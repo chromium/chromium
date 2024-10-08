@@ -108,7 +108,9 @@
 <translation id="2683434792633810741">Padam &amp; tetapkan semula?</translation>
 <translation id="2713106313042589954">Matikan kamera</translation>
 <translation id="2717722538473713889">Alamat e-mel</translation>
+<translation id="2726059656860238749">Lancarkan Chrome dengan Omnibox difokuskan dapat mengurangkan masa permulaan pada peranti bawahan.</translation>
 <translation id="2750481671343847896">Laman boleh menunjukkan gesaan log masuk daripada perkhidmatan identiti.</translation>
+<translation id="2787357173144933081">Mulakan Omnibox</translation>
 <translation id="2790501146643349491">Apabila dihidupkan, laman yang ditutup baru-baru ini dapat menyelesaikan penghantaran dan penerimaan data. Apabila dimatikan, laman yang ditutup baru-baru ini tidak dapat menyelesaikan penghantaran atau penerimaan data.</translation>
 <translation id="2822354292072154809">Adakah anda pasti mahu menetapkan semula semua kebenaran tapak untuk <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Minta paparan mudah alih</translation>
@@ -146,6 +148,7 @@
 <translation id="3295602654194328831">Sembunyikan Maklumat</translation>
 <translation id="3328801116991980348">Maklumat tapak</translation>
 <translation id="3333961966071413176">Semua kenalan</translation>
+<translation id="3360338140203645771">Padamkan tahap zum yang disimpan?</translation>
 <translation id="3362437373201486687">Mengimbas peranti Bluetooth</translation>
 <translation id="3386292677130313581">Tanya sebelum membenarkan tapak mengetahui lokasi anda (disyorkan)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
@@ -243,7 +246,6 @@
 <translation id="4962975101802056554">Batalkan semua kebenaran untuk peranti</translation>
 <translation id="497421865427891073">Ke hadapan</translation>
 <translation id="4976702386844183910">Terakhir dilawati <ph name="DATE" /></translation>
-<translation id="4985206706500620449">Anda membenarkan kuki pihak ketiga untuk laman ini</translation>
 <translation id="4994033804516042629">Tiada kenalan ditemui</translation>
 <translation id="4996978546172906250">Kongsi melalui</translation>
 <translation id="5001526427543320409">Kuki pihak ketiga</translation>
@@ -360,6 +362,7 @@
 <translation id="6527303717912515753">Kongsi</translation>
 <translation id="652937045869844725">Cuba berikan kebenaran untuk kuki pihak ketiga yang boleh mengurangkan perlindungan tetapi ciri laman lebih berkemungkinan untuk berfungsi</translation>
 <translation id="6530703012083415527">Apabila dihidupkan, laman dapat menggunakan tetingkap timbul dan mengubah hala. Apabila dimatikan, laman tidak dapat menggunakan tetingkap timbul dan mengubah hala.</translation>
+<translation id="6540488083026747005">Anda membenarkan kuki pihak ketiga pada laman ini</translation>
 <translation id="6545864417968258051">Pengimbasan Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dan <ph name="NUM_MORE" /> lagi disekat}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dan <ph name="NUM_MORE" /> lagi disekat}}</translation>
 <translation id="6554732001434021288">Terakhir dilawati <ph name="NUM_DAYS" /> hari yang lalu</translation>

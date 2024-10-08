@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">Waarde moet <ph name="MINIMUM_DATE_OR_TIME" /> of later wees.</translation>
 <translation id="2761667185364618470">Merk asseblief hierdie blokkie as jy wil voortgaan.</translation>
 <translation id="2908441821576996758">Voer asseblief 'n kommageskeide lys e-posadresse in.</translation>
+<translation id="2940013921954129954">Presiese ligging word toegelaat</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Voer asseblief 'n geldige waarde in. Die veld is onvolledig of het 'n ongeldige datum.</translation>
 <translation id="310520048233152454">Voer 'n URL in</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">Swak terugspeelgehalte</translation>
 <translation id="6790428901817661496">Speel</translation>
 <translation id="6820355525329141109">Kon nie inprop laai nie.</translation>
+<translation id="688706781007114099">Gebruik ligging</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Verleng asseblief hierdie teks na <ph name="MIN_CHARACTERS" /> karakters of meer (jy gebruik tans 1 karakter).</translation>
 <translation id="709897737746224366">Kry passing vir versoekte formaat.</translation>

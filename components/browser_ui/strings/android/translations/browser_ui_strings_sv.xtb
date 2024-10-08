@@ -49,6 +49,7 @@
 <translation id="1979673356880165407">Gör text och bilder större eller mindre för alla webbplatser du besöker</translation>
 <translation id="1984937141057606926">Tillåts, men inte från tredje part</translation>
 <translation id="1985247341569771101">När detta är aktiverat kan webbplatser använda enhetens rörelsesensorer. När detta är inaktiverat får webbplatser kan inte använda rörelsesensorer.</translation>
+<translation id="1985716030964443178">Detta återställer alla webbplatser på listan till standardzoomen</translation>
 <translation id="1989112275319619282">Bläddra</translation>
 <translation id="1994173015038366702">Webbadress</translation>
 <translation id="2004697686368036666">Vissa webbplatsers funktioner kanske inte fungerar</translation>
@@ -103,10 +104,13 @@
 <translation id="2653659639078652383">Skicka</translation>
 <translation id="2677748264148917807">Lämna</translation>
 <translation id="2678468611080193228">Testa att tillfälligt tillåta cookies från tredje part, vilket innebär mindre skydd men större sannolikhet att webbplatsfunktionerna fungerar</translation>
+<translation id="2682367912565197520">Ta bort sparad zoomnivå</translation>
 <translation id="2683434792633810741">Vill du radera och återställa?</translation>
 <translation id="2713106313042589954">Stäng av kameran</translation>
 <translation id="2717722538473713889">E-postadresser</translation>
+<translation id="2726059656860238749">Starta Chrome med adressfältet i fokus för att minska starttiden på mindre avancerade enheter.</translation>
 <translation id="2750481671343847896">Webbplatser får visa inloggningsmeddelanden från identitetstjänster.</translation>
+<translation id="2787357173144933081">Snabbstarta adressfältet</translation>
 <translation id="2790501146643349491">När detta är aktiverat kan nyligen stängda webbplatser fortsätta att skicka och ta emot data. När detta är inaktiverat får webbplatser som nyligen stängts inte skicka eller ta emot data.</translation>
 <translation id="2822354292072154809">Vill du återställa alla webbplatsbehörigheter för <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Begär mobilvy</translation>
@@ -144,6 +148,7 @@
 <translation id="3295602654194328831">Dölj info</translation>
 <translation id="3328801116991980348">Platsinformation</translation>
 <translation id="3333961966071413176">Alla kontakter</translation>
+<translation id="3360338140203645771">Vill du radera sparade zoomnivåer?</translation>
 <translation id="3362437373201486687">Söker efter Bluetooth-enheter</translation>
 <translation id="3386292677130313581">Fråga innan webbplatser tillåts att veta var du befinner dig (rekommenderas)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
@@ -209,6 +214,7 @@
 <translation id="4338831206024587507">Alla webbplatser under <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Blockera webbplatser från att veta när du använder enheten aktivt</translation>
 <translation id="4412992751769744546">Tillåt cookies från tredje part</translation>
+<translation id="4419929467120297501">Chrome blockerar webbplatser från att spåra dig med hjälp av tredjepartscookies när du surfar. Öppna inställningarna för att <ph name="BEGIN_LINK" />hantera åtkomst till tredjepartscookies<ph name="END_LINK" />.</translation>
 <translation id="4434045419905280838">Popup-fönster och omdirigeringar</translation>
 <translation id="443552056913301231">Om du gör detta raderas all lokal data, inklusive cookies, och alla behörigheter för <ph name="ORIGIN" /> återställs</translation>
 <translation id="4468959413250150279">Stäng av ljudet för en webbplats.</translation>
@@ -230,6 +236,7 @@
 <translation id="4779083564647765204">Zooma in</translation>
 <translation id="4807122856660838973">Aktivera Säker webbsökning</translation>
 <translation id="4811450222531576619">Läs mer om källan och ämnet</translation>
+<translation id="4816495437032298535">Sparade zoomnivåer för webbplatser</translation>
 <translation id="4836046166855586901">Fråga när en webbplats vill veta om du använder enheten aktivt</translation>
 <translation id="483914009762354899">Inkludera alla webbplatser på den här domänen</translation>
 <translation id="4883854917563148705">Hanterade inställningar kan inte återställas</translation>
@@ -239,7 +246,6 @@
 <translation id="4962975101802056554">Återkalla alla behörigheter för enheten</translation>
 <translation id="497421865427891073">Fortsätt</translation>
 <translation id="4976702386844183910">Besöktes senast <ph name="DATE" /></translation>
-<translation id="4985206706500620449">Du har tillåtit cookies från tredje part för den här webbplatsen</translation>
 <translation id="4994033804516042629">Inga kontakter hittades</translation>
 <translation id="4996978546172906250">Dela via</translation>
 <translation id="5001526427543320409">Tredjepartscookies</translation>
@@ -266,6 +272,7 @@
 <translation id="5246825184569358663">Om du gör detta raderas all lokal data, inklusive cookies, och alla behörigheter för <ph name="DOMAIN" /> och alla underordnade webbplatser återställs</translation>
 <translation id="5264323282659631142">Ta bort <ph name="CHIP_LABEL" /></translation>
 <translation id="528192093759286357">Dra uppifrån och tryck på bakåtknappen för att lämna helskärmsläget.</translation>
+<translation id="5292915569214461965">Du blockerade webbplatser från att använda tredjepartscookies för att spåra dig när du surfar. Öppna inställningarna för att <ph name="BEGIN_LINK" />hantera åtkomst till tredjepartscookies<ph name="END_LINK" />.</translation>
 <translation id="5295729974480418933">När detta är aktiverat kan webbplatser be om att få använda information som de har sparat om dig. När detta är inaktiverat får webbplatser inte be dig om att använda information som de har sparat om dig.</translation>
 <translation id="5300589172476337783">Visa</translation>
 <translation id="5301954838959518834">Ok, jag förstår</translation>
@@ -355,6 +362,7 @@
 <translation id="6527303717912515753">Dela</translation>
 <translation id="652937045869844725">Testa att tillåta cookies från tredje part, vilket innebär mindre skydd men större sannolikhet att webbplatsfunktionerna fungerar</translation>
 <translation id="6530703012083415527">När detta är aktiverat kan webbplatser använda popup-fönster och omdirigeringar. När detta är inaktiverat får webbplatser inte använda popup-fönster och omdirigeringar.</translation>
+<translation id="6540488083026747005">Du har tillåtit tredjepartscookies på den här webbplatsen</translation>
 <translation id="6545864417968258051">Bluetooth-sökning</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="NUM_MORE" /> till blockeras}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="NUM_MORE" /> till blockeras}}</translation>
 <translation id="6554732001434021288">Besöktes senast för <ph name="NUM_DAYS" /> dagar sedan</translation>
@@ -377,6 +385,7 @@
 <translation id="6787751205395685251">Välj ett alternativ för <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Spela</translation>
 <translation id="6818926723028410516">Välj objekt</translation>
+<translation id="6837658163275294267">Chrome begränsar de flesta webbplatser från att använda tredjepartscookies för att spåra dig när du surfar. Öppna inställningarna för att <ph name="BEGIN_LINK" />hantera åtkomst till tredjepartscookies<ph name="END_LINK" /></translation>
 <translation id="6838525730752203626">Använd Chrome som standard</translation>
 <translation id="6840760312327750441">Gruppera flikar genom att trycka länge på en flik. Dra sedan fliken ovanpå en annan flik.</translation>
 <translation id="6864395892908308021">Enheten kan inte läsa NFC</translation>
@@ -441,6 +450,7 @@
 <translation id="7835852323729233924">Spelar upp media</translation>
 <translation id="783819812427904514">Slå på ljudet för videon</translation>
 <translation id="7846076177841592234">Rensa val</translation>
+<translation id="7881140103901777395">Chrome begränsar de flesta webbplatser från att använda tredjepartscookies. Tredjepartscookies tillåts dock på den här webbplatsen eftersom den förlitar sig på att de tillhandahåller grundläggande tjänster.\n\nÖppna inställningarna för att <ph name="BEGIN_LINK" />hantera åtkomst till tredjepartscookies<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Tillåt ljud för en webbplats.</translation>
 <translation id="789180354981963912">Blockera cookies från tredje part i inkognitoläge:</translation>
 <translation id="7940722705963108451">Påminn mig</translation>
@@ -503,6 +513,7 @@
 <translation id="8721719390026067591">När detta är aktiverat kan webbplatser be om att få söka efter Bluetooth-enheter. När detta är inaktiverat får webbplatser inte söka efter Bluetooth-enheter.</translation>
 <translation id="8725066075913043281">Försök igen</translation>
 <translation id="8730621377337864115">Klart</translation>
+<translation id="8737426583868847403">Webbplatser som du har sparat en anpassad zoomnivå för visas här</translation>
 <translation id="8751914237388039244">Välj en bild</translation>
 <translation id="8800034312320686233">Fungerar inte webbplatsen?</translation>
 <translation id="8801436777607969138">Blockera JavaScript på en enskild webbplats.</translation>

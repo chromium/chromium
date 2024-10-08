@@ -114,6 +114,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="132346741904777634">Myndavél fest við efra horn vinstra megin. Skörun við vettvang kerfis.</translation>
 <translation id="132415371743256095">Loka <ph name="DESK_NAME" /> og gluggum</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> er tengdur</translation>
+<translation id="1337081488893096731">Notaðu efnisflutningsforritið til að færa gögn skólareikningsins þíns yfir á einkareikninginn þinn</translation>
 <translation id="1340378040547539434">Minnka aðdrátt á síðu</translation>
 <translation id="1341651618736211726">Yfirflæði</translation>
 <translation id="1341926407152459446">Nota „<ph name="DEVICE_NAME" />“ fyrir hljóðinntak og -úttak</translation>
@@ -242,6 +243,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="17722141032474077">Útreikningar</translation>
 <translation id="1774796056689732716">Dagatal, <ph name="CURRENT_MONTH_YEAR" />, núverandi val er <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Setja upp skoðun nýlegra mynda, efnis og tilkynninga í símanum</translation>
+<translation id="1786487376942610288">Skiptu á milli hámarksstærð eða núverandi stærðar af mynd í mynd-glugganum</translation>
 <translation id="1787955149152357925">Slökkt</translation>
 <translation id="1796561540704213354">Vefsvæði að meðtöldum síðum sem þú hefur heimsótt og opnar síður</translation>
 <translation id="179842970735685253">Þjónustuskilmálar Google</translation>
@@ -337,6 +339,9 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="219905428774326614">Ræsiforrit, öll forrit</translation>
 <translation id="2201071101391734388">Nýleg mynd <ph name="INDEX" /> af <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Draga saman Google-verkefni</translation>
+<translation id="2206960886090042977">Slökkt er á innbyggða snertifletinum vegna þess að mús er tengd. Notaðu músina eða lyklaborðið til að staðfesta breytinguna.
+
+Annars verður aftur kveikt á innbyggða snertifletinum eftir 30 sekúndur.</translation>
 <translation id="2208323208084708176">Sameinuð skjáborðsstilling</translation>
 <translation id="2220572644011485463">PIN-númer eða aðgangsorð</translation>
 <translation id="2222841058024245321">Skrifborð 7</translation>
@@ -1468,6 +1473,7 @@ Engin tæki eru tengd.</translation>
 <translation id="598407983968395253">Nota sniðmát</translation>
 <translation id="5986723678596105470">Taka þátt með Google Meet</translation>
 <translation id="598882571027504733">Endurræstu Chromebook með lyklaborðið tengt til að uppfæra</translation>
+<translation id="5990992855591814753">Haltu áætlun og hlustaðu á sérsniðna spilunarlista sem hjálpa þér ná góðri einbeitingu. Prófaðu YouTube Premium í þrjá mánuði þér að kostnaðarlausu til að njóta YouTube Music og YouTube, án auglýsinga. Skilmálar gilda.</translation>
 <translation id="5998374579424866922">Slökktu á leikjastýringum</translation>
 <translation id="6000279412553873020">Lyklar, hnappar og fleira</translation>
 <translation id="6012623610530968780">Síða <ph name="SELECTED_PAGE" /> af <ph name="TOTAL_PAGE_NUM" /></translation>
@@ -1906,6 +1912,9 @@ Ný uppsetning</translation>
 Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translation>
 <translation id="7523420897035067483">Kveikja á „Ónáðið ekki“ á meðan einbeitingarlota er í gangi</translation>
 <translation id="7524043547948122239">Google-verkefni</translation>
+<translation id="7524919752437339268">Slökkt er á innbyggða snertifletinum. Notaðu lyklaborðið eða annað benditæki til að staðfesta breytinguna.
+
+Annars verður aftur kveikt á innbyggða snertifletinum eftir 30 sekúndur.</translation>
 <translation id="7525067979554623046">Búa til</translation>
 <translation id="7526573455193969409">Hugsanlega er fylgst með netinu</translation>
 <translation id="7536035074519304529">IP-tala: <ph name="ADDRESS" /></translation>
@@ -2293,6 +2302,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8858369206579825206">Persónuverndarstillingar</translation>
 <translation id="8860366331836346216">Bæta við eSIM</translation>
 <translation id="8870509716567206129">Forritið styður ekki að skjánum sé skipt.</translation>
+<translation id="8873203135446552888">Staðfestu að þú viljir slökkva á innbyggða snertifletinum</translation>
 <translation id="8874184842967597500">Ekki tengt</translation>
 <translation id="8875021410787719674">Skipta á milli hægra horns neðst, ræsiforrits, veffangastiku, bókamerkjastiku, vefsvæðis sem er opið og niðurhals</translation>
 <translation id="8876148469852588625">Viðburður <ph name="EVENT_POSITION" /> af <ph name="EVENT_TOTAL_COUNT" /></translation>

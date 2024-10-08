@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">Eng kichik qiymati <ph name="MINIMUM_DATE_OR_TIME" /> bo‘lishi kerak.</translation>
 <translation id="2761667185364618470">Davom etish uchun ushbu katakchani belgilang.</translation>
 <translation id="2908441821576996758">Elektron pochta manzillarini bir vergul bilan ajratilgan holda kiriting.</translation>
+<translation id="2940013921954129954">Aniq joylashuvga ruxsat berilgan</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Yaroqli qiymat kiriting. Maydon to‘ldirilmadi yoki noto‘g‘ri sana kiritildi.</translation>
 <translation id="310520048233152454">URL kiriting.</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">Ijro sifati past</translation>
 <translation id="6790428901817661496">Ijro etish</translation>
 <translation id="6820355525329141109">Plagin yuklanmadi.</translation>
+<translation id="688706781007114099">Geolokatsiyani yoqish</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Matndagi belgilar soni <ph name="MIN_CHARACTERS" /> tadan ko‘p bo‘lishi kerak (siz esa 1 ta belgi kiritdingiz).</translation>
 <translation id="709897737746224366">Talab etilgan formatga rioya qiling.</translation>

@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Pantailaren distira jaisteko tekla</translation>
 <translation id="2086091080968010660">Baliteke orduaren araberako aldaketak zehatzak ez izatea. Eman sistemaren kokapena erabiltzeko baimena ezarpenetan.</translation>
 <translation id="2102231663024125441">Testua editatzea</translation>
-<translation id="2102648867808308635">Lagundu orri hau irakurtzen</translation>
 <translation id="2105810540595158374">Gailua bideo-jokoen kontrolagailu bat da.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" /> bertsioa</translation>
 <translation id="2124643134650336457">Une honetan, ingelesez (AEB) soilik dago erabilgarri</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">ikusi aplikazio guztiak</translation>
 <translation id="3510890413042482857">Bidali <ph name="BEGIN_LINK1" />errendimenduaren jarraipena egiteko datuak<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome OS-ren eguneratzea</translation>
-<translation id="3522508178835057262">Oraingoz, ez da onartzen <ph name="MAX_WORD_LENGTH" /> hitz baino gehiagoko transkripziorik</translation>
 <translation id="3527036260304016759">Hutsegitea - Errore ezezaguna</translation>
 <translation id="353214771040290298">Amaitu editatzen</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> minutu inguru geratzen dira</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">Gai argia</translation>
 <translation id="4813136279048157860">Nire irudiak</translation>
 <translation id="4813345808229079766">Konexioa</translation>
-<translation id="4824527342590024245">Oraingoz, ez da onartzen <ph name="MIN_WORD_LENGTH" /> hitz baino gutxiagoko transkripziorik</translation>
 <translation id="4830894019733815633">Arroila</translation>
 <translation id="4832079907277790330">Hautatu karpeta Fitxategiak aplikazioan…</translation>
 <translation id="4835901797422965222">Ez dago sare aktiborik</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">Antzekoak:</translation>
 <translation id="5130848777448318809">poneyak</translation>
 <translation id="5137451382116112100">Osoa</translation>
+<translation id="5140788690559353412">Ikastetxeko kontua erabiltzeko baimena galdu ondoren, ezin izango dituzu erabili harekin lotutako helbide elektronikoa eta Google Drive-ko fitxategiak, hala nola Gmail, Dokumentuak, Aurkezpenak eta beste zerbitzu batzuetakoak.</translation>
 <translation id="5142961317498132443">Autentifikazioa</translation>
 <translation id="5144311987923128508">Berretsi botoia desgaituta dago orain</translation>
 <translation id="5144887194300568405">Kopiatu itzulpena</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">HTTP eskaeren latentzia (Android)</translation>
 <translation id="6078323886959318429">Gehitu lasterbidea</translation>
 <translation id="6091080061796993741">kolore horiko</translation>
+<translation id="6093853427925392522">Erabili Google-ren Content Transfer aplikazioa zure ikastetxeko kontuko datuak zure kontu pertsonalera eramateko, hura erabiltzeko baimena galdu baino lehen.</translation>
 <translation id="6104112872696127344">Bertan behera utzi da eskaneatzeko prozesua</translation>
 <translation id="6106186594183574873">Amaitzeko, idatzi pasahitz zaharra</translation>
 <translation id="6108689792487843350">Ezin da konektatu atebidera</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">Sarbide-puntuaren izena (APNa)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Izenen zerbitzaria}other{Izenen zerbitzariak}}</translation>
 <translation id="7135814714616751706">Bilatu lasterbideak</translation>
+<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Konektatzen</translation>
 <translation id="7144878232160441200">Saiatu berriro</translation>
 <translation id="7144954474087165241">Pagoda</translation>
@@ -1394,6 +1394,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="7856267634822906833">Bluetooth bidezko ukipen-pantaila</translation>
 <translation id="7859006200041800233">Kaktus-lore</translation>
 <translation id="7869143217755017858">Desgaitu modu iluna</translation>
+<translation id="7878972877380405573">Laburbildu irakurtzeko laguntzaren bidez</translation>
 <translation id="7881066108824108340">DNSa</translation>
 <translation id="7882358943899516840">Hornitzaile mota</translation>
 <translation id="7882501334836096755">Gako publikoa</translation>
@@ -1537,6 +1538,7 @@ Transkripzio horiek lortzeko, deskargatu transkripzio-eredua (gehienez ere 100 
 <translation id="8626489604350149811"><ph name="APN_NAME" /> APNarekin erlazionatutako ekintza gehiago</translation>
 <translation id="86356131183441916">More argia</translation>
 <translation id="8647595191512746911">Audio-transkripzioa</translation>
+<translation id="8650852232143958317">Eraman Gmail-eko eta Google Drive-ko fitxategiak zurekin</translation>
 <translation id="8651481478098336970">desaktibatu bolumena</translation>
 <translation id="8655295600908251630">Kanala</translation>
 <translation id="8655828773034788261">Partekatzeko URLa:</translation>

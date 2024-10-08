@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">Gildið verður að vera <ph name="MINIMUM_DATE_OR_TIME" /> eða síðar.</translation>
 <translation id="2761667185364618470">Merktu í þennan gátreit ef þú vilt halda áfram.</translation>
 <translation id="2908441821576996758">Sláðu inn lista yfir netföng, aðskilin með kommum.</translation>
+<translation id="2940013921954129954">Nákvæm staðsetning leyfð</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Sláðu inn gilt gildi. Reiturinn er auður eða dagsetningin er ekki gild.</translation>
 <translation id="310520048233152454">Sláðu inn vefslóð.</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">Léleg spilunargæði</translation>
 <translation id="6790428901817661496">Spila</translation>
 <translation id="6820355525329141109">Ekki var hægt að hlaða viðbót.</translation>
+<translation id="688706781007114099">Nota staðsetningu</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Lengdu þennan texta í <ph name="MIN_CHARACTERS" /> stafi eða meira (sem stendur notarðu einn staf).</translation>
 <translation id="709897737746224366">Fylgdu umbeðnu sniði.</translation>

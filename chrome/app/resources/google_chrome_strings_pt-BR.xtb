@@ -70,6 +70,7 @@
 <translation id="1919130412786645364">Permitir login no Chrome</translation>
 <translation id="1953553007165777902">Fazendo o download… <ph name="MINUTE" /> minuto(s) restante(s)</translation>
 <translation id="1982647487457769627">O Chrome funciona em várias plataformas para oferecer uma experiência familiar, independente do dispositivo</translation>
+<translation id="19955905961160405">Use o Google Lens para pesquisar o que aparece na tela</translation>
 <translation id="2001586581944147178">Dificulte para as pessoas com acesso ao seu tráfego da Internet saber quais sites você visita. O Chrome usa uma conexão segura para procurar o endereço IP de um site no DNS (Sistema de Nomes de Domínio).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Essa extensão não é mais compatível. O Chrome recomenda a remoção dela.}one{Essa extensão não é mais compatível. O Chrome recomenda a remoção dela.}other{Essas extensões não são mais compatíveis. O Chrome recomenda a remoção delas.}}</translation>
 <translation id="2018528049276128029">Cada perfil armazena as próprias informações do Chrome, como favoritos, histórico, senhas, entre outras</translation>
@@ -87,6 +88,7 @@
 <translation id="2126108037660393668">Falha na verificação do arquivo baixado.</translation>
 <translation id="2128411189117340671">Gerenciar perfis do Chrome</translation>
 <translation id="2131230230468101642">Para proteger sua privacidade, excluímos automaticamente seus interesses que têm mais de quatro semanas. Enquanto você navega, um interesse pode aparecer na lista novamente. Você também pode remover interesses que não quer que o Chrome considere.</translation>
+<translation id="2137162749895930932">Fechar o tradutor</translation>
 <translation id="2139300032719313227">Reiniciar o ChromeOS</translation>
 <translation id="2151406531797534936">Reinicie o Chrome agora</translation>
 <translation id="2163089732491971196">Digite sua senha longa para usar e salvar dados do Chrome na sua Conta do Google</translation>
@@ -170,6 +172,7 @@
 <translation id="3019382870990049182">Reiniciar para atualizar o &amp;ChromeOS Flex</translation>
 <translation id="3037838751736561277">O Google Chrome está em modo de segundo plano.</translation>
 <translation id="3038232873781883849">Aguardando instalação...</translation>
+<translation id="3045032126857188731">Idioma traduzido: <ph name="LANGUAGE" /></translation>
 <translation id="3059710691562604940">O "Navegação segura" está desativado. O Chrome recomenda ativá-lo.</translation>
 <translation id="306179102415443347">Use seu atalho para acessar rapidamente o Gerenciador de senhas do Google. Você pode mover o atalho para a tela inicial ou para o Acesso rápido aos apps do seu computador.</translation>
 <translation id="3065168410429928842">Guia do Chrome</translation>
@@ -188,7 +191,6 @@
 <translation id="3234642784688107085">Teste novos recursos de IA para criar temas, receber ajuda com a escrita e se organizar</translation>
 <translation id="3245429137663807393">Se você também compartilhar os relatórios de uso do Chrome, eles vão incluir os URLs acessados</translation>
 <translation id="3261565993776444564">Personalize seu navegador com uma nova cor</translation>
-<translation id="3269209112443570745">Novo! Uma maneira fácil de pesquisar o que está na sua tela</translation>
 <translation id="3282568296779691940">Fazer login no Google Chrome</translation>
 <translation id="3286538390144397061">Reiniciar agora</translation>
 <translation id="3292333338048274092">Depois, é necessário reiniciar o Chrome.</translation>
@@ -238,12 +240,14 @@
 <translation id="386202838227397562">Feche todas as janelas do Google Chrome e tente novamente.</translation>
 <translation id="3865754807470779944">O Chrome versão <ph name="PRODUCT_VERSION" /> está instalado</translation>
 <translation id="3873044882194371212">Abrir link na janela &amp;sem rastros do Chrome</translation>
+<translation id="3885770153807205175">Seletor de idioma</translation>
 <translation id="3889417619312448367">Desinstalar o Google Chrome</translation>
 <translation id="3941890832296813527">Erro de instalação: o nome do arquivo do instalador é inválido ou não tem suporte.</translation>
 <translation id="3973161977468201858">O Chrome quer excluir seus dados do Gerenciador de senhas do Google. Digite sua senha do Windows para conceder essa permissão.</translation>
 <translation id="398236277091248993">O Chrome continua rápido com recursos que melhoram o desempenho</translation>
 <translation id="3999683152997576765">É possível ver e remover os assuntos de interesse que os sites usam para mostrar anúncios a você. O Chrome faz uma estimativa dos seus interesses com base no seu histórico de navegação recente.</translation>
 <translation id="4022972681110646219">Traduzir tela</translation>
+<translation id="4023601594785368013">Idioma original: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">É necessário reiniciar o ChromeOS para aplicar a atualização.</translation>
 <translation id="4050175100176540509">Melhorias de segurança importantes e novos recursos estão disponíveis na versão mais recente.</translation>
 <translation id="4053720452172726777">Personalizar e controlar o Google Chrome</translation>
@@ -515,6 +519,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="7514258452813684157">Google Updater Service</translation>
 <translation id="7515191208480168435">Você pode fixar o Google Lens para facilitar o acesso</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
+<translation id="756809126120519699">Dados do Chrome apagados</translation>
 <translation id="7572537927358445944">Desativada: o Chrome não consegue verificar a origem dessa extensão</translation>
 <translation id="7583399374488819119">Instalador do <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
@@ -532,6 +537,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="7668816516367091728">Traduza, calcule e faça muito mais diretamente da barra de endereço</translation>
 <translation id="7670287553302121848">A conta do Chrome precisa ser autenticada de novo</translation>
 <translation id="769538538642757151">O Chrome vai informar se algo precisar ser revisado</translation>
+<translation id="77283119132245232">Fornece serviços de rastreamento do sistema para o <ph name="BROWSER_NAME" />. Se o serviço for desativado, os rastros de desempenho criados pelo navegador não vão incluir eventos do sistema, como troca de contexto e eventos de linha de execução pronta.</translation>
 <translation id="7747138024166251722">O instalador não conseguiu criar um diretório temporário. Verifique se há espaço livre em disco e se há permissão para a instalação de software.</translation>
 <translation id="7761834446675418963">Clique no seu nome para abrir o Chrome e começar a navegar.</translation>
 <translation id="7763983146198734674">Salve suas senhas e tenha acesso a elas em qualquer lugar</translation>

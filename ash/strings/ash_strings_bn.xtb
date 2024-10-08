@@ -114,6 +114,7 @@
 <translation id="132346741904777634">ক্যামেরাটি উপরে বাঁদিকের কোণে স্ন্যাপ করা হয়েছে। সিস্টেমের সারফেসে ছবির কিছুটা ঢাকা পড়ছে।</translation>
 <translation id="132415371743256095">উইন্ডো ও <ph name="DESK_NAME" /> বন্ধ করুন</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> কানেক্ট করা হয়েছে</translation>
+<translation id="1337081488893096731">আপনার স্কুল অ্যাকাউন্ট ডেটা ব্যক্তিগত অ্যাকাউন্টে সরাতে Content Transfer অ্যাপ ব্যবহার করুন</translation>
 <translation id="1340378040547539434">পৃষ্ঠায় জুম ছোট করুন</translation>
 <translation id="1341651618736211726">ওভারফ্লো</translation>
 <translation id="1341926407152459446">অডিও ইনপুট ও আউটপুটের জন্য "<ph name="DEVICE_NAME" />" ব্যবহার করুন</translation>
@@ -242,6 +243,7 @@
 <translation id="17722141032474077">গণনা</translation>
 <translation id="1774796056689732716">ক্যালেন্ডার, <ph name="CURRENT_MONTH_YEAR" />, বর্তমানে <ph name="DATE" /> বেছে নেওয়া হয়েছে।</translation>
 <translation id="178347895271755507">আপনার ফোনের সাম্প্রতিক ফটো, মিডিয়া ও বিজ্ঞপ্তি দেখা সংক্রান্ত পদ্ধতি সেট-আপ করুন</translation>
+<translation id="1786487376942610288">ছবির-মধ্যে-ছবি উইন্ডোর সর্বাধিক বা বর্তমান সাইজের মধ্যে পাল্টে নিন</translation>
 <translation id="1787955149152357925">বন্ধ আছে</translation>
 <translation id="1796561540704213354">যেসব ওয়েবসাইটের পৃষ্ঠা আপনি ঘুরে দেখেছেন ও পৃষ্ঠা খোলা রয়েছে, সেগুলি সহ</translation>
 <translation id="179842970735685253">Google-এর পরিষেবার শর্তাবলী</translation>
@@ -337,6 +339,9 @@
 <translation id="219905428774326614">লঞ্চার, সমস্ত অ্যাপ</translation>
 <translation id="2201071101391734388"><ph name="TOTAL_COUNT" />-এর মধ্যে <ph name="INDEX" /> নম্বরের সাম্প্রতিক ফটো</translation>
 <translation id="2201687081523799384">Google Tasks আড়াল করুন</translation>
+<translation id="2206960886090042977">মাউস কানেক্ট আছে তাই বিল্ট-ইন টাচপ্যাড বন্ধ আছে। পরিবর্তন কনফার্ম করতে মাউস বা কীবোর্ড ব্যবহার করুন।
+
+না হলে, বিল্ট-ইন টাচপ্যাড ৩০ সেকেন্ডে আবার চালু হবে।</translation>
 <translation id="2208323208084708176">একীভূত ডেস্কটপ মোড</translation>
 <translation id="2220572644011485463">PIN বা পাসওয়ার্ড</translation>
 <translation id="2222841058024245321">ডেস্ক ৭</translation>
@@ -1468,6 +1473,7 @@
 <translation id="598407983968395253">টেমপ্লেট ব্যবহার করুন</translation>
 <translation id="5986723678596105470">Google Meet-এর মাধ্যমে যোগ দিন</translation>
 <translation id="598882571027504733">আপডেট পেতে, অ্যাটাচ করা কীবোর্ডের মাধ্যমে আপনার Chromebook রিস্টার্ট করুন।</translation>
+<translation id="5990992855591814753">পছন্দমতো ফোকাস প্লেলিস্টের সাথে ট্র্যাকে থাকুন। বিনামূল্যে ৩ মাসের YouTube Premium সাবস্ক্রিপশনের সাথে বিজ্ঞাপন ছাড়া YouTube Music ও YouTube পান। শর্তাবলী প্রযোজ্য।</translation>
 <translation id="5998374579424866922">গেম কন্ট্রোল বন্ধ করুন</translation>
 <translation id="6000279412553873020">কী, বোতাম ও আরও অনেক কিছু</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" />টি পৃষ্ঠার মধ্যে <ph name="SELECTED_PAGE" />টি পৃষ্ঠা</translation>
@@ -1907,6 +1913,9 @@
 ডিভাইসটি বন্ধ করতে, আবার ডিভাইসের পাওয়ার বোতাম প্রেস করে ধরে রাখুন।</translation>
 <translation id="7523420897035067483">ফোকাস মোডে থাকাকালীন বিরক্ত করবে না ফিচার চালু করুন</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">বিল্ট-ইন টাচপ্যাড বন্ধ আছে। পরিবর্তন কনফার্ম করতে আপনার কীবোর্ড বা অন্য পয়েন্টার ডিভাইস ব্যবহার করুন।
+
+না হলে, বিল্ট-ইন টাচপ্যাড ৩০ সেকেন্ডে আবার চালু হবে।</translation>
 <translation id="7525067979554623046">তৈরি করুন</translation>
 <translation id="7526573455193969409">নেটওয়ার্কের উপরে নজর রাখা হতে পারে</translation>
 <translation id="7536035074519304529">আইপি অ্যাড্রেস: <ph name="ADDRESS" /></translation>
@@ -2294,6 +2303,7 @@
 <translation id="8858369206579825206">গোপনীয়তা নিয়ন্ত্রণ</translation>
 <translation id="8860366331836346216">eSIM যোগ করুন</translation>
 <translation id="8870509716567206129">অ্যাপ্লিকেশনটি বিভক্ত-স্ক্রিন সমর্থন করে না৷</translation>
+<translation id="8873203135446552888">আপনি বিল্ট-ইন টাচপ্যাড বন্ধ করতে চান তা কনফার্ম করুন</translation>
 <translation id="8874184842967597500">সংযুক্ত নয়</translation>
 <translation id="8875021410787719674">নিচে ডান কোণে, লঞ্চার, অ্যাড্রেস বার, বুকমার্ক বার, খোলা আছে এমন ওয়েবসাইট এবং ডাউনলোডগুলির মধ্যে সরান</translation>
 <translation id="8876148469852588625"><ph name="EVENT_TOTAL_COUNT" />টির মধ্যে <ph name="EVENT_POSITION" /> নম্বর ইভেন্ট</translation>

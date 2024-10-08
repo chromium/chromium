@@ -49,6 +49,7 @@
 <translation id="1979673356880165407">Povečajte ali pomanjšajte besedilo in slike na vseh spletnih mestih, ki jih obiščete.</translation>
 <translation id="1984937141057606926">Dovoljeno, razen za druga spletna mesta</translation>
 <translation id="1985247341569771101">Če je ta možnost vklopljena, spletna mesta lahko uporabljajo tipala gibanja naprave. Če je ta možnost izklopljena, spletna mesta ne smejo uporabljati tipal gibanja.</translation>
+<translation id="1985716030964443178">S tem boste za vsa spletna mesta na seznamu povečavo ponastavili na privzeto</translation>
 <translation id="1989112275319619282">Brskanje</translation>
 <translation id="1994173015038366702">URL spletnega mesta</translation>
 <translation id="2004697686368036666">Funkcije na nekaterih spletnih mestih morda ne bodo delovale.</translation>
@@ -103,10 +104,13 @@
 <translation id="2653659639078652383">Pošlji</translation>
 <translation id="2677748264148917807">Zapusti</translation>
 <translation id="2678468611080193228">Poskusite začasno omogočiti piškotke tretjih oseb, kar pomeni manj zaščite, vendar je večja verjetnost, da bodo funkcije spletnega mesta delovale</translation>
+<translation id="2682367912565197520">Izbris shranjene stopnje povečave</translation>
 <translation id="2683434792633810741">Želite izbrisati in ponastaviti?</translation>
 <translation id="2713106313042589954">Izklopi kamero</translation>
 <translation id="2717722538473713889">E-poštni naslovi</translation>
+<translation id="2726059656860238749">Zaženite Chrome z aktivno naslovno vrstico, da skrajšate čas zagona v napravah nižjega cenovnega razreda.</translation>
 <translation id="2750481671343847896">Spletna mesta lahko prikazujejo pozive za prijavo zunanjih ponudnikov.</translation>
+<translation id="2787357173144933081">Hiter začetek z naslovno vrstico</translation>
 <translation id="2790501146643349491">Če je ta možnost vklopljena, nedavno zaprta spletna mesta lahko dokončajo pošiljanje in prejemanje podatkov. Če je ta možnost izklopljena, nedavno zaprta spletna mesta ne smejo dokončati pošiljanja ali prejemanja podatkov.</translation>
 <translation id="2822354292072154809">Ali ste prepričani, da želite ponastaviti vsa dovoljenja za spletna mesta za <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Zahtevanje pogleda za mobilno napravo</translation>
@@ -144,6 +148,7 @@
 <translation id="3295602654194328831">Skrij informacije</translation>
 <translation id="3328801116991980348">Podatki o mestu</translation>
 <translation id="3333961966071413176">Vsi stiki</translation>
+<translation id="3360338140203645771">Izbris shr. stop. pov.?</translation>
 <translation id="3362437373201486687">Iskanje naprav Bluetooth</translation>
 <translation id="3386292677130313581">Prikaži poziv, preden se spletnim mestom razkrije vaša lokacija (priporočeno)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
@@ -209,6 +214,7 @@
 <translation id="4338831206024587507">Vsa spletna mesta v domeni <ph name="DOMAIN" />.</translation>
 <translation id="4402755511846832236">Preprečevanje, da bi spletna mesta vedela, kdaj aktivno uporabljate to napravo.</translation>
 <translation id="4412992751769744546">Omogočanje piškotkov drugih spletnih mest</translation>
+<translation id="4419929467120297501">Chrome spletnim mestom onemogoči uporabo piškotkov tretjih oseb, da bi vam sledila med brskanjem. Obiščite nastavitve, če želite <ph name="BEGIN_LINK" />upravljati dostop do piškotkov tretjih oseb<ph name="END_LINK" />.</translation>
 <translation id="4434045419905280838">Pojavna okna in preusmeritve</translation>
 <translation id="443552056913301231">To dejanje bo izbrisalo vse lokalne podatke, vključno s piškotki, in ponastavilo vsa dovoljenja za <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Izklop zvoka za določeno spletno mesto.</translation>
@@ -230,6 +236,7 @@
 <translation id="4779083564647765204">Povečaj</translation>
 <translation id="4807122856660838973">Vklop Varnega brskanja</translation>
 <translation id="4811450222531576619">Preberite več o njenem viru in temi</translation>
+<translation id="4816495437032298535">Shranjena povečava za spletna mesta</translation>
 <translation id="4836046166855586901">Vprašaj, ko želi spletno mesto vedeti, kdaj aktivno uporabljate to napravo.</translation>
 <translation id="483914009762354899">Vključi vsa spletna mesta v tej domeni</translation>
 <translation id="4883854917563148705">Upravljanih nastavitev ni mogoče ponastaviti</translation>
@@ -239,7 +246,6 @@
 <translation id="4962975101802056554">Umik vseh dovoljenj za napravo</translation>
 <translation id="497421865427891073">Pojdi naprej</translation>
 <translation id="4976702386844183910">Nazadnje obiskano: <ph name="DATE" /></translation>
-<translation id="4985206706500620449">Za to spletno mesto ste dovolili piškotke tretjih oseb</translation>
 <translation id="4994033804516042629">Ni najdenih stikov</translation>
 <translation id="4996978546172906250">Skupna raba prek</translation>
 <translation id="5001526427543320409">Piškotki tretjih oseb</translation>
@@ -266,6 +272,7 @@
 <translation id="5246825184569358663">To dejanje bo izbrisalo vse lokalne podatke, vključno s piškotki, in ponastavilo vsa dovoljenja za spletno mesto <ph name="DOMAIN" /> ter vsa njegova podrejena spletna mesta</translation>
 <translation id="5264323282659631142">Odstranitev vnosa »<ph name="CHIP_LABEL" />«</translation>
 <translation id="528192093759286357">Povlecite z vrha in se dotaknite gumba za nazaj, če želite zapreti celozaslonski način.</translation>
+<translation id="5292915569214461965">Spletnim mestom ste blokirali uporabo piškotkov tretjih oseb za vaše sledenje med brskanjem. Obiščite nastavitve, če želite <ph name="BEGIN_LINK" />upravljati dostop do piškotkov tretjih oseb<ph name="END_LINK" />.</translation>
 <translation id="5295729974480418933">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo, da dovolite uporabo podatkov, ki so jih shranila o vas. Če je ta možnost izklopljena, spletna mesta ne smejo zahtevati, da dovolite uporabo podatkov, ki so jih shranila o vas.</translation>
 <translation id="5300589172476337783">Pokaži</translation>
 <translation id="5301954838959518834">V redu, razumem</translation>
@@ -355,6 +362,7 @@
 <translation id="6527303717912515753">Skupna raba</translation>
 <translation id="652937045869844725">Poskusite omogočiti piškotke tretjih oseb, kar pomeni manj zaščite, vendar je večja verjetnost, da bodo funkcije spletnega mesta delovale</translation>
 <translation id="6530703012083415527">Če je ta možnost vklopljena, spletna mesta lahko uporabljajo pojavna okna in preusmeritve. Če je ta možnost izklopljena, spletna mesta ne smejo uporabljati pojavnih oken in preusmeritev.</translation>
+<translation id="6540488083026747005">Na tem spletnem mestu ste dovolili piškotke tretjih oseb</translation>
 <translation id="6545864417968258051">Iskanje naprav Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Blokirano: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}one{Blokirano: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}two{Blokirano: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}few{Blokirano: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}other{Blokirano: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in še <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Nazadnje obiskano pred toliko dnevi: <ph name="NUM_DAYS" /></translation>
@@ -377,6 +385,7 @@
 <translation id="6787751205395685251">Izberite možnost za spletno mesto <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Predvajanje</translation>
 <translation id="6818926723028410516">Izberite elemente</translation>
+<translation id="6837658163275294267">Chrome večini spletnih mest omejuje uporabo piškotkov tretjih oseb za vaše sledenje med brskanjem. Obiščite nastavitve, če želite <ph name="BEGIN_LINK" />upravljati dostop do piškotkov tretjih oseb<ph name="END_LINK" />.</translation>
 <translation id="6838525730752203626">Privzeto uporabljajte Chrome</translation>
 <translation id="6840760312327750441">Če želite združiti zavihke v skupino, pridržite zavihek. Nato ga povlecite na drug zavihek.</translation>
 <translation id="6864395892908308021">Ta naprava ne podpira NFC-ja</translation>
@@ -441,6 +450,7 @@
 <translation id="7835852323729233924">Predvajanje predstavnosti</translation>
 <translation id="783819812427904514">Vklop videa</translation>
 <translation id="7846076177841592234">Prekliči izbor</translation>
+<translation id="7881140103901777395">Chrome večini spletnih mest omejuje uporabo piškotkov tretjih oseb. Vendar so piškotki tretjih oseb dovoljeni na tem spletnem mestu, ker z njimi zagotavlja osnovne storitve.\n\nObiščite nastavitve, če želite <ph name="BEGIN_LINK" />upravljati dostop do piškotkov tretjih oseb<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Dovolitev zvoka za določeno spletno mesto.</translation>
 <translation id="789180354981963912">Blokiranje piškotkov tretjih oseb v anonimnem načinu:</translation>
 <translation id="7940722705963108451">Opomni me</translation>
@@ -503,6 +513,7 @@
 <translation id="8721719390026067591">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo iskanje naprav Bluetooth. Če je ta možnost izklopljena, spletna mesta ne smejo iskati naprav Bluetooth.</translation>
 <translation id="8725066075913043281">Poskusite znova</translation>
 <translation id="8730621377337864115">Končano</translation>
+<translation id="8737426583868847403">Spletna mesta, za katera shranite prilagojeno stopnjo povečave, bodo prikazana tukaj</translation>
 <translation id="8751914237388039244">Izberite sliko</translation>
 <translation id="8800034312320686233">Ali spletno mesto ne deluje?</translation>
 <translation id="8801436777607969138">Preprečevanje JavaScripta za določeno spletno mesto.</translation>

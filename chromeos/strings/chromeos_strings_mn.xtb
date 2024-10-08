@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Дэлгэцийн гэрэлтүүлгийг багасгах</translation>
 <translation id="2086091080968010660">Цагт тулгуурласан өөрчлөлтүүд оновчгүй байж магадгүй. Системийн байршлын хандалтыг тохиргоонд асаана уу.</translation>
 <translation id="2102231663024125441">Текст засах</translation>
-<translation id="2102648867808308635">Надад энэ хуудсыг уншихад тусал</translation>
 <translation id="2105810540595158374">Төхөөрөмж нь тоглоомын гар байна.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" />-р хувилбар</translation>
 <translation id="2124643134650336457">Одоогоор зөвхөн англи (АНУ) хэлээр боломжтой</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">бүх аппыг харах</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Гүйцэтгэлийн ул мөрийн өгөгдлийг<ph name="END_LINK1" /> илгээх</translation>
 <translation id="3517001332549868749">ChromeOS-н шинэчлэлт</translation>
-<translation id="3522508178835057262">Одоогоор <ph name="MAX_WORD_LENGTH" />-с олон үгтэй сийрүүлгийг дэмждэггүй</translation>
 <translation id="3527036260304016759">Амжилтгүй болсон - Үл мэдэгдэх алдаа</translation>
 <translation id="353214771040290298">Засаж дууслаа</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> орчим минут үлдсэн байна</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">Цайвар загвар</translation>
 <translation id="4813136279048157860">Миний зураг</translation>
 <translation id="4813345808229079766">Холболт</translation>
-<translation id="4824527342590024245">Одоогоор <ph name="MIN_WORD_LENGTH" />-с цөөн үгтэй сийрүүлгийг дэмждэггүй</translation>
 <translation id="4830894019733815633">хавцал</translation>
 <translation id="4832079907277790330">Файлс аппаас фолдер сонгох...</translation>
 <translation id="4835901797422965222">Идэвхтэй сүлжээ байхгүй байна</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">Төстэй:</translation>
 <translation id="5130848777448318809">одой морьд</translation>
 <translation id="5137451382116112100">Бүтэн</translation>
+<translation id="5140788690559353412">Та сургуулийн бүртгэлдээ хандах эрхээ алдсан байхдаа цаашид Gmail, Докс, Үзүүлэн болон бусад үйлчилгээний холбогдох имэйл, Google Драйвын файлд хандах эрхгүй болно.</translation>
 <translation id="5142961317498132443">Баталгаажуулалт</translation>
 <translation id="5144311987923128508">Баталгаажуулах товчлуурыг одоо идэвхгүй болгосон</translation>
 <translation id="5144887194300568405">Орчуулгыг хуулах</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) HTTP хоцролт</translation>
 <translation id="6078323886959318429">Товчлол нэмэх</translation>
 <translation id="6091080061796993741">шар</translation>
+<translation id="6093853427925392522">Та хандах эрхээ алдахаасаа өмнө сургуулийн бүртгэлийнхээ өгөгдлийг хувийн бүртгэл рүүгээ зөөхөд Google-н Content Transfer аппыг ашиглахаа мартуузай.</translation>
 <translation id="6104112872696127344">Скан хийхийг цуцалсан</translation>
 <translation id="6106186594183574873">Дуусгахын тулд хуучин нууц үгээ оруулна уу</translation>
 <translation id="6108689792487843350">Гэйтвэйд холбогдох боломжгүй байна</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">Хандах цэгийн нэрс (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Нэрийн сервер}other{Нэрийн серверүүд}}</translation>
 <translation id="7135814714616751706">Товчлолууд хайх</translation>
+<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Холбож байна</translation>
 <translation id="7144878232160441200">Дахин оролдох</translation>
 <translation id="7144954474087165241">суварга</translation>
@@ -1394,6 +1394,7 @@
 <translation id="7856267634822906833">Bluetooth мэдрэмтгий дэлгэц</translation>
 <translation id="7859006200041800233">кактус цэцэг</translation>
 <translation id="7869143217755017858">Бараан горимыг идэвхгүй болгох</translation>
+<translation id="7878972877380405573">Надад уншихад тусал онцлогоор хураангуйлах</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Нийлүүлэгчийн төрөл</translation>
 <translation id="7882501334836096755">Нийтийн түлхүүр</translation>
@@ -1537,6 +1538,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" />-н бусад үйлдэл</translation>
 <translation id="86356131183441916">Цайвар нил ягаан</translation>
 <translation id="8647595191512746911">Аудио сийрүүлэг</translation>
+<translation id="8650852232143958317">Gmail болон Google Драйвын файлаа өөртөө авч яваарай</translation>
 <translation id="8651481478098336970">дууг хаах</translation>
 <translation id="8655295600908251630">Суваг</translation>
 <translation id="8655828773034788261">URL хуваалцах:</translation>

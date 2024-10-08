@@ -49,6 +49,7 @@
 <translation id="1979673356880165407">Maak teks en prente groter of kleiner vir alle werwe wat jy besoek</translation>
 <translation id="1984937141057606926">Toegelaat, buiten van derde party af</translation>
 <translation id="1985247341569771101">Wanneer dit aan is, kan werwe jou toestel se bewegingsensors gebruik. Wanneer dit af is, kan werwe nie bewegingsensors gebruik nie.</translation>
+<translation id="1985716030964443178">Dit sal al die werwe op jou lys na die verstek zoeminstelling terugstel</translation>
 <translation id="1989112275319619282">Blaai deur</translation>
 <translation id="1994173015038366702">Werf-URL</translation>
 <translation id="2004697686368036666">Kenmerke op sommige webwerwe sal dalk nie werk nie</translation>
@@ -103,10 +104,13 @@
 <translation id="2653659639078652383">Dien in</translation>
 <translation id="2677748264148917807">Gaan uit</translation>
 <translation id="2678468611080193228">Probeer om derdepartywebkoekies tydelik toe te laat, wat minder beskerming beteken, maar werfkenmerke is meer geneig om te werk</translation>
+<translation id="2682367912565197520">Vee gestoorde zoemvlak uit</translation>
 <translation id="2683434792633810741">Vee uit en stel terug?</translation>
 <translation id="2713106313042589954">Skakel kamera af</translation>
 <translation id="2717722538473713889">E-posadresse</translation>
+<translation id="2726059656860238749">Begin Chrome met die Omnibox gefokus, wat aanskakelingtyd op goedkoper toestelle verminder.</translation>
 <translation id="2750481671343847896">Werwe kan vir jou aanmeldporboodskappe van identiteitsdienste af wys.</translation>
+<translation id="2787357173144933081">Kitsaktiveer Omnibox</translation>
 <translation id="2790501146643349491">Wanneer dit aan is, kan werwe wat onlangs toegemaak is data klaar stuur en ontvang. Wanneer dit af is, kan werwe wat onlangs toegemaak is nie data klaar stuur en ontvang nie.</translation>
 <translation id="2822354292072154809">Is jy seker jy wil alle werftoestemmings vir <ph name="CHOSEN_OBJECT_NAME" /> terugstel?</translation>
 <translation id="2850913818900871965">Versoek mobiele aansig</translation>
@@ -144,6 +148,7 @@
 <translation id="3295602654194328831">Versteek inligting</translation>
 <translation id="3328801116991980348">Werfinligting</translation>
 <translation id="3333961966071413176">Alle kontakte</translation>
+<translation id="3360338140203645771">Vee gestoorde zoemvlakke uit?</translation>
 <translation id="3362437373201486687">Soek tans na Bluetooth-toestelle</translation>
 <translation id="3386292677130313581">Vra voordat werwe toegelaat word om jou ligging te ken (aanbeveel)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
@@ -209,6 +214,7 @@
 <translation id="4338831206024587507">Alle werwe onder <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Keer dat werwe weet wanneer jy hierdie toestel aktief gebruik</translation>
 <translation id="4412992751769744546">Laat derdeparty-webkoekies toe</translation>
+<translation id="4419929467120297501">Chrome blokkeer werwe om derdepartywebkoekies te gebruik om jou na te spoor terwyl jy blaai. Besoek instellings om <ph name="BEGIN_LINK" />toegang tot derdepartywebkoekies te bestuur<ph name="END_LINK" />.</translation>
 <translation id="4434045419905280838">Opspringers en herleidings</translation>
 <translation id="443552056913301231">Hierdie handeling sal alle plaaslike data uitvee, webkoekies ingesluit, en alle toestemmings terugstel vir <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Demp klank vir 'n spesifieke werf.</translation>
@@ -230,6 +236,7 @@
 <translation id="4779083564647765204">Zoem</translation>
 <translation id="4807122856660838973">Skakel Veiligblaai aan</translation>
 <translation id="4811450222531576619">Kom meer te wete oor bron en onderwerp</translation>
+<translation id="4816495437032298535">Gestoorde zoem vir werwe</translation>
 <translation id="4836046166855586901">Vra as 'n werf wil weet wanneer jy hierdie toestel aktief gebruik</translation>
 <translation id="483914009762354899">Sluit alle werwe in hierdie domein in</translation>
 <translation id="4883854917563148705">Bestuurde instellings kan nie teruggestel word nie</translation>
@@ -239,7 +246,6 @@
 <translation id="4962975101802056554">Herroep alle toestemmings vir toestel</translation>
 <translation id="497421865427891073">Gaan vorentoe</translation>
 <translation id="4976702386844183910">Laas besoek op <ph name="DATE" /></translation>
-<translation id="4985206706500620449">Jy het derdepartywebkoekies vir hierdie werf toegelaat</translation>
 <translation id="4994033804516042629">Geen kontakte gevind nie</translation>
 <translation id="4996978546172906250">Deel via</translation>
 <translation id="5001526427543320409">Derdepartywebkoekies</translation>
@@ -266,6 +272,7 @@
 <translation id="5246825184569358663">Hierdie handeling sal alle plaaslike data uitvee, webkoekies ingesluit, en alle toestemmings terugstel vir <ph name="DOMAIN" /> en alle werwe onder dit</translation>
 <translation id="5264323282659631142">Verwyder "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Sleep van bo af en raak die terugknoppie om volskerm te verlaat.</translation>
+<translation id="5292915569214461965">Jy het werwe geblokkeer om derdepartywebkoekies te gebruik om jou blaai-aktiwiteit na te spoor. Besoek instellings om <ph name="BEGIN_LINK" />toegang tot derdepartywebkoekies te bestuur<ph name="END_LINK" />.</translation>
 <translation id="5295729974480418933">Wanneer dit aan is, kan werwe vra om inligting te gebruik wat hulle oor jou gestoor het. Wanneer dit af is, kan werwe jou nie vra om inligting te gebruik wat hulle oor jou gestoor het nie.</translation>
 <translation id="5300589172476337783">Wys</translation>
 <translation id="5301954838959518834">OK, het dit</translation>
@@ -355,6 +362,7 @@
 <translation id="6527303717912515753">Deel</translation>
 <translation id="652937045869844725">Probeer derdepartywebkoekies toelaat, wat minder beskerming beteken, maar werfkenmerke is meer geneig om te werk</translation>
 <translation id="6530703012083415527">Wanneer dit aan is, kan werwe opspringers en herleidings gebruik. Wanneer dit af is, kan werwe nie opspringers en herleidings gebruik nie.</translation>
+<translation id="6540488083026747005">Jy het derdepartywebkoekies op hierdie werf toegelaat</translation>
 <translation id="6545864417968258051">Bluetooth-opsporing</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, en nog <ph name="NUM_MORE" /> word geblokkeer}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, en nog <ph name="NUM_MORE" /> word geblokkeer}}</translation>
 <translation id="6554732001434021288">Laas <ph name="NUM_DAYS" /> dae gelede besoek</translation>
@@ -377,6 +385,7 @@
 <translation id="6787751205395685251">Kies ’n opsie vir <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Speel</translation>
 <translation id="6818926723028410516">Kies items</translation>
+<translation id="6837658163275294267">Chrome beperk die meeste werwe om derdepartywebkoekies te gebruik om jou blaai-aktiwiteit na te spoor. Besoek instellings om <ph name="BEGIN_LINK" />toegang tot derdepartywebkoekies te bestuur<ph name="END_LINK" /></translation>
 <translation id="6838525730752203626">Gebruik Chrome by verstek</translation>
 <translation id="6840760312327750441">Raak en hou 'n oortjie om oortjies te groepeer. Sleep dit dan op 'n ander oortjie.</translation>
 <translation id="6864395892908308021">Hierdie toestel kan nie NFC lees nie</translation>
@@ -441,6 +450,7 @@
 <translation id="7835852323729233924">Speel tans media</translation>
 <translation id="783819812427904514">Ontdemp video</translation>
 <translation id="7846076177841592234">Kanselleer keuse</translation>
+<translation id="7881140103901777395">Chrome beperk die meeste werwe om derdepartywebkoekies te gebruik. Maar derdepartywebkoekies word op hierdie werf toegelaat omdat dit daarop staatmaak om basiese dienste te verskaf.\n\nBesoek instellings om <ph name="BEGIN_LINK" />toegang tot derdepartywebkoekies te bestuur<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Laat klank toe vir 'n spesifieke werf.</translation>
 <translation id="789180354981963912">Blokkeer derdepartywebkoekies in Incognito:</translation>
 <translation id="7940722705963108451">Herinner my</translation>
@@ -503,6 +513,7 @@
 <translation id="8721719390026067591">Wanneer dit aan is, kan werwe vra om Bluetooth-toestelle te soek. Wanneer dit af is, kan werwe nie Bluetooth-toestelle soek nie.</translation>
 <translation id="8725066075913043281">Probeer weer</translation>
 <translation id="8730621377337864115">Gedoen</translation>
+<translation id="8737426583868847403">Werwe vir wie jy ’n gepasmaakte zoemvlak stoor, sal hier verskyn</translation>
 <translation id="8751914237388039244">Kies 'n prent</translation>
 <translation id="8800034312320686233">Werk werf nie?</translation>
 <translation id="8801436777607969138">Blokkeer JavaScript vir 'n spesifieke werf.</translation>

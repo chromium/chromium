@@ -3700,19 +3700,6 @@ Se o <ph name="PRODUCT_NAME" /> não for fechado corretamente (por exemplo, se o
 <translation id="3701121231485832347">Controla configurações específicas de dispositivos <ph name="PRODUCT_OS_NAME" /> gerenciados pelo <ph name="MS_AD_NAME" />.</translation>
 <translation id="3702518095257671450">Atestado remoto</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" />: o campo de linha única é obsoleto e será removido no futuro. Comece a usar a caixa de texto de várias linhas abaixo.</translation>
-<translation id="3705648857103435170">Esta política ativa o app Graduation para usuários gerenciados. O app Graduation ajuda os usuários a transferir os dados da conta gerenciada para uma conta pessoal.
-
-    Se a <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> for definida como <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE_TRUE" />, o app será mostrado nas datas de início e término e entre elas, de acordo com o horário local.
-
-    Se a <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> for definida como <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE_FALSE" /> ou deixada sem definição, o app não será mostrado.
-
-    Se a <ph name="GRADUATION_ENABLEMENT_STATUS_START_DATE_VALUE" /> não for definida, o app será mostrado até a data de término.
-
-    Se a <ph name="GRADUATION_ENABLEMENT_STATUS_END_DATE_VALUE" /> for deixada sem definição, o app será mostrado indefinidamente a partir da data de início.
-
-    Se a <ph name="GRADUATION_ENABLEMENT_STATUS_START_DATE_VALUE" /> e a <ph name="GRADUATION_ENABLEMENT_STATUS_END_DATE_VALUE" /> não forem definidas, o app será mostrado por tempo indefinido. Se as datas de início e término forem inválidas, o app não será mostrado. Isso inclui situações em que as datas fornecidas não existem ou quando a data de término é anterior à data de início.
-
-    A transferência de dados com o Takeout também precisa estar ativada para que o app Graduation funcione corretamente. Para saber mais, consulte https://support.google.com/a/answer/6364687.</translation>
 <translation id="3711561721191203926">Se esta política for ativada, a solicitação principal será bloqueada sempre que um aviso precisar ser
 mostrado no <ph name="DEV_TOOLS_NAME" /> devido a falhas nas verificações do <ph name="PRIVATE_NETWORK_ACCESS" />.
 
@@ -4482,17 +4469,6 @@ Esta política foi usada para desativar o upgrade automático de conteúdo misto
 
       Se deixada sem definição, a frequência padrão de 10 minutos será aplicada.</translation>
 <translation id="4290231183305601970">Texto que será exibido ao usuário na Chrome Web Store se a instalação for bloqueada.</translation>
-<translation id="4291413477651927481">Esses recursos no DevTools do <ph name="PRODUCT_NAME" /> usam modelos de IA generativa para dar mais informações de depuração. Para usá-los, o <ph name="PRODUCT_NAME" /> precisa coletar dados, como mensagens de erro, stack traces, snippets de código e solicitações de rede, e enviá-los a um servidor de propriedade do Google, que executa um modelo de IA generativa. O corpo da resposta ou a autenticação e os cabeçalhos de cookie em solicitações de rede não são incluídos nos dados enviados ao servidor.
-
-0 = ativa o recurso para usuários e envia dados relevantes ao Google para treinar ou melhorar os modelos de IA. Os dados relevantes podem incluir comandos, entradas, saídas e materiais de origem, dependendo do recurso. Eles podem ser analisados por humanos com o único propósito de melhorar os modelos de IA. O valor padrão é 0, exceto quando indicado de outra forma abaixo.
-
-1 = ativa o recurso para os usuários, mas não envia dados ao Google para treinar ou melhorar os modelos de IA. 1 é o valor padrão para usuários corporativos gerenciados pelo <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e contas de ensino gerenciadas pelo <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-2 = desativa o recurso.
-
-Os recursos da IA generativa do DevTools incluem:
-
-- Console Insights: explica as mensagens do console e oferece sugestões para corrigir erros.</translation>
 <translation id="4293187705196369087">Permite ativar ou desativar uma notificação quando há pouco espaço em disco. Isso é válido para todos os usuários no dispositivo.
 
       Se a política for definida como "Ativada", uma notificação será exibida quando houver pouco espaço disponível em disco.
@@ -11263,7 +11239,6 @@ A configuração padrão é permitir que o navegador do host faça a renderizaç
 
       Se a política for definida como verdadeira ou for deixada sem definição, todos os usuários poderão fazer login.</translation>
 <translation id="966425658642788645">Aplicar comportamento padrão</translation>
-<translation id="970144760302377175">Configurar a disponibilidade da ferramenta Graduation do <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="971677226939413180">A opção "Imprimir como imagem" não está disponível para a seleção do usuário.</translation>
 <translation id="974349541138387272">Especifica o modelo de URI do resolvedor DNS sobre HTTPS desejado</translation>
 <translation id="978658824596356870">Formato de relógio de 24 horas</translation>

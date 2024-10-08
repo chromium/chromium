@@ -114,6 +114,7 @@
 <translation id="132346741904777634">ካሜራ ላይኛው ግራ ጥግ ላይ ገጥሟል። ከስርዓት ወለል ጋር ግጭት።</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> እና መስኮቶችን ዝጋ</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> ተገናኝቷል</translation>
+<translation id="1337081488893096731">የትምህርት ቤት መለያ ውሂብዎን ወደ የግል መለያዎ ለማንቀሳቀስ Content Transfer መተግበሪያን ይጠቀሙ</translation>
 <translation id="1340378040547539434">በገጽ ላይ ያሳንሡ</translation>
 <translation id="1341651618736211726">ትርፍ ፍሰት</translation>
 <translation id="1341926407152459446">ለኦዲዮ ግብዓት እና ውፅዓት «<ph name="DEVICE_NAME" />»ን ተጠቀም</translation>
@@ -242,6 +243,7 @@
 <translation id="17722141032474077">የሒሳብ ስሌቶች</translation>
 <translation id="1774796056689732716">ቀን መቁጠሪያ፣ <ph name="CURRENT_MONTH_YEAR" />፣ በአሁኑ ጊዜ <ph name="DATE" /> ተመርጧል።</translation>
 <translation id="178347895271755507">የስልክዎን የቅርብ ጊዜ ፎቶዎች፣ ሚዲያ እና ማሳወቂያዎች ዕይታን ያዋቅሩ</translation>
+<translation id="1786487376942610288">የሥዕል-ላይ-ሥዕል መስኮቱ በፍተኛው ወይም በአሁኑ መጠን መካከል ይቀያይሩ</translation>
 <translation id="1787955149152357925">አጥፋ</translation>
 <translation id="1796561540704213354">የጎበኟቸውን ገፆች እና የተከፈቱ ገፆችን የሚያካትቱ ድር ጣቢያዎች</translation>
 <translation id="179842970735685253">የGoogle የአገልግሎት ውል</translation>
@@ -337,6 +339,9 @@
 <translation id="219905428774326614">ማስጀመሪያ፣ ሁሉም መተግበሪያዎች</translation>
 <translation id="2201071101391734388">የቅርብ ጊዜ ፎቶ <ph name="INDEX" /> ከ<ph name="TOTAL_COUNT" />።</translation>
 <translation id="2201687081523799384">Google ተግባሮችን ሰብስብ</translation>
+<translation id="2206960886090042977">መዳፊት ስለተገናኘ አብሮገነብ የመዳሰሻ ሰሌዳው ተሰናክሏል። ለውጡን ለማረጋገጥ መዳፊት ወይም የቁልፍ ሰሌዳ ይጠቀሙ።
+
+ይህ ካልሆነ አብሮገነብ የመዳሰሻ ሰሌዳው በ30 ሰከንዶች ውስጥ ዳግም ይነቃል።</translation>
 <translation id="2208323208084708176">የተዋሃደ የዴስክቶፕ ሁነታ</translation>
 <translation id="2220572644011485463">ፒን ወይም የይለፍ ቃል</translation>
 <translation id="2222841058024245321">ዴስክ 7</translation>
@@ -1468,6 +1473,7 @@
 <translation id="598407983968395253">ቅንብር ደንብን ተጠቀም</translation>
 <translation id="5986723678596105470">በGoogle Meet ይቀላቀሉ</translation>
 <translation id="598882571027504733">ዝማኔውን ለማግኘት፣ ከተያያዘው የቁልፍ ሰሌዳ ጋር የእርስዎን Chromebook ዳግም ያስጀምሩ።</translation>
+<translation id="5990992855591814753">ግላዊነት በተላበሱ የትኩረት አጫዋች ዝርዝሮች መስመር ይዘው ይቆዩ። በ3 ወራት ያለ ምንም ወጪ YouTube Premium YouTube Music እና YouTubeን ከማስታወቂያ-ነፃ ያግኙ። ደንቦች ተፈጻሚ ናቸው።</translation>
 <translation id="5998374579424866922">የጨዋታ መቆጣጠሪያዎችን ያጥፉ</translation>
 <translation id="6000279412553873020">ቁልፎች፣ አዝራሮች እና ሌሎች</translation>
 <translation id="6012623610530968780">ገፅ <ph name="SELECTED_PAGE" /> ከ<ph name="TOTAL_PAGE_NUM" /></translation>
@@ -1907,6 +1913,9 @@
 መሣሪያ ለመዝጋት በድጋሚ የማብሪያ/ማጥፊያ ቁልፉን በመሣሪያው ላይ ተጭነው ይያዙ።</translation>
 <translation id="7523420897035067483">ትኩረት ላይ በሚሆንበት ጊዜ አትረብሽ የሚለውን አንቃ</translation>
 <translation id="7524043547948122239">Google ተግባሮች</translation>
+<translation id="7524919752437339268">አብሮገነብ የመዳሰሻ ሰሌዳው ተሰናክሏል። ለውጡን ለማረጋገጥ የቁልፍ ሰሌዳ ወይም ሌላ ጠቋሚ መሣሪያ ይጠቀሙ።
+
+ይህ ካልሆነ አብሮገነብ የመዳሰሻ ሰሌዳው በ30 ሰከንዶች ውስጥ ዳግም ይነቃል።</translation>
 <translation id="7525067979554623046">ፍጠር</translation>
 <translation id="7526573455193969409">አውታረ መረብ ክትትል የሚደረግበት ሊሆን ይችላል</translation>
 <translation id="7536035074519304529">የአይፒ አድራሻ፦ <ph name="ADDRESS" /></translation>
@@ -2294,6 +2303,7 @@
 <translation id="8858369206579825206">የግላዊነት ቁጥጥሮች</translation>
 <translation id="8860366331836346216">ኢሲም አክል</translation>
 <translation id="8870509716567206129">መተግበሪያው የተከፈለ ማያ ገጽን አይደግፍም።</translation>
+<translation id="8873203135446552888">አብሮገነብ የመዳሰሻ ሰሌዳውን ማሰናከል እንደሚፈልጉ ያረጋግጡ</translation>
 <translation id="8874184842967597500">አልተገናኘም</translation>
 <translation id="8875021410787719674">በታችኛው ቀኝ ጥግ፣ በአስጀማሪ፣ በአድራሻ አሞሌ፣ በዕልባቶች አሞሌ፣ በሚከፍቱ እና በሚያወርዱ ድር ጣቢያዎች መካከል ያንቀሳቅሳል</translation>
 <translation id="8876148469852588625">ክስተት <ph name="EVENT_POSITION" /> ከ<ph name="EVENT_TOTAL_COUNT" /></translation>

@@ -114,6 +114,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="132346741904777634">Kameraet er fastgjort til hjørnet øverst til venstre. Dette er i strid med systemfladen.</translation>
 <translation id="132415371743256095">Luk <ph name="DESK_NAME" /> og vinduer</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> er forbundet</translation>
+<translation id="1337081488893096731">Brug Content Transfer-appen til at flytte dine skolekontodata til din personlige konto</translation>
 <translation id="1340378040547539434">Zoom ud på en side</translation>
 <translation id="1341651618736211726">Overløb</translation>
 <translation id="1341926407152459446">Brug "<ph name="DEVICE_NAME" />" til lydinput og -output</translation>
@@ -242,6 +243,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="17722141032474077">Beregninger</translation>
 <translation id="1774796056689732716">Kalender for <ph name="CURRENT_MONTH_YEAR" /> – <ph name="DATE" /> er valgt.</translation>
 <translation id="178347895271755507">Konfigurer visning af din telefons seneste billeder, medier og notifikationer</translation>
+<translation id="1786487376942610288">Skift mellem den maksimale eller aktuelle størrelse på vinduet med integreret billede</translation>
 <translation id="1787955149152357925">Fra</translation>
 <translation id="1796561540704213354">Websites, der omfatter sider, du har besøgt, og åbne sider</translation>
 <translation id="179842970735685253">Googles servicevilkår</translation>
@@ -337,6 +339,9 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="219905428774326614">Starter. Alle apps</translation>
 <translation id="2201071101391734388">Seneste billede <ph name="INDEX" /> af <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Skjul Google Huskeliste</translation>
+<translation id="2206960886090042977">Den indbyggede touchplade er deaktiveret, fordi der er tilsluttet en mus. Brug musen eller tastaturet til at bekræfte ændringen.
+
+Ellers genaktiveres den indbyggede touchplade om 30 sekunder.</translation>
 <translation id="2208323208084708176">Samlet skrivebordstilstand</translation>
 <translation id="2220572644011485463">Pin- eller adgangskode</translation>
 <translation id="2222841058024245321">Skrivebord 7</translation>
@@ -1907,6 +1912,9 @@ Installeret for nylig</translation>
 Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</translation>
 <translation id="7523420897035067483">Aktivér Forstyr ikke i fokustilstand</translation>
 <translation id="7524043547948122239">Google Huskeliste</translation>
+<translation id="7524919752437339268">Den indbyggede touchplade er deaktiveret. Brug dit tastatur eller en anden pegeenhed til at bekræfte ændringen.
+
+Ellers genaktiveres den indbyggede touchplade om 30 sekunder.</translation>
 <translation id="7525067979554623046">Opret</translation>
 <translation id="7526573455193969409">Netværket kan være overvåget</translation>
 <translation id="7536035074519304529">IP-adresse: <ph name="ADDRESS" /></translation>
@@ -2294,6 +2302,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8858369206579825206">Privatlivsindstillinger</translation>
 <translation id="8860366331836346216">Tilføj eSIM</translation>
 <translation id="8870509716567206129">Appen understøtter ikke opdelt skærm.</translation>
+<translation id="8873203135446552888">Bekræft, at du vil deaktivere den indbyggede touchplade</translation>
 <translation id="8874184842967597500">Ikke forbundet</translation>
 <translation id="8875021410787719674">Naviger mellem nederste højre hjørne, applisten, adresselinjen, bogmærkelinjen, det åbne website og downloads</translation>
 <translation id="8876148469852588625">Begivenhed <ph name="EVENT_POSITION" /> ud af <ph name="EVENT_TOTAL_COUNT" /></translation>

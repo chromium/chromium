@@ -108,7 +108,9 @@
 <translation id="2683434792633810741">Vuoi eliminare e reimpostare?</translation>
 <translation id="2713106313042589954">Disattiva fotocamera</translation>
 <translation id="2717722538473713889">Indirizzi email</translation>
+<translation id="2726059656860238749">Avvia Chrome con l'omnibox in primo piano per ridurre i tempi di avvio sui dispositivi di fascia bassa.</translation>
 <translation id="2750481671343847896">I siti possono mostrare richieste di accesso da servizi di identità.</translation>
+<translation id="2787357173144933081">Omnibox avvio rapido</translation>
 <translation id="2790501146643349491">Quando l'opzione è attiva, i siti chiusi di recente possono terminare l'invio e la ricezione di dati. Quando l'opzione è disattivata, i siti chiusi di recente non possono terminare l'invio o la ricezione di dati.</translation>
 <translation id="2822354292072154809">Vuoi reimpostare tutte le autorizzazioni del sito per <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Richiedi visualizzazione mobile</translation>
@@ -146,6 +148,7 @@
 <translation id="3295602654194328831">Nascondi informazioni</translation>
 <translation id="3328801116991980348">Informazioni sito</translation>
 <translation id="3333961966071413176">Tutti i contatti</translation>
+<translation id="3360338140203645771">Elim. livel. zoom salv.?</translation>
 <translation id="3362437373201486687">Ricerca di dispositivi Bluetooth in corso…</translation>
 <translation id="3386292677130313581">Chiedi conferma prima di consentire ai siti di conoscere la tua posizione (opzione consigliata)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
@@ -243,7 +246,6 @@
 <translation id="4962975101802056554">Revoca tutte le autorizzazioni per il dispositivo</translation>
 <translation id="497421865427891073">Avanti</translation>
 <translation id="4976702386844183910">Ultima visita: <ph name="DATE" /></translation>
-<translation id="4985206706500620449">Hai consentito i cookie di terze parti per questo sito</translation>
 <translation id="4994033804516042629">Nessun contatto trovato</translation>
 <translation id="4996978546172906250">Condividi tramite</translation>
 <translation id="5001526427543320409">Cookie di terze parti</translation>
@@ -360,6 +362,7 @@
 <translation id="6527303717912515753">Condividi</translation>
 <translation id="652937045869844725">Prova a consentire i cookie di terze parti, il che significa meno protezione, ma è più probabile che le funzionalità del sito funzionino.</translation>
 <translation id="6530703012083415527">Quando l'opzione è attiva, i siti possono utilizzare popup e reindirizzamenti. Quando l'opzione è disattivata, i siti non possono utilizzare popup e reindirizzamenti.</translation>
+<translation id="6540488083026747005">Hai consentito i cookie di terze parti su questo sito</translation>
 <translation id="6545864417968258051">Scansione Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Bloccate: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="NUM_MORE" /> altra}other{Bloccate: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e altre <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Ultima visita: <ph name="NUM_DAYS" /> giorni fa</translation>

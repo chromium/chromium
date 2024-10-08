@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">मान <ph name="MINIMUM_DATE_OR_TIME" /> वा पछि हुनुरपर्छ।</translation>
 <translation id="2761667185364618470">यदि तपाईं अगाडि बढ्न चाहनुहुन्छ भने यस बाकसमा ठिक चिह्न लगाउनुहोस्।</translation>
 <translation id="2908441821576996758">कृपया अल्पविरामले विभाजित गरिएको इमले ठेगानाहरूको सूची प्रविष्टि गर्नुहोस्।</translation>
+<translation id="2940013921954129954">सटीक लोकेसन प्रयोग गर्ने अनुमति दिइएको छ</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> एमबी</translation>
 <translation id="3075154866155599887">कृपया एउटा वैध मान प्रविष्टि गर्नुहोस्। क्षेत््र अपूर्ण छ वा त्यसमा एउटा अमान्य मिति छ।</translation>
 <translation id="310520048233152454">कृपया एउटा URL प्रविष्टि गर्नुहोस्।</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">प्लेब्याकको खराब गुणस्तर</translation>
 <translation id="6790428901817661496">प्ले गर्नुहोस्</translation>
 <translation id="6820355525329141109">प्लगइन लोड गर्न सकेन।</translation>
+<translation id="688706781007114099">लोकेसन प्रयोग गर्नुहोस्</translation>
 <translation id="6919891270253167948">१.५</translation>
 <translation id="6989848892321993519">कृपया यो पाठलाई <ph name="MIN_CHARACTERS" /> वर्ण वा अझ बढीमा लम्ब्याउनुहोस् (तपाईं हाल १ वर्ण प्रयोग गर्दै हुनुहुन्छ )।</translation>
 <translation id="709897737746224366">कृपया अनुरोध गरिएको ढाँचासँग मिलाउनुहोस्।</translation>

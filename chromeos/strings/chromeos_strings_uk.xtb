@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Зменшити яскравість екрана</translation>
 <translation id="2086091080968010660">Зміни на основі часу можуть бути неточними. Увімкніть доступ до геоданих системи в налаштуваннях.</translation>
 <translation id="2102231663024125441">Редагування тексту</translation>
-<translation id="2102648867808308635">Отримати допомогу із читанням цієї сторінки</translation>
 <translation id="2105810540595158374">Це ігровий контролер.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, версія <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">Зараз ця функція доступна лише англійською мовою (США)</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">переглянути всі додатки</translation>
 <translation id="3510890413042482857">Надсилати <ph name="BEGIN_LINK1" />дані відстеження ефективності<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Оновлення ОС Chrome</translation>
-<translation id="3522508178835057262">Зараз підтримуються лише текстові версії, які містять щонайбільше таку кількість слів: <ph name="MAX_WORD_LENGTH" /></translation>
 <translation id="3527036260304016759">Не надруковано – невідома помилка</translation>
 <translation id="353214771040290298">Завершити редагування</translation>
 <translation id="3532980081107202182">Залишилося приблизно <ph name="MIN_REMAINING" /> хв</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">Світла тема</translation>
 <translation id="4813136279048157860">Мої зображення</translation>
 <translation id="4813345808229079766">З’єднання</translation>
-<translation id="4824527342590024245">Зараз підтримуються лише текстові версії, які містять принаймні таку кількість слів: <ph name="MIN_WORD_LENGTH" /></translation>
 <translation id="4830894019733815633">каньйон</translation>
 <translation id="4832079907277790330">Вибрати папку в додатку "Файли"…</translation>
 <translation id="4835901797422965222">Немає активних мереж</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">Синоніми:</translation>
 <translation id="5130848777448318809">поні</translation>
 <translation id="5137451382116112100">На весь екран</translation>
+<translation id="5140788690559353412">Коли ви втратите доступ до облікового запису закладу освіти, то більше не зможете користуватися своєю електронною адресою і файлами на Google Диску, зокрема збереженими з Gmail, Документів, Презентацій тощо.</translation>
 <translation id="5142961317498132443">Автентифікація</translation>
 <translation id="5144311987923128508">Кнопку підтвердження вимкнено</translation>
 <translation id="5144887194300568405">Копіювати переклад</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">Затримка HTTP (Android)</translation>
 <translation id="6078323886959318429">Додати ярлик</translation>
 <translation id="6091080061796993741">жовтого</translation>
+<translation id="6093853427925392522">Щоб уникнути цього, перенесіть дані з облікового запису закладу освіти в особистий за допомогою додатка Перенесення контенту від Google.</translation>
 <translation id="6104112872696127344">Сканування скасовано</translation>
 <translation id="6106186594183574873">Щоб завершити, введіть старий пароль</translation>
 <translation id="6108689792487843350">шлюз недоступний</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">Ім’я точки доступу (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер імен}one{Сервери імен}few{Сервери імен}many{Сервери імен}other{Сервери імен}}</translation>
 <translation id="7135814714616751706">Пошук комбінацій клавіш</translation>
+<translation id="7141470099673912333">Перенесення контенту</translation>
 <translation id="7143207342074048698">Під’єднання</translation>
 <translation id="7144878232160441200">Повторити спробу</translation>
 <translation id="7144954474087165241">Пагода</translation>
@@ -1394,6 +1394,7 @@
 <translation id="7856267634822906833">Сенсорний екран із Bluetooth</translation>
 <translation id="7859006200041800233">кактуса</translation>
 <translation id="7869143217755017858">Вимкнути темний режим</translation>
+<translation id="7878972877380405573">Підсумувати за допомогою функції "Допомога із читанням"</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Тип постачальника</translation>
 <translation id="7882501334836096755">Відкритий ключ</translation>
@@ -1537,6 +1538,7 @@
 <translation id="8626489604350149811">Інші дії для точки доступу <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Світло-фіолетовий</translation>
 <translation id="8647595191512746911">Транскрипція аудіо</translation>
+<translation id="8650852232143958317">Не втратьте доступ до електронної адреси Gmail і файлів на Google Диску</translation>
 <translation id="8651481478098336970">вимкнути звук</translation>
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8655828773034788261">Надіслати URL-адресу:</translation>

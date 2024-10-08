@@ -114,6 +114,7 @@
 <translation id="132346741904777634">Камерата е поставена во горниот лев агол. Конфликт со површината на системот.</translation>
 <translation id="132415371743256095">Затвори ја <ph name="DESK_NAME" /> и прозорците</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> е поврзан</translation>
+<translation id="1337081488893096731">Користете ја апликацијата Content Transfer за да ги префрлите податоците од вашата училишна сметка во вашата лична сметка</translation>
 <translation id="1340378040547539434">Одзумира на страницата</translation>
 <translation id="1341651618736211726">Прелевање</translation>
 <translation id="1341926407152459446">Користете „<ph name="DEVICE_NAME" />“ за влез и излез за аудио</translation>
@@ -242,6 +243,7 @@
 <translation id="17722141032474077">Пресметки</translation>
 <translation id="1774796056689732716">Календар, <ph name="CURRENT_MONTH_YEAR" />, моментално е избран <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Поставете прегледување на неодамнешните фотографии, аудиовизуелни содржини и известувања на телефонот</translation>
+<translation id="1786487376942610288">Менувај меѓу максималната и тековната големина на прозорецот за „Слика во слика“</translation>
 <translation id="1787955149152357925">Исклучено</translation>
 <translation id="1796561540704213354">Веб-сајтовите, заедно со страниците што сте ги посетиле, како и отворените страници</translation>
 <translation id="179842970735685253">Условите за користење на Google</translation>
@@ -337,6 +339,9 @@
 <translation id="219905428774326614">Стартер, сите апликации</translation>
 <translation id="2201071101391734388">Неодамнешна фотографија: <ph name="INDEX" /> од <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Собери го Google Tasks</translation>
+<translation id="2206960886090042977">Вградената допирна подлога е оневозможена бидејќи е поврзано глувче. Користете го глувчето или тастатурата за да ја потврдите промената.
+
+Во спротивно, вградената допирна подлога ќе се овозможи повторно по 30 секунди.</translation>
 <translation id="2208323208084708176">Режим на единствена работна површина</translation>
 <translation id="2220572644011485463">PIN или лозинка</translation>
 <translation id="2222841058024245321">Работна површина 7</translation>
@@ -1469,6 +1474,7 @@
 <translation id="598407983968395253">Употреби го шаблонот</translation>
 <translation id="5986723678596105470">Придружете се со Google Meet</translation>
 <translation id="598882571027504733">За да го добиете ажурирањето, рестартирајте го Chromebook додека тастатурата е прикачена.</translation>
+<translation id="5990992855591814753">Бидете во тек со персонализираните плејлисти за „Режим за концентрација“. Добијте YouTube Music и YouTube, без реклами, со YouTube Premium во период од 3 месеци бесплатно. Важат „Условите“.</translation>
 <translation id="5998374579424866922">Исклучете ги контролите за игри</translation>
 <translation id="6000279412553873020">Клучеви, копчиња и друго</translation>
 <translation id="6012623610530968780">Страница <ph name="SELECTED_PAGE" /> од <ph name="TOTAL_PAGE_NUM" /></translation>
@@ -1907,6 +1913,9 @@
 За да го исклучите уредот, повторно притиснете и задржете го копчето за вклучување на уредот.</translation>
 <translation id="7523420897035067483">Овозможете „Не вознемирувај“ при „Режим за концентрација“</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">Вградената допирна подлога е оневозможена. Користете ја тастатурата или друг уред за покажување за да ја потврдите промената.
+
+Во спротивно, вградената допирна подлога ќе се овозможи повторно по 30 секунди.</translation>
 <translation id="7525067979554623046">Создај</translation>
 <translation id="7526573455193969409">Мрежата можеби се следи</translation>
 <translation id="7536035074519304529">IP адреса: <ph name="ADDRESS" /></translation>
@@ -2294,6 +2303,7 @@
 <translation id="8858369206579825206">Контроли на приватноста</translation>
 <translation id="8860366331836346216">Додајте eSIM</translation>
 <translation id="8870509716567206129">Апликацијата не поддржува поделен екран.</translation>
+<translation id="8873203135446552888">Потврдете дека сакате да ја оневозможите вградената допирна подлога</translation>
 <translation id="8874184842967597500">Не е поврзано</translation>
 <translation id="8875021410787719674">Преместувајте меѓу долниот десен агол, стартерот, лентата за адреси, лентата со обележувачи, отворениот веб-сајт и преземањата</translation>
 <translation id="8876148469852588625">Настан <ph name="EVENT_POSITION" /> од <ph name="EVENT_TOTAL_COUNT" /></translation>

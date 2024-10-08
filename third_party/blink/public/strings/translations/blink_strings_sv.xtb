@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">Värdet måste vara <ph name="MINIMUM_DATE_OR_TIME" /> eller senare.</translation>
 <translation id="2761667185364618470">Markera den här kryssrutan om du vill fortsätta.</translation>
 <translation id="2908441821576996758">Ange en kommaavgränsad lista med e-postadresser.</translation>
+<translation id="2940013921954129954">Exakt plats tillåts</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Ange ett giltigt värde. Fältet är ofullständigt eller innehåller ett ogiltigt datum.</translation>
 <translation id="310520048233152454">Ange en webbadress.</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">Låg uppspelningskvalitet</translation>
 <translation id="6790428901817661496">Spela</translation>
 <translation id="6820355525329141109">Det gick inte att läsa in plugin-programmet.</translation>
+<translation id="688706781007114099">Använd plats</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Lägg till minst <ph name="MIN_CHARACTERS" /> tecken (för närvarande har du angett 1 tecken).</translation>
 <translation id="709897737746224366">Matcha det format som anges.</translation>

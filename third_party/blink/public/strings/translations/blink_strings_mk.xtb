@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">Вредноста мора да биде <ph name="MINIMUM_DATE_OR_TIME" /> или подоцна.</translation>
 <translation id="2761667185364618470">Означете го полето ако сакате да продолжите.</translation>
 <translation id="2908441821576996758">Внесете листа на адреси на е-пошта одвоени со запирка.</translation>
+<translation id="2940013921954129954">Прецизната локација е дозволена</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Внесете важечка вредност. Полето е нецелосно или има неважечки датум.</translation>
 <translation id="310520048233152454">Внесете URL.</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">Слаб квалитет на репродукција</translation>
 <translation id="6790428901817661496">Репродуцирај</translation>
 <translation id="6820355525329141109">Дополнителната компонента не може да се вчита</translation>
+<translation id="688706781007114099">Користи ја локацијата</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Продолжете го текстот на <ph name="MIN_CHARACTERS" /> знаци или повеќе (во моментов користите 1 знак).</translation>
 <translation id="709897737746224366">Усогласете го бараниот формат.</translation>

@@ -204,6 +204,7 @@
 <translation id="1957557050935255529">‏PDF لوڈ ہو رہا ہے…</translation>
 <translation id="1959679933317802873">مواد کے منتظر</translation>
 <translation id="1960290143419248813">‏Chrome اپ ڈیٹس Android کے اس ورژن کیلئے مزید تعاون یافتہ نہیں ہیں</translation>
+<translation id="1963056249988316027">شناختی چیک آن ہے اور توثیق نہیں کر سکتا کہ یہ آپ ہی ہیں</translation>
 <translation id="1963976881984600709">معیاری تحفظ</translation>
 <translation id="1966710179511230534">براہ کرم اپنے سائن ان کی تفصیلات اپ ڈیٹ کریں۔</translation>
 <translation id="1969037871259811890">‏اپنے براؤزنگ ڈیٹا کو حذف کرنے سے آپ اپنے Google اکاؤنٹ سے سائن آؤٹ نہیں ہوتے ہیں۔ ایسا کرنے کے لئے، <ph name="BEGIN_LINK1" />Chrome سے سائن آؤٹ کریں<ph name="END_LINK1" />۔</translation>
@@ -555,6 +556,7 @@
 <translation id="3622349720008044802">ونڈوز کا نظم کریں</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 سائٹ}other{+ # سائٹس}}</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> کے ساتھ اشتراک کیا جا رہا ہے</translation>
+<translation id="363484704507524488">آپ چوری سے تحفظ کی ترتیبات میں شناختی چیک کا نظم کر سکتے ہیں۔ <ph name="BEGIN_LINK" />ترتیبات پر جائیں<ph name="END_LINK" /></translation>
 <translation id="3635073343384702370">‏جب آپ پاس ورڈز کو محفوظ کرتے ہیں تو Chrome انہیں چیک کر سکتا ہے</translation>
 <translation id="363596933471559332">اسٹور کردہ اسناد کا استعمال کر کے ویب سائٹس میں خود کار طور پر سائن ان کریں۔ خصوصیت آف ہونے پر، کسی ویب سائٹ میں سائن ان کرنے سے پہلے ہر بار آپ سے توثیق کرنے کو کہا جائے گا۔</translation>
 <translation id="3636940436873918441">ترجیحی زبانیں</translation>
@@ -727,7 +729,6 @@
 <translation id="4489640160615759754">خلاصہ شیٹ کے ساتھ اشتراک کریں</translation>
 <translation id="4494806687727322324">آپ کے منتظم نے پاس ورڈ محفوظ کرنے کی سہولت کو آن کر دیا ہے</translation>
 <translation id="4508528996305412043">فیڈ کارڈ مینیو کھلا ہوا ہے</translation>
-<translation id="4509501256689523862">براؤز کرتے وقت، آپ جو اشتہار دیکھتے ہیں وہ ذاتی نوعیت کے ہیں یا نہیں اس کا انحصار اس ترتیب پر ہوتا ہے، <ph name="BEGIN_LINK_1" />اشتہار کے عنوانات<ph name="END_LINK_1" /> آپ کی<ph name="BEGIN_LINK_2" /> کوکی کی ترتیبات<ph name="END_LINK_2" /> اور آیا آپ جو سائٹ دیکھ رہے ہیں وہ اشتہارات کو ذاتی بناتی ہے یا نہیں۔</translation>
 <translation id="4509741852167209430">سائٹس کے اشتہارات کی کارکردگی کی پیمائش کرنے کے لیے ان کے درمیان ڈیٹا کی محدود اقسام کا اشتراک کیا جاتا ہے، جیسے کہ آیا آپ نے کسی سائٹ پر جانے کے بعد کوئی خریداری کی ہے</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# دن پہلے}other{# دن پہلے}}</translation>
 <translation id="451872707440238414">اپنے بُک مارکس تلاش کریں</translation>
@@ -740,7 +741,6 @@
 <translation id="4532845899244822526">فولڈر منتخب کریں</translation>
 <translation id="4543131175509360848">کوئی پاسکیز شیٹ نہیں ہے</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ٹیب}other{<ph name="TAB_COUNT_MANY" /> ٹیبز، <ph name="TAB_COUNT_INCOGNITO" /> پوشیدگی}}</translation>
-<translation id="4554077758708533499">‏USB کیبل کے ساتھ منسلک ہے</translation>
 <translation id="4558311620361989323">ویب صفحہ شارٹ کٹس</translation>
 <translation id="4561730552726921821">رجسٹریشن مکمل ہو گئی</translation>
 <translation id="4565377596337484307">پاس ورڈ چھپائیں</translation>
@@ -1036,6 +1036,7 @@
 <translation id="5869522115854928033">محفوظ کردہ پاس ورڈز</translation>
 <translation id="587735546353481577">‏کسی سائٹ کی پیروی کرنے کے لیے، سائٹ پر جائیں، Chrome مینیو کھولیں اور "پیروی کریں" پر تھپتھپائیں۔</translation>
 <translation id="5879072387416556377">بہتر تجاویز حاصل کریں</translation>
+<translation id="5883855034004058011">بایو میٹرکس کئی بار ناکام ہوئے۔ دوبارہ کوشش کرنے کے لیے اپنے آلے کو مقفل اور غیر مقفل کریں۔</translation>
 <translation id="5885378508678660271">‏اطلاعات <ph name="SEPARATOR" /> Chrome نے یہ اجازتیں ہٹادی ہیں کیوں کہ یہ سائٹ خطرناک ہے</translation>
 <translation id="5895834791314695851">‏پاس ورڈز جلد ہی اس آلہ پر کام کرنا بند کر سکتے ہیں۔ اپنے پاس ورڈز کا استعمال جاری رکھنے کے لیے، Google Play سروسز کو اپ ڈیٹ کریں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">کوئی پاسکیز شیٹ بند نہیں تھی</translation>
@@ -1368,7 +1369,6 @@
 <translation id="7260367682327802201">‏آپ کے Android آلے میں ملتی جلتی ترتیب شامل ہو سکتی ہے۔ اگر Chrome میں اور آپ کے Android آلے پر اشتہار کی اثرپذیری کی پیمائش آن ہو تو کمپنی آپ کی ملاحظہ کردہ ویب سائٹس اور آپ کی استعمال کردہ ایپس پر اشتہار کی اثر انگیزی کی پیمائش کر سکتی ہے۔</translation>
 <translation id="727288900855680735"><ph name="ORIGIN" /> میں <ph name="ONE_TIME_CODE" /> کو جمع کرائیں؟</translation>
 <translation id="7274013316676448362">مسدود سائٹ</translation>
-<translation id="7276100255011548441">‏Chrome‏ 4 ہفتے سے زیادہ پرانی موضوعات کو خودکار طور پر حذف کر دیتا ہے۔ جب تک آپ براؤزنگ جاری رکھتے ہیں فہرست پر موضوع دوبارہ ظاہر ہو سکتا ہے۔ یا آپ ان موضوعات کو مسدود کر سکتے ہیں جنہیں آپ نہیں چاہتے کہ Chrome سائٹس کے ساتھ اس کا اشتراک کرے۔ <ph name="BEGIN_LINK" />Chrome میں اپنے اشتہار کی رازداری کا نظم کرنے<ph name="END_LINK" /> کے بارے میں مزید جانیں۔</translation>
 <translation id="7284878711178835966">‏جیسے ہی آپ ٹائپ کرتے ہیں Chrome ایڈریس بار یا تلاش باکس کا مواد آپ کے ڈیفالٹ سرچ انجن کو بھیجتا ہے</translation>
 <translation id="7289049772085228972">‏آپ کے پاس Chrome کی مضبوط ترین سیکیورٹی ہے</translation>
 <translation id="7289303553784750393">اگر آپ آن لائن ہیں لیکن یہ مسئلہ جاری رہتا ہے تو آپ <ph name="SITE_ETLD_PLUS_ONE" /> پر جاری رکھنے کے لیے دوسرے طریقے آزما سکتے ہیں۔</translation>
@@ -1433,7 +1433,6 @@
 <translation id="7517292544534877198">‏اپنے Google اکاؤنٹ میں پاس ورڈز کے لیے Google کی ڈیفالٹ مرموز کاری کا استعمال کریں</translation>
 <translation id="7518079994230200553">یہ اختیار اب دستیاب نہیں ہے۔</translation>
 <translation id="751961395872307827">سائٹ سے منسلک نہیں کیا جا سکتا</translation>
-<translation id="752220631458524187">جب آپ کا کام مکمل ہو جائے تو غیر منسلک کر لیں</translation>
 <translation id="7523960634226602883">‏Google لینز کا استعمال کرتے ہوئے اپنے کیمرے کی مدد سے تلاش کریں</translation>
 <translation id="7525248386620136756"><ph name="TAB_GROUPS_AND_TABS_PART" /> کو بند اور محفوظ کر دیا گیا</translation>
 <translation id="752731652852882757">پوشیدگی وضع کا استعمال کرتے وقت مسدود کریں</translation>

@@ -74,6 +74,7 @@
 <translation id="1919130412786645364">Chrome 로그인 허용</translation>
 <translation id="1953553007165777902">다운로드 중... <ph name="MINUTE" />분 남음</translation>
 <translation id="1982647487457769627">Chrome은 다양한 플랫폼과 호환되므로 어떤 기기에서든 익숙한 환경을 이용할 수 있습니다.</translation>
+<translation id="19955905961160405">Google 렌즈로 화면의 내용을 검색하세요</translation>
 <translation id="2001586581944147178">내 인터넷 트래픽에 액세스할 수 있는 사용자가 내가 방문하는 사이트를 확인하기가 더 어려워집니다. Chrome은 DNS(도메인 이름 시스템)에서 사이트의 IP 주소를 조회하는 데 보안 연결을 사용합니다.</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{이 확장 프로그램은 더 이상 지원되지 않습니다. Chrome에서는 삭제할 것을 권장합니다.}other{이 확장 프로그램은 더 이상 지원되지 않습니다. Chrome에서는 삭제할 것을 권장합니다.}}</translation>
 <translation id="2018528049276128029">각 프로필에는 북마크, 방문 기록, 비밀번호 등과 같은 Chrome 정보가 보관됩니다.</translation>
@@ -91,6 +92,7 @@
 <translation id="2126108037660393668">다운로드한 파일을 확인할 수 없습니다.</translation>
 <translation id="2128411189117340671">Chrome 프로필 관리</translation>
 <translation id="2131230230468101642">개인 정보를 보호하기 위해 Chrome에서는 4주가 지난 관심분야를 자동 삭제합니다. 인터넷 사용에 따라 특정 관심분야가 목록에 다시 표시될 수 있습니다. Chrome에서 고려하지 않았으면 하는 관심분야가 있으면 직접 삭제하세요.</translation>
+<translation id="2137162749895930932">번역 화면 닫기</translation>
 <translation id="2139300032719313227">ChromeOS 다시 시작</translation>
 <translation id="2151406531797534936">지금 Chrome을 다시 시작하세요</translation>
 <translation id="2163089732491971196">Google 계정에서 Chrome 데이터를 사용하고 저장하려면 비밀번호를 입력하세요</translation>
@@ -174,6 +176,7 @@
 <translation id="3019382870990049182">다시 실행하여 ChromeOS Flex 업데이트(&amp;C)</translation>
 <translation id="3037838751736561277">Chrome이 백그라운드 모드로 실행 중입니다.</translation>
 <translation id="3038232873781883849">설치 대기 중...</translation>
+<translation id="3045032126857188731">번역된 언어, <ph name="LANGUAGE" /></translation>
 <translation id="3059710691562604940">세이프 브라우징이 사용 중지되어 있습니다. 사용 설정하는 것이 좋습니다.</translation>
 <translation id="306179102415443347">바로가기를 사용하여 Google 비밀번호 관리자로 빠르게 이동하세요. 바로가기는 컴퓨터의 홈 화면이나 앱 런처로 이동할 수 있습니다.</translation>
 <translation id="3065168410429928842">Chrome 탭</translation>
@@ -192,7 +195,6 @@
 <translation id="3234642784688107085">테마를 만들고, 글쓰기에 도움을 받고, 체계적으로 정리할 수 있는 새로운 AI 기능을 사용해 보세요.</translation>
 <translation id="3245429137663807393">Chrome 사용 보고서를 공유하면, 내가 방문한 URL이 이 보고서에 포함됩니다.</translation>
 <translation id="3261565993776444564">새로운 색상으로 브라우저를 맞춤설정해 보세요.</translation>
-<translation id="3269209112443570745">New! 화면에 표시된 항목을 간편하게 검색하세요</translation>
 <translation id="3282568296779691940">Chrome에 로그인</translation>
 <translation id="3286538390144397061">지금 다시 시작</translation>
 <translation id="3292333338048274092">그런 다음 Chrome을 다시 시작해야 합니다.</translation>
@@ -226,7 +228,7 @@
 <translation id="3673813398384385993">Chrome에서 "<ph name="EXTENSION_NAME" />"에 멀웨어가 포함된 것을 발견했습니다.</translation>
 <translation id="3695446226812920698">자세히 알아보기</translation>
 <translation id="3697952514309507634">기타 Chrome 프로필</translation>
-<translation id="3700276346088749847">계정의 Chrome 데이터 삭제</translation>
+<translation id="3700276346088749847">계정의 Chrome 데이터를 삭제</translation>
 <translation id="3703994572283698466"><ph name="BEGIN_LINK_LINUX_OSS" />Linux 개발 환경<ph name="END_LINK_LINUX_OSS" />과 마찬가지로, ChromeOS는 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용하여 개발되었습니다.</translation>
 <translation id="3716540481907974026">ChromeOS Flex 버전</translation>
 <translation id="3718181793972440140">항목 1개가 기기에서 삭제됩니다. 나중에 데이터를 가져오려면 Chrome에 <ph name="USER_EMAIL" />(으)로 로그인하세요.</translation>
@@ -241,12 +243,14 @@
 <translation id="386202838227397562">Chrome 창을 모두 닫고 다시 시도해 보세요.</translation>
 <translation id="3865754807470779944">Chrome <ph name="PRODUCT_VERSION" /> 버전이 설치됩니다.</translation>
 <translation id="3873044882194371212">Chrome 시크릿 창에서 링크 열기(&amp;G)</translation>
+<translation id="3885770153807205175">언어 선택 도구</translation>
 <translation id="3889417619312448367">Chrome 제거</translation>
 <translation id="3941890832296813527">설치 오류: 설치 프로그램 파일 이름이 잘못되었거나 지원되지 않습니다.</translation>
 <translation id="3973161977468201858">Google Chrome에서 Google 비밀번호 관리자 데이터를 삭제하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="398236277091248993">Chrome이 성능 향상 기능으로 빠른 속도를 유지합니다.</translation>
 <translation id="3999683152997576765">사이트에서 광고 표시를 위해 사용하는 관심분야의 주제를 내가 확인하고 삭제할 수 있습니다. Chrome에서는 사용자의 최근 방문 기록을 기반으로 관심분야를 추정합니다.</translation>
 <translation id="4022972681110646219">화면 번역</translation>
+<translation id="4023601594785368013">원본 언어, <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">업데이트를 적용하려면 ChromeOS를 다시 시작해야 합니다.</translation>
 <translation id="4050175100176540509">최신 버전에는 중요한 보안 개선사항 및 새로운 기능이 포함되어 있습니다.</translation>
 <translation id="4053720452172726777">Chrome 맞춤설정 및 제어</translation>
@@ -522,6 +526,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7514258452813684157">Google 업데이터 서비스</translation>
 <translation id="7515191208480168435">Google 렌즈를 고정하여 쉽게 액세스할 수 있습니다.</translation>
 <translation id="7535429826459677826">Chrome 개발자</translation>
+<translation id="756809126120519699">Chrome 데이터 삭제됨</translation>
 <translation id="7572537927358445944">사용 안함 • Chrome에서 이 확장 프로그램의 출처를 확인할 수 없습니다.</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> 설치 프로그램</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
@@ -539,6 +544,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7668816516367091728">주소 표시줄에서 바로 번역, 계산 등의 작업을 수행하세요.</translation>
 <translation id="7670287553302121848">Chrome 계정에 재인증이 필요함</translation>
 <translation id="769538538642757151">검토가 필요한 사항이 있으면 Chrome에서 알려 드립니다.</translation>
+<translation id="77283119132245232"><ph name="BROWSER_NAME" />에 시스템 추적 서비스가 제공됩니다. 이 서비스를 사용 중지하면 브라우저에서 생성한 성능 추적에 컨텍스트 전환 및 준비된 스레드 이벤트와 같은 시스템 전체 이벤트가 포함되지 않습니다.</translation>
 <translation id="7747138024166251722">설치 프로그램이 임시 디렉터리를 만들지 못했습니다. 디스크 공간 및 설치 권한을 확인해 보세요.</translation>
 <translation id="7761834446675418963">Chrome을 열고 탐색을 시작하려면 내 이름을 클릭하세요.</translation>
 <translation id="7763983146198734674">비밀번호를 저장하여 이동 중에도 액세스하세요.</translation>

@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">必須輸入 <ph name="MINIMUM_DATE_OR_TIME" /> 或之後的值。</translation>
 <translation id="2761667185364618470">如果你要繼續執行，請勾選這個核取方塊。</translation>
 <translation id="2908441821576996758">請輸入以逗號分隔的電子郵件地址清單。</translation>
+<translation id="2940013921954129954">已允許存取精確位置</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">欄位內容不完整或日期無效，請輸入有效的值。</translation>
 <translation id="310520048233152454">請輸入網址。</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">畫質不佳</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6820355525329141109">無法載入外掛程式。</translation>
+<translation id="688706781007114099">使用位置資訊</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">請將這段文字加長到 <ph name="MIN_CHARACTERS" /> 個字元以上 (目前已有 1 個字元)。</translation>
 <translation id="709897737746224366">請符合要求的格式。</translation>

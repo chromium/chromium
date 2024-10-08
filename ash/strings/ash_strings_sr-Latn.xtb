@@ -114,6 +114,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="132346741904777634">Kamera je uklopljena u gornji levi ugao Neusaglašenost sa površinom sistema.</translation>
 <translation id="132415371743256095">Zatvorite <ph name="DESK_NAME" /> i prozore</translation>
 <translation id="1333308631814936910">Povezanih: <ph name="DISPLAY_NAME" /></translation>
+<translation id="1337081488893096731">Koristite aplikaciju za prenos sadržaja da biste premestili podatke školskog naloga na lični nalog</translation>
 <translation id="1340378040547539434">Umanji stranicu</translation>
 <translation id="1341651618736211726">Prekoračenje</translation>
 <translation id="1341926407152459446">Koristite uređaj<ph name="DEVICE_NAME" /> za audio ulaz i izlaz</translation>
@@ -242,6 +243,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="17722141032474077">Proračuni</translation>
 <translation id="1774796056689732716">Kalendar, <ph name="CURRENT_MONTH_YEAR" />, <ph name="DATE" /> je trenutno izabran.</translation>
 <translation id="178347895271755507">Podesite pregled nedavnih slika, medija i obaveštenja na telefonu</translation>
+<translation id="1786487376942610288">Prebacujte između maksimalne ili aktuelne veličine prozora slike u slici</translation>
 <translation id="1787955149152357925">Isključeno</translation>
 <translation id="1796561540704213354">Veb-sajtovi, uključujući stranice koje ste posetili i otvorili</translation>
 <translation id="179842970735685253">Google uslovi korišćenja usluge</translation>
@@ -337,6 +339,9 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="219905428774326614">Pokretač, sve aplikacije</translation>
 <translation id="2201071101391734388"><ph name="INDEX" />. nedavna slika od <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Skupi Google zadatke</translation>
+<translation id="2206960886090042977">Ugrađeni tačped je onemogućen jer je povezan miš. Koristite miš ili tastaturu da biste potvrdili promenu.
+
+U suprotnom će ugrađeni tačped biti ponovo omogućen za 30 sekundi.</translation>
 <translation id="2208323208084708176">Režim spojenih radnih površina</translation>
 <translation id="2220572644011485463">PIN ili lozinka</translation>
 <translation id="2222841058024245321">Radna površina 7</translation>
@@ -1909,6 +1914,9 @@ Priključite uređaj na napajanje.</translation>
 Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivanje na uređaju.</translation>
 <translation id="7523420897035067483">Omogućite funkciju Ne uznemiravaj dok sam u fokusu</translation>
 <translation id="7524043547948122239">Google zadaci</translation>
+<translation id="7524919752437339268">Ugrađeni tačped je onemogućen. Koristite tastaturu ili drugi pokazivački uređaj da biste potvrdili promenu.
+
+U suprotnom će ugrađeni tačped biti ponovo omogućen za 30 sekundi.</translation>
 <translation id="7525067979554623046">Napravi</translation>
 <translation id="7526573455193969409">Mreža se možda nadgleda</translation>
 <translation id="7536035074519304529">IP adresa: <ph name="ADDRESS" /></translation>
@@ -2296,6 +2304,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8858369206579825206">Kontrole privatnosti</translation>
 <translation id="8860366331836346216">Dodaj eSIM</translation>
 <translation id="8870509716567206129">Aplikacija ne podržava podeljeni ekran.</translation>
+<translation id="8873203135446552888">Potvrdite da želite da onemogućite ugrađeni tačped</translation>
 <translation id="8874184842967597500">Nije povezano</translation>
 <translation id="8875021410787719674">Premeštajte iz donjeg desnog ugla na pokretač, traku za adresu, traku sa obeleživačima, veb-sajt koji je otvoren i preuzimanja</translation>
 <translation id="8876148469852588625"><ph name="EVENT_POSITION" />. događaj od <ph name="EVENT_TOTAL_COUNT" /></translation>

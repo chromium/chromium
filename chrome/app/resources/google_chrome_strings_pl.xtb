@@ -70,6 +70,7 @@
 <translation id="1919130412786645364">Zezwalaj na logowanie się w Chrome</translation>
 <translation id="1953553007165777902">Pobieram… Pozostało: <ph name="MINUTE" /> min</translation>
 <translation id="1982647487457769627">Chrome działa na różnych platformach, dzięki czemu możesz korzystać z tych samych funkcji niezależnie od urządzenia</translation>
+<translation id="19955905961160405">Przeszukaj ekran za pomocą Obiektywu Google</translation>
 <translation id="2001586581944147178">Utrudnij osobom mającym dostęp do Twojego ruchu internetowego sprawdzanie, jakie strony odwiedzasz. Do wyszukiwania adresu IP witryny w systemie nazw domenowych (DNS) Chrome używa bezpiecznego połączenia.</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{To rozszerzenie nie jest już obsługiwane. Chrome zaleca jego usunięcie.}few{Te rozszerzenia nie są już obsługiwane. Chrome zaleca ich usunięcie.}many{Te rozszerzenia nie są już obsługiwane. Chrome zaleca ich usunięcie.}other{Te rozszerzenia nie są już obsługiwane. Chrome zaleca ich usunięcie.}}</translation>
 <translation id="2018528049276128029">Każdy profil zawiera własne dane Chrome, takie jak zakładki, historia, hasła i inne</translation>
@@ -87,6 +88,7 @@
 <translation id="2126108037660393668">Weryfikacja pobranego pliku zakończyła się niepowodzeniem.</translation>
 <translation id="2128411189117340671">Zarządzaj profilami Chrome</translation>
 <translation id="2131230230468101642">Aby chronić Twoją prywatność, automatycznie usuwamy Twoje zainteresowania, które są starsze niż 4 tygodnie. Podczas dalszego przeglądania zainteresowanie może się pojawić ponownie na liście. Możesz też usunąć zainteresowania, których Chrome ma nie brać pod uwagę.</translation>
+<translation id="2137162749895930932">Zamknij ekran tłumaczenia</translation>
 <translation id="2139300032719313227">Uruchom ponownie Chrome OS</translation>
 <translation id="2151406531797534936">Uruchom Chrome ponownie</translation>
 <translation id="2163089732491971196">Wpisz hasło wielowyrazowe, aby móc zapisywać dane z Chrome na koncie Google i ich używać</translation>
@@ -170,6 +172,7 @@
 <translation id="3019382870990049182">Uruchom ponownie, aby zaktualizować &amp;ChromeOS Flex</translation>
 <translation id="3037838751736561277">Google Chrome jest w trybie działania w tle</translation>
 <translation id="3038232873781883849">Czekam na instalację…</translation>
+<translation id="3045032126857188731">Język tłumaczenia: <ph name="LANGUAGE" /></translation>
 <translation id="3059710691562604940">Bezpieczne przeglądanie jest wyłączone. Chrome zaleca jego włączenie.</translation>
 <translation id="306179102415443347">Aby szybko otworzyć Menedżera haseł Google, użyj skrótu. Skrót na komputerze możesz przenieść na ekran główny lub do Menu z aplikacjami.</translation>
 <translation id="3065168410429928842">Karta Chrome</translation>
@@ -188,7 +191,6 @@
 <translation id="3234642784688107085">Wypróbuj nowe funkcje oparte na AI, aby tworzyć motywy, korzystać z pomocy przy pisaniu i utrzymywać porządek</translation>
 <translation id="3245429137663807393">Jeśli udostępnisz także raporty o użytkowaniu Chrome, będą one zawierały odwiedzane przez Ciebie adresy URL.</translation>
 <translation id="3261565993776444564">Wypróbuj nowy kolor, aby dostosować przeglądarkę</translation>
-<translation id="3269209112443570745">Nowość! Łatwy sposób na wyszukiwanie tego, co widzisz na ekranie</translation>
 <translation id="3282568296779691940">Zaloguj się w Chrome</translation>
 <translation id="3286538390144397061">Uruchom ponownie teraz</translation>
 <translation id="3292333338048274092">Następnie musisz ponownie uruchomić Chrome.</translation>
@@ -237,12 +239,14 @@
 <translation id="386202838227397562">Zamknij wszystkie okna przeglądarki Google Chrome i spróbuj ponownie.</translation>
 <translation id="3865754807470779944">Zainstalowana jest wersja Chrome <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3873044882194371212">Otwórz link w oknie inco&amp;gnito Chrome</translation>
+<translation id="3885770153807205175">Selektor języka</translation>
 <translation id="3889417619312448367">Odinstaluj Google Chrome</translation>
 <translation id="3941890832296813527">Błąd instalacji: nazwa pliku instalatora jest nieprawidłowa lub nieobsługiwana.</translation>
 <translation id="3973161977468201858">Google Chrome chce usunąć Twoje dane z Menedżera haseł Google. Aby na to zezwolić, podaj hasło do systemu Windows.</translation>
 <translation id="398236277091248993">Chrome działa szybciej dzięki funkcjom zwiększającym wydajność</translation>
 <translation id="3999683152997576765">Możesz przeglądać i usuwać interesujące Cię tematy, których witryny używają do dobierania wyświetlanych reklam. Chrome ocenia, jakie są Twoje zainteresowania, na podstawie ostatniej historii przeglądania.</translation>
 <translation id="4022972681110646219">Przetłumacz ekran</translation>
+<translation id="4023601594785368013">Język oryginału: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Aby system operacyjny Chrome mógł zastosować aktualizacje, musisz go ponownie uruchomić.</translation>
 <translation id="4050175100176540509">W najnowszej wersji zostały wprowadzone ważne poprawki bezpieczeństwa i nowe funkcje.</translation>
 <translation id="4053720452172726777">Dostosowywanie i kontrolowanie Google Chrome</translation>
@@ -514,6 +518,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="7514258452813684157">Usługa aktualizatora Google</translation>
 <translation id="7515191208480168435">Możesz przypiąć Obiektyw Google, aby mieć do niego łatwy dostęp</translation>
 <translation id="7535429826459677826">Wersja deweloperska Google Chrome</translation>
+<translation id="756809126120519699">Wyczyszczono dane Chrome</translation>
 <translation id="7572537927358445944">Wyłączone • Chrome nie może sprawdzić, skąd pochodzi to rozszerzenie</translation>
 <translation id="7583399374488819119">Instalator <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
@@ -531,6 +536,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="7668816516367091728">Wykonuj zadania, takie jak np. tłumaczenie czy obliczanie, bezpośrednio z poziomu paska adresu</translation>
 <translation id="7670287553302121848">Konto Chrome wymaga ponownego uwierzytelnienia</translation>
 <translation id="769538538642757151">Jeśli coś będzie wymagało sprawdzenia, Chrome Cię o tym poinformuje</translation>
+<translation id="77283119132245232">Zapewnia usługi śledzenia systemu dla <ph name="BROWSER_NAME" />. Jeśli ta usługa jest wyłączona, śledzenie wydajności tworzone przez przeglądarkę nie zawiera zdarzeń dotyczących całego systemu, takich jak przełączanie kontekstu i gotowe zdarzenia wątków.</translation>
 <translation id="7747138024166251722">Instalator nie mógł utworzyć katalogu tymczasowego. Sprawdź, czy na dysku jest dość wolnego miejsca oraz sprawdź, czy posiadasz uprawnienia do instalowania programów.</translation>
 <translation id="7761834446675418963">Otwórz Chrome, klikając swoją nazwę, i rozpocznij przeglądanie.</translation>
 <translation id="7763983146198734674">Zapisuj swoje hasła, aby mieć do nich dostęp z dowolnego miejsca</translation>

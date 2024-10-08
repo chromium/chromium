@@ -49,6 +49,7 @@
 <translation id="17264556997921157">您可看到并移除被网站用来向您展示广告的兴趣主题。Chromium 会根据您近期的浏览记录推测出您的兴趣。</translation>
 <translation id="1733725117201708356">Chromium 即将删除浏览数据</translation>
 <translation id="1736443181683099871">Chromium 会尝试将导航路径升级到 HTTPS</translation>
+<translation id="1736662517232558588">已清除 Chromium 数据</translation>
 <translation id="1745121272106313518">Chromium 将在 <ph name="REMAINING_TIME" />后重启</translation>
 <translation id="1749104137266986751">如果 HTTPS 不可用，Chromium 会在不向您发出警告的情况下使用不安全的连接</translation>
 <translation id="1774152462503052664">让 Chromium 在后台运行</translation>
@@ -79,6 +80,7 @@
 <translation id="2088953378266246249">与 Chromium 如何管理其根证书有关的信息</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{贵组织会在 Chromium 闲置 1 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。您的标签页将会保持打开状态。}other{贵组织会在 Chromium 闲置 # 分钟后自动删除浏览数据。这些数据可能包括历史记录、自动填充数据和下载内容。您的标签页将会保持打开状态。}}</translation>
 <translation id="2126108037660393668">所下载的文件未能顺利通过验证。</translation>
+<translation id="2137162749895930932">关闭翻译屏幕</translation>
 <translation id="215352261310130060">Chromium 阻止了此项下载操作，因为网站未使用安全连接，该文件可能已被篡改</translation>
 <translation id="2157600032285353789">您可以通过 Chromium 菜单打开书签、阅读模式等</translation>
 <translation id="2174178932569897599">自定义 Chromium</translation>
@@ -146,6 +148,7 @@
 <translation id="3032706164202344641">Chromium 无法检查您的密码。请稍后重试。</translation>
 <translation id="3032787606318309379">正在添加到 Chromium...</translation>
 <translation id="3038232873781883849">正在等待安装…</translation>
+<translation id="3045032126857188731">译文语言：<ph name="LANGUAGE" /></translation>
 <translation id="3068187312562070417">其他 Chromium 个人资料</translation>
 <translation id="3068515742935458733">将崩溃报告和<ph name="UMA_LINK" />发送给Google，帮助我们完善Chromium。</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{一个或多个 Chromium 扩展程序访问过 1 部 USB 设备}=1{一个或多个 Chromium 扩展程序正在访问 1 部 USB 设备}other{一个或多个 Chromium 扩展程序正在访问 # 部 USB 设备}}</translation>
@@ -164,7 +167,6 @@
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3268051428841342958">V8 是 Chromium 的 JavaScript 和 WebAssembly 引擎，用于提升网站性能</translation>
-<translation id="3269209112443570745">新功能！轻松搜索屏幕上的内容</translation>
 <translation id="3283186697780795848">已安装 Chromium 版本 <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3286538390144397061">立即重新启动</translation>
 <translation id="328888136576916638">缺少 Google API 密钥，因此 Chromium 的部分功能将无法使用。</translation>
@@ -204,6 +206,7 @@
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386822487697155367">获取有关 Chromium 操作系统的帮助</translation>
 <translation id="3871664619793219264">从 <ph name="ACCOUNT_EMAIL" /> 获取您的 Chromium 浏览器信息</translation>
+<translation id="3885770153807205175">语言选择器</translation>
 <translation id="388648406173476553">自定义和控制 Chromium。出了点需要您注意的状况 - 点击即可查看详情。</translation>
 <translation id="3889543394854987837">点击您的姓名即可打开Chromium并开始浏览。</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" />已登录这份 Chromium 个人资料。Chromium 可为您创建一份专属的个人资料，以将您的浏览数据单独存储。</translation>
@@ -216,6 +219,7 @@
 <translation id="3997429360543082038">关于 Chromium 操作系统</translation>
 <translation id="4019629340646866719">与 <ph name="BEGIN_LINK_LINUX_OSS" />Linux 开发环境<ph name="END_LINK_LINUX_OSS" />一样，Chromium 操作系统也是借助了其他<ph name="BEGIN_LINK_CROS_OSS" />开源软件<ph name="END_LINK_CROS_OSS" />才得以问世。</translation>
 <translation id="4022972681110646219">翻译屏幕</translation>
+<translation id="4023601594785368013">源语言：<ph name="LANGUAGE" /></translation>
 <translation id="4036079820698952681">报告<ph name="BEGIN_LINK" />当前设置<ph name="END_LINK" />，协助我们改进 Chromium</translation>
 <translation id="4050175100176540509">最新版本不仅在安全性方面做出了重要改进，还提供了多项新功能。</translation>
 <translation id="4055805654398742145">密码管理工具(&amp;A)</translation>
@@ -285,6 +289,7 @@
 <translation id="494490797786467921">点击即可关闭 Chromium 登录对话框</translation>
 <translation id="4987820182225656817">访客使用Chromium不会留下任何痕迹。</translation>
 <translation id="4994636714258228724">将您自己添加到Chromium</translation>
+<translation id="5024548327980648634">搜索屏幕上的内容</translation>
 <translation id="5051959905407134411">试试图片搜索</translation>
 <translation id="5114678101347489141">Chromium 正在探索各种新功能，以便让网站既能减少使用您的信息，又能提供同样出色的浏览体验</translation>
 <translation id="5123973130450702873">Chromium 需要获得权限，才能跟踪您的手部动作</translation>
@@ -330,6 +335,7 @@
 <translation id="5761096224651992291">您近期未访问过该网站。Chromium 移除了<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和<ph name="PERMISSION_3" />权限</translation>
 <translation id="5800158606660203929">自定义和控制 Chromium。将 Chromium 设为默认浏览器。</translation>
 <translation id="5809516625706423866">无法连接到互联网。发生 HTTP 401 Unauthorized 错误，请检查您的代理配置。</translation>
+<translation id="5821520528363214608">如要将 Chromium 数据保存在 Google 账号中并使用这些数据，请更新 Chromium</translation>
 <translation id="5862307444128926510">欢迎使用 Chromium</translation>
 <translation id="5871205389137001634">点击即可退出图片搜索功能</translation>
 <translation id="5883558403894052917">Chromium 发现这些内容包含恶意软件：</translation>
@@ -490,6 +496,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="7686590090926151193">Chromium 不是您的默认浏览器</translation>
 <translation id="7689606757190482937">在您的所有设备上同步并个性化设置 Chromium</translation>
 <translation id="7699779824407626136">Chromium 更新</translation>
+<translation id="77283119132245232">为 <ph name="BROWSER_NAME" /> 提供系统跟踪服务。如果停用此服务，浏览器创建的性能轨迹将不包含系统级事件，例如上下文切换和就绪线程事件。</translation>
 <translation id="7745317241717453663">这会从这台设备上删除您的浏览数据。如果日后想要检索您的数据，届时请以 <ph name="USER_EMAIL" /> 的身份登录 Chromium。</translation>
 <translation id="7747138024166251722">安装程序无法创建临时目录。请检查您是否有足够的磁盘空间和权限来安装该软件。</translation>
 <translation id="7786760609782648049">提高 Chromium 的运行速度</translation>

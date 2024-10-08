@@ -114,6 +114,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="132346741904777634">Kameran har fästs i det övre vänstra hörnet. Konflikt med systemyta.</translation>
 <translation id="132415371743256095">Stäng <ph name="DESK_NAME" /> och fönster</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> har anslutits</translation>
+<translation id="1337081488893096731">Använd appen Content Transfer för att flytta data från ditt skolkonto till ditt personliga konto</translation>
 <translation id="1340378040547539434">Zooma ut på sidan</translation>
 <translation id="1341651618736211726">Fler alternativ</translation>
 <translation id="1341926407152459446">Använd <ph name="DEVICE_NAME" /> som ljudingång och ljudutgång</translation>
@@ -242,6 +243,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="17722141032474077">Uträkningar</translation>
 <translation id="1774796056689732716">Kalender, <ph name="CURRENT_MONTH_YEAR" />, just nu är <ph name="DATE" /> markerat.</translation>
 <translation id="178347895271755507">Ställ in visning av de senaste bilderna, mediefilerna och aviseringarna på telefonen</translation>
+<translation id="1786487376942610288">Växla mellan största tillåtna och aktuell storlek på bild-i-bild-fönstret</translation>
 <translation id="1787955149152357925">Av</translation>
 <translation id="1796561540704213354">Webbplatser, inklusive sidor som du har besökt och öppna sidor</translation>
 <translation id="179842970735685253">Googles användarvillkor</translation>
@@ -337,6 +339,9 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="219905428774326614">Startprogram, alla appar</translation>
 <translation id="2201071101391734388">Foto <ph name="INDEX" /> av <ph name="TOTAL_COUNT" /> nya foton.</translation>
 <translation id="2201687081523799384">Komprimera Google Tasks</translation>
+<translation id="2206960886090042977">Den inbyggda styrplattan har inaktiverats eftersom en mus är ansluten. Bekräfta ändringen med musen eller tangentbordet.
+
+Annars aktiveras den inbyggda styrplattan igen om 30 sekunder.</translation>
 <translation id="2208323208084708176">Enhetligt skrivbordsläge</translation>
 <translation id="2220572644011485463">Pinkod eller lösenord</translation>
 <translation id="2222841058024245321">Skrivbord 7</translation>
@@ -1468,6 +1473,7 @@ Inga enheter är anslutna.</translation>
 <translation id="598407983968395253">Använd mall</translation>
 <translation id="5986723678596105470">Anslut via Google Meet</translation>
 <translation id="598882571027504733">Starta om Chromebook-enheten med tangentbordet tillkopplat för att uppdatera.</translation>
+<translation id="5990992855591814753">Håll fokus med anpassade spellistor för fokus. Få YouTube Music och YouTube utan annonser med YouTube Premium i tre månader utan kostnad. Villkor gäller.</translation>
 <translation id="5998374579424866922">Inaktivera spelkontroll</translation>
 <translation id="6000279412553873020">Nycklar, knappar med mera</translation>
 <translation id="6012623610530968780">Sida <ph name="SELECTED_PAGE" /> av <ph name="TOTAL_PAGE_NUM" /></translation>
@@ -1906,6 +1912,9 @@ Nyligen installerad</translation>
 Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7523420897035067483">Aktivera Stör ej när Fokus är på</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">Den inbyggda styrplattan är inaktiverad. Bekräfta ändringen med tangentbordet eller ett annat pekdon.
+
+Annars aktiveras den inbyggda styrplattan igen om 30 sekunder.</translation>
 <translation id="7525067979554623046">Skapa</translation>
 <translation id="7526573455193969409">Nätverket kan vara övervakat</translation>
 <translation id="7536035074519304529">IP-adress: <ph name="ADDRESS" /></translation>
@@ -2293,6 +2302,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8858369206579825206">Integritetsinställningar</translation>
 <translation id="8860366331836346216">Lägg till eSIM</translation>
 <translation id="8870509716567206129">Appen har inte stöd för delad skärm.</translation>
+<translation id="8873203135446552888">Bekräfta att du vill inaktivera den inbyggda styrplattan</translation>
 <translation id="8874184842967597500">Inte ansluten</translation>
 <translation id="8875021410787719674">Flytta mellan det nedre högra hörnet, Appstartaren, adressfältet, bokmärkesfältet, webbplatsen som är öppen och nedladdningar</translation>
 <translation id="8876148469852588625">Händelse <ph name="EVENT_POSITION" /> av <ph name="EVENT_TOTAL_COUNT" /></translation>

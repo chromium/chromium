@@ -49,6 +49,7 @@
 <translation id="17264556997921157">サイトでの広告表示に使用される興味 / 関心のトピックを表示、削除できます。Chromium では最近の閲覧履歴に基づいてユーザーの興味 / 関心を推定します。</translation>
 <translation id="1733725117201708356">Chromium でまもなく閲覧データが削除されます</translation>
 <translation id="1736443181683099871">Chromium で移動先の HTTPS へのアップグレードを試行します</translation>
+<translation id="1736662517232558588">Chromium データを削除しました</translation>
 <translation id="1745121272106313518">Chromium は <ph name="REMAINING_TIME" /> 後に再起動します</translation>
 <translation id="1749104137266986751">HTTPS を使用できない場合、Chromium で警告を表示せずに安全でない接続を使用します</translation>
 <translation id="1774152462503052664">Chromium をバックグラウンドで実行する</translation>
@@ -79,6 +80,7 @@
 <translation id="2088953378266246249">Chromium でのルート証明書の管理方法に関する情報</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{1 分間使用しなかった場合、組織は Chromium の閲覧データを自動的に削除します。これには、履歴、自動入力、ダウンロードが含まれます。タブは開いたままになります。}other{# 分間使用しなかった場合、組織は Chromium の閲覧データを自動的に削除します。これには、履歴、自動入力、ダウンロードが含まれます。タブは開いたままになります。}}</translation>
 <translation id="2126108037660393668">ダウンロードしたファイルの検証で不合格でした。</translation>
+<translation id="2137162749895930932">翻訳画面を閉じる</translation>
 <translation id="215352261310130060">このダウンロードは Chromium でブロックされました。サイトで安全な接続が使用されておらず、ファイルが改ざんされている可能性があります</translation>
 <translation id="2157600032285353789">Chromium メニューからブックマークやリーディング モードなどを開くことができます</translation>
 <translation id="2174178932569897599">Chromium をカスタマイズ</translation>
@@ -146,6 +148,7 @@
 <translation id="3032706164202344641">Chromium でパスワードを確認できません。しばらくしてからもう一度お試しください。</translation>
 <translation id="3032787606318309379">Chromium に追加...</translation>
 <translation id="3038232873781883849">インストールの待機中...</translation>
+<translation id="3045032126857188731">翻訳先の言語: <ph name="LANGUAGE" /></translation>
 <translation id="3068187312562070417">その他の Chromium プロフィール</translation>
 <translation id="3068515742935458733">障害レポートと<ph name="UMA_LINK" />を Google に自動送信して Chromium の機能向上に役立てる</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{1 つ以上の Chromium 拡張機能が 1 台の USB デバイスにアクセスしていました}=1{1 つ以上の Chromium 拡張機能が 1 台の USB デバイスにアクセスしています}other{1 つ以上の Chromium 拡張機能が # 台の USB デバイスにアクセスしています}}</translation>
@@ -164,7 +167,6 @@
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3268051428841342958">V8 は、サイトのパフォーマンスを向上させるために使用される Chromium の JavaScript エンジンおよび WebAssembly エンジンです</translation>
-<translation id="3269209112443570745">New! 画面に表示されている内容を簡単に検索</translation>
 <translation id="3283186697780795848">Chromium のバージョン <ph name="PRODUCT_VERSION" /> がインストールされています</translation>
 <translation id="3286538390144397061">今すぐ再起動</translation>
 <translation id="328888136576916638">Google API キーが欠落しています。Chromium の一部の機能は無効になります。</translation>
@@ -204,6 +206,7 @@
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386822487697155367">Chromium OS のヘルプを見る</translation>
 <translation id="3871664619793219264">Chromium ブラウザのアイテムを <ph name="ACCOUNT_EMAIL" /> から取得</translation>
+<translation id="3885770153807205175">言語選択ツール</translation>
 <translation id="388648406173476553">Chromium をカスタマイズ、制御します。確認の必要な項目があります。クリックして詳細をご覧ください。</translation>
 <translation id="3889543394854987837">Chromium を開いてブラウジングを始めるには、名前をクリックしてください。</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> さんはこの Chromium プロフィールにすでにログインしています。ブラウジング環境を分ける場合は、Chromium で自分用のプロフィールを作成できます。</translation>
@@ -216,6 +219,7 @@
 <translation id="3997429360543082038">Chromium OS について</translation>
 <translation id="4019629340646866719">Chromium OS は、<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開発環境<ph name="END_LINK_LINUX_OSS" />と同様に、追加の<ph name="BEGIN_LINK_CROS_OSS" />オープンソース ソフトウェア<ph name="END_LINK_CROS_OSS" />によって実現しました。</translation>
 <translation id="4022972681110646219">画面を翻訳</translation>
+<translation id="4023601594785368013">元の言語: <ph name="LANGUAGE" /></translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />現在の設定<ph name="END_LINK" />を送信して Chromium の品質向上にご協力ください</translation>
 <translation id="4050175100176540509">最新バージョンに更新すると、重要なセキュリティ更新と新機能が適用されます。</translation>
 <translation id="4055805654398742145">パスワード マネージャー(&amp;A)</translation>
@@ -285,6 +289,7 @@
 <translation id="494490797786467921">クリックすると、Chromium のログイン ダイアログを閉じます</translation>
 <translation id="4987820182225656817">ゲスト ユーザーは、記録を残さずに Chromium を使用できます。</translation>
 <translation id="4994636714258228724">Chromium に自分を追加</translation>
+<translation id="5024548327980648634">画面上のコンテンツを検索</translation>
 <translation id="5051959905407134411">画像検索をお試しください</translation>
 <translation id="5114678101347489141">Chromium では、使用されるユーザー情報の量を抑えつつ、同じようにサイトをブラウジングできる新機能をテストしています</translation>
 <translation id="5123973130450702873">Chromium がハンド トラッキングの許可を求めています</translation>
@@ -330,6 +335,7 @@
 <translation id="5761096224651992291">最近アクセスしていないため、Chromium で <ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、<ph name="PERMISSION_3" /> の権限を削除しました</translation>
 <translation id="5800158606660203929">Chromium をカスタマイズ、管理します。Chromium をデフォルトに設定します。</translation>
 <translation id="5809516625706423866">インターネットに接続できません。HTTP 401 認証エラーが発生しました。プロキシ設定をご確認ください。</translation>
+<translation id="5821520528363214608">Google アカウントで Chromium のデータを使用、保存するには、Chromium を更新してください</translation>
 <translation id="5862307444128926510">Chromium へようこそ</translation>
 <translation id="5871205389137001634">クリックすると画像検索を終了します</translation>
 <translation id="5883558403894052917">Chromium で次のアイテムに不正なソフトウェアが含まれていることが検出されました。</translation>
@@ -490,6 +496,7 @@
 <translation id="7686590090926151193">Chromium はデフォルトのブラウザとして設定されていません</translation>
 <translation id="7689606757190482937">同期してカスタマイズした Chromium をどのデバイスでも使用できます</translation>
 <translation id="7699779824407626136">Chromium の更新</translation>
+<translation id="77283119132245232"><ph name="BROWSER_NAME" /> のシステム トレース サービスを提供します。このサービスを無効にした場合、ブラウザによって作成されるパフォーマンス トレースに、コンテキスト切り替えやスレッドの準備完了などのシステム全体のイベントは含められません。</translation>
 <translation id="7745317241717453663">このデバイスから閲覧データを削除します。後でデータを取得するには、<ph name="USER_EMAIL" /> として Chromium にログインしてください。</translation>
 <translation id="7747138024166251722">インストーラーの一時ディレクトリを作成できませんでした。ディスクの空き領域とソフトウェアのインストール許可があることを確認してください。</translation>
 <translation id="7786760609782648049">Chromium を高速化する</translation>

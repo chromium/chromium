@@ -114,6 +114,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="132346741904777634">Máy ảnh được chuyển đến góc trên bên trái Xung đột với khu vực hệ thống.</translation>
 <translation id="132415371743256095">Đóng <ph name="DESK_NAME" /> và các cửa sổ</translation>
 <translation id="1333308631814936910">Đã kết nối <ph name="DISPLAY_NAME" /></translation>
+<translation id="1337081488893096731">Sử dụng ứng dụng Chuyển nội dung để chuyển dữ liệu từ tài khoản trường học sang tài khoản cá nhân</translation>
 <translation id="1340378040547539434">Thu nhỏ trang</translation>
 <translation id="1341651618736211726">Nút tràn</translation>
 <translation id="1341926407152459446">Sử dụng "<ph name="DEVICE_NAME" />" cho đầu vào và đầu ra âm thanh</translation>
@@ -242,6 +243,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="17722141032474077">Máy tính</translation>
 <translation id="1774796056689732716">Lịch, <ph name="CURRENT_MONTH_YEAR" />, đang chọn <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Thiết lập tính năng xem thông báo, nội dung nghe nhìn và ảnh gần đây có trên điện thoại</translation>
+<translation id="1786487376942610288">Chuyển đổi giữa kích thước tối đa hoặc kích thước hiện tại của cửa sổ hình trong hình</translation>
 <translation id="1787955149152357925">Tắt</translation>
 <translation id="1796561540704213354">Trang web, bao gồm các trang bạn đã truy cập và các trang đang mở</translation>
 <translation id="179842970735685253">Điều khoản dịch vụ của Google</translation>
@@ -337,6 +339,9 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="219905428774326614">Trình khởi chạy, tất cả ứng dụng</translation>
 <translation id="2201071101391734388">Ảnh gần đây <ph name="INDEX" /> trong tổng số <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Thu gọn Google Tasks</translation>
+<translation id="2206960886090042977">Bàn di chuột tích hợp sẵn bị tắt vì bạn đã kết nối chuột. Sử dụng chuột hoặc bàn phím để xác nhận thay đổi.
+
+Nếu không, bàn di chuột tích hợp sẵn sẽ bật lại sau 30 giây.</translation>
 <translation id="2208323208084708176">Chế độ màn hình đồng nhất</translation>
 <translation id="2220572644011485463">Mã PIN hoặc mật khẩu</translation>
 <translation id="2222841058024245321">Không gian làm việc 7</translation>
@@ -1468,6 +1473,7 @@ Chưa kết nối thiết bị nào.</translation>
 <translation id="598407983968395253">Sử dụng mẫu</translation>
 <translation id="5986723678596105470">Tham gia bằng Google Meet</translation>
 <translation id="598882571027504733">Để cập nhật, hãy khởi động lại Chromebook bằng bàn phím đã kết nối.</translation>
+<translation id="5990992855591814753">Không bị phân tâm nhờ danh sách phát giúp tập trung dành riêng cho bạn. Tận hưởng YouTube Music và YouTube không có quảng cáo với 3 tháng sử dụng miễn phí YouTube Premium. Có áp dụng các điều khoản.</translation>
 <translation id="5998374579424866922">Tắt các nút điều khiển trò chơi</translation>
 <translation id="6000279412553873020">Phím, nút và các chế độ điều khiển khác</translation>
 <translation id="6012623610530968780">Trang <ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" /></translation>
@@ -1906,6 +1912,9 @@ Mới cài đặt</translation>
 Để tắt thiết bị, hãy nhấn và giữ lại nguồn trên thiết bị một lần nữa.</translation>
 <translation id="7523420897035067483">Bật tính năng Không làm phiền khi đang ở chế độ Tập trung</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">Bàn di chuột tích hợp sẵn đã bị tắt. Sử dụng bàn phím hoặc thiết bị trỏ khác để xác nhận thay đổi.
+
+Nếu không, bàn di chuột tích hợp sẵn sẽ bật lại sau 30 giây.</translation>
 <translation id="7525067979554623046">Tạo</translation>
 <translation id="7526573455193969409">Mạng có thể được giám sát</translation>
 <translation id="7536035074519304529">Địa chỉ IP: <ph name="ADDRESS" /></translation>
@@ -1989,7 +1998,7 @@ Mới cài đặt</translation>
 <translation id="7796735576426975947">Đã ẩn thông báo mới</translation>
 <translation id="7798302898096527229">Nhấn phím Search hoặc Shift để hủy.</translation>
 <translation id="780301667611848630">Không, cảm ơn</translation>
-<translation id="7807067443225230855">Tìm kiếm và trợ lý</translation>
+<translation id="7807067443225230855">Tìm kiếm và Trợ lý</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> và <ph name="MINUTE" /></translation>
 <translation id="7825412704590278437">Từ sự kiện sắp tới trên lịch</translation>
 <translation id="7829386189513694949">Tín hiệu mạnh</translation>
@@ -2293,6 +2302,7 @@ Mới cài đặt</translation>
 <translation id="8858369206579825206">Chế độ kiểm soát quyền riêng tư</translation>
 <translation id="8860366331836346216">Thêm eSIM</translation>
 <translation id="8870509716567206129">Ứng dụng không hỗ trợ chế độ chia đôi màn hình.</translation>
+<translation id="8873203135446552888">Xác nhận rằng bạn muốn tắt bàn di chuột tích hợp sẵn</translation>
 <translation id="8874184842967597500">Chưa kết nối</translation>
 <translation id="8875021410787719674">Di chuyển giữa góc dưới cùng bên phải, Trình chạy, thanh địa chỉ, thanh dấu trang, trang web đang mở và tệp đã tải xuống</translation>
 <translation id="8876148469852588625">Sự kiện <ph name="EVENT_POSITION" /> trong tổng số <ph name="EVENT_TOTAL_COUNT" /></translation>

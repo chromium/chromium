@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Паменшыць яркасць дысплэя</translation>
 <translation id="2086091080968010660">Змяненні, заснаваныя на часе сутак, могуць быць недакладнымі. Уключыце доступ да сістэмных даных пра месцазнаходжанне ў наладах.</translation>
 <translation id="2102231663024125441">Рэдагаванне тэксту</translation>
-<translation id="2102648867808308635">Дапамажыце мне прачытаць гэту старонку</translation>
 <translation id="2105810540595158374">Гэта гульнявы кантролер.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, версія <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">Зараз даступна толькі на англійскай мове (ЗША)</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">паглядзець усе праграмы</translation>
 <translation id="3510890413042482857">Адпраўляць <ph name="BEGIN_LINK1" />даныя адсочвання прадукцыйнасці<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Абнаўленне Chrome OS</translation>
-<translation id="3522508178835057262">Пакуль што расшыфроўка з колькасцю слоў больш за <ph name="MAX_WORD_LENGTH" /> не падтрымліваецца</translation>
 <translation id="3527036260304016759">Збой: невядомая памылка</translation>
 <translation id="353214771040290298">Гатова</translation>
 <translation id="3532980081107202182">Прыблізны час да завяршэння: <ph name="MIN_REMAINING" /> хв</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">Светлая тэма</translation>
 <translation id="4813136279048157860">Мае відарысы</translation>
 <translation id="4813345808229079766">Падключэнне</translation>
-<translation id="4824527342590024245">Пакуль што расшыфроўка з колькасцю слоў менш за <ph name="MIN_WORD_LENGTH" /> не падтрымліваецца</translation>
 <translation id="4830894019733815633">каньён</translation>
 <translation id="4832079907277790330">Выбраць папку ў праграме "Файлы"...</translation>
 <translation id="4835901797422965222">Няма актыўных сетак</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">Маюць падобнае значэнне:</translation>
 <translation id="5130848777448318809">поні</translation>
 <translation id="5137451382116112100">Поўны экран</translation>
+<translation id="5140788690559353412">Страціўшы доступ да вучэбнага ўліковага запісу, вы таксама страціце доступ да прывязанага да яго адраса электроннай пошты і файлаў на Google Дыску, напрыклад Gmail, Дакументаў, Прэзентацый і іншых.</translation>
 <translation id="5142961317498132443">Аўтэнтыфікацыя</translation>
 <translation id="5144311987923128508">Кнопка "Пацвердзіць" зараз неактыўная</translation>
 <translation id="5144887194300568405">Скапіраваць пераклад</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) Затрымка HTTP-запытаў</translation>
 <translation id="6078323886959318429">Дадаць ярлык</translation>
 <translation id="6091080061796993741">жоўты</translation>
+<translation id="6093853427925392522">Праграма "Перанос змесціва" ад Google дазваляе перанесці даныя вучэбнага ўліковага запісу ў асабісты ўліковы запіс да таго, як вы страціце да іх доступ.</translation>
 <translation id="6104112872696127344">Сканіраванне скасавана</translation>
 <translation id="6106186594183574873">Каб закончыць, увядзіце стары пароль</translation>
 <translation id="6108689792487843350">Шлюз недаступны</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">Назва пункта доступу (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер даменных імён}one{Серверы даменных імён}few{Серверы даменных імён}many{Серверы даменных імён}other{Серверы даменных імён}}</translation>
 <translation id="7135814714616751706">Пошук ярлыкоў</translation>
+<translation id="7141470099673912333">Перанос змесціва</translation>
 <translation id="7143207342074048698">Падключэнне</translation>
 <translation id="7144878232160441200">Паўтарыць</translation>
 <translation id="7144954474087165241">пагада</translation>
@@ -1392,6 +1392,7 @@
 <translation id="7856267634822906833">Сэнсарны экран з Bluetooth</translation>
 <translation id="7859006200041800233">кветка кактуса</translation>
 <translation id="7869143217755017858">Адключыць цёмны рэжым</translation>
+<translation id="7878972877380405573">Падсумаваць, выкарыстоўваючы функцыю "Дапамога з чытаннем"</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Тып пастаўшчыка</translation>
 <translation id="7882501334836096755">Адкрыты ключ</translation>
@@ -1535,6 +1536,7 @@
 <translation id="8626489604350149811">Іншыя дзеянні з прыладай "<ph name="APN_NAME" />"</translation>
 <translation id="86356131183441916">Светла-фіялетавы</translation>
 <translation id="8647595191512746911">Расшыфроўка аўдыя</translation>
+<translation id="8650852232143958317">Прыхапіце з сабой файлы Gmail і Google Дыска</translation>
 <translation id="8651481478098336970">выключэнне гуку</translation>
 <translation id="8655295600908251630">Версія</translation>
 <translation id="8655828773034788261">Абагуліць URL-адрас:</translation>

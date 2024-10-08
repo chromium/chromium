@@ -49,6 +49,7 @@
 <translation id="1979673356880165407">Memperbesar atau memperkecil teks dan gambar untuk semua situs yang Anda buka</translation>
 <translation id="1984937141057606926">Diizinkan, kecuali pihak ketiga</translation>
 <translation id="1985247341569771101">Jika diaktifkan, situs dapat menggunakan sensor gerakan perangkat Anda. Jika dinonaktifkan, situs tidak dapat menggunakan sensor gerakan.</translation>
+<translation id="1985716030964443178">Tindakan ini akan mereset semua situs dalam daftar ke zoom default</translation>
 <translation id="1989112275319619282">Jelajahi</translation>
 <translation id="1994173015038366702">URL situs</translation>
 <translation id="2004697686368036666">Fitur tertentu di beberapa situs mungkin tidak berfungsi</translation>
@@ -103,10 +104,13 @@
 <translation id="2653659639078652383">Kirim</translation>
 <translation id="2677748264148917807">Keluar</translation>
 <translation id="2678468611080193228">Coba izinkan cookie pihak ketiga untuk sementara, yang berarti lebih sedikit perlindungan, tetapi fitur situs biasanya berfungsi</translation>
+<translation id="2682367912565197520">Hapus tingkat zoom tersimpan</translation>
 <translation id="2683434792633810741">Hapus &amp; reset?</translation>
 <translation id="2713106313042589954">Nonaktifkan kamera</translation>
 <translation id="2717722538473713889">Alamat email</translation>
+<translation id="2726059656860238749">Luncurkan Chrome dengan fokus pada Omnibox, sehingga mengurangi waktu sistem dimulai di perangkat kelas bawah.</translation>
 <translation id="2750481671343847896">Situs dapat menampilkan perintah login dari layanan identitas.</translation>
+<translation id="2787357173144933081">Mulai Omnibox</translation>
 <translation id="2790501146643349491">Jika diaktifkan, situs yang baru saja ditutup dapat menyelesaikan pengiriman dan penerimaan data. Jika dinonaktifkan, situs yang baru saja ditutup tidak dapat menyelesaikan pengiriman atau penerimaan data.</translation>
 <translation id="2822354292072154809">Yakin ingin menyetel ulang semua izin situs untuk <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Minta tampilan seluler</translation>
@@ -144,6 +148,7 @@
 <translation id="3295602654194328831">Sembunyikan Info</translation>
 <translation id="3328801116991980348">Informasi situs</translation>
 <translation id="3333961966071413176">Semua kontak</translation>
+<translation id="3360338140203645771">Hapus tingkat zoom tersimpan?</translation>
 <translation id="3362437373201486687">Memindai perangkat Bluetooth</translation>
 <translation id="3386292677130313581">Minta izin sebelum mengizinkan situs mengetahui lokasi Anda (disarankan)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
@@ -209,6 +214,7 @@
 <translation id="4338831206024587507">Semua situs di bawah <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Blokir situs agar tidak mengetahui saat Anda aktif menggunakan perangkat ini</translation>
 <translation id="4412992751769744546">Izinkan cookie pihak ketiga</translation>
+<translation id="4419929467120297501">Chrome memblokir situs agar tidak menggunakan cookie pihak ketiga untuk melacak Anda saat menjelajah. Buka setelan untuk <ph name="BEGIN_LINK" />mengelola akses ke cookie pihak ketiga<ph name="END_LINK" />.</translation>
 <translation id="4434045419905280838">Pop-up dan pengalihan</translation>
 <translation id="443552056913301231">Tindakan ini akan menghapus semua data lokal, termasuk cookie, dan mereset semua izin untuk <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Mematikan suara untuk situs tertentu.</translation>
@@ -230,6 +236,7 @@
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4807122856660838973">Aktifkan Safe Browsing</translation>
 <translation id="4811450222531576619">Pelajari sumber dan topik halaman ini</translation>
+<translation id="4816495437032298535">Zoom tersimpan untuk situs</translation>
 <translation id="4836046166855586901">Tanyakan saat situs ingin mengetahui saat Anda aktif menggunakan perangkat ini</translation>
 <translation id="483914009762354899">Sertakan semua situs di domain ini</translation>
 <translation id="4883854917563148705">Setelan yang dikelola tidak dapat direset</translation>
@@ -239,7 +246,6 @@
 <translation id="4962975101802056554">Cabut semua izin untuk perangkat</translation>
 <translation id="497421865427891073">Maju</translation>
 <translation id="4976702386844183910">Terakhir dibuka <ph name="DATE" /></translation>
-<translation id="4985206706500620449">Anda mengizinkan cookie pihak ketiga untuk situs ini</translation>
 <translation id="4994033804516042629">Kontak tidak ditemukan</translation>
 <translation id="4996978546172906250">Bagikan dengan</translation>
 <translation id="5001526427543320409">Cookie pihak ketiga</translation>
@@ -266,6 +272,7 @@
 <translation id="5246825184569358663">Tindakan ini akan menghapus semua data lokal, termasuk cookie, dan mereset semua izin untuk <ph name="DOMAIN" /> serta semua situs di bawahnya</translation>
 <translation id="5264323282659631142">Hapus '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">Tarik dari atas dan ketuk tombol kembali untuk keluar dari mode layar penuh.</translation>
+<translation id="5292915569214461965">Anda memblokir situs agar tidak menggunakan cookie pihak ketiga untuk melacak Anda saat menjelajah. Buka setelan untuk <ph name="BEGIN_LINK" />mengelola akses ke cookie pihak ketiga<ph name="END_LINK" />.</translation>
 <translation id="5295729974480418933">Jika diaktifkan, situs dapat meminta untuk menggunakan info tentang Anda yang disimpannya. Jika dinonaktifkan, situs tidak dapat meminta untuk menggunakan info tentang Anda yang disimpannya.</translation>
 <translation id="5300589172476337783">Tampilkan</translation>
 <translation id="5301954838959518834">Oke, mengerti</translation>
@@ -355,6 +362,7 @@
 <translation id="6527303717912515753">Bagikan</translation>
 <translation id="652937045869844725">Coba izinkan cookie pihak ketiga, yang berarti lebih sedikit perlindungan, tetapi fitur situs biasanya berfungsi</translation>
 <translation id="6530703012083415527">Jika diaktifkan, situs dapat menggunakan pop-up dan pengalihan. Jika dinonaktifkan, situs tidak dapat menggunakan pop-up dan pengalihan.</translation>
+<translation id="6540488083026747005">Anda mengizinkan cookie pihak ketiga di situs ini</translation>
 <translation id="6545864417968258051">Pemindaian Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, dan <ph name="NUM_MORE" /> lainnya diblokir}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, dan <ph name="NUM_MORE" /> lainnya diblokir}}</translation>
 <translation id="6554732001434021288">Terakhir dibuka <ph name="NUM_DAYS" /> hari lalu</translation>
@@ -377,6 +385,7 @@
 <translation id="6787751205395685251">Pilih opsi untuk <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Putar</translation>
 <translation id="6818926723028410516">Pilih item</translation>
+<translation id="6837658163275294267">Chrome membatasi sebagian besar situs agar tidak menggunakan cookie pihak ketiga untuk melacak Anda saat menjelajah. Buka setelan untuk <ph name="BEGIN_LINK" />mengelola akses ke cookie pihak ketiga<ph name="END_LINK" /></translation>
 <translation id="6838525730752203626">Gunakan Chrome secara Default</translation>
 <translation id="6840760312327750441">Untuk mengelompokkan tab, sentuh lama sebuah tab. Lalu, tarik ke tab lainnya.</translation>
 <translation id="6864395892908308021">Perangkat ini tidak dapat membaca NFC</translation>
@@ -441,6 +450,7 @@
 <translation id="7835852323729233924">Media yang sedang diputar</translation>
 <translation id="783819812427904514">Bunyikan video</translation>
 <translation id="7846076177841592234">Batalkan pilihan</translation>
+<translation id="7881140103901777395">Chrome membatasi sebagian besar situs agar tidak menggunakan cookie pihak ketiga. Namun, cookie pihak ketiga diizinkan di situs ini karena situs mengandalkan cookie tersebut untuk memberikan layanan dasar.\n\nBuka setelan untuk <ph name="BEGIN_LINK" />mengelola akses ke cookie pihak ketiga<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Izinkan suara untuk situs tertentu.</translation>
 <translation id="789180354981963912">Blokir cookie pihak ketiga dalam mode Samaran:</translation>
 <translation id="7940722705963108451">Ingatkan saya</translation>
@@ -503,6 +513,7 @@
 <translation id="8721719390026067591">Jika diaktifkan, situs dapat meminta untuk mencari perangkat Bluetooth. Jika dinonaktifkan, situs tidak dapat mencari perangkat Bluetooth.</translation>
 <translation id="8725066075913043281">Coba lagi</translation>
 <translation id="8730621377337864115">Selesai</translation>
+<translation id="8737426583868847403">Situs yang Anda simpan tingkat zoom khususnya akan muncul di sini</translation>
 <translation id="8751914237388039244">Pilih gambar</translation>
 <translation id="8800034312320686233">Situs tidak berfungsi?</translation>
 <translation id="8801436777607969138">Blokir JavaScript untuk situs tertentu.</translation>

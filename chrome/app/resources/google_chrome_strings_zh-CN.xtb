@@ -70,6 +70,7 @@
 <translation id="1919130412786645364">允许登录 Chrome</translation>
 <translation id="1953553007165777902">正在下载…还需 <ph name="MINUTE" /> 分钟</translation>
 <translation id="1982647487457769627">Chrome 支持多种平台，无论您使用哪种设备，都能获得熟悉的体验</translation>
+<translation id="19955905961160405">使用 Google 智能镜头搜索屏幕上的内容</translation>
 <translation id="2001586581944147178">让对您的互联网流量有访问权限的用户更难看到您访问的网站。Chrome 会使用安全连接在 DNS（域名系统）中查找网站的 IP 地址。</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{此扩展程序已不再受支持。Chrome 建议您移除它。}other{这些扩展程序已不再受支持。Chrome 建议您移除它们。}}</translation>
 <translation id="2018528049276128029">每份个人资料均包含自己的 Chrome 信息，例如书签、历史记录、密码等等</translation>
@@ -87,6 +88,7 @@
 <translation id="2126108037660393668">所下载的文件未能顺利通过验证。</translation>
 <translation id="2128411189117340671">管理 Chrome 个人资料</translation>
 <translation id="2131230230468101642">为了保护您的隐私，如果您的兴趣保留时间超过 4 周，系统便会自动将其删除。随着您继续浏览，某项兴趣可能会再次出现在列表中。您也可以移除不希望纳入 Chrome 考虑范围的兴趣。</translation>
+<translation id="2137162749895930932">关闭翻译屏幕</translation>
 <translation id="2139300032719313227">重启 Chrome 操作系统</translation>
 <translation id="2151406531797534936">请立即重启 Chrome</translation>
 <translation id="2163089732491971196">如要将 Chrome 数据保存在您的 Google 账号中并使用这些数据，请输入您的口令</translation>
@@ -170,6 +172,7 @@
 <translation id="3019382870990049182">重新启动以更新 &amp;ChromeOS Flex</translation>
 <translation id="3037838751736561277">Google Chrome处于后台运行模式。</translation>
 <translation id="3038232873781883849">正在等待安装…</translation>
+<translation id="3045032126857188731">译文语言：<ph name="LANGUAGE" /></translation>
 <translation id="3059710691562604940">“安全浏览”功能已关闭。Chrome 建议开启此功能。</translation>
 <translation id="306179102415443347">使用快捷方式可快速访问 Google 密码管理工具。您可以将快捷方式移动到计算机的主屏幕上或应用启动器中。</translation>
 <translation id="3065168410429928842">Chrome 标签页</translation>
@@ -188,7 +191,6 @@
 <translation id="3234642784688107085">试用全新 AI 功能，创建主题、获取写作帮助，并让一切井然有序</translation>
 <translation id="3245429137663807393">如果您还共享了 Chrome 使用情况报告，这些报告会包含您访问过的网址</translation>
 <translation id="3261565993776444564">试用新颜色来自定义浏览器</translation>
-<translation id="3269209112443570745">新功能！轻松搜索屏幕上的内容</translation>
 <translation id="3282568296779691940">登录 Chrome</translation>
 <translation id="3286538390144397061">立即重新启动</translation>
 <translation id="3292333338048274092">然后，您需要重启 Chrome。</translation>
@@ -237,12 +239,14 @@
 <translation id="386202838227397562">请关闭所有 Google Chrome 浏览器窗口，然后重试。</translation>
 <translation id="3865754807470779944">已安装 Chrome 版本 <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3873044882194371212">在 Chrome 无痕式窗口中打开链接(&amp;G)</translation>
+<translation id="3885770153807205175">语言选择器</translation>
 <translation id="3889417619312448367">卸载 Google Chrome</translation>
 <translation id="3941890832296813527">安装时出错：安装程序文件名无效或不受支持。</translation>
 <translation id="3973161977468201858">Google Chrome 想要删除您的 Google 密码管理工具数据。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="398236277091248993">Chrome 会借助性能提升功能保持快速运行</translation>
 <translation id="3999683152997576765">您可看到并移除被网站用来向您展示广告的兴趣主题。Chrome 会根据您近期的浏览记录推测出您的兴趣。</translation>
 <translation id="4022972681110646219">翻译屏幕</translation>
+<translation id="4023601594785368013">源语言：<ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">需要重新启动 Chrome 操作系统以应用更新。</translation>
 <translation id="4050175100176540509">最新版本不仅在安全性方面做出了重要改进，还提供了多项新功能。</translation>
 <translation id="4053720452172726777">自定义及控制 Google Chrome</translation>
@@ -514,6 +518,7 @@
 <translation id="7514258452813684157">Google 更新程序服务</translation>
 <translation id="7515191208480168435">您可以固定 Google 智能镜头以方便访问</translation>
 <translation id="7535429826459677826">Google Chrome 开发者版</translation>
+<translation id="756809126120519699">已清除 Chrome 数据</translation>
 <translation id="7572537927358445944">已关闭 • Chrome 无法验证此扩展程序的来源</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> 安装程序</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
@@ -531,6 +536,7 @@
 <translation id="7668816516367091728">直接在地址栏中执行翻译、计算等任务</translation>
 <translation id="7670287553302121848">Chrome 账号需要重新验证身份</translation>
 <translation id="769538538642757151">如有任何内容需要您审核，Chrome 会通知您</translation>
+<translation id="77283119132245232">为 <ph name="BROWSER_NAME" /> 提供系统跟踪服务。如果停用此服务，浏览器创建的性能轨迹将不包含系统级事件，例如上下文切换和就绪线程事件。</translation>
 <translation id="7747138024166251722">安装程序无法创建临时目录。请检查您是否有足够的磁盘空间和权限来安装该软件。</translation>
 <translation id="7761834446675418963">点击您的姓名即可打开Chrome并开始浏览。</translation>
 <translation id="7763983146198734674">保存密码即可随时随地取用</translation>

@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">Valoarea pentru dată/oră trebuie să fie <ph name="MINIMUM_DATE_OR_TIME" /> sau una ulterioară.</translation>
 <translation id="2761667185364618470">Bifeză caseta dacă vrei să continui.</translation>
 <translation id="2908441821576996758">Introdu o listă de adrese de e-mail separate prin virgulă.</translation>
+<translation id="2940013921954129954">Locația exactă este permisă</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Introduceți o valoare validă. Câmpul este incomplet sau conține o dată nevalidă.</translation>
 <translation id="310520048233152454">Introdu o adresă URL.</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">Calitate slabă a redării</translation>
 <translation id="6790428901817661496">Redă</translation>
 <translation id="6820355525329141109">Nu s-a putut încărca pluginul.</translation>
+<translation id="688706781007114099">Folosește locația</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Mărește acest text la cel puțin <ph name="MIN_CHARACTERS" /> caractere (în prezent folosești 1 caracter).</translation>
 <translation id="709897737746224366">Respectă formatul solicitat.</translation>

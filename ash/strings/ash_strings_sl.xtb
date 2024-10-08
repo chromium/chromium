@@ -114,6 +114,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="132346741904777634">Fotoaparat je pripet v zgornji levi kot. To je v navzkrižju s sistemskim okoljem.</translation>
 <translation id="132415371743256095">Zapri namizje »<ph name="DESK_NAME" />« in okna</translation>
 <translation id="1333308631814936910">Zaslon <ph name="DISPLAY_NAME" /> je povezan</translation>
+<translation id="1337081488893096731">Uporabite aplikacijo za prenos vsebine, če želite podatke iz šolskega računa premakniti v osebni račun.</translation>
 <translation id="1340378040547539434">Pomanjšanje strani</translation>
 <translation id="1341651618736211726">Presežek</translation>
 <translation id="1341926407152459446">Uporabi »<ph name="DEVICE_NAME" />« za zvočni vhod in izhod</translation>
@@ -242,6 +243,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="17722141032474077">Računanje</translation>
 <translation id="1774796056689732716">Koledar, <ph name="CURRENT_MONTH_YEAR" />, trenutno izbran datum: <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Nastavitev ogleda nedavnih fotografij, predstavnosti in obvestil telefona</translation>
+<translation id="1786487376942610288">Preklop med največjo ali trenutno velikostjo okna slike v sliki</translation>
 <translation id="1787955149152357925">Izklopljeno</translation>
 <translation id="1796561540704213354">Spletna mesta, vključno s stranmi, ki ste jih obiskali, in odprtimi stranmi</translation>
 <translation id="179842970735685253">Googlovimi pogoji storitve</translation>
@@ -337,6 +339,9 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="219905428774326614">Zaganjalnik, vse aplikacije</translation>
 <translation id="2201071101391734388">Nedavna fotografija <ph name="INDEX" /> od <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Strnitev Google Opravil</translation>
+<translation id="2206960886090042977">Vgrajena sledilna ploščica je onemogočena, ker je priključena miška. S tipkovnico ali miško potrdite spremembo.
+
+V nasprotnem primeru bo vgrajena sledilna ploščica znova omogočena čez 30 sekund.</translation>
 <translation id="2208323208084708176">Način enotnega namizja</translation>
 <translation id="2220572644011485463">Koda PIN ali geslo</translation>
 <translation id="2222841058024245321">Namizje 7</translation>
@@ -1907,6 +1912,9 @@ Nova namestitev</translation>
 Če želite napravo izklopiti, znova pridržite gumb za vklop v napravi.</translation>
 <translation id="7523420897035067483">Omogočanje načina Ne moti med Osredotočenostjo</translation>
 <translation id="7524043547948122239">Google Opravila</translation>
+<translation id="7524919752437339268">Vgrajena sledilna ploščica je onemogočena. S tipkovnico ali drugo kazalno napravo potrdite spremembo.
+
+V nasprotnem primeru bo vgrajena sledilna ploščica znova omogočena čez 30 sekund.</translation>
 <translation id="7525067979554623046">Ustvari</translation>
 <translation id="7526573455193969409">Omrežje je morda nadzorovano</translation>
 <translation id="7536035074519304529">Naslov IP: <ph name="ADDRESS" /></translation>
@@ -2294,6 +2302,7 @@ Nova namestitev</translation>
 <translation id="8858369206579825206">Nastavitve zasebnosti</translation>
 <translation id="8860366331836346216">Dodajanje kartice e-SIM</translation>
 <translation id="8870509716567206129">Aplikacija ne podpira načina razdeljenega zaslona.</translation>
+<translation id="8873203135446552888">Potrdite onemogočenje vgrajene sledilne ploščice</translation>
 <translation id="8874184842967597500">Ni povezano</translation>
 <translation id="8875021410787719674">Premikanje med spodnjim desnim kotom, zaganjalnikom, naslovno vrstico, vrstico z zaznamki, odprtim spletnim mestom in prenosi</translation>
 <translation id="8876148469852588625">Dogodek <ph name="EVENT_POSITION" /> od <ph name="EVENT_TOTAL_COUNT" /></translation>

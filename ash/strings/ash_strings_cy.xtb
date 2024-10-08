@@ -114,6 +114,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="132346741904777634">Mae'r camera wedi'i snapio i'r gornel chwith uchaf. Gwrthdaro ag arwyneb y system.</translation>
 <translation id="132415371743256095">Cau <ph name="DESK_NAME" /> a ffenestri</translation>
 <translation id="1333308631814936910">Mae <ph name="DISPLAY_NAME" /> wedi cysylltu</translation>
+<translation id="1337081488893096731">Defnyddiwch yr ap Trosglwyddo Cynnwys i symud data eich cyfrif ysgol i'ch cyfrif personol</translation>
 <translation id="1340378040547539434">Pellhau ar dudalen</translation>
 <translation id="1341651618736211726">Gorlif</translation>
 <translation id="1341926407152459446">Defnyddio "<ph name="DEVICE_NAME" />" ar gyfer mewnbwn ac allbwn sain</translation>
@@ -242,6 +243,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="17722141032474077">Cyfrifiadau</translation>
 <translation id="1774796056689732716">Calendr, <ph name="CURRENT_MONTH_YEAR" />, mae <ph name="DATE" /> wedi'i ddewis ar hyn o bryd.</translation>
 <translation id="178347895271755507">Gosod gweld lluniau, cyfryngau a hysbysiadau diweddar eich ffôn</translation>
+<translation id="1786487376942610288">Newid rhwng maint mwyaf neu faint presennol y ffenestr llun-mewn-llun</translation>
 <translation id="1787955149152357925">Diffodd</translation>
 <translation id="1796561540704213354">Gwefannau gan gynnwys tudalennau rydych wedi ymweld â nhw a thudalennau agored</translation>
 <translation id="179842970735685253">Telerau Gwasanaeth Google</translation>
@@ -337,6 +339,9 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="219905428774326614">Lansiwr, pob ap</translation>
 <translation id="2201071101391734388">Llun diweddar <ph name="INDEX" /> o <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Crebachu Google Tasks</translation>
+<translation id="2206960886090042977">Mae'r pad cyffwrdd integredig wedi'i analluogi oherwydd bod llygoden wedi'i chysylltu. Defnyddiwch y llygoden neu'r bysellfwrdd i gadarnhau'r newid.
+
+Fel arall bydd y pad cyffwrdd integredig yn cael ei ail-alluogi mewn 30 eiliad.</translation>
 <translation id="2208323208084708176">Modd bwrdd gwaith unedig</translation>
 <translation id="2220572644011485463">PIN neu gyfrinair</translation>
 <translation id="2222841058024245321">Desg 7</translation>
@@ -1468,6 +1473,7 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="598407983968395253">Defnyddio templed</translation>
 <translation id="5986723678596105470">Ymuno â Google Meet</translation>
 <translation id="598882571027504733">I gael y diweddariad, ailgychwynnwch eich Chromebook gyda'r bysellfwrdd wedi'i atodi.</translation>
+<translation id="5990992855591814753">Aros ar y trywydd iawn gyda rhestri chwarae canolbwyntio personol. Cael YouTube Music a YouTube, heb hysbysebion, gyda 3 mis o YouTube Premium heb unrhyw gost. Mae telerau'n berthnasol.</translation>
 <translation id="5998374579424866922">Diffodd rheolyddion gêm</translation>
 <translation id="6000279412553873020">Bysellau, botymau a rhagor</translation>
 <translation id="6012623610530968780">Tudalen <ph name="SELECTED_PAGE" /> o <ph name="TOTAL_PAGE_NUM" /></translation>
@@ -1906,6 +1912,9 @@ Gosodiad newydd</translation>
 I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</translation>
 <translation id="7523420897035067483">Galluogi Peidiwch ag Aflonyddu tra yn y modd Ffocysu</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">Mae'r pad cyffwrdd integredig wedi'i analluogi. Defnyddiwch eich bysellfwrdd neu ddyfais pwyntydd arall i gadarnhau'r newid.
+
+Fel arall bydd y pad cyffwrdd integredig yn cael ei ail-alluogi mewn 30 eiliad.</translation>
 <translation id="7525067979554623046">Creu</translation>
 <translation id="7526573455193969409">Mae'n bosib bod y rhwydwaith yn cael ei fonitro</translation>
 <translation id="7536035074519304529">Cyfeiriad IP: <ph name="ADDRESS" /></translation>
@@ -2293,6 +2302,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8858369206579825206">Rheolyddion preifatrwydd</translation>
 <translation id="8860366331836346216">Ychwanegu eSIM</translation>
 <translation id="8870509716567206129">Nid yw'r ap yn cefnogi sgrîn hollt.</translation>
+<translation id="8873203135446552888">Cadarnhewch eich bod am analluogi'r pad cyffwrdd integredig</translation>
 <translation id="8874184842967597500">Ni chysylltir</translation>
 <translation id="8875021410787719674">Symud rhwng y gornel dde isaf, y Lansiwr, y bar cyfeiriad, y bar nodau tudalen, y wefan sydd ar agor a'r lawrlwythiadau</translation>
 <translation id="8876148469852588625">Digwyddiad <ph name="EVENT_POSITION" /> o <ph name="EVENT_TOTAL_COUNT" /></translation>

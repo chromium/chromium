@@ -204,6 +204,7 @@
 <translation id="1957557050935255529">Загрузка PDF…</translation>
 <translation id="1959679933317802873">Ожидается контент</translation>
 <translation id="1960290143419248813">Невозможно обновить Chrome в текущей версии Android.</translation>
+<translation id="1963056249988316027">Не удалось выполнить проверку личности</translation>
 <translation id="1963976881984600709">Стандартная защита</translation>
 <translation id="1966710179511230534">Обновите учетные данные</translation>
 <translation id="1969037871259811890">При удалении данных о работе в браузере вы не выйдете из аккаунта Google. Это потребуется <ph name="BEGIN_LINK1" />сделать вручную<ph name="END_LINK1" />.</translation>
@@ -555,6 +556,7 @@
 <translation id="3622349720008044802">Управление окнами</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{и ещё 1 сайт}one{и ещё # сайт}few{и ещё # сайта}many{и ещё # сайтов}other{и ещё # сайта}}</translation>
 <translation id="3631987586758005671">Отправка на устройство "<ph name="DEVICE_NAME" />"…</translation>
+<translation id="363484704507524488">Изменить параметры проверки личности можно в настройках защиты от кражи. <ph name="BEGIN_LINK" />Открыть настройки<ph name="END_LINK" /></translation>
 <translation id="3635073343384702370">Чтобы браузер Chrome мог проверять пароли, сохраните их</translation>
 <translation id="363596933471559332">Входить на веб-сайты с помощью сохраненного имени пользователя и пароля. Когда функция отключена, эти данные нужно указывать при каждом входе.</translation>
 <translation id="3636940436873918441">Предпочитаемые языки</translation>
@@ -727,7 +729,6 @@
 <translation id="4489640160615759754">Раздел "Поделиться" с кратким пересказом страницы</translation>
 <translation id="4494806687727322324">Администратор разрешил сохранять пароли.</translation>
 <translation id="4508528996305412043">Меню карточки из ленты открыто целиком</translation>
-<translation id="4509501256689523862">Персонализация рекламы зависит от этого параметра, <ph name="BEGIN_LINK_1" />тем<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />настроек файлов cookie<ph name="END_LINK_2" />, а также от параметров сайта, который вы просматриваете.</translation>
 <translation id="4509741852167209430">Чтобы оценивать эффективность рекламы, сайты обмениваются некоторыми типами данных, например сведениями о том, сделали ли вы покупку после посещения сайта.</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# день назад}one{# день назад}few{# дня назад}many{# дней назад}other{# дня назад}}</translation>
 <translation id="451872707440238414">Искать в закладках</translation>
@@ -740,7 +741,6 @@
 <translation id="4532845899244822526">Выбор папки</translation>
 <translation id="4543131175509360848">Пустой список ключей доступа</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> вкладка}one{Вкладок: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> вкладка инкогнито}few{Вкладок: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> вкладки инкогнито}many{Вкладок: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> вкладок инкогнито}other{Вкладок: <ph name="TAB_COUNT_MANY" />, <ph name="TAB_COUNT_INCOGNITO" /> вкладки инкогнито}}</translation>
-<translation id="4554077758708533499">Подключено с помощью USB-кабеля</translation>
 <translation id="4558311620361989323">Работа с веб-страницами</translation>
 <translation id="4561730552726921821">Регистрация выполнена</translation>
 <translation id="4565377596337484307">Скрыть пароль</translation>
@@ -1036,6 +1036,7 @@
 <translation id="5869522115854928033">Сайты с сохраненными паролями</translation>
 <translation id="587735546353481577">Чтобы подписаться на сайт, откройте его, перейдите в меню Google Chrome и нажмите "Подписаться".</translation>
 <translation id="5879072387416556377">Получайте более точные подсказки</translation>
+<translation id="5883855034004058011">Слишком много неудачных попыток подтвердить биометрические данные. Чтобы продолжить, заблокируйте и разблокируйте устройство.</translation>
 <translation id="5885378508678660271">Уведомления <ph name="SEPARATOR" /> Chrome отозвал разрешения у этого опасного сайта</translation>
 <translation id="5895834791314695851">Возможно, пароли скоро перестанут работать на этом устройстве. Чтобы сохранить доступ к ним, обновите сервисы Google Play. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">Пустой список ключей доступа был закрыт</translation>
@@ -1368,7 +1369,6 @@
 <translation id="7260367682327802201">На вашем устройстве Android может быть похожая функция. Если оценка эффективности рекламы включена в Chrome и на устройстве Android, компании смогут оценивать эффективность рекламы на посещаемых вами сайтах и в приложениях, которые вы используете.</translation>
 <translation id="727288900855680735">Отправить код <ph name="ONE_TIME_CODE" /> на сайт <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Заблокированный сайт</translation>
-<translation id="7276100255011548441">Chrome автоматически удаляет темы, добавленные более четырех недель назад. По мере просмотра веб-страниц тема может снова появиться в списке. Чтобы тема не передавалась сайтам, заблокируйте ее. Подробнее о том, <ph name="BEGIN_LINK" />как управлять конфиденциальностью в рекламе в Chrome<ph name="END_LINK" />…</translation>
 <translation id="7284878711178835966">Когда вы печатаете запрос, Chrome передает содержимое адресной строки или окна поиска в поисковую систему по умолчанию.</translation>
 <translation id="7289049772085228972">Выбран максимальный уровень защиты в Chrome.</translation>
 <translation id="7289303553784750393">Если у вас есть подключение к интернету, но проблема не решается, попробуйте другие способы авторизации, чтобы продолжить работу на <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -1433,7 +1433,6 @@
 <translation id="7517292544534877198">Шифровать пароли в аккаунте Google с помощью механизма Google по умолчанию</translation>
 <translation id="7518079994230200553">Этот способ входа сейчас недоступен.</translation>
 <translation id="751961395872307827">Не удалось подключиться к сайту</translation>
-<translation id="752220631458524187">Отключите кабель по окончании работы.</translation>
 <translation id="7523960634226602883">Включить камеру и использовать для поиска Google Объектив</translation>
 <translation id="7525248386620136756">Закрыты и сохранены: <ph name="TAB_GROUPS_AND_TABS_PART" />.</translation>
 <translation id="752731652852882757">Блокировать в режиме инкогнито</translation>

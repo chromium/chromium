@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Намаляване на яркостта на дисплея</translation>
 <translation id="2086091080968010660">Промените въз основа на часа може да не са точни. Включете достъпа до местоположението на ниво система от настройките.</translation>
 <translation id="2102231663024125441">Редактиране на текст</translation>
-<translation id="2102648867808308635">Помогни ми да прочета тази страница</translation>
 <translation id="2105810540595158374">Устройството е контролер за игри.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, версия <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">Понастоящем е налице само на английски (САЩ)</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">преглед на всички приложения</translation>
 <translation id="3510890413042482857">Изпращане на <ph name="BEGIN_LINK1" />данните от проследяването на ефективността<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome OS: Актуал.</translation>
-<translation id="3522508178835057262">Засега не се поддържат преписи с повече от <ph name="MAX_WORD_LENGTH" /> думи</translation>
 <translation id="3527036260304016759">Неуспешно – неизвестна грешка</translation>
 <translation id="353214771040290298">Край на редактирането</translation>
 <translation id="3532980081107202182">Остават около <ph name="MIN_REMAINING" /> минути</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">Светла тема</translation>
 <translation id="4813136279048157860">Моите изображения</translation>
 <translation id="4813345808229079766">Връзка</translation>
-<translation id="4824527342590024245">Засега не се поддържат преписи с по-малко от <ph name="MIN_WORD_LENGTH" /> думи</translation>
 <translation id="4830894019733815633">каньон</translation>
 <translation id="4832079907277790330">Избиране на папка в приложението Файлове…</translation>
 <translation id="4835901797422965222">Няма активни мрежи</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">Подобни:</translation>
 <translation id="5130848777448318809">понита</translation>
 <translation id="5137451382116112100">Цял екран</translation>
+<translation id="5140788690559353412">Когато загубите достъп до училищния си профил, вече няма да имате достъп до свързаната електронна поща и файловете в Google Диск, като например Gmail, Документи, Презентации и др.</translation>
 <translation id="5142961317498132443">Удостоверяване</translation>
 <translation id="5144311987923128508">Бутонът за потвърждаване вече е деактивиран</translation>
 <translation id="5144887194300568405">Копиране на превода</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) Забавяне на HTTP</translation>
 <translation id="6078323886959318429">Добавяне на пряк път</translation>
 <translation id="6091080061796993741">жълт</translation>
+<translation id="6093853427925392522">Използвайте приложението Content Transfer от Google, за да преместите в личния си профил данните от училищния, преди да загубите достъп до него.</translation>
 <translation id="6104112872696127344">Сканирането бе отменено</translation>
 <translation id="6106186594183574873">За да завършите процеса, въведете старата си парола</translation>
 <translation id="6108689792487843350">Шлюзът е недостъпен</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">Име на точката за достъп (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сървър за имена}other{Сървъри за имена}}</translation>
 <translation id="7135814714616751706">Търсете комбинации</translation>
+<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Свързва се</translation>
 <translation id="7144878232160441200">Повторен опит</translation>
 <translation id="7144954474087165241">пагода</translation>
@@ -1394,6 +1394,7 @@
 <translation id="7856267634822906833">Сензорен екран с Bluetooth</translation>
 <translation id="7859006200041800233">кактусов цвят</translation>
 <translation id="7869143217755017858">Деактивиране на тъмния режим</translation>
+<translation id="7878972877380405573">Обобщаване с „Помощ при четене“</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Тип на доставчика</translation>
 <translation id="7882501334836096755">Публичен ключ</translation>
@@ -1537,6 +1538,7 @@
 <translation id="8626489604350149811">Още действия за <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Светлолилав</translation>
 <translation id="8647595191512746911">Аудиопрепис</translation>
+<translation id="8650852232143958317">Вземете файловете си от Gmail и Google Диск със себе си</translation>
 <translation id="8651481478098336970">заглушаване на звука</translation>
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8655828773034788261">Споделяне на URL адреса:</translation>

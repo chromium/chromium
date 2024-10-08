@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">ডিসপ্লে উজ্জ্বলতা কমান</translation>
 <translation id="2086091080968010660">সময়ের ভিত্তিতে করা পরিবর্তনগুলি সঠিক নাও হতে পারে। সেটিংস থেকে সিস্টেম লোকেশন সংক্রান্ত অ্যাক্সেস চালু করুন।</translation>
 <translation id="2102231663024125441">টেক্সট এডিটিং</translation>
-<translation id="2102648867808308635">এই পৃষ্ঠা পড়তে আমাকে সাহায্য করো</translation>
 <translation id="2105810540595158374">ডিভাইস একটি গেম কন্ট্রোলার।</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, ভার্সন <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">বর্তমানে শুধুমাত্র ইংরেজিতে (মার্কিন যুক্তরাষ্ট্র) উপলভ্য</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">সব অ্যাপ দেখুন</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />পারফর্ম্যান্স ট্রেস ডেটা<ph name="END_LINK1" /> পাঠান</translation>
 <translation id="3517001332549868749">ChromeOS-এর আপডেট</translation>
-<translation id="3522508178835057262">এখন, <ph name="MAX_WORD_LENGTH" />টির বেশি শব্দের ট্রানস্ক্রিপ্ট ব্যবহার করা যাবে না</translation>
 <translation id="3527036260304016759">প্রিন্ট করা যায়নি - অজানা সমস্যা</translation>
 <translation id="353214771040290298">এডিট করা হয়েছে</translation>
 <translation id="3532980081107202182">প্রায় <ph name="MIN_REMAINING" /> মিনিট সময় লাগবে</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">হালকা থিম</translation>
 <translation id="4813136279048157860">আমার ছবি</translation>
 <translation id="4813345808229079766">কানেকশন</translation>
-<translation id="4824527342590024245">এখন, <ph name="MIN_WORD_LENGTH" />টির কম শব্দের ট্রানস্ক্রিপ্ট ব্যবহার করা যাবে না</translation>
 <translation id="4830894019733815633">ক্যানিয়ন</translation>
 <translation id="4832079907277790330">Files অ্যাপে ফোল্ডার বেছে নিন...</translation>
 <translation id="4835901797422965222">কোনও অ্যাক্টিভ নেটওয়ার্ক নেই</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">একই ধরনের:</translation>
 <translation id="5130848777448318809">ছোট ঘোড়া</translation>
 <translation id="5137451382116112100">ফুলস্ক্রিন স্ট্যাটাস</translation>
+<translation id="5140788690559353412">স্কুল অ্যাকাউন্টে অ্যাক্সেস হারালে, সংশ্লিষ্ট ইমেল এবং Gmail, Docs, Slides এবং অন্যান্য Google Drive ফাইল আর অ্যাক্সেস করতে পারবেন না।</translation>
 <translation id="5142961317498132443">প্রমাণীকরণ</translation>
 <translation id="5144311987923128508">কনফার্ম বোতাম এখন অ্যাক্টিভ নেই</translation>
 <translation id="5144887194300568405">অনুবাদ কপি করুন</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) HTTP লেটেন্সি</translation>
 <translation id="6078323886959318429">শর্টকাট যোগ করুন</translation>
 <translation id="6091080061796993741">হলুদ</translation>
+<translation id="6093853427925392522">অ্যাক্সেস হারানোর আগে, Google-এর Content Transfer অ্যাপের সাহায্যে স্কুল অ্যাকাউন্ট ডেটা আপনার ব্যক্তিগত অ্যাকাউন্টে পাঠাতে ভুলবেন না।</translation>
 <translation id="6104112872696127344">স্ক্যানিং বাতিল করা হয়েছে</translation>
 <translation id="6106186594183574873">সম্পূর্ণ করতে, আপনার পুরনো পাসওয়ার্ড লিখুন</translation>
 <translation id="6108689792487843350">নেটওয়ার্ক গেটওয়ে অ্যাক্সেস করা যাচ্ছে না</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">অ্যাক্সেস পয়েন্ট নাম (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{নেম-সার্ভার}one{নেম সার্ভার}other{নেম সার্ভার}}</translation>
 <translation id="7135814714616751706">শর্টকাট সার্চ করুন</translation>
+<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">সংযুক্ত হচ্ছে</translation>
 <translation id="7144878232160441200">আবার চেষ্টা করুন</translation>
 <translation id="7144954474087165241">প্যাগোডা</translation>
@@ -1394,6 +1394,7 @@
 <translation id="7856267634822906833">ব্লুটুথ টাচস্ক্রিন</translation>
 <translation id="7859006200041800233">ক্যাকটাসের ফুল</translation>
 <translation id="7869143217755017858">'ডার্ক মোড' বন্ধ করুন</translation>
+<translation id="7878972877380405573">'পড়তে সাহায্য করো' ফিচারের মাধ্যমে সংক্ষিপ্ত করুন</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">পরিষেবা প্রদানকারীর ধরন</translation>
 <translation id="7882501334836096755">সর্বজনীন 'কী'</translation>
@@ -1537,6 +1538,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" />-এর জন্য আরও অ্যাকশন</translation>
 <translation id="86356131183441916">হালকা বেগুনি</translation>
 <translation id="8647595191512746911">অডিও ট্রান্সক্রিপশন</translation>
+<translation id="8650852232143958317">Gmail এবং Google Drive ফাইল নিজের কাছেই রাখুন</translation>
 <translation id="8651481478098336970">ভলিউম মিউট করুন</translation>
 <translation id="8655295600908251630">চ্যানেল</translation>
 <translation id="8655828773034788261">URL শেয়ার করুন:</translation>

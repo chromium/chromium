@@ -114,6 +114,7 @@
 <translation id="132346741904777634">카메라 미리보기가 왼쪽 상단으로 맞춰졌습니다. 시스템 표시 경로와 충돌합니다.</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> 및 창 닫기</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> 기기가 연결됨</translation>
+<translation id="1337081488893096731">콘텐츠 전송 앱을 사용하여 학교 계정 데이터를 개인 계정으로 이전하세요</translation>
 <translation id="1340378040547539434">페이지 축소</translation>
 <translation id="1341651618736211726">더보기</translation>
 <translation id="1341926407152459446">오디오 입력 및 출력에 "<ph name="DEVICE_NAME" />" 기기입니다.</translation>
@@ -242,6 +243,7 @@
 <translation id="17722141032474077">계산</translation>
 <translation id="1774796056689732716">현재 캘린더에서 <ph name="CURRENT_MONTH_YEAR" />을 표시 중이며 선택된 날짜는 <ph name="DATE" />입니다.</translation>
 <translation id="178347895271755507">휴대전화의 최근 사진, 미디어, 알림 보기 설정</translation>
+<translation id="1786487376942610288">PIP 모드 창의 최대 크기 또는 현재 크기 간에 전환</translation>
 <translation id="1787955149152357925">꺼짐</translation>
 <translation id="1796561540704213354">방문한 페이지 및 열린 페이지를 포함한 웹사이트</translation>
 <translation id="179842970735685253">Google 서비스 약관</translation>
@@ -337,6 +339,9 @@
 <translation id="219905428774326614">런처, 모든 앱</translation>
 <translation id="2201071101391734388">최근 사진 총 <ph name="TOTAL_COUNT" />개 중 <ph name="INDEX" />번째입니다.</translation>
 <translation id="2201687081523799384">Google Tasks 접기</translation>
+<translation id="2206960886090042977">마우스가 연결되어 있으므로 내장 터치패드가 사용 중지되었습니다. 마우스 또는 키보드를 사용하여 변경사항을 확인합니다.
+
+그렇지 않으면 30초 후에 내장 터치패드가 다시 사용 설정됩니다.</translation>
 <translation id="2208323208084708176">통합 바탕화면 모드</translation>
 <translation id="2220572644011485463">PIN 또는 비밀번호</translation>
 <translation id="2222841058024245321">데스크 7</translation>
@@ -1907,6 +1912,9 @@
 기기를 종료하려면 기기의 전원 버튼을 다시 길게 누르세요.</translation>
 <translation id="7523420897035067483">집중 모드 사용 중 방해 금지 모드 사용 설정</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">내장 터치패드가 사용 중지되었습니다. 키보드 또는 다른 포인팅 기기를 사용하여 변경사항을 확인하세요.
+
+그렇지 않으면 30초 후에 내장 터치패드가 다시 사용 설정됩니다.</translation>
 <translation id="7525067979554623046">만들기</translation>
 <translation id="7526573455193969409">네트워크가 모니터링될 수 있음</translation>
 <translation id="7536035074519304529">IP 주소: <ph name="ADDRESS" /></translation>
@@ -2294,6 +2302,7 @@
 <translation id="8858369206579825206">개인 정보 보호 설정</translation>
 <translation id="8860366331836346216">eSIM 추가</translation>
 <translation id="8870509716567206129">앱이 화면 분할을 지원하지 않습니다.</translation>
+<translation id="8873203135446552888">내장 터치패드를 사용 중지할 것임을 확인합니다</translation>
 <translation id="8874184842967597500">연결되지 않음</translation>
 <translation id="8875021410787719674">오른쪽 하단, 런처, 주소 표시줄, 북마크바, 열려 있는 웹사이트, 다운로드 항목 간에 이동</translation>
 <translation id="8876148469852588625">일정 <ph name="EVENT_TOTAL_COUNT" />개 중 <ph name="EVENT_POSITION" />번째</translation>

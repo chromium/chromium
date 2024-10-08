@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">Værdien må ikke være tidligere end <ph name="MINIMUM_DATE_OR_TIME" />.</translation>
 <translation id="2761667185364618470">Markér dette felt, hvis du vil fortsætte.</translation>
 <translation id="2908441821576996758">Angiv en kommasepareret liste over mailadresser.</translation>
+<translation id="2940013921954129954">Præcis lokation er tilladt</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Angiv en gyldig værdi. Feltet er ufuldstændigt eller har en ugyldig dato.</translation>
 <translation id="310520048233152454">Angiv en webadresse.</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">Dårlig afspilningskvalitet</translation>
 <translation id="6790428901817661496">Afspil</translation>
 <translation id="6820355525329141109">Pluginnet kunne ikke indlæses.</translation>
+<translation id="688706781007114099">Brug lokation</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Forlæng denne tekst til <ph name="MIN_CHARACTERS" /> eller flere tegn (du bruger i øjeblikket ét tegn).</translation>
 <translation id="709897737746224366">Find et match til det anmodede format.</translation>

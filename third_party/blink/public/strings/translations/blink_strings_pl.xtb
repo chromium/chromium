@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">Musisz podać wartość <ph name="MINIMUM_DATE_OR_TIME" /> lub późniejszą.</translation>
 <translation id="2761667185364618470">Zaznacz to pole, jeśli chcesz kontynuować.</translation>
 <translation id="2908441821576996758">Podaj listę adresów e-mail rozdzielonych przecinkami.</translation>
+<translation id="2940013921954129954">Dokładna lokalizacja jest dozwolona</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Wpisz prawidłową wartość. Pole jest niekompletne lub zawiera nieprawidłową datę.</translation>
 <translation id="310520048233152454">Wprowadź adres URL.</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">Niska jakość odtwarzania</translation>
 <translation id="6790428901817661496">Odtwórz</translation>
 <translation id="6820355525329141109">Nie można załadować wtyczki.</translation>
+<translation id="688706781007114099">Włącz lokalizację</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Wydłuż ten tekst co najmniej do <ph name="MIN_CHARACTERS" /> znaków (teraz używasz jednego znaku).</translation>
 <translation id="709897737746224366">Podaj wartość w wymaganym formacie.</translation>

@@ -114,6 +114,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="132346741904777634">Camera foto este aliniată cu colțul din stânga sus. Conflict cu platforma de sistem.</translation>
 <translation id="132415371743256095">Închide <ph name="DESK_NAME" /> și ferestrele</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> s-a conectat</translation>
+<translation id="1337081488893096731">Folosește aplicația Content Transfer pentru a muta datele din contul școlar în contul personal</translation>
 <translation id="1340378040547539434">Micșorează în pagină</translation>
 <translation id="1341651618736211726">Suplimentar</translation>
 <translation id="1341926407152459446">Folosește <ph name="DEVICE_NAME" /> pentru intrare și ieșire audio</translation>
@@ -242,6 +243,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="17722141032474077">Calcule</translation>
 <translation id="1774796056689732716">Calendar, <ph name="CURRENT_MONTH_YEAR" />, momentan s-a selectat <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Configurează afișarea fotografiilor, a elementelor media și a notificărilor recente ale telefonului</translation>
+<translation id="1786487376942610288">Comută între dimensiunea maximă și cea actuală a ferestrei picture-in-picture</translation>
 <translation id="1787955149152357925">Dezactivată</translation>
 <translation id="1796561540704213354">Site-urile, inclusiv paginile pe care le-ai accesat și paginile deschise</translation>
 <translation id="179842970735685253">Termenii și condițiile Google</translation>
@@ -337,6 +339,9 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="219905428774326614">Lansator, toate aplicațiile</translation>
 <translation id="2201071101391734388">Fotografia recentă <ph name="INDEX" /> din <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Restrânge Google Tasks</translation>
+<translation id="2206960886090042977">Touchpadul încorporat este dezactivat deoarece este conectat un mouse. Folosește mouse-ul sau tastatura pentru a confirma modificarea.
+
+În caz contrar, touchpadul încorporat va fi reactivat în 30 de secunde.</translation>
 <translation id="2208323208084708176">Modul Desktop unificat</translation>
 <translation id="2220572644011485463">PIN sau parolă</translation>
 <translation id="2222841058024245321">Desktop 7</translation>
@@ -1907,6 +1912,9 @@ Instalare nouă</translation>
 Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivului din nou.</translation>
 <translation id="7523420897035067483">Activează Nu deranja în modul Focus</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">Touchpadul încorporat este dezactivat. Folosește tastatura sau alt dispozitiv de indicat pentru a confirma modificarea.
+
+În caz contrar, touchpadul încorporat va fi reactivat în 30 de secunde.</translation>
 <translation id="7525067979554623046">Creați</translation>
 <translation id="7526573455193969409">Este posibil ca rețeaua să fie monitorizată</translation>
 <translation id="7536035074519304529">Adresă IP: <ph name="ADDRESS" /></translation>
@@ -2294,6 +2302,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8858369206579825206">Opțiuni de confidențialitate</translation>
 <translation id="8860366331836346216">Adaugă un eSIM</translation>
 <translation id="8870509716567206129">Aplicația nu acceptă ecranul împărțit.</translation>
+<translation id="8873203135446552888">Confirmă că dorești să dezactivezi touchpadul încorporat</translation>
 <translation id="8874184842967597500">Neconectat</translation>
 <translation id="8875021410787719674">Mută între colțul din dreapta jos, Lansator, bara de adrese, bara de marcaje, site-ul deschis și descărcări</translation>
 <translation id="8876148469852588625">Evenimentul <ph name="EVENT_POSITION" /> din <ph name="EVENT_TOTAL_COUNT" /></translation>

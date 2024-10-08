@@ -114,6 +114,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="132346741904777634">La càmera s'ha ajustat a l'extrem superior esquerre. S'ha produït un conflicte amb la superfície del sistema.</translation>
 <translation id="132415371743256095">Tanca <ph name="DESK_NAME" /> i les finestres</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> connectada</translation>
+<translation id="1337081488893096731">Utilitza l'aplicació Transferència de contingut per moure les dades del teu compte de centre educatiu al teu compte personal</translation>
 <translation id="1340378040547539434">Redueix la pàgina</translation>
 <translation id="1341651618736211726">Menú de desbordament</translation>
 <translation id="1341926407152459446">Utilitza "<ph name="DEVICE_NAME" />" per a l'entrada i la sortida d'àudio</translation>
@@ -242,6 +243,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="17722141032474077">Càlculs</translation>
 <translation id="1774796056689732716">Calendari, <ph name="CURRENT_MONTH_YEAR" />, actualment està seleccionat el dia <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Configura la visualització de les notificacions, dels fitxers multimèdia i de les fotos recents del telèfon</translation>
+<translation id="1786487376942610288">Canvia entre la mida màxima o l'actual de la finestra d'imatge sobre imatge</translation>
 <translation id="1787955149152357925">Desactivat</translation>
 <translation id="1796561540704213354">Llocs web que inclouen les pàgines que has visitat i les pàgines obertes</translation>
 <translation id="179842970735685253">condicions del servei de Google</translation>
@@ -337,6 +339,9 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="219905428774326614">Menú d'aplicacions, totes les aplicacions</translation>
 <translation id="2201071101391734388">Foto recent <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Replega Google Tasks</translation>
+<translation id="2206960886090042977">El ratolí tàctil integrat està desactivat perquè hi ha un ratolí connectat. Utilitza el ratolí o el teclat per confirmar el canvi.
+
+Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a 30 segons.</translation>
 <translation id="2208323208084708176">Mode d'escriptori unificat</translation>
 <translation id="2220572644011485463">PIN o contrasenya</translation>
 <translation id="2222841058024245321">Escriptori 7</translation>
@@ -1468,6 +1473,7 @@ No hi ha cap dispositiu connectat.</translation>
 <translation id="598407983968395253">Utilitza la plantilla</translation>
 <translation id="5986723678596105470">Uneix-me amb Google Meet</translation>
 <translation id="598882571027504733">Per obtenir l'actualització, reinicia Chromebook amb el teclat connectat.</translation>
+<translation id="5990992855591814753">Mantén el ritme amb llistes de reproducció personalitzades per concentrar-se. Obtén YouTube Music i YouTube sense anuncis amb 3 mesos de YouTube Premium sense cost econòmic. S'hi apliquen condicions.</translation>
 <translation id="5998374579424866922">Desactiva els controls del joc</translation>
 <translation id="6000279412553873020">Tecles, botons i més</translation>
 <translation id="6012623610530968780">Pàgina <ph name="SELECTED_PAGE" /> de <ph name="TOTAL_PAGE_NUM" /></translation>
@@ -1906,6 +1912,9 @@ Instal·lació nova</translation>
 Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translation>
 <translation id="7523420897035067483">Activa el mode No molestis durant la sessió de Sense distraccions</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">El ratolí tàctil integrat està desactivat. Utilitza el teclat o un altre dispositiu apuntador per confirmar el canvi.
+
+Si no, el ratolí tàctil integrat es tornarà a activar d'aquí a 30 segons.</translation>
 <translation id="7525067979554623046">Crea</translation>
 <translation id="7526573455193969409">És possible que la xarxa estigui supervisada</translation>
 <translation id="7536035074519304529">Adreça IP: <ph name="ADDRESS" /></translation>
@@ -2293,6 +2302,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8858369206579825206">Controls de privadesa</translation>
 <translation id="8860366331836346216">Afegeix una eSIM</translation>
 <translation id="8870509716567206129">L'aplicació no admet la pantalla dividida.</translation>
+<translation id="8873203135446552888">Confirma que vols desactivar el ratolí tàctil integrat</translation>
 <translation id="8874184842967597500">No connectada</translation>
 <translation id="8875021410787719674">Mou-te entre l'extrem inferior dret, el menú d'aplicacions, la barra d'adreces, la barra d'adreces d'interès, el lloc web que està obert i les baixades</translation>
 <translation id="8876148469852588625">Esdeveniment <ph name="EVENT_POSITION" /> de <ph name="EVENT_TOTAL_COUNT" /></translation>

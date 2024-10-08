@@ -70,6 +70,7 @@
 <translation id="1919130412786645364">Salli Chrome-kirjautuminen</translation>
 <translation id="1953553007165777902">Ladataan… <ph name="MINUTE" /> minuuttia jäljellä</translation>
 <translation id="1982647487457769627">Chrome toimii eri alustoilla ja tarjoaa tutun käyttökokemuksen laitteesta riippumatta</translation>
+<translation id="19955905961160405">Hae näytöllä olevaa sisältöä Google Lensilla</translation>
 <translation id="2001586581944147178">Pyri estämään avaamiesi sivustojen näkyminen henkilöille, joilla on pääsy internetliikenteeseesi. Chrome käyttää turvallista yhteyttä sivuston IP-osoitteen etsimiseen DNS:stä (Domain Name System)</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Tätä laajennusta ei enää tueta. Chrome suosittelee poistamaan sen.}other{Näitä laajennuksia ei enää tueta. Chrome suosittelee poistamaan ne.}}</translation>
 <translation id="2018528049276128029">Jokainen profiili sisältää omat Chrome-tietonsa, esim. kirjanmerkit, historian ja salasanat</translation>
@@ -87,6 +88,7 @@
 <translation id="2126108037660393668">Ladattua tiedostoa ei voitu vahvistaa.</translation>
 <translation id="2128411189117340671">Ylläpidä Chrome-profiileja</translation>
 <translation id="2131230230468101642">Yksityisyytesi suojaamiseksi poistamme automaattisesti yli neljä viikkoa vanhat kiinnostuksen kohteet. Kun jatkat selaamista, kiinnostuksen kohde voi näkyä listalla uudelleen. Voit myös poistaa kiinnostuksen kohteet, joita et halua Chromen ottavan huomioon.</translation>
+<translation id="2137162749895930932">Sulje käännösnäyttö</translation>
 <translation id="2139300032719313227">Käynnistä Chrome-käyttöjärjestelmä uudelleen</translation>
 <translation id="2151406531797534936">Käynnistä Chrome uudelleen nyt</translation>
 <translation id="2163089732491971196">Chrome-datan käyttö ja tallennus Google-tilillä edellyttää, että lisäät tunnuslauseesi</translation>
@@ -170,6 +172,7 @@
 <translation id="3019382870990049182">Päivitä &amp;ChromeOS Flex käynnistämällä se uudelleen</translation>
 <translation id="3037838751736561277">Google Chrome on käynnissä taustalla.</translation>
 <translation id="3038232873781883849">Asennetaan…</translation>
+<translation id="3045032126857188731">Käännetty kieli: <ph name="LANGUAGE" /></translation>
 <translation id="3059710691562604940">Selaussuoja on pois päältä. Chrome suosittelee laittamaan sen päälle.</translation>
 <translation id="306179102415443347">Käytä Google Salasanoja nopeasti pikakuvakkeen avulla. Voit siirtää pikakuvakkeen tietokoneen aloitusnäytölle tai sovelluksien käynnistysohjelmaan.</translation>
 <translation id="3065168410429928842">Chrome-välilehti</translation>
@@ -188,7 +191,6 @@
 <translation id="3234642784688107085">Kokeile uusia tekoälyominaisuuksia, niin voit luoda teemoja, saada apua kirjoittamiseen ja pitää asiat järjestyksessä</translation>
 <translation id="3245429137663807393">Jos jaat myös Chromen käyttöraportteja, avaamasi URL-osoitteet näkyvät niissä</translation>
 <translation id="3261565993776444564">Kokeile uutta väriä ja tee selaimesta näköisesi</translation>
-<translation id="3269209112443570745">Uutta! Helppo tapa hakea näytöllä näkyviä asioita</translation>
 <translation id="3282568296779691940">Kirjaudu Chromeen</translation>
 <translation id="3286538390144397061">Käynnistä uudelleen</translation>
 <translation id="3292333338048274092">Käynnistä Chrome uudelleen.</translation>
@@ -238,12 +240,14 @@
 <translation id="386202838227397562">Sulje kaikki Chrome-ikkunat ja yritä uudelleen.</translation>
 <translation id="3865754807470779944">Chromen versio <ph name="PRODUCT_VERSION" /> asennettu</translation>
 <translation id="3873044882194371212">Avaa linkki Chromen inco&amp;gnito-ikkunassa</translation>
+<translation id="3885770153807205175">Kielivalitsin</translation>
 <translation id="3889417619312448367">Poista Google Chromen asennus</translation>
 <translation id="3941890832296813527">Asennusvirhe: Asennusohjelman tiedostonimi on virheellinen, tai sitä ei tueta.</translation>
 <translation id="3973161977468201858">Google Chrome haluaa poistaa Google Salasanat ‐datasi. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="398236277091248993">Chrome pysyy nopeana suorituskykyä parantavilla ominaisuuksilla</translation>
 <translation id="3999683152997576765">Voit tarkistaa ja poistaa kiinnostuksen kohteita, joita sivustot käyttävät mainosten näyttämiseen. Chrome arvioi viimeaikaisen selaushistoriasi perusteella, mikä saattaisi kiinnostaa sinua.</translation>
 <translation id="4022972681110646219">Käännä näyttö</translation>
+<translation id="4023601594785368013">Alkuperäinen kieli: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Chrome-käyttöjärjestelmä täytyy käynnistää uudelleen, jotta päivitys voidaan ottaa käyttöön.</translation>
 <translation id="4050175100176540509">Uusimmassa versiossa on käytettävissä tärkeitä turvallisuusparannuksia ja uusia ominaisuuksia.</translation>
 <translation id="4053720452172726777">Google Chromen muokkaaminen ja hallinta</translation>
@@ -515,6 +519,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="7514258452813684157">Googlen päivityspalvelu</translation>
 <translation id="7515191208480168435">Kiinnitä Google Lens, niin voit käyttää sitä helposti</translation>
 <translation id="7535429826459677826">Google Chromen kehittäjäversio</translation>
+<translation id="756809126120519699">Chrome-tiedot tyhjennetty</translation>
 <translation id="7572537927358445944">Pois päältä • Chrome ei voi vahvistaa, mistä tämä laajennus on peräisin</translation>
 <translation id="7583399374488819119">Asennusohjelma: <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
@@ -532,6 +537,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="7668816516367091728">Voit tehdä esimerkiksi käännös- ja laskentatehtäviä suoraan osoitepalkista</translation>
 <translation id="7670287553302121848">Chrome-tili edellyttää uudelleentodennusta</translation>
 <translation id="769538538642757151">Chrome ilmoittaa, jos jotain on tarkistettava</translation>
+<translation id="77283119132245232">Tarjoaa järjestelmän seurantapalveluja (<ph name="BROWSER_NAME" />). Jos tämä palvelu on poissa käytöstä, selaimen luomat tulosten jäljet eivät sisällä järjestelmänlaajuisia tapahtumia, kuten kontekstin vaihtoa ja valmiita säietapahtumia.</translation>
 <translation id="7747138024166251722">Asennusohjelma ei pystynyt luomaan väliaikaista hakemistoa. Tarkista, että käytettävissä on riittävästi levytilaa ja että sinulla on oikeus asentaa ohjelmia.</translation>
 <translation id="7761834446675418963">Avaa Chrome klikkaamalla nimeäsi ja aloita selaaminen.</translation>
 <translation id="7763983146198734674">Tallenna salasanat, niin voit käyttää niitä missä tahansa</translation>

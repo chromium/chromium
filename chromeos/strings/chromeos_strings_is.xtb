@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Draga úr birtustigi skjás</translation>
 <translation id="2086091080968010660">Breytingar sem byggja á tímasetningu eru hugsanlega ekki nákvæmar. Kveiktu á aðgangi kerfisins að staðsetningu í stillingunum.</translation>
 <translation id="2102231663024125441">Breytingar á texta</translation>
-<translation id="2102648867808308635">Hjálpa mér að lesa þessa síðu</translation>
 <translation id="2105810540595158374">Tækið er leikjafjarstýring.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, útgáfa <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">Aðeins í boði á ensku (Bandaríkin) eins og stendur</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">skoða öll forrit</translation>
 <translation id="3510890413042482857">Senda <ph name="BEGIN_LINK1" />rakningargögn um afköst<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">ChromeOS uppfærsla</translation>
-<translation id="3522508178835057262">Textauppskriftir sem eru lengri en <ph name="MAX_WORD_LENGTH" /> orð er ekki studdar eins og stendur.</translation>
 <translation id="3527036260304016759">Mistókst – óþekkt villa</translation>
 <translation id="353214771040290298">Breytingum lokið</translation>
 <translation id="3532980081107202182">Um <ph name="MIN_REMAINING" /> mínútur eftir</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">Ljóst þema</translation>
 <translation id="4813136279048157860">Myndirnar mínar</translation>
 <translation id="4813345808229079766">Tenging</translation>
-<translation id="4824527342590024245">Skipanir sem innihalda færri en <ph name="MIN_WORD_LENGTH" /> orð er ekki studdar eins og stendur.</translation>
 <translation id="4830894019733815633">gljúfri</translation>
 <translation id="4832079907277790330">Velja möppu í forritinu Skrár...</translation>
 <translation id="4835901797422965222">Engin virk net</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">Svipað:</translation>
 <translation id="5130848777448318809">smáhestar</translation>
 <translation id="5137451382116112100">Allur skjárinn</translation>
+<translation id="5140788690559353412">Þegar þú glatar aðgangi að skólareikningnum þínum glatarðu einnig aðgangi að tengdu netfangi og skrám á Google Drive, s.s. úr Gmail, Skjölum, Skyggnum og víðar.</translation>
 <translation id="5142961317498132443">Auðkenning</translation>
 <translation id="5144311987923128508">Slökkt er á staðfestingarhnappi</translation>
 <translation id="5144887194300568405">Afrita þýðingu</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) HTTP-biðtími</translation>
 <translation id="6078323886959318429">Bæta flýtileið við</translation>
 <translation id="6091080061796993741">gulur</translation>
+<translation id="6093853427925392522">Notaðu Content Transfer-forritið frá Google til að flytja gögn skólareikningsins þíns yfir á einkareikninginn þinn áður en þú glatar aðgangi.</translation>
 <translation id="6104112872696127344">Hætt var við að skanna</translation>
 <translation id="6106186594183574873">Sláðu inn gamla aðgangsorðið þitt til að ganga frá þessu</translation>
 <translation id="6108689792487843350">Ekki næst í gátt</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">Heiti aðgangsstaðar (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nafnaþjónn}one{Nafnaþjónn}other{Nafnaþjónar}}</translation>
 <translation id="7135814714616751706">Leita að flýtileiðum</translation>
+<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Tengist</translation>
 <translation id="7144878232160441200">Reyna aftur</translation>
 <translation id="7144954474087165241">pagóða</translation>
@@ -1394,6 +1394,7 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="7856267634822906833">Bluetooth-snertiskjár</translation>
 <translation id="7859006200041800233">kaktusblóm</translation>
 <translation id="7869143217755017858">Slökkva á dökkri stillingu</translation>
+<translation id="7878972877380405573">Taka saman með Hjálpa mér að lesa</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Gerð veitu</translation>
 <translation id="7882501334836096755">Opinber lykill</translation>
@@ -1537,6 +1538,7 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="8626489604350149811">Fleiri aðgerðir fyrir <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Ljósfjólublár</translation>
 <translation id="8647595191512746911">Hljóðumritun</translation>
+<translation id="8650852232143958317">Taktu Gmail og Google Drive-skrárnar þínar með þér</translation>
 <translation id="8651481478098336970">hljóð af</translation>
 <translation id="8655295600908251630">Rás</translation>
 <translation id="8655828773034788261">Deila vefslóð:</translation>

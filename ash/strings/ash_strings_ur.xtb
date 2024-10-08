@@ -114,6 +114,7 @@
 <translation id="132346741904777634">کیمرا اوپری بائیں کونے میں اسنیپ کیا گیا ہے۔ سسٹم کی سطح سے متصادم ہے۔</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> اور ونڈوز بند کریں</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> منسلک ہے</translation>
+<translation id="1337081488893096731">اپنے اسکول کے اکاؤنٹ ڈیٹا کو اپنے ذاتی اکاؤنٹ میں منتقل کرنے کیلئے، مواد کی منتقلی ایپ کا استعمال کریں</translation>
 <translation id="1340378040547539434">صفحہ پر زوم آؤٹ کریں</translation>
 <translation id="1341651618736211726">اوورفلو</translation>
 <translation id="1341926407152459446">آڈیو ان پٹ اور آؤٹ پٹ کے لیے "<ph name="DEVICE_NAME" />" استعمال کریں</translation>
@@ -242,6 +243,7 @@
 <translation id="17722141032474077">حساب کتاب</translation>
 <translation id="1774796056689732716">کیلنڈر، <ph name="CURRENT_MONTH_YEAR" />، فی الحال <ph name="DATE" /> کو منتخب کیا گیا ہے۔</translation>
 <translation id="178347895271755507">اپنے فون کی حالیہ تصاویر، میڈیا اور اطلاعات دیکھنے کو سیٹ اپ کریں</translation>
+<translation id="1786487376942610288">تصویر میں تصویر ونڈو کو اس کے زیادہ سے زیادہ یا موجودہ سائز کے درمیان سوئچ کریں</translation>
 <translation id="1787955149152357925">آف</translation>
 <translation id="1796561540704213354">ویب سائٹس بشمول وہ صفحات جن کا آپ نے ملاحظہ کیا ہے اور وہ صفحات جنہیں آپ نے کھولا ہے</translation>
 <translation id="179842970735685253">‏‫Google کی سروس کی شرائط</translation>
@@ -337,6 +339,9 @@
 <translation id="219905428774326614">لانچر، سبھی ایپس</translation>
 <translation id="2201071101391734388"><ph name="TOTAL_COUNT" /> میں سے حالیہ تصویر <ph name="INDEX" />۔</translation>
 <translation id="2201687081523799384">‏‫Google Tasks کو سکیڑیں</translation>
+<translation id="2206960886090042977">پہلے سے شامل ٹچ پیڈ غیر فعال ہو گیا ہے کیونکہ ایک ماؤس منسلک ہے۔ تبدیلی کی تصدیق کرنے کیلئے ماؤس یا کی بورڈ کا استعمال کریں۔
+
+بصورت دیگر، پہلے سے شامل ٹچ پیڈ 30 سیکنڈ میں دوبارہ فعال ہو جائے گا۔</translation>
 <translation id="2208323208084708176">متحد ڈیسک ٹاپ وضع</translation>
 <translation id="2220572644011485463">‏PIN یا پاس ورڈ</translation>
 <translation id="2222841058024245321">ڈیسک 7</translation>
@@ -1906,6 +1911,9 @@
 آلہ کو شٹ ڈاؤن کرنے کے لیے پاور بٹن کو آلہ پر دوبارہ چھوئیں اور دبائے رکھیں۔</translation>
 <translation id="7523420897035067483">فوکس میں رہتے ہوئے ڈسٹرب نہ کریں کو فعال کریں</translation>
 <translation id="7524043547948122239">‫Google Tasks</translation>
+<translation id="7524919752437339268">پہلے سے شامل ٹچ پیڈ غیر فعال ہو گیا ہے۔ تبدیلی کی تصدیق کرنے کیلئے اپنے کی بورڈ یا دوسرے پوائنٹر آلے کا استعمال کریں۔
+
+بصورت دیگر، پہلے سے شامل ٹچ پیڈ 30 سیکنڈ میں دوبارہ فعال ہو جائے گا۔</translation>
 <translation id="7525067979554623046">بنائیں</translation>
 <translation id="7526573455193969409">ممکن ہے نیٹ ورک کو مانیٹر کیا جا رہا ہو</translation>
 <translation id="7536035074519304529">‏IP پتہ: <ph name="ADDRESS" /></translation>
@@ -2293,6 +2301,7 @@
 <translation id="8858369206579825206">رازداری سے متعلق کنٹرولز</translation>
 <translation id="8860366331836346216">‏eSIM شامل کریں</translation>
 <translation id="8870509716567206129">ایپ اسپلٹ اسکرین کو سپورٹ نہیں کرتی ہے۔</translation>
+<translation id="8873203135446552888">اس بات کی تصدیق کریں کہ آپ پہلے سے شامل ٹچ پیڈ کو غیر فعال کرنا چاہتے ہیں</translation>
 <translation id="8874184842967597500">منسلک نہیں</translation>
 <translation id="8875021410787719674">نیچے دائیں کونے، لانچر، ایڈریس بار، بُک مارکس بار، کھلی ہوئی ویب سائٹ اور ڈاؤن لوڈز کے درمیان منتقل ہوں</translation>
 <translation id="8876148469852588625"><ph name="EVENT_POSITION" /> از <ph name="EVENT_TOTAL_COUNT" /> ایونٹ</translation>

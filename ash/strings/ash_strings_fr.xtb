@@ -114,6 +114,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="132346741904777634">Appareil photo aligné sur l'angle supérieur gauche. Conflit avec la surface du système.</translation>
 <translation id="132415371743256095">Fermer le <ph name="DESK_NAME" /> et les fenêtres</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> connecté</translation>
+<translation id="1337081488893096731">Utilisez l'appli Content Transfer pour transférer les données de votre compte scolaire vers votre compte personnel</translation>
 <translation id="1340378040547539434">Faire un zoom arrière sur la page</translation>
 <translation id="1341651618736211726">Dépassement</translation>
 <translation id="1341926407152459446">Utiliser "<ph name="DEVICE_NAME" />" pour l'entrée et la sortie audio</translation>
@@ -242,6 +243,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="17722141032474077">Calculs</translation>
 <translation id="1774796056689732716">Agenda, <ph name="CURRENT_MONTH_YEAR" />, le <ph name="DATE" /> est actuellement sélectionné.</translation>
 <translation id="178347895271755507">Configurer l'affichage des photos, notifications et contenus multimédias récents de votre téléphone</translation>
+<translation id="1786487376942610288">Alterner entre la taille maximale et la taille actuelle de la fenêtre Picture-in-picture</translation>
 <translation id="1787955149152357925">Désactivé</translation>
 <translation id="1796561540704213354">Sites Web, y compris les pages que vous avez consultées et celles que vous avez ouvertes</translation>
 <translation id="179842970735685253">Conditions d'utilisation de Google</translation>
@@ -337,6 +339,9 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="219905428774326614">Lanceur d'applications, toutes les applications</translation>
 <translation id="2201071101391734388">Photo récente <ph name="INDEX" /> sur <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Réduire Google Tasks</translation>
+<translation id="2206960886090042977">Le pavé tactile intégré est désactivé, car une souris est connectée. Utilisez la souris ou le clavier pour confirmer la modification.
+
+Sinon, le pavé tactile intégré sera réactivé dans 30 secondes.</translation>
 <translation id="2208323208084708176">Mode bureau unifié</translation>
 <translation id="2220572644011485463">Code ou mot de passe</translation>
 <translation id="2222841058024245321">Bureau 7</translation>
@@ -1468,6 +1473,7 @@ Aucun appareil connecté.</translation>
 <translation id="598407983968395253">Utiliser le modèle</translation>
 <translation id="5986723678596105470">Participer avec Google Meet</translation>
 <translation id="598882571027504733">Pour télécharger la mise à jour, redémarrez votre Chromebook avec le clavier branché.</translation>
+<translation id="5990992855591814753">Restez concentré grâce à des playlists personnalisées. Bénéficiez de YouTube Music et YouTube sans publicité avec 3 mois de YouTube Premium sans frais. Offre soumise à conditions.</translation>
 <translation id="5998374579424866922">Désactiver les commandes de jeu</translation>
 <translation id="6000279412553873020">Touches, boutons, etc.</translation>
 <translation id="6012623610530968780">Page <ph name="SELECTED_PAGE" /> sur <ph name="TOTAL_PAGE_NUM" /></translation>
@@ -1907,6 +1913,9 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bouton Marche/Arrêt.</translation>
 <translation id="7523420897035067483">Activer Ne pas déranger en mode Sans distractions</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">Le pavé tactile intégré est désactivé. Utilisez le clavier ou un autre dispositif de pointage pour confirmer la modification.
+
+Sinon, le pavé tactile intégré sera réactivé dans 30 secondes.</translation>
 <translation id="7525067979554623046">Créer</translation>
 <translation id="7526573455193969409">Il est possible que le réseau soit surveillé</translation>
 <translation id="7536035074519304529">Adresse IP : <ph name="ADDRESS" /></translation>
@@ -2293,6 +2302,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8858369206579825206">Paramètres de confidentialité</translation>
 <translation id="8860366331836346216">Ajouter une eSIM</translation>
 <translation id="8870509716567206129">Application incompatible avec l'écran partagé.</translation>
+<translation id="8873203135446552888">Confirmer que vous voulez désactiver le pavé tactile intégré</translation>
 <translation id="8874184842967597500">Non connecté</translation>
 <translation id="8875021410787719674">Basculer entre l'angle inférieur droit, le lanceur d'applications, la barre d'adresse, la barre de favoris, le site Web ouvert et les téléchargements</translation>
 <translation id="8876148469852588625">Événement <ph name="EVENT_POSITION" /> sur <ph name="EVENT_TOTAL_COUNT" /></translation>

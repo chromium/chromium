@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">ଡିସପ୍ଲେର ଉଜ୍ଜ୍ୱଳତା କମ୍ କରନ୍ତୁ</translation>
 <translation id="2086091080968010660">ସମୟ ଆଧାରିତ ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ସଠିକ ହୋଇନପାରେ। ସେଟିଂସରେ ସିଷ୍ଟମ ଲୋକେସନ ଆକ୍ସେସକୁ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="2102231663024125441">ଟେକ୍ସଟ ଏଡିଟିଂ</translation>
-<translation id="2102648867808308635">ଏହି ପୃଷ୍ଠା ପଢ଼ିବାକୁ ମୋତେ ସାହାଯ୍ୟ କର</translation>
 <translation id="2105810540595158374">ଡିଭାଇସଟି ଏକ ଗେମ କଣ୍ଟ୍ରୋଲର ଅଟେ।</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, ସଂସ୍କରଣ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">ବର୍ତ୍ତମାନ କେବଳ ଇଂରାଜୀ (US)ରେ ଉପଲବ୍ଧ ଅଟେ</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">ସମସ୍ତ ଆପ୍ ଦେଖନ୍ତୁ</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />ପରଫରମାନ୍ସ ଟ୍ରେସ ତାରିଖ<ph name="END_LINK1" /> ପଠାନ୍ତୁ</translation>
 <translation id="3517001332549868749">ChromeOS ଅପଡେଟ</translation>
-<translation id="3522508178835057262">ବର୍ତ୍ତମାନ ପାଇଁ <ph name="MAX_WORD_LENGTH" /> ଶବ୍ଦରୁ ଅଧିକ ଶବ୍ଦ ଥିବା ଏକ ଟ୍ରାନ୍ସକ୍ରିପ୍ଟକୁ ସପୋର୍ଟ କରୁନାହିଁ</translation>
 <translation id="3527036260304016759">ବିଫଳ ହୋଇଛି - ଅଜଣା ତ୍ରୁଟି</translation>
 <translation id="353214771040290298">ଏଡିଟିଂ ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି</translation>
 <translation id="3532980081107202182">ପ୍ରାୟ <ph name="MIN_REMAINING" /> ମିନିଟ୍ ବାକି ଅଛି</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">ହାଲୁକା ଥିମ୍</translation>
 <translation id="4813136279048157860">ମୋ ଛବି</translation>
 <translation id="4813345808229079766">ସଂଯୋଜନ</translation>
-<translation id="4824527342590024245">ବର୍ତ୍ତମାନ ପାଇଁ, <ph name="MIN_WORD_LENGTH" /> ଶବ୍ଦରୁ କମ ଏକ ଟ୍ରାନ୍ସକ୍ରିପ୍ଟକୁ ସପୋର୍ଟ କରୁନାହିଁ</translation>
 <translation id="4830894019733815633">କାନିୟନ</translation>
 <translation id="4832079907277790330">Files ଆପରେ ଫୋଲ୍ଡର୍ ଚୟନ କରନ୍ତୁ...</translation>
 <translation id="4835901797422965222">କୌଣସି ସକ୍ରିୟ ନେଟୱାର୍କ ନାହିଁ</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">ସମାନ:</translation>
 <translation id="5130848777448318809">ପୋନି</translation>
 <translation id="5137451382116112100">ପୂର୍ଣ୍ଣସ୍କ୍ରିନ</translation>
+<translation id="5140788690559353412">ଆପଣଙ୍କର ସ୍କୁଲ ଆକାଉଣ୍ଟକୁ ଆପଣ ଆକ୍ସେସ ହରାଇଲେ, ଆପଣଙ୍କ ପାଖରେ ଆଉ ସମ୍ବନ୍ଧିତ ଇମେଲ ଏବଂ Gmail, Docs, Slides ଓ ଆହୁରି ଅନେକ କିଛି ପରି Google Drive ଫାଇଲଗୁଡ଼ିକୁ ଆକ୍ସେସ ରହିବ ନାହିଁ।</translation>
 <translation id="5142961317498132443">ପ୍ରମାଣିକରଣ</translation>
 <translation id="5144311987923128508">ସୁନିଶ୍ଚିତ କରନ୍ତୁ ବଟନକୁ ବର୍ତ୍ତମାନ ଅକ୍ଷମ କରାଯାଇଛି</translation>
 <translation id="5144887194300568405">ଅନୁବାଦ କପି କରନ୍ତୁ</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) HTTP ଲାଟେନ୍ସି</translation>
 <translation id="6078323886959318429">ସର୍ଟକଟ୍ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="6091080061796993741">ହଳଦିଆ</translation>
+<translation id="6093853427925392522">ଆକ୍ସେସ ହରାଇବା ପୂର୍ବରୁ ଆପଣଙ୍କ ସ୍କୁଲ ଆକାଉଣ୍ଟ ଡାଟାକୁ ଆପଣଙ୍କର ବ୍ୟକ୍ତିଗତ ଆକାଉଣ୍ଟକୁ ମୁଭ କରିବା ପାଇଁ Googleର Content Transfer ଆପକୁ ବ୍ୟବହାର କରିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ।</translation>
 <translation id="6104112872696127344">ସ୍କାନିଂ ବାତିଲ୍ କରାଯାଇଛି</translation>
 <translation id="6106186594183574873">ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ, ଆପଣଙ୍କର ପୁରୁଣା ପାସ୍‍ୱାର୍ଡ ଲେଖନ୍ତୁ</translation>
 <translation id="6108689792487843350">ଗେଟୱେ ସହିତ ସଂଯୋଗ କରାଯାଇପାରିବ ନାହିଁ</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">ଆକ୍ସେସ ପଏଣ୍ଟ ନାମ (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{ନାମ ସର୍ଭର୍}other{ନାମ ସର୍ଭର୍}}</translation>
 <translation id="7135814714616751706">ସର୍ଟକଟ ସର୍ଚ୍ଚ କରନ୍ତୁ</translation>
+<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">ସଂଯୋଗ କରୁଛି</translation>
 <translation id="7144878232160441200">ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="7144954474087165241">ପାଗୋଡା</translation>
@@ -1394,6 +1394,7 @@
 <translation id="7856267634822906833">ବ୍ଲୁଟୁଥ ଟଚସ୍କ୍ରିନ</translation>
 <translation id="7859006200041800233">କାକଟସ ଫୁଲ</translation>
 <translation id="7869143217755017858">ଡାର୍କ ମୋଡକୁ ଅକ୍ଷମ କରନ୍ତୁ</translation>
+<translation id="7878972877380405573">ପଢ଼ିବାକୁ ମୋତେ ସାହାଯ୍ୟ କର ମାଧ୍ୟମରେ ସାରାଂଶ ପ୍ରସ୍ତୁତ କରନ୍ତୁ</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">ପ୍ରଦାତା ପ୍ରକାର</translation>
 <translation id="7882501334836096755">ସାର୍ବଜନୀନ କୀ</translation>
@@ -1537,6 +1538,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" /> ପାଇଁ ଅଧିକ ପଦକ୍ଷେପ</translation>
 <translation id="86356131183441916">ହାଲୁକା ବାଇଗଣୀ</translation>
 <translation id="8647595191512746911">ଅଡିଓ ଟ୍ରାନ୍ସକ୍ରିପସନ</translation>
+<translation id="8650852232143958317">ଆପଣଙ୍କ Gmail ଏବଂ Google Drive ଫାଇଲଗୁଡ଼ିକୁ ଆପଣଙ୍କ ସହିତ ନିଅନ୍ତୁ</translation>
 <translation id="8651481478098336970">ଭଲ୍ୟୁମ୍ ମ୍ୟୁଟ୍ କରନ୍ତୁ</translation>
 <translation id="8655295600908251630">ଚ୍ୟାନେଲ୍</translation>
 <translation id="8655828773034788261">URL ସେୟାର କରନ୍ତୁ:</translation>

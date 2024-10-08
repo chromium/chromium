@@ -3620,19 +3620,6 @@ Se <ph name="PRODUCT_NAME" /> non si chiude correttamente (ad esempio, in caso d
 <translation id="3701121231485832347">Consente di gestire le impostazioni specifiche dei dispositivi <ph name="PRODUCT_OS_NAME" /> gestiti da <ph name="MS_AD_NAME" />.</translation>
 <translation id="3702518095257671450">Attestazione da remoto</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Il campo a una sola riga è obsoleto e sarà rimosso a breve. Inizia a usare la casella di testo multiriga qui sotto).</translation>
-<translation id="3705648857103435170">Questo criterio consente di attivare l'app Graduation per gli utenti gestiti. L'app Graduation aiuta gli utenti a trasferire i propri dati dal loro account gestito a un account consumer.
-
-    Se il criterio <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> è impostato su <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE_TRUE" />, l'app Graduation verrà mostrata tra le date di inizio e fine (comprese) in base all'ora locale.
-
-    Se il criterio <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> è impostato su <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE_FALSE" /> o se non viene configurato, l'app non verrà mostrata.
-
-    Se il criterio <ph name="GRADUATION_ENABLEMENT_STATUS_START_DATE_VALUE" /> non viene configurato, l'app viene mostrata fino alla data di fine.
-
-    Se il criterio <ph name="GRADUATION_ENABLEMENT_STATUS_END_DATE_VALUE" /> non viene configurato, l'app viene mostrata a tempo indeterminato dalla data di inizio.
-
-    Se non vengono impostati né <ph name="GRADUATION_ENABLEMENT_STATUS_START_DATE_VALUE" /> né <ph name="GRADUATION_ENABLEMENT_STATUS_END_DATE_VALUE" />, l'app viene mostrata a tempo indeterminato. Se le date di inizio e fine non sono valide, l'app Graduation non verrà mostrata. Ciò include i casi in cui le date fornite non esistono o la data di fine è precedente alla data di inizio.
-
-    Per il corretto funzionamento dell'app Graduation, è necessario attivare anche il trasferimento dei dati con Takeout. Per ulteriori informazioni, visita la pagina https://support.google.com/a/answer/6364687.</translation>
 <translation id="3711561721191203926">Se questo criterio viene impostato su Attivato, ogni volta che dovrebbe essere visualizzato un avviso in <ph name="DEV_TOOLS_NAME" /> a causa di controlli <ph name="PRIVATE_NETWORK_ACCESS" /> non riusciti, la richiesta principale verrà bloccata.
 
 Se questo criterio viene impostato su Disattivato o se non viene configurato, tutti gli avvisi di <ph name="PRIVATE_NETWORK_ACCESS" /> non verranno applicati in modo forzato e le richieste non verranno bloccate.
@@ -4360,17 +4347,6 @@ Questo criterio è stato utilizzato per disattivare l'upgrade automatico dei con
 
       Se il criterio non è impostato, viene applicata la velocità predefinita di 10 minuti.</translation>
 <translation id="4290231183305601970">Il testo che verrà mostrato all'utente nel Chrome Web Store se l'installazione è bloccata.</translation>
-<translation id="4291413477651927481">Queste funzionalità in DevTools di <ph name="PRODUCT_NAME" /> utilizzano modelli di AI generativa per fornire maggiori informazioni di debug. Per utilizzare queste funzionalità, <ph name="PRODUCT_NAME" /> deve raccogliere dati come messaggi di errore, analisi dello stack, snippet di codice e richieste di rete e inviarli a un server di proprietà di Google, che esegue un modello di AI generativa. Il corpo della risposta o le intestazioni dei cookie e dell'autenticazione nelle richieste di rete non sono inclusi nei dati inviati al server.
-
-0 = Attiva la funzionalità per gli utenti e invia i dati pertinenti a Google per contribuire ad addestrare o migliorare i modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output e materiali originali. Possono essere esaminati da persone al solo scopo di migliorare i modelli di AI. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
-
-1 = Attiva la funzionalità per gli utenti, ma non invia dati a Google per addestrare o migliorare i modelli di AI. 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-2 = Disattiva la funzionalità.
-
-Le funzionalità di AI generativa di DevTools includono quanto segue.
-
-- Approfondimenti sulla console: spiega i messaggi della console e offre suggerimenti su come correggere gli errori.</translation>
 <translation id="4293187705196369087">Consente di attivare o di disattivare una notifica quando lo spazio sul disco è in esaurimento. La scelta si applica a tutti gli utenti sul dispositivo.
 
       Se il criterio viene impostato su Attivato, viene mostrata una notifica quando lo spazio rimanente sul disco è in esaurimento.
@@ -10978,7 +10954,6 @@ L'impostazione predefinita è RollbackDisabled.</translation>
 
       Se il criterio è impostato su Vero o non viene configurato, tutti gli utenti potranno accedere.</translation>
 <translation id="966425658642788645">Applica il comportamento predefinito</translation>
-<translation id="970144760302377175">Configura quando lo strumento Graduation di <ph name="PRODUCT_OS_NAME" /> è disponibile</translation>
 <translation id="971677226939413180">L'opzione Stampa come immagine non può essere selezionata dagli utenti</translation>
 <translation id="974349541138387272">Specifica il modello URI del resolver DNS over HTTPS desiderato</translation>
 <translation id="978658824596356870">Formato dell'orologio di 24 ore</translation>

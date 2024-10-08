@@ -50,6 +50,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="17264556997921157">Ви можете переглядати й вилучати цікаві теми, на основі яких сайти показують вам оголошення. Chromium оцінює, які теми вас цікавлять, за вашою нещодавньою історією веб-перегляду.</translation>
 <translation id="1733725117201708356">Незабаром Chromium видалить дані веб-перегляду</translation>
 <translation id="1736443181683099871">Chromium спробує перейти на протокол HTTPS</translation>
+<translation id="1736662517232558588">Дані Chromium стерто</translation>
 <translation id="1745121272106313518">Chromium перезапуститься через <ph name="REMAINING_TIME" /></translation>
 <translation id="1749104137266986751">Якщо протокол HTTPS недоступний, Chromium використовуватиме незахищене з’єднання без попередження</translation>
 <translation id="1774152462503052664">Дозволити Chromium працювати у фоновому режимі</translation>
@@ -80,6 +81,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="2088953378266246249">Інформація про те, як Chromium керує кореневими сертифікатами</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Ваша організація автоматично видалить дані веб-перегляду, якщо Chromium не використовується протягом 1 хвилини. Це може охоплювати історію, дані автозаповнення й завантаження. Вкладки залишатимуться відкритими.}one{Ваша організація автоматично видалить дані веб-перегляду, якщо Chromium не використовується протягом # хвилини. Це може охоплювати історію, дані автозаповнення й завантаження. Вкладки залишатимуться відкритими.}few{Ваша організація автоматично видалить дані веб-перегляду, якщо Chromium не використовується протягом # хвилин. Це може охоплювати історію, дані автозаповнення й завантаження. Вкладки залишатимуться відкритими.}many{Ваша організація автоматично видалить дані веб-перегляду, якщо Chromium не використовується протягом # хвилин. Це може охоплювати історію, дані автозаповнення й завантаження. Вкладки залишатимуться відкритими.}other{Ваша організація автоматично видалить дані веб-перегляду, якщо Chromium не використовується протягом # хвилини. Це може охоплювати історію, дані автозаповнення й завантаження. Вкладки залишатимуться відкритими.}}</translation>
 <translation id="2126108037660393668">Завантажений файл не пройшов перевірку.</translation>
+<translation id="2137162749895930932">Закрити екран перекладу</translation>
 <translation id="215352261310130060">Веб-переглядач Chromium заблокував завантаження, оскільки цей сайт використовує ненадійне з’єднання й файл може бути підробленим</translation>
 <translation id="2157600032285353789">У меню Chromium можна відкривати закладки, переходити в режим читання тощо</translation>
 <translation id="2174178932569897599">Налаштувати Chromium</translation>
@@ -147,6 +149,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="3032706164202344641">Chromium не може перевірити паролі. Повторіть спробу пізніше.</translation>
 <translation id="3032787606318309379">Додавання в Chromium...</translation>
 <translation id="3038232873781883849">Очікується встановлення…</translation>
+<translation id="3045032126857188731">Мова перекладу: <ph name="LANGUAGE" /></translation>
 <translation id="3068187312562070417">Інші профілі Chromium</translation>
 <translation id="3068515742935458733">Допоможіть покращити Chromium, надсилаючи звіти про аварійне завершення роботи та <ph name="UMA_LINK" /> в Google</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Щонайменше одне розширення Chromium отримало доступ до 1 пристрою USB}=1{Щонайменше одне розширення Chromium має доступ до 1 пристрою USB}one{Щонайменше одне розширення Chromium має доступ до # пристрою USB}few{Щонайменше одне розширення Chromium має доступ до # пристроїв USB}many{Щонайменше одне розширення Chromium має доступ до # пристроїв USB}other{Щонайменше одне розширення Chromium має доступ до # пристрою USB}}</translation>
@@ -165,7 +168,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3268051428841342958">V8 – це система JavaScript і WebAssembly для Chromium, яка використовується, щоб покращувати ефективність сайтів.</translation>
-<translation id="3269209112443570745">Новинка! Легко шукайте те, що бачите на екрані</translation>
 <translation id="3283186697780795848">Chromium версії <ph name="PRODUCT_VERSION" /> встановлено</translation>
 <translation id="3286538390144397061">Перезапустити зараз</translation>
 <translation id="328888136576916638">Ключі API Google відсутні. Деякі функції Chromium буде вимкнено.</translation>
@@ -205,6 +207,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="386822487697155367">Отримати довідку щодо Chromium OS</translation>
 <translation id="3871664619793219264">Отримуйте доступ до своїх даних у веб-переглядачі Chromium через обліковий запис <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="3885770153807205175">Засіб вибору мови</translation>
 <translation id="388648406173476553">Налаштуйте й керуйте Chromium. Якщо з’явиться сповіщення, натисніть його, щоб дізнатися більше.</translation>
 <translation id="3889543394854987837">Натисніть своє ім’я, щоб відкрити Chromium і розпочати перегляд сайтів.</translation>
 <translation id="390528597099634151">Цей профіль Chromium уже використовує <ph name="EXISTING_USER" />. Щоб переглядати веб-сторінки окремо, ви можете створити власний профіль Chromium.</translation>
@@ -217,6 +220,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="3997429360543082038">Про Chromium OS</translation>
 <translation id="4019629340646866719">Chromium OS і <ph name="BEGIN_LINK_LINUX_OSS" />середовище для розробки Linux<ph name="END_LINK_LINUX_OSS" /> працюють завдяки додатковому <ph name="BEGIN_LINK_CROS_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="4022972681110646219">Перекласти вміст екрана</translation>
+<translation id="4023601594785368013">Мова оригіналу: <ph name="LANGUAGE" /></translation>
 <translation id="4036079820698952681">Допоможіть покращити Chromium, надсилаючи звіти про <ph name="BEGIN_LINK" />поточні налаштування<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">В останній версії покращено безпеку та додано нові функції.</translation>
 <translation id="4055805654398742145">М&amp;енеджер паролів</translation>
@@ -286,6 +290,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="494490797786467921">Натисніть, щоб закрити вікно входу в Chromium</translation>
 <translation id="4987820182225656817">Гості можуть анонімно користуватися Chromium.</translation>
 <translation id="4994636714258228724">Додати себе в Chromium</translation>
+<translation id="5024548327980648634">Шукайте контент, який ви бачите на екрані</translation>
 <translation id="5051959905407134411">Спробуйте пошук за зображенням</translation>
 <translation id="5114678101347489141">Chromium досліджує нові функції, з якими сайти могли б працювати як завжди, але використовувати менше вашої інформації</translation>
 <translation id="5123973130450702873">Вебпереглядачу Chromium потрібен дозвіл на відстеження ваших рук</translation>
@@ -331,6 +336,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="5761096224651992291">Останнім часом ви не відвідували цей сайт. Вебпереглядач Chromium скасував такі дозволи: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і <ph name="PERMISSION_3" />.</translation>
 <translation id="5800158606660203929">Керуйте налаштуваннями Chromium. Зробіть Chromium вебпереглядачем за умовчанням.</translation>
 <translation id="5809516625706423866">Не вдалося підключитися до Інтернету. Помилка "HTTP 401 не авторизовано". Перевірте конфігурацію свого проксі-сервера.</translation>
+<translation id="5821520528363214608">Щоб зберігати й використовувати дані Chromium в обліковому записі Google, оновіть Chromium</translation>
 <translation id="5862307444128926510">Вітаємо в Chromium</translation>
 <translation id="5871205389137001634">Натисніть, щоб закрити пошук за зображенням</translation>
 <translation id="5883558403894052917">Веб-переглядач Chromium виявив, що наведені нижче елементи містять зловмисне програмне забезпечення.</translation>
@@ -491,6 +497,7 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="7686590090926151193">Chromium не є вашим веб-переглядачем за умовчанням</translation>
 <translation id="7689606757190482937">Синхронізуйте та персоналізуйте роботу Chromium на всіх своїх пристроях</translation>
 <translation id="7699779824407626136">Оновлення Chromium</translation>
+<translation id="77283119132245232">Сервіс трасування системи для <ph name="BROWSER_NAME" />. Якщо цей сервіс вимкнути, дані про трасування ефективності, створені вебпереглядачем, не включатимуть події на рівні системи, як-от перемикання контексту й події готових потоків.</translation>
 <translation id="7745317241717453663">Дані веб-перегляду буде видалено з цього пристрою. Щоб відновити дані пізніше, увійдіть в обліковий запис Chromium як <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Програмі встановлення не вдалося створити тимчасовий каталог. Перевірте наявність вільного простору на диску та дозволу на встановлення програмного забезпечення.</translation>
 <translation id="7786760609782648049">Пришвидшіть роботу Chromium</translation>

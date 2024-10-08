@@ -114,6 +114,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="132346741904777634">Kamera se uklopila u gornji lijevi ugao. Došlo je do konflikta s površinom sistema.</translation>
 <translation id="132415371743256095">Zatvorite radnu površinu <ph name="DESK_NAME" /> i prozore</translation>
 <translation id="1333308631814936910">Ekran <ph name="DISPLAY_NAME" /> je povezan</translation>
+<translation id="1337081488893096731">Pomoću aplikacije Content Transfer premjestite podatke školskog računa na lični račun</translation>
 <translation id="1340378040547539434">Umanjivanje stranice</translation>
 <translation id="1341651618736211726">Preklopni meni</translation>
 <translation id="1341926407152459446">Koristite "<ph name="DEVICE_NAME" />" za ulaz i izlaz zvuka</translation>
@@ -242,6 +243,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="17722141032474077">Izračuni</translation>
 <translation id="1774796056689732716">Kalendar, <ph name="CURRENT_MONTH_YEAR" />, trenutno je odabran datum <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Postavljanje pregledanja nedavnih fotografija, medijskih fajlova i obavještenja telefona</translation>
+<translation id="1786487376942610288">Prebacivanje između prozora slike u slici u maksimalnoj ili trenutnoj veličini</translation>
 <translation id="1787955149152357925">Isključeno</translation>
 <translation id="1796561540704213354">Web lokacije uključujući posjećene i otvorene stranice</translation>
 <translation id="179842970735685253">Googleovim Uslovima korištenja usluge</translation>
@@ -337,6 +339,9 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="219905428774326614">Pokretač, sve aplikacije</translation>
 <translation id="2201071101391734388"><ph name="INDEX" />. nedavna fotografija od <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Sužavanje Google Zadataka</translation>
+<translation id="2206960886090042977">Ugrađena dodirna podloga je onemogućena jer je povezan miš. Potvrdite promjenu pomoću miša ili tastature.
+
+U suprotnom će se ugrađena dodirna podloga ponovo omogućiti za 30 sekundi.</translation>
 <translation id="2208323208084708176">Unificirani način rada na računaru</translation>
 <translation id="2220572644011485463">PIN ili lozinka</translation>
 <translation id="2222841058024245321">Radna površina 7</translation>
@@ -1468,7 +1473,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="598407983968395253">Koristi šablon</translation>
 <translation id="5986723678596105470">Pridružite se putem Google Meeta</translation>
 <translation id="598882571027504733">Za primanje ažuriranja, ponovo pokrenite Chromebook dok je tastatura priključena.</translation>
-<translation id="5990992855591814753">Ostanite usredotočeni uz personalizirane playliste za koncentraciju. Nabavite YouTube Music i YouTube bez oglasa uz tri mjeseca YouTube Premiuma bez dodatnih troškova. Primjenjuju se uvjeti.</translation>
+<translation id="5990992855591814753">Koncentrirajte se uz personalizirane plejliste za fokusiranje. Nabavite YouTube Music i YouTube bez oglasa uz YouTube Premium 3 mjeseca besplatno. Primjenjuju se uslovi.</translation>
 <translation id="5998374579424866922">Isključite kontrole za igre</translation>
 <translation id="6000279412553873020">Tipke, dugmad i drugo</translation>
 <translation id="6012623610530968780">Stranica <ph name="SELECTED_PAGE" /> od <ph name="TOTAL_PAGE_NUM" /></translation>
@@ -1907,6 +1912,9 @@ Nova instalacija</translation>
 Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na uređaju.</translation>
 <translation id="7523420897035067483">Omogućavanje funkcije "Ne ometaj" za vrijeme fokusiranja</translation>
 <translation id="7524043547948122239">Google Zadaci</translation>
+<translation id="7524919752437339268">Ugrađena dodirna podloga je onemogućena. Potvrdite promjenu pomoću tastature ili drugog uređaja za pokazivanje.
+
+U suprotnom će se ugrađena dodirna podloga ponovo omogućiti za 30 sekundi.</translation>
 <translation id="7525067979554623046">Kreiraj</translation>
 <translation id="7526573455193969409">Mreža može biti nadzirana</translation>
 <translation id="7536035074519304529">IP adresa: <ph name="ADDRESS" /></translation>
@@ -2294,6 +2302,7 @@ Da isključite uređaj, ponovo pritisnite i zadržite dugme za uključivanje na 
 <translation id="8858369206579825206">Kontrole privatnosti</translation>
 <translation id="8860366331836346216">Dodajte eSIM</translation>
 <translation id="8870509716567206129">Aplikacija ne podržava dijeljenje ekrana.</translation>
+<translation id="8873203135446552888">Potvrdite da želite onemogućiti ugrađenu dodirnu podlogu</translation>
 <translation id="8874184842967597500">Nije povezano</translation>
 <translation id="8875021410787719674">Premještajte se između donjeg desnog ugla, pokretača, trake za adresu, trake oznaka, otvorene web lokacije i preuzimanja</translation>
 <translation id="8876148469852588625">Događaj <ph name="EVENT_POSITION" /> od <ph name="EVENT_TOTAL_COUNT" /></translation>

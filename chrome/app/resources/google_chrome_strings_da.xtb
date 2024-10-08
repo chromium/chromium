@@ -70,6 +70,7 @@
 <translation id="1919130412786645364">Tillad login i Chrome</translation>
 <translation id="1953553007165777902">Downloader… Der er <ph name="MINUTE" /> minutter tilbage</translation>
 <translation id="1982647487457769627">Chrome fungerer på tværs af platforme, så du får en ensrettet oplevelse, uanset hvilken enhed du bruger</translation>
+<translation id="19955905961160405">Søg efter det, der vises på din skærm, med Google Lens</translation>
 <translation id="2001586581944147178">Gør det sværere for brugere med adgang til din internettrafik at se, hvilke websites du besøger. Chrome anvender en sikker forbindelse til at slå et websites IP-adresse op i domænenavnesystemet (DNS, Domain Name System).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Denne udvidelse understøttes ikke længere. Chrome anbefaler, at du fjerner den.}one{Denne udvidelse understøttes ikke længere. Chrome anbefaler, at du fjerner den.}other{Disse udvidelser understøttes ikke længere. Chrome anbefaler, at du fjerner dem.}}</translation>
 <translation id="2018528049276128029">Hver profil har sine egne Chrome-oplysninger som f.eks. bogmærker, historik, adgangskoder m.m.</translation>
@@ -87,6 +88,7 @@
 <translation id="2126108037660393668">Verificering af den downloadede fil mislykkedes.</translation>
 <translation id="2128411189117340671">Administrer Chrome-profiler</translation>
 <translation id="2131230230468101642">Vi sletter automatisk de interesser, der er ældre end 4 uger, for at beskytte dit privatliv. Mens du surfer, kan en interesse vises på listen igen. Du kan også fjerne interesser, som du ikke vil have, at Chrome skal tage med i betragtning.</translation>
+<translation id="2137162749895930932">Luk oversættelsesskærmen</translation>
 <translation id="2139300032719313227">Genstart ChromeOS</translation>
 <translation id="2151406531797534936">Genstart Chrome nu</translation>
 <translation id="2163089732491971196">Angiv din adgangssætning for at bruge og gemme Chrome-data på din Google-konto</translation>
@@ -159,7 +161,7 @@
 <translation id="29082080693925013">Du kan holde styr på tingene ved at fastgøre ofte besøgte websites og organisere faner i grupper</translation>
 <translation id="2915996080311180594">Genstart senere</translation>
 <translation id="2926676257163822632">Svage adgangskoder er nemme at gætte. Få Chrome <ph name="BEGIN_LINK" />til at oprette og huske stærke adgangskoder for dig<ph name="END_LINK" />.</translation>
-<translation id="2926952073016206995">Chrome skal have adgangstilladelse til kamera for at bruge dette website</translation>
+<translation id="2926952073016206995">Chrome skal have kameratilladelse for at bruge dette website</translation>
 <translation id="2928420929544864228">Installationen er fuldført.</translation>
 <translation id="2929907241665500097">Chrome blev ikke opdateret, da der opstod en fejl. <ph name="BEGIN_LINK" />Løs problemer med opdatering af Chrome og mislykkede opdateringer.<ph name="END_LINK" /></translation>
 <translation id="2945997411976714835">Installationsfejl: Installationsprocessen kunne ikke startes.</translation>
@@ -170,6 +172,7 @@
 <translation id="3019382870990049182">Genstart for at opdatere &amp;ChromeOS Flex</translation>
 <translation id="3037838751736561277">Google Chrome kører i baggrunden.</translation>
 <translation id="3038232873781883849">Venter på at installere…</translation>
+<translation id="3045032126857188731">Oversat sprog: <ph name="LANGUAGE" /></translation>
 <translation id="3059710691562604940">Beskyttet browsing er deaktiveret. Chrome anbefaler, at du aktiverer funktionen.</translation>
 <translation id="306179102415443347">Brug din genvej til hurtigt at gå til Google Adgangs­kode­admin­istrator. Du kan flytte din genvej til din computers startskærm eller appliste.</translation>
 <translation id="3065168410429928842">Fanen Chrome</translation>
@@ -188,7 +191,6 @@
 <translation id="3234642784688107085">Prøv nye AI-funktioner for at oprette temaer, få hjælp til at skrive og bevare overblikket</translation>
 <translation id="3245429137663807393">Hvis du også deler Chrome-brugsrapporter, omfatter de pågældende rapporter de webadresser, du besøger</translation>
 <translation id="3261565993776444564">Prøv en ny farve for at tilpasse din browser</translation>
-<translation id="3269209112443570745">Nyhed! Nu kan du nemt søge efter det, der vises på din skærm</translation>
 <translation id="3282568296779691940">Log ind i Chrome</translation>
 <translation id="3286538390144397061">Genstart nu</translation>
 <translation id="3292333338048274092">Du skal derefter genstarte Chrome.</translation>
@@ -238,12 +240,14 @@
 <translation id="386202838227397562">Luk alle Google Chrome-vinduer, og prøv igen.</translation>
 <translation id="3865754807470779944">Chrome version <ph name="PRODUCT_VERSION" /> er installeret</translation>
 <translation id="3873044882194371212">Åbn linket i et inko&amp;gnitovindue i Chrome</translation>
+<translation id="3885770153807205175">Sprogvælger</translation>
 <translation id="3889417619312448367">Afinstaller Google Chrome</translation>
 <translation id="3941890832296813527">Installationsfejl: Installationens filnavn er ugyldigt eller understøttes ikke.</translation>
 <translation id="3973161977468201858">Google Chrome anmoder om tilladelse til at slette dine data i Google Adgangskodeadministrator. Angiv din Windows-adgangskode for at tillade dette.</translation>
 <translation id="398236277091248993">Chrome forbliver hurtig takket være funktioner, der booster ydeevnen</translation>
 <translation id="3999683152997576765">Du kan se og fjerne interesseområder, som websites bruger til at vise annoncer. Chrome estimerer dine interesser på baggrund af din seneste browserhistorik.</translation>
 <translation id="4022972681110646219">Oversæt skærmen</translation>
+<translation id="4023601594785368013">Originalsprog: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">ChromeOS skal genstartes, før opdateringen kan anvendes.</translation>
 <translation id="4050175100176540509">Vigtige sikkerhedsforbedringer og nye funktioner er tilgængelige i den seneste version.</translation>
 <translation id="4053720452172726777">Tilpas Google Chrome</translation>
@@ -436,7 +440,7 @@
 <translation id="6489302989675808168">Til • Chrome kan ikke verificere, hvor denne udvidelse kommer fra</translation>
 <translation id="6493527311031785448">Google Chrome forsøger at <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="6497147134301593682">Chrome blev automatisk lukket</translation>
-<translation id="6506909944137591434">Chrome skal have adgangstilladelse til kamera for at oprette et 3D-kort over dine omgivelser</translation>
+<translation id="6506909944137591434">Chrome skal have kameratilladelse for at oprette et 3D-kort over dine omgivelser</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> – Google Chrome for udviklere</translation>
 <translation id="6520670145826811516">Giv Chrome adgang i <ph name="BEGIN_LINK" />systemindstillingerne<ph name="END_LINK" /> for at bruge din lokation</translation>
 <translation id="659498884637196217">I Google Adgangs­kode­admin­istrator på denne enhed</translation>
@@ -515,6 +519,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="7514258452813684157">Google Updater Service</translation>
 <translation id="7515191208480168435">Du kan fastgøre Google Lens for at få nem adgang</translation>
 <translation id="7535429826459677826">Udviklerversionen af Chrome</translation>
+<translation id="756809126120519699">Chrome-dataene blev ryddet</translation>
 <translation id="7572537927358445944">Fra • Chrome kan ikke verificere, hvor denne udvidelse kommer fra</translation>
 <translation id="7583399374488819119">Installationsprogram til <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
@@ -532,6 +537,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="7668816516367091728">Udfør opgaver såsom at oversætte, lave regnestykker og meget mere direkte i adresselinjen</translation>
 <translation id="7670287553302121848">Chrome-kontoen kræver fornyet godkendelse</translation>
 <translation id="769538538642757151">Chrome giver dig besked, hvis der er noget, du skal gennemgå</translation>
+<translation id="77283119132245232">Leverer systemsporingstjenester til <ph name="BROWSER_NAME" />. Hvis denne tjeneste er deaktiveret, omfatter registreringer, der er oprettet af browseren, ikke systemhændelser som f.eks. kontekstskift og hændelser med klargjorte tråde.</translation>
 <translation id="7747138024166251722">Installationsprogrammet kunne ikke oprette en midlertidig mappe. Tjek, om der er tilstrækkelig diskplads, og om der er tilladelse til at installere software.</translation>
 <translation id="7761834446675418963">Klik på dit navn for at åbne Chrome og gå i gang med at browse.</translation>
 <translation id="7763983146198734674">Gem dine adgangskoder, og få adgang til dem på farten</translation>

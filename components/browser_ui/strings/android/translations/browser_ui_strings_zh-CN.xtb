@@ -106,7 +106,9 @@
 <translation id="2683434792633810741">删除并重置？</translation>
 <translation id="2713106313042589954">关闭摄像头</translation>
 <translation id="2717722538473713889">电子邮件地址</translation>
+<translation id="2726059656860238749">启动 Chrome 时将焦点放在多功能框上，从而缩短低端设备的启动时间。</translation>
 <translation id="2750481671343847896">网站可以显示来自身份服务的登录提示。</translation>
+<translation id="2787357173144933081">快速启动多功能框</translation>
 <translation id="2790501146643349491">开启此设置后，最近关闭的网站可以完成数据收发操作。关闭此设置后，最近关闭的网站无法完成数据收发操作。</translation>
 <translation id="2822354292072154809">确定要重置<ph name="CHOSEN_OBJECT_NAME" />的所有网站权限吗？</translation>
 <translation id="2850913818900871965">请求使用移动视图</translation>
@@ -144,6 +146,7 @@
 <translation id="3295602654194328831">隐藏信息</translation>
 <translation id="3328801116991980348">网站信息</translation>
 <translation id="3333961966071413176">所有联系人</translation>
+<translation id="3360338140203645771">要删除已保存的缩放级别？</translation>
 <translation id="3362437373201486687">正在搜寻蓝牙设备</translation>
 <translation id="3386292677130313581">需先询问，得到许可后才允许网站获取您的位置信息（推荐）</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
@@ -239,7 +242,6 @@
 <translation id="4962975101802056554">撤消设备的所有权限</translation>
 <translation id="497421865427891073">前进</translation>
 <translation id="4976702386844183910">上次访问日期：<ph name="DATE" /></translation>
-<translation id="4985206706500620449">您已允许此网站使用第三方 Cookie</translation>
 <translation id="4994033804516042629">找不到任何联系人</translation>
 <translation id="4996978546172906250">分享方式</translation>
 <translation id="5001526427543320409">第三方 Cookie</translation>
@@ -355,6 +357,7 @@
 <translation id="6527303717912515753">分享</translation>
 <translation id="652937045869844725">尝试允许使用第三方 Cookie，这意味着您将采用较低级别的保护措施，但网站功能更有可能正常运行</translation>
 <translation id="6530703012083415527">开启此设置后，网站可以使用弹出式窗口和重定向。关闭此设置后，网站无法使用弹出式窗口和重定向。</translation>
+<translation id="6540488083026747005">您已允许此网站使用第三方 Cookie</translation>
 <translation id="6545864417968258051">蓝牙扫描</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{已禁用“<ph name="PERMISSION_1" />”权限、“<ph name="PERMISSION_2" />”权限和另外 <ph name="NUM_MORE" /> 项权限}other{已禁用“<ph name="PERMISSION_1" />”权限、“<ph name="PERMISSION_2" />”权限和另外 <ph name="NUM_MORE" /> 项权限}}</translation>
 <translation id="6554732001434021288">上次访问时间：<ph name="NUM_DAYS" /> 天前</translation>

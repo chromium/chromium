@@ -204,6 +204,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="1957557050935255529">Loading PDF…</translation>
 <translation id="1959679933317802873">Waiting for content</translation>
 <translation id="1960290143419248813">Chrome updates are no longer supported for this version of Android</translation>
+<translation id="1963056249988316027">Identity Check is on and can't verify that it's you</translation>
 <translation id="1963976881984600709">Standard protection</translation>
 <translation id="1966710179511230534">Please update your sign-in details.</translation>
 <translation id="1969037871259811890">Deleting your browsing data doesn't sign you out of your Google Account. To do so, <ph name="BEGIN_LINK1" />sign out of Chrome<ph name="END_LINK1" />.</translation>
@@ -555,6 +556,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3622349720008044802">Manage windows</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 site}other{+ # sites}}</translation>
 <translation id="3631987586758005671">Sharing to <ph name="DEVICE_NAME" /></translation>
+<translation id="363484704507524488">You can manage Identity Check in theft protection settings. <ph name="BEGIN_LINK" />Go to settings<ph name="END_LINK" /></translation>
 <translation id="3635073343384702370">Chrome can check your passwords when you save them.</translation>
 <translation id="363596933471559332">Automatically sign in to websites using stored credentials. When the feature is off, you’ll be asked for verification every time before signing in to a website.</translation>
 <translation id="3636940436873918441">Preferred languages</translation>
@@ -727,7 +729,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4489640160615759754">Share with summary sheet</translation>
 <translation id="4494806687727322324">Password saving has been turned on by your administrator</translation>
 <translation id="4508528996305412043">Feed card menu is opened</translation>
-<translation id="4509501256689523862">As you browse, whether an ad that you see is personalised depends on this setting, <ph name="BEGIN_LINK_1" />ad topics<ph name="END_LINK_1" />, your <ph name="BEGIN_LINK_2" />cookie settings<ph name="END_LINK_2" /> and if the site that you’re viewing personalises ads</translation>
 <translation id="4509741852167209430">Limited types of data are shared between sites to measure the performance of their ads, such as whether you made a purchase after visiting a site</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# day ago}other{# days ago}}</translation>
 <translation id="451872707440238414">Search your bookmarks</translation>
@@ -740,7 +741,6 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4532845899244822526">Choose folder</translation>
 <translation id="4543131175509360848">No passkeys sheet</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> tab}other{<ph name="TAB_COUNT_MANY" /> tabs, <ph name="TAB_COUNT_INCOGNITO" /> incognito}}</translation>
-<translation id="4554077758708533499">Connected with USB cable</translation>
 <translation id="4558311620361989323">Web page shortcuts</translation>
 <translation id="4561730552726921821">Registration succeeded</translation>
 <translation id="4565377596337484307">Hide password</translation>
@@ -1036,6 +1036,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5869522115854928033">Saved passwords</translation>
 <translation id="587735546353481577">To follow a site, go to the site, open the Chrome menu and tap Follow.</translation>
 <translation id="5879072387416556377">Get better suggestions</translation>
+<translation id="5883855034004058011">Biometrics failed too many times. Lock and unlock your device to retry.</translation>
 <translation id="5885378508678660271">Notifications <ph name="SEPARATOR" /> Chrome removed these permissions because this site is dangerous</translation>
 <translation id="5895834791314695851">Passwords may stop working soon on this device. To keep using your passwords, update Google Play services. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">No passkeys sheet was closed</translation>
@@ -1368,7 +1369,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7260367682327802201">Your Android device may include a similar setting. If ads measurement is turned on in Chrome and on your Android device, a company may be able to measure the effectiveness of an ad across websites that you visit and apps that you use.</translation>
 <translation id="727288900855680735">Submit <ph name="ONE_TIME_CODE" /> to <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Blocked site</translation>
-<translation id="7276100255011548441">Chrome auto-deletes topics that are older than four weeks. As you keep browsing, a topic might reappear on the list. Or you can block topics that you don't want Chrome to share with sites. Learn more about <ph name="BEGIN_LINK" />managing your ad privacy in Chrome.<ph name="END_LINK" /></translation>
 <translation id="7284878711178835966">As you type, Chrome sends the content of the address bar or search box to your default search engine</translation>
 <translation id="7289049772085228972">You have Chrome's strongest security</translation>
 <translation id="7289303553784750393">If you're online but this issue keeps happening, you can try other ways to continue on <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -1433,7 +1433,6 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="7517292544534877198">Use Google's default encryption for the passwords in your Google Account</translation>
 <translation id="7518079994230200553">This option is unavailable right now.</translation>
 <translation id="751961395872307827">Can't connect to the site</translation>
-<translation id="752220631458524187">Disconnect when you’ve finished</translation>
 <translation id="7523960634226602883">Search with your camera using Google Lens</translation>
 <translation id="7525248386620136756"><ph name="TAB_GROUPS_AND_TABS_PART" /> closed and saved</translation>
 <translation id="752731652852882757">Block while using Incognito</translation>

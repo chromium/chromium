@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">ڈسپلے کی چمک کم کرنے کی کلید</translation>
 <translation id="2086091080968010660">وقت پر مبنی تبدیلیاں ممکن ہے درست نہ ہوں۔ ترتیبات میں سسٹم کے مقام کی رسائی کو آن کریں۔</translation>
 <translation id="2102231663024125441">ٹیکسٹ میں ترمیم کرنا</translation>
-<translation id="2102648867808308635">اس صفحہ کو پڑھنے میں میری مدد کریں</translation>
 <translation id="2105810540595158374">آلہ ایک گیم کنٹرولر ہے۔</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />، ورژن <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">‏فی الحال صرف انگریزی (US) میں دستیاب ہے</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">سبھی ایپس دیکھیں</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />کارکردگی کا پتا لگانے کا ڈیٹا<ph name="END_LINK1" /> بھیجیں</translation>
 <translation id="3517001332549868749">‏Chrome OS اپ ڈیٹ</translation>
-<translation id="3522508178835057262">فی الحال، <ph name="MAX_WORD_LENGTH" /> الفاظ سے زیادہ کی ٹرانسکرپٹ تعاون یافتہ نہیں ہے</translation>
 <translation id="3527036260304016759">ناکام ہو گیا - نامعلوم خرابی</translation>
 <translation id="353214771040290298">ترمیم ہو گئی</translation>
 <translation id="3532980081107202182">تقریباً <ph name="MIN_REMAINING" /> منٹ باقی ہیں</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">ہلکی تھیم</translation>
 <translation id="4813136279048157860">میری تصاویر</translation>
 <translation id="4813345808229079766">کنکشن</translation>
-<translation id="4824527342590024245">فی الحال، <ph name="MIN_WORD_LENGTH" /> الفاظ سے کم ٹرانسکرپٹ تعاون یافتہ نہیں ہے</translation>
 <translation id="4830894019733815633">آبی درہ</translation>
 <translation id="4832079907277790330">فائلز ایپ میں فولڈر منتخب کریں...</translation>
 <translation id="4835901797422965222">کوئی فعال نیٹ ورک نہیں</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">ملتا جلتا:</translation>
 <translation id="5130848777448318809">پونیز</translation>
 <translation id="5137451382116112100">فُل</translation>
+<translation id="5140788690559353412">‏جب آپ اپنے اسکول اکاؤنٹ تک رسائی کھو دیتے ہیں تو آپ کو متعلقہ ای میل اور Google Drive فائلز جیسے Gmail، Docs، Slides وغیرہ تک مزید رسائی حاصل نہیں ہوگی۔</translation>
 <translation id="5142961317498132443">تصدیق</translation>
 <translation id="5144311987923128508">تصدیق کا بٹن اب غیر فعال ہے</translation>
 <translation id="5144887194300568405">ترجمہ کاپی کریں</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">‏‎(Android) HTTP میں تاخیر</translation>
 <translation id="6078323886959318429">شارٹ کٹ شامل کریں</translation>
 <translation id="6091080061796993741">پیلا</translation>
+<translation id="6093853427925392522">‏رسائی کھونے سے پہلے اپنے اسکول اکاؤنٹ کے ڈیٹا کو اپنے ذاتی اکاؤنٹ میں منتقل کرنے کے لیے Google کی طرف سے مواد کی منتقلی ایپ کا استعمال یقینی بنائیں۔</translation>
 <translation id="6104112872696127344">اسکین کا عمل منسوخ کر دیا گیا</translation>
 <translation id="6106186594183574873">مکمل کرنے کے لئے اپنا پرانا پاس ورڈ درج کریں</translation>
 <translation id="6108689792487843350">گیٹ وے ناقابل رسائی ہے</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">‏رسائی کی جگہ کا نام (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{نام سرور}other{نام سرورز}}</translation>
 <translation id="7135814714616751706">شارٹ کٹس تلاش کریں</translation>
+<translation id="7141470099673912333">مواد کی منتقلی</translation>
 <translation id="7143207342074048698">منسلک ہو رہا ہے</translation>
 <translation id="7144878232160441200">دوبارہ کوشش کریں</translation>
 <translation id="7144954474087165241">پگوڈا</translation>
@@ -1394,6 +1394,7 @@
 <translation id="7856267634822906833">بلوٹوتھ ٹچ اسکرین</translation>
 <translation id="7859006200041800233">ناگ پھنی کا پھول</translation>
 <translation id="7869143217755017858">تاریک وضع غیر فعال کریں</translation>
+<translation id="7878972877380405573">پڑھنے میں میری مدد کریں کے ساتھ خلاصہ کریں</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">فراہم کنندہ کی قسم</translation>
 <translation id="7882501334836096755">عوامی کلید</translation>
@@ -1537,6 +1538,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" /> کیلئے مزید کارروائیاں</translation>
 <translation id="86356131183441916">ہلکا جامنی</translation>
 <translation id="8647595191512746911">آڈیو ٹرانسکرپشن</translation>
+<translation id="8650852232143958317">‏اپنی Gmail اور Google Drive فائلز اپنے ساتھ لے جائیں</translation>
 <translation id="8651481478098336970">والیوم خاموش کریں</translation>
 <translation id="8655295600908251630">چینل</translation>
 <translation id="8655828773034788261">‏URL کا اشتراک کریں:</translation>

@@ -49,6 +49,7 @@
 <translation id="1979673356880165407">Bëje tekstin dhe imazhet më të mëdha ose më të vogla për të gjitha sajtet që viziton ti</translation>
 <translation id="1984937141057606926">Lejohet, përveç palëve të treta</translation>
 <translation id="1985247341569771101">Kur cilësimi është aktiv, sajtet mund të përdorin sensorët e lëvizjes të pajisjes. Kur cilësimi është joaktiv, sajtet nuk mund të përdorin sensorët e lëvizjes.</translation>
+<translation id="1985716030964443178">Kjo do të rivendosë të gjitha sajtet në listën tënde te zmadhimi i parazgjedhur</translation>
 <translation id="1989112275319619282">Shfleto</translation>
 <translation id="1994173015038366702">URL-ja e sajtit</translation>
 <translation id="2004697686368036666">Veçoritë në disa sajte mund të mos funksionojnë</translation>
@@ -103,10 +104,13 @@
 <translation id="2653659639078652383">Dërgoje</translation>
 <translation id="2677748264148917807">Largohu</translation>
 <translation id="2678468611080193228">Provo të lejosh përkohësisht kukit e palëve të treta, që do të thotë më pak mbrojtje, por veçoritë e sajteve kanë më shumë mundësi të punojnë</translation>
+<translation id="2682367912565197520">Fshi nivelin e ruajtur të zmadhimit</translation>
 <translation id="2683434792633810741">Të fshihen dhe të rivendosen?</translation>
 <translation id="2713106313042589954">Çaktivizo kamerën</translation>
 <translation id="2717722538473713889">Adresat e email-it</translation>
+<translation id="2726059656860238749">Hap Chrome me fokusin tek omnibox-i, duke zvogëluar kohën e nisjes në pajisjet e nivelit të ulët.</translation>
 <translation id="2750481671343847896">Sajtet mund të shfaqin kërkesat për identifikim nga shërbimet e identitetit.</translation>
+<translation id="2787357173144933081">Nis me shpejti omnibox-in</translation>
 <translation id="2790501146643349491">Kur cilësimi është aktiv, sajtet e mbyllura së fundi mund të përfundojnë dërgimin dhe marrjen e të dhënave. Kur cilësimi është joaktiv, sajtet e mbyllura së fundi nuk mund të përfundojnë dërgimin ose marrjen e të dhënave.</translation>
 <translation id="2822354292072154809">Je i sigurt që dëshiron t'i rivendosësh të gjitha lejet e sajtit për <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Kërko pamjen për celular</translation>
@@ -144,6 +148,7 @@
 <translation id="3295602654194328831">Fshih informacionin</translation>
 <translation id="3328801116991980348">Informacionet rreth sajtit</translation>
 <translation id="3333961966071413176">Të gjitha kontaktet</translation>
+<translation id="3360338140203645771">Të fshihen nivelet e ruajtura të zmadhimit</translation>
 <translation id="3362437373201486687">Po skanon për pajisje me Bluetooth</translation>
 <translation id="3386292677130313581">Pyet përpara se sajtet të lejohen të dinë vendndodhjen tënde (rekomandohet)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
@@ -209,6 +214,7 @@
 <translation id="4338831206024587507">Të gjitha sajtet nën domenin <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Blloko sajtet që të mos e dinë kur ti e përdor këtë pajisje në mënyrë aktive</translation>
 <translation id="4412992751769744546">Lejo kukit e palëve të treta</translation>
+<translation id="4419929467120297501">Chrome i bllokon sajtet që të mos përdorin kukit e palëve të treta për të të gjurmuar kur ti shfleton. Vizito cilësimet <ph name="BEGIN_LINK" />për të menaxhuar qasjen te kukit e palëve të treta<ph name="END_LINK" />.</translation>
 <translation id="4434045419905280838">Dritaret kërcyese dhe ridrejtimet</translation>
 <translation id="443552056913301231">Ky veprim do të fshijë të gjitha të dhënat lokale, duke përfshirë kukit, dhe do të rivendosë të gjitha lejet për <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Hiq zërin për një sajt specifik.</translation>
@@ -230,6 +236,7 @@
 <translation id="4779083564647765204">Zmadho</translation>
 <translation id="4807122856660838973">Aktivizo "Shfletimin e sigurt"</translation>
 <translation id="4811450222531576619">Mëso rreth burimit të saj dhe temës</translation>
+<translation id="4816495437032298535">Zmadhimi i ruajtur për sajtet</translation>
 <translation id="4836046166855586901">Pyet kur një sajt kërkon të dijë kur ti e përdor këtë pajisje në mënyrë aktive</translation>
 <translation id="483914009762354899">Përfshi të gjitha sajtet nën këtë domen</translation>
 <translation id="4883854917563148705">Cilësimet e menaxhuara nuk mund të rivendosen</translation>
@@ -239,7 +246,6 @@
 <translation id="4962975101802056554">Anulo të gjitha lejet për pajisjen</translation>
 <translation id="497421865427891073">Vazhdo përpara</translation>
 <translation id="4976702386844183910">Vizituar së fundi më <ph name="DATE" /></translation>
-<translation id="4985206706500620449">Ke lejuar kukit e palëve të treta për këtë sajt</translation>
 <translation id="4994033804516042629">Nuk u gjet asnjë kontakt</translation>
 <translation id="4996978546172906250">Ndaje nëpërmjet</translation>
 <translation id="5001526427543320409">Kukit e palëve të treta</translation>
@@ -266,6 +272,7 @@
 <translation id="5246825184569358663">Ky veprim do të fshijë të gjitha të dhënat lokale, duke përfshirë kukit, dhe do të rivendosë të gjitha lejet për <ph name="DOMAIN" /> dhe për sajtet në të</translation>
 <translation id="5264323282659631142">Hiqe "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Zvarrit nga lart dhe prek butonin e kthimit për të dalë nga ekrani i plotë.</translation>
+<translation id="5292915569214461965">I ke bllokuar sajtet që të mos përdorin kuki të palëve të treta për të të gjurmuar kur ti shfleton. Vizito cilësimet <ph name="BEGIN_LINK" />për të menaxhuar qasjen te kukit e palëve të treta<ph name="END_LINK" />.</translation>
 <translation id="5295729974480418933">Kur cilësimi është aktiv, sajtet mund të kërkojnë që të përdorin informacionet që kanë ruajtur në lidhje me ty. Kur cilësimi është joaktiv, sajtet nuk mund të të kërkojnë që të përdorin informacionet që kanë ruajtur në lidhje me ty.</translation>
 <translation id="5300589172476337783">Shfaq</translation>
 <translation id="5301954838959518834">Në rregull, kuptova.</translation>
@@ -355,6 +362,7 @@
 <translation id="6527303717912515753">Ndaj</translation>
 <translation id="652937045869844725">Provo të lejosh kukit e palëve të treta, që do të thotë më pak mbrojtje, por veçoritë e sajteve kanë më shumë mundësi të punojnë</translation>
 <translation id="6530703012083415527">Kur cilësimi është aktiv, sajtet mund të përdorin dritaret kërcyese dhe ridrejtimet. Kur cilësimi është joaktiv, sajtet nuk mund të përdorin dritaret kërcyese dhe ridrejtimet.</translation>
+<translation id="6540488083026747005">Ke lejuar kukit e palëve të treta në këtë sajt</translation>
 <translation id="6545864417968258051">Skanimi për Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="NUM_MORE" /> tjetër e bllokuar}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dhe <ph name="NUM_MORE" /> të tjera të bllokuara}}</translation>
 <translation id="6554732001434021288">Vizituar së fundi <ph name="NUM_DAYS" /> ditë më parë</translation>
@@ -377,6 +385,7 @@
 <translation id="6787751205395685251">Zgjidh një opsion për <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Luaj</translation>
 <translation id="6818926723028410516">Zgjidh artikujt</translation>
+<translation id="6837658163275294267">Chrome i kufizon shumicën e sajteve që të mos përdorin kuki të palëve të treta për të të gjurmuar kur ti shfleton. Vizito cilësimet <ph name="BEGIN_LINK" />për të menaxhuar qasjen te kukit e palëve të treta<ph name="END_LINK" /></translation>
 <translation id="6838525730752203626">Përdor Chrome si parazgjedhje</translation>
 <translation id="6840760312327750441">Për t'i grupuar skedat, prek dhe mbaje të shtypur një skedë. Më pas zvarrite atë te një skedë tjetër.</translation>
 <translation id="6864395892908308021">Kjo pajisje nuk mund të lexojë NFC-në</translation>
@@ -441,6 +450,7 @@
 <translation id="7835852323729233924">Po luan media</translation>
 <translation id="783819812427904514">Aktivizo zërin e videos</translation>
 <translation id="7846076177841592234">Anulo zgjedhjen</translation>
+<translation id="7881140103901777395">Chrome i kufizon shumicën e sajteve që të mos përdorin kuki të palëve të treta. Por kukit e palëve të treta lejohen në këtë sajt sepse ai mbështetet tek ato për të ofruar shërbimet bazë.\n\nVizito cilësimet <ph name="BEGIN_LINK" />për të menaxhuar qasjen te kukit e palëve të treta<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Lejo tingullin për një sajt specifik.</translation>
 <translation id="789180354981963912">Blloko kukit e palëve të treta në modalitetin "e fshehtë"</translation>
 <translation id="7940722705963108451">Më kujto</translation>
@@ -503,6 +513,7 @@
 <translation id="8721719390026067591">Kur cilësimi është aktiv, sajtet mund të kërkojnë leje që të kërkojnë për pajisjet me Bluetooth. Kur cilësimi është joaktiv, sajtet mund të kërkojnë për pajisjet me Bluetooth.</translation>
 <translation id="8725066075913043281">Provo sërish</translation>
 <translation id="8730621377337864115">U krye</translation>
+<translation id="8737426583868847403">Sajtet për të cilat ruan një nivel të personalizuar të zmadhimit do të shfaqen këtu</translation>
 <translation id="8751914237388039244">Zgjidh një imazh</translation>
 <translation id="8800034312320686233">Sajti nuk funksionon?</translation>
 <translation id="8801436777607969138">Blloko JavaScript për një sajt specifik.</translation>

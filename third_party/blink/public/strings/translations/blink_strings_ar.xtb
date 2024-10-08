@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">يجب أن تكون القيمة <ph name="MINIMUM_DATE_OR_TIME" /> أو بعد ذلك.</translation>
 <translation id="2761667185364618470">يُرجى وضع علامة في هذا المربع إذا أردت المتابعة.</translation>
 <translation id="2908441821576996758">يُرجى إدخال قائمة مفصولة بفواصل لعناوين البريد الإلكتروني.</translation>
+<translation id="2940013921954129954">تمّ السماح بالوصول إلى الموقع الجغرافي الدقيق</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> ميغابايت</translation>
 <translation id="3075154866155599887">يرجى إدخال قيمة صالحة. الحقل غير مكتمل أو أن التاريخ غير صالح.</translation>
 <translation id="310520048233152454">‏يُرجى إدخال عنوان URL.</translation>
@@ -78,6 +79,7 @@
 <translation id="6709570249143506788">جودة التشغيل ضعيفة.</translation>
 <translation id="6790428901817661496">التشغيل</translation>
 <translation id="6820355525329141109">تعذر تحميل المكوّن الإضافي.</translation>
+<translation id="688706781007114099">استخدام الموقع الجغرافي</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">يُرجى إطالة هذا النص إلى <ph name="MIN_CHARACTERS" /> من الحروف أو أكثر (أنت الآن تستخدم حرفًا واحدًا).</translation>
 <translation id="709897737746224366">يُرجى مطابقة التنسيق المطلوب.</translation>

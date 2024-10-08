@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">Vrednost mora biti <ph name="MINIMUM_DATE_OR_TIME" /> ali pozneje.</translation>
 <translation id="2761667185364618470">Potrdite to polje, če želite nadaljevati.</translation>
 <translation id="2908441821576996758">Vnesite seznam e-poštnih naslovov, ločenih z vejicami</translation>
+<translation id="2940013921954129954">Natančna lokacija je dovoljena</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Vnesite veljavno vrednost. Vnos v polje je nepopoln ali vsebuje neveljaven datum.</translation>
 <translation id="310520048233152454">Vnesite URL.</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">Slaba kakovost predvajanja</translation>
 <translation id="6790428901817661496">Predvajanje</translation>
 <translation id="6820355525329141109">Vtičnika ni bilo mogoče naložiti.</translation>
+<translation id="688706781007114099">Uporaba lokacije</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Podaljšajte to besedilo na toliko znakov ali več: <ph name="MIN_CHARACTERS" /> (trenutno uporabljate en znak).</translation>
 <translation id="709897737746224366">Poskrbite za ujemanje z zahtevano obliko.</translation>

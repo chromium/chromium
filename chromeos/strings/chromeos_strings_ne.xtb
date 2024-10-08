@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">डिस्प्लेको चमक घटाउने की</translation>
 <translation id="2086091080968010660">समयका आधारमा गरिने परिवर्तनहरू सटीक नहुन सक्छन्। सेटिङमा गई सिस्टमको लोकेसन प्रयोग गर्ने अनुमति दिनुहोस्।</translation>
 <translation id="2102231663024125441">टेक्स्ट एडिटिङ</translation>
-<translation id="2102648867808308635">मलाई यो पेज पढ्न मद्दत गर्नुहोस्</translation>
 <translation id="2105810540595158374">यो डिभाइस गेम कन्ट्रोलर हो।</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, संस्करण <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">यो सुविधा हाल अङ्ग्रेजी (सं. रा. अमेरिका) भाषामा मात्र उपलब्ध छ</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">सबै एपहरू हेर्नुहोस्</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />पर्फर्मेन्स ट्रेस डेटा<ph name="END_LINK1" /> पठाउनुहोस्</translation>
 <translation id="3517001332549868749">ChromeOS को अपडेट</translation>
-<translation id="3522508178835057262">हाल <ph name="MAX_WORD_LENGTH" /> भन्दा बढी शब्द भएको ट्रान्स्क्रिप्ट बनाउन सकिँदैन</translation>
 <translation id="3527036260304016759">प्रिन्ट गर्न सकिएन - अज्ञात त्रुटि भयो</translation>
 <translation id="353214771040290298">सम्पादन गर्ने कार्य पूरा भयो</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> मिनेट जति बाँकी छ</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">उज्यालो थिम</translation>
 <translation id="4813136279048157860">मेरा फोटो</translation>
 <translation id="4813345808229079766">जडान</translation>
-<translation id="4824527342590024245">हाल <ph name="MIN_WORD_LENGTH" /> भन्दा कम शब्द भएको ट्रान्स्क्रिप्ट बनाउन सकिँदैन</translation>
 <translation id="4830894019733815633">घाटी</translation>
 <translation id="4832079907277790330">Files एप खोलेर कुनै फोल्डर चयन गर्नु...</translation>
 <translation id="4835901797422965222">कुनै पनि सक्रिय नेटवर्क छैन</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">समानार्थक:</translation>
 <translation id="5130848777448318809">पोनीहरू</translation>
 <translation id="5137451382116112100">फुल स्क्रिन</translation>
+<translation id="5140788690559353412">तपाईंले आफ्नो विद्यालयको खाताको एक्सेस गुमाएपछि तपाईं उक्त खातासँग सम्बद्ध इमेल ठेगाना र Gmail, Docs र Slides फाइललगायतका Google Drive मा भएका फाइलहरूको एक्सेस पनि गुमाउनु हुने छ।</translation>
 <translation id="5142961317498132443">प्रमाणीकरण</translation>
 <translation id="5144311987923128508">पुष्टि गर्नुहोस् नामक बटन अहिले अफ गरिएको छ</translation>
 <translation id="5144887194300568405">अनुवादित टेक्स्ट कपी गर्नुहोस्</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) HTTP को विलम्बता</translation>
 <translation id="6078323886959318429">सर्टकट हाल्नुहोस्</translation>
 <translation id="6091080061796993741">पहेँलो</translation>
+<translation id="6093853427925392522">आफ्नो विद्यालयको खाताको एक्सेस गुम्नुअघि नै सो खातामा भएको डेटा आफ्नो व्यक्तिगत खातामा सार्न Google ले बनाएको Content Transfer एप प्रयोग गर्नुहोस्।</translation>
 <translation id="6104112872696127344">स्क्यान गर्ने कार्य रद्द गरिएको छ</translation>
 <translation id="6106186594183574873">यो कार्य पूरा गर्न आफ्नो पुरानो पासवर्ड प्रविष्टि गर्नुहोस्</translation>
 <translation id="6108689792487843350">गेटवेमा कनेक्ट गर्न सकिएन</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">एक्सेस पोइन्टको नाम (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{नेम सर्भर}other{नेम सेभरहरू}}</translation>
 <translation id="7135814714616751706">सर्टकटहरू खोज्नुहोस्</translation>
+<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">जडान गर्दै...</translation>
 <translation id="7144878232160441200">पुन: प्रयास गर्नुहोस्</translation>
 <translation id="7144954474087165241">प्यागोडा</translation>
@@ -1394,6 +1394,7 @@
 <translation id="7856267634822906833">ब्लुटुथ भएको टचस्क्रिन</translation>
 <translation id="7859006200041800233">सिउँडीको फुल</translation>
 <translation id="7869143217755017858">अँध्यारो मोड अफ गर्नुहोस्</translation>
+<translation id="7878972877380405573">"मलाई पढ्न मद्दत गर्नुहोस्" प्रयोग गरी सारांश बनाउनुहोस्</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">प्रदायकको प्रकार</translation>
 <translation id="7882501334836096755">सार्वजनिक की</translation>
@@ -1537,6 +1538,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" /> का सम्बन्धमा गर्न सकिने थप कारबाहीहरू</translation>
 <translation id="86356131183441916">हल्का बैजनी रङ</translation>
 <translation id="8647595191512746911">अडियो ट्रान्स्क्रिप्सन</translation>
+<translation id="8650852232143958317">Gmail र Google Drive मा भएका फाइलहरू आफूसँगै लैजानुहोस्</translation>
 <translation id="8651481478098336970">आवाज म्यूट</translation>
 <translation id="8655295600908251630">च्यानल</translation>
 <translation id="8655828773034788261">URL सेयर गर्नुहोस्:</translation>

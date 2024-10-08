@@ -70,6 +70,7 @@
 <translation id="1919130412786645364">Permitir el acceso a Chrome</translation>
 <translation id="1953553007165777902">Descargando… Minutos restantes: <ph name="MINUTE" /></translation>
 <translation id="1982647487457769627">Chrome funciona en todas las plataformas para brindarte una experiencia familiar sin importar el dispositivo</translation>
+<translation id="19955905961160405">Busca lo que se muestra en la pantalla con Google Lens</translation>
 <translation id="2001586581944147178">Haz que sea más difícil que las personas con acceso a tu tráfico de Internet vean los sitios que visitas. Chrome usa una conexión segura para buscar la dirección IP de un sitio en el DNS (sistema de nombres de dominio).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Esta extensión ya no es compatible. Chrome te recomienda quitarla.}other{Estas extensiones ya no son compatibles. Chrome te recomienda quitarlas.}}</translation>
 <translation id="2018528049276128029">Cada perfil conserva su propia información de Chrome, como los favoritos, el historial, las contraseñas y más.</translation>
@@ -87,6 +88,7 @@
 <translation id="2126108037660393668">Falló la verificación del archivo descargado.</translation>
 <translation id="2128411189117340671">Administrar perfiles de Chrome</translation>
 <translation id="2131230230468101642">Para proteger tu privacidad, quitamos los intereses automáticamente luego de 4 semanas. Es posible que, a medida que navegues, un interés vuelva a aparecer en la lista. O bien, puedes quitar los intereses que no quieres que Chrome tenga en cuenta.</translation>
+<translation id="2137162749895930932">Cerrar la pantalla de traducción</translation>
 <translation id="2139300032719313227">Reiniciar ChromeOS</translation>
 <translation id="2151406531797534936">Reinicia Chrome ahora</translation>
 <translation id="2163089732491971196">Para usar y guardar datos de Chrome en tu Cuenta de Google, ingresa tu frase de contraseña</translation>
@@ -170,6 +172,7 @@
 <translation id="3019382870990049182">Reiniciar para actualizar ChromeOS Flex</translation>
 <translation id="3037838751736561277">Google Chrome está en modo de segundo plano</translation>
 <translation id="3038232873781883849">Esperando para instalar...</translation>
+<translation id="3045032126857188731">Idioma traducido: <ph name="LANGUAGE" /></translation>
 <translation id="3059710691562604940">La Navegación segura está desactivada. Chrome recomienda activarla.</translation>
 <translation id="306179102415443347">Accede rápidamente al Administrador de contraseñas de Google con el acceso directo. Puedes mover el acceso directo a la pantalla principal de la computadora o al Selector de aplicaciones.</translation>
 <translation id="3065168410429928842">Pestaña de Chrome</translation>
@@ -188,7 +191,6 @@
 <translation id="3234642784688107085">Prueba nuevas funciones de IA para crear temas, obtener ayuda con la escritura y mantener tu organización</translation>
 <translation id="3245429137663807393">Si también compartes los informes de uso de Chrome, estos incluirán las URLs que visites</translation>
 <translation id="3261565993776444564">Prueba un color nuevo para personalizar tu navegador</translation>
-<translation id="3269209112443570745">¡Nuevo! Una forma sencilla de buscar lo que aparece en la pantalla</translation>
 <translation id="3282568296779691940">Acceder a Chrome</translation>
 <translation id="3286538390144397061">Reiniciar ahora</translation>
 <translation id="3292333338048274092">Luego, deberás reiniciar Chrome.</translation>
@@ -238,12 +240,14 @@
 <translation id="386202838227397562">Cierra todas las ventanas de Google Chrome e intenta nuevamente.</translation>
 <translation id="3865754807470779944">Se instaló la versión de Chrome <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3873044882194371212">Abrir vínculo en una ventana de navegación de incó&amp;gnito de Chrome</translation>
+<translation id="3885770153807205175">Selector de idioma</translation>
 <translation id="3889417619312448367">Desinstalar Google Chrome</translation>
 <translation id="3941890832296813527">Error de instalación: El nombre de archivo del instalador no es válido o no es compatible.</translation>
 <translation id="3973161977468201858">Google Chrome quiere borrar tus datos del Administrador de contraseñas de Google. Para permitirlo, escribe tu contraseña de Windows.</translation>
 <translation id="398236277091248993">Chrome mantiene la velocidad con funciones que mejoran el rendimiento</translation>
 <translation id="3999683152997576765">Puedes ver y quitar los temas de interés que usan los sitios para mostrarte anuncios. Chrome estima tus intereses en función de tu historial de navegación reciente.</translation>
 <translation id="4022972681110646219">Traducir pantalla</translation>
+<translation id="4023601594785368013">Idioma original: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">ChromeOS debe reiniciarse para que se aplique la actualización.</translation>
 <translation id="4050175100176540509">La última versión proporciona importantes mejoras de seguridad y nuevas funciones.</translation>
 <translation id="4053720452172726777">Personalizar y controlar Google Chrome</translation>
@@ -515,6 +519,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="7514258452813684157">Servicio de Google Updater</translation>
 <translation id="7515191208480168435">Puedes fijar Google Lens para acceder fácilmente</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
+<translation id="756809126120519699">Datos de Chrome borrados</translation>
 <translation id="7572537927358445944">Desactivada • Chrome no puede verificar de dónde proviene esta extensión</translation>
 <translation id="7583399374488819119">Instalador de <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
@@ -532,6 +537,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="7668816516367091728">Realiza tareas como traducir, calcular y mucho más directamente desde la barra de direcciones</translation>
 <translation id="7670287553302121848">La cuenta de Chrome requiere que vuelvas a realizar la autenticación</translation>
 <translation id="769538538642757151">Chrome te avisará si hay algo que debas revisar</translation>
+<translation id="77283119132245232">Proporciona servicios de registro del sistema para <ph name="BROWSER_NAME" />. Si se inhabilita este servicio, los registros de rendimiento creados por el navegador no incluirán eventos de todo el sistema, como los eventos de cambio de contexto y de subproceso listo.</translation>
 <translation id="7747138024166251722">El instalador no pudo crear un directorio temporal. Verifique si hay espacio disponible en el disco y cuenta con permiso para instalar software.</translation>
 <translation id="7761834446675418963">Haz clic en tu nombre para abrir Chrome y empezar a navegar.</translation>
 <translation id="7763983146198734674">Guarda tus contraseñas y accede a ellas estés donde estés</translation>

@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">La valeur doit être <ph name="MINIMUM_DATE_OR_TIME" /> ou plus tard.</translation>
 <translation id="2761667185364618470">Veuillez cocher cette case si vous souhaitez continuer.</translation>
 <translation id="2908441821576996758">Veuillez entrer une liste d'adresses de courriel séparées par des virgules.</translation>
+<translation id="2940013921954129954">Position exacte autorisée</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> Mo</translation>
 <translation id="3075154866155599887">Veuillez entrer une valeur valide. Le champ n'est pas complet ou contient une date non valide.</translation>
 <translation id="310520048233152454">Veuillez entrer une adresse URL.</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">Mauvaise qualité de lecture</translation>
 <translation id="6790428901817661496">Jouer</translation>
 <translation id="6820355525329141109">Échec du chargement du plugiciel.</translation>
+<translation id="688706781007114099">Utiliser la localisation</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Veuillez allonger ce texte de manière à ce qu'il comporte au moins <ph name="MIN_CHARACTERS" /> caractères (votre texte compte actuellement 1 caractère).</translation>
 <translation id="709897737746224366">Veuillez respecter le format demandé.</translation>

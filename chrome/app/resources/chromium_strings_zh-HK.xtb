@@ -51,6 +51,7 @@
 <translation id="17264556997921157">您可以查看及移除網站用來向您顯示廣告的感興趣主題。Chromium 會根據您最近的瀏覽記錄，推測您感興趣的主題。</translation>
 <translation id="1733725117201708356">Chromium 即將刪除瀏覽資料</translation>
 <translation id="1736443181683099871">Chromium 會在導覽網站時，嘗試升級至 HTTPS</translation>
+<translation id="1736662517232558588">已清除 Chromium 的資料</translation>
 <translation id="1745121272106313518">Chromium 將會在 <ph name="REMAINING_TIME" />後重新啟動</translation>
 <translation id="1749104137266986751">無法使用 HTTPS 時，Chromium 會在不顯示警告的情況下使用不安全的連線</translation>
 <translation id="1774152462503052664">讓 Chromium 在背景執行</translation>
@@ -81,6 +82,7 @@
 <translation id="2088953378266246249">Chromium 如何管理根憑證的相關資訊</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{根據機構規定，Chromium 會在閒置 1 分鐘後自動刪除瀏覽資料，當中可能包括記錄、自動填入資料和下載檔案。這些分頁仍會保持開啟。}other{根據機構規定，Chromium 會在閒置 # 分鐘後自動刪除瀏覽資料，當中可能包括記錄、自動填入資料和下載檔案。這些分頁仍會保持開啟。}}</translation>
 <translation id="2126108037660393668">已下載的檔案驗證失敗。</translation>
+<translation id="2137162749895930932">關閉翻譯畫面</translation>
 <translation id="215352261310130060">由於此網站未使用安全連線，且檔案可能已被篡改，因此 Chromium 已禁止下載</translation>
 <translation id="2157600032285353789">你可從 Chromium 選單開啟書籤、閱讀模式等功能</translation>
 <translation id="2174178932569897599">自訂 Chromium</translation>
@@ -148,6 +150,7 @@
 <translation id="3032706164202344641">Chromium 無法檢查密碼，請稍後再試。</translation>
 <translation id="3032787606318309379">正在新增至 Chromium…</translation>
 <translation id="3038232873781883849">正在等待安裝…</translation>
+<translation id="3045032126857188731">譯文語言：<ph name="LANGUAGE" /></translation>
 <translation id="3068187312562070417">其他 Chromium 設定檔</translation>
 <translation id="3068515742935458733">將當機報告和<ph name="UMA_LINK" />傳送給 Google，助我們一臂之力，讓 Google Chrome 更臻完美</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{當時至少有一個 Chromium 擴充程式正在存取 1 部 USB 裝置}=1{至少有一個 Chromium 擴充程式正在存取 1 部 USB 裝置}other{至少有一個 Chromium 擴充程式正在存取 # 部 USB 裝置}}</translation>
@@ -166,7 +169,6 @@
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3268051428841342958">V8 是 Chromium 的 JavaScript 和 WebAssembly 引擎，可提升網站效能</translation>
-<translation id="3269209112443570745">新功能！輕鬆搜尋畫面內容</translation>
 <translation id="3283186697780795848">已安裝 Chromium 版本 <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3286538390144397061">立即重新啟動</translation>
 <translation id="328888136576916638">缺少 Google API 金鑰，系統將停用 Chromium 的部分功能。</translation>
@@ -206,6 +208,7 @@
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386822487697155367">取得 Chromium 作業系統相關說明</translation>
 <translation id="3871664619793219264">從 <ph name="ACCOUNT_EMAIL" /> 存取 Chromium 瀏覽器內容</translation>
+<translation id="3885770153807205175">語言選擇器</translation>
 <translation id="388648406173476553">自訂及控制 Chromium。重要注意事項 - 按這裡瞭解詳情。</translation>
 <translation id="3889543394854987837">按一下您的名稱即可開啟 Chromium 並開始瀏覽。</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" />已登入此 Chromium 設定檔。Chromium 可為您建立您的設定檔，以分開您的瀏覽區。</translation>
@@ -218,6 +221,7 @@
 <translation id="3997429360543082038">關於 Chromium 作業系統</translation>
 <translation id="4019629340646866719">Chromium 作業系統得以面世，全賴其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟件<ph name="END_LINK_CROS_OSS" />，<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開發環境<ph name="END_LINK_LINUX_OSS" />也一樣。</translation>
 <translation id="4022972681110646219">翻譯畫面</translation>
+<translation id="4023601594785368013">原文語言：<ph name="LANGUAGE" /></translation>
 <translation id="4036079820698952681">只要報告<ph name="BEGIN_LINK" />目前的設定<ph name="END_LINK" />，就能助我們一臂之力，讓 Chromium 更臻完美</translation>
 <translation id="4050175100176540509">最新版本提供重大保安改良和新功能。</translation>
 <translation id="4055805654398742145">密碼管理工具(&amp;A)</translation>
@@ -287,6 +291,7 @@
 <translation id="494490797786467921">點擊即可關閉 Chromium 登入對話框</translation>
 <translation id="4987820182225656817">以訪客身分使用 Chromium 不會留下任何記錄。</translation>
 <translation id="4994636714258228724">新增為 Chromium 使用者</translation>
+<translation id="5024548327980648634">搜尋畫面內容</translation>
 <translation id="5051959905407134411">試用「圖片搜尋」</translation>
 <translation id="5114678101347489141">Chromium 正在探索新功能，讓網站能在使用較少資料的情況下提供相同的瀏覽體驗</translation>
 <translation id="5123973130450702873">Chromium 需要相關權限才能追蹤手勢</translation>
@@ -332,6 +337,7 @@
 <translation id="5761096224651992291">由於最近沒有瀏覽記錄，Chromium 已移除<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和<ph name="PERMISSION_3" />權限</translation>
 <translation id="5800158606660203929">自訂及控制 Chromium。將 Chromium 設定為預設瀏覽器。</translation>
 <translation id="5809516625706423866">無法連線至互聯網。發生 HTTP 401 未授權錯誤，請檢查 Proxy 設定。</translation>
+<translation id="5821520528363214608">如要將 Chromium 的資料儲存至 Google 帳戶及使用這類資料，請更新 Chromium</translation>
 <translation id="5862307444128926510">歡迎使用 Chromium</translation>
 <translation id="5871205389137001634">按一下即可退出「圖片搜尋」</translation>
 <translation id="5883558403894052917">Chromium 發現以下項目含有惡意軟件：</translation>
@@ -492,6 +498,7 @@ Chromium 無法復原您的設定。</translation>
 <translation id="7686590090926151193">Chromium 不是您的預設瀏覽器</translation>
 <translation id="7689606757190482937">在不同裝置上同步和設定個人化的 Chromium</translation>
 <translation id="7699779824407626136">Chromium 更新</translation>
+<translation id="77283119132245232">提供 <ph name="BROWSER_NAME" /> 的系統追蹤服務。如停用此服務，瀏覽器建立的成效追蹤記錄將不會包括系統層級事件，例如內容轉換和就緒執行緒事件。</translation>
 <translation id="7745317241717453663">這會刪除此裝置上的瀏覽資料。如果日後想擷取資料，請以 <ph name="USER_EMAIL" /> 的身分登入 Chromium。</translation>
 <translation id="7747138024166251722">安裝程式無法建立暫時目錄，請檢查可用磁碟空間與權限，以順利安裝軟件。</translation>
 <translation id="7786760609782648049">加快 Chromium 的運作速度</translation>

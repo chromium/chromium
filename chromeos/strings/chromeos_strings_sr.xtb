@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Смањите осветљеност екрана</translation>
 <translation id="2086091080968010660">Промене засноване на времену можда нису прецизне. Укључите приступ локацији система у подешавањима.</translation>
 <translation id="2102231663024125441">Уређивање текста</translation>
-<translation id="2102648867808308635">Помоћ при читању за ову страницу</translation>
 <translation id="2105810540595158374">Уређај је контролер за игре.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, верзија <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">Тренутно је доступно само на енглеском (САД)</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">прикажи све апликације</translation>
 <translation id="3510890413042482857">Шаљи <ph name="BEGIN_LINK1" />податке о праћењу учинка<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Ажурирање Chrome ОС-а</translation>
-<translation id="3522508178835057262">За сада није подржан транкрипт са мање од <ph name="MAX_WORD_LENGTH" /> речи</translation>
 <translation id="3527036260304016759">Није успело – непозната грешка</translation>
 <translation id="353214771040290298">Измене су готове</translation>
 <translation id="3532980081107202182">Преостало је још око <ph name="MIN_REMAINING" /> минута</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">Светла тема</translation>
 <translation id="4813136279048157860">Моје слике</translation>
 <translation id="4813345808229079766">Веза</translation>
-<translation id="4824527342590024245">За сада није подржан транкрипт са мање од <ph name="MIN_WORD_LENGTH" /> речи</translation>
 <translation id="4830894019733815633">кањон</translation>
 <translation id="4832079907277790330">Изаберите фолдер у апликацији Фајлови...</translation>
 <translation id="4835901797422965222">Нема активних мрежа</translation>
@@ -1397,6 +1394,7 @@
 <translation id="7856267634822906833">Bluetooth додирни екран</translation>
 <translation id="7859006200041800233">цвет кактуса</translation>
 <translation id="7869143217755017858">Онемогућите тамни режим</translation>
+<translation id="7878972877380405573">Направи резиме уз Помоћ при читању</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Тип добављача</translation>
 <translation id="7882501334836096755">Јавни кључ</translation>

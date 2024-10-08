@@ -204,6 +204,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="1957557050935255529">Đang tải tệp PDF…</translation>
 <translation id="1959679933317802873">Đang chờ nội dung</translation>
 <translation id="1960290143419248813">Các bản cập nhật Chrome không còn được hỗ trợ cho phiên bản Android này</translation>
+<translation id="1963056249988316027">Tính năng Kiểm tra danh tính đang bật nhưng không xác minh được danh tính của bạn</translation>
 <translation id="1963976881984600709">Bảo vệ tiêu chuẩn</translation>
 <translation id="1966710179511230534">Vui lòng cập nhật chi tiết đăng nhập của bạn.</translation>
 <translation id="1969037871259811890">Việc xoá dữ liệu duyệt web sẽ không khiến bạn bị đăng xuất khỏi Tài khoản Google. Nếu bạn muốn đăng xuất, hãy <ph name="BEGIN_LINK1" />đăng xuất khỏi Chrome<ph name="END_LINK1" />.</translation>
@@ -555,6 +556,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3622349720008044802">Quản lý cửa sổ</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 trang web}other{+ # trang web}}</translation>
 <translation id="3631987586758005671">Đang chia sẻ đến <ph name="DEVICE_NAME" /></translation>
+<translation id="363484704507524488">Bạn có thể quản lý tính năng Kiểm tra danh tính trong phần cài đặt bảo vệ chống trộm. <ph name="BEGIN_LINK" />Chuyển đến phần cài đặt<ph name="END_LINK" /></translation>
 <translation id="3635073343384702370">Chrome có thể kiểm tra mật khẩu của bạn khi bạn lưu các mật khẩu đó</translation>
 <translation id="363596933471559332">Tự động đăng nhập vào các trang web bằng thông tin đăng nhập được lưu trữ. Khi tính năng này tắt, bạn sẽ luôn được yêu cầu xác minh trước khi đăng nhập vào trang web.</translation>
 <translation id="3636940436873918441">Ngôn ngữ ưu tiên</translation>
@@ -727,7 +729,6 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="4489640160615759754">Trang tính chia sẻ cùng nội dung tóm tắt</translation>
 <translation id="4494806687727322324">Quản trị viên đã bật tính năng lưu mật khẩu</translation>
 <translation id="4508528996305412043">Đã mở trình đơn thẻ nguồn cấp dữ liệu</translation>
-<translation id="4509501256689523862">Khi bạn duyệt web, chế độ cài đặt này, <ph name="BEGIN_LINK_1" />Chủ đề quảng cáo<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />chế độ cài đặt cookie<ph name="END_LINK_2" /> và khả năng cá nhân hoá quảng cáo của trang web bạn đang xem sẽ quyết định liệu quảng cáo bạn thấy có được cá nhân hoá không</translation>
 <translation id="4509741852167209430">Chỉ có một số loại dữ liệu được chia sẻ giữa các trang web để đo lường hiệu suất của quảng cáo mà các trang web đó hiển thị, chẳng hạn như dữ liệu cho biết bạn có mua hàng sau khi truy cập một trang web hay không</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# ngày trước}other{# ngày trước}}</translation>
 <translation id="451872707440238414">Tìm kiếm trong các dấu trang</translation>
@@ -740,7 +741,6 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4532845899244822526">Chọn thư mục</translation>
 <translation id="4543131175509360848">Trang thông báo "Không có khoá truy cập nào"</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> thẻ}other{<ph name="TAB_COUNT_MANY" /> thẻ, <ph name="TAB_COUNT_INCOGNITO" /> ẩn danh}}</translation>
-<translation id="4554077758708533499">Đã kết nối bằng cáp USB</translation>
 <translation id="4558311620361989323">Phím tắt cho trang web</translation>
 <translation id="4561730552726921821">Đã đăng ký thành công</translation>
 <translation id="4565377596337484307">Ẩn mật khẩu</translation>
@@ -1036,6 +1036,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5869522115854928033">Mật khẩu đã lưu</translation>
 <translation id="587735546353481577">Để theo dõi một trang web, hãy truy cập vào trang web đó, mở trình đơn Chrome rồi nhấn vào Theo dõi.</translation>
 <translation id="5879072387416556377">Nhận đề xuất tốt hơn</translation>
+<translation id="5883855034004058011">Hệ thống nhận dạng sinh trắc học xác minh không thành công quá nhiều lần. Hãy khoá rồi mở khoá thiết bị của bạn để thử lại.</translation>
 <translation id="5885378508678660271">Thông báo <ph name="SEPARATOR" /> Chrome đã loại bỏ các quyền này vì trang web này nguy hiểm</translation>
 <translation id="5895834791314695851">Các mật khẩu có thể sắp ngừng hoạt động trên thiết bị này. Hãy cập nhật Dịch vụ Google Play để tiếp tục sử dụng mật khẩu. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">Trang thông báo "Không có khoá truy cập nào" đã đóng</translation>
@@ -1368,7 +1369,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7260367682327802201">Thiết bị Android của bạn có thể có chế độ cài đặt tương tự. Nếu bạn bật tính năng Đo lường quảng cáo trong Chrome và trên thiết bị Android, một công ty có thể đo lường mức độ hiệu quả của quảng cáo trên những trang web bạn truy cập và ứng dụng bạn dùng.</translation>
 <translation id="727288900855680735">Gửi <ph name="ONE_TIME_CODE" /> tới <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Trang web bị chặn</translation>
-<translation id="7276100255011548441">Chrome tự động xoá những chủ đề đã tồn tại hơn 4 tuần. Khi bạn tiếp tục duyệt web, chủ đề đã bị xoá có thể xuất hiện lại trong danh sách. Bạn cũng có thể chặn những chủ đề mà bạn không muốn Chrome chia sẻ với các trang web. Tìm hiểu thêm về <ph name="BEGIN_LINK" />quản lý quyền riêng tư trong quảng cáo trên Chrome.<ph name="END_LINK" /></translation>
 <translation id="7284878711178835966">Khi bạn nhập nội dung vào thanh địa chỉ hoặc hộp tìm kiếm, Chrome sẽ gửi nội dung  này đến công cụ tìm kiếm mặc định của bạn</translation>
 <translation id="7289049772085228972">Bạn đang dùng chế độ bảo mật mạnh nhất của Chrome</translation>
 <translation id="7289303553784750393">Nếu bạn đang trực tuyến nhưng sự cố này vẫn tiếp diễn, bạn có thể thử những cách khác để tiếp tục trên <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -1433,7 +1433,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7517292544534877198">Sử dụng phương pháp mã hoá mặc định của Google cho mật khẩu trong Tài khoản Google</translation>
 <translation id="7518079994230200553">Lựa chọn này hiện không sẵn dùng.</translation>
 <translation id="751961395872307827">Không thể kết nối với trang web</translation>
-<translation id="752220631458524187">Hãy ngắt kết nối điện thoại khi bạn đã hoàn tất</translation>
 <translation id="7523960634226602883">Tìm kiếm bằng máy ảnh thông qua Google Ống kính</translation>
 <translation id="7525248386620136756">Đã đóng và lưu <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="752731652852882757">Chặn trong khi dùng chế độ Ẩn danh</translation>

@@ -74,6 +74,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1919130412786645364">Laat Chrome-aanmelding toe</translation>
 <translation id="1953553007165777902">Laai tans af … <ph name="MINUTE" /> minuut(minute) oor</translation>
 <translation id="1982647487457769627">Chrome werk regoor platforms om vir jou ’n bekende ervaring te gee ongeag die toestel</translation>
+<translation id="19955905961160405">Soek wat op jou skerm is met Google Lens</translation>
 <translation id="2001586581944147178">Maak dit moeiliker vir mense met toegang tot jou internetverkeer om te sien watter werwe jy besoek. Chrome gebruik ’n veilige verbinding om ’n werf se IP-adres in die DNS (domeinnaamstelsel) op te soek.</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Hierdie uitbreiding word nie meer gesteun nie. Chrome beveel aan dat jy dit verwyder.}other{Hierdie uitbreidings word nie meer gesteun nie. Chrome beveel aan dat jy hulle verwyder.}}</translation>
 <translation id="2018528049276128029">Elke profiel hou sy eie Chrome-inligting soos boekmerke, geskiedenis, wagwoorde en meer</translation>
@@ -91,6 +92,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2126108037660393668">Die afgelaaide lêer kon nie geverifieer word nie.</translation>
 <translation id="2128411189117340671">Bestuur Chrome-profiele</translation>
 <translation id="2131230230468101642">Ons vee outomaties jou belangstellings uit wat ouer as 4 weke is om jou privaatheid te beskerm. Terwyl jy aanhou blaai, kan ’n belangstelling weer op die lys verskyn. Of jy kan belangstellings wat jy wil hê Chrome moenie oorweeg nie, verwyder.</translation>
+<translation id="2137162749895930932">Maak vertaalskerm toe</translation>
 <translation id="2139300032719313227">Herbegin Chrome-bedryfstelsel</translation>
 <translation id="2151406531797534936">Herbegin Chrome asseblief nou</translation>
 <translation id="2163089732491971196">Voer jou wagfrase in om Chrome-data in jou Google-rekening te gebruik en te stoor</translation>
@@ -174,6 +176,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="3019382870990049182">Herbegin om Chrome OS Flex op te dateer</translation>
 <translation id="3037838751736561277">Google Chrome is in agtergrondmodus.</translation>
 <translation id="3038232873781883849">Wag tans om te installeer...</translation>
+<translation id="3045032126857188731">Vertaalde taal: <ph name="LANGUAGE" /></translation>
 <translation id="3059710691562604940">Veiligblaai is afgeskakel. Chrome beveel aan dat jy dit aanskakel.</translation>
 <translation id="306179102415443347">Gebruik jou kortpad om vinnig na Google Wagwoordbestuurder toe te gaan. Jy kan jou kortpad na jou rekenaar se tuisskerm of applanseerder toe skuif.</translation>
 <translation id="3065168410429928842">Chrome-oortjie</translation>
@@ -192,7 +195,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="3234642784688107085">Probeer nuwe AI-kenmerke om temas te skep, skryfhulp te kry en georganiseerd te bly</translation>
 <translation id="3245429137663807393">As jy ook Chrome-gebruiksverslae deel, sluit daardie verslae die URL'e in wat jy besoek</translation>
 <translation id="3261565993776444564">Probeer ’n nuwe kleur om jou blaaier te pasmaak</translation>
-<translation id="3269209112443570745">Nuut! ’n Maklike manier om te soek wat op jou skerm is</translation>
 <translation id="3282568296779691940">Meld by Chrome aan</translation>
 <translation id="3286538390144397061">Herbegin nou</translation>
 <translation id="3292333338048274092">Jy sal dan Chrome moet herbegin.</translation>
@@ -242,12 +244,14 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="386202838227397562">Maak asseblief alle Google Chrome-vensters toe en probeer weer.</translation>
 <translation id="3865754807470779944">Chrome-weergawe <ph name="PRODUCT_VERSION" /> is geïnstalleeer</translation>
 <translation id="3873044882194371212">Maak skakel in 'n incognitovenster in Chrome oop</translation>
+<translation id="3885770153807205175">Taalkieser</translation>
 <translation id="3889417619312448367">Deïnstalleer Google Chrome</translation>
 <translation id="3941890832296813527">Installeerfout: Die installeerderlêernaam is ongeldig of word nie ondersteun nie.</translation>
 <translation id="3973161977468201858">Google Chrome wil jou Google Wagwoordbestuurder-data uitvee. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
 <translation id="398236277091248993">Chrome bly vinnig met kenmerke wat werkverrigting ’n hupstoot gee</translation>
 <translation id="3999683152997576765">Jy kan onderwerpe van belangstelling wat werwe gebruik om vir jou advertensies te wys, sien en verwyder. Chrome skat jou belangstellings op grond van jou onlangse blaaigeskiedenis.</translation>
 <translation id="4022972681110646219">Vertaal skerm</translation>
+<translation id="4023601594785368013">Oorspronklike taal: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Chrome-bedryfstelsel moet herbegin word om die opdatering toe te pas.</translation>
 <translation id="4050175100176540509">Belangrike sekuriteitverbeterings en nuwe kenmerke is in die jongste weergawe beskikbaar.</translation>
 <translation id="4053720452172726777">Pasmaak en beheer Google Chrome</translation>
@@ -523,6 +527,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="7514258452813684157">Google-opdateerderdiens</translation>
 <translation id="7515191208480168435">Jy kan Google Lens vasspeld vir maklike toegang</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
+<translation id="756809126120519699">Het Chrome-data uitgevee</translation>
 <translation id="7572537927358445944">Af • Chrome kan nie verifieer waarvandaan hierdie uitbreiding kom nie</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" />-installeerder</translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
@@ -540,6 +545,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="7668816516367091728">Voer take direk van die adresbalk af uit soos vertaal, bereken en meer</translation>
 <translation id="7670287553302121848">Chrome-rekening vereis herstawing</translation>
 <translation id="769538538642757151">Chrome sal jou laat weet as jy enigiets moet hersien</translation>
+<translation id="77283119132245232">Verskaf stelselnasporingdienste vir <ph name="BROWSER_NAME" />. As hierdie diens gedeaktiveer is, sal prestasiespore wat deur die blaaier geskep word, nie stelselwye gevalle soos kontekswisseling en gespreksdraadgevalle wat gereed is, insluit nie.</translation>
 <translation id="7747138024166251722">Die installeerder kon nie 'n tydelike gids skep nie. Gaan asseblief na vir beskikbare skyfspasie en toestemming om sagteware te installeer.</translation>
 <translation id="7761834446675418963">Klik jou naam om Chrome oop te maak en te begin blaai.</translation>
 <translation id="7763983146198734674">Stoor jou wagwoorde en kry toegang daartoe terwyl jy aan die beweeg is</translation>

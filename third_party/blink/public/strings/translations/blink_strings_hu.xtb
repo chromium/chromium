@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">Az érték <ph name="MINIMUM_DATE_OR_TIME" /> vagy azt követő kell, hogy legyen.</translation>
 <translation id="2761667185364618470">Kérjük, jelölje be ezt a jelölőnégyzetet, ha tovább kíván haladni.</translation>
 <translation id="2908441821576996758">Kérjük, adjon meg egy vesszőkkel elválasztott e-mail címlistát.</translation>
+<translation id="2940013921954129954">Pontos hely engedélyezve</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Kérjük, adjon meg érvényes értéket. A mező hiányos, vagy érvénytelen dátum van megadva.</translation>
 <translation id="310520048233152454">Adjon meg egy URL-t.</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">Gyenge lejátszási minőség</translation>
 <translation id="6790428901817661496">Lejátszás</translation>
 <translation id="6820355525329141109">Nem sikerült betölteni a beépülő modult.</translation>
+<translation id="688706781007114099">Hely használata</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Legalább <ph name="MIN_CHARACTERS" /> karakter hosszú szöveget adjon meg (jelenleg 1 karaktert használ).</translation>
 <translation id="709897737746224366">Kérjük, tartsa magát a kívánt formátumhoz.</translation>

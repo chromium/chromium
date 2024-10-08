@@ -114,6 +114,7 @@
 <translation id="132346741904777634">カメラは左上にスナップされています。システムのサーフェスと競合しています。</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> とウィンドウを閉じる</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" />を接続しました</translation>
+<translation id="1337081488893096731">コンテンツ転送アプリを使用して、学校用アカウントのデータを個人アカウントに移動してください</translation>
 <translation id="1340378040547539434">ページを縮小する</translation>
 <translation id="1341651618736211726">オーバーフロー</translation>
 <translation id="1341926407152459446">オーディオの入出力に "<ph name="DEVICE_NAME" />" を使用する</translation>
@@ -242,6 +243,7 @@
 <translation id="17722141032474077">計算</translation>
 <translation id="1774796056689732716">カレンダー、<ph name="CURRENT_MONTH_YEAR" />、現在 <ph name="DATE" /> が選択されています。</translation>
 <translation id="178347895271755507">スマートフォンの最近の写真、メディア、通知の表示を設定</translation>
+<translation id="1786487376942610288">ピクチャー イン ピクチャー ウィンドウの最大サイズと現在のサイズを切り替えます</translation>
 <translation id="1787955149152357925">オフ</translation>
 <translation id="1796561540704213354">アクセスしたページ、開いているページなどのウェブサイト</translation>
 <translation id="179842970735685253">Google 利用規約</translation>
@@ -337,6 +339,9 @@
 <translation id="219905428774326614">ランチャー、すべてのアプリ</translation>
 <translation id="2201071101391734388">最近の <ph name="INDEX" /> / <ph name="TOTAL_COUNT" /> 件の写真。</translation>
 <translation id="2201687081523799384">Google ToDo リストを折りたたむ</translation>
+<translation id="2206960886090042977">マウスが接続されているため、内蔵タッチパッドを無効にします。マウスまたはキーボードを使用して変更を確定します。
+
+無効にしない場合は 30 秒後に内蔵タッチパッドが再度有効になります。</translation>
 <translation id="2208323208084708176">デスクトップ統合モード</translation>
 <translation id="2220572644011485463">PIN またはパスワード</translation>
 <translation id="2222841058024245321">デスク 7</translation>
@@ -1908,6 +1913,9 @@
 デバイスをシャットダウンするには、デバイスの電源ボタンをもう一度長押しします。</translation>
 <translation id="7523420897035067483">フォーカス モード中にサイレント モードを有効にする</translation>
 <translation id="7524043547948122239">Google ToDo リスト</translation>
+<translation id="7524919752437339268">内蔵タッチパッドを無効にします。キーボードまたは別のポインタ デバイスを使用して変更を確定します。
+
+無効にしない場合は 30 秒後に内蔵タッチパッドが再度有効になります。</translation>
 <translation id="7525067979554623046">作成</translation>
 <translation id="7526573455193969409">ネットワークが監視されている可能性があります</translation>
 <translation id="7536035074519304529">IP アドレス: <ph name="ADDRESS" /></translation>
@@ -2294,6 +2302,7 @@
 <translation id="8858369206579825206">プライバシー管理</translation>
 <translation id="8860366331836346216">eSIM を追加</translation>
 <translation id="8870509716567206129">アプリで分割画面がサポートされていません。</translation>
+<translation id="8873203135446552888">内蔵タッチパッドの無効化を確認</translation>
 <translation id="8874184842967597500">未接続</translation>
 <translation id="8875021410787719674">右下隅、ランチャー、アドレスバー、ブックマーク バー、開いているウェブサイト、ダウンロード ページ間を移動します</translation>
 <translation id="8876148469852588625"><ph name="EVENT_TOTAL_COUNT" /> 件中 <ph name="EVENT_POSITION" /> 件目の予定</translation>

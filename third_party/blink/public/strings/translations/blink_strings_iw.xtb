@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">על הערך להיות <ph name="MINIMUM_DATE_OR_TIME" /> ומעלה.</translation>
 <translation id="2761667185364618470">יש לסמן את התיבה הזאת כדי להמשיך.</translation>
 <translation id="2908441821576996758">יש להזין רשימה של כתובות אימייל המופרדות באמצעות פסיקים.</translation>
+<translation id="2940013921954129954">יש הרשאת גישה למיקום המדויק</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">יש להזין ערך חוקי. השדה ריק או שהוא מכיל תאריך לא חוקי.</translation>
 <translation id="310520048233152454">הזנת כתובת אתר.</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">איכות הפעלה נמוכה</translation>
 <translation id="6790428901817661496">הפעלה</translation>
 <translation id="6820355525329141109">לא ניתן היה לטעון את הפלאגין.</translation>
+<translation id="688706781007114099">שימוש במיקום</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">עליך להאריך את הטקסט ל-<ph name="MIN_CHARACTERS" /> תווים או יותר (כרגע יש תו אחד).</translation>
 <translation id="709897737746224366">יש להתאים את הפורמט המבוקש.</translation>

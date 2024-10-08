@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">O valor debe ser <ph name="MINIMUM_DATE_OR_TIME" /> ou posterior.</translation>
 <translation id="2761667185364618470">Marca esta caixa se queres continuar.</translation>
 <translation id="2908441821576996758">Introduce unha lista de enderezos de correo electrónico separados por comas.</translation>
+<translation id="2940013921954129954">Localización precisa permitida</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Insire un valor válido. O campo está incompleto ou contén unha data non válida.</translation>
 <translation id="310520048233152454">Introduce un URL.</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">Mala calidade de reprodución</translation>
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="6820355525329141109">Non se puido cargar o plugin.</translation>
+<translation id="688706781007114099">Usar localización</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Amplía este texto a <ph name="MIN_CHARACTERS" /> caracteres ou máis. Actualmente estás utilizando 1 carácter.</translation>
 <translation id="709897737746224366">Utiliza un formato que coincida co solicitado.</translation>

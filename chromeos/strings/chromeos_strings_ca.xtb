@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Disminueix la brillantor de la pantalla</translation>
 <translation id="2086091080968010660">És possible que els canvis basats en l'hora no siguin precisos. Activa a la configuració l'accés a la ubicació del sistema.</translation>
 <translation id="2102231663024125441">Edició de text</translation>
-<translation id="2102648867808308635">Ajuda'm a llegir aquesta pàgina</translation>
 <translation id="2105810540595158374">El dispositiu és un comandament de joc.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versió <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">Actualment, només està disponible en anglès (EUA)</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">mostra totes les aplicacions</translation>
 <translation id="3510890413042482857">Envia <ph name="BEGIN_LINK1" />dades de traça del rendiment<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Actualitz. ChromeOS</translation>
-<translation id="3522508178835057262">De moment, no s'admeten les transcripcions de més de <ph name="MAX_WORD_LENGTH" /> paraules</translation>
 <translation id="3527036260304016759">Error: error desconegut</translation>
 <translation id="353214771040290298">Edició finalitzada</translation>
 <translation id="3532980081107202182">Queden aproximadament <ph name="MIN_REMAINING" /> minuts</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">Tema clar</translation>
 <translation id="4813136279048157860">Les meves imatges</translation>
 <translation id="4813345808229079766">Connexió</translation>
-<translation id="4824527342590024245">De moment, no s'admeten les transcripcions de menys de <ph name="MIN_WORD_LENGTH" /> paraules.</translation>
 <translation id="4830894019733815633">un canyó</translation>
 <translation id="4832079907277790330">Selecciona una carpeta a l'aplicació Fitxers...</translation>
 <translation id="4835901797422965222">No hi ha cap xarxa activa</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">Similars:</translation>
 <translation id="5130848777448318809">ponis</translation>
 <translation id="5137451382116112100">Complet</translation>
+<translation id="5140788690559353412">Si perds l'accés al teu compte de centre educatiu, ja no tindràs accés al correu electrònic ni als fitxers de Google Drive associats, com ara Gmail, Documents, Presentacions i més.</translation>
 <translation id="5142961317498132443">Autenticació</translation>
 <translation id="5144311987923128508">El botó Confirma ara està desactivat</translation>
 <translation id="5144887194300568405">Copia la traducció</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) Latència d'HTTP</translation>
 <translation id="6078323886959318429">Afegeix una drecera</translation>
 <translation id="6091080061796993741">groc</translation>
+<translation id="6093853427925392522">Assegura't d'utilitzar l'aplicació Transferència de contingut de Google per moure les dades del teu compte de centre educatiu al teu compte personal abans no perdis l'accés.</translation>
 <translation id="6104112872696127344">L'escaneig s'ha cancel·lat</translation>
 <translation id="6106186594183574873">Per acabar, introdueix la contrasenya antiga</translation>
 <translation id="6108689792487843350">No es pot accedir a la passarel·la</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">Nom del punt d'accés Wi-Fi (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de noms}other{Servidors de noms}}</translation>
 <translation id="7135814714616751706">Cerca dreceres</translation>
+<translation id="7141470099673912333">Transferència de contingut</translation>
 <translation id="7143207342074048698">Connectant</translation>
 <translation id="7144878232160441200">Torna-ho a provar</translation>
 <translation id="7144954474087165241">pagoda</translation>
@@ -1394,6 +1394,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="7856267634822906833">Pantalla tàctil Bluetooth</translation>
 <translation id="7859006200041800233">flor de cactus</translation>
 <translation id="7869143217755017858">Desactiva el mode fosc</translation>
+<translation id="7878972877380405573">Resumeix amb Ajuda'm a llegir</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipus de proveïdor</translation>
 <translation id="7882501334836096755">Clau pública</translation>
@@ -1537,6 +1538,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8626489604350149811">Més accions per a <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Porpra clar</translation>
 <translation id="8647595191512746911">Transcripció d'àudio</translation>
+<translation id="8650852232143958317">Emporta't els teus fitxers de Gmail i Google Drive amb tu</translation>
 <translation id="8651481478098336970">activa el volum</translation>
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655828773034788261">Comparteix l'URL:</translation>

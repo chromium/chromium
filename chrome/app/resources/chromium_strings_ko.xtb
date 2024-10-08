@@ -51,6 +51,7 @@
 <translation id="17264556997921157">사이트에서 광고 표시를 위해 사용하는 관심분야의 주제를 내가 확인하고 삭제할 수 있습니다. Chromium에서는 사용자의 최근 방문 기록을 기반으로 관심분야를 추정합니다.</translation>
 <translation id="1733725117201708356">Chromium에서 곧 인터넷 사용 기록이 삭제됩니다</translation>
 <translation id="1736443181683099871">Chromium에서 탐색을 HTTPS로 업그레이드하려고 시도합니다</translation>
+<translation id="1736662517232558588">Chromium 데이터 삭제 완료</translation>
 <translation id="1745121272106313518"><ph name="REMAINING_TIME" /> 후에 Chromium 다시 시작</translation>
 <translation id="1749104137266986751">HTTPS를 사용할 수 없는 경우, Chromium에서 경고 없이 안전하지 않은 연결을 사용합니다.</translation>
 <translation id="1774152462503052664">백그라운드에서 Chromium을 실행</translation>
@@ -81,6 +82,7 @@
 <translation id="2088953378266246249">Chromium의 루트 인증서 관리 방식에 관한 정보</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Chromium을 1분 동안 사용하지 않으면 조직에서 인터넷 사용 기록을 자동으로 삭제합니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다. 탭이 열린 상태로 유지됩니다.}other{Chromium을 #분 동안 사용하지 않으면 조직에서 인터넷 사용 기록을 자동으로 삭제합니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다. 탭이 열린 상태로 유지됩니다.}}</translation>
 <translation id="2126108037660393668">다운로드한 파일을 확인할 수 없습니다.</translation>
+<translation id="2137162749895930932">번역 화면 닫기</translation>
 <translation id="215352261310130060">사이트에서 보안 연결을 사용하고 있지 않으며 파일이 조작되었을 가능성이 있기 때문에 Chromium에서 이 다운로드를 차단했습니다.</translation>
 <translation id="2157600032285353789">Chromium 메뉴에서 북마크, 읽기 모드 등을 열 수 있습니다.</translation>
 <translation id="2174178932569897599">Chromium 맞춤설정</translation>
@@ -148,6 +150,7 @@
 <translation id="3032706164202344641">Chromium에서 비밀번호를 확인할 수 없습니다. 나중에 다시 시도하세요.</translation>
 <translation id="3032787606318309379">Chromium에 추가하는 중...</translation>
 <translation id="3038232873781883849">설치 대기 중...</translation>
+<translation id="3045032126857188731">번역된 언어, <ph name="LANGUAGE" /></translation>
 <translation id="3068187312562070417">기타 Chromium 프로필</translation>
 <translation id="3068515742935458733">비정상 종료 보고서와 <ph name="UMA_LINK" />을(를) Google로 전송하여 Chromium 개선에 참여합니다.</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{하나 이상의 Chromium 확장 프로그램에서 USB 기기 1대에 액세스함}=1{하나 이상의 Chromium 확장 프로그램에서 USB 기기 1대에 액세스 중}other{하나 이상의 Chromium 확장 프로그램에서 USB 기기 #대에 액세스 중}}</translation>
@@ -166,7 +169,6 @@
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3268051428841342958">V8은 사이트 속도를 개선하는 데 사용되는 Chromium의 JavaScript 및 WebAssembly 엔진입니다.</translation>
-<translation id="3269209112443570745">New! 화면에 표시된 항목을 간편하게 검색하세요</translation>
 <translation id="3283186697780795848">Chromium 버전 <ph name="PRODUCT_VERSION" />이(가)가 설치됩니다.</translation>
 <translation id="3286538390144397061">지금 다시 시작</translation>
 <translation id="328888136576916638">Google API 키가 누락되었습니다. Chromium의 일부 기능이 사용 중지됩니다.</translation>
@@ -206,6 +208,7 @@
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386822487697155367">ChromiumOS 도움말 보기</translation>
 <translation id="3871664619793219264"><ph name="ACCOUNT_EMAIL" /> 계정으로 Chromium 브라우저 기능을 이용해 보세요</translation>
+<translation id="3885770153807205175">언어 선택 도구</translation>
 <translation id="388648406173476553">Chromium을 맞춤설정 및 제어합니다. 확인이 필요한 항목이 있습니다. 클릭하여 세부정보를 보세요.</translation>
 <translation id="3889543394854987837">Chromium을 열고 탐색을 시작하려면 내 이름을 클릭하세요.</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" />님이 이미 Chromium 프로필에 로그인되어 있습니다. 인터넷 사용 기록을 별도로 보관하기 위해 Chromium에서 나만의 프로필을 만들 수 있습니다.</translation>
@@ -218,6 +221,7 @@
 <translation id="3997429360543082038">ChromiumOS 정보</translation>
 <translation id="4019629340646866719"><ph name="BEGIN_LINK_LINUX_OSS" />Linux 개발 환경<ph name="END_LINK_LINUX_OSS" />과 마찬가지로, ChromiumOS는 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용하여 개발되었습니다.</translation>
 <translation id="4022972681110646219">화면 번역</translation>
+<translation id="4023601594785368013">원본 언어, <ph name="LANGUAGE" /></translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />현재 설정<ph name="END_LINK" />을 보고하여 Chromium 개선에 참여</translation>
 <translation id="4050175100176540509">최신 버전에는 중요한 보안 개선사항 및 새로운 기능이 포함되어 있습니다.</translation>
 <translation id="4055805654398742145">비밀번호 관리자(&amp;A)</translation>
@@ -287,6 +291,7 @@
 <translation id="494490797786467921">클릭하여 Chromium 로그인 대화상자 닫기</translation>
 <translation id="4987820182225656817">게스트로 사용 기록을 남기지 않고 Chromium을 사용할 수 있습니다.</translation>
 <translation id="4994636714258228724">Chromium에 본인 추가</translation>
+<translation id="5024548327980648634">화면에 표시된 내용을 검색하세요</translation>
 <translation id="5051959905407134411">이미지 검색 사용해 보기</translation>
 <translation id="5114678101347489141">Chromium은 사이트에서 내 정보를 더 적게 사용하면서도 동일한 인터넷 사용 환경을 제공할 수 있는 새로운 기능을 모색하고 있습니다.</translation>
 <translation id="5123973130450702873">Chromium에서 손 추적 기능을 사용하려면 권한이 필요합니다.</translation>
@@ -332,6 +337,7 @@
 <translation id="5761096224651992291">최근에 사이트를 방문하지 않았습니다. Chromium에서 <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> 권한을 삭제했습니다.</translation>
 <translation id="5800158606660203929">Chromium을 맞춤설정 및 제어합니다. Chromium을 기본 브라우저로 설정합니다.</translation>
 <translation id="5809516625706423866">인터넷에 연결할 수 없습니다(HTTP 401 Unauthorized). 프록시 설정을 확인하시기 바랍니다.</translation>
+<translation id="5821520528363214608">Google 계정에서 Chromium 데이터를 사용하고 저장하려면 Chromium을 업데이트하세요.</translation>
 <translation id="5862307444128926510">Chromium에 오신 것을 환영합니다.</translation>
 <translation id="5871205389137001634">클릭하여 이미지 검색 종료</translation>
 <translation id="5883558403894052917">Chromium에서 다음 항목에 멀웨어가 포함된 것을 발견했습니다.</translation>
@@ -492,6 +498,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7686590090926151193">Chromium이 기본 브라우저로 설정되어 있지 않습니다</translation>
 <translation id="7689606757190482937">모든 기기에서 Chromium을 동기화하고 맞춤설정하세요.</translation>
 <translation id="7699779824407626136">Chromium 업데이트</translation>
+<translation id="77283119132245232"><ph name="BROWSER_NAME" />에 시스템 추적 서비스가 제공됩니다. 이 서비스를 사용 중지하면 브라우저에서 생성한 성능 추적에 컨텍스트 전환 및 준비된 스레드 이벤트와 같은 시스템 전체 이벤트가 포함되지 않습니다.</translation>
 <translation id="7745317241717453663">인터넷 사용 기록이 기기에서 삭제됩니다. 나중에 데이터를 가져오려면 Chromium에 <ph name="USER_EMAIL" />(으)로 로그인하세요.</translation>
 <translation id="7747138024166251722">설치 프로그램이 임시 디렉터리를 만들지 못했습니다. 디스크 공간 및 설치 권한을 확인해 보세요.</translation>
 <translation id="7786760609782648049">Chromium의 속도를 높여보세요</translation>

@@ -114,6 +114,7 @@
 <translation id="132346741904777634">ਕੈਮਰੇ ਨੂੰ ਉੱਪਰਲੇ ਖੱਬੇ ਕੋਨੇ 'ਤੇ ਵਿਵਸਥਿਤ ਕੀਤਾ ਗਿਆ। ਸਿਸਟਮ ਸਰਫ਼ੇਸ ਨਾਲ ਓਵਰਲੈਪ ਕਰਦਾ ਹੈ।</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> ਅਤੇ ਵਿੰਡੋਆਂ ਨੂੰ ਬੰਦ ਕਰੋ</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> ਕਨੈਕਟ ਹੈ</translation>
+<translation id="1337081488893096731">ਆਪਣੇ ਸਕੂਲ ਦੇ ਖਾਤੇ ਸੰਬੰਧੀ ਡਾਟੇ ਨੂੰ ਆਪਣੇ ਨਿੱਜੀ ਖਾਤੇ ਵਿੱਚ ਬਦਲਣ ਲਈ Content Transfer ਐਪ ਦੀ ਵਰਤੋਂ ਕਰੋ</translation>
 <translation id="1340378040547539434">ਪੰਨੇ 'ਤੇ ਜ਼ੂਮ ਘਟਾਓ</translation>
 <translation id="1341651618736211726">ਓਵਰਫ਼ਲੋ</translation>
 <translation id="1341926407152459446">ਆਡੀਓ ਇਨਪੁੱਟ ਅਤੇ ਆਊਟਪੁੱਟ ਲਈ "<ph name="DEVICE_NAME" />" ਵਰਤੋ</translation>
@@ -242,6 +243,7 @@
 <translation id="17722141032474077">ਗਣਨਾਵਾਂ</translation>
 <translation id="1774796056689732716"><ph name="CURRENT_MONTH_YEAR" /> ਦੇ ਕੈਲੰਡਰ ਵਿੱਚ ਫ਼ਿਲਹਾਲ <ph name="DATE" /> ਨੂੰ ਚੁਣਿਆ ਗਿਆ ਹੈ।</translation>
 <translation id="178347895271755507">ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ, ਮੀਡੀਆ ਅਤੇ ਸੂਚਨਾਵਾਂ ਨੂੰ ਦੇਖਣ ਦਾ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
+<translation id="1786487376942610288">ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਵਿੰਡੋ ਦੇ ਵੱਧੋ-ਵੱਧ ਜਾਂ ਮੌਜੂਦਾ ਆਕਾਰ ਵਿਚਾਲੇ ਸਵਿੱਚ ਕਰੋ</translation>
 <translation id="1787955149152357925">ਬੰਦ ਹੈ</translation>
 <translation id="1796561540704213354">ਵੈੱਬਸਾਈਟਾਂ ਦੀ ਸ਼੍ਰੇਣੀ ਵਿੱਚ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੇ ਗਏ ਪੰਨੇ ਅਤੇ ਖੋਲ੍ਹੇ ਗਏ ਪੰਨੇ ਦਿਖਾਏ ਜਾਂਦੇ ਹਨ</translation>
 <translation id="179842970735685253">Google ਦੇ ਸੇਵਾ ਦੇ ਨਿਯਮ</translation>
@@ -337,6 +339,9 @@
 <translation id="219905428774326614">ਲਾਂਚਰ, ਸਭ ਐਪਾਂ</translation>
 <translation id="2201071101391734388">ਹਾਲੀਆ ਫ਼ੋਟੋ <ph name="TOTAL_COUNT" /> ਵਿੱਚੋਂ <ph name="INDEX" />।</translation>
 <translation id="2201687081523799384">Google Tasks ਨੂੰ ਸਮੇਟੋ</translation>
+<translation id="2206960886090042977">ਬਿਲਟ-ਇਨ ਟੱਚਪੈਡ ਬੰਦ ਹੈ ਕਿਉਂਕਿ ਮਾਊਸ ਕਨੈਕਟ ਹੈ। ਤਬਦੀਲੀ ਦੀ ਤਸਦੀਕ ਕਰਨ ਲਈ ਮਾਊਸ ਜਾਂ ਕੀ-ਬੋਰਡ ਦੀ ਵਰਤੋਂ ਕਰੋ।
+
+ਨਹੀਂ ਤਾਂ, ਬਿਲਟ-ਇਨ ਟੱਚਪੈਡ 30 ਸਕਿੰਟਾਂ ਵਿੱਚ ਮੁੜ-ਚਾਲੂ ਹੋ ਜਾਵੇਗਾ।</translation>
 <translation id="2208323208084708176">ਯੂਨੀਫਾਈਡ ਡੈਸਕਟਾਪ ਮੋਡ</translation>
 <translation id="2220572644011485463">ਪਿੰਨ ਜਾਂ ਪਾਸਵਰਡ</translation>
 <translation id="2222841058024245321">ਡੈਸਕ 7</translation>
@@ -1908,6 +1913,9 @@
 ਡੀਵਾਈਸ ਨੂੰ ਬੰਦ ਕਰਨ ਲਈ, ਡੀਵਾਈਸ 'ਤੇ ਦੁਬਾਰਾ ਪਾਵਰ ਬਟਨ ਦਬਾਈ ਰੱਖੋ।</translation>
 <translation id="7523420897035067483">ਫੋਕਸ ਮੋਡ ਵਿੱਚ ਹੋਣ ਵੇਲੇ 'ਪਰੇਸ਼ਾਨ ਨਾ ਕਰੋ' ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">ਬਿਲਟ-ਇਨ ਟੱਚਪੈਡ ਬੰਦ ਹੈ। ਤਬਦੀਲੀ ਦੀ ਤਸਦੀਕ ਕਰਨ ਲਈ ਆਪਣੇ ਕੀ-ਬੋਰਡ ਜਾਂ ਕਿਸੇ ਹੋਰ ਪੁਆਇੰਟਰ ਡੀਵਾਈਸ ਦੀ ਵਰਤੋਂ ਕਰੋ।
+
+ਨਹੀਂ ਤਾਂ, ਬਿਲਟ-ਇਨ ਟੱਚਪੈਡ 30 ਸਕਿੰਟਾਂ ਵਿੱਚ ਮੁੜ-ਚਾਲੂ ਹੋ ਜਾਵੇਗਾ।</translation>
 <translation id="7525067979554623046">ਬਣਾਓ</translation>
 <translation id="7526573455193969409">ਹੋ ਸਕਦਾ ਹੈ ਕਿ ਨੈੱਟਵਰਕ ਦੀ ਨਿਗਰਾਨੀ ਹੋ ਰਹੀ ਹੋਵੇ</translation>
 <translation id="7536035074519304529">IP ਪਤਾ: <ph name="ADDRESS" /></translation>
@@ -2295,6 +2303,7 @@
 <translation id="8858369206579825206">ਪਰਦੇਦਾਰੀ ਕੰਟਰੋਲ</translation>
 <translation id="8860366331836346216">ਈ-ਸਿਮ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="8870509716567206129">ਐਪ ਸਪਲਿਟ ਸਕ੍ਰੀਨ ਦਾ ਸਮਰਥਨ ਨਹੀਂ ਕਰਦੀ।</translation>
+<translation id="8873203135446552888">ਤਸਦੀਕ ਕਰੋ ਕਿ ਤੁਸੀਂ ਬਿਲਟ-ਇਨ ਟੱਚਪੈਡ ਨੂੰ ਬਂਦ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ</translation>
 <translation id="8874184842967597500">ਕਨੈਕਟ ਨਹੀਂ ਹੈ</translation>
 <translation id="8875021410787719674">ਹੇਠਲੇ ਸੱਜੇ ਕੋਨੇ, ਲਾਂਚਰ, ਪਤਾ ਬਾਰ, ਬੁੱਕਮਾਰਕ ਬਾਰ, ਖੁੱਲ੍ਹੀ ਵੈੱਬਸਾਈਟ ਅਤੇ ਡਾਊਨਲੋਡਾਂ ਵਿਚਾਲੇ ਜਾਓ</translation>
 <translation id="8876148469852588625"><ph name="EVENT_TOTAL_COUNT" /> ਵਿੱਚੋਂ <ph name="EVENT_POSITION" /> ਇਵੈਂਟ</translation>

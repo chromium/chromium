@@ -108,7 +108,9 @@
 <translation id="2683434792633810741">Želite li izbrisati i poništiti?</translation>
 <translation id="2713106313042589954">Isključi kameru</translation>
 <translation id="2717722538473713889">E-adrese</translation>
+<translation id="2726059656860238749">Pokrenite Chrome s aktivnim višenamjenskim okvirom, čime se smanjuje vrijeme pokretanja na uređajima nižeg cjenovnog ranga.</translation>
 <translation id="2750481671343847896">Web-lokacije mogu prikazivati upite za prijavu s usluga za provjeru identiteta.</translation>
+<translation id="2787357173144933081">Odmah pokreni višenamjenski okvir</translation>
 <translation id="2790501146643349491">Kad je ta postavka uključena, nedavno zatvorene web-lokacije mogu dovršiti slanje i primanje podataka. Kad je ta postavka isključena, nedavno zatvorene web-lokacije ne mogu dovršiti slanje ili primanje podataka.</translation>
 <translation id="2822354292072154809">Jeste li sigurni da želite poništiti sva dopuštenja za aplikaciju <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Zahtijevaj prikaz na mobilnom uređaju</translation>
@@ -146,6 +148,7 @@
 <translation id="3295602654194328831">Sakrij informacije</translation>
 <translation id="3328801116991980348">Informacije o web-lokaciji</translation>
 <translation id="3333961966071413176">Svi kontakti</translation>
+<translation id="3360338140203645771">Izbrisati spremljeno?</translation>
 <translation id="3362437373201486687">Traženje Bluetooth uređaja</translation>
 <translation id="3386292677130313581">Web-lokacije moraju tražiti dopuštenje za pristup lokaciji (preporučeno)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
@@ -243,7 +246,6 @@
 <translation id="4962975101802056554">Opoziv svih dopuštenja za uređaj</translation>
 <translation id="497421865427891073">Idi naprijed</translation>
 <translation id="4976702386844183910">Posljednji posjet bio je <ph name="DATE" /></translation>
-<translation id="4985206706500620449">Dopustili ste kolačiće trećih strana za ovu web-lokaciju</translation>
 <translation id="4994033804516042629">Nije pronađen nijedan kontakt</translation>
 <translation id="4996978546172906250">Dijeli putem</translation>
 <translation id="5001526427543320409">Kolačići trećih strana</translation>
@@ -360,6 +362,7 @@
 <translation id="6527303717912515753">Podijeli</translation>
 <translation id="652937045869844725">Pokušajte omogućiti kolačiće treće strane, što znači manje zaštite, ali vjerojatnije je da će značajke web-lokacije funkcionirati</translation>
 <translation id="6530703012083415527">Kad je ta postavka uključena, web-lokacije mogu upotrebljavati skočne prozore i preusmjeravanja. Kad je ta postavka isključena, web-lokacije ne mogu upotrebljavati skočne prozore i preusmjeravanja.</translation>
+<translation id="6540488083026747005">Dopustili ste kolačiće trećih strana na ovoj web-lokaciji</translation>
 <translation id="6545864417968258051">Traženje Bluetootha</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Blokirana su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}one{Blokirana su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}few{Blokirana su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}other{Blokirana su dopuštenja <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Posljednji posjet bio je prije <ph name="NUM_DAYS" /> dana</translation>

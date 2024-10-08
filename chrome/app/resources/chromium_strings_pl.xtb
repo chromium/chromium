@@ -49,6 +49,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="17264556997921157">Możesz przeglądać i usuwać interesujące Cię tematy, których witryny używają do dobierania wyświetlanych reklam. Chromium ocenia, jakie są Twoje zainteresowania, na podstawie ostatniej historii przeglądania.</translation>
 <translation id="1733725117201708356">Chromium usunie wkrótce dane przeglądania</translation>
 <translation id="1736443181683099871">Chromium spróbuje uaktualnić elementy nawigacyjne do HTTPS</translation>
+<translation id="1736662517232558588">Wyczyszczono dane Chromium</translation>
 <translation id="1745121272106313518">Chromium uruchomi się ponownie za <ph name="REMAINING_TIME" /></translation>
 <translation id="1749104137266986751">Gdy protokół HTTPS będzie niedostępny, Chromium bez ostrzeżenia użyje połączenia niezabezpieczonego</translation>
 <translation id="1774152462503052664">Zezwól Chromium na działanie w tle</translation>
@@ -79,6 +80,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="2088953378266246249">Informacje o tym, jak Chromium zarządza certyfikatami głównymi</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Twoja organizacja automatycznie usuwa dane przeglądania, gdy nie korzystasz z Chromium przez minutę. Może to obejmować historię, autouzupełnianie i pobrane pliki. Karty pozostają otwarte.}few{Twoja organizacja automatycznie usuwa dane przeglądania, gdy nie korzystasz z Chromium przez # minuty. Może to obejmować historię, autouzupełnianie i pobrane pliki. Karty pozostają otwarte.}many{Twoja organizacja automatycznie usuwa dane przeglądania, gdy nie korzystasz z Chromium przez # minut. Może to obejmować historię, autouzupełnianie i pobrane pliki. Karty pozostają otwarte.}other{Twoja organizacja automatycznie usuwa dane przeglądania, gdy nie korzystasz z Chromium przez # minuty. Może to obejmować historię, autouzupełnianie i pobrane pliki. Karty pozostają otwarte.}}</translation>
 <translation id="2126108037660393668">Weryfikacja pobranego pliku zakończyła się niepowodzeniem.</translation>
+<translation id="2137162749895930932">Zamknij ekran tłumaczenia</translation>
 <translation id="215352261310130060">Pobieranie zostało zablokowane przez Chromium, ponieważ strona nie korzysta z bezpiecznego połączenia, a plik mógł zostać zmodyfikowany</translation>
 <translation id="2157600032285353789">W menu Chromium możesz otworzyć zakładki lub tryb czytania albo wybrać inne opcje</translation>
 <translation id="2174178932569897599">Dostosuj Chromium</translation>
@@ -146,6 +148,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="3032706164202344641">Chromium nie może sprawdzić Twoich haseł. Spróbuj później.</translation>
 <translation id="3032787606318309379">Dodawanie do Chromium...</translation>
 <translation id="3038232873781883849">Czekam na instalację…</translation>
+<translation id="3045032126857188731">Język tłumaczenia: <ph name="LANGUAGE" /></translation>
 <translation id="3068187312562070417">Inne profile Chromium</translation>
 <translation id="3068515742935458733">Pomóż nam ulepszyć Chromium, przesyłając do Google raporty o awariach i <ph name="UMA_LINK" /></translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Co najmniej 1 rozszerzenie do Chromium uzyskuje dostęp do 1 urządzenia USB}=1{Co najmniej 1 rozszerzenie do Chromium uzyskuje dostęp do 1 urządzenia USB}few{Co najmniej 1 rozszerzenie do Chromium uzyskuje dostęp do # urządzeń USB}many{Co najmniej 1 rozszerzenie do Chromium uzyskuje dostęp do # urządzeń USB}other{Co najmniej 1 rozszerzenie do Chromium uzyskuje dostęp do # urządzenia USB}}</translation>
@@ -162,7 +165,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="3224847870593914902">Aby usunąć konto Google z Chromium, wyloguj się z Chromium na stronie Ustawienia</translation>
 <translation id="3258596308407688501">Chromium nie może odczytać ani zapisać danych w katalogu <ph name="USER_DATA_DIRECTORY" />.</translation>
 <translation id="3268051428841342958">V8 to mechanizm JavaScript i WebAssembly Chromium używany do zwiększania wydajności witryny</translation>
-<translation id="3269209112443570745">Nowość! Łatwy sposób na wyszukiwanie tego, co widzisz na ekranie</translation>
 <translation id="3283186697780795848">Zainstalowana jest wersja Chromium <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3286538390144397061">Uruchom ponownie teraz</translation>
 <translation id="328888136576916638">Brakuje kluczy interfejsu Google API. Niektóre funkcje Chromium będą wyłączone.</translation>
@@ -202,6 +204,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="386822487697155367">Skorzystaj z pomocy dotyczącej Chromium OS</translation>
 <translation id="3871664619793219264">Uzyskaj dostęp do danych z przeglądarki Chromium z konta <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="3885770153807205175">Selektor języka</translation>
 <translation id="388648406173476553">Dostosuj i kontroluj Chromium. Pewna kwestia wymaga Twojej uwagi – kliknij, by przejść do szczegółów.</translation>
 <translation id="3889543394854987837">Otwórz Chromium, klikając swoją nazwę i rozpocznij przeglądanie.</translation>
 <translation id="390528597099634151">W tym profilu Chromium jest już zalogowany użytkownik <ph name="EXISTING_USER" />. Aby umożliwić Ci przeglądanie osobno, Chromium może utworzyć dla Ciebie nowy profil.</translation>
@@ -214,6 +217,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="3997429360543082038">System operacyjny Chromium – informacje</translation>
 <translation id="4019629340646866719">Opracowanie Chromium OS było możliwe dzięki dodatkowemu <ph name="BEGIN_LINK_CROS_OSS" />oprogramowaniu open source<ph name="END_LINK_CROS_OSS" />. To samo dotyczy <ph name="BEGIN_LINK_LINUX_OSS" />środowiska programistycznego Linuksa<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Przetłumacz ekran</translation>
+<translation id="4023601594785368013">Język oryginału: <ph name="LANGUAGE" /></translation>
 <translation id="4036079820698952681">Pomóż ulepszyć Chromium, zgłaszając <ph name="BEGIN_LINK" />bieżące ustawienia<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">W najnowszej wersji zostały wprowadzone ważne poprawki bezpieczeństwa i nowe funkcje.</translation>
 <translation id="4055805654398742145">Menedżer &amp;haseł</translation>
@@ -283,6 +287,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="494490797786467921">Kliknij, aby zamknąć okno logowania się w Chromium</translation>
 <translation id="4987820182225656817">Goście mogą korzystać z Chromium, nie pozostawiając żadnych danych.</translation>
 <translation id="4994636714258228724">Dodaj siebie do Chromium</translation>
+<translation id="5024548327980648634">Wyszukaj informacje o tym, co widzisz na ekranie</translation>
 <translation id="5051959905407134411">Wypróbuj wyszukiwanie obrazów</translation>
 <translation id="5114678101347489141">Testujemy nowe funkcje Chromium zapewniające taką samą wygodę przeglądania witryn, jednak przy wykorzystaniu mniejszej ilości informacji o użytkowniku</translation>
 <translation id="5123973130450702873">Chromium potrzebuje uprawnień do śledzenia rąk</translation>
@@ -328,6 +333,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5761096224651992291">Ta witryna nie była przez Ciebie ostatnio odwiedzana. Przeglądarka Chromium usunęła te uprawnienia: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="PERMISSION_3" />.</translation>
 <translation id="5800158606660203929">Dostosuj i kontroluj Chromium. Ustaw Chromium jako przeglądarkę domyślną.</translation>
 <translation id="5809516625706423866">Nie można połączyć się z internetem. Kod HTTP 401 (Brak autoryzacji). Sprawdź konfigurację proxy.</translation>
+<translation id="5821520528363214608">Zaktualizuj Chromium, aby móc zapisywać dane z niego na koncie Google i ich używać</translation>
 <translation id="5862307444128926510">Chromium – witamy!</translation>
 <translation id="5871205389137001634">Kliknij, aby zamknąć wyszukiwanie obrazów</translation>
 <translation id="5883558403894052917">Przeglądarka Chromium wykryła w tych elementach złośliwe oprogramowanie:</translation>
@@ -488,6 +494,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="7686590090926151193">Chromium nie jest domyślną przeglądarką</translation>
 <translation id="7689606757190482937">Synchronizuj dane Chromium i korzystaj z własnych ustawień przeglądarki na wielu urządzeniach</translation>
 <translation id="7699779824407626136">Aktualizacja Chromium</translation>
+<translation id="77283119132245232">Zapewnia usługi śledzenia systemu dla <ph name="BROWSER_NAME" />. Jeśli ta usługa jest wyłączona, śledzenie wydajności tworzone przez przeglądarkę nie zawiera zdarzeń dotyczących całego systemu, takich jak przełączanie kontekstu i gotowe zdarzenia wątków.</translation>
 <translation id="7745317241717453663">Spowoduje to usunięcie danych przeglądania z tego urządzenia. Aby później odzyskać dane, zaloguj się w Chromium jako <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Instalator nie mógł utworzyć katalogu tymczasowego. Sprawdź, czy na dysku jest dość wolnego miejsca oraz sprawdź, czy posiadasz uprawnienia do instalowania programów.</translation>
 <translation id="7786760609782648049">Przyspiesz działanie Chromium</translation>

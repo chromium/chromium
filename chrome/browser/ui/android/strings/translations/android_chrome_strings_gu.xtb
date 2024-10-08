@@ -204,6 +204,7 @@
 <translation id="1957557050935255529">PDF લોડ કરી રહ્યાં છીએ…</translation>
 <translation id="1959679933317802873">તમારું કન્ટેન્ટ લોડ થવાની રાહ જોઈ રહ્યાં છીએ</translation>
 <translation id="1960290143419248813">Androidના આ વર્ઝન માટે Chrome અપડેટ હવે સમર્થિત નથી</translation>
+<translation id="1963056249988316027">ઓળખની તપાસ ચાલુ છે અને તે ચકાસી શકતી નથી કે આ તમે જ છો</translation>
 <translation id="1963976881984600709">માનક સંરક્ષણ</translation>
 <translation id="1966710179511230534">કૃપા કરીને તમારી સાઇન-ઇન વિગતો અપડેટ કરો.</translation>
 <translation id="1969037871259811890">તમારો બ્રાઉઝિંગ ડેટા ડિલીટ કરવાથી તમે તમારા Google એકાઉન્ટમાંથી સાઇન આઉટ થતા નથી. આમ કરવા માટે, <ph name="BEGIN_LINK1" />Chromeમાંથી સાઇન આઉટ કરો<ph name="END_LINK1" />.</translation>
@@ -555,6 +556,7 @@
 <translation id="3622349720008044802">વિન્ડો મેનેજ કરો</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 સાઇટ}one{+ # સાઇટ}other{+ # સાઇટ}}</translation>
 <translation id="3631987586758005671"><ph name="DEVICE_NAME" /> પર શેર કરી રહ્યાં છે</translation>
+<translation id="363484704507524488">તમે ચોરી સામે સંરક્ષણના સેટિંગમાં ઓળખની તપાસને મેનેજ કરી શકો છો. <ph name="BEGIN_LINK" />સેટિંગ પર જાઓ<ph name="END_LINK" /></translation>
 <translation id="3635073343384702370">જ્યારે તમે તમારા પાસવર્ડ સાચવો ત્યારે Chrome તેને ચેક કરી શકે છે</translation>
 <translation id="363596933471559332">સંગ્રહિત ઓળખપત્રોનો ઉપયોગ કરીને વેબસાઇટમાં ઑટોમૅટિક રીતે સાઇન ઇન કરો. જ્યારે સુવિધા બંધ હોય છે, ત્યારે વેબસાઇટમાં સાઇન ઇન કરતાં પહેલાં દર વખતે તમને ચકાસણી માટે કહેવામાં આવશે.</translation>
 <translation id="3636940436873918441">પસંદગીની ભાષાઓ</translation>
@@ -727,7 +729,6 @@
 <translation id="4489640160615759754">સારાંશની શીટ સાથે શેર કરો</translation>
 <translation id="4494806687727322324">તમારા ઍડમિનિસ્ટ્રેટર દ્વારા પાસવર્ડ સાચવવાની સુવિધા ચાલુ કરવામાં આવી છે</translation>
 <translation id="4508528996305412043">ફીડ કાર્ડ મેનૂ ખુલ્લું છે</translation>
-<translation id="4509501256689523862">જેમ-જેમ તમે બ્રાઉઝ કરો છો, તેમ-તેમ તમે જુઓ છો તે જાહેરાત મનગમતી બનાવેલી છે કે નહીં તેનો આધાર આ સેટિંગ પર રહેલો છે, <ph name="BEGIN_LINK_1" />જાહેરાતના વિષયો<ph name="END_LINK_1" />, તમારા <ph name="BEGIN_LINK_2" />કુકીનાં સેટિંગ<ph name="END_LINK_2" /> અને તમે જોઈ રહ્યાં છો તે સાઇટ જાહેરાતોને મનગમતી બનાવે છે કે નહીં</translation>
 <translation id="4509741852167209430">સાઇટની જાહેરાતોનું પર્ફોર્મન્સ માપવા માટે, તેમની વચ્ચે મર્યાદિત પ્રકારના ડેટાને શેર કરવામાં આવે છે, જેમ કે સાઇટની મુલાકાત લીધા પછી તમે કોઈ ખરીદી કરી છે કે નહીં</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# દિવસ પહેલાં}one{# દિવસ પહેલાં}other{# દિવસ પહેલાં}}</translation>
 <translation id="451872707440238414">તમારા બુકમાર્ક શોધો</translation>
@@ -740,7 +741,6 @@
 <translation id="4532845899244822526">ફોલ્ડર પસંદ કરો</translation>
 <translation id="4543131175509360848">કોઈ પાસકી શીટ નથી</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> ટૅબ}one{<ph name="TAB_COUNT_MANY" /> ટૅબ, <ph name="TAB_COUNT_INCOGNITO" /> છૂપી}other{<ph name="TAB_COUNT_MANY" /> ટૅબ, <ph name="TAB_COUNT_INCOGNITO" /> છૂપી}}</translation>
-<translation id="4554077758708533499">USB કેબલ સાથે કનેક્ટ કરેલો છે</translation>
 <translation id="4558311620361989323">વેબ પેજના શૉર્ટકટ</translation>
 <translation id="4561730552726921821">નોંધણી કરવામાં સફળ રહ્યાં</translation>
 <translation id="4565377596337484307">પાસવર્ડ છુપાવો</translation>
@@ -1036,6 +1036,7 @@
 <translation id="5869522115854928033">સાચવેલા પાસવર્ડ્સ</translation>
 <translation id="587735546353481577">કોઈ સાઇટને ફૉલો કરવા માટે, તે સાઇટ પર જાઓ, Chrome મેનૂ ખોલો અને ફૉલો કરો પર ટૅપ કરો.</translation>
 <translation id="5879072387416556377">વધુ સારા સૂચનો મેળવો</translation>
+<translation id="5883855034004058011">બાયોમેટ્રિક્સ ઘણી વાર નિષ્ફ્ળ થયા. ફરી પ્રયાસ કરવા માટે તમારું ડિવાઇસ લૉક કરીને અનલૉક કરો.</translation>
 <translation id="5885378508678660271">નોટિફિકેશન <ph name="SEPARATOR" /> Chrome દ્વારા આ પરવાનગીઓ કાઢી નાખવામાં આવી કારણ કે આ સાઇટ જોખમી છે</translation>
 <translation id="5895834791314695851">આ ડિવાઇસ પર પાસવર્ડ ટૂંક સમયમાં કામ કરવાનું બંધ કરી શકે છે. તમારા પાસવર્ડનો ઉપયોગ કરવાનું ચાલુ રાખવા માટે, Google Play સેવાઓ અપડેટ કરો. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">કોઈ પાસકી શીટ બંધ ન હતી</translation>
@@ -1368,7 +1369,6 @@
 <translation id="7260367682327802201">તમારા Android ડિવાઇસમાં કદાચ આ જ સેટિંગ શામેલ હોઈ શકે. જો Chromeમાં અને તમારા Android ડિવાઇસ પર જાહેરાત માપણીની સુવિધા ચાલુ કરેલી હોય, તો કંપની તમે મુલાકાત લો છો તેવી સમગ્ર વેબસાઇટ પર અને તમે ઉપયોગ કરો છો તેવી ઍપ પર જાહેરાતની અસરકારકતાની માપણી કરી શકે છે.</translation>
 <translation id="727288900855680735"><ph name="ONE_TIME_CODE" />ને <ph name="ORIGIN" /> પર સબમિટ કરીએ?</translation>
 <translation id="7274013316676448362">અવરોધિત સાઇટ</translation>
-<translation id="7276100255011548441">Chrome 4 અઠવાડિયાથી વધુ જૂના વિષયોને ઑટોમૅટિક રીતે ડિલીટ કરે છે. જેમ-જેમ તમે બ્રાઉઝ કરતા જશો, તેમ-તેમ સૂચિમાં કોઈ વિષય ફરીથી દેખાઈ શકે છે. અથવા અન્ય સાઇટ સાથે Chrome શેર ન કરે એવું જો તમે ઇચ્છતા હો, તો તમે તેવા વિષયોને બ્લૉક કરી શકો છો. <ph name="BEGIN_LINK" />Chromeમાં તમારી જાહેરાત સંબંધિત પ્રાઇવસી મેનેજ કરવા<ph name="END_LINK" /> વિશે વધુ જાણો.</translation>
 <translation id="7284878711178835966">જેમ-જેમ તમે ટાઇપ કરો, તેમ-તેમ Chrome ઍડ્રેસ બાર અથવા શોધ બૉક્સનું કન્ટેન્ટ તમારા ડિફૉલ્ટ શોધ એન્જિનને મોકલે છે</translation>
 <translation id="7289049772085228972">તમે Chromeની સૌથી સશક્ત સુરક્ષા ધરાવો છો</translation>
 <translation id="7289303553784750393">જો તમે ઑનલાઇન હો પરંતુ આ સમસ્યા આવવાનું ચાલુ રહે, તો તમે <ph name="SITE_ETLD_PLUS_ONE" /> પર ચાલુ રાખવા માટે અન્ય રીતો અજમાવી શકો છો.</translation>
@@ -1433,7 +1433,6 @@
 <translation id="7517292544534877198">તમારા Google એકાઉન્ટમાં પાસવર્ડ માટે Googleના ડિફૉલ્ટ એન્ક્રિપ્શનનો ઉપયોગ કરો</translation>
 <translation id="7518079994230200553">આ વિકલ્પ અત્યારે અનુપલબ્ધ છે.</translation>
 <translation id="751961395872307827">સાઇટ સાથે કનેક્ટ કરી શકાતું નથી</translation>
-<translation id="752220631458524187">તમારું કામ પૂર્ણ થાય ત્યારે એટલે ડિસ્કનેક્ટ કરો</translation>
 <translation id="7523960634226602883">Google Lensનો ઉપયોગ કરીને તમારા કૅમેરા વડે શોધો</translation>
 <translation id="7525248386620136756"><ph name="TAB_GROUPS_AND_TABS_PART" /> બંધ છે અને સાચવ્યું છે</translation>
 <translation id="752731652852882757">છૂપા મોડનો ઉપયોગ કરતી વખતે બ્લૉક કરો</translation>

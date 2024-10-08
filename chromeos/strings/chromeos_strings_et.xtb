@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Ekraanikuva ereduse vähendamine</translation>
 <translation id="2086091080968010660">Ajapõhised muudatused ei pruugi olla asjakohased. Lülitage seadetes sisse süsteemi juurdepääs asukohale.</translation>
 <translation id="2102231663024125441">Teksti muutmine</translation>
-<translation id="2102648867808308635">Aita mul seda lehte lugeda</translation>
 <translation id="2105810540595158374">Seade on mängupult.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versioon <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">Praegu saadaval ainult inglise keeles (USA)</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">kõikide rakenduste kuvamine</translation>
 <translation id="3510890413042482857">Saada <ph name="BEGIN_LINK1" />toimivuse jälgimiseandmeid<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome OS-i värsken.</translation>
-<translation id="3522508178835057262">Praegu ei toetata üle <ph name="MAX_WORD_LENGTH" />-sõnalist transkriptsiooni.</translation>
 <translation id="3527036260304016759">Ebaõnnestus – tundmatu viga</translation>
 <translation id="353214771040290298">Muudetud</translation>
 <translation id="3532980081107202182">Jäänud on ligikaudu <ph name="MIN_REMAINING" /> minutit</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">Hele teema</translation>
 <translation id="4813136279048157860">Minu pildid</translation>
 <translation id="4813345808229079766">Ühendus</translation>
-<translation id="4824527342590024245">Praegu ei toetata alla <ph name="MIN_WORD_LENGTH" />-sõnalist transkriptsiooni.</translation>
 <translation id="4830894019733815633">kanjon</translation>
 <translation id="4832079907277790330">Valige rakenduses Failid kaust …</translation>
 <translation id="4835901797422965222">Aktiivseid võrke pole</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">Sarnased:</translation>
 <translation id="5130848777448318809">ponid</translation>
 <translation id="5137451382116112100">Täisekraan</translation>
+<translation id="5140788690559353412">Kui kaotate oma koolikontole juurdepääsu, ei pääse te enam juurde sellega seotud e-postile ega Google Drive’i failidele, sh sisule teenustest Gmail, Dokumendid, Esitlused jt.</translation>
 <translation id="5142961317498132443">Autentimine</translation>
 <translation id="5144311987923128508">Nupp Kinnita on nüüd keelatud</translation>
 <translation id="5144887194300568405">Kopeeri tõlge</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) HTTP latentsusaeg</translation>
 <translation id="6078323886959318429">Otsetee lisamine</translation>
 <translation id="6091080061796993741">kollastes toonides</translation>
+<translation id="6093853427925392522">Enne juurdepääsu kaotamist kasutage kindlasti Google’i rakendust Content Transfer, et kanda koolikonto andmed üle isiklikule kontole.</translation>
 <translation id="6104112872696127344">Skannimine tühistati</translation>
 <translation id="6106186594183574873">Toimingu lõpuleviimiseks sisestage oma vana parool</translation>
 <translation id="6108689792487843350">Lüüs on kättesaamatu</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">Pääsupunkti nimi (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nimeserver}other{Nimeserverid}}</translation>
 <translation id="7135814714616751706">Otseteede otsing</translation>
+<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Ühendamine</translation>
 <translation id="7144878232160441200">Proovi uuesti</translation>
 <translation id="7144954474087165241">pagood</translation>
@@ -1394,6 +1394,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="7856267634822906833">Bluetooth-puuteekraan</translation>
 <translation id="7859006200041800233">kaktuselill</translation>
 <translation id="7869143217755017858">Tumeda režiimi keelamine</translation>
+<translation id="7878972877380405573">Tehke kokkuvõte funktsiooniga Aita mul lugeda</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Teenusepakkuja tüüp</translation>
 <translation id="7882501334836096755">Avalik võti</translation>
@@ -1537,6 +1538,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8626489604350149811">Rohkem toiminguid: <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Helelilla</translation>
 <translation id="8647595191512746911">Heli transkribeerimine</translation>
+<translation id="8650852232143958317">Võtke oma Gmaili sisu ja Google Drive’i failid endaga kaasa</translation>
 <translation id="8651481478098336970">vaigistab heli</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655828773034788261">Jaga URL:</translation>

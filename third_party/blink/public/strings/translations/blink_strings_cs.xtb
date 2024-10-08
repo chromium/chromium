@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">Datum musí být <ph name="MINIMUM_DATE_OR_TIME" /> nebo později.</translation>
 <translation id="2761667185364618470">Chcete-li pokračovat, zaškrtněte toto políčko.</translation>
 <translation id="2908441821576996758">Zadejte seznam e-mailových adres oddělených čárkami.</translation>
+<translation id="2940013921954129954">Přesná poloha povolena</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Zadejte prosím platnou hodnotu. Pole obsahuje neúplnou hodnotu nebo neplatné datum.</translation>
 <translation id="310520048233152454">Zadejte prosím adresu URL.</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">Špatná kvalita přehrávání</translation>
 <translation id="6790428901817661496">Přehrát</translation>
 <translation id="6820355525329141109">Plugin se nepodařilo načíst.</translation>
+<translation id="688706781007114099">Používat polohu</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Prodlužte prosím tento text na <ph name="MIN_CHARACTERS" /> či více znaků. (Aktuálně má 1 znak.)</translation>
 <translation id="709897737746224366">Zadejte hodnotu, která odpovídá požadovanému formátu.</translation>

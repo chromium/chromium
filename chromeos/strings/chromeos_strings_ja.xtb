@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">ディスプレイの明るさを下げる</translation>
 <translation id="2086091080968010660">時刻に基づく変更は正確でない場合があります。設定でシステムの位置情報へのアクセスをオンにしてください。</translation>
 <translation id="2102231663024125441">テキスト編集</translation>
-<translation id="2102648867808308635">このページで文書読解サポートを使用する</translation>
 <translation id="2105810540595158374">デバイスの種類はゲーム コントローラです。</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />、バージョン <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">現在、英語（米国）でのみご利用いただけます</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">すべてのアプリを表示</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />パフォーマンス追跡データ<ph name="END_LINK1" />を送信する</translation>
 <translation id="3517001332549868749">ChromeOS の更新</translation>
-<translation id="3522508178835057262">現時点では、<ph name="MAX_WORD_LENGTH" /> 単語を超える文字起こしはサポートされていません</translation>
 <translation id="3527036260304016759">失敗 - 不明なエラー</translation>
 <translation id="353214771040290298">編集を終了</translation>
 <translation id="3532980081107202182">残り時間: 約 <ph name="MIN_REMAINING" /> 分</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">ライトモード</translation>
 <translation id="4813136279048157860">自分の画像</translation>
 <translation id="4813345808229079766">接続</translation>
-<translation id="4824527342590024245">現時点では、<ph name="MIN_WORD_LENGTH" /> 単語未満の文字起こしはサポートされていません</translation>
 <translation id="4830894019733815633">峡谷</translation>
 <translation id="4832079907277790330">ファイルアプリ内のフォルダを選択...</translation>
 <translation id="4835901797422965222">有効なネットワークがありません</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">類義語:</translation>
 <translation id="5130848777448318809">ポニー</translation>
 <translation id="5137451382116112100">全画面表示</translation>
+<translation id="5140788690559353412">学校用アカウントへのアクセス権を失うと、関連するメールや、Gmail、ドキュメント、スライドなどの Google ドライブ ファイルにアクセスできなくなります。</translation>
 <translation id="5142961317498132443">認証</translation>
 <translation id="5144311987923128508">確定ボタンが無効になりました</translation>
 <translation id="5144887194300568405">翻訳をコピー</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">（Android）HTTP レイテンシ</translation>
 <translation id="6078323886959318429">ショートカットを追加</translation>
 <translation id="6091080061796993741">黄色</translation>
+<translation id="6093853427925392522">Google のコンテンツ転送アプリを使用して、アクセス権が失われる前に、学校用アカウントのデータを個人アカウントに移動してください。</translation>
 <translation id="6104112872696127344">スキャンをキャンセルしました</translation>
 <translation id="6106186594183574873">終了するには、古いパスワードを入力してください</translation>
 <translation id="6108689792487843350">ゲートウェイにアクセスできません</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">アクセス ポイント名（APN）</translation>
 <translation id="7134436342991564651">{0,plural, =1{ネームサーバー}other{ネームサーバー}}</translation>
 <translation id="7135814714616751706">ショートカットの検索</translation>
+<translation id="7141470099673912333">コンテンツ転送</translation>
 <translation id="7143207342074048698">接続中</translation>
 <translation id="7144878232160441200">再読み込み</translation>
 <translation id="7144954474087165241">パゴダ</translation>
@@ -1394,6 +1394,7 @@
 <translation id="7856267634822906833">Bluetooth タッチスクリーン</translation>
 <translation id="7859006200041800233">サボテンの花</translation>
 <translation id="7869143217755017858">ダークモードを無効にする</translation>
+<translation id="7878972877380405573">文書読解サポートで要約</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">プロバイダの種類</translation>
 <translation id="7882501334836096755">公開鍵</translation>
@@ -1537,6 +1538,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" /> に対するその他の操作</translation>
 <translation id="86356131183441916">ライトパープル</translation>
 <translation id="8647595191512746911">音声文字起こし</translation>
+<translation id="8650852232143958317">Gmail と Google ドライブのファイルを移動</translation>
 <translation id="8651481478098336970">音量をミュート</translation>
 <translation id="8655295600908251630">チャンネル</translation>
 <translation id="8655828773034788261">URL を共有:</translation>

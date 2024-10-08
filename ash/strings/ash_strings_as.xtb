@@ -114,6 +114,7 @@
 <translation id="132346741904777634">কেমেৰা ওপৰৰ বাওঁফালৰ কোণলৈ স্নেপ কৰা হৈছে। ছিষ্টেম ছাৰ্ফেচৰ সৈতে সংঘাত।</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> আৰু ৱিণ্ড’ বন্ধ কৰক</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> সংযোগ কৰা হৈছে</translation>
+<translation id="1337081488893096731">আপোনাৰ বিদ্যালয়ৰ একাউণ্টৰ ডেটা আপোনাৰ ব্যক্তিগত একাউণ্টলৈ স্থানান্তৰ কৰিবলৈ Content Transfer এপ্‌টো ব্যৱহাৰ কৰক</translation>
 <translation id="1340378040547539434">পৃষ্ঠাটোত জুম আউট কৰক</translation>
 <translation id="1341651618736211726">অভাৰফ্ল'</translation>
 <translation id="1341926407152459446">অডিঅ’ ইনপুট আৰু আউটপুটৰ বাবে "<ph name="DEVICE_NAME" />" ব্যৱহাৰ কৰক</translation>
@@ -242,6 +243,7 @@
 <translation id="17722141032474077">গণনা</translation>
 <translation id="1774796056689732716">কেলেণ্ডাৰ, <ph name="CURRENT_MONTH_YEAR" />, বৰ্তমান <ph name="DATE" /> বাছনি কৰা হৈছে।</translation>
 <translation id="178347895271755507">আপোনাৰ ফ’নৰ শেহতীয়া ফট’, মিডিয়া আৰু জাননী চোৱাৰ সুবিধা ছেট আপ কৰক</translation>
+<translation id="1786487376942610288">picture-in-picture ৱিণ্ডৰ সর্বাধিক বা বর্তমানৰ আকাৰৰ মাজত সালসলনি কৰক</translation>
 <translation id="1787955149152357925">অফ আছে</translation>
 <translation id="1796561540704213354">আপুনি চোৱা আৰু খোলা পৃষ্ঠাসমূহকে ধৰি ৱেবছাইটসমূহ</translation>
 <translation id="179842970735685253">Googleৰ সেৱাৰ চৰ্তাৱলী</translation>
@@ -337,6 +339,9 @@
 <translation id="219905428774326614">লঞ্চাৰ, সকলো এপ্</translation>
 <translation id="2201071101391734388">শেহতীয়া ফট’ <ph name="TOTAL_COUNT" /> খনৰ ভিতৰত <ph name="INDEX" /> খন।</translation>
 <translation id="2201687081523799384">Google Tasks সংকোচন কৰক</translation>
+<translation id="2206960886090042977">এটা মাউছ সংযোগ কৰাৰ বাবে বিল্ট-ইন টাচ্চপেড অক্ষম কৰা হৈছে। সালসলনিটো নিশ্চিত কৰিবলৈ মাউছ বা কীব’ৰ্ড ব্যৱহাৰ কৰক।
+
+অন্যথা ৩০ ছেকেণ্ডৰ ভিতৰত বিল্ট-ইন টাচ্চপেড পুনৰ সক্ৰিয় কৰা হ’ব।</translation>
 <translation id="2208323208084708176">সমন্বিত ডেস্কটপ ম'ড</translation>
 <translation id="2220572644011485463">পিন বা পাছৱৰ্ড</translation>
 <translation id="2222841058024245321">ডেস্ক ৭</translation>
@@ -1907,6 +1912,9 @@
 ডিভাইচটো শ্বাট ডাউন কৰিবলৈ, ডিভাইচটোত থকা পাৱাৰ বুটামটো পুনৰ টিপি কিছুসময় ধৰি থাকক।</translation>
 <translation id="7523420897035067483">ফ’কাছত থাকোঁতে অসুবিধা নিদিব ম’ডটো সক্ষম কৰক</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">বিল্ট-ইন টাচ্চপেড অক্ষম কৰা হৈছে। সালসলনিটো নিশ্চিত কৰিবলৈ আপোনাৰ কীব’ৰ্ড বা আন এটা পইণ্টাৰ ডিভাইচ ব্যৱহাৰ কৰক।
+
+অন্যথা ৩০ ছেকেণ্ডৰ ভিতৰত বিল্ট-ইন টাচ্চপেড পুনৰ সক্ৰিয় কৰা হ’ব।</translation>
 <translation id="7525067979554623046">সৃষ্টি কৰক</translation>
 <translation id="7526573455193969409">নেটৱৰ্ক নিৰীক্ষণ কৰা হ’ব পাৰে</translation>
 <translation id="7536035074519304529">আইপি ঠিকনা: <ph name="ADDRESS" /></translation>
@@ -2294,6 +2302,7 @@
 <translation id="8858369206579825206">গোপনীয়তাৰ নিয়ন্ত্ৰণ</translation>
 <translation id="8860366331836346216">ই-ছিম যোগ দিয়ক</translation>
 <translation id="8870509716567206129">এপটোৱে বিভাজিত স্ক্ৰীন সমৰ্থন নকৰে।</translation>
+<translation id="8873203135446552888">আপুনি বিল্ট-ইন টাচ্চপেড অক্ষম কৰিব বিচাৰে বুলি নিশ্চিত কৰক</translation>
 <translation id="8874184842967597500">সংযোগ হোৱা নাই</translation>
 <translation id="8875021410787719674">একেবাৰে তলৰ সোঁ কোণ, লঞ্চাৰ, ঠিকনাৰ বাৰ, বুকমাৰ্কৰ বাৰ, খোলা থকা ৱেবছাইট আৰু ডাউনল’ডৰ মাজত ইফাল সিফাল কৰক</translation>
 <translation id="8876148469852588625"><ph name="EVENT_TOTAL_COUNT" />টা অনুষ্ঠানৰ ভিতৰত <ph name="EVENT_POSITION" /> নম্বৰটো</translation>

@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">காட்சி ஒளிர்வைக் குறைக்கும்</translation>
 <translation id="2086091080968010660">நேரம் சார்ந்த மாற்றங்கள் துல்லியமற்றதாக இருக்கக்கூடும். அமைப்புகளுக்குச் சென்று சாதனத்தின் இருப்பிட அணுகலை இயக்கவும்.</translation>
 <translation id="2102231663024125441">வார்த்தைகளைத் திருத்துதல்</translation>
-<translation id="2102648867808308635">இந்தப் பக்கத்தைப் படிக்க எனக்கு உதவு</translation>
 <translation id="2105810540595158374">சாதனம் ஒரு கேம் கண்ட்ரோலர்.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, பதிப்பு <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">தற்போது ஆங்கிலத்தில் (அமெரிக்கா) மட்டுமே கிடைக்கிறது</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">அனைத்து ஆப்ஸையும் காட்டும்</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />செயல்திறன் டிரேஸ் தரவை <ph name="END_LINK1" /> அனுப்பு</translation>
 <translation id="3517001332549868749">ChromeOS அப்டேட்</translation>
-<translation id="3522508178835057262">தற்போது <ph name="MAX_WORD_LENGTH" /> வார்த்தைகளைவிட நீளமான டிரான்ஸ்கிரிப்ட் ஆதரிக்கப்படுவதில்லை</translation>
 <translation id="3527036260304016759">அறியப்படாத பிழை காரணமாக அச்சிட முடியவில்லை</translation>
 <translation id="353214771040290298">திருத்தம் முடிந்தது</translation>
 <translation id="3532980081107202182">சுமார் <ph name="MIN_REMAINING" /> நிமிடங்கள் மீதமுள்ளன</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">லைட் தீம்</translation>
 <translation id="4813136279048157860">எனது படங்கள்</translation>
 <translation id="4813345808229079766">இணைப்பு</translation>
-<translation id="4824527342590024245"><ph name="MIN_WORD_LENGTH" />க்குக் குறைவான வார்த்தைகளைக் கொண்ட டிரான்ஸ்கிரிப்ட் தற்போது ஆதரிக்கப்படவில்லை</translation>
 <translation id="4830894019733815633">செங்குத்தான பள்ளத்தாக்கு</translation>
 <translation id="4832079907277790330">Files ஆப்ஸில் ஃபோல்டரைத் தேர்ந்தெடு...</translation>
 <translation id="4835901797422965222">நெட்நொர்க்குகள் எதுவும் செயலில் இல்லை</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">இதைப் போன்றவை:</translation>
 <translation id="5130848777448318809">சிறிய குதிரைகள்</translation>
 <translation id="5137451382116112100">முழுத்திரை</translation>
+<translation id="5140788690559353412">உங்கள் பள்ளிக் கணக்கிற்கான அணுகலை நீங்கள் இழந்துவிட்டால், அதனுடன் தொடர்புடைய மின்னஞ்சல் மற்றும் Gmail, Docs, Slides போன்ற Google Drive ஃபைல்களுக்கான அணுகல் உங்களுக்கு இருக்காது.</translation>
 <translation id="5142961317498132443">அங்கீகாரம்</translation>
 <translation id="5144311987923128508">உறுதிசெய்வதற்கான பட்டன் இப்போது முடக்கப்பட்டுள்ளது</translation>
 <translation id="5144887194300568405">மொழிபெயர்ப்பை நகலெடுக்கும்</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) HTTP தாமதம்</translation>
 <translation id="6078323886959318429">ஷார்ட்கட்டைச் சேர்</translation>
 <translation id="6091080061796993741">மஞ்சள்</translation>
+<translation id="6093853427925392522">அணுகலை இழப்பதற்கு முன் உங்கள் பள்ளிக் கணக்கின் தரவை உங்கள் தனிப்பட்ட கணக்கிற்கு நகர்த்த, Google வழங்கும் Content Transfer ஆப்ஸைப் பயன்படுத்துவதை உறுதிசெய்துகொள்ளவும்.</translation>
 <translation id="6104112872696127344">ஸ்கேன் செய்வது ரத்துசெய்யப்பட்டது</translation>
 <translation id="6106186594183574873">நிறைவுசெய்ய தற்போதைய கடவுச்சொல்லை உள்ளிடவும்</translation>
 <translation id="6108689792487843350">கேட்வேயை அணுக முடியவில்லை</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">ஆக்சஸ் பாயிண்ட் நேம் (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{நேம் சர்வர்}other{நேம் சர்வர்கள்}}</translation>
 <translation id="7135814714616751706">ஷார்ட்கட்களைத் தேடுக</translation>
+<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">இணைத்தல்</translation>
 <translation id="7144878232160441200">மீண்டும் முயற்சி செய்க</translation>
 <translation id="7144954474087165241">பகோடா</translation>
@@ -1394,6 +1394,7 @@
 <translation id="7856267634822906833">புளூடூத் டச்ஸ்கிரீன்</translation>
 <translation id="7859006200041800233">சப்பாத்திக் கள்ளி</translation>
 <translation id="7869143217755017858">டார்க் பயன்முறையை முடக்குதல்</translation>
+<translation id="7878972877380405573">வாசிப்பு உதவி மூலம் சுருக்க விவரத்தைப் பெறலாம்</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">வழங்குநர் வகை</translation>
 <translation id="7882501334836096755">பொதுக் குறியீடு</translation>
@@ -1537,6 +1538,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" />க்கான கூடுதல் செயல்கள்</translation>
 <translation id="86356131183441916">வெளிர் ஊதா</translation>
 <translation id="8647595191512746911">ஆடியோ டிரான்ஸ்கிரிப்ஷன்</translation>
+<translation id="8650852232143958317">உங்கள் Gmail மற்றும் Google Drive ஃபைல்களை உங்களுடனே வைத்திருங்கள்</translation>
 <translation id="8651481478098336970">ஒலியை அடக்கும்</translation>
 <translation id="8655295600908251630">சேனல்</translation>
 <translation id="8655828773034788261">இந்த URLலைப் பகிர்:</translation>

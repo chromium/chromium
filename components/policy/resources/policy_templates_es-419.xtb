@@ -3699,19 +3699,6 @@ Si se produce un error al salir de <ph name="PRODUCT_NAME" /> (por ejemplo, si f
 <translation id="3701121231485832347">Controla la configuración específica de los dispositivos <ph name="PRODUCT_OS_NAME" /> administrados por <ph name="MS_AD_NAME" />.</translation>
 <translation id="3702518095257671450">Certificación remota</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Pronto dejará de estar disponible el campo de una línea y desaparecerá. Empieza a usar el cuadro de texto de varias líneas que se encuentra a continuación).</translation>
-<translation id="3705648857103435170">Esta política habilita la app de Graduation para los usuarios administrados. La app de Graduation ayuda a los usuarios a transferir sus datos de una cuenta administrada a una cuenta personal.
-
-    Si estableces <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> como <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE_TRUE" />, la app de Graduation se mostrará en las fechas de inicio y finalización, y entre ellas, según la hora local.
-
-    Si estableces <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> como <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE_FALSE" /> o no la estableces, no se mostrará la app.
-
-    Si no estableces <ph name="GRADUATION_ENABLEMENT_STATUS_START_DATE_VALUE" />, la app se mostrará hasta la fecha de finalización.
-
-    Si no estableces <ph name="GRADUATION_ENABLEMENT_STATUS_END_DATE_VALUE" />, la app se mostrará de forma indefinida a partir de la fecha de inicio.
-
-    Si no estableces <ph name="GRADUATION_ENABLEMENT_STATUS_START_DATE_VALUE" /> ni <ph name="GRADUATION_ENABLEMENT_STATUS_END_DATE_VALUE" />, se mostrará la app de forma indefinida. Si las fechas de inicio y finalización no son válidas, no se mostrará la app de Graduation. Por ejemplo, si las fechas proporcionadas no existen o si la fecha de finalización es anterior a la fecha de inicio.
-
-    También se debe habilitar la transferencia de datos con Takeout para que la app de Graduation funcione correctamente. Consulta https://support.google.com/a/answer/6364687 para obtener más información.</translation>
 <translation id="3711561721191203926">Si habilitas esta política, cada vez que se deba mostrar
 una advertencia en <ph name="DEV_TOOLS_NAME" /> debido a errores en las verificaciones de <ph name="PRIVATE_NETWORK_ACCESS" />, se
 bloqueará la solicitud principal.
@@ -4480,17 +4467,6 @@ Esta política se usó para inhabilitar la actualización automática de conteni
 
       Si no estableces la política, se aplicará la tasa predeterminada de 10 minutos.</translation>
 <translation id="4290231183305601970">El texto que verá el usuario en Chrome Web Store si se bloquea la instalación.</translation>
-<translation id="4291413477651927481">Estas funciones de las Herramientas para desarrolladores de <ph name="PRODUCT_NAME" /> emplean modelos de IA generativa para proporcionar información de depuración adicional. Para usar estas funciones, <ph name="PRODUCT_NAME" /> tiene que recopilar datos como mensajes de error, seguimientos de pila, fragmentos de código y solicitudes de red, y enviarlos a un servidor de Google que ejecuta un modelo de IA generativa. Los datos que se envían al servidor no incluyen el cuerpo de la respuesta ni los encabezados de autenticación y de cookies.
-
-0 = Habilita la función para los usuarios y envía datos pertinentes a Google para ayudar a entrenar o mejorar los modelos de IA. Los datos pertinentes pueden incluir instrucciones, entradas, resultados y materiales de origen, según la función. Es posible que lo revisen personas con el único propósito de mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los siguientes casos.
-
-1 = Habilita la función para los usuarios, pero no envía datos a Google para entrenar o mejorar los modelos de IA. 1 es el valor predeterminado para los usuarios empresariales que administra <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y las cuentas de institución educativa que administra <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-2 = Inhabilita la función
-
-Las funciones potenciadas por IA generativa de Herramientas para desarrolladores incluyen:
-
-- Estadísticas de la consola: Explica los mensajes de la consola y ofrece sugerencias para corregir errores.</translation>
 <translation id="4293187705196369087">Permite habilitar o inhabilitar una notificación cuando hay poco espacio disponible en el disco. Esto se aplica a todos los usuarios del dispositivo.
 
       Si habilitas la política, se mostrará una notificación cuando haya poco espacio disponible en el disco.
@@ -11300,7 +11276,6 @@ El valor predeterminado es RollbackDisabled.</translation>
 
       Si la estableces como verdadera o no la configuras, todos los usuarios podrán acceder.</translation>
 <translation id="966425658642788645">Aplicar el comportamiento predeterminado</translation>
-<translation id="970144760302377175">Configurar en qué momento estará disponible la herramienta Graduation de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="971677226939413180">La opción Imprimir como imagen no está disponible para el usuario</translation>
 <translation id="974349541138387272">Especifica la plantilla de URI del agente de resolución de DNS sobre HTTPS</translation>
 <translation id="978658824596356870">Formato de reloj de 24 horas</translation>

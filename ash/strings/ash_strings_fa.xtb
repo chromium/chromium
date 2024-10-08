@@ -114,6 +114,7 @@
 <translation id="132346741904777634">دوربین به گوشه بالا سمت چپ چسبید. تداخلی با سطح سیستم روی داد.</translation>
 <translation id="132415371743256095">بستن <ph name="DESK_NAME" /> و پنجره‌ها</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> متصل شد</translation>
+<translation id="1337081488893096731">از برنامه «انتقال محتوا» برای منتقل کردن داده‌های حساب تحصیلی خود به حساب شخصی‌تان استفاده کنید</translation>
 <translation id="1340378040547539434">زوم‌پس کردن در صفحه</translation>
 <translation id="1341651618736211726">سرریز</translation>
 <translation id="1341926407152459446">استفاده از «<ph name="DEVICE_NAME" />» برای ورودی و خروجی صوتی</translation>
@@ -242,6 +243,7 @@
 <translation id="17722141032474077">محاسبات</translation>
 <translation id="1774796056689732716">تقویم، <ph name="CURRENT_MONTH_YEAR" />، درحال‌حاضر <ph name="DATE" /> انتخاب شده است.</translation>
 <translation id="178347895271755507">راه‌اندازی مشاهده عکس‌ها، رسانه‌ها، و اعلان‌های جدید تلفن</translation>
+<translation id="1786487376942610288">جابه‌جایی بین اندازه بیشینه یا اندازه فعلی پنجره تصویر در تصویر</translation>
 <translation id="1787955149152357925">خاموش</translation>
 <translation id="1796561540704213354">وب‌سایت‌ها شامل صفحه‌های که از آن‌ها بازدید کرده‌اید و صفحه‌های باز می‌شود</translation>
 <translation id="179842970735685253">‏شرایط خدمات Google</translation>
@@ -337,6 +339,9 @@
 <translation id="219905428774326614">راه‌انداز، همه برنامه‌ها</translation>
 <translation id="2201071101391734388">عکس اخیر <ph name="INDEX" /> از <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">‏جمع کردن Google Tasks</translation>
+<translation id="2206960886090042977">صفحه لمسی داخلی غیرفعال شد زیرا موشواره متصل شده است. از موشواره یا صفحه‌کلید برای تأیید این تغییر استفاده کنید.
+
+درغیراین‌صورت صفحه لمسی داخلی پس‌از ۳۰ ثانیه دوباره فعال می‌شود.</translation>
 <translation id="2208323208084708176">حالت میز کار یکپارچه</translation>
 <translation id="2220572644011485463">پین یا گذرواژه</translation>
 <translation id="2222841058024245321">میز کار ۷</translation>
@@ -397,7 +402,7 @@
 <translation id="2412593942846481727">به‌روزرسانی دردسترس است</translation>
 <translation id="2416438829169535743">از نما خارج می‌شوید؟</translation>
 <translation id="2417486498593892439">ورود به سیستم شبکه</translation>
-<translation id="2423619675829330672">دفعات وارد کردن پین اشتباه از حد مجاز بیشتر شده است. ‫<ph name="TIME_LEFT" /> صبر کنید و دوباره امتحان کنید.</translation>
+<translation id="2423619675829330672">تلاش‌های زیاد برای وارد کردن پین. ‫<ph name="TIME_LEFT" /> صبر کنید و دوباره امتحان کنید.</translation>
 <translation id="2426051945783024481">قاب دوربین به‌طور خودکار در مرکز قرار گرفت</translation>
 <translation id="2427507373259914951">کلیک چپ</translation>
 <translation id="2429753432712299108">دستگاه بلوتوث «<ph name="DEVICE_NAME" />» برای مرتبط‌سازی به مجوز نیاز دارد. قبل از پذیرش، لطفاً تأیید کنید که این گذرکلید در آن دستگاه نشان داده می‌شود: <ph name="PASSKEY" /></translation>
@@ -1907,6 +1912,9 @@
 برای خاموش کردن دستگاه، دکمه روشن/خاموش روی دستگاه را دوباره فشار دهید و نگه دارید.</translation>
 <translation id="7523420897035067483">وقتی در حالت «تمرکز» هستید، «مزاحم نشوید» فعال می‌شود</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">صفحه لمسی داخلی غیرفعال شد. از صفحه‌کلید یا دستگاه اشاره‌گر دیگری برای تأیید این تغییر استفاده کنید.
+
+درغیراین‌صورت صفحه لمسی داخلی پس‌از ۳۰ ثانیه دوباره فعال می‌شود.</translation>
 <translation id="7525067979554623046">ایجاد</translation>
 <translation id="7526573455193969409">ممکن است شبکه پایش شود</translation>
 <translation id="7536035074519304529">‏نشانی IP: <ph name="ADDRESS" /></translation>
@@ -2293,6 +2301,7 @@
 <translation id="8858369206579825206">تنظیمات حریم خصوصی</translation>
 <translation id="8860366331836346216">افزودن سیم‌کارت داخلی</translation>
 <translation id="8870509716567206129">برنامه از تقسیم صفحه پشتیبانی نمی‌کند.</translation>
+<translation id="8873203135446552888">تأیید کنید که می‌خواهید صفحه لمسی داخلی را غیرفعال کنید</translation>
 <translation id="8874184842967597500">متصل نیست</translation>
 <translation id="8875021410787719674">جابه‌جایی بین گوشه پایین سمت راست، «راه‌انداز»، نوار نشانی، نوار نشانک‌ها، وب‌سایتی که باز است، و بارگیری‌ها</translation>
 <translation id="8876148469852588625">رویداد <ph name="EVENT_POSITION" /> از <ph name="EVENT_TOTAL_COUNT" /></translation>

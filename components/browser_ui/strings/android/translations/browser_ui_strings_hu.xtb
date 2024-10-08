@@ -49,6 +49,7 @@
 <translation id="1979673356880165407">Szöveg és képek nagyítása vagy kicsinyítése az összes felkeresett webhelyen</translation>
 <translation id="1984937141057606926">Engedélyezve, kivéve a harmadik felektől származó cookie-kat</translation>
 <translation id="1985247341569771101">Ha be van kapcsolva, a webhelyek használhatják az eszköz mozgásérzékelőit. Ha ki van kapcsolva, a webhelyek nem használhatnak mozgásérzékelőket.</translation>
+<translation id="1985716030964443178">Ezzel a listán szereplő összes webhelyen visszaállítja az alapértelmezett nagyítást</translation>
 <translation id="1989112275319619282">Böngészés</translation>
 <translation id="1994173015038366702">Webhely URL-je</translation>
 <translation id="2004697686368036666">Előfordulhat, hogy bizonyos webhelyek funkciói nem működnek majd megfelelően</translation>
@@ -103,10 +104,13 @@
 <translation id="2653659639078652383">Küldés</translation>
 <translation id="2677748264148917807">Lap elhagyása</translation>
 <translation id="2678468611080193228">Próbálja meg átmenetileg engedélyezni a harmadik féltől származó cookie-kat, ami kevesebb védelmet jelent, de a webhelyfunkciók nagyobb valószínűséggel fognak működni.</translation>
+<translation id="2682367912565197520">Mentett nagyítási szint törlése</translation>
 <translation id="2683434792633810741">Végrehajtja a törlést és az alaphelyzetbe állítást?</translation>
 <translation id="2713106313042589954">Kamera kikapcsolása</translation>
 <translation id="2717722538473713889">E-mail-címek</translation>
+<translation id="2726059656860238749">A Chrome elindítása a cím- és keresősávra fókuszálva, ami csökkenti az indulási időt alsóbb kategóriás eszközökön.</translation>
 <translation id="2750481671343847896">A webhelyek megjeleníthetnek identitásszolgáltatásoktól származó bejelentkezési értesítéseket.</translation>
+<translation id="2787357173144933081">Gyorsindítás a cím- és keresősávval</translation>
 <translation id="2790501146643349491">Ha be van kapcsolva, a nemrégiben bezárt webhelyek befejezhetik az adatok küldését és fogadását. Ha ki van kapcsolva, a nemrégiben bezárt webhelyek nem tudják befejezni az adatok küldését és fogadását.</translation>
 <translation id="2822354292072154809">Biztosan visszaállítja a(z) <ph name="CHOSEN_OBJECT_NAME" /> minden webhelyengedélyét?</translation>
 <translation id="2850913818900871965">Mobilnézet kérelmezése</translation>
@@ -144,6 +148,7 @@
 <translation id="3295602654194328831">Információk elrejtése…</translation>
 <translation id="3328801116991980348">Webhelyadatok</translation>
 <translation id="3333961966071413176">Összes névjegy</translation>
+<translation id="3360338140203645771">Törli a nagyítási szinteket?</translation>
 <translation id="3362437373201486687">Bluetooth-eszközök keresése…</translation>
 <translation id="3386292677130313581">Kérdezzen rá, mielőtt engedélyezné a webhelyek számára a tartózkodási helyhez való hozzáférést (ajánlott)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
@@ -209,6 +214,7 @@
 <translation id="4338831206024587507">Minden <ph name="DOMAIN" /> alatti webhely</translation>
 <translation id="4402755511846832236">A webhelyek nem kaphatnak információt arról, hogy Ön mikor használja aktívan ezt az eszközt.</translation>
 <translation id="4412992751769744546">Harmadik felektől származó cookie-k engedélyezése</translation>
+<translation id="4419929467120297501">A Chrome megakadályozza a webhelyek számára, hogy harmadik féltől származó cookie-kat használjanak az Ön nyomon követésére böngészés közben. A beállítások között <ph name="BEGIN_LINK" />kezelheti a harmadik féltől származó cookie-khoz való hozzáférést<ph name="END_LINK" />.</translation>
 <translation id="4434045419905280838">Előugró ablakok és átirányítások</translation>
 <translation id="443552056913301231">A művelet törli az összes helyi adatot (a cookie-kat is), és alaphelyzetbe állítja a(z) <ph name="ORIGIN" /> összes engedélyét</translation>
 <translation id="4468959413250150279">Egy adott webhely hangjának némítása.</translation>
@@ -230,6 +236,7 @@
 <translation id="4779083564647765204">Nagyítás</translation>
 <translation id="4807122856660838973">A Biztonságos Böngészés bekapcsolása</translation>
 <translation id="4811450222531576619">További információ a forrásról és a témáról</translation>
+<translation id="4816495437032298535">Webhelyek mentett nagyítási szintje</translation>
 <translation id="4836046166855586901">Kérdezzen rá, ha valamelyik webhely tudni szeretné, hogy Ön mikor használja aktívan ezt az eszközt.</translation>
 <translation id="483914009762354899">A domainhez tartozó összes webhely felvétele</translation>
 <translation id="4883854917563148705">A kezelt beállításokat nem lehet visszaállítani</translation>
@@ -239,7 +246,6 @@
 <translation id="4962975101802056554">Az eszköz összes engedélyének visszavonása</translation>
 <translation id="497421865427891073">Előrelépés</translation>
 <translation id="4976702386844183910">Utolsó látogatás: <ph name="DATE" /></translation>
-<translation id="4985206706500620449">Engedélyezte a harmadik féltől származó cookie-kat ezen a webhelyen</translation>
 <translation id="4994033804516042629">Nem találhatók névjegyek</translation>
 <translation id="4996978546172906250">Megosztás itt:</translation>
 <translation id="5001526427543320409">Harmadik felektől származó cookie-k</translation>
@@ -266,6 +272,7 @@
 <translation id="5246825184569358663">A művelet törli az összes helyi adatot (a cookie-kal együtt), és alaphelyzetbe állítja a(z) <ph name="DOMAIN" /> és az alá tartozó webhelyek összes engedélyét</translation>
 <translation id="5264323282659631142">„<ph name="CHIP_LABEL" />“ eltávolítása</translation>
 <translation id="528192093759286357">A teljes képernyős megjelenítésből való kilépéshez húzza le felülről, majd koppintson a vissza gombra.</translation>
+<translation id="5292915569214461965">Ön letiltotta a webhelyek számára, hogy harmadik féltől származó cookie-kat használjanak az Ön nyomon követésére böngészés közben. A beállítások között <ph name="BEGIN_LINK" />kezelheti a harmadik féltől származó cookie-khoz való hozzáférést<ph name="END_LINK" />.</translation>
 <translation id="5295729974480418933">Ha be van kapcsolva, a webhelyek engedélyt kérhetnek arra, hogy felhasználják az Önről mentett adatokat. Ha ki van kapcsolva, a webhelyek nem kérhetik az Önről mentett adatok használatát.</translation>
 <translation id="5300589172476337783">Megjelenítés</translation>
 <translation id="5301954838959518834">Rendben, értem</translation>
@@ -355,6 +362,7 @@
 <translation id="6527303717912515753">Megosztás</translation>
 <translation id="652937045869844725">Próbálja meg engedélyezni a harmadik féltől származó cookie-kat, ami kevesebb védelmet jelent, de a webhelyfunkciók nagyobb valószínűséggel fognak működni.</translation>
 <translation id="6530703012083415527">Ha be van kapcsolva, a webhelyek használhatnak előugró ablakokat és átirányításokat. Ha ki van kapcsolva, a webhelyek nem használhatnak előugró ablakokat és átirányításokat.</translation>
+<translation id="6540488083026747005">Engedélyezte a harmadik féltől származó cookie-kat ezen a webhelyen</translation>
 <translation id="6545864417968258051">Bluetooth-alapú keresés</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="NUM_MORE" /> letiltva}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> és további <ph name="NUM_MORE" /> letiltva}}</translation>
 <translation id="6554732001434021288">Utolsó látogatás: <ph name="NUM_DAYS" /> napja</translation>
@@ -377,6 +385,7 @@
 <translation id="6787751205395685251">Válassza ki a kívánt lehetőséget a következőhöz: <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Lejátszás</translation>
 <translation id="6818926723028410516">Válasszon elemeket</translation>
+<translation id="6837658163275294267">A Chrome a legtöbb webhely számára korlátozza, hogy harmadik féltől származó cookie-kat használjanak az Ön nyomon követésére böngészés közben. A beállítások között <ph name="BEGIN_LINK" />kezelheti a harmadik féltől származó cookie-khoz való hozzáférést<ph name="END_LINK" />.</translation>
 <translation id="6838525730752203626">A Chrome használata alapértelmezettként</translation>
 <translation id="6840760312327750441">Lapok csoportosításához tartsa nyomva az egyik lapot, majd húzza rá a másikra.</translation>
 <translation id="6864395892908308021">Ez az eszköz nem képes az NFC-alapú kommunikáció olvasására</translation>
@@ -441,6 +450,7 @@
 <translation id="7835852323729233924">Médiatartalom lejátszása…</translation>
 <translation id="783819812427904514">Videó némításának feloldása</translation>
 <translation id="7846076177841592234">Kijelölés törlése</translation>
+<translation id="7881140103901777395">A Chrome a legtöbb webhely számára korlátozza, hogy harmadik féltől származó cookie-kat használjanak. A harmadik féltől származó cookie-k azonban engedélyezettek ezen a webhelyen, mivel az alapvető szolgáltatások nyújtásához szüksége van rájuk.\n\nA beállítások között <ph name="BEGIN_LINK" />kezelheti a harmadik féltől származó cookie-khoz való hozzáférést<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Egy adott webhely hangjának engedélyezése.</translation>
 <translation id="789180354981963912">Harmadik felektől származó cookie-k letiltása Inkognitó módban:</translation>
 <translation id="7940722705963108451">Emlékeztessen</translation>
@@ -503,6 +513,7 @@
 <translation id="8721719390026067591">Ha be van kapcsolva, a webhelyek engedélyt kérhetnek Bluetooth-eszközök keresésére. Ha ki van kapcsolva, a webhelyek nem tudnak Bluetooth-eszközöket keresni.</translation>
 <translation id="8725066075913043281">Újrapróbálás</translation>
 <translation id="8730621377337864115">Kész</translation>
+<translation id="8737426583868847403">Itt jelennek meg azok a webhelyek, amelyeknél egyéni nagyítási szintet mentett el</translation>
 <translation id="8751914237388039244">Válasszon képet</translation>
 <translation id="8800034312320686233">Nem működik a webhely?</translation>
 <translation id="8801436777607969138">JavaScript letiltása adott webhelynél.</translation>

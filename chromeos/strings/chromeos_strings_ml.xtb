@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">ഡിസ്‌പ്ലേ തെളിച്ചം കുറയ്‌ക്കുക</translation>
 <translation id="2086091080968010660">സമയം അടിസ്ഥാനമാക്കിയുള്ള മാറ്റങ്ങൾ കൃത്യമാകാനിടയില്ല. ക്രമീകരണത്തിൽ സിസ്റ്റം ലൊക്കേഷൻ ആക്‌സസ് ഓണാക്കുക.</translation>
 <translation id="2102231663024125441">ടെക്‌സ്റ്റ് തിരുത്തൽ</translation>
-<translation id="2102648867808308635">ഈ പേജ് വായിക്കാൻ എന്നെ സഹായിക്കൂ</translation>
 <translation id="2105810540595158374">ഉപകരണം ഒരു ഗെയിം കൺട്രോളറാണ്.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, പതിപ്പ് <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">നിലവിൽ ഇംഗ്ലീഷിൽ (യുഎസ്) മാത്രം ലഭ്യം</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">എല്ലാ ആപ്പുകളും കാണുക</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />പ്രകടന അടയാള ഡാറ്റ<ph name="END_LINK1" /> അയയ്‌ക്കുക</translation>
 <translation id="3517001332549868749">ChromeOS അപ്ഡേറ്റ്</translation>
-<translation id="3522508178835057262">നിലവിൽ, <ph name="MAX_WORD_LENGTH" />-ൽ കൂടുതൽ വാക്കുകളുള്ള ട്രാൻസ്‌ക്രിപ്റ്റിന് പിന്തുണയില്ല</translation>
 <translation id="3527036260304016759">പ്രിന്റ് ചെയ്യാനായില്ല - അജ്ഞാതമായ പിശക്</translation>
 <translation id="353214771040290298">എഡിറ്റ് ചെയ്യൽ പൂർത്തിയാക്കി</translation>
 <translation id="3532980081107202182">ഏകദേശം <ph name="MIN_REMAINING" /> മിനിറ്റ് ശേഷിക്കുന്നു</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">ലൈറ്റ് തീം</translation>
 <translation id="4813136279048157860">എന്റെ ചിത്രങ്ങൾ</translation>
 <translation id="4813345808229079766">കണക്ഷന്‍</translation>
-<translation id="4824527342590024245">നിലവിൽ, <ph name="MIN_WORD_LENGTH" />-ൽ കുറവ് വാക്കുകളുള്ള ട്രാൻസ്‌ക്രിപ്റ്റിന് പിന്തുണയില്ല.</translation>
 <translation id="4830894019733815633">മലയിടുക്ക്</translation>
 <translation id="4832079907277790330">Files ആപ്പിൽ ഫോൾഡർ തിരഞ്ഞെടുക്കുക...</translation>
 <translation id="4835901797422965222">സജീവമായ നെറ്റ്‌വർക്കുകളൊന്നുമില്ല</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">സമാനമായത്:</translation>
 <translation id="5130848777448318809">പോണികൾ</translation>
 <translation id="5137451382116112100">പൂർണ്ണ സ്ക്രീൻ</translation>
+<translation id="5140788690559353412">സ്‌കൂൾ അക്കൗണ്ടിലേക്കുള്ള ആക്‌സസ് നഷ്ടപ്പെടുമ്പോൾ, അനുബന്ധ ഇമെയിലിലേക്കും Gmail, Docs, Slides, എന്നിവയും മറ്റും പോലുള്ള Google Drive ഫയലുകളിലേക്കും നിങ്ങൾക്ക് ഇനി ആക്‌സസ് ഉണ്ടായിരിക്കില്ല.</translation>
 <translation id="5142961317498132443">പരിശോധിച്ചുറപ്പിക്കൽ</translation>
 <translation id="5144311987923128508">'സ്ഥിരീകരിക്കുക' ബട്ടൺ ഇപ്പോൾ പ്രവർത്തനരഹിതമാക്കി</translation>
 <translation id="5144887194300568405">വിവർത്തനം പകർത്തുക</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) HTTP പ്രതികരണ സമയം</translation>
 <translation id="6078323886959318429">കുറുക്കുവഴി ചേർക്കുക</translation>
 <translation id="6091080061796993741">മഞ്ഞ</translation>
+<translation id="6093853427925392522">ആക്‌സസ് നഷ്ടപ്പെടുന്നതിന് മുമ്പ്, സ്‌കൂൾ അക്കൗണ്ട് ഡാറ്റ നിങ്ങളുടെ വ്യക്തിഗത അക്കൗണ്ടിലേക്ക് നീക്കുന്നതിന് Google-ന്റെ ഉള്ളടക്ക കൈമാറ്റ ആപ്പ് ഉപയോഗിക്കുന്ന കാര്യം ഉറപ്പാക്കുക.</translation>
 <translation id="6104112872696127344">സ്‌കാൻ ചെയ്യൽ റദ്ദാക്കി</translation>
 <translation id="6106186594183574873">പൂർത്തിയാക്കാൻ നിങ്ങളുടെ പഴയ പാസ്‌വേഡ് നൽകുക</translation>
 <translation id="6108689792487843350">ഗേറ്റ്‌വേയിലേക്ക് എത്താനാകുന്നില്ല</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">ആക്സസ്സ് പോയിന്റിന്റെ പേര് (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{നെയിം സെർവർ}other{നെയിം സെർവറുകൾ}}</translation>
 <translation id="7135814714616751706">Search കുറുക്കുവഴികൾ</translation>
+<translation id="7141470099673912333">ഉള്ളടക്ക കൈമാറ്റം</translation>
 <translation id="7143207342074048698">കണക്റ്റിംഗ്</translation>
 <translation id="7144878232160441200">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="7144954474087165241">പഗോഡ</translation>
@@ -1394,6 +1394,7 @@
 <translation id="7856267634822906833">Bluetooth ടച്ച്സ്ക്രീൻ</translation>
 <translation id="7859006200041800233">കള്ളിമുൾച്ചെടിയുടെ പൂവ്</translation>
 <translation id="7869143217755017858">ഡാർക്ക് മോഡ് പ്രവർത്തനരഹിതമാക്കുക</translation>
+<translation id="7878972877380405573">'എന്നെ വായിക്കാൻ സഹായിക്കൂ' ഉപയോഗിച്ച് സംഗ്രഹിക്കുക</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">പ്രൊവൈഡര്‍ തരം:</translation>
 <translation id="7882501334836096755">എല്ലാവർക്കുമായുള്ള കീ</translation>
@@ -1537,6 +1538,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" /> എന്നതിനുള്ള കൂടുതൽ പ്രവർത്തനങ്ങൾ</translation>
 <translation id="86356131183441916">ഇളം പർപ്പിൾ</translation>
 <translation id="8647595191512746911">ഓഡിയോ ട്രാൻസ്‌ക്രിപ്ഷൻ</translation>
+<translation id="8650852232143958317">Gmail, Google Drive ഫയലുകൾ കൈമാറൂ</translation>
 <translation id="8651481478098336970">വോളിയം മ്യൂട്ട് ചെയ്യുക</translation>
 <translation id="8655295600908251630">ചാനല്‍</translation>
 <translation id="8655828773034788261">URL പങ്കിടുക:</translation>

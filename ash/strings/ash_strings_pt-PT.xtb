@@ -114,6 +114,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="132346741904777634">Câmara ajustada ao canto superior esquerdo. Há um conflito com a superfície do sistema.</translation>
 <translation id="132415371743256095">Fechar <ph name="DESK_NAME" /> e janelas</translation>
 <translation id="1333308631814936910">Ecrã <ph name="DISPLAY_NAME" /> ligado.</translation>
+<translation id="1337081488893096731">Use a app Transferência de conteúdo para mover os dados da sua conta escolar para a sua conta pessoal</translation>
 <translation id="1340378040547539434">Diminuir o zoom na página</translation>
 <translation id="1341651618736211726">Menu adicional</translation>
 <translation id="1341926407152459446">Use "<ph name="DEVICE_NAME" />" para a entrada e saída de áudio</translation>
@@ -242,6 +243,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="17722141032474077">Cálculos</translation>
 <translation id="1774796056689732716">Calendário, <ph name="CURRENT_MONTH_YEAR" />, atualmente, está selecionada a data <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Configurar visualização das fotos, dos conteúdos multimédia e das notificações recentes do telemóvel</translation>
+<translation id="1786487376942610288">Alternar entre o tamanho máximo ou atual da janela de ecrã no ecrã</translation>
 <translation id="1787955149152357925">Desativado</translation>
 <translation id="1796561540704213354">Websites, incluindo páginas que visitou e páginas abertas</translation>
 <translation id="179842970735685253">Termos de Utilização da Google</translation>
@@ -337,6 +339,9 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="219905428774326614">Launcher, todas as aplicações</translation>
 <translation id="2201071101391734388">Foto recente <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Reduzir Google Tasks</translation>
+<translation id="2206960886090042977">O touchpad incorporado está desativado porque está ligado um rato. Use o rato ou o teclado para confirmar a alteração.
+
+Caso contrário, o touchpad incorporado é reativado dentro de 30 segundos.</translation>
 <translation id="2208323208084708176">Modo de ambiente de trabalho unificado</translation>
 <translation id="2220572644011485463">PIN ou palavra-passe</translation>
 <translation id="2222841058024245321">Espaço de trabalho 7</translation>
@@ -1907,6 +1912,9 @@ Nova instalação</translation>
 Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente no dispositivo.</translation>
 <translation id="7523420897035067483">Ativar o modo Não incomodar no Modo sem distrações</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">O touchpad incorporado está desativado. Use o teclado ou outro dispositivo apontador para confirmar a alteração.
+
+Caso contrário, o touchpad incorporado é reativado dentro de 30 segundos.</translation>
 <translation id="7525067979554623046">Criar</translation>
 <translation id="7526573455193969409">A rede pode ser monitorizada</translation>
 <translation id="7536035074519304529">Endereço IP: <ph name="ADDRESS" /></translation>
@@ -2294,6 +2302,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8858369206579825206">Controlos de privacidade</translation>
 <translation id="8860366331836346216">Adicionar eSIM</translation>
 <translation id="8870509716567206129">A aplicação não é compatível com o ecrã dividido.</translation>
+<translation id="8873203135446552888">Confirme que quer desativar o touchpad incorporado</translation>
 <translation id="8874184842967597500">Sem ligação</translation>
 <translation id="8875021410787719674">Mover-se entre o canto inferior direito, o Launcher, a barra de endereço, a barra de marcadores, o Website aberto e as transferências</translation>
 <translation id="8876148469852588625">Evento <ph name="EVENT_POSITION" /> de <ph name="EVENT_TOTAL_COUNT" /></translation>

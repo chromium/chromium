@@ -49,6 +49,7 @@
 <translation id="1979673356880165407">Powiększaj lub pomniejszaj tekst i obrazy we wszystkich odwiedzanych witrynach</translation>
 <translation id="1984937141057606926">Dozwolone, z wyjątkiem witryn innych firm</translation>
 <translation id="1985247341569771101">Gdy ta opcja jest włączona, strony internetowe mogą używać czujników ruchu urządzenia. Gdy jest wyłączona, nie mogą tego robić.</translation>
+<translation id="1985716030964443178">Spowoduje to zresetowanie wszystkich witryn na liście do domyślnego powiększenia</translation>
 <translation id="1989112275319619282">Przeglądaj</translation>
 <translation id="1994173015038366702">URL strony</translation>
 <translation id="2004697686368036666">W niektórych witrynach mogą nie działać funkcje</translation>
@@ -103,10 +104,13 @@
 <translation id="2653659639078652383">Prześlij</translation>
 <translation id="2677748264148917807">Wyjdź</translation>
 <translation id="2678468611080193228">Spróbuj tymczasowo zezwolić na pliki cookie innych firm – oznacza to słabszą ochronę, ale jest większa szansa na to, że funkcje witryny będą działać</translation>
+<translation id="2682367912565197520">Usuń zapisany poziom powiększenia</translation>
 <translation id="2683434792633810741">Usunąć i zresetować?</translation>
 <translation id="2713106313042589954">Wyłącz kamerę</translation>
 <translation id="2717722538473713889">Adresy e-mail</translation>
+<translation id="2726059656860238749">Uruchamiaj Chrome z zaznaczonym paskiem adresu, aby skrócić czas uruchamiania na mało wydajnych urządzeniach.</translation>
 <translation id="2750481671343847896">Witryny mogą wyświetlać prośby o zalogowanie się pochodzące od usług tożsamości.</translation>
+<translation id="2787357173144933081">Szybki start omniboksa</translation>
 <translation id="2790501146643349491">Gdy ta opcja jest włączona, ostatnio zamknięte strony internetowe mogą dokończyć wysyłanie i odbieranie danych. Gdy jest wyłączona, nie mogą tego zrobić.</translation>
 <translation id="2822354292072154809">Czy na pewno chcesz zresetować wszystkie uprawnienia witryny dla obiektu <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Żądaj wersji na urządzenia mobilne</translation>
@@ -144,6 +148,7 @@
 <translation id="3295602654194328831">Ukryj informacje</translation>
 <translation id="3328801116991980348">Informacje o witrynie</translation>
 <translation id="3333961966071413176">Wszystkie kontakty</translation>
+<translation id="3360338140203645771">Usunąć zapisane poziomy powiększenia?</translation>
 <translation id="3362437373201486687">Skanuję w poszukiwaniu urządzeń Bluetooth</translation>
 <translation id="3386292677130313581">Pytaj, zanim udostępnisz stronom swoją lokalizację (zalecane)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
@@ -209,6 +214,7 @@
 <translation id="4338831206024587507">Wszystkie witryny w domenie <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Nie pozwalaj stronom sprawdzać, czy aktualnie używasz urządzenia</translation>
 <translation id="4412992751769744546">Zezwalaj na pliki cookie innych firm</translation>
+<translation id="4419929467120297501">Chrome blokuje witrynom możliwość używania plików cookie innych firm do śledzenia Twoich czynności związanych z przeglądaniem internetu. Aby <ph name="BEGIN_LINK" />zarządzać dostępem do plików cookie innych firm<ph name="END_LINK" />, otwórz ustawienia.</translation>
 <translation id="4434045419905280838">Pop-upy i przekierowania</translation>
 <translation id="443552056913301231">Spowoduje to usunięcie wszystkich danych lokalnych, w tym plików cookie, oraz zresetowanie wszystkich uprawnień witryny <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Wycisz dźwięk na konkretnej stronie.</translation>
@@ -230,6 +236,7 @@
 <translation id="4779083564647765204">Powiększ</translation>
 <translation id="4807122856660838973">Włącz Bezpieczne przeglądanie</translation>
 <translation id="4811450222531576619">Poznaj jej źródło i temat</translation>
+<translation id="4816495437032298535">Zapisane powiększenie witryn</translation>
 <translation id="4836046166855586901">Pytaj, gdy strona chce wiedzieć, kiedy aktywnie korzystasz z urządzenia</translation>
 <translation id="483914009762354899">Uwzględnij wszystkie witryny w tej domenie</translation>
 <translation id="4883854917563148705">Ustawień zarządzanych nie można zresetować</translation>
@@ -239,7 +246,6 @@
 <translation id="4962975101802056554">Anuluj wszystkie uprawnienia urządzenia</translation>
 <translation id="497421865427891073">Dalej</translation>
 <translation id="4976702386844183910">Ostatnia wizyta <ph name="DATE" /></translation>
-<translation id="4985206706500620449">W przypadku tej witryny zezwalasz na pliki cookie innych firm</translation>
 <translation id="4994033804516042629">Nie znaleziono kontaktów</translation>
 <translation id="4996978546172906250">Udostępnij przez</translation>
 <translation id="5001526427543320409">Pliki cookie innych firm</translation>
@@ -266,6 +272,7 @@
 <translation id="5246825184569358663">Spowoduje to usunięcie wszystkich danych lokalnych (w tym plików cookie) oraz zresetowanie wszystkich uprawnień witryny <ph name="DOMAIN" /> i jej wszystkich podstron</translation>
 <translation id="5264323282659631142">Usuń: „<ph name="CHIP_LABEL" />”</translation>
 <translation id="528192093759286357">Przeciągnij od góry i kliknij przycisk Wstecz, by wyjść z trybu pełnoekranowego.</translation>
+<translation id="5292915569214461965">Witryny nie mogą używać plików cookie innych firm, aby uzyskiwać informacje na temat przeglądania przez Ciebie internetu. Aby <ph name="BEGIN_LINK" />zarządzać dostępem do plików cookie innych firm<ph name="END_LINK" />, otwórz ustawienia.</translation>
 <translation id="5295729974480418933">Gdy ta opcja jest włączona, strony internetowe mogą prosić o zgodę na wykorzystanie zapisanych informacji o Tobie. Gdy jest wyłączona, nie mogą o to prosić.</translation>
 <translation id="5300589172476337783">Pokaż</translation>
 <translation id="5301954838959518834">OK</translation>
@@ -355,6 +362,7 @@
 <translation id="6527303717912515753">Udostępnij</translation>
 <translation id="652937045869844725">Spróbuj zezwolić na pliki cookie innych firm – oznacza to słabszą ochronę, ale jest większa szansa na to, że funkcje witryny będą działać</translation>
 <translation id="6530703012083415527">Gdy ta opcja jest włączona, strony internetowe mogą używać wyskakujących okienek i przekierowań. Gdy jest wyłączona, nie mają tej możliwości.</translation>
+<translation id="6540488083026747005">W przypadku tej witryny zezwalasz na pliki cookie innych firm</translation>
 <translation id="6545864417968258051">Skanowanie Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Zablokowane: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}few{Zablokowane: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}many{Zablokowane: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}other{Zablokowane: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i jeszcze <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Ostatnio używano <ph name="NUM_DAYS" /> dni temu</translation>
@@ -377,6 +385,7 @@
 <translation id="6787751205395685251">Wybierz opcję dla <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Odtwórz</translation>
 <translation id="6818926723028410516">Wybierz elementy</translation>
+<translation id="6837658163275294267">Chrome ogranicza większości witryn możliwość uzyskiwania informacji na temat przeglądania przez Ciebie internetu za pomocą plików cookie innych firm. Aby <ph name="BEGIN_LINK" />zarządzać dostępem do plików cookie innych firm<ph name="END_LINK" />, otwórz ustawienia</translation>
 <translation id="6838525730752203626">Używaj domyślnie Chrome</translation>
 <translation id="6840760312327750441">Aby pogrupować karty, naciśnij i przytrzymaj jedną z nich. Następnie przeciągnij ją na inną kartę.</translation>
 <translation id="6864395892908308021">To urządzenie nie obsługuje NFC</translation>
@@ -441,6 +450,7 @@
 <translation id="7835852323729233924">Odtwarzanie multimediów</translation>
 <translation id="783819812427904514">Wyłącz wyciszenie filmu</translation>
 <translation id="7846076177841592234">Anuluj wybór</translation>
+<translation id="7881140103901777395">Chrome ogranicza większości witryn możliwość używania plików cookie innych firm. Takie pliki są jednak dozwolone w tej witrynie, ponieważ są w niej niezbędne do świadczenia podstawowych usług.\n\nAby <ph name="BEGIN_LINK" />zarządzać dostępem do plików cookie innych firm<ph name="END_LINK" />, otwórz ustawienia.</translation>
 <translation id="7882806643839505685">Zezwalaj na dźwięk na określonej stronie.</translation>
 <translation id="789180354981963912">Blokuj pliki cookie innych firm w trybie incognito:</translation>
 <translation id="7940722705963108451">Przypomnij mi</translation>
@@ -503,6 +513,7 @@
 <translation id="8721719390026067591">Gdy ta opcja jest włączona, strony internetowe mogą prosić o zgodę na wyszukanie urządzeń Bluetooth. Gdy jest wyłączona, strony nie mogą wyszukiwać urządzeń Bluetooth.</translation>
 <translation id="8725066075913043281">Spróbuj ponownie</translation>
 <translation id="8730621377337864115">Gotowe</translation>
+<translation id="8737426583868847403">Tutaj pojawią się witryny, dla których zapiszesz niestandardowy poziom powiększenia</translation>
 <translation id="8751914237388039244">Wybierz obraz</translation>
 <translation id="8800034312320686233">Strona nie działa?</translation>
 <translation id="8801436777607969138">Zablokuj JavaScript w określonej witrynie.</translation>

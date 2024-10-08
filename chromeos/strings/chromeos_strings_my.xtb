@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">ဖန်သားပြင်တောက်ပမှု လျှော့ရန်</translation>
 <translation id="2086091080968010660">အချိန်အလိုက် ပြောင်းလဲမှုများသည် တိကျမှန်ကန်မှု မရှိနိုင်ပါ။ ဆက်တင်များတွင် စနစ်တည်နေရာသုံးခွင့် ဖွင့်ပါ။</translation>
 <translation id="2102231663024125441">စာသား တည်းဖြတ်ခြင်း</translation>
-<translation id="2102648867808308635">ဤစာမျက်နှာကို ‘ကူဖတ်ပေးပါ’</translation>
 <translation id="2105810540595158374">ကိရိယာသည် ဂိမ်းခလုတ်ဖြစ်သည်။</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />၊ ဗားရှင်း <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">လောလောဆယ်တွင် အင်္ဂလိပ် (ယူအက်စ်) ဖြင့်သာ ရနိုင်သည်</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">အက်ပ်အားလုံး ကြည့်ရန်</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />စွမ်းဆောင်ရည် မှတ်တမ်းဒေတာ<ph name="END_LINK1" /> ပို့ရန်</translation>
 <translation id="3517001332549868749">ChromeOS အပ်ဒိတ်</translation>
-<translation id="3522508178835057262">စာလုံး <ph name="MAX_WORD_LENGTH" /> လုံးထက်ရှည်သော စာသားမှတ်တမ်းကို လောလောဆယ် မပံ့ပိုးပါ</translation>
 <translation id="3527036260304016759">မအောင်မြင်ပါ - အမည်မသိ အမှား</translation>
 <translation id="353214771040290298">တည်းဖြတ်ပြီးပါပြီ</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> မိနစ်ခန့် ကျန်သည်</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">လင်းသည့် အပြင်အဆင်</translation>
 <translation id="4813136279048157860">ကျွန်ုပ်၏ ပုံများ</translation>
 <translation id="4813345808229079766">ချိတ်ဆက်မှု</translation>
-<translation id="4824527342590024245">စာလုံး <ph name="MIN_WORD_LENGTH" /> လုံးထက်နည်းသော စာသားမှတ်တမ်းကို လောလောဆယ် မပံ့ပိုးပါ</translation>
 <translation id="4830894019733815633">ချောက်ကြီး</translation>
 <translation id="4832079907277790330">Files အက်ပ်တွင် ဖိုင်တွဲကိုရွေးရန်...</translation>
 <translation id="4835901797422965222">ဖွင့်ထားသော ကွန်ရက်မရှိပါ</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">အလားတူ-</translation>
 <translation id="5130848777448318809">မြင်းပု</translation>
 <translation id="5137451382116112100">အပြည့်</translation>
+<translation id="5140788690559353412">သင့်ကျောင်းအကောင့်ကို သုံးခွင့်ဆုံးရှုံးသောအခါ ၎င်းနှင့်ဆက်စပ်သည့် အီးမေးလ်အပြင် Gmail၊ Docs၊ Slides စသည်တို့ကဲ့သို့သော Google Drive ဖိုင်များကို သုံးခွင့်ရှိတော့မည် မဟုတ်ပါ။</translation>
 <translation id="5142961317498132443">အထောက်အထားစိစစ်မှု</translation>
 <translation id="5144311987923128508">အတည်ပြုခလုတ်ကို ပိတ်လိုက်ပါပြီ</translation>
 <translation id="5144887194300568405">ဘာသာပြန်ဆိုချက်ကို မိတ္တူကူးရန်</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) HTTP တုံ့ပြန်ချိန်</translation>
 <translation id="6078323886959318429">ဖြတ်လမ်းလင့်ခ် ထည့်ပါ</translation>
 <translation id="6091080061796993741">အဝါရောင်</translation>
+<translation id="6093853427925392522">သင်၏ ကျောင်းအကောင့်ဒေတာကို သုံးခွင့်မဆုံးရှုံးမီ ကိုယ်ပိုင်အကောင့်သို့ ရွှေ့ရန်အတွက် Google ၏ ‘အချက်အလက် လွှဲပြောင်းခြင်း’ အက်ပ်ကိုသုံးကြောင်း သေချာပါစေ။</translation>
 <translation id="6104112872696127344">စကင်ဖတ်ခြင်းကို ပယ်ဖျက်လိုက်သည်</translation>
 <translation id="6106186594183574873">အပြီးသတ်ရန်အတွက် သင့်စကားဝှက်ဟောင်းကို ထည့်ပါ</translation>
 <translation id="6108689792487843350">ဂိတ်ဝကို မချိတ်ဆက်နိုင်ပါ</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">APN အချိတ်အဆက် (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{ဆာဗာအမည်}other{ဆာဗာများအမည်}}</translation>
 <translation id="7135814714616751706">ဖြတ်လမ်းလင့်ခ်များ ရှာရန်</translation>
+<translation id="7141470099673912333">အချက်အလက် လွှဲပြောင်းခြင်း</translation>
 <translation id="7143207342074048698">ချိတ်ဆက်နေသည်</translation>
 <translation id="7144878232160441200">ထပ်စမ်းရန်</translation>
 <translation id="7144954474087165241">ဘုရားစေတီ</translation>
@@ -1394,6 +1394,7 @@
 <translation id="7856267634822906833">ဘလူးတုသ် တို့ထိမျက်နှာပြင်</translation>
 <translation id="7859006200041800233">ရှားစောင်းပင် အပွင့်</translation>
 <translation id="7869143217755017858">အမှောင်မုဒ် ပိတ်ရန်</translation>
+<translation id="7878972877380405573">‘ကူဖတ်ပေးပါ’ ဖြင့် အကျဉ်းချုပ်ရန်</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">ထောက်ပံ့သူအမျိုးစား</translation>
 <translation id="7882501334836096755">အများသုံးကီး</translation>
@@ -1537,6 +1538,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" /> အတွက် နောက်ထပ်လုပ်ဆောင်ချက်များ</translation>
 <translation id="86356131183441916">ခရမ်းနု</translation>
 <translation id="8647595191512746911">အသံစာသားမှတ်တမ်း</translation>
+<translation id="8650852232143958317">သင်၏ Gmail နှင့် Google Drive ဖိုင်များကို သင်နှင့်အတူ ယူဆောင်သွားပါ</translation>
 <translation id="8651481478098336970">အသံတိတ်ပါ</translation>
 <translation id="8655295600908251630">လိုင်း</translation>
 <translation id="8655828773034788261">URL မျှဝေရန်-</translation>

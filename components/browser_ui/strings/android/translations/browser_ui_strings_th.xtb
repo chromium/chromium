@@ -108,7 +108,9 @@
 <translation id="2683434792633810741">ลบและรีเซ็ตใช่ไหม</translation>
 <translation id="2713106313042589954">ปิดกล้อง</translation>
 <translation id="2717722538473713889">อีเมล</translation>
+<translation id="2726059656860238749">เปิด Chrome โดยเน้นไปที่แถบอเนกประสงค์ ซึ่งช่วยลดเวลาในการเริ่มต้นของอุปกรณ์ระดับล่าง</translation>
 <translation id="2750481671343847896">เว็บไซต์สามารถแสดงข้อความแจ้งให้ลงชื่อเข้าใช้จากบริการระบุตัวตนได้</translation>
+<translation id="2787357173144933081">เริ่มต้นใช้งานแถบอเนกประสงค์</translation>
 <translation id="2790501146643349491">เมื่อเปิด เว็บไซต์ที่เพิ่งปิดจะส่งและรับข้อมูลจนเสร็จสิ้นได้ เมื่อปิด เว็บไซต์ที่เพิ่งปิดจะส่งหรือรับข้อมูลจนเสร็จสิ้นไม่ได้</translation>
 <translation id="2822354292072154809">แน่ใจไหมว่าต้องการรีเซ็ตสิทธิ์ทั้งหมดของเว็บไซต์สำหรับ <ph name="CHOSEN_OBJECT_NAME" /></translation>
 <translation id="2850913818900871965">ขอมุมมองบนอุปกรณ์เคลื่อนที่</translation>
@@ -146,6 +148,7 @@
 <translation id="3295602654194328831">ซ่อนข้อมูล</translation>
 <translation id="3328801116991980348">ข้อมูลไซต์</translation>
 <translation id="3333961966071413176">รายชื่อติดต่อทั้งหมด</translation>
+<translation id="3360338140203645771">ลบระดับการซูมที่บันทึกไว้ไหม</translation>
 <translation id="3362437373201486687">กำลังสแกนหาอุปกรณ์บลูทูธ</translation>
 <translation id="3386292677130313581">ถามก่อนอนุญาตให้เว็บไซต์ทราบตำแหน่งของคุณ (แนะนำ)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
@@ -243,7 +246,6 @@
 <translation id="4962975101802056554">เพิกถอนสิทธิ์ทั้งหมดสำหรับอุปกรณ์</translation>
 <translation id="497421865427891073">ไปข้างหน้า</translation>
 <translation id="4976702386844183910">เข้าชมล่าสุด <ph name="DATE" /></translation>
-<translation id="4985206706500620449">คุณได้อนุญาตคุกกี้ของบุคคลที่สามสำหรับเว็บไซต์นี้</translation>
 <translation id="4994033804516042629">ไม่พบรายชื่อติดต่อ</translation>
 <translation id="4996978546172906250">แชร์ผ่าน</translation>
 <translation id="5001526427543320409">คุกกี้ของบุคคลที่สาม</translation>
@@ -360,6 +362,7 @@
 <translation id="6527303717912515753">แชร์</translation>
 <translation id="652937045869844725">ลองอนุญาตคุกกี้ของบุคคลที่สาม ซึ่งหมายความว่าการปกป้องจะลดลง แต่ฟีเจอร์ของเว็บไซต์มีแนวโน้มที่จะทำงานได้มากกว่า</translation>
 <translation id="6530703012083415527">เมื่อเปิด เว็บไซต์จะใช้ป๊อปอัปและการเปลี่ยนเส้นทางได้ เมื่อปิด เว็บไซต์จะใช้ป๊อปอัปและการเปลี่ยนเส้นทางไม่ได้</translation>
+<translation id="6540488083026747005">คุณอนุญาตคุกกี้ของบุคคลที่สามสำหรับเว็บไซต์นี้</translation>
 <translation id="6545864417968258051">การสแกนหาบลูทูธ</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{บล็อกการเข้าถึง<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และอีก <ph name="NUM_MORE" /> รายการไว้}other{บล็อกการเข้าถึง<ph name="PERMISSION_1" /> <ph name="PERMISSION_2" /> และอีก <ph name="NUM_MORE" /> รายการไว้}}</translation>
 <translation id="6554732001434021288">เข้าชมล่าสุด <ph name="NUM_DAYS" /> วันที่ผ่านมา</translation>

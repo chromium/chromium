@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Μείωση φωτεινότητας οθόνης</translation>
 <translation id="2086091080968010660">Οι αλλαγές βάσει χρόνου ενδέχεται να μην είναι ακριβείς. Ενεργοποιήστε την πρόσβαση τοποθεσίας του συστήματος στις ρυθμίσεις.</translation>
 <translation id="2102231663024125441">Επεξεργασία κειμένου</translation>
-<translation id="2102648867808308635">Βοήθησέ με να διαβάσω αυτή τη σελίδα</translation>
 <translation id="2105810540595158374">Η συσκευή είναι χειριστήριο παιχνιδιού.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, έκδοση <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">Προς το παρόν διατίθεται μόνο στα Αγγλικά (ΗΠΑ)</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">προβολή όλων των εφαρμογών</translation>
 <translation id="3510890413042482857">Αποστολή <ph name="BEGIN_LINK1" />δεδομένων εντοπισμού απόδοσης<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Ενημέρωση ChromeOS</translation>
-<translation id="3522508178835057262">Προς το παρόν, δεν υποστηρίζεται μεταγραφή με περισσότερες από <ph name="MAX_WORD_LENGTH" /> λέξεις</translation>
 <translation id="3527036260304016759">Σφάλμα - Άγνωστο σφάλμα</translation>
 <translation id="353214771040290298">Ολοκλήρωση επεξεργασίας</translation>
 <translation id="3532980081107202182">Απομένουν περίπου <ph name="MIN_REMAINING" /> λεπτά</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">Φωτεινό θέμα</translation>
 <translation id="4813136279048157860">Οι εικόνες μου</translation>
 <translation id="4813345808229079766">Σύνδεση</translation>
-<translation id="4824527342590024245">Προς το παρόν, δεν υποστηρίζεται μια μεταγραφή με λιγότερες από <ph name="MIN_WORD_LENGTH" /> λέξεις</translation>
 <translation id="4830894019733815633">φαράγγι</translation>
 <translation id="4832079907277790330">Επιλογή φακέλου στην εφαρμογή Αρχεία…</translation>
 <translation id="4835901797422965222">Δεν υπάρχουν ενεργά δίκτυα</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">Συνώνυμα:</translation>
 <translation id="5130848777448318809">πόνυ</translation>
 <translation id="5137451382116112100">Πλήρης</translation>
+<translation id="5140788690559353412">Όταν χάσετε την πρόσβαση στον λογαριασμό σχολείου σας, δεν θα έχετε πλέον πρόσβαση στα συσχετισμένα μηνύματα ηλεκτρονικού ταχυδρομείου και στα αρχεία Google Drive, όπως του Gmail, των Εγγράφων, των Παρουσιάσεων κ.ά.</translation>
 <translation id="5142961317498132443">Έλεγχος ταυτότητας</translation>
 <translation id="5144311987923128508">Το κουμπί επιβεβαίωσης είναι πλέον απενεργοποιημένο</translation>
 <translation id="5144887194300568405">Αντιγραφή μετάφρασης</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) Λανθάνων χρόνος HTTP</translation>
 <translation id="6078323886959318429">Προσθήκη συντόμευσης</translation>
 <translation id="6091080061796993741">κίτρινο</translation>
+<translation id="6093853427925392522">Φροντίστε να χρησιμοποιήσετε την εφαρμογή Content Transfer (Μεταφορά περιεχομένου) της Google, για να μεταφέρετε τα δεδομένα του λογαριασμού σχολείου στον προσωπικό σας λογαριασμό, προτού χάσετε την πρόσβαση.</translation>
 <translation id="6104112872696127344">Η σάρωση ακυρώθηκε</translation>
 <translation id="6106186594183574873">Για να τελειώσετε, εισαγάγετε τον παλιό κωδικό πρόσβασης</translation>
 <translation id="6108689792487843350">Μη προσβάσιμη πύλη</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">Όνομα σημείου πρόσβασης (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Διακομιστής ονομάτων}other{Διακομιστές ονομάτων}}</translation>
 <translation id="7135814714616751706">Αναζήτηση συντομεύσεων</translation>
+<translation id="7141470099673912333">Μεταφορά περιεχομένου</translation>
 <translation id="7143207342074048698">Σύνδεση</translation>
 <translation id="7144878232160441200">Επανάληψη</translation>
 <translation id="7144954474087165241">παγόδα</translation>
@@ -1394,6 +1394,7 @@
 <translation id="7856267634822906833">Οθόνη αφής Bluetooth</translation>
 <translation id="7859006200041800233">άνθος κάκτου</translation>
 <translation id="7869143217755017858">Απενεργοποίηση λειτουργίας χαμηλού φωτισμού</translation>
+<translation id="7878972877380405573">Συνοψίστε με τη λειτουργία Βοήθησέ με να διαβάσω</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Τύπος παρόχου</translation>
 <translation id="7882501334836096755">Δημόσιο κλειδί</translation>
@@ -1537,6 +1538,7 @@
 <translation id="8626489604350149811">Περισσότερες ενέργειες για <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Ανοιχτό μοβ</translation>
 <translation id="8647595191512746911">Μεταγραφή ήχου</translation>
+<translation id="8650852232143958317">Πάρτε μαζί σας τα αρχεία του Gmail και του Google Drive</translation>
 <translation id="8651481478098336970">σίγαση ήχου</translation>
 <translation id="8655295600908251630">Κανάλι</translation>
 <translation id="8655828773034788261">Κοινοποίηση URL:</translation>

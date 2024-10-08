@@ -108,7 +108,9 @@
 <translation id="2683434792633810741">Желите да избришете и ресетујете?</translation>
 <translation id="2713106313042589954">Искључи камеру</translation>
 <translation id="2717722538473713889">Имејл адресе</translation>
+<translation id="2726059656860238749">Покрените Chrome са фокусом на омнибоксу, чиме се смањује време покретања на уређајима нижих перформанси.</translation>
 <translation id="2750481671343847896">Сајтови могу да приказују упите за пријављивање из услуга за идентитет.</translation>
+<translation id="2787357173144933081">Покрени омнибокс</translation>
 <translation id="2790501146643349491">Када је укључено, недавно затворени сајтови могу да заврше слање и пријем података. Када је искључено, недавно затворени сајтови не могу да заврше слање нити пријем података.</translation>
 <translation id="2822354292072154809">Желите ли стварно да ресетујете све дозволе за сајт за <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Захтевај приказ за мобилне уређаје</translation>
@@ -146,6 +148,7 @@
 <translation id="3295602654194328831">Сакриј информације</translation>
 <translation id="3328801116991980348">Информације о сајту</translation>
 <translation id="3333961966071413176">Сви контакти</translation>
+<translation id="3360338140203645771">Бришете нивое зумирања?</translation>
 <translation id="3362437373201486687">Траже се Bluetooth уређаји</translation>
 <translation id="3386292677130313581">Питај пре него што дозволиш сајтовима да знају локацију (препоручено)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
@@ -243,7 +246,6 @@
 <translation id="4962975101802056554">Опозовите све дозволе за уређај</translation>
 <translation id="497421865427891073">Кретање унапред</translation>
 <translation id="4976702386844183910">Последња посета: <ph name="DATE" /></translation>
-<translation id="4985206706500620449">Дозволили сте колачиће треће стране за овај сајт</translation>
 <translation id="4994033804516042629">Није пронађен ниједан контакт</translation>
 <translation id="4996978546172906250">Дељење преко</translation>
 <translation id="5001526427543320409">Колачићи треће стране</translation>
@@ -360,6 +362,7 @@
 <translation id="6527303717912515753">Дели</translation>
 <translation id="652937045869844725">Пробајте да дозволите колачиће треће стране, што значи слабију заштиту, али већу вероватноћу да ће функције сајта радити</translation>
 <translation id="6530703012083415527">Када је укључено, сајтови могу да користе искачуће прозоре и преусмеравања. Када је искључено, сајтови не могу да користе искачуће прозоре и преусмеравања.</translation>
+<translation id="6540488083026747005">Дозволили сте колачиће треће стране за овај сајт</translation>
 <translation id="6545864417968258051">Bluetooth скенирање</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Блокиране су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}one{Блокиране су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}few{Блокиране су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}other{Блокиране су дозволе <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> и још <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Последња посета: пре <ph name="NUM_DAYS" /> дана</translation>

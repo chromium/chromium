@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">顯示亮度調低</translation>
 <translation id="2086091080968010660">時間相關的變更可能不準確。請在設定中開啟系統位置存取權。</translation>
 <translation id="2102231663024125441">文字編輯</translation>
-<translation id="2102648867808308635">幫我讀這一頁</translation>
 <translation id="2105810540595158374">裝置類型為遊戲控制器。</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />，版本 <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">目前僅支援英文 (美國)</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">查看所有應用程式</translation>
 <translation id="3510890413042482857">傳送<ph name="BEGIN_LINK1" />效能追蹤資料<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome OS 更新</translation>
-<translation id="3522508178835057262">目前的轉錄稿字數上限為 <ph name="MAX_WORD_LENGTH" /> 個字</translation>
 <translation id="3527036260304016759">失敗 - 不明的錯誤</translation>
 <translation id="353214771040290298">編輯完畢</translation>
 <translation id="3532980081107202182">大約還剩 <ph name="MIN_REMAINING" /> 分鐘</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">淺色主題</translation>
 <translation id="4813136279048157860">我的圖片</translation>
 <translation id="4813345808229079766">連線</translation>
-<translation id="4824527342590024245">目前的轉錄稿字數下限為 <ph name="MIN_WORD_LENGTH" /> 個字</translation>
 <translation id="4830894019733815633">峽谷</translation>
 <translation id="4832079907277790330">在「檔案」應用程式中選取資料夾...</translation>
 <translation id="4835901797422965222">沒有使用中的網路</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">相似詞：</translation>
 <translation id="5130848777448318809">小馬</translation>
 <translation id="5137451382116112100">全螢幕</translation>
+<translation id="5140788690559353412">失去學校帳戶存取權後，你將無法再存取相關聯的電子郵件和 Google 雲端硬碟檔案，例如 Gmail、文件和簡報等。</translation>
 <translation id="5142961317498132443">驗證</translation>
 <translation id="5144311987923128508">「確認」按鈕現已停用</translation>
 <translation id="5144887194300568405">複製譯文</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) HTTP 延遲時間</translation>
 <translation id="6078323886959318429">新增捷徑</translation>
 <translation id="6091080061796993741">黃色</translation>
+<translation id="6093853427925392522">請務必在失去學校帳戶存取權前，使用 Google 的內容轉移應用程式將學校帳戶資料移至個人帳戶。</translation>
 <translation id="6104112872696127344">已取消掃描作業</translation>
 <translation id="6106186594183574873">如要完成變更，請輸入你的舊密碼</translation>
 <translation id="6108689792487843350">無法連上閘道</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">存取點名稱 (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{名稱伺服器}other{名稱伺服器}}</translation>
 <translation id="7135814714616751706">搜尋捷徑</translation>
+<translation id="7141470099673912333">內容轉移</translation>
 <translation id="7143207342074048698">連線中</translation>
 <translation id="7144878232160441200">重試</translation>
 <translation id="7144954474087165241">塔</translation>
@@ -1394,6 +1394,7 @@
 <translation id="7856267634822906833">藍牙觸控螢幕</translation>
 <translation id="7859006200041800233">仙人掌花</translation>
 <translation id="7869143217755017858">停用深色模式</translation>
+<translation id="7878972877380405573">使用「幫我閱讀」摘要內容重點</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">供應商類型</translation>
 <translation id="7882501334836096755">公開金鑰</translation>
@@ -1537,6 +1538,7 @@
 <translation id="8626489604350149811">可對 <ph name="APN_NAME" /> 執行的其他動作</translation>
 <translation id="86356131183441916">淺紫色</translation>
 <translation id="8647595191512746911">音訊轉錄</translation>
+<translation id="8650852232143958317">將 Gmail 和 Google 雲端硬碟檔案帶著走</translation>
 <translation id="8651481478098336970">靜音</translation>
 <translation id="8655295600908251630">版本</translation>
 <translation id="8655828773034788261">分享網址：</translation>

@@ -74,6 +74,7 @@
 <translation id="1919130412786645364">Chrome පුරනයට ඉඩ දෙන්න</translation>
 <translation id="1953553007165777902">බාගනිමින්... මිනිත්තු <ph name="MINUTE" />ක් ඉතිරිව ඇත</translation>
 <translation id="1982647487457769627">උපාංගය කුමක් වූවත් ඔබට සුපුරුදු අත්දැකීම දීමට Chrome වේදිකා අතර ක්‍රියා කරයි</translation>
+<translation id="19955905961160405">Google Lens සමග ඔබේ තිරයේ ඇති දේ සොයන්න</translation>
 <translation id="2001586581944147178">ඔබේ අන්තර්ජාල ගමනාගමනයට ප්‍රවේශය ඇති පුද්ගලයින්ට ඔබ පිවිසෙන්නේ කුමන අඩවි දැයි බැලීම අසීරු කරන්න. Chrome DNS (වසම් නාම පද්ධතිය) තුළ වෙබ් අඩවියක IP ලිපිනය සෙවීමට ආරක්ෂිත සම්බන්ධතාවයක් භාවිතා කරයි.</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{මෙම දිගුව තවදුරටත් සහාය නොදක්වයි. ඔබ එය ඉවත් කරන ලෙස Chrome නිර්දේශ කරයි.}one{මෙම දිගු තවදුරටත් සහාය නොදක්වයි. ඔබ ඒවා ඉවත් කරන ලෙස Chrome නිර්දේශ කරයි.}other{මෙම දිගු තවදුරටත් සහාය නොදක්වයි. ඔබ ඒවා ඉවත් කරන ලෙස Chrome නිර්දේශ කරයි.}}</translation>
 <translation id="2018528049276128029">එක් එක් පැතිකඩ පිටුසන්, ඉතිහාසය, මුරපද සහ තවත් දේවල් වැනි එහිම Chrome තොරතුරු දරයි</translation>
@@ -91,6 +92,7 @@
 <translation id="2126108037660393668">බාගත කළ ගොනුව සත්‍යාපනය කිරීම අසමත් විය.</translation>
 <translation id="2128411189117340671">Chrome පැතිකඩවල් කළමනා කරන්න</translation>
 <translation id="2131230230468101642">ඔබගේ පෞද්ගලිකත්වය ආරක්ෂා කිරීමට, අපි සති 4කට වඩා පැරණි ඔබගේ ලැදිකම් ස්වයංක්‍රියව මකමු. ඔබ දිගටම බ්‍රවුස් කරන විට, ලැදිකමක් නැවත ලැයිස්තුවේ දිස් විය හැකිය. නැතහොත් ඔබට Chrome සලකා බැලීමට අවශ්‍ය නොවන ලැදිකම් ඉවත් කළ හැකිය.</translation>
+<translation id="2137162749895930932">පරිවර්තන තිරය වසන්න</translation>
 <translation id="2139300032719313227">ChromeOS යළි අරඹන්න</translation>
 <translation id="2151406531797534936">දැන් Chrome යළි අරඹන්න</translation>
 <translation id="2163089732491971196">ඔබේ Google ගිණුමේ Chrome දත්ත භාවිත කිරීමට සහ සුරැකීමට, ඔබේ මුර වැකිකඩ ඇතුළත් කරන්න.</translation>
@@ -174,6 +176,7 @@
 <translation id="3019382870990049182">&amp;ChromeOS Flex යාවත්කාලීන කිරීමට යළි දියත් කරන්න</translation>
 <translation id="3037838751736561277">Google Chrome පසුබිම් ප්‍රකාරය තුළ ඇත.</translation>
 <translation id="3038232873781883849">ස්ථාපනය කිරීමට පොරොත්තුවෙන්...</translation>
+<translation id="3045032126857188731">පරිවර්තිත භාෂාව: <ph name="LANGUAGE" /></translation>
 <translation id="3059710691562604940">සුරක්ෂිත පිරික්සුම ක්‍රියාවිරහිතයි. එය ක්‍රියාත්මක කිරීමට Chrome නිර්දේශ කරයි.</translation>
 <translation id="306179102415443347">Google මුරපද කළමනාකරු වෙත ඉක්මණින් යාමට ඔබේ කෙටිමඟ භාවිත කරන්න ඔබට පරිගණකයේ මුල් තිරය හෝ යෙදුම් දියත්කරණය වෙත ඔබේ කෙටිමඟ ගෙන යා හැක.</translation>
 <translation id="3065168410429928842">Chrome පටිත්ත</translation>
@@ -192,7 +195,6 @@
 <translation id="3234642784688107085">තේමා සෑදීමට, ලිවීමේ උදවු ලැබීමට, සහ සංවිධාන කොට සිටීමට නව AI විශේෂාංග උත්සාහ කර බලන්න</translation>
 <translation id="3245429137663807393">ඔබ Chrome පරිශීලන වාර්තාද බෙදා ගතහොත්, එම වාර්තාවලට ඔබ පිවිසෙන URL ඇතුළත් වේ</translation>
 <translation id="3261565993776444564">ඔබේ බ්‍රවුසරය අභිරුචි කිරීමට නව වර්ණයක් උත්සාහ කරන්න</translation>
-<translation id="3269209112443570745">අලුත්! ඔබේ තිරයේ ඇති දේ සෙවීමට පහසු ක්‍රමයක්</translation>
 <translation id="3282568296779691940">Chrome වෙත පුරන්න</translation>
 <translation id="3286538390144397061">දැන් යළි අාරම්භ කරන්න</translation>
 <translation id="3292333338048274092">පසුව ඔබට Chrome යළි ඇරඹීමට අවශ්‍ය වෙයි.</translation>
@@ -241,12 +243,14 @@
 <translation id="386202838227397562">Google Chrome කවුළුව වසා නැවත උත්සාහ කරන්න.</translation>
 <translation id="3865754807470779944">Chrome අනුවාදය <ph name="PRODUCT_VERSION" /> ස්ථාපන කෙරේ</translation>
 <translation id="3873044882194371212">සබැඳිය Chrome අ&amp;ප්‍රසිද්ධ කවුළුව තුළ විවෘත කරන්න</translation>
+<translation id="3885770153807205175">භාෂාව තේරීම</translation>
 <translation id="3889417619312448367">Google Chrome අස්ථාපනය</translation>
 <translation id="3941890832296813527">ස්ථාපන දෝෂය: ස්ථාපක ගොනු නාමය වලංගු නැත හෝ සහාය නොදක්වයි.</translation>
 <translation id="3973161977468201858">Google Chrome හට ඔබේ Google මුරපද කළමනාකරු දත්ත මැකීමට අවශ්‍යයි. මෙයට ඉඩ දීමට ඔබේ Windows මුරපදය ටයිප් කරන්න.</translation>
 <translation id="398236277091248993">කාර්යසාධනය අභිවෘද්ධි විශේෂාංග සමග Chrome වේගවත්ව සිටියි</translation>
 <translation id="3999683152997576765">ඔබට වෙළඳ දැන්වීම් පෙන්වීමට උනන්දුවක් දක්වන අඩවි භාවිතා කරන මාතෘකා බැලීමට සහ ඉවත් කිරීමට හැක. Chrome ඔබේ මෑත බ්‍රවුස් කිරීමේ ඉතිහාසය මත පදනම්ව ඔබේ ලැදිකම් අනුමාන කරයි.</translation>
 <translation id="4022972681110646219">තිරය පරිවර්තනය කරන්න</translation>
+<translation id="4023601594785368013">මුල් භාෂාව: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">යාවත්කාලීනය යෙදීමට ChromeOS යළි ඇරඹිය යුතුය.</translation>
 <translation id="4050175100176540509">වැදගත් ආරක්ෂක වැඩිදියුණු කිරීම් සහ නව විශේෂාංග නවතම අනුවාදය තුළ ලද හැකිය.</translation>
 <translation id="4053720452172726777">Google Chrome ගලපා පාලනය කරන්න</translation>
@@ -522,6 +526,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="7514258452813684157">Google යාවත්කාලීන සේවාව</translation>
 <translation id="7515191208480168435">ඔබට පහසු ප්‍රවේශය සඳහා Google Lens ඇමිණිය හැක</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
+<translation id="756809126120519699">Chrome දත්ත හිස් කෙරිණි</translation>
 <translation id="7572537927358445944">අක්‍රිය • Chrome හට මෙම දිගුව එන තැන සත්‍යාපන කළ නොහැක</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> ස්ථාපකය</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
@@ -539,6 +544,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="7668816516367091728">ලිපින තීරුවෙන් රජුව පරිවර්තනය, ගණන් කිරීම, සහ තවත් ඒවා වැනි කාර්යභාර ඉටු කරන්න</translation>
 <translation id="7670287553302121848">Chrome ගිණුමට නැවත සත්‍යාපනය අවශ්‍යයි</translation>
 <translation id="769538538642757151">ඕනෑම දෙයකට ඔබේ සමාලෝචනය අවශ්‍ය නම් Chrome ඔබට දන්වනු ඇත</translation>
+<translation id="77283119132245232"><ph name="BROWSER_NAME" /> සඳහා පද්ධති ලුහුබැඳීමේ සේවා සපයයි. මෙම සේවාව අබල කර ඇත්නම්, බ්‍රව්සරය මඟින් සාදන ලද කාර්ය සාධන ලුහුබැඳීම්වලට සන්දර්භය මාරු කිරීම සහ සූදානම් පොට සිදුවීම් වැනි පද්ධති පුරා සිදුවීම් ඇතුළත් නොවේ.</translation>
 <translation id="7747138024166251722">ස්ථාපකයට තාවකාලික නාමාවලියක් තැනිය නොහැකි විය. කරුණාකර හිස් ඉඩ හා මෘදුකාංග ස්ථාපනයට හිස් තැටි ඉඩ පිරික්සන්න.</translation>
 <translation id="7761834446675418963">ක්‍රෝම් විවෘත කිරීමට ඔබේ නම ක්ලික් කර ගවේෂණය අරඹන්න.</translation>
 <translation id="7763983146198734674">ඔබේ මුරපද සුරැකී යන ගමන් ඒවාට ප්‍රවේශ වන්න</translation>

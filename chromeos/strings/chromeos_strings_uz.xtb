@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Displey yorlinligini pasaytirish</translation>
 <translation id="2086091080968010660">Vaqt asosidagi oʻzgarishlar aniq boʻlmasligi mumkin. Sozlamalar orqali tizim darajasidagi joylashuv ruxsatini yoqing.</translation>
 <translation id="2102231663024125441">Matn tahrirlash</translation>
-<translation id="2102648867808308635">Bu sahifani oʻqishda yordam</translation>
 <translation id="2105810540595158374">Qurilma — geympad</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versiya: <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">Hozirda faqat Ingliz tilida (AQSH) ishlaydi.</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">barcha ilovalarni koʻrish</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Unumdorlik kuzatuvi maʼlumotlarini<ph name="END_LINK1" /> joʻnatish</translation>
 <translation id="3517001332549868749">ChromeOS yangilanishi</translation>
-<translation id="3522508178835057262">Hozircha transkripsiya maksimum <ph name="MAX_WORD_LENGTH" /> ta soʻzdan yaratiladi</translation>
 <translation id="3527036260304016759">Bajarilmadi - Notanish xato</translation>
 <translation id="353214771040290298">Tahrirlashni tugatish</translation>
 <translation id="3532980081107202182">Taxminan <ph name="MIN_REMAINING" /> daqiqa qoldi</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">Kunduzgi mavzu</translation>
 <translation id="4813136279048157860">Rasmlarim</translation>
 <translation id="4813345808229079766">Ulanish</translation>
-<translation id="4824527342590024245">Hozircha transkripsiya minimum <ph name="MIN_WORD_LENGTH" /> ta soʻzdan yaratiladi</translation>
 <translation id="4830894019733815633">kanyon</translation>
 <translation id="4832079907277790330">Fayllar ilovasida jild tanlang...</translation>
 <translation id="4835901797422965222">Faol tarmoq topilmadi</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">Oʻxshash:</translation>
 <translation id="5130848777448318809">ponilar</translation>
 <translation id="5137451382116112100">Toʻliq</translation>
+<translation id="5140788690559353412">Maktab hisobingizga ruxsatingiz yopilsa, unga aloqador email hamda Google Drive omboridagi Gmail xatlari, Docs hujjatlari, Slides taqdimotlari va boshqa fayllarga ruxsat ham yopiladi.</translation>
 <translation id="5142961317498132443">Autentifikatsiya</translation>
 <translation id="5144311987923128508">Tasdiqlash tugmasi faolsizlantirildi</translation>
 <translation id="5144887194300568405">Tarjimadan nusxa olish</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) HTTP kechikichi</translation>
 <translation id="6078323886959318429">Yorliq bilan nomlash</translation>
 <translation id="6091080061796993741">sariq</translation>
+<translation id="6093853427925392522">Maktab hisobingizdagi maʼlumotlarni shaxsiy hisobingizga oldindan koʻchirish uchun Google Kontent uzatish ilovasidan foydalaning.</translation>
 <translation id="6104112872696127344">Skanlash amali bekor qilindi</translation>
 <translation id="6106186594183574873">Yakunlash uchun eski parolni kiriting</translation>
 <translation id="6108689792487843350">Shlyuz bilan aloqa yoʻq</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">Ulanish nuqtasi nomi (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nom serveri}other{Nom serverlari}}</translation>
 <translation id="7135814714616751706">Tezkor tugmalar qidiruvi</translation>
+<translation id="7141470099673912333">Kontent uzatish</translation>
 <translation id="7143207342074048698">Ulanmoqda</translation>
 <translation id="7144878232160441200">Qayta urinish</translation>
 <translation id="7144954474087165241">pagoda</translation>
@@ -1394,6 +1394,7 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="7856267634822906833">Bluetooth sensorli ekran</translation>
 <translation id="7859006200041800233">kaktus guli</translation>
 <translation id="7869143217755017858">Tungi rejimdan chiqish</translation>
+<translation id="7878972877380405573">Oʻqishda yordam bilan xulosalash</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Ta’minot turi</translation>
 <translation id="7882501334836096755">Ochiq kalit</translation>
@@ -1537,6 +1538,7 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="8626489604350149811"><ph name="APN_NAME" /> uchun boshqa amallar</translation>
 <translation id="86356131183441916">Och siyohrang</translation>
 <translation id="8647595191512746911">Audio transkripsiya</translation>
+<translation id="8650852232143958317">Gmail va Google Drive kontentini koʻchiring</translation>
 <translation id="8651481478098336970">ovozni o‘chirib qo‘yish</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655828773034788261">URL havolasi:</translation>

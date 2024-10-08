@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">ਡਿਸਪਲੇ ਦੀ ਚਮਕ ਘਟਾਉਣ ਵਾਲੀ ਕੁੰਜੀ</translation>
 <translation id="2086091080968010660">ਸਮੇਂ ਦੇ ਆਧਾਰ 'ਤੇ ਕੀਤੀਆਂ ਗਈਆਂ ਤਬਦੀਲੀਆਂ ਸ਼ਾਇਦ ਸਟੀਕ ਨਾ ਹੋਣ। ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਸਿਸਟਮ ਟਿਕਾਣਾ ਪਹੁੰਚ ਨੂੰ ਚਾਲੂ ਕਰੋ।</translation>
 <translation id="2102231663024125441">ਲਿਖਤ ਸੰਪਾਦਨ</translation>
-<translation id="2102648867808308635">ਇਸ ਪੰਨੇ ਨੂੰ ਪੜ੍ਹਨ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ</translation>
 <translation id="2105810540595158374">ਡੀਵਾਈਸ ਇੱਕ ਗੇਮ ਕੰਟਰੋਲਰ ਹੈ।</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, ਵਰਜਨ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">ਫ਼ਿਲਹਾਲ ਸਿਰਫ਼ ਅੰਗਰੇਜ਼ੀ (US) ਵਿੱਚ ਉਪਲਬਧ ਹੈ</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">ਸਾਰੀਆਂ ਐਪਾਂ ਦੇਖੋ</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />ਕਾਰਗੁਜ਼ਾਰੀ ਟ੍ਰੇਸ ਡਾਟਾ<ph name="END_LINK1" /> ਭੇਜੋ</translation>
 <translation id="3517001332549868749">ChromeOS ਸੰਬੰਧੀ ਅੱਪਡੇਟ</translation>
-<translation id="3522508178835057262">ਫ਼ਿਲਹਾਲ, <ph name="MAX_WORD_LENGTH" /> ਤੋਂ ਵੱਧ ਸ਼ਬਦਾਂ ਵਾਲੀ ਪ੍ਰਤੀਲਿਪੀ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="3527036260304016759">ਅਸਫਲ ਰਹੀ - ਅਗਿਆਤ ਗੜਬੜ</translation>
 <translation id="353214771040290298">ਸੰਪਾਦਨ ਪੂਰਾ ਹੋਇਆ</translation>
 <translation id="3532980081107202182">ਲਗਭਗ <ph name="MIN_REMAINING" /> ਮਿੰਟ ਬਾਕੀ</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">ਹਲਕਾ ਥੀਮ</translation>
 <translation id="4813136279048157860">ਮੇਰੇ ਚਿੱਤਰ</translation>
 <translation id="4813345808229079766">ਕਨੈਕਸ਼ਨ</translation>
-<translation id="4824527342590024245">ਫ਼ਿਲਹਾਲ, <ph name="MIN_WORD_LENGTH" /> ਤੋਂ ਘੱਟ ਸ਼ਬਦਾਂ ਵਾਲੀ ਪ੍ਰਤੀਲਿਪੀ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="4830894019733815633">ਘਾਟੀ</translation>
 <translation id="4832079907277790330">Files ਐਪ ਵਿੱਚ ਫੋਲਡਰ ਨੂੰ ਚੁਣੋ...</translation>
 <translation id="4835901797422965222">ਕੋਈ ਕਿਰਿਆਸ਼ੀਲ ਨੈੱਟਵਰਕ ਨਹੀਂ ਹਨ</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">ਮਿਲਦੇ-ਜੁਲਦੇ:</translation>
 <translation id="5130848777448318809">ਟੱਟੂ</translation>
 <translation id="5137451382116112100">ਪੂਰੀ ਸਕ੍ਰੀਨ</translation>
+<translation id="5140788690559353412">ਜਦੋਂ ਤੁਸੀਂ ਆਪਣੇ ਸਕੂਲ ਖਾਤੇ ਤੱਕ ਪਹੁੰਚ ਗੁਆ ਦਿੰਦੇ ਹੋ, ਤਾਂ ਤੁਹਾਡੇ ਕੋਲ ਸੰਬੰਧਿਤ ਈਮੇਲ ਅਤੇ Google Drive ਫ਼ਾਈਲਾਂ ਜਿਵੇਂ ਕਿ Gmail, Docs, Slides ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਤੱਕ ਪਹੁੰਚ ਨਹੀਂ ਹੋਵੇਗੀ।</translation>
 <translation id="5142961317498132443">ਪ੍ਰਮਾਣੀਕਰਨ</translation>
 <translation id="5144311987923128508">ਤਸਦੀਕ ਕਰੋ ਬਟਨ ਹੁਣ ਬੰਦ ਹੈ</translation>
 <translation id="5144887194300568405">ਅਨੁਵਾਦ ਕਾਪੀ ਕਰੋ</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) HTTP ਵਿਲੰਬਤਾ</translation>
 <translation id="6078323886959318429">ਸ਼ਾਰਟਕੱਟ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="6091080061796993741">ਪੀਲਾ</translation>
+<translation id="6093853427925392522">ਆਪਣੇ ਸਕੂਲ ਖਾਤੇ ਦੇ ਡਾਟੇ ਨੂੰ ਆਪਣੇ ਨਿੱਜੀ ਖਾਤੇ ਵਿੱਚ ਟ੍ਰਾਂਸਫ਼ਰ ਕਰਨ ਲਈ Google ਦੀ Content Transfer ਐਪ ਦੀ ਵਰਤੋਂ ਕਰਨਾ ਪੱਕਾ ਕਰੋ ਅਤੇ ਅਜਿਹਾ ਪਹੁੰਚ ਗੁਆਉਣ ਤੋਂ ਪਹਿਲਾਂ ਕਰ ਲਓ।</translation>
 <translation id="6104112872696127344">ਸਕੈਨਿੰਗ ਰੱਦ ਕੀਤੀ ਗਈ</translation>
 <translation id="6106186594183574873">ਪੂਰਾ ਕਰਨ ਲਈ, ਆਪਣਾ ਪੁਰਾਣਾ ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="6108689792487843350">ਗੇਟਵੇ ਪਹੁੰਚਯੋਗ ਨਹੀਂ ਹੈ</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">ਐਕਸੈੱਸ ਪੁਆਇੰਟ ਨਾਮ (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{ਨਾਮ ਸਰਵਰ}one{ਨਾਮ ਸਰਵਰ}other{ਨਾਮ ਸਰਵਰ}}</translation>
 <translation id="7135814714616751706">ਸ਼ਾਰਟਕੱਟ ਖੋਜੋ</translation>
+<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">ਕਨੈਕਟ ਕਰ ਰਿਹਾ ਹੈ</translation>
 <translation id="7144878232160441200">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="7144954474087165241">ਪੈਗੋਡਾ</translation>
@@ -1394,6 +1394,7 @@
 <translation id="7856267634822906833">ਬਲੂਟੁੱਥ ਟੱਚਸਕ੍ਰੀਨ</translation>
 <translation id="7859006200041800233">ਕੈਕਟਸ ਦਾ ਫੁੱਲ</translation>
 <translation id="7869143217755017858">ਗੂੜ੍ਹਾ ਮੋਡ ਬੰਦ ਕਰੋ</translation>
+<translation id="7878972877380405573">'ਪੜ੍ਹਨ ਵਿੱਚ ਮੇਰੀ ਮਦਦ ਕਰੋ' ਨਾਲ ਸਾਰਾਂਸ਼ ਦਿਓ</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">ਪ੍ਰਦਾਨਕ ਕਿਸਮ</translation>
 <translation id="7882501334836096755">ਜਨਤਕ ਕੁੰਜੀ</translation>
@@ -1537,6 +1538,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" /> ਲਈ ਹੋਰ ਕਾਰਵਾਈਆਂ</translation>
 <translation id="86356131183441916">ਹਲਕਾ ਜਾਮਨੀ</translation>
 <translation id="8647595191512746911">ਆਡੀਓ ਪ੍ਰਤੀਲਿਪੀਕਰਨ</translation>
+<translation id="8650852232143958317">ਆਪਣੀਆਂ Gmail ਅਤੇ Google Drive ਫ਼ਾਈਲਾਂ ਨੂੰ ਆਪਣੇ ਨਿੱਜੀ ਖਾਤੇ ਵਿੱਚ ਲਿਜਾਓ</translation>
 <translation id="8651481478098336970">ਅਵਾਜ਼ ਮਿਊਟ ਕਰੋ</translation>
 <translation id="8655295600908251630">ਚੈਨਲ</translation>
 <translation id="8655828773034788261">URL ਸਾਂਝਾ ਕਰੋ:</translation>

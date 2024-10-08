@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Kurangkan kecerahan paparan</translation>
 <translation id="2086091080968010660">Perubahan berdasarkan masa mungkin tidak tepat. Hidupkan akses lokasi sistem dalam tetapan.</translation>
 <translation id="2102231663024125441">Pengeditan teks</translation>
-<translation id="2102648867808308635">Bantu saya baca halaman ini</translation>
 <translation id="2105810540595158374">Peranti ialah pengawal permainan.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versi <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">Hanya tersedia dalam bahasa Inggeris (AS) pada masa ini</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">lihat semua apl</translation>
 <translation id="3510890413042482857">Hantar <ph name="BEGIN_LINK1" />data surih prestasi<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Kemaskinian ChromeOS</translation>
-<translation id="3522508178835057262">Pada masa ini, transkrip lebih panjang daripada <ph name="MAX_WORD_LENGTH" /> perkataan tidak disokong</translation>
 <translation id="3527036260304016759">Gagal - Ralat tidak diketahui</translation>
 <translation id="353214771040290298">Selesai mengedit</translation>
 <translation id="3532980081107202182">Kira-kira <ph name="MIN_REMAINING" /> minit lagi</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">Tema cerah</translation>
 <translation id="4813136279048157860">Imej Saya</translation>
 <translation id="4813345808229079766">Sambungan</translation>
-<translation id="4824527342590024245">Pada masa ini, transkrip kurang daripada <ph name="MIN_WORD_LENGTH" /> perkataan tidak disokong</translation>
 <translation id="4830894019733815633">ngarai</translation>
 <translation id="4832079907277790330">Pilih folder dalam apl Files...</translation>
 <translation id="4835901797422965222">Tiada rangkaian aktif</translation>
@@ -1397,6 +1394,7 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="7856267634822906833">Skrin sentuh Bluetooth</translation>
 <translation id="7859006200041800233">bunga kaktus</translation>
 <translation id="7869143217755017858">Lumpuhkan mod gelap</translation>
+<translation id="7878972877380405573">Ringkaskan dengan Bantu saya baca</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Jenis penyedia</translation>
 <translation id="7882501334836096755">Kunci awam</translation>

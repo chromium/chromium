@@ -52,6 +52,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="17264556997921157">You can see and remove topics of interest that sites use to show you ads. Chromium estimates your interests based on your recent browsing history.</translation>
 <translation id="1733725117201708356">Chromium will soon delete browsing data</translation>
 <translation id="1736443181683099871">Chromium will try to upgrade navigations to HTTPS</translation>
+<translation id="1736662517232558588">Cleared Chromium Data</translation>
 <translation id="1745121272106313518">Chromium will restart in <ph name="REMAINING_TIME" /></translation>
 <translation id="1749104137266986751">When HTTPS isn't available, Chromium will use an insecure connection without warning you</translation>
 <translation id="1774152462503052664">Let Chromium run in the background</translation>
@@ -82,6 +83,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="2088953378266246249">Information about how Chromium manages its root certificates</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Your organisation deletes browsing data automatically when Chromium isn't used for one minute. This could include history, autofill and downloads. Your tabs will stay open.}other{Your organisation deletes browsing data automatically when Chromium isn't used for # minutes. This could include history, autofill and downloads. Your tabs will stay open.}}</translation>
 <translation id="2126108037660393668">The downloaded file failed verification.</translation>
+<translation id="2137162749895930932">Close translate screen</translation>
 <translation id="215352261310130060">Chromium blocked this download because the site isn't using a secure connection and the file may have been tampered with</translation>
 <translation id="2157600032285353789">You can open bookmarks, reading mode and more from the Chromium menu</translation>
 <translation id="2174178932569897599">Customise Chromium</translation>
@@ -149,6 +151,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="3032706164202344641">Chromium can't check your passwords. Try again later.</translation>
 <translation id="3032787606318309379">Adding to Chromium ...</translation>
 <translation id="3038232873781883849">Waiting to install…</translation>
+<translation id="3045032126857188731">Translated language: <ph name="LANGUAGE" /></translation>
 <translation id="3068187312562070417">Other Chromium profiles</translation>
 <translation id="3068515742935458733">Help make Chromium better by sending crash reports and <ph name="UMA_LINK" /> to Google</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{1 USB device was being accessed by one or more Chromium extensions}=1{1 USB device is being accessed by one or more Chromium extensions}other{# USB devices are being accessed by one or more Chromium extensions}}</translation>
@@ -167,7 +170,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3268051428841342958">V8 is Chromium’s JavaScript and WebAssembly engine used to improve site performance</translation>
-<translation id="3269209112443570745">New! An easy way to search what's on your screen</translation>
 <translation id="3283186697780795848">Chromium version <ph name="PRODUCT_VERSION" /> is installed</translation>
 <translation id="3286538390144397061">Restart Now</translation>
 <translation id="328888136576916638">Google API keys are missing. Some functionality of Chromium will be disabled.</translation>
@@ -207,6 +209,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386822487697155367">Get help with Chromium OS</translation>
 <translation id="3871664619793219264">Get your Chromium browser stuff from <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="3885770153807205175">Language picker</translation>
 <translation id="388648406173476553">Customise and control Chromium. Something needs your attention – click for details.</translation>
 <translation id="3889543394854987837">Click your name to open Chromium and start browsing.</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> is already signed in to this Chromium profile. To keep your browsing separate, Chromium can create your own profile for you.</translation>
@@ -219,6 +222,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="3997429360543082038">About Chromium OS</translation>
 <translation id="4019629340646866719">Chromium OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />, as is <ph name="BEGIN_LINK_LINUX_OSS" />Linux development environment<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Translate screen</translation>
+<translation id="4023601594785368013">Original language: <ph name="LANGUAGE" /></translation>
 <translation id="4036079820698952681">Help make Chromium better by reporting the <ph name="BEGIN_LINK" />current settings<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Important security improvements and new features are available in the latest version.</translation>
 <translation id="4055805654398742145">P&amp;assword Manager</translation>
@@ -288,6 +292,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="494490797786467921">Click to close the Chromium sign-in dialogue</translation>
 <translation id="4987820182225656817">Guests can use Chromium without leaving anything behind.</translation>
 <translation id="4994636714258228724">Add yourself to Chromium</translation>
+<translation id="5024548327980648634">Search what's on your screen</translation>
 <translation id="5051959905407134411">Try image search</translation>
 <translation id="5114678101347489141">Chromium is exploring new features that allow sites to deliver the same browsing experience using less of your info</translation>
 <translation id="5123973130450702873">Chromium needs permission to track your hands</translation>
@@ -333,6 +338,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5761096224651992291">You haven't visited recently. Chromium removed <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
 <translation id="5800158606660203929">Customise and control Chromium. Set Chromium as your default.</translation>
 <translation id="5809516625706423866">Unable to connect to the Internet. HTTP 401 Unauthorised. Please check your proxy configuration.</translation>
+<translation id="5821520528363214608">To use and save Chromium data in your Google Account, update Chromium</translation>
 <translation id="5862307444128926510">Welcome to Chromium</translation>
 <translation id="5871205389137001634">Click to exit image search</translation>
 <translation id="5883558403894052917">Chromium found that these items contain malware:</translation>
@@ -493,6 +499,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7686590090926151193">Chromium isn't your default browser</translation>
 <translation id="7689606757190482937">Sync and personalise Chromium across your devices</translation>
 <translation id="7699779824407626136">Chromium update</translation>
+<translation id="77283119132245232">Provides system tracing services for <ph name="BROWSER_NAME" />. If this service is disabled, performance traces created by the browser will not include system-wide events, such as context switch and ready thread events.</translation>
 <translation id="7745317241717453663">This will delete your browsing data from this device. To retrieve your data later, sign in to Chromium as <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">The installer couldn't create a temporary directory. Please check for free disk space and permission to install software.</translation>
 <translation id="7786760609782648049">Make Chromium faster</translation>

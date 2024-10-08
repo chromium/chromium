@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">Rhaid i'r gwerth fod yn <ph name="MINIMUM_DATE_OR_TIME" /> neu'n hwyrach.</translation>
 <translation id="2761667185364618470">Ticiwch y blwch hwn os hoffech barhau.</translation>
 <translation id="2908441821576996758">Rhowch gyfeiriadau e-bost sydd wedi'u gwahanu gan atalnodau.</translation>
+<translation id="2940013921954129954">Caniateir union leoliad</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Rhowch werth dilys. Mae'r maes yn anghyflawn neu mae ganddo ddyddiad annilys.</translation>
 <translation id="310520048233152454">Rhowch URL.</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">Ansawdd chwarae gwael</translation>
 <translation id="6790428901817661496">Chwarae</translation>
 <translation id="6820355525329141109">Methu â llwytho'r ategyn.</translation>
+<translation id="688706781007114099">Defnyddio lleoliad</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">Estynnwch y testun hwn i <ph name="MIN_CHARACTERS" /> nod neu fwy (rydych yn defnyddio 1 nod ar hyn o bryd).</translation>
 <translation id="709897737746224366">Defnyddiwch y fformat y gofynnwyd amdano.</translation>

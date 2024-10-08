@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">הפחתת הבהירות של התצוגה</translation>
 <translation id="2086091080968010660">יכול להיות ששינויים שמבוססים על זמן לא יהיו מדויקים. צריך להפעיל את הגישה למיקום בהגדרות המערכת.</translation>
 <translation id="2102231663024125441">עריכת טקסט</translation>
-<translation id="2102648867808308635">עזרה בקריאת הדף הזה</translation>
 <translation id="2105810540595158374">המכשיר הוא שלט לגיימינג.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, גרסה <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">האפשרות הזו זמינה כרגע רק באנגלית (ארה"ב)</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">הצגת כל האפליקציות</translation>
 <translation id="3510890413042482857">שליחת <ph name="BEGIN_LINK1" />נתוני מעקב אחר ביצועים<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">‏עדכון של ChromeOS</translation>
-<translation id="3522508178835057262">בשלב הזה אין תמיכה בתמליל שכולל יותר מ-<ph name="MAX_WORD_LENGTH" /> מילים</translation>
 <translation id="3527036260304016759">נכשלה – שגיאה לא ידועה</translation>
 <translation id="353214771040290298">העריכה הסתיימה</translation>
 <translation id="3532980081107202182">נותרו <ph name="MIN_REMAINING" /> דקות בערך</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">עיצוב בהיר</translation>
 <translation id="4813136279048157860">התמונות שלי</translation>
 <translation id="4813345808229079766">התקשרות</translation>
-<translation id="4824527342590024245">בשלב הזה אין תמיכה בתמליל שכולל פחות מ-<ph name="MIN_WORD_LENGTH" /> מילים</translation>
 <translation id="4830894019733815633">קניון</translation>
 <translation id="4832079907277790330">בחירת תיקייה מהאפליקציה 'קבצים'…</translation>
 <translation id="4835901797422965222">אין רשתות פעילות</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">נרדפות:</translation>
 <translation id="5130848777448318809">סוסי פוני</translation>
 <translation id="5137451382116112100">מסך מלא</translation>
+<translation id="5140788690559353412">‏אם הגישה לחשבון הבית ספרי שלך תאבד, לא תהיה לך יותר גישה לאימייל ולקבצים ב-Google Drive שמשויכים לחשבון, כמו Gmail, ‏Docs, ‏Slides ועוד.</translation>
 <translation id="5142961317498132443">אימות</translation>
 <translation id="5144311987923128508">לחצן האישור מושבת עכשיו</translation>
 <translation id="5144887194300568405">העתקת התרגום</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">‏זמן אחזור של HTTP ‏(Android)</translation>
 <translation id="6078323886959318429">הוספת קיצור דרך</translation>
 <translation id="6091080061796993741">צהוב</translation>
+<translation id="6093853427925392522">‏צריך להקפיד להשתמש באפליקציית 'העברת תוכן' של Google כדי להעביר את הנתונים מהחשבון הבית ספרי שלך לחשבון האישי שלך לפני שהגישה אליהם תאבד.</translation>
 <translation id="6104112872696127344">הסריקה בוטלה</translation>
 <translation id="6106186594183574873">כדי לסיים יש להזין את הסיסמה הישנה</translation>
 <translation id="6108689792487843350">לא ניתן להגיע אל השער</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">‏שם נקודת הגישה (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{שרת שמות}one{שרתי שמות}two{שרתי שמות}other{שרתי שמות}}</translation>
 <translation id="7135814714616751706">חיפוש מקשי קיצור</translation>
+<translation id="7141470099673912333">העברת תוכן</translation>
 <translation id="7143207342074048698">מתבצע חיבור</translation>
 <translation id="7144878232160441200">יש לנסות שוב</translation>
 <translation id="7144954474087165241">פגודה</translation>
@@ -1394,6 +1394,7 @@
 <translation id="7856267634822906833">‏מסך מגע של Bluetooth</translation>
 <translation id="7859006200041800233">פרח קקטוס</translation>
 <translation id="7869143217755017858">השבתת המצב הכהה</translation>
+<translation id="7878972877380405573">סיכום באמצעות 'עזרה בקריאה'</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">סוג ספק</translation>
 <translation id="7882501334836096755">מפתח ציבורי</translation>
@@ -1537,6 +1538,7 @@
 <translation id="8626489604350149811">עוד פעולות לגבי <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">סגול בהיר</translation>
 <translation id="8647595191512746911">תמלול האודיו</translation>
+<translation id="8650852232143958317">‏העברת קבצים מ-Gmail ומ-Google Drive</translation>
 <translation id="8651481478098336970">השתקת עוצמת הקול</translation>
 <translation id="8655295600908251630">ערוץ</translation>
 <translation id="8655828773034788261">‏שיתוף כתובת ה-URL:</translation>

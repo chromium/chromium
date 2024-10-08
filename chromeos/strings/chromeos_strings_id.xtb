@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Kurangi kecerahan layar</translation>
 <translation id="2086091080968010660">Perubahan berbasis waktu mungkin tidak akurat. Aktifkan akses lokasi sistem di setelan.</translation>
 <translation id="2102231663024125441">Pengeditan teks</translation>
-<translation id="2102648867808308635">Bantu baca halaman ini</translation>
 <translation id="2105810540595158374">Perangkat adalah pengontrol game.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versi <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">Saat ini hanya tersedia dalam bahasa Inggris (AS)</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">lihat semua aplikasi</translation>
 <translation id="3510890413042482857">Kirim <ph name="BEGIN_LINK1" />data trace performa<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Update Chrome OS</translation>
-<translation id="3522508178835057262">Untuk saat ini, transkrip yang lebih panjang dari <ph name="MAX_WORD_LENGTH" /> kata tidak didukung</translation>
 <translation id="3527036260304016759">Gagal - Error tidak diketahui</translation>
 <translation id="353214771040290298">Selesai mengedit</translation>
 <translation id="3532980081107202182">Sekitar <ph name="MIN_REMAINING" /> menit lagi</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">Tema terang</translation>
 <translation id="4813136279048157860">Gambar Saya</translation>
 <translation id="4813345808229079766">Sambungan</translation>
-<translation id="4824527342590024245">Untuk saat ini, transkrip yang berisi kurang dari <ph name="MIN_WORD_LENGTH" /> kata tidak didukung</translation>
 <translation id="4830894019733815633">ngarai</translation>
 <translation id="4832079907277790330">Pilih folder di aplikasi File ...</translation>
 <translation id="4835901797422965222">Tidak ada jaringan yang aktif</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">Sinonim:</translation>
 <translation id="5130848777448318809">kuda poni</translation>
 <translation id="5137451382116112100">Penuh</translation>
+<translation id="5140788690559353412">Jika kehilangan akses ke akun sekolah, Anda tidak akan lagi memiliki akses ke email dan file Google Drive yang terkait seperti Gmail, Dokumen, Slide, dan lainnya.</translation>
 <translation id="5142961317498132443">Autentikasi</translation>
 <translation id="5144311987923128508">Tombol konfirmasi sekarang dinonaktifkan</translation>
 <translation id="5144887194300568405">Salin terjemahan</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) Latensi HTTP</translation>
 <translation id="6078323886959318429">Tambahkan pintasan</translation>
 <translation id="6091080061796993741">kuning</translation>
+<translation id="6093853427925392522">Pastikan untuk menggunakan aplikasi Transfer Konten dari Google untuk memindahkan data akun sekolah ke akun pribadi Anda sebelum Anda kehilangan akses.</translation>
 <translation id="6104112872696127344">Pemindaian telah dibatalkan</translation>
 <translation id="6106186594183574873">Untuk menyelesaikan, masukkan sandi yang lama</translation>
 <translation id="6108689792487843350">Gateway tidak dapat dijangkau</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">Nama poin akses (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Server nama}other{Server nama}}</translation>
 <translation id="7135814714616751706">Telusuri pintasan</translation>
+<translation id="7141470099673912333">Transfer Konten</translation>
 <translation id="7143207342074048698">Menghubungkan</translation>
 <translation id="7144878232160441200">Coba lagi</translation>
 <translation id="7144954474087165241">pagoda</translation>
@@ -1394,6 +1394,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="7856267634822906833">Layar sentuh Bluetooth</translation>
 <translation id="7859006200041800233">bunga kaktus</translation>
 <translation id="7869143217755017858">Nonaktifkan mode gelap</translation>
+<translation id="7878972877380405573">Ringkas dengan Bantu baca</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Jenis penyedia</translation>
 <translation id="7882501334836096755">Kunci publik</translation>
@@ -1537,6 +1538,7 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="8626489604350149811">Tindakan lainnya untuk <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Ungu muda</translation>
 <translation id="8647595191512746911">Transkripsi audio</translation>
+<translation id="8650852232143958317">Bawa file Gmail dan Google Drive Anda ke mana saja</translation>
 <translation id="8651481478098336970">membisukan volume</translation>
 <translation id="8655295600908251630">Saluran</translation>
 <translation id="8655828773034788261">Bagikan URL:</translation>

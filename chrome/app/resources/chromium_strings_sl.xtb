@@ -52,6 +52,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="17264556997921157">Vidite ali odstranite lahko teme zanimanja, ki jih spletna mesta uporabljajo, da vam prikazujejo oglase. Chromium oceni vaša zanimanja glede na nedavno zgodovino brskanja.</translation>
 <translation id="1733725117201708356">Chromium bo kmalu izbrisal podatke brskanja</translation>
 <translation id="1736443181683099871">Chromium bo poskusil nadgraditi pomikanje na HTTPS</translation>
+<translation id="1736662517232558588">Podatki Chromiuma so izbrisani</translation>
 <translation id="1745121272106313518">Chromium se bo znova zagnal čez toliko časa: <ph name="REMAINING_TIME" /></translation>
 <translation id="1749104137266986751">Če HTTPS ni na voljo, Chromium uporabi povezavo, ki ni varna, ne da bi vas opozoril</translation>
 <translation id="1774152462503052664">Naj se Chromium izvaja v ozadju</translation>
@@ -82,6 +83,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="2088953378266246249">Informacije o tem, kako Chromium upravlja korenska potrdila.</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Organizacija samodejno izbriše podatke brskanja, če Chromiuma ne uporabljate 1 minuto. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose. Zavihki bodo ostali odprti.}one{Organizacija samodejno izbriše podatke brskanja, če Chromiuma ne uporabljate # minuto. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose. Zavihki bodo ostali odprti.}two{Organizacija samodejno izbriše podatke brskanja, če Chromiuma ne uporabljate # minuti. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose. Zavihki bodo ostali odprti.}few{Organizacija samodejno izbriše podatke brskanja, če Chromiuma ne uporabljate # minute. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose. Zavihki bodo ostali odprti.}other{Organizacija samodejno izbriše podatke brskanja, če Chromiuma ne uporabljate # minut. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose. Zavihki bodo ostali odprti.}}</translation>
 <translation id="2126108037660393668">Napaka pri preverjanju prenesene datoteke.</translation>
+<translation id="2137162749895930932">Zapiranje zaslona za prevajanje</translation>
 <translation id="215352261310130060">Chromium je blokiral ta prenos, ker spletno mesto ne uporablja varne povezave in so v datoteko morda posegali</translation>
 <translation id="2157600032285353789">V Chromiumovem meniju lahko odprete zaznamke, način za branje in drugo</translation>
 <translation id="2174178932569897599">Prilagodi Chromium</translation>
@@ -149,6 +151,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="3032706164202344641">Chromium ne more preveriti gesel. Poskusite pozneje.</translation>
 <translation id="3032787606318309379">Dodajanje v Chromium ...</translation>
 <translation id="3038232873781883849">Čakanje na namestitev …</translation>
+<translation id="3045032126857188731">Jezik prevoda: <ph name="LANGUAGE" /></translation>
 <translation id="3068187312562070417">Drugi profili v Chromiumu</translation>
 <translation id="3068515742935458733">Pomagajte izboljšati Chromium – Googlu pošiljajte poročila o zrušitvah in ta dokument: <ph name="UMA_LINK" />.</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Najmanj ena razširitev za Chromium je dostopala do 1 naprave USB}=1{Najmanj ena razširitev za Chromium dostopa do 1 naprave USB}one{Najmanj ena razširitev za Chromium dostopa do # naprave USB}two{Najmanj ena razširitev za Chromium dostopa do # naprav USB}few{Najmanj ena razširitev za Chromium dostopa do # naprav USB}other{Najmanj ena razširitev za Chromium dostopa do # naprav USB}}</translation>
@@ -167,7 +170,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3268051428841342958">V8 je mehanizem za JavaScript in WebAssembly za Chromium, ki se uporablja za izboljšanje učinkovitosti delovanja spletnih mest</translation>
-<translation id="3269209112443570745">Novo! Preprost način iskanja po vsebini zaslona</translation>
 <translation id="3283186697780795848">Nameščen je Chromium različice <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3286538390144397061">Znova zaženi</translation>
 <translation id="328888136576916638">Manjkajo ključi za Google API. Nekatere funkcije Chromiuma bodo onemogočene.</translation>
@@ -207,6 +209,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="386822487697155367">Pomoč za Chromium OS</translation>
 <translation id="3871664619793219264">Prenesite stvari za brskalnik Chromium iz računa <ph name="ACCOUNT_EMAIL" />.</translation>
+<translation id="3885770153807205175">Izbirnik jezika</translation>
 <translation id="388648406173476553">Prilagajanje in nadziranje Chromiuma. Nekaj morate preveriti – kliknite za podrobnosti.</translation>
 <translation id="3889543394854987837">Kliknite ime, da odprete Chromium in začnete brskati.</translation>
 <translation id="390528597099634151">Uporabnik <ph name="EXISTING_USER" /> je že prijavljen v ta profil v Chromiumu. Če želite ločiti brskanje, lahko Chromium za vas ustvari nov profil.</translation>
@@ -219,6 +222,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="3997429360543082038">O sistemu Chromium OS</translation>
 <translation id="4019629340646866719">Chromium OS omogoča dodatna <ph name="BEGIN_LINK_CROS_OSS" />odprtokodna programska oprema<ph name="END_LINK_CROS_OSS" />, enako kot <ph name="BEGIN_LINK_LINUX_OSS" />razvojno okolje Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Prevedi zaslon</translation>
+<translation id="4023601594785368013">Izvirni jezik: <ph name="LANGUAGE" /></translation>
 <translation id="4036079820698952681">Pomagajte izboljšati Chromium s poročanjem o <ph name="BEGIN_LINK" />trenutnih nastavitvah<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">V najnovejši različici so na voljo pomembne varnostne izboljšave in nove funkcije.</translation>
 <translation id="4055805654398742145">Upravitelj g&amp;esel</translation>
@@ -288,6 +292,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="494490797786467921">Kliknite, če želite zapreti pogovorno okno za prijavo v Chromium</translation>
 <translation id="4987820182225656817">Gostje lahko uporabljajo Chromium, ne da bi za seboj pustili kar koli.</translation>
 <translation id="4994636714258228724">Dodajte se v Chromium</translation>
+<translation id="5024548327980648634">Iščite po vsebini zaslona</translation>
 <translation id="5051959905407134411">Preizkusite slikovno iskanje</translation>
 <translation id="5114678101347489141">Chromium raziskuje nove funkcije, ki spletnim mestom omogočajo, da zagotavljajo isto izkušnjo pri brskanju, pri tem pa uporabljajo manj vaših podatkov.</translation>
 <translation id="5123973130450702873">Chromium potrebuje dovoljenje za sledenje potezam dlani</translation>
@@ -333,6 +338,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="5761096224651992291">Nedavno niste obiskali tega mesta. Chromium je odstranil ta dovoljenja: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="5800158606660203929">Prilagajanje in nadziranje Chromiuma. Nastavite Chromium kot privzeto možnost.</translation>
 <translation id="5809516625706423866">Internetne povezave ni mogoče vzpostaviti. Koda napake HTTP je »401 Unauthorized«. Preverite konfiguracijo strežnika proxy.</translation>
+<translation id="5821520528363214608">Če želite v računu Google uporabljati in shranjevati podatke iz Chromiuma, posodobite Chromium</translation>
 <translation id="5862307444128926510">Pozdravljeni v Chromiumu</translation>
 <translation id="5871205389137001634">Kliknite, če želite zapreti slikovno iskanje</translation>
 <translation id="5883558403894052917">Chromium je ugotovil, da ti elementi vsebujejo zlonamerno programsko opremo:</translation>
@@ -493,6 +499,7 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="7686590090926151193">Chromium ni privzeti brskalnik</translation>
 <translation id="7689606757190482937">V vseh svojih napravah sinhronizirajte in prilagodite Chromium</translation>
 <translation id="7699779824407626136">Posodobitev za Chromium</translation>
+<translation id="77283119132245232">Zagotavlja storitve sledenja sistema za <ph name="BROWSER_NAME" />. Če je ta storitev onemogočena, sledi zmogljivosti, ki jih ustvari brskalnik, ne bodo vključevale sistemskih dogodkov, kot so preklapljanje konteksta in dogodki pripravljenih niti.</translation>
 <translation id="7745317241717453663">S tem bodo iz te naprave izbrisani podatki brskanja. Če želite pozneje prenesti podatke, se v Chromium prijavite kot <ph name="USER_EMAIL" />.</translation>
 <translation id="7747138024166251722">Namestitvenemu programu ni uspelo ustvariti začasnega imenika. Preverite, ali je na disku dovolj prostora in ali imate dovoljenje za namestitev programske opreme.</translation>
 <translation id="7786760609782648049">Pospešite Chromium</translation>

@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">डिसप्ले की रोशनी कम करने वाला बटन</translation>
 <translation id="2086091080968010660">ऐसा हो सकता है कि समय के हिसाब से किए गए बदलाव सटीक न हों. सेटिंग में जाकर, सिस्टम की जगह की जानकारी देने वाली सुविधा चालू करें.</translation>
 <translation id="2102231663024125441">टेक्स्ट में बदलाव करना</translation>
-<translation id="2102648867808308635">इस पेज को पढ़ने में मेरी मदद करो</translation>
 <translation id="2105810540595158374">डिवाइस एक गेम कंट्रोलर है.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, वर्शन <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">फ़िलहाल, यह सुविधा सिर्फ़ अंग्रेज़ी (यूएस) में उपलब्ध है</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">सभी ऐप्लिकेशन देखें</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />परफ़ॉर्मेंस ट्रेस डेटा<ph name="END_LINK1" /> भेजें</translation>
 <translation id="3517001332549868749">ChromeOS का अपडेट</translation>
-<translation id="3522508178835057262">फ़िलहाल, <ph name="MAX_WORD_LENGTH" /> से ज़्यादा शब्दों की ट्रांसक्रिप्ट का इस्तेमाल नहीं किया जा सकता</translation>
 <translation id="3527036260304016759">प्रिंट नहीं हो पाया - अज्ञात गड़बड़ी</translation>
 <translation id="353214771040290298">बदलाव हो गया</translation>
 <translation id="3532980081107202182">करीब <ph name="MIN_REMAINING" /> मिनट बचे हैं</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">हल्के रंग वाली थीम</translation>
 <translation id="4813136279048157860">मेरी इमेज</translation>
 <translation id="4813345808229079766">कनेक्शन</translation>
-<translation id="4824527342590024245">फ़िलहाल, <ph name="MIN_WORD_LENGTH" /> से कम शब्दों की ट्रांसक्रिप्ट का इस्तेमाल नहीं किया जा सकता</translation>
 <translation id="4830894019733815633">घाटी</translation>
 <translation id="4832079907277790330">फ़ाइल ऐप्लिकेशन में कोई फ़ोल्डर चुनें...</translation>
 <translation id="4835901797422965222">कोई भी नेटवर्क चालू नहीं है</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">इसी अर्थ वाले दूसरे शब्द:</translation>
 <translation id="5130848777448318809">खच्चर</translation>
 <translation id="5137451382116112100">फ़ुलस्क्रीन मोड</translation>
+<translation id="5140788690559353412">स्कूल वाले खाते का ऐक्सेस हट जाने पर, आपके पास उससे जुड़े ईमेल और Google Drive में सेव की गई फ़ाइलों का ऐक्सेस नहीं रहेगा. जैसे, Gmail, Docs, Slides वगैरह पर बनाई गई फ़ाइलें.</translation>
 <translation id="5142961317498132443">पुष्टि करना</translation>
 <translation id="5144311987923128508">'पुष्टि करें' बटन को अब बंद कर दिया गया है</translation>
 <translation id="5144887194300568405">अनुवाद कॉपी करें</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) एचटीटीपी के इंतज़ार का समय</translation>
 <translation id="6078323886959318429">शॉर्टकट जोड़ें</translation>
 <translation id="6091080061796993741">पीले</translation>
+<translation id="6093853427925392522">स्कूल वाले अपने खाते का ऐक्सेस हटने से पहले, उस पर मौजूद डेटा को निजी खाते में ट्रांसफ़र करें. इसके लिए, Google का Content Transfer ऐप्लिकेशन इस्तेमाल करें.</translation>
 <translation id="6104112872696127344">स्कैन करने की प्रोसेस रद्द कर दी गई है</translation>
 <translation id="6106186594183574873">पूरा करने के लिए, पुराना पासवर्ड डालें</translation>
 <translation id="6108689792487843350">गेटवे से कनेक्ट नहीं किया जा सका</translation>
@@ -1246,6 +1245,7 @@
 <translation id="7130438335435247835">ऐक्सेस पॉइंट नेम (एपीएन)</translation>
 <translation id="7134436342991564651">{0,plural, =1{नाम सर्वर}one{नाम सर्वर}other{नाम सर्वर}}</translation>
 <translation id="7135814714616751706">शॉर्टकट खोजें</translation>
+<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">कनेक्‍टिंग</translation>
 <translation id="7144878232160441200">फिर से प्रयास करें</translation>
 <translation id="7144954474087165241">पगोडा</translation>
@@ -1394,6 +1394,7 @@
 <translation id="7856267634822906833">टचस्क्रीन ब्लूटूथ</translation>
 <translation id="7859006200041800233">कैक्टस का फूल</translation>
 <translation id="7869143217755017858">गहरे रंग वाला मोड बंद करें</translation>
+<translation id="7878972877380405573">'पढ़ने में मेरी मदद करो' सुविधा का इस्तेमाल करके, खास जानकारी पाएं</translation>
 <translation id="7881066108824108340">डीएनएस</translation>
 <translation id="7882358943899516840">कंपनी का प्रकार</translation>
 <translation id="7882501334836096755">सार्वजनिक कुंजी</translation>
@@ -1537,6 +1538,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" /> से जुड़ी और कार्रवाइयां</translation>
 <translation id="86356131183441916">हल्का बैंगनी</translation>
 <translation id="8647595191512746911">ऑडियो को टेक्स्ट में बदलने की सुविधा</translation>
+<translation id="8650852232143958317">Gmail और Google Drive में मौजूद फ़ाइलों को अपने निजी खाते में ट्रांसफ़र करें</translation>
 <translation id="8651481478098336970">आवाज़ बंद करें</translation>
 <translation id="8655295600908251630">चैनल</translation>
 <translation id="8655828773034788261">यूआरएल शेयर करें:</translation>

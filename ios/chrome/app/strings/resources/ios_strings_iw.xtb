@@ -83,6 +83,7 @@
 <translation id="1364367057792633742">כרטיסייה חדשה</translation>
 <translation id="1365106417372288489">‏ה-iPhone שוחזר לאחרונה, ויכול להיות שדפדפן ברירת מחדל השתנה בעקבות זאת.</translation>
 <translation id="1366297852155605523">קבצים ששותפו איתי</translation>
+<translation id="1369286077209859800">הצגת כל הכרטיסיות בקבוצת הכרטיסיות</translation>
 <translation id="136942498637440594">אפשר לחפש תמונות ודברים שנמצאים בסביבה.</translation>
 <translation id="1377508275003315939">סיסמאות</translation>
 <translation id="1381022135873211423">{count,plural, =1{‫{position} מתוך כתובת אחת ({count})}one{‫{position} מתוך {count} כתובות}two{‫{position} מתוך {count} כתובות}other{‫{position} מתוך {count} כתובות}}</translation>
@@ -202,7 +203,6 @@
 <translation id="1923342640370224680">בשעה האחרונה</translation>
 <translation id="1941314575388338491">כדי להעתיק, לוחצים פעמיים.</translation>
 <translation id="1943478190258551035">תפריט ← הגדרות</translation>
-<translation id="194449685234099560">כאן אפשר למצוא את כל הכרטיסיות הפתוחות.</translation>
 <translation id="1952728750904661634">כניסה עם חשבון מנוהל</translation>
 <translation id="1955773397805078763">הוספת אמצעי תשלום</translation>
 <translation id="1956138802718275401">גישה לסיסמאות במסך הבית</translation>
@@ -687,7 +687,6 @@
 <translation id="4342946437867096381">‏כבר שמרת סיסמה לאתר הזה בחשבון Google. Google יכולה לבחור בשבילך את הסיסמה העדכנית ביותר.</translation>
 <translation id="4365121137632832185">קבוצת כרטיסיות. מצב מורחב.</translation>
 <translation id="4367971618859387374">השם המוצג</translation>
-<translation id="4371591986692297148">לא פעיל</translation>
 <translation id="4375772272517383391">סגירת כל הכרטיסיות</translation>
 <translation id="4378154925671717803">טלפון</translation>
 <translation id="4389019817280890563">צריך להקיש לשינוי שפה</translation>
@@ -735,7 +734,6 @@
 <translation id="461440297010471931">‏חיפוש באמצעות Google</translation>
 <translation id="4619564267100705184">אימות הזהות שלך</translation>
 <translation id="4619615317237390068">כרטיסיות ממכשירים אחרים</translation>
-<translation id="4620845369664293551">אפשר לשתף כאן את הדף הזה.</translation>
 <translation id="4624080227980645783">חלון פרטי חדש</translation>
 <translation id="4630212057753624203">בועה לדוגמה</translation>
 <translation id="4631335160486397366">יש <ph name="COUNT" /> סיסמאות בשימוש חוזר</translation>
@@ -895,7 +893,6 @@
 <translation id="5329451663851195956">אפשר למשוך למטה כדי לרענן.</translation>
 <translation id="5338512273860059533">הכניסה מתבצעת.</translation>
 <translation id="5343472494710226394">חדשות, ספורט ותוכן על סמך תחומי העניין שלך.</translation>
-<translation id="5348775987281903912">אפשר ללחוץ על לחצן השיתוף כדי לשתף כאן את הדף הזה.</translation>
 <translation id="5352128922772839949">שמירת קובץ</translation>
 <translation id="5355191726083956201">מופעלת הגנה משופרת</translation>
 <translation id="5356332698539508708">מחיקה והחלפה</translation>
@@ -1225,7 +1222,6 @@
 <translation id="6761393919622941301">אודיו</translation>
 <translation id="6779455296366983087">נתוני הגלישה יימחקו</translation>
 <translation id="6790502149545262384">בקרוב יוצגו סטוריז מהאתר <ph name="CHANNEL_NAME" /> בפתיחת כרטיסייה חדשה.</translation>
-<translation id="6800349425672670802">אפשר לגשת לכל הכרטיסיות הפתוחות דרך 'כלי למעבר בין כרטיסיות'.</translation>
 <translation id="681368974849482173">הפריט נוצר</translation>
 <translation id="6825078212112407882">{count,plural, =1{‏נשמרה סימנייה בחשבון Google שלך, {email}}one{‏‫{count} סימניות נשמרו בחשבון Google שלך, {email}}two{‏‫{count} סימניות נשמרו בחשבון Google שלך, {email}}other{‏‫{count} סימניות נשמרו בחשבון Google שלך, {email}}}</translation>
 <translation id="6830728435402077660">לא מאובטח</translation>
@@ -1366,7 +1362,6 @@
 <translation id="7488874549363591659">החבילה נמסרה</translation>
 <translation id="7491131399623468277">להגדרות…</translation>
 <translation id="7498234416455752244">המשך העריכה</translation>
-<translation id="749854780843431406">אפשר לפתוח כרטיסייה חדשה באמצעות הלחצן <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="7500244509706269886">מילוי אוטומטי של טופס</translation>
 <translation id="750493650310597496">0 נבחרו</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> ‏(<ph name="FILESIZE" />).</translation>
@@ -1609,9 +1604,9 @@
 <translation id="8577056989960190117">מילוי אוטומטי של שנת התפוגה: <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">כבוי</translation>
 <translation id="8590286732816598906">קבוצת כרטיסיות, <ph name="GROUP_TITLE" />, תפריט.</translation>
-<translation id="8593565399399144771">כאן אפשר לפתוח כרטיסייה חדשה.</translation>
 <translation id="8600272508328041907">צריך לעבור לתרגום דף מלא</translation>
 <translation id="860043288473659153">שם בעל הכרטיס</translation>
+<translation id="8601611099293226919">‏חיפוש במסך באמצעות Google Lens</translation>
 <translation id="8605219856220328675">סגירת כרטיסייה.</translation>
 <translation id="8609743333007776886">‏הוספת הכתובת ${url} לסימניות</translation>
 <translation id="8620640915598389714">עריכה</translation>

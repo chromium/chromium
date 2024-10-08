@@ -52,6 +52,7 @@
 <translation id="17264556997921157">Танд зар харуулахад ашиглах сонирхлын сайтуудын сэдвийг та харах болон хасах боломжтой. Chromium таны сонирхлыг саяхны хөтчийн түүхэд тань тулгуурлан тооцоолно.</translation>
 <translation id="1733725117201708356">Chromium удахгүй интернэтээр үзсэн өгөгдлийг устгана</translation>
 <translation id="1736443181683099871">Chromium навигацуудыг HTTPS болгож сайжруулахаар оролдоно</translation>
+<translation id="1736662517232558588">Chromium-н өгөгдлийг устгасан</translation>
 <translation id="1745121272106313518">Chromium-г <ph name="REMAINING_TIME" />-н дараа дахин эхлүүлнэ</translation>
 <translation id="1749104137266986751">HTTPS боломжгүй үед Chromium танд сануулалгүйгээр аюултай холболт ашиглана</translation>
 <translation id="1774152462503052664">Chromium-ыг арын орчинд ажиллуулах</translation>
@@ -82,6 +83,7 @@
 <translation id="2088953378266246249">Chromium өөрийн үндсэн гэрчилгээг хэрхэн удирддаг тухай мэдээлэл</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Chromium-г 1 минутын турш ашиглаагүй үед танай байгууллага интернэтээр үзсэн өгөгдлийг автоматаар устгана. Үүнд түүх, автоматаар бөглөх хэсэг болон татаж авсан файлууд багтаж болно. Таны табууд нээлттэй хэвээр үлдэнэ.}other{Chromium-г # минутын турш ашиглаагүй үед танай байгууллага интернэтээр үзсэн өгөгдлийг автоматаар устгана. Үүнд түүх, автоматаар бөглөх хэсэг болон татаж авсан файлууд багтаж болно. Таны табууд нээлттэй хэвээр үлдэнэ.}}</translation>
 <translation id="2126108037660393668">Татсан файлын баталгаажуулалт амжилтгүй боллоо.</translation>
+<translation id="2137162749895930932">Орчуулах дэлгэцийг хаах</translation>
 <translation id="215352261310130060">Сайт аюулгүй холболт ашиглахгүй байгаа бөгөөд файлыг оролдсон байж магадгүй тул Chromium энэ таталтыг блоклосон</translation>
 <translation id="2157600032285353789">Та Chromium-н цэсээс хавчуурга, унших горим болон бусад зүйлийг нээх боломжтой</translation>
 <translation id="2174178932569897599">Chromium-г өөрчлөх</translation>
@@ -149,6 +151,7 @@
 <translation id="3032706164202344641">Chromium таны нууц үгсийг шалгах боломжгүй байна. Дараа дахин оролдоно уу.</translation>
 <translation id="3032787606318309379">Chromium-д өгөгдөл нэмэх нь ...</translation>
 <translation id="3038232873781883849">Суулгахыг хүлээж байна...</translation>
+<translation id="3045032126857188731">Орчуулсан хэл: <ph name="LANGUAGE" /></translation>
 <translation id="3068187312562070417">Chromium-н бусад профайл</translation>
 <translation id="3068515742935458733">Алдаа ослын тайлан болон <ph name="UMA_LINK" />-ыг Google рүү илгээх замаар Chromium-ыг улам сайжруулахад тусална уу.</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{1 USB төхөөрөмжид нэг эсвэл түүнээс олон Chromium-н өргөтгөл хандаж байсан}=1{1 USB төхөөрөмжид нэг эсвэл түүнээс олон Chromium-н өргөтгөл хандаж байна}other{# USB төхөөрөмжид нэг эсвэл түүнээс олон Chromium-н өргөтгөл хандаж байна}}</translation>
@@ -165,7 +168,6 @@
 <translation id="3224847870593914902">Google Бүртгэлээ Chromium-с хасахын тулд Тохиргооны хуудсанд Chromium-с гарна уу</translation>
 <translation id="3258596308407688501">Chromium нь өөрийн өгөгдлийн сан руу уншуулж бас бичиж чадахгүй байна: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3268051428841342958">V8 нь сайтын гүйцэтгэлийг сайжруулахад ашигладаг Chromium-н JavaScript болон WebAssembly-н систем юм</translation>
-<translation id="3269209112443570745">Шинэ! Дэлгэц дээрээ байгаа зүйлийг хайх хялбар арга</translation>
 <translation id="3283186697780795848">Chromium <ph name="PRODUCT_VERSION" /> хувилбарыг суулгасан</translation>
 <translation id="3286538390144397061">Одоо дахин эхлүүлнэ үү</translation>
 <translation id="328888136576916638">Google-ийн API түлхүүр байхгүй байна. Chromium-ийн зарим функц идэвхгүй болно.</translation>
@@ -205,6 +207,7 @@
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386822487697155367">ChromiumOS-тэй холбоотой тусламж авах</translation>
 <translation id="3871664619793219264">Chromium хөтчийн зүйлсээ <ph name="ACCOUNT_EMAIL" />-с авна уу</translation>
+<translation id="3885770153807205175">Хэл сонгогч</translation>
 <translation id="388648406173476553">Chromium-г өөрчилж, хянана уу. Та ямар нэг зүйлд анхаарлаа хандуулах шаардлагатай байна. Дэлгэрэнгүй мэдээлэл авахын тулд товшино уу.</translation>
 <translation id="3889543394854987837">Chromium-г нээх мөн хөтөчийг ашиглаж эхлэхийн тулд өөрийн нэр дээр дарна уу.</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> Chromium-н энэ профайлд аль хэдийн нэвтэрсэн байна. Таны хөтчийн үзэлтийг тусад нь байлгахын тулд Chromium танд өөрийн гэсэн профайл үүсгэж өгөх боломжтой.</translation>
@@ -217,6 +220,7 @@
 <translation id="3997429360543082038">ChromiumOS-н тухай</translation>
 <translation id="4019629340646866719">ChromiumOS-г <ph name="BEGIN_LINK_LINUX_OSS" />Linux-н хөгжүүлэлтийн орчин <ph name="END_LINK_LINUX_OSS" /> болох нэмэлт <ph name="BEGIN_LINK_CROS_OSS" />нээлттэй эх кодын программ хангамжаар<ph name="END_LINK_CROS_OSS" /> боломжтой болгосон.</translation>
 <translation id="4022972681110646219">Дэлгэцийг орчуулах</translation>
+<translation id="4023601594785368013">Эх хэл: <ph name="LANGUAGE" /></translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />Одоогийн тохиргоог<ph name="END_LINK" /> мэдэгдэж Chromium-г сайжруулахад тусална уу</translation>
 <translation id="4050175100176540509">Хамгийн сүүлийн хувилбар дээр аюулгүй байдлын чухал сайжруулалт болон шинэ функцийг санал болгож байна.</translation>
 <translation id="4055805654398742145">Нууц үгний менежер</translation>
@@ -286,6 +290,7 @@
 <translation id="494490797786467921">Chromium-н нэвтрэх харилцах цонхыг хаахын тулд товшино уу</translation>
 <translation id="4987820182225656817">Зочид Chromium-ийг ашигласнаар хамгийн сүүлийн үеийн мэдээллийг авна.</translation>
 <translation id="4994636714258228724">Өөрийгөө Chromium руу нэмэх</translation>
+<translation id="5024548327980648634">Дэлгэц дээрээ байгаа зүйлээс хайгаарай</translation>
 <translation id="5051959905407134411">Зурган хайлтыг туршиж үзэх</translation>
 <translation id="5114678101347489141">Chromium нь сайтуудад таны өгөгдлийг бага хэмжээгээр ашиглан ижил үзэх туршлагыг хүргэх боломжийг олгох шинэ онцлогуудыг судалж байна</translation>
 <translation id="5123973130450702873">Chromium-д таны гарыг хянах зөвшөөрөл шаардлагатай</translation>
@@ -331,6 +336,7 @@
 <translation id="5761096224651992291">Та ойрын үед зочлоогүй байна. Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />-г хассан</translation>
 <translation id="5800158606660203929">Chromium-г өөрчилж, хянана уу. Chromium-г өгөгдмөлөөрөө тохируулна уу.</translation>
 <translation id="5809516625706423866">Интернэтэд холбогдох боломжгүй байна. HTTP 401 зөвшөөрөлгүй. Прокси тохируулгаа шалгана уу.</translation>
+<translation id="5821520528363214608">Google Бүртгэлдээ Chromium-н өгөгдлийг ашиглах болон хадгалахын тулд Chromium-г шинэчилнэ үү</translation>
 <translation id="5862307444128926510">Chromium-д тавтай морил</translation>
 <translation id="5871205389137001634">Зурган хайлтаас гарахын тулд товшино уу</translation>
 <translation id="5883558403894052917">Эдгээр зүйл хортой программ агуулж байгааг Chromium олж мэдлээ:</translation>
@@ -489,6 +495,7 @@
 <translation id="7686590090926151193">Chromium таны өгөгдмөл хөтөч биш юм</translation>
 <translation id="7689606757190482937">Төхөөрөмжүүддээ Chromium-г синк хийж, хувийн болгох</translation>
 <translation id="7699779824407626136">Chromium-н шинэчлэлт</translation>
+<translation id="77283119132245232"><ph name="BROWSER_NAME" />-д зориулж системийн ул мөрийн үйлчилгээгээр хангадаг. Хэрэв энэ үйлчилгээг идэвхгүй болгосон бол хөтчийн үүсгэсэн гүйцэтгэлийн ул мөрд хам сэдэв сэлгэх болон дэд процессыг бэлдэх үйл явдал зэрэг систем дээрх үйл явдлуудыг оруулахгүй.</translation>
 <translation id="7745317241717453663">Энэ нь төхөөрөмжөөс таны хайлтын түүхийг устгана. Өгөгдлөө дараа сэргээхийн тулд Chromium-д <ph name="USER_EMAIL" />-р нэвтэрнэ үү.</translation>
 <translation id="7747138024166251722">Суулгагч нь түр зуурын хадгалалтын санг үүсгэж чадсангүй. Дискэнд сул зай байгаа эсэхийг мөн программ хангамж суулгах зөвшөөрлийг шалгана уу.</translation>
 <translation id="7786760609782648049">Chromium-г илүү хурдан болгоорой</translation>

@@ -114,6 +114,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="132346741904777634">Pamja paraprake e kamerës ka kaluar në këndin e sipërm majtas. Në konflikt me sipërfaqen e sistemit.</translation>
 <translation id="132415371743256095">Mbyll "<ph name="DESK_NAME" />" dhe dritaret</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> u lidh</translation>
+<translation id="1337081488893096731">Përdor aplikacionin "Transferimi i përmbajtjes" për të zhvendosur të dhënat e llogarisë së shkollës te llogaria jote personale.</translation>
 <translation id="1340378040547539434">Zvogëlo faqen</translation>
 <translation id="1341651618736211726">Tejkalo</translation>
 <translation id="1341926407152459446">Përdor "<ph name="DEVICE_NAME" />" për hyrjen dhe daljen e audios</translation>
@@ -242,6 +243,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="17722141032474077">Llogaritjet</translation>
 <translation id="1774796056689732716">Kalendari, <ph name="CURRENT_MONTH_YEAR" />, aktualisht është zgjedhur <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Konfiguro shikimin e njoftimeve, medias dhe fotografive më të fundit të telefonit tënd</translation>
+<translation id="1786487376942610288">Ndërro mes madhësisë maksimale ose aktuale të dritares në modalitetin "figurë brenda figurës"</translation>
 <translation id="1787955149152357925">Joaktive</translation>
 <translation id="1796561540704213354">Uebsajtet duke përfshirë faqet që ke vizituar dhe faqet e hapura</translation>
 <translation id="179842970735685253">"Kushteve të shërbimit" të Google</translation>
@@ -337,6 +339,9 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="219905428774326614">Launcher, të gjitha aplikacionet</translation>
 <translation id="2201071101391734388">Fotografia e fundit <ph name="INDEX" /> nga <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Palos Google Tasks</translation>
+<translation id="2206960886090042977">Blloku i integruar me prekje është çaktivizuar pasi është lidhur një mi. Përdor miun ose tastierën për të konfirmuar ndryshimin.
+
+Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas 30 sekondash.</translation>
 <translation id="2208323208084708176">Modaliteti i desktopit të unifikuar</translation>
 <translation id="2220572644011485463">Kodi PIN ose fjalëkalimi</translation>
 <translation id="2222841058024245321">Tavolina e punës 7</translation>
@@ -1468,6 +1473,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="598407983968395253">Përdor shabllonin</translation>
 <translation id="5986723678596105470">Bashkohu me Google Meet</translation>
 <translation id="598882571027504733">Për të marrë përditësimin, rinise Chromebook me tastierën e lidhur.</translation>
+<translation id="5990992855591814753">Vazhdo të ecësh përpara me listat e personalizuara për luajtje për përqendrimin. Merr YouTube Music dhe YouTube, pa reklama, me 3 muaj në YouTube Premium pa asnjë kosto. Zbatohen kushtet.</translation>
 <translation id="5998374579424866922">Çaktivizo kontrollet e lojës</translation>
 <translation id="6000279412553873020">Tastet, butonat etj.</translation>
 <translation id="6012623610530968780">Faqja <ph name="SELECTED_PAGE" /> nga <ph name="TOTAL_PAGE_NUM" /></translation>
@@ -1906,6 +1912,9 @@ Instalim i ri</translation>
 Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë në pajisje.</translation>
 <translation id="7523420897035067483">Aktivizo "Mos shqetëso" ndërsa je në "Fokus"</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">Blloku i integruar me prekje është çaktivizuar. Përdor tastierën ose një pajisje tjetër treguese për të konfirmuar ndryshimin.
+
+Në rast të kundërt, blloku i integruar me prekje do të riaktivizohet pas 30 sekondash.</translation>
 <translation id="7525067979554623046">Krijo</translation>
 <translation id="7526573455193969409">Rrjeti mund të jetë i monitoruar</translation>
 <translation id="7536035074519304529">Adresa IP: <ph name="ADDRESS" /></translation>
@@ -2293,6 +2302,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8858369206579825206">Kontrollet e privatësisë</translation>
 <translation id="8860366331836346216">Shto kartë eSIM</translation>
 <translation id="8870509716567206129">Aplikacioni nuk e mbështet ekranin e ndarë.</translation>
+<translation id="8873203135446552888">Konfirmo që dëshiron ta çaktivizosh bllokun e integruar me prekje</translation>
 <translation id="8874184842967597500">Nuk u lidh</translation>
 <translation id="8875021410787719674">Kalo mes këndit të poshtëm djathtas, "Nisësit", shiritit të adresës, shiritit të faqeshënuesve, uebsajtit që është i hapur dhe shkarkimeve</translation>
 <translation id="8876148469852588625">Ngjarja <ph name="EVENT_POSITION" /> nga <ph name="EVENT_TOTAL_COUNT" /></translation>

@@ -114,6 +114,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="132346741904777634">Nag-snap ang camera sa kaliwang sulok sa itaas. Pagsasalungat sa surface ng system.</translation>
 <translation id="132415371743256095">Isara ang <ph name="DESK_NAME" /> at mga window</translation>
 <translation id="1333308631814936910">Nakonekta ang <ph name="DISPLAY_NAME" /></translation>
+<translation id="1337081488893096731">Gamitin ang Content Transfer app para ilipat ang data ng pampaaralang account mo sa iyong personal na account</translation>
 <translation id="1340378040547539434">Mag-zoom out sa page</translation>
 <translation id="1341651618736211726">Overflow</translation>
 <translation id="1341926407152459446">Gamitin ang "<ph name="DEVICE_NAME" />" para sa audio input at audio output</translation>
@@ -242,6 +243,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="17722141032474077">Mga Kalkulasyon</translation>
 <translation id="1774796056689732716">Kalendaryo, <ph name="CURRENT_MONTH_YEAR" />, kasalukuyang pinili ang <ph name="DATE" />.</translation>
 <translation id="178347895271755507">I-set up ang pagtingin sa mga kamakailang larawan, media, at notification ng iyong telepono</translation>
+<translation id="1786487376942610288">Magpalipat-lipat sa maximum o kasalukuyang laki ng picture-in-picture na window</translation>
 <translation id="1787955149152357925">Naka-off</translation>
 <translation id="1796561540704213354">Mga website kasama ang mga page na binisita mo at nakabukas na page</translation>
 <translation id="179842970735685253">Mga Tuntunin ng Serbisyo ng Google</translation>
@@ -337,6 +339,9 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="219905428774326614">Launcher, lahat ng app</translation>
 <translation id="2201071101391734388">Kamakailang larawan <ph name="INDEX" /> ng <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">I-collapse ang Google Tasks</translation>
+<translation id="2206960886090042977">Naka-disable ang naka-built in na touchpad dahil nakakonekta ang mouse. Gamitin ang mouse o keyboard para kumpirmahin ang pagbabago.
+
+Kung hindi naman, ie-enable ulit ang naka-built in na touchpad sa loob ng 30 segundo.</translation>
 <translation id="2208323208084708176">Unified desktop mode</translation>
 <translation id="2220572644011485463">PIN o password</translation>
 <translation id="2222841058024245321">Desk 7</translation>
@@ -1906,6 +1911,9 @@ Kaka-install lang</translation>
 Para i-shut down ang device, pindutin ulit nang matagal ang power button sa device.</translation>
 <translation id="7523420897035067483">I-enable ang Huwag Istorbohin habang Naka-focus</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">Naka-disable ang naka-built in na touchpad. Gamitin ang iyong keyboard o ibang device na panturo para kumpirmahin ang pagbabago.
+
+Kung hindi naman, ie-enable ulit ang naka-built in na touchpad sa loob ng 30 segundo.</translation>
 <translation id="7525067979554623046">Gumawa</translation>
 <translation id="7526573455193969409">Maaaring sinusubaybayan ang network</translation>
 <translation id="7536035074519304529">IP address: <ph name="ADDRESS" /></translation>
@@ -2292,6 +2300,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8858369206579825206">Mga kontrol sa privacy</translation>
 <translation id="8860366331836346216">Magdagdag ng eSIM</translation>
 <translation id="8870509716567206129">Hindi sinusuportahan ng app ang split-screen.</translation>
+<translation id="8873203135446552888">Kumpirmahing gusto mong i-disable ang naka-built in na touchpad</translation>
 <translation id="8874184842967597500">Hindi konekta</translation>
 <translation id="8875021410787719674">Magpalipat-lipat sa kanang sulok sa ibaba, Launcher, address bar, bookmarks bar, website na nakabukas, at mga download</translation>
 <translation id="8876148469852588625">Event <ph name="EVENT_POSITION" /> sa <ph name="EVENT_TOTAL_COUNT" /></translation>

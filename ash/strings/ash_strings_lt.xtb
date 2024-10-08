@@ -114,6 +114,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="132346741904777634">Fotoaparato peržiūra pridėta viršutiniame kairiajame kampe. Nesuderinama su sistemos platforma.</translation>
 <translation id="132415371743256095">Uždaryti „<ph name="DESK_NAME" />“ ir langus</translation>
 <translation id="1333308631814936910">Prijungta: <ph name="DISPLAY_NAME" /></translation>
+<translation id="1337081488893096731">Naudodami programą „Turinio perkėlimas“ perkelkite mokyklos paskyros duomenis į asmeninę paskyrą</translation>
 <translation id="1340378040547539434">Tolinti puslapyje</translation>
 <translation id="1341651618736211726">Perpildymas</translation>
 <translation id="1341926407152459446">Naudoti „<ph name="DEVICE_NAME" />“ garso įvesčiai ir išvesčiai</translation>
@@ -242,6 +243,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="17722141032474077">Skaičiavimai</translation>
 <translation id="1774796056689732716">Kalendorius, <ph name="CURRENT_MONTH_YEAR" />, šiuo metu pasirinkta <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Nustatyti naujausių telefono nuotraukų, medijos ir pranešimų peržiūrą</translation>
+<translation id="1786487376942610288">Perjungti maksimalų arba dabartinį vaizdo vaizde lango dydį</translation>
 <translation id="1787955149152357925">Išjungta</translation>
 <translation id="1796561540704213354">Svetainės, įskaitant puslapius, kuriuose lankėtės, ir atidarytus puslapius</translation>
 <translation id="179842970735685253">„Google“ paslaugų teikimo sąlygos</translation>
@@ -337,6 +339,9 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="219905428774326614">Paleidimo priemonė, visos programos</translation>
 <translation id="2201071101391734388">Naujausia <ph name="INDEX" /> nuotrauka iš <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Sutraukti „Google Tasks“</translation>
+<translation id="2206960886090042977">Įtaisyta jutiklinė dalis išjungta, nes prijungta pelė. Naudodami pelę arba klaviatūrą patvirtinkite pakeitimą.
+
+Kitu atveju įtaisytoji jutiklinė dalis bus vėl įjungta po trisdešimt sekundžių.</translation>
 <translation id="2208323208084708176">Vieno darbalaukio režimas</translation>
 <translation id="2220572644011485463">PIN kodas arba slaptažodis</translation>
 <translation id="2222841058024245321">7 darbalaukis</translation>
@@ -1907,6 +1912,9 @@ Naujas įdiegimas</translation>
 Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrenginio maitinimo mygtuką.</translation>
 <translation id="7523420897035067483">Įgalinti netrukdymo režimą, kai „Focus“ įjungtas</translation>
 <translation id="7524043547948122239">„Google“ užduotys</translation>
+<translation id="7524919752437339268">Įtaisyta jutiklinė dalis išjungta. Patvirtinkite pakeitimą naudodami klaviatūrą ar kitą manipuliatorių.
+
+Kitu atveju įtaisytoji jutiklinė dalis bus vėl įjungta po trisdešimt sekundžių.</translation>
 <translation id="7525067979554623046">Sukurti</translation>
 <translation id="7526573455193969409">Tinklas gali būti stebimas</translation>
 <translation id="7536035074519304529">IP adresas: <ph name="ADDRESS" /></translation>
@@ -2294,6 +2302,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8858369206579825206">Privatumo valdikliai</translation>
 <translation id="8860366331836346216">Pridėti „eSIM“ kortelę</translation>
 <translation id="8870509716567206129">Programoje nepalaikomas skaidytas ekranas.</translation>
+<translation id="8873203135446552888">Patvirtinkite, kad norite išjungti įtaisytąją jutiklinę dalį</translation>
 <translation id="8874184842967597500">Neprisijungta</translation>
 <translation id="8875021410787719674">Perkelti iš apatinio dešiniojo kampo, Paleidimo priemonės, adreso juostos, žymių juostos, atidarytos svetainės ir atsisiuntimų arba į juos</translation>
 <translation id="8876148469852588625"><ph name="EVENT_POSITION" /> įvyk. iš <ph name="EVENT_TOTAL_COUNT" /></translation>

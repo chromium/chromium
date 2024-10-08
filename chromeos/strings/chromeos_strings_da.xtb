@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Reducer skærmens lysstyrke</translation>
 <translation id="2086091080968010660">Tidsbaserede ændringer er muligvis ikke nøjagtige. Slå systemets lokationsadgang til i indstillingerne.</translation>
 <translation id="2102231663024125441">Tekstredigering</translation>
-<translation id="2102648867808308635">Hjælp mig med at læse denne side</translation>
 <translation id="2105810540595158374">Enheden er en spilcontroller.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">I øjeblikket kun tilgængelig på engelsk (USA)</translation>
@@ -321,7 +320,7 @@
 <translation id="242825218556404975">Der blev ikke registreret indtaling</translation>
 <translation id="2446553403094072641">Nøjagtighed af flydende komma</translation>
 <translation id="2448312741937722512">Type</translation>
-<translation id="2468124392950503650">Vælg en prompt, eller tjek <ph name="BEGIN_LINK_PROMPTING_GUIDE" />promptvejledningen<ph name="END_LINK_PROMPTING_GUIDE" /> for at oprette et AI-billede</translation>
+<translation id="2468124392950503650">Vælg en prompt, eller tjek <ph name="BEGIN_LINK_PROMPTING_GUIDE" />guiden til prompter<ph name="END_LINK_PROMPTING_GUIDE" /> for at oprette et AI-billede</translation>
 <translation id="2472215337771558851">Brug "Hjælp mig med at skrive" til at oprette et udkast eller justere eksisterende tekstarbejde – baseret på Google AI</translation>
 <translation id="2475982808118771221">Der opstod en fejl</translation>
 <translation id="2480572840229215612">krabber</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">se alle apps</translation>
 <translation id="3510890413042482857">Send <ph name="BEGIN_LINK1" />data om ydeevne<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">ChromeOS-opdatering</translation>
-<translation id="3522508178835057262">Indtil videre understøttes transskriptioner på mere end <ph name="MAX_WORD_LENGTH" /> ord ikke</translation>
 <translation id="3527036260304016759">Handlingen mislykkedes – Ukendt fejl</translation>
 <translation id="353214771040290298">Færdig med at redigere</translation>
 <translation id="3532980081107202182">Ca. <ph name="MIN_REMAINING" /> minutter tilbage</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">Lyst tema</translation>
 <translation id="4813136279048157860">Mine billeder</translation>
 <translation id="4813345808229079766">Forbindelse</translation>
-<translation id="4824527342590024245">Indtil videre understøttes transskriptioner på færre end <ph name="MIN_WORD_LENGTH" /> ord ikke</translation>
 <translation id="4830894019733815633">en kløft</translation>
 <translation id="4832079907277790330">Vælg mappe i appen Filer...</translation>
 <translation id="4835901797422965222">Ingen aktive netværk</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">Lignende:</translation>
 <translation id="5130848777448318809">ponyer</translation>
 <translation id="5137451382116112100">Fuld</translation>
+<translation id="5140788690559353412">Når du mister adgangen til din skolekonto, har du ikke længere adgang til den tilknyttede mail og Google Drev-filer som f.eks. Gmail, Docs, Slides m.m.</translation>
 <translation id="5142961317498132443">Godkendelse</translation>
 <translation id="5144311987923128508">Knappen Bekræft er nu deaktiveret</translation>
 <translation id="5144887194300568405">Kopiér oversættelse</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) HTTP-forsinkelse</translation>
 <translation id="6078323886959318429">Tilføj genvej</translation>
 <translation id="6091080061796993741">gul</translation>
+<translation id="6093853427925392522">Sørg for at bruge Googles Content Transfer-app til at flytte skolekontodata til din personlige konto, før du mister adgangen.</translation>
 <translation id="6104112872696127344">Scanningen blev annulleret</translation>
 <translation id="6106186594183574873">Angiv din gamle adgangskode for at afslutte</translation>
 <translation id="6108689792487843350">Denne gateway kan ikke nås</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">Adgangspunkt (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Navneserver}one{Navneserver}other{Navneservere}}</translation>
 <translation id="7135814714616751706">Søg efter genveje</translation>
+<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Tilslutter</translation>
 <translation id="7144878232160441200">Prøv igen</translation>
 <translation id="7144954474087165241">en pagode</translation>
@@ -1394,6 +1394,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="7856267634822906833">Bluetooth-touchskærm</translation>
 <translation id="7859006200041800233">kaktusblomst</translation>
 <translation id="7869143217755017858">Deaktiver mørk tilstand</translation>
+<translation id="7878972877380405573">Opsummer med Hjælp mig med at læse</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Udbydertype</translation>
 <translation id="7882501334836096755">Offentlig nøgle</translation>
@@ -1537,6 +1538,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="8626489604350149811">Flere handlinger for <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Lys violet</translation>
 <translation id="8647595191512746911">Lydtransskription</translation>
+<translation id="8650852232143958317">Tag dine Gmail- og Google Drev-filer med dig</translation>
 <translation id="8651481478098336970">slå lyden fra</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655828773034788261">Del webadresse:</translation>

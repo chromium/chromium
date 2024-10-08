@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Sumažinti ekrano šviesumą</translation>
 <translation id="2086091080968010660">Laiku pagrįsti pakeitimai gali būti netikslūs. Įjunkite sistemos prieigą prie vietovės nustatymuose.</translation>
 <translation id="2102231663024125441">Teksto redagavimas</translation>
-<translation id="2102648867808308635">Pagalba skaitant šį puslapį</translation>
 <translation id="2105810540595158374">Įrenginys yra žaidimų valdiklis.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" /> versija</translation>
 <translation id="2124643134650336457">Šiuo metu pasiekiama tik anglų k. (JAV)</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">žr. visas programas</translation>
 <translation id="3510890413042482857">Siųsti <ph name="BEGIN_LINK1" />našumo stebėjimo duomenis<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">„Chrome“ OS naujinys</translation>
-<translation id="3522508178835057262">Kol kas nepalaikomi transkribuoti tekstai, kuriuose yra daugiau nei <ph name="MAX_WORD_LENGTH" /> žodž.</translation>
 <translation id="3527036260304016759">Nepavyko – nežinoma klaida</translation>
 <translation id="353214771040290298">Suredaguota</translation>
 <translation id="3532980081107202182">Liko apie <ph name="MIN_REMAINING" /> min.</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">Šviesioji tema</translation>
 <translation id="4813136279048157860">Mano vaizdai</translation>
 <translation id="4813345808229079766">Ryšys</translation>
-<translation id="4824527342590024245">Kol kas negalima transkribuoti teksto, kuriame yra mažiau nei tiek žodžių: <ph name="MIN_WORD_LENGTH" />.</translation>
 <translation id="4830894019733815633">kanjonas</translation>
 <translation id="4832079907277790330">Pasirinkite aplanką Failų programoje...</translation>
 <translation id="4835901797422965222">Nėra jokių aktyvių tinklų</translation>
@@ -1397,6 +1394,7 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="7856267634822906833">„Bluetooth“ jutiklinis ekranas</translation>
 <translation id="7859006200041800233">kaktuso žiedas</translation>
 <translation id="7869143217755017858">Išjungti tamsų režimą</translation>
+<translation id="7878972877380405573">Apibendrinti naudojant funkciją „Pagalba skaitant“</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Teikėjo tipas</translation>
 <translation id="7882501334836096755">Viešasis raktas</translation>

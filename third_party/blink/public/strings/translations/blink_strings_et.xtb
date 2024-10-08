@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">Väärtus peab olema <ph name="MINIMUM_DATE_OR_TIME" /> või hilisem.</translation>
 <translation id="2761667185364618470">Märkige see ruut, kui soovite jätkata.</translation>
 <translation id="2908441821576996758">Sisestage meiliaadresside loend komadega eraldatult.</translation>
+<translation id="2940013921954129954">Täpne asukoht on lubatud</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Sisestage kehtiv väärtus. Väli on täitmata või sisaldab sobimatut kuupäeva.</translation>
 <translation id="310520048233152454">Sisestage URL.</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">Kehv esituskvaliteet</translation>
 <translation id="6790428901817661496">Esita</translation>
 <translation id="6820355525329141109">Pistikprogrammi ei saanud laadida.</translation>
+<translation id="688706781007114099">Kasuta asukohta</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Pikendage teksti vähemalt <ph name="MIN_CHARACTERS" /> tähemärgini (kasutate praegu ühte tähemärki).</translation>
 <translation id="709897737746224366">Vastendage nõutav vorming.</translation>

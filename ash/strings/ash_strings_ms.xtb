@@ -114,6 +114,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="132346741904777634">Kamera diautojajar ke penjuru kiri sebelah atas. Bercanggah dengan permukaan sistem.</translation>
 <translation id="132415371743256095">Tutup <ph name="DESK_NAME" /> dan tetingkap</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> disambungkan</translation>
+<translation id="1337081488893096731">Gunakan apl Pemindahan Kandungan untuk mengalihkan data akaun sekolah anda kepada akaun peribadi anda</translation>
 <translation id="1340378040547539434">Zum keluar pada halaman</translation>
 <translation id="1341651618736211726">Limpahan</translation>
 <translation id="1341926407152459446">Gunakan "<ph name="DEVICE_NAME" />" untuk input dan output audio</translation>
@@ -242,6 +243,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="17722141032474077">Pengiraan</translation>
 <translation id="1774796056689732716">Kalendar, <ph name="CURRENT_MONTH_YEAR" />, pada masa ini <ph name="DATE" /> dipilih.</translation>
 <translation id="178347895271755507">Menyediakan pemaparan foto, media dan pemberitahuan terbaharu telefon anda</translation>
+<translation id="1786487376942610288">Beralih antara saiz tetingkap gambar dalam gambar maksimum atau semasa</translation>
 <translation id="1787955149152357925">Mati</translation>
 <translation id="1796561540704213354">Laman web termasuk halaman yang anda lawati dan halaman terbuka</translation>
 <translation id="179842970735685253">Syarat Perkhidmatan Google</translation>
@@ -337,6 +339,9 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="219905428774326614">Pelancar, semua apl</translation>
 <translation id="2201071101391734388">Foto baru-baru ini <ph name="INDEX" /> daripada <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Kuncupkan Google Tasks</translation>
+<translation id="2206960886090042977">Pad sentuh terbina dalam dilumpuhkan kerana tetikus disambungkan. Gunakan tetikus atau papan kekunci untuk mengesahkan perubahan.
+
+Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas 30 saat.</translation>
 <translation id="2208323208084708176">Mod desktop bersatu</translation>
 <translation id="2220572644011485463">PIN atau kata laluan</translation>
 <translation id="2222841058024245321">Meja 7</translation>
@@ -1907,6 +1912,9 @@ Pemasangan baharu</translation>
 Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.</translation>
 <translation id="7523420897035067483">Dayakan Jangan Ganggu ketika sesi Fokus</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">Pad sentuh terbina dalam dilumpuhkan. Gunakan papan kekunci anda atau peranti penuding lain untuk mengesahkan perubahan.
+
+Jika tidak, pad sentuh terbina dalam akan didayakan semula selepas 30 saat.</translation>
 <translation id="7525067979554623046">Cipta</translation>
 <translation id="7526573455193969409">Rangkaian mungkin dipantau</translation>
 <translation id="7536035074519304529">Alamat IP: <ph name="ADDRESS" /></translation>
@@ -2294,6 +2302,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8858369206579825206">Kawalan privasi</translation>
 <translation id="8860366331836346216">Tambahkan eSIM</translation>
 <translation id="8870509716567206129">Apl tidak menyokong skrin pisah.</translation>
+<translation id="8873203135446552888">Sahkan bahawa anda mahu melumpuhkan pad sentuh terbina dalam</translation>
 <translation id="8874184842967597500">Tidak bersambung</translation>
 <translation id="8875021410787719674">Beralih antara penjuru bawah sebelah kanan, Pelancar, bar alamat, bar penanda halaman, laman web yang terbuka dengan muat turun</translation>
 <translation id="8876148469852588625">Acara <ph name="EVENT_POSITION" /> daripada <ph name="EVENT_TOTAL_COUNT" /></translation>

@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">ಡಿಸ್‌ಪ್ಲೇ ಪ್ರಖರತೆಯನ್ನು ಕಡಿಮೆ ಮಾಡಿ</translation>
 <translation id="2086091080968010660">ಸಮಯ ಆಧಾರಿತ ಬದಲಾವಣೆಗಳು ನಿಖರವಾಗಿಲ್ಲದಿರಬಹುದು. ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸಿಸ್ಟಂ ಸ್ಥಳ ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ಆನ್ ಮಾಡಿ.</translation>
 <translation id="2102231663024125441">ಪಠ್ಯ ಎಡಿಟ್ ಮಾಡುವಿಕೆ</translation>
-<translation id="2102648867808308635">ಈ ಪುಟವನ್ನು ಓದಲು ನನಗೆ ಸಹಾಯ ಮಾಡಿ</translation>
 <translation id="2105810540595158374">ಸಾಧನವು ಗೇಮ್ ಕಂಟ್ರೋಲ್ ಆಗಿದೆ.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, ಆವೃತ್ತಿ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">ಪ್ರಸ್ತುತ ಇಂಗ್ಲಿಷ್‌ನಲ್ಲಿ ಮಾತ್ರ ಲಭ್ಯವಿದೆ (US)</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">ಎಲ್ಲಾ ಆ್ಯಪ್‌ಗಳನ್ನು ವೀಕ್ಷಿಸಿ</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />ಕಾರ್ಯಕ್ಷಮತೆ ಟ್ರೇಸ್ ಡೇಟಾ<ph name="END_LINK1" /> ಕಳುಹಿಸಿ</translation>
 <translation id="3517001332549868749">ChromeOS ಅಪ್‌ಡೇಟ್</translation>
-<translation id="3522508178835057262">ಸದ್ಯಕ್ಕೆ, <ph name="MAX_WORD_LENGTH" /> ಕ್ಕಿಂತ ಹೆಚ್ಚಿನ ಪದಗಳನ್ನು ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡುವುದು ಬೆಂಬಲಿತವಾಗಿಲ್ಲ</translation>
 <translation id="3527036260304016759">ವಿಫಲವಾಗಿದೆ - ಅಪರಿಚಿತ ದೋಷ</translation>
 <translation id="353214771040290298">ಎಡಿಟ್ ಮಾಡುವುದು ಮುಗಿದಿದೆ</translation>
 <translation id="3532980081107202182">ಸುಮಾರು <ph name="MIN_REMAINING" /> ಬಾಕಿ ಉಳಿದಿದೆ</translation>
@@ -690,7 +688,7 @@
 <translation id="4474142134969976028">ಹೊಂದಾಣಿಕೆಯಾಗುವ ಯಾವುದೇ ಫಲಿತಾಂಶಗಳಿಲ್ಲ</translation>
 <translation id="4479639480957787382">ಈಥರ್ನೆಟ್</translation>
 <translation id="4483049906298469269">ಡೀಫಾಲ್ಟ್ ಅಲ್ಲದ ನೆಟ್‌ವರ್ಕ್ ಗೇಟ್‌ವೇಗೆ ಪಿಂಗ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ</translation>
-<translation id="4486524074141928967">ನಿಮ್ಮನ್ನು <ph name="TIME" /> ಗೆ ಸೈನ್‌ ಔಟ್‌ ಮಾಡಗುತ್ತದೆ</translation>
+<translation id="4486524074141928967">ನಿಮ್ಮನ್ನು <ph name="TIME" /> ಗೆ ಸೈನ್‌ ಔಟ್‌ ಮಾಡಲಾಗುತ್ತದೆ</translation>
 <translation id="4500722292849917410">ಶಾರ್ಟ್‌ಕಟ್ ಲಭ್ಯವಿಲ್ಲ. ಮಾರ್ಪಡಿಸುವ ಕೀಯನ್ನು ಬಳಸಿಕೊಂಡು ಹೊಸ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಒತ್ತಿರಿ (ctrl, alt, shift ಅಥವಾ <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">ಇಂಟರ್‌ಫೇಸ್ ಬಣ್ಣ</translation>
 <translation id="4503223151711056411">ಲೆಫ್ಟ್ ಆ್ಯರೋ</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">ಲೈಟ್ ಥೀಮ್‌</translation>
 <translation id="4813136279048157860">ನನ್ನ ಚಿತ್ರಗಳು</translation>
 <translation id="4813345808229079766">ಸಂಪರ್ಕ</translation>
-<translation id="4824527342590024245">ಸದ್ಯಕ್ಕೆ, <ph name="MIN_WORD_LENGTH" /> ಕ್ಕಿಂತ ಕಡಿಮೆ ಪದಗಳನ್ನು ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡುವುದು ಬೆಂಬಲಿತವಾಗಿಲ್ಲ</translation>
 <translation id="4830894019733815633">ಕಡಿದಾದ ಕಣಿವೆ</translation>
 <translation id="4832079907277790330">Files ಆ್ಯಪ್‌ನಲ್ಲಿ ಫೋಲ್ಡರ್ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಿ...</translation>
 <translation id="4835901797422965222">ಯಾವುದೇ ಸಕ್ರಿಯ ನೆಟ್‌ವರ್ಕ್‌ಗಳಿಲ್ಲ</translation>
@@ -1397,6 +1394,7 @@
 <translation id="7856267634822906833">ಬ್ಲೂಟೂತ್ ಟಚ್‌ಸ್ಕ್ರೀನ್</translation>
 <translation id="7859006200041800233">ಕಳ್ಳಿ ಹೂವು</translation>
 <translation id="7869143217755017858">ಕತ್ತಲೆ ಮೋಡ್ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
+<translation id="7878972877380405573">ನನಗೆ ಓದಲು ಸಹಾಯ ಮಾಡುವುದರೊಂದಿಗೆ ಸಾರಾಂಶಗೊಳಿಸಿ</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">ಪೂರೈಕೆದಾರರ ಪ್ರಕಾರ</translation>
 <translation id="7882501334836096755">ಸಾರ್ವಜನಿಕ ಕೀ</translation>

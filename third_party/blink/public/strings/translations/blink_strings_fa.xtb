@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">مقدار باید <ph name="MINIMUM_DATE_OR_TIME" /> یا بعد از آن باشد.</translation>
 <translation id="2761667185364618470">درصورتی‌که می‌خواهید ادامه دهید، این کادر را انتخاب کنید.</translation>
 <translation id="2908441821576996758">لطفاً لیستی از آدرس‌های ایمیل که با کاما از هم جدا شده‌اند را وارد کنید.</translation>
+<translation id="2940013921954129954">«مکان دقیق» مجاز است</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> مگابایت</translation>
 <translation id="3075154866155599887">لطفاً یک مقدار معتبر وارد کنید. این قسمت کامل نیست و یا تاریخ نامعتبر است.</translation>
 <translation id="310520048233152454">لطفاً یک نشانی وب وارد کنید.</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">کیفیت پخش ضعیف</translation>
 <translation id="6790428901817661496">پخش</translation>
 <translation id="6820355525329141109">افزایه بارگیری نشد.</translation>
+<translation id="688706781007114099">استفاده از مکان</translation>
 <translation id="6919891270253167948">۱٫۵</translation>
 <translation id="6989848892321993519">لطفاً این نوشتار را به <ph name="MIN_CHARACTERS" /> نویسه یا بیشتر افزایش دهید (درحال‌حاضر از ۱ نویسه استفاده می‌کنید).</translation>
 <translation id="709897737746224366">لطفاً با قالب درخواستی مطابقت دهید.</translation>

@@ -114,6 +114,7 @@
 <translation id="132346741904777634">攝影機已對齊左上角，與系統平台發生衝突。</translation>
 <translation id="132415371743256095">關閉「<ph name="DESK_NAME" />」和視窗</translation>
 <translation id="1333308631814936910">已連結「<ph name="DISPLAY_NAME" />」</translation>
+<translation id="1337081488893096731">使用內容轉移應用程式將學校帳戶資料移到個人帳戶</translation>
 <translation id="1340378040547539434">縮小網頁</translation>
 <translation id="1341651618736211726">溢位</translation>
 <translation id="1341926407152459446">使用「<ph name="DEVICE_NAME" />」做為音訊輸入和輸出裝置</translation>
@@ -242,6 +243,7 @@
 <translation id="17722141032474077">計算</translation>
 <translation id="1774796056689732716">日曆，<ph name="CURRENT_MONTH_YEAR" />，目前已選取 <ph name="DATE" />。</translation>
 <translation id="178347895271755507">配置以下設定：查看手機上最近的相片、媒體和通知</translation>
+<translation id="1786487376942610288">將子母畫面視窗最大化或還原目前大小</translation>
 <translation id="1787955149152357925">關閉</translation>
 <translation id="1796561540704213354">網站，包括你造訪過的網頁和目前開啟的頁面</translation>
 <translation id="179842970735685253">Google 服務條款</translation>
@@ -337,6 +339,9 @@
 <translation id="219905428774326614">啟動器，所有應用程式</translation>
 <translation id="2201071101391734388">第 <ph name="INDEX" /> 張近期相片，共 <ph name="TOTAL_COUNT" /> 張。</translation>
 <translation id="2201687081523799384">收合 Google Tasks</translation>
+<translation id="2206960886090042977">裝置已接上滑鼠，因此內建觸控板已停用。請使用滑鼠或鍵盤確認變更。
+
+如果沒有在 30 秒內確認，內建觸控板將重新啟用。</translation>
 <translation id="2208323208084708176">整合桌面模式</translation>
 <translation id="2220572644011485463">PIN 或密碼</translation>
 <translation id="2222841058024245321">桌面 7</translation>
@@ -1465,6 +1470,7 @@
 <translation id="598407983968395253">使用範本</translation>
 <translation id="5986723678596105470">使用 Google Meet 加入會議</translation>
 <translation id="598882571027504733">如要更新，請連接鍵盤並重新啟動 Chromebook。</translation>
+<translation id="5990992855591814753">聆聽個人化專注模式播放清單，專心處理手邊工作。免付費體驗 YouTube Premium 3 個月，享受零廣告的 YouTube Music 和 YouTube 服務。須遵守相關條款。</translation>
 <translation id="5998374579424866922">關閉遊戲控制選項</translation>
 <translation id="6000279412553873020">按鍵、按鈕等等</translation>
 <translation id="6012623610530968780">第 <ph name="SELECTED_PAGE" /> 頁 (共 <ph name="TOTAL_PAGE_NUM" /> 頁)</translation>
@@ -1902,6 +1908,9 @@
 如要關閉裝置，請再次按住裝置上的電源按鈕。</translation>
 <translation id="7523420897035067483">在專注模式下啟用零打擾模式</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">內建觸控板已停用，請使用鍵盤或其他指標裝置確認變更。
+
+如果沒有在 30 秒內確認，內建觸控板將重新啟用。</translation>
 <translation id="7525067979554623046">建立</translation>
 <translation id="7526573455193969409">網路可能會受到監控</translation>
 <translation id="7536035074519304529">IP 位址：<ph name="ADDRESS" /></translation>
@@ -2288,6 +2297,7 @@
 <translation id="8858369206579825206">隱私權控制項</translation>
 <translation id="8860366331836346216">新增 eSIM 卡</translation>
 <translation id="8870509716567206129">這個應用程式不支援分割畫面。</translation>
+<translation id="8873203135446552888">確認要停用內建觸控板</translation>
 <translation id="8874184842967597500">未連線</translation>
 <translation id="8875021410787719674">在以下位置之間移動：右下角、啟動器、網址列、書籤列、開啟的網站和下載內容</translation>
 <translation id="8876148469852588625">第 <ph name="EVENT_POSITION" /> 項活動，共 <ph name="EVENT_TOTAL_COUNT" /> 項</translation>

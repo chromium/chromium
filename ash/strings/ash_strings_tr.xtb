@@ -114,6 +114,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="132346741904777634">Kamera sol üst köşeye tutturuldu. Sistem yüzeyi ile çakışıyor.</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> masasını ve pencerelerini kapat</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> bağlandı</translation>
+<translation id="1337081488893096731">Okul hesabı verilerinizi kişisel hesabınıza taşımak için İçerik Aktarımı uygulamasını kullanın</translation>
 <translation id="1340378040547539434">Sayfayı uzaklaştır</translation>
 <translation id="1341651618736211726">Taşma</translation>
 <translation id="1341926407152459446">Ses girişi ve çıkışı için "<ph name="DEVICE_NAME" />" adlı cihazı kullanın</translation>
@@ -242,6 +243,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="17722141032474077">Hesaplamalar</translation>
 <translation id="1774796056689732716">Takvim, <ph name="CURRENT_MONTH_YEAR" />, şu anda <ph name="DATE" /> seçili.</translation>
 <translation id="178347895271755507">Telefonunuzdaki son fotoğrafları, medya içeriklerini ve bildirimleri görme seçeneğini ayarlayın</translation>
+<translation id="1786487376942610288">Pencere içinde pencerenin maksimum veya mevcut boyutu arasında geçiş yapın</translation>
 <translation id="1787955149152357925">Kapalı</translation>
 <translation id="1796561540704213354">Ziyaret ettiğiniz ve açık sayfaların da dahil olduğu web siteleri</translation>
 <translation id="179842970735685253">Google'ın Hizmet Şartları</translation>
@@ -337,6 +339,9 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="219905428774326614">Launcher, tüm uygulamalar</translation>
 <translation id="2201071101391734388">Son <ph name="TOTAL_COUNT" /> fotoğraftan <ph name="INDEX" />. fotoğraf.</translation>
 <translation id="2201687081523799384">Google Görevler'i daraltın</translation>
+<translation id="2206960886090042977">Bir fare bağlı olduğundan yerleşik dokunmatik alan devre dışı bırakıldı. Fareyi veya klavyeyi kullanarak değişikliği onaylayın.
+
+Aksi takdirde yerleşik dokunmatik alan 30 saniye sonra yeniden etkinleştirilecek.</translation>
 <translation id="2208323208084708176">Birleştirilmiş masaüstü modu</translation>
 <translation id="2220572644011485463">PIN veya şifre</translation>
 <translation id="2222841058024245321">Masa 7</translation>
@@ -1468,6 +1473,7 @@ Bağlı cihaz yok.</translation>
 <translation id="598407983968395253">Şablonu kullan</translation>
 <translation id="5986723678596105470">Google Meet ile katılın</translation>
 <translation id="598882571027504733">Güncellemeyi almak için Chromebook'unuzu klavye takılıyken yeniden başlatın.</translation>
+<translation id="5990992855591814753">Kişiselleştirilmiş odaklanma listeleriyle zamanınızı yönetin. 3 ay boyunca ücretsiz YouTube Premium ile YouTube Music ve YouTube'u reklamsız kullanın. Şartlar geçerlidir.</translation>
 <translation id="5998374579424866922">Oyun denetimlerini kapatın</translation>
 <translation id="6000279412553873020">Tuşlar, düğmeler ve daha fazlası</translation>
 <translation id="6012623610530968780">Sayfa <ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" /></translation>
@@ -1906,6 +1912,9 @@ Yeni yüklenmiş</translation>
 Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</translation>
 <translation id="7523420897035067483">Odaklanma oturumundayken Rahatsız Etmeyin'i etkinleştir</translation>
 <translation id="7524043547948122239">Google Görevler</translation>
+<translation id="7524919752437339268">Yerleşik dokunmatik alan devre dışı bırakıldı. Klavyenizi veya başka bir işaretleme cihazını kullanarak değişikliği onaylayın.
+
+Aksi takdirde yerleşik dokunmatik alan 30 saniye sonra yeniden etkinleştirilecek.</translation>
 <translation id="7525067979554623046">Oluştur</translation>
 <translation id="7526573455193969409">Ağ trafiği izleniyor olabilir</translation>
 <translation id="7536035074519304529">IP adresi: <ph name="ADDRESS" /></translation>
@@ -2293,6 +2302,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8858369206579825206">Gizlilik denetimleri</translation>
 <translation id="8860366331836346216">eSIM ekle</translation>
 <translation id="8870509716567206129">Uygulama bölünmüş ekranı desteklemiyor.</translation>
+<translation id="8873203135446552888">Yerleşik dokunmatik alanı devre dışı bırakmak istediğinizi onaylayın</translation>
 <translation id="8874184842967597500">Bağlı değil</translation>
 <translation id="8875021410787719674">Sağ alt köşe, Başlatıcı, adres çubuğu, yer işareti çubuğu, açık web sitesi ve indirilenler arasında geçiş yapın</translation>
 <translation id="8876148469852588625">Etkinlik: <ph name="EVENT_POSITION" />/<ph name="EVENT_TOTAL_COUNT" /></translation>

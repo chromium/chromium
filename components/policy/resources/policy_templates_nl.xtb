@@ -3553,19 +3553,6 @@ Als <ph name="PRODUCT_NAME" /> niet correct wordt afgesloten (bijvoorbeeld als d
 <translation id="3701121231485832347">Beheert instellingen die specifiek zijn voor <ph name="PRODUCT_OS_NAME" />-apparaten die via <ph name="MS_AD_NAME" /> worden beheerd.</translation>
 <translation id="3702518095257671450">Externe bevestiging</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Het veld met één regel is beëindigd en wordt in de toekomst verwijderd. Gebruik het tekstvak met meerdere regels hieronder.)</translation>
-<translation id="3705648857103435170">Met dit beleid wordt de Graduation-app aangezet voor beheerde gebruikers. Met de Graduation-app kunnen gebruikers hun gegevens overzetten van hun beheerde account naar een consumentenaccount.
-
-    Als <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> is ingesteld op <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE_TRUE" />, wordt de Graduation-app getoond op en tussen de start- en einddatum volgens de lokale tijd.
-
-    Als <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> is ingesteld op <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE_FALSE" /> of niet is ingesteld, wordt de app niet getoond.
-
-    Als <ph name="GRADUATION_ENABLEMENT_STATUS_START_DATE_VALUE" /> niet is ingesteld, wordt de app getoond tot de einddatum.
-
-    Als <ph name="GRADUATION_ENABLEMENT_STATUS_END_DATE_VALUE" /> niet is ingesteld, wordt de app vanaf de startdatum voor onbepaalde tijd getoond.
-
-    Als zowel <ph name="GRADUATION_ENABLEMENT_STATUS_START_DATE_VALUE" /> als <ph name="GRADUATION_ENABLEMENT_STATUS_END_DATE_VALUE" /> niet zijn ingesteld, wordt de app voor onbepaalde tijd getoond. Als de start- en einddatum ongeldig zijn, wordt de Graduation-app niet getoond. Dit geldt ook als de ingevoerde datums niet bestaan of als de einddatum vóór de startdatum ligt.
-
-    Gegevensoverdracht met Takeout moet ook aanstaan voor een goede werking van de Graduation-app. Ga naar https://support.google.com/a/answer/6364687 voor meer informatie.</translation>
 <translation id="3711561721191203926">Als je dit beleid toepast, wordt het hoofdverzoek geblokkeerd als er een waarschuwing moet worden getoond in de <ph name="DEV_TOOLS_NAME" /> omdat de <ph name="PRIVATE_NETWORK_ACCESS" />-controles mislukken.
 
 Als je dit beleid niet toepast of niet instelt, worden alle <ph name="PRIVATE_NETWORK_ACCESS" />-waarschuwingen niet afgedwongen en worden de verzoeken niet geblokkeerd.
@@ -4280,17 +4267,6 @@ Zoals wordt vermeld in ons beleid <ph name="SITE_PER_PROCESS_POLICY_NAME" />, zi
 
       Als je dit beleid niet instelt, is de standaardsnelheid van 10 minuten van toepassing.</translation>
 <translation id="4290231183305601970">Tekst die de gebruiker te zien krijgt in de Chrome Web Store als de installatie wordt geblokkeerd.</translation>
-<translation id="4291413477651927481">Deze functies in DevTools van <ph name="PRODUCT_NAME" /> gebruiken modellen voor generatieve AI om aanvullende foutopsporingsinformatie te bieden. Als je deze functies wilt gebruiken, moet <ph name="PRODUCT_NAME" /> gegevens zoals foutmeldingen, stacktraces, codefragmenten en netwerkverzoeken verzamelen en naar een server sturen die eigendom is van Google, waarop een model voor generatieve AI wordt uitgevoerd. De hoofdtekst van de reactie of de verificatie- en cookieheaders in netwerkverzoeken zitten niet bij de gegevens die naar de server worden gestuurd.
-
-0 = Zet de functie aan voor gebruikers en stuur relevante gegevens naar Google om AI-modellen te trainen of te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer en bronmateriaal omvatten, afhankelijk van de functie. De gegevens mogen alleen door mensen worden beoordeeld met als doel AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
-
-1 = Zet de functie aan voor gebruikers, maar stuur geen gegevens naar Google om AI-modellen te trainen of te verbeteren. 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd door <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd door <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-2 = Zet de functie uit.
-
-De functies van DevTools van generatieve AI zijn onder andere:
-
-- Console Insights: Hier vind je uitleg over consoleberichten en suggesties om consolefouten op te lossen.</translation>
 <translation id="4293187705196369087">Hiermee kun je meldingen bij weinig schijfruimte aan- of uitzetten. Dit is van toepassing op alle gebruikers op het apparaat.
 
       Als je het beleid toepast, wordt een melding getoond als er weinig schijfruimte is.
@@ -5128,6 +5104,32 @@ Deze instelling bepaalt de presentatie van promotiecontent, waaronder de welkoms
       Als het beleid is ingesteld op True, worden systeemgegevens gedwongen weergegeven op het inlogscherm.
       Als het beleid is ingesteld op False, worden systeemgegevens gedwongen verborgen op het inlogscherm.
       Als het beleid niet is ingesteld, is het standaardgedrag (de systeemgegevens worden weergegeven voor het Canary-/Dev-kanaal) van kracht. Gebruikers kunnen de zichtbaarheid aan- en uitzetten met specifieke bewerkingen (bijv. Alt-V).</translation>
+<translation id="4946124666877421935">Als je het beleid instelt, wordt een lijst met web-apps gespecificeerd die op de achtergrond worden geïnstalleerd zonder interactie met de gebruiker en die niet kunnen worden verwijderd of uitgezet door gebruikers.
+
+Elk lijstitem van het beleid is een object met een verplicht lid:
+<ph name="URL_LABEL" /> (de URL van de web-app die moet worden geïnstalleerd)
+
+en 6 optionele leden:
+- <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" /> (voor hoe de web-app wordt geopend: de standaardinstelling is een nieuw tabblad)
+
+- <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" /> (True als je <ph name="LINUX_OS_NAME" />- en <ph name="MS_WIN_NAME" />-snelkoppelingen wilt maken).
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" /> (Vanaf versie 90 van <ph name="PRODUCT_NAME" /> kun je de app-naam overschrijven als het geen progressive web-app (PWA) is, of kun je de tijdelijk geïnstalleerde app-naam overschrijven als het een PWA is, maar verificatie vereist is voordat de installatie kan worden afgerond. Als zowel <ph name="CUSTOM_NAME_LABEL" /> als <ph name="FALLBACK_APP_NAME_LABEL" /> zijn verstrekt, wordt die laatste genegeerd.)
+
+      - <ph name="OVERRIDE_APP_NAME_LABEL" />
+(Vanaf versie 99 voor <ph name="PRODUCT_OS_NAME" /> en versie 112 voor alle andere desktopbesturingssystemen kun je de app-naam definitief overschrijven voor alle web-apps en PWA's.)
+
+      - <ph name="CUSTOM_ICON_LABEL" />
+(Vanaf versie 99 voor <ph name="PRODUCT_OS_NAME" /> en versie 112 voor alle andere desktopbesturingssystemen kun je het app-icoon van geïnstalleerde apps overschrijven. De iconen moeten vierkant zijn, met een maximale grootte van 1 MB en een van de volgende indelingen hebben: jpeg, png, gif, webp, ico.
+      De hash-waarde moet de SHA256-hash van het icoonbestand zijn. De <ph name="URL_LABEL" /> moet toegankelijk zijn zonder verificatie om te zorgen dat het icoon kan worden gebruikt bij installatie van de app.)
+
+      - <ph name="INSTALL_AS_SHORTCUT_LABEL" />
+(Vanaf versie 107 voor <ph name="PRODUCT_NAME" />). Als je dit beleid toepast, wordt de aangegeven <ph name="URL_LABEL" /> geïnstalleerd als snelkoppeling, alsof je dit doet via de optie Snelkoppeling maken
+      in de GUI van de desktopbrowser.
+      Houd er rekening mee dat als het manifest in <ph name="URL_LABEL" /> wordt gewijzigd, de URL niet wordt geüpdatet als deze is geïnstalleerd als snelkoppeling.
+      Als je dit beleid niet toepast of niet instelt, wordt de web-app op de aangegeven <ph name="URL_LABEL" /> normaal geïnstalleerd.
+
+      Bekijk <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> voor het vastzetten van apps op de <ph name="PRODUCT_OS_NAME" />-plank.</translation>
 <translation id="494613465159630803">Cast-receiver</translation>
 <translation id="494924690085329212">Opnieuw opstarten bij uitloggen gebruiker als Android is gestart.</translation>
 <translation id="4950447493143157880">De ingebouwde DNS-client nooit gebruiken</translation>
@@ -10770,7 +10772,6 @@ De standaardinstelling is RollbackDisabled.</translation>
 
       Als dit beleid is ingesteld op True of niet is ingesteld, kunnen alle gebruikers inloggen.</translation>
 <translation id="966425658642788645">Standaardgedrag toepassen</translation>
-<translation id="970144760302377175">Instellen wanneer de Graduation-tool van <ph name="PRODUCT_OS_NAME" /> beschikbaar is</translation>
 <translation id="971677226939413180">Optie 'Afdrukken als afbeelding' niet beschikbaar voor gebruikersselectie.</translation>
 <translation id="974349541138387272">URI-template van gewenste DNS-over-HTTPS-resolver opgeven</translation>
 <translation id="978658824596356870">24-uurs klok</translation>

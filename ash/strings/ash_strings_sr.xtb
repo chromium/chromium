@@ -114,6 +114,7 @@
 <translation id="132346741904777634">Камера је уклопљена у горњи леви угао Неусаглашеност са површином система.</translation>
 <translation id="132415371743256095">Затворите <ph name="DESK_NAME" /> и прозоре</translation>
 <translation id="1333308631814936910">Повезаних: <ph name="DISPLAY_NAME" /></translation>
+<translation id="1337081488893096731">Користите апликацију за пренос садржаја да бисте преместили податке школског налога на лични налог</translation>
 <translation id="1340378040547539434">Умањи страницу</translation>
 <translation id="1341651618736211726">Прекорачење</translation>
 <translation id="1341926407152459446">Користите уређај<ph name="DEVICE_NAME" /> за аудио улаз и излаз</translation>
@@ -242,6 +243,7 @@
 <translation id="17722141032474077">Прорачуни</translation>
 <translation id="1774796056689732716">Календар, <ph name="CURRENT_MONTH_YEAR" />, <ph name="DATE" /> је тренутно изабран.</translation>
 <translation id="178347895271755507">Подесите преглед недавних слика, медија и обавештења на телефону</translation>
+<translation id="1786487376942610288">Пребацујте између максималне или актуелне величине прозора слике у слици</translation>
 <translation id="1787955149152357925">Искључено</translation>
 <translation id="1796561540704213354">Веб-сајтови, укључујући странице које сте посетили и отворили</translation>
 <translation id="179842970735685253">Google услови коришћења услуге</translation>
@@ -337,6 +339,9 @@
 <translation id="219905428774326614">Покретач, све апликације</translation>
 <translation id="2201071101391734388"><ph name="INDEX" />. недавна слика од <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Скупи Google задатке</translation>
+<translation id="2206960886090042977">Уграђени тачпед је онемогућен јер је повезан миш. Користите миш или тастатуру да бисте потврдили промену.
+
+У супротном ће уграђени тачпед бити поново омогућен за 30 секунди.</translation>
 <translation id="2208323208084708176">Режим спојених радних површина</translation>
 <translation id="2220572644011485463">PIN или лозинка</translation>
 <translation id="2222841058024245321">Радна површина 7</translation>
@@ -1909,6 +1914,9 @@
 Да бисте искључили уређај, поново притисните и задржите дугме за укључивање на уређају.</translation>
 <translation id="7523420897035067483">Омогућите функцију Не узнемиравај док сам у фокусу</translation>
 <translation id="7524043547948122239">Google задаци</translation>
+<translation id="7524919752437339268">Уграђени тачпед је онемогућен. Користите тастатуру или други показивачки уређај да бисте потврдили промену.
+
+У супротном ће уграђени тачпед бити поново омогућен за 30 секунди.</translation>
 <translation id="7525067979554623046">Направи</translation>
 <translation id="7526573455193969409">Мрежа се можда надгледа</translation>
 <translation id="7536035074519304529">IP адреса: <ph name="ADDRESS" /></translation>
@@ -2296,6 +2304,7 @@
 <translation id="8858369206579825206">Контроле приватности</translation>
 <translation id="8860366331836346216">Додај eSIM</translation>
 <translation id="8870509716567206129">Апликација не подржава подељени екран.</translation>
+<translation id="8873203135446552888">Потврдите да желите да онемогућите уграђени тачпед</translation>
 <translation id="8874184842967597500">Није повезано</translation>
 <translation id="8875021410787719674">Премештајте из доњег десног угла на покретач, траку за адресу, траку са обележивачима, веб-сајт који је отворен и преузимања</translation>
 <translation id="8876148469852588625"><ph name="EVENT_POSITION" />. догађај од <ph name="EVENT_TOTAL_COUNT" /></translation>

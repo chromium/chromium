@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">মানকে অবশ্যই <ph name="MINIMUM_DATE_OR_TIME" /> বা পরবর্তী হতে হবে৷</translation>
 <translation id="2761667185364618470">আপনি এগিয়ে যেতে চাইলে এই বাক্সটি পরীক্ষা করুন৷</translation>
 <translation id="2908441821576996758">অনুগ্রহ করে কমা দিয়ে আলাদা করা ইমেল আইডির তালিকা লিখুন৷</translation>
+<translation id="2940013921954129954">সুনির্দিষ্ট লোকেশনের অনুমতি দেওয়া আছে</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> এমবি</translation>
 <translation id="3075154866155599887">অনুগ্রহ করে একটি সঠিক মান লিখুন৷ ফিল্ডটি অসম্পূর্ণ অথবা একটি ভুল তারিখ আছে৷</translation>
 <translation id="310520048233152454">দয়া করে একটি বৈধ URL প্রবেশ করুন৷</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">প্লেব্যাকের গুণমান খারাপ</translation>
 <translation id="6790428901817661496">চালু করুন</translation>
 <translation id="6820355525329141109">প্লাগ-ইন লোড করা যায়নি।</translation>
+<translation id="688706781007114099">লোকেশন ব্যবহার করুন</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">দয়া করে এই পাঠ্যকে ন্যূনতম <ph name="MIN_CHARACTERS" /> অক্ষরের বা তার বেশি দৈর্ঘ্যের করুন (আপনি বর্তমানে ১টি অক্ষর ব্যবহার করেছেন)।</translation>
 <translation id="709897737746224366">দয়া করে অনুরোধ হওয়া বিন্যাসটি মেলান৷</translation>

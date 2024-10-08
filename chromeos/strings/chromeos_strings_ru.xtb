@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Уменьшение яркости дисплея</translation>
 <translation id="2086091080968010660">Переключение по времени может быть неточным. Разрешите доступ к геоданным на уровне системы.</translation>
 <translation id="2102231663024125441">Редактирование текста</translation>
-<translation id="2102648867808308635">Краткий пересказ страницы</translation>
 <translation id="2105810540595158374">Это игровой контроллер.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, версия <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">Сейчас эта функция доступна только на английском языке (США)</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">посмотреть все приложения</translation>
 <translation id="3510890413042482857">Отправлять <ph name="BEGIN_LINK1" />данные отслеживания производительности<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Обновление Chrome OS</translation>
-<translation id="3522508178835057262">На количество слов в расшифровке сейчас действует ограничение (максимум – <ph name="MAX_WORD_LENGTH" />).</translation>
 <translation id="3527036260304016759">Сбой: неизвестная ошибка</translation>
 <translation id="353214771040290298">Завершить изменение</translation>
 <translation id="3532980081107202182">Осталось примерно <ph name="MIN_REMAINING" /> мин.</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">Светлая тема</translation>
 <translation id="4813136279048157860">Мои изображения</translation>
 <translation id="4813345808229079766">Соединение</translation>
-<translation id="4824527342590024245">Количество слов в расшифровке должно быть не меньше <ph name="MIN_WORD_LENGTH" />.</translation>
 <translation id="4830894019733815633">каньон</translation>
 <translation id="4832079907277790330">Выбрать папку в приложении Files…</translation>
 <translation id="4835901797422965222">Нет активных сетей.</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">Синонимы:</translation>
 <translation id="5130848777448318809">пони</translation>
 <translation id="5137451382116112100">Полноэкранный режим</translation>
+<translation id="5140788690559353412">Если вы больше не сможете пользоваться учебным аккаунтом, то также потеряете доступ к данным в нем, включая письма из Gmail, а также документы, презентации и другие файлы на Google Диске.</translation>
 <translation id="5142961317498132443">Аутентификация</translation>
 <translation id="5144311987923128508">Кнопка "Подтвердить" стала недоступной</translation>
 <translation id="5144887194300568405">Скопировать перевод</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">Время ожидания HTTP (Android)</translation>
 <translation id="6078323886959318429">Добавить ярлык</translation>
 <translation id="6091080061796993741">желтый</translation>
+<translation id="6093853427925392522">Используйте приложение "Перенос контента" от Google, чтобы заранее перенести информацию из учебного аккаунта в личный.</translation>
 <translation id="6104112872696127344">Сканирование отменено.</translation>
 <translation id="6106186594183574873">Для завершения введите старый пароль.</translation>
 <translation id="6108689792487843350">Шлюз недоступен.</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">Точка доступа</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер доменных имен}one{Серверы доменных имен}few{Серверы доменных имен}many{Серверы доменных имен}other{Серверы доменных имен}}</translation>
 <translation id="7135814714616751706">Быстрые клавиши для поиска</translation>
+<translation id="7141470099673912333">Перенос контента</translation>
 <translation id="7143207342074048698">Подключение</translation>
 <translation id="7144878232160441200">Повторить</translation>
 <translation id="7144954474087165241">пагода</translation>
@@ -1394,6 +1394,7 @@
 <translation id="7856267634822906833">Сенсорный экран Bluetooth</translation>
 <translation id="7859006200041800233">кактус</translation>
 <translation id="7869143217755017858">Отключить тёмную тему</translation>
+<translation id="7878972877380405573">Получить краткий пересказ от помощника по чтению</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Тип провайдера</translation>
 <translation id="7882501334836096755">Открытый ключ</translation>
@@ -1537,6 +1538,7 @@
 <translation id="8626489604350149811">Другие действия для точки доступа <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Светло-фиолетовый</translation>
 <translation id="8647595191512746911">Включить расшифровку</translation>
+<translation id="8650852232143958317">Перенесите контент из Gmail и с Google Диска</translation>
 <translation id="8651481478098336970">отключить звук</translation>
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8655828773034788261">URL с общим доступом:</translation>

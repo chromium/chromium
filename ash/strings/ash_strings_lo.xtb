@@ -114,6 +114,7 @@
 <translation id="132346741904777634">ແນບກ້ອງຖ່າຍຮູບໄປໃສ່ມຸມຊ້າຍເທິງແລ້ວ. ຂັດແຍ້ງກັບພື້ນຜິວຂອງລະບົບ.</translation>
 <translation id="132415371743256095">ປິດ <ph name="DESK_NAME" /> ແລະ ໜ້າຈໍ</translation>
 <translation id="1333308631814936910">ເຊື່ອມຕໍ່ <ph name="DISPLAY_NAME" /> ແລ້ວ</translation>
+<translation id="1337081488893096731">ໃຊ້ແອັບ Content Transfer ເພື່ອຍ້າຍຂໍ້ມູນບັນຊີໂຮງຮຽນຂອງທ່ານໄປໃສ່ບັນຊີສ່ວນຕົວຂອງທ່ານ</translation>
 <translation id="1340378040547539434">ຂະຫຍາຍອອກໃນໜ້າ</translation>
 <translation id="1341651618736211726">ລົ້ນ</translation>
 <translation id="1341926407152459446">ໃຊ້ "<ph name="DEVICE_NAME" />" ສຳລັບອິນພຸດ ແລະ ເອົ້າພຸດສຽງ</translation>
@@ -242,6 +243,7 @@
 <translation id="17722141032474077">ການຄິດໄລ່</translation>
 <translation id="1774796056689732716">ປະຕິທິນ, <ph name="CURRENT_MONTH_YEAR" />, ຕອນນີ້ເລືອກ <ph name="DATE" /> ຢູ່.</translation>
 <translation id="178347895271755507">ຕັ້ງຄ່າການເບິ່ງຮູບພາບຫຼ້າສຸດ, ມີເດຍ ແລະ ການແຈ້ງເຕືອນຂອງໂທລະສັບທ່ານ</translation>
+<translation id="1786487376942610288">ສະຫຼັບລະຫວ່າງຂະໜາດສູງສຸດ ຫຼື ຂະໜາດປັດຈຸບັນຂອງໜ້າຈໍການສະແດງຜົນຊ້ອນກັນ</translation>
 <translation id="1787955149152357925">ປິດ</translation>
 <translation id="1796561540704213354">ເວັບໄຊຮວມມີໜ້າຕ່າງໆທີ່ທ່ານເຄີຍເຂົ້າ ແລະ ໜ້າທີ່ເປີດໄວ້</translation>
 <translation id="179842970735685253">ຂໍ້ກຳນົດບໍລິການຂອງ Google</translation>
@@ -337,6 +339,9 @@
 <translation id="219905428774326614">ຕົວເປີດນຳໃຊ້, ແອັບທັງໝົດ</translation>
 <translation id="2201071101391734388">ຮູບຫຼ້າສຸດທີ <ph name="INDEX" /> ຈາກທັງໝົດ <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">ຫຍໍ້ Google Tasks ລົງ</translation>
+<translation id="2206960886090042977">ແຜ່ນສຳຜັດໃນຕົວຖືກປິດການນຳໃຊ້ເນື່ອງຈາກມີການເຊື່ອມຕໍ່ເມົ້າຢູ່. ກະລຸນາໃຊ້ເມົ້າ ຫຼື ແປ້ນພິມເພື່ອຢືນຢັນການປ່ຽນແປງ.
+
+ບໍ່ດັ່ງນັ້ນ, ແຜ່ນສຳຜັດໃນຕົວຈະເປີດການນຳໃຊ້ອີກຄັ້ງພາຍໃນ 30 ວິນາທີ.</translation>
 <translation id="2208323208084708176">​ໂໝດ​ໜ້າ​ຈໍ​ເຮັດ​ເຂົ້າ​ກັນ​ແລ້ວ</translation>
 <translation id="2220572644011485463">PIN ຫຼື ລະຫັດຜ່ານ</translation>
 <translation id="2222841058024245321">ໂຕະ 7</translation>
@@ -1907,6 +1912,9 @@
 ເພື່ອປິດເຄື່ອງ, ໃຫ້ກົດປຸ່ມເປີດປິດຄ້າງໄວ້ຢູ່ອຸປະກອນອີກຄັ້ງ.</translation>
 <translation id="7523420897035067483">ເປີດການນຳໃຊ້ຄຸນສົມບັດຫ້າມລົບກວນໃນຂະນະຢູ່ໃນໂໝດໂຟກັສ</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">ແຜ່ນສຳຜັດໃນຕົວຖືກປິດການນຳໃຊ້. ກະລຸນາໃຊ້ແປ້ນພິມ ຫຼື ອຸປະກອນຕົວຊີ້ຕຳແໜ່ງອື່ນຂອງທ່ານເພື່ອຢືນຢັນການປ່ຽນແປງ.
+
+ບໍ່ດັ່ງນັ້ນ, ແຜ່ນສຳຜັດໃນຕົວຈະເປີດການນຳໃຊ້ອີກຄັ້ງພາຍໃນ 30 ວິນາທີ.</translation>
 <translation id="7525067979554623046">ສ້າງຂຶ້ນ</translation>
 <translation id="7526573455193969409">ອາດມີການຕິດຕາມເບິ່ງເຄືອຂ່າຍ</translation>
 <translation id="7536035074519304529">ທີ່ຢູ່ IP: <ph name="ADDRESS" /></translation>
@@ -2294,6 +2302,7 @@
 <translation id="8858369206579825206">ການຄວບຄຸມຄວາມເປັນສ່ວນຕົວ</translation>
 <translation id="8860366331836346216">ເພີ່ມ eSIM</translation>
 <translation id="8870509716567206129">ແອັບບໍ່ຮອງຮັບໜ້າຈໍແບບແຍກກັນ.</translation>
+<translation id="8873203135446552888">ຢືນຢັນວ່າທ່ານຕ້ອງການປິດການນຳໃຊ້ແຜ່ນສຳຜັດໃນຕົວ</translation>
 <translation id="8874184842967597500">ບໍ່​ໄດ້​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="8875021410787719674">ຍ້າຍລະຫວ່າງມຸມຂວາລຸ່ມ, ຕົວເປີດໃຊ້, ແຖບທີ່ຢູ່, ແຖບບຸກມາກ, ເວັບໄຊທີ່ເປີດ ແລະ ດາວໂຫຼດ</translation>
 <translation id="8876148469852588625">ນັດໝາຍທີ <ph name="EVENT_POSITION" /> ຈາກທັງໝົດ <ph name="EVENT_TOTAL_COUNT" /></translation>

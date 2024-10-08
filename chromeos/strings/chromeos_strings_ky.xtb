@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Дисплейдин жарыктыгын азайтуу</translation>
 <translation id="2086091080968010660">Убакыттын негизиндеги өзгөртүүлөр так болбошу мүмкүн. Параметрлерден системага жайгашкан жерди аныктоо мүмкүнчүлүгүн күйгүзүңүз.</translation>
 <translation id="2102231663024125441">Текстти оңдоо</translation>
-<translation id="2102648867808308635">Бул баракты окуганга жардам бер</translation>
 <translation id="2105810540595158374">Түзмөк — оюнду көзөмөлдөгүч.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" /> версиясы</translation>
 <translation id="2124643134650336457">Учурда англис тилинде гана жеткиликтүү (АКШ)</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">бардык колдонмолорду көрүү</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Жаздырылган майнаптуулук маалыматын<ph name="END_LINK1" /> жөнөтүү</translation>
 <translation id="3517001332549868749">ChromeOS жаңыртуусу</translation>
-<translation id="3522508178835057262">Азырынча <ph name="MAX_WORD_LENGTH" /> сөздөн узунураак транскрипция колдоого алынбайт</translation>
 <translation id="3527036260304016759">Басылып чыгарылган жок - Белгисиз ката</translation>
 <translation id="353214771040290298">Түзөтүлүп бүттү</translation>
 <translation id="3532980081107202182">Болжол менен <ph name="MIN_REMAINING" /> мүнөт калды</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">Жарык тема</translation>
 <translation id="4813136279048157860">Менин сүрөттөрүм</translation>
 <translation id="4813345808229079766">Туташуу</translation>
-<translation id="4824527342590024245">Азырынча <ph name="MIN_WORD_LENGTH" /> сөздөн аз турган транскрипция колдоого алынбайт</translation>
 <translation id="4830894019733815633">капчыгай</translation>
 <translation id="4832079907277790330">Files колдонмосунда папка тандоо...</translation>
 <translation id="4835901797422965222">Жигердүү тармак жок</translation>
@@ -1397,6 +1394,7 @@
 <translation id="7856267634822906833">Bluetooth сенсордук экраны</translation>
 <translation id="7859006200041800233">кактус гүлү</translation>
 <translation id="7869143217755017858">Караңгы режимин өчүрүү</translation>
+<translation id="7878972877380405573">Окуганга жардам бер функциясы менен корутунду түзүү</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Жабдуучунун түрү</translation>
 <translation id="7882501334836096755">Жалпыга ачык ачкыч</translation>

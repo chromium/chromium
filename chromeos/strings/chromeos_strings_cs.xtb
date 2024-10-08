@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Snížit jas displeje</translation>
 <translation id="2086091080968010660">Změny závislé na čase nemusí být přesné. V Nastavení zapněte přístup k poloze.</translation>
 <translation id="2102231663024125441">Úprava textu</translation>
-<translation id="2102648867808308635">Pomoz mi přečíst tuhle stránku</translation>
 <translation id="2105810540595158374">Zařízení je herní ovladač.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, verze <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">Momentálně k dispozici jen v angličtině (USA)</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">zobrazit všechny aplikace</translation>
 <translation id="3510890413042482857">Odesílat <ph name="BEGIN_LINK1" />údaje sledování výkonu<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Aktualizace ChromeOS</translation>
-<translation id="3522508178835057262">Přepisy delší než <ph name="MAX_WORD_LENGTH" /> slov nejsou v současné době podporovány</translation>
 <translation id="3527036260304016759">Tisk selhal – neznámá chyba</translation>
 <translation id="353214771040290298">Úpravy dokončeny</translation>
 <translation id="3532980081107202182">Zbývající minuty: <ph name="MIN_REMAINING" /></translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">Světlý motiv</translation>
 <translation id="4813136279048157860">Moje obrázky</translation>
 <translation id="4813345808229079766">Spojení</translation>
-<translation id="4824527342590024245">Přepisy s méně než <ph name="MIN_WORD_LENGTH" /> slovy zatím nejsou podporovány</translation>
 <translation id="4830894019733815633">kaňon</translation>
 <translation id="4832079907277790330">Vyberte složku v aplikaci Soubory…</translation>
 <translation id="4835901797422965222">Žádné aktivní sítě</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">Podobný význam:</translation>
 <translation id="5130848777448318809">poníci</translation>
 <translation id="5137451382116112100">Maximalizovat</translation>
+<translation id="5140788690559353412">Když ztratíte přístup ke školnímu účtu, nebudete už mít přístup k přidruženým e‑mailům a souborům na Disku Google, jako jsou Gmail, Dokumenty, Prezentace a další.</translation>
 <translation id="5142961317498132443">Ověření</translation>
 <translation id="5144311987923128508">Tlačítko Potvrdit teď není aktivní</translation>
 <translation id="5144887194300568405">Kopírovat překlad</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) Latence požadavků HTTP</translation>
 <translation id="6078323886959318429">Přidat zástupce</translation>
 <translation id="6091080061796993741">žlutá</translation>
+<translation id="6093853427925392522">Než ztratíte přístup, pomocí aplikace Přenesení obsahu od Googlu přeneste data ze školního účtu do osobního.</translation>
 <translation id="6104112872696127344">Skenování bylo zrušeno</translation>
 <translation id="6106186594183574873">Chcete-li akci dokončit, zadejte své staré heslo</translation>
 <translation id="6108689792487843350">Brána není dostupná</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">Název přístupového bodu</translation>
 <translation id="7134436342991564651">{0,plural, =1{Názvový server}few{Názvové servery}many{Názvové servery}other{Názvové servery}}</translation>
 <translation id="7135814714616751706">Vyhledat zkratky</translation>
+<translation id="7141470099673912333">Přenesení obsahu</translation>
 <translation id="7143207342074048698">Připojování</translation>
 <translation id="7144878232160441200">Opakovat</translation>
 <translation id="7144954474087165241">pagoda</translation>
@@ -1394,6 +1394,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="7856267634822906833">Dotyková obrazovka Bluetooth</translation>
 <translation id="7859006200041800233">kaktusový květ</translation>
 <translation id="7869143217755017858">Deaktivovat tmavý režim</translation>
+<translation id="7878972877380405573">Shrnout pomocí funkce Pomoz mi číst</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Typ poskytovatele</translation>
 <translation id="7882501334836096755">Veřejný klíč</translation>
@@ -1537,6 +1538,7 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="8626489604350149811">Další akce pro <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Světle fialová</translation>
 <translation id="8647595191512746911">Přepis zvuku</translation>
+<translation id="8650852232143958317">Vezměte si své soubory z Gmailu a Disku Google s sebou</translation>
 <translation id="8651481478098336970">ztlumit hlasitost</translation>
 <translation id="8655295600908251630">Kanál</translation>
 <translation id="8655828773034788261">Sdílet adresu URL:</translation>

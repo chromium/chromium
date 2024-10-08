@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">የማሳያ ብሩህነት መቀነሻ</translation>
 <translation id="2086091080968010660">ጊዜ-ተኮር ለውጦች ትክክለኛ ላይሆኑ ይችላሉ። በቅንብሮች ውስጥ የስርዓት አካባቢ መዳረሻን ያብሩ።</translation>
 <translation id="2102231663024125441">የጽሁፍ አርትዖት</translation>
-<translation id="2102648867808308635">ይህን ገጽ እንዳነብ እርዳኝ</translation>
 <translation id="2105810540595158374">መሣሪያ የጨዋታ መቆጣጠሪያ ነው።</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />፣ ስሪት <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">በአሁኑ ጊዜ በእንግሊዝኛ (አሜሪካ) ብቻ ነው የሚገኘው</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">ሁሉንም መተግበሪያዎች ይመልከቱ</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />የአፈጻጸም መከታተያ ውሂብ<ph name="END_LINK1" />ን ይላኩ</translation>
 <translation id="3517001332549868749">የChromeOS ዝማኔ</translation>
-<translation id="3522508178835057262">ለአሁን ከ<ph name="MAX_WORD_LENGTH" /> ቃላት ረዘም ያለ ጽሁፍ ግልባጭ አይደገፍም</translation>
 <translation id="3527036260304016759">አልተሳካም - ያልታወቀ ስህተት</translation>
 <translation id="353214771040290298">አርትዖት ተከናውኗል</translation>
 <translation id="3532980081107202182"><ph name="MIN_REMAINING" /> ደቂቃዎች ገደማ ይቀራል</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">ነጣ ያለ ገጽታ</translation>
 <translation id="4813136279048157860">የእኔ ምስሎች</translation>
 <translation id="4813345808229079766">ማገናኘት</translation>
-<translation id="4824527342590024245">ለአሁን ከ<ph name="MIN_WORD_LENGTH" /> ቃላት ያነሰ ጽሁፍ ግልባጭ አይደገፍም</translation>
 <translation id="4830894019733815633">ሸለቆ</translation>
 <translation id="4832079907277790330">በፋይሎች መተግበሪያ ውስጥ አቃፊን ይምረጡ...</translation>
 <translation id="4835901797422965222">ምንም ንቁ አውታረ መረቦች የሉም</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">ተመሳሳይ፦</translation>
 <translation id="5130848777448318809">ትናንሽ ፈረሶች</translation>
 <translation id="5137451382116112100">ሙሉ</translation>
+<translation id="5140788690559353412">የትምህርት ቤት መለያዎን መዳረሻ ሲያጡ፣ ከእንግዲህ እንደ Gmail፣ ሰነዶች፣ ስላይዶች እና ሌሎች ያሉ ተጓዳኝ ኢሜይል እና Google Drive ፋይሎች መዳረሻ አይኖርዎትም።</translation>
 <translation id="5142961317498132443">ማረጋገጥ</translation>
 <translation id="5144311987923128508">የአረጋግጥ አዝራር አሁን ተሰናክሏል</translation>
 <translation id="5144887194300568405">ትርጉምን ቅዳ</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) የኤችቲቲፒኤስ የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="6078323886959318429">አቋራጭ አክል</translation>
 <translation id="6091080061796993741">ቢጫ</translation>
+<translation id="6093853427925392522">መዳረሻ ከማጣትዎ በፊት የትምህርት ቤት መለያዎን ውሂብ ወደ እርስዎ የግል መለያ ለማስተላለፍ የContent Transfer መተግበሪያን በGoogle መጠቀምዎን ያረጋግጡ።</translation>
 <translation id="6104112872696127344">መቃኘት ተሰርዟል</translation>
 <translation id="6106186594183574873">ለማጠናቀቅ፣ የእርስዎን ይለፍ ቃል ያስገቡ</translation>
 <translation id="6108689792487843350">አግባቢ ፍኖት አይገኝም</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">የመድረሻ ነጥብ ስም (ኤፒኤን)</translation>
 <translation id="7134436342991564651">{0,plural, =1{የስም አገልጋይ}one{የስም አገልጋዩች}other{የስም አገልጋዩች}}</translation>
 <translation id="7135814714616751706">የፍለጋ አቋራጮች</translation>
+<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">በመያያዝ ላይ</translation>
 <translation id="7144878232160441200">እንደገና ሞክር</translation>
 <translation id="7144954474087165241">ፓጎዳ</translation>
@@ -1394,6 +1394,7 @@
 <translation id="7856267634822906833">የብሉቱዝ መነካት የሚችል ማያ</translation>
 <translation id="7859006200041800233">የቁልቋል አበባ</translation>
 <translation id="7869143217755017858">ጨለማ ሁነታን አሰናክል</translation>
+<translation id="7878972877380405573">በእንዳነብ እርዳኝ ያጠቃልሉ</translation>
 <translation id="7881066108824108340">ዲኤንኤስ</translation>
 <translation id="7882358943899516840">የአቅራቢ ዓይነት</translation>
 <translation id="7882501334836096755">ይፋዊ ቁልፍ</translation>
@@ -1537,6 +1538,7 @@
 <translation id="8626489604350149811">ለ<ph name="APN_NAME" /> ተጨማሪ እርምጃዎች</translation>
 <translation id="86356131183441916">ፈዛዛ ወይን ጠጅ</translation>
 <translation id="8647595191512746911">የኦዲዮ ጽሑፍ ግልባጭ</translation>
+<translation id="8650852232143958317">የእርስዎን Gmail እና Google Drive ፋይሎች ከእርስዎ ጋር ይውሰዱ</translation>
 <translation id="8651481478098336970">ድምፅ ዝጋ</translation>
 <translation id="8655295600908251630">ሰርጥ</translation>
 <translation id="8655828773034788261">ዩአርኤል ያጋሩ፦</translation>

@@ -114,6 +114,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="132346741904777634">Cámara axustada á esquina superior esquerda. Conflito coa plataforma do sistema.</translation>
 <translation id="132415371743256095">Pechar <ph name="DESK_NAME" /> e as ventás</translation>
 <translation id="1333308631814936910">Conectouse <ph name="DISPLAY_NAME" /></translation>
+<translation id="1337081488893096731">Usa a aplicación de transferencia de contido para pasar os datos da túa conta de centro educativo á túa conta persoal</translation>
 <translation id="1340378040547539434">Afastar páxina</translation>
 <translation id="1341651618736211726">Menú adicional</translation>
 <translation id="1341926407152459446">Usa <ph name="DEVICE_NAME" /> para a entrada e a saída de audio</translation>
@@ -242,6 +243,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="17722141032474077">Cálculos</translation>
 <translation id="1774796056689732716">Calendario, <ph name="CURRENT_MONTH_YEAR" />; nestes momentos está seleccionada a data <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Configurar a visualización do contido multimedia, das notificacións e das fotos recentes do teu teléfono</translation>
+<translation id="1786487376942610288">Cambiar entre o tamaño máximo e o actual da ventá da pantalla superposta</translation>
 <translation id="1787955149152357925">Desactivado</translation>
 <translation id="1796561540704213354">Sitios web que inclúen as páxinas que visitaches e as abertas</translation>
 <translation id="179842970735685253">Condicións de servizo de Google</translation>
@@ -337,6 +339,9 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="219905428774326614">Menú de aplicacións, todas as aplicacións</translation>
 <translation id="2201071101391734388">Foto recente <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Contraer Tarefas de Google</translation>
+<translation id="2206960886090042977">O panel táctil integrado está desactivado porque hai un rato conectado. Para confirmar o cambio, utiliza o rato ou o teclado.
+
+Se non o fas, o panel táctil volverá activarse dentro de 30 segundos.</translation>
 <translation id="2208323208084708176">Modo de escritorio unificado</translation>
 <translation id="2220572644011485463">PIN ou contrasinal</translation>
 <translation id="2222841058024245321">Escritorio 7</translation>
@@ -1469,6 +1474,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="598407983968395253">Usar modelo</translation>
 <translation id="5986723678596105470">Unirse con Google Meet</translation>
 <translation id="598882571027504733">Para recibir a actualización, reinicia o dispositivo Chromebook co teclado conectado.</translation>
+<translation id="5990992855591814753">Concéntrate con listas de reprodución personalizadas. Desfruta de YouTube Music e YouTube, sen anuncios, con 3 meses de YouTube Premium sen custo económico. Aplícanse condicións.</translation>
 <translation id="5998374579424866922">Desactivar os controis de xogo</translation>
 <translation id="6000279412553873020">Teclas, botóns e moito máis</translation>
 <translation id="6012623610530968780">Páxina <ph name="SELECTED_PAGE" /> de <ph name="TOTAL_PAGE_NUM" /></translation>
@@ -1907,6 +1913,9 @@ Nova instalación</translation>
 Para apagar o dispositivo, mantén premido de novo o botón de acendido.</translation>
 <translation id="7523420897035067483">Activar o modo Non molestar durante a sesión Sen distraccións</translation>
 <translation id="7524043547948122239">Tarefas de Google</translation>
+<translation id="7524919752437339268">O panel táctil integrado está desactivado. Para confirmar o cambio, utiliza o teclado ou outro dispositivo apuntador.
+
+Se non o fas, o panel táctil volverá activarse dentro de 30 segundos.</translation>
 <translation id="7525067979554623046">Crear</translation>
 <translation id="7526573455193969409">É posible que se controle a rede</translation>
 <translation id="7536035074519304529">Enderezo IP: <ph name="ADDRESS" /></translation>
@@ -2294,6 +2303,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="8858369206579825206">Controis de privacidade</translation>
 <translation id="8860366331836346216">Engadir eSIM</translation>
 <translation id="8870509716567206129">A aplicación non é compatible coa función de pantalla dividida.</translation>
+<translation id="8873203135446552888">Confirmar que queres desactivar o panel táctil integrado</translation>
 <translation id="8874184842967597500">Non conectada</translation>
 <translation id="8875021410787719674">Móvete entre a esquina inferior dereita, o menú de aplicacións, a barra de enderezos, a barra de marcadores, o sitio web que teñas aberto e as descargas</translation>
 <translation id="8876148469852588625">Evento <ph name="EVENT_POSITION" /> de <ph name="EVENT_TOTAL_COUNT" /></translation>

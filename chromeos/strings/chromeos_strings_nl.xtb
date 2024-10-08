@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Helderheid van scherm verlagen</translation>
 <translation id="2086091080968010660">Tijdgebaseerde wijzigingen zijn misschien niet nauwkeurig. Zet locatietoegang voor het systeem aan in de instellingen.</translation>
 <translation id="2102231663024125441">Tekstbewerking</translation>
-<translation id="2102648867808308635">Help me deze pagina te lezen</translation>
 <translation id="2105810540595158374">Apparaat is een gamecontroller.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versie <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">Op dit moment alleen beschikbaar in het Engels (VS)</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">alle apps bekijken</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Gegevens over prestatietracering<ph name="END_LINK1" /> sturen</translation>
 <translation id="3517001332549868749">Chrome OS-update</translation>
-<translation id="3522508178835057262">Op dit moment worden transcripten van meer dan <ph name="MAX_WORD_LENGTH" /> woorden niet ondersteund</translation>
 <translation id="3527036260304016759">Mislukt - Onbekende fout</translation>
 <translation id="353214771040290298">Klaar met bewerken</translation>
 <translation id="3532980081107202182">Nog ongeveer <ph name="MIN_REMAINING" /> minuten</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">Licht thema</translation>
 <translation id="4813136279048157860">Mijn afbeeldingen</translation>
 <translation id="4813345808229079766">Verbinding</translation>
-<translation id="4824527342590024245">Op dit moment worden transcripten van minder dan <ph name="MIN_WORD_LENGTH" /> woorden niet ondersteund.</translation>
 <translation id="4830894019733815633">canyon</translation>
 <translation id="4832079907277790330">Map selecteren in de app Bestanden...</translation>
 <translation id="4835901797422965222">Geen actieve netwerken</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">Vergelijkbaar:</translation>
 <translation id="5130848777448318809">pony's</translation>
 <translation id="5137451382116112100">Volledig</translation>
+<translation id="5140788690559353412">Als je de toegang tot je schoolaccount kwijtraakt, heb je ook geen toegang meer tot de bijbehorende e-mail en Google Drive-bestanden, zoals Gmail, Documenten en Presentaties.</translation>
 <translation id="5142961317498132443">Verificatie</translation>
 <translation id="5144311987923128508">De knop Bevestigen staat nu uit</translation>
 <translation id="5144887194300568405">Vertaling kopiëren</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) HTTP-vertraging</translation>
 <translation id="6078323886959318429">Snelkoppeling toevoegen</translation>
 <translation id="6091080061796993741">geel</translation>
+<translation id="6093853427925392522">Gebruik de Content Transfer-app van Google om de gegevens van je schoolaccount over te zetten naar je persoonlijke account voordat je de toegang kwijtraakt.</translation>
 <translation id="6104112872696127344">Scannen is geannuleerd</translation>
 <translation id="6106186594183574873">Geef je oude wachtwoord op om te voltooien</translation>
 <translation id="6108689792487843350">Gateway is onbereikbaar</translation>
@@ -1245,6 +1244,7 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="7130438335435247835">Toegangspuntnaam (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Naamserver}other{Naamservers}}</translation>
 <translation id="7135814714616751706">Sneltoetsen zoeken</translation>
+<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Verbinden</translation>
 <translation id="7144878232160441200">Opnieuw proberen</translation>
 <translation id="7144954474087165241">pagode</translation>
@@ -1394,6 +1394,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="7856267634822906833">Bluetooth-touchscreen</translation>
 <translation id="7859006200041800233">cactusbloem</translation>
 <translation id="7869143217755017858">Donkere modus uitzetten</translation>
+<translation id="7878972877380405573">Samenvatten met Help me met lezen</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Type provider</translation>
 <translation id="7882501334836096755">Openbare sleutel</translation>
@@ -1537,6 +1538,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="8626489604350149811">Meer acties voor <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Lichtpaars</translation>
 <translation id="8647595191512746911">Audiotranscriptie</translation>
+<translation id="8650852232143958317">Je Gmail- en Google Drive-bestanden meenemen</translation>
 <translation id="8651481478098336970">geluid uitzetten</translation>
 <translation id="8655295600908251630">Kanaal</translation>
 <translation id="8655828773034788261">URL delen:</translation>

@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">ዋጋ <ph name="MINIMUM_DATE_OR_TIME" /> ወይም ከዚያ በኋላ መሆን አለበት።</translation>
 <translation id="2761667185364618470">ለመቀጠል ከፈለጉ እባክዎ ይህ ሳጥን ላይ ምልክት ያድርጉ።</translation>
 <translation id="2908441821576996758">እባክዎ በኮማ የተለዩ የኢሜይል አድራሻዎች ዝርዝር ያስገቡ።</translation>
+<translation id="2940013921954129954">ትክክለኛ አካባቢ ተፈቅዷል</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> ሜባ</translation>
 <translation id="3075154866155599887">እባክዎ የሚሰራ ዋጋ ያስገቡ። መስኩ ያልተጠናቀቀ ነው ወይም ልክ ያልሆነ ቀን አለው።</translation>
 <translation id="310520048233152454">እባክዎ አንድ ዩአርኤል ያስገቡ።</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">ደካማ የመልሶ ማጫወት ጥራት</translation>
 <translation id="6790428901817661496">አጫውት</translation>
 <translation id="6820355525329141109">ተሰኪን መጫን አልተቻለም።</translation>
+<translation id="688706781007114099">አካባቢን ተጠቀም</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">እባክዎ ይህን ጽሁፍ ወደ <ph name="MIN_CHARACTERS" /> ወይም ከዚያ በላይ ቁምፊዎች ያራዝሙት (አሁን እየተጠቀሙ ያሉት 1 ቁምፊ ነው)።</translation>
 <translation id="709897737746224366">እባክዎ የተጠየቀውን ቅርጸት ያዛምዱ።</translation>

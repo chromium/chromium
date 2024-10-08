@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Reducerea luminozității ecranului</translation>
 <translation id="2086091080968010660">Este posibil ca modificările în funcție de oră să nu fie precise. Activează accesul la locația sistemului în setări.</translation>
 <translation id="2102231663024125441">Editarea textului</translation>
-<translation id="2102648867808308635">Ajută-mă să citesc această pagină</translation>
 <translation id="2105810540595158374">Dispozitivul este un controler de jocuri.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versiunea <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">Opțiune disponibilă numai în limba engleză (S.U.A.)</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">vezi toate aplicațiile</translation>
 <translation id="3510890413042482857">Trimite <ph name="BEGIN_LINK1" />datele privind urmărirea performanței<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Actualizare SO Chrome</translation>
-<translation id="3522508178835057262">Momentan, nu se acceptă transcrierile cu mai mult de <ph name="MAX_WORD_LENGTH" /> cuvinte</translation>
 <translation id="3527036260304016759">Nereușită – Eroare necunoscută</translation>
 <translation id="353214771040290298">Editarea s-a încheiat</translation>
 <translation id="3532980081107202182">Au mai rămas aproximativ <ph name="MIN_REMAINING" /> minute</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">Temă luminoasă</translation>
 <translation id="4813136279048157860">Imaginile mele</translation>
 <translation id="4813345808229079766">Conexiune</translation>
-<translation id="4824527342590024245">Momentan, nu este acceptată o transcriere cu mai puțin de <ph name="MIN_WORD_LENGTH" /> cuvinte</translation>
 <translation id="4830894019733815633">canion</translation>
 <translation id="4832079907277790330">Selectează dosarul în aplicația Fișiere...</translation>
 <translation id="4835901797422965222">Nu există rețele active</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">Sinonime:</translation>
 <translation id="5130848777448318809">ponei</translation>
 <translation id="5137451382116112100">Complet</translation>
+<translation id="5140788690559353412">Când pierzi accesul la contul școlar, nu vei mai avea acces la e-mailul asociat și la fișierele Google Drive, cum ar fi Gmail, Documente, Prezentări și altele.</translation>
 <translation id="5142961317498132443">Autentificare</translation>
 <translation id="5144311987923128508">Butonul de confirmare este acum dezactivat</translation>
 <translation id="5144887194300568405">Copiază traducerea</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) Latența solicitărilor HTTP</translation>
 <translation id="6078323886959318429">Adaugă o comandă rapidă</translation>
 <translation id="6091080061796993741">galben</translation>
+<translation id="6093853427925392522">Folosește aplicația Content Transfer de la Google pentru a muta datele din contul școlar în contul personal înainte de a-ți pierde accesul.</translation>
 <translation id="6104112872696127344">Scanarea a fost anulată</translation>
 <translation id="6106186594183574873">Pentru a finaliza, introdu vechea parolă</translation>
 <translation id="6108689792487843350">Gateway-ul nu poate fi accesat</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">Numele punctului de acces (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Server de nume}few{Servere de nume}other{Servere de nume}}</translation>
 <translation id="7135814714616751706">Caută comenzi rapide</translation>
+<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Se conectează</translation>
 <translation id="7144878232160441200">Reîncearcă</translation>
 <translation id="7144954474087165241">pagodă</translation>
@@ -1394,6 +1394,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="7856267634822906833">Ecran tactil cu Bluetooth</translation>
 <translation id="7859006200041800233">floare de cactus</translation>
 <translation id="7869143217755017858">Dezactivează modul întunecat</translation>
+<translation id="7878972877380405573">Rezumă cu Ajută-mă să citesc</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tip furnizor</translation>
 <translation id="7882501334836096755">Cheie publică</translation>
@@ -1537,6 +1538,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="8626489604350149811">Mai multe acțiuni pentru <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Mov deschis</translation>
 <translation id="8647595191512746911">Transcriere audio</translation>
+<translation id="8650852232143958317">Ia-ți fișierele Gmail și Google Drive cu tine</translation>
 <translation id="8651481478098336970">dezactivează sunetul</translation>
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655828773034788261">Trimite adresa URL:</translation>

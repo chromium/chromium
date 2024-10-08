@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">Η τιμή πρέπει να είναι <ph name="MINIMUM_DATE_OR_TIME" /> ή μεταγενέστερη.</translation>
 <translation id="2761667185364618470">Αν θέλετε να συνεχίσετε, επιλέξτε αυτό το πλαίσιο.</translation>
 <translation id="2908441821576996758">Εισαγάγετε μια λίστα διευθύνσεων ηλεκτρονικού ταχυδρομείου διαχωρισμένη με κόμματα.</translation>
+<translation id="2940013921954129954">Η ακριβής τοποθεσία επιτρέπεται</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Καταχωρίστε μια έγκυρη τιμή. Το πεδίο είναι ελλιπές ή περιέχει μη έγκυρη ημερομηνία.</translation>
 <translation id="310520048233152454">Εισαγάγετε μια διεύθυνση URL.</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">Κακή ποιότητα αναπαραγωγής</translation>
 <translation id="6790428901817661496">Αναπαραγωγή</translation>
 <translation id="6820355525329141109">Δεν είναι δυνατή η φόρτωση της προσθήκης.</translation>
+<translation id="688706781007114099">Χρήση τοποθεσίας</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Αυξήστε την έκταση αυτού του κειμένου στους <ph name="MIN_CHARACTERS" /> χαρακτήρες ή περισσότερο (αυτήν τη στιγμή χρησιμοποιείτε 1 χαρακτήρα).</translation>
 <translation id="709897737746224366">Αντιστοιχίστε τη ζητούμενη μορφή.</translation>

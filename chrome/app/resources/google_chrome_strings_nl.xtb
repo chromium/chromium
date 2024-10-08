@@ -74,6 +74,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1919130412786645364">Inloggen bij Chrome toestaan</translation>
 <translation id="1953553007165777902">Downloaden... Nog <ph name="MINUTE" /> minuten</translation>
 <translation id="1982647487457769627">Chrome werkt op verschillende platforms zodat je elk apparaat altijd op dezelfde vertrouwde manier kunt gebruiken</translation>
+<translation id="19955905961160405">Zoeken met Google Lens naar wat er op je scherm staat</translation>
 <translation id="2001586581944147178">Maak het moeilijker voor mensen met toegang tot je internetverkeer om te zien welke sites je bezoekt. Chrome gebruikt een beveiligde verbinding om het IP-adres van een site op te zoeken in het DNS (Domain Name System).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Deze extensie wordt niet meer ondersteund. Chrome raadt je aan deze te verwijderen.}other{Deze extensies worden niet meer ondersteund. Chrome raadt je aan deze te verwijderen.}}</translation>
 <translation id="2018528049276128029">Elk profiel heeft eigen Chrome-informatie, zoals bookmarks, geschiedenis en wachtwoorden</translation>
@@ -91,6 +92,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2126108037660393668">De verificatie van het gedownloade bestand is mislukt.</translation>
 <translation id="2128411189117340671">Chrome-profielen beheren</translation>
 <translation id="2131230230468101642">Ter bescherming van je privacy verwijderen we automatisch interesses die ouder zijn dan 4 weken. Het kan gebeuren dat een interesse weer in de lijst komt te staan als je blijft browsen. Je kunt ook interesses verwijderen waarvan je niet wilt dat Chrome deze overweegt.</translation>
+<translation id="2137162749895930932">Scherm voor vertalen sluiten</translation>
 <translation id="2139300032719313227">Chrome OS opnieuw opstarten</translation>
 <translation id="2151406531797534936">Chrome nu opnieuw opstarten</translation>
 <translation id="2163089732491971196">Voer je wachtwoordzin in als je Chrome-gegevens wilt gebruiken en opslaan in je Google-account</translation>
@@ -174,6 +176,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3019382870990049182">Herstarten om &amp;Chrome OS Flex te updaten</translation>
 <translation id="3037838751736561277">Google Chrome bevindt zich in de achtergrondmodus.</translation>
 <translation id="3038232873781883849">Wachten op installatie...</translation>
+<translation id="3045032126857188731">Vertaalde taal: <ph name="LANGUAGE" /></translation>
 <translation id="3059710691562604940">Safe Browsing staat uit. Chrome raadt je aan deze functie aan te zetten.</translation>
 <translation id="306179102415443347">Gebruik je snelkoppeling om snel naar Google Wachtwoordmanager te gaan. Je kunt je snelkoppeling verplaatsen naar het startscherm of de App Launcher van je computer.</translation>
 <translation id="3065168410429928842">Chrome-tabblad</translation>
@@ -192,7 +195,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3234642784688107085">Probeer nieuwe AI-functies om thema's te maken, hulp bij het schrijven te krijgen en georganiseerd te blijven</translation>
 <translation id="3245429137663807393">Als je ook Chrome-gebruiksrapporten deelt, bevatten die rapporten de URL's die je bezoekt</translation>
 <translation id="3261565993776444564">Pas je browser aan met een nieuwe kleur</translation>
-<translation id="3269209112443570745">Nieuw! Een makkelijke manier om te zoeken naar wat er op je scherm staat</translation>
 <translation id="3282568296779691940">Inloggen bij Chrome</translation>
 <translation id="3286538390144397061">Nu herstarten</translation>
 <translation id="3292333338048274092">Start Chrome daarna opnieuw op.</translation>
@@ -241,12 +243,14 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="386202838227397562">Sluit alle Google Chrome-vensters en probeer het opnieuw.</translation>
 <translation id="3865754807470779944">Chrome-versie <ph name="PRODUCT_VERSION" /> is geïnstalleerd</translation>
 <translation id="3873044882194371212">Link openen in een Chrome-inco&amp;gnitovenster</translation>
+<translation id="3885770153807205175">Taalkiezer</translation>
 <translation id="3889417619312448367">Google Chrome verwijderen</translation>
 <translation id="3941890832296813527">Installatiefout: De bestandsnaam van het installatieprogramma is ongeldig of wordt niet ondersteund.</translation>
 <translation id="3973161977468201858">Google Chrome wil je Google Wachtwoordmanager-gegevens verwijderen. Typ je Windows-wachtwoord om dit toe te staan.</translation>
 <translation id="398236277091248993">Chrome blijft snel met functies om de prestaties te verbeteren</translation>
 <translation id="3999683152997576765">Je kunt interessante onderwerpen bekijken en verwijderen die sites hebben gebruikt om advertenties te tonen. Chrome schat je interesses op basis van je recente browsegeschiedenis.</translation>
 <translation id="4022972681110646219">Scherm vertalen</translation>
+<translation id="4023601594785368013">Oorspronkelijke taal: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Chrome OS moet opnieuw worden gestart om de update uit te voeren.</translation>
 <translation id="4050175100176540509">Er zijn belangrijke beveiligingsverbeteringen en nieuwe functies beschikbaar in de nieuwste versie.</translation>
 <translation id="4053720452172726777">Google Chrome aanpassen en beheren</translation>
@@ -520,6 +524,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="7514258452813684157">Google Updater-service</translation>
 <translation id="7515191208480168435">Je kunt Google Lens vastzetten voor snelle toegang</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
+<translation id="756809126120519699">Chrome-gegevens gewist</translation>
 <translation id="7572537927358445944">Uit • Chrome kan niet verifiëren waar deze extensie vandaan komt</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" />-installatieprogramma</translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
@@ -537,6 +542,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="7668816516367091728">Voer rechtstreeks vanuit de adresbalk taken uit, zoals vertalen en berekenen</translation>
 <translation id="7670287553302121848">Chrome-account moet opnieuw worden geverifieerd</translation>
 <translation id="769538538642757151">Chrome laat het je weten als je iets moet controleren</translation>
+<translation id="77283119132245232">Biedt systeemtraceringsservices voor <ph name="BROWSER_NAME" />. Als deze service is uitgezet, bevatten prestatietraceringen die door de browser worden gemaakt geen systeemgebeurtenissen zoals contextwissels en ready-thread-gebeurtenissen.</translation>
 <translation id="7747138024166251722">Het installatieprogramma kan geen tijdelijke directory maken. Controleer of je nog schijfruimte hebt en of je rechten hebt om software te installeren.</translation>
 <translation id="7761834446675418963">Klik op je naam om Chrome te openen en begin met surfen.</translation>
 <translation id="7763983146198734674">Sla je wachtwoorden op en gebruik ze onderweg</translation>

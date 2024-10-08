@@ -114,6 +114,7 @@
 <translation id="132346741904777634">Камера жоғарғы сол жақ бұрышқа ауыстырылды. Жүйе платформасына қатысты қарама-қайшылық туындады.</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> жұмыс үстелін және терезелерін жабу</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> қосылған</translation>
+<translation id="1337081488893096731">Оқу аккаунтындағы деректерді жеке аккаунтқа Content Transfer қолданбасымен тасымалдаңыз.</translation>
 <translation id="1340378040547539434">Бетті кішірейту</translation>
 <translation id="1341651618736211726">Қосымша мәзір</translation>
 <translation id="1341926407152459446">Аудио кірісі және шығысы ретінде "<ph name="DEVICE_NAME" />" құрылғысын пайдаланыңыз.</translation>
@@ -242,6 +243,7 @@
 <translation id="17722141032474077">Есептеу</translation>
 <translation id="1774796056689732716">Күнтізбе, <ph name="CURRENT_MONTH_YEAR" />, ағымдағы <ph name="DATE" /> таңдалды.</translation>
 <translation id="178347895271755507">Телефондағы соңғы фотосуреттерді, медиафайлдарды және хабарландыруларды көру мүмкіндігін реттеу</translation>
+<translation id="1786487376942610288">"Суреттегі сурет" режимі терезесінің максималды немесе қазіргі өлшемі арасында ауыстыру</translation>
 <translation id="1787955149152357925">Өшірулі</translation>
 <translation id="1796561540704213354">Веб-сайттар, соның ішінде сіз кірген беттер мен ашылған беттер</translation>
 <translation id="179842970735685253">Google Қызмет көрсету шарттары</translation>
@@ -337,6 +339,9 @@
 <translation id="219905428774326614">Launcher, барлық қолданбалар</translation>
 <translation id="2201071101391734388">Соңғы фото: <ph name="INDEX" />/<ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Google Tasks интерфейсін жию</translation>
+<translation id="2206960886090042977">Ендірілген сенсорлық тақта өшірілген, себебі тінтуір қосылған. Өзгерісті тінтуірмен немесе сенсорлық тақтамен растаңыз.
+
+Әйтпесе ендірілген сенсорлық тақта 30 секундтан кейін қайта қосылады.</translation>
 <translation id="2208323208084708176">Бірыңғай жұмыс үстелі режимі</translation>
 <translation id="2220572644011485463">PIN коды немесе құпия сөз</translation>
 <translation id="2222841058024245321">7-ші жұмыс үстелі</translation>
@@ -1468,6 +1473,7 @@
 <translation id="598407983968395253">Үлгіні қолдану</translation>
 <translation id="5986723678596105470">Google Meet-пен қосылу</translation>
 <translation id="598882571027504733">Жаңартылған нұсқаны алу үшін, пернетақта жалғанған күйі Chromebook ноутбугын қайта қосыңыз.</translation>
+<translation id="5990992855591814753">Зейін қоюға арналған жекелендірілген ойнату тізімдерімен тренділерден қалыспаңыз. YouTube Premium-ді 3 ай тегін пайдаланып, YouTube Music пен YouTube-ті жарнамасыз тамашалаңыз. Шарттары бар.</translation>
 <translation id="5998374579424866922">Ойынның басқару элементтерін өшіру</translation>
 <translation id="6000279412553873020">Пернелер, түймелер және т.б.</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" /> бет</translation>
@@ -1906,6 +1912,9 @@
 Құрылғыны өшіру үшін құрылғыдағы қуат түймесін қайта басып тұрыңыз.</translation>
 <translation id="7523420897035067483">Зейін қою режимінде болған кезде, "Мазаламау" функциясын қосу</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">Ендірілген сенсорлық тақта өшірілген. Өзгерісті пернетақтамен немесе басқа нұсқаушы құрылғымен растаңыз.
+
+Әйтпесе ендірілген сенсорлық тақта 30 секундтан кейін қайта қосылады.</translation>
 <translation id="7525067979554623046">Жасау</translation>
 <translation id="7526573455193969409">Желі бақылануы мүмкін</translation>
 <translation id="7536035074519304529">IP мекенжайы: <ph name="ADDRESS" /></translation>
@@ -2293,6 +2302,7 @@
 <translation id="8858369206579825206">Құпиялық параметрлері</translation>
 <translation id="8860366331836346216">eSIM картасын қосу</translation>
 <translation id="8870509716567206129">Қолданба бөлінген экранды қолдамайды.</translation>
+<translation id="8873203135446552888">Ендірілген сенсорлық тақтаны өшіргіңіз келетінін растаңыз</translation>
 <translation id="8874184842967597500">Қосылмаған</translation>
 <translation id="8875021410787719674">Төменгі оң жақ бұрыш, іске қосу тақтасы, мекенжай жолағы, бетбелгілер жолағы, ашық веб-сайт және жүктеп алынғандар арасында жылжу</translation>
 <translation id="8876148469852588625"><ph name="EVENT_POSITION" />/<ph name="EVENT_TOTAL_COUNT" /> іс-шара</translation>

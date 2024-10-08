@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">Минимальное значение должно быть <ph name="MINIMUM_DATE_OR_TIME" />.</translation>
 <translation id="2761667185364618470">Чтобы продолжить, установите этот флажок.</translation>
 <translation id="2908441821576996758">Введите адреса электронной почты через запятую.</translation>
+<translation id="2940013921954129954">Доступ к точному местоположению разрешен</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> МБ</translation>
 <translation id="3075154866155599887">Введите верное значение. Поле не заполнено или введена недействительная дата.</translation>
 <translation id="310520048233152454">Введите URL.</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">Плохое качество воспроизведения</translation>
 <translation id="6790428901817661496">Воспроизвести</translation>
 <translation id="6820355525329141109">Не удалось загрузить плагин</translation>
+<translation id="688706781007114099">Включить геолокацию</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Текст должен быть не короче <ph name="MIN_CHARACTERS" /> симв. Длина текста сейчас: 1 символ.</translation>
 <translation id="709897737746224366">Введите данные в указанном формате.</translation>

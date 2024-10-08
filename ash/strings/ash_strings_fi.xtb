@@ -114,6 +114,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="132346741904777634">Kamera kohdistettu vasempaan yläkulmaan. Ristiriita järjestelmän alustan kanssa.</translation>
 <translation id="132415371743256095">Sulje <ph name="DESK_NAME" /> ja ikkunat</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> yhdistetty</translation>
+<translation id="1337081488893096731">Siirrä koulutilin data henkilökohtaiselle tilille Content Transfer ‑sovelluksella</translation>
 <translation id="1340378040547539434">Loitonna sivua</translation>
 <translation id="1341651618736211726">Ylivuoto</translation>
 <translation id="1341926407152459446">Valitse "<ph name="DEVICE_NAME" />" äänitulolle ja ‐toistolle</translation>
@@ -242,6 +243,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="17722141032474077">Laskutoimitukset</translation>
 <translation id="1774796056689732716">Kalenteri, <ph name="CURRENT_MONTH_YEAR" />, <ph name="DATE" /> on valittuna</translation>
 <translation id="178347895271755507">Ota käyttöön puhelimen viimeaikaisten kuvien, median ja ilmoitusten katselu</translation>
+<translation id="1786487376942610288">Vaihda pikkuruutu-ikkunan maksimikoon tai tämänhetkisen koon välillä</translation>
 <translation id="1787955149152357925">Pois päältä</translation>
 <translation id="1796561540704213354">Verkkosivustot, esimerkiksi aiemmin avaamasi sivut ja avoinna olevat sivut</translation>
 <translation id="179842970735685253">Googlen käyttöehtojen</translation>
@@ -337,6 +339,9 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="219905428774326614">Käynnistysohjelma, kaikki sovellukset</translation>
 <translation id="2201071101391734388">Viimeisin kuva <ph name="INDEX" />/<ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Tiivistä Google Tasks</translation>
+<translation id="2206960886090042977">Sisäänrakennettu kosketuslevy on poistettu käytöstä, koska hiiri on kytkettynä. Vahvista muutos hiirellä tai näppäimistöllä.
+
+Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön 30 sekunnin kuluttua.</translation>
 <translation id="2208323208084708176">Yhtenäisen työpöydän tila</translation>
 <translation id="2220572644011485463">PIN-koodi tai salasana</translation>
 <translation id="2222841058024245321">Työpöytä 7</translation>
@@ -1468,6 +1473,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="598407983968395253">Käytä mallia</translation>
 <translation id="5986723678596105470">Liity Google Meetin avulla</translation>
 <translation id="598882571027504733">Voit asentaa päivityksen käynnistämällä Chromebookisi uudelleen niin, että näppäimistö on kytkettynä.</translation>
+<translation id="5990992855591814753">Pidä tilanne hallussa personoitujen, keskittymiseen tarkoitettujen soittolistojen avulla. YouTube Music ja YouTube ilman mainoksia – 3 kuukautta YouTube Premiumia maksutta. Huomioi ehdot.</translation>
 <translation id="5998374579424866922">Laita peliohjaimet pois päältä</translation>
 <translation id="6000279412553873020">Näppäimet, painikkeet ja muuta</translation>
 <translation id="6012623610530968780">Sivu <ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" /></translation>
@@ -1906,6 +1912,9 @@ Uusi asennus</translation>
 Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="7523420897035067483">Ota Älä häiritse ‐tila käyttöön, kun olet Keskittymistilassa</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">Sisäänrakennettu kosketuslevy on poistettu käytöstä. Vahvista muutos näppäimistöllä tai toisella osoitinlaitteella.
+
+Muussa tapauksessa sisäänrakennettu kosketuslevy otetaan käyttöön 30 sekunnin kuluttua.</translation>
 <translation id="7525067979554623046">Luo</translation>
 <translation id="7526573455193969409">Verkkoa saatetaan valvoa</translation>
 <translation id="7536035074519304529">IP-osoite: <ph name="ADDRESS" /></translation>
@@ -2292,6 +2301,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8858369206579825206">Yksityisyysasetukset</translation>
 <translation id="8860366331836346216">Lisää eSIM</translation>
 <translation id="8870509716567206129">Sovellus ei tue jaetun näytön tilaa.</translation>
+<translation id="8873203135446552888">Vahvista, että haluat poistaa sisäänrakennetun kosketuslevyn käytöstä</translation>
 <translation id="8874184842967597500">Ei yhdistetty</translation>
 <translation id="8875021410787719674">Siirry oikean alakulman, käynnistysohjelman, osoitepalkin, kirjanmerkkipalkin, avoimen verkkosivuston ja latausten välillä</translation>
 <translation id="8876148469852588625">Tapahtuma <ph name="EVENT_POSITION" />/<ph name="EVENT_TOTAL_COUNT" /></translation>

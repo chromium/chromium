@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Осветленоста на екранот се намали</translation>
 <translation id="2086091080968010660">Промените според време можеби не се прецизни. Вклучете пристап до локацијата за оперативниот систем во поставките.</translation>
 <translation id="2102231663024125441">Изменување текст</translation>
-<translation id="2102648867808308635">Помош при читање на страницава</translation>
 <translation id="2105810540595158374">Уредот е контролер на игра.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, верзија <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">Во моментов, достапно е само на англиски (САД)</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">прикажи ги сите апликации</translation>
 <translation id="3510890413042482857">Испрати <ph name="BEGIN_LINK1" />податоци во траги за учинок<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Ажурирање на Chrome OS</translation>
-<translation id="3522508178835057262">Засега, не е поддржана транскрипција со повеќе од <ph name="MAX_WORD_LENGTH" /> збора</translation>
 <translation id="3527036260304016759">Неуспешно - непозната грешка</translation>
 <translation id="353214771040290298">Изменувањето е готово</translation>
 <translation id="3532980081107202182">Преостануваат околу <ph name="MIN_REMAINING" /> мин.</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">Светла тема</translation>
 <translation id="4813136279048157860">Мои слики</translation>
 <translation id="4813345808229079766">Врска</translation>
-<translation id="4824527342590024245">Засега, не е поддржана транскрипција со помалку од <ph name="MIN_WORD_LENGTH" /> збора</translation>
 <translation id="4830894019733815633">кањон</translation>
 <translation id="4832079907277790330">Изберете папка во апликацијата „Датотеки“…</translation>
 <translation id="4835901797422965222">Нема активни мрежи</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">Слични:</translation>
 <translation id="5130848777448318809">понија</translation>
 <translation id="5137451382116112100">Цел екран</translation>
+<translation id="5140788690559353412">Кога ќе го изгубите пристапот до вашата училишна сметка, веќе нема да имате пристап до поврзаната е-пошта и датотеките во Google Drive, како Gmail, „Документи“, „Слајдови“ и друго.</translation>
 <translation id="5142961317498132443">Проверка</translation>
 <translation id="5144311987923128508">Копчето „Потврди“ сега е оневозможено</translation>
 <translation id="5144887194300568405">Копирај го преводот</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) Латенција на HTTP</translation>
 <translation id="6078323886959318429">Додајте кратенка</translation>
 <translation id="6091080061796993741">жолта</translation>
+<translation id="6093853427925392522">Погрижете се да ја користите апликацијата Content Transfer од Google за да ги префрлите податоците во училишната сметка во вашата лична сметка пред да го изгубите пристапот.</translation>
 <translation id="6104112872696127344">Скенирањето е откажано</translation>
 <translation id="6106186594183574873">За да завршите, внесете ја старата лозинка</translation>
 <translation id="6108689792487843350">Порталот е недостапен</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">Име на пристапна точка (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Именски сервер}one{Именски сервер}other{Именски сервери}}</translation>
 <translation id="7135814714616751706">Пребарувајте кратенки</translation>
+<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Се поврзува</translation>
 <translation id="7144878232160441200">Обиди се повторно</translation>
 <translation id="7144954474087165241">пагода</translation>
@@ -1394,6 +1394,7 @@
 <translation id="7856267634822906833">Допирен екран со Bluetooth</translation>
 <translation id="7859006200041800233">цвет од кактус</translation>
 <translation id="7869143217755017858">Оневозможи темен режим</translation>
+<translation id="7878972877380405573">Резимирајте со „Помош при читање“</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Тип оператор</translation>
 <translation id="7882501334836096755">Јавен клуч</translation>
@@ -1537,6 +1538,7 @@
 <translation id="8626489604350149811">Повеќе дејства за <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Светловиолетов</translation>
 <translation id="8647595191512746911">Аудиотранскрипција</translation>
+<translation id="8650852232143958317">Понесете ги датотеките во Gmail и Google Drive со себе</translation>
 <translation id="8651481478098336970">исклучи звук</translation>
 <translation id="8655295600908251630">Канал</translation>
 <translation id="8655828773034788261">Сподели URL:</translation>

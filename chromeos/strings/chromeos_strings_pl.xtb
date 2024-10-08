@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Zmniejsz jasność wyświetlacza</translation>
 <translation id="2086091080968010660">Zmiany oparte na czasie mogą być niedokładne. Włącz dostęp systemu do lokalizacji w ustawieniach.</translation>
 <translation id="2102231663024125441">Edytowanie tekstu</translation>
-<translation id="2102648867808308635">Pomóż mi czytać tę stronę</translation>
 <translation id="2105810540595158374">Urządzenie to kontroler do gier.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, wersja <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">Obecnie dostępna tylko w języku angielskim (USA)</translation>
@@ -321,7 +320,7 @@
 <translation id="242825218556404975">Nie wykryto mowy</translation>
 <translation id="2446553403094072641">Precyzja obliczeń zmiennoprzecinkowych</translation>
 <translation id="2448312741937722512">Typ</translation>
-<translation id="2468124392950503650">Wybierz prompt, aby go utworzyć, lub zapoznaj się z <ph name="BEGIN_LINK_PROMPTING_GUIDE" />przewodnikiem po promptach<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
+<translation id="2468124392950503650">Wybierz prompt, aby utworzyć obraz, lub zapoznaj się z <ph name="BEGIN_LINK_PROMPTING_GUIDE" />przewodnikiem po promptach<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Użyj funkcji Pomóż mi w pisaniu, aby utworzyć wersję lub dopracować już istniejącą pracę z wykorzystaniem AI od Google</translation>
 <translation id="2475982808118771221">Wystąpił błąd</translation>
 <translation id="2480572840229215612">kraby</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">zobacz wszystkie aplikacje</translation>
 <translation id="3510890413042482857">Wyślij <ph name="BEGIN_LINK1" />dane śledzenia wydajności<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Aktualizacja Chrome OS</translation>
-<translation id="3522508178835057262">Obecnie transkrypcje złożone z mniej niż <ph name="MAX_WORD_LENGTH" /> słów nie są obsługiwane</translation>
 <translation id="3527036260304016759">Niepowodzenie – nieznany błąd</translation>
 <translation id="353214771040290298">Zakończ edycję</translation>
 <translation id="3532980081107202182">Pozostało około <ph name="MIN_REMAINING" /> min</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">Jasny motyw</translation>
 <translation id="4813136279048157860">Moje obrazy</translation>
 <translation id="4813345808229079766">Połączenie</translation>
-<translation id="4824527342590024245">Obecnie transkrypcje złożone z mniej niż <ph name="MIN_WORD_LENGTH" /> słów nie są obsługiwane</translation>
 <translation id="4830894019733815633">kanion</translation>
 <translation id="4832079907277790330">Wybierz Folder w aplikacji Pliki...</translation>
 <translation id="4835901797422965222">Brak aktywnych sieci</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">Synonimy:</translation>
 <translation id="5130848777448318809">kucyki</translation>
 <translation id="5137451382116112100">Pełne</translation>
+<translation id="5140788690559353412">Gdy utracisz dostęp do konta szkolnego, stracisz również dostęp do powiązanych z nim usług, takich jak poczta e-mail czy pliki na Dysku Google (np. Dokumentów, Arkuszy czy Prezentacji).</translation>
 <translation id="5142961317498132443">Uwierzytelnianie</translation>
 <translation id="5144311987923128508">Przycisk potwierdzenia jest teraz wyłączony</translation>
 <translation id="5144887194300568405">Kopiuj tłumaczenie</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) Opóźnienie HTTP</translation>
 <translation id="6078323886959318429">Dodaj skrót</translation>
 <translation id="6091080061796993741">żółty</translation>
+<translation id="6093853427925392522">Zanim utracisz dostęp, użyj aplikacji Google do przenoszenia treści, aby przesłać dane z konta szkolnego na konto osobiste.</translation>
 <translation id="6104112872696127344">Skanowanie zostało anulowane</translation>
 <translation id="6106186594183574873">Aby zakończyć, wpisz stare hasło</translation>
 <translation id="6108689792487843350">Brama jest nieosiągalna</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">Nazwa punktu dostępu (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Serwer nazw}few{Serwery nazw}many{Serwery nazw}other{Serwery nazw}}</translation>
 <translation id="7135814714616751706">Szukaj skrótów</translation>
+<translation id="7141470099673912333">Przenoszenie treści</translation>
 <translation id="7143207342074048698">Łączenie</translation>
 <translation id="7144878232160441200">Spróbuj jeszcze raz</translation>
 <translation id="7144954474087165241">pagody</translation>
@@ -1392,6 +1392,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="7856267634822906833">Ekran dotykowy Bluetooth</translation>
 <translation id="7859006200041800233">Kwiat kaktusa</translation>
 <translation id="7869143217755017858">Wyłącz tryb ciemny</translation>
+<translation id="7878972877380405573">Tworzenie podsumowań za pomocą funkcji Pomóż mi czytać</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Typ dostawcy</translation>
 <translation id="7882501334836096755">Klucz publiczny</translation>
@@ -1535,6 +1536,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8626489604350149811">Więcej działań dotyczących: <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Jasnofioletowy</translation>
 <translation id="8647595191512746911">Transkrypcja</translation>
+<translation id="8650852232143958317">Zabierz ze sobą pliki z Gmaila i Dysku Google</translation>
 <translation id="8651481478098336970">wycisz</translation>
 <translation id="8655295600908251630">Kanał</translation>
 <translation id="8655828773034788261">Udostępnij adres URL:</translation>

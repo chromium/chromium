@@ -74,6 +74,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1919130412786645364">Allow Chrome sign-in</translation>
 <translation id="1953553007165777902">Downloading… <ph name="MINUTE" /> minute(s) remaining</translation>
 <translation id="1982647487457769627">Chrome works across platforms to give you a familiar experience, no matter the device</translation>
+<translation id="19955905961160405">Search what's on your screen with Google Lens</translation>
 <translation id="2001586581944147178">Make it harder for people with access to your Internet traffic to see which sites you visit. Chrome uses a secure connection to look up a site's IP address in the DNS (Domain Name System).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{This extension is no longer supported. Chrome recommends that you remove it.}other{These extensions are no longer supported. Chrome recommends that you remove them.}}</translation>
 <translation id="2018528049276128029">Each profile holds its own Chrome info, like bookmarks, history, passwords and more</translation>
@@ -91,6 +92,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2126108037660393668">The downloaded file failed verification.</translation>
 <translation id="2128411189117340671">Manage Chrome profiles</translation>
 <translation id="2131230230468101642">To protect your privacy, we auto-delete your interests that are older than four weeks. As you keep browsing, an interest might appear on the list again. Or you can remove interests that you don't want Chrome to consider.</translation>
+<translation id="2137162749895930932">Close translate screen</translation>
 <translation id="2139300032719313227">Restart Chrome OS</translation>
 <translation id="2151406531797534936">Please restart Chrome now</translation>
 <translation id="2163089732491971196">To use and save Chrome data in your Google Account, enter your passphrase</translation>
@@ -174,6 +176,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3019382870990049182">Relaunch to update Chrome OS Flex</translation>
 <translation id="3037838751736561277">Google Chrome is in background mode.</translation>
 <translation id="3038232873781883849">Waiting to install…</translation>
+<translation id="3045032126857188731">Translated language: <ph name="LANGUAGE" /></translation>
 <translation id="3059710691562604940">Safe Browsing is off. Chrome recommends turning it on.</translation>
 <translation id="306179102415443347">Use your shortcut to quickly get to the Google Password Manager. You can move your shortcut to your computer's home screen or app launcher.</translation>
 <translation id="3065168410429928842">Chrome Tab</translation>
@@ -192,7 +195,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3234642784688107085">Try out new AI features to create themes, get writing help and stay organised</translation>
 <translation id="3245429137663807393">If you also share Chrome usage reports, those reports include the URLs that you visit</translation>
 <translation id="3261565993776444564">Try out a new colour to customise your browser</translation>
-<translation id="3269209112443570745">New! An easy way to search what's on your screen</translation>
 <translation id="3282568296779691940">Sign in to Chrome</translation>
 <translation id="3286538390144397061">Restart Now</translation>
 <translation id="3292333338048274092">You'll then need to restart Chrome.</translation>
@@ -242,12 +244,14 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="386202838227397562">Please close all Google Chrome windows and try again.</translation>
 <translation id="3865754807470779944">Chrome version <ph name="PRODUCT_VERSION" /> is installed</translation>
 <translation id="3873044882194371212">Open link in Chrome inco&amp;gnito window</translation>
+<translation id="3885770153807205175">Language picker</translation>
 <translation id="3889417619312448367">Uninstall Google Chrome</translation>
 <translation id="3941890832296813527">Install error: The installer filename is invalid or unsupported.</translation>
 <translation id="3973161977468201858">Google Chrome wants to delete your Google Password Manager data. Type in your Windows password to allow this.</translation>
 <translation id="398236277091248993">Chrome stays fast with performance-boosting features</translation>
 <translation id="3999683152997576765">You can see and remove topics of interest that sites use to show you ads. Chrome estimates your interests based on your recent browsing history.</translation>
 <translation id="4022972681110646219">Translate screen</translation>
+<translation id="4023601594785368013">Original language: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Chrome OS needs to be restarted to apply the update.</translation>
 <translation id="4050175100176540509">Important security improvements and new features are available in the latest version.</translation>
 <translation id="4053720452172726777">Customise and control Google Chrome</translation>
@@ -523,6 +527,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="7514258452813684157">Google updater service</translation>
 <translation id="7515191208480168435">You can pin Google Lens for easy access</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
+<translation id="756809126120519699">Cleared Chrome data</translation>
 <translation id="7572537927358445944">Off • Chrome can't verify where this extension comes from</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> installer</translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
@@ -540,6 +545,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="7668816516367091728">Perform tasks like translate, calculate and more directly from the address bar</translation>
 <translation id="7670287553302121848">Chrome account requires re-authentication</translation>
 <translation id="769538538642757151">Chrome will let you know if anything needs your review</translation>
+<translation id="77283119132245232">Provides system tracing services for <ph name="BROWSER_NAME" />. If this service is disabled, performance traces created by the browser will not include system-wide events, such as context switch and ready thread events.</translation>
 <translation id="7747138024166251722">The installer couldn't create a temporary directory. Please check for free disk space and permission to install software.</translation>
 <translation id="7761834446675418963">Click your name to open Chrome and start browsing.</translation>
 <translation id="7763983146198734674">Save your passwords and access them on the go</translation>

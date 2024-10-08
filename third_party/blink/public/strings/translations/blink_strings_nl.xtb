@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">Waarde moet <ph name="MINIMUM_DATE_OR_TIME" /> of later zijn.</translation>
 <translation id="2761667185364618470">Vink dit selectievakje aan als je wilt doorgaan.</translation>
 <translation id="2908441821576996758">Voer een door komma's gescheiden lijst met e-mailadressen in.</translation>
+<translation id="2940013921954129954">Exacte locatie toegestaan</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Voer een geldige waarde in. Het veld is onvolledig of bevat een ongeldige datum.</translation>
 <translation id="310520048233152454">Geef een URL op.</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">Slechte afspeelkwaliteit</translation>
 <translation id="6790428901817661496">Spelen</translation>
 <translation id="6820355525329141109">Kan plug-in niet laden.</translation>
+<translation id="688706781007114099">Locatie gebruiken</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Breid deze tekst uit tot <ph name="MIN_CHARACTERS" /> tekens of meer (je gebruikt momenteel één teken).</translation>
 <translation id="709897737746224366">Zorg dat de indeling voldoet aan de gevraagde indeling.</translation>

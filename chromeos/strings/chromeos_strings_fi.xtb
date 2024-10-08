@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Vähennä näytön kirkkautta</translation>
 <translation id="2086091080968010660">Aikaan perustuvat muutokset eivät välttämättä ole tarkkoja. Laita järjestelmän sijainti päälle asetuksissa.</translation>
 <translation id="2102231663024125441">Tekstin muokkaaminen</translation>
-<translation id="2102648867808308635">Auta minua lukemaan tämä sivu</translation>
 <translation id="2105810540595158374">Laite on peliohjain.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versio <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">Saatavilla tällä hetkellä vain englanniksi (Yhdysvallat)</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">näytä kaikki sovellukset</translation>
 <translation id="3510890413042482857">Lähetä <ph name="BEGIN_LINK1" />dataa tehokkuuden jäljistä<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">ChromeOS-päivitys</translation>
-<translation id="3522508178835057262">Yli <ph name="MAX_WORD_LENGTH" /> sanan pituisia transkriptioita ei tällä hetkellä tueta</translation>
 <translation id="3527036260304016759">Epäonnistui – Tuntematon virhe</translation>
 <translation id="353214771040290298">Muokkaus valmis</translation>
 <translation id="3532980081107202182">Noin <ph name="MIN_REMAINING" /> minuuttia jäljellä</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">Vaalea teema</translation>
 <translation id="4813136279048157860">Omat kuvat</translation>
 <translation id="4813345808229079766">Yhteys</translation>
-<translation id="4824527342590024245">Alle <ph name="MIN_WORD_LENGTH" /> sanan transkriptiota ei tällä hetkellä tueta.</translation>
 <translation id="4830894019733815633">kanjoni</translation>
 <translation id="4832079907277790330">Valitse kansio Tiedostot-sovelluksesta…</translation>
 <translation id="4835901797422965222">Ei aktiivisia verkkoja</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">Samantyyppisiä:</translation>
 <translation id="5130848777448318809">ponit</translation>
 <translation id="5137451382116112100">Koko näyttö</translation>
+<translation id="5140788690559353412">Kun menetät pääsyn koulutiliisi, et enää voi käyttää siihen liittyviä sähköposti‑ ja Google Drive ‑tiedostoja, kuten Gmailia, Docsia ja Slidesia.</translation>
 <translation id="5142961317498132443">Todennus</translation>
 <translation id="5144311987923128508">Vahvistuspainike on nyt poistettu käytöstä</translation>
 <translation id="5144887194300568405">Kopioi käännös</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) HTTP-viive</translation>
 <translation id="6078323886959318429">Lisää pikakuvake</translation>
 <translation id="6091080061796993741">keltainen</translation>
+<translation id="6093853427925392522">Muista siirtää koulutilin data henkilökohtaiselle tilillesi Googlen Content Transfer ‑sovelluksella ennen kuin menetät pääsyn.</translation>
 <translation id="6104112872696127344">Skannaus on peruttu</translation>
 <translation id="6106186594183574873">Lisää lopuksi vanha salasana</translation>
 <translation id="6108689792487843350">Yhdyskäytävään ei saa yhteyttä</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">Tukiaseman nimi (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nimipalvelin}other{Nimipalvelimet}}</translation>
 <translation id="7135814714616751706">Hae pikakomentoja</translation>
+<translation id="7141470099673912333">Sisällön siirto</translation>
 <translation id="7143207342074048698">Yhdistetään</translation>
 <translation id="7144878232160441200">Yritä uudelleen</translation>
 <translation id="7144954474087165241">pagodi</translation>
@@ -1394,6 +1394,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="7856267634822906833">Bluetooth-kosketusnäyttö</translation>
 <translation id="7859006200041800233">kaktuksen kukka</translation>
 <translation id="7869143217755017858">Poista tumma tila käytöstä</translation>
+<translation id="7878972877380405573">Luo yhteenvetoja Auta minua lukemaan ‑ominaisuudella</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Palveluntarjoajan tyyppi</translation>
 <translation id="7882501334836096755">Julkinen avain</translation>
@@ -1537,6 +1538,7 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8626489604350149811"><ph name="APN_NAME" />: lisää toimintoja</translation>
 <translation id="86356131183441916">Vaaleanvioletti</translation>
 <translation id="8647595191512746911">Audiotranskriptio</translation>
+<translation id="8650852232143958317">Ota Gmail‑ ja Google Drive ‑tiedostot mukaan</translation>
 <translation id="8651481478098336970">Mykistä äänenvoimakkuus.</translation>
 <translation id="8655295600908251630">Kanava</translation>
 <translation id="8655828773034788261">Jaa URL-osoite:</translation>

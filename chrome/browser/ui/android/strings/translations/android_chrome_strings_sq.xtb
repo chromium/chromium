@@ -204,6 +204,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="1957557050935255529">PDF-ja po ngarkohet…</translation>
 <translation id="1959679933317802873">Në pritje të përmbajtjes</translation>
 <translation id="1960290143419248813">Përditësimet e Chrome nuk mbështeten më për këtë version të Android</translation>
+<translation id="1963056249988316027">"Kontrolli i identitetit" është aktiv dhe nuk mund të verifikojë që je ti</translation>
 <translation id="1963976881984600709">Mbrojtja standarde</translation>
 <translation id="1966710179511230534">Përditëso detajet e identifikimit.</translation>
 <translation id="1969037871259811890">Fshirja e të dhënave të shfletimit nuk bën që të dalësh nga "Llogaria jote e Google". Për ta bërë këtë, <ph name="BEGIN_LINK1" />dil nga llogaria në Chrome<ph name="END_LINK1" />.</translation>
@@ -555,6 +556,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="3622349720008044802">Menaxho dritaret</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{+ 1 sajt}other{+ # sajte}}</translation>
 <translation id="3631987586758005671">Po ndahet te <ph name="DEVICE_NAME" /></translation>
+<translation id="363484704507524488">Mund ta menaxhosh "Kontrollin e identitetit" te cilësimet e mbrojtjes nga vjedhja. <ph name="BEGIN_LINK" />Shko te cilësimet<ph name="END_LINK" /></translation>
 <translation id="3635073343384702370">Chrome mund t'i kontrollojë fjalëkalimet e tua kur ti i ruan ato</translation>
 <translation id="363596933471559332">Identifikohu automatikisht në uebsajte duke përdorur kredencialet e ruajtura. Kur veçoria është e çaktivizuar, do të të kërkohet gjithmonë verifikimi  përpara se të identifikohesh në një uebsajt.</translation>
 <translation id="3636940436873918441">Gjuhët e preferuara</translation>
@@ -727,7 +729,6 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="4489640160615759754">Ndaj me fletën e përmbledhjes</translation>
 <translation id="4494806687727322324">Ruajtja e fjalëkalimeve është aktivizuar nga administratori yt</translation>
 <translation id="4508528996305412043">Menyja e kartave të furnizimit është hapur</translation>
-<translation id="4509501256689523862">Kur shfleton, nëse një reklamë që shikon është e personalizuar, kjo varet nga ky cilësim, nga <ph name="BEGIN_LINK_1" />Temat e reklamave<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />cilësimet e tua të kukive<ph name="END_LINK_2" />, si dhe nëse sajti që po shikon i personalizon reklamat</translation>
 <translation id="4509741852167209430">Lloje të kufizuara të të dhënave ndahen mes sajteve për të matur performancën e reklamave të tyre, si p.sh. nëse ke bërë një blerje pas vizitës në një sajt</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# ditë më parë}other{# ditë më parë}}</translation>
 <translation id="451872707440238414">Kërko te faqeshënuesit</translation>
@@ -740,7 +741,6 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="4532845899244822526">Zgjidh dosjen</translation>
 <translation id="4543131175509360848">Asnjë fletë e çelësave të kalimit</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> skedë}other{<ph name="TAB_COUNT_MANY" /> skeda, <ph name="TAB_COUNT_INCOGNITO" /> të fshehta}}</translation>
-<translation id="4554077758708533499">I lidhur me kabllo USB</translation>
 <translation id="4558311620361989323">Shkurtoret e faqes së uebit</translation>
 <translation id="4561730552726921821">Regjistrimi ishte i suksesshëm</translation>
 <translation id="4565377596337484307">Fshih fjalëkalimin</translation>
@@ -1036,6 +1036,7 @@ Llogaria jote e Google mund të ketë forma të tjera të historikut të shfleti
 <translation id="5869522115854928033">Fjalëkalimet e ruajtura</translation>
 <translation id="587735546353481577">Për të ndjekur një sajt, shko te sajti, hap menynë e Chrome dhe trokit te Ndiq.</translation>
 <translation id="5879072387416556377">Merr sugjerime më të mira</translation>
+<translation id="5883855034004058011">Të dhënat biometrike dështuan shumë herë. Kyçe dhe shkyçe pajisjen tënde për të provuar përsëri.</translation>
 <translation id="5885378508678660271">Njoftimet <ph name="SEPARATOR" /> Chrome i hoqi këto leje sepse ky sajt është i rrezikshëm</translation>
 <translation id="5895834791314695851">Fjalëkalimet mund të mos funksionojnë më së shpejti në këtë pajisje. Për të vazhduar të përdorësh fjalëkalimet e tua, përditëso shërbimet e Google Play. <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">Nuk është mbyllur asnjë fletë e çelësave të kalimit</translation>
@@ -1368,7 +1369,6 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7260367682327802201">Pajisja jote Android mund të përfshijë një cilësim të ngjashëm. Nëse "Matja e reklamave" është aktivizuar në Chrome dhe në pajisjen tënde Android, një kompani mund të matë efektivitetin e një reklame nëpër uebsajtet që viziton dhe aplikacionet që përdor ti.</translation>
 <translation id="727288900855680735">Të dërgohet <ph name="ONE_TIME_CODE" /> te <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Sajt i bllokuar</translation>
-<translation id="7276100255011548441">Chrome i fshin automatikisht temat që janë më të vjetra se 4 javë. Ndërsa vazhdon të shfletosh, një temë mund të shfaqet përsëri në listë. Ose mund t'i bllokosh temat që nuk dëshiron që Chrome t'i ndajë me sajtet. Mëso më shumë rreth <ph name="BEGIN_LINK" />menaxhimit të privatësisë së reklamave në Chrome<ph name="END_LINK" />.</translation>
 <translation id="7284878711178835966">Kur shkruan, Chrome e dërgon përmbajtjen e shiritit të adresës ose të kutisë së kërkimit te motori yt i parazgjedhur i kërkimit</translation>
 <translation id="7289049772085228972">Ti ke sigurinë më të fortë të Chrome</translation>
 <translation id="7289303553784750393">Nëse je online, por ky problem vazhdon të ndodhë, mund të provosh mënyra të tjera për të vazhduar në <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -1433,7 +1433,6 @@ Për ta ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />fshi të dhënat e Ch
 <translation id="7517292544534877198">Përdor enkriptimin e parazgjedhur të Google për fjalëkalimet në "Llogarinë tënde të Google"</translation>
 <translation id="7518079994230200553">Ky opsion nuk ofrohet për momentin.</translation>
 <translation id="751961395872307827">Nuk mund të lidhet me sajtin</translation>
-<translation id="752220631458524187">Shkëputu kur të kesh mbaruar</translation>
 <translation id="7523960634226602883">Kërko me kamerën duke përdorur "Lenten e Google"</translation>
 <translation id="7525248386620136756">U mbyllën dhe u ruajtën: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>
 <translation id="752731652852882757">Bllokoji kur përdor modalitetin "e fshehtë"</translation>

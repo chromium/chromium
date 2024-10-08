@@ -229,6 +229,7 @@
 <translation id="138810468159004008">访问该网站时允许</translation>
 <translation id="1391625539203220400">要将 IBAN 保存到此设备吗？</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> 未发送任何数据。</translation>
+<translation id="1393071644879491291">您尝试访问的网站上的攻击者可能会诱使您安装软件或泄露某些信息，例如您的密码、手机号码或信用卡号码。Chrome 强烈建议您返回到安全的浏览环境。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1405567553485452995">浅绿色</translation>
 <translation id="1406500794671479665">正在验证...</translation>
 <translation id="1406812885827747674">仅这次访问时允许</translation>
@@ -254,7 +255,6 @@
 <translation id="1433225466058025572">尝试重新移动文件</translation>
 <translation id="1435940442311036198">使用另一部设备上的通行密钥</translation>
 <translation id="1436185428532214179">可以请求修改您设备上的文件和文件夹</translation>
-<translation id="1441816242347931036">打开以继续</translation>
 <translation id="1442386063175183758">关门折（右侧）</translation>
 <translation id="1442987760062738829">打孔</translation>
 <translation id="1446396933673057385">准确度检查</translation>
@@ -283,6 +283,7 @@
 <translation id="1483493594462132177">发送</translation>
 <translation id="1484449009683144042">这是一项实验性 AI 写作辅助功能，有时可能会出错。
     <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="1486096554574027028">搜索密码</translation>
 <translation id="1492194039220927094">政策推送：</translation>
 <translation id="1495677929897281669">返回到标签页</translation>
 <translation id="1500286806237135498">摄像头（<ph name="CAMERAS_COUNT" /> 个）</translation>
@@ -662,6 +663,7 @@
 <translation id="2175630235841878061">无法下载超过 100MB 的文件</translation>
 <translation id="2176974405772725904">将地址保存到账号</translation>
 <translation id="2178665390943006934">“更新 Chrome”按钮，激活它即可从 Chrome 设置中更新 Chrome</translation>
+<translation id="2178904466768126352">您尝试访问的网站上的攻击者可能会安装有害软件，以窃取或删除某些信息，例如您的密码、照片、消息或信用卡号码。</translation>
 <translation id="2179003720612888584">来自 <ph name="SITE_DOMAIN_NAME" /> 的“<ph name="SITE_TITLE" />”</translation>
 <translation id="2181821976797666341">政策</translation>
 <translation id="2182170103603703676">洗碗机</translation>
@@ -749,7 +751,6 @@
 <translation id="2328651992442742497">可以使用（默认）</translation>
 <translation id="2328955282645810595">施工与电动工具</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />，到期时间：<ph name="EXPIRATION_DATE_ABBR" /></translation>
-<translation id="2337044517221264923">继续撰写</translation>
 <translation id="2337852623177822836">设置由管理员控制</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> 希望与以下所选设备配对：</translation>
 <translation id="2346319942568447007">您复制的图片</translation>
@@ -1400,6 +1401,7 @@
 <translation id="3566021033012934673">您的连接不是私密连接</translation>
 <translation id="3566336457819493938">215 x 315 毫米</translation>
 <translation id="3566649245868131295">保健和医疗职位</translation>
+<translation id="3566681680543111735">复制变体字符串</translation>
 <translation id="3567778190852720481">无法通过企业账号注册（企业账号不符合条件）。</translation>
 <translation id="3567901620846335314">100 x 150 毫米</translation>
 <translation id="3568886473829759308">访问网站查看商家提供的信息、资源或服务。</translation>
@@ -1788,6 +1790,7 @@
 <translation id="4233220688695460165">Chrome 会在 30 天内自动删除可建议广告的主题和网站。您也可屏蔽不喜欢的特定主题和网站。</translation>
 <translation id="4235360514405112390">有效</translation>
 <translation id="4239799716689808527">标签</translation>
+<translation id="4241830393007970744">您尝试访问的网站上的攻击者可能会诱使您安装软件或泄露某些信息，例如您的密码、手机号码或信用卡号码。</translation>
 <translation id="4242380780309416996">信封（重磅纸）</translation>
 <translation id="4242981939686657948">如需更强大的浏览记录搜索方式，请开启</translation>
 <translation id="4244926541863471678">膜</translation>
@@ -2077,7 +2080,6 @@
 <translation id="4792686369684665359">您即将提交的信息不安全</translation>
 <translation id="4793219378458250238">11 x 12 英寸</translation>
 <translation id="4796594887379589189">工作账号 ID</translation>
-<translation id="4798078619018708837">请输入 <ph name="CREDIT_CARD" /> 的失效日期和银行卡验证码 (CVC)，以更新您的信用卡详细信息。待您确认后，系统便会将您 Google 账号中的信用卡详细信息共享给该网站。</translation>
 <translation id="4798269756263412078">当任一网站上的商品降价时，您会收到提醒。系统会将提醒发送到您的电子邮件地址。</translation>
 <translation id="4800132727771399293">请检查您的到期日期和银行卡验证码 (CVC)，然后重试</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -2282,7 +2284,6 @@
 <translation id="5164798890604758545">输入文字</translation>
 <translation id="5164928537947209380">这款实验性 AI 工具有时可能会出错。为了改进此工具，我们会将您的内容发送给 Google。
     <ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
-<translation id="516920405563544094">请输入 <ph name="CREDIT_CARD" /> 的银行卡验证码 (CVC)。待您确认后，系统便会将您 Google 账号中的信用卡详细信息共享给该网站。</translation>
 <translation id="5169827969064885044">您可能会无法再访问所属组织的账号，或被他人盗用身份信息。Chrome 建议您立即更改密码。</translation>
 <translation id="5171045022955879922">搜索或输入网址</translation>
 <translation id="5172758083709347301">本机</translation>
@@ -3044,6 +3045,7 @@
 <translation id="6579858392010591435">假日和节庆活动</translation>
 <translation id="6579990219486187401">浅粉色</translation>
 <translation id="6581831440014388355">脱毛</translation>
+<translation id="658230438113661756">您尝试访问的网站上的攻击者可能会安装有害软件，以窃取或删除某些信息，例如您的密码、照片、消息或信用卡号码。Chrome 强烈建议您返回到安全的浏览环境。<ph name="BEGIN_LEARN_MORE_LINK" />详细了解此警告<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6587893660316489419">B5 信封</translation>
 <translation id="6587923378399804057">您复制的链接</translation>
 <translation id="6591833882275308647">您的 <ph name="DEVICE_TYPE" /> 不受管理</translation>
@@ -3117,6 +3119,7 @@
 <translation id="6710648923880003133">建议一个安全系数高的密码</translation>
 <translation id="671076103358959139">注册令牌：</translation>
 <translation id="6711464428925977395">代理服务器出现问题，或者地址有误。</translation>
+<translation id="6711700233707023861">已将变体字符串复制到剪贴板</translation>
 <translation id="6716039223770814796">比较“<ph name="COMPARE_SET_NAME" />” · <ph name="ITEMS" /> 项内容</translation>
 <translation id="6716672519412350405"><ph name="URL" /> 想为您的周边环境创建 3D 地图并跟踪摄像头位置</translation>
 <translation id="6717692133381953670">从“<ph name="DEVICE_NAME" />”发送的标签页</translation>
@@ -3470,7 +3473,6 @@
 <translation id="7380398842872229465">10 x 15 英寸</translation>
 <translation id="7388380253839603603">油价与汽车燃料</translation>
 <translation id="7388594495505979117">{0,plural, =1{您的设备将在 1 分钟后重启}other{您的设备将在 # 分钟后重启}}</translation>
-<translation id="7390545607259442187">确认信用卡</translation>
 <translation id="7392089738299859607">更新地址</translation>
 <translation id="7393161616326137353">冒险游戏</translation>
 <translation id="739728382607845710">付款处理程序图标</translation>
@@ -3643,6 +3645,7 @@
 <translation id="7659327900411729175">Kaku 8 信封</translation>
 <translation id="766014026101194726">{0,plural, =1{管理员政策禁止上传此文件}other{管理员政策禁止上传 # 个文件}}</translation>
 <translation id="7660456820368115565">大型多人游戏</translation>
+<translation id="7661591871037163355">您的比较表格已满。若要添加新列，请先移除一些现有列。</translation>
 <translation id="7662298039739062396">设置由某款扩展程序控制</translation>
 <translation id="7663736086183791259">证书<ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">不得在无痕模式下使用</translation>
@@ -4083,6 +4086,7 @@
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">开启</translation>
 <translation id="8461694314515752532">使用您自己的同步口令加密已同步的数据</translation>
+<translation id="8461973047386722744">找不到任何密码</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 张信用卡}other{# 张信用卡}}</translation>
 <translation id="8467494337615822642">前往“设置”中的 Chrome 安全检查页面</translation>
 <translation id="8468358362970107653">C3 信封</translation>

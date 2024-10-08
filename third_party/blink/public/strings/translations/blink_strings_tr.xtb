@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">Değer <ph name="MINIMUM_DATE_OR_TIME" /> veya daha ileri olmalıdır.</translation>
 <translation id="2761667185364618470">İlerlemek istiyorsanız lütfen bu kutuyu işaretleyin.</translation>
 <translation id="2908441821576996758">Lütfen e-posta adreslerinin virgülle ayrılmış listesini girin.</translation>
+<translation id="2940013921954129954">Tam konuma erişim izin verildi</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Lütfen geçerli bir tarih girin. Alan tam doldurulmamış veya geçersiz bir tarih var.</translation>
 <translation id="310520048233152454">Lütfen bir URL girin.</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">Oynatma kalitesi kötü</translation>
 <translation id="6790428901817661496">Oynat</translation>
 <translation id="6820355525329141109">Eklenti yüklenemedi.</translation>
+<translation id="688706781007114099">Konumu kullan</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Lütfen bu metni <ph name="MIN_CHARACTERS" /> karakter veya daha fazla olacak şekilde uzatın (şu anda 1 karakter kullanıyorsunuz).</translation>
 <translation id="709897737746224366">Lütfen istenen biçimi eşleştirin.</translation>

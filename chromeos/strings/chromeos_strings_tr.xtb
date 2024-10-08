@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Ekran parlaklığını azalt</translation>
 <translation id="2086091080968010660">Zamana dayalı değişiklikler doğru olmayabilir. Ayarlar'dan konum erişimini etkinleştirin.</translation>
 <translation id="2102231663024125441">Metin düzenleme</translation>
-<translation id="2102648867808308635">Bu sayfayı okumama yardım et</translation>
 <translation id="2105810540595158374">Cihazın türü oyun kumandası.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, sürüm <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">Şu anda yalnızca İngilizce (ABD) dilinde kullanılabilir</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">tüm uygulamaları göster</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Performans izleme verilerini<ph name="END_LINK1" /> gönder</translation>
 <translation id="3517001332549868749">ChromeOS güncellemesi</translation>
-<translation id="3522508178835057262"><ph name="MAX_WORD_LENGTH" /> kelimeden uzun transkriptler şu an için desteklenmiyor</translation>
 <translation id="3527036260304016759">İşlem başarısız - Bilinmeyen hata</translation>
 <translation id="353214771040290298">Düzenleme tamamlandı</translation>
 <translation id="3532980081107202182">Yaklaşık <ph name="MIN_REMAINING" /> dakika kaldı</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">Açık tema</translation>
 <translation id="4813136279048157860">Görsellerim</translation>
 <translation id="4813345808229079766">Bağlantı</translation>
-<translation id="4824527342590024245"><ph name="MIN_WORD_LENGTH" /> kelimeden kısa transkriptler şu an için desteklenmiyor.</translation>
 <translation id="4830894019733815633">kanyon</translation>
 <translation id="4832079907277790330">Dosyalar uygulamasında klasör seç...</translation>
 <translation id="4835901797422965222">Etkin ağ yok</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">Benzer:</translation>
 <translation id="5130848777448318809">midilliler</translation>
 <translation id="5137451382116112100">Tam</translation>
+<translation id="5140788690559353412">Okul hesabınıza erişimi kaybettiğinizde artık ilgili e-posta ve Google Drive dosyalarına (ör. Gmail, Dokümanlar, Slaytlar vb.) erişemezsiniz.</translation>
 <translation id="5142961317498132443">Kimlik Doğrulama</translation>
 <translation id="5144311987923128508">Onayla düğmesi şu anda devre dışı</translation>
 <translation id="5144887194300568405">Çeviriyi kopyala</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) HTTP Gecikmesi</translation>
 <translation id="6078323886959318429">Kısayol ekle</translation>
 <translation id="6091080061796993741">sarı</translation>
+<translation id="6093853427925392522">Erişiminizi kaybetmeden önce okul hesabı verilerinizi kişisel hesabınıza taşımak için Google'ın İçerik Aktarımı uygulamasını kullandığınızdan emin olun.</translation>
 <translation id="6104112872696127344">Tarama iptal edildi</translation>
 <translation id="6106186594183574873">Bitirmek için eski şifrenizi girin</translation>
 <translation id="6108689792487843350">Ağ geçidine ulaşılamıyor</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">Erişim noktası adı (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Ad sunucusu}other{Ad sunucuları}}</translation>
 <translation id="7135814714616751706">Kısayol araması yapın</translation>
+<translation id="7141470099673912333">İçerik Aktarımı</translation>
 <translation id="7143207342074048698">Bağlanıyor</translation>
 <translation id="7144878232160441200">Yeniden dene</translation>
 <translation id="7144954474087165241">pagoda</translation>
@@ -1394,6 +1394,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="7856267634822906833">Bluetooth dokunmatik ekran</translation>
 <translation id="7859006200041800233">kaktüs çiçeği</translation>
 <translation id="7869143217755017858">Koyu modu devre dışı bırak</translation>
+<translation id="7878972877380405573">''Okumama yardım et'' özelliğini kullanarak özetleyin</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Sağlayıcı türü</translation>
 <translation id="7882501334836096755">Ortak anahtar</translation>
@@ -1537,6 +1538,7 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8626489604350149811"><ph name="APN_NAME" /> ile ilgili diğer işlemler</translation>
 <translation id="86356131183441916">Açık mor</translation>
 <translation id="8647595191512746911">Konuşma transkripti</translation>
+<translation id="8650852232143958317">Gmail ve Google Drive dosyalarınızı yanınızda götürün</translation>
 <translation id="8651481478098336970">sesi kapat</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655828773034788261">URL'yi paylaş:</translation>

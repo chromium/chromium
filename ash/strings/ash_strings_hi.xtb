@@ -114,6 +114,7 @@
 <translation id="132346741904777634">कैमरा इनपुट की झलक, अब ऊपर बाएं कोने में दिखेगी. ऐसा, सिस्टम पर दूसरे ऐप्लिकेशन के साथ ओवरलैप होने की वजह से किया गया है.</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> और विंडो बंद करें</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> कनेक्ट किया गया</translation>
+<translation id="1337081488893096731">स्कूल वाले अपने खाते के डेटा को निजी खाते में ट्रांसफ़र करने के लिए, Content Transfer ऐप्लिकेशन का इस्तेमाल करें</translation>
 <translation id="1340378040547539434">पेज पर ज़ूम आउट करें</translation>
 <translation id="1341651618736211726">ओवरफ़्लो</translation>
 <translation id="1341926407152459446">ऑडियो इनपुट और आउटपुट के लिए, "<ph name="DEVICE_NAME" />" का इस्तेमाल करें</translation>
@@ -242,6 +243,7 @@
 <translation id="17722141032474077">कैलकुलेशन</translation>
 <translation id="1774796056689732716"><ph name="CURRENT_MONTH_YEAR" /> के कैलेंडर में फ़िलहाल <ph name="DATE" /> को चुना गया है.</translation>
 <translation id="178347895271755507">अपने फ़ोन में मौजूद हाल ही की फ़ोटो, कॉन्टेंट, और सूचनाओं को देखने की सुविधा सेट अप करें</translation>
+<translation id="1786487376942610288">पिक्चर में पिक्चर विंडो को, इसके ज़्यादा से ज़्यादा साइज़ या मौजूदा साइज़ में इस्तेमाल करें</translation>
 <translation id="1787955149152357925">बंद करें</translation>
 <translation id="1796561540704213354">वेबसाइटों की कैटगरी में वे पेज दिखाए जाते हैं जिन्हें आपने देखा या खोला होता है</translation>
 <translation id="179842970735685253">Google की सेवा की शर्तें</translation>
@@ -337,6 +339,9 @@
 <translation id="219905428774326614">लॉन्चर, सभी ऐप्लिकेशन</translation>
 <translation id="2201071101391734388"><ph name="TOTAL_COUNT" /> में से <ph name="INDEX" /> हाल ही की फ़ोटो.</translation>
 <translation id="2201687081523799384">Google Tasks को छोटा करें</translation>
+<translation id="2206960886090042977">माउस कनेक्ट होने की वजह से, डिवाइस में पहले से मौजूद टचपैड बंद है. बदलाव की पुष्टि करने के लिए, माउस या कीबोर्ड का इस्तेमाल करें.
+
+ऐसा न करने पर, डिवाइस में पहले से मौजूद टचपैड 30 सेकंड में फिर से चालू हो जाएगा.</translation>
 <translation id="2208323208084708176">संयुक्त डेस्कटॉप मोड</translation>
 <translation id="2220572644011485463">पिन या पासवर्ड</translation>
 <translation id="2222841058024245321">डेस्क 7</translation>
@@ -1469,6 +1474,7 @@
 <translation id="598407983968395253">टेंप्लेट का इस्तेमाल करें</translation>
 <translation id="5986723678596105470">Google Meet के ज़रिए शामिल हों</translation>
 <translation id="598882571027504733">अपडेट पाने के लिए, अटैच किए गए कीबोर्ड से अपने Chromebook को रीस्टार्ट करें.</translation>
+<translation id="5990992855591814753">आपकी दिलचस्पी के हिसाब से बनाई गई, फ़ोकस करने में मदद करने वाली प्लेलिस्ट सुनकर अपने काम पूरे करें. बिना किसी शुल्क के तीन महीनों के लिए YouTube Premium की सदस्यता लें और बिना विज्ञापन के YouTube Music और YouTube चलाएं. शर्तें लागू.</translation>
 <translation id="5998374579424866922">गेम के कंट्रोल बंद करें</translation>
 <translation id="6000279412553873020">कुंजी, बटन वगैरह</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" /> में से <ph name="SELECTED_PAGE" /> पेज</translation>
@@ -1907,6 +1913,9 @@
 डिवाइस को शट डाउन करने के लिए, डिवाइस पर पावर बटन को फिर से दबाकर रखें.</translation>
 <translation id="7523420897035067483">फ़ोकस मोड चालू होने पर, 'परेशान न करें' सुविधा चालू करें</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">डिवाइस में पहले से मौजूद टचपैड बंद है. बदलाव की पुष्टि करने के लिए, कीबोर्ड या किसी दूसरे पॉइंटर डिवाइस का इस्तेमाल करें.
+
+ऐसा न करने पर, डिवाइस में पहले से मौजूद टचपैड 30 सेकंड में फिर से चालू हो जाएगा.</translation>
 <translation id="7525067979554623046">बनाएं</translation>
 <translation id="7526573455193969409">नेटवर्क की निगरानी की जा सकती है</translation>
 <translation id="7536035074519304529">आईपी पता: <ph name="ADDRESS" /></translation>
@@ -2294,6 +2303,7 @@
 <translation id="8858369206579825206">निजता सेटिंग</translation>
 <translation id="8860366331836346216">ई-सिम जोड़ें</translation>
 <translation id="8870509716567206129">ऐप्लिकेशन दो-स्क्रीन मोड में काम नहीं करता है.</translation>
+<translation id="8873203135446552888">इस बात की पुष्टि करें कि आपको डिवाइस में पहले से मौजूद टचपैड को बंद करना है</translation>
 <translation id="8874184842967597500">कनेक्ट नहीं है</translation>
 <translation id="8875021410787719674">निचले दाएं कोने, लॉन्चर, पता बार, बुकमार्क बार, खुली हुई वेबसाइट, और डाउनलोड के बीच स्विच करने के लिए</translation>
 <translation id="8876148469852588625"><ph name="EVENT_TOTAL_COUNT" /> में से <ph name="EVENT_POSITION" /> इवेंट</translation>

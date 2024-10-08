@@ -13,6 +13,7 @@
 <translation id="1005671386794704751">Waridi</translation>
 <translation id="1005919400326853998">Angalia maelezo ya cheti cha <ph name="CERT_NAME" /> katika kidirisha kipya</translation>
 <translation id="1006033052970139968">Ufikiaji wa maikrofoni unaruhusiwa kwenye programu, tovuti zilizo na ruhusa ya maikrofoni na huduma za mfumo</translation>
+<translation id="1006471148601930095">Hakuna kisomaji mahiri cha kadi kilichopatikana.</translation>
 <translation id="1006873397406093306">Kiendelezi hiki kinaweza kusoma na kubadilisha data yako kwenye tovuti. Unaweza kudhibiti tovuti ambazo kiendelezi kinaweza kufikia.</translation>
 <translation id="1007057452468855774">Washa Kipengele cha Duka la Google Play</translation>
 <translation id="1008186147501209563">Hamisha alamisho</translation>
@@ -79,6 +80,7 @@
 <translation id="1049743911850919806">Kichupo fiche</translation>
 <translation id="1049795001945932310">Mipangilio ya lugha</translation>
 <translation id="1050693411695664090">Mbaya</translation>
+<translation id="1053898984916097744">Anza kitu kipya au upate msaada ukiwa unaendelea.</translation>
 <translation id="1054048317165655285">Maliza kuweka mipangilio kwenye simu yako</translation>
 <translation id="1054153489933238809">Fungua Picha Asili katika Kichupo Kipya</translation>
 <translation id="1054187194995068149">Hujambo. Hili ni toleo la kukagua</translation>
@@ -272,6 +274,7 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1187722533808055681">Miamsho isiyofanya kazi</translation>
 <translation id="1188807932851744811">Kumbukumbu haijapakiwa.</translation>
 <translation id="1190086046506744802">Nafasi kubwa sana</translation>
+<translation id="1190155014618058972">Buni mchanganyiko maalum wa vitufe</translation>
 <translation id="11901918071949011">{NUM_FILES,plural, =1{Fikia faili iliyohifadhiwa kwenye kompyuta yako}other{Fikia faili # zilizohifadhiwa kwenye kompyuta yako}}</translation>
 <translation id="1190706173655543975">Sera za Programu ya Microsoft</translation>
 <translation id="1191353342579061195">Chagua mandhari yanayofaa kwa mahitaji yako. Ili ubadilishe mandhari, taswira ya skrini yako na zaidi, bofya kulia kwenye eneo kazi.</translation>
@@ -550,7 +553,6 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1397500194120344683">Hakuna vifaa vinavyotimiza masharti. <ph name="LINK_BEGIN" />Pata maelezo zaidi.<ph name="LINK_END" /></translation>
 <translation id="1397594434718759194">Umeingia katika akaunti ya Chrome kwa kutumia vifaa hivi, hivyo unaweza kuvitumia kama funguo za usalama.</translation>
 <translation id="1398853756734560583">Tanua</translation>
-<translation id="139911022479327130">Fungua simu yako na uthibitishe kuwa ni wewe</translation>
 <translation id="1399261165075500043">Imeshindwa kupakia Sheria na Masharti ya Google Play</translation>
 <translation id="1401216725754314428">Pata maelezo zaidi kuhusu tovuti zinazohusiana kwenye kichupo kipya</translation>
 <translation id="1402426911829176748">Inaunganisha kwenye kifaa chako</translation>
@@ -857,7 +859,6 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1605148987885002237">Kibodi na vifaa vya kuingiza data</translation>
 <translation id="1605744057217831567">Angalia data ya tovuti na ruhusa zote</translation>
 <translation id="1606077700029460857">Badilisha mipangilio ya kipanya</translation>
-<translation id="1606307079840340755">Mtoa huduma wa Passpoint yako ataondolewa kwenye kifaa hiki tu. Ili ufanye mabadiliko ya usajili wako, wasiliana na mtoa huduma ya usajili.</translation>
 <translation id="1606566847233779212">Je, ungependa kuondoa tovuti mahususi ulizoweka?</translation>
 <translation id="1607139524282324606">Futa kipengele</translation>
 <translation id="1607499585984539560">Mtumiaji si mshirika wa kikoa hiki</translation>
@@ -1136,6 +1137,7 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1794212650797661990">Ficha nenosiri la <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">Tuma maoni ili utusaidie kutatua tatizo hili.</translation>
 <translation id="1795214765651529549">Tumia ya Kawaida</translation>
+<translation id="1795438342141780114">Weka upya kiteuzi katikati</translation>
 <translation id="1795668164971917185">Wakati mwingine Kipengele cha Kuvinjari Salama na Google kikibaini kipakuliwa kinachotiliwa shaka, kitakichanganua kiotomatiki kama sehemu ya <ph name="LINK" /> uliochagua</translation>
 <translation id="1796588414813960292">Vipengele vinavyohitaji sauti havitafanya kazi</translation>
 <translation id="1797117170091578105">Cheza ukitumia kibodi ya Chromebook. Unaweza kuweka mapendeleo kwenye vitufe ili vitumike kwa vitendo mahususi.</translation>
@@ -1192,7 +1194,6 @@ Hatua hii haiathiri programu au maudhui kwenye vifaa vingine.</translation>
 <translation id="1826516787628120939">Inakagua</translation>
 <translation id="1826657447823925402">Usogezaji nyuma umezimwa</translation>
 <translation id="1827504459960247692">Jina la mtandaopepe</translation>
-<translation id="1828240307117314415">inadhibitiwa na <ph name="VALUE" /></translation>
 <translation id="1828378091493947763">Programu jalizi hii haitumiki kwenye kifaa hiki</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{&amp;Fungua Zote}=1{&amp;Fungua Alamisho}other{&amp;Fungua Zote ({COUNT})}}</translation>
 <translation id="1828901632669367785">Chapisha kwa Kutumia Kidadisi cha Mfumo...</translation>
@@ -1234,6 +1235,7 @@ Hatua hii haiathiri programu au maudhui kwenye vifaa vingine.</translation>
 <translation id="1854049213067042715">Endelea kutoka mahali ulikoachia. Unaweza kuchagua programu zirejeshwe kila wakati kifaa kinapowashwa au uzime kipengele cha kurejesha katika Mipangilio.</translation>
 <translation id="1854180393107901205">Acha kutuma</translation>
 <translation id="1856715684130786728">Ongeza eneo...</translation>
+<translation id="185766080319917408">Kitufe cha kufungua kinapatikana kushoto mwa kitufe cha alt cha kushoto</translation>
 <translation id="1858585891038687145">Amini cheti hiki kwa kutambua watengenezaji programu</translation>
 <translation id="1859294693760125695">Sihitaji tena</translation>
 <translation id="1859339856433307593">Nenosiri la akaunti hii limeshahifadhiwa kwenye <ph name="BRAND" /> (<ph name="USER_EMAIL" />)</translation>
@@ -1445,6 +1447,7 @@ Hatua hii haiathiri programu au maudhui kwenye vifaa vingine.</translation>
 <translation id="2005199804247617997">Aina zingine za wasifu</translation>
 <translation id="2006638907958895361">Fungua Kiungo katika <ph name="APP" /></translation>
 <translation id="2007404777272201486">Ripoti Tatizo...</translation>
+<translation id="200781997903833896">Ili utumie kipengele cha Soma kwa Sauti, futa baadhi ya vipengee kwenye kifaa chako</translation>
 <translation id="200928901437634269">Tumia Akaunti ya Google ya mtoto wako au akaunti ya shule. Unaweza pia kuweka vidhibiti vya wazazi.</translation>
 <translation id="2009590708342941694">Zana ya Emoji</translation>
 <translation id="2010501376126504057">Vifaa vinavyooana</translation>
@@ -1643,6 +1646,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2147218225094845757">Ficha kidirisha cha pembeni</translation>
 <translation id="2147282432401652483">amri</translation>
 <translation id="2147402320887035428">Faili hii inaweza kuwa programu hasidi.<ph name="LINE_BREAK" />Kipengele cha Kuvinjari Salama na Google kinakagua iwapo faili hii si salama — kwa kawaida uchanganuzi huchukua sekunde chache.</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> pamoja na <ph name="MODIFIER_TWO" /> pamoja na <ph name="MODIFIER_THREE" /> pamoja na <ph name="KEY" /></translation>
 <translation id="2148219725039824548">Hitilafu imetokea wakati wa kupachika faili ya kushiriki. Imeshindwa kupata faili iliyobainishwa ya kushiriki katika mtandao.</translation>
 <translation id="2148756636027685713">Uumbizaji umekamilika</translation>
 <translation id="2148892889047469596">Tuma kichupo</translation>
@@ -1823,6 +1827,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2278562042389100163">Fungua dirisha la kivinjari</translation>
 <translation id="2278668501808246459">Inaanzisha kidhibiti cha metadata</translation>
 <translation id="2280486287150724112">Pambizo la kulia</translation>
+<translation id="228059581448666199">Bofya kushoto kwenye kipanya</translation>
 <translation id="2281863813036651454">Kubofya kipanya upande wa kushoto</translation>
 <translation id="2282146716419988068">Mchakato wa GPU</translation>
 <translation id="228293613124499805">Mara nyingi henda tovuti nyingi unazotembelea zikahifadhi data kwenye kifaa chako kwa ajili ya kuboresha hali yako ya utumiaji kwa kuhifadhi mapendeleo au taarifa unazoshiriki na tovuti. Tunapendekeza mipangilio hii isalie ikiwa imewashwa.</translation>
@@ -2436,11 +2441,11 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2710101514844343743">Data ya matumizi na uchanganuzi</translation>
 <translation id="271033894570825754">Mpya</translation>
 <translation id="2710507903599773521"><ph name="DEVICE_TYPE" /> yako sasa imefunguliwa</translation>
+<translation id="2710676967944965821">Ungependa kubadilisha ruhusa zote za kisomaji mahiri cha kadi?</translation>
 <translation id="2713106313042589954">Zima kamera</translation>
 <translation id="2713444072780614174">Nyeupe</translation>
 <translation id="2714180132046334502">Mandhari-nyuma meusi</translation>
 <translation id="2714393097308983682">Duka la Google Play</translation>
-<translation id="2715640894224696481">Ombi la ufunguo wa usalama</translation>
 <translation id="2715751256863167692">Sasisho hili litabadilisha mipangilio ya Chromebook yako na kuondoa data ya mtumiaji iliyopo.</translation>
 <translation id="2715934493766003251">Imeshindwa kufuta baadhi ya faili wakati umewasha usawazishaji wa faili</translation>
 <translation id="2716986496990888774">Mipangilio hii inasimamiwa na mzazi.</translation>
@@ -2595,7 +2600,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2806372837663997957">Kifaa unachojaribu kushiriki nacho hakijakubali</translation>
 <translation id="2806891468525657116">Tayari umeweka njia hii ya mkato</translation>
 <translation id="2807517655263062534">Faili unazopakua zitaonekana hapa</translation>
-<translation id="2808481877345177494">Ingia katika akaunti ili uvinjari shughuli za kazini na za kibinafsi kivyake kwa usalama. Ongeza tija yako huku ukilinda data nyeti ya kampuni.</translation>
 <translation id="2811205483104563968">Akaunti</translation>
 <translation id="2812049959647166806">Thunderbolt haiwezi kutumika</translation>
 <translation id="2812171980080389735">Mitandao na manenosiri uliyoyahifadhi ili uweze kuunganishwa papo hapo</translation>
@@ -2784,9 +2788,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2947605845283690091">Shughuli ya kuvinjari kwenye wavuti itafanyika haraka. Chukua muda mfupi <ph name="BEGIN_LINK" />uangalie viendelezi vyako<ph name="END_LINK" /> hivi sasa.</translation>
 <translation id="2948300991547862301">Nenda kwenye <ph name="PAGE_TITLE" /></translation>
 <translation id="29488703364906173">Kivinjari kilicho na kasi, rahisi kutumia, na salama, kilichoundwa kwa ajili ya wavuti wa kisasa.</translation>
-<translation id="2948873690143673075">Ungependa kusahau usajili huu?</translation>
 <translation id="2950666755714083615">Nisajili</translation>
-<translation id="2953019166882260872">Unganisha simu yako kwa kutumia kebo</translation>
 <translation id="2953210795988451570">Muda wa masasisho ya usalama umeisha. Pata toleo jipya la Chromebook.</translation>
 <translation id="2953218713108551165">Umezuia arifa katika tovuti ya <ph name="SITE" />. Utaulizwa tena utakapotembelea tovuti hii wakati mwingine.</translation>
 <translation id="2956070239128776395">Sehemu imewekwa katika kikundi: <ph name="ERROR_LINE" /></translation>
@@ -2812,6 +2814,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2970982365449313350">Chrome inayotumia Akaunti hii ya Google</translation>
 <translation id="2972557485845626008">Programu dhibiti</translation>
 <translation id="2972581237482394796">&amp;Rudia</translation>
+<translation id="2972831370061805967">Wasifu huu unadhibitiwa na <ph name="PROFILE_MANAGER" /> na inaweza kuona aina fulani ya maelezo, ikiwa ni pamoja na</translation>
 <translation id="2973324205039581528">Zima Sauti ya Tovuti</translation>
 <translation id="2975761176769946178">URL inahitajika</translation>
 <translation id="2976547701881428815">Zana na vitendo</translation>
@@ -3060,6 +3063,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3162766632262775911">Zinazoruhusiwa kila wakati kutumia kiboreshaji cha V8</translation>
 <translation id="3162853326462195145">Akaunti ya shule</translation>
 <translation id="3162899666601560689">Tovuti zinaweza kutumia vidakuzi ili kuboresha hali yako ya kuvinjari, kwa mfano, ili kufanya ubaki ukiwa umeingia katika akaunti au kukumbuka bidhaa zilizo kwenye kikapu chako cha ununuzi</translation>
+<translation id="3163085718713826852">Weka nenosiri la cheti</translation>
 <translation id="3163201441334626963">Bidhaa isiyojulikana <ph name="PRODUCT_ID" /> kutoka kwa mchuuzi <ph name="VENDOR_ID" /></translation>
 <translation id="3163511056918491211">Rejesha data yako au ubadilishe vifaa kwa urahisi wakati wowote. Nakala unazohifadhi hupakiwa kwenye Google na kusimbwa kwa njia fiche kwa kutumia nenosiri la Akaunti yako ya Google.</translation>
 <translation id="3164329792803560526">Inashiriki kichupo hiki kwenye <ph name="APP_NAME" /></translation>
@@ -3295,6 +3299,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3341703758641437857">Ruhusu kufikia URL za faili</translation>
 <translation id="334171495789408663">Tokeni imenakiliwa</translation>
 <translation id="3342361181740736773">"<ph name="TRIGGERING_EXTENSION_NAME" />" ingependa kuondoa kiendelezi hiki.</translation>
+<translation id="334252345105450327">Piga picha ya skrini</translation>
 <translation id="3345634917232014253">Angalizo la usalama limetekelezwa muda mfupi uliopita</translation>
 <translation id="3345886924813989455">Kivinjari kinachochukuana hakikupatikana</translation>
 <translation id="3346306152660142597">Wekea ukurasa huu mapendeleo ukitumia AI</translation>
@@ -3841,6 +3846,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3728188878314831180">Kuonyesha arifa kutoka kwenye simu yako</translation>
 <translation id="3728681439294129328">Weka mipangilio ya anwani ya mtandao</translation>
 <translation id="3728805180379554595">Mpangilio huu unadhibitiwa na <ph name="USER_EMAIL" />.</translation>
+<translation id="3729455204295802282">Hitilafu imetokea wakati wa kusoma faili</translation>
 <translation id="3729506734996624908">Tovuti zinazoruhusiwa</translation>
 <translation id="3729957991398443677">Ili uangalie nenosiri lako au uweke dokezo la nenosiri hilo, chagua dhibiti manenosiri yako kwenye utafutaji na sehemu ya anwani</translation>
 <translation id="3730076362938942381">Programu ya kuandika ya Stylus</translation>
@@ -4054,6 +4060,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="3861852898230054539">Kwa sasa unatumia nenosiri la Akaunti ya Google. Unaweza kuweka nenosiri la <ph name="DEVICE_TYPE" /> ili urahisishe zaidi mchakato wa kuingia katika akaunti.</translation>
 <translation id="3861977424605124250">Onyesha kifaa kinapowashwa</translation>
 <translation id="386239283124269513">&amp;Rejesha Kikundi</translation>
+<translation id="3863215163880213672">Pakia na Ujumuishe kwenye <ph name="CERT_GROUP" /></translation>
 <translation id="3865414814144988605">Ubora</translation>
 <translation id="3866142613641074814">Una manenosiri ambayo yanaweza kuathiriwa</translation>
 <translation id="3866249974567520381">Maelezo</translation>
@@ -4102,6 +4109,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="3898743717925399322">Nenosiri lako la <ph name="WEBSITE" /> limehifadhiwa katika kifaa hiki na kwenye Akaunti yako ya Google. Ungependa kufuta nenosiri lipi?</translation>
 <translation id="3898768766145818464">Cheza au usitishe video</translation>
 <translation id="389901847090970821">Chagua kibodi</translation>
+<translation id="3899457911440165602">Hitilafu wakati wa kufuta cheti</translation>
 <translation id="3900966090527141178">Hamisha manenosiri</translation>
 <translation id="390187954523570172">imetumika <ph name="TIME_AGO" /></translation>
 <translation id="3903187154317825986">Kibodi iliyojumuishwa</translation>
@@ -4190,7 +4198,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3958088479270651626">Leta alamisho na mipangilio</translation>
 <translation id="3958110062351175311">Kinaruhusiwa kuonyesha maombi katika upau wa vidhibiti</translation>
 <translation id="3958821725268247062">Programu ya <ph name="APP_NAME" /> tayari imewekwa kwenye kifaa</translation>
-<translation id="3959747296451923142">Thibitisha uondoaji wa usajili</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3961005895395968120">Vitendo zaidi vya <ph name="IBAN_DESCRIPTION" /></translation>
 <translation id="3963753386716096475">Tumia simu, kishikwambi au ufunguo tofauti wa usalama</translation>
@@ -4368,7 +4375,6 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4089817585533500276">kitufe cha "shift" pamoja na <ph name="TOP_ROW_KEY" /></translation>
 <translation id="4090103403438682346">Washa Ufikiaji Uliothibitishwa</translation>
 <translation id="4091307190120921067">Programu ulizochagua zitawekwa kwenye kifaa baada ya kuweka mipangilio. Pata mapendekezo zaidi baadaye kwenye programu ya Gundua.</translation>
-<translation id="4092636882861724179">Unaweza kuangalia na kudhibiti manenosiri yaliyohifadhiwa kwenye<ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="4092709865241032354">Ili kusaidia Kidhibiti cha Manenosiri cha Google kuhifadhi maelezo yako ya kuingia katika akaunti, weka jina lako la mtumiaji la tovuti hii</translation>
 <translation id="4093865285251893588">Picha ya wasifu</translation>
 <translation id="4093955363990068916">Faili ya ndani:</translation>
@@ -4572,7 +4578,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="425411422794688815">Hitilafu fulani imetokea. Hakikisha kwamba simu yako ipo karibu, umeifungua na umewasha Bluetooth na Wi-Fi.</translation>
 <translation id="4254414375763576535">Kielekezi kikubwa</translation>
 <translation id="4254813446494774748">Lugha ya Tafsiri:</translation>
-<translation id="4255016471934258618">Fungua kinywa chako kiwe kipana</translation>
+<translation id="4255016471934258618">Fungua kinywa chako wazi</translation>
 <translation id="425573743389990240">Kiwango cha Kutumia betri katika kipimo cha Wati (Nambari hasi inamaanisha betri inachaji)</translation>
 <translation id="4256316378292851214">&amp;Hifadhi Video Kama...</translation>
 <translation id="4258348331913189841">Mifumo ya faili</translation>
@@ -4715,6 +4721,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4359408040881008151">Kilisakinishwa kwa sababu ya kiendelezi au viendelezi vinavyotegemea.</translation>
 <translation id="4359717112757026264">Mandhari ya jiji</translation>
 <translation id="4359809482106103048">Usalama kwa muhtasari</translation>
+<translation id="4360738659108163902">Bofya kulia kwenye kipanya</translation>
 <translation id="4361142739114356624">Ufunguo wa Faragha wa Cheti hiki cha Seva Teja haupo au si sahihi</translation>
 <translation id="4361745360460842907">Fungua kama kichupo</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> ndiyo akaunti ya msingi kwenye <ph name="DEVICE_TYPE" /> yako</translation>
@@ -4796,6 +4803,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4412992751769744546">Ruhusu vidakuzi vingine</translation>
 <translation id="4413087696295876280">Soma maelezo na data ya kifaa cha ChromeOS Flex</translation>
 <translation id="44137799675104237">Sikiliza ujumbe ulio na sauti ya kawaida</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> pamoja na <ph name="MODIFIER_TWO" /> pamoja na <ph name="KEY" /></translation>
 <translation id="44141919652824029">Ungependa kuiruhusu "<ph name="APP_NAME" />" ipate orodha ya vifaa vyako vya USB vilivyounganishwa?</translation>
 <translation id="4414232939543644979">Dirisha &amp;Fiche Jipya</translation>
 <translation id="4414242853388122273">Hitilafu wakati wa kuondoa <ph name="VM_NAME" />. Tafadhali jaribu tena.</translation>
@@ -5344,6 +5352,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="482952334869563894">Vifaa vya USB kutoka kwa muuzaji mwenye kitambulisho cha <ph name="VENDOR_ID" /></translation>
 <translation id="4830502475412647084">Inasasisha Mfumo wa Uendeshaji</translation>
 <translation id="4831226137013573603">kuzima maikrofoni</translation>
+<translation id="483262387981411190">Sitisha au uendeleze udhibiti wa uso</translation>
 <translation id="4833683849865011483">Imepata printa moja kwenye seva ya kuchapisha</translation>
 <translation id="4835598628985424375">Bana midomo kana kwamba unataka kupiga busu</translation>
 <translation id="4835677468087803981">Ficha PIN</translation>
@@ -5659,7 +5668,6 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5068553687099139861">onyesha manenosiri</translation>
 <translation id="506886127401228110">Washa programu za wavuti zilizotengwa</translation>
 <translation id="5068919226082848014">Piza</translation>
-<translation id="5070773577685395116">Je, hukuipata?</translation>
 <translation id="5071295820492622726">Rudi kwenye faili zilizopakuliwa hivi karibuni</translation>
 <translation id="5071892329440114717">Onyesha maelezo ya ulinzi wa kawaida</translation>
 <translation id="5072500507106264618">Huduma za mfumo pekee ndizo zinazoweza kutumia data ya mahali uliko</translation>
@@ -5904,6 +5912,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5240931875940563122">Ingia katika akaunti ukitumia simu ya Android</translation>
 <translation id="5242724311594467048">Ungependa kuwasha "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5243522832766285132">Tafadhali jaribu tena baada ya muda mfupi</translation>
+<translation id="5243752692914402705">Baada ya kuanzisha hali ya kusogeza, sogeza kichwa chako katika upande ambao ungependa kusogeza</translation>
 <translation id="5244234799035360187">OneDrive sasa itaonekana katika programu ya Faili</translation>
 <translation id="5244466461749935369">Weka kwa sasa</translation>
 <translation id="5244474230056479698">Inasawazisha kwenye <ph name="EMAIL" /></translation>
@@ -6194,6 +6203,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458716506062529991">Umeweka PIN isiyo sahihi mara nyingi sana. Ili ufikie funguo za siri na manenosiri yako, badilisha PIN yako.</translation>
 <translation id="5458998536542739734">Kuandika kwenye skrini iliyofungwa</translation>
+<translation id="5459470938885464873">Hitilafu wakati wa kupakia cheti</translation>
 <translation id="5459864179070366255">Endelea kusakinisha</translation>
 <translation id="5460641065520325899">Dhibiti aina za taarifa ambazo tovuti zinaweza kutumia kukufuatilia unapovinjari.</translation>
 <translation id="5460861858595506978">Mifano</translation>
@@ -6397,6 +6407,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="5613074282491265467">Ukiwa umeingia katika Chrome, manenosiri unayohifadhi yatawekwa kwenye Akaunti yako ya Google, <ph name="USER_EMAIL" />. Ili uzime kipengele hiki, nenda kwenye mipangilio.</translation>
 <translation id="5614190747811328134">Arifa ya Mtumiaji</translation>
 <translation id="5614553682702429503">Ungependa kuhifadhi nenosiri?</translation>
+<translation id="5614625640221885312">Ingia katika akaunti ili upate alamisho, manenosiri yako na zaidi kwenye vifaa vyako vyote</translation>
 <translation id="5614947000616625327">iCloud Keychain</translation>
 <translation id="561552177910095306">Orodha ya tovuti za hivi karibuni ulizotembelea ambazo ungependa zipendekeze matangazo kwenye tovuti zingine unapoendelea kuvinjari</translation>
 <translation id="5616571005307953937">La zamani zaidi</translation>
@@ -6460,7 +6471,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="5654669866168491665">Pata maelezo zaidi kuhusu tovuti ambazo huenda zisifanye kazi unapozuia vidakuzi vya washirika wengine</translation>
 <translation id="5654751240928365405">Kiendelezi hiki kimezimwa kwa sababu hakitumiki tena</translation>
 <translation id="5654848283274615843">{NUM_SITES,plural, =1{Ili kulinda faragha yako, ruhusa zimeondolewa kwenye tovuti}other{Ili kulinda faragha yako, ruhusa zimeondolewa kwenye baadhi ya tovuti}}</translation>
-<translation id="565515993087783098">Kwa kusahau mtandao huu pia utaondoa usajili wa Passpoint na mitandao inayohusiana nayo.</translation>
 <translation id="5655296450510165335">Uandikishaji wa kifaa</translation>
 <translation id="5655823808357523308">Rekebisha jinsi rangi zinavyoonekana kwenye skrini yako</translation>
 <translation id="5656845498778518563">Tuma Maoni kwa Google</translation>
@@ -6655,6 +6665,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="5805697420284793859">Kidhibiti cha dirisha</translation>
 <translation id="5806447147478173900">Jumla ya nafasi ya hifadhi iliyotumiwa na tovuti zilizoonyeshwa: <ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0° (Chaguomsingi)</translation>
+<translation id="5807774529265708172">Onyesha au ufiche kibodi ya skrini</translation>
 <translation id="5809835394668218762">Vitendo zaidi vya <ph name="WEBSITE" /></translation>
 <translation id="5809840528400421362">PIN lazima iwe na namba 6</translation>
 <translation id="5810809306422959727">Akaunti hii haijatimiza masharti ya vidhibiti vya wazazi</translation>
@@ -6848,6 +6859,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="5945002094477276055">Huenda <ph name="FILE_NAME" /> ni hatari. Ungependa kuituma kwa Kipengele cha Kuvinjari Salama na Google ili ikaguliwe?</translation>
 <translation id="5945363896952315544">Ufunguo wako wa usalama hauwezi kuhifadhi alama zingine za vidole. Ili uweke alama mpya ya kidole, futa alama ya kidole iliyopo kwanza.</translation>
 <translation id="5946591249682680882">Kitambulisho cha ripoti <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
+<translation id="5947651424015173580">Bofya kipanya mara mbili</translation>
 <translation id="5948476936444935795">Ghairi kupakia</translation>
 <translation id="5948536763493709626">Unganisha kibodi au kipanya au uendelee kuweka mipangilio kwa kutumia skrini yako ya kugusa. Ikiwa unatumia vifaa vyenye Bluetooth, hakikisha kwamba vifaa vyako viko tayari kuoanisha.</translation>
 <translation id="5949544233750246342">Imeshindwa kuchanganua faili</translation>
@@ -6867,6 +6879,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="5958836583172610505">Usawazishaji Umewashwa</translation>
 <translation id="5959471481388474538">Mtandao haupatikani</translation>
 <translation id="5959982036207776176">Kikuzaji hufuata neno linalosomwa na kipengele cha chagua ili izungumze</translation>
+<translation id="5961545272769624207">Kabidhi ishara</translation>
 <translation id="5963413905009737549">Sehemu</translation>
 <translation id="5963453369025043595"><ph name="NUM_HANDLES" /> (<ph name="NUM_KILOBYTES_LIVE" /> kilele)</translation>
 <translation id="5964113968897211042">{COUNT,plural, =0{Fungua zote katika &amp;dirisha jipya}=1{Fungua katika &amp;dirisha jipya}other{Fungua zote ({COUNT}) katika &amp;dirisha jipya}}</translation>
@@ -7313,6 +7326,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="6285120108426285413"><ph name="FILE_NAME" /> haipakuliwi kwa kawaida na huenda ikawa hatari.</translation>
 <translation id="6285770818046456882">Kifaa kinachoshiriki nawe kimeghairi uhamishaji</translation>
 <translation id="628699625505156622">Tumia data ya mahali. Ruhusu tovuti, huduma za ChromeOS na programu za Android zenye ruhusa ya mahali zitumie data ya mahali kifaa hiki kilipo. Mipangilio ya Usahihi wa Mahali hutoa data sahihi zaidi ya mahali inayotumiwa na programu pamoja na huduma za Android. Ili kufanya hivyo, Google huchakata mara kwa mara maelezo kuhusu vitambuzi vya vifaa na mawimbi ya simu za mkononi kutoka kwenye kifaa hiki ili kukusanya data ya mahali ambako mawimbi ya simu za mkononi yako. Data hii hutumika bila kumtambulisha mtu yeyote binafsi ili kuboresha usahihi wa mahali na huduma zinazotegemea mahali na pia kuboresha, kutoa na kudumisha huduma za Google kulingana na sababu halali za Google na washirika wengine ili kutimiza mahitaji ya watumiaji. <ph name="BEGIN_LINK1" />Pata maelezo zaidi kuhusu jinsi ya kutumia data ya mahali<ph name="END_LINK1" /></translation>
+<translation id="628705218210359422">Endelea kufuatilia manenosiri yako na uyadhibiti katika sehemu moja.</translation>
 <translation id="628726841779494414">Dhibiti printa zako kwenye mipangilio ya printa</translation>
 <translation id="6287828400772161253">Simu ya Android (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Hakuna vifaa vinavyoshiriki karibu. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
@@ -7378,6 +7392,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="6341850831632289108">Kifaa kitambue haswa ulipo</translation>
 <translation id="6342069812937806050">Sasa hivi tu</translation>
 <translation id="6343003829431264373">Kurasa shufwa pekee</translation>
+<translation id="6343262564968371601">Pata unachotafuta kwa kutafuta kwenye Google, faili, programu na mengineyo</translation>
 <translation id="6343981313228733146">Dirisha limesogezwa juu na kulia</translation>
 <translation id="6344170822609224263">Pata orodha ya miunganisho ya mtandao</translation>
 <translation id="6344576354370880196">Printa zilizohifadhiwa</translation>
@@ -7550,6 +7565,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="6476482583633999078">Kasi ya matamshi</translation>
 <translation id="6476671549211161535">Bonyeza kitufe kisicho cha kushoto au kulia kwenye kipanya katika <ph name="DEVICE_NAME" /> yako.</translation>
 <translation id="6477822444490674459">Huwezi kusawazisha arifa kwenye simu zilizo na wasifu wa kazini. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
+<translation id="6478849105642611893">Kitufe cha Kuingiza haraka kinapatikana chini ya kitufe cha tab</translation>
 <translation id="6479881432656947268">Tembelea Duka la Chrome kwenye Wavuti</translation>
 <translation id="6480327114083866287">Inadhibitiwa na <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Tuma faili na zaidi kwenye vifaa vilivyo karibu. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
@@ -7914,6 +7930,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6749473226660745022">Picha</translation>
 <translation id="6750757184909117990">Zima Mtandao wa Simu</translation>
 <translation id="6751344591405861699"><ph name="WINDOW_TITLE" /> (Hali fiche)</translation>
+<translation id="6754918760968695779">Kuingiza Haraka</translation>
 <translation id="6756157672127672536">Programu ya Faili inatoa ufikiaji wa haraka kwenye faili ambazo umeweka kwenye Hifadhi ya Google, hifadhi ya nje au kifaa chako chenye Mfumo wa Uendeshaji wa Chrome.</translation>
 <translation id="6756643207511618722">Mitambo ya matamshi</translation>
 <translation id="6757431299485455321">Saidia vifaa vingine kupata mtandao pepe huu.</translation>
@@ -7954,6 +7971,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
     <ph name="BEGIN_PARAGRAPH2" />Unaweza kuzima huduma hii katika Mipangilio.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">Imeghairi kuhifadhi rudufu ya Linux</translation>
 <translation id="6782067259631821405">PIN si Sahihi</translation>
+<translation id="6782364580635609607">Wasifu huu unadhibitiwa na shirika lako na linaweza kuona aina fulani za maelezo, ikiwa ni pamoja na</translation>
 <translation id="6783036716881942511">Ungependa kuondoa kifaa hiki</translation>
 <translation id="6783667414610055871">Mipangilio ya Microsoft OneDrive</translation>
 <translation id="6784523122863989144">Wasifu unaoweza kutumika</translation>
@@ -8106,6 +8124,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="686609795364435700">Kimya</translation>
 <translation id="686664946474413495">Halijoto ya rangi</translation>
 <translation id="6867086642466184030">Programu zingine zimeruhusiwa kufungua viungo vinavyofunguliwa na <ph name="APP_NAME" />. Hatua hii itazuia <ph name="APP_NAME_2" />, <ph name="APP_NAME_3" />, <ph name="APP_NAME_4" /> na programu zingine <ph name="NUMBER_OF_OTHER_APPS" /> zisifungue viungo vinavyoweza kutumika.</translation>
+<translation id="6867671714894555998">Fanikisha mambo kwa haraka ukitumia kibodi mpya</translation>
 <translation id="6868206169573555318">Fungua Upya ili Usasishe</translation>
 <translation id="686831807558000905">Usiingie katika akaunti</translation>
 <translation id="686839242150793617">Zilizoruhusiwa kutumia kipengele cha kupachika picha ndani ya picha nyingine kiotomatiki</translation>
@@ -8140,6 +8159,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="6898438890765871056">Fungua folda ya OneDrive</translation>
 <translation id="6898440773573063262">Programu za skrini nzima sasa zinaweza kusanidiwa ili zijifungue kiotomatiki kwenye kifaa hiki.</translation>
 <translation id="6898524422976162959">Zindua mafunzo ya kikundi cha vichupo</translation>
+<translation id="6898926986978115885">Huwezi kutumia kipengele cha Soma kwa Sauti kwa sasa.</translation>
 <translation id="6899427698619335650">Ruhusu kitendo rahisi cha kuweka alama za matamshi sahihi. Kwa mfano, unaweza kuchapa “anh1” au “a1nh” ili kupata “ánh”.</translation>
 <translation id="6900284862687837908">Programu ya Mandhari: <ph name="BACKGROUND_APP_URL" /></translation>
 <translation id="6900532703269623216">Ulinzi ulioboreshwa</translation>
@@ -8445,6 +8465,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7124013154139278147">Kabidhi swichi ya kitendo cha “Iliyotangulia”</translation>
 <translation id="7124712201233930202">Hujatimiza sera za shirika lako</translation>
 <translation id="7125148293026877011">Futa Crostini</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> pamoja na <ph name="MODIFIER_TWO" /> pamoja na <ph name="MODIFIER_THREE" /> pamoja na <ph name="MODIFIER_FOUR" /> pamoja na <ph name="KEY" /></translation>
 <translation id="7125932261198019860">Hakikisha kuwa printa yako imeunganishwa kwenye mtandao mmoja wa Wi-Fi sawa na Chromebook yako au utumie kebo ya USB. <ph name="LINK_BEGIN" />Pata maelezo zaidi kuhusu hali ya uoanifu<ph name="LINK_END" /></translation>
 <translation id="7127980134843952133">Historia ya upakuaji</translation>
 <translation id="7128151990937044829">Onyesha kiashiria kwenye sehemu ya anwani arifa zinapozuiwa</translation>
@@ -8672,6 +8693,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7301812050652048720">Ufunguo wa siri umefutwa</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Huenda programu hii ikazuia Chrome isifanye kazi inavyostahili.}other{Huenda programu hizi zikazuia Chrome isifanye kazi inavyostahili.}}</translation>
 <translation id="7303281435234579599">Lo! Hitilafu imetokea wakati wa kuweka hali ya onyesho.</translation>
+<translation id="7303485269821975179">Weka nenosiri la <ph name="DEVICE_TYPE" /></translation>
 <translation id="7303900363563182677">Tovuti hii imezuiwa isione maandishi na picha zilizonakiliwa kwenye ubao wa kunakili</translation>
 <translation id="7304030187361489308">Juu</translation>
 <translation id="7305123176580523628">Printa ya USB imeunganishwa</translation>
@@ -8795,6 +8817,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7392915005464253525">&amp;Fungua tena ukurasa uliofungwa</translation>
 <translation id="7393073300870882456">{COUNT,plural, =1{Kipengee kimoja kimenakiliwa}other{Vipengee {COUNT} vimenakiliwa}}</translation>
 <translation id="7393435859300249877">Utaarifiwa ukizungmza huku umezima maikrofoni unapotumia baadhi ya programu, kama vile programu za gumzo la video. Kamwe sauti haiondoki kwenye kifaa chako.</translation>
+<translation id="7395008140803590549">Imeshindwa kufuta cheti</translation>
 <translation id="7395163818609347230">Vidirisha vimebadilishwa ukubwa upande wa kulia</translation>
 <translation id="7395774987022469191">Skrini nzima</translation>
 <translation id="7396017167185131589">Folda za pamoja zitaonekana hapa</translation>
@@ -8811,7 +8834,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7402198013420237102">Je, ungependa kuhamisha manenosiri yaliyohifadhiwa kwenye Akaunti yako ya Google?</translation>
 <translation id="740333000181878130">Sauti wakati kifaa kinawaka</translation>
 <translation id="7403642243184989645">Inapakua Nyenzo</translation>
-<translation id="7404065585741198296">Simu yako kwa kutumia kebo ya USB</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{Angalizo la usalama lilitekelezwa saa moja iliyopita}other{Angalizo la usalama lilitekelezwa saa {NUM_HOURS} zilizopita}}</translation>
 <translation id="7406113532070524618">Mipangilio hii hufanya kazi bila kukutambulisha au kuruhusu tovuti zione historia yako ya kuvinjari, ingawa tovuti zinaweza kushiriki kiasi kidogo cha maelezo kama sehemu ya uthibitishaji</translation>
 <translation id="740624631517654988">Kidirisha ibukizi kimezuiwa</translation>
@@ -8958,11 +8980,11 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7506242536428928412">Weka PIN mpya ili uweze kutumia ufunguo wako mpya wa usalama</translation>
 <translation id="7506541170099744506">Kifaa chako cha <ph name="DEVICE_TYPE" /> kimesajiliwa kwa usimamizi wa biashara.</translation>
 <translation id="7507207699631365376">Ona <ph name="BEGIN_LINK" />Sera ya Faragha<ph name="END_LINK" /> ya mtoa huduma huyu</translation>
+<translation id="7508707215237589321">Ungependa kufuta "<ph name="CERT_NAME" />"?</translation>
 <translation id="7508971277215079477">{MULTI_GROUP_TAB_COUNT,plural, =0{Ungependa kufunga kichupo na ufute kikundi?}=1{Ungependa kufunga vichupo na ufute kikundi?}other{Ungependa kufunga vichupo na ufute vikundi?}}</translation>
 <translation id="7509097596023256288">Inaweka mipangilio ya udhibiti</translation>
 <translation id="7509246181739783082">Thibitisha utambulisho wako</translation>
 <translation id="7509539379068593709">Ondoa Programu</translation>
-<translation id="7509653797310675541">Lacros</translation>
 <translation id="7514239104543605883">Nakili kwenye kifaa chako</translation>
 <translation id="7514365320538308">Pakua</translation>
 <translation id="7514417110442087199">Kabidhi kitendo kwenye swichi</translation>
@@ -9119,7 +9141,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7634337648687970851">Urejeshaji wa data ya kwenye kifaa hautumiki kwa sasa.</translation>
 <translation id="7634566076839829401">Hitilafu fulani imetokea. Tafadhali jaribu tena.</translation>
 <translation id="7635048370253485243">Imebandikwa na Msimamizi wako</translation>
-<translation id="7635711411613274199">Unapovinjari, iwapo tangazo unaloona limewekewa mapendeleo hutegemea mipangilio hii, <ph name="BEGIN_LINK1" />mada za Matangazo<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />mipangilio yako ya vidakuzi<ph name="LINK_END2" /> na ikiwa tovuti unayoangalia huwekea matangazo mapendeleo</translation>
 <translation id="7636346903338549690">Tovuti zinazoruhusiwa kutumia vidakuzi vya washirika wengine</translation>
 <translation id="7636919061354591437">Sakinisha kwenye Kifaa hiki</translation>
 <translation id="7637253234491814483">Gusa kitambuzi cha alama ya kidole katika kona ya juu kulia ya kibodi yako, karibu na Kitufe cha kuwasha au kuzima. Data ya alama yako ya kidole imehifadhiwa kwa usalama na itasalia kwenye <ph name="DEVICE_TYPE" /> yako.</translation>
@@ -9238,7 +9259,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="770831926727930011">Data yako iliyo kwenye kifaa inalindwa kwa kutumia nenosiri lako la awali. Weka nenosiri lako la awali ili urejeshe data iliyo kwenye kifaa.</translation>
 <translation id="7709152031285164251">Imeshindwa - <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;Tuma...</translation>
-<translation id="7711900714716399411">Tumia kebo ya USB kuunganisha simu yako kwenye kompyuta yako. Ikiwa tayari simu yako imeunganishwa, ichomoe kisha uichomeke tena.</translation>
 <translation id="7711968363685835633">Zima ubadilishaji uliowekewa mapendeleo na mapendekezo pamoja na kamusi ya mtumiaji</translation>
 <translation id="7712739869553853093">Kidirisha cha onyesho la kukagua kabla ya kuchapisha</translation>
 <translation id="7713139339518499741">Sauti ya kawaida</translation>
@@ -9601,6 +9621,7 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="7958828865373988933">Iwapo unataka kubuni ufunguo wa siri wa <ph name="APP_NAME" /> kwenye ufunguo wa usalama wa USB, uweke na uuguse sasa</translation>
 <translation id="7959074893852789871">Faili ina vyeti anuwai, badhii ya vingine ambavyo havikuletwa:</translation>
 <translation id="7959665254555683862">Kichupo Kipya &amp;Fiche</translation>
+<translation id="7960540720012720106">Fungua muhtasari wa madirisha</translation>
 <translation id="7961015016161918242">Katu</translation>
 <translation id="7963001036288347286">Kuongeza kasi ya padi ya kugusa</translation>
 <translation id="7963513503134856713">Dirisha limesogezwa kulia</translation>
@@ -9680,6 +9701,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8014154204619229810">Programu ya kusasisha inatekeleza kwa sasa. Onyesha upya baada ya dakika moja ili uangalie tena.</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" /> haiwezi kurejesha toleo lililokuwa limesakinishwa. Tafadhali jaribu kutumia tena Powerwash kwenye kifaa chako.</translation>
 <translation id="8015565302826764056">{NUM_OF_FILES,plural, =1{Imenakili faili 1}other{Imenakili faili {NUM_OF_FILES}}}</translation>
+<translation id="8017004049696748317">Anzisha au uache kuandika kwa kutamka</translation>
 <translation id="8017176852978888182">Saraka za Linux zinazoshirikiwa</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
 <translation id="8017679124341497925">Umebadilisha njia ya mkato</translation>
@@ -9694,6 +9716,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8025291188699172126">Kuhusu Masasisho</translation>
 <translation id="8026471514777758216">Vifaa vyako vyote</translation>
 <translation id="8026784703228858744">Hifadhi alamisho zako na zaidi ukitumia kipengele cha usawazishaji</translation>
+<translation id="8027325966409484573">{NUM_DAYS,plural, =0{Ulitembelea siku 0 zilizopita}=1{Ulitembelea siku 1 iliyopita}other{Ulitembelea siku # zilizopita}}</translation>
 <translation id="8028060951694135607">Uopoaji wa Funguo kutoka Microsoft</translation>
 <translation id="8028803902702117856">Inapakua <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Ukubwa</translation>
@@ -9733,6 +9756,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8050191834453426339">Thibitisha tena</translation>
 <translation id="8051193500142930381">Vipengele vinavyohitaji kamera havitafanya kazi</translation>
 <translation id="8052218774860457016">Dhibiti usawazishaji wa data ya kivinjari</translation>
+<translation id="8052944601017749068">Pakia kwenye <ph name="CERT_GROUP" /></translation>
 <translation id="8053278772142718589">Faili PKCS #12</translation>
 <translation id="8053390638574070785">Pakia Ukurasa Huu Upya</translation>
 <translation id="8054500940978949009">Umeruhusu. Washa <ph name="LINK_BEGIN" />ufikiaji wa maikrofoni ya kifaa<ph name="LINK_END" />.</translation>
@@ -9872,7 +9896,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8147900440966275470">Imepata kichupo <ph name="NUM" /></translation>
 <translation id="814870937590541483">Vitendo zaidi kwenye Faili za Hifadhi ya Google</translation>
 <translation id="8148760431881541277">Dhibiti hatua ya kuingia katika akaunti</translation>
-<translation id="8149564499626272569">Thibitisha kupitia simu yako ukitumia kebo ya USB</translation>
 <translation id="8149870652370242480">Ili utumie manenosiri yako yaliyohifadhiwa kwenye simu yako, pakua Chrome inayotumika kwenye iOS na uingie katika Akaunti yako ya Google.</translation>
 <translation id="8150396590017071059">Badilisha PIN ya Kidhibiti cha Manenosiri</translation>
 <translation id="8151057139207656239">Imenakili maelezo ya muundo</translation>
@@ -10360,6 +10383,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="850382998924680137">Umeiangalia leo</translation>
 <translation id="8505669004895429027">Nafasi Ndogo Iliyookolewa na Kiokoa Hifadhi</translation>
 <translation id="8507227974644337342">Ubora wa skrini</translation>
+<translation id="850763987657366362">Imeshindwa kupakia cheti</translation>
 <translation id="8509177919508253835">Badilisha funguo za usalama na uunde PIN</translation>
 <translation id="8509646642152301857">Upakuaji wa kamusi ya kukagua hijai umeshindwa.</translation>
 <translation id="8509967119010808787">Bofya hapa ili utafute kwenye vichupo vyako</translation>
@@ -10385,6 +10409,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8524841856047224176">Wekea mapendeleo mandharinyuma ya kamera ili uyatumie unapopiga simu za video na zaidi</translation>
 <translation id="8525306231823319788">Skrini nzima</translation>
 <translation id="8525461909394569609">Programu hii ina maudhui ya wavuti kutoka</translation>
+<translation id="8526313996927074827">Weka viungo, emoji na mengineyo. Unaweza pia kupata usaidizi wa kuandika kwa kutumia Google AI.</translation>
 <translation id="8526813720153458066">SSH</translation>
 <translation id="8527228059738193856">Spika</translation>
 <translation id="8527257351549797148">Shirika lako huenda likahitaji ujiandikishe ili uweze kufikia programu, viendelezi na zaidi. Hii inaruhusu shirika lako lidhibiti vitu kama usalama na mipangilio ya kifaa.</translation>
@@ -10744,7 +10769,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <ph name="DOMAIN" /> inahitaji usiondoe kadi yako mahiri.}other{<ph name="DEVICE_TYPE" /> yako itafungwa kiotomatiki baada ya sekunde #.
 <ph name="DOMAIN" /> inahitaji usiondoe kadi yako mahiri.}}</translation>
 <translation id="8776294611668764629">Shirika lako limezuia faili hii kwa sababu ni kubwa sana kufanyiwa ukaguzi wa usalama. Unaweza kufungua faili za hadi MB 50.</translation>
-<translation id="8776420827344913317">Wasifu huu unadhibitiwa na shirika lako na linaweza kuona aina fulani za maelezo</translation>
 <translation id="8777509665768981163">Weka au utambue vitufe kwenye kishikwambi chako</translation>
 <translation id="8777628254805677039">nenosiri msingi</translation>
 <translation id="877985182522063539">A4</translation>
@@ -11190,6 +11214,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> imezuiwa na sera ya biashara</translation>
 <translation id="9088446193279799727">Imeshindwa kuweka mipangilio ya Linux. Unganisha kwenye intaneti kisha ujaribu tena.</translation>
 <translation id="90885733430013283">SSID ya WiFi</translation>
+<translation id="9088858349441302494">Inadhibitiwa na <ph name="VALUE" /></translation>
 <translation id="9089416786594320554">Mbinu za Kuweka</translation>
 <translation id="9089959054554410481">Badilisha mwelekeo wa kusogeza wa padi ya kugusa</translation>
 <translation id="9090044809052745245">Jinsi ambavyo kifaa chako kinaonekana kwa wengine</translation>
@@ -11290,7 +11315,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="915112772806845021">Tovuti hutumia kipengele hiki kupachika picha ndani ya picha nyingine kiotomatiki. Hali hii hukuwezesha kuendelea kutazama video huku ikikupa nafasi ya kufanya mambo mengine kwenye simu yako.</translation>
 <translation id="9151249085738989067">Badilisha kiotomatiki sauti ya ChromeVox kulingana na lugha</translation>
 <translation id="9151906066336345901">end</translation>
-<translation id="9153274276370926498">Maelezo ya Mfumo wa Lacros</translation>
 <translation id="9153367754133725216">Angalia mapendekezo ya programu mpya na maudhui ya wavuti katika Kifungua Programu na matokeo ya utafutaji. Hatua hii hutuma takwimu za kuboresha mapendekezo iwapo tu umechagua kutuma ripoti za kuacha kufanya kazi na data ya uchunguzi na ya matumizi kwenda ChromeOS.</translation>
 <translation id="9154194610265714752">Imesasishwa</translation>
 <translation id="915485121129452731">Kishikwambi kinachotumia kalamu</translation>

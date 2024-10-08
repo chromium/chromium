@@ -114,6 +114,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="132346741904777634">Kamera yuqori chap burchakka joylandi. Tizim platfromasi bilan muammo chiqdi.</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> va oynalarni yopish</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> ulandi</translation>
+<translation id="1337081488893096731">Maktab hisobingizdagi maʼlumotlarni shaxsiy hisobingizga koʻchirish uchun Kontent uzatish ilovasidan foydalaning</translation>
 <translation id="1340378040547539434">Sahifadagi kattalashtirish</translation>
 <translation id="1341651618736211726">Kengaytirish</translation>
 <translation id="1341926407152459446">Audio manbasi va chiqarish uchun "<ph name="DEVICE_NAME" />" ishlatilsin</translation>
@@ -242,6 +243,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="17722141032474077">Hisoblashlar</translation>
 <translation id="1774796056689732716">Taqvim, <ph name="CURRENT_MONTH_YEAR" />, hozir <ph name="DATE" /> tanlangan.</translation>
 <translation id="178347895271755507">Telefondagi oxirgi suratlar, media fayllar va bildirishnomalarni koʻrishni sozlash</translation>
+<translation id="1786487376942610288">Tasvir ustida tasvir oynasining joriy va maksimal oʻlchamini almashtirish</translation>
 <translation id="1787955149152357925">Oʻchiq</translation>
 <translation id="1796561540704213354">Saytlar, jumladan siz tashrif buyurgan va ochilgan sahifalar</translation>
 <translation id="179842970735685253">Google xizmat shartlari</translation>
@@ -337,6 +339,9 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="219905428774326614">Launcher, barcha ilovalar</translation>
 <translation id="2201071101391734388">Oxirgi <ph name="INDEX" />/<ph name="TOTAL_COUNT" /> ta rasm.</translation>
 <translation id="2201687081523799384">Google Tasks maʼlumotlarini yopish</translation>
+<translation id="2206960886090042977">Sichqoncha ulangani uchun ichki sensorli panel oʻchirildi. Bu amalni sichqoncha yoki klaviatura orqali tasdiqlang.
+
+Bekor qilinsa, 30 soniyadan keyin sensorli panel qayta yoqiladi.</translation>
 <translation id="2208323208084708176">Birlashgan ish stoli rejimi</translation>
 <translation id="2220572644011485463">PIN kod yoki parol</translation>
 <translation id="2222841058024245321">Desk 7</translation>
@@ -1907,6 +1912,9 @@ yangi oʻrnatilgan</translation>
 Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translation>
 <translation id="7523420897035067483">Fokus rejimida Bezovta qilinmasin</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">Ichki sensorli panel oʻchirildi. Bu amalni klaviatura yoki boshqa koʻrsatish qurilmasi orqali tasdiqlang.
+
+Bekor qilinsa, 30 soniyadan keyin sensorli panel qayta yoqiladi.</translation>
 <translation id="7525067979554623046">Yaratish</translation>
 <translation id="7526573455193969409">Tarmoq kuzatilishi mumkin</translation>
 <translation id="7536035074519304529">IP manzil: <ph name="ADDRESS" /></translation>
@@ -2294,6 +2302,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8858369206579825206">Maxfiylik sozlamalari</translation>
 <translation id="8860366331836346216">eSIM qoʻshing</translation>
 <translation id="8870509716567206129">Bu dastur ekranni bo‘lish xususiyatini qo‘llab-quvvatlamaydi.</translation>
+<translation id="8873203135446552888">Ichki sensorli panelni oʻchirishni tasdiqlang</translation>
 <translation id="8874184842967597500">Ulanmagan</translation>
 <translation id="8875021410787719674">Pastki oʻng burchak, Launcher, manzil qatori, bukmarklar paneli, ochiq sayt va yuklanmalar paneli oʻrtasida almashish</translation>
 <translation id="8876148469852588625"><ph name="EVENT_POSITION" />/<ph name="EVENT_TOTAL_COUNT" /> – tadbir</translation>

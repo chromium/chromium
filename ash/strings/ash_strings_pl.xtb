@@ -114,6 +114,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="132346741904777634">Podgląd z kamery został przyciągnięty do lewego górnego rogu. Konflikt z obszarem systemowym.</translation>
 <translation id="132415371743256095">Zamknij <ph name="DESK_NAME" /> i okna</translation>
 <translation id="1333308631814936910">Połączono: <ph name="DISPLAY_NAME" /></translation>
+<translation id="1337081488893096731">Za pomocą aplikacji Przenoszenie treści możesz przenieść dane z konta szkolnego na osobiste</translation>
 <translation id="1340378040547539434">Pomniejsz na stronie</translation>
 <translation id="1341651618736211726">Rozwiń menu</translation>
 <translation id="1341926407152459446">Użyj urządzenia „<ph name="DEVICE_NAME" />” jako wejścia i wyjścia audio</translation>
@@ -242,6 +243,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="17722141032474077">Obliczenia</translation>
 <translation id="1774796056689732716">Kalendarz, <ph name="CURRENT_MONTH_YEAR" />, obecnie wybrana jest data <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Skonfiguruj wyświetlanie najnowszych zdjęć, plików multimedialnych i powiadomień z telefonu</translation>
+<translation id="1786487376942610288">Przełączanie między maksymalnym a bieżącym rozmiarem okna obrazu w obrazie</translation>
 <translation id="1787955149152357925">Wyłączono</translation>
 <translation id="1796561540704213354">Strony internetowe, w tym strony odwiedzone i otwarte</translation>
 <translation id="179842970735685253">Warunkami korzystania z usług Google</translation>
@@ -337,6 +339,9 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="219905428774326614">Menu ze wszystkimi aplikacjami</translation>
 <translation id="2201071101391734388">Najnowsze zdjęcie <ph name="INDEX" /> z <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Zwiń Listę zadań Google</translation>
+<translation id="2206960886090042977">Wbudowany touchpad został wyłączony, ponieważ podłączono mysz. Aby potwierdzić tę zmianę, użyj myszy lub klawiatury.
+
+W przeciwnym razie za 30 sekund wbudowany touchpad zostanie ponownie włączony.</translation>
 <translation id="2208323208084708176">Tryb ujednoliconego pulpitu</translation>
 <translation id="2220572644011485463">Kod PIN lub hasło</translation>
 <translation id="2222841058024245321">Biurko 7</translation>
@@ -1906,6 +1911,9 @@ Brak połączonych urządzeń.</translation>
 Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk zasilania.</translation>
 <translation id="7523420897035067483">Włącz funkcję Nie przeszkadzać podczas korzystania z trybu skupienia</translation>
 <translation id="7524043547948122239">Lista zadań Google</translation>
+<translation id="7524919752437339268">Wbudowany touchpad został wyłączony. Aby potwierdzić tę zmianę, użyj klawiatury lub innego urządzenia wskazującego.
+
+W przeciwnym razie za 30 sekund wbudowany touchpad zostanie ponownie włączony.</translation>
 <translation id="7525067979554623046">Utwórz</translation>
 <translation id="7526573455193969409">Sieć może być monitorowana</translation>
 <translation id="7536035074519304529">Adres IP: <ph name="ADDRESS" /></translation>
@@ -2293,6 +2301,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8858369206579825206">Ustawienia prywatności</translation>
 <translation id="8860366331836346216">Dodaj eSIM</translation>
 <translation id="8870509716567206129">Aplikacja nie obsługuje dzielonego ekranu.</translation>
+<translation id="8873203135446552888">Potwierdź, że chcesz wyłączyć wbudowany touchpad</translation>
 <translation id="8874184842967597500">Nie połączono</translation>
 <translation id="8875021410787719674">Przejdź między prawym dolnym rogiem, Menu z aplikacjami, paskiem adresu, paskiem zakładek, otwartą stroną internetową i pobranymi plikami</translation>
 <translation id="8876148469852588625">Wydarzenie <ph name="EVENT_POSITION" /> z <ph name="EVENT_TOTAL_COUNT" /></translation>

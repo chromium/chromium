@@ -254,7 +254,6 @@
 <translation id="1433225466058025572">רוצה לנסות שוב להזיז את הקבצים?</translation>
 <translation id="1435940442311036198">שימוש במפתח גישה במכשיר אחר</translation>
 <translation id="1436185428532214179">האתר יכול לבקש הרשאה לערוך קבצים ותיקיות במכשיר</translation>
-<translation id="1441816242347931036">צריך לפתוח כדי להמשיך</translation>
 <translation id="1442386063175183758">כנף ימנית בקיפול</translation>
 <translation id="1442987760062738829">ניקוב</translation>
 <translation id="1446396933673057385">בדיקת דיוק</translation>
@@ -283,6 +282,7 @@
 <translation id="1483493594462132177">שליחה</translation>
 <translation id="1484449009683144042">‏זהו כלי עזר ניסיוני לכתיבה שמבוסס על AI ויכול להיות שהעזרה ממנו לא תתאים לך.
     <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
+<translation id="1486096554574027028">חיפוש בסיסמאות</translation>
 <translation id="1492194039220927094">דחיפת מדיניות:</translation>
 <translation id="1495677929897281669">חזרה לכרטיסייה</translation>
 <translation id="1500286806237135498">מצלמות (<ph name="CAMERAS_COUNT" />)</translation>
@@ -311,6 +311,7 @@
 <translation id="1553152622374372421">ענפי ספורט חורף</translation>
 <translation id="1553358976309200471">‏כדאי לעדכן את Chrome</translation>
 <translation id="1555130319947370107">כחול</translation>
+<translation id="1555191101192706055">תוקפים באתר שבו ניסית לבקר עשויים לגרום לך בדרכי מרמה להתקין תוכנות מזיקות שמשפיעות על אופן הגלישה שלך. לדוגמה, על ידי שינוי דף הבית או הצגת מודעות נוספות באתרים שמבקרים בהם.</translation>
 <translation id="1559231233244409191">Cardboard (Triple Wall)</translation>
 <translation id="1559447966090556585">לאפשר קבלת התראות?</translation>
 <translation id="1559486004335285648">מילוי אוטומטי של פרטי התשלום</translation>
@@ -512,6 +513,7 @@
 <translation id="1901443836186977402">{1,plural, =1{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. התוקף של אישור האבטחה שלו פג במהלך היממה האחרונה. ייתכן שהסיבה לכך היא הגדרה שגויה או שתוקף מיירט את החיבור שלך. על פי השעון במחשב שלך, עכשיו <ph name="CURRENT_DATE" />. האם זה נכון? אם לא, עליך לכוון את שעון המערכת ולאחר מכן לרענן את הדף הזה.}one{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. תוקף אישור האבטחה שלו פג לפני # ימים. ייתכן שהסיבה לכך היא תצורה שגויה או שתוקף מיירט את החיבור שלך. על פי השעון במחשב שלך, עכשיו <ph name="CURRENT_DATE" />. האם זה נכון? אם לא, עליך לכוון את שעון המערכת ולאחר מכן לרענן את הדף הזה.}two{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. תוקף אישור האבטחה שלו פג לפני יומיים. ייתכן שהסיבה לכך היא תצורה שגויה או שתוקף מיירט את החיבור שלך. על פי השעון במחשב שלך, עכשיו <ph name="CURRENT_DATE" />. האם זה נכון? אם לא, עליך לכוון את שעון המערכת ולאחר מכן לרענן את הדף הזה.}other{השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. תוקף אישור האבטחה שלו פג לפני # ימים. ייתכן שהסיבה לכך היא תצורה שגויה או שתוקף מיירט את החיבור שלך. על פי השעון במחשב שלך, עכשיו <ph name="CURRENT_DATE" />. האם זה נכון? אם לא, עליך לכוון את שעון המערכת ולאחר מכן לרענן את הדף הזה.}}</translation>
 <translation id="1902576642799138955">תקופת תוקף</translation>
 <translation id="1908217026282415406">הרשאה להשתמש במצלמה ולהזיז אותה</translation>
+<translation id="1908690643053136980">אין אישור מהאדמין שלך לשימוש ב<ph name="PERMISSION" /> באתר הזה</translation>
 <translation id="1913037223029790376">‏שימוש בקוד האימות (CVC) של הכרטיס הווירטואלי הזה</translation>
 <translation id="191374271204266022">‏העתקה כ-JSON</translation>
 <translation id="1914326953223720820">שירות לפתיחת קבצים דחוסים</translation>
@@ -749,7 +751,6 @@
 <translation id="2328651992442742497">יש הרשאה (ברירת מחדל)</translation>
 <translation id="2328955282645810595">כלי בנייה וכלי עבודה ממונעים</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" />, בתוקף עד <ph name="EXPIRATION_DATE_ABBR" /></translation>
-<translation id="2337044517221264923">חזרה לכתיבה</translation>
 <translation id="2337852623177822836">ההגדרה נשלטת על-ידי מנהל המערכת</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> רוצה לבצע התאמה עם</translation>
 <translation id="2346319942568447007">תמונה שהעתקת</translation>
@@ -1028,6 +1029,7 @@
 <translation id="2903493209154104877">כתובות</translation>
 <translation id="290376772003165898">הדף לא ב<ph name="LANGUAGE" />?</translation>
 <translation id="2905107382358353958">התראה לגבי הגדרת תשלום חדשה</translation>
+<translation id="2909120679423833511">לפי דרישת הארגון שלך, <ph name="MANAGER" />, צריך להיכנס לחשבון עם פרופיל ספציפי</translation>
 <translation id="2909946352844186028">אותר שינוי ברשת.</translation>
 <translation id="2911255567212929079">‏למידת מכונה ובינה מלאכותית (AI)</translation>
 <translation id="2911973620368911614">מזהה משתמש של חשבון עבודה</translation>
@@ -1137,6 +1139,7 @@
 <translation id="3108943290502734357">המגש האמצעי</translation>
 <translation id="3109061346635850169">טיפוח פנים וגוף</translation>
 <translation id="3109728660330352905">אין לך הרשאה לצפות בדף הזה.</translation>
+<translation id="3109788962812161063">ניהול פרופילים</translation>
 <translation id="3111155154146792758">תנורים וקמינים</translation>
 <translation id="3112892588078695695">מספר טלפון: <ph name="PHONE" /></translation>
 <translation id="3113284927548439113">משמרת שלישית</translation>
@@ -1403,6 +1406,7 @@
 <translation id="3566021033012934673">החיבור שלך אינו פרטי</translation>
 <translation id="3566336457819493938">‏215x315 מ"מ</translation>
 <translation id="3566649245868131295">משרות בתחום הבריאות והרפואה</translation>
+<translation id="3566681680543111735">העתקת מחרוזת הווריאציות</translation>
 <translation id="3567778190852720481">לא ניתן להירשם באמצעות חשבון ארגוני (חשבון ארגוני לא עומד בקריטריונים).</translation>
 <translation id="3567901620846335314">‏100x150 מ"מ</translation>
 <translation id="3568886473829759308">גישה לאתר להצגת פרטים, מקורות מידע או שירותים שהעסק מספק.</translation>
@@ -1532,6 +1536,7 @@
 <translation id="3760561303380396507">‏האם להשתמש ב-Windows Hello במקום ב-CVC?</translation>
 <translation id="3761171036307311438">שם על הכרטיס:</translation>
 <translation id="3761718714832595332">הסתרת הסטטוס</translation>
+<translation id="3763752038825281594">בעבר לא נתת הרשאה ל<ph name="PERMISSION" /> באתר הזה</translation>
 <translation id="3765588406864124894">תיבת דואר 9</translation>
 <translation id="3767485424735936570">לפי המדיניות של מנהל המערכת, לא מומלץ להעתיק את התוכן ולהדביק אותו ב-<ph name="VM_NAME" /></translation>
 <translation id="3772211998634047851">Paper (Bond)</translation>
@@ -1890,6 +1895,7 @@
 <translation id="4397978002248035985">ייפתח חלון קופץ לאימות באתר הבנק</translation>
 <translation id="4406883609789734330">כתוביות מיידיות</translation>
 <translation id="4406896451731180161">תוצאות חיפוש</translation>
+<translation id="4407758156081352648">‏מטעמי אבטחה, הארגון שלך לא מאפשר שימוש חוזר בסיסמאות ב-Chrome. הסיסמאות ב-Chrome מוצפנות כדי להגן על פרטיות המשתמשים.</translation>
 <translation id="4408413947728134509">‏קובצי Cookie <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">ההגדרה הזו מסומנת כניתנת להתקנה, אבל אין תמונה לארכיטקטורה הזו, לכן לא ניתן להתקין אותה.</translation>
 <translation id="4414452699610169758">‏שימוש במנהל הסיסמאות של Google ובמילוי האוטומטי של Chrome לשמירה ומילוי של סיסמאות, אמצעי תשלום וכתובות</translation>
@@ -2085,7 +2091,6 @@ Del</translation>
 <translation id="4792686369684665359">המידע שבכוונתך לשלוח לא מאובטח</translation>
 <translation id="4793219378458250238">‏11x12 אינץ'</translation>
 <translation id="4796594887379589189">מזהה חשבון עבודה</translation>
-<translation id="4798078619018708837">‏כדי לעדכן את פרטי הכרטיס, יש להזין את תאריך התפוגה וקוד האימות של <ph name="CREDIT_CARD" />. אחרי שנקבל ממך אישור, נשתף עם האתר הזה את פרטי הכרטיס מחשבון Google.</translation>
 <translation id="4798269756263412078">קבלת התראות על הנחות באתר כלשהו. ההתראות יישלחו אליך באימייל.</translation>
 <translation id="4800132727771399293">‏יש לבדוק את תאריך התפוגה ואת ה-CVC ולנסות שוב</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -2290,7 +2295,6 @@ Del</translation>
 <translation id="5164798890604758545">מתבצעת הזנת טקסט</translation>
 <translation id="5164928537947209380">‏כלי ה-AI הניסיוני הזה לא תמיד מתאים. כדי לשפר אותו, התוכן שלך נשלח אל Google.
     <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
-<translation id="516920405563544094">‏יש להזין את קוד האימות של <ph name="CREDIT_CARD" />. אחרי שנקבל ממך אישור, נשתף עם האתר הזה את פרטי הכרטיס מחשבון Google.</translation>
 <translation id="5169827969064885044">‏ייתכן שלא יתאפשר לך לגשת לחשבון הארגוני, והזהות שלך עלולה להיגנב. לגלישה בטוחה ב-Chrome, מומלץ לשנות את הסיסמה עכשיו.</translation>
 <translation id="5171045022955879922">טקסט או כתובת אתר לחיפוש</translation>
 <translation id="5172758083709347301">מכונה</translation>
@@ -2312,6 +2316,7 @@ Del</translation>
 <translation id="521659676233207110">מגש 13</translation>
 <translation id="5216942107514965959">הכניסה האחרונה בוצעה היום</translation>
 <translation id="5217759126664161410">פורמט הפרוטוקול לא תקין.</translation>
+<translation id="5221377878828867877">הארגון שלך עוקב אחרי השימוש החוזר בסיסמאות</translation>
 <translation id="5222812217790122047">אימייל (חובה)</translation>
 <translation id="5228269245420405804">למידה מרחוק</translation>
 <translation id="5230733896359313003">כתובת למשלוח</translation>
@@ -2811,6 +2816,7 @@ Del</translation>
 שמשתמשים בהם.</translation>
 <translation id="614940544461990577">כדאי לנסות:</translation>
 <translation id="6150036310511284407">3 ניקובים בצד שמאל</translation>
+<translation id="6150754742333439143">‫<ph name="ORG_NAME" /> עוקבת אחרי השימוש החוזר בסיסמאות</translation>
 <translation id="6151417162996330722">תקופת התוקף של אישור השרת ארוכה מדי.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> אינץ' (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">ריצה והליכה</translation>
@@ -3021,6 +3027,7 @@ Del</translation>
 <translation id="6507117483253822672">כתיבה בראש שקט בכל מקום באינטרנט</translation>
 <translation id="6508722015517270189">‏הפעלה מחדש של Chrome</translation>
 <translation id="6513005815064132016">האתר יכול לבקש הרשאה לעקוב אחר מיקום המצלמה</translation>
+<translation id="6514932395202175590">כדי להמשיך, עליך להיכנס לחשבון <ph name="EMAIL" /> ולאחר מכן להגדיר פרופיל חדש</translation>
 <translation id="6517596291481585650">אזהרה! המדיניות הזו לא עברה מיזוג בהתאם למדיניות, מאחר שהיא אינה רשימה.</translation>
 <translation id="6518133107902771759">אימות</translation>
 <translation id="6519885440226079262">אתרים יכולים לבקש הרשאה לעקוב אחר תנועות הידיים שלך</translation>
@@ -3046,6 +3053,7 @@ Del</translation>
 <translation id="6556866813142980365">ביצוע מחדש</translation>
 <translation id="6557715786897013164">‏14x17 אינץ'</translation>
 <translation id="6560786330438719938">אפליקציות שהותקנו או הוסרו ותדירות השימוש בהן</translation>
+<translation id="6567832540451970450">האדמין שלך מאשר את השימוש ב<ph name="PERMISSION" /> באתר הזה</translation>
 <translation id="6568793038316600992">‏הלחצן לניהול אמצעי התשלום, מפעילים אותו כדי לנהל את פרטי כרטיסי האשראי והתשלומים שלך בהגדרות Chrome</translation>
 <translation id="6569060085658103619">זהו דף של תוסף</translation>
 <translation id="6573200754375280815">שני ניקובים בצד ימין</translation>
@@ -3127,6 +3135,7 @@ Del</translation>
 <translation id="6710648923880003133">הצעת סיסמה חזקה</translation>
 <translation id="671076103358959139">טוקן הרשמה:</translation>
 <translation id="6711464428925977395">‏משהו אינו תקין בשרת ה-proxy, או שהכתובת שגויה.</translation>
+<translation id="6711700233707023861">מחרוזת הווריאציות הועתקה ללוח</translation>
 <translation id="6716039223770814796">‫<ph name="COMPARE_SET_NAME" /> · השוואה בין <ph name="ITEMS" /> פריטים</translation>
 <translation id="6716672519412350405">האתר <ph name="URL" /> רוצה ליצור מפה בתלת ממד של הסביבה שלך ולעקוב אחר מיקום המצלמה</translation>
 <translation id="6717692133381953670">הכרטיסייה נשלחה ממכשיר <ph name="DEVICE_NAME" /></translation>
@@ -3414,6 +3423,7 @@ Del</translation>
 <translation id="7243771829620208687">RA0</translation>
 <translation id="7243898806468402921">פעילויות עסקיות</translation>
 <translation id="7244061187185055290">בכמה מילים, צריך לתאר מה מחפשים</translation>
+<translation id="7250174481516136841"><ph name="BEGIN_LINK" />מידע נוסף על ההטבות בכרטיסים<ph name="END_LINK" /></translation>
 <translation id="7251437084390964440">‏תצורת הרשת אינה תואמת לתקן ONC. ייתכן שחלקים מהתצורה לא ייכללו בייבוא.
 פרטים נוספים:
 <ph name="DEBUG_INFO" /></translation>
@@ -3465,6 +3475,7 @@ Del</translation>
 <translation id="736592699917579616">אוכל</translation>
 <translation id="7366117520888504990">‏198x275 מ"מ</translation>
 <translation id="7366362069757178916">‏מעבדי handler לתשלומים</translation>
+<translation id="7366594738862061263">‏כך Chrome מגן על הסיסמאות שלך</translation>
 <translation id="7367985555340314048">רשימת הנושאים שמעניינים אותך מבוססת על היסטוריית הגלישה שלך מהזמן האחרון, ואתרים נעזרים בנושאים האלה כדי להציג לך מודעות בהתאמה אישית.</translation>
 <translation id="7372526636730851647">Photo (Glossy)</translation>
 <translation id="7372973238305370288">תוצאת חיפוש</translation>
@@ -3480,9 +3491,9 @@ Del</translation>
 <translation id="7380398842872229465">‏10x15 אינץ'</translation>
 <translation id="7388380253839603603">מחירי דלק ותדלוק</translation>
 <translation id="7388594495505979117">{0,plural, =1{המכשיר יופעל מחדש בתוך דקה}one{המכשיר יופעל מחדש בתוך # דקות}two{המכשיר יופעל מחדש בתוך # דקות}other{המכשיר יופעל מחדש בתוך # דקות}}</translation>
-<translation id="7390545607259442187">אישור הכרטיס</translation>
 <translation id="7392089738299859607">עדכון הכתובת</translation>
 <translation id="7393161616326137353">משחקי הרפתקאות</translation>
+<translation id="7393475648162498734">הצגת הפרסים וההטבות שזמינים לכרטיסים שלך בקופה</translation>
 <translation id="739728382607845710">‏סמל רכיב ה-handler של התשלומים</translation>
 <translation id="7399616692258236448">בקשות המיקום חסומות באופן אוטומטי בכל האתרים, מלבד האתרים שאישרת</translation>
 <translation id="7399802613464275309">בדיקת אבטחה</translation>
@@ -3918,6 +3929,7 @@ Del</translation>
 <translation id="8151185429379586178">כלים למפתחים</translation>
 <translation id="8153865548451212769">{0,plural, =1{בהתאם למדיניות האדמין, לא מומלץ להוריד את הקובץ הזה אל <ph name="DESTINATION_NAME" />}one{בהתאם למדיניות האדמין, לא מומלץ להוריד את הקבצים האלה אל <ph name="DESTINATION_NAME" />}two{בהתאם למדיניות האדמין, לא מומלץ להוריד את הקבצים האלה אל <ph name="DESTINATION_NAME" />}other{בהתאם למדיניות האדמין, לא מומלץ להוריד את הקבצים האלה אל <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="81563721597823545">ציוד להוקי</translation>
+<translation id="815805690561372740">‏ב-Chrome יש תכונות בטיחות מובנות שנועדו להגן עליך במהלך הגלישה, למשל הגלישה הבטוחה של Google, ש<ph name="BEGIN_LINK" />מצאה לאחרונה תוכנה זדונית<ph name="END_LINK" /> באתר שבו ניסית לבקר.</translation>
 <translation id="8161095570253161196">המשך הגלישה</translation>
 <translation id="8163866351304776260">4 ניקובים בצד שמאל</translation>
 <translation id="8164078261547504572">רוצה לקבל אימיילים על ירידה במחיר?</translation>
@@ -3935,6 +3947,7 @@ Del</translation>
 <translation id="8194412401381329820">לא ניתן להשתמש בדף הזה מחשבון מנוהל במכשיר הזה שלא מנוהל. כל החשבונות המנוהלים ננעלים אם משתמשים בדף הזה, חוץ מחשבונות שמנוהלים על ידי אותה ישות שמנהלת את המכשיר הזה (חשבונות משויכים).</translation>
 <translation id="8194797478851900357">&amp;ביטול העברה</translation>
 <translation id="8194956568907463262">משחקי יריות</translation>
+<translation id="819931074683918462">לפי דרישת הארגון שלך, צריך להיכנס לחשבון עם פרופיל ספציפי.</translation>
 <translation id="8199437620497683918">Optical Disc (Glossy)</translation>
 <translation id="8199730148066603000">‏אין הרשאה להציג כתובת URL שאינה מסוג HTTPS בתצוגה מקדימה.</translation>
 <translation id="8200772114523450471">חידוש</translation>
@@ -4059,6 +4072,7 @@ Del</translation>
 <translation id="8398790343843005537">אתר את הטלפון שלך</translation>
 <translation id="8399276468426899527">נעילת המקלדת ושימוש בה</translation>
 <translation id="8400929824946688748">תעסוקה וחינוך</translation>
+<translation id="8402442052798347631">תוקפים באתר שבו ניסית לבקר עשויים לגרום לך בדרכי מרמה להתקין תוכנות מזיקות שמשפיעות על אופן הגלישה שלך. לדוגמה, על ידי שינוי דף הבית או הצגת מודעות נוספות באתרים שמבקרים בהם. מומלץ מאוד לחזור לדף הבטוח. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף על האזהרה הזו<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8403506619177967839">ספרות חובבים</translation>
 <translation id="8405579342203358118">‏ניתן לקבוע איזה מידע יסונכרן בהגדרות Chrome</translation>
 <translation id="8406071103346257942">להפסיק להשתמש בנעילת המסך למילוי סיסמאות</translation>
@@ -4093,6 +4107,7 @@ Del</translation>
 <translation id="8458202188076138974">‏9.5x12 אינץ' (Letter Extra)</translation>
 <translation id="8460854335417802511">להפעלת ההגדרה</translation>
 <translation id="8461694314515752532">הצפנת נתונים מסונכרנים בעזרת ביטוי סיסמה אישי לסנכרון</translation>
+<translation id="8461973047386722744">לא נמצאו סיסמאות</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{כרטיס אשראי אחד}one{# כרטיסי אשראי}two{שני כרטיסי אשראי}other{# כרטיסי אשראי}}</translation>
 <translation id="8467494337615822642">‏מעבר לדף בדיקת האבטחה ב-Chrome בהגדרות</translation>
 <translation id="8468358362970107653">‏מעטפה – C3</translation>
@@ -4179,6 +4194,7 @@ Del</translation>
 <translation id="8623885649813806493">אין סיסמאות תואמות. יש להציג את כל הסיסמאות השמורות.</translation>
 <translation id="8624354461147303341">לקבלת הנחות</translation>
 <translation id="8634957317623797170">‏54x86 מ"מ</translation>
+<translation id="8637362707224133343">‏ב-Chrome יש תכונות בטיחות מובנות שנועדו להגן עליך במהלך הגלישה, למשל הגלישה הבטוחה של Google, ש<ph name="BEGIN_LINK" />מצאה לאחרונה פישינג<ph name="END_LINK" /> באתר שבו ניסית לבקר. אתרי פישינג מתחזים לאתרים אחרים כדי להטעות אותך.<ph name="NEW_LINE" />גם אתרים שבדרך כלל נחשבים לבטוחים נפרצים לפעמים על ידי תוקפים. <ph name="BEGIN_ERROR_LINK" />חשוב לנו לדעת<ph name="END_ERROR_LINK" /> אם לדעתך מדובר בטעות והאתר לא מהווה סכנה.</translation>
 <translation id="8641131559425911240">Envelope (Bond)</translation>
 <translation id="8643409044755049933">‏מעטפה – Kaku 3</translation>
 <translation id="8647287295490773273">‏210x330 מ"מ</translation>
@@ -4205,6 +4221,7 @@ Del</translation>
 <translation id="8688672835843460752">זמינות</translation>
 <translation id="868922510921656628">דפים בכל קבוצה</translation>
 <translation id="8695996513186494922">להשוות בין הכרטיסיות?</translation>
+<translation id="8698428283892912525">‏ב-Chrome יש תכונות בטיחות מובנות שנועדו להגן עליך במהלך הגלישה, למשל הגלישה הבטוחה של Google, ש<ph name="BEGIN_LINK" />מצאה לאחרונה תוכנה מזיקה<ph name="END_LINK" /> באתר שבו ניסית לבקר.</translation>
 <translation id="869891660844655955">תאריך תפוגה</translation>
 <translation id="8699041776323235191">‏התקן HID</translation>
 <translation id="8699985386408839112">‏מעטפה – Kaku 1</translation>
@@ -4498,6 +4515,7 @@ Del</translation>
 <translation id="939736085109172342">תיקייה חדשה</translation>
 <translation id="940524522703752213">העלאת הקובץ אל <ph name="CLOUD_PROVIDER" /> תתחיל בעוד <ph name="MINUTES" /> דקות</translation>
 <translation id="944540589955480312">‏שימוש בסיסמאות ובמפתחות הגישה שנשמרו בחשבון Google</translation>
+<translation id="944578681290094302">הצגת הפרסים וההטבות שזמינים לכרטיסים שלך בקופה. <ph name="CARD_BENEFIT_HELP_LINK_BEGIN" />מידע על ההטבות בכרטיסים<ph name="CARD_BENEFIT_HELP_LINK_END" /></translation>
 <translation id="945646848072568856">‏Chrome מונע מאתרים לעשות שימוש בקובצי Cookie של צד שלישי כדי לעקוב אחריך במהלך הגלישה.</translation>
 <translation id="945855313015696284">יש לבדוק את המידע שבהמשך ולמחוק כרטיסים עם שגיאות</translation>
 <translation id="94613679163347541">להשוות את הקטגוריה <ph name="CATEGORY" />?</translation>

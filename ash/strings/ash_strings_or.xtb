@@ -114,6 +114,7 @@
 <translation id="132346741904777634">କ୍ୟାମେରାକୁ ଉପର ବାମପାର୍ଶ୍ୱ କୋଣକୁ ସ୍ନାପ କରାଯାଇଛି। ସିଷ୍ଟମ ସର୍ଫେସ ସହ ବିବାଦ।</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> ଏବଂ ୱିଣ୍ଡୋ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> ସଂଯୋଗ କରାଯାଇଛି</translation>
+<translation id="1337081488893096731">ଆପଣଙ୍କ ସ୍କୁଲ ଆକାଉଣ୍ଟ ଡାଟାକୁ ଆପଣଙ୍କର ବ୍ୟକ୍ତିଗତ ଆକାଉଣ୍ଟକୁ ମୁଭ କରିବା ପାଇଁ Content Transfer ଆପକୁ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="1340378040547539434">ପୃଷ୍ଠାରେ ଜୁମ ଆଉଟ କରନ୍ତୁ</translation>
 <translation id="1341651618736211726">ଓଭର୍‌ଫ୍ଲୋ</translation>
 <translation id="1341926407152459446">ଅଡିଓ ଇନପୁଟ ଏବଂ ଆଉଟପୁଟ ପାଇଁ "<ph name="DEVICE_NAME" />" ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -242,6 +243,7 @@
 <translation id="17722141032474077">ଗଣନା</translation>
 <translation id="1774796056689732716">କ୍ୟାଲେଣ୍ଡର, <ph name="CURRENT_MONTH_YEAR" />, ବର୍ତ୍ତମାନ <ph name="DATE" />କୁ ଚୟନ କରାଯାଇଛି।</translation>
 <translation id="178347895271755507">ଆପଣଙ୍କ ଫୋନର ବର୍ତ୍ତମାନର ଫଟୋ, ମିଡିଆ ଏବଂ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଭ୍ୟୁ କରିବା ସେଟ ଅପ କରନ୍ତୁ</translation>
+<translation id="1786487376942610288">ପିକଚର-ଇନ-ପିକଚର ୱିଣ୍ଡୋର ସର୍ବାଧିକ କିମ୍ବା ବର୍ତ୍ତମାନର ସାଇଜ ମଧ୍ଯରେ ସୁଇଚ କରନ୍ତୁ</translation>
 <translation id="1787955149152357925">ବନ୍ଦ ଅଛି</translation>
 <translation id="1796561540704213354">ଆପଣ ଭିଜିଟ କରିଥିବା ପୃଷ୍ଠା ଏବଂ ଖୋଲା ଥିବା ପୃଷ୍ଠା ସମେତ ୱେବସାଇଟଗୁଡ଼ିକ</translation>
 <translation id="179842970735685253">Googleର ସେବାର ସର୍ତ୍ତାବଳୀ</translation>
@@ -337,6 +339,9 @@
 <translation id="219905428774326614">ଲଞ୍ଚର୍, ସମସ୍ତ ଆପ୍</translation>
 <translation id="2201071101391734388">ବର୍ତ୍ତମାନର ଫଟୋ <ph name="TOTAL_COUNT" />ଟିରୁ <ph name="INDEX" />।</translation>
 <translation id="2201687081523799384">Google Tasksକୁ ସଙ୍କୁଚିତ କରନ୍ତୁ</translation>
+<translation id="2206960886090042977">ଏକ ମାଉସ କନେକ୍ଟ କରାଯାଇଥିବା ଯୋଗୁଁ ବିଲ୍ଟ-ଇନ ଟଚପେଡକୁ ଅକ୍ଷମ କରାଯାଇଛି। ପରିବର୍ତ୍ତନକୁ ସୁନିଶ୍ଚିତ କରିବା ପାଇଁ ମାଉସ କିମ୍ବା କୀବୋର୍ଡକୁ ବ୍ୟବହାର କରନ୍ତୁ।
+
+ଅନ୍ୟଥା ବିଲ୍ଟ-ଇନ ଟଚପେଡକୁ 30 ସେକେଣ୍ଡରେ ପୁଣି-ସକ୍ଷମ କରାଯିବ।</translation>
 <translation id="2208323208084708176">ଏକୀକୃତ ଡେସ୍କଟପ୍ ମୋଡ୍</translation>
 <translation id="2220572644011485463">ପିନ୍‌ କିମ୍ବା ପାସ୍‌ୱର୍ଡ</translation>
 <translation id="2222841058024245321">ଡେସ୍କ 7</translation>
@@ -1468,6 +1473,7 @@
 <translation id="598407983968395253">ଟେମ୍ପଲେଟ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="5986723678596105470">Google Meet ମାଧ୍ୟମରେ ଯୋଗ ଦିଅନ୍ତୁ</translation>
 <translation id="598882571027504733">ଅପ୍‌ଡେଟ୍ ପ୍ରାପ୍ତ କରିବା ପାଇଁ, ଆପଣଙ୍କର Chromebookକୁ କୀବୋର୍ଡରେ ସଂଲଗ୍ନ କରି ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ।</translation>
+<translation id="5990992855591814753">ପର୍ସନାଲାଇଜ କରାଯାଇଥିବା ଫୋକସ ପ୍ଲେଲିଷ୍ଟଗୁଡ଼ିକ ସହିତ ଟ୍ରାକରେ ରୁହନ୍ତୁ। ବିନା ମୂଲ୍ୟରେ 3 ମାସର YouTube Premium ସହିତ ବିଜ୍ଞାପନ-ମୁକ୍ତ ଭାବେ YouTube Music ଏବଂ YouTube ପାଆନ୍ତୁ। ସର୍ତ୍ତାବଳୀ ଲାଗୁ।</translation>
 <translation id="5998374579424866922">ଗେମ ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="6000279412553873020">କୀ, ବଟନ ଏବଂ ଆହୁରି ଅନେକ କିଛି</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" />ରୁ <ph name="SELECTED_PAGE" /> ପୃଷ୍ଠା</translation>
@@ -1905,6 +1911,9 @@
 ଡିଭାଇସକୁ ବନ୍ଦ କରିବା ପାଇଁ ପୁଣି ଡିଭାଇସରେ ପାୱାର ବଟନକୁ ଦବାଇ ଧରନ୍ତୁ।</translation>
 <translation id="7523420897035067483">ଫୋକସ ମୋଡ ଚାଲୁ ଥିବା ସମୟରେ 'ବିରକ୍ତ କରନ୍ତୁ ନାହିଁ'କୁ ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">ବିଲ୍ଟ-ଇନ ଟଚପେଡକୁ ଅକ୍ଷମ କରାଯାଇଛି। ପରିବର୍ତ୍ତନକୁ ସୁନିଶ୍ଚିତ କରିବା ପାଇଁ ଆପଣଙ୍କ କୀବୋର୍ଡ କିମ୍ବା ଅନ୍ୟ ଏକ ପଏଣ୍ଟର ଡିଭାଇସକୁ ବ୍ୟବହାର କରନ୍ତୁ।
+
+ଅନ୍ୟଥା ବିଲ୍ଟ-ଇନ ଟଚପେଡକୁ 30 ସେକେଣ୍ଡରେ ପୁଣି-ସକ୍ଷମ କରାଯିବ।</translation>
 <translation id="7525067979554623046">ତିଆରି କରନ୍ତୁ</translation>
 <translation id="7526573455193969409">ନେଟ୍‌ୱର୍କ ଉପରେ ହୁଏତ ନଜର ରଖାଯାଇପାରେ</translation>
 <translation id="7536035074519304529">IP ଠିକଣା: <ph name="ADDRESS" /></translation>
@@ -2292,6 +2301,7 @@
 <translation id="8858369206579825206">ଗୋପନୀୟତା ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକ</translation>
 <translation id="8860366331836346216">eSIM ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="8870509716567206129">ଆପ୍‍ ସ୍ପ୍ଲିଟ୍‍-ସ୍କ୍ରୀନକୁ ସମର୍ଥନ କରେନାହିଁ।</translation>
+<translation id="8873203135446552888">ଆପଣ ବିଲ୍ଟ-ଇନ ଟଚପେଡକୁ ଅକ୍ଷମ କରିବା ପାଇଁ ଚାହୁଁଥିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="8874184842967597500">ସଂଯୁକ୍ତ ନାହିଁ</translation>
 <translation id="8875021410787719674">ନିମ୍ନ ଡାହାଣ କୋଣ, ଠିକଣା ବାର, ବୁକମାର୍କ, ଖୋଲା ଥିବା ୱେବସାଇଟ ଏବଂ ଡାଉନଲୋଡଗୁଡ଼ିକ ମଧ୍ୟରେ ମୁଭ କରନ୍ତୁ</translation>
 <translation id="8876148469852588625"><ph name="EVENT_TOTAL_COUNT" />ଟିରୁ <ph name="EVENT_POSITION" /> ନମ୍ବର ଇଭେଣ୍ଟ</translation>

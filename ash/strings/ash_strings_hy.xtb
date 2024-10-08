@@ -114,6 +114,7 @@
 <translation id="132346741904777634">Տեսախցիկի պատկերն ամրացված է վերևի ձախ անկյունում, քանի որ ծածկում էր համակարգի միջերեսի տարրերը։</translation>
 <translation id="132415371743256095">Փակել <ph name="DESK_NAME" /> աշխատասեղանը և պատուհանները</translation>
 <translation id="1333308631814936910">Միացված է <ph name="DISPLAY_NAME" /> սարքը</translation>
+<translation id="1337081488893096731">Օգտագործեք Content Transfer հավելվածը՝ ձեր ուսումնական հաշվի տվյալները անձնական հաշիվ տեղափոխելու համար</translation>
 <translation id="1340378040547539434">Փոքրացնել էջի մասշտաբը</translation>
 <translation id="1341651618736211726">Բացել լրացուցիչ ընտրացանկը</translation>
 <translation id="1341926407152459446">Օգտագործեք «<ph name="DEVICE_NAME" />» սարքը աուդիոյի ներածման և արտածման համար</translation>
@@ -242,6 +243,7 @@
 <translation id="17722141032474077">Հաշվարկներ</translation>
 <translation id="1774796056689732716">Օրացույց, <ph name="CURRENT_MONTH_YEAR" />, այժմ ընտրված է՝ <ph name="DATE" />։</translation>
 <translation id="178347895271755507">Կարգավորել հեռախոսի վերջին լուսանկարների, մեդիաֆայլերի և ծանուցումների դիտումը</translation>
+<translation id="1786487376942610288">Օգտագործեք «Նկար նկարի մեջ» պատուհանը առավելագույն կամ ընթացիկ չափսով</translation>
 <translation id="1787955149152357925">Անջատված է</translation>
 <translation id="1796561540704213354">Վեբ կայքերը՝ ներառյալ էջերը, որոնք այցելել եք, և բացված էջերը</translation>
 <translation id="179842970735685253">Google-ի օգտագործման պայմանների</translation>
@@ -337,6 +339,9 @@
 <translation id="219905428774326614">Գործարկիչ, բոլոր հավելվածները</translation>
 <translation id="2201071101391734388">Վերջին լուսանկար <ph name="INDEX" />/<ph name="TOTAL_COUNT" />։</translation>
 <translation id="2201687081523799384">Ծալել Google Tasks-ը</translation>
+<translation id="2206960886090042977">Ներկառուցված հպահարթակն անջատված է, քանի որ մկնիկ է միացված։ Փոփոխությունը հաստատելու համար օգտագործեք մկնիկը կամ ստեղնաշարը։
+
+Այլապես 30 վայրկյան անց ներկառուցված հպահարթակը նորից կակտիվանա։</translation>
 <translation id="2208323208084708176">Միասնական աշխատասեղանի ռեժիմ</translation>
 <translation id="2220572644011485463">PIN կոդը կամ գաղտնաբառը</translation>
 <translation id="2222841058024245321">Աշխատասեղան 7</translation>
@@ -1907,6 +1912,9 @@
 Սրաքն անջատելու համար նորից սեղմեք և պահեք սնուցման կոճակը։</translation>
 <translation id="7523420897035067483">Չանհանգստացնել Առանց շեղումների ռեժիմում</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">Ներկառուցված հպահարթակն անջատված է: Փոփոխությունը հաստատելու համար օգտագործեք ձեր մկնիկը կամ նշորդի այլ սարք։
+
+Այլապես 30 վայրկյան անց ներկառուցված հպահարթակը նորից կակտիվանա։</translation>
 <translation id="7525067979554623046">Ստեղծել</translation>
 <translation id="7526573455193969409">Ցանցը կարող է վերահսկվել</translation>
 <translation id="7536035074519304529">IP հասցե՝ <ph name="ADDRESS" /></translation>
@@ -2294,6 +2302,7 @@
 <translation id="8858369206579825206">Գաղտնիության կարգավորումներ</translation>
 <translation id="8860366331836346216">Ավելացնել eSIM</translation>
 <translation id="8870509716567206129">Հավելվածը չի աջակցում էկրանի տրոհումը:</translation>
+<translation id="8873203135446552888">Հաստատեք, որ ուզում եք անջատել ներկառուցված հպահարթակը</translation>
 <translation id="8874184842967597500">Կապ չկա</translation>
 <translation id="8875021410787719674">Տեղաշարժվել ներքևի աջ անկյունի, Գործարկիչի, հասցեագոտու, էջանիշների գոտու, բացված կայքի և ներբեռնումների միջև</translation>
 <translation id="8876148469852588625">Միջոցառում <ph name="EVENT_POSITION" />՝ <ph name="EVENT_TOTAL_COUNT" />-ից</translation>

@@ -49,6 +49,7 @@
 <translation id="1979673356880165407">Ochilgan barcha saytlar uchun matn va rasmlarni kattalashtiring yoki kichiklashtiring</translation>
 <translation id="1984937141057606926">Tashqi saytlardan tashqarilarga ruxsat berilgan</translation>
 <translation id="1985247341569771101">Yoqilsa, saytlar qurilmangiz harakat sensoridan foydalana oladi. Oʻchirilsa, foydalana olmaydi.</translation>
+<translation id="1985716030964443178">Roʻyxatdagi barcha saytlar uchun birlamchi zum tiklanadi</translation>
 <translation id="1989112275319619282">Tanlash</translation>
 <translation id="1994173015038366702">Sayt URL manzili</translation>
 <translation id="2004697686368036666">Ayrim saytlardagi funksiyalar ishlamay qolishi mumkin.</translation>
@@ -103,10 +104,13 @@
 <translation id="2653659639078652383">Yuborish</translation>
 <translation id="2677748264148917807">Tark etish</translation>
 <translation id="2678468611080193228">Tashqi cookie fayllarga vaqtincha ruxsat bering, bunda himoya pasayadi, lekin saytdagi aksariyat funksiyalar ishlaydi</translation>
+<translation id="2682367912565197520">Saqlangan zum darajasini oʻchirish</translation>
 <translation id="2683434792633810741">Oʻchirib, tiklansinmi?</translation>
 <translation id="2713106313042589954">Kamerani faolsizlantirish</translation>
 <translation id="2717722538473713889">Email manzillar</translation>
+<translation id="2726059656860238749">Chromeni fokusdagi omniboks bilan ishga tushirish, arzon qurilmalarda ishga tushirish vaqtini kamaytiradi.</translation>
 <translation id="2750481671343847896">Saytlar shaxsni tasdiqlash xizmatlariga kirish oynalarini chiqarishi mumkin</translation>
+<translation id="2787357173144933081">Omniboksdan boshlash</translation>
 <translation id="2790501146643349491">Yoqilsa, yaqinda yopilgan saytlar axborot yuborish va qabul qilishni toʻxtatishi mumkin. Oʻchirilsa, toʻxtata olmaydi.</translation>
 <translation id="2822354292072154809"><ph name="CHOSEN_OBJECT_NAME" /> uchun barcha sayt ruxsatnomalari ilk holatga qaytarilsinmi?</translation>
 <translation id="2850913818900871965">Mobil versiyani ochish</translation>
@@ -144,6 +148,7 @@
 <translation id="3295602654194328831">Ma’lumotlarni yashirish</translation>
 <translation id="3328801116991980348">Sayt haqida ma’lumot</translation>
 <translation id="3333961966071413176">Barcha kontaktlar</translation>
+<translation id="3360338140203645771">Hammasi oʻchirilsinmi?</translation>
 <translation id="3362437373201486687">Bluetooth qurilmalar qidirilmoqda</translation>
 <translation id="3386292677130313581">Joylashuv ma’lumotini ko‘rishiga ruxsat so‘ralsin (tavsiya etiladi)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
@@ -209,6 +214,7 @@
 <translation id="4338831206024587507">Barcha saytlar <ph name="DOMAIN" /> ostida</translation>
 <translation id="4402755511846832236">Bu qurilmadan foydalanish axborotlarini saytlar bilishini taqiqlash</translation>
 <translation id="4412992751769744546">Tashqi saytlarga cookie fayllarni saqlashga ruxsat berish</translation>
+<translation id="4419929467120297501">Chrome saytlarni kezishda sizni kuzatish uchun tashqi cookie fayllardan foydalanuvchi saytlarni bloklaydi. Sozlamalar orqali <ph name="BEGIN_LINK" />tashqi cookie fayllariga ruxsatni boshqarish mumkin<ph name="END_LINK" />.</translation>
 <translation id="4434045419905280838">Qalquvchi oyna va yo‘naltirishlar</translation>
 <translation id="443552056913301231">Bunda qurilmadagi cookie fayllar kabi barcha maʼlumotlar oʻchib ketadi va <ph name="ORIGIN" /> saytining barcha ruxsatlari tiklanadi</translation>
 <translation id="4468959413250150279">Muayyan saytdagi ovozni o‘chirish.</translation>
@@ -230,6 +236,7 @@
 <translation id="4779083564647765204">Masshtab</translation>
 <translation id="4807122856660838973">Saytlarni xavfsiz kezish rejimini yoqish</translation>
 <translation id="4811450222531576619">Manbasi va mavzusi haqida batafsil</translation>
+<translation id="4816495437032298535">Saytlar uchun saqlangan zum</translation>
 <translation id="4836046166855586901">Sayt bu qurilmadan faol foydalanishingiz haqidagi axborotni yuborishdan oldin sizdan ruxsat oladi</translation>
 <translation id="483914009762354899">Bu domen ichidagi barcha saytlar</translation>
 <translation id="4883854917563148705">Boshqariladigan sozlamalarni oʻzgartirish imkonsiz</translation>
@@ -239,7 +246,6 @@
 <translation id="4962975101802056554">Qurilma uchun barcha ruxsatnomalarni bekor qilish</translation>
 <translation id="497421865427891073">Oldinga</translation>
 <translation id="4976702386844183910">Oxirgi tashrif: <ph name="DATE" /></translation>
-<translation id="4985206706500620449">Bu sayt uchun tashqi cookie fayllarga ruxsat bergansiz</translation>
 <translation id="4994033804516042629">Hech qanday kontakt topilmadi</translation>
 <translation id="4996978546172906250">Yuborish usuli</translation>
 <translation id="5001526427543320409">Tashqi cookie fayllar</translation>
@@ -266,6 +272,7 @@
 <translation id="5246825184569358663">Bunda qurilmadagi cookie fayllar kabi barcha maʼlumotlar oʻchib ketadi va <ph name="DOMAIN" /> va uning barcha quyi saytlari ruxsatlari tiklanadi</translation>
 <translation id="5264323282659631142">Olib tashlash: <ph name="CHIP_LABEL" /></translation>
 <translation id="528192093759286357">To‘liq ekran rejimidan chiqish uchun ekranni tepadan pastga torting va “Orqaga” tugmasini bosing.</translation>
+<translation id="5292915569214461965">Saytlarni kezishda sizni kuzatish uchun tashqi cookie fayllaridan foydalanishni blokladingiz. Sozlamalar orqali <ph name="BEGIN_LINK" />tashqi cookie fayllariga ruxsatni boshqarish mumkin<ph name="END_LINK" />.</translation>
 <translation id="5295729974480418933">Yoqilsa, saytlar siz haqingizda saqlagan maʼlumotlardan foydalanishni soʻrashi mumkin. Oʻchirilsa, bunday ruxsatlar taqiqlanadi.</translation>
 <translation id="5300589172476337783">Ko‘rsatish</translation>
 <translation id="5301954838959518834">OK</translation>
@@ -355,6 +362,7 @@
 <translation id="6527303717912515753">Ulashish</translation>
 <translation id="652937045869844725">Tashqi cookie fayllarga ruxsat bering, bunda himoya pasayadi, lekin saytdagi aksariyat funksiyalar ishlaydi</translation>
 <translation id="6530703012083415527">Yoqilsa, qalqib chiquvchi oyna va yoʻnaltirishlardan foydalana oladi. Oʻchirilsa, foydalana olmaydi.</translation>
+<translation id="6540488083026747005">Bu sayt uchun tashqi cookie fayllarga ruxsat bergansiz</translation>
 <translation id="6545864417968258051">Bluetooth qurilmalarni qidirish</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Bloklandi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va yana <ph name="NUM_MORE" /> ta}other{Bloklandi: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> va yana <ph name="NUM_MORE" /> ta}}</translation>
 <translation id="6554732001434021288">Oxirgi tashrif: <ph name="NUM_DAYS" /> kun oldin</translation>
@@ -377,6 +385,7 @@
 <translation id="6787751205395685251"><ph name="SITE_NAME" /> uchun parametr tanlang</translation>
 <translation id="6790428901817661496">Ijro etish</translation>
 <translation id="6818926723028410516">Fayllarni tanlang</translation>
+<translation id="6837658163275294267">Chrome aksariyat saytlarga sizni kuzatish uchun tashqi cookie fayllaridan foydalanishni cheklaydi. Sozlamalar orqali <ph name="BEGIN_LINK" />tashqi cookie fayllariga ruxsatni boshqarish mumkin<ph name="END_LINK" /></translation>
 <translation id="6838525730752203626">Chrome birlamchi boʻlsin</translation>
 <translation id="6840760312327750441">Varaqlarni guruhlash uchun: bitta varaqni bosib ushlang, keyin uni boshqa varaqning ustiga tortib tashlang.</translation>
 <translation id="6864395892908308021">Bu qurilma NFC teglarni oʻqiy olmaydi</translation>
@@ -441,6 +450,7 @@
 <translation id="7835852323729233924">Mediani ijro etish</translation>
 <translation id="783819812427904514">Video ovozini yoqish</translation>
 <translation id="7846076177841592234">Belgilashni bekor qilish</translation>
+<translation id="7881140103901777395">Chrome aksariyat saytlarga tashqi cookie fayllaridan foydalanishni cheklaydi. Lekin bu saytda tashqi cookie fayllarga ruxsat berilgan, chunki u asosiy xizmatlarni taqdim etishda ularga tayanadi.\n\nSozlamalar orqali <ph name="BEGIN_LINK" />tashqi cookie fayllariga ruxsatni boshqarish mumkin<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Muayyan saytga ovoz ijro etish uchun ruxsat berish.</translation>
 <translation id="789180354981963912">Inkognito rejimidagi tashqi cookie fayllarni taqiqlash:</translation>
 <translation id="7940722705963108451">Menga eslatilsin</translation>
@@ -503,6 +513,7 @@
 <translation id="8721719390026067591">Yoqilsa, saytlar Bluetooth qurilmalarni qidirish uchun ruxsat soʻrashi mumkin. Oʻchirilsa, saytlar bunday qurilmalarni qidira olmaydi.</translation>
 <translation id="8725066075913043281">Qayta urinib ko‘ring</translation>
 <translation id="8730621377337864115">Tayyor</translation>
+<translation id="8737426583868847403">Bu yerda alohida zum darajasi saqlangan saytlar chiqadi</translation>
 <translation id="8751914237388039244">Rasmni tanlang</translation>
 <translation id="8800034312320686233">Sayt ishlamayaptimi?</translation>
 <translation id="8801436777607969138">Muayyan saytda JavaScript kodini bloklash.</translation>

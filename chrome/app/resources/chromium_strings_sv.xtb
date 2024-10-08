@@ -52,6 +52,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="17264556997921157">Du kan se och ta bort intressanta ämnen som används på webbplatser för att visa annonser för dig. Uppskattningen av vad du är intresserad av görs utifrån den senaste webbhistoriken i Chromium.</translation>
 <translation id="1733725117201708356">Snart raderas webbinformation från Chromium</translation>
 <translation id="1736443181683099871">Chromium försöker uppgradera navigeringar till HTTPS</translation>
+<translation id="1736662517232558588">Chromium-data har rensats</translation>
 <translation id="1745121272106313518">Chromium startas om om <ph name="REMAINING_TIME" /></translation>
 <translation id="1749104137266986751">När HTTPS inte är tillgängligt använder Chromium en osäker anslutning utan att varna dig</translation>
 <translation id="1774152462503052664">Låt Chromium köras i bakgrunden</translation>
@@ -82,6 +83,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="2088953378266246249">Information om hur Chromium hanterar sina rotcertifikat</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Organisationen raderar automatiskt webbinformation när Chromium inte har använts på 1 minut. Detta kan innefatta historik, autofyll och nedladdningar. Flikarna förblir öppna.}other{Organisationen raderar automatiskt webbinformation när Chromium inte har använts på # minuter. Detta kan innefatta historik, autofyll och nedladdningar. Flikarna förblir öppna.}}</translation>
 <translation id="2126108037660393668">Den nedladdade filen gick inte att verifiera.</translation>
+<translation id="2137162749895930932">Stäng översättningsskärmen</translation>
 <translation id="215352261310130060">Den här nedladdningen blockerades av Chromium eftersom webbplatsen inte använder en säker anslutning och filen kan ha manipulerats</translation>
 <translation id="2157600032285353789">Du kan öppna bokmärken, läsläge och annat via Chromium-menyn</translation>
 <translation id="2174178932569897599">Anpassa Chromium</translation>
@@ -149,6 +151,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="3032706164202344641">Chromium kan inte kontrollera dina lösenord. Försök igen senare.</translation>
 <translation id="3032787606318309379">Lägger till i Chromium ...</translation>
 <translation id="3038232873781883849">Väntar på installation …</translation>
+<translation id="3045032126857188731">Översatt språk: <ph name="LANGUAGE" /></translation>
 <translation id="3068187312562070417">Andra Chromium-profiler</translation>
 <translation id="3068515742935458733">Hjälp oss att göra Chromium bättre genom att skicka felrapporter och <ph name="UMA_LINK" /> till Google</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Minst ett Chromium-tillägg har fått åtkomst till 1 USB-enhet}=1{Minst ett Chromium-tillägg har åtkomst till 1 USB-enhet}other{Minst ett Chromium-tillägg har åtkomst till # USB-enheter}}</translation>
@@ -167,7 +170,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3268051428841342958">V8 är Chromiums JavaScript- och WebAssembly-motor som används för att förbättra webbplatsens prestanda</translation>
-<translation id="3269209112443570745">Nytt! Ett enkelt sätt att söka efter det som finns på skärmen</translation>
 <translation id="3283186697780795848">Chromium-version <ph name="PRODUCT_VERSION" /> har installerats</translation>
 <translation id="3286538390144397061">Starta om nu</translation>
 <translation id="328888136576916638">Googles API-nycklar saknas. Vissa funktioner i Google Chromium kommer att vara inaktiverade.</translation>
@@ -207,6 +209,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="386822487697155367">Få hjälp med Chromium OS</translation>
 <translation id="3871664619793219264">Få saker i webbläsaren Chromium från <ph name="ACCOUNT_EMAIL" /></translation>
+<translation id="3885770153807205175">Språkväljare</translation>
 <translation id="388648406173476553">Anpassa och kontrollera Chromium. Någonting behöver ses över. Klicka här för mer information.</translation>
 <translation id="3889543394854987837">Öppna Chromium genom att klicka på ditt namn och börja surfa.</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> är redan inloggad på den här Chromium-profilen. Du kan hålla isär webbinformationen genom att skapa en egen profil i Chromium.</translation>
@@ -219,6 +222,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="3997429360543082038">Om Chromium OS</translation>
 <translation id="4019629340646866719">Chromium OS fungerar tack vare ytterligare <ph name="BEGIN_LINK_CROS_OSS" />program med öppen källkod<ph name="END_LINK_CROS_OSS" />, liksom <ph name="BEGIN_LINK_LINUX_OSS" />utvecklingsmiljön för Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4022972681110646219">Översätt text på skärmen</translation>
+<translation id="4023601594785368013">Originalspråk: <ph name="LANGUAGE" /></translation>
 <translation id="4036079820698952681">Hjälp oss att förbättra Chromium genom att rapportera dina <ph name="BEGIN_LINK" />aktuella inställningar<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Den senaste versionen har viktiga säkerhetsförbättringar och nya funktioner.</translation>
 <translation id="4055805654398742145">Lösenordshantering</translation>
@@ -288,6 +292,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="494490797786467921">Klicka för att stänga inloggningsdialogrutan för Chromium</translation>
 <translation id="4987820182225656817">Gäster kan använda Chromium utan att lämna spår efter sig.</translation>
 <translation id="4994636714258228724">Lägg till dig själv i Chromium</translation>
+<translation id="5024548327980648634">Sök efter saker på skärmen</translation>
 <translation id="5051959905407134411">Testa bildsökning</translation>
 <translation id="5114678101347489141">Chromium utforskar nya funktioner som gör att webbplatser kan ge samma surfupplevelse med mindre information om dig</translation>
 <translation id="5123973130450702873">Chromium behöver behörighet för handspårning</translation>
@@ -333,6 +338,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5761096224651992291">Du har inte besökt webbplatsen nyligen. Chromium har tagit bort <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> och <ph name="PERMISSION_3" /></translation>
 <translation id="5800158606660203929">Anpassa och kontrollera Chromium. Ställ in Chromium som standardwebbläsare.</translation>
 <translation id="5809516625706423866">Det går inte att ansluta till internet. HTTP 401 Åtkomst nekad. Kontrollera proxykonfigurationen.</translation>
+<translation id="5821520528363214608">Uppdatera Chromium om du vill använda och spara Chromium-data i ditt Google-konto</translation>
 <translation id="5862307444128926510">Välkommen till Chromium</translation>
 <translation id="5871205389137001634">Klicka för att avsluta bildsökningen</translation>
 <translation id="5883558403894052917">Chromium har upptäckt att dessa objekt innehåller skadlig kod:</translation>
@@ -493,6 +499,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="7686590090926151193">Chromium är inte din standardwebbläsare</translation>
 <translation id="7689606757190482937">Synkronisera och anpassa Chromium på alla enheter du använder</translation>
 <translation id="7699779824407626136">Chromium-uppdatering</translation>
+<translation id="77283119132245232">Tillhandahåller systemspårningstjänster för <ph name="BROWSER_NAME" />. Om tjänsten är inaktiverad innehåller prestandaspårning som skapas av webbläsaren inte systemhändelser som kontextbyten och färdiga trådhändelser.</translation>
 <translation id="7745317241717453663">Webbinformationen raderas från enheten. Logga in i Chromium som <ph name="USER_EMAIL" /> om du vill kunna återställa datan senare.</translation>
 <translation id="7747138024166251722">Det gick inte att skapa en tillfällig katalog för installationsfilen. Kontrollera diskutrymmet och att du har behörighet att installera program.</translation>
 <translation id="7786760609782648049">Gör Chromium snabbare</translation>

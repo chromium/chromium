@@ -114,6 +114,7 @@
 <translation id="132346741904777634">Камерыг зүүн дээд булан руу зэрэгцүүлсэн. Системийн гадаргуутай зөрчилдсөн.</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> болон цонхнуудыг хаана уу</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> холбогдсон</translation>
+<translation id="1337081488893096731">Сургуулийн бүртгэлийн өгөгдлөө хувийн бүртгэл рүүгээ зөөхөд Content Transfer аппыг ашиглана уу</translation>
 <translation id="1340378040547539434">Хуудсыг жижгэрүүлэх</translation>
 <translation id="1341651618736211726">Дүүрэлт</translation>
 <translation id="1341926407152459446">Аудио оролт, гаралтад "<ph name="DEVICE_NAME" />"-г ашиглана уу</translation>
@@ -242,6 +243,7 @@
 <translation id="17722141032474077">Тооцоолол</translation>
 <translation id="1774796056689732716">Календарь, <ph name="CURRENT_MONTH_YEAR" />, одоогоор <ph name="DATE" />-г сонгосон.</translation>
 <translation id="178347895271755507">Утасныхаа саяхны зураг, медиа болон мэдэгдлүүдийг харахыг тохируулах</translation>
+<translation id="1786487376942610288">Дэлгэц доторх дэлгэц цонхны дээд эсвэл одоогийн хэмжээний хооронд сэлгэх</translation>
 <translation id="1787955149152357925">Унтраалттай</translation>
 <translation id="1796561540704213354">Таны зочилсон хуудас болон нээлттэй хуудаснуудыг оруулсан вебсайтууд</translation>
 <translation id="179842970735685253">Google-н үйлчилгээний нөхцөл</translation>
@@ -337,6 +339,9 @@
 <translation id="219905428774326614">Эхлүүлэгч, бүх апп</translation>
 <translation id="2201071101391734388">Саяхны <ph name="TOTAL_COUNT" />-с <ph name="INDEX" />-р зураг.</translation>
 <translation id="2201687081523799384">Google Tasks-г хураах</translation>
+<translation id="2206960886090042977">Хулгана холбогдсон тул бүрэлдэхүүн мэдрэгч самбарыг идэвхгүй болгосон. Өөрчлөлтийг баталгаажуулахад хулгана эсвэл гар ашиглана уу.
+
+Эс бөгөөс бүрэлдэхүүн мэдрэгч самбарыг 30 секундийн дараа дахин идэвхжүүлнэ.</translation>
 <translation id="2208323208084708176">Компьютерийн нэгдмэл горим</translation>
 <translation id="2220572644011485463">ПИН, эсвэл нууц үг</translation>
 <translation id="2222841058024245321">Дэлгэц 7</translation>
@@ -1469,6 +1474,7 @@
 <translation id="598407983968395253">Загварыг ашиглах</translation>
 <translation id="5986723678596105470">Google Meet-р нэгдэх</translation>
 <translation id="598882571027504733">Шинэчлэлт авахын тулд Chromebook-ээ хавсаргасан гараар шинэчилнэ үү.</translation>
+<translation id="5990992855591814753">Төвлөрөхдөө сонсох хувийн болгосон тоглуулах жагсаалтаар төлөвлөгөөнийхөө дагуу байгаарай. YouTube Premium-н 3 сарын эрхээр зар сурталчилгаагүй YouTube Music, YouTube-г ямар ч зардалгүйгээр аваарай. Нөхцөл хэрэгжинэ.</translation>
 <translation id="5998374579424866922">Тоглоомын тохиргоог унтраах</translation>
 <translation id="6000279412553873020">Түлхүүр, товчлуур болон бусад</translation>
 <translation id="6012623610530968780">Хуудас <ph name="TOTAL_PAGE_NUM" />-н <ph name="SELECTED_PAGE" /></translation>
@@ -1907,6 +1913,9 @@
 Төхөөрөмжийг унтраахын тулд төхөөрөмжийн асаах/унтраах товчийг дахин удаан дарна уу.</translation>
 <translation id="7523420897035067483">Төвлөрөх горимд байхад Бүү саад бол онцлогийг идэвхжүүлэх</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">Бүрэлдэхүүн мэдрэгч самбарыг идэвхгүй болгосон. Өөрчлөлтийг баталгаажуулахад гараа эсвэл өөр нэг заагч төхөөрөмж ашиглана уу.
+
+Эс бөгөөс бүрэлдэхүүн мэдрэгч самбарыг 30 секундийн дараа дахин идэвхжүүлнэ.</translation>
 <translation id="7525067979554623046">Үүсгэх</translation>
 <translation id="7526573455193969409">Сүлжээг хянаж байж болзошгүй</translation>
 <translation id="7536035074519304529">IP хаяг: <ph name="ADDRESS" /></translation>
@@ -2295,6 +2304,7 @@
 <translation id="8858369206579825206">Нууцлалын тохиргоо</translation>
 <translation id="8860366331836346216">eSIM-г нэмэх</translation>
 <translation id="8870509716567206129">Апп нь дэлгэц хуваах тохиргоог дэмждэггүй.</translation>
+<translation id="8873203135446552888">Та бүрэлдэхүүн мэдрэгч самбарыг идэвхгүй болгохыг хүсэж байгаа эсэхээ баталгаажуулна уу</translation>
 <translation id="8874184842967597500">Холбогдоогүй</translation>
 <translation id="8875021410787719674">Баруун доод булан, Эхлүүлэгч, хаяг оруулах хэсэг, хавчуургын хэсэг, нээлттэй вебсайт болон татаж авсан файл хооронд шилжих</translation>
 <translation id="8876148469852588625"><ph name="EVENT_TOTAL_COUNT" />-с <ph name="EVENT_POSITION" /> үйл явдал</translation>

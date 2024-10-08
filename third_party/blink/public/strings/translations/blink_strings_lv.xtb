@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">Vērtībai ir jābūt “<ph name="MINIMUM_DATE_OR_TIME" />” vai vēlākam datumam vai laikam.</translation>
 <translation id="2761667185364618470">Lai turpinātu, atzīmējiet šo izvēles rūtiņu.</translation>
 <translation id="2908441821576996758">Lūdzu, ievadiet ar komatu atdalītu e-pasta adrešu sarakstu.</translation>
+<translation id="2940013921954129954">Precīzas atrašanās vietas noteikšana ir atļauta</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Lūdzu, ievadiet derīgu vērtību. Šis lauks nav pabeigts, vai tajā ir norādīts nederīgs datums.</translation>
 <translation id="310520048233152454">Ievadiet URL.</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">Slikta atskaņošanas kvalitāte</translation>
 <translation id="6790428901817661496">Atskaņot</translation>
 <translation id="6820355525329141109">Nevarēja ielādēt spraudni.</translation>
+<translation id="688706781007114099">Izmantot atrašanās vietu</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Lūdzu, papildiniet šo tekstu līdz vismaz <ph name="MIN_CHARACTERS" /> rakstzīmēm (pašlaik tas ietver 1 rakstzīmi).</translation>
 <translation id="709897737746224366">Pieskaņojiet vērtību prasītajam formātam.</translation>

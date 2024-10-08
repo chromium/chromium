@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">El valor ha de ser <ph name="MINIMUM_DATE_OR_TIME" /> o posterior.</translation>
 <translation id="2761667185364618470">Marqueu aquesta casella si voleu continuar.</translation>
 <translation id="2908441821576996758">Introduïu una llista d'adreces electròniques separades per comes.</translation>
+<translation id="2940013921954129954">Està permès utilitzar la ubicació exacta</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Introduïu un valor vàlid. El camp està incomplet o conté una data no vàlida.</translation>
 <translation id="310520048233152454">Introduïu un URL.</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">Qualitat de reproducció deficient</translation>
 <translation id="6790428901817661496">Reprodueix</translation>
 <translation id="6820355525329141109">El connector no s'ha pogut carregar.</translation>
+<translation id="688706781007114099">Utilitza la ubicació</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Allarga aquest text fins a <ph name="MIN_CHARACTERS" /> caràcters o més (ara n'utilitzes 1).</translation>
 <translation id="709897737746224366">Feu servir el format sol·licitat.</translation>

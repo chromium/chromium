@@ -70,6 +70,7 @@
 <translation id="1919130412786645364">Benarkan log masuk Chrome</translation>
 <translation id="1953553007165777902">Memuat turun... <ph name="MINUTE" /> minit lagi</translation>
 <translation id="1982647487457769627">Chrome berfungsi merentas platform untuk memberi anda pengalaman yang biasa tanpa mengira peranti</translation>
+<translation id="19955905961160405">Cari kandungan yang dipaparkan pada skrin anda dengan Google Lens</translation>
 <translation id="2001586581944147178">Jadikan lebih sukar untuk pengguna dengan akses kepada trafik Internet anda untuk melihat laman yang anda lawati. Chrome menggunakan sambungan selamat untuk mencari alamat IP laman dalam DNS (Sistem Nama Domain).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Sambungan ini tidak disokong lagi. Chrome mengesyorkan supaya anda mengalih keluar sambungan tersebut.}other{Sambungan ini tidak disokong lagi. Chrome mengesyorkan supaya anda mengalih keluar sambungan tersebut.}}</translation>
 <translation id="2018528049276128029">Setiap profil menyimpan maklumat Chrome profil itu sendiri seperti penanda halaman, sejarah, kata laluan dan pelbagai lagi</translation>
@@ -87,6 +88,7 @@
 <translation id="2126108037660393668">Pengesahan fail yang dimuat turun gagal.</translation>
 <translation id="2128411189117340671">Urus profil Chrome</translation>
 <translation id="2131230230468101642">Untuk melindungi privasi anda, kami memadamkan minat anda yang disimpan melebihi 4 minggu secara automatik. Semasa anda terus menyemak imbas, minat itu mungkin muncul semula dalam senarai. Anda juga boleh mengalih keluar minat yang anda tidak mahu dipertimbangkan oleh Chrome.</translation>
+<translation id="2137162749895930932">Tutup skrin terjemahan</translation>
 <translation id="2139300032719313227">Mulakan semula Chrome OS</translation>
 <translation id="2151406531797534936">Sila mulakan semula Chrome sekarang</translation>
 <translation id="2163089732491971196">Untuk menggunakan dan menyimpan data Chrome dalam Google Account anda, masukkan ungkapan laluan anda</translation>
@@ -165,11 +167,12 @@
 <translation id="2945997411976714835">Ralat pemasangan: Proses pemasang gagal dimulakan.</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Log Masuk Rangkaian - Chrome</translation>
 <translation id="2970681950995291301">Untuk mengalih keluar Google Account anda daripada Chrome, log keluar dari Chrome dalam halaman Tetapan</translation>
-<translation id="2994465299455873643">Menyediakan perkhidmatan penyulitan dan cara yang selamat untuk memulihkan semula <ph name="BROWSER_NAME" /> jika penyemak imbas tersebut sudah lapuk. Jika perkhidmatan ini dilumpuhkan, <ph name="BROWSER_NAME" /> mungkin akan kehilangan akses kepada data yang disulitkan dan <ph name="BROWSER_NAME" /> mungkin tidak dapat dipulihkan sendiri.</translation>
+<translation id="2994465299455873643">Menyediakan perkhidmatan penyulitan dan cara yang selamat untuk memulihkan <ph name="BROWSER_NAME" /> semula jika penyemak imbas tersebut sudah lapuk. Jika perkhidmatan ini dilumpuhkan, <ph name="BROWSER_NAME" /> mungkin akan kehilangan akses kepada data yang disulitkan dan <ph name="BROWSER_NAME" /> mungkin tidak dapat dipulihkan sendiri.</translation>
 <translation id="3018957014024118866">Padamkan juga data daripada Chrome (<ph name="URL" />)</translation>
 <translation id="3019382870990049182">Lancarkan semula untuk mengemas kini &amp;ChromeOS Flex</translation>
 <translation id="3037838751736561277">Google Chrome dalam mod latar belakang.</translation>
 <translation id="3038232873781883849">Menunggu untuk memasang...</translation>
+<translation id="3045032126857188731">Bahasa terjemahan: <ph name="LANGUAGE" /></translation>
 <translation id="3059710691562604940">Penyemakan Imbas Selamat dimatikan. Chrome mengesyorkan agar ciri ini dihidupkan.</translation>
 <translation id="306179102415443347">Gunakan pintasan anda untuk mengakses Google Password Manager dengan pantas. Anda boleh mengalihkan pintasan anda kepada skrin utama atau pelancar apl komputer anda.</translation>
 <translation id="3065168410429928842">Tab Chrome</translation>
@@ -188,7 +191,6 @@
 <translation id="3234642784688107085">Cuba ciri AI baharu untuk membuat tema, mendapatkan bantuan menulis dan kekal teratur</translation>
 <translation id="3245429137663807393">Jika anda turut berkongsi laporan penggunaan Chrome, laporan tersebut menyertakan URL yang anda lawati</translation>
 <translation id="3261565993776444564">Cuba warna baharu untuk menyesuaikan penyemak imbas anda</translation>
-<translation id="3269209112443570745">Baharu! Cara mudah untuk mencari sesuatu pada skrin anda</translation>
 <translation id="3282568296779691940">Log masuk ke Chrome</translation>
 <translation id="3286538390144397061">Mulakan Semula Sekarang</translation>
 <translation id="3292333338048274092">Kemudian, anda perlu memulakan semula Chrome.</translation>
@@ -238,12 +240,14 @@
 <translation id="386202838227397562">Sila tutup semua tetingkap Google Chrome dan cuba semula.</translation>
 <translation id="3865754807470779944">Chrome versi <ph name="PRODUCT_VERSION" /> dipasang</translation>
 <translation id="3873044882194371212">Buka pautan dalam tetingkap inko&amp;gnito Chrome</translation>
+<translation id="3885770153807205175">Pemilih bahasa</translation>
 <translation id="3889417619312448367">Nyahpasang Google Chrome</translation>
 <translation id="3941890832296813527">Ralat pemasangan: Nama fail pemasang tidak sah atau tidak disokong.</translation>
 <translation id="3973161977468201858">Google Chrome mahu memadamkan data Google Password Manager. Taip kata laluan Windows anda untuk membenarkan tindakan ini.</translation>
 <translation id="398236277091248993">Chrome kekal pantas dengan ciri peningkatan prestasi</translation>
 <translation id="3999683152997576765">Anda boleh melihat dan mengalih keluar topik minat yang digunakan oleh laman untuk memaparkan iklan kepada anda. Chrome menganggarkan minat anda berdasarkan sejarah penyemakan imbas anda baru-baru ini.</translation>
 <translation id="4022972681110646219">Terjemahkan skrin</translation>
+<translation id="4023601594785368013">Bahasa asal: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Chrome OS perlu dimulakan semula untuk melaksanakan kemaskinian.</translation>
 <translation id="4050175100176540509">Peningkatan keselamatan penting dan ciri baharu tersedia dalam versi terkini.</translation>
 <translation id="4053720452172726777">Sesuaikan dan kawal Google Chrome</translation>
@@ -515,6 +519,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="7514258452813684157">Perkhidmatan Pengemas Kini Google</translation>
 <translation id="7515191208480168435">Anda boleh menyematkan Google Lens untuk akses yang mudah</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
+<translation id="756809126120519699">Data Chrome dikosongkan</translation>
 <translation id="7572537927358445944">Matikan • Chrome tidak dapat mengesahkan tempat asal sambungan ini</translation>
 <translation id="7583399374488819119">Pemasang <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google Chrome OS Flex</translation>
@@ -532,6 +537,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="7668816516367091728">Laksanakan tugas seperti menterjemah, mengira dan pelbagai lagi terus daripada bar alamat</translation>
 <translation id="7670287553302121848">Akaun Chrome memerlukan pengesahan semula</translation>
 <translation id="769538538642757151">Chrome akan memaklumi anda jika terdapat apa-apa perkara yang memerlukan semakan anda</translation>
+<translation id="77283119132245232">Menyediakan perkhidmatan penyurihan sistem untuk <ph name="BROWSER_NAME" />. Jika perkhidmatan ini dilumpuhkan, penyurihan prestasi yang dibuat oleh penyemak imbas tidak akan menyertakan peristiwa seluruh sistem seperti peristiwa suis konteks dan urutan tersedia.</translation>
 <translation id="7747138024166251722">Pemasang tidak dapat mencipta direktori sementara. Sila semak ruang cakera kosong dan kebenaran untuk memasang perisian.</translation>
 <translation id="7761834446675418963">Klik nama anda untuk membuka Chrome dan mula menyemak imbas.</translation>
 <translation id="7763983146198734674">Simpan kata laluan anda dan akses kata laluan tersebut semasa dalam perjalanan</translation>

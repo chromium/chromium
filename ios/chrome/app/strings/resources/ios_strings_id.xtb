@@ -51,6 +51,7 @@
 <translation id="1231733316453485619">Aktifkan sinkronisasi?</translation>
 <translation id="1253032109800629289">Sembunyikan "Dapatkan Notifikasi Pemantauan Harga"</translation>
 <translation id="1258491128795710625">Yang Baru</translation>
+<translation id="1262724000444746916">Sembunyikan Tambahkan ke Bookmark</translation>
 <translation id="1263231323834454256">Daftar bacaan</translation>
 <translation id="1263433075299269530">Tab terakhir yang dibuka</translation>
 <translation id="1264156759663453185">Teks yang dipilih terlalu besar untuk terjemahan sebagian.</translation>
@@ -83,6 +84,7 @@
 <translation id="1364367057792633742">Tab baru</translation>
 <translation id="1365106417372288489">iPhone Anda baru-baru ini dipulihkan, yang mungkin telah mengubah browser default Anda.</translation>
 <translation id="1366297852155605523">Dibagikan Kepada Saya</translation>
+<translation id="1369286077209859800">Tampilkan semua tab dalam grup tab</translation>
 <translation id="136942498637440594">Anda dapat menelusuri gambar dan objek yang Anda lihat.</translation>
 <translation id="1377508275003315939">Sandi</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} dari {count} alamat}other{{position} dari {count} alamat}}</translation>
@@ -202,7 +204,6 @@
 <translation id="1923342640370224680">Sejam Terakhir</translation>
 <translation id="1941314575388338491">Ketuk dua kali untuk menyalin.</translation>
 <translation id="1943478190258551035">Menu → Setelan</translation>
-<translation id="194449685234099560">Anda dapat menemukan semua tab terbuka di sini.</translation>
 <translation id="1952728750904661634">Login dengan akun terkelola</translation>
 <translation id="1955773397805078763">Tambahkan metode pembayaran</translation>
 <translation id="1956138802718275401">Akses sandi dari layar utama</translation>
@@ -263,6 +264,7 @@
 <translation id="2202084845446535117">Tidak ada akun email</translation>
 <translation id="2214453882118345682">Belanja, terjemahkan, dan identifikasi hal yang Anda lihat dengan kamera.</translation>
 <translation id="2220529011494928058">Laporkan masalah</translation>
+<translation id="2223461067862937305">Buat Kode QR</translation>
 <translation id="2230173723195178503">Halaman web dimuat</translation>
 <translation id="2236949375853147973">Aktivitas Saya</translation>
 <translation id="2240256190924001613">Profil konfigurasi tersedia</translation>
@@ -285,7 +287,9 @@
 <translation id="2297989278479054870">Setelah Anda logout, bookmark, sandi, dan data lainnya di Akun Google Anda akan dihapus dari perangkat ini.</translation>
 <translation id="2299218006564889602">Sandi Anda dienkripsi di perangkat sebelum disimpan ke Pengelola Sandi Google.</translation>
 <translation id="2299515531293777561"><ph name="CARRIER_NAME" /> • #<ph name="PARCEL_IDENTIFIER" /></translation>
+<translation id="2309265394777270359">Tutup Tab</translation>
 <translation id="230956208401264723">Lihat semua paket yang dilacak di sini di carousel ini</translation>
+<translation id="2311077293164383652">Tutup Tab Tersemat</translation>
 <translation id="2316129865977710310">Lain kali</translation>
 <translation id="2320166752086256636">Sembunyikan keyboard</translation>
 <translation id="2321086116217818302">Mempersiapkan sandi…</translation>
@@ -387,12 +391,14 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="2773344962924806829">Notifikasi email</translation>
 <translation id="2781331604911854368">Aktif</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2783161812871838616">Minta Situs Desktop</translation>
 <translation id="2789552044937754463">{COUNT,plural, =1{Sandi disimpan di Akun Google Anda, {EMAIL}}other{Sandi disimpan di Akun Google Anda, {EMAIL}}}</translation>
 <translation id="2791174088547598693">Tambahkan sandi…</translation>
 <translation id="2797302972324086597">Kode negara</translation>
 <translation id="2816489851009559785">Menu → Setelan → Browser default</translation>
 <translation id="2818821771744632548">Anda telah logout dari akun, <ph name="USER_NAME" />, sebagai bagian dari proses reset iPhone. Untuk login kembali, ketuk "Lanjutkan" di bawah.</translation>
 <translation id="2819667972867209401">Jika diaktifkan, data akan disimpan di Akun Google Anda. Jika dinonaktifkan, data hanya disimpan di perangkat ini dan akan dihapus saat Anda logout.</translation>
+<translation id="2829172210806130158">Menelusuri layar Anda</translation>
 <translation id="2834399722155632105">3. Ketuk Opsi Sandi</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="284581348330507117">Buat sandi yang unik</translation>
@@ -407,6 +413,7 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="288902476966286676">Kembali ke pengirim</translation>
 <translation id="2905479111267140204">Anda memiliki <ph name="NUMBER_OF_PASSWORDS" /> sandi yang digunakan ulang yang dapat membahayakan keamanan Anda.</translation>
 <translation id="291754862089661335">Letakkan kode QR atau kode batang dalam bingkai ini</translation>
+<translation id="2918688092312652908">Tandai Belum Dibaca</translation>
 <translation id="2920866371965792875">Untuk melihat info terbaru dari situs ini, klik di sini untuk mengikutinya.</translation>
 <translation id="2922210239002704889">Buka halaman beranda atau keyboard Anda</translation>
 <translation id="2924940770243654951">Buka di tab Samaran baru</translation>
@@ -647,6 +654,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4169535189173047238">Jangan izinkan</translation>
 <translation id="4172051516777682613">Selalu tampilkan</translation>
 <translation id="417273154673973994">{count,plural, =1{1 grup tab ditutup dan disimpan}other{{count} grup tab ditutup dan disimpan}}</translation>
+<translation id="417612446554534067">Kirim ke Perangkat Anda</translation>
 <translation id="4180726336228139707">Hanya di perangkat ini</translation>
 <translation id="4181841719683918333">Bahasa</translation>
 <translation id="4183350924949589798">Keamanan yang lebih baik?</translation>
@@ -687,7 +695,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4342946437867096381">Anda sudah menyimpan sandi untuk situs ini di Akun Google Anda. Google dapat memilih sandi terbaru untuk Anda.</translation>
 <translation id="4365121137632832185">Grup tab. Diluaskan.</translation>
 <translation id="4367971618859387374">Nama tampilan</translation>
-<translation id="4371591986692297148">Tidak aktif</translation>
 <translation id="4375772272517383391">Tutup semua tab</translation>
 <translation id="4378154925671717803">Ponsel</translation>
 <translation id="4389019817280890563">Ketuk untuk mengubah bahasa.</translation>
@@ -705,6 +712,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4469324811108161144">Catatan dapat menyimpan hingga <ph name="CHARACTER_LIMIT" /> karakter.</translation>
 <translation id="4469834037720363704">Nomor paket</translation>
 <translation id="4471472356135655769">Tidak dapat mengekspor sandi</translation>
+<translation id="4473608001744970767">Sembunyikan Pantau Harga</translation>
 <translation id="4474142134969976028">Tidak ada hasil yang cocok</translation>
 <translation id="4474494258097106883">Dibuat untuk iPhone Anda</translation>
 <translation id="4488754974567924717">Jika sandi dibobol, kami akan memberi tahu Anda</translation>
@@ -735,7 +743,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="461440297010471931">Menelusuri dengan Google</translation>
 <translation id="4619564267100705184">Verifikasi diri Anda</translation>
 <translation id="4619615317237390068">Tab dari perangkat lain</translation>
-<translation id="4620845369664293551">Anda dapat membagikan halaman ini di sini.</translation>
 <translation id="4624080227980645783">Jendela Samaran baru</translation>
 <translation id="4630212057753624203">Contoh balon</translation>
 <translation id="4631335160486397366"><ph name="COUNT" /> sandi digunakan ulang</translation>
@@ -777,6 +784,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4792385443586519711">Nama perusahaan</translation>
 <translation id="479628432297359449">Hentikan download?</translation>
 <translation id="4796496140132859135">Grup tab. Diciutkan.</translation>
+<translation id="4802185666270672526">Sembunyikan Minta Situs Desktop</translation>
 <translation id="4803185665210547709">Dikelola oleh organisasi Anda.
 <ph name="BEGIN_LINK" />Pelajari Lebih Lanjut<ph name="END_LINK" /></translation>
 <translation id="4807098396393229769">Nama di kartu</translation>
@@ -802,6 +810,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="4881695831933465202">Buka</translation>
 <translation id="488785315393301722">Tampilkan Detail</translation>
 <translation id="4889521386764567563">Profil saat ini</translation>
+<translation id="4893713555726946316">Sembunyikan Cari di Halaman</translation>
 <translation id="4894963374040315706">Hal ini memungkinkan Anda menelusuri menggunakan suara</translation>
 <translation id="4895540042460820904">Terakhir Dibuka</translation>
 <translation id="4896467949657706481">Tab ditutup; Anda telah logout</translation>
@@ -895,7 +904,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="5329451663851195956">Anda dapat menarik ke bagian bawah layar untuk memuat ulang.</translation>
 <translation id="5338512273860059533">Login dalam proses.</translation>
 <translation id="5343472494710226394">Berita, olahraga, dan konten berdasarkan minat Anda.</translation>
-<translation id="5348775987281903912">Anda dapat membagikan halaman ini di sini dari tombol bagikan.</translation>
 <translation id="5352128922772839949">Simpan file</translation>
 <translation id="5355191726083956201">Perlindungan yang Ditingkatkan aktif</translation>
 <translation id="5356332698539508708">Hapus dan Beralih</translation>
@@ -1101,6 +1109,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6254066287920239840">Buka link di aplikasi, bukan di browser.</translation>
 <translation id="6266039999629596120">Perlu diperhatikan</translation>
 <translation id="6268773951964630964">Telusuri gambar yang disalin</translation>
+<translation id="6271462272606946663">Sembunyikan Minta Situs Seluler</translation>
 <translation id="6271824294945464304">Berbagi sandi</translation>
 <translation id="628251768213143684">Anda dapat mengelola data yang disimpan di Akun Google Anda kapan saja</translation>
 <translation id="6284652193729350524">Tawarkan untuk menerjemahkan bahasa <ph name="LANGUAGE" /></translation>
@@ -1203,12 +1212,14 @@ Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda d
 <translation id="6659660757330712663">Anda dapat menggeser toolbar untuk beralih di antara tab.</translation>
 <translation id="6663529247339810546">Gambar tak disimpan</translation>
 <translation id="6668619169535738264">Edit Bookmark</translation>
+<translation id="6671294218820966278">Tandai Sudah Dibaca</translation>
 <translation id="6672241253012342409">Situs dapat menggunakan cookie untuk meningkatkan pengalaman penjelajahan Anda, misalnya untuk membuat Anda tetap login atau untuk mengingat item di keranjang belanja Anda.
 
 Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berbagai situs, misalnya untuk mempersonalisasi iklan.</translation>
 <translation id="6672697278890207089">Masukkan frasa sandi Anda</translation>
 <translation id="6674571176963658787">Untuk memulai sinkronisasi, masukkan frasa sandi</translation>
 <translation id="667999046851023355">Dokumen</translation>
+<translation id="6680416467695217368">Sesuaikan Menu</translation>
 <translation id="6681586159478273915">Penelusuran suara</translation>
 <translation id="6685259053455152195">Pintasan untuk mengubah setelan dan menggunakan fitur dari kolom URL dengan cepat.</translation>
 <translation id="6689685206615181381">Hanya mode Samaran yang tersedia</translation>
@@ -1216,6 +1227,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="6710079714193676716">Dikelola oleh organisasi Anda. Beberapa fitur mungkin tidak tersedia. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="671310123089116995">Buka Feed</translation>
 <translation id="6713676799463473249">Diubah pada <ph name="LAST_MODIFICATION_DATE" /></translation>
+<translation id="6717862474255265991">Pantau Harga</translation>
 <translation id="6723740634201835758">Di Akun Google Anda</translation>
 <translation id="672735642903863329">Dapatkan bookmark, sandi, dan lainnya di semua perangkat Anda.</translation>
 <translation id="6732087373923685049">kamera</translation>
@@ -1225,7 +1237,6 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="6761393919622941301">Audio</translation>
 <translation id="6779455296366983087">Data penjelajahan Anda akan dihapus</translation>
 <translation id="6790502149545262384">Sebentar lagi, Anda akan melihat artikel dari <ph name="CHANNEL_NAME" /> saat membuka tab baru.</translation>
-<translation id="6800349425672670802">Anda dapat mengakses semua tab yang terbuka dari Pengalih Tab.</translation>
 <translation id="681368974849482173">Item dibuat</translation>
 <translation id="6825078212112407882">{count,plural, =1{Bookmark disimpan di Akun Google Anda, {email}}other{{count} bookmark disimpan di Akun Google Anda, {email}}}</translation>
 <translation id="6830728435402077660">Tidak aman</translation>
@@ -1255,6 +1266,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="6913136913033237761"><ph name="FOLDER_NAME" />. Hanya di perangkat ini.</translation>
 <translation id="6914583639806229067">Telusuri Gambar yang Anda Salin</translation>
 <translation id="6914783257214138813">Sandi akan terlihat oleh orang yang dapat melihat file yang diekspor.</translation>
+<translation id="6924299883035848912">Sembunyikan Hapus Data Penjelajahan</translation>
 <translation id="6930162026494574854">Reset setelan Terjemahan</translation>
 <translation id="6930799952781667037">Ketuk untuk mengubahnya ke bahasa ini.</translation>
 <translation id="693761253105515415">Setel kode sandi</translation>
@@ -1356,6 +1368,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7454057999980797137">Prov./County</translation>
 <translation id="7458706065921255639">Personalisasi &amp; penautan</translation>
 <translation id="745899714366929493">Sepanjang hari</translation>
+<translation id="7460698861522306757">Minta Situs Seluler</translation>
 <translation id="7465351360025415755">Dapatkan konten yang penting bagi Anda</translation>
 <translation id="7468373585447318060">Dapatkan info penurunan harga untuk semua produk yang Anda pantau.</translation>
 <translation id="746872191028309255">Belanja hal yang Anda lihat dengan kamera atau galeri foto.</translation>
@@ -1366,7 +1379,6 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7488874549363591659">Terkirim</translation>
 <translation id="7491131399623468277">Buka Setelan…</translation>
 <translation id="7498234416455752244">Lanjut mengedit</translation>
-<translation id="749854780843431406">Anda dapat membuka tab baru dari tombol <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="7500244509706269886">Isi otomatis formulir</translation>
 <translation id="750493650310597496">Tak ada yang dipilih</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
@@ -1404,6 +1416,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="764827086632467055">Ketuk Aplikasi Browser Default</translation>
 <translation id="7649070708921625228">Bantuan</translation>
 <translation id="7658239707568436148">Batal</translation>
+<translation id="7662316065255305764">Informasi Situs</translation>
 <translation id="7665369617277396874">Tambahkan akun</translation>
 <translation id="7666861622396822790">Anda dapat mengelolanya di <ph name="BEGIN_LINK" />Setelan Konten<ph name="END_LINK" />.</translation>
 <translation id="7669493687462784703">Lanjutkan mendownload profil konfigurasi dari <ph name="WEBSITE" />?</translation>
@@ -1411,6 +1424,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7679915578945954324">Alamat situs disalin</translation>
 <translation id="769134787192530091">Menyinkronkan tab Anda…</translation>
 <translation id="7696316012653762532">Opsi untuk menerjemahkan halaman</translation>
+<translation id="7700527812567437847">Telusuri layar dengan Google Lens</translation>
 <translation id="7701040980221191251">Tidak ada</translation>
 <translation id="7711440461521638739">Anda tidak menggunakan kembali sandi apa pun</translation>
 <translation id="7712361583414030698">Melihat versi offline</translation>
@@ -1436,6 +1450,7 @@ Selama dalam mode Samaran, situs tidak dapat menggunakan cookie untuk melihat ak
 <translation id="7807060072011926525">Disediakan oleh Google</translation>
 <translation id="7812377703891978671">Anda dapat mengakses semua histori penjelajahan dengan memilih <ph name="HISTORY_BUTTON_ACCESSIBILITY_LABEL" />.</translation>
 <translation id="78146569776629510">Download</translation>
+<translation id="7815852444315004084">Sembunyikan untuk Saat Ini</translation>
 <translation id="7839994177130598711">Anggota keluarga Anda kini dapat menggunakan nama pengguna dan sandi Anda saat mereka menggunakan Pengelola Sandi Google untuk login ke <ph name="BEGIN_BOLD" /><ph name="WEBSITE" /><ph name="END_BOLD" />.</translation>
 <translation id="7840771868269352570">Item yang Anda pilih akan dihapus.</translation>
 <translation id="7841180087127694526">Telusuri teks yang disalin</translation>
@@ -1575,6 +1590,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8428634594422941299">Mengerti</translation>
 <translation id="8430694217306051839">Pilih lokasi untuk menyimpan <ph name="FILENAME" /> (<ph name="FILE_SIZE" />)</translation>
 <translation id="8438566539970814960">Jadikan penelusuran dan penjelajahan lebih baik</translation>
+<translation id="8439758443371991593">Sembunyikan Tambahkan ke Daftar Bacaan</translation>
 <translation id="8449869326050867919">Sandi dibagikan</translation>
 <translation id="8453847087068411809">Jangan pernah deteksi otomatis paket</translation>
 <translation id="846158969830690371">Mengetahui apakah setelan Anda sudah aman atau perlu ditinjau.</translation>
@@ -1609,9 +1625,9 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8577056989960190117">Isi otomatis tahun habis masa berlaku <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Nonaktif</translation>
 <translation id="8590286732816598906">Grup tab, <ph name="GROUP_TITLE" />, Menu.</translation>
-<translation id="8593565399399144771">Anda dapat membuka tab baru di sini.</translation>
 <translation id="8600272508328041907">Beralih ke terjemahan Halaman penuh</translation>
 <translation id="860043288473659153">Nama pemegang kartu</translation>
+<translation id="8601611099293226919">Telusuri layar Anda dengan Google Lens</translation>
 <translation id="8605219856220328675">Tutup tab.</translation>
 <translation id="8609743333007776886">Tambahkan ${url} ke bookmark</translation>
 <translation id="8620640915598389714">Edit</translation>
@@ -1630,11 +1646,13 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8672733398999596205">Aktifkan Semua</translation>
 <translation id="8672993423386237345">Menampilkan bantuan</translation>
 <translation id="8674716540979958118">Anda memiliki sandi yang telah dibobol.</translation>
+<translation id="8679900250380464358">Tambahkan ke Daftar Bacaan</translation>
 <translation id="8680786875305615692">Bantu tingkatkan keamanan di Web untuk semuanya</translation>
 <translation id="8680787084697685621">Detail proses masuk akun sudah usang.</translation>
 <translation id="8683563711222071415">Pindahkan alamat ke akun</translation>
 <translation id="8692689525339542358">Dapatkan perlindungan dari situs, download, dan ekstensi berbahaya.</translation>
 <translation id="8694281486652655615">Menampilkan item ini</translation>
+<translation id="8696297579102085705">Kirim ke perangkat Anda</translation>
 <translation id="8697136149718343437">Pindahkan kolom URL ke bawah</translation>
 <translation id="8706253136355675497">Suhu</translation>
 <translation id="8709409604518538305">Tab ditutup</translation>
@@ -1724,6 +1742,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="9039373489628511875">Bandwidth</translation>
 <translation id="9057972802061533987">Tidak dapat mengikuti. Terjadi error.</translation>
 <translation id="9065203028668620118">Edit</translation>
+<translation id="9066097352053395362">Sembunyikan Edit Bookmark</translation>
 <translation id="9070824521421603770">Anda akan logout dan tab akan ditutup</translation>
 <translation id="9072837124205571418">Grup tab dari semua perangkat</translation>
 <translation id="9081058212938299310">Perbarui sandi untuk <ph name="USERNAME" />?</translation>
@@ -1739,6 +1758,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="9106655997975673326">Dari "<ph name="SOURCE_DEVICE" />"</translation>
 <translation id="9107664647686727385">Periksa sandi yang telah dibobol</translation>
 <translation id="9124387962554796433">Google dapat menggunakan histori Anda untuk mempersonalisasi Penelusuran dan layanan Google lainnya.</translation>
+<translation id="9130317582644834675">Sembunyikan Zoom Teks</translation>
 <translation id="913036870884277353">Buka link dengan mudah di aplikasi lain.</translation>
 <translation id="9137013805542155359">Perlihatkan halaman asli</translation>
 <translation id="914781932147356857">Tandai semua…</translation>

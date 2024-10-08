@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Дисплей жарықтығын азайту</translation>
 <translation id="2086091080968010660">Уақытқа негізделген өзгерістер дұрыс болмауы мүмкін. Параметрлерде жүйенің локацияны пайдалану рұқсатын қосыңыз.</translation>
 <translation id="2102231663024125441">Мәтін өңдеу</translation>
-<translation id="2102648867808308635">Осы бетті оқуға көмек керек</translation>
 <translation id="2105810540595158374">Бұл — ойын контроллері.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" />-нұсқа</translation>
 <translation id="2124643134650336457">Әзірше тек ағылшын (АҚШ) тілінде қолжетімді.</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">барлық қолданбаны көру</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Өнімділікті бақылау деректерін<ph name="END_LINK1" /> жіберу</translation>
 <translation id="3517001332549868749">Chrome OS жаңарту</translation>
-<translation id="3522508178835057262"><ph name="MAX_WORD_LENGTH" /> сөзден ұзағырақ мәтінді транскрипциялауға қолдау көрсетілмейді.</translation>
 <translation id="3527036260304016759">Сәтсіз: белгісіз қате шықты</translation>
 <translation id="353214771040290298">Өңдеу аяқталды</translation>
 <translation id="3532980081107202182">Шамамен <ph name="MIN_REMAINING" /> минут қалды.</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">Жарық режим</translation>
 <translation id="4813136279048157860">Суреттерім</translation>
 <translation id="4813345808229079766">Байланыс</translation>
-<translation id="4824527342590024245"><ph name="MIN_WORD_LENGTH" /> сөзден аз мәтінді транскрипциялауға қолдау көрсетілмейді.</translation>
 <translation id="4830894019733815633">шатқал</translation>
 <translation id="4832079907277790330">Files қолданбасында қалта таңдау...</translation>
 <translation id="4835901797422965222">Ешқандай белсенді желі жоқ.</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">Ұқсас:</translation>
 <translation id="5130848777448318809">понилер</translation>
 <translation id="5137451382116112100">Толық</translation>
+<translation id="5140788690559353412">Оқу аккаунтына кіру мүмкіндігінен айырылып қалсаңыз, Gmail, Docs, Slides және т.б. сияқты байланысты электрондық пошта мен Google Drive файлдарына енді кіре алмайсыз.</translation>
 <translation id="5142961317498132443">Аутентификация</translation>
 <translation id="5144311987923128508">Растау түймесі өшірілді.</translation>
 <translation id="5144887194300568405">Аударманы көшіру</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">HTTP кідірісі (Android)</translation>
 <translation id="6078323886959318429">Таңбашаны енгізу</translation>
 <translation id="6091080061796993741">сары</translation>
+<translation id="6093853427925392522">Оқу аккаунтындағы деректі кіру мүмкіндігінен айырылып қалмай тұрып жеке аккаунтқа тасымалдау үшін Google ұсынған Content Transfer қолданбасын пайдаланыңыз.</translation>
 <translation id="6104112872696127344">Сканерлеу тоқтатылды.</translation>
 <translation id="6106186594183574873">Аяқтау үшін ескі құпия сөзді енгізіңіз.</translation>
 <translation id="6108689792487843350">Шлюзбен байланыс орнату мүмкін емес.</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">Кіру нүктесінің атауы (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер атауы}other{Сервер атаулары}}</translation>
 <translation id="7135814714616751706">Таңбашаларды іздеу</translation>
+<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Қосылып жатыр</translation>
 <translation id="7144878232160441200">Қайталау</translation>
 <translation id="7144954474087165241">пагода</translation>
@@ -1394,6 +1394,7 @@
 <translation id="7856267634822906833">Bluetooth сенсорлық экраны</translation>
 <translation id="7859006200041800233">кактус гүлі</translation>
 <translation id="7869143217755017858">Қараңғы режимді өшіру</translation>
+<translation id="7878972877380405573">"Оқуға көмек керек" көмегімен қорытындылау</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Провайдер түрі</translation>
 <translation id="7882501334836096755">Ашық кілт</translation>
@@ -1537,6 +1538,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" /> қосымша әрекеттері</translation>
 <translation id="86356131183441916">Ашық күлгін</translation>
 <translation id="8647595191512746911">Аудио транскрипциясы</translation>
+<translation id="8650852232143958317">Gmail және Google Drive файлдарын алып қалыңыз</translation>
 <translation id="8651481478098336970">дыбысты өшіру</translation>
 <translation id="8655295600908251630">Арна</translation>
 <translation id="8655828773034788261">URL мекенжайын бөлісу:</translation>

@@ -114,6 +114,7 @@
 <translation id="132346741904777634">تم توجيه الكاميرا إلى الزاوية العلوية اليسرى. هناك تعارض مع مساحة عرض نظام آخر.</translation>
 <translation id="132415371743256095">إغلاق "<ph name="DESK_NAME" />" والنوافذ</translation>
 <translation id="1333308631814936910">تم توصيل <ph name="DISPLAY_NAME" />.</translation>
+<translation id="1337081488893096731">يمكنك استخدام تطبيق "نقل المحتوى" لنقل بيانات حسابك الذي تديره المؤسسة التعليمية إلى حسابك الشخصي</translation>
 <translation id="1340378040547539434">تصغير الصفحة</translation>
 <translation id="1341651618736211726">القائمة الكاملة</translation>
 <translation id="1341926407152459446">استخدام "<ph name="DEVICE_NAME" />" كمصدر إدخال الصوت وإخراجه</translation>
@@ -243,6 +244,7 @@
 <translation id="17722141032474077">عمليات حسابية</translation>
 <translation id="1774796056689732716">التقويم، <ph name="CURRENT_MONTH_YEAR" />، التاريخ المُحدّد حاليًا هو <ph name="DATE" />.</translation>
 <translation id="178347895271755507">إعداد ميزة عرض الصور والوسائط والإشعارات الحديثة في هاتفك</translation>
+<translation id="1786487376942610288">التبديل بين الحد الأقصى أو الحجم الحالي للنافذة المفتوحة بميزة "نافذة ضمن النافذة"</translation>
 <translation id="1787955149152357925">غير مُفعَّل</translation>
 <translation id="1796561540704213354">المواقع الإلكترونية بما في ذلك الصفحات التي سبقَت زيارتها والصفحات المفتوحة الآن</translation>
 <translation id="179842970735685253">‏بنود خدمة Google</translation>
@@ -338,6 +340,7 @@
 <translation id="219905428774326614">‏Launcher، جميع التطبيقات</translation>
 <translation id="2201071101391734388">الصورة الحديثة رقم <ph name="INDEX" /> من إجمالي <ph name="TOTAL_COUNT" /></translation>
 <translation id="2201687081523799384">‏تصغير "مهام Google"</translation>
+<translation id="2206960886090042977">تم إيقاف لوحة اللمس المُدمَجة لأنّ الماوس متصل. استخدِم الماوس أو لوحة المفاتيح لتأكيد التغيير، وإلّا ستتم إعادة تفعيل لوحة اللمس المُدمَجة بعد 30 ثانية.</translation>
 <translation id="2208323208084708176">وضع سطح المكتب الموحد</translation>
 <translation id="2220572644011485463">رقم التعريف الشخصي أو كلمة المرور</translation>
 <translation id="2222841058024245321">سطح المكتب 7</translation>
@@ -1910,6 +1913,7 @@
 لإطفاء الجهاز، اضغط مع الاستمرار على زر تشغيل الجهاز مرة أخرى.</translation>
 <translation id="7523420897035067483">تفعيل ميزة "عدم الإزعاج" أثناء استخدام "وضع التركيز"</translation>
 <translation id="7524043547948122239">‏مهام Google</translation>
+<translation id="7524919752437339268">تم إيقاف لوحة اللمس المُدمَجة. استخدِم لوحة المفاتيح أو جهاز تأشير آخر لتأكيد التغيير، وإلّا ستتم إعادة تفعيل لوحة اللمس المُدمَجة بعد 30 ثانية.</translation>
 <translation id="7525067979554623046">إنشاء</translation>
 <translation id="7526573455193969409">قد تكون الشبكة خاضعة للمراقبة</translation>
 <translation id="7536035074519304529">‏عنوان IP: ‏<ph name="ADDRESS" /></translation>
@@ -2297,6 +2301,7 @@
 <translation id="8858369206579825206">عناصر التحكّم في الخصوصية</translation>
 <translation id="8860366331836346216">‏إضافة شريحة eSIM</translation>
 <translation id="8870509716567206129">التطبيق لا يتيح تقسيم الشاشة.</translation>
+<translation id="8873203135446552888">تأكيد رغبتك في إيقاف لوحة اللمس المُدمَجة</translation>
 <translation id="8874184842967597500">غير متصل</translation>
 <translation id="8875021410787719674">التنقُّل بين أسفل يسار الشاشة ومشغّل التطبيقات وشريط العناوين وشريط الإشارات والموقع الإلكتروني المفتوح وعمليات التنزيل</translation>
 <translation id="8876148469852588625">الحدث <ph name="EVENT_POSITION" /> من إجمالي <ph name="EVENT_TOTAL_COUNT" /></translation>

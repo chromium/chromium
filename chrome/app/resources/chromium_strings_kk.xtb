@@ -51,6 +51,7 @@
 <translation id="17264556997921157">Сайттардың жарнама көрсетуге пайдаланған қызық тақырыптарын көре және өшіре аласыз. Chromium браузерді қолданудың соңғы тарихына сүйене отырып, сізге қызық болар деген тақырыптарды болжайды.</translation>
 <translation id="1733725117201708356">Chromium жақын арада браузерді пайдалану деректерін жояды</translation>
 <translation id="1736443181683099871">Chromium браузері навигацияларды HTTPS кеңейтіміне жаңартып көреді.</translation>
+<translation id="1736662517232558588">Chromium деректері жойылды</translation>
 <translation id="1745121272106313518">Chromium <ph name="REMAINING_TIME" /> кейін қайта қосылады</translation>
 <translation id="1749104137266986751">HTTPS қолжетімді болмаған кезде, Chromium сізге ескертпестен, қауіпті байланысты пайдаланады.</translation>
 <translation id="1774152462503052664">Chromium жүйесін фонда іске қосуға рұқсат беру</translation>
@@ -81,6 +82,7 @@
 <translation id="2088953378266246249">Chromium-нің түбірлік сертификаттарды қалай басқаратыны туралы ақпарат</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Chromium 1 минут бойы пайдаланылмаса, ұйымыңыз браузерді пайдалану деректерін автоматты түрде жояды. Оларға тарих, автотолтыру және жүктеп алынғандар кіруі мүмкін. Қойындыларыңыз ашық болады.}other{Chromium # минут бойы пайдаланылмаса, ұйымыңыз браузерді пайдалану деректерін автоматты түрде жояды. Оларға тарих, автотолтыру және жүктеп алынғандар кіруі мүмкін. Қойындыларыңыз ашық болады.}}</translation>
 <translation id="2126108037660393668">Жүктеп алынған файл растаудан өтпеді.</translation>
+<translation id="2137162749895930932">Аударма экранын жабу</translation>
 <translation id="215352261310130060">Chromium жүктеп алуды блоктады, себебі сайтта қауіпсіз байланыс пайдаланылып жатқан жоқ және файл өзгертілген болуы мүмкін.</translation>
 <translation id="2157600032285353789">Chromium мәзірінен бетбелгілерді, оқу режимін және т.б. ашуға болады.</translation>
 <translation id="2174178932569897599">Chromium-ді реттеу</translation>
@@ -148,6 +150,7 @@
 <translation id="3032706164202344641">Chromium сіздің құпия сөздеріңізді тексере алмай жатыр. Кейінірек қайталап көріңіз.</translation>
 <translation id="3032787606318309379">Chromium жүйесіне қосылуда…</translation>
 <translation id="3038232873781883849">Сәлден соң орнатыла бастайды…</translation>
+<translation id="3045032126857188731">Аударма тілі: <ph name="LANGUAGE" /></translation>
 <translation id="3068187312562070417">Басқа Chromium профильдері</translation>
 <translation id="3068515742935458733">Google компаниясына жаңылыс туралы есептер және <ph name="UMA_LINK" /> жіберу арқылы Chromium жақсартуға көмектесіңіз</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{1 USB құрылғысын бір немесе бірнеше Chromium кеңейтімі пайдаланды}=1{1 USB құрылғысын бір немесе бірнеше Chromium кеңейтімі пайдаланып жатыр}other{# USB құрылғысын бір немесе бірнеше Chromium кеңейтімі пайдаланып жатыр}}</translation>
@@ -166,7 +169,6 @@
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3268051428841342958">V8 — сайт өнімділігін арттыру үшін қолданылатын Chromium-нің JavaScript және WebAssembly жүйесі.</translation>
-<translation id="3269209112443570745">Жаңа функция! Экранда бар нәрсені оңай іздеуге болады</translation>
 <translation id="3283186697780795848">Chromium браузерінің <ph name="PRODUCT_VERSION" /> нұсқасы орнатылды.</translation>
 <translation id="3286538390144397061">Қазір қайта іске қосу</translation>
 <translation id="328888136576916638">Google API пернелері жоқ. Кейбір Chromium функциялары өшіріледі.</translation>
@@ -206,6 +208,7 @@
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="386822487697155367">ChromiumOS туралы анықтама алу</translation>
 <translation id="3871664619793219264"><ph name="ACCOUNT_EMAIL" /> аккаунтынан Chromium браузерінің мәліметтерін алыңыз.</translation>
+<translation id="3885770153807205175">Тіл таңдағыш</translation>
 <translation id="388648406173476553">Chromium-ді реттеу және басқару. Назар аударуыңыз қажет. Толығырақ ақпарат алу үшін басыңыз.</translation>
 <translation id="3889543394854987837">Chromium ашу үшін атыңызды басып, шарлауды бастаңыз.</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> бұл Chromium профиліне кіріп қойған. Браузерді пайдалану деректерін бөлек сақтау үшін Chromium сізге жеке профиль жасай алады.</translation>
@@ -218,6 +221,7 @@
 <translation id="3997429360543082038">ChromiumOS туралы</translation>
 <translation id="4019629340646866719">ChromiumOS жүйесі де <ph name="BEGIN_LINK_LINUX_OSS" />Linux әзірлеу ортасы<ph name="END_LINK_LINUX_OSS" /> сияқты <ph name="BEGIN_LINK_CROS_OSS" />ашық кодты бағдарламалық құрал<ph name="END_LINK_CROS_OSS" /> арқылы қолжетімді болады.</translation>
 <translation id="4022972681110646219">Экран мазмұнын аудару</translation>
+<translation id="4023601594785368013">Түпнұсқа тілі: <ph name="LANGUAGE" /></translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />Ағымдағы параметрлерді<ph name="END_LINK" /> хабарлау арқылы Chromium браузерін жақсартуға көмектесіңіз</translation>
 <translation id="4050175100176540509">Соңғы нұсқасында қауіпсіздік жақсартылып, жаңа мүмкіндіктер берілген.</translation>
 <translation id="4055805654398742145">P&amp;assword Manager</translation>
@@ -287,6 +291,7 @@
 <translation id="494490797786467921">Chromium-ге кірудің диалогтік терезесін жабу үшін басыңыз.</translation>
 <translation id="4987820182225656817">Қонақтар Chromium қолданбасын ешқандай дерек қалдырмай пайдалана алады.</translation>
 <translation id="4994636714258228724">Chromium жүйесіне өзіңізді қосу</translation>
+<translation id="5024548327980648634">Экраныңыздағы нәрсені іздеңіз</translation>
 <translation id="5051959905407134411">"Сурет іздеу" функциясын қолданып көріңіз.</translation>
 <translation id="5114678101347489141">Chromium жаңа функцияларды зерттеп жатыр. Олардың көмегімен сайттарды аз ақпаратпен де бұрынғыдай пайдалана беруге болады.</translation>
 <translation id="5123973130450702873">Chromium қолыңызды бақылауға рұқсат сұрайды.</translation>
@@ -332,6 +337,7 @@
 <translation id="5761096224651992291">Жақында кірмедіңіз. Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> рұқсаттарын өшірді.</translation>
 <translation id="5800158606660203929">Chromium-ді бейімдеңіз және басқарыңыз. Chromium-ді әдепкі браузер етіп орнатыңыз.</translation>
 <translation id="5809516625706423866">Интернетке қосылу мүмкін емес. HTTP 401 бойынша рұқсат берілмейді. Прокси конфигурациясын тексеріңіз.</translation>
+<translation id="5821520528363214608">Google аккаунтындағы Chromium деректерін пайдалану және сақтау үшін Chromium-ді жаңартыңыз.</translation>
 <translation id="5862307444128926510">Chromium жүйесіне қош келдіңіз</translation>
 <translation id="5871205389137001634">"Сурет іздеу" функциясынан шығу үшін басыңыз.</translation>
 <translation id="5883558403894052917">Chromium бұл элементтерде зиянды бағдарлама бар екенін анықтады:</translation>
@@ -492,6 +498,7 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="7686590090926151193">Chromium әдепкі браузеріңіз емес</translation>
 <translation id="7689606757190482937">Chromium браузерін барлық құрылғыларда синхрондап, параметрлерін жекелендіріңіз</translation>
 <translation id="7699779824407626136">Chromium жаңарту</translation>
+<translation id="77283119132245232"><ph name="BROWSER_NAME" /> браузеріне арналған жүйені трассалау қызметтерін ұсынады. Қызмет өшірілсе, браузер жасаған өнімділік трассалары контекст ауыстыру және дайын ағын оқиғалары сияқты жалпы жүйелік оқиғаларды қамтымайды.</translation>
 <translation id="7745317241717453663">Шолу деректері бұл құрылғыдан жойылады. Деректерді кейінірек алу үшін Chromium жүйесіне <ph name="USER_EMAIL" /> болып кіріңіз.</translation>
 <translation id="7747138024166251722">Орнату құралы уақытша каталогті жасай алмады. Дисктегі бос орынды және бағдарламалық жасақтама рұқсатын тексеріңіз.</translation>
 <translation id="7786760609782648049">Chromium жылдамдығын арттырыңыз</translation>

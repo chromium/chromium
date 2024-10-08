@@ -4,6 +4,7 @@
 <translation id="1444443021901415601">Chrome, son tarama geçmişinize göre ilgi alanlarınızı not eder.</translation>
 <translation id="2252052615723281030">Chrome'da oturum açtığınızda bu ayar IP adresinizin gizli kalmasına yardımcı olur. Chrome bir sitenin sizi izlediğinden şüpheleniyorsa trafiğinizin bir kısmı gizlilik sunucuları aracılığıyla gönderilebilir.</translation>
 <translation id="2793385791865768072">Chrome, son tarama geçmişinize göre ilgi alanlarınızı not eder</translation>
+<translation id="2979365474350987274">Üçüncü taraf çerezleri sınırlı</translation>
 <translation id="33479675708419823">Chrome'da oturum açtığınızda bu ayar IP adresinizin gizli kalmasına yardımcı olur. Chrome bir sitenin sizi izlediğinden şüpheleniyorsa trafiğinizin bir kısmı gizlilik sunucuları aracılığıyla gönderilebilir. <ph name="LINK_BEGIN" />IP korumasının işleyiş şekli<ph name="LINK_END" /> hakkında daha fazla bilgi edinin.</translation>
 <translation id="3529311220178827364">IP adresinizi gizleme hakkında daha fazla bilgi edinin</translation>
 <translation id="4041687306270459969">4 haftadan daha eski reklam konuları (ör. spor, giyim) otomatik olarak silinir</translation>
@@ -14,6 +15,7 @@
 <translation id="4692439979815346597">Reklam konularınızı Chrome ayarlarında görebilir ve sitelerle paylaşılmasını istemediğiniz konuları engelleyebilirsiniz</translation>
 <translation id="5413586988657235240">Ziyaret ettiğiniz siteler, tarama geçmişinizi ve kimliğinizi korurken size alakalı reklamlar göstermek için Chromium'dan ilgilendiğiniz konular hakkında bilgi isteyebilir</translation>
 <translation id="6186536480878693792">Ziyaret ettiğiniz siteler, tarama geçmişinizi ve kimliğinizi korurken size alakalı reklamlar göstermek için Chrome'dan ilgilendiğiniz konular hakkında bilgi isteyebilir</translation>
+<translation id="6195163219142236913">Üçüncü taraf çerezleri sınırlı</translation>
 <translation id="6371812158043974664">Chromium'da oturum açtığınızda bu ayar IP adresinizin gizli kalmasına yardımcı olur. Chromium bir sitenin sizi izlediğinden şüpheleniyorsa trafiğinizin bir kısmı gizlilik sunucuları aracılığıyla gönderilebilir. <ph name="LINK_BEGIN" />IP korumasının işleyiş şekli<ph name="LINK_END" /> hakkında daha fazla bilgi edinin.</translation>
 <translation id="7040031291654706261"><ph name="BEGIN_LINK" />IP korumasının nasıl çalıştığını<ph name="END_LINK" /> öğrenin</translation>
 <translation id="7475768947023614021">Reklam konuları ayarınızı inceleyin</translation>

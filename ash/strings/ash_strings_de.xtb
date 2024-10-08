@@ -114,6 +114,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="132346741904777634">Kamera ist an der oberen linken Ecke angepinnt. Konflikt mit der Systemoberfläche.</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> und Fenster schließen</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> verbunden</translation>
+<translation id="1337081488893096731">Mit der Content Transfer App kannst du die Daten aus dem Konto einer Bildungseinrichtung in dein privates Konto übertragen</translation>
 <translation id="1340378040547539434">Seite herauszoomen</translation>
 <translation id="1341651618736211726">Überlauf</translation>
 <translation id="1341926407152459446">„<ph name="DEVICE_NAME" />“ für Audioeingabe und -ausgabe verwenden</translation>
@@ -242,6 +243,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="17722141032474077">Berechnungen</translation>
 <translation id="1774796056689732716">Kalender, <ph name="CURRENT_MONTH_YEAR" />, momentan ist der <ph name="DATE" /> ausgewählt.</translation>
 <translation id="178347895271755507">Anzeige der letzten Fotos, Medien und Benachrichtigungen auf deinem Smartphone einrichten</translation>
+<translation id="1786487376942610288">Zwischen der maximalen und der aktuellen Größe des „Bild im Bild“-Fensters wechseln</translation>
 <translation id="1787955149152357925">Aus</translation>
 <translation id="1796561540704213354">Websites, einschließlich besuchter und derzeit geöffneter Seiten</translation>
 <translation id="179842970735685253">Google-Nutzungsbedingungen</translation>
@@ -337,6 +339,9 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="219905428774326614">Launcher, alle Apps</translation>
 <translation id="2201071101391734388">Vor Kurzem aufgenommenes Foto <ph name="INDEX" /> von <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Google Tasks minimieren</translation>
+<translation id="2206960886090042977">Das integrierte Touchpad ist deaktiviert, weil eine Maus angeschlossen ist. Bestätige die Änderung mit der Maus oder Tastatur.
+
+Ansonsten wird das integrierte Touchpad in 30 Sekunden wieder aktiviert.</translation>
 <translation id="2208323208084708176">Unified Desktop-Modus</translation>
 <translation id="2220572644011485463">PIN oder Passwort</translation>
 <translation id="2222841058024245321">Desktop 7</translation>
@@ -1468,6 +1473,7 @@ Keine Geräte verbunden.</translation>
 <translation id="598407983968395253">Vorlage verwenden</translation>
 <translation id="5986723678596105470">Mit Google Meet teilnehmen</translation>
 <translation id="598882571027504733">Du kannst das Update vornehmen, indem du dein Chromebook mit angeschlossener Tastatur neu startest.</translation>
+<translation id="5990992855591814753">Mit personalisierten Playlists zur besseren Konzentration bleibst du auf Kurs. Sichere dir YouTube Music und YouTube werbefrei und probiere YouTube Premium 3 Monate kostenlos aus. Es gelten die Angebotsbedingungen.</translation>
 <translation id="5998374579424866922">Spielsteuerung deaktivieren</translation>
 <translation id="6000279412553873020">Tasten, Knöpfe und mehr</translation>
 <translation id="6012623610530968780">Seite <ph name="SELECTED_PAGE" /> von <ph name="TOTAL_PAGE_NUM" /></translation>
@@ -1906,6 +1912,9 @@ Neuinstallation</translation>
 Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</translation>
 <translation id="7523420897035067483">„Bitte nicht stören“ im Konzentrationsmodus aktivieren</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">Das integrierte Touchpad ist deaktiviert. Bestätige die Änderung mit der Tastatur oder einem anderen Zeigegerät.
+
+Ansonsten wird das integrierte Touchpad in 30 Sekunden wieder aktiviert.</translation>
 <translation id="7525067979554623046">Erstellen</translation>
 <translation id="7526573455193969409">Das Netzwerk wird möglicherweise überwacht</translation>
 <translation id="7536035074519304529">IP-Adresse: <ph name="ADDRESS" /></translation>
@@ -2293,6 +2302,7 @@ Halte zum Herunterfahren des Geräts die Ein-/Aus-Taste noch einmal gedrückt.</
 <translation id="8858369206579825206">Datenschutzeinstellungen</translation>
 <translation id="8860366331836346216">eSIM hinzufügen</translation>
 <translation id="8870509716567206129">Splitscreen wird in dieser App nicht unterstützt.</translation>
+<translation id="8873203135446552888">Deaktivierung des integrierten Touchpads bestätigen</translation>
 <translation id="8874184842967597500">Nicht verbunden</translation>
 <translation id="8875021410787719674">Zwischen der unteren rechten Ecke, dem Launcher, der Adressleiste, der Lesezeichenleiste, der geöffneten Website und den Downloads wechseln</translation>
 <translation id="8876148469852588625">Termin <ph name="EVENT_POSITION" /> von <ph name="EVENT_TOTAL_COUNT" /></translation>

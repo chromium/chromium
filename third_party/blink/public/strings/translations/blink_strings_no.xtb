@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">Verdien må være <ph name="MINIMUM_DATE_OR_TIME" /> eller senere.</translation>
 <translation id="2761667185364618470">Kryss av denne boksen hvis du vil fortsette.</translation>
 <translation id="2908441821576996758">Skriv inn en liste over e-postadresser atskilt med komma.</translation>
+<translation id="2940013921954129954">Nøyaktig posisjon er tillatt</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Skriv inn en gyldig verdi. Feltet er ufullstendig, eller har en ugyldig dato.</translation>
 <translation id="310520048233152454">Skriv inn en nettadresse.</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">Dårlig avspillingskvalitet</translation>
 <translation id="6790428901817661496">Spill av</translation>
 <translation id="6820355525329141109">Kunne ikke laste inn programtillegget.</translation>
+<translation id="688706781007114099">Bruk posisjon</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Øk lengden på denne teksten med minst <ph name="MIN_CHARACTERS" /> tegn (du bruker for øyeblikket 1 tegn).</translation>
 <translation id="709897737746224366">Sørg for samsvar med det forespurte formatet.</translation>

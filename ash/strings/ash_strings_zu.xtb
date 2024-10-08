@@ -114,6 +114,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="132346741904777634">Ikhamera iqondaniswe ekhoneni engaphezulu ngakwesokunxele. Ukungqubuzana nendawo yesistimu.</translation>
 <translation id="132415371743256095">Vala i-<ph name="DESK_NAME" /> namawindi</translation>
 <translation id="1333308631814936910">I-<ph name="DISPLAY_NAME" /> ixhunyiwe</translation>
+<translation id="1337081488893096731">Sebenzisa i-app Yokudluliswa Kokuqukethwe ukuze uyise idatha ye-akhawunti yakho yesikole e-akhawuntini yakho yomuntu siqu</translation>
 <translation id="1340378040547539434">Hlehlisa isithombe ekhasini</translation>
 <translation id="1341651618736211726">Ukugcwala kakhulu</translation>
 <translation id="1341926407152459446">Sebenzisa okuthi "<ph name="DEVICE_NAME" />" kokufakwayo nokukhishwayo komsindo</translation>
@@ -242,6 +243,7 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="17722141032474077">Izibalo</translation>
 <translation id="1774796056689732716">Ikhalenda, <ph name="CURRENT_MONTH_YEAR" />, okwamanje umhla ka-<ph name="DATE" /> ukhethiwe.</translation>
 <translation id="178347895271755507">Setha ukubuka izithombe, imidiya, kanye nezaziso zefoni yakho zakamuva</translation>
+<translation id="1786487376942610288">Shintsha phakathi kobukhulu noma usayizi wamanje wewindi lesithombe-esithombeni</translation>
 <translation id="1787955149152357925">Valiwe</translation>
 <translation id="1796561540704213354">Amawebhusayithi ahlanganisa amakhasi owavakashele kanye namakhasi avulekile</translation>
 <translation id="179842970735685253">Imigomo Yesevisi yeGoogle</translation>
@@ -337,6 +339,9 @@ Nazi ezinye zezinto ongazama ukuziqalisa.</translation>
 <translation id="219905428774326614">Isiqalisi, zonke izinhlelo zokusebenza</translation>
 <translation id="2201071101391734388">Isithombe sakamuva <ph name="INDEX" /> kwezingu-<ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Goqa iGoogle Tasks</translation>
+<translation id="2206960886090042977">Iphedi yokuthinta eyakhelwe ngaphakathi ivaliwe ngoba imouse ixhunyiwe. Sebenzisa imouse noma ikhibhodi ukuze uqinisekise ushintsho.
+
+Uma kungenjalo iphedi yokuthinta eyakhelwe ngaphakathi izonikwa amandla kabusha emizuzwaneni engu-30.</translation>
 <translation id="2208323208084708176">Imodi ehlanganisiwe yedeskithophu</translation>
 <translation id="2220572644011485463">Iphinikhodi noma iphasiwedi</translation>
 <translation id="2222841058024245321">Itafula 7</translation>
@@ -1907,6 +1912,9 @@ Ukufaka okusha</translation>
 Ukuze uvale idivayisi, cindezela futhi ubambe inkinobho yamandla kudivayisi futhi.</translation>
 <translation id="7523420897035067483">Nika amandla okuthi Ungaphazamisi ngesikhathi ukokuthi Ukugxilisa</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">Iphedi yokuthinta eyakhelwe ngaphakathi ikhutshaziwe. Sebenzisa ikhibhodi yakho noma enye idivayisi yesikhombi ukuze uqinisekise ushintsho.
+
+Uma kungenjalo iphedi yokuthinta eyakhelwe ngaphakathi izonikwa amandla kabusha emizuzwaneni engu-30.</translation>
 <translation id="7525067979554623046">Dala</translation>
 <translation id="7526573455193969409">Inethiwekhi kungenzeka iqashiwe</translation>
 <translation id="7536035074519304529">Ikheli le-IP: <ph name="ADDRESS" /></translation>
@@ -2294,6 +2302,7 @@ Ukuze uvale idivayisi, cindezela futhi ubambe inkinobho yamandla kudivayisi futh
 <translation id="8858369206579825206">Izilawuli zobumfihlo</translation>
 <translation id="8860366331836346216">Faka i-eSIM</translation>
 <translation id="8870509716567206129">Uhlelo lokusebenza alusekeli isikrini esihlukanisiwe.</translation>
+<translation id="8873203135446552888">Qinisekisa ukuthi ufuna ukukhubaza iphedi yokuthinta eyakhelwe ngaphakathi</translation>
 <translation id="8874184842967597500">Ayixhunyiwe</translation>
 <translation id="8875021410787719674">Hambisa phakathi kwekhona elingezansi kwesokudla, Isiqalisi, ibha yekheli, ibha yamabhukhimakhi, iwebhusayithi evuliwe, nokudawuniloda</translation>
 <translation id="8876148469852588625">Umcimbi ongu-<ph name="EVENT_POSITION" /> kwengu-<ph name="EVENT_TOTAL_COUNT" />.</translation>

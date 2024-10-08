@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">ডিছপ্লে’ৰ উজ্জ্বলতা ডাউন</translation>
 <translation id="2086091080968010660">সময় ভিত্তিক সালসলনিসমূহ সঠিক নহ’বও পাৰে। ছেটিঙত ছিষ্টেমৰ অৱস্থানৰ এক্সেছ অন কৰক।</translation>
 <translation id="2102231663024125441">পাঠ সম্পাদনা</translation>
-<translation id="2102648867808308635">মোৰ এই পৃষ্ঠাখন পঢ়াত সহায় কৰক</translation>
 <translation id="2105810540595158374">ডিভাইচটো এটা গে’ম নিয়ন্ত্ৰক।</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, সংস্কৰণ <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">বৰ্তমান কেৱল ইংৰাজীত (আমেৰিকা যুক্তৰাষ্ট্ৰ) উপলব্ধ</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">আটাইবোৰ এপ্‌ চাওক</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />কাৰ্যদক্ষতাৰ ট্ৰে’চ ডেটা<ph name="END_LINK1" /> পঠিয়াওক</translation>
 <translation id="3517001332549868749">ChromeOSৰ আপডে’ট</translation>
-<translation id="3522508178835057262">এতিয়া <ph name="MAX_WORD_LENGTH" /> টাতকৈ বেছি শব্দৰ ট্ৰেন্সক্ৰিপ্ট সমৰ্থন নকৰে</translation>
 <translation id="3527036260304016759">বিফল হৈছে - অজ্ঞাত আসোঁৱাহ</translation>
 <translation id="353214771040290298">সম্পাদনা সম্পন্ন হৈছে</translation>
 <translation id="3532980081107202182">প্ৰায় <ph name="MIN_REMAINING" /> মিনিট বাকী আছে</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">পাতল ৰঙৰ থীম</translation>
 <translation id="4813136279048157860">মোৰ প্ৰতিচ্ছবি</translation>
 <translation id="4813345808229079766">সংযোগ</translation>
-<translation id="4824527342590024245">এতিয়াৰ বাবে, <ph name="MIN_WORD_LENGTH" /> টাতকৈ কম শব্দৰ ট্ৰেন্সক্ৰিপ্ট সমৰ্থন নকৰে</translation>
 <translation id="4830894019733815633">গিৰিখাদ</translation>
 <translation id="4832079907277790330">Files এপ্‌টোত ফ’ল্ডাৰ বাছনি কৰক...</translation>
 <translation id="4835901797422965222">কোনো সক্ৰিয় নেটৱৰ্ক নাই</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">একেধৰণৰ:</translation>
 <translation id="5130848777448318809">সৰু ঘোঁৰা</translation>
 <translation id="5137451382116112100">সম্পূৰ্ণ</translation>
+<translation id="5140788690559353412">আপুনি নিজৰ বিদ্যালয়ৰ একাউণ্টলৈ এক্সেছ হেৰুওৱালে, আপোনাৰ ওচৰত Gmail, Docs, Slides আৰু অধিকৰ দৰে সহযোগী ইমেইল আৰু Google Driveৰ ফাইলসমূহৰ এক্সেছ আৰু নাথাকিব।</translation>
 <translation id="5142961317498132443">বিশ্বাসযোগ্যতাৰ প্ৰমাণীকৰণ</translation>
 <translation id="5144311987923128508">নিশ্চিত কৰক বুটামটো এতিয়া অক্ষম কৰা হৈছে</translation>
 <translation id="5144887194300568405">অনুবাদ প্ৰতিলিপি কৰক</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) HTTP বিলম্বতা</translation>
 <translation id="6078323886959318429">শ্বর্টকাট যোগ কৰক</translation>
 <translation id="6091080061796993741">হালধীয়া</translation>
+<translation id="6093853427925392522">আপুনি এক্সেছ হেৰুওৱাৰ আগতেই আপোনাৰ বিদ্যালয়ৰ একাউণ্টৰ ডেটা আপোনাৰ ব্যক্তিগত একাউণ্টলৈ নিবলৈ Googleৰ Content Transfer এপ্‌টো ব্যৱহাৰ কৰাটো নিশ্চিত কৰক।</translation>
 <translation id="6104112872696127344">স্কেনিং বাতিল কৰা হৈছে</translation>
 <translation id="6106186594183574873">সম্পূর্ণ কৰিবলৈ আপোনাৰ পুৰণি পাছৱর্ড দিয়ক</translation>
 <translation id="6108689792487843350">গেইটৱে'টো পাব পৰা অৱস্থাত নাই</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">এক্সেছ পইণ্টৰ নাম (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{নে'ম ছার্ভাৰ}one{নে'ম ছার্ভাৰ}other{নে'ম ছার্ভাৰ}}</translation>
 <translation id="7135814714616751706">সন্ধানৰ শ্বৰ্টকাট</translation>
+<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">সংযোগ হৈছে</translation>
 <translation id="7144878232160441200">পুনৰ চেষ্টা কৰক</translation>
 <translation id="7144954474087165241">পেগ’ডা</translation>
@@ -1394,6 +1394,7 @@
 <translation id="7856267634822906833">ব্লুটুথ টাচ্‌স্ক্ৰীন</translation>
 <translation id="7859006200041800233">কেকটাছ ফুল</translation>
 <translation id="7869143217755017858">গাঢ় ম’ড অক্ষম কৰক</translation>
+<translation id="7878972877380405573">হেল্প মী ৰীডৰ জৰিয়তে সাৰাংশ প্ৰস্তুত কৰক</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">প্ৰদানকাৰীৰ ধৰণ</translation>
 <translation id="7882501334836096755">ৰাজহুৱা চাবি</translation>
@@ -1537,6 +1538,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" />ৰ বাবে আৰু অধিক কাৰ্য</translation>
 <translation id="86356131183441916">পাতল বেঙুনীয়া</translation>
 <translation id="8647595191512746911">অডিঅ’ ট্ৰেন্সক্ৰিপশ্বন</translation>
+<translation id="8650852232143958317">আপোনাৰ Gmail আৰু Google Driveৰ ফাইলসমূহ আপোনাৰ সৈতে ৰাখক</translation>
 <translation id="8651481478098336970">ভলিউম মিউট কৰক</translation>
 <translation id="8655295600908251630">চেনেল</translation>
 <translation id="8655828773034788261">URL শ্বেয়াৰ কৰক:</translation>

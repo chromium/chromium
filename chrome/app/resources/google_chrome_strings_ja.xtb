@@ -70,6 +70,7 @@
 <translation id="1919130412786645364">Chrome へのログインを許可する</translation>
 <translation id="1953553007165777902">ダウンロードしています... 残り <ph name="MINUTE" /> 分です</translation>
 <translation id="1982647487457769627">Chrome は複数のプラットフォームで動作し、どのデバイスでも同じ環境で使用できます</translation>
+<translation id="19955905961160405">Google レンズで画面上のコンテンツを検索</translation>
 <translation id="2001586581944147178">あなたのインターネット トラフィックにアクセスできるユーザーに、あなたがアクセスしたサイトを知られないようにします。Chrome では、安全な接続を使用して、DNS（ドメイン ネーム システム）でサイトの IP アドレスを検索します。</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{この拡張機能のサポートは終了しました。削除することをおすすめします。}other{これらの拡張機能のサポートは終了しました。削除することをおすすめします。}}</translation>
 <translation id="2018528049276128029">Chrome の情報（ブックマーク、履歴、パスワードなど）はプロファイルごとに分けて保持されます</translation>
@@ -87,6 +88,7 @@
 <translation id="2126108037660393668">ダウンロードしたファイルの検証で不合格でした。</translation>
 <translation id="2128411189117340671">Chrome プロファイルを管理</translation>
 <translation id="2131230230468101642">ユーザーのプライバシーを保護するため、4 週間以上経過したユーザーの興味 / 関心は自動削除されます。閲覧を続けていると、興味 / 関心がリストに再度表示される場合もあります。Chrome に認識してほしくない興味 / 関心は削除できます。</translation>
+<translation id="2137162749895930932">翻訳画面を閉じる</translation>
 <translation id="2139300032719313227">Chrome OS を再起動してください</translation>
 <translation id="2151406531797534936">Chrome を今すぐ再起動してください</translation>
 <translation id="2163089732491971196">Google アカウントで Chrome のデータを使用、保存するには、パスフレーズを入力してください</translation>
@@ -170,6 +172,7 @@
 <translation id="3019382870990049182">再起動して ChromeOS Flex を更新(&amp;C)</translation>
 <translation id="3037838751736561277">Google Chrome はバックグラウンド モードです。</translation>
 <translation id="3038232873781883849">インストールの待機中...</translation>
+<translation id="3045032126857188731">翻訳先の言語: <ph name="LANGUAGE" /></translation>
 <translation id="3059710691562604940">セーフ ブラウジングがオフになっています。Chrome はオンにすることをおすすめしています。</translation>
 <translation id="306179102415443347">ショートカットを使用して Google パスワード マネージャーにすばやくアクセスできます。ショートカットはパソコンのホーム画面やアプリ ランチャーに移動できます。</translation>
 <translation id="3065168410429928842">Chrome タブ</translation>
@@ -188,7 +191,6 @@
 <translation id="3234642784688107085">テーマや文章の作成、情報の整理に役立つ新しい AI 機能をお試しください</translation>
 <translation id="3245429137663807393">Chrome の使用状況レポートを送信する場合は、アクセスした URL がこのレポートに含められます</translation>
 <translation id="3261565993776444564">新しい色でブラウザをカスタマイズできます</translation>
-<translation id="3269209112443570745">New! 画面に表示されている内容を簡単に検索</translation>
 <translation id="3282568296779691940">Chrome にログイン</translation>
 <translation id="3286538390144397061">今すぐ再起動</translation>
 <translation id="3292333338048274092">その後、Chrome を再起動する必要があります。</translation>
@@ -237,12 +239,14 @@
 <translation id="386202838227397562">すべての Google Chrome ウィンドウを閉じてからもう一度お試しください。</translation>
 <translation id="3865754807470779944">Chrome のバージョン <ph name="PRODUCT_VERSION" /> がインストールされています</translation>
 <translation id="3873044882194371212">Chrome のシークレット ウインドウでリンクを開く(&amp;G)</translation>
+<translation id="3885770153807205175">言語選択ツール</translation>
 <translation id="3889417619312448367">Google Chrome をアンインストール</translation>
 <translation id="3941890832296813527">インストール エラー: インストーラのファイル名が無効またはサポートされていません。</translation>
 <translation id="3973161977468201858">Google Chrome が Google パスワード マネージャーのデータの削除をリクエストしています。続行するには、Windows のパスワードを入力してください。</translation>
 <translation id="398236277091248993">パフォーマンス ブースト機能で Chrome を高速に保ちます</translation>
 <translation id="3999683152997576765">サイトでの広告表示に使用される興味 / 関心のトピックを表示、削除できます。Chrome では最近の閲覧履歴に基づいてユーザーの興味 / 関心を推定します。</translation>
 <translation id="4022972681110646219">画面を翻訳</translation>
+<translation id="4023601594785368013">元の言語: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">更新を適用するには、Chrome OS を再起動する必要があります。</translation>
 <translation id="4050175100176540509">最新バージョンに更新すると、重要なセキュリティ更新と新機能が適用されます。</translation>
 <translation id="4053720452172726777">Google Chrome の設定</translation>
@@ -514,6 +518,7 @@
 <translation id="7514258452813684157">Google Updater サービス</translation>
 <translation id="7515191208480168435">Google レンズを固定して簡単にアクセスできます</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
+<translation id="756809126120519699">Chrome データの消去完了</translation>
 <translation id="7572537927358445944">オフ • Chrome では、この拡張機能の提供元を確認できません</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> インストーラ</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
@@ -531,6 +536,7 @@
 <translation id="7668816516367091728">アドレスバーで翻訳や計算などのタスクを直接行うことができます</translation>
 <translation id="7670287553302121848">Chrome アカウントの再認証が必要です</translation>
 <translation id="769538538642757151">確認の必要な項目がありましたらお知らせします</translation>
+<translation id="77283119132245232"><ph name="BROWSER_NAME" /> のシステム トレース サービスを提供します。このサービスを無効にした場合、ブラウザによって作成されるパフォーマンス トレースに、コンテキスト切り替えやスレッドの準備完了などのシステム全体のイベントは含められません。</translation>
 <translation id="7747138024166251722">インストーラーの一時ディレクトリを作成できませんでした。ディスクの空き領域とソフトウェアのインストール許可があることを確認してください。</translation>
 <translation id="7761834446675418963">Chrome を開いてブラウジングを始めるには、名前をクリックしてください。</translation>
 <translation id="7763983146198734674">パスワードを保存して、外出先でもアクセスできます</translation>

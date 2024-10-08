@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Displey parlaqlığını azaldın</translation>
 <translation id="2086091080968010660">Zaman əsaslı dəyişikliklər dəqiq olmaya bilər. Ayarlarda sistemin məkana girişini aktiv edin.</translation>
 <translation id="2102231663024125441">Mətn redaktəsi</translation>
-<translation id="2102648867808308635">Bu səhifəni oxumağıma kömək edin</translation>
 <translation id="2105810540595158374">Cihaz oyun nizamlayıcısıdır.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versiya <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">Hazırda yalnız İngilis dilində (ABŞ) əlçatandır</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">bütün tətbiqlərə baxın</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Performans izləmə datasını<ph name="END_LINK1" /> göndərin</translation>
 <translation id="3517001332549868749">ChromeOS güncəlləməsi</translation>
-<translation id="3522508178835057262">Hazırda <ph name="MAX_WORD_LENGTH" /> sözdən artıq transkript dəstəklənmir</translation>
 <translation id="3527036260304016759">Alınmadı - Naməlum xəta</translation>
 <translation id="353214771040290298">Redaktəni bitirin</translation>
 <translation id="3532980081107202182">Təxminən <ph name="MIN_REMAINING" /> dəqiqə qalıb</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">İşıqlı tema</translation>
 <translation id="4813136279048157860">Şəkillərim</translation>
 <translation id="4813345808229079766">Bağlantı</translation>
-<translation id="4824527342590024245">Hazırda minimum <ph name="MIN_WORD_LENGTH" /> sözdən ibarət transkrip dəstəklənir</translation>
 <translation id="4830894019733815633">kanyon</translation>
 <translation id="4832079907277790330">Fayllar tətbiqində qovluq seçin...</translation>
 <translation id="4835901797422965222">Aktiv şəbəkə yoxdur</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">Oxşar:</translation>
 <translation id="5130848777448318809">ponilər</translation>
 <translation id="5137451382116112100">Tam</translation>
+<translation id="5140788690559353412">Məktəb hesabınıza girişi itirdiyiniz zaman artıq əlaqəli e-məktublara və Gmail, Sənədlər, Slaydlar və s. kimi Google Disk fayllarına girişiniz olmayacaq.</translation>
 <translation id="5142961317498132443">İdentifikasiya</translation>
 <translation id="5144311987923128508">Təsdiq düyməsi deaktiv edilib</translation>
 <translation id="5144887194300568405">Tərcüməni kopyalayın</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) HTTP Gecikməsi</translation>
 <translation id="6078323886959318429">Qısayol əlavə edin</translation>
 <translation id="6091080061796993741">sarı</translation>
+<translation id="6093853427925392522">Girişi itirməzdən əvvəl məktəb hesabı məlumatlarınızı şəxsi hesabınıza köçürmək üçün Google tərəfindən Kontent Köçürülməsi tətbiqindən istifadə edin.</translation>
 <translation id="6104112872696127344">Skanlama ləğv edilib</translation>
 <translation id="6106186594183574873">Tamamlamaq üçün köhnə parolu yazın</translation>
 <translation id="6108689792487843350">Giriş ilə əlaqə saxlamaq olmur</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">Giriş nöqtəsi adı (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Ad serveri}other{Ad serverləri}}</translation>
 <translation id="7135814714616751706">Qısayol axtarın</translation>
+<translation id="7141470099673912333">Kontent Köçürülməsi</translation>
 <translation id="7143207342074048698">Qoşulur</translation>
 <translation id="7144878232160441200">Yenidən cəhd edin</translation>
 <translation id="7144954474087165241">paqoda</translation>
@@ -1394,6 +1394,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="7856267634822906833">Bluetooth taçskrin</translation>
 <translation id="7859006200041800233">kaktus çiçəyi</translation>
 <translation id="7869143217755017858">Qaranlıq rejimi deaktiv edin</translation>
+<translation id="7878972877380405573">Oxumağıma yardım edin funksiyası ilə ümumiləşdirin</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Provayder növü</translation>
 <translation id="7882501334836096755">İctimai açar</translation>
@@ -1537,6 +1538,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="8626489604350149811"><ph name="APN_NAME" /> üçün digər əməliyyatlar</translation>
 <translation id="86356131183441916">Açıq-bənövşəyi</translation>
 <translation id="8647595191512746911">Audio transkripsiyası</translation>
+<translation id="8650852232143958317">Gmail və Google Disk fayllarınızı özünüzlə aparın</translation>
 <translation id="8651481478098336970">hecmi səssiz rejimə keçirin</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655828773034788261">Keçidi paylaşın:</translation>

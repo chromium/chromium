@@ -114,6 +114,7 @@
 <translation id="132346741904777634">కెమెరా ఎగువ ఎడమ మూలకు స్నాప్ చేయబడింది. సిస్టమ్ ప్లాట్‌ఫామ్‌కు విరుద్ధంగా.</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" />‌ను, విండోలను మూసివేయండి</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> కనెక్ట్ చేయబడింది</translation>
+<translation id="1337081488893096731">మీ స్కూల్ ఖాతా డేటాను మీ వ్యక్తిగత ఖాతాకు తరలించడానికి Content Transfer యాప్‌ను ఉపయోగించండి</translation>
 <translation id="1340378040547539434">పేజీని జూమ్ - అవుట్ చేయండి</translation>
 <translation id="1341651618736211726">అతివ్యాప్తి అంశాలు</translation>
 <translation id="1341926407152459446">ఆడియో ఇన్‌పుట్, అవుట్‌పుట్‌కు "<ph name="DEVICE_NAME" />"‌ను ఉపయోగించండి</translation>
@@ -242,6 +243,7 @@
 <translation id="17722141032474077">లెక్కింపులు</translation>
 <translation id="1774796056689732716">క్యాలెండర్, <ph name="CURRENT_MONTH_YEAR" />, ప్రస్తుతం <ph name="DATE" /> తేదీ ఎంపిక చేయబడింది.</translation>
 <translation id="178347895271755507">మీ ఫోన్‌లోని తాజా ఫోటోలను, మీడియాను, నోటిఫికేషన్‌లను చూసే సదుపాయాన్ని సెటప్ చేయండి</translation>
+<translation id="1786487376942610288">పిక్చర్-ఇన్-పిక్చర్ విండో గరిష్ఠ సైజ్ లేదా ప్రస్తుతం ఉన్న సైజ్ మధ్య మారండి</translation>
 <translation id="1787955149152357925">ఆఫ్ చేయి</translation>
 <translation id="1796561540704213354">వెబ్‌సైట్‌లలో మీరు బ్రౌజ్ చేసిన, తెరిచిన పేజీలు ఉంటాయి</translation>
 <translation id="179842970735685253">Google సర్వీస్ నియమాలు</translation>
@@ -337,6 +339,9 @@
 <translation id="219905428774326614">లాంచర్, అన్ని యాప్‌లు</translation>
 <translation id="2201071101391734388">తాజా ఫోటోలలో <ph name="TOTAL_COUNT" />లో <ph name="INDEX" />వది.</translation>
 <translation id="2201687081523799384">Google Tasksను కుదించండి</translation>
+<translation id="2206960886090042977">మౌస్ కనెక్ట్ అయి ఉన్నందున బిల్ట్-ఇన్ టచ్‌ప్యాడ్ డిజేబుల్ చేయబడింది. మార్పును నిర్ధారించడానికి మౌస్ లేదా కీబోర్డ్‌ను ఉపయోగించండి.
+
+లేదంటే, బిల్ట్-ఇన్ టచ్‌ప్యాడ్ 30 సెకన్లలో మళ్లీ ఎనేబుల్ చేయబడుతుంది.</translation>
 <translation id="2208323208084708176">ఏకీకృత డెస్క్‌టాప్ మోడ్</translation>
 <translation id="2220572644011485463">PIN లేదా పాస్‌వర్డ్</translation>
 <translation id="2222841058024245321">డెస్క్ 7</translation>
@@ -1450,7 +1455,7 @@
 <translation id="5911231045062997865">Lacros విండోలు ప్రస్తుత సపోర్ట్ చేయవు. ఇతర యాప్‌లు సేవ్ చేయబడతాయి.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916646100036936191">కొత్త నోటిఫికేషన్, మొత్తం <ph name="NOTIFICATION_COUNT" /></translation>
-<translation id="5916664084637901428">ఆన్ చేయి</translation>
+<translation id="5916664084637901428">ఆన్‌లో ఉంది</translation>
 <translation id="5920710855273935292">మైక్ మ్యూట్ చేయబడింది.</translation>
 <translation id="5928083197428724029"><ph name="MANAGER" /> కోసం అప్‌డేట్ అవసరం</translation>
 <translation id="5939518447894949180">రీసెట్ చేయండి</translation>
@@ -1908,6 +1913,9 @@
 పరికరాన్ని షట్ డౌన్ చేయడానికి, పరికరంపై ఉన్న పవర్ బటన్‌ను మళ్లీ నొక్కి, పట్టుకోండి.</translation>
 <translation id="7523420897035067483">ఫోకస్ చేసినప్పుడు అంతరాయం కలిగించవద్దు ఫీచర్‌ను ఎనేబుల్ చేయండి</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">బిల్ట్-ఇన్ టచ్‌ప్యాడ్ డిజేబుల్ అయింది. మార్పును నిర్ధారించడానికి మీ కీబోర్డ్‌ను వేరొక కర్సర్‌ను నియంత్రించే పరికరాన్ని ఉపయోగించండి.
+
+లేదంటే, బిల్ట్-ఇన్ టచ్‌ప్యాడ్ 30 సెకన్లలో మళ్లీ ఎనేబుల్ చేయబడుతుంది.</translation>
 <translation id="7525067979554623046">క్రియేట్ చేయండి</translation>
 <translation id="7526573455193969409">నెట్‌వ‌ర్క్‌పై ప‌ర్య‌వేక్ష‌ణ ఉండ‌వ‌చ్చు</translation>
 <translation id="7536035074519304529">IP అడ్రస్‌: <ph name="ADDRESS" /></translation>
@@ -2295,6 +2303,7 @@
 <translation id="8858369206579825206">గోప్యతా కంట్రోల్స్</translation>
 <translation id="8860366331836346216">eSIMను జోడించండి</translation>
 <translation id="8870509716567206129">యాప్‌లో విభజన స్క్రీన్‌కు మద్దతు లేదు.</translation>
+<translation id="8873203135446552888">మీరు బిల్ట్-ఇన్ టచ్‌ప్యాడ్‌ను డిజేబుల్ చేయాలనుకుంటున్నారని నిర్ధారించండి</translation>
 <translation id="8874184842967597500">కనెక్ట్ కాలేదు</translation>
 <translation id="8875021410787719674">దిగువ కుడి మూల, లాంచర్, అడ్రస్ బార్, బుక్‌మార్క్ బార్, తెరిచి ఉన్న వెబ్‌సైట్, డౌన్‌లోడ్‌ల మధ్య మారండి</translation>
 <translation id="8876148469852588625"><ph name="EVENT_TOTAL_COUNT" />లో <ph name="EVENT_POSITION" />వ ఈవెంట్</translation>

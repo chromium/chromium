@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">Vlera duhet të jetë <ph name="MINIMUM_DATE_OR_TIME" /> ose më e vonshme.</translation>
 <translation id="2761667185364618470">Verifikoje këtë kuti, nëse do të vazhdosh.</translation>
 <translation id="2908441821576996758">Fut një listë të ndarë me presje me adresa mail-i.</translation>
+<translation id="2940013921954129954">Vendndodhja e saktë lejohet</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Fut një atribut të vlefshëm. Fusha nuk është e plotë ose ka datë të pavlefshme.</translation>
 <translation id="310520048233152454">Fut një URL.</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">Cilësi e dobët e luajtjes</translation>
 <translation id="6790428901817661496">Luaj</translation>
 <translation id="6820355525329141109">Nuk mund ta ngarkonte përbërësin shtesë.</translation>
+<translation id="688706781007114099">Përdor vendndodhjen</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Zgjate këtë tekst në <ph name="MIN_CHARACTERS" /> karaktere ose më shumë (aktualisht po përdor 1 karakter).</translation>
 <translation id="709897737746224366">Përputhe me formatin e kërkuar.</translation>

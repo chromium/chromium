@@ -114,6 +114,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="132346741904777634">Camera uitgelijnd op de linkerbovenhoek. Conflict met systeemoppervlak.</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> en vensters sluiten</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> gekoppeld</translation>
+<translation id="1337081488893096731">Gebruik de Content Transfer-app om de gegevens van je schoolaccount over te zetten naar je persoonlijke account</translation>
 <translation id="1340378040547539434">Uitzoomen op pagina</translation>
 <translation id="1341651618736211726">Overloop</translation>
 <translation id="1341926407152459446"><ph name="DEVICE_NAME" /> gebruiken voor audio-invoer en -uitvoer</translation>
@@ -242,6 +243,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="17722141032474077">Berekeningen</translation>
 <translation id="1774796056689732716">Agenda, <ph name="CURRENT_MONTH_YEAR" />, momenteel is <ph name="DATE" /> geselecteerd.</translation>
 <translation id="178347895271755507">De weergave van recente foto's, media en meldingen van je telefoon instellen</translation>
+<translation id="1786487376942610288">Schakelen tussen het maximale of huidige formaat van het scherm-in-scherm-venster</translation>
 <translation id="1787955149152357925">Uit</translation>
 <translation id="1796561540704213354">Websites, waaronder pagina's die je hebt bezocht en geopende pagina's</translation>
 <translation id="179842970735685253">Servicevoorwaarden van Google</translation>
@@ -337,6 +339,9 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="219905428774326614">Launcher, alle apps</translation>
 <translation id="2201071101391734388">Recente foto <ph name="INDEX" /> van <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Google Tasks samenvouwen</translation>
+<translation id="2206960886090042977">De ingebouwde touchpad is uitgezet omdat er een muis is aangesloten. Gebruik de muis of het toetsenbord om de wijziging te bevestigen.
+
+Anders wordt de ingebouwde touchpad over 30 seconden weer aangezet.</translation>
 <translation id="2208323208084708176">Samengestelde desktopmodus</translation>
 <translation id="2220572644011485463">Pincode of wachtwoord</translation>
 <translation id="2222841058024245321">Bureau 7</translation>
@@ -1468,6 +1473,7 @@ Geen apparaten verbonden.</translation>
 <translation id="598407983968395253">Template gebruiken</translation>
 <translation id="5986723678596105470">Deelnemen via Google Meet</translation>
 <translation id="598882571027504733">Als je de update wilt downloaden, sluit je het toetsenbord aan en start je je Chromebook opnieuw op</translation>
+<translation id="5990992855591814753">Blijf op schema met gepersonaliseerde focusplaylists. Neem YouTube Music en YouTube zonder advertenties en krijg YouTube Premium 3 maanden zonder kosten. Er zijn voorwaarden van toepassing.</translation>
 <translation id="5998374579424866922">Gamebediening uitzetten</translation>
 <translation id="6000279412553873020">Toetsen, knoppen en meer</translation>
 <translation id="6012623610530968780">Pagina <ph name="SELECTED_PAGE" /> van <ph name="TOTAL_PAGE_NUM" /></translation>
@@ -1906,6 +1912,9 @@ Nieuwe installatie</translation>
 Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer ingedrukt.</translation>
 <translation id="7523420897035067483">Niet storen aanzetten tijdens Focus</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">De ingebouwde touchpad is uitgezet. Gebruik je toetsenbord of een ander aanwijsapparaat om de wijziging te bevestigen.
+
+Anders wordt de ingebouwde touchpad over 30 seconden weer aangezet.</translation>
 <translation id="7525067979554623046">Maken</translation>
 <translation id="7526573455193969409">Netwerk kan worden bijgehouden</translation>
 <translation id="7536035074519304529">IP-adres: <ph name="ADDRESS" /></translation>
@@ -2293,6 +2302,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8858369206579825206">Privacyopties</translation>
 <translation id="8860366331836346216">E-simkaart toevoegen</translation>
 <translation id="8870509716567206129">App biedt geen ondersteuning voor gesplitst scherm.</translation>
+<translation id="8873203135446552888">Bevestig dat je de ingebouwde touchpad wilt uitzetten</translation>
 <translation id="8874184842967597500">Niet verbonden</translation>
 <translation id="8875021410787719674">Schakelen tussen rechterbenedenhoek, Launcher, adresbalk, bookmarkbalk, website die is geopend en downloads</translation>
 <translation id="8876148469852588625">Afspraak <ph name="EVENT_POSITION" /> van <ph name="EVENT_TOTAL_COUNT" /></translation>

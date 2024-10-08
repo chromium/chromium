@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Skjermlysstyrke ned</translation>
 <translation id="2086091080968010660">Tidsbaserte endringer er kanskje ikke nøyaktige. Slå på posisjonstilgang for systemet i innstillingene.</translation>
 <translation id="2102231663024125441">Tekstbehandling</translation>
-<translation id="2102648867808308635">Hjelp meg å lese denne siden</translation>
 <translation id="2105810540595158374">Enheten er en spillkontroller.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versjon <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">Foreløpig bare tilgjengelig på engelsk (USA)</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">se alle appene</translation>
 <translation id="3510890413042482857">Send <ph name="BEGIN_LINK1" />ytelsessporingsdata<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">ChromeOS-oppdatering</translation>
-<translation id="3522508178835057262">Foreløpig støttes ikke transkripsjoner på mer enn <ph name="MAX_WORD_LENGTH" /> ord</translation>
 <translation id="3527036260304016759">Mislykket – ukjent feil</translation>
 <translation id="353214771040290298">Redigeringen er fullført</translation>
 <translation id="3532980081107202182">Omtrent <ph name="MIN_REMAINING" /> minutter igjen</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">Lyst tema</translation>
 <translation id="4813136279048157860">Mine bilder</translation>
 <translation id="4813345808229079766">Tilkobling</translation>
-<translation id="4824527342590024245">Foreløpig støttes ikke transkripsjoner på færre enn <ph name="MIN_WORD_LENGTH" /> ord</translation>
 <translation id="4830894019733815633">gjel</translation>
 <translation id="4832079907277790330">Velg en mappe i Filer-appen …</translation>
 <translation id="4835901797422965222">Ingen aktive nettverk</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">Lignende:</translation>
 <translation id="5130848777448318809">ponnier</translation>
 <translation id="5137451382116112100">Full</translation>
+<translation id="5140788690559353412">Når du mister tilgangen til skolekontoen din, mister du også tilgangen til tilknyttede e-post- og Google Disk-filer, for eksempel Gmail, Dokumenter, Presentasjoner med flere.</translation>
 <translation id="5142961317498132443">Autentisering</translation>
 <translation id="5144311987923128508">Bekreft-knappen er nå deaktivert</translation>
 <translation id="5144887194300568405">Kopier oversettelsen</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) HTTP-tidsforsinkelse</translation>
 <translation id="6078323886959318429">Legg til snarvei</translation>
 <translation id="6091080061796993741">gul</translation>
+<translation id="6093853427925392522">Sørg for å bruke Innholdsoverføring-appen fra Google for å flytte dataene fra skolekontoen din til den personlige kontoen din før du mister tilgangen.</translation>
 <translation id="6104112872696127344">Skanningen er avbrutt</translation>
 <translation id="6106186594183574873">For å fullføre passordendringen, skriv inn det gamle passordet</translation>
 <translation id="6108689792487843350">Gatewayen er utilgjengelig</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">Navn på tilgangspunkt (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Navnetjener}other{Navnetjenere}}</translation>
 <translation id="7135814714616751706">Søkesnarveier</translation>
+<translation id="7141470099673912333">Innholdsoverføring</translation>
 <translation id="7143207342074048698">Kobler til</translation>
 <translation id="7144878232160441200">Prøv på nytt</translation>
 <translation id="7144954474087165241">pagode</translation>
@@ -1394,6 +1394,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="7856267634822906833">Bluetooth-berøringsskjerm</translation>
 <translation id="7859006200041800233">kaktusblomst</translation>
 <translation id="7869143217755017858">Slå av mørk modus</translation>
+<translation id="7878972877380405573">Oppsummer med Hjelp meg å lese</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Leverandørtype</translation>
 <translation id="7882501334836096755">Offentlig nøkkel</translation>
@@ -1537,6 +1538,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="8626489604350149811">Flere handlinger for <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Lys lilla</translation>
 <translation id="8647595191512746911">Transkripsjon av lyd</translation>
+<translation id="8650852232143958317">Ta med deg Gmail- og Google Disk-filene dine</translation>
 <translation id="8651481478098336970">kutt lyden</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655828773034788261">Del nettadressen:</translation>

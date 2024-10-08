@@ -114,6 +114,7 @@
 <translation id="132346741904777634">क्यामेरा सिरानको बायाँ कुनामा स्न्याप गरियो। सिस्टमको सतहसँग बाझियो।</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> र विन्डो बन्द गर्नुहोस्</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> कनेक्ट गरियो</translation>
+<translation id="1337081488893096731">आफ्नो विद्यालयको खातामा भण्डारण गरिएको जानकारी आफ्नो व्यक्तिगत खातामा सार्न Content Transfer एप प्रयोग गर्नुहोस्।</translation>
 <translation id="1340378040547539434">पेजमा जुम आउट गर्नुहोस्</translation>
 <translation id="1341651618736211726">ओभरफ्लो</translation>
 <translation id="1341926407152459446">अडियो इनपुट र आउटपुटका लागि "<ph name="DEVICE_NAME" />" प्रयोग गर्नुहोस्</translation>
@@ -242,6 +243,7 @@
 <translation id="17722141032474077">हिसाबहरू</translation>
 <translation id="1774796056689732716">पात्रो, <ph name="CURRENT_MONTH_YEAR" />, हाल चयन गरिएको मिति: <ph name="DATE" />।</translation>
 <translation id="178347895271755507">आफ्नो फोनमा भएका हालसालैका फोटो, मिडिया तथा सूचनाहरू हेर्ने सुविधा सेटअप गर्नुहोस्</translation>
+<translation id="1786487376942610288">Picture-in-picture विन्डोको अधिकतम वा हालको आकारका बिचमा अदलबदल गर्नुहोस्</translation>
 <translation id="1787955149152357925">अफ छ</translation>
 <translation id="1796561540704213354">तपाईंले हेर्नुभएका पेज र हाल खोलिएका पेजलगायतका वेबसाइटहरू</translation>
 <translation id="179842970735685253">Google का सेवाका सर्तहरू</translation>
@@ -337,6 +339,9 @@
 <translation id="219905428774326614">लन्चर, सबै एपहरू</translation>
 <translation id="2201071101391734388">हालसालैका <ph name="TOTAL_COUNT" /> वटा फोटोमध्ये <ph name="INDEX" /> औँ फोटो।</translation>
 <translation id="2201687081523799384">Google Tasks कोल्याप्स गर्नुहोस्</translation>
+<translation id="2206960886090042977">माउस कनेक्ट गरिएकाले यो अन्तर्निर्मित टचप्याड अफ गरिएको छ। यो परिवर्तनको पुष्टि गर्न माउस वा किबोर्ड प्रयोग गर्नुहोस्।
+
+अन्यथा यो अन्तर्निर्मित टचप्याड ३० सेकेन्डमा फेरि अन गरिने छ।</translation>
 <translation id="2208323208084708176">एकीकृत डेस्कटप मोड</translation>
 <translation id="2220572644011485463">PIN वा पासवर्ड</translation>
 <translation id="2222841058024245321">डेस्क ७</translation>
@@ -1907,6 +1912,9 @@
 डिभाइस सट डाउन गर्न डिभाइसमा रहेको पावर बटन फेरि थिचिराख्नुहोस्।</translation>
 <translation id="7523420897035067483">फोकस मोड अन हुँदा Do Not Disturb अन गर्नुहोस्</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">यो अन्तर्निर्मित टचप्याड अफ गरिएको छ। यो परिवर्तनको पुष्टि गर्न आफ्नो किबोर्ड वा अर्को पोइन्टर डिभाइस प्रयोग गर्नुहोस्।
+
+अन्यथा यो अन्तर्निर्मित टचप्याड ३० सेकेन्डमा फेरि अन गरिने छ।</translation>
 <translation id="7525067979554623046">सिर्जना गर्नुहोस्</translation>
 <translation id="7526573455193969409">नेटवर्कको अनुगमन गरिने सम्भावना छ</translation>
 <translation id="7536035074519304529">IP एड्रेस: <ph name="ADDRESS" /></translation>
@@ -2294,6 +2302,7 @@
 <translation id="8858369206579825206">गोपनीयतासम्बन्धी सेटिङ</translation>
 <translation id="8860366331836346216">eSIM हाल्नुहोस्</translation>
 <translation id="8870509716567206129">एपले विभाजित-स्क्रिनलाई समर्थन गर्दैन।</translation>
+<translation id="8873203135446552888">तपाईं यो अन्तर्निर्मित टचप्याड अफ गर्न चाहनुहुन्छ भन्ने कुरा पुष्टि गर्नुहोस्</translation>
 <translation id="8874184842967597500">जडित छैन</translation>
 <translation id="8875021410787719674">फेदको दायाँ कुना, लन्चर, एड्रेस बार, बुकमार्क बार, खुला रहेको वेबसाइट र डाउनलोडमध्ये एउटा वस्तुबाट अर्को वस्तुमा जानुहोस्</translation>
 <translation id="8876148469852588625"><ph name="EVENT_TOTAL_COUNT" /> मध्ये <ph name="EVENT_POSITION" /> औँ कार्यक्रम</translation>

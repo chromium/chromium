@@ -3561,19 +3561,6 @@ Wenn <ph name="PRODUCT_NAME" /> nicht ordnungsgemäß beendet wird, z. B. beim 
 <translation id="3701121231485832347">Legt die Einstellungen für mit <ph name="MS_AD_NAME" /> verwaltete <ph name="PRODUCT_OS_NAME" />-Geräte fest.</translation>
 <translation id="3702518095257671450">Remote-Attestierung</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> – Das einzeilige Feld ist veraltet und wird in Zukunft entfernt. Bitte nutze das mehrzeilige Textfeld unten.</translation>
-<translation id="3705648857103435170">Mit dieser Richtlinie wird die App zur Umstellung verwalteter Nutzer aktiviert. Mit der App zur Umstellung können Nutzer ihre Daten von ihrem verwalteten Konto in ein Privatnutzerkonto übertragen.
-
-    Wenn „<ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE" />“ auf „<ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE_TRUE" />“ festgelegt ist, wird die App zur Umstellung am Start- und Enddatum sowie zwischen diesen beiden Tagen gemäß Ortszeit angezeigt.
-
-    Wenn „<ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE" />“ auf „<ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE_FALSE" />“ festgelegt oder nicht konfiguriert ist, wird die App nicht angezeigt.
-
-    Wenn „<ph name="GRADUATION_ENABLEMENT_STATUS_START_DATE_VALUE" />“ nicht konfiguriert ist, wird die App bis zum Enddatum angezeigt.
-
-    Wenn „<ph name="GRADUATION_ENABLEMENT_STATUS_END_DATE_VALUE" />“ nicht konfiguriert ist, wird die App ab dem Startdatum dauerhaft angezeigt.
-
-    Wenn weder „<ph name="GRADUATION_ENABLEMENT_STATUS_START_DATE_VALUE" />“ noch „<ph name="GRADUATION_ENABLEMENT_STATUS_END_DATE_VALUE" />“ konfiguriert sind, wird die App dauerhaft angezeigt. Bei Ungültigkeit des Start- und Enddatums wird die App zur Umstellung nicht angezeigt. Dies gilt auch, wenn die Datumsangaben nicht existieren oder das Enddatum vor dem Startdatum liegt.
-
-    Die Datenübertragung mit Datenexport muss ebenfalls aktiviert sein, damit die App zur Umstellung richtig funktioniert. Weitere Informationen findest du unter https://support.google.com/a/answer/6364687.</translation>
 <translation id="3711561721191203926">Wenn diese Richtlinie aktiviert ist und aufgrund fehlgeschlagener <ph name="PRIVATE_NETWORK_ACCESS" />-Prüfungen in <ph name="DEV_TOOLS_NAME" /> eine Warnung angezeigt werden sollte, wird stattdessen die Hauptanfrage blockiert.
 
 Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, werden keine <ph name="PRIVATE_NETWORK_ACCESS" />-Warnungen erzwungen und Anfragen nicht blockiert.
@@ -4288,17 +4275,6 @@ Mit dieser Richtlinie wurde das automatische Upgrade für gemischte Inhalte unte
 
       Wenn die Richtlinie nicht konfiguriert ist, beträgt die Häufigkeit standardmäßig 10 Minuten.</translation>
 <translation id="4290231183305601970">Text, der dem Nutzer im Chrome Webstore angezeigt wird, wenn die Installation blockiert ist.</translation>
-<translation id="4291413477651927481">Bei diesen Funktionen in den Entwicklertools von <ph name="PRODUCT_NAME" /> werden Modelle basierend auf generativer KI eingesetzt, um zusätzliche Debugging-Informationen bereitzustellen. Zur Verwendung dieser Funktionen muss <ph name="PRODUCT_NAME" /> Daten wie Fehlermeldungen, Stacktraces, Code-Snippets und Netzwerkanfragen erheben und an einen Google-Server senden, auf dem ein Modell basierend auf generativer KI ausgeführt wird. Antworttext oder Authentifizierungs- und Cookie-Header in Netzwerkanfragen sind nicht in den Daten enthalten, die an den Server gesendet werden.
-
-„0“ = Die Funktion wird für Nutzer aktiviert und es werden relevante Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben und Quellmaterialien sein. Die Funktion wird möglicherweise manuell überprüft. Dies dient dann ausschließlich dazu, KI‑Modelle zu verbessern. „0“ ist der Standardwert, sofern unten nicht anders angegeben.
-
-„1“ = Die Funktion wird für Nutzer aktiviert, aber es werden keine Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, und für Konten einer Bildungseinrichtung, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
-
-„2“ = Die Funktion wird deaktiviert.
-
-Zu den auf generativer KI basierenden Funktionen der Entwicklertools gehören folgende:
-
-– Console Insights: erklärt Konsolenmeldungen und bietet Vorschläge zum Beheben von Konsolenfehlern.</translation>
 <translation id="4293187705196369087">Ermöglicht die Aktivierung oder Deaktivierung einer Benachrichtigung, wenn nur noch wenig Speicherplatz verfügbar ist. Dies gilt für alle Nutzer auf diesem Gerät.
 
       Ist diese Richtlinie aktiviert, erscheint eine Benachrichtigung, wenn nur noch wenig Speicherplatz verfügbar ist.
@@ -5137,6 +5113,55 @@ Diese Einstellung steuert die Darstellung von Werbeinhalten, einschließlich Beg
       Wenn diese Richtlinie auf „true“ gesetzt ist, wird erzwungen, dass Systeminformationen angezeigt werden.
       Ist sie auf „false“ gesetzt, wird erzwungen, dass Systeminformationen ausgeblendet werden.
       Wenn die Richtlinie nicht konfiguriert ist, gilt das Standardverhalten: Systeminformationen werden für Canary/Entwicklerversion angezeigt. Nutzer können die Sichtbarkeit durch bestimmte Vorgänge umschalten (z. B. Alt + V).</translation>
+<translation id="4946124666877421935">Wenn die Richtlinie konfiguriert ist, wird eine Liste von Web-Apps festgelegt, die automatisch – also ohne Interaktion des Nutzers – installiert werden und vom Nutzer weder deinstalliert noch deaktiviert werden können.
+
+      Jedes Listenelement der Richtlinie ist ein Objekt, das aus der erforderlichen Komponente
+      „<ph name="URL_LABEL" />“ (der URL der Web-App, die installiert werden soll)
+
+      und sechs optionalen Komponenten besteht:
+      – „<ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />“
+      (legt fest, wie die Web-App geöffnet wird – standardmäßig auf einem neuen Tab)
+
+      – „<ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />“
+      (auf „True“ setzen, wenn du Desktopverknüpfungen für <ph name="LINUX_OS_NAME" /> und
+      <ph name="MS_WIN_NAME" /> erstellen möchtest)
+
+      „<ph name="FALLBACK_APP_NAME_LABEL" />“
+      (Ab <ph name="PRODUCT_NAME" /> Version 90 –
+      ermöglicht, den App-Namen zu überschreiben, wenn es keine
+      progressive Web-App (PWA) ist oder es eine temporär installierte PWA ist,
+      für die vor Abschluss der Installation
+      eine Authentifizierung erforderlich ist. Wenn sowohl
+      „<ph name="CUSTOM_NAME_LABEL" />“ als auch
+      „<ph name="FALLBACK_APP_NAME_LABEL" />“ angegeben sind,
+      wird Letzteres ignoriert.)
+
+      – „<ph name="OVERRIDE_APP_NAME_LABEL" />“
+      (Ab <ph name="PRODUCT_OS_NAME" />
+      Version 99 und Version 112 unter allen anderen Desktop-Betriebssystemen – ermöglicht,
+      den App-Namen für alle Web-Apps und PWAs dauerhaft zu überschreiben.
+
+      – „<ph name="CUSTOM_ICON_LABEL" />“
+      (Ab <ph name="PRODUCT_OS_NAME" />
+      Version 99 und Version 112 unter allen anderen Desktop-Betriebssystemen – ermöglicht,
+      das App-Symbol installierter Apps zu überschreiben. Die
+      Symbole müssen quadratisch und maximal 1 MB groß sein und in einem der folgenden
+      Formate vorliegen: JPEG, PNG, GIF, WEBP, ICO.
+      Der Hashwert muss der SHA256-Hash der Symboldatei sein. Die URL „<ph name="URL_LABEL" />“ 
+      sollte ohne Authentifizierung zugänglich sein, damit das Symbol bei der
+      App-Installation verwendet werden kann.
+
+      – „<ph name="INSTALL_AS_SHORTCUT_LABEL" />“
+      (Ab <ph name="PRODUCT_NAME" />
+      Version 107.) Bei Aktivierung wird die jeweilige URL „<ph name="URL_LABEL" />“
+      als Verknüpfung – wie bei Verwendung der Option „Verknüpfung erstellen…“ –
+      auf dem GUI des Desktop-Browsers installiert.
+      Hinweis: Wenn sie als Verknüpfung installiert wird, wird sie nicht aktualisiert, wenn sich das
+      Manifest in „<ph name="URL_LABEL" />“ ändert.
+      Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, wird die Web-App bei der jeweiligen URL
+      („<ph name="URL_LABEL" />“) normal installiert.
+
+      In „<ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" />“ wird beschrieben, wie du Apps an die <ph name="PRODUCT_OS_NAME" />-Ablage anpinnen kannst.</translation>
 <translation id="494613465159630803">Cast Receiver</translation>
 <translation id="494924690085329212">Nach Nutzerabmeldung neu starten, wenn Android gestartet wurde.</translation>
 <translation id="4950447493143157880">Integrierten DNS-Client nie verwenden</translation>
@@ -10778,7 +10803,6 @@ Standardwert ist RollbackDisabled.</translation>
 
       Wenn die Richtlinie auf „true“ gesetzt oder nicht konfiguriert ist, können sich alle Nutzer anmelden.</translation>
 <translation id="966425658642788645">Standardverhalten anwenden</translation>
-<translation id="970144760302377175">Konfigurieren, wann das <ph name="PRODUCT_OS_NAME" />-Umstellungstool verfügbar ist</translation>
 <translation id="971677226939413180">Macht die Option „Als Bild drucken“ nicht zur Auswahl durch den Nutzer verfügbar.</translation>
 <translation id="974349541138387272">Die URI-Vorlage des gewünschten DoH-Resolvers (DNS over HTTPS) angeben</translation>
 <translation id="978658824596356870">24-Stunden-Format</translation>

@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">ลดความสว่างของหน้าจอ</translation>
 <translation id="2086091080968010660">การเปลี่ยนแปลงตามเวลาอาจไม่ถูกต้อง เปิดการเข้าถึงตำแหน่งของระบบในการตั้งค่า</translation>
 <translation id="2102231663024125441">การแก้ไขข้อความ</translation>
-<translation id="2102648867808308635">ช่วยฉันอ่านหน้านี้</translation>
 <translation id="2105810540595158374">อุปกรณ์เป็นอุปกรณ์ควบคุมเกม</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" /> เวอร์ชัน <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">ปัจจุบันมีให้บริการเป็นภาษาอังกฤษ (สหรัฐอเมริกา) เท่านั้น</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">ดูแอปทั้งหมด</translation>
 <translation id="3510890413042482857">ส่ง<ph name="BEGIN_LINK1" />ข้อมูลการติดตามประสิทธิภาพ<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">การอัปเดต Chrome OS</translation>
-<translation id="3522508178835057262">ขณะนี้ระบบยังไม่รองรับข้อความถอดเสียงที่มีจำนวนคำมากกว่า <ph name="MAX_WORD_LENGTH" /> คำ</translation>
 <translation id="3527036260304016759">ไม่สำเร็จ - ข้อผิดพลาดที่ไม่รู้จัก</translation>
 <translation id="353214771040290298">เสร็จสิ้นการแก้ไข</translation>
 <translation id="3532980081107202182">เหลือเวลาอีกประมาณ <ph name="MIN_REMAINING" /> นาที</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">ธีมสว่าง</translation>
 <translation id="4813136279048157860">รูปภาพของฉัน</translation>
 <translation id="4813345808229079766">การเชื่อมต่อ</translation>
-<translation id="4824527342590024245">ขณะนี้ระบบยังไม่รองรับข้อความถอดเสียงที่มีจำนวนคำน้อยกว่า <ph name="MIN_WORD_LENGTH" /> คำ</translation>
 <translation id="4830894019733815633">แคนยอน</translation>
 <translation id="4832079907277790330">เลือกโฟลเดอร์ในแอป Files...</translation>
 <translation id="4835901797422965222">ไม่มีเครือข่ายที่ใช้งานอยู่</translation>
@@ -1098,7 +1095,7 @@
 <translation id="6447630859861661624">ไปที่การตั้งค่าบัญชี</translation>
 <translation id="6462978824459367242">เปิดใช้ปุ่ม "เพิ่ม APN" แล้ว</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{สแกนหน้าอีกครั้งไหม}=1{สแกนหน้าที่ {PAGE_NUMBER} อีกครั้งไหม}other{สแกนหน้าที่ {PAGE_NUMBER} อีกครั้งไหม}}</translation>
-<translation id="6468146470109254228">พรอมต์และเอาต์พุตล่าสุด 3 รายการ คุณเข้าถึงได้เฉพาะขณะที่ใช้วอลล์เปเปอร์และสไตล์</translation>
+<translation id="6468146470109254228">พรอมต์และเอาต์พุต 3 รายการล่าสุด คุณเข้าถึงได้เฉพาะขณะที่ใช้วอลเปเปอร์และสไตล์</translation>
 <translation id="6472207088655375767">OTP</translation>
 <translation id="6472979596862005515">เรือ</translation>
 <translation id="64778964625672495">แดงเข้ม</translation>
@@ -1397,6 +1394,7 @@
 <translation id="7856267634822906833">หน้าจอสัมผัสบลูทูธ</translation>
 <translation id="7859006200041800233">ดอกกระบองเพชร</translation>
 <translation id="7869143217755017858">ปิดใช้โหมดมืด</translation>
+<translation id="7878972877380405573">สรุปด้วยฟีเจอร์ช่วยฉันอ่าน</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">ประเภทผู้ให้บริการ</translation>
 <translation id="7882501334836096755">คีย์สาธารณะ</translation>

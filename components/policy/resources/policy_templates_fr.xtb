@@ -3558,19 +3558,6 @@ Si <ph name="PRODUCT_NAME" /> ne se ferme pas correctement (par exemple, si le n
 <translation id="3701121231485832347">Contrôle les paramètres propres aux appareils <ph name="PRODUCT_OS_NAME" /> gérés par <ph name="MS_AD_NAME" />.</translation>
 <translation id="3702518095257671450">Attestation à distance</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (Le champ constitué d'une seule ligne est abandonné et va être supprimé prochainement. Utilisez à la place la zone de texte à plusieurs lignes ci-dessous.)</translation>
-<translation id="3705648857103435170">Cette règle active l'appli Graduation pour les utilisateurs gérés. Cette appli aide les utilisateurs à transférer leurs données depuis leur compte géré vers un compte personnel.
-
-    Si <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> est défini sur <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE_TRUE" />, l'appli Graduation est affichée à la date de début et entre les dates de début et de fin en fonction de l'heure locale.
-
-    Si <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> est défini sur <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE_FALSE" /> ou n'est pas défini, l'appli n'est pas affichée.
-
-    Si <ph name="GRADUATION_ENABLEMENT_STATUS_START_DATE_VALUE" /> n'est pas défini, l'appli est affichée jusqu'à la date de fin.
-
-    Si <ph name="GRADUATION_ENABLEMENT_STATUS_END_DATE_VALUE" /> n'est pas défini, l'appli est affichée indéfiniment à partir de la date de début.
-
-    Si <ph name="GRADUATION_ENABLEMENT_STATUS_START_DATE_VALUE" /> et <ph name="GRADUATION_ENABLEMENT_STATUS_END_DATE_VALUE" /> ne sont pas définis, l'appli est affichée indéfiniment. Si les dates de début et de fin ne sont pas valides, l'appli n'est pas affichée. Par exemple, si les dates fournies n'existent pas ou si la date de fin est antérieure à la date de début.
-
-    Le transfert de données avec Takeout doit aussi être activé pour que l'appli fonctionne correctement. Pour en savoir plus, consultez https://support.google.com/a/answer/6364687.</translation>
 <translation id="3711561721191203926">Lorsque cette règle est activée, la requête principale est bloquée chaque fois qu'un avertissement est censé s'afficher dans <ph name="DEV_TOOLS_NAME" /> en raison de l'échec des vérifications <ph name="PRIVATE_NETWORK_ACCESS" />.
 
 Si cette règle est désactivée ou n'est pas configurée, tous les avertissements <ph name="PRIVATE_NETWORK_ACCESS" /> ne sont pas appliqués et les requêtes ne sont pas bloquées.
@@ -4284,17 +4271,6 @@ Cette règle a été utilisée pour désactiver la mise à niveau automatique du
 
       Si la règle n'est pas configurée, la fréquence par défaut (10 minutes) est appliquée.</translation>
 <translation id="4290231183305601970">Texte visible par l'utilisateur sur le Chrome Web Store si l'installation est bloquée.</translation>
-<translation id="4291413477651927481">Ces fonctionnalités des outils de développement de <ph name="PRODUCT_NAME" /> utilisent des modèles d'IA générative pour fournir des informations de débogage supplémentaires. Pour utiliser ces fonctionnalités, <ph name="PRODUCT_NAME" /> doit collecter des données telles que les messages d'erreur, les traces de la pile, les extraits de code et les requêtes réseau, puis les envoyer à un serveur de Google qui exécute un modèle d'IA générative. Le corps de la réponse ou les en-têtes d'authentification et de cookies dans les requêtes réseau ne sont pas inclus dans les données envoyées au serveur.
-
-0 = Activer la fonctionnalité pour les utilisateurs et envoyer des données pertinentes à Google afin d'entraîner ou d'améliorer les modèles d'IA. Selon la fonctionnalité, les données pertinentes peuvent inclure des requêtes, des entrées, des sorties et des documents source. Elles pourront être examinées par des réviseurs dans le seul but d'améliorer les modèles d'IA. 0 est la valeur par défaut, sauf pour les exceptions ci-dessous.
-
-1 = Activer la fonctionnalité pour les utilisateurs, mais ne pas envoyer de données à Google afin d'entraîner ou d'améliorer les modèles d'IA. 1 est la valeur par défaut pour les utilisateurs de la version Enterprise gérés par <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> et pour les comptes Education gérés par <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-2 = Désactiver la fonctionnalité.
-
-Les fonctionnalités d'IA générative des outils de développement incluent les suivantes :
-
-- Console Insights : décrit les messages de la console et propose des suggestions pour corriger les erreurs dans la console.</translation>
 <translation id="4293187705196369087">Cette règle permet d'activer ou de désactiver une notification lorsque l'espace disque est faible. Elle s'applique à l'ensemble des utilisateurs de l'appareil.
 
       Si cette règle est activée, une notification s'affiche lorsque l'espace disque disponible est faible.
@@ -5144,6 +5120,48 @@ Cette règle permet de contrôler la présentation de contenus promotionnels, y 
       Si la règle est définie sur "True", l'affichage des informations système est forcé.
       Si elle est définie sur "False", le masquage des informations système est forcé.
       Si la règle n'est pas configurée, le comportement par défaut (c'est-à-dire l'affichage des informations pour Canary/version en développement) s'applique. Les utilisateurs peuvent activer/désactiver la visibilité en effectuant des opérations spécifiques (par exemple, Alt+V).</translation>
+<translation id="4946124666877421935">Permet de lister les applis Web qui s'installent de manière autonome (sans intervention de l'utilisateur) et de définir quels utilisateurs ne peuvent pas les désinstaller ni les désactiver.
+
+      Chaque élément de la liste de cette règle est un objet constitué d'un membre obligatoire :
+      <ph name="URL_LABEL" /> (qui correspond à l'URL de l'appli Web à installer)
+
+      et de six membres facultatifs :
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
+      (qui indique où s'ouvre l'application Web ; par défaut, elle s'ouvre dans un nouvel onglet)
+
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
+      ("True" si vous voulez créer des raccourcis sur le bureau <ph name="LINUX_OS_NAME" /> et
+      <ph name="MS_WIN_NAME" />).
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" />
+      (Disponible depuis la version 90 de <ph name="PRODUCT_NAME" /> ;
+      permet de remplacer le nom de l'appli,
+      sauf pour les progressive web apps (PWA) –
+      dans le cas d'une PWA avec authentification requise pour l'installation,
+      le nom de l'appli temporaire peut être remplacé. Si les règles
+      <ph name="CUSTOM_NAME_LABEL" /> et
+      <ph name="FALLBACK_APP_NAME_LABEL" /> sont fournies,
+      cette dernière sera ignorée.)
+
+      - <ph name="OVERRIDE_APP_NAME_LABEL" />
+      (Disponible depuis la version 99 de <ph name="PRODUCT_OS_NAME" />
+      et la version 112 sur tous les autres systèmes d'exploitation ; permet de remplacer
+      définitivement le nom d'une appli pour toutes les applis Web et les PWA.)
+
+      - <ph name="CUSTOM_ICON_LABEL" />
+      (Disponible depuis la version 99 de <ph name="PRODUCT_OS_NAME" />
+      et la version 112 sur tous les autres systèmes d'exploitation ; permet de remplacer
+      l'icône des applis installées. Les icônes ne doivent pas dépasser 1 Mo.
+      Elles doivent être carrées et au format jpeg, png, gif, webp ou ico.
+      La valeur de hachage doit être un hachage SHA256 du fichier d'icône. L'<ph name="URL_LABEL" /> doit être accessible sans authentification pour que l'icône puisse être utilisée une fois l'appli installée.)
+
+      - <ph name="INSTALL_AS_SHORTCUT_LABEL" />
+      (Disponible depuis la version 107 de <ph name="PRODUCT_NAME" />). Si cette règle est activée, l'<ph name="URL_LABEL" /> donnée sera installée en tant que raccourci, comme si vous cliquiez sur l'option "Créer un raccourci…"
+      dans l'IUG du navigateur pour ordinateur.
+      Notez que lorsqu'elle est installée en tant que raccourci, elle n'est pas mise à jour si le fichier manifeste dans l'<ph name="URL_LABEL" /> change.
+      Si cette règle est désactivée ou qu'elle n'est pas configurée, l'application Web de l'<ph name="URL_LABEL" /> donnée sera installée normalement.
+
+      Consultez <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> pour épingler des applis à l'étagère <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="494613465159630803">Récepteur Cast</translation>
 <translation id="494924690085329212">Redémarrer en cas de déconnexion de l'utilisateur si Android est lancé.</translation>
 <translation id="4950447493143157880">Ne jamais utiliser le client DNS intégré</translation>
@@ -10807,7 +10825,6 @@ La valeur par défaut est "RollbackDisabled".</translation>
 
       Si elle est définie sur "True" ou si elle n'est pas configurée, tous les utilisateurs peuvent se connecter.</translation>
 <translation id="966425658642788645">Appliquer le comportement par défaut</translation>
-<translation id="970144760302377175">Configurer quand l'outil Graduation <ph name="PRODUCT_OS_NAME" /> est disponible</translation>
 <translation id="971677226939413180">L'option "Imprimer en tant qu'image" n'est pas proposée à l'utilisateur.</translation>
 <translation id="974349541138387272">Permet de définir le modèle URI du résolveur DNS-over-HTTPS souhaité</translation>
 <translation id="978658824596356870">Format 24 heures</translation>

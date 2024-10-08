@@ -3569,19 +3569,6 @@ Si <ph name="PRODUCT_NAME" /> no se cierra correctamente (por ejemplo, si el nav
 <translation id="3701121231485832347">Controla la configuración específica de los dispositivos con <ph name="PRODUCT_OS_NAME" /> gestionados con <ph name="MS_AD_NAME" />.</translation>
 <translation id="3702518095257671450">Confirmación remota</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" /> (el campo de una línea está obsoleto y desaparecerá en el futuro; a partir de ahora, debes utilizar el campo de varias líneas que aparece más abajo).</translation>
-<translation id="3705648857103435170">Esta política habilita la aplicación Graduation para los usuarios gestionados. La aplicación Graduation ayuda a los usuarios a transferir sus datos de su cuenta gestionada a una cuenta de consumidor.
-
-    Si se asigna el valor <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE_TRUE" /> a <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE" />, la aplicación Graduation se mostrará en las fechas de inicio y finalización, así como entre ellas, según la hora local.
-
-    Si se asigna el valor <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE_FALSE" /> a <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> o no se define, la aplicación no se mostrará.
-
-    Si <ph name="GRADUATION_ENABLEMENT_STATUS_START_DATE_VALUE" /> no se define, la aplicación se mostrará hasta la fecha de finalización.
-
-    Si no se define <ph name="GRADUATION_ENABLEMENT_STATUS_END_DATE_VALUE" />, la aplicación se mostrará indefinidamente a partir de la fecha de inicio.
-
-    Si no se definen <ph name="GRADUATION_ENABLEMENT_STATUS_START_DATE_VALUE" /> ni <ph name="GRADUATION_ENABLEMENT_STATUS_END_DATE_VALUE" />, la aplicación se mostrará de forma indefinida. Si las fechas de inicio y finalización no son válidas, no se mostrará la aplicación Graduation. Incluso si las fechas proporcionadas no existen o la fecha de finalización es anterior a la fecha de inicio.
-
-    La transferencia de datos con Takeout también debe estar inhabilitada para que la aplicación Graduation funcione correctamente. Consulta https://support.google.com/a/answer/6364687 para obtener más información.</translation>
 <translation id="3711561721191203926">Si se habilita esta política, cuando deba mostrarse una advertencia en <ph name="DEV_TOOLS_NAME" /> debido a un fallo en las comprobaciones de <ph name="PRIVATE_NETWORK_ACCESS" />, se bloqueará la solicitud principal.
 
 Si se inhabilita esta política o no se define, no se implementarán obligatoriamente las advertencias de <ph name="PRIVATE_NETWORK_ACCESS" /> ni se bloquearán las solicitudes.
@@ -4298,17 +4285,6 @@ Esta política se usaba para inhabilitar la actualización automática de conten
 
       Si no se establece esta política, se aplicará el intervalo predeterminado de 10 minutos.</translation>
 <translation id="4290231183305601970">Texto que se mostrará al usuario en Chrome Web Store si se bloquea la instalación.</translation>
-<translation id="4291413477651927481">Estas funciones de DevTools de <ph name="PRODUCT_NAME" /> emplean modelos de IA generativa para proporcionar información de depuración adicional. Para usar estas funciones, <ph name="PRODUCT_NAME" /> tiene que recoger datos como mensajes de error, rastreos de la pila, fragmentos de código y solicitudes de red, y enviarlos a un servidor que pertenece a Google y ejecuta un modelo de IA generativa. En los datos enviados al servidor no se incluyen el cuerpo de las respuestas ni los encabezados de autenticación y cookies de las solicitudes de red.
-
-Si se asigna el valor 0 a esta política, se habilitarán estas funciones para los usuarios y se enviarán los datos pertinentes a Google para ayudar a entrenar o mejorar modelos de IA. Según la función, los datos pertinentes pueden ser peticiones, entradas, resultados y materiales originales. Puede que lo revise una persona con el único propósito de mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los casos indicados abajo.
-
-1 = Habilitar la función para los usuarios, pero no enviar datos a Google para entrenar o mejorar modelos de IA. 1 es el valor predeterminado de los usuarios de empresa que se gestionan en <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y de las cuentas de centro educativo que se gestionan en <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
-
-Si se asigna el valor 2 a esta política, se inhabilitarán estas funciones.
-
-Entre las funciones de IA generativa de DevTools se incluyen las siguientes:
-
-- Console Insights: explica los mensajes de la consola y ofrece sugerencias sobre cómo corregir errores de la consola.</translation>
 <translation id="4293187705196369087">Permite habilitar o inhabilitar la notificación de poco espacio en disco. Se aplica a todos los usuarios del dispositivo.
 
       Si se habilita esta política, se mostrará una notificación cuando quede poco espacio en el disco.
@@ -6107,7 +6083,7 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 
       Si no se asigna ningún valor a esta política, la opción predeterminada no estará disponible para los usuarios gestionados por empresas, aunque sí lo estará para aquellos no gestionados por empresas.</translation>
 <translation id="5584132346604748282">Controlar los servicios de ubicación de Google de Android</translation>
-<translation id="5584609869321980122">Iniciar los retrasos de gestión de energía y los límites de duración de sesión después de la actividad inicial del usuario</translation>
+<translation id="5584609869321980122">Iniciar los retrasos de gestión de batería y los límites de duración de sesión después de la actividad inicial del usuario</translation>
 <translation id="5585298198686067735">Si se establece esta política, los dominios indicados podrán acceder a URLs file:// en el lector de PDFs.
 Si se añaden dominios a la política, podrán acceder a URLs file:// en el lector de PDFs.
 Si se quitan dominios de la política, no podrán acceder a URLs file:// en el lector de PDFs.
@@ -6291,9 +6267,9 @@ Esta política afecta a los flujos de autenticación de inicio de sesión y de b
 <translation id="5729308727912841256">Contraseña de Kerberos. El marcador de posición <ph name="PASSWORD_PLACEHOLDER" /> se reemplazará por la contraseña de inicio de sesión.</translation>
 <translation id="573183812760497142">Bloquear la partición del almacenamiento de terceros en estos orígenes</translation>
 <translation id="5732972008943405952">Importar los datos autocompletados del navegador predeterminado en la primera ejecución</translation>
-<translation id="5733040281451845496">Si se habilita esta política, los retrasos de administración de energía y los límites de duración de sesión no comienzan hasta después de la primera actividad del usuario en una sesión.
+<translation id="5733040281451845496">Si se habilita esta política, los retrasos de gestión de batería y los límites de duración de sesión no comienzan hasta después de la primera actividad del usuario en una sesión.
 
-      Si se inhabilita esta política o no se establece, los retrasos de administración de energía y el límite de tiempo comienzan en cuanto empieza la sesión.</translation>
+      Si se inhabilita esta política o no se establece, los retrasos de gestión de batería y el límite de tiempo comienzan en cuanto empieza la sesión.</translation>
 <translation id="5733357908790472408">Usar Chrome Root Store</translation>
 <translation id="5735348887833535655">Controla si las VMs que usan esta configuración tienen acceso a un vTPM. El valor predeterminado es false.</translation>
 <translation id="5735915264686983150">Ocultar y bloquear las funciones inhabilitadas</translation>
@@ -10234,7 +10210,7 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
 
       "http://acme.com/ABC" solo sería coincidencia en IESiteListMode.</translation>
 <translation id="8728854710675158426">Hashes no seguros habilitados en handshakes de TLS</translation>
-<translation id="8734543507835977857">Iniciar los retrasos de gestión de energía y los límites de duración de sesión al comenzar la sesión</translation>
+<translation id="8734543507835977857">Iniciar los retrasos de gestión de batería y los límites de duración de sesión al comenzar la sesión</translation>
 <translation id="8736538322216687231">Aplicar el modo restringido en YouTube como mínimo</translation>
 <translation id="873800217865395140">Intervalo de recogida de telemetría de sitios web en milisegundos.</translation>
 <translation id="8743902569031401303">Permitir encuestas sobre Navegación segura</translation>
@@ -10913,7 +10889,6 @@ El valor predeterminado es RollbackDisabled.</translation>
 
       Si se le asigna el valor True o no se configura, todos los usuarios podrán iniciar sesión.</translation>
 <translation id="966425658642788645">Aplicar comportamiento predeterminado</translation>
-<translation id="970144760302377175">Configurar cuándo estará disponible la herramienta Graduation de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="971677226939413180">Opción Imprimir como imagen no disponible para el usuario.</translation>
 <translation id="974349541138387272">Especifica la plantilla URI de resolución de DNS-over-HTTPS deseada</translation>
 <translation id="978658824596356870">Formato de reloj de 24 horas</translation>

@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Reducir el brillo de la pantalla</translation>
 <translation id="2086091080968010660">Es posible que los cambios basados en el tiempo no sean precisos. Activa el acceso a la ubicación en los ajustes</translation>
 <translation id="2102231663024125441">Edición de texto</translation>
-<translation id="2102648867808308635">Ayúdame a leer esta página</translation>
 <translation id="2105810540595158374">El dispositivo es un mando de juegos.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versión <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">Actualmente solo disponible en inglés (EE. UU.)</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">ver todas las aplicaciones</translation>
 <translation id="3510890413042482857">Enviar <ph name="BEGIN_LINK1" />datos de seguimiento de rendimiento<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Actualiza Chrome OS</translation>
-<translation id="3522508178835057262">De momento, no se admiten transcripciones de más de <ph name="MAX_WORD_LENGTH" /> palabras</translation>
 <translation id="3527036260304016759">No se ha podido imprimir - Error desconocido</translation>
 <translation id="353214771040290298">Finalizar edición</translation>
 <translation id="3532980081107202182">Quedan unos <ph name="MIN_REMAINING" /> minutos</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">Tema claro</translation>
 <translation id="4813136279048157860">Mis imágenes</translation>
 <translation id="4813345808229079766">Conexión</translation>
-<translation id="4824527342590024245">De momento, no se admiten transcripciones de menos de <ph name="MIN_WORD_LENGTH" /> palabras</translation>
 <translation id="4830894019733815633">cañón</translation>
 <translation id="4832079907277790330">Seleccionar carpeta en aplicación Files...</translation>
 <translation id="4835901797422965222">No hay redes activas</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">Similares:</translation>
 <translation id="5130848777448318809">ponis</translation>
 <translation id="5137451382116112100">Pantalla completa</translation>
+<translation id="5140788690559353412">Cuando pierdas el acceso a tu cuenta de centro educativo, dejarás de tener acceso al correo y a los archivos de Google Drive asociados, como Gmail, Documentos y Presentaciones, entre otros.</translation>
 <translation id="5142961317498132443">Autenticación</translation>
 <translation id="5144311987923128508">El botón Confirmar ahora está inhabilitado</translation>
 <translation id="5144887194300568405">Copiar traducción</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) Latencia de HTTP</translation>
 <translation id="6078323886959318429">Acceso directo</translation>
 <translation id="6091080061796993741">amarillo</translation>
+<translation id="6093853427925392522">Asegúrate de usar la aplicación Transferencia de contenido de Google para transferir los datos de tu cuenta de centro educativo a tu cuenta personal antes de que pierdas el acceso.</translation>
 <translation id="6104112872696127344">Se ha cancelado el análisis</translation>
 <translation id="6106186594183574873">Para finalizar, introduce tu contraseña anterior</translation>
 <translation id="6108689792487843350">No se puede acceder a la puerta de enlace</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">Nombre de punto de acceso (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de nombres}other{Servidores de nombres}}</translation>
 <translation id="7135814714616751706">Buscar accesos directos</translation>
+<translation id="7141470099673912333">Transferencia de contenido</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7144878232160441200">Reintentar</translation>
 <translation id="7144954474087165241">pagoda</translation>
@@ -1394,6 +1394,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="7856267634822906833">Pantalla táctil Bluetooth</translation>
 <translation id="7859006200041800233">Una flor de cactus</translation>
 <translation id="7869143217755017858">Inhabilitar modo Oscuro</translation>
+<translation id="7878972877380405573">Resume con Ayúdame a leer</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipo de proveedor</translation>
 <translation id="7882501334836096755">Clave pública</translation>
@@ -1537,6 +1538,7 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="8626489604350149811">Más acciones de <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Morado claro</translation>
 <translation id="8647595191512746911">Transcripción de audio</translation>
+<translation id="8650852232143958317">Llévate tus archivos de Gmail y Google Drive</translation>
 <translation id="8651481478098336970">silenciar volumen</translation>
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655828773034788261">Compartir URL:</translation>

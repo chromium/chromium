@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Display brightness down</translation>
 <translation id="2086091080968010660">Time based changes may not be accurate. Turn on system location access in Settings.</translation>
 <translation id="2102231663024125441">Text editing</translation>
-<translation id="2102648867808308635">Help me read this page</translation>
 <translation id="2105810540595158374">Device is a game controller.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">Currently only available in English (US)</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">view all apps</translation>
 <translation id="3510890413042482857">Send <ph name="BEGIN_LINK1" />performance trace data<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">ChromeOS update</translation>
-<translation id="3522508178835057262">For now, a transcript longer than <ph name="MAX_WORD_LENGTH" /> words is not supported</translation>
 <translation id="3527036260304016759">Failed – Unknown error</translation>
 <translation id="353214771040290298">Finished editing</translation>
 <translation id="3532980081107202182">About <ph name="MIN_REMAINING" /> minutes remaining</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">Light theme</translation>
 <translation id="4813136279048157860">My Images</translation>
 <translation id="4813345808229079766">Connection</translation>
-<translation id="4824527342590024245">For now, a transcript fewer than <ph name="MIN_WORD_LENGTH" /> words is not supported</translation>
 <translation id="4830894019733815633">canyon</translation>
 <translation id="4832079907277790330">Select folder in the Files app…</translation>
 <translation id="4835901797422965222">No active networks</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">Similar:</translation>
 <translation id="5130848777448318809">ponies</translation>
 <translation id="5137451382116112100">Full</translation>
+<translation id="5140788690559353412">When you lose access to your school account, you will no longer have access to the associated email and Google Drive files such as Gmail, Docs, Slides and more.</translation>
 <translation id="5142961317498132443">Authentication</translation>
 <translation id="5144311987923128508">Confirm button is now disabled</translation>
 <translation id="5144887194300568405">Copy translation</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) HTTP Latency</translation>
 <translation id="6078323886959318429">Add shortcut</translation>
 <translation id="6091080061796993741">yellow</translation>
+<translation id="6093853427925392522">Make sure that you use the Content Transfer app by Google to move your school account data to your personal account before you lose access.</translation>
 <translation id="6104112872696127344">Scanning has been cancelled</translation>
 <translation id="6106186594183574873">To finish, enter your old password</translation>
 <translation id="6108689792487843350">Gateway is unreachable</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">Access Point Name (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Name server}other{Name servers}}</translation>
 <translation id="7135814714616751706">Search shortcuts</translation>
+<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">Connecting</translation>
 <translation id="7144878232160441200">Retry</translation>
 <translation id="7144954474087165241">pagoda</translation>
@@ -1394,6 +1394,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="7856267634822906833">Bluetooth touchscreen</translation>
 <translation id="7859006200041800233">cactus flower</translation>
 <translation id="7869143217755017858">Disable dark mode</translation>
+<translation id="7878972877380405573">Summarise with Help me read</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Provider type</translation>
 <translation id="7882501334836096755">Public key</translation>
@@ -1537,6 +1538,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8626489604350149811">More actions for <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Light purple</translation>
 <translation id="8647595191512746911">Audio transcription</translation>
+<translation id="8650852232143958317">Take your Gmail and Google Drive files with you</translation>
 <translation id="8651481478098336970">volume mute</translation>
 <translation id="8655295600908251630">Channel</translation>
 <translation id="8655828773034788261">Share URL:</translation>

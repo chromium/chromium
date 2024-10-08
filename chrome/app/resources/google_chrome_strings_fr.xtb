@@ -73,6 +73,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1919130412786645364">Autoriser la connexion à Chrome</translation>
 <translation id="1953553007165777902">Téléchargement… <ph name="MINUTE" /> minute(s) restante(s)</translation>
 <translation id="1982647487457769627">Chrome fonctionne sur toutes les plates-formes pour vous offrir une expérience familière, quel que soit l'appareil</translation>
+<translation id="19955905961160405">Rechercher le contenu à l'écran avec Google Lens</translation>
 <translation id="2001586581944147178">Faites en sorte qu'il soit plus difficile pour les personnes ayant accès à votre trafic Internet de voir quels sites vous consultez. Chrome utilise une connexion sécurisée pour rechercher l'adresse IP d'un site dans le système de noms de domaine (DNS).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Cette extension n'est plus prise en charge. Chrome vous recommande de la supprimer.}one{Cette extension n'est plus prise en charge. Chrome vous recommande de la supprimer.}other{Ces extensions ne sont plus prises en charge. Chrome vous recommande de les supprimer.}}</translation>
 <translation id="2018528049276128029">Chaque profil possède ses propres informations Chrome, comme des favoris, un historique, des mots de passe, etc.</translation>
@@ -90,6 +91,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="2126108037660393668">Échec de validation du fichier téléchargé.</translation>
 <translation id="2128411189117340671">Gérer les profils Chrome</translation>
 <translation id="2131230230468101642">Pour protéger votre confidentialité, nous supprimons automatiquement vos centres d'intérêt s'ils datent de plus de quatre semaines. Au fil de votre navigation, un centre d'intérêt peut réapparaître dans la liste. Vous pouvez aussi supprimer des centres d'intérêt si vous ne souhaitez pas que Chrome les prenne en compte.</translation>
+<translation id="2137162749895930932">Fermer l'écran de traduction</translation>
 <translation id="2139300032719313227">Redémarrer Chrome OS</translation>
 <translation id="2151406531797534936">Veuillez redémarrer Chrome maintenant</translation>
 <translation id="2163089732491971196">Pour utiliser et enregistrer des données Chrome dans votre compte Google, saisissez votre phrase secrète</translation>
@@ -173,6 +175,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3019382870990049182">Relancer et mettre à jour &amp;ChromeOS Flex</translation>
 <translation id="3037838751736561277">Google Chrome est exécuté en mode arrière-plan.</translation>
 <translation id="3038232873781883849">En attente d'installation...</translation>
+<translation id="3045032126857188731">Langue de traduction : <ph name="LANGUAGE" /></translation>
 <translation id="3059710691562604940">La navigation sécurisée étant désactivée, Chrome vous recommande de l'activer.</translation>
 <translation id="306179102415443347">Utilisez le raccourci pour accéder rapidement au Gestionnaire de mots de passe de Google. Vous pouvez déplacer ce raccourci vers le Lanceur d'applications ou l'écran d'accueil de votre ordinateur.</translation>
 <translation id="3065168410429928842">Onglet Chrome</translation>
@@ -191,7 +194,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3234642784688107085">Essayez les nouvelles fonctionnalités d'IA pour créer des thèmes, obtenir de l'aide pour écrire et rester organisé</translation>
 <translation id="3245429137663807393">Si vous partagez aussi les rapports d'utilisation Chrome, ceux-ci incluent les URL que vous consultez</translation>
 <translation id="3261565993776444564">Essayez de personnaliser votre navigateur avec une nouvelle couleur</translation>
-<translation id="3269209112443570745">Nouveau ! Recherchez facilement le contenu de l'écran</translation>
 <translation id="3282568296779691940">Connectez-vous à Chrome</translation>
 <translation id="3286538390144397061">Redémarrer maintenant</translation>
 <translation id="3292333338048274092">Vous devrez ensuite redémarrer Chrome.</translation>
@@ -241,12 +243,14 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="386202838227397562">Veuillez fermer toutes les fenêtres de Google Chrome et réessayer.</translation>
 <translation id="3865754807470779944">La version <ph name="PRODUCT_VERSION" /> de Chrome est installée</translation>
 <translation id="3873044882194371212">Ouvrir le lien dans la fenêtre de navi&amp;gation privée Chrome</translation>
+<translation id="3885770153807205175">Outil de sélection de langue</translation>
 <translation id="3889417619312448367">Désinstaller Google Chrome</translation>
 <translation id="3941890832296813527">Erreur d'installation : le nom de fichier du programme d'installation est incorrect ou non compatible.</translation>
 <translation id="3973161977468201858">Google Chrome souhaite supprimer les données du Gestionnaire de mots de passe de Google. Saisissez votre mot de passe Windows pour autoriser l'opération.</translation>
 <translation id="398236277091248993">Chrome reste rapide grâce à des fonctionnalités qui améliorent les performances</translation>
 <translation id="3999683152997576765">Vous pouvez voir et retirer les centres d'intérêt que les sites utilisent pour vous montrer des annonces. Chrome estime vos centres d'intérêt en fonction de votre historique de navigation récent.</translation>
 <translation id="4022972681110646219">Traduire l'écran</translation>
+<translation id="4023601594785368013">Langue d'origine : <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Redémarrez Chrome OS pour appliquer la mise à jour.</translation>
 <translation id="4050175100176540509">La dernière version propose d'importantes améliorations de la sécurité ainsi que de nouvelles fonctionnalités.</translation>
 <translation id="4053720452172726777">Personnaliser et contrôler Google Chrome</translation>
@@ -522,6 +526,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="7514258452813684157">Service de mise à jour Google</translation>
 <translation id="7515191208480168435">Vous pouvez épingler Google Lens pour y accéder facilement</translation>
 <translation id="7535429826459677826">Google Chrome pour les développeurs</translation>
+<translation id="756809126120519699">Données de Chrome effacées</translation>
 <translation id="7572537927358445944">Désactivée • Chrome ne peut pas vérifier d'où vient cette extension</translation>
 <translation id="7583399374488819119">Programme d'installation de <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
@@ -539,6 +544,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="7668816516367091728">Effectuez des tâches directement depuis la barre d'adresse, comme traduire, calculer et plus</translation>
 <translation id="7670287553302121848">Le compte Chrome nécessite une réauthentification</translation>
 <translation id="769538538642757151">Chrome vous avertira si quelque chose doit être examiné</translation>
+<translation id="77283119132245232">Fournit des services de traçage système pour <ph name="BROWSER_NAME" />. Si ce service est désactivé, les traces de performances créées par le navigateur n'incluent pas les événements système tels que les changements de contexte et les threads prêts.</translation>
 <translation id="7747138024166251722">Le programme d'installation n'a pas pu créer de répertoire temporaire. Vérifiez que le disque a suffisamment d'espace libre et que vous disposez des autorisations nécessaires pour installer le logiciel.</translation>
 <translation id="7761834446675418963">Cliquez sur votre nom pour ouvrir Chrome et commencer à naviguer.</translation>
 <translation id="7763983146198734674">Enregistrez vos mots de passe et accédez-y où que vous soyez</translation>

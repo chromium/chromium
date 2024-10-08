@@ -114,6 +114,7 @@
 <translation id="132346741904777634">કૅમેરાને ઉપરના ડાબા ખૂણામાં સ્નેપ કર્યો. સિસ્ટમની સપાટીને ઓવરલેપ કરે છે.</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> અને તેની તમામ વિન્ડો બંધ કરો</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> કનેક્ટ થયું</translation>
+<translation id="1337081488893096731">તમારા સ્કૂલ એકાઉન્ટના ડેટાને તમારા વ્યક્તિગત એકાઉન્ટમાં ખસેડવા માટે, Content Transfer ઍપનો ઉપયોગ કરો</translation>
 <translation id="1340378040547539434">પેજને નાનું કરો</translation>
 <translation id="1341651618736211726">ઓવરફ્લો</translation>
 <translation id="1341926407152459446">ઑડિયો ઇનપુટ અને આઉટપુટ માટે "<ph name="DEVICE_NAME" />"નો ઉપયોગ કરો</translation>
@@ -242,6 +243,7 @@
 <translation id="17722141032474077">ગણતરીઓ</translation>
 <translation id="1774796056689732716">કૅલેન્ડર, <ph name="CURRENT_MONTH_YEAR" />, હાલમાં <ph name="DATE" /> પસંદ કરેલી છે.</translation>
 <translation id="178347895271755507">તમારા ફોનના તાજેતરના ફોટા, મીડિયા અને નોટિફિકેશન જોવાની સુવિધાનું સેટઅપ કરવાની પ્રક્રિયા કરો</translation>
+<translation id="1786487376942610288">ચિત્ર-માં-ચિત્ર વિન્ડોના મહત્તમ અથવા વર્તમાન કદ વચ્ચે સ્વિચ કરો</translation>
 <translation id="1787955149152357925">બંધ છે</translation>
 <translation id="1796561540704213354">વેબસાઇટ જેમાં તમે મુલાકાત લીધેલા પેજ અને ખોલેલા પેજ શામેલ છે</translation>
 <translation id="179842970735685253">Googleની સેવાની શરતો</translation>
@@ -337,6 +339,9 @@
 <translation id="219905428774326614">લૉન્ચર, બધી ઍપ</translation>
 <translation id="2201071101391734388">તાજેતરના <ph name="TOTAL_COUNT" /> ફોટામાંથી <ph name="INDEX" /> નંબરનો ફોટો.</translation>
 <translation id="2201687081523799384">Google Tasksને નાનું કરો</translation>
+<translation id="2206960886090042977">કોઈ માઉસ કનેક્ટેડ હોવાને કારણે બિલ્ટ-ઇન ટચપૅડ બંધ કરવામાં આવ્યું છે. ફેરફાર કરવા માટે, માઉસ કે કીબોર્ડનો ઉપયોગ કરો.
+
+અન્યથા, 30 સેકન્ડમાં બિલ્ટ-ઇન ટચપૅડ ફરીથી ચાલુ કરવામાં આવશે.</translation>
 <translation id="2208323208084708176">એકીકૃત ડેસ્કટૉપ મોડ</translation>
 <translation id="2220572644011485463">PIN અથવા પાસવર્ડ</translation>
 <translation id="2222841058024245321">ડેસ્ક 7</translation>
@@ -1907,6 +1912,9 @@
 ડિવાઇસ શટ ડાઉન કરવા માટે, ફરીથી ડિવાઇસ પરનું પાવર બટન દબાવી રાખો.</translation>
 <translation id="7523420897035067483">ફોકસમાં હો ત્યારે ખલેલ પાડશો નહીં સુવિધા ચાલુ કરો</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">બિલ્ટ-ઇન ટચપૅડ બંધ કરવામાં આવ્યું છે. ફેરફાર કન્ફર્મ કરવા માટે, તમારા કીબોર્ડ કે કોઈ અન્ય પૉઇન્ટર ડિવાઇસનો ઉપયોગ કરો.
+
+અન્યથા, 30 સેકન્ડમાં બિલ્ટ-ઇન ટચપૅડ ફરીથી ચાલુ કરવામાં આવશે.</translation>
 <translation id="7525067979554623046">બનાવો</translation>
 <translation id="7526573455193969409">નેટવર્કને મોનિટર કરવામાં આવી શકે છે</translation>
 <translation id="7536035074519304529">IP સરનામું: <ph name="ADDRESS" /></translation>
@@ -2294,6 +2302,7 @@
 <translation id="8858369206579825206">પ્રાઇવસીને લગતાં નિયંત્રણ</translation>
 <translation id="8860366331836346216">ઇ-સિમ ઉમેરો</translation>
 <translation id="8870509716567206129">ઍપ સ્ક્રીન-વિભાજનને સહાય કરતી નથી.</translation>
+<translation id="8873203135446552888">તમે બિલ્ટ-ઇન ટચપૅડ બંધ કરવા માગો છો, તે કન્ફર્મ કરો</translation>
 <translation id="8874184842967597500">કનેક્ટ નથી</translation>
 <translation id="8875021410787719674">સૌથી નીચેના જમણા ખૂણા, લૉન્ચર, ઍડ્રેસ બાર, બુકમાર્ક બાર, ખુલ્લી હોય તે વેબસાઇટ અને ડાઉનલોડ વચ્ચે ખસેડો</translation>
 <translation id="8876148469852588625"><ph name="EVENT_TOTAL_COUNT" />માંથી ઇવેન્ટ <ph name="EVENT_POSITION" /></translation>

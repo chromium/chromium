@@ -49,6 +49,7 @@
 <translation id="1979673356880165407">Muutke tekst ja pildid kõigil külastatavatel saitidel suuremaks või väiksemaks</translation>
 <translation id="1984937141057606926">Lubatud, välja arvatud kolmanda osapoole küpsised</translation>
 <translation id="1985247341569771101">Kui see on sisse lülitatud, saavad saidid kasutada teie seadme liikumisandureid. Kui see on välja lülitatud, ei saa saidid liikumisandureid kasutada.</translation>
+<translation id="1985716030964443178">See lähtestab kõik teie loendis olevaid saidid vaikesuumitasemele.</translation>
 <translation id="1989112275319619282">Sirvi</translation>
 <translation id="1994173015038366702">Saidi URL</translation>
 <translation id="2004697686368036666">Funktsioonid ei pruugi mõnel saidil toimida</translation>
@@ -103,10 +104,13 @@
 <translation id="2653659639078652383">Esita</translation>
 <translation id="2677748264148917807">Lahku</translation>
 <translation id="2678468611080193228">Proovige kolmanda osapoole küpsisefailid ajutiselt lubada. See vähendab kaitset, kuid saidi funktsiooni töötavad suurema tõenäosusega.</translation>
+<translation id="2682367912565197520">Salvestatud suumitaseme kustutamine</translation>
 <translation id="2683434792633810741">Kas kustutada ja lähtestada?</translation>
 <translation id="2713106313042589954">Lülita kaamera välja</translation>
 <translation id="2717722538473713889">E-posti aadressid</translation>
+<translation id="2726059656860238749">Chrome’i käivitamisel on kursor omnikastikeses, et vähendada väiksema jõudlusega seadmete puhul käivitusaega.</translation>
 <translation id="2750481671343847896">Saidid saavad kuvada identiteedihaldusteenuste sisselogimisviipasid.</translation>
+<translation id="2787357173144933081">Omnikastikese kiirkäivitamine</translation>
 <translation id="2790501146643349491">Kui see on sisse lülitatud, saavad hiljuti suletud saidid andmete saatmise ja vastuvõtmise lõpetada. Kui see on välja lülitatud, ei saa hiljuti suletud saidid andmete saatmist ega vastuvõtmist lõpetada.</translation>
 <translation id="2822354292072154809">Kas soovite objekti <ph name="CHOSEN_OBJECT_NAME" /> jaoks kindlasti lähtestada kõik saidi load?</translation>
 <translation id="2850913818900871965">Mobiilivaate taotlemine</translation>
@@ -144,6 +148,7 @@
 <translation id="3295602654194328831">Peida teave</translation>
 <translation id="3328801116991980348">Saiditeave</translation>
 <translation id="3333961966071413176">Kõik kontaktid</translation>
+<translation id="3360338140203645771">Kas kustutada salvestatud suumitasemed?</translation>
 <translation id="3362437373201486687">Bluetooth-seadmete otsimine</translation>
 <translation id="3386292677130313581">Küsi enne saitidele minu asukoha avaldamist (soovitatav)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
@@ -209,6 +214,7 @@
 <translation id="4338831206024587507">Kõik saidid domeenil <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Keelake saitidel selle tuvastamine, millal seda seadet aktiivselt kasutate</translation>
 <translation id="4412992751769744546">Luba kolmanda osapoole küpsisefailid</translation>
+<translation id="4419929467120297501">Chrome blokeerib saitide puhul kolmanda osapoole küpsisefailide kasutamise teie jälgimiseks sirvimise ajal. Külastage seadeid, et <ph name="BEGIN_LINK" />hallata juurdepääsu kolmanda osapoole küpsisefailidele<ph name="END_LINK" />.</translation>
 <translation id="4434045419905280838">Hüpikaknad ja ümbersuunamised</translation>
 <translation id="443552056913301231">See toiming kustutab kõik kohalikud andmed, sh küpsised, ja lähtestab kõik lähtekoha <ph name="ORIGIN" /> õigused</translation>
 <translation id="4468959413250150279">Konkreetse saidi heli vaigistamine.</translation>
@@ -230,6 +236,7 @@
 <translation id="4779083564647765204">Suumi</translation>
 <translation id="4807122856660838973">Google’i ohutu sirvimise sisselülitamine</translation>
 <translation id="4811450222531576619">Teave selle allika ja teema kohta</translation>
+<translation id="4816495437032298535">Saitide jaoks salvestatud suum</translation>
 <translation id="4836046166855586901">Küsi, kui sait soovib teada, millal kasutate aktiivselt seda seadet</translation>
 <translation id="483914009762354899">Kaasab kõik sellel domeenil olevad saidid</translation>
 <translation id="4883854917563148705">Hallatud seadeid ei saa lähtestada</translation>
@@ -239,7 +246,6 @@
 <translation id="4962975101802056554">Seadme puhul kõigi lubade tühistamine</translation>
 <translation id="497421865427891073">Edasiminek</translation>
 <translation id="4976702386844183910">Viimati külastati <ph name="DATE" /></translation>
-<translation id="4985206706500620449">Lubasite selle saidi jaoks kolmanda osapoole küpsisefailid</translation>
 <translation id="4994033804516042629">Kontakte ei leitud</translation>
 <translation id="4996978546172906250">Jagamine:</translation>
 <translation id="5001526427543320409">Kolmanda osapoole küpsisefailid</translation>
@@ -266,6 +272,7 @@
 <translation id="5246825184569358663">See toiming kustutab kõik kohalikud andmed, sh küpsised, ning lähtestab kõik domeeni <ph name="DOMAIN" /> ja selle alla kuuluvate saitide õigused.</translation>
 <translation id="5264323282659631142">Eemalda „<ph name="CHIP_LABEL" />”</translation>
 <translation id="528192093759286357">Täisekraanilt väljumiseks lohistage ülaservast alla ja puudutage tagasinuppu.</translation>
+<translation id="5292915569214461965">Blokeerisite saitide jaoks kolmanda osapoole küpsisefailide kasutamise sirvimisel teie jälgimiseks. Külastage seadeid, et <ph name="BEGIN_LINK" />hallata juurdepääsu kolmanda osapoole küpsisefailidele<ph name="END_LINK" />.</translation>
 <translation id="5295729974480418933">Kui see on sisse lülitatud, võivad saidid küsida luba teabe kasutamiseks, mille nad on teie kohta salvestanud. Kui see on välja lülitatud, ei saa saidid küsida luba teabe kasutamiseks, mille nad on teie kohta salvestanud.</translation>
 <translation id="5300589172476337783">Kuva</translation>
 <translation id="5301954838959518834">Selge, sain aru</translation>
@@ -355,6 +362,7 @@
 <translation id="6527303717912515753">Jaga</translation>
 <translation id="652937045869844725">Proovige kolmanda osapoole küpsisefailid lubada. See vähendab kaitset, kuid saidi funktsiooni töötavad suurema tõenäosusega.</translation>
 <translation id="6530703012083415527">Kui see on sisse lülitatud, saavad saidid kasutada hüpikaknaid ja ümbersuunamisi. Kui see on välja lülitatud, ei saa saidid kasutada hüpikaknaid ega ümbersuunamisi.</translation>
+<translation id="6540488083026747005">Lubasite sellel saidil kolmanda osapoole küpsisefailid</translation>
 <translation id="6545864417968258051">Bluetoothi otsimine</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja veel <ph name="NUM_MORE" /> on blokeeritud}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ja veel <ph name="NUM_MORE" /> on blokeeritud}}</translation>
 <translation id="6554732001434021288">Viimati külastati <ph name="NUM_DAYS" /> päeva tagasi</translation>
@@ -377,6 +385,7 @@
 <translation id="6787751205395685251">Tehke saidi <ph name="SITE_NAME" /> puhul valik</translation>
 <translation id="6790428901817661496">Esita</translation>
 <translation id="6818926723028410516">Valige üksused</translation>
+<translation id="6837658163275294267">Chrome piirab enamiku saitide jaoks kolmanda osapoole küpsisefailide kasutamist sirvimisel teie jälgimiseks. Külastage seadeid, et <ph name="BEGIN_LINK" />hallata juurdepääsu kolmanda osapoole küpsisefailidele<ph name="END_LINK" /></translation>
 <translation id="6838525730752203626">Kasutage Chrome'i vaikimisi</translation>
 <translation id="6840760312327750441">Vahelehtede rühmitamiseks puudutage vahelehte pikalt. Seejärel lohistage see teise vahelehe peale.</translation>
 <translation id="6864395892908308021">See seade ei saa NFC andmeid lugeda</translation>
@@ -441,6 +450,7 @@
 <translation id="7835852323729233924">Meedia esitamine</translation>
 <translation id="783819812427904514">Video vaigistuse tühistamine</translation>
 <translation id="7846076177841592234">Tühista valik</translation>
+<translation id="7881140103901777395">Chrome piirab enamikul saitidel kolmanda osapoole küpsisefailide kasutamist. Kuid sellel saidil on kolmanda osapoole küpsisefailid lubatud, kuna sait vajab neid põhiteenuste pakkumiseks.\n\nKülastage seadeid, et <ph name="BEGIN_LINK" />hallata juurdepääsu kolmanda osapoole küpsisefailidele<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Konkreetse saidi heli lubamine.</translation>
 <translation id="789180354981963912">Blokeeri kolmanda osapoole küpsisefailid inkognito režiimis</translation>
 <translation id="7940722705963108451">Tuleta mulle meelde</translation>
@@ -503,6 +513,7 @@
 <translation id="8721719390026067591">Kui see on sisse lülitatud, võivad saidid küsida luba Bluetooth-seadmete otsimiseks. Kui see on välja lülitatud, ei saa saidid Bluetooth-seadmeid otsida.</translation>
 <translation id="8725066075913043281">Proovi uuesti</translation>
 <translation id="8730621377337864115">Valmis</translation>
+<translation id="8737426583868847403">Siin kuvatakse saidid, mille jaoks salvestate kohandatud suumitaseme</translation>
 <translation id="8751914237388039244">Kujutise valimine</translation>
 <translation id="8800034312320686233">Kas sait ei tööta?</translation>
 <translation id="8801436777607969138">JavaScripti blokeerimine konkreetsel saidil.</translation>

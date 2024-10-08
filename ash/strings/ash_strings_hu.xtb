@@ -114,6 +114,7 @@
 <translation id="132346741904777634">Kamera a bal felső sarokhoz igazítva. Ütközés a rendszerfelülettel.</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> és az ablakok bezárása</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> csatlakoztatva</translation>
+<translation id="1337081488893096731">Az iskolai fiókjában lévő adatok személyes fiókba történő áthelyezéshez használja a Tartalom átvitele alkalmazást</translation>
 <translation id="1340378040547539434">Kicsinyítés az oldalon</translation>
 <translation id="1341651618736211726">Túlcsordulás</translation>
 <translation id="1341926407152459446">A(z) „<ph name="DEVICE_NAME" />” használata hangbemenethez és -kimenethez</translation>
@@ -242,6 +243,7 @@
 <translation id="17722141032474077">Számítások</translation>
 <translation id="1774796056689732716">Naptár, <ph name="CURRENT_MONTH_YEAR" />, jelenleg kijelölt dátum: <ph name="DATE" /></translation>
 <translation id="178347895271755507">A telefonján lévő legutóbbi fotók, médiatartalmak és értesítések megtekintésének beállítása</translation>
+<translation id="1786487376942610288">Váltás a „kép a képben” ablak maximális és aktuális mérete között</translation>
 <translation id="1787955149152357925">Ki</translation>
 <translation id="1796561540704213354">Webhelyek, például a felkeresett oldalak és a megnyitott oldalak</translation>
 <translation id="179842970735685253">A Google Általános Szerződési Feltételei</translation>
@@ -337,6 +339,9 @@
 <translation id="219905428774326614">Indító, minden alkalmazás</translation>
 <translation id="2201071101391734388"><ph name="INDEX" />. fénykép a legutóbbi <ph name="TOTAL_COUNT" /> fénykép közül.</translation>
 <translation id="2201687081523799384">A Google Tasks összecsukása</translation>
+<translation id="2206960886090042977">A beépített érintőpad le van tiltva, mert csatlakoztatva van egy egér. A módosítás megerősítéséhez használja az egeret vagy a billentyűzetet.
+
+Ellenkező esetben a beépített érintőpad 30 másodperc múlva újra engedélyezve lesz.</translation>
 <translation id="2208323208084708176">Egységes asztali mód</translation>
 <translation id="2220572644011485463">PIN-kód vagy jelszó</translation>
 <translation id="2222841058024245321">7. asztal</translation>
@@ -1469,6 +1474,7 @@ Nincsenek csatlakoztatott eszközök.</translation>
 <translation id="598407983968395253">Sablon használata</translation>
 <translation id="5986723678596105470">Bekapcsolódás Google Meettel</translation>
 <translation id="598882571027504733">A frissítés lekéréséhez indítsa újra a Chromebookot a csatlakoztatott billentyűzet segítségével.</translation>
+<translation id="5990992855591814753">A személyre szabott, összpontosítást elősegítő lejátszási listákkal fókuszált maradhat. Élvezze a hirdetésmentes YouTube Musicot és YouTube-ot a három hónapig díjmentes YouTube Premiummal. Feltételekhez kötött.</translation>
 <translation id="5998374579424866922">Játékvezérlők kikapcsolása</translation>
 <translation id="6000279412553873020">Billentyűk, gombok és egyebek</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" />/<ph name="SELECTED_PAGE" />. oldal</translation>
@@ -1907,6 +1913,9 @@ Frissen telepítve</translation>
 Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját.</translation>
 <translation id="7523420897035067483">A Ne zavarjanak mód bekapcsolása Összpontosítási üzemmódban</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">A beépített érintőpad le van tiltva. A módosítás megerősítéséhez használjon billentyűzetet vagy egy másik mutatóeszközt.
+
+Ellenkező esetben a beépített érintőpad 30 másodperc múlva újra engedélyezve lesz.</translation>
 <translation id="7525067979554623046">Létrehozás</translation>
 <translation id="7526573455193969409">Elképzelhető, hogy figyelik a hálózatot</translation>
 <translation id="7536035074519304529">IP-cím: <ph name="ADDRESS" /></translation>
@@ -2294,6 +2303,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8858369206579825206">Adatvédelmi beállítások</translation>
 <translation id="8860366331836346216">eSIM hozzáadása</translation>
 <translation id="8870509716567206129">Az alkalmazás nem támogatja az osztott képernyős nézetet.</translation>
+<translation id="8873203135446552888">Annak megerősítése, hogy le szeretné tiltani a beépített érintőpadot</translation>
 <translation id="8874184842967597500">Nincs csatl.</translation>
 <translation id="8875021410787719674">Váltás a jobb alsó sarok, az Indító, a címsáv, a könyvjelzősáv, a megnyitott webhely és a letöltések között</translation>
 <translation id="8876148469852588625"><ph name="EVENT_TOTAL_COUNT" />/<ph name="EVENT_POSITION" />. esemény</translation>

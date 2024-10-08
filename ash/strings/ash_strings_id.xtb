@@ -114,6 +114,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="132346741904777634">Kamera dipaskan ke pojok kiri atas. Bertentangan dengan platform sistem.</translation>
 <translation id="132415371743256095">Tutup <ph name="DESK_NAME" /> dan jendelanya</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> terhubung</translation>
+<translation id="1337081488893096731">Gunakan aplikasi Transfer Konten untuk memindahkan data akun sekolah ke akun pribadi Anda</translation>
 <translation id="1340378040547539434">Perkecil halaman</translation>
 <translation id="1341651618736211726">Luapan</translation>
 <translation id="1341926407152459446">Gunakan "<ph name="DEVICE_NAME" />" untuk input dan output audio</translation>
@@ -242,6 +243,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="17722141032474077">Penghitungan</translation>
 <translation id="1774796056689732716">Kalender, <ph name="CURRENT_MONTH_YEAR" />, <ph name="DATE" /> saat ini dipilih.</translation>
 <translation id="178347895271755507">Siapkan untuk melihat foto, media, dan notifikasi terbaru ponsel Anda</translation>
+<translation id="1786487376942610288">Beralih antara ukuran jendela picture-in-picture maksimum atau saat ini</translation>
 <translation id="1787955149152357925">Nonaktif</translation>
 <translation id="1796561540704213354">Situs, termasuk halaman yang telah Anda kunjungi dan halaman yang dibuka</translation>
 <translation id="179842970735685253">Persyaratan Layanan Google</translation>
@@ -337,6 +339,9 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="219905428774326614">Peluncur, semua aplikasi</translation>
 <translation id="2201071101391734388">Foto terbaru <ph name="INDEX" /> dari <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Ciutkan Google Tasks</translation>
+<translation id="2206960886090042977">Touchpad bawaan dinonaktifkan karena mouse terhubung. Gunakan mouse atau keyboard untuk mengonfirmasi perubahan.
+
+Jika tidak, touchpad bawaan akan diaktifkan kembali dalam 30 detik.</translation>
 <translation id="2208323208084708176">Mode desktop terpadu</translation>
 <translation id="2220572644011485463">PIN atau sandi</translation>
 <translation id="2222841058024245321">Desktop 7</translation>
@@ -1907,6 +1912,9 @@ Baru diinstal</translation>
 Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</translation>
 <translation id="7523420897035067483">Aktifkan mode Jangan Ganggu saat dalam mode Fokus</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">Touchpad bawaan dinonaktifkan. Gunakan keyboard atau perangkat penunjuk lainnya untuk mengonfirmasi perubahan.
+
+Jika tidak, touchpad bawaan akan diaktifkan kembali dalam 30 detik.</translation>
 <translation id="7525067979554623046">Buat</translation>
 <translation id="7526573455193969409">Jaringan mungkin dipantau</translation>
 <translation id="7536035074519304529">Alamat IP: <ph name="ADDRESS" /></translation>
@@ -2294,6 +2302,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8858369206579825206">Kontrol privasi</translation>
 <translation id="8860366331836346216">Tambahkan eSIM</translation>
 <translation id="8870509716567206129">Aplikasi tidak mendukung layar terpisah.</translation>
+<translation id="8873203135446552888">Konfirmasi bahwa Anda ingin menonaktifkan touchpad bawaan</translation>
 <translation id="8874184842967597500">Tak terhubung</translation>
 <translation id="8875021410787719674">Beralih antara pojok kanan bawah, Peluncur, kolom URL, kolom bookmark, situs yang terbuka, dan download</translation>
 <translation id="8876148469852588625">Acara <ph name="EVENT_POSITION" /> dari <ph name="EVENT_TOTAL_COUNT" /></translation>

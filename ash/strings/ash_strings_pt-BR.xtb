@@ -114,6 +114,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="132346741904777634">Câmera alinhada ao canto esquerdo de cima. Conflito com a superfície do sistema.</translation>
 <translation id="132415371743256095">Fechar o <ph name="DESK_NAME" /> e as janelas</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> conectado</translation>
+<translation id="1337081488893096731">Use o app Transferência de conteúdo para mover os dados da sua conta escolar para a pessoal</translation>
 <translation id="1340378040547539434">Diminuir zoom na página</translation>
 <translation id="1341651618736211726">Botão flutuante</translation>
 <translation id="1341926407152459446">Usar "<ph name="DEVICE_NAME" />" para entrada e saída de áudio</translation>
@@ -242,6 +243,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="17722141032474077">Cálculos</translation>
 <translation id="1774796056689732716">Agenda, <ph name="CURRENT_MONTH_YEAR" />, a data <ph name="DATE" /> está selecionada.</translation>
 <translation id="178347895271755507">Configurar a visualização de fotos, mídia e notificações recentes do smartphone</translation>
+<translation id="1786487376942610288">Alternar entre o tamanho máximo e o atual da janela picture-in-picture</translation>
 <translation id="1787955149152357925">Desativado</translation>
 <translation id="1796561540704213354">Sites que incluem páginas visitadas e páginas abertas</translation>
 <translation id="179842970735685253">Termos de Serviço do Google</translation>
@@ -337,6 +339,9 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="219905428774326614">Tela de início, todos os apps</translation>
 <translation id="2201071101391734388">Foto recente <ph name="INDEX" /> de <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Fechar o Google Tarefas</translation>
+<translation id="2206960886090042977">O touchpad integrado está desativado porque um mouse está conectado. Use o mouse ou o teclado para confirmar a mudança.
+
+Caso contrário, o touchpad integrado será reativado em 30 segundos.</translation>
 <translation id="2208323208084708176">Modo de área de trabalho unificada.</translation>
 <translation id="2220572644011485463">PIN ou senha</translation>
 <translation id="2222841058024245321">Espaço de trabalho 7</translation>
@@ -1907,6 +1912,9 @@ Nova instalação</translation>
 Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.</translation>
 <translation id="7523420897035067483">Ativa o modo "Não perturbe" durante o Foco</translation>
 <translation id="7524043547948122239">Google Tarefas</translation>
+<translation id="7524919752437339268">O touchpad integrado está desativado. Use o teclado ou outro dispositivo apontador para confirmar a mudança.
+
+Caso contrário, o touchpad integrado será reativado em 30 segundos.</translation>
 <translation id="7525067979554623046">Criar</translation>
 <translation id="7526573455193969409">A rede pode ser monitorada</translation>
 <translation id="7536035074519304529">Endereço IP: <ph name="ADDRESS" /></translation>
@@ -1935,7 +1943,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="7613620083300976559">Ativar controles de jogo</translation>
 <translation id="761736749114493194">Alterne o enquadramento da câmera. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
-<translation id="7627303771480696593">Fazer uma pergunta</translation>
+<translation id="7627303771480696593">Faça uma pergunta</translation>
 <translation id="7634648064048557203">Câmera alinhada ao canto direito de baixo</translation>
 <translation id="7638572816805275740">Fazer uma captura ou gravação de tela</translation>
 <translation id="7642106959537987271">modo de inversão de cores</translation>
@@ -2294,6 +2302,7 @@ Para desligar o dispositivo, toque no botão liga/desliga novamente e pressione.
 <translation id="8858369206579825206">Controles de privacidade</translation>
 <translation id="8860366331836346216">Adicionar eSIM</translation>
 <translation id="8870509716567206129">O app não é compatível com a divisão de tela.</translation>
+<translation id="8873203135446552888">Confirme que você quer desativar o touchpad integrado</translation>
 <translation id="8874184842967597500">Não conectado</translation>
 <translation id="8875021410787719674">Alternar entre o canto inferior direito, o acesso rápido, a barra de endereço, a barra de favoritos, o site aberto e os downloads</translation>
 <translation id="8876148469852588625">Evento <ph name="EVENT_POSITION" /> de <ph name="EVENT_TOTAL_COUNT" /></translation>

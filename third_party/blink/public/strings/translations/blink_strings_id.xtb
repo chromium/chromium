@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">Tanggal harus <ph name="MINIMUM_DATE_OR_TIME" /> atau setelahnya.</translation>
 <translation id="2761667185364618470">Centang kotak ini jika Anda ingin melanjutkan.</translation>
 <translation id="2908441821576996758">Masukkan daftar alamat email yang dipisahkan dengan koma.</translation>
+<translation id="2940013921954129954">Lokasi presisi diizinkan</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Masukkan nilai yang valid. Bidang tersebut tidak lengkap atau memiliki tanggal yang tidak valid.</translation>
 <translation id="310520048233152454">Masukkan URL.</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">Kualitas pemutaran buruk</translation>
 <translation id="6790428901817661496">Putar</translation>
 <translation id="6820355525329141109">Tidak dapat memuat plugin.</translation>
+<translation id="688706781007114099">Gunakan lokasi</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Perpanjang teks ini menjadi <ph name="MIN_CHARACTERS" /> karakter atau lebih (saat ini Anda menggunakan 1 karakter).</translation>
 <translation id="709897737746224366">Sesuaikan dengan format yang diminta.</translation>

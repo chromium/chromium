@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">डिस्प्लेचा ब्राइटनेस कमी करा</translation>
 <translation id="2086091080968010660">वेळेवर आधारित बदल हे कदाचित अचूक नसू शकतात. सेटिंग्जमध्ये सिस्टीम स्थान अ‍ॅक्सेस सुरू करा.</translation>
 <translation id="2102231663024125441">मजकूर संपादन</translation>
-<translation id="2102648867808308635">हे पेज वाचण्यात मला मदत करा</translation>
 <translation id="2105810540595158374">डिव्हाइस हे गेम नियंत्रक आहे.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, आवृत्ती <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">सध्या फक्त इंग्रजीमध्ये (यूएस) उपलब्ध आहे</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">सर्व अ‍ॅप्स पहा</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />परफॉर्मन्स माग डेटा<ph name="END_LINK1" /> पाठवा</translation>
 <translation id="3517001332549868749">ChromeOS अपडेट</translation>
-<translation id="3522508178835057262">सध्या, <ph name="MAX_WORD_LENGTH" /> हून अधिक शब्दांच्या ट्रान्स्क्रिप्टला सपोर्ट नाही</translation>
 <translation id="3527036260304016759">अयशस्वी झाले - अज्ञात एरर</translation>
 <translation id="353214771040290298">संपादन पूर्ण झाले</translation>
 <translation id="3532980081107202182">जवळपास <ph name="MIN_REMAINING" /> मिनिटे शिल्‍लक आहेत</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">फिकट थीम</translation>
 <translation id="4813136279048157860">माझ्या इमेज</translation>
 <translation id="4813345808229079766">कनेक्शन</translation>
-<translation id="4824527342590024245">सध्या, <ph name="MIN_WORD_LENGTH" /> हून कमी शब्दांच्या ट्रान्स्क्रिप्टला सपोर्ट नाही.</translation>
 <translation id="4830894019733815633">मोठी दरी</translation>
 <translation id="4832079907277790330">Files अ‍ॅपमध्ये फोल्डर निवडा...</translation>
 <translation id="4835901797422965222">कोणतीही अ‍ॅक्टिव्ह नेटवर्क नाहीत</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">समानार्थी:</translation>
 <translation id="5130848777448318809">पोनी</translation>
 <translation id="5137451382116112100">फुलस्क्रीन करा</translation>
+<translation id="5140788690559353412">तुम्ही तुमच्या शाळेच्या खात्याचा ॲक्सेस गमवल्यावर, तुम्हाला यापुढे संबंधित ईमेल आणि Google Drive फाइल, जसे की Gmail, Docs, Slides व आणखी बऱ्याच गोष्टींचा ॲक्सेस नसेल.</translation>
 <translation id="5142961317498132443">ऑथेंटिकेशन</translation>
 <translation id="5144311987923128508">कन्फर्म करा बटण आता बंद केले आहे</translation>
 <translation id="5144887194300568405">भाषांतर कॉपी करा</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) HTTP लेटन्सी</translation>
 <translation id="6078323886959318429">शॉर्टकट जोडा</translation>
 <translation id="6091080061796993741">पिवळा</translation>
+<translation id="6093853427925392522">तुम्ही अ‍ॅक्सेस गमवण्यापूर्वी तुमच्या शाळेचा खाते डेटा तुमच्या वैयक्तिक खात्यामध्ये हलवण्यासाठी Google चे Content Transfer ॲप वापरण्याची खात्री करा.</translation>
 <translation id="6104112872696127344">स्कॅनिंग रद्द केले गेले</translation>
 <translation id="6106186594183574873">पूर्ण करण्यासाठी, तुमचा जुना पासवर्ड एंटर करा</translation>
 <translation id="6108689792487843350">गेटवेशी कनेक्ट करू शकत नाही</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">अ‍ॅक्सेस पॉइंट नाव (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{नेम सर्व्हर}other{नेम सर्व्हर}}</translation>
 <translation id="7135814714616751706">शॉर्टकट शोधा</translation>
+<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7143207342074048698">कनेक्ट करत आहे</translation>
 <translation id="7144878232160441200">पुन्हा प्रयत्न करा</translation>
 <translation id="7144954474087165241">पॅगोडा</translation>
@@ -1394,6 +1394,7 @@
 <translation id="7856267634822906833">ब्लूटूथ टचस्क्रीन</translation>
 <translation id="7859006200041800233">निवडुंगाचे फूल</translation>
 <translation id="7869143217755017858">गडद मोड बंद करा</translation>
+<translation id="7878972877380405573">वाचण्यात मला मदत करा वापरून सारांश द्या</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">प्रदाता प्रकार</translation>
 <translation id="7882501334836096755">सार्वजनिक की</translation>
@@ -1537,6 +1538,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" /> साठी आणखी कृती</translation>
 <translation id="86356131183441916">फिकट जांभळा</translation>
 <translation id="8647595191512746911">ऑडिओ ट्रान्स्क्रिप्शन</translation>
+<translation id="8650852232143958317">तुमच्या Gmail आणि Google Drive फाइल तुमच्यासोबत घ्या</translation>
 <translation id="8651481478098336970">आवाज म्यूट करा</translation>
 <translation id="8655295600908251630">खाडी</translation>
 <translation id="8655828773034788261">URL शेअर करा:</translation>

@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Riduci la luminosità del display</translation>
 <translation id="2086091080968010660">Le modifiche basate sul tempo potrebbero non essere accurate. Attiva l'accesso alla posizione del sistema nelle impostazioni.</translation>
 <translation id="2102231663024125441">Modifica del testo</translation>
-<translation id="2102648867808308635">Aiutami a leggere questa pagina</translation>
 <translation id="2105810540595158374">Il dispositivo è un controller.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versione <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">Attualmente disponibile solo in inglese (Stati Uniti)</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">Visualizza tutte le app</translation>
 <translation id="3510890413042482857">Invia <ph name="BEGIN_LINK1" />dati di rilevamento del rendimento<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Aggiornamento ChromeOS</translation>
-<translation id="3522508178835057262">Al momento non sono supportate trascrizioni con più di <ph name="MAX_WORD_LENGTH" /> parole</translation>
 <translation id="3527036260304016759">Operazione non riuscita - Errore sconosciuto</translation>
 <translation id="353214771040290298">Modifica completata</translation>
 <translation id="3532980081107202182">Mancano circa <ph name="MIN_REMAINING" /> minuti</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">Tema chiaro</translation>
 <translation id="4813136279048157860">Le mie immagini</translation>
 <translation id="4813345808229079766">Connessione</translation>
-<translation id="4824527342590024245">Al momento non sono supportate le trascrizioni con meno di <ph name="MIN_WORD_LENGTH" /> parole.</translation>
 <translation id="4830894019733815633">un canyon</translation>
 <translation id="4832079907277790330">Seleziona cartella nell'app File…</translation>
 <translation id="4835901797422965222">Nessuna rete attiva</translation>
@@ -1397,6 +1394,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="7856267634822906833">Touchscreen Bluetooth</translation>
 <translation id="7859006200041800233">Un fiore di cactus</translation>
 <translation id="7869143217755017858">Disabilita la modalità Buio</translation>
+<translation id="7878972877380405573">Riassumi con Aiutami a leggere</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipo di provider</translation>
 <translation id="7882501334836096755">Chiave pubblica</translation>
@@ -1456,7 +1454,7 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8156233298086717232">magico</translation>
 <translation id="8162776280680283326">volpi</translation>
 <translation id="8167413449582155132">Sfondo con Google AI integrata</translation>
-<translation id="8171020708598805594">Crea automaticamente trascrizioni, ottieni i riepiloghi delle registrazioni utilizzando Google AI e cerca l'audio. Crea registrazioni anche quando non disponi di una connessione a internet.</translation>
+<translation id="8171020708598805594">Crea automaticamente trascrizioni, ottieni i riassunti delle registrazioni utilizzando Google AI e cerca l'audio. Crea registrazioni anche quando non disponi di una connessione a internet.</translation>
 <translation id="8179976553408161302">Invio</translation>
 <translation id="8183975772394450380">una spiaggia</translation>
 <translation id="819278132617411009">Usa Google AI per aumentare la produttività</translation>

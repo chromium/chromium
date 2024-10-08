@@ -49,6 +49,7 @@
 <translation id="1979673356880165407">Fanya maandishi na picha kuwa kubwa au ndogo kwa tovuti zote unazotembelea</translation>
 <translation id="1984937141057606926">Inaruhusiwa, isipokuwa vidakuzi vingine</translation>
 <translation id="1985247341569771101">Kikiwashwa, tovuti zinaweza kutumia vitambuzi vya mwendo vya kifaa chako. Kikizimwa, tovuti haziwezi kutumia vitambuzi vya mwendo.</translation>
+<translation id="1985716030964443178">Hatua hii itaweka upya viwango vya ukuzaji katika tovuti zote kwenye orodha yako ili kutumia viwango chaguomsingi</translation>
 <translation id="1989112275319619282">Vinjari</translation>
 <translation id="1994173015038366702">URL ya Tovuti</translation>
 <translation id="2004697686368036666">Huenda vipengele kwenye baadhi ya tovuti visifanye kazi</translation>
@@ -103,10 +104,13 @@
 <translation id="2653659639078652383">Wasilisha</translation>
 <translation id="2677748264148917807">Ondoka</translation>
 <translation id="2678468611080193228">Jaribu kuruhusu kwa muda vidakuzi vya mshirika mwingine, jambo linalomaanisha ulinzi mdogo lakini vipengele vina uwezekano mkubwa wa kufanya kazi.</translation>
+<translation id="2682367912565197520">Futa kiwango cha ukuzaji ulichohifadhi</translation>
 <translation id="2683434792633810741">Je, ungependa kufuta na kuweka upya?</translation>
 <translation id="2713106313042589954">Zima kamera</translation>
 <translation id="2717722538473713889">Anwani za barua pepe</translation>
+<translation id="2726059656860238749">Fungua Chrome huku Sanduku kuu likiwa limeangaziwa, hivyo kupunguza muda wa kuwasha vifaa vya uwezo wa chini.</translation>
 <translation id="2750481671343847896">Tovuti inaweza kuonyesha vidokezo vya kuingia katika akaunti kutoka kwa huduma za utambulisho.</translation>
+<translation id="2787357173144933081">Anzisha Sanduku kuu</translation>
 <translation id="2790501146643349491">Kikiwashwa, tovuti zilizofungwa hivi karibuni zinaweza kumaliza kutuma na kupokea data. Kikizimwa, tovuti zilizofungwa hivi karibuni haziwezi kumaliza kutuma au kupokea data.</translation>
 <translation id="2822354292072154809">Una uhakika ungependa kubadilisha ruhusa zote za tovuti ya <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Omba mwonekano wa kifaa cha mkononi</translation>
@@ -144,6 +148,7 @@
 <translation id="3295602654194328831">Ficha Maelezo</translation>
 <translation id="3328801116991980348">Maelezo ya tovuti</translation>
 <translation id="3333961966071413176">Anwani zote</translation>
+<translation id="3360338140203645771">Ungependa kufuta viwango vya ukuzaji ulivyohifadhi?</translation>
 <translation id="3362437373201486687">Inatafuta vifaa vyenye Bluetooth</translation>
 <translation id="3386292677130313581">Uliza kabla ya kuruhusu tovuti zijue mahali ulipo (inapendekezwa)</translation>
 <translation id="3403537308306431953">Asilimia <ph name="ZOOM_LEVEL" /></translation>
@@ -209,6 +214,7 @@
 <translation id="4338831206024587507">Tovuti zote zenye kikoa cha <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Zuia tovuti zisijue wakati unatumia kifaa hiki</translation>
 <translation id="4412992751769744546">Ruhusu vidakuzi vingine</translation>
+<translation id="4419929467120297501">Chrome huzuia tovuti zisitumie vidakuzi vya wahusika wengine kukufuatilia unapovinjari. Tembelea mipangilio ili <ph name="BEGIN_LINK" />udhibiti ufikiaji wa vidakuzi vya washirika wengine<ph name="END_LINK" />.</translation>
 <translation id="4434045419905280838">Madirisha ibukizi/kuelekeza kwingine</translation>
 <translation id="443552056913301231">Kitendo hiki kitafuta data yote iliyo kwenye kifaa, ikiwa ni pamoja na vidakuzi na kuweka upya ruhusa zote za <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Zima sauti katika tovuti mahususi.</translation>
@@ -230,6 +236,7 @@
 <translation id="4779083564647765204">Kuza</translation>
 <translation id="4807122856660838973">Washa kipengele cha Kuvinjari kwa Usalama</translation>
 <translation id="4811450222531576619">Fahamu kuhusu mada na chanzo chake</translation>
+<translation id="4816495437032298535">Mipangilio uliyohifadhi ya viwango vya ukuzaji wa tovuti</translation>
 <translation id="4836046166855586901">Tovuti ikuombe ruhusa inapotaka kujua wakati unatumia kifaa hiki</translation>
 <translation id="483914009762354899">Inajumuisha tovuti zote zenye kikoa hiki</translation>
 <translation id="4883854917563148705">Huwezi kubadilisha mipangilio inayodhibitiwa</translation>
@@ -239,7 +246,6 @@
 <translation id="4962975101802056554">Batilisha ruhusa zote za kifaa</translation>
 <translation id="497421865427891073">Nenda mbele</translation>
 <translation id="4976702386844183910">Ilitembelewa mara ya mwisho <ph name="DATE" /></translation>
-<translation id="4985206706500620449">Umeruhusu vidakuzi vya mshirika mwingine kwenye tovuti hii</translation>
 <translation id="4994033804516042629">Hakuna anwani zilizopatikana</translation>
 <translation id="4996978546172906250">Shiriki kupitia</translation>
 <translation id="5001526427543320409">Vidakuzi vya washirika wengine</translation>
@@ -266,6 +272,7 @@
 <translation id="5246825184569358663">Kitendo hiki kitafuta data yote iliyo kwenye kifaa, ikiwa ni pamoja na vidakuzi na kuweka upya ruhusa zote za <ph name="DOMAIN" /> na tovuti zote zilizo kwenye kikoa hiki</translation>
 <translation id="5264323282659631142">Ondoa '<ph name="CHIP_LABEL" />'</translation>
 <translation id="528192093759286357">Buruta kutoka juu na uguse kitufe cha kurudi nyuma ili uondoke kwenye skrini nzima.</translation>
+<translation id="5292915569214461965">Umezuia tovuti zisitumie vidakuzi vya washirika wengine ili kukufuatilia unapovinjari. Tembelea mipangilio ili <ph name="BEGIN_LINK" />udhibiti ufikiaji wa vidakuzi vya washirika wengine<ph name="END_LINK" />.</translation>
 <translation id="5295729974480418933">Kikiwashwa, tovuti zinaweza kuomba ruhusa ya kutumia maelezo zilizohifadhi kukuhusu. Kikizimwa, tovuti haziwezi kukuomba ruhusa ya kutumia maelezo zilizohifadhi kukuhusu.</translation>
 <translation id="5300589172476337783">Onyesha</translation>
 <translation id="5301954838959518834">Sawa, nimeelewa</translation>
@@ -355,6 +362,7 @@
 <translation id="6527303717912515753">Shiriki</translation>
 <translation id="652937045869844725">Jaribu kuruhusu vidakuzi vya mshirika mwingine, jambo linalomaanisha ulinzi mdogo lakini vipengele vina uwezekano mkubwa wa kufanya kazi.</translation>
 <translation id="6530703012083415527">Kikiwashwa, tovuti zinaweza kutumia madirisha ibukizi na viungo vya kuelekeza kwingine. Kikizimwa, tovuti haziwezi kutumia madirisha ibukizi na viungo vya kuelekeza kwingine.</translation>
+<translation id="6540488083026747005">Umeruhusu vidakuzi vya washirika wengine kwenye tovuti hii</translation>
 <translation id="6545864417968258051">Kutafuta Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{Umezuia <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> na nyingine <ph name="NUM_MORE" />}other{Umezuia <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> na nyingine <ph name="NUM_MORE" />}}</translation>
 <translation id="6554732001434021288">Ilitembelewa mara ya mwisho siku <ph name="NUM_DAYS" /> zilizopita</translation>
@@ -377,6 +385,7 @@
 <translation id="6787751205395685251">Teua chaguo la <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Cheza</translation>
 <translation id="6818926723028410516">Chagua vipengee</translation>
+<translation id="6837658163275294267">Chrome huzuia tovuti nyingi zisitumie vidakuzi vya washirika wengine kukufuatilia unapovinjari. Tembelea mipangilio ili <ph name="BEGIN_LINK" />udhibiti ufikiaji wa vidakuzi vya washirika wengine<ph name="END_LINK" /></translation>
 <translation id="6838525730752203626">Tumia Chrome kwa chaguomsingi</translation>
 <translation id="6840760312327750441">Ili upange vichupo katika makundi, gusa na ushikilie kichupo. Kisha, kiburute kwenye kichupo kingine.</translation>
 <translation id="6864395892908308021">Kifaa hiki kimeshindwa kusoma NFC</translation>
@@ -441,6 +450,7 @@
 <translation id="7835852323729233924">Kucheza maudhui</translation>
 <translation id="783819812427904514">Rejesha sauti ya video</translation>
 <translation id="7846076177841592234">Ghairi uchaguzi</translation>
+<translation id="7881140103901777395">Chrome huzuia tovuti nyingi zisitumie vidakuzi vya washirika wengine. Lakini vidakuzi vya washirika wengine huruhusiwa kwenye tovuti hii kwa sababu inavitegemea ili kutoa huduma za msingi.\n\nTembelea mipangilio ili <ph name="BEGIN_LINK" />udhibiti ufikiaji wa vidakuzi vya washirika wengine<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Ruhusu sauti katika tovuti mahususi.</translation>
 <translation id="789180354981963912">Kuzuia vidakuzi vya washirika wengine katika hali fiche:</translation>
 <translation id="7940722705963108451">Nikumbushe</translation>
@@ -503,6 +513,7 @@
 <translation id="8721719390026067591">Kikiwashwa, tovuti zinaweza kuomba ruhusa ya kutafuta vifaa vya Bluetooth. Kikizimwa, tovuti haziwezi kutafuta vifaa vya Bluetooth.</translation>
 <translation id="8725066075913043281">Jaribu tena</translation>
 <translation id="8730621377337864115">Nimemaliza</translation>
+<translation id="8737426583868847403">Tovuti ambapo umehifadhi kiwango mahususi cha ukuzaji zitaonekana hapa</translation>
 <translation id="8751914237388039244">Chagua picha</translation>
 <translation id="8800034312320686233">Je, tovuti haifanyi kazi?</translation>
 <translation id="8801436777607969138">Zuia JavaScript katika tovuti mahususi.</translation>

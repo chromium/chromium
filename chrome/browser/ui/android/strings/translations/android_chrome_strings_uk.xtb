@@ -204,6 +204,7 @@
 <translation id="1957557050935255529">Завантаження файлу PDF…</translation>
 <translation id="1959679933317802873">Очікується контент</translation>
 <translation id="1960290143419248813">Chrome більше не оновлюється в цій версії Android</translation>
+<translation id="1963056249988316027">Перевірку особи ввімкнено, але не вдалося підтвердити вашу особу</translation>
 <translation id="1963976881984600709">Стандартний захист</translation>
 <translation id="1966710179511230534">Оновіть свої дані для входу.</translation>
 <translation id="1969037871259811890">Якщо видалити дані вебперегляду, ви не вийдете з облікового запису Google. Для цього потрібно <ph name="BEGIN_LINK1" />вийти з Chrome<ph name="END_LINK1" />.</translation>
@@ -555,6 +556,7 @@
 <translation id="3622349720008044802">Керувати вікнами</translation>
 <translation id="3623240789707551553">{DOMAIN_COUNT,plural, =1{і ще один сайт}one{і ще # сайт}few{і ще # сайти}many{і ще # сайтів}other{і ще # сайту}}</translation>
 <translation id="3631987586758005671">Надсилання на пристрій <ph name="DEVICE_NAME" /></translation>
+<translation id="363484704507524488">Параметрами перевірки особи можна керувати в налаштуваннях захисту від крадіжки. <ph name="BEGIN_LINK" />Перейти в налаштування<ph name="END_LINK" /></translation>
 <translation id="3635073343384702370">Chrome зможе перевірити ваші паролі, коли ви їх збережете</translation>
 <translation id="363596933471559332">Автоматично входити в облікові записи на веб-сайтах за допомогою збережених даних. Якщо цю функцію вимкнено, потрібно вводити облікові дані під час кожного входу.</translation>
 <translation id="3636940436873918441">Вибрані мови</translation>
@@ -727,7 +729,6 @@
 <translation id="4489640160615759754">Нижній екран "Поділитися разом із коротким викладом"</translation>
 <translation id="4494806687727322324">Адміністратор увімкнув можливість зберігати паролі</translation>
 <translation id="4508528996305412043">Відкрито меню картки зі стрічки</translation>
-<translation id="4509501256689523862">Персоналізація реклами залежить від цього параметра, <ph name="BEGIN_LINK_1" />тем оголошень<ph name="END_LINK_1" /> і <ph name="BEGIN_LINK_2" />налаштування файлів cookie<ph name="END_LINK_2" />, а також від налаштувань персоналізації, визначених сайтом, який ви переглядаєте</translation>
 <translation id="4509741852167209430">Сайти обмінюються лише певними типами даних, які дають змогу оцінити ефективність їх оголошень. Наприклад, це може бути інформація про те, чи здійснили ви покупку після відвідування сайту.</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# день тому}one{# день тому}few{# дні тому}many{# днів тому}other{# дня тому}}</translation>
 <translation id="451872707440238414">Шукати закладки</translation>
@@ -740,7 +741,6 @@
 <translation id="4532845899244822526">Вибрати папку</translation>
 <translation id="4543131175509360848">Екран "Немає ключів доступу"</translation>
 <translation id="4547551584605870320">{TAB_COUNT,plural, =1{<ph name="TAB_COUNT_ONE" /> вкладка}one{<ph name="TAB_COUNT_MANY" /> вкладка, <ph name="TAB_COUNT_INCOGNITO" /> анонімно}few{<ph name="TAB_COUNT_MANY" /> вкладки, <ph name="TAB_COUNT_INCOGNITO" /> анонімно}many{<ph name="TAB_COUNT_MANY" /> вкладок, <ph name="TAB_COUNT_INCOGNITO" /> анонімно}other{<ph name="TAB_COUNT_MANY" /> вкладки, <ph name="TAB_COUNT_INCOGNITO" /> анонімно}}</translation>
-<translation id="4554077758708533499">Підключено за допомогою кабелю USB</translation>
 <translation id="4558311620361989323">Комбінації клавіш для роботи з веб-сторінками</translation>
 <translation id="4561730552726921821">Реєстрацію виконано</translation>
 <translation id="4565377596337484307">Сховати пароль</translation>
@@ -1036,6 +1036,7 @@
 <translation id="5869522115854928033">Збережені паролі</translation>
 <translation id="587735546353481577">Щоб підписатися на сайт, перейдіть на нього, відкрийте меню Chrome і натисніть "Підписатися".</translation>
 <translation id="5879072387416556377">Отримуйте найкращі пропозиції</translation>
+<translation id="5883855034004058011">Забагато невдалих спроб автентифікації за допомогою біометричних даних. Щоб повторити спробу, заблокуйте й розблокуйте пристрій.</translation>
 <translation id="5885378508678660271">Сповіщення <ph name="SEPARATOR" /> Chrome скасував ці дозволи, оскільки сайт небезпечний</translation>
 <translation id="5895834791314695851">Незабаром паролі можуть припинити працювати на цьому пристрої. Щоб і надалі використовувати їх, оновіть сервіси Google Play. <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="5899667542927581604">Екран "Немає ключів доступу" закрито</translation>
@@ -1368,7 +1369,6 @@
 <translation id="7260367682327802201">На вашому пристрої Android може бути схоже налаштування. Якщо опцію "Оцінка ефективності реклами" ввімкнено в Chrome і на пристрої Android, компанії можуть визначати ефективність своїх оголошень на веб-сайтах, що ви відвідуєте, та в додатках, якими ви користуєтеся.</translation>
 <translation id="727288900855680735">Надіслати код <ph name="ONE_TIME_CODE" /> на сайт <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Заблокований сайт</translation>
-<translation id="7276100255011548441">Chrome автоматично видаляє теми через 4 тижні. Але якщо ви продовжите пошук за видаленою темою, вона може знову з’явитися в списку. Ви також можете заблокувати теми, якими Chrome не має ділитись із сайтами. Дізнайтесь, <ph name="BEGIN_LINK" />як керувати конфіденційністю в рекламі в Chrome<ph name="END_LINK" />.</translation>
 <translation id="7284878711178835966">Коли ви вводите текст, Chrome надсилає вміст адресного рядка або поля пошуку в пошукову систему за умовчанням</translation>
 <translation id="7289049772085228972">Ви маєте найвищий рівень безпеки в Chrome</translation>
 <translation id="7289303553784750393">Якщо ви підключені до Інтернету, але проблема не зникає, спробуйте інші способи ввійти на сайті <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
@@ -1433,7 +1433,6 @@
 <translation id="7517292544534877198">Використовувати стандартне шифрування Google для паролів в обліковому записі Google</translation>
 <translation id="7518079994230200553">Ця опція зараз не доступна.</translation>
 <translation id="751961395872307827">Немає з’єднання із сайтом</translation>
-<translation id="752220631458524187">Коли завершите, відключіть телефон</translation>
 <translation id="7523960634226602883">Пошук за допомогою камери через Google Об’єктив</translation>
 <translation id="7525248386620136756"><ph name="TAB_GROUPS_AND_TABS_PART" /> закрито й збережено</translation>
 <translation id="752731652852882757">Блокувати в анонімному режимі</translation>

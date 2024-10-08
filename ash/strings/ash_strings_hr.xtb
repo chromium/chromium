@@ -114,6 +114,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="132346741904777634">Kamera je poravnata s gornjim lijevim kutom. Došlo je do sukoba s površinom sustava.</translation>
 <translation id="132415371743256095">Zatvorite <ph name="DESK_NAME" /> i prozore</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> – povezano</translation>
+<translation id="1337081488893096731">Pomoću aplikacije za prijenos sadržaja premjestite podatke sa školskog računa na osobni račun</translation>
 <translation id="1340378040547539434">Smanjivanje stranice</translation>
 <translation id="1341651618736211726">Dodatno</translation>
 <translation id="1341926407152459446">Koristite <ph name="DEVICE_NAME" /> za audioulaz i izlaz</translation>
@@ -242,6 +243,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="17722141032474077">Izračuni</translation>
 <translation id="1774796056689732716">Kalendar, <ph name="CURRENT_MONTH_YEAR" />, trenutačno je odabran datum <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Postavite prikaz nedavnih fotografija, medijskih sadržaja i obavijesti telefona</translation>
+<translation id="1786487376942610288">Prebacivanje između maksimalne ili trenutačne veličine prozora slike u slici</translation>
 <translation id="1787955149152357925">Isključeno</translation>
 <translation id="1796561540704213354">Web-lokacije uključujući stranice koje ste posjetili i otvorene stranice</translation>
 <translation id="179842970735685253">Googleovim uvjetima pružanja usluge</translation>
@@ -337,6 +339,9 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="219905428774326614">Pokretač, sve aplikacije</translation>
 <translation id="2201071101391734388">Nedavna fotografija <ph name="INDEX" /> od <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Sažmi Google zadatke</translation>
+<translation id="2206960886090042977">Ugrađena dodirna podloga onemogućena je jer je povezan miš. Upotrijebite miša ili tipkovnicu da biste potvrdili promjenu.
+
+U suprotnom će se ugrađena dodirna podloga ponovno omogućiti za 30 sekundi.</translation>
 <translation id="2208323208084708176">Način jedinstvene radne površine</translation>
 <translation id="2220572644011485463">PIN ili zaporka</translation>
 <translation id="2222841058024245321">Radna površina 7</translation>
@@ -1907,6 +1912,9 @@ Novo instaliranje</translation>
 Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključivanje/isključivanje na uređaju.</translation>
 <translation id="7523420897035067483">Omogućite značajku Ne uznemiravaj u načinu rada za koncentraciju</translation>
 <translation id="7524043547948122239">Google zadaci</translation>
+<translation id="7524919752437339268">Ugrađena dodirna podloga je onemogućena. Upotrijebite tipkovnicu ili drugi pokazivački uređaj da biste potvrdili promjenu.
+
+U suprotnom će se ugrađena dodirna podloga ponovno omogućiti za 30 sekundi.</translation>
 <translation id="7525067979554623046">Stvori</translation>
 <translation id="7526573455193969409">Mreža se možda nadzire</translation>
 <translation id="7536035074519304529">IP adresa: <ph name="ADDRESS" /></translation>
@@ -2294,6 +2302,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8858369206579825206">Kontrole privatnosti</translation>
 <translation id="8860366331836346216">Dodajte eSIM</translation>
 <translation id="8870509716567206129">Aplikacija ne podržava podijeljeni zaslon.</translation>
+<translation id="8873203135446552888">Potvrdite da želite onemogućiti ugrađenu dodirnu podlogu</translation>
 <translation id="8874184842967597500">Niste povezani</translation>
 <translation id="8875021410787719674">Prebacivanje iz donjeg desnog kuta na pokretač, adresnu traku, traku oznaka, web-lokaciju koja je otvorena i preuzimanja</translation>
 <translation id="8876148469852588625">Događaj <ph name="EVENT_POSITION" /> od <ph name="EVENT_TOTAL_COUNT" /></translation>

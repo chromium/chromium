@@ -108,7 +108,9 @@
 <translation id="2683434792633810741">ລຶບ ແລະ ຣີເຊັດບໍ?</translation>
 <translation id="2713106313042589954">ປິດກ້ອງຖ່າຍຮູບ</translation>
 <translation id="2717722538473713889">ທີ່ຢູ່ອີເມວ</translation>
+<translation id="2726059656860238749">ເປີດໃຊ້ Chrome ໂດຍເນັ້ນໃສ່ Omnibox, ເຊິ່ງຊ່ວຍຫຼຸດເວລາສະຕາດອັບຂອງອຸປະກອນລະດັບລຸ່ມ.</translation>
 <translation id="2750481671343847896">ເວັບໄຊສາມາດສະແດງຂໍ້ຄວາມການເຂົ້າສູ່ລະບົບຈາກບໍລິການຕົວຕົນຕ່າງໆໄດ້.</translation>
+<translation id="2787357173144933081">ເລີ່ມຕົ້ນນຳໃຊ້ Omnibox</translation>
 <translation id="2790501146643349491">ເມື່ອເປີດ, ເວັບໄຊທີ່ປິດຫຼ້າສຸດສາມາດສຳເລັດການສົ່ງ ແລະ ຮັບຂໍ້ມູນໄດ້. ເມື່ອປິດ, ເວັບໄຊທີ່ປິດຫຼ້າສຸດບໍ່ສາມາດສຳເລັດການສົ່ງ ແລະ ຮັບຂໍ້ມູນໄດ້.</translation>
 <translation id="2822354292072154809">ທ່ານແນ່ໃຈບໍ່ວ່າທ່ານຕ້ອງການຣີເຊັດການອະນຸຍາດເວັບໄຊທັງໝົດສຳລັບ <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">ຮ້ອງຂໍມຸມມອງມືຖື</translation>
@@ -146,6 +148,7 @@
 <translation id="3295602654194328831">ເຊື່ອງຂໍ້ມູນ</translation>
 <translation id="3328801116991980348">ຂໍ້​ມູນ​ເວັບ​ໄຊທ໌</translation>
 <translation id="3333961966071413176">ລາຍຊື່ຜູ້ຕິດຕໍ່ທັງໝົດ</translation>
+<translation id="3360338140203645771">ລຶບລະດັບການຊູມທີ່ບັນທຶກໄວ້ບໍ?</translation>
 <translation id="3362437373201486687">ກຳລັງສະແກນຫາອຸປະກອນ Bluetooth</translation>
 <translation id="3386292677130313581">ຖາມກ່ອນທີ່ຈະອະນຸຍາດໃຫ້ເວັບໄຊຮູ້ສະຖານທີ່ຂອງທ່ານ (ແນະນຳ)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
@@ -243,7 +246,6 @@
 <translation id="4962975101802056554">ຖອນການອະນຸຍາດທັງໝົດສຳລັບອຸປະກອນ</translation>
 <translation id="497421865427891073">ໄປຂ້າງ​ຫນ້າ</translation>
 <translation id="4976702386844183910">ເຂົ້າເບິ່ງຫຼ້າສຸດ <ph name="DATE" /></translation>
-<translation id="4985206706500620449">ທ່ານໄດ້ອະນຸຍາດຄຸກກີ້ພາກສ່ວນທີສາມສຳລັບເວັບໄຊນີ້</translation>
 <translation id="4994033804516042629">ບໍ່ເຫັນລາຍຊື່ຕິດຕໍ່</translation>
 <translation id="4996978546172906250">ແຊຣ໌ຜ່ານ</translation>
 <translation id="5001526427543320409">ຄຸກກີ້ພາກສ່ວນທີສາມ</translation>
@@ -360,6 +362,7 @@
 <translation id="6527303717912515753">ແຊຣ໌</translation>
 <translation id="652937045869844725">ລອງອະນຸຍາດຄຸກກີ້ພາກສ່ວນທີສາມ, ເຊິ່ງໝາຍຄວາມວ່າການປົກປ້ອງຈະຫຼຸດລົງ ແຕ່ຄຸນສົມບັດຂອງເວັບໄຊມີແນວໂນ້ມທີ່ຈະເຮັດວຽກໄດ້ຫຼາຍກວ່າ</translation>
 <translation id="6530703012083415527">ເມື່ອເປີດ, ເວັບໄຊສາມາດໃຊ້ປັອບອັບ ແລະ ປ່ຽນເສັ້ນທາງໄດ້. ເມື່ອປິດ, ເວັບໄຊບໍ່ສາມາດໃຊ້ປັອບອັບ ແລະ ປ່ຽນເສັ້ນທາງໄດ້.</translation>
+<translation id="6540488083026747005">ທ່ານໄດ້ອະນຸຍາດຄຸກກີ້ພາກສ່ວນທີສາມຢູ່ເວັບໄຊນີ້ແລ້ວ</translation>
 <translation id="6545864417968258051">ການສະແກນ Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{ບລັອກ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ແລະ ອີກ <ph name="NUM_MORE" /> ລາຍການໄວ້ແລ້ວ}other{ບລັອກ <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ແລະ ອີກ <ph name="NUM_MORE" /> ລາຍການໄວ້ແລ້ວ}}</translation>
 <translation id="6554732001434021288">ເຂົ້າເບິ່ງຫຼ້າສຸດ <ph name="NUM_DAYS" /> ມື້ກ່ອນ</translation>

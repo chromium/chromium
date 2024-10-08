@@ -70,6 +70,7 @@
 <translation id="1919130412786645364">Tillat Chrome-pålogging</translation>
 <translation id="1953553007165777902">Laster ned … <ph name="MINUTE" /> minutt(er) igjen</translation>
 <translation id="1982647487457769627">Chrome fungerer på flere plattformer for å gi deg en kjent opplevelse uansett enhet</translation>
+<translation id="19955905961160405">Bruk Google Lens til å søke etter det som er på skjermen.</translation>
 <translation id="2001586581944147178">Gjør det vanskeligere for folk med tilgang til internettrafikken din å se hvilke nettsteder du besøker. Chrome bruker en sikker tilkobling for å finne IP-adressen til nettsteder i DNS (Domain Name System).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Denne utvidelsen støttes ikke lenger. Chrome anbefaler at du fjerner den.}other{Disse utvidelsene støttes ikke lenger. Chrome anbefaler at du fjerner dem.}}</translation>
 <translation id="2018528049276128029">Hver profil har sin egen Chrome-informasjon, som bokmerker, logg, passord med mer</translation>
@@ -87,6 +88,7 @@
 <translation id="2126108037660393668">Kunne ikke bekrefte den nedlastede filen.</translation>
 <translation id="2128411189117340671">Administrer Chrome-profiler</translation>
 <translation id="2131230230468101642">For å beskytte personvernet ditt sletter vi automatisk interessene dine som er eldre enn fire uker. Når du fortsetter å surfe, kan det hende at interesser havner på listen igjen. Alternativt kan du fjerne interesse du ikke vil at Chrome skal vurdere.</translation>
+<translation id="2137162749895930932">Lukk oversettelsesskjermen</translation>
 <translation id="2139300032719313227">Start ChromeOS på nytt</translation>
 <translation id="2151406531797534936">Start Chrome på nytt nå</translation>
 <translation id="2163089732491971196">For å bruke og lagre Chrome-data i Google-kontoen din, skriv inn passordfrasen din</translation>
@@ -170,6 +172,7 @@
 <translation id="3019382870990049182">Start på nytt for å oppdatere &amp;ChromeOS Flex</translation>
 <translation id="3037838751736561277">Google Chrome er i bakgrunnsmodus.</translation>
 <translation id="3038232873781883849">Venter på installering</translation>
+<translation id="3045032126857188731">Oversatt språk: <ph name="LANGUAGE" /></translation>
 <translation id="3059710691562604940">Safe Browsing er slått av. Chrome anbefaler at du slår det på.</translation>
 <translation id="306179102415443347">Bruk snarveien for å åpne Google Passordlagring raskt. Du kan flytte snarveien til startskjermen eller appoversikten på datamaskinen.</translation>
 <translation id="3065168410429928842">Chrome-fane</translation>
@@ -188,7 +191,6 @@
 <translation id="3234642784688107085">Prøv nye AI-funksjoner for å opprette temaer, få skrivehjelp og holde orden</translation>
 <translation id="3245429137663807393">Hvis du også deler Chrome-bruksrapporter, inneholder disse rapportene nettadressene du besøker</translation>
 <translation id="3261565993776444564">Prøv en ny farge for å tilpasse nettleseren din</translation>
-<translation id="3269209112443570745">Nyhet! En enkel måte å søke etter ting på skjermen din på</translation>
 <translation id="3282568296779691940">Logg på Chrome</translation>
 <translation id="3286538390144397061">Start på nytt nå</translation>
 <translation id="3292333338048274092">Deretter må du starte Chrome på nytt.</translation>
@@ -238,12 +240,14 @@
 <translation id="386202838227397562">Lukk alle Google Chrome-vinduer og prøv på nytt.</translation>
 <translation id="3865754807470779944">Versjon <ph name="PRODUCT_VERSION" /> av Chrome er installert</translation>
 <translation id="3873044882194371212">Åpne linken i et inko&amp;gnitovindu i Chrome</translation>
+<translation id="3885770153807205175">Språkvelger</translation>
 <translation id="3889417619312448367">Avinstaller Google Chrome</translation>
 <translation id="3941890832296813527">Installasjonsfeil: Navnet på installasjonsprogrammet er ugyldig eller støttes ikke.</translation>
 <translation id="3973161977468201858">Google Chrome vil slette Google Passordlagring-dataene dine. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="398236277091248993">Chrome holder seg rask med funksjoner som gir økt ytelse</translation>
 <translation id="3999683152997576765">Du kan se og fjerne interesseemnene som nettsteder bruker for å vise deg annonser. Chrome anslår interessene dine basert på den nylige nettleserloggen din.</translation>
 <translation id="4022972681110646219">Oversett skjermen</translation>
+<translation id="4023601594785368013">Originalspråk: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">ChromeOS må startes på nytt for at oppdateringen skal tas i bruk.</translation>
 <translation id="4050175100176540509">Viktige sikkerhetsforbedringer og nye funksjoner er tilgjengelige i den nyeste versjonen.</translation>
 <translation id="4053720452172726777">Tilpass og kontroller Google Chrome</translation>
@@ -515,6 +519,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="7514258452813684157">Google-oppdateringstjeneste</translation>
 <translation id="7515191208480168435">Du kan feste Google Lens for å gjøre det enklere å finne den</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
+<translation id="756809126120519699">Chrome-dataene er slettet</translation>
 <translation id="7572537927358445944">Av • Chrome kan ikke bekrefte hvor denne utvidelsen kommer fra</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" />-installasjonsprogram</translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
@@ -532,6 +537,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="7668816516367091728">Utfør oppgaver som oversetting, utregninger med mer – direkte fra adressefeltet</translation>
 <translation id="7670287553302121848">Chrome-kontoen krever ny autentisering</translation>
 <translation id="769538538642757151">Chrome gir deg beskjed hvis noe må gjennomgås</translation>
+<translation id="77283119132245232">Leverer tjenester for systemsporing for <ph name="BROWSER_NAME" />. Hvis denne tjenesten er deaktivert, inkluderer ikke ytelsessporingene som nettleseren oppretter, systemomfattende hendelser som kontekstbytte og hendelser for trådklarhet.</translation>
 <translation id="7747138024166251722">Installasjonsprogrammet kunne ikke opprette en midlertidig katalog. Kontroller at du har nok ledig diskplass og tillatelse til å installere programvare.</translation>
 <translation id="7761834446675418963">Klikk på navnet ditt for å åpne Chrome og starte surfingen.</translation>
 <translation id="7763983146198734674">Lagre passordene dine, og få tilgang til dem uansett hvor du er</translation>

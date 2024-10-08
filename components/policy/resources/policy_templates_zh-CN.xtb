@@ -3543,19 +3543,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="3701121231485832347">控制由 <ph name="MS_AD_NAME" /> 管理的 <ph name="PRODUCT_OS_NAME" />设备的专用设置。</translation>
 <translation id="3702518095257671450">远程证明</translation>
 <translation id="3702647575225525306"><ph name="POLICY_NAME" />（我们已弃用并将于日后移除单行字段。请开始使用下面的多行文本框。）</translation>
-<translation id="3705648857103435170">此政策会为受管理的用户启用 Graduation 应用。Graduation 应用可帮助用户将其数据从受管理的账号转移到消费者账号。
-
-    如果 <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> 设置为 <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE_TRUE" />，系统会根据当地时间在开始日期和结束日期当天以及这两个日期之间的日期显示 Graduation 应用。
-
-    如果 <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> 设置为 <ph name="GRADUATION_ENABLEMENT_STATUS_IS_ENABLED_VALUE_FALSE" /> 或未设置，系统将不会显示该应用。
-
-    如果未设置 <ph name="GRADUATION_ENABLEMENT_STATUS_START_DATE_VALUE" />，则系统会一直显示该应用，直至结束日期。
-
-    如果未设置 <ph name="GRADUATION_ENABLEMENT_STATUS_END_DATE_VALUE" />，则系统会自开始日期起无限期地显示该应用。
-
-    如果 <ph name="GRADUATION_ENABLEMENT_STATUS_START_DATE_VALUE" /> 和 <ph name="GRADUATION_ENABLEMENT_STATUS_END_DATE_VALUE" /> 均未设置，则系统会无限期地显示该应用。如果开始日期和结束日期无效，则系统不会显示 Graduation 应用。这包括提供的日期不存在或结束日期早于开始日期的情况。
-
-    还需要启用通过“导出”进行数据传输的功能，才能让 Graduation 应用正常运行。如需了解详情，请访问 https://support.google.com/a/answer/6364687。</translation>
 <translation id="3711561721191203926">如果此政策已启用，只要因 <ph name="PRIVATE_NETWORK_ACCESS" /> 检查失败而应在 <ph name="DEV_TOOLS_NAME" /> 中显示警告，系统就会改为屏蔽主请求。
 
 如果此政策已停用或未设置，系统不会强制执行所有 <ph name="PRIVATE_NETWORK_ACCESS" /> 警告，也不会屏蔽相应请求。
@@ -4269,17 +4256,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
       如果此政策未设置，系统会应用默认时间间隔（10 分钟）。</translation>
 <translation id="4290231183305601970">如果安装被阻止，用户将会在 Chrome 应用商店中看到的文本。</translation>
-<translation id="4291413477651927481"><ph name="PRODUCT_NAME" /> 开发者工具中的这些功能采用生成式 AI 模型来提供额外的调试信息。如需使用这些功能，<ph name="PRODUCT_NAME" /> 必须收集错误消息、堆栈轨迹、代码段和网络请求等数据，并将这些数据发送到归 Google 所有的服务器，该服务器会运行生成式 AI 模型。网络请求中的响应正文或身份验证信息和 Cookie 标头不会包含在发送至服务器的数据中。
-
-0 表示为用户启用此功能，并向 Google 发送相关数据来帮助训练或改进 AI 模型。相关数据可能包括提示、输入、输出和来源资料，具体取决于相应功能。工作人员可能会仅出于改进 AI 模型的目的而审核这些数据。除非下文另有说明，否则默认值是 0。
-
-1 表示为用户启用此功能，但不向 Google 发送数据来训练或改进 AI 模型。对于受 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企业用户和受 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版账号，默认值是 1。
-
-2 表示停用此功能。
-
-开发者工具的生成式 AI 功能包括：
-
-- 控制台数据分析：解释控制台消息，并建议如何修复控制台错误。</translation>
 <translation id="4293187705196369087">借助此政策，您可以允许/禁止系统在磁盘空间不足时显示通知。此设置适用于相应设备上的所有用户。
 
       如果此政策已启用，系统将会在剩余磁盘空间不足时显示通知。
@@ -10738,7 +10714,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       如果此政策设为 true 或未配置，所有用户都将能够登录。</translation>
 <translation id="966425658642788645">应用默认行为</translation>
-<translation id="970144760302377175">配置 <ph name="PRODUCT_OS_NAME" /> Graduation 工具可用的时间</translation>
 <translation id="971677226939413180">不提供“以图片形式打印”选项供用户选择。</translation>
 <translation id="974349541138387272">指定所需 DNS-over-HTTPS 解析器的 URI 模板</translation>
 <translation id="978658824596356870">24 小时制</translation>

@@ -114,6 +114,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="132346741904777634">Camera snapped to the top-left corner. Conflict with system surface.</translation>
 <translation id="132415371743256095">Close <ph name="DESK_NAME" /> and windows</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> connected</translation>
+<translation id="1337081488893096731">Use the Content Transfer app to move your school account data to your personal account</translation>
 <translation id="1340378040547539434">Zoom out on page</translation>
 <translation id="1341651618736211726">Overflow</translation>
 <translation id="1341926407152459446">Use '<ph name="DEVICE_NAME" />' for audio input and output</translation>
@@ -242,6 +243,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="17722141032474077">Calculations</translation>
 <translation id="1774796056689732716">Calendar, <ph name="CURRENT_MONTH_YEAR" />, currently <ph name="DATE" /> is selected.</translation>
 <translation id="178347895271755507">Set up viewing your phone's recent photos, media and notifications</translation>
+<translation id="1786487376942610288">Switch between the maximum or current size of the picture-in-picture window</translation>
 <translation id="1787955149152357925">Off</translation>
 <translation id="1796561540704213354">Websites including pages you've visited and open pages</translation>
 <translation id="179842970735685253">Google's Terms of Service</translation>
@@ -337,6 +339,9 @@ Here are some things that you can try to get started.</translation>
 <translation id="219905428774326614">Launcher, all apps</translation>
 <translation id="2201071101391734388">Recent photo <ph name="INDEX" /> of <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Collapse Google Tasks</translation>
+<translation id="2206960886090042977">The built-in touchpad is disabled because a mouse is connected. Use the mouse or keyboard to confirm the change.
+
+Otherwise, the built-in touchpad will be re-enabled in 30 seconds.</translation>
 <translation id="2208323208084708176">Unified desktop mode</translation>
 <translation id="2220572644011485463">PIN or password</translation>
 <translation id="2222841058024245321">Desk 7</translation>
@@ -1468,6 +1473,7 @@ No devices connected.</translation>
 <translation id="598407983968395253">Use template</translation>
 <translation id="5986723678596105470">Join with Google Meet</translation>
 <translation id="598882571027504733">To get the update, restart your Chromebook with the keyboard attached.</translation>
+<translation id="5990992855591814753">Stay on track with personalised Focus playlists. Get YouTube Music and YouTube, ad-free, with three months of YouTube Premium at no cost. Terms apply.</translation>
 <translation id="5998374579424866922">Turn off game controls</translation>
 <translation id="6000279412553873020">Keys, buttons and more</translation>
 <translation id="6012623610530968780">Page <ph name="SELECTED_PAGE" /> of <ph name="TOTAL_PAGE_NUM" /></translation>
@@ -1906,6 +1912,9 @@ New install</translation>
 To shut down the device, press and hold the power button on the device again.</translation>
 <translation id="7523420897035067483">Enable Do Not Disturb while in Focus</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">The built-in touchpad is disabled. Use your keyboard or another pointer device to confirm the change.
+
+Otherwise, the built-in touchpad will be re-enabled in 30 seconds.</translation>
 <translation id="7525067979554623046">Create</translation>
 <translation id="7526573455193969409">Network may be monitored</translation>
 <translation id="7536035074519304529">IP address: <ph name="ADDRESS" /></translation>
@@ -2293,6 +2302,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8858369206579825206">Privacy controls</translation>
 <translation id="8860366331836346216">Add eSIM</translation>
 <translation id="8870509716567206129">App does not support split-screen.</translation>
+<translation id="8873203135446552888">Confirm that you want to disable the built-in touchpad</translation>
 <translation id="8874184842967597500">Not connected</translation>
 <translation id="8875021410787719674">Move between bottom-right corner, Launcher, address bar, bookmarks bar, website that's open and downloads</translation>
 <translation id="8876148469852588625">Event <ph name="EVENT_POSITION" /> of <ph name="EVENT_TOTAL_COUNT" /></translation>

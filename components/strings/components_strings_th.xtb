@@ -229,6 +229,7 @@
 <translation id="138810468159004008">อนุญาตขณะเข้าชมเว็บไซต์</translation>
 <translation id="1391625539203220400">บันทึก IBAN ไว้ในอุปกรณ์นี้ไหม</translation>
 <translation id="139305205187523129"><ph name="HOST_NAME" /> ไม่ส่งข้อมูลใดๆ</translation>
+<translation id="1393071644879491291">ผู้โจมตีเว็บไซต์ที่คุณพยายามเข้าชมอาจหลอกล่อให้คุณติดตั้งซอฟต์แวร์หรือเปิดเผยข้อมูล เช่น รหัสผ่าน หมายเลขบัตรเครดิต หรือหมายเลขโทรศัพท์ Chrome ขอแนะนำเป็นอย่างยิ่งให้กลับสู่ความปลอดภัย <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับคำเตือนนี้<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1405567553485452995">เขียวอ่อน</translation>
 <translation id="1406500794671479665">กำลังยืนยันความถูกต้อง...</translation>
 <translation id="1406812885827747674">อนุญาตในครั้งนี้</translation>
@@ -254,7 +255,6 @@
 <translation id="1433225466058025572">ลองย้ายไฟล์อีกครั้ง</translation>
 <translation id="1435940442311036198">ใช้พาสคีย์ในอุปกรณ์อื่น</translation>
 <translation id="1436185428532214179">สามารถขอแก้ไขไฟล์และโฟลเดอร์ในอุปกรณ์ของคุณได้</translation>
-<translation id="1441816242347931036">เปิดเพื่อดำเนินการต่อ</translation>
 <translation id="1442386063175183758">พับทบด้านขวา</translation>
 <translation id="1442987760062738829">เจาะรู</translation>
 <translation id="1446396933673057385">การตรวจสอบความถูกต้อง</translation>
@@ -283,6 +283,7 @@
 <translation id="1483493594462132177">ส่ง</translation>
 <translation id="1484449009683144042">ฟีเจอร์ช่วยเหลือในการเขียนของ AI เวอร์ชันทดลองและอาจไม่ถูกต้องเสมอไป
     <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
+<translation id="1486096554574027028">ค้นหารหัสผ่าน</translation>
 <translation id="1492194039220927094">การพุชนโยบาย:</translation>
 <translation id="1495677929897281669">กลับไปที่แท็บ</translation>
 <translation id="1500286806237135498">กล้อง (<ph name="CAMERAS_COUNT" /> ตัว)</translation>
@@ -664,6 +665,7 @@
 <translation id="2175630235841878061">ไฟล์ที่มีขนาดเกิน 100 MB ไม่พร้อมให้ดาวน์โหลด</translation>
 <translation id="2176974405772725904">บันทึกที่อยู่ในบัญชี</translation>
 <translation id="2178665390943006934">ปุ่มอัปเดต Chrome เปิดใช้งานเพื่ออัปเดต Chrome จากการตั้งค่า Chrome</translation>
+<translation id="2178904466768126352">ผู้โจมตีเว็บไซต์ที่คุณพยายามเข้าชมอาจติดตั้งซอฟต์แวร์ที่เป็นอันตรายซึ่งจะขโมยหรือลบข้อมูล เช่น รหัสผ่าน รูปภาพ ข้อความ หรือหมายเลขบัตรเครดิต</translation>
 <translation id="2179003720612888584"><ph name="SITE_TITLE" /> ใน <ph name="SITE_DOMAIN_NAME" /></translation>
 <translation id="2181821976797666341">นโยบาย</translation>
 <translation id="2182170103603703676">เครื่องล้างจาน</translation>
@@ -751,7 +753,6 @@
 <translation id="2328651992442742497">อนุญาต (ค่าเริ่มต้น)</translation>
 <translation id="2328955282645810595">การก่อสร้างและเครื่องมือไฟฟ้า</translation>
 <translation id="2330137317877982892"><ph name="CREDIT_CARD" /> หมดอายุ <ph name="EXPIRATION_DATE_ABBR" /></translation>
-<translation id="2337044517221264923">กลับไปเขียนต่อ</translation>
 <translation id="2337852623177822836">ผู้ดูแลระบบเป็นผู้ควบคุมการตั้งค่า</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> ต้องการจับคู่</translation>
 <translation id="2346319942568447007">รูปภาพที่คุณคัดลอก</translation>
@@ -1406,6 +1407,7 @@
 <translation id="3566021033012934673">การเชื่อมต่อของคุณไม่เป็นส่วนตัว</translation>
 <translation id="3566336457819493938">215 x 315 มม.</translation>
 <translation id="3566649245868131295">งานด้านสุขภาพและการแพทย์</translation>
+<translation id="3566681680543111735">คัดลอกสตริงรูปแบบ</translation>
 <translation id="3567778190852720481">ลงทะเบียนด้วยบัญชีองค์กรไม่ได้ (บัญชีองค์กรไม่มีสิทธิ์)</translation>
 <translation id="3567901620846335314">100 x 150 มม.</translation>
 <translation id="3568886473829759308">เข้าถึงเว็บไซต์เพื่อดูรายละเอียด แหล่งข้อมูล หรือบริการจากธุรกิจ</translation>
@@ -1796,6 +1798,7 @@
 <translation id="4233220688695460165">Chrome จะลบหัวข้อและเว็บไซต์ที่แนะนำโฆษณาออกโดยอัตโนมัติภายใน 30 วัน หรือคุณจะบล็อกบางหัวข้อและเว็บไซต์ที่คุณไม่ชอบก็ได้</translation>
 <translation id="4235360514405112390">ถูกต้อง</translation>
 <translation id="4239799716689808527">ป้าย</translation>
+<translation id="4241830393007970744">ผู้โจมตีเว็บไซต์ที่คุณพยายามเข้าชมอาจหลอกล่อให้คุณติดตั้งซอฟต์แวร์หรือเปิดเผยข้อมูล เช่น รหัสผ่าน หมายเลขบัตรเครดิต หรือหมายเลขโทรศัพท์</translation>
 <translation id="4242380780309416996">ซอง (น้ำหนักมาก)</translation>
 <translation id="4242981939686657948">หากต้องการค้นหาประวัติการท่องเว็บด้วยวิธีที่มีประสิทธิภาพมากขึ้น ให้เปิด</translation>
 <translation id="4244926541863471678">ภาพยนตร์</translation>
@@ -2086,7 +2089,6 @@
 <translation id="4792686369684665359">ข้อมูลที่คุณกำลังจะส่งไม่ปลอดภัย</translation>
 <translation id="4793219378458250238">11 x 12 นิ้ว</translation>
 <translation id="4796594887379589189">รหัสบัญชีงาน</translation>
-<translation id="4798078619018708837">ป้อนวันที่หมดอายุและ CVC ของ <ph name="CREDIT_CARD" /> เพื่ออัปเดตรายละเอียดของบัตร เมื่อยืนยันแล้ว ระบบจะแชร์รายละเอียดของบัตรจากบัญชี Google กับเว็บไซต์นี้</translation>
 <translation id="4798269756263412078">รับการแจ้งเตือนหากราคาลดลงในเว็บไซต์ใดก็ตาม ระบบจะส่งการแจ้งเตือนไปยังอีเมลของคุณ</translation>
 <translation id="4800132727771399293">ตรวจสอบวันหมดอายุและ CVC แล้วลองอีกครั้ง</translation>
 <translation id="4803924862070940586"><ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
@@ -2291,7 +2293,6 @@
 <translation id="5164798890604758545">มีการป้อนข้อความ</translation>
 <translation id="5164928537947209380">เครื่องมือ AI เวอร์ชันทดลองนี้อาจไม่ถูกต้องเสมอไป ระบบจะส่งเนื้อหาของคุณไปยัง Google เพื่อปรับปรุงประสิทธิภาพ
     <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
-<translation id="516920405563544094">ป้อน CVC ของ <ph name="CREDIT_CARD" /> เมื่อยืนยันแล้ว ระบบจะแชร์รายละเอียดของบัตรจากบัญชี Google กับเว็บไซต์นี้</translation>
 <translation id="5169827969064885044">คุณอาจเข้าถึงบัญชีขององค์กรไม่ได้หรือถูกโจรกรรมข้อมูลประจำตัว Chrome ขอแนะนำให้เปลี่ยนรหัสผ่านตอนนี้เลย</translation>
 <translation id="5171045022955879922">ค้นหาหรือพิมพ์ URL</translation>
 <translation id="5172758083709347301">ผู้ใช้คอมพิวเตอร์นี้</translation>
@@ -2604,7 +2605,7 @@
 <translation id="5743684619253032786">ผลิตภัณฑ์ดูแลเล็บ</translation>
 <translation id="5745733273847572235">สามารถขอตำแหน่งของคุณได้</translation>
 <translation id="5750869797196646528">การติดตามการเคลื่อนไหวของมือ</translation>
-<translation id="5752327398324808817">ป้อน 1 คำหรือ 2 คำ</translation>
+<translation id="5752327398324808817">ป้อน 1-2 คำ</translation>
 <translation id="5759751709240058861">ใช้และเคลื่อนย้ายกล้องของคุณ</translation>
 <translation id="5763042198335101085">ป้อนที่อยู่อีเมลที่ถูกต้อง</translation>
 <translation id="5764725887548570807">รูปแบบต้นทางไม่ถูกต้อง</translation>
@@ -3058,6 +3059,7 @@
 <translation id="6579858392010591435">วันหยุดและเทศกาล</translation>
 <translation id="6579990219486187401">ชมพูอ่อน</translation>
 <translation id="6581831440014388355">การกำจัดหนวดเคราและขนตามร่างกายที่ไม่พึงประสงค์</translation>
+<translation id="658230438113661756">ผู้โจมตีเว็บไซต์ที่คุณพยายามเข้าชมอาจติดตั้งซอฟต์แวร์ที่เป็นอันตรายซึ่งจะขโมยหรือลบข้อมูล เช่น รหัสผ่าน รูปภาพ ข้อความ หรือหมายเลขบัตรเครดิต Chrome ขอแนะนำเป็นอย่างยิ่งให้กลับสู่ความปลอดภัย <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับคำเตือนนี้<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="6587893660316489419">Envelope B5</translation>
 <translation id="6587923378399804057">ลิงก์ที่คุณคัดลอก</translation>
 <translation id="6591833882275308647"><ph name="DEVICE_TYPE" /> ของคุณไม่มีการจัดการ</translation>
@@ -3131,6 +3133,7 @@
 <translation id="6710648923880003133">แนะนำรหัสผ่านที่รัดกุม</translation>
 <translation id="671076103358959139">โทเค็นการลงทะเบียน:</translation>
 <translation id="6711464428925977395">พร็อกซีเซิร์ฟเวอร์ผิดปกติหรือที่อยู่ไม่ถูกต้อง</translation>
+<translation id="6711700233707023861">คัดลอกสตริงรูปแบบไปยังคลิปบอร์ดแล้ว</translation>
 <translation id="6716039223770814796">เปรียบเทียบ<ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> รายการ</translation>
 <translation id="6716672519412350405"><ph name="URL" /> ต้องการสร้างแผนที่ 3 มิติของสิ่งที่อยู่รอบตัวคุณและติดตามตำแหน่งของกล้อง</translation>
 <translation id="6717692133381953670">แท็บที่ส่งจาก <ph name="DEVICE_NAME" /></translation>
@@ -3486,7 +3489,6 @@
 <translation id="7380398842872229465">10 x 15 นิ้ว</translation>
 <translation id="7388380253839603603">ราคาน้ำมันและเชื้อเพลิงยานพาหนะ</translation>
 <translation id="7388594495505979117">{0,plural, =1{อุปกรณ์จะรีสตาร์ทใน 1 นาที}other{อุปกรณ์จะรีสตาร์ทใน # นาที}}</translation>
-<translation id="7390545607259442187">ยืนยันบัตร</translation>
 <translation id="7392089738299859607">อัปเดตที่อยู่</translation>
 <translation id="7393161616326137353">เกมผจญภัย</translation>
 <translation id="7393475648162498734">แสดงรางวัลและสิทธิประโยชน์ที่ใช้กับบัตรของคุณได้เมื่อชำระเงิน</translation>
@@ -3660,6 +3662,7 @@
 <translation id="7659327900411729175">Envelope Kaku 8</translation>
 <translation id="766014026101194726">{0,plural, =1{นโยบายของผู้ดูแลระบบบล็อกการอัปโหลดไฟล์นี้}other{นโยบายของผู้ดูแลระบบบล็อกการอัปโหลดไฟล์ # รายการ}}</translation>
 <translation id="7660456820368115565">เกมแบบผู้เล่นหลายคน</translation>
+<translation id="7661591871037163355">ตารางเปรียบเทียบเต็มแล้ว นำคอลัมน์ออกเพื่อเพิ่มคอลัมน์ใหม่</translation>
 <translation id="7662298039739062396">การตั้งค่าควบคุมโดยส่วนขยาย</translation>
 <translation id="7663736086183791259">ใบรับรอง <ph name="CERTIFICATE_VALIDITY" /></translation>
 <translation id="7666397036351755929">ไม่อนุญาตในโหมดไม่ระบุตัวตน</translation>
@@ -4103,6 +4106,7 @@
 <translation id="8458202188076138974">Letter Extra</translation>
 <translation id="8460854335417802511">เปิด</translation>
 <translation id="8461694314515752532">เข้ารหัสข้อมูลที่ซิงค์ด้วยรหัสผ่านการซิงค์ของคุณเอง</translation>
+<translation id="8461973047386722744">ไม่พบรหัสผ่าน</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{บัตรเครดิต 1 ใบ}other{บัตรเครดิต # ใบ}}</translation>
 <translation id="8467494337615822642">ไปที่หน้าการตรวจสอบความปลอดภัยของ Chrome ในการตั้งค่า</translation>
 <translation id="8468358362970107653">Envelope C3</translation>

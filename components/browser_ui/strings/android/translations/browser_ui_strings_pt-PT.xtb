@@ -108,7 +108,9 @@
 <translation id="2683434792633810741">Eliminar e repor?</translation>
 <translation id="2713106313042589954">Desligar câmara</translation>
 <translation id="2717722538473713889">Moradas de email</translation>
+<translation id="2726059656860238749">Inicie o Chrome com o foco na caixa geral, reduzindo o tempo de arranque em dispositivos de gama baixa.</translation>
 <translation id="2750481671343847896">Os sites podem mostrar pedidos de início de sessão de serviços de identidade.</translation>
+<translation id="2787357173144933081">Iniciar rapidamente caixa geral</translation>
 <translation id="2790501146643349491">Quando esta opção está ativada, os sites fechados recentemente podem concluir o envio e a receção de dados. Quando esta opção está desativada, os sites fechados recentemente não podem concluir o envio nem a receção de dados.</translation>
 <translation id="2822354292072154809">Tem a certeza de que quer repor todas as autorizações do site para <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Peça a vista de dispositivo móvel</translation>
@@ -146,6 +148,7 @@
 <translation id="3295602654194328831">Ocultar informações</translation>
 <translation id="3328801116991980348">Informações do site</translation>
 <translation id="3333961966071413176">Todos os contactos</translation>
+<translation id="3360338140203645771">Eliminar níveis de zoom?</translation>
 <translation id="3362437373201486687">A procurar dispositivos Bluetooth</translation>
 <translation id="3386292677130313581">Perguntar antes de permitir que os sites conheçam a sua localização (recomendado)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" />%%</translation>
@@ -243,7 +246,6 @@
 <translation id="4962975101802056554">Revogar todas as autorizações do dispositivo</translation>
 <translation id="497421865427891073">Avançar</translation>
 <translation id="4976702386844183910">Última visita a <ph name="DATE" /></translation>
-<translation id="4985206706500620449">Permitiu cookies de terceiros para este site</translation>
 <translation id="4994033804516042629">Não foram encontrados contactos</translation>
 <translation id="4996978546172906250">Partilhar através de</translation>
 <translation id="5001526427543320409">Cookies de terceiros</translation>
@@ -360,6 +362,7 @@
 <translation id="6527303717912515753">Partilhar</translation>
 <translation id="652937045869844725">Experimente permitir os cookies de terceiros, o que significa que tem menos proteção, mas é mais provável que as funcionalidades do site funcionem</translation>
 <translation id="6530703012083415527">Quando esta opção está ativada, os sites podem usar pop-ups e redirecionamentos. Quando esta opção está desativada, os sites não podem usar pop-ups e redirecionamentos.</translation>
+<translation id="6540488083026747005">Permitiu cookies de terceiros neste site</translation>
 <translation id="6545864417968258051">Procura de Bluetooth</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" /> bloqueadas.}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e mais <ph name="NUM_MORE" /> bloqueadas.}}</translation>
 <translation id="6554732001434021288">Última visita há <ph name="NUM_DAYS" /> dias</translation>

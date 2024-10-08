@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Displayhelligkeit verringern</translation>
 <translation id="2086091080968010660">Zeitbasierte Änderungen können ungenau sein. Aktiviere den Standortzugriff für Systemdienste in den Einstellungen.</translation>
 <translation id="2102231663024125441">Textbearbeitung</translation>
-<translation id="2102648867808308635">Hilfe beim Lesen dieser Seite</translation>
 <translation id="2105810540595158374">Das Gerät ist ein Controller.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, Version <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">Derzeit nur auf Englisch (USA) verfügbar</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">Alle Apps anzeigen</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Leistungs-Trace-Daten<ph name="END_LINK1" /> senden</translation>
 <translation id="3517001332549868749">Chrome OS-Update</translation>
-<translation id="3522508178835057262">Transkripte mit mehr als <ph name="MAX_WORD_LENGTH" /> Wörtern werden derzeit nicht unterstützt</translation>
 <translation id="3527036260304016759">Fehlgeschlagen – Unbekannter Fehler</translation>
 <translation id="353214771040290298">Fertig</translation>
 <translation id="3532980081107202182">Noch etwa <ph name="MIN_REMAINING" /> Minuten</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">Helles Design</translation>
 <translation id="4813136279048157860">Meine Bilder</translation>
 <translation id="4813345808229079766">Verbindung</translation>
-<translation id="4824527342590024245">Transkripts mit weniger als <ph name="MIN_WORD_LENGTH" /> Wörtern werden derzeit nicht unterstützt</translation>
 <translation id="4830894019733815633">Canyon</translation>
 <translation id="4832079907277790330">Ordner in der Dateimanager-App auswählen...</translation>
 <translation id="4835901797422965222">Keine aktiven Netzwerke</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">Ähnlich:</translation>
 <translation id="5130848777448318809">Ponys</translation>
 <translation id="5137451382116112100">Voll</translation>
+<translation id="5140788690559353412">Wenn du den Zugriff auf dein Konto einer Bildungseinrichtung verlierst, hast du auch keinen Zugriff mehr auf die zugehörigen E‑Mails und Google Drive-Dateien in Produkten wie Gmail, Google Docs und Google Präsentationen.</translation>
 <translation id="5142961317498132443">Authentifizierung</translation>
 <translation id="5144311987923128508">Schaltfläche „Bestätigen“ ist jetzt deaktiviert</translation>
 <translation id="5144887194300568405">Übersetzung kopieren</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) HTTP-Latenz</translation>
 <translation id="6078323886959318429">Verknüpfung</translation>
 <translation id="6091080061796993741">gelben</translation>
+<translation id="6093853427925392522">Verwende die App „Inhaltsübertragung“ von Google, um die Daten deines Kontos einer Bildungseinrichtung in dein privates Konto zu übertragen, bevor du den Zugriff verlierst.</translation>
 <translation id="6104112872696127344">Scannen wurde abgebrochen</translation>
 <translation id="6106186594183574873">Gib zum Schluss dein altes Passwort ein</translation>
 <translation id="6108689792487843350">Gateway nicht erreichbar</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">Zugangspunkt (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nameserver}other{Nameserver}}</translation>
 <translation id="7135814714616751706">Tastenkombinationen suchen</translation>
+<translation id="7141470099673912333">Inhaltsübertragung</translation>
 <translation id="7143207342074048698">Verbindung...</translation>
 <translation id="7144878232160441200">Wiederholen</translation>
 <translation id="7144954474087165241">Pagode</translation>
@@ -1394,6 +1394,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="7856267634822906833">Bluetooth-Touchscreen</translation>
 <translation id="7859006200041800233">Kaktusblüte</translation>
 <translation id="7869143217755017858">Dunklen Modus deaktivieren</translation>
+<translation id="7878972877380405573">Mit der Funktion „Erstelle einen Überblick für mich“ zusammenfassen</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Providertyp</translation>
 <translation id="7882501334836096755">Öffentlicher Schlüssel</translation>
@@ -1537,6 +1538,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8626489604350149811">Weitere Aktionen für „<ph name="APN_NAME" />“</translation>
 <translation id="86356131183441916">Hellviolett</translation>
 <translation id="8647595191512746911">Audiotranskript</translation>
+<translation id="8650852232143958317">Gmail- und Google Drive-Dateien mitnehmen</translation>
 <translation id="8651481478098336970">Stummschalten</translation>
 <translation id="8655295600908251630">Kanal</translation>
 <translation id="8655828773034788261">URL teilen:</translation>

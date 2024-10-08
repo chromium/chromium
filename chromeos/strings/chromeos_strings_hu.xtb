@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Kijelző fényerejének csökkentése</translation>
 <translation id="2086091080968010660">Előfordulhat, hogy az időalapú módosítások nem pontosak. Kapcsolja be a rendszer helyhozzáférését a beállításokban.</translation>
 <translation id="2102231663024125441">Szövegszerkesztés</translation>
-<translation id="2102648867808308635">Segítséget kérek az oldal olvasásához</translation>
 <translation id="2105810540595158374">Az eszköz egy kontroller.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, verzió: <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">Jelenleg csak (amerikai) angol nyelven áll rendelkezésre</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">összes app megtekintése</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Teljesítménykövetési adatok<ph name="END_LINK1" /> elküldése</translation>
 <translation id="3517001332549868749">ChromeOS-frissítés</translation>
-<translation id="3522508178835057262">Egyelőre nem támogatjuk a(z) <ph name="MAX_WORD_LENGTH" /> szónál hosszabb átiratokat</translation>
 <translation id="3527036260304016759">Sikertelen – Ismeretlen hiba</translation>
 <translation id="353214771040290298">Szerkesztés kész</translation>
 <translation id="3532980081107202182">Körülbelül <ph name="MIN_REMAINING" /> perc van hátra</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">Világos téma</translation>
 <translation id="4813136279048157860">Saját képek</translation>
 <translation id="4813345808229079766">Kapcsolat</translation>
-<translation id="4824527342590024245">Egyelőre nem támogatjuk a(z) <ph name="MIN_WORD_LENGTH" /> szónál rövidebb átiratokat</translation>
 <translation id="4830894019733815633">kanyon</translation>
 <translation id="4832079907277790330">Mappa kiválasztása a Fájlok alkalmazásban…</translation>
 <translation id="4835901797422965222">Nincs aktív hálózat</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">Rokon értelmű:</translation>
 <translation id="5130848777448318809">pónik</translation>
 <translation id="5137451382116112100">Teljes</translation>
+<translation id="5140788690559353412">Ha elveszíti az iskolai fiókjához való hozzáférését, akkor a jövőben nem fog tudni hozzáférni a hozzá tartozó e-mailekhez és Google Drive-fájlokhoz (például a Gmailhez, a Dokumentumokhoz, a Diákhoz stb.).</translation>
 <translation id="5142961317498132443">Hitelesítés</translation>
 <translation id="5144311987923128508">A Megerősítés gomb mostantól le van tiltva</translation>
 <translation id="5144887194300568405">Fordítás másolása</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) HTTP várakozási idő</translation>
 <translation id="6078323886959318429">Parancsikon hozzáadása</translation>
 <translation id="6091080061796993741">sárga</translation>
+<translation id="6093853427925392522">A Google Tartalom átvitele alkalmazásával helyezze át az iskolai fiókja adatait a személyes fiókjába, mielőtt elveszítené a hozzáférését.</translation>
 <translation id="6104112872696127344">Beolvasás megszakítva</translation>
 <translation id="6106186594183574873">A befejezéshez adja meg régi jelszavát</translation>
 <translation id="6108689792487843350">Az átjáró nem érhető el</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">Hozzáférési pont neve (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Névszerver}other{Névszerverek}}</translation>
 <translation id="7135814714616751706">Billentyűparancs keresése</translation>
+<translation id="7141470099673912333">Tartalom átvitele</translation>
 <translation id="7143207342074048698">Csatlakozás</translation>
 <translation id="7144878232160441200">Újra</translation>
 <translation id="7144954474087165241">pagoda</translation>
@@ -1394,6 +1394,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="7856267634822906833">Bluetooth-érintőképernyő</translation>
 <translation id="7859006200041800233">kaktuszvirág</translation>
 <translation id="7869143217755017858">Sötét mód kikapcsolása</translation>
+<translation id="7878972877380405573">Összegzés a Segítség az olvasáshoz funkcióval</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Szolgáltató típusa</translation>
 <translation id="7882501334836096755">Nyilvános kulcs</translation>
@@ -1537,6 +1538,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="8626489604350149811">További műveletek a következőhöz: <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Világoslila</translation>
 <translation id="8647595191512746911">Hangátirat</translation>
+<translation id="8650852232143958317">Vigye magával a Gmailt és a Google Drive-fájljait</translation>
 <translation id="8651481478098336970">némítás</translation>
 <translation id="8655295600908251630">Csatorna</translation>
 <translation id="8655828773034788261">URL megosztása:</translation>

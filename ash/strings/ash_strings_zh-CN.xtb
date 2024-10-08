@@ -114,6 +114,7 @@
 <translation id="132346741904777634">相机已对准左上角。与系统界面冲突。</translation>
 <translation id="132415371743256095">关闭“<ph name="DESK_NAME" />”和窗口</translation>
 <translation id="1333308631814936910">已与“<ph name="DISPLAY_NAME" />”连接</translation>
+<translation id="1337081488893096731">使用 Content Transfer 应用将学校账号数据转移到个人账号</translation>
 <translation id="1340378040547539434">缩小网页</translation>
 <translation id="1341651618736211726">溢出</translation>
 <translation id="1341926407152459446">使用“<ph name="DEVICE_NAME" />”来输入和输出音频</translation>
@@ -242,6 +243,7 @@
 <translation id="17722141032474077">计算</translation>
 <translation id="1774796056689732716">日历，<ph name="CURRENT_MONTH_YEAR" />，目前所选日期为 <ph name="DATE" />。</translation>
 <translation id="178347895271755507">设置查看手机中的近期照片、媒体内容和通知</translation>
+<translation id="1786487376942610288">将画中画窗口最大化或还原为当前大小</translation>
 <translation id="1787955149152357925">关闭</translation>
 <translation id="1796561540704213354">一系列网站，包含您访问过的网页和打开的网页</translation>
 <translation id="179842970735685253">Google 的服务条款</translation>
@@ -337,6 +339,9 @@
 <translation id="219905428774326614">启动器，所有应用</translation>
 <translation id="2201071101391734388">近期照片中的第 <ph name="INDEX" /> 张，共 <ph name="TOTAL_COUNT" /> 张。</translation>
 <translation id="2201687081523799384">收起 Google Tasks</translation>
+<translation id="2206960886090042977">由于已连接鼠标，内置触控板已停用。请使用鼠标或键盘确认更改。
+
+否则，系统会在 30 秒后重新启用内置触控板。</translation>
 <translation id="2208323208084708176">统一桌面模式</translation>
 <translation id="2220572644011485463">PIN 码或密码</translation>
 <translation id="2222841058024245321">桌面 7</translation>
@@ -1904,6 +1909,9 @@
 要将设备关机，请再次按住设备上的电源按钮。</translation>
 <translation id="7523420897035067483">在专注模式下启用勿扰模式</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">内置触控板已停用。请使用键盘或其他指控设备确认更改。
+
+否则，系统会在 30 秒后重新启用内置触控板。</translation>
 <translation id="7525067979554623046">创建</translation>
 <translation id="7526573455193969409">网络可能受到了监控</translation>
 <translation id="7536035074519304529">IP 地址：<ph name="ADDRESS" /></translation>
@@ -2291,6 +2299,7 @@
 <translation id="8858369206579825206">隐私控制</translation>
 <translation id="8860366331836346216">添加 eSIM 卡</translation>
 <translation id="8870509716567206129">应用不支持分屏。</translation>
+<translation id="8873203135446552888">确认您要停用内置触控板</translation>
 <translation id="8874184842967597500">未连接</translation>
 <translation id="8875021410787719674">在右下角、启动器、地址栏、书签栏、打开的网站以及下载内容之间移动</translation>
 <translation id="8876148469852588625">第 <ph name="EVENT_POSITION" /> 个活动，共 <ph name="EVENT_TOTAL_COUNT" /> 个</translation>

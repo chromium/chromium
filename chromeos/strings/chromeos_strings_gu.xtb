@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">ડિસ્પ્લેનું બ્રાઇટનેસ ઘટાડવાની કી</translation>
 <translation id="2086091080968010660">સમય આધારિત ફેરફારો સચોટ ન પણ હોય. સેટિંગમાં સિસ્ટમનો લોકેશન ઍક્સેસ ચાલુ કરો.</translation>
 <translation id="2102231663024125441">ટેક્સ્ટ એડિટિંગ</translation>
-<translation id="2102648867808308635">આ પેજ વાંચવામાં મારી સહાય કરો</translation>
 <translation id="2105810540595158374">ડિવાઇસ એક ગેમ કન્ટ્રોલર છે.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, વર્ઝન <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">અત્યારે માત્ર અંગ્રેજી (યુએસ)માં જ ઉપલબ્ધ છે</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">બધી ઍપ જુઓ</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />પર્ફોર્મન્સ ટ્રેસ ડેટા<ph name="END_LINK1" /> મોકલો</translation>
 <translation id="3517001332549868749">ChromeOSની અપડેટ</translation>
-<translation id="3522508178835057262">હાલ પૂરતું, <ph name="MAX_WORD_LENGTH" />થી વધુ શબ્દોની ટ્રાન્સક્રિપ્ટને સપોર્ટ આપવામાં આવતો નથી</translation>
 <translation id="3527036260304016759">નિષ્ફળ થયું - અજાણી ભૂલ</translation>
 <translation id="353214771040290298">ફેરફાર કરવાનું પૂર્ણ થયું</translation>
 <translation id="3532980081107202182">લગભગ <ph name="MIN_REMAINING" /> મિનિટ બાકી છે</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">ઝાંખી થીમ</translation>
 <translation id="4813136279048157860">મારી છબીઓ</translation>
 <translation id="4813345808229079766">કનેક્શન</translation>
-<translation id="4824527342590024245">હાલ પૂરતું, <ph name="MIN_WORD_LENGTH" />થી ઓછા શબ્દોની ટ્રાન્સક્રિપ્ટને સપોર્ટ આપવામાં આવતો નથી</translation>
 <translation id="4830894019733815633">ઊંડી ખીણ</translation>
 <translation id="4832079907277790330">Files ઍપમાં ફોલ્ડર પસંદ કરો...</translation>
 <translation id="4835901797422965222">કોઈ નેટવર્ક સક્રિય નથી</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">સમાન:</translation>
 <translation id="5130848777448318809">ટટ્ટુઓ</translation>
 <translation id="5137451382116112100">સંપૂર્ણ</translation>
+<translation id="5140788690559353412">જ્યારે તમે તમારા સ્કૂલના એકાઉન્ટનો ઍક્સેસ ગુમાવો, ત્યારે તમારી પાસે તેની સાથે સંકળાયેલા ઇમેઇલ અને Google Driveની ફાઇલો, જેમ કે Gmail, Docs, Slides અને બીજા બધાનો ઍક્સેસ રહેશે નહીં.</translation>
 <translation id="5142961317498132443">પ્રમાણીકરણ</translation>
 <translation id="5144311987923128508">કન્ફર્મ બટન હવે બંધ છે</translation>
 <translation id="5144887194300568405">અનુવાદ કૉપિ કરો</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) HTTPની વિલંબતા</translation>
 <translation id="6078323886959318429">શોર્ટકટ ઉમેરો</translation>
 <translation id="6091080061796993741">પીળો</translation>
+<translation id="6093853427925392522">તમે ઍક્સેસ ગુમાવો તે પહેલાં તમારી સ્કૂલના એકાઉન્ટ ડેટાને તમારા વ્યક્તિગત એકાઉન્ટમાં ખસેડવા માટે Googleની કન્ટેન્ટ ટ્રાન્સફર કરવાની ઍપનો ઉપયોગ કરવાની ખાતરી કરો.</translation>
 <translation id="6104112872696127344">સ્કૅન કરવાનું કાર્ય રદ કરવામાં આવ્યું છે</translation>
 <translation id="6106186594183574873">સમાપ્ત કરવા માટે, તમારો જૂનો પાસવર્ડ દાખલ કરો</translation>
 <translation id="6108689792487843350">ગેટવેથી કનેક્ટ કરી શકાતું નથી</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">ઍક્સેસ પૉઇન્ટનું નામ (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{સર્વરનું નામ}one{સર્વરનું નામ}other{સર્વરનું નામ}}</translation>
 <translation id="7135814714616751706">શૉર્ટકટ શોધો</translation>
+<translation id="7141470099673912333">કન્ટેન્ટ ટ્રાન્સફર</translation>
 <translation id="7143207342074048698">કનેક્ટિંગ</translation>
 <translation id="7144878232160441200">ફરી પ્રયત્ન કરો</translation>
 <translation id="7144954474087165241">પૅગોડા</translation>
@@ -1394,6 +1394,7 @@
 <translation id="7856267634822906833">બ્લૂટૂથ ટચસ્ક્રીન</translation>
 <translation id="7859006200041800233">થોરનું ફૂલ</translation>
 <translation id="7869143217755017858">ઘેરો મોડ બંધ કરો</translation>
+<translation id="7878972877380405573">વાંચવામાં મારી સહાય કરો સુવિધા વડે સારાંશ આપો</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">પ્રદાતાનો પ્રકાર</translation>
 <translation id="7882501334836096755">જાહેર કી</translation>
@@ -1537,6 +1538,7 @@
 <translation id="8626489604350149811"><ph name="APN_NAME" /> માટે વધુ ક્રિયાઓ</translation>
 <translation id="86356131183441916">આછો જાંબલી</translation>
 <translation id="8647595191512746911">ઑડિયો ટ્રાન્સક્રિપ્શન</translation>
+<translation id="8650852232143958317">તમારા Gmail અને Google Driveની ફાઇલોને તમારી સાથે લઈ જાઓ</translation>
 <translation id="8651481478098336970">વૉલ્યૂમ મ્યૂટ કરો</translation>
 <translation id="8655295600908251630">ચેનલ</translation>
 <translation id="8655828773034788261">URL શેર કરો:</translation>

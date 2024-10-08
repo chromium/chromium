@@ -114,6 +114,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="132346741904777634">Fotocamera allineata all'angolo in alto a sinistra. Conflitto con la piattaforma di sistema.</translation>
 <translation id="132415371743256095">Chiudi <ph name="DESK_NAME" /> e finestre</translation>
 <translation id="1333308631814936910">Dispositivo <ph name="DISPLAY_NAME" /> connesso</translation>
+<translation id="1337081488893096731">Utilizza l'app Trasferimento contenuti per spostare i dati dell'account della scuola nel tuo account personale</translation>
 <translation id="1340378040547539434">Diminuisci lo zoom sulla pagina</translation>
 <translation id="1341651618736211726">Overflow</translation>
 <translation id="1341926407152459446">Usa "<ph name="DEVICE_NAME" />" come dispositivo di input e output audio</translation>
@@ -242,6 +243,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="17722141032474077">Calcoli</translation>
 <translation id="1774796056689732716">Calendario, <ph name="CURRENT_MONTH_YEAR" />, è attualmente selezionata la data <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Configura la visualizzazione di notifiche, contenuti multimediali e foto recenti dello smartphone</translation>
+<translation id="1786487376942610288">Passa dalla dimensione massima a quella corrente e viceversa della finestra Picture in picture</translation>
 <translation id="1787955149152357925">Off</translation>
 <translation id="1796561540704213354">Siti web che includono le pagine che hai visitato e le pagine aperte</translation>
 <translation id="179842970735685253">Termini di servizio di Google</translation>
@@ -337,6 +339,9 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="219905428774326614">Avvio applicazioni, tutte le app</translation>
 <translation id="2201071101391734388">Foto recente <ph name="INDEX" /> di <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Comprimi Google Tasks</translation>
+<translation id="2206960886090042977">Il touchpad integrato è disattivato perché è collegato un mouse. Usa il mouse o la tastiera per confermare la modifica.
+
+In caso contrario, il touchpad integrato verrà riattivato dopo 30 secondi.</translation>
 <translation id="2208323208084708176">Modalità desktop unificato</translation>
 <translation id="2220572644011485463">PIN o password</translation>
 <translation id="2222841058024245321">Scrivania 7</translation>
@@ -1816,7 +1821,7 @@ Nuova installazione</translation>
 <translation id="7168224885072002358">Ripristino della risoluzione precedente tra <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7173114856073700355">Apri Impostazioni</translation>
 <translation id="7180611975245234373">Aggiorna</translation>
-<translation id="7181691792034457084">Un saluto da Google. Il <ph name="PRODUCT_NAME" /> è un po' diverso.</translation>
+<translation id="7181691792034457084">Ciao! Il <ph name="PRODUCT_NAME" /> è cambiato un po'.</translation>
 <translation id="7188494361780961876">Menu spostato nell'angolo in alto a sinistra dello schermo.</translation>
 <translation id="7189412385142492784">Quanto è distante Venere</translation>
 <translation id="7198435252016571249">Fotocamera allineata all'angolo in basso a destra. Conflitto con la piattaforma di sistema.</translation>
@@ -1904,6 +1909,9 @@ Nuova installazione</translation>
 Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accensione.</translation>
 <translation id="7523420897035067483">Abilita Non disturbare finché è attiva la modalità Non disturbare</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">Il touchpad integrato è disattivato. Usa la tastiera o un altro dispositivo di puntamento per confermare la modifica.
+
+In caso contrario, il touchpad integrato verrà riattivato dopo 30 secondi.</translation>
 <translation id="7525067979554623046">Crea</translation>
 <translation id="7526573455193969409">La rete potrebbe essere monitorata</translation>
 <translation id="7536035074519304529">Indirizzo IP: <ph name="ADDRESS" /></translation>
@@ -2290,6 +2298,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8858369206579825206">Controlli per la privacy</translation>
 <translation id="8860366331836346216">Aggiungi eSIM</translation>
 <translation id="8870509716567206129">L'app non supporta la modalità Schermo diviso.</translation>
+<translation id="8873203135446552888">Conferma di voler disattivare il touchpad integrato</translation>
 <translation id="8874184842967597500">Non connesso</translation>
 <translation id="8875021410787719674">Spostati tra l'angolo in basso a destra, Avvio app, la barra degli indirizzi, la barra dei preferiti, il sito web aperto e i download</translation>
 <translation id="8876148469852588625">Evento <ph name="EVENT_POSITION" /> di <ph name="EVENT_TOTAL_COUNT" /></translation>

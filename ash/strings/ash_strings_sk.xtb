@@ -114,6 +114,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="132346741904777634">Kamera bola prichytená do ľavého horného rohu. Konflikt s platformou systému.</translation>
 <translation id="132415371743256095">Zavrite <ph name="DESK_NAME" /> aj okná</translation>
 <translation id="1333308631814936910">Pripojená obrazovka: <ph name="DISPLAY_NAME" /></translation>
+<translation id="1337081488893096731">Pomocou aplikácie Prenos obsahu preneste svoje údaje zo školského účtu do osobného</translation>
 <translation id="1340378040547539434">Oddialenie na stránke</translation>
 <translation id="1341651618736211726">Rozšírené</translation>
 <translation id="1341926407152459446">Používať <ph name="DEVICE_NAME" /> pre zvukový vstup aj výstup</translation>
@@ -242,6 +243,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="17722141032474077">Výpočty</translation>
 <translation id="1774796056689732716">Kalendár, <ph name="CURRENT_MONTH_YEAR" />, momentálne je vybraný dátum <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Nastaviť zobrazovanie nedávnych fotiek, médií a upozornení z telefónu</translation>
+<translation id="1786487376942610288">Prepínanie medzi maximálnou alebo aktuálnou veľkosťou okna obrazu v obraze</translation>
 <translation id="1787955149152357925">Vypnuté</translation>
 <translation id="1796561540704213354">Weby vrátane stránok, ktoré ste navštívili, a tých, ktoré sú otvorené</translation>
 <translation id="179842970735685253">zmluvnými podmienkami spoločnosti Google</translation>
@@ -337,6 +339,9 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="219905428774326614">Spúšťač, všetky aplikácie</translation>
 <translation id="2201071101391734388"><ph name="INDEX" /> nedávna fotka z <ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Zbaliť Úlohy Google</translation>
+<translation id="2206960886090042977">Vstavaný touchpad je deaktivovaný, pretože je pripojená myš. Zmenu potvrďte myšou alebo klávesnicou.
+
+V opačnom prípade sa vstavaný touchpad znova aktivuje o 30 sekúnd.</translation>
 <translation id="2208323208084708176">Režim zjednotenej pracovnej plochy</translation>
 <translation id="2220572644011485463">PIN alebo heslo</translation>
 <translation id="2222841058024245321">7. plocha</translation>
@@ -1468,6 +1473,7 @@ Nie sú pripojené žiadne zariadenia.</translation>
 <translation id="598407983968395253">Použiť šablónu</translation>
 <translation id="5986723678596105470">Pripojiť sa cez Google Meet</translation>
 <translation id="598882571027504733">Ak chcete získať aktualizáciu, Chromebook s pripojenou klávesnicou reštartujte.</translation>
+<translation id="5990992855591814753">Zostaňte na správnej ceste vďaka prispôsobeným zoznamom skladieb na sústredenie. Získajte YouTube Music a YouTube bez reklám s odberom YouTube Premium na tri mesiace bez peňažného poplatku. Na ponuku sa vzťahujú zmluvné podmienky.</translation>
 <translation id="5998374579424866922">Vypnúť ovládanie hry</translation>
 <translation id="6000279412553873020">Klávesy, tlačidlá a ďalšie položky</translation>
 <translation id="6012623610530968780">Stránka <ph name="SELECTED_PAGE" /> z <ph name="TOTAL_PAGE_NUM" /></translation>
@@ -1906,6 +1912,9 @@ Nová inštalácia</translation>
 Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="7523420897035067483">Povoľte režim bez vyrušení počas zamerania</translation>
 <translation id="7524043547948122239">Úlohy Google</translation>
+<translation id="7524919752437339268">Vstavaný touchpad je deaktivovaný. Zmenu potvrďte klávesnicou alebo iným polohovacím zariadením.
+
+V opačnom prípade sa vstavaný touchpad znova aktivuje o 30 sekúnd.</translation>
 <translation id="7525067979554623046">Vytvoriť</translation>
 <translation id="7526573455193969409">Sieť môže byť sledovaná</translation>
 <translation id="7536035074519304529">Adresa IP: <ph name="ADDRESS" /></translation>
@@ -2292,6 +2301,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8858369206579825206">Nastavenia ochrany súkromia</translation>
 <translation id="8860366331836346216">Pridanie eSIM karty</translation>
 <translation id="8870509716567206129">Aplikácia nepodporuje rozdelenú obrazovku.</translation>
+<translation id="8873203135446552888">Potvrďte, že chcete deaktivovať vstavaný touchpad</translation>
 <translation id="8874184842967597500">Nepripojené</translation>
 <translation id="8875021410787719674">Presúvanie medzi pravým dolným rohom, Spúšťačom, panelom s adresou, panelom so záložkami, otvoreným webom a stiahnutými súbormi</translation>
 <translation id="8876148469852588625"><ph name="EVENT_POSITION" />. udalosť z <ph name="EVENT_TOTAL_COUNT" /></translation>

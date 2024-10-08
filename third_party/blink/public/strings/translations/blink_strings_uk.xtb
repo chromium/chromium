@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">Має бути <ph name="MINIMUM_DATE_OR_TIME" /> або пізніша дата.</translation>
 <translation id="2761667185364618470">Поставте тут прапорець, якщо хочете продовжити.</translation>
 <translation id="2908441821576996758">Введіть список електронних адрес, розділених комою.</translation>
+<translation id="2940013921954129954">Доступ до даних про точне місцезнаходження надано</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> МБ</translation>
 <translation id="3075154866155599887">Введіть дійсне значення. Поле не заповнено або введено недійсну дату.</translation>
 <translation id="310520048233152454">Введіть URL-адресу.</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">Низька якість відтворення</translation>
 <translation id="6790428901817661496">Відтворити</translation>
 <translation id="6820355525329141109">Не вдалося завантажити плагін.</translation>
+<translation id="688706781007114099">Використовувати геодані</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">У тексті має бути не менше стількох символів: <ph name="MIN_CHARACTERS" />. Наразі ви ввели 1 символ.</translation>
 <translation id="709897737746224366">Виберіть потрібний формат.</translation>

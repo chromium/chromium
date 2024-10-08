@@ -74,6 +74,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1919130412786645364">Omogočanje prijave v Chrome</translation>
 <translation id="1953553007165777902">Prenašanje … Še <ph name="MINUTE" /> min.</translation>
 <translation id="1982647487457769627">Chrome deluje v več okoljih in vam tako zagotavlja znano izkušnjo ne glede na napravo</translation>
+<translation id="19955905961160405">Iščite po vsebini zaslona z Googlom Lens</translation>
 <translation id="2001586581944147178">Ljudem z dostopom do vašega internetnega prometa otežite ogled spletnih mest, ki jih obiskujete. Chrome uporablja varno povezavo za iskanje naslova IP spletnega mesta v DNS-ju (imenskem sistemu domen).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Ta razširitev ni več podprta. Chrome priporoča, da jo odstranite.}one{Te razširitve niso več podprte. Chrome priporoča, da jih odstranite.}two{Te razširitve niso več podprte. Chrome priporoča, da jih odstranite.}few{Te razširitve niso več podprte. Chrome priporoča, da jih odstranite.}other{Te razširitve niso več podprte. Chrome priporoča, da jih odstranite.}}</translation>
 <translation id="2018528049276128029">Vsak profil ima svoje podatke v Chromu, kot so zaznamki, zgodovina, gesla in drugo.</translation>
@@ -91,6 +92,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2126108037660393668">Napaka pri preverjanju prenesene datoteke.</translation>
 <translation id="2128411189117340671">Upravljanje profilov v Chromu</translation>
 <translation id="2131230230468101642">Zaradi zaščite vaše varnosti samodejno izbrišemo vaša zanimanja, starejša od 4 tednov. Ko brskate naprej, se zanimanje morda znova prikaže na seznamu. Odstranite lahko tudi zanimanja, za katera ne želite, da jih Chrome predlaga.</translation>
+<translation id="2137162749895930932">Zapiranje zaslona za prevajanje</translation>
 <translation id="2139300032719313227">Vnovičen zagon sistema Chrome OS</translation>
 <translation id="2151406531797534936">Znova zaženite Chrome</translation>
 <translation id="2163089732491971196">Če želite v računu Google uporabljati in shranjevati podatke iz Chroma, vnesite geslo</translation>
@@ -174,6 +176,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3019382870990049182">Znova zaženi za posodobitev sistema &amp;ChromeOS Flex</translation>
 <translation id="3037838751736561277">Google Chrome se izvaja v ozadju.</translation>
 <translation id="3038232873781883849">Čakanje na namestitev …</translation>
+<translation id="3045032126857188731">Jezik prevoda: <ph name="LANGUAGE" /></translation>
 <translation id="3059710691562604940">Varno brskanje je izklopljeno. Chrome priporoča, da ga vklopite.</translation>
 <translation id="306179102415443347">Z bližnjico lahko hitro odprete Googlovega upravitelja gesel. Bližnjico lahko premaknete na začetni zaslon računalnika ali v zaganjalnik aplikacij.</translation>
 <translation id="3065168410429928842">Zavihek v Chromu</translation>
@@ -192,7 +195,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3234642784688107085">Preizkusite nove funkcije umetne inteligence in ustvarite teme, prejmite pomoč pri pisanju in ostanite organizirani</translation>
 <translation id="3245429137663807393">Če delite tudi poročila o uporabi Chroma, so v teh poročilih vključeni URL-ji, ki jih obiščete.</translation>
 <translation id="3261565993776444564">Preizkusite novo barvo za prilagajanje brskalnika</translation>
-<translation id="3269209112443570745">Novo! Preprost način iskanja po vsebini zaslona</translation>
 <translation id="3282568296779691940">Prijava v Chrome</translation>
 <translation id="3286538390144397061">Znova zaženi</translation>
 <translation id="3292333338048274092">Nato boste morali znova zagnati Chrome.</translation>
@@ -242,12 +244,14 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="386202838227397562">Zaprite vsa okna brskalnika Google Chrome in poskusite znova.</translation>
 <translation id="3865754807470779944">Nameščen je Chrome različice <ph name="PRODUCT_VERSION" /></translation>
 <translation id="3873044882194371212">Odpiranje povezave v Chromovem oknu brez belež&amp;enja zgodovine</translation>
+<translation id="3885770153807205175">Izbirnik jezika</translation>
 <translation id="3889417619312448367">Odstrani Google Chrome</translation>
 <translation id="3941890832296813527">Napaka pri namestitvi: Ime datoteke namestitvenega programa je neveljavno ali ni podprto.</translation>
 <translation id="3973161977468201858">Google Chrome želi izbrisati vaše podatke v Googlovem upravitelju gesel. Če želite to omogočiti, vnesite geslo za Windows.</translation>
 <translation id="398236277091248993">Chrome ostane hiter s funkcijami za izboljšanje delovanja</translation>
 <translation id="3999683152997576765">Vidite ali odstranite lahko teme zanimanja, ki jih spletna mesta uporabljajo, da vam prikazujejo oglase. Chrome oceni vaša zanimanja glede na nedavno zgodovino brskanja.</translation>
 <translation id="4022972681110646219">Prevedi zaslon</translation>
+<translation id="4023601594785368013">Izvirni jezik: <ph name="LANGUAGE" /></translation>
 <translation id="4035053306113201399">Če želite namestiti posodobitev, morate znova zagnati Chrome OS.</translation>
 <translation id="4050175100176540509">V najnovejši različici so na voljo pomembne varnostne izboljšave in nove funkcije.</translation>
 <translation id="4053720452172726777">Prilagajanje in nadziranje Google Chroma</translation>
@@ -523,6 +527,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="7514258452813684157">Googlova storitev za posodabljanje</translation>
 <translation id="7515191208480168435">Google Lens lahko pripnete za preprost dostop</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
+<translation id="756809126120519699">Chromovi podatki so izbrisani.</translation>
 <translation id="7572537927358445944">Izklopljeno • Chrome ne more preveriti, od kod izvira ta razširitev</translation>
 <translation id="7583399374488819119">Namestitveni program za <ph name="COMPANY_NAME" /></translation>
 <translation id="7606334485649076285">Google ChromeOS Flex</translation>
@@ -540,6 +545,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="7668816516367091728">Izvajanje opravil, kot so prevajanje, računanje in drugo, neposredno v naslovni vrstici</translation>
 <translation id="7670287553302121848">Račun Chrome zahteva vnovično preverjanje pristnosti</translation>
 <translation id="769538538642757151">Chrome vas bo obvestil, če boste morali kaj pregledati</translation>
+<translation id="77283119132245232">Zagotavlja storitve sledenja sistema za <ph name="BROWSER_NAME" />. Če je ta storitev onemogočena, sledi zmogljivosti, ki jih ustvari brskalnik, ne bodo vključevale sistemskih dogodkov, kot so preklapljanje konteksta in dogodki pripravljenih niti.</translation>
 <translation id="7747138024166251722">Namestitvenemu programu ni uspelo ustvariti začasnega imenika. Preverite, ali je na disku dovolj prostora in ali imate dovoljenje za namestitev programske opreme.</translation>
 <translation id="7761834446675418963">Kliknite ime, da odprete Chrome in začnete brskati.</translation>
 <translation id="7763983146198734674">Shranite gesla in dostopajte do njih na poti</translation>

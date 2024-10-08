@@ -114,6 +114,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="132346741904777634">Kaamera kinnitati vasakusse ülanurka. Konflikt süsteemi platvormiga.</translation>
 <translation id="132415371743256095">Töölaua <ph name="DESK_NAME" /> ja akende sulgemine</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> on ühendatud</translation>
+<translation id="1337081488893096731">Kasutage koolikonto andmete ülekandmiseks oma isiklikule kontole rakendust Content Transfer</translation>
 <translation id="1340378040547539434">Lehel väljasuumimine</translation>
 <translation id="1341651618736211726">Ületäide</translation>
 <translation id="1341926407152459446">Helisisendiks ja -väljundiks hakatakse kasutama seadet „<ph name="DEVICE_NAME" />“.</translation>
@@ -242,6 +243,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="17722141032474077">Arvutused</translation>
 <translation id="1774796056689732716">Kalender, <ph name="CURRENT_MONTH_YEAR" />, praegu on valitud <ph name="DATE" />.</translation>
 <translation id="178347895271755507">Teie telefoni hiljutiste fotode, meediafailide ja märguannete kuvamise seadistamine</translation>
+<translation id="1786487376942610288">Vaheta pilt pildis aknas maksimumsuuruse ja praeguse suuruse vahel</translation>
 <translation id="1787955149152357925">Väljas</translation>
 <translation id="1796561540704213354">Veebisaidid, mis hõlmavad teie külastatud lehti ja avatud lehti</translation>
 <translation id="179842970735685253">Google'i teenusetingimused</translation>
@@ -337,6 +339,9 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="219905428774326614">Käivitaja, kõik rakendused</translation>
 <translation id="2201071101391734388">Hiljutine foto <ph name="INDEX" />/<ph name="TOTAL_COUNT" />.</translation>
 <translation id="2201687081523799384">Google Tasksi ahendamine</translation>
+<translation id="2206960886090042977">Sisseehitatud puuteplaat on keelatud, kuna hiir on ühendatud. Kasutage muudatuse kinnitamiseks hiirt või klaviatuuri.
+
+Vastasel korral lubatakse sisseehitatud puuteplaat uuesti 30 sekundi pärast.</translation>
 <translation id="2208323208084708176">Ühendatud töölaua režiim</translation>
 <translation id="2220572644011485463">PIN-kood või parool</translation>
 <translation id="2222841058024245321">Töölaud 7</translation>
@@ -1469,6 +1474,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="598407983968395253">Kasuta malli</translation>
 <translation id="5986723678596105470">Liitu Google Meetiga</translation>
 <translation id="598882571027504733">Värskenduse hankimiseks taaskäivitage Chromebook koos ühendatud klaviatuuriga.</translation>
+<translation id="5990992855591814753">Isikupärastatud esitusloendid toetavad keskendumist. Hankige YouTube Premiumiga reklaamideta YouTube Music ja YouTube 3 kuuks ilma maksekohustuseta. Kehtivad tingimused.</translation>
 <translation id="5998374579424866922">Lülita mängu juhtnupud välja</translation>
 <translation id="6000279412553873020">Võtmed, nupud ja palju muud</translation>
 <translation id="6012623610530968780">Leht <ph name="SELECTED_PAGE" />/<ph name="TOTAL_PAGE_NUM" /></translation>
@@ -1907,6 +1913,9 @@ Uus installimine</translation>
 Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translation>
 <translation id="7523420897035067483">Luba funktsioon Mitte segada keskendumise režiimi kasutamisel</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">Sisseehitatud puuteplaat on keelatud. Kasutage muudatuse kinnitamiseks klaviatuuri või muud osutamisseadet.
+
+Vastasel korral lubatakse sisseehitatud puuteplaat uuesti 30 sekundi pärast.</translation>
 <translation id="7525067979554623046">Loo</translation>
 <translation id="7526573455193969409">Võrku võidakse jälgida</translation>
 <translation id="7536035074519304529">IP-adress: <ph name="ADDRESS" /></translation>
@@ -2294,6 +2303,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8858369206579825206">Privaatsuse seaded</translation>
 <translation id="8860366331836346216">eSIM-i lisamine</translation>
 <translation id="8870509716567206129">Rakendus ei toeta jagatud ekraani.</translation>
+<translation id="8873203135446552888">Kinnitage, kas soovite sisseehitatud puuteplaadi keelata</translation>
 <translation id="8874184842967597500">Ühendus puudub</translation>
 <translation id="8875021410787719674">Fookuse teisaldamine järgmises järjestuses: parem allnurk, käivitaja, aadressiriba, järjehoidjariba, avatud veebisait, allalaadimised</translation>
 <translation id="8876148469852588625">Sündmus <ph name="EVENT_POSITION" />/<ph name="EVENT_TOTAL_COUNT" /></translation>

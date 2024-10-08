@@ -248,7 +248,6 @@
 <translation id="2085089206770112532">Diminuir o brilho da tela</translation>
 <translation id="2086091080968010660">As mudanças baseadas em tempo podem não ser precisas. Ative o acesso ao local nas configurações.</translation>
 <translation id="2102231663024125441">Edição de texto</translation>
-<translation id="2102648867808308635">Quero ajuda para ler esta página</translation>
 <translation id="2105810540595158374">Este dispositivo é um controle de jogo.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versão <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">Disponível apenas em inglês (EUA)</translation>
@@ -499,7 +498,6 @@
 <translation id="3502426834823382181">mostrar todos os apps</translation>
 <translation id="3510890413042482857">Enviar <ph name="BEGIN_LINK1" />dados de rastreamento de performance<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Atualização do ChromeOS</translation>
-<translation id="3522508178835057262">Por enquanto, não é possível gerar transcrições com mais de <ph name="MAX_WORD_LENGTH" /> palavras</translation>
 <translation id="3527036260304016759">Falha - Erro desconhecido</translation>
 <translation id="353214771040290298">Concluído</translation>
 <translation id="3532980081107202182">Aproximadamente <ph name="MIN_REMAINING" /> minutos restantes</translation>
@@ -754,7 +752,6 @@
 <translation id="4809927044794281115">Tema claro</translation>
 <translation id="4813136279048157860">Minhas imagens</translation>
 <translation id="4813345808229079766">Conexão</translation>
-<translation id="4824527342590024245">Por enquanto, não é possível gerar transcrições com menos de <ph name="MIN_WORD_LENGTH" /> palavras</translation>
 <translation id="4830894019733815633">cânion</translation>
 <translation id="4832079907277790330">Selecionar a pasta no app Arquivos…</translation>
 <translation id="4835901797422965222">Não há redes ativas</translation>
@@ -821,6 +818,7 @@
 <translation id="5108781503443873320">Semelhantes:</translation>
 <translation id="5130848777448318809">pôneis</translation>
 <translation id="5137451382116112100">Tela cheia</translation>
+<translation id="5140788690559353412">Ao perder o acesso à conta escolar, você também perde o acesso ao e-mail e aos arquivos do Google Drive associados, como os do Gmail, Documentos, Apresentações e outros.</translation>
 <translation id="5142961317498132443">Autenticação</translation>
 <translation id="5144311987923128508">O botão de confirmação está desativado</translation>
 <translation id="5144887194300568405">Copiar tradução</translation>
@@ -1008,6 +1006,7 @@
 <translation id="6075872808778243331">(Android) Latência do HTTP</translation>
 <translation id="6078323886959318429">Adicionar atalho</translation>
 <translation id="6091080061796993741">amarela</translation>
+<translation id="6093853427925392522">Use o app Transferência de conteúdo do Google para transferir os dados da conta escolar para a pessoal antes de perder o acesso.</translation>
 <translation id="6104112872696127344">A digitalização foi cancelada</translation>
 <translation id="6106186594183574873">Para concluir, insira sua senha antiga</translation>
 <translation id="6108689792487843350">Não é possível acessar o gateway</translation>
@@ -1245,6 +1244,7 @@
 <translation id="7130438335435247835">Nome do ponto de acesso (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de nomes}one{Servidor de nomes}other{Servidores de nomes}}</translation>
 <translation id="7135814714616751706">Atalhos de pesquisa</translation>
+<translation id="7141470099673912333">Transferência de conteúdo</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7144878232160441200">Tentar novamente</translation>
 <translation id="7144954474087165241">Pagode</translation>
@@ -1394,6 +1394,7 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="7856267634822906833">Tela touchscreen Bluetooth</translation>
 <translation id="7859006200041800233">flor de cacto</translation>
 <translation id="7869143217755017858">Desativar o modo escuro</translation>
+<translation id="7878972877380405573">Resumir com o recurso "Quero ajuda para ler"</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipo de provedor</translation>
 <translation id="7882501334836096755">Chave pública</translation>
@@ -1537,6 +1538,7 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="8626489604350149811">Mais ações para o site <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Roxo-claro</translation>
 <translation id="8647595191512746911">Transcrição de áudio</translation>
+<translation id="8650852232143958317">Leve seus arquivos do Gmail e do Google Drive com você</translation>
 <translation id="8651481478098336970">desativar o som</translation>
 <translation id="8655295600908251630">Canal</translation>
 <translation id="8655828773034788261">Compartilhar URL:</translation>

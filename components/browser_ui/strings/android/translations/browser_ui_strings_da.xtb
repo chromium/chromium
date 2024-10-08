@@ -49,6 +49,7 @@
 <translation id="1979673356880165407">Gør tekst og billeder større eller mindre på alle websites, du besøger</translation>
 <translation id="1984937141057606926">Tilladt, undtagen tredjepartscookies</translation>
 <translation id="1985247341569771101">Når dette er slået til, kan websites anvende din enheds bevægelsessensorer. Når dette er slået fra, kan websites ikke anvende bevægelsessensorer.</translation>
+<translation id="1985716030964443178">Dette nulstiller alle websites på din liste til standardzoom</translation>
 <translation id="1989112275319619282">Gennemse</translation>
 <translation id="1994173015038366702">Webadresse</translation>
 <translation id="2004697686368036666">Funktionerne på visse websites virker muligvis ikke</translation>
@@ -103,10 +104,13 @@
 <translation id="2653659639078652383">Send</translation>
 <translation id="2677748264148917807">Forlad</translation>
 <translation id="2678468611080193228">Prøv midlertidigt at tillade tredjepartscookies, hvilket vil betyde mindre beskyttelse, men større sandsynlighed for, at websitefunktionerne fungerer</translation>
+<translation id="2682367912565197520">Slet gemt zoomniveau</translation>
 <translation id="2683434792633810741">Vil du slette og gendanne?</translation>
 <translation id="2713106313042589954">Slå kamera fra</translation>
 <translation id="2717722538473713889">Mailadresser</translation>
+<translation id="2726059656860238749">Åbn Chrome med omnifeltet i fokus, hvilket reducerer opstartstiden på mindre avancerede enheder.</translation>
 <translation id="2750481671343847896">Websites kan vise loginmeddelelser fra identitetstjenester.</translation>
+<translation id="2787357173144933081">Åbn omnifeltet</translation>
 <translation id="2790501146643349491">Når dette er slået til, kan nyligt lukkede websites gennemføre afsendelse og modtagelse af data. Når dette er slået fra, kan nyligt lukkede websites ikke sende eller modtage data.</translation>
 <translation id="2822354292072154809">Er du sikker på, at du vil nulstille alle websitetilladelser for <ph name="CHOSEN_OBJECT_NAME" />?</translation>
 <translation id="2850913818900871965">Anmod om mobilvenlig visning</translation>
@@ -144,6 +148,7 @@
 <translation id="3295602654194328831">Skjul oplysninger</translation>
 <translation id="3328801116991980348">Webstedoplysninger</translation>
 <translation id="3333961966071413176">Alle kontakter</translation>
+<translation id="3360338140203645771">Vil du slette de gemte zoomniveauer?</translation>
 <translation id="3362437373201486687">Søger efter Bluetooth-enheder</translation>
 <translation id="3386292677130313581">Spørg, om websites må få adgang til din lokation (anbefales)</translation>
 <translation id="3403537308306431953"><ph name="ZOOM_LEVEL" /> %%</translation>
@@ -209,6 +214,7 @@
 <translation id="4338831206024587507">Alle websites på <ph name="DOMAIN" /></translation>
 <translation id="4402755511846832236">Bloker websites fra at vide, hvornår du aktivt bruger denne enhed</translation>
 <translation id="4412992751769744546">Tillad tredjepartscookies</translation>
+<translation id="4419929467120297501">Chrome blokerer websites, så de ikke kan bruge tredjepartscookies til at spore dig, mens du browser. Gå til indstillingerne for at <ph name="BEGIN_LINK" />administrere adgangen til tredjepartscookies<ph name="END_LINK" />.</translation>
 <translation id="4434045419905280838">Pop op-vinduer og omdirigeringer</translation>
 <translation id="443552056913301231">Denne handling sletter alle lokale data, herunder cookies, og nulstiller alle tilladelser for <ph name="ORIGIN" /></translation>
 <translation id="4468959413250150279">Slå lyden fra for et bestemt website.</translation>
@@ -230,6 +236,7 @@
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4807122856660838973">Aktivér Beskyttet browsing</translation>
 <translation id="4811450222531576619">Få oplysninger om sidens kilde og emne</translation>
+<translation id="4816495437032298535">Gemt zoomniveau for websites</translation>
 <translation id="4836046166855586901">Spørg, når et website vil vide, hvornår du aktivt bruger denne enhed</translation>
 <translation id="483914009762354899">Medtag alle websites under dette domæne</translation>
 <translation id="4883854917563148705">Administrerede indstillinger kan ikke nulstilles</translation>
@@ -239,7 +246,6 @@
 <translation id="4962975101802056554">Tilbagekald alle tilladelser for enheden</translation>
 <translation id="497421865427891073">Gå fremad</translation>
 <translation id="4976702386844183910">Senest besøgt <ph name="DATE" /></translation>
-<translation id="4985206706500620449">Du har tilladt tredjepartscookies for dette website</translation>
 <translation id="4994033804516042629">Der blev ikke fundet nogen kontakter</translation>
 <translation id="4996978546172906250">Del via</translation>
 <translation id="5001526427543320409">Tredjepartscookies</translation>
@@ -266,6 +272,7 @@
 <translation id="5246825184569358663">Denne handling sletter alle lokale data, herunder cookies, og nulstiller alle tilladelser for <ph name="DOMAIN" /> samt alle websites under domænet</translation>
 <translation id="5264323282659631142">Fjern "<ph name="CHIP_LABEL" />"</translation>
 <translation id="528192093759286357">Træk fra toppen, og tryk på tilbageknappen igen for at afslutte fuld skærm.</translation>
+<translation id="5292915569214461965">Du har blokeret websites, så de ikke kan bruge tredjepartscookies til at spore din aktivitet, mens du browser. Gå til indstillingerne for at <ph name="BEGIN_LINK" />administrere adgangen til tredjepartscookies<ph name="END_LINK" />.</translation>
 <translation id="5295729974480418933">Når dette er slået til, kan websites anmode om tilladelse til at bruge de oplysninger, de har gemt om dig. Når dette er slået fra, kan websites ikke anmode om tilladelse til at bruge de oplysninger, de har gemt om dig.</translation>
 <translation id="5300589172476337783">Vis</translation>
 <translation id="5301954838959518834">OK, det er forstået</translation>
@@ -355,6 +362,7 @@
 <translation id="6527303717912515753">Del</translation>
 <translation id="652937045869844725">Prøv at tillade tredjepartscookies, hvilket vil betyde mindre beskyttelse, men større sandsynlighed for, at websitefunktionerne fungerer</translation>
 <translation id="6530703012083415527">Når dette er slået til, kan websites anvende pop op-vinduer og omdirigeringer. Når dette er slået fra, kan websites ikke anvende pop op-vinduer og omdirigeringer.</translation>
+<translation id="6540488083026747005">Du har tilladt tredjepartscookies på dette website</translation>
 <translation id="6545864417968258051">Bluetooth-scanning</translation>
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> mere er blokeret}one{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, and <ph name="NUM_MORE" /> more blocked}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="NUM_MORE" /> mere er blokeret}}</translation>
 <translation id="6554732001434021288">Senest besøgt for <ph name="NUM_DAYS" /> dage siden</translation>
@@ -377,6 +385,7 @@
 <translation id="6787751205395685251">Vælg en mulighed for <ph name="SITE_NAME" /></translation>
 <translation id="6790428901817661496">Afspil</translation>
 <translation id="6818926723028410516">Vælg elementer</translation>
+<translation id="6837658163275294267">Chrome begrænser de fleste websites fra at bruge tredjepartscookies til at spore din aktivitet, mens du browser. Gå til indstillingerne for at <ph name="BEGIN_LINK" />administrere adgangen til tredjepartscookies<ph name="END_LINK" /></translation>
 <translation id="6838525730752203626">Brug Chrome som standard</translation>
 <translation id="6840760312327750441">Du kan gruppere faner ved at holde en fane nede. Træk den derefter oven på en anden fane.</translation>
 <translation id="6864395892908308021">Denne enhed kan ikke læse NFC</translation>
@@ -441,6 +450,7 @@
 <translation id="7835852323729233924">Afspilning af medier</translation>
 <translation id="783819812427904514">Slå lyden i videoen til</translation>
 <translation id="7846076177841592234">Annuller valg</translation>
+<translation id="7881140103901777395">Chrome begrænser de fleste websites fra at bruge tredjepartscookies. Tredjepartscookies er dog tilladt på dette website, fordi det er afhængigt af, at de leverer grundlæggende tjenester.\n\nGå til indstillingerne for at <ph name="BEGIN_LINK" />administrere adgangen til tredjepartscookies<ph name="END_LINK" />.</translation>
 <translation id="7882806643839505685">Tillad, at et bestemt website afspiller lyd.</translation>
 <translation id="789180354981963912">Bloker tredjepartscookies i inkognitotilstand:</translation>
 <translation id="7940722705963108451">Påmind mig</translation>
@@ -503,6 +513,7 @@
 <translation id="8721719390026067591">Når dette er slået til, kan websites anmode om tilladelse til at søge efter Bluetooth-enheder. Når dette er slået fra, kan websites ikke søge efter Bluetooth-enheder.</translation>
 <translation id="8725066075913043281">Forsøg igen</translation>
 <translation id="8730621377337864115">Udfør</translation>
+<translation id="8737426583868847403">Websites, du har gemt et tilpasset zoomniveau for, vises her</translation>
 <translation id="8751914237388039244">Vælg et billede</translation>
 <translation id="8800034312320686233">Fungerer websitet ikke?</translation>
 <translation id="8801436777607969138">Bloker JavaScript for et bestemt website.</translation>

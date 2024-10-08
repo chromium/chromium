@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">El valor debe ser igual o posterior a <ph name="MINIMUM_DATE_OR_TIME" />.</translation>
 <translation id="2761667185364618470">Selecciona esta casilla de verificación si quieres continuar</translation>
 <translation id="2908441821576996758">Introduce una lista de direcciones de correo electrónico separada por comas</translation>
+<translation id="2940013921954129954">Acceso a la ubicación precisa permitido</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">Debes introducir un valor válido. El campo está incompleto o incluye una fecha no válida.</translation>
 <translation id="310520048233152454">Introduce una URL</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">Calidad de reproducción baja</translation>
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="6820355525329141109">No se ha podido cargar el complemento.</translation>
+<translation id="688706781007114099">Usar ubicación</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Aumenta la longitud de este texto a <ph name="MIN_CHARACTERS" /> caracteres o más (actualmente, el texto tiene 1 carácter).</translation>
 <translation id="709897737746224366">Utiliza un formato que coincida con el solicitado</translation>

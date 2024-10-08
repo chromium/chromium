@@ -114,6 +114,7 @@
 <translation id="132346741904777634">कॅमेरा सर्वात वरच्या डाव्या कोपर्‍यात स्नॅप केला आहे. सिस्टीम सर्फेसवरील इतर ॲपवर ओव्‍हरलॅप होत आहे.</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> आणि विंडो बंद करा</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> कनेक्‍ट केले</translation>
+<translation id="1337081488893096731">तुमच्या शाळेचा खाते डेटा तुमच्या वैयक्तिक खात्यामध्ये हलवण्यासाठी Content Transfer ॲप वापरा</translation>
 <translation id="1340378040547539434">पेजवर झूम आउट करा</translation>
 <translation id="1341651618736211726">ओव्हरफ्लो</translation>
 <translation id="1341926407152459446">ऑडिओ इनपुट आणि आउटपुटसाठी "<ph name="DEVICE_NAME" />" वापरा</translation>
@@ -242,6 +243,7 @@
 <translation id="17722141032474077">गणना</translation>
 <translation id="1774796056689732716">कॅलेंडर, <ph name="CURRENT_MONTH_YEAR" />, सध्या <ph name="DATE" /> निवडली आहे.</translation>
 <translation id="178347895271755507">तुमच्या फोनमधील अलीकडील फोटो, मीडिया आणि सूचना पाहणे सेट करा</translation>
+<translation id="1786487376942610288">चित्रात-चित्र विंडोच्या कमाल किंवा सध्याच्या आकारादरम्यान स्विच करा</translation>
 <translation id="1787955149152357925">बंद करा</translation>
 <translation id="1796561540704213354">तुम्ही भेट दिलेल्या आणि उघडलेल्या पेजसह वेबसाइट</translation>
 <translation id="179842970735685253">Google च्या सेवा अटी</translation>
@@ -337,6 +339,9 @@
 <translation id="219905428774326614">लाँचर, सर्व अ‍ॅप्स</translation>
 <translation id="2201071101391734388"><ph name="TOTAL_COUNT" /> पैकी <ph name="INDEX" /> अलीकडील फोटो.</translation>
 <translation id="2201687081523799384">Google Tasks कोलॅप्स करा</translation>
+<translation id="2206960886090042977">माउस कनेक्ट केल्यामुळे बिल्ट-इन टचपॅड बंद केले गेले आहे. बदल कन्फर्म करण्यासाठी माउस किंवा कीबोर्ड वापरा.
+
+अन्यथा ३० सेकंदांमध्ये बिल्ट-इन टचपॅड पुन्हा सुरू केले जाईल.</translation>
 <translation id="2208323208084708176">एकीकृत डेस्कटॉप मोड</translation>
 <translation id="2220572644011485463">पिन किंवा पासवर्ड</translation>
 <translation id="2222841058024245321">डेस्‍क ७</translation>
@@ -1468,6 +1473,7 @@
 <translation id="598407983968395253">टेंप्लेट वापरा</translation>
 <translation id="5986723678596105470">Google Meet वापरून सामील व्हा</translation>
 <translation id="598882571027504733">अपडेट करण्यासाठी, संलग्न केलेल्या कीबोर्डसह तुमचे Chromebook रीस्टार्ट करा.</translation>
+<translation id="5990992855591814753">पर्सनलाइझ केलेल्या, एकाग्र करणाऱ्या गाण्यांच्या प्लेलिस्टच्या मदतीने कामांचा माग ठेवा. कोणत्याही शुल्काशिवाय ३ महिन्यांच्या YouTube Premium सह जाहिरातमुक्त YouTube Music आणि YouTube मिळवा. अटी लागू.</translation>
 <translation id="5998374579424866922">गेम नियंत्रणे बंद करा</translation>
 <translation id="6000279412553873020">की, बटण आणि आणखी बरेच काही</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" /> पैकी <ph name="SELECTED_PAGE" /> पेज</translation>
@@ -1906,6 +1912,9 @@
 डिव्हाइस बंद करण्यासाठी, डिव्हाइसवरील पॉवर बटण पुन्हा प्रेस करून धरून ठेवा.</translation>
 <translation id="7523420897035067483">फोकस मध्ये असताना व्यत्यय आणू नका सुरू करा</translation>
 <translation id="7524043547948122239">Google Tasks</translation>
+<translation id="7524919752437339268">बिल्ट-इन टचपॅड बंद केले गेले आहे. बदल कन्फर्म करण्यासाठी तुमचा कीबोर्ड किंवा दुसरे पॉइंटर डिव्हाइस वापरा.
+
+अन्यथा ३० सेकंदांमध्ये बिल्ट-इन टचपॅड पुन्हा सुरू केले जाईल.</translation>
 <translation id="7525067979554623046">तयार करा</translation>
 <translation id="7526573455193969409">नेटवर्कचे परीक्षण केले जाऊ शकते</translation>
 <translation id="7536035074519304529">IP पत्ता: <ph name="ADDRESS" /></translation>
@@ -2293,6 +2302,7 @@
 <translation id="8858369206579825206">गोपनीयता नियंत्रणे</translation>
 <translation id="8860366331836346216">eSIM जोडा</translation>
 <translation id="8870509716567206129">अ‍ॅप विभाजित-स्क्रीनला सपोर्ट करत नाही.</translation>
+<translation id="8873203135446552888">तुम्हाला बिल्ट-इन टचपॅड बंद करायचे असल्याचे कन्फर्म करा</translation>
 <translation id="8874184842967597500">कनेक्ट नाही</translation>
 <translation id="8875021410787719674">तळाकडील उजवा कोपरा, लाँचर, अ‍ॅड्रेस बार, बुकमार्क बार, उघडी असलेली वेबसाइट आणि डाउनलोड यांदरम्यान हलवा</translation>
 <translation id="8876148469852588625"><ph name="EVENT_TOTAL_COUNT" /> पैकी <ph name="EVENT_POSITION" /> इव्हेंट</translation>

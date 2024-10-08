@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">მნიშვნელობა უნდა იყოს <ph name="MINIMUM_DATE_OR_TIME" /> ან მეტი.</translation>
 <translation id="2761667185364618470">გთხოვთ შეამოწმოთ ეს ყუთი, თუ გსურთ გაგრძელება.</translation>
 <translation id="2908441821576996758">შეიყვანეთ მძიმეებით გამოყოფილი ელფოსტის მისამართების სია.</translation>
+<translation id="2940013921954129954">დაშვებულია ზუსტი მდებარეობა</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> მბაიტი</translation>
 <translation id="3075154866155599887">გთხოვთ, შეიყვანოთ სწორი მნიშვნელობა. ველი არასრულია ან გააჩნია არასწორი თარიღი.</translation>
 <translation id="310520048233152454">გთხოვთ შეიყვანოთ URL.</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">დაკვრის ხარისხი ცუდია</translation>
 <translation id="6790428901817661496">დაკვრა</translation>
 <translation id="6820355525329141109">დანამატი ვერ ჩაიტვირთა.</translation>
+<translation id="688706781007114099">მდებარეობის გამოყენება</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">გთხოვთ, გაზარდოთ ეს ტექსტი <ph name="MIN_CHARACTERS" /> ან მეტ სიმბოლომდე (ამჟამად 1 სიმბოლოს იყენებთ).</translation>
 <translation id="709897737746224366">გთხოვთ, შეუსაბამეთ მოთხოვნილ ფორმატს.</translation>
