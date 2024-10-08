@@ -295,11 +295,11 @@ public class TabContentManager {
     }
 
     /**
-     * Call to get an ETC1 thumbnail for a given tab through a {@link Callback}. If there is
-     * no up-to-date thumbnail on disk for the given tab, callback returns null.
+     * Call to get an ETC1 thumbnail for a given tab through a {@link Callback}. If there is no
+     * up-to-date thumbnail on disk for the given tab, callback returns null.
+     *
      * @param tabId The ID of the tab to get the thumbnail for.
-     * @param callback The callback to send the {@link Bitmap} with. Can be called up to twice when
-     *                 {@code forceUpdate}; otherwise always called exactly once.
+     * @param callback The callback to send the {@link Bitmap} with.
      */
     public void getEtc1TabThumbnailWithCallback(int tabId, @NonNull Callback<Bitmap> callback) {
         if (!mSnapshotsEnabled || mNativeTabContentManager == 0) {
