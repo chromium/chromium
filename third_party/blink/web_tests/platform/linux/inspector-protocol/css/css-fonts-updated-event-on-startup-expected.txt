@@ -1,0 +1,100 @@
+Verifies that CSS.fontsUpdated events are sent after CSS domain is enabled
+{
+    fontDisplay : auto
+    fontFamily : Amstelvar
+    fontStretch : normal
+    fontStyle : normal
+    fontVariant : normal
+    fontVariationAxes : [
+        [0] : {
+            defaultValue : 400
+            maxValue : 900
+            minValue : 100
+            name : wght
+            tag : wght
+        }
+        [1] : {
+            defaultValue : 100
+            maxValue : 125
+            minValue : 50
+            name : wdth
+            tag : wdth
+        }
+        [2] : {
+            defaultValue : 14
+            maxValue : 144
+            minValue : 8
+            name : opsz
+            tag : opsz
+        }
+        [3] : {
+            defaultValue : 0
+            maxValue : 1
+            minValue : -1
+            name : GRAD
+            tag : GRAD
+        }
+        [4] : {
+            defaultValue : 562
+            maxValue : 640
+            minValue : 324
+            name : XTRA
+            tag : XTRA
+        }
+        [5] : {
+            defaultValue : 176
+            maxValue : 263
+            minValue : 18
+            name : XOPQ
+            tag : XOPQ
+        }
+        [6] : {
+            defaultValue : 124
+            maxValue : 132
+            minValue : 15
+            name : YOPQ
+            tag : YOPQ
+        }
+        [7] : {
+            defaultValue : 500
+            maxValue : 570
+            minValue : 420
+            name : YTLC
+            tag : YTLC
+        }
+        [8] : {
+            defaultValue : 750
+            maxValue : 1000
+            minValue : 500
+            name : YTUC
+            tag : YTUC
+        }
+        [9] : {
+            defaultValue : 767
+            maxValue : 983
+            minValue : 500
+            name : YTAS
+            tag : YTAS
+        }
+        [10] : {
+            defaultValue : -240
+            maxValue : -138
+            minValue : -500
+            name : YTDE
+            tag : YTDE
+        }
+        [11] : {
+            defaultValue : 760
+            maxValue : 1000
+            minValue : 425
+            name : YTFI
+            tag : YTFI
+        }
+    ]
+    fontWeight : normal
+    platformFontFamily : Amstelvar Roman (Fontations)
+    src : <string>
+    unicodeRange : U+0-10FFFF
+}
+SUCCESS: CSS.FontsUpdated events received.
+

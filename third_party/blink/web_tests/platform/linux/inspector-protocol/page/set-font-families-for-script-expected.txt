@@ -8,7 +8,7 @@ Tests Page.setFontFamilies for scripts.
 .inherited_font
 [
     [0] : {
-        familyName : Ahem
+        familyName : Ahem (Fontations)
         glyphCount : 9
         isCustomFont : true
         postScriptName : Ahem
@@ -17,7 +17,7 @@ Tests Page.setFontFamilies for scripts.
 .inherited_font_ru
 [
     [0] : {
-        familyName : Ahem
+        familyName : Ahem (Fontations)
         glyphCount : 9
         isCustomFont : true
         postScriptName : Ahem

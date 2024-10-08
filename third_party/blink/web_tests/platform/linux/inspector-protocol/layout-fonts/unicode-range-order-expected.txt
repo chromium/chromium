@@ -1,7 +1,7 @@
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
 #test_1:
 "Tinos" : 25,
-"Ahem" : 1
+"Ahem (Fontations)" : 1
 
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
 #font_usage_reference__must_match_test_1:
@@ -10,7 +10,7 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZ
 
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
 #test_2:
-"Ahem" : 15,
+"Ahem (Fontations)" : 15,
 "Tinos" : 11
 
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
@@ -21,7 +21,7 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZ
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
 #test_3:
 "Tinos" : 23,
-"Ahem" : 3
+"Ahem (Fontations)" : 3
 
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
 #font_usage_reference__must_match_test_3:
@@ -31,7 +31,7 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZ
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
 #test_4:
 "Tinos" : 16,
-"Ahem" : 7,
+"Ahem (Fontations)" : 7,
 "Cousine" : 3
 
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
@@ -43,7 +43,7 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZ
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
 #test_5:
 "Tinos" : 17,
-"Ahem" : 5,
+"Ahem (Fontations)" : 5,
 "Cousine" : 4
 
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
@@ -55,7 +55,7 @@ ABCDEFGHIJKLMNOPQRSTUVWXYZ
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
 #test_5a:
 "Tinos" : 17,
-"Ahem" : 5,
+"Ahem (Fontations)" : 5,
 "Cousine" : 4
 
 ABCDEFGHIJKLMNOPQRSTUVWXYZ
