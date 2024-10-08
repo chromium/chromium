@@ -44,6 +44,9 @@ public class ToolbarPositionController {
         return !isCustomTab
                 && ChromeFeatureList.sAndroidBottomToolbar.isEnabled()
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
-                && !BuildInfo.getInstance().isFoldable;
+                // Some emulators erroneously report that they have a hinge sensor (and thus are
+                // foldables). To make the feature testable on these "devices", skip the foldable
+                // check for debug builds.
+                && (!BuildInfo.getInstance().isFoldable || BuildInfo.isDebugApp());
     }
 }
