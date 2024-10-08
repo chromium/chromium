@@ -32,7 +32,11 @@ namespace url {
 // Examples:
 // - Special URLs: "https://host/path", "ftp://host/path"
 // - Non Special URLs: "about:blank", "data:xxx", "git://host/path"
-enum class CanonMode { kSpecialURL, kNonSpecialURL };
+//
+// kFileURL (file://) is a special case of kSpecialURL that allows space
+// characters but otherwise behaves identically to kSpecialURL.
+// See crbug.com/40256677
+enum class CanonMode { kSpecialURL, kNonSpecialURL, kFileURL };
 
 // Canonicalizer output
 // -------------------------------------------------------
@@ -453,6 +457,21 @@ bool CanonicalizeSpecialHost(const char16_t* spec,
                              CanonOutput& output,
                              Component& out_host);
 
+// Host in special URLs.
+//
+// The 8-bit version requires UTF-8 encoding. Use this version when you only
+// need to know whether canonicalization succeeded.
+COMPONENT_EXPORT(URL)
+bool CanonicalizeFileHost(const char* spec,
+                          const Component& host,
+                          CanonOutput& output,
+                          Component& out_host);
+COMPONENT_EXPORT(URL)
+bool CanonicalizeFileHost(const char16_t* spec,
+                          const Component& host,
+                          CanonOutput& output,
+                          Component& out_host);
+
 // Deprecated. Please call either CanonicalizeSpecialHostVerbose or
 // CanonicalizeNonSpecialHostVerbose.
 //
@@ -482,6 +501,21 @@ void CanonicalizeSpecialHostVerbose(const char16_t* spec,
                                     const Component& host,
                                     CanonOutput& output,
                                     CanonHostInfo& host_info);
+
+// Extended version of CanonicalizeFileHost, which returns additional
+// information. Use this when you need to know whether the hostname was an IP
+// address. A successful return is indicated by host_info->family != BROKEN. See
+// the definition of CanonHostInfo above for details.
+COMPONENT_EXPORT(URL)
+void CanonicalizeFileHostVerbose(const char* spec,
+                                 const Component& host,
+                                 CanonOutput& output,
+                                 CanonHostInfo& host_info);
+COMPONENT_EXPORT(URL)
+void CanonicalizeFileHostVerbose(const char16_t* spec,
+                                 const Component& host,
+                                 CanonOutput& output,
+                                 CanonHostInfo& host_info);
 
 // Canonicalizes a string according to the host canonicalization rules. Unlike
 // CanonicalizeHost, this will not check for IP addresses which can change the

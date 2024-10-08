@@ -495,7 +495,8 @@ TEST_F(SecurityOriginTest, CanonicalizeHost) {
     SCOPED_TRACE(testing::Message() << "raw host: '" << test.host << "'");
     String host = String::FromUTF8(test.host);
     bool success = false;
-    String canonical_host = SecurityOrigin::CanonicalizeHost(host, &success);
+    String canonical_host =
+        SecurityOrigin::CanonicalizeSpecialHost(host, &success);
     EXPECT_EQ(test.canonical_output, canonical_host);
     EXPECT_EQ(test.expected_success, success);
   }

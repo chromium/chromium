@@ -27,10 +27,18 @@ COMPONENT_EXPORT(URL) bool IsRecordingIDNA2008Metrics();
 // enabled. See url::kStandardCompliantNonSpecialSchemeURLParsing for details.
 COMPONENT_EXPORT(URL) bool IsUsingStandardCompliantNonSpecialSchemeURLParsing();
 
+// Returns true if space characters should be treated as invalid in URL host
+// parsing.
+COMPONENT_EXPORT(URL) bool IsDisallowingSpaceCharacterInURLHostParsing();
+
 // When enabled, Chrome uses standard-compliant URL parsing for non-special
 // scheme URLs. See https://crbug.com/1416006 for details.
 COMPONENT_EXPORT(URL)
 BASE_DECLARE_FEATURE(kStandardCompliantNonSpecialSchemeURLParsing);
+
+// When enabled, treat space characters as invalid in URL host parsing.
+COMPONENT_EXPORT(URL)
+BASE_DECLARE_FEATURE(kDisallowSpaceCharacterInURLHostParsing);
 
 }  // namespace url
 

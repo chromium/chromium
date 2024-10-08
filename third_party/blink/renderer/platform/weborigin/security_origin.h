@@ -380,7 +380,10 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
 
   // Only used for document.domain setting. The method should probably be moved
   // if we need it for something more general.
-  static String CanonicalizeHost(const String& host, bool* success);
+  static String CanonicalizeSpecialHost(const String& host, bool* success);
+  static String CanonicalizeHost(const String& host,
+                                 const String& scheme,
+                                 bool* success);
 
   // Return a security origin that is assigned to the agent cluster. This will
   // be a copy of this security origin if the current agent doesn't match the

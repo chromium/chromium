@@ -6270,7 +6270,8 @@ void Document::setDomain(const String& raw_domain,
   }
 
   bool success = false;
-  String new_domain = SecurityOrigin::CanonicalizeHost(raw_domain, &success);
+  String new_domain = SecurityOrigin::CanonicalizeHost(
+      raw_domain, dom_window_->GetSecurityOrigin()->Protocol(), &success);
   if (!success) {
     exception_state.ThrowSecurityError("'" + raw_domain +
                                        "' could not be parsed properly.");
