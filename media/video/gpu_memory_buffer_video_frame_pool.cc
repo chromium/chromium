@@ -67,11 +67,9 @@ namespace media {
 
 namespace {
 
-// TODO(crbug.com/330865436): Resolve issue(s) causing crbug.com/369838163 and
-// re-enable.
 BASE_FEATURE(kAddScanoutUsageOnlyIfSupportedBySharedImage,
              "AddScanoutUsageOnlyIfSupportedBySharedImage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 
