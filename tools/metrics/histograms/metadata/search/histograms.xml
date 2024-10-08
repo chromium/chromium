@@ -879,6 +879,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.OsDefaultsChoice.DialogShownAttempt" units="attempts"
+    expires_after="2025-03-01">
+  <owner>dgn@google.com</owner>
+  <owner>triploblastic@google.com</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    Records the triggering attempt number of the dialog that blocks Chrome usage
+    to require the Android OS default apps choice to be completed. [Android
+    only]
+
+    This value represents for a given client how many times that dialog was
+    shown and blocked a session. It is recorded when the dialog is shown, and
+    the count gets cleared when Chrome gets the signal that the OS choices have
+    been completed or the feature is entirely disabled. It would restart to 0 if
+    a similar blocking campaign is restarted.
+
+    Recording timing: on startups where we actually show the dialog.
+  </summary>
+</histogram>
+
 <histogram name="Search.OsDefaultsChoice.DialogStatusChange"
     enum="OsDefaultsChoiceDialogStatus" expires_after="2025-03-01">
   <owner>dgn@google.com</owner>
@@ -905,6 +925,25 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logs the status of the choice dialog (if it's shown) when Chrome is brought
     to the foreground. [Android only].
+  </summary>
+</histogram>
+
+<histogram name="Search.OsDefaultsChoice.DialogSuppressionStatus"
+    enum="OsDefaultsChoiceDialogSuppressionStatus" expires_after="2025-03-01">
+  <owner>dgn@google.com</owner>
+  <owner>triploblastic@google.com</owner>
+  <owner>chrome-waffle-eng@google.com</owner>
+  <summary>
+    Outcome of the logic determining whether to suppress the dialog that blocks
+    Chrome usage to require the Android OS default apps choice to be completed.
+    [Android only]
+
+    At the moment of showing the dialog on startup, some additional checks can
+    suppress it, and whether these conditions are met is reported in this
+    histogram. The user then does not see the dialog, and Chrome drops the
+    connection to the backend until another attempt on next startup.
+
+    Recording timing: on startup, when we attempt to show the dialog.
   </summary>
 </histogram>
 

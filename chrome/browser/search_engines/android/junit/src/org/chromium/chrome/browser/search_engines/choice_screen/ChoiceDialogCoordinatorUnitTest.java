@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.search_engines.choice_screen;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -16,6 +17,8 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.robolectric.Shadows.shadowOf;
+
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_PENDING_OS_CHOICE_DIALOG_SHOWN_ATTEMPTS;
 
 import android.content.Context;
 import android.os.Looper;
@@ -35,7 +38,10 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogCoordinator.DialogSuppressionStatus;
 import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogMediator.DialogType;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
 import org.chromium.components.search_engines.SearchEnginesFeatures;
@@ -71,6 +77,13 @@ public class ChoiceDialogCoordinatorUnitTest {
 
     @Test
     public void testMaybeShow() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Search.OsDefaultsChoice.DialogShownAttempt", 1)
+                        .expectIntRecord(
+                                "Search.OsDefaultsChoice.DialogSuppressionStatus",
+                                DialogSuppressionStatus.CAN_SHOW)
+                        .build();
         var shouldShowSupplier = new ObservableSupplierImpl<>(true);
         doReturn(shouldShowSupplier)
                 .when(mSearchEngineChoiceService)
@@ -88,6 +101,10 @@ public class ChoiceDialogCoordinatorUnitTest {
                         eq(ModalDialogPriority.VERY_HIGH));
         verify(mSearchEngineChoiceService).notifyDeviceChoiceBlockShown();
         verify(mViewHolder).updateViewForType(eq(DialogType.CHOICE_LAUNCH));
+        assertEquals(
+                1,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(SEARCH_ENGINE_CHOICE_PENDING_OS_CHOICE_DIALOG_SHOWN_ATTEMPTS));
 
         shouldShowSupplier.set(false);
 
@@ -101,10 +118,16 @@ public class ChoiceDialogCoordinatorUnitTest {
 
         verify(mModalDialogManager).dismissDialog(any(), eq(DialogDismissalCause.UNKNOWN));
         assertFalse(shouldShowSupplier.hasObservers()); // The dialog stopped observing.
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void testMaybeShow_doesNotShowWhenNotEligible() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Search.OsDefaultsChoice.DialogShownAttempt")
+                        .expectNoRecords("Search.OsDefaultsChoice.DialogSuppressionStatus")
+                        .build();
         doReturn(false).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();
 
         assertFalse(ChoiceDialogCoordinator.maybeShowInternal(this::createCoordinatorWithMocks));
@@ -113,15 +136,25 @@ public class ChoiceDialogCoordinatorUnitTest {
         verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyInt());
         verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockShown();
         verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockCleared();
+        assertEquals(
+                0,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(SEARCH_ENGINE_CHOICE_PENDING_OS_CHOICE_DIALOG_SHOWN_ATTEMPTS));
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void testMaybeShow_doesNotShowInDarkLaunchMode() {
-        var testFeatures = new FeatureList.TestValues();
-        testFeatures.addFeatureFlagOverride(SearchEnginesFeatures.CLAY_BLOCKING, true);
-        testFeatures.addFieldTrialParamOverride(
-                SearchEnginesFeatures.CLAY_BLOCKING, "is_dark_launch", "true");
-        FeatureList.setTestValues(testFeatures);
+        SearchEnginesFeaturesTestUtil.configureClayBlockingFeatureParams(
+                Map.of("is_dark_launch", "true"));
+
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Search.OsDefaultsChoice.DialogShownAttempt")
+                        .expectIntRecord(
+                                "Search.OsDefaultsChoice.DialogSuppressionStatus",
+                                DialogSuppressionStatus.SUPPRESSED_DARK_LAUNCH)
+                        .build();
         var shouldShowSupplier = new ObservableSupplierImpl<>(true);
         doReturn(shouldShowSupplier)
                 .when(mSearchEngineChoiceService)
@@ -134,6 +167,80 @@ public class ChoiceDialogCoordinatorUnitTest {
         verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyInt());
         verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockShown();
         verify(mSearchEngineChoiceService, never()).notifyDeviceChoiceBlockCleared();
+        assertEquals(
+                0,
+                ChromeSharedPreferences.getInstance()
+                        .readInt(SEARCH_ENGINE_CHOICE_PENDING_OS_CHOICE_DIALOG_SHOWN_ATTEMPTS));
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testMaybeShow_doesNotShowEscapeHatch() {
+        SearchEnginesFeaturesTestUtil.configureClayBlockingFeatureParams(
+                Map.of("escape_hatch_block_limit", "1"));
+        var shouldShowSupplier = new ObservableSupplierImpl<>(true);
+        doReturn(shouldShowSupplier)
+                .when(mSearchEngineChoiceService)
+                .getIsDeviceChoiceRequiredSupplier();
+        doReturn(true).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();
+
+        // Initial run, the dialog is shown
+        try (var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord("Search.OsDefaultsChoice.DialogShownAttempt", 1)
+                        .expectIntRecord(
+                                "Search.OsDefaultsChoice.DialogSuppressionStatus",
+                                DialogSuppressionStatus.CAN_SHOW)
+                        .build()) {
+            assertTrue(ChoiceDialogCoordinator.maybeShowInternal(this::createCoordinatorWithMocks));
+
+            shadowOf(Looper.getMainLooper()).idle();
+            verify(mModalDialogManager)
+                    .showDialog(any(), eq(ModalDialogType.APP), eq(ModalDialogPriority.VERY_HIGH));
+            assertEquals(
+                    1,
+                    ChromeSharedPreferences.getInstance()
+                            .readInt(SEARCH_ENGINE_CHOICE_PENDING_OS_CHOICE_DIALOG_SHOWN_ATTEMPTS));
+        }
+
+        // Second run, the dialog is suppressed
+        reset(mModalDialogManager);
+        try (var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Search.OsDefaultsChoice.DialogShownAttempt")
+                        .expectIntRecord(
+                                "Search.OsDefaultsChoice.DialogSuppressionStatus",
+                                DialogSuppressionStatus.SUPPRESSED_ESCAPE_HATCH)
+                        .build()) {
+            assertFalse(
+                    ChoiceDialogCoordinator.maybeShowInternal(this::createCoordinatorWithMocks));
+
+            shadowOf(Looper.getMainLooper()).idle();
+            verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyInt());
+            assertEquals(
+                    1,
+                    ChromeSharedPreferences.getInstance()
+                            .readInt(SEARCH_ENGINE_CHOICE_PENDING_OS_CHOICE_DIALOG_SHOWN_ATTEMPTS));
+        }
+
+        // When the device becomes ineligible, the counter is reset.
+        reset(mModalDialogManager);
+        doReturn(false).when(mSearchEngineChoiceService).isDeviceChoiceDialogEligible();
+        try (var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords("Search.OsDefaultsChoice.DialogShownAttempt")
+                        .expectNoRecords("Search.OsDefaultsChoice.DialogSuppressionStatus")
+                        .build()) {
+            assertFalse(
+                    ChoiceDialogCoordinator.maybeShowInternal(this::createCoordinatorWithMocks));
+
+            shadowOf(Looper.getMainLooper()).idle();
+            verify(mModalDialogManager, never()).showDialog(any(), anyInt(), anyInt());
+            assertEquals(
+                    0,
+                    ChromeSharedPreferences.getInstance()
+                            .readInt(SEARCH_ENGINE_CHOICE_PENDING_OS_CHOICE_DIALOG_SHOWN_ATTEMPTS));
+        }
     }
 
     @Test

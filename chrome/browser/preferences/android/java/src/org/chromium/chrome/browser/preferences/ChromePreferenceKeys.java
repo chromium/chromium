@@ -670,6 +670,13 @@ public final class ChromePreferenceKeys {
     public static final String SEARCH_ENGINE_CHOICE_OS_CHOICE_APPLIED_TIMESTAMP =
             "Chrome.SearchEngineChoice.OsChoiceAppliedTimestamp";
 
+    /**
+     * Key used to store the number of sessions that have been blocked by the dialog requiring the
+     * user to complete the OS level default apps choice.
+     */
+    public static final String SEARCH_ENGINE_CHOICE_PENDING_OS_CHOICE_DIALOG_SHOWN_ATTEMPTS =
+            "Chrome.SearchEngineChoice.PendingOsChoiceDialogShownAttempts";
+
     public static final String SEARCH_WIDGET_IS_VOICE_SEARCH_AVAILABLE =
             "org.chromium.chrome.browser.searchwidget.IS_VOICE_SEARCH_AVAILABLE";
     public static final String SEARCH_WIDGET_NUM_CONSECUTIVE_CRASHES =
@@ -1028,6 +1035,7 @@ public final class ChromePreferenceKeys {
                 PWA_RESTORE_APPS_AVAILABLE,
                 PWA_RESTORE_PROMO_STAGE,
                 SEARCH_ENGINE_CHOICE_OS_CHOICE_APPLIED_TIMESTAMP,
+                SEARCH_ENGINE_CHOICE_PENDING_OS_CHOICE_DIALOG_SHOWN_ATTEMPTS,
                 SEGMENTATION_FEED_ACTIVE_USER,
                 SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
                 SETTINGS_SAFETY_CHECK_RUN_COUNTER,

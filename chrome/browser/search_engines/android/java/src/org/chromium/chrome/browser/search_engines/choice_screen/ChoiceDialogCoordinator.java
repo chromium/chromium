@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.search_engines.choice_screen;
 
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SEARCH_ENGINE_CHOICE_PENDING_OS_CHOICE_DIALOG_SHOWN_ATTEMPTS;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,12 +13,15 @@ import android.view.View;
 import android.widget.TextView;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.search_engines.R;
 import org.chromium.chrome.browser.search_engines.choice_screen.ChoiceDialogMediator.DialogType;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
@@ -28,6 +33,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.function.Function;
 
 /**
@@ -78,6 +85,11 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
                 public void handleOnBackPressed() {}
             };
 
+    /**
+     * Attempts to show the device defaults apps choice dialog.
+     *
+     * @return {@code true} if the dialog will be shown, {@code false} otherwise.
+     */
     public static boolean maybeShow(
             Context context,
             ModalDialogManager modalDialogManager,
@@ -106,14 +118,15 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
         }
 
         if (!canShow) {
+            clearDialogShownCount();
             return false;
         }
 
         coordinatorFactory.apply(searchEngineChoiceService);
 
-        // In dark launch mode, we won't show the UI regardless of the backend response, so we can
-        // let other promos get triggered after this one.
-        return !SearchEnginesFeatureUtils.clayBlockingIsDarkLaunch();
+        // If the dialog is suppressed, we won't show the UI regardless of the backend response, so
+        // we can let other promos get triggered after this one.
+        return computeDialogSuppressionStatus() == DialogSuppressionStatus.CAN_SHOW;
     }
 
     @VisibleForTesting
@@ -190,12 +203,10 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
     @Override
     public void showDialog() {
         assert SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING);
-        if (SearchEnginesFeatureUtils.clayBlockingIsDarkLaunch()) {
-            if (SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging()) {
-                // TODO(b/355186707): Temporary log to be removed after e2e validation.
-                Log.i(TAG, "[DarkLaunch] showDialog() suppressed");
-            }
-            return; // Ensure that we never show the dialog when the feature is in dark launch mode.
+        @DialogSuppressionStatus int suppressionStatus = computeDialogSuppressionStatus();
+        recordShowDialogStatus(suppressionStatus);
+        if (suppressionStatus != DialogSuppressionStatus.CAN_SHOW) {
+            return; // Suppress the dialog.
         }
 
         mModalDialogManager.addObserver(mDialogAddedObserver);
@@ -213,6 +224,79 @@ public class ChoiceDialogCoordinator implements ChoiceDialogMediator.Delegate {
     @Override
     public void onMediatorDestroyed() {
         mModalDialogManager.removeObserver(mDialogAddedObserver);
+    }
+
+    @IntDef({
+        DialogSuppressionStatus.CAN_SHOW,
+        DialogSuppressionStatus.SUPPRESSED_DARK_LAUNCH,
+        DialogSuppressionStatus.SUPPRESSED_ESCAPE_HATCH,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    @VisibleForTesting
+    @interface DialogSuppressionStatus {
+        // These values are persisted to logs. Entries should not be renumbered and numeric values
+        // should never be reused.
+        // LINT.IfChange(DialogSuppressionStatus)
+        int CAN_SHOW = 0;
+        int SUPPRESSED_DARK_LAUNCH = 1;
+        int SUPPRESSED_ESCAPE_HATCH = 2;
+        int COUNT = 3;
+        // LINT.ThenChange(//tools/metrics/histograms/enums.xml:OsDefaultsChoiceDialogSuppressionStatus)
+    }
+
+    @DialogSuppressionStatus
+    private static int computeDialogSuppressionStatus() {
+        if (SearchEnginesFeatureUtils.clayBlockingIsDarkLaunch()) {
+            if (SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging()) {
+                // TODO(b/355186707): Temporary log to be removed after e2e validation.
+                Log.i(TAG, "The dialog is suppressed: Dark Launch mode.");
+            }
+            return DialogSuppressionStatus.SUPPRESSED_DARK_LAUNCH;
+        }
+
+        int blockCount =
+                ChromeSharedPreferences.getInstance()
+                        .readInt(SEARCH_ENGINE_CHOICE_PENDING_OS_CHOICE_DIALOG_SHOWN_ATTEMPTS);
+        int blockLimit = SearchEnginesFeatureUtils.clayBlockingEscapeHatchBlockLimit();
+        if (blockLimit > 0 && blockCount >= blockLimit) {
+            if (SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging()) {
+                // TODO(b/355186707): Temporary log to be removed after e2e validation.
+                Log.i(
+                        TAG,
+                        "The dialog is suppressed: Escape Hatch triggered, blocked %d times"
+                                + " (limit=%d).",
+                        blockCount,
+                        blockLimit);
+            }
+            return DialogSuppressionStatus.SUPPRESSED_ESCAPE_HATCH;
+        }
+
+        return DialogSuppressionStatus.CAN_SHOW;
+    }
+
+    private static void recordShowDialogStatus(@DialogSuppressionStatus int suppressionStatus) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Search.OsDefaultsChoice.DialogSuppressionStatus",
+                suppressionStatus,
+                DialogSuppressionStatus.COUNT);
+
+        if (suppressionStatus == DialogSuppressionStatus.CAN_SHOW) {
+            int newCount =
+                    ChromeSharedPreferences.getInstance()
+                            .incrementInt(
+                                    SEARCH_ENGINE_CHOICE_PENDING_OS_CHOICE_DIALOG_SHOWN_ATTEMPTS);
+            RecordHistogram.recordLinearCountHistogram(
+                    "Search.OsDefaultsChoice.DialogShownAttempt",
+                    newCount,
+                    /* min= */ 1,
+                    /* max= */ 50,
+                    /* numBuckets= */ 51);
+        }
+    }
+
+    private static void clearDialogShownCount() {
+        ChromeSharedPreferences.getInstance()
+                .removeKey(SEARCH_ENGINE_CHOICE_PENDING_OS_CHOICE_DIALOG_SHOWN_ATTEMPTS);
     }
 
     private static class ViewHolderImpl implements ViewHolder {

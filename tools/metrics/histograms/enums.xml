@@ -27987,6 +27987,16 @@ Called by update_net_error_codes.py.-->
 
 <!-- LINT.ThenChange() -->
 
+<!-- LINT.IfChange(OsDefaultsChoiceDialogSuppressionStatus) -->
+
+<enum name="OsDefaultsChoiceDialogSuppressionStatus">
+  <int value="0" label="Can show"/>
+  <int value="1" label="Suppressed: Dark Launch"/>
+  <int value="2" label="Suppressed: Escape Hatch"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/search_engines/android/java/src/org/chromium/chrome/browser/search_engines/choice_screen/ChoiceDialogCoordinator.java:DialogSuppressionStatus) -->
+
 <enum name="OSXNSException">
   <int value="0" label="NSGenericException"/>
   <int value="1" label="NSRangeException"/>

@@ -13,10 +13,10 @@ public final class SearchEnginesFeatureUtils {
      * other device apps/components to test the feature.
      *
      * <p>In "fake backend" mode, if the "dialog_timeout_millis" param is set, it is also used to
-     * simulate a long-running backend query. It will respond that blocking is required after
-     * <tt>min(3000, paramValue("dialog_timeout_millis"))</tt> milliseconds.
+     * simulate a long-running backend query. It will respond that blocking is required after {@code
+     * min(3000, paramValue("dialog_timeout_millis"))} milliseconds.
      *
-     * <p>This param is surfaced in <tt>chrome://flags</tt>.
+     * <p>This param is surfaced in {@code chrome://flags}.
      */
     public static boolean clayBlockingUseFakeBackend() {
         return clayBlockingFeatureParamAsBoolean("use_fake_backend", false);
@@ -39,7 +39,7 @@ public final class SearchEnginesFeatureUtils {
     /**
      * Whether verbose logs should be enabled.
      *
-     * <p>This param is surfaced in <tt>chrome://flags</tt>.
+     * <p>This param is surfaced in {@code chrome://flags}.
      */
     public static boolean clayBlockingEnableVerboseLogging() {
         return clayBlockingFeatureParamAsBoolean("enable_verbose_logging", false);
@@ -63,12 +63,24 @@ public final class SearchEnginesFeatureUtils {
      * mode, with the action button disable.
      *
      * <p>Should be a positive value. Showing the dialog in "Pending" mode will be disabled if an
-     * unexpected value is provided. <tt>0</tt> deliberately also disables the dialog. If we want to
-     * show the pending dialog "immediately", we can use another very small duration (e.g. <tt>1
-     * ms</tt>), which should be functionally identical.
+     * unexpected value is provided. {@code 0} deliberately also disables the dialog. If we want to
+     * show the pending dialog "immediately", we can use another very small duration (e.g. {@code 1
+     * ms}), which should be functionally identical.
      */
     public static int clayBlockingDialogSilentlyPendingDurationMillis() {
         return clayBlockingFeatureParamAsInt("silent_pending_duration_millis", 0);
+    }
+
+    /**
+     * Number of blocked Chrome sessions after which we suppress the blocking dialog. This is
+     * intended as an escape hatch for initial iterations of the feature, to mitigate potential
+     * bugs.
+     *
+     * <p>Should be a positive value. The Escape Hatch triggering and suppressing dialog will be
+     * disabled if an unexpected value (including {@code 0}) is provided.
+     */
+    public static int clayBlockingEscapeHatchBlockLimit() {
+        return clayBlockingFeatureParamAsInt("escape_hatch_block_limit", 0);
     }
 
     @VisibleForTesting
