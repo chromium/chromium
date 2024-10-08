@@ -4348,9 +4348,6 @@ crbug.com/1041973 external/wpt/html/semantics/forms/constraints/form-validation-
 # Failing origin trial for css properties test
 crbug.com/1041993 http/tests/origin_trials/sample-api-script-added-after-css-declaration.html [ Failure ]
 
-# Sheriff 2020-01-20
-crbug.com/1043357 http/tests/credentialmanagement/credentialscontainer-get-with-virtual-authenticator.html [ Failure Pass Timeout ]
-
 # Will change clip-path and mix-blend-mode don't trigger a Backdrop Root
 crbug.com/338250112 external/wpt/css/filter-effects/backdrop-filter-backdrop-root-clip-path.html [ Failure ]
 crbug.com/338250112 external/wpt/css/filter-effects/backdrop-filter-backdrop-root-mix-blend-mode.html [ Failure ]
@@ -5097,7 +5094,6 @@ crbug.com/1229212 inspector-protocol/heap-profiler/heap-samples-in-snapshot.js [
 
 # Sheriff 2021-07-15
 crbug.com/1229666 external/wpt/html/semantics/forms/form-submission-0/urlencoded2.window.html [ Pass Timeout ]
-crbug.com/1093027 http/tests/credentialmanagement/credentialscontainer-create-with-virtual-authenticator.html [ Crash Failure Pass Timeout ]
 # pause-on-elements-panel.js is marked as Slow, so it's required to also be Skipped due to it Timing out.
 crbug.com/1229725 http/tests/devtools/sources/debugger-pause/pause-on-elements-panel.js [ Crash Failure Pass Timeout ]
 crbug.com/1087232 http/tests/devtools/network/network-worker-fetch-blocked.js [ Failure Pass ]

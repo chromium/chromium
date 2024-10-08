@@ -1671,9 +1671,6 @@ crbug.com/691944 external/wpt/service-workers/service-worker/update-after-oneday
 crbug.com/1224804 virtual/not-site-per-process/external/wpt/wasm/serialization/module/window-similar-but-cross-origin-success.sub.html [ Skip ]
 crbug.com/1224804 virtual/not-site-per-process/external/wpt/wasm/serialization/module/window-domain-success.sub.html [ Skip ]
 
-# Utility for manual testing, not intended to be run as part of layout tests.
-crbug.com/785955 http/tests/credentialmanagement/tools/virtual-authenticator-environment-manual.html [ Skip ]
-
 # Since enabling the multi IDP flag affects existing tests, we only enable the flag in the virtual multi IDP test suite
 crbug.com/1373766 external/wpt/credential-management/fedcm-multi-idp/* [ Skip ]
 
