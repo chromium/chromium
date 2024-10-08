@@ -427,4 +427,14 @@ public interface Tab extends TabLifecycle {
      * @return True if the current tab has embedded media experience enabled.
      */
     boolean shouldEnableEmbeddedMediaExperience();
+
+    /** Returns the content sensitivity of the tab. */
+    boolean getTabHasSensitiveContent();
+
+    /**
+     * Sets the content sensitivity of the tab.
+     *
+     * @param contentIsSensitive True if the content is sensitive.
+     */
+    void setTabHasSensitiveContent(boolean contentIsSensitive);
 }

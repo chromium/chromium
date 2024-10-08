@@ -90,6 +90,7 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
         }
         TabStateFlatBufferV1.addTabGroupId(
                 fbb, TabGroupIdToken.createTabGroupIdToken(fbb, tokenHigh, tokenLow));
+        TabStateFlatBufferV1.addTabHasSensitiveContent(fbb, state.tabHasSensitiveContent);
         int r = TabStateFlatBufferV1.endTabStateFlatBufferV1(fbb);
         fbb.finish(r);
         return fbb.dataBuffer();
@@ -123,6 +124,7 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
             state.tabLaunchTypeAtCreation =
                     getLaunchTypeFromFlatBuffer(tabStateFlatBuffer.launchTypeAtCreation());
             state.themeColor = tabStateFlatBuffer.themeColor();
+            state.tabHasSensitiveContent = tabStateFlatBuffer.tabHasSensitiveContent();
             ByteBuffer webContentsStateBuffer =
                     tabStateFlatBuffer.webContentsStateBytesAsByteBuffer() == null
                             ? ByteBuffer.allocateDirect(0)

@@ -253,6 +253,7 @@ public class TabTest {
         tabState.lastNavigationCommittedTimestampMillis = 748932L;
         tabState.rootId = 5;
         tabState.tabGroupId = new Token(1L, 2L);
+        tabState.tabHasSensitiveContent = true;
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -264,6 +265,7 @@ public class TabTest {
                 mTab.getLastNavigationCommittedTimestampMillis());
         assertEquals(tabState.rootId, mTab.getRootId());
         assertEquals(tabState.tabGroupId, mTab.getTabGroupId());
+        assertEquals(tabState.tabHasSensitiveContent, mTab.getTabHasSensitiveContent());
     }
 
     @FunctionalInterface

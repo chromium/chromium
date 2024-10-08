@@ -58,6 +58,7 @@ public class TabStateFileManagerUnitTest {
     private static final Token TAB_GROUP_ID =
             new Token(TAB_GROUP_ID_TOKEN_HIGH, TAB_GROUP_ID_TOKEN_LOW);
     private static final int LARGE_BYTE_BUFFER_SIZE = Integer.MAX_VALUE / 4;
+    private static final boolean CONTENT_IS_SENSITIVE = true;
 
     @Rule public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
@@ -518,6 +519,7 @@ public class TabStateFileManagerUnitTest {
         state.userAgent = USER_AGENT;
         state.lastNavigationCommittedTimestampMillis = TIMESTAMP;
         state.tabGroupId = tabGroupId;
+        state.tabHasSensitiveContent = CONTENT_IS_SENSITIVE;
         return state;
     }
 
@@ -548,6 +550,7 @@ public class TabStateFileManagerUnitTest {
         assertEquals(ROOT_ID, state.rootId);
         assertEquals(USER_AGENT, state.userAgent);
         assertEquals(TIMESTAMP, state.lastNavigationCommittedTimestampMillis);
+        assertEquals(CONTENT_IS_SENSITIVE, state.tabHasSensitiveContent);
         if (tabGroupId == null) {
             assertNull(state.tabGroupId);
         } else {

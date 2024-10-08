@@ -417,4 +417,7 @@ public interface TabObserver {
      * Retrieve the current animation state using the Tab's WebContents.
      */
     default void didBackForwardTransitionAnimationChange() {}
+
+    /** Called when the content sensitivity of the tab changes. */
+    default void onTabContentSensitivityChanged(Tab tab, boolean contentIsSensitive) {}
 }

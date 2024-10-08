@@ -458,6 +458,43 @@ public class TabStateAttributesTest {
     }
 
     @Test
+    public void testTabHasSensitiveContentUpdates() {
+        TabStateAttributes.createForTab(mTab, TabCreationState.FROZEN_ON_RESTORE);
+        TabStateAttributes.from(mTab).addObserver(mAttributesObserver);
+        assertEquals(
+                TabStateAttributes.DirtinessState.CLEAN,
+                TabStateAttributes.from(mTab).getDirtinessState());
+
+        mTab.setTabHasSensitiveContent(true);
+        assertEquals(
+                TabStateAttributes.DirtinessState.UNTIDY,
+                TabStateAttributes.from(mTab).getDirtinessState());
+        verify(mAttributesObserver)
+                .onTabStateDirtinessChanged(mTab, TabStateAttributes.DirtinessState.UNTIDY);
+        TabStateAttributes.from(mTab).clearTabStateDirtiness();
+
+        mTab.setUrl(new GURL(UrlConstants.NTP_URL));
+        mTab.setTabHasSensitiveContent(false);
+        assertEquals(
+                TabStateAttributes.DirtinessState.CLEAN,
+                TabStateAttributes.from(mTab).getDirtinessState());
+        TabStateAttributes.from(mTab).clearTabStateDirtiness();
+
+        mTab.setUrl(new GURL(UrlConstants.CONTENT_SCHEME + "://hello_world"));
+        mTab.setTabHasSensitiveContent(true);
+        assertEquals(
+                TabStateAttributes.DirtinessState.CLEAN,
+                TabStateAttributes.from(mTab).getDirtinessState());
+
+        // Checks that that the number of dirtiness changes to `UNTIDY` did not increase since the
+        // last `UNTIDY` check above.
+        verify(mAttributesObserver)
+                .onTabStateDirtinessChanged(mTab, TabStateAttributes.DirtinessState.UNTIDY);
+        verify(mAttributesObserver, never())
+                .onTabStateDirtinessChanged(mTab, TabStateAttributes.DirtinessState.DIRTY);
+    }
+
+    @Test
     public void testDuplicateUpdateCalls() {
         TabStateAttributes.createForTab(mTab, TabCreationState.FROZEN_ON_RESTORE);
         TabStateAttributes.from(mTab).addObserver(mAttributesObserver);

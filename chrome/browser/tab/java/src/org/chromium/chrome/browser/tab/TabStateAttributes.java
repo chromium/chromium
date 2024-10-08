@@ -192,6 +192,13 @@ public class TabStateAttributes extends TabWebContentsUserData {
                         if (!tab.isInitialized()) return;
                         updateIsDirtyNotCheckingNtp(DirtinessState.DIRTY);
                     }
+
+                    @Override
+                    public void onTabContentSensitivityChanged(
+                            Tab tab, boolean contentIsSensitive) {
+                        if (!tab.isInitialized()) return;
+                        updateIsDirty(DirtinessState.UNTIDY);
+                    }
                 });
     }
 

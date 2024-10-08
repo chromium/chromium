@@ -42,6 +42,7 @@ public class TabStateExtractor {
         tabState.lastNavigationCommittedTimestampMillis =
                 tab.getLastNavigationCommittedTimestampMillis();
         tabState.tabGroupId = tab.getTabGroupId();
+        tabState.tabHasSensitiveContent = tab.getTabHasSensitiveContent();
         return tabState;
     }
 

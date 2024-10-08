@@ -242,6 +242,7 @@ class TabImpl implements Tab {
     private int mParentId = INVALID_TAB_ID;
     private int mRootId;
     private @Nullable Token mTabGroupId;
+    private boolean mTabHasSensitiveContent;
     private @TabUserAgent int mUserAgent = TabUserAgent.DEFAULT;
 
     /**
@@ -1209,13 +1210,13 @@ class TabImpl implements Tab {
         setRootId(state.rootId == Tab.INVALID_TAB_ID ? mId : state.rootId);
         setTabGroupId(state.tabGroupId);
         setUserAgent(state.userAgent);
+        setTabHasSensitiveContent(state.tabHasSensitiveContent);
     }
 
     /**
-     * @return An {@link ObserverList.RewindableIterator} instance that points to all of
-     *         the current {@link TabObserver}s on this class.  Note that calling
-     *         {@link java.util.Iterator#remove()} will throw an
-     *         {@link UnsupportedOperationException}.
+     * @return An {@link ObserverList.RewindableIterator} instance that points to all of the current
+     *     {@link TabObserver}s on this class. Note that calling {@link java.util.Iterator#remove()}
+     *     will throw an {@link UnsupportedOperationException}.
      */
     ObserverList.RewindableIterator<TabObserver> getTabObservers() {
         return mObservers.rewindableIterator();
@@ -2391,6 +2392,20 @@ class TabImpl implements Tab {
     public boolean shouldEnableEmbeddedMediaExperience() {
         if (mWebContentsDelegate == null) return false;
         return mWebContentsDelegate.shouldEnableEmbeddedMediaExperience();
+    }
+
+    @Override
+    public boolean getTabHasSensitiveContent() {
+        return mTabHasSensitiveContent;
+    }
+
+    @Override
+    public void setTabHasSensitiveContent(boolean contentIsSensitive) {
+        if (mTabHasSensitiveContent == contentIsSensitive || isDestroyed()) return;
+        mTabHasSensitiveContent = contentIsSensitive;
+        for (TabObserver observer : mObservers) {
+            observer.onTabContentSensitivityChanged(this, contentIsSensitive);
+        }
     }
 
     @NativeMethods

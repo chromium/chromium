@@ -237,6 +237,7 @@ public class TabStateFlatBufferTest {
         state.userAgent = UserAgentType.DESKTOP;
         state.lastNavigationCommittedTimestampMillis = 42L;
         state.timestampMillis = 41L;
+        state.tabHasSensitiveContent = true;
         state.isIncognito = isIncognito;
         String url = sTestServer.getURL(TEST_URL);
         Tab tab = sActivityTestRule.loadUrlInNewTab(url);
@@ -278,6 +279,7 @@ public class TabStateFlatBufferTest {
                 actual.lastNavigationCommittedTimestampMillis);
         Assert.assertEquals(expected.timestampMillis, actual.timestampMillis);
         Assert.assertEquals(expected.themeColor, actual.themeColor);
+        Assert.assertEquals(expected.tabHasSensitiveContent, actual.tabHasSensitiveContent);
         ByteBufferTestUtils.verifyByteBuffer(
                 expected.contentsState.buffer(), actual.contentsState.buffer());
         Assert.assertTrue(
