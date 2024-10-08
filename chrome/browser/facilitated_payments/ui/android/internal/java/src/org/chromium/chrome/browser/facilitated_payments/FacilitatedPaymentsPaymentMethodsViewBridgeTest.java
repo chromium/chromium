@@ -155,8 +155,14 @@ public class FacilitatedPaymentsPaymentMethodsViewBridgeTest {
                 .requestShowContent(contentCaptor.capture(), /* animate= */ anyBoolean());
         FacilitatedPaymentsPaymentMethodsView content = contentCaptor.getValue();
         assertThat(content.getContentView(), notNullValue());
-        assertThat(content.getSheetContentDescriptionStringId(), equalTo(R.string.ok));
-        assertThat(content.getSheetFullHeightAccessibilityStringId(), equalTo(R.string.ok));
-        assertThat(content.getSheetClosedAccessibilityStringId(), equalTo(R.string.ok));
+        assertThat(
+                content.getSheetContentDescriptionStringId(),
+                equalTo(R.string.pix_payment_methods_bottom_sheet_content_description));
+        assertThat(
+                content.getSheetFullHeightAccessibilityStringId(),
+                equalTo(R.string.pix_payment_methods_bottom_sheet_full_height));
+        assertThat(
+                content.getSheetClosedAccessibilityStringId(),
+                equalTo(R.string.pix_payment_methods_bottom_sheet_closed));
     }
 }

@@ -177,7 +177,7 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
 
     @Override
     public int getSheetContentDescriptionStringId() {
-        return R.string.ok;
+        return R.string.pix_payment_methods_bottom_sheet_content_description;
     }
 
     @Override
@@ -189,11 +189,11 @@ class FacilitatedPaymentsPaymentMethodsView implements BottomSheetContent {
 
     @Override
     public int getSheetFullHeightAccessibilityStringId() {
-        return R.string.ok;
+        return R.string.pix_payment_methods_bottom_sheet_full_height;
     }
 
     @Override
     public int getSheetClosedAccessibilityStringId() {
-        return R.string.ok;
+        return R.string.pix_payment_methods_bottom_sheet_closed;
     }
 }
