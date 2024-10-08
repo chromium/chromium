@@ -50,4 +50,9 @@ void ServerCertificateDatabaseService::GetAllCertificates(
       .Then(std::move(callback));
 }
 
+void ServerCertificateDatabaseService::PostTaskWithDatabase(
+    base::OnceCallback<void(net::ServerCertificateDatabase*)> callback) {
+  server_cert_database_.PostTaskWithThisObject(std::move(callback));
+}
+
 }  // namespace net

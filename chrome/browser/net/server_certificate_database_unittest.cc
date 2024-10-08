@@ -5,23 +5,18 @@
 #include "chrome/browser/net/server_certificate_database.h"
 
 #include "base/containers/span.h"
-#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/net/server_certificate_database.pb.h"
-#include "crypto/sha2.h"
+#include "chrome/browser/net/server_certificate_database_test_util.h"
 #include "net/test/cert_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
 
-using ::base::test::EqualsProto;
 using chrome_browser_server_certificate_database::CertificateTrust;
-using ::testing::Matches;
 using ::testing::UnorderedElementsAre;
 
 class ServerCertificateDatabaseTest : public testing::Test {
@@ -46,24 +41,6 @@ class ServerCertificateDatabaseTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<ServerCertificateDatabase> database_;
 };
-
-MATCHER_P(CertInfoEquals, expected_value, "") {
-  return expected_value.get().sha256hash_hex == arg.sha256hash_hex &&
-         expected_value.get().der_cert == arg.der_cert &&
-         Matches(EqualsProto(expected_value.get().cert_metadata))(
-             arg.cert_metadata);
-}
-
-ServerCertificateDatabase::CertInformation MakeCertInfo(
-    const std::string der_cert,
-    CertificateTrust::CertificateTrustType trust_type) {
-  ServerCertificateDatabase::CertInformation cert_info;
-  cert_info.sha256hash_hex =
-      base::HexEncode(crypto::SHA256HashString(der_cert));
-  cert_info.cert_metadata.mutable_trust()->set_trust_type(trust_type);
-  cert_info.der_cert = base::ToVector(base::as_byte_span(der_cert));
-  return cert_info;
-}
 
 TEST_F(ServerCertificateDatabaseTest, StoreAndRetrieve) {
   EXPECT_TRUE(database_->RetrieveAllCertificates().empty());

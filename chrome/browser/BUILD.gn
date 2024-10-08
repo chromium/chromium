@@ -8337,6 +8337,12 @@ static_library("browser") {
       "net/server_certificate_database_service_factory.cc",
       "net/server_certificate_database_service_factory.h",
     ]
+    if (is_chromeos) {
+      sources += [
+        "net/server_certificate_database_nss_migrator.cc",
+        "net/server_certificate_database_nss_migrator.h",
+      ]
+    }
   }
 
   if (use_udev) {

@@ -38,6 +38,13 @@ class ServerCertificateDatabaseService : public KeyedService {
           void(std::vector<net::ServerCertificateDatabase::CertInformation>)>
           callback);
 
+  // Run callback with `server_cert_database_`. The callback will be run on a
+  // thread pool sequence where it is allowed to call methods on the database
+  // object. This can be used to do multiple operations on the database without
+  // repeated thread hops.
+  void PostTaskWithDatabase(
+      base::OnceCallback<void(net::ServerCertificateDatabase*)> callback);
+
  private:
   const raw_ptr<Profile> profile_;
 
