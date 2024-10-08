@@ -19,17 +19,10 @@
 #include "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #include "url/gurl.h"
 
-// TODO(crbug.com/328831758): Remove this once all use cases for
-// MoveWebStateWrapperAt have landed and covered by tests.
-#include "base/gtest_prod_util.h"
-
 class RemovingIndexes;
 class TabGroup;
 class WebStateListDelegate;
 class WebStateListObserver;
-// TODO(crbug.com/328831758): Remove this once all use cases for
-// MoveWebStateWrapperAt have landed and covered by tests.
-class WebStateListTest;
 
 namespace tab_groups {
 class TabGroupId;
@@ -544,15 +537,6 @@ class WebStateList {
 
   // Weak pointer factory.
   base::WeakPtrFactory<WebStateList> weak_factory_{this};
-
-  // TODO(crbug.com/328831758): Remove this once all use cases for
-  // MoveWebStateWrapperAt have landed and covered by tests.
-  FRIEND_TEST_ALL_PREFIXES(WebStateListTest, MoveToGroup_NoMove_GoToRightGroup);
-  FRIEND_TEST_ALL_PREFIXES(WebStateListTest,
-                           MoveToGroup_NoMove_GoToRightGroup_OldGroupEmpty);
-  FRIEND_TEST_ALL_PREFIXES(WebStateListTest,
-                           MoveToGroup_NoMove_GoToRightGroup_OldGroupNonEmpty);
-  FRIEND_TEST_ALL_PREFIXES(WebStateListTest, MoveToGroup_NoMove_PinnedToGroup);
 };
 
 // Helper function that closes all WebStates in `web_state_list`. The operation
