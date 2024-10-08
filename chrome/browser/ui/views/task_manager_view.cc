@@ -37,6 +37,8 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/table_model_observer.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
@@ -63,7 +65,6 @@
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace task_manager {
-
 namespace {
 
 TaskManagerView* g_task_manager_view = nullptr;
@@ -364,14 +365,17 @@ void TaskManagerView::Init() {
   tab_table->set_context_menu_controller(this);
   set_context_menu_controller(this);
 
+  const auto* provider = ChromeLayoutProvider::Get();
   const bool tm_refresh_enabled =
       base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh);
 
   // Has a border if the feature is disabled, since the redesign version doesn't
   // have a border.
-  bool table_has_border = !tm_refresh_enabled;
+  bool table_has_border = !tm_refresh_enabled,
+       large_header_padding = tm_refresh_enabled,
+       scroll_view_rounded = tm_refresh_enabled;
 
-  if (tm_refresh_enabled) {
+  if (large_header_padding) {
     views::TableHeaderStyle header_style = {/*vertical_padding=*/16,
                                             /*horizontal_padding=*/8};
     tab_table->SetHeaderStyle(header_style);
@@ -380,9 +384,18 @@ void TaskManagerView::Init() {
   tab_table_parent_ = AddChildView(views::TableView::CreateScrollViewWithTable(
       std::move(tab_table), table_has_border));
 
+  if (scroll_view_rounded) {
+    tab_table_parent_->SetPaintToLayer(ui::LAYER_TEXTURED);
+    ui::Layer* scroll_view_layer = tab_table_parent_->layer();
+
+    scroll_view_layer->SetRoundedCornerRadius(gfx::RoundedCornersF(
+        provider->GetCornerRadiusMetric(views::Emphasis::kHigh)));
+
+    scroll_view_layer->SetIsFastRoundedCorner(true);
+  }
+
   SetUseDefaultFillLayout(true);
 
-  const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
   const gfx::Insets dialog_insets =
       provider->GetInsetsMetric(views::INSETS_DIALOG);
   // We don't use ChromeLayoutProvider::GetDialogInsetsForContentType because we
