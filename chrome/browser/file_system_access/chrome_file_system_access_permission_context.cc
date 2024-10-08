@@ -2092,7 +2092,7 @@ base::CallbackListSubscription ChromeFileSystemAccessPermissionContext::
 
 ChromeFileSystemAccessPermissionContext::Grants
 ChromeFileSystemAccessPermissionContext::ConvertObjectsToGrants(
-    const std::vector<std::unique_ptr<Object>> objects) {
+    std::vector<std::unique_ptr<Object>> objects) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ChromeFileSystemAccessPermissionContext::Grants grants;

@@ -266,8 +266,7 @@ class ChromeFileSystemAccessPermissionContext
     std::vector<base::FilePath> directory_read_grants;
     std::vector<base::FilePath> directory_write_grants;
   };
-  Grants ConvertObjectsToGrants(
-      const std::vector<std::unique_ptr<Object>> objects);
+  Grants ConvertObjectsToGrants(std::vector<std::unique_ptr<Object>> objects);
 
   // Creates a new set of persisted grants based on the currently granted,
   // active grants for a given origin.
