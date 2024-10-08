@@ -84,9 +84,6 @@ struct StartParams {
   // Enables developer options used to generate Play Auto Install rosters.
   bool arc_generate_play_auto_install = false;
 
-  // Flag to enable keyboard shortcut helper integration.
-  bool enable_keyboard_shortcut_helper_integration = false;
-
   // Flag to enable TTS caching.
   bool enable_tts_caching = false;
 

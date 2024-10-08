@@ -2900,22 +2900,6 @@ TEST_F(ArcVmClientAdapterTest, LazyWebViewInitDisabled) {
   EXPECT_FALSE(request.enable_web_view_zygote_lazy_init());
 }
 
-TEST_F(ArcVmClientAdapterTest, ArcKeyboardShortcutHelperIntegrationEnabled) {
-  StartParams start_params(GetPopulatedStartParams());
-  start_params.enable_keyboard_shortcut_helper_integration = true;
-  StartMiniArcWithParams(true, std::move(start_params));
-  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_TRUE(request.enable_keyboard_shortcut_helper_integration());
-}
-
-TEST_F(ArcVmClientAdapterTest, ArcKeyboardShortcutHelperIntegrationDisabled) {
-  StartParams start_params(GetPopulatedStartParams());
-  start_params.enable_keyboard_shortcut_helper_integration = false;
-  StartMiniArcWithParams(true, std::move(start_params));
-  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
-  EXPECT_FALSE(request.enable_keyboard_shortcut_helper_integration());
-}
-
 TEST_F(ArcVmClientAdapterTest, ArcFilePickerExperimentFalse) {
   StartParams start_params(GetPopulatedStartParams());
   start_params.arc_file_picker_experiment = false;

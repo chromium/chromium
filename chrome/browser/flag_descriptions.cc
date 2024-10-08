@@ -5921,11 +5921,6 @@ const char kArcInstantResponseWindowOpenDescription[] =
     "In some devices the placeholder window will popup immediately after the "
     "user attempts to launch apps.";
 
-const char kArcKeyboardShortcutHelperIntegrationName[] =
-    "Enable keyboard shortcut helper integration for ARC";
-const char kArcKeyboardShortcutHelperIntegrationDescription[] =
-    "Shows keyboard shortcuts from Android apps in ChromeOS Shortcut Viewer";
-
 const char kArcNativeBridgeToggleName[] =
     "Toggle between native bridge implementations for ARC";
 const char kArcNativeBridgeToggleDescription[] =

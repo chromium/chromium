@@ -66,7 +66,6 @@ BASE_DECLARE_FEATURE(kIgnoreHoverEventAnr);
 BASE_DECLARE_FEATURE(kInstantResponseWindowOpen);
 BASE_DECLARE_FEATURE(kLockGuestMemory);
 BASE_DECLARE_FEATURE(kLvmApplicationContainers);
-BASE_DECLARE_FEATURE(kKeyboardShortcutHelperIntegrationFeature);
 BASE_DECLARE_FEATURE(kMglruReclaim);
 extern const base::FeatureParam<int> kMglruReclaimInterval;
 extern const base::FeatureParam<int> kMglruReclaimSwappiness;

@@ -19768,7 +19768,6 @@ from previous Chrome versions.
   <int value="-238175256" label="EarlyExitOnNoopClassOrStyleChange:enabled"/>
   <int value="-237367320" label="AssistantAudioEraser:disabled"/>
   <int value="-236719122" label="AddIdentityInCanMakePaymentEvent:enabled"/>
-  <int value="-236433493" label="ArcKeyboardShortcutHelperIntegration:enabled"/>
   <int value="-236310717" label="AccessibilityDeprecateChromeVoxTabs:disabled"/>
   <int value="-236071174" label="NearbyShareVisibilityReminder:disabled"/>
   <int value="-236058937" label="UseGpuSchedulerDfs:disabled"/>
@@ -22317,7 +22316,6 @@ from previous Chrome versions.
   <int value="804103264" label="OverviewScrollLayoutForClamshell:disabled"/>
   <int value="804119864"
       label="AutofillEnableRankingAddressFormulaProfiles:enabled"/>
-  <int value="804551127" label="ArcKeyboardShortcutHelperIntegration:disabled"/>
   <int value="804958673" label="LensCameraAssistedSearch:enabled"/>
   <int value="805882800" label="SafetyCheckChromeCleanerChild:disabled"/>
   <int value="806035639" label="EnableNeuralPalmDetectionFilter:disabled"/>

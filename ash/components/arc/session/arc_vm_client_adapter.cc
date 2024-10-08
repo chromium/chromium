@@ -200,8 +200,6 @@ std::vector<std::string> GenerateUpgradeProps(
 void AppendParamsFromStartParams(
     vm_tools::concierge::StartArcVmRequest& request,
     const StartParams& start_params) {
-  request.set_enable_keyboard_shortcut_helper_integration(
-      start_params.enable_keyboard_shortcut_helper_integration);
 
   switch (IdentifyBinaryTranslationType(start_params)) {
     case ArcBinaryTranslationType::NONE:

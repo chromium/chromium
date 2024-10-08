@@ -283,11 +283,6 @@ BASE_FEATURE(kLockGuestMemory,
              "ArcLockGuestMemory",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Controls keyboard shortcut helper integration feature in ARC.
-BASE_FEATURE(kKeyboardShortcutHelperIntegrationFeature,
-             "ArcKeyboardShortcutHelperIntegration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Controls ARCVM MGLRU reclaim feature.
 BASE_FEATURE(kMglruReclaim,
              "ArcMglruReclaim",
