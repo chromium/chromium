@@ -488,6 +488,8 @@
     IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD) \
   E(kActionContentContextAutofillFallbackPasswordsNoSavedPasswords, \
     IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS) \
+  E(kActionContentContextUsePasskeyFromAnotherDevice, \
+    IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_USE_PASSKEY_FROM_ANOTHER_DEVICE) \
   /* Live Caption */ \
   E(kActionLiveCaption, IDC_LIVE_CAPTION) \
   /* Device API system tray icon */ \

@@ -943,6 +943,17 @@ bool PasswordFormManager::WebAuthnCredentialsAvailable() const {
   auto check_credentials_delegate = [=, this]() {
     WebAuthnCredentialsDelegate* delegate =
         client_->GetWebAuthnCredentialsDelegateForDriver(driver_.get());
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+    const bool passkey_from_another_device_in_context_menu =
+        (base::FeatureList::IsEnabled(
+             features::kPasswordManualFallbackAvailable) &&
+         base::FeatureList::IsEnabled(
+             features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu));
+    if (passkey_from_another_device_in_context_menu) {
+      return delegate && delegate->GetPasskeys().has_value() &&
+             !delegate->GetPasskeys()->empty();
+    }
+#endif  //! BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
     return delegate && delegate->GetPasskeys().has_value();
   };
 #if BUILDFLAG(IS_ANDROID)
@@ -963,6 +974,7 @@ bool PasswordFormManager::WebAuthnCredentialsAvailable() const {
       return check_cred_man_delegate() || check_credentials_delegate();
   }
 #else
+
   return check_credentials_delegate();
 #endif  // BUILDFLAG(IS_ANDROID)
 }

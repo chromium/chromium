@@ -257,6 +257,10 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // Saves username value from |pending_credentials_| to votes uploader.
   void SaveSuggestedUsernameValueToVotesUploader();
 
+  // Returns true if WebAuthn credential filling is enabled and there are
+  // credentials available to use.
+  bool WebAuthnCredentialsAvailable() const;
+
 #if defined(UNIT_TEST)
   static void set_wait_for_server_predictions_for_filling(bool value) {
     wait_for_server_predictions_for_filling_ = value;
@@ -376,10 +380,6 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // Sends fill data to the renderer immediately regardless of whether server
   // predictions are available.
   void FillNow();
-
-  // Returns true if WebAuthn credential filling is enabled and there are
-  // credentials available to use.
-  bool WebAuthnCredentialsAvailable() const;
 
   // Checks if `best_candidate` has better signal than the username
   // found inside the password form.

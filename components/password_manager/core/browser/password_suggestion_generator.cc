@@ -7,6 +7,7 @@
 #include <set>
 
 #include "base/base64.h"
+#include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
@@ -64,7 +65,7 @@ std::u16string GetHumanReadableRealm(const std::string& signon_realm) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-Suggestion CreateWebAuthnEntry(bool listed_passkeys) {
+Suggestion CreatePasskeyFromAnotherDeviceEntry(bool listed_passkeys) {
   return Suggestion(
       l10n_util::GetStringUTF8(listed_passkeys
                                    ? IDS_PASSWORD_MANAGER_USE_DIFFERENT_PASSKEY
@@ -359,13 +360,25 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Add "Sign in with another device" button.
+  // Add "Use a passkey" or "Use a different passkey" button.
   if (uses_passkeys && delegate->IsSecurityKeyOrHybridFlowAvailable()) {
-    bool listed_passkeys = delegate->GetPasskeys().has_value() &&
-                           delegate->GetPasskeys()->size() > 0;
-    suggestions.emplace_back(CreateWebAuthnEntry(listed_passkeys));
+#if !BUILDFLAG(IS_IOS)
+    const bool passkey_from_another_device_in_autofill =
+        !(base::FeatureList::IsEnabled(
+              features::kPasswordManualFallbackAvailable) &&
+          base::FeatureList::IsEnabled(
+              features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu));
+#else
+    const bool passkey_from_another_device_in_autofill = true;
+#endif  //! BUILDFLAG(IS_IOS)
+    if (passkey_from_another_device_in_autofill) {
+      bool listed_passkeys = delegate->GetPasskeys().has_value() &&
+                             delegate->GetPasskeys()->size() > 0;
+      suggestions.emplace_back(
+          CreatePasskeyFromAnotherDeviceEntry(listed_passkeys));
+    }
   }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Add password generation entry, if available.
   if (offers_generation) {

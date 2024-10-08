@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
+#include "chrome/browser/ui/webauthn/context_menu_helper.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
@@ -54,6 +55,7 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_manual_fallback_flow.h"
 #include "components/password_manager/core/browser/password_manual_fallback_metrics_recorder.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_service.h"
@@ -162,6 +164,7 @@ bool IsAutofillCustomCommandId(
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD,
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS,
       IDC_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS,
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_USE_PASSKEY_FROM_ANOTHER_DEVICE,
   });
   return kAutofillCommands.contains(command_id.value());
 }
@@ -254,13 +257,26 @@ bool AutofillContextMenuManager::IsCommandIdSupported(int command_id) {
 }
 
 bool AutofillContextMenuManager::IsCommandIdEnabled(int command_id) {
-  return command_id !=
-         IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS;
+  switch (command_id) {
+    case IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_USE_PASSKEY_FROM_ANOTHER_DEVICE:
+      return webauthn::IsPasskeyFromAnotherDeviceContextMenuEnabled(
+          delegate_->GetRenderFrameHost(), params_.form_renderer_id,
+          params_.field_renderer_id);
+    case IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS:
+      return false;
+    default:
+      return true;
+  }
 }
 
 void AutofillContextMenuManager::ExecuteCommand(int command_id) {
   content::RenderFrameHost* rfh = delegate_->GetRenderFrameHost();
   if (!rfh) {
+    return;
+  }
+  if (command_id ==
+      IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_USE_PASSKEY_FROM_ANOTHER_DEVICE) {
+    webauthn::OnPasskeyFromAnotherDeviceContextMenuItemSelected(rfh);
     return;
   }
   ContentAutofillDriver* autofill_driver =
@@ -559,11 +575,17 @@ void AutofillContextMenuManager::AddPasswordsManualFallbackItems(
       (password_manager_driver.IsPasswordFieldForPasswordManager(
           autofill::FieldRendererId(params_.field_renderer_id), params_));
 
+  const bool add_passkey_from_another_device_option =
+      base::FeatureList::IsEnabled(
+          password_manager::features::
+              kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
+
   const bool add_submenu =
       std::ranges::count(
           std::array{add_select_password_option, add_no_saved_passwords_option,
                      add_import_passwords_option,
-                     add_password_generation_option},
+                     add_password_generation_option,
+                     add_passkey_from_another_device_option},
           true) > 1;
   const ui::ImageModel password_manager_icon = ui::ImageModel::FromVectorIcon(
       vector_icons::kPasswordManagerIcon, ui::kColorIcon, kContextMenuIconSize);
@@ -604,9 +626,17 @@ void AutofillContextMenuManager::AddPasswordsManualFallbackItems(
         IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD);
   }
 
+  if (add_passkey_from_another_device_option) {
+    passwords_submenu_model_.AddItemWithStringId(
+        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_USE_PASSKEY_FROM_ANOTHER_DEVICE,
+        IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_USE_PASSKEY_FROM_ANOTHER_DEVICE);
+  }
+
   menu_model_->AddSubMenuWithStringIdAndIcon(
       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS,
-      IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS,
+      add_passkey_from_another_device_option
+          ? IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORD_AND_PASSKEYS
+          : IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS,
       &passwords_submenu_model_, password_manager_icon);
   MaybeMarkLastItemAsNewFeature(
       password_manager::features::kPasswordManualFallbackAvailable);

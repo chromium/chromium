@@ -138,6 +138,16 @@ constexpr autofill::FieldSignature kSingleUsernameFieldSignature(123);
 // Unique renderer id of the single username field.
 constexpr autofill::FieldRendererId kSingleUsernameFieldRendererId(101);
 
+const std::optional<std::vector<PasskeyCredential>> kNullopt = std::nullopt;
+const std::optional<std::vector<PasskeyCredential>> kNoPasskeys =
+    std::vector<PasskeyCredential>();
+const PasskeyCredential kPasskey(
+    PasskeyCredential::Source::kGooglePasswordManager,
+    PasskeyCredential::RpId("bestRpInTheWorld.com"),
+    PasskeyCredential::CredentialId({1, 2, 3, 4}),
+    PasskeyCredential::UserId(),
+    PasskeyCredential::Username(""));
+
 // Creates a matcher for an `autofill::AutofillUploadContents::Field` that
 // checks that the field's signature matches that of `field` and its predicted
 // type is `type`.
@@ -4656,9 +4666,7 @@ TEST_P(PasswordFormManagerTest, SetCreditCardFieldsAsBanned) {
 
 #endif
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         PasswordFormManagerTest,
-                         testing::Values(false, true));
+INSTANTIATE_TEST_SUITE_P(All, PasswordFormManagerTest, testing::Bool());
 
 class MockPasswordSaveManager : public PasswordSaveManager {
  public:
@@ -5198,7 +5206,107 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
                                                possible_usernames));
   EXPECT_TRUE(parsed_submitted_form.username_value.empty());
 }
-
 }  // namespace
+
+class PasswordFormManagerWebAuthnCredentialsTest : public testing::Test {
+ protected:
+  void SetUp() override {
+    PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
+#if BUILDFLAG(IS_ANDROID)
+    webauthn::WebAuthnCredManDelegate::override_cred_man_support_for_testing(
+        webauthn::CredManSupport::DISABLED);
+#endif
+    auto password_save_manager = std::make_unique<PasswordSaveManagerImpl>(
+        /*profile_form_saver=*/std::make_unique<NiceMock<MockFormSaver>>(),
+        /*account_form_saver=*/nullptr);
+    fetcher_.Fetch();
+    form_manager_ = std::make_unique<PasswordFormManager>(
+        &client_, driver_.AsWeakPtr(), FormData(), &fetcher_,
+        std::move(password_save_manager), nullptr);
+
+    ON_CALL(client_, GetWebAuthnCredentialsDelegateForDriver)
+        .WillByDefault(Return(&webauthn_credentials_delegate_));
+    ON_CALL(webauthn_credentials_delegate_, GetPasskeys)
+        .WillByDefault(ReturnRef(kNullopt));
+  }
+
+  MockPasswordManagerClient& client() { return client_; }
+
+  MockWebAuthnCredentialsDelegate& webauthn_credentials_delegate() {
+    return webauthn_credentials_delegate_;
+  }
+
+  PasswordFormManager& form_manager() { return *form_manager_.get(); }
+
+ private:
+  MockPasswordManagerClient client_;
+  MockPasswordManagerDriver driver_;
+  MockWebAuthnCredentialsDelegate webauthn_credentials_delegate_;
+  FakeFormFetcher fetcher_;
+
+  std::unique_ptr<PasswordFormManager> form_manager_;
+};
+
+TEST_F(PasswordFormManagerWebAuthnCredentialsTest, NoDelegate) {
+  ON_CALL(client(), GetWebAuthnCredentialsDelegateForDriver)
+      .WillByDefault(Return(nullptr));
+
+  EXPECT_FALSE(form_manager().WebAuthnCredentialsAvailable());
+}
+
+TEST_F(PasswordFormManagerWebAuthnCredentialsTest, NoConditionalRequest) {
+  ON_CALL(client(), GetWebAuthnCredentialsDelegateForDriver)
+      .WillByDefault(Return(nullptr));
+
+  EXPECT_FALSE(form_manager().WebAuthnCredentialsAvailable());
+}
+
+TEST_F(PasswordFormManagerWebAuthnCredentialsTest,
+       OnePasskeysFromConditionalRequest) {
+  const std::optional<std::vector<PasskeyCredential>> kOnePasskey =
+      std::vector<PasskeyCredential>{kPasskey};
+  ON_CALL(webauthn_credentials_delegate(), GetPasskeys)
+      .WillByDefault(ReturnRef(kOnePasskey));
+
+  EXPECT_TRUE(form_manager().WebAuthnCredentialsAvailable());
+}
+
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+TEST_F(
+    PasswordFormManagerWebAuthnCredentialsTest,
+    NoPasskeysFromConditionalRequest_WhenUseAnotherDeviceInContextMenu_ThenNoWebauthnCredentials) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu,
+       features::kPasswordManualFallbackAvailable},
+      {});
+  ON_CALL(webauthn_credentials_delegate(), GetPasskeys)
+      .WillByDefault(ReturnRef(kNoPasskeys));
+
+  EXPECT_FALSE(form_manager().WebAuthnCredentialsAvailable());
+}
+
+TEST_F(
+    PasswordFormManagerWebAuthnCredentialsTest,
+    NoPasskeysFromConditionalRequest_WhenUseAnotherDeviceInAutofillPopup_ThenWebauthnCredentials) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {features::kPasswordManualFallbackAvailable},
+      {features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu});
+  ON_CALL(webauthn_credentials_delegate(), GetPasskeys)
+      .WillByDefault(ReturnRef(kNoPasskeys));
+
+  EXPECT_TRUE(form_manager().WebAuthnCredentialsAvailable());
+}
+#else
+
+TEST_F(PasswordFormManagerWebAuthnCredentialsTest,
+       NoPasskeysFromConditionalRequest_ThenWebauthnCredentials) {
+  ON_CALL(webauthn_credentials_delegate(), GetPasskeys)
+      .WillByDefault(ReturnRef(kNoPasskeys));
+
+  EXPECT_TRUE(form_manager().WebAuthnCredentialsAvailable());
+}
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 
 }  // namespace password_manager

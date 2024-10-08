@@ -29,6 +29,9 @@ BASE_DECLARE_FEATURE(kAutoApproveSharedPasswordUpdatesFromSameSender);
 // goal is to have a go to place to understand how users are perceiving autofill
 // across quarters.
 BASE_DECLARE_FEATURE(kAutofillPasswordUserPerceptionSurvey);
+// Moves the "Use a passkey / Use a different passkey" to the context menu from
+// the autofill dropdown.
+BASE_DECLARE_FEATURE(kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_WIN)

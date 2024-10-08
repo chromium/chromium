@@ -859,6 +859,9 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_CONTENT_CONTEXT_GENERATEPASSWORD" desc="The name of the Generate Password command in the content area context menu">
             Suggest password...
           </message>
+          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_USE_PASSKEY_FROM_ANOTHER_DEVICE" desc="The name of the Use passkey from another device command in the content area context menu">
+            Use passkey from another device
+          </message>
           <message name="IDS_CONTENT_CONTEXT_MORE_APPS" desc="The label for the parent item of the submenu in the content area context menu.">
             More
           </message>
@@ -880,6 +883,9 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS" desc="The name of the Autofill manual fallback for payment methods attribute command in the content area context menu.">
             Payment methods
+          </message>
+          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORD_AND_PASSKEYS" desc="This is a context menu entry. Upon clicking, it opens a submenu with more entries where the user can select a password or use a passkey from another device.">
+            Passwords and passkeys
           </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD" desc="This is a context menu entry in the passwords submenu. It triggers the password selection bubble.">
             Select password
@@ -1196,6 +1202,9 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_CONTENT_CONTEXT_GENERATEPASSWORD" desc="In Title Case: The name of the Generate Password command in the content area context menu">
             Suggest Password...
           </message>
+          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_USE_PASSKEY_FROM_ANOTHER_DEVICE" desc="In Title Case: The name of the Use passkey from another device command in the content area context menu">
+            Use Passkey from Another Device
+          </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FEEDBACK" desc="In Title Case: The name of the Autofill Feedback command in the content area context menu">
             Help Improve Autofill
           </message>
@@ -1211,6 +1220,9 @@ are declared in tools/grit/grit_rule.gni.
           </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS" desc="In Title Case: The name of the Autofill manual fallback for payment methods attribute command in the content area context menu.">
             Payment Methods
+          </message>
+          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORD_AND_PASSKEYS" desc="This is a context menu entry. Upon clicking, it opens a submenu with more entries where the user can select a password or use a passkey from another device.">
+            Passwords and Passkeys
           </message>
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD" desc="In Title Case: This is a context menu entry in the passwords submenu. It triggers the password selection bubble.">
             Select Password
