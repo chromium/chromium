@@ -2713,9 +2713,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Desks.DeskButton.DeskBar.Enter.PresentationTime"
     units="ms" expires_after="2025-03-30">
-  <owner>yongshun@google.com</owner>
   <owner>sammiequon@chromium.org</owner>
-  <owner>chromeos-wms@google.com</owner>
+  <owner>dandersson@chromium.org</owner>
+  <owner>yongshun@chromium.org</owner>
+  <owner>chromeos-wmp@google.com</owner>
   <summary>
     Records the presentation time, which is the time in milliseconds it takes
     from when the desk button desk bar enter event was received and successfully
@@ -2725,9 +2726,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Desks.DeskButton.DeskBar.Exit.PresentationTime" units="ms"
     expires_after="2025-03-30">
-  <owner>yongshun@google.com</owner>
   <owner>sammiequon@chromium.org</owner>
-  <owner>chromeos-wms@google.com</owner>
+  <owner>dandersson@chromium.org</owner>
+  <owner>yongshun@chromium.org</owner>
+  <owner>chromeos-wmp@google.com</owner>
   <summary>
     Records the presentation time, which is the time in milliseconds it takes
     from when the desk button desk bar exit event was received and successfully
@@ -2736,10 +2738,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.DeskButton.HiddenByUser" enum="BooleanHit"
-    expires_after="2024-11-17">
-  <owner>yongshun@google.com</owner>
-  <owner>benbecker@google.com</owner>
-  <owner>nupurjain@google.com</owner>
+    expires_after="2025-03-30">
+  <owner>dandersson@chromium.org</owner>
+  <owner>yongshun@chromium.org</owner>
+  <owner>chromeos-wmp@google.com</owner>
   <summary>
     Emitted when a user decides to hide the desk button to specify how often
     users are deliberately choosing to hide the button.
@@ -2747,10 +2749,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.DeskButton.Presses" enum="BooleanHit"
-    expires_after="2025-03-09">
-  <owner>yongshun@google.com</owner>
-  <owner>benbecker@google.com</owner>
-  <owner>nupurjain@google.com</owner>
+    expires_after="2025-03-30">
+  <owner>dandersson@chromium.org</owner>
+  <owner>yongshun@chromium.org</owner>
+  <owner>chromeos-wmp@google.com</owner>
   <summary>
     Emitted when a user presses on the central button on the desk button to
     specify how often users are using the center button to open or close the
@@ -3166,9 +3168,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Ash.Desks.{EntryPoint}.BarAction.{BarAction}"
     enum="BooleanHit" expires_after="2025-03-30">
-  <owner>benbecker@google.com</owner>
-  <owner>yongshun@google.com</owner>
-  <owner>nupurjain@google.com</owner>
+  <owner>dandersson@chromium.org</owner>
+  <owner>yongshun@chromium.org</owner>
+  <owner>chromeos-wmp@google.com</owner>
   <summary>
     Emitted when a user {BarAction} using the {EntryPoint} desk bar to specify
     how often users are using the {EntryPoint} desk bar to perform these
