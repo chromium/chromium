@@ -14,6 +14,7 @@ export class ScrollModeController {
   private scrollLocation_: ScreenPoint|undefined;
   private lastScrollTime_ = 0;
   private screenBounds_: ScreenRect|undefined;
+  private originalCursorControlPref_: boolean|undefined;
 
   active(): boolean {
     return this.active_;
@@ -42,6 +43,14 @@ export class ScrollModeController {
     this.active_ = true;
     this.scrollLocation_ = mouseLocation;
     this.screenBounds_ = screenBounds;
+    chrome.settingsPrivate.getPref(
+        ScrollModeController.PREF_CURSOR_CONTROL_ENABLED, pref => {
+          // Save the original cursor control setting and ensure cursor control
+          // is enabled.
+          this.originalCursorControlPref_ = pref.value;
+          chrome.settingsPrivate.setPref(
+              ScrollModeController.PREF_CURSOR_CONTROL_ENABLED, true);
+        });
   }
 
   private stop_(): void {
@@ -49,6 +58,12 @@ export class ScrollModeController {
     this.scrollLocation_ = undefined;
     this.screenBounds_ = undefined;
     this.lastScrollTime_ = 0;
+
+    // Set cursor control back to its original setting.
+    chrome.settingsPrivate.setPref(
+        ScrollModeController.PREF_CURSOR_CONTROL_ENABLED,
+        Boolean(this.originalCursorControlPref_));
+    this.originalCursorControlPref_ = undefined;
   }
 
   /** Scrolls based on the new mouse location. */
@@ -90,6 +105,8 @@ export class ScrollModeController {
 }
 
 export namespace ScrollModeController {
+  export const PREF_CURSOR_CONTROL_ENABLED =
+      'settings.a11y.face_gaze.cursor_control_enabled';
   // The time in milliseconds that needs to be exceeded before sending another
   // scroll.
   export const RATE_LIMIT = 50;

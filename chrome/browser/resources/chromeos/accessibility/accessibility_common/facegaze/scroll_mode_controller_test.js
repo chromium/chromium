@@ -32,6 +32,29 @@ FaceGazeScrollModeControllerTest = class extends FaceGazeTestBase {
   getScrollModeController() {
     return this.getFaceGaze().mouseController_.scrollModeController_;
   }
+
+  /** @param {boolean} enabled */
+  async waitForCursorControlPref(enabled) {
+    const matches = async () => {
+      const pref = await this.getPref(FaceGaze.PREF_CURSOR_CONTROL_ENABLED);
+      return pref.value === enabled;
+    };
+
+    const done = await matches();
+    if (done) {
+      return;
+    }
+
+    await new Promise((resolve) => {
+      const intervalId = setIntervalOriginal(async () => {
+        const done = await matches();
+        if (done) {
+          clearIntervalOriginal(intervalId);
+          resolve();
+        }
+      }, 300);
+    });
+  }
 };
 
 AX_TEST_F('FaceGazeScrollModeControllerTest', 'Active', function() {
@@ -154,4 +177,53 @@ AX_TEST_F(
       assertEquals(2, mockApi.getScrollAtPointCount());
       assertEquals(350, mockApi.getScrollAtPointTarget().x);
       assertEquals(250, mockApi.getScrollAtPointTarget().y);
+    });
+
+AX_TEST_F(
+    'FaceGazeScrollModeControllerTest', 'CursorControlOriginallyOff',
+    async function() {
+      // Force cursor control off.
+      await this.setPref(FaceGaze.PREF_CURSOR_CONTROL_ENABLED, false);
+      await this.waitForCursorControlPref(false);
+
+      // Ensure cursor control is toggled on automatically.
+      this.toggleScrollMode();
+      await this.waitForCursorControlPref(true);
+
+      // Ensure cursor control is reset to its original value.
+      this.toggleScrollMode();
+      await this.waitForCursorControlPref(false);
+    });
+
+AX_TEST_F(
+    'FaceGazeScrollModeControllerTest', 'CursorControlOriginallyOn',
+    async function() {
+      await this.waitForCursorControlPref(true);
+
+      this.toggleScrollMode();
+      await this.waitForCursorControlPref(true);
+
+      // Ensure cursor control is still on, since it was on when scroll mode was
+      // originally toggled.
+      this.toggleScrollMode();
+      await this.waitForCursorControlPref(true);
+    });
+
+AX_TEST_F(
+    'FaceGazeScrollModeControllerTest',
+    'AutoTogglesCursorControlIfCursorControlModifiedDuringScrollMode',
+    async function() {
+      await this.waitForCursorControlPref(true);
+
+      this.toggleScrollMode();
+      await this.waitForCursorControlPref(true);
+
+      // Manually turn cursor control off.
+      await this.setPref(FaceGaze.PREF_CURSOR_CONTROL_ENABLED, false);
+      await this.waitForCursorControlPref(false);
+
+      // Cursor control will be turned back on, since it was on when scroll mode
+      // was originally toggled.
+      this.toggleScrollMode();
+      await this.waitForCursorControlPref(true);
     });

@@ -126,6 +126,7 @@ export class FaceGaze {
     if (this.cursorControlEnabled_ === value) {
       return;
     }
+
     this.cursorControlEnabled_ = value;
     if (this.cursorControlEnabled_) {
       this.mouseController_.start();
@@ -138,6 +139,7 @@ export class FaceGaze {
     if (this.actionsEnabled_ === value) {
       return;
     }
+
     this.actionsEnabled_ = value;
     if (this.actionsEnabled_) {
       this.gestureHandler_.start();
