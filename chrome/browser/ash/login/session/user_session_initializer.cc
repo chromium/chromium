@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/system/media/media_notification_provider.h"
+#include "base/debug/crash_logging.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/system/sys_info.h"
@@ -141,8 +142,33 @@ UserSessionInitializer* UserSessionInitializer::Get() {
 }
 
 void UserSessionInitializer::OnUserProfileLoaded(const AccountId& account_id) {
+  // TODO(b/371636008): Remove after fixing the crash.
+  using user_manager::UserManager;
+  SCOPED_CRASH_KEY_NUMBER("UserSessionInitializer", "LoggedInUsers",
+                          UserManager::Get()->GetLoggedInUsers().size());
+  SCOPED_CRASH_KEY_NUMBER(
+      "UserSessionInitializer", "LoadedProfiles",
+      g_browser_process->profile_manager()->GetLoadedProfiles().size());
+  SCOPED_CRASH_KEY_BOOL("UserSessionInitializer", "FindUser",
+                        UserManager::Get()->FindUser(account_id) != nullptr);
+  if (auto* found_user = UserManager::Get()->FindUser(account_id);
+      found_user != nullptr) {
+    SCOPED_CRASH_KEY_NUMBER("UserSessionInitializer", "UserType",
+                            static_cast<int>(found_user->GetType()));
+    SCOPED_CRASH_KEY_BOOL("UserSessionInitializer", "ProfileCreated",
+                          found_user->is_profile_created());
+    SCOPED_CRASH_KEY_BOOL("UserSessionInitializer", "IsPrimary",
+                          UserManager::Get()->GetPrimaryUser() == found_user);
+    SCOPED_CRASH_KEY_BOOL("UserSessionInitializer", "IsActive",
+                          UserManager::Get()->GetActiveUser() == found_user);
+    SCOPED_CRASH_KEY_NUMBER("UserSessionInitializer", "NameHashSize",
+                            found_user->username_hash().size());
+  }
+
   Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  CHECK(profile);
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile);
+  CHECK(user);
 
   if (user_manager::UserManager::Get()->GetPrimaryUser() == user) {
     // TODO(https://crbug.com/1208416): Investigate why OnUserProfileLoaded
