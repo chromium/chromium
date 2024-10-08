@@ -16,6 +16,8 @@ class RenderProcessHost;
 
 namespace performance_manager {
 
+class ProcessNode;
+
 // Convenience aliases.
 using LoadingScenario = blink::performance_scenarios::LoadingScenario;
 using InputScenario = blink::performance_scenarios::InputScenario;
@@ -45,10 +47,11 @@ class ScopedGlobalScenarioMemory {
 };
 
 // Returns a copy of the shared memory handle for the scenario state of a
-// renderer process, or an invalid handle if there is none. The handle can be
-// passed to child processes to map in the scenario state.
+// renderer process, or an invalid handle if there is none. Also returns an
+// invalid handle if `host` is null. The handle can be passed to child processes
+// to map in the scenario state. Must be called from the UI thread.
 base::ReadOnlySharedMemoryRegion GetSharedScenarioRegionForProcess(
-    content::RenderProcessHost& host);
+    content::RenderProcessHost* host);
 
 // Returns a copy of the shared memory handle for the global scenario state, or
 // an invalid handle if there is none. The handle can be passed to child
@@ -56,18 +59,25 @@ base::ReadOnlySharedMemoryRegion GetSharedScenarioRegionForProcess(
 base::ReadOnlySharedMemoryRegion GetGlobalSharedScenarioRegion();
 
 // Functions to set the current performance scenarios. This can only be done
-// from the browser process.
+// from the browser process. Functions that take a RenderProcessHost must be
+// called from the UI thread; functions that take a ProcessNode must be called
+// from the PerformanceManager sequence. These do nothing if the process
+// argument is null. Functions that update global scenarios are thread-safe.
 
 // Atomically updates the loading scenario for a renderer process.
-void SetLoadingScenarioForProcess(content::RenderProcessHost& host,
-                                  LoadingScenario scenario);
+void SetLoadingScenarioForProcess(LoadingScenario scenario,
+                                  content::RenderProcessHost* host);
+void SetLoadingScenarioForProcessNode(LoadingScenario scenario,
+                                      const ProcessNode* process_node);
 
 // Atomically updates the global loading scenario.
 void SetGlobalLoadingScenario(LoadingScenario scenario);
 
 // Atomically updates the input scenario for a renderer process.
-void SetInputScenarioForProcess(content::RenderProcessHost& host,
-                                InputScenario scenario);
+void SetInputScenarioForProcess(InputScenario scenario,
+                                content::RenderProcessHost* host);
+void SetInputScenarioForProcessNode(InputScenario scenario,
+                                    const ProcessNode* process_node);
 
 // Atomically updates the global input scenario.
 void SetGlobalInputScenario(InputScenario scenario);

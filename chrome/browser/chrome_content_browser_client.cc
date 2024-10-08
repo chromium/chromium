@@ -8840,7 +8840,7 @@ void ChromeContentBrowserClient::SetSamplingProfiler(
 base::ReadOnlySharedMemoryRegion
 ChromeContentBrowserClient::GetPerformanceScenarioRegionForProcess(
     content::RenderProcessHost* process_host) {
-  return performance_manager::GetSharedScenarioRegionForProcess(*process_host);
+  return performance_manager::GetSharedScenarioRegionForProcess(process_host);
 }
 
 base::ReadOnlySharedMemoryRegion
