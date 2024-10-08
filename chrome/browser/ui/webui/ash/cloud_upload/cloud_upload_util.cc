@@ -132,6 +132,8 @@ SourceType GetSourceType(Profile* profile,
       << source_url.filesystem_id() << ")";
   // Local by default.
   if (!source_volume) {
+    LOG(ERROR) << "Unable to find source volume (source path filesystem_id: "
+               << source_url.filesystem_id() << ")";
     return SourceType::LOCAL;
   }
   // First, look at whether the filesystem is read-only.
