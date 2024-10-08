@@ -12,6 +12,7 @@ import '//resources/cr_elements/cr_page_host_style.css.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_textarea/cr_textarea.js';
+import '//resources/cr_elements/cr_input/cr_input.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 import '//resources/cr_elements/cr_toolbar/cr_toolbar.js';
 
@@ -19,6 +20,7 @@ import type {CrDialogElement} from '//resources/cr_elements/cr_dialog/cr_dialog.
 import type {CrDrawerElement} from '//resources/cr_elements/cr_drawer/cr_drawer.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import type {CrToolbarSearchFieldElement} from '//resources/cr_elements/cr_toolbar/cr_toolbar_search_field.ts';
+import type {TimeDelta} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -28,9 +30,10 @@ import {PageCallbackRouter, PageHandler, Request} from './suggest_internals.mojo
 
 interface SuggestInternalsAppElement {
   $: {
+    drawer: CrDrawerElement,
+    fileInput: HTMLInputElement,
     hardcodeResponseDialog: CrDialogElement,
     toast: CrToastElement,
-    drawer: CrDrawerElement,
   };
 }
 
@@ -49,6 +52,7 @@ class SuggestInternalsAppElement extends PolymerElement {
       filter_: String,
       hardcodedRequest_: Request,
       requests_: Object,
+      responseDelay_: String,
       responseText_: String,
       toastDuration_: Number,
       toastMessage_: String,
@@ -56,8 +60,9 @@ class SuggestInternalsAppElement extends PolymerElement {
   }
 
   private filter_: string = '';
-  private hardcodedRequest_: Request|null;
+  private hardcodedRequest_: Request|null = null;
   private requests_: Request[] = [];
+  private responseDelay_: string = '';
   private responseText_: string = '';
   private toastDuration_: number = 3000;
   private toastMessage_: string = '';
@@ -103,8 +108,13 @@ class SuggestInternalsAppElement extends PolymerElement {
         this.suggestionsRequestCompletedListenerId_);
   }
 
+  private millisecondsToMojoTimeDelta(milliseconds: number): TimeDelta {
+    return {microseconds: BigInt(Math.floor(milliseconds * 1000))};
+  }
+
   private onClearClick_() {
     this.requests_ = [];
+    this.hardcodedRequest_ = null;
   }
 
   private onCloseDialogs_() {
@@ -112,14 +122,18 @@ class SuggestInternalsAppElement extends PolymerElement {
   }
 
   private async onConfirmHardcodeResponseDialog_() {
-    await this.pageHandler_.hardcodeResponse(this.responseText_)
+    const responseDelayMs = Math.max(0, parseInt(this.responseDelay_) || 0);
+    await this.pageHandler_
+        .hardcodeResponse(
+            this.responseText_,
+            this.millisecondsToMojoTimeDelta(responseDelayMs))
         .then(({request}) => {
           this.hardcodedRequest_ = request;
         });
     this.$.hardcodeResponseDialog.close();
   }
 
-  private onDownloadClick_() {
+  private onExportClick_() {
     const a = document.createElement('a');
     const file =
         new Blob([this.stringifyRequests_()], {type: 'application/json'});
@@ -130,16 +144,12 @@ class SuggestInternalsAppElement extends PolymerElement {
     a.click();
   }
 
-  private onEntityInfoLinkClick_() {
-    window.open('http://protoshop/gws.searchbox.chrome.EntityInfo');
-  }
-
   private onFilterChanged_(e: CustomEvent<string>) {
     this.filter_ = e.detail ?? '';
   }
 
-  private onGroupsInfoLinkClick_() {
-    window.open('http://protoshop/gws.searchbox.chrome.GroupsInfo');
+  private onImportClick_() {
+    this.$.fileInput.click();
   }
 
   private onImportFile_(event: Event) {
@@ -158,6 +168,7 @@ class SuggestInternalsAppElement extends PolymerElement {
   }
 
   private onOpenHardcodeResponseDialog_(e: CustomEvent<string>) {
+    this.responseDelay_ = '';
     this.responseText_ = e.detail;
     this.$.hardcodeResponseDialog.showModal();
   }

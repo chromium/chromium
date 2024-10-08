@@ -45,9 +45,10 @@ struct Request {
 interface PageHandler {
   // Called by the page when first initialized.
   SetPage(pending_remote<Page> page);
-  // Called by the page to hardcode a given response for all suggest requests.
+  // Called by the page to hardcode a given response to return after an optional
+  // delay period for all suggest requests.
   // The returned promise is a synthetic request with the hardcoded response.
-  HardcodeResponse(string response) => (Request request);
+  HardcodeResponse(string response, mojo_base.mojom.TimeDelta delay) => (Request request);
 };
 
 // WebUI-side handler for requests from the browser.

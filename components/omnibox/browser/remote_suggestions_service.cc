@@ -92,6 +92,10 @@ GURL AddLensOverlaySuggestInputsDataToEndpointUrl(
 
 }  // namespace
 
+RemoteSuggestionsService::Delegate::Delegate() = default;
+
+RemoteSuggestionsService::Delegate::~Delegate() = default;
+
 RemoteSuggestionsService::RemoteSuggestionsService(
     DocumentSuggestionsService* document_suggestions_service,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
@@ -410,6 +414,10 @@ void RemoteSuggestionsService::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void RemoteSuggestionsService::SetDelegate(base::WeakPtr<Delegate> delegate) {
+  delegate_ = std::move(delegate);
+}
+
 void RemoteSuggestionsService::set_url_loader_factory_for_testing(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   url_loader_factory_ = std::move(url_loader_factory);
@@ -453,6 +461,13 @@ void RemoteSuggestionsService::OnURLLoadComplete(
                                        response_body);
   }
 
-  std::move(completion_callback)
-      .Run(source, response_code, std::move(response_body));
+  // Call the completion callback or delegate it.
+  if (delegate_) {
+    delegate_->OnSuggestRequestCompleted(source, response_code,
+                                         std::move(response_body),
+                                         std::move(completion_callback));
+  } else {
+    std::move(completion_callback)
+        .Run(source, response_code, std::move(response_body));
+  }
 }

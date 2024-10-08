@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/webui/suggest_internals/suggest_internals_handler.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/autocomplete/remote_suggestions_service_factory.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 
 SuggestInternalsHandler::SuggestInternalsHandler(
     mojo::PendingReceiver<suggest_internals::mojom::PageHandler>
@@ -35,8 +37,16 @@ void SuggestInternalsHandler::SetPage(
 
 void SuggestInternalsHandler::HardcodeResponse(
     const std::string& response,
+    base::TimeDelta delay,
     HardcodeResponseCallback callback) {
-  hardcoded_response_ = response;
+  hardcoded_response_and_delay_ = std::make_pair(response, delay);
+  if (auto* remote_suggestions_service =
+          RemoteSuggestionsServiceFactory::GetForProfile(
+              profile_,
+              /*create_if_necessary=*/true)) {
+    remote_suggestions_service->SetDelegate(weak_ptr_factory_.GetWeakPtr());
+  }
+
   // Update the page with a synthetic request representing the hardcoded
   // response.
   suggest_internals::mojom::RequestPtr mojom_request =
@@ -94,11 +104,25 @@ void SuggestInternalsHandler::OnSuggestRequestCompleted(
   mojom_request->end_time = base::Time::Now();
   mojom_request->response = response_received ? *response_body : "";
   page_->OnSuggestRequestCompleted(std::move(mojom_request));
+}
 
-  // If the page has hardcoded a response, override the response.
-  if (response_received && !hardcoded_response_.empty()) {
-    auto& non_const_response_body =
-        const_cast<std::unique_ptr<std::string>&>(response_body);
-    *non_const_response_body = hardcoded_response_;
+void SuggestInternalsHandler::OnSuggestRequestCompleted(
+    const network::SimpleURLLoader* source,
+    const int response_code,
+    std::unique_ptr<std::string> response_body,
+    RemoteSuggestionsService::CompletionCallback completion_callback) {
+  CHECK(hardcoded_response_and_delay_);
+  const auto [hardcoded_response, delay] = *hardcoded_response_and_delay_;
+
+  // Override the response with the hardcoded response given by the page.
+  if (response_code == 200) {
+    *response_body = hardcoded_response;
   }
+
+  // Call the completion callback after the delay given by the page.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(std::move(completion_callback), source, response_code,
+                     std::move(response_body)),
+      delay);
 }

@@ -8,10 +8,13 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/scoped_variations_ids_provider.h"
@@ -26,6 +29,10 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 
 namespace {
+
+using testing::_;
+using testing::Invoke;
+using testing::NiceMock;
 
 class TestObserver : public RemoteSuggestionsService::Observer {
  public:
@@ -57,7 +64,6 @@ class TestObserver : public RemoteSuggestionsService::Observer {
       const base::UnguessableToken& request_id,
       const int response_code,
       const std::unique_ptr<std::string>& response_body) override {
-    // Verify the observer has been notified of this request.
     ASSERT_EQ(request_id_, request_id);
     response_received_ = true;
     response_body_ = *response_body;
@@ -69,6 +75,26 @@ class TestObserver : public RemoteSuggestionsService::Observer {
   GURL url_;
   bool response_received_{false};
   std::string response_body_;
+};
+
+class MockDelegate : public NiceMock<RemoteSuggestionsService::Delegate> {
+ public:
+  explicit MockDelegate(RemoteSuggestionsService* service) {
+    service->SetDelegate(weak_ptr_factory_.GetWeakPtr());
+  }
+  ~MockDelegate() override = default;
+  MockDelegate(const MockDelegate&) = delete;
+  MockDelegate& operator=(const MockDelegate&) = delete;
+
+  // RemoteSuggestionsService::Delegate:
+  MOCK_METHOD(
+      void,
+      OnSuggestRequestCompleted,
+      (const network::SimpleURLLoader* source,
+       const int response_code,
+       std::unique_ptr<std::string> response_body,
+       RemoteSuggestionsService::CompletionCallback completion_callback),
+      (override));
 };
 
 }  // namespace
@@ -83,11 +109,15 @@ class RemoteSuggestionsServiceTest : public testing::Test {
 
   void OnRequestComplete(const network::SimpleURLLoader* source,
                          const int response_code,
-                         std::unique_ptr<std::string> response_body) {}
+                         std::unique_ptr<std::string> response_body) {
+    response_body_ = *response_body;
+  }
 
   TemplateURLService& template_url_service() {
     return *search_engines_test_environment_.template_url_service();
   }
+
+  std::string response_body() { return response_body_; }
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
@@ -95,9 +125,10 @@ class RemoteSuggestionsServiceTest : public testing::Test {
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   network::TestURLLoaderFactory test_url_loader_factory_;
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
+  std::string response_body_;
 };
 
-TEST_F(RemoteSuggestionsServiceTest, EnsureAttachCookies_ZeroPrefixSuggest) {
+TEST_F(RemoteSuggestionsServiceTest, AttachCookies_ZeroPrefixSuggest) {
   network::ResourceRequest resource_request;
   test_url_loader_factory_.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
@@ -112,9 +143,7 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureAttachCookies_ZeroPrefixSuggest) {
   auto loader = service.StartZeroPrefixSuggestionsRequest(
       RemoteRequestType::kZeroSuggest,
       template_url_service().GetDefaultSearchProvider(), search_terms_args,
-      template_url_service().search_terms_data(),
-      base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestComplete,
-                     base::Unretained(this)));
+      template_url_service().search_terms_data(), base::DoNothing());
 
   base::RunLoop().RunUntilIdle();
 
@@ -127,7 +156,7 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureAttachCookies_ZeroPrefixSuggest) {
             resource_request.url.spec().substr(0, kRequestUrl.size()));
 }
 
-TEST_F(RemoteSuggestionsServiceTest, EnsureAttachCookies_Suggest) {
+TEST_F(RemoteSuggestionsServiceTest, AttachCookies_Suggest) {
   network::ResourceRequest resource_request;
   test_url_loader_factory_.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
@@ -142,9 +171,7 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureAttachCookies_Suggest) {
   auto loader = service.StartSuggestionsRequest(
       RemoteRequestType::kSearch,
       template_url_service().GetDefaultSearchProvider(), search_terms_args,
-      template_url_service().search_terms_data(),
-      base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestComplete,
-                     base::Unretained(this)));
+      template_url_service().search_terms_data(), base::DoNothing());
 
   base::RunLoop().RunUntilIdle();
 
@@ -156,7 +183,7 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureAttachCookies_Suggest) {
             resource_request.url.spec().substr(0, kRequestUrl.size()));
 }
 
-TEST_F(RemoteSuggestionsServiceTest, EnsureAttachCookies_DeleteSuggest) {
+TEST_F(RemoteSuggestionsServiceTest, AttachCookies_DeleteSuggest) {
   network::ResourceRequest resource_request;
   test_url_loader_factory_.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
@@ -166,9 +193,7 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureAttachCookies_DeleteSuggest) {
   RemoteSuggestionsService service(/*document_suggestions_service_=*/nullptr,
                                    GetUrlLoaderFactory());
   auto loader = service.StartDeletionRequest(
-      "https://google.com/complete/delete",
-      base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestComplete,
-                     base::Unretained(this)));
+      "https://google.com/complete/delete", base::DoNothing());
 
   base::RunLoop().RunUntilIdle();
 
@@ -177,7 +202,7 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureAttachCookies_DeleteSuggest) {
       << resource_request.site_for_cookies.ToDebugString();
 }
 
-TEST_F(RemoteSuggestionsServiceTest, EnsureBypassCache) {
+TEST_F(RemoteSuggestionsServiceTest, BypassCache) {
   network::ResourceRequest resource_request;
   test_url_loader_factory_.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
@@ -193,9 +218,7 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureBypassCache) {
   auto loader = service.StartZeroPrefixSuggestionsRequest(
       RemoteRequestType::kZeroSuggest,
       template_url_service().GetDefaultSearchProvider(), search_terms_args,
-      template_url_service().search_terms_data(),
-      base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestComplete,
-                     base::Unretained(this)));
+      template_url_service().search_terms_data(), base::DoNothing());
 
   base::RunLoop().RunUntilIdle();
 
@@ -209,7 +232,7 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureBypassCache) {
             resource_request.url.spec().substr(0, kRequestUrl.size()));
 }
 
-TEST_F(RemoteSuggestionsServiceTest, EnsureObservers) {
+TEST_F(RemoteSuggestionsServiceTest, Observer) {
   base::HistogramTester histogram_tester;
 
   TemplateURLData template_url_data;
@@ -251,9 +274,69 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureObservers) {
   ASSERT_EQ(observer.url().spec(), kRequestUrl);
   ASSERT_TRUE(observer.response_received());
   ASSERT_EQ(observer.response_body(), kResponseBody);
+
+  // Verify the service client got notified of request completion.
+  ASSERT_EQ(response_body(), kResponseBody);
 }
 
-TEST_F(RemoteSuggestionsServiceTest, EnsureCrOSOverridenOrAppendedQueryParams) {
+TEST_F(RemoteSuggestionsServiceTest, Delegate) {
+  base::HistogramTester histogram_tester;
+
+  TemplateURLData template_url_data;
+  template_url_data.suggestions_url = "https://www.example.com/suggest";
+  template_url_service().SetUserSelectedDefaultSearchProvider(
+      template_url_service().Add(
+          std::make_unique<TemplateURL>(template_url_data)));
+
+  RemoteSuggestionsService service(/*document_suggestions_service_=*/nullptr,
+                                   GetUrlLoaderFactory());
+
+  // Set up a delegate that will be replaced.
+  MockDelegate delegate1(&service);
+  EXPECT_CALL(delegate1, OnSuggestRequestCompleted(_, _, _, _)).Times(0);
+
+  // Set up a delegate that will be deallocated.
+  {
+    MockDelegate delegate2(&service);
+    EXPECT_CALL(delegate2, OnSuggestRequestCompleted(_, _, _, _)).Times(0);
+  }
+
+  // Set up a delegate that will call the completion callback asynchronously.
+  MockDelegate delegate3(&service);
+  EXPECT_CALL(delegate3, OnSuggestRequestCompleted(_, _, _, _))
+      .WillOnce(Invoke(
+          [](const network::SimpleURLLoader* source, const int response_code,
+             std::unique_ptr<std::string> response_body,
+             RemoteSuggestionsService::CompletionCallback completion_callback) {
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE,
+                base::BindOnce(std::move(completion_callback), source,
+                               response_code, std::move(response_body)));
+          }));
+
+  auto loader = service.StartZeroPrefixSuggestionsRequest(
+      RemoteRequestType::kZeroSuggest,
+      template_url_service().GetDefaultSearchProvider(),
+      TemplateURLRef::SearchTermsArgs(),
+      template_url_service().search_terms_data(),
+      base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestComplete,
+                     base::Unretained(this)));
+
+  base::RunLoop().RunUntilIdle();
+
+  // Verify the pending request and resolve it.
+  const std::string kRequestUrl = "https://www.example.com/suggest";
+  ASSERT_TRUE(test_url_loader_factory_.IsPending(kRequestUrl));
+  const std::string kResponseBody = "example response";
+  test_url_loader_factory_.AddResponse(kRequestUrl, kResponseBody);
+
+  base::RunLoop().RunUntilIdle();
+
+  // Verify the service client got notified of request completion.
+  ASSERT_EQ(response_body(), kResponseBody);
+}
+
+TEST_F(RemoteSuggestionsServiceTest, CrOSOverridenOrAppendedQueryParams) {
   // Set up a non-Google search provider.
   TemplateURLData template_url_data;
   template_url_data.SetURL("https://www.example.com/search?q={searchTerms}");
@@ -296,9 +379,8 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureCrOSOverridenOrAppendedQueryParams) {
             "https://www.google.com/suggest?q=query&sclient=cros-launcher");
 }
 
-TEST_F(
-    RemoteSuggestionsServiceTest,
-    EnsureLensOverlaySuggestInputsAppendedQueryParamsForContextualSearchbox) {
+TEST_F(RemoteSuggestionsServiceTest,
+       LensOverlaySuggestInputsAppendedQueryParamsForContextualSearchbox) {
   // Set up a Google search provider.
   TemplateURLData google_template_url_data;
   google_template_url_data.SetURL(
@@ -349,7 +431,7 @@ TEST_F(
 }
 
 TEST_F(RemoteSuggestionsServiceTest,
-       EnsureLensOverlaySuggestInputsAppendedQueryParamsForLensSearchbox) {
+       LensOverlaySuggestInputsAppendedQueryParamsForLensSearchbox) {
   // Set up a Google search provider.
   TemplateURLData google_template_url_data;
   google_template_url_data.SetURL(
@@ -415,9 +497,8 @@ TEST_F(RemoteSuggestionsServiceTest,
             "vsrid=vsrid&gsessionid=gsessionid");
 }
 
-TEST_F(
-    RemoteSuggestionsServiceTest,
-    EnsureLensOverlaySuggestInputsAppendedNothingForOtherPageClassifications) {
+TEST_F(RemoteSuggestionsServiceTest,
+       LensOverlaySuggestInputsAppendedNothingForOtherPageClassifications) {
   // Set up a Google search provider.
   TemplateURLData google_template_url_data;
   google_template_url_data.SetURL(
@@ -455,7 +536,7 @@ TEST_F(
 }
 
 TEST_F(RemoteSuggestionsServiceTest,
-       EnsureLensOverlaySuggestInputsAppendedNothingForNonGoogleSearch) {
+       LensOverlaySuggestInputsAppendedNothingForNonGoogleSearch) {
   // Set up a non-Google search provider.
   TemplateURLData template_url_data;
   template_url_data.SetURL("https://www.example.com/search?q={searchTerms}");

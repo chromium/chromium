@@ -5,11 +5,12 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SUGGEST_INTERNALS_SUGGEST_INTERNALS_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SUGGEST_INTERNALS_SUGGEST_INTERNALS_HANDLER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/webui/suggest_internals/suggest_internals.mojom.h"
 #include "components/omnibox/browser/remote_suggestions_service.h"
 #include "components/search_engines/template_url.h"
@@ -26,7 +27,8 @@ class WebUIDataSource;
 
 // Handles communication between the browser and chrome://suggest-internals.
 class SuggestInternalsHandler : public suggest_internals::mojom::PageHandler,
-                                public RemoteSuggestionsService::Observer {
+                                public RemoteSuggestionsService::Observer,
+                                public RemoteSuggestionsService::Delegate {
  public:
   static void SetupWebUIDataSource(content::WebUIDataSource* source,
                                    Profile* profile);
@@ -43,6 +45,7 @@ class SuggestInternalsHandler : public suggest_internals::mojom::PageHandler,
   void SetPage(mojo::PendingRemote<suggest_internals::mojom::Page> pending_page)
       override;
   void HardcodeResponse(const std::string& response,
+                        base::TimeDelta delay,
                         HardcodeResponseCallback callback) override;
 
   // RemoteSuggestionsService::Observer:
@@ -57,6 +60,13 @@ class SuggestInternalsHandler : public suggest_internals::mojom::PageHandler,
       const int response_code,
       const std::unique_ptr<std::string>& response_body) override;
 
+  // RemoteSuggestionsService::Delegate:
+  void OnSuggestRequestCompleted(const network::SimpleURLLoader* source,
+                                 const int response_code,
+                                 std::unique_ptr<std::string> response_body,
+                                 RemoteSuggestionsService::CompletionCallback
+                                     completion_callback) override;
+
  private:
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
@@ -64,13 +74,12 @@ class SuggestInternalsHandler : public suggest_internals::mojom::PageHandler,
                           RemoteSuggestionsService::Observer>
       remote_suggestions_service_observation_{this};
 
-  // Used to override the response for all requests, if non-empty.
-  std::string hardcoded_response_;
+  // Used to override the response after a delay for all requests.
+  std::optional<std::pair<std::string, base::TimeDelta>>
+      hardcoded_response_and_delay_;
 
   mojo::Remote<suggest_internals::mojom::Page> page_;
   mojo::Receiver<suggest_internals::mojom::PageHandler> page_handler_;
-
-  base::WeakPtrFactory<SuggestInternalsHandler> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SUGGEST_INTERNALS_SUGGEST_INTERNALS_HANDLER_H_

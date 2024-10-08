@@ -105,14 +105,6 @@ class RemoteSuggestionsService : public KeyedService {
         const std::unique_ptr<std::string>& response_body) {}
   };
 
-  RemoteSuggestionsService(
-      DocumentSuggestionsService* document_suggestions_service,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
-
-  ~RemoteSuggestionsService() override;
-  RemoteSuggestionsService(const RemoteSuggestionsService&) = delete;
-  RemoteSuggestionsService& operator=(const RemoteSuggestionsService&) = delete;
-
   // Called when the transfer is done. `response_code` is the response status
   // code. A status code of 200 indicates that the request has succeeded and
   // `response_body` is populated.
@@ -120,6 +112,32 @@ class RemoteSuggestionsService : public KeyedService {
       base::OnceCallback<void(const network::SimpleURLLoader* source,
                               const int response_code,
                               std::unique_ptr<std::string> response_body)>;
+
+  class Delegate {
+   public:
+    Delegate();
+    virtual ~Delegate();
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
+    // Called when the transfer is done. Delegates invocation of
+    // `completion_callback`
+    virtual void OnSuggestRequestCompleted(
+        const network::SimpleURLLoader* source,
+        const int response_code,
+        std::unique_ptr<std::string> response_body,
+        CompletionCallback completion_callback) = 0;
+
+   protected:
+    base::WeakPtrFactory<Delegate> weak_ptr_factory_{this};
+  };
+
+  RemoteSuggestionsService(
+      DocumentSuggestionsService* document_suggestions_service,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  ~RemoteSuggestionsService() override;
+  RemoteSuggestionsService(const RemoteSuggestionsService&) = delete;
+  RemoteSuggestionsService& operator=(const RemoteSuggestionsService&) = delete;
 
   // Returns the suggest endpoint URL for `template_url`.
   //
@@ -184,6 +202,8 @@ class RemoteSuggestionsService : public KeyedService {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  void SetDelegate(base::WeakPtr<Delegate> delegate);
+
   // Exposed for testing.
   void set_url_loader_factory_for_testing(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
@@ -212,6 +232,8 @@ class RemoteSuggestionsService : public KeyedService {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   // Observers being notified of request start and completion events.
   base::ObserverList<Observer> observers_;
+  // Delegate to which invocation of completion callback is delegated.
+  base::WeakPtr<Delegate> delegate_;
   // Used to bind `OnURLLoadComplete` to the network loader's callback as the
   // loader is no longer owned by `this` once returned.
   base::WeakPtrFactory<RemoteSuggestionsService> weak_ptr_factory_{this};
