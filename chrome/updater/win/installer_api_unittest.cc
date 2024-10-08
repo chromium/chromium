@@ -7,8 +7,10 @@
 #include <optional>
 #include <string>
 
+#include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_reg_util_win.h"
+#include "base/version.h"
 #include "base/win/registry.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/updater_scope.h"
@@ -258,6 +260,54 @@ TEST_P(InstallerAPITest, ClientStateAppKeyOpen) {
       ClientStateAppKeyOpen(updater_scope_, "invalid-app-id", KEY_READ));
   SetInstallerProgressForTesting(updater_scope_, kAppId, 0);
   EXPECT_TRUE(ClientStateAppKeyOpen(updater_scope_, kAppId, KEY_READ));
+}
+
+TEST_P(InstallerAPITest, LookupVersionMissing) {
+  ASSERT_NO_FATAL_FAILURE(registry_override_.OverrideRegistry(
+      UpdaterScopeToHKeyRoot(updater_scope_)));
+  base::Version default_version = base::Version("1.1.1.1");
+  base::Version version =
+      LookupVersion(updater_scope_, "{4e346bdc-c3d1-460e-83d7-31555eef96c7}",
+                    base::FilePath(), "", default_version);
+  EXPECT_EQ(default_version, version);
+}
+
+TEST_P(InstallerAPITest, LookupVersionInvalid) {
+  HKEY root = UpdaterScopeToHKeyRoot(updater_scope_);
+  ASSERT_NO_FATAL_FAILURE(registry_override_.OverrideRegistry(root));
+
+  base::win::RegKey key;
+  ASSERT_EQ(
+      key.Create(root,
+                 UPDATER_KEY L"Clients\\{4e346bdc-c3d1-460e-83d7-31555eef96c7}",
+                 Wow6432(KEY_WRITE)),
+      ERROR_SUCCESS);
+  ASSERT_EQ(key.WriteValue(kRegValuePV, L"invalid"), ERROR_SUCCESS);
+
+  base::Version default_version = base::Version("1.1.1.1");
+  base::Version version =
+      LookupVersion(updater_scope_, "{4e346bdc-c3d1-460e-83d7-31555eef96c7}",
+                    base::FilePath(), "", default_version);
+  EXPECT_EQ(default_version, version);
+}
+
+TEST_P(InstallerAPITest, LookupVersionValid) {
+  HKEY root = UpdaterScopeToHKeyRoot(updater_scope_);
+  ASSERT_NO_FATAL_FAILURE(registry_override_.OverrideRegistry(root));
+
+  base::win::RegKey key;
+  ASSERT_EQ(
+      key.Create(root,
+                 UPDATER_KEY L"Clients\\{4e346bdc-c3d1-460e-83d7-31555eef96c7}",
+                 Wow6432(KEY_WRITE)),
+      ERROR_SUCCESS);
+  ASSERT_EQ(key.WriteValue(kRegValuePV, L"1.1.1.2"), ERROR_SUCCESS);
+
+  base::Version default_version = base::Version("1.1.1.1");
+  base::Version version =
+      LookupVersion(updater_scope_, "{4e346bdc-c3d1-460e-83d7-31555eef96c7}",
+                    base::FilePath(), "", default_version);
+  EXPECT_EQ(version, base::Version("1.1.1.2"));
 }
 
 }  // namespace updater

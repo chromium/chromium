@@ -19,6 +19,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/action_handler.h"
 #include "chrome/updater/constants.h"
@@ -47,7 +48,8 @@ AppInfo MakeAppInfo(UpdaterScope scope,
                     const base::FilePath& brand_path,
                     const std::string& brand_key,
                     const base::FilePath& ec_path) {
-  const base::Version pv_lookup = LookupVersion(pv_path, pv_key, pv);
+  const base::Version pv_lookup =
+      LookupVersion(scope, app_id, pv_path, pv_key, pv);
   return AppInfo(scope, app_id, LookupString(ap_path, ap_key, ap),
                  LookupString(brand_path, brand_key, brand),
                  pv_lookup.IsValid() ? pv_lookup : base::Version(kNullVersion),

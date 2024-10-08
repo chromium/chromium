@@ -1323,6 +1323,14 @@ POSIX platforms, they will additionally lchown the existence checker path
 registered by the application to be owned by the root user. User-scope updaters
 use this as a signal that the application is managed by a system-scope updater.
 
+#### Windows
+
+Application installers are expected to register with the updater by setting
+[HKCU or HKLM]\SOFTWARE\{Company}\Update\Clients\{AppID} → pv to the installed
+version of the application. If pv is present and valid in the app's Clients
+key it will be used by the updater as the source of truth for the registered
+version.
+
 For backwards compatibility with third party software, on Windows, after a
 successful registration and on each update, the updater will set
 [HKCU or HKLM]\SOFTWARE\{Company}\Update\ClientState\{AppID} → pv to the

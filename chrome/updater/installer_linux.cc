@@ -5,13 +5,17 @@
 #include "chrome/updater/installer.h"
 
 #include <optional>
+#include <string>
 
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/process/launch.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/version.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/updater_scope.h"
 
 namespace updater {
 
@@ -65,8 +69,10 @@ std::string LookupString(const base::FilePath& path,
   return default_value;
 }
 
-base::Version LookupVersion(const base::FilePath& path,
-                            const std::string& keyname,
+base::Version LookupVersion(UpdaterScope scope,
+                            const std::string& app_id,
+                            const base::FilePath& version_path,
+                            const std::string& version_key,
                             const base::Version& default_value) {
   return default_value;
 }

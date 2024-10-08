@@ -24,6 +24,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/version.h"
 #include "base/win/registry.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/enum_traits.h"
@@ -544,9 +545,18 @@ std::string LookupString(const base::FilePath& path,
   return default_value;
 }
 
-base::Version LookupVersion(const base::FilePath& path,
-                            const std::string& keyname,
+base::Version LookupVersion(UpdaterScope scope,
+                            const std::string& app_id,
+                            const base::FilePath& version_path,
+                            const std::string& version_key,
                             const base::Version& default_value) {
+  std::wstring pv;
+  if (base::win::RegKey(UpdaterScopeToHKeyRoot(scope),
+                        GetAppClientsKey(app_id).c_str(), Wow6432(KEY_READ))
+          .ReadValue(kRegValuePV, &pv) == ERROR_SUCCESS) {
+    base::Version value_version = base::Version(base::WideToUTF8(pv));
+    return value_version.IsValid() ? value_version : default_value;
+  }
   return default_value;
 }
 
