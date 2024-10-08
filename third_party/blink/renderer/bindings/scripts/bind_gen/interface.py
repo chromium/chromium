@@ -400,11 +400,6 @@ def bind_callback_local_vars(code_node, cg_context):
     def create_exception_state(symbol_node):
         node = SymbolDefinitionNode(symbol_node)
 
-        if cg_context.is_return_type_promise_type:
-            node.append(
-                T("ExceptionToRejectPromiseScope reject_promise_scope(${info});"
-                  ))
-
         pattern = ("{exception_state_type} ${exception_state}({init_args});")
         exception_state_type = "ExceptionState"
         init_args = ["${isolate}", "${exception_context_type}"]
@@ -984,7 +979,8 @@ def make_check_argument_length(cg_context):
                                           num_of_required_args),
                              attribute="[[unlikely]]",
                              body=[
-                                 F(("${exception_state}.ThrowTypeError("
+                                 F(("V8ThrowException::ThrowTypeError("
+                                    "${isolate}, "
                                     "ExceptionMessages::NotEnoughArguments"
                                     "({}, ${info}.Length()));"),
                                    num_of_required_args),
@@ -1001,7 +997,7 @@ def make_check_constructor_call(cg_context):
         CxxUnlikelyIfNode(
             cond="!${info}.IsConstructCall()",
             attribute=None,
-            body=T("${exception_state}.ThrowTypeError("
+            body=T("V8ThrowException::ThrowTypeError(${isolate}, "
                    "ExceptionMessages::ConstructorCalledAsFunction());\n"
                    "return;")),
     ])
@@ -1049,16 +1045,36 @@ def make_check_proxy_access(cg_context):
     else:
         error_exit_return_statement = "return;"
 
-    return CxxUnlikelyIfNode(
+    node = CxxUnlikelyIfNode(
         cond=
         ("auto reason = ${blink_receiver}->GetProxyAccessBlockedReason(${isolate})"
          ),
         attribute="[[unlikely]]",
         body=[
-            T("${exception_state}.ThrowSecurityError("
+            T("V8ThrowDOMException::Throw(${isolate}, "
+              "DOMExceptionCode::kSecurityError, "
               "DOMWindow::GetProxyAccessBlockedExceptionMessage(*reason));"),
             T(error_exit_return_statement),
         ])
+    node.accumulate(
+        CodeGenAccumulator.require_include_headers([
+            "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
+        ]))
+    return node
+
+
+def make_promise_return_context(cg_context):
+    assert isinstance(cg_context, CodeGenContext)
+
+    if not cg_context.is_return_type_promise_type:
+        return None
+
+    T = TextNode
+    return SequenceNode([
+        T("// Promise returning function: "
+          "Convert a TypeError to a reject promise."),
+        T("ExceptionToRejectPromiseScope reject_promise_scope(${info});"),
+    ])
 
 
 def make_check_receiver(cg_context):
@@ -1081,13 +1097,11 @@ def make_check_receiver(cg_context):
 
     if cg_context.is_return_type_promise_type:
         return SequenceNode([
-            T("// Promise returning function: "
-              "Convert a TypeError to a reject promise."),
             CxxUnlikelyIfNode(
                 cond="!${class_name}::HasInstance(${isolate}, ${v8_receiver})",
                 attribute=None,
                 body=[
-                    T("${exception_state}.ThrowTypeError("
+                    T("V8ThrowException::ThrowTypeError(${isolate}, "
                       "\"Illegal invocation\");"),
                     T("return;"),
                 ])
@@ -1451,8 +1465,8 @@ def make_overload_dispatcher(cg_context):
         branches,
         EmptyNode(),
         make_check_argument_length(cg_context),
-        T("${exception_state}.ThrowTypeError"
-          "(\"Overload resolution failed.\");\n"
+        T("V8ThrowException::ThrowTypeError(${isolate}, "
+          "\"Overload resolution failed.\");\n"
           "return;"),
     ])
 
@@ -1755,7 +1769,7 @@ def make_steps_of_put_forwards(cg_context):
         CxxUnlikelyIfNode(cond="!target->IsObject()",
                           attribute=None,
                           body=[
-                              T("${exception_state}.ThrowTypeError("
+                              T("V8ThrowException::ThrowTypeError(${isolate}, "
                                 "\"The attribute value is not an object\");"),
                               T(error_exit_return_statement),
                           ]),
@@ -2031,6 +2045,7 @@ def make_attribute_get_callback_def(cg_context, function_name):
     body = func_def.body
 
     body.extend([
+        make_promise_return_context(cg_context),
         make_check_receiver(cg_context),
         EmptyNode(),
         make_runtime_call_timer_scope(cg_context),
@@ -2259,6 +2274,7 @@ def make_overload_dispatcher_function_def(cg_context, function_name):
     body = func_def.body
 
     if cg_context.operation_group:
+        body.append(make_promise_return_context(cg_context))
         body.append(make_operation_entry(cg_context))
         body.append(EmptyNode())
         body.append(make_cooperative_scheduling_safepoint(cg_context))
@@ -2306,7 +2322,8 @@ def make_constructor_function_def(cg_context, function_name):
                     expr_from_exposure(cg_context.constructor.exposure)),
                                   attribute=None,
                                   body=[
-                                      T("${exception_state}.ThrowTypeError("
+                                      T("V8ThrowException::ThrowTypeError("
+                                        "${isolate}, "
                                         "\"Illegal constructor\");"),
                                       T("return;"),
                                   ]))
@@ -2708,6 +2725,7 @@ def make_operation_function_def(cg_context, function_name):
 
     if not cg_context.operation_group or len(cg_context.operation_group) == 1:
         body.append(make_operation_entry(cg_context))
+        body.append(make_promise_return_context(cg_context))
         body.append(EmptyNode())
 
     body.extend([
@@ -2976,7 +2994,7 @@ return ${class_name}::NamedPropertySetterCallback(
                 cond="${info}.ShouldThrowOnError()",
                 attribute=None,
                 body=TextNode(
-                    "${exception_state}.ThrowTypeError("
+                    "V8ThrowException::ThrowTypeError(${isolate}, "
                     "\"Indexed property setter is not supported.\");")),
             TextNode("return v8::Intercepted::kYes;"),
         ])
@@ -3057,7 +3075,7 @@ return ${class_name}::NamedPropertyDeleterCallback(
         CxxLikelyIfNode(cond="is_supported && ${info}.ShouldThrowOnError()",
                         attribute=None,
                         body=TextNode(
-                            "${exception_state}.ThrowTypeError("
+                            "V8ThrowException::ThrowTypeError(${isolate}, "
                             "\"Index property deleter is not supported.\");")),
         TextNode("return v8::Intercepted::kYes;")
     ])
@@ -3102,7 +3120,7 @@ return ${class_name}::NamedPropertyDefinerCallback(
                     cond="${info}.ShouldThrowOnError()",
                     attribute=None,
                     body=TextNode(
-                        "${exception_state}.ThrowTypeError("
+                        "V8ThrowException::ThrowTypeError(${isolate}, "
                         " \"Accessor properties are not allowed.\");")),
                 TextNode("return v8::Intercepted::kYes;")
             ])
@@ -3118,8 +3136,8 @@ return ${class_name}::NamedPropertyDefinerCallback(
                 cond="${info}.ShouldThrowOnError()",
                 attribute=None,
                 body=TextNode(
-                    "${exception_state}.ThrowTypeError(\"Index property"
-                    " setter is not supported.\");")),
+                    "V8ThrowException::ThrowTypeError(${isolate}, "
+                    "\"Index property setter is not supported.\");")),
             TextNode("return v8::Intercepted::kYes;"),
         ])
     else:
@@ -3326,7 +3344,7 @@ def make_named_property_setter_callback(cg_context, function_name):
                 cond="${info}.ShouldThrowOnError()",
                 attribute=None,
                 body=TextNode(
-                    "${exception_state}.ThrowTypeError("
+                    "V8ThrowException::ThrowTypeError(${isolate}, "
                     "\"Named property setter is not supported.\");")),
             TextNode("return v8::Intercepted::kYes;")
         ]
@@ -3445,8 +3463,8 @@ def make_named_property_deleter_callback(cg_context, function_name):
         CxxLikelyIfNode(cond="${info}.ShouldThrowOnError()",
                         attribute=None,
                         body=TextNode(
-                            "${exception_state}.ThrowTypeError(\""
-                            "Named property deleter is not supported.\");")),
+                            "V8ThrowException::ThrowTypeError(${isolate}, "
+                            "\"Named property deleter is not supported.\");")),
         TextNode("return v8::Intercepted::kYes;"),
     ]
 
@@ -3522,7 +3540,8 @@ return v8::Intercepted::kNo;\
                 CxxLikelyIfNode(cond="${info}.ShouldThrowOnError()",
                                 attribute=None,
                                 body=TextNode(
-                                    "${exception_state}.ThrowTypeError("
+                                    "V8ThrowException::ThrowTypeError("
+                                    "${isolate}, "
                                     "\"Failed to delete a property.\");")),
                 TextNode("return v8::Intercepted::kYes;"),
             ]),
@@ -3550,7 +3569,7 @@ def make_named_property_definer_callback(cg_context, function_name):
         CxxLikelyIfNode(cond="${info}.ShouldThrowOnError()",
                         attribute=None,
                         body=TextNode(
-                            "${exception_state}.ThrowTypeError("
+                            "V8ThrowException::ThrowTypeError(${isolate}, "
                             "\"Named property setter is not supported.\");")),
         TextNode("return v8::Intercepted::kYes;")
     ]
@@ -3618,7 +3637,7 @@ return v8::Intercepted::kNo;
                         attribute=None,
                         body=[
                             TextNode(
-                                "${exception_state}.ThrowTypeError("
+                                "V8ThrowException::ThrowTypeError(${isolate}, "
                                 " \"Accessor properties are not allowed.\");"),
                         ]),
                     TextNode("return v8::Intercepted::kYes;"),
