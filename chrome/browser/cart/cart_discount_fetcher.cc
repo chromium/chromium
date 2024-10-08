@@ -105,7 +105,7 @@ std::string GetMerchantId(const base::Value::Dict* merchant_identifier) {
 }
 
 std::string GetStringFromDict(const base::Value* dict,
-                              const std::string key,
+                              std::string_view key,
                               bool is_required) {
   DCHECK(dict->is_dict());
 
@@ -382,9 +382,9 @@ void CartDiscountFetcher::Fetch(
     CartDiscountFetcherCallback callback,
     std::vector<CartDB::KeyAndValue> proto_pairs,
     bool is_oauth_fetch,
-    const std::string access_token,
-    const std::string fetch_for_locale,
-    const std::string variation_headers) {
+    std::string access_token,
+    std::string fetch_for_locale,
+    std::string variation_headers) {
   CartDiscountFetcher::FetchForDiscounts(
       std::move(pending_factory), std::move(callback), std::move(proto_pairs),
       is_oauth_fetch, std::move(access_token), std::move(fetch_for_locale),
@@ -396,9 +396,9 @@ void CartDiscountFetcher::FetchForDiscounts(
     CartDiscountFetcherCallback callback,
     std::vector<CartDB::KeyAndValue> proto_pairs,
     bool is_oauth_fetch,
-    const std::string access_token,
-    const std::string fetch_for_locale,
-    const std::string variation_headers) {
+    std::string access_token,
+    std::string fetch_for_locale,
+    std::string variation_headers) {
   auto fetcher = CreateEndpointFetcher(
       std::move(pending_factory), std::move(proto_pairs), is_oauth_fetch,
       std::move(fetch_for_locale), std::move(variation_headers));
@@ -415,8 +415,8 @@ std::unique_ptr<EndpointFetcher> CartDiscountFetcher::CreateEndpointFetcher(
     std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
     std::vector<CartDB::KeyAndValue> proto_pairs,
     bool is_oauth_fetch,
-    const std::string fetch_for_locale,
-    const std::string variation_headers) {
+    std::string fetch_for_locale,
+    std::string variation_headers) {
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("chrome_cart_discounts_lookup", R"(
         semantics {
@@ -459,7 +459,7 @@ std::unique_ptr<EndpointFetcher> CartDiscountFetcher::CreateEndpointFetcher(
 }
 
 std::string CartDiscountFetcher::generatePostData(
-    std::vector<CartDB::KeyAndValue> proto_pairs,
+    const std::vector<CartDB::KeyAndValue>& proto_pairs,
     base::Time current_time) {
   base::Value::List carts_list;
 

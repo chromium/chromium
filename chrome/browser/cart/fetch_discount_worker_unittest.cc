@@ -169,10 +169,10 @@ class FakeCartDiscountFetcher : public CartDiscountFetcher {
       std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
       CartDiscountFetcherCallback callback,
       std::vector<CartDB::KeyAndValue> proto_pairs,
-      const bool is_oauth_fetch,
-      const std::string access_token_str,
-      const std::string fetch_for_locale,
-      const std::string variation_headers) override {
+      bool is_oauth_fetch,
+      std::string access_token_str,
+      std::string fetch_for_locale,
+      std::string variation_headers) override {
     FakeCartDiscountFetcher::fetcher_fetch_count_++;
     // Only oauth fetch has a chance to be a tester.
     bool is_tester = is_tester_ && is_oauth_fetch;
@@ -205,10 +205,10 @@ class MockCartDiscountFetcher : public CartDiscountFetcher {
       (std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
        CartDiscountFetcherCallback callback,
        std::vector<CartDB::KeyAndValue> proto_pairs,
-       const bool is_oauth_fetch,
-       const std::string access_token_str,
-       const std::string fetch_for_locale,
-       const std::string variation_headers),
+       bool is_oauth_fetch,
+       std::string access_token_str,
+       std::string fetch_for_locale,
+       std::string variation_headers),
       (override));
 
   void DelegateToFake(CartDiscountMap fake_result, bool is_tester) {
@@ -221,10 +221,9 @@ class MockCartDiscountFetcher : public CartDiscountFetcher {
                        pending_factory,
                    CartDiscountFetcherCallback callback,
                    std::vector<CartDB::KeyAndValue> proto_pairs,
-                   const bool is_oauth_fetch,
-                   const std::string access_token_str,
-                   const std::string fetch_for_locale,
-                   const std::string variation_headers) {
+                   bool is_oauth_fetch, std::string access_token_str,
+                   std::string fetch_for_locale,
+                   std::string variation_headers) {
               return fake_cart_discount_fetcher_.Fetch(
                   std::move(pending_factory), std::move(callback),
                   std::move(proto_pairs), is_oauth_fetch,

@@ -122,9 +122,8 @@ void FetchDiscountWorker::OnAuthTokenFetched(
   LoadAllActiveCarts(/*is_oauth_fetch*/ true, access_token_info.token);
 }
 
-void FetchDiscountWorker::LoadAllActiveCarts(
-    const bool is_oauth_fetch,
-    const std::string access_token_str) {
+void FetchDiscountWorker::LoadAllActiveCarts(bool is_oauth_fetch,
+                                             std::string access_token_str) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
   auto cart_loaded_callback = base::BindOnce(
@@ -135,8 +134,8 @@ void FetchDiscountWorker::LoadAllActiveCarts(
 }
 
 void FetchDiscountWorker::ReadyToFetch(
-    const bool is_oauth_fetch,
-    const std::string access_token_str,
+    bool is_oauth_fetch,
+    std::string access_token_str,
     bool success,
     std::vector<CartDB::KeyAndValue> proto_pairs) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
@@ -194,10 +193,10 @@ void FetchDiscountWorker::FetchInBackground(
     std::unique_ptr<CartDiscountFetcher> fetcher,
     AfterFetchingCallback after_fetching_callback,
     std::vector<CartDB::KeyAndValue> proto_pairs,
-    const bool is_oauth_fetch,
-    const std::string access_token_str,
-    const std::string fetch_for_locale,
-    const std::string variation_headers) {
+    bool is_oauth_fetch,
+    std::string access_token_str,
+    std::string fetch_for_locale,
+    std::string variation_headers) {
   DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
   auto done_fetching_callback = base::BindOnce(

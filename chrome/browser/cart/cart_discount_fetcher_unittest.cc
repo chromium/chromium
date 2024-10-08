@@ -97,10 +97,10 @@ class CartDiscountFetcherTest {
       std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
       std::vector<CartDB::KeyAndValue> proto_pairs,
       bool is_oauth_fetch,
-      const std::string fetch_for_locale) {
+      std::string fetch_for_locale) {
     return CartDiscountFetcher::CreateEndpointFetcher(
         std::move(pending_factory), std::move(proto_pairs), is_oauth_fetch,
-        fetch_for_locale, kVariationHeaders);
+        std::move(fetch_for_locale), kVariationHeaders);
   }
 
   static void OnDiscountsAvailable(
