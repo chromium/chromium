@@ -5,7 +5,9 @@
 #include "ios/chrome/browser/net/model/ios_chrome_network_delegate.h"
 
 #include <stdlib.h>
+
 #include <iterator>
+#include <optional>
 
 #include "base/base_paths.h"
 #include "base/debug/alias.h"
@@ -114,6 +116,11 @@ bool IOSChromeNetworkDelegate::OnCanSetCookie(
 std::optional<net::cookie_util::StorageAccessStatus>
 IOSChromeNetworkDelegate::OnGetStorageAccessStatus(
     const net::URLRequest& request) const {
+  // Null during tests, or when we're running in the system context.
+  if (!cookie_settings_.get()) {
+    return std::nullopt;
+  }
+
   return cookie_settings_->GetStorageAccessStatus(
       request.url(), request.site_for_cookies(),
       request.isolation_info().top_frame_origin(),

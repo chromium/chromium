@@ -165,6 +165,52 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="API.StorageAccessHeader.ActivateStorageAccessLoadOutcome"
+    enum="ActivateStorageAccessLoadOutcome" expires_after="2025-09-15">
+  <owner>sledoux@chromium.org</owner>
+  <owner>cfredric@chromium.org</owner>
+  <summary>
+    Records instances of HTTP responses that include the
+    `Activate-Storage-Access` header with a well-formed value indicating the
+    server would like the response to be loaded with an active storage access
+    permission. Logs whether the header was honored, or the reason for its
+    rejection if it was not.
+
+    Recorded for each HTTP response received that contains a
+    `Activate-Storage-Access` header with the value of `load`.
+  </summary>
+</histogram>
+
+<histogram name="API.StorageAccessHeader.ActivateStorageAccessRetryOutcome"
+    enum="ActivateStorageAccessRetryOutcome" expires_after="2025-09-15">
+  <owner>sledoux@chromium.org</owner>
+  <owner>cfredric@chromium.org</owner>
+  <summary>
+    Records instances of HTTP responses that include the
+    `Activate-Storage-Access` header with a well-formed value indicating the
+    server would like the request to be retried with an active storage access
+    persmission. Logs whether the header was honored, or the reason for its
+    rejection if it was not.
+
+    Recorded for each HTTP response received that contains a
+    `Activate-Storage-Access` header with a well-formed retry value.
+  </summary>
+</histogram>
+
+<histogram name="API.StorageAccessHeader.SecFetchStorageAccessValueOutcome"
+    enum="SecFetchStorageAccessValueOutcome" expires_after="2025-09-15">
+  <owner>sledoux@chromium.org</owner>
+  <owner>cfredric@chromium.org</owner>
+  <summary>
+    Records whether an HTTP request contains the `Sec-Fetch-Storage-Access`
+    header. If the request did contain the header, it also logs what value of
+    the header was; if the request did not contain the header, it logs why the
+    header was omitted.
+
+    Recorded whenever an HTTP request is sent.
+  </summary>
+</histogram>
+
 <histogram name="API.TopLevelStorageAccess.RequestOutcome"
     enum="TopLevelStorageAccessRequestOutcome" expires_after="2025-03-09">
   <owner>cfredric@chromium.org</owner>

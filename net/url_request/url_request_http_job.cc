@@ -25,6 +25,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_functions_internal_overloads.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -340,6 +341,21 @@ char const* GetSecFetchStorageAccessHeaderValue(
   }
 }
 
+net::cookie_util::SecFetchStorageAccessValueOutcome
+ConvertSecFetchStorageAccessHeaderValueToOutcome(
+    net::cookie_util::StorageAccessStatus storage_access_status) {
+  using enum net::cookie_util::SecFetchStorageAccessValueOutcome;
+  switch (storage_access_status) {
+    case net::cookie_util::StorageAccessStatus::kInactive:
+      return kValueInactive;
+    case net::cookie_util::StorageAccessStatus::kActive:
+      return kValueActive;
+    case net::cookie_util::StorageAccessStatus::kNone:
+      return kValueNone;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 namespace net {
@@ -481,25 +497,48 @@ bool ShouldBlockAllCookies(PrivacyMode privacy_mode) {
 }  // namespace
 
 void URLRequestHttpJob::MaybeSetSecFetchStorageAccessHeader() {
-  if (!request_->network_delegate()->IsStorageAccessHeaderEnabled(
-          base::OptionalToPtr(request_->isolation_info().top_frame_origin()),
-          request_->url())) {
-    return;
-  }
-  // Avoid attaching the header in cases where the Cookie header is not included
-  // in the request.
-  if (!ShouldAddCookieHeader() ||
-      ShouldBlockAllCookies(request_info_.privacy_mode)) {
-    return;
-  }
   std::optional<cookie_util::StorageAccessStatus> storage_access_status =
       request_->network_delegate()->GetStorageAccessStatus(*request_);
-  if (storage_access_status) {
+
+  auto get_storage_access_value_outcome_if_omitted =
+      [&]() -> std::optional<cookie_util::SecFetchStorageAccessValueOutcome> {
+    if (!request_->network_delegate()->IsStorageAccessHeaderEnabled(
+            base::OptionalToPtr(request_->isolation_info().top_frame_origin()),
+            request_->url())) {
+      return cookie_util::SecFetchStorageAccessValueOutcome::
+          kOmittedFeatureDisabled;
+    }
+    // Avoid attaching the header in cases where the Cookie header is not
+    // included in the request.
+    if (!ShouldAddCookieHeader()) {
+      return cookie_util::SecFetchStorageAccessValueOutcome::
+          kOmittedRequestOmitsCredentials;
+    }
+    if (ShouldBlockAllCookies(request_info_.privacy_mode)) {
+      return cookie_util::SecFetchStorageAccessValueOutcome::
+          kOmittedByPrivacyMode;
+    }
+    if (!storage_access_status) {
+      return cookie_util::SecFetchStorageAccessValueOutcome::kOmittedSameSite;
+    }
+    return std::nullopt;
+  };
+
+  auto storage_access_value_outcome =
+      get_storage_access_value_outcome_if_omitted();
+  if (!storage_access_value_outcome) {
     storage_access_status_ = storage_access_status.value();
     request_info_.extra_headers.SetHeader(
         HttpRequestHeaders::kSecFetchStorageAccess,
         GetSecFetchStorageAccessHeaderValue(storage_access_status_));
+    storage_access_value_outcome =
+        ConvertSecFetchStorageAccessHeaderValueToOutcome(
+            storage_access_status.value());
   }
+
+  base::UmaHistogramEnumeration(
+      "API.StorageAccessHeader.SecFetchStorageAccessValueOutcome",
+      storage_access_value_outcome.value());
 }
 
 void URLRequestHttpJob::OnGotFirstPartySetMetadata(
@@ -1579,29 +1618,42 @@ bool URLRequestHttpJob::NeedsAuth() {
 }
 
 bool URLRequestHttpJob::NeedsRetryWithStorageAccess() {
-  if (!request_->network_delegate()->IsStorageAccessHeaderEnabled(
-          base::OptionalToPtr(request_->isolation_info().top_frame_origin()),
-          request_->url())) {
-    return false;
-  }
-  if (!ShouldAddCookieHeader() ||
-      storage_access_status_ != cookie_util::StorageAccessStatus::kInactive ||
-      request_->cookie_setting_overrides().Has(
-          CookieSettingOverride::kStorageAccessGrantEligible) ||
-      request_->cookie_setting_overrides().Has(
-          CookieSettingOverride::kStorageAccessGrantEligibleViaHeader)) {
-    // We're not allowed to read cookies for this request, or this request
-    // already had all the relevant settings overrides, so retrying it wouldn't
-    // change anything.
+  // We use the Origin header's value directly, rather than
+  // `request_.initiator()`, because the header may be "null" in some cases.
+  if (!request_->response_headers() ||
+      !request_->response_headers()->HasStorageAccessRetryHeader(
+          base::OptionalToPtr(request_info_.extra_headers.GetHeader(
+              HttpRequestHeaders::kOrigin)))) {
     return false;
   }
 
-  HttpResponseHeaders* headers = request_->response_headers();
-  // We use the Origin header's value directly, rather than
-  // `request_.initiator()`, because the header may be "null" in some cases.
-  return headers && headers->HasStorageAccessRetryHeader(base::OptionalToPtr(
-                        request_info_.extra_headers.GetHeader(
-                            HttpRequestHeaders::kOrigin)));
+  auto determine_storage_access_retry_outcome =
+      [&]() -> cookie_util::ActivateStorageAccessRetryOutcome {
+    using enum cookie_util::ActivateStorageAccessRetryOutcome;
+    if (!request_->network_delegate()->IsStorageAccessHeaderEnabled(
+            base::OptionalToPtr(request_->isolation_info().top_frame_origin()),
+            request_->url())) {
+      return kFailureHeaderDisabled;
+    }
+    if (!ShouldAddCookieHeader() ||
+        storage_access_status_ != cookie_util::StorageAccessStatus::kInactive ||
+        request_->cookie_setting_overrides().Has(
+            CookieSettingOverride::kStorageAccessGrantEligible) ||
+        request_->cookie_setting_overrides().Has(
+            CookieSettingOverride::kStorageAccessGrantEligibleViaHeader)) {
+      // We're not allowed to read cookies for this request, or this request
+      // already had all the relevant settings overrides, so retrying it
+      // wouldn't change anything.
+      return kFailureIneffectiveRetry;
+    }
+    return kSuccess;
+  };
+
+  auto outcome = determine_storage_access_retry_outcome();
+
+  base::UmaHistogramEnumeration(
+      "API.StorageAccessHeader.ActivateStorageAccessRetryOutcome", outcome);
+  return outcome == cookie_util::ActivateStorageAccessRetryOutcome::kSuccess;
 }
 
 void URLRequestHttpJob::SetSharedDictionaryGetter(

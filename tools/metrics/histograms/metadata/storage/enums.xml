@@ -26,6 +26,27 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(ActivateStorageAccessLoadOutcome) -->
+
+<enum name="ActivateStorageAccessLoadOutcome">
+  <int value="0" label="Failure: header disabled"/>
+  <int value="1" label="Failure: invalid storage access status"/>
+  <int value="2" label="Success"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/cookies/cookie_util.h:ActivateStorageAccessLoadOutcome) -->
+
+<!-- LINT.IfChange(ActivateStorageAccessRetryOutcome) -->
+
+<enum name="ActivateStorageAccessRetryOutcome">
+  <int value="0" label="Failure: header disabled"/>
+  <int value="1"
+      label="Failure: ineffective retry, would not change cookie access"/>
+  <int value="2" label="Success"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/cookies/cookie_util.h:ActivateStorageAccessRetryOutcome) -->
+
 <!-- LINT.IfChange(AdProtoDecompressionOutcome) -->
 
 <enum name="AdProtoDecompressionOutcome">
@@ -293,6 +314,20 @@ chromium-metrics-reviews@google.com.
   <int value="13" label="Rejected due to fenced frame"/>
   <int value="14" label="Rejected due to invalid origin"/>
 </enum>
+
+<!-- LINT.IfChange(SecFetchStorageAccessValueOutcome) -->
+
+<enum name="SecFetchStorageAccessValueOutcome">
+  <int value="0" label="Ommitted: feature disabled"/>
+  <int value="1" label="Omitted: same site request"/>
+  <int value="2" label="Omitted: request omits credentials"/>
+  <int value="3" label="Omitted: privacy mode enabled"/>
+  <int value="4" label="Value: none"/>
+  <int value="5" label="Value: inactive"/>
+  <int value="6" label="Value: active"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/cookies/cookie_util.h:SecFetchStorageAccessValueOutcome) -->
 
 <enum name="SharedStorageHeaderObserverPermissionsPolicyDoubleCheckStatus">
   <int value="0" label="SubresourceSourceNoRFH">

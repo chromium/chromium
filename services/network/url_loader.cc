@@ -3097,22 +3097,37 @@ bool URLLoader::ShouldSendTransferSizeUpdated() const {
 
 bool URLLoader::ShouldSetLoadWithStorageAccess() const {
   CHECK(url_request_);
-  if (!url_request_context_->network_delegate()->IsStorageAccessHeaderEnabled(
-          base::OptionalToPtr(
-              url_request_->isolation_info().top_frame_origin()),
-          url_request_->url())) {
+  if (!url_request_->response_headers() ||
+      !url_request_->response_headers()->HasHeaderValue(
+          kActivateStorageAccessHeader, "load")) {
     return false;
   }
-  switch (url_request_->StorageAccessStatus()) {
-    case net::cookie_util::StorageAccessStatus::kNone:
-      return false;
-    case net::cookie_util::StorageAccessStatus::kInactive:
-    case net::cookie_util::StorageAccessStatus::kActive:
-      return url_request_->response_headers() &&
-             url_request_->response_headers()->HasHeaderValue(
-                 kActivateStorageAccessHeader, "load");
-  }
-  NOTREACHED();
+
+  auto determine_storage_access_load_outcome =
+      [&]() -> net::cookie_util::ActivateStorageAccessLoadOutcome {
+    if (!url_request_context_->network_delegate()->IsStorageAccessHeaderEnabled(
+            base::OptionalToPtr(
+                url_request_->isolation_info().top_frame_origin()),
+            url_request_->url())) {
+      return net::cookie_util::ActivateStorageAccessLoadOutcome::
+          kFailureHeaderDisabled;
+    }
+    switch (url_request_->StorageAccessStatus()) {
+      case net::cookie_util::StorageAccessStatus::kNone:
+        return net::cookie_util::ActivateStorageAccessLoadOutcome::
+            kFailureInvalidStatus;
+      case net::cookie_util::StorageAccessStatus::kInactive:
+      case net::cookie_util::StorageAccessStatus::kActive:
+        return net::cookie_util::ActivateStorageAccessLoadOutcome::kSuccess;
+    }
+    NOTREACHED();
+  };
+
+  auto outcome = determine_storage_access_load_outcome();
+  base::UmaHistogramEnumeration(
+      "API.StorageAccessHeader.ActivateStorageAccessLoadOutcome", outcome);
+  return outcome ==
+         net::cookie_util::ActivateStorageAccessLoadOutcome::kSuccess;
 }
 
 void URLLoader::RecordRequestMetrics() {
