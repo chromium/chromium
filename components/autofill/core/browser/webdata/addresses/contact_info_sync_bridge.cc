@@ -92,6 +92,7 @@ std::optional<syncer::ModelError> ContactInfoSyncBridge::MergeFullSyncData(
                                                std::move(entity_data))) {
     return error;
   }
+  FlushPendingAccountProfileChanges();
   return std::nullopt;
 }
 
@@ -189,8 +190,11 @@ std::string ContactInfoSyncBridge::GetStorageKey(
 void ContactInfoSyncBridge::AutofillProfileChanged(
     const AutofillProfileChange& change) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!change_processor()->IsTrackingMetadata() ||
-      !change.data_model().IsAccountProfile()) {
+  if (!change.data_model().IsAccountProfile()) {
+    return;
+  }
+  if (!change_processor()->IsTrackingMetadata()) {
+    pending_account_profile_changes_.push(change);
     return;
   }
 
@@ -352,6 +356,17 @@ bool ContactInfoSyncBridge::EnsureUniquenessOfHomeAndWork(
            return p.guid() == profile.guid() ||
                   table.UpdateAutofillProfile(p.DowngradeToAccountProfile());
          });
+}
+
+void ContactInfoSyncBridge::FlushPendingAccountProfileChanges() {
+  CHECK(change_processor()->IsTrackingMetadata());
+  while (!pending_account_profile_changes_.empty()) {
+    const AutofillProfileChange& change =
+        pending_account_profile_changes_.front();
+    CHECK(change.data_model().IsAccountProfile());
+    AutofillProfileChanged(change);
+    pending_account_profile_changes_.pop();
+  }
 }
 
 }  // namespace autofill

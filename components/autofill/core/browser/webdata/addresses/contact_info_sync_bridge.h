@@ -9,6 +9,7 @@
 #include <optional>
 #include <string>
 
+#include "base/containers/queue.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -113,6 +114,9 @@ class ContactInfoSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
   // Returns false if storage operations fail.
   bool EnsureUniquenessOfHomeAndWork(const AutofillProfile& profile);
 
+  // Uploads all `pending_profile_changes_`.
+  void FlushPendingAccountProfileChanges();
+
   // The bridge should be used on the same sequence where it has been
   // constructed.
   SEQUENCE_CHECKER(sequence_checker_);
@@ -124,6 +128,11 @@ class ContactInfoSyncBridge : public AutofillWebDataServiceObserverOnDBSequence,
   base::ScopedObservation<AutofillWebDataBackend,
                           AutofillWebDataServiceObserverOnDBSequence>
       scoped_observation_{this};
+
+  // Contains local changes (see `AutofillProfileChanged()`) that happen before
+  // the change processor starts tracking metadata. They get uploaded once the
+  // change processor is ready (see `FlushPendingProfileChanges()`).
+  base::queue<AutofillProfileChange> pending_account_profile_changes_;
 };
 
 }  // namespace autofill

@@ -31,6 +31,7 @@ namespace {
 
 using testing::_;
 using testing::ElementsAre;
+using testing::Return;
 using testing::UnorderedElementsAre;
 
 constexpr char kGUID1[] = "00000000-0000-0000-0000-000000000001";
@@ -80,13 +81,10 @@ class ContactInfoSyncBridgeTest : public testing::Test {
     db_.AddTable(&table_);
     db_.AddTable(&sync_metadata_table_);
     db_.Init(temp_dir_.GetPath().AppendASCII("SyncTestWebDatabase"));
-    ON_CALL(backend_, GetDatabase()).WillByDefault(testing::Return(&db_));
+    ON_CALL(backend_, GetDatabase()).WillByDefault(Return(&db_));
 
     bridge_ = std::make_unique<ContactInfoSyncBridge>(
         mock_processor_.CreateForwardingProcessor(), &backend_);
-    ON_CALL(mock_processor(), IsTrackingMetadata)
-        .WillByDefault(testing::Return(true));
-
     ON_CALL(mock_processor_, GetPossiblyTrimmedRemoteSpecifics)
         .WillByDefault(
             testing::ReturnRef(sync_pb::EntitySpecifics::default_instance()));
@@ -96,6 +94,7 @@ class ContactInfoSyncBridgeTest : public testing::Test {
   // Triggers the `bridge()`'s `MergeFullSyncData()`.
   // Returns true if syncing started successfully.
   bool StartSyncing(const std::vector<AutofillProfile>& remote_profiles) {
+    ON_CALL(mock_processor(), IsTrackingMetadata).WillByDefault(Return(true));
     syncer::EntityChangeList entity_data;
     for (const AutofillProfile& profile : remote_profiles) {
       entity_data.push_back(syncer::EntityChange::CreateAdd(
@@ -156,7 +155,7 @@ class ContactInfoSyncBridgeTest : public testing::Test {
 // Regression test for crbug.com/1421663.
 TEST_F(ContactInfoSyncBridgeTest, InitializationFailure) {
   // The database will be null if it failed to initialize.
-  ON_CALL(backend(), GetDatabase()).WillByDefault(testing::Return(nullptr));
+  ON_CALL(backend(), GetDatabase()).WillByDefault(Return(nullptr));
   EXPECT_CALL(mock_processor(), ReportError);
   // The `bridge()` was already initialized during `SetUp()`. Recreate it.
   ContactInfoSyncBridge(mock_processor().CreateForwardingProcessor(),
@@ -334,6 +333,15 @@ TEST_F(ContactInfoSyncBridgeTest, GetAllDataForDebugging) {
   EXPECT_THAT(profiles, UnorderedElementsAre(profile1, profile2));
 }
 
+// Tests that the bridges ignores changes to local profiles.
+TEST_F(ContactInfoSyncBridgeTest, AutofillProfileChange_IgnoresLocalProfiles) {
+  ASSERT_TRUE(StartSyncing(/*remote_profiles=*/{}));
+  EXPECT_CALL(mock_processor(), Put).Times(0);
+  bridge().AutofillProfileChanged(
+      {AutofillProfileChange::ADD, kGUID1,
+       TestProfile(kGUID1, AutofillProfile::RecordType::kLocalOrSyncable)});
+}
+
 // Tests that new local profiles are pushed to Sync.
 TEST_F(ContactInfoSyncBridgeTest, AutofillProfileChange_Add) {
   ASSERT_TRUE(StartSyncing(/*remote_profiles=*/{}));
@@ -426,6 +434,22 @@ TEST_F(ContactInfoSyncBridgeTest,
                     specifics_with_known_and_unknown_fields)
                 .SerializeAsString(),
             specifics_with_only_unknown_fields.SerializePartialAsString());
+}
+
+// Tests that any `AutofillProfileChanged()` events are queued until sync is
+// ready to process them, at which point the bridge flushes them.
+TEST_F(ContactInfoSyncBridgeTest, PendingChanges) {
+  const AutofillProfile profile = TestProfile(kGUID1);
+  ON_CALL(mock_processor(), IsTrackingMetadata).WillByDefault(Return(false));
+  EXPECT_CALL(mock_processor(),
+              Put(kGUID1, ContactInfoSpecificsEqualsProfile(profile), _))
+      .Times(0);
+  bridge().AutofillProfileChanged(
+      {AutofillProfileChange::ADD, kGUID1, profile});
+
+  EXPECT_CALL(mock_processor(),
+              Put(kGUID1, ContactInfoSpecificsEqualsProfile(profile), _));
+  ASSERT_TRUE(StartSyncing(/*remote_profiles=*/{}));
 }
 
 }  // namespace
