@@ -59,7 +59,7 @@ namespace base {
 class CommandLine;
 
 #if BUILDFLAG(IS_IOS)
-class MachPortRendezvousServer;
+class MachPortRendezvousServerIOS;
 #endif
 }
 
@@ -334,7 +334,7 @@ class ChildProcessLauncherHelper
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_IOS)
-  std::unique_ptr<base::MachPortRendezvousServer> rendezvous_server_;
+  std::unique_ptr<base::MachPortRendezvousServerIOS> rendezvous_server_;
   std::unique_ptr<ProcessStorageBase> process_storage_;
 #endif
 

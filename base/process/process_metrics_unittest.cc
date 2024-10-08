@@ -55,8 +55,8 @@
 #include <mach/mach.h>
 
 #include "base/apple/mach_logging.h"
+#include "base/apple/mach_port_rendezvous.h"
 #include "base/apple/scoped_mach_port.h"
-#include "base/mac/mach_port_rendezvous.h"
 #include "base/process/port_provider_mac.h"
 #endif
 
@@ -149,7 +149,7 @@ class TestChildLauncher {
 
 #if BUILDFLAG(IS_MAC)
 
-// Adapted from base/mac/mach_port_rendezvous_unittest.cc and
+// Adapted from base/apple/mach_port_rendezvous_unittest.cc and
 // https://mw.foldr.org/posts/computers/macosx/task-info-fun-with-mach/
 
 constexpr MachPortsForRendezvous::key_type kTestChildRendezvousKey = 'test';

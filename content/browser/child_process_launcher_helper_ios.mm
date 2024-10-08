@@ -8,7 +8,7 @@
 
 #include <list>
 
-#include "base/mac/mach_port_rendezvous.h"
+#include "base/apple/mach_port_rendezvous.h"
 #include "base/no_destructor.h"
 #include "base/threading/platform_thread.h"
 #include "content/browser/child_process_launcher.h"
@@ -189,7 +189,7 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
     int* launch_result) {
   DCHECK(options);
   *is_synchronous_launch = false;
-  rendezvous_server_ = std::make_unique<base::MachPortRendezvousServer>(
+  rendezvous_server_ = std::make_unique<base::MachPortRendezvousServerIOS>(
       options->mach_ports_for_rendezvous);
 
   // We need to hand out unique "process ids" just use a static counter

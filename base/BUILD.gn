@@ -2023,6 +2023,8 @@ component("base") {
   # Desktop Mac.
   if (is_mac) {
     sources += [
+      "apple/mach_port_rendezvous.cc",
+      "apple/mach_port_rendezvous.h",
       "enterprise_util.cc",
       "enterprise_util.h",
       "enterprise_util_mac.mm",
@@ -2048,8 +2050,6 @@ component("base") {
       "mac/login_util.h",
       "mac/mac_util.h",
       "mac/mac_util.mm",
-      "mac/mach_port_rendezvous.cc",
-      "mac/mach_port_rendezvous.h",
       "mac/os_crash_dumps.cc",
       "mac/os_crash_dumps.h",
       "mac/process_requirement.cc",
@@ -2138,12 +2138,12 @@ component("base") {
 
     if (use_blink) {
       sources += [
+        "apple/mach_port_rendezvous.cc",
+        "apple/mach_port_rendezvous.h",
         "files/file_path_watcher_kqueue.cc",
         "files/file_path_watcher_kqueue.h",
         "files/file_path_watcher_mac.cc",
         "ios/sim_header_shims.h",
-        "mac/mach_port_rendezvous.cc",
-        "mac/mach_port_rendezvous.h",
         "process/kill_ios.cc",
         "process/memory_mac.mm",
         "process/port_provider_mac.cc",
@@ -3880,6 +3880,7 @@ test("base_unittests") {
   if (is_mac) {
     sources += [
       "apple/call_with_eh_frame_unittest.mm",
+      "apple/mach_port_rendezvous_unittest.cc",
       "apple/scoped_cftyperef_unittest.cc",
       "apple/scoped_mach_vm_unittest.cc",
       "apple/scoped_nsautorelease_pool_unittest.mm",
@@ -3887,7 +3888,6 @@ test("base_unittests") {
       "enterprise_util_mac_unittest.mm",
       "mac/launch_application_unittest.mm",
       "mac/mac_util_unittest.mm",
-      "mac/mach_port_rendezvous_unittest.cc",
       "mac/process_requirement_unittest.cc",
       "mac/scoped_sending_event_unittest.mm",
       "message_loop/message_pump_apple_unittest.mm",
@@ -5373,7 +5373,7 @@ if (is_mac) {
     ]
   }
   fuzzer_test("base_mach_port_rendezvous_fuzzer") {
-    sources = [ "mac/mach_port_rendezvous_fuzzer.cc" ]
+    sources = [ "apple/mach_port_rendezvous_fuzzer.cc" ]
     deps = [
       "//base",
       "//testing/libfuzzer/fuzzers/mach:converter",

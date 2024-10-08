@@ -264,7 +264,7 @@ struct BASE_EXPORT LaunchOptions {
   // After calling LaunchProcess(), any rights that were transferred with MOVE
   // dispositions will be consumed, even on failure.
   //
-  // See base/mac/mach_port_rendezvous.h for details.
+  // See base/apple/mach_port_rendezvous.h for details.
   MachPortsForRendezvous mach_ports_for_rendezvous;
 
   // Apply a process scheduler policy to enable mitigations against CPU side-

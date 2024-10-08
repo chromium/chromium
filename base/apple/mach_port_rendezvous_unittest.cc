@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "base/mac/mach_port_rendezvous.h"
+#include "base/apple/mach_port_rendezvous.h"
 
 #include <mach/mach.h>
 
@@ -35,8 +35,8 @@ class MachPortRendezvousServerTest : public MultiProcessTest {
  public:
   void SetUp() override {}
 
-  std::map<pid_t, MachPortRendezvousServer::ClientData>& client_data() {
-    return MachPortRendezvousServer::GetInstance()->client_data_;
+  std::map<pid_t, MachPortRendezvousServerMac::ClientData>& client_data() {
+    return MachPortRendezvousServerMac::GetInstance()->client_data_;
   }
 
  private:
@@ -68,7 +68,7 @@ MULTIPROCESS_TEST_MAIN(TakeSendRight) {
 }
 
 TEST_F(MachPortRendezvousServerTest, SendRight) {
-  auto* server = MachPortRendezvousServer::GetInstance();
+  auto* server = MachPortRendezvousServerMac::GetInstance();
   ASSERT_TRUE(server);
 
   apple::ScopedMachReceiveRight port;
@@ -112,7 +112,7 @@ MULTIPROCESS_TEST_MAIN(NoRights) {
 }
 
 TEST_F(MachPortRendezvousServerTest, NoRights) {
-  auto* server = MachPortRendezvousServer::GetInstance();
+  auto* server = MachPortRendezvousServerMac::GetInstance();
   ASSERT_TRUE(server);
 
   Process child = SpawnChild("NoRights");
@@ -129,7 +129,7 @@ MULTIPROCESS_TEST_MAIN(Exit42) {
 }
 
 TEST_F(MachPortRendezvousServerTest, CleanupIfNoRendezvous) {
-  auto* server = MachPortRendezvousServer::GetInstance();
+  auto* server = MachPortRendezvousServerMac::GetInstance();
   ASSERT_TRUE(server);
 
   apple::ScopedMachReceiveRight port;
@@ -161,8 +161,9 @@ TEST_F(MachPortRendezvousServerTest, CleanupIfNoRendezvous) {
   // while for it to be delivered.
   auto start = TimeTicks::Now();
   do {
-    if (client_data().size() == 0)
+    if (client_data().size() == 0) {
       break;
+    }
     // Sleep is fine because dispatch will process the notification on one of
     // its workers.
     PlatformThread::Sleep(Milliseconds(10));
@@ -235,7 +236,7 @@ MULTIPROCESS_TEST_MAIN(FailToRendezvous) {
 }
 
 TEST_F(MachPortRendezvousServerTest, FailToRendezvous) {
-  auto* server = MachPortRendezvousServer::GetInstance();
+  auto* server = MachPortRendezvousServerMac::GetInstance();
   ASSERT_TRUE(server);
 
   Process child = SpawnChild("FailToRendezvous");

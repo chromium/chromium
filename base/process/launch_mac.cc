@@ -11,10 +11,10 @@
 #include <string.h>
 #include <sys/wait.h>
 
+#include "base/apple/mach_port_rendezvous.h"
 #include "base/command_line.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
-#include "base/mac/mach_port_rendezvous.h"
 #include "base/memory/raw_ptr.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/environment_internal.h"
@@ -297,7 +297,7 @@ Process LaunchProcess(const std::vector<std::string>& argv,
     // can be recorded with the set of ports.
     AutoLockMaybe rendezvous_lock(
         has_mach_ports_for_rendezvous
-            ? &MachPortRendezvousServer::GetInstance()->GetLock()
+            ? &MachPortRendezvousServerMac::GetInstance()->GetLock()
             : nullptr);
 #endif
     // Use posix_spawnp as some callers expect to have PATH consulted.
@@ -307,8 +307,8 @@ Process LaunchProcess(const std::vector<std::string>& argv,
 #if !BUILDFLAG(IS_IOS)
     if (has_mach_ports_for_rendezvous) {
       if (rv == 0) {
-        MachPortRendezvousServer::GetInstance()->GetLock().AssertAcquired();
-        MachPortRendezvousServer::GetInstance()->RegisterPortsForPid(
+        MachPortRendezvousServerMac::GetInstance()->GetLock().AssertAcquired();
+        MachPortRendezvousServerMac::GetInstance()->RegisterPortsForPid(
             pid, options.mach_ports_for_rendezvous);
       } else {
         // Because |options| is const-ref, the collection has to be copied here.
