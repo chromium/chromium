@@ -479,8 +479,8 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   // We close all sessions when certificate verifier settings have changed.
   void OnCertVerifierChanged() override;
 
-  bool is_quic_known_to_work_on_current_network() const {
-    return is_quic_known_to_work_on_current_network_;
+  bool has_quic_ever_worked_on_current_network() const {
+    return has_quic_ever_worked_on_current_network_;
   }
 
   bool allow_server_migration() const { return params_.allow_server_migration; }
@@ -495,8 +495,8 @@ class NET_EXPORT_PRIVATE QuicSessionPool
     return report_ecn_;
   }
 
-  void set_is_quic_known_to_work_on_current_network(
-      bool is_quic_known_to_work_on_current_network);
+  void set_has_quic_ever_worked_on_current_network(
+      bool has_quic_ever_worked_on_current_network);
 
   // It returns the amount of time waiting job should be delayed.
   base::TimeDelta GetTimeDelayForWaitingJob(const QuicSessionKey& session_key);
@@ -738,11 +738,12 @@ class NET_EXPORT_PRIVATE QuicSessionPool
     return params_.supported_versions;
   }
 
-  // Whether QUIC is known to work on current network. This is true when QUIC is
-  // expected to work in general, rather than whether QUIC was broken / recently
-  // broken when used with a particular server. That information is stored in
-  // the broken alternative service map in HttpServerProperties.
-  bool is_quic_known_to_work_on_current_network_ = false;
+  // Whether QUIC is known to have ever worked on current network. This is true
+  // when QUIC is expected to work in general, rather than whether QUIC was
+  // broken / recently broken when used with a particular server. That
+  // information is stored in the broken alternative service map in
+  // HttpServerProperties.
+  bool has_quic_ever_worked_on_current_network_ = false;
 
   NetLogWithSource net_log_;
   const raw_ptr<HostResolver> host_resolver_;

@@ -3687,7 +3687,7 @@ void QuicChromiumClientSession::NotifyFactoryOfSessionClosed() {
 
 void QuicChromiumClientSession::OnCryptoHandshakeComplete() {
   if (session_pool_) {
-    session_pool_->set_is_quic_known_to_work_on_current_network(true);
+    session_pool_->set_has_quic_ever_worked_on_current_network(true);
   }
 
   // Update |connect_end| only when handshake is confirmed. This should also

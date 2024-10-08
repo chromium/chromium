@@ -202,12 +202,9 @@ void HttpStreamPool::QuicTask::OnSessionAttemptComplete(int rv) {
 
   // TODO(crbug.com/346835898): Attempt other endpoints when failed.
 
-  // The destination is not considered broken or working if we didn't attempt
-  // QUIC due to no matching ALPN.
-  if (rv == OK) {
-    quic_session_pool()->set_is_quic_known_to_work_on_current_network(true);
-  } else if (rv != ERR_DNS_NO_MATCHING_SUPPORTED_ALPN) {
-    quic_session_pool()->set_is_quic_known_to_work_on_current_network(false);
+  if (rv == OK &&
+      !quic_session_pool()->has_quic_ever_worked_on_current_network()) {
+    quic_session_pool()->set_has_quic_ever_worked_on_current_network(true);
   }
 
   NetErrorDetails details;

@@ -3358,6 +3358,10 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicOk) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
 
+  // Set `is_quic_known_to_work_on_current_network` to false to check the flag
+  // is updated to true after the QUIC attempt succeeds.
+  quic_session_pool()->set_has_quic_ever_worked_on_current_network(false);
+
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
 
   AddQuicData();
@@ -3389,6 +3393,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicOk) {
                   .GetAttemptManagerForTesting()
                   ->GetQuicTaskResultForTesting(),
               Optional(IsOk()));
+  EXPECT_TRUE(quic_session_pool()->has_quic_ever_worked_on_current_network());
 
   std::unique_ptr<HttpStream> stream = requester.ReleaseStream();
   LoadTimingInfo timing_info;
@@ -3771,7 +3776,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
 // DNS resolution indicates that the endpoint doesn't support QUIC.
 TEST_F(HttpStreamPoolAttemptManagerTest, QuicEndpointNotFoundNoDnsAlpn) {
   // Set that QUIC is working on the current network.
-  quic_session_pool()->set_is_quic_known_to_work_on_current_network(true);
+  quic_session_pool()->set_has_quic_ever_worked_on_current_network(true);
 
   FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
   endpoint_request
@@ -3797,7 +3802,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicEndpointNotFoundNoDnsAlpn) {
               Optional(IsError(ERR_DNS_NO_MATCHING_SUPPORTED_ALPN)));
   // No matching ALPN should not update
   // `is_quic_known_to_work_on_current_network()`.
-  EXPECT_TRUE(quic_session_pool()->is_quic_known_to_work_on_current_network());
+  EXPECT_TRUE(quic_session_pool()->has_quic_ever_worked_on_current_network());
 
   // QUIC should not be marked as broken.
   const AlternativeService alternative_service(

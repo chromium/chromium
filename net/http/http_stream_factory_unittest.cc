@@ -1179,7 +1179,7 @@ TEST_P(HttpStreamFactoryTest, QuicProxyMarkedAsBad) {
 
     auto session =
         std::make_unique<HttpNetworkSession>(session_params, session_context);
-    session->quic_session_pool()->set_is_quic_known_to_work_on_current_network(
+    session->quic_session_pool()->set_has_quic_ever_worked_on_current_network(
         true);
 
     StaticSocketDataProvider socket_data1;
@@ -2317,7 +2317,7 @@ class HttpStreamFactoryQuicTest
   HttpNetworkSession* MakeSession() {
     session_ = SpdySessionDependencies::SpdyCreateSessionWithSocketFactory(
         &session_deps_, &socket_factory_);
-    session_->quic_session_pool()->set_is_quic_known_to_work_on_current_network(
+    session_->quic_session_pool()->set_has_quic_ever_worked_on_current_network(
         true);
     return session_.get();
   }
@@ -2760,7 +2760,7 @@ class HttpStreamFactoryBidirectionalQuicTest
     session_context.ssl_config_service = ssl_config_service_.get();
     session_context.client_socket_factory = &socket_factory_;
     session_ = std::make_unique<HttpNetworkSession>(params_, session_context);
-    session_->quic_session_pool()->set_is_quic_known_to_work_on_current_network(
+    session_->quic_session_pool()->set_has_quic_ever_worked_on_current_network(
         true);
   }
 

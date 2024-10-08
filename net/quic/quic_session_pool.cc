@@ -942,7 +942,7 @@ void QuicSessionPool::FinishConnectAndConfigureSocket(
     need_to_check_persisted_supports_quic_ = false;
     if (http_server_properties_->WasLastLocalAddressWhenQuicWorked(
             local_address_.address())) {
-      is_quic_known_to_work_on_current_network_ = true;
+      has_quic_ever_worked_on_current_network_ = true;
       // Clear the persisted IP address, in case the network no longer supports
       // QUIC so the next restart will require confirmation. It will be
       // re-persisted when the first job completes successfully.
@@ -1056,7 +1056,7 @@ int QuicSessionPool::ConfigureSocket(DatagramClientSocket* socket,
     need_to_check_persisted_supports_quic_ = false;
     if (http_server_properties_->WasLastLocalAddressWhenQuicWorked(
             local_address_.address())) {
-      is_quic_known_to_work_on_current_network_ = true;
+      has_quic_ever_worked_on_current_network_ = true;
       // Clear the persisted IP address, in case the network no longer supports
       // QUIC so the next restart will require confirmation. It will be
       // re-persisted when the first job completes successfully.
@@ -1102,7 +1102,7 @@ void QuicSessionPool::OnIPAddressChanged() {
 
   connectivity_monitor_.OnIPAddressChanged();
 
-  set_is_quic_known_to_work_on_current_network(false);
+  set_has_quic_ever_worked_on_current_network(false);
   if (params_.close_sessions_on_ip_change) {
     CloseAllSessions(ERR_NETWORK_CHANGED, quic::QUIC_IP_ADDRESS_CHANGED);
   } else {
@@ -1195,7 +1195,7 @@ void QuicSessionPool::OnNetworkMadeDefault(handles::NetworkHandle network) {
     session->OnNetworkMadeDefault(network);
   }
   if (params_.migrate_sessions_on_network_change_v2) {
-    set_is_quic_known_to_work_on_current_network(false);
+    set_has_quic_ever_worked_on_current_network(false);
   }
 }
 
@@ -1217,12 +1217,12 @@ void QuicSessionPool::OnCertVerifierChanged() {
   MarkAllActiveSessionsGoingAway(kCertVerifierChanged);
 }
 
-void QuicSessionPool::set_is_quic_known_to_work_on_current_network(
-    bool is_quic_known_to_work_on_current_network) {
-  is_quic_known_to_work_on_current_network_ =
-      is_quic_known_to_work_on_current_network;
+void QuicSessionPool::set_has_quic_ever_worked_on_current_network(
+    bool has_quic_ever_worked_on_current_network) {
+  has_quic_ever_worked_on_current_network_ =
+      has_quic_ever_worked_on_current_network;
   if (!(local_address_ == IPEndPoint())) {
-    if (is_quic_known_to_work_on_current_network_) {
+    if (has_quic_ever_worked_on_current_network_) {
       http_server_properties_->SetLastLocalAddressWhenQuicWorked(
           local_address_.address());
     } else {
@@ -1244,7 +1244,7 @@ base::TimeDelta QuicSessionPool::GetTimeDelayForWaitingJob(
   // if the current network is the last one where QUIC worked.
   // 2) Startup has been completed, and QUIC has not been used
   // successfully since startup, or on this network before.
-  if (!is_quic_known_to_work_on_current_network_) {
+  if (!has_quic_ever_worked_on_current_network_) {
     // If |need_to_check_persisted_supports_quic_| is false, this is case 1)
     // above. If HasLastLocalAddressWhenQuicWorked() is also true, then there's
     // a chance the current network is the last one on which QUIC worked. So
@@ -1429,8 +1429,8 @@ void QuicSessionPool::OnJobComplete(
 
   CHECK(iter != active_jobs_.end(), base::NotFatalUntil::M130);
   if (rv == OK) {
-    if (!is_quic_known_to_work_on_current_network_) {
-      set_is_quic_known_to_work_on_current_network(true);
+    if (!has_quic_ever_worked_on_current_network_) {
+      set_has_quic_ever_worked_on_current_network(true);
     }
 
     auto session_it = active_sessions_.find(job->key().session_key());
@@ -1733,7 +1733,7 @@ bool QuicSessionPool::CreateSessionHelper(
 
   // Wait for handshake confirmation before allowing streams to be created if
   // either this session or the pool require confirmation.
-  if (!is_quic_known_to_work_on_current_network_) {
+  if (!has_quic_ever_worked_on_current_network_) {
     require_confirmation = true;
   }
 
