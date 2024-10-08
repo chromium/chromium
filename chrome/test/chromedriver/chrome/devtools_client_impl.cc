@@ -73,7 +73,8 @@ Status ConditionIsMet(bool* is_condition_met) {
 }
 
 struct SessionId {
-  explicit SessionId(const std::string session_id) : session_id_(session_id) {}
+  explicit SessionId(std::string session_id)
+      : session_id_(std::move(session_id)) {}
   std::string session_id_;
 };
 

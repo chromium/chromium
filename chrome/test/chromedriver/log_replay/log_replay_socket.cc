@@ -12,7 +12,7 @@
 
 namespace {
 
-std::string SessionIdJson(const std::string session_id) {
+std::string SessionIdJson(const std::string& session_id) {
   return session_id.empty() ? std::string()
                             : ",\"session_id\":\"" + session_id + "\"";
 }
