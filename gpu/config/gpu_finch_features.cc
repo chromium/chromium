@@ -173,14 +173,6 @@ BASE_FEATURE(kEnableMSAAOnNewIntelGPUs,
              "EnableMSAAOnNewIntelGPUs",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, Dawn SharedImage representations use the internal usages passed
-// by their clients when creating textures rather than using custom hardcoded
-// internal usages. Serves as killswitch while we roll out this transition.
-// TODO(crbug.com/339171225): Remove post-safe rollout.
-BASE_FEATURE(kDawnSIRepsUseClientProvidedInternalUsages,
-             "DawnSIRepsUseClientProvidedInternalUsages",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_WIN)
 BASE_FEATURE(kNoUndamagedOverlayPromotion,
              "NoUndamagedOverlayPromotion",

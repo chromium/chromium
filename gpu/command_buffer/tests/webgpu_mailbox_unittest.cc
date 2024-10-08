@@ -874,11 +874,6 @@ TEST_P(WebGPUMailboxTest, PassDiscardWhenAssociatingReadOnlyMailbox) {
 // the client doesn't pass a usage supporting lazy clearing.
 TEST_P(WebGPUMailboxTest,
        PassDiscardWhenAssociatingMailboxWithoutUsageSupportingClearing) {
-  // The relevant check in WebGPUDecoderImpl is only performed if the below
-  // feature is enabled.
-  SKIP_TEST_IF(!base::FeatureList::IsEnabled(
-      features::kDawnSIRepsUseClientProvidedInternalUsages));
-
   // Create the shared image.
   SharedImageInterface* sii = GetSharedImageInterface();
   scoped_refptr<gpu::ClientSharedImage> shared_image =

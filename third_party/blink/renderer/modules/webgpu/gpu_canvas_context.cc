@@ -466,15 +466,7 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   // `swap_texture_descriptor_`: Each can end up being used in operations on the
   // texture depending on whether the operation is on `texture_` or
   // `swap_texture_` (which will of course be the same texture in this case).
-  // NOTE: We gate these additions under the
-  // `kDawnSIRepsUseClientProvidedInternalUsages` feature here just to be safe
-  // while rolling out this feature. In reality, setting internal usages on
-  // `texture_` will be a no-op in this case if the feature is disabled, as the
-  // SI rep backing the texture will use hardcoded internal usages rather than
-  // taking them from the client.
-  if (!copy_to_swap_texture_required_ &&
-      base::FeatureList::IsEnabled(
-          features::kDawnSIRepsUseClientProvidedInternalUsages)) {
+  if (!copy_to_swap_texture_required_) {
     // `texture_` will be used as the source of either CopyTextureForBrowser()
     // or CopyTextureToTexture() operations (the former if the alpha mode is
     // opaque, the latter if it is not). In either case, CopySrc is required.

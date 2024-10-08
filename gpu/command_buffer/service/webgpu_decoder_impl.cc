@@ -598,19 +598,9 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       // the dest and source of copies for transfer back and forth between Skia
       // and Dawn.
       wgpu::DawnTextureInternalUsageDescriptor internal_usage_desc;
-      if (base::FeatureList::IsEnabled(
-              features::kDawnSIRepsUseClientProvidedInternalUsages)) {
-        internal_usage_desc.internalUsage = internal_usage |
-                                            wgpu::TextureUsage::CopyDst |
-                                            wgpu::TextureUsage::CopySrc;
-      } else {
-        // We also need RenderAttachment usage for clears, and TextureBinding
-        // for copyTextureForBrowser.
-        internal_usage_desc.internalUsage =
-            wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::CopySrc |
-            wgpu::TextureUsage::RenderAttachment |
-            wgpu::TextureUsage::TextureBinding;
-      }
+      internal_usage_desc.internalUsage = internal_usage |
+                                          wgpu::TextureUsage::CopyDst |
+                                          wgpu::TextureUsage::CopySrc;
       wgpu::TextureDescriptor texture_desc = {
           .nextInChain = &internal_usage_desc,
           .usage = usage,
@@ -2018,19 +2008,14 @@ WebGPUDecoderImpl::AssociateMailboxDawn(
     // Set contents to uncleared.
     shared_image->SetClearedRect(gfx::Rect());
 
-    if (base::FeatureList::IsEnabled(
-            features::kDawnSIRepsUseClientProvidedInternalUsages)) {
-      if (!(usage & kWritableUsagesSupportingLazyClear) &&
-          !(internal_usage & kWritableUsagesSupportingLazyClear)) {
-        LOG(ERROR) << "AssociateMailbox: Using WEBGPU_MAILBOX_DISCARD to clear "
-                      "the texture requires passing a usage that supports lazy "
-                      "clearing";
-        return nullptr;
-      }
+    if (!(usage & kWritableUsagesSupportingLazyClear) &&
+        !(internal_usage & kWritableUsagesSupportingLazyClear)) {
+      LOG(ERROR) << "AssociateMailbox: Using WEBGPU_MAILBOX_DISCARD to clear "
+                    "the texture requires passing a usage that supports lazy "
+                    "clearing";
+      return nullptr;
     }
-  } else if (base::FeatureList::IsEnabled(
-                 features::kDawnSIRepsUseClientProvidedInternalUsages) &&
-             !shared_image->IsCleared()) {
+  } else if (!shared_image->IsCleared()) {
     if (!(shared_image->usage().Has(SHARED_IMAGE_USAGE_WEBGPU_WRITE))) {
       LOG(ERROR) << "AssociateMailbox: Accessing an uncleared texture requires "
                     "WebGPU write access to the SharedImage";
@@ -2105,19 +2090,14 @@ WebGPUDecoderImpl::AssociateMailboxUsingSkiaFallback(
     // Set contents to uncleared.
     shared_image->SetClearedRect(gfx::Rect());
 
-    if (base::FeatureList::IsEnabled(
-            features::kDawnSIRepsUseClientProvidedInternalUsages)) {
-      if (!(usage & kWritableUsagesSupportingLazyClear) &&
-          !(internal_usage & kWritableUsagesSupportingLazyClear)) {
-        LOG(ERROR) << "AssociateMailbox: Using WEBGPU_MAILBOX_DISCARD to clear "
-                      "the texture requires passing a usage that supports lazy "
-                      "clearing";
-        return nullptr;
-      }
+    if (!(usage & kWritableUsagesSupportingLazyClear) &&
+        !(internal_usage & kWritableUsagesSupportingLazyClear)) {
+      LOG(ERROR) << "AssociateMailbox: Using WEBGPU_MAILBOX_DISCARD to clear "
+                    "the texture requires passing a usage that supports lazy "
+                    "clearing";
+      return nullptr;
     }
-  } else if (base::FeatureList::IsEnabled(
-                 features::kDawnSIRepsUseClientProvidedInternalUsages) &&
-             !shared_image->IsCleared()) {
+  } else if (!shared_image->IsCleared()) {
     if (!shared_image->usage().Has(SHARED_IMAGE_USAGE_WEBGPU_WRITE)) {
       LOG(ERROR) << "AssociateMailbox: Accessing an uncleared texture requires "
                     "WebGPU write access to the SharedImage";

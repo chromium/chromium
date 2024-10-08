@@ -92,14 +92,8 @@ namespace {
 // Determine whether to apply the correction of the computation on using the
 // color attachment, which conceptually is "can this backing be written".
 bool CorrectComputationOfUsagesNeedingColorAttachment() {
-  // This feature guards the addition of the invariant that the WebGPU
-  // RenderAttachment usage only gets passed when beginning access on Dawn
-  // representations if WEBGPU_WRITE has been specified when creating the
-  // backing. Without this invariant, there is no guarantee that a SharedImage
-  // with WEBGPU_READ won't require the color attachment (e.g., for lazy
-  // clearing).
-  return base::FeatureList::IsEnabled(
-      features::kDawnSIRepsUseClientProvidedInternalUsages);
+  // TODO(crbug.com/339171225): Remove this function entirely.
+  return true;
 }
 
 class ScopedDedicatedMemoryObject {
