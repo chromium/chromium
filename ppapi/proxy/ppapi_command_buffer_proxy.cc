@@ -314,7 +314,7 @@ void PpapiCommandBufferProxy::FlushInternal() {
 
   IPC::Message* message = new PpapiHostMsg_PPBGraphics3D_AsyncFlush(
       ppapi::API_ID_PPB_GRAPHICS_3D, flush_info_->resource,
-      flush_info_->put_offset);
+      flush_info_->put_offset, pending_fence_sync_release_);
 
   // Do not let a synchronous flush hold up this message. If this handler is
   // deferred until after the synchronous flush completes, it will overwrite the

@@ -49,7 +49,7 @@ class PPAPI_PROXY_EXPORT Graphics3D : public PPB_Graphics3D_Shared {
 
   // Graphics3DTrusted API. These are not implemented in the proxy.
   PP_Bool SetGetBuffer(int32_t shm_id) override;
-  PP_Bool Flush(int32_t put_offset) override;
+  PP_Bool Flush(int32_t put_offset, uint64_t release_count) override;
   scoped_refptr<gpu::Buffer> CreateTransferBuffer(uint32_t size,
                                                   int32_t* id) override;
   PP_Bool DestroyTransferBuffer(int32_t id) override;
@@ -113,7 +113,9 @@ class PPB_Graphics3D_Proxy : public InterfaceProxy {
                                     int32_t end,
                                     gpu::CommandBuffer::State* state,
                                     bool* success);
-  void OnMsgAsyncFlush(const HostResource& context, int32_t put_offset);
+  void OnMsgAsyncFlush(const HostResource& context,
+                       int32_t put_offset,
+                       uint64_t release_count);
   void OnMsgCreateTransferBuffer(
       const HostResource& context,
       uint32_t size,

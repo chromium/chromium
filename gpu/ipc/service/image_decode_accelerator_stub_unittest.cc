@@ -387,15 +387,13 @@ class ImageDecodeAcceleratorStubTest
   // registers |buffer| in the TransferBufferManager and releases the sync token
   // corresponding to |handle_release_count|.
   void RegisterDiscardableHandleBuffer(int32_t shm_id,
-                                       scoped_refptr<Buffer> buffer,
-                                       uint64_t handle_release_count) {
+                                       scoped_refptr<Buffer> buffer) {
     GpuChannel* channel = channel_manager()->LookupChannel(kChannelId);
     DCHECK(channel);
     CommandBufferStub* command_buffer =
         channel->LookupCommandBuffer(kCommandBufferRouteId);
     CHECK(command_buffer);
     command_buffer->RegisterTransferBufferForTest(shm_id, std::move(buffer));
-    command_buffer->OnFenceSyncRelease(handle_release_count);
   }
 
   // Creates a discardable handle and schedules a task in the GPU scheduler (in
@@ -419,8 +417,10 @@ class ImageDecodeAcceleratorStubTest
         base::BindOnce(
             &ImageDecodeAcceleratorStubTest::RegisterDiscardableHandleBuffer,
             weak_ptr_factory_.GetWeakPtr(), handle.shm_id(),
-            handle.BufferForTesting(), handle_release_count) /* closure */,
-        std::vector<SyncToken>() /* sync_token_fences */));
+            handle.BufferForTesting()) /* closure */,
+        std::vector<SyncToken>() /* sync_token_fences */,
+        SyncToken(CommandBufferNamespace::GPU_IO,
+                  command_buffer->command_buffer_id(), handle_release_count)));
     return handle;
   }
 

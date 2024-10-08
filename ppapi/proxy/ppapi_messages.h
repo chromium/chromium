@@ -759,9 +759,10 @@ IPC_SYNC_MESSAGE_ROUTED4_2(PpapiHostMsg_PPBGraphics3D_WaitForGetOffsetInRange,
                            int32_t /* end */,
                            gpu::CommandBuffer::State /* state */,
                            bool /* success */)
-IPC_MESSAGE_ROUTED2(PpapiHostMsg_PPBGraphics3D_AsyncFlush,
+IPC_MESSAGE_ROUTED3(PpapiHostMsg_PPBGraphics3D_AsyncFlush,
                     ppapi::HostResource /* context */,
-                    int32_t /* put_offset */)
+                    int32_t /* put_offset */,
+                    uint64_t /* release_count */)
 IPC_SYNC_MESSAGE_ROUTED2_2(PpapiHostMsg_PPBGraphics3D_CreateTransferBuffer,
                            ppapi::HostResource /* context */,
                            uint32_t /* size */,

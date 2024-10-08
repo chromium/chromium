@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/hash/hash.h"
@@ -135,9 +136,15 @@ CommandBufferStub::~CommandBufferStub() {
 }
 
 void CommandBufferStub::ExecuteDeferredRequest(
-    mojom::DeferredCommandBufferRequestParams& params) {
+    mojom::DeferredCommandBufferRequestParams& params,
+    FenceSyncReleaseDelegate* release_delegate) {
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "GPUTask",
                "data", DevToolsChannelData::CreateForChannel(channel()));
+
+  // Reentrant call is not supported.
+  CHECK(!release_delegate_);
+  base::AutoReset<raw_ptr<FenceSyncReleaseDelegate>> auto_reset(
+      &release_delegate_, release_delegate);
 
   // Ensure the appropriate GL context is current before handling any IPC
   // messages directed at the command buffer. This ensures that the message
@@ -315,10 +322,7 @@ void CommandBufferStub::Destroy() {
     }
   }
 
-  if (sync_point_client_state_) {
-    sync_point_client_state_->Destroy();
-    sync_point_client_state_ = nullptr;
-  }
+  scoped_sync_point_client_state_.Reset();
 
   // Try to make the context current regardless of whether it was lost, so we
   // don't leak resources. Don't use GetGLContext()->MakeCurrent() since that
@@ -479,11 +483,6 @@ void CommandBufferStub::OnAsyncFlush(
   // to catch regressions. Ignore the message.
   DVLOG_IF(0, flush_id - last_flush_id_ >= 0x8000000U)
       << "Received a Flush message out-of-order";
-  // Check if sync token waits are invalid or already complete. Do not use
-  // SyncPointManager::IsSyncTokenReleased() as it can't say if the wait is
-  // invalid.
-  for (const auto& sync_token : sync_token_fences)
-    DCHECK(!sync_point_client_state_->Wait(sync_token, base::DoNothing()));
 
   last_flush_id_ = flush_id;
   gpu::CommandBuffer::State pre_state = command_buffer_->GetState();
@@ -556,12 +555,19 @@ void CommandBufferStub::ReportState() {
 void CommandBufferStub::SignalSyncToken(const SyncToken& sync_token,
                                         uint32_t id) {
   UpdateActiveUrl();
+
+  if (channel_->scheduler()
+          ->task_graph()
+          ->sync_point_manager()
+          ->IsSyncTokenReleased(sync_token)) {
+    OnSignalAck(id);
+    return;
+  }
+
   auto callback =
       base::BindOnce(&CommandBufferStub::OnSignalAck, this->AsWeakPtr(), id);
-  if (!sync_point_client_state_->WaitNonThreadSafe(
-          sync_token, channel_->task_runner(), std::move(callback))) {
-    OnSignalAck(id);
-  }
+  channel_->scheduler()->ScheduleTask(Scheduler::Task(
+      sequence_id_, std::move(callback), {sync_token}, SyncToken()));
 }
 
 void CommandBufferStub::OnSignalAck(uint32_t id) {
@@ -588,7 +594,9 @@ void CommandBufferStub::OnFenceSyncRelease(uint64_t release) {
   SyncToken sync_token(CommandBufferNamespace::GPU_IO, command_buffer_id_,
                        release);
   command_buffer_->SetReleaseCount(release);
-  sync_point_client_state_->ReleaseFenceSync(release);
+
+  CHECK(release_delegate_);
+  release_delegate_->Release(release);
 }
 
 void CommandBufferStub::OnDescheduleUntilFinished() {

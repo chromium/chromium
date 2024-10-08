@@ -234,7 +234,8 @@ PP_Bool PPB_Graphics3D_Impl::DestroyTransferBuffer(int32_t id) {
   return PP_TRUE;
 }
 
-PP_Bool PPB_Graphics3D_Impl::Flush(int32_t put_offset) {
+PP_Bool PPB_Graphics3D_Impl::Flush(int32_t put_offset, uint64_t release_count) {
+  command_buffer_->UpdateLastFenceSyncRelease(release_count);
   GetCommandBuffer()->Flush(put_offset);
   return PP_TRUE;
 }

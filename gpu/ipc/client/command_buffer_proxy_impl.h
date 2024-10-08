@@ -149,8 +149,6 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
   void AddDeletionObserver(DeletionObserver* observer);
   void RemoveDeletionObserver(DeletionObserver* observer);
 
-  bool EnsureBackbuffer();
-
   int32_t route_id() const { return route_id_; }
 
   const scoped_refptr<GpuChannelHost>& channel() const { return channel_; }
@@ -162,6 +160,10 @@ class GPU_EXPORT CommandBufferProxyImpl : public gpu::CommandBuffer,
   const base::UnsafeSharedMemoryRegion& GetSharedStateRegion() const {
     return shared_state_shm_;
   }
+
+  // Used in cases where fence sync releases are not directly generated from
+  // this class itself.
+  void UpdateLastFenceSyncRelease(uint64_t release_count);
 
  private:
   typedef std::map<int32_t, scoped_refptr<gpu::Buffer>> TransferBufferMap;
