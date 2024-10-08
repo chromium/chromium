@@ -1,0 +1,57 @@
+{
+  "ToTiOS": {
+    "additional_compile_targets": [
+      "all"
+    ],
+    "isolated_scripts": [
+      {
+        "args": [
+          "--platform",
+          "iPhone X",
+          "--version",
+          "16.4",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "16a242d",
+          "--xctest"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "base_unittests iPhone X 16.4",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:a18b7d95d26f3c6bf9591978b19cf0ca8268ac7d"
+            }
+          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "os": "Mac-14"
+          },
+          "named_caches": [
+            {
+              "name": "runtime_ios_16_4",
+              "path": "Runtime-ios-16.4"
+            },
+            {
+              "name": "xcode_ios_16a242d",
+              "path": "Xcode.app"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "base_unittests",
+        "test_id_prefix": "ninja://base:base_unittests/",
+        "variant_id": "iPhone X 16.4"
+      }
+    ]
+  }
+}

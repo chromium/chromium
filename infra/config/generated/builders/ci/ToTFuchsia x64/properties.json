@@ -44,7 +44,8 @@
           "builder": "ToTFuchsia x64",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/ToTFuchsia x64/targets"
     }
   },
   "$build/reclient": {

@@ -776,224 +776,55 @@
     },
   },
   {
+    # The following builders in this group have been migrated to set their
+    # targets in the builders' declarations in
+    # //infra/config/subprojects/ci/chromium.clang.star
+    #   CFI Linux CF
+    #   CFI Linux ToT
+    #   CrWinAsan
+    #   CrWinAsan(dll)
+    #   ToTAndroid
+    #   ToTAndroid (dbg)
+    #   ToTAndroid x64
+    #   ToTAndroid x86
+    #   ToTAndroid64
+    #   ToTAndroidASan
+    #   ToTAndroidCoverage x86
+    #   ToTAndroidOfficial
+    #   ToTChromeOS
+    #   ToTChromeOS (dbg)
+    #   ToTFuchsia x64
+    #   ToTFuchsiaOfficial arm64
+    #   ToTLinux
+    #   ToTLinux (dbg)
+    #   ToTLinux
+    #   ToTLinuxASan
+    #   ToTLinuxASanLibfuzzer
+    #   ToTLinuxMSan
+    #   ToTLinuxPGO
+    #   ToTLinuxTSan
+    #   ToTLinuxUBSanVptr
+    #   ToTMac
+    #   ToTMac (dbg)
+    #   ToTMacASan
+    #   ToTMacArm64
+    #   ToTMacArm64PGO
+    #   ToTMacPGO
+    #   ToTWin
+    #   ToTWin(dbg)
+    #   ToTWin(dll)
+    #   ToTWin64
+    #   ToTWin64(dbg)
+    #   ToTWin64(dll)
+    #   ToTWin64PGO
+    #   ToTWinASanLibfuzzer
+    #   ToTWinArm64PGO
+    #   ToTiOS
+    #   ToTiOSDevice
+    #   linux-win-cross-clang-tot-rel
     'name': 'chromium.clang',
     'mixins': ['chromium-tester-service-account'],
     'machines': {
-      'CFI Linux CF': {
-        'additional_compile_targets': [
-          'chromium_builder_asan',
-        ],
-      },
-      'CFI Linux ToT': {
-        'mixins': [
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'gtest_tests': 'clang_tot_gtests',
-        },
-      },
-      'CrWinAsan': {
-        'mixins': [
-          'x86-64',
-          'win10',
-        ],
-        'test_suites': {
-          'gtest_tests': 'clang_tot_gtests',
-        },
-        'additional_compile_targets': [
-          'chromium_builder_asan',
-        ],
-      },
-      'CrWinAsan(dll)': {
-        'mixins': [
-          'x86-64',
-          'win10',
-        ],
-        'test_suites': {
-          'gtest_tests': 'clang_tot_gtests',
-        },
-        'additional_compile_targets': [
-          'chromium_builder_asan',
-        ],
-      },
-      'ToTAndroid': {
-        'mixins': [
-          'chromium_pixel_2_pie',
-          'has_native_resultdb_integration',
-        ],
-        'additional_compile_targets': [
-          'all',
-        ],
-        # This mirrors 'android-lollipop-arm-rel'.
-        'test_suites': {
-          'gtest_tests': 'clang_tot_gtests',
-        },
-        'os_type': 'android',
-      },
-      'ToTAndroid (dbg)': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'ToTAndroid x64': {
-        'swarming': {
-          'dimensions': {
-            'device_type': 'coho',
-            'os': 'Android',
-          },
-        },
-        'test_suites': {
-          # TODO(crbug.com/41368235): Re-enable tests once there are devices to run them on.
-        },
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'ToTAndroid x86': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'ToTAndroid64': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'chrome_sizes_android',
-        },
-      },
-      'ToTAndroidASan': {
-        'test_suites': {
-          'gtest_tests': 'clang_tot_gtests',
-        },
-        'mixins': [
-          'has_native_resultdb_integration'
-        ],
-        'swarming': {
-          'dimensions': {
-            'device_os': 'MMB29Q',
-            'device_type': 'bullhead',
-            'os': 'Android',
-          },
-        },
-        'os_type': 'android',
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'ToTAndroidCoverage x86': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'ToTAndroidOfficial': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'chrome_sizes_android',
-        },
-      },
-      'ToTChromeOS': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'ToTChromeOS (dbg)': {
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'ToTFuchsia x64': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'browser_config': 'web-engine-shell',
-        'os_type': 'fuchsia',
-        'mixins': [
-          'linux-jammy',
-        ],
-        'swarming': {
-          'dimensions': {
-            'kvm': '1',
-          },
-        },
-        'test_suites': {
-          'gtest_tests': 'clang_tot_gtests',
-          'isolated_scripts': 'fuchsia_isolated_scripts',
-        },
-      },
-      'ToTFuchsiaOfficial arm64': {
-        'test_suites': {
-          'gtest_tests': 'clang_tot_gtests',
-          'isolated_scripts': 'fuchsia_arm64_isolated_scripts',
-        },
-        'mixins': [
-          'arm64',
-          'docker',
-          'linux-jammy-or-focal',
-        ],
-      },
-      'ToTLinux': {
-        'mixins': [
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'gtest_tests': 'clang_tot_gtests',
-          'isolated_scripts': 'chrome_sizes_suite',
-        },
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'ToTLinux (dbg)': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'mixins': [
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'chrome_sizes_suite',
-        },
-      },
-      'ToTLinuxASan': {
-        'mixins': [
-          'linux-jammy',
-        ],
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'clang_tot_gtests',
-        },
-        'args': [
-          '--test-launcher-print-test-stdio=always',
-        ],
-      },
-      'ToTLinuxASanLibfuzzer': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'mixins': [
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'chrome_sizes_suite',
-        },
-      },
-      'ToTLinuxMSan': {
-        'mixins': [
-          'linux-focal',
-        ],
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'clang_tot_gtests',
-          'isolated_scripts': 'chrome_sizes_suite',
-        },
-      },
       # Used on an internal builder.
       'ToTLinuxOfficial': {
         'mixins': [
@@ -1007,91 +838,6 @@
         },
         'additional_compile_targets': [
           'all',
-        ],
-      },
-      'ToTLinuxPGO': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'mixins': [
-          'linux-jammy',
-        ],
-        'test_suites': {
-          'gtest_tests': 'clang_tot_gtests',
-        },
-      },
-      'ToTLinuxTSan': {
-        'mixins': [
-          'linux-jammy',
-        ],
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'clang_tot_gtests',
-          'isolated_scripts': 'chrome_sizes_suite',
-        },
-      },
-      'ToTLinuxUBSanVptr': {
-        'mixins': [
-          'linux-jammy',
-        ],
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'clang_tot_gtests',
-          'isolated_scripts': 'chrome_sizes_suite',
-        },
-      },
-      'ToTMac': {
-        'mixins': [
-          'mac_default_x64',
-        ],
-        'test_suites': {
-          'gtest_tests': 'clang_tot_gtests',
-          'isolated_scripts': 'chromium_mac_rel_isolated_scripts_and_sizes',
-        },
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'ToTMac (dbg)': {
-        'mixins': [
-          'mac_default_x64',
-        ],
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'ToTMacASan': {
-        'mixins': [
-          'mac_default_x64',
-        ],
-        'test_suites': {
-          'gtest_tests': 'clang_tot_gtests',
-        },
-        'args': [
-          '--test-launcher-print-test-stdio=always',
-        ],
-        'additional_compile_targets': [
-          'chromium_builder_asan',
-        ],
-      },
-      'ToTMacArm64': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'mixins': [
-          'mac_default_x64',
-        ],
-      },
-      'ToTMacArm64PGO': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'mixins': [
-          'mac_default_x64',
         ],
       },
       # Used on an internal builder.
@@ -1109,123 +855,7 @@
           'all',
         ],
       },
-      'ToTMacPGO': {
-        'additional_compile_targets': [
-          'all',
-        ],
-        'mixins': [
-          'mac_default_x64',
-        ],
-        'test_suites': {
-          'gtest_tests': 'clang_tot_gtests',
-        },
-      },
-      'ToTWin': {
-        'mixins': [
-          'win10',
-        ],
-        'test_suites': {
-          'gtest_tests': 'clang_tot_gtests',
-          'isolated_scripts': 'win_specific_isolated_scripts_and_sizes',
-        },
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'ToTWin(dbg)': {
-        'mixins': [
-          'win10',
-        ],
-        'test_suites': {
-          'gtest_tests': 'clang_tot_gtests',
-          # Doesn't run win_specific_isolated_scripts because the mini
-          # installer isn't hooked up in 32-bit debug builds.
-          'isolated_scripts': 'chrome_sizes_suite',
-        },
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'ToTWin(dll)': {
-        'mixins': [
-          'win10',
-        ],
-        'test_suites': {
-          'gtest_tests': 'clang_tot_gtests',
-          'isolated_scripts': 'win_specific_isolated_scripts_and_sizes',
-        },
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'ToTWin64': {
-        'mixins': [
-          'x86-64',
-          'win10',
-        ],
-        'test_suites': {
-          'gtest_tests': 'clang_tot_gtests',
-          'isolated_scripts': 'win_specific_isolated_scripts_and_sizes',
-        },
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'ToTWin64(dbg)': {
-        'mixins': [
-          'x86-64',
-          'win10',
-        ],
-        'test_suites': {
-          'gtest_tests': 'clang_tot_gtests',
-          'isolated_scripts': 'win_specific_isolated_scripts_and_sizes',
-        },
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'ToTWin64(dll)': {
-        'mixins': [
-          'x86-64',
-          'win10',
-        ],
-        'test_suites': {
-          'gtest_tests': 'clang_tot_gtests',
-          'isolated_scripts': 'win_specific_isolated_scripts_and_sizes',
-        },
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'ToTWin64PGO': {
-        'mixins': [
-          'x86-64',
-          'win10',
-        ],
-        'additional_compile_targets': [
-          'all',
-        ],
-        'test_suites': {
-          'gtest_tests': 'clang_tot_gtests',
-        },
-      },
-      'ToTWinASanLibfuzzer': {
-        'mixins': [
-          'win10',
-        ],
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'ToTWinArm64PGO': {
-        'mixins': [
-          'arm64',
-          'win11',
-        ],
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
+      # Used on an internal builder.
       'ToTWinOfficial': {
         'mixins': [
           'chrome-tester-service-account',
@@ -1244,6 +874,7 @@
           },
         },
       },
+      # Used on an internal builder.
       'ToTWinOfficial64': {
         'mixins': [
           'chrome-tester-service-account',
@@ -1261,67 +892,6 @@
             'os': 'Windows-10',
           },
         },
-      },
-      'ToTiOS': {
-        'additional_compile_targets': [
-          'all'
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-          'mac_default_x64',
-          'mac_toolchain',
-          'out_dir_arg',
-          'xcode_16_main',
-          'xctest',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'ios_clang_tot_sim_tests'
-        }
-      },
-      'ToTiOSDevice': {
-        'additional_compile_targets': [
-          'base_unittests',
-          'boringssl_crypto_tests',
-          'boringssl_ssl_tests',
-          'components_unittests',
-          'crypto_unittests',
-          'gfx_unittests',
-          'google_apis_unittests',
-          'ios_chrome_unittests',
-          'ios_net_unittests',
-          'ios_web_inttests',
-          'ios_web_unittests',
-          'ios_web_view_inttests',
-          'net_unittests',
-          'skia_unittests',
-          'sql_unittests',
-          'ui_base_unittests',
-          'url_unittests'
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
-          'ios_restart_device',
-          'limited_capacity_bot',
-          'mac_default_x64',
-          'mac_toolchain',
-          'out_dir_arg',
-          'xcode_16_main',
-          'xctest',
-        ],
-        'test_suites': {
-          'isolated_scripts': 'ios_clang_tot_device_tests'
-        },
-      },
-      'linux-win-cross-clang-tot-rel': {
-        'mixins': [
-          'win10',
-        ],
-        'test_suites': {
-          'gtest_tests': 'clang_tot_gtests',
-        },
-        'additional_compile_targets': [
-          'all',
-        ],
       },
     },
   },

@@ -897,6 +897,8 @@ targets.binaries.script(
 targets.binaries.generated_script(
     name = "fuchsia_sizes",
     label = "//tools/fuchsia/size_tests:fuchsia_sizes",
+    # All references have been moved to starlark
+    skip_usage_check = True,
     merge = targets.merge(
         script = "//tools/perf/process_perf_results.py",
     ),

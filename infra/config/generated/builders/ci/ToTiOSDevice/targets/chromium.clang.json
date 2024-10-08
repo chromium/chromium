@@ -1,0 +1,68 @@
+{
+  "ToTiOSDevice": {
+    "additional_compile_targets": [
+      "base_unittests",
+      "boringssl_crypto_tests",
+      "boringssl_ssl_tests",
+      "components_unittests",
+      "crypto_unittests",
+      "gfx_unittests",
+      "google_apis_unittests",
+      "ios_chrome_unittests",
+      "ios_net_unittests",
+      "ios_web_inttests",
+      "ios_web_unittests",
+      "ios_web_view_inttests",
+      "net_unittests",
+      "skia_unittests",
+      "sql_unittests",
+      "ui_base_unittests",
+      "url_unittests"
+    ],
+    "isolated_scripts": [
+      {
+        "args": [
+          "--restart",
+          "--out-dir",
+          "${ISOLATED_OUTDIR}",
+          "--xcode-build-version",
+          "16a242d",
+          "--xctest"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "base_unittests iPhone 15 Pro 17.5.1 or 17.6.1 or 18.0",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/mac_toolchain/${platform}",
+              "location": ".",
+              "revision": "git_revision:a18b7d95d26f3c6bf9591978b19cf0ca8268ac7d"
+            }
+          ],
+          "dimensions": {
+            "cpu": "x86-64",
+            "device": "iPhone16,1",
+            "os": "Mac-14"
+          },
+          "expiration": 21600,
+          "named_caches": [
+            {
+              "name": "xcode_ios_16a242d",
+              "path": "Xcode.app"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "base_unittests",
+        "test_id_prefix": "ninja://base:base_unittests/",
+        "variant_id": "iPhone 15 Pro 17.5.1 or 17.6.1 or 18.0"
+      }
+    ]
+  }
+}

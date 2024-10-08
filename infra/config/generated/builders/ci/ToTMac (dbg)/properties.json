@@ -41,7 +41,8 @@
           "builder": "ToTMac (dbg)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/ToTMac (dbg)/targets"
     }
   },
   "$build/reclient": {

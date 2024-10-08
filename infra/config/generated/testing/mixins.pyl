@@ -249,13 +249,6 @@
       '--extra-app-args=--disable-field-trial-config',
     ],
   },
-  'docker': {
-    'swarming': {
-      'dimensions': {
-        'inside_docker': '1',
-      },
-    },
-  },
   'emulator-4-cores': {
     'swarming': {
       'dimensions': {
@@ -466,11 +459,6 @@
       '2',
     ],
   },
-  'ios_restart_device': {
-    'args': [
-      '--restart',
-    ],
-  },
   'ios_runtime_cache_16_4': {
     'swarming': {
       'named_caches': [
@@ -535,25 +523,11 @@
       'expiration': 21600,
     },
   },
-  'linux-focal': {
-    'swarming': {
-      'dimensions': {
-        'os': 'Ubuntu-20.04',
-      },
-    },
-  },
   'linux-jammy': {
     'fail_if_unused': False,
     'swarming': {
       'dimensions': {
         'os': 'Ubuntu-22.04',
-      },
-    },
-  },
-  'linux-jammy-or-focal': {
-    'swarming': {
-      'dimensions': {
-        'os': 'Ubuntu-22.04|Ubuntu-20.04',
       },
     },
   },

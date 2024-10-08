@@ -41,7 +41,8 @@
           "builder": "ToTWin64(dll)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/ToTWin64(dll)/targets"
     }
   },
   "$build/reclient": {

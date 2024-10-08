@@ -41,7 +41,8 @@
           "builder": "ToTWin64PGO",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/ToTWin64PGO/targets"
     }
   },
   "$build/reclient": {

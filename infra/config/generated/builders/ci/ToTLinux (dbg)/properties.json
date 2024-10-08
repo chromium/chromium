@@ -42,7 +42,8 @@
           "builder": "ToTLinux (dbg)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/ToTLinux (dbg)/targets"
     }
   },
   "$build/reclient": {

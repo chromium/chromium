@@ -857,28 +857,6 @@ targets.legacy_matrix_compound_suite(
     },
 )
 
-targets.legacy_matrix_compound_suite(
-    name = "ios_clang_tot_device_tests",
-    basic_suites = {
-        "clang_tot_gtests": targets.legacy_matrix_config(
-            variants = [
-                "IPHONE_15_PRO_18_0",
-            ],
-        ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
-    name = "ios_clang_tot_sim_tests",
-    basic_suites = {
-        "clang_tot_gtests": targets.legacy_matrix_config(
-            variants = [
-                "SIM_IPHONE_X_16_4",
-            ],
-        ),
-    },
-)
-
 # This suite is a union of ios_simulator_tests and
 # ios_simulator_full_configs_tests.
 targets.legacy_matrix_compound_suite(

@@ -664,6 +664,32 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "chrome_sizes_android",
+    targets = [
+        "chrome_sizes",
+    ],
+    per_test_modifications = {
+        "chrome_sizes": targets.per_test_modification(
+            mixins = targets.mixin(
+                args = [
+                    "--platform=android",
+                ],
+                swarming = targets.swarming(
+                    dimensions = {
+                        "cpu": "x86-64",
+                        "os": "Ubuntu-22.04",
+                    },
+                ),
+            ),
+            remove_mixins = [
+                "chromium_nexus_5x_oreo",
+                "chromium_pixel_2_pie",
+            ],
+        ),
+    },
+)
+
+targets.bundle(
     name = "chromium_android_cast_receiver",
     additional_compile_targets = [
         "cast_browser_apk",
@@ -966,6 +992,14 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "fuchsia_arm64_isolated_scripts",
+    targets = [
+        "fuchsia_sizes_tests",
+        "gpu_angle_fuchsia_unittests_isolated_scripts",
+    ],
+)
+
+targets.bundle(
     name = "fuchsia_arm64_tests",
     targets = [
         "fuchsia_sizes_tests",
@@ -1004,6 +1038,21 @@ targets.bundle(
     ],
     mixins = [
         "upload_inv_extended_properties",
+    ],
+)
+
+targets.bundle(
+    name = "fuchsia_isolated_scripts",
+    targets = [
+        "chromium_webkit_isolated_scripts",
+        "gpu_angle_fuchsia_unittests_isolated_scripts",
+    ],
+)
+
+targets.bundle(
+    name = "fuchsia_sizes_tests",
+    targets = [
+        "fuchsia_sizes",
     ],
 )
 
@@ -1066,6 +1115,30 @@ targets.bundle(
             "has_native_resultdb_integration",
         ],
     },
+)
+
+targets.bundle(
+    name = "ios_clang_tot_device_tests",
+    targets = [
+        targets.bundle(
+            targets = "clang_tot_gtests",
+            variants = [
+                "IPHONE_15_PRO_18_0",
+            ],
+        ),
+    ],
+)
+
+targets.bundle(
+    name = "ios_clang_tot_sim_tests",
+    targets = [
+        targets.bundle(
+            targets = "clang_tot_gtests",
+            variants = [
+                "SIM_IPHONE_X_16_4",
+            ],
+        ),
+    ],
 )
 
 # Please also change ios_code_coverage_tests for any change in this suite.

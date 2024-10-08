@@ -90,11 +90,6 @@
   },
   'base_unittests': {
     'modifications': {
-      'ToTAndroid': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_tot.base_unittests.filter',
-        ],
-      },
       'fuchsia-code-coverage': {
         'swarming': {
           'shards': 5,
@@ -133,14 +128,6 @@
             'gpu': None,
           },
           'shards': 12,
-        },
-      },
-      'ToTFuchsia x64': {
-        'args': [
-          '--platform=fuchsia',
-        ],
-        'swarming': {
-          'shards': 1,
         },
       },
       'V8 Blink Linux Future': {
@@ -322,14 +309,6 @@
           'shards': 18,
         },
       },
-      'ToTFuchsia x64': {
-        'args': [
-          '--platform=fuchsia',
-        ],
-        'swarming': {
-          'shards': 1,
-        },
-      },
       'V8 Blink Linux Future': {
         'args': [
           '--flag-specific=future-js',
@@ -470,27 +449,11 @@
   },
   'browser_tests': {
     'remove_from': [
-      'CrWinAsan(dll)', # https://crbug.com/935598
-      'ToTLinuxTSan',  # https://crbug.com/368525
       'mac-code-coverage', # https://crbug.com/1201386
       'Linux TSan Tests',  # https://crbug.com/368525
       'linux-chromeos-chrome-preuprev', # http://b/331706144
     ],
     'modifications': {
-      'CrWinAsan': {
-        # These are very slow on the ASAN trybot for some reason.
-        # crbug.com/1257927
-        'swarming': {
-          'shards': 40,
-        },
-      },
-      'CrWinAsan(dll)': {
-        # These are very slow on the ASAN trybot for some reason.
-        # crbug.com/1257927
-        'swarming': {
-          'shards': 40,
-        },
-      },
       'Linux - Future (dbg)': {  # client.v8.chromium
         'swarming': {
           'shards': 10,
@@ -553,21 +516,6 @@
         'ci_only': True,
         'swarming': {
           'shards': 20,  # crbug.com/1361887
-        },
-      },
-      'ToTLinuxMSan': {
-        'swarming': {
-          'shards': 24,
-        },
-      },
-      'ToTWin(dbg)': {
-        'swarming': {
-          'shards': 20,
-        },
-      },
-      'ToTWin64(dbg)': {
-        'swarming': {
-          'shards': 20,
         },
       },
       'linux-chromeos-chrome': {
@@ -793,7 +741,6 @@
   },
   'chrome_public_test_vr_apk': {
     'remove_from': [
-      'ToTAndroid',
       'android-asan',  # https://crbug.com/964562
       'android-code-coverage-native', # Does not generate profraw data.
     ],
@@ -887,10 +834,6 @@
   },
   'content_browsertests': {
     'remove_from': [
-      'CrWinAsan(dll)', # https://crbug.com/935598
-      # TODO(crbug.com/40241445): Enable on Fuchsia asan/clang builders.
-      'ToTFuchsia x64',
-      'ToTFuchsiaOfficial arm64',
       'linux-chromeos-chrome-preuprev', # http://b/331706144
     ],
     'modifications': {
@@ -1180,10 +1123,8 @@
     'remove_from': [
       # https://crbug.com/crashpad/304
       'Linux TSan Tests',
-      'ToTLinuxTSan',
       # https://crbug.com/crashpad/306
       'Linux CFI',
-      'CFI Linux ToT',
     ],
     'modifications': {
       # TODO(crbug.com/40794640): dyld was rebuilt for macOS 12, which breaks
@@ -1191,11 +1132,6 @@
       # remove this exception once fixed.
       'Mac Builder Next': {
         'experiment_percentage': 100,
-      },
-      'ToTAndroid': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_tot.crashpad_tests.filter',
-        ],
       },
       # TODO(crbug.com/40794640): dyld was rebuilt for macOS 12, which breaks
       # the tests. Run this experimentally on all the macOS bots >= 12 and
@@ -1446,9 +1382,6 @@
     },
   },
   'extensions_browsertests': {
-    'remove_from': [
-      'CrWinAsan(dll)', # https://crbug.com/935598
-    ],
     'modifications': {
       'win10-code-coverage': {
         'swarming': {
@@ -1491,7 +1424,6 @@
   },
   'gin_unittests': {
     'remove_from': [
-      'ToTLinuxASan',  # https://crbug.com/831667
       'Linux ASan LSan Tests (1)',  # https://crbug.com/831667
       'Linux Chromium OS ASan LSan Tests (1)',  # https://crbug.com/831667
     ],
@@ -1506,7 +1438,6 @@
   },
   'gl_tests_passthrough': {
     'remove_from': [
-      'CFI Linux ToT',
       # TODO(crbug.com/40238674): Enable these once they're shown to work on
       # Android.
       'Dawn Android arm DEPS Release (Pixel 4)',
@@ -1615,11 +1546,6 @@
       'Android FYI Release (Samsung A23)': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.samsung_a23.gl_tests.filter',
-        ],
-      },
-      'ToTAndroid': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_tot.gl_tests.filter', # https://crbug.com/1034007
         ],
       },
       'android-code-coverage-native': {
@@ -1802,9 +1728,6 @@
     },
   },
   'interactive_ui_tests': {
-    'remove_from': [
-      'CrWinAsan(dll)', # https://crbug.com/935598
-    ],
     'modifications': {
       'Linux - Future (dbg)': {  # client.v8.chromium
         'swarming': {
@@ -1863,12 +1786,6 @@
         },
       },
       'Mac Tests Siso FYI': {
-        'swarming': {
-          'shards': 6,
-        },
-      },
-      'ToTLinuxTSan': {
-        # These are slow on the TSan bots for some reason, crbug.com/1257927
         'swarming': {
           'shards': 6,
         },
@@ -2043,25 +1960,12 @@
   'nacl_loader_unittests': {
     # If you change this, make similar changes in ppapi_unittests
     'remove_from': [
-      'ToTMacASan',  # The mac asan tot bot sets enable_nacl=false
       'Linux TSan Tests',  # The TSan bot sets enable_nacl=false
       'Mac ASan 64 Tests (1)',  # The mac asan bot sets enable_nacl=false
     ],
   },
   'net_unittests': {
     'modifications': {
-      'CrWinAsan': {
-        # TODO(crbug.com/40200867): net_unittests is slow under ASan.
-        'swarming': {
-          'shards': 16,
-        },
-      },
-      'CrWinAsan(dll)': {
-        # TODO(crbug.com/40200867): net_unittests is slow under ASan.
-        'swarming': {
-          'shards': 16,
-        },
-      },
       'Linux ASan LSan Tests (1)': {
         # These are very slow on the ASAN trybot for some reason.
         # crbug.com/1257927
@@ -2084,17 +1988,6 @@
         },
       },
       'Linux TSan Tests': {
-        'swarming': {
-          'shards': 4,
-        }
-      },
-      'ToTLinuxASan': {
-        # TODO(crbug.com/40200867): net_unittests is slow under ASan.
-        'swarming': {
-          'shards': 16,
-        },
-      },
-      'ToTLinuxTSan': {
         'swarming': {
           'shards': 4,
         }
@@ -2151,14 +2044,8 @@
   'notification_helper_unittests': {
     'remove_from': [
       # all these bots run Windows 7.
-      'ToTWin',
-      'ToTWin(dbg)',
-      'ToTWin(dll)',
       'ToTWinOfficial',
       'ToTWinOfficial64',
-      'ToTWin64',
-      'ToTWin64(dbg)',
-      'ToTWin64(dll)',
     ],
   },
   'ondevice_stability_tests AMD Radeon RX 5500 XT': {
@@ -2217,7 +2104,6 @@
       'android-asan',
       'android-code-coverage',
       'android-code-coverage-native',
-      'ToTAndroid'
     ]
   },
   'pixel_browser_tests': {
@@ -2391,7 +2277,6 @@
   'ppapi_unittests': {
     # If you change this, make similar changes in nacl_loader_unittests
     'remove_from': [
-      'ToTMacASan',  # The mac asan tot bot sets enable_nacl=false
       'Linux TSan Tests',  # The TSan bot sets enable_nacl=false
       'Mac ASan 64 Tests (1)',  # The mac asan bot sets enable_nacl=false
     ],
@@ -2463,7 +2348,6 @@
   },
   'services_unittests': {
     'remove_from': [
-      'ToTLinuxMSan',  # https://crbug.com/831676
       # The face and barcode detection tests fail on the Mac Pros.
       'Mac Pro FYI Release (AMD)',
       'Linux ChromiumOS MSan Tests',  # https://crbug.com/831676
@@ -2497,9 +2381,6 @@
     },
   },
   'sync_integration_tests': {
-    'remove_from': [
-      'CrWinAsan(dll)', # https://crbug.com/935598
-    ],
     'modifications': {
       'Linux ASan LSan Tests (1)': {
         'swarming': {
@@ -2521,11 +2402,6 @@
         'ci_only': True,
         'swarming': {
           'shards': 4,
-        },
-      },
-      'ToTLinuxTSan': {
-        'swarming': {
-          'shards': 6,
         },
       },
       'linux-chromeos-code-coverage': {
@@ -2750,11 +2626,6 @@
         },
       },
       'Mac Tests Siso FYI': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
-      'ToTLinuxASan': {
         'swarming': {
           'shards': 2,
         },
@@ -3486,9 +3357,6 @@
   },
   'webview_instrumentation_test_apk_multiple_process_mode': {
     'remove_from': [
-      # This test frequently fails on Android, https://crbug.com/824959
-      # matching android builders, the test fails on these.
-      'ToTAndroid',
       'android-asan',  # https://crbug.com/964562
     ],
     'modifications': {

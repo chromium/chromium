@@ -644,6 +644,7 @@ targets.mixin(
 
 targets.mixin(
     name = "docker",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "inside_docker": "1",
@@ -948,6 +949,7 @@ targets.mixin(
 
 targets.mixin(
     name = "ios_restart_device",
+    generate_pyl_entry = False,
     args = [
         "--restart",
     ],
@@ -1038,6 +1040,7 @@ targets.mixin(
 
 targets.mixin(
     name = "linux-focal",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "os": "Ubuntu-20.04",
@@ -1057,6 +1060,7 @@ targets.mixin(
 
 targets.mixin(
     name = "linux-jammy-or-focal",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "os": "Ubuntu-22.04|Ubuntu-20.04",

@@ -368,32 +368,6 @@
       },
     },
 
-    'chrome_sizes_android': {
-      'chrome_sizes': {
-        'test_common': {
-          'mixins': [
-            'has_native_resultdb_integration',
-          ],
-          'merge': {
-            'script': '//tools/perf/process_perf_results.py',
-          },
-        },
-        'remove_mixins': [
-          'chromium_nexus_5x_oreo',
-          'chromium_pixel_2_pie',
-        ],
-        'args': [
-          '--platform=android',
-        ],
-        'swarming': {
-          'dimensions': {
-            'cpu': 'x86-64',
-            'os': 'Ubuntu-22.04',
-          },
-        },
-      },
-    },
-
     'chrome_sizes_suite': {
       'chrome_sizes': {
         'test_common': {
@@ -2158,20 +2132,6 @@
       'wm_unittests': {},
       'wtf_unittests': {},
       'zlib_unittests': {},
-    },
-
-    'fuchsia_sizes_tests': {
-      'fuchsia_sizes': {
-        'test_common': {
-          'args': [
-            '--sizes-path',
-            'tools/fuchsia/size_tests/fyi_sizes_smoketest.json',
-          ],
-          'merge': {
-            'script': '//tools/perf/process_perf_results.py',
-          },
-        },
-      },
     },
 
     'fuchsia_web_engine_gtests': {
@@ -6086,19 +6046,9 @@
       'devtools_browser_tests_suite',
     ],
 
-    'fuchsia_arm64_isolated_scripts': [
-      'fuchsia_sizes_tests',
-      'gpu_angle_fuchsia_unittests_isolated_scripts',
-    ],
-
     'fuchsia_gtests': [
       'fuchsia_chrome_gtests',
       'fuchsia_web_engine_gtests',
-    ],
-
-    'fuchsia_isolated_scripts': [
-      'chromium_webkit_isolated_scripts',
-      'gpu_angle_fuchsia_unittests_isolated_scripts',
     ],
 
     'gpu_angle_linux_telemetry_tests': [
@@ -7310,22 +7260,6 @@
         'variants': [
           'SIM_IPHONE_14_17_5',
           'SIM_IPHONE_15_18_0',
-        ],
-      },
-    },
-
-    'ios_clang_tot_device_tests': {
-      'clang_tot_gtests': {
-        'variants': [
-          'IPHONE_15_PRO_18_0',
-        ],
-      },
-    },
-
-    'ios_clang_tot_sim_tests': {
-      'clang_tot_gtests': {
-        'variants': [
-          'SIM_IPHONE_X_16_4',
         ],
       },
     },

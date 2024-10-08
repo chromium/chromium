@@ -868,6 +868,7 @@
   "fuchsia_sizes": {
     "label": "//tools/fuchsia/size_tests:fuchsia_sizes",
     "type": "generated_script",
+    "skip_usage_check": True,
   },
   "fuzzing_unittests": {
     "label": "//testing/libfuzzer/tests:fuzzing_unittests",

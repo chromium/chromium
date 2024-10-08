@@ -361,28 +361,12 @@ targets.legacy_compound_suite(
     ],
 )
 
-targets.legacy_compound_suite(
-    name = "fuchsia_arm64_isolated_scripts",
-    basic_suites = [
-        "fuchsia_sizes_tests",
-        "gpu_angle_fuchsia_unittests_isolated_scripts",
-    ],
-)
-
 # All gtests that can be run on Fuchsia CI/CQ
 targets.legacy_compound_suite(
     name = "fuchsia_gtests",
     basic_suites = [
         "fuchsia_chrome_gtests",
         "fuchsia_web_engine_gtests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "fuchsia_isolated_scripts",
-    basic_suites = [
-        "chromium_webkit_isolated_scripts",
-        "gpu_angle_fuchsia_unittests_isolated_scripts",
     ],
 )
 

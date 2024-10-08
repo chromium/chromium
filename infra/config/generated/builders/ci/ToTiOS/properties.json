@@ -42,7 +42,8 @@
           "builder": "ToTiOS",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/ToTiOS/targets"
     }
   },
   "$build/reclient": {

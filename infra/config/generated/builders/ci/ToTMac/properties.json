@@ -42,7 +42,8 @@
           "builder": "ToTMac",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/ToTMac/targets"
     }
   },
   "$build/reclient": {

@@ -268,29 +268,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "chrome_sizes_android",
-    tests = {
-        "chrome_sizes": targets.legacy_test_config(
-            remove_mixins = [
-                "chromium_nexus_5x_oreo",
-                "chromium_pixel_2_pie",
-                "marshmallow",
-                "oreo_mr1_fleet",
-            ],
-            args = [
-                "--platform=android",
-            ],
-            swarming = targets.swarming(
-                dimensions = {
-                    "cpu": "x86-64",
-                    "os": "Ubuntu-22.04",
-                },
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "chromedriver_py_tests_isolated_scripts",
     tests = {
         "chromedriver_py_tests": targets.legacy_test_config(
@@ -1866,13 +1843,6 @@ targets.legacy_basic_suite(
         "web_engine_browsertests": targets.legacy_test_config(),
         "web_engine_integration_tests": targets.legacy_test_config(),
         "web_engine_unittests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "fuchsia_sizes_tests",
-    tests = {
-        "fuchsia_sizes": targets.legacy_test_config(),
     },
 )
 

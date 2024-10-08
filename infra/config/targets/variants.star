@@ -89,6 +89,7 @@ targets.variant(
 targets.variant(
     name = "IPHONE_15_PRO_18_0",
     identifier = "iPhone 15 Pro 17.5.1 or 17.6.1 or 18.0",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "os": "iOS-17.5.1|iOS-17.6.1|iOS-18.0",
@@ -461,6 +462,7 @@ targets.variant(
 targets.variant(
     name = "SIM_IPHONE_X_16_4",
     identifier = "iPhone X 16.4",
+    generate_pyl_entry = False,
     mixins = [
         "ios_runtime_cache_16_4",
     ],

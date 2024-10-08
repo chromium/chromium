@@ -88,15 +88,6 @@
       'intel_uhd_630_or_770',
     ],
   },
-  'IPHONE_15_PRO_18_0': {
-    'identifier': 'iPhone 15 Pro 17.5.1 or 17.6.1 or 18.0',
-    'swarming': {
-      'dimensions': {
-        'os': 'iOS-17.5.1|iOS-17.6.1|iOS-18.0',
-        'device': 'iPhone16,1',
-      },
-    },
-  },
   'LINUX_INTEL_UHD_630_STABLE': {
     'identifier': 'UHD 630',
     'mixins': [
@@ -335,18 +326,6 @@
     ],
     'mixins': [
       'ios_runtime_cache_18_1',
-    ],
-  },
-  'SIM_IPHONE_X_16_4': {
-    'identifier': 'iPhone X 16.4',
-    'args': [
-      '--platform',
-      'iPhone X',
-      '--version',
-      '16.4',
-    ],
-    'mixins': [
-      'ios_runtime_cache_16_4',
     ],
   },
   'SINGLE_GROUP_PER_STUDY_PREFER_EXISTING_BEHAVIOR': {

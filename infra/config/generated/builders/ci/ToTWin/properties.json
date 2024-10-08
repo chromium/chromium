@@ -41,7 +41,8 @@
           "builder": "ToTWin",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/ToTWin/targets"
     }
   },
   "$build/reclient": {
