@@ -189,7 +189,11 @@ void GoogleURLLoaderThrottle::WillStartRequest(
   is_main_frame_navigation_ =
       request->is_outermost_main_frame &&
       request->destination == network::mojom::RequestDestination::kDocument;
-  sends_cookies_ = request->SendsCookies();
+  // TODO(crbug.com/372169462): `request->SendsCookies()` cannot be used for now
+  // because it excludes `kSameOrigin` requests.
+  sends_cookies_ =
+      request->credentials_mode == network::mojom::CredentialsMode::kInclude ||
+      request->credentials_mode == network::mojom::CredentialsMode::kSameOrigin;
   if (sends_cookies_) {
     RequestBoundSessionStatus status = GetRequestBoundSessionStatus(
         request->url, dynamic_params_->bound_session_throttler_params);
