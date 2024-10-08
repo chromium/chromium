@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="./webgpu-helpers.js"></script>
+</head>
+
+<h1>Canvas2D WebGPU Transfer: transferToGPUTexture-two-canvases</h1>
+
+<p>A transfer in one canvas does not result in an initial transfer in
+a second canvas being zero-copy.</p>
+
+<canvas id="c" width="50" height="50"></canvas>
+<canvas id="c2" width="50" height="50"></canvas>
+
+<script>
+
+promise_test(() => {
+    return with_webgpu((adapter, adapterInfo, device) => {
+      test_transferToGPUTexture_two_canvases(
+          device,
+          document.getElementById('c'),
+          document.getElementById('c2'));
+    });
+  },
+  'A transfer in one canvas does not result in an initial transfer in ' +
+  'a second canvas being zero-copy.'
+);
+
+promise_test(() => {
+    return with_webgpu((adapter, adapterInfo, device) => {
+      test_transferToGPUTexture_two_canvases(
+          device,
+          new OffscreenCanvas(50, 50),
+          new OffscreenCanvas(50, 50));
+    });
+  },
+  'A transfer in one offscreen canvas does not result in an initial transfer ' +
+  'in a second offscreen canvas being zero-copy.'
+);
+
+</script>
