@@ -24,7 +24,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="QuickStart.AttestationCertificate.FailureReason"
     enum="QuickStartAttestationCertificateFetchFailureReason"
-    expires_after="2025-02-02">
+    expires_after="2025-04-06">
   <owner>sinhak@chromium.org</owner>
   <owner>hansenmichael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -36,7 +36,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.AttestationCertificate.FetchDuration" units="ms"
-    expires_after="2025-02-02">
+    expires_after="2025-04-06">
   <owner>sinhak@chromium.org</owner>
   <owner>bhartmire@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -48,7 +48,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.AttestationCertificate.FetchResult"
-    enum="BooleanSuccess" expires_after="2025-02-02">
+    enum="BooleanSuccess" expires_after="2025-04-06">
   <owner>sinhak@chromium.org</owner>
   <owner>hansenmichael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -61,7 +61,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.AuthenticationMethod"
-    enum="QuickStartAuthenticationMethod" expires_after="2025-02-02">
+    enum="QuickStartAuthenticationMethod" expires_after="2025-04-06">
   <owner>bhartmire@google.com</owner>
   <owner>hansenmichael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -72,7 +72,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.ChallengeBytes.FailureReason"
-    enum="GoogleServiceAuthError" expires_after="2025-02-02">
+    enum="GoogleServiceAuthError" expires_after="2025-04-06">
   <owner>sinhak@chromium.org</owner>
   <owner>bhartmire@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -85,7 +85,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.ChallengeBytes.FetchDuration" units="ms"
-    expires_after="2025-02-02">
+    expires_after="2025-04-06">
   <owner>sinhak@chromium.org</owner>
   <owner>bhartmire@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -97,7 +97,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.ChallengeBytes.FetchResult" enum="BooleanSuccess"
-    expires_after="2025-02-02">
+    expires_after="2025-04-06">
   <owner>sinhak@chromium.org</owner>
   <owner>bhartmire@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -153,7 +153,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.FastPairAdvertisementEnded.Duration" units="ms"
-    expires_after="2025-02-02">
+    expires_after="2025-04-06">
   <owner>bhartmire@google.com</owner>
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -167,7 +167,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.FastPairAdvertisementEnded.ErrorCode"
-    enum="QuickStartFastPairAdvertisingErrorCode" expires_after="2025-02-02">
+    enum="QuickStartFastPairAdvertisingErrorCode" expires_after="2025-04-06">
   <owner>bhartmire@google.com</owner>
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -179,7 +179,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.FastPairAdvertisementEnded.Succeeded"
-    enum="BooleanSuccess" expires_after="2025-02-02">
+    enum="BooleanSuccess" expires_after="2025-04-06">
   <owner>bhartmire@google.com</owner>
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -246,7 +246,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.GaiaAuthentication.Result"
-    enum="QuickStartGaiaAuthenticationResult" expires_after="2025-02-02">
+    enum="QuickStartGaiaAuthenticationResult" expires_after="2025-04-06">
   <owner>sinhak@chromium.org</owner>
   <owner>bhartmire@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -258,7 +258,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.GaiaTransferResult" enum="BooleanSuccess"
-    expires_after="2025-02-02">
+    expires_after="2025-04-06">
   <owner>bhartmire@google.com</owner>
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -280,7 +280,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.HandshakeResult.Duration" units="ms"
-    expires_after="2025-02-02">
+    expires_after="2025-04-06">
   <owner>bhartmire@google.com</owner>
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -302,7 +302,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.HandshakeResult.Succeeded" enum="BooleanSuccess"
-    expires_after="2025-02-02">
+    expires_after="2025-04-06">
   <owner>bhartmire@google.com</owner>
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -313,7 +313,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.HandshakeStarted" enum="BooleanAttempted"
-    expires_after="2025-02-02">
+    expires_after="2025-04-06">
   <owner>bhartmire@google.com</owner>
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -379,7 +379,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.MessageReceived.{MessageType}.Succeeded"
-    enum="BooleanSuccess" expires_after="2025-02-02">
+    enum="BooleanSuccess" expires_after="2025-04-06">
   <owner>bhartmire@google.com</owner>
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -581,7 +581,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.WifiTransferResult" enum="BooleanSuccess"
-    expires_after="2025-02-02">
+    expires_after="2025-04-06">
   <owner>bhartmire@google.com</owner>
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -592,7 +592,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="QuickStart.WifiTransferResult.FailureReason"
-    enum="QuickStartWifiTransferResultFailureReason" expires_after="2025-02-02">
+    enum="QuickStartWifiTransferResultFailureReason" expires_after="2025-04-06">
   <owner>bhartmire@google.com</owner>
   <owner>joeantonetti@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>

@@ -344,7 +344,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.Diversion.Commit.{Reason}.{Part}"
-    enum="FuseboxPosixErrorCode" expires_after="2025-01-31">
+    enum="FuseboxPosixErrorCode" expires_after="2025-04-06">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -364,7 +364,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.Diversion.EnsureFileExists.ShouldDivert"
-    enum="Boolean" expires_after="2025-01-31">
+    enum="Boolean" expires_after="2025-04-06">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>

@@ -319,7 +319,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Quota.StaleBucketCount" units="areas"
-    expires_after="2025-02-02">
+    expires_after="2025-04-06">
   <owner>arichiv@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

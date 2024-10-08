@@ -923,7 +923,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.SupportTool.SupportToolWebUIAction"
-    enum="SupportToolWebUIActionType" expires_after="2025-02-02">
+    enum="SupportToolWebUIActionType" expires_after="2025-04-06">
   <owner>iremuguz@google.com</owner>
   <owner>chromeos-commercial-supportability@google.com</owner>
   <summary>
