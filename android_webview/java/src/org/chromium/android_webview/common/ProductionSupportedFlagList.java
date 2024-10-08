@@ -262,6 +262,10 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_INFER_COUNTRY_CALLING_CODE,
                 "Infers the country calling code from the profile's country, if available."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_DECOUPLE_AUTOFILL_COUNT_FROM_CACHE,
+                "Makes AutofillManager::GetCachedFormAndField return a form even if"
+                        + " form->autofill_count() == 0"),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_DETECT_REMOVED_FORM_CONTROLS,
                 "Enables Autofill to detect if form controls are removed from the DOM"),
         Flag.baseFeature(
