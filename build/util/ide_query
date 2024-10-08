@@ -82,7 +82,12 @@ def main():
   repo_root = os.path.join(this_dir, '..', '..')
 
   targets = []
+  use_prepare_header_only = True
   for source in options.source:
+    _, ext = os.path.splitext(source)
+    if ext not in ('.c', '.cc', '.cxx', '.cpp', '.m', '.mm', '.S',
+                   '.h', '.hxx', '.hpp', '.inc'):
+        use_prepare_header_only = False
     # source is repo root (cwd) relative,
     # but siso uses out dir relative target.
     target = os.path.relpath(source, start=options.out_dir) + "^"
@@ -105,7 +110,10 @@ def main():
     ])
     args.extend(targets)
     env = os.environ.copy()
-    env['SISO_EXPERIMENTS'] = 'no-fast-deps,prepare-header-only'
+    if use_prepare_header_only:
+        env['SISO_EXPERIMENTS'] = 'no-fast-deps,prepare-header-only'
+    else:
+        env['SISO_EXPERIMENTS'] = 'no-fast-deps'
     with subprocess.Popen(
         args,
         cwd=repo_root,
