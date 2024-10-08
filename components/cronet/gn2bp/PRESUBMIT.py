@@ -16,9 +16,7 @@ _ENABLE_PRESUBMIT = False
 
 def CheckGenerateBuildScriptsOutput(input_api, output_api):
     presubmit_script_path = input_api.PresubmitLocalPath()
-    # Those tests can take up to 5 minutes in order to execute so
-    # run them on CQ along with the other tests instead of locally.
-    if _ENABLE_PRESUBMIT and input_api.is_committing:
+    if _ENABLE_PRESUBMIT:
         return input_api.RunTests(
             input_api.canned_checks.GetUnitTests(
                 input_api,
@@ -26,7 +24,9 @@ def CheckGenerateBuildScriptsOutput(input_api, output_api):
                 unit_tests=[
                     input_api.os_path.join(
                         presubmit_script_path, 'tests',
-                        'generate_build_scripts_output_test.py')
+                        'generate_build_scripts_output_test.py'),
+                    input_api.os_path.join(presubmit_script_path, 'tests',
+                                           'gen_android_bp_test.py')
                 ],
             ))
     else:

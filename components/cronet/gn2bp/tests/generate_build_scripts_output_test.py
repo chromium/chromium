@@ -80,15 +80,16 @@ class TestSum(unittest.TestCase):
         print('REBASELINE=1', sys.argv[0])
         print('to regenerate the data files.')
 
-    def _test_end_to_end_generation(self, archs: List[str],
-                                    targets: List[str]):
+    def _test_end_to_end_generation(self,
+                                    archs: List[str],
+                                    targets: List[str] = None):
 
         temp_file = tempfile.NamedTemporaryFile(delete=False)
         # We dont collect transitive dependencies build_output in the
         # tests because it will start collecting std build_output which
         # can change often on new releases of rust.
         build_scripts_generator.dump_build_scripts_outputs_to_file(
-            temp_file.name, archs, targets, False)
+            temp_file.name, archs, targets)
         self.assert_golden_test_equals(
             pathlib.Path(temp_file.name).read_text(),
             f"{self._testMethodName}.golden")

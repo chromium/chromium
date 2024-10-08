@@ -5,11 +5,12 @@
 Generates the rust build script output into a well-structured JSON format.
 """
 import argparse
-from typing import Set, List
+from typing import Set, List, Dict
 import glob
 import json
 import tempfile
 import re
+import subprocess
 import os
 import sys
 
@@ -17,15 +18,12 @@ REPOSITORY_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
 sys.path.insert(0, REPOSITORY_ROOT)
 
+# The current value of 500 is a heuristic that seems to work. If command
+# line length limitation is exceeded, reduce this number.
+_MAX_TARGETS_PER_NINJA_EXECUTION = 500
+
 import components.cronet.tools.utils as cronet_utils  # pylint: disable=wrong-import-position
 import components.cronet.gn2bp.gen_android_bp as cronet_gn2bp  # pylint: disable=wrong-import-position
-# Default targets to compile before crawling the output directory
-# for build scripts output. It is important to note that this list
-# should be consistent with the list in GN2BP
-
-_TARGETS = cronet_gn2bp.DEFAULT_TARGETS + cronet_gn2bp.DEFAULT_TESTS + [
-    '//build/rust/tests:tests',
-]
 
 # TODO: Move ARCHS to cronet_utils.
 _ARCHS = ["x86", "x64", "arm", "arm64", "riscv64"]
@@ -34,15 +32,12 @@ _OUT_DIR = os.path.join(REPOSITORY_ROOT, "out")
 
 
 def _find_all_cargo_flags_files(out_dir: str) -> Set[str]:
-    return set(
-        glob.glob("gen/**/cargo_flags.rs", root_dir=out_dir, recursive=True))
+    return set(glob.glob(f"{out_dir}/gen/**/cargo_flags.rs", recursive=True))
 
 
 def _find_all_host_cargo_flags_files(out_dir: str) -> Set[str]:
     return set(
-        glob.glob("clang_*/gen/**/cargo_flags.rs",
-                  root_dir=out_dir,
-                  recursive=True))
+        glob.glob(f"{out_dir}/clang_*/gen/**/cargo_flags.rs", recursive=True))
 
 
 def _get_args_for_arch(arch: str) -> List[str]:
@@ -52,12 +47,44 @@ def _get_args_for_arch(arch: str) -> List[str]:
                                     ["use_remoteexec", "enable_rust"]))
 
 
-def _build_cronet_targets(out_path: str, targets: List[str]):
-    if cronet_utils.build_all(
-            out_path, [target.removeprefix("//") for target in targets]) != 0:
-        raise Exception(
-            f"Failed to build the provided targets {targets}. Check the logs for more information"
-        )
+def _build_rust_build_script_actions(out_path: str):
+    """Builds build script actions, first GN is used to query
+    all actions that are available to build, then the actions are
+    filtered to only actions that has "build_script_output" in its
+    name which indicates that it builds a build_script.
+
+    The build script actions are split into chunks of _MAX_TARGETS_PER_NINJA_EXECUTION
+    where each ninja execution will build _MAX_TARGETS_PER_NINJA_EXECUTION actions.
+    This is to avoid hitting the command-line maximum length limitation.
+
+    Args:
+      out_path: the GN output directory.
+
+    Raises:
+      Exception: If ninja execution has failed or querying GN failed.
+    """
+    all_actions_process = subprocess.run(
+        [cronet_utils.GN_PATH, 'ls', out_path, '--as=output', '--type=action'],
+        check=True,
+        capture_output=True,
+        text=True)
+    all_actions_process.check_returncode()
+    build_script_actions = [
+        action for action in all_actions_process.stdout.split("\n")
+        # Skip roboelectric actions.
+        if "build_script_output" in action and "robolectric" not in action
+    ]
+    # Split the build script actions into chunk of _MAX_TARGETS_PER_NINJA_EXECUTION.
+    # This is needed in order not to exceed the command-line length.
+    build_script_actions_chunk = [
+        build_script_actions[i:i + _MAX_TARGETS_PER_NINJA_EXECUTION] for i in
+        range(0, len(build_script_actions), _MAX_TARGETS_PER_NINJA_EXECUTION)
+    ]
+    for chunk in build_script_actions_chunk:
+        if cronet_utils.build_all(out_path, chunk) != 0:
+            raise Exception(
+                f"Failed to build the following build actions scripts chunk: {chunk}."
+            )
 
 
 def _get_target_name_from_file(file_name: str) -> str:
@@ -85,14 +112,13 @@ def _get_target_name_from_file(file_name: str) -> str:
 
 
 def _generate_build_script_outputs_for_host(
-        targets: List[str]) -> dict[str, List[str]]:
-    return _generate_build_script_outputs_for_arch("x64", targets, True)
+        targets: List[str]) -> Dict[str, List[str]]:
+    return _generate_build_script_outputs_for_arch("x64", targets)
 
 
-def _generate_build_script_outputs_for_arch(
-        arch: str,
-        targets: List[str],
-        host_variant: bool = False) -> dict[str, List[str]]:
+def _generate_build_script_outputs_for_arch(arch: str,
+                                            host_variant: bool = False
+                                            ) -> Dict[str, List[str]]:
     # gn desc behaves completely differently when the output
     # directory is outside of chromium/src, some paths will
     # stop having // in the beginning of their labels
@@ -102,10 +128,9 @@ def _generate_build_script_outputs_for_arch(
     # beneath the repository root until gn2bp is tweaked to
     # deal with this small differences.
     target_name_to_build_script_output = {}
-    with tempfile.TemporaryDirectory(dir=_OUT_DIR,
-                                     ignore_cleanup_errors=True) as gn_out_dir:
+    with tempfile.TemporaryDirectory(dir=_OUT_DIR) as gn_out_dir:
         cronet_utils.gn(gn_out_dir, _get_args_for_arch(arch))
-        _build_cronet_targets(gn_out_dir, targets)
+        _build_rust_build_script_actions(gn_out_dir)
         build_script_output_files = _find_all_host_cargo_flags_files(
             gn_out_dir) if host_variant else _find_all_cargo_flags_files(
                 gn_out_dir)
@@ -121,14 +146,13 @@ def _generate_build_script_outputs_for_arch(
 
 
 def _generate_build_scripts_outputs(
-        archs: List[str], targets: List[str],
-        fetch_transitive_outputs: bool) -> dict[str, dict[str, List[str]]]:
+        archs: List[str],
+        targets: List[str]) -> Dict[str, Dict[str, List[str]]]:
     build_scripts_output_per_arch = {}
     for arch in archs:
-        build_script_output = _generate_build_script_outputs_for_arch(
-            arch, targets)
+        build_script_output = _generate_build_script_outputs_for_arch(arch)
         for (target_name, output) in build_script_output.items():
-            if not fetch_transitive_outputs and target_name not in targets:
+            if targets and target_name not in targets:
                 continue
             if target_name not in build_scripts_output_per_arch:
                 build_scripts_output_per_arch[target_name] = {}
@@ -137,7 +161,7 @@ def _generate_build_scripts_outputs(
     # Generate host-specific build script outputs
     build_script_output = _generate_build_script_outputs_for_host(targets)
     for (target_name, output) in build_script_output.items():
-        if not fetch_transitive_outputs and target_name not in targets:
+        if targets and target_name not in targets:
             continue
         if target_name not in build_scripts_output_per_arch:
             build_scripts_output_per_arch[target_name] = {}
@@ -148,25 +172,22 @@ def _generate_build_scripts_outputs(
 def dump_build_scripts_outputs_to_file(
         output_file_path: str,
         archs: List[str],
-        targets_to_build: List[str],
-        fetch_transitive_outputs: bool = True) -> None:
+        targets_to_build: List[str] = None) -> None:
     """Dumps a JSON formatted string that maps from target
   name to build scripts output.
 
   Args:
     output_file_path: Path of the file to write the output to
     archs: List of archs to compile for
-    targets_to_build: Targets which will be compiled to get their
-    output
-    fetch_transitive_outputs: Determines if the build script output
-    of transitive dependencies should be also dumped, otherwise only the
-    declared targets will exist in the final output. Defaults to True.
+    targets_to_build: If specified, only those targets build_script will
+    be present in the final output. Otherwise, everything will be available.
   """
     with open(output_file_path, "w") as output_file:
         output_file.write(
-            json.dumps(_generate_build_scripts_outputs(
-                archs, targets_to_build, fetch_transitive_outputs),
-                       indent=2))
+            json.dumps(_generate_build_scripts_outputs(archs,
+                                                       targets_to_build),
+                       indent=2,
+                       sort_keys=True))
 
 
 def main():
@@ -180,7 +201,7 @@ def main():
         help='Path to file for which the output will be written to',
         required=True)
     args = parser.parse_args()
-    dump_build_scripts_outputs_to_file(args.output, _ARCHS, _TARGETS)
+    dump_build_scripts_outputs_to_file(args.output, _ARCHS)
 
 
 if __name__ == '__main__':
