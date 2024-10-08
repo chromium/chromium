@@ -260,6 +260,7 @@ scoped_refptr<const CalculationExpressionNode> BuildLengthBoundExpr(
 
 HTMLPermissionElement::HTMLPermissionElement(Document& document)
     : HTMLElement(html_names::kPermissionTag, document),
+      ScrollSnapshotClient(GetDocument().GetFrame()),
       permission_service_(document.GetExecutionContext()),
       permission_observer_receivers_(this, document.GetExecutionContext()),
       embedded_permission_control_receiver_(this,
@@ -370,6 +371,7 @@ void HTMLPermissionElement::DetachLayoutTree(bool performing_reattach) {
   permission_observer_receivers_.Clear();
   permission_status_map_.clear();
   permissions_granted_ = false;
+  pseudo_state_ = {/*has_invalid_style*/ false, /*is_occluded*/ false};
   if (disable_reason_expire_timer_.IsActive()) {
     disable_reason_expire_timer_.Stop();
   }
@@ -415,6 +417,16 @@ bool HTMLPermissionElement::CanGeneratePseudoElement(PseudoId id) const {
     default:
       return Element::CanGeneratePseudoElement(id);
   }
+}
+
+bool HTMLPermissionElement::HasInvalidStyle() const {
+  return IsClickingDisabledIndefinitely(DisableReason::kInvalidStyle);
+}
+
+bool HTMLPermissionElement::IsOccluded() const {
+  return !GetRecentlyAttachedTimeoutRemaining() &&
+         IsClickingDisabledIndefinitely(
+             DisableReason::kIntersectionVisibilityOccludedOrDistorted);
 }
 
 // static
@@ -845,16 +857,50 @@ void HTMLPermissionElement::OnEmbeddedPermissionsDecided(
 
 void HTMLPermissionElement::DisableReasonExpireTimerFired(TimerBase* timer) {
   EnableClicking(static_cast<DisableReasonExpireTimer*>(timer)->reason());
+  NotifyClickingDisablePseudoStateChanged();
 }
 
 void HTMLPermissionElement::MaybeDispatchValidationChangeEvent() {
   auto state = GetClickingEnabledState();
-  if (clicking_enabled_state_ != state) {
-    DispatchEvent(*Event::Create(event_type_names::kValidationstatuschange));
+  if (clicking_enabled_state_ == state) {
+    return;
   }
 
   // Always keep `clicking_enabled_state_` up-to-date
   clicking_enabled_state_ = state;
+  DispatchEvent(*Event::Create(event_type_names::kValidationstatuschange));
+}
+
+void HTMLPermissionElement::UpdateSnapshot() {
+  ValidateSnapshot();
+}
+
+bool HTMLPermissionElement::ValidateSnapshot() {
+  return NotifyClickingDisablePseudoStateChanged();
+}
+
+bool HTMLPermissionElement::NotifyClickingDisablePseudoStateChanged() {
+  ClickingDisablePseudoState new_state(
+      invalidReason() ==
+          DisableReasonToInvalidReasonString(DisableReason::kInvalidStyle),
+      invalidReason() ==
+          DisableReasonToInvalidReasonString(
+              DisableReason::kIntersectionVisibilityOccludedOrDistorted));
+
+  if (new_state.is_occluded != pseudo_state_.is_occluded) {
+    PseudoStateChanged(CSSSelector::kPseudoPermissionElementOccluded);
+  }
+
+  if (new_state.has_invalid_style != pseudo_state_.has_invalid_style) {
+    PseudoStateChanged(CSSSelector::kPseudoPermissionElementInvalidStyle);
+  }
+
+  if (pseudo_state_ != new_state) {
+    pseudo_state_ = new_state;
+    return false;
+  }
+
+  return true;
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>

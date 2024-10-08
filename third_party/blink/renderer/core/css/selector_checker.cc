@@ -1995,6 +1995,18 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       auto* permission_element = DynamicTo<HTMLPermissionElement>(element);
       return permission_element && permission_element->granted();
     }
+    case CSSSelector::kPseudoPermissionElementInvalidStyle: {
+      CHECK(RuntimeEnabledFeatures::PermissionElementEnabled(
+          element.GetExecutionContext()));
+      auto* permission_element = DynamicTo<HTMLPermissionElement>(element);
+      return permission_element && permission_element->HasInvalidStyle();
+    }
+    case CSSSelector::kPseudoPermissionElementOccluded: {
+      CHECK(RuntimeEnabledFeatures::PermissionElementEnabled(
+          element.GetExecutionContext()));
+      auto* permission_element = DynamicTo<HTMLPermissionElement>(element);
+      return permission_element && permission_element->IsOccluded();
+    }
     case CSSSelector::kPseudoPictureInPicture:
       return PictureInPictureController::IsElementInPictureInPicture(&element);
     case CSSSelector::kPseudoPlaying: {

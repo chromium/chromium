@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
+#include "third_party/blink/renderer/core/scroll/scroll_snapshot_client.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver_set.h"
@@ -34,6 +35,7 @@ class CORE_EXPORT HTMLPermissionElement final
     : public HTMLElement,
       public mojom::blink::PermissionObserver,
       public mojom::blink::EmbeddedPermissionControlClient,
+      public ScrollSnapshotClient,
       public LocalFrameView::LifecycleNotificationObserver {
   DEFINE_WRAPPERTYPEINFO();
 
@@ -61,6 +63,8 @@ class CORE_EXPORT HTMLPermissionElement final
   CascadeFilter GetCascadeFilter() const override;
   bool CanGeneratePseudoElement(PseudoId) const override;
 
+  bool HasInvalidStyle() const;
+  bool IsOccluded() const;
   bool granted() const { return permissions_granted_; }
 
   // Given an input type, return permissions list. This method is for testing
@@ -89,6 +93,8 @@ class CORE_EXPORT HTMLPermissionElement final
                            IntersectionChanged);
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementIntersectionTest,
                            IntersectionChangedDisableEnableDisable);
+  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementIntersectionTest,
+                           OccludedPseudoClass);
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementIntersectionTest,
                            ContainerDivRotates);
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementIntersectionTest,
@@ -309,6 +315,21 @@ class CORE_EXPORT HTMLPermissionElement final
   // Dispatch validation status change event if necessary.
   void MaybeDispatchValidationChangeEvent();
 
+  // Implements ScrollSnapshotClient:
+  // Pseudoclass updates are now using the same timing internally through
+  // ScrollSnapshotClient. It could make sense to bring this in line with other
+  // features that deal with snapshotting this state, such as scroll-driven
+  // animations, scroll-state container queries, and anchor positioning.
+  void UpdateSnapshot() override;
+  bool ValidateSnapshot() override;
+  bool ShouldScheduleNextService() override { return false; }
+
+  // Update and notify CSS pseudo class changed, which indicates PEPC is
+  // currently entering/exiting clicking disable state, such as invalid style or
+  // being occluded.
+  // Return true if the state has been changed.
+  bool NotifyClickingDisablePseudoStateChanged();
+
   // Verify whether the element has been registered in browser process by
   // checking `permission_status_map_`. This map is initially empty and is
   // populated only *after* the permission element has been registered in
@@ -414,6 +435,12 @@ class CORE_EXPORT HTMLPermissionElement final
   // time of the events to match the recently_attached cooldown time.
   std::optional<base::TimeDelta> GetRecentlyAttachedTimeoutRemaining() const;
 
+  bool IsClickingDisabledIndefinitely(DisableReason reason) const {
+    auto it = clicking_disabled_reasons_.find(reason);
+    return it != clicking_disabled_reasons_.end() &&
+           it->value == base::TimeTicks::Max();
+  }
+
   IntersectionVisibility IntersectionVisibilityForTesting() const {
     return intersection_visibility_;
   }
@@ -459,6 +486,19 @@ class CORE_EXPORT HTMLPermissionElement final
   // Set to true only if all the corresponding permissions (from `type`
   // attribute) are granted.
   bool permissions_granted_ = false;
+
+  // Store information to notify CSS pseudo class changed.
+  struct ClickingDisablePseudoState {
+    bool has_invalid_style = false;
+    bool is_occluded = false;
+
+    bool operator==(const ClickingDisablePseudoState& other) const {
+      return has_invalid_style == other.has_invalid_style &&
+             is_occluded == other.is_occluded;
+    }
+  };
+
+  ClickingDisablePseudoState pseudo_state_;
 
   // Observed by IntersectionObserver to indicate the fully visibility state of
   // the element on the viewport.
