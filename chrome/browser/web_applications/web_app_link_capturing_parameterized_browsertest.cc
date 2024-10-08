@@ -591,6 +591,13 @@ class WebAppLinkCapturingParameterizedBrowserTest
       ASSERT_EQ(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto,
                 GetClientMode());
     }
+
+    if (GetNavigationElement() ==
+        NavigationElement::kElementServiceWorkerButton) {
+      ASSERT_EQ(test::ClickMethod::kLeftClick, ClickMethod());
+      ASSERT_EQ(OpenerMode::kNoOpener, GetOpenerMode());
+      ASSERT_EQ(NavigationTarget::kBlank, GetNavigationTarget());
+    }
   }
 
   // Trigger a right click on an HTML element, wait for the context menu to
