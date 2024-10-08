@@ -180,9 +180,15 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
   // WKWebViewConfigurationProvider are different objects because WKWebView
   // makes a shallow copy of the config inside init, so every WKWebView
   // owns a separate shallow copy of WKWebViewConfiguration.
-  return [self.delegate UIHandler:self
-      createWebViewWithConfiguration:configuration
-                         forWebState:childWebState];
+  WKWebView* newWebView = [self.delegate UIHandler:self
+                    createWebViewWithConfiguration:configuration
+                                       forWebState:childWebState];
+
+  if (childWebState->GetDelegate()) {
+    childWebState->GetDelegate()->OnNewWebViewCreated(childWebState);
+  }
+
+  return newWebView;
 }
 
 - (void)webViewDidClose:(WKWebView*)webView {

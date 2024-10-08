@@ -143,4 +143,10 @@ id<CRWResponderInputView> WebStateDelegateBridge::GetResponderInputView(
   return nil;
 }
 
+void WebStateDelegateBridge::OnNewWebViewCreated(WebState* source) {
+  if ([delegate_ respondsToSelector:@selector(webStateDidCreateWebView:)]) {
+    [delegate_ webStateDidCreateWebView:source];
+  }
+}
+
 }  // web

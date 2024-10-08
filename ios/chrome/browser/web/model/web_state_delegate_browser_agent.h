@@ -106,6 +106,7 @@ class WebStateDelegateBrowserAgent
       id<UIContextMenuInteractionCommitAnimating> animator) override;
   id<CRWResponderInputView> GetResponderInputView(
       web::WebState* source) override;
+  void OnNewWebViewCreated(web::WebState* source) override;
 
   // Helper methods to set/clear the WebState delegate if it is realized,
   // or to listen for the realization of the WebState.

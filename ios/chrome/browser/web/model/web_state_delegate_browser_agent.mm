@@ -30,6 +30,7 @@
 #import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/ui/context_menu_params.h"
+#import "ios/web/public/ui/crw_web_view_proxy.h"
 
 BROWSER_USER_DATA_KEY_IMPL(WebStateDelegateBrowserAgent)
 
@@ -388,6 +389,12 @@ void WebStateDelegateBrowserAgent::ContextMenuWillCommitWithAnimator(
 id<CRWResponderInputView> WebStateDelegateBrowserAgent::GetResponderInputView(
     web::WebState* source) {
   return input_view_provider_;
+}
+
+void WebStateDelegateBrowserAgent::OnNewWebViewCreated(web::WebState* source) {
+  // Focusing a newly-created web view allows it to request auth-based API. See
+  // crbug.com/369996712.
+  [source->GetWebViewProxy() becomeFirstResponder];
 }
 
 void WebStateDelegateBrowserAgent::SetWebStateDelegate(
