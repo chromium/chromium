@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webtransport/web_transport.h"
 
 #include <stdint.h>
@@ -126,8 +121,7 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
           isolate, v8chunk, exception_state);
       if (exception_state.HadException())
         return EmptyPromise();
-      return SendDatagram(
-          {static_cast<const uint8_t*>(data->Data()), data->ByteLength()});
+      return SendDatagram(data->ByteSpan());
     }
 
     if (v8chunk->IsArrayBufferView()) {
@@ -136,9 +130,7 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
               isolate, v8chunk, exception_state);
       if (exception_state.HadException())
         return EmptyPromise();
-      return SendDatagram({static_cast<const uint8_t*>(data->buffer()->Data()) +
-                               data->byteOffset(),
-                           data->byteLength()});
+      return SendDatagram(data->ByteSpan());
     }
 
     exception_state.ThrowTypeError(
@@ -1283,20 +1275,10 @@ void WebTransport::Init(const String& url_for_diagnostics,
       if (!hash->hasAlgorithm() || !hash->hasValue())
         continue;
       StringBuilder value_builder;
-      const uint8_t* data;
-      size_t size;
-      if (hash->value()->IsArrayBuffer()) {
-        const auto* value = hash->value()->GetAsArrayBuffer();
-        data = static_cast<const uint8_t*>(value->Data());
-        size = value->ByteLength();
-      } else {
-        DCHECK(hash->value()->IsArrayBufferView());
-        const auto* value = hash->value()->GetAsArrayBufferView().Get();
-        data = static_cast<const uint8_t*>(value->BaseAddress());
-        size = value->byteLength();
-      }
+      DOMArrayPiece array_piece(hash->value());
 
-      for (size_t i = 0; i < size; ++i) {
+      auto data = array_piece.ByteSpan();
+      for (size_t i = 0; i < data.size(); ++i) {
         if (i > 0) {
           value_builder.Append(":");
         }

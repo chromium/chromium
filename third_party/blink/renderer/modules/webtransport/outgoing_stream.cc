@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webtransport/outgoing_stream.h"
 
 #include <cstring>
 #include <utility>
 
+#include "base/containers/heap_array.h"
 #include "base/numerics/safe_conversions.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "partition_alloc/partition_alloc.h"
@@ -33,6 +29,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_external_memory_accounter.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -56,6 +53,12 @@ class SendStreamAbortAlgorithm final : public AbortSignal::Algorithm {
 
  private:
   Member<OutgoingStream> stream_;
+};
+
+struct CachedDataBufferDeleter {
+  void operator()(void* buffer) {
+    WTF::Partitions::BufferPartition()->Free(buffer);
+  }
 };
 
 }  // namespace
@@ -150,25 +153,40 @@ class OutgoingStream::UnderlyingSink final : public UnderlyingSinkBase {
   const Member<OutgoingStream> outgoing_stream_;
 };
 
-OutgoingStream::CachedDataBuffer::CachedDataBuffer(v8::Isolate* isolate,
-                                                   const uint8_t* data,
-                                                   size_t length)
-    : isolate_(isolate), length_(length) {
-  // We use the BufferPartition() allocator here to allow big enough
-  // allocations, and to do proper accounting of the used memory. If
-  // BufferPartition() will ever not be able to provide big enough allocations,
-  // e.g. because bigger ArrayBuffers get supported, then we have to switch to
-  // another allocator, e.g. the ArrayBuffer allocator.
-  buffer_ = reinterpret_cast<uint8_t*>(
-      WTF::Partitions::BufferPartition()->Alloc(length, "OutgoingStream"));
-  memcpy(buffer_, data, length);
-  external_memory_accounter_.Increase(isolate_.get(), length);
-}
+class OutgoingStream::CachedDataBuffer {
+ public:
+  using HeapBuffer = base::HeapArray<uint8_t, CachedDataBufferDeleter>;
 
-OutgoingStream::CachedDataBuffer::~CachedDataBuffer() {
-  WTF::Partitions::BufferPartition()->Free(buffer_.ExtractAsDangling());
-  external_memory_accounter_.Decrease(isolate_.get(), length_);
-}
+  CachedDataBuffer(v8::Isolate* isolate, base::span<const uint8_t> data)
+      : isolate_(isolate) {
+    // We use the BufferPartition() allocator here to allow big enough
+    // allocations, and to do proper accounting of the used memory. If
+    // BufferPartition() will ever not be able to provide big enough
+    // allocations, e.g. because bigger ArrayBuffers get supported, then we
+    // have to switch to another allocator, e.g. the ArrayBuffer allocator.
+    void* memory_buffer = WTF::Partitions::BufferPartition()->Alloc(
+        data.size(), "OutgoingStream");
+    // SAFETY: WTF::Partitions::BufferPartition()->Alloc() returns a valid
+    // pointer to at least data.size() bytes.
+    buffer_ = UNSAFE_BUFFERS(HeapBuffer::FromOwningPointer(
+        reinterpret_cast<uint8_t*>(memory_buffer), data.size()));
+    buffer_.copy_from(data);
+    external_memory_accounter_.Increase(isolate_.get(), buffer_.size());
+  }
+
+  ~CachedDataBuffer() {
+    external_memory_accounter_.Decrease(isolate_.get(), buffer_.size());
+  }
+
+  base::span<const uint8_t> span() const { return buffer_; }
+
+ private:
+  // We need the isolate to report memory to
+  // |external_memory_accounter_| for the memory stored in |buffer_|.
+  raw_ptr<v8::Isolate> isolate_;
+  HeapBuffer buffer_;
+  NO_UNIQUE_ADDRESS V8ExternalMemoryAccounterBase external_memory_accounter_;
+};
 
 OutgoingStream::OutgoingStream(ScriptState* script_state,
                                Client* client,
@@ -351,8 +369,7 @@ ScriptPromise<IDLUndefined> OutgoingStream::SinkWrite(
   }
 
   DOMArrayPiece array_piece(buffer_source);
-  return WriteOrCacheData(script_state,
-                          {array_piece.Bytes(), array_piece.ByteLength()});
+  return WriteOrCacheData(script_state, array_piece.ByteSpan());
 }
 
 // Attempt to write |data|. Cache anything that could not be written
@@ -376,8 +393,8 @@ ScriptPromise<IDLUndefined> OutgoingStream::WriteOrCacheData(
   }
 
   DCHECK(!cached_data_);
-  cached_data_ = std::make_unique<CachedDataBuffer>(
-      script_state->GetIsolate(), data.data() + written, data.size() - written);
+  cached_data_ = std::make_unique<CachedDataBuffer>(script_state->GetIsolate(),
+                                                    data.subspan(written));
   DCHECK_EQ(offset_, 0u);
   write_watcher_.ArmOrNotify();
   write_promise_resolver_ =
@@ -392,9 +409,7 @@ ScriptPromise<IDLUndefined> OutgoingStream::WriteOrCacheData(
 void OutgoingStream::WriteCachedData() {
   DVLOG(1) << "OutgoingStream::WriteCachedData() this=" << this;
 
-  auto data = base::make_span(static_cast<uint8_t*>(cached_data_->data()),
-                              cached_data_->length())
-                  .subspan(offset_);
+  auto data = cached_data_->span().subspan(offset_);
   size_t written = WriteDataSynchronously(data);
 
   if (written == data.size()) {

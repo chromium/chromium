@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webtransport/web_transport.h"
 
 #include <array>
@@ -1793,9 +1788,7 @@ TEST_F(WebTransportTest, CreateReceiveStream) {
       NativeValueTraits<NotShared<DOMUint8Array>>::NativeValue(
           scope.GetIsolate(), value, ASSERT_NO_EXCEPTION);
   ASSERT_TRUE(u8array);
-  EXPECT_THAT(base::make_span(static_cast<uint8_t*>(u8array->Data()),
-                              u8array->byteLength()),
-              ElementsAre('w', 'h', 'a', 't'));
+  EXPECT_THAT(u8array->ByteSpan(), ElementsAre('w', 'h', 'a', 't'));
 }
 
 TEST_F(WebTransportTest, CreateReceiveStreamThenClose) {
