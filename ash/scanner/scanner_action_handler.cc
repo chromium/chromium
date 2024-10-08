@@ -20,11 +20,16 @@ namespace ash {
 
 namespace {
 
-const GURL kGoogleCalendarEventTemplateUrl(
-    "https://calendar.google.com/calendar/render?action=TEMPLATE");
+const GURL& GetCalendarEventTemplateUrl() {
+  // Required to delay the creation of this GURL to avoid hitting the
+  // `url::DoSchemeModificationPreamble` DCHECK.
+  static GURL kGoogleCalendarEventTemplateUrl(
+      "https://calendar.google.com/calendar/render?action=TEMPLATE");
+  return kGoogleCalendarEventTemplateUrl;
+}
 
 GURL GetCalendarEventUrl(const NewCalendarEventAction& event) {
-  std::string query = kGoogleCalendarEventTemplateUrl.query();
+  std::string query = GetCalendarEventTemplateUrl().query();
   CHECK(!query.empty());
   if (!event.title.empty()) {
     query += "&text=";
@@ -33,7 +38,7 @@ GURL GetCalendarEventUrl(const NewCalendarEventAction& event) {
 
   GURL::Replacements replacements;
   replacements.SetQueryStr(query);
-  return kGoogleCalendarEventTemplateUrl.ReplaceComponents(replacements);
+  return GetCalendarEventTemplateUrl().ReplaceComponents(replacements);
 }
 
 void OpenInBrowserTab(const GURL& gurl) {
