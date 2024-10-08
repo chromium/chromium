@@ -31,6 +31,18 @@ source_set("factory") {
   ]
 }
 
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_share_kit_service.h",
+    "test_share_kit_service.mm",
+  ]
+  deps = [
+    ":model",
+    "//base",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [ "share_kit_service_factory_unittest.mm" ]

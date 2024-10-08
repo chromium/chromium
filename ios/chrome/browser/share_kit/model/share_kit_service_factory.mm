@@ -53,7 +53,5 @@ std::unique_ptr<KeyedService> ShareKitServiceFactory::BuildServiceInstanceFor(
       AuthenticationServiceFactory::GetForProfile(profile);
   configuration.data_sharing_service =
       data_sharing::DataSharingServiceFactory::GetForProfile(profile);
-  // TODO(crbug.com/358373145): Use return
-  // ios::provider::CreateShareKitService(configuration);.
-  return nullptr;
+  return ios::provider::CreateShareKitService(configuration);
 }

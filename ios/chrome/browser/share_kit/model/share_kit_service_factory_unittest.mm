@@ -16,7 +16,9 @@ class ShareKitServiceFactoryTest : public PlatformTest {
  protected:
   ShareKitServiceFactoryTest() {
     scoped_feature_list_.InitWithFeatures(
-        {data_sharing::features::kDataSharingJoinOnly}, {});
+        {kTabGroupsIPad, kModernTabStrip, kTabGroupSync,
+         data_sharing::features::kDataSharingFeature},
+        {});
     profile_ = TestProfileIOS::Builder().Build();
   }
 
@@ -31,8 +33,6 @@ TEST_F(ShareKitServiceFactoryTest, NoProfileInIncognito) {
       ShareKitServiceFactory::GetForProfile(profile_.get());
   ShareKitService* off_the_record_service =
       ShareKitServiceFactory::GetForProfile(profile_->GetOffTheRecordProfile());
-  // TODO(crbug.com/358373145): Update to "EXPECT_NE" once the build is actually
-  // building.
-  EXPECT_EQ(nullptr, regular_service);
+  EXPECT_NE(nullptr, regular_service);
   EXPECT_EQ(nullptr, off_the_record_service);
 }
