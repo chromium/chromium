@@ -109,11 +109,11 @@ class SessionService : public SessionServiceBase {
   void AddTabExtraData(SessionID window_id,
                        SessionID tab_id,
                        const char* key,
-                       const std::string data);
+                       const std::string& data);
 
   void AddWindowExtraData(SessionID window_id,
                           const char* key,
-                          const std::string data);
+                          const std::string& data);
 
   void TabClosed(SessionID window_id, SessionID tab_id) override;
 

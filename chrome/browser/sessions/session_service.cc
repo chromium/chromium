@@ -301,7 +301,7 @@ void SessionService::SetTabGroupMetadata(
 void SessionService::AddTabExtraData(SessionID window_id,
                                      SessionID tab_id,
                                      const char* key,
-                                     const std::string data) {
+                                     const std::string& data) {
   if (!ShouldTrackChangesToWindow(window_id))
     return;
 
@@ -310,7 +310,7 @@ void SessionService::AddTabExtraData(SessionID window_id,
 
 void SessionService::AddWindowExtraData(SessionID window_id,
                                         const char* key,
-                                        const std::string data) {
+                                        const std::string& data) {
   if (!ShouldTrackChangesToWindow(window_id))
     return;
 
