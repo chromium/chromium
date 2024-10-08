@@ -1029,7 +1029,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1714644264617423774">Omogućite značajke pristupačnosti radi jednostavnije upotrebe uređaja. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="1716034099915639464">Želite li izbrisati podatke web-lokacije i dopuštenja za web-lokaciju <ph name="SITE_NAME" /> i njezinu instaliranu aplikaciju?</translation>
 <translation id="171826447717908393">Izolirane web-aplikacije (beta)</translation>
-<translation id="1718835860248848330">Zadnji sat</translation>
+<translation id="1718835860248848330">Posljednji sat</translation>
 <translation id="1719312230114180055">Napomena: otisak prsta može biti manje siguran od snažne zaporke ili PIN-a.</translation>
 <translation id="1720244237656138008">Impresionizam</translation>
 <translation id="1720318856472900922">Autentifikacija TLS WWW poslužitelja</translation>
@@ -8108,7 +8108,7 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="6863496016067551393">Dopuštena su sva proširenja</translation>
 <translation id="686366188661646310">Izbrisati zaporku?</translation>
 <translation id="6863925886424789941">Kolosej</translation>
-<translation id="6865313869410766144">Automatski ispuni podatke u obrascu</translation>
+<translation id="6865313869410766144">Podaci iz obrazaca za automatsko popunjavanje</translation>
 <translation id="6865598234501509159">Jezik stranice nije <ph name="LANGUAGE" /></translation>
 <translation id="6865708901122695652">WebRTC zapisnici događaja (<ph name="WEBRTC_EVENT_LOG_COUNT" />)</translation>
 <translation id="686609795364435700">Tiho</translation>
