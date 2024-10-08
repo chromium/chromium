@@ -116,16 +116,56 @@ NSString* const kEnhancedSafeBrowsingAccessibilityID =
       symbolBackgroundColor = [UIColor colorNamed:kBackgroundColor];
   }
 
-  _contentView = [[IconDetailView alloc]
-                initWithTitle:[self titleText:tip]
-                  description:[self descriptionTextForTip:tip]
-                   layoutType:IconDetailViewLayoutType::kHero
-                   symbolName:symbolName
-           symbolColorPalette:@[ [UIColor whiteColor] ]
-        symbolBackgroundColor:symbolBackgroundColor
-            usesDefaultSymbol:isDefaultSymbol
-                showCheckmark:NO
-      accessibilityIdentifier:[self accessibilityIdentifierForTip:tip]];
+  // Determine how the Tip should be initialized based on if it has a Badge
+  // Icon. If the Tip has a badge, pass additional parameters to customize the
+  // Badge Icon.
+  switch (tip) {
+    case segmentation_platform::TipIdentifier::kLensShop:
+      _contentView = [[IconDetailView alloc]
+                    initWithTitle:[self titleText:tip]
+                      description:[self descriptionTextForTip:tip]
+                       layoutType:IconDetailViewLayoutType::kHero
+                       symbolName:symbolName
+               symbolColorPalette:@[ [UIColor whiteColor] ]
+            symbolBackgroundColor:symbolBackgroundColor
+                usesDefaultSymbol:isDefaultSymbol
+                    showCheckmark:NO
+                  badgeSymbolName:@"cart"
+             badgeBackgroundColor:[UIColor colorNamed:kPink500Color]
+           badgeUsesDefaultSymbol:YES
+          accessibilityIdentifier:[self accessibilityIdentifierForTip:tip]];
+
+      break;
+    case segmentation_platform::TipIdentifier::kLensTranslate:
+      _contentView = [[IconDetailView alloc]
+                    initWithTitle:[self titleText:tip]
+                      description:[self descriptionTextForTip:tip]
+                       layoutType:IconDetailViewLayoutType::kHero
+                       symbolName:symbolName
+               symbolColorPalette:@[ [UIColor whiteColor] ]
+            symbolBackgroundColor:symbolBackgroundColor
+                usesDefaultSymbol:isDefaultSymbol
+                    showCheckmark:NO
+                  badgeSymbolName:kLanguageSymbol
+             badgeBackgroundColor:[UIColor colorNamed:kBlue500Color]
+           badgeUsesDefaultSymbol:NO
+          accessibilityIdentifier:[self accessibilityIdentifierForTip:tip]];
+
+      break;
+    default:
+      _contentView = [[IconDetailView alloc]
+                    initWithTitle:[self titleText:tip]
+                      description:[self descriptionTextForTip:tip]
+                       layoutType:IconDetailViewLayoutType::kHero
+                       symbolName:symbolName
+               symbolColorPalette:@[ [UIColor whiteColor] ]
+            symbolBackgroundColor:symbolBackgroundColor
+                usesDefaultSymbol:isDefaultSymbol
+                    showCheckmark:NO
+          accessibilityIdentifier:[self accessibilityIdentifierForTip:tip]];
+
+      break;
+  }
 
   [self addSubview:_contentView];
 

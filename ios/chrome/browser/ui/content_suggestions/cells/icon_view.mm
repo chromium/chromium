@@ -178,7 +178,7 @@ UIView* IconInSquareContainer(UIImageView* icon, UIColor* containerColor) {
   AddSameConstraints(self, _icon);
 }
 
-// Creates the type-specific icon.
+// Creates the icon.
 - (UIView*)createIcon {
   UIImageView* icon =
       IconForSymbol(_symbol, _symbolWidth, _defaultSymbol, _symbolColorPalette);

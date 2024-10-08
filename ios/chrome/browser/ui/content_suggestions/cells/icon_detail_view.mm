@@ -30,6 +30,15 @@ constexpr CGFloat kCheckmarkTrailingOffset = 6;
 // Constants related to icon sizing.
 constexpr CGFloat kIconSize = 22;
 
+// Constants related to Badge Icon sizing.
+constexpr CGFloat kBadgeIconSize = 14;
+
+// Constants related to Badge Icon container sizing and positioning.
+constexpr CGFloat kBadgeIconContainerSize = 20;
+constexpr CGFloat kBadgeIconCircleContainerRadius = kBadgeIconContainerSize / 2;
+constexpr CGFloat kBadgeTopOffset = -25;
+constexpr CGFloat kBadgeTrailingOffset = -6;
+
 // Creates and returns a checkmark icon `UIImageView` with a green checkmark
 // symbol. The icon is configured with a specific size and has auto layout
 // constraints activated for its width and height.
@@ -57,6 +66,55 @@ UIImageView* CheckmarkIcon() {
   ]];
 
   return icon;
+}
+
+// Creates and returns a badge icon `UIImageView` with `_badgeSymbolName` using
+// `default_symbol` The icon is configured with a specific size and has auto
+// layout constraints activated for its width and height.
+UIImageView* BadgeIcon(NSString* badge_symbol_name, BOOL default_symbol) {
+  UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
+      configurationWithWeight:UIImageSymbolWeightMedium];
+
+  UIImageSymbolConfiguration* color_config = [UIImageSymbolConfiguration
+      configurationWithPaletteColors:@[ [UIColor whiteColor] ]];
+
+  config = [config configurationByApplyingConfiguration:color_config];
+
+  UIImage* image =
+      default_symbol ? DefaultSymbolWithConfiguration(badge_symbol_name, config)
+                     : CustomSymbolWithConfiguration(badge_symbol_name, config);
+
+  UIImageView* badge_icon = [[UIImageView alloc] initWithImage:image];
+
+  badge_icon.translatesAutoresizingMaskIntoConstraints = NO;
+
+  [NSLayoutConstraint activateConstraints:@[
+    [badge_icon.widthAnchor constraintEqualToConstant:kBadgeIconSize],
+    [badge_icon.heightAnchor constraintEqualToAnchor:badge_icon.widthAnchor],
+  ]];
+
+  return badge_icon;
+}
+
+// Creates and returns a badge icon container `UIView` with `icon` and
+// `containerColor` The icon is configured with a specific size and has auto
+// layout constraints activated for its width and height.
+UIView* BadgeIconInContainer(UIImageView* icon, UIColor* container_color) {
+  UIView* circle_view = [[UIView alloc] init];
+
+  circle_view.translatesAutoresizingMaskIntoConstraints = NO;
+  circle_view.layer.cornerRadius = kBadgeIconCircleContainerRadius;
+  circle_view.backgroundColor = container_color;
+
+  icon.contentMode = UIViewContentModeScaleAspectFit;
+
+  [circle_view addSubview:icon];
+
+  AddSameCenterConstraints(icon, circle_view);
+
+  AddSquareConstraints(circle_view, kBadgeIconContainerSize);
+
+  return circle_view;
 }
 
 }  // namespace
@@ -91,6 +149,15 @@ UIImageView* CheckmarkIcon() {
   // indicate a completed state.
   BOOL _showCheckmark;
 
+  // The symbol name of the Badge Icon to be displayed in the view.
+  NSString* _badgeSymbolName;
+
+  // The background color of the Badge Icon to be displayed in the view.
+  UIColor* _badgeBackgroundColor;
+
+  // Indicates whether the Badge's Icon is a default symbol.
+  BOOL _badgeUsesDefaultSymbol;
+
   // UI tap gesture recognizer. This recognizer detects taps on the view
   // and triggers the appropriate action.
   UITapGestureRecognizer* _tapGestureRecognizer;
@@ -108,6 +175,9 @@ UIImageView* CheckmarkIcon() {
             usesDefaultSymbol:(BOOL)usesDefaultSymbol
                   symbolWidth:(CGFloat)symbolWidth
                 showCheckmark:(BOOL)showCheckmark
+              badgeSymbolName:(NSString*)badgeSymbolName
+         badgeBackgroundColor:(UIColor*)badgeBackgroundColor
+       badgeUsesDefaultSymbol:(BOOL)badgeUsesDefaultSymbol
       accessibilityIdentifier:(NSString*)accessibilityIdentifier {
   if ((self = [super init])) {
     _title = title;
@@ -119,10 +189,40 @@ UIImageView* CheckmarkIcon() {
     _usesDefaultSymbol = usesDefaultSymbol;
     _symbolWidth = symbolWidth;
     _showCheckmark = showCheckmark;
+    _badgeSymbolName = badgeSymbolName;
+    _badgeBackgroundColor = badgeBackgroundColor;
+    _badgeUsesDefaultSymbol = badgeUsesDefaultSymbol;
     _accessibilityIdentifier = accessibilityIdentifier;
   }
 
   return self;
+}
+
+- (instancetype)initWithTitle:(NSString*)title
+                  description:(NSString*)description
+                   layoutType:(IconDetailViewLayoutType)layoutType
+                   symbolName:(NSString*)symbolName
+           symbolColorPalette:(NSArray<UIColor*>*)symbolColorPalette
+        symbolBackgroundColor:(UIColor*)symbolBackgroundColor
+            usesDefaultSymbol:(BOOL)usesDefaultSymbol
+                showCheckmark:(BOOL)showCheckmark
+              badgeSymbolName:(NSString*)badgeSymbolName
+         badgeBackgroundColor:(UIColor*)badgeBackgroundColor
+       badgeUsesDefaultSymbol:(BOOL)badgeUsesDefaultSymbol
+      accessibilityIdentifier:(NSString*)accessibilityIdentifier {
+  return [self initWithTitle:title
+                  description:description
+                   layoutType:layoutType
+                   symbolName:symbolName
+           symbolColorPalette:symbolColorPalette
+        symbolBackgroundColor:symbolBackgroundColor
+            usesDefaultSymbol:usesDefaultSymbol
+                  symbolWidth:kIconSize
+                showCheckmark:showCheckmark
+              badgeSymbolName:badgeSymbolName
+         badgeBackgroundColor:badgeBackgroundColor
+       badgeUsesDefaultSymbol:badgeUsesDefaultSymbol
+      accessibilityIdentifier:accessibilityIdentifier];
 }
 
 - (instancetype)initWithTitle:(NSString*)title
@@ -143,6 +243,9 @@ UIImageView* CheckmarkIcon() {
             usesDefaultSymbol:usesDefaultSymbol
                   symbolWidth:kIconSize
                 showCheckmark:showCheckmark
+              badgeSymbolName:nil
+         badgeBackgroundColor:nil
+       badgeUsesDefaultSymbol:NO
       accessibilityIdentifier:accessibilityIdentifier];
 }
 
@@ -163,6 +266,9 @@ UIImageView* CheckmarkIcon() {
             usesDefaultSymbol:usesDefaultSymbol
                   symbolWidth:kIconSize
                 showCheckmark:showCheckmark
+              badgeSymbolName:nil
+         badgeBackgroundColor:nil
+       badgeUsesDefaultSymbol:NO
       accessibilityIdentifier:accessibilityIdentifier];
 }
 
@@ -182,6 +288,9 @@ UIImageView* CheckmarkIcon() {
             usesDefaultSymbol:usesDefaultSymbol
                   symbolWidth:kIconSize
                 showCheckmark:showCheckmark
+              badgeSymbolName:nil
+         badgeBackgroundColor:nil
+       badgeUsesDefaultSymbol:NO
       accessibilityIdentifier:accessibilityIdentifier];
 }
 
@@ -252,6 +361,25 @@ UIImageView* CheckmarkIcon() {
         [checkmark.trailingAnchor
             constraintEqualToAnchor:iconContainerView.trailingAnchor
                            constant:kCheckmarkTrailingOffset],
+      ]];
+    }
+
+    // Create the Badge Icon, if applicable.
+    if (_badgeSymbolName.length != 0) {
+      UIImageView* badge = BadgeIcon(_badgeSymbolName, _badgeUsesDefaultSymbol);
+
+      UIView* badgeWithContainer =
+          BadgeIconInContainer(badge, _badgeBackgroundColor);
+
+      [iconContainerView addSubview:badgeWithContainer];
+
+      [NSLayoutConstraint activateConstraints:@[
+        [badgeWithContainer.topAnchor
+            constraintEqualToAnchor:iconContainerView.bottomAnchor
+                           constant:kBadgeTopOffset],
+        [badgeWithContainer.trailingAnchor
+            constraintEqualToAnchor:iconContainerView.trailingAnchor
+                           constant:kBadgeTrailingOffset],
       ]];
     }
 

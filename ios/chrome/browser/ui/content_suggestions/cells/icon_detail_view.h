@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+/// TODO(crbug.com/371968237): Refactor Icon Detail View to reduce the number
+/// of parameters passed to the initializer.
 @class IconDetailView;
 
 // A protocol for handling `IconDetailView` taps. `-didTapIconDetailView:view`
@@ -42,6 +44,8 @@ enum class IconDetailViewLayoutType {
 // initializer provides a streamlined way to set up an `IconDetailView`
 // instance. When `showCheckmark` is true, the icon is displayed with a green
 // checkmark to indicate a completed state.
+// The icon will display a badge based on
+// `badgeSymbolName`, `badgeUsesDefaultSymbol`, and `badgeBackgroundColor`.
 - (instancetype)initWithTitle:(NSString*)title
                   description:(NSString*)description
                    layoutType:(IconDetailViewLayoutType)layoutType
@@ -51,6 +55,31 @@ enum class IconDetailViewLayoutType {
             usesDefaultSymbol:(BOOL)usesDefaultSymbol
                   symbolWidth:(CGFloat)symbolwidth
                 showCheckmark:(BOOL)showCheckmark
+              badgeSymbolName:(NSString*)badgeSymbolName
+         badgeBackgroundColor:(UIColor*)badgeBackgroundColor
+       badgeUsesDefaultSymbol:(BOOL)badgeUsesDefaultSymbol
+      accessibilityIdentifier:(NSString*)accessibilityIdentifier;
+
+// Initializer for creating an `IconDetailView` with the
+// given `title`, `description`, `layoutType`, `symbolName`,
+// `symbolColorPalette`, `symbolBackgroundColor` (and whether it
+// `usesDefaultSymbol`), and `accessibilityIdentifier`. This initializer
+// provides a streamlined way to set up an `IconDetailView` instance. When
+// `showCheckmark` is true, the icon is displayed with a green checkmark to
+// indicate a completed state.
+// The icon will display a badge based on
+// `badgeSymbolName`, `badgeUsesDefaultSymbol`, and `badgeBackgroundColor`.
+- (instancetype)initWithTitle:(NSString*)title
+                  description:(NSString*)description
+                   layoutType:(IconDetailViewLayoutType)layoutType
+                   symbolName:(NSString*)symbolName
+           symbolColorPalette:(NSArray<UIColor*>*)symbolColorPalette
+        symbolBackgroundColor:(UIColor*)symbolBackgroundColor
+            usesDefaultSymbol:(BOOL)usesDefaultSymbol
+                showCheckmark:(BOOL)showCheckmark
+              badgeSymbolName:(NSString*)badgeSymbolName
+         badgeBackgroundColor:(UIColor*)badgeBackgroundColor
+       badgeUsesDefaultSymbol:(BOOL)badgeUsesDefaultSymbol
       accessibilityIdentifier:(NSString*)accessibilityIdentifier;
 
 // Initializer for creating an `IconDetailView` with the
