@@ -5,6 +5,7 @@
 #include "components/optimization_guide/core/model_execution/safety_config.h"
 
 #include <cstddef>
+#include <iterator>
 #include <optional>
 #include <string>
 
@@ -167,7 +168,7 @@ bool SafetyConfig::IsRequestUnsafe(
 }
 
 bool SafetyConfig::HasRawOutputCheck() const {
-  return proto_.has_value();
+  return proto_.has_value() && NumResponseChecks() == 0;
 }
 
 std::optional<SubstitutionResult> SafetyConfig::GetRawOutputCheckInput(
@@ -175,6 +176,53 @@ std::optional<SubstitutionResult> SafetyConfig::GetRawOutputCheckInput(
   proto::StringValue message;
   message.set_value(raw_output);
   return CreateSubstitutions(message, GetRawOutputCheckTemplate(*proto_));
+}
+
+int SafetyConfig::NumResponseChecks() const {
+  return proto_ ? proto_->response_check_size() : 0;
+}
+
+bool SafetyConfig::ShouldIgnoreLanguageResultForResponseCheck(
+    int check_idx) const {
+  return proto_->response_check(check_idx).ignore_language_result();
+}
+
+bool SafetyConfig::IsResponseUnsafe(
+    int check_idx,
+    const on_device_model::mojom::SafetyInfoPtr& safety_info) const {
+  const auto& check = proto_->response_check(check_idx);
+  const auto& thresholds = check.safety_category_thresholds().empty()
+                               ? proto_->safety_category_thresholds()
+                               : check.safety_category_thresholds();
+  return HasUnsafeScores(thresholds, safety_info);
+}
+
+std::optional<SubstitutionResult> SafetyConfig::GetResponseCheckInput(
+    int check_idx,
+    const google::protobuf::MessageLite& request,
+    const google::protobuf::MessageLite& response) const {
+  SubstitutionResult result;
+  result.input = on_device_model::mojom::Input::New();
+  for (const auto& input : proto_->response_check(check_idx).inputs()) {
+    std::optional<SubstitutionResult> inner_result;
+    switch (input.input_type()) {
+      case proto::CHECK_INPUT_TYPE_REQUEST:
+        inner_result = CreateSubstitutions(request, input.templates());
+        break;
+      case proto::CHECK_INPUT_TYPE_RESPONSE:
+        inner_result = CreateSubstitutions(response, input.templates());
+        break;
+      default:
+        return std::nullopt;
+    }
+    if (!inner_result) {
+      return std::nullopt;
+    }
+    std::move(inner_result->input->pieces.begin(),
+              inner_result->input->pieces.end(),
+              std::back_inserter(result.input->pieces));
+  }
+  return result;
 }
 
 }  // namespace optimization_guide

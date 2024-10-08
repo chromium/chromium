@@ -6,6 +6,7 @@
 
 #include "base/barrier_callback.h"
 #include "base/memory/weak_ptr.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
 
 namespace optimization_guide {
 
@@ -77,6 +78,28 @@ SafetyChecker::Result RawOutputCheckResult(
   // Evaluate the check.
   result.is_unsafe = checker->safety_cfg().IsUnsafeText(safety_info);
   result.is_unsupported_language =
+      checker->safety_cfg().IsTextInUnsupportedOrUndeterminedLanguage(
+          safety_info);
+  *result.logs.Add() = MakeTextSafetyExecutionLog(check_input_text, safety_info,
+                                                  result.is_unsafe);
+  return result;
+}
+
+SafetyChecker::Result ResponseCheckResult(
+    base::WeakPtr<SafetyChecker> checker,
+    int request_check_idx,
+    std::string check_input_text,
+    on_device_model::mojom::SafetyInfoPtr safety_info) {
+  if (!checker) {
+    return FailToRunResult();
+  }
+  SafetyChecker::Result result;
+  // Evaluate the check.
+  result.is_unsafe =
+      checker->safety_cfg().IsResponseUnsafe(request_check_idx, safety_info);
+  result.is_unsupported_language =
+      !checker->safety_cfg().ShouldIgnoreLanguageResultForResponseCheck(
+          request_check_idx) &&
       checker->safety_cfg().IsTextInUnsupportedOrUndeterminedLanguage(
           safety_info);
   *result.logs.Add() = MakeTextSafetyExecutionLog(check_input_text, safety_info,
@@ -161,6 +184,41 @@ void SafetyChecker::RunRawOutputCheck(TextSafetyClient& client,
       text, base::BindOnce(&RawOutputCheckResult,
                            weak_ptr_factory_.GetWeakPtr(), text)
                 .Then(std::move(callback)));
+}
+
+void SafetyChecker::RunResponseChecks(
+    TextSafetyClient& client,
+    const google::protobuf::MessageLite& request,
+    const proto::Any& response_as_any,
+    ResultCallback callback) {
+  int num_checks = safety_cfg_.NumResponseChecks();
+  if (num_checks == 0) {
+    std::move(callback).Run(SafetyChecker::Result{});
+    return;
+  }
+  auto response = GetProtoFromAny(response_as_any);
+  if (!response) {
+    std::move(callback).Run(FailToRunResult());
+    return;
+  }
+  auto merge_fn = base::BarrierCallback<Result>(
+      num_checks,
+      base::BindOnce(&SafetyChecker::Result::Merge).Then(std::move(callback)));
+  for (int idx = 0; idx < num_checks; idx++) {
+    auto check_input =
+        safety_cfg_.GetResponseCheckInput(idx, request, *response);
+    if (!check_input) {
+      merge_fn.Run(FailToRunResult());
+      continue;
+    }
+    auto text = check_input->ToString();
+    auto merge_result_fn =
+        base::BindOnce(&ResponseCheckResult, weak_ptr_factory_.GetWeakPtr(),
+                       idx, text)
+            .Then(merge_fn);
+    client.GetTextSafetyModelRemote()->ClassifyTextSafety(
+        text, std::move(merge_result_fn));
+  }
 }
 
 }  // namespace optimization_guide

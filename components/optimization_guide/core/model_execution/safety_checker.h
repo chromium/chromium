@@ -63,6 +63,12 @@ class SafetyChecker final {
                          const std::string& raw_output,
                          ResultCallback callback);
 
+  // Runs all of the configured checks for evaluating parsed responses.
+  void RunResponseChecks(TextSafetyClient& client,
+                         const google::protobuf::MessageLite& request,
+                         const proto::Any& response,
+                         ResultCallback callback);
+
   const SafetyConfig& safety_cfg() const { return safety_cfg_; }
 
   size_t TokenInterval() const { return safety_cfg_.TokenInterval(); }

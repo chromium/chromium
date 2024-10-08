@@ -22,6 +22,20 @@ message TextSafetyModelMetadata {
       2;
 }
 
+enum CheckInputType {
+  CHECK_INPUT_TYPE_UNSPECIFIED = 0;
+  CHECK_INPUT_TYPE_REQUEST = 1;
+  CHECK_INPUT_TYPE_RESPONSE = 2;
+}
+
+message CheckInput {
+  // Which message to use as input.
+  optional CheckInputType input_type = 1;
+
+  // Concatenated template for converting the message to input chunks.
+  repeated SubstitutedString templates = 2;
+}
+
 message SafetyCategoryThreshold {
   // Label for the category. E.g. 'TOXICITY', 'SEXUAL', 'HEALTH', etc.
   optional string category_label = 1;
@@ -55,6 +69,19 @@ message RawOutputCheck {
   repeated SubstitutedString input_template = 1;
 }
 
+message ResponseSafetyCheck {
+  // How to generate input for the text safety check based on the request and
+  // response.
+  repeated CheckInput inputs = 1;
+
+  // The set of thresholds to apply per category, overriding those in the
+  // parent.
+  repeated SafetyCategoryThreshold safety_category_thresholds = 2;
+
+  // Whether to ignore the language result of the safety check.
+  optional bool ignore_language_result = 3;
+}
+
 message FeatureTextSafetyConfiguration {
   // The feature this configuration pertains to.
   optional ModelExecutionFeature feature = 1;
@@ -71,4 +98,7 @@ message FeatureTextSafetyConfiguration {
 
   // Configures the checks to run on raw model output.
   optional RawOutputCheck raw_output_check = 5;
+
+  // Configures check that run on parsed model output, with request as context.
+  repeated ResponseSafetyCheck response_check = 6;
 }

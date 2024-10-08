@@ -300,6 +300,8 @@ std::string PlaceholderForToken(ml::Token token) {
 SubstitutionResult::SubstitutionResult() = default;
 SubstitutionResult::~SubstitutionResult() = default;
 SubstitutionResult::SubstitutionResult(SubstitutionResult&&) = default;
+SubstitutionResult& SubstitutionResult::operator=(SubstitutionResult&&) =
+    default;
 
 std::string OnDeviceInputToString(const on_device_model::mojom::Input& input) {
   std::ostringstream oss;

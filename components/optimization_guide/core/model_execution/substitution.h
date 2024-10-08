@@ -17,6 +17,7 @@ struct SubstitutionResult {
   SubstitutionResult();
   ~SubstitutionResult();
   SubstitutionResult(SubstitutionResult&&);
+  SubstitutionResult& operator=(SubstitutionResult&&);
 
   std::string ToString() const;
 

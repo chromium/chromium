@@ -182,7 +182,7 @@ def GenerateProtoDescriptors(out, includes: set[str], messages: KnownMessages,
                              requests: set[str], responses: set[str]):
     """Generate the on_device_model_execution_proto_descriptors.cc content."""
 
-    readable_messages = messages.GetAllTransitiveDeps(requests)
+    readable_messages = messages.GetAllTransitiveDeps(requests | responses)
     writable_messages = messages.GetAllTransitiveDeps(responses)
 
     out.write(

@@ -589,7 +589,7 @@ void SessionImpl::OnRawOutputSafetyResult(size_t raw_output_size,
 }
 
 void SessionImpl::MaybeSendCompleteResponse() {
-  if (on_device_state_->model_response_complete &&
+  if (on_device_state_ && on_device_state_->model_response_complete &&
       on_device_state_->latest_safe_raw_output.length ==
           on_device_state_->current_response.size()) {
     on_device_state_->AddModelExecutionLogs(
@@ -699,18 +699,50 @@ void SessionImpl::OnParsedResponse(
         return;
     }
   }
+  on_device_state_->opts.safety_checker->RunResponseChecks(
+      *on_device_state_->opts.model_client, *last_message_, *output,
+      base::BindOnce(&SessionImpl::OnResponseSafetyResult,
+                     on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),
+                     is_complete, *output));
+}
 
+void SessionImpl::OnResponseSafetyResult(bool is_complete,
+                                         proto::Any output,
+                                         SafetyChecker::Result safety_result) {
+  if (safety_result.failed_to_run) {
+    DestroyOnDeviceStateAndFallbackToRemote(
+        ExecuteModelResult::kFailedConstructingMessage);
+    return;
+  }
+  if (is_complete || safety_result.is_unsafe ||
+      safety_result.is_unsupported_language) {
+    on_device_state_->AddModelExecutionLogs(std::move(safety_result.logs));
+  }
+  if (safety_result.is_unsafe || safety_result.is_unsupported_language) {
+    if (on_device_state_->histogram_logger) {
+      on_device_state_->histogram_logger->set_result(
+          ExecuteModelResult::kUsedOnDeviceOutputUnsafe);
+    }
+    if (features::GetOnDeviceModelRetractUnsafeContent()) {
+      CancelPendingResponse(ExecuteModelResult::kUsedOnDeviceOutputUnsafe,
+                            safety_result.is_unsupported_language
+                                ? ModelExecutionError::kUnsupportedLanguage
+                                : ModelExecutionError::kFiltered);
+
+      return;
+    }
+  }
   if (!is_complete) {
-    SendPartialResponseCallback(*output);
+    SendPartialResponseCallback(output);
     return;
   }
 
   if (features::ShouldUseTextSafetyRemoteFallbackForEligibleFeatures()) {
-    RunTextSafetyRemoteFallbackAndCompletionCallback(std::move(*output));
+    RunTextSafetyRemoteFallbackAndCompletionCallback(std::move(output));
     return;
   }
 
-  SendSuccessCompletionCallback(*output);
+  SendSuccessCompletionCallback(output);
 }
 
 void SessionImpl::SendPartialResponseCallback(

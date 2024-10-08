@@ -15,14 +15,17 @@
 #include "base/test/test.pb.h"
 #include "base/test/test_future.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_descriptors.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_execution_proto_value_utils.h"
 #include "components/optimization_guide/core/model_execution/safety_config.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/core/model_execution/test/request_builder.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/descriptors.pb.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/features/prompt_api.pb.h"
 #include "components/optimization_guide/proto/features/tab_organization.pb.h"
 #include "components/optimization_guide/proto/substitution.pb.h"
+#include "components/optimization_guide/proto/text_safety_model_metadata.pb.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/on_device_model/public/cpp/test_support/fake_service.h"
 #include "services/on_device_model/public/cpp/text_safety_assets.h"
@@ -56,6 +59,12 @@ proto::ComposeRequest UrlAndInputRequest(const std::string& url,
   req.mutable_page_metadata()->set_page_url(url);
   req.mutable_generate_params()->set_user_input(input);
   return req;
+}
+
+proto::Any SimpleResponse(const std::string& output) {
+  proto::ComposeResponse resp;
+  resp.set_output(output);
+  return AnyWrapProto(resp);
 }
 
 }  // namespace
@@ -533,6 +542,158 @@ TEST_F(SafetyCheckerTest, RequestCheckFailsWithLanguageOnly) {
                                          "is_safe_input: english input"),
                                 ResultOf("scores", &GetScores, IsEmpty()),
                                 ResultOf("is_unsafe", &GetIsUnsafe, false))));
+}
+
+TEST_F(SafetyCheckerTest, ResponseCheckPassesWithSafeResponse) {
+  SafetyChecker checker([]() {
+    auto safety_config = ComposeSafetyConfig();
+    safety_config.mutable_safety_category_thresholds()->Add(
+        RequireReasonable());
+    safety_config.add_allowed_languages("eo");  // Require esperanto
+    {
+      auto* check = safety_config.add_response_check();
+      auto* i1 = check->add_inputs();
+      i1->set_input_type(proto::CHECK_INPUT_TYPE_REQUEST);
+      i1->mutable_templates()->Add(
+          FieldSubstitution("response_check: %s", PageUrlField()));
+      auto* i2 = check->add_inputs();
+      i2->set_input_type(proto::CHECK_INPUT_TYPE_RESPONSE);
+      i2->mutable_templates()->Add(FieldSubstitution("%s", ProtoField({1})));
+      check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+      check->set_ignore_language_result(true);
+    }
+    {
+      auto* check = safety_config.add_response_check();
+      auto* i1 = check->add_inputs();
+      i1->set_input_type(proto::CHECK_INPUT_TYPE_REQUEST);
+      i1->mutable_templates()->Add(
+          FieldSubstitution("response_check2: %s", UserInputField()));
+      auto* i2 = check->add_inputs();
+      i2->set_input_type(proto::CHECK_INPUT_TYPE_RESPONSE);
+      i2->mutable_templates()->Add(FieldSubstitution("%s", ProtoField({1})));
+    }
+    return SafetyConfig(safety_config);
+  }());
+  checker.RunResponseChecks(
+      client_, UrlAndInputRequest("very_", "reasonable_esperanto_"),
+      SimpleResponse("safe_output"), future_.GetCallback());
+  auto result = future_.Take();
+
+  EXPECT_FALSE(result.failed_to_run);
+  EXPECT_FALSE(result.is_unsafe);
+  EXPECT_FALSE(result.is_unsupported_language);
+  EXPECT_THAT(
+      result.logs,
+      ElementsAre(
+          AllOf(ResultOf("check text", &GetCheckText,
+                         "response_check: very_safe_output"),
+                ResultOf("scores", &GetScores, ElementsAre(0.2, 0.8)),
+                ResultOf("is_unsafe", &GetIsUnsafe, false)),
+          AllOf(ResultOf("check text", &GetCheckText,
+                         "response_check2: reasonable_esperanto_safe_output"),
+                ResultOf("scores", &GetScores, ElementsAre(0.2, 0.2)),
+                ResultOf("is_unsafe", &GetIsUnsafe, false))));
+}
+
+TEST_F(SafetyCheckerTest, RequestCheckFailsWithUnsafeResponse) {
+  SafetyChecker checker([]() {
+    auto safety_config = ComposeSafetyConfig();
+    safety_config.mutable_safety_category_thresholds()->Add(
+        RequireReasonable());
+    safety_config.add_allowed_languages("eo");  // Require esperanto
+    {
+      auto* check = safety_config.add_response_check();
+      auto* i1 = check->add_inputs();
+      i1->set_input_type(proto::CHECK_INPUT_TYPE_REQUEST);
+      i1->mutable_templates()->Add(
+          FieldSubstitution("response_check: %s", PageUrlField()));
+      auto* i2 = check->add_inputs();
+      i2->set_input_type(proto::CHECK_INPUT_TYPE_RESPONSE);
+      i2->mutable_templates()->Add(FieldSubstitution("%s", ProtoField({1})));
+      check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+      check->set_ignore_language_result(true);
+    }
+    {
+      auto* check = safety_config.add_response_check();
+      auto* i1 = check->add_inputs();
+      i1->set_input_type(proto::CHECK_INPUT_TYPE_REQUEST);
+      i1->mutable_templates()->Add(
+          FieldSubstitution("response_check2: %s", UserInputField()));
+      auto* i2 = check->add_inputs();
+      i2->set_input_type(proto::CHECK_INPUT_TYPE_RESPONSE);
+      i2->mutable_templates()->Add(FieldSubstitution("%s", ProtoField({1})));
+    }
+    return SafetyConfig(safety_config);
+  }());
+  checker.RunResponseChecks(
+      client_, UrlAndInputRequest("un", "reasonable_esperanto_"),
+      SimpleResponse("safe_output"), future_.GetCallback());
+  auto result = future_.Take();
+
+  EXPECT_FALSE(result.failed_to_run);
+  EXPECT_TRUE(result.is_unsafe);
+  EXPECT_FALSE(result.is_unsupported_language);
+  EXPECT_THAT(
+      result.logs,
+      ElementsAre(
+          AllOf(ResultOf("check text", &GetCheckText,
+                         "response_check: unsafe_output"),
+                ResultOf("scores", &GetScores, ElementsAre(0.8, 0.8)),
+                ResultOf("is_unsafe", &GetIsUnsafe, true)),
+          AllOf(ResultOf("check text", &GetCheckText,
+                         "response_check2: reasonable_esperanto_safe_output"),
+                ResultOf("scores", &GetScores, ElementsAre(0.2, 0.2)),
+                ResultOf("is_unsafe", &GetIsUnsafe, false))));
+}
+
+TEST_F(SafetyCheckerTest, ResponseCheckFailsWithUnmetRequiredLanguge) {
+  SafetyChecker checker([]() {
+    auto safety_config = ComposeSafetyConfig();
+    safety_config.mutable_safety_category_thresholds()->Add(
+        RequireReasonable());
+    safety_config.add_allowed_languages("eo");  // Require esperanto
+    {
+      auto* check = safety_config.add_response_check();
+      auto* i1 = check->add_inputs();
+      i1->set_input_type(proto::CHECK_INPUT_TYPE_REQUEST);
+      i1->mutable_templates()->Add(
+          FieldSubstitution("response_check: %s", PageUrlField()));
+      auto* i2 = check->add_inputs();
+      i2->set_input_type(proto::CHECK_INPUT_TYPE_RESPONSE);
+      i2->mutable_templates()->Add(FieldSubstitution("%s", ProtoField({1})));
+      check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+      check->set_ignore_language_result(true);
+    }
+    {
+      auto* check = safety_config.add_response_check();
+      auto* i1 = check->add_inputs();
+      i1->set_input_type(proto::CHECK_INPUT_TYPE_REQUEST);
+      i1->mutable_templates()->Add(
+          FieldSubstitution("response_check2: %s", UserInputField()));
+      auto* i2 = check->add_inputs();
+      i2->set_input_type(proto::CHECK_INPUT_TYPE_RESPONSE);
+      i2->mutable_templates()->Add(FieldSubstitution("%s", ProtoField({1})));
+    }
+    return SafetyConfig(safety_config);
+  }());
+  checker.RunResponseChecks(client_, UrlAndInputRequest("very_", "reasonable_"),
+                            SimpleResponse("safe_output"),
+                            future_.GetCallback());
+  auto result = future_.Take();
+
+  EXPECT_FALSE(result.failed_to_run);
+  EXPECT_FALSE(result.is_unsafe);
+  EXPECT_TRUE(result.is_unsupported_language);
+  EXPECT_THAT(
+      result.logs,
+      ElementsAre(AllOf(ResultOf("check text", &GetCheckText,
+                                 "response_check: very_safe_output"),
+                        ResultOf("scores", &GetScores, ElementsAre(0.2, 0.8)),
+                        ResultOf("is_unsafe", &GetIsUnsafe, false)),
+                  AllOf(ResultOf("check text", &GetCheckText,
+                                 "response_check2: reasonable_safe_output"),
+                        ResultOf("scores", &GetScores, ElementsAre(0.2, 0.2)),
+                        ResultOf("is_unsafe", &GetIsUnsafe, false))));
 }
 
 }  // namespace optimization_guide

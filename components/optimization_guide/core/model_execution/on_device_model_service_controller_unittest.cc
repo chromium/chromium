@@ -1400,6 +1400,150 @@ TEST_F(OnDeviceModelServiceControllerTest, FallbackWithInvalidRawOutputChecks) {
   EXPECT_FALSE(response_.log_entry());
 }
 
+TEST_F(OnDeviceModelServiceControllerTest,
+       SucceedsWithPassingResponseSafetyCheck) {
+  auto config = SimpleComposeConfig();
+  config.set_can_skip_text_safety(false);
+  Initialize({.config = config});
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kTextSafetyClassifier,
+      {{"on_device_retract_unsafe_content", "true"}});
+
+  FakeSafetyModelAsset safety_asset([]() {
+    auto safety_config = ComposeSafetyConfig();
+    {
+      auto* check = safety_config.add_response_check();
+      auto* i1 = check->add_inputs();
+      i1->set_input_type(proto::CHECK_INPUT_TYPE_REQUEST);
+      i1->mutable_templates()->Add(
+          FieldSubstitution("response_check: %s", PageUrlField()));
+      auto* i2 = check->add_inputs();
+      i2->set_input_type(proto::CHECK_INPUT_TYPE_RESPONSE);
+      i2->mutable_templates()->Add(FieldSubstitution("%s", ProtoField({1})));
+      check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+      check->set_ignore_language_result(true);
+    }
+    return safety_config;
+  }());
+  test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
+
+  auto session = test_controller_->CreateSession(
+      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(), nullptr,
+      /*config_params=*/std::nullopt);
+  ASSERT_TRUE(session);
+
+  fake_settings_.set_execute_result({"safe_output"});
+  session->ExecuteModel(PageUrlRequest("url_very_"), response_.callback());
+  ASSERT_TRUE(response_.GetFinalStatus());
+  ASSERT_TRUE(response_.log_entry());
+  EXPECT_THAT(response_.logged_executions(),
+              ElementsAre(testing::_,  // Base Model Execution
+                          ResultOf("check text", &GetCheckText,
+                                   "response_check: url_very_safe_output")));
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       FailsWithFailingResponseSafetyCheck) {
+  auto config = SimpleComposeConfig();
+  config.set_can_skip_text_safety(false);
+  Initialize({.config = config});
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kTextSafetyClassifier,
+      {{"on_device_retract_unsafe_content", "true"}});
+
+  FakeSafetyModelAsset safety_asset([]() {
+    auto safety_config = ComposeSafetyConfig();
+    {
+      auto* check = safety_config.add_response_check();
+      auto* i1 = check->add_inputs();
+      i1->set_input_type(proto::CHECK_INPUT_TYPE_REQUEST);
+      i1->mutable_templates()->Add(
+          FieldSubstitution("response_check: %s", PageUrlField()));
+      auto* i2 = check->add_inputs();
+      i2->set_input_type(proto::CHECK_INPUT_TYPE_RESPONSE);
+      i2->mutable_templates()->Add(FieldSubstitution("%s", ProtoField({1})));
+      check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+      check->set_ignore_language_result(true);
+    }
+    return safety_config;
+  }());
+  test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
+
+  auto session = test_controller_->CreateSession(
+      kFeature, FailOnRemoteFallback(), logger_.GetWeakPtr(), nullptr,
+      /*config_params=*/std::nullopt);
+  ASSERT_TRUE(session);
+
+  fake_settings_.set_execute_result({"safe_output"});
+  session->ExecuteModel(PageUrlRequest("url_un"), response_.callback());
+  ASSERT_FALSE(response_.GetFinalStatus());
+  EXPECT_EQ(
+      *response_.error(),
+      OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
+  ASSERT_TRUE(response_.log_entry());
+  EXPECT_THAT(response_.logged_executions(),
+              ElementsAre(testing::_,  // Base Model Execution
+                          ResultOf("check text", &GetCheckText,
+                                   "response_check: url_unsafe_output")));
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       FallbackWithInvalidResponseSafetyCheck) {
+  auto config = SimpleComposeConfig();
+  config.set_can_skip_text_safety(false);
+  Initialize({.config = config});
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kTextSafetyClassifier,
+      {{"on_device_retract_unsafe_content", "true"}});
+
+  FakeSafetyModelAsset safety_asset([]() {
+    auto safety_config = ComposeSafetyConfig();
+    {
+      auto* check = safety_config.add_response_check();
+      auto* i1 = check->add_inputs();
+      i1->set_input_type(proto::CHECK_INPUT_TYPE_UNSPECIFIED);
+      i1->mutable_templates()->Add(
+          FieldSubstitution("response_check: %s", PageUrlField()));
+      auto* i2 = check->add_inputs();
+      i2->set_input_type(proto::CHECK_INPUT_TYPE_RESPONSE);
+      i2->mutable_templates()->Add(FieldSubstitution("%s", ProtoField({1})));
+      check->mutable_safety_category_thresholds()->Add(ForbidUnsafe());
+      check->set_ignore_language_result(true);
+    }
+    return safety_config;
+  }());
+  test_controller_->MaybeUpdateSafetyModel(safety_asset.model_info());
+
+  ExpectedRemoteFallback fallback;
+  auto session = test_controller_->CreateSession(
+      kFeature, fallback.CreateExecuteRemoteFn(), logger_.GetWeakPtr(), nullptr,
+      /*config_params=*/std::nullopt);
+  ASSERT_TRUE(session);
+
+  fake_settings_.set_execute_result({"safe_output"});
+  session->ExecuteModel(PageUrlRequest("url_very_"), response_.callback());
+
+  auto fallback_call = fallback.Take();
+  EXPECT_THAT(
+      fallback_call.logged_executions(),
+      ElementsAre(testing::_  // Base Model Execution
+                              // response check failed to run, not logged.
+                  ));
+  EXPECT_EQ(fallback_call.feature, ModelBasedCapabilityKey::kCompose);
+  std::move(fallback_call.callback)
+      .Run(base::ok(fallback.ComposeResponse("remote response")), nullptr);
+
+  ASSERT_TRUE(response_.GetFinalStatus());
+  EXPECT_EQ(*response_.value(), "remote response");
+  EXPECT_FALSE(response_.log_entry());
+}
+
 TEST_F(OnDeviceModelServiceControllerTest, NoRetractUnsafeContent) {
   // Tests the behavior of "on_device_retract_unsafe_content = false" flag.
   auto config = SimpleComposeConfig();

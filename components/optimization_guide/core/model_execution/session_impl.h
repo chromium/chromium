@@ -331,6 +331,11 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
       bool is_complete,
       base::expected<proto::Any, ResponseParsingError> output);
 
+  // Called when response safety check completes.
+  void OnResponseSafetyResult(bool is_complete,
+                              proto::Any output,
+                              SafetyChecker::Result safety_result);
+
   // Returns a new message created by merging `request` into `context_`. This
   // is a bit tricky since we don't know the type of MessageLite.
   std::unique_ptr<google::protobuf::MessageLite> MergeContext(
