@@ -110,6 +110,9 @@ bool IsDefault(SafetyCheckState* state) {
   [_contentViewDelegate
       setSubtitle:FormatElapsedTimeSinceLastSafetyCheck(_state.lastRunTime)];
 
+  [_contentViewDelegate
+      updateNotificationsOptInVisibility:_state.showNotificationsOptIn];
+
   int checkIssuesCount = [_state numberOfIssues];
   BOOL isRunning = IsRunning(_state);
   BOOL isDefault = IsDefault(_state);

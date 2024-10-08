@@ -452,6 +452,11 @@ const CGFloat kSeparatorHeight = 0.5;
 
 #pragma mark - MagicStackModuleContentViewDelegate
 
+- (void)updateNotificationsOptInVisibility:(BOOL)showNotificationsOptIn {
+  _notificationsOptInButton.hidden = !showNotificationsOptIn;
+  _subtitle.hidden = ![self shouldShowSubtitle];
+}
+
 - (void)setSubtitle:(NSString*)subtitle {
   _subtitle.text = subtitle;
   _subtitle.accessibilityIdentifier = subtitle;

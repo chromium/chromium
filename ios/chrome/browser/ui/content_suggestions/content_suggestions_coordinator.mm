@@ -140,7 +140,6 @@
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_alert_coordinator.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_coordinator.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_coordinator_delegate.h"
-#import "ios/chrome/browser/ui/settings/notifications/notifications_settings_observer.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -162,7 +161,6 @@ using segmentation_platform::TipIdentifier;
     NotificationsConfirmationPresenter,
     NotificationsOptInAlertCoordinatorDelegate,
     NotificationsOptInCoordinatorDelegate,
-    NotificationsSettingsObserverDelegate,
     PriceTrackingPromoActionDelegate,
     SetUpListContentNotificationPromoCoordinatorDelegate,
     SetUpListDefaultBrowserPromoCoordinatorDelegate,
@@ -222,10 +220,6 @@ using segmentation_platform::TipIdentifier;
   // The coordinator used to present an alert to enable Tips notifications.
   NotificationsOptInAlertCoordinator* _notificationsOptInAlertCoordinator;
 
-  // An observer that tracks whether push notification permission settings have
-  // been modified.
-  NotificationsSettingsObserver* _notificationsObserver;
-
   MagicStackRankingModel* _magicStackRankingModel;
 
   // Module mediators.
@@ -271,12 +265,6 @@ using segmentation_platform::TipIdentifier;
   // enrollment to `SafetyCheckNotificationClient` once
   // `ProvisionalPushNotificationUtil` circular dependencies are fixed.
   if (IsSafetyCheckNotificationsEnabled()) {
-    _notificationsObserver = [[NotificationsSettingsObserver alloc]
-        initWithPrefService:prefs
-                 localState:GetApplicationContext()->GetLocalState()];
-
-    _notificationsObserver.delegate = self;
-
     [ProvisionalPushNotificationUtil
         enrollUserToProvisionalNotificationsForClientIds:
             {PushNotificationClientId::kSafetyCheck}
@@ -517,9 +505,6 @@ using segmentation_platform::TipIdentifier;
   _magicStackHalfSheetTableViewController = nil;
   [self dismissParcelListHalfSheet];
   [self dismissParcelTrackingAlertCoordinator];
-  _notificationsObserver.delegate = nil;
-  [_notificationsObserver disconnect];
-  _notificationsObserver = nil;
   [_notificationsOptInAlertCoordinator stop];
   _notificationsOptInAlertCoordinator = nil;
   [self.browser->GetCommandDispatcher()
@@ -1079,20 +1064,6 @@ using segmentation_platform::TipIdentifier;
   CHECK_EQ(coordinator, _notificationsOptInCoordinator);
   [_notificationsOptInCoordinator stop];
   _notificationsOptInCoordinator = nil;
-}
-
-#pragma mark - NotificationsSettingsObserverDelegate
-
-- (void)notificationsSettingsDidChangeForClient:
-    (PushNotificationClientId)clientID {
-  CHECK(IsSafetyCheckNotificationsEnabled());
-
-  if (clientID == PushNotificationClientId::kSafetyCheck) {
-    // When Safety Check notification permissions change, refresh the Magic
-    // Stack. This ensures the Safety Check container accurately reflects the
-    // user's notification settings.
-    [self refresh];
-  }
 }
 
 #pragma mark - PriceTrackingPromoActionDelegate

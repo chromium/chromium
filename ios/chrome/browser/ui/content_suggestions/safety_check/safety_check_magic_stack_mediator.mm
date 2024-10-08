@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_prefs.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/utils.h"
+#import "ios/chrome/browser/ui/settings/notifications/notifications_settings_observer.h"
 
 namespace {
 
@@ -57,12 +58,14 @@ int ImpressionsCount(const base::Value::List& impressions,
 
 }  // namespace
 
-@interface SafetyCheckMagicStackMediator () <AppStateObserver,
-                                             MagicStackModuleDelegate,
-                                             PrefObserverDelegate,
-                                             SafetyCheckAudience,
-                                             SafetyCheckConsumerSource,
-                                             SafetyCheckManagerObserver>
+@interface SafetyCheckMagicStackMediator () <
+    AppStateObserver,
+    MagicStackModuleDelegate,
+    NotificationsSettingsObserverDelegate,
+    PrefObserverDelegate,
+    SafetyCheckAudience,
+    SafetyCheckConsumerSource,
+    SafetyCheckManagerObserver>
 @end
 
 @implementation SafetyCheckMagicStackMediator {
@@ -84,6 +87,9 @@ int ImpressionsCount(const base::Value::List& impressions,
   // state.
   SafetyCheckState* _safetyCheckState;
   id<SafetyCheckMagicStackConsumer> _safetyCheckConsumer;
+  // An observer that tracks whether push notification permission settings have
+  // been modified.
+  NotificationsSettingsObserver* _notificationsObserver;
 }
 
 - (instancetype)initWithSafetyCheckManager:
@@ -99,6 +105,14 @@ int ImpressionsCount(const base::Value::List& impressions,
     _appState = appState;
 
     [_appState addObserver:self];
+
+    if (IsSafetyCheckNotificationsEnabled()) {
+      _notificationsObserver = [[NotificationsSettingsObserver alloc]
+          initWithPrefService:userState
+                   localState:localState];
+
+      _notificationsObserver.delegate = self;
+    }
 
     if (!safety_check_prefs::IsSafetyCheckInMagicStackDisabled(
             IsHomeCustomizationEnabled() ? _userState : _localState)) {
@@ -158,6 +172,9 @@ int ImpressionsCount(const base::Value::List& impressions,
 }
 
 - (void)disconnect {
+  _notificationsObserver.delegate = nil;
+  [_notificationsObserver disconnect];
+  _notificationsObserver = nil;
   _safetyCheckManagerObserver.reset();
   if (_prefObserverBridge) {
     _prefChangeRegistrar.RemoveAll();
@@ -305,6 +322,23 @@ int ImpressionsCount(const base::Value::List& impressions,
 
     _localState->SetList(prefs::kMagicStackSafetyCheckNotificationsShown,
                          std::move(impressions));
+  }
+}
+
+#pragma mark - NotificationsSettingsObserverDelegate
+
+- (void)notificationsSettingsDidChangeForClient:
+    (PushNotificationClientId)clientID {
+  CHECK(IsSafetyCheckNotificationsEnabled());
+
+  if (clientID == PushNotificationClientId::kSafetyCheck) {
+    // When Safety Check notification permissions change, refresh the Magic
+    // Stack module. This ensures the Safety Check container accurately reflects
+    // the user's notification settings.
+    _safetyCheckState.showNotificationsOptIn =
+        [self shouldShowNotificationsOptIn];
+
+    [_safetyCheckConsumer safetyCheckStateDidChange:_safetyCheckState];
   }
 }
 
