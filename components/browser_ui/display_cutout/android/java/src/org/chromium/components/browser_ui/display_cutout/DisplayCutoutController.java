@@ -68,6 +68,8 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
     /** Tracks Safe Area Insets. */
     private final SafeAreaInsetsTrackerImpl mSafeAreaInsetsTracker;
 
+    private Rect mCachedSafeAreaInsets = new Rect();
+
     /**
      * An interface to track general changes to Safe Area Insets. TODO(crbug.com/40279791) Develop
      * beyond this minimal stub.
@@ -265,6 +267,11 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
 
         mViewportFit = value;
         maybeUpdateLayout();
+        if (mDelegate.isDrawEdgeToEdgeEnabled()) {
+            // Update the safe area insets just in case, since in some flows (such as navigating
+            // from recent tabs) the insets may be incorrect and outdated.
+            maybePushSafeAreaInsets(mCachedSafeAreaInsets);
+        }
     }
 
     /**
@@ -290,6 +297,7 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
         if (webContents == null) return;
         if (webContents.getTopLevelNativeWindow() == null) return;
 
+        mCachedSafeAreaInsets = area;
         float dipScale = getDipScale();
         Rect safeArea =
                 new Rect(
