@@ -1859,8 +1859,12 @@ Permissions you've already given to websites and apps may apply to this account.
           desc="Text on the continue button in the dialog for choosing to allow the sending of the Lens screenshot to Google.">
           OK
         </message>
+        <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_CSB_DESCRIPTION"
+          desc="Text that is shown in the Lens permission bubble, giving examples of what Lens can do and informing uawea what information will be sent to the server. Includes placeholder for learn more link.">
+          When you use Image Search, the page title, URL, and content, including PDFs, are sent to the server. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>
+        </message>
         <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_DESCRIPTION"
-          desc="Text that is shown in the Lens permission bubble, giving examples of what Lens can do and informing users that their screenshot will be sent to Google. Includes placeholder for learn more link.">
+          desc="Text that is shown in the Lens permission bubble, giving examples of what Lens can do and informing users that their screenshot will be sent to the server. Includes placeholder for learn more link.">
           Identify things or places and copy or translate text. When you use Image Search, a screenshot of the page is sent to the server. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>
         </message>
         <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_LEARN_MORE_LINK"
@@ -1869,7 +1873,7 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
         <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_TITLE"
           desc="The title of the lens permission search bubble dialog, introducing Lens as a way to search what's on their screen.">
-          Search what's on your screen
+          Search anything on this page
         </message>
 
         <!-- Title Case Dependent -->

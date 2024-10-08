@@ -94,6 +94,13 @@ LensPermissionBubbleController::CreateLensPermissionDialogModel() {
           &LensPermissionBubbleController::OnHelpCenterLinkClicked,
           weak_ptr_factory_.GetWeakPtr()));
 
+  auto description_text =
+      lens::features::IsLensOverlayContextualSearchboxEnabled()
+          ? ui::DialogModelLabel::CreateWithReplacement(
+                IDS_LENS_PERMISSION_BUBBLE_DIALOG_CSB_DESCRIPTION, link)
+          : ui::DialogModelLabel::CreateWithReplacement(
+                IDS_LENS_PERMISSION_BUBBLE_DIALOG_DESCRIPTION, link);
+
   return ui::DialogModel::Builder()
       .SetInternalName(kLensPermissionDialogName)
       .SetTitle(
@@ -105,8 +112,7 @@ LensPermissionBubbleController::CreateLensPermissionDialogModel() {
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
               IDR_LENS_PERMISSION_MODAL_IMAGE)))
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      .AddParagraph(ui::DialogModelLabel::CreateWithReplacement(
-          IDS_LENS_PERMISSION_BUBBLE_DIALOG_DESCRIPTION, link))
+      .AddParagraph(description_text)
       .AddOkButton(
           base::BindOnce(
               &LensPermissionBubbleController::OnPermissionDialogAccept,
