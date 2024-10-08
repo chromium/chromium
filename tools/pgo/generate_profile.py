@@ -16,8 +16,12 @@ With that, you can do a second build with:
     pgo_data_path = "//out/builddir/profile.profdata"
 
 and with chrome_pgo_phase _not_ set. (It defaults to =2 in official builds.)
+
+**IMPORTANT**: If you add any new deps for this script, make sure that it is
+    also added to the template in //tools/pgo/BUILD.gn as data or data_deps, as
+    this script is run as an isolated script on the bots, which means that only
+    listed data and data_deps are available to it when run on the bot.
 '''
-# TODO(thakis): Make PGO bots actually run this script, crbug.com/1455237
 
 import argparse
 import glob
@@ -78,8 +82,11 @@ class OptionsNamespace(argparse.Namespace):
     repeats: int
     verbose: int
     quiet: int
-    # TODO(https://crbug.com/40272686): Remove this when no longer needed.
-    is_bot: bool
+    # The following are bot-specific args.
+    isolated_script_test_output: Optional[str]
+    isolated_script_test_perf_output: Optional[str]
+    # TODO(wnwen): Remove this when no longer needed.
+    suffix: str
 
 
 def parse_args():
@@ -149,10 +156,10 @@ def parse_args():
                         default=0,
                         help='Decrease verbosity level (passed through to '
                         'run_benchmark.)')
-    parser.add_argument('--is-bot',
-                        action='store_true',
-                        default=False,
-                        help='Makes it easier to add bot-specific logic.')
+    parser.add_argument('--isolated-script-test-output',
+                        help='Output.json file that the script can write to.')
+    parser.add_argument('--isolated-script-test-perf-output',
+                        help='Deprecated and ignored, but bots pass it.')
     # ▲▲▲▲▲ Please update OptionsNamespace when adding or modifying args. ▲▲▲▲▲
 
     args = parser.parse_args(namespace=OptionsNamespace())
@@ -190,6 +197,12 @@ def parse_args():
     if not args.outputdir:
         args.outputdir = args.builddir
 
+    if args.isolated_script_test_output:
+        args.outputdir = os.path.dirname(args.isolated_script_test_output)
+        args.suffix = '.profraw'
+    else:
+        args.suffix = '.profdata'
+
     _LOGGER.info(f"Output directory: {args.outputdir}")
     _LOGGER.info(f"Profile directory: {args.profiledir}")
 
@@ -216,6 +229,7 @@ def run_profdata_merge(output_path, input_files, args: OptionsNamespace):
         else:
             filtered_input_files.append(f)
     assert filtered_input_files, 'No valid profraw/profdata file after filter.'
+
     cmd = [_PROFDATA, 'merge', '-o', output_path
            ] + extra_args + filtered_input_files
     _LOGGER.debug(f"Running command: {' '.join(cmd)}")
@@ -246,7 +260,7 @@ def run_benchmark(benchmark_args: List[str], args: OptionsNamespace):
         shutil.rmtree(profraw_path)
     os.makedirs(profraw_path, exist_ok=True)
 
-    profdata_path = f'{args.profiledir}/{name}.profdata'
+    profdata_path = f'{args.profiledir}/{name}{args.suffix}'
     _LOGGER.debug(f"profdata path: {profdata_path}")
     if os.path.exists(profdata_path):
         _LOGGER.debug(f"Removing existing profdata file: {profdata_path}")
@@ -401,9 +415,9 @@ def run_benchmarks(benchmarks: List[List[str]], args: OptionsNamespace):
 
 
 def merge_profdata(args: OptionsNamespace):
-    profile_output_path = f'{args.outputdir}/profile.profdata'
+    profile_output_path = f'{args.outputdir}/profile{args.suffix}'
     _LOGGER.info(f"Merging all profdata files into: {profile_output_path}")
-    profdata_files = glob.glob(f'{args.profiledir}/*.profdata')
+    profdata_files = glob.glob(f'{args.profiledir}/*{args.suffix}')
     _LOGGER.debug(f"Found {len(profdata_files)} profdata files")
     if not profdata_files:
         raise RuntimeError(f'No profdata files found in {args.profiledir}')
@@ -438,7 +452,7 @@ def main():
         _LOGGER.setLevel(logging.WARN)
 
     if not os.path.exists(_PROFDATA):
-        if args.is_bot:
+        if args.isolated_script_test_output:
             _LOGGER.warning(f'{_PROFDATA} missing on bot, {_LLVM_DIR}:')
             for root, _, files in os.walk(_LLVM_DIR):
                 for f in files:

@@ -10,52 +10,47 @@ import("//testing/test.gni")
 # now instead of using a variable for better searchability.
 # import("//tools/perf/chrome_telemetry_build/android_browser_types.gni")
 
-_script_name = "//tools/pgo/generate_profile.py"
-
-_common_args = [
-  # Assume that we are running this script from the output directory.
-  "--builddir",
-  ".",
-  "--is-bot",
-  "--android-browser",
-]
-
-_common_data_deps = [
-  # Likely the following are not all necessary just to run
-  # `tools/perf/run_benchmark` but it is easier to get started by mirroring.
-  # From performance_test_suite_template_base:
-  "//components:components_perftests",
-  "//testing:run_perf_test",
-  "//third_party/dawn/src/tint/cmd/bench:bench_cmd",
-
-  # From performance_test_suite_template_android:
-  # The target-specific ones will need to be added for each target, e.g.
-  # "//chrome/test:telemetry_perf_tests${suffix}"
-]
-
-_common_data = [
-  # This avoids generate_profile.py attempting to download it on demand.
-  "${clang_base_path}/bin/llvm-profdata",
-]
-
 if (enable_chrome_android_internal) {
-  isolated_script_test("generate_profile_android_clank_trichrome_bundle") {
-    script = _script_name
-    args = _common_args + [ "android-trichrome-bundle" ]
-    data_deps = _common_data_deps
-    data_deps +=
-        [ "//chrome/test:telemetry_perf_tests_android_clank_trichrome_bundle" ]
-    data = _common_data
+  template("generate_profile_test") {
+    script_test(target_name) {
+      script = "//tools/pgo/generate_profile.py"
+
+      # Stream logcat from device.
+      enable_android_wrapper = true
+
+      args = [
+        # Assume that we are running this script from the output directory.
+        "--builddir",
+        ".",
+        "--android-browser",
+        invoker.browser_name,
+      ]
+
+      data_deps = [
+        # From performance_test_suite_template_base:
+        "//chrome/test:telemetry_perf_tests${invoker.suffix}",
+
+        # From performance_test_suite_template_android:
+        "//components:components_perftests",
+        "//testing:run_perf_test",
+        "//third_party/dawn/src/tint/cmd/bench:bench_cmd",
+      ]
+
+      # This avoids generate_profile.py attempting to download it on demand.
+      data = [ "${clang_base_path}/bin/llvm-profdata" ]
+    }
+  }
+
+  generate_profile_test("generate_profile_android_clank_trichrome_bundle") {
+    browser_name = "android-trichrome-bundle"
+    suffix = "_android_clank_trichrome_bundle"
   }
 
   if (android_64bit_target_cpu) {
-    isolated_script_test(
+    generate_profile_test(
         "generate_profile_android_clank_trichrome_chrome_google_64_32_bundle") {
-      script = _script_name
-      args = _common_args + [ "android-trichrome-chrome-google-64-32-bundle" ]
-      data_deps = _common_data_deps
-      data_deps += [ "//chrome/test:telemetry_perf_tests_android_clank_trichrome_chrome_google_64_32_bundle" ]
-      data = _common_data
+      browser_name = "android-trichrome-chrome-google-64-32-bundle"
+      suffix = "_android_clank_trichrome_chrome_google_64_32_bundle"
     }
   }
 }
