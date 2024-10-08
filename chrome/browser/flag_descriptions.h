@@ -4883,6 +4883,11 @@ extern const char kProfilesReorderingName[];
 extern const char kProfilesReorderingDescription[];
 #endif
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+extern const char kBatchUploadDesktopName[];
+extern const char kBatchUploadDesktopDescription[];
+#endif
+
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 extern const char kEnableBoundSessionCredentialsName[];
 extern const char kEnableBoundSessionCredentialsDescription[];

@@ -977,6 +977,11 @@
     "expiry_milestone": 132
   },
   {
+    "name": "batch-upload-desktop",
+    "owners": ["rsult@google.com", "chrome-signin-team@google.com"],
+    "expiry_milestone": 134
+  },
+  {
     "name": "battery-badge-icon",
     "owners": [
       "bbetini@google.com",

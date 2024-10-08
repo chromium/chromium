@@ -10581,6 +10581,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(kProfilesReordering)},
 #endif
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+    {"batch-upload-desktop", flag_descriptions::kBatchUploadDesktopName,
+     flag_descriptions::kBatchUploadDesktopDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(switches::kBatchUploadDesktop)},
+#endif
+
     {"autofill-require-valid-local-cards-in-settings",
      flag_descriptions::kAutofillRequireValidLocalCardsInSettingsName,
      flag_descriptions::kAutofillRequireValidLocalCardsInSettingsDescription,
