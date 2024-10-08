@@ -273,6 +273,15 @@ void FeaturedSearchProvider::AddStarterPackMatch(
     match.allowed_to_be_default_match = false;
     match.keyword = template_url.keyword();
   } else {
+    // The Gemini provider should be ranked first.
+    // TODO(b/41494524): Currently templateurlservice returns the keywords in
+    //  alphabetical order, which is the order we rank them. There should be a
+    //  more sustainable way for specifying the order they should appear in the
+    //  omnibox.
+    if (OmniboxFieldTrial::IsStarterPackExpansionEnabled() &&
+        template_url.starter_pack_id() == TemplateURLStarterPackData::kGemini) {
+      match.relevance = kGeminiRelevance;
+    }
     match.description = template_url.short_name();
     match.description_class.emplace_back(0, ACMatchClassification::NONE);
     match.contents = destination_url;
