@@ -301,10 +301,13 @@ void KioskBrowserSession::OnAppWindowAdded(AppWindow* app_window) {
 
 void KioskBrowserSession::OnGuestAdded(
     content::WebContents* guest_web_contents) {
-  CHECK(extensions::WebViewGuest::FromWebContents(guest_web_contents));
-
   // Bail if the session is shutting down.
   if (is_shutting_down()) {
+    return;
+  }
+
+  // Bail if the guest is not a WebViewGuest.
+  if (!extensions::WebViewGuest::FromWebContents(guest_web_contents)) {
     return;
   }
 
