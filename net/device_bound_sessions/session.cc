@@ -120,7 +120,7 @@ std::unique_ptr<Session> Session::CreateFromProto(const proto::Session& proto) {
 
 proto::Session Session::ToProto() const {
   proto::Session session_proto;
-  session_proto.set_id(static_cast<std::string>(id_));
+  session_proto.set_id(*id_);
   session_proto.set_refresh_url(refresh_url_.spec());
   session_proto.set_should_defer_when_expired(should_defer_when_expired_);
   session_proto.set_expiry_time(

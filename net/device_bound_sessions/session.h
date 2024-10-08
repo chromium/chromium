@@ -40,6 +40,21 @@ class NET_EXPORT Session {
   static std::unique_ptr<Session> CreateFromProto(const proto::Session& proto);
   proto::Session ToProto() const;
 
+  // Used to set the unexportable session binding key associated with this
+  // session. This method can be called when a session is first bound with
+  // a brand new key. It can also be called when restoring a session after
+  // browser restart.
+  void set_unexportable_key_id(
+      unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
+          key_id_or_error) {
+    key_id_or_error_ = std::move(key_id_or_error);
+  }
+
+  const unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>&
+  unexportable_key_id() const {
+    return key_id_or_error_;
+  }
+
   // this bool could also be an enum for UMA, eventually devtools, etc.
   bool ShouldDeferRequest(URLRequest* request) const;
 
@@ -51,6 +66,8 @@ class NET_EXPORT Session {
     return cached_challenge_;
   }
 
+  const base::Time& expiry_date() const { return expiry_date_; }
+
   bool should_defer_when_expired() const { return should_defer_when_expired_; }
 
   bool IsEqualForTesting(const Session& other) const;
@@ -58,6 +75,8 @@ class NET_EXPORT Session {
   void set_cached_challenge(std::string challenge) {
     cached_challenge_ = std::move(challenge);
   }
+
+  void set_expiry_date(base::Time expiry_date) { expiry_date_ = expiry_date; }
 
  private:
   Session(Id id, url::Origin origin, GURL refresh);
@@ -94,13 +113,13 @@ class NET_EXPORT Session {
   bool should_defer_when_expired_ = true;
   // Expiry date for session, 400 days from last refresh similar to cookies.
   base::Time expiry_date_;
-  // Unexportable key for this session. Once provisioned, this will never
-  // change.
+  // Unexportable key for this session.
   // NOTE: The key may not be available for sometime after a browser restart.
   // This is because the key needs to be restored from a corresponding
   // "wrapped" value that is persisted to disk. This restoration takes time
   // and can be done lazily. The "wrapped" key and the restore process are
-  // transparent to this class.
+  // transparent to this class. Once restored, the key can be set using
+  // `set_unexportable_key_id`
   unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
       key_id_or_error_ =
           base::unexpected(unexportable_keys::ServiceError::kKeyNotReady);

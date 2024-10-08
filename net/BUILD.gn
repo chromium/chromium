@@ -1189,13 +1189,18 @@ component("net") {
       "device_bound_sessions/session_service.h",
       "device_bound_sessions/session_service_impl.cc",
       "device_bound_sessions/session_service_impl.h",
+      "device_bound_sessions/session_store.h",
+      "device_bound_sessions/session_store_impl.cc",
+      "device_bound_sessions/session_store_impl.h",
       "device_bound_sessions/unexportable_key_service_factory.cc",
       "device_bound_sessions/unexportable_key_service_factory.h",
     ]
 
     deps += [
       ":device_bound_sessions_storage_proto",
+      "//components/sqlite_proto",
       "//components/unexportable_keys:unexportable_keys",
+      "//sql:sql",
     ]
   }
 
@@ -3335,6 +3340,7 @@ target(_test_target_type, "net_unittests") {
       "device_bound_sessions/session_inclusion_rules_unittest.cc",
       "device_bound_sessions/session_service_impl_unittest.cc",
       "device_bound_sessions/session_service_unittest.cc",
+      "device_bound_sessions/session_store_impl_unittest.cc",
       "device_bound_sessions/session_unittest.cc",
       "device_bound_sessions/test_util.cc",
       "device_bound_sessions/test_util.h",
@@ -3380,6 +3386,16 @@ if (!is_ios) {
       # Needed for isolate script to execute.
       "//testing:run_perf_test",
     ]
+
+    if (enable_device_bound_sessions) {
+      sources += [ "device_bound_sessions/session_store_impl_perftest.cc" ]
+      deps += [
+        ":device_bound_sessions_storage_proto",
+        "//components/unexportable_keys:unexportable_keys",
+        "//crypto:test_support",
+      ]
+    }
+
     if (enable_websockets) {
       sources += [ "websockets/websocket_frame_perftest.cc" ]
     }
