@@ -334,7 +334,7 @@ crbug.com/333739950 [ Mac ] virtual/threaded/external/wpt/css/css-view-transitio
 # View transition SPA failures with MPA serialization.
 crbug.com/1443559 [ Mac ] virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/fractional-translation-from-transform.html [ Failure ]
 
-# This should always fail when serializing. It's a same-doc feature only. 
+# This should always fail when serializing. It's a same-doc feature only.
 crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/auto-name.html [ Failure ]
 crbug.com/1443559 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/auto-name-from-id-shadow.html [ Failure ]
 
@@ -8170,3 +8170,6 @@ crbug.com/371060464 external/wpt/compute-pressure/compute_pressure_disconnect_im
 crbug.com/827209 [ Release Win ] fast/events/middleClickAutoscroll-latching.html [ Failure Pass Timeout ]
 crbug.com/827209 [ Linux ] fast/events/middleClickAutoscroll-latching.html [ Failure Pass Timeout ]
 crbug.com/827209 [ Mac14 ] fast/events/middleClickAutoscroll-latching.html [ Failure Pass Timeout ]
+
+# Gardener 2024-10-11
+crbug.com/372293920 [ Mac ] wpt_internal/webxr/ar/ar_hittestsource_lifetimes.https.html [ Failure Pass ]
