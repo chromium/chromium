@@ -72,13 +72,13 @@ class ContextMenuConfigurationProviderTest : public PlatformTest {
  protected:
   void SetUp() final {
     PlatformTest::SetUp();
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
         base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
                                 BuildIdentityManagerForTests));
-    browser_state_ = std::move(builder).Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     std::unique_ptr<web::FakeWebState> web_state =
         std::make_unique<web::FakeWebState>();
     browser_->GetWebStateList()->InsertWebState(
@@ -125,7 +125,7 @@ class ContextMenuConfigurationProviderTest : public PlatformTest {
   // Sign-in with a fake account.
   void SignIn() {
     signin::MakePrimaryAccountAvailable(
-        IdentityManagerFactory::GetForProfile(browser_state_.get()),
+        IdentityManagerFactory::GetForProfile(profile_.get()),
         kPrimaryAccountEmail, signin::ConsentLevel::kSignin);
   }
 
@@ -152,7 +152,7 @@ class ContextMenuConfigurationProviderTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;
   ContextMenuConfigurationProvider* configuration_provider_;

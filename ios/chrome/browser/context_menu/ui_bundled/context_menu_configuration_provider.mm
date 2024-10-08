@@ -215,8 +215,8 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   const GURL imageURL = params.src_url;
   const bool isImage = imageURL.is_valid();
 
-  DCHECK(self.browser->GetBrowserState());
-  const bool isOffTheRecord = self.browser->GetBrowserState()->IsOffTheRecord();
+  DCHECK(self.browser->GetProfile());
+  const bool isOffTheRecord = self.browser->GetProfile()->IsOffTheRecord();
 
   const GURL& lastCommittedURL = webState->GetLastCommittedURL();
   web::Referrer referrer(lastCommittedURL, web::ReferrerPolicyDefault);
@@ -543,9 +543,9 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   web::NavigationManager::WebLoadParams webParams =
       ImageSearchParamGenerator::LoadParamsForImageData(
           imageData, URL,
-          ios::TemplateURLServiceFactory::GetForBrowserState(
-              self.browser->GetBrowserState()));
-  const BOOL isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
+          ios::TemplateURLServiceFactory::GetForProfile(
+              self.browser->GetProfile()));
+  const BOOL isIncognito = self.browser->GetProfile()->IsOffTheRecord();
 
   // Apply variation header data to the params.
   NSMutableDictionary<NSString*, NSString*>* combinedExtraHeaders =
@@ -582,7 +582,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   __weak __typeof(self) weakSelf = self;
 
   std::set<const TabGroup*> groups =
-      GetAllGroupsForProfile(self.browser->GetBrowserState());
+      GetAllGroupsForProfile(self.browser->GetProfile());
 
   auto actionResult = ^(const TabGroup* group) {
     ContextMenuConfigurationProvider* strongSelf = weakSelf;
@@ -691,8 +691,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   // TODO(crbug.com/351817704): Save to photo is not presented in the
   // baseViewController.
   const bool saveToPhotosAvailable =
-      !_isLensOverlay &&
-      IsSaveToPhotosAvailable(self.browser->GetBrowserState());
+      !_isLensOverlay && IsSaveToPhotosAvailable(self.browser->GetProfile());
 
   BrowserActionFactory* actionFactory =
       [[BrowserActionFactory alloc] initWithBrowser:self.browser
@@ -769,8 +768,7 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   // Search the image using Lens if Lens is enabled and available. Otherwise
   // fall back to a standard search by image experience.
   TemplateURLService* service =
-      ios::TemplateURLServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      ios::TemplateURLServiceFactory::GetForProfile(self.browser->GetProfile());
 
   const BOOL useLens =
       lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
