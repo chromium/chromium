@@ -129,6 +129,13 @@ constexpr float kRotationNinetyCW = (90 / 180.0) * M_PI;
           constraintEqualToAnchor:self.contentView.trailingAnchor
                          constant:-HorizontalPadding()]
     ]];
+
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+          @[ UITraitPreferredContentSizeCategory.self ]);
+      [self registerForTraitChanges:traits
+                         withAction:@selector(updateFontOnTraitChange)];
+    }
   }
   return self;
 }
@@ -143,18 +150,19 @@ constexpr float kRotationNinetyCW = (90 / 180.0) * M_PI;
   }
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
   if (previousTraitCollection.preferredContentSizeCategory !=
       self.traitCollection.preferredContentSizeCategory) {
-    UIFontDescriptor* baseDescriptor = [UIFontDescriptor
-        preferredFontDescriptorWithTextStyle:UIFontTextStyleHeadline];
-    UIFontDescriptor* styleDescriptor = [baseDescriptor
-        fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
-    self.titleLabel.font = [UIFont fontWithDescriptor:styleDescriptor
-                                                 size:kUseDefaultFontSize];
+    [self updateFontOnTraitChange];
   }
 }
+#endif
 
 #pragma mark - public methods
 
@@ -232,6 +240,16 @@ constexpr float kRotationNinetyCW = (90 / 180.0) * M_PI;
                                       : UIColor.clearColor;
   }
   return _cellDefaultBackgroundColor;
+}
+
+// Updates the font of the title label when UITraits have changed.
+- (void)updateFontOnTraitChange {
+  UIFontDescriptor* baseDescriptor = [UIFontDescriptor
+      preferredFontDescriptorWithTextStyle:UIFontTextStyleHeadline];
+  UIFontDescriptor* styleDescriptor = [baseDescriptor
+      fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
+  self.titleLabel.font = [UIFont fontWithDescriptor:styleDescriptor
+                                               size:kUseDefaultFontSize];
 }
 
 #pragma mark - Accessibility
