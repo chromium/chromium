@@ -162,6 +162,14 @@ std::unique_ptr<test_server::HttpResponse> ReturnResponse(
   return response;
 }
 
+std::unique_ptr<test_server::HttpResponse> ReturnUnauthorized(
+    const test_server::HttpRequest& request) {
+  auto response = std::make_unique<test_server::BasicHttpResponse>();
+  response->set_code(HTTP_UNAUTHORIZED);
+  response->AddCustomHeader("Sec-Session-Challenge", R"("challenge")");
+  return response;
+}
+
 std::unique_ptr<test_server::HttpResponse> ReturnTextResponse(
     const test_server::HttpRequest& request) {
   auto response = std::make_unique<test_server::BasicHttpResponse>();
@@ -176,6 +184,24 @@ std::unique_ptr<test_server::HttpResponse> ReturnInvalidResponse(
   return std::make_unique<test_server::RawHttpResponse>(
       "", "Not a valid HTTP response.");
 }
+
+class UnauthorizedThenSuccessResponseContainer {
+ public:
+  UnauthorizedThenSuccessResponseContainer(int unauthorize_response_times)
+      : run_times(0), error_respose_times(unauthorize_response_times) {}
+
+  std::unique_ptr<test_server::HttpResponse> Return(
+      const test_server::HttpRequest& request) {
+    if (run_times++ < error_respose_times) {
+      return ReturnUnauthorized(request);
+    }
+    return ReturnResponse(HTTP_OK, kBasicValidJson, request);
+  }
+
+ private:
+  int run_times;
+  int error_respose_times;
+};
 
 TEST_F(RegistrationTest, BasicSuccess) {
   crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
@@ -652,6 +678,36 @@ TEST_F(RegistrationTest, ServerError500) {
   callback.WaitForCall();
 
   EXPECT_EQ(callback.outcome(), std::nullopt);
+}
+
+TEST_F(RegistrationTest, ServerErrorReturnOne401ThenSuccess) {
+  crypto::ScopedMockUnexportableKeyProvider scoped_mock_key_provider_;
+
+  auto* container = new UnauthorizedThenSuccessResponseContainer(1);
+  server_.RegisterRequestHandler(
+      base::BindRepeating(&UnauthorizedThenSuccessResponseContainer::Return,
+                          base::Owned(container)));
+  ASSERT_TRUE(server_.Start());
+
+  TestRegistrationCallback callback;
+  RegistrationFetcherParam params = GetBasicParam();
+  RegistrationFetcher::StartCreateTokenAndFetch(
+      std::move(params), unexportable_key_service(), context_.get(),
+      IsolationInfo::CreateTransient(), callback.callback());
+  callback.WaitForCall();
+
+  std::optional<RegistrationFetcher::RegistrationCompleteParams> out_params =
+      callback.outcome();
+  ASSERT_TRUE(out_params);
+  EXPECT_TRUE(out_params->params.scope.include_site);
+  EXPECT_THAT(out_params->params.scope.specifications,
+              ElementsAre(SessionParams::Scope::Specification(
+                  SessionParams::Scope::Specification::Type::kInclude,
+                  "trusted.example.com", "/only_trusted_path")));
+  EXPECT_THAT(
+      out_params->params.credentials,
+      ElementsAre(SessionParams::Credential(
+          "auth_cookie", "Domain=example.com; Path=/; Secure; SameSite=None")));
 }
 
 std::unique_ptr<test_server::HttpResponse> ReturnRedirect(
