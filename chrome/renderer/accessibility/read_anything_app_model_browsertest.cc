@@ -252,6 +252,9 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
   raw_ptr<ReadAnythingAppModel> model_ = nullptr;
 };
 
+// TODO(crbug.com/371596691): Add test to verify no crashes are happening
+// before initialization in IsDocs.
+
 TEST_F(ReadAnythingAppModelTest, FontName) {
   EXPECT_EQ(string_constants::kReadAnythingPlaceholderFontName, FontName());
 

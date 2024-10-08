@@ -468,6 +468,13 @@ void ReadAnythingAppModel::AddUrlInformationForTreeId(
 }
 
 bool ReadAnythingAppModel::IsDocs() const {
+  // Sometimes during an initial page load, this may be called before the
+  // tree has been initialized. If this happens, IsDocs should return false
+  // instead of crashing.
+  if (!tree_infos_.contains(active_tree_id_)) {
+    return false;
+  }
+
   return tree_infos_.at(active_tree_id_)->is_docs;
 }
 
