@@ -228,7 +228,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/system_web_apps:unit_tests",
     "//chrome/browser/ash/tether:unit_tests",
     "//chrome/browser/ash/tpm:unit_tests",
-    "//chrome/browser/ash/trusted_vault:unit_tests",
     "//chrome/browser/ash/usb:unit_tests",
     "//chrome/browser/ash/video_conference:unit_tests",
     "//chrome/browser/ash/wallpaper_handlers:unit_tests",

@@ -23,10 +23,6 @@ BASE_FEATURE(kSetClientEncryptionKeysJsApi,
 BASE_FEATURE(kChromeOSTrustedVaultUseWebUIDialog,
              "ChromeOSTrustedVaultUseWebUIDialog",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kChromeOSTrustedVaultClientShared,
-             "ChromeOSTrustedVaultClientShared",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 }  // namespace trusted_vault

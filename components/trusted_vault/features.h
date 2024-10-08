@@ -34,15 +34,9 @@ BASE_DECLARE_FEATURE(kSetClientEncryptionKeysJsApi);
 // If enabled - trusted vault error pages will be opened in WebUI dialog instead
 // of browser tab. In Ash this behavioral change additionally guarded by
 // LacrosOnly mode.
+// TODO(crbug.com/372221465): decide whether we want to keep this without
+// lacros.
 BASE_DECLARE_FEATURE(kChromeOSTrustedVaultUseWebUIDialog);
-
-// Enables sharing of the Chrome Sync TrustedVaultClient between Ash and Lacros
-// main profile via Crosapi: Ash will keep a stateful TrustedVaultClient and
-// Lacros will use it via IPC to implement stateless TrustedVaultClient.
-//
-// Passkeys TrustedVaultClients are not controlled by this flag, they always
-// share state between Ash and Lacros.
-BASE_DECLARE_FEATURE(kChromeOSTrustedVaultClientShared);
 #endif
 
 }  // namespace trusted_vault

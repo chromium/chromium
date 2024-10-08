@@ -124,9 +124,6 @@
 #include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
 #include "chrome/browser/ash/sync/sync_mojo_service_ash.h"
 #include "chrome/browser/ash/sync/sync_mojo_service_factory_ash.h"
-#include "chrome/browser/ash/trusted_vault/trusted_vault_backend_ash.h"
-#include "chrome/browser/ash/trusted_vault/trusted_vault_backend_service_ash.h"
-#include "chrome/browser/ash/trusted_vault/trusted_vault_backend_service_factory_ash.h"
 #include "chrome/browser/ash/video_conference/video_conference_manager_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -1069,29 +1066,12 @@ void CrosapiAsh::BindTimeZoneService(
 
 void CrosapiAsh::BindTrustedVaultBackend(
     mojo::PendingReceiver<mojom::TrustedVaultBackend> receiver) {
-  if (!base::FeatureList::IsEnabled(
-          trusted_vault::kChromeOSTrustedVaultClientShared)) {
-    return;
-  }
-  auto* backend_service =
-      ash::TrustedVaultBackendServiceFactoryAsh::GetForProfile(GetAshProfile());
-  if (!backend_service) {
-    // Nullable in Guest profile.
-    return;
-  }
-  backend_service->chrome_sync_trusted_vault_backend()->BindReceiver(
-      std::move(receiver));
+  // Can be safely removed from Crosapi.
 }
 
 void CrosapiAsh::BindTrustedVaultBackendService(
     mojo::PendingReceiver<mojom::TrustedVaultBackendService> receiver) {
-  auto* backend_service =
-      ash::TrustedVaultBackendServiceFactoryAsh::GetForProfile(GetAshProfile());
-  if (!backend_service) {
-    // Nullable in Guest profile.
-    return;
-  }
-  backend_service->BindReceiver(std::move(receiver));
+  // Can be safely removed from Crosapi.
 }
 
 void CrosapiAsh::BindTts(mojo::PendingReceiver<mojom::Tts> receiver) {
