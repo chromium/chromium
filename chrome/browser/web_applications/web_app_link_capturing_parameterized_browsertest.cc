@@ -564,6 +564,14 @@ class WebAppLinkCapturingParameterizedBrowserTest
       return nullptr;  // This test is not using redirects.
     }
 
+    // The way the tests are currently set up, there should only be a single
+    // redirection happening on the way from a source to a destination url.
+    // Prevent multiple redirections from being triggered which causes a Chrome
+    // error page to show up, cancelling the navigation.
+    if (did_redirect_) {
+      return nullptr;
+    }
+
     // Strip out queries and fragments from the request url, since the id and
     // click type is appended by the test file to the url on click events for
     // debugging, which interferes with the redirection logic.
@@ -593,6 +601,8 @@ class WebAppLinkCapturingParameterizedBrowserTest
     response->AddCustomHeader("Access-Control-Allow-Origin", "*");
     response->set_content(base::StringPrintf(
         "<!doctype html><p>Redirecting to %s", redirect_to.spec().c_str()));
+
+    did_redirect_ = true;
     return response;
   }
 
@@ -1098,6 +1108,11 @@ class WebAppLinkCapturingParameterizedBrowserTest
 
   // Current expectations for this test (parsed from the test json file).
   std::optional<base::Value> test_expectations_;
+
+  // Prevent multiple redirections from triggering for an intermediate step in a
+  // redirection that matches the end site, preventing an infinite loop and a
+  // Chrome error page from showing up.
+  bool did_redirect_ = false;
 };
 
 // TODO(crbug.com/359600606): Enable on CrOS if needed.
@@ -1304,8 +1319,23 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(NavigationTarget::kBlank)),
     LinkCaptureTestParamToString);
 
-// TODO(crbug.com/372059334): Fix test infrastructure message handling to
-// support redirection that navigates existing windows without hanging.
+// Use-case where redirection goes into an intermediary target that matches the
+// final target app_id as a result of an user modified click.
+INSTANTIATE_TEST_SUITE_P(
+    Redirection_NavigateCurrent,
+    WebAppLinkCapturingParameterizedBrowserTest,
+    testing::Combine(
+        testing::Values(blink::mojom::ManifestLaunchHandler_ClientMode::kAuto),
+        testing::Values(LinkCapturing::kEnabled),
+        testing::Values(StartingPoint::kAppWindow),
+        testing::Values(Destination::kScopeA2B),
+        testing::Values(RedirectType::kServerSideViaB),
+        testing::Values(NavigationElement::kElementLink),
+        testing::Values(test::ClickMethod::kMiddleClick,
+                        test::ClickMethod::kShiftClick),
+        testing::Values(OpenerMode::kOpener),
+        testing::Values(NavigationTarget::kBlank)),
+    LinkCaptureTestParamToString);
 
 // This is a derived test fixture that allows us to test Navigation Capturing
 // code that relies on an app being launched in the background, so we can
