@@ -58,7 +58,8 @@ import org.chromium.url.GURL;
     private final TabModel mTabModel;
     private final PlusAddressCreationViewBridge mBridge;
     private PropertyModel mModel;
-    private String mProposedPlusAddress;
+    @Nullable private String mProposedPlusAddress;
+    @Nullable private PlusAddressCreationErrorStateInfo mErrorStateInfo;
 
     /**
      * Creates the mediator.
@@ -136,7 +137,14 @@ import org.chromium.url.GURL;
             mModel.set(LOADING_INDICATOR_VISIBLE, false);
             return;
         }
-        mModel.set(ERROR_STATE_INFO, errorStateInfo);
+        if (mModel.get(LOADING_INDICATOR_VISIBLE)) {
+            // If the loading view is visible, hide it first and then show the error screen to avoid
+            // UI glitches.
+            mErrorStateInfo = errorStateInfo;
+            mModel.set(LOADING_INDICATOR_VISIBLE, false);
+        } else {
+            mModel.set(ERROR_STATE_INFO, errorStateInfo);
+        }
     }
 
     void hideRefreshButton() {
@@ -182,6 +190,14 @@ import org.chromium.url.GURL;
     }
 
     @Override
+    public void onConfirmationLoadingViewHidden() {
+        if (mModel.get(VISIBLE) && mErrorStateInfo != null) {
+            mModel.set(ERROR_STATE_INFO, mErrorStateInfo);
+            mErrorStateInfo = null;
+        }
+    }
+
+    @Override
     public void onTryAgain() {
         boolean wasPlusAddressReserved = mModel.get(ERROR_STATE_INFO).wasPlusAddressReserved();
         mModel.set(ERROR_STATE_INFO, null);
@@ -205,6 +221,7 @@ import org.chromium.url.GURL;
 
     @Override
     public void onPromptDismissed() {
+        mModel.set(VISIBLE, false);
         mBridge.onPromptDismissed();
     }
 
@@ -220,6 +237,7 @@ import org.chromium.url.GURL;
     // EmptyBottomSheetObserver overridden methods follow:
     @Override
     public void onSheetClosed(@StateChangeReason int reason) {
+        mModel.set(VISIBLE, false);
         // Swipe to dismiss should record cancel metrics.
         if (reason == StateChangeReason.SWIPE) {
             mBridge.onCanceled();

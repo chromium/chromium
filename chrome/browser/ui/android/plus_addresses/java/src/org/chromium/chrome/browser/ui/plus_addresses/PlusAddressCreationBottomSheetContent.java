@@ -127,6 +127,21 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
         mPlusAddressCancelButton.setOnClickListener(unused -> mDelegate.onCanceled());
 
         mLoadingView = mContentView.findViewById(R.id.plus_address_creation_loading_view);
+        // {@link LoadingView} is shown and hidden with a delay. This prevents the bottom sheet to
+        // adjust its height automatically. This observer ensures that the bottom sheet height is
+        // adjusted after every loading view state change event.
+        mLoadingView.addObserver(
+                new LoadingView.Observer() {
+                    @Override
+                    public void onShowLoadingUIComplete() {}
+
+                    @Override
+                    public void onHideLoadingUIComplete() {
+                        if (mDelegate != null) {
+                            mDelegate.onConfirmationLoadingViewHidden();
+                        }
+                    }
+                });
 
         mErrorContentStub = mContentView.findViewById(R.id.plus_address_error_container_stub);
 
@@ -233,6 +248,10 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
         } else {
             mLoadingView.hideLoadingUI();
         }
+    }
+
+    void expandSheet() {
+        mBottomSheetController.expandSheet();
     }
 
     // BottomSheetContent implementation follows:

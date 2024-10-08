@@ -467,6 +467,7 @@ public class PlusAddressCreationModuleTest {
 
         // Simulate that the error occurred.
         mCoordinator.showError(info);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verifyErrorScreenIsShown(view, info);
 
         // Click ok button and check that the initial screen in shown.
@@ -483,6 +484,7 @@ public class PlusAddressCreationModuleTest {
 
         // Simulate that the error occurred again.
         mCoordinator.showError(info);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verifyErrorScreenIsShown(view, info);
 
         // Click cancel button to hide the bottom sheet.
@@ -575,6 +577,7 @@ public class PlusAddressCreationModuleTest {
 
         // Simulate that the reserve request timed out.
         mCoordinator.showError(createQuotaError);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verifyErrorScreenIsShown(view, createQuotaError);
 
         // Click ok button and check that the bottom sheet gets hidden.
@@ -601,6 +604,7 @@ public class PlusAddressCreationModuleTest {
 
         // Simulate that the reserve request timed out.
         mCoordinator.showError(createAffiliationError);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verifyErrorScreenIsShown(view, createAffiliationError);
 
         // Click ok button and check that the bottom sheet gets hidden.
@@ -633,6 +637,7 @@ public class PlusAddressCreationModuleTest {
 
         // Simulate that the reserve request timed out.
         mCoordinator.showError(createAffiliationError);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verifyErrorScreenIsShown(view, createAffiliationError);
 
         // Click ok button and check that the bottom sheet gets hidden.

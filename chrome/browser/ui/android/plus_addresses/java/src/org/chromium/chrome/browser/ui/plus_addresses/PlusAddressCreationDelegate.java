@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.ui.plus_addresses;
 
 import org.chromium.url.GURL;
 
-/** The set of operations that inform the C++ side of actions taken. */
+/** The set of operations to inform the view delegate about UI events. */
 public interface PlusAddressCreationDelegate {
     /** Called when the sninner before the generated plus address gets hidden. */
     public void onPlusAddressLoadingViewHidden();
@@ -16,6 +16,9 @@ public interface PlusAddressCreationDelegate {
 
     /** Called when the user clicks the confirm button. */
     public void onConfirmRequested();
+
+    /** Called when the confirmation loading view is hidden. */
+    public void onConfirmationLoadingViewHidden();
 
     /** Called when the user clicks the "Try again" button on the error screen. */
     public void onTryAgain();
