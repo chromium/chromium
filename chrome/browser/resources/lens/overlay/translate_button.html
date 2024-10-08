@@ -2,14 +2,18 @@
   #arrowRightIcon {
     background-color: var(--color-surface-container-highest-dark);
     display: block;
-    height: 16px;
+    height: 20px;
     flex-shrink: 0;
     margin-block: auto;
-    mask-image: url('bidirectional_arrow.svg');
+    mask-image: url('arrow_right.svg');
     mask-position: center;
     mask-repeat: no-repeat;
     mask-size: 100%;
     width: 20px;
+  }
+
+  :dir(rtl) #arrowRightIcon {
+    transform: scaleX(-1);
   }
 
   .button {
