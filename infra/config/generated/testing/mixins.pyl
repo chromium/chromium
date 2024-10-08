@@ -1273,12 +1273,12 @@
   'xcode_16_1_beta': {
     'args': [
       '--xcode-build-version',
-      '16b5001e',
+      '16b5029d',
     ],
     'swarming': {
       'named_caches': [
         {
-          'name': 'xcode_ios_16b5001e',
+          'name': 'xcode_ios_16b5029d',
           'path': 'Xcode.app',
         },
       ],
