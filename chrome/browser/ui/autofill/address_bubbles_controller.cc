@@ -19,6 +19,7 @@
 #include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/promos/promos_types.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/autofill/add_new_address_bubble_controller.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
@@ -28,7 +29,9 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/promos/ios_promos_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
@@ -174,6 +177,15 @@ void AddressBubblesController::OnUserDecision(
   if (address_profile_save_prompt_callback_) {
     std::move(address_profile_save_prompt_callback_).Run(decision, profile);
   }
+
+// TODO(crbug.com/372209715): Extract out of GOOGLE_CHROME_BRANDING flag.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if ((decision == AutofillClient::AddressPromptUserDecision::kAccepted ||
+       decision == AutofillClient::AddressPromptUserDecision::kEditAccepted) &&
+      base::FeatureList::IsEnabled(::features::kIOSPromoAddressBubble)) {
+    MaybeShowIOSDektopAddressPromo();
+  }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 void AddressBubblesController::OnBubbleClosed() {
@@ -261,6 +273,19 @@ void AddressBubblesController::SetUpAndShowBubble(
   is_migration_to_account_ = is_migration_to_account;
 
   Show();
+}
+
+void AddressBubblesController::MaybeShowIOSDektopAddressPromo() {
+  // TODO(crbug.com/372209715): Extract out of GOOGLE_CHROME_BRANDING flag.
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  Browser* browser = chrome::FindBrowserWithTab(web_contents());
+
+  // Verify if user is eligible for iOS promo, and attempt showing if they are.
+  ios_promos_utils::VerifyIOSPromoEligibility(
+      IOSPromoType::kAddress, browser->profile(),
+      BrowserView::GetBrowserViewForBrowser(browser)
+          ->toolbar_button_provider());
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AddressBubblesController);
