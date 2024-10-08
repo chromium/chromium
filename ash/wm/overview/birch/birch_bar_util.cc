@@ -51,6 +51,7 @@ std::unique_ptr<views::Button> CreateCoralAddonButton(
       accessible_name, /*is_togglable=*/true, /*has_border=*/true);
   button->SetProperty(views::kMarginsKey, kAddonMargins);
   button->SetBackgroundColor(cros_tokens::kCrosSysSystemBaseElevated);
+  button->SetIconColor(cros_tokens::kCrosSysSecondary);
   return button;
 }
 

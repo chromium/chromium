@@ -256,21 +256,23 @@ END_METADATA
 TabAppSelectionView::TabAppSelectionView(BirchCoralItem* coral_item) {
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStretch);
   SetOrientation(views::BoxLayout::Orientation::kVertical);
+  SetBackground(views::CreateThemedRoundedRectBackground(
+      cros_tokens::kCrosSysSystemOnBaseOpaque, kContainerCornerRadius, 0));
 
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>(
       views::ScrollView::ScrollWithLayers::kEnabled));
   scroll_view_->ClipHeightTo(/*min_height=*/0,
                              /*max_height=*/kScrollViewMaxHeight);
-  // TODO(http://b/361326120): This applies a rectangle themed background. We
-  // will need to set this to std::nullopt and apply a rounded rectangle
-  // background elsewhere, or clip the contents after it has been set (painted
-  // to a layer).
-  scroll_view_->SetBackgroundThemeColorId(
-      cros_tokens::kCrosSysSystemOnBaseOpaque);
+  // This applies a non-rounded rectangle themed background. We set this to
+  // std::nullopt and apply a rounded rectangle background above on the whole
+  // view. We still need to set the viewport rounded corner radius to clip the
+  // child backgrounds when they are hovered over.
+  scroll_view_->SetBackgroundThemeColorId(std::nullopt);
   scroll_view_->SetBorder(std::make_unique<views::HighlightBorder>(
       kContainerCornerRadius,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));
   scroll_view_->SetViewportRoundedCornerRadius(kContainerCornerRadius);
+  scroll_view_->SetDrawOverflowIndicator(false);
 
   AddChildView(views::Builder<views::Separator>()
                    .SetColorId(cros_tokens::kCrosSysSeparator)

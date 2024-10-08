@@ -22,6 +22,8 @@ class BirchChipButtonBase : public views::Button {
   BirchChipButtonBase& operator=(const BirchChipButtonBase&) = delete;
   ~BirchChipButtonBase() override;
 
+  void SetTopHalfRounded(bool rounded);
+
   // Configure the chip with given `item`.
   virtual void Init(BirchItem* item) = 0;
 
@@ -31,6 +33,16 @@ class BirchChipButtonBase : public views::Button {
 
   // Shut down the chip while destroying the bar view.
   virtual void Shutdown() = 0;
+
+ private:
+  // Updates all the UI that will be affected by rounded corner change (border,
+  // background, focus ring).
+  void UpdateRoundedCorners();
+
+  // Most birch buttons have rounded corners on all sides. The exception is the
+  // birch coral chip whose top corners are not rounded when the tab app
+  // selector widget is shown.
+  bool top_half_rounded_ = true;
 };
 
 BEGIN_VIEW_BUILDER(/*no export*/, BirchChipButtonBase, views::Button)

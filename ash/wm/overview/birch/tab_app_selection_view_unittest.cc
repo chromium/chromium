@@ -69,8 +69,7 @@ class TabAppSelectionViewTest : public AshTestBase {
   }
 
   // Brings up the selector menu host object by entering overview and clicking
-  // the birch coral chip. Note that the overview session is a temporary owner
-  // for the host object.
+  // the birch coral chip.
   TabAppSelectionHost* ShowAndGetSelectorMenu() {
     EnterOverview();
 
@@ -142,6 +141,27 @@ TEST_F(TabAppSelectionViewTest, CloseSelectorItems) {
       selection_view->GetViewByID(TabAppSelectionView::kTabSubtitleID));
   EXPECT_FALSE(
       selection_view->GetViewByID(TabAppSelectionView::kCloseButtonID));
+}
+
+// Tests clicking outside the selector view closes it.
+TEST_F(TabAppSelectionViewTest, PressToHideMenu) {
+  TabAppSelectionHost* menu = ShowAndGetSelectorMenu();
+  ASSERT_TRUE(menu);
+
+  // Clicks on the selector itself should not hide it.
+  LeftClickOn(menu->GetContentsView());
+  EXPECT_TRUE(menu->IsVisible());
+
+  // Test clicking outside the selector.
+  GetEventGenerator()->MoveMouseTo(gfx::Point(1, 1));
+  GetEventGenerator()->ClickLeftButton();
+  EXPECT_TRUE(!menu->IsVisible());
+
+  // Test tapping outside the selector.
+  menu = ShowAndGetSelectorMenu();
+  ASSERT_TRUE(menu);
+  GetEventGenerator()->GestureTapAt(gfx::Point(1, 1));
+  EXPECT_TRUE(!menu->IsVisible());
 }
 
 }  // namespace ash

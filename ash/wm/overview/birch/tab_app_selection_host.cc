@@ -6,6 +6,7 @@
 
 #include "ash/birch/birch_coral_item.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/shell.h"
 #include "ash/style/icon_button.h"
 #include "ash/wm/overview/birch/birch_chip_button.h"
 #include "ash/wm/overview/birch/birch_chip_button_base.h"
@@ -13,14 +14,55 @@
 #include "ash/wm/window_properties.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/aura/window.h"
+#include "ui/events/event_handler.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 
+class TabAppSelectionHost::SelectionHostHider : public ui::EventHandler {
+ public:
+  explicit SelectionHostHider(TabAppSelectionHost* owner) : owner_(owner) {
+    Shell::Get()->AddPreTargetHandler(this);
+  }
+  SelectionHostHider(const SelectionHostHider&) = delete;
+  SelectionHostHider& operator=(const SelectionHostHider&) = delete;
+  ~SelectionHostHider() override { Shell::Get()->RemovePreTargetHandler(this); }
+
+  // ui::EventHandler:
+  void OnEvent(ui::Event* event) override {
+    if (event->type() == ui::EventType::kMousePressed ||
+        event->type() == ui::EventType::kTouchPressed) {
+      // Ignore all events if the host widget is not visible.
+      if (!owner_->IsVisible()) {
+        return;
+      }
+
+      gfx::Point event_screen_point = event->AsLocatedEvent()->root_location();
+      wm::ConvertPointToScreen(
+          static_cast<aura::Window*>(event->target())->GetRootWindow(),
+          &event_screen_point);
+      // Unless the event is on the host widget, hide it and stop the event from
+      // propagating.
+      if (!owner_->GetWindowBoundsInScreen().Contains(event_screen_point)) {
+        owner_->Hide();
+        event->SetHandled();
+        event->StopPropagation();
+      }
+    }
+  }
+  std::string_view GetLogContext() const override {
+    return "TabAppSelectionHost::SelectionHostHider";
+  }
+
+ private:
+  const raw_ptr<TabAppSelectionHost> owner_;
+};
+
 TabAppSelectionHost::TabAppSelectionHost(BirchChipButton* coral_chip)
-    : owner_(coral_chip) {
+    : hider_(std::make_unique<SelectionHostHider>(this)), owner_(coral_chip) {
   using InitParams = views::Widget::InitParams;
   InitParams params(InitParams::CLIENT_OWNS_WIDGET, InitParams::TYPE_MENU);
   params.accept_events = true;
@@ -30,6 +72,7 @@ TabAppSelectionHost::TabAppSelectionHost(BirchChipButton* coral_chip)
   params.init_properties_container.SetProperty(kHideInDeskMiniViewKey, true);
   params.init_properties_container.SetProperty(kOverviewUiKey, true);
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+  params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
 
   Init(std::move(params));
   SetContentsView(std::make_unique<TabAppSelectionView>(
@@ -60,10 +103,9 @@ void TabAppSelectionHost::ProcessKeyEvent(ui::KeyEvent* event) {
 void TabAppSelectionHost::OnNativeWidgetVisibilityChanged(bool visible) {
   views::Widget::OnNativeWidgetVisibilityChanged(visible);
   views::AsViewClass<IconButton>(owner_->addon_view())
-      ->SetImageModel(
-          BirchChipButtonBase::ButtonState::STATE_NORMAL,
-          ui::ImageModel::FromVectorIcon(visible ? vector_icons::kCaretDownIcon
-                                                 : vector_icons::kCaretUpIcon));
+      ->SetVectorIcon(visible ? vector_icons::kCaretDownIcon
+                              : vector_icons::kCaretUpIcon);
+  owner_->SetTopHalfRounded(!visible);
 }
 
 gfx::Rect TabAppSelectionHost::GetDesiredBoundsInScreen() {

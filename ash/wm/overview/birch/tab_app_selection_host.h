@@ -25,8 +25,11 @@ class TabAppSelectionHost : public views::Widget {
   const BirchChipButton* owner_for_testing() const { return owner_; }
 
  private:
+  class SelectionHostHider;
+
   gfx::Rect GetDesiredBoundsInScreen();
 
+  std::unique_ptr<SelectionHostHider> hider_;
   const raw_ptr<BirchChipButton> owner_;
 };
 
