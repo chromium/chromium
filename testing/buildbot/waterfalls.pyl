@@ -2825,13 +2825,6 @@
           'gtest_tests': 'perfetto_gtests',
         },
       },
-      'mac-upload-perfetto': {
-        'additional_compile_targets': [ 'trace_processor_shell' ],
-        'test_suites': {
-          'isolated_scripts': 'upload_perfetto',
-        },
-        'use_swarming': False,
-      },
       'mac13-wpt-chromium-rel': {
         'mixins': [
           'has_native_resultdb_integration',

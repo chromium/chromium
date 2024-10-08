@@ -333,7 +333,6 @@
     "linux-wpt-chromium-rel": "ci/linux-wpt-chromium-rel/gn-args.json",
     "mac-osxbeta-rel": "ci/mac-osxbeta-rel/gn-args.json",
     "mac-perfetto-rel": "ci/mac-perfetto-rel/gn-args.json",
-    "mac-upload-perfetto": "ci/mac-upload-perfetto/gn-args.json",
     "mac13-wpt-chromium-rel": "ci/mac13-wpt-chromium-rel/gn-args.json",
     "win-annotator-rel": "ci/win-annotator-rel/gn-args.json",
     "win-fieldtrial-rel": "ci/win-fieldtrial-rel/gn-args.json",
