@@ -8,7 +8,6 @@
 #import "base/memory/ptr_util.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
-#import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_content_adjustment_util.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller_observer.h"
@@ -16,7 +15,6 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_web_view_resizer.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/web/public/web_state.h"
-#import "services/metrics/public/cpp/ukm_builders.h"
 
 FullscreenMediator::FullscreenMediator(FullscreenController* controller,
                                        FullscreenModel* model)
@@ -124,21 +122,10 @@ void FullscreenMediator::FullscreenModelProgressUpdated(
   if (should_record_metrics_) {
     if (model_->progress() == 0) {
       base::RecordAction(base::UserMetricsAction("MobileFullscreenEntered"));
-      should_record_metrics_ = false;
     } else if (model_->progress() == 1) {
       base::RecordAction(base::UserMetricsAction("MobileFullscreenExited"));
-
-      web::WebState* webState = resizer_.webState;
-      if (webState) {
-        ukm::SourceId sourceID = ukm::GetSourceIdForWebStateDocument(webState);
-        if (sourceID != ukm::kInvalidSourceId) {
-          ukm::builders::IOS_FullscreenActions(sourceID)
-              .SetHasExitedManually(false)
-              .Record(ukm::UkmRecorder::Get());
-        }
-      }
-      should_record_metrics_ = false;
     }
+    should_record_metrics_ = false;
   }
 
   [resizer_ updateForCurrentState];
