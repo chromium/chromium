@@ -13,7 +13,6 @@
 namespace {
 const char kFillScriptName[] = "fill";
 const char kFormScriptName[] = "form";
-const char kFeaturesScriptName[] = "autofill_form_features";
 }  // namespace
 
 namespace autofill {
@@ -28,11 +27,6 @@ FormUtilJavaScriptFeature::FormUtilJavaScriptFeature()
     : web::JavaScriptFeature(
           ContentWorldForAutofillJavascriptFeatures(),
           {FeatureScript::CreateWithFilename(
-               kFeaturesScriptName,
-               FeatureScript::InjectionTime::kDocumentStart,
-               FeatureScript::TargetFrames::kAllFrames,
-               FeatureScript::ReinjectionBehavior::kInjectOncePerWindow),
-           FeatureScript::CreateWithFilename(
                kFillScriptName,
                FeatureScript::InjectionTime::kDocumentStart,
                FeatureScript::TargetFrames::kAllFrames,
@@ -49,20 +43,5 @@ FormUtilJavaScriptFeature::FormUtilJavaScriptFeature()
           }) {}
 
 FormUtilJavaScriptFeature::~FormUtilJavaScriptFeature() = default;
-
-void FormUtilJavaScriptFeature::SetAutofillAcrossIframes(web::WebFrame* frame,
-                                                         bool enabled) {
-  CallJavaScriptFunction(frame,
-                         "autofill_form_features.setAutofillAcrossIframes",
-                         base::Value::List().Append(enabled));
-}
-
-void FormUtilJavaScriptFeature::SetAutofillIsolatedContentWorld(
-    web::WebFrame* frame,
-    bool enabled) {
-  CallJavaScriptFunction(
-      frame, "autofill_form_features.setAutofillIsolatedContentWorld",
-      base::Value::List().Append(enabled));
-}
 
 }  // namespace autofill

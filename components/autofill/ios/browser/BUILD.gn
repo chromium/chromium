@@ -44,6 +44,7 @@ source_set("browser") {
     "//components/autofill/core/common",
     "//components/autofill/ios/common",
     "//components/autofill/ios/form_util",
+    "//components/autofill/ios/form_util:autofill_form_features",
     "//components/autofill/ios/form_util:child_frame_registrar",
     "//components/autofill/ios/form_util:form_handler_feature",
     "//components/autofill/ios/form_util:form_util_feature",
@@ -121,6 +122,8 @@ source_set("test_support") {
     "mock_password_autofill_agent_delegate.mm",
     "new_frame_catcher.h",
     "new_frame_catcher.mm",
+    "test_autofill_java_script_feature_container.h",
+    "test_autofill_java_script_feature_container.mm",
     "test_autofill_manager_injector.h",
   ]
   public_deps = [ ":browser" ]
@@ -129,6 +132,9 @@ source_set("test_support") {
     "//base/test:test_support",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
+    "//components/autofill/ios/form_util:autofill_form_features",
+    "//components/autofill/ios/form_util:form_handler_feature",
+    "//components/autofill/ios/form_util:form_util_feature",
     "//components/leveldb_proto:leveldb_proto",
     "//ios/web/public",
     "//ios/web/public/js_messaging",

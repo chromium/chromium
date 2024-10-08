@@ -9,6 +9,7 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
+#import "components/autofill/ios/form_util/autofill_form_features_java_script_feature.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
 #import "components/autofill/ios/form_util/form_activity_tab_helper.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
@@ -59,6 +60,7 @@ FormHandlersJavaScriptFeature::FormHandlersJavaScriptFeature()
           ContentWorldForAutofillJavascriptFeatures(),
           GetFeatureScripts(),
           {web::java_script_features::GetCommonJavaScriptFeature(),
+           autofill::AutofillFormFeaturesJavaScriptFeature::GetInstance(),
            autofill::FormUtilJavaScriptFeature::GetInstance()}) {}
 
 FormHandlersJavaScriptFeature::~FormHandlersJavaScriptFeature() = default;

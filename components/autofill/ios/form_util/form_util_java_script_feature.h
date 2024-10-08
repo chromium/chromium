@@ -8,10 +8,6 @@
 #include "base/no_destructor.h"
 #import "ios/web/public/js_messaging/java_script_feature.h"
 
-namespace web {
-class WebFrame;
-}  // namespace web
-
 namespace autofill {
 
 // Communicates with the JavaScript file, fill.js, which contains form util
@@ -21,13 +17,6 @@ class FormUtilJavaScriptFeature : public web::JavaScriptFeature {
   // This feature holds no state, so only a single static instance is ever
   // needed.
   static FormUtilJavaScriptFeature* GetInstance();
-
-  // Enables/disables the AutofillAcrossIframes feature in `frame`.
-  void SetAutofillAcrossIframes(web::WebFrame* frame, bool enabled);
-
-  // Enables/disables the renderer side behaviours in `frame` needed for
-  // Autofill features to work in an isolated content world.
-  void SetAutofillIsolatedContentWorld(web::WebFrame* frame, bool enabled);
 
  private:
   friend class base::NoDestructor<FormUtilJavaScriptFeature>;

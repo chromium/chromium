@@ -36,7 +36,6 @@ source_set("form_util_feature") {
     "form_util_java_script_feature.mm",
   ]
   deps = [
-    ":autofill_form_features",
     ":cross_content_world_util_feature",
     ":fill_js",
     ":form_js",
@@ -53,6 +52,7 @@ source_set("form_handler_feature") {
     "form_handlers_java_script_feature.mm",
   ]
   deps = [
+    ":autofill_form_features",
     ":child_frame_registrar",
     ":form_handlers_js",
     ":form_util",
@@ -72,8 +72,8 @@ compile_ts("autofill_form_features_ts") {
   deps = [ "//ios/web/public/js_messaging:gcrweb" ]
 }
 
-# For bundling with form_util_feature, which enables/disables features
-optimize_js("autofill_form_features") {
+# For bundling with autofill_form_features, which enables/disables features
+optimize_js("autofill_form_features_ts_bundling") {
   deps = [
     ":autofill_form_features_ts",
     "//ios/web/public/js_messaging:gcrweb",
@@ -231,6 +231,20 @@ source_set("child_frame_registrar") {
   ]
 }
 
+source_set("autofill_form_features") {
+  sources = [
+    "autofill_form_features_java_script_feature.h",
+    "autofill_form_features_java_script_feature.mm",
+  ]
+  deps = [
+    ":autofill_form_features_ts_bundling",
+    "//base",
+    "//components/autofill/ios/common:common",
+    "//ios/web/public/js_messaging",
+  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -242,6 +256,7 @@ source_set("unit_tests") {
     "remote_frame_token_registration_unittest.mm",
   ]
   deps = [
+    ":autofill_form_features",
     ":child_frame_registrar",
     ":cross_content_world_util_feature",
     ":fill_js",

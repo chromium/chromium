@@ -60,6 +60,7 @@
 #import "components/autofill/ios/browser/password_autofill_agent.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/common/field_data_manager_factory_ios.h"
+#import "components/autofill/ios/form_util/autofill_form_features_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/autofill/ios/form_util/form_handlers_java_script_feature.h"
@@ -86,6 +87,7 @@
 #import "ui/gfx/image/image.h"
 #import "url/gurl.h"
 
+using autofill::AutofillFormFeaturesJavaScriptFeature;
 using autofill::AutofillJavaScriptFeature;
 using autofill::FieldDataManager;
 using autofill::FieldDataManagerFactoryIOS;
@@ -96,7 +98,6 @@ using autofill::FormFieldData;
 using autofill::FormGlobalId;
 using autofill::FormHandlersJavaScriptFeature;
 using autofill::FormRendererId;
-using autofill::FormUtilJavaScriptFeature;
 using autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger;
 using base::NumberToString;
 using base::SysNSStringToUTF16;
@@ -1308,13 +1309,15 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   }
   driver->set_processed(true);
 
-  FormUtilJavaScriptFeature::GetInstance()->SetAutofillAcrossIframes(
-      frame, base::FeatureList::IsEnabled(
-                 autofill::features::kAutofillAcrossIframesIos));
+  AutofillFormFeaturesJavaScriptFeature::GetInstance()
+      ->SetAutofillAcrossIframes(
+          frame, base::FeatureList::IsEnabled(
+                     autofill::features::kAutofillAcrossIframesIos));
 
-  FormUtilJavaScriptFeature::GetInstance()->SetAutofillIsolatedContentWorld(
-      frame,
-      base::FeatureList::IsEnabled(kAutofillIsolatedWorldForJavascriptIos));
+  AutofillFormFeaturesJavaScriptFeature::GetInstance()
+      ->SetAutofillIsolatedContentWorld(
+          frame,
+          base::FeatureList::IsEnabled(kAutofillIsolatedWorldForJavascriptIos));
 
   if (frame->IsMainFrame()) {
     _suggestionDelegate.reset();

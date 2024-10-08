@@ -13,8 +13,10 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
+#import "components/autofill/ios/browser/test_autofill_java_script_feature_container.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
+#import "components/autofill/ios/form_util/autofill_form_features_java_script_feature.h"
 #import "components/autofill/ios/form_util/cross_content_world_util_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "ios/web/public/js_messaging/content_world.h"
@@ -73,24 +75,27 @@ class FillJsTest : public web::WebTestWithWebState,
           kAutofillIsolatedWorldForJavascriptIos);
     }
 
-    form_util_java_script_feature_ = new FormUtilJavaScriptFeature();
-
     OverrideJavaScriptFeatures(
         {form_util_java_script_feature(),
+         autofill_form_features_java_script_feature(),
          CrossContentWorldUtilJavaScriptFeature::GetInstance(),
          GetDummyPageContentWorldFeature(), GetDummyIsolatedWorldFeature()});
   }
 
   void TearDown() override {
     // Clean up overriden features. Don't leave a dangling pointer to
-    // `FormUtilJavaScriptFeature`.
+    // features in `feature_container_`.
     OverrideJavaScriptFeatures({});
-    delete form_util_java_script_feature_;
     web::WebTestWithWebState::TearDown();
   }
 
   FormUtilJavaScriptFeature* form_util_java_script_feature() {
-    return form_util_java_script_feature_;
+    return feature_container_.form_util_java_script_feature();
+  }
+
+  AutofillFormFeaturesJavaScriptFeature*
+  autofill_form_features_java_script_feature() {
+    return feature_container_.autofill_form_features_java_script_feature();
   }
 
  protected:
@@ -119,13 +124,12 @@ class FillJsTest : public web::WebTestWithWebState,
   }
 
   base::test::ScopedFeatureList feature_list_;
-  // Test instance of FormUtilJavaScriptFeature. Using a pointer so we can
-  // create the instance after the feature flag for isolated world is set in
-  // `SetUp`.
-  // TODO(crbug.com/359538514): Remove this variable and use
-  // FormUtilJavaScriptFeature::GetInstance() once Autofill in the isolated
-  // world is launched.
-  raw_ptr<FormUtilJavaScriptFeature> form_util_java_script_feature_ = nullptr;
+  //  Test instances of JavaScriptFeature's that are injected in a different
+  //  content world depending on kAutofillIsolatedWorldForJavascriptIos.
+  //  TODO(crbug.com/359538514): Remove this variable and use
+  //  the statically stored instances once Autofill in the isolated
+  //  world is launched.
+  TestAutofillJavaScriptFeatureContainer feature_container_;
 };
 
 TEST_P(FillJsTest, GetCanonicalActionForForm) {
