@@ -58,8 +58,8 @@ std::set<web::WebStateID> GetWebStateIDs(WebStateIDToTime tabs) {
 class TabsClosureUtilTest : public PlatformTest {
  public:
   TabsClosureUtilTest() {
-    // Create a TestChromeBrowserState with required services.
-    TestChromeBrowserState::Builder builder;
+    // Create a TestProfileIOS with required services.
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
@@ -68,16 +68,15 @@ class TabsClosureUtilTest : public PlatformTest {
         TestSessionRestorationService::GetTestingFactory());
     builder.AddTestingFactory(IOSChromeTabRestoreServiceFactory::GetInstance(),
                               FakeTabRestoreService::GetTestingFactory());
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
 
     // Initialize the AuthenticationService.
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
 
     scene_state_ = OCMClassMock([SceneState class]);
     OCMStub([scene_state_ sceneSessionID]).andReturn(@(kSceneSessionID));
-    browser_ = Browser::Create(browser_state_.get(), scene_state_);
+    browser_ = Browser::Create(profile_.get(), scene_state_);
   }
 
   Browser* browser() { return browser_.get(); }
@@ -116,7 +115,7 @@ class TabsClosureUtilTest : public PlatformTest {
     auto web_state = std::make_unique<web::FakeWebState>();
     web_state->SetIsRealized(realized);
     web_state->SetVisibleURL(url);
-    web_state->SetBrowserState(browser_->GetBrowserState());
+    web_state->SetBrowserState(browser_->GetProfile());
     web_state->SetNavigationManager(std::move(navigation_manager));
     web_state->SetNavigationItemCount(1);
 
@@ -149,7 +148,7 @@ class TabsClosureUtilTest : public PlatformTest {
  private:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<ProfileIOS> profile_;
   __strong SceneState* scene_state_;
   std::unique_ptr<Browser> browser_;
 

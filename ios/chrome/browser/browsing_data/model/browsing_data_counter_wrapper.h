@@ -25,13 +25,13 @@ class BrowsingDataCounterWrapper {
   // `pref_name` or null if there is no such counter.
   static std::unique_ptr<BrowsingDataCounterWrapper> CreateCounterWrapper(
       std::string_view pref_name,
-      ChromeBrowserState* browser_state,
+      ProfileIOS* profile,
       PrefService* pref_service,
       UpdateUICallback update_ui_callback);
 
   static std::unique_ptr<BrowsingDataCounterWrapper> CreateCounterWrapper(
       std::string_view pref_name,
-      ChromeBrowserState* browser_state,
+      ProfileIOS* profile,
       PrefService* pref_service,
       base::Time begin_time,
       UpdateUICallback update_ui_callback);

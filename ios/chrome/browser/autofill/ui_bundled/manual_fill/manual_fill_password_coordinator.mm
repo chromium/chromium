@@ -71,7 +71,7 @@
         IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
             profile, ServiceAccessType::EXPLICIT_ACCESS);
     auto accountPasswordStore =
-        IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
+        IOSChromeAccountPasswordStoreFactory::GetForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS);
 
     _passwordMediator = [[ManualFillPasswordMediator alloc]

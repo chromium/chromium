@@ -21,10 +21,6 @@ class PasswordStoreInterface;
 class IOSChromeAccountPasswordStoreFactory
     : public RefcountedBrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358299863): Remove when fully migrated.
-  static scoped_refptr<password_manager::PasswordStoreInterface>
-  GetForBrowserState(ProfileIOS* profile, ServiceAccessType access_type);
-
   static scoped_refptr<password_manager::PasswordStoreInterface> GetForProfile(
       ProfileIOS* profile,
       ServiceAccessType access_type);

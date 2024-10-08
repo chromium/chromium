@@ -38,16 +38,16 @@ namespace {
 class CacheCounterTest : public PlatformTest {
  public:
   CacheCounterTest() {
-    TestChromeBrowserState::Builder builder;
-    browser_state_ = std::move(builder).Build();
-    context_getter_ = browser_state_->GetRequestContext();
+    TestProfileIOS::Builder builder;
+    profile_ = std::move(builder).Build();
+    context_getter_ = profile_->GetRequestContext();
   }
 
   ~CacheCounterTest() override {}
 
-  ChromeBrowserState* browser_state() { return browser_state_.get(); }
+  ProfileIOS* profile() { return profile_.get(); }
 
-  PrefService* prefs() { return browser_state_->GetPrefs(); }
+  PrefService* prefs() { return profile_->GetPrefs(); }
 
   void SetCacheDeletionPref(bool value) {
     prefs()->SetBoolean(browsing_data::prefs::kDeleteCache, value);
@@ -132,7 +132,7 @@ class CacheCounterTest : public PlatformTest {
   // finished.
   void CacheOperationStep(int rv) {
     while (rv != net::ERR_IO_PENDING && next_step_ != STEP_DONE) {
-      // The testing browser state uses a memory cache which should not cause
+      // The testing profile uses a memory cache which should not cause
       // any errors.
       DCHECK_GE(rv, 0);
 
@@ -233,7 +233,7 @@ class CacheCounterTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<base::RunLoop> run_loop_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<ProfileIOS> profile_;
 
   CacheOperation current_operation_;
   CacheEntryCreationStep next_step_;
@@ -248,7 +248,7 @@ class CacheCounterTest : public PlatformTest {
 
 // Tests that for the empty cache, the result is zero.
 TEST_F(CacheCounterTest, Empty) {
-  CacheCounter counter(browser_state());
+  CacheCounter counter(profile());
   counter.Init(prefs(), browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&CacheCounterTest::CountingCallback,
                                    base::Unretained(this)));
@@ -264,7 +264,7 @@ TEST_F(CacheCounterTest, Empty) {
 TEST_F(CacheCounterTest, BeforeAndAfterClearing) {
   CreateCacheEntry();
 
-  CacheCounter counter(browser_state());
+  CacheCounter counter(profile());
   counter.Init(prefs(), browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&CacheCounterTest::CountingCallback,
                                    base::Unretained(this)));
@@ -285,7 +285,7 @@ TEST_F(CacheCounterTest, BeforeAndAfterClearing) {
 TEST_F(CacheCounterTest, PrefChanged) {
   SetCacheDeletionPref(false);
 
-  CacheCounter counter(browser_state());
+  CacheCounter counter(profile());
   counter.Init(prefs(), browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&CacheCounterTest::CountingCallback,
                                    base::Unretained(this)));
@@ -302,7 +302,7 @@ TEST_F(CacheCounterTest, PrefChanged) {
 TEST_F(CacheCounterTest, PeriodChanged) {
   CreateCacheEntry();
 
-  CacheCounter counter(browser_state());
+  CacheCounter counter(profile());
   counter.Init(prefs(), browsing_data::ClearBrowsingDataTab::ADVANCED,
                base::BindRepeating(&CacheCounterTest::CountingCallback,
                                    base::Unretained(this)));

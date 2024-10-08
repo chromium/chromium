@@ -118,7 +118,7 @@
             SyncServiceFactory::GetForBrowserState(browserState));
     scoped_refptr<password_manager::PasswordStoreInterface> storeToSave =
         defaultStore == password_manager::PasswordForm::Store::kAccountStore
-            ? IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
+            ? IOSChromeAccountPasswordStoreFactory::GetForProfile(
                   browserState, ServiceAccessType::IMPLICIT_ACCESS)
             : IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
                   browserState, ServiceAccessType::IMPLICIT_ACCESS);

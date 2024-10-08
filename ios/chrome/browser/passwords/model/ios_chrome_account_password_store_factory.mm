@@ -29,14 +29,6 @@ using password_manager::AffiliatedMatchHelper;
 
 // static
 scoped_refptr<password_manager::PasswordStoreInterface>
-IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
-    ProfileIOS* profile,
-    ServiceAccessType access_type) {
-  return GetForProfile(profile, access_type);
-}
-
-// static
-scoped_refptr<password_manager::PasswordStoreInterface>
 IOSChromeAccountPasswordStoreFactory::GetForProfile(
     ProfileIOS* profile,
     ServiceAccessType access_type) {

@@ -115,8 +115,8 @@ class IOThreadCacheCounter {
 
 }  // namespace
 
-CacheCounter::CacheCounter(ChromeBrowserState* browser_state)
-    : browser_state_(browser_state), weak_ptr_factory_(this) {}
+CacheCounter::CacheCounter(ProfileIOS* profile)
+    : profile_(profile), weak_ptr_factory_(this) {}
 
 CacheCounter::~CacheCounter() = default;
 
@@ -134,7 +134,7 @@ void CacheCounter::Count() {
   // UI to interpret the results for finite time intervals as upper estimates.
   // IOThreadCacheCounter deletes itself when done.
   (new IOThreadCacheCounter(
-       browser_state_->GetRequestContext(),
+       profile_->GetRequestContext(),
        base::BindRepeating(&CacheCounter::OnCacheSizeCalculated,
                            weak_ptr_factory_.GetWeakPtr())))
       ->Count();

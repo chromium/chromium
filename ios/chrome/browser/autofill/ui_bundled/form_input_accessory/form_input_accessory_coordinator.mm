@@ -198,7 +198,7 @@ const base::Feature* FetchIPHFeatureFromEnum(
       IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
           self.profile, ServiceAccessType::EXPLICIT_ACCESS);
   auto accountPasswordStore =
-      IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
+      IOSChromeAccountPasswordStoreFactory::GetForProfile(
           self.profile, ServiceAccessType::EXPLICIT_ACCESS);
 
   // There is no personal data manager in OTR (incognito). Get the original

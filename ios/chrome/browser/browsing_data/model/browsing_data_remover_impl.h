@@ -34,8 +34,8 @@ class URLRequestContextGetter;
 class BrowsingDataRemoverImpl : public BrowsingDataRemover {
  public:
   // Creates a BrowsingDataRemoverImpl to remove browser data from the
-  // specified ChromeBrowserstate. Use Remove to initiate the removal.
-  explicit BrowsingDataRemoverImpl(ChromeBrowserState* browser_state);
+  // specified ProfileIOS. Use Remove to initiate the removal.
+  explicit BrowsingDataRemoverImpl(ProfileIOS* profile);
 
   BrowsingDataRemoverImpl(const BrowsingDataRemoverImpl&) = delete;
   BrowsingDataRemoverImpl& operator=(const BrowsingDataRemoverImpl&) = delete;
@@ -148,8 +148,8 @@ class BrowsingDataRemoverImpl : public BrowsingDataRemover {
   // This object is sequence affine.
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // ChromeBrowserState we're to remove from.
-  raw_ptr<ChromeBrowserState> browser_state_ = nullptr;
+  // ProfileIOS we're to remove from.
+  raw_ptr<ProfileIOS> profile_ = nullptr;
 
   // Used to delete data from HTTP cache.
   scoped_refptr<net::URLRequestContextGetter> context_getter_;

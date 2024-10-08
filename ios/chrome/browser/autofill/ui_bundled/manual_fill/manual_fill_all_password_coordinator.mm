@@ -80,7 +80,7 @@
           IOSChromeAffiliationServiceFactory::GetForBrowserState(profile),
           IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
               profile, ServiceAccessType::EXPLICIT_ACCESS),
-          IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
+          IOSChromeAccountPasswordStoreFactory::GetForProfile(
               profile, ServiceAccessType::EXPLICIT_ACCESS),
           IOSPasskeyModelFactory::GetForProfile(profile));
 

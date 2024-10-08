@@ -45,7 +45,7 @@ BrowsingDataRemoverFactory::BuildServiceInstanceFor(
   // TODO(crbug.com/40940855): the factory should declare the services
   // used by BrowsingDataRemoverImpl and inject them in the constructor.
   return std::make_unique<BrowsingDataRemoverImpl>(
-      ChromeBrowserState::FromBrowserState(context));
+      ProfileIOS::FromBrowserState(context));
 }
 
 web::BrowserState* BrowsingDataRemoverFactory::GetBrowserStateToUse(
