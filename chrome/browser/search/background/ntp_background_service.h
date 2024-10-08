@@ -168,7 +168,7 @@ class NtpBackgroundService : public KeyedService {
   // Callback that processes the response from the FetchCollectionInfo request,
   // refreshing the contents of collection_info_ with server-provided data.
   void OnCollectionInfoFetchComplete(
-      const std::unique_ptr<std::string> response_body);
+      std::unique_ptr<std::string> response_body);
 
   // Callback that processes the response from the FetchCollectionImages
   // request, refreshing the contents of collection_images_ with
@@ -204,8 +204,7 @@ class NtpBackgroundService : public KeyedService {
   // Callback that processes the response from the FetchNextCollectionImage
   // request, refreshing the contents of next_collection_image_ and
   // next_resume_token_ with server-provided data.
-  void OnNextImageInfoFetchComplete(
-      const std::unique_ptr<std::string> response_body);
+  void OnNextImageInfoFetchComplete(std::unique_ptr<std::string> response_body);
 
   // Requests an asynchronous fetch of metadata about images in the specified
   // collection.
