@@ -450,9 +450,9 @@ void AccountSelectionViewBase::SetLabelProperties(views::Label* label) {
   label->SetAllowCharacterBreak(true);
   label->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded,
-                               /*adjust_height_for_width=*/true));
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded));
 }
 
 std::unique_ptr<views::View> AccountSelectionViewBase::CreateAccountRow(
