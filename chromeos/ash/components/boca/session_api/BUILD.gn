@@ -18,6 +18,8 @@ source_set("session_api") {
     "session_parser.h",
     "update_session_request.cc",
     "update_session_request.h",
+    "update_student_activities_request.cc",
+    "update_student_activities_request.h",
     "upload_token_request.cc",
     "upload_token_request.h",
   ]
@@ -41,6 +43,7 @@ source_set("unit_tests") {
     "get_session_request_unittest.cc",
     "session_parser_unittest.cc",
     "update_session_request_unittest.cc",
+    "update_student_activities_request_unittest.cc",
     "upload_token_request_unittest.cc",
   ]
 

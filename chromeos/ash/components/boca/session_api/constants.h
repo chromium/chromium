@@ -29,6 +29,9 @@ inline constexpr char kUploadFCMTokenTemplate[] = "v1/users/$1";
 inline constexpr char kUpdateSessionUrlTemplate[] =
     "v1/teachers/$1/sessions/$2?updateMask=$3";
 
+inline constexpr char kInsertStudentActivity[] =
+    "v1/sessions/$1/students/$2/devices/$3/activities:insert";
+
 inline constexpr char kSessionId[] = "sessionId";
 inline constexpr char kTeacher[] = "teacher";
 inline constexpr char kRoster[] = "roster";
@@ -60,6 +63,9 @@ inline constexpr char kLockedNavigationOptions[] = "lockedNavigationOptions";
 inline constexpr char kNavigationType[] = "navigationType";
 inline constexpr char kSeconds[] = "seconds";
 inline constexpr char kNanos[] = "nanos";
+inline constexpr char kRequestTime[] = "requestTime";
+inline constexpr char kActivities[] = "activities";
+inline constexpr char kActiveTab[] = "activeTab";
 
 inline constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("boca_classroom_integration", R"(
