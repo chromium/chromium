@@ -14,7 +14,7 @@
 // If enabled, a `ScreenCapturePermissionChecker` will be instantiated.
 // * The `ScreenCapturePermissionChecker` object *will* record the initial
 //   screen-sharing permission status.
-// * Depending on the state of the `kDesktopCapturePermissionChecker` feature
+// * Depending on the state of the `kDesktopCapturePermissionChecker*` features
 //   defined below, the `ScreenCapturePermissionChecker` object may additionally
 //   send updates on the system's screen-recording permission-state, which may
 //   be used to display a permission notification and a button to open the
@@ -23,20 +23,44 @@ BASE_FEATURE(kDesktopCapturePermissionCheckerKillSwitch,
              "DesktopCapturePermissionCheckerKillSwitch",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Only has an effect if `kDesktopCapturePermissionCheckerKillSwitch` is
-// enabled, in which case:
+// Only has an effect if `kDesktopCapturePermissionCheckerKillSwitch` is enabled
+// and macOS 14.4+ is used, in which case:
 // * If the user is missing screen-sharing permissions, then when
-//   `kDesktopCapturePermissionChecker` is enabled, users will be presented
-//   with a button letting them quickly jump into the OS settings where they
-//   can grant the missing permission.
-// * If the user has screen-sharing permission, `kScreenCapturePermissionButton`
-//   will not have any user-visible effect.
-BASE_FEATURE(kDesktopCapturePermissionChecker,
-             "DesktopCapturePermissionChecker",
+//   `kDesktopCapturePermissionCheckerMacos14_4Plus` is enabled, users will be
+//   presented with a button letting them quickly jump into the OS settings
+//   where they can grant the missing permission.
+// * If the user has screen-sharing permission,
+// `kDesktopCapturePermissionCheckerMacos14_4Plus` will not have any
+// user-visible effect.
+BASE_FEATURE(kDesktopCapturePermissionCheckerMacos14_4Plus,
+             "DesktopCapturePermissionCheckerMacos14_4Plus",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// This feature is the same as `kDesktopCapturePermissionCheckerMacos14_4Plus`
+// but only affects macOS <14.4.
+BASE_FEATURE(kDesktopCapturePermissionCheckerPreMacos14_4,
+             "DesktopCapturePermissionCheckerPreMacos14_4",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kDesktopCapturePermissionCheckerUpdateIntervalMs{
-    &kDesktopCapturePermissionChecker, "update_interval_ms", 1000};
+    &kDesktopCapturePermissionCheckerMacos14_4Plus, "update_interval_ms", 1000};
+
+namespace {
+bool IsDesktopCapturePermissionCheckerEnabled() {
+  const int macos_version = base::mac::MacOSVersion();
+  if (macos_version >= 14'04'00 &&
+      !base::FeatureList::IsEnabled(
+          kDesktopCapturePermissionCheckerMacos14_4Plus)) {
+    return false;
+  }
+  if (macos_version < 14'04'00 &&
+      !base::FeatureList::IsEnabled(
+          kDesktopCapturePermissionCheckerPreMacos14_4)) {
+    return false;
+  }
+  return true;
+}
+}  // namespace
 
 std::unique_ptr<ScreenCapturePermissionCheckerMac>
 ScreenCapturePermissionCheckerMac::MaybeCreate(
@@ -61,7 +85,7 @@ ScreenCapturePermissionCheckerMac::ScreenCapturePermissionCheckerMac(
       is_screen_capture_allowed_(std::move(is_screen_capture_allowed)) {
   OnRecurrentPermissionCheck();
 
-  if (!base::FeatureList::IsEnabled(kDesktopCapturePermissionChecker)) {
+  if (!IsDesktopCapturePermissionCheckerEnabled()) {
     return;
   }
 
@@ -103,7 +127,7 @@ void ScreenCapturePermissionCheckerMac::OnPermissionUpdate(
     has_recorded_uma_ = true;
   }
 
-  if (!base::FeatureList::IsEnabled(kDesktopCapturePermissionChecker)) {
+  if (!IsDesktopCapturePermissionCheckerEnabled()) {
     return;
   }
 

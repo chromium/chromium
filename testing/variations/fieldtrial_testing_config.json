@@ -7836,18 +7836,16 @@
             ]
         }
     ],
-    "DesktopCapturePermissionChecker": [
+    "DesktopCapturePermissionCheckerPreMacos14_4": [
         {
             "platforms": [
                 "mac"
             ],
             "experiments": [
                 {
-                    "name": "Enabled_SckPicker_20240522",
+                    "name": "Enabled",
                     "enable_features": [
-                        "DesktopCapturePermissionChecker",
-                        "ScreenCaptureKitPickerScreen",
-                        "ScreenCaptureKitStreamPickerSonoma"
+                        "DesktopCapturePermissionCheckerPreMacos14_4"
                     ]
                 }
             ]

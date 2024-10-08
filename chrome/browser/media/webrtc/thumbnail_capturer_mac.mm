@@ -141,9 +141,15 @@ API_AVAILABLE(macos(13.2))
 
 namespace {
 
+// These features enable the use of ScreenCaptureKit to produce thumbnails in
+// the getDisplayMedia picker. The `kScreenCaptureKitStreamPicker*` features are
+// used to produce thumbnails of specific windows, while the
+// `kScreenCaptureKitPickerScreen` feature is used to produce thumbnails of the
+// entire screen. This is distinct from `kUseSCContentSharingPicker`, which uses
+// the native macOS picker.
 BASE_FEATURE(kScreenCaptureKitStreamPickerSonoma,
              "ScreenCaptureKitStreamPickerSonoma",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kScreenCaptureKitStreamPickerVentura,
              "ScreenCaptureKitStreamPickerVentura",
@@ -151,7 +157,7 @@ BASE_FEATURE(kScreenCaptureKitStreamPickerVentura,
 
 BASE_FEATURE(kScreenCaptureKitPickerScreen,
              "ScreenCaptureKitPickerScreen",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The enable/disable property of this feature has no impact. The feature is
 // used solely to pass on the parameters below.
