@@ -4,6 +4,8 @@
 
 static_library("user_annotations") {
   sources = [
+    "form_submission_handler.cc",
+    "form_submission_handler.h",
     "user_annotations_database.cc",
     "user_annotations_database.h",
     "user_annotations_features.cc",

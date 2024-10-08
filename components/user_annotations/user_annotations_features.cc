@@ -43,4 +43,10 @@ bool ShouldExtractAXTreeForFormsAnnotations() {
       kUserAnnotations, "should_extract_ax_tree_for_forms_annotations", false);
 }
 
+base::TimeDelta GetFormSubmissionCompletionTimeout() {
+  return base::GetFieldTrialParamByFeatureAsTimeDelta(
+      kUserAnnotations, "form_submission_completion_timeout",
+      base::Seconds(30));
+}
+
 }  // namespace user_annotations

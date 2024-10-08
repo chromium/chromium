@@ -6,10 +6,12 @@
 #define COMPONENTS_USER_ANNOTATIONS_USER_ANNOTATIONS_SERVICE_H_
 
 #include <memory>
+#include <queue>
 #include <string>
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/containers/queue.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -39,6 +41,7 @@ class OSCryptAsync;
 
 namespace user_annotations {
 
+class FormSubmissionHandler;
 class UserAnnotationsDatabase;
 struct Entry;
 
@@ -117,49 +120,32 @@ class UserAnnotationsService : public KeyedService {
 
  private:
   friend class TestUserAnnotationsService;
-
-  using FormSubmissionResult =
-      base::expected<optimization_guide::proto::FormsAnnotationsResponse,
-                     UserAnnotationsExecutionResult>;
+  friend class FormSubmissionHandler;
 
   // Used in testing, to construct the service without encryptor and database.
   UserAnnotationsService();
-
-  // Processes model execution response. Invoked when model execution has been
-  // received.
-  void OnModelExecuted(
-      ImportFormCallback callback,
-      std::unique_ptr<autofill::FormStructure> form,
-      optimization_guide::OptimizationGuideModelExecutionResult result,
-      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
 
   // Called when the encryptor is ready.
   void OnOsCryptAsyncReady(const base::FilePath& storage_dir,
                            os_crypt_async::Encryptor encryptor,
                            bool success);
 
-  // Called after the `entries` are retrieved, to submit the form `request`
-  // filling the entries.
-  void ExecuteModelWithEntries(
-      optimization_guide::proto::FormsAnnotationsRequest request,
-      std::unique_ptr<autofill::FormStructure> form,
-      ImportFormCallback callback,
-      UserAnnotationsEntries entries);
+  // Returns whether the database initialization is complete.
+  bool IsDatabaseReady();
 
-  // Sends the result of form submission.
-  void SendFormSubmissionResult(
-      UserAnnotationsService::ImportFormCallback callback,
-      std::unique_ptr<autofill::FormStructure> form,
-      FormSubmissionResult result,
-      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry);
+  // Starts the processing of next pending form submission.
+  void ProcessNextFormSubmission();
 
-  // Called when decision has been made whether to import form entries.
-  // `prompt_was_accepted` is the user decision, and `entries` will be persisted
-  // to database when true.
-  void OnImportFormConfirmation(
-      FormSubmissionResult result,
-      std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry,
-      bool prompt_was_accepted);
+  // Saves the entries to database.
+  void SaveEntries(
+      const optimization_guide::proto::FormsAnnotationsResponse& entries);
+
+  // Called when the form submission is fully complete.
+  void OnFormSubmissionComplete();
+
+  optimization_guide::OptimizationGuideModelExecutor* model_executor() {
+    return model_executor_;
+  }
 
   // An in-memory representation of the "database" of user annotation entries.
   // Used only when `ShouldPersistUserAnnotations()` is false.
@@ -187,6 +173,12 @@ class UserAnnotationsService : public KeyedService {
   // TODO: b/361692317 - Remove this once optimization guide actually populates
   // list.
   const std::vector<std::string> allowed_hosts_for_forms_annotations_;
+
+  // The queue of form submissions pending to be processed. Each form submission
+  // goes through multiple stages of processing, and until then the form
+  // submissions will wait in this queue. The first entry is the one that is
+  // currently being processed.
+  base::queue<std::unique_ptr<FormSubmissionHandler>> pending_form_submissions_;
 
   base::WeakPtrFactory<UserAnnotationsService> weak_ptr_factory_{this};
 };

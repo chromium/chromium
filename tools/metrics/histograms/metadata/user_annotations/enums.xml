@@ -33,6 +33,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="OSCrypt encrypt/decrypt error"/>
   <int value="4" label="Response error"/>
   <int value="5" label="Response malformed"/>
+  <int value="6" label="Response timed out"/>
 </enum>
 
 </enums>

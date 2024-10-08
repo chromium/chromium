@@ -34,10 +34,11 @@ enum class UserAnnotationsExecutionResult {
   kCryptError = 3,
   kResponseError = 4,
   kResponseMalformed = 5,
+  kResponseTimedOut = 6,
 
   // Insert new values before this line. Should be in sync with
   // UserAnnotationsExecutionResult in user_annotations/enums.xml
-  kMaxValue = kResponseMalformed
+  kMaxValue = kResponseTimedOut
 };
 
 using UserAnnotationsEntryRetrievalResult =

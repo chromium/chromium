@@ -32,6 +32,9 @@ bool ShouldPersistUserAnnotations();
 
 bool ShouldExtractAXTreeForFormsAnnotations();
 
+// Returns the completion timeout for the entirety of forms submission stages.
+base::TimeDelta GetFormSubmissionCompletionTimeout();
+
 }  // namespace user_annotations
 
 #endif  // COMPONENTS_USER_ANNOTATIONS_USER_ANNOTATIONS_FEATURES_H_
