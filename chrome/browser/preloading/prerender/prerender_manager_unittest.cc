@@ -308,4 +308,12 @@ TEST_P(PrerenderManagerBasicRequirementTest, NavigateAway) {
   }
 }
 
+// Test that a Searched related url is ignored by the prerender BookmarkBar
+// trigger.
+TEST_F(PrerenderManagerTest, DisallowSearchUrlBookmarkBar) {
+  GURL prerendering_url2 = GetSearchSuggestionUrl("prer", "prerender");
+  GURL canonical_url2 = GetCanonicalSearchUrl(prerendering_url2);
+  ASSERT_FALSE(prerender_manager()->StartPrerenderBookmark(prerendering_url2));
+}
+
 }  // namespace

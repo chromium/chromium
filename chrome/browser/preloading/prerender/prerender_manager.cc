@@ -18,8 +18,11 @@
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
+#include "components/search_engines/template_url.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/preloading.h"
@@ -63,6 +66,15 @@ void AttachBookmarkBarNavigationHandleUserData(
   page_load_metrics::NavigationHandleUserData::CreateForNavigationHandle(
       navigation_handle, page_load_metrics::NavigationHandleUserData::
                              InitiatorLocation::kBookmarkBar);
+}
+
+bool IsSearchUrl(content::WebContents& web_contents, const GURL& url) {
+  auto* profile = Profile::FromBrowserContext(web_contents.GetBrowserContext());
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile);
+  return template_url_service &&
+         template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
+             url);
 }
 
 }  // namespace
@@ -179,6 +191,10 @@ PrerenderManager::StartPrerenderBookmark(const GURL& prerendering_url) {
       content::PreloadingData::GetOrCreateForWebContents(web_contents());
   content::PreloadingURLMatchCallback same_url_matcher =
       content::PreloadingData::GetSameURLMatcher(prerendering_url);
+
+  if (IsSearchUrl(*web_contents(), prerendering_url)) {
+    return nullptr;
+  }
 
   // Create new PreloadingAttempt and pass all the values corresponding to
   // this prerendering attempt for Prerender.
