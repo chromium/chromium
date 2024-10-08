@@ -136,6 +136,84 @@ override updated(changedProperties: PropertyValues<this>) {
 }
 ```
 
+## Lit data binding issue with select elements
+The `<select>` element has an ordering requirement that sometimes causes a
+bug when using Lit data bindings on both the `value` property of the
+`<select>` and the `value` attribute of its child `<option>` elements.
+Specifically, when the `<select>`'s `value` property is set, there must
+already be an existing `<option>` with that value, or the `<select>` will
+be rendered as blank. If Lit bindings are used for the `<option>` values,
+these values will not be populated in time, and the `<select>` will be
+empty at startup. The following example would reproduce this bug and
+have an empty `<select>` displayed at startup.
+
+`.html.ts` file with `<select>` bug:
+```
+<select .value="${this.mySelectValue}" @change="${this.onSelectChange_}">
+  <option value="${MyEnum.FIRST}">Option 1</option>
+  <option value="${MyEnum.SECOND}">Option 2</option>
+</select>
+```
+
+Corresponding `.ts`. Note that the bug manifests even though `mySelectValue`
+is being initialized to a valid option.
+```
+static get properties() {
+  return {
+    mySelectValue: {type: String},
+  };
+}
+
+mySelectValue: MyEnum = MyEnum.SECOND;
+
+onSelectChange_(e: Event) {
+  this.mySelectValue = (e.target as HTMLSelectElement).value;
+}
+```
+
+The current recommended workaround is to instead bind to the `selected`
+attribute on each `<option>`, i.e.:
+
+`.html.ts` file:
+```
+<select @change="${this.onSelectChange_}">
+  <option value="${MyEnum.FIRST}"
+      ?selected="${this.isSelected_(MyEnum.FIRST)}">
+    Option 1
+  </option>
+  <option value="${MyEnum.SECOND}"
+      ?selected="${this.isSelected_(MyEnum.SECOND)}">
+    Option 2
+  </option>
+</select>
+```
+
+Corresponding `.ts` file:
+```
+static get properties() {
+  return {
+    mySelectValue: {type: String},
+  };
+}
+
+mySelectValue: MyEnum = MyEnum.SECOND;
+
+onSelectChange_(e: Event) {
+  this.mySelectValue = (e.target as HTMLSelectElement).value;
+}
+
+isSelected_(value: MyEnum): boolean {
+  return value === this.mySelectValue;
+}
+```
+
+Note: This bug can also be worked around by using Lit's `live` directive in
+the data binding and requesting an extra update any time the `<select>` is
+rendered. Including `live` in the Chromium Lit bundle is still under
+consideration. Reach out to the WebUI team if you have a `<select>` where the
+workaround above is problematic or impractical (e.g. due to a huge list of
+`<option>` elements).
+
 ## Lit and Polymer Data Bindings Compatibility
 Two-way bindings are not natively supported in Lit. As mentioned above,
 basic compatibility is provided by the `CrLitElement` base class’s
@@ -195,10 +273,10 @@ Note: `iron-` and `paper-` elements are
 
 |POLYMER LIBRARY ELEMENT|RECOMMENDED APPROACH|
 |-----------------------|--------------------|
-|`iron-list`|Consider using a simple `items.map(...)` pattern. If you have a very large number of elements and need `iron-list` for its re-use of nodes, currently you will need to use `iron-list` itself (and consequently pull in Polymer, ~90kb). See also later section on migrating `iron-list` clients.|
+|`iron-list`|Use `cr-infinite-list` or, if the list is not very large, use the `map()` directive. See additional detail on migrating `iron-list` clients below.|
 |`iron-icon`|Use `cr-icon`.|
 |`iron-collapse`|Use `cr-collapse`.|
-|`paper-spinner`|Style `throbber.svg` with CSS as needed.|
+|`paper-spinner`|Use `cr-spinner-style` CSS, or for more customization style `throbber.svg` as needed.|
 |`paper-styles`|Do not use, these styles are pre-2023 refresh and have been removed on non-CrOS builds.|
 |`iron-flex-layout`|Do not use, use standard CSS to style elements.|
 |`iron-a11y-announcer`|Use `cr-a11y-announcer`|
@@ -784,23 +862,35 @@ protected shouldShowFolderImages_(): boolean {
 ```
 
 ### Migrating iron-list clients
-Currently, there is no Lit alternative for the `iron-list` element. For cases
-where `iron-list` is used that do not require a virtual list (i.e., number of
-list items is not very large), `iron-list` may be replaced with a `map()`
-pattern, as described above for `dom-repeat`.
+There are a few considerations when migrating `iron-list` clients.
 
-For cases that need a virtual list, note the following:
+First, many existing `iron-list` clients don't require virtualization
+as the lists they render are bounded in size and not particularly large (e.g.
+only ~100 items). Such clients should use Lit's `map()` directive.
 
-1. `iron-list`'s parent element *must* be a Polymer element, because
-   `iron-list` accepts a `<template>`. Lit data bindings do not work inside
-   `<template>`s.
-2. Elements that are used as children in an `iron-list` may be migrated to Lit,
-   but due to differences in rendering timing between Polymer and Lit, it is
-   important to manually fire an `iron-resize` event from the child's
-   `updated()` lifecycle callback whenever any property that impacts the height
-   of the child element has changed. See example below:
+If the `iron-list` client is actually rendering a very large number of items,
+some lazy rendering may be necessary. `cr-infinite-list` replicates the
+focus and navigation behavior of `iron-list`. It uses `cr-lazy-list`
+internally to render items.
 
-From the `list_parent.html` template (must be Polymer)
+`cr-lazy-list` adds list items to the DOM lazily as the user scrolls to them.
+It also leverages CSS `content-visibility` to avoid rendering work for items
+not in the viewport. If custom navigation or focus behavior (i.e. different
+from `iron-list`) is desired, `cr-lazy-list` can be used directly as it is in
+the Tab Search Page's `selectable-lazy-list`.
+
+If you do not think any of the 3 options above are suitable for a list you
+are migrating or adding to a WebUI, reach out to the WebUI team.
+
+For incremental migrations, it may be useful to migrate `iron-list` children
+prior to migrating the `iron-list` client itself. This can be somewhat
+complicated by `iron-list` manually positioning its items, meaning it must
+always know when its children change size. When migrating `iron-list`
+children, the child elements must manually fire an `iron-resize` event from
+their `updated()` lifecycle callback whenever any property that may impact
+their height has changed. See example below:
+
+From the `list_parent.html` template (`iron-list` client so must be Polymer)
 ```
 <iron-list id="list" items="[[listItems_]]" as="item">
   <template>
