@@ -993,7 +993,19 @@
     "platforms": ["Linux", "Mac", "Win", "Fuchsia"],
     "bases": [],
     "args": ["--enable-font-antialiasing"],
-    "expires": "Jan 1, 2025"
+    "expires": "Jan 1, 2026"
+  },
+  " Temporary test suite running virtual/text-antialias using FreeType, until   ",
+  " we are ready to remove FreeType and stop rolling FreeType into Chromium.    ",
+  " Until then, we need pixel coverage for font rendering tests running through ",
+  " FreeType.                                                                   ",
+  {
+    "prefix": "text-antialias-freetype",
+    "owners": ["drott@chromium.org"],
+    "platforms": ["Linux"],
+    "bases": [ "virtual/text-antialias" ],
+    "args": ["--enable-font-antialiasing", "--disable-features=FontationsFontBackend"],
+    "expires": "Jul 1, 2025"
   },
   {
     "prefix": "text-contrast-gamma",
