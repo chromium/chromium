@@ -13,6 +13,7 @@
 #include "components/optimization_guide/proto/features/forms_predictions.pb.h"
 #include "components/optimization_guide/proto/features/history_answer.pb.h"
 #include "components/optimization_guide/proto/features/history_query.pb.h"
+#include "components/optimization_guide/proto/features/history_query_intent.pb.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
 #include "components/optimization_guide/proto/features/tab_organization.pb.h"
 #include "components/optimization_guide/proto/features/wallpaper_search.pb.h"
@@ -89,6 +90,19 @@ class HistoryQueryFeatureTypeMap {
   }
 
   static std::string_view ToString() { return "HistoryQuery"; }
+};
+
+class HistoryQueryIntentFeatureTypeMap {
+ public:
+  using LoggingData = proto::HistoryQueryIntentLoggingData;
+  using Request = proto::HistoryQueryIntentRequest;
+  using Response = proto::HistoryQueryIntentResponse;
+
+  static LoggingData* GetLoggingData(proto::LogAiDataRequest& ai_data_request) {
+    return ai_data_request.mutable_history_query_intent();
+  }
+
+  static std::string_view ToString() { return "HistoryQueryIntent"; }
 };
 
 class HistoryAnswerFeatureTypeMap {

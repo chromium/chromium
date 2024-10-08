@@ -18,6 +18,7 @@ import "components/optimization_guide/proto/features/forms_annotations.proto";
 import "components/optimization_guide/proto/features/forms_predictions.proto";
 import "components/optimization_guide/proto/features/history_answer.proto";
 import "components/optimization_guide/proto/features/history_query.proto";
+import "components/optimization_guide/proto/features/history_query_intent.proto";
 import "components/optimization_guide/proto/features/model_prototyping.proto";
 import "components/optimization_guide/proto/features/product_specifications.proto";
 import "components/optimization_guide/proto/features/tab_organization.proto";
@@ -43,6 +44,8 @@ message LogAiDataRequest {
     HistoryQueryLoggingData history_query = 7;
 
     HistoryAnswerLoggingData history_answer = 8;
+
+    HistoryQueryIntentLoggingData history_query_intent = 13;
 
     ProductSpecificationsLoggingData product_specifications = 9;
 
