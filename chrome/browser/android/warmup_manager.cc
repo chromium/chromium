@@ -48,6 +48,6 @@ static void JNI_WarmupManager_StartPrefetchFromCCT(
     GURL& url,
     jboolean juse_prefetch_proxy,
     std::optional<url::Origin>& trusted_source_origin) {
-  return ChromePrefetchManager::GetOrCreateForWebContents(web_contents)
+  ChromePrefetchManager::GetOrCreateForWebContents(web_contents)
       ->StartPrefetchFromCCT(url, juse_prefetch_proxy, trusted_source_origin);
 }
