@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
+#include <vector>
+
 #include "ash/capture_mode/base_capture_mode_session.h"
 #include "ash/capture_mode/capture_button_view.h"
 #include "ash/capture_mode/capture_label_view.h"
@@ -17,7 +20,10 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
+#include "ash/public/cpp/scanner/scanner_action.h"
+#include "ash/public/cpp/scanner/scanner_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/scanner/fake_scanner_profile_scoped_delegate.h"
 #include "ash/scanner/scanner_controller.h"
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
@@ -28,18 +34,31 @@
 #include "base/auto_reset.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/expected.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view_utils.h"
+#include "url/gurl.h"
 
 namespace ash {
+
+using ::testing::SizeIs;
 
 void WaitForImageCapturedForSearch() {
   base::RunLoop run_loop;
   ash::CaptureModeTestApi().SetOnImageCapturedForSearchCallback(
       run_loop.QuitClosure());
   run_loop.Run();
+}
+
+FakeScannerProfileScopedDelegate* GetFakeScannerProfileScopedDelegate(
+    ScannerController& scanner_controller) {
+  return static_cast<FakeScannerProfileScopedDelegate*>(
+      scanner_controller.delegate_for_testing()->GetProfileScopedDelegate());
 }
 
 class SunfishTest : public AshTestBase {
@@ -537,6 +556,28 @@ TEST_F(SunfishWithScannerTest, CreatesScannerSession) {
   ScannerController* scanner_controller = Shell::Get()->scanner_controller();
   ASSERT_TRUE(scanner_controller);
   EXPECT_TRUE(scanner_controller->HasActiveSessionForTesting());
+}
+
+// Tests that action buttons are created when a Scanner response includes
+// suggested actions.
+TEST_F(SunfishWithScannerTest, CreatesScannerActionButtons) {
+  auto* capture_mode_controller = CaptureModeController::Get();
+  capture_mode_controller->StartSunfishSession();
+  SelectCaptureModeRegion(GetEventGenerator(), gfx::Rect(100, 100, 600, 500),
+                          /*release_mouse=*/true, /*verify_region=*/true);
+  WaitForImageCapturedForSearch();
+
+  ScannerController* scanner_controller = Shell::Get()->scanner_controller();
+  ASSERT_TRUE(scanner_controller);
+  GetFakeScannerProfileScopedDelegate(*scanner_controller)
+      ->SendFakeActionsResponse(base::ok(std::vector<ScannerAction>{
+          OpenUrlAction{.url = GURL("https://www.google.com")},
+          OpenUrlAction{.url = GURL("https://www.example.com")},
+      }));
+
+  const CaptureModeSessionTestApi session_test_api(
+      capture_mode_controller->capture_mode_session());
+  EXPECT_THAT(session_test_api.GetActionButtons(), SizeIs(2));
 }
 
 }  // namespace ash

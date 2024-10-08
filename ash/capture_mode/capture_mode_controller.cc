@@ -4,6 +4,7 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -1716,7 +1717,13 @@ void CaptureModeController::OnImageCapturedForSearch(
 
 void CaptureModeController::OnScannerActionsFetched(
     std::vector<ScannerAction> scanner_actions) {
-  // TODO(b/369470078): Show action chips based on fetched actions.
+  for (const ScannerAction& _ : scanner_actions) {
+    // TODO(b/369470078): Replace the placeholders with a real callback, text
+    // and icon.
+    capture_mode_util::AddActionButton(views::Button::PressedCallback(),
+                                       /*text=*/u"Placeholder action",
+                                       &kCaptureModeIcon);
+  }
 }
 
 void CaptureModeController::OnImageFileSaved(
