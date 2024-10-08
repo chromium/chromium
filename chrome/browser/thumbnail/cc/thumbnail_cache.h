@@ -83,7 +83,6 @@ class ThumbnailCache : ThumbnailDelegate {
                         TabId primary_tab_id);
   void DecompressEtc1ThumbnailFromFile(
       TabId tab_id,
-      bool save_jpeg,
       base::OnceCallback<void(bool, const SkBitmap&)> post_decompress_callback);
 
   // Called when resident textures were evicted, which requires paging
@@ -132,11 +131,6 @@ class ThumbnailCache : ThumbnailDelegate {
                   std::unique_ptr<ThumbnailCaptureTracker,
                                   base::OnTaskRunnerDeleter> tracker,
                   const SkBitmap& bitmap);
-  void ForkToSaveAsJpeg(
-      base::OnceCallback<void(bool, const SkBitmap&)> callback,
-      int tab_id,
-      bool result,
-      const SkBitmap& bitmap);
   void PostWriteJpegTask(std::unique_ptr<ThumbnailCaptureTracker,
                                          base::OnTaskRunnerDeleter> tracker,
                          bool success);

@@ -295,38 +295,12 @@ void ThumbnailCache::PruneCache() {
   }
 }
 
-void ThumbnailCache::ForkToSaveAsJpeg(
-    base::OnceCallback<void(bool, const SkBitmap&)> callback,
-    int tab_id,
-    bool result,
-    const SkBitmap& bitmap) {
-  if (result && !bitmap.isNull()) {
-    SaveAsJpeg(
-        tab_id,
-        std::unique_ptr<ThumbnailCaptureTracker, base::OnTaskRunnerDeleter>(
-            nullptr, base::OnTaskRunnerDeleter(
-                         base::SequencedTaskRunner::GetCurrentDefault())),
-        bitmap);
-  }
-  std::move(callback).Run(result, bitmap);
-}
-
 void ThumbnailCache::DecompressEtc1ThumbnailFromFile(
     TabId tab_id,
-    bool save_jpeg,
     base::OnceCallback<void(bool, const SkBitmap&)> post_decompress_callback) {
-  base::OnceCallback<void(bool, const SkBitmap&)> transcoding_callback;
-  if (save_jpeg && save_jpeg_thumbnails_) {
-    transcoding_callback = base::BindOnce(
-        &ThumbnailCache::ForkToSaveAsJpeg, weak_factory_.GetWeakPtr(),
-        std::move(post_decompress_callback), tab_id);
-  } else {
-    transcoding_callback = std::move(post_decompress_callback);
-  }
-
   auto decompress_task = base::BindOnce(
       &thumbnail::Etc1ThumbnailHelper::Decompress, etc1_helper_.GetWeakPtr(),
-      std::move(transcoding_callback));
+      std::move(post_decompress_callback));
   etc1_helper_.Read(
       tab_id, base::BindPostTaskToCurrentDefault(std::move(decompress_task)));
 }

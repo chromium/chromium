@@ -309,9 +309,7 @@ public class TabContentManager {
 
         // Do not capture a JPEG here because we likely already created one when capturing. We just
         // want to fetch the ETC1 off of disk for a higher resolution image to use for animations.
-        TabContentManagerJni.get()
-                .getEtc1TabThumbnail(
-                        mNativeTabContentManager, tabId, /* saveJpeg= */ false, callback);
+        TabContentManagerJni.get().getEtc1TabThumbnail(mNativeTabContentManager, tabId, callback);
     }
 
     /**
@@ -706,10 +704,7 @@ public class TabContentManager {
                 long nativeTabContentManager, int tabId, Callback<Boolean> callback);
 
         void getEtc1TabThumbnail(
-                long nativeTabContentManager,
-                int tabId,
-                boolean saveJpeg,
-                Callback<Bitmap> callback);
+                long nativeTabContentManager, int tabId, Callback<Bitmap> callback);
 
         void setCaptureMinRequestTimeForTesting(long nativeTabContentManager, int timeMs);
 
