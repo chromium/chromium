@@ -110,7 +110,7 @@ class WebAppFrameToolbarTestHelper {
     return web_app_frame_toolbar_;
   }
   WebAppOriginText* origin_text_view();
-  void SetOriginTextLabelForTesting(std::u16string label_text);
+  void SetOriginTextLabelForTesting(const std::u16string& label_text);
 
  private:
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> app_browser_ = nullptr;

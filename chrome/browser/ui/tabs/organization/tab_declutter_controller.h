@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/callback_list.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -74,7 +75,7 @@ class TabDeclutterController {
 
  private:
   void StartDeclutterTimer();
-  bool DeclutterNudgeCriteriaMet(const std::vector<tabs::TabModel*> stale_tabs);
+  bool DeclutterNudgeCriteriaMet(base::span<tabs::TabModel*> stale_tabs);
   void ProcessStaleTabs();
   void StartNudgeTimer();
 

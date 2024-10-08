@@ -321,6 +321,6 @@ WebAppOriginText* WebAppFrameToolbarTestHelper::origin_text_view() {
 }
 
 void WebAppFrameToolbarTestHelper::SetOriginTextLabelForTesting(
-    const std::u16string label_text) {
+    const std::u16string& label_text) {
   origin_text_view()->label_->SetText(label_text);
 }

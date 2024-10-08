@@ -163,7 +163,7 @@ void TabDeclutterController::ExcludeFromStaleTabs(tabs::TabModel* tab_model) {
 }
 
 bool TabDeclutterController::DeclutterNudgeCriteriaMet(
-    const std::vector<tabs::TabModel*> stale_tabs) {
+    base::span<tabs::TabModel*> stale_tabs) {
   if (usage_tick_clock_->NowTicks() < next_nudge_valid_time_ticks_) {
     return false;
   }

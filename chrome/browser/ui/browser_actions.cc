@@ -115,7 +115,7 @@ std::u16string BrowserActions::GetCleanTitleAndTooltipText(
   const std::u16string ellipsis_unicode = u"\u2026";
   const std::u16string ellipsis_text = u"...";
 
-  auto remove_ellipsis = [&string](const std::u16string ellipsis) {
+  auto remove_ellipsis = [&string](const std::u16string& ellipsis) {
     size_t ellipsis_pos = string.find(ellipsis);
     if (ellipsis_pos != std::u16string::npos) {
       string.erase(ellipsis_pos);

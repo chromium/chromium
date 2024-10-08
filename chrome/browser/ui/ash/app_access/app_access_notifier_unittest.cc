@@ -195,7 +195,7 @@ class AppAccessNotifierTest : public testing::Test,
     return app_access_notifier_->GetAppsAccessingMicrophone();
   }
 
-  static apps::AppPtr MakeApp(const std::string app_id,
+  static apps::AppPtr MakeApp(const std::string& app_id,
                               const char* name,
                               apps::AppType app_type) {
     apps::AppPtr app = std::make_unique<apps::App>(app_type, app_id);
@@ -205,7 +205,7 @@ class AppAccessNotifierTest : public testing::Test,
   }
 
   static apps::CapabilityAccessPtr MakeCapabilityAccess(
-      const std::string app_id,
+      const std::string& app_id,
       std::optional<bool> camera,
       std::optional<bool> microphone) {
     auto access = std::make_unique<apps::CapabilityAccess>(app_id);
@@ -215,7 +215,7 @@ class AppAccessNotifierTest : public testing::Test,
   }
 
   void LaunchAppUsingCameraOrMicrophone(
-      const std::string id,
+      const std::string& id,
       const char* name,
       bool use_camera,
       bool use_microphone,

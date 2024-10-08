@@ -204,12 +204,12 @@ std::pair<std::u16string, std::u16string> GetErrorDialogText(
 }
 
 std::u16string BuildStringFromIDPs(
-    const std::vector<std::u16string> mismatch_idps,
-    const std::vector<std::u16string> non_mismatch_idps) {
+    const std::vector<std::u16string>& mismatch_idps,
+    const std::vector<std::u16string>& non_mismatch_idps) {
   constexpr int kMaxIdpsToShow = 3;
   size_t num_idps = 0;
   std::u16string result;
-  auto AddToResult = [&](const auto& idp_vector) {
+  auto AddToResult = [&](const std::vector<std::u16string>& idp_vector) {
     if (num_idps == kMaxIdpsToShow) {
       return;
     }
@@ -990,7 +990,7 @@ AccountSelectionBubbleView::CreateUseOtherAccountButton(
 
 void AccountSelectionBubbleView::UpdateHeader(
     const content::IdentityProviderMetadata& idp_metadata,
-    const std::u16string title,
+    const std::u16string& title,
     bool show_back_button) {
   back_button_->SetVisible(show_back_button);
   if (header_icon_view_) {
@@ -1031,8 +1031,8 @@ void AccountSelectionBubbleView::RemoveNonHeaderChildViews() {
 
 std::unique_ptr<views::View>
 AccountSelectionBubbleView::CreateChooseAnAccountButton(
-    const std::vector<std::u16string> mismatch_idps,
-    const std::vector<std::u16string> non_mismatch_idps) {
+    const std::vector<std::u16string>& mismatch_idps,
+    const std::vector<std::u16string>& non_mismatch_idps) {
   // TODO(crbug.com/325503352): `icon_view` should probably be smaller while
   // still taking the same amount of space.
   auto icon_view =
