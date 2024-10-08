@@ -440,9 +440,9 @@ export class AudioWaveform extends ReactiveLitElement {
       width="100"
       height=${maxHeight}
     >
-      <div class="speaker-label ${classMap(classes)}">
-        <span class="short">${shortLabel}</span>
-        <span class="full">${fullLabel}</span>
+      <div class="speaker-label ${classMap(classes)}" aria-label=${fullLabel}>
+        <span class="short" aria-hidden="true">${shortLabel}</span>
+        <span class="full" aria-hidden="true">${fullLabel}</span>
       </div>
     </foreignObject>`;
     // clang-format on
