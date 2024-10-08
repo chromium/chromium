@@ -22,6 +22,25 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/canvas.h"
 
+namespace {
+
+constexpr char kVideoDelay[] =
+    "MediaPreviews.UI.Preview.Permissions.Video.Delay";
+constexpr char kPixelHeight[] =
+    "MediaPreviews.UI.Permissions.Camera.PixelHeight";
+constexpr char kExpectedFPS[] =
+    "MediaPreviews.UI.Preview.Permissions.Video.ExpectedFPS";
+constexpr char kActualFPS[] =
+    "MediaPreviews.UI.Preview.Permissions.Video.ActualFPS";
+constexpr char kRenderedPercent[] =
+    "MediaPreviews.UI.Preview.Permissions.Video.RenderedPercent";
+constexpr char kTotalVisibleDuration[] =
+    "MediaPreviews.UI.Preview.Permissions.Video.TotalVisibleDuration";
+constexpr char TimeToActionWithoutPreview[] =
+    "MediaPreviews.UI.Preview.Permissions.Video.TimeToActionWithoutPreview";
+
+}  // namespace
+
 using testing::_;
 using testing::Mock;
 using testing::Sequence;
@@ -108,31 +127,23 @@ TEST_F(VideoStreamCoordinatorTest, ConnectToFrameHandlerAndReceiveFrames) {
   coordinator_->Stop();
   EXPECT_TRUE(fake_video_source_.WaitForPushSubscriptionClosed());
 
-  histogram_tester_.ExpectUniqueSample(
-      "MediaPreviews.UI.Preview.Permissions.Video.Delay",
-      /*bucket_min_value=*/50, 1);
+  histogram_tester_.ExpectUniqueSample(kVideoDelay,
+                                       /*bucket_min_value=*/50, 1);
 
   // The selected pixel height is 720, so it will be logged in the 675 bucket.
-  histogram_tester_.ExpectUniqueSample(
-      "MediaPreviews.UI.Permissions.Camera.PixelHeight",
-      /*bucket_min_value=*/675, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "MediaPreviews.UI.Preview.Permissions.Video.ExpectedFPS",
-      /*bucket_min_value=*/30, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "MediaPreviews.UI.Preview.Permissions.Video.ActualFPS",
-      /*bucket_min_value=*/18, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "MediaPreviews.UI.Preview.Permissions.Video.RenderedPercent",
-      /*bucket_min_value=*/50, 1);
+  histogram_tester_.ExpectUniqueSample(kPixelHeight,
+                                       /*bucket_min_value=*/675, 1);
+  histogram_tester_.ExpectUniqueSample(kExpectedFPS,
+                                       /*bucket_min_value=*/30, 1);
+  histogram_tester_.ExpectUniqueSample(kActualFPS,
+                                       /*bucket_min_value=*/18, 1);
+  histogram_tester_.ExpectUniqueSample(kRenderedPercent,
+                                       /*bucket_min_value=*/50, 1);
 
   coordinator_.reset();
-  histogram_tester_.ExpectUniqueSample(
-      "MediaPreviews.UI.Preview.Permissions.Video.TotalVisibleDuration",
-      /*bucket_min_value=*/750, 1);
-  histogram_tester_.ExpectTotalCount(
-      "MediaPreviews.UI.Preview.Permissions.Video.TimeToActionWithoutPreview",
-      0);
+  histogram_tester_.ExpectUniqueSample(kTotalVisibleDuration,
+                                       /*bucket_min_value=*/750, 1);
+  histogram_tester_.ExpectTotalCount(TimeToActionWithoutPreview, 0);
 }
 
 TEST_F(VideoStreamCoordinatorTest, ConnectToFrameHandlerAndReceiveNoFrames) {
@@ -153,27 +164,44 @@ TEST_F(VideoStreamCoordinatorTest, ConnectToFrameHandlerAndReceiveNoFrames) {
   coordinator_->Stop();
   EXPECT_TRUE(fake_video_source_.WaitForPushSubscriptionClosed());
 
-  histogram_tester_.ExpectTotalCount(
-      "MediaPreviews.UI.Preview.Permissions.Video.Delay", 0);
+  histogram_tester_.ExpectTotalCount(kVideoDelay, 0);
 
   // The selected pixel height is 720, so it will be logged in the 675 bucket.
-  histogram_tester_.ExpectUniqueSample(
-      "MediaPreviews.UI.Permissions.Camera.PixelHeight",
-      /*bucket_min_value=*/675, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "MediaPreviews.UI.Preview.Permissions.Video.ExpectedFPS",
-      /*bucket_min_value=*/30, 1);
+  histogram_tester_.ExpectUniqueSample(kPixelHeight,
+                                       /*bucket_min_value=*/675, 1);
+  histogram_tester_.ExpectUniqueSample(kExpectedFPS,
+                                       /*bucket_min_value=*/30, 1);
 
-  histogram_tester_.ExpectTotalCount(
-      "MediaPreviews.UI.Preview.Permissions.Video.ActualFPS", 0);
-  histogram_tester_.ExpectTotalCount(
-      "MediaPreviews.UI.Preview.Permissions.Video.RenderedPercent", 0);
+  histogram_tester_.ExpectTotalCount(kActualFPS, 0);
+  histogram_tester_.ExpectTotalCount(kRenderedPercent, 0);
 
   coordinator_.reset();
-  histogram_tester_.ExpectUniqueSample(
-      "MediaPreviews.UI.Preview.Permissions.Video.TotalVisibleDuration",
-      /*bucket_min_value=*/0, 1);
-  histogram_tester_.ExpectUniqueSample(
-      "MediaPreviews.UI.Preview.Permissions.Video.TimeToActionWithoutPreview",
-      /*bucket_min_value=*/125, 1);
+  histogram_tester_.ExpectUniqueSample(kTotalVisibleDuration,
+                                       /*bucket_min_value=*/0, 1);
+  histogram_tester_.ExpectUniqueSample(TimeToActionWithoutPreview,
+                                       /*bucket_min_value=*/125, 1);
+}
+
+TEST_F(VideoStreamCoordinatorTest,
+       ConnectToFrameHandlerWithUnBoundVideoSource) {
+  mojo::Remote<video_capture::mojom::VideoSource> video_source;
+  coordinator_->ConnectToDevice(GetVideoCaptureDeviceInfo(),
+                                std::move(video_source));
+
+  coordinator_->GetVideoStreamView()->SetPreferredSize(gfx::Size{250, 180});
+  coordinator_->GetVideoStreamView()->SizeToPreferredSize();
+
+  base::RunLoop().RunUntilIdle();
+  task_environment()->AdvanceClock(base::Milliseconds(130));
+
+  coordinator_->Stop();
+  histogram_tester_.ExpectTotalCount(kVideoDelay, 0);
+  histogram_tester_.ExpectTotalCount(kPixelHeight, 0);
+  histogram_tester_.ExpectTotalCount(kExpectedFPS, 0);
+  histogram_tester_.ExpectTotalCount(kActualFPS, 0);
+  histogram_tester_.ExpectTotalCount(kRenderedPercent, 0);
+
+  coordinator_.reset();
+  histogram_tester_.ExpectTotalCount(kTotalVisibleDuration, 0);
+  histogram_tester_.ExpectTotalCount(TimeToActionWithoutPreview, 0);
 }
