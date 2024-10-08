@@ -392,7 +392,7 @@ TEST_F(AccountMenuMediatorTest, TestDidTapAddAccount) {
 }
 
 // Tests the effect of signOutFromTargetRect.
-TEST_F(AccountMenuMediatorTest, TestViewControllerWantsToBeClosed) {
+TEST_F(AccountMenuMediatorTest, TestSignoutFromTargetRect) {
   CGRect rect = CGRectMake(0, 0, 40, 24);
 
   __block void (^callback)(BOOL) = nil;
@@ -406,4 +406,29 @@ TEST_F(AccountMenuMediatorTest, TestViewControllerWantsToBeClosed) {
   [mediator_ signOutFromTargetRect:rect];
   OCMExpect([delegate_ unblockOtherScene]);
   callback(YES);
+}
+
+// Tests tapping on the close button just after the sign-out button.
+// This is a regression test for crbug.com/371046656.
+TEST_F(AccountMenuMediatorTest, TestSignoutAndClose) {
+  CGRect rect = CGRectMake(0, 0, 40, 24);
+  __block void (^callback)(BOOL) = nil;
+  OCMExpect([delegate_
+      signOutFromTargetRect:rect
+                   callback:[OCMArg checkWithBlock:^BOOL(id value) {
+                     callback = value;
+                     return true;
+                   }]]);
+  OCMExpect([delegate_ blockOtherScene]);
+  [mediator_ signOutFromTargetRect:rect];
+  [mediator_ disconnect];
+  OCMExpect([delegate_ unblockOtherScene]);
+  callback(NO);
+}
+// Tests tapping on the close button just after the sign-out button.
+// This is a regression test for crbug.com/371046656.
+TEST_F(AccountMenuMediatorTest, TestViewControllerWantToBeClosed) {
+  OCMExpect([delegate_ mediatorWantsToBeDismissed:mediator_]);
+  [mediator_
+      viewControllerWantsToBeClosed:(AccountMenuViewController*)consumer_];
 }

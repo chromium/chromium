@@ -153,26 +153,31 @@
   if (!_accountDetailsControllerDismissCallback.is_null()) {
     std::move(_accountDetailsControllerDismissCallback).Run(/*animated=*/false);
   }
-  _activityOverlayCallback.RunAndReset();
-  [self unblockOtherScene];
+  // Stopping all potentially open children views.
+  [self stopSignoutActionSheetCoordinator];
   [self stopAccountsCoordinator];
-  _authenticationService = nil;
-  _browserCoordinatorCommands = nil;
-  _identityManager = nil;
-  _prefService = nil;
-  [self dismissTheViewController];
+  _activityOverlayCallback.RunAndReset();
   [_syncEncryptionPassphraseTableViewController settingsWillBeDismissed];
   _syncEncryptionPassphraseTableViewController = nil;
   [_syncEncryptionTableViewController settingsWillBeDismissed];
   _syncEncryptionTableViewController = nil;
+
+  // Sets to nil the account menu objects.
+  [self dismissTheViewController];
   [_mediator disconnect];
   _mediator.delegate = nil;
   _mediator = nil;
+
+  // Sets the service to nil.
+  _authenticationService = nil;
+  _browserCoordinatorCommands = nil;
+  _identityManager = nil;
+  _prefService = nil;
   _applicationHandler = nil;
   _syncService = nullptr;
   _accountManagerService = nullptr;
-  [self stopSignoutActionSheetCoordinator];
-  [self stopAccountsCoordinator];
+
+  [self unblockOtherScene];
   [super stop];
 }
 

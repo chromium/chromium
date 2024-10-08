@@ -348,13 +348,40 @@
   }];
 }
 
-#pragma mark - Private
+#pragma mark - Callbacks
 
 // Callback for didTapAddAccount
 - (void)accountAddedIsDone {
   [self restartUpdates];
   _blockUserInteractions = NO;
 }
+
+// Callback for signout.
+- (void)signoutEndedWithSuccess:(BOOL)success {
+  [self.delegate unblockOtherScene];
+  if (!success) {
+    // User had not signed-out. Allow to interact with the UI.
+    _blockUserInteractions = NO;
+    [self restartUpdates];
+  }
+}
+
+- (void)signinEndedWithSuccess:(BOOL)success {
+  if (success) {
+    [_delegate mediatorWantsToBeDismissed:self];
+  } else if (_authenticationService->GetPrimaryIdentity(
+                 signin::ConsentLevel::kSignin)) {
+    // Sign in to the new identity failed, and the user was signed back.
+    [self restartUpdates];
+    _blockUserInteractions = NO;
+  } else {
+    // That should be extremely are. MDM invalidated the previous account
+    // during the switch.
+    [self.delegate mediatorWantsToBeDismissed:self];
+  }
+}
+
+#pragma mark - Private
 
 // Updates the identity list in `_identities`, and sends an notification to
 // the consumer.
@@ -400,33 +427,13 @@
   }
 }
 
-// Callback for signout.
-- (void)signoutEndedWithSuccess:(BOOL)success {
-  [self.delegate unblockOtherScene];
-  if (!success) {
-    // User had not signed-out. Allow to interact with the UI.
-    _blockUserInteractions = NO;
-    [self restartUpdates];
-  }
-}
-
-- (void)signinEndedWithSuccess:(BOOL)success {
-  if (success) {
-    [_delegate mediatorWantsToBeDismissed:self];
-  } else if (_authenticationService->GetPrimaryIdentity(
-                 signin::ConsentLevel::kSignin)) {
-    // Sign in to the new identity failed, and the user was signed back.
-    [self restartUpdates];
-    _blockUserInteractions = NO;
-  } else {
-    // That should be extremely are. MDM invalidated the previous account
-    // during the switch.
-    [self.delegate mediatorWantsToBeDismissed:self];
-  }
-}
-
-// Refresh everything and update the UI according to the change in the state.
+// Refresh everything and update the UI according to the change in the state. Do
+// nothing if the mediator was disconnected.
 - (void)restartUpdates {
+  if ([self isDisconnected]) {
+    // The mediator was disconnected. Don’t restart updates.
+    return;
+  }
   _blockUpdates = NO;
   [self updateIdentities];
   [self onSyncStateChanged];
@@ -461,6 +468,13 @@
   _primaryAccountDisplayedUserFullName = self.primaryAccountUserFullName;
   _primaryAccountDisplayedAvatar = self.primaryAccountAvatar;
   _primaryAccountDisplayedManaged = self.managementState.is_profile_managed();
+}
+
+// Returns whether this mediator is disconnected
+- (BOOL)isDisconnected {
+  // The account manager service is set in init and reset in `disconnect`. So
+  // this property correctly reflects whether the mediator is disconnected.
+  return !_accountManagerService;
 }
 
 @end
