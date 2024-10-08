@@ -12,15 +12,6 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
-#include "url/gurl.h"
-
-namespace {
-
-ash::ScannerAction CreateOpenUrlAction(const GURL& url) {
-  return ash::OpenUrlAction{url};
-}
-
-}  // namespace
 
 ScannerActionProvider::ScannerActionProvider() = default;
 
@@ -31,6 +22,5 @@ void ScannerActionProvider::FetchActionsForImage(
     OnActionsResolved callback) {
   // TODO(b/363100868): Fetch available actions from service
   std::move(callback).Run(base::ok(std::vector<ash::ScannerAction>{
-      CreateOpenUrlAction(GURL("https://www.google.com")),
-  }));
+      ash::NewCalendarEventAction("Event title")}));
 }

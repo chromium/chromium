@@ -5,24 +5,32 @@
 #ifndef ASH_PUBLIC_CPP_SCANNER_SCANNER_ACTION_H_
 #define ASH_PUBLIC_CPP_SCANNER_SCANNER_ACTION_H_
 
+#include <string>
 #include <variant>
 #include <vector>
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/scanner/scanner_enums.h"
 #include "base/types/expected.h"
-#include "url/gurl.h"
 
 namespace ash {
 
-// Instructs the system to open the given url.
-struct ASH_PUBLIC_EXPORT OpenUrlAction {
-  GURL url;
+// Opens the browser to the Google Calendar event creation page, with some
+// fields pre-set.
+struct ASH_PUBLIC_EXPORT NewCalendarEventAction {
+  std::string title;
+
+  explicit NewCalendarEventAction(std::string title);
+
+  NewCalendarEventAction(const NewCalendarEventAction&);
+  NewCalendarEventAction& operator=(const NewCalendarEventAction&);
+
+  ~NewCalendarEventAction();
 };
 
 // Holds a particular action the user can complete in a ScannerSession,
 // equivalently a single command that can be applied to the system.
-using ScannerAction = std::variant<OpenUrlAction>;
+using ScannerAction = std::variant<NewCalendarEventAction>;
 
 // Holds the response returned from the Scanner service. This may be a list of
 // 0 or more actions, or an error state.

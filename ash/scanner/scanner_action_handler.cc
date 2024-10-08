@@ -4,18 +4,37 @@
 
 #include "ash/scanner/scanner_action_handler.h"
 
+#include <string>
 #include <string_view>
 #include <variant>
 
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/scanner/scanner_action.h"
+#include "base/check.h"
 #include "base/functional/callback.h"
 #include "base/functional/overloaded.h"
+#include "base/strings/escape.h"
 #include "url/gurl.h"
 
 namespace ash {
 
 namespace {
+
+const GURL kGoogleCalendarEventTemplateUrl(
+    "https://calendar.google.com/calendar/render?action=TEMPLATE");
+
+GURL GetCalendarEventUrl(const NewCalendarEventAction& event) {
+  std::string query = kGoogleCalendarEventTemplateUrl.query();
+  CHECK(!query.empty());
+  if (!event.title.empty()) {
+    query += "&text=";
+    query += base::EscapeQueryParamValue(event.title, /*use_plus=*/true);
+  }
+
+  GURL::Replacements replacements;
+  replacements.SetQueryStr(query);
+  return kGoogleCalendarEventTemplateUrl.ReplaceComponents(replacements);
+}
 
 void OpenInBrowserTab(const GURL& gurl) {
   NewWindowDelegate::GetPrimary()->OpenUrl(
@@ -29,8 +48,8 @@ void HandleScannerAction(const ScannerAction& action,
                          base::OnceCallback<void(bool)> callback) {
   std::visit(
       base::Overloaded{
-          [&](const OpenUrlAction& action) {
-            OpenInBrowserTab(action.url);
+          [&](const NewCalendarEventAction& action) {
+            OpenInBrowserTab(GetCalendarEventUrl(action));
             std::move(callback).Run(true);
           },
       },

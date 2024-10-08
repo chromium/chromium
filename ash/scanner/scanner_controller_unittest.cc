@@ -59,7 +59,7 @@ TEST_F(ScannerControllerTest, FetchesActionsDuringActiveSession) {
                                            actions_future.GetCallback());
   GetFakeScannerProfileScopedDelegate(*scanner_controller)
       ->SendFakeActionsResponse(base::ok(std::vector<ScannerAction>{
-          OpenUrlAction{.url = GURL("https://www.google.com")},
+          NewCalendarEventAction("Event title"),
       }));
 
   EXPECT_THAT(actions_future.Take(), SizeIs(1));

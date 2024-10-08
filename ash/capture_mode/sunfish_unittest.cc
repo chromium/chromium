@@ -571,8 +571,8 @@ TEST_F(SunfishWithScannerTest, CreatesScannerActionButtons) {
   ASSERT_TRUE(scanner_controller);
   GetFakeScannerProfileScopedDelegate(*scanner_controller)
       ->SendFakeActionsResponse(base::ok(std::vector<ScannerAction>{
-          OpenUrlAction{.url = GURL("https://www.google.com")},
-          OpenUrlAction{.url = GURL("https://www.example.com")},
+          NewCalendarEventAction("Event 1"),
+          NewCalendarEventAction("Event 2"),
       }));
 
   const CaptureModeSessionTestApi session_test_api(
