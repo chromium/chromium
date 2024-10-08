@@ -11,12 +11,18 @@ import android.content.pm.verify.domain.DomainVerificationManager;
 import android.content.pm.verify.domain.DomainVerificationUserState;
 import android.net.Uri;
 import android.os.Build;
+import android.os.SystemClock;
 import android.text.TextUtils;
 
 import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsService;
 
+import org.chromium.base.CallbackController;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
 import org.chromium.chrome.browser.browserservices.verification.ChromeOriginVerifier;
@@ -46,6 +52,9 @@ public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
     // Value to return as activity result when the verification failed.
     // TODO(358167556): Move this to AndroidX.
     public static final int RESULT_VERIFICATION_FAILED = 2;
+    public static final int RESULT_VERIFICATION_TIMED_OUT = 3;
+
+    @VisibleForTesting static final long VERIFICATION_TIMEOUT_MS = 10000;
 
     private static boolean sDelayVerificationForTesting;
 
@@ -66,6 +75,9 @@ public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
     private GURL mReturnUrl;
     private boolean mDestroyed;
     private int mActivityResult;
+    private Long mVerificationStartTime;
+    private Long mHttpsReturnAttemptTime;
+    private CallbackController mCallbackController;
 
     @Inject
     public AuthTabVerifier(
@@ -118,6 +130,7 @@ public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
                         .authority(mRedirectHost)
                         .path(mRedirectPath)
                         .build();
+        mVerificationStartTime = SystemClock.elapsedRealtime();
         mOriginVerifier.start(
                 (packageName, unused, verified, online) -> {
                     if (mDestroyed) return;
@@ -204,22 +217,68 @@ public class AuthTabVerifier implements NativeInitObserver, DestroyObserver {
         boolean customScheme = isCustomScheme(url);
         if (hasValidatedHttps() || customScheme) {
             returnAsActivityResultInternal(url, customScheme);
+        } else {
+            mHttpsReturnAttemptTime = SystemClock.elapsedRealtime();
+            mCallbackController = new CallbackController();
+            PostTask.postDelayedTask(
+                    TaskTraits.UI_DEFAULT,
+                    mCallbackController.makeCancelable(this::returnTimeoutAsActivityResult),
+                    VERIFICATION_TIMEOUT_MS);
         }
     }
 
     private void returnAsActivityResultInternal(GURL url, boolean customScheme) {
         assert mStatus != VerificationStatus.PENDING : "Verification was not completed!";
         Intent intent = new Intent();
-        intent.setData(Uri.parse(url.getSpec()));
+
+        int resultCode = customScheme ? Activity.RESULT_OK : mActivityResult;
+        if (resultCode == Activity.RESULT_OK) {
+            intent.setData(Uri.parse(url.getSpec()));
+        }
+
+        if (mVerificationStartTime != null) {
+            long elapsedSinceVerificationStart =
+                    SystemClock.elapsedRealtime() - mVerificationStartTime;
+            RecordHistogram.recordTimesHistogram(
+                    "CustomTabs.AuthTab.TimeToDalVerification.SinceStart",
+                    elapsedSinceVerificationStart);
+            mVerificationStartTime = null;
+        }
+
+        if (mHttpsReturnAttemptTime != null) {
+            long elapsedSinceReturnAttempt =
+                    SystemClock.elapsedRealtime() - mHttpsReturnAttemptTime;
+            RecordHistogram.recordTimesHistogram(
+                    "CustomTabs.AuthTab.TimeToDalVerification.SinceFlowCompletion",
+                    elapsedSinceReturnAttempt);
+            mHttpsReturnAttemptTime = null;
+        }
+
+        if (mCallbackController != null) {
+            mCallbackController.destroy();
+            mCallbackController = null;
+        }
 
         // Canceling/user-initiated closing of custom-scheme AuthTab flow doesn't end here.
-        mActivity.setResult(customScheme ? Activity.RESULT_OK : mActivityResult, intent);
+        mActivity.setResult(resultCode, intent);
         mActivity.finish();
         mReturnUrl = null;
     }
 
+    private void returnTimeoutAsActivityResult() {
+        mStatus = VerificationStatus.FAILURE;
+        mActivityResult = RESULT_VERIFICATION_TIMED_OUT;
+        returnAsActivityResultInternal(GURL.emptyGURL(), false);
+    }
+
     @Override
     public void onDestroy() {
+        if (mCallbackController != null) {
+            mCallbackController.destroy();
+            mCallbackController = null;
+        }
+        mVerificationStartTime = null;
+        mHttpsReturnAttemptTime = null;
         mDestroyed = true;
         mLifecycleDispatcher.unregister(this);
     }

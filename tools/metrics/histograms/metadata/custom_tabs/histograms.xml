@@ -57,6 +57,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="CustomTabs.AuthTab.TimeToDalVerification.SinceFlowCompletion"
+    units="ms" expires_after="2025-02-02">
+  <owner>sinansahin@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Records the time it took to complete the DAL verification since the auth
+    flow in the Auth Tab was completed, i.e. navigation to the redirect_uri
+    happened. Unlike CustomTabs.AuthTab.TimeToDalVerification.SinceNativeInit,
+    this is only recorded when the verification isn't done before the auth flow
+    completion. Recorded when OriginVerifier returns a result. Android only.
+  </summary>
+</histogram>
+
+<histogram name="CustomTabs.AuthTab.TimeToDalVerification.SinceStart"
+    units="ms" expires_after="2025-02-02">
+  <owner>sinansahin@google.com</owner>
+  <owner>chrome-connective-tissue@google.com</owner>
+  <summary>
+    Records the total time it took to complete the DAL verification, regardless
+    of the success status, when OriginVerifier returns a result. Android only.
+  </summary>
+</histogram>
+
 <histogram name="CustomTabs.AuthView.UrlParams" units="bit field"
     expires_after="2025-04-06">
   <owner>sinansahin@google.com</owner>
