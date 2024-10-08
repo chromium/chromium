@@ -1,11 +1,76 @@
+<!DOCTYPE html>
+<title>This tests that contenteditable elements, with no children, get the right baseline.</title>
 <style>
-DIV#tc:first-line { font-size: 80pt }
+DIV.tc:first-line { font-size: 40pt }
 input:first-line { font-size: 80pt }
+
+.wmwrapper {
+  display: inline-block;
+  inline-size: 280px;
+  text-orientation: sideways;
+  background: #eeeeee;
+  margin: 2px;
+}
+
+.outer1 {
+  display: inline-block;
+  border: solid thin red;
+}
+.inner1 {
+  border: solid thin green;
+  inline-size: 100px;
+  vertical-align: baseline;
+}
+
+.outer2 {
+  display:inline-block;
+  border: solid 10px red;
+}
+.inner2 {
+  border: solid 20px green;
+  inline-size: 100px;
+  vertical-align: baseline;
+}
+
+.outer3 {
+  display: inline-block;
+  border: solid 5px red;
+}
+.tc {
+  border: solid 10px green;
+  inline-size: 100px;
+  padding-block-start: 20px;
+  vertical-align: baseline
+}
 </style>
-This tests that contenteditable elements, with no children, get the right baseline.
-<br><br>
-<div style="display:inline-block; border: solid thin red;"><div contenteditable style="border: solid thin green; width:150px; vertical-align: baseline"></div></div>This text should line up with the bottom of the text in the editable div.
-<br><br>
-<div style="display:inline-block; border: solid 10px red;">text<div contenteditable style="border: solid 20px green; width:150px; vertical-align: baseline"></div></div>This text should line up with the bottom of the text in the editable div.
-<br><br>
-<div style="display:inline-block; border: solid 5px red;"><div contenteditable id="tc" style="border: solid 10px green; width:150px; padding-top: 20px; vertical-align: baseline"></div></div>This text should line up with the bottom of the text in the editable div.
+<div class="wmwrapper" style="inline-size:350px">
+<div class="outer1"><div contenteditable class="inner1"></div></div>This text should line up with the bottom of the text in the editable div.
+<br>
+<div class="outer2">text<div contenteditable class="inner2"></div></div>This text should line up with the bottom of the text in the editable div.
+<br>
+<div class="outer3"><div contenteditable class="tc"></div></div>This text should line up with the bottom of the text in the editable div.
+</div>
+
+<div class="wmwrapper" style="writing-mode:vertical-lr">
+<div class="outer1"><div contenteditable class="inner1"></div></div>This text should line up with the bottom of the text in the editable div.
+<br>
+<div class="outer2">text<div contenteditable class="inner2"></div></div>This text should line up with the bottom of the text in the editable div.
+<br>
+<div class="outer3"><div contenteditable class="tc"></div></div>This text should line up with the bottom of the text in the editable div.
+</div>
+
+<div class="wmwrapper" style="writing-mode:vertical-rl">
+<div class="outer1"><div contenteditable class="inner1"></div></div>This text should line up with the bottom of the text in the editable div.
+<br>
+<div class="outer2">text<div contenteditable class="inner2"></div></div>This text should line up with the bottom of the text in the editable div.
+<br>
+<div class="outer3"><div contenteditable class="tc"></div></div>This text should line up with the bottom of the text in the editable div.
+</div>
+
+<div class="wmwrapper" style="writing-mode:sideways-lr">
+<div class="outer1"><div contenteditable class="inner1"></div></div>This text should line up with the bottom of the text in the editable div.
+<br>
+<div class="outer2">text<div contenteditable class="inner2"></div></div>This text should line up with the bottom of the text in the editable div.
+<br>
+<div class="outer3"><div contenteditable class="tc"></div></div>This text should line up with the bottom of the text in the editable div.
+</div>

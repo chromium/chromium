@@ -587,6 +587,8 @@ bool LayoutBlock::HasLineIfEmpty() const {
   return FirstLineStyleRef().HasLineIfEmpty();
 }
 
+// This function should return the distance from the block-start, not from
+// the line-over.
 std::optional<LayoutUnit> LayoutBlock::BaselineForEmptyLine() const {
   NOT_DESTROYED();
   const ComputedStyle* style = FirstLineStyle();
@@ -596,6 +598,15 @@ std::optional<LayoutUnit> LayoutBlock::BaselineForEmptyLine() const {
   const auto& font_metrics = font_data->GetFontMetrics();
   const auto baseline_type = style->GetFontBaseline();
   const LayoutUnit line_height = FirstLineHeight();
+  if (RuntimeEnabledFeatures::SidewaysWritingModesEnabled()) {
+    int ascent_or_descent = IsFlippedLinesWritingMode(style->GetWritingMode())
+                                ? font_metrics.Descent(baseline_type)
+                                : font_metrics.Ascent(baseline_type);
+    return LayoutUnit((ascent_or_descent +
+                       (line_height - font_metrics.Height()) / 2 +
+                       BorderAndPaddingBlockStart())
+                          .ToInt());
+  }
   const LayoutUnit border_padding = style->IsHorizontalWritingMode()
                                         ? BorderTop() + PaddingTop()
                                         : BorderRight() + PaddingRight();
