@@ -204,12 +204,16 @@ void CSSGroupingRule::AppendCSSTextForItems(StringBuilder& result) const {
   result.Append(" {\n");
 
   // 4. The result of performing serialize a CSS rule on each rule in the rule’s
-  //    cssRules list, separated by a newline and indented by two spaces.
+  //    cssRules list, filtering out empty strings, indenting each item
+  //    with two spaces, all joined with newline.
   for (unsigned i = 0; i < length(); ++i) {
     CSSRule* child = ItemInternal(i);
-    result.Append("  ");
-    result.Append(child->cssText());
-    result.Append('\n');
+    String child_text = child->cssText();
+    if (!child_text.empty()) {
+      result.Append("  ");
+      result.Append(child_text);
+      result.Append('\n');
+    }
   }
 
   // A newline, followed by the string "}", i.e., RIGHT CURLY BRACKET (U+007D)

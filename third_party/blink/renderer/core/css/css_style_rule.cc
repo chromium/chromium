@@ -139,8 +139,11 @@ String CSSStyleRule::cssText() const {
   unsigned size = length();
   for (unsigned i = 0; i < size; ++i) {
     // Step 6.2 for rules.
-    rules.Append("\n  ");
-    rules.Append(ItemInternal(i)->cssText());
+    String item_text = ItemInternal(i)->cssText();
+    if (!item_text.empty()) {
+      rules.Append("\n  ");
+      rules.Append(item_text);
+    }
   }
 
   // Step 4.
