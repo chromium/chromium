@@ -231,9 +231,6 @@ const CGFloat kSeparatorHeight = 0.5;
 - (void)hideDescriptionOnTraitChange {
   _descriptionLabel.hidden = self.traitCollection.preferredContentSizeCategory >
                              UIContentSizeCategoryExtraExtraLarge;
-  // Force a layout since the size of text components may have changed.
-  [self setNeedsLayout];
-  [self layoutIfNeeded];
 }
 
 #pragma mark - Testing category methods
