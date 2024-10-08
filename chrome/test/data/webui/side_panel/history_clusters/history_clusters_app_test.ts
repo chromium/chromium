@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://history-clusters-side-panel.top-chrome/app.js';
+import 'chrome://history-clusters-side-panel.top-chrome/history_clusters.js';
 
-import type {HistoryClustersAppElement} from 'chrome://history-clusters-side-panel.top-chrome/app.js';
-import {HistoryEmbeddingsBrowserProxyImpl} from 'chrome://resources/cr_components/history_embeddings/browser_proxy.js';
-import {PageHandlerRemote as HistoryEmbeddingsPageHandlerRemote} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.mojom-webui.js';
+import type {HistoryClustersAppElement} from 'chrome://history-clusters-side-panel.top-chrome/history_clusters.js';
+import {HistoryEmbeddingsBrowserProxyImpl, HistoryEmbeddingsPageHandlerRemote} from 'chrome://history-clusters-side-panel.top-chrome/history_clusters.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
