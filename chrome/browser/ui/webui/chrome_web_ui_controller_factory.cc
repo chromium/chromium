@@ -93,7 +93,6 @@
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
-#include "chrome/browser/ui/webui/settings/settings_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_utils.h"
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -296,11 +295,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
         return &NewWebUI<NewTabUI>;
     }
   }
-  // Settings are implemented with native UI elements on Android.
-  if (url.host_piece() == chrome::kChromeUISettingsHost)
-    return &NewWebUI<settings::SettingsUI>;
-#endif  // !BUILDFLAG(IS_ANDROID)
-#if !BUILDFLAG(IS_ANDROID)
   if (url.SchemeIs(content::kChromeDevToolsScheme)) {
     if (!DevToolsUIBindings::IsValidFrontendURL(url))
       return nullptr;
@@ -315,7 +309,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
       !profile->IsOffTheRecord()) {
     return &NewWebUI<SyncConfirmationUI>;
   }
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
   if (url.host_piece() == chrome::kChromeUILensOverlayHost) {

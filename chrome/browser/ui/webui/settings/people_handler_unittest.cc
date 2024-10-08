@@ -220,15 +220,6 @@ class TestingPeopleHandler : public PeopleHandler {
 #endif
 };
 
-class TestWebUIProvider
-    : public TestChromeWebUIControllerFactory::WebUIProvider {
- public:
-  std::unique_ptr<content::WebUIController> NewWebUI(content::WebUI* web_ui,
-                                                     const GURL& url) override {
-    return std::make_unique<content::WebUIController>(web_ui);
-  }
-};
-
 class PeopleHandlerTest : public ChromeRenderViewHostTestHarness {
  public:
   PeopleHandlerTest() = default;
@@ -372,8 +363,6 @@ class PeopleHandlerTest : public ChromeRenderViewHostTestHarness {
       identity_test_env_adaptor_;
   raw_ptr<syncer::TestSyncService> sync_service_;
   content::TestWebUI web_ui_;
-  TestWebUIProvider test_provider_;
-  std::unique_ptr<TestChromeWebUIControllerFactory> test_factory_;
   std::unique_ptr<TestingPeopleHandler> handler_;
   base::test::ScopedFeatureList feature_list_;
 };
@@ -555,14 +544,11 @@ TEST_F(PeopleHandlerTest, OnlyStartEngineWhenConfiguringSync) {
 TEST_F(PeopleHandlerTest, AcquireSyncBlockerWhenLoadingSyncSettingsSubpage) {
   SigninUserAndTurnSyncFeatureOn();
   CreatePeopleHandler();
-  // We set up a factory override here to prevent a new web ui from being
-  // created when we navigate to a page that would normally create one.
-  TestChromeWebUIControllerFactory test_factory;
-  content::ScopedWebUIControllerFactoryRegistration factory_registration(
-      &test_factory, ChromeWebUIControllerFactory::GetInstance());
-  test_factory.AddFactoryOverride(
-      chrome::GetSettingsUrl(chrome::kSyncSetupSubPage).host(),
-      &test_provider_);
+  // Remove the WebUIConfig for chrome::kSyncSetupSubPage to prevent a new web
+  // ui from being created when we navigate to a page that would normally create
+  // one.
+  content::ScopedWebUIConfigRegistration registration(
+      chrome::GetSettingsUrl(chrome::kSyncSetupSubPage));
 
   EXPECT_FALSE(handler_->sync_blocker_);
 
