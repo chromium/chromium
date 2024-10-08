@@ -370,7 +370,8 @@ TerminalPrivateOpenTerminalProcessFunction::OpenProcess(
     auto* tracker = guest_os::GuestOsSessionTracker::GetForProfile(profile);
     bool verbose = !(tracker && tracker->GetInfo(*guest_id_).has_value());
     auto status_printer = std::make_unique<StartupStatusPrinter>(
-        base::BindRepeating(&NotifyProcessOutput, browser_context(), startup_id,
+        base::BindRepeating(&NotifyProcessOutput, browser_context(),
+                            std::move(startup_id),
                             api::terminal_private::ToString(
                                 api::terminal_private::OutputType::kStdout)),
         verbose);

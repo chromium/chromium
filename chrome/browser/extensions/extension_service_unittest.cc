@@ -731,8 +731,8 @@ class ExtensionServiceTest : public ExtensionServiceTestWithInstall {
 
   // Helper method to test that an extension moves through being blocked and
   // unblocked as appropriate for its type.
-  void AssertExtensionBlocksAndUnblocks(
-      bool should_block, const std::string extension_id) {
+  void AssertExtensionBlocksAndUnblocks(bool should_block,
+                                        const std::string& extension_id) {
     // Assume we start in an unblocked state.
     EXPECT_FALSE(IsBlocked(extension_id));
 

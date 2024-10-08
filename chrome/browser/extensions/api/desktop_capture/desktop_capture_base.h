@@ -63,7 +63,7 @@ class DesktopCaptureChooseDesktopMediaFunctionBase : public ExtensionFunction {
       bool suppress_local_audio_playback_intended,
       content::RenderFrameHost* render_frame_host,
       const GURL& origin,
-      const std::u16string target_name);
+      const std::u16string& target_name);
 
   // Returns the calling application name to show in the picker.
   std::string GetCallerDisplayName() const;

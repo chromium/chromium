@@ -32,7 +32,7 @@ class WebstoreDataFetcher {
  public:
   WebstoreDataFetcher(WebstoreDataFetcherDelegate* delegate,
                       const GURL& referrer_url,
-                      const std::string webstore_item_id);
+                      const std::string& webstore_item_id);
 
   WebstoreDataFetcher(const WebstoreDataFetcher&) = delete;
   WebstoreDataFetcher& operator=(const WebstoreDataFetcher&) = delete;

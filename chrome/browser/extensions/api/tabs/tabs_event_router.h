@@ -141,9 +141,8 @@ class TabsEventRouter : public TabStripModelObserver,
 
   // Packages |changed_property_names| as a tab updated event for the tab
   // |contents| and dispatches the event to the extension.
-  void DispatchTabUpdatedEvent(
-      content::WebContents* contents,
-      const std::set<std::string> changed_property_names);
+  void DispatchTabUpdatedEvent(content::WebContents* contents,
+                               std::set<std::string> changed_property_names);
 
   // Register ourselves to receive the various notifications we are interested
   // in for a tab. Also create tab entry to observe web contents notifications.

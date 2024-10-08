@@ -44,7 +44,7 @@ namespace {
 
 bool WillDispatchTabUpdatedEvent(
     WebContents* contents,
-    const std::set<std::string> changed_property_names,
+    const std::set<std::string>& changed_property_names,
     content::BrowserContext* browser_context,
     mojom::ContextType target_context,
     const Extension* extension,
@@ -584,7 +584,7 @@ void TabsEventRouter::DispatchEvent(
 
 void TabsEventRouter::DispatchTabUpdatedEvent(
     WebContents* contents,
-    const std::set<std::string> changed_property_names) {
+    std::set<std::string> changed_property_names) {
   DCHECK(!changed_property_names.empty());
   DCHECK(contents);
 

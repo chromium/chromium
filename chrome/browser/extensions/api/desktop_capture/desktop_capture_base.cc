@@ -85,7 +85,7 @@ DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
     bool suppress_local_audio_playback_intended,
     content::RenderFrameHost* render_frame_host,
     const GURL& origin,
-    const std::u16string target_name) {
+    const std::u16string& target_name) {
   DCHECK(!picker_controller_);
 
   if (!render_frame_host->IsActive())

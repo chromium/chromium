@@ -106,7 +106,7 @@ namespace extensions {
 
 WebstoreDataFetcher::WebstoreDataFetcher(WebstoreDataFetcherDelegate* delegate,
                                          const GURL& referrer_url,
-                                         const std::string webstore_item_id)
+                                         const std::string& webstore_item_id)
     : delegate_(delegate), referrer_url_(referrer_url), id_(webstore_item_id) {}
 
 WebstoreDataFetcher::~WebstoreDataFetcher() = default;
