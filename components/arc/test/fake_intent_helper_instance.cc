@@ -14,7 +14,7 @@
 
 namespace arc {
 
-FakeIntentHelperInstance::FakeIntentHelperInstance() {}
+FakeIntentHelperInstance::FakeIntentHelperInstance() = default;
 
 FakeIntentHelperInstance::Broadcast::Broadcast(const std::string& action,
                                                const std::string& package_name,
@@ -50,7 +50,7 @@ void FakeIntentHelperInstance::SetIntentHandlers(
   intent_handlers_[action] = std::move(handlers);
 }
 
-FakeIntentHelperInstance::~FakeIntentHelperInstance() {}
+FakeIntentHelperInstance::~FakeIntentHelperInstance() = default;
 
 void FakeIntentHelperInstance::AddPreferredPackage(
     const std::string& package_name) {}
