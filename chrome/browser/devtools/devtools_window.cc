@@ -413,6 +413,14 @@ class DevToolsWindow::Throttle : public content::NavigationThrottle {
   raw_ptr<DevToolsWindow> devtools_window_;
 };
 
+void DevToolsWindow::MainWebContentsObserver::RenderFrameHostChanged(
+    content::RenderFrameHost* old_frame,
+    content::RenderFrameHost* new_frame) {
+  window_->MainWebContentRenderFrameHostChanged(old_frame, new_frame);
+}
+
+DevToolsWindow::MainWebContentsObserver::~MainWebContentsObserver() = default;
+
 // Helper class that holds the owned main WebContents for the docked
 // devtools window and maintains a keepalive object that keeps the browser
 // main loop alive long enough for the WebContents to clean up properly.
@@ -1116,6 +1124,7 @@ DevToolsWindow::DevToolsWindow(FrontendType frontend_type,
     : frontend_type_(frontend_type),
       profile_(profile),
       main_web_contents_(main_web_contents.get()),
+      main_web_contents_observer_(*main_web_contents_, *this),
       toolbox_web_contents_(nullptr),
       bindings_(bindings),
       browser_(nullptr),
@@ -2023,4 +2032,16 @@ void DevToolsWindow::OnInfoBarRemoved(infobars::InfoBar* infobar,
 
 void DevToolsWindow::PrimaryPageChanged(content::Page& page) {
   MaybeShowSharedProcessInfobar();
+}
+
+void DevToolsWindow::MainWebContentRenderFrameHostChanged(
+    content::RenderFrameHost* old_frame,
+    content::RenderFrameHost* new_frame) {
+  DevToolsUIBindings* new_bindings =
+      DevToolsUIBindings::ForWebContents(main_web_contents_);
+  if (!new_bindings) {
+    return;
+  }
+  bindings_->TransferDelegate(*new_bindings);
+  bindings_ = new_bindings;
 }
