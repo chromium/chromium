@@ -255,11 +255,6 @@ TEST_F(EnrollmentFwmpHelperTest, DevDisableBoot) {
 
 class AutoEnrollmentControllerBaseTest : public testing::Test {
  protected:
-  ~AutoEnrollmentControllerBaseTest() override {
-    AutoEnrollmentTypeChecker::
-        ClearUnifiedStateDeterminationKillSwitchForTesting();
-  }
-
   AutoEnrollmentControllerForTesting CreateController() {
     return AutoEnrollmentControllerForTesting(
         &mock_device_settings_service_, &fake_dm_service_,
@@ -305,10 +300,6 @@ class AutoEnrollmentControllerBaseTest : public testing::Test {
     command_line_.GetProcessCommandLine()->AppendSwitchASCII(
         ash::switches::kEnterpriseEnableUnifiedStateDetermination,
         switch_value);
-
-    const bool is_killed = !enabled;
-    AutoEnrollmentTypeChecker::SetUnifiedStateDeterminationKillSwitchForTesting(
-        is_killed);
   }
 
   void SetupForcedReenrollmentCheckType() {

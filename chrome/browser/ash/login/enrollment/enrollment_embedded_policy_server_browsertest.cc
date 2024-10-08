@@ -134,6 +134,11 @@ class EnrollmentEmbeddedPolicyServerBase : public OobeBaseTest {
     command_line->AppendSwitchASCII(
         policy::switches::kPolicyVerificationKey,
         policy::PolicyBuilder::GetEncodedPolicyVerificationKey());
+
+    // TODO(b/353731379): Remove when removing legacy state determination code.
+    command_line->AppendSwitchASCII(
+        switches::kEnterpriseEnableUnifiedStateDetermination,
+        policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
   }
 
  protected:

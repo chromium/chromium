@@ -109,6 +109,9 @@ class AutoEnrollmentController : public ash::NetworkStateHandlerObserver {
   // Retry checking.
   void Retry();
 
+  // Returns true if auto-enrollment check is running.
+  bool IsInProgress() const;
+
   // Registers a callback to invoke on state changes.
   base::CallbackListSubscription RegisterProgressCallback(
       const ProgressCallbackList::CallbackType& callback);
@@ -229,8 +232,6 @@ class AutoEnrollmentController : public ash::NetworkStateHandlerObserver {
 
   // Handles timeout of the safeguard timer and stops waiting for a result.
   void Timeout();
-
-  bool IsInProgress() const;
 
   // Used for checking ownership.
   raw_ptr<ash::DeviceSettingsService> device_settings_service_;

@@ -930,6 +930,10 @@ class OobeZeroTouchInteractiveUITest : public OobeInteractiveUITest {
     command_line->AppendSwitchASCII(
         switches::kEnterpriseEnableInitialEnrollment,
         policy::AutoEnrollmentTypeChecker::kInitialEnrollmentAlways);
+    // TODO(b/353731379): Remove when removing legacy state determination code.
+    command_line->AppendSwitchASCII(
+        switches::kEnterpriseEnableUnifiedStateDetermination,
+        policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
   }
 
   void ZeroTouchEndToEnd();

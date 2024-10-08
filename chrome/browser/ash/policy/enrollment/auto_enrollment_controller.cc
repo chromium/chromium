@@ -245,17 +245,6 @@ void AutoEnrollmentController::Start() {
     network_state_observation_.Observe(network_state_handler_);
   }
 
-  if (!AutoEnrollmentTypeChecker::Initialized()) {
-    if (!auto_enrollment_check_type_init_started_) {
-      auto_enrollment_check_type_init_started_ = true;
-      AutoEnrollmentTypeChecker::Initialize(
-          shared_url_loader_factory_,
-          base::BindOnce(&AutoEnrollmentController::Start,
-                         weak_ptr_factory_.GetWeakPtr()));
-    }
-    return;
-  }
-
   if (IsInProgress()) {
     return;
   }
@@ -270,8 +259,14 @@ void AutoEnrollmentController::Start() {
     auto_enrollment_check_type_ = AutoEnrollmentTypeChecker::CheckType::
         kForcedReEnrollmentExplicitlyRequired;
 
+    // TODO(b/353731379): BrowserPolicyConnector::ScheduleServiceInitialization.
+    if (device_management_service_) {
+      device_management_service_->ScheduleInitialization(0);
+    } else {
+      CHECK_IS_TEST();
+    }
+
     LOG(WARNING) << "Starting state determination";
-    device_management_service_->ScheduleInitialization(0);
     enrollment_state_fetcher_ = enrollment_state_fetcher_factory_.Run(
         base::BindRepeating(&AutoEnrollmentController::UpdateState,
                             weak_ptr_factory_.GetWeakPtr()),
