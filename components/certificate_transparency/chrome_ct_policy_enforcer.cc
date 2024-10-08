@@ -61,7 +61,7 @@ ChromeCTPolicyEnforcer::ChromeCTPolicyEnforcer(
       log_operator_history_(std::move(log_operator_history)),
       log_list_date_(log_list_date) {}
 
-ChromeCTPolicyEnforcer::~ChromeCTPolicyEnforcer() {}
+ChromeCTPolicyEnforcer::~ChromeCTPolicyEnforcer() = default;
 
 CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCompliance(
     net::X509Certificate* cert,

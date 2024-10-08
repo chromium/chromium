@@ -172,7 +172,7 @@ bool AreCertsSameOrganization(const bssl::RDNSequence& leaf_rdn_sequence,
 ChromeRequireCTDelegate::ChromeRequireCTDelegate()
     : url_matcher_(std::make_unique<url_matcher::URLMatcher>()), next_id_(0) {}
 
-ChromeRequireCTDelegate::~ChromeRequireCTDelegate() {}
+ChromeRequireCTDelegate::~ChromeRequireCTDelegate() = default;
 
 net::TransportSecurityState::RequireCTDelegate::CTRequirementLevel
 ChromeRequireCTDelegate::IsCTRequiredForHost(
