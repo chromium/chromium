@@ -25,6 +25,9 @@ extern const char kDefaultUkmServerUrl[];
 // The UKM server's MIME type.
 extern const char kUkmMimeType[];
 
+// The default DWA server's URL.
+extern const char kDefaultDwaServerUrl[];
+
 } // namespace metrics
 
 #endif // COMPONENTS_METRICS_URL_CONSTANTS_H_

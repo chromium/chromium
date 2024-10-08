@@ -46,8 +46,7 @@ metrics::LogStore* DwaReportingService::log_store() {
 }
 
 GURL DwaReportingService::GetUploadUrl() const {
-  // TODO(b/368085157): Set the upload url for DWA server.
-  return client()->GetMetricsServerUrl();
+  return GURL(metrics::kDefaultDwaServerUrl);
 }
 
 GURL DwaReportingService::GetInsecureUploadUrl() const {
