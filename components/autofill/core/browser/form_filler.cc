@@ -527,7 +527,15 @@ void FormFiller::FillOrPreviewFormExperimental(
     const AutofillField& autofill_trigger_field,
     const base::flat_map<FieldGlobalId, std::u16string>& values_to_fill) {
   std::vector<FormFieldData> result_fields = form.fields();
-  CHECK_EQ(result_fields.size(), form_structure.field_count());
+  // Previously, the following if statement wasn't there and instead a CHECK
+  // expecting equal number of fields in `form` and `form_structure`. However,
+  // dynamic form changes can cause the numbers of fields to differ which caused
+  // a crash when this method was called by Autofill prediction improvements.
+  // Return early here to mitigate further crashes.
+  // TODO(crbug.com/372026861): Properly handle this case.
+  if (result_fields.size() != form_structure.field_count()) {
+    return;
+  }
 
   base::flat_map<FieldGlobalId, FieldFillingSkipReason> skip_reasons =
       GetFieldFillingSkipReasons(
