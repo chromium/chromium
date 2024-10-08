@@ -228,6 +228,11 @@ class SecureDnsManagerTest : public testing::Test {
         path, shill::kUIDataProperty, base::Value(ui_data->GetAsJson()));
   }
 
+  void ResetSecureDnsManager() {
+    secure_dns_manager_observer_.reset();
+    secure_dns_manager_.reset();
+  }
+
   TestingPrefServiceSimple* local_state() { return &local_state_; }
   PrefService* profile_prefs() { return &profile_prefs_; }
   SecureDnsManager* secure_dns_manager() { return secure_dns_manager_.get(); }
@@ -876,6 +881,40 @@ TEST_F(SecureDnsManagerTest, DohExcludedDomains_ShillDohConfig) {
   EXPECT_EQ(it->first, kGoogleDns);
   EXPECT_TRUE(it->second.empty());
   EXPECT_EQ(providers.size(), 1u);
+}
+
+TEST_F(SecureDnsManagerTest, ResetShillState) {
+  // Set DnsOverHttpsMode and DnsOverHttpsTemplates.
+  local_state()->SetManagedPref(::prefs::kDnsOverHttpsMode,
+                                base::Value(SecureDnsConfig::kModeSecure));
+  local_state()->Set(::prefs::kDnsOverHttpsTemplates, base::Value(kGoogleDns));
+
+  auto providers = GetDOHProviders();
+
+  auto it = providers.find(kGoogleDns);
+  EXPECT_TRUE(it != providers.end());
+  EXPECT_EQ(it->first, kGoogleDns);
+  EXPECT_TRUE(it->second.empty());
+  EXPECT_EQ(providers.size(), 1u);
+
+  // Set DnsOverHttpsIncludedDomains and DnsOverHttpsExcludedDomains.
+  std::vector<std::string> domains = {"test.com", "*.test.com"};
+  base::Value pref_value(base::Value::Type::LIST);
+  for (const auto& domain : domains) {
+    pref_value.GetList().Append(domain);
+  }
+  local_state()->Set(prefs::kDnsOverHttpsIncludedDomains, pref_value);
+  local_state()->Set(prefs::kDnsOverHttpsExcludedDomains, pref_value);
+
+  EXPECT_EQ(domains, GetDOHIncludedDomains());
+  EXPECT_EQ(domains, GetDOHExcludedDomains());
+
+  // Expect Shill's state to be cleared when the class is destroyed.
+  ResetSecureDnsManager();
+
+  EXPECT_TRUE(GetDOHProviders().empty());
+  EXPECT_TRUE(GetDOHIncludedDomains().empty());
+  EXPECT_TRUE(GetDOHExcludedDomains().empty());
 }
 
 }  // namespace

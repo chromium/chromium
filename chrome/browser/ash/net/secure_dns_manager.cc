@@ -202,6 +202,10 @@ SecureDnsManager::~SecureDnsManager() {
   // `::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS` should not outlive the
   // current instance of SecureDnsManager.
   local_state_->ClearPref(::prefs::kDnsOverHttpsEffectiveTemplatesChromeOS);
+
+  // Reset Shill's state in order for the secure DNS configuration to not leak
+  // to the login screen.
+  ResetShillState();
 }
 
 void SecureDnsManager::SetDoHTemplatesUriResolverForTesting(
@@ -479,6 +483,20 @@ void SecureDnsManager::UpdateTemplateUri() {
             doh_templates_uri_resolver_->GetDohWithIdentifiersActive() &&
             local_state_->IsManagedPreference(::prefs::kDnsOverHttpsMode));
   }
+}
+
+void SecureDnsManager::ResetShillState() {
+  if (!NetworkHandler::IsInitialized()) {
+    return;
+  }
+  auto* handler = NetworkHandler::Get()->network_configuration_handler();
+  handler->SetManagerProperty(shill::kDOHIncludedDomainsProperty,
+                              base::Value());
+  handler->SetManagerProperty(shill::kDOHExcludedDomainsProperty,
+                              base::Value());
+  handler->SetManagerProperty(
+      shill::kDNSProxyDOHProvidersProperty,
+      base::Value(GetProviders(SecureDnsConfig::kModeOff, /*templates=*/"")));
 }
 
 // static

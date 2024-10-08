@@ -110,6 +110,14 @@ class SecureDnsManager : public NetworkStateHandlerObserver {
   void OnDoHIncludedDomainsPrefChanged();
   void OnDoHExcludedDomainsPrefChanged();
 
+  // When moving between profiles (and login screen), SecureDnsManager instance
+  // is destroyed. A new instance is created on the new user session. On login
+  // screen, the class is not instantiated. In order to have the correct Shill
+  // state on login screen, Shill's state needs to be reset whenever the class
+  // is destroyed. This is done by propagating all the default values of the
+  // states.
+  void ResetShillState();
+
   // If the DoH template URIs contain network identifiers, this method will
   // instantiate `network_state_handler_observer_` to start monitoring
   // network changes. Otherwise, it will reset
