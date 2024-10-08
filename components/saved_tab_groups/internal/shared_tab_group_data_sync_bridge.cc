@@ -7,6 +7,7 @@
 #include <map>
 #include <optional>
 #include <set>
+#include <utility>
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_helpers.h"
@@ -112,6 +113,10 @@ sync_pb::SharedTabGroupDataSpecifics SharedTabGroupToSpecifics(
   sync_pb::SharedTabGroup* pb_group = pb_specifics.mutable_tab_group();
   pb_group->set_color(TabGroupColorToSyncColor(group.color()));
   pb_group->set_title(base::UTF16ToUTF8(group.title()));
+  if (group.originating_saved_tab_group_guid().has_value()) {
+    pb_group->set_originating_tab_group_guid(
+        group.originating_saved_tab_group_guid().value().AsLowercaseString());
+  }
   return pb_specifics;
 }
 
@@ -124,7 +129,12 @@ SavedTabGroup SpecificsToSharedTabGroup(
   const tab_groups::TabGroupColorId color =
       SyncColorToTabGroupColor(specifics.tab_group().color());
   std::u16string title = base::UTF8ToUTF16(specifics.tab_group().title());
-  const base::Uuid guid = base::Uuid::ParseLowercase(specifics.guid());
+  base::Uuid guid = base::Uuid::ParseLowercase(specifics.guid());
+  base::Uuid originating_saved_tab_group_guid;
+  if (specifics.tab_group().has_originating_tab_group_guid()) {
+    originating_saved_tab_group_guid = base::Uuid::ParseLowercase(
+        specifics.tab_group().originating_tab_group_guid());
+  }
 
   // GUID must be checked before this method is called.
   CHECK(guid.is_valid());
@@ -133,13 +143,17 @@ SavedTabGroup SpecificsToSharedTabGroup(
       TimeFromWindowsEpochMicros(specifics.update_time_windows_epoch_micros());
 
   SavedTabGroup group(title, color, /*urls=*/{}, /*position=*/std::nullopt,
-                      guid, /*local_group_id=*/std::nullopt,
+                      std::move(guid), /*local_group_id=*/std::nullopt,
                       /*creator_cache_guid=*/std::nullopt,
                       /*last_updater_cache_guid=*/std::nullopt,
                       /*created_before_syncing_tab_groups=*/false,
                       /*creation_time_windows_epoch_micros=*/std::nullopt,
                       update_time);
   group.SetCollaborationId(collaboration_id);
+  if (originating_saved_tab_group_guid.is_valid()) {
+    group.SetOriginatingSavedTabGroupGuid(
+        std::move(originating_saved_tab_group_guid));
+  }
   return group;
 }
 
@@ -304,7 +318,7 @@ void StoreSharedGroup(syncer::DataTypeStore::WriteBatch* write_batch,
 proto::LocalSharedTabGroupData GroupToLocalOnlyData(
     const SavedTabGroup& group) {
   proto::LocalSharedTabGroupData local_group_data;
-  if (group.local_group_id().has_value()) {
+  if (AreLocalIdsPersisted() && group.local_group_id().has_value()) {
     local_group_data.set_local_group_id(
         LocalTabGroupIDToString(group.local_group_id().value()));
   }

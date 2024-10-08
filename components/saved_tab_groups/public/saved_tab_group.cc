@@ -219,6 +219,13 @@ SavedTabGroup& SavedTabGroup::SetCollaborationId(
   return *this;
 }
 
+SavedTabGroup& SavedTabGroup::SetOriginatingSavedTabGroupGuid(
+    std::optional<base::Uuid> originating_saved_tab_group_guid) {
+  originating_saved_tab_group_guid_ =
+      std::move(originating_saved_tab_group_guid);
+  return *this;
+}
+
 SavedTabGroup& SavedTabGroup::AddTabLocally(SavedTabGroupTab tab) {
   InsertTabImpl(tab);
   UpdateTabPositionsImpl();
@@ -390,6 +397,27 @@ void SavedTabGroup::MergeRemoteGroupMetadata(
 bool SavedTabGroup::IsSyncEquivalent(const SavedTabGroup& other) const {
   return saved_guid() == other.saved_guid() && color() == other.color() &&
          title() == other.title() && position() == other.position();
+}
+
+SavedTabGroup SavedTabGroup::CloneAsSharedTabGroup(
+    std::string collaboration_id) const {
+  SavedTabGroup shared_group(title(), color(), /*urls=*/{});
+  shared_group.SetCollaborationId(std::move(collaboration_id));
+  shared_group.SetOriginatingSavedTabGroupGuid(saved_guid());
+  shared_group.SetLocalGroupId(local_group_id());
+
+  for (size_t i = 0; i < saved_tabs().size(); ++i) {
+    const SavedTabGroupTab& tab = saved_tabs()[i];
+
+    // Use tab's index as a position for shared tabs because shared tab groups
+    // use unique positions for syncing tabs.
+    SavedTabGroupTab shared_tab(tab.url(), tab.title(),
+                                shared_group.saved_guid(), /*position=*/i);
+    shared_tab.SetFavicon(tab.favicon());
+    shared_tab.SetLocalTabID(tab.local_tab_id());
+    shared_group.AddTabLocally(std::move(shared_tab));
+  }
+  return shared_group;
 }
 
 void SavedTabGroup::RemoveTabImpl(const base::Uuid& saved_tab_guid) {

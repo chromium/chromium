@@ -224,33 +224,6 @@ TEST_F(TabGroupSyncBridgeMediatorTest, ShouldReturnSavedBridgeNotSyncing) {
   EXPECT_EQ(bridge_mediator().GetLocalCacheGuidForSavedBridge(), std::nullopt);
 }
 
-TEST_F(TabGroupSyncBridgeMediatorTest, ShouldTransitionSavedTabGroupToShared) {
-  ON_CALL(mock_saved_processor(), IsTrackingMetadata)
-      .WillByDefault(Return(true));
-  ON_CALL(mock_shared_processor(), IsTrackingMetadata)
-      .WillByDefault(Return(true));
-
-  SavedTabGroup group(u"group title", TabGroupColorId::kBlue, {}, 0);
-  group.SetLocalGroupId(test::GenerateRandomTabGroupID());
-  SavedTabGroupTab tab(GURL("https://google.com"), u"tab title",
-                       group.saved_guid(),
-                       /*position=*/std::nullopt);
-  group.AddTabLocally(tab);
-  model().Add(group);
-  ASSERT_TRUE(model().Get(group.saved_guid()));
-  ASSERT_FALSE(model().Get(group.saved_guid())->is_shared_tab_group());
-
-  // Both the tab and the group are expected to be added to the shared tab group
-  // bridge, but only the group should be removed from the saved tab group
-  // bridge.
-  EXPECT_CALL(mock_saved_processor(), Delete);
-  EXPECT_CALL(mock_shared_processor(),
-              Put(group.saved_guid().AsLowercaseString(), _, _));
-  EXPECT_CALL(mock_shared_processor(),
-              Put(tab.saved_tab_guid().AsLowercaseString(), _, _));
-  model().MakeTabGroupShared(group.local_group_id().value(), "collaboration");
-}
-
 TEST_F(TabGroupSyncBridgeMediatorTest, ShouldResolveDuplicatesOnLoad) {
   // The model is not expected to contain duplicate GUIDs, hence data
   // preparation is done in several steps:

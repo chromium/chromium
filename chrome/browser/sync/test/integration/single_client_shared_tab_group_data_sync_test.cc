@@ -23,6 +23,7 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/sync/protocol/shared_tab_group_data_specifics.pb.h"
+#include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/service/sync_service_impl.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -31,6 +32,7 @@
 namespace tab_groups {
 namespace {
 
+using testing::Contains;
 using testing::SizeIs;
 using testing::UnorderedElementsAre;
 
@@ -181,18 +183,33 @@ IN_PROC_BROWSER_TEST_F(SingleClientSharedTabGroupDataSyncTest,
   // Transition the saved tab group to shared tab group.
   MakeTabGroupShared(group.local_group_id().value(), "collaboration");
 
-  // Only the tab group header is removed for saved tab groups.
-  EXPECT_TRUE(
-      ServerSavedTabGroupMatchChecker(UnorderedElementsAre(HasSpecificsSavedTab(
-                                          "title 1", "https://google.com/1")))
-          .Wait());
-
+  // Saved tab group remains intact, hence verify only that the shared tab group
+  // is committed.
   EXPECT_TRUE(ServerSharedTabGroupMatchChecker(
                   UnorderedElementsAre(
                       HasSpecificsSharedTabGroup("title",
                                                  sync_pb::SharedTabGroup::BLUE),
                       HasSpecificsSharedTab("title 1", "https://google.com/1")))
                   .Wait());
+
+  std::vector<sync_pb::SyncEntity> server_entities =
+      GetFakeServer()->GetSyncEntitiesByDataType(syncer::SHARED_TAB_GROUP_DATA);
+  ASSERT_THAT(server_entities, SizeIs(2));
+  // Put the tab group first for simplicity.
+  if (server_entities[0].specifics().shared_tab_group_data().has_tab()) {
+    server_entities[0].Swap(&server_entities[1]);
+  }
+  const sync_pb::SharedTabGroupDataSpecifics& group_specifics =
+      server_entities[0].specifics().shared_tab_group_data();
+  const sync_pb::SharedTabGroupDataSpecifics& tab_specifics =
+      server_entities[1].specifics().shared_tab_group_data();
+
+  // Verify that GUIDs are different.
+  EXPECT_NE(group_specifics.guid(), group.saved_guid().AsLowercaseString());
+  EXPECT_NE(tab_specifics.guid(), tab.saved_tab_guid().AsLowercaseString());
+
+  EXPECT_EQ(group_specifics.tab_group().originating_tab_group_guid(),
+            group.saved_guid().AsLowercaseString());
 }
 
 #if !BUILDFLAG(IS_ANDROID)

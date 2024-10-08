@@ -150,7 +150,8 @@ void SavedTabGroupModel::Add(SavedTabGroup saved_group) {
   // In V1, give a default position to groups if it is not already set.
   // In V2, do nothing because unpinned saved tab groups don't have position
   // set.
-  if (!IsTabGroupsSaveUIUpdateEnabled() &&
+  // Shared tab groups don't support positions.
+  if (!IsTabGroupsSaveUIUpdateEnabled() && !saved_group.is_shared_tab_group() &&
       !saved_group.position().has_value()) {
     saved_group.SetPosition(Count());
   }
@@ -213,19 +214,31 @@ void SavedTabGroupModel::UpdateVisualData(
 void SavedTabGroupModel::MakeTabGroupShared(
     const LocalTabGroupID& local_group_id,
     std::string collaboration_id) {
-  SavedTabGroup* group = GetMutableGroup(local_group_id);
+  const SavedTabGroup* group = Get(local_group_id);
   CHECK(group);
   CHECK(!group->is_shared_tab_group());
 
-  group->SetCollaborationId(std::move(collaboration_id));
+  // Make a deep copy of the group without fields which are not used in shared
+  // tab groups. Create a new group and new tabs to generate new UUIDs. Note
+  // that the new group will have the same local ID as the original group.
+  SavedTabGroup shared_group =
+      group->CloneAsSharedTabGroup(std::move(collaboration_id));
 
-  // Creator cache GUID is not used for the shared tab groups.
-  // TODO(crbug.com/351022699): clean up creator cache GUID for tabs.
-  group->SetCreatorCacheGuid(std::nullopt);
+  // `local_group_id` needs to be associated with the new shared tab group.
+  // First, clear the local ID from the old group. This will store the tab on
+  // the disk, and in case of crash, the tab group will be duplicated on browser
+  // restart. It's safer than resolving duplicate local group IDs on browser
+  // startup.
+  // The order is important here because `OnGroupClosedInTabStrip` will remove
+  // all associated local tab IDs.
+  OnGroupClosedInTabStrip(local_group_id);
 
-  for (SavedTabGroupModelObserver& observer : observers_) {
-    observer.SavedTabGroupSharedStateUpdatedLocally(group->saved_guid());
-  }
+  // Add the new shared group to the model and associate it with the same local
+  // ID.
+  Add(std::move(shared_group));
+
+  // No additional observers are notified because all mutations are done using
+  // the existing methods which should notify observers.
 }
 
 void SavedTabGroupModel::AddedFromSync(SavedTabGroup saved_group) {

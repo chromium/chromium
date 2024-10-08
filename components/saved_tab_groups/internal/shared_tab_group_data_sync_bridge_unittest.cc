@@ -56,6 +56,7 @@ using base::test::EqualsProto;
 using tab_groups::test::HasSharedGroupMetadata;
 using tab_groups::test::HasTabMetadata;
 using testing::_;
+using testing::AllOf;
 using testing::ElementsAre;
 using testing::Eq;
 using testing::Invoke;
@@ -77,6 +78,13 @@ MATCHER_P3(HasGroupEntityData, title, color, collaboration_id, "") {
       arg.specifics.shared_tab_group_data().tab_group();
   return arg_tab_group.title() == title && arg_tab_group.color() == color &&
          arg.collaboration_id == collaboration_id;
+}
+
+MATCHER_P(HasGroupEntityDataWithOriginatingGroup, originating_group_guid, "") {
+  const sync_pb::SharedTabGroup& arg_tab_group =
+      arg.specifics.shared_tab_group_data().tab_group();
+  return arg_tab_group.originating_tab_group_guid() ==
+         originating_group_guid.AsLowercaseString();
 }
 
 MATCHER_P3(HasTabEntityData, title, url, collaboration_id, "") {
@@ -840,10 +848,13 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnAllDataForDebugging) {
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncNewGroupWithTabs) {
   ASSERT_TRUE(InitializeBridgeAndModel());
+  const base::Uuid kOriginatingSavedTabGroupGuid =
+      base::Uuid::GenerateRandomV4();
 
   SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
                       /*urls=*/{}, /*position=*/std::nullopt);
   group.SetCollaborationId("collaboration");
+  group.SetOriginatingSavedTabGroupGuid(kOriginatingSavedTabGroupGuid);
   SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
       "http://google.com/1", u"tab 1", group.saved_guid(), /*position=*/0);
   SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(
@@ -852,24 +863,28 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncNewGroupWithTabs) {
   group.AddTabLocally(tab1);
   group.AddTabLocally(tab2);
 
-  std::vector<syncer::EntityData> entity_data_list;
-  EXPECT_CALL(mock_processor(), Put)
-      .Times(3)
-      .WillRepeatedly(WithArg<1>(Invoke(
-          [&entity_data_list](std::unique_ptr<syncer::EntityData> entity_data) {
-            entity_data_list.push_back(std::move(*entity_data));
-          })));
+  EXPECT_CALL(mock_processor(),
+              Put(_,
+                  Pointee(HasTabEntityData("tab 2", "http://google.com/2",
+                                           "collaboration")),
+                  _));
+  EXPECT_CALL(mock_processor(),
+              Put(_,
+                  Pointee(HasTabEntityData("tab 1", "http://google.com/1",
+                                           "collaboration")),
+                  _));
+  EXPECT_CALL(mock_processor(),
+              Put(_,
+                  AllOf(Pointee(HasGroupEntityData(
+                            "title", sync_pb::SharedTabGroup_Color_GREY,
+                            "collaboration")),
+                        Pointee(HasGroupEntityDataWithOriginatingGroup(
+                            kOriginatingSavedTabGroupGuid))),
+                  _));
+
   model()->Add(group);
   ASSERT_TRUE(model()->Contains(group.saved_guid()));
   ASSERT_EQ(model()->Get(group.saved_guid())->saved_tabs().size(), 2u);
-
-  EXPECT_THAT(
-      entity_data_list,
-      UnorderedElementsAre(
-          HasTabEntityData("tab 2", "http://google.com/2", "collaboration"),
-          HasTabEntityData("tab 1", "http://google.com/1", "collaboration"),
-          HasGroupEntityData("title", sync_pb::SharedTabGroup_Color_GREY,
-                             "collaboration")));
 }
 
 TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldSendToSyncUpdatedGroupMetadata) {

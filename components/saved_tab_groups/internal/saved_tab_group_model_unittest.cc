@@ -38,6 +38,7 @@ namespace {
 
 using testing::IsEmpty;
 using testing::Not;
+using testing::NotNull;
 using testing::Pointee;
 using testing::UnorderedElementsAre;
 
@@ -85,11 +86,6 @@ class SavedTabGroupModelObserverTest
     retrieved_group_.emplace_back(*saved_tab_group_model_->Get(group_guid));
     retrieved_index_ =
         saved_tab_group_model_->GetIndexOf(group_guid).value_or(-1);
-  }
-
-  void SavedTabGroupSharedStateUpdatedLocally(
-      const base::Uuid& group_guid) override {
-    SavedTabGroupUpdatedLocally(group_guid, /*tab_guid=*/std::nullopt);
   }
 
   void SavedTabGroupAddedFromSync(const base::Uuid& guid) override {
@@ -365,15 +361,99 @@ TEST_P(SavedTabGroupModelTest, UpdateElement) {
 }
 
 TEST_P(SavedTabGroupModelTest, MakeTabGroupShared) {
-  const SavedTabGroup* group = saved_tab_group_model_->Get(id_1_);
-  saved_tab_group_model_->OnGroupOpenedInTabStrip(
-      id_1_, test::GenerateRandomTabGroupID());
+  // Use `id_3_` because it contains several tabs, to verify that tabs are
+  // copied over correctly.
+  const SavedTabGroup* group = saved_tab_group_model_->Get(id_3_);
+  const LocalTabGroupID local_group_id = test::GenerateRandomTabGroupID();
+  saved_tab_group_model_->OnGroupOpenedInTabStrip(id_3_, local_group_id);
   ASSERT_FALSE(group->is_shared_tab_group());
 
-  saved_tab_group_model_->MakeTabGroupShared(group->local_group_id().value(),
-                                             "collaboration");
+  // Prepare the fields which are not expected to be copied over to the shared
+  // group, apart from the local tab ID.
+  if (!group->position().has_value()) {
+    saved_tab_group_model_->TogglePinState(group->saved_guid());
+  }
+  saved_tab_group_model_->UpdateLocalCacheGuid(/*old_cache_guid=*/std::nullopt,
+                                               /*new_cache_guid=*/"cache_guid");
+  saved_tab_group_model_->UpdateLastUpdaterCacheGuidForGroup(
+      "updater_cache_guid", local_group_id, /*tab_id=*/std::nullopt);
+  for (const SavedTabGroupTab& tab : group->saved_tabs()) {
+    saved_tab_group_model_->UpdateLocalTabId(group->saved_guid(), tab,
+                                             test::GenerateRandomTabID());
+    saved_tab_group_model_->UpdateLastUpdaterCacheGuidForGroup(
+        "updater_cache_guid", local_group_id, tab.local_tab_id());
+  }
+  saved_tab_group_model_->UpdateLastUserInteractionTimeLocally(local_group_id);
 
-  EXPECT_TRUE(group->is_shared_tab_group());
+  ASSERT_NE(group->position(), std::nullopt);
+
+  // Transition the saved tab group to a shared tab group, and excessively
+  // verify the contents of the shared group.
+  saved_tab_group_model_->MakeTabGroupShared(local_group_id, "collaboration");
+
+  // The originating group should remain unchanged.
+  ASSERT_EQ(group, saved_tab_group_model_->Get(id_3_));
+  EXPECT_FALSE(group->is_shared_tab_group());
+  EXPECT_NE(group->position(), std::nullopt);
+  EXPECT_NE(group->creator_cache_guid(), std::nullopt);
+  EXPECT_NE(group->last_updater_cache_guid(), std::nullopt);
+  EXPECT_FALSE(group->last_user_interaction_time().is_null());
+
+  const SavedTabGroup* shared_group =
+      saved_tab_group_model_->Get(local_group_id);
+  ASSERT_THAT(shared_group, NotNull());
+  EXPECT_NE(shared_group->saved_guid(), group->saved_guid());
+  EXPECT_TRUE(shared_group->saved_guid().is_valid());
+  EXPECT_EQ(shared_group->collaboration_id(), "collaboration");
+  EXPECT_EQ(shared_group->originating_saved_tab_group_guid(),
+            group->saved_guid());
+
+  // Verify that both groups have the same fields.
+  EXPECT_EQ(shared_group->title(), group->title());
+  EXPECT_EQ(shared_group->color(), group->color());
+
+  // Verify that the shared group has updated fields.
+  EXPECT_GT(shared_group->creation_time_windows_epoch_micros(),
+            group->creation_time_windows_epoch_micros());
+  EXPECT_GT(shared_group->update_time_windows_epoch_micros(),
+            group->update_time_windows_epoch_micros());
+  EXPECT_EQ(shared_group->creator_cache_guid(), std::nullopt);
+  EXPECT_EQ(shared_group->last_updater_cache_guid(), std::nullopt);
+  EXPECT_EQ(shared_group->position(), std::nullopt);
+  EXPECT_TRUE(shared_group->last_user_interaction_time().is_null());
+
+  // Verify group tabs, there should be at least two tabs in the group. Note
+  // that the order is expected to remain the same.
+  ASSERT_EQ(shared_group->saved_tabs().size(), group->saved_tabs().size());
+  ASSERT_GE(shared_group->saved_tabs().size(), 2u);
+  for (size_t i = 0; i < shared_group->saved_tabs().size(); ++i) {
+    const SavedTabGroupTab& shared_tab = shared_group->saved_tabs()[i];
+    const SavedTabGroupTab& saved_tab = group->saved_tabs()[i];
+
+    // Verify the same fields.
+    EXPECT_EQ(shared_tab.url(), saved_tab.url());
+    EXPECT_EQ(shared_tab.title(), saved_tab.title());
+    EXPECT_EQ(shared_tab.favicon(), saved_tab.favicon());
+    EXPECT_EQ(shared_tab.saved_group_guid(), shared_group->saved_guid());
+
+    // Verify updated fields.
+    EXPECT_NE(shared_tab.saved_tab_guid(), saved_tab.saved_tab_guid());
+    EXPECT_NE(shared_tab.local_tab_id(), std::nullopt);
+    EXPECT_EQ(saved_tab.local_tab_id(), std::nullopt);
+    EXPECT_EQ(shared_tab.creator_cache_guid(), std::nullopt);
+    EXPECT_NE(saved_tab.creator_cache_guid(), std::nullopt);
+    EXPECT_EQ(shared_tab.last_updater_cache_guid(), std::nullopt);
+    EXPECT_NE(saved_tab.last_updater_cache_guid(), std::nullopt);
+    EXPECT_GT(shared_group->creation_time_windows_epoch_micros(),
+              saved_tab.creation_time_windows_epoch_micros());
+    EXPECT_GT(shared_tab.update_time_windows_epoch_micros(),
+              saved_tab.update_time_windows_epoch_micros());
+
+    // Do not verify the position of the original tab because its meaning
+    // differs for shared tab groups: it's the index of the tab in the shared
+    // group.
+    EXPECT_EQ(shared_tab.position(), i);
+  }
 }
 
 // Tests that the correct tabs are added to the correct position in group 1.
@@ -519,21 +599,25 @@ TEST_P(SavedTabGroupModelTest, MoveElement) {
 }
 
 TEST_P(SavedTabGroupModelTest, ShouldDistinguishSavedAndSharedGroups) {
-  const SavedTabGroup* group = saved_tab_group_model_->Get(id_1_);
-  saved_tab_group_model_->OnGroupOpenedInTabStrip(
-      id_1_, test::GenerateRandomTabGroupID());
-  saved_tab_group_model_->MakeTabGroupShared(group->local_group_id().value(),
-                                             "collaboration");
+  const LocalTabGroupID local_group_id = test::GenerateRandomTabGroupID();
+  saved_tab_group_model_->OnGroupOpenedInTabStrip(id_1_, local_group_id);
+  saved_tab_group_model_->MakeTabGroupShared(local_group_id, "collaboration");
 
-  ASSERT_TRUE(saved_tab_group_model_->Get(id_1_)->is_shared_tab_group());
+  const SavedTabGroup* shared_group =
+      saved_tab_group_model_->Get(local_group_id);
+  ASSERT_TRUE(shared_group->is_shared_tab_group());
+
+  ASSERT_FALSE(saved_tab_group_model_->Get(id_1_)->is_shared_tab_group());
   ASSERT_FALSE(saved_tab_group_model_->Get(id_2_)->is_shared_tab_group());
   ASSERT_FALSE(saved_tab_group_model_->Get(id_3_)->is_shared_tab_group());
 
   EXPECT_THAT(saved_tab_group_model_->GetSavedTabGroupsOnly(),
-              UnorderedElementsAre(Pointee(HasGroupId(id_2_)),
+              UnorderedElementsAre(Pointee(HasGroupId(id_1_)),
+                                   Pointee(HasGroupId(id_2_)),
                                    Pointee(HasGroupId(id_3_))));
-  EXPECT_THAT(saved_tab_group_model_->GetSharedTabGroupsOnly(),
-              UnorderedElementsAre(Pointee(HasGroupId(id_1_))));
+  EXPECT_THAT(
+      saved_tab_group_model_->GetSharedTabGroupsOnly(),
+      UnorderedElementsAre(Pointee(HasGroupId(shared_group->saved_guid()))));
 }
 
 TEST_P(SavedTabGroupModelTest, LoadStoredEntriesPopulatesModel) {
@@ -1102,20 +1186,6 @@ TEST_P(SavedTabGroupModelObserverTest, UpdatedElement) {
                                  received_group.saved_tabs());
   EXPECT_EQ(saved_tab_group_model_->GetIndexOf(received_group.saved_guid()),
             retrieved_index_);
-}
-
-TEST_P(SavedTabGroupModelObserverTest, MakeTabGroupShared) {
-  SavedTabGroup group = test::CreateTestSavedTabGroup();
-  group.SetLocalGroupId(test::GenerateRandomTabGroupID());
-  saved_tab_group_model_->Add(group);
-  ClearSignals();
-
-  saved_tab_group_model_->MakeTabGroupShared(group.local_group_id().value(),
-                                             "collaboration");
-
-  ASSERT_THAT(retrieved_group_, Not(IsEmpty()));
-  EXPECT_EQ(retrieved_group_.back().saved_guid(), group.saved_guid());
-  EXPECT_EQ(retrieved_group_.back().collaboration_id(), "collaboration");
 }
 
 // Tests that SavedTabGroupModelObserver::AddedFromSync passes the correct

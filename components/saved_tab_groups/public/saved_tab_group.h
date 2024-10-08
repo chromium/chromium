@@ -79,6 +79,9 @@ class SavedTabGroup {
   const std::optional<std::string>& collaboration_id() const {
     return collaboration_id_;
   }
+  std::optional<base::Uuid> originating_saved_tab_group_guid() const {
+    return originating_saved_tab_group_guid_;
+  }
 
   bool is_pinned() const { return position_.has_value(); }
   bool is_shared_tab_group() const { return collaboration_id_.has_value(); }
@@ -119,6 +122,8 @@ class SavedTabGroup {
   SavedTabGroup& SetPinned(bool pinned);
   SavedTabGroup& SetCollaborationId(
       std::optional<std::string> collaboration_id);
+  SavedTabGroup& SetOriginatingSavedTabGroupGuid(
+      std::optional<base::Uuid> originating_saved_tab_group_guid);
 
   // Tab mutators.
   // Add `tab` into its position in `saved_tabs_` if it is set. Otherwise add it
@@ -169,6 +174,9 @@ class SavedTabGroup {
 
   // Returns true iff syncable data fields in `this` and `other` are equivalent.
   bool IsSyncEquivalent(const SavedTabGroup& other) const;
+
+  // Creates a copy of this group and converts it to a shared tab group.
+  SavedTabGroup CloneAsSharedTabGroup(std::string collaboration_id) const;
 
  private:
   // Moves the tab denoted by `saved_tab_guid` to the position `new_index`.
@@ -237,6 +245,10 @@ class SavedTabGroup {
 
   // Collaboration ID in case if the group is shared.
   std::optional<std::string> collaboration_id_;
+
+  // The saved guid of the group that this group was created from. Used for
+  // shared tab groups only.
+  std::optional<base::Uuid> originating_saved_tab_group_guid_;
 };
 
 }  // namespace tab_groups
