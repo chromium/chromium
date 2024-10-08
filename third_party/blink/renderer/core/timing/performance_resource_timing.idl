@@ -41,13 +41,13 @@ interface PerformanceResourceTiming : PerformanceEntry {
     readonly attribute DOMString nextHopProtocol;
     [Measure] readonly attribute DOMString deliveryType;
     readonly attribute DOMHighResTimeStamp workerStart;
-    [RuntimeEnabled=ServiceWorkerStaticRouterTimingInfo]
+    [RuntimeEnabled=ServiceWorkerStaticRouterTimingInfo, Measure]
         readonly attribute DOMHighResTimeStamp workerRouterEvaluationStart;
-    [RuntimeEnabled=ServiceWorkerStaticRouterTimingInfo]
+    [RuntimeEnabled=ServiceWorkerStaticRouterTimingInfo, Measure]
         readonly attribute DOMHighResTimeStamp workerCacheLookupStart;
-    [RuntimeEnabled=ServiceWorkerStaticRouterTimingInfo]
+    [RuntimeEnabled=ServiceWorkerStaticRouterTimingInfo, Measure]
         readonly attribute DOMString workerMatchedSourceType;
-    [RuntimeEnabled=ServiceWorkerStaticRouterTimingInfo]
+    [RuntimeEnabled=ServiceWorkerStaticRouterTimingInfo, Measure]
         readonly attribute DOMString workerFinalSourceType;
     readonly attribute DOMHighResTimeStamp redirectStart;
     readonly attribute DOMHighResTimeStamp redirectEnd;

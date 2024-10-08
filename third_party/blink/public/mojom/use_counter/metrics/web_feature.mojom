@@ -4486,6 +4486,10 @@ enum WebFeature {
   kShowPickerSelect = 5112,
   kAudioContextPlayoutStats = 5113,
   kThirdPartyCookieBlocked = 5114,
+  kV8PerformanceResourceTiming_WorkerRouterEvaluationStart_AttributeGetter = 5115,
+  kV8PerformanceResourceTiming_WorkerCacheLookupStart_AttributeGetter = 5116,
+  kV8PerformanceResourceTiming_WorkerMatchedSourceType_AttributeGetter = 5117,
+  kV8PerformanceResourceTiming_WorkerFinalSourceType_AttributeGetter = 5118,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

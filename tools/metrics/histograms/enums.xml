@@ -11008,6 +11008,14 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5112" label="ShowPickerSelect"/>
   <int value="5113" label="AudioContextPlayoutStats"/>
   <int value="5114" label="ThirdPartyCookieBlocked"/>
+  <int value="5115"
+      label="V8PerformanceResourceTiming_WorkerRouterEvaluationStart_AttributeGetter"/>
+  <int value="5116"
+      label="V8PerformanceResourceTiming_WorkerCacheLookupStart_AttributeGetter"/>
+  <int value="5117"
+      label="V8PerformanceResourceTiming_WorkerMatchedSourceType_AttributeGetter"/>
+  <int value="5118"
+      label="V8PerformanceResourceTiming_WorkerFinalSourceType_AttributeGetter"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
