@@ -627,7 +627,8 @@ std::vector<ContentSettingsType> GetVisiblePermissionCategories(
       base_types->push_back(ContentSettingsType::CAPTURED_SURFACE_CONTROL);
     }
 
-    if (base::FeatureList::IsEnabled(features::kKeyboardAndPointerLockPrompt)) {
+    if (base::FeatureList::IsEnabled(
+            permissions::features::kKeyboardAndPointerLockPrompt)) {
       base_types->push_back(ContentSettingsType::KEYBOARD_LOCK);
       base_types->push_back(ContentSettingsType::POINTER_LOCK);
     }

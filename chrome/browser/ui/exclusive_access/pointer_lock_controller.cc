@@ -11,8 +11,8 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_permission_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/permissions/features.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -78,7 +78,8 @@ void PointerLockController::RequestToLockPointer(WebContents* web_contents,
   content::GlobalRenderFrameHostId rfh_id =
       web_contents->GetPrimaryMainFrame()->GetGlobalId();
 
-  if (!base::FeatureList::IsEnabled(features::kKeyboardAndPointerLockPrompt)) {
+  if (!base::FeatureList::IsEnabled(
+          permissions::features::kKeyboardAndPointerLockPrompt)) {
     LockPointer(web_contents->GetWeakPtr(), rfh_id, last_unlocked_by_target);
     return;
   }

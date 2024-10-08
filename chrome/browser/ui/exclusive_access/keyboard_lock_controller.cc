@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/permissions/features.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
@@ -106,7 +107,8 @@ bool KeyboardLockController::IsKeyboardLockActive() const {
 void KeyboardLockController::RequestKeyboardLock(WebContents* web_contents,
                                                  bool esc_key_locked) {
   DCHECK(!exclusive_access_tab() || exclusive_access_tab() == web_contents);
-  if (!base::FeatureList::IsEnabled(features::kKeyboardAndPointerLockPrompt)) {
+  if (!base::FeatureList::IsEnabled(
+          permissions::features::kKeyboardAndPointerLockPrompt)) {
     LockKeyboard(web_contents->GetWeakPtr(), esc_key_locked);
     return;
   }

@@ -5,6 +5,7 @@
 #include "components/permissions/contexts/pointer_lock_permission_context.h"
 
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/permissions_client.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
 namespace permissions {
@@ -36,5 +37,20 @@ void PointerLockPermissionContext::NotifyPermissionSet(
       id, requesting_origin, embedding_origin, std::move(callback), persist,
       content_setting, is_one_time, is_final_decision);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+ContentSetting PointerLockPermissionContext::GetPermissionStatusInternal(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& requesting_origin,
+    const GURL& embedding_origin) const {
+  if (base::FeatureList::IsEnabled(features::kKeyboardAndPointerLockPrompt)) {
+    return PermissionsClient::Get()
+        ->GetSettingsMap(browser_context())
+        ->GetContentSetting(requesting_origin, embedding_origin,
+                            ContentSettingsType::POINTER_LOCK);
+  }
+  return CONTENT_SETTING_ALLOW;
+}
+#endif
 
 }  // namespace permissions

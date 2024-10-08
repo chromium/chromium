@@ -382,7 +382,8 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 
   html_source->AddBoolean(
       "enableKeyboardAndPointerLockPrompt",
-      base::FeatureList::IsEnabled(features::kKeyboardAndPointerLockPrompt));
+      base::FeatureList::IsEnabled(
+          permissions::features::kKeyboardAndPointerLockPrompt));
 
   html_source->AddBoolean(
       "enableLinkedServicesSetting",

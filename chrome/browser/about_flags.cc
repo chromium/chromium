@@ -8735,7 +8735,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"keyboard-and-pointer-lock-prompt",
      flag_descriptions::kKeyboardAndPointerLockPromptName,
      flag_descriptions::kKeyboardAndPointerLockPromptDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kKeyboardAndPointerLockPrompt)},
+     FEATURE_VALUE_TYPE(permissions::features::kKeyboardAndPointerLockPrompt)},
 
     {"press-and-hold-esc-to-exit-browser-fullscreen",
      flag_descriptions::kPressAndHoldEscToExitBrowserFullscreenName,

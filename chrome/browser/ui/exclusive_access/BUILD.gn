@@ -57,6 +57,7 @@ source_set("exclusive_access") {
     "//components/content_settings/core/browser",
     "//components/history/core/browser",
     "//components/input",
+    "//components/permissions:permissions_common",
     "//components/prefs",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/strings:components_strings",

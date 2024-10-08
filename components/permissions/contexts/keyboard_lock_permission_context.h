@@ -19,6 +19,15 @@ class KeyboardLockPermissionContext
   KeyboardLockPermissionContext(const KeyboardLockPermissionContext&) = delete;
   KeyboardLockPermissionContext& operator=(
       const KeyboardLockPermissionContext&) = delete;
+
+#if !BUILDFLAG(IS_ANDROID)
+ private:
+  // PermissionContextBase:
+  ContentSetting GetPermissionStatusInternal(
+      content::RenderFrameHost* render_frame_host,
+      const GURL& requesting_origin,
+      const GURL& embedding_origin) const override;
+#endif
 };
 
 }  // namespace permissions
