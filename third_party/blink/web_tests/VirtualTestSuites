@@ -1885,10 +1885,10 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true/block_until_head_timeout_eager_prefetch/0,PrefetchCookieIndices,CookieIndicesHeader",
+      "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true/block_until_head_timeout_eager_prefetch/0,PrefetchCookieIndices,CookieIndicesHeader,ExemptSpeculationRulesHeaderFromCSP",
       "--bypass-prefetch-proxy-for-host=not-web-platform.test"
     ],
-    "expires": "Oct 1, 2024"
+    "expires": "Oct 1, 2025"
   },
   {
     "prefix": "prefetch-new-wait-loop",
@@ -1900,7 +1900,7 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true/block_until_head_timeout_eager_prefetch/0,PrefetchCookieIndices,CookieIndicesHeader,PrefetchNewWaitLoop",
+      "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true/block_until_head_timeout_eager_prefetch/0,PrefetchCookieIndices,CookieIndicesHeader,PrefetchNewWaitLoop,ExemptSpeculationRulesHeaderFromCSP",
       "--bypass-prefetch-proxy-for-host=not-web-platform.test"
     ],
     "expires": "March 9, 2025"
@@ -1917,7 +1917,7 @@
     "args": [
       "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true"
     ],
-    "expires": "Oct 1, 2024"
+    "expires": "Oct 1, 2025"
   },
   {
     "prefix": "prefetch-reusable",
@@ -1929,10 +1929,10 @@
     ],
     "exclusive_tests": "ALL",
     "args": [
-      "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true/block_until_head_timeout_eager_prefetch/0,PrefetchReusable,PrefetchCookieIndices,CookieIndicesHeader",
+      "--enable-features=PrefetchUseContentRefactor:block_until_head_eager_prefetch/true/block_until_head_timeout_eager_prefetch/0,PrefetchReusable,PrefetchCookieIndices,CookieIndicesHeader,ExemptSpeculationRulesHeaderFromCSP",
       "--bypass-prefetch-proxy-for-host=not-web-platform.test"
     ],
-    "expires": "Oct 1, 2024"
+    "expires": "Oct 1, 2025"
   },
   {
     "prefix": "speculation-rules-prerender-target-hint",
