@@ -7,6 +7,8 @@
 #import "base/feature_list.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/prefs/testing_pref_service.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/features.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -60,7 +62,9 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
   }
 
  protected:
-  void SetUpTestObjects(int tab_count, bool enable_pref) {
+  void SetUpTestObjects(int tab_count,
+                        bool reauth_enabled,
+                        bool soft_lock_enabled) {
     // Stub all calls to be able to mock the following:
     // 1. sceneState.browserProviderInterface.incognitoBrowserProvider
     //            .browser->GetWebStateList()->count()
@@ -83,7 +87,12 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
     [IncognitoReauthSceneAgent registerLocalState:pref_service_.registry()];
     agent_.localState = &pref_service_;
     pref_service_.SetBoolean(prefs::kIncognitoAuthenticationSetting,
-                             enable_pref);
+                             reauth_enabled);
+    feature_list_.InitWithFeatureState(kIOSSoftLock, soft_lock_enabled);
+  }
+
+  void SetUpTestObjects(int tab_count, bool enable_pref) {
+    SetUpTestObjects(tab_count, enable_pref, false);
   }
 
   void SetUp() override {
@@ -189,6 +198,101 @@ TEST_F(IncognitoReauthSceneAgentTest, AuthNotRequiredWhenNoIncognitoTabs) {
 TEST_F(IncognitoReauthSceneAgentTest,
        AuthNotRequiredWhenNoIncognitoTabsOnForeground) {
   SetUpTestObjects(/*tab_count=*/0, /*enable_pref=*/true);
+
+  // Go foreground.
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_FALSE(agent_.authenticationRequired);
+
+  // Open another tab.
+  test_browser_->GetWebStateList()->InsertWebState(
+      std::make_unique<web::FakeWebState>(),
+      WebStateList::InsertionParams::AtIndex(0));
+
+  EXPECT_FALSE(agent_.authenticationRequired);
+}
+
+#pragma mark - Soft Lock tests
+
+// Test that when both reauth and soft lock are disabled, no overlay is
+// displayed.
+TEST_F(IncognitoReauthSceneAgentTest, AllFeaturesDisabled) {
+  SetUpTestObjects(/*tab_count=*/1,
+                   /*reauth_enabled=*/false,
+                   /*soft_lock_enabled=*/false);
+
+  // Go foreground.
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_EQ(agent_.incognitoLockState, IncognitoLockState::kNone);
+}
+
+// Test that the correct overlay is displayed when soft lock is enabled.
+TEST_F(IncognitoReauthSceneAgentTest, SoftLockEnabled) {
+  SetUpTestObjects(/*tab_count=*/1,
+                   /*reauth_enabled=*/false,
+                   /*soft_lock_enabled=*/true);
+
+  // Go foreground.
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_EQ(agent_.incognitoLockState, IncognitoLockState::kSoftLock);
+}
+
+// Test that the correct overlay is displayed when both reauth and soft lock are
+// enabled.
+TEST_F(IncognitoReauthSceneAgentTest, AllFeaturesEnabled) {
+  SetUpTestObjects(/*tab_count=*/1,
+                   /*reauth_enabled=*/true,
+                   /*soft_lock_enabled=*/true);
+
+  // Go foreground.
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_EQ(agent_.incognitoLockState, IncognitoLockState::kReauth);
+}
+
+// Test that when unlock is required and is successfully performed, it's
+// not required anymore.
+TEST_F(IncognitoReauthSceneAgentTest, SuccessfulSoftUnlock) {
+  SetUpTestObjects(/*tab_count=*/1, /*reauth_enabled=*/false,
+                   /*soft_lock_enabled=*/true);
+
+  // Go foreground.
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_TRUE(agent_.authenticationRequired);
+
+  [agent_ authenticateIncognitoContent];
+
+  // Auth not required
+  EXPECT_FALSE(agent_.authenticationRequired);
+
+  // Auth required after backgrounding.
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+  EXPECT_TRUE(agent_.authenticationRequired);
+}
+
+// Test that when soft lock is enabled, unlock isn't required if we foreground
+// without any incognito tabs.
+TEST_F(IncognitoReauthSceneAgentTest,
+       SoftUnlockNotRequiredWhenNoIncognitoTabs) {
+  SetUpTestObjects(/*tab_count=*/0, /*reauth_enabled=*/false,
+                   /*soft_lock_enabled=*/true);
+
+  // Go foreground.
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_FALSE(agent_.authenticationRequired);
+}
+
+// Test that when soft lock is enabled, we're foregrounded with some incognito
+// content already present, unlock is not required.
+TEST_F(IncognitoReauthSceneAgentTest,
+       SoftUnlockNotRequiredWhenNoIncognitoTabsOnForeground) {
+  SetUpTestObjects(/*tab_count=*/0, /*reauth_enabled=*/false,
+                   /*soft_lock_enabled*/ true);
 
   // Go foreground.
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;

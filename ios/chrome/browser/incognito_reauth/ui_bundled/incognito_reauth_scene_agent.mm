@@ -13,6 +13,9 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/features.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
@@ -20,7 +23,6 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_util.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/web_state.h"
@@ -71,9 +73,20 @@
 }
 
 - (BOOL)isAuthenticationRequired {
-  return [self featureEnabled] &&
-         self.windowHadIncognitoContentWhenBackgrounded &&
-         !self.authenticatedSinceLastForeground;
+  return self.incognitoLockState != IncognitoLockState::kNone;
+}
+
+- (IncognitoLockState)incognitoLockState {
+  if (self.windowHadIncognitoContentWhenBackgrounded &&
+      !self.authenticatedSinceLastForeground) {
+    if ([self isReauthFeatureEnabled]) {
+      return IncognitoLockState::kReauth;
+    } else if ([self isSoftLockFeatureEnabled]) {
+      return IncognitoLockState::kSoftLock;
+    }
+  }
+
+  return IncognitoLockState::kNone;
 }
 
 - (void)authenticateIncognitoContent {
@@ -84,8 +97,8 @@
     (void (^)(BOOL success))completion {
   DCHECK(self.reauthModule);
 
-  if (!self.isAuthenticationRequired) {
-    if (self.featureEnabled) {
+  if (![self isAuthenticationRequired]) {
+    if ([self areLockFeaturesEnabled]) {
       [self notifyObservers];
     }
     // If reauthentication is not required, it should be considered a success
@@ -97,28 +110,11 @@
     return;
   }
 
-  base::RecordAction(base::UserMetricsAction(
-      "MobileIncognitoBiometricAuthenticationRequested"));
-
-  NSString* authReason = l10n_util::GetNSStringF(
-      IDS_IOS_INCOGNITO_REAUTH_SYSTEM_DIALOG_REASON,
-      base::SysNSStringToUTF16(BiometricAuthenticationTypeString()));
-
-  __weak IncognitoReauthSceneAgent* weakSelf = self;
-  void (^completionHandler)(ReauthenticationResult) =
-      ^(ReauthenticationResult result) {
-        BOOL success = (result == ReauthenticationResult::kSuccess);
-        base::UmaHistogramBoolean(
-            "IOS.Incognito.BiometricReauthAttemptSuccessful", success);
-
-        weakSelf.authenticatedSinceLastForeground = success;
-        if (completion) {
-          completion(success);
-        }
-      };
-  [self.reauthModule attemptReauthWithLocalizedReason:authReason
-                                 canReusePreviousAuth:false
-                                              handler:completionHandler];
+  if ([self isReauthFeatureEnabled]) {
+    [self reauthIncognitoContentWithCompletionBlock:completion];
+  } else if ([self isSoftLockFeatureEnabled]) {
+    [self unlockIncognitoContentWithCompletionBlock:completion];
+  }
 }
 
 - (void)addObserver:(id<IncognitoReauthObserver>)observer {
@@ -133,7 +129,7 @@
 
 - (void)setAuthenticatedSinceLastForeground:(BOOL)authenticated {
   _authenticatedSinceLastForeground = authenticated;
-  if (self.featureEnabled) {
+  if ([self areLockFeaturesEnabled]) {
     [self notifyObservers];
   }
 }
@@ -153,7 +149,7 @@
 
   self.windowHadIncognitoContentWhenBackgrounded = hasIncognitoContent;
 
-  if (self.featureEnabled) {
+  if ([self areLockFeaturesEnabled]) {
     [self notifyObservers];
   }
 }
@@ -163,13 +159,13 @@
     return;
   }
   _windowHadIncognitoContentWhenBackgrounded = hadIncognitoContent;
-  if (self.featureEnabled) {
+  if ([self areLockFeaturesEnabled]) {
     [self notifyObservers];
   }
 }
 
 - (void)notifyObservers {
-  DCHECK(self.featureEnabled);
+  DCHECK([self areLockFeaturesEnabled]);
   [self.observers reauthAgent:self
       didUpdateAuthenticationRequirement:self.isAuthenticationRequired];
 }
@@ -226,16 +222,30 @@
 
 // Convenience method to check the pref associated with the reauth setting and
 // the feature flag.
-- (BOOL)featureEnabled {
+- (BOOL)isReauthFeatureEnabled {
   return self.localState &&
          self.localState->GetBoolean(prefs::kIncognitoAuthenticationSetting);
 }
 
-// Closes the media presentations to avoid having the fullscreen video on top of
-// the blocker.
+// Convenience method to check the pref associated with the soft lock setting
+// and the feature flag.
+- (BOOL)isSoftLockFeatureEnabled {
+  // TODO(crbug.com/370804664): Add pref check when the settings page is
+  // available.
+  return IsIOSSoftLockEnabled();
+}
+
+// Convenience method to check whether any of the locking features are enabled.
+- (BOOL)areLockFeaturesEnabled {
+  return [self isReauthFeatureEnabled] || [self isSoftLockFeatureEnabled];
+}
+
+// Closes the media presentations to avoid having the fullscreen video on
+// top of the blocker.
 - (void)closeMediaPresentations {
-  if (![self featureEnabled])
+  if (![self areLockFeaturesEnabled]) {
     return;
+  }
 
   Browser* browser =
       self.sceneState.browserProviderInterface.incognitoBrowserProvider.browser;
@@ -247,6 +257,47 @@
           ->CloseMediaPresentations();
     }
   }
+}
+
+// Marks the scene as authenticated and, upon completion, will notify observers
+// and call the completion block (passing authentication result).
+- (void)unlockIncognitoContentWithCompletionBlock:
+    (void (^)(BOOL success))completion {
+  self.authenticatedSinceLastForeground = YES;
+  if (completion) {
+    completion(YES);
+  }
+}
+
+// Requests authentication and marks the scene as authenticated until the next
+// scene foregrounding.
+// The authentication will require user interaction. Upon completion, will
+// notify observers and call the completion block (passing authentication
+// result).
+- (void)reauthIncognitoContentWithCompletionBlock:
+    (void (^)(BOOL success))completion {
+  base::RecordAction(base::UserMetricsAction(
+      "MobileIncognitoBiometricAuthenticationRequested"));
+
+  NSString* authReason = l10n_util::GetNSStringF(
+      IDS_IOS_INCOGNITO_REAUTH_SYSTEM_DIALOG_REASON,
+      base::SysNSStringToUTF16(BiometricAuthenticationTypeString()));
+
+  __weak IncognitoReauthSceneAgent* weakSelf = self;
+  void (^completionHandler)(ReauthenticationResult) =
+      ^(ReauthenticationResult result) {
+        BOOL success = (result == ReauthenticationResult::kSuccess);
+        base::UmaHistogramBoolean(
+            "IOS.Incognito.BiometricReauthAttemptSuccessful", success);
+
+        weakSelf.authenticatedSinceLastForeground = success;
+        if (completion) {
+          completion(success);
+        }
+      };
+  [self.reauthModule attemptReauthWithLocalizedReason:authReason
+                                 canReusePreviousAuth:false
+                                              handler:completionHandler];
 }
 
 @end

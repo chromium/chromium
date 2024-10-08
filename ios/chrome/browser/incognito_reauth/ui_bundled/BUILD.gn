@@ -19,6 +19,7 @@ source_set("incognito_reauth_commands") {
 
 source_set("incognito_reauth_util") {
   sources = [
+    "incognito_reauth_constants.h",
     "incognito_reauth_util.h",
     "incognito_reauth_util.mm",
   ]
@@ -59,6 +60,7 @@ source_set("incognito_reauth_scene_agent") {
     "incognito_reauth_scene_agent.mm",
   ]
   deps = [
+    ":features",
     ":incognito_reauth_commands",
     ":incognito_reauth_util",
     ":ui",
@@ -83,7 +85,9 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "incognito_reauth_scene_agent_unittest.mm" ]
   deps = [
+    ":features",
     ":incognito_reauth_scene_agent",
+    ":incognito_reauth_util",
     "//base",
     "//base/test:test_support",
     "//components/prefs:test_support",
