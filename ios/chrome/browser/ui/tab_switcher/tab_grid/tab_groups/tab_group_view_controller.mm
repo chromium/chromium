@@ -75,6 +75,8 @@ constexpr CGFloat kSpace = 8;
   UIView* _coloredDotView;
   // Whether this is an incognito group.
   BOOL _incognito;
+  // Whether this is shared with other users.
+  BOOL _shared;
   // The bottom toolbar.
   TabGridBottomToolbar* _bottomToolbar;
 }
@@ -83,6 +85,7 @@ constexpr CGFloat kSpace = 8;
 
 - (instancetype)initWithHandler:(id<TabGroupsCommands>)handler
                       incognito:(BOOL)incognito
+                         shared:(BOOL)shared
                        tabGroup:(const TabGroup*)tabGroup {
   CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to create a tab group view controller outside "
@@ -91,6 +94,7 @@ constexpr CGFloat kSpace = 8;
   if ((self = [super init])) {
     _handler = handler;
     _incognito = incognito;
+    _shared = shared;
     _tabGroup = tabGroup;
     _gridViewController = [[TabGroupGridViewController alloc] init];
     if (!incognito) {
@@ -468,6 +472,14 @@ constexpr CGFloat kSpace = 8;
                   [weakSelf openNewTab];
                 }]];
 
+  if (_shared) {
+    [menuElements addObject:[actionFactory actionToShowRecentActivity:^{
+                    [weakSelf showRecentActivity];
+                  }]];
+
+    // TODO(crbug.com/358533115): Add an entry point to the management UI.
+  }
+
   [menuElements addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
                   [weakSelf ungroup];
                 }]];
@@ -540,6 +552,12 @@ constexpr CGFloat kSpace = 8;
 
   [self.mutator deleteGroup];
   [_handler hideTabGroup];
+}
+
+// Shows the recent activity of a shared tab group.
+- (void)showRecentActivity {
+  CHECK(_shared);
+  // TODO(crbug.com/370897655): Create a half sheet with logs and show it.
 }
 
 // Updates the safe area inset of the grid based on this VC safe areas and the

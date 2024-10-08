@@ -227,6 +227,7 @@ chromium-metrics-reviews@google.com.
   <int value="59" label="Select Drive Identity"/>
   <int value="60" label="Add Drive Account"/>
   <int value="61" label="Manage In New Tab"/>
+  <int value="62" label="Recent Activity in Shared Tab Group"/>
 </enum>
 
 <enum name="IOSMenuScenario">

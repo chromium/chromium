@@ -746,4 +746,14 @@
                          block:block];
 }
 
+- (UIAction*)actionToShowRecentActivity:(ProceduralBlock)block {
+  UIImage* image =
+      DefaultSymbolWithPointSize(kHistorySymbol, kSymbolActionPointSize);
+  return [self actionWithTitle:l10n_util::GetNSString(
+                                   IDS_IOS_CONTENT_CONTEXT_RECENTACTIVITY)
+                         image:image
+                          type:MenuActionType::RecentActivityInSharedTabGroup
+                         block:block];
+}
+
 @end

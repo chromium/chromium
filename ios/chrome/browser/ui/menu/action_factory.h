@@ -226,6 +226,10 @@ class TabGroup;
 // manage in a new tab, which will invoke the given `block` when executed.
 - (UIAction*)actionToManageLinkInNewTabWithBlock:(ProceduralBlock)block;
 
+// Creates a UIAction instance to show the recent activity in a shared tab
+// group.
+- (UIAction*)actionToShowRecentActivity:(ProceduralBlock)block;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_MENU_ACTION_FACTORY_H_
