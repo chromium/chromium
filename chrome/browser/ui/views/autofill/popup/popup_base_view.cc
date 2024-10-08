@@ -356,11 +356,13 @@ void PopupBaseView::NotifyAXSelection(views::View& selected_view) {
   }
   selected_view.GetViewAccessibility().SetPopupFocusOverride();
 #if DCHECK_IS_ON()
+  // TODO(crbug.com/362445293): Update the automation handler once the
+  // Typescript migration is complete.
   constexpr auto kDerivedClasses = base::MakeFixedFlatSet<std::string_view>(
       {"PopupSuggestionView", "PopupPasswordSuggestionView", "PopupFooterView",
        "PopupSeparatorView", "PopupWarningView", "PopupBaseView",
        "PasswordGenerationPopupViewViews::GeneratedPasswordBox", "PopupRowView",
-       "PopupRowContentView", "MdTextButton",
+       "PopupRowWithButtonView", "PopupRowContentView", "MdTextButton",
        "PopupRowPredictionImprovementsFeedbackView"});
   DCHECK(kDerivedClasses.contains(selected_view.GetClassName()))
       << "If you add a new derived class from AutofillPopupRowView, add it "

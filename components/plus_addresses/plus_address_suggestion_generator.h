@@ -67,6 +67,10 @@ class PlusAddressSuggestionGenerator final {
       const PlusAddress& plus_address,
       autofill::Suggestion& suggestion);
 
+  // Updates the `suggestion`'s style to indicate whether it `is_loading`.
+  static void SetLoadingStateForSuggestion(bool is_loading,
+                                           autofill::Suggestion& suggestion);
+
  private:
   // Returns a suggestion to create a new plus address.
   autofill::Suggestion CreateNewPlusAddressSuggestion();

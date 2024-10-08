@@ -217,7 +217,15 @@ void PlusAddressSuggestionGenerator::SetSuggestedPlusAddressForSuggestion(
     autofill::Suggestion& suggestion) {
   suggestion.payload =
       Suggestion::PlusAddressPayload(base::UTF8ToUTF16(*plus_address));
-  suggestion.is_loading = Suggestion::IsLoading(false);
+  SetLoadingStateForSuggestion(/*is_loading=*/false, suggestion);
+}
+
+// static
+void PlusAddressSuggestionGenerator::SetLoadingStateForSuggestion(
+    bool is_loading,
+    autofill::Suggestion& suggestion) {
+  suggestion.is_loading = Suggestion::IsLoading(is_loading);
+  suggestion.is_acceptable = !is_loading;
 }
 
 autofill::Suggestion
@@ -280,7 +288,7 @@ PlusAddressSuggestionGenerator::CreateNewPlusAddressInlineSuggestion() {
         &feature_engagement::kIPHPlusAddressCreateSuggestionFeature;
   } else {
     suggestion.payload = Suggestion::PlusAddressPayload();
-    suggestion.is_loading = Suggestion::IsLoading(true);
+    SetLoadingStateForSuggestion(/*is_loading=*/true, suggestion);
   }
   suggestion.icon = Suggestion::Icon::kPlusAddress;
   suggestion.labels = CreateLabelsForCreateSuggestion(

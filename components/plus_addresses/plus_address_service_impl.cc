@@ -700,8 +700,8 @@ void PlusAddressServiceImpl::OnAcceptedInlineSuggestion(
   // First, update the suggestions to show a loading state.
   std::vector<Suggestion> updated_suggestions(current_suggestions.begin(),
                                               current_suggestions.end());
-  updated_suggestions[current_suggestion_index].is_loading =
-      Suggestion::IsLoading(true);
+  PlusAddressSuggestionGenerator::SetLoadingStateForSuggestion(
+      /*is_loading=*/true, updated_suggestions[current_suggestion_index]);
   std::move(update_suggestions_callback)
       .Run(
           std::move(updated_suggestions),
