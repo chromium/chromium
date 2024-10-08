@@ -211,33 +211,12 @@
           '--flag-specific=enable-editing-ng',
         ],
       },
-      'linux-rel-cft': {
-        "args": [
-          '--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw',
-          '--test-launcher-filter-file=../../testing/buildbot/filters/cft.blink_web_tests.filter',
-          '--flag-specific=chrome-for-testing',
-        ],
-        'swarming': {
-          'shards': 8,
-        },
-      },
       'mac-osxbeta-rel': {
         'swarming': {
           'dimensions': {
             'gpu': None
           },
           'shards': 10,
-        },
-      },
-      'mac-rel-cft': {
-       "args": [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/cft.blink_web_tests.filter',
-        ],
-        'swarming': {
-          'dimensions': {
-            'gpu': None,
-          },
-          'shards': 12,
         },
       },
       'mac11.0-blink-rel': {
@@ -259,14 +238,6 @@
       'mac12.0.arm64-blink-rel': {
         'swarming': {
           'hard_timeout': 2400,
-        },
-      },
-      'win-rel-cft': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/cft.blink_web_tests.filter',
-        ],
-        'swarming': {
-          "shards": 12,
         },
       },
       'win10-rel-no-external-ip': {
@@ -296,9 +267,6 @@
     'remove_from': [
       'devtools_frontend_linux_blink_light_rel',
       'devtools_frontend_linux_blink_light_rel_fastbuild',
-      'linux-rel-cft',
-      'mac-rel-cft',
-      'win-rel-cft',
     ],
     'modifications': {
       'Mac Tests Siso FYI': {
@@ -370,30 +338,10 @@
           '--flag-specific=enable-editing-ng',
         ],
       },
-      'linux-rel-cft': {
-        "args": [
-          "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw",
-          '--flag-specific=chrome-for-testing',
-        ],
-        'swarming': {
-          'shards': 10,
-        },
-      },
       'mac-osxbeta-rel': {
         'swarming': {
           'dimensions': {
             'gpu': None
-          },
-          'shards': 18,
-        },
-      },
-      'mac-rel-cft': {
-        'args': [
-          '--driver-logging',
-        ],
-        'swarming': {
-          'dimensions': {
-            'gpu': None,
           },
           'shards': 18,
         },
@@ -417,11 +365,6 @@
       'mac12.0.arm64-blink-rel': {
         'swarming': {
           'hard_timeout': 2400,
-        },
-      },
-      'win-rel-cft': {
-        'swarming': {
-          "shards": 18,
         },
       },
       'win10-rel-no-external-ip': {
@@ -563,14 +506,6 @@
           'shards': 50,
         },
       },
-      'linux-rel-cft': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux.linux-rel-cft.browser_tests.filter',
-        ],
-        'swarming': {
-          'shards': 20,
-        },
-      },
       'linux-ubsan-fyi-rel': {
         'swarming': {
           'shards': 20,
@@ -586,15 +521,6 @@
           'shards': 30,
         },
       },
-      'mac-rel-cft': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel-cft.browser_tests.filter',
-        ],
-        'ci_only': True,
-        'swarming': {
-          'shards': 20,  # crbug.com/1361887
-        },
-      },
       'win-asan': {
          # Tests shows tests run faster with fewer retries by using fewer jobs crbug.com/1411912
         'args': [
@@ -605,18 +531,6 @@
         'swarming': {
           'shards': 60,
         },
-      },
-      'win-rel-cft': {
-        'args': [
-          # crbug.com/868082
-          '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
-          '--test-launcher-filter-file=../../testing/buildbot/filters/win.win-rel-cft.browser_tests.filter',
-        ],
-        'swarming': {
-          # This is for slow test execution that often becomes a critical path of
-          # swarming jobs. crbug.com/868114
-          'shards': 15,
-        }
       },
       'win10-code-coverage': {
         'swarming': {
@@ -641,7 +555,6 @@
   'browser_tests_no_field_trial': {
     'remove_from': [
       'win10-rel-no-external-ip',
-      'win-rel-cft',
     ],
   },
   'capture_unittests': {
@@ -672,11 +585,6 @@
   'check_static_initializers': {
     'modifications': {
       'Mac Builder': {
-        'args': [
-          '--allow-coverage-initializer',
-        ],
-      },
-      'mac-rel-cft': {
         'args': [
           '--allow-coverage-initializer',
         ],
@@ -759,14 +667,6 @@
       },
     },
   },
-  'chromedriver_py_tests': {
-    'modifications': {
-      'win-rel-cft': {
-        # TODO(crbug.com/40868908): Fix & re-enable.
-        'isolate_profile_data': False,
-      },
-    },
-  },
   'components_browsertests': {
     'modifications': {
       'Linux TSan Tests': {
@@ -795,7 +695,6 @@
   'components_browsertests_no_field_trial': {
     'remove_from': [
       'win10-rel-no-external-ip',
-      'win-rel-cft',
     ],
   },
   'components_unittests': {
@@ -957,11 +856,6 @@
           '--coverage-continuous-mode=1',
         ],
       },
-      'mac-rel-cft': {
-        'swarming': {
-          'shards': 12,
-        },
-      },
       # https://crbug.com/1255940
       'mac-rel-dev': {
         'swarming': {
@@ -980,12 +874,6 @@
           # ASAN bot is slow: https://crbug.com/1484550#c3
           'shards': 32,
         },
-      },
-      'win-rel-cft': {
-        # crbug.com/868082
-        'args': [
-          '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
-        ],
       },
       'win10-code-coverage': {
         'swarming': {
@@ -1047,12 +935,6 @@
         'swarming': {
           'shards': 12,
         },
-      },
-      'win-rel-cft': {
-        # crbug.com/337984655
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/win.win-rel-cft.content_unittests.filter',
-        ],
       },
       'win10-code-coverage': {
         'swarming': {
@@ -1824,11 +1706,6 @@
           'shards': 10,
         },
       },
-      'linux-rel-cft': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux.linux-rel-cft.interactive_ui_tests.filter',
-        ],
-      },
       'linux-ubsan-fyi-rel': {
         'swarming': {
           'shards': 6,
@@ -1846,26 +1723,10 @@
           'shards': 7,
         },
       },
-      'mac-rel-cft': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/mac.mac-rel-cft.interactive_ui_tests.filter',
-        ],
-        'swarming': {
-          'shards': 6,
-        },
-      },
       'win-asan': {
          # Tests shows tests run faster with fewer retries by using fewer jobs crbug.com/1411912
         'args': [
           '--test-launcher-jobs=3',
-        ],
-        'swarming': {
-          'shards': 9,
-        },
-      },
-      'win-rel-cft': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/win.win-rel-cft.interactive_ui_tests.filter',
         ],
         'swarming': {
           'shards': 9,
@@ -1885,7 +1746,6 @@
   'interactive_ui_tests_no_field_trial': {
     'remove_from': [
       'win10-rel-no-external-ip',
-      'win-rel-cft',
     ],
   },
   'ipc_tests': {
@@ -1896,13 +1756,6 @@
         },
       },
     },
-  },
-  'mac_signing_tests': {
-    'remove_from': [
-      # This is intentional and explained in the waterfalls.pyl comment for
-      # this builder.
-      'mac-rel-cft',
-    ],
   },
   'media_foundation_browser_tests': {
     'remove_from': [
@@ -2033,12 +1886,6 @@
           'shards': 20,
         },
       },
-      'linux-rel-cft': {
-        "args": [
-          '--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m.profraw',
-          '--flag-specific=chrome-for-testing',
-        ],
-      },
     },
   },
   'notification_helper_unittests': {
@@ -2105,26 +1952,6 @@
       'android-code-coverage',
       'android-code-coverage-native',
     ]
-  },
-  'pixel_browser_tests': {
-    # This target should be removed from any CI only builders. Developers can
-    # intentionally make UI changes. Without running pixel tests on CQ, those
-    # cls will get wrongly reverted by sheriffs.
-    # When we switch CQ builders(e.g. use Win11 to replace Win10), we also
-    # need to update this field.
-    'remove_from': [
-      'win-rel-cft',
-    ],
-  },
-  'pixel_interactive_ui_tests': {
-    # This target should be removed from any CI only builders. Developers can
-    # intentionally make UI changes. Without running pixel tests on CQ, those
-    # cls will get wrongly reverted by sheriffs.
-    # When we switch CQ builders(e.g. use Win11 to replace Win10), we also
-    # need to update this field.
-    'remove_from': [
-      'win-rel-cft',
-    ],
   },
   'pixel_skia_gold_gl_passthrough_ganesh_test': {
     'replacements': {
@@ -2424,12 +2251,6 @@
           '--coverage-continuous-mode=1',
         ],
       },
-      'mac-rel-cft': {
-        'ci_only': True,
-        'swarming': {
-          'shards': 4,
-        },
-      },
       'win-asan': {
          # Tests shows tests run faster with fewer retries by using fewer jobs crbug.com/1411912
         'args': [
@@ -2437,11 +2258,6 @@
         ],
         'swarming': {
           'shards': 2,
-        },
-      },
-      'win-rel-cft': {
-        'swarming': {
-          'shards': 3,
         },
       },
       'win10-code-coverage': {
@@ -2458,7 +2274,6 @@
   'sync_integration_tests_no_field_trial': {
     'remove_from': [
       'win10-rel-no-external-ip',
-      'win-rel-cft',
     ],
   },
   'tab_capture_end2end_tests': {
@@ -2497,26 +2312,16 @@
           '--skip=benchmarks.benchmark_smoke_unittest.BenchmarkSmokeTest.wasmpspdfkit',
         ],
       },
-      'linux-rel-cft': {
-        'args': [
-          '--xvfb',
-          '--jobs=1',
-        ],
-      },
       'linux-rel-no-external-ip': {
         'args': [
           '--xvfb',
           '--jobs=1',
         ],
       },
-      'mac-rel-cft': {
-        'ci_only': True,
-      },
     },
     'remove_from': [
       'Linux - Future (dbg)',  # client.v8.chromium
       'win10-rel-no-external-ip',
-      'win-rel-cft',
     ],
   },
   'telemetry_perf_unittests_android_chrome': {
@@ -2537,7 +2342,6 @@
       # TODO(crbug.com/40727045): Restore when there's more DUTs
       'chromeos-eve-chrome',
       'win10-rel-no-external-ip',
-      'win-rel-cft',
     ],
   },
   'testing_pytype': {
@@ -2820,11 +2624,6 @@
         },
       },
     },
-  },
-  'webdriver_wpt_tests': {
-    'remove_from': [
-      'linux-rel-cft',
-    ],
   },
   'webgl2_conformance_d3d11_passthrough_tests': {
     'remove_from': [

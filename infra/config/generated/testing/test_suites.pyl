@@ -5966,15 +5966,6 @@
       'telemetry_perf_unittests_isolated_scripts',
     ],
 
-    'chromium_mac_rel_isolated_scripts': [
-      'chromedriver_py_tests_isolated_scripts',
-      'components_perftests_isolated_scripts',
-      'desktop_chromium_isolated_scripts',
-      'mac_specific_isolated_scripts',
-      'mojo_python_unittests_isolated_scripts',
-      'telemetry_perf_unittests_isolated_scripts',
-    ],
-
     'chromium_mac_rel_isolated_scripts_and_sizes': [
       'chrome_sizes_suite',
       'chromedriver_py_tests_isolated_scripts',

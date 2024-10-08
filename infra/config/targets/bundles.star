@@ -791,6 +791,18 @@ targets.bundle(
     ],
 )
 
+targets.bundle(
+    name = "chromium_mac_rel_isolated_scripts",
+    targets = [
+        "chromedriver_py_tests_isolated_scripts",
+        "components_perftests_isolated_scripts",
+        "desktop_chromium_isolated_scripts",
+        "mac_specific_isolated_scripts",
+        "mojo_python_unittests_isolated_scripts",
+        "telemetry_perf_unittests_isolated_scripts",
+    ],
+)
+
 # On some bots we don't have capacity to run all standard tests (for example
 # Android Pie), however there are tracing integration tests we want to
 # ensure are still working.

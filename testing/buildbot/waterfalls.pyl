@@ -15,6 +15,7 @@
   #   chromium.accessibility
   #   chromium.android
   #   chromium.android.fyi
+  #   chromium.cft
   #   chromium.fuchsia
   #   chromium.fuchsia.fyi
   #   chromium.mac
@@ -577,70 +578,6 @@
         'test_suites': {
           'gtest_tests': 'chromium_mac_gtests_no_nacl',
           'isolated_scripts': 'chromium_mac_rel_isolated_scripts_once',
-        },
-      },
-    },
-  },
-  {
-    # CfT == Chrome for Testing
-    # The -cft builders are the Chrome for Testing builders. They
-    # are intended to mirror the main builders as much as possible.
-    'name': 'chromium.cft',
-    'mixins': ['chromium-tester-service-account'],
-    'machines': {
-      # Mirrors "Linux Builder" and "Linux Tests".
-      'linux-rel-cft': {
-        'mixins': [
-          'isolate_profile_data',
-          'linux-jammy',
-        ],
-        'additional_compile_targets': [
-          'all'
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_linux_gtests',
-          'isolated_scripts': 'chromium_linux_rel_isolated_scripts',
-          'scripts': 'chromium_linux_scripts',
-        }
-      },
-
-      # Mirrors "Mac Builder" and "Mac12 Tests", except that we don't run
-      # 'mac_signing_tests' (it is removed in test_suite_exceptions.pyl),
-      # which doesn't exist in the CfT config.
-      'mac-rel-cft': {
-        'mixins': [
-          'mac_default_x64',
-          'isolate_profile_data',
-        ],
-        # TODO(crbug.com/40883191) - for some reason gcapi_example
-        # is failing to build in this config. For now, just try
-        # to build the test binaries and we can decide if we really
-        # need everything to build later.
-        #
-        # 'additional_compile_targets': [
-        #   'all',
-        # ],
-        'test_suites': {
-          'gtest_tests': 'chromium_mac_gtests_no_nacl',
-          'isolated_scripts': 'chromium_mac_rel_isolated_scripts',
-          'scripts': 'chromium_mac_scripts',
-        },
-      },
-
-      # Mirrors "Win x64 Builder" and "Win10 Tests x64".
-      'win-rel-cft': {
-        'mixins': [
-          'x86-64',
-          'win10',
-          'isolate_profile_data',
-        ],
-        'additional_compile_targets': [
-          'pdf_fuzzers'
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_win10_gtests',
-          'isolated_scripts': 'chromium_win_rel_isolated_scripts',
-          'scripts': 'chromium_win_scripts',
         },
       },
     },

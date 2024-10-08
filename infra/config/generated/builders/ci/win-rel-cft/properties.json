@@ -46,7 +46,8 @@
           "builder": "win-rel-cft",
           "group": "tryserver.chromium.cft"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/win-rel-cft/targets"
     }
   },
   "$build/reclient": {
