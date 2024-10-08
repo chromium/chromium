@@ -28,9 +28,22 @@ struct ASH_PUBLIC_EXPORT NewCalendarEventAction {
   ~NewCalendarEventAction();
 };
 
+// Opens the browser to the Google Contacts contact creation page, with some
+// fields pre-set.
+struct ASH_PUBLIC_EXPORT NewContactAction {
+  std::string given_name;
+
+  explicit NewContactAction(std::string given_name);
+
+  NewContactAction(const NewContactAction&);
+  NewContactAction& operator=(const NewContactAction&);
+
+  ~NewContactAction();
+};
+
 // Holds a particular action the user can complete in a ScannerSession,
 // equivalently a single command that can be applied to the system.
-using ScannerAction = std::variant<NewCalendarEventAction>;
+using ScannerAction = std::variant<NewCalendarEventAction, NewContactAction>;
 
 // Holds the response returned from the Scanner service. This may be a list of
 // 0 or more actions, or an error state.

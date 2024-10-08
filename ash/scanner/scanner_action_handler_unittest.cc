@@ -41,6 +41,9 @@ class TestUrlNewWindowDelegate : public TestNewWindowDelegate {
 constexpr std::string_view kGoogleCalendarHost = "calendar.google.com";
 constexpr std::string_view kGoogleCalendarRenderPath = "/calendar/render";
 
+constexpr std::string_view kGoogleContactsHost = "contacts.google.com";
+constexpr std::string_view kGoogleContactsNewPath = "/new";
+
 TEST(ScannerActionHandlerTest, NewCalendarEventWithNoFieldsOpensUrl) {
   base::test::SingleThreadTaskEnvironment task_environment;
   TestUrlNewWindowDelegate delegate;
@@ -74,6 +77,38 @@ TEST(ScannerActionHandlerTest, NewCalendarEventWithTitleOpensUrl) {
           Property("path_piece", &GURL::path_piece, kGoogleCalendarRenderPath),
           Property("query_piece", &GURL::query_piece,
                    "action=TEMPLATE&text=Test+title%3F")));
+}
+
+TEST(ScannerActionHandlerTest, NewContactWithNoFieldsOpensUrl) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  TestUrlNewWindowDelegate delegate;
+
+  base::test::TestFuture<bool> done_future;
+  HandleScannerAction(NewContactAction(/*given_name=*/""),
+                      done_future.GetCallback());
+
+  EXPECT_TRUE(done_future.Get());
+  EXPECT_THAT(
+      delegate.TakeLastOpenedUrl(),
+      AllOf(Property("host_piece", &GURL::host_piece, kGoogleContactsHost),
+            Property("path_piece", &GURL::path_piece, kGoogleContactsNewPath),
+            Property("query_piece", &GURL::query_piece, "")));
+}
+
+TEST(ScannerActionHandlerTest, NewContactWithGivenNameOpensUrl) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  TestUrlNewWindowDelegate delegate;
+
+  base::test::TestFuture<bool> done_future;
+  HandleScannerAction(NewContactAction("Léa"), done_future.GetCallback());
+
+  EXPECT_TRUE(done_future.Get());
+  EXPECT_THAT(
+      delegate.TakeLastOpenedUrl(),
+      AllOf(
+          Property("host_piece", &GURL::host_piece, kGoogleContactsHost),
+          Property("path_piece", &GURL::path_piece, kGoogleContactsNewPath),
+          Property("query_piece", &GURL::query_piece, "given_name=L%C3%A9a")));
 }
 
 }  // namespace

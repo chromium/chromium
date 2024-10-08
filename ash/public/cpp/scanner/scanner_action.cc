@@ -18,4 +18,12 @@ NewCalendarEventAction& NewCalendarEventAction::operator=(
     const NewCalendarEventAction&) = default;
 NewCalendarEventAction::~NewCalendarEventAction() = default;
 
+NewContactAction::NewContactAction(std::string given_name)
+    : given_name(std::move(given_name)) {}
+
+NewContactAction::NewContactAction(const NewContactAction&) = default;
+NewContactAction& NewContactAction::operator=(const NewContactAction&) =
+    default;
+NewContactAction::~NewContactAction() = default;
+
 }  // namespace ash
