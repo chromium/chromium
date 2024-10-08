@@ -480,6 +480,8 @@ void UpdateMonitorInfo() {
 }
 
 // Update video processor auto HDR feature support status.
+// Note that NVIDIA GPU is the only one that supports Auto HDR feature
+// currently.
 // Must be called on GpuMain thread.
 void UpdateVideoProcessorAutoHDRSupport() {
   if (GetGlWorkarounds().disable_vp_auto_hdr) {
@@ -495,6 +497,33 @@ void UpdateVideoProcessorAutoHDRSupport() {
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device = g_d3d11_device;
   if (!d3d11_device) {
     LOG(ERROR) << __func__ << ": Failed to retrieve D3D11 device";
+    SetSupportsVideoProcessorAutoHDR(false);
+    return;
+  }
+
+  Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
+  if (FAILED(d3d11_device.As(&dxgi_device))) {
+    DLOG(ERROR) << "Failed to retrieve DXGI device";
+    SetSupportsVideoProcessorAutoHDR(false);
+    return;
+  }
+
+  Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
+  if (FAILED(dxgi_device->GetAdapter(&dxgi_adapter))) {
+    DLOG(ERROR) << "Failed to retrieve DXGI adapter";
+    SetSupportsVideoProcessorAutoHDR(false);
+    return;
+  }
+
+  DXGI_ADAPTER_DESC adapter_desc;
+  if (FAILED(dxgi_adapter->GetDesc(&adapter_desc))) {
+    DLOG(ERROR) << "Failed to get adapter desc";
+    SetSupportsVideoProcessorAutoHDR(false);
+    return;
+  }
+
+  // Check the vendor ID to make sure it's NVIDIA.
+  if (adapter_desc.VendorId != 0x10de) {
     SetSupportsVideoProcessorAutoHDR(false);
     return;
   }
