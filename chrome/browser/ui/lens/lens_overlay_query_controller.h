@@ -125,6 +125,10 @@ class LensOverlayQueryController {
   virtual void SendTaskCompletionGen204IfEnabled(
       lens::mojom::UserAction user_action);
 
+  // Sends a semantic event Gen204 ping.
+  virtual void SendSemanticEventGen204IfEnabled(
+      lens::mojom::SemanticEvent event);
+
  protected:
   // Creates an endpoint fetcher for fetching the request data and fetches
   // the request.

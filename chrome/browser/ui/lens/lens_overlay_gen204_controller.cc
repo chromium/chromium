@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_gen204_controller.h"
 
 #include "base/containers/span.h"
+#include "base/format_macros.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/browser_process.h"
@@ -24,13 +25,22 @@ namespace lens {
 
 namespace {
 
-const int kMaxDownloadBytes = 1024 * 1024;
-const int kCopyAsImageTaskCompletionID = 233325;
-const int kCopyTextTaskCompletionID = 198153;
-const int kSaveAsImageTaskCompletionID = 233326;
-const int kSelectTextTaskCompletionID = 198157;
-const int kTranslateTaskCompletionID = 198158;
+constexpr int kMaxDownloadBytes = 1024 * 1024;
+
+// Task completion ids.
+constexpr int kCopyAsImageTaskCompletionID = 233325;
+constexpr int kCopyTextTaskCompletionID = 198153;
+constexpr int kSaveAsImageTaskCompletionID = 233326;
+constexpr int kSelectTextTaskCompletionID = 198157;
+constexpr int kTranslateTaskCompletionID = 198158;
+
+// Semantic event ids.
+constexpr int kTextGleamsViewStartSemanticEventID = 234181;
+constexpr int kTextGleamsViewEndSemanticEventID = 234180;
+
+// Query parameter keys.
 constexpr char kGen204IdentifierQueryParameter[] = "plla";
+constexpr char kSemanticEventIdParameter[] = "rid";
 constexpr char kRequestTypeQueryParameter[] = "rt";
 constexpr char kFullPageObjectsFetchRequestType[] = "fpof";
 constexpr char kFullPageTranslateFetchRequestType[] = "fptf";
@@ -101,8 +111,7 @@ void LensOverlayGen204Controller::OnQueryFlowStart(
 void LensOverlayGen204Controller::SendLatencyGen204IfEnabled(
     int64_t latency_ms,
     bool is_translate_query) {
-  if (profile_ && lens::features::GetLensOverlaySendLatencyGen204() &&
-      g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven()) {
+  if (profile_ && lens::features::GetLensOverlaySendLatencyGen204()) {
     std::string query = base::StringPrintf(
         "gen_204?atyp=csi&%s=%s&%s=%s.%s&s=web",
         kGen204IdentifierQueryParameter,
@@ -116,15 +125,14 @@ void LensOverlayGen204Controller::SendLatencyGen204IfEnabled(
                          .Resolve(query);
     fetch_url =
         lens::AppendInvocationSourceParamToURL(fetch_url, invocation_source_);
-    IssueGen204NetworkRequest(fetch_url);
+    CheckMetricsConsentAndIssueGen204NetworkRequest(fetch_url);
   }
 }
 
 void LensOverlayGen204Controller::SendTaskCompletionGen204IfEnabled(
     std::string encoded_analytics_id,
     lens::mojom::UserAction user_action) {
-  if (profile_ && lens::features::GetLensOverlaySendTaskCompletionGen204() &&
-      g_browser_process->GetMetricsServicesManager()->IsMetricsConsentGiven()) {
+  if (profile_ && lens::features::GetLensOverlaySendTaskCompletionGen204()) {
     int task_id;
     switch (user_action) {
       case mojom::UserAction::kTextSelection:
@@ -158,19 +166,51 @@ void LensOverlayGen204Controller::SendTaskCompletionGen204IfEnabled(
                          .Resolve(query);
     fetch_url =
         lens::AppendInvocationSourceParamToURL(fetch_url, invocation_source_);
-    IssueGen204NetworkRequest(fetch_url);
+    CheckMetricsConsentAndIssueGen204NetworkRequest(fetch_url);
+  }
+}
+
+void LensOverlayGen204Controller::SendSemanticEventGen204IfEnabled(
+    lens::mojom::SemanticEvent event) {
+  if (profile_ && lens::features::GetLensOverlaySendSemanticEventGen204()) {
+    int event_id;
+    switch (event) {
+      case mojom::SemanticEvent::kTextGleamsViewStart:
+        event_id = kTextGleamsViewStartSemanticEventID;
+        break;
+      case mojom::SemanticEvent::kTextGleamsViewEnd:
+        event_id = kTextGleamsViewEndSemanticEventID;
+        break;
+    }
+    std::string query = base::StringPrintf(
+        "gen_204?%s=%d&zx=%" PRId64 "&%s=%" PRIu64, kSemanticEventIdParameter,
+        event_id, base::Time::Now().InMillisecondsSinceUnixEpoch(),
+        kGen204IdentifierQueryParameter, gen204_id_);
+    auto fetch_url = GURL(TemplateURLServiceFactory::GetForProfile(profile_)
+                              ->search_terms_data()
+                              .GoogleBaseURLValue())
+                         .Resolve(query);
+    fetch_url =
+        lens::AppendInvocationSourceParamToURL(fetch_url, invocation_source_);
+    CheckMetricsConsentAndIssueGen204NetworkRequest(fetch_url);
   }
 }
 
 void LensOverlayGen204Controller::OnQueryFlowEnd(
     std::string encoded_analytics_id) {
-  // TODO(b/364291616): Log and send text gleam render gen204s. This will
-  // require a check in this function to send an end event if no explicit
-  // end event was received from the overlay due to it closing.
+  // Send a text gleams view end event because the event trigger from webui
+  // will not fire when the overlay is closing. The server will dedupe
+  // end events.
+  SendSemanticEventGen204IfEnabled(mojom::SemanticEvent::kTextGleamsViewEnd);
   profile_ = nullptr;
 }
 
-void LensOverlayGen204Controller::IssueGen204NetworkRequest(GURL url) {
+void LensOverlayGen204Controller::
+    CheckMetricsConsentAndIssueGen204NetworkRequest(GURL url) {
+  if (!g_browser_process->GetMetricsServicesManager()
+           ->IsMetricsConsentGiven()) {
+    return;
+  }
   auto request = std::make_unique<network::ResourceRequest>();
   request->url = url;
   gen204_loaders_.push_back(network::SimpleURLLoader::Create(

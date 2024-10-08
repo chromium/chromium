@@ -20,9 +20,9 @@ import {findWordsInRegion} from './find_words_in_region.js';
 import {CenterRotatedBox_CoordinateType} from './geometry.mojom-webui.js';
 import type {CenterRotatedBox} from './geometry.mojom-webui.js';
 import {bestHit} from './hit.js';
-import {UserAction} from './lens.mojom-webui.js';
+import {SemanticEvent, UserAction} from './lens.mojom-webui.js';
 import {INVOCATION_SOURCE} from './lens_overlay_app.js';
-import {recordLensOverlayInteraction} from './metrics_utils.js';
+import {recordLensOverlayInteraction, recordLensOverlaySemanticEvent} from './metrics_utils.js';
 import type {CursorData, SelectedRegionContextMenuData, SelectedTextContextMenuData} from './selection_overlay.js';
 import {CursorType} from './selection_utils.js';
 import type {GestureEvent} from './selection_utils.js';
@@ -303,6 +303,11 @@ export class TextLayerElement extends PolymerElement {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
+
+    // If there was rendered text, log a text gleam render end event.
+    if (this.renderedWords?.length > 0) {
+      recordLensOverlaySemanticEvent(SemanticEvent.kTextGleamsViewEnd);
+    }
 
     this.listenerIds.forEach(
         id => assert(this.browserProxy.callbackRouter.removeListener(id)));
@@ -602,6 +607,11 @@ export class TextLayerElement extends PolymerElement {
     let lineNumber = 0;
     let paragraphNumber = 0;
 
+    // If there was already text, log a text gleam render end event.
+    if (this.renderedWords?.length > 0) {
+      recordLensOverlaySemanticEvent(SemanticEvent.kTextGleamsViewEnd);
+    }
+
     // Reset all old translation text.
     let detectedWordIndex = 0;
     let translatedWordIndex = 0;
@@ -693,6 +703,10 @@ export class TextLayerElement extends PolymerElement {
     // Need to set this.renderedWords to a new array instead of
     // this.renderedWords.push() to ensure the dom-repeat updates.
     this.renderedWords = receivedWords;
+    // If there is text, log a text gleam render start event.
+    if (this.renderedWords.length > 0) {
+      recordLensOverlaySemanticEvent(SemanticEvent.kTextGleamsViewStart);
+    }
     assert(this.lineNumbers.length === this.renderedWords.length);
     assert(this.paragraphNumbers.length === this.renderedWords.length);
 

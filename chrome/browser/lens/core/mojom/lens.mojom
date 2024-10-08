@@ -43,6 +43,12 @@ enum UserAction {
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayUserAction)
 
+// Enumerates the semantic events that can be logged by the Lens Overlay.
+enum SemanticEvent {
+  kTextGleamsViewStart = 0,
+  kTextGleamsViewEnd = 1,
+};
+
 // TODO(crbug.com/365448173): Split into separate mojom files for overlay
 // and side panel.
 // Factory method for creating a new WebUI page handler for lens overlay.
@@ -184,6 +190,9 @@ interface LensPageHandler {
   // Records UKM metrics and task completion for lens overlay interactions.
   RecordUkmAndTaskCompletionForLensOverlayInteraction(
       UserAction user_action);
+
+  // Records a semantic event for the lens overlay.
+  RecordLensOverlaySemanticEvent(SemanticEvent event);
 };
 
 // WebUI page handler for request from Browser side. (C++ -> TypeScript)

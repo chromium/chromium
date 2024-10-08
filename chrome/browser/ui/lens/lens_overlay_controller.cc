@@ -1063,6 +1063,11 @@ void LensOverlayController::RecordUkmAndTaskCompletionForLensOverlayInteraction(
       user_action);
 }
 
+void LensOverlayController::RecordLensOverlaySemanticEvent(
+    lens::mojom::SemanticEvent event) {
+  lens_overlay_query_controller_->SendSemanticEventGen204IfEnabled(event);
+}
+
 std::string LensOverlayController::GetInvocationSourceString() {
   switch (invocation_source_) {
     case lens::LensOverlayInvocationSource::kAppMenu:

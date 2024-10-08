@@ -469,6 +469,11 @@ void LensOverlayQueryController::SendTaskCompletionGen204IfEnabled(
       request_id_generator_->GetBase32EncodedAnalyticsId(), user_action);
 }
 
+void LensOverlayQueryController::SendSemanticEventGen204IfEnabled(
+    lens::mojom::SemanticEvent event) {
+  gen204_controller_->SendSemanticEventGen204IfEnabled(event);
+}
+
 void LensOverlayQueryController::RunFullImageCallbackForError() {
   ResetRequestClusterInfoState();
   // Needs to be set to received response so this query can be retried on the

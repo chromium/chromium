@@ -815,6 +815,8 @@ class LensOverlayController : public LensSearchboxClient,
   void NotifyOverlayInitialized() override;
   void RecordUkmAndTaskCompletionForLensOverlayInteraction(
       lens::mojom::UserAction user_action) override;
+  void RecordLensOverlaySemanticEvent(
+      lens::mojom::SemanticEvent event) override;
   void SaveAsImage(lens::mojom::CenterRotatedBoxPtr region) override;
 
   // Performs shared logic for IssueTextSelectionRequest() and

@@ -242,6 +242,7 @@ source_set("interactive_ui_tests") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "lens_overlay_gen204_controller_unittest.cc",
     "lens_overlay_image_helper_unittest.cc",
     "lens_overlay_proto_converter_unittest.cc",
     "lens_overlay_query_controller_unittest.cc",
@@ -256,6 +257,7 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser:browser_process",
     "//chrome/browser/lens/core/mojom:mojo_bindings",
+    "//chrome/browser/search_engines",
     "//chrome/browser/themes",
     "//chrome/test:test_support",
     "//components/base32",
