@@ -682,13 +682,6 @@ BASE_FEATURE(kAutofillLogDeduplicationMetricsFollowup,
              "AutofillLogDeduplicationMetricsFollowup",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, low-quality quasi duplicates of rank one are silently removed
-// during the once-per-milestone deduplication routine.
-// TODO(crbug.com/325450676): Remove when launched.
-BASE_FEATURE(kAutofillSilentlyRemoveQuasiDuplicates,
-             "AutofillSilentlyRemoveQuasiDuplicates",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Currently, the importing logic offers new profile creation if the observed
 // profile is non-mergeable with any existing profile. With this feature, low-
 // quality tokens receive special treatment and can bypass this requirement.
