@@ -24,5 +24,6 @@ source_set("browser_tests") {
     "//chromeos/ash/components/policy/weekly_time:test_support",
     "//components/policy/proto",
     "//content/test:test_support",
+    "//ui/message_center",
   ]
 }

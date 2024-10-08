@@ -14,3 +14,9 @@ include_rules = [
   "+chrome/browser/lifetime/termination_notification.h",
   "+chrome/browser/ui/webui/ash/login/device_disabled_screen_handler.h",
 ]
+
+specific_include_rules = {
+  "device_restriction_schedule_controller_browsertest\.cc": [
+    "+ui/message_center",
+  ]
+}
