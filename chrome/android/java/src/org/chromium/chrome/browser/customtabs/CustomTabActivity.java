@@ -227,6 +227,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
             BackupSigninProcessor.start(this);
         }
 
+        mConnection.showSignInToastIfNecessary(mSession, getIntent());
         mConnection.showSignInToastIfNecessary(mSession, getIntent(), getProfileProviderSupplier());
 
         new CustomTabTrustedCdnPublisherUrlVisibility(
