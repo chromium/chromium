@@ -198,6 +198,7 @@
                       on-remove-item-click="onHistoryEmbeddingsItemRemoveClick_"
                       on-is-empty-changed="onHistoryEmbeddingsIsEmptyChanged_"
                       force-suppress-logging="[[historyEmbeddingsDisclaimerLinkClicked_]]"
+                      show-more-from-site-menu-option="[[!getShowResultsByGroup_(selectedPage_)]]"
                       show-relative-times="[[
                           getShowResultsByGroup_(selectedPage_)]]">
                   </cr-history-embeddings>

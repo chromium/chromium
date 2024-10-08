@@ -19,7 +19,7 @@
       var(--cr-fallback-color-surface1));
   border-radius: 16px;
   box-shadow: none;
-  padding-block: 16px;
+  padding-block: var(--cr-history-embeddings-card-padding-block, 16px);
 }
 
 h2 {
@@ -27,10 +27,10 @@ h2 {
   align-items: center;
   gap: 14px;
   margin: 0;
-  padding: 23px 24px 13px;
-  font-size: 16px;
+  padding: var(--cr-history-embeddings-heading-padding, 23px 24px 13px);
+  font-size: var(--cr-history-embeddings-heading-font-size, 16px);
   font-weight: 500;
-  line-height: 24px;
+  line-height: var(--cr-history-embeddings-heading-line-height, 24px);
   color: var(--color-history-embeddings-foreground,
       var(--cr-primary-text-color));
 }
@@ -40,20 +40,21 @@ h2 cr-icon {
 }
 
 :host([enable-answers_]) h2 {
-  font-size: 14px;
-  line-height: 20px;
-  padding: 8px 24px;
+  font-size: var(--cr-history-embeddings-heading-font-size, 14px);
+  line-height: var(--cr-history-embeddings-heading-line-height, 20px);
+  padding: var(--cr-history-embeddings-heading-padding, 8px 24px);
 }
 
 :host([enable-answers_]) .answer-section {
-  margin-block-end: 16px;
+  margin-block-end: var(
+      --cr-history-embeddings-answer-section-margin-block-end, 16px);
 }
 
 :host([enable-answers_]) .answer {
   font-size: 16px;
   font-weight: 500;
   line-height: 24px;
-  padding: 8px 24px;
+  padding: var(--cr-history-embeddings-answer-padding, 8px 24px);
 }
 
 :host([enable-answers_]) .answer-source {
@@ -63,23 +64,23 @@ h2 cr-icon {
   display: inline-flex;
   font-size: 11px;
   gap: 4px;
-  margin: 8px 24px;
+  margin: var(--cr-history-embeddings-answer-source-margin, 8px 24px);
   max-width: calc(100% - 48px);
   line-height: 16px;
   text-decoration: none;
 }
 
 .loading {
-  padding: 24px;
-  padding-block-start: 4px;
+  padding: var(--cr-history-embeddings-loading-padding, 4px 24px 24px 24px);
 }
 
 :host([enable-answers_]) .loading {
-  padding-block-end: 8px;
+  padding: var(--cr-history-embeddings-loading-padding, 4px 24px 8px 24px);
 }
 
 hr {
   border: 0;
+  display: var(--cr-history-embeddings-hr-display, block);
   height: 1px;
   background: var(--color-history-embeddings-divider,
       var(--cr-fallback-color-divider));
@@ -92,7 +93,8 @@ hr:last-of-type {
 
 cr-url-list-item {
   --cr-url-list-item-height: auto;
-  --cr-url-list-item-padding: 14px 24px;
+  --cr-url-list-item-padding: var(
+      --cr-history-embeddings-url-list-item-padding, 14px 24px);
 }
 
 cr-url-list-item:has(.source-passage:not([hidden])) {
@@ -372,10 +374,12 @@ cr-url-list-item:hover + hr {
 <cr-lazy-render id="sharedMenu">
   <template>
     <cr-action-menu role-description="[[i18n('actionMenuDescription')]]">
-      <button id="moreFromSiteOption" class="dropdown-item"
-          on-click="onMoreFromSiteClick_">
-        [[i18n('moreFromSite')]]
-      </button>
+      <template is="dom-if" if="[[showMoreFromSiteMenuOption]]">
+        <button id="moreFromSiteOption" class="dropdown-item"
+            on-click="onMoreFromSiteClick_">
+          [[i18n('moreFromSite')]]
+        </button>
+      </template>
       <button id="removeFromHistoryOption"
           class="dropdown-item" on-click="onRemoveFromHistoryClick_">
         [[i18n('removeFromHistory')]]

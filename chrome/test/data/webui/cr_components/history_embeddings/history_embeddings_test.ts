@@ -74,6 +74,7 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
       element = document.createElement('cr-history-embeddings');
       document.body.appendChild(element);
       element.overrideLoadingStateMinimumMsForTesting(0);
+      element.showMoreFromSiteMenuOption = true;
 
       element.numCharsForQuery = 21;
       element.searchQuery = 'some query';

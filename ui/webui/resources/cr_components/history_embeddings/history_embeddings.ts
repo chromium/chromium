@@ -106,6 +106,10 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
         computed: 'computeAnswerSource_(loadingAnswer_, searchResult_.items)',
         value: null,
       },
+      showMoreFromSiteMenuOption: {
+        type: Boolean,
+        value: false,
+      },
       showRelativeTimes: {type: Boolean, value: false},
     };
   }
@@ -151,6 +155,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
    */
   private searchResultPromise_: Promise<void>|null = null;
   showRelativeTimes: boolean = false;
+  showMoreFromSiteMenuOption: boolean = false;
 
   override connectedCallback() {
     super.connectedCallback();
