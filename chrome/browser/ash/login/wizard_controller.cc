@@ -2577,10 +2577,17 @@ void WizardController::OnPinSetupScreenExit(PinSetupScreen::Result result) {
                PinSetupScreen::GetResultString(result));
   if (ash::switches::IsOobePinOnlyPrototypeEnabled()) {
     switch (result) {
+      // Possible exit results when the PIN screen is shown for PIN-only setup.
       case PinSetupScreen::Result::kNotApplicableAsPrimaryFactor:
+      case PinSetupScreen::Result::kUserChosePassword:
         ShowPasswordSelectionScreen();
         break;
-      case PinSetupScreen::Result::kDone:
+      case PinSetupScreen::Result::kDoneAsMainFactor:
+        ShowFingerprintSetupScreen();
+        break;
+      // These are emitted when the screen is surfaced at the end of the flow,
+      // offering PIN as an additional factor.
+      case PinSetupScreen::Result::kDoneAsSecondaryFactor:
       case PinSetupScreen::Result::kUserSkip:
       case PinSetupScreen::Result::kNotApplicable:
       case PinSetupScreen::Result::kTimedOut:

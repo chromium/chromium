@@ -24,12 +24,13 @@ class PinSetupScreen : public BaseScreen {
  public:
   using TView = PinSetupScreenView;
   enum class Result {
-    kDone = 0,
-    kUserSkip = 1,
-    kNotApplicable = 2,
-    kTimedOut = 3,
-    kNotApplicableAsPrimaryFactor = 4,
-    kMaxValue = kNotApplicableAsPrimaryFactor,
+    kDoneAsSecondaryFactor = 0,
+    kUserSkip,
+    kNotApplicable,
+    kNotApplicableAsPrimaryFactor,
+    kTimedOut,
+    kUserChosePassword,
+    kDoneAsMainFactor,
   };
 
   // Detailed reason describing why the screen is being skipped.
@@ -41,6 +42,7 @@ class PinSetupScreen : public BaseScreen {
     kManagedGuestSessionOrEphemeralLogin,
     kUsupportedHardware,
     kNotSupportedAsPrimaryFactor,
+    kPinAlreadySet,
   };
 
   // This enum is tied directly to a UMA enum defined in
@@ -62,6 +64,7 @@ class PinSetupScreen : public BaseScreen {
     kSetupAsSecondaryFactor,
     // TODO(b/365059362) : Add support for recovery.
     // kRecovery
+    kSetupFinished,
   };
 
   // Whether the current platform has support for PIN login, or just unlock.
@@ -108,6 +111,13 @@ class PinSetupScreen : public BaseScreen {
   // Finalizes the hardware support status.
   void DetermineHardwareSupport();
 
+  void ClearAuthData(WizardContext& context);
+  void OnHasLoginSupport(bool login_available);
+  void OnTokenTimedOut();
+
+  // Whether the screen is operating in the given mode. Guarded by flag.
+  bool IsInSetupMode(PinSetupMode mode);
+
   // Hardware support and screen mode. The main logic bits driving how the
   // screen is surfaced to the user. See enum definition for details.
   std::optional<HardwareSupport> hardware_support_;
@@ -117,10 +127,6 @@ class PinSetupScreen : public BaseScreen {
   ScreenExitCallback exit_callback_;
 
   base::OneShotTimer token_lifetime_timeout_;
-
-  void ClearAuthData(WizardContext& context);
-  void OnHasLoginSupport(bool login_available);
-  void OnTokenTimedOut();
 
   AuthPerformer auth_performer_;
 

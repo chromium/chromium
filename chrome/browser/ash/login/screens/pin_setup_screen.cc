@@ -77,12 +77,17 @@ void RecordUserAction(const std::string& action_id) {
 std::string PinSetupScreen::GetResultString(Result result) {
   // LINT.IfChange(UsageMetrics)
   switch (result) {
-    case Result::kDone:
+    // Keep original 'Done'
+    case Result::kDoneAsSecondaryFactor:
       return "Done";
     case Result::kUserSkip:
       return "Skipped";
     case Result::kTimedOut:
       return "TimedOut";
+    case Result::kUserChosePassword:
+      return "UserChosePassword";
+    case Result::kDoneAsMainFactor:
+      return "DoneAsMainFactor";
     case Result::kNotApplicable:
     case Result::kNotApplicableAsPrimaryFactor:
       return BaseScreen::kNotApplicable;
@@ -99,6 +104,7 @@ PinSetupScreen::PinSetupScreen(base::WeakPtr<PinSetupScreenView> view,
       cryptohome_pin_engine_(&auth_performer_) {
   DCHECK(view_);
 
+  // TODO(b/365059362): Move setup mode to WizardContext.
   if (ash::switches::IsOobePinOnlyPrototypeEnabled()) {
     setup_mode_ = PinSetupMode::kSetupAsPrimaryFactor;
   } else {
@@ -152,12 +158,16 @@ std::optional<PinSetupScreen::SkipReason> PinSetupScreen::GetSkipReason(
 
   // Further checks for the PIN-only setup mode. It needs to login support and
   // it is only available for consumers.
-  if (setup_mode_ == PinSetupMode::kSetupAsPrimaryFactor &&
-      ash::switches::IsOobePinOnlyPrototypeEnabled()) {
+  if (IsInSetupMode(PinSetupMode::kSetupAsPrimaryFactor)) {
     if (!has_login_support) {
       return SkipReason::kNotSupportedAsPrimaryFactor;
     }
     // TODO(b/365059362): Skip for managed users.
+  }
+
+  // Second surfacing of the PIN setup screen after setting a PIN as primary.
+  if (IsInSetupMode(PinSetupMode::kSetupFinished)) {
+    return SkipReason::kPinAlreadySet;
   }
 
   // Will not be skipped.
@@ -167,17 +177,16 @@ std::optional<PinSetupScreen::SkipReason> PinSetupScreen::GetSkipReason(
 bool PinSetupScreen::MaybeSkip(WizardContext& context) {
   DetermineHardwareSupport();
 
+  // TODO(b/365059362): Create new metric to track the detailed skip reason.
   const auto skip_reason = GetSkipReason(context);
   if (skip_reason.has_value()) {
-    if (setup_mode_ == PinSetupMode::kSetupAsPrimaryFactor &&
-        ash::switches::IsOobePinOnlyPrototypeEnabled()) {
+    if (IsInSetupMode(PinSetupMode::kSetupAsPrimaryFactor)) {
       setup_mode_ = PinSetupMode::kSetupAsSecondaryFactor;
       exit_callback_.Run(Result::kNotApplicableAsPrimaryFactor);
       return true;
     }
 
     ClearAuthData(context);
-    // TODO(b/365059362): Create new metric to track the detailed skip reason.
     exit_callback_.Run(Result::kNotApplicable);
     return true;
   }
@@ -191,21 +200,31 @@ void PinSetupScreen::ShowImpl() {
   // been skipped.
   CHECK(hardware_support_.has_value());
   CHECK(context()->extra_factors_token);
+  CHECK(setup_mode_ != PinSetupMode::kSetupFinished);
 
-  token_lifetime_timeout_.Start(FROM_HERE,
-                                quick_unlock::AuthToken::kTokenExpiration,
-                                base::BindOnce(&PinSetupScreen::OnTokenTimedOut,
-                                               weak_ptr_factory_.GetWeakPtr()));
-  quick_unlock::QuickUnlockStorage* quick_unlock_storage =
-      quick_unlock::QuickUnlockFactory::GetForProfile(
-          ProfileManager::GetActiveUserProfile());
-  quick_unlock_storage->MarkStrongAuth();
+  // When the screen is being shown offering PIN as a secondary factor
+  // factor, a timer is used for invalidating the AuthSession.
+  // TODO(b/365059362): Replace legacy timer logic with a AuthSessionStorage
+  // notification that will be triggered upon invalidation.
+  if (IsInSetupMode(PinSetupMode::kSetupAsSecondaryFactor)) {
+    token_lifetime_timeout_.Start(
+        FROM_HERE, quick_unlock::AuthToken::kTokenExpiration,
+        base::BindOnce(&PinSetupScreen::OnTokenTimedOut,
+                       weak_ptr_factory_.GetWeakPtr()));
+    quick_unlock::QuickUnlockStorage* quick_unlock_storage =
+        quick_unlock::QuickUnlockFactory::GetForProfile(
+            ProfileManager::GetActiveUserProfile());
+    quick_unlock_storage->MarkStrongAuth();
+  } else {
+    // TODO(b/365059362): Add session refresher for main factor setup.
+  }
+
   const std::string token = *context()->extra_factors_token;
   bool is_child_account =
       user_manager::UserManager::Get()->IsLoggedInAsChildUser();
 
   const bool using_pin_as_main_factor =
-      setup_mode_ == PinSetupMode::kSetupAsPrimaryFactor;
+      IsInSetupMode(PinSetupMode::kSetupAsPrimaryFactor);
   const bool has_login_support =
       hardware_support_.value() == HardwareSupport::kLoginCompatible;
   if (view_) {
@@ -223,17 +242,29 @@ void PinSetupScreen::OnUserAction(const base::Value::List& args) {
   const std::string& action_id = args[0].GetString();
   if (action_id == kUserActionDoneButtonClicked) {
     RecordUserAction(action_id);
-    ClearAuthData(*context());
     token_lifetime_timeout_.Stop();
-    exit_callback_.Run(Result::kDone);
+    if (IsInSetupMode(PinSetupMode::kSetupAsPrimaryFactor)) {
+      setup_mode_ = PinSetupMode::kSetupFinished;
+      exit_callback_.Run(Result::kDoneAsMainFactor);
+    } else {
+      ClearAuthData(*context());
+      exit_callback_.Run(Result::kDoneAsSecondaryFactor);
+    }
     return;
   }
   if (action_id == kUserActionSkipButtonClickedOnStart ||
       action_id == kUserActionSkipButtonClickedInFlow) {
     RecordUserAction(action_id);
-    ClearAuthData(*context());
     token_lifetime_timeout_.Stop();
-    exit_callback_.Run(Result::kUserSkip);
+    if (IsInSetupMode(PinSetupMode::kSetupAsPrimaryFactor)) {
+      // The user chose "Use password instead". Change the setup mode to offer
+      // PIN as an additional factor later in the OOBE flow.
+      setup_mode_ = PinSetupMode::kSetupAsSecondaryFactor;
+      exit_callback_.Run(Result::kUserChosePassword);
+    } else {
+      ClearAuthData(*context());
+      exit_callback_.Run(Result::kUserSkip);
+    }
     return;
   }
   BaseScreen::OnUserAction(args);
@@ -274,6 +305,17 @@ void PinSetupScreen::OnHasLoginSupport(bool login_available) {
 void PinSetupScreen::OnTokenTimedOut() {
   ClearAuthData(*context());
   exit_callback_.Run(Result::kTimedOut);
+}
+
+bool PinSetupScreen::IsInSetupMode(PinSetupScreen::PinSetupMode mode) {
+  const bool same_mode = setup_mode_ == mode;
+  if (mode == PinSetupMode::kSetupAsPrimaryFactor ||
+      mode == PinSetupMode::kSetupFinished) {
+    // These modes are only available when PasswordlessSetup is enabled.
+    return same_mode && ash::switches::IsOobePinOnlyPrototypeEnabled();
+  } else {
+    return same_mode;
+  }
 }
 
 }  // namespace ash

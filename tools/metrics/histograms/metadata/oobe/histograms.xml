@@ -398,8 +398,10 @@ chromium-metrics-reviews@google.com.
   <variant name="Personalized-apps.Skip"/>
   <variant name="Personalized-apps.Timeout"/>
   <variant name="Pin-setup.Done"/>
+  <variant name="Pin-setup.DoneAsMainFactor"/>
   <variant name="Pin-setup.Skipped"/>
   <variant name="Pin-setup.TimedOut"/>
+  <variant name="Pin-setup.UserChosePassword"/>
   <variant name="Quick-start.CancelAndReturnToGaiaInfo"/>
   <variant name="Quick-start.CancelAndReturnToNetwork"/>
   <variant name="Quick-start.CancelAndReturnToSignin"/>

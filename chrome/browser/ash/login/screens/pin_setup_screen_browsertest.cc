@@ -459,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, FinishedFlow) {
   InsertAndConfirmPin();
   WaitForScreenExit();
 
-  ExpectExitResultAndMetric(PinSetupScreen::Result::kDone);
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kDoneAsSecondaryFactor);
   ExpectUserActionMetric(PinSetupScreen::UserAction::kDoneButtonClicked);
 }
 
@@ -552,6 +552,63 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor,
   test::OobeJS().ExpectElementText(
       l10n_util::GetStringUTF8(IDS_DISCOVER_PIN_SETUP_PIN_AS_MAIN_FACTOR_SKIP),
       kSkipButtonCore);
+}
+
+// The password selection screen should be shown when the user does not want to
+// set up a PIN as a main factor.
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor,
+                       SkippingLeadsToPasswordSelectionScreen) {
+  ShowPinSetupScreen();
+  WaitForScreenShown();
+
+  ExpectSetupMode(PinSetupScreen::PinSetupMode::kSetupAsPrimaryFactor);
+  TapSkipButton();
+
+  // Wait for the password selection screen to be surfaced.
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kUserChosePassword);
+  OobeScreenWaiter(PasswordSelectionScreenHandler::kScreenId).Wait();
+}
+
+// When PIN is set as a main factor, the flow continues into the fingerprint
+// setup screen, which *always* leads to the PIN setup screen. But when the PIN
+// has already been set, the screen is skipped and the auth flow is finished.
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor, MainFactorSet) {
+  ShowPinSetupScreen();
+  WaitForScreenShown();
+
+  InsertAndConfirmPin();
+  WaitForScreenExit();
+
+  // The flow will exit and continue into the fingerprint setup screen.
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kDoneAsMainFactor);
+  ExpectFingerprintScreenExitedAndContinue();
+
+  // When the PIN is surfaced at the end of the flow for a second time, it exits
+  // properly, since a PIN has already been set.
+  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::kNotApplicable);
+}
+
+// PIN is offered as an additional factor at the end of the auth factor setup
+// flow when the user chooses not to use it as a main factor.
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor,
+                       SkippingLeadsToPinBeingOfferedAsSecondaryFactor) {
+  ShowPinSetupScreen();
+  WaitForScreenShown();
+
+  TapSkipButton();
+
+  // The flow leads to the password selection screen.
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kUserChosePassword);
+  HandlePasswordSelectionScreen();
+
+  // Once the password is set, the flow continues into fingerprint setup.
+  WaitForFingerprintScreenExit();
+  ExpectFingerprintScreenExitedAndContinue();
+
+  // Skip offering to set a PIN as an additional factor.
+  WaitForScreenShown();
+  TapSkipButton();
+  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::kUserSkip);
 }
 
 class PinSetupScreenTestAsMainFactorWithoutLoginSupport
