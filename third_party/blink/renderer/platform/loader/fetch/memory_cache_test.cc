@@ -248,35 +248,6 @@ TEST_F(MemoryCacheTest, ClientRemoval_MultipleResourceMaps) {
   }
 }
 
-TEST_F(MemoryCacheTest, PruneAll) {
-  // Add a "loaded" and a "loading" resource to the cache.
-  auto* resource1 = MakeGarbageCollected<FakeResource>("http://test/resource1",
-                                                       ResourceType::kRaw);
-  resource1->FinishForTest();
-  MemoryCache::Get()->Add(resource1);
-
-  auto* resource2 = MakeGarbageCollected<FakeResource>("http://test/resource2",
-                                                       ResourceType::kRaw);
-  MemoryCache::Get()->Add(resource2);
-
-  // Verify size tracking.
-  EXPECT_EQ(resource1->DecodedSize(), FakeResource::kInitialDecodedSize);
-  EXPECT_EQ(resource2->DecodedSize(), FakeResource::kInitialDecodedSize);
-  EXPECT_EQ(MemoryCache::Get()->size(),
-            2 * FakeResource::kInitialDecodedSize +
-                resource1->CalculateOverheadSizeForTest() +
-                resource2->CalculateOverheadSizeForTest());
-
-  // Prune the cache. This should clear decoded data on the "loaded" resource.
-  MemoryCache::Get()->PruneAll();
-  EXPECT_EQ(resource1->DecodedSize(), 0u);
-  EXPECT_EQ(resource2->DecodedSize(), FakeResource::kInitialDecodedSize);
-  EXPECT_EQ(MemoryCache::Get()->size(),
-            1 * FakeResource::kInitialDecodedSize +
-                resource1->CalculateOverheadSizeForTest() +
-                resource2->CalculateOverheadSizeForTest());
-}
-
 TEST_F(MemoryCacheTest, RemoveDuringRevalidation) {
   auto* resource1 = MakeGarbageCollected<FakeResource>("http://test/resource",
                                                        ResourceType::kRaw);
@@ -412,13 +383,13 @@ TEST_F(MemoryCacheStrongReferenceTest, LRU) {
   ASSERT_EQ(*MemoryCache::Get()->strong_references_.begin(), resource2.Get());
 }
 
-TEST_F(MemoryCacheStrongReferenceTest, PruneAllClearsStrongReferences) {
+TEST_F(MemoryCacheStrongReferenceTest, ClearStrongReferences) {
   const KURL kURL("http://test/resource1");
   Member<FakeResource> resource =
       MakeGarbageCollected<FakeResource>(kURL, ResourceType::kRaw);
   MemoryCache::Get()->SaveStrongReference(resource);
   EXPECT_EQ(MemoryCache::Get()->strong_references_.size(), 1u);
-  MemoryCache::Get()->PruneAll();
+  MemoryCache::Get()->ClearStrongReferences();
   EXPECT_EQ(MemoryCache::Get()->strong_references_.size(), 0u);
 }
 
