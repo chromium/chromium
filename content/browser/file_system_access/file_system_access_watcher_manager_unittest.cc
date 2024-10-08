@@ -362,8 +362,7 @@ class FileSystemAccessWatcherManagerTest : public testing::Test {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)
 TEST_F(FileSystemAccessWatcherManagerTest, BasicRegistration) {
   base::FilePath dir_path = dir_.GetPath().AppendASCII("dir");
-  auto dir_url = manager_->CreateFileSystemURLFromPath(
-      FileSystemAccessEntryFactory::PathType::kLocal, dir_path);
+  auto dir_url = manager_->CreateFileSystemURLFromPath(PathInfo(dir_path));
 
   EXPECT_FALSE(watcher_manager().HasObservationsForTesting());
 
@@ -399,8 +398,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, BasicRegistration) {
 
 TEST_F(FileSystemAccessWatcherManagerTest, BasicRegistrationUnownedSource) {
   base::FilePath file_path = dir_.GetPath().AppendASCII("foo");
-  auto file_url = manager_->CreateFileSystemURLFromPath(
-      FileSystemAccessEntryFactory::PathType::kLocal, file_path);
+  auto file_url = manager_->CreateFileSystemURLFromPath(PathInfo(file_path));
 
   auto scope = FileSystemAccessWatchScope::GetScopeForFileWatch(file_url);
   {
@@ -415,8 +413,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, BasicRegistrationUnownedSource) {
 
 TEST_F(FileSystemAccessWatcherManagerTest, UnownedSource) {
   base::FilePath file_path = dir_.GetPath().AppendASCII("foo");
-  auto file_url = manager_->CreateFileSystemURLFromPath(
-      FileSystemAccessEntryFactory::PathType::kLocal, file_path);
+  auto file_url = manager_->CreateFileSystemURLFromPath(PathInfo(file_path));
 
   FakeChangeSource source(
       FileSystemAccessWatchScope::GetScopeForFileWatch(file_url),
@@ -447,8 +444,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, UnownedSource) {
 
 TEST_F(FileSystemAccessWatcherManagerTest, SourceFailsInitialization) {
   base::FilePath file_path = dir_.GetPath().AppendASCII("foo");
-  auto file_url = manager_->CreateFileSystemURLFromPath(
-      FileSystemAccessEntryFactory::PathType::kLocal, file_path);
+  auto file_url = manager_->CreateFileSystemURLFromPath(PathInfo(file_path));
 
   FakeChangeSource source(
       FileSystemAccessWatchScope::GetScopeForFileWatch(file_url),
@@ -476,8 +472,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, SourceFailsInitialization) {
 
 TEST_F(FileSystemAccessWatcherManagerTest, IgnoreSwapFileChanges) {
   base::FilePath dir_path = dir_.GetPath().AppendASCII("dir");
-  auto dir_url = manager_->CreateFileSystemURLFromPath(
-      FileSystemAccessEntryFactory::PathType::kLocal, dir_path);
+  auto dir_url = manager_->CreateFileSystemURLFromPath(PathInfo(dir_path));
 
   CreateDirectory(dir_path);
   auto swap_file_path = dir_path.AppendASCII("foo.crswap");
@@ -531,8 +526,8 @@ TEST_F(FileSystemAccessWatcherManagerTest, IgnoreSwapFileChanges) {
   file_path_type = FilePathType::kUnknown;
 #endif  // BUILDFLAG(IS_WIN)
 
-  auto expected_url = manager_->CreateFileSystemURLFromPath(
-      FileSystemAccessEntryFactory::PathType::kLocal, non_swap_file_path);
+  auto expected_url =
+      manager_->CreateFileSystemURLFromPath(PathInfo(non_swap_file_path));
 
   const ChangeInfo change_info =
       ChangeInfo(file_path_type, ChangeType::kDeleted, expected_url.path());
@@ -547,8 +542,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, IgnoreSwapFileChanges) {
 
 TEST_F(FileSystemAccessWatcherManagerTest, RemoveObservation) {
   base::FilePath file_path = dir_.GetPath().AppendASCII("foo");
-  auto file_url = manager_->CreateFileSystemURLFromPath(
-      FileSystemAccessEntryFactory::PathType::kLocal, file_path);
+  auto file_url = manager_->CreateFileSystemURLFromPath(PathInfo(file_path));
 
   FakeChangeSource source(
       FileSystemAccessWatchScope::GetScopeForFileWatch(file_url),
@@ -630,7 +624,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, UnsupportedScope) {
   base::FilePath test_external_path =
       base::FilePath::FromUTF8Unsafe(kTestMountPoint).AppendASCII("foo");
   auto external_url = manager_->CreateFileSystemURLFromPath(
-      FileSystemAccessEntryFactory::PathType::kExternal, test_external_path);
+      PathInfo(PathType::kExternal, test_external_path));
 
 #if BUILDFLAG(IS_MAC)
   // Flush setup events before observation begins.
@@ -652,11 +646,9 @@ TEST_F(FileSystemAccessWatcherManagerTest, UnsupportedScope) {
 // overlapping scopes.
 TEST_F(FileSystemAccessWatcherManagerTest, OverlappingSourceScopes) {
   base::FilePath dir_path = dir_.GetPath().AppendASCII("dir");
-  auto dir_url = manager_->CreateFileSystemURLFromPath(
-      FileSystemAccessEntryFactory::PathType::kLocal, dir_path);
+  auto dir_url = manager_->CreateFileSystemURLFromPath(PathInfo(dir_path));
   base::FilePath file_path = dir_path.AppendASCII("foo");
-  auto file_url = manager_->CreateFileSystemURLFromPath(
-      FileSystemAccessEntryFactory::PathType::kLocal, file_path);
+  auto file_url = manager_->CreateFileSystemURLFromPath(PathInfo(file_path));
 
   FakeChangeSource source_for_file(
       FileSystemAccessWatchScope::GetScopeForFileWatch(file_url),
@@ -757,11 +749,9 @@ TEST_F(FileSystemAccessWatcherManagerTest,
 TEST_F(FileSystemAccessWatcherManagerTest,
        OnlyReceiveChangesWhenSourceAndObservationUrlsMatchForLocalFileSystem) {
   base::FilePath dir_path = dir_.GetPath().AppendASCII("dir");
-  auto dir_url = manager_->CreateFileSystemURLFromPath(
-      FileSystemAccessEntryFactory::PathType::kLocal, dir_path);
+  auto dir_url = manager_->CreateFileSystemURLFromPath(PathInfo(dir_path));
   base::FilePath file_path = dir_path.AppendASCII("foo");
-  auto file_url = manager_->CreateFileSystemURLFromPath(
-      FileSystemAccessEntryFactory::PathType::kLocal, file_path);
+  auto file_url = manager_->CreateFileSystemURLFromPath(PathInfo(file_path));
 
   FakeChangeSource source(FileSystemAccessWatchScope::GetScopeForDirectoryWatch(
                               dir_url, /*is_recursive=*/true),
@@ -816,8 +806,7 @@ TEST_F(FileSystemAccessWatcherManagerTest,
 
 TEST_F(FileSystemAccessWatcherManagerTest, ErroredChange) {
   base::FilePath file_path = dir_.GetPath().AppendASCII("foo");
-  auto file_url = manager_->CreateFileSystemURLFromPath(
-      FileSystemAccessEntryFactory::PathType::kLocal, file_path);
+  auto file_url = manager_->CreateFileSystemURLFromPath(PathInfo(file_path));
 
   FakeChangeSource source(
       FileSystemAccessWatchScope::GetScopeForFileWatch(file_url),
@@ -884,8 +873,7 @@ TEST_F(FileSystemAccessWatcherManagerTest,
 
 TEST_F(FileSystemAccessWatcherManagerTest, ChangeAtRelativePath) {
   base::FilePath dir_path = dir_.GetPath().AppendASCII("foo");
-  auto dir_url = manager_->CreateFileSystemURLFromPath(
-      FileSystemAccessEntryFactory::PathType::kLocal, dir_path);
+  auto dir_url = manager_->CreateFileSystemURLFromPath(PathInfo(dir_path));
 
   FakeChangeSource source(FileSystemAccessWatchScope::GetScopeForDirectoryWatch(
                               dir_url, /*is_recursive=*/true),
@@ -911,8 +899,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, ChangeAtRelativePath) {
 
   std::list<Change> expected_changes = {
       {manager_->CreateFileSystemURLFromPath(
-           FileSystemAccessEntryFactory::PathType::kLocal,
-           dir_path.Append(relative_path)),
+           PathInfo(dir_path.Append(relative_path))),
        ChangeInfo()}};
   EXPECT_TRUE(base::test::RunUntil([&]() {
     return testing::Matches(testing::ContainerEq(expected_changes))(
@@ -922,8 +909,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, ChangeAtRelativePath) {
 
 TEST_F(FileSystemAccessWatcherManagerTest, ChangeType) {
   base::FilePath file_path = dir_.GetPath().AppendASCII("foo");
-  auto file_url = manager_->CreateFileSystemURLFromPath(
-      FileSystemAccessEntryFactory::PathType::kLocal, file_path);
+  auto file_url = manager_->CreateFileSystemURLFromPath(PathInfo(file_path));
 
   FakeChangeSource source(
       FileSystemAccessWatchScope::GetScopeForFileWatch(file_url),
@@ -959,8 +945,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, ChangeType) {
 
 TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalDirectory) {
   base::FilePath dir_path = dir_.GetPath().AppendASCII("dir");
-  auto dir_url = manager_->CreateFileSystemURLFromPath(
-      FileSystemAccessEntryFactory::PathType::kLocal, dir_path);
+  auto dir_url = manager_->CreateFileSystemURLFromPath(PathInfo(dir_path));
 
   CreateDirectory(dir_path);
   auto file_path = dir_path.AppendASCII("foo");
@@ -990,8 +975,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalDirectory) {
 
   auto expected_url =
       ReportsModifiedPathForLocalObservations()
-          ? manager_->CreateFileSystemURLFromPath(
-                FileSystemAccessEntryFactory::PathType::kLocal, new_file_path)
+          ? manager_->CreateFileSystemURLFromPath(PathInfo(new_file_path))
           : dir_url;
   ChangeInfo change_info =
       ReportsChangeInfoForLocalObservations()
@@ -1010,8 +994,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalDirectory) {
 TEST_F(FileSystemAccessWatcherManagerTest,
        DISABLED_WatchLocalDirectoryNonRecursivelyDoesNotSeeRecursiveChanges) {
   base::FilePath dir_path = dir_.GetPath().AppendASCII("dir");
-  auto dir_url = manager_->CreateFileSystemURLFromPath(
-      FileSystemAccessEntryFactory::PathType::kLocal, dir_path);
+  auto dir_url = manager_->CreateFileSystemURLFromPath(PathInfo(dir_path));
 
   // Create a file within a subdirectory of the directory being watched.
   CreateDirectory(dir_path);
@@ -1053,8 +1036,7 @@ TEST_F(FileSystemAccessWatcherManagerTest,
 
 TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalDirectoryRecursively) {
   base::FilePath dir_path = dir_.GetPath().AppendASCII("dir");
-  auto dir_url = manager_->CreateFileSystemURLFromPath(
-      FileSystemAccessEntryFactory::PathType::kLocal, dir_path);
+  auto dir_url = manager_->CreateFileSystemURLFromPath(PathInfo(dir_path));
 
   // Create a file within a subdirectory of the directory being watched.
   CreateDirectory(dir_path);
@@ -1101,8 +1083,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalDirectoryRecursively) {
 
 TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalFile) {
   base::FilePath file_path = dir_.GetPath().AppendASCII("foo");
-  auto file_url = manager_->CreateFileSystemURLFromPath(
-      FileSystemAccessEntryFactory::PathType::kLocal, file_path);
+  auto file_url = manager_->CreateFileSystemURLFromPath(PathInfo(file_path));
 
   // Create the file to be watched.
   WriteFile(file_path, "watch me");
@@ -1158,8 +1139,7 @@ TEST_F(FileSystemAccessWatcherManagerTest, WatchLocalFile) {
 TEST_F(FileSystemAccessWatcherManagerTest,
        WatchLocalFileWithMultipleObservations) {
   base::FilePath file_path = dir_.GetPath().AppendASCII("foo");
-  auto file_url = manager_->CreateFileSystemURLFromPath(
-      FileSystemAccessEntryFactory::PathType::kLocal, file_path);
+  auto file_url = manager_->CreateFileSystemURLFromPath(PathInfo(file_path));
 
   // Create the file to be watched.
   WriteFile(file_path, "watch me");
@@ -1231,8 +1211,7 @@ TEST_F(FileSystemAccessWatcherManagerTest,
 
 TEST_F(FileSystemAccessWatcherManagerTest, OutOfScope) {
   base::FilePath file_path = dir_.GetPath().AppendASCII("foo");
-  auto file_url = manager_->CreateFileSystemURLFromPath(
-      FileSystemAccessEntryFactory::PathType::kLocal, file_path);
+  auto file_url = manager_->CreateFileSystemURLFromPath(PathInfo(file_path));
 
 #if BUILDFLAG(IS_MAC)
   // Flush setup events before observation begins.

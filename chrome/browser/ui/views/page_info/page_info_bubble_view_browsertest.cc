@@ -71,6 +71,7 @@
 #include "components/security_state/content/security_state_tab_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -711,7 +712,8 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
   views::Label* label = static_cast<views::Label*>(
       scroll_panel->contents()->children()[0]->children()[1]);
   const std::u16string expected_file_path =
-      file_system_access_ui_helper::GetPathForDisplayAsParagraph(test_file);
+      file_system_access_ui_helper::GetPathForDisplayAsParagraph(
+          content::PathInfo(test_file));
   EXPECT_EQ(label->GetText(), expected_file_path);
 
   // Simulate clicking the subpage manage button for File System.

@@ -4443,8 +4443,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   auto kTestOrigin1 = url::Origin::Create(GURL("https://a.com"));
   auto kTestOrigin2 = url::Origin::Create(GURL("https://b.com"));
 
-  const base::FilePath kTestPath1 = base::FilePath(FILE_PATH_LITERAL("/a/b"));
-  const base::FilePath kTestPath2 = base::FilePath(FILE_PATH_LITERAL("/a/c"));
+  const content::PathInfo kTestPath1(FILE_PATH_LITERAL("/a/b"));
+  const content::PathInfo kTestPath2(FILE_PATH_LITERAL("/a/c"));
 
   // Populate the `grants` object with permissions.
   auto origin1_file_read_grant =

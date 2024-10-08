@@ -18,7 +18,7 @@ namespace content {
 // Support for WellKnown directories is provided via a setter which allows
 // setting custom paths in an in-memory map.
 class FakeFileSystemAccessPermissionContext
-    : public content::FileSystemAccessPermissionContext {
+    : public FileSystemAccessPermissionContext {
  public:
   static constexpr char16_t kPickerTitle[] = u"Choose something";
 
@@ -27,20 +27,19 @@ class FakeFileSystemAccessPermissionContext
 
   scoped_refptr<FileSystemAccessPermissionGrant> GetReadPermissionGrant(
       const url::Origin& origin,
-      const base::FilePath& path,
+      const PathInfo& path_info,
       HandleType handle_type,
       UserAction user_action) override;
 
   scoped_refptr<FileSystemAccessPermissionGrant> GetWritePermissionGrant(
       const url::Origin& origin,
-      const base::FilePath& path,
+      const PathInfo& path_info,
       HandleType handle_type,
       UserAction user_action) override;
 
   void ConfirmSensitiveEntryAccess(
       const url::Origin& origin,
-      PathType path_type,
-      const base::FilePath& path,
+      const PathInfo& path_info,
       HandleType handle_type,
       UserAction user_action,
       GlobalRenderFrameHostId frame_id,
@@ -59,8 +58,7 @@ class FakeFileSystemAccessPermissionContext
 
   void SetLastPickedDirectory(const url::Origin& origin,
                               const std::string& id,
-                              const base::FilePath& path,
-                              const PathType type) override;
+                              const PathInfo& path_info) override;
   PathInfo GetLastPickedDirectory(const url::Origin& origin,
                                   const std::string& id) override;
 
@@ -79,8 +77,8 @@ class FakeFileSystemAccessPermissionContext
 
   // No-op. This class does not manage any permission grants.
   void NotifyEntryMoved(const url::Origin& origin,
-                        const base::FilePath& old_path,
-                        const base::FilePath& new_path) override;
+                        const PathInfo& old_path,
+                        const PathInfo& new_path) override;
 
   void OnFileCreatedFromShowSaveFilePicker(
       const GURL& file_picker_binding_context,

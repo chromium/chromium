@@ -39,18 +39,17 @@ namespace {
 // the correct file system backend. This method checks if this is the case, and
 // updates `entry_path` to the path that should be used by the File System
 // Access implementation.
-content::FileSystemAccessEntryFactory::PathType MaybeRemapPath(
-    base::FilePath* entry_path) {
+content::PathType MaybeRemapPath(base::FilePath* entry_path) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::FilePath virtual_path;
   auto* external_mount_points =
       storage::ExternalMountPoints::GetSystemInstance();
   if (external_mount_points->GetVirtualPath(*entry_path, &virtual_path)) {
     *entry_path = std::move(virtual_path);
-    return content::FileSystemAccessEntryFactory::PathType::kExternal;
+    return content::PathType::kExternal;
   }
 #endif
-  return content::FileSystemAccessEntryFactory::PathType::kLocal;
+  return content::PathType::kLocal;
 }
 
 }  // namespace
@@ -68,11 +67,13 @@ std::vector<blink::mojom::DataTransferFilePtr> FileInfosToDataTransferFiles(
     mojo::PendingRemote<blink::mojom::FileSystemAccessDataTransferToken>
         pending_token;
     base::FilePath entry_path = file_info.path;
-    FileSystemAccessManagerImpl::PathType path_type =
-        MaybeRemapPath(&entry_path);
+    content::PathType path_type = MaybeRemapPath(&entry_path);
+    base::FilePath display_name = !file_info.display_name.empty()
+                                      ? file_info.display_name
+                                      : entry_path.BaseName();
     file_system_access_manager->CreateFileSystemAccessDataTransferToken(
-        path_type, entry_path, file_info.display_name, child_id,
-        pending_token.InitWithNewPipeAndPassReceiver());
+        content::PathInfo(path_type, entry_path, display_name.AsUTF8Unsafe()),
+        child_id, pending_token.InitWithNewPipeAndPassReceiver());
     file->file_system_access_token = std::move(pending_token);
     result.push_back(std::move(file));
   }

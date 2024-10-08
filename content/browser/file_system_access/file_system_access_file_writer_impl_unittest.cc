@@ -396,7 +396,7 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
   scoped_refptr<FixedFileSystemAccessPermissionGrant> permission_grant_ =
       base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
           FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
-          base::FilePath());
+          PathInfo());
 
   mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter> remote_;
   base::WeakPtr<FileSystemAccessFileWriterImpl> handle_;

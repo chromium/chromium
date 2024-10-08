@@ -313,17 +313,23 @@ void FileSystemChooser::FileSelected(const ui::SelectedFileInfo& file,
 void FileSystemChooser::MultiFilesSelected(
     const std::vector<ui::SelectedFileInfo>& files) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  std::vector<ResultEntry> result;
+  std::vector<PathInfo> result;
 
   for (const ui::SelectedFileInfo& file : files) {
     if (file.virtual_path.has_value()) {
-      result.push_back({PathType::kExternal, *file.virtual_path,
-                        base::FilePath(file.display_name)});
+      base::FilePath display_name = !file.display_name.empty()
+                                        ? base::FilePath(file.display_name)
+                                        : file.virtual_path->BaseName();
+      result.emplace_back(PathType::kExternal, *file.virtual_path,
+                          display_name.AsUTF8Unsafe());
     } else {
-      result.push_back(
-          {PathType::kLocal,
-           file.local_path.empty() ? file.file_path : file.local_path,
-           base::FilePath(file.display_name)});
+      base::FilePath path =
+          !file.local_path.empty() ? file.local_path : file.file_path;
+      base::FilePath display_name = !file.display_name.empty()
+                                        ? base::FilePath(file.display_name)
+                                        : path.BaseName();
+      result.emplace_back(PathType::kLocal, std::move(path),
+                          display_name.AsUTF8Unsafe());
     }
   }
 

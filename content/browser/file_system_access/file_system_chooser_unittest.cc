@@ -33,12 +33,12 @@ class FileSystemChooserTest : public RenderViewHostImplTestHarness {
     ui::SelectFileDialog::SetFactory(nullptr);
   }
 
-  std::vector<FileSystemChooser::ResultEntry> SyncShowDialog(
+  std::vector<PathInfo> SyncShowDialog(
       WebContents* web_contents,
       std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
       bool include_accepts_all) {
     base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
-                           std::vector<FileSystemChooser::ResultEntry>>
+                           std::vector<PathInfo>>
         future;
     FileSystemChooser::CreateAndShow(
         web_contents,
@@ -224,7 +224,7 @@ TEST_F(FileSystemChooserTest, LocalPath) {
   auto results = SyncShowDialog(/*web_contents=*/nullptr, {},
                                 /*include_accepts_all=*/true);
   ASSERT_EQ(results.size(), 1u);
-  EXPECT_EQ(results[0].type, FileSystemChooser::PathType::kLocal);
+  EXPECT_EQ(results[0].type, PathType::kLocal);
   EXPECT_EQ(results[0].path, local_path);
 }
 
@@ -241,7 +241,7 @@ TEST_F(FileSystemChooserTest, ExternalPath) {
   auto results = SyncShowDialog(/*web_contents=*/nullptr, {},
                                 /*include_accepts_all=*/true);
   ASSERT_EQ(results.size(), 1u);
-  EXPECT_EQ(results[0].type, FileSystemChooser::PathType::kExternal);
+  EXPECT_EQ(results[0].type, PathType::kExternal);
   EXPECT_EQ(results[0].path, virtual_path);
 }
 

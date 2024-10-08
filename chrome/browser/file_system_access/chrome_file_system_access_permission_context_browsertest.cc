@@ -319,10 +319,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemChromeAppTest,
 
   // Initialize file permission grant.
   const url::Origin kTestOrigin = extension->origin();
-  const base::FilePath kTestPath =
-      base::FilePath(FILE_PATH_LITERAL("/foo/bar"));
+  const content::PathInfo kTestPathInfo(FILE_PATH_LITERAL("/foo/bar"));
   auto grant = permission_context.GetReadPermissionGrant(
-      kTestOrigin, kTestPath,
+      kTestOrigin, kTestPathInfo,
       ChromeFileSystemAccessPermissionContext::HandleType::kFile,
       ChromeFileSystemAccessPermissionContext::UserAction::kOpen);
   EXPECT_EQ(grant->GetStatus(), content::PermissionStatus::GRANTED);

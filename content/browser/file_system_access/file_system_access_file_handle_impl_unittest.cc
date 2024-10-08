@@ -28,6 +28,7 @@
 #include "content/browser/file_system_access/features.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/browser/file_system_access/mock_file_system_access_permission_grant.h"
+#include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -106,8 +107,7 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
       const base::FilePath& path,
       scoped_refptr<FixedFileSystemAccessPermissionGrant> read_grant,
       scoped_refptr<FixedFileSystemAccessPermissionGrant> write_grant) {
-    auto url = manager_->CreateFileSystemURLFromPath(
-        FileSystemAccessEntryFactory::PathType::kLocal, path);
+    auto url = manager_->CreateFileSystemURLFromPath(PathInfo(path));
     auto handle = std::make_unique<FileSystemAccessFileHandleImpl>(
         manager_.get(),
         FileSystemAccessManagerImpl::BindingContext(
@@ -124,8 +124,7 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
       const base::FilePath& path,
       scoped_refptr<FixedFileSystemAccessPermissionGrant> read_grant,
       scoped_refptr<FixedFileSystemAccessPermissionGrant> write_grant) {
-    auto url = manager_->CreateFileSystemURLFromPath(
-        FileSystemAccessEntryFactory::PathType::kLocal, path);
+    auto url = manager_->CreateFileSystemURLFromPath(PathInfo(path));
     auto handle = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
         manager_.get(),
         FileSystemAccessManagerImpl::BindingContext(
@@ -249,15 +248,15 @@ class FileSystemAccessFileHandleImplTest : public testing::Test {
   scoped_refptr<FixedFileSystemAccessPermissionGrant> allow_grant_ =
       base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
           FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
-          base::FilePath());
+          PathInfo());
   scoped_refptr<FixedFileSystemAccessPermissionGrant> ask_grant_ =
       base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
           FixedFileSystemAccessPermissionGrant::PermissionStatus::ASK,
-          base::FilePath());
+          PathInfo());
   scoped_refptr<FixedFileSystemAccessPermissionGrant> deny_grant_ =
       base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
           FixedFileSystemAccessPermissionGrant::PermissionStatus::DENIED,
-          base::FilePath());
+          PathInfo());
   std::unique_ptr<FileSystemAccessFileHandleImpl> handle_;
 
   base::test::ScopedFeatureList scoped_feature_list;
@@ -1039,13 +1038,13 @@ class FileSystemAccessFileHandleImplMovePermissionsTest
         .WillOnce(testing::Return(false));
     EXPECT_CALL(permission_context_,
                 GetReadPermissionGrant(
-                    origin, target,
+                    origin, content::PathInfo(target),
                     FileSystemAccessPermissionContext::HandleType::kFile,
                     FileSystemAccessPermissionContext::UserAction::kNone))
         .WillOnce(testing::Return(target_grant));
     EXPECT_CALL(permission_context_,
                 GetWritePermissionGrant(
-                    origin, target,
+                    origin, content::PathInfo(target),
                     FileSystemAccessPermissionContext::HandleType::kFile,
                     FileSystemAccessPermissionContext::UserAction::kNone))
         .WillOnce(testing::Return(target_grant));
@@ -1067,7 +1066,8 @@ class FileSystemAccessFileHandleImplMovePermissionsTest
                     kAllow));
       }
     }
-    EXPECT_CALL(permission_context_, NotifyEntryMoved(origin, source, target));
+    EXPECT_CALL(permission_context_,
+                NotifyEntryMoved(origin, PathInfo(source), PathInfo(target)));
 
     if (gesture_present()) {
       static_cast<TestRenderFrameHost*>(web_contents_->GetPrimaryMainFrame())
@@ -1105,13 +1105,13 @@ class FileSystemAccessFileHandleImplMovePermissionsTest
       // If safe name check has passed, it should be expected to get grants.
       EXPECT_CALL(permission_context_,
                   GetReadPermissionGrant(
-                      origin, target,
+                      origin, content::PathInfo(target),
                       FileSystemAccessPermissionContext::HandleType::kFile,
                       FileSystemAccessPermissionContext::UserAction::kNone))
           .WillOnce(testing::Return(target_grant));
       EXPECT_CALL(permission_context_,
                   GetWritePermissionGrant(
-                      origin, target,
+                      origin, content::PathInfo(target),
                       FileSystemAccessPermissionContext::HandleType::kFile,
                       FileSystemAccessPermissionContext::UserAction::kNone))
           .WillOnce(testing::Return(target_grant));
@@ -1168,7 +1168,8 @@ class FileSystemAccessFileHandleImplMovePermissionsTest
                     kAllow));
       }
     }
-    EXPECT_CALL(permission_context_, NotifyEntryMoved(origin, source, target));
+    EXPECT_CALL(permission_context_,
+                NotifyEntryMoved(origin, PathInfo(source), PathInfo(target)));
 
     mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> dir_remote;
     manager_->CreateTransferToken(*dest_dir_handle,

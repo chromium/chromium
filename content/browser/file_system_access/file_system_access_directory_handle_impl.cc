@@ -49,7 +49,6 @@ using storage::FileSystemOperationRunner;
 namespace content {
 
 using HandleType = FileSystemAccessPermissionContext::HandleType;
-using PathType = FileSystemAccessPermissionContext::PathType;
 using SensitiveEntryResult =
     FileSystemAccessPermissionContext::SensitiveEntryResult;
 using UserAction = FileSystemAccessPermissionContext::UserAction;
@@ -154,13 +153,14 @@ void FileSystemAccessDirectoryHandleImpl::GetFile(const std::string& basename,
     // checked for the blocklist, a child symlink file may have been created
     // since then, pointing to a blocklisted file or directory.  Check for
     // sensitive entry access, which is run on the resolved path.
-    manager()->permission_context()->ConfirmSensitiveEntryAccess(
-        context().storage_key.origin(),
+    PathInfo path_info{
         child_url.type() == storage::FileSystemType::kFileSystemTypeLocal
             ? PathType::kLocal
             : PathType::kExternal,
-        child_url.path(), HandleType::kFile, UserAction::kNone,
-        context().frame_id,
+        child_url.path(), basename};
+    manager()->permission_context()->ConfirmSensitiveEntryAccess(
+        context().storage_key.origin(), path_info, HandleType::kFile,
+        UserAction::kNone, context().frame_id,
         base::BindOnce(&FileSystemAccessDirectoryHandleImpl::DoGetFile,
                        weak_factory_.GetWeakPtr(), create, child_url,
                        std::move(callback)));
@@ -567,11 +567,12 @@ void FileSystemAccessDirectoryHandleImpl::DidReadDirectory(
       // link.
       manager()->permission_context()->ConfirmSensitiveEntryAccess(
           context().storage_key.origin(),
-          child_url.type() == storage::FileSystemType::kFileSystemTypeLocal
-              ? PathType::kLocal
-              : PathType::kExternal,
-          child_url.path(), HandleType::kFile, UserAction::kNone,
-          context().frame_id,
+          PathInfo(
+              child_url.type() == storage::FileSystemType::kFileSystemTypeLocal
+                  ? PathType::kLocal
+                  : PathType::kExternal,
+              child_url.path(), entry.name.AsUTF8Unsafe()),
+          HandleType::kFile, UserAction::kNone, context().frame_id,
           base::BindOnce(&FileSystemAccessDirectoryHandleImpl::
                              DidVerifySensitiveAccessForFileEntry,
                          weak_factory_.GetWeakPtr(), entry.name,

@@ -164,18 +164,17 @@ class ChromeFileSystemAccessPermissionContext
   // content::FileSystemAccessPermissionContext:
   scoped_refptr<content::FileSystemAccessPermissionGrant>
   GetReadPermissionGrant(const url::Origin& origin,
-                         const base::FilePath& path,
+                         const content::PathInfo& path_info,
                          HandleType handle_type,
                          UserAction user_action) override;
   scoped_refptr<content::FileSystemAccessPermissionGrant>
   GetWritePermissionGrant(const url::Origin& origin,
-                          const base::FilePath& path,
+                          const content::PathInfo& path_info,
                           HandleType handle_type,
                           UserAction user_action) override;
   void ConfirmSensitiveEntryAccess(
       const url::Origin& origin,
-      PathType path_type,
-      const base::FilePath& path,
+      const content::PathInfo& path_info,
       HandleType handle_type,
       UserAction user_action,
       content::GlobalRenderFrameHostId frame_id,
@@ -190,23 +189,22 @@ class ChromeFileSystemAccessPermissionContext
   bool CanObtainWritePermission(const url::Origin& origin) override;
   void SetLastPickedDirectory(const url::Origin& origin,
                               const std::string& id,
-                              const base::FilePath& path,
-                              const PathType type) override;
-  PathInfo GetLastPickedDirectory(const url::Origin& origin,
-                                  const std::string& id) override;
+                              const content::PathInfo& path_info) override;
+  content::PathInfo GetLastPickedDirectory(const url::Origin& origin,
+                                           const std::string& id) override;
   base::FilePath GetWellKnownDirectoryPath(
       blink::mojom::WellKnownDirectory directory,
       const url::Origin& origin) override;
   std::u16string GetPickerTitle(
       const blink::mojom::FilePickerOptionsPtr& options) override;
   void NotifyEntryMoved(const url::Origin& origin,
-                        const base::FilePath& old_path,
-                        const base::FilePath& new_path) override;
+                        const content::PathInfo& old_path,
+                        const content::PathInfo& new_path) override;
   void OnFileCreatedFromShowSaveFilePicker(
       const GURL& file_picker_binding_context,
       const storage::FileSystemURL& url) override;
   void CheckPathsAgainstEnterprisePolicy(
-      std::vector<PathInfo> entries,
+      std::vector<content::PathInfo> entries,
       content::GlobalRenderFrameHostId frame_id,
       EntriesAllowedByEnterprisePolicyCallback callback) override;
 
@@ -244,12 +242,12 @@ class ChromeFileSystemAccessPermissionContext
   }
 
   bool HasExtendedPermissionForTesting(const url::Origin& origin,
-                                       const base::FilePath& path,
+                                       const content::PathInfo& path_info,
                                        HandleType handle_type,
                                        GrantType grant_type) {
     // TODO(crbug.com/40101962): Clean up this usage in test.
-    return CanAutoGrantViaPersistentPermission(origin, path, handle_type,
-                                               grant_type);
+    return CanAutoGrantViaPersistentPermission(origin, path_info.path,
+                                               handle_type, grant_type);
   }
 
   // Converts permissions objects into a snapshot of grants categorized by
@@ -318,11 +316,11 @@ class ChromeFileSystemAccessPermissionContext
 
   scoped_refptr<content::FileSystemAccessPermissionGrant>
   GetExtendedReadPermissionGrantForTesting(const url::Origin& origin,
-                                           const base::FilePath& path,
+                                           const content::PathInfo& path_info,
                                            HandleType handle_type);
   scoped_refptr<content::FileSystemAccessPermissionGrant>
   GetExtendedWritePermissionGrantForTesting(const url::Origin& origin,
-                                            const base::FilePath& path,
+                                            const content::PathInfo& path_info,
                                             HandleType handle_type);
 
   HostContentSettingsMap* content_settings() { return content_settings_.get(); }
@@ -358,7 +356,7 @@ class ChromeFileSystemAccessPermissionContext
 
 #if BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
   void OnContentAnalysisComplete(
-      std::vector<PathInfo> entries,
+      std::vector<content::PathInfo> entries,
       EntriesAllowedByEnterprisePolicyCallback callback,
       std::vector<base::FilePath> paths,
       std::vector<bool> allowed);
@@ -367,13 +365,12 @@ class ChromeFileSystemAccessPermissionContext
   // Checks whether the file or directory at `path` corresponds to a directory
   // Chrome considers sensitive (i.e. system files). Calls `callback` with
   // whether the path is on the blocklist.
-  void CheckPathAgainstBlocklist(PathType path_type,
-                                 const base::FilePath& path,
+  void CheckPathAgainstBlocklist(const content::PathInfo& path_info,
                                  HandleType handle_type,
                                  base::OnceCallback<void(bool)> callback);
   void DidCheckPathAgainstBlocklist(
       const url::Origin& origin,
-      const base::FilePath& path,
+      const content::PathInfo& path_info,
       HandleType handle_type,
       UserAction user_action,
       content::GlobalRenderFrameHostId frame_id,

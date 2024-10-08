@@ -13,14 +13,13 @@ MockFileSystemAccessPermissionContext::
 
 void MockFileSystemAccessPermissionContext::ConfirmSensitiveEntryAccess(
     const url::Origin& origin,
-    PathType path_type,
-    const base::FilePath& path,
+    const PathInfo& path_info,
     HandleType handle_type,
     UserAction user_action,
     GlobalRenderFrameHostId frame_id,
     base::OnceCallback<void(SensitiveEntryResult)> callback) {
-  ConfirmSensitiveEntryAccess_(origin, path_type, path, handle_type,
-                               user_action, frame_id, callback);
+  ConfirmSensitiveEntryAccess_(origin, path_info, handle_type, user_action,
+                               frame_id, callback);
 }
 
 void MockFileSystemAccessPermissionContext::PerformAfterWriteChecks(

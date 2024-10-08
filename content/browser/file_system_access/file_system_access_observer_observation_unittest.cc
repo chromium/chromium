@@ -309,12 +309,10 @@ class FileSystemAccessObserverObservationTest
     return file_path;
   }
 
-  storage::FileSystemURL CreateFileSystemURL(
-      FileSystemAccessPermissionContext::PathType path_type,
-      const base::FilePath& file_path) {
+  storage::FileSystemURL CreateFileSystemURL(const base::FilePath& file_path) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    return manager_->CreateFileSystemURLFromPath(path_type, file_path);
+    return manager_->CreateFileSystemURLFromPath(PathInfo(file_path));
   }
 
   std::unique_ptr<FileSystemAccessFileHandleImpl> CreateFileHandle(
@@ -369,14 +367,13 @@ class FileSystemAccessObserverObservationTest
   scoped_refptr<FixedFileSystemAccessPermissionGrant> allow_grant_ =
       base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
           FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
-          base::FilePath());
+          PathInfo());
 };
 
 TEST_F(FileSystemAccessObserverObservationTest,
        NoChangesAfterAnErrorIsReported) {
   base::FilePath file_path = CreateFile();
-  storage::FileSystemURL file_url = CreateFileSystemURL(
-      FileSystemAccessEntryFactory::PathType::kLocal, file_path);
+  storage::FileSystemURL file_url = CreateFileSystemURL(file_path);
   std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle =
       CreateFileHandle(file_url);
 
@@ -410,8 +407,7 @@ TEST_F(FileSystemAccessObserverObservationTest,
 TEST_F(FileSystemAccessObserverObservationTest,
        AnErrorDestroysTheCorrectObservation) {
   base::FilePath file_path1 = CreateFile();
-  storage::FileSystemURL file_url1 = CreateFileSystemURL(
-      FileSystemAccessEntryFactory::PathType::kLocal, file_path1);
+  storage::FileSystemURL file_url1 = CreateFileSystemURL(file_path1);
   std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle1 =
       CreateFileHandle(file_url1);
 
@@ -422,8 +418,7 @@ TEST_F(FileSystemAccessObserverObservationTest,
   RegisterChangeSource(source1);
 
   base::FilePath file_path2 = CreateFile();
-  storage::FileSystemURL file_url2 = CreateFileSystemURL(
-      FileSystemAccessEntryFactory::PathType::kLocal, file_path2);
+  storage::FileSystemURL file_url2 = CreateFileSystemURL(file_path2);
   std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle2 =
       CreateFileHandle(file_url2);
 
@@ -461,8 +456,7 @@ TEST_F(FileSystemAccessObserverObservationTest,
 
 TEST_F(FileSystemAccessObserverObservationTest, ReceivedEventsInBFCache) {
   base::FilePath file_path = CreateFile();
-  storage::FileSystemURL file_url = CreateFileSystemURL(
-      FileSystemAccessEntryFactory::PathType::kLocal, file_path);
+  storage::FileSystemURL file_url = CreateFileSystemURL(file_path);
   std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle =
       CreateFileHandle(file_url);
 
@@ -504,8 +498,7 @@ TEST_F(FileSystemAccessObserverObservationTest, ReceivedEventsInBFCache) {
 
 TEST_F(FileSystemAccessObserverObservationTest, ReceivedErrorsInBFCache) {
   base::FilePath file_path = CreateFile();
-  storage::FileSystemURL file_url = CreateFileSystemURL(
-      FileSystemAccessEntryFactory::PathType::kLocal, file_path);
+  storage::FileSystemURL file_url = CreateFileSystemURL(file_path);
   std::unique_ptr<FileSystemAccessFileHandleImpl> file_handle =
       CreateFileHandle(file_url);
 

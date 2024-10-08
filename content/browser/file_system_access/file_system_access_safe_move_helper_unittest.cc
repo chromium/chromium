@@ -210,7 +210,7 @@ class FileSystemAccessSafeMoveHelperTest : public testing::Test {
   scoped_refptr<FixedFileSystemAccessPermissionGrant> permission_grant_ =
       base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
           FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
-          base::FilePath());
+          PathInfo());
 
   std::unique_ptr<FileSystemAccessSafeMoveHelper> helper_;
 };

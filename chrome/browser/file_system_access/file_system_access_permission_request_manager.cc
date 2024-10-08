@@ -25,8 +25,8 @@ bool AllFileRequestDataAreIdentical(const std::vector<FileRequestData>& a,
     return false;
   }
   for (size_t i = 0; i < a.size(); i++) {
-    if (a[i].path != b[i].path || a[i].handle_type != b[i].handle_type ||
-        a[i].access != b[i].access) {
+    if (a[i].path_info.path != b[i].path_info.path ||
+        a[i].handle_type != b[i].handle_type || a[i].access != b[i].access) {
       return false;
     }
   }
@@ -45,7 +45,8 @@ bool NewPermissionRequestsAreForSamePath(const RequestData& a,
          a.request_type == RequestType::kNewPermission &&
          a.request_type == b.request_type && a.file_request_data.size() == 1 &&
          a.file_request_data.size() == b.file_request_data.size() &&
-         a.file_request_data[0].path == b.file_request_data[0].path &&
+         a.file_request_data[0].path_info.path ==
+             b.file_request_data[0].path_info.path &&
          a.file_request_data[0].handle_type ==
              b.file_request_data[0].handle_type;
 }

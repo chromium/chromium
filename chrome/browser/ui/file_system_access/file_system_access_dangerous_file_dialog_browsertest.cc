@@ -17,7 +17,7 @@ class FileSystemAccessDangerousFileDialogBrowserTest
   void ShowUi(const std::string& name) override {
     ShowFileSystemAccessDangerousFileDialog(
         url::Origin::Create(GURL("https://example.com")),
-        base::FilePath(FILE_PATH_LITERAL("bar.swf")), base::DoNothing(),
+        content::PathInfo(FILE_PATH_LITERAL("bar.swf")), base::DoNothing(),
         browser()->tab_strip_model()->GetActiveWebContents());
   }
 };

@@ -4068,17 +4068,17 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
 
   // Populate the `grants` object with permissions.
   auto file_read_grant = context->GetExtendedReadPermissionGrantForTesting(
-      kTestOrigin1, kTestPath,
+      kTestOrigin1, content::PathInfo(kTestPath),
       ChromeFileSystemAccessPermissionContext::HandleType::kFile);
   auto file_write_grant = context->GetExtendedWritePermissionGrantForTesting(
-      kTestOrigin2, kTestPath2,
+      kTestOrigin2, content::PathInfo(kTestPath2),
       ChromeFileSystemAccessPermissionContext::HandleType::kFile);
   auto directory_read_grant = context->GetExtendedReadPermissionGrantForTesting(
-      kTestOrigin1, kTestPath3,
+      kTestOrigin1, content::PathInfo(kTestPath3),
       ChromeFileSystemAccessPermissionContext::HandleType::kDirectory);
   auto directory_write_grant =
       context->GetExtendedWritePermissionGrantForTesting(
-          kTestOrigin2, kTestPath4,
+          kTestOrigin2, content::PathInfo(kTestPath4),
           ChromeFileSystemAccessPermissionContext::HandleType::kDirectory);
 
   auto kTestOrigin1Grants =
@@ -4168,18 +4168,18 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
 
   // Populate the `grants` object with permissions.
   auto file_read_grant = context->GetExtendedReadPermissionGrantForTesting(
-      kTestOrigin1, kTestPath,
+      kTestOrigin1, content::PathInfo(kTestPath),
       ChromeFileSystemAccessPermissionContext::HandleType::kFile);
   auto directory_read_grant = context->GetExtendedReadPermissionGrantForTesting(
-      kTestOrigin1, kTestPath2,
+      kTestOrigin1, content::PathInfo(kTestPath2),
       ChromeFileSystemAccessPermissionContext::HandleType::kDirectory);
   auto directory_write_grant =
       context->GetExtendedWritePermissionGrantForTesting(
-          kTestOrigin2, kTestPath3,
+          kTestOrigin2, content::PathInfo(kTestPath3),
           ChromeFileSystemAccessPermissionContext::HandleType::kDirectory);
   auto second_directory_write_grant =
       context->GetExtendedWritePermissionGrantForTesting(
-          kTestOrigin2, kTestPath4,
+          kTestOrigin2, content::PathInfo(kTestPath4),
           ChromeFileSystemAccessPermissionContext::HandleType::kDirectory);
 
   base::Value::List revoke_origin1_grant_permissions_args;
@@ -4250,17 +4250,17 @@ TEST_F(PersistentPermissionsSiteSettingsHandlerTest,
 
   // Populate the `grants` object with permissions.
   auto file_read_grant = context->GetExtendedReadPermissionGrantForTesting(
-      kTestOrigin1, kTestPath,
+      kTestOrigin1, content::PathInfo(kTestPath),
       ChromeFileSystemAccessPermissionContext::HandleType::kFile);
   auto file_write_grant = context->GetExtendedWritePermissionGrantForTesting(
-      kTestOrigin2, kTestPath2,
+      kTestOrigin2, content::PathInfo(kTestPath2),
       ChromeFileSystemAccessPermissionContext::HandleType::kFile);
   auto directory_read_grant = context->GetExtendedReadPermissionGrantForTesting(
-      kTestOrigin1, kTestPath3,
+      kTestOrigin1, content::PathInfo(kTestPath3),
       ChromeFileSystemAccessPermissionContext::HandleType::kDirectory);
   auto directory_write_grant =
       context->GetExtendedWritePermissionGrantForTesting(
-          kTestOrigin2, kTestPath4,
+          kTestOrigin2, content::PathInfo(kTestPath4),
           ChromeFileSystemAccessPermissionContext::HandleType::kDirectory);
 
   base::Value::List get_file_system_grants_permissions_args;

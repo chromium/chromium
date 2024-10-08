@@ -255,7 +255,9 @@ void FileSystemAccessHandleBase::DoRename(
       url().type() == storage::FileSystemType::kFileSystemTypeTemporary
           ? manager()->GetSharedHandleStateForSandboxedPath()
           : manager()->GetSharedHandleStateForNonSandboxedPath(
-                destination_url.virtual_path(), context().storage_key,
+                content::PathInfo(destination_url.virtual_path(),
+                                  new_entry_name),
+                context().storage_key,
                 // TODO(crbug.com/40198034): Support directory moves.
                 FileSystemAccessPermissionContext::HandleType::kFile,
                 FileSystemAccessPermissionContext::UserAction::kNone);
@@ -473,7 +475,8 @@ void FileSystemAccessHandleBase::DidMove(
     if (ShouldTrackUsage(url_) && ShouldTrackUsage(destination_url) &&
         manager()->permission_context()) {
       manager()->permission_context()->NotifyEntryMoved(
-          context_.storage_key.origin(), url_.path(), destination_url.path());
+          context_.storage_key.origin(), content::PathInfo(url_.path()),
+          content::PathInfo(destination_url.path()));
     }
     url_ = std::move(destination_url);
   }

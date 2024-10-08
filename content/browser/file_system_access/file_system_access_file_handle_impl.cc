@@ -636,8 +636,7 @@ void FileSystemAccessFileHandleImpl::StartCreateSwapFile(
       std::string file_name = base::EscapeAllExceptUnreserved(
           url().path().DirName().Append(*opt_swap_name).value());
       swap_url = manager()->CreateFileSystemURLFromPath(
-          FileSystemAccessEntryFactory::PathType::kLocal,
-          swap_dir_.Append(file_name));
+          PathInfo(swap_dir_.Append(file_name)));
     } else {
       swap_url = url().CreateSibling(*opt_swap_name);
     }

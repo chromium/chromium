@@ -5,12 +5,12 @@
 #ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_DATA_TRANSFER_TOKEN_IMPL_H_
 #define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_DATA_TRANSFER_TOKEN_IMPL_H_
 
-#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/thread_annotations.h"
 #include "base/unguessable_token.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/file_system_access_permission_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom.h"
@@ -29,9 +29,7 @@ class CONTENT_EXPORT FileSystemAccessDataTransferTokenImpl
  public:
   FileSystemAccessDataTransferTokenImpl(
       FileSystemAccessManagerImpl* manager,
-      FileSystemAccessManagerImpl::PathType path_type,
-      const base::FilePath& file_path,
-      const base::FilePath& display_name,
+      const content::PathInfo& file_path_info,
       int renderer_process_id,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessDataTransferToken>
           receiver);
@@ -46,11 +44,7 @@ class CONTENT_EXPORT FileSystemAccessDataTransferTokenImpl
 
   int renderer_process_id() const { return renderer_process_id_; }
 
-  FileSystemAccessManagerImpl::PathType path_type() const { return path_type_; }
-
-  const base::FilePath& file_path() const { return file_path_; }
-
-  const base::FilePath& display_name() const { return display_name_; }
+  const content::PathInfo& file_path_info() const { return file_path_info_; }
 
   const base::UnguessableToken& token() const { return token_; }
 
@@ -68,9 +62,7 @@ class CONTENT_EXPORT FileSystemAccessDataTransferTokenImpl
 
   // Raw pointer since FileSystemAccessManagerImpl owns `this`.
   const raw_ptr<FileSystemAccessManagerImpl> manager_ = nullptr;
-  const FileSystemAccessManagerImpl::PathType path_type_;
-  const base::FilePath file_path_;
-  const base::FilePath display_name_;
+  const content::PathInfo file_path_info_;
   const int renderer_process_id_;
   const base::UnguessableToken token_;
 
