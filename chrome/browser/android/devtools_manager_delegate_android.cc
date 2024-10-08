@@ -73,7 +73,6 @@ class TabProxyDelegate : public content::DevToolsExternalAgentProxyDelegate {
 
   void Attach(content::DevToolsExternalAgentProxy* proxy) override {
     proxies_[proxy] = std::make_unique<ClientProxy>(proxy);
-    MaterializeAgentHost();
     if (agent_host_)
       agent_host_->AttachClient(proxies_[proxy].get());
   }
@@ -85,8 +84,10 @@ class TabProxyDelegate : public content::DevToolsExternalAgentProxyDelegate {
     if (agent_host_)
       agent_host_->DetachClient(it->second.get());
     proxies_.erase(it);
-    if (proxies_.empty())
+    if (proxies_.empty()) {
       agent_host_ = nullptr;
+      MaterializeAgentHost();
+    }
   }
 
   std::string GetType() override {
