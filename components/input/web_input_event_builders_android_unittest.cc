@@ -11,6 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/events/android/key_event_utils.h"
+#include "ui/events/android/motion_event_android_java.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -206,7 +207,7 @@ TEST(WebInputEventBuilderAndroidTest, WebMouseEventCoordinates) {
   const float raw_offset_y = 22.f;
   const float kPixToDip = 0.5f;
 
-  ui::MotionEventAndroidJavaBacked motion_event(
+  ui::MotionEventAndroidJava motion_event(
       AttachCurrentThread(), nullptr, kPixToDip, 0.f, 0.f, 0.f,
       base::TimeTicks() + base::Nanoseconds(kEventTimeNs),
       AMOTION_EVENT_ACTION_DOWN, 1, 0, -1, 0, 0, 1, AMETA_ALT_ON, 0,

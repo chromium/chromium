@@ -15,7 +15,7 @@
 #include "ui/events/android/gesture_event_android.h"
 #include "ui/events/android/gesture_event_type.h"
 #include "ui/events/android/key_event_android.h"
-#include "ui/events/android/motion_event_android.h"
+#include "ui/events/android/motion_event_android_java.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/android/ui_android_jni_headers/EventForwarder_jni.h"
@@ -114,7 +114,7 @@ jboolean EventForwarder::OnTouchEvent(JNIEnv* env,
   ui::MotionEventAndroid::Pointer pointer1(
       pointer_id_1, pos_x_1, pos_y_1, touch_major_1, touch_minor_1,
       orientation_1, tilt_1, android_tool_type_1);
-  ui::MotionEventAndroidJavaBacked event(
+  ui::MotionEventAndroidJava event(
       env, motion_event.obj(), 1.f / view_->GetDipScale(), 0.f, 0.f, 0.f,
       base::TimeTicks::FromJavaNanoTime(oldest_event_time_ns),
       base::TimeTicks::FromJavaNanoTime(latest_event_time_ns), android_action,
@@ -158,7 +158,7 @@ void EventForwarder::OnMouseEvent(JNIEnv* env,
   ui::MotionEventAndroid::Pointer pointer(
       pointer_id, x, y, 0.0f /* touch_major */, 0.0f /* touch_minor */,
       orientation, tilt, android_tool_type);
-  ui::MotionEventAndroidJavaBacked event(
+  ui::MotionEventAndroidJava event(
       env, nullptr /* event */, 1.f / view_->GetDipScale(), 0.f, 0.f, 0.f,
       base::TimeTicks::FromJavaNanoTime(time_ns), android_action,
       1 /* pointer_count */, 0 /* history_size */, 0 /* action_index */,
@@ -223,7 +223,7 @@ jboolean EventForwarder::OnGenericMotionEvent(
   float x = size.width() / 2;
   float y = size.height() / 2;
   ui::MotionEventAndroid::Pointer pointer0(0, x, y, 0, 0, 0, 0, 0);
-  ui::MotionEventAndroidJavaBacked event(
+  ui::MotionEventAndroidJava event(
       env, motion_event.obj(), 1.f / view_->GetDipScale(), 0.f, 0.f, 0.f,
       base::TimeTicks::FromJavaNanoTime(time_ns), 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
       0, false, &pointer0, nullptr);

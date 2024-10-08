@@ -355,6 +355,7 @@ component("events") {
       "android/key_event_android.h",
       "android/key_event_utils.h",
       "android/motion_event_android.h",
+      "android/motion_event_android_java.h",
 
       # TODO(crbug.com/40255699): Move this outside is_android block when
       # consuming cross-platform code which uses it lands.
@@ -367,6 +368,7 @@ component("events") {
       "android/key_event_android.cc",
       "android/key_event_utils.cc",
       "android/motion_event_android.cc",
+      "android/motion_event_android_java.cc",
       "back_gesture_event.cc",
     ]
     deps += [

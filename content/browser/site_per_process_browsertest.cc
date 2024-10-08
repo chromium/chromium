@@ -190,7 +190,7 @@
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/events/android/event_handler_android.h"
-#include "ui/events/android/motion_event_android.h"
+#include "ui/events/android/motion_event_android_java.h"
 #include "ui/gfx/geometry/point_f.h"
 #endif
 
@@ -9230,10 +9230,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   float y = size.height() / 2;
   ui::MotionEventAndroid::Pointer pointer0(0, x, y, 0, 0, 0, 0, 0);
   ui::MotionEventAndroid::Pointer pointer1(0, 0, 0, 0, 0, 0, 0, 0);
-  ui::MotionEventAndroidJavaBacked event(
-      nullptr, nullptr, 1.f / root_view->GetDipScale(), 0.f, 0.f, 0.f,
-      base::TimeTicks(), 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, &pointer0,
-      &pointer1);
+  ui::MotionEventAndroidJava event(nullptr, nullptr,
+                                   1.f / root_view->GetDipScale(), 0.f, 0.f,
+                                   0.f, base::TimeTicks(), 0, 1, 0, 0, 0, 0, 0,
+                                   0, 0, 0, 0, false, &pointer0, &pointer1);
   root_view->OnTouchEventForTesting(event);
 
   EXPECT_TRUE(mock_handler.did_receive_event());
@@ -9564,7 +9564,7 @@ class TouchSelectionControllerClientAndroidSiteIsolationTest
     ui::MotionEventAndroid::Pointer p(0, point.x(), point.y(), 10, 0, 0, 0, 0);
     JNIEnv* env = base::android::AttachCurrentThread();
     auto time_ns = (ui::EventTimeForNow() - base::TimeTicks()).InNanoseconds();
-    ui::MotionEventAndroidJavaBacked touch(
+    ui::MotionEventAndroidJava touch(
         env, nullptr, 1.f, 0, 0, 0, base::TimeTicks::FromJavaNanoTime(time_ns),
         ui::MotionEventAndroid::GetAndroidAction(action), 1, 0, 0, 0, 0, 0, 0,
         0, 0, 0, false, &p, nullptr);

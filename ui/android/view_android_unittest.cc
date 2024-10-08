@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/android/view_android.h"
+
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/android/event_forwarder.h"
@@ -10,7 +11,7 @@
 #include "ui/android/view_android_observer.h"
 #include "ui/android/window_android.h"
 #include "ui/events/android/event_handler_android.h"
-#include "ui/events/android/motion_event_android.h"
+#include "ui/events/android/motion_event_android_java.h"
 #include "ui/events/test/scoped_event_test_tick_clock.h"
 
 namespace ui {
@@ -76,10 +77,10 @@ class ViewAndroidBoundsTest : public testing::Test {
   void GenerateTouchEventAt(float x, float y) {
     ui::MotionEventAndroid::Pointer pointer0(0, x, y, 0, 0, 0, 0, 0);
     ui::MotionEventAndroid::Pointer pointer1(0, 0, 0, 0, 0, 0, 0, 0);
-    ui::MotionEventAndroidJavaBacked event(
-        nullptr, JavaParamRef<jobject>(nullptr), 1.f, 0, 0, 0,
-        base::TimeTicks(), 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, false, &pointer0,
-        &pointer1);
+    ui::MotionEventAndroidJava event(nullptr, JavaParamRef<jobject>(nullptr),
+                                     1.f, 0, 0, 0, base::TimeTicks(), 0, 1, 0,
+                                     0, 0, 0, 0, 0, 0, 0, 0, false, &pointer0,
+                                     &pointer1);
     root_.OnTouchEvent(event);
   }
 
