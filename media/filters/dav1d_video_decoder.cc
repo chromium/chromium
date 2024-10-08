@@ -221,12 +221,14 @@ void Dav1dVideoDecoder::Initialize(const VideoDecoderConfig& config,
   // Set a maximum frame size limit to avoid OOM'ing fuzzers.
   s.frame_size_limit = limits::kMaxCanvas;
 
-  // TODO(tmathmeyer) write the dav1d error into the data for the media error.
   {
     Dav1dContext* decoder = nullptr;
-    if (dav1d_open(&decoder, &s) < 0) {
+    const int res = dav1d_open(&decoder, &s);
+    if (res < 0) {
       std::move(bound_init_cb)
-          .Run(DecoderStatus::Codes::kFailedToCreateDecoder);
+          .Run(DecoderStatus(DecoderStatus::Codes::kFailedToCreateDecoder,
+                             "dav1d_open() failed")
+                   .WithData("error_code", res));
       return;
     }
     dav1d_decoder_.reset(decoder);
@@ -306,8 +308,12 @@ bool Dav1dVideoDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
 
   if (!buffer->end_of_stream()) {
     input_buffer.reset(new Dav1dData{0});
-    if (dav1d_data_wrap(input_buffer.get(), buffer->data(), buffer->size(),
-                        &ReleaseDecoderBuffer, buffer.get()) < 0) {
+    const int res =
+        dav1d_data_wrap(input_buffer.get(), buffer->data(), buffer->size(),
+                        &ReleaseDecoderBuffer, buffer.get());
+    if (res < 0) {
+      MEDIA_LOG(ERROR, media_log_)
+          << "dav1d_data_wrap() failed with error " << res;
       return false;
     }
     input_buffer->m.timestamp = buffer->timestamp().InMicroseconds();
@@ -323,8 +329,9 @@ bool Dav1dVideoDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
     if (input_buffer) {
       const int res = dav1d_send_data(dav1d_decoder_.get(), input_buffer.get());
       if (res < 0 && res != -EAGAIN) {
-        MEDIA_LOG(ERROR, media_log_) << "dav1d_send_data() failed on "
-                                     << buffer->AsHumanReadableString();
+        MEDIA_LOG(ERROR, media_log_)
+            << "dav1d_send_data() failed with error " << res << " on "
+            << buffer->AsHumanReadableString();
         return false;
       }
 
@@ -341,8 +348,9 @@ bool Dav1dVideoDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
     const int res = dav1d_get_picture(dav1d_decoder_.get(), p.get());
     if (res < 0) {
       if (res != -EAGAIN) {
-        MEDIA_LOG(ERROR, media_log_) << "dav1d_get_picture() failed on "
-                                     << buffer->AsHumanReadableString();
+        MEDIA_LOG(ERROR, media_log_)
+            << "dav1d_get_picture() failed with error " << res << " on "
+            << buffer->AsHumanReadableString();
         return false;
       }
 
