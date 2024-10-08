@@ -92,8 +92,23 @@ TEST_P(UtilitySandboxDelegateWinTest, IsAppContainerDisabled) {
     expected_app_container_enabled = false;
   }
 
-  EXPECT_EQ(!!policy->GetConfig()->GetAppContainer(),
-            expected_app_container_enabled);
+  if (expected_app_container_enabled) {
+    EXPECT_TRUE(policy->GetConfig()->GetAppContainer());
+    EXPECT_EQ(policy->GetConfig()->GetIntegrityLevel(),
+              sandbox::IntegrityLevel::INTEGRITY_LEVEL_LAST);
+    EXPECT_EQ(policy->GetConfig()->GetInitialTokenLevel(),
+              sandbox::TokenLevel::USER_UNPROTECTED);
+    EXPECT_EQ(policy->GetConfig()->GetLockdownTokenLevel(),
+              sandbox::TokenLevel::USER_UNPROTECTED);
+  } else {
+    EXPECT_FALSE(policy->GetConfig()->GetAppContainer());
+    EXPECT_EQ(policy->GetConfig()->GetIntegrityLevel(),
+              sandbox::IntegrityLevel::INTEGRITY_LEVEL_LOW);
+    EXPECT_EQ(policy->GetConfig()->GetInitialTokenLevel(),
+              sandbox::TokenLevel::USER_RESTRICTED_SAME_ACCESS);
+    EXPECT_EQ(policy->GetConfig()->GetLockdownTokenLevel(),
+              sandbox::TokenLevel::USER_LOCKDOWN);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
