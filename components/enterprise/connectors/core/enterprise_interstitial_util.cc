@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/connectors/interstitials/enterprise_interstitial_util.h"
+#include "components/enterprise/connectors/core/enterprise_interstitial_util.h"
+
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -35,7 +36,7 @@ std::u16string GetCustomMessageFromNavigationRule(
 }  // namespace
 
 std::u16string GetUrlFilteringCustomMessage(
-    const safe_browsing::SafeBrowsingBlockingPage::UnsafeResourceList&
+    const std::vector<security_interstitials::UnsafeResource>&
         unsafe_resources_) {
   std::u16string custom_message = u"";
 

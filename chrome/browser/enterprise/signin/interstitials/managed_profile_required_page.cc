@@ -8,8 +8,8 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/enterprise/connectors/interstitials/enterprise_interstitial_util.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
+#include "components/enterprise/connectors/core/enterprise_interstitial_util.h"
 #include "components/grit/components_resources.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
