@@ -153,7 +153,7 @@ std::vector<std::string> GetHistogramSuffixes(
 }
 
 void AppendRange(std::vector<std::string>& target,
-                 const std::vector<std::string_view> append) {
+                 const std::vector<std::string_view>& append) {
   // Use std append_range() when c++23 is available.
   target.insert(target.end(), append.begin(), append.end());
 }

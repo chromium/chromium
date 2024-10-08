@@ -52,7 +52,7 @@ class HistoryCounterTest : public InProcessBrowserTest {
     history_service_ = nullptr;
   }
 
-  void AddVisit(const std::string url) {
+  void AddVisit(std::string_view url) {
     history_service_->AddPage(GURL(url), time_, history::SOURCE_BROWSED);
   }
 
