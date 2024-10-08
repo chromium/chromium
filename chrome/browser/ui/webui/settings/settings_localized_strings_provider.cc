@@ -1205,6 +1205,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                          chrome::kSyncTrustedVaultOptInURL);
   html_source->AddString("trustedVaultLearnMoreUrl",
                          chrome::kSyncTrustedVaultLearnMoreURL);
+  html_source->AddString("wallpaperSearchLearnMoreUrl",
+                         chrome::kWallpaperSearchLearnMorePageURL);
 
   bool is_guest_mode = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH)

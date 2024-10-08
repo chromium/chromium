@@ -543,10 +543,9 @@ void WallpaperSearchHandler::SetUserFeedback(UserFeedback selected_option) {
 }
 
 void WallpaperSearchHandler::OpenHelpArticle() {
-  NavigateParams navigate_params(
-      profile_,
-      GURL("https://support.google.com/chrome?p=create_themes_with_ai"),
-      ui::PAGE_TRANSITION_LINK);
+  NavigateParams navigate_params(profile_,
+                                 GURL(chrome::kWallpaperSearchLearnMorePageURL),
+                                 ui::PAGE_TRANSITION_LINK);
   navigate_params.window_action = NavigateParams::WindowAction::SHOW_WINDOW;
   navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   Navigate(&navigate_params);

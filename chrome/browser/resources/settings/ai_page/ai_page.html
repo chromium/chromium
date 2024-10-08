@@ -68,36 +68,32 @@
   <settings-animated-pages id="pages" section="ai"
       focus-config="[[focusConfig_]]">
     <div route-path="default">
-      <cr-link-row id="historySearchRowV2"
-          class="hr"
+      <cr-link-row id="historySearchRowV2" class="hr"
           hidden="[[!showHistorySearchControl_]]"
           label="$i18n{historySearchSettingLabel}"
           sub-label="$i18n{historySearchSettingSublabel}"
           role-description="$i18n{subpageArrowRoleDescription}"
           on-click="onHistorySearchRowClick_">
       </cr-link-row>
-      <cr-link-row id="composeRowV2"
-          class="hr"
+      <cr-link-row id="composeRowV2" class="hr"
           hidden="[[!showComposeControl_]]"
           label="$i18n{aiComposeLabel}"
           sub-label="$i18n{aiComposeSublabel}"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
-      <cr-link-row id="tabOrganizationRowV2"
-          class="hr"
+      <cr-link-row id="tabOrganizationRowV2" class="hr"
           hidden="[[!showTabOrganizationControl_]]"
           label="$i18n{experimentalAdvancedFeature2Label}"
           sub-label="$i18n{experimentalAdvancedFeature2Sublabel}"
           role-description="$i18n{subpageArrowRoleDescription}"
           on-click="onTabOrganizationRowClick_">
       </cr-link-row>
-      <cr-link-row id="wallpaperSearchRowV2"
-          class="hr"
+      <cr-link-row id="wallpaperSearchRowV2" class="hr"
           hidden="[[!showWallpaperSearchControl_]]"
           label="$i18n{experimentalAdvancedFeature3Label}"
           sub-label="$i18n{experimentalAdvancedFeature3Sublabel}"
           role-description="$i18n{subpageArrowRoleDescription}"
-          external>
+          on-click="onWallpaperSearchRowClick_" external>
       </cr-link-row>
     </div>
 

@@ -537,6 +537,10 @@ inline constexpr char kHistorySearchLearnMorePageURL[] =
 inline constexpr char16_t kHistorySearchSettingURL[] =
     u"chrome://settings/historySearch";
 
+// The URL for the "Learn more" page for Wallpaper Search.
+inline constexpr char kWallpaperSearchLearnMorePageURL[] =
+    "https://support.google.com/chrome?p=create_themes_with_ai";
+
 // The URL for the "Learn more" link in the enterprise disclaimer for managed
 // profile in the Signin Intercept bubble.
 inline constexpr char kSigninInterceptManagedDisclaimerLearnMoreURL[] =

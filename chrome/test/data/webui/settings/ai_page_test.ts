@@ -7,17 +7,21 @@
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FeatureOptInState, SettingsAiPageFeaturePrefName as PrefName} from 'chrome://settings/lazy_load.js';
 import type {SettingsToggleButtonElement, SettingsAiPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, loadTimeData, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, resetRouterForTesting, Router, routes, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
 import {assertEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
+import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {microtasksFinished, isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('ExperimentalAdvancedPage', function() {
+  let openWindowProxy: TestOpenWindowProxy;
   let page: SettingsAiPageElement;
   let settingsPrefs: SettingsPrefsElement;
 
   suiteSetup(function() {
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
@@ -90,6 +94,23 @@ suite('ExperimentalAdvancedPage', function() {
     tabOrganizationRow.click();
     assertEquals(
         routes.AI_TAB_ORGANIZATION, Router.getInstance().getCurrentRoute());
+  });
+
+  test('WallpaperSearchRow', async () => {
+    loadTimeData.overrideValues({
+      showWallpaperSearchControl: true,
+    });
+    resetRouterForTesting();
+    await createPage();
+
+    const wallpaperSearchRow =
+        page.shadowRoot!.querySelector<HTMLElement>('#wallpaperSearchRowV2');
+    assertTrue(!!wallpaperSearchRow);
+    assertTrue(isVisible(wallpaperSearchRow));
+
+    wallpaperSearchRow.click();
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(url, loadTimeData.getString('wallpaperSearchLearnMoreUrl'));
   });
 });
 
