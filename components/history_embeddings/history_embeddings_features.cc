@@ -43,11 +43,11 @@ const base::FeatureParam<int> kPassageExtractionMaxWordsPerAggregatePassage(
 const base::FeatureParam<int> kSearchQueryMinimumWordCount(
     &kHistoryEmbeddings,
     "SearchQueryMinimumWordCount",
-    1);
+    2);
 const base::FeatureParam<int> kSearchPassageMinimumWordCount(
     &kHistoryEmbeddings,
     "SearchPassageMinimumWordCount",
-    2);
+    5);
 
 // TODO(b/352384806): Take model metadata from Answerer when available,
 //  and eliminate this parameter as it will then be unnecessary.
