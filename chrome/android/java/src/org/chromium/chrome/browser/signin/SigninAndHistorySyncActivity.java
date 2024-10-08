@@ -353,20 +353,24 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
      */
     @Override
     public void addAccount() {
+        SigninMetricsUtils.logAddAccountStateHistogram(State.REQUESTED);
         AccountManagerFacadeProvider.getInstance()
                 .createAddAccountIntent(
                         intent -> {
                             final ActivityWindowAndroid windowAndroid = getWindowAndroid();
                             if (windowAndroid == null) {
                                 // The activity was shut down. Do nothing.
+                                SigninMetricsUtils.logAddAccountStateHistogram(State.FAILED);
                                 return;
                             }
                             if (intent == null) {
                                 // AccountManagerFacade couldn't create the intent, use SigninUtils
                                 // to open settings instead.
+                                SigninMetricsUtils.logAddAccountStateHistogram(State.FAILED);
                                 SigninUtils.openSettingsForAllAccounts(this);
                                 return;
                             }
+                            SigninMetricsUtils.logAddAccountStateHistogram(State.STARTED);
                             mIsWaitingForAddAccountResult = true;
                             startActivityForResult(intent, ADD_ACCOUNT_REQUEST_CODE);
                         });
@@ -419,9 +423,18 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
             if (mCoordinator != null) {
                 mCoordinator.onAddAccountCanceled();
             }
+
+            // Record NULL_ACCOUNT_NAME if the add account activity successfully returns but
+            // contains a null account name.
+            if (resultCode == Activity.RESULT_OK && accountEmail == null) {
+                SigninMetricsUtils.logAddAccountStateHistogram(State.NULL_ACCOUNT_NAME);
+            } else {
+                SigninMetricsUtils.logAddAccountStateHistogram(State.CANCELLED);
+            }
             return;
         }
 
+        SigninMetricsUtils.logAddAccountStateHistogram(State.SUCCEEDED);
         if (mUpgradePromoCoordinator != null) {
             mUpgradePromoCoordinator.onAccountSelected(accountEmail);
         } else {

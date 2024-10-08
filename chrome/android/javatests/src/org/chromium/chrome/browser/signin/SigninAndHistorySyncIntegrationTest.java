@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator.HistoryOptInMode;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator.WithAccountSigninMode;
@@ -384,6 +385,15 @@ public class SigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     public void testWithExistingAccount_signInWithAddedAccount_requiredHistoryOptIn() {
+        HistogramWatcher addAccountStateWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Signin.AddAccountState",
+                                State.REQUESTED,
+                                State.STARTED,
+                                State.SUCCEEDED,
+                                State.ACTIVITY_SURVIVED)
+                        .build();
 
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
@@ -397,6 +407,7 @@ public class SigninAndHistorySyncIntegrationTest {
                 AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail());
         onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
         acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ false);
+        addAccountStateWatcher.assertExpected();
     }
 
     @Test
@@ -506,6 +517,15 @@ public class SigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     public void testWithNoAccount_bottomSheetSignin_requiredHistorySync_cancelAddAccount() {
+        HistogramWatcher addAccountStateWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Signin.AddAccountState",
+                                State.REQUESTED,
+                                State.STARTED,
+                                State.CANCELLED,
+                                State.ACTIVITY_SURVIVED)
+                        .build();
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
@@ -526,6 +546,7 @@ public class SigninAndHistorySyncIntegrationTest {
                         isCompletelyDisplayed()));
         assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
+        addAccountStateWatcher.assertExpected();
     }
 
     @Test
@@ -534,6 +555,15 @@ public class SigninAndHistorySyncIntegrationTest {
         HistogramWatcher signinStartedWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.SignIn.Started", mSigninAccessPoint);
+        HistogramWatcher addAccountStateWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Signin.AddAccountState",
+                                State.REQUESTED,
+                                State.STARTED,
+                                State.SUCCEEDED,
+                                State.ACTIVITY_SURVIVED)
+                        .build();
 
         launchActivity(
                 NoAccountSigninMode.ADD_ACCOUNT,
@@ -545,11 +575,21 @@ public class SigninAndHistorySyncIntegrationTest {
 
         acceptHistorySyncAndVerifyFlowCompletion(/* checkDialogRoot= */ true);
         signinStartedWatcher.assertExpected();
+        addAccountStateWatcher.assertExpected();
     }
 
     @Test
     @MediumTest
     public void testWithNoAccount_instantSignin_requiredHistorySync_cancelAddAccount() {
+        HistogramWatcher addAccountStateWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Signin.AddAccountState",
+                                State.REQUESTED,
+                                State.STARTED,
+                                State.CANCELLED,
+                                State.ACTIVITY_SURVIVED)
+                        .build();
         launchActivity(
                 NoAccountSigninMode.ADD_ACCOUNT,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
@@ -559,6 +599,7 @@ public class SigninAndHistorySyncIntegrationTest {
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
         assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
+        addAccountStateWatcher.assertExpected();
     }
 
     private void launchActivity(
@@ -603,6 +644,15 @@ public class SigninAndHistorySyncIntegrationTest {
         HistogramWatcher signinStartedWatcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         "Signin.SignIn.Started", mSigninAccessPoint);
+        HistogramWatcher addAccountStateWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Signin.AddAccountState",
+                                State.REQUESTED,
+                                State.STARTED,
+                                State.SUCCEEDED,
+                                State.ACTIVITY_SURVIVED)
+                        .build();
 
         // Start sign-in from the 0-account sign-in bottom-sheet shown.
         onView(
@@ -616,6 +666,7 @@ public class SigninAndHistorySyncIntegrationTest {
         onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
         signinStartedWatcher.assertExpected();
+        addAccountStateWatcher.assertExpected();
 
         mSigninTestRule.waitForSignin(AccountManagerTestRule.AADC_ADULT_ACCOUNT);
         if (BuildInfo.getInstance().isAutomotive) {
