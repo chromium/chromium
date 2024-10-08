@@ -356,7 +356,7 @@ BASE_FEATURE(kShowFeaturedEnterpriseSiteSearch,
 // users to featured Enterprise search engines created by policy.
 BASE_FEATURE(kShowFeaturedEnterpriseSiteSearchIPH,
              "ShowFeaturedEnterpriseSiteSearchIPH",
-             DISABLED);
+             enable_if(!IS_ANDROID && !IS_IOS));
 
 // If enabled, site search engines defined by policy are saved into prefs and
 // committed to the keyword database, so that they can be accessed from the
