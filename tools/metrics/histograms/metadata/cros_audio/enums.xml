@@ -56,6 +56,14 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Unmuted"/>
 </enum>
 
+<!--
+  When converted to a 28-bit binary number, each decimal enum value represents a
+  set of connected audio devices with the highest order 14 bits representing the
+  before connected device types and the lowest order 14 bits representing the
+  after connected devices. See go/audio-selection-metrics-proposal for the exact
+  bit mapping hash table.
+-->
+
 <enum name="AudioSelectionBeforeAndAfterDeviceSet">
   <int value="5" label="System boots with internal and 3.5mm"/>
   <int value="6" label="System boots with two internal and 3.5mm"/>
@@ -155,6 +163,44 @@ chromium-metrics-reviews@google.com.
   <int value="9175856" label="Three USB and two HDMI PLUG HDMI"/>
   <int value="9454081"
       label="Internal, bluetooth and two HDMI UNPLUG bluetooth"/>
+</enum>
+
+<!--
+  When converted to a 14-bit binary number, each decimal enum value represents a
+  set of connected audio devices with each bit representing a particular
+  connected device type. See go/audio-selection-metrics-proposal for the exact
+  bit mapping hash table.
+-->
+
+<enum name="AudioSelectionDeviceSet">
+  <int value="0" label="Empty"/>
+  <int value="1" label="Internal"/>
+  <int value="2" label="Two internal"/>
+  <int value="5" label="Internal and 3.5mm"/>
+  <int value="6" label="Two internal and 3.5mm"/>
+  <int value="16" label="USB"/>
+  <int value="17" label="Internal and USB"/>
+  <int value="18" label="Two internal and USB"/>
+  <int value="21" label="Internal, 3.5mm, and USB"/>
+  <int value="33" label="Internal and two USB"/>
+  <int value="49" label="Internal and three USB"/>
+  <int value="65" label="Internal and Bluetooth"/>
+  <int value="66" label="Two internal and Bluetooth"/>
+  <int value="80" label="Bluetooth and USB"/>
+  <int value="81" label="Internal, Bluetooth, and USB"/>
+  <int value="85" label="Internal, 3.5mm, USB, and Bluetooth"/>
+  <int value="257" label="Internal and HDMI"/>
+  <int value="260" label="3.5mm and HDMI"/>
+  <int value="261" label="Internal, 3.5mm, and HDMI"/>
+  <int value="272" label="USB and HDMI"/>
+  <int value="273" label="Internal, USB, and HDMI"/>
+  <int value="277" label="Internal, 3.5mm, USB, and HDMI"/>
+  <int value="289" label="Internal, two USB, and HDMI"/>
+  <int value="321" label="Internal, Bluetooth, and HDMI"/>
+  <int value="341" label="Internal, 3.5mm, USB, Bluetooth, and HDMI"/>
+  <int value="512" label="Two HDMI"/>
+  <int value="513" label="Internal and two HDMI"/>
+  <int value="528" label="USB and two HDMI"/>
 </enum>
 
 <enum name="AudioSelectionEvents">
