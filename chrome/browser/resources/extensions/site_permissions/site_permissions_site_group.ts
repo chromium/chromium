@@ -4,21 +4,19 @@
 
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import '../strings.m.js';
-import '../shared_style.css.js';
-import '../shared_vars.css.js';
 import './site_permissions_edit_permissions_dialog.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './site_permissions_site_group.html.js';
-import type {SiteSettingsDelegate} from './site_settings_mixin.js';
 import {getFaviconUrl, matchesSubdomains, SUBDOMAIN_SPECIFIER} from '../url_util.js';
+
+import {getCss} from './site_permissions_site_group.css.js';
+import {getHtml} from './site_permissions_site_group.html.js';
+import type {SiteSettingsDelegate} from './site_settings_mixin.js';
+import {DummySiteSettingsDelegate} from './site_settings_mixin.js';
 
 export interface SitePermissionsSiteGroupElement {
   $: {
@@ -28,83 +26,72 @@ export interface SitePermissionsSiteGroupElement {
   };
 }
 
-export class SitePermissionsSiteGroupElement extends PolymerElement {
+export class SitePermissionsSiteGroupElement extends CrLitElement {
   static get is() {
     return 'site-permissions-site-group';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      data: Object,
-      delegate: Object,
-      extensions: Array,
-
-      listIndex: {
-        type: Number,
-        value: -1,
-      },
-
-      expanded_: {
-        type: Boolean,
-        value: false,
-      },
-
-      isExpandable_: {
-        type: Boolean,
-        computed: 'computeIsExpandable_(data.sites)',
-      },
-
-      showEditSitePermissionsDialog_: {
-        type: Boolean,
-        value: false,
-      },
-
-      siteToEdit_: {
-        type: Object,
-        value: null,
-      },
+      data: {type: Object},
+      delegate: {type: Object},
+      extensions: {type: Array},
+      listIndex: {type: Number},
+      expanded_: {type: Boolean},
+      showEditSitePermissionsDialog_: {type: Boolean},
+      siteToEdit_: {type: Object},
     };
   }
 
-  data: chrome.developerPrivate.SiteGroup;
-  delegate: SiteSettingsDelegate;
-  extensions: chrome.developerPrivate.ExtensionInfo[];
-  listIndex: number;
-  private expanded_: boolean;
-  private isExpandable_: boolean;
-  private showEditSitePermissionsDialog_: boolean;
-  private siteToEdit_: chrome.developerPrivate.SiteInfo|null;
+  data: chrome.developerPrivate.SiteGroup = {
+    etldPlusOne: '',
+    numExtensions: 0,
+    sites: [],
+  };
+  delegate: SiteSettingsDelegate = new DummySiteSettingsDelegate();
+  extensions: chrome.developerPrivate.ExtensionInfo[] = [];
+  listIndex: number = -1;
+  protected expanded_: boolean = false;
+  protected showEditSitePermissionsDialog_: boolean = false;
+  protected siteToEdit_: chrome.developerPrivate.SiteInfo|null = null;
 
-  private getEtldOrSiteFaviconUrl_(): string {
+  protected getEtldOrSiteFaviconUrl_(): string {
     return getFaviconUrl(this.getDisplayUrl_());
   }
 
-  private getFaviconUrl_(url: string): string {
+  protected getFaviconUrl_(url: string): string {
     return getFaviconUrl(url);
   }
 
-  private computeIsExpandable_(): boolean {
+  protected isExpandable_(): boolean {
     return this.data.sites.length > 1;
   }
 
-  private getClassForIndex_(): string {
+  protected getClassForIndex_(): string {
     return this.listIndex > 0 ? 'hr' : '';
   }
 
-  private getDisplayUrl_(): string {
+  protected getDisplayUrl_(): string {
     return this.data.sites.length === 1 ?
         this.getSiteWithoutSubdomainSpecifier_(this.data.sites[0].site) :
         this.data.etldPlusOne;
   }
 
-  private getEtldOrSiteSubText_(): string {
+  protected getEtldOrSiteSubText_(): string {
     // TODO(crbug.com/40199251): Revisit what to show for this eTLD+1 group's
     // subtext. For now, default to showing no text if there is any mix of sites
     // under the group (i.e. user permitted/restricted/specified by extensions).
+    if (this.data.sites.length === 0) {
+      return '';
+    }
     const siteSet = this.data.sites[0].siteSet;
     const isSiteSetConsistent =
         this.data.sites.every(site => site.siteSet === siteSet);
@@ -121,21 +108,22 @@ export class SitePermissionsSiteGroupElement extends PolymerElement {
         this.getExtensionCountText_(this.data.numExtensions);
   }
 
-  private getSiteWithoutSubdomainSpecifier_(site: string): string {
+  protected getSiteWithoutSubdomainSpecifier_(site: string): string {
     return site.replace(SUBDOMAIN_SPECIFIER, '');
   }
 
-  private etldOrFirstSiteMatchesSubdomains_(): boolean {
+  protected etldOrFirstSiteMatchesSubdomains_(): boolean {
     const site = this.data.sites.length === 1 ? this.data.sites[0].site :
                                                 this.data.etldPlusOne;
     return matchesSubdomains(site);
   }
 
-  private matchesSubdomains_(site: string): boolean {
+  protected matchesSubdomains_(site: string): boolean {
     return matchesSubdomains(site);
   }
 
-  private getSiteSubtext_(siteInfo: chrome.developerPrivate.SiteInfo): string {
+  protected getSiteSubtext_(siteInfo: chrome.developerPrivate.SiteInfo):
+      string {
     if (siteInfo.numExtensions > 0) {
       return this.getExtensionCountText_(siteInfo.numExtensions);
     }
@@ -158,27 +146,25 @@ export class SitePermissionsSiteGroupElement extends PolymerElement {
             'sitePermissionsAllSitesExtensionCount', numExtensions);
   }
 
-  private onEditSiteClick_() {
+  protected onEditSiteClick_() {
     this.siteToEdit_ = this.data.sites[0];
     this.showEditSitePermissionsDialog_ = true;
   }
 
-  private onEditSiteInListClick_(
-      e: DomRepeatEvent<chrome.developerPrivate.SiteInfo>) {
-    this.siteToEdit_ = e.model.item;
+  protected onEditSiteInListClick_(e: Event) {
+    const index = Number((e.target as HTMLElement).dataset['index']);
+    this.siteToEdit_ = this.data.sites[index] || null;
     this.showEditSitePermissionsDialog_ = true;
   }
 
-  private onEditSitePermissionsDialogClose_() {
+  protected onEditSitePermissionsDialogClose_() {
     this.showEditSitePermissionsDialog_ = false;
     assert(this.siteToEdit_, 'Site To Edit');
     this.siteToEdit_ = null;
   }
 
-  private isUserSpecifiedSite_(siteSet: chrome.developerPrivate.SiteSet):
-      boolean {
-    return siteSet === chrome.developerPrivate.SiteSet.USER_PERMITTED ||
-        siteSet === chrome.developerPrivate.SiteSet.USER_RESTRICTED;
+  protected onExpandedChanged_(e: CustomEvent<{value: boolean}>) {
+    this.expanded_ = e.detail.value;
   }
 }
 

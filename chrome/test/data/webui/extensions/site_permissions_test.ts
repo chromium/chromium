@@ -10,7 +10,7 @@ import {navigation, Page, Service} from 'chrome://extensions/extensions.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
 import {testVisible} from './test_util.js';
@@ -53,6 +53,7 @@ suite('SitePermissions', function() {
   test('user site settings are present', async function() {
     await delegate.whenCalled('getUserSiteSettings');
     flush();
+    await microtasksFinished();
 
     const sitePermissionLists =
         element!.shadowRoot!.querySelectorAll<HTMLElement>(
@@ -81,6 +82,7 @@ suite('SitePermissions', function() {
     delegate.userSiteSettingsChangedTarget.callListeners(
         {permittedSites: [], restrictedSites: ['http://example.com']});
     flush();
+    await microtasksFinished();
 
     const sitePermissionLists =
         element!.shadowRoot!.querySelectorAll<HTMLElement>(

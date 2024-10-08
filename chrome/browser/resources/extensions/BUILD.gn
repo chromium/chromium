@@ -90,6 +90,8 @@ build_webui("build") {
     "shortcut_input.css",
     "sidebar.css",
     "site_permissions/site_permissions_edit_permissions_dialog.css",
+    "site_permissions/site_permissions_list.css",
+    "site_permissions/site_permissions_site_group.css",
     "toolbar.css",
   ]
 

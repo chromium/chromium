@@ -1,0 +1,56 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=../shared_style_lit.css.js
+ * #import=../shared_vars.css.js
+ * #include=cr-shared-style-lit shared-style-lit
+ * #css_wrapper_metadata_end */
+
+#etld-row {
+  align-items: center;
+  display: flex;
+  height: var(--cr-section-two-line-min-height);
+}
+
+.site-and-subtext {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  margin: 0 calc(var(--cr-section-padding) + var(--cr-icon-ripple-margin));
+  overflow: hidden;
+}
+
+.site-wrapper {
+  display: flex;
+}
+
+.site {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.includes-subdomains {
+  color: var(--cr-secondary-text-color);
+  flex-shrink: 0;
+  margin-inline-start: 4px;
+}
+
+.site-subtext {
+  color: var(--cr-secondary-text-color);
+}
+
+#sites-list {
+  margin-inline-start: var(--cr-section-indent-padding);
+}
+
+.site-row {
+  align-items: center;
+  display: flex;
+  height: var(--cr-section-min-height);
+}
