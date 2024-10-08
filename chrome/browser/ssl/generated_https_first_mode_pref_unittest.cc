@@ -140,6 +140,9 @@ TEST_F(GeneratedHttpsFirstModePrefTest,
 
 // Check the generated pref respects updates to the underlying preference.
 TEST_F(GeneratedHttpsFirstModePrefTest, UpdatePreference) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kHttpsFirstBalancedMode);
+
   GeneratedHttpsFirstModePref pref(profile());
 
   // Check setting the generated pref updates the underlying preference.

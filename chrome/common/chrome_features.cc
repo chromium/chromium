@@ -683,7 +683,7 @@ BASE_FEATURE(kHideWebAppOriginText,
 // HTTP when HTTPS can't be reasonably expected.
 BASE_FEATURE(kHttpsFirstBalancedMode,
              "HttpsFirstBalancedMode",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Automatically enables HTTPS-First Mode in a balanced configuration when
 // possible.
@@ -699,7 +699,7 @@ BASE_FEATURE(kHttpsFirstDialogUi,
 // Enables the new interstitial UI for HTTPS-First Mode.
 BASE_FEATURE(kHttpsFirstModeInterstitialAugust2024Refresh,
              "HttpsFirstModeInterstitialAugust2024Refresh",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Kill switch for crbug.com/1414633.
 BASE_FEATURE(kHttpsFirstModeForAdvancedProtectionUsers,
