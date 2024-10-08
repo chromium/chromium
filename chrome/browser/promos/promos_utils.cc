@@ -20,6 +20,8 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
+#include "components/sync/base/data_type.h"
+#include "components/sync/service/sync_service.h"
 
 namespace promos_utils {
 // TODO(crbug.com/339262105): Clean up the old password promo methods after the
@@ -113,6 +115,26 @@ bool VerifyMostRecentPromoTimestamp(Profile* profile) {
 
   return *most_recent_promo_timestamp + kiOSDesktopPromoCooldownTime <
          base::Time::Now();
+}
+
+// Verify that the user is syncing preferences (for impressions and opt-out
+// tracking), and that they are syncing the specific datatype needed for a given
+// promo type.
+bool VerifySyncingDatatypes(const syncer::SyncService& sync_service,
+                            IOSPromoType promo_type) {
+  if (!sync_service.GetActiveDataTypes().Has(syncer::PREFERENCES)) {
+    return false;
+  }
+
+  switch (promo_type) {
+    case IOSPromoType::kPassword:
+      return sync_service.GetActiveDataTypes().Has(syncer::PASSWORDS);
+    case IOSPromoType::kAddress:
+      return sync_service.GetActiveDataTypes().Has(syncer::CONTACT_INFO);
+    case IOSPromoType::kPayment:
+      return sync_service.GetActiveDataTypes().Has(
+          syncer::AUTOFILL_WALLET_DATA);
+  }
 }
 
 // TODO(crbug.com/339262105): Clean up the old password promo methods after
@@ -300,7 +322,9 @@ bool ShouldShowIOSPasswordPromo(Profile* profile) {
   return false;
 }
 
-bool ShouldShowIOSDesktopPromo(Profile* profile, IOSPromoType promo_type) {
+bool ShouldShowIOSDesktopPromo(Profile* profile,
+                               const syncer::SyncService* sync_service,
+                               IOSPromoType promo_type) {
   // Don't show the promo if the local state exists and `kPromotionsEnabled` is
   // false (likely overridden by policy).
 #if !BUILDFLAG(IS_ANDROID)
@@ -311,9 +335,11 @@ bool ShouldShowIOSDesktopPromo(Profile* profile, IOSPromoType promo_type) {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   IOSPromoPrefsConfig promo_prefs(promo_type);
+
   // Show the promo if the user hasn't opted out, is not in the cooldown
   // period and is within the impression limit for this promo.
-  return profile->GetPrefs()->GetInteger(
+  return sync_service && VerifySyncingDatatypes(*sync_service, promo_type) &&
+         profile->GetPrefs()->GetInteger(
              promo_prefs.promo_impressions_counter_pref_name) <
              kiOSDesktopPromoMaxImpressionCount &&
          VerifyMostRecentPromoTimestamp(profile) &&

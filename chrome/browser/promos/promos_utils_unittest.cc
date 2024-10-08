@@ -16,6 +16,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/embedder/default_model/device_switcher_model.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,6 +37,9 @@ class IOSPromoOnDesktopTest : public ::testing::Test {
     local_state_.registry()->RegisterBooleanPref(prefs::kPromotionsEnabled,
                                                  true);
     TestingBrowserProcess::GetGlobal()->SetLocalState(&local_state_);
+
+    sync_service_.GetUserSettings()->SetSelectedTypes(/*sync_everything=*/true,
+                                                      {});
   }
 
   void TearDown() override {
@@ -59,6 +63,9 @@ class IOSPromoOnDesktopTest : public ::testing::Test {
   // Getter for the testing profile.
   TestingProfile* profile() { return &profile_; }
 
+  // Getter for the testing sync_service.
+  syncer::TestSyncService* sync_service() { return &sync_service_; }
+
  protected:
   TestingPrefServiceSimple local_state_;
 
@@ -68,6 +75,7 @@ class IOSPromoOnDesktopTest : public ::testing::Test {
   base::HistogramTester histogram_;
   base::test::ScopedFeatureList scoped_feature_list_;
   TestingProfile profile_;
+  syncer::TestSyncService sync_service_;
 };
 
 // Tests RecordIOSDesktopPromoUserInteractionHistogram for all promo types.
@@ -244,7 +252,8 @@ TEST_F(
 // shown for the given password promo type.
 TEST_F(IOSPromoOnDesktopTest,
        ShouldShowIOSDesktopPromoTestTrueForPasswordPromo) {
-  EXPECT_TRUE(ShouldShowIOSDesktopPromo(profile(), IOSPromoType::kPassword));
+  EXPECT_TRUE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
+                                        IOSPromoType::kPassword));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns false when the promotions are
@@ -252,7 +261,8 @@ TEST_F(IOSPromoOnDesktopTest,
 TEST_F(IOSPromoOnDesktopTest,
        ShouldShowIOSDesktopPromoTestFalsePromotionsDisabled) {
   local_state_.SetBoolean(prefs::kPromotionsEnabled, false);
-  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), IOSPromoType::kPassword));
+  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
+                                         IOSPromoType::kPassword));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns false when the user has already
@@ -261,7 +271,8 @@ TEST_F(IOSPromoOnDesktopTest,
        ShouldShowIOSDesktopPromoTestFalseTooManyImpressionsForPasswordPromo) {
   prefs()->SetInteger(
       promos_prefs::kDesktopToiOSPasswordPromoImpressionsCounter, 3);
-  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), IOSPromoType::kPassword));
+  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
+                                         IOSPromoType::kPassword));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns false when the last seen
@@ -272,7 +283,8 @@ TEST_F(
   prefs()->SetTime(
       promos_prefs::kDesktopToiOSPasswordPromoLastImpressionTimestamp,
       base::Time::Now());
-  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), IOSPromoType::kPassword));
+  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
+                                         IOSPromoType::kPassword));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns false when the user has
@@ -280,14 +292,16 @@ TEST_F(
 TEST_F(IOSPromoOnDesktopTest,
        ShouldShowIOSDesktopPromoTestFalseUserOptedOutForPasswordPromo) {
   prefs()->SetBoolean(promos_prefs::kDesktopToiOSPasswordPromoOptOut, true);
-  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), IOSPromoType::kPassword));
+  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
+                                         IOSPromoType::kPassword));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns true when no promo has yet been
 // shown for the given address promo type.
 TEST_F(IOSPromoOnDesktopTest,
        ShouldShowIOSDesktopPromoTestTrueForAddressPromo) {
-  EXPECT_TRUE(ShouldShowIOSDesktopPromo(profile(), IOSPromoType::kAddress));
+  EXPECT_TRUE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
+                                        IOSPromoType::kAddress));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns false when the user has already
@@ -296,7 +310,8 @@ TEST_F(IOSPromoOnDesktopTest,
        ShouldShowIOSDesktopPromoTestFalseTooManyImpressionsForAddressPromo) {
   prefs()->SetInteger(promos_prefs::kDesktopToiOSAddressPromoImpressionsCounter,
                       3);
-  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), IOSPromoType::kAddress));
+  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
+                                         IOSPromoType::kAddress));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns false when the last seen
@@ -307,7 +322,8 @@ TEST_F(
   prefs()->SetTime(
       promos_prefs::kDesktopToiOSAddressPromoLastImpressionTimestamp,
       base::Time::Now());
-  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), IOSPromoType::kAddress));
+  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
+                                         IOSPromoType::kAddress));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns false when the user has
@@ -315,7 +331,8 @@ TEST_F(
 TEST_F(IOSPromoOnDesktopTest,
        ShouldShowIOSDesktopPromoTestFalseUserOptedOutForAddressPromo) {
   prefs()->SetBoolean(promos_prefs::kDesktopToiOSAddressPromoOptOut, true);
-  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), IOSPromoType::kAddress));
+  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
+                                         IOSPromoType::kAddress));
 }
 
 // Tests that IOSDesktopPromoShown sets the correct prefs and records the
@@ -797,7 +814,8 @@ TEST_F(
 // shown for the given payment promo type.
 TEST_F(IOSPromoOnDesktopTest,
        ShouldShowIOSDesktopPromoTestTrueForPaymentPromo) {
-  EXPECT_TRUE(ShouldShowIOSDesktopPromo(profile(), IOSPromoType::kPayment));
+  EXPECT_TRUE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
+                                        IOSPromoType::kPayment));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns false when the user has already
@@ -806,7 +824,8 @@ TEST_F(IOSPromoOnDesktopTest,
        ShouldShowIOSDesktopPromoTestFalseTooManyImpressionsForPaymentPromo) {
   prefs()->SetInteger(promos_prefs::kDesktopToiOSPaymentPromoImpressionsCounter,
                       3);
-  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), IOSPromoType::kPayment));
+  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
+                                         IOSPromoType::kPayment));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns false when the last seen
@@ -817,7 +836,8 @@ TEST_F(
   prefs()->SetTime(
       promos_prefs::kDesktopToiOSPaymentPromoLastImpressionTimestamp,
       base::Time::Now());
-  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), IOSPromoType::kPayment));
+  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
+                                         IOSPromoType::kPayment));
 }
 
 // Tests that ShouldShowIOSDesktopPromo returns false when the user has
@@ -825,7 +845,8 @@ TEST_F(
 TEST_F(IOSPromoOnDesktopTest,
        ShouldShowIOSDesktopPromoTestFalseUserOptedOutForPaymentPromo) {
   prefs()->SetBoolean(promos_prefs::kDesktopToiOSPaymentPromoOptOut, true);
-  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), IOSPromoType::kPayment));
+  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
+                                         IOSPromoType::kPayment));
 }
 
 // Tests that IOSDesktopPromoShown sets the correct prefs and records the
@@ -929,5 +950,113 @@ TEST_F(IOSPromoOnDesktopTest, GetIOSDesktopPromoFeatureEngagementAddress) {
   ASSERT_EQ(&feature, &feature_engagement::kIPHiOSAddressPromoDesktopFeature);
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+// Tests that ShouldShowIOSDesktopPromo returns true when the correct datatypes
+// are syncing.
+TEST_F(IOSPromoOnDesktopTest,
+       PasswordPromoSyncPrefsPasswordsAndPreferencesEnabled) {
+  sync_service()->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, /*types=*/
+      {syncer::UserSelectableType::kPasswords,
+       syncer::UserSelectableType::kPreferences});
+  EXPECT_TRUE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
+                                        IOSPromoType::kPassword));
+}
+
+// Tests that ShouldShowIOSDesktopPromo returns false when the preferences
+// datatype is not syncing.
+TEST_F(IOSPromoOnDesktopTest,
+       PasswordPromoSyncPrefsPasswordsEnabledPreferencesDisabled) {
+  sync_service()->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, /*types=*/
+      {syncer::UserSelectableType::kPasswords});
+  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
+                                         IOSPromoType::kPassword));
+}
+
+// Tests that ShouldShowIOSDesktopPromo returns false when the passwords
+// datatype is not syncing.
+TEST_F(IOSPromoOnDesktopTest,
+       PasswordPromoSyncPrefsPreferencesEnabledPasswordsDisabled) {
+  sync_service()->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, /*types=*/
+      {syncer::UserSelectableType::kPreferences});
+  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
+                                         IOSPromoType::kPassword));
+}
+
+// Tests that ShouldShowIOSDesktopPromo returns true when the correct datatypes
+// are syncing.
+TEST_F(IOSPromoOnDesktopTest,
+       AddressPromoSyncPrefsAutofillAndPreferencesEnabled) {
+  sync_service()->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, /*types=*/
+      {syncer::UserSelectableType::kAutofill,
+       syncer::UserSelectableType::kPreferences});
+  EXPECT_TRUE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
+                                        IOSPromoType::kAddress));
+}
+
+// Tests that ShouldShowIOSDesktopPromo returns false when the preferences
+// datatype is not syncing.
+TEST_F(IOSPromoOnDesktopTest,
+       AddressPromoSyncPrefsAutofillEnabledPreferencesDisabled) {
+  sync_service()->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, /*types=*/
+      {syncer::UserSelectableType::kAutofill});
+  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
+                                         IOSPromoType::kAddress));
+}
+
+// Tests that ShouldShowIOSDesktopPromo returns false when the autofill datatype
+// is not syncing.
+TEST_F(IOSPromoOnDesktopTest,
+       AddressPromoSyncPrefsPreferencesEnabledAutofillDisabled) {
+  sync_service()->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, /*types=*/
+      {syncer::UserSelectableType::kPreferences});
+  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
+                                         IOSPromoType::kAddress));
+}
+
+// Tests that ShouldShowIOSDesktopPromo returns true when the correct datatypes
+// are syncing.
+TEST_F(IOSPromoOnDesktopTest,
+       PaymentPromoSyncPrefsPaymentsAndPreferencesEnabled) {
+  sync_service()->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, /*types=*/
+      {syncer::UserSelectableType::kPayments,
+       syncer::UserSelectableType::kPreferences});
+  EXPECT_TRUE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
+                                        IOSPromoType::kPayment));
+}
+
+// Tests that ShouldShowIOSDesktopPromo returns false when the preferences
+// datatype is not syncing.
+TEST_F(IOSPromoOnDesktopTest,
+       PaymentPromoSyncPrefsPaymentsEnabledPreferencesDisabled) {
+  sync_service()->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, /*types=*/
+      {syncer::UserSelectableType::kPayments});
+  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
+                                         IOSPromoType::kPayment));
+}
+
+// Tests that ShouldShowIOSDesktopPromo returns false when the payments datatype
+// is not syncing.
+TEST_F(IOSPromoOnDesktopTest,
+       PaymentPromoSyncPrefsPreferencesEnabledPaymentsDisabled) {
+  sync_service()->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, /*types=*/
+      {syncer::UserSelectableType::kPreferences});
+  EXPECT_FALSE(ShouldShowIOSDesktopPromo(profile(), sync_service(),
+                                         IOSPromoType::kPayment));
+}
+
+// Tests that ShouldShowIOSDesktopPromo returns false when sync service is null.
+TEST_F(IOSPromoOnDesktopTest, PromoSyncPrefsSyncServiceNull) {
+  EXPECT_FALSE(
+      ShouldShowIOSDesktopPromo(profile(), nullptr, IOSPromoType::kPayment));
+}
 
 }  // namespace promos_utils

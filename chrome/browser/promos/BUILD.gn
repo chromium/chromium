@@ -20,6 +20,8 @@ source_set("utils") {
     "//components/prefs",
     "//components/segmentation_platform/embedder/default_model",
     "//components/segmentation_platform/public",
+    "//components/sync/base",
+    "//components/sync/service",
     "//skia",
   ]
 }

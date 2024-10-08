@@ -12,9 +12,13 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/segmentation_platform/public/result.h"
 
+enum class IOSPromoType;
+
 class Profile;
 
-enum class IOSPromoType;
+namespace syncer {
+class SyncService;
+}  // namespace syncer
 
 namespace promos_utils {
 
@@ -122,9 +126,11 @@ void RecordIOSDesktopPromoUserInteractionHistogram(
 bool ShouldShowIOSPasswordPromo(Profile* profile);
 
 // ShouldShowIOSDesktopPromo checks if the user should be shown the iOS desktop
-// promo (all criteria are met) depending on the given promo type , and returns
+// promo (all criteria are met) depending on the given promo type, and returns
 // true if so.
-bool ShouldShowIOSDesktopPromo(Profile* profile, IOSPromoType promo_type);
+bool ShouldShowIOSDesktopPromo(Profile* profile,
+                               const syncer::SyncService* sync_service,
+                               IOSPromoType promo_type);
 
 // Processes the results of the user classification to make sure there were
 // no errors and the user is not classified as a switcher from a mobile

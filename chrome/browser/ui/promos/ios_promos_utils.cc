@@ -85,10 +85,8 @@ void VerifyIOSPromoEligibility(IOSPromoType promo_type,
   // Verify that the user is currently syncing their preferences, hasn't
   // exceeded their impression limit, is not in the cooldown period or has not
   // opted-out from seeing the promo.
-  if (sync_service &&
-      sync_service->GetActiveDataTypes().Has(syncer::PREFERENCES) &&
-      sync_service->GetActiveDataTypes().Has(syncer::PASSWORDS) &&
-      promos_utils::ShouldShowIOSDesktopPromo(profile, promo_type)) {
+  if (sync_service && promos_utils::ShouldShowIOSDesktopPromo(
+                          profile, sync_service, promo_type)) {
     auto input_context =
         base::MakeRefCounted<segmentation_platform::InputContext>();
     input_context->metadata_args.emplace(
