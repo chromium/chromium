@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_TACHYON_RESPONSE_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 namespace ash::babelorca {
