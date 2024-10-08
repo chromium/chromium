@@ -107,7 +107,8 @@ export class SettingsSearchEngineListDialogElement extends
     assert(searchEngine);
 
     this.browserProxy_.setDefaultSearchEngine(
-        searchEngine.modelIndex, ChoiceMadeLocation.SEARCH_SETTINGS);
+        searchEngine.modelIndex, ChoiceMadeLocation.SEARCH_SETTINGS,
+        this.saveGuestChoice_);
 
     this.dispatchEvent(new CustomEvent('search-engine-changed', {
       bubbles: true,

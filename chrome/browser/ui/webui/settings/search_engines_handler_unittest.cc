@@ -143,6 +143,7 @@ TEST_F(SearchEnginesHandlerTest,
   first_call_args.Append(1);
   first_call_args.Append(static_cast<int>(
       search_engines::ChoiceMadeLocation::kSearchEngineSettings));
+  first_call_args.Append(base::Value());  // saveGuestChoice
   web_ui()->HandleReceivedMessage("setDefaultSearchEngine", first_call_args);
 
   histogram_tester().ExpectUniqueSample(
@@ -154,6 +155,7 @@ TEST_F(SearchEnginesHandlerTest,
   second_call_args.Append(1);
   second_call_args.Append(
       static_cast<int>(search_engines::ChoiceMadeLocation::kSearchSettings));
+  second_call_args.Append(base::Value());  // saveGuestChoice
   web_ui()->HandleReceivedMessage("setDefaultSearchEngine", second_call_args);
 
   histogram_tester().ExpectUniqueSample(
@@ -182,6 +184,7 @@ TEST_F(SearchEnginesHandlerTest,
   args.Append(1);
   args.Append(static_cast<int>(
       search_engines::ChoiceMadeLocation::kSearchEngineSettings));
+  args.Append(base::Value());  // saveGuestChoice
   web_ui()->HandleReceivedMessage("setDefaultSearchEngine", args);
 
   EXPECT_NEAR(pref_service->GetInt64(
@@ -217,6 +220,7 @@ TEST_F(SearchEnginesHandlerTest,
   args.Append(1);
   args.Append(static_cast<int>(
       search_engines::ChoiceMadeLocation::kSearchEngineSettings));
+  args.Append(base::Value());  // saveGuestChoice
   web_ui()->HandleReceivedMessage("setDefaultSearchEngine", args);
 
   histogram_tester().ExpectUniqueSample(
@@ -271,6 +275,38 @@ TEST_F(SearchEnginesHandlerTest, GetSaveGuestChoiceGuestProfile) {
     // arg3 is our result.
     EXPECT_TRUE(call_data->arg3()->GetBool());
   }
+}
+
+TEST_F(SearchEnginesHandlerTest, UpdateSavedGuestSearch) {
+  auto* choice_service =
+      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+          profile());
+  choice_service->SetIsProfileEligibleForDseGuestPropagationForTesting(true);
+
+  EXPECT_EQ(std::nullopt,
+            choice_service->GetSavedSearchEngineBetweenGuestSessions());
+  {
+    base::Value::List args;
+    // Search engine model id.
+    args.Append(1);
+    args.Append(static_cast<int>(
+        search_engines::ChoiceMadeLocation::kSearchEngineSettings));
+    args.Append(true);  // saveGuestChoice
+    web_ui()->HandleReceivedMessage("setDefaultSearchEngine", args);
+  }
+  EXPECT_EQ(TemplateURLPrepopulateData::bing.id,
+            choice_service->GetSavedSearchEngineBetweenGuestSessions());
+  {
+    base::Value::List args;
+    // Search engine model id.
+    args.Append(0);
+    args.Append(static_cast<int>(
+        search_engines::ChoiceMadeLocation::kSearchEngineSettings));
+    args.Append(false);  // saveGuestChoice
+    web_ui()->HandleReceivedMessage("setDefaultSearchEngine", args);
+  }
+  EXPECT_EQ(std::nullopt,
+            choice_service->GetSavedSearchEngineBetweenGuestSessions());
 }
 
 }  // namespace settings

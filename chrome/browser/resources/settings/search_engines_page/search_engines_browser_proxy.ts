@@ -88,7 +88,8 @@ export enum ChoiceMadeLocation {
 
 export interface SearchEnginesBrowserProxy {
   setDefaultSearchEngine(
-      modelIndex: number, choiceMadeLocation: ChoiceMadeLocation): void;
+      modelIndex: number, choiceMadeLocation: ChoiceMadeLocation,
+      saveGuestChoice: boolean|null): void;
 
   setIsActiveSearchEngine(modelIndex: number, isActive: boolean): void;
 
@@ -119,8 +120,11 @@ export interface SearchEnginesBrowserProxy {
 export class SearchEnginesBrowserProxyImpl implements
     SearchEnginesBrowserProxy {
   setDefaultSearchEngine(
-      modelIndex: number, choiceMadeLocation: ChoiceMadeLocation) {
-    chrome.send('setDefaultSearchEngine', [modelIndex, choiceMadeLocation]);
+      modelIndex: number, choiceMadeLocation: ChoiceMadeLocation,
+      saveGuestChoice?: boolean|null) {
+    chrome.send(
+        'setDefaultSearchEngine',
+        [modelIndex, choiceMadeLocation, saveGuestChoice]);
   }
 
   setIsActiveSearchEngine(modelIndex: number, isActive: boolean) {

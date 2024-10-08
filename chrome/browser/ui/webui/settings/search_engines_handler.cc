@@ -295,7 +295,7 @@ void SearchEnginesHandler::HandleGetSearchEnginesList(
 
 void SearchEnginesHandler::HandleSetDefaultSearchEngine(
     const base::Value::List& args) {
-  CHECK_EQ(2U, args.size());
+  CHECK_EQ(3U, args.size());
   int index = args[0].GetInt();
   if (index < 0 || static_cast<size_t>(index) >=
                        list_controller_.table_model()->RowCount()) {
@@ -309,8 +309,28 @@ void SearchEnginesHandler::HandleSetDefaultSearchEngine(
         choice_made_location ==
             search_engines::ChoiceMadeLocation::kSearchEngineSettings);
   list_controller_.MakeDefaultTemplateURL(index, choice_made_location);
-
   base::RecordAction(base::UserMetricsAction("Options_SearchEngineSetDefault"));
+
+  auto* choice_service =
+      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(profile_);
+  if (!choice_service->IsProfileEligibleForDseGuestPropagation()) {
+    return;
+  }
+
+  // TODO(b/364256844): Decide what to do with the subpage search engine UI.
+  // CHECK(!args[2].is_none());
+  bool saveGuestChoice = args[2].GetBool();
+  if (!saveGuestChoice) {
+    choice_service->SetSavedSearchEngineBetweenGuestSessions(std::nullopt);
+    return;
+  }
+
+  int prepopulate_id =
+      list_controller_.GetDefaultSearchProvider()->prepopulate_id();
+  if (prepopulate_id > 0 &&
+      prepopulate_id <= TemplateURLPrepopulateData::kMaxPrepopulatedEngineID) {
+    choice_service->SetSavedSearchEngineBetweenGuestSessions(prepopulate_id);
+  }
 }
 
 void SearchEnginesHandler::HandleGetSaveGuestChoice(

@@ -38,8 +38,11 @@ export class TestSearchEnginesBrowserProxy extends TestBrowserProxy implements
   }
 
   setDefaultSearchEngine(
-      modelIndex: number, choiceMadeLocation: ChoiceMadeLocation) {
-    this.methodCalled('setDefaultSearchEngine', modelIndex, choiceMadeLocation);
+      modelIndex: number, choiceMadeLocation: ChoiceMadeLocation,
+      saveGuestChoice?: boolean|null) {
+    this.methodCalled(
+        'setDefaultSearchEngine', modelIndex, choiceMadeLocation,
+        saveGuestChoice);
   }
 
   setIsActiveSearchEngine(modelIndex: number, isActive: boolean) {

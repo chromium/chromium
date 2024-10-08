@@ -135,7 +135,8 @@ export class SettingsSearchEngineEntryElement extends
   private onMakeDefaultClick_() {
     this.closePopupMenu_();
     this.browserProxy_.setDefaultSearchEngine(
-        this.engine.modelIndex, ChoiceMadeLocation.SEARCH_ENGINE_SETTINGS);
+        this.engine.modelIndex, ChoiceMadeLocation.SEARCH_ENGINE_SETTINGS,
+        /*saveGuestChoice=*/ null);
   }
 
   private onActivateClick_() {

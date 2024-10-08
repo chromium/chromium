@@ -94,7 +94,10 @@ suite('SearchPageTests', function() {
     radioButtons[1]!.click();
     setAsDefaultButton.click();
 
-    await browserProxy.whenCalled('setDefaultSearchEngine');
+    const [, , saveGuestChoice] =
+        await browserProxy.whenCalled('setDefaultSearchEngine');
+    assertEquals(saveGuestChoice, null);
+
     assertEquals('1', radioGroupElement.selected);
 
     // Simulate a change that happened in a different tab.
@@ -183,5 +186,18 @@ suite('SearchPageTests', function() {
             '#saveGuestChoiceCheckbox')!;
     assertTrue(!!saveGuestChoiceCheckbox);
     assertTrue(saveGuestChoiceCheckbox.checked);
+
+    saveGuestChoiceCheckbox.click();
+    await flushTasks();
+    assertFalse(saveGuestChoiceCheckbox.checked);
+
+    const setAsDefaultButton =
+        searchEngineListDialog.shadowRoot!.querySelector<HTMLButtonElement>(
+            '#setAsDefaultButton')!;
+    setAsDefaultButton.click();
+
+    const [, , saveGuestChoice] =
+        await browserProxy.whenCalled('setDefaultSearchEngine');
+    assertFalse(saveGuestChoice);
   });
 });
