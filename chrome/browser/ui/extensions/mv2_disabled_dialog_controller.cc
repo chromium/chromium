@@ -7,6 +7,8 @@
 #include "base/barrier_closure.h"
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
@@ -257,6 +259,16 @@ void Mv2DisabledDialogController::OnRemoveSelected() {
     extension_service->UninstallExtension(
         extension_info.id, UNINSTALL_REASON_USER_INITIATED, nullptr);
   }
+
+  if (experiment_stage_ == MV2ExperimentStage::kDisableWithReEnable) {
+    base::RecordAction(base::UserMetricsAction(
+        "Extensions.Mv2Deprecation.Disabled.RemoveExtension.DisabledDialog"));
+  } else {
+    CHECK_EQ(experiment_stage_, MV2ExperimentStage::kUnsupported);
+    base::RecordAction(
+        base::UserMetricsAction("Extensions.Mv2Deprecation.Unsupported."
+                                "RemoveExtension.DisabledDialog"));
+  }
 }
 
 void Mv2DisabledDialogController::OnManageSelected() {
@@ -275,6 +287,16 @@ void Mv2DisabledDialogController::UserAcknowledgedDialog() {
       GetDisabledDialogAcknowledgedPref(experiment_stage_);
   for (const auto& extension_info : affected_extensions_info_) {
     extension_prefs->SetBooleanPref(extension_info.id, dialog_ack_pref, true);
+  }
+
+  if (experiment_stage_ == MV2ExperimentStage::kDisableWithReEnable) {
+    base::RecordAction(base::UserMetricsAction(
+        "Extensions.Mv2Deprecation.Disabled.ManageExtension.DisabledDialog"));
+  } else {
+    CHECK_EQ(experiment_stage_, MV2ExperimentStage::kUnsupported);
+    base::RecordAction(
+        base::UserMetricsAction("Extensions.Mv2Deprecation.Unsupported."
+                                "ManageExtension.DisabledDialog"));
   }
 }
 
