@@ -17,6 +17,7 @@
 #import "ios/chrome/grit/ios_theme_resources.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/web_state.h"
 #import "skia/ext/skia_utils_ios.h"
 
 @interface LocationBarMediator () <SearchEngineObserving, WebStateListObserving>
@@ -121,6 +122,10 @@
   }
 }
 
+- (void)locationUpdated {
+  [self updatePlaceholderType];
+}
+
 #pragma mark - WebStateListObserving
 
 - (void)didChangeWebStateList:(WebStateList*)webStateList
@@ -139,12 +144,21 @@
   if (!IsLensOverlayAvailable()) {
     return;
   }
-  if (!_isIncognito &&
+  if (!_isIncognito && ![self isNTP] &&
       search_engines::SupportsSearchImageWithLens(self.templateURLService)) {
     [self.consumer setPlaceholderType:LocationBarPlaceholderType::kLensOverlay];
   } else {
     [self.consumer setPlaceholderType:LocationBarPlaceholderType::kNone];
   }
+}
+
+/// Returns YES if the active web state is a New Tab Page.
+- (BOOL)isNTP {
+  if (!_webStateList) {
+    return NO;
+  }
+  web::WebState* webState = _webStateList->GetActiveWebState();
+  return webState ? IsURLNewTabPage(webState->GetVisibleURL()) : NO;
 }
 
 @end

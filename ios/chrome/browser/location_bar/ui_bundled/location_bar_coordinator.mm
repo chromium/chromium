@@ -522,6 +522,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   [self.omniboxCoordinator updateOmniboxState];
   [self.viewController updateLocationText:text clipTail:clipTail];
   [self.viewController updateForNTP:NO];
+  [self.mediator locationUpdated];
 }
 
 - (void)updateLocationIcon:(UIImage*)icon

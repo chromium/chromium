@@ -35,6 +35,9 @@ class WebStateList;
 // Stops observing all objects.
 - (void)disconnect;
 
+// Called when the location is updated.
+- (void)locationUpdated;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_LOCATION_BAR_UI_BUNDLED_LOCATION_BAR_MEDIATOR_H_
