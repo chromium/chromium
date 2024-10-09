@@ -42,7 +42,7 @@ class PartitionedVisitedLinkWriter : public VisitedLinkCommon {
   // event as a constructor argument and dispatches events using it.
   class Listener {
    public:
-    virtual ~Listener() {}
+    virtual ~Listener() = default;
 
     // Called when link coloring database has been created or replaced. The
     // argument is a memory region containing the new table.
@@ -102,7 +102,7 @@ class PartitionedVisitedLinkWriter : public VisitedLinkCommon {
     virtual bool HasNextVisitedLink() const = 0;
 
    protected:
-    virtual ~VisitedLinkIterator() {}
+    virtual ~VisitedLinkIterator() = default;
   };
 
   // Deletes the specified VisitedLinks from the hashtable.

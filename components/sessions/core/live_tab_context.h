@@ -87,7 +87,7 @@ class SESSIONS_EXPORT LiveTabContext {
   virtual void CloseTab() = 0;
 
  protected:
-  virtual ~LiveTabContext() {}
+  virtual ~LiveTabContext() = default;
 };
 
 }  // namespace sessions

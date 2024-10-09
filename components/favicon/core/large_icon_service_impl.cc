@@ -192,7 +192,7 @@ LargeIconServiceImpl::LargeIconServiceImpl(
   // a DCHECK(image_fetcher_) here.
 }
 
-LargeIconServiceImpl::~LargeIconServiceImpl() {}
+LargeIconServiceImpl::~LargeIconServiceImpl() = default;
 
 base::CancelableTaskTracker::TaskId
 LargeIconServiceImpl::GetLargeIconRawBitmapOrFallbackStyleForPageUrl(

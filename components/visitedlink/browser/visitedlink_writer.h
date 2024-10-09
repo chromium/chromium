@@ -63,7 +63,7 @@ class VisitedLinkWriter : public VisitedLinkCommon {
   // event as a constructor argument and dispatches events using it.
   class Listener {
    public:
-    virtual ~Listener() {}
+    virtual ~Listener() = default;
 
     // Called when link coloring database has been created or replaced. The
     // argument is a memory region containing the new table.
@@ -140,7 +140,7 @@ class VisitedLinkWriter : public VisitedLinkCommon {
     virtual bool HasNextURL() const = 0;
 
    protected:
-    virtual ~URLIterator() {}
+    virtual ~URLIterator() = default;
   };
 
   // Deletes the specified URLs from |rows| from the table.

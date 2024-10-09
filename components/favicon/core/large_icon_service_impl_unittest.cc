@@ -109,7 +109,7 @@ class LargeIconServiceTest : public testing::Test {
   LargeIconServiceTest(const LargeIconServiceTest&) = delete;
   LargeIconServiceTest& operator=(const LargeIconServiceTest&) = delete;
 
-  ~LargeIconServiceTest() override {}
+  ~LargeIconServiceTest() override = default;
 
  protected:
   base::test::TaskEnvironment task_environment_;
@@ -438,7 +438,7 @@ class LargeIconServiceGetterTest : public LargeIconServiceTest,
   LargeIconServiceGetterTest& operator=(const LargeIconServiceGetterTest&) =
       delete;
 
-  ~LargeIconServiceGetterTest() override {}
+  ~LargeIconServiceGetterTest() override = default;
 
   void ExpectFetchImageFromGoogleServer() {
     EXPECT_CALL(*mock_image_fetcher_,

@@ -219,7 +219,7 @@ class VisitedLinkWriter::TableBuilder
   void OnComplete(bool succeed) override;
 
  private:
-  ~TableBuilder() override {}
+  ~TableBuilder() override = default;
 
   // OnComplete mashals to this function on the main thread to do the
   // notification.
