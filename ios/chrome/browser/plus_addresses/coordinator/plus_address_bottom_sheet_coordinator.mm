@@ -106,6 +106,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
       IDS_PLUS_ADDRESS_AFFILIATION_ERROR_ALERT_MESSAGE_IOS,
       GetOriginForDisplay(plusProfile),
       base::UTF8ToUTF16(*plusProfile.plus_address));
+
   _alertCoordinator = [[AlertCoordinator alloc]
       initWithBaseViewController:_viewController
                          browser:self.browser
@@ -132,17 +133,23 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
   [_alertCoordinator start];
 }
 
-- (void)showGenericErrorAlert {
+- (void)showQuotaErrorAlert {
   _alertCoordinator = [[AlertCoordinator alloc]
       initWithBaseViewController:_viewController
                          browser:self.browser
                            title:
                                l10n_util::GetNSString(
-                                   IDS_PLUS_ADDRESS_GENERIC_ERROR_ALERT_TITLE_IOS)
+                                   IDS_PLUS_ADDRESS_QUOTA_ERROR_ALERT_TITLE_IOS)
                          message:
                              l10n_util::GetNSString(
-                                 IDS_PLUS_ADDRESS_GENERIC_ERROR_ALERT_MESSAGE_IOS)];
+                                 IDS_PLUS_ADDRESS_QUOTA_ERROR_ALERT_MESSAGE_IOS)];
 
+  __weak PlusAddressBottomSheetMediator* weakMediator = _mediator;
+  [_alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_OK)
+                               action:^{
+                                 [weakMediator didCancelAlert];
+                               }
+                                style:UIAlertActionStyleCancel];
   [_alertCoordinator start];
 }
 

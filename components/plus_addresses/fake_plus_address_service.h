@@ -95,6 +95,9 @@ class FakePlusAddressService : public PlusAddressService {
   void SavePlusProfile(const PlusProfile& profile) override;
   bool IsEnabled() const override;
 
+  // Resets the state of the class.
+  void ClearState();
+
   void add_plus_profile(PlusProfile profile) {
     plus_profiles_.emplace_back(std::move(profile));
   }
@@ -144,6 +147,10 @@ class FakePlusAddressService : public PlusAddressService {
         should_return_affiliated_plus_profile_on_confirm;
   }
 
+  void set_should_return_quota_error(bool should_return_quota_error) {
+    should_return_quota_error_ = should_return_quota_error;
+  }
+
  private:
   PlusAddressRequestCallback on_confirmed_;
   testing::NiceMock<affiliations::MockAffiliationService>
@@ -157,6 +164,7 @@ class FakePlusAddressService : public PlusAddressService {
   bool should_offer_creation_ = false;
   bool should_return_no_affiliated_plus_profiles_ = false;
   bool should_return_affiliated_plus_profile_on_confirm_ = false;
+  bool should_return_quota_error_ = false;
 };
 
 }  // namespace plus_addresses

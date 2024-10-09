@@ -36,6 +36,12 @@
 + (void)setShouldReturnAffiliatedPlusProfileOnConfirm:
     (BOOL)shouldReturnAffiliatedPlusProfileOnConfirm;
 
+// Setter to return quota error on reserve/confirm.
++ (void)setShouldReturnQuotaError:(BOOL)shouldReturnQuotaError;
+
+// Resets the state of `FakePlusAddressService`.
++ (void)clearState;
+
 // Returns the primary email from `FakePlusAddressService`.
 + (NSString*)primaryEmail;
 

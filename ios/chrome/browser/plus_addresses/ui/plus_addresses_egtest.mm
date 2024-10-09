@@ -89,7 +89,10 @@ void ExpectModalTimeSample(
   _fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:_fakeIdentity];
 
+  // To prevent any flakiness.
+  [PlusAddressAppInterface clearState];
   [PlusAddressAppInterface setPlusAddressFillingEnabled:YES];
+
   [self loadPlusAddressEligiblePage];
 }
 
@@ -116,7 +119,7 @@ void ExpectModalTimeSample(
         feature_engagement::kIPHPlusAddressCreateSuggestionFeature.name;
   }
 
-  if ([self isRunningTest:@selector(testGenericErrorAlert)] ||
+  if ([self isRunningTest:@selector(testQuotaErrorAlertOnConfirm)] ||
       [self isRunningTest:@selector(testAffiliationError)]) {
     config.features_enabled_and_params.push_back(
         {plus_addresses::features::kPlusAddressIOSErrorAndLoadingStatesEnabled,
@@ -390,10 +393,13 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:iph_chip];
 }
 
-// Tests that an error alert is shown if the plus address is failed to confirm.
-- (void)testGenericErrorAlert {
-  [PlusAddressAppInterface setShouldFailToConfirm:YES];
+// Tests that an error alert is shown if the plus address quota has been reached
+// on confirming plus address.
+- (void)testQuotaErrorAlertOnConfirm {
   [self openCreatePlusAddressBottomSheet];
+
+  // Set up after the reserve has been called so that it fails on confirm.
+  [PlusAddressAppInterface setShouldReturnQuotaError:YES];
 
   id<GREYMatcher> plusAddressLabelMatcher = GetMatcherForPlusAddressLabel(
       base::SysUTF8ToNSString(plus_addresses::test::kFakePlusAddress));
@@ -407,10 +413,14 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
   [[EarlGrey selectElementWithMatcher:confirmButton] performAction:grey_tap()];
 
   id<GREYMatcher> error_alert = grey_text(
-      l10n_util::GetNSString(IDS_PLUS_ADDRESS_GENERIC_ERROR_ALERT_MESSAGE_IOS));
+      l10n_util::GetNSString(IDS_PLUS_ADDRESS_QUOTA_ERROR_ALERT_MESSAGE_IOS));
 
   // Ensure the error alert is shown.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:error_alert];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_OK)] performAction:grey_tap()];
 }
 
 // Tests that the alert is shown and filled when an affiliated site contains the

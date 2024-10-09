@@ -26,8 +26,8 @@ class UrlLoadingBrowserAgent;
 // Shows an alert asking the user to use an affiliated plus address.
 - (void)showAffiliationError:(const plus_addresses::PlusProfile&)plusProfile;
 
-// Shows generic alert with the message.
-- (void)showGenericErrorAlert;
+// Shows alert for the quota error.
+- (void)showQuotaErrorAlert;
 
 @end
 

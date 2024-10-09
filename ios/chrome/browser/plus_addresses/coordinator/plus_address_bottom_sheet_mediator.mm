@@ -208,7 +208,13 @@ enum class PlusAddressAction {
         [self.consumer notifyError:plus_addresses::metrics::
                                        PlusAddressModalCompletionStatus::
                                            kReservePlusAddressError];
-        showGenericError = YES;
+        if (errorStatesEnabled) {
+          if (maybePlusProfile.error().IsQuotaError()) {
+            [_delegate showQuotaErrorAlert];
+          } else {
+            showGenericError = YES;
+          }
+        }
       }
       break;
     case PlusAddressAction::kPlusAddressActionConfirm:
@@ -234,13 +240,19 @@ enum class PlusAddressAction {
         [self.consumer notifyError:plus_addresses::metrics::
                                        PlusAddressModalCompletionStatus::
                                            kConfirmPlusAddressError];
-        showGenericError = YES;
+        if (errorStatesEnabled) {
+          if (maybePlusProfile.error().IsQuotaError()) {
+            [_delegate showQuotaErrorAlert];
+          } else {
+            showGenericError = YES;
+          }
+        }
       }
       break;
   }
 
   if (showGenericError && errorStatesEnabled) {
-    [_delegate showGenericErrorAlert];
+    // TODO(crbug.com/354881209): Show alert for generic error.
   }
 }
 

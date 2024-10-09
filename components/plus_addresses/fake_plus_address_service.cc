@@ -173,6 +173,12 @@ void FakePlusAddressService::ReservePlusAddress(
             PlusAddressRequestErrorType::kNetworkError)));
     return;
   }
+  if (should_return_quota_error_) {
+    std::move(on_completed)
+        .Run(base::unexpected(PlusAddressRequestError::AsNetworkError(
+            net::HTTP_TOO_MANY_REQUESTS)));
+    return;
+  }
   std::move(on_completed)
       .Run(PlusProfile(kFakeProfileId, FacetURI::FromCanonicalSpec(kFacet),
                        PlusAddress(plus_addresses::test::kFakePlusAddress),
@@ -189,6 +195,14 @@ void FakePlusAddressService::ConfirmPlusAddress(
             PlusAddressRequestErrorType::kNetworkError)));
     return;
   }
+
+  if (should_return_quota_error_) {
+    std::move(on_completed)
+        .Run(base::unexpected(PlusAddressRequestError::AsNetworkError(
+            net::HTTP_TOO_MANY_REQUESTS)));
+    return;
+  }
+
   if (should_return_affiliated_plus_profile_on_confirm_) {
     std::move(on_completed)
         .Run(PlusProfile(
@@ -259,6 +273,18 @@ void FakePlusAddressService::SavePlusProfile(const PlusProfile& profile) {
 
 bool FakePlusAddressService::IsEnabled() const {
   return true;
+}
+
+void FakePlusAddressService::ClearState() {
+  is_confirmed_ = false;
+  should_fail_to_confirm_ = false;
+  should_fail_to_reserve_ = false;
+  should_fail_to_refresh_ = false;
+  is_plus_address_filling_enabled_ = false;
+  should_offer_creation_ = false;
+  should_return_no_affiliated_plus_profiles_ = false;
+  should_return_affiliated_plus_profile_on_confirm_ = false;
+  should_return_quota_error_ = false;
 }
 
 }  // namespace plus_addresses

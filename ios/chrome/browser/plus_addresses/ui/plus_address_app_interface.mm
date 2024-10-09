@@ -61,6 +61,15 @@ plus_addresses::FakePlusAddressService* GetFakePlusAddressService() {
           shouldReturnAffiliatedPlusProfileOnConfirm);
 }
 
++ (void)setShouldReturnQuotaError:(BOOL)shouldReturnQuotaError {
+  GetFakePlusAddressService()->set_should_return_quota_error(
+      shouldReturnQuotaError);
+}
+
++ (void)clearState {
+  GetFakePlusAddressService()->ClearState();
+}
+
 + (NSString*)primaryEmail {
   return base::SysUTF8ToNSString(
       *(GetFakePlusAddressService()->GetPrimaryEmail()));
