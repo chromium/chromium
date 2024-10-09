@@ -39,10 +39,10 @@ Commands assume the working directory is //infra/config.
 
     This is most likely due to outdated configurations in //testing/buildbot,
     where an update in the test suites in //testing/buildbot/waterfalls.pyl was
-    not reflected in //testing/buildbot/test_suite_exceptions.pyl. Remove the
-    offending modification or removal for the builder in
-    //testing/buildbot/test_suite_exceptions.pyl, and rerun the script until
-    the errors go away.
+    not reflected in //testing/buildbot/test_suite_exceptions.pyl. Remove any
+    offending modifications or removals from
+    //testing/buildbot/test_suite_exceptions.pyl, and rerun the script and those
+    errors should go away.
 
     After updating starlark, the script will put the working copy into the state
     where git index contains the updated starlark and the new json files with

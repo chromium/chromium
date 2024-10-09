@@ -15,6 +15,7 @@ get_targets_spec_generator to get an object that can be used to generate the
 targets spec files for the builder.
 """
 
+load("@stdlib//internal/error.star", "error")
 load("@stdlib//internal/graph.star", "graph")
 load("//lib/args.star", args_lib = "args")
 load("//lib/chrome_settings.star", "targets_config")
@@ -146,10 +147,10 @@ def _get_bundle_resolver():
                 # DEFINITION_ORDER preserves the order that the edges were added
                 # from the parent to the child
                 for m in graph.children(test.key, _targets_nodes.MIXIN.kind, graph.DEFINITION_ORDER):
-                    spec, error = _apply_mixin(spec, settings, m.props.mixin_values)
-                    if error:
+                    spec, failure = _apply_mixin(spec, settings, m.props.mixin_values)
+                    if failure:
                         fail("modifying {} {} with {} failed: {}"
-                            .format(spec.handler.type_name, test.key.id, m, error))
+                            .format(spec.handler.type_name, test.key.id, m, failure))
                 test_expansion_by_name[test.key.id] = _test_expansion(
                     spec = spec,
                     source = n.key,
@@ -172,43 +173,49 @@ def _get_bundle_resolver():
                             ))
                     test_expansion_by_name[name] = test_expansion
 
-            # Update the mixins to remove for the test expansions
+            per_test_modifications = []
             for per_test_modification in graph.children(n.key, kind = _targets_nodes.PER_TEST_MODIFICATION.kind):
                 name = per_test_modification.key.id
-                if name not in test_expansion_by_name:
-                    fail(
-                        "attempting to modify test '{}' that is not contained in the bundle"
-                            .format(name),
-                        trace = n.props.stacktrace,
-                    )
+                if name in test_expansion_by_name:
+                    per_test_modifications.append(per_test_modification)
+                    continue
+                error(
+                    "attempting to modify test '{}' that is not contained in the bundle"
+                        .format(name),
+                    trace = n.props.stacktrace,
+                )
+
+            # Update the mixins to remove for the test expansions
+            for per_test_modification in per_test_modifications:
                 mixins_to_ignore = _targets_nodes.REMOVE_MIXIN.children(per_test_modification.key)
                 if mixins_to_ignore:
+                    name = per_test_modification.key.id
                     test_expansion = test_expansion_by_name[name]
                     test_expansion_by_name[name] = structs.evolve(test_expansion, mixins_to_ignore = test_expansion.mixins_to_ignore | set(mixins_to_ignore))
 
-            def update_spec_with_mixin(test_name, test_expansion, mixin, *, ignore_error = False):
+            def update_spec_with_mixin(test_name, test_expansion, mixin, *, ignore_failure = False):
                 if mixin in test_expansion.mixins_to_ignore:
                     return
                 spec = test_expansion.spec
-                new_spec, error = _apply_mixin(spec, settings, mixin.props.mixin_values)
-                if error:
-                    if ignore_error:
+                new_spec, failure = _apply_mixin(spec, settings, mixin.props.mixin_values)
+                if failure:
+                    if ignore_failure:
                         return
                     fail(
                         "modifying {} {} with {} failed: {}"
-                            .format(spec.handler.type_name, test_name, mixin, error),
+                            .format(spec.handler.type_name, test_name, mixin, failure),
                         trace = n.props.stacktrace,
                     )
                 test_expansion_by_name[test_name] = structs.evolve(test_expansion, spec = new_spec, source = n.key)
 
             for name in n.props.tests_to_remove:
-                if name not in test_expansion_by_name:
-                    fail(
+                test_expansion = test_expansion_by_name.pop(name, None)
+                if test_expansion == None:
+                    error(
                         "attempting to remove test '{}' that is not contained in the bundle"
                             .format(name),
                         trace = n.props.stacktrace,
                     )
-                test_expansion_by_name.pop(name)
 
             variants = graph.children(n.key, _targets_nodes.VARIANT.kind)
             if variants:
@@ -237,9 +244,9 @@ def _get_bundle_resolver():
                 for name, test_expansion in test_expansion_by_name.items():
                     # We don't care if a mixin applied at bundle level doesn't
                     # apply to every test, so ignore errors
-                    update_spec_with_mixin(name, test_expansion, mixin, ignore_error = True)
+                    update_spec_with_mixin(name, test_expansion, mixin, ignore_failure = True)
 
-            for per_test_modification in graph.children(n.key, kind = _targets_nodes.PER_TEST_MODIFICATION.kind):
+            for per_test_modification in per_test_modifications:
                 name = per_test_modification.key.id
 
                 # The order that mixins are declared is significant,
