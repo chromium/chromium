@@ -377,6 +377,13 @@ message WalletMaskedCreditCard {
     NETWORK = 2;
   }
 
+  enum CardInfoRetrievalEnrollmentState {
+    RETRIEVAL_UNSPECIFIED = 0;
+    RETRIEVAL_ENROLLED = 1;
+    RETRIEVAL_UNENROLLED_AND_NOT_ELIGIBLE = 2;
+    RETRIEVAL_UNENROLLED_AND_ELIGIBLE = 3;
+  }
+
   // Server-generated unique ID string. This is opaque to the client.
   // This is the legacy version of |instrument_id|.
   optional string id = 1;
@@ -439,6 +446,10 @@ message WalletMaskedCreditCard {
   // Separate link from the card issuer which provides additional context or
   // terms and conditions regarding the credit card product and its benefits.
   optional string product_terms_url = 21;
+
+  // The state of enrollement for runtime card info retrieval.
+  optional CardInfoRetrievalEnrollmentState
+      card_info_retrieval_enrollment_state = 22;
 }
 
 // Unused by the client since M121.

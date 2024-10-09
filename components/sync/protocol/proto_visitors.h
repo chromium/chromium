@@ -1752,6 +1752,7 @@ VISIT_PROTO_FIELDS(const sync_pb::WalletMaskedCreditCard& proto) {
   VISIT_ENUM(virtual_card_enrollment_type);
   VISIT_REP(card_benefit);
   VISIT(product_terms_url);
+  VISIT_ENUM(card_info_retrieval_enrollment_state);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::WalletMetadataSpecifics& proto) {

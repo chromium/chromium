@@ -629,6 +629,24 @@ const char* ProtoEnumToString(
 }
 
 const char* ProtoEnumToString(
+    sync_pb::WalletMaskedCreditCard::CardInfoRetrievalEnrollmentState
+        card_info_retrieval_enrollment_state) {
+  ASSERT_ENUM_BOUNDS(sync_pb::WalletMaskedCreditCard,
+                     CardInfoRetrievalEnrollmentState, RETRIEVAL_UNSPECIFIED,
+                     RETRIEVAL_UNENROLLED_AND_ELIGIBLE);
+  switch (card_info_retrieval_enrollment_state) {
+    ENUM_CASE(sync_pb::WalletMaskedCreditCard, RETRIEVAL_UNSPECIFIED);
+    ENUM_CASE(sync_pb::WalletMaskedCreditCard, RETRIEVAL_ENROLLED);
+    ENUM_CASE(sync_pb::WalletMaskedCreditCard,
+              RETRIEVAL_UNENROLLED_AND_NOT_ELIGIBLE);
+    ENUM_CASE(sync_pb::WalletMaskedCreditCard,
+              RETRIEVAL_UNENROLLED_AND_ELIGIBLE);
+  }
+  NOTREACHED_IN_MIGRATION();
+  return "";
+}
+
+const char* ProtoEnumToString(
     sync_pb::WalletMaskedCreditCard::VirtualCardEnrollmentState
         virtual_card_enrollment_state) {
   ASSERT_ENUM_BOUNDS(sync_pb::WalletMaskedCreditCard,
