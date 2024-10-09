@@ -17,6 +17,7 @@ import AutomationNode = chrome.automation.AutomationNode;
 import RoleType = chrome.automation.RoleType;
 import ScreenRect = chrome.accessibilityPrivate.ScreenRect;
 import ScreenPoint = chrome.accessibilityPrivate.ScreenPoint;
+import SyntheticMouseEventButton = chrome.accessibilityPrivate.SyntheticMouseEventButton;
 
 type PrefObject = chrome.settingsPrivate.PrefObject;
 
@@ -88,6 +89,7 @@ export class MouseController {
 
   private scrollModeController_: ScrollModeController;
   private bubbleController_: BubbleController;
+  private longClickActive_ = false;
 
   constructor(bubbleController: BubbleController) {
     this.bubbleController_ = bubbleController;
@@ -128,6 +130,10 @@ export class MouseController {
 
   isScrollModeActive(): boolean {
     return this.scrollModeController_.active();
+  }
+
+  isLongClickActive(): boolean {
+    return this.longClickActive_;
   }
 
   async start(): Promise<void> {
@@ -505,6 +511,12 @@ export class MouseController {
   }
 
   stop(): void {
+    if (this.longClickActive_ && this.mouseLocation_) {
+      // Release the existing long click action when the mouse controller is
+      // stopped to ensure we do not leave the user in a permanent "drag" state.
+      EventGenerator.sendMouseRelease(
+          this.mouseLocation_.x, this.mouseLocation_.y);
+    }
     if (this.mouseInterval_ !== -1) {
       clearInterval(this.mouseInterval_);
       this.mouseInterval_ = -1;
@@ -540,6 +552,23 @@ export class MouseController {
     }
   }
 
+  toggleLongClick(): void {
+    if (!this.mouseLocation_) {
+      return;
+    }
+
+    this.longClickActive_ = !this.longClickActive_;
+
+    if (this.longClickActive_) {
+      EventGenerator.sendMousePress(
+          this.mouseLocation_.x, this.mouseLocation_.y,
+          SyntheticMouseEventButton.LEFT);
+    } else {
+      EventGenerator.sendMouseRelease(
+          this.mouseLocation_.x, this.mouseLocation_.y);
+    }
+  }
+
   /** Listener for when the mouse position changes. */
   private onMouseMovedOrDragged_(event: chrome.automation.AutomationEvent):
       void {
@@ -552,6 +581,13 @@ export class MouseController {
       if (this.scrollModeController_.active()) {
         // Scroll mode honors physical mouse movements.
         this.scrollModeController_.updateScrollLocation(this.mouseLocation_);
+      }
+
+      if (this.longClickActive_) {
+        // Send a synthetic drag event from the user's mouse move event.
+        // FaceGaze cursor control should already have sent a synthetic drag
+        // event, so this only needs to occur on user mouse movements.
+        EventGenerator.sendMouseMove(event.mouseX, event.mouseY);
       }
     }
   }

@@ -385,7 +385,8 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
           .Default()
           .WithGesturesToMacros({{FaceGazeGesture::MOUTH_RIGHT,
                                   MacroName::MOUSE_LONG_CLICK_LEFT}})
-          .WithGestureConfidences({{FaceGazeGesture::MOUTH_RIGHT, 30}}));
+          .WithGestureConfidences({{FaceGazeGesture::MOUTH_RIGHT, 30}})
+          .WithGestureRepeatDelayMs(0));
   event_handler().ClearEvents();
 
   // Move mouth right to trigger mouse press event.
@@ -399,10 +400,12 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
   ASSERT_EQ(kCenter, mouse_events.back().root_location());
   ASSERT_TRUE(mouse_events.back().IsSynthesized());
 
-  // Release mouth right to trigger mouse release event.
+  // TODO(b:371199038): Move mouse to trigger drag event.
+
+  // Move mouth right again to trigger mouse release event.
   event_handler().ClearEvents();
   utils()->ProcessFaceLandmarkerResult(MockFaceLandmarkerResult().WithGesture(
-      MediapipeGesture::MOUTH_RIGHT, 20));
+      MediapipeGesture::MOUTH_RIGHT, 40));
   mouse_events = event_handler().mouse_events(ui::EventType::kMouseReleased);
   ASSERT_EQ(1u, mouse_events.size());
   ASSERT_EQ(ui::EventType::kMouseReleased, mouse_events.back().type());

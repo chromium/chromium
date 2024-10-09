@@ -69,6 +69,7 @@ ts_modules = [
   "facegaze/metrics_utils.ts",
   "facegaze/mouse_controller.ts",
   "facegaze/scroll_mode_controller.ts",
+  "facegaze/macros/mouse_long_click_macro.ts",
   "facegaze/macros/mouse_scroll_macro.ts",
   "facegaze/macros/reset_cursor_macro.ts",
   "magnifier/magnifier.ts",

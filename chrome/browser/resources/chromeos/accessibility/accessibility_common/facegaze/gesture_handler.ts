@@ -16,6 +16,7 @@ import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 import {BubbleController} from './bubble_controller.js';
 import {FacialGesture} from './facial_gestures.js';
 import {GestureDetector} from './gesture_detector.js';
+import {MouseLongClickMacro} from './macros/mouse_long_click_macro.js';
 import {MouseScrollMacro} from './macros/mouse_scroll_macro.js';
 import {ResetCursorMacro} from './macros/reset_cursor_macro.js';
 import {MouseController} from './mouse_controller.js';
@@ -199,19 +200,11 @@ export class GestureHandler {
     for (const [macroName, gesture] of macroNames) {
       const macro = this.macroFromName_(macroName, gesture);
       if (macro) {
-        if (macro instanceof MouseClickMacro) {
-          // Don't add mouse click macros if we are in the middle of long click.
-          if ([...this.macrosToCompleteLater_.values()].some(
-                  (savedMacro: Macro) => savedMacro.getName() ===
-                      MacroName.MOUSE_LONG_CLICK_LEFT)) {
-            continue;
-          }
-        }
         result.push(macro);
         displayStrings.push(BubbleController.getDisplayText(gesture, macro));
         if (macro.triggersAtActionStartAndEnd()) {
           // Cache this macro to be run a second time later,
-          // e.g. for the mouse or key release.
+          // e.g. for key release.
           this.macrosToCompleteLater_.set(gesture, macro);
         }
       }
@@ -223,9 +216,9 @@ export class GestureHandler {
 
   /**
    * Gets the cached macros that are run again when a gesture ends. For example,
-   * for a left click macro, the left click starts when the gesture is first
+   * for a key press macro, the key press starts when the gesture is first
    * detected and the macro is run a second time when the gesture is no longer
-   * detected, thus the click will be held as long as the gesture is still
+   * detected, thus the key press will be held as long as the gesture is still
    * detected.
    */
   private popMacrosOnGestureEnd(
@@ -238,9 +231,6 @@ export class GestureHandler {
         const macro = this.macrosToCompleteLater_.get(previousGesture);
         if (!macro) {
           return;
-        }
-        if (macro instanceof MouseClickMacro) {
-          macro.updateLocation(this.mouseController_.mouseLocation());
         }
         macrosForLater.push(macro);
         this.macrosToCompleteLater_.delete(previousGesture);
@@ -260,6 +250,16 @@ export class GestureHandler {
       return;
     }
 
+    // If we are in the middle of long click, do not allow additional mouse
+    // clicks or scroll mode.
+    if (this.mouseController_.isLongClickActive() &&
+        (name === MacroName.MOUSE_CLICK_LEFT ||
+         name === MacroName.MOUSE_CLICK_RIGHT ||
+         name === MacroName.MOUSE_CLICK_LEFT_DOUBLE ||
+         name === MacroName.TOGGLE_SCROLL_MODE)) {
+      return;
+    }
+
     switch (name) {
       case MacroName.TOGGLE_DICTATION:
         return new ToggleDictationMacro();
@@ -269,9 +269,7 @@ export class GestureHandler {
         return new MouseClickMacro(
             this.mouseController_.mouseLocation(), /*leftClick=*/ false);
       case MacroName.MOUSE_LONG_CLICK_LEFT:
-        return new MouseClickMacro(
-            this.mouseController_.mouseLocation(), /*leftClick=*/ true,
-            /*clickImmediately=*/ false);
+        return new MouseLongClickMacro(this.mouseController_);
       case MacroName.MOUSE_CLICK_LEFT_DOUBLE:
         return new MouseClickLeftDoubleMacro(
             this.mouseController_.mouseLocation());

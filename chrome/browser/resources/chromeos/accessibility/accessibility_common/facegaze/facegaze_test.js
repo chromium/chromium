@@ -592,7 +592,8 @@ AX_TEST_F(
       const config = new Config()
                          .withMouseLocation({x: 600, y: 400})
                          .withGestureToMacroName(gestureToMacroName)
-                         .withGestureToConfidence(gestureToConfidence);
+                         .withGestureToConfidence(gestureToConfidence)
+                         .withRepeatDelayMs(0);
       await this.configureFaceGaze(config);
 
       let result =
@@ -613,10 +614,10 @@ AX_TEST_F(
       assertEquals(600, pressEvent.x);
       assertEquals(400, pressEvent.y);
 
-      // Reduce amount of jaw open to get the release event.
+      // Trigger jaw open again to get the release event.
       result =
           new MockFaceLandmarkerResult()
-              .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0.4)
+              .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0.8)
               .addGestureWithConfidence(
                   MediapipeFacialGesture.BROW_INNER_UP, 0.3);
       this.processFaceLandmarkerResult(result);
@@ -804,10 +805,12 @@ AX_TEST_F('FaceGazeTest', 'DoesNotRepeatGesturesTooSoon', async function() {
         pressEvent.mouseButton);
   }
 
-  // Release is generated when the JAW_OPEN ends.
+  this.getFaceGaze().gestureHandler_.repeatDelayMs_ = 0;
+
+  // Release is generated when the JAW_OPEN is triggered again.
   let result =
       new MockFaceLandmarkerResult()
-          .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0.5)
+          .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0.9)
           .addGestureWithConfidence(MediapipeFacialGesture.BROW_INNER_UP, 0.3);
   this.processFaceLandmarkerResult(result);
   this.assertNumMouseEvents(2);
@@ -818,6 +821,8 @@ AX_TEST_F('FaceGazeTest', 'DoesNotRepeatGesturesTooSoon', async function() {
   assertEquals(
       this.mockAccessibilityPrivate.SyntheticMouseEventButton.LEFT,
       releaseEvent.mouseButton);
+
+  this.getFaceGaze().gestureHandler_.repeatDelayMs_ = 1000;
 
   // Another gesture is let through once and then also throttled.
   for (let i = 0; i < 5; i++) {
@@ -845,7 +850,7 @@ AX_TEST_F('FaceGazeTest', 'DoesNotRepeatGesturesTooSoon', async function() {
         releaseEvent.mouseButton);
   }
 
-  // Release is processed when BROWS_DOWN ends.
+  // No further events are sent when BROWS_DOWN ends.
   result =
       new MockFaceLandmarkerResult()
           .addGestureWithConfidence(MediapipeFacialGesture.BROW_DOWN_LEFT, 0.4)
@@ -864,7 +869,8 @@ AX_TEST_F('FaceGazeTest', 'DoesNotClickDuringLongClick', async function() {
 
   const config = new Config()
                      .withMouseLocation({x: 600, y: 400})
-                     .withGestureToMacroName(gestureToMacroName);
+                     .withGestureToMacroName(gestureToMacroName)
+                     .withRepeatDelayMs(0);
   await this.configureFaceGaze(config);
 
   // Start the long click.
@@ -887,11 +893,9 @@ AX_TEST_F('FaceGazeTest', 'DoesNotClickDuringLongClick', async function() {
   assertEquals(600, pressEvent.x);
   assertEquals(400, pressEvent.y);
 
-  // Send a short left click gesture while holding long click left by
-  // keeping the MOUTH_PUCKER gesture.
+  // Send a short left click gesture while long click is active.
   result =
       new MockFaceLandmarkerResult()
-          .addGestureWithConfidence(MediapipeFacialGesture.MOUTH_PUCKER, 0.9)
           .addGestureWithConfidence(MediapipeFacialGesture.EYE_SQUINT_LEFT, 0.9)
           .addGestureWithConfidence(
               MediapipeFacialGesture.EYE_SQUINT_RIGHT, 0.3);
@@ -900,7 +904,6 @@ AX_TEST_F('FaceGazeTest', 'DoesNotClickDuringLongClick', async function() {
   this.assertNumMouseEvents(1);
   result =
       new MockFaceLandmarkerResult()
-          .addGestureWithConfidence(MediapipeFacialGesture.MOUTH_PUCKER, 0.9)
           .addGestureWithConfidence(MediapipeFacialGesture.EYE_SQUINT_LEFT, 0.3)
           .addGestureWithConfidence(
               MediapipeFacialGesture.EYE_SQUINT_RIGHT, 0.3);
@@ -908,10 +911,9 @@ AX_TEST_F('FaceGazeTest', 'DoesNotClickDuringLongClick', async function() {
   // No more events are generated.
   this.assertNumMouseEvents(1);
 
-  // Try with short right click gesture while still holding long click left.
+  // Try with short right click gesture while long click is active.
   result =
       new MockFaceLandmarkerResult()
-          .addGestureWithConfidence(MediapipeFacialGesture.MOUTH_PUCKER, 0.9)
           .addGestureWithConfidence(MediapipeFacialGesture.EYE_SQUINT_LEFT, 0.3)
           .addGestureWithConfidence(
               MediapipeFacialGesture.EYE_SQUINT_RIGHT, 0.9);
@@ -921,7 +923,6 @@ AX_TEST_F('FaceGazeTest', 'DoesNotClickDuringLongClick', async function() {
 
   result =
       new MockFaceLandmarkerResult()
-          .addGestureWithConfidence(MediapipeFacialGesture.MOUTH_PUCKER, 0.9)
           .addGestureWithConfidence(MediapipeFacialGesture.EYE_SQUINT_LEFT, 0.3)
           .addGestureWithConfidence(
               MediapipeFacialGesture.EYE_SQUINT_RIGHT, 0.3);
@@ -929,10 +930,10 @@ AX_TEST_F('FaceGazeTest', 'DoesNotClickDuringLongClick', async function() {
   // No more events are generated.
   this.assertNumMouseEvents(1);
 
-  // Send the end of the long click by stopping mouth pucker.
+  // Send the end of the long click by triggering mouth pucker again.
   result =
       new MockFaceLandmarkerResult()
-          .addGestureWithConfidence(MediapipeFacialGesture.MOUTH_PUCKER, 0.4)
+          .addGestureWithConfidence(MediapipeFacialGesture.MOUTH_PUCKER, 0.9)
           .addGestureWithConfidence(MediapipeFacialGesture.EYE_SQUINT_LEFT, 0.3)
           .addGestureWithConfidence(
               MediapipeFacialGesture.EYE_SQUINT_RIGHT, 0.3);
@@ -1292,10 +1293,11 @@ AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeGesturesLong', async function() {
   this.assertNumKeyEvents(3);
   this.assertKeyDown(this.getKeyEvents()[2]);
 
-  // Release gestures to get the mouse release and the key up events.
+  // Toggle long click gesture again to get the mouse release event.
+  // Release key gesture to get the key up events.
   result =
       new MockFaceLandmarkerResult()
-          .addGestureWithConfidence(MediapipeFacialGesture.BROW_INNER_UP, 0)
+          .addGestureWithConfidence(MediapipeFacialGesture.BROW_INNER_UP, 0.9)
           .addGestureWithConfidence(MediapipeFacialGesture.EYE_SQUINT_LEFT, 0);
   this.processFaceLandmarkerResult(
       result, /*triggerMouseControllerInterval=*/ false);
