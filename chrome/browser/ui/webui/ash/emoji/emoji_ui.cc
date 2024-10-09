@@ -51,7 +51,11 @@ class EmojiBubbleDialogView : public WebUIBubbleDialogView {
   explicit EmojiBubbleDialogView(
       std::unique_ptr<WebUIContentsWrapper> contents_wrapper,
       gfx::Rect caret_bounds)
-      : WebUIBubbleDialogView(nullptr, contents_wrapper->GetWeakPtr()),
+      : WebUIBubbleDialogView(nullptr,
+                              contents_wrapper->GetWeakPtr(),
+                              std::nullopt,
+                              views::BubbleBorder::TOP_RIGHT,
+                              /*autosize=*/false),
         contents_wrapper_(std::move(contents_wrapper)),
         caret_bounds_(caret_bounds) {
     set_has_parent(false);
