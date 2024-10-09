@@ -652,7 +652,7 @@ export class AppElement extends AppElementBase {
       case NtpWallpaperSearchButtonHideCondition.BACKGROUND_IMAGE_SET:
         return !this.showBackgroundImage_;
       case NtpWallpaperSearchButtonHideCondition.THEME_SET:
-        return this.colorSourceIsBaseline;
+        return this.colorSourceIsBaseline && !this.showBackgroundImage_;
     }
     return false;
   }

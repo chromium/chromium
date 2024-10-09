@@ -1348,8 +1348,7 @@ suite('NewTabPageAppTest', () => {
       });
 
       test(
-          'wallpaper search button shows when there is no condition',
-          async () => {
+          'hide condition 0 shows button unconditonally', async () => {
             loadTimeData.overrideValues({
               wallpaperSearchButtonHideCondition: /*NONE*/ 0,
             });
@@ -1358,7 +1357,7 @@ suite('NewTabPageAppTest', () => {
             assertTrue(
                 !!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
 
-            const theme = createTheme();
+            const theme = createTheme({isBaseline: false});
             theme.backgroundImage = createBackgroundImage('https://foo.com');
             await callbackRouterRemote.$.flushForTesting();
 
@@ -1367,31 +1366,28 @@ suite('NewTabPageAppTest', () => {
                 !!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
           });
 
-      test(
-          'wallpaper search button conditionally hides when background is set',
-          async () => {
-            loadTimeData.overrideValues({
-              wallpaperSearchButtonHideCondition: /*BACKGROUND_IMAGE_SET*/ 1,
-            });
+      test('hideCondition 1 hides button if background is set', async () => {
+        loadTimeData.overrideValues({
+          wallpaperSearchButtonHideCondition: 1,
+        });
 
-            assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
-            assertTrue(
-                !!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
+        assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
+        assertTrue(!!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
 
-            // Set theme with a background image.
-            const theme = createTheme();
-            theme.backgroundImage = createBackgroundImage('https://img.png');
-            callbackRouterRemote.setTheme(theme);
-            await backgroundManager.whenCalled('setShowBackgroundImage');
-            await microtasksFinished();
+        // Set theme with a background image and baseline color.
+        const theme = createTheme({isBaseline: true});
+        theme.backgroundImage = createBackgroundImage('https://img.png');
+        callbackRouterRemote.setTheme(theme);
+        await backgroundManager.whenCalled('setShowBackgroundImage');
+        await microtasksFinished();
 
-            assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
-            assertFalse(
-                !!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
-          });
+        assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
+        assertFalse(!!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
+      });
 
       test(
-          'wallpaper search button conditionally hides when theme is set',
+          'hide condition 2 hides button if background or' +
+              ' non-baseline color is set',
           async () => {
             loadTimeData.overrideValues({
               wallpaperSearchButtonHideCondition: /*THEME_SET*/ 2,
@@ -1401,8 +1397,30 @@ suite('NewTabPageAppTest', () => {
             assertTrue(
                 !!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
 
+            // Set theme with a non-baseline color that has no background image.
             callbackRouterRemote.setTheme(createTheme({isBaseline: false}));
             await callbackRouterRemote.$.flushForTesting();
+            await microtasksFinished();
+
+            assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
+            assertFalse(
+                !!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
+
+            // Resurface button by setting a theme with a baseline color (and no
+            // background image).
+            callbackRouterRemote.setTheme(createTheme({isBaseline: true}));
+            await callbackRouterRemote.$.flushForTesting();
+            await microtasksFinished();
+
+            assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
+            assertTrue(
+                !!app.shadowRoot!.querySelector('#wallpaperSearchButton'));
+
+            // Set theme with a background image and baseline color.
+            const theme = createTheme({isBaseline: true});
+            theme.backgroundImage = createBackgroundImage('https://img.png');
+            callbackRouterRemote.setTheme(theme);
+            await backgroundManager.whenCalled('setShowBackgroundImage');
             await microtasksFinished();
 
             assertTrue(!!app.shadowRoot!.querySelector('#customizeButton'));
