@@ -66,7 +66,7 @@ TEST_F(FederatedProviderFetcherTest, FailedToFetchWellKnown) {
 
   // Asserts that we get a kWellKnownHttpNotFound.
   fetcher.Start(
-      {GURL("https://idp.example/fedcm.json")}, blink::mojom::RpMode::kWidget,
+      {GURL("https://idp.example/fedcm.json")}, blink::mojom::RpMode::kPassive,
       /*icon_ideal_size=*/0,
       /*icon_minimum_size=*/0,
       base::BindLambdaForTesting(
@@ -118,7 +118,7 @@ TEST_F(FederatedProviderFetcherTest, FailedToFetchWellKnownButNoEnforcement) {
 
   // Asserts that we get no error in the result.
   fetcher.Start(
-      {GURL("https://idp.example/fedcm.json")}, blink::mojom::RpMode::kWidget,
+      {GURL("https://idp.example/fedcm.json")}, blink::mojom::RpMode::kPassive,
       /*icon_ideal_size=*/0,
       /*icon_minimum_size=*/0,
       base::BindLambdaForTesting(
@@ -161,7 +161,7 @@ TEST_F(FederatedProviderFetcherTest, FailedToFetchConfig) {
 
   // Asserts that we get a kConfigHttpNotFound.
   fetcher.Start(
-      {GURL("https://idp.example/fedcm.json")}, blink::mojom::RpMode::kWidget,
+      {GURL("https://idp.example/fedcm.json")}, blink::mojom::RpMode::kPassive,
       /*icon_ideal_size=*/0,
       /*icon_minimum_size=*/0,
       base::BindLambdaForTesting(
@@ -203,7 +203,7 @@ TEST_F(FederatedProviderFetcherTest, SucceedsToFetchConfigButInvalidResponse) {
 
   // Asserts that we get a kConfigHttpNotFound.
   fetcher.Start(
-      {GURL("https://idp.example/fedcm.json")}, blink::mojom::RpMode::kWidget,
+      {GURL("https://idp.example/fedcm.json")}, blink::mojom::RpMode::kPassive,
       /*icon_ideal_size=*/0,
       /*icon_minimum_size=*/0,
       base::BindLambdaForTesting(
@@ -252,7 +252,7 @@ TEST_F(FederatedProviderFetcherTest, SuccessfullAndValidResponse) {
 
   // Asserts that we get a kConfigHttpNotFound.
   fetcher.Start(
-      {GURL("https://idp.example/fedcm.json")}, blink::mojom::RpMode::kWidget,
+      {GURL("https://idp.example/fedcm.json")}, blink::mojom::RpMode::kPassive,
       /*icon_ideal_size=*/0,
       /*icon_minimum_size=*/0,
       base::BindLambdaForTesting(
@@ -301,7 +301,7 @@ TEST_F(FederatedProviderFetcherTest,
 
   // Asserts that we get a kConfigHttpNotFound.
   fetcher.Start(
-      {GURL("https://idp.example/fedcm.json")}, blink::mojom::RpMode::kWidget,
+      {GURL("https://idp.example/fedcm.json")}, blink::mojom::RpMode::kPassive,
       /*icon_ideal_size=*/0,
       /*icon_minimum_size=*/0,
       base::BindLambdaForTesting(
@@ -358,7 +358,7 @@ TEST_F(FederatedProviderFetcherTest,
 
   // Asserts that we get a kConfigHttpNotFound.
   fetcher.Start(
-      {GURL("https://idp.example/fedcm.json")}, blink::mojom::RpMode::kWidget,
+      {GURL("https://idp.example/fedcm.json")}, blink::mojom::RpMode::kPassive,
       /*icon_ideal_size=*/0,
       /*icon_minimum_size=*/0,
       base::BindLambdaForTesting(

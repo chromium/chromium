@@ -378,8 +378,8 @@ FederatedAuthRequestResultToProtocol(
       return FederatedAuthRequestIssueReasonEnum::
           MissingTransientUserActivation;
     }
-    case FederatedAuthRequestResult::kReplacedByButtonMode: {
-      return FederatedAuthRequestIssueReasonEnum::ReplacedByButtonMode;
+    case FederatedAuthRequestResult::kReplacedByActiveMode: {
+      return FederatedAuthRequestIssueReasonEnum::ReplacedByActiveMode;
     }
     case FederatedAuthRequestResult::kInvalidFieldsSpecified: {
       return FederatedAuthRequestIssueReasonEnum::InvalidFieldsSpecified;

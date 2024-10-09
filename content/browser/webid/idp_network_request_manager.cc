@@ -77,8 +77,8 @@ constexpr char kTypesKey[] = "types";
 constexpr char kIncludeKey[] = "include";
 
 // Keys in the 'modes' dictionary.
-constexpr char kButtonModeKey[] = "button";
-constexpr char kWidgetModeKey[] = "widget";
+constexpr char kActiveModeKey[] = "active";
+constexpr char kPassiveModeKey[] = "passive";
 
 // Keys in the specific mode dictionary.
 constexpr char kSupportsUseOtherAccountKey[] = "supports_use_other_account";
@@ -584,16 +584,16 @@ void OnConfigParsed(const GURL& provider,
     }
   }
 
-  if (IsFedCmUseOtherAccountEnabled(rp_mode == blink::mojom::RpMode::kButton)) {
+  if (IsFedCmUseOtherAccountEnabled(rp_mode == blink::mojom::RpMode::kActive)) {
     const base::Value::Dict* modes_dict = response.FindDict(kModesKey);
     const base::Value::Dict* selected_mode_dict = nullptr;
     if (modes_dict) {
       switch (rp_mode) {
-        case blink::mojom::RpMode::kWidget:
-          selected_mode_dict = modes_dict->FindDict(kWidgetModeKey);
+        case blink::mojom::RpMode::kPassive:
+          selected_mode_dict = modes_dict->FindDict(kPassiveModeKey);
           break;
-        case blink::mojom::RpMode::kButton:
-          selected_mode_dict = modes_dict->FindDict(kButtonModeKey);
+        case blink::mojom::RpMode::kActive:
+          selected_mode_dict = modes_dict->FindDict(kActiveModeKey);
           break;
       };
     }

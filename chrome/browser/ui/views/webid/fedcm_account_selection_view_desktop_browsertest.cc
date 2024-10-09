@@ -54,7 +54,8 @@ class FedCmAccountSelectionViewBrowserTest : public DialogBrowserTest {
         /*labels=*/std::vector<std::string>())};
     accounts_[0]->identity_provider = idps_[0];
     account_selection_view()->Show(
-        "rp-example.com", idps_, accounts_, mode, blink::mojom::RpMode::kWidget,
+        "rp-example.com", idps_, accounts_, mode,
+        blink::mojom::RpMode::kPassive,
         /*new_accounts=*/std::vector<IdentityRequestAccountPtr>());
   }
 
@@ -163,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
       &FedCmAccountSelectionViewBrowserTest::ResetAccountSelectionView,
       base::Unretained(this)));
   account_selection_view_->ShowModalDialog(GURL("https://example.test/"),
-                                           blink::mojom::RpMode::kWidget);
+                                           blink::mojom::RpMode::kPassive);
   // Because a modal dialog is up, this should save the accounts for later.
   ShowAccounts(Account::SignInMode::kAuto);
   // This should trigger auto re-authn without crashing or UAF.

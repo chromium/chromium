@@ -266,7 +266,7 @@ struct MockConfiguration {
       kTokenNotReceivedAndErrorNotReceivedAndContinueOnNotReceived;
   std::optional<ErrorDialogType> error_dialog_type;
   std::optional<ErrorUrlType> error_url_type;
-  blink::mojom::RpMode rp_mode{blink::mojom::RpMode::kWidget};
+  blink::mojom::RpMode rp_mode{blink::mojom::RpMode::kPassive};
 };
 
 static const MockClientIdConfiguration kDefaultClientMetadata{
@@ -282,7 +282,7 @@ static const IdentityProviderParameters kDefaultIdentityProviderRequestOptions{
 static const RequestParameters kDefaultRequestParameters{
     std::vector<IdentityProviderParameters>{
         kDefaultIdentityProviderRequestOptions},
-    blink::mojom::RpContext::kSignIn, blink::mojom::RpMode::kWidget};
+    blink::mojom::RpContext::kSignIn, blink::mojom::RpMode::kPassive};
 
 static MockIdpInfo kDefaultIdentityProviderInfo;
 static MockIdpInfo kProviderTwoInfo;
@@ -305,7 +305,7 @@ static const RequestParameters kDefaultMultiIdpRequestParameters{
         {kProviderTwoUrlFull, kClientId, kNonce, /*login_hint=*/"",
          /*domain_hint=*/""}},
     /*rp_context=*/blink::mojom::RpContext::kSignIn,
-    /*rp_mode=*/blink::mojom::RpMode::kWidget};
+    /*rp_mode=*/blink::mojom::RpMode::kPassive};
 
 url::Origin OriginFromString(const std::string& url_string) {
   return url::Origin::Create(GURL(url_string));
@@ -1163,7 +1163,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
 
       EXPECT_EQ(did_show_accounts_dialog(),
                 !expectation.is_auto_selected ||
-                    configuration.rp_mode != blink::mojom::RpMode::kButton);
+                    configuration.rp_mode != blink::mojom::RpMode::kActive);
     }
 
     EXPECT_EQ(expectation.is_auto_selected, auth_helper_.is_auto_selected());
@@ -1648,7 +1648,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
                                              GURL(kIdpUrl), GURL(login_url));
   }
 
-  void ExpectSuccessfulButtonFlow() {
+  void ExpectSuccessfulActiveFlow() {
     base::test::ScopedFeatureList list;
     list.InitAndEnableFeature(features::kFedCmButtonMode);
 
@@ -1672,7 +1672,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
         }));
 
     RequestParameters parameters = kDefaultRequestParameters;
-    parameters.rp_mode = blink::mojom::RpMode::kButton;
+    parameters.rp_mode = blink::mojom::RpMode::kActive;
 
     request_remote_.set_disconnect_handler(auth_helper_.quit_closure());
 
@@ -1695,7 +1695,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
     CheckAuthExpectations(kConfigurationValid, kExpectationSuccess);
 
     // These metrics are not recorded when a user's LoginStatus is "logged-out"
-    // such that they need to sign in to the IdP in the button flow.
+    // such that they need to sign in to the IdP in the active flow.
     histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ShowAccountsDialog",
                                        0);
     histogram_tester_.ExpectTotalCount(
@@ -1954,7 +1954,7 @@ TEST_F(FederatedAuthRequestImplTest, ProviderNotTrustworthy) {
   RequestParameters request{
       std::vector<IdentityProviderParameters>{identity_provider},
       /*rp_context=*/blink::mojom::RpContext::kSignIn,
-      /*rp_mode=*/blink::mojom::RpMode::kWidget};
+      /*rp_mode=*/blink::mojom::RpMode::kPassive};
   MockConfiguration configuration = kConfigurationValid;
   RequestExpectations expectations = {
       RequestTokenStatus::kError,
@@ -2961,7 +2961,7 @@ TEST_F(FederatedAuthRequestImplTest, MetricsForSuccessfulSignInCase) {
   ExpectNoUKMPresence("Timing.CancelOnDialog");
   ExpectUKMPresence("Timing.AccountsDialogShownDuration");
   ExpectNoUKMPresence("Timing.MismatchDialogShownDuration");
-  ExpectUkmValue("RpMode", static_cast<int>(RpMode::kWidget));
+  ExpectUkmValue("RpMode", static_cast<int>(RpMode::kPassive));
 
   ExpectStatusMetrics(TokenStatus::kSuccessUsingTokenInHttpResponse);
   CheckAllFedCmSessionIDs();
@@ -4508,7 +4508,7 @@ TEST_F(FederatedAuthRequestImplTest, MultiIdpLoginToOneIdp) {
   // The second IDP has 3 accounts, so those should be showing up.
   EXPECT_EQ(all_accounts_for_display().size(), 3u);
 
-  // First, simulate the user clicking on the sign in to IDP button.
+  // First, simulate the user clicking on the sign in to IDP active.
   SimulateLoginToIdP();
   // Then, simulate user signing into IdP by updating the IdP signin status and
   // calling the observer.
@@ -4968,7 +4968,7 @@ TEST_F(FederatedAuthRequestImplTest, TooManyRequests) {
                                        1);
   ExpectUkmValue(
       "MultipleRequestsRpMode",
-      static_cast<int>(FedCmMultipleRequestsRpMode::kWidgetThenWidget));
+      static_cast<int>(FedCmMultipleRequestsRpMode::kPassiveThenPassive));
 
   // Check for RP-keyed UKM presence.
   ExpectUKMPresenceInternal("NumRequestsPerDocument", FedCmEntry::kEntryName);
@@ -4976,7 +4976,7 @@ TEST_F(FederatedAuthRequestImplTest, TooManyRequests) {
 }
 
 TEST_F(FederatedAuthRequestImplTest,
-       ButtonModeTooManyRequestsWithNewWidgetFlow) {
+       ActiveModeTooManyRequestsWithNewPassiveFlow) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmButtonMode);
   base::RunLoop ukm_loop;
@@ -4987,7 +4987,7 @@ TEST_F(FederatedAuthRequestImplTest,
   configuration.accounts_dialog_action = AccountsDialogAction::kNone;
 
   RequestParameters parameters = kDefaultRequestParameters;
-  parameters.rp_mode = blink::mojom::RpMode::kButton;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
 
   static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
       ->SimulateUserActivation();
@@ -5000,8 +5000,8 @@ TEST_F(FederatedAuthRequestImplTest,
   configuration.accounts_dialog_action =
       AccountsDialogAction::kSelectFirstAccount;
   SetNetworkRequestManager(std::make_unique<TestIdpNetworkRequestManager>());
-  // The next FedCM request should fail since a widget flow cannot replace
-  // another button flow.
+  // The next FedCM request should fail since a passive flow cannot replace
+  // another active flow.
   RequestExpectations expectations = {
       RequestTokenStatus::kErrorTooManyRequests,
       FederatedAuthRequestResult::kTooManyRequests,
@@ -5025,7 +5025,7 @@ TEST_F(FederatedAuthRequestImplTest,
                                        1);
   ExpectUkmValue(
       "MultipleRequestsRpMode",
-      static_cast<int>(FedCmMultipleRequestsRpMode::kButtonThenWidget));
+      static_cast<int>(FedCmMultipleRequestsRpMode::kActiveThenPassive));
 
   // Check for RP-keyed UKM presence.
   ExpectUKMPresenceInternal("NumRequestsPerDocument", FedCmEntry::kEntryName);
@@ -5033,7 +5033,7 @@ TEST_F(FederatedAuthRequestImplTest,
 }
 
 TEST_F(FederatedAuthRequestImplTest,
-       ButtonModeTooManyRequestsWithNewButtonFlow) {
+       ActiveModeTooManyRequestsWithNewActiveFlow) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmButtonMode);
   base::RunLoop ukm_loop;
@@ -5044,7 +5044,7 @@ TEST_F(FederatedAuthRequestImplTest,
   configuration.accounts_dialog_action = AccountsDialogAction::kNone;
 
   RequestParameters parameters = kDefaultRequestParameters;
-  parameters.rp_mode = blink::mojom::RpMode::kButton;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
 
   static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
       ->SimulateUserActivation();
@@ -5057,8 +5057,8 @@ TEST_F(FederatedAuthRequestImplTest,
   configuration.accounts_dialog_action =
       AccountsDialogAction::kSelectFirstAccount;
   SetNetworkRequestManager(std::make_unique<TestIdpNetworkRequestManager>());
-  // The next FedCM request should fail since a button flow cannot replace
-  // another button flow.
+  // The next FedCM request should fail since a active flow cannot replace
+  // another active flow.
   RequestExpectations expectations = {
       RequestTokenStatus::kErrorTooManyRequests,
       FederatedAuthRequestResult::kTooManyRequests,
@@ -5085,7 +5085,7 @@ TEST_F(FederatedAuthRequestImplTest,
                                        1);
   ExpectUkmValue(
       "MultipleRequestsRpMode",
-      static_cast<int>(FedCmMultipleRequestsRpMode::kButtonThenButton));
+      static_cast<int>(FedCmMultipleRequestsRpMode::kActiveThenActive));
 
   // Check for RP-keyed UKM presence.
   ExpectUKMPresenceInternal("NumRequestsPerDocument", FedCmEntry::kEntryName);
@@ -6058,14 +6058,14 @@ TEST_F(FederatedAuthRequestImplTest, RequestWithParametersAndScopes) {
 }
 
 // Test successfully signing-in users when they are signed-out on
-// button flows.
+// active flows.
 TEST_F(FederatedAuthRequestImplTest,
-       SignInWhenSignedOutOnButtonModeWithUserActivation) {
-  ExpectSuccessfulButtonFlow();
+       SignInWhenSignedOutOnActiveModeWithUserActivation) {
+  ExpectSuccessfulActiveFlow();
 }
 
-// Test button flow failure outside of user activation.
-TEST_F(FederatedAuthRequestImplTest, ButtonFlowRequiresUserActivation) {
+// Test active flow failure outside of user activation.
+TEST_F(FederatedAuthRequestImplTest, ActiveFlowRequiresUserActivation) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmButtonMode);
 
@@ -6073,7 +6073,7 @@ TEST_F(FederatedAuthRequestImplTest, ButtonFlowRequiresUserActivation) {
       ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = false;
 
   RequestParameters parameters = kDefaultRequestParameters;
-  parameters.rp_mode = blink::mojom::RpMode::kButton;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
 
   request_remote_.set_disconnect_handler(auth_helper_.quit_closure());
 
@@ -6083,15 +6083,15 @@ TEST_F(FederatedAuthRequestImplTest, ButtonFlowRequiresUserActivation) {
       /*standalone_console_message=*/std::nullopt,
       /*selected_idp_config_url=*/std::nullopt};
 
-  // Button flow request gets rejected without delay.
+  // Active flow request gets rejected without delay.
   RunAuthDontWaitForCallback(parameters, kConfigurationValid);
   CheckAuthExpectations(kConfigurationValid, error);
 
   EXPECT_FALSE(DidFetchAnyEndpoint());
 }
 
-// Test the button flow request fails without delay if IdP config is wrong.
-TEST_F(FederatedAuthRequestImplTest, ButtonFlowWellKnownNotInList) {
+// Test the active flow request fails without delay if IdP config is wrong.
+TEST_F(FederatedAuthRequestImplTest, ActiveFlowWellKnownNotInList) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmButtonMode);
 
@@ -6111,12 +6111,12 @@ TEST_F(FederatedAuthRequestImplTest, ButtonFlowWellKnownNotInList) {
       {kWellKnownMismatchConfigUrl}, {ParseStatus::kSuccess, net::HTTP_OK}};
 
   RequestParameters parameters = kDefaultRequestParameters;
-  parameters.rp_mode = blink::mojom::RpMode::kButton;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
 
   static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
       ->SimulateUserActivation();
 
-  // Button flow request gets rejected without delay.
+  // Active flow request gets rejected without delay.
   RunAuthDontWaitForCallback(parameters, config);
   CheckAuthExpectations(config, request_not_in_list);
 
@@ -6124,7 +6124,7 @@ TEST_F(FederatedAuthRequestImplTest, ButtonFlowWellKnownNotInList) {
   EXPECT_FALSE(DidFetch(FetchedEndpoint::ACCOUNTS));
 }
 
-TEST_F(FederatedAuthRequestImplTest, ButtonFlowWithUnknownLoginStatus) {
+TEST_F(FederatedAuthRequestImplTest, ActiveFlowWithUnknownLoginStatus) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmButtonMode);
 
@@ -6148,7 +6148,7 @@ TEST_F(FederatedAuthRequestImplTest, ButtonFlowWithUnknownLoginStatus) {
       .WillOnce(Return(nullptr));
 
   RequestParameters parameters = kDefaultRequestParameters;
-  parameters.rp_mode = blink::mojom::RpMode::kButton;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
 
   static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
       ->SimulateUserActivation();
@@ -6156,8 +6156,8 @@ TEST_F(FederatedAuthRequestImplTest, ButtonFlowWithUnknownLoginStatus) {
   RunAuthDontWaitForCallback(parameters, configuration);
 }
 
-// Test that button flow can skip the mismatch UI.
-TEST_F(FederatedAuthRequestImplTest, ButtonFlowSkipsMismatchUI) {
+// Test that active flow can skip the mismatch UI.
+TEST_F(FederatedAuthRequestImplTest, ActiveFlowSkipsMismatchUI) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmButtonMode);
 
@@ -6177,7 +6177,7 @@ TEST_F(FederatedAuthRequestImplTest, ButtonFlowSkipsMismatchUI) {
       .WillOnce(Return(nullptr));
 
   RequestParameters parameters = kDefaultRequestParameters;
-  parameters.rp_mode = blink::mojom::RpMode::kButton;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
   static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
       ->SimulateUserActivation();
 
@@ -6187,14 +6187,14 @@ TEST_F(FederatedAuthRequestImplTest, ButtonFlowSkipsMismatchUI) {
   EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
 }
 
-// Test that button flow shows the loading dialog.
-TEST_F(FederatedAuthRequestImplTest, ButtonFlowShowsLoadingUI) {
-  ExpectSuccessfulButtonFlow();
+// Test that active flow shows the loading dialog.
+TEST_F(FederatedAuthRequestImplTest, ActiveFlowShowsLoadingUI) {
+  ExpectSuccessfulActiveFlow();
   EXPECT_TRUE(dialog_controller_state_.did_show_loading_dialog);
 }
 
-// Test dismissing a button flow through the loading UI.
-TEST_F(FederatedAuthRequestImplTest, ButtonFlowDismissLoadingUI) {
+// Test dismissing a active flow through the loading UI.
+TEST_F(FederatedAuthRequestImplTest, ActiveFlowDismissLoadingUI) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmButtonMode);
 
@@ -6202,7 +6202,7 @@ TEST_F(FederatedAuthRequestImplTest, ButtonFlowDismissLoadingUI) {
       ->SimulateUserActivation();
 
   RequestParameters parameters = kDefaultRequestParameters;
-  parameters.rp_mode = blink::mojom::RpMode::kButton;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError, FederatedAuthRequestResult::kError,
@@ -7202,8 +7202,8 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintAddAccount) {
   EXPECT_EQ(login_url, kIdpLoginUrl);
 }
 
-// Test that auto re-authn works in button mode.
-TEST_F(FederatedAuthRequestImplTest, AutoReauthnInButtonMode) {
+// Test that auto re-authn works in active mode.
+TEST_F(FederatedAuthRequestImplTest, AutoReauthnInActiveMode) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmButtonMode);
 
@@ -7218,7 +7218,7 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnInButtonMode) {
   for (const auto& idp_info : kConfigurationValid.idp_info) {
     ASSERT_EQ(idp_info.second.accounts.size(), 1u);
   }
-  // The following checks work in button mode.
+  // The following checks work in active mode.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
               IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
       .WillOnce(Return(false));
@@ -7233,7 +7233,7 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnInButtonMode) {
       ->SimulateUserActivation();
 
   RequestParameters parameters = kDefaultRequestParameters;
-  parameters.rp_mode = blink::mojom::RpMode::kButton;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
 
   RunAuthDontWaitForCallback(parameters, kConfigurationValid);
 
@@ -7262,7 +7262,7 @@ TEST_F(FederatedAuthRequestImplTest,
       ->SimulateUserActivation();
 
   RequestParameters parameters = kDefaultRequestParameters;
-  parameters.rp_mode = blink::mojom::RpMode::kButton;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
 
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].accounts = kMultipleAccounts;
@@ -7299,7 +7299,7 @@ TEST_F(FederatedAuthRequestImplTest,
       ->SimulateUserActivation();
 
   RequestParameters parameters = kDefaultRequestParameters;
-  parameters.rp_mode = blink::mojom::RpMode::kButton;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
 
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].accounts = kMultipleAccounts;
@@ -7343,7 +7343,7 @@ TEST_F(FederatedAuthRequestImplTest,
       ->SimulateUserActivation();
 
   RequestParameters parameters = kDefaultRequestParameters;
-  parameters.rp_mode = blink::mojom::RpMode::kButton;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
 
   MockConfiguration configuration = kConfigurationValid;
   configuration.idp_info[kProviderUrlFull].accounts = kMultipleAccounts;
@@ -7363,23 +7363,23 @@ TEST_F(FederatedAuthRequestImplTest,
             LoginState::kSignUp);
 }
 
-// Test button flow is exempted if the FedCM is disabled in  settings.
-TEST_F(FederatedAuthRequestImplTest, ButtonFlowNotAffectedBySettings) {
+// Test active flow is exempted if the FedCM is disabled in  settings.
+TEST_F(FederatedAuthRequestImplTest, ActiveFlowNotAffectedBySettings) {
   test_api_permission_delegate_->permission_override_ =
       std::make_pair(main_test_rfh()->GetLastCommittedOrigin(),
                      ApiPermissionStatus::BLOCKED_SETTINGS);
-  ExpectSuccessfulButtonFlow();
+  ExpectSuccessfulActiveFlow();
 }
 
-// Test button flow is exempted if the FedCM is embargoed in the widget flow.
-TEST_F(FederatedAuthRequestImplTest, ButtonFlowNotAffectedByEmbargo) {
+// Test active flow is exempted if the FedCM is embargoed in the passive flow.
+TEST_F(FederatedAuthRequestImplTest, ActiveFlowNotAffectedByEmbargo) {
   test_api_permission_delegate_->RecordDismissAndEmbargo(
       OriginFromString(kRpUrl));
-  ExpectSuccessfulButtonFlow();
+  ExpectSuccessfulActiveFlow();
 }
 
-// Test dismissing UI in button flow does not trigger embargo.
-TEST_F(FederatedAuthRequestImplTest, ButtonFlowNotAffectEmbargo) {
+// Test dismissing UI in active flow does not trigger embargo.
+TEST_F(FederatedAuthRequestImplTest, ActiveFlowNotAffectEmbargo) {
   base::test::ScopedFeatureList list;
   list.InitAndEnableFeature(features::kFedCmButtonMode);
 
@@ -7391,7 +7391,7 @@ TEST_F(FederatedAuthRequestImplTest, ButtonFlowNotAffectEmbargo) {
       ->SimulateUserActivation();
 
   RequestParameters parameters = kDefaultRequestParameters;
-  parameters.rp_mode = blink::mojom::RpMode::kButton;
+  parameters.rp_mode = blink::mojom::RpMode::kActive;
 
   RequestExpectations expectations = {
       RequestTokenStatus::kError, FederatedAuthRequestResult::kError,
@@ -7404,7 +7404,7 @@ TEST_F(FederatedAuthRequestImplTest, ButtonFlowNotAffectEmbargo) {
   RunAuthTest(parameters, expectations, configuration);
 
   ukm_loop.Run();
-  ExpectUkmValue("RpMode", static_cast<int>(RpMode::kButton));
+  ExpectUkmValue("RpMode", static_cast<int>(RpMode::kActive));
 
   EXPECT_TRUE(did_show_accounts_dialog());
   EXPECT_FALSE(DidFetch(FetchedEndpoint::TOKEN));

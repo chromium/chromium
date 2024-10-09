@@ -37,13 +37,13 @@ import org.chromium.ui.modelutil.PropertyModel;
 import java.util.Arrays;
 import java.util.Collections;
 
-/** Controller tests verify that the Account Selection Widget Mode delegate modifies the model. */
+/** Controller tests verify that the Account Selection Passive Mode delegate modifies the model. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AccountSelectionWidgetModeControllerTest extends AccountSelectionJUnitTestBase {
     @Before
     @Override
     public void setUp() {
-        mRpMode = RpMode.WIDGET;
+        mRpMode = RpMode.PASSIVE;
         super.setUp();
     }
 

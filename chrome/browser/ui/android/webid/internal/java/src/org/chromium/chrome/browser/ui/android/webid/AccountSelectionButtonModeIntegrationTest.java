@@ -58,7 +58,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * Integration tests for the Account Selection Button Mode component check that the calls to the
+ * Integration tests for the Account Selection Active Mode component check that the calls to the
  * Account Selection API end up rendering a View. This class is parameterized to run all tests for
  * each RP mode.
  */
@@ -69,7 +69,7 @@ public class AccountSelectionButtonModeIntegrationTest extends AccountSelectionI
     @Before
     @Override
     public void setUp() throws InterruptedException {
-        mRpMode = RpMode.BUTTON;
+        mRpMode = RpMode.ACTIVE;
         super.setUp();
     }
 

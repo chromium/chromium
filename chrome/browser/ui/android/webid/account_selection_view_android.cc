@@ -178,7 +178,7 @@ void RecordJavaObjectCreationOutcome(
     return;
   }
   const char* mode =
-      *rp_mode == blink::mojom::RpMode::kWidget ? "Widget" : "Button";
+      *rp_mode == blink::mojom::RpMode::kPassive ? "Passive" : "Active";
   base::UmaHistogramEnumeration(
       base::StringPrintf("Blink.FedCm.JavaObjectCreationOutcome.%s", mode),
       outcome);
@@ -233,7 +233,7 @@ bool AccountSelectionViewAndroid::Show(
       env, java_object_internal_, rp_for_display, idp_list[0]->idp_for_display,
       accounts_obj, idp_obj,
       sign_in_mode == Account::SignInMode::kAuto &&
-          rp_mode == blink::mojom::RpMode::kWidget,
+          rp_mode == blink::mojom::RpMode::kPassive,
       new_accounts_obj);
   return true;
 }
@@ -244,9 +244,9 @@ bool AccountSelectionViewAndroid::ShowFailureDialog(
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode,
     const content::IdentityProviderMetadata& idp_metadata) {
-  // ShowFailureDialog is never called in button mode.
+  // ShowFailureDialog is never called in active mode.
   // TODO(crbug.com/347736746): Remove rp_mode from this method.
-  CHECK(rp_mode == blink::mojom::RpMode::kWidget);
+  CHECK(rp_mode == blink::mojom::RpMode::kPassive);
 
   if (!MaybeCreateJavaObject(rp_mode)) {
     // It's possible that the constructor cannot access the bottom sheet clank
@@ -271,8 +271,8 @@ bool AccountSelectionViewAndroid::ShowErrorDialog(
     blink::mojom::RpMode rp_mode,
     const content::IdentityProviderMetadata& idp_metadata,
     const std::optional<TokenError>& error) {
-  // TODO(crbug.com/347117752): Implement button mode error dialog.
-  if (rp_mode == blink::mojom::RpMode::kButton ||
+  // TODO(crbug.com/347117752): Implement active mode error dialog.
+  if (rp_mode == blink::mojom::RpMode::kActive ||
       !MaybeCreateJavaObject(rp_mode)) {
     // It's possible that the constructor cannot access the bottom sheet clank
     // component. That case may be temporary but we can't let users in a
@@ -416,7 +416,7 @@ bool AccountSelectionViewAndroid::MaybeCreateJavaObject(
       env, reinterpret_cast<intptr_t>(this),
       delegate_->GetWebContents()->GetJavaWebContents(),
       delegate_->GetNativeView()->GetWindowAndroid()->GetJavaObject(),
-      static_cast<jint>(rp_mode.value_or(blink::mojom::RpMode::kWidget)));
+      static_cast<jint>(rp_mode.value_or(blink::mojom::RpMode::kPassive)));
 
   if (!!java_object_internal_) {
     RecordJavaObjectCreationOutcome(

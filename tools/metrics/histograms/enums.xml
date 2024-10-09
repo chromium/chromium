@@ -11236,13 +11236,13 @@ Called by update_permissions_policy_enum.py.-->
 
 <enum name="FedCmMultipleRequestsRpMode">
   <int value="0"
-      label="A widget flow is invoked while a widget flow is pending"/>
+      label="A passive flow is invoked while a passive flow is pending"/>
   <int value="1"
-      label="A widget flow is invoked while a button flow is pending"/>
+      label="A passive flow is invoked while an active flow is pending"/>
   <int value="2"
-      label="A button flow is invoked while a widget flow is pending"/>
+      label="An active flow is invoked while a passive flow is pending"/>
   <int value="3"
-      label="A button flow is invoked while a button flow is pending"/>
+      label="An active flow is invoked while an active flow is pending"/>
 </enum>
 
 <enum name="FedCmNumAccounts">
@@ -11302,7 +11302,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="41" label="IdTokenCrossSiteIdpErrorResponse"/>
   <int value="42" label="OtherIdpChosen"/>
   <int value="43" label="MissingTransientUserActivation"/>
-  <int value="44" label="ReplacedByButtonMode"/>
+  <int value="44" label="ReplacedByActiveMode"/>
   <int value="45" label="ContinuationPopupClosedByUser"/>
   <int value="46" label="SuccessUsingIdentityProviderResolve"/>
   <int value="47" label="ContinuationPopupClosedByIdentityProviderClose"/>
@@ -11336,8 +11336,8 @@ Called by update_permissions_policy_enum.py.-->
 </enum>
 
 <enum name="FedCmRpMode">
-  <int value="0" label="Widget"/>
-  <int value="1" label="Button"/>
+  <int value="0" label="Passive"/>
+  <int value="1" label="Active"/>
 </enum>
 
 <enum name="FedCmRpParameters">

@@ -247,7 +247,7 @@ enum FederatedAuthRequestResult {
   kThirdPartyCookiesBlocked,
   kNotSignedInWithIdp,
   kMissingTransientUserActivation,
-  kReplacedByButtonMode,
+  kReplacedByActiveMode,
   kInvalidFieldsSpecified,
   kRelyingPartyOriginIsOpaque,
   kTypeNotMatching,

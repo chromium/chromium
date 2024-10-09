@@ -59,15 +59,15 @@ bool IsWebIdentityDigitalCredentialsEnabled() {
   return base::FeatureList::IsEnabled(features::kWebIdentityDigitalCredentials);
 }
 
-bool IsFedCmUseOtherAccountEnabled(bool is_button_mode) {
-  // TODO(crbug.com/328470597): this feature is bundled with the button mode at
+bool IsFedCmUseOtherAccountEnabled(bool is_active_mode) {
+  // TODO(crbug.com/328470597): this feature is bundled with the active mode at
   // the moment. We should decouple them when supporting the feature in the
-  // widget flow.
+  // passive flow.
   return base::FeatureList::IsEnabled(features::kFedCmUseOtherAccount) ||
-         (IsFedCmButtonModeEnabled() && is_button_mode);
+         (IsFedCmActiveModeEnabled() && is_active_mode);
 }
 
-bool IsFedCmButtonModeEnabled() {
+bool IsFedCmActiveModeEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmButtonMode);
 }
 

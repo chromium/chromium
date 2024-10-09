@@ -660,8 +660,8 @@ class AccountSelectionViewBinder {
         Resources resources = view.getResources();
         View headerView = view.findViewById(R.id.header);
 
-        // Reuse the same header from previous dialog if button mode verify sheet.
-        if (model.get(HeaderProperties.RP_MODE) == RpMode.BUTTON
+        // Reuse the same header from previous dialog if active mode verify sheet.
+        if (model.get(HeaderProperties.RP_MODE) == RpMode.ACTIVE
                 && (model.get(HeaderProperties.TYPE) == HeaderProperties.HeaderType.VERIFY
                         || model.get(HeaderProperties.TYPE)
                                 == HeaderProperties.HeaderType.VERIFY_AUTO_REAUTHN)) {
@@ -740,8 +740,8 @@ class AccountSelectionViewBinder {
             }
 
             if (key == HeaderProperties.TYPE) {
-                // There is no progress bar or divider in the header for button mode.
-                if (model.get(HeaderProperties.RP_MODE) == RpMode.BUTTON) return;
+                // There is no progress bar or divider in the header for active mode.
+                if (model.get(HeaderProperties.RP_MODE) == RpMode.ACTIVE) return;
 
                 boolean progressBarVisible =
                         (headerType == HeaderProperties.HeaderType.VERIFY
@@ -756,7 +756,7 @@ class AccountSelectionViewBinder {
             if (brandIcon != null) {
                 int iconSize =
                         resources.getDimensionPixelSize(
-                                model.get(HeaderProperties.RP_MODE) == RpMode.BUTTON
+                                model.get(HeaderProperties.RP_MODE) == RpMode.ACTIVE
                                         ? R.dimen.account_selection_button_mode_sheet_icon_size
                                         : R.dimen.account_selection_sheet_icon_size);
                 Drawable croppedBrandIcon =
@@ -766,8 +766,8 @@ class AccountSelectionViewBinder {
                 headerIconView.setVisibility(View.VISIBLE);
             }
         } else if (key == HeaderProperties.RP_BRAND_ICON) {
-            // RP icon is not shown in widget mode.
-            if (model.get(HeaderProperties.RP_MODE) == RpMode.WIDGET) return;
+            // RP icon is not shown in passive mode.
+            if (model.get(HeaderProperties.RP_MODE) == RpMode.PASSIVE) return;
 
             Bitmap brandIcon = model.get(HeaderProperties.RP_BRAND_ICON);
             ImageView headerIconView = (ImageView) view.findViewById(R.id.header_rp_icon);
@@ -788,8 +788,8 @@ class AccountSelectionViewBinder {
             headerIconView.setVisibility(isRpIconVisible ? View.VISIBLE : View.GONE);
             arrowRangeIcon.setVisibility(isRpIconVisible ? View.VISIBLE : View.GONE);
         } else if (key == HeaderProperties.CLOSE_ON_CLICK_LISTENER) {
-            // There is no explicit close button for button mode, user swipes to close instead.
-            if (model.get(HeaderProperties.RP_MODE) == RpMode.BUTTON) return;
+            // There is no explicit close button for active mode, user swipes to close instead.
+            if (model.get(HeaderProperties.RP_MODE) == RpMode.ACTIVE) return;
 
             final Runnable closeOnClickRunnable =
                     (Runnable) model.get(HeaderProperties.CLOSE_ON_CLICK_LISTENER);
@@ -821,7 +821,7 @@ class AccountSelectionViewBinder {
             @RpContext.EnumType int rpContext,
             @RpMode.EnumType int rpMode) {
         @StringRes int titleStringId;
-        if (rpMode == RpMode.BUTTON) {
+        if (rpMode == RpMode.ACTIVE) {
             switch (rpContext) {
                 case RpContext.SIGN_UP:
                     titleStringId =
@@ -871,7 +871,7 @@ class AccountSelectionViewBinder {
             String idpUrl,
             @RpMode.EnumType int rpMode,
             Boolean isMultipleAccountChooser) {
-        if (rpMode == RpMode.WIDGET) return "";
+        if (rpMode == RpMode.PASSIVE) return "";
 
         if (isMultipleAccountChooser) {
             return String.format(

@@ -63,7 +63,7 @@ import java.util.Map;
 public class AccountSelectionViewTest extends AccountSelectionJUnitTestBase {
     @Parameters
     public static Collection<Object> data() {
-        return Arrays.asList(new Object[] {RpMode.WIDGET, RpMode.BUTTON});
+        return Arrays.asList(new Object[] {RpMode.PASSIVE, RpMode.ACTIVE});
     }
 
     @Rule(order = -2)

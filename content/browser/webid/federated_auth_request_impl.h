@@ -142,7 +142,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
     blink::mojom::IdentityProviderRequestOptionsPtr provider;
     blink::mojom::RpContext rp_context{blink::mojom::RpContext::kSignIn};
-    blink::mojom::RpMode rp_mode{blink::mojom::RpMode::kWidget};
+    blink::mojom::RpMode rp_mode{blink::mojom::RpMode::kPassive};
   };
 
   struct IdentityProviderInfo {
@@ -159,7 +159,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     IdentityProviderMetadata metadata;
     bool has_failing_idp_signin_status{false};
     blink::mojom::RpContext rp_context{blink::mojom::RpContext::kSignIn};
-    blink::mojom::RpMode rp_mode{blink::mojom::RpMode::kWidget};
+    blink::mojom::RpMode rp_mode{blink::mojom::RpMode::kPassive};
     IdentityProviderDataPtr data;
   };
 
@@ -199,7 +199,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   };
   DialogType GetDialogType() const { return dialog_type_; }
 
-  enum IdentitySelectionType { kExplicit, kAutoWidget, kAutoButton };
+  enum IdentitySelectionType { kExplicit, kAutoPassive, kAutoActive };
 
   bool ShouldNotifyDevtoolsForDialogType(DialogType type);
 
@@ -434,7 +434,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
                   const GURL& idp_config_url,
                   GURL login_url);
 
-  void MaybeShowButtonModeModalDialog(const GURL& idp_config_url,
+  void MaybeShowActiveModeModalDialog(const GURL& idp_config_url,
                                       const GURL& idp_login_url);
 
   void CompleteDisconnectRequest(DisconnectCallback callback,
@@ -591,7 +591,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   DialogType dialog_type_ = kNone;
   MediationRequirement mediation_requirement_;
   IdentitySelectionType identity_selection_type_ = kExplicit;
-  RpMode rp_mode_{RpMode::kWidget};
+  RpMode rp_mode_{RpMode::kPassive};
 
   // Time when the accounts dialog is last shown for metrics purposes.
   std::optional<base::TimeTicks> accounts_dialog_shown_time_;
@@ -609,12 +609,12 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Wallets or multi-IDP are not counted.
   int num_requests_{0};
 
-  // The button flow requires user activation to be kicked off. We'd also need
+  // The active flow requires user activation to be kicked off. We'd also need
   // this information along the way. e.g. showing pop-up window when accounts
   // fetch is failed. However, the function `HasTransientUserActivation` may
   // return false at that time because the network requests may be very slow
   // such that the previous user gesture is expired. Therefore we store the
-  // information to use it during the entire the button flow.
+  // information to use it during the entire the active flow.
   bool had_transient_user_activation_{false};
 
   base::WeakPtrFactory<FederatedAuthRequestImpl> weak_ptr_factory_{this};

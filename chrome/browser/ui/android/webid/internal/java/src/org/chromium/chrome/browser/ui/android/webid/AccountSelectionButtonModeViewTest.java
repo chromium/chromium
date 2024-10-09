@@ -38,7 +38,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * View tests for the Account Selection Button Mode component ensure that model changes are
+ * View tests for the Account Selection Active Mode component ensure that model changes are
  * reflected in the sheet.
  */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -65,7 +65,7 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
     @Before
     @Override
     public void setUp() {
-        mRpMode = RpMode.BUTTON;
+        mRpMode = RpMode.ACTIVE;
         super.setUp();
     }
 
@@ -86,7 +86,7 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
                             .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
                             .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                             .with(HeaderProperties.RP_CONTEXT, rpContext.mValue)
-                            .with(HeaderProperties.RP_MODE, RpMode.BUTTON)
+                            .with(HeaderProperties.RP_MODE, RpMode.ACTIVE)
                             .build());
             assertEquals(View.VISIBLE, mContentView.getVisibility());
             TextView title = mContentView.findViewById(R.id.header_title);
@@ -110,7 +110,7 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
                             .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
                             .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                             .with(HeaderProperties.RP_CONTEXT, rpContext.mValue)
-                            .with(HeaderProperties.RP_MODE, RpMode.BUTTON)
+                            .with(HeaderProperties.RP_MODE, RpMode.ACTIVE)
                             .build());
             assertEquals(View.VISIBLE, mContentView.getVisibility());
             TextView title = mContentView.findViewById(R.id.header_title);
@@ -134,7 +134,7 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
                             .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
                             .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                             .with(HeaderProperties.RP_CONTEXT, rpContext.mValue)
-                            .with(HeaderProperties.RP_MODE, RpMode.BUTTON)
+                            .with(HeaderProperties.RP_MODE, RpMode.ACTIVE)
                             .with(HeaderProperties.IS_MULTIPLE_ACCOUNT_CHOOSER, true)
                             .build());
             assertEquals(View.VISIBLE, mContentView.getVisibility());
@@ -228,7 +228,7 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
                         .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
                         .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                         .with(HeaderProperties.RP_CONTEXT, RpContext.SIGN_IN)
-                        .with(HeaderProperties.RP_MODE, RpMode.BUTTON)
+                        .with(HeaderProperties.RP_MODE, RpMode.ACTIVE)
                         .with(
                                 HeaderProperties.IDP_BRAND_ICON,
                                 Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888))
@@ -263,7 +263,7 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
                             .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
                             .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                             .with(HeaderProperties.RP_CONTEXT, RpContext.SIGN_IN)
-                            .with(HeaderProperties.RP_MODE, RpMode.BUTTON)
+                            .with(HeaderProperties.RP_MODE, RpMode.ACTIVE)
                             .with(
                                     HeaderProperties.IDP_BRAND_ICON,
                                     Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888))
@@ -291,7 +291,7 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
                         .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
                         .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                         .with(HeaderProperties.RP_CONTEXT, RpContext.SIGN_IN)
-                        .with(HeaderProperties.RP_MODE, RpMode.BUTTON)
+                        .with(HeaderProperties.RP_MODE, RpMode.ACTIVE)
                         .with(
                                 HeaderProperties.IDP_BRAND_ICON,
                                 Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888))
@@ -316,7 +316,7 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
                         .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
                         .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                         .with(HeaderProperties.RP_CONTEXT, RpContext.SIGN_IN)
-                        .with(HeaderProperties.RP_MODE, RpMode.BUTTON)
+                        .with(HeaderProperties.RP_MODE, RpMode.ACTIVE)
                         .with(HeaderProperties.IDP_BRAND_ICON, null)
                         .with(
                                 HeaderProperties.RP_BRAND_ICON,
@@ -341,7 +341,7 @@ public class AccountSelectionButtonModeViewTest extends AccountSelectionJUnitTes
                         .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
                         .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                         .with(HeaderProperties.RP_CONTEXT, RpContext.SIGN_IN)
-                        .with(HeaderProperties.RP_MODE, RpMode.BUTTON)
+                        .with(HeaderProperties.RP_MODE, RpMode.ACTIVE)
                         .with(HeaderProperties.IDP_BRAND_ICON, null)
                         .with(HeaderProperties.RP_BRAND_ICON, null)
                         .build());

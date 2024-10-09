@@ -72,7 +72,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
         Resources resources = ContextUtils.getApplicationContext().getResources();
         return Math.round(
                 resources.getDimension(
-                                rpMode == RpMode.BUTTON
+                                rpMode == RpMode.ACTIVE
                                         ? R.dimen.account_selection_button_mode_sheet_icon_size
                                         : R.dimen.account_selection_sheet_icon_size)
                         / MASKABLE_ICON_SAFE_ZONE_DIAMETER_RATIO);

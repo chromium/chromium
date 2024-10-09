@@ -136,11 +136,11 @@ void IdentityDialogController::OnAccountSelected(const GURL& idp_config_url,
                                                  const Account& account) {
   CHECK(on_account_selection_);
 
-  // We only allow dismiss after account selection on button flows and not on
-  // widget flows.
+  // We only allow dismiss after account selection on active modes and not on
+  // passive mode.
   // TODO(crbug.com/335886093): Figure out whether users can cancel after
-  // selecting an account on button flow modal.
-  if (rp_mode_ == blink::mojom::RpMode::kWidget) {
+  // selecting an account on active mode modal.
+  if (rp_mode_ == blink::mojom::RpMode::kPassive) {
     on_dismiss_.Reset();
   }
 

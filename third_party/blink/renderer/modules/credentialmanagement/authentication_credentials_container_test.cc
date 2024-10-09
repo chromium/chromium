@@ -438,18 +438,18 @@ TEST(AuthenticationCredentialsContainerTest, PublicKeyConditionalMediationUkm) {
   mock_authenticator.InvokeGetCallback();
 }
 
-class AuthenticationCredentialsContainerButtonModeMultiIdpTest
+class AuthenticationCredentialsContainerActiveModeMultiIdpTest
     : public testing::Test,
       private ScopedFedCmMultipleIdentityProvidersForTest,
       ScopedFedCmButtonModeForTest {
  protected:
-  AuthenticationCredentialsContainerButtonModeMultiIdpTest()
+  AuthenticationCredentialsContainerActiveModeMultiIdpTest()
       : ScopedFedCmMultipleIdentityProvidersForTest(true),
         ScopedFedCmButtonModeForTest(true) {}
 };
 
-TEST_F(AuthenticationCredentialsContainerButtonModeMultiIdpTest,
-       RejectButtonModeWithMultipleIdps) {
+TEST_F(AuthenticationCredentialsContainerActiveModeMultiIdpTest,
+       RejectActiveModeWithMultipleIdps) {
   test::TaskEnvironment task_environment;
   MockCredentialManager mock_credential_manager;
   CredentialManagerTestingContext context(&mock_credential_manager);
@@ -467,7 +467,7 @@ TEST_F(AuthenticationCredentialsContainerButtonModeMultiIdpTest,
   idp2->setClientId("clientId");
 
   identity->setProviders({idp1, idp2});
-  identity->setMode("button");
+  identity->setMode("active");
   options->setIdentity(identity);
 
   auto promise = AuthenticationCredentialsContainer::credentials(

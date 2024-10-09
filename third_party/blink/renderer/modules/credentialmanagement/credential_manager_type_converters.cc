@@ -945,10 +945,14 @@ RpMode
 TypeConverter<RpMode, blink::V8IdentityCredentialRequestOptionsMode>::Convert(
     const blink::V8IdentityCredentialRequestOptionsMode& mode) {
   switch (mode.AsEnum()) {
+    case blink::V8IdentityCredentialRequestOptionsMode::Enum::kPassive:
+      return RpMode::kPassive;
+    case blink::V8IdentityCredentialRequestOptionsMode::Enum::kActive:
+      return RpMode::kActive;
     case blink::V8IdentityCredentialRequestOptionsMode::Enum::kWidget:
-      return RpMode::kWidget;
+      return RpMode::kPassive;
     case blink::V8IdentityCredentialRequestOptionsMode::Enum::kButton:
-      return RpMode::kButton;
+      return RpMode::kActive;
   }
 }
 

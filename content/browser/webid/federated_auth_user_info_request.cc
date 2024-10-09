@@ -169,7 +169,7 @@ void FederatedAuthUserInfoRequest::SetCallbackAndStart(
   provider_fetcher_ = std::make_unique<FederatedProviderFetcher>(
       *render_frame_host_, network_manager_.get());
   provider_fetcher_->Start(
-      {idp_config_url_}, blink::mojom::RpMode::kWidget, /*icon_ideal_size=*/0,
+      {idp_config_url_}, blink::mojom::RpMode::kPassive, /*icon_ideal_size=*/0,
       /*icon_minimum_size=*/0,
       base::BindOnce(
           &FederatedAuthUserInfoRequest::OnAllConfigAndWellKnownFetched,

@@ -32,7 +32,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 /**
- * Integration tests for the Account Selection Widget Mode component check that the calls to the
+ * Integration tests for the Account Selection Passive Mode component check that the calls to the
  * Account Selection API end up rendering a View.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -42,7 +42,7 @@ public class AccountSelectionWidgetModeIntegrationTest extends AccountSelectionI
     @Before
     @Override
     public void setUp() throws InterruptedException {
-        mRpMode = RpMode.WIDGET;
+        mRpMode = RpMode.PASSIVE;
         super.setUp();
     }
 
@@ -65,7 +65,7 @@ public class AccountSelectionWidgetModeIntegrationTest extends AccountSelectionI
         View contentView = mBottomSheetController.getCurrentSheetContent().getContentView();
         assertNotNull(contentView);
 
-        // Add account secondary button does not exist on widget mode, despite IDP supporting add
+        // Add account secondary button does not exist on passive mode, despite IDP supporting add
         // account.
         onView(withId(R.id.account_selection_add_account_btn)).check(doesNotExist());
     }

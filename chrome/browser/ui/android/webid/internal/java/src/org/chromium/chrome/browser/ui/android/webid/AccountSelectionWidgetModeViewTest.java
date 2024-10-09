@@ -23,7 +23,7 @@ import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.I
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
- * View tests for the Account Selection Widget Mode component ensure that model changes are
+ * View tests for the Account Selection Passive Mode component ensure that model changes are
  * reflected in the sheet.
  */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -46,7 +46,7 @@ public class AccountSelectionWidgetModeViewTest extends AccountSelectionJUnitTes
     @Before
     @Override
     public void setUp() {
-        mRpMode = RpMode.WIDGET;
+        mRpMode = RpMode.PASSIVE;
         super.setUp();
     }
 
@@ -60,7 +60,7 @@ public class AccountSelectionWidgetModeViewTest extends AccountSelectionJUnitTes
                             .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
                             .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                             .with(HeaderProperties.RP_CONTEXT, rpContext.mValue)
-                            .with(HeaderProperties.RP_MODE, RpMode.WIDGET)
+                            .with(HeaderProperties.RP_MODE, RpMode.PASSIVE)
                             .build());
             assertEquals(View.VISIBLE, mContentView.getVisibility());
             TextView title = mContentView.findViewById(R.id.header_title);
@@ -81,7 +81,7 @@ public class AccountSelectionWidgetModeViewTest extends AccountSelectionJUnitTes
                         .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
                         .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                         .with(HeaderProperties.RP_CONTEXT, RpContext.SIGN_IN)
-                        .with(HeaderProperties.RP_MODE, RpMode.WIDGET)
+                        .with(HeaderProperties.RP_MODE, RpMode.PASSIVE)
                         .build());
         assertEquals(View.VISIBLE, mContentView.getVisibility());
         TextView title = mContentView.findViewById(R.id.header_title);
@@ -103,7 +103,7 @@ public class AccountSelectionWidgetModeViewTest extends AccountSelectionJUnitTes
                         .with(HeaderProperties.RP_FOR_DISPLAY, "example.org")
                         .with(HeaderProperties.IDP_FOR_DISPLAY, "idp.org")
                         .with(HeaderProperties.RP_CONTEXT, RpContext.SIGN_IN)
-                        .with(HeaderProperties.RP_MODE, RpMode.WIDGET)
+                        .with(HeaderProperties.RP_MODE, RpMode.PASSIVE)
                         .build());
         assertEquals(View.VISIBLE, mContentView.getVisibility());
         TextView title = mContentView.findViewById(R.id.header_title);

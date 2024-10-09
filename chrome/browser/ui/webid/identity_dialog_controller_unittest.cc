@@ -248,7 +248,7 @@ TEST_F(IdentityDialogControllerTest, OnAccountSelectedButtonCallsDismiss) {
   controller.ShowAccountsDialog(
       kTopFrameEtldPlusOne, {idp_data}, accounts,
       content::IdentityRequestAccount::SignInMode::kExplicit,
-      blink::mojom::RpMode::kButton,
+      blink::mojom::RpMode::kActive,
       /*new_accounts=*/std::vector<IdentityRequestAccountPtr>(),
       /*on_selected=*/base::DoNothing(), /*on_add_account=*/base::DoNothing(),
       /*dismiss_callback=*/dismiss_callback.Get(),
@@ -278,7 +278,7 @@ TEST_F(IdentityDialogControllerTest, OnAccountSelectedWidgetResetsDismiss) {
   controller.ShowAccountsDialog(
       kTopFrameEtldPlusOne, {idp_data}, accounts,
       content::IdentityRequestAccount::SignInMode::kExplicit,
-      blink::mojom::RpMode::kWidget,
+      blink::mojom::RpMode::kPassive,
       /*new_accounts=*/std::vector<IdentityRequestAccountPtr>(),
       /*on_selected=*/base::DoNothing(), /*on_add_account=*/base::DoNothing(),
       /*dismiss_callback=*/dismiss_callback.Get(),
@@ -300,7 +300,7 @@ TEST_F(IdentityDialogControllerTest, NoTabDoesNotCrash) {
   EXPECT_FALSE(controller.ShowAccountsDialog(
       kTopFrameEtldPlusOne, {idp_data}, accounts,
       content::IdentityRequestAccount::SignInMode::kExplicit,
-      blink::mojom::RpMode::kButton,
+      blink::mojom::RpMode::kActive,
       /*new_accounts=*/std::vector<IdentityRequestAccountPtr>(),
       /*on_selected=*/base::DoNothing(), /*on_add_account=*/base::DoNothing(),
       /*dismiss_callback=*/base::DoNothing(),

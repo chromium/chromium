@@ -224,7 +224,7 @@ TEST_F(FedCmModalDialogViewTest, LoadingStatePopupInteractionMetric) {
   auto OpenLoadingStatePopupWindow([&]() {
     popup_window = std::make_unique<FedCmModalDialogView>(web_contents(),
                                                           /*observer=*/nullptr);
-    popup_window->SetButtonModeSheetType(AccountSelectionView::LOADING);
+    popup_window->SetActiveModeSheetType(AccountSelectionView::LOADING);
     popup_window->ShowPopupWindow(GURL(u"https://example.com"));
   });
 
@@ -278,7 +278,7 @@ TEST_F(FedCmModalDialogViewTest, UseOtherAccountPopupInteractionMetric) {
   auto OpenUseOtherAccountPopupWindow([&]() {
     popup_window = std::make_unique<FedCmModalDialogView>(web_contents(),
                                                           /*observer=*/nullptr);
-    popup_window->SetButtonModeSheetType(
+    popup_window->SetActiveModeSheetType(
         AccountSelectionView::ACCOUNT_SELECTION);
     popup_window->ShowPopupWindow(GURL(u"https://example.com"));
   });

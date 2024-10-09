@@ -77,8 +77,8 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
             Arrays.asList(
-                    new ParameterSet().value(RpMode.WIDGET).name("widget"),
-                    new ParameterSet().value(RpMode.BUTTON).name("button"));
+                    new ParameterSet().value(RpMode.PASSIVE).name("passive"),
+                    new ParameterSet().value(RpMode.ACTIVE).name("active"));
 
     private @BottomSheetController.SheetState int mExpectedSheetState;
 
@@ -87,7 +87,7 @@ public class AccountSelectionIntegrationTest extends AccountSelectionIntegration
     public AccountSelectionIntegrationTest(@RpMode.EnumType int rpMode) {
         mRpMode = rpMode;
         mExpectedSheetState =
-                rpMode == RpMode.BUTTON
+                rpMode == RpMode.ACTIVE
                         ? BottomSheetController.SheetState.HALF
                         : BottomSheetController.SheetState.FULL;
     }

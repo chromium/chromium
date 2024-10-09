@@ -918,7 +918,7 @@ experimental domain Audits
       ThirdPartyCookiesBlocked
       NotSignedInWithIdp
       MissingTransientUserActivation
-      ReplacedByButtonMode
+      ReplacedByActiveMode
       InvalidFieldsSpecified
       RelyingPartyOriginIsOpaque
       TypeNotMatching

@@ -73,7 +73,7 @@ enum class FedCmRequestIdTokenStatus {
   kIdTokenCrossSiteIdpErrorResponse = 41,
   kOtherIdpChosen = 42,
   kMissingTransientUserActivation = 43,
-  kReplacedByButtonMode = 44,
+  kReplacedByActiveMode = 44,
   kContinuationPopupClosedByUser = 45,
   kSuccessUsingIdentityProviderResolve = 46,
   kContinuationPopupClosedByIdentityProviderClose = 47,
@@ -231,12 +231,12 @@ enum class FedCmLifecycleStateFailureReason {
 // one. These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class FedCmMultipleRequestsRpMode {
-  kWidgetThenWidget = 0,
-  kWidgetThenButton = 1,
-  kButtonThenWidget = 2,
-  kButtonThenButton = 3,
+  kPassiveThenPassive = 0,
+  kPassiveThenActive = 1,
+  kActiveThenPassive = 2,
+  kActiveThenActive = 3,
 
-  kMaxValue = kButtonThenButton
+  kMaxValue = kActiveThenActive
 };
 
 // This enum tracks whether the RP requested additional scopes and/or
@@ -273,7 +273,7 @@ class CONTENT_EXPORT FedCmMetrics {
 
   // Records the time from when a call to the API was made to when the accounts
   // dialog is shown. This does not include flows that involve LoginToIdP. e.g.
-  // mismatch flow or button flow with users whose login status is "logged-out".
+  // mismatch flow or active flow with users whose login status is "logged-out".
   void RecordShowAccountsDialogTime(
       const std::vector<IdentityProviderDataPtr>& providers,
       base::TimeDelta duration);
@@ -281,7 +281,7 @@ class CONTENT_EXPORT FedCmMetrics {
   // Records the time from when a call to the API was made to when the accounts
   // dialog is shown in breakdown. In case of multi-IdP, this records the max
   // time across IdPs. This does not include flows that involve LoginToIdP. e.g.
-  // mismatch flow or button flow with users whose login status is "logged-out".
+  // mismatch flow or active flow with users whose login status is "logged-out".
   void RecordShowAccountsDialogTimeBreakdown(
       base::TimeDelta well_known_and_config_fetch_duration,
       base::TimeDelta accounts_fetch_duration,
@@ -293,7 +293,7 @@ class CONTENT_EXPORT FedCmMetrics {
   void RecordWellKnownAndConfigFetchTime(base::TimeDelta duration);
 
   // Records the time from when the accounts dialog is shown to when the user
-  // presses the Continue button of an account of the given provider.
+  // presses the Continue active of an account of the given provider.
   void RecordContinueOnPopupTime(const GURL& provider,
                                  base::TimeDelta duration);
 
@@ -322,14 +322,14 @@ class CONTENT_EXPORT FedCmMetrics {
   void RecordCancelReason(
       IdentityRequestDialogController::DismissReason dismiss_reason);
 
-  // Records the time from when the user presses the Continue button to when the
+  // Records the time from when the user presses the Continue active to when the
   // token response is received. Also records the overall time from when the API
   // is called to when the token response is received.
   void RecordTokenResponseAndTurnaroundTime(const GURL& provider,
                                             base::TimeDelta token_response_time,
                                             base::TimeDelta turnaround_time);
 
-  // Records the time from when the user presses the Continue button to when
+  // Records the time from when the user presses the Continue active to when
   // the continue_on response is received. Also records the overall time from
   // when the API is called to when the IdentityProvider.resolve token is
   // received.
@@ -448,8 +448,8 @@ class CONTENT_EXPORT FedCmMetrics {
       const std::vector<GURL>& requested_providers);
 
   // Records the time from when a User Info API call, if any, most likely upon
-  // page load, to when the first Button Mode API is called afterwards, if any.
-  void RecordTimeBetweenUserInfoAndButtonModeAPI(base::TimeDelta duration);
+  // page load, to when the first Active Mode API is called afterwards, if any.
+  void RecordTimeBetweenUserInfoAndActiveModeAPI(base::TimeDelta duration);
 
   // Records the number of accounts matching a given filter, when the FedCM call
   // involved filtering out accounts with that filter. Filter must be one of
