@@ -1011,6 +1011,16 @@ public class ManageSyncSettingsTest {
     @Test
     @LargeTest
     @Feature({"Sync", "RenderTest"})
+    public void testBottomOfAccountSyncSettingsPage() throws Exception {
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        final ManageSyncSettings fragment = startManageSyncPreferences();
+        onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
+        render(fragment, "bottom_of_account_sync_settings_page");
+    }
+
+    @Test
+    @LargeTest
+    @Feature({"Sync", "RenderTest"})
     @EnableFeatures({
         ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
         ChromeFeatureList.ENABLE_BATCH_UPLOAD_FROM_SETTINGS
