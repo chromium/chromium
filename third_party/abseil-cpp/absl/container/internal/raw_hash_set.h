@@ -1247,8 +1247,6 @@ struct soo_tag_t {};
 struct full_soo_tag_t {};
 // Sentinel type to indicate non-SOO CommonFields construction.
 struct non_soo_tag_t {};
-// Sentinel value to indicate non-SOO construction for moved-from values.
-struct moved_from_non_soo_tag_t {};
 // Sentinel value to indicate an uninitialized CommonFields for use in swapping.
 struct uninitialized_tag_t {};
 
@@ -1337,8 +1335,6 @@ class CommonFields : public CommonFieldsGenerationInfo {
       : capacity_(SooCapacity()), size_(size_t{1} << HasInfozShift()) {}
   explicit CommonFields(non_soo_tag_t)
       : capacity_(0), size_(0), heap_or_soo_(EmptyGroup()) {}
-  // For non-SOO moved-from values, we only need to initialize capacity_.
-  explicit CommonFields(moved_from_non_soo_tag_t) : capacity_(0) {}
   // For use in swapping.
   explicit CommonFields(uninitialized_tag_t) {}
 
@@ -1354,10 +1350,6 @@ class CommonFields : public CommonFieldsGenerationInfo {
   static CommonFields CreateDefault() {
     return kSooEnabled ? CommonFields{soo_tag_t{}}
                        : CommonFields{non_soo_tag_t{}};
-  }
-  template <bool kSooEnabled>
-  static CommonFields CreateMovedFrom() {
-    return CreateDefault<kSooEnabled>();
   }
 
   // The inline data for SOO is written on top of control_/slots_.
@@ -1458,12 +1450,6 @@ class CommonFields : public CommonFieldsGenerationInfo {
   size_t alloc_size(size_t slot_size, size_t slot_align) const {
     return RawHashSetLayout(capacity(), slot_align, has_infoz())
         .alloc_size(slot_size);
-  }
-
-  // Initialize fields that are left uninitialized by moved-from constructor.
-  void reinitialize_moved_from_non_soo() {
-    size_ = 0;
-    heap_or_soo_ = HeapOrSoo(EmptyGroup());
   }
 
   // Move fields other than heap_or_soo_.
@@ -1753,7 +1739,7 @@ inline void AssertSameContainer(const ctrl_t* ctrl_a, const ctrl_t* ctrl_b,
             "hashtable.");
     fail_if(true, "Comparing non-end() iterators from different hashtables.");
   } else {
-    ABSL_HARDENING_ASSERT(
+    ABSL_HARDENING_ASSERT_SLOW(
         AreItersFromSameContainer(ctrl_a, ctrl_b, slot_a, slot_b) &&
         "Invalid iterator comparison. The iterators may be from different "
         "containers or the container might have rehashed or moved. Consider "
@@ -2849,7 +2835,7 @@ class raw_hash_set {
     if (!PolicyTraits::transfer_uses_memcpy() && that.is_full_soo()) {
       transfer(soo_slot(), that.soo_slot());
     }
-    that.common() = CommonFields::CreateMovedFrom<SooEnabled()>();
+    that.common() = CommonFields::CreateDefault<SooEnabled()>();
     annotate_for_bug_detection_on_move(that);
   }
 
@@ -2952,7 +2938,7 @@ class raw_hash_set {
     // past that we simply deallocate the array.
     const size_t cap = capacity();
     if (cap == 0) {
-      common().reinitialize_moved_from_non_soo();
+      // Already guaranteed to be empty; so nothing to do.
     } else if (is_soo()) {
       if (!empty()) destroy(soo_slot());
       common().set_empty_soo();
@@ -3834,7 +3820,7 @@ class raw_hash_set {
     eq_ref() = that.eq_ref();
     CopyAlloc(alloc_ref(), that.alloc_ref(),
               std::integral_constant<bool, propagate_alloc>());
-    that.common() = CommonFields::CreateMovedFrom<SooEnabled()>();
+    that.common() = CommonFields::CreateDefault<SooEnabled()>();
     annotate_for_bug_detection_on_move(that);
     return *this;
   }
@@ -3848,7 +3834,7 @@ class raw_hash_set {
       that.destroy(it.slot());
     }
     if (!that.is_soo()) that.dealloc();
-    that.common() = CommonFields::CreateMovedFrom<SooEnabled()>();
+    that.common() = CommonFields::CreateDefault<SooEnabled()>();
     annotate_for_bug_detection_on_move(that);
     return *this;
   }
