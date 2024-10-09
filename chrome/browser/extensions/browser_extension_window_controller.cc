@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/platform_util.h"
@@ -16,13 +15,34 @@
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/extensions/api/tabs.h"
 #include "components/sessions/core/session_id.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 
 namespace extensions {
+
+namespace {
+
+constexpr char kAlwaysOnTopKey[] = "alwaysOnTop";
+constexpr char kFocusedKey[] = "focused";
+constexpr char kHeightKey[] = "height";
+constexpr char kIncognitoKey[] = "incognito";
+constexpr char kLeftKey[] = "left";
+constexpr char kShowStateKey[] = "state";
+constexpr char kTopKey[] = "top";
+constexpr char kWidthKey[] = "width";
+constexpr char kWindowTypeKey[] = "type";
+constexpr char kShowStateValueNormal[] = "normal";
+constexpr char kShowStateValueMinimized[] = "minimized";
+constexpr char kShowStateValueMaximized[] = "maximized";
+constexpr char kShowStateValueFullscreen[] = "fullscreen";
+constexpr char kShowStateValueLockedFullscreen[] = "locked-fullscreen";
+
+}  // anonymous namespace
 
 BrowserExtensionWindowController::BrowserExtensionWindowController(
     Browser* browser)
@@ -41,18 +61,18 @@ int BrowserExtensionWindowController::GetWindowId() const {
 
 std::string BrowserExtensionWindowController::GetWindowTypeText() const {
   if (browser_->is_type_devtools()) {
-    return tabs_constants::kWindowTypeValueDevTools;
+    return api::tabs::ToString(api::tabs::WindowType::kDevtools);
   }
   // Browser::TYPE_APP_POPUP is considered 'popup' rather than 'app' since
   // chrome.windows.create({type: 'popup'}) uses
   // Browser::CreateParams::CreateForAppPopup().
   if (browser_->is_type_popup() || browser_->is_type_app_popup()) {
-    return tabs_constants::kWindowTypeValuePopup;
+    return api::tabs::ToString(api::tabs::WindowType::kPopup);
   }
   if (browser_->is_type_app()) {
-    return tabs_constants::kWindowTypeValueApp;
+    return api::tabs::ToString(api::tabs::WindowType::kApp);
   }
-  return tabs_constants::kWindowTypeValueNormal;
+  return api::tabs::ToString(api::tabs::WindowType::kNormal);
 }
 
 void BrowserExtensionWindowController::SetFullscreenMode(
@@ -118,29 +138,29 @@ BrowserExtensionWindowController::CreateWindowValueForExtension(
     mojom::ContextType context) const {
   base::Value::Dict dict;
 
-  dict.Set(tabs_constants::kIdKey, browser_->session_id().id());
-  dict.Set(tabs_constants::kWindowTypeKey, GetWindowTypeText());
+  dict.Set(extension_misc::kId, browser_->session_id().id());
+  dict.Set(kWindowTypeKey, GetWindowTypeText());
   ui::BaseWindow* window = browser_->window();
-  dict.Set(tabs_constants::kFocusedKey, window->IsActive());
+  dict.Set(kFocusedKey, window->IsActive());
   const Profile* profile = browser_->profile();
-  dict.Set(tabs_constants::kIncognitoKey, profile->IsOffTheRecord());
-  dict.Set(tabs_constants::kAlwaysOnTopKey,
+  dict.Set(kIncognitoKey, profile->IsOffTheRecord());
+  dict.Set(kAlwaysOnTopKey,
            window->GetZOrderLevel() == ui::ZOrderLevel::kFloatingWindow);
 
   std::string window_state;
   if (window->IsMinimized()) {
-    window_state = tabs_constants::kShowStateValueMinimized;
+    window_state = kShowStateValueMinimized;
   } else if (window->IsFullscreen()) {
-    window_state = tabs_constants::kShowStateValueFullscreen;
+    window_state = kShowStateValueFullscreen;
     if (platform_util::IsBrowserLockedFullscreen(browser_.get())) {
-      window_state = tabs_constants::kShowStateValueLockedFullscreen;
+      window_state = kShowStateValueLockedFullscreen;
     }
   } else if (window->IsMaximized()) {
-    window_state = tabs_constants::kShowStateValueMaximized;
+    window_state = kShowStateValueMaximized;
   } else {
-    window_state = tabs_constants::kShowStateValueNormal;
+    window_state = kShowStateValueNormal;
   }
-  dict.Set(tabs_constants::kShowStateKey, window_state);
+  dict.Set(kShowStateKey, window_state);
 
   gfx::Rect bounds;
   if (window->IsMinimized()) {
@@ -148,13 +168,13 @@ BrowserExtensionWindowController::CreateWindowValueForExtension(
   } else {
     bounds = window->GetBounds();
   }
-  dict.Set(tabs_constants::kLeftKey, bounds.x());
-  dict.Set(tabs_constants::kTopKey, bounds.y());
-  dict.Set(tabs_constants::kWidthKey, bounds.width());
-  dict.Set(tabs_constants::kHeightKey, bounds.height());
+  dict.Set(kLeftKey, bounds.x());
+  dict.Set(kTopKey, bounds.y());
+  dict.Set(kWidthKey, bounds.width());
+  dict.Set(kHeightKey, bounds.height());
 
   if (populate_tab_behavior == kPopulateTabs) {
-    dict.Set(tabs_constants::kTabsKey, CreateTabList(extension, context));
+    dict.Set(ExtensionTabUtil::kTabsKey, CreateTabList(extension, context));
   }
 
   return dict;

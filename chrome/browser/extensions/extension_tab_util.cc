@@ -21,7 +21,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected_macros.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -83,6 +82,7 @@ namespace extensions {
 namespace {
 
 constexpr char kGroupNotFoundError[] = "No group with id: *.";
+constexpr char kInvalidUrlError[] = "Invalid url: \"*\".";
 
 // This enum is used for counting schemes used via a navigation triggered by
 // extensions.
@@ -126,7 +126,7 @@ Browser* CreateAndShowBrowser(Profile* profile,
                               std::string* error) {
   Browser* browser = CreateBrowser(profile, user_gesture);
   if (!browser) {
-    *error = tabs_constants::kBrowserWindowNotAllowed;
+    *error = ExtensionTabUtil::kBrowserWindowNotAllowed;
     return nullptr;
   }
   browser->window()->Show();
@@ -247,7 +247,7 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
     browser = chrome::FindTabbedBrowser(
         profile, function->include_incognito_information());
   if (!browser || !browser->window()) {
-    return base::unexpected(tabs_constants::kNoCurrentWindowError);
+    return base::unexpected(kNoCurrentWindowError);
   }
 
   // TODO(jstritar): Add a constant, chrome.tabs.TAB_ID_ACTIVE, that
@@ -259,8 +259,7 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
                     function->include_incognito_information(), &opener_browser,
                     nullptr, &opener, nullptr)) {
       return base::unexpected(ErrorUtils::FormatErrorMessage(
-          tabs_constants::kTabNotFoundError,
-          base::NumberToString(*params.opener_tab_id)));
+          kTabNotFoundError, base::NumberToString(*params.opener_tab_id)));
     }
   }
 
@@ -295,7 +294,7 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
     if (!browser) {
       browser = CreateBrowser(original_profile, user_gesture);
       if (!browser) {
-        return base::unexpected(tabs_constants::kBrowserWindowNotAllowed);
+        return base::unexpected(kBrowserWindowNotAllowed);
       }
       browser->window()->Show();
     }
@@ -331,7 +330,7 @@ base::expected<base::Value::Dict, std::string> ExtensionTabUtil::OpenTab(
 
   // This happens in locked fullscreen mode.
   if (!navigate_params.navigated_or_inserted_contents) {
-    return base::unexpected(tabs_constants::kLockedFullscreenModeNewTabError);
+    return base::unexpected(kLockedFullscreenModeNewTabError);
   }
 
   // The tab may have been created in a different window, so make sure we look
@@ -371,7 +370,7 @@ WindowController* ExtensionTabUtil::GetControllerFromWindowID(
       return window_controller;
     }
     if (error) {
-      *error = tabs_constants::kNoCurrentWindowError;
+      *error = kNoCurrentWindowError;
     }
     return nullptr;
   }
@@ -401,7 +400,7 @@ WindowController* ExtensionTabUtil::GetControllerInProfileWithId(
 
   if (error_message) {
     *error_message = ErrorUtils::FormatErrorMessage(
-        tabs_constants::kWindowNotFoundError, base::NumberToString(window_id));
+        kWindowNotFoundError, base::NumberToString(window_id));
   }
 
   return nullptr;
@@ -1026,19 +1025,18 @@ base::expected<GURL, std::string> ExtensionTabUtil::PrepareURLForNavigation(
 
   // Reject invalid URLs.
   if (!url.is_valid()) {
-    return base::unexpected(ErrorUtils::FormatErrorMessage(
-        tabs_constants::kInvalidUrlError, url_string));
+    return base::unexpected(
+        ErrorUtils::FormatErrorMessage(kInvalidUrlError, url_string));
   }
 
   // Don't let the extension use JavaScript URLs in API triggered navigations.
   if (url.SchemeIs(url::kJavaScriptScheme)) {
-    return base::unexpected(
-        tabs_constants::kJavaScriptUrlsNotAllowedInExtensionNavigations);
+    return base::unexpected(kJavaScriptUrlsNotAllowedInExtensionNavigations);
   }
 
   // Don't let the extension crash the browser or renderers.
   if (ExtensionTabUtil::IsKillURL(url)) {
-    return base::unexpected(tabs_constants::kNoCrashBrowserError);
+    return base::unexpected(kNoCrashBrowserError);
   }
 
   // Don't let the extension navigate directly to devtools scheme pages, unless
@@ -1050,13 +1048,13 @@ base::expected<GURL, std::string> ExtensionTabUtil::PrepareURLForNavigation(
                       extension->permissions_data()->HasAPIPermission(
                           APIPermissionID::kDebugger));
     if (!has_permission) {
-      return base::unexpected(tabs_constants::kCannotNavigateToDevtools);
+      return base::unexpected(kCannotNavigateToDevtools);
     }
   }
 
   // Don't let the extension navigate directly to chrome-untrusted scheme pages.
   if (url.SchemeIs(content::kChromeUIUntrustedScheme)) {
-    return base::unexpected(tabs_constants::kCannotNavigateToChromeUntrusted);
+    return base::unexpected(kCannotNavigateToChromeUntrusted);
   }
 
   // Don't let the extension navigate directly to file scheme pages, unless
@@ -1071,8 +1069,7 @@ base::expected<GURL, std::string> ExtensionTabUtil::PrepareURLForNavigation(
       !extensions::ExtensionManagementFactory::GetForBrowserContext(
            browser_context)
            ->IsFileUrlNavigationAllowed(extension->id())) {
-    return base::unexpected(
-        tabs_constants::kFileUrlsNotAllowedInExtensionNavigations);
+    return base::unexpected(kFileUrlsNotAllowedInExtensionNavigations);
   }
 
   if (extension && browser_context) {

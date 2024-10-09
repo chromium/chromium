@@ -487,6 +487,9 @@ inline constexpr int kContentVerificationDefaultBlockSize = 4096;
 inline constexpr char kDocsOfflineExtensionId[] =
     "ghbmnnjooekpmoecnnnilnnbdlolhkhi";
 
+// This is used extensively, generally as a key in a dictionary.
+inline constexpr char kId[] = "id";
+
 }  // namespace extension_misc
 
 #endif  // EXTENSIONS_COMMON_CONSTANTS_H_

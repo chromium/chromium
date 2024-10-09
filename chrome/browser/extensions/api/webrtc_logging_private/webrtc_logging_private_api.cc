@@ -15,7 +15,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/supports_user_data.h"
 #include "build/build_config.h"
-#include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
@@ -158,7 +157,7 @@ content::RenderProcessHost* WebrtcLoggingPrivateFunction::RphFromRequest(
   if (!ExtensionTabUtil::GetTabById(tab_id, browser_context(), true,
                                     &contents)) {
     *error = extensions::ErrorUtils::FormatErrorMessage(
-        extensions::tabs_constants::kTabNotFoundError,
+        extensions::ExtensionTabUtil::kTabNotFoundError,
         base::NumberToString(tab_id));
     return nullptr;
   }

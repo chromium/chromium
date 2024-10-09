@@ -18,7 +18,6 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_event_router.h"
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_event_router_factory.h"
-#include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
@@ -767,7 +766,7 @@ TEST_F(TabGroupsApiUnitTest, IsTabStripEditable) {
     function->set_extension(extension);
     std::string error = api_test_utils::RunFunctionAndReturnError(
         function.get(), args, profile());
-    EXPECT_EQ(tabs_constants::kTabStripNotEditableError, error);
+    EXPECT_EQ(ExtensionTabUtil::kTabStripNotEditableError, error);
   }
 }
 

@@ -263,7 +263,8 @@ TEST_F(TabsApiUnitTest, IsTabStripEditable) {
             function.get(), args, profile(),
             api_test_utils::FunctionMode::kNone);
     ASSERT_TRUE(value && value->is_dict());
-    EXPECT_EQ(*value->GetDict().FindString("pendingUrl"), url);
+    EXPECT_EQ(*value->GetDict().FindString(tabs_constants::kPendingUrlKey),
+              url);
   }
 
   // Succeed while edit in progress and calling chrome.tabs.query.
@@ -294,7 +295,7 @@ TEST_F(TabsApiUnitTest, IsTabStripEditable) {
     function->set_extension(extension);
     std::string error = api_test_utils::RunFunctionAndReturnError(
         function.get(), args, profile());
-    EXPECT_EQ(tabs_constants::kTabStripNotEditableError, error);
+    EXPECT_EQ(ExtensionTabUtil::kTabStripNotEditableError, error);
   }
 
   // Error highlighting tab while drag in progress.
@@ -304,7 +305,7 @@ TEST_F(TabsApiUnitTest, IsTabStripEditable) {
     function->set_extension(extension);
     std::string error = api_test_utils::RunFunctionAndReturnError(
         function.get(), args, profile(), api_test_utils::FunctionMode::kNone);
-    EXPECT_EQ(tabs_constants::kTabStripNotEditableError, error);
+    EXPECT_EQ(ExtensionTabUtil::kTabStripNotEditableError, error);
   }
 
   // Bug fix for crbug.com/1197146. Tab group modification during drag.
@@ -315,7 +316,7 @@ TEST_F(TabsApiUnitTest, IsTabStripEditable) {
     function->set_extension(extension);
     std::string error = api_test_utils::RunFunctionAndReturnError(
         function.get(), args, profile());
-    EXPECT_EQ(tabs_constants::kTabStripNotEditableError, error);
+    EXPECT_EQ(ExtensionTabUtil::kTabStripNotEditableError, error);
   }
 
   // TODO(solomonkinard): Consider adding tests for drag cancellation.
@@ -762,7 +763,7 @@ TEST_F(TabsApiUnitTest, TabsUpdateJavaScriptUrlNotAllowed) {
       kFormatArgs, tab_id, "javascript:void(document.title = 'Won't work')");
   std::string error = api_test_utils::RunFunctionAndReturnError(
       function.get(), args, profile(), api_test_utils::FunctionMode::kNone);
-  EXPECT_EQ(tabs_constants::kJavaScriptUrlsNotAllowedInExtensionNavigations,
+  EXPECT_EQ(ExtensionTabUtil::kJavaScriptUrlsNotAllowedInExtensionNavigations,
             error);
 }
 
@@ -1666,7 +1667,7 @@ TEST_F(TabsApiUnitTest, DontCreateTabsInLockedFullscreenMode) {
   // In locked fullscreen mode we should not be able to create any tabs.
   PinWindow(browser_window()->GetNativeWindow(), /*trusted=*/true);
 
-  EXPECT_EQ(tabs_constants::kLockedFullscreenModeNewTabError,
+  EXPECT_EQ(ExtensionTabUtil::kLockedFullscreenModeNewTabError,
             api_test_utils::RunFunctionAndReturnError(
                 function.get(), "[{}]", profile(),
                 api_test_utils::FunctionMode::kNone));
