@@ -19,6 +19,7 @@
 
 #include "base/base_export.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -196,6 +197,8 @@ class BASE_EXPORT Pickle {
     return header_ ? header_size_ + header_->payload_size : 0;
   }
 
+  bool empty() const { return !size(); }
+
   // Returns the data for this Pickle.
   const uint8_t* data() const {
     return reinterpret_cast<const uint8_t*>(header_);
@@ -204,6 +207,15 @@ class BASE_EXPORT Pickle {
   // Handy method to simplify calling data() with a reinterpret_cast.
   const char* data_as_char() const {
     return reinterpret_cast<const char*>(data());
+  }
+
+  // Iteration. These allow `Pickle` to satisfy `std::ranges::contiguous_range`,
+  // which in turn allow it to be implicitly converted to a `span`.
+  const uint8_t* begin() const { return data(); }
+  const uint8_t* end() const {
+    // SAFETY: `data()` always points to at least `size()` valid bytes, so this
+    // pointer is no further than just-past-the-end of the allocation.
+    return UNSAFE_BUFFERS(data() + size());
   }
 
   // Returns the effective memory capacity of this Pickle, that is, the total
