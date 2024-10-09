@@ -1625,6 +1625,8 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
                           ProfileShortcutManager::IsFeatureEnabled());
   html_source->AddString("historySearchLearnMoreUrl",
                          chrome::kHistorySearchLearnMorePageURL);
+  html_source->AddString("historySearchDataHomeUrl",
+                         chrome::kChromeUIHistoryURL);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   auto* profile_entry =

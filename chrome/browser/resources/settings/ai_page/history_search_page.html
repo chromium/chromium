@@ -3,19 +3,47 @@
     margin-bottom: 1lh;
   }
 
+  .separator {
+    margin: 0 4px;
+  }
+
+  .separator + settings-toggle-button {
+    margin-inline-end: 12px;
+  }
+
   cr-icon {
     flex-shrink: 0;
   }
 </style>
-<settings-toggle-button
-    label="$i18n{historySearchSettingLabel}"
-    sub-label="$i18n{historySearchSettingSublabel}"
-    learn-more-url="$i18n{historySearchLearnMoreUrl}"
-    learn-more-aria-label="$i18n{historySearchLearnMoreA11yLabel}"
-    pref="{{prefs.optimization_guide.history_search_setting_state}}"
-    numeric-unchecked-values="[[numericUncheckedValues_]]"
-    numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]">
-</settings-toggle-button>
+
+<template is="dom-if" if="[[!enableAiSettingsPageRefresh_]]" restamp>
+  <settings-toggle-button label="$i18n{historySearchSettingLabel}"
+      sub-label="$i18n{historySearchSettingSublabel}"
+      learn-more-url="$i18n{historySearchLearnMoreUrl}"
+      learn-more-aria-label="$i18n{historySearchLearnMoreA11yLabel}"
+      pref="{{prefs.optimization_guide.history_search_setting_state}}"
+      numeric-unchecked-values="[[numericUncheckedValues_]]"
+      numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]">
+  </settings-toggle-button>
+</template>
+
+<template is="dom-if" if="[[enableAiSettingsPageRefresh_]]" restamp>
+  <div class="settings-row first">
+    <cr-link-row label="$i18n{historySearchSettingLabel}"
+        sub-label="$i18n{historySearchSettingSublabel}"
+        on-click="onHistorySearchLinkoutClick_"
+        external>
+    </cr-link-row>
+    <div class="separator"></div>
+    <settings-toggle-button aria-label="$i18n{historySearchSettingLabel}"
+        learn-more-url="$i18n{historySearchLearnMoreUrl}"
+        learn-more-aria-label="$i18n{historySearchLearnMoreA11yLabel}"
+        pref="{{prefs.optimization_guide.history_search_setting_state}}"
+        numeric-unchecked-values="[[numericUncheckedValues_]]"
+        numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]">
+    </settings-toggle-button>
+  </div>
+</template>
 
 <div class="settings-columned-section">
   <div class="column">

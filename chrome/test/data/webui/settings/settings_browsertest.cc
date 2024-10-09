@@ -177,12 +177,12 @@ IN_PROC_BROWSER_TEST_F(SettingsAiPageTest,
           "runMochaSuite('ExperimentalAdvancedPageRefreshDisabled')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsTest, TabOrganizationSubpage) {
+IN_PROC_BROWSER_TEST_F(SettingsAiPageTest, TabOrganizationSubpage) {
   RunTest("settings/ai_subpage_test.js",
           "runMochaSuite('TabOrganizationSubpage')");
 }
 
-IN_PROC_BROWSER_TEST_F(SettingsTest, HistorySearchSubpage) {
+IN_PROC_BROWSER_TEST_F(SettingsAiPageTest, HistorySearchSubpage) {
   RunTest("settings/ai_subpage_test.js",
           "runMochaSuite('HistorySearchSubpage')");
 }

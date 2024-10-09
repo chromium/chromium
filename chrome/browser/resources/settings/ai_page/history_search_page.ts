@@ -8,6 +8,8 @@ import '../settings_columned_section.css.js';
 import '../settings_shared.css.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {FeatureOptInState} from './constants.js';
@@ -27,6 +29,11 @@ export class SettingsHistorySearchPageElement extends
 
   static get properties() {
     return {
+      enableAiSettingsPageRefresh_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableAiSettingsPageRefresh'),
+      },
+
       featureOptInStateEnum_: {
         type: Object,
         value: FeatureOptInState,
@@ -40,7 +47,13 @@ export class SettingsHistorySearchPageElement extends
     };
   }
 
+  private enableAiSettingsPageRefresh_: boolean;
   private numericUncheckedValues_: FeatureOptInState[];
+
+  private onHistorySearchLinkoutClick_() {
+    OpenWindowProxyImpl.getInstance().openUrl(
+        loadTimeData.getString('historySearchDataHomeUrl'));
+  }
 }
 
 declare global {

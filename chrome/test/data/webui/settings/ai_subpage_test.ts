@@ -6,9 +6,10 @@
 import type {SettingsAiTabOrganizationSubpageElement, SettingsHistorySearchPageElement} from 'chrome://settings/lazy_load.js';
 import {FeatureOptInState, SettingsAiPageFeaturePrefName as PrefName} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {assertEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
+import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
 // clang-format on
 
@@ -58,10 +59,13 @@ suite('TabOrganizationSubpage', function() {
 });
 
 suite('HistorySearchSubpage', function() {
+  let openWindowProxy: TestOpenWindowProxy;
   let subpage: SettingsHistorySearchPageElement;
   let settingsPrefs: SettingsPrefsElement;
 
   suiteSetup(function() {
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
   });
@@ -99,5 +103,16 @@ suite('HistorySearchSubpage', function() {
         FeatureOptInState.DISABLED,
         subpage.getPref(PrefName.HISTORY_SEARCH).value);
     assertFalse(toggle.checked);
+  });
+
+  test('historySearchLinkout', async function() {
+    await createPage();
+
+    const linkout = subpage.shadowRoot!.querySelector('cr-link-row');
+    assertTrue(!!linkout);
+
+    linkout.click();
+    const url = await openWindowProxy.whenCalled('openUrl');
+    assertEquals(url, loadTimeData.getString('historySearchDataHomeUrl'));
   });
 });
