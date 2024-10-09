@@ -76,7 +76,7 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 // enforce the transformation.
 const char kServiceTypeSuffix[] = "local";
 
-std::string LongServiceType(const std::string service_type) {
+std::string LongServiceType(const std::string& service_type) {
   // Should not already have the suffix.
   auto found_index =
       service_type.find(kServiceTypeSuffix, /*pos=*/service_type.length() -
@@ -85,7 +85,7 @@ std::string LongServiceType(const std::string service_type) {
   return service_type + kServiceTypeSuffix;
 }
 
-std::string ShortServiceType(const std::string service_type) {
+std::string ShortServiceType(const std::string& service_type) {
   // Should already have the suffix.
   CHECK(service_type.length() >= strlen(kServiceTypeSuffix));
   auto found_index =
