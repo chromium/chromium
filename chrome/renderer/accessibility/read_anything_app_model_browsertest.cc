@@ -30,7 +30,7 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
 
   void SetUp() override {
     ChromeRenderViewTest::SetUp();
-    model_ = new ReadAnythingAppModel();
+    model_ = std::make_unique<ReadAnythingAppModel>();
 
     // Create a tree id.
     tree_id_ = ui::AXTreeID::CreateNewAXTreeID();
@@ -42,6 +42,10 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
     AccessibilityEventReceived({*snapshot});
     SetActiveTreeId(tree_id_);
     Reset({});
+  }
+
+  void SetUpWithoutInitialization() {
+    model_ = std::make_unique<ReadAnythingAppModel>();
   }
 
   void SetUpdateTreeID(ui::AXTreeUpdate* update) {
@@ -208,6 +212,8 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
     model_->OnSelection(event_from);
   }
 
+  bool IsDocs() { return model_->IsDocs(); }
+
   void IncreaseTextSize() { model_->IncreaseTextSize(); }
 
   void DecreaseTextSize() { model_->DecreaseTextSize(); }
@@ -247,13 +253,14 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
   ui::AXTreeID tree_id_;
 
  private:
-  // ReadAnythingAppModel constructor and destructor are private so it's
-  // not accessible by std::make_unique.
-  raw_ptr<ReadAnythingAppModel> model_ = nullptr;
+  std::unique_ptr<ReadAnythingAppModel> model_ = nullptr;
 };
 
-// TODO(crbug.com/371596691): Add test to verify no crashes are happening
-// before initialization in IsDocs.
+TEST_F(ReadAnythingAppModelTest, IsDocs_FalseBeforeTreeInitialization) {
+  EXPECT_FALSE(IsDocs());
+  SetUpWithoutInitialization();
+  EXPECT_FALSE(IsDocs());
+}
 
 TEST_F(ReadAnythingAppModelTest, FontName) {
   EXPECT_EQ(string_constants::kReadAnythingPlaceholderFontName, FontName());
