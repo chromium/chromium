@@ -68,7 +68,6 @@ public class CommerceSubscriptionsServiceUnitTest {
     @Mock private ShoppingService mShoppingService;
     @Mock TabModelSelector mTabModelSelector;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    @Mock private ImplicitPriceDropSubscriptionsManager mImplicitSubscriptionsManager;
     @Mock private Profile mProfile;
     @Mock private PrefService mPrefService;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
@@ -119,19 +118,11 @@ public class CommerceSubscriptionsServiceUnitTest {
         mPriceDropNotificationManager = PriceDropNotificationManagerFactory.create(mProfile);
         mService =
                 new CommerceSubscriptionsService(mShoppingService, mPriceDropNotificationManager);
-        mService.setImplicitSubscriptionsManagerForTesting(mImplicitSubscriptionsManager);
     }
 
     @After
     public void tearDown() {
         PriceDropNotificationManagerImpl.setNotificationManagerForTesting(null);
-    }
-
-    @Test
-    @SmallTest
-    public void testDestroy() {
-        mService.setImplicitSubscriptionsManagerForTesting(null);
-        mService.destroy();
     }
 
     @Test
@@ -144,7 +135,6 @@ public class CommerceSubscriptionsServiceUnitTest {
         mService.destroy();
         verify(mActivityLifecycleDispatcher, times(1))
                 .unregister(eq(mPauseResumeWithNativeObserverCaptor.getValue()));
-        verify(mImplicitSubscriptionsManager, times(1)).destroy();
     }
 
     @Test
@@ -164,7 +154,6 @@ public class CommerceSubscriptionsServiceUnitTest {
                 RecordHistogram.getHistogramTotalCountForTesting(
                         PriceDropNotificationManagerImpl.NOTIFICATION_USER_MANAGED_COUNT_HISTOGRAM),
                 equalTo(1));
-        verify(mImplicitSubscriptionsManager, times(1)).initializeSubscriptions();
     }
 
     @Test
@@ -177,7 +166,6 @@ public class CommerceSubscriptionsServiceUnitTest {
                 RecordHistogram.getHistogramTotalCountForTesting(
                         PriceDropNotificationManagerImpl.NOTIFICATION_ENABLED_HISTOGRAM),
                 equalTo(0));
-        verify(mImplicitSubscriptionsManager, times(0)).initializeSubscriptions();
     }
 
     @Test
@@ -192,7 +180,6 @@ public class CommerceSubscriptionsServiceUnitTest {
                 RecordHistogram.getHistogramTotalCountForTesting(
                         PriceDropNotificationManagerImpl.NOTIFICATION_ENABLED_HISTOGRAM),
                 equalTo(0));
-        verify(mImplicitSubscriptionsManager, times(0)).initializeSubscriptions();
     }
 
     private void setupTestOnResume() {

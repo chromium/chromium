@@ -35,7 +35,6 @@ android_resources("java_resources") {
     "java/res/drawable/ic_deselect_all_24dp.xml",
     "java/res/drawable/ic_group_add_16dp.xml",
     "java/res/drawable/ic_open_new_tab_in_group_24dp.xml",
-    "java/res/drawable/ic_price_alert_blue.xml",
     "java/res/drawable/ic_rating_star_full.xml",
     "java/res/drawable/ic_rating_star_half.xml",
     "java/res/drawable/ic_rating_star_outline.xml",

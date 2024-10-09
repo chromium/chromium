@@ -33,7 +33,6 @@ public class CommerceSubscriptionsService implements Destroyable {
 
     private final SharedPreferencesManager mSharedPreferencesManager;
     private final PriceDropNotificationManager mPriceDropNotificationManager;
-    private ImplicitPriceDropSubscriptionsManager mImplicitPriceDropSubscriptionsManager;
     private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private PauseResumeWithNativeObserver mPauseResumeWithNativeObserver;
     private ShoppingService mShoppingService;
@@ -63,12 +62,6 @@ public class CommerceSubscriptionsService implements Destroyable {
                     public void onPauseWithNative() {}
                 };
         mActivityLifecycleDispatcher.register(mPauseResumeWithNativeObserver);
-
-        if (CommerceSubscriptionsServiceConfig.isImplicitSubscriptionsEnabled()
-                && mImplicitPriceDropSubscriptionsManager == null) {
-            mImplicitPriceDropSubscriptionsManager =
-                    new ImplicitPriceDropSubscriptionsManager(tabModelSelector, mShoppingService);
-        }
     }
 
     /**
@@ -78,10 +71,6 @@ public class CommerceSubscriptionsService implements Destroyable {
     public void destroy() {
         if (mActivityLifecycleDispatcher != null) {
             mActivityLifecycleDispatcher.unregister(mPauseResumeWithNativeObserver);
-        }
-        if (mImplicitPriceDropSubscriptionsManager != null) {
-            mImplicitPriceDropSubscriptionsManager.destroy();
-            mImplicitPriceDropSubscriptionsManager = null;
         }
     }
 
@@ -97,18 +86,11 @@ public class CommerceSubscriptionsService implements Destroyable {
                 CHROME_MANAGED_SUBSCRIPTIONS_TIMESTAMP, System.currentTimeMillis());
         if (!CommerceFeatureUtils.isShoppingListEligible(mShoppingService)) return;
         recordMetricsForEligibleAccount();
-        if (mImplicitPriceDropSubscriptionsManager != null) {
-            mImplicitPriceDropSubscriptionsManager.initializeSubscriptions();
-        }
     }
 
     private void recordMetricsForEligibleAccount() {
         // Record notification opt-in metrics.
         mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded();
         mPriceDropNotificationManager.recordMetricsForNotificationCounts();
-    }
-
-    void setImplicitSubscriptionsManagerForTesting(ImplicitPriceDropSubscriptionsManager manager) {
-        mImplicitPriceDropSubscriptionsManager = manager;
     }
 }

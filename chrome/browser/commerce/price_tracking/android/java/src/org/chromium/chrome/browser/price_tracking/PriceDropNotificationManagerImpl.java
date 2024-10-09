@@ -401,9 +401,6 @@ public class PriceDropNotificationManagerImpl implements PriceDropNotificationMa
             createNotificationChannel();
         }
         mContext.startActivity(getNotificationSettingsIntent());
-        // Disable PriceAlertsMessageCard after the first time we send users to notification
-        // settings.
-        PriceTrackingUtilities.disablePriceAlertsMessageCard();
     }
 
     @Override

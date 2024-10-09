@@ -8,7 +8,6 @@ android_library("subscriptions_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsService.java",
     "java/src/org/chromium/chrome/browser/subscriptions/CommerceSubscriptionsServiceConfig.java",
-    "java/src/org/chromium/chrome/browser/subscriptions/ImplicitPriceDropSubscriptionsManager.java",
   ]
 
   deps = [

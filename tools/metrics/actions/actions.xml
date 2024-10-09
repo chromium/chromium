@@ -7121,6 +7121,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Commerce.PriceAlertsMessageCard.Dismissed">
+  <obsolete>Deprecated due to removal in M131.</obsolete>
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <description>
@@ -7130,6 +7131,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="Commerce.PriceAlertsMessageCard.Reviewed">
+  <obsolete>Deprecated due to removal in M131.</obsolete>
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <description>

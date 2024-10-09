@@ -30,11 +30,10 @@ public class PriceMessageService extends MessageService {
     // insertion positions are different as well. Right now PRICE_WELCOME is added via {@link
     // TabSwitcherCoordinator#appendNextMessage}, while PRICE_ALERTS is added via {@link
     // TabSwitcherCoordinator#appendMessagesTo}.
-    @IntDef({PriceMessageType.PRICE_WELCOME, PriceMessageType.PRICE_ALERTS})
+    @IntDef({PriceMessageType.PRICE_WELCOME})
     @Retention(RetentionPolicy.SOURCE)
     public @interface PriceMessageType {
         int PRICE_WELCOME = 0;
-        int PRICE_ALERTS = 1;
     }
 
     /** Provides the binding tab ID and the price drop of the binding tab. */
@@ -174,9 +173,7 @@ public class PriceMessageService extends MessageService {
      */
     boolean preparePriceMessage(@PriceMessageType int type, @Nullable PriceTabData priceTabData) {
         assert (type == PriceMessageType.PRICE_WELCOME
-                        && PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(mProfile))
-                || (type == PriceMessageType.PRICE_ALERTS
-                        && PriceTrackingUtilities.isPriceAlertsMessageCardEnabled(mProfile));
+                && PriceTrackingUtilities.isPriceWelcomeMessageCardEnabled(mProfile));
         if (type == PriceMessageType.PRICE_WELCOME) {
             PriceTrackingUtilities.increasePriceWelcomeMessageCardShowCount();
             if (PriceTrackingUtilities.getPriceWelcomeMessageCardShowCount()
@@ -184,21 +181,6 @@ public class PriceMessageService extends MessageService {
                 logMessageDisableMetrics(
                         WELCOME_MESSAGE_METRICS_IDENTIFIER, MessageDisableReason.MESSAGE_IGNORED);
                 PriceTrackingUtilities.disablePriceWelcomeMessageCard();
-                return false;
-            }
-            // When PriceWelcomeMessageCard is available, it takes priority over
-            // PriceAlertsMessageCard which will be removed first. This should be called only if
-            // PriceAlertsMessageCard is currently enabled.
-            if (PriceTrackingUtilities.isPriceAlertsMessageCardEnabled(mProfile)) {
-                PriceTrackingUtilities.decreasePriceAlertsMessageCardShowCount();
-            }
-        } else if (type == PriceMessageType.PRICE_ALERTS) {
-            PriceTrackingUtilities.increasePriceAlertsMessageCardShowCount();
-            if (PriceTrackingUtilities.getPriceAlertsMessageCardShowCount()
-                    > MAX_PRICE_MESSAGE_SHOW_COUNT) {
-                logMessageDisableMetrics(
-                        ALERTS_MESSAGE_METRICS_IDENTIFIER, MessageDisableReason.MESSAGE_IGNORED);
-                PriceTrackingUtilities.disablePriceAlertsMessageCard();
                 return false;
             }
         }
@@ -245,16 +227,6 @@ public class PriceMessageService extends MessageService {
             PriceTrackingUtilities.disablePriceWelcomeMessageCard();
             mPriceTabData = null;
             RecordUserAction.record("Commerce.PriceWelcomeMessageCard.Reviewed");
-        } else if (type == PriceMessageType.PRICE_ALERTS) {
-            if (mNotificationManager.areAppNotificationsEnabled()) {
-                mNotificationManager.createNotificationChannel();
-            } else {
-                mNotificationManager.launchNotificationSettings();
-            }
-            logMessageDisableMetrics(
-                    ALERTS_MESSAGE_METRICS_IDENTIFIER, MessageDisableReason.MESSAGE_ACCEPTED);
-            PriceTrackingUtilities.disablePriceAlertsMessageCard();
-            RecordUserAction.record("Commerce.PriceAlertsMessageCard.Reviewed");
         }
     }
 
@@ -266,11 +238,6 @@ public class PriceMessageService extends MessageService {
             PriceTrackingUtilities.disablePriceWelcomeMessageCard();
             mPriceTabData = null;
             RecordUserAction.record("Commerce.PriceWelcomeMessageCard.Dismissed");
-        } else if (type == PriceMessageType.PRICE_ALERTS) {
-            logMessageDisableMetrics(
-                    ALERTS_MESSAGE_METRICS_IDENTIFIER, MessageDisableReason.MESSAGE_DISMISSED);
-            PriceTrackingUtilities.disablePriceAlertsMessageCard();
-            RecordUserAction.record("Commerce.PriceAlertsMessageCard.Dismissed");
         }
     }
 

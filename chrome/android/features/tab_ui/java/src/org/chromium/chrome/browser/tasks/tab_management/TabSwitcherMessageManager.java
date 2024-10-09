@@ -364,10 +364,6 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         onTabModelFilterChanged(mCurrentTabModelFilterSupplier.get(), null);
         removeAllAppendedMessage();
         if (tabCount > 0) {
-            if (mPriceMessageService != null
-                    && PriceTrackingUtilities.isPriceAlertsMessageCardEnabled(mProfile)) {
-                mPriceMessageService.preparePriceMessage(PriceMessageType.PRICE_ALERTS, null);
-            }
             appendMessagesTo(tabCount);
         }
     }

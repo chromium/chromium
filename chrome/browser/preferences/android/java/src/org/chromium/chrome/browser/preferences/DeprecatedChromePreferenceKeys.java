@@ -44,6 +44,8 @@ public class DeprecatedChromePreferenceKeys {
                 "Chrome.OfflineMeasurements.IsRoaming",
                 "Chrome.OfflineMeasurements.TimeBetweenChecksMillisList",
                 "Chrome.OfflineMeasurements.UserStateList",
+                "Chrome.PriceTracking.PriceAlerts",
+                "Chrome.PriceTracking.PriceAlertsShowCount",
                 "Chrome.PriceTracking.PriceDropAlerts",
                 "Chrome.Querytiles.RecentMvClicks",
                 "Chrome.Querytiles.RecentQueryTileClicks",
