@@ -23,19 +23,10 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kContainerAppPreinstallActivationTimeThreshold[];
 
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const char kContainerAppPreinstallDebugKey[];
-
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kMahiRestrictionsOverride[];
 
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 std::optional<base::Time> GetContainerAppPreinstallActivationTimeThreshold();
-
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-bool IsContainerAppPreinstallDebugKeyMatched();
-
-[[nodiscard]] COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-    base::AutoReset<bool> SetIgnoreContainerAppPreinstallDebugKeyForTesting();
 
 }  // namespace chromeos::switches
 

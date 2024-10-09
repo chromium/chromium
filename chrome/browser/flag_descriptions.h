@@ -141,8 +141,6 @@ extern const char kContainerName[];
 extern const char kContainerDescription[];
 extern const char kContainerDebugName[];
 extern const char kContainerDebugDescription[];
-extern const char kContainerDebugContentsName[];
-extern const char kContainerDebugContentsDescription[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 extern const char kContainerTypeNoLayoutContainmentName[];

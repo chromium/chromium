@@ -182,8 +182,6 @@ const char kContainerName[] = "Container";
 const char kContainerDescription[] = "Enables container.";
 const char kContainerDebugName[] = "Container Debug";
 const char kContainerDebugDescription[] = "Enables container debug.";
-const char kContainerDebugContentsName[] = "Container Debug Contents";
-const char kContainerDebugContentsDescription[] = "Container debug contents.";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 const char kComputePressureBreakCalibrationMitigationName[] =
