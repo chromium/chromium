@@ -161,6 +161,15 @@ extern const char kModernTabStripBlackBackground[] =
     "modern-tab-strip-black-background";
 extern const char kModernTabStripBiggerNTB[] = "modern-tab-strip-bigger-ntb";
 
+extern const char kModernTabStripDarkerBackgroundV3[] =
+    "modern-tab-strip-darker-background-v3";
+extern const char kModernTabStripCloseButtonsVisible[] =
+    "modern-tab-strip-close-buttons-visible";
+extern const char kModernTabStripInactiveTabsHighContrast[] =
+    "modern-tab-strip-inactive-tabs-high-contrast";
+extern const char kModernTabStripHighContrastNTB[] =
+    "modern-tab-strip-high-contrast-ntb";
+
 BASE_FEATURE(kDefaultBrowserIntentsShowSettings,
              "DefaultBrowserIntentsShowSettings",
              base::FEATURE_ENABLED_BY_DEFAULT);

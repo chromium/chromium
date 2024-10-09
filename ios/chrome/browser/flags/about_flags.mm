@@ -594,6 +594,20 @@ const FeatureEntry::FeatureParam kModernTabStripBlackBackgroundOption[] = {
     {kModernTabStripNTBNoBackground, "true"},
     {kModernTabStripBiggerNTB, "true"}};
 
+const FeatureEntry::FeatureParam kModernTabStripCloseButtonVisibleOption[] = {
+    {kModernTabStripCloseButtonsVisible, "true"}};
+const FeatureEntry::FeatureParam
+    kModernTabStripInactiveTabsHighContrastOption[] = {
+        {kModernTabStripInactiveTabsHighContrast, "true"},
+        {kModernTabStripDarkerBackgroundV3, "true"}};
+const FeatureEntry::FeatureParam kModernTabStripHighContrastNTBOption[] = {
+    {kModernTabStripHighContrastNTB, "true"}};
+const FeatureEntry::FeatureParam kModernTabStripCloseV3AllOptions[] = {
+    {kModernTabStripCloseButtonsVisible, "true"},
+    {kModernTabStripInactiveTabsHighContrast, "true"},
+    {kModernTabStripHighContrastNTB, "true"},
+    {kModernTabStripDarkerBackgroundV3, "true"}};
+
 const FeatureEntry::FeatureVariation kModernTabStripVariations[] = {
     {"New tab button dynamic", kModernTabStripNTBDynamic,
      std::size(kModernTabStripNTBDynamic), nullptr},
@@ -610,6 +624,14 @@ const FeatureEntry::FeatureVariation kModernTabStripVariations[] = {
      std::size(kModernTabStripNTBNoBackgroundOption), nullptr},
     {"Black background", kModernTabStripBlackBackgroundOption,
      std::size(kModernTabStripBlackBackgroundOption), nullptr},
+    {"V3 Close buttons", kModernTabStripCloseButtonVisibleOption,
+     std::size(kModernTabStripCloseButtonVisibleOption), nullptr},
+    {"V3 High Contrast tabs", kModernTabStripInactiveTabsHighContrastOption,
+     std::size(kModernTabStripInactiveTabsHighContrastOption), nullptr},
+    {"V3 Visible NTB", kModernTabStripHighContrastNTBOption,
+     std::size(kModernTabStripHighContrastNTBOption), nullptr},
+    {"V3 all options", kModernTabStripCloseV3AllOptions,
+     std::size(kModernTabStripCloseV3AllOptions), nullptr},
 };
 
 const FeatureEntry::FeatureVariation

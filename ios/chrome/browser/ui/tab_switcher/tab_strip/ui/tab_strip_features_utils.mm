@@ -31,6 +31,11 @@
       kModernTabStrip, kModernTabStripDarkerBackground, false);
 }
 
++ (BOOL)hasDarkerBackgroundV3 {
+  return GetFieldTrialParamByFeatureAsBool(
+      kModernTabStrip, kModernTabStripDarkerBackgroundV3, false);
+}
+
 + (BOOL)hasNoNTBBackground {
   return GetFieldTrialParamByFeatureAsBool(
       kModernTabStrip, kModernTabStripNTBNoBackground, false);
@@ -44,6 +49,21 @@
 + (BOOL)hasBiggerNTB {
   return GetFieldTrialParamByFeatureAsBool(kModernTabStrip,
                                            kModernTabStripBiggerNTB, false);
+}
+
++ (BOOL)hasCloseButtonsVisible {
+  return GetFieldTrialParamByFeatureAsBool(
+      kModernTabStrip, kModernTabStripCloseButtonsVisible, false);
+}
+
++ (BOOL)hasHighContrastInactiveTabs {
+  return GetFieldTrialParamByFeatureAsBool(
+      kModernTabStrip, kModernTabStripInactiveTabsHighContrast, false);
+}
+
++ (BOOL)hasHighContrastNTB {
+  return GetFieldTrialParamByFeatureAsBool(
+      kModernTabStrip, kModernTabStripHighContrastNTB, false);
 }
 
 @end

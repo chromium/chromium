@@ -23,6 +23,9 @@
 // Whether the tab strip should have a darker background.
 @property(class, nonatomic, readonly) BOOL hasDarkerBackground;
 
+// Whether the tab strip should have a darker background for V3.
+@property(class, nonatomic, readonly) BOOL hasDarkerBackgroundV3;
+
 // Whether the new tab button should have its background removed.
 @property(class, nonatomic, readonly) BOOL hasNoNTBBackground;
 
@@ -31,6 +34,15 @@
 
 // Whether the NTB button should be bigger.
 @property(class, nonatomic, readonly) BOOL hasBiggerNTB;
+
+// Whether the close button of the non-selected tabs should always be visible.
+@property(class, nonatomic, readonly) BOOL hasCloseButtonsVisible;
+
+// Whether the non-selected tabs should have a higher contrast.
+@property(class, nonatomic, readonly) BOOL hasHighContrastInactiveTabs;
+
+// Whether the New Tab Button should have high contrast.
+@property(class, nonatomic, readonly) BOOL hasHighContrastNTB;
 
 @end
 

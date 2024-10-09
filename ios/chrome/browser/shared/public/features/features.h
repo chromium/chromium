@@ -153,12 +153,18 @@ extern const char kModernTabStripParameterName[];
 extern const char kModernTabStripNTBDynamicParam[];
 extern const char kModernTabStripNTBStaticParam[];
 
-// Feature parameter for V2 of Modern Tab Strip.
+// Feature parameters for V2 of Modern Tab Strip.
 extern const char kModernTabStripCloserNTB[];
 extern const char kModernTabStripDarkerBackground[];
 extern const char kModernTabStripNTBNoBackground[];
 extern const char kModernTabStripBlackBackground[];
 extern const char kModernTabStripBiggerNTB[];
+
+// Feature parameters for V3 of Modern Tab Strip.
+extern const char kModernTabStripDarkerBackgroundV3[];
+extern const char kModernTabStripCloseButtonsVisible[];
+extern const char kModernTabStripInactiveTabsHighContrast[];
+extern const char kModernTabStripHighContrastNTB[];
 
 // Feature flag that allows external apps to show default browser settings.
 BASE_DECLARE_FEATURE(kDefaultBrowserIntentsShowSettings);
