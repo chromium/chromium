@@ -11381,6 +11381,12 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "http-add-threshold": "1",
+                        "http-remove-threshold": "5",
+                        "https-add-threshold": "80",
+                        "https-remove-threshold": "75"
+                    },
                     "enable_features": [
                         "HttpsFirstModeV2ForEngagedSites"
                     ]
