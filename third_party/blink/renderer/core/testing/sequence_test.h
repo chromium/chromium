@@ -36,6 +36,8 @@ class SequenceTest final : public ScriptWrappable {
 
   HeapVector<Member<Element>> getElementSequence() const;
   void setElementSequence(const HeapVector<Member<Element>>& arg);
+  void setElementSequenceOfSequences(
+      const HeapVector<HeapVector<Member<Element>>>& arg);
 
   bool unionReceivedSequence(const V8UnionDoubleOrDoubleSequence* arg);
 
