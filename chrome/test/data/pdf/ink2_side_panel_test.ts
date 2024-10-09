@@ -145,8 +145,10 @@ function getBrushSelector(): InkBrushSelectorElement {
  * @returns A list of exactly 5 size buttons.
  */
 function getSizeButtons(): NodeListOf<HTMLElement> {
-  const sizeButtons = sidePanel.shadowRoot!.querySelectorAll<HTMLElement>(
-      '#sizes cr-icon-button');
+  const sizeSelector =
+      getRequiredElement<HTMLElement>(sidePanel, 'ink-size-selector');
+  const sizeButtons =
+      sizeSelector.shadowRoot!.querySelectorAll<HTMLElement>('cr-icon-button');
   assert(sizeButtons);
   assert(sizeButtons.length === 5);
   return sizeButtons;

@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './ink_brush_selector.js';
+import './ink_size_selector.js';
+
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -10,6 +13,7 @@ import {AnnotationBrushType} from '../constants.js';
 import type {AnnotationBrush, Color} from '../constants.js';
 import {PluginController} from '../controller.js';
 
+import {ERASER_SIZES, HIGHLIGHTER_SIZES, PEN_SIZES} from './ink_size_selector.js';
 import {getCss} from './viewer_side_panel.css.js';
 import {getHtml} from './viewer_side_panel.html.js';
 
@@ -60,37 +64,6 @@ export const PEN_COLORS: ColorOption[] = [
   {name: 'penColorGreen700', color: '#188038'},
   {name: 'penColorBlue700', color: '#1967d2'},
   {name: 'penColorBrown3', color: '#885945'},
-];
-
-interface SizeOption {
-  icon: string;
-  name: string;
-  size: number;
-}
-
-// TODO(crbug.com/341282609): Choose production size values. Add labels.
-const ERASER_SIZES: SizeOption[] = [
-  {icon: 'eraser-size-1', name: 'sizeExtraThin', size: 1},
-  {icon: 'eraser-size-2', name: 'sizeThin', size: 2},
-  {icon: 'eraser-size-3', name: 'sizeExtraMedium', size: 3},
-  {icon: 'eraser-size-4', name: 'sizeThick', size: 6},
-  {icon: 'eraser-size-5', name: 'sizeExtraThick', size: 8},
-];
-
-const HIGHLIGHTER_SIZES: SizeOption[] = [
-  {icon: 'highlighter-size-1', name: 'sizeExtraThin', size: 4},
-  {icon: 'highlighter-size-2', name: 'sizeThin', size: 6},
-  {icon: 'highlighter-size-3', name: 'sizeExtraMedium', size: 8},
-  {icon: 'highlighter-size-4', name: 'sizeThick', size: 12},
-  {icon: 'highlighter-size-5', name: 'sizeExtraThick', size: 16},
-];
-
-const PEN_SIZES: SizeOption[] = [
-  {icon: 'pen-size-1', name: 'sizeExtraThin', size: 1},
-  {icon: 'pen-size-2', name: 'sizeThin', size: 2},
-  {icon: 'pen-size-3', name: 'sizeExtraMedium', size: 3},
-  {icon: 'pen-size-4', name: 'sizeThick', size: 6},
-  {icon: 'pen-size-5', name: 'sizeExtraThick', size: 8},
 ];
 
 // LINT.IfChange(HighlighterOpacity)
@@ -208,10 +181,11 @@ export class ViewerSidePanelElement extends CrLitElement {
     };
   }
 
+  protected currentType_: AnnotationBrushType = AnnotationBrushType.PEN;
+
   // Indicates the brush has changes and should be updated in
   // `this.pluginController_`.
   private brushDirty_: boolean = false;
-  private currentType_: AnnotationBrushType = AnnotationBrushType.PEN;
 
   private brushes_: Map<AnnotationBrushType, AnnotationBrush>;
   private pluginController_: PluginController = PluginController.getInstance();
@@ -265,40 +239,15 @@ export class ViewerSidePanelElement extends CrLitElement {
     this.brushDirty_ = true;
   }
 
-  protected onSizeClick_(e: Event) {
-    this.setBrushSize_(e.currentTarget as HTMLElement);
+  protected onSizeChange_(e: CustomEvent<{value: number}>) {
+    this.getCurrentBrush_().size = e.detail.value;
+    this.brushDirty_ = true;
   }
 
   protected onColorClick_(e: Event) {
     assert(this.shouldShowColorOptions_());
 
     this.setBrushColor_(e.currentTarget as HTMLInputElement);
-  }
-
-
-  protected onSizeKeydown_(e: KeyboardEvent) {
-    // Only handle arrow keys.
-    const isPrevious = e.key === 'ArrowLeft' || e.key === 'ArrowUp';
-    const isNext = e.key === 'ArrowRight' || e.key === 'ArrowDown';
-    if (!isPrevious && !isNext) {
-      return;
-    }
-    e.preventDefault();
-
-    const currSizeButton = e.target as HTMLElement;
-    const currentIndex = Number(currSizeButton.dataset['index']);
-
-    const brushSizes = this.getCurrentBrushSizes_();
-    const numOptions = brushSizes.length;
-    const delta = isNext ? 1 : -1;
-    const newIndex = (numOptions + currentIndex + delta) % numOptions;
-
-    const newSize = brushSizes[newIndex]!.size;
-    const newSizeButton =
-        this.shadowRoot!.querySelector<HTMLElement>(`[data-size='${newSize}']`);
-    assert(newSizeButton);
-    this.setBrushSize_(newSizeButton);
-    newSizeButton.focus();
   }
 
   protected onColorKeydown_(e: KeyboardEvent) {
@@ -324,10 +273,6 @@ export class ViewerSidePanelElement extends CrLitElement {
     assert(newColorButton);
     this.setBrushColor_(newColorButton);
     newColorButton.focus();
-  }
-
-  protected isCurrentSize_(size: number): boolean {
-    return this.getCurrentBrush_().size === size;
   }
 
   protected isCurrentColor_(hex: string): boolean {
@@ -366,22 +311,15 @@ export class ViewerSidePanelElement extends CrLitElement {
     return colorToHex(color);
   }
 
-  protected getCurrentBrushSizes_(): SizeOption[] {
-    switch (this.currentType_) {
-      case AnnotationBrushType.ERASER:
-        return ERASER_SIZES;
-      case AnnotationBrushType.HIGHLIGHTER:
-        return HIGHLIGHTER_SIZES;
-      case AnnotationBrushType.PEN:
-        return PEN_SIZES;
-    }
-  }
-
   protected getCurrentBrushColors_(): ColorOption[] {
     assert(this.currentType_ !== AnnotationBrushType.ERASER);
     return this.currentType_ === AnnotationBrushType.HIGHLIGHTER ?
         HIGHLIGHTER_COLORS :
         PEN_COLORS;
+  }
+
+  protected getCurrentSize_(): number {
+    return this.getCurrentBrush_().size;
   }
 
   /**
@@ -397,18 +335,6 @@ export class ViewerSidePanelElement extends CrLitElement {
     const brush = this.brushes_.get(this.currentType_);
     assert(brush);
     return brush;
-  }
-
-  private setBrushSize_(sizeButton: HTMLElement): void {
-    const size = Number(sizeButton.dataset['size']);
-
-    const currentBrush = this.getCurrentBrush_();
-    if (currentBrush.size === size) {
-      return;
-    }
-
-    currentBrush.size = size;
-    this.brushDirty_ = true;
   }
 
   private setBrushColor_(colorButton: HTMLInputElement): void {

@@ -13,14 +13,9 @@ export function getHtml(this: ViewerSidePanelElement) {
     </ink-brush-selector>
     <div id="brush-options">
       <h2>Size</h2>
-      <div id="sizes" role="listbox" @keydown="${this.onSizeKeydown_}">
-        ${this.getCurrentBrushSizes_().map((item, index) => html`
-          <cr-icon-button iron-icon="pdf:${item.icon}" role="option"
-              data-index="${index}" data-size="${item.size}"
-              data-selected="${this.isCurrentSize_(item.size)}"
-              aria-selected="${this.isCurrentSize_(item.size)}"
-              @click="${this.onSizeClick_}"></cr-icon-button>`)}
-      </div>
+      <ink-size-selector .currentSize="${this.getCurrentSize_()}"
+          .currentType="${this.currentType_}"
+          @current-size-changed="${this.onSizeChange_}"></ink-size-selector>
       ${this.shouldShowColorOptions_() ? html`
         <h2>Color</h2>
         <div id="colors" @keydown="${this.onColorKeydown_}">

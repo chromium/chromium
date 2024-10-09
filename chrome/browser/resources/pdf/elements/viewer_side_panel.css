@@ -48,17 +48,15 @@ ink-brush-selector {
 }
 
 #colors,
-#sizes {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  justify-content: center;
+ink-size-selector {
   margin: 16px 0 32px;
   padding: 0 8px;
 }
 
-#sizes cr-icon-button {
-  --cr-icon-button-icon-size: 24px;
-  --cr-icon-button-size: 48px;
+#colors {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  justify-content: center;
 }
 
 .color-item {
