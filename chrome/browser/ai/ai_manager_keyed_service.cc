@@ -65,6 +65,14 @@ int GetAssistantModelMaxTopK() {
   return max_top_k;
 }
 
+double GetAssistantModelDefaultTemperature() {
+  if (base::FeatureList::IsEnabled(
+          features::kAIAssistantOverrideConfiguration)) {
+    return features::kAIAssistantOverrideConfigurationDefaultTemperature.Get();
+  }
+  return optimization_guide::features::GetOnDeviceModelDefaultTemperature();
+}
+
 blink::mojom::ModelAvailabilityCheckResult
 ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
     optimization_guide::OnDeviceModelEligibilityReason
@@ -378,6 +386,11 @@ std::unique_ptr<AIAssistant> AIManagerKeyedService::CreateAssistantInternal(
         .top_k = std::min(sampling_params->top_k,
                           uint32_t(GetAssistantModelMaxTopK())),
         .temperature = sampling_params->temperature};
+  } else {
+    config_params.sampling_params = optimization_guide::SamplingParams{
+        .top_k = uint32_t(
+            optimization_guide::features::GetOnDeviceModelDefaultTopK()),
+        .temperature = float(GetAssistantModelDefaultTemperature())};
   }
 
   std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
@@ -461,8 +474,7 @@ void AIManagerKeyedService::CreateSummarizer(
 void AIManagerKeyedService::GetModelInfo(GetModelInfoCallback callback) {
   std::move(callback).Run(blink::mojom::AIModelInfo::New(
       optimization_guide::features::GetOnDeviceModelDefaultTopK(),
-      GetAssistantModelMaxTopK(),
-      optimization_guide::features::GetOnDeviceModelDefaultTemperature()));
+      GetAssistantModelMaxTopK(), GetAssistantModelDefaultTemperature()));
 }
 
 void AIManagerKeyedService::CreateWriter(
