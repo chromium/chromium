@@ -1010,10 +1010,18 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
   in_tear_down_ = true;
   LOG(INFO) << "TearDownOnMainThread: Start.";
   observation_.Reset();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (delegate_->IsSyncTest()) {
     SyncTurnOff();
   }
+#endif
   for (auto* profile : GetAllProfiles()) {
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+    if (delegate_->IsSyncTest()) {
+      delegate_->SyncSignOut(profile);
+    }
+#endif
     auto* provider = GetProviderForProfile(profile);
     if (!provider) {
       continue;
@@ -2524,6 +2532,22 @@ void WebAppIntegrationTestDriver::SyncTurnOn() {
     return;
   }
   delegate_->SyncTurnOn();
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::SyncSignOut() {
+  if (!BeforeStateChangeAction(__FUNCTION__)) {
+    return;
+  }
+  delegate_->SyncSignOut(active_profile_);
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::SyncSignIn() {
+  if (!BeforeStateChangeAction(__FUNCTION__)) {
+    return;
+  }
+  delegate_->SyncSignIn(active_profile_);
   AfterStateChangeAction();
 }
 
@@ -4781,6 +4805,7 @@ WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
   enabled_features.push_back(features::kIsolatedWebApps);
   enabled_features.push_back(features::kPwaUpdateDialogForIcon);
   enabled_features.push_back(features::kRecordWebAppDebugInfo);
+  enabled_features.push_back(features::kWebAppDontAddExistingAppsToSync);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // WebAppIntegrationTest runs in Ash only when Lacros is disabled.
   // If Lacros is enabled, WebAppIntegrationTest runs in Lacros with crosapi
@@ -4844,6 +4869,12 @@ void WebAppIntegrationTest::SyncTurnOff() {
   NOTREACHED();
 }
 void WebAppIntegrationTest::SyncTurnOn() {
+  NOTREACHED();
+}
+void WebAppIntegrationTest::SyncSignOut(Profile*) {
+  NOTREACHED();
+}
+void WebAppIntegrationTest::SyncSignIn(Profile*) {
   NOTREACHED();
 }
 void WebAppIntegrationTest::AwaitWebAppQuiescence() {

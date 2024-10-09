@@ -5,6 +5,7 @@
 #include "chrome/browser/sync/test/integration/web_apps_sync_test_base.h"
 
 #include "base/containers/extend.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/common/content_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -35,6 +36,8 @@ WebAppsSyncTestBase::WebAppsSyncTestBase(TestType test_type)
   // TOOD(b/313492499): Update test driver to work with new intent picker UI.
   enabled_features.push_back(features::kPwaNavigationCapturing);
 #endif
+
+  enabled_features.push_back(features::kWebAppDontAddExistingAppsToSync);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Disable Lacros, so that Web Apps get synced in the Ash browser.

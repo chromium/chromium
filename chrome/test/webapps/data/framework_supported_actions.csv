@@ -73,6 +73,8 @@ switch_profile_clients,                                🌕, 🌕,  🌕,   🌕
 switch_active_profile,                                 🌕, 🌕,  🌕,   🌑,
 sync_turn_off,                                         🌕, 🌕,  🌕,   🌕,
 sync_turn_on,                                          🌕, 🌕,  🌕,   🌕,
+sync_sign_out,                                         🌕, 🌕,  🌕,   🌑,
+sync_sign_in,                                          🌕, 🌕,  🌕,   🌑,
 uninstall_from_list,                                   🌕, 🌕,  🌕,   🌕,
 uninstall_from_menu,                                   🌕, 🌕,  🌕,   🌑,
 uninstall_from_os,                                     🌑, 🌕,  🌑,   🌑,

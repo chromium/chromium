@@ -626,7 +626,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
 
   if (base::FeatureList::IsEnabled(
           features::kWebAppDontAddExistingAppsToSync)) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // On Chrome OS it is not possible to install apps before signing in to
+    // sync. So in that case we do expect the app to exist in sync.
+    EXPECT_EQ(1, GetNumWebAppsInSync());
+#else
     EXPECT_EQ(0, GetNumWebAppsInSync());
+#endif
   } else {
     EXPECT_EQ(1, GetNumWebAppsInSync());
   }

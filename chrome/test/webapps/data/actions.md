@@ -20,7 +20,7 @@ The tables in this file are parsed as action templates for critical user journey
 
 TODO(dmurph): Possibly this table up into markdown-header section.
 
-| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 174) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
+| # Action base name | Argument Types | Output Actions | Unique Identifier (next: 176) | Status (WIP, Implemented, Not Implemented, Parameterized) | Description | Metadata, implementation bug, etc |
 | --- | --- | --- | --- | --- | --- | --- |
 | # Badging |
 | check_app_badge_empty | Site |  | 2 | Not Implemented | Check that the 'badge' on the app icon is empty |  |
@@ -144,8 +144,10 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | navigate_link_target_blank |  |  | 82 | Not Implemented | Click on a href link on the current page, where the target of the link is "_blank" | P3 |
 | # Cross-device syncing |
 | switch_profile_clients | ProfileClient |  | 40 | Implemented | Switch to a different instance of chrome signed in to the same profile |  |
-| sync_turn_off |  |  | 41 | Implemented | Turn chrome sync off for "Apps": chrome://settings/syncSetup/advanced |  |
-| sync_turn_on |  |  | 42 | Implemented | Turn chrome sync on for "Apps": chrome://settings/syncSetup/advanced |  |
+| sync_turn_off |  |  | 41 | Implemented | Turn chrome sync off for "Apps": chrome://settings/syncSetup/advanced in all profiles |  |
+| sync_turn_on |  |  | 42 | Implemented | Turn chrome sync on for "Apps": chrome://settings/syncSetup/advanced in all profiles |  |
+| sync_sign_out |  |  | 174 | Implemented | Sign out of chrome sync in the current profile |  |
+| sync_sign_in |  |  | 175 | Implemented | Sign in to chrome sync in the current profile |  |
 | switch_incognito_profile |  |  | 73 | Implemented | Switch to using incognito mode | P2 |
 | switch_active_profile | ProfileName |  | 160 | Implemented | Switch to using a different profile |  |
 | # File handling |

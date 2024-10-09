@@ -240,6 +240,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
     virtual bool IsSyncTest() = 0;
     virtual void SyncTurnOff() = 0;
     virtual void SyncTurnOn() = 0;
+    virtual void SyncSignOut(Profile*) = 0;
+    virtual void SyncSignIn(Profile*) = 0;
     virtual void AwaitWebAppQuiescence() = 0;
     virtual Profile* GetProfileClient(ProfileClient client) = 0;
   };
@@ -334,6 +336,8 @@ class WebAppIntegrationTestDriver : WebAppInstallManagerObserver {
   void SwitchActiveProfile(ProfileName profile_name);
   void SyncTurnOff();
   void SyncTurnOn();
+  void SyncSignOut();
+  void SyncSignIn();
   void UninstallFromList(Site site);
   void UninstallFromMenu(Site site);
   void UninstallFromAppSettings(Site site);
@@ -583,6 +587,8 @@ class WebAppIntegrationTest : public InProcessBrowserTest,
   bool IsSyncTest() override;
   void SyncTurnOff() override;
   void SyncTurnOn() override;
+  void SyncSignOut(Profile*) override;
+  void SyncSignIn(Profile*) override;
   void AwaitWebAppQuiescence() override;
   Profile* GetProfileClient(ProfileClient client) override;
 
