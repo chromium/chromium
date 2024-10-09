@@ -6,6 +6,7 @@
 
 import argparse
 import ast
+import collections
 import glob
 import json
 import pathlib
@@ -25,35 +26,73 @@ def _per_test_modifications(
     builder: str,
     test_suite_exceptions: dict[str, typing.Any],
 ) -> values.ValueBuilder:
-  value_builder = values.DictValueBuilder()
+
+  def mod_builder_factory():
+    return values.CallValueBuilder('targets.per_test_modification',
+                                   elide_param='mixins')
+
+  mod_builders = collections.defaultdict(mod_builder_factory)
 
   for test_name, exceptions in test_suite_exceptions.items():
-    if builder in exceptions.get('remove_from', []):
-      value_builder[test_name] = values.CallValueBuilder(
-          'targets.remove',
-          {
+    test_name = values.convert_direct(test_name)
+    for key, value in exceptions.items():
+      match key:
+        case 'remove_from':
+          if builder not in value:
+            continue
+
+          mod_builders[test_name] = values.CallValueBuilder(
+              'targets.remove',
               # Break up the string so that it doesn't get flagged by the
               # presubmit check but the generated code will if not updated
-              'reason': f'"DO{""} NOT SUBMIT provide an actual reason"',
-          })
+              {'reason': f'"DO{""} NOT SUBMIT provide an actual reason"'})
+          break
 
-    elif modifications := exceptions.get('modifications', {}).get(builder):
-      mixin_builder = values.CallValueBuilder('targets.mixin')
-      value_builder[test_name] = mixin_builder
+        case 'modifications':
+          mods = value.get(builder)
+          if mods is None:
+            continue
 
-      for key, value in modifications.items():
-        match key:
-          case ('args' | 'ci_only' | 'experiment_percentage'
-                | 'isolate_profile_data' | 'retry_only_failed_tests'):
-            mixin_builder[key] = values.convert_direct(value)
+          mixin_builder = values.CallValueBuilder('targets.mixin')
+          mod_builders[test_name]['mixins'] = mixin_builder
 
-          case 'swarming':
-            mixin_builder['swarming'] = values.convert_swarming(value)
+          for mod_key, mod_value in mods.items():
+            match mod_key:
+              case ('ci_only' | 'experiment_percentage'
+                    | 'isolate_profile_data' | 'retry_only_failed_tests'):
+                mixin_builder[mod_key] = values.convert_direct(mod_value)
 
-          case _:
-            raise Exception(f'unhandled key in modifications: "{key}"')
+              case 'args':
+                mixin_builder[mod_key] = values.convert_args(mod_value)
 
-  return value_builder
+              case 'swarming':
+                mixin_builder['swarming'] = values.convert_swarming(mod_value)
+
+              case _:
+                raise Exception(f'unhandled key in modifications: "{key}"')
+
+        case 'replacements':
+          replacements = value.get(builder)
+          if replacements is None:
+            continue
+
+          replacements_builder = (
+              values.CallValueBuilder('targets.replacements'))
+          mod_builders[test_name]['replacements'] = replacements_builder
+
+          for replace_key, replace_value in replacements.items():
+            match replace_key:
+              case 'args' | 'precommit_args' | 'non_precommit_args':
+                args_builder = values.DictValueBuilder()
+                for arg_name, arg_value in replace_value.items():
+                  args_builder[values.convert_arg(arg_name)] = (
+                      values.convert_direct(arg_value))
+                replacements_builder[replace_key] = args_builder
+
+              case _:
+                raise Exception(f'unhandled key in replacements: "{key}"')
+
+  return values.DictValueBuilder(mod_builders)
 
 
 class SkylabSuite(Exception):
@@ -122,7 +161,7 @@ def _compute_edits(
         bundle_builder[key] = values.convert_direct(value)
 
       case 'args':
-        anonymous_mixin_builder['args'] = values.convert_direct(value)
+        anonymous_mixin_builder['args'] = values.convert_args(value)
 
       case 'mixins':
         for element in value:

@@ -76,6 +76,42 @@ def to_output(value: Value) -> str | None:
   return value
 
 
+_MAGIC_ARG_MAPPING = {
+    '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote': 'CROS_TELEMETRY_REMOTE',
+    '$$MAGIC_SUBSTITUTION_ChromeOSGtestFilterFile': 'CROS_GTEST_FILTER_FILE',
+    '$$MAGIC_SUBSTITUTION_GPUExpectedVendorId': 'GPU_EXPECTED_VENDOR_ID',
+    '$$MAGIC_SUBSTITUTION_GPUExpectedDeviceId': 'GPU_EXPECTED_DEVICE_ID',
+    '$$MAGIC_SUBSTITUTION_GPUParallelJobs': 'GPU_PARALLEL_JOBS',
+    '$$MAGIC_SUBSTITUTION_GPUTelemetryNoRootForUnrootedDevices':
+    'GPU_TELEMETRY_NO_ROOT_FOR_UNROOTED_DEVICES',
+    '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile': 'GPU_WEBGL_RUNTIME_FILE',
+}
+
+
+def convert_arg(arg: str) -> Value:
+  """Convert a test argument to a starlark value.
+
+  In //testing/buildbot, there are magic strings that trigger special
+  replacement behavior. In starlark, these are replaced with struct
+  values. This function takes care of converting the argument to a
+  string or a magic struct as appropriate.
+  """
+  if arg.startswith('$$MAGIC_SUBSTITUTION_'):
+    return f'targets.magic_args.{_MAGIC_ARG_MAPPING[arg]}'
+  return convert_direct(arg)
+
+
+def convert_args(args: list[str]) -> Value:
+  """Convert a list of test arguments to a starlark value.
+
+  In //testing/buildbot, there are magic strings that trigger special
+  replacement behavior. In starlark, these are replaced with struct
+  values. This function takes care of converting the indiviual arguments
+  to a string or a magic struct as appropriate.
+  """
+  return ListValueBuilder([convert_arg(arg) for arg in args])
+
+
 def convert_direct(value: typing.Any) -> Value:
   """Convert a python value to a starlark value.
 
@@ -365,7 +401,7 @@ class DictValueBuilder(_CompoundValueBuilder):
 
     def gen():
       for key, output_stream in item_output_streams.items():
-        yield f'{indent}"{key}": '
+        yield f'{indent}{key}: '
         yield from output_stream
         yield ',\n'
 

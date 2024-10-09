@@ -137,8 +137,8 @@ class ValueBuildersTest(unittest.TestCase):
     self.assertEqual(
         textwrap.dedent("""\
             {
-              "foo": x,
-              "bar": y,
+              foo: x,
+              bar: y,
             }"""),
         builder.output(),
     )
@@ -168,7 +168,7 @@ class ValueBuildersTest(unittest.TestCase):
     self.assertEqual(
         textwrap.dedent("""\
             {
-              "bar": y,
+              bar: y,
             }"""),
         builder.output(),
     )
@@ -178,11 +178,11 @@ class ValueBuildersTest(unittest.TestCase):
     self.assertEqual(
         textwrap.dedent("""\
             {
-              "foo": <
+              foo: <
                 x,
                 z,
               >,
-              "bar": y,
+              bar: y,
             }"""),
         builder.output(),
     )

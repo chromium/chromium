@@ -39,31 +39,42 @@ def _convert_basic_suite(
   targets_builder = values.ListValueBuilder()
   per_test_modifications_builder = values.DictValueBuilder()
   for test_name, test in suite.items():
-    targets_builder.append(values.convert_direct(test_name))
+    test_name = values.convert_direct(test_name)
+    targets_builder.append(test_name)
 
-    mixin_builder = values.CallValueBuilder('targets.mixin')
+    anonymous_mixin_builder = values.CallValueBuilder('targets.mixin')
+    mixins_builder = None
     modifications_builder = values.CallValueBuilder(
         'targets.per_test_modification',
-        {'mixins': mixin_builder},
         elide_param='mixins',
     )
+
     per_test_modifications_builder[test_name] = modifications_builder
 
     for key, value in test.items():
       match key:
       # These keys are actually filled in by the declaration of the test in
       # starlark, so can't/shouldn't be part of the bundle definition
-        case 'results_handler' | 'script' | 'test' | 'test_common':
+        case ('results_handler' | 'script' | 'telemetry_test_name' | 'test'
+              | 'test_common'):
           pass
 
+        case 'use_isolated_scripts_api':
+          anonymous_mixin_builder[key] = values.convert_direct(value)
+
         case 'args':
-          mixin_builder[key] = values.convert_direct(value)
+          anonymous_mixin_builder[key] = values.convert_args(value)
 
         case 'resultdb':
-          mixin_builder['resultdb'] = values.convert_resultdb(value)
+          anonymous_mixin_builder['resultdb'] = values.convert_resultdb(value)
 
         case 'swarming':
-          mixin_builder['swarming'] = values.convert_swarming(value)
+          anonymous_mixin_builder['swarming'] = values.convert_swarming(value)
+
+        case 'mixins':
+          mixins_builder = values.ListValueBuilder([anonymous_mixin_builder])
+          for e in value:
+            mixins_builder.append(values.convert_direct(e))
 
         case 'remove_mixins':
           # Remove_mixins in the starlark basic suite declaration won't be part
@@ -80,6 +91,8 @@ def _convert_basic_suite(
         case _:
           raise Exception(
               f'unhandled key in basic suite test definition: {key}')
+
+  modifications_builder['mixins'] = mixins_builder or anonymous_mixin_builder
 
   return {
       'targets': targets_builder.output(),
