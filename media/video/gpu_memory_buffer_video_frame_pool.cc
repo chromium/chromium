@@ -47,6 +47,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_types.h"
@@ -66,10 +67,6 @@
 namespace media {
 
 namespace {
-
-BASE_FEATURE(kAddScanoutUsageOnlyIfSupportedBySharedImage,
-             "AddScanoutUsageOnlyIfSupportedBySharedImage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 
@@ -1216,10 +1213,11 @@ GpuMemoryBufferVideoFramePool::PoolImpl::GetOrCreateFrameResource(
 
     // SCANOUT usage was historically added unconditionally. However, it
     // actually should be added only if scanout of SharedImages for this use
-    // case is supported. This CL makes that change under a killswitch.
+    // case is supported.
     // TODO(crbug.com/330865436): Remove killswitch post-safe rollout.
     if (base::FeatureList::IsEnabled(
-            kAddScanoutUsageOnlyIfSupportedBySharedImage)) {
+            features::
+                kSWVideoFrameAddScanoutUsageOnlyIfSupportedBySharedImage)) {
       auto si_caps = sii->GetCapabilities();
 
 #if BUILDFLAG(IS_WIN)

@@ -350,6 +350,16 @@ BASE_FEATURE(kSkiaGraphiteDawnUseD3D12,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+// If enabled, SharedImages created for SW video frames have SCANOUT usage added
+// only if SharedImageCapabilities indicates that there is support. Serves as
+// killswitch for this rollout. Lives in //gpu as backings that are rolling out
+// restrictions on supporting SCANOUT usage must check the value of this
+// base::Feature.
+// TODO(crbug.com/330865436): Remove post-safe rollout.
+BASE_FEATURE(kSWVideoFrameAddScanoutUsageOnlyIfSupportedBySharedImage,
+             "SWVideoFrameAddScanoutUsageOnlyIfSupportedBySharedImage",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enable persistent storage of VkPipelineCache data.
 BASE_FEATURE(kEnableVkPipelineCache,
              "EnableVkPipelineCache",
