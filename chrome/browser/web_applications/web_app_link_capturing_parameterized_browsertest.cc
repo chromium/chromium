@@ -3,9 +3,12 @@
 // found in the LICENSE file.
 
 #include <ostream>
+#include <string>
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
@@ -488,6 +491,44 @@ class WebContentsCreationMonitor : public ui_test_utils::AllTabsObserver {
   base::WeakPtr<content::WebContents> last_seen_web_contents_;
 };
 
+// IMPORTANT NOTE TO GARDENERS:
+//
+// TL;DR: Need to disable a specific test? Scroll down and add its name to
+// the appropriate OS block below (and include a bug reference).
+//
+// More detailed version:
+//
+// To disable a test that is failing, please refer to the following steps:
+// 1. Find the full name of the test. The test name should follow the format:
+// `TestBaseName/TestSuite.TestClass/TestParams`, the name should be available
+// on the trybot failure page itself.
+// 2. Add the `TestParam` under BUILDFLAGs inside the `disabled_flaky_tests` set
+// below, to ensure that a single test is only disabled for the OS or builds it
+// is flaking on.
+// 3. Add the appropriate TODO with a public bug so that the flaky tests can be
+// tracked.
+//
+// Once flakiness has been fixed, please remove the entry from here so that test
+// suites can start running the test again.
+static const base::flat_set<std::string> disabled_flaky_tests = {
+// TODO(crbug.com/372119276): Fix flakiness for `Redirection_OpenInChrome` tests
+// on MacOS.
+#if BUILDFLAG(IS_MAC)
+    "CaptureOn_AppWnd_ScopeA2X_ServerSideViaB_ViaLink_ShiftClick_WithOpener_"
+    "TargetBlank",
+    "CaptureOn_AppWnd_ScopeA2X_ServerSideViaA_ViaLink_ShiftClick_WithOpener_"
+    "TargetBlank",
+    "CaptureOn_AppWnd_ScopeA2X_ServerSideViaA_ViaLink_MiddleClick_WithOpener_"
+    "TargetBlank"
+#elif BUILDFLAG(IS_LINUX)
+#elif BUILDFLAG(IS_WIN)
+#elif BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/359600606): Enable on CrOS if navigation capturing needs
+    // to be supported.
+    "*"
+#endif
+};
+
 // This test verifies the navigation capture logic by testing by launching sites
 // inside app containers and tabs and test what happens when links are
 // left/middle clicked and window.open is used (whether browser objects are
@@ -909,11 +950,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
   }
 
   void RunTest() {
-    testing::TestParamInfo<LinkCaptureTestParam> param(GetParam(), 0);
-
-    const base::Value::Dict& test_case = GetTestCaseDataFromParam();
-    if (!ShouldRunDisabledTests() &&
-        test_case.FindBool("disabled").value_or(false)) {
+    if (ShouldSkipCurrentTest()) {
       GTEST_SKIP()
           << "Skipped as test is marked as disabled in the expectations file. "
              "Add the switch '--run-all-tests' to run disabled tests too.";
@@ -1034,6 +1071,7 @@ class WebAppLinkCapturingParameterizedBrowserTest
     if (ShouldRebaseline()) {
       RecordActualResults();
     } else {
+      const base::Value::Dict& test_case = GetTestCaseDataFromParam();
       const base::Value::Dict* expected_state =
           test_case.FindDict("expected_state");
       ASSERT_TRUE(expected_state);
@@ -1045,6 +1083,27 @@ class WebAppLinkCapturingParameterizedBrowserTest
   std::unique_ptr<base::HistogramTester> action_histogram_tester_;
 
  private:
+  bool ShouldSkipCurrentTest() {
+    testing::TestParamInfo<LinkCaptureTestParam> param(GetParam(), 0);
+    const base::Value::Dict& test_case = GetTestCaseDataFromParam();
+
+    // Skip current test-case if the test is disabled and `--run-all-tests` is
+    // not passed to the test runner.
+    if (!ShouldRunDisabledTests() &&
+        test_case.FindBool("disabled").value_or(false)) {
+      return true;
+    }
+
+    // Skip tests that are disabled because they are flaky.
+    if (base::Contains(disabled_flaky_tests,
+                       LinkCaptureTestParamToString(param)) ||
+        base::Contains(disabled_flaky_tests, "*")) {
+      return true;
+    }
+
+    return false;
+  }
+
   // Returns the path to the test expectation file (or an error).
   base::expected<base::FilePath, std::string> GetPathForLinkCaptureInputJson() {
     base::FilePath chrome_src_dir;
@@ -1118,15 +1177,17 @@ class WebAppLinkCapturingParameterizedBrowserTest
   bool did_redirect_ = false;
 };
 
-// TODO(crbug.com/359600606): Enable on CrOS if needed.
-// TODO(crbug.com/372119276): Enable on MacOS if needed.
-#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC))
-#define MAYBE_CheckLinkCaptureCombinations DISABLED_CheckLinkCaptureCombinations
-#else
-#define MAYBE_CheckLinkCaptureCombinations CheckLinkCaptureCombinations
-#endif  // BUILDFLAG(IS_CHROMEOS)
+// IMPORTANT NOTE TO GARDENERS:
+//
+// Please do not disable tests by adding BUILDFLAGs. The current test class
+// runs the same test code for roughly ~700+ parameters, and using a BUILDFLAG
+// will disable the whole test suite for an OS, which is an overkill if the
+// intention is to disable only a few tests.
+//
+// Instead, to disable individual test cases, please refer to the documentation
+// above the `disabled_flaky_tests` declaration inside this file.
 IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
-                       MAYBE_CheckLinkCaptureCombinations) {
+                       CheckLinkCaptureCombinations) {
   RunTest();
 }
 
@@ -1364,9 +1425,8 @@ class NavigationCapturingTestWithAppBLaunched
   }
 };
 
-// TODO(crbug.com/359600606): Enable on CrOS if needed.
 IN_PROC_BROWSER_TEST_P(NavigationCapturingTestWithAppBLaunched,
-                       MAYBE_CheckLinkCaptureCombinations) {
+                       CheckLinkCaptureCombinations) {
   RunTest();
 }
 
