@@ -35,6 +35,9 @@ class UpdateStudentActivitiesRequest : public google_apis::UrlFetchRequestBase {
       const UpdateStudentActivitiesRequest&) = delete;
   ~UpdateStudentActivitiesRequest() override;
 
+  std::string session_id() const { return session_id_; }
+  std::string gaia_id() const { return gaia_id_; }
+  std::string device_id() const { return device_id_; }
   std::string active_tab_title() const { return active_tab_title_; }
 
   void set_active_tab_title(std::string active_tab_title) {

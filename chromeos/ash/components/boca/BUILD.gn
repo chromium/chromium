@@ -56,10 +56,7 @@ static_library("activity") {
     "activity/active_tab_tracker.cc",
     "activity/active_tab_tracker.h",
   ]
-  deps = [
-    "//base",
-    "//chromeos/ash/components/boca/session_api",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {

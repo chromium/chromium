@@ -6,8 +6,10 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "ash/test/ash_test_base.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
@@ -42,6 +44,10 @@ class MockSessionClientImpl : public SessionClientImpl {
   MOCK_METHOD(void,
               GetSession,
               (std::unique_ptr<GetSessionRequest>),
+              (override));
+  MOCK_METHOD(void,
+              UpdateStudentActivity,
+              (std::unique_ptr<UpdateStudentActivitiesRequest>),
               (override));
 };
 
@@ -84,6 +90,7 @@ class MockBocaAppClient : public BocaAppClient {
               GetURLLoaderFactory,
               (),
               (override));
+  MOCK_METHOD(std::string, GetDeviceId, (), (override));
 };
 
 constexpr char kTestGaiaId[] = "123";
@@ -128,8 +135,12 @@ class BocaSessionManagerTest : public testing::Test {
         .WillOnce(Return(identity_test_env_.identity_manager()));
 
     boca_session_manager_ = std::make_unique<BocaSessionManager>(
-        session_client_impl_.get(), AccountId::FromUserEmail(kTestUserEmail));
+        session_client_impl_.get(), account_id);
     boca_session_manager_->AddObserver(observer_.get());
+
+    // Set statistic provider for hardware class tests.
+    ash::system::StatisticsProvider::SetTestProvider(
+        &fake_statistics_provider_);
 
     EXPECT_CALL(*observer(), OnSessionStarted(_, _)).Times(1);
     // Set initial network config.
@@ -184,6 +195,7 @@ class BocaSessionManagerTest : public testing::Test {
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
       fake_user_manager_;
   std::unique_ptr<BocaSessionManager> boca_session_manager_;
+  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 };
 
 TEST_F(BocaSessionManagerTest, DoNothingIfSessionUpdateFailed) {
@@ -659,5 +671,65 @@ TEST_F(BocaSessionManagerTest, NotifyAppReloadEvent) {
   BocaAppClient::Get()->GetSessionManager()->NotifyAppReload();
 }
 
+TEST_F(BocaSessionManagerTest, UpdateTabActivity) {
+  std::string kDeviceId("myDevice");
+  std::u16string kTab(u"google.com");
+  std::string kSessionId("sessionId");
+  ::boca::Session session;
+  session.set_session_id(kSessionId);
+  session.set_session_state(::boca::Session::ACTIVE);
+  EXPECT_CALL(*boca_app_client(), GetDeviceId()).WillOnce(Return(kDeviceId));
+
+  EXPECT_CALL(*session_client_impl(), UpdateStudentActivity(_))
+      .WillOnce(WithArg<0>(
+          // Unique pointer have ownership issue, have to do manual deep copy
+          // here instead of using SaveArg.
+          Invoke([&](auto request) {
+            EXPECT_EQ(kSessionId, request->session_id());
+            EXPECT_EQ(kTestGaiaId, request->gaia_id());
+            EXPECT_EQ(kDeviceId, request->device_id());
+            request->callback().Run(true);
+          })));
+
+  boca_session_manager()->UpdateCurrentSession(
+      std::make_unique<::boca::Session>(session), false);
+  boca_session_manager()->UpdateTabActivity(kTab);
+}
+
+TEST_F(BocaSessionManagerTest, UpdateTabActivityWithDummyDeviceId) {
+  std::u16string kTab(u"google.com");
+  std::string kSessionId("sessionId");
+  ::boca::Session session;
+  session.set_session_id(kSessionId);
+  session.set_session_state(::boca::Session::ACTIVE);
+  EXPECT_CALL(*boca_app_client(), GetDeviceId()).WillOnce(Return(""));
+
+  EXPECT_CALL(*session_client_impl(), UpdateStudentActivity(_))
+      .WillOnce(WithArg<0>(
+          // Unique pointer have ownership issue, have to do manual deep copy
+          // here instead of using SaveArg.
+          Invoke([&](auto request) {
+            EXPECT_EQ(kSessionId, request->session_id());
+            EXPECT_EQ(kTestGaiaId, request->gaia_id());
+            EXPECT_EQ(BocaSessionManager::kDummyDeviceId, request->device_id());
+            request->callback().Run(true);
+          })));
+
+  boca_session_manager()->UpdateCurrentSession(
+      std::make_unique<::boca::Session>(session), false);
+  boca_session_manager()->UpdateTabActivity(kTab);
+}
+
+TEST_F(BocaSessionManagerTest, UpdateTabActivityWithInactiveSession) {
+  ::boca::Session session;
+  session.set_session_id(kSessionId);
+  EXPECT_CALL(*boca_app_client(), GetDeviceId()).Times(0);
+
+  EXPECT_CALL(*session_client_impl(), UpdateStudentActivity(_)).Times(0);
+
+  boca_session_manager()->UpdateCurrentSession(
+      std::make_unique<::boca::Session>(session), false);
+  boca_session_manager()->UpdateTabActivity(u"any");
+}
 }  // namespace
 }  // namespace ash::boca

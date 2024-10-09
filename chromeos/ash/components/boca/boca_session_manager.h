@@ -32,6 +32,7 @@ class BocaSessionManager
     : public chromeos::network_config::CrosNetworkConfigObserver {
  public:
   inline static constexpr base::TimeDelta kPollingInterval = base::Minutes(5);
+  inline static constexpr char kDummyDeviceId[] = "kDummyDeviceId";
 
   enum class BocaAction {
     kDefault = 0,
@@ -120,7 +121,8 @@ class BocaSessionManager
   virtual void UpdateCurrentSession(std::unique_ptr<::boca::Session> session,
                                     bool dispatch_event);
   virtual ::boca::Session* GetCurrentSession();
-  virtual SessionClientImpl* GetSessionClientImpl();
+
+  virtual void UpdateTabActivity(std::u16string title);
 
   // Local events.
   virtual void NotifyLocalCaptionEvents(::boca::CaptionsConfig caption_config);
@@ -129,6 +131,8 @@ class BocaSessionManager
   virtual void NotifyAppReload();
 
   base::ObserverList<Observer>& observers() { return observers_; }
+
+  AccountId& account_id() { return account_id_; }
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);

@@ -11,6 +11,7 @@
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/ash/components/boca/boca_session_util.h"
@@ -137,8 +138,26 @@ void BocaSessionManager::UpdateCurrentSession(
   return current_session_.get();
 }
 
-boca::SessionClientImpl* BocaSessionManager::GetSessionClientImpl() {
-  return session_client_impl_;
+void BocaSessionManager::UpdateTabActivity(std::u16string title) {
+  if (!current_session_ ||
+      current_session_->session_state() != ::boca::Session::ACTIVE) {
+    return;
+  }
+  auto session_id = current_session_->session_id();
+  auto gaia_id = account_id_.GetGaiaId();
+  auto device_id = BocaAppClient::Get()->GetDeviceId();
+  auto request = std::make_unique<UpdateStudentActivitiesRequest>(
+      session_client_impl_->sender(), session_id, gaia_id,
+      !device_id.empty() ? device_id : kDummyDeviceId,
+      base::BindOnce(
+          [](base::expected<bool, google_apis::ApiErrorCode> result) {
+            if (result.has_value()) {
+              // TODO(b/366316261):Add metrics for update failure.
+              LOG(WARNING) << "[Boca]Failed to update student activity.";
+            }
+          }));
+  request->set_active_tab_title(base::UTF16ToUTF8(title));
+  session_client_impl_->UpdateStudentActivity(std::move(request));
 }
 
 void BocaSessionManager::NotifyLocalCaptionEvents(
