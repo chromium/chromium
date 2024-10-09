@@ -3,3 +3,10 @@
 include_rules = [
   "+components/viz/service/frame_sinks",
 ]
+
+specific_include_rules = {
+  "input_manager.cc": [
+    "+gpu/ipc/common/gpu_surface_lookup.h",
+    "+ui/gl/android/scoped_a_native_window.h",
+  ],
+}

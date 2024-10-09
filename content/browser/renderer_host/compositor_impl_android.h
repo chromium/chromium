@@ -109,8 +109,10 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
   // Compositor implementation.
   void SetRootWindow(gfx::NativeWindow root_window) override;
   void SetRootLayer(scoped_refptr<cc::slim::Layer> root) override;
-  void SetSurface(const base::android::JavaRef<jobject>& surface,
-                  bool can_be_used_with_surface_control) override;
+  void SetSurface(
+      const base::android::JavaRef<jobject>& surface,
+      bool can_be_used_with_surface_control,
+      const base::android::JavaRef<jobject>& host_input_token) override;
   void SetBackgroundColor(int color) override;
   void SetWindowBounds(const gfx::Size& size) override;
   const gfx::Size& GetWindowBounds() override;

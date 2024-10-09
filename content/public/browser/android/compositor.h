@@ -74,8 +74,10 @@ class CONTENT_EXPORT Compositor {
   virtual const gfx::Size& GetWindowBounds() = 0;
 
   // Set the output surface which the compositor renders into.
-  virtual void SetSurface(const base::android::JavaRef<jobject>& surface,
-                          bool can_be_used_with_surface_control) = 0;
+  virtual void SetSurface(
+      const base::android::JavaRef<jobject>& surface,
+      bool can_be_used_with_surface_control,
+      const base::android::JavaRef<jobject>& host_input_token) = 0;
 
   // Set the background color used by the layer tree host.
   virtual void SetBackgroundColor(int color) = 0;

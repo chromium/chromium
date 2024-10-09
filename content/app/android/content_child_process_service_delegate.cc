@@ -85,8 +85,10 @@ class ChildProcessSurfaceManager : public gpu::ScopedSurfaceRequestConduit,
           content::JNI_SurfaceWrapper_takeSurface(env, surface_wrapper),
           /*auto_release=*/true);
       DCHECK(!surface.j_surface().is_null());
-      return gpu::SurfaceRecord(std::move(surface),
-                                can_be_used_with_surface_control);
+      return gpu::SurfaceRecord(
+          std::move(surface), can_be_used_with_surface_control,
+          content::JNI_SurfaceWrapper_getBrowserInputToken(env,
+                                                           surface_wrapper));
     } else {
       gl::ScopedJavaSurfaceControl surface_control(
           JNI_SurfaceWrapper_takeSurfaceControl(env, surface_wrapper),

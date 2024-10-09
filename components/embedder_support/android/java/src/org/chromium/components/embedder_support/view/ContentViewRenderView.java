@@ -7,17 +7,21 @@ package org.chromium.components.embedder_support.view;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
+import android.view.AttachedSurfaceControl;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.Window;
 import android.widget.FrameLayout;
+import android.window.InputTransferToken;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.common.InputUtils;
 import org.chromium.ui.base.WindowAndroid;
 
 /***
@@ -75,6 +79,14 @@ public class ContentViewRenderView extends FrameLayout {
                     public void surfaceChanged(
                             SurfaceHolder holder, int format, int width, int height) {
                         assert mNativeContentViewRenderView != 0;
+
+                        InputTransferToken hostInputToken = null;
+                        Window window = mWindowAndroid.getWindow();
+                        if (InputUtils.isTransferInputToVizSupported() && window != null) {
+                            AttachedSurfaceControl rootSurfaceControl =
+                                    window.getRootSurfaceControl();
+                            hostInputToken = rootSurfaceControl.getInputTransferToken();
+                        }
                         ContentViewRenderViewJni.get()
                                 .surfaceChanged(
                                         mNativeContentViewRenderView,
@@ -82,7 +94,8 @@ public class ContentViewRenderView extends FrameLayout {
                                         format,
                                         width,
                                         height,
-                                        holder.getSurface());
+                                        holder.getSurface(),
+                                        hostInputToken);
                         if (mWebContents != null) {
                             ContentViewRenderViewJni.get()
                                     .onPhysicalBackingSizeChanged(
@@ -299,7 +312,8 @@ public class ContentViewRenderView extends FrameLayout {
                 int format,
                 int width,
                 int height,
-                Surface surface);
+                Surface surface,
+                InputTransferToken browserInputToken);
 
         void setOverlayVideoMode(
                 long nativeContentViewRenderView, ContentViewRenderView caller, boolean enabled);

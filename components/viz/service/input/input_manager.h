@@ -67,8 +67,10 @@ class VIZ_SERVICE_EXPORT InputManager
   input::TouchEmulator* GetTouchEmulator(bool create_if_necessary) override;
 
  private:
+#if BUILDFLAG(IS_ANDROID)
   void CreateAndroidInputReceiver(const FrameSinkId& frame_sink_id,
                                   const gpu::SurfaceHandle& surface_handle);
+#endif  // BUILDFLAG(IS_ANDROID)
 
   friend class MockInputManager;
 

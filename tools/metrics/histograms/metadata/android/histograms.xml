@@ -2038,6 +2038,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.InputOnViz.InputReceiverCreationResult"
+    enum="CreateAndroidInputReceiverResult" expires_after="2025-06-30">
+  <owner>kartarsingh@google.com</owner>
+  <owner>woa-performance-team@google.com</owner>
+  <summary>
+    Records result of InputReceiver creation on Viz. When Android returns null
+    pointer to some of the API calls made, input receiver creation API call
+    cannot be issued. This histogram tracks if input receiver creation was
+    successful or failed due to some reason.
+  </summary>
+</histogram>
+
 <histogram name="Android.Intent.BlockedExternalNavLastGestureTime" units="ms"
     expires_after="2024-12-08">
   <owner>mthiesse@chromium.org</owner>

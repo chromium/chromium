@@ -172,6 +172,7 @@ source_set("ipc_common_sources") {
       "gpu_surface_tracker.h",
     ]
     libs = [ "android" ]
+    deps += [ "//ui/gl:surface_jni_headers" ]
   }
 
   if (use_ozone) {

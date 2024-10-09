@@ -565,7 +565,10 @@ group("gl_unittests_ozone") {
 
 if (is_android) {
   generate_jar_jni("surface_jni_headers") {
-    classes = [ "android/view/Surface.class" ]
+    classes = [
+      "android/view/Surface.class",
+      "android/window/InputTransferToken.class",
+    ]
   }
 
   generate_jni("gl_jni_headers") {

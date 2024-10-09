@@ -5,6 +5,7 @@
 #include "base/android/feature_map.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "components/input/features.h"
 #include "content/common/features.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/features.h"
@@ -26,6 +27,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &blink::features::kStylusPointerAdjustment,
     &blink::features::kStylusRichGestures,
     &blink::features::kViewportSegments,
+    &input::features::kInputOnViz,
     &features::kAccessibilityIncludeLongClickAction,
     &features::kAccessibilityPageZoom,
     &features::kAccessibilityPageZoomEnhancements,

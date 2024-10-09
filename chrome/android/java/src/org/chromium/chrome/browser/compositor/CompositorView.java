@@ -13,9 +13,11 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.view.AttachedSurfaceControl;
 import android.view.Surface;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.window.InputTransferToken;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -37,6 +39,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.common.InputUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.resources.AndroidResourceType;
 import org.chromium.ui.resources.ResourceManager;
@@ -473,6 +476,13 @@ public class CompositorView extends FrameLayout
         }
         if (mNativeCompositorView == 0) return;
 
+        InputTransferToken browserInputToken = null;
+        if (InputUtils.isTransferInputToVizSupported()) {
+            AttachedSurfaceControl rootSurfaceControl =
+                    ((Activity) getContext()).getWindow().getRootSurfaceControl();
+            browserInputToken = rootSurfaceControl.getInputTransferToken();
+        }
+
         CompositorViewJni.get()
                 .surfaceChanged(
                         mNativeCompositorView,
@@ -481,7 +491,8 @@ public class CompositorView extends FrameLayout
                         width,
                         height,
                         canUseSurfaceControl(),
-                        surface);
+                        surface,
+                        browserInputToken);
         mRenderHost.onSurfaceResized(width, height);
     }
 
@@ -792,7 +803,8 @@ public class CompositorView extends FrameLayout
                 int width,
                 int height,
                 boolean backedBySurfaceTexture,
-                Surface surface);
+                Surface surface,
+                InputTransferToken browserInputToken);
 
         void onPhysicalBackingSizeChanged(
                 long nativeCompositorView,

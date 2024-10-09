@@ -64,13 +64,15 @@ class CompositorView : public content::CompositorClient,
                       const base::android::JavaParamRef<jobject>& object);
   void SurfaceDestroyed(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& object);
-  void SurfaceChanged(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& object,
-                      jint format,
-                      jint width,
-                      jint height,
-                      bool can_be_used_with_surface_control,
-                      const base::android::JavaParamRef<jobject>& surface);
+  void SurfaceChanged(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& object,
+      jint format,
+      jint width,
+      jint height,
+      bool can_be_used_with_surface_control,
+      const base::android::JavaParamRef<jobject>& surface,
+      const base::android::JavaParamRef<jobject>& browser_input_token);
   void OnPhysicalBackingSizeChanged(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,

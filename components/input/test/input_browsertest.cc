@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_trace_processor.h"
 #include "components/input/features.h"
@@ -132,6 +133,28 @@ IN_PROC_BROWSER_TEST_P(AndroidInputBrowserTest,
     EXPECT_THAT(result.value(),
                 testing::ElementsAre(testing::ElementsAre("id")));
   }
+}
+
+IN_PROC_BROWSER_TEST_P(AndroidInputBrowserTest, AndroidInputReceiverCreated) {
+  base::HistogramTester histogram_tester;
+  content::RenderFrameSubmissionObserver render_frame_submission_observer(
+      shell()->web_contents());
+
+  EXPECT_TRUE(content::NavigateToURL(
+      shell(), GURL("data:text/html,<!doctype html>"
+                    "<body style='background-color: magenta;'></body>")));
+  if (render_frame_submission_observer.render_frame_count() == 0) {
+    render_frame_submission_observer.WaitForAnyFrameSubmission();
+  }
+  // By this point a root compositor frame sink should have been created as
+  // well, and if an input receiver were to be created it should have been
+  // since it happens when root compositor frame sink is created.
+
+  const int expected_count = IsTransferInputToVizSupported() ? 1 : 0;
+  content::FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectUniqueSample(
+      "Android.InputOnViz.InputReceiverCreationResult",
+      /*kSuccessfullyCreated*/ 0, expected_count);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -100,6 +100,12 @@ component("input") {
   }
   if (is_android) {
     sources += [
+      "android/scoped_input_receiver.cc",
+      "android/scoped_input_receiver.h",
+      "android/scoped_input_receiver_callbacks.cc",
+      "android/scoped_input_receiver_callbacks.h",
+      "android/scoped_input_transfer_token.cc",
+      "android/scoped_input_transfer_token.h",
       "native_web_keyboard_event_android.cc",
       "web_input_event_builders_android.cc",
       "web_input_event_builders_android.h",

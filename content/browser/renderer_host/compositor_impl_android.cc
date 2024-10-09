@@ -43,6 +43,7 @@
 #include "cc/slim/layer_tree.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_settings.h"
+#include "components/input/utils.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -243,7 +244,7 @@ CompositorImpl::~CompositorImpl() {
 
   DetachRootWindow();
   // Clean-up any surface references.
-  SetSurface(nullptr, false);
+  SetSurface(nullptr, false, nullptr);
 
   BrowserGpuChannelHostFactory::instance()->MaybeCloseChannel();
 }
@@ -303,8 +304,10 @@ void CompositorImpl::SetRootLayer(scoped_refptr<cc::slim::Layer> root_layer) {
   }
 }
 
-void CompositorImpl::SetSurface(const base::android::JavaRef<jobject>& surface,
-                                bool can_be_used_with_surface_control) {
+void CompositorImpl::SetSurface(
+    const base::android::JavaRef<jobject>& surface,
+    bool can_be_used_with_surface_control,
+    const base::android::JavaRef<jobject>& host_input_token) {
   gpu::GpuSurfaceTracker* tracker = gpu::GpuSurfaceTracker::Get();
 
   if (window_) {
@@ -321,8 +324,9 @@ void CompositorImpl::SetSurface(const base::android::JavaRef<jobject>& surface,
   if (window) {
     window_ = std::move(window);
     // Register first, SetVisible() might create a LayerTreeFrameSink.
-    surface_handle_ = tracker->AddSurfaceForNativeWidget(gpu::SurfaceRecord(
-        std::move(scoped_surface), can_be_used_with_surface_control));
+    surface_handle_ = tracker->AddSurfaceForNativeWidget(
+        gpu::SurfaceRecord(std::move(scoped_surface),
+                           can_be_used_with_surface_control, host_input_token));
     SetVisible(true);
   }
 }
@@ -778,6 +782,9 @@ void CompositorImpl::InitializeVizLayerTreeFrameSink(
   root_params->gpu_compositing = true;
   root_params->renderer_settings = renderer_settings;
   root_params->refresh_rate = root_window_->GetRefreshRate();
+  if (input::IsTransferInputToVizSupported()) {
+    root_params->create_input_receiver = true;
+  }
 
   GetHostFrameSinkManager()->CreateRootCompositorFrameSink(
       std::move(root_params));
@@ -827,7 +834,7 @@ void CompositorImpl::OnFatalOrSurfaceContextCreationFailure(
   }
 
   if (context_result == gpu::ContextResult::kSurfaceFailure) {
-    SetSurface(nullptr, false);
+    SetSurface(nullptr, false, nullptr);
     client_->RecreateSurface();
   }
 }
