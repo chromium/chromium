@@ -586,6 +586,13 @@ ChromeAutofillClient::ShowAutofillSuggestions(
   return session_id;
 }
 
+void ChromeAutofillClient::ShowPlusAddressEmailOverrideNotification(
+    const std::string& original_email,
+    EmailOverrideUndoCallback email_override_undo_callback) {
+  // TODO(crbug.com/324557053): Implement.
+  NOTIMPLEMENTED();
+}
+
 void ChromeAutofillClient::UpdateAutofillDataListValues(
     base::span<const SelectOption> options) {
   if (suggestion_controller_.get()) {

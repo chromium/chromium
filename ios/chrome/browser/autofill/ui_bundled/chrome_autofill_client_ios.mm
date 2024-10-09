@@ -309,6 +309,13 @@ ChromeAutofillClientIOS::ShowAutofillSuggestions(
   return SuggestionUiSessionId();
 }
 
+void ChromeAutofillClientIOS::ShowPlusAddressEmailOverrideNotification(
+    const std::string& original_email,
+    EmailOverrideUndoCallback email_override_undo_callback) {
+  // TODO(crbug.com/324557053): Implement.
+  NOTIMPLEMENTED();
+}
+
 AutofillPlusAddressDelegate* ChromeAutofillClientIOS::GetPlusAddressDelegate() {
   return PlusAddressServiceFactory::GetForProfile(profile_);
 }

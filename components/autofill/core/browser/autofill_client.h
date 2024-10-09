@@ -201,6 +201,11 @@ class AutofillClient {
   // user closing the dialog directly and not when user closes the browser tab.
   using AddressProfileDeleteDialogCallback = base::OnceCallback<void(bool)>;
 
+  // Callback to run when the user decides to undo the plus address full form
+  // fulling. If the user never undoes the operation, the callback is never
+  // triggered.
+  using EmailOverrideUndoCallback = base::OnceClosure;
+
   virtual ~AutofillClient() = default;
 
   // Returns the channel for the installation. In branded builds, this will be
@@ -401,6 +406,15 @@ class AutofillClient {
   virtual SuggestionUiSessionId ShowAutofillSuggestions(
       const PopupOpenArgs& open_args,
       base::WeakPtr<AutofillSuggestionDelegate> delegate) = 0;
+
+  // Notifies the user via a patform specific UI that full form filling for plus
+  // addresses has occurred (i.e. the filled email address was overridden by the
+  // plus address). The UI provides the user with the option to undo the
+  // filling operation back to back to `original_email`, in which case the
+  // `email_override_undo_callback` is triggered.
+  virtual void ShowPlusAddressEmailOverrideNotification(
+      const std::string& original_email,
+      EmailOverrideUndoCallback email_override_undo_callback);
 
   // Update the data list values shown by the Autofill suggestions, if visible.
   virtual void UpdateAutofillDataListValues(

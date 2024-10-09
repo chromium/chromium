@@ -148,6 +148,10 @@ AutofillClient::GetDeviceAuthenticator() {
   return nullptr;
 }
 
+void AutofillClient::ShowPlusAddressEmailOverrideNotification(
+    const std::string& original_email,
+    EmailOverrideUndoCallback email_override_undo_callback) {}
+
 void AutofillClient::ShowAutofillFieldIphForFeature(
     const FormFieldData&,
     AutofillClient::IphFeature feature) {}
