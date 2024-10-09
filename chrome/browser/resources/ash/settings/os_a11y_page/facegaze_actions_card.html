@@ -39,7 +39,7 @@
   </settings-toggle-button>
   <dom-repeat items="[[commandPairs_]]">
     <template>
-      <div class="settings-box">
+      <div class="command-pair settings-box">
         <div class="start settings-box-text two-line single-column action-row">
           <div>[[getActionDisplayText_(item.action)]]</div>
           <template is="dom-if" if="[[getSubLabel_(item.action)]]">
@@ -68,7 +68,9 @@
             <iron-icon icon="cr:add" slot="icon"></iron-icon>
           </cros-chip>
         </template>
-        <cr-icon-button class="icon-clear" on-click="onRemoveCommandPairButtonClick_">
+        <cr-icon-button
+            class="icon-clear"
+            on-click="onRemoveCommandPairButtonClick_">
         </cr-icon-button>
       </div>
     </template>

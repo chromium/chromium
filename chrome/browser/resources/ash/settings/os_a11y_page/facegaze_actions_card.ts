@@ -18,6 +18,7 @@ import './facegaze_icons.html.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {FacialGesture} from 'chrome://resources/ash/common/accessibility/facial_gestures.js';
 import {MacroName} from 'chrome://resources/ash/common/accessibility/macro_names.js';
+import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -226,6 +227,21 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
     this.splice(
         FaceGazeActionsCardElement.FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME,
         removeCommandPairIndex, 1);
+
+    // If there is one, set focus to the remove button of the next command pair.
+    // Otherwise, set focus to the action button.
+    if (this.commandPairs_[removeCommandPairIndex]) {
+      const commandPairElements =
+          this.shadowRoot!.querySelectorAll<HTMLElement>('.command-pair');
+      const nextRemoveButton =
+          commandPairElements[removeCommandPairIndex]
+              .shadowRoot!.querySelector<CrButtonElement>('.icon-clear');
+      nextRemoveButton!.focus();
+    } else {
+      const addActionButton =
+          this.shadowRoot!.querySelector<CrButtonElement>('#addActionButton');
+      addActionButton!.focus();
+    }
   }
 
   private removeCommandPairFromPref_(removedCommandPair: FaceGazeCommandPair):
