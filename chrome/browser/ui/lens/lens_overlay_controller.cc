@@ -360,7 +360,12 @@ void LensOverlayController::ShowUI(
 
   // Request user permission before grabbing a screenshot.
   CHECK(pref_service_);
-  if (!lens::CanSharePageScreenshotWithLensOverlay(pref_service_)) {
+  // If contextual serachbox is enabled, show permission bubble again informing
+  // users of other information that will be shared. The contextual searchbox
+  // pref is a different pref.
+  if (!lens::CanSharePageScreenshotWithLensOverlay(pref_service_) ||
+      (lens::features::IsLensOverlayContextualSearchboxEnabled() &&
+       !lens::CanSharePageContentWithLensOverlay(pref_service_))) {
     if (!permission_bubble_controller_) {
       permission_bubble_controller_ =
           std::make_unique<lens::LensPermissionBubbleController>(
@@ -1328,7 +1333,7 @@ void LensOverlayController::ContinueCreateInitializationData(
   }
 
   std::optional<std::string> page_title;
-  if (lens::CanSharePageTitleWithLensOverlay(sync_service_)) {
+  if (lens::CanSharePageTitleWithLensOverlay(sync_service_, pref_service_)) {
     page_title = std::make_optional<std::string>(
         base::UTF16ToUTF8(active_web_contents->GetTitle()));
   }

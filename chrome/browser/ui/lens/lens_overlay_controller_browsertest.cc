@@ -606,6 +606,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
     // Permits sharing the page screenshot by default.
     PrefService* prefs = browser()->profile()->GetPrefs();
     prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, true);
+    prefs->SetBoolean(lens::prefs::kLensSharingPageContentEnabled, true);
   }
 
   void TearDownOnMainThread() override {
@@ -615,6 +616,7 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
     // Disallow sharing the page screenshot by default.
     PrefService* prefs = browser()->profile()->GetPrefs();
     prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, false);
+    prefs->SetBoolean(lens::prefs::kLensSharingPageContentEnabled, false);
   }
 
   ~LensOverlayControllerBrowserTest() override {
@@ -790,18 +792,21 @@ class LensOverlayControllerBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       PermissionBubble_Accept) {
+                       PermissionBubble_CSBPrefAccept) {
   WaitForPaint();
   // State should start in off.
   auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
-  // Disallow sharing the page screenshot.
+  // Allow sharing the page screenshot but not other page content.
   PrefService* prefs = browser()->profile()->GetPrefs();
-  prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, false);
-  ASSERT_FALSE(lens::CanSharePageScreenshotWithLensOverlay(prefs));
+  prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, true);
+  prefs->SetBoolean(lens::prefs::kLensSharingPageContentEnabled, false);
+  ASSERT_TRUE(lens::CanSharePageScreenshotWithLensOverlay(prefs));
+  ASSERT_FALSE(lens::CanSharePageContentWithLensOverlay(prefs));
 
-  // Verify attempting to show the UI will show the permission bubble.
+  // Verify attempting to show the UI will still show the permission bubble
+  // with the contextual searchbox enabled.
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        lens::kLensPermissionDialogName);
   controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
@@ -832,7 +837,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_FALSE(controller->get_lens_permission_bubble_controller_for_testing()
                    ->HasOpenDialogWidget());
 
-  // Verify sharing the page screenshot is now permitted.
+  // Verify sharing the page content and screenshot are now permitted.
+  ASSERT_TRUE(lens::CanSharePageContentWithLensOverlay(prefs));
   ASSERT_TRUE(lens::CanSharePageScreenshotWithLensOverlay(prefs));
 
   // Verify accepting the permission bubble will eventually result in the
@@ -846,16 +852,18 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       PermissionBubble_Reject) {
+                       PermissionBubble_CSBPrefReject) {
   WaitForPaint();
   // State should start in off.
   auto* controller = GetLensOverlayController();
   ASSERT_EQ(controller->state(), State::kOff);
 
-  // Disallow sharing the page screenshot.
+  // Allow sharing the page screenshot but not other page content.
   PrefService* prefs = browser()->profile()->GetPrefs();
-  prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, false);
-  ASSERT_FALSE(lens::CanSharePageScreenshotWithLensOverlay(prefs));
+  prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, true);
+  prefs->SetBoolean(lens::prefs::kLensSharingPageContentEnabled, false);
+  ASSERT_TRUE(lens::CanSharePageScreenshotWithLensOverlay(prefs));
+  ASSERT_FALSE(lens::CanSharePageContentWithLensOverlay(prefs));
 
   // Verify attempting to show the UI will show the permission bubble.
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
@@ -888,61 +896,10 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   ASSERT_FALSE(controller->get_lens_permission_bubble_controller_for_testing()
                    ->HasOpenDialogWidget());
 
-  // Verify sharing the page screenshot is still not permitted.
-  ASSERT_FALSE(lens::CanSharePageScreenshotWithLensOverlay(prefs));
-}
-
-IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
-                       PermissionBubble_PrefChange) {
-  WaitForPaint();
-  // State should start in off.
-  auto* controller = GetLensOverlayController();
-  ASSERT_EQ(controller->state(), State::kOff);
-
-  // Disallow sharing the page screenshot.
-  PrefService* prefs = browser()->profile()->GetPrefs();
-  prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, false);
-  ASSERT_FALSE(lens::CanSharePageScreenshotWithLensOverlay(prefs));
-
-  // Verify attempting to show the UI will show the permission bubble.
-  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       lens::kLensPermissionDialogName);
-  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
-  // State should remain off.
-  ASSERT_EQ(controller->state(), State::kOff);
-  auto* bubble_widget = waiter.WaitIfNeededAndGet();
-  // Wait for the bubble to become visible.
-  views::test::WidgetVisibleWaiter(bubble_widget).Wait();
-  ASSERT_TRUE(bubble_widget->IsVisible());
-  ASSERT_TRUE(controller->get_lens_permission_bubble_controller_for_testing()
-                  ->HasOpenDialogWidget());
-
-  // Verify attempting to show the UI again does not close the bubble widget.
-  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
-  // State should remain off.
-  ASSERT_EQ(controller->state(), State::kOff);
-  ASSERT_TRUE(bubble_widget->IsVisible());
-  ASSERT_TRUE(controller->get_lens_permission_bubble_controller_for_testing()
-                  ->HasOpenDialogWidget());
-
-  // Simulate pref being enabled elsewhere.
-  prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, true);
-  // Wait for the bubble to be destroyed.
-  views::test::WidgetDestroyedWaiter(bubble_widget).Wait();
-  ASSERT_FALSE(controller->get_lens_permission_bubble_controller_for_testing()
-                   ->HasOpenDialogWidget());
-
-  // Verify sharing the page screenshot is now permitted.
+  // Verify sharing the page screenshot is still permitted.
   ASSERT_TRUE(lens::CanSharePageScreenshotWithLensOverlay(prefs));
-
-  // Verify accepting the permission bubble will eventually result in the
-  // overlay state.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return controller->state() == State::kOverlay; }));
-
-  // Verify screenshot was captured and stored.
-  auto screenshot_bitmap = controller->current_screenshot();
-  EXPECT_FALSE(screenshot_bitmap.empty());
+  // Verify sharing the page content is still not permitted.
+  ASSERT_FALSE(lens::CanSharePageContentWithLensOverlay(prefs));
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -1558,9 +1515,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab_web_contents);
   EXPECT_EQ(controller->GetTabIdForTesting(), tab_id);
 
-  // TODO(b/335234545): The current page URL should be made available for use by
-  // the searchbox.
-  EXPECT_TRUE(controller->GetPageURLForTesting().is_empty());
+  EXPECT_TRUE(!controller->GetPageURLForTesting().is_empty());
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
@@ -3755,6 +3710,7 @@ class LensOverlayControllerBrowserPDFTest
     // permission dialog.
     PrefService* prefs = browser()->profile()->GetPrefs();
     prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, true);
+    prefs->SetBoolean(lens::prefs::kLensSharingPageContentEnabled, true);
   }
 
   bool UseOopif() const override { return GetParam(); }
@@ -4304,11 +4260,10 @@ class LensOverlayControllerContextualFeaturesDisabledTest
     : public LensOverlayControllerBrowserTest {
  protected:
   void SetupFeatureList() override {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        lens::features::kLensOverlayContextualSearchbox,
-        {
-            {"use-inner-text-as-context", "false"},
-        });
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{
+            lens::features::kLensOverlayContextualSearchbox});
   }
 };
 
@@ -4438,6 +4393,166 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
       fake_query_controller->last_sent_underlying_content_bytes_.empty());
   ASSERT_TRUE(
       fake_query_controller->last_sent_underlying_content_type_.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
+                       PermissionBubble_Accept) {
+  WaitForPaint();
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Disallow sharing the page screenshot.
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, false);
+  prefs->SetBoolean(lens::prefs::kLensSharingPageContentEnabled, false);
+  ASSERT_FALSE(lens::CanSharePageScreenshotWithLensOverlay(prefs));
+  ASSERT_FALSE(lens::CanSharePageContentWithLensOverlay(prefs));
+
+  // Verify attempting to show the UI will show the permission bubble.
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       lens::kLensPermissionDialogName);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  // State should remain off.
+  ASSERT_EQ(controller->state(), State::kOff);
+  auto* bubble_widget = waiter.WaitIfNeededAndGet();
+  // Wait for the bubble to become visible.
+  views::test::WidgetVisibleWaiter(bubble_widget).Wait();
+  ASSERT_TRUE(bubble_widget->IsVisible());
+  ASSERT_TRUE(controller->get_lens_permission_bubble_controller_for_testing()
+                  ->HasOpenDialogWidget());
+
+  // Verify attempting to show the UI again does not close the bubble widget.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  // State should remain off.
+  ASSERT_EQ(controller->state(), State::kOff);
+  ASSERT_TRUE(bubble_widget->IsVisible());
+  ASSERT_TRUE(controller->get_lens_permission_bubble_controller_for_testing()
+                  ->HasOpenDialogWidget());
+
+  // Simulate click on the accept button.
+  auto* bubble_widget_delegate =
+      bubble_widget->widget_delegate()->AsBubbleDialogDelegate();
+  ClickBubbleDialogButton(bubble_widget_delegate,
+                          bubble_widget_delegate->GetOkButton());
+  // Wait for the bubble to be destroyed.
+  views::test::WidgetDestroyedWaiter(bubble_widget).Wait();
+  ASSERT_FALSE(controller->get_lens_permission_bubble_controller_for_testing()
+                   ->HasOpenDialogWidget());
+
+  // Verify sharing the page screenshot is now permitted.
+  ASSERT_TRUE(lens::CanSharePageScreenshotWithLensOverlay(prefs));
+  // Page content should still not be able to be shared when CSB isn't enabled.
+  ASSERT_FALSE(lens::CanSharePageContentWithLensOverlay(prefs));
+
+  // Verify accepting the permission bubble will eventually result in the
+  // overlay state.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Verify screenshot was captured and stored.
+  auto screenshot_bitmap = controller->current_screenshot();
+  EXPECT_FALSE(screenshot_bitmap.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
+                       PermissionBubble_Reject) {
+  WaitForPaint();
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Disallow sharing the page screenshot.
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, false);
+  ASSERT_FALSE(lens::CanSharePageScreenshotWithLensOverlay(prefs));
+
+  // Verify attempting to show the UI will show the permission bubble.
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       lens::kLensPermissionDialogName);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  // State should remain off.
+  ASSERT_EQ(controller->state(), State::kOff);
+  auto* bubble_widget = waiter.WaitIfNeededAndGet();
+  // Wait for the bubble to become visible.
+  views::test::WidgetVisibleWaiter(bubble_widget).Wait();
+  ASSERT_TRUE(bubble_widget->IsVisible());
+  ASSERT_TRUE(controller->get_lens_permission_bubble_controller_for_testing()
+                  ->HasOpenDialogWidget());
+
+  // Verify attempting to show the UI again does not close the bubble widget.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  // State should remain off.
+  ASSERT_EQ(controller->state(), State::kOff);
+  ASSERT_TRUE(bubble_widget->IsVisible());
+  ASSERT_TRUE(controller->get_lens_permission_bubble_controller_for_testing()
+                  ->HasOpenDialogWidget());
+
+  // Simulate click on the reject button.
+  auto* bubble_widget_delegate =
+      bubble_widget->widget_delegate()->AsBubbleDialogDelegate();
+  ClickBubbleDialogButton(bubble_widget_delegate,
+                          bubble_widget_delegate->GetCancelButton());
+  // Wait for the bubble to be destroyed.
+  views::test::WidgetDestroyedWaiter(bubble_widget).Wait();
+  ASSERT_FALSE(controller->get_lens_permission_bubble_controller_for_testing()
+                   ->HasOpenDialogWidget());
+
+  // Verify sharing the page screenshot is still not permitted.
+  ASSERT_FALSE(lens::CanSharePageScreenshotWithLensOverlay(prefs));
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
+                       PermissionBubble_PrefChange) {
+  WaitForPaint();
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Disallow sharing the page screenshot.
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, false);
+  ASSERT_FALSE(lens::CanSharePageScreenshotWithLensOverlay(prefs));
+
+  // Verify attempting to show the UI will show the permission bubble.
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       lens::kLensPermissionDialogName);
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  // State should remain off.
+  ASSERT_EQ(controller->state(), State::kOff);
+  auto* bubble_widget = waiter.WaitIfNeededAndGet();
+  // Wait for the bubble to become visible.
+  views::test::WidgetVisibleWaiter(bubble_widget).Wait();
+  ASSERT_TRUE(bubble_widget->IsVisible());
+  ASSERT_TRUE(controller->get_lens_permission_bubble_controller_for_testing()
+                  ->HasOpenDialogWidget());
+
+  // Verify attempting to show the UI again does not close the bubble widget.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  // State should remain off.
+  ASSERT_EQ(controller->state(), State::kOff);
+  ASSERT_TRUE(bubble_widget->IsVisible());
+  ASSERT_TRUE(controller->get_lens_permission_bubble_controller_for_testing()
+                  ->HasOpenDialogWidget());
+
+  // Simulate pref being enabled elsewhere.
+  prefs->SetBoolean(lens::prefs::kLensSharingPageScreenshotEnabled, true);
+  // Wait for the bubble to be destroyed.
+  views::test::WidgetDestroyedWaiter(bubble_widget).Wait();
+  ASSERT_FALSE(controller->get_lens_permission_bubble_controller_for_testing()
+                   ->HasOpenDialogWidget());
+
+  // Verify sharing the page screenshot is now permitted.
+  ASSERT_TRUE(lens::CanSharePageScreenshotWithLensOverlay(prefs));
+
+  // Verify accepting the permission bubble will eventually result in the
+  // overlay state.
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+
+  // Verify screenshot was captured and stored.
+  auto screenshot_bitmap = controller->current_screenshot();
+  EXPECT_FALSE(screenshot_bitmap.empty());
 }
 
 class LensOverlayControllerOverlaySearchbox

@@ -69,11 +69,19 @@ void LensPermissionBubbleController::RequestPermission(
   // several times in succession.
   pref_observer_.Reset();
   pref_observer_.Init(pref_service_);
-  pref_observer_.Add(
-      prefs::kLensSharingPageScreenshotEnabled,
-      base::BindRepeating(
-          &LensPermissionBubbleController::OnPermissionPreferenceUpdated,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  if (lens::features::IsLensOverlayContextualSearchboxEnabled()) {
+    pref_observer_.Add(
+        prefs::kLensSharingPageContentEnabled,
+        base::BindRepeating(
+            &LensPermissionBubbleController::OnPermissionPreferenceUpdated,
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  } else {
+    pref_observer_.Add(
+        prefs::kLensSharingPageScreenshotEnabled,
+        base::BindRepeating(
+            &LensPermissionBubbleController::OnPermissionPreferenceUpdated,
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
 
   // Show a tab-modal dialog and keep a reference to its widget.
   dialog_widget_ = constrained_window::ShowWebModal(
@@ -154,6 +162,9 @@ void LensPermissionBubbleController::OnHelpCenterLinkClicked(
 void LensPermissionBubbleController::OnPermissionDialogAccept() {
   RecordPermissionUserAction(LensPermissionUserAction::kAcceptButtonPressed,
                              invocation_source_);
+  if (lens::features::IsLensOverlayContextualSearchboxEnabled()) {
+    pref_service_->SetBoolean(prefs::kLensSharingPageContentEnabled, true);
+  }
   pref_service_->SetBoolean(prefs::kLensSharingPageScreenshotEnabled, true);
   dialog_widget_ = nullptr;
 }
@@ -175,6 +186,8 @@ void LensPermissionBubbleController::OnPermissionDialogClose() {
 
 void LensPermissionBubbleController::OnPermissionPreferenceUpdated(
     RequestPermissionCallback callback) {
+  // If sharing page content pref is enabled, the screenshot pref will also be
+  // enabled. Only need to check for the latter when a pref gets updated.
   if (CanSharePageScreenshotWithLensOverlay(pref_service_)) {
     if (HasOpenDialogWidget()) {
       dialog_widget_->CloseWithReason(
