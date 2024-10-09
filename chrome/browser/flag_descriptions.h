@@ -2587,6 +2587,9 @@ extern const char kDynamicSafeAreaInsetsOnScrollDescription[];
 extern const char kEdgeToEdgeBottomChinName[];
 extern const char kEdgeToEdgeBottomChinDescription[];
 
+extern const char kEdgeToEdgeEverywhereName[];
+extern const char kEdgeToEdgeEverywhereDescription[];
+
 extern const char kEdgeToEdgeWebOptInName[];
 extern const char kEdgeToEdgeWebOptInDescription[];
 

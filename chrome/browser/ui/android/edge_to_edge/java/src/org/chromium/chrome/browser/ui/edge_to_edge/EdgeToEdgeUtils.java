@@ -120,7 +120,8 @@ public class EdgeToEdgeUtils {
     public static boolean isEnabled() {
         return isLegacyWebsiteOptInEnabled()
                 || isEdgeToEdgeBottomChinEnabled()
-                || isEdgeToEdgeWebOptInEnabled();
+                || isEdgeToEdgeWebOptInEnabled()
+                || isEdgeToEdgeEverywhereEnabled();
     }
 
     /**
@@ -152,6 +153,11 @@ public class EdgeToEdgeUtils {
      */
     public static boolean isEdgeToEdgeWebOptInEnabled() {
         return ChromeFeatureList.sEdgeToEdgeWebOptIn.isEnabled();
+    }
+
+    /** Whether edge-to-edge should be enabled everywhere. */
+    public static boolean isEdgeToEdgeEverywhereEnabled() {
+        return ChromeFeatureList.sEdgeToEdgeEverywhere.isEnabled();
     }
 
     /** Whether key native pages should draw to edge. */

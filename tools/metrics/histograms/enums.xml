@@ -20523,6 +20523,7 @@ from previous Chrome versions.
   <int value="79595680" label="OmniboxTabSwitchSuggestions:enabled"/>
   <int value="79729295" label="WebBundles:enabled"/>
   <int value="80036427" label="AutofillEnableCardProductName:disabled"/>
+  <int value="80283971" label="EdgeToEdgeEverywhere:disabled"/>
   <int value="82303171" label="AccountIdMigration:disabled"/>
   <int value="82489049" label="AutofillSaveCardUiExperiment:enabled"/>
   <int value="82922831" label="NtpHistoryClustersModuleDiscounts:enabled"/>
@@ -22338,6 +22339,7 @@ from previous Chrome versions.
   <int value="813466537" label="CrOSLateBootAudioA2DPAdvancedCodecs:enabled"/>
   <int value="813999334" label="HistoryManipulationIntervention:enabled"/>
   <int value="814671037" label="VirtualKeyboardGlobalEmojiPreferences:enabled"/>
+  <int value="815912654" label="EdgeToEdgeEverywhere:enabled"/>
   <int value="816369907" label="SharingHubDesktopAppMenu:disabled"/>
   <int value="816596744" label="PhoneHubOnboardingNotifierRevamp:enabled"/>
   <int value="816907702" label="GlobalMediaControlsSeamlessTransfer:disabled"/>
