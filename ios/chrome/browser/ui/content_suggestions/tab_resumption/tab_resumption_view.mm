@@ -162,7 +162,7 @@ void SetFallbackImageToImageView(UIImageView* image_view,
   [labelStackView addArrangedSubview:hostnameAndSyncTimeLabel];
   [accessibilityLabel addObject:hostnameAndSyncTimeLabel.text];
 
-  if (IsTabResumption2BubbleEnabled() && _item.reason) {
+  if (IsTabResumption2ReasonEnabled() && _item.reason) {
     // If there is a reason, limit the title to 1 line and add the reason.
     tabTitleLabel.numberOfLines = 1;
     UIView* reasonLabel = [self configuredReasonLabel];
@@ -332,8 +332,8 @@ void SetFallbackImageToImageView(UIImageView* image_view,
   BOOL hasSalientImage = NO;
   CGFloat containerSize;
   if (_item.contentImage &&
-      (IsTabResumption1_5SalientImageEnabled() ||
-       IsTabResumption1_5ThumbnailsImageEnabled()) &&
+      (IsTabResumptionImagesSalientEnabled() ||
+       IsTabResumptionImagesThumbnailsEnabled()) &&
       _item.contentImage.size.width && _item.contentImage.size.height) {
     hasSalientImage = YES;
     containerSize = kImageSalientContainerSize;

@@ -650,23 +650,30 @@ BASE_DECLARE_FEATURE(kTabResumption);
 // Feature that enables enhancements for Tab Resumption.
 BASE_DECLARE_FEATURE(kTabResumption1_5);
 
-// A parameter to indicate whether the Tab resumption tile should use salient
-// images.
-extern const char kTR15SalientImageParam[];
-
-// A value for `kTR15SalientImageParam` to enable thumbnails images for local
-// tabs and not salient images.
-extern const char kTR15SalientImageThumbnailsOnly[];
-
 // A parameter to indicate whether the Tab resumption tile should have a see
 // more button.
 extern const char kTR15SeeMoreButtonParam[];
 
+// Feature that enables images for Tab Resumption.
+BASE_DECLARE_FEATURE(kTabResumptionImages);
+
+// A parameter to choose what type of images are enabled in
+// `kTabResumptionImages` experiment (default to all).
+extern const char kTabResumptionImagesTypes[];
+
+// A parameter value for `kTabResumptionImagesTypes` to only enable salient
+// images images for tab resumption.
+extern const char kTabResumptionImagesTypesSalient[];
+
+// A parameter value for `kTabResumptionImagesTypes` to only enable thumbnails
+// images images for tab resumption.
+extern const char kTabResumptionImagesTypesThumbnails[];
+
 // Feature that enables tab resumption 2.0.
 BASE_DECLARE_FEATURE(kTabResumption2);
 
-// The parameter to enable Tab resumption 2 bubble.
-extern const char kTabResumption2BubbleParam[];
+// Feature that enables tab resumption 2.0 reason bubble.
+BASE_DECLARE_FEATURE(kTabResumption2Reason);
 
 // A parameter to indicate whether the Most Visited Tiles should be in the Magic
 // Stack.
@@ -707,7 +714,7 @@ bool IsTabResumptionEnabled();
 bool IsTabResumption2_0Enabled();
 
 // Whether to show the reason bubble for Tab resumption.
-bool IsTabResumption2BubbleEnabled();
+bool IsTabResumption2ReasonEnabled();
 
 // Whether the tab resumption feature is enabled for most recent tab only.
 bool IsTabResumptionEnabledForMostRecentTabOnly();
@@ -715,15 +722,15 @@ bool IsTabResumptionEnabledForMostRecentTabOnly();
 // Whether the tab resumption enhancements feature is enabled.
 bool IsTabResumption1_5Enabled();
 
-// Whether the tab resumption with salient images for distant tabs (or fallback
-// for local tabs) is enabled.
-bool IsTabResumption1_5SalientImageEnabled();
-
-// Whether the tab resumption with salient images for local tabs is enabled.
-bool IsTabResumption1_5ThumbnailsImageEnabled();
-
 // Whether the tab resumption with see more button is enabled.
 bool IsTabResumption1_5SeeMoreEnabled();
+
+// Whether the tab resumption with salient images for distant tabs (or fallback
+// for local tabs) is enabled.
+bool IsTabResumptionImagesSalientEnabled();
+
+// Whether the tab resumption with salient images for local tabs is enabled.
+bool IsTabResumptionImagesThumbnailsEnabled();
 
 // Convenience method for determining the tab resumption time threshold for
 // X-Devices tabs only.

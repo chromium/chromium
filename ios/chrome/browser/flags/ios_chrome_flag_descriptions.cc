@@ -1119,6 +1119,15 @@ const char kTabResumption2Description[] =
     "When enabled, enable the version 2.0 of tab resumption. Requires Tab "
     "resumption to be enabled.";
 
+const char kTabResumption2ReasonName[] = "Enable Tab Resumption 2.0 Reason";
+const char kTabResumption2ReasonDescription[] =
+    "When enabled, a bubble showing the reason why the tab is shown is "
+    "displayed.";
+
+const char kTabResumptionImagesName[] = "Enable Tab Resumption images";
+const char kTabResumptionImagesDescription[] =
+    "When enabled, a relevant image is displayed in Tab resumption items.";
+
 const char kUndoMigrationOfSyncingUserToSignedInName[] =
     "Undo the migration of syncing users to signed-in";
 const char kUndoMigrationOfSyncingUserToSignedInDescription[] =

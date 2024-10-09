@@ -639,26 +639,26 @@ const FeatureEntry::FeatureVariation
         {"High Performance Canonicalization", nullptr, 0, "3362133"},
 };
 
-const FeatureEntry::FeatureParam kTabResumption15DisableSalientImages[] = {
-    {kTR15SalientImageParam, "false"}};
-const FeatureEntry::FeatureParam kTabResumption15ThumbnailsImagesOnly[] = {
-    {kTR15SalientImageParam, kTR15SalientImageThumbnailsOnly}};
 const FeatureEntry::FeatureParam kTabResumption15DisableSeeMoreButtonImages[] =
     {{kTR15SeeMoreButtonParam, "false"}};
-const FeatureEntry::FeatureParam kTabResumption15UIChangeOnlyImages[] = {
-    {kTR15SeeMoreButtonParam, "false"},
-    {kTR15SalientImageParam, "false"}};
 
 const FeatureEntry::FeatureVariation kTabResumption15Variations[] = {
-    {"No Salient/Thumbnails Image", kTabResumption15DisableSalientImages,
-     std::size(kTabResumption15DisableSalientImages), nullptr},
-    {"No Salient Image", kTabResumption15ThumbnailsImagesOnly,
-     std::size(kTabResumption15ThumbnailsImagesOnly), nullptr},
     {"No See More Button", kTabResumption15DisableSeeMoreButtonImages,
      std::size(kTabResumption15DisableSeeMoreButtonImages), nullptr},
-    {"UI changes only", kTabResumption15UIChangeOnlyImages,
-     std::size(kTabResumption15UIChangeOnlyImages), nullptr},
 };
+
+const FeatureEntry::FeatureParam kTabResumptionImagesOnlyThumbnail[] = {
+    {kTabResumptionImagesTypes, kTabResumptionImagesTypesThumbnails}};
+const FeatureEntry::FeatureParam kTabResumptionImagesOnlySalient[] = {
+    {kTabResumptionImagesTypes, kTabResumptionImagesTypesSalient}};
+
+const FeatureEntry::FeatureVariation kTabResumptionImagesVariations[] = {
+    {"Only thumbnails", kTabResumptionImagesOnlyThumbnail,
+     std::size(kTabResumptionImagesOnlyThumbnail), nullptr},
+    {"Only salient", kTabResumptionImagesOnlySalient,
+     std::size(kTabResumptionImagesOnlySalient), nullptr},
+};
+
 // Uses int values from Lens filters ablation mode enum.
 const FeatureEntry::FeatureParam kLensFiltersAblationModeDisabled[] = {
     {kLensFiltersAblationMode, "0"}};
@@ -927,12 +927,6 @@ const FeatureEntry::FeatureVariation
     kIdentityConfirmationSnackbarTestingVariations[] = {
         {" - for testing", kIdentityConfirmationSnackbarTestingConfig,
          std::size(kIdentityConfirmationSnackbarTestingConfig), nullptr}};
-
-const FeatureEntry::FeatureParam kTabResumption2EnableCauseBubble[] = {
-    {kTabResumption2BubbleParam, "true"}};
-const FeatureEntry::FeatureVariation kTabResumption2Variations[] = {
-    {"Enable Bubble", kTabResumption2EnableCauseBubble,
-     std::size(kTabResumption2EnableCauseBubble), nullptr}};
 
 const FeatureEntry::FeatureParam kPriceTrackingPromoForceShowArm[] = {
     {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
@@ -1693,9 +1687,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfIOSPushNotifications)},
     {"tab-resumption-2", flag_descriptions::kTabResumption2Name,
      flag_descriptions::kTabResumption2Description, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kTabResumption2,
-                                    kTabResumption2Variations,
-                                    "TabResumption2")},
+     FEATURE_VALUE_TYPE(kTabResumption2)},
     {"page-image-service-optimization-guide-salient-images",
      flag_descriptions::kPageImageServiceSalientImageName,
      flag_descriptions::kPageImageServiceSalientImageDescription,
@@ -1908,8 +1900,16 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"separate-profiles-for-managed-accounts",
      flag_descriptions::kSeparateProfilesForManagedAccountsName,
      flag_descriptions::kSeparateProfilesForManagedAccountsDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kSeparateProfilesForManagedAccounts)}};
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kSeparateProfilesForManagedAccounts)},
+    {"tab-resumption-2-reason", flag_descriptions::kTabResumption2ReasonName,
+     flag_descriptions::kTabResumption2ReasonDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kTabResumption2Reason)},
+    {"tab-resumption-images", flag_descriptions::kTabResumptionImagesName,
+     flag_descriptions::kTabResumptionImagesDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kTabResumptionImages,
+                                    kTabResumptionImagesVariations,
+                                    "TabResumption1_5")},
+};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;

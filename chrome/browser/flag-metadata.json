@@ -8649,6 +8649,16 @@
     "expiry_milestone": 135
   },
   {
+    "name": "tab-resumption-2-reason",
+    "owners": [ "gambard@chromium.org", "olivierrobin@chromium.org", "bling-flags@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
+    "name": "tab-resumption-images",
+    "owners": [ "gambard@chromium.org", "olivierrobin@chromium.org", "bling-flags@google.com" ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "tab-resumption1-5",
     "owners": [ "gambard@chromium.org", "olivierrobin@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 135

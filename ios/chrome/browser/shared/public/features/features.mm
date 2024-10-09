@@ -783,7 +783,9 @@ BASE_FEATURE(kTabResumption2,
              "TabResumption2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const char kTabResumption2BubbleParam[] = "tab-resumption-2-bubble-param";
+BASE_FEATURE(kTabResumption2Reason,
+             "TabResumption2Reason",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kMagicStackMostVisitedModuleParam[] = "MagicStackMostVisitedModule";
 
@@ -824,12 +826,11 @@ bool IsTabResumption2_0Enabled() {
   return base::FeatureList::IsEnabled(kTabResumption2);
 }
 
-bool IsTabResumption2BubbleEnabled() {
+bool IsTabResumption2ReasonEnabled() {
   if (!IsTabResumption2_0Enabled()) {
     return false;
   }
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kTabResumption2, kTabResumption2BubbleParam, false);
+  return base::FeatureList::IsEnabled(kTabResumption2Reason);
 }
 
 const base::TimeDelta TabResumptionForXDevicesTimeThreshold() {
@@ -844,37 +845,49 @@ const base::TimeDelta TabResumptionForXDevicesTimeThreshold() {
 
 BASE_FEATURE(kTabResumption1_5,
              "TabResumption1_5",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsTabResumption1_5Enabled() {
   return IsTabResumptionEnabled() &&
          base::FeatureList::IsEnabled(kTabResumption1_5);
 }
 
-const char kTR15SalientImageParam[] = "tr15-salient-image";
-const char kTR15SalientImageThumbnailsOnly[] = "thumbnails-only";
 const char kTR15SeeMoreButtonParam[] = "tr15-see-more-button";
-
-bool IsTabResumption1_5SalientImageEnabled() {
-  return IsTabResumption1_5Enabled() &&
-         base::GetFieldTrialParamByFeatureAsString(
-             kTabResumption1_5, kTR15SalientImageParam, "true") == "true";
-}
-
-bool IsTabResumption1_5ThumbnailsImageEnabled() {
-  return IsTabResumption1_5Enabled() &&
-         (base::GetFieldTrialParamByFeatureAsString(
-              kTabResumption1_5, kTR15SalientImageParam, "true") == "true" ||
-          base::GetFieldTrialParamByFeatureAsString(
-              kTabResumption1_5, kTR15SalientImageParam, "true") ==
-              kTR15SalientImageThumbnailsOnly);
-  ;
-}
 
 bool IsTabResumption1_5SeeMoreEnabled() {
   return IsTabResumption1_5Enabled() &&
          base::GetFieldTrialParamByFeatureAsBool(kTabResumption1_5,
                                                  kTR15SeeMoreButtonParam, true);
+}
+
+BASE_FEATURE(kTabResumptionImages,
+             "TabResumptionImages",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kTabResumptionImagesTypes[] = "tr-images-type";
+const char kTabResumptionImagesTypesSalient[] = "salient";
+const char kTabResumptionImagesTypesThumbnails[] = "thumbnails";
+
+bool IsTabResumptionImagesSalientEnabled() {
+  if (!IsTabResumption1_5Enabled() ||
+      !base::FeatureList::IsEnabled(kTabResumptionImages)) {
+    return false;
+  }
+  std::string image_type = base::GetFieldTrialParamByFeatureAsString(
+      kTabResumptionImages, kTabResumptionImagesTypes, "");
+
+  return image_type == kTabResumptionImagesTypesSalient || image_type == "";
+}
+
+bool IsTabResumptionImagesThumbnailsEnabled() {
+  if (!IsTabResumption1_5Enabled() ||
+      !base::FeatureList::IsEnabled(kTabResumptionImages)) {
+    return false;
+  }
+  std::string image_type = base::GetFieldTrialParamByFeatureAsString(
+      kTabResumptionImages, kTabResumptionImagesTypes, "");
+
+  return image_type == kTabResumptionImagesTypesThumbnails || image_type == "";
 }
 
 bool ShouldPutMostVisitedSitesInMagicStack() {

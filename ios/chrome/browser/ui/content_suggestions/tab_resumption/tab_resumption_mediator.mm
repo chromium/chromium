@@ -573,7 +573,7 @@ NSString* GetOverridenReason(
 
 // Fetches the snapshot of the tab showing `item`.
 - (void)fetchSnapshotForItem:(TabResumptionItem*)item {
-  if (!IsTabResumption1_5ThumbnailsImageEnabled()) {
+  if (!IsTabResumptionImagesThumbnailsEnabled()) {
     return [self fetchSalientImageForItem:item];
   }
   BrowserList* browserList =
@@ -611,7 +611,7 @@ NSString* GetOverridenReason(
 
 // Fetches the salient image for `item`.
 - (void)fetchSalientImageForItem:(TabResumptionItem*)item {
-  if (!IsTabResumption1_5SalientImageEnabled() || !_pageImageService ||
+  if (!IsTabResumptionImagesSalientEnabled() || !_pageImageService ||
       !base::FeatureList::IsEnabled(page_image_service::kImageService)) {
     return;
   }
@@ -788,7 +788,7 @@ NSString* GetOverridenReason(
       URLs.size() == 0) {
     return;
   }
-  if (!IsTabResumption2BubbleEnabled()) {
+  if (!IsTabResumption2ReasonEnabled()) {
     return [self onURLDecorated:std::move(URLs) withStatus:status];
   }
 
@@ -865,7 +865,7 @@ NSString* GetOverridenReason(
   }
   item.commandHandler = self;
   item.delegate = self;
-  if (IsTabResumption2BubbleEnabled()) {
+  if (IsTabResumption2ReasonEnabled()) {
     NSString* overridenReason = GetOverridenReason(*URLAggregate);
     if (overridenReason) {
       item.reason = overridenReason;
