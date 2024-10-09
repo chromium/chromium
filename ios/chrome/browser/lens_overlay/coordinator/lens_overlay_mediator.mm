@@ -292,6 +292,10 @@
   [self.resultConsumer loadResultsURL:URL];
 }
 
+- (void)lensOverlayDidOpenOverlayMenu:(id<ChromeLensOverlay>)lensOverlay {
+  // TODO(crbug.com/359794018): Record metrics for this.
+}
+
 #pragma mark - Private
 
 /// Resets the omnibox state to the `_currentLensResult` text and thumbnail.
