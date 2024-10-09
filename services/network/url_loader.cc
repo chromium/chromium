@@ -60,7 +60,9 @@
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_connection_info.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
+#include "net/http/structured_headers.h"
 #include "net/log/net_log_source_type.h"
 #include "net/log/net_log_with_source.h"
 #include "net/ssl/client_cert_store.h"
@@ -496,6 +498,24 @@ bool IsMultiplexedConnection(const net::HttpResponseInfo& response_info) {
     case net::HttpConnectionInfoCoarse::kOTHER:
       return false;
   }
+}
+
+bool IncludesValidLoadField(const net::HttpResponseHeaders* headers) {
+  if (!headers) {
+    return false;
+  }
+
+  std::string header_value;
+  if (!headers->GetNormalizedHeader(kActivateStorageAccessHeader,
+                                    &header_value)) {
+    return false;
+  }
+  const std::optional<net::structured_headers::ParameterizedItem> item =
+      net::structured_headers::ParseItem(header_value);
+  if (!item.has_value()) {
+    return false;
+  }
+  return item->item.is_token() && item->item.GetString() == "load";
 }
 
 }  // namespace
@@ -3118,9 +3138,7 @@ bool URLLoader::ShouldSendTransferSizeUpdated() const {
 
 bool URLLoader::ShouldSetLoadWithStorageAccess() const {
   CHECK(url_request_);
-  if (!url_request_->response_headers() ||
-      !url_request_->response_headers()->HasHeaderValue(
-          kActivateStorageAccessHeader, "load")) {
+  if (!IncludesValidLoadField(url_request_->response_headers())) {
     return false;
   }
 
