@@ -1870,7 +1870,7 @@
   {
     "name": "crostini-container-install",
     "owners": [ "davidmunro@google.com", "clumptini@google.com" ],
-    "expiry_milestone": 130
+    "expiry_milestone": 150
   },
   {
     "name": "crostini-gpu-support",
@@ -1879,23 +1879,23 @@
   },
   {
     "name": "crostini-multi-container",
-    "owners": [ "sidereal@chromium.org", "davidmunro@google.com", "nverne@chromium.org" ],
-    "expiry_milestone": 130
+    "owners": [ "sidereal@chromium.org", "davidmunro@google.com", "nverne@chromium.org", "clumptini@google.com" ],
+    "expiry_milestone": 150
   },
   {
     "name": "crostini-qt-ime-support",
-    "owners": [ "timloh@chromium.org", "sophialin@google.com" ],
+    "owners": [ "timloh@chromium.org", "sophialin@google.com", "clumptini@google.com" ],
     "expiry_milestone": 150
   },
   {
     "name": "crostini-reset-lxd-db",
-    "owners": [ "easy@google.com", "jamesye@google.com", "sidereal@google.com" ],
-    "expiry_milestone": 130
+    "owners": [ "easy@google.com", "jamesye@google.com", "sidereal@google.com", "clumptini@google.com" ],
+    "expiry_milestone": 150
   },
   {
     "name": "crostini-virtual-keyboard-support",
-    "owners": ["timloh@chromium.org", "sophialin@google.com"],
-    "expiry_milestone": 130
+    "owners": [ "timloh@chromium.org", "sophialin@google.com", "clumptini@google.com" ],
+    "expiry_milestone": 150
   },
   {
     "name": "css-gamut-mapping",
