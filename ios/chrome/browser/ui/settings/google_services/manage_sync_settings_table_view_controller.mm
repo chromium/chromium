@@ -208,13 +208,15 @@ CGFloat kDefaultSectionFooterHeightPointSize = 10.;
                                        name:(NSString*)name
                                       email:(NSString*)email
                             managementState:(ManagementState)managementState {
-  CentralAccountView* identityAccountItem = [[CentralAccountView alloc]
-        initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 0)
-          avatarImage:avatarImage
-                 name:name
-                email:email
-      managementState:std::move(managementState)
-      useLargeMargins:YES];
+  // Put a small non-empty frame to avoid layout constraint error during
+  // initialization. The actual frame size is changed by the CentralAccountView.
+  CentralAccountView* identityAccountItem =
+      [[CentralAccountView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)
+                                    avatarImage:avatarImage
+                                           name:name
+                                          email:email
+                                managementState:std::move(managementState)
+                                useLargeMargins:YES];
   self.tableView.tableHeaderView = identityAccountItem;
   [self.tableView reloadData];
 }

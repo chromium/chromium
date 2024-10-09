@@ -266,7 +266,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
 // Tests to open the account details twice in a row.
 // TODO(crbug.com/357145635): Test failing on builders.
-- (void)DISABLED_testOpenTwiceAccountDetails {
+- (void)testOpenTwiceAccountDetails {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
 
   // Sign In `fakeIdentity`, then open the Account Settings.
