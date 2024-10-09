@@ -5141,7 +5141,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"bypass-app-banner-engagement-checks",
      flag_descriptions::kBypassAppBannerEngagementChecksName,
      flag_descriptions::kBypassAppBannerEngagementChecksDescription, kOsAll,
-     SINGLE_VALUE_TYPE(webapps::switches::kBypassAppBannerEngagementChecks)},
+     FEATURE_VALUE_TYPE(webapps::features::kBypassAppBannerEngagementChecks)},
     {"enable-desktop-pwas-app-title",
      flag_descriptions::kDesktopPWAsAppTitleName,
      flag_descriptions::kDesktopPWAsAppTitleDescription, kOsDesktop,

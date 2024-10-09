@@ -89,29 +89,6 @@ InstallableParams ParamsToGetManifest() {
   return params;
 }
 
-// Logs installable status codes to the console.
-class ConsoleStatusReporter : public AppBannerManager::StatusReporter {
- public:
-  // Constructs a ConsoleStatusReporter which logs to the devtools console
-  // attached to |web_contents|.
-  explicit ConsoleStatusReporter(content::WebContents* web_contents)
-      : web_contents_(web_contents) {}
-
-  // Logs an error message corresponding to |code| to the devtools console.
-  void ReportStatus(InstallableStatusCode code) override {
-    LogToConsole(web_contents_, code,
-                 blink::mojom::ConsoleMessageLevel::kError);
-  }
-
-  WebappInstallSource GetInstallSource(content::WebContents* web_contents,
-                                       InstallTrigger trigger) override {
-    return WebappInstallSource::DEVTOOLS;
-  }
-
- private:
-  raw_ptr<content::WebContents> web_contents_;
-};
-
 // Tracks installable status codes via an UMA histogram.
 class TrackingStatusReporter : public AppBannerManager::StatusReporter {
  public:
@@ -248,10 +225,7 @@ void AppBannerManager::RequestAppBanner() {
     has_sufficient_engagement_ = true;
   }
 
-  if (ShouldBypassEngagementChecks())
-    status_reporter_ = std::make_unique<ConsoleStatusReporter>(web_contents());
-  else
-    status_reporter_ = std::make_unique<TrackingStatusReporter>();
+  status_reporter_ = std::make_unique<TrackingStatusReporter>();
 
   UpdateState(State::FETCHING_MANIFEST);
   manager_->GetData(ParamsToGetManifest(),
@@ -386,8 +360,8 @@ bool AppBannerManager::HasSufficientEngagement() const {
 }
 
 bool AppBannerManager::ShouldBypassEngagementChecks() const {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kBypassAppBannerEngagementChecks);
+  return base::FeatureList::IsEnabled(
+      webapps::features::kBypassAppBannerEngagementChecks);
 }
 
 void AppBannerManager::OnDidGetManifest(const InstallableData& data) {
@@ -809,7 +783,7 @@ void AppBannerManager::OnEngagementEvent(
     double old_score,
     site_engagement::EngagementType /*type*/,
     const std::optional<webapps::AppId>& /*app_id*/) {
-  if (TriggeringDisabledForTesting()) {
+  if (TriggeringDisabledForTesting() || ShouldBypassEngagementChecks()) {
     return;
   }
 

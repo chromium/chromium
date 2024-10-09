@@ -47,6 +47,8 @@ extern const base::FeatureParam<double> kWebAppsMLGuardrailResultReportProb;
 extern const base::FeatureParam<double> kWebAppsMLModelUserDeclineReportProb;
 extern const base::FeatureParam<int> kMaxDaysForMLPromotionGuardrailStorage;
 
+BASE_DECLARE_FEATURE(kBypassAppBannerEngagementChecks);
+
 }  // namespace features
 }  // namespace webapps
 

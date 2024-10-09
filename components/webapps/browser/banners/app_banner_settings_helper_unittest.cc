@@ -5,12 +5,14 @@
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 
 #include "base/auto_reset.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/permissions/test/test_permissions_client.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/user_prefs/user_prefs.h"
 #include "components/webapps/browser/banners/app_banner_metrics.h"
+#include "components/webapps/browser/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 
@@ -112,6 +114,10 @@ TEST_F(AppBannerSettingsHelperTest, SingleEvents) {
 }
 
 TEST_F(AppBannerSettingsHelperTest, ShouldShowFromEngagement) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kBypassAppBannerEngagementChecks);
+
   GURL url(kTestURL);
   site_engagement::SiteEngagementService* service =
       site_engagement::SiteEngagementService::Get(browser_context());
@@ -198,22 +204,27 @@ TEST_F(AppBannerSettingsHelperTest, ReportsWhetherBannerWasRecentlyIgnored) {
 TEST_F(AppBannerSettingsHelperTest, OperatesOnOrigins) {
   GURL url(kTestURL);
   GURL otherURL(kSameOriginTestURL);
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        features::kBypassAppBannerEngagementChecks);
 
-  site_engagement::SiteEngagementService* service =
-      site_engagement::SiteEngagementService::Get(browser_context());
+    site_engagement::SiteEngagementService* service =
+        site_engagement::SiteEngagementService::Get(browser_context());
 
-  // By default the banner should not be shown.
-  EXPECT_FALSE(
-      AppBannerSettingsHelper::HasSufficientEngagement(service->GetScore(url)));
+    // By default the banner should not be shown.
+    EXPECT_FALSE(AppBannerSettingsHelper::HasSufficientEngagement(
+        service->GetScore(url)));
 
-  // Add engagement such that the banner should show.
-  service->ResetBaseScoreForURL(url, 4);
-  EXPECT_TRUE(
-      AppBannerSettingsHelper::HasSufficientEngagement(service->GetScore(url)));
+    // Add engagement such that the banner should show.
+    service->ResetBaseScoreForURL(url, 4);
+    EXPECT_TRUE(AppBannerSettingsHelper::HasSufficientEngagement(
+        service->GetScore(url)));
 
-  // The banner should show as settings are per-origin.
-  EXPECT_TRUE(AppBannerSettingsHelper::HasSufficientEngagement(
-      service->GetScore(otherURL)));
+    // The banner should show as settings are per-origin.
+    EXPECT_TRUE(AppBannerSettingsHelper::HasSufficientEngagement(
+        service->GetScore(otherURL)));
+  }
 
   base::Time reference_time = GetReferenceTime();
   base::Time one_week_ago = reference_time - base::Days(5);
@@ -238,6 +249,10 @@ TEST_F(AppBannerSettingsHelperTest, OperatesOnOrigins) {
 }
 
 TEST_F(AppBannerSettingsHelperTest, ShouldShowWithHigherTotal) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kBypassAppBannerEngagementChecks);
+
   base::AutoReset<double> total_engagement =
       AppBannerSettingsHelper::ScopeTotalEngagementForTesting(10);
   GURL url(kTestURL);
