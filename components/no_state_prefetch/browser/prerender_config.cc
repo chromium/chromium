@@ -16,6 +16,6 @@ Config::Config()
       abandon_time_to_live(base::Seconds(3)),
       default_tab_bounds(640, 480) {}
 
-Config::~Config() {}
+Config::~Config() = default;
 
 }  // namespace prerender

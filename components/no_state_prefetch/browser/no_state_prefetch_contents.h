@@ -55,12 +55,12 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
   // create the NoStatePrefetchContents. Factory is intended for testing.
   class Factory {
    public:
-    Factory() {}
+    Factory() = default;
 
     Factory(const Factory&) = delete;
     Factory& operator=(const Factory&) = delete;
 
-    virtual ~Factory() {}
+    virtual ~Factory() = default;
 
     // Ownership is not transferred through this interface as
     // no_state_prefetch_manager and browser_context are stored as weak
@@ -89,7 +89,7 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
     virtual void OnPrefetchStop(NoStatePrefetchContents* contents) {}
 
    protected:
-    Observer() {}
+    Observer() = default;
     virtual ~Observer() = 0;
   };
 
