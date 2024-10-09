@@ -30,7 +30,7 @@ InfoCardTracker::InfoCardTracker(PrefService* browser_state_prefs)
   CHECK(browser_state_prefs_);
 }
 
-InfoCardTracker::~InfoCardTracker() {}
+InfoCardTracker::~InfoCardTracker() = default;
 
 void InfoCardTracker::OnTrackInfoCardCommand(
     int info_card_type,
