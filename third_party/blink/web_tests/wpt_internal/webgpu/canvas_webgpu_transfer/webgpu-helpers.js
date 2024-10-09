@@ -307,20 +307,15 @@ function test_transferToGPUTexture_balanced_access(device, canvas) {
  */
 function test_transferToGPUTexture_two_canvases(device, canvas1, canvas2) {
   const ctx1 = canvas1.getContext('2d');
-  const ctx2 = canvas2.getContext('2d');
 
-  // Draw to both canvases via the canvas2D API to ensure that the SharedImages
-  // backing the canvases are created before doing any transfers to WebGPU. This
-  // ensures that these SharedImages will be created without WebGPU usage, which
+  // Draw to the first canvas via the canvas2D API to ensure that the SharedImage
+  // backing this canvas is created before doing any transfers to WebGPU. This
+  // ensures that this SharedImage will be created without WebGPU usage, which
   // the test below assumes as a precondition.
   const w1 = ctx1.canvas.width;
   const h1 = ctx1.canvas.height;
   ctx1.fillStyle = "#00FF00";
   ctx1.fillRect(0, 0, w1, h1 / 2);
-  const w2 = ctx2.canvas.width;
-  const h2 = ctx2.canvas.height;
-  ctx2.fillStyle = "#00FF00";
-  ctx2.fillRect(0, 0, w2, h2 / 2);
 
   // An initial transfer incurs a copy as the canvas resource's SharedImage
   // doesn't have WebGPU usage by default. Validate that `requireZeroCopy` is
@@ -341,7 +336,17 @@ function test_transferToGPUTexture_two_canvases(device, canvas1, canvas2) {
     ctx1.transferBackFromGPUTexture();
   }
 
-  // An initial transfer on a different canvas must incur a copy.
+  // Draw to the second canvas via the canvas2D API to ensure that the
+  // SharedImage backing this canvas is created before doing any transfers to
+  // WebGPU. This ensures that this SharedImage will be created without WebGPU
+  // usage, which the test below assumes as a precondition.
+  const ctx2 = canvas2.getContext('2d');
+  const w2 = ctx2.canvas.width;
+  const h2 = ctx2.canvas.height;
+  ctx2.fillStyle = "#00FF00";
+  ctx2.fillRect(0, 0, w2, h2 / 2);
+
+  // An initial transfer on the second canvas must incur a copy.
   try {
     const tex = ctx2.transferToGPUTexture({device: device, requireZeroCopy: true});
     assert_unreached('transferToGPUTexture should have thrown.');
