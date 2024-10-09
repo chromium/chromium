@@ -6,9 +6,6 @@
 
 #import "base/no_destructor.h"
 #import "base/values.h"
-#import "components/autofill/ios/common/features.h"
-#import "components/autofill/ios/common/javascript_feature_util.h"
-#import "components/autofill/ios/form_util/cross_content_world_util_java_script_feature.h"
 #import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 
@@ -44,7 +41,6 @@ FormUtilJavaScriptFeature::FormUtilJavaScriptFeature()
           {
               web::java_script_features::GetCommonJavaScriptFeature(),
               web::java_script_features::GetMessageJavaScriptFeature(),
-              CrossContentWorldUtilJavaScriptFeature::GetInstance(),
           }) {}
 
 FormUtilJavaScriptFeature::~FormUtilJavaScriptFeature() = default;

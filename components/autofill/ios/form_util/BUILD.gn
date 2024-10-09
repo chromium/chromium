@@ -36,7 +36,6 @@ source_set("form_util_feature") {
     "form_util_java_script_feature.mm",
   ]
   deps = [
-    ":cross_content_world_util_feature",
     ":fill_js",
     ":form_js",
     "//base",
@@ -54,6 +53,7 @@ source_set("form_handler_feature") {
   ]
   deps = [
     ":autofill_form_features",
+    ":autofill_renderer_id_feature",
     ":child_frame_registrar",
     ":form_handlers_js",
     ":form_util",
@@ -168,23 +168,24 @@ optimize_ts("register_remote_frame_token_js") {
   ]
 }
 
-source_set("cross_content_world_util_feature") {
+source_set("autofill_renderer_id_feature") {
   sources = [
-    "cross_content_world_util_java_script_feature.h",
-    "cross_content_world_util_java_script_feature.mm",
+    "autofill_renderer_id_java_script_feature.h",
+    "autofill_renderer_id_java_script_feature.mm",
   ]
 
   deps = [
-    ":cross_content_world_js",
+    ":autofill_renderer_id_js",
     "//base",
+    "//components/autofill/ios/common",
     "//ios/web/public/js_messaging",
     "//ios/web/public/js_messaging:content_world_header",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
-optimize_ts("cross_content_world_js") {
-  sources = [ "resources/cross_content_world_fill_util.ts" ]
+optimize_ts("autofill_renderer_id_js") {
+  sources = [ "resources/renderer_id.ts" ]
 
   deps = [
     ":fill_js_namespace",
@@ -258,8 +259,8 @@ source_set("unit_tests") {
   ]
   deps = [
     ":autofill_form_features",
+    ":autofill_renderer_id_feature",
     ":child_frame_registrar",
-    ":cross_content_world_util_feature",
     ":fill_js",
     ":form_handler_feature",
     ":form_js",
@@ -274,11 +275,14 @@ source_set("unit_tests") {
     "//components/autofill/ios/browser:util",
     "//components/autofill/ios/common",
     "//ios/web/public/js_messaging",
+    "//ios/web/public/js_messaging:content_world_header",
     "//ios/web/public/test:javascript_test",
     "//ios/web/public/test:test_fixture",
     "//ios/web/public/test:util",
     "//ios/web/public/test/fakes",
+    "//testing/gmock",
     "//testing/gtest",
+    "//url",
   ]
 }
 if (is_ios) {

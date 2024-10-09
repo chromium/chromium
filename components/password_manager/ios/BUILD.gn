@@ -18,6 +18,7 @@ component("ios") {
     "//components/autofill/ios/browser:util",
     "//components/autofill/ios/common",
     "//components/autofill/ios/form_util",
+    "//components/autofill/ios/form_util:autofill_renderer_id_feature",
     "//components/autofill/ios/form_util:form_util_feature",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/form_parsing",

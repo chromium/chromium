@@ -23,6 +23,7 @@ source_set("bottom_sheet") {
     "//components/autofill/ios/browser",
     "//components/autofill/ios/common",
     "//components/autofill/ios/form_util",
+    "//components/autofill/ios/form_util:autofill_renderer_id_feature",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common:features",
     "//components/password_manager/ios",

@@ -2,37 +2,37 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "components/autofill/ios/form_util/cross_content_world_util_java_script_feature.h"
+#import "components/autofill/ios/form_util/autofill_renderer_id_java_script_feature.h"
 
+#import "components/autofill/ios/common/javascript_feature_util.h"
 #import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 
 namespace {
 
-const char kFillScriptName[] = "cross_content_world_fill_util";
-
+const char kScriptName[] = "renderer_id";
 }
 
 namespace autofill {
 
 // static
-CrossContentWorldUtilJavaScriptFeature*
-CrossContentWorldUtilJavaScriptFeature::GetInstance() {
-  static base::NoDestructor<CrossContentWorldUtilJavaScriptFeature> instance;
+AutofillRendererIDJavaScriptFeature*
+AutofillRendererIDJavaScriptFeature::GetInstance() {
+  static base::NoDestructor<AutofillRendererIDJavaScriptFeature> instance;
   return instance.get();
 }
 
-CrossContentWorldUtilJavaScriptFeature::CrossContentWorldUtilJavaScriptFeature()
+AutofillRendererIDJavaScriptFeature::AutofillRendererIDJavaScriptFeature()
     : web::JavaScriptFeature(
-          web::ContentWorld::kAllContentWorlds,
+          ContentWorldForAutofillJavascriptFeatures(),
           {FeatureScript::CreateWithFilename(
-              kFillScriptName,
+              kScriptName,
               FeatureScript::InjectionTime::kDocumentStart,
               FeatureScript::TargetFrames::kAllFrames,
               FeatureScript::ReinjectionBehavior::kInjectOncePerWindow)},
           {web::java_script_features::GetBaseJavaScriptFeature()}) {}
 
-CrossContentWorldUtilJavaScriptFeature::
-    ~CrossContentWorldUtilJavaScriptFeature() = default;
+AutofillRendererIDJavaScriptFeature::~AutofillRendererIDJavaScriptFeature() =
+    default;
 
 }  // namespace autofill

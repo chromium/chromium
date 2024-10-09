@@ -17,7 +17,7 @@
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/common/javascript_feature_util.h"
 #import "components/autofill/ios/form_util/autofill_form_features_java_script_feature.h"
-#import "components/autofill/ios/form_util/cross_content_world_util_java_script_feature.h"
+#import "components/autofill/ios/form_util/autofill_renderer_id_java_script_feature.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
 #import "ios/web/public/js_messaging/content_world.h"
 #import "ios/web/public/test/js_test_util.h"
@@ -73,13 +73,16 @@ class FillJsTest : public web::WebTestWithWebState,
     if (GetParam()) {
       feature_list_.InitAndEnableFeature(
           kAutofillIsolatedWorldForJavascriptIos);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          kAutofillIsolatedWorldForJavascriptIos);
     }
 
-    OverrideJavaScriptFeatures(
-        {FormUtilJavaScriptFeature::GetInstance(),
-         autofill_form_features_java_script_feature(),
-         CrossContentWorldUtilJavaScriptFeature::GetInstance(),
-         GetDummyPageContentWorldFeature(), GetDummyIsolatedWorldFeature()});
+    OverrideJavaScriptFeatures({FormUtilJavaScriptFeature::GetInstance(),
+                                autofill_form_features_java_script_feature(),
+                                renderer_id_java_script_feature(),
+                                GetDummyPageContentWorldFeature(),
+                                GetDummyIsolatedWorldFeature()});
   }
 
   void TearDown() override {
@@ -92,6 +95,10 @@ class FillJsTest : public web::WebTestWithWebState,
   AutofillFormFeaturesJavaScriptFeature*
   autofill_form_features_java_script_feature() {
     return feature_container_.autofill_form_features_java_script_feature();
+  }
+
+  AutofillRendererIDJavaScriptFeature* renderer_id_java_script_feature() {
+    return feature_container_.autofill_renderer_id_java_script_feature();
   }
 
  protected:
@@ -128,6 +135,7 @@ class FillJsTest : public web::WebTestWithWebState,
   }
 
   base::test::ScopedFeatureList feature_list_;
+
   //  Test instances of JavaScriptFeature's that are injected in a different
   //  content world depending on kAutofillIsolatedWorldForJavascriptIos.
   //  TODO(crbug.com/359538514): Remove this variable and use
@@ -346,14 +354,12 @@ TEST_P(FillJsTest, DISABLED_GetUniqueIDInAllJavaScriptContentWorlds) {
     SCOPED_TRACE(testing::Message()
                  << "Autofill content world = " << is_autofill_world);
     // Check that the correct ID is returned for the form and input elements.
-    // IDs should accessible from both content worlds when the flag is on.
-    // When the flag is off, the IDs are accessible only from the same content
-    // world other Autofill scripts are injected in.
+    // IDs should accessible from both content worlds.
     id form_id = GetUniqueID(@"form", content_world);
-    EXPECT_NSEQ(form_id, GetParam() || is_autofill_world ? @"1" : @"0");
+    EXPECT_NSEQ(form_id, @"1");
 
     id input_id = GetUniqueID(@"input", content_world);
-    EXPECT_NSEQ(input_id, GetParam() || is_autofill_world ? @"2" : @"0");
+    EXPECT_NSEQ(input_id, @"2");
   }
 }
 
