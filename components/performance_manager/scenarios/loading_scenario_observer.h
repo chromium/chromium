@@ -5,50 +5,30 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_SCENARIOS_LOADING_SCENARIO_OBSERVER_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_SCENARIOS_LOADING_SCENARIO_OBSERVER_H_
 
+#include "base/containers/span.h"
 #include "base/sequence_checker.h"
+#include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
-#include "components/performance_manager/public/scenarios/performance_scenarios.h"
+#include "components/performance_manager/public/graph/process_node.h"
+#include "components/performance_manager/scenarios/loading_scenario_data.h"
 
 namespace performance_manager {
 
-class LoadingScenarioObserver : public PageNode::ObserverDefaultImpl,
+class LoadingScenarioObserver : public FrameNode::ObserverDefaultImpl,
+                                public PageNode::ObserverDefaultImpl,
+                                public ProcessNode::ObserverDefaultImpl,
                                 public GraphOwned {
  public:
-  // Counts of pages in each loading state.
-  class LoadingCounts {
-   public:
-    LoadingCounts() = default;
-    ~LoadingCounts() = default;
-
-    constexpr friend bool operator==(const LoadingCounts&,
-                                     const LoadingCounts&) = default;
-
-    // Focused pages that are loading.
-    size_t focused_loading_pages() const { return focused_loading_pages_; }
-
-    // Visible pages (including focused) that are loading.
-    size_t visible_loading_pages() const { return visible_loading_pages_; }
-
-    // All pages (including focused and visible) that are loading.
-    size_t loading_pages() const { return loading_pages_; }
-
-    void IncrementLoadingPageCounts(bool visible, bool focused);
-    void DecrementLoadingPageCounts(bool visible, bool focused);
-
-    LoadingScenario GetScenario() const;
-
-   private:
-    size_t focused_loading_pages_ = 0;
-    size_t visible_loading_pages_ = 0;
-    size_t loading_pages_ = 0;
-  };
-
-  LoadingScenarioObserver() = default;
-  ~LoadingScenarioObserver() override = default;
+  LoadingScenarioObserver();
+  ~LoadingScenarioObserver() override;
 
   LoadingScenarioObserver(const LoadingScenarioObserver&) = delete;
   LoadingScenarioObserver& operator=(const LoadingScenarioObserver&) = delete;
+
+  // FrameNodeObserver:
+  void OnFrameNodeAdded(const FrameNode* frame_node) override;
+  void OnBeforeFrameNodeRemoved(const FrameNode* frame_node) override;
 
   // PageNodeObserver:
   void OnPageNodeAdded(const PageNode* page_node) override;
@@ -58,15 +38,31 @@ class LoadingScenarioObserver : public PageNode::ObserverDefaultImpl,
   void OnLoadingStateChanged(const PageNode* page_node,
                              PageNode::LoadingState previous_state) override;
 
+  // ProcessNodeObserver:
+  void OnProcessNodeAdded(const ProcessNode* process_node) override;
+
   // GraphOwned:
   void OnPassedToGraph(Graph* graph) override;
   void OnTakenFromGraph(Graph* graph) override;
 
  private:
-  void UpdateGlobalScenario();
+  // Increments or decrements the loading counts for a page that `is_visible`
+  // and `is_focused`. Modifies the counts for the global loading scenario and
+  // all process scenarios for `process_nodes`.
+  void IncrementLoadingCounts(base::span<const ProcessNode*> process_nodes,
+                              bool is_visible,
+                              bool is_focused);
+  void DecrementLoadingCounts(base::span<const ProcessNode*> process_nodes,
+                              bool is_visible,
+                              bool is_focused);
+
+  // Updates the global loading scenario, and all process scenarios for
+  // `process_nodes`, based on the current loading counts.
+  void UpdateLoadingScenarios(base::span<const ProcessNode*> process_nodes);
 
   SEQUENCE_CHECKER(sequence_checker_);
-  LoadingCounts global_counts_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  LoadingScenarioCounts global_counts_ GUARDED_BY_CONTEXT(sequence_checker_);
 };
 
 }  // namespace performance_manager
