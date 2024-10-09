@@ -365,6 +365,9 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        /*greater_or_equal_input=*/kFloat16To32AndInt32To64,
        /*lesser_input=*/kFloat16To32AndInt32To64,
        /*lesser_or_equal_input=*/kFloat16To32AndInt32To64,
+       /*logical_and_input=*/{},
+       /*logical_or_input=*/{},
+       /*logical_xor_input=*/{},
        /*logical_not_input=*/DataTypeConstraint::kUint8,
        /*logical_output=*/DataTypeConstraint::kUint8,
        /*abs_input=*/kFloat16To32AndInt32,
@@ -1742,6 +1745,13 @@ auto GraphBuilderTflite::SerializeElementWiseBinary(
           input_data_type));
       code = ::tflite::BuiltinOperator_LESS_EQUAL;
       break;
+    case mojom::ElementWiseBinary::Kind::kLogicalAnd:
+    case mojom::ElementWiseBinary::Kind::kLogicalOr:
+    case mojom::ElementWiseBinary::Kind::kLogicalXor:
+      // TODO(crbug.com/368085791): Implement logical binary ops for TFLite.
+      return base::unexpected(
+          "logicalAnd, logicalXor, and logicalXor are not yet supported on "
+          "TFLite.");
   }
 
   ASSIGN_OR_RETURN(const TensorInfo& lhs_tensor_info,

@@ -73,6 +73,9 @@ struct DataTypeLimits {
   SupportedDataTypes greater_or_equal_input;
   SupportedDataTypes lesser_input;
   SupportedDataTypes lesser_or_equal_input;
+  SupportedDataTypes logical_and_input;
+  SupportedDataTypes logical_or_input;
+  SupportedDataTypes logical_xor_input;
   SupportedDataTypes logical_not_input;
   SupportedDataTypes logical_output;
 

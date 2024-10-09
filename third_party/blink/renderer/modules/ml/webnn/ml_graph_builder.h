@@ -186,6 +186,18 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                            const MLOperand* b,
                            const MLOperatorOptions* options,
                            ExceptionState& exception_state);
+  MLOperand* logicalAnd(const MLOperand* a,
+                        const MLOperand* b,
+                        const MLOperatorOptions* options,
+                        ExceptionState& exception_state);
+  MLOperand* logicalOr(const MLOperand* a,
+                       const MLOperand* b,
+                       const MLOperatorOptions* options,
+                       ExceptionState& exception_state);
+  MLOperand* logicalXor(const MLOperand* a,
+                        const MLOperand* b,
+                        const MLOperatorOptions* options,
+                        ExceptionState& exception_state);
 
   // Element-wise unary operations
   MLOperand* abs(const MLOperand* input,

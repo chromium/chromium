@@ -1875,7 +1875,9 @@ void CreateOperatorNodeForDequantizeOrQuantizeLinear(
   CHECK(id_to_node_output_map.try_emplace(output_id, node_output).second);
 }
 
-void CreateOperatorNodeForBinary(
+// TODO(crbug.com/368222740): Change return type back to void once logicalAnd,
+// logicalNot, logicalOr are implemented.
+base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBinary(
     const ContextProperties& context_properties,
     const IdToOperandMap& id_to_operand_map,
     const Operation* operation,
@@ -2044,12 +2046,23 @@ void CreateOperatorNodeForBinary(
           inputs, label);
       break;
     }
+    case mojom::ElementWiseBinary::Kind::kLogicalAnd:
+    case mojom::ElementWiseBinary::Kind::kLogicalOr:
+    case mojom::ElementWiseBinary::Kind::kLogicalXor: {
+      // TODO(crbug.com/368222740): Implement logical binary ops for DML.
+      return base::unexpected(
+          CreateError(mojom::Error::Code::kNotSupportedError,
+                      "logicalAnd, logicalXor, and logicalXor are not yet "
+                      "supported on DML."));
+    }
   }
 
   const NodeOutput* output = graph_builder.CreateNodeOutput(
       binary_node, std::move(output_tensor_desc), 0);
   // The output id must be unique in the map.
   CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
+
+  return base::ok();
 }
 
 void CreateOperatorNodeForPad(const ContextProperties& context_properties,
@@ -6015,7 +6028,7 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
         break;
       }
       case mojom::Operation::Tag::kElementWiseBinary: {
-        CreateOperatorNodeForBinary(
+        create_operator_result = CreateOperatorNodeForBinary(
             context_properties, id_to_operand_map, operation.get(),
             graph_fusion_info.operation_to_fusible_standalone_activation_map,
             graph_builder, id_to_node_output_map);

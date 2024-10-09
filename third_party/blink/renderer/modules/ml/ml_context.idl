@@ -192,6 +192,9 @@ dictionary MLOpSupportLimits {
   MLBinarySupportLimits greaterOrEqual;
   MLBinarySupportLimits lesser;
   MLBinarySupportLimits lesserOrEqual;
+  MLBinarySupportLimits logicalAnd;
+  MLBinarySupportLimits logicalOr;
+  MLBinarySupportLimits logicalXor;
   MLLogicalNotSupportLimits logicalNot;
 
   // Element-wise unary ops.

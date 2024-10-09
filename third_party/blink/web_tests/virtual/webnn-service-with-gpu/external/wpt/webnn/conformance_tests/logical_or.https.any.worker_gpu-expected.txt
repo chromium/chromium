@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+[FAIL] logicalOr uint8 0D scalar
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'logicalOr' on 'MLGraphBuilder': Unsupported data type uint8 for argument a, must be one of []."
+[FAIL] logicalOr uint8 1D constant tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'logicalOr' on 'MLGraphBuilder': Unsupported data type uint8 for argument a, must be one of []."
+[FAIL] logicalOr uint8 1D tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'logicalOr' on 'MLGraphBuilder': Unsupported data type uint8 for argument a, must be one of []."
+[FAIL] logicalOr uint8 2D tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'logicalOr' on 'MLGraphBuilder': Unsupported data type uint8 for argument a, must be one of []."
+[FAIL] logicalOr uint8 3D tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'logicalOr' on 'MLGraphBuilder': Unsupported data type uint8 for argument a, must be one of []."
+[FAIL] logicalOr uint8 4D tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'logicalOr' on 'MLGraphBuilder': Unsupported data type uint8 for argument a, must be one of []."
+[FAIL] logicalOr uint8 5D tensors
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'logicalOr' on 'MLGraphBuilder': Unsupported data type uint8 for argument a, must be one of []."
+[FAIL] logicalOr uint8 broadcast 0D to 4D
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'logicalOr' on 'MLGraphBuilder': Unsupported data type uint8 for argument a, must be one of []."
+[FAIL] logicalOr uint8 broadcast 1D to 4D
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'logicalOr' on 'MLGraphBuilder': Unsupported data type uint8 for argument a, must be one of []."
+[FAIL] logicalOr uint8 broadcast 2D to 4D
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'logicalOr' on 'MLGraphBuilder': Unsupported data type uint8 for argument a, must be one of []."
+[FAIL] logicalOr uint8 broadcast 3D to 4D
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'logicalOr' on 'MLGraphBuilder': Unsupported data type uint8 for argument a, must be one of []."
+[FAIL] logicalOr uint8 broadcast 4D to 4D
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'logicalOr' on 'MLGraphBuilder': Unsupported data type uint8 for argument a, must be one of []."
+Harness: the test ran to completion.
+

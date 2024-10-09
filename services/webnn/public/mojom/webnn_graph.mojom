@@ -269,6 +269,9 @@ struct ElementWiseBinary {
     kGreaterOrEqual,
     kLesser,
     kLesserOrEqual,
+    kLogicalAnd,
+    kLogicalOr,
+    kLogicalXor,
   };
 
   // The kind of binary operation.

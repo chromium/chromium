@@ -75,6 +75,9 @@ inline constexpr char kGreater[] = "greater";
 inline constexpr char kGreaterOrEqual[] = "greaterOrEqual";
 inline constexpr char kLesser[] = "lesser";
 inline constexpr char kLesserOrEqual[] = "lesserOrEqual";
+inline constexpr char kLogicalAnd[] = "logicalAnd";
+inline constexpr char kLogicalOr[] = "logicalOr";
+inline constexpr char kLogicalXor[] = "logicalXor";
 
 // elementwise unary ops.
 inline constexpr char kAbs[] = "abs";

@@ -256,6 +256,9 @@ dictionary MLTriangularOptions : MLOperatorOptions {
   [RaisesException] MLOperand greaterOrEqual(MLOperand a, MLOperand b, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand lesser(MLOperand a, MLOperand b, optional MLOperatorOptions options = {});
   [RaisesException] MLOperand lesserOrEqual(MLOperand a, MLOperand b, optional MLOperatorOptions options = {});
+  [RaisesException] MLOperand logicalAnd(MLOperand a, MLOperand b, optional MLOperatorOptions options = {});
+  [RaisesException] MLOperand logicalOr(MLOperand a, MLOperand b, optional MLOperatorOptions options = {});
+  [RaisesException] MLOperand logicalXor(MLOperand a, MLOperand b, optional MLOperatorOptions options = {});
 
   // Element-wise unary operations
   [RaisesException] MLOperand abs(MLOperand x, optional MLOperatorOptions options = {});

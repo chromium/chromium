@@ -386,6 +386,9 @@ bool IsLogicalBinaryOperator(
     case webnn::mojom::blink::ElementWiseBinary::Kind::kGreaterOrEqual:
     case webnn::mojom::blink::ElementWiseBinary::Kind::kLesser:
     case webnn::mojom::blink::ElementWiseBinary::Kind::kLesserOrEqual:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kLogicalAnd:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kLogicalOr:
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kLogicalXor:
       return true;
   }
 }

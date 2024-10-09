@@ -670,6 +670,10 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        /*greater_or_equal_input=*/kFloatsAndInt32,
        /*lesser_input=*/kFloatsAndInt32,
        /*lesser_or_equal_input=*/kFloatsAndInt32,
+       // TODO(crbug.com/368208141): Implement logical binary ops.
+       /*logical_and_input=*/{},
+       /*logical_or_input=*/{},
+       /*logical_xor_input=*/{},
        /*logical_not_input=*/DataTypeConstraint::kUint8,
        /*logical_output=*/DataTypeConstraint::kUint8,
        /*abs_input=*/kFloatsAndInt32,
@@ -1736,6 +1740,14 @@ GraphBuilderCoreml::AddOperationForElementwiseBinary(
           input_data_type));
       op->set_type(kOpLogicalLessEqual);
       break;
+    }
+    case mojom::ElementWiseBinary::Kind::kLogicalAnd:
+    case mojom::ElementWiseBinary::Kind::kLogicalOr:
+    case mojom::ElementWiseBinary::Kind::kLogicalXor: {
+      // TODO(crbug.com/368208141): Implement logical binary ops for CoreML.
+      return NewNotSupportedError(
+          "logicalAnd, logicalXor, and logicalXor are not yet supported on "
+          "CoreML.");
     }
   }
 

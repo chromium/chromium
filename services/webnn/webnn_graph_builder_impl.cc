@@ -900,6 +900,15 @@ bool ValidateElementWiseBinaryDataTypes(
     case mojom::ElementWiseBinary::Kind::kLesserOrEqual:
       return context_properties.data_type_limits.lesser_or_equal_input.Has(
           lhs->descriptor.data_type());
+    case mojom::ElementWiseBinary::Kind::kLogicalAnd:
+      return context_properties.data_type_limits.logical_and_input.Has(
+          lhs->descriptor.data_type());
+    case mojom::ElementWiseBinary::Kind::kLogicalOr:
+      return context_properties.data_type_limits.logical_or_input.Has(
+          lhs->descriptor.data_type());
+    case mojom::ElementWiseBinary::Kind::kLogicalXor:
+      return context_properties.data_type_limits.logical_xor_input.Has(
+          lhs->descriptor.data_type());
   }
 }
 

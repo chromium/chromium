@@ -38,6 +38,9 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes greater_or_equal_input,
                  SupportedDataTypes lesser_input,
                  SupportedDataTypes lesser_or_equal_input,
+                 SupportedDataTypes logical_and_input,
+                 SupportedDataTypes logical_or_input,
+                 SupportedDataTypes logical_xor_input,
                  SupportedDataTypes logical_not_input,
                  SupportedDataTypes logical_output,
                  SupportedDataTypes abs_input,
@@ -145,6 +148,9 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes greater_or_equal_input;
   SupportedDataTypes lesser_input;
   SupportedDataTypes lesser_or_equal_input;
+  SupportedDataTypes logical_and_input;
+  SupportedDataTypes logical_or_input;
+  SupportedDataTypes logical_xor_input;
   SupportedDataTypes logical_not_input;
   SupportedDataTypes logical_output;
   SupportedDataTypes abs_input;
@@ -245,6 +251,9 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.greater_or_equal_input == rhs.greater_or_equal_input &&
          lhs.lesser_input == rhs.lesser_input &&
          lhs.lesser_or_equal_input == rhs.lesser_or_equal_input &&
+         lhs.logical_and_input == rhs.logical_and_input &&
+         lhs.logical_or_input == rhs.logical_or_input &&
+         lhs.logical_xor_input == rhs.logical_xor_input &&
          lhs.logical_not_input == rhs.logical_not_input &&
          lhs.logical_output == rhs.logical_output &&
          lhs.abs_input == rhs.abs_input &&

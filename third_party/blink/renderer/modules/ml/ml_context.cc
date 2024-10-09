@@ -408,11 +408,35 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
   lesser_or_equal->setOutput(
       SupportedDataTypesToSupportLimits(data_type_limits.logical_output));
   op_support_limits->setLesserOrEqual(lesser_or_equal);
+  MLBinarySupportLimits* logical_and = MLBinarySupportLimits::Create();
+  logical_and->setA(
+      SupportedDataTypesToSupportLimits(data_type_limits.logical_and_input));
+  logical_and->setB(
+      SupportedDataTypesToSupportLimits(data_type_limits.logical_and_input));
+  logical_and->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.logical_output));
+  op_support_limits->setLogicalAnd(logical_and);
+  MLBinarySupportLimits* logical_or = MLBinarySupportLimits::Create();
+  logical_or->setA(
+      SupportedDataTypesToSupportLimits(data_type_limits.logical_or_input));
+  logical_or->setB(
+      SupportedDataTypesToSupportLimits(data_type_limits.logical_or_input));
+  logical_or->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.logical_output));
+  op_support_limits->setLogicalOr(logical_or);
+  MLBinarySupportLimits* logical_xor = MLBinarySupportLimits::Create();
+  logical_xor->setA(
+      SupportedDataTypesToSupportLimits(data_type_limits.logical_xor_input));
+  logical_xor->setB(
+      SupportedDataTypesToSupportLimits(data_type_limits.logical_xor_input));
+  logical_xor->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.logical_output));
+  op_support_limits->setLogicalXor(logical_xor);
   MLLogicalNotSupportLimits* logical_not = MLLogicalNotSupportLimits::Create();
   logical_not->setA(
       SupportedDataTypesToSupportLimits(data_type_limits.logical_not_input));
   logical_not->setOutput(
-      SupportedDataTypesToSupportLimits(data_type_limits.logical_not_input));
+      SupportedDataTypesToSupportLimits(data_type_limits.logical_output));
   op_support_limits->setLogicalNot(logical_not);
 
   // Element-wise unary ops.

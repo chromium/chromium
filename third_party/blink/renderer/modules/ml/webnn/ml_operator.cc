@@ -62,6 +62,12 @@ String MLOperator::OperatorKindToString(
           return "lesser";
         case webnn::mojom::blink::ElementWiseBinary::Kind::kLesserOrEqual:
           return "lesserOrEqual";
+        case webnn::mojom::blink::ElementWiseBinary::Kind::kLogicalAnd:
+          return "logicalAnd";
+        case webnn::mojom::blink::ElementWiseBinary::Kind::kLogicalOr:
+          return "logicalOr";
+        case webnn::mojom::blink::ElementWiseBinary::Kind::kLogicalXor:
+          return "logicalXor";
       }
     }
     case webnn::mojom::blink::Operation::Tag::kClamp:

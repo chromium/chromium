@@ -311,6 +311,12 @@ MLOperand* BuildElementWiseBinaryOperator(
       return builder->lesser(a, b, options, scope.GetExceptionState());
     case webnn::mojom::blink::ElementWiseBinary::Kind::kLesserOrEqual:
       return builder->lesserOrEqual(a, b, options, scope.GetExceptionState());
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kLogicalAnd:
+      return builder->logicalAnd(a, b, options, scope.GetExceptionState());
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kLogicalOr:
+      return builder->logicalOr(a, b, options, scope.GetExceptionState());
+    case webnn::mojom::blink::ElementWiseBinary::Kind::kLogicalXor:
+      return builder->logicalXor(a, b, options, scope.GetExceptionState());
   }
 }
 
@@ -629,6 +635,9 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
          /*greater_or_equal_input=*/webnn::SupportedDataTypes::All(),
          /*lesser_input=*/webnn::SupportedDataTypes::All(),
          /*lesser_or_equal_input=*/webnn::SupportedDataTypes::All(),
+         /*logical_and_input=*/webnn::SupportedDataTypes::All(),
+         /*logical_or_input=*/webnn::SupportedDataTypes::All(),
+         /*logical_xor_input=*/webnn::SupportedDataTypes::All(),
          /*logical_not_input=*/webnn::SupportedDataTypes::All(),
          /*logical_output=*/webnn::SupportedDataTypes::All(),
          /*abs_input=*/webnn::SupportedDataTypes::All(),
