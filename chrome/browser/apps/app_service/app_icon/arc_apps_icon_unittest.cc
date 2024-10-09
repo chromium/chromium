@@ -41,7 +41,7 @@ class ArcAppsIconFactoryTest : public testing::Test {
   }
 
   arc::mojom::RawIconPngDataPtr GenerateRawArcAppIcon(
-      const std::string app_id,
+      const std::string& app_id,
       ui::ResourceScaleFactor scale_factor) {
     ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile());
     base::test::TestFuture<arc::mojom::RawIconPngDataPtr> result;
@@ -104,7 +104,7 @@ class AppServiceArcAppIconTest : public ArcAppsIconFactoryTest,
     proxy_ = AppServiceProxyFactory::GetForProfile(profile());
   }
 
-  void GenerateArcAppUncompressedIcon(const std::string app_id,
+  void GenerateArcAppUncompressedIcon(const std::string& app_id,
                                       gfx::ImageSkia& image_skia) {
     gfx::ImageSkia foreground_image_skia;
     gfx::ImageSkia background_image_skia;
@@ -138,7 +138,7 @@ class AppServiceArcAppIconTest : public ArcAppsIconFactoryTest,
     image_skia.MakeThreadSafe();
   }
 
-  void GenerateArcAppCompressedIcon(const std::string app_id,
+  void GenerateArcAppCompressedIcon(const std::string& app_id,
                                     float scale,
                                     std::vector<uint8_t>& result) {
     gfx::ImageSkia image_skia;

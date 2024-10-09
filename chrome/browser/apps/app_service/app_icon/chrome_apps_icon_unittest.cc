@@ -66,7 +66,7 @@ class ChromeAppsIconFactoryTest : public extensions::ExtensionServiceTestBase {
     ASSERT_EQ(4U, registry()->enabled_extensions().size());
   }
 
-  void GenerateExtensionAppIcon(const std::string app_id,
+  void GenerateExtensionAppIcon(const std::string& app_id,
                                 gfx::ImageSkia& output_image_skia,
                                 bool skip_effects = false) {
     extensions::ExtensionRegistry* registry =
@@ -86,7 +86,7 @@ class ChromeAppsIconFactoryTest : public extensions::ExtensionServiceTestBase {
             : apps::CreateStandardIconImage(result.Take().AsImageSkia());
   }
 
-  void GenerateExtensionAppCompressedIcon(const std::string app_id,
+  void GenerateExtensionAppCompressedIcon(const std::string& app_id,
                                           float scale,
                                           std::vector<uint8_t>& result,
                                           bool skip_effects = false) {
