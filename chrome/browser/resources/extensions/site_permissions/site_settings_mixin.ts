@@ -34,6 +34,12 @@ export interface SiteSettingsDelegate {
       ChromeEvent<(settings: chrome.developerPrivate.UserSiteSettings) => void>;
 }
 
+class FakeChromeEvent {
+  addListener(_listener: Function) {}
+  removeListener(_listener: Function) {}
+  callListeners(..._args: any[]) {}
+}
+
 export class DummySiteSettingsDelegate {
   getUserSiteSettings() {
     return Promise.resolve({permittedSites: [], restrictedSites: []});
@@ -58,12 +64,48 @@ export class DummySiteSettingsDelegate {
     return Promise.resolve();
   }
   getUserSiteSettingsChangedTarget() {
-    // FakeChromeEvent
-    return {
-      addListener(_listener: Function) {},
-      removeListener(_listener: Function) {},
-      callListeners(..._args: any[]) {},
-    };
+    return new FakeChromeEvent();
+  }
+}
+
+export class DummySiteSettingsMixinDelegate extends DummySiteSettingsDelegate {
+  deleteItem(_id: string) {}
+  deleteItems(_ids: string[]) {
+    return Promise.resolve();
+  }
+  uninstallItem(_id: string) {
+    return Promise.resolve();
+  }
+  setItemEnabled(_id: string, _isEnabled: boolean) {}
+  setItemAllowedIncognito(_id: string, _isAllowedIncognito: boolean) {}
+  setItemAllowedOnFileUrls(_id: string, _isAllowedOnFileUrls: boolean) {}
+  setItemHostAccess(
+      _id: string, _hostAccess: chrome.developerPrivate.HostAccess) {}
+  setItemCollectsErrors(_id: string, _collectsErrors: boolean) {}
+  inspectItemView(_id: string, _view: chrome.developerPrivate.ExtensionView) {}
+  openUrl(_url: string) {}
+  reloadItem(_id: string) {
+    return Promise.resolve();
+  }
+  repairItem(_id: string) {}
+  showItemOptionsPage(_extension: chrome.developerPrivate.ExtensionInfo) {}
+  showInFolder(_id: string) {}
+  getExtensionSize(_id: string) {
+    return Promise.resolve('');
+  }
+  addRuntimeHostPermission(_id: string, _host: string) {
+    return Promise.resolve();
+  }
+  removeRuntimeHostPermission(_id: string, _host: string) {
+    return Promise.resolve();
+  }
+  setItemSafetyCheckWarningAcknowledged(
+      _id: string, _reason: chrome.developerPrivate.SafetyCheckWarningReason) {}
+  setShowAccessRequestsInToolbar(_id: string, _showRequests: boolean) {}
+  setItemPinnedToToolbar(_id: string, _pinnedToToolbar: boolean) {}
+  recordUserAction(_metricName: string) {}
+  getItemStateChangedTarget() {
+    return new FakeChromeEvent();
   }
 }
 

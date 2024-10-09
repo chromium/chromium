@@ -64,6 +64,7 @@ build_webui("build") {
     "service.ts",
     "shortcut_util.ts",
     "site_permissions/site_settings_mixin.ts",
+    "site_permissions/site_settings_mixin_lit.ts",
     "url_util.ts",
   ]
 
@@ -89,6 +90,8 @@ build_webui("build") {
     "shared_vars.css",
     "shortcut_input.css",
     "sidebar.css",
+    "site_permissions/site_permissions.css",
+    "site_permissions/site_permissions_by_site.css",
     "site_permissions/site_permissions_edit_permissions_dialog.css",
     "site_permissions/site_permissions_list.css",
     "site_permissions/site_permissions_site_group.css",
