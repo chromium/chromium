@@ -3038,9 +3038,14 @@
     "expiry_milestone": 140
   },
   {
-    "name": "enable-enterprise-profile-badging",
-    "owners": [ "ydago@chromium.org", "cbe-magic@google.com" ],
-    "expiry_milestone": 125
+    "name": "enable-enterprise-profile-badging-for-avatar",
+    "owners": [ "ydago@chromium.org", "esalma@google.com","cbe-magic@google.com"],
+    "expiry_milestone": 133
+  },
+  {
+    "name": "enable-enterprise-profile-badging-for-menu",
+    "owners": [ "ydago@chromium.org", "esalma@google.com","cbe-magic@google.com"],
+    "expiry_milestone": 133
   },
   {
     "name": "enable-enterprise-updated-profile-creation-screen",

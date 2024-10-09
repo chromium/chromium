@@ -667,8 +667,11 @@ extern const char kViewTransitionOnNavigationIframeDescription[];
 extern const char kEnableAutofillAddressSavePromptName[];
 extern const char kEnableAutofillAddressSavePromptDescription[];
 
-extern const char kEnterpriseProfileBadgingName[];
-extern const char kEnterpriseProfileBadgingDescription[];
+extern const char kEnterpriseProfileBadgingForAvatarName[];
+extern const char kEnterpriseProfileBadgingForAvatarDescription[];
+
+extern const char kEnterpriseProfileBadgingForMenuName[];
+extern const char kEnterpriseProfileBadgingForMenuDescription[];
 
 extern const char kEnterpriseUpdatedProfileCreationScreenName[];
 extern const char kEnterpriseUpdatedProfileCreationScreenDescription[];

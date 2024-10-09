@@ -1175,10 +1175,16 @@ const char kEnableAutofillAddressSavePromptName[] =
 const char kEnableAutofillAddressSavePromptDescription[] =
     "Enable the Autofill address save prompts.";
 
-const char kEnterpriseProfileBadgingName[] =
-    "Enable enterprise profile badging";
-const char kEnterpriseProfileBadgingDescription[] =
-    "Enable enterprise profile badging on the toolbar avatar and profile menu";
+const char kEnterpriseProfileBadgingForAvatarName[] =
+    "Enable enterprise profile badging on the avatar";
+const char kEnterpriseProfileBadgingForAvatarDescription[] =
+    "Enable enterprise profile badging on the toolbar avatar";
+
+const char kEnterpriseProfileBadgingForMenuName[] =
+    "Enable enterprise profile badging in the profile menu";
+const char kEnterpriseProfileBadgingForMenuDescription[] =
+    "Enable enterprise profile badging in the profile menu. This includes "
+    "showing the enterprise logo and the management disclaimer under the email";
 
 const char kEnterpriseUpdatedProfileCreationScreenName[] =
     "Enable enterprise updated profile creation screens";

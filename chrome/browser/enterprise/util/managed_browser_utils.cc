@@ -227,14 +227,35 @@ bool IsEnterpriseBadgingEnabledForToolbar(Profile* profile) {
              prefs::kEnterpriseProfileBadgeToolbarSettings) == 0;
 }
 
-bool CanShowEnterpriseBadging(Profile* profile) {
+bool CanShowEnterpriseBadgingForMenu(Profile* profile) {
   if (!UserAcceptedAccountManagement(profile)) {
     return false;
   }
-  if (base::FeatureList::IsEnabled(features::kEnterpriseProfileBadging)) {
+  if (base::FeatureList::IsEnabled(
+          features::kEnterpriseProfileBadgingForMenu)) {
     return true;
   }
+  if (!base::FeatureList::IsEnabled(
+          features::kEnterpriseProfileBadgingPolicies)) {
+    return false;
+  }
 
+  return !profile->GetPrefs()
+              ->GetString(prefs::kEnterpriseLogoUrlForProfile)
+              .empty();
+}
+
+bool CanShowEnterpriseBadgingForAvatar(Profile* profile) {
+  if (!UserAcceptedAccountManagement(profile)) {
+    return false;
+  }
+  if (!IsEnterpriseBadgingEnabledForToolbar(profile)) {
+    return false;
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kEnterpriseProfileBadgingForAvatar)) {
+    return true;
+  }
   if (!base::FeatureList::IsEnabled(
           features::kEnterpriseProfileBadgingPolicies)) {
     return false;
@@ -242,9 +263,6 @@ bool CanShowEnterpriseBadging(Profile* profile) {
 
   return !profile->GetPrefs()
               ->GetString(prefs::kEnterpriseCustomLabelForProfile)
-              .empty() ||
-         !profile->GetPrefs()
-              ->GetString(prefs::kEnterpriseLogoUrlForProfile)
               .empty();
 }
 

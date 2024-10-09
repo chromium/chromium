@@ -1115,7 +1115,7 @@ class AvatarToolbarButtonEnterpriseBadgingBrowserTest
  protected:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
   base::test::ScopedFeatureList scoped_feature_list_{
-      features::kEnterpriseProfileBadging};
+      features::kEnterpriseProfileBadgingForAvatar};
 };
 
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,

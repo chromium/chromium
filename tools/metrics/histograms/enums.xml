@@ -16174,6 +16174,7 @@ from previous Chrome versions.
   <int value="-1702323888" label="MediaAppPdfSignature:disabled"/>
   <int value="-1701123067" label="ShowManagedUi:enabled"/>
   <int value="-1700764114" label="HelpAppBackgroundPage:enabled"/>
+  <int value="-1700227008" label="EnterpriseProfileBadgingForMenu:disabled"/>
   <int value="-1700068858" label="HelpAppCrosComponents:disabled"/>
   <int value="-1699960514" label="ChromeOSSyncedSessionSharing:enabled"/>
   <int value="-1699952400"
@@ -16890,6 +16891,7 @@ from previous Chrome versions.
   <int value="-1417642561" label="AutofillCreditCardUploadFeedback:enabled"/>
   <int value="-1417122729"
       label="AutofillCreditCardAblationExperiment:disabled"/>
+  <int value="-1417117326" label="EnterpriseProfileBadgingForAvatar:enabled"/>
   <int value="-1416754663" label="enable-mac-views-native-app-windows"/>
   <int value="-1416610483" label="WallpaperPerDesk:enabled"/>
   <int value="-1416184931" label="TranslateRankerEnforcement:enabled"/>
@@ -18017,7 +18019,6 @@ from previous Chrome versions.
   <int value="-962574060" label="kQuickAnswersMaterialNextUI:enabled"/>
   <int value="-962233051" label="PasspointSettings:enabled"/>
   <int value="-962030536" label="ChromeDuetLabeled:enabled"/>
-  <int value="-962004315" label="EnterpriseProfileBadging:disabled"/>
   <int value="-961427615" label="WebviewTagMPArchBehavior:enabled"/>
   <int value="-960851702" label="EcheSWADisableStunServer:disabled"/>
   <int value="-960745328" label="EnableBubbleCornerRadiusUpdate:enabled"/>
@@ -18540,6 +18541,7 @@ from previous Chrome versions.
   <int value="-738957187" label="OmniboxUIExperimentSwapTitleAndUrl:disabled"/>
   <int value="-738264153" label="WaylandScreenCoordinatesEnabled:enabled"/>
   <int value="-737740161" label="SupportForAddPasswordsInSettings:enabled"/>
+  <int value="-737020263" label="EnterpriseProfileBadgingForAvatar:disabled"/>
   <int value="-736477364" label="HTMLParamElementUrlSupport:disabled"/>
   <int value="-735827773" label="PageInfoHistoryDesktop:enabled"/>
   <int value="-735790302" label="CCTBrandTransparency:enabled"/>
@@ -18680,6 +18682,7 @@ from previous Chrome versions.
   <int value="-682580680" label="DisableOfficeEditingComponentApp:disabled"/>
   <int value="-682440269" label="WebNotesPublish:disabled"/>
   <int value="-681881853" label="TabAndLinkDragDropAndroid:disabled"/>
+  <int value="-681644963" label="EnterpriseProfileBadgingForMenu:enabled"/>
   <int value="-681535143"
       label="UserCloudSigninRestrictionPolicyFetcher:enabled"/>
   <int value="-681434111" label="WebFeed:disabled"/>
@@ -22358,7 +22361,6 @@ from previous Chrome versions.
   <int value="824620391" label="AndroidTabDeclutter:disabled"/>
   <int value="824961931" label="use-simple-cache-backend"/>
   <int value="824968180" label="SimLockPolicy:enabled"/>
-  <int value="825301017" label="EnterpriseProfileBadging:enabled"/>
   <int value="826644834" label="NtpRealboxCr23ConsistentRowHeight:disabled"/>
   <int value="826748470" label="NtpCalendarModule:enabled"/>
   <int value="828092263" label="TemporaryUnexpireFlagsM78:enabled"/>

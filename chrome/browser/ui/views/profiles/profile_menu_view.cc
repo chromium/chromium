@@ -529,7 +529,8 @@ void ProfileMenuView::BuildIdentity() {
     std::u16string management_label;
     ui::ImageModel badge_image_model;
 
-    if (enterprise_util::CanShowEnterpriseBadging(browser()->profile())) {
+    if (enterprise_util::CanShowEnterpriseBadgingForMenu(
+            browser()->profile())) {
       management_label =
           account_manager
               ? l10n_util::GetStringFUTF16(IDS_PROFILES_MANAGED_BY,

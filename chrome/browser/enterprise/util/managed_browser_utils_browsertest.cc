@@ -74,15 +74,23 @@ IN_PROC_BROWSER_TEST_P(ManagedBrowserUtilsBrowserTest, LocalState) {
 #if !BUILDFLAG(IS_CHROMEOS)
 class EnterpriseBadgingTest
     : public InProcessBrowserTest,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, bool, bool>> {
  public:
   void SetUp() override {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-    if (feature_enabled()) {
-      enabled_features.emplace_back(features::kEnterpriseProfileBadging);
+    if (avatar_feature_enabled()) {
+      enabled_features.emplace_back(
+          features::kEnterpriseProfileBadgingForAvatar);
     } else {
-      disabled_features.emplace_back(features::kEnterpriseProfileBadging);
+      disabled_features.emplace_back(
+          features::kEnterpriseProfileBadgingForAvatar);
+    }
+    if (profile_menu_feature_enabled()) {
+      enabled_features.emplace_back(features::kEnterpriseProfileBadgingForMenu);
+    } else {
+      disabled_features.emplace_back(
+          features::kEnterpriseProfileBadgingForMenu);
     }
     if (policies_feature_enabled()) {
       enabled_features.emplace_back(
@@ -99,9 +107,10 @@ class EnterpriseBadgingTest
     SetUserAcceptedAccountManagement(browser()->profile(), managed_profile());
     InProcessBrowserTest::SetUpOnMainThread();
   }
-  bool feature_enabled() { return std::get<0>(GetParam()); }
-  bool policies_feature_enabled() { return std::get<1>(GetParam()); }
-  bool managed_profile() { return std::get<2>(GetParam()); }
+  bool avatar_feature_enabled() { return std::get<0>(GetParam()); }
+  bool profile_menu_feature_enabled() { return std::get<1>(GetParam()); }
+  bool policies_feature_enabled() { return std::get<2>(GetParam()); }
+  bool managed_profile() { return std::get<3>(GetParam()); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -109,22 +118,31 @@ class EnterpriseBadgingTest
 
 IN_PROC_BROWSER_TEST_P(EnterpriseBadgingTest, CanShowEnterpriseBadging) {
   Profile* profile = browser()->profile();
-  EXPECT_EQ(CanShowEnterpriseBadging(profile),
-            feature_enabled() && managed_profile());
+  // When no custom policy is set, the visibility of each of the the avatar
+  // badging and profile menu badging depends on whether the profile is managed
+  // and if each feature controlling the default behaviour is enabled.
+  EXPECT_EQ(CanShowEnterpriseBadgingForAvatar(profile),
+            avatar_feature_enabled() && managed_profile());
+  EXPECT_EQ(CanShowEnterpriseBadgingForMenu(profile),
+            profile_menu_feature_enabled() && managed_profile());
+
+  profile->GetPrefs()->SetString(prefs::kEnterpriseCustomLabelForProfile,
+                                 "some_label");
+  EXPECT_EQ(CanShowEnterpriseBadgingForAvatar(profile),
+            (avatar_feature_enabled() || policies_feature_enabled()) &&
+                managed_profile());
 
   profile->GetPrefs()->SetString(prefs::kEnterpriseLogoUrlForProfile,
                                  "some_url");
-  profile->GetPrefs()->SetString(prefs::kEnterpriseCustomLabelForProfile,
-                                 "some_label");
-
-  EXPECT_EQ(
-      CanShowEnterpriseBadging(profile),
-      (feature_enabled() || policies_feature_enabled()) && managed_profile());
+  EXPECT_EQ(CanShowEnterpriseBadgingForMenu(profile),
+            ((profile_menu_feature_enabled() || policies_feature_enabled()) &&
+             managed_profile()));
 }
 
 INSTANTIATE_TEST_SUITE_P(,
                          EnterpriseBadgingTest,
                          testing::Combine(testing::Bool(),
+                                          testing::Bool(),
                                           testing::Bool(),
                                           testing::Bool()));
 #endif  // !BUILDFLAG(IS_CHROMEOS)

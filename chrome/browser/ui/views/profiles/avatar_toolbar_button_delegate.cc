@@ -107,8 +107,7 @@ gfx::Image GetGaiaAccountImage(Profile* profile) {
 // - true for Work.
 // - false for School.
 bool IsManagementWork(Profile* profile) {
-  CHECK(enterprise_util::CanShowEnterpriseBadging(profile) &&
-        enterprise_util::IsEnterpriseBadgingEnabledForToolbar(profile));
+  CHECK(enterprise_util::CanShowEnterpriseBadgingForAvatar(profile));
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   auto management_environment = enterprise_util::GetManagementEnvironment(
       profile, identity_manager->FindExtendedAccountInfoByAccountId(
@@ -749,9 +748,7 @@ class ManagementStateProvider : public StateProvider,
 
   // StateProvider:
   bool IsActive() const override {
-    return enterprise_util::CanShowEnterpriseBadging(&profile_.get()) &&
-           enterprise_util::IsEnterpriseBadgingEnabledForToolbar(
-               &profile_.get());
+    return enterprise_util::CanShowEnterpriseBadgingForAvatar(&profile_.get());
   }
 
  private:
@@ -959,7 +956,8 @@ class StateManager : public StateObserver,
               /*sync_error_type=*/std::nullopt);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-      if (base::FeatureList::IsEnabled(features::kEnterpriseProfileBadging) ||
+      if (base::FeatureList::IsEnabled(
+              features::kEnterpriseProfileBadgingForAvatar) ||
           base::FeatureList::IsEnabled(
               features::kEnterpriseProfileBadgingPolicies)) {
         // Contains both Work and School.

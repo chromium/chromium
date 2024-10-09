@@ -362,12 +362,18 @@ bool IsToolbarPinningEnabled() {
 }
 #endif
 
+// Enables enterprise profile badging for managed profiles on the toolbar
+// avatar. On managed profiles, a "Work" or "School" label will be used in the
+// toolbar.
+BASE_FEATURE(kEnterpriseProfileBadgingForAvatar,
+             "EnterpriseProfileBadgingForAvatar",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables enterprise profile badging for managed profiles on the toolbar avatar
-// and in the profile menu. On managed profiles, a "Work" or "School" label will
-// be used in the toolbar, and a building icon will be used  as a badge in the
-// profile menu.
-BASE_FEATURE(kEnterpriseProfileBadging,
-             "EnterpriseProfileBadging",
+// and in the profile menu. On managed profiles, a building icon will be used as
+// a badge in the profile menu.
+BASE_FEATURE(kEnterpriseProfileBadgingForMenu,
+             "EnterpriseProfileBadgingForMenu",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables enterprise profile badging for managed profiles on the toolbar avatar
