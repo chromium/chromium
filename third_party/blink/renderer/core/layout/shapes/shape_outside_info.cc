@@ -196,16 +196,13 @@ static PhysicalRect GetShapeImagePhysicalMarginRect(
 static LogicalRect GetShapeImageMarginRect(
     const LayoutBox& layout_box,
     const LogicalSize& reference_box_logical_size) {
-  LogicalOffset margin_box_origin(-layout_box.MarginInlineStart() -
-                                      layout_box.BorderAndPaddingInlineStart(),
-                                  -layout_box.MarginBlockStart() -
-                                      layout_box.BorderBlockStart() -
-                                      layout_box.PaddingBlockStart());
+  BoxStrut outsets =
+      (layout_box.MarginBoxOutsets() + layout_box.BorderOutsets() +
+       layout_box.PaddingOutsets())
+          .ConvertToLogical(layout_box.Style()->GetWritingDirection());
+  LogicalOffset margin_box_origin(-outsets.inline_start, -outsets.block_start);
   LogicalSize margin_rect_size = reference_box_logical_size;
-  margin_rect_size.Expand(
-      layout_box.MarginLogicalWidth() + layout_box.BorderAndPaddingInlineSize(),
-      layout_box.MarginLogicalHeight() +
-          layout_box.BorderAndPaddingBlockSize());
+  margin_rect_size.Expand(outsets.InlineSum(), outsets.BlockSum());
   margin_rect_size.ClampNegativeToZero();
   return LogicalRect(margin_box_origin, margin_rect_size);
 }
