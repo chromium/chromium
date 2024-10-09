@@ -215,7 +215,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     /** Pipe ("|") separated list of package names allowed to use the interactive Omnibox. */
     // TODO(b/40239922): remove when no longer relevant.
     private static final String DEFAULT_OMNIBOX_ALLOWED_PACKAGE_NAMES =
-            BuildConfig.ENABLE_DEBUG_LOGS ? "org.chromium.customtabsclient" : null;
+            BuildConfig.ENABLE_DEBUG_LOGS ? "org.chromium.customtabsclient" : "";
 
     public static final StringCachedFieldTrialParameter OMNIBOX_ALLOWED_PACKAGE_NAMES =
             ChromeFeatureList.newStringCachedFieldTrialParameter(

@@ -15,14 +15,12 @@ import org.chromium.base.cached_flags.ValuesReturned;
 import org.chromium.base.supplier.Supplier;
 
 /** An int-type {@link CachedFieldTrialParameter}. */
-public class IntCachedFieldTrialParameter extends CachedFieldTrialParameter {
-    private final int mDefaultValue;
+public class IntCachedFieldTrialParameter extends CachedFieldTrialParameter<Integer> {
     private Supplier<Integer> mValueSupplier;
 
     public IntCachedFieldTrialParameter(
             FeatureMap featureMap, String featureName, String variationName, int defaultValue) {
-        super(featureMap, featureName, variationName, FieldTrialParameterType.INT);
-        mDefaultValue = defaultValue;
+        super(featureMap, featureName, variationName, FieldTrialParameterType.INT, defaultValue);
     }
 
     /**
@@ -69,7 +67,7 @@ public class IntCachedFieldTrialParameter extends CachedFieldTrialParameter {
     void writeCacheValueToEditor(final SharedPreferences.Editor editor) {
         final int value =
                 mFeatureMap.getFieldTrialParamByFeatureAsInt(
-                        getFeatureName(), getParameterName(), getDefaultValue());
+                        getFeatureName(), getName(), getDefaultValue());
         editor.putInt(getSharedPreferenceKey(), value);
     }
 

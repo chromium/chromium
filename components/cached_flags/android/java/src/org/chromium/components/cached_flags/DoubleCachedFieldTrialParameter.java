@@ -15,14 +15,12 @@ import org.chromium.base.cached_flags.ValuesReturned;
 import org.chromium.base.supplier.Supplier;
 
 /** A double-type {@link CachedFieldTrialParameter}. */
-public class DoubleCachedFieldTrialParameter extends CachedFieldTrialParameter {
-    private final double mDefaultValue;
+public class DoubleCachedFieldTrialParameter extends CachedFieldTrialParameter<Double> {
     private Supplier<Double> mValueSupplier;
 
     public DoubleCachedFieldTrialParameter(
             FeatureMap featureMap, String featureName, String variationName, double defaultValue) {
-        super(featureMap, featureName, variationName, FieldTrialParameterType.DOUBLE);
-        mDefaultValue = defaultValue;
+        super(featureMap, featureName, variationName, FieldTrialParameterType.DOUBLE, defaultValue);
     }
 
     /**
@@ -71,7 +69,7 @@ public class DoubleCachedFieldTrialParameter extends CachedFieldTrialParameter {
         final long value =
                 Double.doubleToRawLongBits(
                         mFeatureMap.getFieldTrialParamByFeatureAsDouble(
-                                getFeatureName(), getParameterName(), getDefaultValue()));
+                                getFeatureName(), getName(), getDefaultValue()));
         editor.putLong(getSharedPreferenceKey(), value);
     }
 

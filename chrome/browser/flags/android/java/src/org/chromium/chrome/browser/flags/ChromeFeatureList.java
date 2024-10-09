@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.flags;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.base.BaseFeatures;
 import org.chromium.base.FeatureMap;
 import org.chromium.base.MutableBooleanParamWithSafeDefault;
@@ -131,7 +133,7 @@ public abstract class ChromeFeatureList {
     }
 
     public static StringCachedFieldTrialParameter newStringCachedFieldTrialParameter(
-            String featureName, String variationName, String defaultValue) {
+            String featureName, String variationName, @NonNull String defaultValue) {
         return new StringCachedFieldTrialParameter(
                 ChromeFeatureMap.getInstance(), featureName, variationName, defaultValue);
     }

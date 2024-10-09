@@ -95,7 +95,7 @@ public class CachedFieldTrialParameterUnitTest {
     private static final AllCachedFieldTrialParameters ALL_PARAM =
             new AllCachedFieldTrialParameters(FEATURE_MAP, FEATURE_B);
 
-    private static final List<CachedFieldTrialParameter> PARAMS_TO_CACHE =
+    private static final List<CachedFieldTrialParameter<?>> PARAMS_TO_CACHE =
             List.of(STRING_PARAM, BOOLEAN_PARAM, INT_PARAM, DOUBLE_PARAM, STRING2_PARAM, ALL_PARAM);
 
     @Before

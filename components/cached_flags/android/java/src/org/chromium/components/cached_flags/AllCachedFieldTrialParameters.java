@@ -14,15 +14,21 @@ import org.chromium.base.cached_flags.ValuesOverridden;
 import org.chromium.base.cached_flags.ValuesReturned;
 import org.chromium.base.supplier.Supplier;
 
+import java.util.Collections;
 import java.util.Map;
 
 /** AllCachedFieldTrialParameters caches all the parameters for a feature. */
-public class AllCachedFieldTrialParameters extends CachedFieldTrialParameter {
+public class AllCachedFieldTrialParameters extends CachedFieldTrialParameter<Map<String, String>> {
     private Supplier<String> mValueSupplier;
 
     public AllCachedFieldTrialParameters(FeatureMap featureMap, String featureName) {
         // As this includes all parameters, the parameterName is empty.
-        super(featureMap, featureName, /* parameterName= */ "", FieldTrialParameterType.ALL);
+        super(
+                featureMap,
+                featureName,
+                /* parameterName= */ "",
+                FieldTrialParameterType.ALL,
+                Collections.emptyMap());
     }
 
     /** Returns a map of field trial parameter to value. */

@@ -15,14 +15,17 @@ import org.chromium.base.cached_flags.ValuesReturned;
 import org.chromium.base.supplier.Supplier;
 
 /** A boolean-type {@link CachedFieldTrialParameter}. */
-public class BooleanCachedFieldTrialParameter extends CachedFieldTrialParameter {
-    private final boolean mDefaultValue;
+public class BooleanCachedFieldTrialParameter extends CachedFieldTrialParameter<Boolean> {
     private Supplier<Boolean> mValueSupplier;
 
     public BooleanCachedFieldTrialParameter(
             FeatureMap featureMap, String featureName, String variationName, boolean defaultValue) {
-        super(featureMap, featureName, variationName, FieldTrialParameterType.BOOLEAN);
-        mDefaultValue = defaultValue;
+        super(
+                featureMap,
+                featureName,
+                variationName,
+                FieldTrialParameterType.BOOLEAN,
+                defaultValue);
     }
 
     /**
@@ -69,7 +72,7 @@ public class BooleanCachedFieldTrialParameter extends CachedFieldTrialParameter 
     void writeCacheValueToEditor(final SharedPreferences.Editor editor) {
         final boolean value =
                 mFeatureMap.getFieldTrialParamByFeatureAsBoolean(
-                        getFeatureName(), getParameterName(), getDefaultValue());
+                        getFeatureName(), getName(), getDefaultValue());
         editor.putBoolean(getSharedPreferenceKey(), value);
     }
 

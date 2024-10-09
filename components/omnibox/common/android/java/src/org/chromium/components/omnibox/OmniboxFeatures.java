@@ -42,7 +42,7 @@ public class OmniboxFeatures {
     // Auto-populated list of Omnibox cached feature flags.
     // Each flag created via newFlag() will be automatically added to this list.
     private static final List<CachedFlag> sCachedFlags = new ArrayList<>();
-    private static final List<CachedFieldTrialParameter> sCachedParams = new ArrayList<>();
+    private static final List<CachedFieldTrialParameter<?>> sCachedParams = new ArrayList<>();
 
     /// Holds the information whether logic should focus on preserving memory on this device.
     private static Boolean sIsLowMemoryDevice;
@@ -171,7 +171,7 @@ public class OmniboxFeatures {
     }
 
     /** Retrieve list of FieldTrialParams that should be cached. */
-    public static List<CachedFieldTrialParameter> getFieldTrialParamsToCache() {
+    public static List<CachedFieldTrialParameter<?>> getFieldTrialParamsToCache() {
         return sCachedParams;
     }
 

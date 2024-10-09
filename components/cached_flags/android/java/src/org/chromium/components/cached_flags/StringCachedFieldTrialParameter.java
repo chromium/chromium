@@ -7,6 +7,7 @@ package org.chromium.components.cached_flags;
 import android.content.SharedPreferences;
 
 import androidx.annotation.AnyThread;
+import androidx.annotation.NonNull;
 
 import org.chromium.base.FeatureMap;
 import org.chromium.base.cached_flags.CachedFlagsSharedPreferences;
@@ -15,14 +16,15 @@ import org.chromium.base.cached_flags.ValuesReturned;
 import org.chromium.base.supplier.Supplier;
 
 /** A String-type {@link CachedFieldTrialParameter}. */
-public class StringCachedFieldTrialParameter extends CachedFieldTrialParameter {
-    private final String mDefaultValue;
+public class StringCachedFieldTrialParameter extends CachedFieldTrialParameter<String> {
     private Supplier<String> mValueSupplier;
 
     public StringCachedFieldTrialParameter(
-            FeatureMap featureMap, String featureName, String variationName, String defaultValue) {
-        super(featureMap, featureName, variationName, FieldTrialParameterType.STRING);
-        mDefaultValue = defaultValue;
+            FeatureMap featureMap,
+            String featureName,
+            String variationName,
+            @NonNull String defaultValue) {
+        super(featureMap, featureName, variationName, FieldTrialParameterType.STRING, defaultValue);
     }
 
     /**
@@ -67,8 +69,7 @@ public class StringCachedFieldTrialParameter extends CachedFieldTrialParameter {
 
     @Override
     void writeCacheValueToEditor(final SharedPreferences.Editor editor) {
-        final String value =
-                mFeatureMap.getFieldTrialParamByFeature(getFeatureName(), getParameterName());
+        final String value = mFeatureMap.getFieldTrialParamByFeature(getFeatureName(), getName());
         editor.putString(getSharedPreferenceKey(), value.isEmpty() ? getDefaultValue() : value);
     }
 

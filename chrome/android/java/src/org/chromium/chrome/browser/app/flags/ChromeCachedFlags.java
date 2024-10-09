@@ -66,7 +66,7 @@ public class ChromeCachedFlags {
      * A list of field trial parameters that will be cached when starting minimal browser mode. See
      * {@link #cacheMinimalBrowserFlags()}.
      */
-    private static final List<CachedFieldTrialParameter> MINIMAL_BROWSER_FIELD_TRIALS =
+    private static final List<CachedFieldTrialParameter<?>> MINIMAL_BROWSER_FIELD_TRIALS =
             List.of(
                     // This is used by CustomTabsConnection implementation, which does not
                     // necessarily start chrome.
@@ -94,7 +94,7 @@ public class ChromeCachedFlags {
                 SigninFeatureMap.sCachedFlags);
         cacheAdditionalNativeFlags();
 
-        List<CachedFieldTrialParameter> fieldTrialsToCache =
+        List<CachedFieldTrialParameter<?>> fieldTrialsToCache =
                 List.of(
                         AuxiliarySearchProvider.MAX_FAVICON_NUMBER,
                         BackPressManager.TAB_HISTORY_RECOVER,
@@ -168,11 +168,11 @@ public class ChromeCachedFlags {
     }
 
     private void tryToCatchMissingParameters(
-            List<CachedFieldTrialParameter>... listsOfParamsToTest) {
+            List<CachedFieldTrialParameter<?>>... listsOfParamsToTest) {
         if (!BuildConfig.ENABLE_ASSERTS) return;
 
-        var paramsToTest = new ArrayList<CachedFieldTrialParameter>();
-        for (List<CachedFieldTrialParameter> list : listsOfParamsToTest) {
+        var paramsToTest = new ArrayList<CachedFieldTrialParameter<?>>();
+        for (List<CachedFieldTrialParameter<?>> list : listsOfParamsToTest) {
             paramsToTest.addAll(list);
         }
 
@@ -181,10 +181,10 @@ public class ChromeCachedFlags {
         // attempt to try to catch accidental omissions. It cannot replace the list because some
         // instances might not be instantiated if the classes they belong to are not accessed yet.
         List<String> omissions = new ArrayList<>();
-        for (CachedFieldTrialParameter trial : CachedFieldTrialParameter.getAllInstances()) {
+        for (CachedFieldTrialParameter<?> trial : CachedFieldTrialParameter.getAllInstances()) {
             if (paramsToTest.contains(trial)) continue;
             if (MINIMAL_BROWSER_FIELD_TRIALS.contains(trial)) continue;
-            omissions.add(trial.getFeatureName() + ":" + trial.getParameterName());
+            omissions.add(trial.getFeatureName() + ":" + trial.getName());
         }
         assert omissions.isEmpty()
                 : "The following trials are not correctly cached: "

@@ -7,22 +7,25 @@ package org.chromium.components.cached_flags;
 import android.content.SharedPreferences;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 
 import org.chromium.base.FeatureMap;
+import org.chromium.base.FeatureParam;
 import org.chromium.base.cached_flags.CachedFlagsSharedPreferences;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.CheckDiscard;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
  * A field trial parameter in the variations framework that is cached to disk be used before native.
+ *
+ * @param <T> the type of the parameter
  */
-public abstract class CachedFieldTrialParameter {
+public abstract class CachedFieldTrialParameter<T> extends FeatureParam<T> {
 
     /** Data types of field trial parameters. */
     @IntDef({
@@ -42,35 +45,20 @@ public abstract class CachedFieldTrialParameter {
     }
 
     @CheckDiscard("crbug.com/1067145")
-    private static Set<CachedFieldTrialParameter> sAllInstances;
+    private static Set<CachedFieldTrialParameter<?>> sAllInstances;
 
-    protected final FeatureMap mFeatureMap;
-
-    private final String mFeatureName;
-    private final String mParameterName;
     private final @FieldTrialParameterType int mType;
-    private static HashMap<String, CachedFieldTrialParameter> sParamsCreatedForTesting =
-            new HashMap<>();
 
     CachedFieldTrialParameter(
             FeatureMap featureMap,
             String featureName,
             String parameterName,
-            @FieldTrialParameterType int type) {
-        if (BuildConfig.IS_FOR_TEST) {
-            String combinedName = featureName + ":" + parameterName;
-            CachedFieldTrialParameter previous = sParamsCreatedForTesting.put(combinedName, this);
-            assert previous == null
-                    : String.format(
-                            "Feature '%s' has a duplicate parameter: '%s'",
-                            featureName, parameterName);
-        }
+            @FieldTrialParameterType int type,
+            @NonNull T defaultValue) {
+        super(featureMap, featureName, parameterName, defaultValue);
 
-        mFeatureMap = featureMap;
-        mFeatureName = featureName;
         // parameterName does not apply to ALL (because it includes all parameters).
         assert type != FieldTrialParameterType.ALL || parameterName.isEmpty();
-        mParameterName = parameterName;
         mType = type;
 
         registerInstance();
@@ -86,22 +74,8 @@ public abstract class CachedFieldTrialParameter {
     }
 
     @CheckDiscard("crbug.com/1067145")
-    public static Set<CachedFieldTrialParameter> getAllInstances() {
+    public static Set<CachedFieldTrialParameter<?>> getAllInstances() {
         return sAllInstances;
-    }
-
-    /**
-     * @return The name of the related field trial.
-     */
-    public String getFeatureName() {
-        return mFeatureName;
-    }
-
-    /**
-     * @return The name of the field trial parameter.
-     */
-    public String getParameterName() {
-        return mParameterName;
     }
 
     /**
@@ -116,7 +90,7 @@ public abstract class CachedFieldTrialParameter {
      */
     String getSharedPreferenceKey() {
         return CachedFlagsSharedPreferences.generateParamSharedPreferenceKey(
-                getFeatureName(), getParameterName());
+                getFeatureName(), getName());
     }
 
     /**
