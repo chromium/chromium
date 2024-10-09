@@ -88,6 +88,13 @@ bool TooNarrowForBanner(UIView* view) {
   UITableViewDiffableDataSource<NSNumber*, NSNumber*>* _dataSource;
   NSDiffableDataSourceSnapshot* _snapshot;
   ChromeTableViewStyler* _tableViewStyler;
+  // The `viewWillLayoutSubviews` is invoked on creation, dismissal, and
+  // backward navigation of the NotificationsBannerViewController. To prevent
+  // the view controller styling aspects of the view that will be carried over
+  // to other views, `_viewControllerIsBeingDismissed` ivar is set to true when
+  // the view controller's `viewWillDisappear` and prevents the view controller
+  // from further configuring the view once this occurs.
+  bool _viewControllerIsBeingDismissed;
 }
 
 - (void)viewDidLoad {
@@ -101,6 +108,7 @@ bool TooNarrowForBanner(UIView* view) {
   self.layoutBehindNavigationBar = YES;
   self.view.accessibilityIdentifier = kNotificationsBannerTableViewId;
   _tableView = [self tableView];
+  _viewControllerIsBeingDismissed = NO;
   [self.specificContentView addSubview:_tableView];
   [NSLayoutConstraint activateConstraints:@[
     [_tableView.topAnchor
@@ -139,6 +147,12 @@ bool TooNarrowForBanner(UIView* view) {
 
 - (void)viewWillLayoutSubviews {
   [super viewWillLayoutSubviews];
+  if (_viewControllerIsBeingDismissed) {
+    // The ivar is reset to handle the case where the user navigates back to
+    // this view controller via the 'back' navigation item.
+    _viewControllerIsBeingDismissed = NO;
+    return;
+  }
   [self configureBanner];
   [self updateTableViewHeightConstraint];
 }
@@ -146,6 +160,7 @@ bool TooNarrowForBanner(UIView* view) {
 - (void)viewWillDisappear:(BOOL)animated {
   [super viewWillDisappear:animated];
   self.navigationController.navigationBar.tintColor = nil;
+  _viewControllerIsBeingDismissed = YES;
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
