@@ -253,7 +253,7 @@ class FakeGCMInternalsBuilder : public GCMInternalsBuilder {
 FakeGCMInternalsBuilder::FakeGCMInternalsBuilder(base::TimeDelta clock_step)
     : clock_(clock_step) {}
 
-FakeGCMInternalsBuilder::~FakeGCMInternalsBuilder() {}
+FakeGCMInternalsBuilder::~FakeGCMInternalsBuilder() = default;
 
 base::Clock* FakeGCMInternalsBuilder::GetClock() {
   return &clock_;
@@ -463,7 +463,7 @@ class GCMClientImplTest : public testing::Test,
 GCMClientImplTest::GCMClientImplTest()
     : last_event_(NONE), last_result_(GCMClient::UNKNOWN_ERROR) {}
 
-GCMClientImplTest::~GCMClientImplTest() {}
+GCMClientImplTest::~GCMClientImplTest() = default;
 
 void GCMClientImplTest::SetUp() {
   testing::Test::SetUp();

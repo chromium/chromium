@@ -21,7 +21,7 @@ const char kUnknownError[] = "UNKNOWN_ERROR";
 GCMStatsRecorderAndroid::GCMStatsRecorderAndroid(Delegate* delegate)
     : delegate_(delegate) {}
 
-GCMStatsRecorderAndroid::~GCMStatsRecorderAndroid() {}
+GCMStatsRecorderAndroid::~GCMStatsRecorderAndroid() = default;
 
 void GCMStatsRecorderAndroid::Clear() {
   registration_activities_.clear();

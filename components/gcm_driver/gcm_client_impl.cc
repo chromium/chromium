@@ -213,8 +213,8 @@ void RecordRegistrationRequestToUMA(gcm::RegistrationCacheStatus status) {
       "GCM.RegistrationCacheStatus", status,
       RegistrationCacheStatus::REGISTRATION_CACHE_STATUS_COUNT);
 }
-GCMInternalsBuilder::GCMInternalsBuilder() {}
-GCMInternalsBuilder::~GCMInternalsBuilder() {}
+GCMInternalsBuilder::GCMInternalsBuilder() = default;
+GCMInternalsBuilder::~GCMInternalsBuilder() = default;
 
 base::Clock* GCMInternalsBuilder::GetClock() {
   return base::DefaultClock::GetInstance();

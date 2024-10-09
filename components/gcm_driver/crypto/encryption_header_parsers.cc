@@ -61,7 +61,7 @@ EncryptionHeaderIterator::EncryptionHeaderIterator(
     : iterator_(std::string_view(header_begin, header_end), /*delimiter=*/','),
       rs_(kDefaultRecordSizeBytes) {}
 
-EncryptionHeaderIterator::~EncryptionHeaderIterator() {}
+EncryptionHeaderIterator::~EncryptionHeaderIterator() = default;
 
 bool EncryptionHeaderIterator::GetNext() {
   keyid_.clear();
@@ -111,7 +111,7 @@ CryptoKeyHeaderIterator::CryptoKeyHeaderIterator(
     : iterator_(std::string_view(header_begin, header_end), /*delimiter=*/',') {
 }
 
-CryptoKeyHeaderIterator::~CryptoKeyHeaderIterator() {}
+CryptoKeyHeaderIterator::~CryptoKeyHeaderIterator() = default;
 
 bool CryptoKeyHeaderIterator::GetNext() {
   keyid_.clear();
