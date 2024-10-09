@@ -78,9 +78,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
     virtual ~Logger() = default;
   };
 
-  void SetLoggerForTesting(std::unique_ptr<Logger> logger) {
-    logger_ = std::move(logger);
-  }
   CanvasResourceProvider* GetOrCreateResourceProvider();
 
   // Allow access to the hibernation handler while Canvas2DLayerBridge is being

@@ -251,14 +251,6 @@ void DrawSomething(Canvas2DLayerBridge* bridge) {
   provider->FlushCanvas(FlushReason::kTesting);
 }
 
-class MockLogger : public Canvas2DLayerBridge::Logger {
- public:
-  MOCK_METHOD1(ReportHibernationEvent,
-               void(Canvas2DLayerBridge::HibernationEvent));
-  MOCK_METHOD0(DidStartHibernating, void());
-  ~MockLogger() override = default;
-};
-
 TEST_F(Canvas2DLayerBridgeTest, ResourceRecycling) {
   ScopedCanvas2dImageChromiumForTest canvas_2d_image_chromium(true);
   const_cast<gpu::Capabilities&>(SharedGpuContext::ContextProviderWrapper()
