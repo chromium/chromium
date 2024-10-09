@@ -33,7 +33,9 @@ class MockSaveAutofillPredictionImprovementsController
   MOCK_METHOD(void,
               OfferSave,
               (std::vector<optimization_guide::proto::UserAnnotationsEntry>,
-               PromptAcceptanceCallback),
+               PromptAcceptanceCallback PromptAcceptanceCallback,
+               LearnMoreClickedCallback,
+               UserFeedbackCallback),
               (override));
   MOCK_METHOD(
       const std::vector<optimization_guide::proto::UserAnnotationsEntry>&,

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
 #include "content/public/browser/web_contents.h"
 
 namespace optimization_guide::proto {
@@ -24,6 +25,10 @@ class SaveAutofillPredictionImprovementsController {
   // user decision for the save prompt.
   using PromptAcceptanceCallback =
       base::OnceCallback<void(bool prompt_was_accepted)>;
+  using LearnMoreClickedCallback = base::RepeatingCallback<void()>;
+  using UserFeedbackCallback = base::RepeatingCallback<void(
+      AutofillPredictionImprovementsDelegate::UserFeedback)>;
+
   enum class PredictionImprovementsBubbleClosedReason {
     // Bubble closed reason not specified.
     kUnknown,
@@ -54,7 +59,9 @@ class SaveAutofillPredictionImprovementsController {
   virtual void OfferSave(
       std::vector<optimization_guide::proto::UserAnnotationsEntry>
           prediction_improvements,
-      PromptAcceptanceCallback prompt_acceptance_callback) = 0;
+      PromptAcceptanceCallback prompt_acceptance_callback,
+      LearnMoreClickedCallback learn_more_clicked_callback,
+      UserFeedbackCallback user_feedback_callback) = 0;
 
   // Called when the user accepts to save prediction improvements.
   virtual void OnSaveButtonClicked() = 0;

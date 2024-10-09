@@ -819,8 +819,36 @@ void ChromeAutofillClient::ShowSaveAutofillPredictionImprovementsBubble(
   if (SaveAutofillPredictionImprovementsController* controller =
           SaveAutofillPredictionImprovementsController::GetOrCreate(
               web_contents())) {
+    SaveAutofillPredictionImprovementsController::LearnMoreClickedCallback
+        learn_more_clicked_callback = base::BindRepeating(
+            [](base::WeakPtr<ChromeAutofillClient> self,
+               AutofillPredictionImprovementsDelegate* delegate) {
+              if (!self || !delegate) {
+                return;
+              }
+              delegate->UserClickedLearnMore();
+            },
+            GetWeakPtr(), GetAutofillPredictionImprovementsDelegate());
+
+    SaveAutofillPredictionImprovementsController::UserFeedbackCallback
+        user_feedback_callback = base::BindRepeating(
+            [](base::WeakPtr<ChromeAutofillClient> self,
+               AutofillPredictionImprovementsDelegate* delegate,
+               AutofillPredictionImprovementsDelegate::UserFeedback
+                   user_feedback) {
+              if (!self || !delegate) {
+                return;
+              }
+              // TODO(crbug.com/369833864): Add `feedback_id` for the savem
+              // prompt case. Otherwise the feedback will not show up.
+              delegate->UserFeedbackReceived(user_feedback);
+            },
+            GetWeakPtr(), GetAutofillPredictionImprovementsDelegate());
+
     controller->OfferSave(std::move(to_be_upserted_entries),
-                          std::move(prompt_acceptance_callback));
+                          std::move(prompt_acceptance_callback),
+                          std::move(learn_more_clicked_callback),
+                          std::move(user_feedback_callback));
     return;
   }
 #endif  // !BUILDFLAG(IS_ANDROID)

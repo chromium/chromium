@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
 #include "content/public/browser/navigation_handle.h"
 
 namespace autofill {
@@ -43,13 +44,17 @@ SaveAutofillPredictionImprovementsController::GetOrCreate(
 void SaveAutofillPredictionImprovementsControllerImpl::OfferSave(
     std::vector<optimization_guide::proto::UserAnnotationsEntry>
         new_prediction_improvements,
-    PromptAcceptanceCallback prompt_acceptance_callback) {
+    PromptAcceptanceCallback prompt_acceptance_callback,
+    LearnMoreClickedCallback learn_more_clicked_callback,
+    UserFeedbackCallback user_feedback_callback) {
   // Don't show the bubble if it's already visible.
   if (bubble_view()) {
     return;
   }
   prediction_improvements_ = std::move(new_prediction_improvements);
   prompt_acceptance_callback_ = std::move(prompt_acceptance_callback);
+  learn_more_clicked_callback_ = std::move(learn_more_clicked_callback);
+  user_feedback_callback_ = std::move(user_feedback_callback);
   DoShowBubble();
 }
 
@@ -69,10 +74,23 @@ void SaveAutofillPredictionImprovementsControllerImpl::OnBubbleClosed(
   }
 }
 
-void SaveAutofillPredictionImprovementsControllerImpl::OnThumbsUpClicked() {}
-void SaveAutofillPredictionImprovementsControllerImpl::OnThumbsDownClicked() {}
-void SaveAutofillPredictionImprovementsControllerImpl::OnLearnMoreClicked() {}
-
+void SaveAutofillPredictionImprovementsControllerImpl::OnThumbsUpClicked() {
+  if (!user_feedback_callback_.is_null()) {
+    std::move(user_feedback_callback_)
+        .Run(AutofillPredictionImprovementsDelegate::UserFeedback::kThumbsUp);
+  }
+}
+void SaveAutofillPredictionImprovementsControllerImpl::OnThumbsDownClicked() {
+  if (!user_feedback_callback_.is_null()) {
+    std::move(user_feedback_callback_)
+        .Run(AutofillPredictionImprovementsDelegate::UserFeedback::kThumbsDown);
+  }
+}
+void SaveAutofillPredictionImprovementsControllerImpl::OnLearnMoreClicked() {
+  if (!learn_more_clicked_callback_.is_null()) {
+    std::move(learn_more_clicked_callback_).Run();
+  }
+}
 PageActionIconType
 SaveAutofillPredictionImprovementsControllerImpl::GetPageActionIconType() {
   // TODO(crbug.com/362227379): Update icon.
