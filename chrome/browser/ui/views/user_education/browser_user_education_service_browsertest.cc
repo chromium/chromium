@@ -661,7 +661,7 @@ IN_PROC_BROWSER_TEST_P(BrowserUserEducationServiceNewBadgeBrowserTest,
        i += 2) {
     browser()->window()->NotifyPromoFeatureUsed(
         user_education::features::kNewBadgeTestFeature);
-    UserEducationService::MaybeNotifyPromoFeatureUsed(
+    UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
         browser()->profile(), user_education::features::kNewBadgeTestFeature);
   }
 
@@ -686,7 +686,7 @@ IN_PROC_BROWSER_TEST_P(BrowserUserEducationServiceNewBadgeBrowserTest,
        i += 2) {
     browser()->window()->NotifyPromoFeatureUsed(
         user_education::features::kNewBadgeTestFeature);
-    UserEducationService::MaybeNotifyPromoFeatureUsed(
+    UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
         browser()->profile(), user_education::features::kNewBadgeTestFeature);
   }
 

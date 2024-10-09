@@ -4497,7 +4497,7 @@ void RenderViewContextMenu::ExecRegionSearch(
   bool entered_through_keyboard =
       IsLensOptionEnteredThroughKeyboard(event_flags);
   if (lens_overlay_for_region_search_enabled) {
-    UserEducationService::MaybeNotifyPromoFeatureUsed(
+    UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
         GetBrowserContext(), lens::features::kLensOverlay);
     if (!entered_through_keyboard) {
       lens::RecordAmbientSearchQuery(

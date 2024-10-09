@@ -217,7 +217,7 @@ void LensOverlayPageActionIconView::OnExecuting(
   lens::RecordAmbientSearchQuery(
       lens::AmbientSearchEntryPoint::LENS_OVERLAY_LOCATION_BAR);
   controller->ShowUI(lens::LensOverlayInvocationSource::kOmnibox);
-  UserEducationService::MaybeNotifyPromoFeatureUsed(
+  UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
       GetWebContents()->GetBrowserContext(), lens::features::kLensOverlay);
 }
 

@@ -78,7 +78,7 @@ user_education::DisplayNewBadge UserEducationService::MaybeShowNewBadge(
 }
 
 // static
-void UserEducationService::MaybeNotifyPromoFeatureUsed(
+void UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
     content::BrowserContext* context,
     const base::Feature& feature) {
   // Do not register events for disabled features.
@@ -95,16 +95,6 @@ void UserEducationService::MaybeNotifyPromoFeatureUsed(
 
   // Notify the "New" Badge controller.
   service->new_badge_controller()->NotifyFeatureUsedIfValid(feature);
-
-  // Notify the Feature Engagement Tracker if there is a corresponding IPH.
-  // This mirrors logic in FeaturePromoController without having to actually
-  // retrieve a controller from a browser window.
-  if (service->feature_promo_registry().IsFeatureRegistered(feature)) {
-    if (auto* const tracker =
-            feature_engagement::TrackerFactory::GetForBrowserContext(context)) {
-      tracker->NotifyUsedEvent(feature);
-    }
-  }
 }
 
 UserEducationService::~UserEducationService() = default;

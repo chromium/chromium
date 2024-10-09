@@ -778,7 +778,7 @@ void AutofillContextMenuManager::ExecuteFallbackForPlusAddressesCommand(
       AutofillSuggestionTriggerSource::kManualFallbackPlusAddresses);
 
   // TODO(crbug.com/327566698): Add metrics for plus addresses.
-  UserEducationService::MaybeNotifyPromoFeatureUsed(
+  UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
       delegate_->GetBrowserContext(),
       plus_addresses::features::kPlusAddressFallbackFromContextMenu);
 }
@@ -791,7 +791,7 @@ void AutofillContextMenuManager::ExecuteFallbackForPaymentsCommand(
       AutofillSuggestionTriggerSource::kManualFallbackPayments);
 
   LogPaymentsManualFallbackContextMenuEntryAccepted(autofill_driver);
-  UserEducationService::MaybeNotifyPromoFeatureUsed(
+  UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
       delegate_->GetBrowserContext(),
       features::kAutofillForUnclassifiedFieldsAvailable);
 }
@@ -804,7 +804,7 @@ void AutofillContextMenuManager::ExecuteFallbackForSelectPasswordCommand(
       AutofillSuggestionTriggerSource::kManualFallbackPasswords);
 
   LogSelectPasswordManualFallbackContextMenuEntryAccepted();
-  UserEducationService::MaybeNotifyPromoFeatureUsed(
+  UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
       delegate_->GetBrowserContext(),
       password_manager::features::kPasswordManualFallbackAvailable);
 }
@@ -890,7 +890,7 @@ void AutofillContextMenuManager::ExecuteFallbackForAddressesCommand(
   }
 
   LogAddressManualFallbackContextMenuEntryAccepted(autofill_driver);
-  UserEducationService::MaybeNotifyPromoFeatureUsed(
+  UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
       delegate_->GetBrowserContext(),
       features::kAutofillForUnclassifiedFieldsAvailable);
 }

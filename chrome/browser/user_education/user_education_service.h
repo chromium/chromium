@@ -80,10 +80,10 @@ class UserEducationService : public KeyedService {
       content::BrowserContext* context,
       const base::Feature& feature);
 
-  // Notifies that a feature associated with an IPH or "New" Badge was used in
-  // `context` (or profile), but only if the context supports user education.
-  static void MaybeNotifyPromoFeatureUsed(content::BrowserContext* context,
-                                          const base::Feature& feature);
+  // Notifies that a feature associated with a "New" Badge was used in `context`
+  // (or profile), if the context supports User Education.
+  static void MaybeNotifyNewBadgeFeatureUsed(content::BrowserContext* context,
+                                             const base::Feature& feature);
 
  private:
   friend class UserEducationServiceFactory;

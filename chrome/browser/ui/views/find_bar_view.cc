@@ -333,7 +333,7 @@ FindBarView::FindBarView(FindBarHost* host) {
 
                           controller->ShowUI(
                               lens::LensOverlayInvocationSource::kFindInPage);
-                          UserEducationService::MaybeNotifyPromoFeatureUsed(
+                          UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
                               web_contents->GetBrowserContext(),
                               lens::features::kLensOverlay);
 

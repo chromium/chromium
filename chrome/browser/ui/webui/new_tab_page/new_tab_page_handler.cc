@@ -825,11 +825,9 @@ void NewTabPageHandler::OnModulesLoadedWithData(
 
 void NewTabPageHandler::OnModuleUsed(const std::string& module_id) {
   auto* tab = web_contents_.get();
-  feature_promo_helper_->RecordPromoFeatureUsage(
-      feature_engagement::kIPHDesktopNewTabPageModulesCustomizeFeature, tab);
   // Close the associated IPH promo if open, as interaction with a module
   // indicates the user is aware of how to interact with modules.
-  feature_promo_helper_->CloseFeaturePromo(
+  feature_promo_helper_->RecordPromoFeatureUsageAndClosePromo(
       feature_engagement::kIPHDesktopNewTabPageModulesCustomizeFeature, tab);
 
   IncrementDictPrefKeyCount(prefs::kNtpModulesInteractedCountDict, module_id);
@@ -915,13 +913,9 @@ void NewTabPageHandler::SetCustomizeChromeSidePanelVisible(
 
   // Record usage for customize chrome promo.
   auto* tab = web_contents_.get();
-  feature_promo_helper_->RecordPromoFeatureUsage(
+  feature_promo_helper_->RecordPromoFeatureUsageAndClosePromo(
       feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature, tab);
-  feature_promo_helper_->RecordPromoFeatureUsage(
-      feature_engagement::kIPHDesktopCustomizeChromeFeature, tab);
-  feature_promo_helper_->CloseFeaturePromo(
-      feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature, tab);
-  feature_promo_helper_->CloseFeaturePromo(
+  feature_promo_helper_->RecordPromoFeatureUsageAndClosePromo(
       feature_engagement::kIPHDesktopCustomizeChromeFeature, tab);
 }
 

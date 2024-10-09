@@ -282,8 +282,7 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(int index) {
     manual_filling_controller->Hide();
   }
 
-  NotifyUserEducationAboutAcceptedSuggestion(web_contents_->GetBrowserContext(),
-                                             suggestion);
+  NotifyUserEducationAboutAcceptedSuggestion(web_contents_.get(), suggestion);
   if (suggestion.acceptance_a11y_announcement && view_) {
     view_->AxAnnounce(*suggestion.acceptance_a11y_announcement);
   }
