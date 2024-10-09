@@ -296,6 +296,11 @@ void TabSearchPageHandler::DeclutterTabs(const std::vector<int32_t>& tab_ids) {
         controller->tab_strip_model()->GetTabAtIndex(tab_index));
   }
   controller->DeclutterTabs(tab_models);
+
+  auto embedder = webui_controller_->embedder();
+  if (embedder) {
+    embedder->CloseUI();
+  }
 }
 
 void TabSearchPageHandler::AcceptTabOrganization(
