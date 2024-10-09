@@ -1,0 +1,39 @@
+This is a testharness.js-based test.
+[FAIL] execCommand("insertText", false, "  ") when <b>A[]B</b>
+  assert_in_array: value "<b>A  B</b>" not in array ["<b>A &nbsp;B</b>", "<b>A&nbsp; B</b>"]
+[FAIL] Typing "  " when <b>A[]B</b>
+  assert_in_array: value "<b>A  B</b>" not in array ["<b>A &nbsp;B</b>", "<b>A&nbsp; B</b>"]
+[FAIL] execCommand("insertText", false, "  ") when <p style="white-space:normal">A[]B</p>
+  assert_in_array: value "<p style=\\"white-space:normal\\">A  B</p>" not in array ["<p style=\\"white-space:normal\\">A &nbsp;B</p>", "<p style=\\"white-space:normal\\">A&nbsp; B</p>"]
+[FAIL] Typing "  " when <p style="white-space:normal">A[]B</p>
+  assert_in_array: value "<p style=\\"white-space:normal\\">A  B</p>" not in array ["<p style=\\"white-space:normal\\">A &nbsp;B</p>", "<p style=\\"white-space:normal\\">A&nbsp; B</p>"]
+[FAIL] execCommand("insertText", false, "  ") when <p style="white-space:pre-line">A[]B</p>
+  assert_in_array: value "<p style=\\"white-space:pre-line\\">A  B</p>" not in array ["<p style=\\"white-space:pre-line\\">A &nbsp;B</p>", "<p style=\\"white-space:pre-line\\">A&nbsp; B</p>"]
+[FAIL] Typing "  " when <p style="white-space:pre-line">A[]B</p>
+  assert_in_array: value "<p style=\\"white-space:pre-line\\">A  B</p>" not in array ["<p style=\\"white-space:pre-line\\">A &nbsp;B</p>", "<p style=\\"white-space:pre-line\\">A&nbsp; B</p>"]
+[FAIL] execCommand("insertText", false, "a") when <p><b>[AB]</b></p> and execCommand("insertParagraph")
+  assert_in_array: value "<p><br></p><p style=\\"font-weight: 700;\\">a</p>" not in array ["<p><b><br></b></p><p><b>a</b></p>", "<p><b>\\n</b></p><p><b>a</b></p>", "<p><b><br></b></p><p><b>a<br></b></p>", "<p><b>\\n</b></p><p><b>a\\n</b></p>"]
+[FAIL] Typing "a" when <p><b>[AB]</b></p> and execCommand("insertParagraph")
+  assert_in_array: value "<p><br></p><p style=\\"font-weight: 700;\\">a</p>" not in array ["<p><b><br></b></p><p><b>a</b></p>", "<p><b>\\n</b></p><p><b>a</b></p>", "<p><b><br></b></p><p><b>a<br></b></p>", "<p><b>\\n</b></p><p><b>a\\n</b></p>"]
+[FAIL] execCommand("insertText", false, "a") when <p><b>[AB]</b></p> and execCommand("insertLineBreak")
+  assert_in_array: value "<p>\\n<b>a</b></p>" not in array ["<p><b><br>a</b></p>", "<p><b><br>a<br></b></p>", "<p><b>\\na</b></p>", "<p><b>\\na\\n</b></p>", "<p><b><br>a\\n</b></p>", "<p><b>\\na<br></b></p>"]
+[FAIL] Typing "a" when <p><b>[AB]</b></p> and execCommand("insertLineBreak")
+  assert_in_array: value "<p>\\n<b>a</b></p>" not in array ["<p><b><br>a</b></p>", "<p><b><br>a<br></b></p>", "<p><b>\\na</b></p>", "<p><b>\\na\\n</b></p>", "<p><b><br>a\\n</b></p>", "<p><b>\\na<br></b></p>"]
+[FAIL] execCommand("insertText", false, "a") when <p><b>[AB]</b></p> and execCommand("delete")
+  assert_in_array: value "<p style=\\"font-weight: 700;\\">a</p>" not in array ["<p><b>a</b></p>", "<p><b>a<br></b></p>", "<p><b>a\\n</b></p>"]
+[FAIL] Typing "a" when <p><b>[AB]</b></p> and execCommand("delete")
+  assert_in_array: value "<p style=\\"font-weight: 700;\\">a</p>" not in array ["<p><b>a</b></p>", "<p><b>a<br></b></p>", "<p><b>a\\n</b></p>"]
+[FAIL] execCommand("insertText", false, "a") when <p><b>A[]</b></p><p>B</p> and execCommand("delete") and move caret to the following paragraph temporarily
+  assert_in_array: value "<p>a</p><p>B</p>" not in array ["<p><b>a</b></p><p>B</p>", "<p><b>a<br></b></p><p>B</p>", "<p><b>a\\n</b></p><p>B</p>"]
+[FAIL] Typing "a" when <p><b>A[]</b></p><p>B</p> and execCommand("delete") and move caret to the following paragraph temporarily
+  assert_in_array: value "<p>a</p><p>B</p>" not in array ["<p><b>a</b></p><p>B</p>", "<p><b>a<br></b></p><p>B</p>", "<p><b>a\\n</b></p><p>B</p>"]
+[FAIL] execCommand("insertText", false, "a") when <p><b>[]A</b></p><p>B</p> and execCommand("forwardDelete") and move caret to the following paragraph temporarily
+  assert_in_array: value "<p>a</p><p>B</p>" not in array ["<p><b>a</b></p><p>B</p>", "<p><b>a<br></b></p><p>B</p>", "<p><b>a\\n</b></p><p>B</p>"]
+[FAIL] Typing "a" when <p><b>[]A</b></p><p>B</p> and execCommand("forwardDelete") and move caret to the following paragraph temporarily
+  assert_in_array: value "<p>a</p><p>B</p>" not in array ["<p><b>a</b></p><p>B</p>", "<p><b>a<br></b></p><p>B</p>", "<p><b>a\\n</b></p><p>B</p>"]
+[FAIL] execCommand("insertText", false, "a") when <p><b>[A]</b></p><p>B</p> and execCommand("delete") and move caret to the following paragraph temporarily
+  assert_in_array: value "<p>a</p><p>B</p>" not in array ["<p><b>a</b></p><p>B</p>", "<p><b>a<br></b></p><p>B</p>", "<p><b>a\\n</b></p><p>B</p>"]
+[FAIL] Typing "a" when <p><b>[A]</b></p><p>B</p> and execCommand("delete") and move caret to the following paragraph temporarily
+  assert_in_array: value "<p>a</p><p>B</p>" not in array ["<p><b>a</b></p><p>B</p>", "<p><b>a<br></b></p><p>B</p>", "<p><b>a\\n</b></p><p>B</p>"]
+Harness: the test ran to completion.
+
