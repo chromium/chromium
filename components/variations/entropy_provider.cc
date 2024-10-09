@@ -53,7 +53,8 @@ NormalizedMurmurHashEntropyProvider::NormalizedMurmurHashEntropyProvider(
   DCHECK_LE(entropy_value.range, std::numeric_limits<uint16_t>::max());
 }
 
-NormalizedMurmurHashEntropyProvider::~NormalizedMurmurHashEntropyProvider() {}
+NormalizedMurmurHashEntropyProvider::~NormalizedMurmurHashEntropyProvider() =
+    default;
 
 double NormalizedMurmurHashEntropyProvider::GetEntropyForTrial(
     std::string_view trial_name,

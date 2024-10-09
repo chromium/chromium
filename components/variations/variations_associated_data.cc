@@ -109,7 +109,7 @@ class GroupMapAccessor {
   GroupMapAccessor() {
     group_to_id_maps_.resize(ID_COLLECTION_COUNT);
   }
-  ~GroupMapAccessor() {}
+  ~GroupMapAccessor() = default;
 
   base::Lock lock_;
   std::vector<GroupToIDMap> group_to_id_maps_;

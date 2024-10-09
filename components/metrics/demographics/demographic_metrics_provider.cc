@@ -79,7 +79,7 @@ DemographicMetricsProvider::DemographicMetricsProvider(
   DCHECK(profile_client_);
 }
 
-DemographicMetricsProvider::~DemographicMetricsProvider() {}
+DemographicMetricsProvider::~DemographicMetricsProvider() = default;
 
 std::optional<UserDemographics>
 DemographicMetricsProvider::ProvideSyncedUserNoisedBirthYearAndGender() {

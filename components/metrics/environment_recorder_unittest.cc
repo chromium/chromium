@@ -20,7 +20,7 @@ class EnvironmentRecorderTest : public testing::Test {
   EnvironmentRecorderTest(const EnvironmentRecorderTest&) = delete;
   EnvironmentRecorderTest& operator=(const EnvironmentRecorderTest&) = delete;
 
-  ~EnvironmentRecorderTest() override {}
+  ~EnvironmentRecorderTest() override = default;
 
  protected:
   TestingPrefServiceSimple prefs_;

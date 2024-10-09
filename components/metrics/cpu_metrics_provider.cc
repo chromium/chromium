@@ -10,9 +10,9 @@
 
 namespace metrics {
 
-CPUMetricsProvider::CPUMetricsProvider() {}
+CPUMetricsProvider::CPUMetricsProvider() = default;
 
-CPUMetricsProvider::~CPUMetricsProvider() {}
+CPUMetricsProvider::~CPUMetricsProvider() = default;
 
 void CPUMetricsProvider::ProvideSystemProfileMetrics(
     SystemProfileProto* system_profile) {

@@ -226,7 +226,7 @@ class ScopedUkmFeatureParams {
   ScopedUkmFeatureParams(const ScopedUkmFeatureParams&) = delete;
   ScopedUkmFeatureParams& operator=(const ScopedUkmFeatureParams&) = delete;
 
-  ~ScopedUkmFeatureParams() {}
+  ~ScopedUkmFeatureParams() = default;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -235,7 +235,7 @@ class ScopedUkmFeatureParams {
 class MockDemographicMetricsProvider
     : public metrics::UkmDemographicMetricsProvider {
  public:
-  ~MockDemographicMetricsProvider() override {}
+  ~MockDemographicMetricsProvider() override = default;
 
   // DemographicMetricsProvider:
   MOCK_METHOD1(ProvideSyncedUserNoisedBirthYearAndGenderToReport,

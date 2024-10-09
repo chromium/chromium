@@ -82,7 +82,7 @@ class VariationsService
     virtual void OnExperimentChangesDetected(Severity severity) = 0;
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   VariationsService(const VariationsService&) = delete;

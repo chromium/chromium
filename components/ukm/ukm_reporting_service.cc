@@ -89,7 +89,7 @@ UkmReportingService::UkmReportingService(metrics::MetricsServiceClient* client,
                         client->GetUploadSigningKey(),
                         /*logs_event_manager=*/nullptr) {}
 
-UkmReportingService::~UkmReportingService() {}
+UkmReportingService::~UkmReportingService() = default;
 
 metrics::LogStore* UkmReportingService::log_store() {
   return &unsent_log_store_;

@@ -30,7 +30,7 @@ namespace variations {
 // environment.
 class VariationsServiceClient {
  public:
-  virtual ~VariationsServiceClient() {}
+  virtual ~VariationsServiceClient() = default;
 
   // Returns the version to use for variations seed simulation.
   virtual base::Version GetVersionForSimulation() = 0;

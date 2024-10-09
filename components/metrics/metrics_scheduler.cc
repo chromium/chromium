@@ -28,7 +28,7 @@ MetricsScheduler::MetricsScheduler(const base::RepeatingClosure& task_callback,
       running_(false),
       callback_pending_(false) {}
 
-MetricsScheduler::~MetricsScheduler() {}
+MetricsScheduler::~MetricsScheduler() = default;
 
 void MetricsScheduler::Start() {
   running_ = true;

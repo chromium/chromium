@@ -94,7 +94,7 @@ StabilityMetricsHelper::StabilityMetricsHelper(PrefService* local_state)
   DCHECK(local_state_);
 }
 
-StabilityMetricsHelper::~StabilityMetricsHelper() {}
+StabilityMetricsHelper::~StabilityMetricsHelper() = default;
 
 #if BUILDFLAG(IS_ANDROID)
 void StabilityMetricsHelper::ProvideStabilityMetrics(

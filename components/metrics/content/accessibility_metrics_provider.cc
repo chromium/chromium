@@ -8,9 +8,9 @@
 
 namespace metrics {
 
-AccessibilityMetricsProvider::AccessibilityMetricsProvider() {}
+AccessibilityMetricsProvider::AccessibilityMetricsProvider() = default;
 
-AccessibilityMetricsProvider::~AccessibilityMetricsProvider() {}
+AccessibilityMetricsProvider::~AccessibilityMetricsProvider() = default;
 
 void AccessibilityMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {

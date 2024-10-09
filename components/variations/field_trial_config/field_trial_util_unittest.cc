@@ -30,7 +30,7 @@ namespace {
 
 class ExperimentBuilder {
  public:
-  ExperimentBuilder() {}
+  ExperimentBuilder() = default;
 
   FieldTrialTestingExperiment Build() const {
     return {
@@ -75,7 +75,7 @@ class TestOverrideStringCallback {
   TestOverrideStringCallback& operator=(const TestOverrideStringCallback&) =
       delete;
 
-  virtual ~TestOverrideStringCallback() {}
+  virtual ~TestOverrideStringCallback() = default;
 
   const VariationsSeedProcessor::UIStringOverrideCallback& callback() const {
     return callback_;
@@ -126,7 +126,7 @@ class TestVariationsServiceClient : public VariationsServiceClient {
 
 class FieldTrialUtilTest : public ::testing::Test {
  public:
-  FieldTrialUtilTest() {}
+  FieldTrialUtilTest() = default;
 
   FieldTrialUtilTest(const FieldTrialUtilTest&) = delete;
   FieldTrialUtilTest& operator=(const FieldTrialUtilTest&) = delete;

@@ -45,7 +45,7 @@ SingleSampleMetricsFactoryImpl::SingleSampleMetricsFactoryImpl(
     CreateProviderCB create_provider_cb)
     : create_provider_cb_(std::move(create_provider_cb)) {}
 
-SingleSampleMetricsFactoryImpl::~SingleSampleMetricsFactoryImpl() {}
+SingleSampleMetricsFactoryImpl::~SingleSampleMetricsFactoryImpl() = default;
 
 std::unique_ptr<base::SingleSampleMetric>
 SingleSampleMetricsFactoryImpl::CreateCustomCountsMetric(

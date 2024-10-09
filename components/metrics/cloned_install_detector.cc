@@ -48,7 +48,7 @@ void LogMachineIdState(MachineIdState state) {
 
 }  // namespace
 
-ClonedInstallDetector::ClonedInstallDetector() {}
+ClonedInstallDetector::ClonedInstallDetector() = default;
 
 ClonedInstallDetector::~ClonedInstallDetector() {
 }

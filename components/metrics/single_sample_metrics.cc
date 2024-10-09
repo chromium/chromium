@@ -28,7 +28,7 @@ class MojoSingleSampleMetric : public mojom::SingleSampleMetric {
   MojoSingleSampleMetric(const MojoSingleSampleMetric&) = delete;
   MojoSingleSampleMetric& operator=(const MojoSingleSampleMetric&) = delete;
 
-  ~MojoSingleSampleMetric() override {}
+  ~MojoSingleSampleMetric() override = default;
 
  private:
   // mojom::SingleSampleMetric:
@@ -42,7 +42,7 @@ class MojoSingleSampleMetric : public mojom::SingleSampleMetric {
 class MojoSingleSampleMetricsProvider
     : public mojom::SingleSampleMetricsProvider {
  public:
-  MojoSingleSampleMetricsProvider() {}
+  MojoSingleSampleMetricsProvider() = default;
 
   MojoSingleSampleMetricsProvider(const MojoSingleSampleMetricsProvider&) =
       delete;

@@ -10,7 +10,7 @@ namespace metrics {
 // An interface that provides whether metrics should be reported.
 class EnabledStateProvider {
  public:
-  virtual ~EnabledStateProvider() {}
+  virtual ~EnabledStateProvider() = default;
 
   // Indicates that the user has provided consent to collect and report metrics.
   virtual bool IsConsentGiven() const = 0;

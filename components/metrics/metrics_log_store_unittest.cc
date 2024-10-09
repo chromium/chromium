@@ -50,7 +50,7 @@ class MetricsLogStoreTest : public testing::Test {
   MetricsLogStoreTest(const MetricsLogStoreTest&) = delete;
   MetricsLogStoreTest& operator=(const MetricsLogStoreTest&) = delete;
 
-  ~MetricsLogStoreTest() override {}
+  ~MetricsLogStoreTest() override = default;
 
   MetricsLog* CreateLog(MetricsLog::LogType log_type) {
     return new MetricsLog("0a94430b-18e5-43c8-a657-580f7e855ce1", 0, log_type,
