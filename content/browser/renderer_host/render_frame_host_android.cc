@@ -175,14 +175,14 @@ void RenderFrameHostAndroid::NotifyWebAuthnAssertionRequestSucceeded(
 
 jboolean RenderFrameHostAndroid::IsCloseWatcherActive(JNIEnv* env) const {
   auto* close_listener_host =
-      CloseListenerHost::GetOrCreateForCurrentDocument(render_frame_host_);
-  return close_listener_host->IsActive();
+      CloseListenerHost::GetForCurrentDocument(render_frame_host_);
+  return close_listener_host && close_listener_host->IsActive();
 }
 
 jboolean RenderFrameHostAndroid::SignalCloseWatcherIfActive(JNIEnv* env) const {
   auto* close_listener_host =
-      CloseListenerHost::GetOrCreateForCurrentDocument(render_frame_host_);
-  return close_listener_host->SignalIfActive();
+      CloseListenerHost::GetForCurrentDocument(render_frame_host_);
+  return close_listener_host && close_listener_host->SignalIfActive();
 }
 
 jboolean RenderFrameHostAndroid::IsRenderFrameLive(JNIEnv* env) const {
