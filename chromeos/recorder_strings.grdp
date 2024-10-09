@@ -71,6 +71,9 @@
   <message desc="Link to more information about generative AI disclaimer." name="IDS_RECORDER_GEN_AI_LEARN_MORE_LINK">
     Learn more
   </message>
+  <message desc="Tooltip of the link to more information about generative AI disclaimer." name="IDS_RECORDER_GEN_AI_LEARN_MORE_LINK_TOOLTIP">
+    Learn more about Generative AI
+  </message>
   <message desc="Accessibility label of the landmark for the list of recordings in the main page." name="IDS_RECORDER_MAIN_RECORDINGS_LIST_LANDMARK_ARIA_LABEL">
     List of audio recordings
   </message>

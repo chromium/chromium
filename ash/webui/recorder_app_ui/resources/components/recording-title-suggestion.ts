@@ -204,7 +204,13 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
     return html`
       <div id="footer">
         ${i18n.genAiDisclaimerText}
-        <a href=${HELP_URL} target="_blank">${i18n.genAiLearnMoreLink}</a>
+        <a
+          href=${HELP_URL}
+          target="_blank"
+          aria-label=${i18n.genAiLearnMoreLinkTooltip}
+        >
+          ${i18n.genAiLearnMoreLink}
+        </a>
       </div>
       <genai-feedback-buttons .resultType=${GenaiResultType.TITLE_SUGGESTION}>
       </genai-feedback-buttons>

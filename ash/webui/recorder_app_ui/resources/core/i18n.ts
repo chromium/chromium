@@ -36,6 +36,7 @@ const noArgStringNames = [
   'genAiErrorTitleSuggestionTrustAndSafetyLabel',
   'genAiExperimentBadge',
   'genAiLearnMoreLink',
+  'genAiLearnMoreLinkTooltip',
   'genaiNegativeFeedbackButtonTooltip',
   'genaiPositiveFeedbackButtonTooltip',
   'mainRecordingBarLandmarkAriaLabel',

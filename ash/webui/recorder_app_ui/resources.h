@@ -41,6 +41,7 @@ const webui::LocalizedString kLocalizedStrings[] = {
      IDS_RECORDER_GEN_AI_ERROR_TITLE_SUGGESTION_TRUST_AND_SAFETY_LABEL},
     {"genAiExperimentBadge", IDS_RECORDER_GEN_AI_EXPERIMENT_BADGE},
     {"genAiLearnMoreLink", IDS_RECORDER_GEN_AI_LEARN_MORE_LINK},
+    {"genAiLearnMoreLinkTooltip", IDS_RECORDER_GEN_AI_LEARN_MORE_LINK_TOOLTIP},
     {"genaiNegativeFeedbackButtonTooltip",
      IDS_RECORDER_GENAI_NEGATIVE_FEEDBACK_BUTTON_TOOLTIP},
     {"genaiPositiveFeedbackButtonTooltip",
