@@ -114,7 +114,11 @@ enum class LensOverlayDismissalSource {
   // Lens overlay closed due to low memory warning. Only used on iOS.
   kLowMemory = 28,
 
-  kMaxValue = kLowMemory
+  // Lens overlay closed due to network issues. Only used on iOS. (the Lens UI
+  // becomes unresponsive with slow connection).
+  kNetworkIssue = 29,
+
+  kMaxValue = kNetworkIssue
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayDismissalSource)
 
