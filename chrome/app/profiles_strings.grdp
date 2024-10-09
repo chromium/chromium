@@ -945,8 +945,8 @@
 
     <!-- Batch Upload Desktop -->
     <!-- TODO(b/365954368): All batch upload strings to be finalized and translated. -->
-    <message translateable="false" name="IDS_BATCH_UPLOAD_TITLE" desc="">
-      Save data to account
+    <message name="IDS_BATCH_UPLOAD_TITLE" desc="Title of the Batch Upload dialog on Desktop.">
+      Save items in account
     </message>
     <message translateable="false" name="IDS_BATCH_UPLOAD_SUBTITLE" desc="">
       <!-- TODO(b/365954465): Incomplete string that might get more complex. -->
@@ -958,11 +958,11 @@
     <message translateable="false" name="IDS_BATCH_UPLOAD_SECTION_TITLE_ADDRESSES" desc="">
       Addresses
     </message>
-    <message translateable="false" name="IDS_BATCH_UPLOAD_SAVE_TO_ACCOUNT_OK_BUTTON_LABEL" desc="">
+    <message name="IDS_BATCH_UPLOAD_SAVE_TO_ACCOUNT_OK_BUTTON_LABEL" desc="Text of the button that triggers the saving of the selected items in the Batch Upload dialog. When pressing the button, selected items are moved to the account storage (Saved in account) and the dialog is then closed.">
       Save in account
     </message>
-    <message translateable="false" name="IDS_BATCH_UPLOAD_AVATAR_BUTTON_SAVING_TO_ACCOUNT" desc="">
-      Saving to your account...
+    <message name="IDS_BATCH_UPLOAD_AVATAR_BUTTON_SAVING_TO_ACCOUNT" desc="Text shown on the avatar button pill after the user has requested to save items in their account through the Batch Upload dialog. The text is shown for few seconds then disappears.">
+      Saving in your account...
     </message>
   </if>
 </grit-part>
