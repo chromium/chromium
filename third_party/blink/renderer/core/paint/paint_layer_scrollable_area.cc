@@ -3375,8 +3375,7 @@ void PaintLayerScrollableArea::CreateAndSetSnappedQueryScrollSnapshotIfNeeded(
     if (ContainerQueryEvaluator* evaluator =
             target->GetContainerQueryEvaluator()) {
       if (evaluator->DependsOnSnapped()) {
-        evaluator->SetPendingSnappedStateFromScrollSnapshot(
-            EnsureSnappedQueryScrollSnapshot());
+        EnsureSnappedQueryScrollSnapshot();
       }
     }
   }
