@@ -1127,7 +1127,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Desktop.{PromoType}.Shown"
-    enum="DesktopIOSPromoImpression" expires_after="2025-02-05">
+    enum="DesktopIOSPromoImpression" expires_after="2025-04-15">
   <owner>aliaaborhamy@google.com</owner>
   <owner>nicolasmacbeth@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
@@ -1145,7 +1145,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Desktop.{PromoType}.{Impression}.Action"
-    enum="DesktopIOSPromoAction" expires_after="2024-12-06">
+    enum="DesktopIOSPromoAction" expires_after="2025-04-15">
   <owner>aliaaborhamy@google.com</owner>
   <owner>nicolasmacbeth@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
@@ -1169,7 +1169,7 @@ chromium-metrics-reviews@google.com.
 the generic promo launch. -->
 
 <histogram name="IOS.DesktopPasswordPromo.Shown"
-    enum="DesktopIOSPasswordPromoImpression" expires_after="2025-02-10">
+    enum="DesktopIOSPasswordPromoImpression" expires_after="2025-04-15">
   <owner>nicolasmacbeth@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -1183,7 +1183,7 @@ the generic promo launch. -->
 the generic promo launch. -->
 
 <histogram name="IOS.DesktopPasswordPromo.{Impression}.Action"
-    enum="DesktopIOSPasswordPromoAction" expires_after="2025-02-10">
+    enum="DesktopIOSPasswordPromoAction" expires_after="2025-04-15">
   <owner>nicolasmacbeth@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -1374,7 +1374,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.ExternalAction" enum="IOSExternalAction"
-    expires_after="2024-11-15">
+    expires_after="2025-04-15">
   <owner>nicolasmacbeth@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
