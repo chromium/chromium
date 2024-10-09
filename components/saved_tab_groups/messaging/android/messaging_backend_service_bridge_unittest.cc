@@ -11,6 +11,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
+#include "components/saved_tab_groups/messaging/activity_log.h"
 #include "components/saved_tab_groups/messaging/android/messaging_backend_service_bridge.h"
 #include "components/saved_tab_groups/messaging/message.h"
 #include "components/saved_tab_groups/messaging/messaging_backend_service.h"
@@ -46,6 +47,9 @@ class MockMessagingBackendService : public MessagingBackendService {
   MOCK_METHOD(std::vector<PersistentMessage>,
               GetMessages,
               (std::optional<PersistentNotificationType>));
+  MOCK_METHOD(std::vector<ActivityLogItem>,
+              GetActivityLog,
+              (const ActivityLogQueryParams&));
 };
 
 class MessagingBackendServiceBridgeTest : public testing::Test {

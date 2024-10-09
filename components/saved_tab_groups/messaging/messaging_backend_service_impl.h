@@ -46,6 +46,8 @@ class MessagingBackendServiceImpl : public MessagingBackendService {
       std::optional<PersistentNotificationType> type) override;
   std::vector<PersistentMessage> GetMessages(
       std::optional<PersistentNotificationType> type) override;
+  std::vector<ActivityLogItem> GetActivityLog(
+      const ActivityLogQueryParams& params) override;
 
  private:
   // Service providing information about tabs and tab groups.

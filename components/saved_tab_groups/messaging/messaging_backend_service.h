@@ -9,6 +9,7 @@
 #include "base/observer_list_types.h"
 #include "base/supports_user_data.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/saved_tab_groups/messaging/activity_log.h"
 #include "components/saved_tab_groups/messaging/message.h"
 #include "components/saved_tab_groups/public/types.h"
 
@@ -79,6 +80,11 @@ class MessagingBackendService : public KeyedService,
       std::optional<PersistentNotificationType> type) = 0;
   virtual std::vector<PersistentMessage> GetMessages(
       std::optional<PersistentNotificationType> type) = 0;
+
+  // Central method to query the list of rows to be shown in the activity log
+  // UI. Will return an empty list if the service has not been initialized.
+  virtual std::vector<ActivityLogItem> GetActivityLog(
+      const ActivityLogQueryParams& params) = 0;
 };
 
 }  // namespace tab_groups::messaging

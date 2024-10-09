@@ -10,6 +10,8 @@ if (is_android) {
 
 source_set("messaging") {
   sources = [
+    "activity_log.cc",
+    "activity_log.h",
     "configuration.cc",
     "configuration.h",
     "message.cc",

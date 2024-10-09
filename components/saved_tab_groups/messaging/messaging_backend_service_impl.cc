@@ -66,4 +66,11 @@ std::vector<PersistentMessage> MessagingBackendServiceImpl::GetMessages(
   return {};
 }
 
+std::vector<ActivityLogItem> MessagingBackendServiceImpl::GetActivityLog(
+    const ActivityLogQueryParams& params) {
+  // TODO(345856704): Implement this and DCHECK(IsInitialized()) and update
+  // interface description.
+  return std::vector<ActivityLogItem>();
+}
+
 }  // namespace tab_groups::messaging
