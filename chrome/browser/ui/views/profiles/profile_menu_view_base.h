@@ -93,8 +93,10 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
     base::RepeatingClosure edit_action;
   };
 
-  // Size of the large identity image in the menu.
+  // Size of the large identity image in the Sync info section.
   static constexpr int kIdentityImageSize = 64;
+  // Size of the large identity image in the identity info section.
+  static constexpr int kIdentityInfoImageSize = 56;
 
   ProfileMenuViewBase(views::Button* anchor_button,
                       Browser* browser);
@@ -120,6 +122,18 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
       const std::u16string& subtitle = std::u16string(),
       const std::u16string& management_label = std::u16string(),
       const ui::ThemedVectorIcon& avatar_header_art = ui::ThemedVectorIcon());
+
+  // `profile_image`, `title` and `subtitle` may not be empty.
+  // If `button_text` is empty, no button will be shown.
+  // If `button_image` is empty, the button has no image.
+  // `action` must be valid if there is a button.
+  void SetProfileIdentityWithCallToAction(SkColor profile_background_color,
+                                          const ui::ImageModel& profile_image,
+                                          const std::u16string& title,
+                                          const std::u16string& subtitle,
+                                          const std::u16string& button_text,
+                                          const ui::ImageModel& button_image,
+                                          const base::RepeatingClosure& action);
 
 #if !BUILDFLAG(IS_CHROMEOS)
   // Displays the sync info section as a rounded rectangle with text on top and
@@ -233,6 +247,8 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   // Child components of `identity_info_container_`.
   raw_ptr<views::FlexLayoutView> profile_background_container_ = nullptr;
   raw_ptr<views::Label> heading_label_ = nullptr;
+  raw_ptr<views::Label> title_label_ = nullptr;
+  raw_ptr<views::Label> subtitle_label_ = nullptr;
 
   // The first profile button that should be focused when the menu is opened
   // using a key accelerator.

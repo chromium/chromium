@@ -83,11 +83,18 @@ class ProfileMenuView : public ProfileMenuViewBase {
   static bool close_on_deactivate_for_testing_;
 
   // Helper methods for building the menu.
-  void BuildIdentity();
   void BuildGuestIdentity();
+  void BuildFeatureButtons();
+  std::u16string GetIdentitySectionSubtitle(
+      const CoreAccountInfo& account_info) const;
+  void BuildIdentityWithCallToAction();
+
+  // TODO(crbug.com/370473765): Delete these functions after
+  // `switches::IsImprovedSigninUIOnDesktopEnabled()` is launched.
+  void BuildIdentity();
   void BuildAutofillButtons();
   void BuildSyncInfo();
-  void BuildFeatureButtons();
+
   void BuildAvailableProfiles();
   void BuildProfileManagementFeatureButtons();
 

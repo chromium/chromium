@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -130,6 +131,20 @@ std::u16string GetSyncErrorButtonText(AvatarSyncErrorType error) {
           IDS_SYNC_ERROR_USER_MENU_CONFIRM_SYNC_SETTINGS_BUTTON);
   }
 }
+
+std::u16string GetProfileIdentifier(
+    std::u16string local_profile_name,
+    const std::string& primary_account_info_name) {
+  if (primary_account_info_name.empty()) {
+    return local_profile_name;
+  }
+
+  return l10n_util::GetStringFUTF16(
+      IDS_PROFILE_MENU_PROFILE_IDENTIFIER_WITH_SEPARATOR,
+      base::UTF8ToUTF16(primary_account_info_name),
+      std::move(local_profile_name));
+}
+
 }  // namespace
 
 // ProfileMenuView ---------------------------------------------------------
@@ -150,12 +165,17 @@ void ProfileMenuView::BuildMenu() {
     BuildGuestIdentity();
   } else {
     CHECK(!profile->IsOffTheRecord());
-    BuildIdentity();
 
-    // Users should not be able to open chrome settings from WebApps.
-    if (!web_app::AppBrowserController::IsWebApp(browser())) {
-      BuildSyncInfo();
-      BuildAutofillButtons();
+    if (switches::IsImprovedSigninUIOnDesktopEnabled()) {
+      BuildIdentityWithCallToAction();
+    } else {
+      BuildIdentity();
+
+      // Users should not be able to open chrome settings from WebApps.
+      if (!web_app::AppBrowserController::IsWebApp(browser())) {
+        BuildSyncInfo();
+        BuildAutofillButtons();
+      }
     }
   }
 
@@ -465,6 +485,10 @@ void ProfileMenuView::OnCookiesClearedOnExitLinkClicked() {
 }
 
 void ProfileMenuView::BuildIdentity() {
+  // TODO(crbug.com/370473765): Delete this function after
+  // `switches::IsImprovedSigninUIOnDesktopEnabled()` is launched.
+  CHECK(!switches::IsImprovedSigninUIOnDesktopEnabled());
+
   Profile* profile = browser()->profile();
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
@@ -580,6 +604,10 @@ void ProfileMenuView::BuildGuestIdentity() {
 }
 
 void ProfileMenuView::BuildAutofillButtons() {
+  // TODO(crbug.com/370473765): Delete this function after
+  // `switches::IsImprovedSigninUIOnDesktopEnabled()` is launched.
+  CHECK(!switches::IsImprovedSigninUIOnDesktopEnabled());
+
   AddShortcutFeatureButton(
       vector_icons::kPasswordManagerIcon,
       l10n_util::GetStringUTF16(
@@ -601,6 +629,10 @@ void ProfileMenuView::BuildAutofillButtons() {
 }
 
 void ProfileMenuView::BuildSyncInfo() {
+  // TODO(crbug.com/370473765): Delete this function after
+  // `switches::IsImprovedSigninUIOnDesktopEnabled()` is launched.
+  CHECK(!switches::IsImprovedSigninUIOnDesktopEnabled());
+
   Profile* profile = browser()->profile();
   if (!profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed))
     return;
@@ -715,6 +747,55 @@ void ProfileMenuView::BuildSyncInfo() {
                           access_point),
       show_sync_badge,
       show_account_card ? account_info_for_promos : AccountInfo());
+}
+
+std::u16string ProfileMenuView::GetIdentitySectionSubtitle(
+    const CoreAccountInfo& account_info) const {
+  // TODO(crbug.com/356603651): Implement this.
+  return account_info.email.empty()
+             ? l10n_util::GetStringUTF16(
+                   IDS_PROFILE_MENU_SIGNIN_PROMO_DESCRIPTION)
+             : base::UTF8ToUTF16(account_info.email);
+}
+
+void ProfileMenuView::BuildIdentityWithCallToAction() {
+  Profile* profile = browser()->profile();
+  ProfileAttributesEntry* profile_attributes =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile->GetPath());
+  if (!profile_attributes) {
+    // May happen if the profile is being deleted. https://crbug.com/1040079
+    return;
+  }
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  const CoreAccountInfo account =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  const AccountInfo account_info =
+      identity_manager->FindExtendedAccountInfo(account);
+
+  // TODO(crbug.com/356603651): Finish button implementation.
+  std::u16string button_text =
+      account.IsEmpty()
+          ? l10n_util::GetStringUTF16(IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON)
+          : std::u16string();
+
+  profiles::PlaceholderAvatarIconParams icon_params = {.has_padding = true,
+                                                       .has_background = false};
+  ui::ImageModel profile_image = ui::ImageModel::FromImage(
+      !account_info.IsEmpty() ? account_info.account_image
+                              : profile_attributes->GetAvatarIcon(
+                                    kIdentityInfoImageSize,
+                                    /*use_high_res_file=*/true, icon_params));
+  std::u16string title = GetProfileIdentifier(
+      profile_attributes->GetLocalProfileName(), account_info.given_name);
+
+  SetProfileIdentityWithCallToAction(
+      profile_attributes->GetProfileThemeColors().profile_highlight_color,
+      profile_image, title, GetIdentitySectionSubtitle(account), button_text,
+      /*button_image=*/ui::ImageModel(), base::DoNothing());
 }
 
 void ProfileMenuView::BuildFeatureButtons() {
