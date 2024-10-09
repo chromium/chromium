@@ -37,6 +37,8 @@
 namespace ash {
 namespace {
 
+using PinSetupMode = WizardContext::PinSetupMode;
+
 constexpr const char kUserActionDoneButtonClicked[] = "done-button";
 constexpr const char kUserActionSkipButtonClickedOnStart[] =
     "skip-button-on-start";
@@ -71,6 +73,22 @@ void RecordUserAction(const std::string& action_id) {
   NOTREACHED_IN_MIGRATION() << "Unexpected action id: " << action_id;
 }
 
+// Utility to check if the screen is operating in the given mode. WizardContext
+// is only available between the Show/Hide calls. During `MaybeSkip`
+// WizardController provides a reference to it.
+bool IsInSetupMode(PinSetupMode mode, WizardContext& context) {
+  CHECK(context.knowledge_factor_setup.pin_setup_mode.has_value());
+  const bool mode_matches =
+      context.knowledge_factor_setup.pin_setup_mode.value() == mode;
+  if (mode == PinSetupMode::kSetupAsPrimaryFactor ||
+      mode == PinSetupMode::kAlreadyPerformed) {
+    // These modes are only available when PasswordlessSetup is enabled.
+    return mode_matches && ash::switches::IsOobePinOnlyPrototypeEnabled();
+  } else {
+    return mode_matches;
+  }
+}
+
 }  // namespace
 
 // static
@@ -103,13 +121,6 @@ PinSetupScreen::PinSetupScreen(base::WeakPtr<PinSetupScreenView> view,
       auth_performer_(UserDataAuthClient::Get()),
       cryptohome_pin_engine_(&auth_performer_) {
   DCHECK(view_);
-
-  // TODO(b/365059362): Move setup mode to WizardContext.
-  if (ash::switches::IsOobePinOnlyPrototypeEnabled()) {
-    setup_mode_ = PinSetupMode::kSetupAsPrimaryFactor;
-  } else {
-    setup_mode_ = PinSetupMode::kSetupAsSecondaryFactor;
-  }
 
   quick_unlock::PinBackend::GetInstance()->HasLoginSupport(base::BindOnce(
       &PinSetupScreen::OnHasLoginSupport, weak_ptr_factory_.GetWeakPtr()));
@@ -158,7 +169,7 @@ std::optional<PinSetupScreen::SkipReason> PinSetupScreen::GetSkipReason(
 
   // Further checks for the PIN-only setup mode. It needs to login support and
   // it is only available for consumers.
-  if (IsInSetupMode(PinSetupMode::kSetupAsPrimaryFactor)) {
+  if (IsInSetupMode(PinSetupMode::kSetupAsPrimaryFactor, context)) {
     if (!has_login_support) {
       return SkipReason::kNotSupportedAsPrimaryFactor;
     }
@@ -166,7 +177,7 @@ std::optional<PinSetupScreen::SkipReason> PinSetupScreen::GetSkipReason(
   }
 
   // Second surfacing of the PIN setup screen after setting a PIN as primary.
-  if (IsInSetupMode(PinSetupMode::kSetupFinished)) {
+  if (IsInSetupMode(PinSetupMode::kAlreadyPerformed, context)) {
     return SkipReason::kPinAlreadySet;
   }
 
@@ -180,8 +191,7 @@ bool PinSetupScreen::MaybeSkip(WizardContext& context) {
   // TODO(b/365059362): Create new metric to track the detailed skip reason.
   const auto skip_reason = GetSkipReason(context);
   if (skip_reason.has_value()) {
-    if (IsInSetupMode(PinSetupMode::kSetupAsPrimaryFactor)) {
-      setup_mode_ = PinSetupMode::kSetupAsSecondaryFactor;
+    if (IsInSetupMode(PinSetupMode::kSetupAsPrimaryFactor, context)) {
       exit_callback_.Run(Result::kNotApplicableAsPrimaryFactor);
       return true;
     }
@@ -200,13 +210,13 @@ void PinSetupScreen::ShowImpl() {
   // been skipped.
   CHECK(hardware_support_.has_value());
   CHECK(context()->extra_factors_token);
-  CHECK(setup_mode_ != PinSetupMode::kSetupFinished);
+  CHECK(!IsInSetupMode(PinSetupMode::kAlreadyPerformed, *context()));
 
   // When the screen is being shown offering PIN as a secondary factor
   // factor, a timer is used for invalidating the AuthSession.
   // TODO(b/365059362): Replace legacy timer logic with a AuthSessionStorage
   // notification that will be triggered upon invalidation.
-  if (IsInSetupMode(PinSetupMode::kSetupAsSecondaryFactor)) {
+  if (IsInSetupMode(PinSetupMode::kSetupAsSecondaryFactor, *context())) {
     token_lifetime_timeout_.Start(
         FROM_HERE, quick_unlock::AuthToken::kTokenExpiration,
         base::BindOnce(&PinSetupScreen::OnTokenTimedOut,
@@ -224,7 +234,7 @@ void PinSetupScreen::ShowImpl() {
       user_manager::UserManager::Get()->IsLoggedInAsChildUser();
 
   const bool using_pin_as_main_factor =
-      IsInSetupMode(PinSetupMode::kSetupAsPrimaryFactor);
+      IsInSetupMode(PinSetupMode::kSetupAsPrimaryFactor, *context());
   const bool has_login_support =
       hardware_support_.value() == HardwareSupport::kLoginCompatible;
   if (view_) {
@@ -243,8 +253,7 @@ void PinSetupScreen::OnUserAction(const base::Value::List& args) {
   if (action_id == kUserActionDoneButtonClicked) {
     RecordUserAction(action_id);
     token_lifetime_timeout_.Stop();
-    if (IsInSetupMode(PinSetupMode::kSetupAsPrimaryFactor)) {
-      setup_mode_ = PinSetupMode::kSetupFinished;
+    if (IsInSetupMode(PinSetupMode::kSetupAsPrimaryFactor, *context())) {
       exit_callback_.Run(Result::kDoneAsMainFactor);
     } else {
       ClearAuthData(*context());
@@ -256,10 +265,7 @@ void PinSetupScreen::OnUserAction(const base::Value::List& args) {
       action_id == kUserActionSkipButtonClickedInFlow) {
     RecordUserAction(action_id);
     token_lifetime_timeout_.Stop();
-    if (IsInSetupMode(PinSetupMode::kSetupAsPrimaryFactor)) {
-      // The user chose "Use password instead". Change the setup mode to offer
-      // PIN as an additional factor later in the OOBE flow.
-      setup_mode_ = PinSetupMode::kSetupAsSecondaryFactor;
+    if (IsInSetupMode(PinSetupMode::kSetupAsPrimaryFactor, *context())) {
       exit_callback_.Run(Result::kUserChosePassword);
     } else {
       ClearAuthData(*context());
@@ -305,17 +311,6 @@ void PinSetupScreen::OnHasLoginSupport(bool login_available) {
 void PinSetupScreen::OnTokenTimedOut() {
   ClearAuthData(*context());
   exit_callback_.Run(Result::kTimedOut);
-}
-
-bool PinSetupScreen::IsInSetupMode(PinSetupScreen::PinSetupMode mode) {
-  const bool same_mode = setup_mode_ == mode;
-  if (mode == PinSetupMode::kSetupAsPrimaryFactor ||
-      mode == PinSetupMode::kSetupFinished) {
-    // These modes are only available when PasswordlessSetup is enabled.
-    return same_mode && ash::switches::IsOobePinOnlyPrototypeEnabled();
-  } else {
-    return same_mode;
-  }
 }
 
 }  // namespace ash

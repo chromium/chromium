@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
+#include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
@@ -144,6 +145,8 @@ class PinSetupScreenTest : public OobeBaseTest {
 
     auto* wizard_context =
         LoginDisplayHost::default_host()->GetWizardContextForTesting();
+    wizard_context->knowledge_factor_setup.pin_setup_mode =
+        WizardContext::PinSetupMode::kSetupAsSecondaryFactor;
 
     // Force the sync screen to be shown so that we don't jump to PIN setup
     // screen (consuming auth session) in unbranded build
@@ -258,10 +261,6 @@ class PinSetupScreenTest : public OobeBaseTest {
     EXPECT_THAT(
         histogram_tester_.GetAllSamples(kPinSetupScreenUserAction),
         ElementsAre(base::Bucket(static_cast<int>(user_action), /*count=*/1)));
-  }
-
-  void ExpectSetupMode(PinSetupScreen::PinSetupMode screen_mode) {
-    EXPECT_EQ(GetScreen()->get_setup_mode_for_testing(), screen_mode);
   }
 
   void ExpectExitResultAndMetric(PinSetupScreen::Result result) {
@@ -469,7 +468,6 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTest,
   ShowPinSetupScreen();
   WaitForScreenShown();
 
-  ExpectSetupMode(PinSetupScreen::PinSetupMode::kSetupAsSecondaryFactor);
   WaitForSetupTitleAndSubtitle(IDS_DISCOVER_PIN_SETUP_TITLE1,
                                IDS_DISCOVER_PIN_SETUP_SUBTITLE1);
   test::OobeJS().ExpectElementText(
@@ -529,6 +527,14 @@ class PinSetupScreenTestAsMainFactor : public PinSetupScreenTest {
         ash::switches::kOobeEnablePinOnlyPrototype);
   }
 
+  void SetUpOnMainThread() override {
+    PinSetupScreenTest::SetUpOnMainThread();
+    auto* wizard_context =
+        LoginDisplayHost::default_host()->GetWizardContextForTesting();
+    wizard_context->knowledge_factor_setup.pin_setup_mode =
+        WizardContext::PinSetupMode::kSetupAsPrimaryFactor;
+  }
+
   ~PinSetupScreenTestAsMainFactor() override = default;
 
  private:
@@ -542,7 +548,6 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor,
   ShowPinSetupScreen();
   WaitForScreenShown();
 
-  ExpectSetupMode(PinSetupScreen::PinSetupMode::kSetupAsPrimaryFactor);
   WaitForSetupTitleAndSubtitle(
       IDS_DISCOVER_PIN_SETUP_PIN_AS_MAIN_FACTOR_TITLE,
       IDS_DISCOVER_PIN_SETUP_PIN_AS_MAIN_FACTOR_SUBTITLE,
@@ -561,7 +566,6 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor,
   ShowPinSetupScreen();
   WaitForScreenShown();
 
-  ExpectSetupMode(PinSetupScreen::PinSetupMode::kSetupAsPrimaryFactor);
   TapSkipButton();
 
   // Wait for the password selection screen to be surfaced.

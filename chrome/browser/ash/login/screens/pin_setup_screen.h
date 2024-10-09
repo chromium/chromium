@@ -14,6 +14,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/auth/cryptohome_pin_engine.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/wizard_context.h"
 
 namespace ash {
 
@@ -56,17 +57,6 @@ class PinSetupScreen : public BaseScreen {
     kMaxValue = kSkipButtonClickedInFlow
   };
 
-  // Depending on hardware capability, the PIN setup screen may be shown to set
-  // the PIN as a main factor, or as an auxiliary factor. In the future, it will
-  // also support resetting the PIN while going through recovery.
-  enum class PinSetupMode {
-    kSetupAsPrimaryFactor,
-    kSetupAsSecondaryFactor,
-    // TODO(b/365059362) : Add support for recovery.
-    // kRecovery
-    kSetupFinished,
-  };
-
   // Whether the current platform has support for PIN login, or just unlock.
   // Initially undetermined until PinBackend informs us of the actual state.
   enum class HardwareSupport { kLoginCompatible, kUnlockOnly };
@@ -94,8 +84,6 @@ class PinSetupScreen : public BaseScreen {
     return exit_callback_;
   }
 
-  PinSetupMode get_setup_mode_for_testing() const { return setup_mode_; }
-
  protected:
   // BaseScreen:
   bool MaybeSkip(WizardContext& context) override;
@@ -115,13 +103,9 @@ class PinSetupScreen : public BaseScreen {
   void OnHasLoginSupport(bool login_available);
   void OnTokenTimedOut();
 
-  // Whether the screen is operating in the given mode. Guarded by flag.
-  bool IsInSetupMode(PinSetupMode mode);
-
   // Hardware support and screen mode. The main logic bits driving how the
   // screen is surfaced to the user. See enum definition for details.
   std::optional<HardwareSupport> hardware_support_;
-  PinSetupMode setup_mode_;
 
   base::WeakPtr<PinSetupScreenView> view_;
   ScreenExitCallback exit_callback_;

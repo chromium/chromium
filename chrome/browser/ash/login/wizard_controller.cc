@@ -1199,6 +1199,9 @@ void WizardController::ShowFingerprintSetupScreen() {
 }
 
 void WizardController::ShowPinSetupScreen() {
+  // The PIN Setup screen can be used for setting up PIN as a main factor, or as
+  // a secondary one. At this point, the mode must be known.
+  CHECK(wizard_context_->knowledge_factor_setup.pin_setup_mode.has_value());
   SetCurrentScreen(GetScreen(PinSetupScreenView::kScreenId));
 }
 
@@ -2420,6 +2423,11 @@ void WizardController::OnCryptohomeRecoverySetupScreenExit(
   OnScreenExit(CryptohomeRecoverySetupScreenView::kScreenId,
                CryptohomeRecoverySetupScreen::GetResultString(result));
   if (ash::switches::IsOobePinOnlyPrototypeEnabled()) {
+    // First step of the AuthFactor setup flow. Offer PIN as a main factor. If
+    // there isn't hardware support, the screen exits gracefully.
+    CHECK(!wizard_context_->knowledge_factor_setup.pin_setup_mode.has_value());
+    wizard_context_->knowledge_factor_setup.pin_setup_mode =
+        WizardContext::PinSetupMode::kSetupAsPrimaryFactor;
     ShowPinSetupScreen();
   } else {
     ShowPasswordSelectionScreen();
@@ -2569,6 +2577,12 @@ void WizardController::OnFingerprintSetupScreenExit(
     FingerprintSetupScreen::Result result) {
   OnScreenExit(FingerprintSetupScreenView::kScreenId,
                FingerprintSetupScreen::GetResultString(result));
+  if (!ash::switches::IsOobePinOnlyPrototypeEnabled()) {
+    // First time surfacing the screen for the non PIN-only OOBE.
+    CHECK(!wizard_context_->knowledge_factor_setup.pin_setup_mode.has_value());
+    wizard_context_->knowledge_factor_setup.pin_setup_mode =
+        WizardContext::PinSetupMode::kSetupAsSecondaryFactor;
+  }
   ShowPinSetupScreen();
 }
 
@@ -2580,9 +2594,16 @@ void WizardController::OnPinSetupScreenExit(PinSetupScreen::Result result) {
       // Possible exit results when the PIN screen is shown for PIN-only setup.
       case PinSetupScreen::Result::kNotApplicableAsPrimaryFactor:
       case PinSetupScreen::Result::kUserChosePassword:
+        // PIN as a main factor is not supported or not wanted, it will be
+        // offered later again as a secondary factor after the fingerprint setup
+        // screen.
+        wizard_context_->knowledge_factor_setup.pin_setup_mode =
+            WizardContext::PinSetupMode::kSetupAsSecondaryFactor;
         ShowPasswordSelectionScreen();
         break;
       case PinSetupScreen::Result::kDoneAsMainFactor:
+        wizard_context_->knowledge_factor_setup.pin_setup_mode =
+            WizardContext::PinSetupMode::kAlreadyPerformed;
         ShowFingerprintSetupScreen();
         break;
       // These are emitted when the screen is surfaced at the end of the flow,
