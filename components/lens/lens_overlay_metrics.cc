@@ -164,6 +164,7 @@ void RecordTimeToFirstInteraction(
   // UKM unsliced TimeToFirstInteraction.
   ukm::builders::Lens_Overlay_TimeToFirstInteraction(source_id)
       .SetAllEntryPoints(time_to_first_interaction.InMilliseconds())
+      .SetFirstInteractionType(static_cast<int64_t>(first_interaction_type))
       .Record(ukm::UkmRecorder::Get());
   // UKM TimeToFirstInteraction sliced by entry point.
   ukm::builders::Lens_Overlay_TimeToFirstInteraction event(source_id);
@@ -190,7 +191,8 @@ void RecordTimeToFirstInteraction(
       event.SetOmnibox(time_to_first_interaction.InMilliseconds());
       break;
   }
-  event.Record(ukm::UkmRecorder::Get());
+  event.SetFirstInteractionType(static_cast<int64_t>(first_interaction_type))
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void RecordUKMSessionEndMetrics(ukm::SourceId source_id,
