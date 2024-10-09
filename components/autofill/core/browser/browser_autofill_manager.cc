@@ -1563,7 +1563,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
        trigger_source ==
            AutofillSuggestionTriggerSource::kFormControlElementClicked)) {
     std::vector<Suggestion> prediction_improvements_suggestions =
-        delegate->GetSuggestions(suggestions, field);
+        delegate->GetSuggestions(suggestions, form, field);
     if (!prediction_improvements_suggestions.empty()) {
       std::move(callback).Run(/*show_suggestions=*/true,
                               std::move(prediction_improvements_suggestions),

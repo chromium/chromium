@@ -251,6 +251,8 @@ TEST_F(AutofillPredictionImprovementsManagerTest, EndToEnd) {
                   .heuristic_type = autofill::NAME_FIRST}}};
   autofill::FormData form = autofill::test::GetFormData(form_description);
   // Filled form, as returned by the filling engine.
+  form_description.host_frame = form.host_frame();
+  form_description.renderer_id = form.renderer_id();
   form_description.fields[0].value = u"John";
   form_description.fields[0].host_frame = form.fields().front().host_frame();
   form_description.fields[0].renderer_id = form.fields().front().renderer_id();
@@ -283,7 +285,7 @@ TEST_F(AutofillPredictionImprovementsManagerTest, EndToEnd) {
   std::move(axtree_received_callback).Run({});
 
   const std::vector<autofill::Suggestion> suggestions_while_loading =
-      manager_->GetSuggestions({}, filled_form.fields().front());
+      manager_->GetSuggestions({}, filled_form, filled_form.fields().front());
   ASSERT_FALSE(suggestions_while_loading.empty());
   EXPECT_THAT(suggestions_while_loading[0],
               HasType(SuggestionType::kPredictionImprovementsLoadingState));
@@ -326,9 +328,10 @@ TEST_F(AutofillPredictionImprovementsManagerTest, EndToEnd) {
 // `MaybeUpdateSuggestions()`.
 TEST_F(AutofillPredictionImprovementsManagerTest,
        MaybeUpdateSuggestionsOnEmptyAddressSuggestionsAddsTriggerSuggestion) {
+  autofill::FormData form;
   autofill::FormFieldData field;
   EXPECT_THAT(
-      manager_->GetSuggestions({}, field),
+      manager_->GetSuggestions({}, form, field),
       ElementsAre(HasType(SuggestionType::kRetrievePredictionImprovements)));
 }
 
@@ -345,7 +348,8 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
                   .heuristic_type = autofill::NAME_FIRST}}};
   autofill::FormData form = autofill::test::GetFormData(form_description);
   EXPECT_THAT(
-      manager_->GetSuggestions(autofill_suggestions, form.fields().front()),
+      manager_->GetSuggestions(autofill_suggestions, form,
+                               form.fields().front()),
       ElementsAre(HasType(SuggestionType::kRetrievePredictionImprovements)));
 }
 
@@ -363,8 +367,10 @@ TEST_F(AutofillPredictionImprovementsManagerTest, MaybeUpdateSuggestionsShows) {
   test_api(*manager_).SetAutofillSuggestions(autofill_suggestions);
   test_api(*manager_).SetCache(PredictionsByGlobalId{
       {form.fields().front().global_id(), {u"value", u"label"}}});
+  test_api(*manager_).SetLastQueriedFormGlobalId(form.global_id());
   EXPECT_THAT(
-      manager_->GetSuggestions(autofill_suggestions, form.fields().front()),
+      manager_->GetSuggestions(autofill_suggestions, form,
+                               form.fields().front()),
       ElementsAre(HasType(SuggestionType::kFillPredictionImprovements),
                   HasType(SuggestionType::kAddressEntry),
                   HasType(SuggestionType::kSeparator),
@@ -382,8 +388,9 @@ TEST_F(
   autofill::FormData form = autofill::test::GetFormData(form_description);
   test_api(*manager_).SetCache(PredictionsByGlobalId{
       {form.fields().front().global_id(), {u"value", u"label"}}});
+  test_api(*manager_).SetLastQueriedFormGlobalId(form.global_id());
   EXPECT_THAT(
-      manager_->GetSuggestions({}, form.fields().front()),
+      manager_->GetSuggestions({}, form, form.fields().front()),
       ElementsAre(HasType(SuggestionType::kFillPredictionImprovements),
                   HasType(SuggestionType::kSeparator),
                   HasType(SuggestionType::kPredictionImprovementsFeedback)));
@@ -409,9 +416,10 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
        {trigger_field_value, trigger_field_label}},
       {form.fields()[1].global_id(),
        {select_field_value, select_field_label, select_field_option_text}}});
+  test_api(*manager_).SetLastQueriedFormGlobalId(form.global_id());
 
   EXPECT_THAT(
-      manager_->GetSuggestions({}, form.fields()[0]),
+      manager_->GetSuggestions({}, form, form.fields()[0]),
       ElementsAre(
           AllOf(
               HasType(SuggestionType::kFillPredictionImprovements),
@@ -453,9 +461,10 @@ TEST_F(
   autofill::FormData form = autofill::test::GetFormData(form_description);
   test_api(*manager_).SetCache(PredictionsByGlobalId{
       {form.fields()[0].global_id(), {u"Jane", u"First name"}}});
+  test_api(*manager_).SetLastQueriedFormGlobalId(form.global_id());
 
   const std::vector<autofill::Suggestion> suggestions =
-      manager_->GetSuggestions({}, form.fields()[0]);
+      manager_->GetSuggestions({}, form, form.fields()[0]);
   ASSERT_FALSE(suggestions.empty());
   EXPECT_THAT(suggestions[0], HasLabel(u"Fill First name"));
 }
@@ -477,9 +486,10 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
       {form.fields()[0].global_id(), {u"Jane", u"First name"}},
       {form.fields()[1].global_id(), {u"Country roads str", u"Street name"}},
       {form.fields()[2].global_id(), {u"33", u"state", u"West Virginia"}}});
+  test_api(*manager_).SetLastQueriedFormGlobalId(form.global_id());
 
   const std::vector<autofill::Suggestion> suggestions =
-      manager_->GetSuggestions({}, form.fields()[0]);
+      manager_->GetSuggestions({}, form, form.fields()[0]);
   ASSERT_FALSE(suggestions.empty());
   EXPECT_THAT(suggestions[0],
               HasLabel(u"Fill First name, Street name & 1 more field"));
@@ -506,9 +516,10 @@ TEST_F(
       {form.fields()[1].global_id(), {u"Doe", u"Last name"}},
       {form.fields()[2].global_id(), {u"Country roads str", u"Street name"}},
       {form.fields()[3].global_id(), {u"33", u"state", u"West Virginia"}}});
+  test_api(*manager_).SetLastQueriedFormGlobalId(form.global_id());
 
   const std::vector<autofill::Suggestion> suggestions =
-      manager_->GetSuggestions({}, form.fields()[0]);
+      manager_->GetSuggestions({}, form, form.fields()[0]);
   ASSERT_FALSE(suggestions.empty());
   EXPECT_THAT(suggestions[0],
               HasLabel(u"Fill First name, Last name & 2 more fields"));
@@ -740,6 +751,51 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
   EXPECT_CALL(client_, GetAXTree).Times(0);
   manager_->OnLoadingSuggestionShown(form, form.fields().front(),
                                      update_suggestions_callback.Get());
+}
+
+// Tests that the regular Autofill flow continues if predictions are being
+// retrieved for form A, while a field of form B is focused.
+TEST_F(AutofillPredictionImprovementsManagerTest,
+       GetSuggestionsReturnsEmptyVectorIfRequestedFromNewFormWhileLoading) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  autofill::test::FormDescription form_description = {
+      .fields = {{.role = autofill::NAME_FIRST,
+                  .heuristic_type = autofill::NAME_FIRST,
+                  .label = u"First Name",
+                  .value = u"Jane"}}};
+  autofill::FormData form_a = autofill::test::GetFormData(form_description);
+  manager_->OnClickedTriggerSuggestion(form_a, form_a.fields().front(),
+                                       base::DoNothing());
+
+  autofill::FormData form_b = autofill::test::GetFormData(form_description);
+
+  EXPECT_TRUE(manager_
+                  ->GetSuggestions(/*autofill_suggestions=*/{}, form_b,
+                                   form_b.fields().front())
+                  .empty());
+}
+
+// Tests that the trigger suggestion is shown if predictions were retrieved for
+// form A and now a field of form B is focused.
+TEST_F(
+    AutofillPredictionImprovementsManagerTest,
+    GetSuggestionsReturnsTriggerSuggestionIfRequestedFromNewFormAndNotLoading) {
+  autofill::test::FormDescription form_description = {
+      .fields = {{.role = autofill::NAME_FIRST,
+                  .heuristic_type = autofill::NAME_FIRST,
+                  .label = u"First Name",
+                  .value = u"Jane"}}};
+  autofill::FormData form_a = autofill::test::GetFormData(form_description);
+  test_api(*manager_).SetLastQueriedFormGlobalId(form_a.global_id());
+
+  autofill::FormData form_b = autofill::test::GetFormData(form_description);
+
+  const std::vector<autofill::Suggestion> suggestions =
+      manager_->GetSuggestions(/*autofill_suggestions=*/{}, form_b,
+                               form_b.fields().front());
+  ASSERT_FALSE(suggestions.empty());
+  EXPECT_THAT(suggestions[0],
+              HasType(SuggestionType::kRetrievePredictionImprovements));
 }
 
 class AutofillPredictionImprovementsManagerTriggerAutomaticallyTest

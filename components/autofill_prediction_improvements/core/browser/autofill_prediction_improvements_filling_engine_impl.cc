@@ -88,8 +88,11 @@ void AutofillPredictionImprovementsFillingEngineImpl::OnModelExecuted(
     PredictionsReceivedCallback callback,
     optimization_guide::OptimizationGuideModelExecutionResult execution_result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
+  const std::optional<std::string> execution_id =
+      log_entry ? log_entry->model_execution_id()
+                : std::optional<std::string>();
   if (!execution_result.has_value()) {
-    std::move(callback).Run(base::unexpected(false), std::nullopt);
+    std::move(callback).Run(base::unexpected(false), execution_id);
     return;
   }
 
@@ -98,13 +101,12 @@ void AutofillPredictionImprovementsFillingEngineImpl::OnModelExecuted(
           optimization_guide::proto::FormsPredictionsResponse>(
           execution_result.value());
   if (!maybe_response) {
-    std::move(callback).Run(base::unexpected(false), std::nullopt);
+    std::move(callback).Run(base::unexpected(false), execution_id);
     return;
   }
 
   std::move(callback).Run(
-      ExtractPredictions(form_data, maybe_response->form_data()),
-      log_entry ? log_entry->model_execution_id() : "");
+      ExtractPredictions(form_data, maybe_response->form_data()), execution_id);
 }
 
 // static

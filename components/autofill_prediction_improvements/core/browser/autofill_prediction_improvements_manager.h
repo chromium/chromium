@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/strike_databases/strike_database.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_annotation_prompt_strike_database.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_client.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_filling_engine.h"
@@ -52,6 +53,7 @@ class AutofillPredictionImprovementsManager
   // autofill::AutofillPredictionImprovementsDelegate
   std::vector<autofill::Suggestion> GetSuggestions(
       const std::vector<autofill::Suggestion>& autofill_suggestions,
+      const autofill::FormData& form,
       const autofill::FormFieldData& field) override;
   bool IsFormAndFieldEligible(
       const autofill::FormStructure& form,
@@ -90,14 +92,15 @@ class AutofillPredictionImprovementsManager
 
   // Enum specifying the states of retrieving prediction improvements.
   enum class PredictionRetrievalState {
-    // This state means that currently no attempt is made to retrieve prediction
-    // improvements. This can either be because no attempt was made yet to
-    // retrieve prediction improvements. Or because retrieving prediction
-    // improvements has finished. Note that the latter includes both successful
-    // and unsuccessful retrieval attempts.
-    kIdle = 0,
+    // Ready for retrieving prediction improvements.
+    kReady = 0,
     // Prediction improvements are being retrieved right now.
-    kIsLoadingPredictions = 1
+    kIsLoadingPredictions = 1,
+    // Prediction improvements were received successfully. Note that the
+    // predictions map might be empty.
+    kDoneSuccess = 2,
+    // Retrieving prediction improvements resulted in an error.
+    kDoneError = 3
   };
 
   // Receives prediction improvements for all fields in `form`, then calls
@@ -123,7 +126,7 @@ class AutofillPredictionImprovementsManager
   // Method for showing filling or error suggestions, depending on the outcome
   // of the retrieval attempts.
   void UpdateSuggestionsAfterReceivedPredictions(
-      const std::vector<autofill::Suggestion>& suggestions);
+      const autofill::FormFieldData& trigger_field);
 
   // Resets the state of this class.
   void Reset();
@@ -157,7 +160,7 @@ class AutofillPredictionImprovementsManager
 
   // Current state for retrieving predictions.
   PredictionRetrievalState prediction_retrieval_state_ =
-      PredictionRetrievalState::kIdle;
+      PredictionRetrievalState::kReady;
 
   // A raw reference to the client, which owns `this` and therefore outlives
   // it.
@@ -168,7 +171,9 @@ class AutofillPredictionImprovementsManager
   std::optional<
       AutofillPredictionImprovementsFillingEngine::PredictionsByGlobalId>
       cache_ = std::nullopt;
-
+  // The form global id for which predictions were retrieved last. Set at the
+  // beginning of retrieving prediction improvements.
+  std::optional<autofill::FormGlobalId> last_queried_form_global_id_;
   // Address suggestions that will be shown as defined in
   // `CreateFillingSuggestions()` after prediction improvements was triggered.
   std::vector<autofill::Suggestion> autofill_suggestions_;

@@ -309,7 +309,25 @@ bool AutofillPredictionImprovementsManager::IsUserEligible() const {
 std::vector<autofill::Suggestion>
 AutofillPredictionImprovementsManager::GetSuggestions(
     const std::vector<autofill::Suggestion>& autofill_suggestions,
+    const autofill::FormData& form,
     const autofill::FormFieldData& field) {
+  if (last_queried_form_global_id_ &&
+      *last_queried_form_global_id_ != form.global_id()) {
+    if (prediction_retrieval_state_ !=
+        PredictionRetrievalState::kIsLoadingPredictions) {
+      // Reset state if the trigger form global id has changed from the
+      // `last_queried_form_global_id_` while not loading predictions.
+      // TODO(crbug.com/370695713): Reset also for dynamically changed forms
+      // that keep their global id.
+      Reset();
+    } else {
+      // Return an empty vector of suggestions while retrieving predictions for
+      // a different form. This will continue the regular Autofill flow (e.g.
+      // show Autofill or Autocomplete suggestions) in the
+      // `BrowserAutofillManager`.
+      return {};
+    }
+  }
   // Keep showing the loading suggesiton while prediction improvements are being
   // retrieved.
   if (prediction_retrieval_state_ ==
@@ -337,12 +355,15 @@ void AutofillPredictionImprovementsManager::RetrievePredictions(
     const autofill::FormData& form,
     const autofill::FormFieldData& trigger_field,
     UpdateSuggestionsCallback update_suggestions_callback) {
-  Reset();
+  if (prediction_retrieval_state_ != PredictionRetrievalState::kReady) {
+    return;
+  }
   update_suggestions_callback_ = std::move(update_suggestions_callback);
   if (!kTriggerAutomatically.Get()) {
     UpdateSuggestions({CreateLoadingSuggestion()});
   }
   prediction_retrieval_state_ = PredictionRetrievalState::kIsLoadingPredictions;
+  last_queried_form_global_id_ = form.global_id();
   client_->GetAXTree(
       base::BindOnce(&AutofillPredictionImprovementsManager::OnReceivedAXTree,
                      weak_ptr_factory_.GetWeakPtr(), form, trigger_field));
@@ -365,9 +386,13 @@ void AutofillPredictionImprovementsManager::OnReceivedPredictions(
     AutofillPredictionImprovementsFillingEngine::PredictionsOrError
         predictions_or_error,
     std::optional<std::string> feedback_id) {
+  feedback_id_ = feedback_id;
+
   if (predictions_or_error.has_value()) {
-    cache_ = predictions_or_error.value();
-    feedback_id_ = feedback_id;
+    prediction_retrieval_state_ = PredictionRetrievalState::kDoneSuccess;
+    cache_ = std::move(predictions_or_error.value());
+  } else {
+    prediction_retrieval_state_ = PredictionRetrievalState::kDoneError;
   }
 
   // Depending on whether predictions where retrieved or not, we need to show
@@ -375,23 +400,32 @@ void AutofillPredictionImprovementsManager::OnReceivedPredictions(
   // don't see a flickering UI.
   loading_suggestion_timer_.Start(
       FROM_HERE, kMinTimeToShowLoading,
-      predictions_or_error.has_value()
-          ? base::BindRepeating(
-                &AutofillPredictionImprovementsManager::
-                    UpdateSuggestionsAfterReceivedPredictions,
-                weak_ptr_factory_.GetWeakPtr(),
-                CreateFillingSuggestions(trigger_field, autofill_suggestions_))
-          : base::BindRepeating(&AutofillPredictionImprovementsManager::
-                                    UpdateSuggestionsAfterReceivedPredictions,
-                                weak_ptr_factory_.GetWeakPtr(),
-                                CreateErrorSuggestions()));
+      base::BindRepeating(&AutofillPredictionImprovementsManager::
+                              UpdateSuggestionsAfterReceivedPredictions,
+                          weak_ptr_factory_.GetWeakPtr(), trigger_field));
 }
 
 void AutofillPredictionImprovementsManager::
     UpdateSuggestionsAfterReceivedPredictions(
-        const std::vector<autofill::Suggestion>& suggestions) {
-  prediction_retrieval_state_ = PredictionRetrievalState::kIdle;
-  UpdateSuggestions(suggestions);
+        const autofill::FormFieldData& trigger_field) {
+  switch (prediction_retrieval_state_) {
+    case PredictionRetrievalState::kDoneSuccess:
+      if (cache_ && cache_->empty()) {
+        // TODO(crbug.com/371924310): If the predictions map in the `cache_` is
+        // empty, update to an appropriate suggestion instead of the error one.
+        UpdateSuggestions(CreateErrorSuggestions());
+      } else {
+        UpdateSuggestions(
+            CreateFillingSuggestions(trigger_field, autofill_suggestions_));
+      }
+      break;
+    case PredictionRetrievalState::kDoneError:
+      UpdateSuggestions(CreateErrorSuggestions());
+      break;
+    case PredictionRetrievalState::kReady:
+    case PredictionRetrievalState::kIsLoadingPredictions:
+      NOTREACHED();
+  }
 }
 
 void AutofillPredictionImprovementsManager::UserFeedbackReceived(
@@ -479,10 +513,11 @@ void AutofillPredictionImprovementsManager::OnLoadingSuggestionShown(
 
 void AutofillPredictionImprovementsManager::Reset() {
   cache_ = std::nullopt;
+  last_queried_form_global_id_ = std::nullopt;
   update_suggestions_callback_ = base::NullCallback();
   feedback_id_ = std::nullopt;
   loading_suggestion_timer_.Stop();
-  prediction_retrieval_state_ = PredictionRetrievalState::kIdle;
+  prediction_retrieval_state_ = PredictionRetrievalState::kReady;
 }
 
 void AutofillPredictionImprovementsManager::UpdateSuggestions(

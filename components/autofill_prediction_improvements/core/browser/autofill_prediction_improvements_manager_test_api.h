@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_PREDICTION_IMPROVEMENTS_CORE_BROWSER_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGER_TEST_API_H_
 
 #include "base/check_deref.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager.h"
 
 namespace autofill_prediction_improvements {
@@ -21,6 +22,11 @@ class AutofillPredictionImprovementsManagerTestApi {
           AutofillPredictionImprovementsFillingEngine::PredictionsByGlobalId>
           cache) {
     manager_->cache_ = cache;
+  }
+
+  void SetLastQueriedFormGlobalId(
+      std::optional<autofill::FormGlobalId> last_queried_form_global_id) {
+    manager_->last_queried_form_global_id_ = last_queried_form_global_id;
   }
 
   void SetAutofillSuggestions(

@@ -23,6 +23,7 @@ class MockAutofillPredictionImprovementsDelegate
   MOCK_METHOD(std::vector<Suggestion>,
               GetSuggestions,
               (const std::vector<Suggestion>& address_suggestions,
+               const FormData& form,
                const FormFieldData& field),
               (override));
   MOCK_METHOD(bool,

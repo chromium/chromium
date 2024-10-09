@@ -52,6 +52,7 @@ class AutofillPredictionImprovementsDelegate {
   // `autofill_suggestions`. May return an empty vector.
   virtual std::vector<Suggestion> GetSuggestions(
       const std::vector<Suggestion>& autofill_suggestions,
+      const FormData& form,
       const FormFieldData& field) = 0;
 
   // Returns whether `form` and `field` are eligible for the improved prediction
