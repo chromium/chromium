@@ -169,6 +169,9 @@ class WebUIContentsWrapper : public content::WebContentsDelegate,
 // subclass used by the hosted WebUI. This type information allows compile time
 // checking that the WebUIController subclasses TopChromeWebUIController as
 // expected.
+// Upon the construction of this class, its wrapped web contents has started the
+// navigation to `webui_url`, and `GetWebUIController()` is guaranteed to return
+// a non-null pointer.
 template <typename T>
 class WebUIContentsWrapperT : public WebUIContentsWrapper {
  public:
@@ -189,24 +192,23 @@ class WebUIContentsWrapperT : public WebUIContentsWrapper {
                              T::GetWebUIName()),
         webui_url_(webui_url) {
     static_assert(views_metrics::IsValidWebUIName("." + T::GetWebUIName()));
-    if (is_ready_to_show()) {
-      CHECK(GetWebUIController());
-      GetWebUIController()->set_embedder(weak_ptr_factory_.GetWeakPtr());
-    } else {
-      ReloadWebContents();
-    }
+
+    CHECK(GetWebUIController());
+    GetWebUIController()->set_embedder(weak_ptr_factory_.GetWeakPtr());
   }
 
   void ReloadWebContents() override {
     web_contents()->GetController().LoadURL(webui_url_, content::Referrer(),
                                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
                                             std::string());
-    // Depends on the WebUIController object being constructed synchronously
-    // when the navigation is started in LoadInitialURL(). The WebUIController
-    // may not be defined at this point if the content code encounteres an
-    // error during navigation so check here to ensure the pointer is valid.
-    if (T* webui_controller = GetWebUIController())
+    // WARNING: with RenderDocument enabled, every navigation creates a new
+    // WebUI controller. If this is not the initial navigation,
+    // `GetWebUIController()` will return the old controller.
+    // TODO(crbug.com/40615943): provide an content API to access the new
+    // WebUI object.
+    if (T* webui_controller = GetWebUIController()) {
       webui_controller->set_embedder(weak_ptr_factory_.GetWeakPtr());
+    }
   }
 
   // May return null.

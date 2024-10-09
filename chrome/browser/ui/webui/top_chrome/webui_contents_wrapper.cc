@@ -32,23 +32,9 @@ bool IsEscapeEvent(const input::NativeWebKeyboardEvent& event) {
 
 RequestResult Request(const GURL& webui_url,
                       content::BrowserContext* browser_context) {
-  // Currently we will always use the preload manager because it is always
-  // available, but we make a fallback just in case this assumption no longer
-  // holds.
-  if (auto* preload_manager = WebUIContentsPreloadManager::GetInstance()) {
-    return preload_manager->Request(webui_url, browser_context);
-  }
-
-  // Fallback when the preloaded manager is not available.
-  content::WebContents::CreateParams create_params(browser_context);
-  create_params.initially_hidden = true;
-  create_params.site_instance =
-      content::SiteInstance::CreateForURL(browser_context, webui_url);
-
-  RequestResult result;
-  result.web_contents = content::WebContents::Create(create_params),
-  result.is_ready_to_show = false;
-  return result;
+  auto* preload_manager = WebUIContentsPreloadManager::GetInstance();
+  CHECK(preload_manager);
+  return preload_manager->Request(webui_url, browser_context);
 }
 
 // Enables the web contents to automatically resize to its content and
