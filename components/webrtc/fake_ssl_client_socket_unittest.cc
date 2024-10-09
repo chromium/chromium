@@ -59,7 +59,7 @@ enum {
 // Used by PassThroughMethods test.
 class MockClientSocket : public net::StreamSocket {
  public:
-  ~MockClientSocket() override {}
+  ~MockClientSocket() override = default;
 
   MOCK_METHOD3(Read, int(net::IOBuffer*, int, net::CompletionOnceCallback));
   MOCK_METHOD4(Write,
@@ -105,9 +105,9 @@ void AddChunkedOps(std::string_view data,
 
 class FakeSSLClientSocketTest : public testing::Test {
  protected:
-  FakeSSLClientSocketTest() {}
+  FakeSSLClientSocketTest() = default;
 
-  ~FakeSSLClientSocketTest() override {}
+  ~FakeSSLClientSocketTest() override = default;
 
   std::unique_ptr<net::StreamSocket> MakeClientSocket() {
     return mock_client_socket_factory_.CreateTransportClientSocket(
