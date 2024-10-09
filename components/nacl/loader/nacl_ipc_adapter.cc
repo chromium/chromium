@@ -266,7 +266,7 @@ std::unique_ptr<NaClDescWrapper> MakeShmRegionNaClDesc(
 class NaClIPCAdapter::RewrittenMessage {
  public:
   RewrittenMessage();
-  ~RewrittenMessage() {}
+  ~RewrittenMessage() = default;
 
   bool is_consumed() const { return data_read_cursor_ == data_len_; }
 

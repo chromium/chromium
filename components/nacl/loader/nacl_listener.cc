@@ -196,7 +196,7 @@ class FileTokenMessageFilter : public IPC::MessageFilter {
     g_listener->OnFileTokenResolved(token_lo, token_hi, ipc_fd, file_path);
   }
  private:
-  ~FileTokenMessageFilter() override {}
+  ~FileTokenMessageFilter() override = default;
 };
 
 void NaClListener::Listen() {

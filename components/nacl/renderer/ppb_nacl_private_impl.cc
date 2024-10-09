@@ -232,7 +232,7 @@ class ManifestServiceProxy : public ManifestServiceChannel::Delegate {
   ManifestServiceProxy(const ManifestServiceProxy&) = delete;
   ManifestServiceProxy& operator=(const ManifestServiceProxy&) = delete;
 
-  ~ManifestServiceProxy() override {}
+  ~ManifestServiceProxy() override = default;
 
   void StartupInitializationComplete() override {
     if (StartPpapiProxy(pp_instance_) == PP_TRUE) {

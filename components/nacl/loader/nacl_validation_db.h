@@ -9,12 +9,12 @@
 
 class NaClValidationDB {
  public:
-  NaClValidationDB() {}
+  NaClValidationDB() = default;
 
   NaClValidationDB(const NaClValidationDB&) = delete;
   NaClValidationDB& operator=(const NaClValidationDB&) = delete;
 
-  virtual ~NaClValidationDB() {}
+  virtual ~NaClValidationDB() = default;
 
   virtual bool QueryKnownToValidate(const std::string& signature) = 0;
   virtual void SetKnownToValidate(const std::string& signature) = 0;

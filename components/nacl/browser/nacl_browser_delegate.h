@@ -27,7 +27,7 @@ class HostFactory;
 // otherwise noted.
 class NaClBrowserDelegate {
  public:
-  virtual ~NaClBrowserDelegate() {}
+  virtual ~NaClBrowserDelegate() = default;
 
   // Show an infobar to the user to indicate the client architecture was not
   // covered by the manifest.

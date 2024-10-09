@@ -94,7 +94,7 @@ namespace {
 class NaClSandboxedProcessLauncherDelegate
     : public content::SandboxedProcessLauncherDelegate {
  public:
-  NaClSandboxedProcessLauncherDelegate() {}
+  NaClSandboxedProcessLauncherDelegate() = default;
 
 #if BUILDFLAG(USE_ZYGOTE)
   content::ZygoteCommunication* GetZygote() override {
