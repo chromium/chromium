@@ -11,6 +11,7 @@
 
 namespace stylus_handwriting::android {
 
+BASE_DECLARE_FEATURE(kCacheStylusSettings);
 BASE_DECLARE_FEATURE(kUseHandwritingInitiator);
 
 }  // namespace stylus_handwriting::android

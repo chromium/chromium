@@ -24,6 +24,7 @@ public class StylusWritingController {
     private boolean mIconFetched;
     private boolean mLazyFetchHandWritingIconFeatureEnabled;
     private boolean mShouldOverrideStylusHoverIcon;
+    private boolean mIsFocused;
 
     @Nullable private AndroidStylusWritingHandler mAndroidHandler;
     @Nullable private DirectWritingTrigger mDirectWritingTrigger;
@@ -124,15 +125,13 @@ public class StylusWritingController {
     public void onWindowFocusChanged(boolean hasFocus) {
         // This notification is used to determine if the Stylus writing feature is enabled or not
         // from System settings as it can be changed while Chrome is in background.
-        StylusApiOption handler = getHandler();
-        handler.onWindowFocusChanged(mContext, hasFocus);
+        mIsFocused = hasFocus;
+        updateStylusState();
+    }
 
-        if (mCurrentWebContents == null) return;
-        handler.onWebContentsChanged(mContext, mCurrentWebContents);
-        if (mCurrentWebContents.getViewAndroidDelegate() == null) return;
-        mCurrentWebContents
-                .getViewAndroidDelegate()
-                .setShouldShowStylusHoverIconCallback(this::setShouldOverrideStylusHoverIcon);
+    /** Notify stylus related settings changed. */
+    public void onSettingsChange() {
+        updateStylusState();
     }
 
     @Nullable
@@ -147,5 +146,19 @@ public class StylusWritingController {
 
     private void setShouldOverrideStylusHoverIcon(boolean shouldOverride) {
         mShouldOverrideStylusHoverIcon = shouldOverride;
+    }
+
+    private void updateStylusState() {
+        StylusApiOption handler = getHandler();
+        // TODO(crbug.com/372430494): Refactor handler to have a dedicated method to update state
+        // instead of calling onWindowFocusChanged.
+        handler.onWindowFocusChanged(mContext, mIsFocused);
+
+        if (mCurrentWebContents == null) return;
+        handler.onWebContentsChanged(mContext, mCurrentWebContents);
+        if (mCurrentWebContents.getViewAndroidDelegate() == null) return;
+        mCurrentWebContents
+                .getViewAndroidDelegate()
+                .setShouldShowStylusHoverIconCallback(this::setShouldOverrideStylusHoverIcon);
     }
 }

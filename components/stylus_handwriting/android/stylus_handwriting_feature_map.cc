@@ -14,6 +14,7 @@ namespace stylus_handwriting::android {
 namespace {
 
 const base::Feature* const kFeaturesExposedToJava[] = {
+    &kCacheStylusSettings,
     &kUseHandwritingInitiator,
 };
 
@@ -31,6 +32,11 @@ static jlong JNI_StylusHandwritingFeatureMap_GetNativeMap(JNIEnv* env) {
 }
 
 // Android only features.
+
+// Cache Stylus related settings
+BASE_FEATURE(kCacheStylusSettings,
+             "CacheStylusSettings",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Initiate handwriting based on the distance between touch events compared to
 // the current handwriting touch slop rather than relying on scroll events for

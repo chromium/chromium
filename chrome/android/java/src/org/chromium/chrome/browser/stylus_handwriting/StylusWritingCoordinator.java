@@ -12,7 +12,9 @@ import org.chromium.chrome.browser.lifecycle.WindowFocusChangedObserver;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.stylus_handwriting.StylusHandwritingFeatureMap;
 import org.chromium.components.stylus_handwriting.StylusWritingController;
+import org.chromium.components.stylus_handwriting.StylusWritingSettingsState;
 
 /**
  * This class coordinates the Tab events and Window focus events required for Stylus handwriting.
@@ -31,6 +33,10 @@ public class StylusWritingCoordinator implements WindowFocusChangedObserver {
         mActivity = activity;
         mTabProvider = activityTabProvider;
         mStylusWritingController = new StylusWritingController(mActivity.getApplicationContext());
+        if (StylusHandwritingFeatureMap.isEnabledOrDefault(
+                StylusHandwritingFeatureMap.CACHE_STYLUS_SETTINGS, false)) {
+            StylusWritingSettingsState.getInstance().registerObserver(mStylusWritingController);
+        }
 
         lifecycleDispatcher.register(this);
         mLifecycleDispatcher = lifecycleDispatcher;
@@ -58,6 +64,10 @@ public class StylusWritingCoordinator implements WindowFocusChangedObserver {
     }
 
     public void destroy() {
+        if (StylusHandwritingFeatureMap.isEnabledOrDefault(
+                StylusHandwritingFeatureMap.CACHE_STYLUS_SETTINGS, false)) {
+            StylusWritingSettingsState.getInstance().unregisterObserver(mStylusWritingController);
+        }
         mLifecycleDispatcher.unregister(this);
         mCurrentTabObserver.destroy();
     }
