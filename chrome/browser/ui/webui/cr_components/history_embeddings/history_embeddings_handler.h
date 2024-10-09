@@ -49,6 +49,7 @@ class HistoryEmbeddingsHandler : public history_embeddings::mojom::PageHandler {
   void MaybeShowFeaturePromo() override;
   void SendQualityLog(const std::vector<uint32_t>& selected_indices,
                       uint32_t num_chars_for_query) override;
+  void OpenSettingsPage() override;
 
   void PublishResultToPageForTesting(
       const history_embeddings::SearchResult& native_search_result);

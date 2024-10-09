@@ -11,6 +11,9 @@
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/common/url_constants.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/history_embeddings_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -217,6 +220,15 @@ void HistoryEmbeddingsHandler::SetUserFeedback(
         /*extra_diagnostics=*/std::string(),
         /*autofill_metadata=*/base::Value::Dict(), base::Value::Dict());
   }
+}
+
+void HistoryEmbeddingsHandler::OpenSettingsPage() {
+  NavigateParams navigate_params(profile_.get(),
+                                 GURL(chrome::kHistorySearchSettingURL),
+                                 ui::PAGE_TRANSITION_LINK);
+  navigate_params.window_action = NavigateParams::WindowAction::SHOW_WINDOW;
+  navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&navigate_params);
 }
 
 void HistoryEmbeddingsHandler::MaybeShowFeaturePromo() {

@@ -9,17 +9,19 @@ import {HistoryEmbeddingsBrowserProxyImpl, HistoryEmbeddingsPageHandlerRemote} f
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('HistoryClustersAppWithEmbeddingsTest', () => {
   let app: HistoryClustersAppElement;
+  let embeddingsHandler: TestMock<HistoryEmbeddingsPageHandlerRemote>&
+      HistoryEmbeddingsPageHandlerRemote;
 
   setup(async () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
+    embeddingsHandler = TestMock.fromClass(HistoryEmbeddingsPageHandlerRemote);
     HistoryEmbeddingsBrowserProxyImpl.setInstance(
-        new HistoryEmbeddingsBrowserProxyImpl(
-            TestMock.fromClass(HistoryEmbeddingsPageHandlerRemote)));
+        new HistoryEmbeddingsBrowserProxyImpl(embeddingsHandler));
 
     loadTimeData.overrideValues({
       enableHistoryEmbeddings: true,
@@ -45,6 +47,31 @@ suite('HistoryClustersAppWithEmbeddingsTest', () => {
     document.body.appendChild(app);
     await microtasksFinished();
     assertEquals('', app.$.searchbox.iconOverride);
+  });
+
+  test('DisclaimerLink', async () => {
+    // Force a search so that the cr-history-embeddings component is available.
+    app.query = 'two words';
+    await app.updateComplete;
+
+    const historyEmbeddingsElement =
+        app.shadowRoot!.querySelector('cr-history-embeddings');
+    assertTrue(!!historyEmbeddingsElement);
+    assertFalse(historyEmbeddingsElement.forceSuppressLogging);
+
+    const disclaimerLink = app.shadowRoot!.querySelector<HTMLElement>(
+        '#historyEmbeddingsDisclaimerLink');
+    assertTrue(!!disclaimerLink);
+    assertTrue(isVisible(disclaimerLink));
+
+    const clickEvent = new Event('click', {cancelable: true});
+    disclaimerLink.dispatchEvent(clickEvent);
+    await embeddingsHandler.whenCalled('openSettingsPage');
+    assertTrue(clickEvent.defaultPrevented);
+    assertEquals(1, embeddingsHandler.getCallCount('openSettingsPage'));
+
+    await app.updateComplete;
+    assertTrue(historyEmbeddingsElement.forceSuppressLogging);
   });
 
   test('ShowsResultsComponent', async () => {

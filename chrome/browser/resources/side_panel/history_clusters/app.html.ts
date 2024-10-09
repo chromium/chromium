@@ -19,6 +19,12 @@ export function getHtml(this: HistoryClustersAppElement) {
 ${this.enableHistoryEmbeddings_ ? html`
 <div id="historyEmbeddingsDisclaimer">
   $i18n{historyEmbeddingsDisclaimer}
+  <a id="historyEmbeddingsDisclaimerLink" href="#"
+      aria-describedby="historyEmbeddingsDisclaimer"
+      @click="${this.onHistoryEmbeddingsDisclaimerLinkClick_}"
+      @auxclick="${this.onHistoryEmbeddingsDisclaimerLinkClick_}">
+    $i18n{learnMore}
+  </a>
 </div>
 ` : ''}
 <div id="embeddingsScrollContainer"
@@ -26,7 +32,8 @@ ${this.enableHistoryEmbeddings_ ? html`
   ${this.shouldShowHistoryEmbeddingsResults_() ? html`
   <cr-history-embeddings
       .searchQuery="${this.query}"
-      .showRelativeTimes="${true}">
+      .showRelativeTimes="${true}"
+      .forceSuppressLogging="${this.historyEmbeddingsDisclaimerLinkClicked_}">
   </cr-history_embeddings>
   ` : ''}
   <history-clusters id="historyClusters"

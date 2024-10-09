@@ -12,6 +12,7 @@ export interface HistoryEmbeddingsBrowserProxy {
       nonEmptyResults: boolean, userClickedResult: boolean): void;
   setUserFeedback(userFeedback: UserFeedback): void;
   maybeShowFeaturePromo(): void;
+  openSettingsPage(): void;
 
   handler: PageHandlerRemote;
   callbackRouter: PageCallbackRouter;
@@ -63,5 +64,9 @@ export class HistoryEmbeddingsBrowserProxyImpl implements
 
   maybeShowFeaturePromo() {
     this.handler.maybeShowFeaturePromo();
+  }
+
+  openSettingsPage() {
+    this.handler.openSettingsPage();
   }
 }

@@ -12,6 +12,7 @@ import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {BrowserProxyImpl} from 'chrome://resources/cr_components/history_clusters/browser_proxy.js';
 import type {HistoryClustersElement} from 'chrome://resources/cr_components/history_clusters/clusters.js';
+import {HistoryEmbeddingsBrowserProxyImpl} from 'chrome://resources/cr_components/history_embeddings/browser_proxy.js';
 import type {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -44,6 +45,8 @@ export class HistoryClustersAppElement extends CrLitElement {
     return {
       enableHistoryEmbeddings_: {type: Boolean, reflect: true},
 
+      historyEmbeddingsDisclaimerLinkClicked_: {type: Boolean},
+
       /**
        * The current query for which related clusters are requested and shown.
        */
@@ -66,6 +69,7 @@ export class HistoryClustersAppElement extends CrLitElement {
 
   protected enableHistoryEmbeddings_ =
       loadTimeData.getBoolean('enableHistoryEmbeddings');
+  protected historyEmbeddingsDisclaimerLinkClicked_ = false;
   query: string = '';
   protected scrollTarget_?: HTMLElement;
   protected searchIcon_?: string;
@@ -106,6 +110,12 @@ export class HistoryClustersAppElement extends CrLitElement {
     return this.enableHistoryEmbeddings_ ?
         '' :
         'sp-scroller sp-scroller-bottom-of-page';
+  }
+
+  protected onHistoryEmbeddingsDisclaimerLinkClick_(e: Event) {
+    e.preventDefault();
+    this.historyEmbeddingsDisclaimerLinkClicked_ = true;
+    HistoryEmbeddingsBrowserProxyImpl.getInstance().openSettingsPage();
   }
 
   /**

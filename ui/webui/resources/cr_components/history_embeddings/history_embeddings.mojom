@@ -112,6 +112,10 @@ interface PageHandler {
   // Attempt to show the IPH bubble to promote the feature. Called from the
   // main history app on page load.
   MaybeShowFeaturePromo();
+
+  // Opens the History Search Settings page in a new tab, for use in the side
+  // panel where normal anchor tags do not work.
+  OpenSettingsPage();
 };
 
 // WebUI-side handler for requests from the browser.
