@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.74"
 name = "clap"
-version = "4.5.18"
+version = "4.5.20"
 build = false
 include = [
     "build.rs",
@@ -465,7 +465,7 @@ doc-scrape-examples = true
 required-features = ["derive"]
 
 [dependencies.clap_builder]
-version = "=4.5.18"
+version = "=4.5.20"
 default-features = false
 
 [dependencies.clap_derive]
@@ -600,6 +600,7 @@ string_add_assign = "warn"
 string_lit_as_bytes = "warn"
 todo = "warn"
 trait_duplication_in_bounds = "warn"
+uninlined_format_args = "warn"
 verbose_file_reads = "warn"
 zero_sized_map_values = "warn"
 

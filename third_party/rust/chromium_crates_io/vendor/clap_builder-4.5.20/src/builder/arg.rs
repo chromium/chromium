@@ -1623,7 +1623,7 @@ impl Arg {
 
     /// Consume all following arguments.
     ///
-    /// Do not be parse them individually, but rather pass them in entirety.
+    /// Do not parse them individually, but rather pass them in entirety.
     ///
     /// It is worth noting that setting this requires all values to come after a `--` to indicate
     /// they should all be captured. For example:

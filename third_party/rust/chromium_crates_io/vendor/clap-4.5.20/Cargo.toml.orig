@@ -89,6 +89,7 @@ string_lit_as_bytes = "warn"
 # string_to_string = "warn"
 todo = "warn"
 trait_duplication_in_bounds = "warn"
+uninlined_format_args = "warn"
 verbose_file_reads = "warn"
 # wildcard_imports = "warn"
 zero_sized_map_values = "warn"
@@ -99,7 +100,7 @@ blocks_in_conditions = "allow"
 
 [package]
 name = "clap"
-version = "4.5.18"
+version = "4.5.20"
 description = "A simple to use, efficient, and full-featured Command Line Argument Parser"
 categories = ["command-line-interface"]
 keywords = [
@@ -176,7 +177,7 @@ unstable-derive-ui-tests = []
 bench = false
 
 [dependencies]
-clap_builder = { path = "./clap_builder", version = "=4.5.18", default-features = false }
+clap_builder = { path = "./clap_builder", version = "=4.5.20", default-features = false }
 clap_derive = { path = "./clap_derive", version = "=4.5.18", optional = true }
 
 [dev-dependencies]

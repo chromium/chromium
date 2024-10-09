@@ -161,7 +161,7 @@ impl Styles {
     }
 }
 
-impl super::AppTag for Styles {}
+impl super::AppExt for Styles {}
 
 impl Default for Styles {
     fn default() -> Self {

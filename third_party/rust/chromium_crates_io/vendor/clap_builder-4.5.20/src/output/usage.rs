@@ -109,7 +109,7 @@ impl<'cmd> Usage<'cmd> {
             {
                 self.write_arg_usage(styled, &[], true);
                 styled.trim_end();
-                let _ = write!(styled, "{}", USAGE_SEP);
+                let _ = write!(styled, "{USAGE_SEP}");
             }
             let mut cmd = self.cmd.clone();
             cmd.build();
@@ -120,7 +120,7 @@ impl<'cmd> Usage<'cmd> {
             {
                 if i != 0 {
                     styled.trim_end();
-                    let _ = write!(styled, "{}", USAGE_SEP);
+                    let _ = write!(styled, "{USAGE_SEP}");
                 }
                 Usage::new(sub).write_usage_no_title(styled, &[]);
             }
@@ -183,7 +183,7 @@ impl<'cmd> Usage<'cmd> {
                 || self.cmd.is_args_conflicts_with_subcommands_set()
             {
                 styled.trim_end();
-                let _ = write!(styled, "{}", USAGE_SEP);
+                let _ = write!(styled, "{USAGE_SEP}");
                 if self.cmd.is_args_conflicts_with_subcommands_set() {
                     let bin_name = self.cmd.get_usage_name_fallback();
                     // Short-circuit full usage creation since no args will be relevant

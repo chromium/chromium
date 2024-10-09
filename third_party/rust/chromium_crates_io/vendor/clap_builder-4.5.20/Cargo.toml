@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.74"
 name = "clap_builder"
-version = "4.5.18"
+version = "4.5.20"
 build = false
 include = [
     "build.rs",
@@ -84,7 +84,7 @@ version = "0.11.0"
 optional = true
 
 [dependencies.terminal_size]
-version = "0.3.0"
+version = "0.4.0"
 optional = true
 
 [dependencies.unicase]
@@ -92,7 +92,7 @@ version = "2.6.0"
 optional = true
 
 [dependencies.unicode-width]
-version = "0.1.9"
+version = "0.2.0"
 optional = true
 
 [dev-dependencies.color-print]
@@ -202,6 +202,7 @@ string_add_assign = "warn"
 string_lit_as_bytes = "warn"
 todo = "warn"
 trait_duplication_in_bounds = "warn"
+uninlined_format_args = "warn"
 verbose_file_reads = "warn"
 zero_sized_map_values = "warn"
 

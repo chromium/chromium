@@ -532,6 +532,12 @@ who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "4.5.17 -> 4.5.18"
 
+[[audits.clap]]
+who = "danakj <danakj@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "4.5.18 -> 4.5.20"
+notes = "Trivial changes"
+
 [[audits.clap_builder]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -603,6 +609,12 @@ notes = "No new unsafe, net, fs"
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "4.5.17 -> 4.5.18"
+
+[[audits.clap_builder]]
+who = "danakj <danakj@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto", "ub-risk-0"]
+delta = "4.5.18 -> 4.5.20"
+notes = "No new unsafe"
 
 [[audits.clap_lex]]
 who = "danakj@chromium.org"
