@@ -516,9 +516,7 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
       presentationController.presentedViewController;
 
   if (presentedViewController == _consentViewController) {
-    // Don't let the consent view controller dismiss without user opting in or
-    // out.
-    return NO;
+    return YES;
   }
 
   CHECK_EQ(presentedViewController, _resultViewController);
@@ -547,11 +545,10 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
   UIViewController* presentedViewController =
       presentationController.presentedViewController;
 
-  if (presentedViewController == _resultViewController) {
-    [self
-        destroyLensUI:YES
+  CHECK(presentedViewController == _resultViewController ||
+        presentedViewController == _consentViewController);
+  [self destroyLensUI:YES
                reason:lens::LensOverlayDismissalSource::kBottomSheetDismissed];
-  }
 }
 
 - (void)adjustSelectionOcclusionInsets {
