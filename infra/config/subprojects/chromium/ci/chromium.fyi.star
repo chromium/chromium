@@ -428,6 +428,7 @@ ci.builder(
         category = "mulitscreen",
     ),
     contact_team_email = "web-windowing-team@google.com",
+    notifies = ["multiscreen-owners"],
 )
 
 ci.builder(

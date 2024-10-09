@@ -336,3 +336,11 @@ luci.notifier(
         "bchoobineh@google.com",
     ],
 )
+
+luci.notifier(
+    name = "multiscreen-owners",
+    on_new_status = ["FAILURE"],
+    notify_emails = [
+        "web-windowing-team@google.com",
+    ],
+)
