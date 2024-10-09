@@ -151,4 +151,9 @@ BASE_FEATURE(kWebAuthnAmbientSignin,
              "WebAuthenticationAmbientSignin",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Not yet enabled by default.
+BASE_FEATURE(kWebAuthniCloudKeychainPrf,
+             "WebAuthenticationiCloudKeychainPrf",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace device

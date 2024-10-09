@@ -124,6 +124,10 @@ BASE_DECLARE_FEATURE(kWebAuthnEnclaveAuthenticatorDelay);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnAmbientSignin);
 
+// Support the PRF extension with iCloud Keychain credentials.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthniCloudKeychainPrf);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

@@ -31,6 +31,7 @@
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
 #include "device/fido/discoverable_credential_metadata.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_parsing_utils.h"
@@ -57,7 +58,8 @@ AuthenticatorSupportedOptions AuthenticatorOptions() {
       UserVerificationAvailability::kSupportedAndConfigured;
   options.supports_user_presence = true;
   if (@available(macOS 15.0, *)) {
-    options.supports_prf = true;
+    options.supports_prf =
+        base::FeatureList::IsEnabled(kWebAuthniCloudKeychainPrf);
   }
   return options;
 }
