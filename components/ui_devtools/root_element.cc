@@ -13,7 +13,7 @@ namespace ui_devtools {
 RootElement::RootElement(UIElementDelegate* ui_element_delegate)
     : UIElement(UIElementType::ROOT, ui_element_delegate, nullptr) {}
 
-RootElement::~RootElement() {}
+RootElement::~RootElement() = default;
 
 void RootElement::GetBounds(gfx::Rect* bounds) const {
   NOTREACHED_IN_MIGRATION();

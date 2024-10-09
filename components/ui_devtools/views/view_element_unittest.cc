@@ -126,12 +126,12 @@ END_METADATA
 
 class ViewElementTest : public views::ViewsTestBase {
  public:
-  ViewElementTest() {}
+  ViewElementTest() = default;
 
   ViewElementTest(const ViewElementTest&) = delete;
   ViewElementTest& operator=(const ViewElementTest&) = delete;
 
-  ~ViewElementTest() override {}
+  ~ViewElementTest() override = default;
 
  protected:
   void SetUp() override {

@@ -61,7 +61,7 @@ void AddFrameResources(
 
 PageAgentViews::PageAgentViews(DOMAgent* dom_agent) : PageAgent(dom_agent) {}
 
-PageAgentViews::~PageAgentViews() {}
+PageAgentViews::~PageAgentViews() = default;
 
 protocol::Response PageAgentViews::disable() {
   return protocol::Response::Success();

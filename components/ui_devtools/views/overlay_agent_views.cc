@@ -383,7 +383,7 @@ OverlayAgentViews::OverlayAgentViews(DOMAgent* dom_agent)
       show_size_on_canvas_(false),
       highlight_rect_config_(HighlightRectsConfiguration::NO_DRAW) {}
 
-OverlayAgentViews::~OverlayAgentViews() {}
+OverlayAgentViews::~OverlayAgentViews() = default;
 
 void OverlayAgentViews::SetPinnedNodeId(int node_id) {
   pinned_id_ = node_id;

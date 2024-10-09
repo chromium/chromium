@@ -10,7 +10,7 @@ OverlayAgent::OverlayAgent(DOMAgent* dom_agent) : dom_agent_(dom_agent) {
   DCHECK(dom_agent_);
 }
 
-OverlayAgent::~OverlayAgent() {}
+OverlayAgent::~OverlayAgent() = default;
 
 protocol::Response OverlayAgent::setInspectMode(
     const protocol::String& in_mode,
