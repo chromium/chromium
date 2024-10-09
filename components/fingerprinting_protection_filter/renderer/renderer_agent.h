@@ -70,6 +70,8 @@ class RendererAgent
 
   void DidFailProvisionalLoad() override;
 
+  void DidFinishLoad() override;
+
   // Used to delete `this` to avoid memory leaks and ensure `render_frame()` is
   // always valid.
   void OnDestruct() override;
@@ -134,6 +136,11 @@ class RendererAgent
   // resource loads.
   virtual void SetFilter(
       std::unique_ptr<subresource_filter::DocumentSubresourceFilter> filter);
+
+  // Sends statistics about the `DocumentSubresourceFilter`s work to the
+  // browser.
+  virtual void SendDocumentLoadStatistics(
+      const subresource_filter::mojom::DocumentLoadStatistics& statistics);
 
  private:
   // Initializes `filter_`. Assumes that activation has been computed.

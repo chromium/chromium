@@ -9,6 +9,7 @@
 #include "chrome/browser/fingerprinting_protection/fingerprinting_protection_filter_browser_test_harness.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
+#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features_test_support.h"
 #include "components/subresource_filter/core/common/test_ruleset_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -113,14 +114,16 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterBrowserTest,
         entry, ukm::builders::FingerprintingProtection::kDryRunName));
   }
 
-  // TODO(https://crbug.com/358371545): Add PageLoad.SubresourceLoads histogram
-  // testing.
   histogram_tester.ExpectBucketCount(
       ActivationDecisionHistogramName,
       subresource_filter::ActivationDecision::ACTIVATED, 1);
   histogram_tester.ExpectBucketCount(
       ActivationLevelHistogramName,
       subresource_filter::mojom::ActivationLevel::kEnabled, 1);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsTotalForPage, 1);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsEvaluatedForPage, 1);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsMatchedRulesForPage, 1);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsDisallowedForPage, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -201,14 +204,16 @@ IN_PROC_BROWSER_TEST_F(
         entry, ukm::builders::FingerprintingProtection::kDryRunName));
   }
 
-  // TODO(https://crbug.com/358371545): Add PageLoad.SubresourceLoads histogram
-  // testing.
   histogram_tester.ExpectBucketCount(
       ActivationDecisionHistogramName,
       subresource_filter::ActivationDecision::ACTIVATED, 1);
   histogram_tester.ExpectBucketCount(
       ActivationLevelHistogramName,
       subresource_filter::mojom::ActivationLevel::kEnabled, 1);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsTotalForPage, 1);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsEvaluatedForPage, 1);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsMatchedRulesForPage, 1);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsDisallowedForPage, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterDryRunBrowserTest,
@@ -285,14 +290,87 @@ IN_PROC_BROWSER_TEST_F(FingerprintingProtectionFilterDryRunBrowserTest,
         entry, ukm::builders::FingerprintingProtection::kDryRunName));
   }
 
-  // TODO(https://crbug.com/358371545): Add PageLoad.SubresourceLoads histogram
-  // testing.
   histogram_tester.ExpectBucketCount(
       ActivationDecisionHistogramName,
       subresource_filter::ActivationDecision::ACTIVATED, 1);
   histogram_tester.ExpectBucketCount(
       ActivationLevelHistogramName,
       subresource_filter::mojom::ActivationLevel::kDryRun, 1);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsTotalForPage, 1);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsEvaluatedForPage, 1);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsMatchedRulesForPage, 1);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsDisallowedForPage, 1);
+}
+
+class FingerprintingProtectionFilterBrowserTestPerformanceMeasurementsEnabled
+    : public FingerprintingProtectionFilterBrowserTest {
+ public:
+  FingerprintingProtectionFilterBrowserTestPerformanceMeasurementsEnabled() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{features::kEnableFingerprintingProtectionFilter,
+          {{"activation_level", "enabled"},
+           {"performance_measurement_rate", "1.0"}}}},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+#if BUILDFLAG(IS_MAC)
+// TODO(https://crbug.com/40236757): Flaky on Mac.
+#define MAYBE_PerformanceMeasurementsHistogramsAreRecorded \
+  DISABLED_PerformanceMeasurementsHistogramsAreRecorded
+#else
+#define MAYBE_PerformanceMeasurementsHistogramsAreRecorded \
+  PerformanceMeasurementsHistogramsAreRecorded
+#endif
+
+// TODO(https://crbug.com/371981583): Add browser test(s) for Incognito mode
+// equivalent.
+IN_PROC_BROWSER_TEST_F(
+    FingerprintingProtectionFilterBrowserTestPerformanceMeasurementsEnabled,
+    MAYBE_PerformanceMeasurementsHistogramsAreRecorded) {
+  base::HistogramTester histogram_tester;
+
+  GURL url(GetTestUrl(kTestFrameSetPath));
+
+  // Disallow loading child frame documents that in turn would end up
+  // loading included_script.js.
+  ASSERT_NO_FATAL_FAILURE(
+      SetRulesetToDisallowURLsWithPathSuffix("included_script.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  const std::vector<const char*> kSubframeNames{"one", "two", "three"};
+  const std::vector<bool> kExpectOnlySecondSubframe{false, true, false};
+  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
+      kSubframeNames, kExpectOnlySecondSubframe));
+  ExpectFramesIncludedInLayout(kSubframeNames, kExpectOnlySecondSubframe);
+
+  // Now navigate the first subframe to an allowed URL and ensure that the load
+  // successfully commits and the frame gets restored (no longer collapsed).
+  GURL allowed_subdocument_url(
+      GetTestUrl("subresource_filter/frame_with_allowed_script.html"));
+  NavigateFrame(kSubframeNames[0], allowed_subdocument_url);
+
+  const std::vector<bool> kExpectFirstAndSecondSubframe{true, true, false};
+  ASSERT_NO_FATAL_FAILURE(ExpectParsedScriptElementLoadedStatusInFrames(
+      kSubframeNames, kExpectFirstAndSecondSubframe));
+  ExpectFramesIncludedInLayout(kSubframeNames, kExpectFirstAndSecondSubframe);
+
+  histogram_tester.ExpectBucketCount(
+      ActivationDecisionHistogramName,
+      subresource_filter::ActivationDecision::ACTIVATED, 1);
+  histogram_tester.ExpectBucketCount(
+      ActivationLevelHistogramName,
+      subresource_filter::mojom::ActivationLevel::kEnabled, 1);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsTotalForPage, 1);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsEvaluatedForPage, 1);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsMatchedRulesForPage, 1);
+  histogram_tester.ExpectTotalCount(kSubresourceLoadsDisallowedForPage, 1);
+  histogram_tester.ExpectTotalCount(kEvaluationTotalWallDurationForPage, 1);
+  histogram_tester.ExpectTotalCount(kEvaluationTotalCPUDurationForPage, 1);
 }
 
 }  // namespace fingerprinting_protection_filter

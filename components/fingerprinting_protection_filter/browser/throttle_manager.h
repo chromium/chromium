@@ -264,7 +264,7 @@ class ThrottleManager : public base::SupportsUserData::Data,
   void CheckActivation(CheckActivationCallback callback) override;
 
   void SetDocumentLoadStatistics(
-      subresource_filter::mojom::DocumentLoadStatisticsPtr statistics);
+      subresource_filter::mojom::DocumentLoadStatisticsPtr statistics) override;
 
   // Gets a filter for the navigation from `throttle`, creates and returns a new
   // filter, or returns `nullptr`. Also adds `FilterHandle` objects as

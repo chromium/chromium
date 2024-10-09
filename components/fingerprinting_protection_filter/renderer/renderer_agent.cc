@@ -180,6 +180,14 @@ void RendererAgent::DidFailProvisionalLoad() {
   pending_activation_ = true;
 }
 
+void RendererAgent::DidFinishLoad() {
+  if (!filter_) {
+    return;
+  }
+  const auto& statistics = filter_->statistics();
+  SendDocumentLoadStatistics(statistics);
+}
+
 void RendererAgent::OnDestruct() {
   // Deleting itself here ensures that a `RendererAgent` does not need to
   // check the validity of `render_frame()` before using it and avoids a memory
@@ -289,6 +297,12 @@ void RendererAgent::MaybeCreateNewFilter() {
   url::Origin origin = url::Origin::Create(current_document_url_);
   SetFilter(std::make_unique<subresource_filter::DocumentSubresourceFilter>(
       std::move(origin), activation_state_, std::move(ruleset)));
+}
+
+void RendererAgent::SendDocumentLoadStatistics(
+    const subresource_filter::mojom::DocumentLoadStatistics& statistics) {
+  GetFingerprintingProtectionHost()->SetDocumentLoadStatistics(
+      statistics.Clone());
 }
 
 }  // namespace fingerprinting_protection_filter
