@@ -27,7 +27,9 @@
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/sync/service/sync_service.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/profile/profile_init_stage.h"
+#import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/link_preview/link_preview_coordinator.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_observer_bridge.h"
@@ -132,7 +134,6 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 @interface NewTabPageCoordinator () <AccountMenuCoordinatorDelegate,
-                                     AppStateObserver,
                                      AuthenticationServiceObserving,
                                      BooleanObserver,
                                      ContentSuggestionsDelegate,
@@ -152,6 +153,7 @@
                                      NewTabPageHeaderCommands,
                                      NewTabPageActionsDelegate,
                                      OverscrollActionsControllerDelegate,
+                                     ProfileStateObserver,
                                      SceneStateObserver,
                                      SupervisedUserCapabilitiesObserving> {
   // Observes changes in the IdentityManager.
@@ -343,11 +345,12 @@
   [self initializeNTPComponents];
   [self startObservers];
 
+  ProfileState* profileState = sceneState.profileState;
+  [profileState addObserver:self];
+
   // Do not focus on omnibox for voice over if there are other screens to
   // show or if the caller requested for this focus to not happen.
-  AppState* appState = sceneState.appState;
-  [appState addObserver:self];
-  BOOL appInitializing = appState.initStage < AppInitStage::kFinal;
+  BOOL appInitializing = profileState.initStage < ProfileInitStage::kFinal;
   if (appInitializing || !self.canfocusAccessibilityOmniboxWhenViewAppears) {
     self.NTPViewController.focusAccessibilityOmniboxWhenViewAppears = NO;
   }
@@ -402,7 +405,7 @@
   // NOTE: anything that executes below WILL NOT execute for OffTheRecord
   // browsers!
 
-  [sceneState.appState removeObserver:self];
+  [sceneState.profileState removeObserver:self];
 
   if (IsTabGroupIndicatorEnabled()) {
     [_tabGroupIndicatorCoordinator stop];
@@ -1476,15 +1479,16 @@
   return nullptr;
 }
 
-#pragma mark - AppStateObserver
+#pragma mark - ProfileStateObserver
 
-- (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(AppInitStage)previousInitStage {
-  if (previousInitStage == AppInitStage::kFirstRun) {
+- (void)profileState:(ProfileState*)profileState
+    didTransitionToInitStage:(ProfileInitStage)nextInitStage
+               fromInitStage:(ProfileInitStage)fromInitStage {
+  if (nextInitStage == ProfileInitStage::kFinal) {
     self.NTPViewController.focusAccessibilityOmniboxWhenViewAppears = YES;
     [self.headerViewController focusAccessibilityOnOmnibox];
 
-    [appState removeObserver:self];
+    [profileState removeObserver:self];
   }
 }
 

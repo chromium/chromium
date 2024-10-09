@@ -103,7 +103,7 @@ source_set("coordinator") {
     "//components/signin/public/base",
     "//components/signin/public/identity_manager/objc",
     "//components/supervised_user/core/common:features",
-    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/profile",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/bubble/ui_bundled",
     "//ios/chrome/browser/context_menu/ui_bundled/link_preview",
