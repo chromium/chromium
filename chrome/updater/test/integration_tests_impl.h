@@ -440,7 +440,8 @@ void RunFakeLegacyUpdater(UpdaterScope scope);
 
 // Dismiss the installation completion dialog, then wait for the process
 // exit.
-void CloseInstallCompleteDialog(const std::wstring& child_window_text_to_find,
+void CloseInstallCompleteDialog(const std::u16string& bundle_name,
+                                const std::wstring& child_window_text_to_find,
                                 bool verify_app_logo_loaded = false);
 #endif  // BUILDFLAG(IS_WIN)
 

@@ -639,6 +639,12 @@ BELOW_NORMAL_PRIORITY_CLASS if the update flow is a background flow.
 #### Updater UI behavior
 
 The updater UI does the following:
+*   The title of the UI is derived from the `bundlename` if specified, or
+    otherwise the `appname` from the metainstaller `tag`. For instance, if no
+    `bundlename` is specified, and the `appname` is "Sample App", the title of
+    the UI will be "Sample App Installer". If no `bundlename` or `appname` is
+    specified, the UI title will be a generic `Chromium Installer` for
+    unbranded, or `Google Installer` for branded.
 *   on successful installs that do not specify an installer API launch command:
     *   Displays a "Thank you for installing" message that the user must click
         to close.

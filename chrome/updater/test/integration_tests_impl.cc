@@ -567,7 +567,16 @@ void InstallUpdaterAndApp(UpdaterScope scope,
 #if BUILDFLAG(IS_WIN)
     ASSERT_TRUE(wait_for_the_installer);
     Run(scope, command_line, nullptr);
-    CloseInstallCompleteDialog(base::ASCIIToWide(child_window_text_to_find),
+
+    std::u16string bundle_name;
+    if (!tag.empty()) {
+      tagging::TagArgs tag_args;
+      ASSERT_EQ(tagging::ErrorCode::kSuccess,
+                tagging::Parse(tag, {}, tag_args));
+      bundle_name = base::UTF8ToUTF16(tag_args.bundle_name);
+    }
+    CloseInstallCompleteDialog(bundle_name,
+                               base::ASCIIToWide(child_window_text_to_find),
                                verify_app_logo_loaded);
 #else
     NOTREACHED_IN_MIGRATION();

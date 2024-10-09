@@ -89,7 +89,7 @@ BOOL OmahaWnd::PreTranslateMessage(MSG* msg) {
 }
 
 void OmahaWnd::InitializeDialog() {
-  SetWindowText(GetInstallerDisplayName(bundle_name_).c_str());
+  SetWindowText(GetInstallerDisplayName(bundle_name()).c_str());
 
   CenterWindow(nullptr);
   ui::SetWindowIcon(m_hWnd, IDI_APP,

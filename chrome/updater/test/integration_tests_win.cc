@@ -83,6 +83,7 @@
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/resources/resources.grh"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
+#include "chrome/updater/win/ui/ui_util.h"
 #include "chrome/updater/win/win_constants.h"
 #include "components/crx_file/crx_verifier.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -649,7 +650,8 @@ void RunOfflineInstallWithManifest(UpdaterScope scope,
   if (is_silent_install || expect_success) {
     EXPECT_TRUE(WaitForUpdaterExit());
   } else {
-    CloseInstallCompleteDialog(GetLocalizedString(string_resource_id_to_find));
+    CloseInstallCompleteDialog({},
+                               GetLocalizedString(string_resource_id_to_find));
   }
 
   scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(scope);
@@ -1843,11 +1845,10 @@ void RunFakeLegacyUpdater(UpdaterScope scope) {
   }
 }
 
-void CloseInstallCompleteDialog(const std::wstring& child_window_text_to_find,
+void CloseInstallCompleteDialog(const std::u16string& bundle_name,
+                                const std::wstring& child_window_text_to_find,
                                 bool verify_app_logo_loaded) {
-  const std::wstring window_title =
-      GetLocalizedStringF(IDS_INSTALLER_DISPLAY_NAME_BASE,
-                          GetLocalizedString(IDS_FRIENDLY_COMPANY_NAME_BASE));
+  const std::wstring window_title = ui::GetInstallerDisplayName(bundle_name);
   bool found = false;
   base::Process process;
   ASSERT_TRUE(WaitFor(

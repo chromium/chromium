@@ -4091,6 +4091,29 @@ TEST_F(IntegrationTest, AppLogoUrl) {
   ASSERT_NO_FATAL_FAILURE(Uninstall());
 }
 
+TEST_F(IntegrationTest, BundleNameShowsUpInUI) {
+  ScopedServer test_server(test_commands_);
+  const std::string kAppId("test");
+  const std::string kAppName("Test%20App");
+  const base::Version v1("1");
+  ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
+      &test_server, kAppId, "", UpdateService::Priority::kForeground,
+      base::Version({0, 0, 0, 0}), v1));
+
+  ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
+      /*app_id=*/{}, /*is_silent_install=*/false, /*tag=*/
+      base::StrCat(
+          {"appguid=", kAppId, "&appname=", kAppName, "&usagestats=1"}),
+      base::WideToUTF8(
+          GetLocalizedString(IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE))));
+  ASSERT_TRUE(WaitForUpdaterExit());
+
+  ASSERT_NO_FATAL_FAILURE(ExpectAppVersion(kAppId, v1));
+
+  ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(&test_server));
+  ASSERT_NO_FATAL_FAILURE(Uninstall());
+}
+
 TEST_F(IntegrationTest, OfflineInstall) {
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
@@ -4192,7 +4215,7 @@ TEST_F(IntegrationTest, ExpectErrorUIWhenGetSetupLockFails) {
   for (const auto message_id : {IDS_UNABLE_TO_GET_SETUP_LOCK_BASE,
                                 IDS_BUNDLE_INSTALLED_SUCCESSFULLY_BASE}) {
     ASSERT_NO_FATAL_FAILURE(
-        CloseInstallCompleteDialog(GetLocalizedString(message_id)));
+        CloseInstallCompleteDialog({}, GetLocalizedString(message_id)));
   }
 
   ASSERT_TRUE(WaitForUpdaterExit());
