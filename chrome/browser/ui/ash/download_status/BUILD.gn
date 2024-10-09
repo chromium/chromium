@@ -83,8 +83,6 @@ source_set("browser_tests") {
     "//chrome/browser/notifications",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui",
-    "//chrome/browser/ui/ash:test_support",
     "//chrome/browser/ui/ash/holding_space:test_support",
     "//chrome/test/base/ash/util:test_support",
     "//chromeos/crosapi/mojom",

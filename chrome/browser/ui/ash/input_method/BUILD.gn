@@ -110,7 +110,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/ash/input_method",
     "//chrome/browser/ash/input_method:test_support",
-    "//chrome/browser/ui/ash",
     "//chrome/test:test_support",
     "//chromeos/ash/services/ime/public/cpp:structs",
     "//content/test:test_support",

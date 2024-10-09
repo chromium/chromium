@@ -53,6 +53,7 @@ static_library("main_extra_parts") {
     "//chrome/browser/chromeos/tablet_mode",
     "//chrome/browser/enterprise/connectors/device_trust/attestation/ash",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash",
     "//chrome/browser/ui/ash/accessibility",
     "//chrome/browser/ui/ash/app_access",
     "//chrome/browser/ui/ash/arc",

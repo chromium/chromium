@@ -183,7 +183,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/lock_screen_apps",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/settings:test_support",
-    "//chrome/browser/ui/ash:test_support",
     "//chrome/browser/ui/ash/assistant",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/ash/session",

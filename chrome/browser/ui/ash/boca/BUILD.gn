@@ -61,7 +61,6 @@ source_set("browser_tests") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/ui",
-    "//chrome/browser/ui/ash",
     "//chrome/test:test_support",
     "//components/prefs",
     "//content/test:test_support",

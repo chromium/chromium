@@ -600,8 +600,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/ui",
     "//chrome/browser/ui:test_support",
-    "//chrome/browser/ui/ash",
-    "//chrome/browser/ui/ash:test_support",
     "//chrome/browser/ui/webui/ash/login",
     "//chrome/browser/ui/webui/ash/login:test_support",
     "//chrome/browser/ui/webui/ash/login/mojom",

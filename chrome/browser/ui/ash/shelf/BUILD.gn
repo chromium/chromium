@@ -246,7 +246,6 @@ source_set("unit_tests") {
     "//chrome/browser/sync",
     "//chrome/browser/ui",
     "//chrome/browser/ui/apps",
-    "//chrome/browser/ui/ash",
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/ui/ash/session",
     "//chrome/browser/ui/ash/shelf/app_service",

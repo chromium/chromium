@@ -148,7 +148,6 @@ source_set("browser_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui:test_support",
-    "//chrome/browser/ui/ash:test_support",
     "//chrome/test:test_support_ui",
     "//chrome/test/base/ash/util:test_support",
     "//chromeos/ash/components/browser_context_helper",
