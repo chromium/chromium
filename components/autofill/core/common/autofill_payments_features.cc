@@ -222,12 +222,6 @@ BASE_FEATURE(kAutofillEnableVcnGrayOutForMerchantOptOut,
              "AutofillEnableVcnGrayOutForMerchantOptOut",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, uses the refactored VirtualCardEnrollMetricsLogger in
-// VirtualCardEnrollBubbleController on all platforms.
-BASE_FEATURE(kAutofillEnableVirtualCardEnrollMetricsLogger,
-             "AutofillEnableVirtualCardEnrollMetricsLogger",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, Verve-branded card art will be shown for Verve cards.
 BASE_FEATURE(kAutofillEnableVerveCardSupport,
              "AutofillEnableVerveCardSupport",

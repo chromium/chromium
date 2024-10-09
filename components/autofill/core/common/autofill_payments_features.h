@@ -88,8 +88,6 @@ BASE_DECLARE_FEATURE(kAutofillEnableVcnEnrollLoadingAndConfirmation);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableVcnGrayOutForMerchantOptOut);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillEnableVirtualCardEnrollMetricsLogger);
-COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableVerveCardSupport);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableVirtualCardMetadata);
