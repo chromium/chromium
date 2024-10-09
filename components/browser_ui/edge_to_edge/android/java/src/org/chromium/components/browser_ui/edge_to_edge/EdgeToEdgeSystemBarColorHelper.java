@@ -58,11 +58,6 @@ public class EdgeToEdgeSystemBarColorHelper extends BaseSystemBarColorHelper {
         mWindowColorHelper.destroy();
     }
 
-    /** Whether the current activity is drawing edge to edge. */
-    public boolean isEdgeToEdge() {
-        return mIsActivityEdgeToEdge;
-    }
-
     @Override
     protected void applyStatusBarColor() {
         // Don't support color status bar yet. Delegate to the window directly.

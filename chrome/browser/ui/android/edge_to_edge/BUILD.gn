@@ -48,6 +48,7 @@ android_library_factory("factory_java") {
     "//chrome/browser/fullscreen/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/layouts:java",
+    "//components/browser_ui/edge_to_edge/android:java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_utils_java",

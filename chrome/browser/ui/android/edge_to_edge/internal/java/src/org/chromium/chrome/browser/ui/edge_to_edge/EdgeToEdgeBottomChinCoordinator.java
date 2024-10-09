@@ -12,6 +12,7 @@ import org.chromium.base.lifetime.Destroyable;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
+import org.chromium.components.browser_ui.edge_to_edge.SystemBarColorHelper;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -22,7 +23,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * for an edge-to-edge like experience, with the ability to scroll back the bottom chin / "OS
  * navbar" to better view and access bottom-anchored web content.
  */
-public class EdgeToEdgeBottomChinCoordinator implements Destroyable {
+public class EdgeToEdgeBottomChinCoordinator implements Destroyable, SystemBarColorHelper {
     private final EdgeToEdgeBottomChinMediator mMediator;
     private final LayoutManager mLayoutManager;
     private final EdgeToEdgeBottomChinSceneLayer mSceneLayer;
@@ -106,5 +107,20 @@ public class EdgeToEdgeBottomChinCoordinator implements Destroyable {
     public void destroy() {
         mMediator.destroy();
         mSceneLayer.destroy();
+    }
+
+    // SystemBarColorHelper
+
+    @Override
+    public void setStatusBarColor(int color) {}
+
+    @Override
+    public void setNavigationBarColor(int color) {
+        mMediator.onNavigationBarColorChanged(color);
+    }
+
+    @Override
+    public void setNavigationBarDividerColor(int dividerColor) {
+        mMediator.onNavigationBarDividerChanged(dividerColor);
     }
 }
