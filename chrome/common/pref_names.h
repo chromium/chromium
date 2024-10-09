@@ -100,11 +100,12 @@ inline constexpr char kHttpsFirstBalancedMode[] =
 inline constexpr char kHttpsFirstModeIncognito[] =
     "https_first_mode_incognito_enabled";
 
-// A boolean specifying whether HTTPS-Only Mode is automatically enabled by
-// heuristics. Can only be set to true if this pref or kHttpsOnlyModeEnabled has
-// never been set before (true or false). If kHttpsOnlyModeEnabled is modified,
-// this will be set to false, disabling automatic enabling of HTTPS-First Mode
-// forever for this profile.
+// A boolean specifying whether HTTPS-First Balanced Mode is automatically
+// enabled by the Typically Secure User heuristic. Can only be set to true if
+// this pref, kHttpsOnlyModeEnabled and kHttpsFirstBalancedMode have never been
+// set before (true or false).
+// If any of the prefs is modified, this will be set to false, disabling
+// automatic enabling of HTTPS-First Balanced Mode forever for this profile.
 inline constexpr char kHttpsOnlyModeAutoEnabled[] =
     "https_only_mode_auto_enabled";
 
