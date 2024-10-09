@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.provider.Browser;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
+import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
 import android.view.View;
 
@@ -40,7 +41,6 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.Toast;
 
@@ -104,8 +104,12 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
                         new SpanApplier.SpanInfo(
                                 "<link>",
                                 "</link>",
-                                new NoUnderlineClickableSpan(
-                                        getContext(), this::onLearnMoreClicked))));
+                                new ClickableSpan() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        onLearnMoreClicked(view);
+                                    }
+                                })));
 
         ChromeSwitchPreference blockAll3PCookiesSwitch =
                 (ChromeSwitchPreference) findPreference(PREF_BLOCK_ALL_TOGGLE);
@@ -147,8 +151,12 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
                             new SpanApplier.SpanInfo(
                                     "<link>",
                                     "</link>",
-                                    new NoUnderlineClickableSpan(
-                                            getContext(), this::onLearnMoreClicked))));
+                                    new ClickableSpan() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            onLearnMoreClicked(view);
+                                        }
+                                    })));
         }
 
         // Fingerprinting protection switch.
@@ -172,8 +180,12 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
                             new SpanApplier.SpanInfo(
                                     "<link>",
                                     "</link>",
-                                    new NoUnderlineClickableSpan(
-                                            getContext(), this::onLearnMoreClicked))));
+                                    new ClickableSpan() {
+                                        @Override
+                                        public void onClick(View view) {
+                                            onLearnMoreClicked(view);
+                                        }
+                                    })));
         }
 
         // Do not track switch.
