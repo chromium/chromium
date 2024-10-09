@@ -2245,8 +2245,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="I420"/>
   <int value="2" label="YV12"/>
   <int value="3" label="I422"/>
-  <int value="4" label="YV12A"/>
-  <int value="5" label="YV24"/>
+  <int value="4" label="I420A"/>
+  <int value="5" label="I444"/>
   <int value="6" label="NV12"/>
   <int value="7" label="NV21"/>
   <int value="8" label="UYVY"/>
