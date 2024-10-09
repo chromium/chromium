@@ -13,8 +13,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "unicode/locid.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
+
 namespace {
 
 class MockPeerConnectionObserver : public webrtc::PeerConnectionObserver {
@@ -377,5 +377,5 @@ TEST_F(WebRtcMediumTest, GetMessengerAndStartReceivingMessagesTwice) {
 }
 
 }  // namespace
-}  // namespace chrome
-}  // namespace nearby
+
+}  // namespace nearby::chrome

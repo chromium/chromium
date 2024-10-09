@@ -7,8 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 namespace {
 
@@ -187,5 +186,4 @@ void OutputStreamImpl::DoClose(base::WaitableEvent* task_run_waitable_event) {
   }
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

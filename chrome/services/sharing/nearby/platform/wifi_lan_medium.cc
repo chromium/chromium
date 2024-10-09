@@ -21,8 +21,7 @@
 #include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 namespace {
 
@@ -681,5 +680,4 @@ void WifiLanMedium::Shutdown(base::WaitableEvent* shutdown_waitable_event) {
   shutdown_waitable_event->Signal();
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

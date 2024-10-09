@@ -26,8 +26,7 @@
 #include "third_party/webrtc_overrides/task_queue_factory.h"
 #include "unicode/locid.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 namespace {
 
@@ -568,5 +567,4 @@ WebRtcMedium::GetSignalingMessenger(
       std::string(self_id), location_hint, webrtc_signaling_messenger_);
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

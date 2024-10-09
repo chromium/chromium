@@ -9,8 +9,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/c/system/data_pipe.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 namespace {
 
@@ -189,5 +188,4 @@ void InputStreamImpl::DoClose(base::WaitableEvent* task_run_waitable_event) {
     task_run_waitable_event->Signal();
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

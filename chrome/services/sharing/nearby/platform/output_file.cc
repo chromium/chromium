@@ -6,8 +6,7 @@
 
 #include "base/containers/span.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 OutputFile::OutputFile(base::File file) : file_(std::move(file)) {}
 
@@ -41,5 +40,4 @@ Exception OutputFile::Close() {
   return {Exception::kSuccess};
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

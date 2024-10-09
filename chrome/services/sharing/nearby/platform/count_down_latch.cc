@@ -6,8 +6,7 @@
 
 #include "base/time/time.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 CountDownLatch::CountDownLatch(int32_t count)
     : count_(count),
@@ -39,5 +38,4 @@ void CountDownLatch::CountDown() {
     count_waitable_event_.Signal();
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

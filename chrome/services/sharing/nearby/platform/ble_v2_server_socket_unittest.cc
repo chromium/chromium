@@ -11,8 +11,7 @@
 #include "chrome/services/sharing/nearby/platform/count_down_latch.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 class BleV2ServerSocketTest : public testing::Test {
  public:
@@ -155,5 +154,4 @@ TEST_F(BleV2ServerSocketTest, OutputStream_Close) {
   EXPECT_TRUE(output_stream->Close().Ok());
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

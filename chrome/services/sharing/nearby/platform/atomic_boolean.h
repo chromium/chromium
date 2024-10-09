@@ -9,8 +9,7 @@
 
 #include "third_party/nearby/src/internal/platform/implementation/atomic_boolean.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 // Concrete AtomicBoolean implementation.
 class AtomicBoolean : public api::AtomicBoolean {
@@ -29,7 +28,6 @@ class AtomicBoolean : public api::AtomicBoolean {
   std::atomic_bool value_;
 };
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_ATOMIC_BOOLEAN_H_

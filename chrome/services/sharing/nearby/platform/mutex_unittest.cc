@@ -16,8 +16,7 @@
 #include "base/unguessable_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 class MutexTest : public testing::Test {
  protected:
@@ -91,5 +90,4 @@ TEST_F(MutexTest, CannotUnlockBeforeAnyLocks) {
   EXPECT_DCHECK_DEATH(mutex().Unlock());
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

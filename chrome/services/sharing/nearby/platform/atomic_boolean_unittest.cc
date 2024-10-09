@@ -12,8 +12,7 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 class AtomicBooleanTest : public testing::Test {
  protected:
@@ -92,5 +91,4 @@ TEST_F(AtomicBooleanTest, GetOnNewThread) {
   VerifyAtomicBooleanOnThread(true);
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

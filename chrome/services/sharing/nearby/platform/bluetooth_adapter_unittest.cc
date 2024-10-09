@@ -18,8 +18,7 @@
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 class BluetoothAdapterTest : public testing::Test {
  public:
@@ -175,5 +174,4 @@ TEST_F(BluetoothAdapterTest, TestGetAddress) {
   EXPECT_EQ(fake_adapter_->address_, bluetooth_adapter_->GetAddress());
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

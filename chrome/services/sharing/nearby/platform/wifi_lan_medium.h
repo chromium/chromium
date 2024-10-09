@@ -28,19 +28,16 @@
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "third_party/nearby/src/internal/platform/implementation/wifi_lan.h"
 
-namespace ash {
-namespace nearby {
+namespace ash::nearby {
 class TcpServerSocketPort;
-}  // namespace nearby
-}  // namespace ash
+}  // namespace ash::nearby
 
 namespace base {
 class SequencedTaskRunner;
 class WaitableEvent;
 }  // namespace base
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 // An implementation of the abstract Nearby Connections's class
 // api::WifiLanMedium. The implementation uses the
@@ -210,7 +207,6 @@ class WifiLanMedium : public api::WifiLanMedium,
       pending_listen_waitable_events_;
 };
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_WIFI_LAN_MEDIUM_H_

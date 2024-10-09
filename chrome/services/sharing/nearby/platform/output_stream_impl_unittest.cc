@@ -20,8 +20,7 @@
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 namespace {
 
@@ -220,5 +219,4 @@ TEST_F(OutputStreamImplTest, ResetHandle) {
   EXPECT_EQ(Exception::kIo, output_stream_->Write(byte_array).value);
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

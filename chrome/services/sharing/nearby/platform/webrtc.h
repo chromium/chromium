@@ -27,8 +27,7 @@ namespace sharing {
 class IpcPacketSocketFactory;
 }  // namespace sharing
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 class WebRtcMedium : public api::WebRtcMedium {
  public:
@@ -109,7 +108,6 @@ class WebRtcMedium : public api::WebRtcMedium {
   base::WeakPtrFactory<WebRtcMedium> weak_ptr_factory_{this};
 };
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_WEBRTC_H_
