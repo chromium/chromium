@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/crostini/crostini_sshfs.h"
 
 #include <inttypes.h>
+
 #include <memory>
 #include <utility>
 
@@ -20,6 +21,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "content/public/browser/browser_thread.h"
@@ -105,17 +107,17 @@ void CrostiniSshfs::MountCrostiniFiles(const guest_os::GuestId& container_id,
     return;
   }
 
-  bool running =
-      guest_os::GuestOsSessionTracker::GetForProfile(profile_)->IsRunning(
-          in_progress_mount_->container_id);
+  bool running = guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile_)
+                     ->IsRunning(in_progress_mount_->container_id);
   if (!running) {
     LOG(ERROR) << "Unable to mount files for a container that's not running";
     Finish(CrostiniSshfsResult::kContainerNotRunning);
     return;
   }
 
-  auto info = guest_os::GuestOsSessionTracker::GetForProfile(profile_)->GetInfo(
-      in_progress_mount_->container_id);
+  auto info =
+      guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile_)->GetInfo(
+          in_progress_mount_->container_id);
   if (!info) {
     LOG(ERROR) << "Got ssh keys for a container that's not running. Aborting.";
     Finish(CrostiniSshfsResult::kGetContainerInfoFailed);

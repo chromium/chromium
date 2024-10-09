@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_dlc_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -204,7 +205,8 @@ void BruschettaLauncher::OnStartVm(
   BruschettaServiceFactory::GetForProfile(profile_)->RegisterVmLaunch(
       vm_name_, launch_policy);
 
-  auto* tracker = guest_os::GuestOsSessionTracker::GetForProfile(profile_);
+  auto* tracker =
+      guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile_);
   subscription_ = tracker->RunOnceContainerStarted(
       guest_os::GuestId{guest_os::VmType::BRUSCHETTA, vm_name_, "penguin"},
       base::BindOnce(&BruschettaLauncher::OnContainerRunning,

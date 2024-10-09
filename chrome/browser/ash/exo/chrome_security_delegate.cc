@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_files.h"
@@ -219,7 +220,7 @@ void ShareAndTranslateHostToVM(
   if (!paths_to_share.empty()) {
     if (vm_name != plugin_vm::kPluginVmName) {
       auto vm_info =
-          guest_os::GuestOsSessionTracker::GetForProfile(primary_profile)
+          guest_os::GuestOsSessionTrackerFactory::GetForProfile(primary_profile)
               ->GetVmInfo(vm_name);
       if (!vm_info) {
         // VM must be running for copy-paste or drag-drop to be happening so

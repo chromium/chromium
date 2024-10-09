@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
@@ -385,7 +386,7 @@ void GuestOsSharePath::CallSeneschalUnsharePath(const std::string& vm_name,
 
   // Return success if VM is not currently running.
   auto vm_info =
-      GuestOsSessionTracker::GetForProfile(profile_)->GetVmInfo(vm_name);
+      GuestOsSessionTrackerFactory::GetForProfile(profile_)->GetVmInfo(vm_name);
   if (!vm_info) {
     std::move(callback).Run(true, "VM not running");
     return;
@@ -614,8 +615,9 @@ void GuestOsSharePath::OnVolumeMounted(ash::MountError error_code,
     const auto& vms = it.second.GetList();
     for (const auto& vm : vms) {
       RegisterSharedPath(vm.GetString(), path);
-      auto vm_info = GuestOsSessionTracker::GetForProfile(profile_)->GetVmInfo(
-          vm.GetString());
+      auto vm_info =
+          GuestOsSessionTrackerFactory::GetForProfile(profile_)->GetVmInfo(
+              vm.GetString());
       if (vm_info) {
         CallSeneschalSharePath(
             vm.GetString(), vm_info->seneschal_server_handle(), path,

@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
@@ -270,10 +271,10 @@ class GuestOsSharePathTest : public testing::Test {
     drivefs_ =
         base::FilePath("/media/fuse/drivefs-84675c855b63e12f384d45f033826980");
 
-    guest_os::GuestOsSessionTracker::GetForProfile(profile())
+    guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile())
         ->AddGuestForTesting(guest_os::GuestId{guest_os::VmType::UNKNOWN,
                                                "vm-running", "unused"});
-    guest_os::GuestOsSessionTracker::GetForProfile(profile())
+    guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile())
         ->AddGuestForTesting(guest_os::GuestId{guest_os::VmType::TERMINA,
                                                crostini::kCrostiniDefaultVmName,
                                                "unused"});

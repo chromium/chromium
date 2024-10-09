@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -237,7 +238,7 @@ void CrostiniHandler::OnJavascriptAllowed() {
       this);
   crostini::CrostiniPortForwarderFactory::GetForProfile(profile_)->AddObserver(
       this);
-  guest_os::GuestOsSessionTracker::GetForProfile(profile_)
+  guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile_)
       ->AddContainerStartedObserver(this);
 
   // Observe ADB sideloading device policy and react to its changes
@@ -271,7 +272,7 @@ void CrostiniHandler::OnJavascriptDisallowed() {
       ->RemoveObserver(this);
   crostini::CrostiniPortForwarderFactory::GetForProfile(profile_)
       ->RemoveObserver(this);
-  guest_os::GuestOsSessionTracker::GetForProfile(profile_)
+  guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile_)
       ->RemoveContainerStartedObserver(this);
 
   adb_sideloading_device_policy_subscription_ = {};
@@ -899,9 +900,8 @@ void CrostiniHandler::HandleRequestContainerInfo(
        guest_os::GetContainers(profile_, guest_os::VmType::TERMINA)) {
     base::Value::Dict container_info_value;
     container_info_value.Set(kIdKey, container_id.ToDictValue());
-    auto info =
-        guest_os::GuestOsSessionTracker::GetForProfile(profile_)->GetInfo(
-            container_id);
+    auto info = guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile_)
+                    ->GetInfo(container_id);
     if (info) {
       container_info_value.Set(kIpv4Key, info->ipv4_address);
     }

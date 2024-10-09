@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 
 namespace bruschetta {
@@ -74,7 +75,8 @@ void BruschettaMountProvider::OnRunning(PrepareCallback callback,
     std::move(callback).Run(false, 0, 0, base::FilePath());
     return;
   }
-  auto* tracker = guest_os::GuestOsSessionTracker::GetForProfile(profile_);
+  auto* tracker =
+      guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile_);
 
   auto info = tracker->GetInfo(guest_id_);
   if (!info) {

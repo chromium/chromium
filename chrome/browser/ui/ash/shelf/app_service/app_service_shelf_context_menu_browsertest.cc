@@ -23,6 +23,7 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
@@ -446,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuCrostiniAppBrowserTest,
 
   guest_os::GuestId id(guest_os::VmType::BRUSCHETTA,
                        bruschetta::kBruschettaVmName, "");
-  guest_os::GuestOsSessionTracker::GetForProfile(browser()->profile())
+  guest_os::GuestOsSessionTrackerFactory::GetForProfile(browser()->profile())
       ->AddGuestForTesting(id, guest_os::GuestInfo{id, 0, {}, {}, {}, {}});
 
   auto* bruschetta_service =

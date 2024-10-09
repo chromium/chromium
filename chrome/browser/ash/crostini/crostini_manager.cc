@@ -59,6 +59,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_remover.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_stability_monitor.h"
@@ -595,7 +596,7 @@ void CrostiniManager::CrostiniRestarter::StartLxdContainerFinished(
   // ready.
   if (container_id_ == DefaultContainerId()) {
     crostini_manager_->primary_counter_mount_subscription_ =
-        guest_os::GuestOsSessionTracker::GetForProfile(profile_)
+        guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile_)
             ->RunOnceContainerStarted(
                 container_id_,
                 base::BindOnce(&CrostiniManager::MountCrostiniFilesBackground,
@@ -1050,7 +1051,7 @@ std::optional<VmInfo> CrostiniManager::GetVmInfo(std::string vm_name) {
 void CrostiniManager::AddRunningVmForTesting(std::string vm_name,
                                              uint32_t cid) {
   guest_os::GuestId id(guest_os::VmType::TERMINA, vm_name, "");
-  guest_os::GuestOsSessionTracker::GetForProfile(profile_)
+  guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile_)
       ->AddGuestForTesting(  // IN-TEST
           id, guest_os::GuestInfo{id, cid, {}, {}, {}, {}});
   running_vms_[std::move(vm_name)] = VmInfo{VmState::STARTED};
@@ -1227,7 +1228,8 @@ void CrostiniManager::SetUncleanStartupForTesting(bool is_unclean_startup) {
 void CrostiniManager::AddRunningContainerForTesting(std::string vm_name,
                                                     ContainerInfo info,
                                                     bool notify) {
-  auto* tracker = guest_os::GuestOsSessionTracker::GetForProfile(profile_);
+  auto* tracker =
+      guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile_);
   std::optional<guest_os::GuestInfo> vm_info = tracker->GetInfo(
       guest_os::GuestId{guest_os::VmType::TERMINA, vm_name, ""});
   CHECK(vm_info);
@@ -3508,9 +3510,8 @@ void CrostiniManager::OnLxdContainerStarting(
                << " reason: " << signal.failure_reason();
   }
 
-  bool running =
-      guest_os::GuestOsSessionTracker::GetForProfile(profile_)->IsRunning(
-          container_id);
+  bool running = guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile_)
+                     ->IsRunning(container_id);
   if (result == CrostiniResult::SUCCESS && !running) {
     VLOG(1) << "Awaiting ContainerStarted signal from Garcon, did not yet have "
                "information for container "
@@ -4077,9 +4078,8 @@ void CrostiniManager::SuspendDone(base::TimeDelta sleep_duration) {
   // https://crbug.com/968060.  Sshfs is unmounted before suspend,
   // call RestartCrostini to force remount if container is running.
   guest_os::GuestId container_id = DefaultContainerId();
-  bool running =
-      guest_os::GuestOsSessionTracker::GetForProfile(profile_)->IsRunning(
-          container_id);
+  bool running = guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile_)
+                     ->IsRunning(container_id);
   if (running) {
     // TODO(crbug/1142321): Double-check if anything breaks if we change this
     // to just remount the sshfs mounts, in particular check 9p mounts.

@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
@@ -134,7 +135,7 @@ void LaunchApplication(
   // Get vm_info because we need seneschal_server_handle.
   const std::string& vm_name = registration.VmName();
   auto vm_info =
-      guest_os::GuestOsSessionTracker::GetForProfile(profile)->GetVmInfo(
+      guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile)->GetVmInfo(
           vm_name);
   if (!vm_info) {
     return OnLaunchFailed(app_id, std::move(callback),
@@ -493,8 +494,8 @@ bool ShouldStopVm(Profile* profile, const guest_os::GuestId& container_id) {
        guest_os::GetContainers(profile, kCrostiniDefaultVmType)) {
     if (container.container_name != container_id.container_name &&
         container.vm_name == container_id.vm_name) {
-      if (guest_os::GuestOsSessionTracker::GetForProfile(profile)->IsRunning(
-              container)) {
+      if (guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile)
+              ->IsRunning(container)) {
         return false;
       }
     }

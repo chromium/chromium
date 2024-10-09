@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/guest_os/dbus_test_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
@@ -60,7 +61,7 @@ class BruschettaLauncherTest : public testing::Test,
     FakeConciergeClient()->set_start_vm_response(std::move(response));
 
     guest_os::GuestId id{guest_os::VmType::BRUSCHETTA, kTestVmName, "penguin"};
-    guest_os::GuestOsSessionTracker::GetForProfile(&profile_)
+    guest_os::GuestOsSessionTrackerFactory::GetForProfile(&profile_)
         ->AddGuestForTesting(id, guest_os::GuestInfo(id, 30, {}, {}, {}, {}));
 
     SetupPrefs();

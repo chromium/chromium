@@ -38,6 +38,7 @@
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
@@ -587,8 +588,8 @@ bool ConvertFileSystemURLToPathInsideVM(
     // Crostini.
     if (map_crostini_home) {
       auto container_info =
-          guest_os::GuestOsSessionTracker::GetForProfile(profile)->GetInfo(
-              crostini::DefaultContainerId());
+          guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile)
+              ->GetInfo(crostini::DefaultContainerId());
       if (!container_info) {
         return false;
       }
@@ -600,7 +601,7 @@ bool ConvertFileSystemURLToPathInsideVM(
     // Bruschetta: use path to homedir, which is currently the empty string
     // because sftp-server inside the VM runs in the homedir.
     auto container_info =
-        guest_os::GuestOsSessionTracker::GetForProfile(profile)->GetInfo(
+        guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile)->GetInfo(
             guest_id);
     if (!container_info) {
       return false;
@@ -672,7 +673,7 @@ bool ConvertPathInsideVMToFileSystemURL(
 
   if (map_crostini_home) {
     auto container_info =
-        guest_os::GuestOsSessionTracker::GetForProfile(profile)->GetInfo(
+        guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile)->GetInfo(
             crostini::DefaultContainerId());
     if (container_info &&
         AppendRelativePath(container_info->homedir, inside, &relative_path)) {
