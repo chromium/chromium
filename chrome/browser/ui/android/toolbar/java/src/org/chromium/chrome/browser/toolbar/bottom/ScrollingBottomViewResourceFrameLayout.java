@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.toolbar.ConstraintsChecker;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarCaptureType;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.components.browser_ui.widget.ViewResourceFrameLayout;
 import org.chromium.ui.resources.dynamics.ViewResourceAdapter;
 
@@ -42,8 +41,6 @@ public class ScrollingBottomViewResourceFrameLayout extends ViewResourceFrameLay
 
     private @Nullable ConstraintsChecker mConstraintsChecker;
 
-    private boolean mLayoutChanged;
-
     public ScrollingBottomViewResourceFrameLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
         mTopShadowHeightPx = getResources().getDimensionPixelOffset(R.dimen.toolbar_shadow_height);
@@ -60,14 +57,6 @@ public class ScrollingBottomViewResourceFrameLayout extends ViewResourceFrameLay
                     // first.
                     if (!super.isDirty()) {
                         return false;
-                    }
-
-                    // Navigating to and from edge-to-edge tabs causes changes to the layout, and
-                    // should trigger a new snapshot. This isn't ideal, though.
-                    // TODO (crbug.com/331692414) Remove once the edge-to-edge adjustment to the
-                    // bottom controls height / padding is refactored.
-                    if (EdgeToEdgeUtils.isLegacyWebsiteOptInEnabled() && mLayoutChanged) {
-                        return true;
                     }
 
                     if (mConstraintsChecker != null && mConstraintsChecker.areControlsLocked()) {
@@ -104,16 +93,9 @@ public class ScrollingBottomViewResourceFrameLayout extends ViewResourceFrameLay
                 }
 
                 super.onCaptureStart(canvas, dirtyRect);
-                mLayoutChanged = false;
                 mLastCaptureSnapshotToken = mCurrentSnapshotToken;
             }
         };
-    }
-
-    @Override
-    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
-        super.onLayout(changed, left, top, right, bottom);
-        mLayoutChanged = changed;
     }
 
     /**
