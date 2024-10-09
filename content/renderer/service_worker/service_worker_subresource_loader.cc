@@ -1524,6 +1524,9 @@ void ServiceWorkerSubresourceLoader::DidCacheStorageMatch(
   auto timing = blink::mojom::ServiceWorkerFetchEventTiming::New();
   response_head_->load_timing.service_worker_cache_lookup_start =
       event_dispatch_time;
+  base::UmaHistogramTimes(
+      "ServiceWorker.StaticRouter.Subresource.CacheLookupDuration",
+      base::TimeTicks::Now() - event_dispatch_time);
   switch (result->which()) {
     case blink::mojom::MatchResult::Tag::kStatus:  // error fallback.
       base::UmaHistogramEnumeration(

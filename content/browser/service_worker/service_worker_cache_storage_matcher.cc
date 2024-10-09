@@ -117,6 +117,9 @@ void ServiceWorkerCacheStorageMatcher::DidMatch(
                          "ServiceWorkerCacheStorageMatcher::DidMatch",
                          TRACE_ID_LOCAL(this),
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  base::UmaHistogramTimes(
+      "ServiceWorker.StaticRouter.MainResource.CacheLookupDuration",
+      base::TimeTicks::Now() - cache_lookup_start_);
 
   auto timing = blink::mojom::ServiceWorkerFetchEventTiming::New();
   switch (result->which()) {

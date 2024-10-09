@@ -1582,6 +1582,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.StaticRouter.{Resource}.CacheLookupDuration"
+    units="microseconds" expires_after="2025-02-10">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Time spent to conduct cache lookup. Recorded when the service worker has
+    associated routing info with the `cache` as the rule, and the browser or
+    renderer is processing requests. This metric is recorded for {Resource}.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+  <token key="Resource">
+    <variant name="MainResource" summary="main resource"/>
+    <variant name="Subresource" summary="subresource"/>
+  </token>
+</histogram>
+
 <histogram name="ServiceWorker.StaticRouter.{Resource}.CacheStorageError"
     enum="CacheStorageErrorType" expires_after="2025-04-06">
   <owner>yyanagisawa@chromium.org</owner>
