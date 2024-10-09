@@ -29,7 +29,8 @@
               "legacy_gclient_config": {
                 "apply_configs": [
                   "chromium_with_telemetry_dependencies",
-                  "use_clang_coverage"
+                  "use_clang_coverage",
+                  "siso_latest"
                 ],
                 "config": "chromium"
               }

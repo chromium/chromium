@@ -606,6 +606,9 @@ ci.builder(
                 # telemetry_perf_unittests suite.
                 "chromium_with_telemetry_dependencies",
                 "use_clang_coverage",
+                # mitigate for tree close due to unfinished siso.
+                # TODO(crbug.com/360961799): remove this
+                "siso_latest",
             ],
         ),
         chromium_config = builder_config.chromium_config(
