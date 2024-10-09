@@ -226,7 +226,11 @@ void PinSetupScreen::ShowImpl() {
             ProfileManager::GetActiveUserProfile());
     quick_unlock_storage->MarkStrongAuth();
   } else {
-    // TODO(b/365059362): Add session refresher for main factor setup.
+    // When PIN is being offered as the main factor, the AuthSession must remain
+    // alive until the user sets their PIN, or until a password is set.
+    CHECK(IsInSetupMode(PinSetupMode::kSetupAsPrimaryFactor, *context()));
+    session_refresher_ = AuthSessionStorage::Get()->KeepAlive(
+        context()->extra_factors_token.value());
   }
 
   const std::string token = *context()->extra_factors_token;
@@ -246,6 +250,7 @@ void PinSetupScreen::ShowImpl() {
 
 void PinSetupScreen::HideImpl() {
   token_lifetime_timeout_.Stop();
+  session_refresher_.reset();
 }
 
 void PinSetupScreen::OnUserAction(const base::Value::List& args) {

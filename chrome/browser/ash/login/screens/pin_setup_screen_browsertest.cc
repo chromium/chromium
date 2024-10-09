@@ -474,6 +474,20 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTest,
       l10n_util::GetStringUTF8(IDS_DISCOVER_PIN_SETUP_SKIP), kSkipButtonCore);
 }
 
+// The AuthSession should not be kept alive while offering PIN as a secondary
+// factor.
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTest,
+                       AuthSessionIsNotKeptAliveForSecondaryFactorSetup) {
+  ShowPinSetupScreen();
+  WaitForScreenShown();
+
+  // Ensure that there isn't a SessionRefresher keeping the AuthSession alive.
+  EXPECT_FALSE(AuthSessionStorage::Get()->CheckHasKeepAliveForTesting(
+      LoginDisplayHost::default_host()
+          ->GetWizardContext()
+          ->extra_factors_token.value()));
+}
+
 // Fixture to pretend that hardware support for login is not available.
 class PinSetupScreenTestWithoutLoginSupport : public PinSetupScreenTest {
  public:
@@ -613,6 +627,20 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor,
   WaitForScreenShown();
   TapSkipButton();
   EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::kUserSkip);
+}
+
+// Ensures that the AuthSession is kept alive when PIN is being offered as the
+// main factor.
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor,
+                       AuthSessionIsKeptAliveForMainFactorSetup) {
+  ShowPinSetupScreen();
+  WaitForScreenShown();
+
+  // Ensure that there is a SessionRefresher keeping the AuthSession alive.
+  EXPECT_TRUE(AuthSessionStorage::Get()->CheckHasKeepAliveForTesting(
+      LoginDisplayHost::default_host()
+          ->GetWizardContext()
+          ->extra_factors_token.value()));
 }
 
 class PinSetupScreenTestAsMainFactorWithoutLoginSupport

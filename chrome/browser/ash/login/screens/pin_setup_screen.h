@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/auth/cryptohome_pin_engine.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 
 namespace ash {
 
@@ -115,6 +116,9 @@ class PinSetupScreen : public BaseScreen {
   AuthPerformer auth_performer_;
 
   legacy::CryptohomePinEngine cryptohome_pin_engine_;
+
+  // For keeping the AuthSession while offering PIN as a main factor.
+  std::unique_ptr<ScopedSessionRefresher> session_refresher_;
 
   base::WeakPtrFactory<PinSetupScreen> weak_ptr_factory_{this};
 };
