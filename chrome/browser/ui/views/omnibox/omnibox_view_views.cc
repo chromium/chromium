@@ -209,6 +209,14 @@ OmniboxViewViews::OmniboxViewViews(std::unique_ptr<OmniboxClient> client,
   } else {
     GetViewAccessibility().SetIsEditable(true);
   }
+  GetViewAccessibility().SetAutoComplete("both");
+  GetViewAccessibility().AddHTMLAttributes(std::make_pair("type", "url"));
+  // Expose keyboard shortcut where it makes sense.
+#if BUILDFLAG(IS_MAC)
+  GetViewAccessibility().SetKeyShortcuts("⌘L");
+#else
+  GetViewAccessibility().SetKeyShortcuts("Ctrl+L");
+#endif
 }
 
 OmniboxViewViews::~OmniboxViewViews() {
@@ -1271,17 +1279,6 @@ bool OmniboxViewViews::SkipDefaultKeyEventProcessing(
 
 void OmniboxViewViews::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   Textfield::GetAccessibleNodeData(node_data);
-  node_data->AddStringAttribute(ax::mojom::StringAttribute::kAutoComplete,
-                                "both");
-// Expose keyboard shortcut where it makes sense.
-#if BUILDFLAG(IS_MAC)
-  node_data->AddStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts,
-                                "⌘L");
-#else
-  node_data->AddStringAttribute(ax::mojom::StringAttribute::kKeyShortcuts,
-                                "Ctrl+L");
-#endif
-  node_data->html_attributes.push_back(std::make_pair("type", "url"));
 
   if (model()->PopupIsOpen()) {
     popup_view_->AddPopupAccessibleNodeData(node_data);

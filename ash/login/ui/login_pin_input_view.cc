@@ -59,8 +59,6 @@ class LoginPinInput : public FixedLengthCodeInput {
                           const ui::GestureEvent& gesture_event) override;
   bool HandleKeyEvent(views::Textfield* sender,
                       const ui::KeyEvent& key_event) override;
-  // views::view
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:
   void UpdateAccessibleDescription();
@@ -96,6 +94,8 @@ LoginPinInput::LoginPinInput(int length,
       AddActiveInputIndexChanged(base::BindRepeating(
           &LoginPinInput::UpdateAccessibleDescription, base::Unretained(this)));
 
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF8(
+      IDS_ASH_LOGIN_POD_PASSWORD_PIN_INPUT_ACCESSIBLE_NAME));
   UpdateAccessibleDescription();
 }
 
@@ -148,12 +148,6 @@ bool LoginPinInput::HandleKeyEvent(views::Textfield* sender,
 
   // Delegate all other key events to the base class.
   return FixedLengthCodeInput::HandleKeyEvent(sender, key_event);
-}
-
-void LoginPinInput::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  FixedLengthCodeInput::GetAccessibleNodeData(node_data);
-  node_data->SetName(l10n_util::GetStringUTF8(
-      IDS_ASH_LOGIN_POD_PASSWORD_PIN_INPUT_ACCESSIBLE_NAME));
 }
 
 void LoginPinInput::UpdateAccessibleDescription() {

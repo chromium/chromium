@@ -288,6 +288,8 @@ FixedLengthCodeInput::FixedLengthCodeInput(int length,
   GetViewAccessibility().SetRole(ax::mojom::Role::kTextField);
   GetViewAccessibility().SetIsProtected(is_obscure_pin_);
   GetViewAccessibility().SetValue(text_value_for_a11y_);
+  GetViewAccessibility().SetIsEditable(true);
+  GetViewAccessibility().AddHTMLAttributes(std::make_pair("type", "tel"));
   OnTextSelectionChanged();
 }
 
@@ -402,9 +404,6 @@ void FixedLengthCodeInput::OnTextSelectionChanged() {
 }
 
 void FixedLengthCodeInput::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->AddState(ax::mojom::State::kEditable);
-
-  node_data->html_attributes.push_back(std::make_pair("type", "tel"));
   node_data->AddStringAttribute(
       ax::mojom::StringAttribute::kName,
       l10n_util::GetStringUTF8(

@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
@@ -237,6 +238,10 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void SetIsSelected(bool selected);
 
   void SetIsMultiselectable(bool multiselectable);
+
+  void SetIsModal(bool modal);
+
+  void AddHTMLAttributes(std::pair<std::string, std::string> attribute);
 
   void SetIsHovered(bool is_hovered);
   bool GetIsHovered() const;

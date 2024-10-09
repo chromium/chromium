@@ -40,7 +40,6 @@ class InfoBarView : public infobars::InfoBar,
 
   // views::View:
   void Layout(PassKey) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   void ViewHierarchyChanged(

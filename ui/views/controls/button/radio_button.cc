@@ -42,10 +42,6 @@ RadioButton::RadioButton(const std::u16string& label, int group_id)
 
 RadioButton::~RadioButton() = default;
 
-void RadioButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  Checkbox::GetAccessibleNodeData(node_data);
-}
-
 View* RadioButton::GetSelectedViewForGroup(int group) {
   Views views;
   GetViewsInGroupFromParent(group, &views);

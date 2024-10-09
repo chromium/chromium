@@ -771,6 +771,15 @@ void ViewAccessibility::SetIsMultiselectable(bool multiselectable) {
   SetState(ax::mojom::State::kMultiselectable, multiselectable);
 }
 
+void ViewAccessibility::SetIsModal(bool modal) {
+  data_.AddBoolAttribute(ax::mojom::BoolAttribute::kModal, modal);
+}
+
+void ViewAccessibility::AddHTMLAttributes(
+    std::pair<std::string, std::string> attribute) {
+  data_.html_attributes.push_back(attribute);
+}
+
 void ViewAccessibility::SetIsIgnored(bool is_ignored) {
   if (is_ignored == should_be_ignored_) {
     return;
