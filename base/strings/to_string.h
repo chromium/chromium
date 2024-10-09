@@ -73,6 +73,21 @@ struct ToStringHelper<T> {
   }
 };
 
+// Integral types that can't stream, like char16_t.
+template <typename T>
+  requires(!SupportsOstreamOperator<const T&> && std::is_integral_v<T>)
+struct ToStringHelper<T> {
+  static void Stringify(const T& v, std::ostringstream& ss) {
+    if constexpr (std::is_signed_v<T>) {
+      static_assert(sizeof(T) <= 8);
+      ss << static_cast<int64_t>(v);
+    } else {
+      static_assert(sizeof(T) <= 8);
+      ss << static_cast<uint64_t>(v);
+    }
+  }
+};
+
 // Non-streamables that have a `ToString` member.
 template <typename T>
   requires(!SupportsOstreamOperator<const T&> && SupportsToString<const T&>)

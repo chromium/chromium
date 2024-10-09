@@ -24,6 +24,7 @@
 #include "base/memory/raw_span.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/utf_ostream_operators.h"
 #include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -3315,6 +3316,11 @@ TEST(SpanTest, Printing) {
   EXPECT_EQ(testing::PrintToString(base::span<int>()), "[]");
   EXPECT_EQ(testing::PrintToString(base::span<char>()), "[\"\"]");
 
+  EXPECT_EQ(testing::PrintToString(base::span({u'a', u'b', u'c'})),
+            "[u\"abc\"]");
+  EXPECT_EQ(testing::PrintToString(base::span({L'a', L'b', L'c'})),
+            "[L\"abc\"]");
+
   // Base prints values in spans. Chars are special.
   EXPECT_EQ(base::ToString(base::span({1, 2, 3})), "[1, 2, 3]");
   EXPECT_EQ(base::ToString(base::span({S(), S()})), "[S(), S()]");
@@ -3325,6 +3331,9 @@ TEST(SpanTest, Printing) {
             std::string_view("[\"ab\0c\0\"]", 9u));
   EXPECT_EQ(base::ToString(base::span<int>()), "[]");
   EXPECT_EQ(base::ToString(base::span<char>()), "[\"\"]");
+
+  EXPECT_EQ(base::ToString(base::span({u'a', u'b', u'c'})), "[u\"abc\"]");
+  EXPECT_EQ(base::ToString(base::span({L'a', L'b', L'c'})), "[L\"abc\"]");
 }
 
 }  // namespace base

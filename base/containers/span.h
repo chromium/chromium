@@ -1375,20 +1375,6 @@ span(R&& r) noexcept
 template <typename T, size_t N>
 span(const T (&)[N]) -> span<const T, N>;
 
-// span can be printed and will print each of its values, including in Gtests.
-//
-// TODO(danakj): This could move to a ToString() member method if gtest printers
-// were hooked up to base::ToString().
-template <class T, size_t N>
-  requires requires {
-    { as_string_view(span<T, N>()) };
-  } || requires(T t) {
-    { base::ToString(t) };
-  }
-constexpr std::ostream& operator<<(std::ostream& l, span<T, N> r) {
-  return internal::span_stream(l, r);
-}
-
 // [span.objectrep], views of object representation
 template <typename T, size_t X, typename InternalPtrType>
 constexpr auto as_bytes(span<T, X, InternalPtrType> s) noexcept {
@@ -1442,7 +1428,7 @@ constexpr auto as_chars(span<T, X, InternalPtrType> s) noexcept {
 // If you want to view an arbitrary span type as a string, first explicitly
 // convert it to bytes via `base::as_bytes()`.
 //
-// For spans over byte-sized primitives, this is sugar for:
+// For spans over bytes, this is sugar for:
 // ```
 // std::string_view(as_chars(span).begin(), as_chars(span).end())
 // ```
@@ -1453,6 +1439,12 @@ constexpr std::string_view as_string_view(
     span<const unsigned char> s) noexcept {
   const auto c = as_chars(s);
   return std::string_view(c.begin(), c.end());
+}
+constexpr std::u16string_view as_string_view(span<const char16_t> s) noexcept {
+  return std::u16string_view(s.begin(), s.end());
+}
+constexpr std::wstring_view as_string_view(span<const wchar_t> s) noexcept {
+  return std::wstring_view(s.begin(), s.end());
 }
 
 // as_writable_chars() is the equivalent of as_writable_bytes(), except that
@@ -1697,11 +1689,21 @@ constexpr auto span_cmp(span<T, N> l, span<U, M> r)
                                                 r.end());
 }
 
+template <class T>
+concept SpanConvertsToStringView = requires {
+  { ::base::as_string_view(span<T>()) };
+};
+
+template <class T>
+concept StringViewCanStreamToCharStream = requires(std::ostream& s) {
+  { s << ::base::as_string_view(span<T>()) };
+};
+
 // Template helper for implementing printing.
 template <class T, size_t N>
 constexpr std::ostream& span_stream(std::ostream& l, span<T, N> r) {
   l << "[";
-  if constexpr (!std::same_as<std::remove_cvref_t<T>, char>) {
+  if constexpr (!SpanConvertsToStringView<T>) {
     if (!r.empty()) {
       l << base::ToString(r.front());
       for (const T& e : r.subspan(1u)) {
@@ -1710,6 +1712,19 @@ constexpr std::ostream& span_stream(std::ostream& l, span<T, N> r) {
       }
     }
   } else {
+    // Note: Since we don't always have that header included, we can't branch on
+    // whether streaming is available, as it would create UB if different parts
+    // of the TU see a different answer. So we just try catch it with an assert.
+    static_assert(StringViewCanStreamToCharStream<T>,
+                  "include base/strings/utf_ostream_operators.h when streaming "
+                  "spans of wide chars");
+    if constexpr (std::same_as<wchar_t, std::remove_cvref_t<T>>) {
+      l << "L";
+    } else if constexpr (std::same_as<char16_t, std::remove_cvref_t<T>>) {
+      l << "u";
+    } else if constexpr (std::same_as<char32_t, std::remove_cvref_t<T>>) {
+      l << "U";
+    }
     l << '\"';
     l << as_string_view(r);
     l << '\"';
@@ -1719,6 +1734,18 @@ constexpr std::ostream& span_stream(std::ostream& l, span<T, N> r) {
 }
 
 }  // namespace internal
+
+// span can be printed and will print each of its values, including in Gtests.
+//
+// TODO(danakj): This could move to a ToString() member method if gtest printers
+// were hooked up to base::ToString().
+template <class T, size_t N>
+  requires internal::SpanConvertsToStringView<T> || requires(T t) {
+    { base::ToString(t) };
+  }
+constexpr std::ostream& operator<<(std::ostream& l, span<T, N> r) {
+  return internal::span_stream(l, r);
+}
 
 }  // namespace base
 
