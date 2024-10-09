@@ -639,7 +639,7 @@ message PolicyFetchRequest {
 
   // Encoded information from a policy invalidation notification. This is opaque
   // to the client and should be forwarded from the invalidation notification.
-  optional string policy_invalidation_info = 10;
+  optional string policy_invalidation_info = 10 [deprecated = true];
 
   // Whether or not the client only supports the new PolicyData invalidation
   // topics. If true, only the policy_invalidation_topic and
