@@ -194,7 +194,7 @@ WebDatabaseTable::TypeKey GetKey() {
 KeywordTable::KeywordTable() {
 }
 
-KeywordTable::~KeywordTable() {}
+KeywordTable::~KeywordTable() = default;
 
 KeywordTable* KeywordTable::FromWebDatabase(WebDatabase* db) {
   return static_cast<KeywordTable*>(db->GetTable(GetKey()));
