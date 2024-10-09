@@ -69,7 +69,7 @@ FeedbackUploaderFactory::FeedbackUploaderFactory()
           "feedback::FeedbackUploader",
           BrowserContextDependencyManager::GetInstance()) {}
 
-FeedbackUploaderFactory::~FeedbackUploaderFactory() {}
+FeedbackUploaderFactory::~FeedbackUploaderFactory() = default;
 
 std::unique_ptr<KeyedService>
 FeedbackUploaderFactory::BuildServiceInstanceForBrowserContext(

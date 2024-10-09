@@ -96,7 +96,7 @@ FeedbackUploader::FeedbackUploader(
                        SharedURLLoaderFactoryGetter(),
                        shared_url_loader_factory) {}
 
-FeedbackUploader::~FeedbackUploader() {}
+FeedbackUploader::~FeedbackUploader() = default;
 
 // static
 void FeedbackUploader::SetMinimumRetryDelayForTesting(base::TimeDelta delay) {
