@@ -1077,15 +1077,11 @@ static String ExtractSelectedText(const FrameSelection& selection,
 String FrameSelection::SelectedHTMLForClipboard() const {
   const EphemeralRangeInFlatTree& range =
       ComputeRangeForSerialization(GetSelectionInDOMTree());
-  CreateMarkupOptions::Builder builder;
-  if (RuntimeEnabledFeatures::
-          IgnoresCSSTextTransformsForPlainTextCopyEnabled()) {
-    builder.SetIgnoresCSSTextTransformsForRenderedText(true);
-  }
-
   return CreateMarkup(range.StartPosition(), range.EndPosition(),
-                      builder.SetShouldAnnotateForInterchange(true)
+                      CreateMarkupOptions::Builder()
+                          .SetShouldAnnotateForInterchange(true)
                           .SetShouldResolveURLs(kResolveNonLocalURLs)
+                          .SetIgnoresCSSTextTransformsForRenderedText(true)
                           .Build());
 }
 
@@ -1099,19 +1095,14 @@ String FrameSelection::SelectedText() const {
 }
 
 String FrameSelection::SelectedTextForClipboard() const {
-  TextIteratorBehavior::Builder builder;
-  if (RuntimeEnabledFeatures::
-          IgnoresCSSTextTransformsForPlainTextCopyEnabled()) {
-    builder.SetIgnoresCSSTextTransforms(true);
-  }
-
   return ExtractSelectedText(
-      *this, builder
+      *this, TextIteratorBehavior::Builder()
                  .SetEmitsImageAltText(
                      frame_->GetSettings() &&
                      frame_->GetSettings()->GetSelectionIncludesAltImageText())
                  .SetSkipsUnselectableContent(true)
                  .SetEntersTextControls(true)
+                 .SetIgnoresCSSTextTransforms(true)
                  .Build());
 }
 
