@@ -173,17 +173,18 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest, GetLanguageCode) {
   EXPECT_EQ("es", GetLanguageCode());
 }
 
-class GraduationManagerWithUnmanagedUserTest
-    : public SystemWebAppBrowserTestBase {
+class GraduationManagerWithConsumerUserTest
+    : public SystemWebAppBrowserTestBase,
+      public ::testing::WithParamInterface<bool> {
  public:
-  GraduationManagerWithUnmanagedUserTest() {
+  GraduationManagerWithConsumerUserTest() {
     scoped_feature_list_.InitAndEnableFeature(features::kGraduation);
   }
-  ~GraduationManagerWithUnmanagedUserTest() override = default;
-  GraduationManagerWithUnmanagedUserTest(
-      const GraduationManagerWithUnmanagedUserTest&) = delete;
-  GraduationManagerWithUnmanagedUserTest& operator=(
-      const GraduationManagerWithUnmanagedUserTest&) = delete;
+  ~GraduationManagerWithConsumerUserTest() override = default;
+  GraduationManagerWithConsumerUserTest(
+      const GraduationManagerWithConsumerUserTest&) = delete;
+  GraduationManagerWithConsumerUserTest& operator=(
+      const GraduationManagerWithConsumerUserTest&) = delete;
 
   void SetUpOnMainThread() override {
     SystemWebAppBrowserTestBase::SetUpOnMainThread();
@@ -193,16 +194,22 @@ class GraduationManagerWithUnmanagedUserTest
   }
 
  private:
+  bool IsChildUser() const { return GetParam(); }
+
   base::test::ScopedFeatureList scoped_feature_list_;
 
   LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_, /*test_base=*/this, embedded_test_server(),
-      LoggedInUserMixin::LogInType::kConsumer};
+      IsChildUser() ? LoggedInUserMixin::LogInType::kChild
+                    : LoggedInUserMixin::LogInType::kConsumer};
 };
 
-IN_PROC_BROWSER_TEST_F(GraduationManagerWithUnmanagedUserTest,
-                       AppNotInstalled) {
+IN_PROC_BROWSER_TEST_P(GraduationManagerWithConsumerUserTest, AppNotInstalled) {
   EXPECT_FALSE(GetManager().IsSystemWebApp(web_app::kGraduationAppId));
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         GraduationManagerWithConsumerUserTest,
+                         testing::Bool());
 
 }  // namespace ash

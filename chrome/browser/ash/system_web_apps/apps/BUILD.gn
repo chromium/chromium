@@ -159,6 +159,7 @@ static_library("apps") {
     "//components/keyed_service/content",
     "//components/prefs",
     "//components/services/app_service/public/cpp:app_types",
+    "//components/supervised_user/core/browser",
     "//components/version_info:channel",
     "//components/webapps/common",
     "//content/public/common",
