@@ -204,15 +204,27 @@ void RecordGeneratedTabCount(int generated_tab_count) {
                               generated_tab_count);
 }
 
-void RecordUKMSessionEndMetrics(ukm::SourceId source_id,
-                                LensOverlayInvocationSource invocation_source,
-                                bool search_performed_in_session,
-                                base::TimeDelta session_duration) {
+void RecordUKMSessionEndMetrics(
+    ukm::SourceId source_id,
+    LensOverlayInvocationSource invocation_source,
+    bool search_performed_in_session,
+    base::TimeDelta session_duration,
+    std::optional<base::TimeDelta> session_foreground_duration,
+    std::optional<int> generated_tab_count) {
   if (source_id == ukm::kInvalidSourceId) {
     return;
   }
-  ukm::builders::Lens_Overlay_SessionEnd(source_id)
-      .SetInvocationSource(static_cast<int64_t>(invocation_source))
+  ukm::builders::Lens_Overlay_SessionEnd event(source_id);
+
+  if (session_foreground_duration.has_value()) {
+    event.SetSessionForegroundDuration(
+        session_foreground_duration->InMilliseconds());
+  }
+  if (generated_tab_count.has_value()) {
+    event.SetGeneratedTabCount(*generated_tab_count);
+  }
+
+  event.SetInvocationSource(static_cast<int64_t>(invocation_source))
       .SetInvocationResultedInSearch(search_performed_in_session)
       .SetSessionDuration(session_duration.InMilliseconds())
       .Record(ukm::UkmRecorder::Get());

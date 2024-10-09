@@ -5,18 +5,16 @@
 #ifndef COMPONENTS_LENS_LENS_OVERLAY_METRICS_H_
 #define COMPONENTS_LENS_LENS_OVERLAY_METRICS_H_
 
+#include <optional>
 #include <string>
 
+#include "base/time/time.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/lens/lens_overlay_first_interaction_type.h"
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_new_tab_source.h"
 #include "components/lens/lens_permission_user_action.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-
-namespace base {
-class TimeDelta;
-}  // namespace base
 
 namespace lens {
 
@@ -70,11 +68,16 @@ void RecordNewTabGenerated(LensOverlayNewTabSource tab_source);
 // overlay.
 void RecordGeneratedTabCount(int generated_tab_count);
 
-// Records UKM session end metrics.
-void RecordUKMSessionEndMetrics(ukm::SourceId source_id,
-                                LensOverlayInvocationSource invocation_source,
-                                bool search_performed_in_session,
-                                base::TimeDelta session_duration);
+// Records UKM session end metrics. `session_foreground_duration` and
+// `generated_tab_count` are only recorded on iOS. Remove the optional when
+// recording on Desktop.
+void RecordUKMSessionEndMetrics(
+    ukm::SourceId source_id,
+    LensOverlayInvocationSource invocation_source,
+    bool search_performed_in_session,
+    base::TimeDelta session_duration,
+    std::optional<base::TimeDelta> session_foreground_duration = std::nullopt,
+    std::optional<int> generated_tab_count = std::nullopt);
 
 }  // namespace lens
 

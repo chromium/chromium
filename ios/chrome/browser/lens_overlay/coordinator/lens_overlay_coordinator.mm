@@ -1116,9 +1116,10 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
   lens::RecordGeneratedTabCount(_mediator.generatedTabCount);
 
   // Session end UKM metrics.
-  lens::RecordUKMSessionEndMetrics(self.associatedTabSourceId,
-                                   self.currentInvocationSource,
-                                   _searchPerformedInSession, sessionDuration);
+  lens::RecordUKMSessionEndMetrics(
+      self.associatedTabSourceId, self.currentInvocationSource,
+      _searchPerformedInSession, sessionDuration, _foregroundDuration,
+      _mediator.generatedTabCount);
 }
 
 @end
