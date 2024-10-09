@@ -1,0 +1,26 @@
+{
+  "gn_args": {
+    "clang_use_default_sample_profile": false,
+    "debuggable_apks": false,
+    "default_min_sdk_version": 21,
+    "disable_file_support": true,
+    "enable_base_tracing": false,
+    "enable_reporting": true,
+    "enable_resource_allowlist_generation": false,
+    "enable_websockets": false,
+    "include_transport_security_state_preload_list": false,
+    "is_component_build": false,
+    "is_cronet_build": true,
+    "is_debug": true,
+    "media_use_ffmpeg": false,
+    "symbol_level": 1,
+    "target_cpu": "x64",
+    "target_os": "android",
+    "use_hashed_jni_names": true,
+    "use_partition_alloc": false,
+    "use_platform_icu_alternatives": true,
+    "use_remoteexec": true,
+    "use_siso": true,
+    "use_thin_lto": false
+  }
+}
