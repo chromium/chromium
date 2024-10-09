@@ -25,6 +25,30 @@
       numeric-unchecked-values="[[numericUncheckedValues_]]"
       numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]">
   </settings-toggle-button>
+  <div class="settings-columned-section">
+    <div class="column">
+      <h2 class="description-header">$i18n{columnHeadingWhenOn}</h2>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:astrophotography-mode" aria-hidden="true">
+          </cr-icon>
+          <div class="secondary">$i18n{historySearchWhenOnBulletOne}</div>
+        </li>
+      </ul>
+    </div>
+    <div class="column">
+      <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:find-in-path" aria-hidden="true"></cr-icon>
+          <div class="secondary">
+            <div class="bullet-one">$i18n{historySearchConsiderBulletOne}</div>
+            <div>$i18n{historySearchConsiderBulletTwo}</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
 </template>
 
 <template is="dom-if" if="[[enableAiSettingsPageRefresh_]]" restamp>
@@ -49,29 +73,45 @@
         numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]">
     </settings-toggle-button>
   </div>
+  <div class="settings-columned-section">
+    <div class="column">
+      <h2 class="description-header">$i18n{columnHeadingWhenOn}</h2>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:search-spark" aria-hidden="true"></cr-icon>
+          <div class="secondary">
+            $i18n{experimentalAdvancedFeature2Sublabel}
+          </div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:quick-reference-all" aria-hidden="true">
+          </cr-icon>
+          <div class="secondary">
+            $i18n{experimentalAdvancedFeature2Sublabel}
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="column">
+      <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:psychiatry" aria-hidden="true"></cr-icon>
+          <div class="secondary">$i18n{privacyPageTitle}</div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:googleg" aria-hidden="true"></cr-icon>
+          <div class="secondary">$i18n{privacyPageTitle}</div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:account-box" aria-hidden="true"></cr-icon>
+          <div class="secondary">$i18n{privacyPageTitle}</div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:file-save" aria-hidden="true"></cr-icon>
+          <div class="secondary">$i18n{privacyPageTitle}</div>
+        </li>
+      </ul>
+    </div>
+  </div>
 </template>
-
-<div class="settings-columned-section">
-  <div class="column">
-    <h2 class="description-header">$i18n{columnHeadingWhenOn}</h2>
-    <ul class="icon-bulleted-list">
-      <li>
-        <cr-icon icon="settings20:astrophotography-mode" aria-hidden="true">
-        </cr-icon>
-        <div class="secondary">$i18n{historySearchWhenOnBulletOne}</div>
-      </li>
-    </ul>
-  </div>
-  <div class="column">
-    <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
-    <ul class="icon-bulleted-list">
-      <li>
-        <cr-icon icon="settings20:find-in-path" aria-hidden="true"></cr-icon>
-        <div class="secondary">
-          <div class="bullet-one">$i18n{historySearchConsiderBulletOne}</div>
-          <div>$i18n{historySearchConsiderBulletTwo}</div>
-        </div>
-      </li>
-    </ul>
-  </div>
-</div>
