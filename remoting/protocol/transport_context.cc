@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/webrtc/thread_wrapper.h"
@@ -58,23 +59,21 @@ void PrintIceConfig(const IceConfig& ice_config) {
 // static
 scoped_refptr<TransportContext> TransportContext::ForTests(TransportRole role) {
   webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
-  return new protocol::TransportContext(
+  return base::MakeRefCounted<TransportContext>(
       std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
-      webrtc::ThreadWrapper::current()->SocketServer(), nullptr, nullptr,
-      role);
+      webrtc::ThreadWrapper::current()->SocketServer(),
+      /*ice_config_fetcher=*/nullptr, role);
 }
 
 TransportContext::TransportContext(
     std::unique_ptr<PortAllocatorFactory> port_allocator_factory,
     rtc::SocketFactory* socket_factory,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    OAuthTokenGetter* oauth_token_getter,
+    std::unique_ptr<IceConfigFetcher> ice_config_fetcher,
     TransportRole role)
     : port_allocator_factory_(std::move(port_allocator_factory)),
       socket_factory_(socket_factory),
-      url_loader_factory_(url_loader_factory),
-      oauth_token_getter_(oauth_token_getter),
-      role_(role) {
+      role_(role),
+      ice_config_fetcher_(std::move(ice_config_fetcher)) {
   DCHECK(socket_factory_);
 }
 
@@ -85,7 +84,7 @@ void TransportContext::GetIceConfig(OnIceConfigCallback callback) {
 
   // If there is a pending |ice_config_request_| then delay the callback until
   // the request is finished.
-  if (ice_config_fetcher_) {
+  if (ice_config_request_in_flight_) {
     pending_ice_config_callbacks_.push_back(std::move(callback));
   } else {
     HOST_LOG << "Using cached ICE Config.";
@@ -96,7 +95,7 @@ void TransportContext::GetIceConfig(OnIceConfigCallback callback) {
 
 void TransportContext::EnsureFreshIceConfig() {
   // Check if request is already pending.
-  if (ice_config_fetcher_) {
+  if (ice_config_request_in_flight_) {
     HOST_LOG << "ICE Config request is already pending.";
     return;
   }
@@ -108,8 +107,7 @@ void TransportContext::EnsureFreshIceConfig() {
 
   if (base::Time::Now() >
       (last_request_completion_time_ + kIceConfigRequestCooldown)) {
-    ice_config_fetcher_ = std::make_unique<RemotingIceConfigRequest>(
-        url_loader_factory_, oauth_token_getter_);
+    ice_config_request_in_flight_ = true;
     ice_config_fetcher_->GetIceConfig(
         base::BindOnce(&TransportContext::OnIceConfig, base::Unretained(this)));
   } else {
@@ -119,7 +117,7 @@ void TransportContext::EnsureFreshIceConfig() {
 
 void TransportContext::OnIceConfig(std::optional<IceConfig> ice_config) {
   ice_config_ = ice_config.value_or(IceConfig());
-  ice_config_fetcher_.reset();
+  ice_config_request_in_flight_ = false;
 
   if (!ice_config_.is_null()) {
     // Only reset |last_request_completion_time_| if we received a valid config.

@@ -45,6 +45,7 @@
 #include "remoting/protocol/chromium_port_allocator_factory.h"
 #include "remoting/protocol/it2me_host_authenticator_factory.h"
 #include "remoting/protocol/jingle_session_manager.h"
+#include "remoting/protocol/remoting_ice_config_request.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/protocol/validating_authenticator.h"
 #include "remoting/signaling/log_to_server.h"
@@ -294,11 +295,13 @@ void It2MeHost::ConnectOnNetworkThread(
       base::BindOnce(&It2MeHost::OnReceivedSupportID,
                      weak_factory_.GetWeakPtr()));
 
+  auto ice_config_fetcher =
+      std::make_unique<protocol::RemotingIceConfigRequest>(
+          host_context_->url_loader_factory(), oauth_token_getter_.get());
   auto transport_context = base::MakeRefCounted<protocol::TransportContext>(
       std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
       webrtc::ThreadWrapper::current()->SocketServer(),
-      host_context_->url_loader_factory(), oauth_token_getter_.get(),
-      protocol::TransportRole::SERVER);
+      std::move(ice_config_fetcher), protocol::TransportRole::SERVER);
   if (!ice_config.is_null()) {
     transport_context->set_turn_ice_config(ice_config);
   }

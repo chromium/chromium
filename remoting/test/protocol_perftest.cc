@@ -39,6 +39,7 @@
 #include "remoting/protocol/frame_consumer.h"
 #include "remoting/protocol/frame_stats.h"
 #include "remoting/protocol/host_authentication_config.h"
+#include "remoting/protocol/ice_config_fetcher.h"
 #include "remoting/protocol/jingle_session_manager.h"
 #include "remoting/protocol/me2me_host_authenticator_factory.h"
 #include "remoting/protocol/session_config.h"
@@ -307,8 +308,8 @@ class ProtocolPerfTest
         GetParam().out_of_order_rate);
     auto transport_context = base::MakeRefCounted<protocol::TransportContext>(
         std::move(port_allocator_factory),
-        webrtc::ThreadWrapper::current()->SocketServer(), nullptr, nullptr,
-        protocol::TransportRole::SERVER);
+        webrtc::ThreadWrapper::current()->SocketServer(),
+        /*ice_config_fetcher=*/nullptr, protocol::TransportRole::SERVER);
     std::unique_ptr<protocol::SessionManager> session_manager(
         new protocol::JingleSessionManager(host_signaling_.get()));
     session_manager->set_protocol_config(protocol_config_->Clone());
@@ -377,8 +378,8 @@ class ProtocolPerfTest
         GetParam().out_of_order_rate);
     auto transport_context = base::MakeRefCounted<protocol::TransportContext>(
         std::move(port_allocator_factory),
-        webrtc::ThreadWrapper::current()->SocketServer(), nullptr, nullptr,
-        protocol::TransportRole::CLIENT);
+        webrtc::ThreadWrapper::current()->SocketServer(),
+        /*ice_config_fetcher=*/nullptr, protocol::TransportRole::CLIENT);
 
     protocol::ClientAuthenticationConfig client_auth_config;
     client_auth_config.host_id = kHostId;

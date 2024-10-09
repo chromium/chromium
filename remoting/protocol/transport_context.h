@@ -16,15 +16,7 @@
 #include "remoting/protocol/ice_config.h"
 #include "remoting/protocol/transport.h"
 
-namespace network {
-class SharedURLLoaderFactory;
-}  // namespace network
-
-namespace remoting {
-
-class OAuthTokenGetter;
-
-namespace protocol {
+namespace remoting::protocol {
 
 class PortAllocatorFactory;
 class IceConfigFetcher;
@@ -39,12 +31,10 @@ class TransportContext : public base::RefCountedThreadSafe<TransportContext> {
 
   static scoped_refptr<TransportContext> ForTests(TransportRole role);
 
-  TransportContext(
-      std::unique_ptr<PortAllocatorFactory> port_allocator_factory,
-      rtc::SocketFactory* socket_factory,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      OAuthTokenGetter* oauth_token_getter,
-      TransportRole role);
+  TransportContext(std::unique_ptr<PortAllocatorFactory> port_allocator_factory,
+                   rtc::SocketFactory* socket_factory,
+                   std::unique_ptr<IceConfigFetcher> ice_config_fetcher,
+                   TransportRole role);
 
   TransportContext(const TransportContext&) = delete;
   TransportContext& operator=(const TransportContext&) = delete;
@@ -83,20 +73,18 @@ class TransportContext : public base::RefCountedThreadSafe<TransportContext> {
 
   std::unique_ptr<PortAllocatorFactory> port_allocator_factory_;
   raw_ptr<rtc::SocketFactory> socket_factory_;
-  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  raw_ptr<OAuthTokenGetter> oauth_token_getter_ = nullptr;
   TransportRole role_;
 
   IceConfig ice_config_;
 
   base::Time last_request_completion_time_;
+  bool ice_config_request_in_flight_ = false;
   std::unique_ptr<IceConfigFetcher> ice_config_fetcher_;
 
   // Called once |ice_config_request_| completes.
   std::list<OnIceConfigCallback> pending_ice_config_callbacks_;
 };
 
-}  // namespace protocol
-}  // namespace remoting
+}  // namespace remoting::protocol
 
 #endif  // REMOTING_PROTOCOL_TRANSPORT_CONTEXT_H_

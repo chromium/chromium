@@ -38,6 +38,7 @@
 #include "remoting/protocol/negotiating_client_authenticator.h"
 #include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/pairing_registry.h"
+#include "remoting/protocol/remoting_ice_config_request.h"
 #include "remoting/protocol/transport.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/signaling/ftl_signal_strategy.h"
@@ -260,11 +261,13 @@ void FtlSignalingPlayground::RegisterSession(
 void FtlSignalingPlayground::InitializeTransport() {
   protocol::NetworkSettings network_settings(
       protocol::NetworkSettings::NAT_TRAVERSAL_FULL);
+  auto ice_config_fetcher =
+      std::make_unique<protocol::RemotingIceConfigRequest>(
+          url_loader_factory_owner_->GetURLLoaderFactory(), nullptr);
   auto transport_context = base::MakeRefCounted<protocol::TransportContext>(
       std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
       webrtc::ThreadWrapper::current()->SocketServer(),
-      url_loader_factory_owner_->GetURLLoaderFactory(), nullptr,
-      transport_role_);
+      std::move(ice_config_fetcher), transport_role_);
   auto close_callback =
       base::BindOnce(&FtlSignalingPlayground::AsyncTearDownAndRunCallback,
                      base::Unretained(this));

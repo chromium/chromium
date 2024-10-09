@@ -118,6 +118,7 @@
 #include "remoting/protocol/jingle_session_manager.h"
 #include "remoting/protocol/me2me_host_authenticator_factory.h"
 #include "remoting/protocol/pairing_registry.h"
+#include "remoting/protocol/remoting_ice_config_request.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/signaling/ftl_host_device_id_provider.h"
 #include "remoting/signaling/ftl_signal_strategy.h"
@@ -1818,12 +1819,15 @@ void HostProcess::StartHost() {
 
   InitializeSignaling();
 
+  // TODO: joedow - Create Cloud/Corp/Me2Me fetchers based on host config hint.
+  auto ice_config_fetcher =
+      std::make_unique<protocol::RemotingIceConfigRequest>(
+          context_->url_loader_factory(), oauth_token_getter_.get());
   scoped_refptr<protocol::TransportContext> transport_context =
       new protocol::TransportContext(
           std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
           webrtc::ThreadWrapper::current()->SocketServer(),
-          context_->url_loader_factory(), oauth_token_getter_.get(),
-          protocol::TransportRole::SERVER);
+          std::move(ice_config_fetcher), protocol::TransportRole::SERVER);
   std::unique_ptr<protocol::SessionManager> session_manager(
       new protocol::JingleSessionManager(signal_strategy_.get()));
 

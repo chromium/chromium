@@ -16,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "components/webrtc/thread_wrapper.h"
@@ -31,6 +32,7 @@
 #include "remoting/protocol/client_authentication_config.h"
 #include "remoting/protocol/frame_consumer.h"
 #include "remoting/protocol/host_stub.h"
+#include "remoting/protocol/ice_config_fetcher.h"
 #include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/performance_tracker.h"
 #include "remoting/protocol/transport_context.h"
@@ -525,8 +527,7 @@ void ChromotingSession::Core::ConnectOnNetworkThread() {
       new protocol::TransportContext(
           std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
           webrtc::ThreadWrapper::current()->SocketServer(),
-          runtime_->url_loader_factory(),
-          /* oauth_token_getter= */ nullptr, protocol::TransportRole::CLIENT);
+          /*ice_config_fetcher=*/nullptr, protocol::TransportRole::CLIENT);
 
   if (session_context_->info.pairing_id.length() &&
       session_context_->info.pairing_secret.length()) {
