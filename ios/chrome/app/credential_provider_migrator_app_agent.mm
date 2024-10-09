@@ -29,7 +29,7 @@
 
 @interface CredentialProviderMigratorAppAgent () <PasskeyModelObserverDelegate>
 
-// Keep track of the migration status of each browser state.
+// Keep track of the migration status of each profile.
 @property(nonatomic, strong) NSMutableSet<NSString*>* migratingTracker;
 
 @property(nonatomic, strong)
@@ -74,27 +74,27 @@
   NSString* key = AppGroupUserDefaultsCredentialProviderNewCredentials();
   NSUserDefaults* userDefaults = app_group::GetGroupUserDefaults();
 
-  const std::vector<ChromeBrowserState*> loadedProfiles =
+  const std::vector<ProfileIOS*> loadedProfiles =
       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
   if (!self.migratingTracker) {
     self.migratingTracker =
         [NSMutableSet setWithCapacity:loadedProfiles.size()];
   }
 
-  for (ChromeBrowserState* browserState : loadedProfiles) {
-    NSString* browserStatePathString =
-        [NSString stringWithCString:browserState->GetStatePath()
+  for (ProfileIOS* profile : loadedProfiles) {
+    NSString* profilePathString =
+        [NSString stringWithCString:profile->GetStatePath()
                                         .BaseName()
                                         .MaybeAsASCII()
                                         .c_str()
                            encoding:NSASCIIStringEncoding];
-    // Do nothing if the migration for a browser state already started.
-    if ([self.migratingTracker containsObject:browserStatePathString]) {
+    // Do nothing if the migration for a profile already started.
+    if ([self.migratingTracker containsObject:profilePathString]) {
       continue;
     }
 
     webauthn::PasskeyModel* passkeyStore =
-        IOSPasskeyModelFactory::GetForBrowserState(browserState);
+        IOSPasskeyModelFactory::GetForProfile(profile);
     // If the migration is happening as a result of a passkey model becoming
     // ready, only perform the migration for that specific passkey model.
     if (passkeyModel && passkeyStore != passkeyModel) {
@@ -114,25 +114,24 @@
 
     password_manager::PasswordForm::Store defaultStore =
         password_manager::features_util::GetDefaultPasswordStore(
-            browserState->GetPrefs(),
-            SyncServiceFactory::GetForBrowserState(browserState));
+            profile->GetPrefs(), SyncServiceFactory::GetForProfile(profile));
     scoped_refptr<password_manager::PasswordStoreInterface> storeToSave =
         defaultStore == password_manager::PasswordForm::Store::kAccountStore
             ? IOSChromeAccountPasswordStoreFactory::GetForProfile(
-                  browserState, ServiceAccessType::IMPLICIT_ACCESS)
-            : IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-                  browserState, ServiceAccessType::IMPLICIT_ACCESS);
+                  profile, ServiceAccessType::IMPLICIT_ACCESS)
+            : IOSChromeProfilePasswordStoreFactory::GetForProfile(
+                  profile, ServiceAccessType::IMPLICIT_ACCESS);
     CredentialProviderMigrator* migrator =
         [[CredentialProviderMigrator alloc] initWithUserDefaults:userDefaults
                                                              key:key
                                                    passwordStore:storeToSave
                                                     passkeyStore:passkeyStore];
-    [self.migratingTracker addObject:browserStatePathString];
+    [self.migratingTracker addObject:profilePathString];
     __weak __typeof__(self) weakSelf = self;
     [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
       DCHECK(success) << error.localizedDescription;
       if (weakSelf) {
-        [weakSelf.migratingTracker removeObject:browserStatePathString];
+        [weakSelf.migratingTracker removeObject:profilePathString];
         if (passkeyStore) {
           [weakSelf removeObserverForPasskeyModel:passkeyStore];
         }

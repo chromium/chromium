@@ -143,14 +143,14 @@ enum class SkipScreenDecision {
   // made yet, evaluate the conditions, and then store the decision result.
   if (_skipScreenDecision == SkipScreenDecision::kUnknown) {
     DCHECK(browserProvider.browser);
-    DCHECK(browserProvider.browser->GetBrowserState());
+    DCHECK(browserProvider.browser->GetProfile());
 
     // If there is no need to present the screen, then transition to the next
     // application stage (otherwise the transition will happen once the user
     // has selected a default search engine and completed the workflow). In
     // that case, the method won't be called again.
     if (!ShouldDisplaySearchEngineChoiceScreen(
-            *browserProvider.browser->GetBrowserState(),
+            *browserProvider.browser->GetProfile(),
             /*is_first_run_entrypoint=*/false,
             [self startupHadExternalIntent])) {
       _skipScreenDecision = SkipScreenDecision::kSkip;

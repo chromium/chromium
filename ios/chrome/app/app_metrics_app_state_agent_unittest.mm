@@ -86,12 +86,12 @@ class AppMetricsAppStateAgentTest : public PlatformTest {
   AppMetricsAppStateAgentTest() {
     agent_ = [[AppMetricsAppStateAgent alloc] init];
 
-    TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.AddTestingFactory(
+    TestProfileIOS::Builder test_profile_builder;
+    test_profile_builder.AddTestingFactory(
         IOSProfileSessionDurationsServiceFactory::GetInstance(),
         base::BindRepeating(&FakeProfileSessionDurationsService::Create));
-    browser_state_ =
-        profile_manager_.AddProfileWithBuilder(std::move(test_cbs_builder));
+    profile_ =
+        profile_manager_.AddProfileWithBuilder(std::move(test_profile_builder));
 
     app_state_ = [[FakeAppState alloc] initWithStartupInformation:nil];
   }
@@ -104,8 +104,8 @@ class AppMetricsAppStateAgentTest : public PlatformTest {
 
   FakeProfileSessionDurationsService* getProfileSessionDurationsService() {
     return static_cast<FakeProfileSessionDurationsService*>(
-        IOSProfileSessionDurationsServiceFactory::GetForBrowserState(
-            browser_state_.get()));
+        IOSProfileSessionDurationsServiceFactory::GetForProfile(
+            profile_.get()));
   }
 
   void SimulateTransitionToCurrentStage() {
@@ -120,7 +120,7 @@ class AppMetricsAppStateAgentTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
   AppMetricsAppStateAgent* agent_;
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
   FakeAppState* app_state_;
 };
 

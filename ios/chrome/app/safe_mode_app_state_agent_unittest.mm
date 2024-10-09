@@ -52,7 +52,7 @@ void IterateToStage(AppInitStage startInitStage,
 class SafeModeAppStateAgentTest : public BlockCleanupTest {
  protected:
   SafeModeAppStateAgentTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
     window_ = [OCMockObject mockForClass:[UIWindow class]];
     startup_information_mock_ =
         [OCMockObject mockForProtocol:@protocol(StartupInformation)];
@@ -79,9 +79,8 @@ class SafeModeAppStateAgentTest : public BlockCleanupTest {
       app_state_ = [[AppState alloc]
           initWithStartupInformation:startup_information_mock_];
 
-      main_scene_state_ =
-          [main_scene_state_ initWithAppState:app_state_
-                                 browserState:browser_state_.get()];
+      main_scene_state_ = [main_scene_state_ initWithAppState:app_state_
+                                                      profile:profile_.get()];
       main_scene_state_.window = GetWindowMock();
     }
     return app_state_;
@@ -93,7 +92,7 @@ class SafeModeAppStateAgentTest : public BlockCleanupTest {
 
  private:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   AppState* app_state_;
   FakeSceneState* main_scene_state_;
 

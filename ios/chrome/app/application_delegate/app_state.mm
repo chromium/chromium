@@ -285,7 +285,7 @@ void FlushCookieStoreOnIOThread(
 
   [self.startupInformation expireFirstUserActionRecorder];
 
-  // TODO(crbug.com/325596562): Update this for multiple browser states and for
+  // TODO(crbug.com/325596562): Update this for multiple profiles and for
   // per-state cookie storage.
   if (!_savingCookies) {
     NSSet<ProfileState*>* profileStates = self.connectedProfileStates;

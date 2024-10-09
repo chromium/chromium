@@ -82,9 +82,7 @@ const char* const kUMAShowDefaultPromoFromAppsHistogram =
       };
 
       // TODO(crbug.com/41443029): Exacly the same copy of this code is present
-      // in
-      // +[UserAcrtivityHandler
-      // handleStartupParametersWithTabOpener:startupInformation:browserState:]
+      // in UserActivityBrowserAgent::RouteToCorrectTab()
 
       GURL gurl;
       GURL virtualURL;

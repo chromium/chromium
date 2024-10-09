@@ -46,7 +46,7 @@ enum class AppInitStage {
   kEnterprise,
 
   // The app is initializing the browser objects for the browser UI (e.g., the
-  // browser state).
+  // profile).
   kBrowserObjectsForUI,
 
   // If there are connected scenes, the app is creating browsers and starting

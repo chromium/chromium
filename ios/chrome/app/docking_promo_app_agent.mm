@@ -100,10 +100,9 @@
 
 // Registers the Docking Promo with the PromosManager.
 - (void)registerPromo {
-  for (ChromeBrowserState* browserState :
+  for (ProfileIOS* profile :
        GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
-    PromosManager* promosManager =
-        PromosManagerFactory::GetForBrowserState(browserState);
+    PromosManager* promosManager = PromosManagerFactory::GetForProfile(profile);
     promosManager->RegisterPromoForSingleDisplay(
         promos_manager::Promo::DockingPromo);
   }
@@ -111,10 +110,9 @@
 
 // Deregisters the Docking Promo from the PromosManager.
 - (void)deregisterPromo {
-  for (ChromeBrowserState* browserState :
+  for (ProfileIOS* profile :
        GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
-    PromosManager* promosManager =
-        PromosManagerFactory::GetForBrowserState(browserState);
+    PromosManager* promosManager = PromosManagerFactory::GetForProfile(profile);
     promosManager->DeregisterPromo(promos_manager::Promo::DockingPromo);
   }
 }

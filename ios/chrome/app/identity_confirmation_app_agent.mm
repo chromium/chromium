@@ -129,16 +129,14 @@ enum class IdentityConfirmationSnackbarDecision {
 - (IdentityConfirmationSnackbarDecision)
     shouldShowIdentityConfirmationSnackbarWithBrowser:(Browser*)browser {
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(
-          browser->GetBrowserState());
+      AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
   if (!authenticationService->HasPrimaryIdentity(
           signin::ConsentLevel::kSignin)) {
     return IdentityConfirmationSnackbarDecision::kDontShowNoAccount;
   }
 
   ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(
-          browser->GetBrowserState());
+      ChromeAccountManagerServiceFactory::GetForProfile(browser->GetProfile());
   NSArray<id<SystemIdentity>>* allIdentities =
       accountManagerService->GetAllIdentities();
   if ([allIdentities count] <= 1) {

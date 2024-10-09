@@ -302,10 +302,9 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
     return;
   }
   // TODO(crbug.com/325613461): Associate downloads with a specific file path to
-  // determine which browser state / download service to use here.
+  // determine which profile / download service to use here.
   download::BackgroundDownloadService* download_service =
-      BackgroundDownloadServiceFactory::GetForProfile(
-          browser->GetBrowserState());
+      BackgroundDownloadServiceFactory::GetForProfile(browser->GetProfile());
   if (download_service) {
     download_service->HandleEventsForBackgroundURLSession(
         base::BindOnce(completionHandler));
@@ -477,10 +476,10 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
     return NO;
   }
 
-  ChromeBrowserState* browserState = browser->GetBrowserState();
+  ProfileIOS* profile = browser->GetProfile();
 
-  return IsContentNotificationEnabled(browserState) ||
-         IsContentNotificationRegistered(browserState) ||
+  return IsContentNotificationEnabled(profile) ||
+         IsContentNotificationRegistered(profile) ||
          base::FeatureList::IsEnabled(
              send_tab_to_self::kSendTabToSelfIOSPushNotifications);
 }
