@@ -755,30 +755,9 @@ try_.builder(
         "ci/android-cronet-x86-dbg",
         "ci/android-cronet-x86-dbg-lollipop-tests",
     ],
-    # Replicates "ci/android-cronet-x86-dbg", with code coverage related
-    # arguments appended.
-    gn_args = gn_args.config(
-        configs = [
-            "ci/android-cronet-x86-dbg",
-            "use_clang_coverage",
-            "use_java_coverage",
-            "partial_code_coverage_instrumentation",
-        ],
-    ),
+    gn_args = "ci/android-cronet-x86-dbg",
     contact_team_email = "cronet-team@google.com",
-    coverage_test_types = ["unit", "overall"],
-    main_list_view = "try",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-    tryjob = try_.job(
-        location_filters = [
-            "components/cronet/.+",
-            "components/grpc_support/.+",
-            "build/android/.+",
-            "build/config/android/.+",
-        ],
-    ),
-    use_clang_coverage = True,
-    use_java_coverage = True,
 )
 
 try_.builder(
@@ -812,9 +791,30 @@ try_.builder(
         "ci/android-cronet-x86-dbg",
         "ci/android-cronet-x86-dbg-marshmallow-tests",
     ],
-    gn_args = "ci/android-cronet-x86-dbg",
+    # Replicates "ci/android-cronet-x86-dbg", with code coverage related
+    # arguments appended.
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-cronet-x86-dbg",
+            "use_clang_coverage",
+            "use_java_coverage",
+            "partial_code_coverage_instrumentation",
+        ],
+    ),
     contact_team_email = "cronet-team@google.com",
+    coverage_test_types = ["unit", "overall"],
+    main_list_view = "try",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+    tryjob = try_.job(
+        location_filters = [
+            "components/cronet/.+",
+            "components/grpc_support/.+",
+            "build/android/.+",
+            "build/config/android/.+",
+        ],
+    ),
+    use_clang_coverage = True,
+    use_java_coverage = True,
 )
 
 try_.builder(

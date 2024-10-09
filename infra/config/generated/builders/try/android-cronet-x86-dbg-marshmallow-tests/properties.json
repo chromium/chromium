@@ -92,6 +92,18 @@
       "targets_spec_directory": "src/infra/config/generated/builders/try/android-cronet-x86-dbg-marshmallow-tests/targets"
     }
   },
+  "$build/code_coverage": {
+    "coverage_test_types": [
+      "unit",
+      "overall"
+    ],
+    "use_clang_coverage": true,
+    "use_java_coverage": true
+  },
+  "$build/flakiness": {
+    "check_for_flakiness": true,
+    "check_for_flakiness_with_resultdb": true
+  },
   "$build/reclient": {
     "instance": "rbe-chromium-untrusted",
     "metrics_project": "chromium-reclient-metrics",
@@ -115,5 +127,6 @@
     ]
   },
   "builder_group": "tryserver.chromium.android",
+  "cq": "path-based",
   "recipe": "chromium_trybot"
 }
