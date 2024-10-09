@@ -726,6 +726,7 @@ crbug.com/angleproject/6430 [ angle-metal intel mac passthrough ] deqp/functiona
 ## Metal Graphite ##
 
 
+
 ######################################################################
 # Mac failures (mainly OpenGL; some need to be reevaluated on Metal) #
 ######################################################################
@@ -816,6 +817,9 @@ crbug.com/354627705 [ mac amd-0x7340 angle-metal ] deqp/functional/gles3/fbomult
 crbug.com/354627705 [ mac amd-0x7340 angle-metal ] deqp/functional/gles3/fbomultisample.4_samples.html [ Failure ]
 crbug.com/354627705 [ mac amd-0x7340 angle-opengl ] deqp/functional/gles3/instancedrendering.html [ Failure ]
 crbug.com/328102507 [ mac amd angle-opengl graphite-disabled asan ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
+
+crbug.com/372295133 [ amd-0x679e angle-metal monterey passthrough ] deqp/functional/gles3/textureshadow/2d_array_linear_mipmap_linear_equal.html [ Failure ]
+
 
 ## Mac Intel ##
 
