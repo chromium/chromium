@@ -47,12 +47,11 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  ChromeBrowserState* browserState =
-      self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
   plus_addresses::PlusAddressService* plusAddressService =
-      PlusAddressServiceFactory::GetForProfile(browserState);
+      PlusAddressServiceFactory::GetForProfile(profile);
   plus_addresses::PlusAddressSettingService* plusAddressSettingService =
-      PlusAddressSettingServiceFactory::GetForProfile(browserState);
+      PlusAddressSettingServiceFactory::GetForProfile(profile);
   web::WebState* activeWebState =
       self.browser->GetWebStateList()->GetActiveWebState();
   // TODO(crbug.com/40276862): Move this to the mediator to reduce model
@@ -68,8 +67,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
                                      ->GetPendingPlusAddressFillCallback()
                        urlLoader:UrlLoadingBrowserAgent::FromBrowser(
                                      self.browser)
-                       incognito:self.browser->GetBrowserState()
-                                     ->IsOffTheRecord()];
+                       incognito:self.browser->GetProfile()->IsOffTheRecord()];
   _viewController = [[PlusAddressBottomSheetViewController alloc]
                     initWithDelegate:_mediator
       withBrowserCoordinatorCommands:HandlerForProtocol(

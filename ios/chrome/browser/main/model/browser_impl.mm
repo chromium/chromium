@@ -46,12 +46,6 @@ Browser::Type BrowserImpl::type() const {
   return type_;
 }
 
-// TODO(crbug.com/358301380): After all usage has changed to GetProfile(),
-// remove this method.
-ProfileIOS* BrowserImpl::GetBrowserState() {
-  return GetProfile();
-}
-
 ProfileIOS* BrowserImpl::GetProfile() {
   return profile_;
 }

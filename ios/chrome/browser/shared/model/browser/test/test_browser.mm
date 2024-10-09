@@ -63,12 +63,6 @@ Browser::Type TestBrowser::type() const {
   return type_;
 }
 
-// TODO(crbug.com/358301380): After all usage has changed to GetProfile(),
-// remove this method.
-ProfileIOS* TestBrowser::GetBrowserState() {
-  return GetProfile();
-}
-
 ProfileIOS* TestBrowser::GetProfile() {
   return profile_;
 }

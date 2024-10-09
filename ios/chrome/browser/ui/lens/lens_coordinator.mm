@@ -149,13 +149,12 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
       base::ScopedObservation<web::WebState, web::WebStateObserver>>(
       _webStateObserverBridge.get());
 
-  ChromeBrowserState* browserState = browser->GetBrowserState();
-  DCHECK(browserState);
+  ProfileIOS* profile = browser->GetProfile();
+  DCHECK(profile);
 
   self.templateURLService =
-      ios::TemplateURLServiceFactory::GetForBrowserState(browserState);
-  self.tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(browserState);
+      ios::TemplateURLServiceFactory::GetForProfile(profile);
+  self.tracker = feature_engagement::TrackerFactory::GetForProfile(profile);
   self.loadingWebState = nil;
   self.lensWebPageLoadTriggeredFromInputSelection = NO;
   self.transitionAnimator = [[LensModalAnimator alloc] init];
@@ -188,7 +187,7 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
 #pragma mark - Commands
 
 - (void)searchImageWithLens:(SearchImageWithLensCommand*)command {
-  const bool isIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
+  const bool isIncognito = self.browser->GetProfile()->IsOffTheRecord();
   __weak LensCoordinator* weakSelf = self;
 
   LensQuery* lensQuery = [LensQuery alloc];
@@ -224,8 +223,8 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
 
   // Create a Lens configuration for this request.
   const LensEntrypoint entrypoint = command.entryPoint;
-  ChromeBrowserState* browserState = browser->GetBrowserState();
-  const bool isIncognito = browserState->IsOffTheRecord();
+  ProfileIOS* profile = browser->GetProfile();
+  const bool isIncognito = profile->IsOffTheRecord();
   LensConfiguration* configuration = [[LensConfiguration alloc] init];
   configuration.isIncognito = isIncognito;
   configuration.singleSignOnService =
@@ -245,13 +244,13 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
         feature_engagement::events::kLensButtonKeyboardUsed);
     featureTracker->Dismissed(feature_engagement::kIPHiOSLensKeyboardFeature);
   } else if (entrypoint == LensEntrypoint::NewTabPage) {
-    browserState->GetPrefs()->SetInteger(
-        prefs::kNTPLensEntryPointNewBadgeShownCount, INT_MAX);
+    profile->GetPrefs()->SetInteger(prefs::kNTPLensEntryPointNewBadgeShownCount,
+                                    INT_MAX);
   }
 
   if (!isIncognito) {
     AuthenticationService* authenticationService =
-        AuthenticationServiceFactory::GetForBrowserState(browserState);
+        AuthenticationServiceFactory::GetForProfile(profile);
     id<SystemIdentity> identity = authenticationService->GetPrimaryIdentity(
         ::signin::ConsentLevel::kSignin);
     configuration.identity = identity;
@@ -491,7 +490,7 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
     loadParams.append_to = OpenPosition::kCurrentTab;
     loadParams.SetInBackground(NO);
   }
-  loadParams.in_incognito = self.browser->GetBrowserState()->IsOffTheRecord();
+  loadParams.in_incognito = self.browser->GetProfile()->IsOffTheRecord();
   UrlLoadingBrowserAgent::FromBrowser(self.browser)->Load(loadParams);
 }
 
