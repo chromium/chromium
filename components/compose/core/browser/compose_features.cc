@@ -104,8 +104,4 @@ BASE_FEATURE(kComposeAllowOnDeviceExecution,
              "ComposeAllowOnDeviceExecution",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kComposeUpfrontInputModes,
-             "ComposeUpfrontInputModes",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 }  // namespace compose::features

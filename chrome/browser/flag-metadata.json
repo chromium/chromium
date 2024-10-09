@@ -1616,11 +1616,6 @@
     "expiry_milestone": 132
   },
   {
-    "name": "compose-upfront-input-modes",
-    "owners": ["//components/compose/OWNERS", "chrome-compose-frontend@google.com"],
-    "expiry_milestone": 141
-  },
-  {
     "name": "conch",
     "owners": ["pihsun@chromium.org"],
     "expiry_milestone": 132

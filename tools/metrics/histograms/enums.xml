@@ -16104,7 +16104,6 @@ from previous Chrome versions.
   <int value="-1734885284" label="enable-navigation-predictor"/>
   <int value="-1734666001" label="SafeBrowsingEnhancedProtection:enabled"/>
   <int value="-1734254845" label="ash-enable-night-light"/>
-  <int value="-1733673658" label="ComposeUpfrontInputModes:enabled"/>
   <int value="-1732940196" label="MultiCalendarSupport:disabled"/>
   <int value="-1732888954" label="UseButtonTranslateBubbleUI:enabled"/>
   <int value="-1732777136" label="SignInProfileCreationFlow:disabled"/>
@@ -19229,7 +19228,6 @@ from previous Chrome versions.
   <int value="-459999278" label="OverviewScrollLayoutForClamshell:enabled"/>
   <int value="-459469509" label="SidePanelImprovedClobbering:enabled"/>
   <int value="-459318667" label="AccessiblePDFForm:enabled"/>
-  <int value="-459050579" label="ComposeUpfrontInputModes:disabled"/>
   <int value="-458726025" label="WebApkInstallFailureNotification:disabled"/>
   <int value="-458308082" label="ContextualTriggersSelectionMenu:disabled"/>
   <int value="-458090289" label="CrOSLateBootMissiveStorage:disabled"/>
