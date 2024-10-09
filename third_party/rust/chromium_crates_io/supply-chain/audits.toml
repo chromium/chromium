@@ -1407,6 +1407,12 @@ Just bumping up the version number in `lib.rs`.
 Config-related changes in `test_size.rs`.
 """
 
+[[audits.proc-macro2]]
+who = "danakj <danakj@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.0.86 -> 1.0.87"
+notes = "No new unsafe interactions."
+
 [[audits.prost]]
 who = "agl@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]

@@ -13,12 +13,13 @@
 edition = "2021"
 rust-version = "1.56"
 name = "proc-macro2"
-version = "1.0.86"
+version = "1.0.87"
 authors = [
     "David Tolnay <dtolnay@gmail.com>",
     "Alex Crichton <alex@alexcrichton.com>",
 ]
 build = "build.rs"
+autolib = false
 autobins = false
 autoexamples = false
 autotests = false

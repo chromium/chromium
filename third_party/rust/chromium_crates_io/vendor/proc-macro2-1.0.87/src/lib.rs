@@ -86,7 +86,7 @@
 //! a different thread.
 
 // Proc-macro2 types in rustdoc of other crates get linked to here.
-#![doc(html_root_url = "https://docs.rs/proc-macro2/1.0.86")]
+#![doc(html_root_url = "https://docs.rs/proc-macro2/1.0.87")]
 #![cfg_attr(any(proc_macro_span, super_unstable), feature(proc_macro_span))]
 #![cfg_attr(super_unstable, feature(proc_macro_def_site))]
 #![cfg_attr(docsrs, feature(doc_cfg))]
@@ -102,9 +102,11 @@
     clippy::let_underscore_untyped,
     clippy::manual_assert,
     clippy::manual_range_contains,
+    clippy::missing_panics_doc,
     clippy::missing_safety_doc,
     clippy::must_use_candidate,
     clippy::needless_doctest_main,
+    clippy::needless_lifetimes,
     clippy::new_without_default,
     clippy::return_self_not_must_use,
     clippy::shadow_unrelated,
@@ -833,10 +835,16 @@ impl Punct {
     /// The returned `Punct` will have the default span of `Span::call_site()`
     /// which can be further configured with the `set_span` method below.
     pub fn new(ch: char, spacing: Spacing) -> Self {
-        Punct {
-            ch,
-            spacing,
-            span: Span::call_site(),
+        if let '!' | '#' | '$' | '%' | '&' | '\'' | '*' | '+' | ',' | '-' | '.' | '/' | ':' | ';'
+        | '<' | '=' | '>' | '?' | '@' | '^' | '|' | '~' = ch
+        {
+            Punct {
+                ch,
+                spacing,
+                span: Span::call_site(),
+            }
+        } else {
+            panic!("unsupported proc macro punctuation character {:?}", ch);
         }
     }
 

@@ -1,9 +1,9 @@
 Name: proc-macro2
 URL: https://crates.io/crates/proc-macro2
 Description: A substitute implementation of the compiler's `proc_macro` API to decouple token-based libraries from the procedural macro use case.
-Version: 1.0.86
+Version: 1.0.87
 Security Critical: yes
 Shipped: yes
 License: Apache 2.0
-License File: //third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.86/LICENSE-APACHE
-Revision: aa9476b27932ae1b1b50bbfe0530b3b261fc1b72
+License File: //third_party/rust/chromium_crates_io/vendor/proc-macro2-1.0.87/LICENSE-APACHE
+Revision: 50b477d6dc0d1a781f91bf1f979ae138dadf795f
