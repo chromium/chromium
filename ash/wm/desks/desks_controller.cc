@@ -620,7 +620,7 @@ void DesksController::NewDesk(DesksCreationRemovalSource source,
                         /*set_by_user=*/false);
     }
   } else {
-    new_desk->SetName(std::move(name), /*set_by_user=*/false);
+    new_desk->SetName(std::move(name), /*set_by_user=*/true);
   }
 
   // Don't trigger an a11y alert when the source is `kLaunchTemplate` because
