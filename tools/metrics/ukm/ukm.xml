@@ -11497,6 +11497,14 @@ be describing additional metrics about the same event.
     invocation source of the session, the duration, and whether a search
     performed in the session.
   </summary>
+  <metric name="GeneratedTabCount">
+    <summary>
+      The number of tabs opened by the user during a Lens Overlay session. On
+      iOS the Lens Overlay opens all non-lens URLs in new tabs. New unimodal
+      searches are also opened in a new tab. Additionally the user can open tabs
+      in the background through the web context menu.
+    </summary>
+  </metric>
   <metric name="InvocationResultedInSearch" enum="Boolean">
     <summary>
       Indicates whether or not a search was performed at any point since the
@@ -11526,6 +11534,20 @@ be describing additional metrics about the same event.
     <summary>
       Measures the elapsed time between when the overlay was invoked and when it
       was dismissed.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SessionForegroundDuration">
+    <summary>
+      Measures the total time the Lens Overlay is in the foreground, between
+      invocation and dismissal. Sum of all times that the overlay tab is
+      returned to the foreground.
     </summary>
     <aggregation>
       <history>
@@ -11592,6 +11614,18 @@ be describing additional metrics about the same event.
       <history>
         <statistics>
           <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="FirstInteractionType" enum="LensOverlayFirstInteractionType">
+    <summary>
+      The first interaction event type.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
         </statistics>
       </history>
     </aggregation>
