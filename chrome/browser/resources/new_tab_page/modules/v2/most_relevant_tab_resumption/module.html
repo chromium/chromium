@@ -1,213 +1,63 @@
-<style include="cr-shared-style">
-  :host {
-    background-color: var(--color-new-tab-page-module-background);
-    border-radius: var(--ntp-module-border-radius);
-  }
-
-  @media (forced-colors: active) {
-    /* Set outline since background isn't visible in hcm */
-    ntp-module-header-v2,
-    a {
-      border-radius: var(--ntp-module-item-border-radius);
-      outline: var(--cr-border-hcm);
-     }
-
-    .url-visit {
-      overflow: visible;
-    }
-  }
-
-  ntp-module-header-v2 {
-    background-color: var(--color-new-tab-page-module-background);
-    margin: 8px;
-  }
-
-  :host-context(.focus-outline-visible) a:focus,
-  a:focus-visible {
-    box-shadow: var(--ntp-focus-shadow);
-    outline: none;
-  }
-
-  #urlVisits {
-    background-color: var(--color-new-tab-page-module-item-background);
-    border-radius: var(--ntp-module-item-border-radius);
-    overflow: hidden;
-    margin: 8px;
-  }
-
-  .url-visit {
-    align-items: center;
-    display: flex;
-    height: 56px;
-    position: relative;
-    text-decoration: none;
-    overflow: hidden;
-  }
-
-  .url-visit:hover #hoverLayer {
-    background: var(--color-new-tab-page-module-item-background-hovered);
-    display: block;
-    inset: 0;
-    pointer-events: none;
-    position: absolute;
-  }
-
-  #hoverLayer {
-    display: none;
-  }
-
-  .url-visit:first-of-type {
-    border-radius: var(--ntp-module-item-border-radius)
-        var(--ntp-module-item-border-radius) 0 0;
-    padding-top: var(--ntp-module-first-element-top-padding);
-  }
-
-  .icon {
-    background-color: var(--color-new-tab-page-module-icon-background);
-    border-radius: 8px;
-    height: var(--ntp-module-icon-size);
-    margin-inline: 8px;
-    position: relative;
-    width: var(--ntp-module-icon-size);
-  }
-
-  .url-visit-info {
-    color: var(--color-new-tab-page-secondary-foreground);
-    min-width: 0;
-    padding-inline-end: 16px;
-    position: relative;
-  }
-
-  .url-visit-title,
-  .url-visit-domain,
-  .url-visit-device {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .url-visit-title {
-    color: var(--color-new-tab-page-primary-foreground);
-    font-size: var(--ntp-module-text-size);
-    line-height: var(--ntp-module-line-height);
-  }
-
-  .url-visit-description {
-    display: flex;
-    flex-direction: row;
-    font-size: var(--ntp-module-secondary-text-size);
-    line-height: var(--ntp-module-secondary-line-height);
-  }
-
-  .url-visit-reason {
-    white-space: nowrap;
-  }
-
-  :host([should-show-device-icon_]) .url-visit-device {
-    flex-shrink: 0;
-    height: 14px;
-    margin-bottom: auto;
-    margin-inline: 0 4px;
-    margin-top: auto;
-    width: 14px;
-  }
-
-  cr-icon-button {
-    --cr-icon-button-fill-color: var(--color-new-tab-page-primary-foreground);
-    --cr-icon-button-hover-background-color:
-            var(--color-new-tab-page-active-background);
-    display: none;
-    justify-content: flex-end;
-    margin-left: auto;
-    margin-right: 16px;
-  }
-
-  .url-visit:hover cr-icon-button {
-      display: block;
-  }
-
-  #seeMoreButtonContainer {
-    padding: 4px 0 8px 0;
-  }
-
-  #seeMoreButtonContainer a {
-    color: var(--color-new-tab-page-link);
-    font-size: 13px;
-    display: block;
-    font-weight: var(--ntp-module-see-more-font-weight);
-    line-height: 20px;
-    padding: 4px 16px 4px 16px;
-    position: relative;
-    text-decoration: none;
-  }
-
-  #seeMoreButtonContainer:hover #hoverContainer {
-    background: var(--color-new-tab-page-module-item-background-hovered);
-    display: block;
-    inset: 0;
-    pointer-events: none;
-    position: absolute;
-  }
-
-  #seeMoreButtonContainer #hoverContainer {
-    display: none;
-  }
-</style>
 <ntp-module-header-v2
     id="moduleHeaderElementV2"
-    header-text="[[i18n('modulesMostRelevantTabResumptionTitle')]]"
-    menu-item-groups="[[getMenuItemGroups_()]]"
-    more-actions-text="[[i18nRecursive('',
+    header-text="${this.i18n('modulesMostRelevantTabResumptionTitle')}"
+    .menuItemGroups="${this.getMenuItemGroups_()}"
+    more-actions-text="${this.i18nRecursive('',
                                   'modulesMoreActions',
-                                  'modulesTabResumptionTitle')]]"
-    on-disable-button-click="onDisableButtonClick_"
-    on-dismiss-button-click="onDismissAllButtonClick_"
-    on-info-button-click="onInfoButtonClick_"
-    on-menu-button-click="onMenuButtonClick_">
+                                  'modulesTabResumptionTitle')}"
+    @disable-button-click="${this.onDisableButtonClick_}"
+    @dismiss-button-click="${this.onDismissAllButtonClick_}"
+    @info-button-click="${this.onInfoButtonClick_}"
+    @menu-button-click="${this.onMenuButtonClick_}">
 </ntp-module-header-v2>
 <div id="urlVisits">
-  <template id="urlVisitRepeat" is="dom-repeat"
-            items="[[getVisibleUrlVisits_()]]">
-    <a class="url-visit" href="[[item.url.url]]" on-click="onUrlVisitClick_">
+  ${this.getVisibleUrlVisits_().map((item, index) => html`
+    <a class="url-visit" href="${item.url.url}"
+        @click="${this.onUrlVisitClick_}" data-index="${index}">
       <div id="hoverLayer"></div>
-      <page-favicon class="icon" url="[[item.url]]"
-                    size="[[computeFaviconSize_()]]">
+      <page-favicon class="icon" .url="${item.url}" size="24">
       </page-favicon>
       <div class="url-visit-info">
-        <div class="url-visit-title">[[item.title]]</div>
+        <div class="url-visit-title">${item.title}</div>
         <div class="url-visit-description">
-          <cr-icon class="url-visit-device" hidden="[[!shouldShowDeviceIcon_]]"
-              icon="[[computeIcon_(item)]]"></cr-icon>
-          <div class="url-visit-domain">[[computeDomain_(item)]]</div>
-          <span class="dot" hidden="[[!computeShouldShowDeviceName_(item)]]">
-            &nbsp&#8226&nbsp</span>
+          <cr-icon class="url-visit-device"
+              ?hidden="${!this.shouldShowDeviceIcon_}"
+              icon="${this.computeIcon_(item)}">
+          </cr-icon>
+          <div class="url-visit-domain">${this.computeDomain_(item)}</div>
+          <span class="dot"
+              ?hidden="${!this.computeShouldShowDeviceName_(item)}">
+            &nbsp&#8226&nbsp
+          </span>
           <div class="url-visit-device"
-               hidden="[[!computeShouldShowDeviceName_(item)]]">
-            [[computeDeviceName_(item)]]
+              ?hidden="${!this.computeShouldShowDeviceName_(item)}">
+            ${this.computeDeviceName_(item)}
           </div>
           <span class="dot">
-            &nbsp&#8226&nbsp</span>
+            &nbsp&#8226&nbsp
+          </span>
           <span class="url-visit-reason">
-            [[item.decoration.displayString]]
+            ${item.decoration.displayString}
           </span>
         </div>
       </div>
-      <cr-icon-button iron-icon="modules:done" on-click="onDismissButtonClick_"
-                      title="$i18n{modulesHistoryDoneButton}">
+      <cr-icon-button iron-icon="modules:done"
+          @click="${this.onDismissButtonClick_}"
+          title="$i18n{modulesHistoryDoneButton}">
       </cr-icon-button>
     </a>
-  </template>
+  `)}
   <div id="seeMoreButtonContainer">
-    <a href="chrome://history/syncedTabs" on-click="onSeeMoreButtonClick_">
+    <a href="chrome://history/syncedTabs"
+        @click="${this.onSeeMoreButtonClick_}">
       $i18n{modulesMostRelevantTabResumptionSeeMore}
       <div id="hoverContainer"></div>
     </a>
   </div>
 </div>
-<cr-lazy-render id="infoDialogRender">
-  <template>
-    <ntp-info-dialog
-        inner-h-t-m-l="[[i18nAdvanced('modulesTabResumptionInfo')]]">
+${this.showInfoDialog_ ? html`
+    <ntp-info-dialog show-on-attach
+        .innerHTML="${this.i18nAdvanced('modulesTabResumptionInfo')}"
+        @close="${this.onInfoDialogClose_}">>
     </ntp-info-dialog>
-  </template>
-</cr-lazy-render>
+` : ''}

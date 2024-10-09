@@ -3,10 +3,16 @@
 # found in the LICENSE file.
 
 # List of files that should be passed to html_to_wrapper().
-most_relevant_tab_resumption_v2_web_component_files = [
-  "modules/v2/most_relevant_tab_resumption/module.ts",
+most_relevant_tab_resumption_v2_web_component_files =
+    [ "modules/v2/most_relevant_tab_resumption/module.ts" ]
+
+# List of files that don't need to be passed to html_to_wrapper().
+most_relevant_tab_resumption_v2_non_web_component_files = [
+  "modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_proxy.ts",
   "modules/v2/most_relevant_tab_resumption/page_favicon.ts",
 ]
 
-# List of files that don't need to be passed to html_to_wrapper().
-most_relevant_tab_resumption_v2_non_web_component_files = [ "modules/v2/most_relevant_tab_resumption/most_relevant_tab_resumption_proxy.ts" ]
+most_relevant_tab_resumption_v2_css_files = [
+  "modules/v2/most_relevant_tab_resumption/module.css",
+  "modules/v2/most_relevant_tab_resumption/page_favicon.css",
+]

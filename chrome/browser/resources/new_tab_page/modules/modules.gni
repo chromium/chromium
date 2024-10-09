@@ -40,7 +40,8 @@ modules_web_component_files =
 modules_css_files = [
                       "modules/info_dialog.css",
                       "modules/v2/module_header.css",
-                    ] + calendar_css_files + file_suggestion_v2_css_files
+                    ] + calendar_css_files + file_suggestion_v2_css_files +
+                    most_relevant_tab_resumption_v2_css_files
 
 if (!is_official_build) {
   modules_web_component_files += dummy_v2_web_component_files

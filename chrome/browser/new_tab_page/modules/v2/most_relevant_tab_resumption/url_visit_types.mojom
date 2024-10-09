@@ -58,7 +58,7 @@ struct URLVisit {
   string title;
 
   // Info about the reason this tab is being shown.
-  Decoration? decoration;
+  Decoration decoration;
 
   // Time since tab was last active.
   mojo_base.mojom.TimeDelta relative_time;

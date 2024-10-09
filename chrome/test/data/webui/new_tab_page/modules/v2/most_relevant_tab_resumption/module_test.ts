@@ -14,7 +14,7 @@ import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from '../../../test_support.js';
 
@@ -121,7 +121,10 @@ suite('NewTabPageModulesMostRelevantTabResumptionModuleTest', () => {
       assertTrue(!!moduleElement);
       const headerElement = $$(moduleElement, 'ntp-module-header-v2');
       assertTrue(!!headerElement);
-      headerElement!.dispatchEvent(new Event('info-button-click'));
+      const infoButton = $$<HTMLElement>(headerElement, '#info');
+      assertTrue(!!infoButton);
+      infoButton!.click();
+      await microtasksFinished();
 
       assertTrue(!!$$(moduleElement, 'ntp-info-dialog'));
     });
@@ -134,9 +137,12 @@ suite('NewTabPageModulesMostRelevantTabResumptionModuleTest', () => {
       assertTrue(!!moduleElement);
       const headerElement = $$(moduleElement, 'ntp-module-header-v2');
       assertTrue(!!headerElement);
+      const dismissButton = $$<HTMLElement>(headerElement, '#dismiss');
+      assertTrue(!!dismissButton);
       const waitForDismissEvent =
           eventToPromise('dismiss-module-instance', moduleElement);
-      headerElement!.dispatchEvent(new Event('dismiss-button-click'));
+      dismissButton!.click();
+      await microtasksFinished();
 
       const dismissEvent: DismissModuleInstanceEvent =
           await waitForDismissEvent;
@@ -159,6 +165,7 @@ suite('NewTabPageModulesMostRelevantTabResumptionModuleTest', () => {
       const dismissButton = $$<HTMLElement>(moduleElement, 'cr-icon-button');
       assertTrue(!!dismissButton);
       dismissButton!.click();
+      await microtasksFinished();
 
       const dismissEvent: DismissModuleElementEvent = await waitForDismissEvent;
       assertEquals(`Tabs hidden`, dismissEvent.detail.message);
@@ -184,6 +191,7 @@ suite('NewTabPageModulesMostRelevantTabResumptionModuleTest', () => {
       const waitForUsageEvent = eventToPromise('usage', moduleElement);
       urlVisitElement!.removeAttribute('href');
       urlVisitElement!.click();
+      await microtasksFinished();
       assertEquals(1, metrics.count(`NewTabPage.TabResumption.ClickIndex`));
       assertEquals(
           1,

@@ -1,0 +1,164 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #scheme=relative
+ * #import=//resources/cr_elements/cr_shared_style_lit.css.js
+ * #include=cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  background-color: var(--color-new-tab-page-module-background);
+  border-radius: var(--ntp-module-border-radius);
+}
+
+@media (forced-colors: active) {
+  /* Set outline since background isn't visible in hcm */
+  ntp-module-header-v2,
+  a {
+    border-radius: var(--ntp-module-item-border-radius);
+    outline: var(--cr-border-hcm);
+   }
+
+  .url-visit {
+    overflow: visible;
+  }
+}
+
+ntp-module-header-v2 {
+  background-color: var(--color-new-tab-page-module-background);
+  margin: 8px;
+}
+
+:host-context(.focus-outline-visible) a:focus,
+a:focus-visible {
+  box-shadow: var(--ntp-focus-shadow);
+  outline: none;
+}
+
+#urlVisits {
+  background-color: var(--color-new-tab-page-module-item-background);
+  border-radius: var(--ntp-module-item-border-radius);
+  overflow: hidden;
+  margin: 8px;
+}
+
+.url-visit {
+  align-items: center;
+  display: flex;
+  height: 56px;
+  position: relative;
+  text-decoration: none;
+  overflow: hidden;
+}
+
+.url-visit:hover #hoverLayer {
+  background: var(--color-new-tab-page-module-item-background-hovered);
+  display: block;
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+#hoverLayer {
+  display: none;
+}
+
+.url-visit:first-of-type {
+  border-radius: var(--ntp-module-item-border-radius)
+      var(--ntp-module-item-border-radius) 0 0;
+  padding-top: var(--ntp-module-first-element-top-padding);
+}
+
+.icon {
+  background-color: var(--color-new-tab-page-module-icon-background);
+  border-radius: 8px;
+  height: var(--ntp-module-icon-size);
+  margin-inline: 8px;
+  position: relative;
+  width: var(--ntp-module-icon-size);
+}
+
+.url-visit-info {
+  color: var(--color-new-tab-page-secondary-foreground);
+  min-width: 0;
+  padding-inline-end: 16px;
+  position: relative;
+}
+
+.url-visit-title,
+.url-visit-domain,
+.url-visit-device {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.url-visit-title {
+  color: var(--color-new-tab-page-primary-foreground);
+  font-size: var(--ntp-module-text-size);
+  line-height: var(--ntp-module-line-height);
+}
+
+.url-visit-description {
+  display: flex;
+  flex-direction: row;
+  font-size: var(--ntp-module-secondary-text-size);
+  line-height: var(--ntp-module-secondary-line-height);
+}
+
+.url-visit-reason {
+  white-space: nowrap;
+}
+
+:host([should-show-device-icon_]) .url-visit-device {
+  flex-shrink: 0;
+  height: 14px;
+  margin-bottom: auto;
+  margin-inline: 0 4px;
+  margin-top: auto;
+  width: 14px;
+}
+
+cr-icon-button {
+  --cr-icon-button-fill-color: var(--color-new-tab-page-primary-foreground);
+  --cr-icon-button-hover-background-color:
+          var(--color-new-tab-page-active-background);
+  display: none;
+  justify-content: flex-end;
+  margin-left: auto;
+  margin-right: 16px;
+}
+
+.url-visit:hover cr-icon-button {
+    display: block;
+}
+
+#seeMoreButtonContainer {
+  padding: 4px 0 8px 0;
+}
+
+#seeMoreButtonContainer a {
+  color: var(--color-new-tab-page-link);
+  font-size: 13px;
+  display: block;
+  font-weight: var(--ntp-module-see-more-font-weight);
+  line-height: 20px;
+  padding: 4px 16px 4px 16px;
+  position: relative;
+  text-decoration: none;
+}
+
+#seeMoreButtonContainer:hover #hoverContainer {
+  background: var(--color-new-tab-page-module-item-background-hovered);
+  display: block;
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+#seeMoreButtonContainer #hoverContainer {
+  display: none;
+}
