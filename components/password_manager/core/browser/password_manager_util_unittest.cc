@@ -674,8 +674,9 @@ TEST(PasswordManagerUtil, AvoidOverlappingAutofillMenuAndManualGeneration) {
 
   test_autofill_client.ShowAutofillSuggestions(
       autofill::AutofillClient::PopupOpenArgs(), /*delegate=*/nullptr);
-  test_autofill_client.ShowAutofillFieldIphForManualFallbackFeature(
-      autofill::FormFieldData());
+  test_autofill_client.ShowAutofillFieldIphForFeature(
+      autofill::FormFieldData(),
+      autofill::AutofillClient::IphFeature::kManualFallback);
 
   ASSERT_TRUE(test_autofill_client.IsShowingAutofillPopup());
   ASSERT_TRUE(test_autofill_client.IsShowingManualFallbackIph());

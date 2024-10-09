@@ -171,9 +171,10 @@ class ChromeAutofillClient : public ContentAutofillClient,
   FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
   std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator()
       override;
-  void ShowAutofillFieldIphForManualFallbackFeature(
-      const FormFieldData& field) override;
-  void HideAutofillFieldIphForManualFallbackFeature() override;
+  void ShowAutofillFieldIphForFeature(
+      const FormFieldData& field,
+      AutofillClient::IphFeature feature) override;
+  void HideAutofillFieldIph() override;
   void NotifyAutofillManualFallbackUsed() override;
   void ShowSaveAutofillPredictionImprovementsBubble(
       const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
@@ -202,8 +203,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   }
   void SetAutofillFieldPromoControllerManualFallbackForTesting(
       std::unique_ptr<AutofillFieldPromoController> test_controller) {
-    autofill_field_promo_controller_manual_fallback_ =
-        std::move(test_controller);
+    autofill_field_promo_controller_ = std::move(test_controller);
   }
 #endif  // defined(UNIT_TEST)
 
@@ -245,7 +245,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   std::unique_ptr<FastCheckoutClient> fast_checkout_client_;
 #endif
   std::unique_ptr<AutofillFieldPromoController>
-      autofill_field_promo_controller_manual_fallback_;
+      autofill_field_promo_controller_;
   // Test addresses used to allow developers to test their forms.
   std::vector<AutofillProfile> test_addresses_;
   const AutofillAblationStudy ablation_study_;

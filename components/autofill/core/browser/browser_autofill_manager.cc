@@ -1832,7 +1832,8 @@ void BrowserAutofillManager::MaybeShowIphForManualFallback(
     return;
   }
 
-  client().ShowAutofillFieldIphForManualFallbackFeature(field);
+  client().ShowAutofillFieldIphForFeature(
+      field, AutofillClient::IphFeature::kManualFallback);
 }
 
 void BrowserAutofillManager::OnGenerateSuggestionsComplete(
@@ -2240,7 +2241,7 @@ void BrowserAutofillManager::DidShowSuggestions(
 void BrowserAutofillManager::OnHidePopupImpl() {
   single_field_form_fill_router_->CancelPendingQueries();
   client().HideAutofillSuggestions(SuggestionHidingReason::kRendererEvent);
-  client().HideAutofillFieldIphForManualFallbackFeature();
+  client().HideAutofillFieldIph();
   if (fast_checkout_delegate_) {
     fast_checkout_delegate_->HideFastCheckout(/*allow_further_runs=*/false);
   }

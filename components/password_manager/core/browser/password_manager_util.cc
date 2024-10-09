@@ -130,7 +130,7 @@ void UserTriggeredManualGenerationFromContextMenu(
     autofill_client->HideAutofillSuggestions(
         autofill::SuggestionHidingReason::
             kOverlappingWithPasswordGenerationPopup);
-    autofill_client->HideAutofillFieldIphForManualFallbackFeature();
+    autofill_client->HideAutofillFieldIph();
   }
   if (!password_manager_client->GetPasswordFeatureManager()
            ->ShouldShowAccountStorageOptIn()) {

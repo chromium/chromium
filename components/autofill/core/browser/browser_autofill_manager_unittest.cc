@@ -548,13 +548,10 @@ class MockAutofillClient : public TestAutofillClient {
               (override));
   MOCK_METHOD(AutofillComposeDelegate*, GetComposeDelegate, (), (override));
   MOCK_METHOD(void,
-              ShowAutofillFieldIphForManualFallbackFeature,
-              (const FormFieldData& field),
+              ShowAutofillFieldIphForFeature,
+              (const FormFieldData& field, AutofillClient::IphFeature feature),
               (override));
-  MOCK_METHOD(void,
-              HideAutofillFieldIphForManualFallbackFeature,
-              (),
-              (override));
+  MOCK_METHOD(void, HideAutofillFieldIph, (), (override));
   MOCK_METHOD(void, NotifyAutofillManualFallbackUsed, (), (override));
   MOCK_METHOD(MockAutofillPredictionImprovementsDelegate*,
               GetAutofillPredictionImprovementsDelegate,
@@ -1811,13 +1808,11 @@ TEST_F(BrowserAutofillManagerTest,
   MockFunction<void(int)> check;
   {
     InSequence s;
-    EXPECT_CALL(autofill_client_, ShowAutofillFieldIphForManualFallbackFeature)
-        .Times(0);
+    EXPECT_CALL(autofill_client_, ShowAutofillFieldIphForFeature).Times(0);
     EXPECT_CALL(check, Call(1));
-    EXPECT_CALL(autofill_client_, ShowAutofillFieldIphForManualFallbackFeature);
+    EXPECT_CALL(autofill_client_, ShowAutofillFieldIphForFeature);
     EXPECT_CALL(check, Call(2));
-    EXPECT_CALL(autofill_client_, ShowAutofillFieldIphForManualFallbackFeature)
-        .Times(0);
+    EXPECT_CALL(autofill_client_, ShowAutofillFieldIphForFeature).Times(0);
   }
 
   // IPH should not be shown for correct autocomplete value.
@@ -1842,7 +1837,7 @@ TEST_F(BrowserAutofillManagerTest, AutofillManualFallback_NotifyFeatureUsed) {
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
 
-  EXPECT_CALL(autofill_client_, NotifyAutofillManualFallbackUsed).Times(2);
+  EXPECT_CALL(autofill_client_, NotifyAutofillManualFallbackUsed()).Times(2);
   GetAutofillSuggestions(
       form, form.fields()[0],
       AutofillSuggestionTriggerSource::kManualFallbackAddress);
@@ -6965,7 +6960,7 @@ TEST_F(BrowserAutofillManagerTest, GetSuggestions_AboutBlankTarget) {
 TEST_F(BrowserAutofillManagerTest, HideAutofillSuggestionsAndOtherPopups) {
   EXPECT_CALL(autofill_client_,
               HideAutofillSuggestions(SuggestionHidingReason::kRendererEvent));
-  EXPECT_CALL(autofill_client_, HideAutofillFieldIphForManualFallbackFeature);
+  EXPECT_CALL(autofill_client_, HideAutofillFieldIph);
   EXPECT_CALL(touch_to_fill_delegate(), HideTouchToFill);
   EXPECT_CALL(fast_checkout_delegate(),
               HideFastCheckout(/*allow_further_runs=*/false));

@@ -138,6 +138,11 @@ class AutofillClient {
     kMaxValue = kAutoDeclined,
   };
 
+  // Describes the types of Iph shown by Autofill and anchored to a field.
+  enum class IphFeature {
+    kManualFallback,
+  };
+
   // Required arguments to create a dropdown showing autofill suggestions.
   struct PopupOpenArgs {
     PopupOpenArgs();
@@ -486,11 +491,12 @@ class AutofillClient {
 
   // Attaches the IPH for the manual fallback feature to the `field`, on
   // platforms that support manual fallback.
-  virtual void ShowAutofillFieldIphForManualFallbackFeature(
-      const FormFieldData& field);
+  virtual void ShowAutofillFieldIphForFeature(
+      const FormFieldData& field,
+      AutofillClient::IphFeature feature);
 
   // Hides the IPH for the manual fallback feature.
-  virtual void HideAutofillFieldIphForManualFallbackFeature();
+  virtual void HideAutofillFieldIph();
 
   // Notifies the IPH code that the manual fallback feature was used.
   virtual void NotifyAutofillManualFallbackUsed();

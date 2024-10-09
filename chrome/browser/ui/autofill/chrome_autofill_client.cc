@@ -571,7 +571,7 @@ ChromeAutofillClient::ShowAutofillSuggestions(
     base::WeakPtr<AutofillSuggestionDelegate> delegate) {
   // The Autofill Popup cannot open if it overlaps with another popup.
   // Therefore, the IPH is hidden before showing the Autofill Popup.
-  HideAutofillFieldIphForManualFallbackFeature();
+  HideAutofillFieldIph();
 
   // IPH hiding is asynchronous. Posting showing the Autofill Popup
   // guarantees the IPH will be hidden by the time the Autofill Popup will
@@ -760,23 +760,33 @@ ChromeAutofillClient::GetDeviceAuthenticator() {
 #endif
 }
 
-void ChromeAutofillClient::ShowAutofillFieldIphForManualFallbackFeature(
-    const FormFieldData& field) {
+void ChromeAutofillClient::ShowAutofillFieldIphForFeature(
+    const FormFieldData& field,
+    AutofillClient::IphFeature feature) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (!autofill_field_promo_controller_manual_fallback_) {
-    autofill_field_promo_controller_manual_fallback_ =
+  if (autofill_field_promo_controller_ &&
+      autofill_field_promo_controller_->IsMaybeShowing()) {
+    return;
+  }
+  const std::string_view feature_name =
+      feature_engagement::kIPHAutofillManualFallbackFeature.name;
+
+  if (!autofill_field_promo_controller_ ||
+      autofill_field_promo_controller_->GetFeaturePromo().name !=
+          feature_name) {
+    autofill_field_promo_controller_ =
         std::make_unique<AutofillFieldPromoControllerImpl>(
             web_contents(),
             feature_engagement::kIPHAutofillManualFallbackFeature,
             kAutofillManualFallbackElementId);
   }
-  autofill_field_promo_controller_manual_fallback_->Show(field.bounds());
+  autofill_field_promo_controller_->Show(field.bounds());
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-void ChromeAutofillClient::HideAutofillFieldIphForManualFallbackFeature() {
-  if (autofill_field_promo_controller_manual_fallback_) {
-    autofill_field_promo_controller_manual_fallback_->Hide();
+void ChromeAutofillClient::HideAutofillFieldIph() {
+  if (autofill_field_promo_controller_) {
+    autofill_field_promo_controller_->Hide();
   }
 }
 

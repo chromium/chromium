@@ -7,6 +7,7 @@
 
 #include <concepts>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -295,16 +296,17 @@ class TestAutofillClientTemplate : public T {
 
   SuggestionHidingReason popup_hiding_reason() { return popup_hidden_reason_; }
 
-  void ShowAutofillFieldIphForManualFallbackFeature(
-      const FormFieldData& field) override {
-    is_showing_manual_fallback_iph_ = true;
+  void ShowAutofillFieldIphForFeature(
+      const FormFieldData& field,
+      AutofillClient::IphFeature feature) override {
+    autofill_iph_showing_ = feature;
   }
 
-  void HideAutofillFieldIphForManualFallbackFeature() override {
-    is_showing_manual_fallback_iph_ = false;
-  }
+  void HideAutofillFieldIph() override { autofill_iph_showing_ = std::nullopt; }
 
-  bool IsShowingManualFallbackIph() { return is_showing_manual_fallback_iph_; }
+  bool IsShowingManualFallbackIph() {
+    return autofill_iph_showing_ == AutofillClient::IphFeature::kManualFallback;
+  }
 
   bool IsAutocompleteEnabled() const override { return true; }
 
@@ -529,7 +531,7 @@ class TestAutofillClientTemplate : public T {
 
   SuggestionHidingReason popup_hidden_reason_;
 
-  bool is_showing_manual_fallback_iph_ = false;
+  std::optional<AutofillClient::IphFeature> autofill_iph_showing_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_ =

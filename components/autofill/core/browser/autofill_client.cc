@@ -148,10 +148,11 @@ AutofillClient::GetDeviceAuthenticator() {
   return nullptr;
 }
 
-void AutofillClient::ShowAutofillFieldIphForManualFallbackFeature(
-    const FormFieldData&) {}
+void AutofillClient::ShowAutofillFieldIphForFeature(
+    const FormFieldData&,
+    AutofillClient::IphFeature feature) {}
 
-void AutofillClient::HideAutofillFieldIphForManualFallbackFeature() {}
+void AutofillClient::HideAutofillFieldIph() {}
 
 void AutofillClient::NotifyAutofillManualFallbackUsed() {}
 

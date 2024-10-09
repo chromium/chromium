@@ -74,11 +74,14 @@ void AutofillFieldPromoControllerImpl::Show(const gfx::RectF& bounds) {
   params.show_promo_result_callback =
       base::BindOnce(&AutofillFieldPromoControllerImpl::OnShowPromoResult,
                      weak_ptr_factory_.GetWeakPtr());
-
-  interface->MaybeShowFeaturePromo(std::move(params));
+  if (interface->CanShowFeaturePromo(feature_promo_.get())) {
+    is_maybe_showing_ = true;
+    interface->MaybeShowFeaturePromo(std::move(params));
+  }
 }
 
 void AutofillFieldPromoControllerImpl::Hide() {
+  is_maybe_showing_ = false;
   promo_hide_helper_.reset();
   if (promo_view_) {
     promo_view_->Close();
@@ -94,4 +97,11 @@ void AutofillFieldPromoControllerImpl::OnShowPromoResult(
   }
 }
 
+const base::Feature& AutofillFieldPromoControllerImpl::GetFeaturePromo() const {
+  return feature_promo_.get();
+}
+
+bool AutofillFieldPromoControllerImpl::IsMaybeShowing() const {
+  return is_maybe_showing_;
+}
 }  // namespace autofill

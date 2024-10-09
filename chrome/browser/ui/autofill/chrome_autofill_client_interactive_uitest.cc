@@ -151,7 +151,8 @@ IN_PROC_BROWSER_TEST_F(ChromeAutofillClientBrowserTest,
                        AutofillPopupIsShownIfOverlappingWithIph) {
   FormData form = test::CreateTestAddressFormData();
   test_api(form).field(0).set_bounds(gfx::RectF(10, 10));
-  client()->ShowAutofillFieldIphForManualFallbackFeature(form.fields()[0]);
+  client()->ShowAutofillFieldIphForFeature(
+      form.fields()[0], AutofillClient::IphFeature::kManualFallback);
 
   // Set the bounds such that the Autofill Popup would overlap with the IPH (the
   // IPH is displayed right below `form.fields[0]`, whose bounds are set above).
