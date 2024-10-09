@@ -363,4 +363,7 @@ std::string CastCertErrorToString(CastCertError error) {
   return "CastCertError::UNKNOWN";
 }
 
+CertVerificationContext::CertVerificationContext() = default;
+CertVerificationContext::~CertVerificationContext() = default;
+
 }  // namespace cast_certificate

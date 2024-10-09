@@ -142,7 +142,7 @@ class MockTCPSocket : public net::MockTCPClientSocket {
 
 class CompleteHandler {
  public:
-  CompleteHandler() {}
+  CompleteHandler() = default;
 
   CompleteHandler(const CompleteHandler&) = delete;
   CompleteHandler& operator=(const CompleteHandler&) = delete;
@@ -176,7 +176,7 @@ class TestCastSocketBase : public CastSocketImpl {
   TestCastSocketBase(const TestCastSocketBase&) = delete;
   TestCastSocketBase& operator=(const TestCastSocketBase&) = delete;
 
-  ~TestCastSocketBase() override {}
+  ~TestCastSocketBase() override = default;
 
   void SetVerifyChallengeResult(bool value) {
     verify_challenge_result_ = value;
@@ -225,7 +225,7 @@ class MockTestCastSocket : public TestCastSocketBase {
   MockTestCastSocket(const MockTestCastSocket&) = delete;
   MockTestCastSocket& operator=(const MockTestCastSocket&) = delete;
 
-  ~MockTestCastSocket() override {}
+  ~MockTestCastSocket() override = default;
 
   void SetupMockTransport() {
     mock_transport_ = new MockCastTransport;
@@ -385,7 +385,7 @@ class CastSocketTestBase : public testing::Test {
   CastSocketTestBase(const CastSocketTestBase&) = delete;
   CastSocketTestBase& operator=(const CastSocketTestBase&) = delete;
 
-  ~CastSocketTestBase() override {}
+  ~CastSocketTestBase() override = default;
 
   void SetUp() override {
     EXPECT_CALL(*observer_, OnMessage(_, _)).Times(0);
@@ -425,7 +425,7 @@ class MockCastSocketTest : public CastSocketTestBase {
   MockCastSocketTest& operator=(const MockCastSocketTest&) = delete;
 
  protected:
-  MockCastSocketTest() {}
+  MockCastSocketTest() = default;
 
   void TearDown() override {
     if (socket_) {
@@ -466,7 +466,7 @@ class SslCastSocketTest : public CastSocketTestBase {
   SslCastSocketTest& operator=(const SslCastSocketTest&) = delete;
 
  protected:
-  SslCastSocketTest() {}
+  SslCastSocketTest() = default;
 
   void TearDown() override {
     if (socket_) {

@@ -18,9 +18,9 @@ using blink::mojom::PresentationInfo;
 namespace media_router {
 
 // LocalPresentationManager implementation.
-LocalPresentationManager::LocalPresentationManager() {}
+LocalPresentationManager::LocalPresentationManager() = default;
 
-LocalPresentationManager::~LocalPresentationManager() {}
+LocalPresentationManager::~LocalPresentationManager() = default;
 
 LocalPresentationManager::LocalPresentation*
 LocalPresentationManager::GetOrCreateLocalPresentation(
@@ -166,6 +166,6 @@ LocalPresentationManager::LocalPresentation::ControllerConnection::
       receiver_connection_receiver(std::move(receiver_connection_receiver)) {}
 
 LocalPresentationManager::LocalPresentation::ControllerConnection::
-    ~ControllerConnection() {}
+    ~ControllerConnection() = default;
 
 }  // namespace media_router

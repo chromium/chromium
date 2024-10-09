@@ -41,6 +41,10 @@ bool IsPingPong(const CastMessage& message) {
 
 }  // namespace
 
+CastTransport::~CastTransport() = default;
+CastTransport::Delegate::~Delegate() = default;
+CastTransportImpl::Channel::~Channel() = default;
+
 CastTransportImpl::CastTransportImpl(Channel* channel,
                                      int channel_id,
                                      const net::IPEndPoint& ip_endpoint,
@@ -123,7 +127,7 @@ CastTransportImpl::WriteRequest::WriteRequest(
 
 CastTransportImpl::WriteRequest::WriteRequest(WriteRequest&& other) = default;
 
-CastTransportImpl::WriteRequest::~WriteRequest() {}
+CastTransportImpl::WriteRequest::~WriteRequest() = default;
 
 void CastTransportImpl::SetReadState(ReadState read_state) {
   if (read_state_ != read_state)

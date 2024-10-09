@@ -87,12 +87,12 @@ enum class CastDigestAlgorithm {
 // certificate.
 class CertVerificationContext {
  public:
-  CertVerificationContext() {}
+  CertVerificationContext();
 
   CertVerificationContext(const CertVerificationContext&) = delete;
   CertVerificationContext& operator=(const CertVerificationContext&) = delete;
 
-  virtual ~CertVerificationContext() {}
+  virtual ~CertVerificationContext();
 
   // Use the public key from the verified certificate to verify an
   // RSASSA-PKCS1-v1_5 |signature| over arbitrary |data|, with the specified

@@ -49,8 +49,8 @@ constexpr CastChannelFlags kFlagsExpiredFallbackCRL =
 
 class CastAuthUtilTest : public testing::Test {
  public:
-  CastAuthUtilTest() {}
-  ~CastAuthUtilTest() override {}
+  CastAuthUtilTest() = default;
+  ~CastAuthUtilTest() override = default;
 
   void SetUp() override {}
 

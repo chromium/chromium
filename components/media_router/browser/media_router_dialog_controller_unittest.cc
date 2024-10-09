@@ -34,7 +34,7 @@ class TestMediaRouterDialogController : public MediaRouterDialogController {
  public:
   explicit TestMediaRouterDialogController(content::WebContents* initiator)
       : MediaRouterDialogController(initiator) {}
-  ~TestMediaRouterDialogController() override {}
+  ~TestMediaRouterDialogController() override = default;
 
   bool IsShowingMediaRouterDialog() const override { return has_dialog_; }
   void CreateMediaRouterDialog(
@@ -49,8 +49,8 @@ class TestMediaRouterDialogController : public MediaRouterDialogController {
 
 class MockWebContentsDelegate : public content::WebContentsDelegate {
  public:
-  MockWebContentsDelegate() {}
-  ~MockWebContentsDelegate() override {}
+  MockWebContentsDelegate() = default;
+  ~MockWebContentsDelegate() override = default;
 
   MOCK_METHOD1(ActivateContents, void(content::WebContents* web_contents));
 };
@@ -66,8 +66,8 @@ class MediaRouterDialogControllerTest
                void(const blink::mojom::PresentationError& error));
 
  protected:
-  MediaRouterDialogControllerTest() {}
-  ~MediaRouterDialogControllerTest() override {}
+  MediaRouterDialogControllerTest() = default;
+  ~MediaRouterDialogControllerTest() override = default;
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();

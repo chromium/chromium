@@ -8,7 +8,8 @@
 
 namespace media_router {
 
-PresentationServiceDelegateObservers::PresentationServiceDelegateObservers() {}
+PresentationServiceDelegateObservers::PresentationServiceDelegateObservers() =
+    default;
 
 PresentationServiceDelegateObservers::~PresentationServiceDelegateObservers() {
   for (auto& observer_pair : observers_)

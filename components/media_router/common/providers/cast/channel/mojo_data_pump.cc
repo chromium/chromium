@@ -38,7 +38,7 @@ MojoDataPump::MojoDataPump(mojo::ScopedDataPipeConsumerHandle receive_stream,
       base::BindRepeating(&MojoDataPump::SendMore, base::Unretained(this)));
 }
 
-MojoDataPump::~MojoDataPump() {}
+MojoDataPump::~MojoDataPump() = default;
 
 void MojoDataPump::Read(net::IOBuffer* io_buffer,
                         int count,

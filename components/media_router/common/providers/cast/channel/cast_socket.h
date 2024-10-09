@@ -70,7 +70,7 @@ class CastSocket {
     virtual void OnReadyStateChanged(const CastSocket& socket) = 0;
   };
 
-  virtual ~CastSocket() {}
+  virtual ~CastSocket();
 
   // Used by BrowserContextKeyedAPIFactory.
   static const char* service_name() { return "CastSocketImplManager"; }

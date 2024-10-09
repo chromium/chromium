@@ -93,7 +93,7 @@ MediaRouterAndroid::MediaRouteRequest::~MediaRouteRequest() {}
 MediaRouterAndroid::MediaRouterAndroid()
     : bridge_(new MediaRouterAndroidBridge(this)) {}
 
-MediaRouterAndroid::~MediaRouterAndroid() {}
+MediaRouterAndroid::~MediaRouterAndroid() = default;
 
 const MediaRoute* MediaRouterAndroid::FindRouteBySource(
     const MediaSource::Id& source_id) const {

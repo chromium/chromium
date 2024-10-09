@@ -50,7 +50,7 @@ const int kChannelId = 0;
 // Mockable placeholder for write completion events.
 class CompleteHandler {
  public:
-  CompleteHandler() {}
+  CompleteHandler() = default;
 
   CompleteHandler(const CompleteHandler&) = delete;
   CompleteHandler& operator=(const CompleteHandler&) = delete;
@@ -75,7 +75,7 @@ CastMessage CreateCastMessage() {
 // Pop() in the same order as Push().
 class CompletionQueue {
  public:
-  CompletionQueue() {}
+  CompletionQueue() = default;
 
   CompletionQueue(const CompletionQueue&) = delete;
   CompletionQueue& operator=(const CompletionQueue&) = delete;
@@ -164,7 +164,7 @@ class CastTransportTest : public testing::Test {
         &mock_socket_, kChannelId, CreateIPEndPointForTest(), logger_);
     transport_->SetReadDelegate(base::WrapUnique(delegate_.get()));
   }
-  ~CastTransportTest() override {}
+  ~CastTransportTest() override = default;
 
  protected:
   // Runs all pending tasks in the message loop.

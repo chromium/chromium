@@ -82,7 +82,7 @@ LastError::LastError()
       challenge_reply_error(ChallengeReplyError::NONE),
       net_return_value(net::OK) {}
 
-LastError::~LastError() {}
+LastError::~LastError() = default;
 
 Logger::Logger() {
   // Logger may not be necessarily be created on the IO thread, but logging
@@ -90,7 +90,7 @@ Logger::Logger() {
   DETACH_FROM_THREAD(thread_checker_);
 }
 
-Logger::~Logger() {}
+Logger::~Logger() = default;
 
 void Logger::LogSocketEventWithRv(int channel_id,
                                   ChannelEvent channel_event,

@@ -132,7 +132,8 @@ MediaRouterDialogControllerAndroid::MediaRouterDialogControllerAndroid(
       env, reinterpret_cast<jlong>(this), web_contents->GetJavaWebContents()));
 }
 
-MediaRouterDialogControllerAndroid::~MediaRouterDialogControllerAndroid() {}
+MediaRouterDialogControllerAndroid::~MediaRouterDialogControllerAndroid() =
+    default;
 
 void MediaRouterDialogControllerAndroid::CreateMediaRouterDialog(
     MediaRouterDialogActivationLocation activation_location) {
