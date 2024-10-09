@@ -410,6 +410,7 @@ class AssistantValueProp extends AssistantValuePropBase {
         const title = document.createElement('div');
         title.slot = 'title';
         title.innerHTML = this.sanitizer_.sanitizeHtml(data['name']);
+        title.setAttribute('id', 'title-' + i);
         zippy.appendChild(title);
 
         const content = document.createElement('div');
@@ -418,6 +419,7 @@ class AssistantValueProp extends AssistantValuePropBase {
         const description = document.createElement('div');
         description.innerHTML =
             this.sanitizer_.sanitizeHtml(data['description'] + '&ensp;');
+        description.setAttribute('id', 'description-' + i);
 
         const learnMoreLink = document.createElement('a');
         learnMoreLink.textContent = data['popupLink'];
@@ -436,6 +438,7 @@ class AssistantValueProp extends AssistantValuePropBase {
           const additionalInfo = document.createElement('div');
           additionalInfo.innerHTML =
               this.sanitizer_.sanitizeHtml(data['additionalInfo']);
+          additionalInfo.setAttribute('id', 'additional-info-' + i);
           content.appendChild(document.createElement('br'));
           content.appendChild(additionalInfo);
         }
