@@ -54,7 +54,7 @@ class TestSecurityStateHelper {
         has_policy_certificate_(false),
         safety_tip_info_({security_state::SafetyTipStatus::kUnknown, GURL()}),
         is_https_only_mode_upgraded_(false) {}
-  virtual ~TestSecurityStateHelper() {}
+  virtual ~TestSecurityStateHelper() = default;
 
   void SetCertificate(scoped_refptr<net::X509Certificate> cert) {
     cert_ = std::move(cert);
