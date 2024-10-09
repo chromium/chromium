@@ -10,13 +10,11 @@
 #import "base/time/time.h"
 #import "build/branding_buildflags.h"
 #import "components/autofill/core/common/autofill_features.h"
-#import "components/autofill/core/common/autofill_payments_features.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
-#import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
@@ -189,13 +187,6 @@ void FillAndSubmitXframeCreditCardForm() {
         autofill::features::kAutofillAcrossIframesIos);
   }
   // testUserData_LocalSave_UserAccepts_Xframe
-  if ([self isRunningTest:@selector
-            (test_UploadSaveSuccess_LoadingAndConfirmation)] ||
-      [self isRunningTest:@selector
-            (test_UploadSaveFailure_LoadingAndConfirmation)]) {
-    config.features_enabled.push_back(
-        autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation);
-  }
   return config;
 }
 
@@ -260,41 +251,6 @@ void FillAndSubmitXframeCreditCardForm() {
     return error == nil;
   };
   return WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition);
-}
-
-// Sets up the Google Payments server response, submits credit card form and
-// accepts the save card upload banner.
-- (void)setUpAndAcceptSaveCardUploadBanner {
-  [ChromeEarlGrey
-      loadURL:web::test::HttpServer::MakeUrl(kCreditCardUploadForm)];
-
-  // Set up the Google Payments server response.
-  [AutofillAppInterface setPaymentsResponse:kResponseGetUploadDetailsSuccess
-                                 forRequest:kURLGetUploadDetailsRequest
-                              withErrorCode:net::HTTP_OK];
-
-  [AutofillAppInterface resetEventWaiterForEvents:@[
-    @(CreditCardSaveManagerObserverEvent::kOnDecideToRequestUploadSaveCalled),
-    @(CreditCardSaveManagerObserverEvent::
-          kOnReceivedGetUploadDetailsResponseCalled)
-  ]
-                                          timeout:kWaitForDownloadTimeout];
-  [self fillAndSubmitForm];
-  GREYAssertTrue([AutofillAppInterface waitForEvents],
-                 @"Event was not triggered");
-
-  // Wait until the save card infobar becomes visible.
-  GREYAssert(
-      [self waitForUIElementToAppearWithMatcher:UploadBannerLabelsMatcher()],
-      @"Save card infobar failed to show.");
-
-  [AutofillAppInterface resetEventWaiterForEvents:@[
-    @(CreditCardSaveManagerObserverEvent::kOnSentUploadCardRequestCalled)
-  ]
-                                          timeout:kWaitForDownloadTimeout];
-  // Tap the banner save button.
-  [[EarlGrey selectElementWithMatcher:UploadBannerSaveButtonMatcher()]
-      performAction:grey_tap()];
 }
 
 #pragma mark - Tests
@@ -578,7 +534,36 @@ void FillAndSubmitXframeCreditCardForm() {
 // Google Payments, and UMA metrics are correctly logged if the user accepts
 // upload.
 - (void)testUMA_Upstream_UserAccepts {
-  [self setUpAndAcceptSaveCardUploadBanner];
+  [ChromeEarlGrey
+      loadURL:web::test::HttpServer::MakeUrl(kCreditCardUploadForm)];
+
+  // Set up the Google Payments server response.
+  [AutofillAppInterface setPaymentsResponse:kResponseGetUploadDetailsSuccess
+                                 forRequest:kURLGetUploadDetailsRequest
+                              withErrorCode:net::HTTP_OK];
+
+  [AutofillAppInterface resetEventWaiterForEvents:@[
+    @(CreditCardSaveManagerObserverEvent::kOnDecideToRequestUploadSaveCalled),
+    @(CreditCardSaveManagerObserverEvent::
+          kOnReceivedGetUploadDetailsResponseCalled)
+  ]
+                                          timeout:kWaitForDownloadTimeout];
+  [self fillAndSubmitForm];
+  GREYAssertTrue([AutofillAppInterface waitForEvents],
+                 @"Event was not triggered");
+
+  // Wait until the save card infobar becomes visible.
+  GREYAssert(
+      [self waitForUIElementToAppearWithMatcher:UploadBannerLabelsMatcher()],
+      @"Save card infobar failed to show.");
+
+  [AutofillAppInterface resetEventWaiterForEvents:@[
+    @(CreditCardSaveManagerObserverEvent::kOnSentUploadCardRequestCalled)
+  ]
+                                          timeout:kWaitForDownloadTimeout];
+  // Tap the banner save button.
+  [[EarlGrey selectElementWithMatcher:UploadBannerSaveButtonMatcher()]
+      performAction:grey_tap()];
 
   // Tap the modal save button.
   [[EarlGrey selectElementWithMatcher:UploadModalSaveButtonMatcher()]
@@ -865,115 +850,6 @@ void FillAndSubmitXframeCreditCardForm() {
   GREYAssertTrue(
       [self waitForUIElementToDisappearWithMatcher:LocalBannerLabelsMatcher()],
       @"Save card infobar failed to disappear.");
-}
-
-- (void)test_UploadSaveSuccess_LoadingAndConfirmation {
-  [self setUpAndAcceptSaveCardUploadBanner];
-
-  // Tap the modal save button.
-  [[EarlGrey selectElementWithMatcher:UploadModalSaveButtonMatcher()]
-      performAction:grey_tap()];
-
-  if (![[AutofillAppInterface paymentsRiskData] length]) {
-    // There is no provider for risk data so the request will not be sent.
-    // Provide dummy risk data for this test.
-    [AutofillAppInterface setPaymentsRiskData:@"Dummy risk data for tests"];
-  }
-  GREYAssertTrue([AutofillAppInterface waitForEvents],
-                 @"Event was not triggered");
-
-  // Verify activity indicator view is being shown in the loading state.
-
-  [[[EarlGrey selectElementWithMatcher:grey_kindOfClass(
-                                           [UIActivityIndicatorView class])]
-      inRoot:
-          grey_allOf(
-              grey_accessibilityLabel(l10n_util::GetNSStringWithFixup(
-                  IDS_AUTOFILL_SAVE_CARD_PROMPT_LOADING_THROBBER_ACCESSIBLE_NAME)),
-              grey_kindOfClass([UIButton class]), nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Verify the save button is disabled in loading state.
-  [[EarlGrey selectElementWithMatcher:UploadModalSaveButtonMatcher()]
-      assertWithMatcher:grey_not(grey_userInteractionEnabled())];
-
-  [AutofillAppInterface resetEventWaiterForEvents:@[
-    @(CreditCardSaveManagerObserverEvent::kOnReceivedUploadCardResponseCalled),
-    @(CreditCardSaveManagerObserverEvent::kOnShowCardSavedFeedbackCalled)
-  ]
-                                          timeout:kWaitForDownloadTimeout];
-
-  // Inject a successful card upload response from the payments server.
-  [AutofillAppInterface simulateUploadCardServerResponseWithSuccess:YES];
-
-  GREYAssertTrue([AutofillAppInterface waitForEvents],
-                 @"Save card feedback event was not triggered");
-
-  // Verify checkmark is being shown in the confirmation state.
-  [[[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                           kTableViewTextButtonCellCheckmarkId)]
-      inRoot:
-          grey_allOf(
-              grey_accessibilityLabel(l10n_util::GetNSStringWithFixup(
-                  IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_ACCESSIBLE_NAME)),
-              grey_kindOfClass([UIButton class]), nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Verify the save button is disabled in confirmation state.
-  [[EarlGrey selectElementWithMatcher:UploadModalSaveButtonMatcher()]
-      assertWithMatcher:grey_not(grey_userInteractionEnabled())];
-}
-
-- (void)test_UploadSaveFailure_LoadingAndConfirmation {
-  [self setUpAndAcceptSaveCardUploadBanner];
-
-  // Tap the modal save button.
-  [[EarlGrey selectElementWithMatcher:UploadModalSaveButtonMatcher()]
-      performAction:grey_tap()];
-
-  if (![[AutofillAppInterface paymentsRiskData] length]) {
-    // There is no provider for risk data so the request will not be sent.
-    // Provide dummy risk data for this test.
-    [AutofillAppInterface setPaymentsRiskData:@"Dummy risk data for tests"];
-  }
-  GREYAssertTrue([AutofillAppInterface waitForEvents],
-                 @"Event was not triggered");
-
-  // Verify activity indicator view is being shown in the loading state.
-  [[[EarlGrey selectElementWithMatcher:grey_kindOfClass(
-                                           [UIActivityIndicatorView class])]
-      inRoot:
-          grey_allOf(
-              grey_accessibilityLabel(l10n_util::GetNSStringWithFixup(
-                  IDS_AUTOFILL_SAVE_CARD_PROMPT_LOADING_THROBBER_ACCESSIBLE_NAME)),
-              grey_kindOfClass([UIButton class]), nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Verify the save button is disabled in loading state.
-  [[EarlGrey selectElementWithMatcher:UploadModalSaveButtonMatcher()]
-      assertWithMatcher:grey_not(grey_userInteractionEnabled())];
-
-  [AutofillAppInterface resetEventWaiterForEvents:@[
-    @(CreditCardSaveManagerObserverEvent::kOnReceivedUploadCardResponseCalled),
-    @(CreditCardSaveManagerObserverEvent::kOnShowCardSavedFeedbackCalled)
-  ]
-                                          timeout:kWaitForDownloadTimeout];
-
-  // Inject an unsuccessful card upload response from the payments server.
-  [AutofillAppInterface simulateUploadCardServerResponseWithSuccess:NO];
-
-  GREYAssertTrue([AutofillAppInterface waitForEvents],
-                 @"Save card feedback event was not triggered");
-
-  // Wait until the save card infobar disappears on card upload failure.
-  [[EarlGrey selectElementWithMatcher:UploadModalSaveButtonMatcher()]
-      assertWithMatcher:grey_nil()];
-
-  // Verify that an alert dialog is shown on card upload failure.
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityLabel(l10n_util::GetNSStringWithFixup(
-                     IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_TITLE_TEXT))]
-      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end
