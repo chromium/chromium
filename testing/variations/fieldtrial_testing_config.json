@@ -16529,6 +16529,13 @@
             ],
             "experiments": [
                 {
+                    "name": "Control",
+                    "disable_features": [
+                        "PartitionVisitedLinkDatabase",
+                        "PartitionVisitedLinkDatabaseWithSelfLinks"
+                    ]
+                },
+                {
                     "name": "EnabledNoSelfLinks",
                     "enable_features": [
                         "PartitionVisitedLinkDatabase"
@@ -16544,13 +16551,6 @@
                     ],
                     "disable_features": [
                         "PartitionVisitedLinkDatabase"
-                    ]
-                },
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "PartitionVisitedLinkDatabase",
-                        "PartitionVisitedLinkDatabaseWithSelfLinks"
                     ]
                 }
             ]
