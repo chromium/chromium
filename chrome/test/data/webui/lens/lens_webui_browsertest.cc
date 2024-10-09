@@ -175,6 +175,11 @@ IN_PROC_BROWSER_TEST_F(LensOverlayTest, CubicBezier) {
   RunOverlayTest("lens/overlay/cubic_bezier_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(LensOverlayTest, TranslatePromo) {
+  RunOverlayTest("lens/overlay/overlay_show_translate_promo_test.js",
+                 "mocha.run()");
+}
+
 #if defined(UNDEFINED_SANITIZER)
 #define MAYBE_TranslateButton DISABLED_TranslateButton
 #else

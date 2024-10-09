@@ -181,9 +181,10 @@ class LensOverlayControllerCUJTest : public InteractiveFeaturePromoTest {
   ~LensOverlayControllerCUJTest() override = default;
 
   void SetUp() override {
-    feature_list_.InitWithFeatures(
-        {lens::features::kLensOverlay, media::kContextMenuSearchForVideoFrame},
-        {});
+    feature_list_.InitWithFeatures({lens::features::kLensOverlay,
+                                    lens::features::kLensOverlayTranslateButton,
+                                    media::kContextMenuSearchForVideoFrame},
+                                   {});
     ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
     InteractiveFeaturePromoTest::SetUp();
   }
@@ -834,6 +835,64 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerPromoTest, MAYBE_ShowsPromo) {
       // A second IPH should appear showing where the item was pinned.
       WaitForPromo(
           feature_engagement::kIPHSidePanelLensOverlayPinnableFollowupFeature));
+}
+
+class LensOverlayControllerTranslatePromoTest
+    : public LensOverlayControllerCUJTest {
+ public:
+  LensOverlayControllerTranslatePromoTest()
+      : LensOverlayControllerCUJTest(
+            feature_engagement::kIPHLensOverlayTranslateButtonFeature) {}
+  ~LensOverlayControllerTranslatePromoTest() override = default;
+};
+
+// TODO(crbug.com/355224013): Disabled on mac because the mac interaction test
+// util implementation does not support setting the input (mouse / keyboard)
+// type for a context menu item selection.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ShowsTranslatePromo DISABLED_ShowsTranslatePromo
+#else
+#define MAYBE_ShowsTranslatePromo ShowsTranslatePromo
+#endif
+// This tests the following promo flow:
+//  (1) User opens the Lens Overlay.
+//  (2) Promo shows. After, user clicks the translate button.
+//  (3) Promo hides.
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerTranslatePromoTest,
+                       MAYBE_ShowsTranslatePromo) {
+  WaitForTemplateURLServiceToLoad();
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+
+  const DeepQuery kPathToTranslateButton{
+      "lens-overlay-app",
+      "#translateButton",
+      "#translateEnableButton",
+  };
+  RunTestSequence(
+      OpenLensOverlay(),
+
+      // The overlay controller is an independent floating widget
+      // associated with a tab rather than a browser window, so by
+      // convention gets its own element context.
+      InAnyContext(Steps(
+          InstrumentNonTabWebView(kOverlayId,
+                                  LensOverlayController::kOverlayId),
+          WaitForWebContentsReady(
+              kOverlayId, GURL(chrome::kChromeUILensOverlayUntrustedURL)))),
+
+      // Wait for the webview to finish loading to prevent re-entrancy.
+      InSameContext(Steps(WaitForShow(LensOverlayController::kOverlayId),
+                          WaitForScreenshotRendered(kOverlayId),
+                          EnsurePresent(kOverlayId, kPathToTranslateButton))),
+
+      // Wait for the initial translate promo help bubble.
+      WaitForPromo(feature_engagement::kIPHLensOverlayTranslateButtonFeature),
+
+      // Click the translate button element.
+      ClickElement(kOverlayId, kPathToTranslateButton),
+
+      WaitForHide(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
 }
 
 }  // namespace

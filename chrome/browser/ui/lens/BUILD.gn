@@ -124,6 +124,7 @@ source_set("lens") {
     "//components/sync/service",
     "//components/sync_preferences",
     "//components/unified_consent",
+    "//components/user_education/webui",
     "//components/variations",
     "//components/variations:variations_mojom",
     "//components/version_info:channel",

@@ -77,6 +77,7 @@ suite('OverlayTranslateButton', function() {
         eventToPromise('translate-mode-state-changed', document.body);
     // Click the translate button to show the language picker.
     overlayTranslateButtonElement.$.translateEnableButton.click();
+
     // Clicking the translate button should focus the shimmer.
     const focusRegionEvent = await focusRegionEventPromise;
     assertEquals(
@@ -123,6 +124,10 @@ suite('OverlayTranslateButton', function() {
         translateModeStateChangeEvent.detail.targetLanguage,
         expectedTargetLanguage);
 
+    assertEquals(
+        1,
+        testBrowserProxy.handler.getCallCount(
+            'maybeCloseTranslateFeaturePromo'));
     assertEquals(
         1,
         testBrowserProxy.handler.getCallCount('issueTranslateFullPageRequest'));

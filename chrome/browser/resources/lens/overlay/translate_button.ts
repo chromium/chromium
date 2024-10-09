@@ -168,6 +168,10 @@ export class TranslateButtonElement extends PolymerElement {
     this.eventTracker_.removeAll();
   }
 
+  getTranslateEnableButton(): CrButtonElement {
+    return this.$.translateEnableButton;
+  }
+
   private onLanguageListRetrieved(
       languageList: chrome.languageSettingsPrivate.Language[]) {
     this.translateLanguageList = languageList.filter((language) => {
@@ -259,6 +263,7 @@ export class TranslateButtonElement extends PolymerElement {
     // Toggle translate mode on button click.
     this.isTranslateModeEnabled = !this.isTranslateModeEnabled;
     if (this.isTranslateModeEnabled) {
+      this.browserProxy.handler.maybeCloseTranslateFeaturePromo();
       this.maybeIssueTranslateRequest();
     } else {
       this.browserProxy.handler.issueEndTranslateModeRequest();

@@ -820,6 +820,12 @@ class LensOverlayController : public LensSearchboxClient,
   void RecordLensOverlaySemanticEvent(
       lens::mojom::SemanticEvent event) override;
   void SaveAsImage(lens::mojom::CenterRotatedBoxPtr region) override;
+  void MaybeShowTranslateFeaturePromo() override;
+  void MaybeCloseTranslateFeaturePromo() override;
+
+  // Tries to show the translate feature promo after the translate button
+  // element is shown.
+  void TryShowTranslateFeaturePromo(ui::TrackedElement* element);
 
   // Performs shared logic for IssueTextSelectionRequest() and
   // IssueTranslateSelectionRequest().
@@ -1001,6 +1007,10 @@ class LensOverlayController : public LensSearchboxClient,
   // session. Note that a trigger does not mean the survey will actually be
   // shown.
   bool hats_triggered_in_session_ = false;
+
+  // The callback subscription for the element shown callback used to show the
+  // translate feature promo.
+  base::CallbackListSubscription translate_button_shown_subscription_;
 
   // ---------------Browser window scoped state: START---------------------
   // State that is scoped to the browser window must be reset when the tab is

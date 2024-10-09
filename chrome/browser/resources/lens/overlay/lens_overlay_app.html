@@ -71,6 +71,7 @@
     inset-inline-end: 24px;
   }
 
+  :host(:not([is-translate-button-enabled])) #translateButtonContainer,
   :host([is-searchbox-focused]) #translateButtonContainer {
     display: none;
   }
@@ -274,11 +275,9 @@
       </cr-searchbox>
     </div>
   </template>
-  <template is="dom-if" if="[[isTranslateButtonEnabled]]">
-    <div id="translateButtonContainer" class="button-container">
-      <translate-button></translate-button>
-    </div>
-  </template>
+  <div id="translateButtonContainer" class="button-container">
+    <translate-button id="translateButton"></translate-button>
+  </div>
   <div id="optionsButtonContainer" class="button-container">
     <div id="moreOptions">
       <cr-icon-button iron-icon="cr:more-vert" id="moreOptionsButton"

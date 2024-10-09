@@ -21,6 +21,7 @@
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -33,6 +34,7 @@
 #include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_coordinator.h"
 #include "chrome/browser/ui/lens/lens_overlay_theme_utils.h"
+#include "chrome/browser/ui/lens/lens_overlay_untrusted_ui.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/lens/lens_permission_bubble_controller.h"
 #include "chrome/browser/ui/lens/lens_preselection_bubble.h"
@@ -76,6 +78,7 @@
 #include "third_party/lens_server_proto/lens_overlay_selection_type.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_service_deps.pb.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/base/window_open_disposition_utils.h"
@@ -1021,6 +1024,22 @@ void LensOverlayController::CopyImage(lens::mojom::CenterRotatedBoxPtr region) {
   clipboard_writer.WriteImage(cropped);
 }
 
+void LensOverlayController::RecordUkmAndTaskCompletionForLensOverlayInteraction(
+    lens::mojom::UserAction user_action) {
+  ukm::SourceId source_id =
+      tab_->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+  ukm::builders::Lens_Overlay_Overlay_UserAction(source_id)
+      .SetUserAction(static_cast<int64_t>(user_action))
+      .Record(ukm::UkmRecorder::Get());
+  lens_overlay_query_controller_->SendTaskCompletionGen204IfEnabled(
+      user_action);
+}
+
+void LensOverlayController::RecordLensOverlaySemanticEvent(
+    lens::mojom::SemanticEvent event) {
+  lens_overlay_query_controller_->SendSemanticEventGen204IfEnabled(event);
+}
+
 void LensOverlayController::SaveAsImage(
     lens::mojom::CenterRotatedBoxPtr region) {
   SkBitmap cropped = lens::CropBitmapToRegion(
@@ -1067,20 +1086,38 @@ void LensOverlayController::SaveAsImage(
   download_manager->DownloadUrl(std::move(params));
 }
 
-void LensOverlayController::RecordUkmAndTaskCompletionForLensOverlayInteraction(
-    lens::mojom::UserAction user_action) {
-  ukm::SourceId source_id =
-      tab_->GetContents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
-  ukm::builders::Lens_Overlay_Overlay_UserAction(source_id)
-      .SetUserAction(static_cast<int64_t>(user_action))
-      .Record(ukm::UkmRecorder::Get());
-  lens_overlay_query_controller_->SendTaskCompletionGen204IfEnabled(
-      user_action);
+void LensOverlayController::MaybeShowTranslateFeaturePromo() {
+  auto* tracker = ui::ElementTracker::GetElementTracker();
+  translate_button_shown_subscription_ =
+      tracker->AddElementShownInAnyContextCallback(
+          kLensOverlayTranslateButtonElementId,
+          base::BindRepeating(
+              &LensOverlayController::TryShowTranslateFeaturePromo,
+              weak_factory_.GetWeakPtr()));
 }
 
-void LensOverlayController::RecordLensOverlaySemanticEvent(
-    lens::mojom::SemanticEvent event) {
-  lens_overlay_query_controller_->SendSemanticEventGen204IfEnabled(event);
+void LensOverlayController::MaybeCloseTranslateFeaturePromo() {
+  if (auto* const interface =
+          BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
+              tab_->GetContents())) {
+    interface->NotifyFeaturePromoFeatureUsed(
+        feature_engagement::kIPHLensOverlayTranslateButtonFeature,
+        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  }
+}
+
+void LensOverlayController::TryShowTranslateFeaturePromo(
+    ui::TrackedElement* element) {
+  if (!element) {
+    return;
+  }
+
+  if (auto* const interface =
+          BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
+              tab_->GetContents())) {
+    interface->MaybeShowFeaturePromo(
+        feature_engagement::kIPHLensOverlayTranslateButtonFeature);
+  }
 }
 
 std::string LensOverlayController::GetInvocationSourceString() {

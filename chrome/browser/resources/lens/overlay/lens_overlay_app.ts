@@ -11,6 +11,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/icons_lit.html.js';
 import '//resources/cr_components/searchbox/searchbox.js';
 
+import {HelpBubbleMixin} from '//resources/cr_components/help_bubble/help_bubble_mixin.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
@@ -32,6 +33,8 @@ import {UserAction} from './lens.mojom-webui.js';
 import {getTemplate} from './lens_overlay_app.html.js';
 import {recordLensOverlayInteraction, recordTimeToWebUIReady} from './metrics_utils.js';
 import type {SelectionOverlayElement} from './selection_overlay.js';
+import type {TranslateButtonElement} from './translate_button.js';
+
 
 export let INVOCATION_SOURCE: string = 'Unknown';
 
@@ -45,10 +48,12 @@ export interface LensOverlayAppElement {
     moreOptionsMenu: HTMLElement,
     selectionOverlay: SelectionOverlayElement,
     toast: CrToastElement,
+    translateButton: TranslateButtonElement,
+    translateButtonContainer: HTMLDivElement,
   };
 }
 
-const LensOverlayAppElementBase = I18nMixin(PolymerElement);
+const LensOverlayAppElementBase = HelpBubbleMixin(I18nMixin(PolymerElement));
 
 export class LensOverlayAppElement extends LensOverlayAppElementBase {
   static get is() {
@@ -87,8 +92,9 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
       },
       isTranslateButtonEnabled: {
         type: Boolean,
-        value: loadTimeData.getBoolean('enableOverlayTranslateButton'),
+        value: () => loadTimeData.getBoolean('enableOverlayTranslateButton'),
         readOnly: true,
+        reflectToAttribute: true,
       },
       shouldFadeOutButtons: {
         type: Boolean,
@@ -117,6 +123,8 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     };
   }
 
+  // Whether the translate button is enabled.
+  private isTranslateButtonEnabled: boolean;
   // Whether the image has finished rendering.
   private isImageRendered: boolean = false;
   // Whether the initial flash animation has ended on the selection overlay.
@@ -195,6 +203,13 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     this.eventTracker_.add(document, 'copied-as-image', () => {
       this.showToast(this.i18n('copyAsImageToastMessage'));
     });
+    this.eventTracker_.add(
+        this.$.translateButtonContainer, 'transitionend', () => {
+          this.registerHelpBubble(
+              'kLensOverlayTranslateButtonElementId',
+              this.$.translateButton.getTranslateEnableButton());
+          this.browserProxy.handler.maybeShowTranslateFeaturePromo();
+        });
   }
 
   override disconnectedCallback() {
