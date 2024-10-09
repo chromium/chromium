@@ -449,7 +449,6 @@ gn_args.config(
         "include_transport_security_state_preload_list": False,
         "is_cronet_build": True,
         "use_platform_icu_alternatives": True,
-        "enable_rust": False,
     },
 )
 
