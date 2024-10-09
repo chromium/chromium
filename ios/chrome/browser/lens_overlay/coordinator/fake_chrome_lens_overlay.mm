@@ -18,7 +18,7 @@
 /// Data containing the suggest signals.
 @property(nonatomic, strong) NSData* suggestSignals;
 /// Query text.
-@property(nonatomic, strong) NSString* queryText;
+@property(nonatomic, copy, readwrite) NSString* queryText;
 /// Whether the result represents a text selection.
 @property(nonatomic, readonly) BOOL isTextSelection;
 
