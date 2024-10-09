@@ -56,6 +56,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/extensions/install_limiter.h"
+#include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
+#include "chrome/browser/browser_process.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
+#include "components/user_manager/user_manager_impl.h"
 #endif
 
 namespace extensions {
@@ -243,6 +247,12 @@ ExtensionServiceTestBase::ExtensionServiceTestBase(
       service_(nullptr),
       testing_local_state_(TestingBrowserProcess::GetGlobal()),
       registry_(nullptr),
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      user_manager_(std::make_unique<user_manager::UserManagerImpl>(
+          std::make_unique<ash::UserManagerDelegateImpl>(),
+          testing_local_state_.Get(),
+          ash::CrosSettings::Get())),
+#endif
       verifier_format_override_(crx_file::VerifierFormat::CRX3) {
   base::FilePath test_data_dir;
   if (!base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir)) {

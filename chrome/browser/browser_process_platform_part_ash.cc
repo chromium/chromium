@@ -19,9 +19,9 @@
 #include "chrome/browser/ash/login/saml/in_session_password_change_manager.h"
 #include "chrome/browser/ash/login/session/chrome_session_manager.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_registry.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
 #include "chrome/browser/ash/login/users/policy_user_manager_controller.h"
 #include "chrome/browser/ash/login/users/profile_user_manager_controller.h"
+#include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
 #include "chrome/browser/ash/net/ash_proxy_monitor.h"
 #include "chrome/browser/ash/net/secure_dns_manager.h"
 #include "chrome/browser/ash/net/system_proxy_manager.h"
@@ -53,6 +53,7 @@
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_manager_impl.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/preferences/public/mojom/preferences.mojom.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
@@ -112,7 +113,9 @@ void BrowserProcessPlatformPart::ShutdownAutomaticRebootManager() {
 void BrowserProcessPlatformPart::InitializeUserManager() {
   DCHECK(!user_manager_);
   CHECK(session_manager_);
-  user_manager_ = ash::ChromeUserManagerImpl::CreateChromeUserManager();
+  user_manager_ = std::make_unique<user_manager::UserManagerImpl>(
+      std::make_unique<ash::UserManagerDelegateImpl>(),
+      g_browser_process->local_state(), ash::CrosSettings::Get());
   profile_user_manager_controller_ =
       std::make_unique<ash::ProfileUserManagerController>(
           g_browser_process->profile_manager(), user_manager_.get());

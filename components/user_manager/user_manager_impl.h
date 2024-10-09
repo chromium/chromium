@@ -32,6 +32,7 @@ class PrefRegistrySimple;
 
 namespace ash {
 class CrosSettings;
+class UserManagerTest;
 }  // namespace ash
 
 namespace user_manager {
@@ -276,6 +277,8 @@ class USER_MANAGER_EXPORT UserManagerImpl : public UserManager {
                      std::set<AccountId>* users_set);
 
  protected:
+  friend class ash::UserManagerTest;
+
   ash::CrosSettings* cros_settings() { return cros_settings_; }
   const ash::CrosSettings* cros_settings() const { return cros_settings_; }
 

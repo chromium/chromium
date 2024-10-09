@@ -18,7 +18,6 @@
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
 #include "chrome/browser/ash/login/test/user_policy_mixin.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/site_isolation/about_flags.h"
@@ -236,11 +235,6 @@ class SiteIsolationFlagHandlingTest
     // Observe for user session start.
     user_session_started_observer_ =
         std::make_unique<ash::SessionStateWaiter>();
-  }
-
-  ash::ChromeUserManagerImpl* GetChromeUserManager() const {
-    return static_cast<ash::ChromeUserManagerImpl*>(
-        user_manager::UserManager::Get());
   }
 
   bool HasAttemptRestartBeenCalled() const { return attempt_restart_called_; }

@@ -486,7 +486,7 @@ ProfileImpl::ProfileImpl(
 
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(crbug.com/40225390): Move this into
-  // ChromeUserManagerImpl::OnProfileCreationStarted().
+  // ProfileUserManagerController::OnProfileCreationStarted().
   if (ash::ProfileHelper::IsUserProfile(this)) {
     // |ash::InitializeAccountManager| is called during a User's session
     // initialization but some tests do not properly login to a User Session.

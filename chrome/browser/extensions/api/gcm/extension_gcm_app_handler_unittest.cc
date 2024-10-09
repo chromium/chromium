@@ -67,10 +67,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
+#include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_manager_impl.h"
 #endif
 
 namespace extensions {
@@ -271,8 +274,9 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
 
     // This is needed to create extension service under CrOS.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    test_user_manager_.Reset(
-        ash::ChromeUserManagerImpl::CreateChromeUserManager());
+    user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
+        std::make_unique<ash::UserManagerDelegateImpl>(),
+        g_browser_process->local_state(), ash::CrosSettings::Get()));
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 #endif
 
@@ -301,7 +305,7 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
 
   void TearDown() override {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    test_user_manager_.Reset();
+    user_manager_.Reset();
 #endif
 
     waiter_.PumpUILoop();
@@ -425,7 +429,7 @@ class ExtensionGCMAppHandlerTest : public testing::Test {
   // This is needed to create extension service under CrOS.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  user_manager::ScopedUserManager test_user_manager_;
+  user_manager::ScopedUserManager user_manager_;
 #endif
 
   Waiter waiter_;
