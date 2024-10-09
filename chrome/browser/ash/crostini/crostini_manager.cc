@@ -43,6 +43,7 @@
 #include "chrome/browser/ash/crostini/crostini_metrics_service.h"
 #include "chrome/browser/ash/crostini/crostini_mount_provider.h"
 #include "chrome/browser/ash/crostini/crostini_port_forwarder.h"
+#include "chrome/browser/ash/crostini/crostini_port_forwarder_factory.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_reporting_util.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
@@ -4048,7 +4049,7 @@ void CrostiniManager::ActiveNetworksChanged(
     return;
   }
   if (CrostiniFeatures::Get()->IsPortForwardingAllowed(profile_)) {
-    crostini::CrostiniPortForwarder::GetForProfile(profile_)
+    crostini::CrostiniPortForwarderFactory::GetForProfile(profile_)
         ->ActiveNetworksChanged(device->interface(), network->GetIpAddress());
   }
 }
@@ -4104,7 +4105,7 @@ void CrostiniManager::RemoveUncleanSshfsMounts() {
 
 void CrostiniManager::DeallocateForwardedPortsCallback(
     const guest_os::GuestId& container_id) {
-  crostini::CrostiniPortForwarder::GetForProfile(profile_)
+  crostini::CrostiniPortForwarderFactory::GetForProfile(profile_)
       ->DeactivateAllActivePorts(container_id);
 }
 

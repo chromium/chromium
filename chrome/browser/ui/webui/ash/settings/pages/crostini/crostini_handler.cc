@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/crostini/crostini_installer.h"
 #include "chrome/browser/ash/crostini/crostini_installer_factory.h"
 #include "chrome/browser/ash/crostini/crostini_port_forwarder.h"
+#include "chrome/browser/ash/crostini/crostini_port_forwarder_factory.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_shared_devices.h"
 #include "chrome/browser/ash/crostini/crostini_shared_devices_factory.h"
@@ -231,7 +232,8 @@ void CrostiniHandler::OnJavascriptAllowed() {
   crostini_manager->AddCrostiniContainerPropertiesObserver(this);
   crostini_manager->AddContainerShutdownObserver(this);
   crostini::CrostiniExportImport::GetForProfile(profile_)->AddObserver(this);
-  crostini::CrostiniPortForwarder::GetForProfile(profile_)->AddObserver(this);
+  crostini::CrostiniPortForwarderFactory::GetForProfile(profile_)->AddObserver(
+      this);
   guest_os::GuestOsSessionTracker::GetForProfile(profile_)
       ->AddContainerStartedObserver(this);
 
@@ -263,8 +265,8 @@ void CrostiniHandler::OnJavascriptDisallowed() {
   crostini_manager->RemoveCrostiniContainerPropertiesObserver(this);
   crostini_manager->RemoveContainerShutdownObserver(this);
   crostini::CrostiniExportImport::GetForProfile(profile_)->RemoveObserver(this);
-  crostini::CrostiniPortForwarder::GetForProfile(profile_)->RemoveObserver(
-      this);
+  crostini::CrostiniPortForwarderFactory::GetForProfile(profile_)
+      ->RemoveObserver(this);
   guest_os::GuestOsSessionTracker::GetForProfile(profile_)
       ->RemoveContainerStartedObserver(this);
 
@@ -552,7 +554,7 @@ void CrostiniHandler::HandleAddCrostiniPortForward(
     return;
   }
 
-  crostini::CrostiniPortForwarder::GetForProfile(profile_)->AddPort(
+  crostini::CrostiniPortForwarderFactory::GetForProfile(profile_)->AddPort(
       container_id, port_number,
       static_cast<crostini::CrostiniPortForwarder::Protocol>(protocol_type),
       std::move(label),
@@ -576,7 +578,7 @@ void CrostiniHandler::HandleRemoveCrostiniPortForward(
     return;
   }
 
-  crostini::CrostiniPortForwarder::GetForProfile(profile_)->RemovePort(
+  crostini::CrostiniPortForwarderFactory::GetForProfile(profile_)->RemovePort(
       container_id, port_number,
       static_cast<crostini::CrostiniPortForwarder::Protocol>(protocol_type),
       base::BindOnce(&CrostiniHandler::OnPortForwardComplete,
@@ -592,8 +594,8 @@ void CrostiniHandler::HandleRemoveAllCrostiniPortForwards(
     return;
   }
 
-  crostini::CrostiniPortForwarder::GetForProfile(profile_)->RemoveAllPorts(
-      guest_os::GuestId(args[0]));
+  crostini::CrostiniPortForwarderFactory::GetForProfile(profile_)
+      ->RemoveAllPorts(guest_os::GuestId(args[0]));
 }
 
 void CrostiniHandler::HandleActivateCrostiniPortForward(
@@ -611,7 +613,7 @@ void CrostiniHandler::HandleActivateCrostiniPortForward(
     return;
   }
 
-  crostini::CrostiniPortForwarder::GetForProfile(profile_)->ActivatePort(
+  crostini::CrostiniPortForwarderFactory::GetForProfile(profile_)->ActivatePort(
       container_id, port_number,
       static_cast<crostini::CrostiniPortForwarder::Protocol>(protocol_type),
       base::BindOnce(&CrostiniHandler::OnPortForwardComplete,
@@ -634,12 +636,13 @@ void CrostiniHandler::HandleDeactivateCrostiniPortForward(
     return;
   }
 
-  crostini::CrostiniPortForwarder::GetForProfile(profile_)->DeactivatePort(
-      container_id, port_number,
-      static_cast<crostini::CrostiniPortForwarder::Protocol>(protocol_type),
-      base::BindOnce(&CrostiniHandler::OnPortForwardComplete,
-                     callback_weak_ptr_factory_.GetWeakPtr(),
-                     std::move(callback_id)));
+  crostini::CrostiniPortForwarderFactory::GetForProfile(profile_)
+      ->DeactivatePort(
+          container_id, port_number,
+          static_cast<crostini::CrostiniPortForwarder::Protocol>(protocol_type),
+          base::BindOnce(&CrostiniHandler::OnPortForwardComplete,
+                         callback_weak_ptr_factory_.GetWeakPtr(),
+                         std::move(callback_id)));
 }
 
 void CrostiniHandler::OnPortForwardComplete(std::string callback_id,
@@ -695,7 +698,7 @@ void CrostiniHandler::HandleGetCrostiniActivePorts(
 
   ResolveJavascriptCallback(
       base::Value(callback_id),
-      crostini::CrostiniPortForwarder::GetForProfile(profile_)
+      crostini::CrostiniPortForwarderFactory::GetForProfile(profile_)
           ->GetActivePorts());
 }
 
@@ -707,7 +710,7 @@ void CrostiniHandler::HandleGetCrostiniActiveNetworkInfo(
   std::string callback_id = args[0].GetString();
   ResolveJavascriptCallback(
       base::Value(callback_id),
-      crostini::CrostiniPortForwarder::GetForProfile(profile_)
+      crostini::CrostiniPortForwarderFactory::GetForProfile(profile_)
           ->GetActiveNetworkInfo());
 }
 
