@@ -932,11 +932,10 @@ template("test") {
         deps = []
       }
     }
-  } else if ((is_chromeos_ash || (is_chromeos_lacros && is_chromeos_device)) &&
-             cros_board != "") {
+  } else if (is_chromeos && cros_board != "") {
     assert(!defined(invoker.use_xvfb) || !invoker.use_xvfb)
 
-    # Building for a cros board (ie: not linux-chromeos or linux-lacros).
+    # Building for a cros board (ie: not linux-chromeos).
 
     _gen_runner_target = "${target_name}__runner"
     _runtime_deps_file =
@@ -952,13 +951,6 @@ template("test") {
         generated_script = "$root_build_dir/bin/run_" + invoker.target_name
         test_exe = invoker.target_name
         runtime_deps_file = _runtime_deps_file
-
-        if (is_chromeos_lacros) {
-          # At build time, Lacros tests don't know whether they'll run on VM or
-          # HW, and instead, these flags are specified at runtime when invoking
-          # the generated runner script.
-          skip_generating_board_args = true
-        }
 
         if (tests_have_location_tags) {
           data = [ "//testing/location_tags.json" ]
@@ -989,91 +981,6 @@ template("test") {
       }
 
       data_deps += [ "//testing:test_scripts_shared" ]
-    }
-  } else if (is_chromeos_lacros && !is_chromeos_device) {
-    _runtime_deps_file = "$root_out_dir/${target_name}.runtime_deps"
-    _executable = target_name
-    _gen_runner_target = "${target_name}__runner"
-
-    if (defined(invoker.use_xvfb)) {
-      _use_xvfb = invoker.use_xvfb
-    } else {
-      _use_xvfb = false
-    }
-
-    # When use_xvfb is set by the invoker, it indicates that running this test
-    # target requires a window, and in lacros build, ash-chrome serves as the
-    # display server. Note that even though the tests themselves do not require
-    # xvfb anymore, xvfb.py is still needed to invoke the lacros test runner
-    # because ash-chrome is based on x11.
-    _use_ash_chrome = _use_xvfb
-
-    generate_wrapper(_gen_runner_target) {
-      wrapper_script = "$root_build_dir/bin/run_" + _executable
-
-      data = []
-      data_deps = [ "//testing:test_scripts_shared" ]
-
-      if (_use_xvfb) {
-        executable = "//testing/xvfb.py"
-        data += [ "//.vpython3" ]
-      } else {
-        executable = "//testing/test_env.py"
-      }
-      if (tests_have_location_tags) {
-        data += [ "//testing/location_tags.json" ]
-      }
-
-      executable_args = [
-        "@WrappedPath(../../build/lacros/test_runner.py)",
-        "test",
-        "@WrappedPath(./${_executable})",
-        "--test-launcher-bot-mode",
-      ]
-
-      if (_use_ash_chrome) {
-        executable_args += [ "--ash-chrome-path" ]
-
-        # Can't use --ash-chrome-path=path because WrappedPath
-        # won't be expanded for that usage.
-        executable_args += [ "@WrappedPath(./ash_clang_x64/test_ash_chrome)" ]
-      }
-
-      if (is_asan) {
-        executable_args += [ "--asan=1" ]
-      }
-      if (is_msan) {
-        executable_args += [ "--msan=1" ]
-      }
-      if (is_tsan) {
-        executable_args += [ "--tsan=1" ]
-      }
-      if (use_cfi_diag) {
-        executable_args += [ "--cfi-diag=1" ]
-      }
-      if (fail_on_san_warnings) {
-        executable_args += [ "--fail-san=1" ]
-      }
-
-      data += [ "//build/lacros/test_runner.py" ]
-    }
-
-    mixed_test(target_name) {
-      target_type = "executable"
-      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
-      forward_variables_from(invoker, [ "visibility" ])
-      if (!defined(deps)) {
-        deps = []
-      }
-
-      if (!defined(data_deps)) {
-        data_deps = []
-      }
-
-      data_deps += [ "//testing:test_scripts_shared" ]
-
-      write_runtime_deps = _runtime_deps_file
-      deps += [ ":$_gen_runner_target" ]
     }
   } else if (!is_nacl) {
     if (is_mac || is_win) {
@@ -1199,7 +1106,7 @@ template("script_test") {
                            invoker.enable_android_wrapper && is_android
   _enable_cros_wrapper =
       defined(invoker.enable_cros_wrapper) && invoker.enable_cros_wrapper &&
-      is_chromeos_ash && is_chromeos_device
+      is_chromeos && is_chromeos_device
   assert(!(_enable_logdog_wrapper && _enable_cros_wrapper),
          "The logdog and cros_test wrappers are mutually exclusive")
 
