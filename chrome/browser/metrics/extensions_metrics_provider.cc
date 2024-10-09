@@ -30,8 +30,10 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
+#include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
@@ -325,7 +327,8 @@ metrics::ExtensionInstallProto ConstructInstallProto(
     const extensions::Extension& extension,
     extensions::ExtensionPrefs* prefs,
     base::Time last_sample_time,
-    extensions::ExtensionManagement* extension_management) {
+    extensions::ExtensionManagement* extension_management,
+    bool in_extensions_developer_mode) {
   ExtensionInstallProto install;
   install.set_type(GetType(extension.manifest()->type()));
   install.set_install_location(GetInstallLocation(extension.location()));
@@ -349,6 +352,7 @@ metrics::ExtensionInstallProto ConstructInstallProto(
   install.set_blacklist_state(GetBlacklistState(extension.id(), prefs));
   install.set_installed_in_this_sample_period(
       prefs->GetLastUpdateTime(extension.id()) >= last_sample_time);
+  install.set_in_extensions_developer_mode(in_extensions_developer_mode);
 
   return install;
 }
@@ -357,6 +361,8 @@ metrics::ExtensionInstallProto ConstructInstallProto(
 std::vector<metrics::ExtensionInstallProto> GetInstallsForProfile(
     Profile* profile,
     base::Time last_sample_time) {
+  bool in_extensions_developer_mode = extensions::GetCurrentDeveloperMode(
+      extensions::util::GetBrowserContextId(profile));
   extensions::ExtensionPrefs* prefs = extensions::ExtensionPrefs::Get(profile);
   const extensions::ExtensionSet extensions =
       extensions::ExtensionRegistry::Get(profile)
@@ -367,7 +373,8 @@ std::vector<metrics::ExtensionInstallProto> GetInstallsForProfile(
       extensions::ExtensionManagementFactory::GetForBrowserContext(profile);
   for (const auto& extension : extensions) {
     installs.push_back(ConstructInstallProto(
-        *extension, prefs, last_sample_time, extension_management));
+        *extension, prefs, last_sample_time, extension_management,
+        in_extensions_developer_mode));
   }
 
   return installs;
@@ -431,8 +438,11 @@ ExtensionsMetricsProvider::ConstructInstallProtoForTesting(
     Profile* profile) {
   extensions::ExtensionManagement* extension_management =
       extensions::ExtensionManagementFactory::GetForBrowserContext(profile);
+  bool in_extensions_developer_mode = extensions::GetCurrentDeveloperMode(
+      extensions::util::GetBrowserContextId(profile));
   return ConstructInstallProto(extension, prefs, last_sample_time,
-                               extension_management);
+                               extension_management,
+                               in_extensions_developer_mode);
 }
 
 // static

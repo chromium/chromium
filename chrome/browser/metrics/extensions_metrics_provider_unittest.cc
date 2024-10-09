@@ -19,6 +19,7 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -230,6 +231,9 @@ TEST_F(ExtensionMetricsProviderInstallsTest, TestProtoConstruction) {
 
     EXPECT_TRUE(install.has_installed_in_this_sample_period());
     EXPECT_TRUE(install.installed_in_this_sample_period());
+
+    EXPECT_TRUE(install.has_in_extensions_developer_mode());
+    EXPECT_FALSE(install.in_extensions_developer_mode());
   }
 
   // It's not helpful to exhaustively test each possible variation of each
@@ -384,6 +388,22 @@ TEST_F(ExtensionMetricsProviderInstallsTest, TestProtoConstruction) {
     set_last_sample_time(base::Time::Now() + base::Minutes(60));
     ExtensionInstallProto install = ConstructProto(*extension);
     EXPECT_FALSE(install.installed_in_this_sample_period());
+  }
+
+  {
+    // Test that the `in_extensions_developer_mode` boolean is correctly
+    // reported when developer mode is ON.
+    extensions::util::SetDeveloperModeForProfile(profile(), true);
+    scoped_refptr<const Extension> extension =
+        ExtensionBuilder("test")
+            .SetLocation(ManifestLocation::kInternal)
+            .Build();
+    add_extension(extension.get());
+
+    ExtensionInstallProto install = ConstructProto(*extension);
+
+    EXPECT_TRUE(install.has_in_extensions_developer_mode());
+    EXPECT_TRUE(install.in_extensions_developer_mode());
   }
 }
 
