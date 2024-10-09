@@ -216,13 +216,20 @@ void IsolatedWebAppUpdateDiscoveryTask::OnUpdateManifestFetched(
   debug_log_.Set(
       "available_versions",
       base::ToValueList(update_manifest.versions(), [](const auto& entry) {
-        return entry.version().GetString();
+        return base::Value::Dict()
+            .Set("version", entry.version().GetString())
+            .Set("update_channels",
+                 base::ToValueList(entry.channels(), [](const auto& channel) {
+                   return channel.ToString();
+                 }));
       }));
+
   debug_log_.Set(
       "latest_version",
       base::Value::Dict()
           .Set("version", latest_version_entry->version().GetString())
-          .Set("src", latest_version_entry->src().spec()));
+          .Set("src", latest_version_entry->src().spec())
+          .Set("update_channel", task_params_.update_channel().ToString()));
 
   ASSIGN_OR_RETURN(
       const WebApp& iwa,
