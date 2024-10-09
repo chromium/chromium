@@ -659,8 +659,6 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sEnableDiscountInfoApi =
             newCachedFlag(ENABLE_DISCOUNT_INFO_API, false);
     public static final CachedFlag sExperimentsForAgsa = newCachedFlag(EXPERIMENTS_FOR_AGSA, true);
-    public static final CachedFlag sFeedLoadingPlaceholder =
-            newCachedFlag(FEED_LOADING_PLACEHOLDER, false);
     public static final CachedFlag sForceListTabSwitcher =
             newCachedFlag(FORCE_LIST_TAB_SWITCHER, false);
     public static final CachedFlag sFullscreenInsetsApiMigration =
@@ -802,7 +800,6 @@ public abstract class ChromeFeatureList {
                     sEdgeToEdgeWebOptIn,
                     sEducationalTipModule,
                     sEnableDiscountInfoApi,
-                    sFeedLoadingPlaceholder,
                     sForceListTabSwitcher,
                     sFullscreenInsetsApiMigration,
                     sFullscreenInsetsApiMigrationOnAutomotive,
