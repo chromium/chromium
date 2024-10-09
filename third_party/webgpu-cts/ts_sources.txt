@@ -616,6 +616,7 @@ src/webgpu/shader/execution/expression/call/builtin/tan.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/tanh.cache.ts
 src/webgpu/shader/execution/expression/call/builtin/tanh.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureDimensions.spec.ts
+src/webgpu/shader/validation/decl/util.ts
 src/webgpu/shader/execution/expression/call/builtin/texture_utils.ts
 src/webgpu/shader/execution/expression/call/builtin/textureGather.spec.ts
 src/webgpu/shader/execution/expression/call/builtin/textureGatherCompare.spec.ts
@@ -730,7 +731,6 @@ src/webgpu/shader/validation/decl/const.spec.ts
 src/webgpu/shader/validation/decl/context_dependent_resolution.spec.ts
 src/webgpu/shader/validation/decl/let.spec.ts
 src/webgpu/shader/validation/decl/override.spec.ts
-src/webgpu/shader/validation/decl/util.ts
 src/webgpu/shader/validation/decl/var.spec.ts
 src/webgpu/shader/validation/expression/early_evaluation.spec.ts
 src/webgpu/shader/validation/expression/overload_resolution.spec.ts
