@@ -128,12 +128,7 @@ void OpenNTPAndBackgroundAndForegroundApp() {
 #endif
 - (void)MAYBE_testHistoryOptInPromoUserSignedIn {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey
-       addFakeIdentity:fakeIdentity
-      withCapabilities:@{
-        @(kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName) :
-            @YES,
-      }];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableHistorySync:NO];
 
   OpenNTPAndBackgroundAndForegroundApp();
@@ -151,12 +146,7 @@ void OpenNTPAndBackgroundAndForegroundApp() {
 
 - (void)testHistoryOptInPromoNotShownWhenAlreadyGranted {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey
-       addFakeIdentity:fakeIdentity
-      withCapabilities:@{
-        @(kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName) :
-            @YES,
-      }];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableHistorySync:YES];
 
   OpenNTPAndBackgroundAndForegroundApp();
@@ -169,42 +159,17 @@ void OpenNTPAndBackgroundAndForegroundApp() {
       assertWithMatcher:grey_notVisible()];
 }
 
-// Tests that the sign-in promo is not visible at start-up for an account
-// with minor mode restrictions.
-- (void)testStartupSigninPromoNotShownForMinor {
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey
-       addFakeIdentity:fakeIdentity
-      withCapabilities:@{
-        @(kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName) :
-            @NO,
-      }];
-
-  OpenNTPAndBackgroundAndForegroundApp();
-
-  [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::SigninScreenPromoMatcher()]
-      assertWithMatcher:grey_notVisible()];
-}
-
 // Tests that the sign-in promo is visible at start-up for regular user, and
 // followed by the history sync opt-in.
 // TODO(crbug.com/346537324): Test fails on device.
 #if TARGET_IPHONE_SIMULATOR
-#define MAYBE_testStartupSigninPromoShownForNoneMinor \
-  testStartupSigninPromoShownForNoneMinor
+#define MAYBE_testStartupSigninPromoShown testStartupSigninPromoShown
 #else
-#define MAYBE_testStartupSigninPromoShownForNoneMinor \
-  DISABLED_testStartupSigninPromoShownForNoneMinor
+#define MAYBE_testStartupSigninPromoShown DISABLED_testStartupSigninPromoShown
 #endif
-- (void)MAYBE_testStartupSigninPromoShownForNoneMinor {
+- (void)MAYBE_testStartupSigninPromoShown {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey
-       addFakeIdentity:fakeIdentity
-      withCapabilities:@{
-        @(kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName) :
-            @YES,
-      }];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   OpenNTPAndBackgroundAndForegroundApp();
 
@@ -227,12 +192,7 @@ void OpenNTPAndBackgroundAndForegroundApp() {
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
                                 error:nil];
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey
-       addFakeIdentity:fakeIdentity
-      withCapabilities:@{
-        @(kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName) :
-            @YES,
-      }];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
   OpenNTPAndBackgroundAndForegroundApp();
 

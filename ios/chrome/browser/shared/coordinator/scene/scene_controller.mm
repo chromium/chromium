@@ -134,9 +134,6 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/signin/model/capabilities_types.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
@@ -911,8 +908,7 @@ void OnListFamilyMembersResponse(
 
   if (level == SceneActivationLevelForegroundActive &&
       appInitStage == AppInitStage::kFinal) {
-    [self tryPresentSigninModalUI];
-
+    [self tryPresentSigninUpgradePromo];
     [self handleExternalIntents];
 
     if (!initializingUIInColdStart &&
@@ -944,48 +940,6 @@ void OnListFamilyMembersResponse(
           removeSceneSessionID:self.sceneState.sceneSessionID];
     }
   }
-}
-
-// Displays either the sign-in upgrade promo if it is eligible or the list
-// of signed-in accounts if the user has recently updated their accounts. These
-// two sign-in modal dialog are mutually exclusive (one is presented when the
-// user is signed in to Chrome, the other when the user is signed out of
-// Chrome).
-- (void)tryPresentSigninModalUI {
-  // If the sign-in promo is not eligible, return immediately.
-  if (![self shouldPresentSigninUpgradePromo]) {
-    return;
-  }
-
-  ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForProfile(
-          self.mainInterface.browser->GetProfile());
-  // The sign-in promo should not be presented if there is no identities.
-  id<SystemIdentity> defaultIdentity =
-      accountManagerService->GetDefaultIdentity();
-  DCHECK(defaultIdentity);
-
-  using CapabilityResult = SystemIdentityManager::CapabilityResult;
-  SystemIdentityManager* system_identity_manager =
-      GetApplicationContext()->GetSystemIdentityManager();
-
-  // Asynchronously checks whether the default identity can display extended
-  // sync promos and displays the sign-in promo if possible.
-  __weak SceneController* weakSelf = self;
-  base::Time fetch_start = base::Time::Now();
-  system_identity_manager->CanShowHistorySyncOptInsWithoutMinorModeRestrictions(
-      defaultIdentity, base::BindOnce(^(CapabilityResult result) {
-        base::TimeDelta fetch_duration = (base::Time::Now() - fetch_start);
-        base::UmaHistogramTimes(
-            "Signin.AccountCapabilities.GetFromSystemLibraryDuration."
-            "SigninUpgradePromo",
-            fetch_duration);
-        if (fetch_duration > signin::GetWaitThresholdForCapabilities() ||
-            result != CapabilityResult::kTrue) {
-          return;
-        }
-        [weakSelf presentSigninUpgradePromo];
-      }));
 }
 
 - (void)initializeUI {
@@ -1436,7 +1390,7 @@ void OnListFamilyMembersResponse(
 }
 
 // Presents the sign-in upgrade promo.
-- (void)presentSigninUpgradePromo {
+- (void)tryPresentSigninUpgradePromo {
   // It is possible during a slow asynchronous call that the user changes their
   // state so as to no longer be eligible for sign-in promos. Return early in
   // this case.
