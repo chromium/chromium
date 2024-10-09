@@ -11,6 +11,8 @@
 #import "components/variations/scoped_variations_ids_provider.h"
 #import "components/variations/variations_ids_provider.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/profile/profile_init_stage.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
@@ -85,10 +87,17 @@ class SceneControllerTest : public PlatformTest {
   SceneControllerTest() {
     base_view_controller_ = [[UIViewController alloc] init];
 
+    // Required because UserActivityBrowserAgent uses the AppState's initStage
+    // instead of ProfileState's initStage. Remove once this is no longer the
+    // case.
+    app_state_ = CreateMockAppState(AppInitStage::kFinal);
+
     fake_scene_ = FakeSceneWithIdentifier([[NSUUID UUID] UUIDString]);
-    AppState* appState = CreateMockAppState(AppInitStage::kFinal);
     scene_state_ = [[SceneStateWithFakeScene alloc] initWithScene:fake_scene_
-                                                         appState:appState];
+                                                         appState:app_state_];
+
+    profile_state_ = CreateMockProfileState(ProfileInitStage::kFinal);
+    scene_state_.profileState = profile_state_;
 
     scene_controller_ =
         [[InternalFakeSceneController alloc] initWithSceneState:scene_state_];
@@ -153,10 +162,18 @@ class SceneControllerTest : public PlatformTest {
   ~SceneControllerTest() override { [scene_controller_ teardownUI]; }
 
   // Mock & stub an AppState object with an arbitrary `init_stage` property.
-  id CreateMockAppState(AppInitStage init_stage) {
-    id mock_app_state = OCMClassMock([AppState class]);
-    OCMStub([(AppState*)mock_app_state initStage]).andReturn(init_stage);
+  AppState* CreateMockAppState(AppInitStage init_stage) {
+    AppState* mock_app_state = OCMClassMock([AppState class]);
+    OCMStub([mock_app_state initStage]).andReturn(init_stage);
     return mock_app_state;
+  }
+
+  // Mock & stub a ProfileState object with an arbitrary `init_stage` property.
+  ProfileState* CreateMockProfileState(ProfileInitStage init_stage) {
+    ProfileState* mock_profile_state = OCMClassMock([ProfileState class]);
+    OCMStub([mock_profile_state initStage]).andReturn(init_stage);
+    OCMStub([mock_profile_state profile]).andReturn(profile_.get());
+    return mock_profile_state;
   }
 
   // Mock & stub a WrangledBrowser object.
@@ -191,7 +208,9 @@ class SceneControllerTest : public PlatformTest {
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestProfileIOS> profile_;
   InternalFakeSceneController* scene_controller_;
+  AppState* app_state_;
   SceneState* scene_state_;
+  ProfileState* profile_state_;
   id fake_scene_;
   id<ConnectionInformation> connection_information_;
 

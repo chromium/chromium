@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 
 @protocol BrowserProviderInterface;
+@class ProfileState;
 
 // The controller object for a scene. Reacts to scene state changes.
 @interface SceneController : NSObject <SceneStateObserver,
@@ -30,13 +31,15 @@
 - (instancetype)initWithSceneState:(SceneState*)sceneState
     NS_DESIGNATED_INITIALIZER;
 
-
 // The interface provider for this scene.
 @property(nonatomic, strong, readonly) id<BrowserProviderInterface>
     browserProviderInterface;
 
 // YES if the tab grid is the main user interface at the moment.
 @property(nonatomic, readonly, getter=isTabGridVisible) BOOL tabGridVisible;
+
+// Connects the ProfileState to this SceneController.
+- (void)setProfileState:(ProfileState*)profileState;
 
 // Handler for the UIWindowSceneDelegate callback with the same selector.
 - (void)performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem

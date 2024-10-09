@@ -46,6 +46,7 @@
 #import "ios/chrome/app/chrome_overlay_window.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
 #import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/app_store_rating/ui_bundled/app_store_rating_scene_agent.h"
 #import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
@@ -330,7 +331,7 @@ void OnListFamilyMembersResponse(
 
 }  // namespace
 
-@interface SceneController () <AppStateObserver,
+@interface SceneController () <ProfileStateObserver,
                                HistoryCoordinatorDelegate,
                                IncognitoInterstitialCoordinatorDelegate,
                                PasswordCheckupCoordinatorDelegate,
@@ -461,7 +462,6 @@ void OnListFamilyMembersResponse(
   if (self) {
     _sceneState = sceneState;
     [_sceneState addObserver:self];
-    [_sceneState.appState addObserver:self];
 
     _sceneURLLoadingService = std::make_unique<SceneUrlLoadingService>();
     _sceneURLLoadingService->SetDelegate(self);
@@ -472,18 +472,26 @@ void OnListFamilyMembersResponse(
     _policyWatcherObserverBridge =
         std::make_unique<PolicyWatcherBrowserAgentObserverBridge>(self);
 
-    // Add agents.
-    [_sceneState addAgent:[[UIBlockerSceneAgent alloc] init]];
-    [_sceneState addAgent:[[IncognitoBlockerSceneAgent alloc] init]];
-    [_sceneState
-        addAgent:[[IncognitoReauthSceneAgent alloc]
-                     initWithReauthModule:[[ReauthenticationModule alloc]
-                                              init]]];
-    [_sceneState addAgent:[[StartSurfaceSceneAgent alloc] init]];
-    [_sceneState addAgent:[[SessionSavingSceneAgent alloc] init]];
-    [_sceneState addAgent:[[LayoutGuideSceneAgent alloc] init]];
   }
   return self;
+}
+
+- (void)setProfileState:(ProfileState*)profileState {
+  DCHECK(!_sceneState.profileState);
+
+  _sceneState.profileState = profileState;
+  [profileState sceneStateConnected:_sceneState];
+  [profileState addObserver:self];
+
+  // Add agents.
+  [_sceneState addAgent:[[UIBlockerSceneAgent alloc] init]];
+  [_sceneState addAgent:[[IncognitoBlockerSceneAgent alloc] init]];
+  [_sceneState
+      addAgent:[[IncognitoReauthSceneAgent alloc]
+                   initWithReauthModule:[[ReauthenticationModule alloc] init]]];
+  [_sceneState addAgent:[[StartSurfaceSceneAgent alloc] init]];
+  [_sceneState addAgent:[[SessionSavingSceneAgent alloc] init]];
+  [_sceneState addAgent:[[LayoutGuideSceneAgent alloc] init]];
 }
 
 #pragma mark - Setters and getters
@@ -563,8 +571,9 @@ void OnListFamilyMembersResponse(
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
-  AppState* appState = self.sceneState.appState;
-  [self transitionToSceneActivationLevel:level appInitStage:appState.initStage];
+  ProfileState* profileState = self.sceneState.profileState;
+  [self transitionToSceneActivationLevel:level
+                        profileInitStage:profileState.initStage];
 }
 
 - (void)handleExternalIntents {
@@ -686,7 +695,7 @@ void OnListFamilyMembersResponse(
   // If there's only one connected scene, and it isn't being restored, this
   // must be the initial app launch with scenes, so don't record the window
   // creation.
-  if (sceneState.appState.connectedScenes.count <= 1) {
+  if (sceneState.profileState.connectedScenes.count <= 1) {
     return;
   }
 
@@ -709,7 +718,7 @@ void OnListFamilyMembersResponse(
 - (void)performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem
                    completionHandler:
                        (void (^)(BOOL succeeded))completionHandler {
-  if (self.sceneState.appState.initStage <= AppInitStage::kNormalUI ||
+  if (self.sceneState.profileState.initStage <= ProfileInitStage::kUIReady ||
       !self.currentInterface.profile) {
     // Don't handle the intent if the browser UI objects aren't yet initialized.
     // This is the case when the app is in safe mode or may be the case when the
@@ -740,7 +749,7 @@ void OnListFamilyMembersResponse(
     return;
   }
 
-  if (self.sceneState.appState.initStage <= AppInitStage::kNormalUI ||
+  if (self.sceneState.profileState.initStage <= ProfileInitStage::kUIReady ||
       !self.currentInterface.profile) {
     // Don't handle the intent if the browser UI objects aren't yet initialized.
     // This is the case when the app is in safe mode or may be the case when the
@@ -778,12 +787,13 @@ void OnListFamilyMembersResponse(
   [self handleExternalIntents];
 }
 
-#pragma mark - AppStateObserver
+#pragma mark - ProfileStateObserver
 
-- (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(AppInitStage)previousInitStage {
+- (void)profileState:(ProfileState*)profileState
+    didTransitionToInitStage:(ProfileInitStage)nextInitStage
+               fromInitStage:(ProfileInitStage)fromInitStage {
   [self transitionToSceneActivationLevel:self.sceneState.activationLevel
-                            appInitStage:appState.initStage];
+                        profileInitStage:nextInitStage];
 }
 
 #pragma mark - private
@@ -861,13 +871,14 @@ void OnListFamilyMembersResponse(
   [self.incognitoInterstitialCoordinator start];
 }
 
-// A sink for appState:didTransitionFromInitStage: and
-// sceneState:transitionedToActivationLevel: events. Discussion: the scene
-// controller cares both about the app and the scene init stages. This method is
-// called from both observer callbacks and allows to handle all the transitions
-// in one place.
+// A sink for profileState:didTransitionFromInitStage: and
+// sceneState:transitionedToActivationLevel: events.
+//
+// Discussion: the scene controller cares both about the profile and the scene
+// init stages. This method is called from both observer callbacks and allows
+// to handle all the transitions in one place.
 - (void)transitionToSceneActivationLevel:(SceneActivationLevel)level
-                            appInitStage:(AppInitStage)appInitStage {
+                        profileInitStage:(ProfileInitStage)profileInitStage {
   // Update `backgroundedSinceLastActivated` and, if the scene has just been
   // activated, mark its state before the current activation for future use.
   BOOL transitionedToForegroundActiveFromBackground =
@@ -884,7 +895,7 @@ void OnListFamilyMembersResponse(
     //  was already set-up should be torn down.
     [self teardownUI];
   }
-  if (appInitStage < AppInitStage::kNormalUI) {
+  if (profileInitStage < ProfileInitStage::kUIReady) {
     // Nothing else per-scene should happen before the app completes the global
     // setup, like executing Safe mode, or creating the main Profile.
     return;
@@ -907,7 +918,7 @@ void OnListFamilyMembersResponse(
   }
 
   if (level == SceneActivationLevelForegroundActive &&
-      appInitStage == AppInitStage::kFinal) {
+      profileInitStage == ProfileInitStage::kFinal) {
     [self tryPresentSigninUpgradePromo];
     [self handleExternalIntents];
 
@@ -1242,7 +1253,7 @@ void OnListFamilyMembersResponse(
   [self.browserViewWrangler shutdown];
   self.browserViewWrangler = nil;
 
-  [self.sceneState.appState removeObserver:self];
+  [self.sceneState.profileState removeObserver:self];
   _sceneURLLoadingService.reset();
 }
 
@@ -1414,7 +1425,7 @@ void OnListFamilyMembersResponse(
     return NO;
   }
 
-  if (self.sceneState.appState.initStage <= AppInitStage::kFirstRun) {
+  if (self.sceneState.profileState.initStage < ProfileInitStage::kFinal) {
     return NO;
   }
 
@@ -2096,7 +2107,7 @@ using UserFeedbackDataCallback =
   if (self.settingsNavigationController) {
     return NO;
   }
-  if (self.sceneState.appState.initStage <= AppInitStage::kFirstRun) {
+  if (self.sceneState.profileState.initStage < ProfileInitStage::kFinal) {
     return NO;
   }
   if (self.sceneState.appState.currentUIBlocker) {
@@ -3885,7 +3896,7 @@ using UserFeedbackDataCallback =
 }
 
 - (void)openURLContexts:(NSSet<UIOpenURLContext*>*)URLContexts {
-  if (self.sceneState.appState.initStage <= AppInitStage::kNormalUI ||
+  if (self.sceneState.profileState.initStage <= ProfileInitStage::kUIReady ||
       !self.currentInterface.profile) {
     // Don't handle the intent if the browser UI objects aren't yet initialized.
     // This is the case when the app is in safe mode or may be the case when the
@@ -4003,7 +4014,7 @@ using UserFeedbackDataCallback =
 
   NSMutableArray<SceneController*>* sceneControllers =
       [[NSMutableArray alloc] init];
-  for (SceneState* sceneState in [self.sceneState.appState connectedScenes]) {
+  for (SceneState* sceneState in self.sceneState.profileState.connectedScenes) {
     SceneController* sceneController = sceneState.controller;
     // In some circumstances, the scene state may still exist while the
     // corresponding scene controller has been deallocated.

@@ -1664,9 +1664,7 @@ SEQUENCE_CHECKER(_sequenceChecker);
     }
   }
 
-  sceneState.profileState = profileState;
-  [profileState sceneStateConnected:sceneState];
-
+  [sceneState.controller setProfileState:profileState];
   storage->SetProfileNameForSceneID(sceneID, iterator->first);
 }
 
