@@ -312,6 +312,13 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     return;
   }
 
+  // Always disallow navigations to fido URLs. See crbug.com/371929521.
+  constexpr char kFidoScheme[] = "fido";
+  if (requestURL.SchemeIs(kFidoScheme)) {
+    decisionHandler(WKNavigationActionPolicyCancel);
+    return;
+  }
+
   ui::PageTransition transition =
       [self pageTransitionFromNavigationType:action.navigationType];
   if (isMainFrameNavigationAction) {
