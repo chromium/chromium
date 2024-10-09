@@ -12,6 +12,8 @@
 #import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
+#import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -52,16 +54,16 @@ bool IsEmptyNTP(const web::WebState* web_state) {
 
 }  // namespace
 
-@interface StartSurfaceSceneAgent () <AppStateObserver>
+@interface StartSurfaceSceneAgent () <ProfileStateObserver>
 
 // Caches the previous activation level.
 @property(nonatomic, assign) SceneActivationLevel previousActivationLevel;
 
-// YES if The AppState was not ready before the SceneState reached a valid
-// activation level, so therefore this agent needs to wait for the AppState's
+// YES if The ProfileState was not ready before the SceneState reached a valid
+// activation level, so therefore this agent needs to wait for the ProfileState
 // initStage to reach a valid stage before checking whether the Start Surface
 // should be shown.
-@property(nonatomic, assign) BOOL waitingForAppStateAfterSceneStateReady;
+@property(nonatomic, assign) BOOL waitingForProfileStateAfterSceneStateReady;
 
 @end
 
@@ -80,16 +82,17 @@ bool IsEmptyNTP(const web::WebState* web_state) {
 - (void)setSceneState:(SceneState*)sceneState {
   [super setSceneState:sceneState];
 
-  [self.sceneState.appState addObserver:self];
+  [self.sceneState.profileState addObserver:self];
 }
 
-#pragma mark - AppStateObserver
+#pragma mark - ProfileStateObserver
 
-- (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(AppInitStage)previousInitStage {
-  if (appState.initStage >= AppInitStage::kFirstRun &&
-      self.waitingForAppStateAfterSceneStateReady) {
-    self.waitingForAppStateAfterSceneStateReady = NO;
+- (void)profileState:(ProfileState*)profileState
+    didTransitionToInitStage:(ProfileInitStage)nextInitStage
+               fromInitStage:(ProfileInitStage)fromInitStage {
+  if (nextInitStage == ProfileInitStage::kFinal &&
+      self.waitingForProfileStateAfterSceneStateReady) {
+    self.waitingForProfileStateAfterSceneStateReady = NO;
     [self showStartSurfaceIfNecessary];
   }
 }
@@ -98,8 +101,8 @@ bool IsEmptyNTP(const web::WebState* web_state) {
 
 - (void)sceneStateDidDisableUI:(SceneState*)sceneState {
   // Tear down objects tied to the scene state before it is deleted.
-  [self.sceneState.appState removeObserver:self];
-  self.waitingForAppStateAfterSceneStateReady = NO;
+  [self.sceneState.profileState removeObserver:self];
+  self.waitingForProfileStateAfterSceneStateReady = NO;
 }
 
 - (void)sceneState:(SceneState*)sceneState
@@ -115,16 +118,7 @@ bool IsEmptyNTP(const web::WebState* web_state) {
       self.previousActivationLevel > SceneActivationLevelBackground) {
     if (base::FeatureList::IsEnabled(kRemoveExcessNTPs)) {
       // Remove duplicate NTP pages upon background event.
-      if (self.sceneState.browserProviderInterface.mainBrowserProvider
-              .browser) {
-        [self removeExcessNTPsInBrowser:self.sceneState.browserProviderInterface
-                                            .mainBrowserProvider.browser];
-      }
-      if (self.sceneState.browserProviderInterface.incognitoBrowserProvider
-              .browser) {
-        [self removeExcessNTPsInBrowser:self.sceneState.browserProviderInterface
-                                            .incognitoBrowserProvider.browser];
-      }
+      [self removeExcessNTPs];
     }
   }
   if (level >= SceneActivationLevelForegroundInactive &&
@@ -136,10 +130,10 @@ bool IsEmptyNTP(const web::WebState* web_state) {
 }
 
 - (void)showStartSurfaceIfNecessary {
-  if (self.sceneState.appState.initStage <= AppInitStage::kFirstRun) {
+  if (self.sceneState.profileState.initStage < ProfileInitStage::kFinal) {
     // NO if the app is not yet ready to present normal UI that is required by
     // Start Surface.
-    self.waitingForAppStateAfterSceneStateReady = YES;
+    self.waitingForProfileStateAfterSceneStateReady = YES;
     return;
   }
 
@@ -168,9 +162,7 @@ bool IsEmptyNTP(const web::WebState* web_state) {
   // Note that activeWebState could only be nullptr when the Tab grid is active
   // for now.
   web::WebState* activeWebState =
-      self.sceneState.browserProviderInterface.mainBrowserProvider.browser
-          ->GetWebStateList()
-          ->GetActiveWebState();
+      browser->GetWebStateList()->GetActiveWebState();
   if (!activeWebState || IsUrlNtp(activeWebState->GetVisibleURL())) {
     return;
   }
@@ -199,13 +191,28 @@ bool IsEmptyNTP(const web::WebState* web_state) {
   insertion_agent->InsertWebState(web_load_params, tab_insertion_params);
 }
 
-// Removes empty NTP tabs (i.e. NTPs with no further navigation) in `browser`'s
-// WebStateList.
+// Removes empty NTP tabs.
+- (void)removeExcessNTPs {
+  id<BrowserProviderInterface> providerInterface =
+      self.sceneState.browserProviderInterface;
+
+  [self removeExcessNTPsInBrowser:providerInterface.mainBrowserProvider];
+  [self removeExcessNTPsInBrowser:providerInterface.incognitoBrowserProvider];
+}
+
+// Removes empty NTP tabs (i.e. NTPs with no further navigation) in the
+// WebStateList attached to the Browser accessible via `browserProvider`
 //
 // NTPs with navigation are all preserved. If there are none, an empty NTP is
 // preserved.
-- (void)removeExcessNTPsInBrowser:(Browser*)browser {
+- (void)removeExcessNTPsInBrowser:(id<BrowserProvider>)browserProvider {
+  Browser* browser = browserProvider.browser;
+  if (!browser) {
+    return;
+  }
+
   WebStateList* webStateList = browser->GetWebStateList();
+  DCHECK(webStateList);
 
   // Map groups to the indices of its empty NTPs, and whether the group contains
   // at least one non-empty NTP (an NTP with navigation), which will be kept.
@@ -291,7 +298,7 @@ bool IsEmptyNTP(const web::WebState* web_state) {
       GetTimeSinceMostRecentTabWasOpenForSceneState(self.sceneState);
   const BOOL isColdStart =
       (level > SceneActivationLevelBackground &&
-       self.sceneState.appState.startupInformation.isColdStart);
+       self.sceneState.profileState.appState.startupInformation.isColdStart);
   if (isColdStart) {
     UMA_HISTOGRAM_CUSTOM_COUNTS("IOS.BackgroundTimeBeforeColdStart",
                                 timeSinceBackground.InMinutes(), 1,
