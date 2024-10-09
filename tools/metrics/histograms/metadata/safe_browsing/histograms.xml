@@ -430,34 +430,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.CheckUrl.FirstRequestThreatType2{ThreatSource}"
-    enum="SBThreatType" expires_after="2025-03-30">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the threat type of the first request to Safe Browsing, split by the
-    source of the threat type. This is logged whenever the first request
-    completes.
-
-    Note that an unsafe threat type is slightly different than a warning, since
-    there are other conditions that must apply for an unsafe threat type to show
-    a warning.
-  </summary>
-  <token key="ThreatSource" variants="ThreatSources"/>
-</histogram>
-
-<histogram name="SafeBrowsing.CheckUrl.FirstRequestTimedOut{ThreatSource}"
-    enum="BooleanTimedOut" expires_after="2024-11-17">
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Records the whether the first request to Safe Browsing timed out, split by
-    the source of the threat type. This is logged whenever the first request
-    completes.
-  </summary>
-  <token key="ThreatSource" variants="ThreatSources"/>
-</histogram>
-
 <histogram name="SafeBrowsing.CheckUrl.IsDocumentCheckPrefetch"
     enum="BooleanIsPrefetch" expires_after="2025-03-30">
   <owner>thefrog@chromium.org</owner>
