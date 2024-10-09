@@ -30,7 +30,7 @@
       # Don't include unwind tables for linux-/mac-/win-/win64-chrome builders.
       # They monitor binary size growth, which may be affected by the tables.
       'linux-chrome': 'official_reclient',
-      'mac-chrome': 'official_reclient_mac',
+      'mac-chrome': 'official_reclient_mac_x64',
       'win-branded-rel': 'chrome_branded_reclient_minimal_symbols',
       'win-chrome': 'official_reclient_x86',
       'win64-chrome': 'official_reclient_x64',
@@ -204,7 +204,7 @@
       'linux-chrome': 'official_reclient',
       'linux-finch-smoke-chrome': 'official_reclient',
       'mac-arm64-finch-smoke-chrome': 'official_reclient_mac_arm',
-      'mac-chrome': 'official_reclient_mac',
+      'mac-chrome': 'official_reclient_mac_x64',
       'win-branded-compile-rel': 'chrome_branded_reclient_minimal_symbols',
       'win-celab-try-rel': 'official_celab_release_bot',
       'win-chrome': 'official_reclient_x86',
@@ -482,10 +482,6 @@
       'official', 'reclient', 'no_gnome_keyring', 'minimal_symbols',
     ],
 
-    'official_reclient_mac': [
-      'official', 'reclient', 'no_widevine_cdm_host_verification',
-    ],
-
     'official_reclient_mac_arm': [
       'official', 'reclient', 'no_widevine_cdm_host_verification', 'arm64',
     ],
@@ -508,6 +504,10 @@
 
     'official_reclient_mac_perf_pgo': [
       'official', 'reclient', 'no_keystone_registration_framework', 'no_widevine_cdm_host_verification', 'minimal_symbols',
+    ],
+
+    'official_reclient_mac_x64': [
+      'official', 'reclient', 'x64', 'no_widevine_cdm_host_verification',
     ],
 
     'official_reclient_minimal_symbols_android': [

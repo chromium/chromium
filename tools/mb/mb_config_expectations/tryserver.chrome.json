@@ -27,6 +27,7 @@
       "ignore_missing_widevine_signing_cert": true,
       "is_chrome_branded": true,
       "is_official_build": true,
+      "target_cpu": "x64",
       "use_remoteexec": true
     }
   },
