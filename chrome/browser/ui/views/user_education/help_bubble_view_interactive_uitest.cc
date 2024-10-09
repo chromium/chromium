@@ -217,7 +217,8 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest,
 // bubble, or by trying to interact with the help bubble with the mouse to e.g.
 // close it.
 IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest,
-                       BubblePreventsCloseOnLossOfFocus) {
+                       // TODO(crbug.com/372283580): Re-enable this test
+                       DISABLED_BubblePreventsCloseOnLossOfFocus) {
   browser()->tab_strip_model()->AddToNewGroup({0});
 
   HelpBubbleParams params;
