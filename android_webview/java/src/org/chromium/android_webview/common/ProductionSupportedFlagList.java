@@ -1078,6 +1078,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "AllowSensorsToEnterBfcache",
                 "Allow pages with sensors to enter back/forward cache."),
+        Flag.baseFeature(
+                BlinkFeatures.FONTATIONS_FONT_BACKEND,
+                "Enables the Fontations font backend for web fonts."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
