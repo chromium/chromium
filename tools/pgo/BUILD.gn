@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/clang/clang.gni")
+import("//build/config/python.gni")
 import("//testing/test.gni")
 
 # Use the following import to find other suffixes as needed. The suffixes start
@@ -10,13 +11,20 @@ import("//testing/test.gni")
 # now instead of using a variable for better searchability.
 # import("//tools/perf/chrome_telemetry_build/android_browser_types.gni")
 
+python_library("generate_profile_py") {
+  testonly = true
+  pydeps_file = "//tools/pgo/generate_profile.pydeps"
+  data = [ "//.vpython3" ]
+}
+
 if (enable_chrome_android_internal) {
   template("generate_profile_test") {
     script_test(target_name) {
       script = "//tools/pgo/generate_profile.py"
 
       # Stream logcat from device.
-      enable_android_wrapper = true
+      # TODO(wnwen): Turn this back on once the script is working well.
+      #enable_android_wrapper = true
 
       args = [
         # Assume that we are running this script from the output directory.
@@ -25,6 +33,8 @@ if (enable_chrome_android_internal) {
         "--android-browser",
         invoker.browser_name,
       ]
+
+      deps = [ ":generate_profile_py" ]
 
       data_deps = [
         # From performance_test_suite_template_base:
