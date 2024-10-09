@@ -1137,11 +1137,6 @@ void PartitionRoot::Init(PartitionOptions opts) {
     ReserveBackupRefPtrGuardRegionIfNeeded();
 #endif
 
-#if PA_BUILDFLAG(DCHECKS_ARE_ON)
-    settings.use_cookie = true;
-#else
-    static_assert(!Settings::use_cookie);
-#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     settings.brp_enabled_ = opts.backup_ref_ptr == PartitionOptions::kEnabled;
 #else   // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)

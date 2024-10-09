@@ -238,11 +238,11 @@ struct alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
     bool with_thread_cache = false;
 
-#if PA_BUILDFLAG(DCHECKS_ARE_ON)
-    bool use_cookie = false;
+#if PA_BUILDFLAG(USE_PARTITION_COOKIE)
+    static constexpr bool use_cookie = true;
 #else
     static constexpr bool use_cookie = false;
-#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
+#endif  // PA_BUILDFLAG(USE_PARTITION_COOKIE)
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     bool brp_enabled_ = false;
 #if PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)

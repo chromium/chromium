@@ -156,6 +156,11 @@ declare_args() {
   # Enable reentrancy checks at `partition_alloc::internal::Lock`.
   # TODO(crbug.com/371135823): Remove upon completion of investigation.
   enable_partition_lock_reentrancy_check = false
+
+  # This will write a fixed cookie pattern at the end of each allocation, and
+  # later verify the pattern remain unchanged to ensure there is no OOB write.
+  # It comes with performance and memory cost, hence enabled only in debug.
+  use_partition_cookie = is_debug || dcheck_always_on
 }
 
 declare_args() {

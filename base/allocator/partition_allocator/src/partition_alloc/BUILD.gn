@@ -168,6 +168,7 @@ pa_buildflag_header("buildflags") {
     "USE_LARGE_EMPTY_SLOT_SPAN_RING=$use_large_empty_slot_span_ring",
     "USE_PARTITION_ALLOC=$use_partition_alloc",
     "USE_PARTITION_ALLOC_AS_MALLOC=$use_partition_alloc_as_malloc",
+    "USE_PARTITION_COOKIE=$use_partition_cookie",
     "USE_RAW_PTR_ASAN_UNOWNED_IMPL=$use_raw_ptr_asan_unowned_impl",
     "USE_RAW_PTR_BACKUP_REF_IMPL=$use_raw_ptr_backup_ref_impl",
     "USE_RAW_PTR_HOOKABLE_IMPL=$use_raw_ptr_hookable_impl",

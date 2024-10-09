@@ -13,8 +13,7 @@ namespace partition_alloc::internal {
 
 static constexpr size_t kCookieSize = 16;
 
-// Cookie is enabled for debug builds.
-#if PA_BUILDFLAG(DCHECKS_ARE_ON)
+#if PA_BUILDFLAG(USE_PARTITION_COOKIE)
 
 inline constexpr unsigned char kCookieValue[kCookieSize] = {
     0xDE, 0xAD, 0xBE, 0xEF, 0xCA, 0xFE, 0xD0, 0x0D,
@@ -24,7 +23,7 @@ constexpr size_t kPartitionCookieSizeAdjustment = kCookieSize;
 
 PA_ALWAYS_INLINE void PartitionCookieCheckValue(unsigned char* cookie_ptr) {
   for (size_t i = 0; i < kCookieSize; ++i, ++cookie_ptr) {
-    PA_DCHECK(*cookie_ptr == kCookieValue[i]);
+    PA_CHECK(*cookie_ptr == kCookieValue[i]);
   }
 }
 
@@ -42,7 +41,7 @@ PA_ALWAYS_INLINE void PartitionCookieCheckValue(unsigned char* address) {}
 
 PA_ALWAYS_INLINE void PartitionCookieWriteValue(unsigned char* cookie_ptr) {}
 
-#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
+#endif  // PA_BUILDFLAG(USE_PARTITION_COOKIE)
 
 }  // namespace partition_alloc::internal
 
