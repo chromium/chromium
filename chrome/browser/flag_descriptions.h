@@ -4936,8 +4936,8 @@ extern const char kSupervisedProfileSubframeReauthDescription[];
 extern const char kSupervisedProfileFilteringFallbackName[];
 extern const char kSupervisedProfileFilteringFallbackDescription[];
 
-extern const char kSupervisedProfileCustomSignInInterceptName[];
-extern const char kSupervisedProfileCustomSignInInterceptDescription[];
+extern const char kSupervisedProfileCustomStringsName[];
+extern const char kSupervisedProfileCustomStringsDescription[];
 
 extern const char kSupervisedProfileSignInIphName[];
 extern const char kSupervisedProfileSignInIphDescription[];

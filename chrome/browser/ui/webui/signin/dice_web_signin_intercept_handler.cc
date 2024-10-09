@@ -318,7 +318,7 @@ std::string DiceWebSigninInterceptHandler::GetChromeSigninTitle() {
   // calling code waits for Account Capabilities to be fetched (with a timeout),
   // so Account Capabilities will be available for the vast majority of users.
   if (base::FeatureList::IsEnabled(
-          supervised_user::kCustomWebSignInInterceptForSupervisedUsersUi) &&
+          supervised_user::kCustomProfileStringsForSupervisedUsers) &&
       bubble_parameters_.intercepted_account.capabilities
               .is_subject_to_parental_controls() == signin::Tribool::kTrue) {
     return l10n_util::GetStringUTF8(
@@ -333,7 +333,7 @@ std::string DiceWebSigninInterceptHandler::GetChromeSigninSubtitle() {
   // calling code waits for Account Capabilities to be fetched (with a timeout),
   // so Account Capabilities will be available for the vast majority of users.
   if (base::FeatureList::IsEnabled(
-          supervised_user::kCustomWebSignInInterceptForSupervisedUsersUi) &&
+          supervised_user::kCustomProfileStringsForSupervisedUsers) &&
       bubble_parameters_.intercepted_account.capabilities
               .is_subject_to_parental_controls() == signin::Tribool::kTrue) {
     return l10n_util::GetStringUTF8(

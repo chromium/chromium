@@ -8469,11 +8469,11 @@ const char kSupervisedProfileFilteringFallbackDescription[] =
     "If the Family Link website filtering setting is set to another value, it "
     "is applied in the pending regardless of this flag.";
 
-const char kSupervisedProfileCustomSignInInterceptName[] =
-    "Supervised Profile custom sign-in intercept";
-const char kSupervisedProfileCustomSignInInterceptDescription[] =
-    "Displays a modified sign-in intercept UI for sign-in attempts from "
-    "supervised users.";
+const char kSupervisedProfileCustomStringsName[] =
+    "Supervised Profile custom strings";
+const char kSupervisedProfileCustomStringsDescription[] =
+    "Displays modified strings on both the sign-in intercept UI and the "
+    "pre-UNO sync opt out screen";
 
 const char kSupervisedProfileSignInIphName[] = "Supervised Profile sign-in IPH";
 const char kSupervisedProfileSignInIphDescription[] =

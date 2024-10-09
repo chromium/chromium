@@ -98,8 +98,8 @@ bool IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled() {
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-BASE_FEATURE(kCustomWebSignInInterceptForSupervisedUsersUi,
-             "CustomWebSignInInterceptForSupervisedUsersUi",
+BASE_FEATURE(kCustomProfileStringsForSupervisedUsers,
+             "CustomProfileStringsForSupervisedUsers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSupervisedUserProfileSigninIPH,

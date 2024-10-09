@@ -51,7 +51,7 @@ bool IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled();
 //    Profile
 //
 // Only affects Linux/Mac/Windows platforms.
-BASE_DECLARE_FEATURE(kCustomWebSignInInterceptForSupervisedUsersUi);
+BASE_DECLARE_FEATURE(kCustomProfileStringsForSupervisedUsers);
 
 // Displays the supervised user signin-in IPH when the child signs
 // in to a new or existing local profile.

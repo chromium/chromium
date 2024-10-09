@@ -11557,12 +11557,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          supervised_user::kUncredentialedFilteringFallbackForSupervisedUsers)},
 
-    {"supervised-profile-custom-sign-in-intercept",
-     flag_descriptions::kSupervisedProfileCustomSignInInterceptName,
-     flag_descriptions::kSupervisedProfileCustomSignInInterceptDescription,
+    {"supervised-profile-custom-strings",
+     flag_descriptions::kSupervisedProfileCustomStringsName,
+     flag_descriptions::kSupervisedProfileCustomStringsDescription,
      kOsLinux | kOsMac | kOsWin,
      FEATURE_VALUE_TYPE(
-         supervised_user::kCustomWebSignInInterceptForSupervisedUsersUi)},
+         supervised_user::kCustomProfileStringsForSupervisedUsers)},
 
     {"supervised-profile-sign-in-iph",
      flag_descriptions::kSupervisedProfileSignInIphName,

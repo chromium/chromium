@@ -16176,6 +16176,8 @@ from previous Chrome versions.
   <int value="-1700764114" label="HelpAppBackgroundPage:enabled"/>
   <int value="-1700068858" label="HelpAppCrosComponents:disabled"/>
   <int value="-1699960514" label="ChromeOSSyncedSessionSharing:enabled"/>
+  <int value="-1699952400"
+      label="CustomProfileStringsForSupervisedUsers:disabled"/>
   <int value="-1699908146" label="NtpRealboxCr23ConsistentRowHeight:enabled"/>
   <int value="-1699855205" label="MemorySaverAggressiveness:disabled"/>
   <int value="-1699700244"
@@ -18241,8 +18243,6 @@ from previous Chrome versions.
   <int value="-863738382" label="CbdTimeframeRequired:disabled"/>
   <int value="-863581676" label="BluetoothFixA2dpPacketSize:disabled"/>
   <int value="-863269581" label="WebFeedOnboarding:disabled"/>
-  <int value="-862882412"
-      label="CustomWebSignInInterceptForSupervisedUsersUi:enabled"/>
   <int value="-861678473" label="disable-offer-upload-credit-cards"/>
   <int value="-861524874" label="AutofillParseMerchantPromoCodeFields:enabled"/>
   <int value="-861343291" label="ChromeHome:disabled"/>
@@ -20089,8 +20089,6 @@ from previous Chrome versions.
   <int value="-97599565" label="WebViewNewInvalidateHeuristic:disabled"/>
   <int value="-97511671" label="AnimatedImageDragShadow:disabled"/>
   <int value="-97145978" label="DesktopPWAsStayInWindow:enabled"/>
-  <int value="-97062979"
-      label="CustomWebSignInInterceptForSupervisedUsersUi:disabled"/>
   <int value="-96820962"
       label="ExperimentalAccessibilitySelectToSpeakVoiceSwitching:enabled"/>
   <int value="-95160434" label="AdvancedPeripheralsSupport:disabled"/>
@@ -22065,6 +22063,8 @@ from previous Chrome versions.
   <int value="711424932" label="enable-cloud-print-xps"/>
   <int value="711627544" label="ImeSwitchCheckConnectionStatus:enabled"/>
   <int value="713216521" label="NtpMostRelevantTabResumptionModule:disabled"/>
+  <int value="713636081"
+      label="CustomProfileStringsForSupervisedUsers:enabled"/>
   <int value="713946324" label="OmniboxSearchReadyIncognito:disabled"/>
   <int value="714714531" label="VcControlsUi:enabled"/>
   <int value="714871827" label="FastPairSoftwareScanning:enabled"/>

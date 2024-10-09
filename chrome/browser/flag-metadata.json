@@ -8365,7 +8365,7 @@
     "expiry_milestone": 133
   },
   {
-    "name": "supervised-profile-custom-sign-in-intercept",
+    "name": "supervised-profile-custom-strings",
     "owners": [
       "ljjlee@google.com",
       "chrome-kids-eng@google.com"

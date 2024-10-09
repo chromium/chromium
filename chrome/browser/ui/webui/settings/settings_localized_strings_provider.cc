@@ -94,6 +94,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
@@ -1298,16 +1299,13 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
 
 void AddSignOutDialogStrings(content::WebUIDataSource* html_source,
                              Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  bool is_main_profile = profile->IsMainProfile();
-#else
-  bool is_main_profile = false;
-#endif
-
-  if (is_main_profile) {
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kCustomProfileStringsForSupervisedUsers) &&
+      profile->IsChild()) {
     static constexpr webui::LocalizedString kTurnOffStrings[] = {
         {"syncDisconnect", IDS_SETTINGS_PEOPLE_SYNC_TURN_OFF},
-        {"syncDisconnectTitle", IDS_SETTINGS_TURN_OFF_SYNC_DIALOG_TITLE},
+        {"syncDisconnectTitle",
+         IDS_SETTINGS_TURN_OFF_SYNC_AND_SIGN_OUT_DIALOG_TITLE_SUPERVISED_PROFILE},
     };
     html_source->AddLocalizedStrings(kTurnOffStrings);
   } else {
@@ -1325,14 +1323,16 @@ void AddSignOutDialogStrings(content::WebUIDataSource* html_source,
           g_browser_process->GetApplicationLocale())
           .spec();
 
-  if (is_main_profile) {
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kCustomProfileStringsForSupervisedUsers) &&
+      profile->IsChild()) {
     static constexpr webui::LocalizedString kSyncDisconnectStrings[] = {
         {"syncDisconnectDeleteProfile",
          IDS_SETTINGS_TURN_OFF_SYNC_DIALOG_CHECKBOX},
         {"syncDisconnectConfirm",
          IDS_SETTINGS_TURN_OFF_SYNC_DIALOG_MANAGED_CONFIRM},
         {"syncDisconnectExplanation",
-         IDS_SETTINGS_SYNC_DISCONNECT_MAIN_PROFILE_EXPLANATION},
+         IDS_SETTINGS_SYNC_DISCONNECT_AND_SIGN_OUT_EXPLANATION_SUPERVISED_PROFILE},
     };
     html_source->AddLocalizedStrings(kSyncDisconnectStrings);
   } else {

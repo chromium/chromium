@@ -256,7 +256,7 @@ class DiceWebSigninInterceptionBubblePixelTest
       enabled_features.push_back(switches::kExplicitBrowserSigninUIOnDesktop);
     }
     enabled_features.push_back(
-        supervised_user::kCustomWebSignInInterceptForSupervisedUsersUi);
+        supervised_user::kCustomProfileStringsForSupervisedUsers);
     enabled_features.push_back(supervised_user::kShowKiteForSupervisedUsers);
     scoped_feature_list_.InitWithFeatures(enabled_features,
                                           /*disabled_features=*/{});
