@@ -280,7 +280,8 @@ class FloatScopedWindowTuckerDelegate : public ScopedWindowTucker::Delegate {
 // FloatedWindowInfo:
 
 // Represents and stores information used for window's floated state.
-class FloatController::FloatedWindowInfo : public aura::WindowObserver {
+class FloatController::FloatedWindowInfo : public aura::WindowObserver,
+                                           public views::WidgetObserver {
  public:
   FloatedWindowInfo(aura::Window* floated_window, const Desk* desk)
       : floated_window_(floated_window),
@@ -289,9 +290,16 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
         desk_(desk) {
     DCHECK(floated_window_);
     floated_window_observation_.Observe(floated_window);
+    if (auto* widget =
+            views::Widget::GetWidgetForNativeWindow(floated_window)) {
+      floated_widget_observation_.Observe(widget);
+      last_minimum_size_ = widget->GetMinimumSize();
+      last_maximum_size_ = widget->GetMaximumSize();
+    }
 
-    if (desk->is_active())
+    if (desk->is_active()) {
       float_start_time_ = base::TimeTicks::Now();
+    }
 
     if (display::Screen::GetScreen()->InTabletMode() &&
         TabletModeTuckEducation::CanActivateTuckEducation() &&
@@ -307,8 +315,9 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
   FloatedWindowInfo& operator=(const FloatedWindowInfo&) = delete;
   ~FloatedWindowInfo() override {
     // Reset the window position auto-managed status if it was auto managed.
-    if (was_position_auto_managed_)
+    if (was_position_auto_managed_) {
       WindowState::Get(floated_window_)->SetWindowPositionManaged(true);
+    }
     MaybeRecordFloatWindowDuration();
   }
 
@@ -394,8 +403,9 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
   }
 
   void OnWindowVisibilityChanged(aura::Window* window, bool visible) override {
-    if (window != floated_window_)
+    if (window != floated_window_) {
       return;
+    }
 
     // When a floated window switches desks, it is hidden or shown. We track the
     // amount of time a floated window is visible on the active desk to avoid
@@ -404,13 +414,15 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
     // the saved desks library view may temporarily hide the floated window on
     // the active desk.
     if (visible && desk_->is_active()) {
-      if (float_start_time_.is_null())
+      if (float_start_time_.is_null()) {
         float_start_time_ = base::TimeTicks::Now();
+      }
       return;
     }
 
-    if (!visible && !desk_->is_active())
+    if (!visible && !desk_->is_active()) {
       MaybeRecordFloatWindowDuration();
+    }
   }
 
   void OnWindowPropertyChanged(aura::Window* window,
@@ -441,15 +453,34 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
       return;
     }
 
-    if (key != aura::client::kResizeBehaviorKey) {
-      return;
+    if (key == aura::client::kResizeBehaviorKey &&
+        static_cast<int>(old) !=
+            window->GetProperty(aura::client::kResizeBehaviorKey)) {
+      OnResizabilityOrSizeConstraintsChanged();
     }
+  }
 
+  // views::Widget::WidgetObserver:
+  void OnWidgetSizeConstraintsChanged(views::Widget* widget) override {
+    CHECK_EQ(views::Widget::GetWidgetForNativeWindow(floated_window_), widget);
+
+    if (last_minimum_size_ != widget->GetMinimumSize() ||
+        last_maximum_size_ != widget->GetMaximumSize()) {
+      OnResizabilityOrSizeConstraintsChanged();
+      last_minimum_size_ = widget->GetMinimumSize();
+      last_maximum_size_ = widget->GetMaximumSize();
+    }
+  }
+
+ private:
+  // Called when the floated window's resizability or size constraints changed.
+  void OnResizabilityOrSizeConstraintsChanged() {
     // If `window` is in transitional snapped state, `window` is going to be
     // snapped very soon so we don't need to apply the float bounds policies.
     // Otherwise, the bounds change request may be queued and applied after
     // `window` is snapped.
-    if (SplitViewController::Get(window)->IsWindowInTransitionalState(window)) {
+    if (SplitViewController::Get(floated_window_)
+            ->IsWindowInTransitionalState(floated_window_)) {
       return;
     }
 
@@ -466,7 +497,6 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
     }
   }
 
- private:
   // The `floated_window` this object is hosting information for.
   raw_ptr<aura::Window> floated_window_;
 
@@ -504,6 +534,12 @@ class FloatController::FloatedWindowInfo : public aura::WindowObserver {
 
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       floated_window_observation_{this};
+
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      floated_widget_observation_{this};
+
+  gfx::Size last_minimum_size_;
+  gfx::Size last_maximum_size_;
 
   base::WeakPtrFactory<FloatedWindowInfo> weak_ptr_factory_{this};
 };
