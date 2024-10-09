@@ -54,8 +54,8 @@ namespace {
 
 class LenientMockObserver : public SystemNodeImpl::Observer {
  public:
-  LenientMockObserver() {}
-  ~LenientMockObserver() override {}
+  LenientMockObserver() = default;
+  ~LenientMockObserver() override = default;
 
   MOCK_METHOD(void,
               OnProcessMemoryMetricsAvailable,

@@ -249,7 +249,7 @@ class BoostingVoteAggregator : public VoteObserver {
         : src_(boosting_vote->input_execution_context()),
           dst_(boosting_vote->output_execution_context()) {}
     Edge(const Edge&) = default;
-    ~Edge() {}
+    ~Edge() = default;
 
     Edge& operator=(const Edge&) = default;
     Edge& operator=(Edge&&) = delete;

@@ -99,8 +99,8 @@ namespace {
 
 class LenientMockObserver : public ProcessNodeImpl::Observer {
  public:
-  LenientMockObserver() {}
-  ~LenientMockObserver() override {}
+  LenientMockObserver() = default;
+  ~LenientMockObserver() override = default;
 
   MOCK_METHOD(void, OnProcessNodeAdded, (const ProcessNode*), (override));
   MOCK_METHOD(void, OnProcessLifetimeChange, (const ProcessNode*), (override));
