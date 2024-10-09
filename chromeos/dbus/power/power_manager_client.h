@@ -15,6 +15,7 @@
 #include "base/files/scoped_file.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list_types.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/common/dbus_callback.h"
@@ -68,10 +69,8 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
   };
 
   // Interface for observing changes from the power manager.
-  class Observer {
+  class Observer : public base::CheckedObserver {
    public:
-    virtual ~Observer() {}
-
     // Called when the power manager service becomes available. Will be called
     // immediately and synchronously when a new observer is added to
     // PowerManagerClient if the service's availability is already known.

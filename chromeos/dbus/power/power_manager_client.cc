@@ -1630,7 +1630,9 @@ class PowerManagerClientImpl : public PowerManagerClient {
 
   raw_ptr<dbus::ObjectProxy, LeakedDanglingUntriaged> power_manager_proxy_ =
       nullptr;
-  base::ObserverList<Observer>::Unchecked observers_;
+  // TODO(b/370501118): Make the observer list check it's empty once all
+  // observers unsubscribe on shutdown.
+  base::ObserverList<Observer> observers_;
 
   std::optional<bool> service_available_;
 
