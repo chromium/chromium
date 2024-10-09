@@ -56,7 +56,12 @@ static_library("activity") {
     "activity/active_tab_tracker.cc",
     "activity/active_tab_tracker.h",
   ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+
+    # TODO(b / 372525386): This is a transitive dep on the protobuf, please fix.
+    "//chromeos/ash/components/boca/proto",
+  ]
 }
 
 source_set("unit_tests") {
