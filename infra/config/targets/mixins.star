@@ -686,6 +686,18 @@ targets.mixin(
     ),
 )
 
+# In //testing/buildbot, what test type a test is expanded as depends on the
+# test_suites key that the builder puts it under, so gtests included under the
+# isolated_scripts suite type would get expanded as isolated scripts. In
+# starlark, tests know what type they are and their type determines how they are
+# expanded, which allows tests of different types to in the same bundle. This
+# mixin enables using gtests as isolated script tests.
+targets.mixin(
+    name = "expand-as-isolated-script",
+    generate_pyl_entry = False,
+    expand_as_isolated_script = True,
+)
+
 targets.mixin(
     name = "finch-chromium-swarming-pool",
     swarming = targets.swarming(

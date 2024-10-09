@@ -1194,10 +1194,7 @@ ios_builder(
             "all",
         ],
         mixins = [
-            # Make sure any gtests included get expanded as isolated scripts
-            targets.mixin(
-                expand_as_isolated_script = True,
-            ),
+            "expand-as-isolated-script",
             "has_native_resultdb_integration",
             "isolate_profile_data",
             "mac_default_x64",
@@ -1271,10 +1268,7 @@ ios_builder(
             "all",
         ],
         mixins = [
-            # Make sure any gtests included get expanded as isolated scripts
-            targets.mixin(
-                expand_as_isolated_script = True,
-            ),
+            "expand-as-isolated-script",
             "has_native_resultdb_integration",
             "isolate_profile_data",
             "mac_default_x64",
@@ -1340,10 +1334,7 @@ ios_builder(
             "all",
         ],
         mixins = [
-            # Make sure any gtests included get expanded as isolated scripts
-            targets.mixin(
-                expand_as_isolated_script = True,
-            ),
+            "expand-as-isolated-script",
             "has_native_resultdb_integration",
             "mac_default_arm64",
             "mac_toolchain",

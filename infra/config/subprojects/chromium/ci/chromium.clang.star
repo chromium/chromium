@@ -818,13 +818,8 @@ ci.builder(
         targets = [
             "clang_tot_gtests",
             targets.bundle(
-                targets = [
-                    "fuchsia_isolated_scripts",
-                ],
-                # Make sure any gtests included get expanded as isolated scripts
-                mixins = targets.mixin(
-                    expand_as_isolated_script = True,
-                ),
+                targets = "fuchsia_isolated_scripts",
+                mixins = "expand-as-isolated-script",
             ),
         ],
         additional_compile_targets = [
@@ -910,13 +905,8 @@ ci.builder(
         targets = [
             "clang_tot_gtests",
             targets.bundle(
-                targets = [
-                    "fuchsia_arm64_isolated_scripts",
-                ],
-                # Make sure any gtests included get expanded as isolated scripts
-                mixins = targets.mixin(
-                    expand_as_isolated_script = True,
-                ),
+                targets = "fuchsia_arm64_isolated_scripts",
+                mixins = "expand-as-isolated-script",
             ),
         ],
         mixins = [
@@ -1818,10 +1808,7 @@ ci.builder(
             "all",
         ],
         mixins = [
-            # Make sure any gtests included get expanded as isolated scripts
-            targets.mixin(
-                expand_as_isolated_script = True,
-            ),
+            "expand-as-isolated-script",
             "has_native_resultdb_integration",
             "mac_default_x64",
             "mac_toolchain",
@@ -1896,10 +1883,7 @@ ci.builder(
             "url_unittests",
         ],
         mixins = [
-            # Make sure any gtests included get expanded as isolated scripts
-            targets.mixin(
-                expand_as_isolated_script = True,
-            ),
+            "expand-as-isolated-script",
             "has_native_resultdb_integration",
             "ios_restart_device",
             "limited_capacity_bot",

@@ -57,9 +57,13 @@ Commands assume the working directory is //infra/config.
     * Some manual changes are required that can't be handled by the migration
       script
       * The builder sets the isolated_scripts suite type with a suite containing
-        gtests: a mixin needs to be added that sets `expand_as_isolated_script =
-        True` (see
-        [example](https://chromium-review.googlesource.com/c/chromium/src/+/5900539/6/infra/config/subprojects/chromium/ci/chromium.mac.star))
+        gtests: the `"expand-as-isolated-script"` mixin needs to be applied to
+        the suite; see
+        [examples](https://source.chromium.org/search?q=%27%22expand-as-isolated-script%22%27%20-f:mixins.star).
+        Note that if the builder was using both the gtest_tests and
+        isolated_scripts suite types, then an anonymous bundle may need to be
+        created to limit the scope that the mixin is applied to; see
+        [examples](https://source.chromium.org/search?q=%27mixins%20%3D%20%22expand-as-isolated-script%22%27&sq=).
     * Some feature is not supported by starlark and/or the migration script
     * The difference doesn't actually have an effect (the
       targets-config-verifier try builder will pass in this case)

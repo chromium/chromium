@@ -1021,10 +1021,7 @@ targets.bundle(
                 "fuchsia_gtests",
                 targets.bundle(
                     targets = "gpu_angle_fuchsia_unittests_isolated_scripts",
-                    # Make sure any gtests included get expanded as isolated scripts
-                    mixins = targets.mixin(
-                        expand_as_isolated_script = True,
-                    ),
+                    mixins = "expand-as-isolated-script",
                 ),
             ],
             mixins = [
@@ -1075,11 +1072,7 @@ targets.bundle(
         "fuchsia_gtests",
         targets.bundle(
             targets = "fuchsia_isolated_scripts",
-            # Make sure any gtests included in fuchsia_isolated_scripts get
-            # expanded as isolated scripts
-            mixins = targets.mixin(
-                expand_as_isolated_script = True,
-            ),
+            mixins = "expand-as-isolated-script",
         ),
     ],
     mixins = [
