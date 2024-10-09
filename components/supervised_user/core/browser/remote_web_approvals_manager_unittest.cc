@@ -62,7 +62,7 @@ class MockPermissionRequestCreator
   MockPermissionRequestCreator& operator=(const MockPermissionRequestCreator&) =
       delete;
 
-  ~MockPermissionRequestCreator() override {}
+  ~MockPermissionRequestCreator() override = default;
 
   void set_enabled(bool enabled) { enabled_ = enabled; }
 

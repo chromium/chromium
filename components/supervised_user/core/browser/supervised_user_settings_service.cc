@@ -91,7 +91,7 @@ bool SyncChangeIsNewWebsiteApproval(const std::string& name,
 SupervisedUserSettingsService::SupervisedUserSettingsService()
     : active_(false), initialization_failed_(false) {}
 
-SupervisedUserSettingsService::~SupervisedUserSettingsService() {}
+SupervisedUserSettingsService::~SupervisedUserSettingsService() = default;
 
 void SupervisedUserSettingsService::Init(
     base::FilePath profile_path,

@@ -32,8 +32,8 @@ const char kSplitItemName[] = "X-SuperMoosePowers";
 
 class SupervisedUserSettingsServiceTest : public ::testing::Test {
  protected:
-  SupervisedUserSettingsServiceTest() {}
-  ~SupervisedUserSettingsServiceTest() override {}
+  SupervisedUserSettingsServiceTest() = default;
+  ~SupervisedUserSettingsServiceTest() override = default;
 
   std::unique_ptr<syncer::SyncChangeProcessor> CreateSyncProcessor() {
     sync_processor_ = std::make_unique<syncer::FakeSyncChangeProcessor>();

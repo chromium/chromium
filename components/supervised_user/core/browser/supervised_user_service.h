@@ -45,7 +45,7 @@ class SupervisedUserService : public KeyedService {
   // Delegate encapsulating platform-specific logic that is invoked from SUS.
   class PlatformDelegate {
    public:
-    virtual ~PlatformDelegate() {}
+    virtual ~PlatformDelegate() = default;
 
     // Returns the country code stored for this client.
     // Country code is in the format of lowercase ISO 3166-1 alpha-2. Example:
