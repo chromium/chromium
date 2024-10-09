@@ -7,7 +7,7 @@
 
 #include "third_party/s2cellid/src/s2/s2cellid.h"
 
-S2LangQuadTreeNode::S2LangQuadTreeNode() {}
+S2LangQuadTreeNode::S2LangQuadTreeNode() = default;
 S2LangQuadTreeNode::S2LangQuadTreeNode(const S2LangQuadTreeNode& other) =
     default;
 S2LangQuadTreeNode::~S2LangQuadTreeNode() = default;

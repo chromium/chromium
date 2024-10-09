@@ -48,7 +48,7 @@ class IOSLanguageDetectionTabHelper
     virtual void IOSLanguageDetectionTabHelperWasDestroyed(
         IOSLanguageDetectionTabHelper* tab_helper) = 0;
 
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   IOSLanguageDetectionTabHelper(const IOSLanguageDetectionTabHelper&) = delete;
