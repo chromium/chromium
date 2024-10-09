@@ -373,6 +373,44 @@ TEST_F(PopupRowViewTest, NotifyAXSelectionCalledOnChangesOnly) {
   row_view().SetSelectedCell(CellType::kContent);
 }
 
+TEST_F(PopupRowViewTest, UnselectResetsA11ySelectionState) {
+  ShowView(/*line_number=*/0, /*has_control=*/false);
+
+  EXPECT_CALL(a11y_selection_delegate(),
+              NotifyAXSelection(Ref(row_view().GetContentView())));
+
+  row_view().SetSelectedCell(CellType::kContent);
+  ui::AXNodeData node_data;
+  row_view().GetContentView().GetViewAccessibility().GetAccessibleNodeData(
+      &node_data);
+  EXPECT_TRUE(node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+
+  row_view().SetSelectedCell(std::nullopt);
+
+  node_data = ui::AXNodeData();
+  row_view().GetContentView().GetViewAccessibility().GetAccessibleNodeData(
+      &node_data);
+  EXPECT_FALSE(node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+}
+
+TEST_F(PopupRowViewTest,
+       UnselectResetsA11ySelectionStateForNonAcceptableSuggestion) {
+  ShowView(/*line_number=*/0, /*has_control=*/false, /*is_acceptable=*/false);
+
+  EXPECT_CALL(a11y_selection_delegate(), NotifyAXSelection(Ref(row_view())));
+
+  row_view().SetSelectedCell(CellType::kContent);
+  ui::AXNodeData node_data;
+  row_view().GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_TRUE(node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+
+  row_view().SetSelectedCell(std::nullopt);
+
+  node_data = ui::AXNodeData();
+  row_view().GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_FALSE(node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+}
+
 TEST_F(PopupRowViewTest, ReturnKeyEventsAreHandled) {
   ShowView(/*line_number=*/0, /*has_control=*/true);
   ASSERT_TRUE(row_view().GetExpandChildSuggestionsView());

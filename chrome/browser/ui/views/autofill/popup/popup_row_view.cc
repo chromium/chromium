@@ -409,14 +409,20 @@ void PopupRowView::SetSelectedCell(std::optional<CellType> new_cell) {
 
   if ((new_cell == CellType::kControl && expand_child_suggestions_view_) ||
       (new_cell == CellType::kContent && !suggestion_is_acceptable_)) {
+    // TODO(crbug.com/370695550): `SetIsSelected()` must go after
+    // `NotifyAXSelection()` as the latter calls `SetPopupFocusOverride()`  that
+    // is required for a11y focus working on a non-activatable popup.  Consider
+    // moving `SetIsSelected()` into `NotifyAXSelection()` (and rename it) to
+    // hide this API complexity from clients.
     GetA11ySelectionDelegate().NotifyAXSelection(*this);
+    GetViewAccessibility().SetIsSelected(true);
     NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
     selected_cell_ = new_cell;
   } else if (new_cell == CellType::kContent) {
     controller_->SelectSuggestion(line_number_);
     content_view_->UpdateStyle(/*selected=*/highlight_on_select_);
-    content_view_->GetViewAccessibility().SetIsSelected(true);
     GetA11ySelectionDelegate().NotifyAXSelection(*content_view_);
+    content_view_->GetViewAccessibility().SetIsSelected(true);
     NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
     selected_cell_ = new_cell;
   } else {
@@ -424,6 +430,9 @@ void PopupRowView::SetSelectedCell(std::optional<CellType> new_cell) {
     // selecting a control cell when none exists) or the cell was reset
     // explicitly with `std::nullopt`.
     selected_cell_ = std::nullopt;
+
+    GetViewAccessibility().SetIsSelected(false);
+    content_view_->GetViewAccessibility().SetIsSelected(false);
   }
 
   UpdateUI();
