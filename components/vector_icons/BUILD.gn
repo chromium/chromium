@@ -185,6 +185,7 @@ aggregate_vector_icons("components_vector_icons") {
     "replay.icon",
     "replay_10.icon",
     "save_cloud.icon",
+    "science.icon",
     "screen_share.icon",
     "search.icon",
     "search_chrome_refresh.icon",

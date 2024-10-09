@@ -24,6 +24,7 @@ blink::mojom::CustomContextMenuItemPtr MenuItemBuild(
   result->type =
       static_cast<blink::mojom::CustomContextMenuItemType>(item.type);
   result->action = item.action;
+  result->is_experimental_feature = item.is_experimental_feature;
   result->rtl = (item.text_direction == base::i18n::RIGHT_TO_LEFT);
   result->has_directional_override = item.has_text_direction_override;
   result->enabled = item.enabled;

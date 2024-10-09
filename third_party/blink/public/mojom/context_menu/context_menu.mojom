@@ -69,6 +69,7 @@ struct CustomContextMenuItem {
   mojo_base.mojom.String16 tool_tip;
   CustomContextMenuItemType type;
   int32 action;
+  bool is_experimental_feature;
   bool rtl;
   bool has_directional_override;
   bool enabled;

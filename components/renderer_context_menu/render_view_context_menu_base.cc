@@ -14,6 +14,7 @@
 #include "base/observer_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -104,6 +105,11 @@ void AddCustomItemsToMenu(
             RenderViewContextMenuBase::ConvertToContentCustomCommandId(
                 item->action),
             item->label);
+        if (item->is_experimental_feature) {
+          menu_model->SetMinorIcon(
+              menu_model->GetItemCount() - 1,
+              ui::ImageModel::FromVectorIcon(vector_icons::kScienceIcon));
+        }
         break;
       case blink::mojom::CustomContextMenuItemType::kCheckableOption:
         menu_model->AddCheckItem(

@@ -1,5 +1,6 @@
 include_rules = [
   "+components/search_engines",
+  "+components/vector_icons",
   "+content/public/browser",
   "+content/public/common",
   "+printing/buildflags",

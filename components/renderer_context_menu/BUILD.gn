@@ -21,6 +21,7 @@ static_library("renderer_context_menu") {
     "//base",
     "//build:chromeos_buildflags",
     "//components/search_engines",
+    "//components/vector_icons",
     "//content/public/browser",
     "//content/public/common",
     "//ppapi/buildflags",

@@ -224,6 +224,7 @@ static std::vector<MenuItemInfo> PopulateContextMenuItems(
       String label = item->getLabelOr(String());
       label.Ensure16Bit();
       item_info.label = std::u16string(label.Characters16(), label.length());
+      item_info.is_experimental_feature = item->isExperimentalFeature();
       item_info.enabled = item->enabled();
       item_info.action = item->id();
       item_info.checked = item->checked();
