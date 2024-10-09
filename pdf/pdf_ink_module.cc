@@ -825,8 +825,7 @@ void PdfInkModule::MaybeSetCursor() {
   float brush_size;
   if (is_drawing_stroke()) {
     const auto& ink_brush = drawing_stroke_state().brush->GetInkBrush();
-    auto rgba = ink_brush.GetColor().AsUint8(ink::Color::Format::kGammaEncoded);
-    color = SkColorSetARGB(rgba.a, rgba.r, rgba.g, rgba.b);
+    color = GetSkColorFromInkBrush(ink_brush);
     brush_size = ink_brush.GetSize();
   } else {
     CHECK(is_erasing_stroke());

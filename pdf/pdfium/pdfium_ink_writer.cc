@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "pdf/pdf_ink_conversions.h"
 #include "printing/units.h"
 #include "third_party/ink/src/ink/geometry/modeled_shape.h"
 #include "third_party/ink/src/ink/strokes/stroke.h"
@@ -116,9 +117,11 @@ bool WriteStrokeToPage(FPDF_DOCUMENT document,
                                 /*stroke=*/false);
   CHECK(result);
 
-  const auto rgba =
-      stroke.GetBrush().GetColor().AsUint8(ink::Color::Format::kGammaEncoded);
-  result = FPDFPageObj_SetFillColor(path.get(), rgba.r, rgba.g, rgba.b, rgba.a);
+  const auto& brush = stroke.GetBrush();
+  SkColor color = GetSkColorFromInkBrush(brush);
+  result = FPDFPageObj_SetFillColor(path.get(), SkColorGetR(color),
+                                    SkColorGetG(color), SkColorGetB(color),
+                                    SkColorGetA(color));
   CHECK(result);
 
   // Path completed, close and mark it with an ID.
