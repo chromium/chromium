@@ -89,6 +89,11 @@ public class FullscreenVideoPictureInPictureController {
     private static final Set<String> NO_PIP_COMPONENT_NAMES =
             Collections.singleton(NotificationIntentInterceptor.TrampolineActivity.class.getName());
 
+    // If true, then we will use `setSourceRectHint()` to enable fancy transitions into pip.
+    // However, since this also causes visible flicker especially when transitioning from landscape
+    // to portrait, this is off by default.
+    private static final boolean sUseSourceRectHint = false;
+
     /** Callbacks to cleanup after leaving PiP. */
     private final List<Runnable> mOnLeavePipCallbacks = new LinkedList<>();
 
@@ -232,8 +237,10 @@ public class FullscreenVideoPictureInPictureController {
         Rect bounds = getVideoBounds(webContents, mActivity);
         PictureInPictureParams.Builder builder = new PictureInPictureParams.Builder();
         if (bounds != null) {
-            builder.setAspectRatio(new Rational(bounds.width(), bounds.height()));
-            builder.setSourceRectHint(bounds);
+            if (sUseSourceRectHint) {
+                builder.setAspectRatio(new Rational(bounds.width(), bounds.height()));
+                builder.setSourceRectHint(bounds);
+            }
         }
 
         try {
@@ -464,8 +471,10 @@ public class FullscreenVideoPictureInPictureController {
 
             final Rect bounds = getVideoBounds(webContents, mActivity);
             if (bounds != null) {
-                builder.setAspectRatio(new Rational(bounds.width(), bounds.height()));
-                builder.setSourceRectHint(bounds);
+                if (sUseSourceRectHint) {
+                    builder.setAspectRatio(new Rational(bounds.width(), bounds.height()));
+                    builder.setSourceRectHint(bounds);
+                }
             }
         }
         builder.setAutoEnterEnabled(allowed);
