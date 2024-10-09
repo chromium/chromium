@@ -95,6 +95,7 @@ class LockedSessionWindowTracker : public KeyedService,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
   void OnTabWillBeRemoved(content::WebContents* contents, int index) override;
+  void WillCloseAllTabs(TabStripModel* tab_strip_model) override;
 
   // BrowserListObserver Implementation
   void OnBrowserClosing(Browser* browser) override;

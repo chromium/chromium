@@ -38,6 +38,7 @@ static_library("on_task") {
     "//chrome/browser/ash/boca",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/system_web_apps",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca:activity",
     "//chromeos/ash/components/boca/on_task",
@@ -80,12 +81,16 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [ "on_task_system_web_app_manager_impl_browsertest.cc" ]
+  sources = [
+    "on_task_locked_session_window_tracker_browsertest.cc",
+    "on_task_system_web_app_manager_impl_browsertest.cc",
+  ]
 
   deps = [
     ":on_task",
     "//base/test:test_support",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/boca/on_task",
   ]
 }

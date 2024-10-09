@@ -8,8 +8,8 @@
 #include <map>
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
+#include "base/memory/weak_ptr.h"
 #include "components/policy/core/browser/url_blocklist_manager.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/web_contents.h"
@@ -117,7 +117,7 @@ class OnTaskBlocklist {
  private:
   OnTaskBlocklist::RestrictionLevel current_page_restriction_level_ =
       OnTaskBlocklist::RestrictionLevel::kNoRestrictions;
-  raw_ptr<content::WebContents> previous_tab_;
+  base::WeakPtr<content::WebContents> previous_tab_;
   GURL previous_url_;
   bool first_time_popup_ = true;
   std::map<SessionID, OnTaskBlocklist::RestrictionLevel>

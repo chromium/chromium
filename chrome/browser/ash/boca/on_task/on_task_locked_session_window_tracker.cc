@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chromeos/ash/components/boca/activity/active_tab_tracker.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -178,6 +179,18 @@ void LockedSessionWindowTracker::OnTabWillBeRemoved(
     content::WebContents* contents,
     int index) {
   on_task_blocklist()->RemoveParentFilter(contents);
+}
+
+void LockedSessionWindowTracker::WillCloseAllTabs(
+    TabStripModel* tab_strip_model) {
+  CHECK(tab_strip_model);
+
+  // We block tab unload when the browser instance is locked for OnTask. We need
+  // to unset the relevant boolean to unblock tab unload so it can proceed with
+  // the close operation.
+  Browser* const browser = static_cast<Browser*>(
+      tab_strip_model->delegate()->GetBrowserWindowInterface());
+  browser->SetLockedForOnTask(false);
 }
 
 // BrowserListObserver Implementation

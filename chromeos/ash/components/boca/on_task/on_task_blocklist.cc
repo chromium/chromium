@@ -156,7 +156,7 @@ void OnTaskBlocklist::RefreshForUrlBlocklist(content::WebContents* tab) {
   // `previous_tab_` should only be not valid when we first navigate to the
   // first tab when the OnTask SWA is first launched. Every other instance
   // should have a valid `previous_tab_`.
-  if (previous_tab_ && previous_tab_ == tab && previous_url_.is_valid() &&
+  if (previous_tab() && previous_tab() == tab && previous_url_.is_valid() &&
       previous_url_ == url) {
     return;
   }
@@ -205,7 +205,7 @@ void OnTaskBlocklist::RefreshForUrlBlocklist(content::WebContents* tab) {
   }
 
   previous_url_ = url;
-  previous_tab_ = tab;
+  previous_tab_ = tab->GetWeakPtr();
   url_blocklist_manager_->SetOverrideBlockListSource(
       std::move(blocklist_source));
 }
@@ -274,7 +274,10 @@ OnTaskBlocklist::current_page_restriction_level() {
 }
 
 content::WebContents* OnTaskBlocklist::previous_tab() {
-  return previous_tab_;
+  if (!previous_tab_) {
+    return nullptr;
+  }
+  return previous_tab_.get();
 }
 
 void OnTaskBlocklist::CleanupBlocklist() {
