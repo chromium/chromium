@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/api/tasks/fake_tasks_client.h"
-#include "ash/constants/ash_features.h"
 #include "ash/glanceables/common/glanceables_list_footer_view.h"
 #include "ash/glanceables/common/glanceables_util.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
@@ -25,7 +24,6 @@
 #include "base/test/gtest_tags.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/account_id/account_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -50,11 +48,7 @@ class GlanceablesTasksViewTest : public AshTestBase {
   GlanceablesTasksViewTest()
       : AshTestBase(std::make_unique<base::test::TaskEnvironment>(
             base::test::TaskEnvironment::MainThreadType::UI,
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlanceablesTimeManagementTasksView},
-        /*disabled_features=*/{});
-  }
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME)) {}
 
   void SetUp() override {
     AshTestBase::SetUp();
@@ -178,7 +172,6 @@ class GlanceablesTasksViewTest : public AshTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_;
   AccountId account_id_ = AccountId::FromUserEmail("test_user@gmail.com");
   std::unique_ptr<api::FakeTasksClient> fake_glanceables_tasks_client_;
   raw_ptr<GlanceablesTasksView, DanglingUntriaged> view_;

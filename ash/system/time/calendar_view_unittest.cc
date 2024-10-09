@@ -98,7 +98,9 @@ class CalendarViewTest : public AshTestBase {
   CalendarViewTest() {
     features_.InitWithFeatures(
         /*enabled_features=*/{},
-        /*disabled_features=*/{features::kGlanceablesTimeManagementTasksView});
+        /*disabled_features=*/{
+            features::kGlanceablesTimeManagementClassroomStudentView,
+            features::kGlanceablesTimeManagementTasksView});
   }
   CalendarViewTest(const CalendarViewTest&) = delete;
   CalendarViewTest& operator=(const CalendarViewTest&) = delete;
@@ -1426,6 +1428,7 @@ class CalendarViewAnimationTest
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitWithFeatureStates(
         {{features::kMultiCalendarSupport, IsMultiCalendarEnabled()},
+         {features::kGlanceablesTimeManagementClassroomStudentView, false},
          {features::kGlanceablesTimeManagementTasksView, false}});
   }
   CalendarViewAnimationTest(const CalendarViewAnimationTest&) = delete;

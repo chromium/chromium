@@ -8,7 +8,6 @@
 #include <tuple>
 
 #include "ash/api/tasks/tasks_types.h"
-#include "ash/constants/ash_features.h"
 #include "ash/glanceables/common/glanceables_util.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/tasks/glanceables_task_view.h"
@@ -19,7 +18,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/test/gtest_tags.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -111,8 +109,6 @@ class GlanceablesTaskViewPixelTest
   bool is_in_edit_state() const { return std::get<5>(GetParam()); }
 
  private:
-  base::test::ScopedFeatureList feature_list_{
-      features::kGlanceablesTimeManagementTasksView};
   std::unique_ptr<api::Task> task_;
   std::unique_ptr<views::Widget> widget_;
   raw_ptr<GlanceablesTaskView> view_;

@@ -15,7 +15,6 @@
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/account_id/account_id.h"
 #include "google_apis/calendar/calendar_api_requests.h"
@@ -39,18 +38,8 @@ std::unique_ptr<google_apis::calendar::CalendarEvent> CreateEvent(
 
 }  // namespace
 
-class CalendarViewPixelTest
-    : public AshTestBase,
-      public testing::WithParamInterface</*glanceables_enabled=*/bool> {
+class CalendarViewPixelTest : public AshTestBase {
  public:
-  CalendarViewPixelTest() {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kGlanceablesTimeManagementClassroomStudentView,
-          AreGlanceablesEnabled()},
-         {features::kGlanceablesTimeManagementTasksView,
-          AreGlanceablesEnabled()}});
-  }
-
   void SetUp() override {
     AshTestBase::SetUp();
 
@@ -66,8 +55,6 @@ class CalendarViewPixelTest
 
     AshTestBase::TearDown();
   }
-
-  bool AreGlanceablesEnabled() { return GetParam(); }
 
   // AshTestBase:
   std::optional<pixel_test::InitParams> CreatePixelTestInitParams()
@@ -109,20 +96,15 @@ class CalendarViewPixelTest
   static void SetFakeNow(base::Time fake_now) { fake_time_ = fake_now; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   const AccountId account_id_ = AccountId::FromUserEmail("user1@email.com");
   calendar_test_utils::CalendarClientTestImpl client_;
   raw_ptr<CalendarView, DanglingUntriaged> calendar_view_ = nullptr;
   static base::Time fake_time_;
 };
 
-INSTANTIATE_TEST_SUITE_P(GlanceablesEnabled,
-                         CalendarViewPixelTest,
-                         testing::Bool());
-
 base::Time CalendarViewPixelTest::fake_time_;
 
-TEST_P(CalendarViewPixelTest, Basics) {
+TEST_F(CalendarViewPixelTest, Basics) {
   // Sets time override.
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("14 Jun 2023 10:00 GMT", &date));
@@ -140,7 +122,7 @@ TEST_P(CalendarViewPixelTest, Basics) {
 
 // Tests that the scroll view scrolls up when there are not at least 2 weeks
 // visible below todays view (without up-next view).
-TEST_P(CalendarViewPixelTest, Basics_ShowMoreFutureDates) {
+TEST_F(CalendarViewPixelTest, Basics_ShowMoreFutureDates) {
   // Sets time override.
   base::Time date;
 
@@ -159,7 +141,7 @@ TEST_P(CalendarViewPixelTest, Basics_ShowMoreFutureDates) {
       /*revision_number=*/1, GetCalendarView()));
 }
 
-TEST_P(CalendarViewPixelTest, EventList) {
+TEST_F(CalendarViewPixelTest, EventList) {
   // Sets time override.
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("14 Jun 2023 10:00 GMT", &date));

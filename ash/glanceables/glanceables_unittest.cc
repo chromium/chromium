@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_features.h"
 #include "ash/glanceables/classroom/fake_glanceables_classroom_client.h"
 #include "ash/glanceables/classroom/glanceables_classroom_student_view.h"
 #include "ash/glanceables/common/glanceables_contents_scroll_view.h"
@@ -25,7 +24,6 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "components/account_id/account_id.h"
@@ -77,14 +75,6 @@ class ResizeAnimationWaiter {
 
 class GlanceablesBaseTest : public AshTestBase {
  public:
-  GlanceablesBaseTest() {
-    features_.InitWithFeatures(
-        /*enabled_features=*/
-        {features::kGlanceablesTimeManagementTasksView,
-         features::kGlanceablesTimeManagementClassroomStudentView},
-        /*disabled_features=*/{});
-  }
-
   void SetUp() override {
     AshTestBase::SetUp();
 
@@ -113,7 +103,6 @@ class GlanceablesBaseTest : public AshTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList features_;
   std::unique_ptr<FakeGlanceablesClassroomClient> classroom_client_;
   std::unique_ptr<api::FakeTasksClient> tasks_client_;
 };

@@ -7,10 +7,8 @@
 #include <memory>
 #include <string>
 
-#include "ash/constants/ash_features.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/shell.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/account_id/account_id.h"
@@ -37,10 +35,6 @@ class GlanceablesKeyedServiceTest : public BrowserWithTestWindowTest {
     OnUserProfileCreated(profile_name, profile);
     return profile;
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_{
-      features::kGlanceablesTimeManagementTasksView};
 };
 
 TEST_F(GlanceablesKeyedServiceTest, RegistersClientsInAsh) {
