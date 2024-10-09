@@ -56,6 +56,11 @@ BASE_FEATURE(kUseRustJsonParser,
 #endif  // BUILDFLAG(IS_ANDROID)
 );
 
+// If true, use the Rust JSON parser in-thread; otherwise, it runs in a thread
+// pool.
+const base::FeatureParam<bool> kUseRustJsonParserInCurrentSequence{
+    &kUseRustJsonParser, "UseRustJsonParserInCurrentSequence", false};
+
 // Use non default low memory device threshold.
 // Value should be given via |LowMemoryDeviceThresholdMB|.
 #if BUILDFLAG(IS_IOS)

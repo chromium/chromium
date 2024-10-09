@@ -211,40 +211,63 @@ TEST_F(DataDecoderTest, SeparateDecoderInstancesMakeSeparateConnectionsForPix) {
 
 class DataDecoderMultiThreadTest : public testing::Test {
  protected:
+  void TestJSONDecode() {
+    base::RunLoop run_loop;
+    DataDecoder decoder;
+    DataDecoder::ValueOrError result;
+    decoder.ParseJson(
+        // The magic 122.416294033786585 number comes from
+        // https://github.com/serde-rs/json/issues/707
+        "[ 122.416294033786585 ]",
+        base::BindLambdaForTesting(
+            [&run_loop, &result](DataDecoder::ValueOrError value_or_error) {
+              result = std::move(value_or_error);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    histogram_tester_.ExpectTotalCount("Security.DataDecoder.Json.DecodingTime",
+                                       1);
+    ASSERT_TRUE(result.has_value());
+    ASSERT_TRUE(result->is_list());
+    base::Value::List& list = result->GetList();
+    ASSERT_EQ(1u, list.size());
+    EXPECT_TRUE(list[0].is_double());
+    EXPECT_EQ(122.416294033786585, list[0].GetDouble());
+  }
+
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
 };
 
-TEST_F(DataDecoderMultiThreadTest, JSONDecode) {
-  // Test basic JSON decoding. We test only on Android or if Rust
-  // is enabled, because otherwise this would result in spawning
-  // a process.
-#if !BUILDFLAG(IS_ANDROID)
+// Test basic JSON decoding without using Rust. We test only on Android,
+// because otherwise this would result in spawning a process.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_JSONDecodeNonRust JSONDecodeNonRust
+#else  // BUILDFLAG(IS_ANDROID)
+#define MAYBE_JSONDecodeNonRust DISABLED_JSONDecodeNonRust
+#endif  // BUILDFLAG(IS_ANDROID)
+TEST_F(DataDecoderMultiThreadTest, MAYBE_JSONDecodeNonRust) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(base::features::kUseRustJsonParser);
-#endif  // !BUILDFLAG(IS_ANDROID)
+  scoped_feature_list.InitAndDisableFeature(base::features::kUseRustJsonParser);
+  TestJSONDecode();
+}
 
-  base::RunLoop run_loop;
-  DataDecoder decoder;
-  DataDecoder::ValueOrError result;
-  decoder.ParseJson(
-      // The magic 122.416294033786585 number comes from
-      // https://github.com/serde-rs/json/issues/707
-      "[ 122.416294033786585 ]",
-      base::BindLambdaForTesting(
-          [&run_loop, &result](DataDecoder::ValueOrError value_or_error) {
-            result = std::move(value_or_error);
-            run_loop.Quit();
-          }));
-  run_loop.Run();
-  histogram_tester_.ExpectTotalCount("Security.DataDecoder.Json.DecodingTime",
-                                     1);
-  ASSERT_TRUE(result.has_value());
-  ASSERT_TRUE(result->is_list());
-  base::Value::List& list = result->GetList();
-  ASSERT_EQ(1u, list.size());
-  EXPECT_TRUE(list[0].is_double());
-  EXPECT_EQ(122.416294033786585, list[0].GetDouble());
+// Test basic JSON decoding using Rust, in a threadpool.
+TEST_F(DataDecoderMultiThreadTest, JSONDecodeRustThreadpool) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      base::features::kUseRustJsonParser,
+      {{"UseRustJsonParserInCurrentSequence", "false"}});
+  TestJSONDecode();
+}
+
+// Test basic JSON decoding using Rust, in the main thread.
+TEST_F(DataDecoderMultiThreadTest, JSONDecodeRustCurrentSequence) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      base::features::kUseRustJsonParser,
+      {{"UseRustJsonParserInCurrentSequence", "true"}});
+  TestJSONDecode();
 }
 
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(BUILD_RUST_JSON_READER)

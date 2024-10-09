@@ -19780,6 +19780,25 @@
             ]
         }
     ],
+    "RustyJSONParserInCurrentSequence": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20241007",
+                    "params": {
+                        "UseRustJsonParserInCurrentSequence": "true"
+                    },
+                    "enable_features": [
+                        "UseRustJsonParser"
+                    ]
+                }
+            ]
+        }
+    ],
     "SafeBrowsingAsyncRealTimeCheck": [
         {
             "platforms": [

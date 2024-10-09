@@ -21,6 +21,9 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kFeatureParamWithCache);
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kUseRustJsonParser);
 
+BASE_EXPORT extern const base::FeatureParam<bool>
+    kUseRustJsonParserInCurrentSequence;
+
 BASE_EXPORT BASE_DECLARE_FEATURE(kLowEndMemoryExperiment);
 
 BASE_EXPORT extern const base::FeatureParam<int> kLowMemoryDeviceThresholdMB;
