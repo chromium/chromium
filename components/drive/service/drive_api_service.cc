@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -177,7 +178,8 @@ BatchRequestConfigurator::MultipartUploadNewFile(
   std::unique_ptr<google_apis::BatchableDelegate> delegate(
       new google_apis::drive::MultipartUploadNewFileDelegate(
           task_runner_.get(), title, parent_resource_id, content_type,
-          content_length, options.modified_date, options.last_viewed_by_me_date,
+          /*converted_mime_type=*/std::nullopt, content_length,
+          options.modified_date, options.last_viewed_by_me_date,
           local_file_path, options.properties, url_generator_,
           std::move(callback), progress_callback));
   // Batch request can be null when pre-authorization for the requst is failed
@@ -745,7 +747,8 @@ CancelCallbackOnce DriveAPIService::MultipartUploadNewFile(
           sender_.get(),
           std::make_unique<google_apis::drive::MultipartUploadNewFileDelegate>(
               sender_->blocking_task_runner(), title, parent_resource_id,
-              content_type, content_length, options.modified_date,
+              content_type, /*converted_mime_type=*/std::nullopt,
+              content_length, options.modified_date,
               options.last_viewed_by_me_date, local_file_path,
               options.properties, url_generator_, std::move(callback),
               progress_callback)));
