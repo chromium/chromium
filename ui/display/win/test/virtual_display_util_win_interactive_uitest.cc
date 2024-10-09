@@ -61,7 +61,9 @@ TEST_F(VirtualDisplayUtilWinInteractiveUitest, AddDisplay) {
   EXPECT_FALSE(screen()->GetDisplayWithDisplayId(display_id, &d));
 }
 
-TEST_F(VirtualDisplayUtilWinInteractiveUitest, AddRemove) {
+// TODO(crbug.com/371121282): Re-enable the test.
+// TODO(crbug.com/365126887): Re-enable the test.
+TEST_F(VirtualDisplayUtilWinInteractiveUitest, DISABLED_AddRemove) {
   int64_t display_id[3];
   int initial_display_count = screen()->GetNumDisplays();
   display_id[0] = virtual_display_util_win_.AddDisplay(

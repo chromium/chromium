@@ -40,6 +40,13 @@ class WebAppInteractiveUiTest : public WebAppBrowserTestBase {};
 #define MAYBE_TabOpensOnCorrectDisplayMultiScreen \
   DISABLED_TabOpensOnCorrectDisplayMultiScreen
 #endif
+#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/371121282): Re-enable the test.
+// TODO(crbug.com/365126887): Re-enable the test.
+#undef MAYBE_TabOpensOnCorrectDisplayMultiScreen
+#define MAYBE_TabOpensOnCorrectDisplayMultiScreen \
+  DISABLED_TabOpensOnCorrectDisplayMultiScreen
+#endif  // BUILDFLAG(IS_WIN)
 // Tests that PWAs that open in a tab open tabs on the correct display.
 IN_PROC_BROWSER_TEST_F(WebAppInteractiveUiTest,
                        MAYBE_TabOpensOnCorrectDisplayMultiScreen) {
