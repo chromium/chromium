@@ -35,11 +35,15 @@ class BrowseDriveFilePickerCoordinatorTest : public PlatformTest {
     [dispatcher startDispatchingToTarget:handler_
                              forProtocol:@protocol(DriveFilePickerCommands)];
     fake_web_state_ = std::make_unique<web::FakeWebState>();
+    images_pending_ = [NSMutableSet set];
+    image_cache_ = [[NSCache alloc] init];
     coordinator_ = [[BrowseDriveFilePickerCoordinator alloc]
         initWithBaseNavigationViewController:navigation_controller_
                                      browser:browser_.get()
                                     webState:fake_web_state_->GetWeakPtr()
                                        title:@"Collection title"
+                               imagesPending:images_pending_
+                                  imageCache:image_cache_
                               collectionType:DriveFilePickerCollectionType::
                                                  kFolder
                             folderIdentifier:nil
@@ -77,6 +81,8 @@ class BrowseDriveFilePickerCoordinatorTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<web::FakeWebState> fake_web_state_;
   FakeDriveFilePickerHandler* handler_;
+  NSMutableSet<NSString*>* images_pending_;
+  NSCache<NSString*, UIImage*>* image_cache_;
   BrowseDriveFilePickerCoordinator* coordinator_;
 };
 

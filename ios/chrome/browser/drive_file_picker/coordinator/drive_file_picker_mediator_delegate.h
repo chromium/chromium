@@ -13,17 +13,19 @@
 @protocol DriveFilePickerMediatorDelegate
 
 // Browses a given drive collection.
-- (void)browseDriveCollectionWithMediator:
-            (DriveFilePickerMediator*)driveFilePickerMediator
-                                    title:(NSString*)title
-                           collectionType:
-                               (DriveFilePickerCollectionType)collectionType
-                         folderIdentifier:(NSString*)folderIdentifier
-                                   filter:(DriveFilePickerFilter)filter
-                      ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
-                          sortingCriteria:(DriveItemsSortingType)sortingCriteria
-                         sortingDirection:
-                             (DriveItemsSortingOrder)sortingDirection;
+- (void)
+    browseDriveCollectionWithMediator:
+        (DriveFilePickerMediator*)driveFilePickerMediator
+                                title:(NSString*)title
+                        imagesPending:(NSMutableSet<NSString*>*)imagesPending
+                           imageCache:(NSCache<NSString*, UIImage*>*)imageCache
+                       collectionType:
+                           (DriveFilePickerCollectionType)collectionType
+                     folderIdentifier:(NSString*)folderIdentifier
+                               filter:(DriveFilePickerFilter)filter
+                  ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
+                      sortingCriteria:(DriveItemsSortingType)sortingCriteria
+                     sortingDirection:(DriveItemsSortingOrder)sortingDirection;
 
 // Called when the mediator has stopped file selection in the web page.
 - (void)mediatorDidStopFileSelection:(DriveFilePickerMediator*)mediator;

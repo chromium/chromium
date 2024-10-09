@@ -30,6 +30,9 @@ class WebState;
                                  browser:(Browser*)browser
                                 webState:(base::WeakPtr<web::WebState>)webState
                                    title:(NSString*)title
+                           imagesPending:(NSMutableSet<NSString*>*)imagesPending
+                              imageCache:
+                                  (NSCache<NSString*, UIImage*>*)imageCache
                           collectionType:
                               (DriveFilePickerCollectionType)collectionType
                         folderIdentifier:(NSString*)folderIdentifier

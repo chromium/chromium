@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_COORDINATOR_DRIVE_FILE_PICKER_MEDIATOR_H_
 #define IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_COORDINATOR_DRIVE_FILE_PICKER_MEDIATOR_H_
 
+#import <UIKit/UIKit.h>
+
 #import <memory>
 
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_mutator.h"
@@ -44,6 +46,8 @@ class ChromeAccountManagerService;
          initWithWebState:(web::WebState*)webState
                  identity:(id<SystemIdentity>)identity
                     title:(NSString*)title
+            imagesPending:(NSMutableSet<NSString*>*)imagesPending
+               imageCache:(NSCache<NSString*, UIImage*>*)imageCache
            collectionType:(DriveFilePickerCollectionType)collectionType
          folderIdentifier:(NSString*)folderIdentifier
                    filter:(DriveFilePickerFilter)filter

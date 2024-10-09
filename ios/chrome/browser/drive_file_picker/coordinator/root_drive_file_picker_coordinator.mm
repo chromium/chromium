@@ -46,6 +46,10 @@
   // A child `BrowseDriveFilePickerCoordinator` created and started to browse an
   // drive folder.
   BrowseDriveFilePickerCoordinator* _childBrowseCoordinator;
+  // The set of images being fetched, soon to be added to `_imageCache`.
+  NSMutableSet<NSString*>* _imagesPending;
+  // Cache of fetched images for the Drive file picker.
+  NSCache<NSString*, UIImage*>* _imageCache;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -55,6 +59,8 @@
   if (self) {
     CHECK(webState);
     _webState = webState->GetWeakPtr();
+    _imagesPending = [NSMutableSet set];
+    _imageCache = [[NSCache alloc] init];
   }
   return self;
 }
@@ -78,6 +84,8 @@
            initWithWebState:_webState.get()
                    identity:_currentIdentity
                       title:nil
+              imagesPending:_imagesPending
+                 imageCache:_imageCache
              collectionType:DriveFilePickerCollectionType::kRoot
            folderIdentifier:nil
                      filter:DriveFilePickerFilter::kShowAllFiles
@@ -150,22 +158,26 @@
 
 #pragma mark - DriveFilePickerMediatorDelegate
 
-- (void)browseDriveCollectionWithMediator:
-            (DriveFilePickerMediator*)driveFilePickerMediator
-                                    title:(NSString*)title
-                           collectionType:
-                               (DriveFilePickerCollectionType)collectionType
-                         folderIdentifier:(NSString*)folderIdentifier
-                                   filter:(DriveFilePickerFilter)filter
-                      ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
-                          sortingCriteria:(DriveItemsSortingType)sortingCriteria
-                         sortingDirection:
-                             (DriveItemsSortingOrder)sortingDirection {
+- (void)
+    browseDriveCollectionWithMediator:
+        (DriveFilePickerMediator*)driveFilePickerMediator
+                                title:(NSString*)title
+                        imagesPending:(NSMutableSet<NSString*>*)imagesPending
+                           imageCache:(NSCache<NSString*, UIImage*>*)imageCache
+                       collectionType:
+                           (DriveFilePickerCollectionType)collectionType
+                     folderIdentifier:(NSString*)folderIdentifier
+                               filter:(DriveFilePickerFilter)filter
+                  ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
+                      sortingCriteria:(DriveItemsSortingType)sortingCriteria
+                     sortingDirection:(DriveItemsSortingOrder)sortingDirection {
   _childBrowseCoordinator = [[BrowseDriveFilePickerCoordinator alloc]
       initWithBaseNavigationViewController:_navigationController
                                    browser:self.browser
                                   webState:_webState
                                      title:title
+                             imagesPending:imagesPending
+                                imageCache:imageCache
                             collectionType:collectionType
                           folderIdentifier:folderIdentifier
                                     filter:filter

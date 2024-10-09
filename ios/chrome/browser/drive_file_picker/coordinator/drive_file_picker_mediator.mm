@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/web/public/js_image_transcoder/java_script_image_transcoder.h"
 #import "ios/web/public/web_state.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
@@ -42,16 +43,13 @@ constexpr base::TimeDelta kFetchItemsDelayToRetryMin = base::Seconds(0.5);
 constexpr base::TimeDelta kFetchItemsDelayToRetryMax = base::Seconds(10.0);
 // folder_identifier parameter for the My Drive view.
 NSString* kMyDriveFolderIdentifier = @"root";
-// Size to which shared drive images should be resized before going to consumer.
-constexpr CGFloat kSharedDriveBackgroundImageResizeDimension = 64.0;
-// Prefix of links to icons in the Drive third-party icon repository.
-NSString* kDriveIconRepositoryPrefix =
-    @"https://drive-thirdparty.googleusercontent.com/";
-// Prefix of links to shared drive background images gallery.
-NSString* kSharedDriveBackgroundImageGalleryPrefix =
-    @"https://ssl.gstatic.com/team_drive_themes/";
+// Size to which fetched images should be resized before caching.
+constexpr int kFetchedImageResizeDimension = 64;
 
 }  // namespace
+
+@interface DriveFilePickerMediator ()
+@end
 
 @implementation DriveFilePickerMediator {
   base::WeakPtr<web::WebState> _webState;
@@ -69,6 +67,12 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   // The service responsible for fetching a `DriveFilePickerItem`'s image data.
   std::unique_ptr<image_fetcher::ImageDataFetcher> _imageFetcher;
+  // The set of images being fetched, soon to be added to `_imageCache`.
+  __weak NSMutableSet<NSString*>* _imagesPending;
+  // Cache of fetched images for the Drive file picker.
+  __weak NSCache<NSString*, UIImage*>* _imageCache;
+  // JavaScript image transcoder to locally re-encode icons, thumbnails, etc.
+  std::unique_ptr<web::JavaScriptImageTranscoder> _imageTranscoder;
   // File URL to which the selected file is being downloaded.
   NSURL* _selectedFileDestinationURL;
   // The selected drive item. This comes from `_fetchedDriveItems` but is not
@@ -106,6 +110,8 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
          initWithWebState:(web::WebState*)webState
                  identity:(id<SystemIdentity>)identity
                     title:(NSString*)title
+            imagesPending:(NSMutableSet<NSString*>*)imagesPending
+               imageCache:(NSCache<NSString*, UIImage*>*)imageCache
            collectionType:(DriveFilePickerCollectionType)collectionType
          folderIdentifier:(NSString*)folderIdentifier
                    filter:(DriveFilePickerFilter)filter
@@ -122,6 +128,8 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
     CHECK(identity);
     CHECK(driveService);
     CHECK(accountManagerService);
+    CHECK(imagesPending);
+    CHECK(imageCache);
     _webState = webState->GetWeakPtr();
     _identity = identity;
     _driveService = driveService;
@@ -142,6 +150,9 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
     _acceptedTypes = UTTypesAcceptedForEvent(tab_helper->GetChooseFileEvent());
     _driveList = _driveService->CreateList(_identity);
     _driveDownloader = _driveService->CreateFileDownloader(_identity);
+    _imageTranscoder = std::make_unique<web::JavaScriptImageTranscoder>();
+    _imagesPending = imagesPending;
+    _imageCache = imageCache;
   }
   return self;
 }
@@ -161,6 +172,7 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
   _driveDownloader = nullptr;
   _accountManagerService = nullptr;
   _imageFetcher = nullptr;
+  _imageTranscoder = nullptr;
 }
 
 - (void)setConsumer:(id<DriveFilePickerConsumer>)consumer {
@@ -211,6 +223,8 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
     [self.delegate
         browseDriveCollectionWithMediator:self
                                     title:driveItem->name
+                            imagesPending:_imagesPending
+                               imageCache:_imageCache
                            collectionType:DriveFilePickerCollectionType::kFolder
                          folderIdentifier:driveItem->identifier
                                    filter:_filter
@@ -261,6 +275,8 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
         folderIdentifier != nil);
   [self.delegate browseDriveCollectionWithMediator:self
                                              title:title
+                                     imagesPending:_imagesPending
+                                        imageCache:_imageCache
                                     collectionType:collectionType
                                   folderIdentifier:folderIdentifier
                                             filter:_filter
@@ -294,42 +310,47 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
   std::optional<DriveItem> driveItem =
       FindDriveItemFromIdentifier(_fetchedDriveItems, itemIdentifier);
   CHECK(driveItem);
-
-  NSString* imageLink = nil;
-  if (driveItem->is_shared_drive) {
-    // If this is a shared drive, the background image link should be fetched.
-    imageLink = driveItem->background_image_link;
-  } else {
-    // Otherwise the icon link should be fetched.
-    // By default drive api provides a 16 resolution icons, replacing 16 by 64
-    // in the icon URLs provide better sized icons e.g. the URL
-    // https://drive-thirdparty.googleusercontent.com/16/type/video/mp4 becomes
-    // https://drive-thirdparty.googleusercontent.com/64/type/video/mp4
-    imageLink = driveItem->icon_link;
-    imageLink = [imageLink stringByReplacingOccurrencesOfString:@"16"
-                                                     withString:@"64"];
-  }
-
-  if (!imageLink ||
-      (![imageLink hasPrefix:kDriveIconRepositoryPrefix] &&
-       ![imageLink hasPrefix:kSharedDriveBackgroundImageGalleryPrefix])) {
-    // If the image link is not a known source, it should not be fetched and the
-    // placeholder image should become the default icon.
-    // If no image link was found the placeholder image should become the
-    // default icon.
-    [self.consumer setShouldFetchIcon:NO forItem:itemIdentifier];
+  NSString* imageLink = GetImageLinkForDriveItem(*driveItem);
+  CHECK(imageLink);
+  __weak __typeof(self) weakSelf = self;
+  // If there is a cached image, use it.
+  UIImage* cachedImage = [_imageCache objectForKey:imageLink];
+  if (cachedImage) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](DriveFilePickerMediator* mediator,
+                          UIImage* cachedImage, NSString* imageLink) {
+                         [mediator setIcon:cachedImage
+                             forItemsWithImageLink:imageLink];
+                       },
+                       weakSelf, cachedImage, imageLink));
+    // Since `setIcon:` has to be called asynchronously, if there were other
+    // cells with the same image appearing in this cycle for which
+    // `shouldFetchIcon` is also YES, then this task would be posted once for
+    // each cell, which is duplicated work. To avoid this, set `shouldFetchIcon`
+    // to NO for all these items synchronously.
+    [self setShouldFetchIcon:NO forItemsWithImageLink:imageLink];
     return;
   }
+  // If the image is being fetched, it should be in the cache next time.
+  if ([_imagesPending containsObject:imageLink]) {
+    return;
+  }
+  // Otherwise fetch the image.
+  [_imagesPending addObject:imageLink];
   GURL imageURL = GURL(base::SysNSStringToUTF16(imageLink));
-  __weak __typeof(self) weakSelf = self;
   _imageFetcher->FetchImageData(
       imageURL,
       base::BindOnce(
-          ^(__strong __typeof(self) strongSelf, const std::string& imageData,
-            const image_fetcher::RequestMetadata& metadata) {
-            [strongSelf updateDriveItem:itemIdentifier withImageData:imageData];
+          [](DriveFilePickerMediator* mediator, NSString* imageLink,
+             NSString* itemIdentifier, const std::string& imageData,
+             const image_fetcher::RequestMetadata& metadata) {
+            NSData* imageNSData = [NSData dataWithBytes:imageData.data()
+                                                 length:imageData.length()];
+            [mediator processUnsafeImageData:imageNSData
+                             fetchedFromLink:imageLink];
           },
-          weakSelf),
+          weakSelf, imageLink, itemIdentifier),
       NO_TRAFFIC_ANNOTATION_YET);
 }
 
@@ -720,16 +741,11 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
         [itemsToReconfigure addObject:item.identifier];
       }
     }
-    DriveFilePickerItem* filePickerItem =
-        DriveItemToDriveFilePickerItem(item, _collectionType, _sortingCriteria,
-                                       _shouldShowSearchItems, _searchText);
-    if (item.is_shared_drive &&
-        ![item.background_image_link
-            hasPrefix:kSharedDriveBackgroundImageGalleryPrefix]) {
-      // If a "shared drive" item background image link is not a link to a
-      // background image from the gallery, use a symbol instead.
-      filePickerItem.icon = [DriveFilePickerItem sharedDrivesItem].icon;
-    }
+    NSString* imageLink = GetImageLinkForDriveItem(item);
+    UIImage* fetchedIcon = [_imageCache objectForKey:imageLink];
+    DriveFilePickerItem* filePickerItem = DriveItemToDriveFilePickerItem(
+        item, _collectionType, _sortingCriteria, _shouldShowSearchItems,
+        _searchText, fetchedIcon, imageLink);
     filePickerItem.enabled = DriveFilePickerItemShouldBeEnabled(
         item, _acceptedTypes, _ignoreAcceptedTypes);
     // If the search text is not empty, emphasize the first match of the search
@@ -792,31 +808,66 @@ NSString* kSharedDriveBackgroundImageGalleryPrefix =
                  ]]];
 }
 
-- (void)updateDriveItem:(NSString*)itemIdentifier
-          withImageData:(const std::string&)imageData {
-  std::optional<DriveItem> driveItem =
-      FindDriveItemFromIdentifier(_fetchedDriveItems, itemIdentifier);
-  if (!driveItem) {
-    return;
-  }
-  UIImage* image =
-      [UIImage imageWithData:[NSData dataWithBytes:imageData.data()
-                                            length:imageData.size()]
-                       scale:[UIScreen mainScreen].scale];
-  // An early return if no drive icon is available, avoiding an infinite look in
-  // the consumer.
-  if (!image) {
-    return;
-  }
+// Transcodes `unsafeImageData` into `safeImageData` and forwards
+// `safeImageData` to `processSafeImageData:`.
+- (void)processUnsafeImageData:(NSData*)unsafeImageData
+               fetchedFromLink:(NSString*)imageLink {
+  __weak __typeof(self) weakSelf = self;
+  _imageTranscoder->TranscodeImage(
+      unsafeImageData, @"image/png", @(kFetchedImageResizeDimension),
+      @(kFetchedImageResizeDimension), nil,
+      base::BindOnce(
+          [](DriveFilePickerMediator* mediator,
+             NSMutableSet<NSString*>* imagesPending, NSString* imageLink,
+             NSData* safeImageData, NSError* error) {
+            if (!safeImageData) {
+              // If there is no data, then remove `imageLink` from
+              // `imagesPending` and try again next time the item appears on the
+              // screen.
+              [imagesPending removeObject:imageLink];
+              return;
+            }
+            [mediator processSafeImageData:safeImageData
+                           fetchedFromLink:imageLink];
+          },
+          weakSelf, _imagesPending, imageLink));
+}
 
-  if (driveItem->is_shared_drive) {
-    image = ResizeImage(image,
-                        CGSizeMake(kSharedDriveBackgroundImageResizeDimension,
-                                   kSharedDriveBackgroundImageResizeDimension),
-                        ProjectionMode::kFill, YES);
-  }
+// Decodes and caches `imageData` using `imageLink` as key and updates the
+// consumer items associated with image link `imageLink`.
+- (void)processSafeImageData:(NSData*)imageData
+             fetchedFromLink:(NSString*)imageLink {
+  UIImage* image = [UIImage imageWithData:imageData];
+  [_imageCache setObject:image forKey:imageLink];
+  [_imagesPending removeObject:imageLink];
+  [self setIcon:image forItemsWithImageLink:imageLink];
+}
 
-  [self.consumer setIcon:image forItem:itemIdentifier];
+// Set `shouldFetchIcon` for all consumer items associated with image link
+// `imageLink`.
+- (void)setShouldFetchIcon:(BOOL)shouldFetchIcon
+     forItemsWithImageLink:(NSString*)imageLink {
+  // Update items with the same image link in the consumer.
+  NSMutableSet<NSString*>* itemsToUpdate = [NSMutableSet set];
+  for (const DriveItem& item : _fetchedDriveItems) {
+    if ([GetImageLinkForDriveItem(item) isEqualToString:imageLink]) {
+      [itemsToUpdate addObject:item.identifier];
+    }
+  }
+  [self.consumer setShouldFetchIcon:shouldFetchIcon forItems:itemsToUpdate];
+}
+
+// Sets `image` as icon for all consumer items associated with image link
+// `imageLink`.
+- (void)setIcon:(UIImage*)image forItemsWithImageLink:(NSString*)imageLink {
+  // Update items with the same image link in the consumer.
+  NSMutableSet<NSString*>* itemsToUpdate = [NSMutableSet set];
+  for (const DriveItem& item : _fetchedDriveItems) {
+    if ([GetImageLinkForDriveItem(item) isEqualToString:imageLink]) {
+      [itemsToUpdate addObject:item.identifier];
+    }
+  }
+  [self.consumer setFetchedIcon:image forItems:itemsToUpdate];
 }
 
 @end

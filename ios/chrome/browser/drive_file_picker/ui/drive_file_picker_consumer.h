@@ -44,8 +44,9 @@
 // Sets the consumer's emails menu.
 - (void)setEmailsMenu:(UIMenu*)emailsMenu;
 
-// Sets the icon to `iconImage` for item with identifier `itemIdentifier`.
-- (void)setIcon:(UIImage*)iconImage forItem:(NSString*)itemIdentifier;
+// Sets the icon to `iconImage` for items with identifier in `itemIdentifiers`.
+- (void)setFetchedIcon:(UIImage*)iconImage
+              forItems:(NSSet<NSString*>*)itemIdentifiers;
 
 // Reconfigures items matching `identifiers`.
 - (void)reconfigureItemsWithIdentifiers:(NSArray<NSString*>*)identifiers;
@@ -74,9 +75,9 @@
 // Sets whether the leading "Cancel" button should be visible.
 - (void)setCancelButtonVisible:(BOOL)visible;
 
-// Sets whether the consumer should request icon fetching of `itemIdentifier`.
+// Sets whether the consumer should request icon fetching for `itemIdentifiers`.
 - (void)setShouldFetchIcon:(BOOL)shouldFetchIcon
-                   forItem:(NSString*)itemIdentifier;
+                  forItems:(NSSet<NSString*>*)itemIdentifiers;
 
 // Shows an alert to indicate that the selected file could not be downloaded,
 // asking whether to try again or not.

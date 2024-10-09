@@ -517,25 +517,22 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
                     : [UIListContentConfiguration cellConfiguration];
 
   // Set up cell image.
-  if (item.icon) {
-    UIListContentImageProperties* imageProperties =
-        contentConfiguration.imageProperties;
-    contentConfiguration.image = item.icon;
-    imageProperties.reservedLayoutSize =
-        CGSizeMake(UIListContentImageStandardDimension,
-                   UIListContentImageStandardDimension);
-    imageProperties.maximumSize =
-        CGSize(kCellImageDimension, kCellImageDimension);
-    // Set image tint color.
-    if (item.icon.isSymbolImage) {
-      imageProperties.tintColor = [UIColor colorNamed:kGrey600Color];
-      imageProperties.cornerRadius = 0;
-    } else {
-      imageProperties.tintColor = nil;
-      imageProperties.cornerRadius = item.type == DriveItemType::kSharedDrive
-                                         ? kCellImageDimension / 2.0
-                                         : 0;
-    }
+  UIListContentImageProperties* imageProperties =
+      contentConfiguration.imageProperties;
+  contentConfiguration.image = item.icon;
+  imageProperties.reservedLayoutSize = CGSizeMake(
+      UIListContentImageStandardDimension, UIListContentImageStandardDimension);
+  imageProperties.maximumSize =
+      CGSize(kCellImageDimension, kCellImageDimension);
+  // Set image tint color.
+  if (item.icon.isSymbolImage) {
+    imageProperties.tintColor = [UIColor colorNamed:kGrey600Color];
+    imageProperties.cornerRadius = 0;
+  } else {
+    imageProperties.tintColor = nil;
+    imageProperties.cornerRadius = item.type == DriveItemType::kSharedDrive
+                                       ? kCellImageDimension / 2.0
+                                       : 0;
   }
 
   // Set up text.
@@ -722,23 +719,25 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   _accountButton.menu = emailsMenu;
 }
 
-- (void)setIcon:(UIImage*)iconImage forItem:(NSString*)itemIdentifier {
-  for (size_t i = 0; i < _primaryItems.count; ++i) {
-    if ([_primaryItems[i].identifier isEqual:itemIdentifier]) {
-      _primaryItems[i].icon = iconImage;
-      _primaryItems[i].shouldFetchIcon = NO;
-      break;
+- (void)setFetchedIcon:(UIImage*)iconImage
+              forItems:(NSSet<NSString*>*)itemIdentifiers {
+  NSMutableArray<NSString*>* itemsToReconfigure = [NSMutableArray array];
+  for (DriveFilePickerItem* primaryItem in _primaryItems) {
+    if ([itemIdentifiers containsObject:primaryItem.identifier]) {
+      primaryItem.icon = iconImage;
+      primaryItem.shouldFetchIcon = NO;
+      [itemsToReconfigure addObject:primaryItem.identifier];
     }
   }
-  for (size_t i = 0; i < _secondaryItems.count; ++i) {
-    if ([_secondaryItems[i].identifier isEqual:itemIdentifier]) {
-      _secondaryItems[i].icon = iconImage;
-      _secondaryItems[i].shouldFetchIcon = NO;
-      break;
+  for (DriveFilePickerItem* secondaryItem in _secondaryItems) {
+    if ([itemIdentifiers containsObject:secondaryItem.identifier]) {
+      secondaryItem.icon = iconImage;
+      secondaryItem.shouldFetchIcon = NO;
+      [itemsToReconfigure addObject:secondaryItem.identifier];
     }
   }
   NSDiffableDataSourceSnapshot* snapshot = _diffableDataSource.snapshot;
-  [snapshot reconfigureItemsWithIdentifiers:@[ itemIdentifier ]];
+  [snapshot reconfigureItemsWithIdentifiers:itemsToReconfigure];
   [_diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
 }
 
@@ -887,11 +886,17 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 }
 
 - (void)setShouldFetchIcon:(BOOL)shouldFetchIcon
-                   forItem:(NSString*)itemIdentifier {
-  DriveFilePickerItem* item =
-      FindDriveFilePickerItem(itemIdentifier, _primaryItems, _secondaryItems);
-  CHECK(item);
-  item.shouldFetchIcon = shouldFetchIcon;
+                  forItems:(NSSet<NSString*>*)itemIdentifiers {
+  for (DriveFilePickerItem* primaryItem in _primaryItems) {
+    if ([itemIdentifiers containsObject:primaryItem.identifier]) {
+      primaryItem.shouldFetchIcon = shouldFetchIcon;
+    }
+  }
+  for (DriveFilePickerItem* secondaryItem in _secondaryItems) {
+    if ([itemIdentifiers containsObject:secondaryItem.identifier]) {
+      secondaryItem.shouldFetchIcon = shouldFetchIcon;
+    }
+  }
 }
 
 - (void)showDownloadFailureAlertWithRetryBlock:(ProceduralBlock)retryBlock {

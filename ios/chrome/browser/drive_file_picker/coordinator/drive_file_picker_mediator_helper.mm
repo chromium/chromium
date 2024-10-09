@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator_helper.h"
 
+#import <UIKit/UIKit.h>
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import "base/apple/foundation_util.h"
@@ -82,6 +83,12 @@ NSString* kOnlyShowPDFsExtraTerm =
      " mimeType='application/pdf')";
 // Prefix of MIME types associated with Google apps.
 NSString* kGoogleAppsMIMETypePrefix = @"application/vnd.google-apps.";
+// Prefix of links to icons in the Drive third-party icon repository.
+NSString* kDriveIconRepositoryPrefix =
+    @"https://drive-thirdparty.googleusercontent.com/";
+// Prefix of links to shared drive background images gallery.
+NSString* kSharedDriveBackgroundImageGalleryPrefix =
+    @"https://ssl.gstatic.com/team_drive_themes/";
 
 }  // namespace
 
@@ -381,20 +388,19 @@ DriveFilePickerItem* DriveItemToDriveFilePickerItem(
     DriveFilePickerCollectionType collection_type,
     DriveItemsSortingType sorting_criteria,
     BOOL should_show_search_items,
-    NSString* search_text) {
+    NSString* search_text,
+    UIImage* fetched_icon,
+    NSString* fetched_icon_link) {
   DriveItemType type;
-  UIImage* icon;
   if (item.is_folder) {
     type = DriveItemType::kFolder;
-    icon = [DriveFilePickerItem sharedDrivesItem].icon;
   } else if (item.is_shared_drive) {
     type = DriveItemType::kSharedDrive;
-    icon =
-        DefaultSymbolWithPointSize(kFolderSymbol, kDriveFilePickerItemIconSize);
   } else {
     type = DriveItemType::kFile;
-    icon = DefaultSymbolWithPointSize(kDocSymbol, kDriveFilePickerItemIconSize);
   }
+  UIImage* icon =
+      fetched_icon ? fetched_icon : GetPlaceholderIconForDriveItem(item);
   DriveFilePickerItem* drive_file_picker_item = [[DriveFilePickerItem alloc]
       initWithIdentifier:item.identifier
                    title:item.name
@@ -403,7 +409,8 @@ DriveFilePickerItem* DriveItemToDriveFilePickerItem(
                              should_show_search_items, search_text)
                     icon:icon
                     type:type];
-  drive_file_picker_item.shouldFetchIcon = YES;
+  drive_file_picker_item.shouldFetchIcon =
+      (fetched_icon == nil && fetched_icon_link != nil);
   return drive_file_picker_item;
 }
 
@@ -431,4 +438,42 @@ NSURL* DriveFilePickerGenerateDownloadFileURL(NSString* download_file_name) {
   base::FilePath download_file_path =
       download_dir.Append(base::SysNSStringToUTF8(download_file_name));
   return base::apple::FilePathToNSURL(download_file_path);
+}
+
+UIImage* GetPlaceholderIconForDriveItem(const DriveItem& item) {
+  if (item.is_shared_drive) {
+    return [DriveFilePickerItem sharedDrivesItem].icon;
+  } else if (item.is_folder) {
+    return DefaultSymbolWithPointSize(kFolderSymbol,
+                                      kDriveFilePickerItemIconSize);
+  } else {
+    return DefaultSymbolWithPointSize(kDocSymbol, kDriveFilePickerItemIconSize);
+  }
+}
+
+NSString* GetImageLinkForDriveItem(const DriveItem& item) {
+  NSString* imageLink = nil;
+  if (item.is_shared_drive) {
+    // If this is a shared drive, the background image link should be fetched.
+    imageLink = item.background_image_link;
+  } else {
+    // Otherwise the icon link should be fetched.
+    // By default drive api provides a 16 resolution icons, replacing 16 by 64
+    // in the icon URLs provide better sized icons e.g. the URL
+    // https://drive-thirdparty.googleusercontent.com/16/type/video/mp4 becomes
+    // https://drive-thirdparty.googleusercontent.com/64/type/video/mp4
+    imageLink = item.icon_link;
+    NSString* target =
+        [kDriveIconRepositoryPrefix stringByAppendingString:@"16"];
+    NSString* replacement =
+        [kDriveIconRepositoryPrefix stringByAppendingString:@"64"];
+    imageLink = [imageLink stringByReplacingOccurrencesOfString:target
+                                                     withString:replacement];
+  }
+  if (![imageLink hasPrefix:kDriveIconRepositoryPrefix] &&
+      ![imageLink hasPrefix:kSharedDriveBackgroundImageGalleryPrefix]) {
+    // If the image link is not a known source, return nil.
+    return nil;
+  }
+  return imageLink;
 }

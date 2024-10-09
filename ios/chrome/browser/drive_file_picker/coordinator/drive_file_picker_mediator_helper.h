@@ -16,6 +16,7 @@ struct ChooseFileEvent;
 @class DriveFilePickerItem;
 struct DriveItem;
 struct DriveListQuery;
+@class UIImage;
 @class UTType;
 
 // Returns the list of unified types accepted for `event`.
@@ -75,7 +76,9 @@ DriveFilePickerItem* DriveItemToDriveFilePickerItem(
     DriveFilePickerCollectionType collection_type,
     DriveItemsSortingType sorting_criteria,
     BOOL should_show_search_items,
-    NSString* search_text);
+    NSString* search_text,
+    UIImage* fetched_icon,
+    NSString* fetched_icon_link);
 
 // Finds a DriveItem within the provided vector based on its identifier.
 std::optional<DriveItem> FindDriveItemFromIdentifier(
@@ -84,5 +87,12 @@ std::optional<DriveItem> FindDriveItemFromIdentifier(
 
 // Generates the `URL` to which the local copy of a file will be saved.
 NSURL* DriveFilePickerGenerateDownloadFileURL(NSString* download_file_name);
+
+// Returns the placeholder icon for `item`.
+UIImage* GetPlaceholderIconForDriveItem(const DriveItem& item);
+
+// Returns the appropriate image link to use for a given `item`.
+// If there is no such link, returns nil instead.
+NSString* GetImageLinkForDriveItem(const DriveItem& item);
 
 #endif  // IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_COORDINATOR_DRIVE_FILE_PICKER_MEDIATOR_HELPER_H_

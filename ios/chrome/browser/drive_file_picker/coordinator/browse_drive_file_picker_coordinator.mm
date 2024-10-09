@@ -38,38 +38,19 @@
 
   DriveFilePickerTableViewController* _viewController;
 
-  // WebState for which the Drive file picker is presented.
+  // Parameters to initialize the mediator.
   base::WeakPtr<web::WebState> _webState;
-
-  // A child `BrowseDriveFilePickerCoordinator` created and started to browse an
-  // inner folder.
   BrowseDriveFilePickerCoordinator* _childBrowseCoordinator;
-
-  // The type of collection presented in this coordinator.
   DriveFilePickerCollectionType _collectionType;
-
-  // If the collection is a folder, the identifier of that folder.
   NSString* _folderIdentifier;
-
-  // Title of this collection of items.
   NSString* _title;
-
-  // Filter applied to this collection of items.
   DriveFilePickerFilter _filter;
-
-  // Whether the list of types accepted by the website is ignored.
   BOOL _ignoreAcceptedTypes;
-
-  // Sorting criteria.
   DriveItemsSortingType _sortingCriteria;
-
-  // Sorting direction.
   DriveItemsSortingOrder _sortingDirection;
-
-  // Identity whose Drive is being browsed.
+  __weak NSMutableSet<NSString*>* _imagesPending;
+  __weak NSCache<NSString*, UIImage*>* _imageCache;
   id<SystemIdentity> _identity;
-
-  raw_ptr<drive::DriveService> _driveService;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -80,6 +61,9 @@
                                  browser:(Browser*)browser
                                 webState:(base::WeakPtr<web::WebState>)webState
                                    title:(NSString*)title
+                           imagesPending:(NSMutableSet<NSString*>*)imagesPending
+                              imageCache:
+                                  (NSCache<NSString*, UIImage*>*)imageCache
                           collectionType:
                               (DriveFilePickerCollectionType)collectionType
                         folderIdentifier:(NSString*)folderIdentifier
@@ -104,6 +88,8 @@
     _ignoreAcceptedTypes = ignoreAcceptedTypes;
     _sortingCriteria = sortingCriteria;
     _sortingDirection = sortingDirection;
+    _imagesPending = imagesPending;
+    _imageCache = imageCache;
     _identity = identity;
   }
   return self;
@@ -123,6 +109,8 @@
            initWithWebState:_webState.get()
                    identity:_identity
                       title:_title
+              imagesPending:_imagesPending
+                 imageCache:_imageCache
              collectionType:_collectionType
            folderIdentifier:_folderIdentifier
                      filter:_filter
@@ -158,22 +146,26 @@
 
 #pragma mark - DriveFilePickerMediatorDelegate
 
-- (void)browseDriveCollectionWithMediator:
-            (DriveFilePickerMediator*)driveFilePickerMediator
-                                    title:(NSString*)title
-                           collectionType:
-                               (DriveFilePickerCollectionType)collectionType
-                         folderIdentifier:(NSString*)folderIdentifier
-                                   filter:(DriveFilePickerFilter)filter
-                      ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
-                          sortingCriteria:(DriveItemsSortingType)sortingCriteria
-                         sortingDirection:
-                             (DriveItemsSortingOrder)sortingDirection {
+- (void)
+    browseDriveCollectionWithMediator:
+        (DriveFilePickerMediator*)driveFilePickerMediator
+                                title:(NSString*)title
+                        imagesPending:(NSMutableSet<NSString*>*)imagesPending
+                           imageCache:(NSCache<NSString*, UIImage*>*)imageCache
+                       collectionType:
+                           (DriveFilePickerCollectionType)collectionType
+                     folderIdentifier:(NSString*)folderIdentifier
+                               filter:(DriveFilePickerFilter)filter
+                  ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
+                      sortingCriteria:(DriveItemsSortingType)sortingCriteria
+                     sortingDirection:(DriveItemsSortingOrder)sortingDirection {
   _childBrowseCoordinator = [[BrowseDriveFilePickerCoordinator alloc]
       initWithBaseNavigationViewController:_baseNavigationController
                                    browser:self.browser
                                   webState:_webState
                                      title:title
+                             imagesPending:imagesPending
+                                imageCache:imageCache
                             collectionType:collectionType
                           folderIdentifier:folderIdentifier
                                     filter:filter

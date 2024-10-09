@@ -47,17 +47,19 @@
 
 @implementation FakeDriveFilePickerMediatorDelegate
 
-- (void)browseDriveCollectionWithMediator:
-            (DriveFilePickerMediator*)driveFilePickerMediator
-                                    title:(NSString*)title
-                           collectionType:
-                               (DriveFilePickerCollectionType)collectionType
-                         folderIdentifier:(NSString*)folderIdentifier
-                                   filter:(DriveFilePickerFilter)filter
-                      ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
-                          sortingCriteria:(DriveItemsSortingType)sortingCriteria
-                         sortingDirection:
-                             (DriveItemsSortingOrder)sortingDirection {
+- (void)
+    browseDriveCollectionWithMediator:
+        (DriveFilePickerMediator*)driveFilePickerMediator
+                                title:(NSString*)title
+                        imagesPending:(NSMutableSet<NSString*>*)imagesPending
+                           imageCache:(NSCache<NSString*, UIImage*>*)imageCache
+                       collectionType:
+                           (DriveFilePickerCollectionType)collectionType
+                     folderIdentifier:(NSString*)folderIdentifier
+                               filter:(DriveFilePickerFilter)filter
+                  ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
+                      sortingCriteria:(DriveItemsSortingType)sortingCriteria
+                     sortingDirection:(DriveItemsSortingOrder)sortingDirection {
   self.titleOfBrowsedCollection = title;
   self.collectionType = collectionType;
   self.folderIdentifier = folderIdentifier;
@@ -130,7 +132,8 @@
 - (void)setEmailsMenu:(UIMenu*)emailsMenu {
 }
 
-- (void)setIcon:(UIImage*)iconImage forItem:(NSString*)itemIdentifier {
+- (void)setFetchedIcon:(UIImage*)iconImage
+              forItems:(NSSet<NSString*>*)itemIdentifiers {
 }
 
 - (void)setDownloadStatus:(DriveFileDownloadStatus)downloadStatus {
@@ -165,7 +168,7 @@
 }
 
 - (void)setShouldFetchIcon:(BOOL)shouldFetchIcon
-                   forItem:(NSString*)itemIdentifier {
+                  forItems:(NSSet<NSString*>*)itemIdentifiers {
 }
 
 - (void)showDownloadFailureAlertWithRetryBlock:(ProceduralBlock)retryBlock {
@@ -185,6 +188,8 @@ class DriveFilePickerMediatorTest : public PlatformTest {
         ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
     image_fetcher_ = std::make_unique<image_fetcher::ImageDataFetcher>(
         profile_.get()->GetSharedURLLoaderFactory());
+    images_pending_ = [NSMutableSet set];
+    image_cache_ = [[NSCache alloc] init];
     web_state_ = std::make_unique<web::FakeWebState>();
     StartChoosingFiles();
     // Start file selection in `web_state_`.
@@ -213,6 +218,8 @@ class DriveFilePickerMediatorTest : public PlatformTest {
              initWithWebState:web_state_.get()
                      identity:[FakeSystemIdentity fakeIdentity1]
                         title:nil
+                imagesPending:images_pending_
+                   imageCache:image_cache_
                collectionType:collectionType
              folderIdentifier:nil
                        filter:DriveFilePickerFilter::kShowAllFiles
@@ -251,6 +258,8 @@ class DriveFilePickerMediatorTest : public PlatformTest {
   using TaskEnvironment = base::test::TaskEnvironment;
   TaskEnvironment task_environment_{TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList scoped_feature_list_;
+  NSMutableSet<NSString*>* images_pending_;
+  NSCache<NSString*, UIImage*>* image_cache_;
   DriveFilePickerMediator* mediator_;
   std::unique_ptr<web::FakeWebState> web_state_;
   raw_ptr<ChooseFileTabHelper> choose_file_tab_helper_;
