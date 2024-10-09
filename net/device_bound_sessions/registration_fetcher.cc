@@ -106,7 +106,8 @@ void SignChallengeWithKey(
   std::optional<std::string> optional_header_and_payload =
       CreateKeyRegistrationHeaderAndPayload(
           challenge, registration_url, expected_algorithm.value(),
-          expected_public_key.value(), base::Time::Now(), authorization);
+          expected_public_key.value(), base::Time::Now(),
+          std::move(authorization));
 
   if (!optional_header_and_payload.has_value()) {
     std::move(callback).Run(std::nullopt);
@@ -285,7 +286,8 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
         RunCallbackAndDeleteSelf(std::nullopt);
       }
 
-      DCHECK(challenge_param_.size() == 1);
+      // TODO(kristianm): Log if there is more than one challenge
+      // Note this preserves the lifetime of *this
       std::string_view challenge(challenge_param_[0].challenge());
       SignChallengeWithKey(
           *key_service_, challenge, *key_id_, fetcher_endpoint_, authorization_,
