@@ -370,14 +370,11 @@ suite('UpdateContentIntegration', () => {
       },
       {
         id: 4,
-        role: 'image',
-        htmlTag: 'img',
-        url: 'http://www.mycat.com',
+        role: 'link',
+        htmlTag: 'a',
       },
     ];
-    const expected =
-        '<div><a>This link does not have a url.</a><canvas alt="" ' +
-        'class="downloaded-image"></canvas></div>';
+    const expected = '<div><a>This link does not have a url.</a><a></a></div>';
 
     setTree([2, 4], nodes);
 
