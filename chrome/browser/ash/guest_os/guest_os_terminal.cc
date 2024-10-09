@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_terminal_provider.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/browser_process.h"
@@ -259,7 +260,7 @@ void LaunchTerminalWithIntent(
     }
   }
 
-  auto* registry = guest_os::GuestOsService::GetForProfile(profile)
+  auto* registry = guest_os::GuestOsServiceFactory::GetForProfile(profile)
                        ->TerminalProviderRegistry();
   auto* provider = registry->Get(guest_id);
 
@@ -574,7 +575,7 @@ void AddTerminalMenuShortcuts(
   gfx::ImageSkia crostini_mascot_icon = icon(kCrostiniMascotIcon);
   std::vector<std::pair<std::string, std::string>> connections =
       GetSSHConnections(profile);
-  auto* registry = guest_os::GuestOsService::GetForProfile(profile)
+  auto* registry = guest_os::GuestOsServiceFactory::GetForProfile(profile)
                        ->TerminalProviderRegistry();
   if (connections.size() > 0 || registry->List().size() > 0) {
     apps::AddSeparator(ui::DOUBLE_SEPARATOR, menu_items);

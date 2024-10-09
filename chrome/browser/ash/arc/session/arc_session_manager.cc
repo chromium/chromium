@@ -53,6 +53,7 @@
 #include "chrome/browser/ash/arc/session/arc_provisioning_result.h"
 #include "chrome/browser/ash/arc/session/arc_reven_hardware_checker.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -1128,13 +1129,13 @@ void ArcSessionManager::OnVmStarted(
       // called (due to concierge crash etc.). Unregister the old instance
       // before registering a new one to prevent multiple registration like
       // b/279378611.
-      guest_os::GuestOsService::GetForProfile(profile())
+      guest_os::GuestOsServiceFactory::GetForProfile(profile())
           ->MountProviderRegistry()
           ->Unregister(*arcvm_mount_provider_id_);
     }
     arcvm_mount_provider_id_ =
         std::optional<guest_os::GuestOsMountProviderRegistry::Id>(
-            guest_os::GuestOsService::GetForProfile(profile())
+            guest_os::GuestOsServiceFactory::GetForProfile(profile())
                 ->MountProviderRegistry()
                 ->Register(std::make_unique<ArcMountProvider>(
                     profile(), vm_signal.vm_info().cid())));
@@ -1146,7 +1147,7 @@ void ArcSessionManager::OnVmStopped(
   // When ARCVM stops, unregister GuestOsMountProvider for Play files.
   if (vm_signal.name() == kArcVmName) {
     if (arcvm_mount_provider_id_.has_value()) {
-      guest_os::GuestOsService::GetForProfile(profile())
+      guest_os::GuestOsServiceFactory::GetForProfile(profile())
           ->MountProviderRegistry()
           ->Unregister(*arcvm_mount_provider_id_);
       arcvm_mount_provider_id_.reset();

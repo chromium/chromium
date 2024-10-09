@@ -119,6 +119,7 @@
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/smb_client/smb_errors.h"
 #include "chrome/browser/ash/smb_client/smb_service.h"
@@ -4172,7 +4173,7 @@ bool FileManagerBrowserTestBase::HandleGuestOsCommands(
     // TODO(davidmunro): Merge with in-constructor derivation.
     // auto id = guest_os::GuestId(guest_os::VmType::UNKNOWN, *displayName,
     // *displayName);
-    auto* registry = guest_os::GuestOsService::GetForProfile(profile())
+    auto* registry = guest_os::GuestOsServiceFactory::GetForProfile(profile())
                          ->MountProviderRegistry();
     auto id = registry->Register(std::make_unique<MockGuestOsMountProvider>(
         profile()->GetOriginalProfile(), *displayName,
@@ -4196,7 +4197,7 @@ bool FileManagerBrowserTestBase::HandleGuestOsCommands(
     const std::string* str = value.FindString("guestId");
     CHECK(str != nullptr);
     CHECK(base::StringToInt(*str, &id));
-    auto* registry = guest_os::GuestOsService::GetForProfile(profile())
+    auto* registry = guest_os::GuestOsServiceFactory::GetForProfile(profile())
                          ->MountProviderRegistry();
     registry->Unregister(id);
     return true;
@@ -4206,7 +4207,7 @@ bool FileManagerBrowserTestBase::HandleGuestOsCommands(
     const std::string* str = value.FindString("guestId");
     CHECK(str != nullptr);
     CHECK(base::StringToInt(*str, &id));
-    auto* registry = guest_os::GuestOsService::GetForProfile(profile())
+    auto* registry = guest_os::GuestOsServiceFactory::GetForProfile(profile())
                          ->MountProviderRegistry();
     registry->Get(id)->Unmount();
     return true;

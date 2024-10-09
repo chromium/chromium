@@ -33,6 +33,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -1853,10 +1854,11 @@ TEST_F(CrostiniManagerRestartTest, StopAfterLxdAvailableThenFullRestart) {
 
 TEST_F(CrostiniManagerRestartTest, UninstallUnregistersContainers) {
   auto* terminal_registry =
-      guest_os::GuestOsService::GetForProfile(profile_.get())
+      guest_os::GuestOsServiceFactory::GetForProfile(profile_.get())
           ->TerminalProviderRegistry();
-  auto* mount_registry = guest_os::GuestOsService::GetForProfile(profile_.get())
-                             ->MountProviderRegistry();
+  auto* mount_registry =
+      guest_os::GuestOsServiceFactory::GetForProfile(profile_.get())
+          ->MountProviderRegistry();
   auto* share_service =
       guest_os::GuestOsSharePathFactory::GetForProfile(profile_.get());
 
@@ -1880,10 +1882,11 @@ TEST_F(CrostiniManagerRestartTest, UninstallUnregistersContainers) {
 TEST_F(CrostiniManagerRestartTest,
        DeleteUnregistersContainersWhenDoesNotExist) {
   auto* terminal_registry =
-      guest_os::GuestOsService::GetForProfile(profile_.get())
+      guest_os::GuestOsServiceFactory::GetForProfile(profile_.get())
           ->TerminalProviderRegistry();
-  auto* mount_registry = guest_os::GuestOsService::GetForProfile(profile_.get())
-                             ->MountProviderRegistry();
+  auto* mount_registry =
+      guest_os::GuestOsServiceFactory::GetForProfile(profile_.get())
+          ->MountProviderRegistry();
   auto* share_service =
       guest_os::GuestOsSharePathFactory::GetForProfile(profile_.get());
   vm_tools::cicerone::DeleteLxdContainerResponse response;
@@ -1911,10 +1914,11 @@ TEST_F(CrostiniManagerRestartTest,
 
 TEST_F(CrostiniManagerRestartTest, DeleteUnregistersContainers) {
   auto* terminal_registry =
-      guest_os::GuestOsService::GetForProfile(profile_.get())
+      guest_os::GuestOsServiceFactory::GetForProfile(profile_.get())
           ->TerminalProviderRegistry();
-  auto* mount_registry = guest_os::GuestOsService::GetForProfile(profile_.get())
-                             ->MountProviderRegistry();
+  auto* mount_registry =
+      guest_os::GuestOsServiceFactory::GetForProfile(profile_.get())
+          ->MountProviderRegistry();
   auto* share_service =
       guest_os::GuestOsSharePathFactory::GetForProfile(profile_.get());
 

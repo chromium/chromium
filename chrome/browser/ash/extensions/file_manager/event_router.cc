@@ -50,6 +50,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
@@ -103,6 +104,7 @@ using file_manager::io_task::IOTaskController;
 using file_manager::util::EntryDefinition;
 using file_manager::util::FileDefinition;
 using guest_os::GuestOsService;
+using guest_os::GuestOsServiceFactory;
 using guest_os::GuestOsSharePath;
 using guest_os::GuestOsSharePathFactory;
 
@@ -668,7 +670,8 @@ void EventRouter::Shutdown() {
   }
 
   // GuestOsService doesn't exist for all profiles.
-  if (GuestOsService* const service = GuestOsService::GetForProfile(profile_)) {
+  if (GuestOsService* const service =
+          GuestOsServiceFactory::GetForProfile(profile_)) {
     service->MountProviderRegistry()->RemoveObserver(this);
   }
 
@@ -761,7 +764,8 @@ void EventRouter::ObserveEvents() {
   }
 
   // GuestOsService doesn't exist for all profiles.
-  if (GuestOsService* const service = GuestOsService::GetForProfile(profile_)) {
+  if (GuestOsService* const service =
+          GuestOsServiceFactory::GetForProfile(profile_)) {
     service->MountProviderRegistry()->AddObserver(this);
   }
 

@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_file_watcher.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "content/public/browser/browser_thread.h"
 #include "google_apis/common/task_util.h"
@@ -55,7 +56,7 @@ std::unique_ptr<guest_os::GuestOsFileWatcher> GetForPath(
         crostini::DefaultContainerId(), std::move(crostini_mount),
         std::move(relative_path));
   }
-  auto* service = guest_os::GuestOsService::GetForProfile(profile);
+  auto* service = guest_os::GuestOsServiceFactory::GetForProfile(profile);
   if (!service) {
     return nullptr;
   }

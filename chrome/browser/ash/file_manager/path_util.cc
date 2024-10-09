@@ -40,6 +40,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/smb_client/smb_service.h"
 #include "chrome/browser/ash/smb_client/smb_service_factory.h"
@@ -469,7 +470,7 @@ std::string GetAndroidFilesMountPointName() {
 bool IsBruschettaMountPointName(const std::string& name,
                                 Profile* profile,
                                 guest_os::GuestId* guest_id) {
-  auto* service = guest_os::GuestOsService::GetForProfile(profile);
+  auto* service = guest_os::GuestOsServiceFactory::GetForProfile(profile);
   if (!service) {
     return false;
   }

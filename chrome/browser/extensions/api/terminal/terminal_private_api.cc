@@ -40,6 +40,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_terminal_provider.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_terminal_provider_registry.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
@@ -362,7 +363,7 @@ TerminalPrivateOpenTerminalProcessFunction::OpenProcess(
             << ", cmdline=" << cmdline.GetCommandLineString();
 
     Profile* profile = Profile::FromBrowserContext(browser_context());
-    auto* service = guest_os::GuestOsService::GetForProfile(profile);
+    auto* service = guest_os::GuestOsServiceFactory::GetForProfile(profile);
     guest_os::GuestOsTerminalProvider* provider = nullptr;
     if (service) {
       provider = service->TerminalProviderRegistry()->Get(*guest_id_);

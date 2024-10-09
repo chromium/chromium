@@ -62,6 +62,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_stability_monitor.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/scheduler_config/scheduler_configuration_manager.h"
 #include "chrome/browser/browser_process.h"
@@ -4230,7 +4231,7 @@ void CrostiniManager::RegisterContainerTerminal(
     const guest_os::GuestId& container_id) {
   if (terminal_provider_ids_.find(container_id) ==
       terminal_provider_ids_.end()) {
-    auto* registry = guest_os::GuestOsService::GetForProfile(profile_)
+    auto* registry = guest_os::GuestOsServiceFactory::GetForProfile(profile_)
                          ->TerminalProviderRegistry();
     terminal_provider_ids_[container_id] = registry->Register(
         std::make_unique<CrostiniTerminalProvider>(profile_, container_id));
@@ -4245,7 +4246,7 @@ void CrostiniManager::RegisterContainer(const guest_os::GuestId& container_id) {
     // TODO(b/217469540): The default container is still using sshfs for now,
     // so start off using this approach only for non-default.
     if (mount_provider_ids_.find(container_id) == mount_provider_ids_.end()) {
-      auto* registry = guest_os::GuestOsService::GetForProfile(profile_)
+      auto* registry = guest_os::GuestOsServiceFactory::GetForProfile(profile_)
                            ->MountProviderRegistry();
       mount_provider_ids_[container_id] = registry->Register(
           std::make_unique<CrostiniMountProvider>(profile_, container_id));
@@ -4258,16 +4259,18 @@ void CrostiniManager::RegisterContainer(const guest_os::GuestId& container_id) {
 
 void CrostiniManager::UnregisterContainer(
     const guest_os::GuestId& container_id) {
-  auto* terminal_registry = guest_os::GuestOsService::GetForProfile(profile_)
-                                ->TerminalProviderRegistry();
+  auto* terminal_registry =
+      guest_os::GuestOsServiceFactory::GetForProfile(profile_)
+          ->TerminalProviderRegistry();
   auto it = terminal_provider_ids_.find(container_id);
   if (it != terminal_provider_ids_.end()) {
     terminal_registry->Unregister(it->second);
     terminal_provider_ids_.erase(it);
   }
 
-  auto* mount_registry = guest_os::GuestOsService::GetForProfile(profile_)
-                             ->MountProviderRegistry();
+  auto* mount_registry =
+      guest_os::GuestOsServiceFactory::GetForProfile(profile_)
+          ->MountProviderRegistry();
   it = mount_provider_ids_.find(container_id);
   if (it != mount_provider_ids_.end()) {
     mount_registry->Unregister(it->second);
@@ -4286,15 +4289,17 @@ void CrostiniManager::UnregisterContainer(
 }
 
 void CrostiniManager::UnregisterAllContainers() {
-  auto* terminal_registry = guest_os::GuestOsService::GetForProfile(profile_)
-                                ->TerminalProviderRegistry();
+  auto* terminal_registry =
+      guest_os::GuestOsServiceFactory::GetForProfile(profile_)
+          ->TerminalProviderRegistry();
   for (const auto& pair : terminal_provider_ids_) {
     terminal_registry->Unregister(pair.second);
   }
   terminal_provider_ids_.clear();
 
-  auto* mount_registry = guest_os::GuestOsService::GetForProfile(profile_)
-                             ->MountProviderRegistry();
+  auto* mount_registry =
+      guest_os::GuestOsServiceFactory::GetForProfile(profile_)
+          ->MountProviderRegistry();
   for (const auto& pair : mount_provider_ids_) {
     mount_registry->Unregister(pair.second);
   }
