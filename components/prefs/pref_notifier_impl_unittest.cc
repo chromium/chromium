@@ -51,7 +51,7 @@ class MockPrefNotifier : public PrefNotifierImpl {
  public:
   explicit MockPrefNotifier(PrefService* pref_service)
       : PrefNotifierImpl(pref_service) {}
-  ~MockPrefNotifier() override {}
+  ~MockPrefNotifier() override = default;
 
   MOCK_METHOD(void, FireObservers, (std::string_view path), (override));
 

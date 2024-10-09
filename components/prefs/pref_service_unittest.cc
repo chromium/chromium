@@ -349,7 +349,7 @@ class WriteFlagChecker : public TestingPrefStore {
   bool last_write_flags_set() { return last_write_flags_set_; }
 
  private:
-  ~WriteFlagChecker() override {}
+  ~WriteFlagChecker() override = default;
 
   void SetLastWriteFlags(uint32_t flags) {
     CHECK(!last_write_flags_set_);

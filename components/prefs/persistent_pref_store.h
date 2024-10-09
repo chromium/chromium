@@ -37,7 +37,7 @@ class COMPONENTS_PREFS_EXPORT PersistentPrefStore : public WriteablePrefStore {
 
   class ReadErrorDelegate {
    public:
-    virtual ~ReadErrorDelegate() {}
+    virtual ~ReadErrorDelegate() = default;
 
     virtual void OnError(PrefReadError error) = 0;
   };

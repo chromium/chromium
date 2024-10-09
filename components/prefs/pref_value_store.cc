@@ -70,7 +70,7 @@ PrefValueStore::PrefValueStore(PrefStore* managed_prefs,
   CheckInitializationCompleted();
 }
 
-PrefValueStore::~PrefValueStore() {}
+PrefValueStore::~PrefValueStore() = default;
 
 std::unique_ptr<PrefValueStore> PrefValueStore::CloneAndSpecialize(
     PrefStore* managed_prefs,

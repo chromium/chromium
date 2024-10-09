@@ -159,12 +159,12 @@ class PrefMember : public subtle::PrefMemberBase {
  public:
   // Defer initialization to an Init method so it's easy to make this class be
   // a member variable.
-  PrefMember() {}
+  PrefMember() = default;
 
   PrefMember(const PrefMember&) = delete;
   PrefMember& operator=(const PrefMember&) = delete;
 
-  virtual ~PrefMember() {}
+  ~PrefMember() override = default;
 
   // Do the actual initialization of the class.  Use the two-parameter
   // version if you don't want any notifications of changes.  This
@@ -274,7 +274,7 @@ class PrefMember : public subtle::PrefMemberBase {
     }
 
    protected:
-    ~Internal() override {}
+    ~Internal() override = default;
 
     COMPONENTS_PREFS_EXPORT bool UpdateValueInternal(
         const base::Value& value) const override;
