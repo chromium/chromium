@@ -24,11 +24,13 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/checked_iterators.h"
-#include "base/containers/dynamic_extent.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/types/to_address.h"
 
 namespace base {
+
+// [span.syn]: Constants
+inline constexpr size_t dynamic_extent = std::numeric_limits<size_t>::max();
 
 template <typename T,
           size_t Extent = dynamic_extent,
