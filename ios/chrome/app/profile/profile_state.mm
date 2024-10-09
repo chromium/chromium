@@ -102,6 +102,20 @@
   return [_connectedSceneStates copy];
 }
 
+- (NSArray<SceneState*>*)foregroundScenes {
+  if (self.initStage < ProfileInitStage::kUIReady) {
+    return nil;
+  }
+
+  NSMutableArray<SceneState*>* foregroundScenes = [[NSMutableArray alloc] init];
+  for (SceneState* sceneState in _connectedSceneStates) {
+    if (sceneState.activationLevel >= SceneActivationLevelForegroundInactive) {
+      [foregroundScenes addObject:sceneState];
+    }
+  }
+  return foregroundScenes;
+}
+
 - (NSArray<id<ProfileStateAgent>>*)connectedAgents {
   return [_agents copy];
 }

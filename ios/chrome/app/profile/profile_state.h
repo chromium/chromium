@@ -35,6 +35,9 @@
 // The list of all connected scenes.
 @property(nonatomic, readonly) NSArray<SceneState*>* connectedScenes;
 
+// The list of all scenes in the foreground (even if they are not active).
+@property(nonatomic, readonly) NSArray<SceneState*>* foregroundScenes;
+
 // All agents that have been attached. Use -addAgent: and -removeAgent: to
 // add and remove agents.
 @property(nonatomic, readonly) NSArray<id<ProfileStateAgent>>* connectedAgents;
