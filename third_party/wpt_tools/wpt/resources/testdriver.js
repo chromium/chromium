@@ -176,11 +176,10 @@
         },
 
         /**
-         * Triggers a user-initiated click
+         * Triggers a user-initiated mouse click.
          *
-         * If ``element`` isn't inside the
-         * viewport, it will be scrolled into view before the click
-         * occurs.
+         * If ``element`` isn't inside the viewport, it will be
+         * scrolled into view before the click occurs.
          *
          * If ``element`` is from a different browsing context, the
          * command will be run in that context.
