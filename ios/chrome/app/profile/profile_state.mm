@@ -217,11 +217,26 @@
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
-  if (level == SceneActivationLevelForegroundActive) {
-    const ProfileInitStage initStage = self.initStage;
-    if (initStage >= ProfileInitStage::kUIReady) {
-      [_observers profileState:self sceneDidBecomeActive:sceneState];
-    }
+  switch (level) {
+    case SceneActivationLevelUnattached:
+      // Nothing to do.
+      break;
+
+    case SceneActivationLevelDisconnected:
+      [_connectedSceneStates removeObject:sceneState];
+      [sceneState removeObserver:self];
+      break;
+
+    case SceneActivationLevelBackground:
+    case SceneActivationLevelForegroundInactive:
+      // Nothing to do.
+      break;
+
+    case SceneActivationLevelForegroundActive:
+      if (self.initStage >= ProfileInitStage::kUIReady) {
+        [_observers profileState:self sceneDidBecomeActive:sceneState];
+      }
+      break;
   }
 }
 

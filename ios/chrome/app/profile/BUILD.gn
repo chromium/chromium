@@ -63,6 +63,18 @@ source_set("post_restore_profile_agent") {
   ]
 }
 
+source_set("test_utils") {
+  testonly = true
+  sources = [
+    "profile_state_test_utils.h",
+    "profile_state_test_utils.mm",
+  ]
+  deps = [
+    ":profile",
+    "//base",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -76,6 +88,7 @@ source_set("unit_tests") {
     ":post_restore_profile_agent",
     ":profile",
     ":profile_controller",
+    ":test_utils",
     "//base/test:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
@@ -97,6 +110,5 @@ source_set("unit_tests") {
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
     "//testing/gtest",
-    "//third_party/ocmock",
   ]
 }
