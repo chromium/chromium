@@ -42,8 +42,8 @@ MATCHER(OKStatus, "Equality matcher for type OK leveldb::Status") {
 
 class MockListener : public SessionStorageDataMap::Listener {
  public:
-  MockListener() {}
-  ~MockListener() override {}
+  MockListener() = default;
+  ~MockListener() override = default;
   MOCK_METHOD2(OnDataMapCreation,
                void(const std::vector<uint8_t>& map_id,
                     SessionStorageDataMap* map));

@@ -18,7 +18,7 @@ std::unique_ptr<LevelDBWriteBatch> LevelDBWriteBatch::Create() {
 LevelDBWriteBatch::LevelDBWriteBatch()
     : write_batch_(new leveldb::WriteBatch) {}
 
-LevelDBWriteBatch::~LevelDBWriteBatch() {}
+LevelDBWriteBatch::~LevelDBWriteBatch() = default;
 
 void LevelDBWriteBatch::Put(std::string_view key, std::string_view value) {
   write_batch_->Put(leveldb_env::MakeSlice(key), leveldb_env::MakeSlice(value));

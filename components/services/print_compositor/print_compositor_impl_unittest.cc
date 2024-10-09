@@ -135,14 +135,14 @@ class PrintCompositorImplTest : public testing::Test {
 
 class PrintCompositorImplCrashKeyTest : public PrintCompositorImplTest {
  public:
-  PrintCompositorImplCrashKeyTest() {}
+  PrintCompositorImplCrashKeyTest() = default;
 
   PrintCompositorImplCrashKeyTest(const PrintCompositorImplCrashKeyTest&) =
       delete;
   PrintCompositorImplCrashKeyTest& operator=(
       const PrintCompositorImplCrashKeyTest&) = delete;
 
-  ~PrintCompositorImplCrashKeyTest() override {}
+  ~PrintCompositorImplCrashKeyTest() override = default;
 
   void SetUp() override {
     crash_reporter::ResetCrashKeysForTesting();

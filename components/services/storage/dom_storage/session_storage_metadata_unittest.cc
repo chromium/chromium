@@ -69,7 +69,7 @@ class SessionStorageMetadataTest : public testing::Test {
         std::begin(SessionStorageMetadata::kNamespacePrefixBytes),
         std::end(SessionStorageMetadata::kNamespacePrefixBytes));
   }
-  ~SessionStorageMetadataTest() override {}
+  ~SessionStorageMetadataTest() override = default;
 
   void ReadMetadataFromDatabase(SessionStorageMetadata* metadata) {
     std::vector<uint8_t> version_value;

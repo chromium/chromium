@@ -29,7 +29,7 @@ DirectoryImpl::DirectoryImpl(base::FilePath directory_path,
                              scoped_refptr<SharedTempDir> temp_dir)
     : directory_path_(directory_path), temp_dir_(std::move(temp_dir)) {}
 
-DirectoryImpl::~DirectoryImpl() {}
+DirectoryImpl::~DirectoryImpl() = default;
 
 void DirectoryImpl::Read(ReadCallback callback) {
   std::vector<mojom::DirectoryEntryPtr> entries;
