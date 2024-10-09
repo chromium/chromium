@@ -31,6 +31,7 @@ class Browser;
 @protocol TabGroupsCommands;
 @class TabGroupInfo;
 @protocol TabPresentationDelegate;
+class UrlLoadingBrowserAgent;
 class WebStateList;
 
 namespace web {
@@ -48,6 +49,8 @@ class WebState;
 
 // The source browser.
 @property(nonatomic, assign) Browser* browser;
+// URL loader to open tabs when needed.
+@property(nonatomic, assign) UrlLoadingBrowserAgent* URLLoader;
 // The UI consumer to which updates are made.
 @property(nonatomic, weak) id<TabCollectionConsumer> consumer;
 // Delegate to handle presenting the action sheet.

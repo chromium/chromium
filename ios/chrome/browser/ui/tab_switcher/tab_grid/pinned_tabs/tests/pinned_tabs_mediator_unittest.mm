@@ -19,10 +19,16 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_drag_session.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_drop_session.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_pinned_tab_collection_consumer.h"
+#import "ios/chrome/browser/url_loading/model/fake_url_loading_delegate.h"
+#import "ios/chrome/browser/url_loading/model/scene_url_loading_service.h"
+#import "ios/chrome/browser/url_loading/model/test_scene_url_loading_service.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -61,12 +67,35 @@ class PinnedTabsMediatorTest : public PlatformTest {
     browser_list_->AddBrowser(regular_browser_.get());
     browser_list_->AddBrowser(incognito_browser_.get());
 
+    scene_loader_ = std::make_unique<TestSceneUrlLoadingService>();
+    scene_loader_->current_browser_ = regular_browser_.get();
+    url_loading_delegate_ = [[FakeURLLoadingDelegate alloc] init];
+
+    // Create loaders, insertion and notifier agents.
+    UrlLoadingNotifierBrowserAgent::CreateForBrowser(regular_browser_.get());
+    UrlLoadingBrowserAgent::CreateForBrowser(regular_browser_.get());
+    TabInsertionBrowserAgent::CreateForBrowser(regular_browser_.get());
+    loader_ = UrlLoadingBrowserAgent::FromBrowser(regular_browser_.get());
+    loader_->SetSceneService(scene_loader_.get());
+    loader_->SetDelegate(url_loading_delegate_);
+
     // The Pinned Tabs feature is not available on iPad.
     if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
       consumer_ = [[FakePinnedTabCollectionConsumer alloc] init];
       mediator_ = [[PinnedTabsMediator alloc] initWithConsumer:consumer_];
       mediator_.browser = regular_browser_.get();
     }
+  }
+
+  ~PinnedTabsMediatorTest() override {
+    // Cleanup to avoid debugger crash in non empty observer lists.
+    WebStateList* web_state_list = regular_browser_->GetWebStateList();
+    CloseAllWebStates(*web_state_list,
+                      WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
+    WebStateList* incognito_web_state_list =
+        incognito_browser_->GetWebStateList();
+    CloseAllWebStates(*incognito_web_state_list,
+                      WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
   }
 
   // Creates a FakeWebState with a navigation history containing exactly only
@@ -105,6 +134,9 @@ class PinnedTabsMediatorTest : public PlatformTest {
   base::test::ScopedFeatureList feature_list_;
   raw_ptr<BrowserList> browser_list_;
   std::unique_ptr<TestProfileIOS> profile_;
+  std::unique_ptr<TestSceneUrlLoadingService> scene_loader_;
+  raw_ptr<UrlLoadingBrowserAgent> loader_;
+  FakeURLLoadingDelegate* url_loading_delegate_;
 };
 
 // Tests that the consumer is notified when a web state is pinned.

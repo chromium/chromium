@@ -26,7 +26,6 @@
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
 #import "ios/chrome/browser/iph_for_new_chrome_user/model/tab_based_iph_browser_agent.h"
-#import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_browser_agent.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
@@ -79,7 +78,8 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
-#import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "net/base/apple/url_conversions.h"
@@ -198,6 +198,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 
   _webStateList = browser ? browser->GetWebStateList() : nullptr;
   _profile = browser ? browser->GetProfile() : nullptr;
+  _URLLoader = browser ? UrlLoadingBrowserAgent::FromBrowser(browser) : nullptr;
 
   [self.snapshotStorage addObserver:self];
 
@@ -228,6 +229,7 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 - (void)disconnect {
   _browser.reset();
   _profile = nil;
+  _URLLoader = nil;
   _consumer = nil;
   _delegate = nil;
   _toolbarsMutator = nil;
@@ -355,22 +357,18 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
     return;
   }
 
-  DCHECK(self.profile);
-  web::WebState::CreateParams params(self.profile);
-  std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
+  CHECK(self.profile);
+  CHECK(self.URLLoader);
 
   int webStateListIndex =
       WebStateIndexFromGridDropItemIndex(self.webStateList, index);
-  webStateListIndex =
-      std::clamp(webStateListIndex, 0, self.webStateList->count());
+  webStateListIndex = std::clamp(webStateListIndex, 0, _webStateList->count());
 
-  web::NavigationManager::WebLoadParams loadParams(newTabURL);
-  loadParams.transition_type = ui::PAGE_TRANSITION_TYPED;
-  webState->GetNavigationManager()->LoadURLWithParams(loadParams);
-
-  self.webStateList->InsertWebState(
-      std::move(webState),
-      WebStateList::InsertionParams::AtIndex(webStateListIndex).Activate());
+  UrlLoadParams params = UrlLoadParams::InNewTab(newTabURL);
+  params.in_incognito = self.profile->IsOffTheRecord();
+  params.append_to = OpenPosition::kSpecifiedIndex;
+  params.insertion_index = webStateListIndex;
+  self.URLLoader->Load(params);
 }
 
 - (void)insertItem:(GridItemIdentifier*)item
@@ -845,21 +843,17 @@ Browser* GetBrowserForNonPinnedTabWithId(BrowserList* browser_list,
 - (BOOL)addNewItem {
   // The incognito mediator's Browser is briefly set to nil after the last
   // incognito tab is closed.
-  if (!self.browser) {
+  if (!self.browser || !self.profile) {
     return NO;
   }
 
-  if (self.profile &&
-      !IsAddNewTabAllowedByPolicy(self.profile->GetPrefs(),
-                                  self.profile->IsOffTheRecord())) {
-    return NO;
-  }
+  int webStateListCount = self.webStateList->count();
 
   // The function is clamping the value, so it safe to pass the total count of
   // the WebState even if it is supposed to be a grid index.
-  [self insertNewWebStateAtGridIndex:self.webStateList->count()
+  [self insertNewWebStateAtGridIndex:webStateListCount
                              withURL:GURL(kChromeUINewTabURL)];
-  return YES;
+  return webStateListCount != self.webStateList->count();
 }
 
 - (void)selectItemWithID:(web::WebStateID)itemID

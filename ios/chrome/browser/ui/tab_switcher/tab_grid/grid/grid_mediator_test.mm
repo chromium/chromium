@@ -31,10 +31,16 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/tabs/model/closing_web_state_observer_browser_agent.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/test/fake_tab_grid_toolbars_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_tab_collection_consumer.h"
+#import "ios/chrome/browser/url_loading/model/fake_url_loading_delegate.h"
+#import "ios/chrome/browser/url_loading/model/scene_url_loading_service.h"
+#import "ios/chrome/browser/url_loading/model/test_scene_url_loading_service.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_frames_manager.h"
@@ -113,10 +119,23 @@ void GridMediatorTestClass::SetUp() {
       std::make_unique<BrowserWebStateListDelegate>());
   other_browser_ = std::make_unique<TestBrowser>(
       profile_.get(), nil, std::make_unique<BrowserWebStateListDelegate>());
+  scene_loader_ = std::make_unique<TestSceneUrlLoadingService>();
+  scene_loader_->current_browser_ = browser_.get();
+  url_loading_delegate_ = [[FakeURLLoadingDelegate alloc] init];
+
   WebUsageEnablerBrowserAgent::CreateForBrowser(browser_.get());
   ClosingWebStateObserverBrowserAgent::CreateForBrowser(browser_.get());
   SnapshotBrowserAgent::CreateForBrowser(browser_.get());
   SnapshotBrowserAgent::FromBrowser(browser_.get())->SetSessionID(kIdentifier);
+
+  // Create loaders, insertion and notifier agents.
+  UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
+  UrlLoadingBrowserAgent::CreateForBrowser(browser_.get());
+  TabInsertionBrowserAgent::CreateForBrowser(browser_.get());
+  loader_ = UrlLoadingBrowserAgent::FromBrowser(browser_.get());
+  loader_->SetSceneService(scene_loader_.get());
+  loader_->SetDelegate(url_loading_delegate_);
+
   SessionRestorationServiceFactory::GetForProfile(profile_.get())
       ->SetSessionID(browser_.get(), kIdentifier);
   browser_list_ = BrowserListFactory::GetForProfile(profile_.get());

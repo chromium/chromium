@@ -102,6 +102,9 @@ struct UrlLoadParams {
   // Note: Currently only applies to tabs that are not instant-loaded.
   std::u16string placeholder_title;
 
+  // Whether the URL should be loaded as part of pinned tabs.
+  bool load_pinned = false;
+
   // Whether the URL should be loaded as part of a tab group.
   bool load_in_group = false;
 
