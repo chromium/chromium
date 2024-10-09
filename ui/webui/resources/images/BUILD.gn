@@ -75,6 +75,9 @@ generate_grd("build_grdp") {
       "icon_settings.svg",
       "icon_visibility_off.svg",
       "icon_visibility.svg",
+      "promotion_banner_light.svg",
+      "dark/promotion_banner_dark.svg",
+      "promotion_policy_banner_close.svg",
     ]
   }
 

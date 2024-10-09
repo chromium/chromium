@@ -72,6 +72,37 @@
     </div>
   </header>
   <main id="policy-ui">
+    <if expr="not is_android and not is_ios">
+      <section id="promotion-banner-section" class="banner-section" hidden>
+        <div id="promotion-banner-section" class="banner-section-container">
+          <div id="promotion-icon" class="promotion-icon-container" aria-hidden="true">
+            <picture>
+              <source srcset="chrome://resources/images/dark/promotion_banner_dark.svg"
+                  media="(prefers-color-scheme: dark)">
+              <img src="chrome://resources/images/promotion_banner_light.svg">
+            </picture>
+          </div>
+          <div id="banner-actions" class="banner-actions-container">
+            <div id="promotion-main-text" class="promotion-main-text-container">
+              <div id="promotion-banner-title" class="banner-title">
+                $i18n{promotionBannerTitle}
+              </div>
+              <div id="promotion-banner-description" class="banner-description">
+                $i18n{promotionBannerDesc}
+              </div>
+              <a
+                  id="promotion-redirect-button"
+                  class="blue-pill-button"
+                  href="https://admin.google.com?utm_source=chrome_policy_promotion">
+                  $i18n{promotionBannerBtn}
+              </a>
+            </div>
+            <div id="close-icon-container">
+            </div>
+          </div>
+        </div>
+      </section>
+    </if>
     <section id="status-section" class="status-box-section" hidden>
       <h3>$i18n{status}</h3>
       <div id="status-box-container"></div>

@@ -262,9 +262,91 @@ a {
   z-index: 999;
 }
 
+.banner-section {
+  background-color: var(--promotion-banner-background);
+  padding: 24px;
+}
+
+.banner-section-container {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  gap: 24px;
+}
+
+.banner-actions-container {
+  display: flex;
+  width: 100%;
+  gap: 16px;
+  justify-content: space-between;
+  flex-direction: row;
+}
+
+.promotion-main-text-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.blue-pill-button {
+  background-color: var(--promotion-pill-button-color);
+  width: 202px;
+  height: 20px;
+  padding: 8px 16px 8px 16px;
+  text-align: center;
+  line-height: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  color: var(--promotion-pill-text-color);
+  border-radius: 50px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.banner-title {
+  color: var(--promotion-banner-title-color);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.banner-description {
+  color: var(--promotion-banner-description-color);
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.promotion-icon-container {
+  display: flex;
+  align-items: center;
+}
+
+#close-icon-container {
+  -webkit-mask-image: url(chrome://resources/images/promotion_policy_banner_close.svg);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 20px;
+  background-color: #5F6368;
+  height: 20px;
+  width: 20px;
+}
+
+@media (prefers-color-scheme: dark) {
+  #close-icon-container {
+    background-color: #F1F3F4;
+  }
+}
+
 /* Remove the flex gap after the searchbar on smaller width devices. */
 @media only screen and (max-width: 440px) {
   #right-content {
+    display: none;
+  }
+}
+/* Remove the icon with smaller width devices for promotion banner */
+@media only screen and (max-width: 530px) {
+  .promotion-icon-container {
     display: none;
   }
 }

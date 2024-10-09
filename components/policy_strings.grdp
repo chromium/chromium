@@ -809,6 +809,15 @@ Additional details:
   <message name="IDS_POLICY_TABLE_COLUMN_SORT_DESCENDING" desc="Part of the label for policy table sorting arrows denoting descending sort order.">
     in descending order
   </message>
+  <message name="IDS_POLICY_BANNER_PROMOTION_TITLE" desc="Title for Chrome Enterprise Core (CEC) promotion banner">
+    Streamline how your organization manages policies
+  </message>
+  <message name="IDS_POLICY_BANNER_PROMOTION_DESC" desc="Description for Chrome Enterprise Core (CEC) promotion banner">
+    Chrome Enterprise Core gives you a centralized tool for configuring browser policies from the cloud
+  </message>
+  <message name="IDS_POLICY_BANNER_PROMOTION_BTN" desc="Button for Chrome Enterprise Core (CEC) promotion banner">
+    Try Chrome Enterprise Core
+  </message>
 
   <!-- Strings for chrome://policy/logs -->
   <message name="IDS_POLICY_LOGS_TITLE" desc="Title for the page.">
