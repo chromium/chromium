@@ -135,10 +135,13 @@ void MenuHost::InitMenuHost(const InitParams& init_params) {
   params.name = "MenuHost";
   params.shadow_type = bubble_border ? Widget::InitParams::ShadowType::kNone
                                      : Widget::InitParams::ShadowType::kDrop;
-  params.opacity = (bubble_border ||
-                    MenuConfig::instance().CornerRadiusForMenu(menu_controller))
+
+  const int corner_radius =
+      MenuConfig::instance().CornerRadiusForMenu(menu_controller);
+  params.opacity = (bubble_border || corner_radius)
                        ? Widget::InitParams::WindowOpacity::kTranslucent
                        : Widget::InitParams::WindowOpacity::kOpaque;
+  params.corner_radius = corner_radius;
   params.parent = init_params.parent ? init_params.parent->GetNativeView()
                                      : gfx::NativeView();
   params.context = init_params.context ? init_params.context->GetNativeWindow()
