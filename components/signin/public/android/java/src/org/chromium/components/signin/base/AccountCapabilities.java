@@ -122,6 +122,13 @@ public class AccountCapabilities {
     }
 
     /**
+     * @return canUseCopyeditorFeature capability value.
+     */
+    public @Tribool int canUseCopyeditorFeature() {
+        return getCapabilityByName(AccountCapabilitiesConstants.CAN_USE_COPYEDITOR_FEATURE_NAME);
+    }
+
+    /**
      * @return canUseDevToolsGenerativeAiFeatures capability value.
      */
     public @Tribool int canUseDevToolsGenerativeAiFeatures() {

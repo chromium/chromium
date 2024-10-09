@@ -116,6 +116,10 @@ signin::Tribool AccountCapabilities::can_use_manta_service() const {
   return GetCapabilityByName(kCanUseMantaServiceName);
 }
 
+signin::Tribool AccountCapabilities::can_use_copyeditor_feature() const {
+  return GetCapabilityByName(kCanUseCopyEditorFeatureName);
+}
+
 signin::Tribool AccountCapabilities::can_use_model_execution_features() const {
   return GetCapabilityByName(kCanUseModelExecutionFeaturesName);
 }

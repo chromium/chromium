@@ -27,6 +27,7 @@ class AccountCapabilitiesTestMutator {
   void set_can_fetch_family_member_info(bool value);
   void set_can_toggle_auto_updates(bool value);
   void set_can_use_chrome_ip_protection(bool value);
+  void set_can_use_copyeditor_feature(bool value);
   void set_can_use_devtools_generative_ai_features(bool value);
   void set_can_use_edu_features(bool value);
   void set_can_use_manta_service(bool value);

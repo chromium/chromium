@@ -47,6 +47,10 @@ ACCOUNT_CAPABILITY(kCanUseChromeIpProtectionName,
                    CAN_USE_CHROME_IP_PROTECTION_NAME,
                    "accountcapabilities/geydgnznmnqxa")
 
+ACCOUNT_CAPABILITY(kCanUseCopyEditorFeatureName,
+                   CAN_USE_COPYEDITOR_FEATURE_NAME,
+                   "accountcapabilities/ge2tkmznmnqxa")
+
 ACCOUNT_CAPABILITY(kCanUseDevToolsGenerativeAiFeaturesCapabilityName,
                    CAN_USE_DEVTOOLS_GENERATIVE_AI_FEATURES_CAPABILITY_NAME,
                    "accountcapabilities/geztenjnmnqxa")

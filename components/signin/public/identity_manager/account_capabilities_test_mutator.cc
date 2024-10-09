@@ -59,6 +59,11 @@ void AccountCapabilitiesTestMutator::set_can_use_chrome_ip_protection(
   capabilities_->capabilities_map_[kCanUseChromeIpProtectionName] = value;
 }
 
+void AccountCapabilitiesTestMutator::set_can_use_copyeditor_feature(
+    bool value) {
+  capabilities_->capabilities_map_[kCanUseCopyEditorFeatureName] = value;
+}
+
 void AccountCapabilitiesTestMutator::
     set_can_use_devtools_generative_ai_features(bool value) {
   capabilities_
