@@ -80,4 +80,7 @@ extern NSString* const kImproveChromeItemAccessibilityIdentifier;
 // Accessibility identifier for TableViewActivityIndicatorHeaderFooterView.
 extern NSString* const kTableViewActivityIndicatorHeaderFooterViewId;
 
+// Accessibility identifier for checkmark in TableViewTextButtonCell.
+extern NSString* const kTableViewTextButtonCellCheckmarkId;
+
 #endif  // IOS_CHROME_COMMON_UI_TABLE_VIEW_TABLE_VIEW_CELLS_CONSTANTS_H_

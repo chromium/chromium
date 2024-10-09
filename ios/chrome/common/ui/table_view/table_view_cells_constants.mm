@@ -39,6 +39,9 @@ NSString* const kImproveChromeItemAccessibilityIdentifier =
 NSString* const kTableViewActivityIndicatorHeaderFooterViewId =
     @"TableViewActivityIndicatorHeaderFooterViewId";
 
+NSString* const kTableViewTextButtonCellCheckmarkId =
+    @"TableViewTextButtonCellCheckmarkId";
+
 CGFloat HorizontalPadding() {
   if (!IsSmallDevice())
     return 0;

@@ -103,6 +103,10 @@ enum CreditCardSaveManagerObserverEvent : int {
 // Clear all existing fake response.
 + (void)clearPaymentsResponses;
 
+// Triggers `CreditCardSaveManager::OnDidUploadCard`
+// to get card upload server response as the `result` passed.
++ (void)simulateUploadCardServerResponseWithSuccess:(BOOL)result;
+
 // Sets a fake access token to bypass the token fetch request.
 + (void)setAccessToken;
 

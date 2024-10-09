@@ -122,8 +122,11 @@ const NSTextAlignment kDefaultTextAlignment = NSTextAlignmentCenter;
   }
 
   if (self.showsCheckmark) {
-    buttonConfiguration.image = DefaultSymbolWithPointSize(
+    UIImage* checkmarkImage = DefaultSymbolWithPointSize(
         kCheckmarkCircleFillSymbol, kSymbolConfirmationCheckmarkPointSize);
+    checkmarkImage.accessibilityIdentifier =
+        kTableViewTextButtonCellCheckmarkId;
+    buttonConfiguration.image = checkmarkImage;
 
     __weak __typeof(self) weakSelf = self;
     buttonConfiguration.imageColorTransformer = ^UIColor*(UIColor* color) {

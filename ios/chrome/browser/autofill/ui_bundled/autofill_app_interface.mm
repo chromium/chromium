@@ -49,6 +49,9 @@
 
 namespace {
 
+using PaymentsRpcResult =
+    autofill::payments::PaymentsAutofillClient::PaymentsRpcResult;
+
 const char16_t kExampleUsername[] = u"concrete username";
 const char16_t kExamplePassword[] = u"concrete password";
 
@@ -328,6 +331,15 @@ class FakeCreditCardServer : public CreditCardSaveManager::ObserverForTest {
     GetCreditCardSaveManager()->OnDidGetUploadRiskData(risk_data);
   }
 
+  void SimulateUploadCardServerResponseWithSuccess(BOOL result) {
+    autofill::payments::PaymentsNetworkInterface::UploadCardResponseDetails
+        upload_card_response_details;
+    GetCreditCardSaveManager()->OnDidUploadCard(
+        result ? PaymentsRpcResult::kSuccess
+               : PaymentsRpcResult::kTryAgainFailure,
+        upload_card_response_details);
+  }
+
   void SetUp() {
     test_url_loader_factory_ =
         std::make_unique<network::TestURLLoaderFactory>();
@@ -542,6 +554,11 @@ static std::unique_ptr<ScopedAutofillPaymentReauthModuleOverride>
 + (void)clearPaymentsResponses {
   return autofill::FakeCreditCardServer::SharedInstance()
       ->ClearPaymentsResponses();
+}
+
++ (void)simulateUploadCardServerResponseWithSuccess:(BOOL)result {
+  return autofill::FakeCreditCardServer::SharedInstance()
+      ->SimulateUploadCardServerResponseWithSuccess(result);
 }
 
 + (void)setAccessToken {
