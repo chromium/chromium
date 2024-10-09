@@ -1693,3 +1693,62 @@ AX_TEST_F(
       assertFalse(this.getScrollModeController().active());
       assertEquals('', this.mockAccessibilityPrivate.getFaceGazeBubbleText());
     });
+
+AX_TEST_F('FaceGazeTest', 'GesturesDisabledInScrollMode', async function() {
+  const gestureToMacroName =
+      new Map()
+          .set(FacialGesture.JAW_OPEN, MacroName.TOGGLE_SCROLL_MODE)
+          .set(FacialGesture.MOUTH_PUCKER, MacroName.MOUSE_CLICK_LEFT);
+  const gestureToConfidence = new Map()
+                                  .set(FacialGesture.JAW_OPEN, 0.3)
+                                  .set(FacialGesture.MOUTH_PUCKER, 0.3);
+  const config = new Config()
+                     .withMouseLocation({x: 600, y: 400})
+                     .withBufferSize(1)
+                     .withCursorControlEnabled(false)
+                     .withGestureToMacroName(gestureToMacroName)
+                     .withGestureToConfidence(gestureToConfidence)
+                     .withRepeatDelayMs(-1);
+  await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
+
+  // Set the mouse position with an automation event.
+  this.sendAutomationMouseEvent({mouseX: 350, mouseY: 250, eventFrom: 'user'});
+
+  this.assertNumMouseEvents(0);
+
+  // Turn on scroll mode.
+  result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.JAW_OPEN, 0.9);
+  this.processFaceLandmarkerResult(result);
+  assertTrue(this.getScrollModeController().active());
+  this.assertNumMouseEvents(0);
+
+  // Try to click the mouse. No additional mouse events should have been fired
+  // because gestures are blocked while scroll mode is active.
+  result =
+      new MockFaceLandmarkerResult()
+          .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0)
+          .addGestureWithConfidence(MediapipeFacialGesture.MOUTH_PUCKER, 0.9);
+  this.processFaceLandmarkerResult(result);
+  this.assertNumMouseEvents(0);
+
+  // Turn off scroll mode.
+  result =
+      new MockFaceLandmarkerResult()
+          .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0.9)
+          .addGestureWithConfidence(MediapipeFacialGesture.MOUTH_PUCKER, 0);
+  this.processFaceLandmarkerResult(result);
+  assertFalse(this.getScrollModeController().active());
+
+  // Ensure the mouse can be clicked using a gesture.
+  result =
+      new MockFaceLandmarkerResult()
+          .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0)
+          .addGestureWithConfidence(MediapipeFacialGesture.MOUTH_PUCKER, 0.9);
+  this.processFaceLandmarkerResult(result);
+  this.assertNumMouseEvents(2);
+  const pressEvent = this.getMouseEvents()[0];
+  const releaseEvent = this.getMouseEvents()[1];
+  this.assertMouseClickAt(
+      {pressEvent, releaseEvent, isLeft: true, x: 350, y: 250});
+});

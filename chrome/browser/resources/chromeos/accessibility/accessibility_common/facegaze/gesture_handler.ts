@@ -251,6 +251,11 @@ export class GestureHandler {
 
   private macroFromName_(name: MacroName, gesture: FacialGesture): Macro
       |undefined {
+    if (this.mouseController_.isScrollModeActive() &&
+        name !== MacroName.TOGGLE_SCROLL_MODE) {
+      return;
+    }
+
     if (this.paused_ && name !== MacroName.TOGGLE_FACEGAZE) {
       return;
     }
