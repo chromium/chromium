@@ -166,8 +166,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
             boolean protectionsOn,
             @CookieControlsEnforcement int enforcement,
             long expiration) {
-        boolean isEnforced = enforcement != CookieControlsEnforcement.NO_ENFORCEMENT;
-
         if (enforcement == CookieControlsEnforcement.ENFORCED_BY_TPCD_GRANT) {
             // Hide all the 3PC controls.
             mCookieSwitch.setVisible(false);
@@ -212,13 +210,13 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
                                 ? R.drawable.ic_visibility_off_black
                                 : R.drawable.ic_visibility_black));
         mCookieSwitch.setChecked(!protectionsOn);
-        mCookieSwitch.setEnabled(!isEnforced);
+        mCookieSwitch.setEnabled(enforcement == CookieControlsEnforcement.NO_ENFORCEMENT);
         mCookieSwitch.setManagedPreferenceDelegate(
                 new ForwardingManagedPreferenceDelegate(
                         getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
                     @Override
                     public boolean isPreferenceControlledByPolicy(Preference preference) {
-                        return isEnforced;
+                        return enforcement == CookieControlsEnforcement.ENFORCED_BY_POLICY;
                     }
                 });
 
