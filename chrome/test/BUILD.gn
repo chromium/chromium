@@ -1437,7 +1437,6 @@ if (is_android) {
       "//chrome/browser/ui/hats",
       "//chrome/browser/ui/tabs:tab_enums",
       "//chrome/browser/webaudio:browser_tests",
-      "//chrome/test/android:live_signin_test_util_public_impl_java",
       "//components/autofill/content/renderer:test_support",
       "//components/blocked_content",
       "//components/browser_ui/widget/android:java",
@@ -1687,10 +1686,7 @@ if (is_android) {
         "${target_gen_dir}/android_browsertests_manifest/AndroidManifest.xml"
     android_manifest_dep = ":android_browsertests_manifest"
 
-    deps = android_sync_integration_tests_deps + [
-             "//chrome/browser/sync",
-             "//chrome/test/android:live_signin_test_util_public_impl_java",
-           ]
+    deps = android_sync_integration_tests_deps + [ "//chrome/browser/sync" ]
     sources = sync_integration_tests_sources
     data = android_sync_integration_tests_data
   }

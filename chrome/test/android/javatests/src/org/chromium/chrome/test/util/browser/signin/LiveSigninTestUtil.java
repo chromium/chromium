@@ -7,6 +7,7 @@ package org.chromium.chrome.test.util.browser.signin;
 import org.hamcrest.Matchers;
 
 import org.chromium.base.Log;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -19,14 +20,17 @@ import org.chromium.components.signin.base.CoreAccountInfo;
  * Base class for defining methods for signing in an live account for testing. The correct version
  * of LiveSigninTestUtilImpl will be determined at compile time via build rules.
  */
-public abstract class LiveSigninTestUtil {
+public class LiveSigninTestUtil {
     private static final String TAG = "LiveSigninTestUtil";
     private static final long MAX_TIME_TO_POLL_MS = 10000L;
     private static LiveSigninTestUtil sInstance;
 
     public static LiveSigninTestUtil getInstance() {
         if (sInstance == null) {
-            sInstance = new LiveSigninTestUtilImpl();
+            sInstance = ServiceLoaderUtil.maybeCreate(LiveSigninTestUtil.class);
+            if (sInstance == null) {
+                sInstance = new LiveSigninTestUtil();
+            }
         }
         return sInstance;
     }

@@ -547,19 +547,13 @@ android_library("chrome_java_test_support_common") {
 # separately.
 android_library("live_signin_test_util_java") {
   testonly = true
-  sources = [
-    "javatests/src/org/chromium/chrome/test/util/browser/signin/LiveSigninTestUtil.java",
+  sources = [ "javatests/src/org/chromium/chrome/test/util/browser/signin/LiveSigninTestUtil.java" ]
 
-    # The impl is listed here but then excluded via jar_excluded_patterns, so
-    # downstream targets can provide their own implementation.
-    "javatests/src/org/chromium/chrome/test/util/browser/signin/LiveSigninTestUtilImpl.java",
-  ]
-
-  jar_excluded_patterns = [ "*/LiveSigninTestUtilImpl.class" ]
   deps = [
     ":chrome_java_integration_test_support",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//base:service_loader_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/signin/services/android:java",
     "//components/signin/public/android:java",
@@ -567,11 +561,4 @@ android_library("live_signin_test_util_java") {
     "//content/public/test/android:content_java_test_support",
     "//third_party/hamcrest:hamcrest_java",
   ]
-}
-
-# Compiles the implementation of LiveSigninTestUtil for public targets.
-android_library("live_signin_test_util_public_impl_java") {
-  testonly = true
-  sources = [ "javatests/src/org/chromium/chrome/test/util/browser/signin/LiveSigninTestUtilImpl.java" ]
-  deps = [ ":live_signin_test_util_java" ]
 }
