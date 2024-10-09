@@ -40,6 +40,12 @@ BASE_FEATURE(kPlusAddressAndroidErrorStatesEnabled,
 BASE_FEATURE(kPlusAddressAndroidManualFallbackEnabled,
              "PlusAddressAndroidManualFallbackEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, the mobile autofill profiles fragment shows a link to open plus
+// address management page.
+BASE_FEATURE(kPlusAddressAndroidSettingsEntry,
+             "PlusAddressAndroidSettingsEntry",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // When enabled, Chrome will fetch the blocklist data using the Component

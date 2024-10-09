@@ -103,6 +103,13 @@
     <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_CANCEL_BUTTON_TEXT_ANDROID" desc="Cancel button text in the plus address creation bottom sheet that closes the bottom sheet." translateable="false">
       Cancel
     </message>
+    <!-- Android settings management entry -->
+    <message name="IDS_PLUS_ADDRESS_SETTINGS_ENTRY_TITLE" desc="Settings entry title for the setting preference that opens plus address management UI." translateable="false" formatter_data="android_java">
+      Plus Addresses
+    </message>
+    <message name="IDS_PLUS_ADDRESS_SETTINGS_ENTRY_SUMMARY" desc="Settings entry summary for the setting preference that opens plus address management UI." translateable="false" formatter_data="android_java">
+      Manage plus addresses you've created
+    </message>
 
     <!-- iOS strings -->
     <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_TITLE_IOS" desc="Title for the experimental enterprise plus addresses feature modal on iOS." translateable="false">

@@ -26,4 +26,10 @@ void ShowManagePlusAddressesPage(content::WebContents& web_contents) {
   }
 }
 
+static jni_zero::ScopedJavaLocalRef<jstring>
+JNI_PlusAddressesHelper_GetPlusAddressManagementUrl(JNIEnv* env) {
+  return base::android::ConvertUTF8ToJavaString(
+      env, plus_addresses::features::kPlusAddressManagementUrl.Get());
+}
+
 }  // namespace plus_addresses
