@@ -165,8 +165,7 @@ import org.chromium.url.GURL;
         mModel.set(
                 PROPOSED_PLUS_ADDRESS,
                 mContext.getString(
-                        R.string
-                                .plus_address_model_refresh_temporary_label_content_android_to_migrate));
+                        R.string.plus_address_model_refresh_temporary_label_content_android));
         mModel.set(REFRESH_ICON_ENABLED, false);
         mModel.set(CONFIRM_BUTTON_ENABLED, false);
         if (ChromeFeatureList.isEnabled(

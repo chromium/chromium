@@ -66,7 +66,6 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/plus_addresses/blocked_facets.pb.h"
 #include "components/plus_addresses/features.h"
-#include "components/plus_addresses/grit/plus_addresses_strings.h"
 #include "components/plus_addresses/plus_address_blocklist_data.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_test_utils.h"

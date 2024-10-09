@@ -52,7 +52,6 @@
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/plus_addresses/fake_plus_address_service.h"
 #include "components/plus_addresses/features.h"
-#include "components/plus_addresses/grit/plus_addresses_strings.h"
 #include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/resources/android/theme_resources.h"

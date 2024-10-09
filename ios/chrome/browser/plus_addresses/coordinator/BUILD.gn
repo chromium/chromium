@@ -14,7 +14,6 @@ source_set("coordinator") {
     "//base",
     "//components/plus_addresses",
     "//components/plus_addresses/metrics",
-    "//components/plus_addresses/resources/strings",
     "//components/plus_addresses/settings",
     "//components/strings:components_strings_grit",
     "//ios/chrome/browser/autofill/model/bottom_sheet:bottom_sheet",

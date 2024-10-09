@@ -3387,7 +3387,6 @@ static_library("browser") {
       "//components/payments/content/android:jni_headers",
       "//components/permissions/android:native",
       "//components/plus_addresses:features",
-      "//components/plus_addresses/resources/strings",
       "//components/power_bookmarks/core",
       "//components/power_bookmarks/storage",
       "//components/reading_list/features:flags",

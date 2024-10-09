@@ -10,7 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "components/constrained_window/constrained_window_views.h"
-#include "components/plus_addresses/grit/plus_addresses_strings.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
