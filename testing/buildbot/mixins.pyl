@@ -831,7 +831,7 @@
     'swarming': {
       'dimensions': {
         'cpu': 'x86-64',
-        'gpu': '1002:7340',
+        'gpu': '1002:67ef',
         'hidpi': '1',
         'os': 'Mac-14.4.1',
         'pool': 'chromium.tests.gpu',
@@ -844,20 +844,7 @@
     'swarming': {
       'dimensions': {
         'cpu': 'x86-64',
-        'gpu': '1002:67ef|1002:7340',
-        'hidpi': '1',
-        'os': 'Mac-14.4.1',
-        'pool': 'chromium.tests.gpu',
-        'display_attached': '1',
-      },
-    },
-  },
-  'mac_retina_amd_radeon_pro_555x_gpu_stable': {
-    'fail_if_unused': False,
-    'swarming': {
-      'dimensions': {
-        'cpu': 'x86-64',
-        'gpu': '1002:67ef',
+        'gpu': '1002:7340',
         'hidpi': '1',
         'os': 'Mac-14.4.1',
         'pool': 'chromium.tests.gpu',

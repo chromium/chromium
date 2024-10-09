@@ -124,7 +124,7 @@ targets.variant(
 
 targets.variant(
     name = "MAC_RETINA_AMD_GPU_STABLE",
-    identifier = "1002:67ef OR 1002:7340",
+    identifier = "1002:7340",
     mixins = [
         "mac_retina_amd_gpu_stable",
     ],

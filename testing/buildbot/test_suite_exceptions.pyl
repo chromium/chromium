@@ -2769,16 +2769,6 @@
       'Win11 FYI arm64 Release (Qualcomm Adreno 690)',
     ],
   },
-  'webgl_conformance_gl_passthrough_ganesh_tests 1002:67ef': {
-    'modifications': {
-      'mac_optional_gpu_tests_rel': {
-        'args': [
-          # Added to debug crbug.com/1293967.
-          '--extra-browser-args=--disable-background-media-suspend --disable-renderer-backgrounding --disable-background-timer-throttling',
-        ],
-      },
-    },
-  },
   'webgl_conformance_metal_passthrough_ganesh_tests': {
     'remove_from': [
       # crbug.com/1270755

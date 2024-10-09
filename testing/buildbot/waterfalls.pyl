@@ -1321,7 +1321,7 @@
         'os_type': 'mac',
         'browser_config': 'release',
         'mixins': [
-          'mac_retina_amd_radeon_pro_555x_gpu_stable',
+          'mac_retina_amd_gpu_stable',
         ],
         'test_suites': {
           'gpu_telemetry_tests': 'gpu_dawn_telemetry_tests',
@@ -1377,7 +1377,7 @@
         'os_type': 'mac',
         'browser_config': 'release',
         'mixins': [
-          'mac_retina_amd_radeon_pro_555x_gpu_stable',
+          'mac_retina_amd_gpu_stable',
         ],
         'test_suites': {
           'gpu_telemetry_tests': 'gpu_dawn_telemetry_tests',
