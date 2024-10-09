@@ -233,7 +233,7 @@ void MaybeRegisterChromeFeaturePromos(
                     .SetMetadata(115, "vykochko@chromium.org",
                                  "Triggered after autofill popup appears.")));
 
-  // kIPHAutofillVirtualCardSuggestionFeature:
+  // kIPHAutofillManualFallbackFeature:
   registry.RegisterFeature(std::move(
       FeaturePromoSpecification::CreateForToastPromo(
           feature_engagement::kIPHAutofillManualFallbackFeature,
@@ -246,6 +246,32 @@ void MaybeRegisterChromeFeaturePromos(
               "User focuses a field, but autofill cannot be triggered "
               "automatically because the field has autocomplete=garbage. In "
               "this case, autofill can be triggered from the context menu.")));
+
+  // kIPHAutofillPredictionImprovementsFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForCustomAction(
+          feature_engagement::kIPHAutofillPredictionImprovementsFeature,
+          kAutofillPredictionImprovementsIphElementId,
+          IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_BODY,
+          IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_GO_TO_SETTINGS,
+          base::BindRepeating(
+              [](ui::ElementContext ctx,
+                 user_education::FeaturePromoHandle promo_handle) {
+                auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
+                if (!browser) {
+                  return;
+                }
+                chrome::ShowSettingsSubPage(
+                    browser, chrome::kAutofillPredictionImprovementsSubPage);
+              }))
+          .SetBubbleTitleText(IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_TITLE)
+          .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+          .SetMetadata(131, "brunobraga@google.com",
+                       "Displayed on input fields that are eligible for "
+                       "improved predictions. These can be input fields on any "
+                       "website, as long as the page and field supports the "
+                       "feature. The IPH is displayed when the user clicks on "
+                       "such input field and is anchored against it.")));
 
   // kIPHAutofillVirtualCardCVCSuggestionFeature:
   registry.RegisterFeature(std::move(

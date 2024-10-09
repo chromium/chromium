@@ -45936,6 +45936,8 @@ should be able to be added at any place in this file.
       label="For AutofillExternalAccountProfileSuggestion feature."/>
   <suffix name="AutofillManualFallback"
       label="For AutofillManualFallback feature."/>
+  <suffix name="AutofillPredictionImprovements"
+      label="For AutofillPredictionImprovements feature."/>
   <suffix name="AutofillVirtualCardCVCSuggestion"
       label="For autofill suggestion of virtual cards."/>
   <suffix name="AutofillVirtualCardSuggestion"
@@ -46171,6 +46173,9 @@ should be able to be added at any place in this file.
       label="For iOSSwipeToolbarToChangeTabFeature feature"/>
   <suffix name="iOSTabGridSwipeRightForIncognito"
       label="For iOSTabGridSwipeRightForIncognito feature"/>
+  <suffix name="IPH_AutofillPredictionImprovements"
+      label="For giving users information on how to turn on prediction
+             improvements."/>
   <suffix name="IPH_DefaultBrowserPromoMagicStack"
       label="For Default browser promo in Magic Stack."/>
   <suffix name="IPH_DefaultBrowserPromoMessages"

@@ -104,4 +104,5 @@ const base::Feature& AutofillFieldPromoControllerImpl::GetFeaturePromo() const {
 bool AutofillFieldPromoControllerImpl::IsMaybeShowing() const {
   return is_maybe_showing_;
 }
+
 }  // namespace autofill

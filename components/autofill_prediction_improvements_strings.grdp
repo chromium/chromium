@@ -74,4 +74,21 @@
     translateable="false">
     Send feedback for Autofill prediction improvements.
   </message>
+
+  <!-- Iph -->
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_TITLE"
+    desc="Text displayed in the prediction improvements iph title."
+    translateable="false">
+    Prediction improvements
+  </message>
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_BODY"
+    desc="Text displayed in the prediction improvements iph body."
+    translateable="false">
+    Turn on prediction improvements
+  </message>
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_GO_TO_SETTINGS"
+    desc="Text displayed in the prediction improvements IPH bubble."
+    translateable="false">
+    Go to settings
+  </message>
 </grit-part>

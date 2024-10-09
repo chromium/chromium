@@ -70,6 +70,9 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_AutofillManualFallback"
       summary="message educating users about the possibility of triggering
                autofill on any field from the context menu"/>
+  <variant name="IPH_AutofillPredictionImprovements"
+      summary="snooze educating users about the possibility of turning on the
+               prediction improvements feature from the settings page"/>
   <variant name="IPH_AutofillVirtualCardCVCSuggestion"
       summary="message shown to users that have saved a virtual card on an
                online merchant website to educate users on how to fill in

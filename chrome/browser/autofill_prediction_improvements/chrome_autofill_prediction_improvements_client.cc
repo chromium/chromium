@@ -15,6 +15,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/user_annotations/user_annotations_service_factory.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_client.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
@@ -28,13 +29,6 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/base/l10n/l10n_util.h"
-
-namespace {
-
-const char kPredictionImprovementsSettingsURL[] =
-    "chrome://settings/autofillPredictionImprovements";
-
-}  // namespace
 
 ChromeAutofillPredictionImprovementsClient::
     ChromeAutofillPredictionImprovementsClient(
@@ -167,8 +161,9 @@ void ChromeAutofillPredictionImprovementsClient::
     OpenPredictionImprovementsSettings() {
   GetWebContents().OpenURL(
       content::OpenURLParams(
-          GURL(kPredictionImprovementsSettingsURL), content::Referrer(),
-          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
+          GURL(chrome::kAutofillPredictionImprovementsSubPage),
+          content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui::PAGE_TRANSITION_LINK,
           /*is_renderer_initiated=*/false),
       /*navigation_handle_callback=*/{});
 }

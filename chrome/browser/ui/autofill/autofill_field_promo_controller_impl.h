@@ -28,6 +28,7 @@ class AutofillFieldPromoControllerImpl : public AutofillFieldPromoController {
       content::WebContents* web_contents,
       const base::Feature& feature_promo,
       ui::ElementIdentifier promo_element_identifier);
+
   AutofillFieldPromoControllerImpl(const AutofillFieldPromoControllerImpl&) =
       delete;
   AutofillFieldPromoControllerImpl& operator=(
