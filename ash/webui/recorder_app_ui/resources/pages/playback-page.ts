@@ -731,13 +731,21 @@ export class PlaybackPage extends ReactiveLitElement {
     </div>`;
   }
 
+  private getSpeedLabel(speed: number): string {
+    return speed === 1.0 ? i18n.playbackSpeedNormalOption : speed.toString();
+  }
+
+  private getPlaybackSpeedControlLabel(): string {
+    return `${i18n.playbackSpeedButtonTooltip}: ${
+      this.getSpeedLabel(this.audioPlayer.playbackSpeed.value)}`;
+  }
+
   private renderSpeedControl(): RenderResult {
     const iconName = assertExists(
       PLAYBACK_SPEED_ICON_MAP.get(this.audioPlayer.playbackSpeed.value),
     );
     const menuItems = PLAYBACK_SPEEDS.map((speed) => {
-      const label =
-        speed === 1.0 ? i18n.playbackSpeedNormalOption : speed.toString();
+      const label = this.getSpeedLabel(speed);
       const onClick = () => {
         this.audioPlayer.playbackSpeed.value = speed;
       };
@@ -779,7 +787,7 @@ export class PlaybackPage extends ReactiveLitElement {
         id="show-speed-menu"
         @click=${togglePlaybackSpeedMenu}
         aria-haspopup="true"
-        aria-label=${i18n.playbackSpeedButtonTooltip}
+        aria-label=${this.getPlaybackSpeedControlLabel()}
       >
         <cra-icon slot="icon" .name=${iconName}></cra-icon>
       </cra-icon-button>
