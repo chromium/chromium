@@ -335,7 +335,7 @@ FlagsState::FlagsState(base::span<const FeatureEntry> feature_entries,
       needs_restart_(false),
       delegate_(delegate) {}
 
-FlagsState::~FlagsState() {}
+FlagsState::~FlagsState() = default;
 
 void FlagsState::ConvertFlagsToSwitches(
     FlagsStorage* flags_storage,
