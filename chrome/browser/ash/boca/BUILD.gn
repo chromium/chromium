@@ -20,6 +20,7 @@ static_library("boca") {
 
   deps = [
     "//base",
+    "//chrome/browser/ash/settings",
     "//chrome/browser/profiles:profile",
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca:invalidations",

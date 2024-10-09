@@ -43,6 +43,10 @@ class BocaAppClient : public signin::IdentityManager::Observer {
   // Get `BocaSessionManager` instance for the current profile.
   virtual BocaSessionManager* GetSessionManager();
 
+  // Get virtual device id. Returns empty is device is not enrolled and has no
+  // device policy.
+  virtual std::string GetDeviceId();
+
   // IdentityManager overrides.
   void OnIdentityManagerShutdown(
       signin::IdentityManager* identity_manager) override;

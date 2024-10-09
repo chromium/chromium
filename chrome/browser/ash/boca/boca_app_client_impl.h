@@ -26,8 +26,8 @@ class BocaAppClientImpl : public BocaAppClient {
 
   // ash::BocaAppClient
   signin::IdentityManager* GetIdentityManager() override;
-
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
+  std::string GetDeviceId() override;
 };
 }  // namespace ash::boca
 

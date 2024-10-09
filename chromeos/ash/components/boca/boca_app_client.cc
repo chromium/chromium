@@ -10,6 +10,8 @@ namespace ash::boca {
 
 namespace {
 
+inline constexpr char kDummyDeviceId[] = "kDummyDeviceId";
+
 // Non thread safe, life cycle is managed by owner.
 BocaAppClient* g_instance = nullptr;
 
@@ -50,6 +52,10 @@ BocaSessionManager* BocaAppClient::GetSessionManager() {
   auto it = session_manager_map_.find(GetIdentityManager());
   CHECK(it != session_manager_map_.end());
   return it->second;
+}
+
+std::string BocaAppClient::GetDeviceId() {
+  return kDummyDeviceId;
 }
 
 void BocaAppClient::OnIdentityManagerShutdown(
