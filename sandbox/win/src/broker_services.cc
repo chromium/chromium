@@ -329,7 +329,11 @@ BrokerServicesBase::~BrokerServicesBase() {
 
   if (job_thread_.is_valid() &&
       WAIT_TIMEOUT == ::WaitForSingleObject(job_thread_.get(), 5000)) {
-    // Cannot clean broker services.
+    // Cannot clean broker services, continuing past here will lead to crashes
+    // if any sandbox IPCs are outstanding, and crashing isn't valuable, so
+    // terminate the process.
+    ::TerminateProcess(GetCurrentProcess(), SBOX_FATAL_BROKER_SHUTDOWN_HUNG);
+    // Should never happen but tells the compiler this block cannot return.
     NOTREACHED();
   }
 }

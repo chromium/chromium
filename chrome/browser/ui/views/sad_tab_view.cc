@@ -197,6 +197,9 @@ std::u16string ErrorToString(int error_code) {
     case 7013:
       error_string = "SBOX_FATAL_WARMUP";
       break;
+    case 7014:
+      error_string = "SBOX_FATAL_BROKER_SHUTDOWN_HUNG";
+      break;
     case 36861:
       error_string = "Crashpad_NotConnectedToHandler";
       break;

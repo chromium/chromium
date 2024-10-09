@@ -1027,6 +1027,7 @@ Called by update_debug_scenarios.py.-->
   <int value="1766" label="RPC_S_INTERNAL_ERROR"/>
   <int value="1783" label="RPC_X_BAD_STUB_DATA"/>
   <int value="1818" label="RPC_S_CALL_CANCELLED"/>
+  <int value="7014" label="SBOX_FATAL_BROKER_SHUTDOWN_HUNG"/>
   <int value="85436397" label="0x517a7ed - Crashpad simulated exception"/>
   <int value="1073807364" label="0x40010004 - DBG_TERMINATE_PROCESS"/>
 </enum>

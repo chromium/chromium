@@ -177,7 +177,10 @@ enum ResultCode : int {
 };
 
 // If the sandbox cannot create a secure environment for the target, the
-// target will be forcibly terminated. These are the process exit codes.
+// target will be forcibly terminated. The sandbox may terminate the broker
+// process during shutdown if continuing would be unsafe. These are the process
+// exit codes. Note: keep up to date with CrashExitCodes enum in
+// tools/metrics/histograms/enums.xml.
 enum TerminationCodes {
   SBOX_FATAL_INTEGRITY = 7006,        // Could not set the integrity level.
   SBOX_FATAL_DROPTOKEN = 7007,        // Could not lower the token.
@@ -187,6 +190,7 @@ enum TerminationCodes {
   SBOX_FATAL_MITIGATION = 7011,       // Could not set the mitigation policy.
   SBOX_FATAL_MEMORY_EXCEEDED = 7012,  // Exceeded the job memory limit.
   SBOX_FATAL_WARMUP = 7013,           // Failed to warmup.
+  SBOX_FATAL_BROKER_SHUTDOWN_HUNG = 7014,  // Broker terminated in shutdown.
   SBOX_FATAL_LAST
 };
 

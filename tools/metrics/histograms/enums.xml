@@ -3518,6 +3518,7 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="7011" label="SBOX_FATAL_MITIGATION"/>
   <int value="7012" label="SBOX_FATAL_MEMORY_EXCEEDED"/>
   <int value="7013" label="SBOX_FATAL_WARMUP"/>
+  <int value="7014" label="SBOX_FATAL_BROKER_SHUTDOWN_HUNG"/>
   <int value="36861" label="Crashpad_NotConnectedToHandler"/>
   <int value="36862" label="Crashpad_FailedToCaptureProcess"/>
   <int value="36863" label="Crashpad_HandlerDidNotRespond"/>
