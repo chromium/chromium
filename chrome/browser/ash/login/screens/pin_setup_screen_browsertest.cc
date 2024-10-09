@@ -252,9 +252,18 @@ class PinSetupScreenTest : public OobeBaseTest {
   }
 
   void CheckCredentialsWereCleared() {
-    EXPECT_FALSE(LoginDisplayHost::default_host()
-                     ->GetWizardContextForTesting()
-                     ->extra_factors_token.has_value());
+    ExpectExtraFactorsTokenPresence(/*present=*/false);
+  }
+
+  void CheckCredentialsArePresent() {
+    ExpectExtraFactorsTokenPresence(/*present=*/true);
+  }
+
+  void ExpectExtraFactorsTokenPresence(bool present) {
+    EXPECT_EQ(LoginDisplayHost::default_host()
+                  ->GetWizardContextForTesting()
+                  ->extra_factors_token.has_value(),
+              present);
   }
 
   void ExpectUserActionMetric(PinSetupScreen::UserAction user_action) {
@@ -460,6 +469,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, FinishedFlow) {
 
   ExpectExitResultAndMetric(PinSetupScreen::Result::kDoneAsSecondaryFactor);
   ExpectUserActionMetric(PinSetupScreen::UserAction::kDoneButtonClicked);
+  CheckCredentialsWereCleared();
 }
 
 // Ensures the correct strings when PIN is being offered not as the main factor.
@@ -597,13 +607,16 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor, MainFactorSet) {
   InsertAndConfirmPin();
   WaitForScreenExit();
 
-  // The flow will exit and continue into the fingerprint setup screen.
+  // The flow will exit and continue into the fingerprint setup screen. Ensure
+  // that the credentials are still present.
+  CheckCredentialsArePresent();
   ExpectExitResultAndMetric(PinSetupScreen::Result::kDoneAsMainFactor);
   ExpectFingerprintScreenExitedAndContinue();
 
   // When the PIN is surfaced at the end of the flow for a second time, it exits
   // properly, since a PIN has already been set.
   EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::kNotApplicable);
+  CheckCredentialsWereCleared();
 }
 
 // PIN is offered as an additional factor at the end of the auth factor setup
@@ -615,8 +628,10 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor,
 
   TapSkipButton();
 
-  // The flow leads to the password selection screen.
+  // The flow leads to the password selection screen. Ensure that the
+  // credentials have not been cleared.
   ExpectExitResultAndMetric(PinSetupScreen::Result::kUserChosePassword);
+  CheckCredentialsArePresent();
   HandlePasswordSelectionScreen();
 
   // Once the password is set, the flow continues into fingerprint setup.
@@ -627,6 +642,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor,
   WaitForScreenShown();
   TapSkipButton();
   EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::kUserSkip);
+  CheckCredentialsWereCleared();
 }
 
 // Ensures that the AuthSession is kept alive when PIN is being offered as the
@@ -664,6 +680,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactorWithoutLoginSupport,
   ExpectExitResultAndMetric(
       PinSetupScreen::Result::kNotApplicableAsPrimaryFactor);
   OobeScreenWaiter(PasswordSelectionScreenHandler::kScreenId).Wait();
+  CheckCredentialsArePresent();
 }
 
 }  // namespace ash

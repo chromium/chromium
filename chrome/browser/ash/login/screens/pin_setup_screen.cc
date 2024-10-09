@@ -196,7 +196,6 @@ bool PinSetupScreen::MaybeSkip(WizardContext& context) {
       return true;
     }
 
-    ClearAuthData(context);
     exit_callback_.Run(Result::kNotApplicable);
     return true;
   }
@@ -261,7 +260,6 @@ void PinSetupScreen::OnUserAction(const base::Value::List& args) {
     if (IsInSetupMode(PinSetupMode::kSetupAsPrimaryFactor, *context())) {
       exit_callback_.Run(Result::kDoneAsMainFactor);
     } else {
-      ClearAuthData(*context());
       exit_callback_.Run(Result::kDoneAsSecondaryFactor);
     }
     return;
@@ -273,7 +271,6 @@ void PinSetupScreen::OnUserAction(const base::Value::List& args) {
     if (IsInSetupMode(PinSetupMode::kSetupAsPrimaryFactor, *context())) {
       exit_callback_.Run(Result::kUserChosePassword);
     } else {
-      ClearAuthData(*context());
       exit_callback_.Run(Result::kUserSkip);
     }
     return;
@@ -288,14 +285,6 @@ void PinSetupScreen::DetermineHardwareSupport() {
   if (!hardware_support_.has_value()) {
     LOG(WARNING) << "Could not determine hardware support support for login";
     hardware_support_ = HardwareSupport::kUnlockOnly;
-  }
-}
-
-void PinSetupScreen::ClearAuthData(WizardContext& context) {
-  if (context.extra_factors_token.has_value()) {
-    ash::AuthSessionStorage::Get()->Invalidate(
-        context.extra_factors_token.value(), base::DoNothing());
-    context.extra_factors_token = std::nullopt;
   }
 }
 
@@ -314,7 +303,6 @@ void PinSetupScreen::OnHasLoginSupport(bool login_available) {
 }
 
 void PinSetupScreen::OnTokenTimedOut() {
-  ClearAuthData(*context());
   exit_callback_.Run(Result::kTimedOut);
 }
 

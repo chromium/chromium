@@ -100,7 +100,6 @@ class PinSetupScreen : public BaseScreen {
   // Finalizes the hardware support status.
   void DetermineHardwareSupport();
 
-  void ClearAuthData(WizardContext& context);
   void OnHasLoginSupport(bool login_available);
   void OnTokenTimedOut();
 
