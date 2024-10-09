@@ -130,7 +130,7 @@ TEST_P(PDFiumInkWriterTest, Basic) {
   std::optional<ink::StrokeInputBatch> inputs =
       CreateInkInputBatch(kBasicInputs);
   ASSERT_TRUE(inputs.has_value());
-  ink::Stroke stroke(brush->GetInkBrush(), inputs.value());
+  ink::Stroke stroke(brush->ink_brush(), inputs.value());
   ASSERT_TRUE(WriteStrokeToPage(engine->doc(), page, stroke));
 
   ASSERT_TRUE(FPDFPage_GenerateContent(page));
@@ -155,7 +155,7 @@ TEST_P(PDFiumInkWriterTest, EmptyStroke) {
 
   auto brush =
       std::make_unique<PdfInkBrush>(PdfInkBrush::Type::kPen, kBasicBrushParams);
-  ink::Stroke unused_stroke(brush->GetInkBrush());
+  ink::Stroke unused_stroke(brush->ink_brush());
   ASSERT_FALSE(WriteStrokeToPage(engine->doc(), page, unused_stroke));
 }
 
@@ -171,7 +171,7 @@ TEST_P(PDFiumInkWriterTest, NoDocumentNoPage) {
 
   auto brush =
       std::make_unique<PdfInkBrush>(PdfInkBrush::Type::kPen, kBasicBrushParams);
-  ink::Stroke unused_stroke(brush->GetInkBrush());
+  ink::Stroke unused_stroke(brush->ink_brush());
   ASSERT_FALSE(
       WriteStrokeToPage(/*document=*/nullptr, /*page=*/nullptr, unused_stroke));
   ASSERT_FALSE(WriteStrokeToPage(/*document=*/nullptr, page, unused_stroke));

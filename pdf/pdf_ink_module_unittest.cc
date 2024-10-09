@@ -303,7 +303,7 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessagePen) {
   const PdfInkBrush* brush = ink_module().GetPdfInkBrushForTesting();
   ASSERT_TRUE(brush);
 
-  const ink::Brush& ink_brush = brush->GetInkBrush();
+  const ink::Brush& ink_brush = brush->ink_brush();
   EXPECT_EQ(ink::Color::FromUint8(/*red=*/10, /*green=*/255, /*blue=*/50,
                                   /*alpha=*/255),
             ink_brush.GetColor());
@@ -331,7 +331,7 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageHighlighter) {
   const PdfInkBrush* brush = ink_module().GetPdfInkBrushForTesting();
   ASSERT_TRUE(brush);
 
-  const ink::Brush& ink_brush = brush->GetInkBrush();
+  const ink::Brush& ink_brush = brush->ink_brush();
   EXPECT_EQ(ink::Color::FromUint8(/*red=*/240, /*green=*/133, /*blue=*/0,
                                   /*alpha=*/255),
             ink_brush.GetColor());
@@ -358,7 +358,7 @@ TEST_F(PdfInkModuleTest, HandleSetAnnotationBrushMessageColorZero) {
   const PdfInkBrush* brush = ink_module().GetPdfInkBrushForTesting();
   ASSERT_TRUE(brush);
 
-  const ink::Brush& ink_brush = brush->GetInkBrush();
+  const ink::Brush& ink_brush = brush->ink_brush();
   EXPECT_EQ(ink::Color::Black(), ink_brush.GetColor());
   EXPECT_EQ(4.5f, ink_brush.GetSize());
   ASSERT_EQ(1u, ink_brush.CoatCount());
@@ -1306,10 +1306,10 @@ TEST_F(PdfInkModuleGetVisibleStrokesTest, MultiplePageStrokes) {
   EXPECT_THAT(
       collected_strokes,
       ElementsAre(
-          Pair(0, Pointwise(InkStrokeEq(brush->GetInkBrush()),
+          Pair(0, Pointwise(InkStrokeEq(brush->ink_brush()),
                             {expected_page0_horz_line_input_batch.value(),
                              expected_page0_vert_line_input_batch.value()})),
-          Pair(1, Pointwise(InkStrokeEq(brush->GetInkBrush()),
+          Pair(1, Pointwise(InkStrokeEq(brush->ink_brush()),
                             {expected_page1_horz_line_input_batch.value()}))));
 }
 

@@ -5,7 +5,6 @@
 #ifndef PDF_PDF_INK_BRUSH_H_
 #define PDF_PDF_INK_BRUSH_H_
 
-#include <memory>
 #include <optional>
 #include <string>
 
@@ -19,7 +18,7 @@ class PointF;
 
 namespace chrome_pdf {
 
-// A class used to create ink brushes for PDF annotation mode and support
+// A class used to create Ink brushes for PDF annotation mode and support
 // invalidation for rendering.
 class PdfInkBrush {
  public:
@@ -36,7 +35,6 @@ class PdfInkBrush {
   };
 
   PdfInkBrush(Type brush_type, Params brush_params);
-
   PdfInkBrush(const PdfInkBrush&) = delete;
   PdfInkBrush& operator=(const PdfInkBrush&) = delete;
   ~PdfInkBrush();
@@ -55,12 +53,11 @@ class PdfInkBrush {
   // Returns whether `size` is in range or not.
   static bool IsToolSizeInRange(float size);
 
-  // Returns the `ink::Brush` that `this` represents.
-  const ink::Brush& GetInkBrush() const;
+  const ink::Brush& ink_brush() const { return ink_brush_; }
 
  private:
-  // The ink brush of type `type_` with params` params_`.
-  ink::Brush ink_brush_;
+  // The Ink brush initialized based on the PdfInkBrush ctor parameters.
+  const ink::Brush ink_brush_;
 };
 
 }  // namespace chrome_pdf

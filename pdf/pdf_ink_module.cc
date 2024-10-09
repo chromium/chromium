@@ -662,7 +662,7 @@ PdfInkModule::CreateInProgressStrokeSegmentsFromInputs() const {
     }
 
     ink::InProgressStroke stroke;
-    stroke.Start(state.brush->GetInkBrush());
+    stroke.Start(state.brush->ink_brush());
     auto enqueue_results =
         stroke.EnqueueInputs(segment, /*predicted_inputs=*/{});
     CHECK(enqueue_results.ok());
@@ -824,7 +824,7 @@ void PdfInkModule::MaybeSetCursor() {
   SkColor color;
   float brush_size;
   if (is_drawing_stroke()) {
-    const auto& ink_brush = drawing_stroke_state().brush->GetInkBrush();
+    const auto& ink_brush = drawing_stroke_state().brush->ink_brush();
     color = GetSkColorFromInkBrush(ink_brush);
     brush_size = ink_brush.GetSize();
   } else {
