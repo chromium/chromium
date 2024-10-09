@@ -30,31 +30,14 @@ suite('TabOrganizationSubpage', function() {
     return flushTasks();
   }
 
-  test('tabOrganizationToggle', async () => {
+  test('tabOrganizationLearnMore', async () => {
     await createPage();
 
-    const toggle = subpage.shadowRoot!.querySelector('settings-toggle-button');
-    assertTrue(!!toggle);
-
-    // Check NOT_INITIALIZED case.
+    const learnMoreLink = subpage.shadowRoot!.querySelector('a');
+    assertTrue(!!learnMoreLink);
     assertEquals(
-        FeatureOptInState.NOT_INITIALIZED,
-        subpage.getPref(PrefName.TAB_ORGANIZATION).value);
-    assertFalse(toggle.checked);
-
-    // Check ENABLED case.
-    toggle.click();
-    assertEquals(
-        FeatureOptInState.ENABLED,
-        subpage.getPref(PrefName.TAB_ORGANIZATION).value);
-    assertTrue(toggle.checked);
-
-    // Check DISABLED case.
-    toggle.click();
-    assertEquals(
-        FeatureOptInState.DISABLED,
-        subpage.getPref(PrefName.TAB_ORGANIZATION).value);
-    assertFalse(toggle.checked);
+        learnMoreLink.href,
+        loadTimeData.getString('tabOrganizationLearnMoreUrl'));
   });
 });
 

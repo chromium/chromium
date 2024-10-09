@@ -60,6 +60,7 @@
 #include "chrome/browser/user_education/tutorial_identifiers.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
@@ -725,7 +726,7 @@ void TabSearchPageHandler::TriggerSignIn() {
 
 void TabSearchPageHandler::OpenHelpPage() {
   Browser* browser = chrome::FindLastActive();
-  GURL help_url("https://support.google.com/chrome?p=auto_tab_group");
+  GURL help_url(chrome::kTabOrganizationLearnMorePageURL);
   NavigateParams params(browser, help_url,
                         ui::PageTransition::PAGE_TRANSITION_LINK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;

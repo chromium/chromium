@@ -541,6 +541,10 @@ inline constexpr char16_t kHistorySearchSettingURL[] =
 inline constexpr char kWallpaperSearchLearnMorePageURL[] =
     "https://support.google.com/chrome?p=create_themes_with_ai";
 
+// The URL for the "Learn more" page for Tab Organization.
+inline constexpr char kTabOrganizationLearnMorePageURL[] =
+    "https://support.google.com/chrome?p=auto_tab_group";
+
 // The URL for the "Learn more" link in the enterprise disclaimer for managed
 // profile in the Signin Intercept bubble.
 inline constexpr char kSigninInterceptManagedDisclaimerLearnMoreURL[] =
