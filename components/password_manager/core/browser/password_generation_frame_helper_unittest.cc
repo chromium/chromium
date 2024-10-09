@@ -149,7 +149,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
         password_requirements_service_(
             std::make_unique<FakePasswordRequirementsSpecFetcher>()) {}
 
-  ~MockPasswordManagerClient() override {}
+  ~MockPasswordManagerClient() override = default;
 
   PasswordStoreInterface* GetProfilePasswordStore() const override {
     return store_.get();

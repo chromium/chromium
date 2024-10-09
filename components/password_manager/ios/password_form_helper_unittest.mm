@@ -71,7 +71,7 @@ namespace {
 // A FakeWebState that returns nullopt as the last trusted committed URL.
 class FakeWebStateWithoutTrustedCommittedUrl : public web::FakeWebState {
  public:
-  ~FakeWebStateWithoutTrustedCommittedUrl() override {}
+  ~FakeWebStateWithoutTrustedCommittedUrl() override = default;
 
   // WebState implementation.
   std::optional<GURL> GetLastCommittedURLIfTrusted() const override {
