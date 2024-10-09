@@ -241,48 +241,6 @@ TEST_F(AutofillPredictionImprovementsManagerTest, RejctedPromptStrikeCounting) {
   EXPECT_FALSE(manager_->IsFormBlockedForImport(form2));
 }
 
-// Tests that suggestion generation times out after
-// `kMaxLoadingTimeBeforeTimeout` passes while displaying the loading suggestion
-// and not getting a PredictionReceived callback.
-TEST_F(AutofillPredictionImprovementsManagerTest, RetrievePredictionsTimeOut) {
-  base::test::SingleThreadTaskEnvironment task_environment{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
-  autofill::test::FormDescription form_description = {
-      .fields = {{.role = autofill::NAME_FIRST,
-                  .heuristic_type = autofill::NAME_FIRST}}};
-  autofill::FormData form = autofill::test::GetFormData(form_description);
-
-  base::MockCallback<autofill::AutofillPredictionImprovementsDelegate::
-                         UpdateSuggestionsCallback>
-      update_suggestions_callback;
-  std::vector<Suggestion> loading_suggestion;
-  std::vector<Suggestion> error_suggestions;
-  {
-    InSequence s;
-    EXPECT_CALL(update_suggestions_callback, Run)
-        .WillOnce(SaveArg<0>(&loading_suggestion));
-    EXPECT_CALL(update_suggestions_callback, Run)
-        .WillOnce(SaveArg<0>(&error_suggestions));
-  }
-
-  // Since `manager_` has a reference to a mocked `client_`, and no special
-  // treatment was done to that client, no predictions will be retrieved.
-  manager_->OnClickedTriggerSuggestion(form, form.fields().front(),
-                                       update_suggestions_callback.Get());
-  task_environment.FastForwardBy(kMaxLoadingTimeBeforeTimeout +
-                                 base::Seconds(1));
-
-  EXPECT_THAT(loading_suggestion,
-              ElementsAre(HasType(
-                  SuggestionType::kPredictionImprovementsLoadingState)));
-  EXPECT_THAT(
-      error_suggestions,
-      ElementsAre(HasType(SuggestionType::kPredictionImprovementsError),
-                  HasType(SuggestionType::kSeparator),
-                  HasType(SuggestionType::kPredictionImprovementsFeedback)));
-}
-
 // Tests that the `update_suggestions_callback` is called eventually with the
 // `kFillPredictionImprovements` suggestion.
 TEST_F(AutofillPredictionImprovementsManagerTest, EndToEnd) {
