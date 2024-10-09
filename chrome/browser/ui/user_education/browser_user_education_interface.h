@@ -26,6 +26,18 @@ namespace web_app {
 class WebAppUiManagerImpl;
 }
 
+// Describes what to do when the feature associated with an IPH is used.
+enum class FeaturePromoFeatureUsedAction {
+  // If the promo is showing, it is dismissed. If it is queued, it will be
+  // canceled. In most cases, the promo will not be shown again.
+  kClosePromoIfPresent,
+  // If the promo is showing or queued, it continues to be showing or queued.
+  // However, marking the feature as used may prevent the promo from showing
+  // in the future. If you intend to use e.g. CloseFeaturePromoAndContinue(),
+  // this option will avoid terminating the promo prematurely.
+  kIgnorePromoIfPresent,
+};
+
 // Provides the interface for common User Education actions.
 class BrowserUserEducationInterface {
  public:
@@ -97,12 +109,11 @@ class BrowserUserEducationInterface {
   virtual bool MaybeShowStartupFeaturePromo(
       user_education::FeaturePromoParams params) = 0;
 
-  // Closes the in-product help promo for `iph_feature` if it is showing or
-  // cancels a pending startup promo; returns true if a promo bubble was
-  // actually closed.
-  virtual bool EndFeaturePromo(
-      const base::Feature& iph_feature,
-      user_education::EndFeaturePromoReason end_promo_reason) = 0;
+  // Aborts the in-product help promo for `iph_feature` if it is showing or
+  // cancels a pending startup promo. Aborting a promo means it was not fully
+  // shown or interacted with, and may allow the promo to show again. Returns
+  // whether a showing or pending promo was canceled.
+  virtual bool AbortFeaturePromo(const base::Feature& iph_feature) = 0;
 
   // Closes the bubble for a feature promo but continues the promo; returns a
   // handle that can be used to end the promo when it is destructed. The handle
@@ -113,8 +124,13 @@ class BrowserUserEducationInterface {
 
   // Records that the user has engaged the specific `feature` associated with an
   // IPH promo; this information is used to determine whether to show the promo
-  // in the future.
-  virtual void NotifyFeaturePromoFeatureUsed(const base::Feature& feature) = 0;
+  // in the future. Also specifies which `action` should be taken regarding
+  // existing queued or showing promos associated with `feature`.
+  //
+  // Returns whether a promo was closed as a result.
+  virtual bool NotifyFeaturePromoFeatureUsed(
+      const base::Feature& feature,
+      FeaturePromoFeatureUsedAction action) = 0;
 
   // Records that the user has performed an action that is specified in in a
   // FeaturePromoSpecification by calling the `SetAdditionalConditions()`

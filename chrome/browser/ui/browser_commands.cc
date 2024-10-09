@@ -102,6 +102,7 @@
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
@@ -1653,15 +1654,15 @@ void ShowTranslateBubble(Browser* browser) {
 }
 
 void ManagePasswordsForPage(Browser* browser) {
-  browser->window()->EndFeaturePromo(
+  browser->window()->NotifyFeaturePromoFeatureUsed(
       feature_engagement::kIPHPasswordsManagementBubbleAfterSaveFeature,
-      user_education::EndFeaturePromoReason::kFeatureEngaged);
-  browser->window()->EndFeaturePromo(
+      FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  browser->window()->NotifyFeaturePromoFeatureUsed(
       feature_engagement::kIPHPasswordsManagementBubbleDuringSigninFeature,
-      user_education::EndFeaturePromoReason::kFeatureEngaged);
-  browser->window()->EndFeaturePromo(
+      FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  browser->window()->NotifyFeaturePromoFeatureUsed(
       feature_engagement::kIPHPasswordManagerShortcutFeature,
-      user_education::EndFeaturePromoReason::kFeatureEngaged);
+      FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
   ManagePasswordsUIController* controller =

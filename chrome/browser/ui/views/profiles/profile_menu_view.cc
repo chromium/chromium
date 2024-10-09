@@ -53,6 +53,7 @@
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/sync/sync_passphrase_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -200,7 +201,8 @@ void ProfileMenuView::BuildMenu() {
 
   if (web_app::AppBrowserController::IsWebApp(browser())) {
     browser()->window()->NotifyFeaturePromoFeatureUsed(
-        feature_engagement::kIPHPasswordsWebAppProfileSwitchFeature);
+        feature_engagement::kIPHPasswordsWebAppProfileSwitchFeature,
+        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   }
 }
 

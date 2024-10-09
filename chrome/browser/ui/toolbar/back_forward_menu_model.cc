@@ -235,8 +235,6 @@ void BackForwardMenuModel::ActivatedAt(size_t index, int event_flags) {
 
 void BackForwardMenuModel::MenuWillShow() {
   base::RecordComputedAction(BuildActionName("Popup", std::nullopt));
-  browser_->window()->NotifyFeaturePromoFeatureUsed(
-      feature_engagement::kIPHBackNavigationMenuFeature);
   requested_favicons_.clear();
   cancelable_task_tracker_.TryCancelAll();
   menu_model_open_timestamp_ = base::TimeTicks::Now();
@@ -245,9 +243,9 @@ void BackForwardMenuModel::MenuWillShow() {
   content::WebContentsObserver::Observe(GetWebContents());
 
   // Close the IPH popup if the user opens the menu.
-  browser_->window()->EndFeaturePromo(
+  browser_->window()->NotifyFeaturePromoFeatureUsed(
       feature_engagement::kIPHBackNavigationMenuFeature,
-      user_education::EndFeaturePromoReason::kFeatureEngaged);
+      FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
 }
 
 void BackForwardMenuModel::MenuWillClose() {

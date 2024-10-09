@@ -10,6 +10,7 @@
 
 #include "base/cancelable_callback.h"
 #include "base/check.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -488,15 +490,15 @@ void SidePanelCoordinator::Show(
         ->NotifyEvent("side_panel_shown");
 
     // Close IPH for side panel if shown.
-    browser_view_->browser()->window()->EndFeaturePromo(
+    ClosePromoAndMaybeNotifyUsed(
         feature_engagement::kIPHReadingListInSidePanelFeature,
-        user_education::EndFeaturePromoReason::kFeatureEngaged);
-    browser_view_->browser()->window()->EndFeaturePromo(
+        SidePanelEntryId::kReadingList, input.key.id());
+    ClosePromoAndMaybeNotifyUsed(
         feature_engagement::kIPHPowerBookmarksSidePanelFeature,
-        user_education::EndFeaturePromoReason::kFeatureEngaged);
-    browser_view_->browser()->window()->EndFeaturePromo(
+        SidePanelEntryId::kBookmarks, input.key.id());
+    ClosePromoAndMaybeNotifyUsed(
         feature_engagement::kIPHReadingModeSidePanelFeature,
-        user_education::EndFeaturePromoReason::kFeatureEngaged);
+        SidePanelEntryId::kReadAnything, input.key.id());
   }
 
   SidePanelUtil::RecordSidePanelShowOrChangeEntryTrigger(open_trigger);
@@ -904,23 +906,16 @@ void SidePanelCoordinator::MaybeEndPinPromo(bool pinned) {
   }
 
   if (pinned) {
-    browser_view_->EndFeaturePromo(
+    browser_view_->NotifyFeaturePromoFeatureUsed(
         *pending_pin_promo_,
-        user_education::EndFeaturePromoReason::kFeatureEngaged);
+        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
     if (pending_pin_promo_ ==
         &feature_engagement::kIPHSidePanelLensOverlayPinnableFeature) {
-      browser_view_->NotifyFeaturePromoFeatureUsed(
-          feature_engagement::kIPHSidePanelLensOverlayPinnableFeature);
       browser_view_->MaybeShowFeaturePromo(
           feature_engagement::kIPHSidePanelLensOverlayPinnableFollowupFeature);
-    } else {
-      browser_view_->NotifyFeaturePromoFeatureUsed(
-          feature_engagement::kIPHSidePanelGenericPinnableFeature);
     }
   } else {
-    browser_view_->EndFeaturePromo(
-        *pending_pin_promo_,
-        user_education::EndFeaturePromoReason::kAbortPromo);
+    browser_view_->AbortFeaturePromo(*pending_pin_promo_);
   }
 
   pin_promo_timer_.Stop();
@@ -1201,4 +1196,16 @@ SidePanelEntry* SidePanelCoordinator::GetEntryForUniqueKey(
     entry = window_registry_->GetEntryForKey(unique_key.key);
   }
   return entry;
+}
+
+void SidePanelCoordinator::ClosePromoAndMaybeNotifyUsed(
+    const base::Feature& promo_feature,
+    SidePanelEntryId promo_id,
+    SidePanelEntryId actual_id) {
+  if (promo_id == actual_id) {
+    browser_view_->NotifyFeaturePromoFeatureUsed(
+        promo_feature, FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  } else {
+    browser_view_->AbortFeaturePromo(promo_feature);
+  }
 }

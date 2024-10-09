@@ -1113,7 +1113,8 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       LogMenuAction(MENU_ACTION_SHOW_BOOKMARK_SIDE_PANEL);
       // Close IPH for side panel menu, if shown.
       browser()->window()->NotifyFeaturePromoFeatureUsed(
-          feature_engagement::kIPHPowerBookmarksSidePanelFeature);
+          feature_engagement::kIPHPowerBookmarksSidePanelFeature,
+          FeaturePromoFeatureUsedAction::kIgnorePromoIfPresent);
       break;
     case IDC_SHOW_BOOKMARK_MANAGER:
       if (!uma_action_recorded_) {
@@ -1375,7 +1376,8 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       LogMenuAction(MENU_ACTION_SHOW_READING_MODE_SIDE_PANEL);
       // Close IPH for side panel menu, if shown.
       browser()->window()->NotifyFeaturePromoFeatureUsed(
-          feature_engagement::kIPHReadingModeSidePanelFeature);
+          feature_engagement::kIPHReadingModeSidePanelFeature,
+          FeaturePromoFeatureUsedAction::kIgnorePromoIfPresent);
       break;
     case IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL:
       if (!uma_action_recorded_) {
@@ -1385,7 +1387,8 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       LogMenuAction(MENU_ACTION_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL);
       // Close IPH for side panel menu, if shown.
       browser()->window()->NotifyFeaturePromoFeatureUsed(
-          feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature);
+          feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature,
+          FeaturePromoFeatureUsedAction::kIgnorePromoIfPresent);
       break;
     // Zoom menu
     case IDC_ZOOM_MINUS:

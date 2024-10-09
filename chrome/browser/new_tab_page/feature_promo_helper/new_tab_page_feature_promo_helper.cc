@@ -22,9 +22,8 @@ void NewTabPageFeaturePromoHelper::RecordPromoFeatureUsageAndClosePromo(
   if (auto* const interface =
           BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
               web_contents)) {
-    interface->NotifyFeaturePromoFeatureUsed(feature);
-    interface->EndFeaturePromo(
-        feature, user_education::EndFeaturePromoReason::kFeatureEngaged);
+    interface->NotifyFeaturePromoFeatureUsed(
+        feature, FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   }
 }
 

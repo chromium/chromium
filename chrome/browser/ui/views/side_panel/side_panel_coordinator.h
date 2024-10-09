@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/ui/toolbar/pinned_toolbar/pinned_toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
@@ -244,6 +246,12 @@ class SidePanelCoordinator final : public TabStripModelObserver,
 
   // Returns the SidePanelEntry uniquely specified by UniqueKey.
   SidePanelEntry* GetEntryForUniqueKey(const UniqueKey& unique_key) const;
+
+  // Closes `promo_feature` if showing and if actual_id == promo_id, also
+  // notifies the User Education system that the feature was used.
+  void ClosePromoAndMaybeNotifyUsed(const base::Feature& promo_feature,
+                                    SidePanelEntryId promo_id,
+                                    SidePanelEntryId actual_id);
 
   // Timestamp of when the side panel was opened. Updated when the side panel is
   // triggered to be opened, not when visibility changes. These can differ due

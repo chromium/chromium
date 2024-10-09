@@ -323,9 +323,7 @@ void SearchTabHelper::CloseNTPCustomizeChromeFeaturePromo() {
   if (auto* const interface =
           BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
               web_contents())) {
-    interface->EndFeaturePromo(
-        customize_chrome_feature,
-        user_education::EndFeaturePromoReason::kAbortPromo);
+    interface->AbortFeaturePromo(customize_chrome_feature);
   }
 }
 

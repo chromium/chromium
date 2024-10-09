@@ -223,8 +223,7 @@ InteractiveFeaturePromoTestApi::AbortPromo(const base::Feature& iph_feature,
   auto steps = Steps(CheckView(
       kBrowserViewElementId,
       [&iph_feature](BrowserView* browser_view) {
-        return browser_view->EndFeaturePromo(
-            iph_feature, user_education::EndFeaturePromoReason::kAbortPromo);
+        return browser_view->AbortFeaturePromo(iph_feature);
       },
       expected_result));
   if (expected_result) {

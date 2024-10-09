@@ -212,9 +212,9 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
 
   // Close the Tab Search IPH if it is showing.
   if (auto* const browser = GetBrowser()) {
-    browser->window()->EndFeaturePromo(
+    browser->window()->NotifyFeaturePromoFeatureUsed(
         feature_engagement::kIPHTabSearchFeature,
-        user_education::EndFeaturePromoReason::kFeatureEngaged);
+        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   }
 
   std::optional<gfx::Rect> anchor;

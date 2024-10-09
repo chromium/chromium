@@ -95,6 +95,7 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/accelerator_table.h"
 #include "chrome/browser/ui/views/accessibility/accessibility_focus_highlight.h"
@@ -216,6 +217,7 @@
 #include "components/sync/service/sync_service.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
+#include "components/user_education/common/feature_promo_controller.h"
 #include "components/user_education/common/feature_promo_handle.h"
 #include "components/user_education/common/feature_promo_result.h"
 #include "components/user_education/common/help_bubble_factory_registry.h"
@@ -5366,11 +5368,10 @@ bool BrowserView::MaybeShowStartupFeaturePromo(
          feature_promo_controller_->MaybeShowStartupPromo(std::move(params));
 }
 
-bool BrowserView::EndFeaturePromo(
-    const base::Feature& iph_feature,
-    user_education::EndFeaturePromoReason end_promo_reason) {
+bool BrowserView::AbortFeaturePromo(const base::Feature& iph_feature) {
   return feature_promo_controller_ &&
-         feature_promo_controller_->EndPromo(iph_feature, end_promo_reason);
+         feature_promo_controller_->EndPromo(
+             iph_feature, user_education::EndFeaturePromoReason::kAbortPromo);
 }
 
 user_education::FeaturePromoHandle BrowserView::CloseFeaturePromoAndContinue(
@@ -5383,10 +5384,17 @@ user_education::FeaturePromoHandle BrowserView::CloseFeaturePromoAndContinue(
   return feature_promo_controller_->CloseBubbleAndContinuePromo(iph_feature);
 }
 
-void BrowserView::NotifyFeaturePromoFeatureUsed(const base::Feature& feature) {
+bool BrowserView::NotifyFeaturePromoFeatureUsed(
+    const base::Feature& feature,
+    FeaturePromoFeatureUsedAction action) {
   if (feature_promo_controller_) {
     feature_promo_controller_->NotifyFeatureUsedIfValid(feature);
+    if (action == FeaturePromoFeatureUsedAction::kClosePromoIfPresent) {
+      return feature_promo_controller_->EndPromo(
+          feature, user_education::EndFeaturePromoReason::kFeatureEngaged);
+    }
   }
+  return false;
 }
 
 void BrowserView::NotifyAdditionalConditionEvent(const char* event_name) {

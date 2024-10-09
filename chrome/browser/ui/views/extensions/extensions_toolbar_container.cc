@@ -957,15 +957,15 @@ void ExtensionsToolbarContainer::UpdateContainerVisibilityAfterAnimation() {
 }
 
 void ExtensionsToolbarContainer::OnMenuOpening() {
-  // Close Extensions menu IPH if it is open.
-  browser_->window()->EndFeaturePromo(
-      feature_engagement::kIPHExtensionsMenuFeature,
-      user_education::EndFeaturePromoReason::kFeatureEngaged);
-
   // Record IPH usage, which should only be shown when any extension has access.
   if (GetExtensionsButton()->state() ==
       ExtensionsToolbarButton::State::kAnyExtensionHasAccess) {
     browser_->window()->NotifyFeaturePromoFeatureUsed(
+        feature_engagement::kIPHExtensionsMenuFeature,
+        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  } else {
+    // Otherwise, just close the IPH if it's present.
+    browser_->window()->AbortFeaturePromo(
         feature_engagement::kIPHExtensionsMenuFeature);
   }
 

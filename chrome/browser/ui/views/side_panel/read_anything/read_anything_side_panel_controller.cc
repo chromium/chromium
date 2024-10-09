@@ -224,8 +224,7 @@ void ReadAnythingSidePanelController::UpdateIphVisibility() {
     user_ed->MaybeShowFeaturePromo(
         feature_engagement::kIPHReadingModeSidePanelFeature);
   } else {
-    user_ed->EndFeaturePromo(
-        feature_engagement::kIPHReadingModeSidePanelFeature,
-        user_education::EndFeaturePromoReason::kAbortPromo);
+    user_ed->AbortFeaturePromo(
+        feature_engagement::kIPHReadingModeSidePanelFeature);
   }
 }

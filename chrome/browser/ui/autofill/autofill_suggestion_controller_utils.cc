@@ -163,6 +163,7 @@ bool IsPointerLocked(content::WebContents* web_contents) {
 
 void NotifyUserEducationAboutAcceptedSuggestion(content::WebContents* contents,
                                                 const Suggestion& suggestion) {
+#if BUILDFLAG(IS_ANDROID)
   if (suggestion.feature_for_iph) {
     using IphEventPair = std::pair<const base::Feature*, const char*>;
     static const auto kIphFeatures = std::to_array<IphEventPair>(
@@ -186,27 +187,24 @@ void NotifyUserEducationAboutAcceptedSuggestion(content::WebContents* contents,
       feature_engagement::TrackerFactory::GetForBrowserContext(
           contents->GetBrowserContext())
           ->NotifyEvent(it->second);
-    } else {
-#if !BUILDFLAG(IS_ANDROID)
-      // Otherwise, notify the new API for the user education service.
-
-      if (auto* interface =
-              BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
-                  contents)) {
-        interface->NotifyFeaturePromoFeatureUsed(*suggestion.feature_for_iph);
-      }
-#endif
     }
   }
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Notifications for the new badge system.
+#else
+  if (suggestion.feature_for_iph) {
+    if (auto* interface =
+            BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
+                contents)) {
+      interface->NotifyFeaturePromoFeatureUsed(
+          *suggestion.feature_for_iph,
+          FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+    }
+  }
   if (suggestion.feature_for_new_badge &&
       suggestion.feature_for_new_badge != suggestion.feature_for_iph) {
     UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
         contents->GetBrowserContext(), *suggestion.feature_for_new_badge);
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif
 }
 
 std::vector<Suggestion> UpdateSuggestionsFromDataList(

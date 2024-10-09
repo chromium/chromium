@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_hover_card_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_chip_button.h"
@@ -162,7 +163,8 @@ bool ExtensionsRequestAccessButton::ShouldShowInkdropAfterIphInteraction() {
 void ExtensionsRequestAccessButton::OnButtonPressed() {
   // Record IPH usage.
   browser_->window()->NotifyFeaturePromoFeatureUsed(
-      feature_engagement::kIPHExtensionsRequestAccessButtonFeature);
+      feature_engagement::kIPHExtensionsRequestAccessButtonFeature,
+      FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   content::WebContents* web_contents = GetActiveWebContents();
   extensions::ExtensionActionRunner* action_runner =
       extensions::ExtensionActionRunner::GetForWebContents(web_contents);

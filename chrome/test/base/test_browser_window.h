@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/common/buildflags.h"
 #include "components/user_education/common/feature_promo_controller.h"
 #include "components/user_education/common/new_badge_controller.h"
@@ -259,12 +260,12 @@ class TestBrowserWindow : public BrowserWindow {
       user_education::FeaturePromoParams params) override;
   bool MaybeShowStartupFeaturePromo(
       user_education::FeaturePromoParams params) override;
-  bool EndFeaturePromo(
-      const base::Feature& iph_feature,
-      user_education::EndFeaturePromoReason close_reason) override;
+  bool AbortFeaturePromo(const base::Feature& iph_feature) override;
   user_education::FeaturePromoHandle CloseFeaturePromoAndContinue(
       const base::Feature& iph_feature) override;
-  void NotifyFeaturePromoFeatureUsed(const base::Feature& feature) override;
+  bool NotifyFeaturePromoFeatureUsed(
+      const base::Feature& feature,
+      FeaturePromoFeatureUsedAction action) override;
   void NotifyAdditionalConditionEvent(const char* event_name) override;
   user_education::DisplayNewBadge MaybeShowNewBadgeFor(
       const base::Feature& new_badge_feature) override;

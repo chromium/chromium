@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/web_apps/pwa_confirmation_bubble_view.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
@@ -96,9 +97,8 @@ void PwaInstallView::OnTabStripModelChanged(
   bool web_content_replaced =
       change.type() == TabStripModelChange::Type::kReplaced;
   if ((active_tab_changed || web_content_replaced)) {
-    browser_->window()->EndFeaturePromo(
-        feature_engagement::kIPHDesktopPwaInstallFeature,
-        user_education::EndFeaturePromoReason::kAbortPromo);
+    browser_->window()->AbortFeaturePromo(
+        feature_engagement::kIPHDesktopPwaInstallFeature);
   }
 }
 
@@ -208,9 +208,10 @@ void PwaInstallView::OnExecuting(PageActionIconView::ExecuteSource source) {
   // Close PWA install IPH if it is showing.
   web_app::PwaInProductHelpState iph_state =
       web_app::PwaInProductHelpState::kNotShown;
-  install_icon_clicked_after_iph_shown_ = browser_->window()->EndFeaturePromo(
-      feature_engagement::kIPHDesktopPwaInstallFeature,
-      user_education::EndFeaturePromoReason::kFeatureEngaged);
+  install_icon_clicked_after_iph_shown_ =
+      browser_->window()->NotifyFeaturePromoFeatureUsed(
+          feature_engagement::kIPHDesktopPwaInstallFeature,
+          FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   if (install_icon_clicked_after_iph_shown_) {
     iph_state = web_app::PwaInProductHelpState::kShown;
   }

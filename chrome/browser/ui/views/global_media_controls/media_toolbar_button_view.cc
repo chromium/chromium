@@ -164,13 +164,19 @@ void MediaToolbarButtonView::ClosePromoBubble(bool engaged) {
     return;
   }
 
-  const auto result =
-      engaged ? user_education::EndFeaturePromoReason::kFeatureEngaged
-              : user_education::EndFeaturePromoReason::kAbortPromo;
-  browser_->window()->EndFeaturePromo(
-      feature_engagement::kIPHLiveCaptionFeature, result);
-  browser_->window()->EndFeaturePromo(
-      feature_engagement::kIPHGMCCastStartStopFeature, result);
+  if (engaged) {
+    browser_->window()->NotifyFeaturePromoFeatureUsed(
+        feature_engagement::kIPHLiveCaptionFeature,
+        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+    browser_->window()->NotifyFeaturePromoFeatureUsed(
+        feature_engagement::kIPHGMCCastStartStopFeature,
+        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  } else {
+    browser_->window()->AbortFeaturePromo(
+        feature_engagement::kIPHLiveCaptionFeature);
+    browser_->window()->AbortFeaturePromo(
+        feature_engagement::kIPHGMCCastStartStopFeature);
+  }
 }
 
 BEGIN_METADATA(MediaToolbarButtonView)

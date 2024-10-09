@@ -7,6 +7,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
@@ -45,9 +46,9 @@ void ProfileMenuCoordinator::Show(bool is_source_accelerator) {
   auto& browser = GetBrowser();
   signin_ui_util::RecordProfileMenuViewShown(browser.profile());
   // Close any existing IPH bubble for the profile menu.
-  browser.window()->EndFeaturePromo(
+  browser.window()->NotifyFeaturePromoFeatureUsed(
       feature_engagement::kIPHProfileSwitchFeature,
-      user_education::EndFeaturePromoReason::kFeatureEngaged);
+      FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
 
   std::unique_ptr<ProfileMenuViewBase> bubble;
   bool is_incognito = browser.profile()->IsIncognitoProfile();
