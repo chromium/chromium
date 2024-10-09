@@ -173,7 +173,7 @@ bool JPEGCodec::Decode(const uint8_t* input,
 }
 
 // static
-std::optional<SkBitmap> JPEGCodec::Decode(base::span<const uint8_t> input) {
+SkBitmap JPEGCodec::Decode(base::span<const uint8_t> input) {
   constexpr SkColorType kFormat =  // Parens around (0) solve dead-code warning.
       (SK_R32_SHIFT == (0))   ? kRGBA_8888_SkColorType
       : (SK_B32_SHIFT == (0)) ? kBGRA_8888_SkColorType
@@ -182,29 +182,31 @@ std::optional<SkBitmap> JPEGCodec::Decode(base::span<const uint8_t> input) {
   std::optional<PreparationOutput> preparation_output =
       PrepareForJPEGDecode(input, kFormat);
   if (!preparation_output) {
-    return std::nullopt;
+    return SkBitmap();
   }
 
   // Allocate pixel storage for the decoded JPEG.
   SkBitmap bitmap;
   if (!bitmap.tryAllocN32Pixels(preparation_output->image_info.width(),
                                 preparation_output->image_info.height())) {
-    return std::nullopt;
+    return SkBitmap();
   }
 
   // Decode the image pixels directly onto an SkBitmap.
   SkCodec::Result result =
       preparation_output->codec->getPixels(bitmap.pixmap());
-  return (result == SkCodec::kSuccess)
-             ? std::optional<SkBitmap>(std::move(bitmap))
-             : std::nullopt;
+  if (result == SkCodec::kSuccess) {
+    return bitmap;
+  } else {
+    return SkBitmap();
+  }
 }
 
 // DEPRECATED
 std::unique_ptr<SkBitmap> JPEGCodec::Decode(const unsigned char* input,
                                             size_t input_size) {
   std::optional<SkBitmap> result =
-      Decode(UNSAFE_BUFFERS(base::span(input, input_size)));
+      Decode(UNSAFE_TODO(base::span(input, input_size)));
   if (!result) {
     return std::make_unique<SkBitmap>();
   }

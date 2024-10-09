@@ -96,8 +96,10 @@ class CODEC_EXPORT JPEGCodec {
                                    int* h);
 
   // Decodes the JPEG data contained in `input`.
-  // If successful, an SkBitmap is created and returned.
-  static std::optional<SkBitmap> Decode(base::span<const uint8_t> input);
+  //
+  // Returns a valid SkBitmap if the data can be decoded as a JPEG, and a null
+  // SkBitmap otherwise.
+  static SkBitmap Decode(base::span<const uint8_t> input);
 
   // DEPRECATED version of above.
   static std::unique_ptr<SkBitmap> Decode(const unsigned char* input,

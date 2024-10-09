@@ -54,21 +54,34 @@ std::unique_ptr<SkCodec> CreatePngDecoder(std::unique_ptr<SkStream> stream,
   return SkPngDecoder::Decode(std::move(stream), result);
 }
 
-bool PrepareForPNGDecode(base::span<const uint8_t> input,
-                         PNGCodec::ColorFormat format,
-                         std::unique_ptr<SkCodec>* codec,
-                         SkImageInfo* image_info) {
+struct PreparationOutput {
+  std::unique_ptr<SkCodec> codec;
+  SkImageInfo image_info;
+};
+
+std::optional<PreparationOutput> PrepareForPNGDecode(
+    base::span<const uint8_t> input,
+    PNGCodec::ColorFormat format) {
+  PreparationOutput output;
+
   // Parse the input stream with the PNG decoder, yielding a SkCodec.
   auto stream = std::make_unique<SkMemoryStream>(input.data(), input.size(),
                                                  /*copyData=*/false);
   SkCodec::Result result;
-  *codec = CreatePngDecoder(std::move(stream), &result);
-  if (!*codec || result != SkCodec::kSuccess) {
-    return false;
+  output.codec = CreatePngDecoder(std::move(stream), &result);
+  if (!output.codec || result != SkCodec::kSuccess) {
+    return std::nullopt;
+  }
+
+  // Reject images that would exceed INT_MAX bytes.
+  SkISize size = output.codec->dimensions();
+  constexpr int kBytesPerPixel = 4;
+  if (size.area() >= (INT_MAX / kBytesPerPixel)) {
+    return std::nullopt;
   }
 
   // Create an SkImageInfo matching the PNG's, but with our desired format.
-  SkImageInfo codec_info = (*codec)->getInfo();
+  SkImageInfo codec_info = output.codec->getInfo();
   SkAlphaType alpha_type = codec_info.alphaType();
   SkColorType color_type;
   switch (format) {
@@ -86,15 +99,13 @@ bool PrepareForPNGDecode(base::span<const uint8_t> input,
       break;
     default:
       NOTREACHED_IN_MIGRATION() << "Invalid color format " << format;
-      return false;
+      return std::nullopt;
   }
-  *image_info =
+  output.image_info =
       SkImageInfo::Make(codec_info.width(), codec_info.height(), color_type,
                         alpha_type, codec_info.refColorSpace());
 
-  // Reject images that would exceed INT_MAX bytes.
-  constexpr int kBytesPerPixel = 4;
-  return image_info->dimensions().area() < (INT_MAX / kBytesPerPixel);
+  return output;
 }
 
 }  // namespace
@@ -105,24 +116,26 @@ std::optional<PNGCodec::DecodeOutput> PNGCodec::Decode(
     ColorFormat format) {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS("ImageDecoder.Png.UiGfxIntoVector");
 
-  std::unique_ptr<SkCodec> codec;
-  SkImageInfo info;
-  if (!PrepareForPNGDecode(input, format, &codec, &info)) {
+  std::optional<PreparationOutput> preparation_output =
+      PrepareForPNGDecode(input, format);
+  if (!preparation_output) {
     return std::nullopt;
   }
 
   DecodeOutput output;
-  output.width = info.width();
-  output.height = info.height();
+  output.width = preparation_output->image_info.width();
+  output.height = preparation_output->image_info.height();
 
   // Always decode into vanilla sRGB, because the output array is a bag of RGBA
   // pixels and doesn't have an associated colorspace.
-  SkImageInfo info_srgb = info.makeColorSpace(SkColorSpace::MakeSRGB());
+  SkImageInfo info_srgb =
+      preparation_output->image_info.makeColorSpace(SkColorSpace::MakeSRGB());
 
   // Decode the pixels into the `output` vector.
   output.output.resize(info_srgb.computeMinByteSize());
-  SkCodec::Result result =
-      codec->getPixels(info_srgb, output.output.data(), info.minRowBytes());
+  SkCodec::Result result = preparation_output->codec->getPixels(
+      info_srgb, output.output.data(),
+      preparation_output->image_info.minRowBytes());
   if (result == SkCodec::kSuccess) {
     return output;
   } else {
@@ -130,40 +143,53 @@ std::optional<PNGCodec::DecodeOutput> PNGCodec::Decode(
   }
 }
 
-bool PNGCodec::Decode(base::span<const uint8_t> input, SkBitmap* bitmap) {
-  DCHECK(bitmap);
+SkBitmap PNGCodec::Decode(base::span<const uint8_t> input) {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS("ImageDecoder.Png.UiGfxIntoSkBitmap");
 
-  std::unique_ptr<SkCodec> codec;
-  SkImageInfo info;
-  if (!PrepareForPNGDecode(input, FORMAT_SkBitmap, &codec, &info)) {
-    return false;
+  std::optional<PreparationOutput> preparation_output =
+      PrepareForPNGDecode(input, FORMAT_SkBitmap);
+  if (!preparation_output) {
+    return SkBitmap();
   }
 
   // The image alpha type is likely to be "unpremultiplied," as this is set by
   // the PNG standard. However, Skia prefers premultiplied bitmaps. We update
   // the image-info struct to specify premultiplication; the SkCodec will
   // automatically fix up the pixels as it runs.
-  SkAlphaType alpha = info.alphaType();
+  SkAlphaType alpha = preparation_output->image_info.alphaType();
   if (alpha == kUnpremul_SkAlphaType) {
-    info = info.makeAlphaType(kPremul_SkAlphaType);
+    preparation_output->image_info =
+        preparation_output->image_info.makeAlphaType(kPremul_SkAlphaType);
   }
 
-  // Decode the image pixels directly onto the SkBitmap. Alpha premultiplication
+  // Decode the image pixels directly into the SkBitmap. Alpha premultiplication
   // will be performed by `getPixels`. No colorspace conversion will occur,
   // because the bitmap uses the same colorspace as the original PNG.
-  if (!bitmap->tryAllocPixels(info)) {
-    return false;
+  SkBitmap bitmap;
+  if (!bitmap.tryAllocPixels(preparation_output->image_info)) {
+    return SkBitmap();
   }
 
-  return codec->getPixels(bitmap->pixmap()) == SkCodec::kSuccess;
+  SkCodec::Result result =
+      preparation_output->codec->getPixels(bitmap.pixmap());
+  if (result == SkCodec::kSuccess) {
+    return bitmap;
+  } else {
+    return SkBitmap();
+  }
 }
 
 // DEPRECATED
 bool PNGCodec::Decode(const unsigned char* input,
                       size_t input_size,
                       SkBitmap* bitmap) {
-  return Decode(UNSAFE_BUFFERS(base::span(input, input_size)), bitmap);
+  SkBitmap result = Decode(UNSAFE_TODO(base::span(input, input_size)));
+  if (result.isNull()) {
+    return false;
+  }
+
+  *bitmap = std::move(result);
+  return true;
 }
 
 // Encoder --------------------------------------------------------------------

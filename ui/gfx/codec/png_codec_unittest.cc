@@ -730,7 +730,8 @@ TEST_P(PNGCodecTest, DecodeInterlacedRGBtoSkBitmap) {
   SkBitmap decoded_bitmap;
   {
     base::HistogramTester histograms;
-    ASSERT_TRUE(PNGCodec::Decode(encoded.value(), &decoded_bitmap));
+    decoded_bitmap = PNGCodec::Decode(encoded.value());
+    ASSERT_FALSE(decoded_bitmap.isNull());
     std::vector<base::Bucket> buckets =
         histograms.GetAllSamples("ImageDecoder.Png.UiGfxIntoSkBitmap");
     ASSERT_EQ(buckets.size(), 1u);
@@ -759,8 +760,8 @@ void DecodeInterlacedRGBAtoSkBitmap(bool use_transparency) {
   ASSERT_TRUE(encoded);
 
   // Decode the encoded string.
-  SkBitmap decoded_bitmap;
-  ASSERT_TRUE(PNGCodec::Decode(encoded.value(), &decoded_bitmap));
+  SkBitmap decoded_bitmap = PNGCodec::Decode(encoded.value());
+  ASSERT_FALSE(decoded_bitmap.isNull());
   EXPECT_EQ(decoded_bitmap.alphaType(),
             use_transparency ? kPremul_SkAlphaType : kOpaque_SkAlphaType);
 
@@ -792,8 +793,8 @@ TEST(PNGCodec, EncoderSavesImagesWithAllOpaquePixelsAsOpaque) {
   ASSERT_TRUE(png_data);
 
   // Decode the image into an SkBitmap.
-  SkBitmap bitmap;
-  ASSERT_TRUE(PNGCodec::Decode(png_data.value(), &bitmap));
+  SkBitmap bitmap = PNGCodec::Decode(png_data.value());
+  ASSERT_FALSE(bitmap.isNull());
 
   // Verify that the bitmap is opaque, despite coming from RGBA data.
   EXPECT_EQ(bitmap.info().alphaType(), kOpaque_SkAlphaType);
@@ -934,8 +935,8 @@ TEST_P(PNGCodecTest, EncodeBGRASkBitmapStridePadded) {
       original_bitmap, /*discard_transparency=*/false);
 
   // Decode the encoded string.
-  SkBitmap decoded_bitmap;
-  EXPECT_TRUE(PNGCodec::Decode(encoded.value(), &decoded_bitmap));
+  SkBitmap decoded_bitmap = PNGCodec::Decode(encoded.value());
+  EXPECT_FALSE(decoded_bitmap.isNull());
 
   // Compare the original bitmap and the output bitmap. We use ColorsClose
   // as SkBitmaps are considered to be pre-multiplied, the unpremultiplication
@@ -963,8 +964,8 @@ TEST_P(PNGCodecTest, EncodeBGRASkBitmap) {
       original_bitmap, /*discard_transparency=*/false);
 
   // Decode the encoded string.
-  SkBitmap decoded_bitmap;
-  EXPECT_TRUE(PNGCodec::Decode(encoded.value(), &decoded_bitmap));
+  SkBitmap decoded_bitmap = PNGCodec::Decode(encoded.value());
+  EXPECT_FALSE(decoded_bitmap.isNull());
 
   // Compare the original bitmap and the output bitmap. We use ColorsClose
   // as SkBitmaps are considered to be pre-multiplied, the unpremultiplication
@@ -992,8 +993,8 @@ TEST_P(PNGCodecTest, EncodeBGRASkBitmapDiscardTransparency) {
       original_bitmap, /*discard_transparency=*/true);
 
   // Decode the encoded string.
-  SkBitmap decoded_bitmap;
-  EXPECT_TRUE(PNGCodec::Decode(encoded.value(), &decoded_bitmap));
+  SkBitmap decoded_bitmap = PNGCodec::Decode(encoded.value());
+  EXPECT_FALSE(decoded_bitmap.isNull());
 
   // Compare the original bitmap and the output bitmap. We need to
   // unpremultiply original_pixel, as the decoded bitmap doesn't have an alpha
@@ -1056,12 +1057,12 @@ TEST_P(PNGCodecTest, EncodeDecodeWithVaryingCompressionLevels) {
   constexpr int kWidth = 20;
   constexpr int kHeight = 20;
 
-  // create an image with known values, a must be opaque because it will be
-  // lost during encoding
+  // Create an image with known values, a must be opaque because it will be
+  // lost during encoding.
   SkBitmap original_bitmap;
   MakeTestBGRASkBitmap(kWidth, kHeight, &original_bitmap);
 
-  // encode
+  // Encode.
   std::optional<std::vector<uint8_t>> encoded_normal =
       PNGCodec::EncodeBGRASkBitmap(original_bitmap,
                                    /*discard_transparency=*/false);
@@ -1076,12 +1077,13 @@ TEST_P(PNGCodecTest, EncodeDecodeWithVaryingCompressionLevels) {
   // sizes should be different.
   EXPECT_NE(encoded_normal->size(), encoded_fast->size());
 
-  // decode, they should be identical to the original.
-  SkBitmap decoded;
-  EXPECT_TRUE(PNGCodec::Decode(encoded_normal.value(), &decoded));
+  // Decode, they should be identical to the original.
+  SkBitmap decoded = PNGCodec::Decode(encoded_normal.value());
+  EXPECT_FALSE(decoded.isNull());
   EXPECT_TRUE(BitmapsAreEqual(decoded, original_bitmap));
 
-  EXPECT_TRUE(PNGCodec::Decode(encoded_fast.value(), &decoded));
+  decoded = PNGCodec::Decode(encoded_fast.value());
+  EXPECT_FALSE(decoded.isNull());
   EXPECT_TRUE(BitmapsAreEqual(decoded, original_bitmap));
 }
 
@@ -1113,8 +1115,8 @@ TEST_P(PNGCodecTest, DecodingTruncatedEXIFChunkIsSafe) {
       0xf0, 0x7e,
   };
 
-  SkBitmap bitmap;
-  EXPECT_FALSE(PNGCodec::Decode(kPNGData, &bitmap));
+  SkBitmap bitmap = PNGCodec::Decode(kPNGData);
+  EXPECT_TRUE(bitmap.isNull());
 }
 
 #if BUILDFLAG(SKIA_BUILD_RUST_PNG)

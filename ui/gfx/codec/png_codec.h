@@ -173,16 +173,15 @@ class CODEC_EXPORT PNGCodec {
   static std::optional<DecodeOutput> Decode(base::span<const uint8_t> input,
                                             ColorFormat format);
 
-  // Decodes the PNG data directly into the passed in SkBitmap. This is
-  // significantly faster than the vector<unsigned char> version of Decode()
-  // above when dealing with PNG files that are >500K, which a lot of theme
-  // images are. (There are a lot of themes that have a NTP image of about ~1
-  // megabyte, and those require a 7-10 megabyte side buffer.)
+  // Decodes the PNG data directly into an SkBitmap. This is significantly
+  // faster than the vector<uint8_t> version of Decode() above when dealing with
+  // PNG files that are >500K, which a lot of theme images are. (There are a lot
+  // of themes that have a NTP image of about ~1 megabyte, and those require a
+  // 7-10 megabyte side buffer.)
   //
-  // Returns true if data is non-null and can be decoded as a png, false
-  // otherwise.
-  [[nodiscard]] static bool Decode(base::span<const uint8_t> input,
-                                   SkBitmap* bitmap);
+  // Returns a valid SkBitmap if the data can be decoded as a PNG, and a null
+  // SkBitmap otherwise.
+  static SkBitmap Decode(base::span<const uint8_t> input);
 
   // DEPRECATED version of above.
   static bool Decode(const unsigned char* input,
