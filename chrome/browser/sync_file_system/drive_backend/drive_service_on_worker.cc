@@ -5,7 +5,9 @@
 #include "chrome/browser/sync_file_system/drive_backend/drive_service_on_worker.h"
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -405,6 +407,7 @@ google_apis::CancelCallbackOnce DriveServiceOnWorker::GetUploadStatus(
 
 google_apis::CancelCallbackOnce DriveServiceOnWorker::MultipartUploadNewFile(
     const std::string& content_type,
+    std::optional<std::string_view> converted_mime_type,
     int64_t content_length,
     const std::string& parent_resource_id,
     const std::string& title,

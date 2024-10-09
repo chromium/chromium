@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/files/file_util.h"
@@ -324,8 +325,9 @@ void DriveUploader::CallUploadServiceAPINewFile(
       RecordDriveUploadProtocol(UPLOAD_METHOD_MULTIPART);
     }
     info_ptr->cancel_callback = service->MultipartUploadNewFile(
-        info_ptr->content_type, info_ptr->content_length, parent_resource_id,
-        title, info_ptr->file_path, options,
+        info_ptr->content_type, /*converted_mime_type=*/std::nullopt,
+        info_ptr->content_length, parent_resource_id, title,
+        info_ptr->file_path, options,
         base::BindOnce(&DriveUploader::OnMultipartUploadComplete,
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(upload_file_info)),

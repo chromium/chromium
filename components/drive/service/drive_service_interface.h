@@ -8,7 +8,9 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/time/time.h"
 #include "google_apis/common/auth_service_interface.h"
@@ -117,9 +119,15 @@ class DriveServiceBatchOperationsInterface {
   // Uploads a file by a single request with multipart body. It's more efficient
   // for small files than using |InitiateUploadNewFile| and |ResumeUpload|.
   // |content_type| and |content_length| should be the ones of the file to be
-  // uploaded.  |callback| must not be null. |progress_callback| may be null.
+  // uploaded.
+  // `converted_mime_type` is the desired MIME type of the file after uploading.
+  // This should only be set if it is expected that Drive will convert the
+  // uploaded file into another format such as Google Docs:
+  // https://developers.google.com/drive/api/guides/manage-uploads#import-docs
+  // |callback| must not be null. |progress_callback| may be null.
   virtual google_apis::CancelCallbackOnce MultipartUploadNewFile(
       const std::string& content_type,
+      std::optional<std::string_view> converted_mime_type,
       int64_t content_length,
       const std::string& parent_resource_id,
       const std::string& title,
