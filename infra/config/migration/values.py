@@ -125,7 +125,10 @@ def convert_direct(value: typing.Any) -> Value:
   if isinstance(value, list):
     return ListValueBuilder([convert_direct(e) for e in value])
   if isinstance(value, dict):
-    return DictValueBuilder({k: convert_direct(v) for k, v in value.items()})
+    return DictValueBuilder({
+        convert_direct(k): convert_direct(v)
+        for k, v in value.items()
+    })
   raise Exception(f'unhandled python value: {value!r}')
 
 
