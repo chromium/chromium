@@ -1105,7 +1105,8 @@ const base::FeatureParam<int>
 const base::FeatureParam<std::string> kGeminiUrlOverride(
     &omnibox::kStarterPackExpansion,
     "StarterPackGeminiUrlOverride",
-    "https://gemini.google.com/prompt");
+    "https://gemini.google.com/prompt?"
+    "utm_source=chrome_omnibox&utm_medium=owned&utm_campaign=gemini_shortcut");
 
 bool IsStarterPackExpansionEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kStarterPackExpansion);

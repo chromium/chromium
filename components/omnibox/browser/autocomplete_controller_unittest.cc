@@ -2019,6 +2019,10 @@ TEST_F(AutocompleteControllerTest, ExtraHeaders) {
         std::make_unique<TemplateURL>(std::move(*turl_data)));
   }
 
+  const std::string expected_gemini_url =
+      "https://gemini.google.com/prompt?"
+      "utm_source=chrome_omnibox&utm_medium=owned&utm_campaign=gemini_shortcut";
+
   {
     SCOPED_TRACE("@gemini starter pack match gets an extra header.");
     auto match = CreateStarterPackMatch(u"@gemini");
@@ -2028,7 +2032,7 @@ TEST_F(AutocompleteControllerTest, ExtraHeaders) {
 
     controller_.SetMatchDestinationURL(&match);
     EXPECT_EQ(match.extra_headers, "X-Omnibox-Gemini:search%20term");
-    EXPECT_EQ(match.destination_url, "https://gemini.google.com/prompt");
+    EXPECT_EQ(match.destination_url, expected_gemini_url);
   }
   {
     SCOPED_TRACE("@gemini starter pack match with url override");
@@ -2056,7 +2060,7 @@ TEST_F(AutocompleteControllerTest, ExtraHeaders) {
 
     controller_.SetMatchDestinationURL(&match);
     EXPECT_EQ(match.extra_headers, "X-Omnibox-Gemini:search%20term%0A");
-    EXPECT_EQ(match.destination_url, "https://gemini.google.com/prompt");
+    EXPECT_EQ(match.destination_url, expected_gemini_url);
   }
   {
     SCOPED_TRACE("@gemini starter pack with url in the input");
@@ -2068,7 +2072,7 @@ TEST_F(AutocompleteControllerTest, ExtraHeaders) {
     controller_.SetMatchDestinationURL(&match);
     EXPECT_EQ(match.extra_headers,
               "X-Omnibox-Gemini:what%20is%20http%3A%2F%2Fexample.com%20for%3F");
-    EXPECT_EQ(match.destination_url, "https://gemini.google.com/prompt");
+    EXPECT_EQ(match.destination_url, expected_gemini_url);
   }
   {
     SCOPED_TRACE("@gemini starter pack with non-ascii input");
@@ -2081,7 +2085,7 @@ TEST_F(AutocompleteControllerTest, ExtraHeaders) {
     EXPECT_EQ(
         match.extra_headers,
         "X-Omnibox-Gemini:%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF%0A");
-    EXPECT_EQ(match.destination_url, "https://gemini.google.com/prompt");
+    EXPECT_EQ(match.destination_url, expected_gemini_url);
   }
   {
     SCOPED_TRACE("@bookmarks starter pack match does not get an extra header.");
