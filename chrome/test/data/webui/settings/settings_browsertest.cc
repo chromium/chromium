@@ -11,6 +11,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "components/compose/buildflags.h"
+#include "components/compose/core/browser/compose_features.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/performance_manager/public/features.h"
@@ -522,8 +523,28 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, ToggleButton) {
 }
 
 #if BUILDFLAG(ENABLE_COMPOSE)
-IN_PROC_BROWSER_TEST_F(SettingsTest, OfferWritingHelpPage) {
-  RunTest("settings/offer_writing_help_page_test.js", "mocha.run()");
+class SettingsComposePageTest : public SettingsBrowserTest {
+ public:
+  SettingsComposePageTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{optimization_guide::features::
+                                  kAiSettingsPageRefresh,
+                              compose::features::kEnableComposeProactiveNudge},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsComposePageTest, ComposePage) {
+  RunTest("settings/offer_writing_help_page_test.js",
+          "runMochaSuite('ComposePage')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsComposePageTest, ComposePageRefreshDisabled) {
+  RunTest("settings/offer_writing_help_page_test.js",
+          "runMochaSuite('ComposePageRefreshDisabled')");
 }
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
 

@@ -10,6 +10,8 @@ import {ListPropertyUpdateMixin} from 'chrome://resources/cr_elements/list_prope
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {loadTimeData} from '../i18n_setup.js';
+
 import {getTemplate} from './offer_writing_help_page.html.js';
 
 export const COMPOSE_PROACTIVE_NUDGE_PREF = 'compose.proactive_nudge_enabled';
@@ -39,6 +41,14 @@ export class SettingsOfferWritingHelpPageElement extends
         type: Array,
         value: [],
       },
+      enableAiSettingsPageRefresh_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableAiSettingsPageRefresh'),
+      },
+      enableComposeProactiveNudge_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableComposeProactiveNudge'),
+      },
     };
   }
 
@@ -48,6 +58,8 @@ export class SettingsOfferWritingHelpPageElement extends
   }
 
   private siteList_: string[];
+  private enableAiSettingsPageRefresh_: boolean;
+  private enableComposeProactiveNudge_: boolean;
 
   private hasSites_(): boolean {
     return this.siteList_.length > 0;
@@ -65,6 +77,10 @@ export class SettingsOfferWritingHelpPageElement extends
     const newSites = Object.keys(prefDict);
 
     this.updateList('siteList_', (entry: string) => entry, newSites);
+  }
+
+  private getProactiveNudgeToggleHrCssClass_(): string {
+    return this.enableAiSettingsPageRefresh_ ? 'hr' : '';
   }
 }
 
