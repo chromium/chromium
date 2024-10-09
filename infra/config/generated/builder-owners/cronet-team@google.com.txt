@@ -19,7 +19,6 @@ ci/android-cronet-x64-rel
 ci/android-cronet-x86-dbg
 ci/android-cronet-x86-dbg-10-tests
 ci/android-cronet-x86-dbg-11-tests
-ci/android-cronet-x86-dbg-lollipop-tests
 ci/android-cronet-x86-dbg-marshmallow-tests
 ci/android-cronet-x86-dbg-nougat-tests
 ci/android-cronet-x86-dbg-oreo-tests
@@ -46,8 +45,6 @@ try/android-cronet-x64-rel
 try/android-cronet-x86-dbg
 try/android-cronet-x86-dbg-10-tests
 try/android-cronet-x86-dbg-11-tests
-try/android-cronet-x86-dbg-lollipop-fyi-tests
-try/android-cronet-x86-dbg-lollipop-tests
 try/android-cronet-x86-dbg-marshmallow-tests
 try/android-cronet-x86-dbg-nougat-tests
 try/android-cronet-x86-dbg-oreo-tests

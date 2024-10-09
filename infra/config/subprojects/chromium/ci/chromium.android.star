@@ -2362,61 +2362,6 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
-    name = "android-cronet-x86-dbg-lollipop-tests",
-    triggered_by = ["ci/android-cronet-x86-dbg"],
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-                "android",
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "android",
-            apply_configs = [
-                "cronet_builder",
-                "mb",
-            ],
-            build_config = builder_config.build_config.DEBUG,
-            target_bits = 32,
-            target_platform = builder_config.target_platform.ANDROID,
-        ),
-        android_config = builder_config.android_config(
-            config = "x86_builder",
-        ),
-        build_gs_bucket = "chromium-android-archive",
-    ),
-    targets = targets.bundle(
-        targets = [
-            "cronet_gtests",
-        ],
-        mixins = [
-            "lollipop-x86-emulator",
-            "emulator-4-cores",
-            "has_native_resultdb_integration",
-            "isolate_profile_data",
-            "linux-jammy",
-            "x86-64",
-        ],
-        per_test_modifications = {
-            "net_unittests": targets.mixin(
-                args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_l.net_unittests.filter",
-                ],
-            ),
-        },
-    ),
-    gardener_rotations = args.ignore_default(None),
-    console_view_entry = consoles.console_view_entry(
-        category = "cronet|test",
-        short_name = "l",
-    ),
-    contact_team_email = "cronet-team@google.com",
-    notifies = ["cronet"],
-)
-
-ci.thin_tester(
     name = "android-cronet-x86-dbg-marshmallow-tests",
     triggered_by = ["ci/android-cronet-x86-dbg"],
     builder_spec = builder_config.builder_spec(
