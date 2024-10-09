@@ -2,8 +2,8 @@ Name: Emoji Segmenter
 Short Name: emoji-segmenter
 URL: https://github.com/googlei18n/emoji-segmenter
 Version: 0.3.0
-Date: 2024-09-05
-Revision: 242460e9cbee7453880725be5b9bf352d1882a9f
+Date: 2024-10-09
+Revision: 955936be8b391e00835257059607d7c5b72ce744
 Security Critical: yes
 Shipped: yes
 License: Apache 2.0

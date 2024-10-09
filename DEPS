@@ -345,7 +345,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling Emoji Segmenter
   # and whatever else without interference from each other.
-  'emoji_segmenter_revision': '6b8f235b72deba7d6ef113631129b274c14941ef',
+  'emoji_segmenter_revision': '955936be8b391e00835257059607d7c5b72ce744',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling OTS
   # and whatever else without interference from each other.

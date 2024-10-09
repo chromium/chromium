@@ -128,13 +128,19 @@ TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest,
   CheckRuns({{"0123456789#*", FontFallbackPriority::kText},
              {"0\uFE0F⃣1\uFE0F⃣2\uFE0F⃣3\uFE0F⃣4\uFE0F⃣5\uFE0F⃣6\uFE0F⃣7\uFE0F⃣8\uFE0F⃣9"
               "\uFE0F⃣*\uFE0F⃣",
-              FontFallbackPriority::kEmojiEmoji},
+              FontFallbackPriority::kEmojiEmojiWithVS},
              {"0123456789#*", FontFallbackPriority::kText}});
 }
 
 TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, VS16onDigits) {
   CheckRuns({{"#", FontFallbackPriority::kText},
-             {"#\uFE0F\u20E3", FontFallbackPriority::kEmojiEmoji},
+             {"#\uFE0F\u20E3", FontFallbackPriority::kEmojiEmojiWithVS},
+             {"#", FontFallbackPriority::kText}});
+}
+
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, VS15onDigits) {
+  CheckRuns({{"#", FontFallbackPriority::kText},
+             {"#\uFE0E\u20E3", FontFallbackPriority::kEmojiTextWithVS},
              {"#", FontFallbackPriority::kText}});
 }
 
