@@ -67,7 +67,7 @@ class ReportUploaderTest : public ::testing::Test {
   ReportUploaderTest(const ReportUploaderTest&) = delete;
   ReportUploaderTest& operator=(const ReportUploaderTest&) = delete;
 
-  ~ReportUploaderTest() override {}
+  ~ReportUploaderTest() override = default;
 
   void UploadReportAndSetExpectation(
       int number_of_request,

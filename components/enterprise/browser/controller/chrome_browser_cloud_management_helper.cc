@@ -42,7 +42,7 @@ ChromeBrowserCloudManagementRegistrar::ChromeBrowserCloudManagementRegistrar(
       url_loader_factory_(url_loader_factory) {}
 
 ChromeBrowserCloudManagementRegistrar::
-    ~ChromeBrowserCloudManagementRegistrar() {}
+    ~ChromeBrowserCloudManagementRegistrar() = default;
 
 void ChromeBrowserCloudManagementRegistrar::
     RegisterForCloudManagementWithEnrollmentToken(

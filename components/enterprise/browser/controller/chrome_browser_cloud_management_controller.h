@@ -166,7 +166,7 @@ class ChromeBrowserCloudManagementController
 
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
 
     // Called when policy enrollment is finished.
     // |succeeded| is true if |dm_token| is returned from the server.
