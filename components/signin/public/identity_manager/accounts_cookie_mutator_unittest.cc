@@ -82,7 +82,7 @@ class AccountsCookieMutatorTest
   AccountsCookieMutatorTest& operator=(const AccountsCookieMutatorTest&) =
       delete;
 
-  ~AccountsCookieMutatorTest() override {}
+  ~AccountsCookieMutatorTest() override = default;
 
   // Make an account available and returns the account ID.
   CoreAccountId AddAcountWithRefreshToken(const std::string& email) {

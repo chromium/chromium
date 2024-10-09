@@ -213,7 +213,7 @@ void MutableProfileOAuth2TokenServiceDelegate::RevokeServerRefreshToken::
 }
 
 MutableProfileOAuth2TokenServiceDelegate::RevokeServerRefreshToken::
-    ~RevokeServerRefreshToken() {}
+    ~RevokeServerRefreshToken() = default;
 
 bool MutableProfileOAuth2TokenServiceDelegate::RevokeServerRefreshToken::
     ShouldRetry(GaiaAuthConsumer::TokenRevocationStatus status) {

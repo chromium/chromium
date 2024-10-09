@@ -59,7 +59,7 @@ TestSigninClient::TestSigninClient(
       pref_service_(pref_service),
       are_signin_cookies_allowed_(true) {}
 
-TestSigninClient::~TestSigninClient() {}
+TestSigninClient::~TestSigninClient() = default;
 
 void TestSigninClient::DoFinalInit() {}
 

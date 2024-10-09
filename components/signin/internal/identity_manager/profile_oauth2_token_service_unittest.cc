@@ -50,7 +50,7 @@ class RetryingTestingOAuth2AccessTokenManagerConsumer
       ProfileOAuth2TokenService* oauth2_service,
       const CoreAccountId& account_id)
       : oauth2_service_(oauth2_service), account_id_(account_id) {}
-  ~RetryingTestingOAuth2AccessTokenManagerConsumer() override {}
+  ~RetryingTestingOAuth2AccessTokenManagerConsumer() override = default;
 
   void OnGetTokenFailure(const OAuth2AccessTokenManager::Request* request,
                          const GoogleServiceAuthError& error) override {

@@ -178,7 +178,7 @@ class MockTestSigninClient : public testing::StrictMock<TestSigninClient> {
 
 class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
  public:
-  ProfileOAuth2TokenServiceDelegateChromeOSTest() {}
+  ProfileOAuth2TokenServiceDelegateChromeOSTest() = default;
 
   ProfileOAuth2TokenServiceDelegateChromeOSTest(
       const ProfileOAuth2TokenServiceDelegateChromeOSTest&) = delete;

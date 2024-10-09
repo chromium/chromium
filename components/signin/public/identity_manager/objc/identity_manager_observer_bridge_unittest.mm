@@ -95,7 +95,7 @@ class IdentityManagerObserverBridgeTest : public testing::Test {
     account_info_.gaia = "joegaia";
     account_info_.email = "joe@example.com";
   }
-  ~IdentityManagerObserverBridgeTest() override {}
+  ~IdentityManagerObserverBridgeTest() override = default;
 
   void TearDown() override {
     // Check no unexpected calls. None zero counter needs to be reset at the end

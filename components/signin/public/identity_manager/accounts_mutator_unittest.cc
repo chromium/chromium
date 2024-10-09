@@ -97,7 +97,7 @@ class AccountsMutatorTest : public testing::Test {
   AccountsMutatorTest(const AccountsMutatorTest&) = delete;
   AccountsMutatorTest& operator=(const AccountsMutatorTest&) = delete;
 
-  ~AccountsMutatorTest() override {}
+  ~AccountsMutatorTest() override = default;
 
   PrefService* pref_service() { return &prefs_; }
 

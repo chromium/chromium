@@ -8,9 +8,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 
-FakeDeviceAccountsProvider::FakeDeviceAccountsProvider() {}
+FakeDeviceAccountsProvider::FakeDeviceAccountsProvider() = default;
 
-FakeDeviceAccountsProvider::~FakeDeviceAccountsProvider() {}
+FakeDeviceAccountsProvider::~FakeDeviceAccountsProvider() = default;
 
 void FakeDeviceAccountsProvider::GetAccessToken(
     const std::string& account_id,

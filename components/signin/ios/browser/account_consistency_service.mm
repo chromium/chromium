@@ -338,7 +338,7 @@ AccountConsistencyService::AccountConsistencyService(
   }
 }
 
-AccountConsistencyService::~AccountConsistencyService() {}
+AccountConsistencyService::~AccountConsistencyService() = default;
 
 BOOL AccountConsistencyService::RestoreGaiaCookies(
     base::OnceCallback<void(BOOL)> cookies_restored_callback) {

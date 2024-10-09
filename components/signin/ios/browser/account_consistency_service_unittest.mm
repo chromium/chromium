@@ -96,8 +96,8 @@ class MockAccountReconcilor : public AccountReconcilor {
 // Fake delegate implementation; all it does it count delegate calls.
 class FakeManageAccountsDelegate : public ManageAccountsDelegate {
  public:
-  FakeManageAccountsDelegate() {}
-  ~FakeManageAccountsDelegate() override {}
+  FakeManageAccountsDelegate() = default;
+  ~FakeManageAccountsDelegate() override = default;
 
   void OnRestoreGaiaCookies() override { restore_cookies_call_count_++; }
   void OnManageAccounts() override { manage_accounts_call_count_++; }

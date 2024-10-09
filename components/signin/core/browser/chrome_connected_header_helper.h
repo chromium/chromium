@@ -27,7 +27,7 @@ class ChromeConnectedHeaderHelper : public SigninHeaderHelper {
  public:
   explicit ChromeConnectedHeaderHelper(
       AccountConsistencyMethod account_consistency);
-  ~ChromeConnectedHeaderHelper() override {}
+  ~ChromeConnectedHeaderHelper() override = default;
 
   // Returns the Chrome-Connected cookie, or an empty string if it should not be
   // added to the request to |url|.

@@ -36,7 +36,7 @@ AccountsMutatorImpl::AccountsMutatorImpl(
 #endif
 }
 
-AccountsMutatorImpl::~AccountsMutatorImpl() {}
+AccountsMutatorImpl::~AccountsMutatorImpl() = default;
 
 CoreAccountId AccountsMutatorImpl::AddOrUpdateAccount(
     const std::string& gaia_id,

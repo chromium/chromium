@@ -76,7 +76,7 @@ AccessTokenFetcher::AccessTokenFetcher(
   token_service_observation_.Observe(token_service_.get());
 }
 
-AccessTokenFetcher::~AccessTokenFetcher() {}
+AccessTokenFetcher::~AccessTokenFetcher() = default;
 
 void AccessTokenFetcher::VerifyScopeAccess() {
   if (account_id_.empty()) {

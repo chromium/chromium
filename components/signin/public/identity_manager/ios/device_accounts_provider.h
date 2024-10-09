@@ -55,8 +55,8 @@ class DeviceAccountsProvider {
   using AccessTokenCallback =
       base::OnceCallback<void(AccessTokenResult result)>;
 
-  DeviceAccountsProvider() {}
-  virtual ~DeviceAccountsProvider() {}
+  DeviceAccountsProvider() = default;
+  virtual ~DeviceAccountsProvider() = default;
 
   // Returns the ids of all accounts.
   virtual std::vector<AccountInfo> GetAllAccounts() const;

@@ -26,7 +26,7 @@ class DiceHeaderHelper : public SigninHeaderHelper {
   DiceHeaderHelper(const DiceHeaderHelper&) = delete;
   DiceHeaderHelper& operator=(const DiceHeaderHelper&) = delete;
 
-  ~DiceHeaderHelper() override {}
+  ~DiceHeaderHelper() override = default;
 
   // Returns the parameters contained in the X-Chrome-ID-Consistency-Response
   // response header.

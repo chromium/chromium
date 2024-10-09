@@ -40,8 +40,8 @@ ManageAccountsParams& ManageAccountsParams::operator=(
     const ManageAccountsParams&) = default;
 
 // Trivial constructors and destructors.
-DiceResponseParams::DiceResponseParams() {}
-DiceResponseParams::~DiceResponseParams() {}
+DiceResponseParams::DiceResponseParams() = default;
+DiceResponseParams::~DiceResponseParams() = default;
 DiceResponseParams::DiceResponseParams(DiceResponseParams&&) = default;
 DiceResponseParams& DiceResponseParams::operator=(DiceResponseParams&&) =
     default;

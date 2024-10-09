@@ -262,7 +262,7 @@ AboutSigninInternals::AboutSigninInternals(
   account_reconcilor_observeration_.Observe(account_reconcilor_);
 }
 
-AboutSigninInternals::~AboutSigninInternals() {}
+AboutSigninInternals::~AboutSigninInternals() = default;
 
 signin_internals_util::UntimedSigninStatusField& operator++(
     signin_internals_util::UntimedSigninStatusField& field) {

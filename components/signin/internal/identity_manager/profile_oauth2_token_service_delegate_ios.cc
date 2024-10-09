@@ -107,7 +107,7 @@ SSOAccessTokenFetcher::SSOAccessTokenFetcher(
   DCHECK(provider_);
 }
 
-SSOAccessTokenFetcher::~SSOAccessTokenFetcher() {}
+SSOAccessTokenFetcher::~SSOAccessTokenFetcher() = default;
 
 void SSOAccessTokenFetcher::Start(const std::string& client_id,
                                   const std::string& client_secret_unused,

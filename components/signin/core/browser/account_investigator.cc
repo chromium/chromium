@@ -62,7 +62,7 @@ AccountInvestigator::AccountInvestigator(
     signin::IdentityManager* identity_manager)
     : pref_service_(pref_service), identity_manager_(identity_manager) {}
 
-AccountInvestigator::~AccountInvestigator() {}
+AccountInvestigator::~AccountInvestigator() = default;
 
 // static
 void AccountInvestigator::RegisterPrefs(PrefRegistrySimple* registry) {

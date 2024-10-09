@@ -38,7 +38,7 @@ PrimaryAccountMutatorImpl::PrimaryAccountMutatorImpl(
   DCHECK(signin_client_);
 }
 
-PrimaryAccountMutatorImpl::~PrimaryAccountMutatorImpl() {}
+PrimaryAccountMutatorImpl::~PrimaryAccountMutatorImpl() = default;
 
 PrimaryAccountMutator::PrimaryAccountError
 PrimaryAccountMutatorImpl::SetPrimaryAccount(
