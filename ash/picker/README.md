@@ -1,6 +1,10 @@
-# Picker
+# Quick Insert
 
-An updated picker for Ash.
+Quick Insert is a feature in Ash that allows users to quickly insert
+emojis, GIFs, links, images, and more. It is triggered via a dedicated
+key on the keyboard or a keyboard shortcut. The user can search for
+something in the Quick Insert window and insert it directly without
+leaving the input field.
 
 ## Key Components
 
