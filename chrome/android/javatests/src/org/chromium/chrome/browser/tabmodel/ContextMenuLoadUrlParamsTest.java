@@ -25,7 +25,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
-import org.chromium.chrome.browser.app.tabmodel.ChromeTabModelFilterFactory;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -79,12 +78,10 @@ public class ContextMenuLoadUrlParamsTest {
 
         public RecordingTabModelSelector(
                 OneshotSupplier<ProfileProvider> profileProviderSupplier,
-                TabCreatorManager tabCreatorManager,
-                TabModelFilterFactory tabModelFilterFactory) {
+                TabCreatorManager tabCreatorManager) {
             super(
                     profileProviderSupplier,
                     tabCreatorManager,
-                    tabModelFilterFactory,
                     () -> NextTabPolicy.HIERARCHICAL,
                     AsyncTabParamsManagerSingleton.getInstance(),
                     false,
@@ -107,9 +104,7 @@ public class ContextMenuLoadUrlParamsTest {
                             TabCreatorManager tabCreatorManager,
                             NextTabPolicySupplier nextTabPolicySupplier) {
                         return new RecordingTabModelSelector(
-                                profileProviderSupplier,
-                                tabCreatorManager,
-                                new ChromeTabModelFilterFactory(context));
+                                profileProviderSupplier, tabCreatorManager);
                     }
                 });
     }

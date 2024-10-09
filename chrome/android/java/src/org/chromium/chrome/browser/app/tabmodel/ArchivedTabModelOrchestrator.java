@@ -291,7 +291,6 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
                 new ArchivedTabModelSelectorImpl(
                         mProfile,
                         mArchivedTabCreatorManager,
-                        new ChromeTabModelFilterFactory(context),
                         () -> NextTabPolicy.LOCATIONAL,
                         mAsyncTabParamsManager);
         mTabWindowManager.setArchivedTabModelSelector(mTabModelSelector);

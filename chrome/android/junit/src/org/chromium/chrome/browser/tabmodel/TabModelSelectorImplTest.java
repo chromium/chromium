@@ -29,7 +29,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -79,8 +78,6 @@ public class TabModelSelectorImplTest {
     private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
 
-    @Mock private TabGroupModelFilter mRegularFilter;
-    @Mock private TabGroupModelFilter mIncognitoFilter;
     @Mock private Callback<TabModel> mTabModelSupplierObserverMock;
     @Mock private Callback<Tab> mTabSupplierObserverMock;
     @Mock private Callback<Integer> mTabCountSupplierObserverMock;
@@ -107,8 +104,6 @@ public class TabModelSelectorImplTest {
                 new TabModelSelectorImpl(
                         mProfileProviderSupplier,
                         mTabCreatorManager,
-                        (tabModel) ->
-                                tabModel == mRegularTabModel ? mRegularFilter : mIncognitoFilter,
                         mNextTabPolicySupplier,
                         mAsyncTabParamsManager,
                         /* supportUndo= */ false,
@@ -116,16 +111,8 @@ public class TabModelSelectorImplTest {
                         /* startIncognito= */ false);
 
         mRegularTabModel = new MockTabModel(mProfile, null);
-        when(mRegularFilter.getTabModel()).thenReturn(mRegularTabModel);
-        Mockito.doAnswer(ignored -> mTabModelSelector.getCurrentModel() == mRegularTabModel)
-                .when(mRegularFilter)
-                .isCurrentlySelectedFilter();
-
+        mRegularTabModel.setActive(true);
         mIncognitoTabModel = new MockTabModel(mIncognitoProfile, null);
-        when(mIncognitoFilter.getTabModel()).thenReturn(mIncognitoTabModel);
-        Mockito.doAnswer(ignored -> mTabModelSelector.getCurrentModel() == mIncognitoTabModel)
-                .when(mIncognitoFilter)
-                .isCurrentlySelectedFilter();
 
         assertTrue(currentTabModelSupplierHasObservers());
         assertNull(mTabModelSelector.getCurrentTabModelSupplier().get());
@@ -414,19 +401,35 @@ public class TabModelSelectorImplTest {
     public void testOnActivityAttachmentChanged() {
         MockTab tab0 = mRegularTabModel.addTab(0);
         MockTab tab1 = mRegularTabModel.addTab(1);
+        TabGroupModelFilter filter =
+                (TabGroupModelFilter)
+                        mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(false);
+        assertEquals(filter.getTabModel(), mRegularTabModel);
+        assertEquals(0, TabModelUtils.getTabIndexById(mRegularTabModel, tab0.getId()));
+        assertEquals(1, TabModelUtils.getTabIndexById(mRegularTabModel, tab1.getId()));
 
-        when(mRegularFilter.isTabInTabGroup(tab0)).thenReturn(false);
-        for (TabObserver observer : tab0.getObservers()) {
-            observer.onActivityAttachmentChanged(tab0, /* window= */ null);
-        }
-        verify(mRegularFilter, never())
-                .moveTabOutOfGroupInDirection(tab0.getId(), /* trailing= */ true);
-
-        when(mRegularFilter.isTabInTabGroup(tab1)).thenReturn(true);
+        assertFalse(filter.isTabInTabGroup(tab1));
         for (TabObserver observer : tab1.getObservers()) {
             observer.onActivityAttachmentChanged(tab1, /* window= */ null);
         }
-        verify(mRegularFilter).moveTabOutOfGroupInDirection(tab1.getId(), /* trailing= */ true);
+        assertFalse(filter.isTabInTabGroup(tab1));
+        assertEquals(0, TabModelUtils.getTabIndexById(mRegularTabModel, tab0.getId()));
+        assertEquals(
+                TabModel.INVALID_TAB_INDEX,
+                TabModelUtils.getTabIndexById(mRegularTabModel, tab1.getId()));
+
+        filter.createSingleTabGroup(tab0, /* notify= */ true);
+
+        assertTrue(filter.isTabInTabGroup(tab0));
+        for (TabObserver observer : tab0.getObservers()) {
+            observer.onActivityAttachmentChanged(tab0, /* window= */ null);
+        }
+        assertFalse(filter.isTabInTabGroup(tab0));
+        assertNull(tab0.getTabGroupId());
+        assertEquals(tab0.getId(), tab0.getRootId());
+        assertEquals(
+                TabModel.INVALID_TAB_INDEX,
+                TabModelUtils.getTabIndexById(mRegularTabModel, tab0.getId()));
     }
 
     @Test
@@ -438,16 +441,12 @@ public class TabModelSelectorImplTest {
                 new TabModelSelectorImpl(
                         mProfileProviderSupplier,
                         mTabCreatorManager,
-                        (tabModel) -> tabModel == regularModel ? mRegularFilter : mIncognitoFilter,
                         mNextTabPolicySupplier,
                         mAsyncTabParamsManager,
                         /* supportUndo= */ false,
                         NO_RESTORE_TYPE,
                         /* startIncognito= */ false);
-        when(mRegularFilter.getTabModel()).thenReturn(regularModel);
-        Mockito.doAnswer(ignored -> mTabModelSelector.getCurrentModel() == regularModel)
-                .when(mRegularFilter)
-                .isCurrentlySelectedFilter();
+        when(regularModel.isActiveModel()).thenReturn(true);
         mTabModelSelector.initializeForTesting(regularModel, mIncognitoTabModel);
         TabModelSelectorObserver observer =
                 new TabModelSelectorObserver() {

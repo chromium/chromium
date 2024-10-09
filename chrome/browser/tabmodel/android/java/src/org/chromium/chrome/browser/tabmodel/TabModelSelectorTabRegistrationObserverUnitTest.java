@@ -32,7 +32,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 
 /** Tests for the TabModelSelectorTabRegistrationObserver. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -349,7 +348,7 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
 
     private static class TestTabModelSelector extends TabModelSelectorBase {
         public TestTabModelSelector(TabCreatorManager tabCreatorManager) {
-            super(tabCreatorManager, TabGroupModelFilter::new, false);
+            super(tabCreatorManager, false);
         }
 
         @Override

@@ -43,7 +43,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
-import org.chromium.chrome.browser.app.tabmodel.ChromeTabModelFilterFactory;
 import org.chromium.chrome.browser.app.tabmodel.CustomTabsTabModelOrchestrator;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -437,7 +436,6 @@ public class CustomTabTabPersistencePolicyTest {
         orchestrator.createTabModels(
                 profileProviderSupplier,
                 customTabActivity,
-                new ChromeTabModelFilterFactory(customTabActivity),
                 buildTestPersistencePolicy(),
                 ActivityType.CUSTOM_TAB,
                 AsyncTabParamsManagerSingleton.getInstance(),

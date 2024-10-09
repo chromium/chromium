@@ -24,6 +24,7 @@ android_library("java") {
     "//base:base_shared_preferences_java",
 
     # TODO(https://crbug.com/370773585): Move these.
+    "//build/android:build_java",
     "//chrome/android/features/tab_ui:java_strings_grd",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",

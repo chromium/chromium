@@ -35,17 +35,15 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
      *
      * @param profile The {@link Profile} used.
      * @param tabCreatorManager A {@link TabCreatorManager} instance.
-     * @param tabModelFilterFactory The factory for setting up {@link TabModelFilter}s.
      * @param nextTabPolicySupplier A policy for next tab selection.
      * @param asyncTabParamsManager Manager of async params for reparenting.
      */
     public ArchivedTabModelSelectorImpl(
             Profile profile,
             TabCreatorManager tabCreatorManager,
-            TabModelFilterFactory tabModelFilterFactory,
             NextTabPolicySupplier nextTabPolicySupplier,
             AsyncTabParamsManager asyncTabParamsManager) {
-        super(tabCreatorManager, tabModelFilterFactory, /* startIncognito= */ false);
+        super(tabCreatorManager, /* startIncognito= */ false);
         mProfile = profile;
         mOrderController = new TabModelOrderControllerImpl(this);
         mNextTabPolicySupplier = nextTabPolicySupplier;

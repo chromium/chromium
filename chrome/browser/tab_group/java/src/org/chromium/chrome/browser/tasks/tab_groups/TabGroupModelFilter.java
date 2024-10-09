@@ -19,6 +19,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.LazyOneshotSupplier;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -942,6 +943,9 @@ public class TabGroupModelFilter extends TabModelFilterBase {
     @Override
     protected void selectTab(Tab tab) {
         assert mAbsentSelectedTab == null;
+
+        if (tab == null) return;
+
         int rootId = tab.getRootId();
         if (mRootIdToGroupMap.get(rootId) == null) {
             mAbsentSelectedTab = tab;
@@ -1753,11 +1757,20 @@ public class TabGroupModelFilter extends TabModelFilterBase {
     }
 
     private static void setBothGroupIds(Tab tab, int rootId, Token tabGroupId) {
-        TabStateAttributes tabStateAttributes = TabStateAttributes.from(tab);
-        tabStateAttributes.beginBatchEdit();
+        @Nullable TabStateAttributes tabStateAttributes = TabStateAttributes.from(tab);
+
+        // Tab state attributes may be null in unit tests. Permit this only for test builds.
+        boolean skipAttributes = BuildConfig.IS_FOR_TEST && tabStateAttributes == null;
+        if (!skipAttributes) {
+            tabStateAttributes.beginBatchEdit();
+        }
+
         tab.setRootId(rootId);
         tab.setTabGroupId(tabGroupId);
-        tabStateAttributes.endBatchEdit();
+
+        if (!skipAttributes) {
+            tabStateAttributes.endBatchEdit();
+        }
     }
 
     private static boolean shouldSkipGroupCreationDialog(boolean shouldShow) {

@@ -12,7 +12,6 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabModelFilterFactory;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorFactory;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
@@ -27,13 +26,11 @@ public class DefaultTabModelSelectorFactory implements TabModelSelectorFactory {
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             TabCreatorManager tabCreatorManager,
             NextTabPolicySupplier nextTabPolicySupplier) {
-        TabModelFilterFactory tabModelFilterFactory = new ChromeTabModelFilterFactory(context);
         AsyncTabParamsManager asyncTabParamsManager = AsyncTabParamsManagerSingleton.getInstance();
 
         return new TabModelSelectorImpl(
                 profileProviderSupplier,
                 tabCreatorManager,
-                tabModelFilterFactory,
                 nextTabPolicySupplier,
                 asyncTabParamsManager,
                 true,

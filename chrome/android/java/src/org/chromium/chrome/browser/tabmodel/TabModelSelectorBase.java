@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.ArrayList;
@@ -50,7 +51,6 @@ public abstract class TabModelSelectorBase
      */
     private TabModelFilterProvider mTabModelFilterProvider = new TabModelFilterProvider();
 
-    private final TabModelFilterFactory mTabModelFilterFactory;
     private final ObservableSupplierImpl<TabModel> mTabModelSupplier =
             new ObservableSupplierImpl<>();
     private final TransitiveObservableSupplier<TabModel, Tab> mCurrentTabSupplier;
@@ -69,12 +69,8 @@ public abstract class TabModelSelectorBase
 
     private final TabCreatorManager mTabCreatorManager;
 
-    protected TabModelSelectorBase(
-            TabCreatorManager tabCreatorManager,
-            TabModelFilterFactory tabModelFilterFactory,
-            boolean startIncognito) {
+    protected TabModelSelectorBase(TabCreatorManager tabCreatorManager, boolean startIncognito) {
         mTabCreatorManager = tabCreatorManager;
-        mTabModelFilterFactory = tabModelFilterFactory;
         mStartIncognito = startIncognito;
         // Notify the re-auth code first so we show the re-auth dialog first.
         mIncognitoReauthDialogDelegateCallback =
@@ -103,7 +99,7 @@ public abstract class TabModelSelectorBase
         mIncognitoTabModel = incognitoModel;
         int activeModelIndex = getModelIndex(mStartIncognito);
         assert activeModelIndex != MODEL_NOT_FOUND;
-        mTabModelFilterProvider.init(mTabModelFilterFactory, this, getModels());
+        mTabModelFilterProvider.init(TabGroupModelFilter::new, this, getModels());
 
         TabModelObserver tabModelObserver =
                 new TabModelObserver() {

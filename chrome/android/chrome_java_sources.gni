@@ -91,7 +91,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/app/tabmodel/ArchivedTabModelOrchestrator.java",
   "java/src/org/chromium/chrome/browser/app/tabmodel/AsyncTabParamsManagerSingleton.java",
   "java/src/org/chromium/chrome/browser/app/tabmodel/ChromeNextTabPolicySupplier.java",
-  "java/src/org/chromium/chrome/browser/app/tabmodel/ChromeTabModelFilterFactory.java",
   "java/src/org/chromium/chrome/browser/app/tabmodel/CustomTabsTabModelOrchestrator.java",
   "java/src/org/chromium/chrome/browser/app/tabmodel/DefaultTabModelSelectorFactory.java",
   "java/src/org/chromium/chrome/browser/app/tabmodel/TabModelOrchestrator.java",

@@ -57,19 +57,21 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
      *
      * @param profileProviderSupplier Provides the Profiles used in this selector.
      * @param tabCreatorManager A {@link TabCreatorManager} instance.
+     * @param nextTabPolicySupplier Supplier of a policy to decide which tab to select next.
+     * @param asyncTabParamsManager The params manager to use for async tab creation.
      * @param supportUndo Whether a tab closure can be undone.
      * @param activityType Type of the activity for the tab model selector.
+     * @param startIncognito Whether to start in incognito mode.
      */
     public TabModelSelectorImpl(
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             TabCreatorManager tabCreatorManager,
-            TabModelFilterFactory tabModelFilterFactory,
             NextTabPolicySupplier nextTabPolicySupplier,
             AsyncTabParamsManager asyncTabParamsManager,
             boolean supportUndo,
             @ActivityType int activityType,
             boolean startIncognito) {
-        super(tabCreatorManager, tabModelFilterFactory, startIncognito);
+        super(tabCreatorManager, startIncognito);
         mProfileProviderSupplier = profileProviderSupplier;
         mIsUndoSupported = supportUndo;
         mOrderController = new TabModelOrderControllerImpl(this);

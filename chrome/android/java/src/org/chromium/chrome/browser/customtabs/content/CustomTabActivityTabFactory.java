@@ -17,7 +17,6 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
-import org.chromium.chrome.browser.app.tabmodel.ChromeTabModelFilterFactory;
 import org.chromium.chrome.browser.app.tabmodel.CustomTabsTabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -36,7 +35,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabModelFilterFactory;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.content_public.browser.WebContents;
@@ -52,7 +50,6 @@ import javax.inject.Inject;
 public class CustomTabActivityTabFactory {
     private final Activity mActivity;
     private final CustomTabTabPersistencePolicy mPersistencePolicy;
-    private final TabModelFilterFactory mTabModelFilterFactory;
     private final Lazy<ActivityWindowAndroid> mActivityWindowAndroid;
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
     private final Lazy<CustomTabDelegateFactory> mCustomTabDelegateFactory;
@@ -71,7 +68,6 @@ public class CustomTabActivityTabFactory {
     public CustomTabActivityTabFactory(
             Activity activity,
             CustomTabTabPersistencePolicy persistencePolicy,
-            ChromeTabModelFilterFactory tabModelFilterFactory,
             Lazy<ActivityWindowAndroid> activityWindowAndroid,
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             Lazy<CustomTabDelegateFactory> customTabDelegateFactory,
@@ -83,7 +79,6 @@ public class CustomTabActivityTabFactory {
             CipherFactory cipherFactory) {
         mActivity = activity;
         mPersistencePolicy = persistencePolicy;
-        mTabModelFilterFactory = tabModelFilterFactory;
         mActivityWindowAndroid = activityWindowAndroid;
         mProfileProviderSupplier = profileProviderSupplier;
         mCustomTabDelegateFactory = customTabDelegateFactory;
@@ -116,7 +111,6 @@ public class CustomTabActivityTabFactory {
         mTabModelOrchestrator.createTabModels(
                 mProfileProviderSupplier,
                 mTabCreatorManager,
-                mTabModelFilterFactory,
                 mPersistencePolicy,
                 mActivityType,
                 mAsyncTabParamsManager.get(),
