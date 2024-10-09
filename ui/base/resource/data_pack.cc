@@ -106,8 +106,8 @@ void DataPack::Iterator::UpdateResourceData() {
   const Entry* const next_entry = entry_ + 1;
   resource_data_ = new ResourceData(
       entry_->resource_id,
-      GetStringPieceFromOffset(entry_->file_offset, next_entry->file_offset,
-                               data_source_));
+      GetStringViewFromOffset(entry_->file_offset, next_entry->file_offset,
+                              data_source_));
 }
 
 DataPack::Iterator DataPack::begin() const {
@@ -372,15 +372,14 @@ bool DataPack::HasResource(uint16_t resource_id) const {
 }
 
 // static
-std::string_view DataPack::GetStringPieceFromOffset(
-    uint32_t target_offset,
-    uint32_t next_offset,
-    const uint8_t* data_source) {
+std::string_view DataPack::GetStringViewFromOffset(uint32_t target_offset,
+                                                   uint32_t next_offset,
+                                                   const uint8_t* data_source) {
   size_t length = next_offset - target_offset;
   return {reinterpret_cast<const char*>(data_source + target_offset), length};
 }
 
-std::optional<std::string_view> DataPack::GetStringPiece(
+std::optional<std::string_view> DataPack::GetStringView(
     uint16_t resource_id) const {
   const Entry* target = LookupEntryById(resource_id);
   if (!target)
@@ -410,14 +409,14 @@ std::optional<std::string_view> DataPack::GetStringPiece(
   }
 
   MaybePrintResourceId(resource_id);
-  return GetStringPieceFromOffset(target->file_offset, next_entry->file_offset,
-                                  data_source_->GetData());
+  return GetStringViewFromOffset(target->file_offset, next_entry->file_offset,
+                                 data_source_->GetData());
 }
 
 base::RefCountedStaticMemory* DataPack::GetStaticMemory(
     uint16_t resource_id) const {
-  if (auto piece = GetStringPiece(resource_id); piece.has_value()) {
-    return new base::RefCountedStaticMemory(base::as_byte_span(*piece));
+  if (auto view = GetStringView(resource_id); view.has_value()) {
+    return new base::RefCountedStaticMemory(base::as_byte_span(*view));
   }
   return nullptr;
 }
@@ -476,7 +475,7 @@ bool DataPack::WritePack(const base::FilePath& path,
   std::vector<uint16_t> resource_ids;
   std::map<uint16_t, uint16_t> aliases;  // resource_id -> entry_index
   if (resources_count > 0) {
-    // A reverse map from string pieces to the index of the corresponding
+    // A reverse map from string view to the index of the corresponding
     // original id in the final resource list.
     std::map<std::string_view, uint16_t> rev_map;
     for (const auto& entry : resources) {

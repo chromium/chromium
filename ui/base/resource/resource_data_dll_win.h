@@ -28,7 +28,7 @@ class ResourceDataDLL : public ResourceHandle {
 
   // ResourceHandle implementation:
   bool HasResource(uint16_t resource_id) const override;
-  std::optional<std::string_view> GetStringPiece(
+  std::optional<std::string_view> GetStringView(
       uint16_t resource_id) const override;
   base::RefCountedStaticMemory* GetStaticMemory(
       uint16_t resource_id) const override;

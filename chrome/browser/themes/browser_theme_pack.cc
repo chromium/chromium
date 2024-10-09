@@ -765,8 +765,7 @@ scoped_refptr<BrowserThemePack> BrowserThemePack::BuildFromDataPack(
     return nullptr;
   }
 
-  std::optional<std::string_view> pointer =
-      data_pack->GetStringPiece(kHeaderID);
+  std::optional<std::string_view> pointer = data_pack->GetStringView(kHeaderID);
   if (!pointer) {
     return nullptr;
   }
@@ -786,35 +785,35 @@ scoped_refptr<BrowserThemePack> BrowserThemePack::BuildFromDataPack(
     return nullptr;
   }
 
-  pointer = data_pack->GetStringPiece(kTintsID);
+  pointer = data_pack->GetStringView(kTintsID);
   if (!pointer) {
     return nullptr;
   }
   pack->tints_ =
       reinterpret_cast<TintEntry*>(const_cast<char*>(pointer->data()));
 
-  pointer = data_pack->GetStringPiece(kColorsID);
+  pointer = data_pack->GetStringView(kColorsID);
   if (!pointer) {
     return nullptr;
   }
   pack->colors_ =
       reinterpret_cast<ColorPair*>(const_cast<char*>(pointer->data()));
 
-  pointer = data_pack->GetStringPiece(kDisplayPropertiesID);
+  pointer = data_pack->GetStringView(kDisplayPropertiesID);
   if (!pointer) {
     return nullptr;
   }
   pack->display_properties_ = reinterpret_cast<DisplayPropertyPair*>(
       const_cast<char*>(pointer->data()));
 
-  pointer = data_pack->GetStringPiece(kSourceImagesID);
+  pointer = data_pack->GetStringView(kSourceImagesID);
   if (!pointer) {
     return nullptr;
   }
   pack->source_images_ =
       reinterpret_cast<SourceImage*>(const_cast<char*>(pointer->data()));
 
-  pointer = data_pack->GetStringPiece(kScaleFactorsID);
+  pointer = data_pack->GetStringView(kScaleFactorsID);
   if (!pointer) {
     return nullptr;
   }

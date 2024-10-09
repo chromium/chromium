@@ -702,7 +702,7 @@ std::string_view ResourceBundle::GetRawDataResourceForScale(
   if (scale_factor != ui::k100Percent) {
     for (const auto& resource_handle : resource_handles_) {
       if (resource_handle->GetResourceScaleFactor() == scale_factor) {
-        if (auto data = resource_handle->GetStringPiece(
+        if (auto data = resource_handle->GetStringView(
                 static_cast<uint16_t>(resource_id));
             data.has_value()) {
           if (loaded_scale_factor) {
@@ -719,7 +719,7 @@ std::string_view ResourceBundle::GetRawDataResourceForScale(
          resource_handle->GetResourceScaleFactor() == ui::k200Percent ||
          resource_handle->GetResourceScaleFactor() == ui::k300Percent ||
          resource_handle->GetResourceScaleFactor() == ui::kScaleFactorNone)) {
-      if (auto data = resource_handle->GetStringPiece(
+      if (auto data = resource_handle->GetStringView(
               static_cast<uint16_t>(resource_id));
           data.has_value()) {
         if (loaded_scale_factor) {
@@ -759,12 +759,12 @@ std::string ResourceBundle::LoadLocalizedResourceString(int resource_id) const {
   std::string_view data;
   if (locale_resources_data_.get()) {
     data = locale_resources_data_
-               ->GetStringPiece(static_cast<uint16_t>(resource_id))
+               ->GetStringView(static_cast<uint16_t>(resource_id))
                .value_or(std::string_view());
   }
   if (data.empty() && secondary_locale_resources_data_.get()) {
     data = secondary_locale_resources_data_
-               ->GetStringPiece(static_cast<uint16_t>(resource_id))
+               ->GetStringView(static_cast<uint16_t>(resource_id))
                .value_or(std::string_view());
   }
   if (data.empty()) {
@@ -812,7 +812,7 @@ base::RefCountedMemory* ResourceBundle::LoadLocalizedResourceBytes(
     base::AutoLock lock_scope(*locale_resources_data_lock_);
 
     if (locale_resources_data_.get()) {
-      if (auto data = locale_resources_data_->GetStringPiece(
+      if (auto data = locale_resources_data_->GetStringView(
               static_cast<uint16_t>(resource_id));
           data.has_value() && !data->empty()) {
         return new base::RefCountedStaticMemory(base::as_byte_span(*data));
@@ -820,7 +820,7 @@ base::RefCountedMemory* ResourceBundle::LoadLocalizedResourceBytes(
     }
 
     if (secondary_locale_resources_data_.get()) {
-      if (auto data = secondary_locale_resources_data_->GetStringPiece(
+      if (auto data = secondary_locale_resources_data_->GetStringView(
               static_cast<uint16_t>(resource_id));
           data.has_value() && !data->empty()) {
         return new base::RefCountedStaticMemory(base::as_byte_span(*data));
@@ -1187,11 +1187,11 @@ std::u16string ResourceBundle::GetLocalizedStringImpl(int resource_id) const {
   std::optional<std::string_view> data;
   ResourceHandle::TextEncodingType encoding =
       locale_resources_data_->GetTextEncodingType();
-  if (!(data = locale_resources_data_->GetStringPiece(
+  if (!(data = locale_resources_data_->GetStringView(
             static_cast<uint16_t>(resource_id)))
            .has_value()) {
     if (secondary_locale_resources_data_.get() &&
-        (data = secondary_locale_resources_data_->GetStringPiece(
+        (data = secondary_locale_resources_data_->GetStringView(
              static_cast<uint16_t>(resource_id)))
             .has_value()) {
       // Fall back on the secondary locale pak if it exists.
