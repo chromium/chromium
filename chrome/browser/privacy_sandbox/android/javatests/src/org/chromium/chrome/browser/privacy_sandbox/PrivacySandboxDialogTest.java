@@ -216,7 +216,6 @@ public final class PrivacySandboxDialogTest {
 
     @Test
     @SmallTest
-    @Feature({"RenderTest"})
     @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_POLICY)
     // TODO(crbug.com/369540483): fix and re-enable on ARM devices.
     @DisableIf.Build(supported_abis_includes = "armeabi-v7a")
@@ -266,7 +265,6 @@ public final class PrivacySandboxDialogTest {
     // than testing internal state of the LoadUrlParams.
     @Test
     @SmallTest
-    @Feature({"RenderTest"})
     @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_PRIVACY_POLICY)
     public void testRenderEEAConsentPrivacyPolicyPageUrlParams() throws IOException {
         Locale defaultLocale = Locale.getDefault();
