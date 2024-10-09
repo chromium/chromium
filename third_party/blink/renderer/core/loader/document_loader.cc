@@ -3172,6 +3172,16 @@ void DocumentLoader::CreateParserPostCommit() {
           mojom::blink::OriginTrialFeature::kTouchEventFeatureDetection);
     }
 
+#if BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/371971653): Remove the force enabling of
+    // getAllScreensMedia once the feature is moved to stable in runtime enabled
+    // features.
+    if (window->GetExecutionContext()->IsIsolatedContext()) {
+      window->GetOriginTrialContext()->AddFeature(
+          mojom::blink::OriginTrialFeature::kGetAllScreensMedia);
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
     // Enable any origin trials that have been force enabled for this commit.
     window->GetOriginTrialContext()->AddForceEnabledTrials(
         force_enabled_origin_trials_);
