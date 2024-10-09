@@ -129,7 +129,7 @@ class InputStreamReaderWrapper
 
  private:
   friend class base::RefCountedThreadSafe<InputStreamReaderWrapper>;
-  ~InputStreamReaderWrapper() {}
+  ~InputStreamReaderWrapper() = default;
 
   std::unique_ptr<InputStream> input_stream_;
   std::unique_ptr<InputStreamReader> input_stream_reader_;
@@ -179,7 +179,7 @@ AndroidStreamReaderURLLoader::AndroidStreamReaderURLLoader(
       resource_request_.mode, is_request_considered_same_origin);
 }
 
-AndroidStreamReaderURLLoader::~AndroidStreamReaderURLLoader() {}
+AndroidStreamReaderURLLoader::~AndroidStreamReaderURLLoader() = default;
 
 void AndroidStreamReaderURLLoader::FollowRedirect(
     const std::vector<std::string>& removed_headers,

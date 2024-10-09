@@ -51,7 +51,7 @@ WebContentsDelegateAndroid::WebContentsDelegateAndroid(
     const jni_zero::JavaRef<jobject>& obj)
     : weak_java_delegate_(env, obj) {}
 
-WebContentsDelegateAndroid::~WebContentsDelegateAndroid() {}
+WebContentsDelegateAndroid::~WebContentsDelegateAndroid() = default;
 
 ScopedJavaLocalRef<jobject> WebContentsDelegateAndroid::GetJavaDelegate(
     JNIEnv* env) const {

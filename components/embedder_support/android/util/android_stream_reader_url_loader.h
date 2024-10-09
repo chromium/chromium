@@ -39,7 +39,7 @@ class AndroidStreamReaderURLLoader : public network::mojom::URLLoader {
   // Delegate abstraction for obtaining input streams.
   class ResponseDelegate {
    public:
-    virtual ~ResponseDelegate() {}
+    virtual ~ResponseDelegate() = default;
 
     // This method is called from a worker thread, not from the IO thread.
     virtual std::unique_ptr<embedder_support::InputStream> OpenInputStream(

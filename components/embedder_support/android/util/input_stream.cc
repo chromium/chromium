@@ -54,7 +54,7 @@ int InputStream::GetIntermediateBufferSize() {
 // TODO: Use unsafe version for all Java_InputStream methods in this file
 // once BUG 157880 is fixed and implement graceful exception handling.
 
-InputStream::InputStream() {}
+InputStream::InputStream() = default;
 
 InputStream::InputStream(const JavaRef<jobject>& stream) : jobject_(stream) {
   DCHECK(stream);

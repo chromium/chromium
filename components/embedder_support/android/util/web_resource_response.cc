@@ -29,7 +29,7 @@ WebResourceResponse::WebResourceResponse(
     const base::android::JavaRef<jobject>& obj)
     : java_object_(obj), input_stream_transferred_(false) {}
 
-WebResourceResponse::~WebResourceResponse() {}
+WebResourceResponse::~WebResourceResponse() = default;
 
 bool WebResourceResponse::HasInputStream(JNIEnv* env) const {
   ScopedJavaLocalRef<jobject> jstream =

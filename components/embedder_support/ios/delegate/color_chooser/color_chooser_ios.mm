@@ -27,7 +27,7 @@ ColorChooserIOS::ColorChooserIOS(
                            color:skia::UIColorFromSkColor(initial_color)];
 }
 
-ColorChooserIOS::~ColorChooserIOS() {}
+ColorChooserIOS::~ColorChooserIOS() = default;
 
 void ColorChooserIOS::End() {
   if (!coordinator_) {

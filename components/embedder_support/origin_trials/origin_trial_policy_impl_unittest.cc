@@ -292,7 +292,7 @@ TEST_F(OriginTrialPolicyImplTest, DisableFeatureForUserAfterCheck) {
 class OriginTrialPolicyImplInitializationTest
     : public OriginTrialPolicyImplTest {
  protected:
-  OriginTrialPolicyImplInitializationTest() {}
+  OriginTrialPolicyImplInitializationTest() = default;
 
   OriginTrialPolicyImpl* initialized_manager() {
     return initialized_manager_.get();

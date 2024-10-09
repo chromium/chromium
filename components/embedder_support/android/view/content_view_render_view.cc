@@ -35,7 +35,7 @@ ContentViewRenderView::ContentViewRenderView(JNIEnv* env,
   java_obj_.Reset(env, obj);
 }
 
-ContentViewRenderView::~ContentViewRenderView() {}
+ContentViewRenderView::~ContentViewRenderView() = default;
 
 // static
 static jlong JNI_ContentViewRenderView_Init(
