@@ -41,6 +41,7 @@ constexpr CGFloat KErrorIconImageSize = 22.;
            withStyler:(ChromeTableViewStyler*)styler {
   [super configureCell:cell withStyler:styler];
 
+  CHECK(self.image, base::NotFatalUntil::M123);
   cell.imageView.image = self.image;
   cell.textLabel.text = self.text;
   cell.detailTextLabel.text = self.detailText;
@@ -70,12 +71,6 @@ constexpr CGFloat KErrorIconImageSize = 22.;
   }
 }
 
-@end
-
-@interface TableViewAccountCell () {
-  // Constraint used to set padding between image and text when image exists.
-  NSLayoutConstraint* _textLeadingAnchorConstraint;
-}
 @end
 
 @implementation TableViewAccountCell
@@ -143,8 +138,6 @@ constexpr CGFloat KErrorIconImageSize = 22.;
   verticalCenteringView.translatesAutoresizingMaskIntoConstraints = NO;
   [contentView addSubview:verticalCenteringView];
 
-  _textLeadingAnchorConstraint = [_textLabel.leadingAnchor
-      constraintEqualToAnchor:_imageView.trailingAnchor];
   [NSLayoutConstraint activateConstraints:@[
     // Set leading anchors.
     [_imageView.leadingAnchor
@@ -194,7 +187,9 @@ constexpr CGFloat KErrorIconImageSize = 22.;
         constraintLessThanOrEqualToAnchor:_errorIcon.leadingAnchor
                                  constant:
                                      -kHorizontalPaddingBetweenTextAndError],
-    _textLeadingAnchorConstraint,
+    [_textLabel.leadingAnchor
+        constraintEqualToAnchor:_imageView.trailingAnchor
+                       constant:kTableViewOneLabelCellVerticalSpacing],
     [_textLabel.trailingAnchor
         constraintLessThanOrEqualToAnchor:_errorIcon.leadingAnchor
                                  constant:
@@ -209,20 +204,6 @@ constexpr CGFloat KErrorIconImageSize = 22.;
   [_detailTextLabel
       setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                       forAxis:UILayoutConstraintAxisHorizontal];
-}
-
-#pragma mark - UIView
-
-- (void)layoutSubviews {
-  [super layoutSubviews];
-
-  // Adjust the leading margin depending on existence of image.
-  if (_imageView.image) {
-    _textLeadingAnchorConstraint.constant =
-        kTableViewOneLabelCellVerticalSpacing;
-  } else {
-    _textLeadingAnchorConstraint.constant = 0;
-  }
 }
 
 #pragma mark - UITableViewCell
