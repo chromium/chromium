@@ -270,7 +270,8 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
      * @return The projected state the Panel will be if the given velocity is applied.
      */
     protected @PanelState int getProjectedState(float velocity) {
-        final float kickY = calculateAnimationDisplacement(velocity, BASE_ANIMATION_DURATION_MS);
+        final float kickY =
+                calculateAnimationDisplacement(velocity, (float) BASE_ANIMATION_DURATION_MS);
         final float projectedHeight = getHeight() - kickY;
 
         // Calculate the projected state the Panel will be at the end of the fling movement and the

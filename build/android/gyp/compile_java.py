@@ -36,11 +36,8 @@ ERRORPRONE_CHECKS_TO_APPLY = []
 
 # Full list of checks: https://errorprone.info/bugpatterns
 ERRORPRONE_WARNINGS_TO_DISABLE = [
-    # Temporarily disabling to roll doubledown.
-    # TODO(wnwen): Re-enable this upstream.
     'InlineMeInliner',
-    # The following are super useful, but existing issues need to be fixed first
-    # before they can start failing the build on new errors.
+    'InlineMeSuggester',
     'InvalidParam',
     'InvalidLink',
     'InvalidInlineTag',
@@ -52,14 +49,9 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'NonCanonicalType',
     'AlmostJavadoc',
     'ReturnValueIgnored',
-    # The following are added for errorprone update: https://crbug.com/1216032
-    'InlineMeSuggester',
     'DoNotClaimAnnotations',
     'JavaUtilDate',
     'IdentityHashMapUsage',
-    'LongFloatConversion',
-    'CharacterGetNumericValue',
-    'ErroneousThreadPoolConstructorChecker',
     'StaticMockMember',
     'MissingSuperCall',
     'ToStringReturnsNull',
@@ -90,10 +82,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'StringSplitter',
     # Preferred to use another method since it propagates exceptions better.
     'ClassNewInstance',
-    # Nice to have static inner classes but not necessary.
-    'ClassCanBeStatic',
-    # Explicit is better than implicit.
-    'FloatCast',
     # Results in false positives.
     'ThreadLocalUsage',
     # Also just false positives.
@@ -108,9 +96,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'OverrideThrowableToString',
     # Nice to have better type safety.
     'CollectionToArraySafeParameter',
-    # Makes logcat debugging more difficult, and does not provide obvious
-    # benefits in the Chromium codebase.
-    'ObjectToString',
     # Triggers on private methods that are @CalledByNative.
     'UnusedMethod',
     # Triggers on generated R.java files.
@@ -128,8 +113,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     # Does not apply to Android because it assumes no desugaring.
     'UnnecessaryLambda',
     # Nice to have.
-    'UnnecessaryAnonymousClass',
-    # Nice to have.
     'MissingSummary',
     # Nice to have.
     'EmptyCatch',
@@ -142,11 +125,10 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     # Must be off since we are now passing in annotation processor generated
     # code as a source jar (deduplicating work with turbine).
     'RefersToDaggerCodegen',
-    # We already have presubmit checks for this. Not necessary to warn on
-    # every build.
+    # We already have presubmit checks for this. We don't want it to fail
+    # local compiles.
     'RemoveUnusedImports',
-    # The only time we trigger this is when it is better to be explicit in a
-    # list of unicode characters, e.g. FindAddress.java
+    # Only has false positives (would not want to enable this).
     'UnicodeEscape',
     # Nice to have.
     'AlreadyChecked',

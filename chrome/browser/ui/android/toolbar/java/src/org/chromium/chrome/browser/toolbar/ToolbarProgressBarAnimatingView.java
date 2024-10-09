@@ -152,7 +152,7 @@ public class ToolbarProgressBarAnimatingView extends ImageView {
         if (mProgressWidth <= 0) return;
 
         // Total duration: logE(progress_dp) * 200 * 1.3
-        long totalDuration = (long) (Math.log(mProgressWidth / mDpToPx) / Math.log(Math.E)) * 260;
+        long totalDuration = (long) ((Math.log(mProgressWidth / mDpToPx) / Math.log(Math.E)) * 260);
         if (totalDuration <= 0) return;
 
         mSlowAnimation.setDuration((long) (totalDuration * SLOW_ANIMATION_FRACTION));

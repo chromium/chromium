@@ -238,7 +238,7 @@ public class ShareServiceImpl implements ShareService {
                         "Cannot share potentially dangerous \""
                                 + file.blob.contentType
                                 + "\" file \""
-                                + file.name
+                                + file.name.path.path
                                 + "\".");
                 callback.call(ShareError.PERMISSION_DENIED);
                 return;

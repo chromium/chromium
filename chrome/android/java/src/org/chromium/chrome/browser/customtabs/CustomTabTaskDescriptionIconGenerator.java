@@ -33,13 +33,13 @@ public class CustomTabTaskDescriptionIconGenerator {
     public CustomTabTaskDescriptionIconGenerator(Context context) {
         mContext = context;
         mMinSizePx =
-                (int) mContext.getResources().getDisplayMetrics().density * APP_ICON_MIN_SIZE_DP;
+                (int) (mContext.getResources().getDisplayMetrics().density * APP_ICON_MIN_SIZE_DP);
     }
 
     /**
      * Returns the icon to use for the Activity in the recent tasks list. Returns the favicon if it
-     * is adequate. If the passed in favicon is not adequate, an icon is generated from the
-     * page URL.
+     * is adequate. If the passed in favicon is not adequate, an icon is generated from the page
+     * URL.
      *
      * @param pageUrl The URL of the tab.
      * @param largestFavicon The largest favicon available at the page URL.

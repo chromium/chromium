@@ -78,11 +78,11 @@ public class ShrinkExpandAnimator {
         mView.setScaleX(scaleX);
         mView.setScaleY(scaleY);
         mView.setTranslationX(
-                rect.left
+                (float) rect.left
                         - Math.round(
                                 mInitialRect.left + (1.0 - scaleX) * mInitialRect.width() / 2.0));
         mView.setTranslationY(
-                rect.top
+                (float) rect.top
                         - Math.round(
                                 mInitialRect.top + (1.0 - scaleY) * mInitialRect.height() / 2.0));
 

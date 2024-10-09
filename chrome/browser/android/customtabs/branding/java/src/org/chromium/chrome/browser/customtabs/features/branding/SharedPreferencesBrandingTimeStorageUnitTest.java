@@ -47,7 +47,7 @@ public class SharedPreferencesBrandingTimeStorageUnitTest {
         for (int i = 0; i < MAX_NON_PACKAGE_ENTRIES; ++i) {
             storage.put("id-" + i, brandingTime.apply(i));
         }
-        assertEquals(0, storage.get("id-0"), brandingTime.apply(0));
+        assertEquals(0, (float) storage.get("id-0"), brandingTime.apply(0));
         assertEquals(
                 "The number of entries can't be bigger than |MAX_NON_PACKAGE_ENTRIES|",
                 MAX_NON_PACKAGE_ENTRIES,

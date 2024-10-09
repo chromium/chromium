@@ -830,7 +830,7 @@ public class TabStripTransitionCoordinatorUnitTest {
     private Configuration setConfigurationWithNewWidth(int widthDp) {
         Resources res = mActivity.getResources();
         DisplayMetrics displayMetrics = res.getDisplayMetrics();
-        displayMetrics.widthPixels = (int) displayMetrics.density * widthDp;
+        displayMetrics.widthPixels = (int) (displayMetrics.density * widthDp);
 
         Configuration configuration = res.getConfiguration();
         configuration.screenWidthDp = widthDp;

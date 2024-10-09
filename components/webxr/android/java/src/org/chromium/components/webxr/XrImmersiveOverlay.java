@@ -135,7 +135,7 @@ public class XrImmersiveOverlay
         mXrSurfaceView = new XrSurfaceView();
     }
 
-    private class PointerData {
+    private static class PointerData {
         public float x;
         public float y;
         public boolean touching;

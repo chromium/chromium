@@ -26,7 +26,7 @@ public class ArCoreInstallUtils {
      * Helper class to store a reference to the ArCoreInstallUtils instance and activity
      * that requested an install of ArCore, and await that activity being resumed.
      */
-    private class InstallRequest implements ActivityLifecycleCallbacks {
+    private static class InstallRequest implements ActivityLifecycleCallbacks {
         private ArCoreInstallUtils mInstallInstance;
         private ImmutableWeakReference<Activity> mWeakActivity;
         private ImmutableWeakReference<Application> mWeakApplication;

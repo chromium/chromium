@@ -109,7 +109,7 @@ public class PlayerFrameBitmapPainterTest {
         private void assertDrawBitmap(
                 @NonNull Bitmap bitmap, @Nullable Rect src, @NonNull Rect dst) {
             Assert.assertTrue(
-                    bitmap + " has not been drawn from " + src + " to " + dst,
+                    "Bitmap has not been drawn from " + src + " to " + dst,
                     mDrawnBitmaps.contains(new DrawnBitmap(bitmap, src, dst)));
         }
 

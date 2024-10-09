@@ -106,14 +106,17 @@ final class FakeCronetEngine extends CronetEngineBase {
      * {@link FakeCronetEngine.Builder}.
      *
      * @param builder a {@link CronetEngineBuilderImpl} to build this {@link CronetEngine}
-     *                implementation from.
+     *     implementation from.
      */
+    @SuppressWarnings("ErroneousThreadPoolConstructorChecker")
     private FakeCronetEngine(FakeCronetEngine.Builder builder) {
         if (builder.mController != null) {
             mController = builder.mController;
         } else {
             mController = new FakeCronetController();
         }
+        // TODO(ErroneousThreadPoolConstructorChecker): Thread pool size will never go beyond
+        // corePoolSize if an unbounded queue is used
         mExecutorService =
                 new ThreadPoolExecutor(
                         /* corePoolSize= */ 1,

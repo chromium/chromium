@@ -53,7 +53,7 @@ public class AuxiliarySearchProvider {
     static Comparator<Tab> sComparator =
             (tab1, tab2) -> {
                 long delta = tab1.getTimestampMillis() - tab2.getTimestampMillis();
-                return (int) -Math.signum(delta);
+                return (int) -Math.signum((float) delta);
             };
 
     private static final String MAX_FAVICON_NUMBER_PARAM = "max_favicon_number";
