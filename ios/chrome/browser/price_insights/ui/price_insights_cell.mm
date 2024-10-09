@@ -456,6 +456,18 @@ const CGFloat kTrackButtonVerticalPadding = 4.0f;
         [UIButtonConfiguration plainButtonConfiguration];
     configuration.baseForegroundColor = [UIColor colorNamed:kSolidWhiteColor];
     configuration.background.backgroundColor = [UIColor colorNamed:kBlueColor];
+
+    // Ensure the foreground color is applied and doesn't change.
+    configuration.titleTextAttributesTransformer =
+        ^NSDictionary<NSAttributedStringKey, id>*(
+            NSDictionary<NSAttributedStringKey, id>* incomingAttributes) {
+      NSMutableDictionary* outgoingAttributes =
+          [incomingAttributes mutableCopy];
+      outgoingAttributes[NSForegroundColorAttributeName] =
+          [UIColor colorNamed:kSolidWhiteColor];
+      return outgoingAttributes;
+    };
+
     configuration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
     configuration.contentInsets = NSDirectionalEdgeInsetsMake(
         kTrackButtonVerticalPadding, 0, kTrackButtonVerticalPadding, 0);
