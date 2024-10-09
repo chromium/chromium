@@ -756,3 +756,22 @@ TEST_F(FeaturedSearchProviderTest, IphShownLimit) {
     test(input, {});
   }
 }
+
+TEST_F(FeaturedSearchProviderTest, OffTheRecord) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeaturesAndParameters(
+      {{history_embeddings::kHistoryEmbeddings,
+        {{history_embeddings::kOmniboxScoped.name, "true"}}}},
+      {omnibox::kStarterPackIPH});
+  AddStarterPackEntriesToTemplateUrlService();
+  AutocompleteInput input;
+  input.set_focus_type(metrics::INTERACTION_FOCUS);
+
+  // By default, the @history promo should be shown.
+  RunAndVerifyIphTypes(input, {IphType::kHistoryScopePromo});
+
+  // The @history scope doesn't work in Incognito or guest mode, though, so it
+  // doesn't make sense to promote it in these windows.
+  EXPECT_CALL(*client_, IsOffTheRecord()).WillRepeatedly(testing::Return(true));
+  RunAndVerifyIphTypes(input, {});
+}

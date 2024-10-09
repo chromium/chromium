@@ -509,6 +509,7 @@ bool FeaturedSearchProvider::ShouldShowHistoryScopePromoIphMatch(
   // to embeddings.
   return input.IsZeroSuggest() && !client_->IsHistoryEmbeddingsEnabled() &&
          history_embeddings::kOmniboxScoped.Get() &&
+         !client_->IsOffTheRecord() &&
          ShouldShowIPH(IphType::kHistoryScopePromo);
 }
 
