@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
@@ -533,7 +534,8 @@ bool MockRenderProcessHost::HostHasNotBeenUsed() {
 }
 
 bool MockRenderProcessHost::IsSpare() const {
-  return this == SpareRenderProcessHostManagerImpl::Get().GetSpare();
+  return base::Contains(SpareRenderProcessHostManagerImpl::Get().GetSpares(),
+                        this);
 }
 
 void MockRenderProcessHost::SetProcessLock(

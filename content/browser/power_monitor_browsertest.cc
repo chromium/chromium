@@ -181,7 +181,8 @@ class PowerMonitorTest : public ContentBrowserTest {
       ++request_count_from_renderer_;
       std::move(renderer_bound_closure_).Run();
     } else {
-      DCHECK(SpareRenderProcessHostManagerImpl::Get().GetSpare());
+      DCHECK_EQ(SpareRenderProcessHostManagerImpl::Get().GetSpares().size(),
+                1u);
     }
 
     power_monitor_message_broadcaster_.Bind(std::move(receiver));

@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -26,9 +27,10 @@ struct WebUIContentsWarmupLevelPreCondition {
   WebUIContentsWarmupLevelPreCondition& operator=(
       WebUIContentsWarmupLevelPreCondition&&);
   ~WebUIContentsWarmupLevelPreCondition();
-  // The spare process before the contents is created. This can be nullptr
-  // when the memory pressure is high or the spare process creation is delayed.
-  raw_ptr<const content::RenderProcessHost> spare_process = nullptr;
+  // The IDs of the spare processes before the contents is created. This can be
+  // empty when the memory pressure is high or a spare process creation is
+  // delayed.
+  std::vector<int> spare_process_ids;
 
   // Use WeakPtr because the preloaded contents could be destroyed, e.g. after
   // a request of contents under a different browser context.

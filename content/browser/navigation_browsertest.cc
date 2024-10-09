@@ -107,6 +107,8 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/mojom/frame/remote_frame.mojom-test-utils.h"
 #include "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom-shared.h"
@@ -9187,7 +9189,7 @@ IN_PROC_BROWSER_TEST_P(DeferSpeculativeRFHCreationRenderProcessTest,
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
-  SpareRenderProcessHostManagerImpl::Get().CleanupSpare();
+  SpareRenderProcessHostManagerImpl::Get().CleanupSparesForTesting();
   SpareRenderProcessHostStartedObserver spare_started_observer;
 
   GURL url = embedded_test_server()->GetURL("b.com", "/title1.html");
@@ -9663,14 +9665,14 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(AndroidPrewarmSpareRendererTest, ReuseSpareRenderer) {
   auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
-  spare_manager.CleanupSpare();
+  spare_manager.CleanupSparesForTesting();
   SpareRenderProcessHostStartedObserver spare_started_observer;
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
   RenderProcessHost* created_process =
       spare_started_observer.WaitForSpareRenderProcessStarted();
   ASSERT_TRUE(!!created_process);
-  ASSERT_EQ(spare_manager.GetSpare(), created_process);
+  ASSERT_THAT(spare_manager.GetSpares(), testing::ElementsAre(created_process));
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
   ASSERT_TRUE(NavigateToURL(
@@ -9685,14 +9687,14 @@ IN_PROC_BROWSER_TEST_P(AndroidPrewarmSpareRendererTest, RendererTimeout) {
   spare_manager.SetDeferTimerTaskRunnerForTesting(task_runner);
   const base::TimeDelta kTimeout = base::Seconds(10);
 
-  spare_manager.CleanupSpare();
+  spare_manager.CleanupSparesForTesting();
   SpareRenderProcessHostStartedObserver spare_started_observer;
   ASSERT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("a.com", "/title1.html")));
   RenderProcessHost* created_process =
       spare_started_observer.WaitForSpareRenderProcessStarted();
   ASSERT_TRUE(!!created_process);
-  ASSERT_EQ(spare_manager.GetSpare(), created_process);
+  ASSERT_THAT(spare_manager.GetSpares(), testing::ElementsAre(created_process));
 
   if (!SpareRendererHasTimeout()) {
     // Warming up a spare renderer with a timeout shall not override
@@ -9703,9 +9705,10 @@ IN_PROC_BROWSER_TEST_P(AndroidPrewarmSpareRendererTest, RendererTimeout) {
   task_runner->FastForwardBy(kTimeout);
   base::RunLoop().RunUntilIdle();
   if (SpareRendererHasTimeout()) {
-    ASSERT_FALSE(!!spare_manager.GetSpare());
+    EXPECT_TRUE(spare_manager.GetSpares().empty());
   } else {
-    ASSERT_EQ(created_process, spare_manager.GetSpare());
+    ASSERT_THAT(spare_manager.GetSpares(),
+                testing::ElementsAre(created_process));
   }
 }
 #endif  // BUILDFLAG(IS_ANDROID)

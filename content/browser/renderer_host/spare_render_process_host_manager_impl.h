@@ -40,9 +40,11 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   void WarmupSpare(BrowserContext* browser_context) override;
-  RenderProcessHost* GetSpare() override;
+  const std::vector<RenderProcessHost*>& GetSpares() override;
+  std::vector<int> GetSpareIds() override;
+  void CleanupSparesForTesting() override;
 
-  // Start a spare renderer immediately if there isn't one.
+  // Start a spare renderer immediately, only if there is none.
   // If the timeout is given, the spare render process will not be created
   // if there is a delayed creation which indicates no timeout.
   //
@@ -76,24 +78,24 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
   // might require a new process for |browser_context|).
   //
   // Note that depending on the caller PrepareForFutureRequests can be called
-  // after the `spare_rph_` has either been 1) matched and taken or 2)
-  // mismatched and ignored or 3) matched and ignored.
+  // after a spare RPH has either been 1) matched and taken or 2) mismatched and
+  // ignored or 3) matched and ignored.
   //
   // The creation of new spare renderer will be delayed by `delay` if present.
   // This is used to mitigate resource contention.
   void PrepareForFutureRequests(BrowserContext* browser_context,
                                 std::optional<base::TimeDelta> delay);
 
-  // Gracefully remove and cleanup a spare RenderProcessHost if it exists.
-  void CleanupSpare();
+  // Gracefully remove and cleanup all existing spare RenderProcessHost.
+  void CleanupSpares();
 
   void SetDeferTimerTaskRunnerForTesting(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
  private:
-  // Release ownership of the spare renderer. Called when the spare has either
+  // Release ownership of a spare renderer. Called when the spare has either
   // been 1) claimed to be used in a navigation or 2) shutdown somewhere else.
-  void ReleaseSpare();
+  void ReleaseSpare(RenderProcessHost* host);
 
   // RenderProcessHostObserver:
   void RenderProcessReady(RenderProcessHost* host) override;
@@ -116,9 +118,8 @@ class CONTENT_EXPORT SpareRenderProcessHostManagerImpl
   // changed.
   base::ObserverList<Observer> observer_list_;
 
-  // This is a bare pointer, because RenderProcessHost manages the lifetime of
-  // all its instances; see GetAllHosts().
-  raw_ptr<RenderProcessHost> spare_rph_ = nullptr;
+  // All spare RPHs. RPH instances are self-owned, hence the raw pointers.
+  std::vector<RenderProcessHost*> spare_rphs_;
 
   // The timer used to track the startup time of the spare renderer process.
   std::unique_ptr<base::ElapsedTimer> process_startup_timer_;

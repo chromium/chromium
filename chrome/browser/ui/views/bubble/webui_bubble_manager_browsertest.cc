@@ -14,23 +14,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_utils.h"
 
 namespace {
-
-void DestroySpareRenderProcess() {
-  content::RenderProcessHost* spare_render_process_host =
-      content::SpareRenderProcessHostManager::Get().GetSpare();
-  if (!spare_render_process_host) {
-    return;
-  }
-
-  content::RenderProcessHostWatcher kill_observer(
-      spare_render_process_host,
-      content::RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
-  spare_render_process_host->FastShutdownIfPossible(0);
-  kill_observer.Wait();
-}
 
 // Close the bubble, clear any cached content wrapper, including the ones
 // stored in the contents wrapper service.
@@ -157,13 +142,14 @@ IN_PROC_BROWSER_TEST_F(WebUIBubbleManagerBrowserTest,
 // TODO(crbug.com/325316150): Fix flakiness and re-enable.
 IN_PROC_BROWSER_TEST_F(WebUIBubbleManagerBrowserTest, DISABLED_WarmupLevel) {
   // Use the spare renderer if there is one.
-  EXPECT_NE(content::SpareRenderProcessHostManager::Get().GetSpare(), nullptr);
+  auto& spare_manager = content::SpareRenderProcessHostManager::Get();
+  EXPECT_FALSE(spare_manager.GetSpares().empty());
   bubble_manager()->ShowBubble();
   EXPECT_EQ(bubble_manager()->contents_warmup_level(),
             WebUIContentsWarmupLevel::kSpareRenderer);
 
   // Create a new process if there is no spare renderer.
-  DestroySpareRenderProcess();
+  spare_manager.CleanupSparesForTesting();
   DestroyBubble(bubble_manager(), browser()->profile());
   bubble_manager()->ShowBubble();
   EXPECT_EQ(bubble_manager()->contents_warmup_level(),

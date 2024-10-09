@@ -1362,7 +1362,9 @@ void RenderProcessHost::SetMaxRendererProcessCount(size_t count) {
   g_max_renderer_count_override = count;
 
   if (RenderProcessHostImpl::GetProcessCount() > count) {
-    SpareRenderProcessHostManagerImpl::Get().CleanupSpare();
+    // TODO(pmonette): Only cleanup n spares, where n is the count of processes
+    // that is over the limit.
+    SpareRenderProcessHostManagerImpl::Get().CleanupSpares();
   }
 }
 
@@ -3079,7 +3081,8 @@ bool RenderProcessHostImpl::HostHasNotBeenUsed() {
 }
 
 bool RenderProcessHostImpl::IsSpare() const {
-  return this == SpareRenderProcessHostManagerImpl::Get().GetSpare();
+  return base::Contains(SpareRenderProcessHostManagerImpl::Get().GetSpares(),
+                        this);
 }
 
 void RenderProcessHostImpl::SetProcessLock(

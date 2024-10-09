@@ -5,8 +5,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_SPARE_RENDER_PROCESS_HOST_MANAGER_H_
 #define CONTENT_PUBLIC_BROWSER_SPARE_RENDER_PROCESS_HOST_MANAGER_H_
 
-#include <optional>
-
 #include "base/observer_list_types.h"
 #include "content/common/content_export.h"
 
@@ -39,10 +37,18 @@ class CONTENT_EXPORT SpareRenderProcessHostManager {
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
 
-  // Return the spare RenderProcessHost, if it exists. There is at most one
-  // globally-used spare RenderProcessHost at any time. Can be used in tandem
-  // with the Observer interface above to track the spare RenderProcessHost.
-  virtual RenderProcessHost* GetSpare() = 0;
+  // Return all existing spare RenderProcessHosts. Can be used in tandem
+  // with the Observer interface above to track the lifetime of all the spare
+  // RenderProcessHosts.
+  virtual const std::vector<RenderProcessHost*>& GetSpares() = 0;
+
+  // Returns the IDs of all the existing spare RenderProcessHosts. Useful when
+  // you want to save the current set of spare RPHs for a later comparison (e.g.
+  // save the current spares, do a navigation, and check if the used RPH was a
+  // spare before the navigation. Using `GetSpares()` and comparing pointers
+  // wouldn't work because there is always a chance that a RPH is destroyed and
+  // a new one is created reusing the same address).
+  virtual std::vector<int> GetSpareIds() = 0;
 
   // Possibly start an unbound, spare RenderProcessHost. A subsequent creation
   // of a RenderProcessHost with a matching browser_context may use this
@@ -62,6 +68,9 @@ class CONTENT_EXPORT SpareRenderProcessHostManager {
   // //content layer will maintain a warm spare process host at all times
   // (without a need for separate calls to WarmupSpare).
   virtual void WarmupSpare(BrowserContext* browser_context) = 0;
+
+  // Gracefully remove and cleanup all existing spare RenderProcessHosts.
+  virtual void CleanupSparesForTesting() = 0;
 
  protected:
   virtual ~SpareRenderProcessHostManager() = default;

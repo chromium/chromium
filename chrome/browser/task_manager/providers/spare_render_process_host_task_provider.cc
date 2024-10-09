@@ -32,13 +32,15 @@ Task* SpareRenderProcessHostTaskProvider::GetTaskOfUrlRequest(int child_id,
 
 void SpareRenderProcessHostTaskProvider::StartUpdating() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!task_);
+  DCHECK(tasks_by_rph_id_.empty());
 
   auto& spare_manager = content::SpareRenderProcessHostManager::Get();
-  RenderProcessHost* spare_rph = spare_manager.GetSpare();
-  if (spare_rph && spare_rph->IsReady()) {
-    OnSpareRenderProcessHostReady(spare_rph);
+  for (RenderProcessHost* spare_rph : spare_manager.GetSpares()) {
+    if (spare_rph->IsReady()) {
+      OnSpareRenderProcessHostReady(spare_rph);
+    }
   }
+
   scoped_observation_.Observe(&spare_manager);
 }
 
@@ -47,29 +49,36 @@ void SpareRenderProcessHostTaskProvider::StopUpdating() {
 
   scoped_observation_.Reset();
 
-  task_.reset();
+  // Destroy all tasks.
+  tasks_by_rph_id_.clear();
 }
 
 void SpareRenderProcessHostTaskProvider::OnSpareRenderProcessHostReady(
     RenderProcessHost* host) {
-  CHECK(!task_);
   ChildProcessData data(content::PROCESS_TYPE_RENDERER);
   data.SetProcess(host->GetProcess().Duplicate());
   data.id = host->GetID();
-  task_ = std::make_unique<ChildProcessTask>(
+  auto task = std::make_unique<ChildProcessTask>(
       data, ChildProcessTask::ProcessSubtype::kSpareRenderProcess);
-  NotifyObserverTaskAdded(task_.get());
+
+  auto [it, inserted] =
+      tasks_by_rph_id_.emplace(host->GetID(), std::move(task));
+  CHECK(inserted);
+
+  NotifyObserverTaskAdded(it->second.get());
 }
 
 void SpareRenderProcessHostTaskProvider::OnSpareRenderProcessHostRemoved(
     RenderProcessHost* host) {
-  if (!task_) {
+  auto it = tasks_by_rph_id_.find(host->GetID());
+  if (it == tasks_by_rph_id_.end()) {
     // This can happen when a spare RenderProcessHost was created but never
     // reached the "ready" state.
     return;
   }
-  NotifyObserverTaskRemoved(task_.get());
-  task_.reset();
+
+  NotifyObserverTaskRemoved(it->second.get());
+  tasks_by_rph_id_.erase(it);
 }
 
 }  // namespace task_manager

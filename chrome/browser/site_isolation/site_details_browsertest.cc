@@ -276,12 +276,10 @@ class SiteDetailsBrowserTest : public extensions::ExtensionBrowserTest {
     EXPECT_EQ(buckets.size(), 1u);
     int rph_count = buckets[0].min;
 
-    // Memory.RenderProcessHost.Count.All includes the spare process. If a
-    // spare is present, subtract it from total count since the tests below
-    // assume no spare.
-    if (content::SpareRenderProcessHostManager::Get().GetSpare()) {
-      rph_count--;
-    }
+    // Memory.RenderProcessHost.Count.All includes all spare processes. Subtract
+    // them from total count since the tests below assume no spare.
+    rph_count -=
+        content::SpareRenderProcessHostManager::Get().GetSpares().size();
 
     return rph_count;
   }

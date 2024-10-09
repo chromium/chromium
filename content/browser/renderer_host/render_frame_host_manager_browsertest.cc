@@ -6020,8 +6020,8 @@ IN_PROC_BROWSER_TEST_P(
   // Discard the spare RenderProcessHost to ensure a new RenderProcessHost
   // is created and has the right prioritization.
   auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
-  spare_manager.CleanupSpare();
-  EXPECT_FALSE(spare_manager.GetSpare());
+  spare_manager.CleanupSparesForTesting();
+  EXPECT_TRUE(spare_manager.GetSpares().empty());
 
   // Start a navigation to b.com to ensure a cross-process navigation is
   // in progress and ensure the process for the speculative host is different.
@@ -6097,9 +6097,9 @@ IN_PROC_BROWSER_TEST_P(
 
   // At this time, there should be a spare RenderProcesHost. Capture it for
   // testing expectations later.
-  RenderProcessHost* spare_rph =
-      SpareRenderProcessHostManagerImpl::Get().GetSpare();
-  EXPECT_TRUE(spare_rph);
+  auto& spare_manager = SpareRenderProcessHostManagerImpl::Get();
+  ASSERT_EQ(spare_manager.GetSpares().size(), 1u);
+  RenderProcessHost* spare_rph = spare_manager.GetSpares()[0];
   EXPECT_EQ(spare_rph->GetPriority(), base::Process::Priority::kBestEffort);
 
   // Start a navigation to b.com to ensure a cross-process navigation is

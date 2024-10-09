@@ -4,6 +4,7 @@
 
 #include <set>
 
+#include "base/containers/contains.h"
 #include "base/stl_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -103,9 +104,9 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, ProcessPerSite) {
 // discard it as in https://crbug.com/1094088.
 IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, SpareRenderer) {
   // Capture current spare renderer.
-  content::RenderProcessHost* spare =
-      content::SpareRenderProcessHostManager::Get().GetSpare();
-  ASSERT_TRUE(spare);
+  std::vector<int> spare_ids_before_navigation =
+      content::SpareRenderProcessHostManager::Get().GetSpareIds();
+  ASSERT_FALSE(spare_ids_before_navigation.empty());
 
   // Note the current render processes before the navigation. These should all
   // remain alive after the navigation.
@@ -118,7 +119,9 @@ IN_PROC_BROWSER_TEST_F(WebUiNtpBrowserTest, SpareRenderer) {
   ExpectIsWebUiNtp(ntp);
 
   // Check spare was taken.
-  EXPECT_EQ(ntp->GetPrimaryMainFrame()->GetProcess(), spare);
+  EXPECT_TRUE(
+      base::Contains(spare_ids_before_navigation,
+                     ntp->GetPrimaryMainFrame()->GetProcess()->GetID()));
 
   // No processes should be unnecessarily terminated.
   const std::set<int> ending_rph_ids = LiveRenderProcessHostIds();

@@ -808,7 +808,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   static void SetHungRendererAnalysisFunction(
       AnalyzeHungRendererFunction analyze_hung_renderer);
 
-  // Counts current RenderProcessHost(s), ignoring the spare process.
+  // Counts current RenderProcessHost(s), ignoring all spare processes.
   static int GetCurrentRenderProcessCountForTesting();
 
   // Allows tests to override host interface binding behavior. Any interface

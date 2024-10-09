@@ -44,7 +44,7 @@ void SpareRenderProcessHostManagerImpl::StartDestroyTimer(
   }
   deferred_destroy_timer_.Start(
       FROM_HERE, timeout.value(),
-      base::BindOnce(&SpareRenderProcessHostManagerImpl::CleanupSpare,
+      base::BindOnce(&SpareRenderProcessHostManagerImpl::CleanupSpares,
                      base::Unretained(this)));
 }
 
@@ -67,8 +67,22 @@ void SpareRenderProcessHostManagerImpl::WarmupSpare(
   WarmupSpare(browser_context, std::nullopt);
 }
 
-RenderProcessHost* SpareRenderProcessHostManagerImpl::GetSpare() {
-  return spare_rph_;
+const std::vector<RenderProcessHost*>&
+SpareRenderProcessHostManagerImpl::GetSpares() {
+  return spare_rphs_;
+}
+
+std::vector<int> SpareRenderProcessHostManagerImpl::GetSpareIds() {
+  std::vector<int> spare_ids;
+  spare_ids.reserve(spare_rphs_.size());
+  for (RenderProcessHost* spare_rph : spare_rphs_) {
+    spare_ids.push_back(spare_rph->GetID());
+  }
+  return spare_ids;
+}
+
+void SpareRenderProcessHostManagerImpl::CleanupSparesForTesting() {
+  CleanupSpares();
 }
 
 void SpareRenderProcessHostManagerImpl::WarmupSpare(
@@ -86,9 +100,12 @@ void SpareRenderProcessHostManagerImpl::WarmupSpare(
     }
   }
 
-  if (spare_rph_ && spare_rph_->GetBrowserContext() == browser_context) {
+  // Check if there's already an existing, matching, spare.
+  RenderProcessHost* spare_rph =
+      !spare_rphs_.empty() ? spare_rphs_[0] : nullptr;
+  if (spare_rph && spare_rph->GetBrowserContext() == browser_context) {
     DCHECK_EQ(browser_context->GetDefaultStoragePartition(),
-              spare_rph_->GetStoragePartition());
+              spare_rph->GetStoragePartition());
 
     // Use the new timeout if the specified timeout will be triggered after the
     // current timeout (or not triggered at all).
@@ -99,8 +116,8 @@ void SpareRenderProcessHostManagerImpl::WarmupSpare(
     return;
   }
 
-  bool had_spare_renderer = !!spare_rph_;
-  CleanupSpare();
+  bool had_spare_renderer = !!spare_rph;
+  CleanupSpares();
   UMA_HISTOGRAM_BOOLEAN(
       "BrowserRenderProcessHost.SpareProcessEvictedOtherSpare",
       had_spare_renderer);
@@ -144,10 +161,14 @@ void SpareRenderProcessHostManagerImpl::WarmupSpare(
   }
 
   process_startup_timer_ = std::make_unique<base::ElapsedTimer>();
-  spare_rph_ = RenderProcessHostImpl::CreateRenderProcessHost(
-      browser_context, nullptr /* site_instance */);
-  spare_rph_->AddObserver(this);
-  spare_rph_->Init();
+
+  RenderProcessHost* new_spare_rph =
+      RenderProcessHostImpl::CreateRenderProcessHost(
+          browser_context, nullptr /* site_instance */);
+  new_spare_rph->AddObserver(this);
+  new_spare_rph->Init();
+  spare_rphs_.push_back(new_spare_rph);
+
   // Use the new timeout if there is no previous renderer or
   // the specified timeout will be triggered after the current timeout
   // (or not triggered at all).
@@ -165,6 +186,7 @@ void SpareRenderProcessHostManagerImpl::DeferredWarmupSpare(
     BrowserContext* browser_context,
     base::TimeDelta delay,
     std::optional<base::TimeDelta> timeout) {
+  delay_timer_ = std::make_unique<base::ElapsedTimer>();
   deferred_warmup_timer_.Start(
       FROM_HERE, delay,
       base::BindOnce(
@@ -264,11 +286,15 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
       RenderProcessHostImpl::SpareProcessMaybeTakeAction;
   SpareProcessMaybeTakeAction action =
       SpareProcessMaybeTakeAction::kNoSparePresent;
-  if (!spare_rph_) {
+
+  RenderProcessHost* next_spare_rph =
+      !spare_rphs_.empty() ? spare_rphs_[0] : nullptr;
+
+  if (!next_spare_rph) {
     action = SpareProcessMaybeTakeAction::kNoSparePresent;
-  } else if (browser_context != spare_rph_->GetBrowserContext()) {
+  } else if (browser_context != next_spare_rph->GetBrowserContext()) {
     action = SpareProcessMaybeTakeAction::kMismatchedBrowserContext;
-  } else if (!spare_rph_->InSameStoragePartition(site_storage)) {
+  } else if (!next_spare_rph->InSameStoragePartition(site_storage)) {
     action = SpareProcessMaybeTakeAction::kMismatchedStoragePartition;
   } else if (!embedder_allows_spare_usage) {
     action = SpareProcessMaybeTakeAction::kRefusedByEmbedder;
@@ -284,29 +310,32 @@ RenderProcessHost* SpareRenderProcessHostManagerImpl::MaybeTakeSpare(
 
   // Decide whether to take or drop the spare process.
   RenderProcessHost* returned_process = nullptr;
-  if (spare_rph_ && browser_context == spare_rph_->GetBrowserContext() &&
-      spare_rph_->InSameStoragePartition(site_storage) &&
+  if (next_spare_rph &&
+      browser_context == next_spare_rph->GetBrowserContext() &&
+      next_spare_rph->InSameStoragePartition(site_storage) &&
       !site_instance->IsGuest() && embedder_allows_spare_usage &&
       site_instance_allows_spare_usage && !hosts_pdf_content &&
       !use_skia_font_manager) {
-    CHECK(spare_rph_->HostHasNotBeenUsed());
+    CHECK(next_spare_rph->HostHasNotBeenUsed());
 
     // If the spare process ends up getting killed, the spare manager should
     // discard the spare RPH, so if one exists, it should always be live here.
-    CHECK(spare_rph_->IsInitializedAndNotDead());
+    CHECK(next_spare_rph->IsInitializedAndNotDead());
 
     DCHECK_EQ(SpareProcessMaybeTakeAction::kSpareTaken, action);
-    returned_process = spare_rph_;
-    ReleaseSpare();
+    returned_process = next_spare_rph;
+    ReleaseSpare(next_spare_rph);
   } else if (!RenderProcessHostImpl::IsSpareProcessKeptAtAllTimes()) {
     // If the spare shouldn't be kept around, then discard it as soon as we
     // find that the current spare was mismatched.
-    CleanupSpare();
+    CleanupSpares();
   } else if (RenderProcessHostImpl::GetProcessCountForLimit() >=
              RenderProcessHostImpl::GetMaxRendererProcessCount()) {
-    // Drop the spare if we are at a process limit and the spare wasn't taken.
+    // Drop all spares if we are at a process limit and the spare wasn't taken.
     // This helps avoid process reuse.
-    CleanupSpare();
+    // TODO(pmonette): Only cleanup n spares, where n is the count of processes
+    // that is over the limit.
+    CleanupSpares();
   }
 
   return returned_process;
@@ -334,35 +363,33 @@ void SpareRenderProcessHostManagerImpl::PrepareForFutureRequests(
     // Always keep around a spare process for the most recently requested
     // |browser_context|.
     if (delay.has_value()) {
-      delay_timer_ = std::make_unique<base::ElapsedTimer>();
       DeferredWarmupSpare(browser_context, *delay, timeout);
     } else {
       WarmupSpare(browser_context, timeout);
     }
   } else {
-    // Discard the ignored (probably non-matching) spare so as not to waste
+    // Discard the ignored (probably non-matching) spares so as not to waste
     // resources.
-    CleanupSpare();
+    CleanupSpares();
   }
 }
 
-void SpareRenderProcessHostManagerImpl::CleanupSpare() {
-  if (spare_rph_) {
+void SpareRenderProcessHostManagerImpl::CleanupSpares() {
+  std::vector<RenderProcessHost*> spare_rphs = std::move(spare_rphs_);
+
+  // Stop the destroy timer since it is no longer required.
+  deferred_destroy_timer_.Stop();
+
+  for (RenderProcessHost* spare_rph : spare_rphs) {
     // Stop observing the process, to avoid getting notifications as a
     // consequence of the Cleanup call below - such notification could call
     // back into CleanupSpare leading to stack overflow.
-    spare_rph_->RemoveObserver(this);
+    spare_rph->RemoveObserver(this);
 
     // Make sure the RenderProcessHost object gets destroyed.
-    if (!spare_rph_->AreRefCountsDisabled()) {
-      spare_rph_->Cleanup();
+    if (!spare_rph->AreRefCountsDisabled()) {
+      spare_rph->Cleanup();
     }
-
-    // Stop the destroy timer since it is no longer required.
-    deferred_destroy_timer_.Stop();
-
-    // Drop reference to the RenderProcessHost object
-    RenderProcessHost* spare_rph = std::exchange(spare_rph_, nullptr);
 
     for (auto& observer : observer_list_) {
       observer.OnSpareRenderProcessHostRemoved(spare_rph);
@@ -376,40 +403,48 @@ void SpareRenderProcessHostManagerImpl::SetDeferTimerTaskRunnerForTesting(
   deferred_destroy_timer_.SetTaskRunner(task_runner);
 }
 
-void SpareRenderProcessHostManagerImpl::ReleaseSpare() {
-  CHECK(spare_rph_);
-
-  spare_rph_->RemoveObserver(this);
-
-  RenderProcessHost* spare_rph = std::exchange(spare_rph_, nullptr);
+void SpareRenderProcessHostManagerImpl::ReleaseSpare(RenderProcessHost* host) {
+  // Erase while intentionally preserving the order of the other elements.
+  size_t removed = std::erase(spare_rphs_, host);
+  CHECK_EQ(removed, 1u);
+  host->RemoveObserver(this);
   for (auto& observer : observer_list_) {
-    observer.OnSpareRenderProcessHostRemoved(spare_rph);
+    observer.OnSpareRenderProcessHostRemoved(host);
   }
 }
 
 void SpareRenderProcessHostManagerImpl::RenderProcessReady(
     RenderProcessHost* host) {
-  CHECK_EQ(spare_rph_, host);
+  CHECK(base::Contains(spare_rphs_, host));
+
   CHECK(process_startup_timer_);
   UMA_HISTOGRAM_TIMES("BrowserRenderProcessHost.SpareProcessStartupTime",
                       process_startup_timer_->Elapsed());
   process_startup_timer_.reset();
+
   for (auto& observer : observer_list_) {
-    observer.OnSpareRenderProcessHostReady(spare_rph_);
+    observer.OnSpareRenderProcessHostReady(host);
   }
 }
 
 void SpareRenderProcessHostManagerImpl::RenderProcessExited(
     RenderProcessHost* host,
     const ChildProcessTerminationInfo& info) {
-  CHECK_EQ(spare_rph_, host);
-  CleanupSpare();
+  ReleaseSpare(host);
+
+  // Make sure the RenderProcessHost object gets destroyed.
+  if (!host->AreRefCountsDisabled()) {
+    host->Cleanup();
+  }
+
+  if (spare_rphs_.empty()) {
+    deferred_destroy_timer_.Stop();
+  }
 }
 
 void SpareRenderProcessHostManagerImpl::RenderProcessHostDestroyed(
     RenderProcessHost* host) {
-  CHECK_EQ(spare_rph_, host);
-  ReleaseSpare();
+  ReleaseSpare(host);
 }
 
 }  // namespace content
