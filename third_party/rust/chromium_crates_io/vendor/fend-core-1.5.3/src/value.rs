@@ -47,6 +47,7 @@ impl Value {
 	pub(crate) fn compare<I: Interrupt>(
 		&self,
 		other: &Self,
+		ctx: &mut crate::Context,
 		int: &I,
 	) -> FResult<Option<cmp::Ordering>> {
 		let c = |cmp| {
@@ -57,14 +58,14 @@ impl Value {
 			}
 		};
 		Ok(match (self, other) {
-			(Self::Num(a), Self::Num(b)) => a.compare(b, int)?,
+			(Self::Num(a), Self::Num(b)) => a.compare(b, ctx.decimal_separator, int)?,
 			(Self::BuiltInFunction(a), Self::BuiltInFunction(b)) => c(a == b),
 			(Self::Format(a), Self::Format(b)) => c(a == b),
 			(Self::Dp, Self::Dp) | (Self::Sf, Self::Sf) | (Self::Unit, Self::Unit) => c(true),
 			(Self::Base(a), Self::Base(b)) => c(a == b),
-			(Self::Fn(a1, a2, a3), Self::Fn(b1, b2, b3)) => {
-				c(a1 == b1 && a2.compare(b2, int)? && compare_option_arc_scope(a3, b3, int)?)
-			}
+			(Self::Fn(a1, a2, a3), Self::Fn(b1, b2, b3)) => c(a1 == b1
+				&& a2.compare(b2, ctx, int)?
+				&& compare_option_arc_scope(a3, b3, ctx, int)?),
 			(Self::Object(a), Self::Object(b)) => {
 				if a.len() != b.len() {
 					return Ok(None);
@@ -73,7 +74,7 @@ impl Value {
 					if a1 != b1 {
 						return Ok(None);
 					}
-					match a2.compare(b2, int)? {
+					match a2.compare(b2, ctx, int)? {
 						Some(cmp::Ordering::Equal) => (),
 						other => return Ok(other),
 					}
@@ -279,11 +280,15 @@ impl Value {
 			Self::Num(n) => {
 				let other = crate::ast::evaluate(other, scope.clone(), attrs, context, int)?;
 				if matches!(other, Self::Dp) {
-					let num = Self::Num(n).expect_num()?.try_as_usize(int)?;
+					let num = Self::Num(n)
+						.expect_num()?
+						.try_as_usize(context.decimal_separator, int)?;
 					return Ok(Self::Format(FormattingStyle::DecimalPlaces(num)));
 				}
 				if matches!(other, Self::Sf) {
-					let num = Self::Num(n).expect_num()?.try_as_usize(int)?;
+					let num = Self::Num(n)
+						.expect_num()?
+						.try_as_usize(context.decimal_separator, int)?;
 					if num == 0 {
 						return Err(FendError::CannotFormatWithZeroSf);
 					}
@@ -328,22 +333,22 @@ impl Value {
 			BuiltInFunction::Sin => arg.expect_num()?.sin(scope, attrs, context, int)?,
 			BuiltInFunction::Cos => arg.expect_num()?.cos(scope, attrs, context, int)?,
 			BuiltInFunction::Tan => arg.expect_num()?.tan(scope, attrs, context, int)?,
-			BuiltInFunction::Asin => arg.expect_num()?.asin(int)?,
-			BuiltInFunction::Acos => arg.expect_num()?.acos(int)?,
-			BuiltInFunction::Atan => arg.expect_num()?.atan(int)?,
-			BuiltInFunction::Sinh => arg.expect_num()?.sinh(int)?,
-			BuiltInFunction::Cosh => arg.expect_num()?.cosh(int)?,
-			BuiltInFunction::Tanh => arg.expect_num()?.tanh(int)?,
-			BuiltInFunction::Asinh => arg.expect_num()?.asinh(int)?,
-			BuiltInFunction::Acosh => arg.expect_num()?.acosh(int)?,
-			BuiltInFunction::Atanh => arg.expect_num()?.atanh(int)?,
-			BuiltInFunction::Ln => arg.expect_num()?.ln(int)?,
-			BuiltInFunction::Log2 => arg.expect_num()?.log2(int)?,
-			BuiltInFunction::Log10 => arg.expect_num()?.log10(int)?,
+			BuiltInFunction::Asin => arg.expect_num()?.asin(context, int)?,
+			BuiltInFunction::Acos => arg.expect_num()?.acos(context, int)?,
+			BuiltInFunction::Atan => arg.expect_num()?.atan(context, int)?,
+			BuiltInFunction::Sinh => arg.expect_num()?.sinh(context, int)?,
+			BuiltInFunction::Cosh => arg.expect_num()?.cosh(context, int)?,
+			BuiltInFunction::Tanh => arg.expect_num()?.tanh(context, int)?,
+			BuiltInFunction::Asinh => arg.expect_num()?.asinh(context, int)?,
+			BuiltInFunction::Acosh => arg.expect_num()?.acosh(context, int)?,
+			BuiltInFunction::Atanh => arg.expect_num()?.atanh(context, int)?,
+			BuiltInFunction::Ln => arg.expect_num()?.ln(context, int)?,
+			BuiltInFunction::Log2 => arg.expect_num()?.log2(context, int)?,
+			BuiltInFunction::Log10 => arg.expect_num()?.log10(context, int)?,
 			BuiltInFunction::Base => {
 				let n: u8 = arg
 					.expect_num()?
-					.try_as_usize(int)?
+					.try_as_usize(context.decimal_separator, int)?
 					.try_into()
 					.map_err(|_| FendError::UnableToConvertToBase)?;
 				return Ok(Self::Base(Base::from_plain_base(n)?));
@@ -354,11 +359,13 @@ impl Value {
 			BuiltInFunction::Conjugate => arg.expect_num()?.conjugate()?,
 			BuiltInFunction::Real => arg.expect_num()?.real()?,
 			BuiltInFunction::Imag => arg.expect_num()?.imag()?,
-			BuiltInFunction::Arg => arg.expect_num()?.arg(int)?,
+			BuiltInFunction::Arg => arg.expect_num()?.arg(context.decimal_separator, int)?,
 			BuiltInFunction::Floor => arg.expect_num()?.floor(int)?,
 			BuiltInFunction::Ceil => arg.expect_num()?.ceil(int)?,
 			BuiltInFunction::Round => arg.expect_num()?.round(int)?,
-			BuiltInFunction::Fibonacci => arg.expect_num()?.fibonacci(int)?,
+			BuiltInFunction::Fibonacci => arg
+				.expect_num()?
+				.fibonacci(context.decimal_separator, int)?,
 		})))
 	}
 

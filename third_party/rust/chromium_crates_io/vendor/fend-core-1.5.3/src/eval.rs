@@ -11,7 +11,7 @@ pub(crate) fn evaluate_to_value<I: Interrupt>(
 	context: &mut crate::Context,
 	int: &I,
 ) -> FResult<Value> {
-	let lex = lexer::lex(input, int);
+	let lex = lexer::lex(input, context, int);
 	let mut tokens = vec![];
 	let mut missing_open_parens: i32 = 0;
 	for token in lex {

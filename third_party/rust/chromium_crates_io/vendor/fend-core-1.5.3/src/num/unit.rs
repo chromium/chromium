@@ -8,7 +8,7 @@ use crate::scope::Scope;
 use crate::serialize::{Deserialize, Serialize};
 use crate::units::{lookup_default_unit, query_unit_static};
 use crate::{ast, ident::Ident};
-use crate::{Attrs, Span, SpanKind};
+use crate::{Attrs, DecimalSeparatorStyle, Span, SpanKind};
 use std::borrow::Cow;
 use std::cmp::Ordering;
 use std::collections::HashMap;
@@ -47,9 +47,10 @@ impl Value {
 	pub(crate) fn compare<I: Interrupt>(
 		&self,
 		other: &Self,
+		decimal_separator: DecimalSeparatorStyle,
 		int: &I,
 	) -> FResult<Option<cmp::Ordering>> {
-		match self.clone().sub(other.clone(), int) {
+		match self.clone().sub(other.clone(), decimal_separator, int) {
 			Err(FendError::Interrupted) => Err(FendError::Interrupted),
 			Err(_) => Ok(None),
 			Ok(result) => {
@@ -85,8 +86,13 @@ impl Value {
 		})
 	}
 
-	pub(crate) fn try_as_usize<I: Interrupt>(self, int: &I) -> FResult<usize> {
-		self.into_unitless_complex(int)?.try_as_usize(int)
+	pub(crate) fn try_as_usize<I: Interrupt>(
+		self,
+		decimal_separator: DecimalSeparatorStyle,
+		int: &I,
+	) -> FResult<usize> {
+		self.into_unitless_complex(decimal_separator, int)?
+			.try_as_usize(int)
 	}
 
 	pub(crate) fn try_as_usize_unit<I: Interrupt>(self, int: &I) -> FResult<usize> {
@@ -159,14 +165,21 @@ impl Value {
 		}
 	}
 
-	pub(crate) fn factorial<I: Interrupt>(self, int: &I) -> FResult<Self> {
+	pub(crate) fn factorial<I: Interrupt>(
+		self,
+		decimal_separator: DecimalSeparatorStyle,
+		int: &I,
+	) -> FResult<Self> {
 		Ok(Self {
 			unit: Unit::unitless(),
 			exact: self.exact,
 			base: self.base,
 			format: self.format,
 			simplifiable: self.simplifiable,
-			value: Dist::from(self.into_unitless_complex(int)?.factorial(int)?),
+			value: Dist::from(
+				self.into_unitless_complex(decimal_separator, int)?
+					.factorial(int)?,
+			),
 		})
 	}
 
@@ -183,8 +196,17 @@ impl Value {
 		}
 	}
 
-	pub(crate) fn add<I: Interrupt>(self, rhs: Self, int: &I) -> FResult<Self> {
-		let scale_factor = Unit::compute_scale_factor(&rhs.unit, &self.unit, int)?;
+	pub(crate) fn add<I: Interrupt>(
+		self,
+		rhs: Self,
+		decimal_separator: DecimalSeparatorStyle,
+		int: &I,
+	) -> FResult<Self> {
+		if rhs.is_zero(int)? {
+			return Ok(self);
+		}
+		let scale_factor =
+			Unit::compute_scale_factor(&rhs.unit, &self.unit, decimal_separator, int)?;
 		let scaled = Exact::new(rhs.value, rhs.exact)
 			.mul(&scale_factor.scale_1.apply(Dist::from), int)?
 			.div(&scale_factor.scale_2.apply(Dist::from), int)?;
@@ -221,11 +243,17 @@ impl Value {
 		Ok(rhs)
 	}
 
-	pub(crate) fn convert_to<I: Interrupt>(self, rhs: Self, int: &I) -> FResult<Self> {
+	pub(crate) fn convert_to<I: Interrupt>(
+		self,
+		rhs: Self,
+		decimal_separator: DecimalSeparatorStyle,
+		int: &I,
+	) -> FResult<Self> {
 		if rhs.value.one_point()?.compare(&1.into(), int)? != Some(Ordering::Equal) {
 			return Err(FendError::ConversionRhsNumerical);
 		}
-		let scale_factor = Unit::compute_scale_factor(&self.unit, &rhs.unit, int)?;
+		let scale_factor =
+			Unit::compute_scale_factor(&self.unit, &rhs.unit, decimal_separator, int)?;
 		let new_value = Exact::new(self.value, self.exact)
 			.mul(&scale_factor.scale_1.apply(Dist::from), int)?
 			.add(&scale_factor.offset.apply(Dist::from), int)?
@@ -240,20 +268,13 @@ impl Value {
 		})
 	}
 
-	pub(crate) fn sub<I: Interrupt>(self, rhs: Self, int: &I) -> FResult<Self> {
-		let scale_factor = Unit::compute_scale_factor(&rhs.unit, &self.unit, int)?;
-		let scaled = Exact::new(rhs.value, rhs.exact)
-			.mul(&scale_factor.scale_1.apply(Dist::from), int)?
-			.div(&scale_factor.scale_2.apply(Dist::from), int)?;
-		let value = Exact::new(self.value, self.exact).add(&-scaled, int)?;
-		Ok(Self {
-			value: value.value,
-			unit: self.unit,
-			exact: self.exact && rhs.exact && value.exact,
-			base: self.base,
-			format: self.format,
-			simplifiable: self.simplifiable,
-		})
+	pub(crate) fn sub<I: Interrupt>(
+		self,
+		rhs: Self,
+		decimal_separator: DecimalSeparatorStyle,
+		int: &I,
+	) -> FResult<Self> {
+		self.add(-rhs, decimal_separator, int)
 	}
 
 	pub(crate) fn div<I: Interrupt>(self, rhs: Self, int: &I) -> FResult<Self> {
@@ -276,7 +297,12 @@ impl Value {
 		})
 	}
 
-	fn modulo<I: Interrupt>(self, rhs: Self, int: &I) -> FResult<Self> {
+	fn modulo<I: Interrupt>(
+		self,
+		rhs: Self,
+		decimal_separator: DecimalSeparatorStyle,
+		int: &I,
+	) -> FResult<Self> {
 		Ok(Self {
 			unit: Unit::unitless(),
 			exact: self.exact && rhs.exact,
@@ -284,28 +310,19 @@ impl Value {
 			format: self.format,
 			simplifiable: self.simplifiable,
 			value: Dist::from(
-				self.into_unitless_complex(int)?
-					.modulo(rhs.into_unitless_complex(int)?, int)?,
+				self.into_unitless_complex(decimal_separator, int)?
+					.modulo(rhs.into_unitless_complex(decimal_separator, int)?, int)?,
 			),
 		})
 	}
 
-	fn bitwise<I: Interrupt>(self, rhs: Self, op: BitwiseBop, int: &I) -> FResult<Self> {
-		Ok(Self {
-			unit: Unit::unitless(),
-			exact: self.exact && rhs.exact,
-			base: self.base,
-			format: self.format,
-			simplifiable: self.simplifiable,
-			value: Dist::from(self.into_unitless_complex(int)?.bitwise(
-				rhs.into_unitless_complex(int)?,
-				op,
-				int,
-			)?),
-		})
-	}
-
-	pub(crate) fn combination<I: Interrupt>(self, rhs: Self, int: &I) -> FResult<Self> {
+	fn bitwise<I: Interrupt>(
+		self,
+		rhs: Self,
+		op: BitwiseBop,
+		decimal_separator: DecimalSeparatorStyle,
+		int: &I,
+	) -> FResult<Self> {
 		Ok(Self {
 			unit: Unit::unitless(),
 			exact: self.exact && rhs.exact,
@@ -313,13 +330,18 @@ impl Value {
 			format: self.format,
 			simplifiable: self.simplifiable,
 			value: Dist::from(
-				self.into_unitless_complex(int)?
-					.combination(rhs.into_unitless_complex(int)?, int)?,
+				self.into_unitless_complex(decimal_separator, int)?
+					.bitwise(rhs.into_unitless_complex(decimal_separator, int)?, op, int)?,
 			),
 		})
 	}
 
-	pub(crate) fn permutation<I: Interrupt>(self, rhs: Self, int: &I) -> FResult<Self> {
+	pub(crate) fn combination<I: Interrupt>(
+		self,
+		rhs: Self,
+		decimal_separator: DecimalSeparatorStyle,
+		int: &I,
+	) -> FResult<Self> {
 		Ok(Self {
 			unit: Unit::unitless(),
 			exact: self.exact && rhs.exact,
@@ -327,8 +349,27 @@ impl Value {
 			format: self.format,
 			simplifiable: self.simplifiable,
 			value: Dist::from(
-				self.into_unitless_complex(int)?
-					.permutation(rhs.into_unitless_complex(int)?, int)?,
+				self.into_unitless_complex(decimal_separator, int)?
+					.combination(rhs.into_unitless_complex(decimal_separator, int)?, int)?,
+			),
+		})
+	}
+
+	pub(crate) fn permutation<I: Interrupt>(
+		self,
+		rhs: Self,
+		decimal_separator: DecimalSeparatorStyle,
+		int: &I,
+	) -> FResult<Self> {
+		Ok(Self {
+			unit: Unit::unitless(),
+			exact: self.exact && rhs.exact,
+			base: self.base,
+			format: self.format,
+			simplifiable: self.simplifiable,
+			value: Dist::from(
+				self.into_unitless_complex(decimal_separator, int)?
+					.permutation(rhs.into_unitless_complex(decimal_separator, int)?, int)?,
 			),
 		})
 	}
@@ -342,19 +383,21 @@ impl Value {
 		int: &I,
 	) -> FResult<Self> {
 		match op {
-			Bop::Plus => self.add(rhs, int),
+			Bop::Plus => self.add(rhs, context.decimal_separator, int),
 			Bop::ImplicitPlus => {
 				let rhs = self.fudge_implicit_rhs_unit(rhs, attrs, context, int)?;
-				self.add(rhs, int)
+				self.add(rhs, context.decimal_separator, int)
 			}
-			Bop::Minus => self.sub(rhs, int),
+			Bop::Minus => self.sub(rhs, context.decimal_separator, int),
 			Bop::Mul => self.mul(rhs, int),
 			Bop::Div => self.div(rhs, int),
-			Bop::Mod => self.modulo(rhs, int),
-			Bop::Pow => self.pow(rhs, int),
-			Bop::Bitwise(bitwise_bop) => self.bitwise(rhs, bitwise_bop, int),
-			Bop::Combination => self.combination(rhs, int),
-			Bop::Permutation => self.permutation(rhs, int),
+			Bop::Mod => self.modulo(rhs, context.decimal_separator, int),
+			Bop::Pow => self.pow(rhs, context.decimal_separator, int),
+			Bop::Bitwise(bitwise_bop) => {
+				self.bitwise(rhs, bitwise_bop, context.decimal_separator, int)
+			}
+			Bop::Combination => self.combination(rhs, context.decimal_separator, int),
+			Bop::Permutation => self.permutation(rhs, context.decimal_separator, int),
 		}
 	}
 
@@ -374,9 +417,14 @@ impl Value {
 		Ok(self.exact && self.value.equals_int(1, int)? && self.is_unitless(int)?)
 	}
 
-	pub(crate) fn pow<I: Interrupt>(self, rhs: Self, int: &I) -> FResult<Self> {
+	pub(crate) fn pow<I: Interrupt>(
+		self,
+		rhs: Self,
+		decimal_separator: DecimalSeparatorStyle,
+		int: &I,
+	) -> FResult<Self> {
 		let rhs_exact = rhs.exact;
-		let rhs = rhs.into_unitless_complex(int)?;
+		let rhs = rhs.into_unitless_complex(decimal_separator, int)?;
 		let mut new_components = vec![];
 		let mut exact_res = true;
 		for unit_exp in self.unit.components {
@@ -466,12 +514,20 @@ impl Value {
 		Ok(Self::new(Dist::new_die(count, faces, int)?, vec![]))
 	}
 
-	fn remove_unit_scaling<I: Interrupt>(self, int: &I) -> FResult<Self> {
-		self.convert_to(Self::unitless(), int)
+	fn remove_unit_scaling<I: Interrupt>(
+		self,
+		decimal_separator: DecimalSeparatorStyle,
+		int: &I,
+	) -> FResult<Self> {
+		self.convert_to(Self::unitless(), decimal_separator, int)
 	}
 
-	pub(crate) fn into_unitless_complex<I: Interrupt>(mut self, int: &I) -> FResult<Complex> {
-		self = self.remove_unit_scaling(int)?;
+	pub(crate) fn into_unitless_complex<I: Interrupt>(
+		mut self,
+		decimal_separator: DecimalSeparatorStyle,
+		int: &I,
+	) -> FResult<Complex> {
+		self = self.remove_unit_scaling(decimal_separator, int)?;
 		if !self.is_unitless(int)? {
 			return Err(FendError::ExpectedAUnitlessNumber);
 		}
@@ -482,9 +538,10 @@ impl Value {
 		mut self,
 		f: impl FnOnce(Complex, &I) -> FResult<Exact<Complex>>,
 		require_unitless: bool,
+		decimal_separator: DecimalSeparatorStyle,
 		int: &I,
 	) -> FResult<Self> {
-		self = self.remove_unit_scaling(int)?;
+		self = self.remove_unit_scaling(decimal_separator, int)?;
 		if require_unitless && !self.is_unitless(int)? {
 			return Err(FendError::ExpectedAUnitlessNumber);
 		}
@@ -503,9 +560,10 @@ impl Value {
 		mut self,
 		f: impl FnOnce(Complex, &I) -> FResult<Complex>,
 		require_unitless: bool,
+		decimal_separator: DecimalSeparatorStyle,
 		int: &I,
 	) -> FResult<Self> {
-		self = self.remove_unit_scaling(int)?;
+		self = self.remove_unit_scaling(decimal_separator, int)?;
 		if require_unitless && !self.is_unitless(int)? {
 			return Err(FendError::ExpectedAUnitlessNumber);
 		}
@@ -543,7 +601,7 @@ impl Value {
 		let radians =
 			ast::resolve_identifier(&Ident::new_str("radians"), scope, attrs, context, int)?
 				.expect_num()?;
-		self.convert_to(radians, int)
+		self.convert_to(radians, context.decimal_separator, int)
 	}
 
 	fn unitless() -> Self {
@@ -593,7 +651,11 @@ impl Value {
 		})
 	}
 
-	pub(crate) fn fibonacci<I: Interrupt>(self, int: &I) -> FResult<Self> {
+	pub(crate) fn fibonacci<I: Interrupt>(
+		self,
+		decimal_separator: DecimalSeparatorStyle,
+		int: &I,
+	) -> FResult<Self> {
 		Ok(Self {
 			unit: Unit::unitless(),
 			exact: self.exact,
@@ -601,7 +663,7 @@ impl Value {
 			format: self.format,
 			simplifiable: self.simplifiable,
 			value: Complex::from(Real::from(BigRat::from(BigUint::fibonacci(
-				self.try_as_usize(int)?,
+				self.try_as_usize(decimal_separator, int)?,
 				int,
 			)?)))
 			.into(),
@@ -622,10 +684,15 @@ impl Value {
 		})
 	}
 
-	pub(crate) fn arg<I: Interrupt>(self, int: &I) -> FResult<Self> {
+	pub(crate) fn arg<I: Interrupt>(
+		self,
+		decimal_separator: DecimalSeparatorStyle,
+		int: &I,
+	) -> FResult<Self> {
 		self.apply_fn_exact(
 			|c, int| c.arg(int).map(|c| c.apply(Complex::from)),
 			false,
+			decimal_separator,
 			int,
 		)
 	}
@@ -649,10 +716,10 @@ impl Value {
 			.convert_angle_to_rad(scope, attrs, context, int)
 		{
 			Ok(rad
-				.apply_fn_exact(Complex::sin, false, int)?
-				.convert_to(Self::unitless(), int)?)
+				.apply_fn_exact(Complex::sin, false, context.decimal_separator, int)?
+				.convert_to(Self::unitless(), context.decimal_separator, int)?)
 		} else {
-			self.apply_fn_exact(Complex::sin, false, int)
+			self.apply_fn_exact(Complex::sin, false, context.decimal_separator, int)
 		}
 	}
 
@@ -667,10 +734,10 @@ impl Value {
 			.clone()
 			.convert_angle_to_rad(scope, attrs, context, int)
 		{
-			rad.apply_fn_exact(Complex::cos, false, int)?
-				.convert_to(Self::unitless(), int)
+			rad.apply_fn_exact(Complex::cos, false, context.decimal_separator, int)?
+				.convert_to(Self::unitless(), context.decimal_separator, int)
 		} else {
-			self.apply_fn_exact(Complex::cos, false, int)
+			self.apply_fn_exact(Complex::cos, false, context.decimal_separator, int)
 		}
 	}
 
@@ -685,59 +752,75 @@ impl Value {
 			.clone()
 			.convert_angle_to_rad(scope, attrs, context, int)
 		{
-			rad.apply_fn_exact(Complex::tan, false, int)?
-				.convert_to(Self::unitless(), int)
+			rad.apply_fn_exact(Complex::tan, false, context.decimal_separator, int)?
+				.convert_to(Self::unitless(), context.decimal_separator, int)
 		} else {
-			self.apply_fn_exact(Complex::tan, false, int)
+			self.apply_fn_exact(Complex::tan, false, context.decimal_separator, int)
 		}
 	}
 
-	pub(crate) fn asin<I: Interrupt>(self, int: &I) -> FResult<Self> {
-		self.apply_fn(Complex::asin, false, int)
+	pub(crate) fn asin<I: Interrupt>(self, context: &mut crate::Context, int: &I) -> FResult<Self> {
+		self.apply_fn(Complex::asin, false, context.decimal_separator, int)
 	}
 
-	pub(crate) fn acos<I: Interrupt>(self, int: &I) -> FResult<Self> {
-		self.apply_fn(Complex::acos, false, int)
+	pub(crate) fn acos<I: Interrupt>(self, context: &mut crate::Context, int: &I) -> FResult<Self> {
+		self.apply_fn(Complex::acos, false, context.decimal_separator, int)
 	}
 
-	pub(crate) fn atan<I: Interrupt>(self, int: &I) -> FResult<Self> {
-		self.apply_fn(Complex::atan, false, int)
+	pub(crate) fn atan<I: Interrupt>(self, context: &mut crate::Context, int: &I) -> FResult<Self> {
+		self.apply_fn(Complex::atan, false, context.decimal_separator, int)
 	}
 
-	pub(crate) fn sinh<I: Interrupt>(self, int: &I) -> FResult<Self> {
-		self.apply_fn(Complex::sinh, false, int)
+	pub(crate) fn sinh<I: Interrupt>(self, context: &mut crate::Context, int: &I) -> FResult<Self> {
+		self.apply_fn(Complex::sinh, false, context.decimal_separator, int)
 	}
 
-	pub(crate) fn cosh<I: Interrupt>(self, int: &I) -> FResult<Self> {
-		self.apply_fn(Complex::cosh, false, int)
+	pub(crate) fn cosh<I: Interrupt>(self, context: &mut crate::Context, int: &I) -> FResult<Self> {
+		self.apply_fn(Complex::cosh, false, context.decimal_separator, int)
 	}
 
-	pub(crate) fn tanh<I: Interrupt>(self, int: &I) -> FResult<Self> {
-		self.apply_fn(Complex::tanh, false, int)
+	pub(crate) fn tanh<I: Interrupt>(self, context: &mut crate::Context, int: &I) -> FResult<Self> {
+		self.apply_fn(Complex::tanh, false, context.decimal_separator, int)
 	}
 
-	pub(crate) fn asinh<I: Interrupt>(self, int: &I) -> FResult<Self> {
-		self.apply_fn(Complex::asinh, false, int)
+	pub(crate) fn asinh<I: Interrupt>(
+		self,
+		context: &mut crate::Context,
+		int: &I,
+	) -> FResult<Self> {
+		self.apply_fn(Complex::asinh, false, context.decimal_separator, int)
 	}
 
-	pub(crate) fn acosh<I: Interrupt>(self, int: &I) -> FResult<Self> {
-		self.apply_fn(Complex::acosh, false, int)
+	pub(crate) fn acosh<I: Interrupt>(
+		self,
+		context: &mut crate::Context,
+		int: &I,
+	) -> FResult<Self> {
+		self.apply_fn(Complex::acosh, false, context.decimal_separator, int)
 	}
 
-	pub(crate) fn atanh<I: Interrupt>(self, int: &I) -> FResult<Self> {
-		self.apply_fn(Complex::atanh, false, int)
+	pub(crate) fn atanh<I: Interrupt>(
+		self,
+		context: &mut crate::Context,
+		int: &I,
+	) -> FResult<Self> {
+		self.apply_fn(Complex::atanh, false, context.decimal_separator, int)
 	}
 
-	pub(crate) fn ln<I: Interrupt>(self, int: &I) -> FResult<Self> {
-		self.apply_fn_exact(Complex::ln, true, int)
+	pub(crate) fn ln<I: Interrupt>(self, context: &mut crate::Context, int: &I) -> FResult<Self> {
+		self.apply_fn_exact(Complex::ln, true, context.decimal_separator, int)
 	}
 
-	pub(crate) fn log2<I: Interrupt>(self, int: &I) -> FResult<Self> {
-		self.apply_fn(Complex::log2, true, int)
+	pub(crate) fn log2<I: Interrupt>(self, context: &mut crate::Context, int: &I) -> FResult<Self> {
+		self.apply_fn(Complex::log2, true, context.decimal_separator, int)
 	}
 
-	pub(crate) fn log10<I: Interrupt>(self, int: &I) -> FResult<Self> {
-		self.apply_fn(Complex::log10, true, int)
+	pub(crate) fn log10<I: Interrupt>(
+		self,
+		context: &mut crate::Context,
+		int: &I,
+	) -> FResult<Self> {
+		self.apply_fn(Complex::log10, true, context.decimal_separator, int)
 	}
 
 	pub(crate) fn format<I: Interrupt>(
@@ -769,6 +852,7 @@ impl Value {
 			self.base,
 			self.format,
 			true,
+			ctx.decimal_separator,
 			int,
 		)?;
 		exact = exact && unit_string.exact;
@@ -846,6 +930,7 @@ impl Value {
 							exponent: 1.into(),
 						}],
 					},
+					ctx.decimal_separator,
 					int,
 				);
 				match conversion {
@@ -965,7 +1050,7 @@ impl Value {
 				base_units.sort();
 				if let Some(new_unit) = lookup_default_unit(&base_units.join(" ")) {
 					let rhs = query_unit_static(new_unit, attrs, ctx, int)?.expect_num()?;
-					return result.convert_to(rhs, int);
+					return result.convert_to(rhs, ctx.decimal_separator, int);
 				}
 			}
 		}
@@ -1178,6 +1263,7 @@ impl Unit {
 
 	fn print_base_units<I: Interrupt>(
 		hash: HashMap<BaseUnit, Complex>,
+		decimal_separator: DecimalSeparatorStyle,
 		int: &I,
 	) -> FResult<String> {
 		let from_base_units: Vec<_> = hash
@@ -1195,6 +1281,7 @@ impl Unit {
 			Base::default(),
 			FormattingStyle::Auto,
 			false,
+			decimal_separator,
 			int,
 		)?
 		.value)
@@ -1204,6 +1291,7 @@ impl Unit {
 	fn compute_scale_factor<I: Interrupt>(
 		from: &Self,
 		into: &Self,
+		decimal_separator: DecimalSeparatorStyle,
 		int: &I,
 	) -> FResult<ScaleFactor> {
 		let (hash_a, scale_a) = from.to_hashmap_and_scale(int)?;
@@ -1224,6 +1312,7 @@ impl Unit {
 					Base::default(),
 					FormattingStyle::Auto,
 					false,
+					decimal_separator,
 					int,
 				)?
 				.value;
@@ -1234,14 +1323,15 @@ impl Unit {
 					Base::default(),
 					FormattingStyle::Auto,
 					false,
+					decimal_separator,
 					int,
 				)?
 				.value;
 			Err(FendError::IncompatibleConversion {
 				from: from_formatted,
 				to: into_formatted,
-				from_base: Self::print_base_units(hash_a, int)?,
-				to_base: Self::print_base_units(hash_b, int)?,
+				from_base: Self::print_base_units(hash_a, decimal_separator, int)?,
+				to_base: Self::print_base_units(hash_b, decimal_separator, int)?,
 			})
 		}
 	}
@@ -1250,6 +1340,7 @@ impl Unit {
 		Self { components: vec![] }
 	}
 
+	#[allow(clippy::too_many_arguments)]
 	fn format<I: Interrupt>(
 		&self,
 		unitless: &str,
@@ -1257,6 +1348,7 @@ impl Unit {
 		base: Base,
 		format: FormattingStyle,
 		consider_printing_space: bool,
+		decimal_separator: DecimalSeparatorStyle,
 		int: &I,
 	) -> FResult<Exact<String>> {
 		let mut unit_string = String::new();
@@ -1308,7 +1400,8 @@ impl Unit {
 			} else {
 				format
 			};
-			let formatted_exp = unit_exponent.format(base, exp_format, plural, invert, int)?;
+			let formatted_exp =
+				unit_exponent.format(base, exp_format, plural, invert, decimal_separator, int)?;
 			unit_string.push_str(formatted_exp.value.to_string().as_str());
 			exact = exact && formatted_exp.exact;
 		}
@@ -1351,7 +1444,9 @@ mod tests {
 		let kg = NamedUnit::new("k".into(), "g".into(), "g".into(), false, hashmap, 1);
 		let one_kg = Value::new(1, vec![UnitExponent::new(kg.clone(), 1)]);
 		let two_kg = Value::new(2, vec![UnitExponent::new(kg, 1)]);
-		let sum = one_kg.add(two_kg, &Never).unwrap();
+		let sum = one_kg
+			.add(two_kg, DecimalSeparatorStyle::Dot, &Never)
+			.unwrap();
 		assert_eq!(to_string(&sum), "3 kg");
 	}
 
@@ -1383,9 +1478,21 @@ mod tests {
 		let one_kg = Value::new(1, vec![UnitExponent::new(kg, 1)]);
 		let twelve_g = Value::new(12, vec![UnitExponent::new(g, 1)]);
 		assert_eq!(
-			to_string(&one_kg.clone().add(twelve_g.clone(), int).unwrap()),
+			to_string(
+				&one_kg
+					.clone()
+					.add(twelve_g.clone(), DecimalSeparatorStyle::Dot, int)
+					.unwrap()
+			),
 			"1.012 kg"
 		);
-		assert_eq!(to_string(&twelve_g.add(one_kg, int).unwrap()), "1012 g");
+		assert_eq!(
+			to_string(
+				&twelve_g
+					.add(one_kg, DecimalSeparatorStyle::Comma, int)
+					.unwrap()
+			),
+			"1012 g"
+		);
 	}
 }

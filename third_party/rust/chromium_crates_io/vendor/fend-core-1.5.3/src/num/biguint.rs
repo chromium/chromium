@@ -133,6 +133,29 @@ impl BigUint {
 		}
 	}
 
+	pub(crate) fn ilog2(&self) -> u64 {
+		assert!(!self.is_zero());
+		self.bits() - 1
+	}
+
+	#[allow(clippy::cast_precision_loss)]
+	pub(crate) fn log2<I: Interrupt>(&self, int: &I) -> FResult<f64> {
+		let int_log = self.ilog2() as f64;
+		let msb_position = self.bits();
+		let mut fractional_value = self.clone();
+
+		let mut divisor = Self::from(1).lshift_n(&msb_position.into(), int)?;
+		fractional_value.lshift(int)?;
+
+		while fractional_value.bits() > 1023 || divisor.bits() > 1023 {
+			fractional_value.rshift(int)?;
+			divisor.rshift(int)?;
+		}
+		let fractional_log = (fractional_value.as_f64() / divisor.as_f64()).log2();
+
+		Ok(int_log + fractional_log)
+	}
+
 	fn make_large(&mut self) {
 		match self {
 			Small(n) => {

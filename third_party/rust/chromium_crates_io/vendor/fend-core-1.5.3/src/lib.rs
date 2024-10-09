@@ -191,6 +191,33 @@ where
 	}
 }
 
+/// This controls decimal and thousands separators.
+#[non_exhaustive]
+#[derive(Clone, Copy, PartialEq, Eq, Debug, Default)]
+pub enum DecimalSeparatorStyle {
+	/// Use `.` as the decimal separator and `,` as the thousands separator. This is common in English.
+	#[default]
+	Dot,
+	/// Use `,` as the decimal separator and `.` as the thousands separator. This is common in European languages.
+	Comma,
+}
+
+impl DecimalSeparatorStyle {
+	fn decimal_separator(self) -> char {
+		match self {
+			Self::Dot => '.',
+			Self::Comma => ',',
+		}
+	}
+
+	fn thousands_separator(self) -> char {
+		match self {
+			Self::Dot => ',',
+			Self::Comma => '.',
+		}
+	}
+}
+
 /// This struct contains fend's current context, including some settings
 /// as well as stored variables.
 ///
@@ -208,16 +235,20 @@ pub struct Context {
 	output_mode: OutputMode,
 	get_exchange_rate: Option<Arc<dyn ExchangeRateFn + Send + Sync>>,
 	custom_units: Vec<(String, String, String)>,
+	decimal_separator: DecimalSeparatorStyle,
 }
 
 impl fmt::Debug for Context {
 	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+		// we can't derive Debug because of the get_exchange_rate field
 		f.debug_struct("Context")
 			.field("current_time", &self.current_time)
 			.field("variables", &self.variables)
 			.field("fc_mode", &self.fc_mode)
 			.field("random_u32", &self.random_u32)
 			.field("output_mode", &self.output_mode)
+			.field("custom_units", &self.custom_units)
+			.field("decimal_separator_style", &self.decimal_separator)
 			.finish_non_exhaustive()
 	}
 }
@@ -240,6 +271,7 @@ impl Context {
 			output_mode: OutputMode::SimpleText,
 			get_exchange_rate: None,
 			custom_units: vec![],
+			decimal_separator: DecimalSeparatorStyle::default(),
 		}
 	}
 
@@ -357,6 +389,12 @@ impl Context {
 			plural.to_string(),
 			format!("{definition_prefix}{definition}"),
 		));
+	}
+
+	/// Sets the decimal separator style for this context. This can be used to
+	/// change the number format from e.g. `1,234.00` to `1.234,00`.
+	pub fn set_decimal_separator_style(&mut self, style: DecimalSeparatorStyle) {
+		self.decimal_separator = style;
 	}
 }
 

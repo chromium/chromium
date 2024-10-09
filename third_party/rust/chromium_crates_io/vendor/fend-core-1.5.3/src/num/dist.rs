@@ -132,9 +132,14 @@ impl Dist {
 		int: &I,
 	) -> FResult<Exact<()>> {
 		if self.parts.len() == 1 {
-			let res = self.parts[0]
-				.0
-				.format(exact, style, base, use_parentheses, int)?;
+			let res = self.parts[0].0.format(
+				exact,
+				style,
+				base,
+				use_parentheses,
+				ctx.decimal_separator,
+				int,
+			)?;
 			write!(out, "{}", res.value)?;
 			Ok(Exact::new((), res.exact))
 		} else {
@@ -156,7 +161,14 @@ impl Dist {
 			let mut first = true;
 			for (num, _prob, prob_f64) in ordered_kvs {
 				let num = num
-					.format(exact, style, base, use_parentheses, int)?
+					.format(
+						exact,
+						style,
+						base,
+						use_parentheses,
+						ctx.decimal_separator,
+						int,
+					)?
 					.value
 					.to_string();
 				let prob_percentage = prob_f64 * 100.0;

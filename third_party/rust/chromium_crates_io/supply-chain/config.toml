@@ -113,7 +113,7 @@ criteria = ["crypto-safe", "safe-to-run"]
 [policy."fdeflate:0.3.5"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
-[policy."fend-core:1.5.2"]
+[policy."fend-core:1.5.3"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."flate2:1.0.34"]
@@ -361,7 +361,7 @@ Exemption updated to 1.0.128 in September 2024.
 
 [[exemptions.cxxbridge-macro]]
 version = "1.0.128"
-criteria = ["safe-to-deploy", "ub-risk-2", "crypto-safe"]
+criteria = ["safe-to-deploy", "crypto-safe", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
 

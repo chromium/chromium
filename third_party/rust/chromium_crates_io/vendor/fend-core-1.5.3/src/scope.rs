@@ -2,8 +2,8 @@ use crate::ident::Ident;
 use crate::result::FResult;
 use crate::serialize::{Deserialize, Serialize};
 use crate::value::Value;
-use crate::Attrs;
 use crate::{ast::Expr, error::Interrupt};
+use crate::{Attrs, Context};
 use std::io;
 use std::sync::Arc;
 
@@ -13,10 +13,15 @@ enum ScopeValue {
 }
 
 impl ScopeValue {
-	pub(crate) fn compare<I: Interrupt>(&self, other: &Self, int: &I) -> FResult<bool> {
+	pub(crate) fn compare<I: Interrupt>(
+		&self,
+		other: &Self,
+		ctx: &mut Context,
+		int: &I,
+	) -> FResult<bool> {
 		let Self::LazyVariable(a1, a2) = self;
 		let Self::LazyVariable(b1, b2) = other;
-		Ok(a1.compare(b1, int)? && compare_option_arc_scope(a2, b2, int)?)
+		Ok(a1.compare(b1, ctx, int)? && compare_option_arc_scope(a2, b2, ctx, int)?)
 	}
 
 	fn eval<I: Interrupt>(
@@ -70,20 +75,26 @@ pub(crate) struct Scope {
 pub(crate) fn compare_option_arc_scope<I: Interrupt>(
 	a: &Option<Arc<Scope>>,
 	b: &Option<Arc<Scope>>,
+	ctx: &mut Context,
 	int: &I,
 ) -> FResult<bool> {
 	Ok(match (a, b) {
 		(None, None) => true,
-		(Some(a), Some(b)) => a.compare(b, int)?,
+		(Some(a), Some(b)) => a.compare(b, ctx, int)?,
 		_ => false,
 	})
 }
 
 impl Scope {
-	pub(crate) fn compare<I: Interrupt>(&self, other: &Self, int: &I) -> FResult<bool> {
+	pub(crate) fn compare<I: Interrupt>(
+		&self,
+		other: &Self,
+		ctx: &mut Context,
+		int: &I,
+	) -> FResult<bool> {
 		Ok(self.ident == other.ident
-			&& self.value.compare(&other.value, int)?
-			&& compare_option_arc_scope(&self.inner, &other.inner, int)?)
+			&& self.value.compare(&other.value, ctx, int)?
+			&& compare_option_arc_scope(&self.inner, &other.inner, ctx, int)?)
 	}
 
 	pub(crate) fn serialize(&self, write: &mut impl io::Write) -> FResult<()> {

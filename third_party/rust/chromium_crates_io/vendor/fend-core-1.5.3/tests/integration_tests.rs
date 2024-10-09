@@ -3283,7 +3283,7 @@ fn log10_1000() {
 
 #[test]
 fn log10_10000() {
-	test_eval("log10 10000", "approx. 4");
+	test_eval("log10 10000", "approx. 3.9999999999");
 }
 
 #[test]
@@ -3303,7 +3303,7 @@ fn log_1000() {
 
 #[test]
 fn log_10000() {
-	test_eval("log 10000", "approx. 4");
+	test_eval("log 10000", "approx. 3.9999999999");
 }
 
 #[test]
@@ -3314,6 +3314,16 @@ fn log_100000() {
 #[test]
 fn log2_65536() {
 	test_eval("log2 65536", "approx. 16");
+}
+
+#[test]
+fn log2_2_2048() {
+	test_eval("log2(2^2048)", "approx. 2048");
+}
+
+#[test]
+fn log2_3_2_2048() {
+	test_eval("log2(3*2^2048)", "approx. 2049.5849625007");
 }
 
 #[test]
@@ -5940,10 +5950,10 @@ fn test_roman() {
 	test_eval_simple("2020 to roman", "MMXX");
 	test_eval_simple("3456 to roman", "MMMCDLVI");
 	test_eval_simple("1452 to roman", "MCDLII");
-	test_eval_simple("20002 to roman", "MMMMMMMMMMMMMMMMMMMMII");
+	test_eval_simple("20002 to roman", "X\u{305}X\u{305}II");
 	expect_error(
-		"100001 to roman",
-		Some("100001 must lie in the interval [1, 100000]"),
+		"1000000001 to roman",
+		Some("1000000001 must lie in the interval [1, 1000000000]"),
 	);
 }
 
@@ -6032,4 +6042,39 @@ fn test_words() {
 	test_eval_simple("1234567890123456 to words", "one quadrillion two hundred and thirty-four trillion five hundred and sixty-seven billion eight hundred and ninety million one hundred and twenty-three thousand four hundred and fifty-six");
 	test_eval_simple("1000000000000000000000 to words", "one sextillion");
 	test_eval_simple("1000000000000000000000000 to words", "one septillion");
+}
+
+#[test]
+fn test_plus_zero_ignore_units() {
+	test_eval("4m + 0", "4 m");
+	test_eval("4m + 0kg", "4 m");
+	test_eval("4m + (sin pi) kg", "4 m");
+	expect_error(
+		"4m + (sin (pi/2)) kg",
+		Some("cannot convert from kg to m: units 'kilogram' and 'meter' are incompatible"),
+	);
+}
+
+#[test]
+fn european_formatting() {
+	let mut ctx = Context::new();
+	ctx.set_decimal_separator_style(fend_core::DecimalSeparatorStyle::Comma);
+	assert_eq!(
+		fend_core::evaluate("1.234,56 * 1000", &mut ctx)
+			.unwrap()
+			.get_main_result(),
+		"1234560"
+	);
+	assert_eq!(
+		fend_core::evaluate("100-1,9", &mut ctx)
+			.unwrap()
+			.get_main_result(),
+		"98,1"
+	);
+	assert_eq!(
+		fend_core::evaluate("sin(1,2)", &mut ctx)
+			.unwrap()
+			.get_main_result(),
+		"approx. 0,9320390859"
+	);
 }

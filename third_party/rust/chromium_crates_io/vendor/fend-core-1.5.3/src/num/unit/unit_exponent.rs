@@ -5,7 +5,7 @@ use crate::interrupt::test_int;
 use crate::num::complex::{self, Complex, UseParentheses};
 use crate::num::{Base, Exact, FormattingStyle};
 use crate::result::FResult;
-use crate::Interrupt;
+use crate::{DecimalSeparatorStyle, Interrupt};
 
 use super::{base_unit::BaseUnit, named_unit::NamedUnit};
 
@@ -91,6 +91,7 @@ impl UnitExponent {
 		format: FormattingStyle,
 		plural: bool,
 		invert_exp: bool,
+		decimal_separator: DecimalSeparatorStyle,
 		int: &I,
 	) -> FResult<Exact<FormattedExponent<'_>>> {
 		let (prefix, name) = self.unit.prefix_and_name(plural);
@@ -102,8 +103,14 @@ impl UnitExponent {
 		let (exact, exponent) = if exp.compare(&1.into(), int)? == Some(Ordering::Equal) {
 			(true, None)
 		} else {
-			let formatted =
-				exp.format(true, format, base, UseParentheses::IfComplexOrFraction, int)?;
+			let formatted = exp.format(
+				true,
+				format,
+				base,
+				UseParentheses::IfComplexOrFraction,
+				decimal_separator,
+				int,
+			)?;
 			(formatted.exact, Some(formatted.value))
 		};
 		Ok(Exact::new(

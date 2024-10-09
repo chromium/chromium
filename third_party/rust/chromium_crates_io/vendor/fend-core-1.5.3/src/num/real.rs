@@ -5,6 +5,7 @@ use crate::num::Exact;
 use crate::num::{Base, FormattingStyle};
 use crate::result::FResult;
 use crate::serialize::{Deserialize, Serialize};
+use crate::DecimalSeparatorStyle;
 use std::cmp::Ordering;
 use std::ops::Neg;
 use std::{fmt, hash, io};
@@ -261,6 +262,7 @@ impl Real {
 		mut style: FormattingStyle,
 		imag: bool,
 		use_parens_if_fraction: bool,
+		decimal_separator: DecimalSeparatorStyle,
 		int: &I,
 	) -> FResult<Exact<Formatted>> {
 		let mut pi = false;
@@ -300,6 +302,7 @@ impl Real {
 				style,
 				term,
 				use_parens_if_fraction,
+				decimal_separator,
 			},
 			int,
 		)?;

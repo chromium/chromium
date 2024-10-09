@@ -7,7 +7,7 @@ use crate::result::FResult;
 use crate::scope::Scope;
 use crate::serialize::{Deserialize, Serialize};
 use crate::value::{built_in_function::BuiltInFunction, ApplyMulHandling, Value};
-use crate::Attrs;
+use crate::{Attrs, Context, DecimalSeparatorStyle};
 use std::borrow::Cow;
 use std::sync::Arc;
 use std::{borrow, cmp, fmt, io};
@@ -128,38 +128,45 @@ pub(crate) enum Expr {
 }
 
 impl Expr {
-	pub(crate) fn compare<I: Interrupt>(&self, other: &Self, int: &I) -> FResult<bool> {
+	pub(crate) fn compare<I: Interrupt>(
+		&self,
+		other: &Self,
+		ctx: &mut Context,
+		int: &I,
+	) -> FResult<bool> {
 		Ok(match (self, other) {
 			(Self::Literal(a), Self::Literal(b)) => {
-				a.compare(b, int)? == Some(cmp::Ordering::Equal)
+				a.compare(b, ctx, int)? == Some(cmp::Ordering::Equal)
 			}
 			(Self::Ident(a), Self::Ident(b)) => a == b,
-			(Self::Parens(a), Self::Parens(b)) => a.compare(b, int)?,
-			(Self::UnaryMinus(a), Self::UnaryMinus(b)) => a.compare(b, int)?,
-			(Self::UnaryPlus(a), Self::UnaryPlus(b)) => a.compare(b, int)?,
-			(Self::UnaryDiv(a), Self::UnaryDiv(b)) => a.compare(b, int)?,
-			(Self::Factorial(a), Self::Factorial(b)) => a.compare(b, int)?,
+			(Self::Parens(a), Self::Parens(b)) => a.compare(b, ctx, int)?,
+			(Self::UnaryMinus(a), Self::UnaryMinus(b)) => a.compare(b, ctx, int)?,
+			(Self::UnaryPlus(a), Self::UnaryPlus(b)) => a.compare(b, ctx, int)?,
+			(Self::UnaryDiv(a), Self::UnaryDiv(b)) => a.compare(b, ctx, int)?,
+			(Self::Factorial(a), Self::Factorial(b)) => a.compare(b, ctx, int)?,
 			(Self::Bop(a1, a2, a3), Self::Bop(b1, b2, b3)) => {
-				a1 == b1 && a2.compare(b2, int)? && a3.compare(b3, int)?
+				a1 == b1 && a2.compare(b2, ctx, int)? && a3.compare(b3, ctx, int)?
 			}
 			(Self::Apply(a1, a2), Self::Apply(b1, b2)) => {
-				a1.compare(b1, int)? && a2.compare(b2, int)?
+				a1.compare(b1, ctx, int)? && a2.compare(b2, ctx, int)?
 			}
 			(Self::ApplyFunctionCall(a1, a2), Self::ApplyFunctionCall(b1, b2)) => {
-				a1.compare(b1, int)? && a2.compare(b2, int)?
+				a1.compare(b1, ctx, int)? && a2.compare(b2, ctx, int)?
 			}
 			(Self::ApplyMul(a1, a2), Self::ApplyMul(b1, b2)) => {
-				a1.compare(b1, int)? && a2.compare(b2, int)?
+				a1.compare(b1, ctx, int)? && a2.compare(b2, ctx, int)?
 			}
-			(Self::As(a1, a2), Self::As(b1, b2)) => a1.compare(b1, int)? && a2.compare(b2, int)?,
-			(Self::Fn(a1, a2), Self::Fn(b1, b2)) => a1 == b1 && a2.compare(b2, int)?,
-			(Self::Of(a1, a2), Self::Of(b1, b2)) => a1 == b1 && a2.compare(b2, int)?,
-			(Self::Assign(a1, a2), Self::Assign(b1, b2)) => a1 == b1 && a2.compare(b2, int)?,
+			(Self::As(a1, a2), Self::As(b1, b2)) => {
+				a1.compare(b1, ctx, int)? && a2.compare(b2, ctx, int)?
+			}
+			(Self::Fn(a1, a2), Self::Fn(b1, b2)) => a1 == b1 && a2.compare(b2, ctx, int)?,
+			(Self::Of(a1, a2), Self::Of(b1, b2)) => a1 == b1 && a2.compare(b2, ctx, int)?,
+			(Self::Assign(a1, a2), Self::Assign(b1, b2)) => a1 == b1 && a2.compare(b2, ctx, int)?,
 			(Self::Equality(a1, a2, a3), Self::Equality(b1, b2, b3)) => {
-				a1 == b1 && a2.compare(b2, int)? && a3.compare(b3, int)?
+				a1 == b1 && a2.compare(b2, ctx, int)? && a3.compare(b3, ctx, int)?
 			}
 			(Self::Statements(a1, a2), Self::Statements(b1, b2)) => {
-				a1.compare(b1, int)? && a2.compare(b2, int)?
+				a1.compare(b1, ctx, int)? && a2.compare(b2, ctx, int)?
 			}
 			_ => false,
 		})
@@ -412,14 +419,26 @@ pub(crate) fn evaluate<I: Interrupt>(
 		Expr::UnaryDiv(x) => {
 			eval!(*x)?.handle_num(|x| Number::from(1).div(x, int), Expr::UnaryDiv, scope)?
 		}
-		Expr::Factorial(x) => {
-			eval!(*x)?.handle_num(|x| x.factorial(int), Expr::Factorial, scope)?
-		}
-		Expr::Bop(Bop::Plus, a, b) => evaluate_add(eval!(*a)?, eval!(*b)?, scope, int)?,
+		Expr::Factorial(x) => eval!(*x)?.handle_num(
+			|x| x.factorial(context.decimal_separator, int),
+			Expr::Factorial,
+			scope,
+		)?,
+		Expr::Bop(Bop::Plus, a, b) => evaluate_add(
+			eval!(*a)?,
+			eval!(*b)?,
+			scope,
+			context.decimal_separator,
+			int,
+		)?,
 		Expr::Bop(Bop::Minus, a, b) => {
 			let a = eval!(*a)?;
 			match a {
-				Value::Num(a) => Value::Num(Box::new(a.sub(eval!(*b)?.expect_num()?, int)?)),
+				Value::Num(a) => Value::Num(Box::new(a.sub(
+					eval!(*b)?.expect_num()?,
+					context.decimal_separator,
+					int,
+				)?)),
 				Value::Date(a) => a.sub(eval!(*b)?, int)?,
 				f @ (Value::BuiltInFunction(_) | Value::Fn(_, _, _)) => f.apply(
 					Expr::UnaryMinus(b),
@@ -446,7 +465,7 @@ pub(crate) fn evaluate<I: Interrupt>(
 			}
 			lhs.handle_two_nums(
 				eval!(*b)?,
-				|a, b| a.pow(b, int),
+				|a, b| a.pow(b, context.decimal_separator, int),
 				|a| {
 					|f| {
 						Expr::Bop(
@@ -511,7 +530,7 @@ pub(crate) fn evaluate<I: Interrupt>(
 		Expr::Equality(is_equals, a, b) => {
 			let lhs = evaluate(*a, scope.clone(), attrs, context, int)?;
 			let rhs = evaluate(*b, scope, attrs, context, int)?;
-			Value::Bool(match lhs.compare(&rhs, int)? {
+			Value::Bool(match lhs.compare(&rhs, context, int)? {
 				Some(cmp::Ordering::Equal) => is_equals,
 				Some(cmp::Ordering::Greater | cmp::Ordering::Less) | None => !is_equals,
 			})
@@ -523,10 +542,13 @@ fn evaluate_add<I: Interrupt>(
 	a: Value,
 	b: Value,
 	scope: Option<Arc<Scope>>,
+	decimal_separator: DecimalSeparatorStyle,
 	int: &I,
 ) -> FResult<Value> {
 	Ok(match (a, b) {
-		(Value::Num(a), Value::Num(b)) => Value::Num(Box::new(a.add(*b, int)?)),
+		(Value::Num(a), Value::Num(b)) => {
+			Value::Num(Box::new(a.add(*b, decimal_separator, int)?))
+		}
 		(Value::String(a), Value::String(b)) => {
 			Value::String(format!("{}{}", a.as_ref(), b.as_ref()).into())
 		}
@@ -612,7 +634,7 @@ fn evaluate_as<I: Interrupt>(
 			"char" | "character" => {
 				let a = evaluate(a, scope, attrs, context, int)?;
 				if let Value::Num(v) = a {
-					let n = v.try_as_usize(int)?;
+					let n = v.try_as_usize(context.decimal_separator, int)?;
 					let ch = n
 						.try_into()
 						.ok()
@@ -626,11 +648,11 @@ fn evaluate_as<I: Interrupt>(
 			"roman" | "roman_numeral" => {
 				let a = evaluate(a, scope, attrs, context, int)?
 					.expect_num()?
-					.try_as_usize(int)?;
+					.try_as_usize(context.decimal_separator, int)?;
 				if a == 0 {
 					return Err(FendError::RomanNumeralZero);
 				}
-				let upper_limit = 100_000;
+				let upper_limit = 1_000_000_000;
 				if a > upper_limit {
 					return Err(FendError::OutOfRange {
 						value: Box::new(a),
@@ -640,12 +662,12 @@ fn evaluate_as<I: Interrupt>(
 						},
 					});
 				}
-				return Ok(Value::String(borrow::Cow::Owned(to_roman(a))));
+				return Ok(Value::String(borrow::Cow::Owned(to_roman(a, true))));
 			}
 			"words" => {
 				let uint = evaluate(a, scope, attrs, context, int)?
 					.expect_num()?
-					.into_unitless_complex(int)?
+					.into_unitless_complex(context.decimal_separator, int)?
 					.try_as_real()?
 					.try_as_biguint(int)?;
 				return Ok(Value::String(borrow::Cow::Owned(uint.to_words(int)?)));
@@ -657,7 +679,7 @@ fn evaluate_as<I: Interrupt>(
 		Value::Num(b) => Value::Num(Box::new(
 			evaluate(a, scope, attrs, context, int)?
 				.expect_num()?
-				.convert_to(*b, int)?,
+				.convert_to(*b, context.decimal_separator, int)?,
 		)),
 		Value::Format(fmt) => Value::Num(Box::new(
 			evaluate(a, scope, attrs, context, int)?
@@ -823,10 +845,10 @@ fn resolve_builtin_identifier<I: Interrupt>(
 	})
 }
 
-fn to_roman(mut num: usize) -> String {
+fn to_roman(mut num: usize, large: bool) -> String {
 	// based on https://stackoverflow.com/a/41358305
 	let mut result = String::new();
-	for (r, n) in [
+	let values = [
 		("M", 1000),
 		("CM", 900),
 		("D", 500),
@@ -840,7 +862,21 @@ fn to_roman(mut num: usize) -> String {
 		("V", 5),
 		("IV", 4),
 		("I", 1),
-	] {
+	];
+	if large {
+		for (r, mut n) in &values[0..values.len() - 1] {
+			n *= 1000;
+			let q = num / n;
+			num -= q * n;
+			for _ in 0..q {
+				for ch in r.chars() {
+					result.push(ch);
+					result.push('\u{305}'); // combining overline
+				}
+			}
+		}
+	}
+	for (r, n) in values {
 		let q = num / n;
 		num -= q * n;
 		for _ in 0..q {

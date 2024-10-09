@@ -223,7 +223,7 @@ dependencies = [
 
 [[package]]
 name = "fend-core"
-version = "1.5.2"
+version = "1.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]

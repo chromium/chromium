@@ -3,6 +3,7 @@ use crate::num::real::{self, Real};
 use crate::num::Exact;
 use crate::num::{Base, FormattingStyle};
 use crate::result::FResult;
+use crate::DecimalSeparatorStyle;
 use std::cmp::Ordering;
 use std::ops::Neg;
 use std::{fmt, io};
@@ -250,6 +251,7 @@ impl Complex {
 		style: FormattingStyle,
 		base: Base,
 		use_parentheses: UseParentheses,
+		decimal_separator: DecimalSeparatorStyle,
 		int: &I,
 	) -> FResult<Exact<Formatted>> {
 		let style = if !exact && style == FormattingStyle::Auto {
@@ -262,7 +264,9 @@ impl Complex {
 
 		if self.imag.is_zero() {
 			let use_parens = use_parentheses == UseParentheses::IfComplexOrFraction;
-			let x = self.real.format(base, style, false, use_parens, int)?;
+			let x = self
+				.real
+				.format(base, style, false, use_parens, decimal_separator, int)?;
 			return Ok(Exact::new(
 				Formatted {
 					first_component: x.value,
@@ -276,7 +280,9 @@ impl Complex {
 
 		Ok(if self.real.is_zero() {
 			let use_parens = use_parentheses == UseParentheses::IfComplexOrFraction;
-			let x = self.imag.format(base, style, true, use_parens, int)?;
+			let x = self
+				.imag
+				.format(base, style, true, use_parens, decimal_separator, int)?;
 			Exact::new(
 				Formatted {
 					first_component: x.value,
@@ -288,14 +294,27 @@ impl Complex {
 			)
 		} else {
 			let mut exact = exact;
-			let real_part = self.real.format(base, style, false, false, int)?;
+			let real_part = self
+				.real
+				.format(base, style, false, false, decimal_separator, int)?;
 			exact = exact && real_part.exact;
 			let (positive, imag_part) = if self.imag.is_pos() {
-				(true, self.imag.format(base, style, true, false, int)?)
+				(
+					true,
+					self.imag
+						.format(base, style, true, false, decimal_separator, int)?,
+				)
 			} else {
 				(
 					false,
-					(-self.imag.clone()).format(base, style, true, false, int)?,
+					(-self.imag.clone()).format(
+						base,
+						style,
+						true,
+						false,
+						decimal_separator,
+						int,
+					)?,
 				)
 			};
 			exact = exact && imag_part.exact;

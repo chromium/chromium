@@ -4,6 +4,8 @@ use crate::interrupt::test_int;
 use crate::num::biguint::BigUint;
 use crate::num::{Base, Exact, FormattingStyle, Range, RangeBound};
 use crate::result::FResult;
+use crate::DecimalSeparatorStyle;
+use core::f64;
 use std::{cmp, fmt, hash, io, ops};
 
 pub(crate) mod sign {
@@ -289,26 +291,6 @@ impl BigRat {
 		Self::from_f64(f64::atanh(self.into_f64(int)?), int)
 	}
 
-	// For all logs: value must be greater than 0
-	pub(crate) fn ln<I: Interrupt>(self, int: &I) -> FResult<Exact<Self>> {
-		if self <= 0.into() {
-			return Err(out_of_range(
-				self.fm(int)?,
-				Range {
-					start: RangeBound::Open(0),
-					end: RangeBound::None,
-				},
-			));
-		}
-		if self == 1.into() {
-			return Ok(Exact::new(0.into(), true));
-		}
-		Ok(Exact::new(
-			Self::from_f64(f64::ln(self.into_f64(int)?), int)?,
-			false,
-		))
-	}
-
 	pub(crate) fn log2<I: Interrupt>(self, int: &I) -> FResult<Self> {
 		if self <= 0.into() {
 			return Err(out_of_range(
@@ -319,20 +301,23 @@ impl BigRat {
 				},
 			));
 		}
-		Self::from_f64(f64::log2(self.into_f64(int)?), int)
+		Self::from_f64(self.num.log2(int)? - self.den.log2(int)?, int)
+	}
+
+	pub(crate) fn ln<I: Interrupt>(self, int: &I) -> FResult<Exact<Self>> {
+		if self == 1.into() {
+			return Ok(Exact::new(0.into(), true));
+		}
+		Ok(Exact::new(
+			self.log2(int)?
+				.div(&Self::from_f64(std::f64::consts::LOG2_E, int)?, int)?,
+			false,
+		))
 	}
 
 	pub(crate) fn log10<I: Interrupt>(self, int: &I) -> FResult<Self> {
-		if self <= 0.into() {
-			return Err(out_of_range(
-				self.fm(int)?,
-				Range {
-					start: RangeBound::Open(0),
-					end: RangeBound::None,
-				},
-			));
-		}
-		Self::from_f64(f64::log10(self.into_f64(int)?), int)
+		self.log2(int)?
+			.div(&Self::from_f64(std::f64::consts::LOG2_10, int)?, int)
 	}
 
 	fn apply_uint_op<I: Interrupt, R>(
@@ -615,6 +600,7 @@ impl BigRat {
 		))
 	}
 
+	#[allow(clippy::too_many_arguments)]
 	fn format_as_decimal<I: Interrupt>(
 		&self,
 		style: FormattingStyle,
@@ -622,6 +608,7 @@ impl BigRat {
 		sign: Sign,
 		term: &'static str,
 		mut terminating: impl FnMut() -> FResult<bool>,
+		decimal_separator: DecimalSeparatorStyle,
 		int: &I,
 	) -> FResult<Exact<FormattedBigRat>> {
 		let integer_part = self.clone().num.div(&self.den, int)?;
@@ -694,6 +681,7 @@ impl BigRat {
 			num_trailing_digits_to_print,
 			terminating,
 			print_integer_part,
+			decimal_separator,
 			int,
 		)?;
 		Ok(Exact::new(
@@ -710,6 +698,7 @@ impl BigRat {
 	}
 
 	/// Prints the decimal expansion of num/den, where num < den, in the given base.
+	#[allow(clippy::too_many_arguments)]
 	fn format_trailing_digits<I: Interrupt>(
 		base: Base,
 		numerator: &BigUint,
@@ -717,6 +706,7 @@ impl BigRat {
 		max_digits: MaxDigitsToPrint,
 		mut terminating: impl FnMut() -> FResult<bool>,
 		print_integer_part: impl Fn(bool) -> FResult<(Sign, String)>,
+		decimal_separator: DecimalSeparatorStyle,
 		int: &I,
 	) -> FResult<(Sign, Exact<String>)> {
 		let base_as_u64: u64 = base.base_as_u8().into();
@@ -724,11 +714,17 @@ impl BigRat {
 		let next_digit =
 			|i: usize, num: BigUint, base: &BigUint| -> Result<(BigUint, BigUint), NextDigitErr> {
 				test_int(int)?;
-				if num == 0.into()
-					|| max_digits == MaxDigitsToPrint::DecimalPlaces(i)
+				if num == 0.into() {
+					// reached the end of the number
+					return Err(NextDigitErr::Terminated { round_up: false });
+				}
+				if max_digits == MaxDigitsToPrint::DecimalPlaces(i)
 					|| max_digits == MaxDigitsToPrint::DpButIgnoreLeadingZeroes(i)
 				{
-					return Err(NextDigitErr::Terminated);
+					// round up if remaining fraction is >1/2
+					return Err(NextDigitErr::Terminated {
+						round_up: num.mul(&2.into(), int)? >= *denominator,
+					});
 				}
 				// digit = base * numerator / denominator
 				// next_numerator = base * numerator - digit * denominator
@@ -762,6 +758,7 @@ impl BigRat {
 				ignore_number_of_leading_zeroes,
 				next_digit,
 				print_integer_part,
+				decimal_separator,
 				int,
 			);
 		}
@@ -778,14 +775,14 @@ impl BigRat {
 				let (sign, formatted_int) = print_integer_part(false)?;
 				let mut trailing_digits = String::new();
 				trailing_digits.push_str(&formatted_int);
-				trailing_digits.push('.');
+				trailing_digits.push(decimal_separator.decimal_separator());
 				trailing_digits.push_str(a);
 				trailing_digits.push('(');
 				trailing_digits.push_str(b);
 				trailing_digits.push(')');
 				Ok((sign, Exact::new(trailing_digits, true))) // the recurring decimal is exact
 			}
-			Err(NextDigitErr::Terminated) => {
+			Err(NextDigitErr::Terminated { round_up: _ }) => {
 				panic!("decimal number terminated unexpectedly");
 			}
 			Err(NextDigitErr::Error(e)) => Err(e),
@@ -798,6 +795,7 @@ impl BigRat {
 		ignore_number_of_leading_zeroes: bool,
 		mut next_digit: impl FnMut(usize, BigUint, &BigUint) -> Result<(BigUint, BigUint), NextDigitErr>,
 		print_integer_part: impl Fn(bool) -> FResult<(Sign, String)>,
+		decimal_separator: DecimalSeparatorStyle,
 		int: &I,
 	) -> FResult<(Sign, Exact<String>)> {
 		let mut current_numerator = numerator.clone();
@@ -822,7 +820,7 @@ impl BigRat {
 							let (sign, formatted_int) = print_integer_part(false)?;
 							actual_sign = Some(sign);
 							trailing_digits.push_str(&formatted_int);
-							trailing_digits.push('.');
+							trailing_digits.push(decimal_separator.decimal_separator());
 						}
 						for _ in 0..trailing_zeroes {
 							trailing_digits.push('0');
@@ -844,7 +842,7 @@ impl BigRat {
 						i += 1;
 					}
 				}
-				Err(NextDigitErr::Terminated) => {
+				Err(NextDigitErr::Terminated { round_up }) => {
 					let sign = if let Some(actual_sign) = actual_sign {
 						actual_sign
 					} else {
@@ -854,6 +852,9 @@ impl BigRat {
 						trailing_digits.push_str(&formatted_int);
 						sign
 					};
+					if round_up {
+						// todo
+					}
 					// is the number exact, or did we need to truncate?
 					let exact = current_numerator == 0.into();
 					return Ok((sign, Exact::new(trailing_digits, exact)));
@@ -1079,7 +1080,11 @@ impl BigRat {
 }
 enum NextDigitErr {
 	Error(FendError),
-	Terminated,
+	/// Stop printing digits because we've reached the end of the number or the
+	/// limit of how much we want to print
+	Terminated {
+		round_up: bool,
+	},
 }
 
 impl From<FendError> for NextDigitErr {
@@ -1135,6 +1140,7 @@ pub(crate) struct FormatOptions {
 	pub(crate) style: FormattingStyle,
 	pub(crate) term: &'static str,
 	pub(crate) use_parens_if_fraction: bool,
+	pub(crate) decimal_separator: DecimalSeparatorStyle,
 }
 
 impl Format for BigRat {
@@ -1194,7 +1200,15 @@ impl Format for BigRat {
 		}
 
 		// not a fraction, will be printed as a decimal
-		x.format_as_decimal(style, base, sign, term, terminating, int)
+		x.format_as_decimal(
+			style,
+			base,
+			sign,
+			term,
+			terminating,
+			params.decimal_separator,
+			int,
+		)
 	}
 }
 
