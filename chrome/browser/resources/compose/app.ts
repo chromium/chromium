@@ -7,6 +7,7 @@ import './strings.m.js';
 import './textarea.js';
 import './result_text.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_chip/cr_chip.js';
 import '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_loading_gradient/cr_loading_gradient.js';
@@ -19,6 +20,7 @@ import {ColorChangeUpdater} from '//resources/cr_components/color_change_listene
 import type {CrA11yAnnouncerElement} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
+import type {CrChipElement} from '//resources/cr_elements/cr_chip/cr_chip.js';
 import type {CrFeedbackButtonsElement} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {CrScrollObserverMixin} from '//resources/cr_elements/cr_scroll_observer_mixin.js';
@@ -32,7 +34,7 @@ import {Debouncer, microTask, PolymerElement} from '//resources/polymer/v3_0/pol
 import {ComposeAppAnimator} from './animations/app_animator.js';
 import {getTemplate} from './app.html.js';
 import type {ComposeResponse, ComposeState, ComposeUntrustedDialogCallbackRouter, ConfigurableParams, PartialComposeResponse} from './compose.mojom-webui.js';
-import {CloseReason, StyleModifier, UserFeedback} from './compose.mojom-webui.js';
+import {CloseReason, InputMode, StyleModifier, UserFeedback} from './compose.mojom-webui.js';
 import type {ComposeApiProxy} from './compose_api_proxy.js';
 import {ComposeApiProxyImpl} from './compose_api_proxy.js';
 import {ComposeStatus} from './compose_enums.mojom-webui.js';
@@ -44,6 +46,7 @@ import type {ComposeTextareaElement} from './textarea.js';
 export interface ComposeAppState {
   editedInput?: string;
   input: string;
+  inputMode: InputMode;
   isEditingSubmittedInput?: boolean;
 }
 
@@ -78,6 +81,9 @@ export interface ComposeAppElement {
     modifierMenu: HTMLSelectElement,
     resultText: ComposeResultTextElement,
     feedbackButtons: CrFeedbackButtonsElement,
+    polishChip: CrChipElement,
+    elaborateChip: CrChipElement,
+    formalizeChip: CrChipElement,
   };
 }
 
@@ -118,6 +124,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
         type: Boolean,
         value: loadTimeData.getBoolean('enableAnimations'),
         reflectToAttribute: true,
+      },
+      enableUpfrontInputModes: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('enableUpfrontInputModes'),
       },
       feedbackState_: {
         type: String,
@@ -163,6 +173,30 @@ export class ComposeAppElement extends ComposeAppElementBase {
       partialResponse_: {
         type: Object,
         value: null,
+      },
+      showInputModes_: {
+        type: Boolean,
+        reflectToAttribute: true,
+        computed: 'shouldShowInputModes_(submitted_, enableUpfrontInputModes)',
+      },
+      selectedInputMode_: {
+        type: Number,
+        value: InputMode.kUnset,
+      },
+      polishChipIcon_: {
+        type: String,
+        value: 'cr:check',
+        reflectToAttribute: true,
+      },
+      elaborateChipIcon_: {
+        type: String,
+        value: 'compose:elaborate',
+        reflectToAttribute: true,
+      },
+      formalizeChipIcon_: {
+        type: String,
+        value: 'compose:formalize',
+        reflectToAttribute: true,
       },
       showMainAppDialog_: {
         type: Boolean,
@@ -242,6 +276,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   }
 
   enableAnimations: boolean;
+  enableUpfrontInputModes: boolean;
 
   private animator_: ComposeAppAnimator;
   private apiProxy_: ComposeApiProxy = ComposeApiProxyImpl.getInstance();
@@ -266,6 +301,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private saveAppStateDebouncer_: Debouncer;
   private scrollCheckDebouncer_: Debouncer;
   private updateResultCompleteDebouncer_: Debouncer;
+  private selectedInputMode_: InputMode;
+  private polishChipIcon_: string;
+  private elaborateChipIcon_: string;
+  private formalizeChipIcon_: string;
   private textSelected_: boolean;
   private submitted_: boolean;
   private undoEnabled_: boolean;
@@ -285,6 +324,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.animator_ = new ComposeAppAnimator(
         this, loadTimeData.getBoolean('enableAnimations'));
     this.getInitialState_();
+    // If upfront inputs are enabled, the default mode should be set to Polish.
+    if (this.enableUpfrontInputModes) {
+      this.selectedInputMode_ = InputMode.kPolish;
+    }
     this.router_.responseReceived.addListener((response: ComposeResponse) => {
       this.composeResponseReceived_(response);
     });
@@ -382,6 +425,8 @@ export class ComposeAppElement extends ComposeAppElementBase {
       if (composeState.webuiState) {
         const appState: ComposeAppState = JSON.parse(composeState.webuiState);
         this.input_ = appState.input;
+        this.selectedInputMode_ = appState.inputMode;
+        this.updateInputMode_();
         if (appState.isEditingSubmittedInput) {
           this.isEditingSubmittedInput_ = appState.isEditingSubmittedInput;
           this.editedInput_ = appState.editedInput!;
@@ -549,6 +594,41 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.$.modifierMenu.selectedIndex = 0;
   }
 
+  private shouldShowInputModes_() {
+    return !this.submitted_ && this.enableUpfrontInputModes;
+  }
+
+  private onPolishChipClick_() {
+    this.selectedInputMode_ = InputMode.kPolish;
+    this.updateInputMode_();
+  }
+
+  private onElaborateChipClick_() {
+    this.selectedInputMode_ = InputMode.kElaborate;
+    this.updateInputMode_();
+  }
+
+  private onFormalizeChipClick_() {
+    this.selectedInputMode_ = InputMode.kFormalize;
+    this.updateInputMode_();
+  }
+
+  private updateInputMode_() {
+    this.userHasModifiedState_ = true;
+    this.$.polishChip.selected = this.selectedInputMode_ === InputMode.kPolish;
+    this.polishChipIcon_ =
+        this.$.polishChip.selected ? 'cr:check' : 'compose:polish';
+    this.$.elaborateChip.selected =
+        this.selectedInputMode_ === InputMode.kElaborate;
+    this.elaborateChipIcon_ =
+        this.$.elaborateChip.selected ? 'cr:check' : 'compose:elaborate';
+    this.$.formalizeChip.selected =
+        this.selectedInputMode_ === InputMode.kFormalize;
+    this.formalizeChipIcon_ =
+        this.$.formalizeChip.selected ? 'cr:check' : 'compose:formalize';
+    this.saveComposeAppState_();
+  }
+
   private openModifierMenuOnKeyDown_(e: KeyboardEvent) {
     // On Windows and Linux, ArrowDown and ArrowUp key events directly change
     // the menu selection, which fires the `select` on-change event without
@@ -615,7 +695,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.partialResponse_ = undefined;
     this.feedbackEnabled_ = true;
     this.saveComposeAppState_();  // Ensure state is saved before compose call.
-    this.apiProxy_.compose(this.input_, inputEdited);
+    this.apiProxy_.compose(this.input_, this.selectedInputMode_, inputEdited);
   }
 
   private rewrite_(style: StyleModifier) {
@@ -827,7 +907,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
       return;
     }
 
-    const state: ComposeAppState = {input: this.input_};
+    const state: ComposeAppState = {
+      input: this.input_,
+      inputMode: this.selectedInputMode_,
+    };
     if (this.isEditingSubmittedInput_) {
       state.isEditingSubmittedInput = this.isEditingSubmittedInput_;
       state.editedInput = this.editedInput_;

@@ -94,6 +94,37 @@ compose::EvalLocation GetEvalLocation(
                                       : compose::EvalLocation::kServer;
 }
 
+compose::ComposeRequestReason GetRequestReasonForInputMode(
+    compose::mojom::InputMode mode) {
+  switch (mode) {
+    case compose::mojom::InputMode::kElaborate:
+      return compose::ComposeRequestReason::kFirstRequestElaborateMode;
+    case compose::mojom::InputMode::kFormalize:
+      return compose::ComposeRequestReason::kFirstRequestFormalizeMode;
+    case compose::mojom::InputMode::kPolish:
+      return compose::ComposeRequestReason::kFirstRequestPolishMode;
+    case compose::mojom::InputMode::kUnset:
+      return compose::ComposeRequestReason::kFirstRequest;
+  }
+}
+
+bool WasRequestTriggeredFromModifier(compose::ComposeRequestReason reason) {
+  switch (reason) {
+    case compose::ComposeRequestReason::kRetryRequest:
+    case compose::ComposeRequestReason::kLengthShortenRequest:
+    case compose::ComposeRequestReason::kLengthElaborateRequest:
+    case compose::ComposeRequestReason::kToneCasualRequest:
+    case compose::ComposeRequestReason::kToneFormalRequest:
+      return true;
+    case compose::ComposeRequestReason::kUpdateRequest:
+    case compose::ComposeRequestReason::kFirstRequest:
+    case compose::ComposeRequestReason::kFirstRequestPolishMode:
+    case compose::ComposeRequestReason::kFirstRequestElaborateMode:
+    case compose::ComposeRequestReason::kFirstRequestFormalizeMode:
+      return false;
+  }
+}
+
 }  // namespace
 
 // The state of a compose session. This currently includes the model quality log
@@ -382,7 +413,9 @@ void ComposeSession::LogCancelEdit() {
 }
 
 // ComposeSessionUntrustedPageHandler
-void ComposeSession::Compose(const std::string& input, bool is_input_edited) {
+void ComposeSession::Compose(const std::string& input,
+                             compose::mojom::InputMode mode,
+                             bool is_input_edited) {
   compose::ComposeRequestReason request_reason;
   if (is_input_edited) {
     session_events_.update_input_count += 1;
@@ -390,10 +423,14 @@ void ComposeSession::Compose(const std::string& input, bool is_input_edited) {
   } else {
     base::RecordAction(
         base::UserMetricsAction("Compose.ComposeRequest.CreateClicked"));
-    request_reason = compose::ComposeRequestReason::kFirstRequest;
+    request_reason = GetRequestReasonForInputMode(mode);
   }
   optimization_guide::proto::ComposeRequest request;
   request.mutable_generate_params()->set_user_input(input);
+  optimization_guide::proto::ComposeUpfrontInputMode request_mode =
+      ComposeUpfrontInputMode(mode);
+  request.mutable_generate_params()->set_upfront_input_mode(request_mode);
+
   MakeRequest(std::move(request), request_reason, is_input_edited);
 }
 
@@ -757,8 +794,7 @@ void ComposeSession::ProcessError(
   active_mojo_state_->response = compose::mojom::ComposeResponse::New();
   active_mojo_state_->response->status = error;
   active_mojo_state_->response->triggered_from_modifier =
-      request_reason != compose::ComposeRequestReason::kFirstRequest &&
-      request_reason != compose::ComposeRequestReason::kUpdateRequest;
+      WasRequestTriggeredFromModifier(request_reason);
 
   if (dialog_remote_.is_bound()) {
     dialog_remote_->ResponseReceived(active_mojo_state_->response->Clone());
@@ -1058,7 +1094,7 @@ void ComposeSession::MaybeRefreshPageContext(bool has_selection) {
   // Autocompose if it is enabled and there is a valid selection.
   if (compose::GetComposeConfig().auto_submit_with_selection &&
       IsValidComposePrompt(initial_input_)) {
-    Compose(initial_input_, false);
+    Compose(initial_input_, compose::mojom::InputMode::kUnset, false);
   }
   has_checked_autocompose_ = true;
 }

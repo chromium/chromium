@@ -10694,6 +10694,12 @@ const FeatureEntry kFeatureEntries[] = {
          compose::features::kEnableComposeSelectionNudge,
          kComposeSelectionNudgeVariations,
          "ComposeSelectionNudge")},
+
+    {"compose-upfront-input-modes",
+     flag_descriptions::kComposeUpfrontInputModesName,
+     flag_descriptions::kComposeUpfrontInputModesDescription,
+     kOsWin | kOsLinux | kOsMac | kOsCrOS,
+     FEATURE_VALUE_TYPE(compose::features::kComposeUpfrontInputModes)},
 #endif
 
     {"related-website-sets-permission-grants",

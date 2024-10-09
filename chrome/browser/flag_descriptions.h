@@ -4850,6 +4850,9 @@ extern const char kComposeSegmentationPromotionDescription[];
 
 extern const char kComposeSelectionNudgeName[];
 extern const char kComposeSelectionNudgeDescription[];
+
+extern const char kComposeUpfrontInputModesName[];
+extern const char kComposeUpfrontInputModesDescription[];
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
