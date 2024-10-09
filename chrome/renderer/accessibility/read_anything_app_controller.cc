@@ -409,13 +409,12 @@ ReadAnythingAppController* ReadAnythingAppController::Install(
 
 ReadAnythingAppController::ReadAnythingAppController(
     content::RenderFrame* render_frame)
-    : content::RenderFrameObserver(render_frame),
-      post_user_entry_draw_timer_(
-          FROM_HERE,
-          base::Seconds(kPostInputDistillSeconds),
-          base::BindRepeating(&ReadAnythingAppController::Draw,
-                              base::Unretained(this),
-                              /* recompute_display_nodes= */ true)) {
+    : content::RenderFrameObserver(render_frame) {
+  post_user_entry_draw_timer_ = std::make_unique<base::RetainingOneShotTimer>(
+      FROM_HERE, base::Seconds(kPostInputDistillSeconds),
+      base::BindRepeating(&ReadAnythingAppController::Draw,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          /* recompute_display_nodes= */ true));
   renderer_load_triggered_time_ms_ = base::TimeTicks::Now();
   distiller_ = std::make_unique<AXTreeDistiller>(
       render_frame,
@@ -428,7 +427,7 @@ ReadAnythingAppController::ReadAnythingAppController(
   ukm_recorder_ = ukm::MojoUkmRecorder::Create(*factory);
   if (features::IsDataCollectionModeForScreen2xEnabled()) {
     model_.SetDataCollectionForScreen2xCallback(base::BindRepeating(
-        &ReadAnythingAppController::Distill, base::Unretained(this)));
+        &ReadAnythingAppController::Distill, weak_ptr_factory_.GetWeakPtr()));
   }
 
   model_observer_.Observe(&model_);
@@ -436,8 +435,7 @@ ReadAnythingAppController::ReadAnythingAppController(
 
 ReadAnythingAppController::~ReadAnythingAppController() {
   RecordNumSelections();
-  // Stop the timer for base::unretained.
-  post_user_entry_draw_timer_.Stop();
+  post_user_entry_draw_timer_->Stop();
 }
 
 void ReadAnythingAppController::OnDestruct() {
@@ -518,7 +516,7 @@ void ReadAnythingAppController::AccessibilityEventReceived(
   // If the user typed something, this value will be true and it will reset the
   // timer to distill.
   if (model_.reset_draw_timer()) {
-    post_user_entry_draw_timer_.Reset();
+    post_user_entry_draw_timer_->Reset();
     model_.set_reset_draw_timer(false);
   }
 }
@@ -562,7 +560,7 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   RecordNumSelections();
 
   // Cancel any running draw timers.
-  post_user_entry_draw_timer_.Stop();
+  post_user_entry_draw_timer_->Stop();
 
   model_.SetActiveTreeId(tree_id);
   model_.SetUkmSourceId(ukm_source_id);
@@ -594,7 +592,7 @@ void ReadAnythingAppController::RecordNumSelections() {
 
 void ReadAnythingAppController::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
   // Cancel any running draw timers.
-  post_user_entry_draw_timer_.Stop();
+  post_user_entry_draw_timer_->Stop();
   model_.OnAXTreeDestroyed(tree_id);
 }
 

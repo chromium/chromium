@@ -420,7 +420,7 @@ class ReadAnythingAppController
 
   // A timer that causes a distillation after a user stops typing for a set
   // number of seconds.
-  base::RetainingOneShotTimer post_user_entry_draw_timer_;
+  std::unique_ptr<base::RetainingOneShotTimer> post_user_entry_draw_timer_;
 
   base::WeakPtrFactory<ReadAnythingAppController> weak_ptr_factory_{this};
 };
