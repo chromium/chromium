@@ -72,8 +72,8 @@ namespace net_log {
 
 class FakeNetLogExporter : public network::mojom::NetLogExporter {
  public:
-  FakeNetLogExporter() {}
-  ~FakeNetLogExporter() override {}
+  FakeNetLogExporter() = default;
+  ~FakeNetLogExporter() override = default;
 
   void Start(base::File destination,
              base::Value::Dict extra_constants,
