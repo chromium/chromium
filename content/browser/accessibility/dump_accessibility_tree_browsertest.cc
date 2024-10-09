@@ -3769,6 +3769,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityNestedList) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityNextAndPreviousOnLineId) {
+  RunHtmlTest(FILE_PATH_LITERAL("next-and-previous-on-line-id.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityButtonWithListboxPopup) {
   RunHtmlTest(FILE_PATH_LITERAL("button-with-listbox-popup.html"));
 }

@@ -4519,6 +4519,8 @@ data/accessibility/html/nestedlist-expected-android-external.txt
 data/accessibility/html/nestedlist-expected-android.txt
 data/accessibility/html/nestedlist-expected-fuchsia.txt
 data/accessibility/html/nestedlist.html
+data/accessibility/html/next-and-previous-on-line-id-expected-blink.txt
+data/accessibility/html/next-and-previous-on-line-id.html
 data/accessibility/html/no-source-video-expected-android.txt
 data/accessibility/html/no-source-video-expected-auralinux.txt
 data/accessibility/html/no-source-video-expected-blink.txt

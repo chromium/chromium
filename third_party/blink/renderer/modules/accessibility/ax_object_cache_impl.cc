@@ -90,6 +90,7 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/inline/abstract_inline_text_box.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/layout_image.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
@@ -734,6 +735,48 @@ void LogNodeDataSizeDistribution(
       "Accessibility.Performance.AXObjectCacheImpl.Incremental.ChildIds",
       base::saturated_cast<int>(node_data_size.child_ids_size), 1, kSize10Mb,
       kBucketCount);
+}
+
+// Rreturns true if `layout_object`represent a text that is all white spaces and
+// is all collapsed. This means that this object will not be accessed by an
+// InlineCursor.
+static bool IsAllCollapsedWhiteSpace(const LayoutObject& layout_object) {
+  if (const auto* layout_text = DynamicTo<LayoutText>(&layout_object)) {
+    if (layout_text->StyleRef().ShouldCollapseWhiteSpaces() &&
+        layout_text->TransformedText()
+            .IsAllSpecialCharacters<Character::IsCollapsibleSpace>()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+// Returns the previous LayoutObject representing text that is in the same line
+// as `layout_object`, nullptr if there are none. `layout_object`must be a child
+// of `block_flow`.
+LayoutObject* PreviousLayoutObjectTextOnLine(
+    const LayoutObject& layout_object,
+    const LayoutBlockFlow& block_flow) {
+  LayoutObject* previous = layout_object.PreviousInPreOrder(&block_flow);
+  while (previous) {
+    if (IsA<LayoutText>(previous)) {
+      InlineCursor cursor;
+      cursor.MoveToIncludingCulledInline(*previous);
+      while (cursor) {
+        if (cursor.Current()->IsInlineBox() ||
+            cursor.Current()->IsLineBreak()) {
+          return nullptr;
+        }
+        cursor.MoveToNextForSameLayoutObject();
+      }
+
+      return previous;
+    }
+
+    previous = previous->PreviousInPreOrder(&block_flow);
+  }
+
+  return nullptr;
 }
 
 }  // namespace
@@ -5914,6 +5957,10 @@ void AXObjectCacheImpl::Trace(Visitor* visitor) const {
   visitor->Trace(active_aria_modal_dialog_);
 
   visitor->Trace(objects_);
+  visitor->Trace(next_on_line_map_);
+  visitor->Trace(processed_blocks_);
+  visitor->Trace(previous_on_line_map_);
+
   visitor->Trace(tree_update_callback_queue_main_);
   visitor->Trace(tree_update_callback_queue_popup_);
   visitor->Trace(render_accessibility_host_);
@@ -6045,6 +6092,133 @@ void AXObjectCacheImpl::MarkPluginDescendantDirty(ui::AXNodeID node_id) {
   if (plugin_serializer_.get()) {
     plugin_serializer_->MarkSubtreeDirty(node_id);
   }
+}
+
+void AXObjectCacheImpl::ComputeNodesOnLine(const LayoutObject* layout_object) {
+  // The following computation is expensive.
+  //
+  // This function works as follows:
+  // 1. If a layout object associated with an AXNodeObject has its data already
+  // computed, we finish early;
+  // 2. If the associated Layout Block that the inline element is contained is
+  // already processed, we finish early. Note that 2 must come after 1, since
+  // retrieving the block is not so cheap;
+  // 3. For each line of this layout block flow, we connect and store the layout
+  // objects that are part of this line. They are later used in
+  // Next|PreviousOnLine.
+  //
+  // The main advantage of this approach is to be able to, in a single pass,
+  // compute the next and previous objects in a single line.
+  if (!layout_object) {
+    return;
+  }
+  if (!layout_object->IsInline() ||
+      !layout_object->IsInLayoutNGInlineFormattingContext()) {
+    return;
+  }
+  if (CachedNextOnLine(layout_object)) {
+    return;
+  }
+  const LayoutBlockFlow* block_flow = layout_object->FragmentItemsContainer();
+  if (!block_flow) {
+    return;
+  }
+  if (!processed_blocks_.insert(block_flow).is_new_entry) {
+    return;
+  }
+  InlineCursor cursor(*block_flow);
+  if (!cursor) {
+    // Cursor may be null if all objects of this cursor are collapsed.
+    return;
+  }
+
+  // Important! The next call to MoveToNextInlineLeaf() below fails if we are
+  // not inside a line.
+  cursor.MoveToFirstLine();
+  if (!cursor) {
+    return;
+  }
+
+  do {
+    InlineCursor line_cursor = cursor;
+
+    // Moves to first LayoutObject that a11y cares about.
+    line_cursor.MoveToNextInlineLeaf();
+    while (line_cursor) {
+      auto* line_object = line_cursor.CurrentMutableLayoutObject();
+      line_cursor.MoveToNextInlineLeafOnLine();
+
+      if (line_object) {
+        auto* next_line_object =
+            line_cursor ? line_cursor.CurrentMutableLayoutObject() : nullptr;
+        if (next_line_object) {
+          next_on_line_map_.insert(line_object, next_line_object);
+          previous_on_line_map_.insert(next_line_object, line_object);
+        } else {
+          // Reached the end of the line. Check if it contains a trailing white
+          // space that was not visited by the inline cursor because it was
+          // collapsed.
+          // The white space at the end of the line is important for a11y
+          // because if it is not part of the line text, a screen reader may not
+          // know that it has reached a previous line when going back to the
+          // previous line.
+          ConnectToTrailingWhitespaceOnLine(*line_object, *block_flow);
+        }
+      }
+    }
+    cursor.MoveToNextLine();
+  } while (cursor);
+}
+
+void AXObjectCacheImpl::ConnectToTrailingWhitespaceOnLine(
+    const LayoutObject& line_object,
+    const LayoutBlockFlow& block_flow) {
+  LayoutObject* trailing_whitespace_object =
+      PreviousLayoutObjectTextOnLine(line_object, block_flow);
+  if (!trailing_whitespace_object) {
+    return;
+  }
+  if (!IsAllCollapsedWhiteSpace(*trailing_whitespace_object)) {
+    return;
+  }
+  if (AXObject* obj = Get(trailing_whitespace_object);
+      obj && obj->IsIncludedInTree()) {
+    if (auto* previous = PreviousLayoutObjectTextOnLine(
+            *trailing_whitespace_object, block_flow)) {
+      // `trailing_whitespace_object` has a LayoutObject that is in
+      // the same line, connect them here.
+      // Note: we use `Set()` here to override if a value exists, where in
+      // `ComputeNodesOnLine()` we use `insert()`, which does not. This is
+      // necessary in case a object in the line pointed to something else, where
+      // now it needs to point to the trailing whitespace.
+      next_on_line_map_.Set(previous, trailing_whitespace_object);
+      previous_on_line_map_.Set(trailing_whitespace_object, previous);
+    }
+  }
+}
+
+const LayoutObject* AXObjectCacheImpl::CachedNextOnLine(
+    const LayoutObject* layout_object) {
+  auto it = next_on_line_map_.find(layout_object);
+  if (it != next_on_line_map_.end()) {
+    return it->value;
+  }
+  return nullptr;
+}
+
+const LayoutObject* AXObjectCacheImpl::CachedPreviousOnLine(
+    const LayoutObject* layout_object) {
+  auto it = previous_on_line_map_.find(layout_object);
+  if (it != previous_on_line_map_.end()) {
+    return it->value;
+  }
+  return nullptr;
+}
+
+void AXObjectCacheImpl::ClearCachedNodesOnLine() {
+  next_on_line_map_.clear();
+  previous_on_line_map_.clear();
+  processed_blocks_.clear();
 }
 
 std::ostream& operator<<(std::ostream& stream, const AXObjectCacheImpl& cache) {

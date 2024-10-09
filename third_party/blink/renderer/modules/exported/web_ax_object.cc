@@ -849,6 +849,12 @@ WebAXObject WebAXObject::NextOnLine() const {
     return WebAXObject();
 
   ScopedFreezeAXCache freeze(private_->AXObjectCache());
+  // Force computation of next/previous on line data, since this API may call
+  // serializations outside of the regular flow. AXObjectCacheImpl may not had
+  // the chance to compute next|previous on line data. Clear the cache and force
+  // the computation.
+  private_->AXObjectCache().ClearCachedNodesOnLine();
+  private_->AXObjectCache().ComputeNodesOnLine(private_->GetLayoutObject());
   return WebAXObject(private_.Get()->NextOnLine());
 }
 
@@ -857,6 +863,12 @@ WebAXObject WebAXObject::PreviousOnLine() const {
     return WebAXObject();
 
   ScopedFreezeAXCache freeze(private_->AXObjectCache());
+  // Force computation of next/previous on line data, since this API may call
+  // serializations outside of the regular flow. AXObjectCacheImpl may not had
+  // the chance to compute next|previous on line data. Clear the cache and force
+  // the computation.
+  private_->AXObjectCache().ClearCachedNodesOnLine();
+  private_->AXObjectCache().ComputeNodesOnLine(private_->GetLayoutObject());
   return WebAXObject(private_.Get()->PreviousOnLine());
 }
 

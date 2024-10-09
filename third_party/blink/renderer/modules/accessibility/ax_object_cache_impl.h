@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/modules/accessibility/aria_notification.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_lifecycle.h"
@@ -171,6 +172,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
     CHECK_GE(frozen_count_, 1);
     if (--frozen_count_ == 0) {
       ax_tree_source_->Thaw();
+      ClearCachedNodesOnLine();
     }
   }
   bool IsFrozen() const override { return frozen_count_; }
@@ -773,6 +775,28 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
     std::string ToString();
   };
 
+  // Computes and links all nodes backed by a LayoutObject, and stores this
+  // information in next|previous_on_line_map_. If a node is already part of the
+  // map, skips the computation. Also see Next|PreviousOnLine() for where this
+  // information is used.
+  void ComputeNodesOnLine(const LayoutObject* layout_object);
+
+  bool HasCachedDataForNodesOnLine() const {
+    return !processed_blocks_.empty();
+  }
+
+  // Helper method to clear the cached data to compute next/previous on line.
+  void ClearCachedNodesOnLine();
+
+  // Returns the next LayoutObject that is in the same line as `layout_object`,
+  // nullptr if it is the last object or if it is not part of a line.
+  const LayoutObject* CachedNextOnLine(const LayoutObject* layout_object);
+
+  // Returns the previous LayoutObject that is in the same line as
+  // `layout_object`, nullptr if it is the first object or if it is not part of
+  // a line.
+  const LayoutObject* CachedPreviousOnLine(const LayoutObject* layout_object);
+
  protected:
   void ScheduleImmediateSerialization() override;
 
@@ -921,6 +945,13 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // Helper that clears children up to the first included ancestor and returns
   // the ancestor if a children changed notification should be fired on it.
   AXObject* InvalidateChildren(AXObject* obj);
+
+  // Helper method for `ComputeNodesOnLine()`. Given a `line_object` which is
+  // the last LayoutObject of a line and that is a child of `block_flow`,
+  // connects the previous LayoutObject to a LayoutObject that represents a
+  // trailing white space on this line, if one exists.
+  void ConnectToTrailingWhitespaceOnLine(const LayoutObject& line_object,
+                                         const LayoutBlockFlow& block_flow);
 
   const Member<Document> document_;
 
@@ -1211,6 +1242,14 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   bool mark_all_dirty_ = false;
 
   mutable bool has_axid_generator_looped_ = false;
+
+  // These maps get cleared when the tree is thawed. Contains the data used to
+  // compute Next|PreviousOnLineId attributes.
+  HeapHashMap<Member<const LayoutObject>, Member<const LayoutObject>>
+      next_on_line_map_;
+  HeapHashMap<Member<const LayoutObject>, Member<const LayoutObject>>
+      previous_on_line_map_;
+  HeapHashSet<Member<const LayoutBlockFlow>> processed_blocks_;
 
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, PauseUpdatesAfterMaxNumberQueued);
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest,
