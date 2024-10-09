@@ -1952,13 +1952,6 @@ https://chromium.googlesource.com/chromiumos/platform2/+/main/secagentd/proto/se
   <int value="7" label="KeyboardBacklight"/>
 </enum>
 
-<enum name="UmaInitParamsResult">
-  <int value="0" label="Client ID and entropy sources were found"/>
-  <int value="1" label="Only the client ID was found"/>
-  <int value="2" label="Only entropy sources were found"/>
-  <int value="3" label="Neither the client ID nor entropy sources were found"/>
-</enum>
-
 <enum name="WebApkInstallResultChromeOS">
   <int value="0" label="Success">Installed successfully.</int>
   <int value="1" label="App invalid">
