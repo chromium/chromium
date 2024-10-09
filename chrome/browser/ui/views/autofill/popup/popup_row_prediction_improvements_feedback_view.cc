@@ -4,8 +4,12 @@
 
 #include "chrome/browser/ui/views/autofill/popup/popup_row_prediction_improvements_feedback_view.h"
 
+#include <algorithm>
+#include <array>
 #include <memory>
+#include <optional>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
@@ -141,6 +145,31 @@ std::unique_ptr<views::ImageButton> CreateFeedbackButton(
   return button;
 }
 
+// The focusable controls form a visually recognizable horizontal line of
+// elements on the UI. These controls are focused by the LEFT/RIGHT keys.
+// This function defines the order in which controls are selected and its list
+// must be in sync with `PopupRowPredictionImprovementsFeedbackView`'s rendered
+// views. It returns the `FocusableControl` which should have focus next after
+// the reference `control`, wrapping the list, so that if the current `control`
+// is the last one, the next will be the first element if moving `forward`.
+PopupRowPredictionImprovementsFeedbackView::FocusableControl
+GetNextHorizontalFocusableControl(
+    PopupRowPredictionImprovementsFeedbackView::FocusableControl control,
+    bool forward) {
+  using Control = PopupRowPredictionImprovementsFeedbackView::FocusableControl;
+  static constexpr std::array kControls{
+      Control::kManagePredictionImprovementsLink, Control::kThumbsUp,
+      Control::kThumbsDown};
+  const auto found_it = std::find(kControls.begin(), kControls.end(), control);
+  CHECK(found_it != kControls.end());
+
+  const int index = found_it - kControls.begin();
+  const int step = forward ? +1 : -1;
+  const int next_index = (index + step + kControls.size()) % kControls.size();
+
+  return kControls[next_index];
+}
+
 }  // namespace
 
 PopupRowPredictionImprovementsFeedbackView::
@@ -194,11 +223,61 @@ PopupRowPredictionImprovementsFeedbackView::
 void PopupRowPredictionImprovementsFeedbackView::SetSelectedCell(
     std::optional<CellType> cell) {
   autofill::PopupRowView::SetSelectedCell(cell);
-  if (cell != CellType::kContent) {
-    // When the row is not selected, no button should have a hover style.
-    SetHoverStyleImageButton(thumbs_up_button_, /*hover=*/false);
-    SetHoverStyleImageButton(thumbs_down_button_, /*hover=*/false);
+  UpdateFocusedControl(
+      cell == CellType::kContent
+          ? std::optional(FocusableControl::kManagePredictionImprovementsLink)
+          : std::nullopt);
+}
+
+bool PopupRowPredictionImprovementsFeedbackView::HandleKeyPressEvent(
+    const input::NativeWebKeyboardEvent& event) {
+  if (!focused_control_.has_value()) {
+    return PopupRowView::HandleKeyPressEvent(event);
   }
+
+  switch (event.windows_key_code) {
+    case ui::VKEY_LEFT:
+      UpdateFocusedControl(GetNextHorizontalFocusableControl(
+          *focused_control_, /*forward=*/base::i18n::IsRTL()));
+      return true;
+    case ui::VKEY_RIGHT:
+      UpdateFocusedControl(GetNextHorizontalFocusableControl(
+          *focused_control_, /*forward=*/!base::i18n::IsRTL()));
+      return true;
+    case ui::VKEY_RETURN:
+      switch (*focused_control_) {
+        case FocusableControl::kManagePredictionImprovementsLink:
+          controller()->PerformButtonActionForSuggestion(
+              line_number(),
+              PredictionImprovementsButtonActions::kLearnMoreClicked);
+          break;
+        case FocusableControl::kThumbsUp:
+          controller()->PerformButtonActionForSuggestion(
+              line_number(),
+              PredictionImprovementsButtonActions::kThumbsUpClicked);
+          break;
+        case FocusableControl::kThumbsDown:
+          controller()->PerformButtonActionForSuggestion(
+              line_number(),
+              PredictionImprovementsButtonActions::kThumbsDownClicked);
+          break;
+      }
+      UpdateFocusedControl(std::nullopt);
+      return true;
+  }
+
+  return PopupRowView::HandleKeyPressEvent(event);
+}
+
+void PopupRowPredictionImprovementsFeedbackView::UpdateFocusedControl(
+    std::optional<FocusableControl> focused_control) {
+  focused_control_ = focused_control;
+
+  SetHoverStyleImageButton(thumbs_up_button_, /*hover=*/focused_control_ ==
+                                                  FocusableControl::kThumbsUp);
+  SetHoverStyleImageButton(
+      thumbs_down_button_,
+      /*hover=*/focused_control_ == FocusableControl::kThumbsDown);
 }
 
 BEGIN_METADATA(PopupRowPredictionImprovementsFeedbackView)

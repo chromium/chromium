@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_row_prediction_improvements_feedback_view.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/callback.h"
@@ -19,6 +20,7 @@
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/button/image_button.h"
@@ -64,6 +66,15 @@ class PopupRowPredictionImprovementsFeedbackViewTest
         a11y_selection_delegate(), selection_delegate(),
         controller_.GetWeakPtr(), /*line_number=*/0);
     ShowView(std::move(row));
+  }
+
+  // Simulates the keyboard event and returns whether the event was handled.
+  bool SimulateKeyPress(int windows_key_code) {
+    input::NativeWebKeyboardEvent event(
+        blink::WebKeyboardEvent::Type::kRawKeyDown,
+        blink::WebInputEvent::kNoModifiers, ui::EventTimeForNow());
+    event.windows_key_code = windows_key_code;
+    return view().HandleKeyPressEvent(event);
   }
 
  protected:
@@ -140,4 +151,128 @@ TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
   suggestion_text->ClickFirstLinkForTesting();
 }
 
+TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
+       LinkIsDefaultFocusableControlForSelectedRow) {
+  CreateFeedbackRowAndGetButtons();
+
+  EXPECT_EQ(view().focused_control_for_testing(), std::nullopt);
+  view().SetSelectedCell(PopupRowView::CellType::kContent);
+  EXPECT_EQ(view().focused_control_for_testing(),
+            PopupRowPredictionImprovementsFeedbackView::FocusableControl::
+                kManagePredictionImprovementsLink);
+
+  view().SetSelectedCell(std::nullopt);
+  EXPECT_EQ(view().focused_control_for_testing(), std::nullopt);
+}
+
+TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
+       LeftRightKeysUpdateFocusedControl) {
+  CreateFeedbackRowAndGetButtons();
+  view().SetSelectedCell(PopupRowView::CellType::kContent);
+
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RIGHT));
+  EXPECT_EQ(
+      view().focused_control_for_testing(),
+      PopupRowPredictionImprovementsFeedbackView::FocusableControl::kThumbsUp);
+
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RIGHT));
+  EXPECT_EQ(view().focused_control_for_testing(),
+            PopupRowPredictionImprovementsFeedbackView::FocusableControl::
+                kThumbsDown);
+
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RIGHT));
+  EXPECT_EQ(view().focused_control_for_testing(),
+            PopupRowPredictionImprovementsFeedbackView::FocusableControl::
+                kManagePredictionImprovementsLink)
+      << "The list of controls wraps.";
+
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_LEFT));
+  EXPECT_EQ(view().focused_control_for_testing(),
+            PopupRowPredictionImprovementsFeedbackView::FocusableControl::
+                kThumbsDown);
+}
+
+TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
+       LeftRightKeysUpdateFocusedControlRTL) {
+  base::i18n::SetRTLForTesting(true);
+
+  CreateFeedbackRowAndGetButtons();
+  view().SetSelectedCell(PopupRowView::CellType::kContent);
+
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_LEFT));
+  EXPECT_EQ(
+      view().focused_control_for_testing(),
+      PopupRowPredictionImprovementsFeedbackView::FocusableControl::kThumbsUp);
+
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_LEFT));
+  EXPECT_EQ(view().focused_control_for_testing(),
+            PopupRowPredictionImprovementsFeedbackView::FocusableControl::
+                kThumbsDown);
+
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_LEFT));
+  EXPECT_EQ(view().focused_control_for_testing(),
+            PopupRowPredictionImprovementsFeedbackView::FocusableControl::
+                kManagePredictionImprovementsLink)
+      << "The list of controls wraps.";
+
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RIGHT));
+  EXPECT_EQ(view().focused_control_for_testing(),
+            PopupRowPredictionImprovementsFeedbackView::FocusableControl::
+                kThumbsDown);
+  base::i18n::SetRTLForTesting(false);
+}
+
+TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
+       EnterIsHandledForFocusedManagePredictionImprovementsLink) {
+  CreateFeedbackRowAndGetButtons();
+  view().SetSelectedCell(PopupRowView::CellType::kContent);
+
+  EXPECT_CALL(controller(),
+              PerformButtonActionForSuggestion(
+                  /*index=*/0,
+                  VariantWith<PredictionImprovementsButtonActions>(
+                      PredictionImprovementsButtonActions::kLearnMoreClicked)));
+
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RETURN));
+}
+
+TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
+       EnterIsHandledForFocusedThumbsUp) {
+  CreateFeedbackRowAndGetButtons();
+  view().SetSelectedCell(PopupRowView::CellType::kContent);
+
+  SimulateKeyPress(ui::VKEY_RIGHT);
+  ASSERT_EQ(
+      view().focused_control_for_testing(),
+      PopupRowPredictionImprovementsFeedbackView::FocusableControl::kThumbsUp);
+
+  EXPECT_CALL(controller(),
+              PerformButtonActionForSuggestion(
+                  /*index=*/0,
+                  VariantWith<PredictionImprovementsButtonActions>(
+                      PredictionImprovementsButtonActions::kThumbsUpClicked)));
+
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RETURN));
+}
+
+TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
+       EnterIsHandledForFocusedThumbsDown) {
+  CreateFeedbackRowAndGetButtons();
+  view().SetSelectedCell(PopupRowView::CellType::kContent);
+
+  SimulateKeyPress(ui::VKEY_RIGHT);
+  SimulateKeyPress(ui::VKEY_RIGHT);
+  ASSERT_EQ(view().focused_control_for_testing(),
+            PopupRowPredictionImprovementsFeedbackView::FocusableControl::
+                kThumbsDown);
+
+  EXPECT_CALL(
+      controller(),
+      PerformButtonActionForSuggestion(
+          /*index=*/0,
+          VariantWith<PredictionImprovementsButtonActions>(
+              PredictionImprovementsButtonActions::kThumbsDownClicked)));
+
+  EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RETURN));
+}
 }  // namespace autofill

@@ -24,6 +24,12 @@ class PopupRowPredictionImprovementsFeedbackView : public PopupRowView {
   METADATA_HEADER(PopupRowPredictionImprovementsFeedbackView, PopupRowView)
 
  public:
+  enum class FocusableControl {
+    kManagePredictionImprovementsLink,
+    kThumbsUp,
+    kThumbsDown,
+  };
+
   static constexpr int kLearnMoreStyledLabelViewID = 123;
   static constexpr int kFeedbackTextAndButtonsContainerViewID = 321;
 
@@ -46,8 +52,18 @@ class PopupRowPredictionImprovementsFeedbackView : public PopupRowView {
 
   // PopupRowView:
   void SetSelectedCell(std::optional<CellType> cell) override;
+  bool HandleKeyPressEvent(const input::NativeWebKeyboardEvent& event) override;
+
+  std::optional<FocusableControl> focused_control_for_testing() {
+    return focused_control_;
+  }
 
  private:
+  void UpdateFocusedControl(std::optional<FocusableControl> focused_control);
+
+  // The FocusableControl currently focused. Pressing enter will run their
+  // respective controller method.s
+  std::optional<FocusableControl> focused_control_;
   raw_ptr<views::ImageButton> thumbs_up_button_ = nullptr;
   raw_ptr<views::ImageButton> thumbs_down_button_ = nullptr;
 };
