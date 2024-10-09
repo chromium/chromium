@@ -11850,9 +11850,10 @@ void RenderFrameHostImpl::CommitNavigation(
     // processes.
     const bool maybe_new_process_is_used =
         GetProcess()->GetRenderFrameHostCount() == 1 &&
-        GetSiteInstance() != navigation_request->frame_tree_node()
-                                 ->current_frame_host()
-                                 ->GetSiteInstance();
+        GetSiteInstance()->group() != navigation_request->frame_tree_node()
+                                          ->current_frame_host()
+                                          ->GetSiteInstance()
+                                          ->group();
     if (maybe_new_process_is_used && common_params->url.SchemeIsHTTPOrHTTPS() &&
         IsOutermostMainFrame()) {
       bool value = NewProcessUsedForNavigationWhenSameSiteProcessExists(this);
