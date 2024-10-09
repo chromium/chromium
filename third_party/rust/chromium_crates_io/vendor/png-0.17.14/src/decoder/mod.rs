@@ -16,6 +16,7 @@ use crate::common::{
     BitDepth, BytesPerPixel, ColorType, Info, ParameterErrorKind, Transformations,
 };
 use crate::filter::{unfilter, FilterType};
+use crate::FrameControl;
 
 pub use interlace_info::InterlaceInfo;
 use interlace_info::InterlaceInfoIter;
@@ -205,8 +206,7 @@ impl<R: Read> Decoder<R> {
             decoder: self.read_decoder,
             bpp: BytesPerPixel::One,
             subframe: SubframeInfo::not_yet_init(),
-            fctl_read: 0,
-            next_frame: SubframeIdx::Initial,
+            remaining_frames: 0, // Temporary value - fixed below after reading `acTL` and `fcTL`.
             data_stream: Vec::new(),
             prev_start: 0,
             current_start: 0,
@@ -234,6 +234,19 @@ impl<R: Read> Decoder<R> {
         }
 
         reader.read_until_image_data()?;
+
+        reader.remaining_frames = match reader.info().animation_control.as_ref() {
+            None => 1, // No `acTL` => only expecting `IDAT` frame.
+            Some(animation) => {
+                let mut num_frames = animation.num_frames as usize;
+                if reader.info().frame_control.is_none() {
+                    // No `fcTL` before `IDAT` => `IDAT` is not part of the animation, but
+                    // represents an *extra*, default frame for non-APNG-aware decoders.
+                    num_frames += 1;
+                }
+                num_frames
+            }
+        };
         Ok(reader)
     }
 
@@ -349,11 +362,8 @@ pub struct Reader<R: Read> {
     decoder: ReadDecoder<R>,
     bpp: BytesPerPixel,
     subframe: SubframeInfo,
-    /// Number of frame control chunks read.
-    /// By the APNG specification the total number must equal the count specified in the animation
-    /// control chunk. The IDAT image _may_ have such a chunk applying to it.
-    fctl_read: u32,
-    next_frame: SubframeIdx,
+    /// How many frames remain to be decoded.  Decremented after each `IDAT` or `fdAT` sequence.
+    remaining_frames: usize,
     /// Vec containing the uncompressed image data currently being processed.
     data_stream: Vec<u8>,
     /// Index in `data_stream` where the previous row starts.
@@ -386,20 +396,39 @@ struct SubframeInfo {
     consumed_and_flushed: bool,
 }
 
-/// Denote a frame as given by sequence numbers.
-#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
-enum SubframeIdx {
-    /// The initial frame in an IDAT chunk without fcTL chunk applying to it.
-    /// Note that this variant precedes `Some` as IDAT frames precede fdAT frames and all fdAT
-    /// frames must have a fcTL applying to it.
-    Initial,
-    /// An IDAT frame with fcTL or an fdAT frame.
-    Some(u32),
-    /// The past-the-end index.
-    End,
-}
-
 impl<R: Read> Reader<R> {
+    /// Advances to the start of the next animation frame and
+    /// returns a reference to the `FrameControl` info that describes it.
+    /// Skips and discards the image data of the previous frame if necessary.
+    ///
+    /// Returns a [`ParameterError`] when there are no more animation frames.
+    /// To avoid this the caller can check if [`Info::animation_control`] exists
+    /// and consult [`AnimationControl::num_frames`].
+    pub fn next_frame_info(&mut self) -> Result<&FrameControl, DecodingError> {
+        let remaining_frames = if self.subframe.consumed_and_flushed {
+            self.remaining_frames
+        } else {
+            // One remaining frame will be consumed by the `finish_decoding` call below.
+            self.remaining_frames - 1
+        };
+        if remaining_frames == 0 {
+            return Err(DecodingError::Parameter(
+                ParameterErrorKind::PolledAfterEndOfImage.into(),
+            ));
+        }
+
+        if !self.subframe.consumed_and_flushed {
+            self.subframe.current_interlace_info = None;
+            self.finish_decoding()?;
+        }
+        self.read_until_image_data()?;
+
+        // The PNG standard (and `StreamingDecoder `) guarantes that there is an `fcTL` chunk
+        // before the start of image data in a sequence of `fdAT` chunks.  Therefore `unwrap`
+        // below is guaranteed to not panic.
+        Ok(self.info().frame_control.as_ref().unwrap())
+    }
+
     /// Reads all meta data until the next frame data starts.
     /// Requires IHDR before the IDAT and fcTL before fdAT.
     fn read_until_image_data(&mut self) -> Result<(), DecodingError> {
@@ -414,14 +443,6 @@ impl<R: Read> Reader<R> {
             match state {
                 Some(Decoded::ChunkBegin(_, chunk::IDAT))
                 | Some(Decoded::ChunkBegin(_, chunk::fdAT)) => break,
-                Some(Decoded::FrameControl(_)) => {
-                    // The next frame is the one to which this chunk applies.
-                    self.next_frame = SubframeIdx::Some(self.fctl_read);
-                    // TODO: what about overflow here? That would imply there are more fctl chunks
-                    // than can be specified in the animation control but also that we have read
-                    // several gigabytes of data.
-                    self.fctl_read += 1;
-                }
                 None => {
                     return Err(DecodingError::Format(
                         FormatErrorInner::MissingImageData.into(),
@@ -473,7 +494,7 @@ impl<R: Read> Reader<R> {
     /// Output lines will be written in row-major, packed matrix with width and height of the read
     /// frame (or subframe), all samples are in big endian byte order where this matters.
     pub fn next_frame(&mut self, buf: &mut [u8]) -> Result<OutputInfo, DecodingError> {
-        if self.next_frame == SubframeIdx::End {
+        if self.remaining_frames == 0 {
             return Err(DecodingError::Parameter(
                 ParameterErrorKind::PolledAfterEndOfImage.into(),
             ));
@@ -532,30 +553,32 @@ impl<R: Read> Reader<R> {
         }
 
         // Advance over the rest of data for this (sub-)frame.
-        if !self.subframe.consumed_and_flushed {
-            self.decoder.finish_decoding()?;
-            self.subframe.consumed_and_flushed = true;
-        }
-
-        // Advance our state to expect the next frame.
-        let past_end_subframe = self
-            .info()
-            .animation_control()
-            .map(|ac| ac.num_frames)
-            .unwrap_or(0);
-        self.next_frame = match self.next_frame {
-            SubframeIdx::End => unreachable!("Next frame called when already at image end"),
-            // Reached the end of non-animated image.
-            SubframeIdx::Initial if past_end_subframe == 0 => SubframeIdx::End,
-            // An animated image, expecting first subframe.
-            SubframeIdx::Initial => SubframeIdx::Some(0),
-            // This was the last subframe, slightly fuzzy condition in case of programmer error.
-            SubframeIdx::Some(idx) if past_end_subframe <= idx + 1 => SubframeIdx::End,
-            // Expecting next subframe.
-            SubframeIdx::Some(idx) => SubframeIdx::Some(idx + 1),
-        };
+        self.finish_decoding()?;
 
         Ok(output_info)
+    }
+
+    fn mark_subframe_as_consumed_and_flushed(&mut self) {
+        assert!(self.remaining_frames > 0);
+        self.remaining_frames -= 1;
+
+        self.subframe.consumed_and_flushed = true;
+    }
+
+    /// Advance over the rest of data for this (sub-)frame.
+    /// Called after decoding the last row of a frame.
+    fn finish_decoding(&mut self) -> Result<(), DecodingError> {
+        // Double-check that all rows of this frame have been decoded (i.e. that the potential
+        // `finish_decoding` call below won't be discarding any data).
+        assert!(self.subframe.current_interlace_info.is_none());
+
+        // Discard the remaining data in the current sequence of `IDAT` or `fdAT` chunks.
+        if !self.subframe.consumed_and_flushed {
+            self.decoder.finish_decoding()?;
+            self.mark_subframe_as_consumed_and_flushed();
+        }
+
+        Ok(())
     }
 
     /// Returns the next processed row of the image
@@ -567,7 +590,10 @@ impl<R: Read> Reader<R> {
     /// Returns the next processed row of the image
     pub fn next_interlaced_row(&mut self) -> Result<Option<InterlacedRow>, DecodingError> {
         let interlace = match self.subframe.current_interlace_info.as_ref() {
-            None => return Ok(None),
+            None => {
+                self.finish_decoding()?;
+                return Ok(None);
+            }
             Some(interlace) => *interlace,
         };
         if interlace.line_number() == 0 {
@@ -602,7 +628,7 @@ impl<R: Read> Reader<R> {
     /// Read the rest of the image and chunks and finish up, including text chunks or others
     /// This will discard the rest of the image if the image is not read already with [`Reader::next_frame`], [`Reader::next_row`] or [`Reader::next_interlaced_row`]
     pub fn finish(&mut self) -> Result<(), DecodingError> {
-        self.next_frame = SubframeIdx::End;
+        self.remaining_frames = 0;
         self.data_stream.clear();
         self.current_start = 0;
         self.prev_start = 0;
@@ -714,7 +740,7 @@ impl<R: Read> Reader<R> {
 
             match self.decoder.decode_next(&mut self.data_stream)? {
                 Some(Decoded::ImageData) => (),
-                Some(Decoded::ImageDataFlushed) => self.subframe.consumed_and_flushed = true,
+                Some(Decoded::ImageDataFlushed) => self.mark_subframe_as_consumed_and_flushed(),
                 _ => (),
             }
         }

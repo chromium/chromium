@@ -30,18 +30,18 @@ pub fn create_transform_fn(
     match color_type {
         ColorType::Indexed if expand => {
             if info.palette.is_none() {
-                return Err(DecodingError::Format(
+                Err(DecodingError::Format(
                     FormatErrorInner::PaletteRequired.into(),
-                ));
+                ))
             } else if let BitDepth::Sixteen = info.bit_depth {
                 // This should have been caught earlier but let's check again. Can't hurt.
-                return Err(DecodingError::Format(
+                Err(DecodingError::Format(
                     FormatErrorInner::InvalidColorBitDepth {
                         color_type: ColorType::Indexed,
                         bit_depth: BitDepth::Sixteen,
                     }
                     .into(),
-                ));
+                ))
             } else {
                 Ok(if trns {
                     palette::create_expansion_into_rgba8(info)

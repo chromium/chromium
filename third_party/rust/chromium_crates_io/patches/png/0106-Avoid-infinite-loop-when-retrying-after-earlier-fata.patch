@@ -1,0 +1,123 @@
+From 1ec761327e59f712374068e63a44f705b9162e0f Mon Sep 17 00:00:00 2001
+From: Lukasz Anforowicz <lukasza@chromium.org>
+Date: Fri, 4 Oct 2024 22:51:09 +0000
+Subject: [PATCH 106/113] Avoid infinite loop when retrying after earlier fatal
+ error.
+
+When `StreamingDecoder` reports an error, it leaves `state` set to
+`None`.  Before this commit, calling `next_frame` in this state would
+have led to an infinite loop:
+
+* `ReadDecoder::decode_next` would loop forever (`!self.at_eof` is true
+  after an error) and would fail to make progress, because
+* When `StreamingDecoder::update` sees `state` saw set to `None` then
+  before this commit it wouldn't enter the `next_state` loop and would
+  immediately return no progress
+  (`Ok((/* consumer bytes = */ 0, Decoded::Nothing))`).
+
+After this commit, `StreamingDecoder::update` checks if the `state` is
+`None` and treats this as an error.
+---
+ src/common.rs         |  7 +++++++
+ src/decoder/stream.rs | 32 +++++++++++++++++++++++++-------
+ 2 files changed, 32 insertions(+), 7 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/common.rs b/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/common.rs
+index 4475153..a3b6c27 100644
+--- a/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/common.rs
++++ b/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/common.rs
+@@ -791,6 +791,10 @@ pub(crate) enum ParameterErrorKind {
+     /// library will perform the checks necessary to ensure that data was accurate or error with a
+     /// format error otherwise.
+     PolledAfterEndOfImage,
++    /// Attempt to continue decoding after a fatal, non-resumable error was reported (e.g. after
++    /// [`DecodingError::Format`]).  The only case when it is possible to resume after an error
++    /// is an `UnexpectedEof` scenario - see [`DecodingError::IoError`].
++    PolledAfterFatalError,
+ }
+ 
+ impl From<ParameterErrorKind> for ParameterError {
+@@ -807,6 +811,9 @@ impl fmt::Display for ParameterError {
+                 write!(fmt, "wrong data size, expected {} got {}", expected, actual)
+             }
+             PolledAfterEndOfImage => write!(fmt, "End of image has been reached"),
++            PolledAfterFatalError => {
++                write!(fmt, "A fatal decoding error has been encounted earlier")
++            }
+         }
+     }
+ }
+diff --git a/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/decoder/stream.rs b/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/decoder/stream.rs
+index f52523a..e8412f3 100644
+--- a/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/decoder/stream.rs
++++ b/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/decoder/stream.rs
+@@ -10,7 +10,7 @@ use super::zlib::ZlibStream;
+ use crate::chunk::{self, ChunkType, IDAT, IEND, IHDR};
+ use crate::common::{
+     AnimationControl, BitDepth, BlendOp, ColorType, DisposeOp, FrameControl, Info, ParameterError,
+-    PixelDimensions, ScaledFloat, SourceChromaticities, Unit,
++    ParameterErrorKind, PixelDimensions, ScaledFloat, SourceChromaticities, Unit,
+ };
+ use crate::text_metadata::{ITXtChunk, TEXtChunk, TextDecodingError, ZTXtChunk};
+ use crate::traits::ReadBytesExt;
+@@ -627,15 +627,24 @@ impl StreamingDecoder {
+         mut buf: &[u8],
+         image_data: &mut Vec<u8>,
+     ) -> Result<(usize, Decoded), DecodingError> {
++        if self.state.is_none() {
++            return Err(DecodingError::Parameter(
++                ParameterErrorKind::PolledAfterFatalError.into(),
++            ));
++        }
++
+         let len = buf.len();
+-        while !buf.is_empty() && self.state.is_some() {
++        while !buf.is_empty() {
+             match self.next_state(buf, image_data) {
+                 Ok((bytes, Decoded::Nothing)) => buf = &buf[bytes..],
+                 Ok((bytes, result)) => {
+                     buf = &buf[bytes..];
+                     return Ok((len - buf.len(), result));
+                 }
+-                Err(err) => return Err(err),
++                Err(err) => {
++                    debug_assert!(self.state.is_none());
++                    return Err(err);
++                }
+             }
+         }
+         Ok((len - buf.len(), Decoded::Nothing))
+@@ -1917,8 +1926,18 @@ mod tests {
+         // 0-length fdAT should result in an error.
+         let err = reader.next_frame(&mut buf).unwrap_err();
+         assert!(matches!(&err, DecodingError::Format(_)));
+-        let msg = format!("{err}");
+-        assert_eq!("fdAT chunk shorter than 4 bytes", msg);
++        assert_eq!("fdAT chunk shorter than 4 bytes", format!("{err}"));
++
++        // Calling `next_frame` again should return an error.  Same error as above would be nice,
++        // but it is probably unnecessary and infeasible (`DecodingError` can't derive `Clone`
++        // because `std::io::Error` doesn't implement `Clone`)..  But it definitely shouldn't enter
++        // an infinite loop.
++        let err2 = reader.next_frame(&mut buf).unwrap_err();
++        assert!(matches!(&err2, DecodingError::Parameter(_)));
++        assert_eq!(
++            "A fatal decoding error has been encounted earlier",
++            format!("{err2}")
++        );
+     }
+ 
+     #[test]
+@@ -1935,8 +1954,7 @@ mod tests {
+         // 3-bytes-long fdAT should result in an error.
+         let err = reader.next_frame(&mut buf).unwrap_err();
+         assert!(matches!(&err, DecodingError::Format(_)));
+-        let msg = format!("{err}");
+-        assert_eq!("fdAT chunk shorter than 4 bytes", msg);
++        assert_eq!("fdAT chunk shorter than 4 bytes", format!("{err}"));
+     }
+ 
+     #[test]
+-- 
+2.47.0.rc0.187.ge670bccf7e-goog
+

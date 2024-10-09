@@ -791,6 +791,10 @@ pub(crate) enum ParameterErrorKind {
     /// library will perform the checks necessary to ensure that data was accurate or error with a
     /// format error otherwise.
     PolledAfterEndOfImage,
+    /// Attempt to continue decoding after a fatal, non-resumable error was reported (e.g. after
+    /// [`DecodingError::Format`]).  The only case when it is possible to resume after an error
+    /// is an `UnexpectedEof` scenario - see [`DecodingError::IoError`].
+    PolledAfterFatalError,
 }
 
 impl From<ParameterErrorKind> for ParameterError {
@@ -807,6 +811,9 @@ impl fmt::Display for ParameterError {
                 write!(fmt, "wrong data size, expected {} got {}", expected, actual)
             }
             PolledAfterEndOfImage => write!(fmt, "End of image has been reached"),
+            PolledAfterFatalError => {
+                write!(fmt, "A fatal decoding error has been encounted earlier")
+            }
         }
     }
 }

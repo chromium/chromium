@@ -1,0 +1,61 @@
+From f5dd12f4db62efc5db23307784f386c8a7440b71 Mon Sep 17 00:00:00 2001
+From: Lukasz Anforowicz <lukasza@chromium.org>
+Date: Thu, 3 Oct 2024 19:34:53 +0000
+Subject: [PATCH 102/113] Add test showing `next_frame` after `next_row` is
+ temporarily stuck.
+
+This commit adds a test with the main assertions commented out
+(because they would fail as-is).  A fix comes in the follow-up commit.
+---
+ src/decoder/stream.rs | 37 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 37 insertions(+)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/decoder/stream.rs b/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/decoder/stream.rs
+index 1cd5ff6..9c7e1b6 100644
+--- a/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/decoder/stream.rs
++++ b/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/decoder/stream.rs
+@@ -2398,4 +2398,41 @@ mod tests {
+             .expect_err("Main test - expecting error");
+         assert!(matches!(err, DecodingError::Parameter(_)));
+     }
++
++    /// Tests that after decoding a whole frame via [`Reader.next_row`] the call to
++    /// [`Reader.next_frame`] will decode the **next** frame.
++    #[test]
++    fn test_row_by_row_then_next_frame() {
++        let mut reader = create_reader_of_ihdr_actl_fctl_idat_fctl_fdat();
++        let mut buf = vec![0; reader.output_buffer_size()];
++
++        assert_eq!(
++            reader
++                .info()
++                .frame_control
++                .as_ref()
++                .unwrap()
++                .sequence_number,
++            0
++        );
++        while let Some(_) = reader.next_row().unwrap() {}
++        assert_eq!(
++            reader
++                .info()
++                .frame_control
++                .as_ref()
++                .unwrap()
++                .sequence_number,
++            0
++        );
++
++        buf.fill(0x0f);
++        reader
++            .next_frame(&mut buf)
++            .expect("Expecting no error from next_frame call");
++
++        // TODO: Verify if we have read the next `fcTL` chunk + repopulated `buf`:
++        //assert_eq!(reader.info().frame_control.as_ref().unwrap().sequence_number, 1);
++        //assert!(buf.iter().any(|byte| *byte != 0x0f));
++    }
+ }
+-- 
+2.47.0.rc0.187.ge670bccf7e-goog
+

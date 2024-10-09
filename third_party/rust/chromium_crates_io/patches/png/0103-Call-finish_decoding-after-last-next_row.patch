@@ -1,0 +1,101 @@
+From 3ef723bdb6f816e0d467aa6cf7739d525857f669 Mon Sep 17 00:00:00 2001
+From: Lukasz Anforowicz <lukasza@chromium.org>
+Date: Thu, 3 Oct 2024 19:38:26 +0000
+Subject: [PATCH 103/113] Call `finish_decoding` after last `next_row`.
+
+Before this commit, `next_frame` would take care to read till the end of
+an `IDAT`/`fdAT` chunks sequence, by calling
+`self.decoder.finish_decoding` when
+`!self.subframe.consumed_and_flushed`.  `next_row` wouldn't do this and
+therefore the next call to `next_frame` would be temporarily stuck on
+the previous frame (i.e. finishing decoding after the previous frame
+rather than advancing to the next frame).
+
+After this commit, the `finish_decoding` code is extracted to a separate
+helper function that is called by *both* `next_frame` and
+`next_interlaced_row` (once they detect that all rows of a frame have
+been already decoded).
+
+This commit fixes the `test_row_by_row_then_next_frame` unit test.
+---
+ src/decoder/mod.rs    | 25 ++++++++++++++++++++-----
+ src/decoder/stream.rs | 14 +++++++++++---
+ 2 files changed, 31 insertions(+), 8 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/decoder/mod.rs b/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/decoder/mod.rs
+index 8a76200..56570b3 100644
+--- a/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/decoder/mod.rs
++++ b/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/decoder/mod.rs
+@@ -532,10 +532,7 @@ impl<R: Read> Reader<R> {
+         }
+ 
+         // Advance over the rest of data for this (sub-)frame.
+-        if !self.subframe.consumed_and_flushed {
+-            self.decoder.finish_decoding()?;
+-            self.subframe.consumed_and_flushed = true;
+-        }
++        self.finish_decoding()?;
+ 
+         // Advance our state to expect the next frame.
+         let past_end_subframe = self
+@@ -558,6 +555,21 @@ impl<R: Read> Reader<R> {
+         Ok(output_info)
+     }
+ 
++    /// Advance over the rest of data for this (sub-)frame.
++    /// Called after decoding the last row of a frame.
++    fn finish_decoding(&mut self) -> Result<(), DecodingError> {
++        // Double-check that all rows of this frame have been decoded.
++        assert!(self.subframe.current_interlace_info.is_none());
++
++        // Discard the remaining data in the current sequence of `IDAT` or `fdAT` chunks.
++        if !self.subframe.consumed_and_flushed {
++            self.decoder.finish_decoding()?;
++            self.subframe.consumed_and_flushed = true;
++        }
++
++        Ok(())
++    }
++
+     /// Returns the next processed row of the image
+     pub fn next_row(&mut self) -> Result<Option<Row>, DecodingError> {
+         self.next_interlaced_row()
+@@ -567,7 +579,10 @@ impl<R: Read> Reader<R> {
+     /// Returns the next processed row of the image
+     pub fn next_interlaced_row(&mut self) -> Result<Option<InterlacedRow>, DecodingError> {
+         let interlace = match self.subframe.current_interlace_info.as_ref() {
+-            None => return Ok(None),
++            None => {
++                self.finish_decoding()?;
++                return Ok(None);
++            }
+             Some(interlace) => *interlace,
+         };
+         if interlace.line_number() == 0 {
+diff --git a/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/decoder/stream.rs b/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/decoder/stream.rs
+index 9c7e1b6..2607078 100644
+--- a/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/decoder/stream.rs
++++ b/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/decoder/stream.rs
+@@ -2431,8 +2431,16 @@ mod tests {
+             .next_frame(&mut buf)
+             .expect("Expecting no error from next_frame call");
+ 
+-        // TODO: Verify if we have read the next `fcTL` chunk + repopulated `buf`:
+-        //assert_eq!(reader.info().frame_control.as_ref().unwrap().sequence_number, 1);
+-        //assert!(buf.iter().any(|byte| *byte != 0x0f));
++        // Verify if we have read the next `fcTL` chunk + repopulated `buf`:
++        assert_eq!(
++            reader
++                .info()
++                .frame_control
++                .as_ref()
++                .unwrap()
++                .sequence_number,
++            1
++        );
++        assert!(buf.iter().any(|byte| *byte != 0x0f));
+     }
+ }
+-- 
+2.47.0.rc0.187.ge670bccf7e-goog
+

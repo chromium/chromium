@@ -70,7 +70,7 @@ fn create_rgba_palette(info: &Info) -> [[u8; 4]; 256] {
             palette_iter = &palette_iter[3..];
             rgba_iter = &mut rgba_iter[1..];
         }
-        if palette_iter.len() > 0 {
+        if !palette_iter.is_empty() {
             rgba_iter[0][0..3].copy_from_slice(&palette_iter[0..3]);
         }
     }
@@ -99,7 +99,7 @@ fn expand_8bit_into_rgb8(mut input: &[u8], mut output: &mut [u8], rgba_palette: 
         input = &input[1..];
         output = &mut output[3..];
     }
-    if output.len() > 0 {
+    if !output.is_empty() {
         let rgba = &rgba_palette[input[0] as usize];
         output[0..3].copy_from_slice(&rgba[0..3]);
     }

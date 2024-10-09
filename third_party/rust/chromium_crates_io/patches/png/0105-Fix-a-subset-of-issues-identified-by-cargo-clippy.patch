@@ -1,0 +1,100 @@
+From 1764d169bd1e05354336a4b1f07b6345a760a556 Mon Sep 17 00:00:00 2001
+From: Lukasz Anforowicz <lukasza@chromium.org>
+Date: Thu, 3 Oct 2024 20:07:16 +0000
+Subject: [PATCH 105/113] Fix a subset of issues identified by `cargo clippy`.
+
+---
+ src/decoder/stream.rs            | 6 ++----
+ src/decoder/transform.rs         | 8 ++++----
+ src/decoder/transform/palette.rs | 4 ++--
+ src/encoder.rs                   | 1 -
+ 4 files changed, 8 insertions(+), 11 deletions(-)
+
+diff --git a/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/decoder/stream.rs b/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/decoder/stream.rs
+index 2607078..f52523a 100644
+--- a/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/decoder/stream.rs
++++ b/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/decoder/stream.rs
+@@ -958,7 +958,7 @@ impl StreamingDecoder {
+             _ => Ok(Decoded::PartialChunk(type_str)),
+         };
+ 
+-        let parse_result = parse_result.map_err(|e| {
++        parse_result.map_err(|e| {
+             self.state = None;
+             match e {
+                 // `parse_chunk` is invoked after gathering **all** bytes of a chunk, so
+@@ -972,9 +972,7 @@ impl StreamingDecoder {
+                 }
+                 e => e,
+             }
+-        });
+-
+-        parse_result
++        })
+     }
+ 
+     fn parse_fctl(&mut self) -> Result<Decoded, DecodingError> {
+diff --git a/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/decoder/transform.rs b/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/decoder/transform.rs
+index e7de03e..f2b6654 100644
+--- a/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/decoder/transform.rs
++++ b/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/decoder/transform.rs
+@@ -30,18 +30,18 @@ pub fn create_transform_fn(
+     match color_type {
+         ColorType::Indexed if expand => {
+             if info.palette.is_none() {
+-                return Err(DecodingError::Format(
++                Err(DecodingError::Format(
+                     FormatErrorInner::PaletteRequired.into(),
+-                ));
++                ))
+             } else if let BitDepth::Sixteen = info.bit_depth {
+                 // This should have been caught earlier but let's check again. Can't hurt.
+-                return Err(DecodingError::Format(
++                Err(DecodingError::Format(
+                     FormatErrorInner::InvalidColorBitDepth {
+                         color_type: ColorType::Indexed,
+                         bit_depth: BitDepth::Sixteen,
+                     }
+                     .into(),
+-                ));
++                ))
+             } else {
+                 Ok(if trns {
+                     palette::create_expansion_into_rgba8(info)
+diff --git a/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/decoder/transform/palette.rs b/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/decoder/transform/palette.rs
+index 329c7bd..7508913 100644
+--- a/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/decoder/transform/palette.rs
++++ b/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/decoder/transform/palette.rs
+@@ -70,7 +70,7 @@ fn create_rgba_palette(info: &Info) -> [[u8; 4]; 256] {
+             palette_iter = &palette_iter[3..];
+             rgba_iter = &mut rgba_iter[1..];
+         }
+-        if palette_iter.len() > 0 {
++        if !palette_iter.is_empty() {
+             rgba_iter[0][0..3].copy_from_slice(&palette_iter[0..3]);
+         }
+     }
+@@ -99,7 +99,7 @@ fn expand_8bit_into_rgb8(mut input: &[u8], mut output: &mut [u8], rgba_palette:
+         input = &input[1..];
+         output = &mut output[3..];
+     }
+-    if output.len() > 0 {
++    if !output.is_empty() {
+         let rgba = &rgba_palette[input[0] as usize];
+         output[0..3].copy_from_slice(&rgba[0..3]);
+     }
+diff --git a/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/encoder.rs b/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/encoder.rs
+index 73e0f1e..d694f76 100644
+--- a/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/encoder.rs
++++ b/third_party/rust/chromium_crates_io/vendor/png-0.17.14/src/encoder.rs
+@@ -317,7 +317,6 @@ impl<'a, W: Write> Encoder<'a, W> {
+     /// based on heuristics which minimize the file size for compression rather
+     /// than use a single filter for the entire image. The default method is
+     /// [`AdaptiveFilterType::NonAdaptive`].
+-
+     pub fn set_adaptive_filter(&mut self, adaptive_filter: AdaptiveFilterType) {
+         self.options.adaptive_filter = adaptive_filter;
+     }
+-- 
+2.47.0.rc0.187.ge670bccf7e-goog
+

@@ -26,7 +26,6 @@ use std::io::Write;
 /// [this
 /// discussion](https://github.com/image-rs/image-png/discussions/416#discussioncomment-7436871)
 /// for more details).
-#[allow(dead_code)] // Used from `benches/decoder.rs`
 pub fn write_noncompressed_png(w: &mut impl Write, size: u32, idat_bytes: usize) {
     write_png_sig(w);
     write_rgba8_ihdr_with_width(w, size);

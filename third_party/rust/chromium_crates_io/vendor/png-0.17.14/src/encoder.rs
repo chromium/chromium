@@ -317,7 +317,6 @@ impl<'a, W: Write> Encoder<'a, W> {
     /// based on heuristics which minimize the file size for compression rather
     /// than use a single filter for the entire image. The default method is
     /// [`AdaptiveFilterType::NonAdaptive`].
-
     pub fn set_adaptive_filter(&mut self, adaptive_filter: AdaptiveFilterType) {
         self.options.adaptive_filter = adaptive_filter;
     }
