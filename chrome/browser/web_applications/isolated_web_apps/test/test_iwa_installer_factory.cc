@@ -8,10 +8,9 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
-#include "base/test/bind.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
-#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_installer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/mock_isolated_web_app_install_command_wrapper.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/webapps/common/web_app_id.h"
@@ -24,7 +23,7 @@ TestIwaInstallerFactory::TestIwaInstallerFactory() = default;
 TestIwaInstallerFactory::~TestIwaInstallerFactory() = default;
 
 void TestIwaInstallerFactory::SetUp(Profile* profile) {
-  internal::IwaInstallerFactory::GetIwaInstallerFactory() =
+  IwaInstallerFactory::GetIwaInstallerFactory() =
       base::BindRepeating(&TestIwaInstallerFactory::CreateIwaInstaller,
                           base::Unretained(this), profile);
 }
@@ -49,14 +48,13 @@ void TestIwaInstallerFactory::SetInstallCompletedClosure(
   closure_ = std::move(closure);
 }
 
-std::unique_ptr<internal::IwaInstaller>
-TestIwaInstallerFactory::CreateIwaInstaller(
+std::unique_ptr<IwaInstaller> TestIwaInstallerFactory::CreateIwaInstaller(
     Profile* profile,
     IsolatedWebAppExternalInstallOptions install_options,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     base::Value::List& log,
     WebAppProvider* provider,
-    internal::IwaInstaller::ResultCallback callback) {
+    IwaInstaller::ResultCallback callback) {
   CHECK(command_behaviors_.contains(install_options.web_bundle_id().id()));
   const webapps::AppId& app_id = install_options.web_bundle_id().id();
   auto& command_behavior = command_behaviors_[app_id];
@@ -65,13 +63,13 @@ TestIwaInstallerFactory::CreateIwaInstaller(
       std::make_unique<MockIsolatedWebAppInstallCommandWrapper>(
           profile, provider, command_behavior.first, command_behavior.second);
   latest_install_wrappers_[app_id] = install_command_wrapper.get();
-  return std::make_unique<internal::IwaInstaller>(
+  return std::make_unique<IwaInstaller>(
       std::move(install_options), std::move(url_loader_factory),
       std::move(install_command_wrapper), log,
       base::BindOnce(
           [](TestIwaInstallerFactory* installer_instance,
-             internal::IwaInstaller::ResultCallback callback,
-             webapps::AppId app_id, internal::IwaInstaller::Result result) {
+             IwaInstaller::ResultCallback callback, webapps::AppId app_id,
+             IwaInstaller::Result result) {
             installer_instance->latest_install_wrappers_.erase(app_id);
             std::move(callback).Run(result);
           },

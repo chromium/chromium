@@ -371,6 +371,8 @@ source_set("web_applications") {
       "commands/install_app_from_verified_manifest_command.h",
       "isolated_web_apps/policy/isolated_web_app_external_install_options.cc",
       "isolated_web_apps/policy/isolated_web_app_external_install_options.h",
+      "isolated_web_apps/policy/isolated_web_app_installer.cc",
+      "isolated_web_apps/policy/isolated_web_app_installer.h",
       "isolated_web_apps/policy/isolated_web_app_policy_constants.cc",
       "isolated_web_apps/policy/isolated_web_app_policy_constants.h",
       "isolated_web_apps/policy/isolated_web_app_policy_manager.cc",

@@ -11,9 +11,6 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
-#include "base/containers/to_vector.h"
-#include "base/files/file_enumerator.h"
-#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -34,19 +31,16 @@
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_external_install_options.h"
-#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/iwa_test_server_configurator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/mock_isolated_web_app_install_command_wrapper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_generator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_iwa_installer_factory.h"
-#include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/fake_web_contents_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
@@ -56,12 +50,10 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/ash/components/login/login_state/login_state.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/user_manager/user.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/common/web_app_id.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -83,14 +75,10 @@ namespace {
 using base::test::DictionaryHasValue;
 using testing::_;
 using ::testing::AllOf;
-using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::Invoke;
-using ::testing::IsEmpty;
 using ::testing::IsNull;
-using ::testing::Not;
 using ::testing::NotNull;
-using ::testing::Pair;
 using ::testing::Pointee;
 using ::testing::Property;
 using ::testing::UnorderedElementsAre;
@@ -158,7 +146,7 @@ constexpr char kWebBundleId7[] =
     "gerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
 
 class MockIwaInstallCommandWrapper
-    : public internal::IwaInstaller::IwaInstallCommandWrapper {
+    : public IwaInstaller::IwaInstallCommandWrapper {
  public:
   MockIwaInstallCommandWrapper() = default;
   ~MockIwaInstallCommandWrapper() override = default;
@@ -244,7 +232,7 @@ struct IwaInstallerTestParam {
   bool is_user_session;
   std::string bundle_id;
   std::string manifest_url;
-  internal::IwaInstallerResult::Type result_type;
+  IwaInstallerResult::Type result_type;
   std::optional<std::string> update_channel;
 };
 
@@ -266,8 +254,6 @@ class IwaInstallerTest
   }
 
  protected:
-  using InstallResult = internal::IwaInstallerResult;
-
   void SetUp() override {
     ASSERT_TRUE(dir_.CreateUniqueTempDir());
     AddJsonResponse(kUpdateManifestUrl1, kUpdateManifestValue1);
@@ -329,7 +315,7 @@ class IwaInstallerTest
 // ephemeral session. The install options will cover cases of success for
 // both, managed guest sessions and managed user sessions.
 TEST_P(IwaInstallerTest, MgsRegularFlow) {
-  base::test::TestFuture<InstallResult> future;
+  base::test::TestFuture<IwaInstallerResult> future;
   base::Value::List log;
 
   auto install_command = std::make_unique<MockIwaInstallCommandWrapper>();
@@ -346,19 +332,19 @@ TEST_P(IwaInstallerTest, MgsRegularFlow) {
                          std::move(install_command), log, future.GetCallback());
   installer.Start();
 
-  EXPECT_THAT(
-      future.Get(),
-      Property(
-          "type", &InstallResult::type,
-          Eq(!GetParam().is_user_session && !GetParam().is_mgs_install_enabled
-                 ? InstallResult::Type::kErrorManagedGuestSessionInstallDisabled
-                 : GetParam().result_type)));
+  EXPECT_THAT(future.Get(),
+              Property("type", &IwaInstallerResult::type,
+                       Eq(!GetParam().is_user_session &&
+                                  !GetParam().is_mgs_install_enabled
+                              ? IwaInstallerResult::Type::
+                                    kErrorManagedGuestSessionInstallDisabled
+                              : GetParam().result_type)));
 }
 
 TEST_P(IwaInstallerTest, NotMgs) {
   test_managed_guest_session_.reset();
 
-  base::test::TestFuture<InstallResult> future;
+  base::test::TestFuture<IwaInstallerResult> future;
   base::Value::List log;
 
   auto install_command = std::make_unique<MockIwaInstallCommandWrapper>();
@@ -375,7 +361,7 @@ TEST_P(IwaInstallerTest, NotMgs) {
                          std::move(install_command), log, future.GetCallback());
   installer.Start();
 
-  EXPECT_THAT(future.Get(), Property("type", &InstallResult::type,
+  EXPECT_THAT(future.Get(), Property("type", &IwaInstallerResult::type,
                                      Eq(GetParam().result_type)));
 }
 
@@ -390,75 +376,74 @@ INSTANTIATE_TEST_SUITE_P(
          .is_user_session = true,
          .bundle_id = kWebBundleId1,
          .manifest_url = kUpdateManifestUrl1,
-         .result_type = internal::IwaInstallerResult::Type::kSuccess},
+         .result_type = IwaInstallerResult::Type::kSuccess},
         // Same as the first test case, but with non-default release channel.
         {.is_mgs_install_enabled = true,
          .is_user_session = true,
          .bundle_id = kWebBundleId1Beta,
          .manifest_url = kUpdateManifestUrl1Beta,
-         .result_type = internal::IwaInstallerResult::Type::kSuccess,
+         .result_type = IwaInstallerResult::Type::kSuccess,
          .update_channel = "beta"},
         // Same as the first test case, but inside a managed guest session.
         {.is_mgs_install_enabled = true,
          .is_user_session = false,
          .bundle_id = kWebBundleId1,
          .manifest_url = kUpdateManifestUrl1,
-         .result_type = internal::IwaInstallerResult::Type::kSuccess},
+         .result_type = IwaInstallerResult::Type::kSuccess},
         // App 2 is similar to App 1 but has only one record in the Update
         // Manifest.
         {.is_mgs_install_enabled = true,
          .is_user_session = true,
          .bundle_id = kWebBundleId2,
          .manifest_url = kUpdateManifestUrl2,
-         .result_type = internal::IwaInstallerResult::Type::kSuccess},
+         .result_type = IwaInstallerResult::Type::kSuccess},
         // We can't download Update Manifest for the app 3.
         {.is_mgs_install_enabled = true,
          .is_user_session = true,
          .bundle_id = kWebBundleId3,
          .manifest_url = kUpdateManifestUrl3,
-         .result_type = internal::IwaInstallerResult::Type::
-             kErrorUpdateManifestDownloadFailed},
+         .result_type =
+             IwaInstallerResult::Type::kErrorUpdateManifestDownloadFailed},
         // App 4 represents the case where the Update Manifest if not parsable.
         {.is_mgs_install_enabled = true,
          .is_user_session = true,
          .bundle_id = kWebBundleId4,
          .manifest_url = kUpdateManifestUrl4,
-         .result_type = internal::IwaInstallerResult::Type::
-             kErrorUpdateManifestParsingFailed},
+         .result_type =
+             IwaInstallerResult::Type::kErrorUpdateManifestParsingFailed},
         // Release channel is not assigned to any version of the app.
         {.is_mgs_install_enabled = true,
          .is_user_session = true,
          .bundle_id = kWebBundleId1Beta,
          .manifest_url = kUpdateManifestUrl1,
-         .result_type = internal::IwaInstallerResult::Type::
-             kErrorWebBundleUrlCantBeDetermined,
+         .result_type =
+             IwaInstallerResult::Type::kErrorWebBundleUrlCantBeDetermined,
          .update_channel = "beta"},
         // The Web Bundle URL of the App 5 is not valid.
         {.is_mgs_install_enabled = true,
          .is_user_session = true,
          .bundle_id = kWebBundleId5,
          .manifest_url = kUpdateManifestUrl5,
-         .result_type = internal::IwaInstallerResult::Type::
-             kErrorWebBundleUrlCantBeDetermined},
+         .result_type =
+             IwaInstallerResult::Type::kErrorWebBundleUrlCantBeDetermined},
         // The Web Bundle of the App 6 can't be installed.
         {.is_mgs_install_enabled = true,
          .is_user_session = true,
          .bundle_id = kWebBundleId6,
          .manifest_url = kUpdateManifestUrl6,
-         .result_type = internal::IwaInstallerResult::Type::
-             kErrorCantInstallFromWebBundle},
+         .result_type =
+             IwaInstallerResult::Type::kErrorCantInstallFromWebBundle},
         // The Web Bundle file of the App 7 can't be downloaded.
         {.is_mgs_install_enabled = true,
          .is_user_session = true,
          .bundle_id = kWebBundleId7,
          .manifest_url = kUpdateManifestUrl7,
-         .result_type =
-             internal::IwaInstallerResult::Type::kErrorCantDownloadWebBundle},
+         .result_type = IwaInstallerResult::Type::kErrorCantDownloadWebBundle},
         {.is_mgs_install_enabled = false,
          .is_user_session = false,
          .bundle_id = kWebBundleId1,
          .manifest_url = kUpdateManifestUrl1,
-         .result_type = internal::IwaInstallerResult::Type::kSuccess}}));
+         .result_type = IwaInstallerResult::Type::kSuccess}}));
 
 }  // namespace internal
 

@@ -4,48 +4,37 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
 
-#include <algorithm>
 #include <functional>
 #include <memory>
 #include <optional>
-#include <ostream>
 #include <string>
+#include <utility>
 
 #include "base/barrier_callback.h"
 #include "base/barrier_closure.h"
 #include "base/check_deref.h"
+#include "base/containers/contains.h"
 #include "base/containers/map_util.h"
 #include "base/containers/to_value_list.h"
-#include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/files/scoped_temp_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/overloaded.h"
 #include "base/i18n/time_formatting.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/to_string.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "base/types/cxx23_to_underlying.h"
 #include "base/types/expected.h"
-#include "base/types/expected_macros.h"
-#include "base/version.h"
-#include "chrome/browser/web_applications/callback_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_downloader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
-#include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
-#include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.h"
+#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_installer.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -56,11 +45,8 @@
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "net/base/backoff_entry.h"
-#include "net/base/net_errors.h"
-#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
@@ -69,65 +55,18 @@ namespace web_app {
 namespace {
 
 constexpr net::BackoffEntry::Policy kInstallRetryBackoffPolicy = {
-    /*num_errors_to_ignore=*/0,
-    /*initial_delay_ms=*/60 * 1000,
-    /*multiply_factor=*/2.0,
-    /*jitter_factor=*/0.0,
-    /*maximum_backoff_ms=*/5 * 60 * 60 * 1000,
-    /*entry_lifetime_ms=*/-1,
-    /*always_use_initial_delay=*/false,
+    .num_errors_to_ignore = 0,
+    .initial_delay_ms = 60 * 1000,
+    .multiply_factor = 2.0,
+    .jitter_factor = 0.0,
+    .maximum_backoff_ms = 5 * 60 * 60 * 1000,
+    .entry_lifetime_ms = -1,
+    .always_use_initial_delay = false,
 };
 
 constexpr int kIsolatedWebAppForceInstallMaxRetryTreshold = 2;
 constexpr base::TimeDelta kIsolatedWebAppForceInstallEmergencyDelay =
     base::Hours(5);
-
-constexpr auto kUpdateManifestFetchTrafficAnnotation =
-    net::DefinePartialNetworkTrafficAnnotation("iwa_policy_update_manifest",
-                                               "iwa_update_manifest_fetcher",
-                                               R"(
-  semantics {
-    sender: "Isolated Web App Policy Manager"
-    description:
-      "Downloads the update manifest of an Isolated Web App that is provided "
-      "in an enterprise policy by the administrator. The update manifest "
-      "contains at least the list of the available versions of the IWA "
-      "and the URL to the Signed Web Bundles that correspond to each version."
-    trigger:
-      "Installation/update of a IWA from the enterprise policy requires "
-      "fetching of a IWA Update Manifest"
-  }
-  policy {
-    setting: "This feature cannot be disabled in settings."
-    chrome_policy {
-      IsolatedWebAppInstallForceList {
-        IsolatedWebAppInstallForceList: ""
-      }
-    }
-  })");
-
-constexpr auto kWebBundleDownloadTrafficAnnotation =
-    net::DefinePartialNetworkTrafficAnnotation("iwa_policy_signed_web_bundle",
-                                               "iwa_bundle_downloader",
-                                               R"(
-  semantics {
-    sender: "Isolated Web App Policy Manager"
-    description:
-      "Downloads the Signed Web Bundle of an Isolated Web App (IWA) from the "
-      "URL read from an Update Manifest that is provided in an enterprise "
-      "policy by the administrator. The Signed Web Bundle contains code and "
-      "other resources of the IWA."
-    trigger:
-      "An Isolated Web App is installed from an enterprise policy."
-  }
-  policy {
-    setting: "This feature cannot be disabled in settings."
-    chrome_policy {
-      IsolatedWebAppInstallForceList {
-        IsolatedWebAppInstallForceList: ""
-      }
-    }
-  })");
 
 std::vector<IsolatedWebAppExternalInstallOptions> ParseIwaPolicyValues(
     const base::Value::List& iwa_policy_values) {
@@ -193,256 +132,6 @@ using AppAction = absl::variant<AppActionRemoveInstallSource,
 using AppActions = base::flat_map<web_package::SignedWebBundleId, AppAction>;
 
 }  // namespace
-
-namespace internal {
-
-IwaInstaller::IwaInstallCommandWrapperImpl::IwaInstallCommandWrapperImpl(
-    web_app::WebAppProvider* provider)
-    : provider_(provider) {}
-
-void IwaInstaller::IwaInstallCommandWrapperImpl::Install(
-    const IsolatedWebAppInstallSource& install_source,
-    const IsolatedWebAppUrlInfo& url_info,
-    const base::Version& expected_version,
-    WebAppCommandScheduler::InstallIsolatedWebAppCallback callback) {
-  // There is no need to keep the browser or profile alive when
-  // policy-installing an IWA. If the browser or profile shut down, installation
-  // will be re-attempted the next time they start, assuming that the policy is
-  // still set.
-  provider_->scheduler().InstallIsolatedWebApp(
-      url_info, install_source, expected_version,
-      /*optional_keep_alive=*/nullptr,
-      /*optional_profile_keep_alive=*/nullptr, std::move(callback));
-}
-
-IwaInstallerResult::IwaInstallerResult(Type type, std::string message)
-    : type_(type), message_(std::move(message)) {}
-
-base::Value::Dict IwaInstallerResult::ToDebugValue() const {
-  return base::Value::Dict()
-      .Set("type", base::ToString(type_))
-      .Set("message", message_);
-}
-
-IwaInstaller::IwaInstaller(
-    IsolatedWebAppExternalInstallOptions install_options,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::unique_ptr<IwaInstallCommandWrapper> install_command_wrapper,
-    base::Value::List& log,
-    ResultCallback callback)
-    : install_options_(std::move(install_options)),
-      url_loader_factory_(std::move(url_loader_factory)),
-      install_command_wrapper_(std::move(install_command_wrapper)),
-      log_(log),
-      callback_(std::move(callback)) {}
-
-IwaInstaller::~IwaInstaller() = default;
-
-void IwaInstaller::Start() {
-  if (chromeos::IsManagedGuestSession() &&
-      !base::FeatureList::IsEnabled(
-          features::kIsolatedWebAppManagedGuestSessionInstall)) {
-    LOG(ERROR) << "IWA installation in managed guest sessions is disabled.";
-    Finish(Result(Result::Type::kErrorManagedGuestSessionInstallDisabled));
-    return;
-  }
-
-  auto weak_ptr = weak_factory_.GetWeakPtr();
-  RunChainedCallbacks(
-      base::BindOnce(&IwaInstaller::CreateTempFile, weak_ptr),
-      base::BindOnce(&IwaInstaller::DownloadUpdateManifest, weak_ptr),
-      base::BindOnce(&IwaInstaller::DownloadWebBundle, weak_ptr),
-      base::BindOnce(&IwaInstaller::RunInstallCommand, weak_ptr));
-}
-
-void IwaInstaller::CreateTempFile(base::OnceClosure next_step_callback) {
-  log_->Append(base::Value("creating temp file"));
-  ScopedTempWebBundleFile::Create(base::BindOnce(
-      &IwaInstaller::OnTempFileCreated, weak_factory_.GetWeakPtr(),
-      std::move(next_step_callback)));
-}
-
-void IwaInstaller::OnTempFileCreated(base::OnceClosure next_step_callback,
-                                     ScopedTempWebBundleFile bundle) {
-  if (!bundle) {
-    Finish(Result(Result::Type::kErrorCantCreateTempFile));
-    return;
-  }
-  bundle_ = std::move(bundle);
-  log_->Append(
-      base::Value(u"created temp file: " + bundle_.path().LossyDisplayName()));
-  std::move(next_step_callback).Run();
-}
-
-void IwaInstaller::DownloadUpdateManifest(
-    base::OnceCallback<void(GURL, base::Version)> next_step_callback) {
-  log_->Append(base::Value(
-      "Downloading Update Manifest from " +
-      install_options_.update_manifest_url().possibly_invalid_spec()));
-
-  update_manifest_fetcher_ = std::make_unique<UpdateManifestFetcher>(
-      install_options_.update_manifest_url(),
-      kUpdateManifestFetchTrafficAnnotation, url_loader_factory_);
-  update_manifest_fetcher_->FetchUpdateManifest(base::BindOnce(
-      &IwaInstaller::OnUpdateManifestParsed, weak_factory_.GetWeakPtr(),
-      std::move(next_step_callback)));
-}
-
-void IwaInstaller::OnUpdateManifestParsed(
-    base::OnceCallback<void(GURL, base::Version)> next_step_callback,
-    base::expected<UpdateManifest, UpdateManifestFetcher::Error> fetch_result) {
-  update_manifest_fetcher_.reset();
-  ASSIGN_OR_RETURN(
-      UpdateManifest update_manifest, fetch_result,
-      [&](UpdateManifestFetcher::Error error) {
-        switch (error) {
-          case UpdateManifestFetcher::Error::kDownloadFailed:
-            Finish(Result(Result::Type::kErrorUpdateManifestDownloadFailed));
-            break;
-          case UpdateManifestFetcher::Error::kInvalidJson:
-          case UpdateManifestFetcher::Error::kInvalidManifest:
-            Finish(Result(Result::Type::kErrorUpdateManifestParsingFailed));
-            break;
-        }
-      });
-
-  std::optional<UpdateManifest::VersionEntry> latest_version =
-      update_manifest.GetLatestVersion(install_options_.update_channel());
-  if (!latest_version.has_value()) {
-    Finish(Result(Result::Type::kErrorWebBundleUrlCantBeDetermined));
-    return;
-  }
-
-  log_->Append(base::Value("Downloaded Update Manifest. Latest version: " +
-                           latest_version->version().GetString() + " from " +
-                           latest_version->src().possibly_invalid_spec()));
-  std::move(next_step_callback)
-      .Run(latest_version->src(), latest_version->version());
-}
-
-void IwaInstaller::DownloadWebBundle(
-    base::OnceCallback<void(base::Version)> next_step_callback,
-    GURL web_bundle_url,
-    base::Version expected_version) {
-  log_->Append(base::Value("Downloading Web Bundle from " +
-                           web_bundle_url.possibly_invalid_spec()));
-
-  bundle_downloader_ = IsolatedWebAppDownloader::CreateAndStartDownloading(
-      std::move(web_bundle_url), bundle_.path(),
-      kWebBundleDownloadTrafficAnnotation, url_loader_factory_,
-      base::BindOnce(&IwaInstaller::OnWebBundleDownloaded,
-                     // If `this` is deleted, `bundle_downloader_` is deleted
-                     // as well, and thus the callback will never run.
-                     base::Unretained(this),
-                     base::BindOnce(std::move(next_step_callback),
-                                    std::move(expected_version))));
-}
-
-void IwaInstaller::OnWebBundleDownloaded(base::OnceClosure next_step_callback,
-                                         int32_t net_error) {
-  bundle_downloader_.reset();
-
-  if (net_error != net::OK) {
-    Finish(Result(Result::Type::kErrorCantDownloadWebBundle,
-                  net::ErrorToString(net_error)));
-    return;
-  }
-  log_->Append(base::Value("Downloaded Web Bundle"));
-  std::move(next_step_callback).Run();
-}
-
-void IwaInstaller::RunInstallCommand(base::Version expected_version) {
-  log_->Append(base::Value("Running install command, expected version: " +
-                           expected_version.GetString()));
-  IsolatedWebAppUrlInfo url_info =
-      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-          install_options_.web_bundle_id());
-
-  // TODO: crbug.com/306638108 - In the time it took to download everything, the
-  // app might have already been installed by other means.
-
-  install_command_wrapper_->Install(
-      IsolatedWebAppInstallSource::FromExternalPolicy(
-          IwaSourceBundleProdModeWithFileOp(bundle_.path(),
-                                            IwaSourceBundleProdFileOp::kMove)),
-      url_info, std::move(expected_version),
-      base::BindOnce(&IwaInstaller::OnIwaInstalled,
-                     weak_factory_.GetWeakPtr()));
-}
-
-void IwaInstaller::OnIwaInstalled(
-    base::expected<InstallIsolatedWebAppCommandSuccess,
-                   InstallIsolatedWebAppCommandError> result) {
-  if (!result.has_value()) {
-    LOG(ERROR) << "Could not install the IWA "
-               << install_options_.web_bundle_id();
-    Finish(Result(Result::Type::kErrorCantInstallFromWebBundle,
-                  base::ToString(result.error())));
-  } else {
-    Finish(Result(Result::Type::kSuccess));
-  }
-}
-
-void IwaInstaller::Finish(Result result) {
-  std::move(callback_).Run(std::move(result));
-}
-
-std::unique_ptr<IwaInstaller> IwaInstallerFactory::Create(
-    IsolatedWebAppExternalInstallOptions install_options,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    base::Value::List& log,
-    WebAppProvider* provider,
-    IwaInstaller::ResultCallback callback) {
-  return GetIwaInstallerFactory().Run(std::move(install_options),
-                                      std::move(url_loader_factory), log,
-                                      provider, std::move(callback));
-}
-
-IwaInstallerFactory::IwaInstallerFactoryCallback&
-IwaInstallerFactory::GetIwaInstallerFactory() {
-  static base::LazyInstance<IwaInstallerFactoryCallback>::Leaky
-      iwa_installer_factory = LAZY_INSTANCE_INITIALIZER;
-  if (!iwa_installer_factory.Get()) {
-    iwa_installer_factory.Get() = base::BindRepeating(
-        [](IsolatedWebAppExternalInstallOptions install_options,
-           scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-           base::Value::List& log, WebAppProvider* provider,
-           IwaInstaller::ResultCallback callback) {
-          return std::make_unique<internal::IwaInstaller>(
-              std::move(install_options), std::move(url_loader_factory),
-              std::make_unique<IwaInstaller::IwaInstallCommandWrapperImpl>(
-                  provider),
-              log, std::move(callback));
-        });
-  }
-  return iwa_installer_factory.Get();
-}
-
-std::ostream& operator<<(std::ostream& os,
-                         IwaInstallerResultType install_result_type) {
-  using Type = IwaInstallerResultType;
-
-  switch (install_result_type) {
-    case Type::kSuccess:
-      return os << "kSuccess";
-    case Type::kErrorCantCreateTempFile:
-      return os << "kErrorCantCreateTempFile";
-    case Type::kErrorUpdateManifestDownloadFailed:
-      return os << "kErrorUpdateManifestDownloadFailed";
-    case Type::kErrorUpdateManifestParsingFailed:
-      return os << "kErrorUpdateManifestParsingFailed";
-    case Type::kErrorWebBundleUrlCantBeDetermined:
-      return os << "kErrorWebBundleUrlCantBeDetermined";
-    case Type::kErrorCantDownloadWebBundle:
-      return os << "kErrorCantDownloadWebBundle";
-    case Type::kErrorCantInstallFromWebBundle:
-      return os << "kErrorCantInstallFromWebBundle";
-    case Type::kErrorManagedGuestSessionInstallDisabled:
-      return os << "kErrorManagedGuestSessionInstallDisabled";
-  }
-}
-
-}  // namespace internal
 
 // static
 void IsolatedWebAppPolicyManager::RegisterProfilePrefs(
@@ -710,12 +399,10 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
                                std::move(weak_ptr)));
           },
           weak_ptr_factory_.GetWeakPtr()));
-  auto install_task_done_callback =
-      base::BarrierCallback<internal::IwaInstaller::Result>(
-          number_of_install_tasks,
-          base::BindOnce(
-              &IsolatedWebAppPolicyManager::OnAllInstallTasksCompleted,
-              weak_ptr_factory_.GetWeakPtr()));
+  auto install_task_done_callback = base::BarrierCallback<IwaInstaller::Result>(
+      number_of_install_tasks,
+      base::BindOnce(&IsolatedWebAppPolicyManager::OnAllInstallTasksCompleted,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   for (const auto& [web_bundle_id, app_action] : app_actions) {
     auto url_info =
@@ -764,7 +451,7 @@ void IsolatedWebAppPolicyManager::DoProcessPolicy(
                                            weak_ptr))
                       .Then(action_done_callback);
 
-              auto installer = internal::IwaInstallerFactory::Create(
+              auto installer = IwaInstallerFactory::Create(
                   action.options, profile_->GetURLLoaderFactory(),
                   *current_process_log_.EnsureDict("install_progress")
                        ->EnsureList(base::ToString(web_bundle_id)),
@@ -800,12 +487,12 @@ void IsolatedWebAppPolicyManager::LogRemoveInstallSourceResult(
 
 void IsolatedWebAppPolicyManager::OnInstallTaskCompleted(
     web_package::SignedWebBundleId web_bundle_id,
-    base::RepeatingCallback<void(internal::IwaInstaller::Result)> callback,
-    internal::IwaInstaller::Result install_result) {
+    base::RepeatingCallback<void(IwaInstaller::Result)> callback,
+    IwaInstaller::Result install_result) {
   // Remove the completed task from the queue.
   install_tasks_.pop();
 
-  if (install_result.type() != internal::IwaInstallerResultType::kSuccess) {
+  if (install_result.type() != IwaInstallerResultType::kSuccess) {
     DLOG(WARNING) << "Could not force-install IWA " << web_bundle_id
                   << ". Error: " << install_result.ToDebugValue();
   }
@@ -816,14 +503,14 @@ void IsolatedWebAppPolicyManager::OnInstallTaskCompleted(
 }
 
 void IsolatedWebAppPolicyManager::OnAllInstallTasksCompleted(
-    std::vector<internal::IwaInstaller::Result> install_results) {
+    std::vector<IwaInstaller::Result> install_results) {
   if (install_results.empty()) {
     return;
   }
 
   const bool any_task_failed = base::ranges::any_of(
-      install_results, [](const internal::IwaInstaller::Result& result) {
-        return result.type() != internal::IwaInstallerResultType::kSuccess;
+      install_results, [](const IwaInstaller::Result& result) {
+        return result.type() != IwaInstallerResultType::kSuccess;
       });
 
   if (any_task_failed) {
