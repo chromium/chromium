@@ -27,6 +27,7 @@ extern const char kHatsSurveyTriggerDownloadWarningBubbleIgnore[];
 extern const char kHatsSurveyTriggerDownloadWarningPageBypass[];
 extern const char kHatsSurveyTriggerDownloadWarningPageHeed[];
 extern const char kHatsSurveyTriggerDownloadWarningPageIgnore[];
+extern const char kHatsSurveyTriggerLensOverlayResults[];
 extern const char kHatsSurveyTriggerM1AdPrivacyPage[];
 extern const char kHatsSurveyTriggerM1TopicsSubpage[];
 extern const char kHatsSurveyTriggerM1FledgeSubpage[];

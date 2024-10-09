@@ -59,6 +59,10 @@ BASE_DECLARE_FEATURE(kLensOverlayTranslateButton);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayContextualSearchbox);
 
+// Enables the Lens overlay HaTS survey.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlaySurvey);
+
 // The base URL for Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern const base::FeatureParam<std::string> kHomepageURLForLens;
@@ -567,6 +571,10 @@ int GetLensOverlayImageContextMenuActionsTextReceivedTimeout();
 // Whether to show the contextual searchbox in the Lens Overlay.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayContextualSearchboxEnabled();
+
+// Time delay for the results trigger of the Lens Overlay HaTS survey.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern base::TimeDelta GetLensOverlaySurveyResultsTime();
 
 }  // namespace lens::features
 

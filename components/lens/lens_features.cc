@@ -64,6 +64,10 @@ BASE_FEATURE(kLensOverlayContextualSearchbox,
              "LensOverlayContextualSearchbox",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLensOverlaySurvey,
+             "LensOverlaySurvey",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const base::FeatureParam<int> kLensOverlayMinRamMb{&kLensOverlay, "min_ram_mb",
                                                    /*default=value=*/-1};
 const base::FeatureParam<std::string> kActivityUrl{
@@ -273,6 +277,9 @@ constexpr base::FeatureParam<std::string> kLensOverlayClusterInfoEndpointUrl{
 
 constexpr base::FeatureParam<size_t> kLensOverlayFileUploadLimitBytes{
     &kLensOverlayContextualSearchbox, "file-upload-limit-bytes", 2000000};
+
+const base::FeatureParam<base::TimeDelta> kLensOverlaySurveyResultsTime{
+    &kLensOverlaySurvey, "results-time", base::Seconds(1)};
 
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
@@ -695,6 +702,10 @@ int GetLensOverlayImageContextMenuActionsTextReceivedTimeout() {
 
 bool IsLensOverlayContextualSearchboxEnabled() {
   return base::FeatureList::IsEnabled(kLensOverlayContextualSearchbox);
+}
+
+base::TimeDelta GetLensOverlaySurveyResultsTime() {
+  return kLensOverlaySurveyResultsTime.Get();
 }
 
 }  // namespace lens::features

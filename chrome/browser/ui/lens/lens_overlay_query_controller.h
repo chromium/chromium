@@ -134,6 +134,8 @@ class LensOverlayQueryController {
   virtual void SendSemanticEventGen204IfEnabled(
       lens::mojom::SemanticEvent event);
 
+  uint64_t gen204_id() const { return gen204_id_; }
+
  protected:
   // Returns the EndpointFetcher to use with the given params. Protected to
   // allow overriding in tests to mock server responses.
@@ -542,7 +544,7 @@ class LensOverlayQueryController {
   const raw_ptr<lens::LensOverlayGen204Controller> gen204_controller_;
 
   // The current gen204 id for logging, set on each overlay invocation.
-  uint64_t gen204_id_;
+  uint64_t gen204_id_ = 0;
 
   base::WeakPtrFactory<LensOverlayQueryController> weak_ptr_factory_{this};
 };
