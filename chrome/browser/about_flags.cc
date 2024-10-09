@@ -11861,6 +11861,15 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrivacySandboxPrivacyPolicyDescription, kOsAll,
      FEATURE_VALUE_TYPE(privacy_sandbox::kPrivacySandboxPrivacyPolicy)},
 
+#if BUILDFLAG(IS_ANDROID)
+    {"support-multiple-server-requests-for-pix-payments",
+     flag_descriptions::kSupportMultipleServerRequestsForPixPaymentsName,
+     flag_descriptions::kSupportMultipleServerRequestsForPixPaymentsDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         payments::facilitated::kSupportMultipleServerRequestsForPixPayments)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

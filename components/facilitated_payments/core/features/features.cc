@@ -37,4 +37,9 @@ BASE_FEATURE(kEwalletPayments,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// When enabled, Pix will be able to send multiple server request at a time.
+BASE_FEATURE(kSupportMultipleServerRequestsForPixPayments,
+             "SupportMultipleServerRequestsForPixPayments",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace payments::facilitated

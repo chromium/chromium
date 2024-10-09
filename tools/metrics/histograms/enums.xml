@@ -23809,6 +23809,8 @@ from previous Chrome versions.
   <int value="1425425055" label="WiFiDirect:disabled"/>
   <int value="1427427985"
       label="CacheControlNoStoreEnterBackForwardCache:enabled"/>
+  <int value="1427683927"
+      label="SupportMultipleServerRequestsForPixPayments:disabled"/>
   <int value="1427905064" label="CreditCardAutofillTouchBar:enabled"/>
   <int value="1428004502" label="PaymentRequestOptionalTotal:enabled"/>
   <int value="1428027882" label="SidePanelPinning:enabled"/>
@@ -24254,6 +24256,8 @@ from previous Chrome versions.
   <int value="1602627012" label="OverrideSitePrefsForHrefTranslate:enabled"/>
   <int value="1602869271" label="ChromeShareScreenshot:disabled"/>
   <int value="1603578716" label="CaptionSettings:disabled"/>
+  <int value="1603999817"
+      label="SupportMultipleServerRequestsForPixPayments:enabled"/>
   <int value="1604335827"
       label="AutofillUpstreamAllowAdditionalEmailDomains:enabled"/>
   <int value="1604893983" label="VizForWebView:disabled"/>

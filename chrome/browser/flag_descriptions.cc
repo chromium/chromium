@@ -4818,6 +4818,12 @@ const char kStrictSiteIsolationDescription[] =
     "#site-isolation-trial-opt-out for how to disable site isolation for "
     "testing.";
 
+const char kSupportMultipleServerRequestsForPixPaymentsName[] =
+    "Support multiple server requests for Pix payments";
+const char kSupportMultipleServerRequestsForPixPaymentsDescription[] =
+    "When enabled, the network interface with Google Payments supports "
+    "handling multiple concurrent requests for Pix flows.";
+
 const char kTabletToolbarReorderingAndroidName[] =
     "Tablet Toolbar Reordering Android.";
 const char kTabletToolbarReorderingAndroidDescription[] =

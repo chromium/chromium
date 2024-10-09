@@ -17,6 +17,7 @@ BASE_DECLARE_FEATURE(kEnablePixPaymentsInLandscapeMode);
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kEwalletPayments);
 #endif  // BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kSupportMultipleServerRequestsForPixPayments);
 
 }  // namespace payments::facilitated
 

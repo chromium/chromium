@@ -2805,6 +2805,9 @@ extern const char kSearchResumptionModuleAndroidDescription[];
 extern const char kStrictSiteIsolationName[];
 extern const char kStrictSiteIsolationDescription[];
 
+extern const char kSupportMultipleServerRequestsForPixPaymentsName[];
+extern const char kSupportMultipleServerRequestsForPixPaymentsDescription[];
+
 extern const char kCrossDeviceTabPaneAndroidName[];
 extern const char kCrossDeviceTabPaneAndroidDescription[];
 
