@@ -79,7 +79,8 @@
           hidden="[[!showComposeControl_]]"
           label="$i18n{aiComposeLabel}"
           sub-label="$i18n{aiComposeSublabel}"
-          role-description="$i18n{subpageArrowRoleDescription}">
+          role-description="$i18n{subpageArrowRoleDescription}"
+          on-click="onComposeRowClick_">
       </cr-link-row>
       <cr-link-row id="tabOrganizationRowV2" class="hr"
           hidden="[[!showTabOrganizationControl_]]"
@@ -104,6 +105,17 @@
             page-title="$i18n{historySearchSettingLabel}">
           <settings-history-search-page prefs="{{prefs}}">
           </settings-history-search-page>
+        </settings-subpage>
+      </template>
+    </template>
+
+    <template is="dom-if" if="[[showComposeControl_]]">
+      <template is="dom-if" route-path="/ai/helpMeWrite">
+        <settings-subpage id="compose"
+            associated-control="[[$$('#composeRowV2')]]"
+            page-title="$i18n{aiComposeLabel}">
+          <settings-offer-writing-help-page prefs="{{prefs}}">
+          </settings-offer-writing-help-page>
         </settings-subpage>
       </template>
     </template>

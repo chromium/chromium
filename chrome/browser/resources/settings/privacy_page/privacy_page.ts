@@ -218,6 +218,11 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
         value: () => loadTimeData.getBoolean('capturedSurfaceControlEnabled'),
       },
 
+      enableAiSettingsPageRefresh_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableAiSettingsPageRefresh'),
+      },
+
       enableComposeProactiveNudge_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableComposeProactiveNudge'),
@@ -381,6 +386,7 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private privateStateTokensEnabled_: boolean;
   private autoPictureInPictureEnabled_: boolean;
   private capturedSurfaceControlEnabled_: boolean;
+  private enableAiSettingsPageRefresh_: boolean;
   private enableComposeProactiveNudge_: boolean;
   private enableSafetyHub_: boolean;
   private enableWebAppInstallation_: boolean;
@@ -643,6 +649,11 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
   private shouldShowManageTopics_(): boolean {
     return this.isProactiveTopicsBlockingEnabled_ &&
         !this.isPrivacySandboxRestricted_;
+  }
+
+  private shouldShowComposeProactiveNudge_(): boolean {
+    return this.enableComposeProactiveNudge_ &&
+        !this.enableAiSettingsPageRefresh_;
   }
 
   private onSafetyHubButtonClick_() {

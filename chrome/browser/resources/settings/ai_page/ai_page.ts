@@ -88,6 +88,10 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
             map.set(routes.HISTORY_SEARCH.path, '#historySearchRowV2');
           }
 
+          if (routes.OFFER_WRITING_HELP) {
+            map.set(routes.OFFER_WRITING_HELP.path, '#composeRowV2');
+          }
+
           if (routes.AI_TAB_ORGANIZATION) {
             map.set(routes.AI_TAB_ORGANIZATION.path, '#tabOrganizationRowV2');
           }
@@ -127,6 +131,11 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   private onHistorySearchRowClick_() {
     const router = Router.getInstance();
     router.navigateTo(router.getRoutes().HISTORY_SEARCH);
+  }
+
+  private onComposeRowClick_() {
+    const router = Router.getInstance();
+    router.navigateTo(router.getRoutes().OFFER_WRITING_HELP);
   }
 
   private onTabOrganizationRowClick_() {

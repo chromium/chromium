@@ -98,6 +98,26 @@ suite('ExperimentalAdvancedPage', function() {
     assertEquals(routes.AI, currentRoute.parent);
   });
 
+  test('composeRow', async () => {
+    loadTimeData.overrideValues({
+      showAdvancedFeaturesMainControl: true,
+      showComposeControl: true,
+    });
+    resetRouterForTesting();
+    await createPage();
+
+    const composeRow =
+        page.shadowRoot!.querySelector<HTMLElement>('#composeRowV2');
+
+    assertTrue(!!composeRow);
+    assertTrue(isVisible(composeRow));
+    composeRow.click();
+
+    const currentRoute = Router.getInstance().getCurrentRoute();
+    assertEquals(routes.OFFER_WRITING_HELP, currentRoute);
+    assertEquals(routes.AI, currentRoute.parent);
+  });
+
   test('tabOrganizationRow', async () => {
     loadTimeData.overrideValues({
       showAdvancedFeaturesMainControl: true,

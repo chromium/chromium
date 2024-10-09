@@ -279,7 +279,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       icon: 'privacy:notifications',
     },
     {
-      route: routes.SITE_SETTINGS_OFFER_WRITING_HELP,
+      route: routes.OFFER_WRITING_HELP,
       id: Id.OFFER_WRITING_HELP,
       label: 'siteSettingsOfferWritingHelp',
       icon: 'settings:compose',
