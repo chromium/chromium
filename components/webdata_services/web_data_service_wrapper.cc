@@ -105,7 +105,7 @@ void InitWalletCredentialSyncBridgeOnDBSequence(
 
 }  // namespace
 
-WebDataServiceWrapper::WebDataServiceWrapper() {}
+WebDataServiceWrapper::WebDataServiceWrapper() = default;
 
 WebDataServiceWrapper::WebDataServiceWrapper(
     const base::FilePath& context_path,

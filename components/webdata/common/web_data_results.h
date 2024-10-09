@@ -66,7 +66,7 @@ class WEBDATA_EXPORT WDTypedResult {
   WDTypedResult(const WDTypedResult&) = delete;
   WDTypedResult& operator=(const WDTypedResult&) = delete;
 
-  virtual ~WDTypedResult() {}
+  virtual ~WDTypedResult() = default;
 
   // Return the result type.
   WDResultType GetType() const { return type_; }
@@ -89,7 +89,7 @@ class WDResult : public WDTypedResult {
   WDResult(const WDResult&) = delete;
   WDResult& operator=(const WDResult&) = delete;
 
-  ~WDResult() override {}
+  ~WDResult() override = default;
 
   // Return a single value result.
   const T& GetValue() const { return value_; }
