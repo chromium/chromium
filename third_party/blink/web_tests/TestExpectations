@@ -5059,9 +5059,6 @@ crbug.com/359253683 [ Mac ] external/wpt/css/css-highlight-api/highlight-text-de
 
 crbug.com/1455239 http/tests/security/drag-drop-different-origin.html [ Failure Pass ]
 
-# Green Mac11 Test
-crbug.com/1201406 http/tests/credentialmanagement/publickeycredential-same-origin-with-ancestors.html [ Crash Pass Timeout ]
-
 # Waiting for resolution on disabled fieldsets in https://github.com/whatwg/html/issues/5886
 # We want to make fieldsets not disableable due to crbug.com/1422096 and crbug.com/1422547
 # which breaks this exhaustive test, but it will be updated after whatwg/html resolution.
