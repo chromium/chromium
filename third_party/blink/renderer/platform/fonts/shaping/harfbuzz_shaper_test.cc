@@ -162,6 +162,7 @@ class HarfBuzzShaperTest : public FontTestBase {
 
 #if BUILDFLAG(IS_MAC)
   const char* kSystemMonoEmojiFont = "Apple Symbols";
+  const char* kSystemMonoTextDefaultEmojiFont = "Hiragino Mincho ProN";
 #elif BUILDFLAG(IS_ANDROID)
   const char* kSystemMonoEmojiFont = "Noto Sans Symbols";
 #elif BUILDFLAG(IS_WIN)
@@ -823,9 +824,15 @@ TEST_F(HarfBuzzShaperTest, SystemEmojiVS15) {
     EXPECT_TRUE(
         MatchesFontName(GetShapedFontFamilyNameForEmojiVS(mono_font, text),
                         kNotoEmojiFontName));
+    const char* system_mono_font_name = kSystemMonoEmojiFont;
+#if BUILDFLAG(IS_MAC)
+    if (text == text_default) {
+      system_mono_font_name = kSystemMonoTextDefaultEmojiFont;
+    }
+#endif
     EXPECT_TRUE(
         MatchesFontName(GetShapedFontFamilyNameForEmojiVS(color_font, text),
-                        kSystemMonoEmojiFont));
+                        system_mono_font_name));
   }
 }
 
@@ -888,6 +895,12 @@ TEST_P(FontVariantEmojiTest, FontVariantEmojiSystemFallback) {
         is_text_presentation ? kNotoEmojiFontName : kSystemColorEmojiFont;
     const char* expected_name_for_color_requested_font =
         is_emoji_presentation ? kNotoColorEmojiFontName : kSystemMonoEmojiFont;
+
+#if BUILDFLAG(IS_MAC)
+    if (text == text_default && !is_emoji_presentation) {
+      expected_name_for_color_requested_font = kSystemMonoTextDefaultEmojiFont;
+    }
+#endif
 
     EXPECT_TRUE(
         MatchesFontName(GetShapedFontFamilyNameForEmojiVS(mono_font, text),
