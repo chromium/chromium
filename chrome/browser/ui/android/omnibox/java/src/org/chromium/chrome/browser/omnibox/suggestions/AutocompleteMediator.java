@@ -354,10 +354,14 @@ class AutocompleteMediator
      * presented suggestions in the event where Native counterpart is not yet initialized.
      *
      * <p>Note: the only supported page context right now is the ANDROID_SEARCH_WIDGET.
+     *
+     * @param isOnFocusContext Whether the request is made on focus (as opposed to on a text
+     *     change).
      */
-    void startCachedZeroSuggest() {
+    void startCachedZeroSuggest(boolean isOnFocusContext) {
         maybeServeCachedResult();
-        postAutocompleteRequest(this::startZeroSuggest, SCHEDULE_FOR_IMMEDIATE_EXECUTION);
+        postAutocompleteRequest(
+                () -> startZeroSuggest(isOnFocusContext), SCHEDULE_FOR_IMMEDIATE_EXECUTION);
     }
 
     private void maybeCacheResult(@NonNull AutocompleteResult result) {
@@ -438,7 +442,8 @@ class AutocompleteMediator
             // This is tracked by MobileStartup.LaunchCause / EXTERNAL_SEARCH_ACTION_INTENT
             // metric.
             String text = mUrlBarEditingTextProvider.getTextWithoutAutocomplete();
-            onTextChanged(text);
+            onTextChanged(
+                    text, /* isOnFocusContext= */ OmniboxFeatures.shouldRetainOmniboxOnFocus());
         } else {
             mDeferredIMEWindowInsetApplicationCallback.detach();
             stopMeasuringSuggestionRequestToUiModelTime();
@@ -615,7 +620,9 @@ class AutocompleteMediator
         if (isSearchSuggestion) refineText = TextUtils.concat(refineText, " ").toString();
 
         mDelegate.setOmniboxEditingText(refineText);
-        onTextChanged(mUrlBarEditingTextProvider.getTextWithoutAutocomplete());
+        onTextChanged(
+                mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),
+                /* isOnFocusContext= */ false);
 
         if (isSearchSuggestion) {
             // Note: the logic below toggles assumes individual values to be represented by
@@ -835,8 +842,9 @@ class AutocompleteMediator
      * autocomplete suggestions should be updated.
      *
      * @param textWithoutAutocomplete The text that does not include autocomplete information.
+     * @param isOnFocusContext Whether the request is made on focus (as opposed to on text change).
      */
-    public void onTextChanged(@NonNull String textWithoutAutocomplete) {
+    public void onTextChanged(@NonNull String textWithoutAutocomplete, boolean isOnFocusContext) {
         if (mShouldPreventOmniboxAutocomplete) return;
 
         mIgnoreOmniboxItemSelection = true;
@@ -850,11 +858,13 @@ class AutocompleteMediator
 
         stopAutocomplete(false);
 
-        mIsInZeroPrefixContext = TextUtils.isEmpty(textWithoutAutocomplete);
+        boolean isTextWithoutAutocompleteEmpty = TextUtils.isEmpty(textWithoutAutocomplete);
+        mIsInZeroPrefixContext = isOnFocusContext || isTextWithoutAutocompleteEmpty;
+        isOnFocusContext = isOnFocusContext && !isTextWithoutAutocompleteEmpty;
 
         if (mIsInZeroPrefixContext) {
             clearSuggestions();
-            startCachedZeroSuggest();
+            startCachedZeroSuggest(isOnFocusContext);
         } else if (mDataProvider.hasTab()) {
             boolean preventAutocomplete = !mUrlBarEditingTextProvider.shouldAutocomplete();
             int cursorPosition =
@@ -1079,8 +1089,10 @@ class AutocompleteMediator
      * Make a zero suggest request if: - The URL bar has focus. - The the tab/overview is not
      * incognito. This method should not be called directly. Schedule execution using
      * postAutocompleteRequest.
+     *
+     * @param isOnFocusContext Whether the request is made on focus (as opposed to on text change).
      */
-    private void startZeroSuggest() {
+    private void startZeroSuggest(boolean isOnFocusContext) {
         // Reset "edited" state in the omnibox if zero suggest is triggered -- new edits
         // now count as a new session.
         mEditSessionState = EditSessionState.INACTIVE;
@@ -1095,7 +1107,8 @@ class AutocompleteMediator
                                 mUrlBarEditingTextProvider.getTextWithAutocomplete(),
                                 mDataProvider.getCurrentGurl(),
                                 mPageClassification.getAsInt(),
-                                mDataProvider.getTitle());
+                                mDataProvider.getTitle(),
+                                isOnFocusContext);
                     });
         }
     }

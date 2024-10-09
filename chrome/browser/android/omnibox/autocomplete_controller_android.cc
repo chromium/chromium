@@ -240,9 +240,8 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
     const JavaParamRef<jstring>& j_omnibox_text,
     const JavaParamRef<jstring>& j_current_url,
     jint j_page_classification,
-    const JavaParamRef<jstring>& j_current_title) {
-  using OFT = metrics::OmniboxFocusType;
-
+    const JavaParamRef<jstring>& j_current_title,
+    bool is_on_focus_context) {
   // Prevents double triggering of zero suggest when OnOmniboxFocused is issued
   // in quick succession (due to odd timing in the Android focus callbacks).
   if (!autocomplete_controller_->done()) {
@@ -263,13 +262,11 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
 
   auto page_class =
       OmniboxEventProto::PageClassification(j_page_classification);
-
-  // Assign focus type to INTERACTION_CLOBBER to non-NTP zero-prefix requests
-  const auto interaction_type = omnibox::IsNTPPage(page_class)
-                                    ? OFT::INTERACTION_FOCUS
-                                    : OFT::INTERACTION_CLOBBER;
-
-  if (interaction_type == OFT::INTERACTION_CLOBBER) {
+  const bool interaction_clobber_focus_type =
+      !(omnibox::IsNTPPage(page_class) ||
+        (is_on_focus_context &&
+         base::FeatureList::IsEnabled(omnibox::kRetainOmniboxOnFocus)));
+  if (interaction_clobber_focus_type) {
     omnibox_text.clear();
   }
 
@@ -295,7 +292,11 @@ void AutocompleteControllerAndroid::OnOmniboxFocused(
                              ChromeAutocompleteSchemeClassifier(profile_));
   input_.set_current_url(current_url);
   input_.set_current_title(current_title);
-  input_.set_focus_type(interaction_type);
+
+  // Assign focus type to INTERACTION_CLOBBER to non-NTP zero-prefix requests
+  input_.set_focus_type(interaction_clobber_focus_type
+                            ? metrics::OmniboxFocusType::INTERACTION_CLOBBER
+                            : metrics::OmniboxFocusType::INTERACTION_FOCUS);
 
   autocomplete_controller_->Start(input_);
 }

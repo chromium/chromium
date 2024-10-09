@@ -262,7 +262,8 @@ public class SearchActivityTest {
                         eq(""),
                         any(/* DSE URL*/ ),
                         eq(PageClassification.ANDROID_SEARCH_WIDGET_VALUE),
-                        eq(""));
+                        eq(""),
+                        /* isOnFocusContext= */ eq(false));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
@@ -286,7 +287,8 @@ public class SearchActivityTest {
                         eq(""),
                         any(/* DSE URL*/ ),
                         eq(PageClassification.ANDROID_SEARCH_WIDGET_VALUE),
-                        eq(""));
+                        eq(""),
+                        /* isOnFocusContext= */ eq(false));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
@@ -513,7 +515,8 @@ public class SearchActivityTest {
                         eq(""),
                         any(/* DSE URL */ ),
                         eq(PageClassification.ANDROID_SEARCH_WIDGET_VALUE),
-                        any());
+                        any(),
+                        /* isOnFocusContext= */ eq(false));
     }
 
     @Test
