@@ -20,7 +20,7 @@ namespace winhttp {
 // with GlobalAlloc.
 class ScopedWinHttpProxyInfo {
  public:
-  ScopedWinHttpProxyInfo() {}
+  ScopedWinHttpProxyInfo() = default;
 
   ScopedWinHttpProxyInfo(const ScopedWinHttpProxyInfo& other) = delete;
   ScopedWinHttpProxyInfo& operator=(const ScopedWinHttpProxyInfo& other) =
