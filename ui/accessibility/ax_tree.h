@@ -318,7 +318,7 @@ class AX_EXPORT AXTree {
   // destroyed. This function is called during AXTree teardown.
   void RecursivelyNotifyNodeWillBeDeletedForTreeTeardown(
       AXNode& node,
-      std::vector<AXNodeID>& deleted_nodes);
+      std::set<AXNodeID>& deleted_nodes);
 
   // Notify the delegate that the node marked by |node_id| has been deleted.
   // We are passing the node id instead of ax node is because by the time this

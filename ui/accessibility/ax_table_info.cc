@@ -681,10 +681,9 @@ void AXTableInfo::ClearExtraMacNodes() {
     return;
   }
 
-  std::vector<AXNodeID> deleting_node_ids;
-  deleting_node_ids.reserve(extra_mac_nodes.size());
+  std::set<AXNodeID> deleting_node_ids;
   for (AXNode* extra_mac_node : extra_mac_nodes) {
-    deleting_node_ids.push_back(extra_mac_node->id());
+    deleting_node_ids.insert(extra_mac_node->id());
     for (AXTreeObserver& observer : tree_->observers()) {
       observer.OnNodeWillBeDeleted(tree_, extra_mac_node);
     }

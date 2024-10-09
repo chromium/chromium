@@ -323,10 +323,6 @@ struct AXTreeUpdateState {
   AXTreeUpdateState(const AXTree& tree, const AXTreeUpdate& pending_tree_update)
       : pending_tree_update(pending_tree_update), tree(tree) {}
 
-  // Returns whether this update removes |node|.
-  bool IsRemovedNode(const AXNodeID node_id) const {
-    return base::Contains(removed_node_ids, node_id);
-  }
   // Returns whether this update creates a node marked by |node_id|.
   bool IsCreatedNode(AXNodeID node_id) const {
     return base::Contains(new_node_ids, node_id);
@@ -342,29 +338,12 @@ struct AXTreeUpdateState {
     DCHECK_EQ(AXTreePendingStructureStatus::kComplete, pending_update_status)
         << "This method should not be called before pending changes have "
            "finished computing.";
-    PendingStructureChanges* data = GetPendingStructureChanges(node->id());
-    if (!data)
-      return false;
-
-    return IsReparentedNode(node->id(), data);
+    return IsReparentedNode(node->id());
   }
 
   // Returns whether this update reparents the node represented by `node_data`.
-  bool IsReparentedNode(const AXNodeID node_id,
-                        const PendingStructureChanges* node_data) const {
-    if (!node_data) {
-      return false;
-    }
-
-    // In order to know if the node will be reparented during the update,
-    // we check if either the node will be destroyed or has been destroyed at
-    // least once during the update.
-    // Since this method is only allowed to be called after calculating all
-    // pending structure changes, `node_exists` in `node_data` tells us if the
-    // node should exist after all updates have been applied.
-    return (node_data->DoesNodeExpectNodeWillBeDestroyed() ||
-            IsRemovedNode(node_id)) &&
-           node_data->node_exists;
+  bool IsReparentedNode(const AXNodeID node_id) const {
+    return reparenting_node_ids.contains(node_id);
   }
 
   // Returns true if the node should exist in the tree but doesn't have
@@ -490,6 +469,12 @@ struct AXTreeUpdateState {
     data->parent_node_id = std::nullopt;
     if (pending_root_id == node_id)
       pending_root_id = std::nullopt;
+
+    // This node may have been flagged for reparenting previously. It is now
+    // deleted (possibly again).
+    reparenting_node_ids.erase(node_id);
+    deleting_node_ids.insert(node_id);
+
     return true;
   }
 
@@ -531,6 +516,15 @@ struct AXTreeUpdateState {
     ++data->create_node_count;
     data->node_exists = true;
     data->parent_node_id = parent_node_id;
+
+    if (data->destroy_node_count > 0) {
+      // This node was destroyed by a previous update. This means a reparenting.
+      reparenting_node_ids.insert(node_id);
+
+      // This also means the node isn't going to be deleted after all.
+      deleting_node_ids.erase(node_id);
+    }
+
     return true;
   }
 
@@ -579,30 +573,6 @@ struct AXTreeUpdateState {
     }
   }
 
-  // Returns (`deleting_node_ids`, `reparenting_node_ids`) that will happen as a
-  // result of the next pending update.
-  std::tuple<std::vector<AXNodeID>, std::vector<AXNodeID>>
-  GetDeletingAndReparentingNodes() const {
-    // TODO(crbug.com/367363880): Compute deleting | reparenting node ids during
-    // AXTree::ComputePendingChanges.
-    std::vector<AXNodeID> deleting_node_ids;
-    std::vector<AXNodeID> reparenting_node_ids;
-    for (auto& [node_id, pending_node_data] : node_id_to_pending_data) {
-      if (!pending_node_data->DoesNodeExpectNodeWillBeDestroyed()) {
-        continue;
-      }
-      if (IsReparentedNode(node_id, pending_node_data.get())) {
-        reparenting_node_ids.push_back(node_id);
-        continue;
-      }
-
-      deleting_node_ids.push_back(node_id);
-    }
-
-    return std::forward_as_tuple(std::move(deleting_node_ids),
-                                 std::move(reparenting_node_ids));
-  }
-
   // Indicates the status for calculating what changes will occur during
   // an update before the update applies changes.
   AXTreePendingStructureStatus pending_update_status =
@@ -641,12 +611,11 @@ struct AXTreeUpdateState {
   // Keeps track of new nodes created during this update.
   std::set<AXNodeID> new_node_ids;
 
-  // Keeps track of any nodes removed. Nodes are removed when their AXID no
-  // longer exist in the parent |child_ids| list, or the node is part of to the
-  // subtree of the AXID that was explicitly cleared with |node_id_to_clear|.
-  // Used to identify re-parented nodes. A re-parented occurs when any AXID
-  // is first removed from the tree then added to the tree again.
-  std::set<AXNodeID> removed_node_ids;
+  // Nodes expected to be deleted.
+  std::set<AXNodeID> deleting_node_ids;
+
+  // Nodes expected to be reparented.
+  std::set<AXNodeID> reparenting_node_ids;
 
   // Maps between a node id and its pending update information.
   std::map<AXNodeID, std::unique_ptr<PendingStructureChanges>>
@@ -884,12 +853,11 @@ void AXTree::Destroy() {
   if (!root_)
     return;
 
-  std::vector<AXNodeID> deleting_node_ids;
-  deleting_node_ids.reserve(size());
+  std::set<AXNodeID> deleting_node_ids;
   RecursivelyNotifyNodeWillBeDeletedForTreeTeardown(*root_, deleting_node_ids);
 
   observers_.Notify(&AXTreeObserver::OnAtomicUpdateStarting, this,
-                    deleting_node_ids, std::vector<AXNodeID>{});
+                    deleting_node_ids, std::set<AXNodeID>{});
 
   {
     ScopedTreeUpdateInProgressStateSetter tree_update_in_progress(*this);
@@ -1237,10 +1205,9 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
     }
   }
 
-  auto [deleting_node_ids, reparenting_node_ids] =
-      update_state.GetDeletingAndReparentingNodes();
   observers_.Notify(&AXTreeObserver::OnAtomicUpdateStarting, this,
-                    deleting_node_ids, reparenting_node_ids);
+                    update_state.deleting_node_ids,
+                    update_state.reparenting_node_ids);
 
   // Now that we have finished sending events for changes that will  happen,
   // set update state to true. |tree_update_in_progress_| gets set back to
@@ -1386,10 +1353,10 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
           // whose parent happens to be new only because it has been reparented.
           // Note that we also need to check for the special case when we update
           // the root without replacing it.
-          bool is_subtree = !node->parent() ||
-                            !update_state.IsCreatedNode(node->parent()) ||
-                            update_state.IsRemovedNode(node->parent()->id()) ||
-                            (node->parent() == root_ && root_updated);
+          bool is_subtree =
+              !node->parent() || !update_state.IsCreatedNode(node->parent()) ||
+              update_state.IsReparentedNode(node->parent()->id()) ||
+              (node->parent() == root_ && root_updated);
           change = is_subtree ? AXTreeObserver::SUBTREE_CREATED
                               : AXTreeObserver::NODE_CREATED;
         }
@@ -1463,10 +1430,8 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
 
   // Now that the unignored cached values are up to date, notify observers of
   // the nodes that were deleted from the tree but not reparented.
-  for (AXNodeID node_id : update_state.removed_node_ids) {
-    if (!update_state.IsCreatedNode(node_id)) {
-      NotifyNodeHasBeenDeleted(node_id);
-    }
+  for (AXNodeID node_id : update_state.deleting_node_ids) {
+    NotifyNodeHasBeenDeleted(node_id);
   }
 
   // Now that the unignored cached values are up to date, notify observers of
@@ -1993,7 +1958,7 @@ void AXTree::NotifyNodeWillBeReparentedOrDeleted(
 
 void AXTree::RecursivelyNotifyNodeWillBeDeletedForTreeTeardown(
     AXNode& node,
-    std::vector<AXNodeID>& deleted_nodes) {
+    std::set<AXNodeID>& deleted_nodes) {
   // TODO(crbug.com/366332767): Migrate tree observers to listen for tree
   // teardown by observing AXTreeManager.
   DCHECK(!GetTreeUpdateInProgressState());
@@ -2001,7 +1966,7 @@ void AXTree::RecursivelyNotifyNodeWillBeDeletedForTreeTeardown(
     return;
   }
 
-  deleted_nodes.push_back(node.id());
+  deleted_nodes.insert(node.id());
 
   observers_.Notify(&AXTreeObserver::OnNodeWillBeDeleted, this, &node);
   for (ui::AXNode* child : node.children()) {
@@ -2351,7 +2316,6 @@ void AXTree::DestroyNodeAndSubtree(AXNode* node,
   if (update_state) {
     update_state->pending_node_ids.erase(id);
     update_state->DecrementPendingDestroyNodeCount(id);
-    update_state->removed_node_ids.insert(id);
     update_state->new_node_ids.erase(id);
     update_state->node_data_changed_ids.erase(id);
     if (update_state->IsReparentedNode(node_to_delete.get())) {

@@ -408,8 +408,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) BrowserAccessibilityManager
   void OnNodeReparented(AXTree* tree, AXNode* node) override;
   void OnAtomicUpdateStarting(
       AXTree* tree,
-      const std::vector<AXNodeID>& deleted_node_ids,
-      const std::vector<AXNodeID>& reparented_node_ids) override;
+      const std::set<AXNodeID>& deleted_node_ids,
+      const std::set<AXNodeID>& reparented_node_ids) override;
   void OnAtomicUpdateFinished(
       AXTree* tree,
       bool root_changed,
