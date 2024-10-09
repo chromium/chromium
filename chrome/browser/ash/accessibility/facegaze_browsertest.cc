@@ -611,13 +611,18 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, DefaultBehavior) {
       GetPrefs()->GetDict(prefs::kAccessibilityFaceGazeGesturesToMacros);
   const auto& gestures_to_confidences =
       GetPrefs()->GetDict(prefs::kAccessibilityFaceGazeGesturesToConfidence);
-  ASSERT_EQ(gestures_to_macros.size(), 1u);
-  ASSERT_EQ(gestures_to_confidences.size(), 1u);
+  ASSERT_EQ(gestures_to_macros.size(), 2u);
+  ASSERT_EQ(gestures_to_confidences.size(), 2u);
   ASSERT_EQ(/* MOUTH_SMILE */ 35,
             gestures_to_macros.FindInt(
                 FaceGazeTestUtils::ToString(FaceGazeGesture::MOUTH_SMILE)));
+  ASSERT_EQ(/* SCROLL */ 50,
+            gestures_to_macros.FindInt(
+                FaceGazeTestUtils::ToString(FaceGazeGesture::JAW_OPEN)));
   ASSERT_EQ(60, gestures_to_confidences.FindInt(
                     FaceGazeTestUtils::ToString(FaceGazeGesture::MOUTH_SMILE)));
+  ASSERT_EQ(60, gestures_to_confidences.FindInt(
+                    FaceGazeTestUtils::ToString(FaceGazeGesture::JAW_OPEN)));
 }
 
 }  // namespace ash

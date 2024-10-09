@@ -158,6 +158,18 @@ const char kTtsStandardFileName[] = "voice-standard.zvoice";
 // action in the above file.
 constexpr int kFaceGazeLeftClickValue = 35;
 
+// The value representing the FaceGaze scroll action. See
+// ash/webui/common/resources/accessibility/macro_names.ts for the full list of
+// FaceGaze actions. This value needs to be in sync with the TOGGLE_SCROLL_MODE
+// action in the above file.
+constexpr int kFaceGazeScrollValue = 50;
+
+// The string representing the FaceGaze jaw open gesture. See
+// ash/webui/common/resources/accessibility/facial_gestures.ts for the full list
+// of FaceGaze gestures. This value needs to be in sync with the JAW_OPEN
+// gesture in the above file.
+constexpr char kFaceGazeJawOpenGesture[] = "jawOpen";
+
 // The string representing the FaceGaze mouth smile gesture. See
 // ash/webui/common/resources/accessibility/facial_gestures.ts for the full list
 // of FaceGaze gestures. This value needs to be in sync with the MOUTH_SMILE
@@ -684,12 +696,15 @@ void AccessibilityManager::OnFaceGazeChanged() {
     // If FaceGaze is enabled but there isn't a gesture to action mapping, then
     // we should install a minimal mapping to provide a working default
     // experience.
-    pref_service->SetDict(prefs::kAccessibilityFaceGazeGesturesToMacros,
-                          base::Value::Dict().Set(kFaceGazeMouthSmileGesture,
-                                                  kFaceGazeLeftClickValue));
     pref_service->SetDict(
-        prefs::kAccessibilityFaceGazeGesturesToConfidence,
-        base::Value::Dict().Set(kFaceGazeMouthSmileGesture, 60));
+        prefs::kAccessibilityFaceGazeGesturesToMacros,
+        base::Value::Dict()
+            .Set(kFaceGazeMouthSmileGesture, kFaceGazeLeftClickValue)
+            .Set(kFaceGazeJawOpenGesture, kFaceGazeScrollValue));
+    pref_service->SetDict(prefs::kAccessibilityFaceGazeGesturesToConfidence,
+                          base::Value::Dict()
+                              .Set(kFaceGazeMouthSmileGesture, 60)
+                              .Set(kFaceGazeJawOpenGesture, 60));
     pref_service->CommitPendingWrite();
   }
 }
