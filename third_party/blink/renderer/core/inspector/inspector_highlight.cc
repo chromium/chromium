@@ -1284,8 +1284,8 @@ std::unique_ptr<protocol::DictionaryValue> BuildGridInfo(
   // The last column in RTL will not go to the extent of the grid if not
   // necessary, and will stop sooner if the tracks don't take up the full size
   // of the grid.
-  LayoutUnit rtl_offset = grid->LogicalWidth() - columns.back() -
-                          grid->BorderAndPaddingLogicalRight();
+  LayoutUnit rtl_offset =
+      grid->LogicalWidth() - columns.back() - grid->BorderAndPaddingInlineEnd();
 
   if (grid_highlight_config.show_track_sizes) {
     StyleResolver& style_resolver = element->GetDocument().GetStyleResolver();

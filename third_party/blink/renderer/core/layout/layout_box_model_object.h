@@ -295,22 +295,22 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
     NOT_DESTROYED();
     return BorderLeft() + BorderRight() + PaddingLeft() + PaddingRight();
   }
-  DISABLE_CFI_PERF LayoutUnit BorderAndPaddingLogicalHeight() const {
+  DISABLE_CFI_PERF LayoutUnit BorderAndPaddingBlockSize() const {
     NOT_DESTROYED();
     return (StyleRef().HasBorder() || StyleRef().MayHavePadding())
                ? BorderAndPaddingBlockStart() + BorderAndPaddingBlockEnd()
                : LayoutUnit();
   }
-  DISABLE_CFI_PERF LayoutUnit BorderAndPaddingLogicalWidth() const {
+  DISABLE_CFI_PERF LayoutUnit BorderAndPaddingInlineSize() const {
     NOT_DESTROYED();
     return StyleRef().IsHorizontalWritingMode() ? BorderAndPaddingWidth()
                                                 : BorderAndPaddingHeight();
   }
-  DISABLE_CFI_PERF LayoutUnit BorderAndPaddingLogicalLeft() const {
+  DISABLE_CFI_PERF LayoutUnit BorderAndPaddingInlineStart() const {
     NOT_DESTROYED();
     return BorderInlineStart() + PhysicalPaddingToLogical().InlineStart();
   }
-  DISABLE_CFI_PERF LayoutUnit BorderAndPaddingLogicalRight() const {
+  DISABLE_CFI_PERF LayoutUnit BorderAndPaddingInlineEnd() const {
     NOT_DESTROYED();
     return BorderInlineEnd() + PaddingInlineEnd();
   }

@@ -150,28 +150,28 @@ TEST_P(LayoutBoxModelObjectTest, BorderAndPaddingLogicalLeftRight) {
 
   {
     auto* target = GetLayoutBoxByElementId("target-htb");
-    EXPECT_EQ(kLeft, target->BorderAndPaddingLogicalLeft());
-    EXPECT_EQ(kRight, target->BorderAndPaddingLogicalRight());
+    EXPECT_EQ(kLeft, target->BorderAndPaddingInlineStart());
+    EXPECT_EQ(kRight, target->BorderAndPaddingInlineEnd());
   }
   {
     auto* target = GetLayoutBoxByElementId("target-vrl");
-    EXPECT_EQ(kTop, target->BorderAndPaddingLogicalLeft());
-    EXPECT_EQ(kBottom, target->BorderAndPaddingLogicalRight());
+    EXPECT_EQ(kTop, target->BorderAndPaddingInlineStart());
+    EXPECT_EQ(kBottom, target->BorderAndPaddingInlineEnd());
   }
   {
     auto* target = GetLayoutBoxByElementId("target-vlr");
-    EXPECT_EQ(kTop, target->BorderAndPaddingLogicalLeft());
-    EXPECT_EQ(kBottom, target->BorderAndPaddingLogicalRight());
+    EXPECT_EQ(kTop, target->BorderAndPaddingInlineStart());
+    EXPECT_EQ(kBottom, target->BorderAndPaddingInlineEnd());
   }
   {
     auto* target = GetLayoutBoxByElementId("target-srl");
-    EXPECT_EQ(kTop, target->BorderAndPaddingLogicalLeft());
-    EXPECT_EQ(kBottom, target->BorderAndPaddingLogicalRight());
+    EXPECT_EQ(kTop, target->BorderAndPaddingInlineStart());
+    EXPECT_EQ(kBottom, target->BorderAndPaddingInlineEnd());
   }
   {
     auto* target = GetLayoutBoxByElementId("target-slr");
-    EXPECT_EQ(kBottom, target->BorderAndPaddingLogicalLeft());
-    EXPECT_EQ(kTop, target->BorderAndPaddingLogicalRight());
+    EXPECT_EQ(kBottom, target->BorderAndPaddingInlineStart());
+    EXPECT_EQ(kTop, target->BorderAndPaddingInlineEnd());
   }
 }
 

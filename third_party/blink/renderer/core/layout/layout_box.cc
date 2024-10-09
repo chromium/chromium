@@ -197,7 +197,7 @@ LayoutUnit TextFieldIntrinsicInlineSize(const HTMLInputElement& input,
     if (LayoutBox* spin_box =
             spin_button ? spin_button->GetLayoutBox() : nullptr) {
       const Length& logical_width = spin_box->StyleRef().LogicalWidth();
-      result += spin_box->BorderAndPaddingLogicalWidth();
+      result += spin_box->BorderAndPaddingInlineSize();
       // Since the width of spin_box is not calculated yet,
       // spin_box->LogicalWidth() returns 0. Use the computed logical
       // width instead.
@@ -356,8 +356,7 @@ LayoutUnit MenuListIntrinsicBlockSize(const HTMLSelectElement& select,
   DCHECK(font_data);
   const LayoutBox* inner_box = select.InnerElement().GetLayoutBox();
   return (font_data ? font_data->GetFontMetrics().Height() : 0) +
-         (inner_box ? inner_box->BorderAndPaddingLogicalHeight()
-                    : LayoutUnit());
+         (inner_box ? inner_box->BorderAndPaddingBlockSize() : LayoutUnit());
 }
 
 #if DCHECK_IS_ON()
