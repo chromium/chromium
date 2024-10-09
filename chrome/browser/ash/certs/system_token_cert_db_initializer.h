@@ -13,7 +13,6 @@
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
 #include "crypto/scoped_nss_types.h"
-#include "net/cert/nss_cert_database.h"
 
 namespace net {
 class NSSCertDatabase;
@@ -27,8 +26,7 @@ namespace ash {
 //
 // All of the methods must be called on the UI thread.
 class SystemTokenCertDBInitializer
-    : public chromeos::TpmManagerClient::Observer,
-      public net::NSSCertDatabase::Observer {
+    : public chromeos::TpmManagerClient::Observer {
  public:
   // It is stated in cryptohome implementation that 5 minutes is enough time to
   // wait for any TPM operations. For more information, please refer to:
@@ -54,10 +52,6 @@ class SystemTokenCertDBInitializer
   void set_is_nss_slots_software_fallback_allowed_for_testing(bool is_allowed) {
     is_nss_slots_software_fallback_allowed_ = is_allowed;
   }
-
-  // net::NSSCertDatabase::Observer
-  void OnTrustStoreChanged() override;
-  void OnClientCertStoreChanged() override;
 
  private:
   // Called once the cryptohome service is available.
