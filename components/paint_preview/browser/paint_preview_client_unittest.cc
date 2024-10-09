@@ -116,7 +116,7 @@ class PaintPreviewClientRenderViewHostTest
     : public content::RenderViewHostTestHarness,
       public testing::WithParamInterface<RecordingPersistence> {
  public:
-  PaintPreviewClientRenderViewHostTest() {}
+  PaintPreviewClientRenderViewHostTest() = default;
 
  protected:
   void SetUp() override {
