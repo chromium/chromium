@@ -10881,6 +10881,7 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
   request.url = test_server_.GetURL("/defaultresponse");
   const url::Origin kTopFrameOrigin =
       url::Origin::Create(GURL("https://b.test"));
+  request.credentials_mode = mojom::CredentialsMode::kOmit;
 
   mojom::URLLoaderFactoryParamsPtr params =
       mojom::URLLoaderFactoryParams::New();
@@ -10897,13 +10898,10 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
   }
   base::HistogramTester histogram_tester;
 
-  SetDefaultContentSetting(ContentSetting::CONTENT_SETTING_BLOCK,
-                           network_context.get());
-
   RunRequestToCompletion(std::move(network_context), std::move(params),
                          request);
 
-  // Since all cookies are blocked, no header should be attached.
+  // Since credentials are blocked, no header should be attached.
   EXPECT_THAT(most_recent_request_headers(),
               ElementsAre(Not(Contains(
                   Key(net::HttpRequestHeaders::kSecFetchStorageAccess)))));
@@ -10911,7 +10909,7 @@ TEST_P(StorageAccessHeaderNetworkContextParameterizedTest,
   histogram_tester.ExpectUniqueSample(
       "API.StorageAccessHeader.SecFetchStorageAccessValueOutcome", /*sample=*/
       net::cookie_util::SecFetchStorageAccessValueOutcome::
-          kOmittedByPrivacyMode,
+          kOmittedRequestOmitsCredentials,
       /*expected_bucket_count=*/1);
 }
 

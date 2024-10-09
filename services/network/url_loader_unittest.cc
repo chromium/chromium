@@ -5038,8 +5038,8 @@ TEST_F(StorageAccessHeaderURLLoaderTest, StorageAccessHeader_Load_NoStatus) {
   delete_run_loop.Run();
 
   // TestNetworkDelegate always returns std::nullopt for the
-  // GetStorageAccessStatus call, so the job's `storage_access_status_` is never
-  // overwritten and stays kNone.
+  // GetStorageAccessStatus call, so the loader's `storage_access_status_` is
+  // std::nullopt.
   EXPECT_FALSE(client()->response_head()->load_with_storage_access);
 }
 

@@ -89,7 +89,6 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   ConnectionAttempts GetConnectionAttempts() const override;
   void CloseConnectionOnDestruction() override;
   std::unique_ptr<SourceStream> SetUpSourceStream() override;
-  cookie_util::StorageAccessStatus StorageAccessStatus() const override;
 
   RequestPriority priority() const {
     return priority_;
@@ -330,13 +329,6 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   // The First-Party Set metadata associated with this job. Set when the job is
   // started.
   FirstPartySetMetadata first_party_set_metadata_;
-
-  // The level of storage access available to this request. Note that this
-  // member is not set during construction; it is only set on request legs that
-  // include the Sec-Fetch-Storage-Access request header. (In particular, this
-  // excludes same-site requests and requests that cannot include cookies.)
-  cookie_util::StorageAccessStatus storage_access_status_ =
-      cookie_util::StorageAccessStatus::kNone;
 
   base::WeakPtrFactory<URLRequestHttpJob> weak_factory_{this};
 };

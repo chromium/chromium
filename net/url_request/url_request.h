@@ -39,6 +39,7 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/cookie_setting_override.h"
+#include "net/cookies/cookie_util.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/filter/source_stream.h"
@@ -854,12 +855,27 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   void SetSharedDictionaryGetter(
       SharedDictionaryGetter shared_dictionary_getter);
 
+  void set_storage_access_status(
+      std::optional<cookie_util::StorageAccessStatus> status) {
+    storage_access_status_ = status;
+  }
+
   // Returns the StorageAccessStatus for this request.
   // TODO(https://crbug.com/366284840): move this state out of //net (into
   // network::URLLoader) to respect layering rules.
-  cookie_util::StorageAccessStatus StorageAccessStatus() const;
+  std::optional<cookie_util::StorageAccessStatus> storage_access_status()
+      const {
+    return storage_access_status_;
+  }
 
   static bool DefaultCanUseCookies();
+
+  // Calculates the StorageAccessStatus for this request, according to the
+  // NetworkDelegate. Also records metrics.
+  // TODO(https://crbug.com/366284840): Move this to URLLoader once the
+  // "Activate-Storage-Access: retry" header is handled in URLLoader.
+  std::optional<net::cookie_util::StorageAccessStatus>
+  CalculateStorageAccessStatus() const;
 
   base::WeakPtr<URLRequest> GetWeakPtr();
 
@@ -1131,6 +1147,10 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   Idempotency idempotency_ = DEFAULT_IDEMPOTENCY;
 
   SharedDictionaryGetter shared_dictionary_getter_;
+
+  // The storage access status for this request. If this is nullopt, this
+  // request will not include the Sec-Fetch-Storage-Access header.
+  std::optional<net::cookie_util::StorageAccessStatus> storage_access_status_;
 
   THREAD_CHECKER(thread_checker_);
 

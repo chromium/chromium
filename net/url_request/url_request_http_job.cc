@@ -341,21 +341,6 @@ char const* GetSecFetchStorageAccessHeaderValue(
   }
 }
 
-net::cookie_util::SecFetchStorageAccessValueOutcome
-ConvertSecFetchStorageAccessHeaderValueToOutcome(
-    net::cookie_util::StorageAccessStatus storage_access_status) {
-  using enum net::cookie_util::SecFetchStorageAccessValueOutcome;
-  switch (storage_access_status) {
-    case net::cookie_util::StorageAccessStatus::kInactive:
-      return kValueInactive;
-    case net::cookie_util::StorageAccessStatus::kActive:
-      return kValueActive;
-    case net::cookie_util::StorageAccessStatus::kNone:
-      return kValueNone;
-  }
-  NOTREACHED();
-}
-
 }  // namespace
 
 namespace net {
@@ -497,48 +482,12 @@ bool ShouldBlockAllCookies(PrivacyMode privacy_mode) {
 }  // namespace
 
 void URLRequestHttpJob::MaybeSetSecFetchStorageAccessHeader() {
-  std::optional<cookie_util::StorageAccessStatus> storage_access_status =
-      request_->network_delegate()->GetStorageAccessStatus(*request_);
-
-  auto get_storage_access_value_outcome_if_omitted =
-      [&]() -> std::optional<cookie_util::SecFetchStorageAccessValueOutcome> {
-    if (!request_->network_delegate()->IsStorageAccessHeaderEnabled(
-            base::OptionalToPtr(request_->isolation_info().top_frame_origin()),
-            request_->url())) {
-      return cookie_util::SecFetchStorageAccessValueOutcome::
-          kOmittedFeatureDisabled;
-    }
-    // Avoid attaching the header in cases where the Cookie header is not
-    // included in the request.
-    if (!ShouldAddCookieHeader()) {
-      return cookie_util::SecFetchStorageAccessValueOutcome::
-          kOmittedRequestOmitsCredentials;
-    }
-    if (ShouldBlockAllCookies(request_info_.privacy_mode)) {
-      return cookie_util::SecFetchStorageAccessValueOutcome::
-          kOmittedByPrivacyMode;
-    }
-    if (!storage_access_status) {
-      return cookie_util::SecFetchStorageAccessValueOutcome::kOmittedSameSite;
-    }
-    return std::nullopt;
-  };
-
-  auto storage_access_value_outcome =
-      get_storage_access_value_outcome_if_omitted();
-  if (!storage_access_value_outcome) {
-    storage_access_status_ = storage_access_status.value();
+  if (request_->storage_access_status()) {
     request_info_.extra_headers.SetHeader(
         HttpRequestHeaders::kSecFetchStorageAccess,
-        GetSecFetchStorageAccessHeaderValue(storage_access_status_));
-    storage_access_value_outcome =
-        ConvertSecFetchStorageAccessHeaderValueToOutcome(
-            storage_access_status.value());
+        GetSecFetchStorageAccessHeaderValue(
+            request_->storage_access_status().value()));
   }
-
-  base::UmaHistogramEnumeration(
-      "API.StorageAccessHeader.SecFetchStorageAccessValueOutcome",
-      storage_access_value_outcome.value());
 }
 
 void URLRequestHttpJob::OnGotFirstPartySetMetadata(
@@ -1565,11 +1514,6 @@ std::unique_ptr<SourceStream> URLRequestHttpJob::SetUpSourceStream() {
   return upstream;
 }
 
-cookie_util::StorageAccessStatus URLRequestHttpJob::StorageAccessStatus()
-    const {
-  return storage_access_status_;
-}
-
 bool URLRequestHttpJob::CopyFragmentOnRedirect(const GURL& location) const {
   // Allow modification of reference fragments by default, unless
   // |preserve_fragment_on_redirect_url_| is set and equal to the redirect URL.
@@ -1636,7 +1580,8 @@ bool URLRequestHttpJob::NeedsRetryWithStorageAccess() {
       return kFailureHeaderDisabled;
     }
     if (!ShouldAddCookieHeader() ||
-        storage_access_status_ != cookie_util::StorageAccessStatus::kInactive ||
+        request_->storage_access_status() !=
+            cookie_util::StorageAccessStatus::kInactive ||
         request_->cookie_setting_overrides().Has(
             CookieSettingOverride::kStorageAccessGrantEligible) ||
         request_->cookie_setting_overrides().Has(

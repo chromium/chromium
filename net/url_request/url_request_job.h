@@ -288,8 +288,6 @@ class NET_EXPORT URLRequestJob {
       const GURL& destination,
       bool* same_origin_out_for_metrics = nullptr);
 
-  virtual cookie_util::StorageAccessStatus StorageAccessStatus() const;
-
  protected:
   // Notifies the job that we are connected.
   int NotifyConnected(const TransportInfo& info,

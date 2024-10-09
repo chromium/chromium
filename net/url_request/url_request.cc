@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions_internal_overloads.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
@@ -141,6 +142,23 @@ NetLogWithSource CreateNetLogWithSource(
     return NetLogWithSource::Make(net_log, net_log_source.value());
   }
   return NetLogWithSource::Make(net_log, NetLogSourceType::URL_REQUEST);
+}
+
+// TODO(https://crbug.com/366284840): remove this, once the "retry" header is
+// handled in URLLoader.
+net::cookie_util::SecFetchStorageAccessValueOutcome
+ConvertSecFetchStorageAccessHeaderValueToOutcome(
+    net::cookie_util::StorageAccessStatus storage_access_status) {
+  using enum net::cookie_util::SecFetchStorageAccessValueOutcome;
+  switch (storage_access_status) {
+    case net::cookie_util::StorageAccessStatus::kInactive:
+      return kValueInactive;
+    case net::cookie_util::StorageAccessStatus::kActive:
+      return kValueActive;
+    case net::cookie_util::StorageAccessStatus::kNone:
+      return kValueNone;
+  }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -1042,6 +1060,7 @@ void URLRequest::RetryWithStorageAccess() {
 
   cookie_setting_overrides().Put(
       CookieSettingOverride::kStorageAccessGrantEligibleViaHeader);
+  set_storage_access_status(CalculateStorageAccessStatus());
 
   if (!final_upload_progress_.position() && upload_data_stream_) {
     final_upload_progress_ = upload_data_stream_->GetUploadProgress();
@@ -1316,10 +1335,46 @@ void URLRequest::set_socket_tag(const SocketTag& socket_tag) {
   DCHECK(url().SchemeIsHTTPOrHTTPS());
   socket_tag_ = socket_tag;
 }
+std::optional<net::cookie_util::StorageAccessStatus>
+URLRequest::CalculateStorageAccessStatus() const {
+  std::optional<net::cookie_util::StorageAccessStatus> storage_access_status =
+      network_delegate()->GetStorageAccessStatus(*this);
 
-cookie_util::StorageAccessStatus URLRequest::StorageAccessStatus() const {
-  CHECK(job_);
-  return job_->StorageAccessStatus();
+  auto get_storage_access_value_outcome_if_omitted = [&]()
+      -> std::optional<net::cookie_util::SecFetchStorageAccessValueOutcome> {
+    if (!network_delegate()->IsStorageAccessHeaderEnabled(
+            base::OptionalToPtr(isolation_info().top_frame_origin()), url())) {
+      return net::cookie_util::SecFetchStorageAccessValueOutcome::
+          kOmittedFeatureDisabled;
+    }
+    // Avoid attaching the header in cases where credentials are not included in
+    // the request.
+    if (!allow_credentials_) {
+      return net::cookie_util::SecFetchStorageAccessValueOutcome::
+          kOmittedRequestOmitsCredentials;
+    }
+    if (!storage_access_status) {
+      return net::cookie_util::SecFetchStorageAccessValueOutcome::
+          kOmittedSameSite;
+    }
+    return std::nullopt;
+  };
+
+  auto storage_access_value_outcome =
+      get_storage_access_value_outcome_if_omitted();
+  if (storage_access_value_outcome) {
+    storage_access_status = std::nullopt;
+  } else {
+    storage_access_value_outcome =
+        ConvertSecFetchStorageAccessHeaderValueToOutcome(
+            storage_access_status.value());
+  }
+
+  base::UmaHistogramEnumeration(
+      "API.StorageAccessHeader.SecFetchStorageAccessValueOutcome",
+      storage_access_value_outcome.value());
+
+  return storage_access_status;
 }
 
 void URLRequest::SetSharedDictionaryGetter(

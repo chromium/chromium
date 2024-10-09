@@ -822,15 +822,25 @@ void URLLoader::ConfigureRequest(
 
   url_request_->set_initiator(initiator);
 
+  // Note: There are some ordering dependencies here. `SetRequestCredentials`
+  // depends on `SetLoadFlags`; `CalculateStorageAccessStatus` depends on
+  // `cookie_setting_overrides` and `SetRequestCredentials`.
+  // `SetFetchMetadataHeaders` will depend on
+  // `url_request_->storage_access_status()`, once https://crbug.com/366284840
+  // is fixed.
+  url_request_->cookie_setting_overrides() = cookie_setting_overrides;
+  url_request_->SetLoadFlags(request_load_flags);
+  SetRequestCredentials(url);
+  url_request_->set_storage_access_status(
+      url_request_->CalculateStorageAccessStatus());
+
   SetFetchMetadataHeaders(url_request_.get(), request_mode_,
                           has_user_activation_, request_destination_, nullptr,
                           *factory_params_, *origin_access_list_);
 
   url_request_->set_first_party_url_policy(first_party_url_policy);
 
-  url_request_->SetLoadFlags(request_load_flags);
   url_request_->SetPriorityIncremental(priority_incremental);
-  SetRequestCredentials(url);
 
   url_request_->SetRequestHeadersCallback(base::BindRepeating(
       &URLLoader::SetRawRequestHeadersAndNotify, base::Unretained(this)));
@@ -846,8 +856,6 @@ void URLLoader::ConfigureRequest(
 
   url_request_->SetEarlyResponseHeadersCallback(base::BindRepeating(
       &URLLoader::NotifyEarlyResponse, base::Unretained(this)));
-
-  url_request_->cookie_setting_overrides() = cookie_setting_overrides;
 
   if (shared_dictionary_getter) {
     url_request_->SetSharedDictionaryGetter(
@@ -1563,6 +1571,14 @@ void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,
   net::cookie_util::AddOrRemoveStorageAccessApiOverride(
       redirect_info.new_url, storage_access_api_status_,
       url_request_->initiator(), url_request_->cookie_setting_overrides());
+
+  // Note: There are some ordering dependencies here.
+  // `CalculateStorageAccessStatus` depends on
+  // `url_request->cookie_setting_overrides()`.  `SetFetchMetadataHeaders` will
+  // depend on `url_request_->storage_access_status()`, once
+  // https://crbug.com/366284840 is fixed.
+  url_request_->set_storage_access_status(
+      url_request_->CalculateStorageAccessStatus());
 
   // We may need to clear out old Sec- prefixed request headers. We'll attempt
   // to do this before we re-add any.
@@ -3117,7 +3133,11 @@ bool URLLoader::ShouldSetLoadWithStorageAccess() const {
       return net::cookie_util::ActivateStorageAccessLoadOutcome::
           kFailureHeaderDisabled;
     }
-    switch (url_request_->StorageAccessStatus()) {
+    if (!url_request_->storage_access_status()) {
+      return net::cookie_util::ActivateStorageAccessLoadOutcome::
+          kFailureInvalidStatus;
+    }
+    switch (url_request_->storage_access_status().value()) {
       case net::cookie_util::StorageAccessStatus::kNone:
         return net::cookie_util::ActivateStorageAccessLoadOutcome::
             kFailureInvalidStatus;

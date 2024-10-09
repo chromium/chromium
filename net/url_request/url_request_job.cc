@@ -392,10 +392,6 @@ GURL URLRequestJob::ComputeReferrerForPolicy(
   return GURL();
 }
 
-cookie_util::StorageAccessStatus URLRequestJob::StorageAccessStatus() const {
-  return cookie_util::StorageAccessStatus::kNone;
-}
-
 int URLRequestJob::NotifyConnected(const TransportInfo& info,
                                    CompletionOnceCallback callback) {
   return request_->NotifyConnected(info, std::move(callback));

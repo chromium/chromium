@@ -13336,10 +13336,8 @@ class PatternedExpectBypassCacheNetworkDelegate : public TestNetworkDelegate {
  public:
   explicit PatternedExpectBypassCacheNetworkDelegate(
       std::vector<bool> expectations,
-      std::optional<cookie_util::StorageAccessStatus> storage_access_status,
       bool enable_storage_access_header)
       : expectations_(std::move(expectations)) {
-    set_storage_access_status(storage_access_status);
     set_is_storage_access_header_enabled(enable_storage_access_header);
   }
 
@@ -13512,7 +13510,7 @@ TEST_P(StorageAccessHeaderRetryURLRequestTest, StorageAccessHeaderRetry) {
   auto context_builder = CreateTestURLRequestContextBuilder();
   auto& network_delegate = *context_builder->set_network_delegate(
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
-          pattern, cookie_util::StorageAccessStatus::kInactive,
+          pattern,
           /*enable_storage_access_header=*/true));
   auto context = context_builder->Build();
   TestDelegate d;
@@ -13526,6 +13524,7 @@ TEST_P(StorageAccessHeaderRetryURLRequestTest, StorageAccessHeaderRetry) {
                                      test.origin_header->Serialize(),
                                      /*overwrite=*/true);
   }
+  req->set_storage_access_status(cookie_util::StorageAccessStatus::kInactive);
 
   req->Start();
   d.RunUntilComplete();
@@ -13648,7 +13647,6 @@ TEST_F(StorageAccessHeaderURLRequestTest,
   auto& network_delegate = *context_builder->set_network_delegate(
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
           std::vector({false, true, false}),
-          cookie_util::StorageAccessStatus::kInactive,
           /*enable_storage_access_header=*/true));
   auto context = context_builder->Build();
   TestDelegate d;
@@ -13656,11 +13654,13 @@ TEST_F(StorageAccessHeaderURLRequestTest,
   std::unique_ptr<URLRequest> req(context->CreateRequest(
       http_test_server()->GetURL(kStorageAccessRetryPath), DEFAULT_PRIORITY, &d,
       TRAFFIC_ANNOTATION_FOR_TESTS));
+  req->set_storage_access_status(cookie_util::StorageAccessStatus::kInactive);
 
   req->Start();
   d.RunUntilRedirect();
 
   EXPECT_EQ(req->url().path(), kStorageAccessRetryPath);
+  req->set_storage_access_status(cookie_util::StorageAccessStatus::kActive);
   req->FollowDeferredRedirect(/*removed_headers=*/{}, /*modified_headers=*/{});
 
   d.RunUntilComplete();
@@ -13693,7 +13693,6 @@ TEST_F(StorageAccessHeaderURLRequestTest,
   auto& network_delegate = *context_builder->set_network_delegate(
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
           std::vector({false, true}),
-          cookie_util::StorageAccessStatus::kInactive,
           /*enable_storage_access_header=*/true));
   auto context = context_builder->Build();
   TestDelegate d;
@@ -13702,6 +13701,7 @@ TEST_F(StorageAccessHeaderURLRequestTest,
   std::unique_ptr<URLRequest> req(context->CreateRequest(
       http_test_server()->GetURL(kStorageAccessRetryPath), DEFAULT_PRIORITY, &d,
       TRAFFIC_ANNOTATION_FOR_TESTS));
+  req->set_storage_access_status(cookie_util::StorageAccessStatus::kInactive);
 
   req->Start();
   d.RunUntilComplete();
@@ -13735,7 +13735,6 @@ TEST_F(StorageAccessHeaderURLRequestTest,
   auto& network_delegate = *context_builder->set_network_delegate(
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
           std::vector({false, true}),
-          cookie_util::StorageAccessStatus::kInactive,
           /*enable_storage_access_header=*/true));
   auto context = context_builder->Build();
   TestDelegate d;
@@ -13744,6 +13743,7 @@ TEST_F(StorageAccessHeaderURLRequestTest,
   std::unique_ptr<URLRequest> req(context->CreateRequest(
       http_test_server()->GetURL(kStorageAccessRetryPath), DEFAULT_PRIORITY, &d,
       TRAFFIC_ANNOTATION_FOR_TESTS));
+  req->set_storage_access_status(cookie_util::StorageAccessStatus::kInactive);
 
   req->Start();
   d.RunUntilComplete();
@@ -13772,7 +13772,6 @@ TEST_F(StorageAccessHeaderURLRequestTest,
   auto& network_delegate = *context_builder->set_network_delegate(
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
           std::vector({false, true}),
-          cookie_util::StorageAccessStatus::kInactive,
           /*enable_storage_access_header=*/true));
   auto context = context_builder->Build();
   TestDelegate d;
@@ -13781,6 +13780,7 @@ TEST_F(StorageAccessHeaderURLRequestTest,
   std::unique_ptr<URLRequest> req(context->CreateRequest(
       http_test_server()->GetURL(kStorageAccessRetryPath), DEFAULT_PRIORITY, &d,
       TRAFFIC_ANNOTATION_FOR_TESTS));
+  req->set_storage_access_status(cookie_util::StorageAccessStatus::kInactive);
 
   req->Start();
   d.RunUntilComplete();
@@ -13812,7 +13812,7 @@ TEST_F(StorageAccessHeaderURLRequestTest,
   auto context_builder = CreateTestURLRequestContextBuilder();
   auto& network_delegate = *context_builder->set_network_delegate(
       std::make_unique<PatternedExpectBypassCacheNetworkDelegate>(
-          std::vector({false}), cookie_util::StorageAccessStatus::kInactive,
+          std::vector({false}),
           /*enable_storage_access_header=*/false));
   auto context = context_builder->Build();
   TestDelegate d;

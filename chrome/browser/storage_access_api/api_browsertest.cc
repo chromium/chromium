@@ -3139,11 +3139,12 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
-                       RequestHeadersCookiesBlocked) {
-  BlockAllCookiesOnHost(kHostB);
-
+                       RequestHeadersCredentialsBlocked) {
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(GetURL(kHostB));
+  ASSERT_TRUE(content::ExecJs(
+      GetFrame(), content::JsReplace("fetch($1, {'credentials': 'omit'})",
+                                     GetURL(kHostB))));
   EXPECT_THAT(MostRecentRequestHeaders(),
               testing::Not(Contains(testing::Key(
                   net::HttpRequestHeaders::kSecFetchStorageAccess))));
