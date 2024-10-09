@@ -470,7 +470,7 @@ const char BaseSearchProvider::kDeletionUrlKey[] = "deletion_url";
 const char BaseSearchProvider::kTrue[] = "true";
 const char BaseSearchProvider::kFalse[] = "false";
 
-BaseSearchProvider::~BaseSearchProvider() {}
+BaseSearchProvider::~BaseSearchProvider() = default;
 
 // static
 std::u16string BaseSearchProvider::GetFillIntoEdit(

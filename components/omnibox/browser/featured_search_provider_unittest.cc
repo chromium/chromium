@@ -79,12 +79,14 @@ struct IphData {
 }  // namespace
 
 class FeaturedSearchProviderTest : public testing::Test {
- protected:
-  FeaturedSearchProviderTest() : provider_(nullptr) {}
-  ~FeaturedSearchProviderTest() override {}
+ public:
   FeaturedSearchProviderTest(const FeaturedSearchProviderTest&) = delete;
   FeaturedSearchProviderTest& operator=(const FeaturedSearchProviderTest&) =
       delete;
+
+ protected:
+  FeaturedSearchProviderTest() = default;
+  ~FeaturedSearchProviderTest() override = default;
 
   void SetUp() override {
     client_ = std::make_unique<FakeAutocompleteProviderClient>();

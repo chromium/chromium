@@ -256,9 +256,9 @@ void GetScoringSignalsForLogging(const OmniboxScoringSignals& scoring_signals,
 
 }  // namespace
 
-OmniboxMetricsProvider::OmniboxMetricsProvider() {}
+OmniboxMetricsProvider::OmniboxMetricsProvider() = default;
 
-OmniboxMetricsProvider::~OmniboxMetricsProvider() {}
+OmniboxMetricsProvider::~OmniboxMetricsProvider() = default;
 
 void OmniboxMetricsProvider::OnRecordingEnabled() {
   subscription_ = OmniboxEventGlobalTracker::GetInstance()->RegisterCallback(

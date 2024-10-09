@@ -139,7 +139,7 @@ ClipboardProvider::ClipboardProvider(AutocompleteProviderClient* client,
   AddListener(listener);
 }
 
-ClipboardProvider::~ClipboardProvider() {}
+ClipboardProvider::~ClipboardProvider() = default;
 
 void ClipboardProvider::Start(const AutocompleteInput& input,
                               bool minimal_changes) {

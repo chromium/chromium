@@ -81,7 +81,7 @@ DocumentSuggestionsService::DocumentSuggestionsService(
   DCHECK(url_loader_factory);
 }
 
-DocumentSuggestionsService::~DocumentSuggestionsService() {}
+DocumentSuggestionsService::~DocumentSuggestionsService() = default;
 
 void DocumentSuggestionsService::CreateDocumentSuggestionsRequest(
     const std::u16string& query,

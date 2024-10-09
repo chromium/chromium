@@ -174,7 +174,7 @@ LocalHistoryZeroSuggestProvider::LocalHistoryZeroSuggestProvider(
   AddListener(listener);
 }
 
-LocalHistoryZeroSuggestProvider::~LocalHistoryZeroSuggestProvider() {}
+LocalHistoryZeroSuggestProvider::~LocalHistoryZeroSuggestProvider() = default;
 
 void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
     const AutocompleteInput& input) {

@@ -162,7 +162,7 @@ class DocumentProviderTest : public testing::Test,
   raw_ptr<TemplateURL> default_template_url_;
 };
 
-DocumentProviderTest::DocumentProviderTest() {}
+DocumentProviderTest::DocumentProviderTest() = default;
 
 void DocumentProviderTest::SetUp() {
   client_ = std::make_unique<FakeAutocompleteProviderClient>();

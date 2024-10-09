@@ -20,7 +20,7 @@ TailoredWordBreakIterator::TailoredWordBreakIterator(std::u16string_view str)
       non_word_breaks_{u"_"},
       all_breaks_{word_breaks_ + non_word_breaks_} {}
 
-TailoredWordBreakIterator::~TailoredWordBreakIterator() {}
+TailoredWordBreakIterator::~TailoredWordBreakIterator() = default;
 
 bool TailoredWordBreakIterator::Advance() {
   if (HasSpecialWord() && AdvanceInSpecialWord()) {

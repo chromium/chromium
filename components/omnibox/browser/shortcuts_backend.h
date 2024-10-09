@@ -84,7 +84,7 @@ class ShortcutsBackend : public RefcountedKeyedService,
     virtual void OnShortcutsChanged() {}
 
    protected:
-    virtual ~ShortcutsBackendObserver() {}
+    virtual ~ShortcutsBackendObserver() = default;
   };
 
   // Asynchronously initializes the ShortcutsBackend, it is safe to call

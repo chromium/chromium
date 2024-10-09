@@ -52,7 +52,7 @@ const char16_t kSubpageThree[] = u"three";
 
 class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
  public:
-  FakeAutocompleteProviderClient() {}
+  FakeAutocompleteProviderClient() = default;
   FakeAutocompleteProviderClient(const FakeAutocompleteProviderClient&) =
       delete;
   FakeAutocompleteProviderClient& operator=(
@@ -92,16 +92,18 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
 }  // namespace
 
 class BuiltinProviderTest : public testing::Test {
+ public:
+  BuiltinProviderTest(const BuiltinProviderTest&) = delete;
+  BuiltinProviderTest& operator=(const BuiltinProviderTest&) = delete;
+
  protected:
   struct TestData {
     const std::u16string input;
     const std::vector<GURL> output;
   };
 
-  BuiltinProviderTest() : provider_(nullptr) {}
-  ~BuiltinProviderTest() override {}
-  BuiltinProviderTest(const BuiltinProviderTest&) = delete;
-  BuiltinProviderTest& operator=(const BuiltinProviderTest&) = delete;
+  BuiltinProviderTest() = default;
+  ~BuiltinProviderTest() override = default;
 
   void SetUp() override {
     client_ = std::make_unique<FakeAutocompleteProviderClient>();

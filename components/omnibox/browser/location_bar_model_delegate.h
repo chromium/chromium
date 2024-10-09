@@ -98,7 +98,7 @@ class LocationBarModelDelegate {
   virtual TemplateURLService* GetTemplateURLService();
 
  protected:
-  virtual ~LocationBarModelDelegate() {}
+  virtual ~LocationBarModelDelegate() = default;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_LOCATION_BAR_MODEL_DELEGATE_H_

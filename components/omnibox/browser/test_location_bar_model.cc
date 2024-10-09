@@ -18,7 +18,7 @@ TestLocationBarModel::TestLocationBarModel()
       should_display_url_(true) {
 }
 
-TestLocationBarModel::~TestLocationBarModel() {}
+TestLocationBarModel::~TestLocationBarModel() = default;
 
 std::u16string TestLocationBarModel::GetFormattedFullURL() const {
   if (!formatted_full_url_)

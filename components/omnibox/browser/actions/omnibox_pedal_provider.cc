@@ -68,7 +68,7 @@ OmniboxPedalProvider::OmniboxPedalProvider(
   });
 }
 
-OmniboxPedalProvider::~OmniboxPedalProvider() {}
+OmniboxPedalProvider::~OmniboxPedalProvider() = default;
 
 size_t OmniboxPedalProvider::EstimateMemoryUsage() const {
   size_t total = 0;

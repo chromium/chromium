@@ -96,7 +96,7 @@ class TestBaseSearchProvider : public BaseSearchProvider {
   void AddMatch(const AutocompleteMatch& match) { matches_.push_back(match); }
 
  protected:
-  ~TestBaseSearchProvider() override {}
+  ~TestBaseSearchProvider() override = default;
 };
 
 class BaseSearchProviderTestFixture {

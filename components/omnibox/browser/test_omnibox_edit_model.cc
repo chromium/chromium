@@ -16,7 +16,7 @@ TestOmniboxEditModel::TestOmniboxEditModel(
       popup_is_open_(false),
       pref_service_(pref_service) {}
 
-TestOmniboxEditModel::~TestOmniboxEditModel() {}
+TestOmniboxEditModel::~TestOmniboxEditModel() = default;
 
 bool TestOmniboxEditModel::PopupIsOpen() const {
   return popup_is_open_;

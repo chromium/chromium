@@ -19,6 +19,6 @@ void OmniboxEventGlobalTracker::OnURLOpened(OmniboxLog* log) {
   on_url_opened_callback_list_.Notify(log);
 }
 
-OmniboxEventGlobalTracker::OmniboxEventGlobalTracker() {}
+OmniboxEventGlobalTracker::OmniboxEventGlobalTracker() = default;
 
-OmniboxEventGlobalTracker::~OmniboxEventGlobalTracker() {}
+OmniboxEventGlobalTracker::~OmniboxEventGlobalTracker() = default;
