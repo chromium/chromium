@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/windows_services/service_program/scoped_mock_context.h"
+#include "chrome/windows_services/service_program/test_support/scoped_mock_context.h"
 
 #include <objbase.h>
 

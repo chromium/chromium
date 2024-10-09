@@ -16,8 +16,8 @@
 #include "chrome/elevation_service/elevation_service_idl.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/windows_services/service_program/process_wrl_module.h"
-#include "chrome/windows_services/service_program/scoped_mock_context.h"
 #include "chrome/windows_services/service_program/service.h"
+#include "chrome/windows_services/service_program/test_support/scoped_mock_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

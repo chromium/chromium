@@ -137,7 +137,7 @@ test("elevation_service_unittests") {
     "//chrome/install_static/test:test_support",
     "//chrome/windows_services/service_program",
     "//chrome/windows_services/service_program:lib",
-    "//chrome/windows_services/service_program:test_support",
+    "//chrome/windows_services/service_program/test_support",
     "//components/crx_file",
     "//testing/gtest",
   ]

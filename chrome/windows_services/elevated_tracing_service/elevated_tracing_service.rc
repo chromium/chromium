@@ -35,4 +35,6 @@ END
 
 #endif    // English (United States) resources
 
+1 TYPELIB "components/tracing/tracing_service_idl.tlb"
+
 /////////////////////////////////////////////////////////////////////////////
