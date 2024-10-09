@@ -294,6 +294,7 @@ test("extensions_unittests") {
     "//content/public/common",
     "//content/test:test_support",
     "//extensions/browser:unit_tests",
+    "//extensions/browser/api/messaging:unit_tests",
     "//extensions/common",
     "//extensions/common:unit_tests",
     "//extensions/renderer:unit_tests",

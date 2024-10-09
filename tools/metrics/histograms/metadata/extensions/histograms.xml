@@ -4498,6 +4498,66 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram
+    name="Extensions.ServiceWorkerBackground.MessageStagesCompletedForBackground"
+    enum="ExtensionBackgroundPageType" expires_after="2025-04-10">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Tracks the background type of an extension message's destination when it
+    completed the messaging process successfully.
+
+    It is emitted when
+    Extensions.ServiceWorkerBackground.Extensions.ServiceWorkerBackground.MessageStagesCompleted
+    is true.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.ServiceWorkerBackground.MessageStagesCompletedTime"
+    units="microseconds" expires_after="2025-04-10">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Tracks how long it took for an extension message to successfully complete
+    the messaging process.
+
+    It is emitted when
+    Extensions.ServiceWorkerBackground.Extensions.ServiceWorkerBackground.MessageStagesCompleted
+    is true.
+
+    This is only emitted for users with high resolution clocks.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.ServiceWorkerBackground.MessageStaleAtStage"
+    enum="MessageDeliveryStage" expires_after="2025-04-10">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Tracks the stage where the an extension message to the background context
+    became stale.
+
+    It is emitted when
+    Extensions.ServiceWorkerBackground.Extensions.ServiceWorkerBackground.MessageStagesCompleted
+    is false.
+  </summary>
+</histogram>
+
+<histogram
+    name="Extensions.ServiceWorkerBackground.MessageStaleForBackgroundType"
+    enum="ExtensionBackgroundPageType" expires_after="2025-04-10">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Tracks the background type of an extension message's destination when it
+    became stale.
+
+    It is emitted when
+    Extensions.ServiceWorkerBackground.Extensions.ServiceWorkerBackground.MessageStagesCompleted
+    is false.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.ServiceWorkerBackground.MultiWorkerVersionIdMatch"
     enum="Boolean" expires_after="2025-02-23">
   <owner>jlulejian@chromium.org</owner>
@@ -4674,6 +4734,25 @@ This is emitted for two scenarios when a worker may be unregistered:
 
     Note: this histogram was incremented May, 2024 since it additionally started
     emmitting when the extension is unloaded.
+  </summary>
+</histogram>
+
+<histogram
+    name="Extensions.ServiceWorkerBackground.ServiceWorkerBackground.MessageStagesCompleted"
+    enum="Boolean" expires_after="2025-04-10">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Tracks the overall success/failure of messages as they are tracked through
+    the messaging process.
+
+    It is emitted either:
+
+    *) when a message has progressed through entire expected process
+    successfully (true)
+
+    *) when a message has stayed in a given stage for ~30 seconds (false) and is
+    now considered &quot;stale&quot;
   </summary>
 </histogram>
 

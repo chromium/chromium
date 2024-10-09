@@ -3348,6 +3348,11 @@ Called by update_extension_permission.py.-->
   <int value="3" label="Manifest Version 3 extensions only"/>
 </enum>
 
+<enum name="MessageDeliveryStage">
+  <int value="0" label="Unknown Stage"/>
+  <int value="1" label="Browser received open channel request from renderer"/>
+</enum>
+
 <enum name="MV2ExtensionState">
   <int value="0" label="Unaffected"/>
   <int value="1" label="Soft-disabled by Chrome"/>
