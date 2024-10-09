@@ -4396,6 +4396,7 @@ crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/t
 crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-pseudo-elements-003.html [ Failure ]
 crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-pseudo-elements-004.html [ Failure ]
 crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-pseudo-elements-005.html [ Failure ]
+crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-pseudo-elements-006.html [ Failure ]
 
 # "in-multicol-child.html" is laid out in legacy layout due by "multicol" but
 # reference is laid out by LayoutNG.
