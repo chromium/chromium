@@ -27,7 +27,7 @@ constexpr char kObjGuid[] = "fake-obj-guid";
 // local_state.
 class AccountIdUtilTest : public testing::Test {
  public:
-  AccountIdUtilTest() {}
+  AccountIdUtilTest() = default;
   ~AccountIdUtilTest() override = default;
 
   AccountIdUtilTest(const AccountIdUtilTest& other) = delete;

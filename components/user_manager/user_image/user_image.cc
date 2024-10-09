@@ -89,7 +89,7 @@ UserImage::UserImage(const gfx::ImageSkia& image,
       image_format_(image_format) {
 }
 
-UserImage::~UserImage() {}
+UserImage::~UserImage() = default;
 
 void UserImage::MarkAsSafe() {
   is_safe_format_ = true;
