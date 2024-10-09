@@ -201,6 +201,7 @@ void GetDefault(std::vector<std::string>* app_ids) {
     web_app::kYoutubeTVAppId,
     web_app::kGoogleNewsAppId,
     extensions::kWebStoreAppId,
+    web_app::kGraduationAppId,
 
     arc::kLightRoomAppId,
     arc::kInfinitePainterAppId,
