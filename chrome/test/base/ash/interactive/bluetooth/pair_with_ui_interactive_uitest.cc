@@ -189,7 +189,7 @@ class PairWithUiInteractiveUiTest : public InteractiveAshTest {
   }
 
   ui::test::internal::InteractiveTestPrivate::MultiStep
-  PerformDeviceForgetSteps(const std::string device_name) {
+  PerformDeviceForgetSteps(const std::string& device_name) {
     return Steps(
         Log("Navigating to the Bluetooth device details page"),
 
@@ -222,7 +222,7 @@ class PairWithUiInteractiveUiTest : public InteractiveAshTest {
   }
 
   ui::test::internal::InteractiveTestPrivate::MultiStep
-  PerformCheckDeviceBattery(const std::string device_name) {
+  PerformCheckDeviceBattery(const std::string& device_name) {
     return Steps(
         Log("Navigating to the Bluetooth device details page"),
 
