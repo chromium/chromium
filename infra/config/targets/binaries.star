@@ -2125,6 +2125,28 @@ targets.binaries.script(
 )
 
 targets.binaries.script(
+    name = "webview_trichrome_64_32_cts_tests",
+    label = "//android_webview/test:webview_trichrome_64_32_cts_tests",
+    script = "//android_webview/tools/run_cts.py",
+    # All references have been moved to starlark
+    skip_usage_check = True,
+    args = [
+        "--skip-expected-failures",
+        "--additional-apk",
+        "apks/TrichromeLibrary6432.apk",
+        "--use-webview-provider",
+        "apks/TrichromeWebView6432.apk",
+        "--apk-under-test",
+        "apks/TrichromeWebView6432.apk",
+        "--use-apk-under-test-flags-file",
+        "-v",
+        # Required for stack.py to find build artifacts for symbolization.
+        "--output-directory",
+        ".",
+    ],
+)
+
+targets.binaries.script(
     name = "webview_trichrome_64_cts_tests",
     label = "//android_webview/test:webview_trichrome_64_cts_tests",
     script = "//android_webview/tools/run_cts.py",

@@ -2886,6 +2886,13 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
+    name = "webview_trichrome_64_32_cts_tests",
+    mixins = [
+        "webview_cts_archive",
+    ],
+)
+
+targets.tests.gtest_test(
     name = "webview_trichrome_64_cts_tests",
     mixins = [
         "webview_cts_archive",

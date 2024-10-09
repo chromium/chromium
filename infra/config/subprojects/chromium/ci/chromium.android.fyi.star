@@ -1241,6 +1241,7 @@ ci.thin_tester(
     targets = targets.bundle(
         targets = [
             "webview_trichrome_64_cts_gtests",
+            "webview_trichrome_64_32_cts_tests_suite",
         ],
         mixins = [
             "13-x64-emulator",

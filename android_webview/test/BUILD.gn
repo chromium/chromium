@@ -69,6 +69,18 @@ if (android_64bit_target_cpu) {
       "//third_party/chromium-variations",
     ]
   }
+
+  if (!skip_secondary_abi_for_cq) {
+    python_library("webview_trichrome_64_32_cts_tests") {
+      pydeps_file = "//android_webview/tools/run_cts.pydeps"
+      deps = [ "//android_webview:trichrome_webview_64_32_apk" ]
+      data_deps = [ "//build/android:test_runner_py" ]
+      data = [
+        "//android_webview/tools/cts_config/",
+        "//third_party/chromium-variations",
+      ]
+    }
+  }
 }
 
 script_test("system_webview_crx_smoke_tests") {

@@ -1423,6 +1423,21 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "webview_trichrome_64_32_cts_tests_suite",
+    targets = "webview_trichrome_64_32_cts_tests",
+    per_test_modifications = {
+        "webview_trichrome_64_32_cts_tests": targets.mixin(
+            args = [
+                "--store-tombstones",
+            ],
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
     name = "webview_trichrome_64_cts_gtests",
     targets = [
         "webview_trichrome_64_cts_tests_suite",
