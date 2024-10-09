@@ -48,7 +48,7 @@ AdminTemplateService::AdminTemplateService(
                           weak_ptr_factory_.GetWeakPtr()));
 }
 
-AdminTemplateService::~AdminTemplateService() {}
+AdminTemplateService::~AdminTemplateService() = default;
 
 void AdminTemplateService::UpdateModelWithPolicy() {
   if (!IsReady()) {
