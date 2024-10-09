@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation_traits.h"
 #include "base/strings/utf_string_conversions.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/test_web_app_url_loader.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
@@ -705,8 +707,14 @@ TEST_F(PublisherTest, WebAppsOnApps) {
   app_service_test_.SetUp(profile());
   auto app_id = CreateWebApp(kAppName);
 
+  InstallReason expected_install_reason = InstallReason::kSync;
+  if (base::FeatureList::IsEnabled(
+          features::kWebAppDontAddExistingAppsToSync)) {
+    expected_install_reason = InstallReason::kUser;
+  }
+
   VerifyApp(AppType::kWeb, app_id, kAppName, Readiness::kReady,
-            InstallReason::kSync, InstallSource::kBrowser, {}, base::Time(),
+            expected_install_reason, InstallSource::kBrowser, {}, base::Time(),
             base::Time(), apps::Permissions(),
             /*is_platform_app=*/false,
             /*recommendable=*/true,

@@ -104,6 +104,13 @@ bool IsSyncDataEqualIfApplied(const WebApp& expected_app,
   app_applied_sync_data_copy.SetCurrentOsIntegrationStates(
       proto::WebAppOsIntegrationState());
 
+  // The same as what applies to OS integration state also applies to the
+  // "user installed" installation source. So remove that as well.
+  // TODO(https://crbug.com/372062068): Figure out a better way to handle
+  // differences in installed state.
+  expected_app_copy.RemoveSource(WebAppManagement::kUserInstalled);
+  app_applied_sync_data_copy.RemoveSource(WebAppManagement::kUserInstalled);
+
   return expected_app_copy == app_applied_sync_data_copy;
 }
 
@@ -226,7 +233,7 @@ void RunCallbacksOnInstall(
     callback.Run(app->app_id(), code);
 }
 
-syncer::EntityChangeList ToEntityChageList(
+syncer::EntityChangeList ToEntityChangeList(
     const webapps::AppId& app_id,
     const sync_pb::WebAppSpecifics& sync_proto,
     WebAppSyncBridge& sync_bridge) {
@@ -1438,7 +1445,7 @@ TEST_F(WebAppSyncBridgeTest, SpecificsProtoWithNewFieldPreserved) {
 
   EXPECT_FALSE(sync_bridge().ApplyIncrementalSyncChanges(
       sync_bridge().CreateMetadataChangeList(),
-      ToEntityChageList(app_id, sync_proto, sync_bridge())));
+      ToEntityChangeList(app_id, sync_proto, sync_bridge())));
 
   // Await sync install.
   EXPECT_EQ(install_observer.Wait(), app_id);
@@ -1663,7 +1670,7 @@ TEST_P(WebAppSyncBridgeTest_UserDisplayModeSplit, SyncUpdateToUserDisplayMode) {
 
   EXPECT_FALSE(sync_bridge().ApplyIncrementalSyncChanges(
       sync_bridge().CreateMetadataChangeList(),
-      ToEntityChageList(app_id, sync_proto, sync_bridge())));
+      ToEntityChangeList(app_id, sync_proto, sync_bridge())));
 
   // Await sync install.
   if (!installed_before_sync()) {

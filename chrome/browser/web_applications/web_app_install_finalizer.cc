@@ -12,6 +12,7 @@
 #include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -56,6 +57,7 @@
 #include "chrome/browser/web_applications/web_app_translation_manager.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/sync/protocol/web_app_specifics.pb.h"
@@ -378,6 +380,12 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
   web_app->SetParentAppId(web_app_info.parent_app_id);
   web_app->SetAdditionalSearchTerms(web_app_info.additional_search_terms);
   web_app->AddSource(options.source);
+  if (base::FeatureList::IsEnabled(
+          features::kWebAppDontAddExistingAppsToSync) &&
+      options.source == WebAppManagement::kUserInstalled &&
+      IsSyncEnabledForApps(profile_)) {
+    web_app->AddSource(WebAppManagement::kSync);
+  }
   web_app->SetIsFromSyncAndPendingInstallation(false);
   web_app->SetLatestInstallSource(options.install_surface);
 

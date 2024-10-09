@@ -1774,6 +1774,13 @@ bool IsRegistryEqual(const Registry& registry,
     if (exclude_current_os_integration) {
       web_app.SetCurrentOsIntegrationStates(proto::WebAppOsIntegrationState());
       web_app2.SetCurrentOsIntegrationStates(proto::WebAppOsIntegrationState());
+      // Tests that want to ignore current os integration state usually also
+      // want to ignore the presence/absece of the "user installed" source, as
+      // that is something else that is not synced across.
+      // TODO(https://crbug.com/372062068): Figure out a better way to handle
+      // differences in installed state.
+      web_app.RemoveSource(WebAppManagement::kUserInstalled);
+      web_app2.RemoveSource(WebAppManagement::kUserInstalled);
     }
     if (web_app != web_app2) {
       LOG(ERROR) << "Web apps are not equal:\n" << web_app << "\n" << web_app2;

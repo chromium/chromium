@@ -27,6 +27,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/common/chrome_features.h"
 #include "components/services/app_service/public/cpp/icon_info.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -610,6 +611,25 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest, InvalidManifestId) {
   // Since this makes the entity not parse-able for an AppId, the entity cannot
   // be deleted yet from Sync.
   EXPECT_EQ(1, GetNumWebAppsInSync());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
+                       InstalledAppsDontEnterSync) {
+  ASSERT_TRUE(SetupClients());
+  EXPECT_EQ(0, GetNumWebAppsInSync());
+
+  const std::string app_id = test::InstallDummyWebApp(
+      GetProfile(0), "app name", GURL("https://example.com/"),
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
+  ASSERT_TRUE(SetupSync());
+  AwaitWebAppQuiescence();
+
+  if (base::FeatureList::IsEnabled(
+          features::kWebAppDontAddExistingAppsToSync)) {
+    EXPECT_EQ(0, GetNumWebAppsInSync());
+  } else {
+    EXPECT_EQ(1, GetNumWebAppsInSync());
+  }
 }
 
 }  // namespace
