@@ -947,6 +947,17 @@ const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
          std::size(kPriceTrackingPromoForceHideArm), nullptr},
 };
 
+const FeatureEntry::FeatureParam
+    kSendTabIOSPushNotificationsWithMagicStackCard[] = {
+        {send_tab_to_self::kSendTabIOSPushNotificationsWithMagicStackCardParam,
+         "true"}};
+const FeatureEntry::FeatureVariation kSendTabIOSPushNotificationsVariations[] =
+    {
+        {"With Magic Stack Card",
+         kSendTabIOSPushNotificationsWithMagicStackCard,
+         std::size(kSendTabIOSPushNotificationsWithMagicStackCard), nullptr},
+};
+
 // To add a new entry, add to the end of kFeatureEntries. There are four
 // distinct types of entries:
 // . ENABLE_DISABLE_VALUE: entry is either enabled, disabled, or uses the
@@ -1684,7 +1695,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSendTabToSelfIOSPushNotificationsName,
      flag_descriptions::kSendTabToSelfIOSPushNotificationsDescription,
      flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfIOSPushNotifications)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         send_tab_to_self::kSendTabToSelfIOSPushNotifications,
+         kSendTabIOSPushNotificationsVariations,
+         "SendTabToSelfIOSPushNotifications")},
     {"tab-resumption-2", flag_descriptions::kTabResumption2Name,
      flag_descriptions::kTabResumption2Description, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kTabResumption2)},

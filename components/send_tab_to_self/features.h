@@ -29,6 +29,16 @@ BASE_DECLARE_FEATURE(kSendTabToSelfV2);
 // notifications as a push notification to their target iOS device.
 BASE_DECLARE_FEATURE(kSendTabToSelfIOSPushNotifications);
 
+#if BUILDFLAG(IS_IOS)
+// Param for the iOS Magic Stack Card variant for the
+// kSendTabToSelfIOSPushNotifications feature.
+extern const char kSendTabIOSPushNotificationsWithMagicStackCardParam[];
+
+// Convenience method for determining when SendTabIOSPushNotifications is
+// enabled with Magic Stack Card.
+bool IsSendTabIOSPushNotificationsEnabledWithMagicStackCard();
+#endif  // BUILDFLAG(IS_IOS)
+
 }  // namespace send_tab_to_self
 
 #endif  // COMPONENTS_SEND_TAB_TO_SELF_FEATURES_H_
