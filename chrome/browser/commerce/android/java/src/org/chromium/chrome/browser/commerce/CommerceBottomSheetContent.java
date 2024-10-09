@@ -50,6 +50,11 @@ public class CommerceBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
+    public int getPeekHeight() {
+        return HeightMode.DISABLED;
+    }
+
+    @Override
     public float getHalfHeightRatio() {
         if (mExpectedContentItemCount > 2) {
             return 0.5f;
@@ -91,5 +96,11 @@ public class CommerceBottomSheetContent implements BottomSheetContent {
     @Override
     public int getSheetClosedAccessibilityStringId() {
         return R.string.commerce_bottom_sheet_content_closed;
+    }
+
+    @Override
+    public boolean hasCustomScrimLifecycle() {
+        // Don't show a scrim (gray overlay on page) when open the bottom sheet.
+        return true;
     }
 }
