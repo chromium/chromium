@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
+#include "services/webnn/dml/graph_impl_dml.h"
 
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/349653202): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
 #endif
-
-#include "services/webnn/dml/graph_impl_dml.h"
 
 #include <winerror.h>
 
@@ -25,6 +23,7 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -34,6 +33,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "base/types/fixed_array.h"
 #include "base/types/optional_ref.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "services/webnn/dml/adapter.h"
@@ -1272,11 +1272,11 @@ GraphFusionInfo GetGraphFusionInfo(const mojom::GraphInfoPtr& graph_info) {
   // many times each operand id is used as an output edge from one operation.
   // Notice that the operand id from renderer is increased from 1, so reserve
   // `operand count + 1` size for the vector.
-  std::vector<uint32_t> node_output_edge_counts(
+  base::FixedArray<uint32_t> node_output_edge_counts(
       graph_info->id_to_operand_map.size() + 1, 0);
 
   for (uint64_t graph_output_id : graph_info->output_operands) {
-    ++node_output_edge_counts.at(graph_output_id);
+    ++node_output_edge_counts[graph_output_id];
   }
 
   // Iterate from the end of operations instead from the beginning, so we
@@ -1291,7 +1291,7 @@ GraphFusionInfo GetGraphFusionInfo(const mojom::GraphInfoPtr& graph_info) {
         /*out_operation_connectivity*/ operation_connectivity);
 
     for (uint64_t input_id : operation_connectivity.input_ids) {
-      ++node_output_edge_counts.at(input_id);
+      ++node_output_edge_counts[input_id];
     }
 
     // Try to find standalone activations that can be fused into preceding
@@ -1591,16 +1591,13 @@ void CreateOperatorNodeForConcat(const IdToOperandMap& id_to_operand_map,
   const auto& input_operand_ids = concat->input_operand_ids;
   size_t input_num = input_operand_ids.size();
 
-  std::vector<const NodeOutput*> inputs;
-  std::vector<DML_TENSOR_DESC> input_dml_tensor_descs;
-  inputs.reserve(input_num);
-  input_dml_tensor_descs.reserve(input_num);
-
-  for (const auto& input_operand_id : input_operand_ids) {
+  base::FixedArray<const NodeOutput*> inputs(input_num);
+  base::FixedArray<DML_TENSOR_DESC> input_dml_tensor_descs(input_num);
+  for (size_t i = 0; i < input_num; ++i) {
     const NodeOutput* input =
-        GetNodeOutputForOperand(id_to_node_output_map, input_operand_id);
-    inputs.push_back(input);
-    input_dml_tensor_descs.push_back(input->GetTensorDesc().GetDMLTensorDesc());
+        GetNodeOutputForOperand(id_to_node_output_map, input_operand_ids[i]);
+    inputs[i] = input;
+    input_dml_tensor_descs[i] = input->GetTensorDesc().GetDMLTensorDesc();
   }
 
   uint64_t output_id = concat->output_operand_id;
@@ -2363,13 +2360,11 @@ void CreateOperatorNodeForSlice(const IdToOperandMap& id_to_operand_map,
   const auto& input_dimensions = input_tensor_desc.GetDimensions();
 
   // Start and size attributes must be unpacked from the mojo interface.
-  std::vector<uint32_t> starts;
-  std::vector<uint32_t> sizes;
-  starts.reserve(slice->starts_and_sizes.size());
-  sizes.reserve(slice->starts_and_sizes.size());
+  base::FixedArray<uint32_t> starts(slice->starts_and_sizes.size());
+  base::FixedArray<uint32_t> sizes(slice->starts_and_sizes.size());
   for (size_t i = 0; i < slice->starts_and_sizes.size(); ++i) {
-    starts.push_back(slice->starts_and_sizes[i]->start);
-    sizes.push_back(slice->starts_and_sizes[i]->size);
+    starts[i] = slice->starts_and_sizes[i]->start;
+    sizes[i] = slice->starts_and_sizes[i]->size;
   }
   CHECK_EQ(input_dimensions.size(), slice->starts_and_sizes.size());
 
@@ -2378,7 +2373,7 @@ void CreateOperatorNodeForSlice(const IdToOperandMap& id_to_operand_map,
 
   // WebNN doesn't support the strides parameter, but DML expects one. Create
   // an appropriately sized array of 1s to produce the expected operation.
-  std::vector<uint32_t> strides(input_dimensions.size(), 1u);
+  base::FixedArray<uint32_t> strides(input_dimensions.size(), 1u);
 
   DML_SLICE_OPERATOR_DESC slice_operator_desc{
       .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
@@ -2408,15 +2403,14 @@ void CreateOperatorNodeForSplit(const IdToOperandMap& id_to_operand_map,
   const auto& input_tensor_desc = input->GetTensorDesc();
   // Since TensorDesc stores dimensions and strides vectors, we need to keep
   // TensorDescs until create CreateOperatorNode is called.
-  std::vector<TensorDesc> output_tensor_desc;
-  output_tensor_desc.reserve(split->output_operand_ids.size());
-  std::vector<DML_TENSOR_DESC> output_tensor_desc_dml;
-  output_tensor_desc_dml.reserve(output_tensor_desc.size());
-  for (uint64_t output_id : split->output_operand_ids) {
-    output_tensor_desc.push_back(
-        CreateOutputTensorDesc(id_to_operand_map, output_id));
-    output_tensor_desc_dml.push_back(
-        output_tensor_desc.back().GetDMLTensorDesc());
+  base::FixedArray<TensorDesc> output_tensor_desc(
+      split->output_operand_ids.size());
+  base::FixedArray<DML_TENSOR_DESC> output_tensor_desc_dml(
+      split->output_operand_ids.size());
+  for (size_t i = 0; i < split->output_operand_ids.size(); ++i) {
+    output_tensor_desc[i] =
+        CreateOutputTensorDesc(id_to_operand_map, split->output_operand_ids[i]);
+    output_tensor_desc_dml[i] = output_tensor_desc[i].GetDMLTensorDesc();
   }
 
   auto output_count =
@@ -2660,7 +2654,7 @@ void CreateOperatorNodeForResample2d(
   // Use explicit scales if given, otherwise, compute scales from output
   // dimensions / input dimensions. Then expand scales to full scales (same size
   // as input rank using axes).
-  std::vector<float> full_scales(input_rank, 1);
+  base::FixedArray<float> full_scales(input_rank, 1);
   const auto& scales = resample2d->scales;
   const auto& axes = resample2d->axes;
   if (scales) {
@@ -3588,22 +3582,23 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGru(
           ? gru->activations.size() * 2
           : gru->activations.size();
 
-  std::vector<ActivationOperatorDesc> activation_operator_descs;
-  activation_operator_descs.reserve(number_of_activations);
-  for (mojom::RecurrentNetworkActivation activation : gru->activations) {
-    activation_operator_descs.push_back(
-        CreateOperatorDescForActivation(activation));
+  base::FixedArray<ActivationOperatorDesc> activation_operator_descs(
+      number_of_activations);
+  for (size_t i = 0; i < gru->activations.size(); ++i) {
+    activation_operator_descs[i] =
+        CreateOperatorDescForActivation(gru->activations[i]);
+    // For bidirectional, activations must be provided f() and g() for forward
+    // followed by f() and g() for backwards.
+    if (direction == mojom::RecurrentNetworkDirection::kBoth) {
+      activation_operator_descs[gru->activations.size() + i] =
+          activation_operator_descs[i];
+    }
   }
-  // For bidirectional, activations must be provided f() and g() for forward
-  // followed by f() and g() for backwards.
-  if (direction == mojom::RecurrentNetworkDirection::kBoth) {
-    base::ranges::copy(activation_operator_descs,
-                       std::back_inserter(activation_operator_descs));
-  }
-  std::vector<DML_OPERATOR_DESC> activation_dml_descs;
-  activation_dml_descs.reserve(activation_operator_descs.size());
+
+  base::FixedArray<DML_OPERATOR_DESC> activation_dml_descs(
+      activation_operator_descs.size());
   base::ranges::transform(
-      activation_operator_descs, std::back_inserter(activation_dml_descs),
+      activation_operator_descs, std::begin(activation_dml_descs),
       [](const auto& activation_operator_desc) {
         return activation_operator_desc.GetActivationDmlDesc();
       });
@@ -4128,7 +4123,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
         base::MakeCheckedNum(lstm.hidden_size) * 4;
     // Four times hidden size should have already been validated.
     CHECK(checked_four_times_hidden_size.IsValid());
-    const std::vector<uint32_t> bias_dimensions = {
+    const std::array<uint32_t, 4> bias_dimensions = {
         1, 1, direction_count, checked_four_times_hidden_size.ValueOrDie()};
 
     // The bias tensor shape is [1] or `[4 * hidden_size]` or [direction_count,
@@ -4246,23 +4241,24 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
           ? lstm.activations.size() * 2
           : lstm.activations.size();
 
-  std::vector<ActivationOperatorDesc> activation_operator_descs;
-  activation_operator_descs.reserve(number_of_activations);
-  for (mojom::RecurrentNetworkActivation activation : lstm.activations) {
-    activation_operator_descs.push_back(
-        CreateOperatorDescForActivation(activation));
-  }
-  // For bidirectional, activations must be provided f() and g() for forward
-  // followed by f() and g() for backwards.
-  if (direction == mojom::RecurrentNetworkDirection::kBoth) {
-    base::ranges::copy(activation_operator_descs,
-                       std::back_inserter(activation_operator_descs));
+  base::FixedArray<ActivationOperatorDesc> activation_operator_descs(
+      number_of_activations);
+  for (size_t i = 0; i < lstm.activations.size(); ++i) {
+    activation_operator_descs[i] =
+        CreateOperatorDescForActivation(lstm.activations[i]);
+
+    // For bidirectional, activations must be provided f() and g() for forward
+    // followed by f() and g() for backwards.
+    if (direction == mojom::RecurrentNetworkDirection::kBoth) {
+      activation_operator_descs[lstm.activations.size() + i] =
+          activation_operator_descs[i];
+    }
   }
 
-  std::vector<DML_OPERATOR_DESC> activation_dml_descs;
-  activation_dml_descs.reserve(activation_operator_descs.size());
+  base::FixedArray<DML_OPERATOR_DESC> activation_dml_descs(
+      activation_operator_descs.size());
   base::ranges::transform(
-      activation_operator_descs, std::back_inserter(activation_dml_descs),
+      activation_operator_descs, activation_dml_descs.begin(),
       [](const auto& activation_operator_desc) {
         return activation_operator_desc.GetActivationDmlDesc();
       });
@@ -5413,7 +5409,7 @@ HRESULT GraphImplDml::RecordGraphExecution(
                            .SizeInBytes = size_in_bytes};
   }
 
-  std::vector<DML_BINDING_DESC> input_buffer_binding_desc(
+  base::FixedArray<DML_BINDING_DESC> input_buffer_binding_desc(
       graph_buffer_binding_info.input_buffer_binding_count,
       DML_BINDING_DESC{.Type = DML_BINDING_TYPE_NONE, .Desc = nullptr});
 
@@ -5441,7 +5437,7 @@ HRESULT GraphImplDml::RecordGraphExecution(
   // Create the output buffer bindings for the graph execution.
   size_t output_buffer_binding_count =
       graph_buffer_binding_info.graph_output_name_to_index_map.size();
-  std::vector<DML_BINDING_DESC> output_buffer_binding_desc(
+  base::FixedArray<DML_BINDING_DESC> output_buffer_binding_desc(
       output_buffer_binding_count,
       DML_BINDING_DESC{.Type = DML_BINDING_TYPE_NONE, .Desc = nullptr});
   std::vector<DML_BUFFER_BINDING> output_buffer_binding;
@@ -6026,8 +6022,8 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
         break;
       }
       case Operation::Tag::kElu: {
-            CreateOperatorNodeForElu(id_to_operand_map, operation->get_elu(),
-                                     graph_builder, id_to_node_output_map);
+        CreateOperatorNodeForElu(id_to_operand_map, operation->get_elu(),
+                                 graph_builder, id_to_node_output_map);
         break;
       }
       case mojom::Operation::Tag::kElementWiseUnary: {
@@ -6205,10 +6201,10 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
         break;
       }
       case Operation::Tag::kRelu: {
-            CreateOperatorNodeForUnary<DML_ACTIVATION_RELU_OPERATOR_DESC,
-                                       DML_OPERATOR_ACTIVATION_RELU>(
-                id_to_operand_map, operation->get_relu(), graph_builder,
-                id_to_node_output_map);
+        CreateOperatorNodeForUnary<DML_ACTIVATION_RELU_OPERATOR_DESC,
+                                   DML_OPERATOR_ACTIVATION_RELU>(
+            id_to_operand_map, operation->get_relu(), graph_builder,
+            id_to_node_output_map);
         break;
       }
       case Operation::Tag::kResample2d: {
@@ -6230,10 +6226,10 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
         break;
       }
       case Operation::Tag::kSigmoid: {
-            CreateOperatorNodeForUnary<DML_ACTIVATION_SIGMOID_OPERATOR_DESC,
-                                       DML_OPERATOR_ACTIVATION_SIGMOID>(
-                id_to_operand_map, operation->get_sigmoid(), graph_builder,
-                id_to_node_output_map);
+        CreateOperatorNodeForUnary<DML_ACTIVATION_SIGMOID_OPERATOR_DESC,
+                                   DML_OPERATOR_ACTIVATION_SIGMOID>(
+            id_to_operand_map, operation->get_sigmoid(), graph_builder,
+            id_to_node_output_map);
 
         break;
       }
@@ -6255,10 +6251,10 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
         break;
       }
       case Operation::Tag::kSoftsign: {
-            CreateOperatorNodeForUnary<DML_ACTIVATION_SOFTSIGN_OPERATOR_DESC,
-                                       DML_OPERATOR_ACTIVATION_SOFTSIGN>(
-                id_to_operand_map, operation->get_softsign(), graph_builder,
-                id_to_node_output_map);
+        CreateOperatorNodeForUnary<DML_ACTIVATION_SOFTSIGN_OPERATOR_DESC,
+                                   DML_OPERATOR_ACTIVATION_SOFTSIGN>(
+            id_to_operand_map, operation->get_softsign(), graph_builder,
+            id_to_node_output_map);
 
         break;
       }
@@ -6268,10 +6264,10 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
         break;
       }
       case Operation::Tag::kTanh: {
-            CreateOperatorNodeForUnary<DML_ACTIVATION_TANH_OPERATOR_DESC,
-                                       DML_OPERATOR_ACTIVATION_TANH>(
-                id_to_operand_map, operation->get_tanh(), graph_builder,
-                id_to_node_output_map);
+        CreateOperatorNodeForUnary<DML_ACTIVATION_TANH_OPERATOR_DESC,
+                                   DML_OPERATOR_ACTIVATION_TANH>(
+            id_to_operand_map, operation->get_tanh(), graph_builder,
+            id_to_node_output_map);
         break;
       }
       case Operation::Tag::kTile: {
@@ -6631,7 +6627,7 @@ void GraphImplDml::DispatchImpl(
 
     // The graph input tensors must be bound to the binding table during the
     // graph execution.
-    std::vector<DML_BINDING_DESC> input_buffer_binding_desc(
+    base::FixedArray<DML_BINDING_DESC> input_buffer_binding_desc(
         graph_buffer_binding_info_.input_buffer_binding_count,
         DML_BINDING_DESC{.Type = DML_BINDING_TYPE_NONE, .Desc = nullptr});
 
@@ -6666,7 +6662,7 @@ void GraphImplDml::DispatchImpl(
 
     // The graph output tensors must be bound to the binding table during the
     // graph execution.
-    std::vector<DML_BINDING_DESC> output_buffer_binding_desc(
+    base::FixedArray<DML_BINDING_DESC> output_buffer_binding_desc(
         output_buffer_binding_count,
         DML_BINDING_DESC{.Type = DML_BINDING_TYPE_NONE, .Desc = nullptr});
 
