@@ -546,6 +546,11 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
     return base::FeatureList::IsEnabled(features::kLanguageDetectionAPI);
   }
 
+  if (trial_name == "AIPromptAPIForExtension") {
+    return base::FeatureList::IsEnabled(
+        features::kEnableAIPromptAPIForExtension);
+  }
+
   return true;
 }
 
