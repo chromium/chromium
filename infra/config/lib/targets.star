@@ -798,6 +798,7 @@ targets = struct(
     # Functions for declaring bundles
     bundle = _bundle,
     per_test_modification = _targets_common.per_test_modification,
+    replacements = _targets_common.replacements,
     builder_defaults = _targets_common.builder_defaults,
     settings = _targets_common.settings,
     settings_defaults = _targets_common.settings_defaults,

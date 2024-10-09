@@ -255,10 +255,58 @@ def _remove(*, reason):
         __targets_remove__ = reason,
     )
 
-def _per_test_modification(*, mixins = None, remove_mixins = None):
+def _per_test_modification(*, mixins = None, remove_mixins = None, replacements = None):
+    """Per test modifications.
+
+    Args:
+        mixins: Mixins to apply to the test. Can take the form of the name of
+            mixin declared elsewhere, an anonymous mixin declaration or a list
+            of such elements.
+        remove_mixins: A list of mixin names that will be ignored when expanding
+            the test further. This has no effect on mixins that are specified by
+            bundles contained by the bundle where this declaration appears as
+            those have already been applied.
+        replacements: A targets.replacements object providing argument overrides
+            for the test.
+
+    Returns:
+        An object that can be passed as a value in the per_test_modifications
+        dict of a bundle declaration in order to modify the test expansion. In
+        the case that only mixins is set, the mixins value can be set directly
+        as the value in the per_test_modifications dict, so this is only
+        necessary when using other parameters.
+    """
     return struct(
         mixins = args_lib.listify(mixins),
         remove_mixins = args_lib.listify(remove_mixins),
+        replacements = replacements or _replacements(),
+    )
+
+def _replacements(*, args = None, precommit_args = None, non_precommit_args = None):
+    """Replacements for arguments.
+
+    Args:
+        args: A dict mapping flag strings to the replacement value for the args
+            value of a test spec. A replacement value of None will remove the
+            flag but cannot be used to remove a flag where the value is
+            specified in a separate argument. A non-None replacement value will
+            override the value for the flag whether the value is specified as a
+            separate argument or as part of the flag argument (--flag=value).
+        precommit_args: A dict mapping flag strings to the replacement value for
+            the precommit_args value of a test spec. See args for behavior.
+        non_precommit_args: A dict mapping flag strings to the replacement value
+            for the non_precommit_args value of a test spec. See args for
+            behavior.
+
+    Returns:
+        An object that can be passed to the replacements argument of
+        targets.per_test_modifications to perform replacements on the args lists
+        in the test spec.
+    """
+    return struct(
+        args = args or {},
+        precommit_args = precommit_args or {},
+        non_precommit_args = non_precommit_args or {},
     )
 
 def _create_bundle(
@@ -298,17 +346,20 @@ def _create_bundle(
     for v in variants:
         graph.add_edge(bundle_key, _targets_nodes.VARIANT.key(v))
     for test_name, mods in per_test_modifications.items():
-        # Use bundle_key.id here instead of name because an inline bundle will
-        # have None for name
-        modification_key = _targets_nodes.PER_TEST_MODIFICATION.add(bundle_key.id, test_name)
-        graph.add_edge(bundle_key, modification_key)
-
         # mods may be a single unnamed mixin, which would appear here as a
         # keyset, which is also a struct
         if graph.is_keyset(mods) or type(mods) != type(struct()):
             mods = _per_test_modification(
                 mixins = mods,
             )
+
+        # Use bundle_key.id here instead of name because an inline bundle will
+        # have None for name
+        modification_key = _targets_nodes.PER_TEST_MODIFICATION.add(bundle_key.id, test_name, props = dict(
+            replacements = mods.replacements,
+        ))
+        graph.add_edge(bundle_key, modification_key)
+
         for m in mods.mixins:
             graph.add_edge(modification_key, _targets_nodes.MIXIN.key(m))
         for r in mods.remove_mixins:
@@ -615,6 +666,7 @@ common = struct(
     create_legacy_test = _create_legacy_test,
     create_test = _create_test,
     per_test_modification = _per_test_modification,
+    replacements = _replacements,
     create_bundle = _create_bundle,
 
     # Functions for defining target spec types
