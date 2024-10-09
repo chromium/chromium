@@ -331,7 +331,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
   GetBackingClientSharedImageForExternalWrite(
       gpu::SyncToken* internal_access_sync_token,
       gpu::SharedImageUsageSet required_shared_image_usages,
-      bool* was_copy_performed /*=nullptr*/) override {
+      bool* was_copy_performed) override {
     // This may cause the current resource and all cached resources to become
     // unusable. WillDrawInternal() will detect this case, drop all cached
     // resources, and copy the current resource to a newly-created resource
