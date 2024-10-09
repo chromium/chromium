@@ -11,6 +11,7 @@
 
 permission {
   background-color:#efefef;
+  border: solid 1px #767676;
   box-sizing: border-box !important;
   border-radius: 3px;
   color: #000000;
@@ -19,7 +20,6 @@ permission {
   font-weight: normal;
   font-style: normal;
   height: 1.2em;
-  outline: solid 1px #767676;
   width: 188px;
   word-spacing: normal;
  }

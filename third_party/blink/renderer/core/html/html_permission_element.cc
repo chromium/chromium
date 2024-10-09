@@ -18,9 +18,11 @@
 #include "third_party/blink/renderer/core/css/properties/longhand.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
+#include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
@@ -48,6 +50,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -199,12 +202,74 @@ float ContrastBetweenColorAndBackgroundColor(const ComputedStyle* style) {
           .toSkColor4f());
 }
 
+// Returns the minimum contrast between the background color and all four border
+// colors.
+float ContrastBetweenColorAndBorderColor(const ComputedStyle* style) {
+  auto background_color =
+      style->VisitedDependentColor(GetCSSPropertyBackgroundColor())
+          .toSkColor4f();
+  SkColor4f border_colors[] = {
+      style->VisitedDependentColor(GetCSSPropertyBorderBottomColor())
+          .toSkColor4f(),
+      style->VisitedDependentColor(GetCSSPropertyBorderTopColor())
+          .toSkColor4f(),
+      style->VisitedDependentColor(GetCSSPropertyBorderLeftColor())
+          .toSkColor4f(),
+      style->VisitedDependentColor(GetCSSPropertyBorderRightColor())
+          .toSkColor4f()};
+
+  float min_contrast = SK_FloatInfinity;
+  float contrast;
+  for (const auto& border_color : border_colors) {
+    contrast = color_utils::GetContrastRatio(border_color, background_color);
+    if (min_contrast > contrast) {
+      min_contrast = contrast;
+    }
+  }
+
+  return min_contrast;
+}
+
 // Returns true if the 'color' or 'background-color' properties have the
 // alphas set to anything else except fully opaque.
 bool AreColorsNonOpaque(const ComputedStyle* style) {
   return style->VisitedDependentColor(GetCSSPropertyColor()).Alpha() != 1. ||
          style->VisitedDependentColor(GetCSSPropertyBackgroundColor())
                  .Alpha() != 1;
+}
+
+// Returns true if any border color has an alpha that is not fully opaque.
+bool AreBorderColorsNonOpaque(const ComputedStyle* style) {
+  return style->VisitedDependentColor(GetCSSPropertyBorderBottomColor())
+                 .Alpha() != 1. ||
+         style->VisitedDependentColor(GetCSSPropertyBorderTopColor()).Alpha() !=
+             1. ||
+         style->VisitedDependentColor(GetCSSPropertyBorderLeftColor())
+                 .Alpha() != 1. ||
+         style->VisitedDependentColor(GetCSSPropertyBorderRightColor())
+                 .Alpha() != 1.;
+}
+
+bool IsBorderSufficientlyDistinctFromBackgroundColor(
+    const ComputedStyle* style) {
+  if (!style || !style->HasBorder()) {
+    return false;
+  }
+
+  if (style->BorderBottomWidth() == 0 || style->BorderTopWidth() == 0 ||
+      style->BorderLeftWidth() == 0 || style->BorderRightWidth() == 0) {
+    return false;
+  }
+
+  if (AreBorderColorsNonOpaque(style)) {
+    return false;
+  }
+
+  if (ContrastBetweenColorAndBorderColor(style) < kMinimumAllowedContrast) {
+    return false;
+  }
+
+  return true;
 }
 
 // Build an expression that is equivalent to `size * |factor|)`. To be used
@@ -645,21 +710,17 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
       /*lower_bound=*/std::nullopt,
       /*upper_bound=*/builder.FontSize() * kMaxLengthToFontSizeRatio,
       /*should_multiply_by_content_size=*/false));
+
   builder.SetMinWidth(
       AdjustedBoundedLength(builder.MinWidth(),
                             /*lower_bound=*/kMinLengthToFontSizeRatio,
                             /*upper_bound=*/kMaxLengthToFontSizeRatio,
                             /*should_multiply_by_content_size=*/true));
-  builder.SetMaxWidth(AdjustedBoundedLength(
-      builder.MaxWidth(),
-      /*lower_bound=*/std::nullopt, /*upper_bound=*/kMaxLengthToFontSizeRatio,
-      /*should_multiply_by_content_size=*/true));
 
-  // If width is set to auto and there is left padding specified, we will
-  // respect the padding (up to a certain maximum), otherwise the padding has no
-  // effect. We treat height and top/bottom padding similarly.
-  if (builder.Width().IsAuto() && builder.PaddingLeft().IsSpecified() &&
-      !builder.PaddingLeft().IsZero()) {
+  bool unlimited_width_allowed =
+      IsBorderSufficientlyDistinctFromBackgroundColor(builder.CloneStyle());
+
+  if (unlimited_width_allowed) {
     if (builder.PaddingRight().IsSpecified() &&
         !builder.PaddingRight().IsZero() &&
         builder.PaddingLeft() != builder.PaddingRight()) {
@@ -667,17 +728,37 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
           "The permission element does not support 'padding-right'. "
           "'padding-right' is always set to be identical to 'padding-left'.");
     }
-
-    builder.SetPaddingLeft(
-        AdjustedBoundedLength(builder.PaddingLeft(),
-                              /*lower_bound=*/std::nullopt,
-                              /*upper_bound=*/builder.FontSize() *
-                                  kMaxHorizontalPaddingToFontSizeRatio,
-                              /*should_multiply_by_content_size=*/false));
     builder.SetPaddingRight(builder.PaddingLeft());
   } else {
-    builder.ResetPaddingLeft();
-    builder.ResetPaddingRight();
+    builder.SetMaxWidth(AdjustedBoundedLength(
+        builder.MaxWidth(),
+        /*lower_bound=*/std::nullopt, /*upper_bound=*/kMaxLengthToFontSizeRatio,
+        /*should_multiply_by_content_size=*/true));
+
+    // If width is set to auto and there is left padding specified, we will
+    // respect the padding (up to a certain maximum), otherwise the padding has
+    // no effect. We treat height and top/bottom padding similarly.
+    if (builder.Width().IsAuto() && builder.PaddingLeft().IsSpecified() &&
+        !builder.PaddingLeft().IsZero()) {
+      if (builder.PaddingRight().IsSpecified() &&
+          !builder.PaddingRight().IsZero() &&
+          builder.PaddingLeft() != builder.PaddingRight()) {
+        AddConsoleError(
+            "The permission element does not support 'padding-right'. "
+            "'padding-right' is always set to be identical to 'padding-left'.");
+      }
+
+      builder.SetPaddingLeft(
+          AdjustedBoundedLength(builder.PaddingLeft(),
+                                /*lower_bound=*/std::nullopt,
+                                /*upper_bound=*/builder.FontSize() *
+                                    kMaxHorizontalPaddingToFontSizeRatio,
+                                /*should_multiply_by_content_size=*/false));
+      builder.SetPaddingRight(builder.PaddingLeft());
+    } else {
+      builder.ResetPaddingLeft();
+      builder.ResetPaddingRight();
+    }
   }
 
   if (builder.Height().IsAuto() && builder.PaddingTop().IsSpecified() &&
@@ -702,6 +783,8 @@ void HTMLPermissionElement::AdjustStyle(ComputedStyleBuilder& builder) {
 }
 
 void HTMLPermissionElement::DidRecalcStyle(const StyleRecalcChange change) {
+  HTMLElement::DidRecalcStyle(change);
+
   if (!IsStyleValid()) {
     DisableClickingIndefinitely(DisableReason::kInvalidStyle);
     return;
