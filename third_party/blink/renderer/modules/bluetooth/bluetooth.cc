@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth.h"
 
 #include <utility>
@@ -182,6 +177,7 @@ void CanonicalizeFilter(
               ? DOMArrayPiece(manufacturer_data->dataPrefix())
               : DOMArrayPiece();
 
+      base::span<const uint8_t> mask_bytes;
       if (manufacturer_data->hasMask()) {
         if (mask_buffer.IsDetached()) {
           exception_state.ThrowDOMException(
@@ -201,6 +197,7 @@ void CanonicalizeFilter(
               "'mask' size must be equal to 'dataPrefix' size.");
           return;
         }
+        mask_bytes = mask_buffer.ByteSpan();
       }
 
       Vector<mojom::blink::WebBluetoothDataFilterPtr> data_filters_vector;
@@ -219,10 +216,10 @@ void CanonicalizeFilter(
         }
 
         // Iterate by index here since we're iterating through two arrays.
-        for (wtf_size_t i = 0; i < data_prefix_buffer.ByteLength(); ++i) {
-          uint8_t data = data_prefix_buffer.Bytes()[i];
-          uint8_t mask =
-              manufacturer_data->hasMask() ? mask_buffer.Bytes()[i] : 0xff;
+        auto prefix_bytes = data_prefix_buffer.ByteSpan();
+        for (size_t i = 0; i < prefix_bytes.size(); ++i) {
+          const uint8_t data = prefix_bytes[i];
+          const uint8_t mask = mask_bytes.empty() ? 0xff : mask_bytes[i];
           data_filters_vector.push_back(
               mojom::blink::WebBluetoothDataFilter::New(data, mask));
         }
