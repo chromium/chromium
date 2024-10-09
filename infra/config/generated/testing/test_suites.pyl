@@ -5391,6 +5391,10 @@
           'integrity_high',
           'updater-default-pool',
         ],
+        'swarming': {
+          'shards': 2,
+          'hard_timeout': 7200,
+        },
       },
     },
 
@@ -5753,7 +5757,12 @@
         },
       },
       'updater_tests': {},
-      'updater_tests_system': {},
+      'updater_tests_system': {
+        'swarming': {
+          'shards': 2,
+          'hard_timeout': 7200,
+        },
+      },
       'zucchini_unittests': {},
     },
 

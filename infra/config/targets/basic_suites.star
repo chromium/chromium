@@ -4528,6 +4528,10 @@ targets.legacy_basic_suite(
                 "integrity_high",
                 "updater-default-pool",
             ],
+            swarming = targets.swarming(
+                shards = 2,
+                hard_timeout_sec = 7200,
+            ),
         ),
     },
 )
@@ -4828,7 +4832,12 @@ targets.legacy_basic_suite(
             ),
         ),
         "updater_tests": targets.legacy_test_config(),
-        "updater_tests_system": targets.legacy_test_config(),
+        "updater_tests_system": targets.legacy_test_config(
+            swarming = targets.swarming(
+                shards = 2,
+                hard_timeout_sec = 7200,
+            ),
+        ),
         "zucchini_unittests": targets.legacy_test_config(),
     },
 )

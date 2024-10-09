@@ -17511,6 +17511,7 @@
           "dimensions": {
             "os": "Windows-10-19045"
           },
+          "hard_timeout": 7200,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 2
         },
