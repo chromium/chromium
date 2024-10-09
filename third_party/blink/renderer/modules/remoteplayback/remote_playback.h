@@ -39,6 +39,7 @@ class AvailabilityCallbackWrapper;
 class HTMLMediaElement;
 class ScriptState;
 class V8RemotePlaybackAvailabilityCallback;
+class V8RemotePlaybackState;
 
 // Remote playback for HTMLMediaElements.
 // The new RemotePlayback pipeline is implemented on top of Presentation.
@@ -97,7 +98,7 @@ class MODULES_EXPORT RemotePlayback final
   // element (by picking a remote playback device from the list, for example).
   ScriptPromise<IDLUndefined> prompt(ScriptState*, ExceptionState&);
 
-  String state() const;
+  V8RemotePlaybackState state() const;
 
   // The implementation of prompt(). Used by the native remote playback button.
   void PromptInternal();

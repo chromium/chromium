@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_remote_playback_availability_callback.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_remote_playback_state.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -39,24 +40,18 @@ namespace blink {
 
 namespace {
 
-const AtomicString& RemotePlaybackStateToString(
+V8RemotePlaybackState::Enum RemotePlaybackStateToEnum(
     mojom::blink::PresentationConnectionState state) {
-  DEFINE_STATIC_LOCAL(const AtomicString, connecting_value, ("connecting"));
-  DEFINE_STATIC_LOCAL(const AtomicString, connected_value, ("connected"));
-  DEFINE_STATIC_LOCAL(const AtomicString, disconnected_value, ("disconnected"));
-
   switch (state) {
     case mojom::blink::PresentationConnectionState::CONNECTING:
-      return connecting_value;
+      return V8RemotePlaybackState::Enum::kConnecting;
     case mojom::blink::PresentationConnectionState::CONNECTED:
-      return connected_value;
+      return V8RemotePlaybackState::Enum::kConnected;
     case mojom::blink::PresentationConnectionState::CLOSED:
     case mojom::blink::PresentationConnectionState::TERMINATED:
-      return disconnected_value;
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return disconnected_value;
+      return V8RemotePlaybackState::Enum::kDisconnected;
   }
+  NOTREACHED();
 }
 
 void RunRemotePlaybackTask(
@@ -277,8 +272,8 @@ ScriptPromise<IDLUndefined> RemotePlayback::prompt(
   return promise;
 }
 
-String RemotePlayback::state() const {
-  return RemotePlaybackStateToString(state_);
+V8RemotePlaybackState RemotePlayback::state() const {
+  return V8RemotePlaybackState(RemotePlaybackStateToEnum(state_));
 }
 
 bool RemotePlayback::HasPendingActivity() const {
