@@ -60,11 +60,22 @@ inline int snprintf(char* buffer, size_t size, const char* format, ...) {
 }
 
 // BSD-style safe and consistent string copy functions.
+
+// Copies `src` to `dst`, truncating `dst` if it does not fit, and ensuring that
+// `dst` is NUL-terminated if it's not an empty span. Returns the length of
+// `src` in characters. If the return value is `>= dst.size()`, then the output
+// was truncated. NOTE: All sizes are in number of characters, NOT in bytes.
+BASE_EXPORT size_t strlcpy(span<char> dst, std::string_view src);
+BASE_EXPORT size_t u16cstrlcpy(span<char16_t> dst, std::u16string_view src);
+BASE_EXPORT size_t wcslcpy(span<wchar_t> dst, std::wstring_view src);
+
 // Copies |src| to |dst|, where |dst_size| is the total allocated size of |dst|.
 // Copies at most |dst_size|-1 characters, and always NULL terminates |dst|, as
 // long as |dst_size| is not 0.  Returns the length of |src| in characters.
 // If the return value is >= dst_size, then the output was truncated.
 // NOTE: All sizes are in number of characters, NOT in bytes.
+//
+// TODO: crbug.com/40284755 - Make these UNSAFE_BUFFER_USAGE.
 BASE_EXPORT size_t strlcpy(char* dst, const char* src, size_t dst_size);
 BASE_EXPORT size_t u16cstrlcpy(char16_t* dst,
                                const char16_t* src,

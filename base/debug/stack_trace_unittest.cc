@@ -243,12 +243,16 @@ TEST_F(StackTraceDeathTest, StackDumpSignalHandlerIsMallocFree) {
 namespace {
 
 std::string itoa_r_wrapper(intptr_t i, size_t sz, int base, size_t padding) {
-  char buffer[1024];
-  CHECK_LE(sz, sizeof(buffer));
-
-  char* result = internal::itoa_r(i, buffer, sz, base, padding);
-  EXPECT_TRUE(result);
-  return std::string(buffer);
+  std::array<char, 1024> buffer;
+  internal::itoa_r(i, base, padding, base::span(buffer).first(sz));
+  EXPECT_NE(buffer[0], '\0');
+  for (char c : buffer) {
+    if (c == '\0') {
+      return std::string(buffer.data());
+    }
+  }
+  ADD_FAILURE() << "buffer is not NUL terminated";
+  return std::string("");
 }
 
 }  // namespace
@@ -290,14 +294,21 @@ TEST_F(StackTraceTest, itoa_r) {
   EXPECT_EQ("deadbeef", itoa_r_wrapper(0xdeadbeef, 128, 16, 0));
 
   // Check that itoa_r respects passed buffer size limit.
-  char buffer[1024];
-  EXPECT_TRUE(internal::itoa_r(0xdeadbeef, buffer, 10, 16, 0));
-  EXPECT_TRUE(internal::itoa_r(0xdeadbeef, buffer, 9, 16, 0));
-  EXPECT_FALSE(internal::itoa_r(0xdeadbeef, buffer, 8, 16, 0));
-  EXPECT_FALSE(internal::itoa_r(0xdeadbeef, buffer, 7, 16, 0));
-  EXPECT_TRUE(internal::itoa_r(0xbeef, buffer, 5, 16, 4));
-  EXPECT_FALSE(internal::itoa_r(0xbeef, buffer, 5, 16, 5));
-  EXPECT_FALSE(internal::itoa_r(0xbeef, buffer, 5, 16, 6));
+  std::array<char, 1024> buffer;
+  internal::itoa_r(0xdeadbeef, 16, 0, base::span(buffer).first(10u));
+  EXPECT_NE(buffer[0u], '\0');
+  internal::itoa_r(0xdeadbeef, 16, 0, base::span(buffer).first(9u));
+  EXPECT_NE(buffer[0u], '\0');
+  internal::itoa_r(0xdeadbeef, 16, 0, base::span(buffer).first(8u));
+  EXPECT_EQ(buffer[0u], '\0');
+  internal::itoa_r(0xdeadbeef, 16, 0, base::span(buffer).first(7u));
+  EXPECT_EQ(buffer[0u], '\0');
+  internal::itoa_r(0xbeef, 16, 4, base::span(buffer).first(5u));
+  EXPECT_NE(buffer[0u], '\0');
+  internal::itoa_r(0xbeef, 16, 5, base::span(buffer).first(5u));
+  EXPECT_EQ(buffer[0u], '\0');
+  internal::itoa_r(0xbeef, 16, 6, base::span(buffer).first(5u));
+  EXPECT_EQ(buffer[0u], '\0');
 
   // Test padding.
   EXPECT_EQ("1", itoa_r_wrapper(1, 128, 10, 0));

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/debug/stack_trace.h"
 
 #include <errno.h>
@@ -24,6 +19,7 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <array>
 #include <map>
 #include <memory>
 #include <ostream>
@@ -31,6 +27,9 @@
 #include <tuple>
 #include <vector>
 
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
@@ -173,8 +172,7 @@ void OutputPointer(const void* pointer, BacktraceOutputHandler* handler) {
   // 16 hex digits + 1 for null-terminator.
   char buf[17] = { '\0' };
   handler->HandleOutput("0x");
-  internal::itoa_r(reinterpret_cast<intptr_t>(pointer),
-                   buf, sizeof(buf), 16, 12);
+  internal::itoa_r(reinterpret_cast<intptr_t>(pointer), 16, 12, buf);
   handler->HandleOutput(buf);
 }
 
@@ -184,7 +182,7 @@ void OutputValue(size_t value, BacktraceOutputHandler* handler) {
   // Hence, 30 digits should be more than enough to represent it in decimal
   // (including the null-terminator).
   char buf[30] = { '\0' };
-  internal::itoa_r(static_cast<intptr_t>(value), buf, sizeof(buf), 10, 1);
+  internal::itoa_r(static_cast<intptr_t>(value), 10, 1, buf);
   handler->HandleOutput(buf);
 }
 #endif  // defined(HAVE_DLADDR) || defined(USE_SYMBOLIZE)
@@ -202,10 +200,13 @@ void ProcessBacktrace(span<const void* const> traces,
   // NOTE: This code MUST be async-signal safe (it's used by in-process
   // stack dumping signal handler). NO malloc or stdio is allowed here.
 
+  // Don't exceed kMaxTraces or GetDwarfCompileUnitOffsets can go OOB.
+  traces = traces.first(std::min(traces.size(), StackTrace::kMaxTraces));
+
 #if defined(USE_SYMBOLIZE)
 #if BUILDFLAG(ENABLE_STACK_TRACE_LINE_NUMBERS)
-  uint64_t cu_offsets[StackTrace::kMaxTraces] = {};
-  GetDwarfCompileUnitOffsets(traces.data(), cu_offsets, traces.size());
+  std::array<uint64_t, StackTrace::kMaxTraces> cu_offsets = {};
+  GetDwarfCompileUnitOffsets(traces.data(), cu_offsets.data(), traces.size());
 #endif
 
   for (size_t i = 0; i < traces.size(); ++i) {
@@ -217,20 +218,25 @@ void ProcessBacktrace(span<const void* const> traces,
     OutputPointer(traces[i], handler);
     handler->HandleOutput(" ");
 
-    char buf[1024] = {'\0'};
+    std::array<char, 1024> buf = {};
 
-    // Subtract by one as return address of function may be in the next
-    // function when a function is annotated as noreturn.
-    const void* address = static_cast<const char*>(traces[i]) - 1;
-    if (google::Symbolize(const_cast<void*>(address), buf, sizeof(buf))) {
-      handler->HandleOutput(buf);
+    // Subtract by one as return address of function may be in the next function
+    // when a function is annotated as noreturn.
+    //
+    // SAFETY: The pointer here is not dereferenced, it is a program counter and
+    // it is used to look up an object file/function. It is treated as a
+    // `uintptr_t` inside Symbolize().
+    const void* address =
+        UNSAFE_BUFFERS(static_cast<const char*>(traces[i]) - 1);
+    if (google::Symbolize(const_cast<void*>(address), buf.data(), buf.size())) {
+      handler->HandleOutput(buf.data());
 #if BUILDFLAG(ENABLE_STACK_TRACE_LINE_NUMBERS)
       // Only output the source line number if the offset was found. Otherwise,
       // it takes far too long in debug mode when there are lots of symbols.
-      if (GetDwarfSourceLineNumber(address, cu_offsets[i], &buf[0],
-                                   sizeof(buf))) {
+      if (GetDwarfSourceLineNumber(address, cu_offsets[i], buf.data(),
+                                   buf.size())) {
         handler->HandleOutput(" [");
-        handler->HandleOutput(buf);
+        handler->HandleOutput(buf.data());
         handler->HandleOutput("]");
       }
 #endif
@@ -272,12 +278,16 @@ void ProcessBacktrace(span<const void* const> traces,
     }
     printed = true;
 #else   // defined(HAVE_DLADDR)
-    std::unique_ptr<char*, FreeDeleter> trace_symbols(
-        backtrace_symbols(const_cast<void* const*>(traces.data()),
-                          static_cast<int>(traces.size())));
-    if (trace_symbols.get()) {
-      for (size_t i = 0; i < traces.size(); ++i) {
-        std::string trace_symbol = trace_symbols.get()[i];
+    auto trace_symbols =
+        // SAFETY: backtrace_symbols returns an allocated array of the same size
+        // as the input array, which is traces.size().
+        UNSAFE_BUFFERS(base::HeapArray<char*, FreeDeleter>::FromOwningPointer(
+            backtrace_symbols(const_cast<void* const*>(traces.data()),
+                              static_cast<int>(traces.size())),
+            traces.size()));
+    if (!trace_symbols.empty()) {
+      for (char* s : trace_symbols) {
+        auto trace_symbol = std::string(s);
         DemangleSymbols(&trace_symbol);
         if (!prefix_string.empty())
           handler->HandleOutput(prefix_string.c_str());
@@ -372,7 +382,7 @@ void StackDumpSignalHandler(int signal, siginfo_t* info, void* void_context) {
 
   PrintToStderr("Received signal ");
   char buf[1024] = { 0 };
-  internal::itoa_r(signal, buf, sizeof(buf), 10, 0);
+  internal::itoa_r(signal, 10, 0, buf);
   PrintToStderr(buf);
   if (signal == SIGBUS) {
     if (info->si_code == BUS_ADRALN)
@@ -434,8 +444,7 @@ void StackDumpSignalHandler(int signal, siginfo_t* info, void* void_context) {
   }
   if (signal == SIGBUS || signal == SIGFPE ||
       signal == SIGILL || signal == SIGSEGV) {
-    internal::itoa_r(reinterpret_cast<intptr_t>(info->si_addr),
-                     buf, sizeof(buf), 16, 12);
+    internal::itoa_r(reinterpret_cast<intptr_t>(info->si_addr), 16, 12, buf);
     PrintToStderr(buf);
   }
   PrintToStderr("\n");
@@ -465,56 +474,39 @@ void StackDumpSignalHandler(int signal, siginfo_t* info, void* void_context) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #if ARCH_CPU_X86_FAMILY
   ucontext_t* context = reinterpret_cast<ucontext_t*>(void_context);
-  const struct {
+  auto gregs = base::span(context->uc_mcontext.gregs);
+
+  struct Register {
     const char* label;
     greg_t value;
-  } registers[] = {
-#if ARCH_CPU_32_BITS
-    { "  gs: ", context->uc_mcontext.gregs[REG_GS] },
-    { "  fs: ", context->uc_mcontext.gregs[REG_FS] },
-    { "  es: ", context->uc_mcontext.gregs[REG_ES] },
-    { "  ds: ", context->uc_mcontext.gregs[REG_DS] },
-    { " edi: ", context->uc_mcontext.gregs[REG_EDI] },
-    { " esi: ", context->uc_mcontext.gregs[REG_ESI] },
-    { " ebp: ", context->uc_mcontext.gregs[REG_EBP] },
-    { " esp: ", context->uc_mcontext.gregs[REG_ESP] },
-    { " ebx: ", context->uc_mcontext.gregs[REG_EBX] },
-    { " edx: ", context->uc_mcontext.gregs[REG_EDX] },
-    { " ecx: ", context->uc_mcontext.gregs[REG_ECX] },
-    { " eax: ", context->uc_mcontext.gregs[REG_EAX] },
-    { " trp: ", context->uc_mcontext.gregs[REG_TRAPNO] },
-    { " err: ", context->uc_mcontext.gregs[REG_ERR] },
-    { "  ip: ", context->uc_mcontext.gregs[REG_EIP] },
-    { "  cs: ", context->uc_mcontext.gregs[REG_CS] },
-    { " efl: ", context->uc_mcontext.gregs[REG_EFL] },
-    { " usp: ", context->uc_mcontext.gregs[REG_UESP] },
-    { "  ss: ", context->uc_mcontext.gregs[REG_SS] },
-#elif ARCH_CPU_64_BITS
-    { "  r8: ", context->uc_mcontext.gregs[REG_R8] },
-    { "  r9: ", context->uc_mcontext.gregs[REG_R9] },
-    { " r10: ", context->uc_mcontext.gregs[REG_R10] },
-    { " r11: ", context->uc_mcontext.gregs[REG_R11] },
-    { " r12: ", context->uc_mcontext.gregs[REG_R12] },
-    { " r13: ", context->uc_mcontext.gregs[REG_R13] },
-    { " r14: ", context->uc_mcontext.gregs[REG_R14] },
-    { " r15: ", context->uc_mcontext.gregs[REG_R15] },
-    { "  di: ", context->uc_mcontext.gregs[REG_RDI] },
-    { "  si: ", context->uc_mcontext.gregs[REG_RSI] },
-    { "  bp: ", context->uc_mcontext.gregs[REG_RBP] },
-    { "  bx: ", context->uc_mcontext.gregs[REG_RBX] },
-    { "  dx: ", context->uc_mcontext.gregs[REG_RDX] },
-    { "  ax: ", context->uc_mcontext.gregs[REG_RAX] },
-    { "  cx: ", context->uc_mcontext.gregs[REG_RCX] },
-    { "  sp: ", context->uc_mcontext.gregs[REG_RSP] },
-    { "  ip: ", context->uc_mcontext.gregs[REG_RIP] },
-    { " efl: ", context->uc_mcontext.gregs[REG_EFL] },
-    { " cgf: ", context->uc_mcontext.gregs[REG_CSGSFS] },
-    { " erf: ", context->uc_mcontext.gregs[REG_ERR] },
-    { " trp: ", context->uc_mcontext.gregs[REG_TRAPNO] },
-    { " msk: ", context->uc_mcontext.gregs[REG_OLDMASK] },
-    { " cr2: ", context->uc_mcontext.gregs[REG_CR2] },
-#endif  // ARCH_CPU_32_BITS
   };
+  const auto registers = std::to_array<Register>({
+#if ARCH_CPU_32_BITS
+      {"  gs: ", gregs[REG_GS]},     {"  fs: ", gregs[REG_FS]},
+      {"  es: ", gregs[REG_ES]},     {"  ds: ", gregs[REG_DS]},
+      {" edi: ", gregs[REG_EDI]},    {" esi: ", gregs[REG_ESI]},
+      {" ebp: ", gregs[REG_EBP]},    {" esp: ", gregs[REG_ESP]},
+      {" ebx: ", gregs[REG_EBX]},    {" edx: ", gregs[REG_EDX]},
+      {" ecx: ", gregs[REG_ECX]},    {" eax: ", gregs[REG_EAX]},
+      {" trp: ", gregs[REG_TRAPNO]}, {" err: ", gregs[REG_ERR]},
+      {"  ip: ", gregs[REG_EIP]},    {"  cs: ", gregs[REG_CS]},
+      {" efl: ", gregs[REG_EFL]},    {" usp: ", gregs[REG_UESP]},
+      {"  ss: ", gregs[REG_SS]},
+#elif ARCH_CPU_64_BITS
+      {"  r8: ", gregs[REG_R8]},     {"  r9: ", gregs[REG_R9]},
+      {" r10: ", gregs[REG_R10]},    {" r11: ", gregs[REG_R11]},
+      {" r12: ", gregs[REG_R12]},    {" r13: ", gregs[REG_R13]},
+      {" r14: ", gregs[REG_R14]},    {" r15: ", gregs[REG_R15]},
+      {"  di: ", gregs[REG_RDI]},    {"  si: ", gregs[REG_RSI]},
+      {"  bp: ", gregs[REG_RBP]},    {"  bx: ", gregs[REG_RBX]},
+      {"  dx: ", gregs[REG_RDX]},    {"  ax: ", gregs[REG_RAX]},
+      {"  cx: ", gregs[REG_RCX]},    {"  sp: ", gregs[REG_RSP]},
+      {"  ip: ", gregs[REG_RIP]},    {" efl: ", gregs[REG_EFL]},
+      {" cgf: ", gregs[REG_CSGSFS]}, {" erf: ", gregs[REG_ERR]},
+      {" trp: ", gregs[REG_TRAPNO]}, {" msk: ", gregs[REG_OLDMASK]},
+      {" cr2: ", gregs[REG_CR2]},
+#endif  // ARCH_CPU_32_BITS
+  });
 
 #if ARCH_CPU_32_BITS
   const int kRegisterPadding = 8;
@@ -524,8 +516,7 @@ void StackDumpSignalHandler(int signal, siginfo_t* info, void* void_context) {
 
   for (size_t i = 0; i < std::size(registers); i++) {
     PrintToStderr(registers[i].label);
-    internal::itoa_r(registers[i].value, buf, sizeof(buf),
-                     16, kRegisterPadding);
+    internal::itoa_r(registers[i].value, 16, kRegisterPadding, buf);
     PrintToStderr(buf);
 
     if ((i + 1) % 4 == 0)
@@ -731,15 +722,22 @@ class SandboxSymbolizeHelper {
   // address into |base_address|, copies the object file name into
   // |out_file_name|, and attempts to open the object file.  If the object
   // file is opened successfully, returns the file descriptor.  Otherwise,
-  // returns -1.  |out_file_name_size| is the size of the file name buffer
-  // (including the null terminator).
+  // returns -1.
   // IMPORTANT: This function must be async-signal-safe because it can be
   // called from a signal handler (symbolizing stack frames for a crash).
   static int OpenObjectFileContainingPc(uint64_t pc,
                                         uint64_t& start_address,
                                         uint64_t& base_address,
-                                        char* file_path,
+                                        char* file_path_ptr,
                                         size_t file_path_size) {
+    auto file_path =
+        // SAFETY: This function is given as a function pointer to
+        // google::InstallSymbolizeOpenObjectFileCallback. It provides
+        // `file_path_size` as the size of the string in `file_path_ptr`,
+        // including a NUL terminator. Via code inspection we can see that
+        // `file_path_ptr` can be null, in which case `file_path_size` is zero.
+        UNSAFE_BUFFERS(base::span(file_path_ptr, file_path_size));
+
     // This method can only be called after the singleton is instantiated.
     // This is ensured by the following facts:
     // * This is the only static method in this class, it is private, and
@@ -755,13 +753,13 @@ class SandboxSymbolizeHelper {
     // NOLINTNEXTLINE(modernize-loop-convert)
     for (size_t i = 0; i < instance->regions_.size(); ++i) {
       const MappedMemoryRegion& region = instance->regions_[i];
+      // We overwrite the file_path with the if `pc` is within a
+      // MemoryMappedRegion.
       if (region.start <= pc && pc < region.end) {
         start_address = region.start;
         base_address = region.base;
-        if (file_path && file_path_size > 0) {
-          strncpy(file_path, region.path.c_str(), file_path_size);
-          // Ensure null termination.
-          file_path[file_path_size - 1] = '\0';
+        if (!file_path.empty()) {
+          strlcpy(file_path, region.path);
         }
         return instance->GetFileDescriptor(region.path.c_str());
       }
@@ -1080,18 +1078,20 @@ void StackTrace::OutputToStreamWithPrefixImpl(
 namespace internal {
 
 // NOTE: code from sandbox/linux/seccomp-bpf/demo.cc.
-char* itoa_r(intptr_t i, char* buf, size_t sz, int base, size_t padding) {
+// Modified to use bounds-checked containers.
+void itoa_r(intptr_t i, int base, size_t padding, base::span<char> buf) {
   // Make sure we can write at least one NUL byte.
-  size_t n = 1;
-  if (n > sz)
-    return nullptr;
-
-  if (base < 2 || base > 16) {
-    buf[0] = '\000';
-    return nullptr;
+  if (buf.empty()) {
+    return;
   }
 
-  char* start = buf;
+  if (base < 2 || base > 16) {
+    buf[0u] = '\000';
+    return;
+  }
+
+  auto writer = base::SpanWriter(buf);
+  size_t start = 0u;
 
   uintptr_t j = static_cast<uintptr_t>(i);
 
@@ -1101,25 +1101,22 @@ char* itoa_r(intptr_t i, char* buf, size_t sz, int base, size_t padding) {
     j = static_cast<uintptr_t>(-(i + 1)) + 1;
 
     // Make sure we can write the '-' character.
-    if (++n > sz) {
-      buf[0] = '\000';
-      return nullptr;
+    if (!writer.Write('-')) {
+      buf[0u] = '\000';
+      return;
     }
-    *start++ = '-';
+    start += 1u;  // The number starts after the sign.
   }
 
   // Loop until we have converted the entire number. Output at least one
   // character (i.e. '0').
-  char* ptr = start;
+  constexpr std::string_view digits = "0123456789abcdef";
   do {
-    // Make sure there is still enough space left in our output buffer.
-    if (++n > sz) {
-      buf[0] = '\000';
-      return nullptr;
-    }
-
     // Output the next digit.
-    *ptr++ = "0123456789abcdef"[j % static_cast<uintptr_t>(base)];
+    if (!writer.Write(digits[j % static_cast<uintptr_t>(base)])) {
+      buf[0] = '\000';
+      return;
+    }
     j /= static_cast<uintptr_t>(base);
 
     if (padding > 0)
@@ -1127,18 +1124,16 @@ char* itoa_r(intptr_t i, char* buf, size_t sz, int base, size_t padding) {
   } while (j > 0 || padding > 0);
 
   // Terminate the output with a NUL character.
-  *ptr = '\000';
-
-  // Conversion to ASCII actually resulted in the digits being in reverse
-  // order. We can't easily generate them in forward order, as we can't tell
-  // the number of characters needed until we are done converting.
-  // So, now, we reverse the string (except for the possible "-" sign).
-  while (--ptr > start) {
-    char ch = *ptr;
-    *ptr = *start;
-    *start++ = ch;
+  if (!writer.Write('\000')) {
+    buf[0] = '\000';
+    return;
   }
-  return buf;
+
+  // Conversion to ASCII actually resulted in the digits being in reverse order.
+  // We can't easily generate them in forward order, as we can't tell the number
+  // of characters needed until we are done converting. So, now, we reverse the
+  // string (except for the possible "-" sign and the NUL terminator).
+  std::ranges::reverse(buf.first(writer.num_written() - 1u).subspan(start));
 }
 
 }  // namespace internal

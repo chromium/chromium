@@ -1380,6 +1380,11 @@ span(const T (&)[N]) -> span<const T, N>;
 // TODO(danakj): This could move to a ToString() member method if gtest printers
 // were hooked up to base::ToString().
 template <class T, size_t N>
+  requires requires {
+    { as_string_view(span<T, N>()) };
+  } || requires(T t) {
+    { base::ToString(t) };
+  }
 constexpr std::ostream& operator<<(std::ostream& l, span<T, N> r) {
   return internal::span_stream(l, r);
 }

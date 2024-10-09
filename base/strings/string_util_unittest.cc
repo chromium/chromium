@@ -1224,6 +1224,16 @@ TEST(StringUtilTest, LcpyTest) {
     EXPECT_EQ(0, memcmp(u16dst, u"abcdefg", sizeof(u16dst[0]) * 8));
     EXPECT_EQ(7U, wcslcpy(wdst, L"abcdefg", std::size(wdst)));
     EXPECT_EQ(0, memcmp(wdst, L"abcdefg", sizeof(wdst[0]) * 8));
+
+    EXPECT_EQ(7U, strlcpy(dst, "abcdefg"));
+    EXPECT_EQ(base::span(dst).first(8u),
+              base::span_with_nul_from_cstring("abcdefg"));
+    EXPECT_EQ(7U, u16cstrlcpy(u16dst, u"abcdefg"));
+    EXPECT_EQ(base::span(u16dst).first(8u),
+              base::span_with_nul_from_cstring(u"abcdefg"));
+    EXPECT_EQ(7U, wcslcpy(wdst, L"abcdefg"));
+    EXPECT_EQ(base::span(wdst).first(8u),
+              base::span_with_nul_from_cstring(L"abcdefg"));
   }
 
   // Test dst_size == 0, nothing should be written to |dst| and we should
@@ -1241,6 +1251,16 @@ TEST(StringUtilTest, LcpyTest) {
     EXPECT_EQ(7U, wcslcpy(wdst, L"abcdefg", 0));
     EXPECT_EQ(static_cast<wchar_t>(1), wdst[0]);
     EXPECT_EQ(static_cast<wchar_t>(2), wdst[1]);
+
+    EXPECT_EQ(7U, strlcpy(base::span(dst).first(0u), "abcdefg"));
+    EXPECT_EQ(1, dst[0]);
+    EXPECT_EQ(2, dst[1]);
+    EXPECT_EQ(7U, u16cstrlcpy(base::span(u16dst).first(0u), u"abcdefg"));
+    EXPECT_EQ(char16_t{1}, u16dst[0]);
+    EXPECT_EQ(char16_t{2}, u16dst[1]);
+    EXPECT_EQ(7U, wcslcpy(base::span(wdst).first(0u), L"abcdefg"));
+    EXPECT_EQ(static_cast<wchar_t>(1), wdst[0]);
+    EXPECT_EQ(static_cast<wchar_t>(2), wdst[1]);
   }
 
   // Test the case were we _just_ competely fit including the null.
@@ -1254,6 +1274,13 @@ TEST(StringUtilTest, LcpyTest) {
     EXPECT_EQ(0, memcmp(u16dst, u"abcdefg", sizeof(u16dst)));
     EXPECT_EQ(7U, wcslcpy(wdst, L"abcdefg", std::size(wdst)));
     EXPECT_EQ(0, memcmp(wdst, L"abcdefg", sizeof(wdst)));
+
+    EXPECT_EQ(7U, strlcpy(dst, "abcdefg"));
+    EXPECT_EQ(base::span(dst), base::span_with_nul_from_cstring("abcdefg"));
+    EXPECT_EQ(7U, u16cstrlcpy(u16dst, u"abcdefg"));
+    EXPECT_EQ(base::span(u16dst), base::span_with_nul_from_cstring(u"abcdefg"));
+    EXPECT_EQ(7U, wcslcpy(wdst, L"abcdefg"));
+    EXPECT_EQ(base::span(wdst), base::span_with_nul_from_cstring(L"abcdefg"));
   }
 
   // Test the case were we we are one smaller, so we can't fit the null.
@@ -1267,6 +1294,13 @@ TEST(StringUtilTest, LcpyTest) {
     EXPECT_EQ(0, memcmp(u16dst, u"abcdef", sizeof(u16dst[0]) * 7));
     EXPECT_EQ(7U, wcslcpy(wdst, L"abcdefg", std::size(wdst)));
     EXPECT_EQ(0, memcmp(wdst, L"abcdef", sizeof(wdst[0]) * 7));
+
+    EXPECT_EQ(7U, strlcpy(dst, "abcdefg"));
+    EXPECT_EQ(base::span(dst), base::span_with_nul_from_cstring("abcdef"));
+    EXPECT_EQ(7U, u16cstrlcpy(u16dst, u"abcdefg"));
+    EXPECT_EQ(base::span(u16dst), base::span_with_nul_from_cstring(u"abcdef"));
+    EXPECT_EQ(7U, wcslcpy(wdst, L"abcdefg"));
+    EXPECT_EQ(base::span(wdst), base::span_with_nul_from_cstring(L"abcdef"));
   }
 
   // Test the case were we are just too small.
@@ -1280,6 +1314,13 @@ TEST(StringUtilTest, LcpyTest) {
     EXPECT_EQ(0, memcmp(u16dst, u"ab", sizeof(u16dst)));
     EXPECT_EQ(7U, wcslcpy(wdst, L"abcdefg", std::size(wdst)));
     EXPECT_EQ(0, memcmp(wdst, L"ab", sizeof(wdst)));
+
+    EXPECT_EQ(7U, strlcpy(dst, "abcdefg"));
+    EXPECT_EQ(base::span(dst), base::span_with_nul_from_cstring("ab"));
+    EXPECT_EQ(7U, u16cstrlcpy(u16dst, u"abcdefg"));
+    EXPECT_EQ(base::span(u16dst), base::span_with_nul_from_cstring(u"ab"));
+    EXPECT_EQ(7U, wcslcpy(wdst, L"abcdefg"));
+    EXPECT_EQ(base::span(wdst), base::span_with_nul_from_cstring(L"ab"));
   }
 }
 
