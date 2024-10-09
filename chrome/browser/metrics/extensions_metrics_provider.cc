@@ -422,6 +422,19 @@ uint64_t ExtensionsMetricsProvider::GetClientID() const {
   return metrics::MetricsLog::Hash(metrics_state_manager_->client_id());
 }
 
+void ExtensionsMetricsProvider::ProvideCurrentSessionData(
+    metrics::ChromeUserMetricsExtension* uma_proto) {
+  Profile* profile = cached_profile_.GetMetricsProfile();
+  if (!profile) {
+    return;
+  }
+
+  bool in_extensions_developer_mode = extensions::GetCurrentDeveloperMode(
+      extensions::util::GetBrowserContextId(profile));
+  base::UmaHistogramBoolean("Extensions.DeveloperModeStatusEnabled",
+                            in_extensions_developer_mode);
+}
+
 void ExtensionsMetricsProvider::ProvideSystemProfileMetrics(
     metrics::SystemProfileProto* system_profile) {
   ProvideOffStoreMetric(system_profile);

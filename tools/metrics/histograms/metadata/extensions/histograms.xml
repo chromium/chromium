@@ -1358,6 +1358,16 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="Extensions.DeveloperModeStatusEnabled" enum="Boolean"
+    expires_after="2025-04-01">
+  <owner>richche@google.com</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    The current developer mode status of the main profile. Recorded for all UMA
+    logs at upload time by the ExtensionsMetricsProvider.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.DevTools.UserIsInDeveloperMode"
     enum="InDeveloperMode" expires_after="2023-07-02">
   <owner>ghazale@chromium.org</owner>
