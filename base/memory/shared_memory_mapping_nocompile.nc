@@ -40,6 +40,11 @@ static_assert(std::is_trivially_copyable_v<NotLockFreeAtomic>);
 static_assert(!NotLockFreeAtomic::is_always_lock_free);
 
 // Assert that common smart pointer types fail the is_trivially_copyable test.
+// This ensures that they can't be used in a shared memory mapping, without
+// needing explicit handling in SharedMemorySafetyChecker. If one of these
+// asserts fails because a type is now trivially copyable, replace it with a
+// SharedMemorySafetyChecker specialization in shared_memory_safety_checker.h
+// that disallows the type.
 static_assert(!std::is_trivially_copyable_v<std::unique_ptr<int>>);
 static_assert(!std::is_trivially_copyable_v<raw_ptr<int>>);
 static_assert(!std::is_trivially_copyable_v<raw_ref<int>>);
