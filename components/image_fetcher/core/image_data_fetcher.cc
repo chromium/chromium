@@ -38,7 +38,7 @@ struct ImageDataFetcher::ImageDataFetcherRequest {
                           std::unique_ptr<network::SimpleURLLoader> loader)
       : callback(std::move(callback)), loader(std::move(loader)) {}
 
-  ~ImageDataFetcherRequest() {}
+  ~ImageDataFetcherRequest() = default;
 
   // The callback to run after the image data was fetched. The callback will
   // be run even if the image data could not be fetched successfully.

@@ -35,7 +35,7 @@ constexpr char kNetworkRequestStatusCodes[] = "ImageFetcher.RequestStatusCode";
 
 class ImageFetcherMetricsReporterTest : public testing::Test {
  public:
-  ImageFetcherMetricsReporterTest() {}
+  ImageFetcherMetricsReporterTest() = default;
 
   ImageFetcherMetricsReporterTest(const ImageFetcherMetricsReporterTest&) =
       delete;
