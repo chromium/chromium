@@ -26,7 +26,6 @@ import org.chromium.components.browser_ui.site_settings.ForwardingManagedPrefere
 import org.chromium.components.browser_ui.site_settings.RWSCookieInfo;
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.util.AttrUtils;
 
@@ -104,12 +103,13 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
         mIsIncognito = params.isIncognito;
         mOnCookieSettingsLinkClicked = params.onCookieSettingsLinkClicked;
         Preference cookieSummary = findPreference(COOKIE_SUMMARY_PREFERENCE);
-        NoUnderlineClickableSpan linkSpan =
-                new NoUnderlineClickableSpan(
-                        getContext(),
-                        (view) -> {
-                            mOnCookieSettingsLinkClicked.run();
-                        });
+        ClickableSpan linkSpan =
+                new ClickableSpan() {
+                    @Override
+                    public void onClick(View view) {
+                        mOnCookieSettingsLinkClicked.run();
+                    }
+                };
         cookieSummary.setSummary(
                 SpanApplier.applySpans(
                         getString(R.string.page_info_cookies_description),
@@ -222,12 +222,13 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
 
         boolean permanentException = (expiration == 0);
 
-        NoUnderlineClickableSpan feedbackSpan =
-                new NoUnderlineClickableSpan(
-                        getContext(),
-                        (view) -> {
-                            mOnFeedbackClicked.onResult(this.getActivity());
-                        });
+        ClickableSpan feedbackSpan =
+                new ClickableSpan() {
+                    @Override
+                    public void onClick(View view) {
+                        mOnFeedbackClicked.onResult(getActivity());
+                    }
+                };
 
         if (protectionsOn) {
             mThirdPartyCookiesTitle.setTitle(
