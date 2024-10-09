@@ -165,7 +165,7 @@ class MockShellDelegate : public ash::TestShellDelegate {
 class DragDropOperationTestWithWebUITabStripTest
     : public DragDropOperationTest {
  public:
-  DragDropOperationTestWithWebUITabStripTest() {}
+  DragDropOperationTestWithWebUITabStripTest() = default;
 
   // DragDropOperationTest:
   void SetUp() override {

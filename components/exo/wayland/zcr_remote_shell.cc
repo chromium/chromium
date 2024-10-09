@@ -309,7 +309,7 @@ WaylandRemoteShellData::WaylandRemoteShellData(
     Display* display,
     OutputResourceProvider output_provider)
     : display(display), output_provider(output_provider) {}
-WaylandRemoteShellData::~WaylandRemoteShellData() {}
+WaylandRemoteShellData::~WaylandRemoteShellData() = default;
 
 void bind_remote_shell(wl_client* client,
                        void* data,

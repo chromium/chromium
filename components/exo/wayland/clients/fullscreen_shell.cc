@@ -34,9 +34,9 @@ void FrameCallback(void* data, wl_callback* callback, uint32_t time) {
 ////////////////////////////////////////////////////////////////////////////////
 // FullscreenClient, public:
 
-FullscreenClient::FullscreenClient() {}
+FullscreenClient::FullscreenClient() = default;
 
-FullscreenClient::~FullscreenClient() {}
+FullscreenClient::~FullscreenClient() = default;
 
 bool FullscreenClient::Run(const InitParams& params) {
   wl_callback_listener frame_listener = {FrameCallback};

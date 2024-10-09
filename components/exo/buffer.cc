@@ -569,7 +569,7 @@ Buffer::Buffer(gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle,
       y_invert_(y_invert),
       wait_for_release_delay_(base::Milliseconds(kWaitForReleaseDelayMs)) {}
 
-Buffer::~Buffer() {}
+Buffer::~Buffer() = default;
 
 // static
 std::unique_ptr<Buffer> Buffer::CreateBufferFromGMBHandle(

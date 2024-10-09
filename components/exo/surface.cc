@@ -193,7 +193,7 @@ class CustomWindowDelegate : public aura::WindowDelegate {
   CustomWindowDelegate(const CustomWindowDelegate&) = delete;
   CustomWindowDelegate& operator=(const CustomWindowDelegate&) = delete;
 
-  ~CustomWindowDelegate() override {}
+  ~CustomWindowDelegate() override = default;
 
   // Overridden from aura::WindowDelegate:
   gfx::Size GetMinimumSize() const override { return gfx::Size(); }
@@ -259,12 +259,12 @@ class CustomWindowDelegate : public aura::WindowDelegate {
 
 class CustomWindowTargeter : public aura::WindowTargeter {
  public:
-  CustomWindowTargeter() {}
+  CustomWindowTargeter() = default;
 
   CustomWindowTargeter(const CustomWindowTargeter&) = delete;
   CustomWindowTargeter& operator=(const CustomWindowTargeter&) = delete;
 
-  ~CustomWindowTargeter() override {}
+  ~CustomWindowTargeter() override = default;
 
   // Overridden from aura::WindowTargeter:
   bool EventLocationInsideBounds(aura::Window* window,

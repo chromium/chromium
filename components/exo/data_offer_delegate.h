@@ -34,7 +34,7 @@ class DataOfferDelegate {
   virtual SecurityDelegate* GetSecurityDelegate() const = 0;
 
  protected:
-  virtual ~DataOfferDelegate() {}
+  virtual ~DataOfferDelegate() = default;
 };
 
 }  // namespace exo

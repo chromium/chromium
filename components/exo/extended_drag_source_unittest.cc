@@ -99,7 +99,7 @@ class TestExtendedDragSourceDelegate : public ExtendedDragSource::Delegate {
 
 class ExtendedDragSourceTest : public test::ExoTestBase {
  public:
-  ExtendedDragSourceTest() {}
+  ExtendedDragSourceTest() = default;
   ExtendedDragSourceTest(const ExtendedDragSourceTest&) = delete;
   ExtendedDragSourceTest& operator=(const ExtendedDragSourceTest&) = delete;
   ~ExtendedDragSourceTest() override = default;

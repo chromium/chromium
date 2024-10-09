@@ -133,7 +133,7 @@ ExoTestHelper::ExoTestHelper() {
   ash::window_positioner::DisableAutoPositioning(true);
 }
 
-ExoTestHelper::~ExoTestHelper() {}
+ExoTestHelper::~ExoTestHelper() = default;
 
 // static
 std::unique_ptr<Buffer> ExoTestHelper::CreateBuffer(

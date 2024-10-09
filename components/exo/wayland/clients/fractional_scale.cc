@@ -20,7 +20,7 @@ namespace clients {
 
 class FractionalScaleClient : public ClientBase {
  public:
-  FractionalScaleClient() {}
+  FractionalScaleClient() = default;
 
   void Run(const ClientBase::InitParams& params);
 

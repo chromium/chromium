@@ -121,7 +121,7 @@ class ClientControlledStateDelegate
   ClientControlledStateDelegate& operator=(
       const ClientControlledStateDelegate&) = delete;
 
-  ~ClientControlledStateDelegate() override {}
+  ~ClientControlledStateDelegate() override = default;
 
   // Overridden from ash::ClientControlledState::Delegate:
   void HandleWindowStateRequest(ash::WindowState* window_state,
@@ -160,7 +160,7 @@ class ClientControlledWindowStateDelegate : public ash::WindowStateDelegate {
   ClientControlledWindowStateDelegate& operator=(
       const ClientControlledWindowStateDelegate&) = delete;
 
-  ~ClientControlledWindowStateDelegate() override {}
+  ~ClientControlledWindowStateDelegate() override = default;
 
   // Overridden from ash::WindowStateDelegate:
   bool ToggleFullscreen(ash::WindowState* window_state) override {

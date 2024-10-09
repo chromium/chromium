@@ -3754,7 +3754,7 @@ TEST_F(ShellSurfaceTest, OverlayCanResize) {
 
 class TestWindowObserver : public WMHelper::ExoWindowObserver {
  public:
-  TestWindowObserver() {}
+  TestWindowObserver() = default;
 
   TestWindowObserver(const TestWindowObserver&) = delete;
   TestWindowObserver& operator=(const TestWindowObserver&) = delete;

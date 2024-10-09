@@ -1388,7 +1388,7 @@ bool ClientBase::Init(const InitParams& params) {
 ////////////////////////////////////////////////////////////////////////////////
 // ClientBase, protected:
 
-ClientBase::ClientBase() {}
+ClientBase::ClientBase() = default;
 
 ClientBase::~ClientBase() {
   make_current_ = nullptr;

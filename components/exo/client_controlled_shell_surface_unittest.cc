@@ -119,7 +119,7 @@ class TestCanvas : public SkNoDrawCanvas {
   TestCanvas(const TestCanvas&) = delete;
   TestCanvas& operator=(const TestCanvas&) = delete;
 
-  ~TestCanvas() override {}
+  ~TestCanvas() override = default;
 
   void onDrawTextBlob(const SkTextBlob*,
                       SkScalar,

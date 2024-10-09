@@ -50,7 +50,7 @@ class DataSourceDelegate {
   virtual SecurityDelegate* GetSecurityDelegate() const = 0;
 
  protected:
-  virtual ~DataSourceDelegate() {}
+  virtual ~DataSourceDelegate() = default;
 };
 
 }  // namespace exo

@@ -14,7 +14,7 @@ class KeyboardDeviceConfigurationDelegate {
   virtual void OnKeyboardTypeChanged(bool is_physical) = 0;
 
  protected:
-  virtual ~KeyboardDeviceConfigurationDelegate() {}
+  virtual ~KeyboardDeviceConfigurationDelegate() = default;
 };
 
 }  // namespace exo

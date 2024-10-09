@@ -112,7 +112,7 @@ void DispatchGesture(ui::EventType gesture_type, gfx::Point location) {
 
 class MockPointerDelegate : public PointerDelegate {
  public:
-  MockPointerDelegate() {}
+  MockPointerDelegate() = default;
 
   // Overridden from PointerDelegate:
   MOCK_METHOD1(OnPointerDestroying, void(Pointer*));
@@ -166,7 +166,7 @@ class MockPointerConstraintDelegate : public PointerConstraintDelegate {
 
 class MockPointerStylusDelegate : public PointerStylusDelegate {
  public:
-  MockPointerStylusDelegate() {}
+  MockPointerStylusDelegate() = default;
 
   // Overridden from PointerStylusDelegate:
   MOCK_METHOD(void, OnPointerDestroying, (Pointer*));

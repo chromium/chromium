@@ -120,7 +120,7 @@ WaylandProtocolLogger::WaylandProtocolLogger(struct wl_display* display) {
 }
 
 // Complex class/struct needs an explicit out-of-line destructor.
-WaylandProtocolLogger::~WaylandProtocolLogger() {}
+WaylandProtocolLogger::~WaylandProtocolLogger() = default;
 
 // static
 std::vector<std::string> WaylandProtocolLogger::FormatMessage(

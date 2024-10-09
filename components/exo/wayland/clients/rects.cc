@@ -236,7 +236,7 @@ void InputTimestamp(void* data,
 
 class RectsClient : public ClientBase {
  public:
-  RectsClient() {}
+  RectsClient() = default;
 
   RectsClient(const RectsClient&) = delete;
   RectsClient& operator=(const RectsClient&) = delete;

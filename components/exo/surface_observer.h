@@ -67,7 +67,7 @@ class SurfaceObserver {
       OverlayPriority overlay_priority_hint) {}
 
  protected:
-  virtual ~SurfaceObserver() {}
+  virtual ~SurfaceObserver() = default;
 };
 
 }  // namespace exo

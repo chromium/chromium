@@ -39,7 +39,7 @@ class PointerStylusDelegate {
                              const gfx::Vector2dF& tilt) = 0;
 
  protected:
-  virtual ~PointerStylusDelegate() {}
+  virtual ~PointerStylusDelegate() = default;
 };
 
 }  // namespace exo
