@@ -222,6 +222,14 @@ suite('BasicPage', () => {
     await flushTasks();
     assertActiveSubpage(routes.SYNC.section);
 
+    // RouteState.SUBPAGE -> RoutState.SUBPAGE when they reside under different
+    // sections.
+    whenDone = eventToPromise('show-container', page);
+    Router.getInstance().navigateTo(routes.FONTS);
+    await whenDone;
+    await flushTasks();
+    assertActiveSubpage(routes.APPEARANCE.section);
+
     // RouteState.SUBPAGE -> RoutState.DIALOG when they reside under different
     // sections.
     whenDone = eventToPromise('show-container', page);
