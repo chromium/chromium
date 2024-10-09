@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/webui/boca_ui/mojom/boca.mojom-forward.h"
+#include "ash/webui/boca_ui/mojom/boca.mojom-shared.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom.h"
 #include "ash/webui/boca_ui/provider/classroom_page_handler_impl.h"
 #include "ash/webui/boca_ui/provider/tab_info_collector.h"
@@ -23,7 +24,7 @@ namespace ash::boca {
 
 class BocaUI;
 
-class BocaAppHandler : public mojom::PageHandler {
+class BocaAppHandler : public mojom::PageHandler, public mojom::Page {
  public:
   BocaAppHandler(
       BocaUI* boca_ui,
@@ -51,6 +52,11 @@ class BocaAppHandler : public mojom::PageHandler {
                           UpdateOnTaskConfigCallback callback) override;
   void UpdateCaptionConfig(mojom::CaptionConfigPtr config,
                            UpdateCaptionConfigCallback callback) override;
+
+  void OnStudentActivityUpdated(
+      std::vector<mojom::IdentifiedActivityPtr> activities) override {}
+
+  void OnSessionConfigUpdated(mojom::ConfigPtr config) override {}
 
   void NotifyLocalCaptionConfigUpdate(mojom::CaptionConfigPtr config);
 

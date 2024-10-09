@@ -180,4 +180,16 @@ export declare interface ClientApi {
    * @param delegate
    */
   setDelegate(delegate: ClientApiDelegate|null): void;
+
+  /**
+   * Notify the app that the session config has been updated. Null if the
+   * session has ended.
+   */
+  onSessionConfigUpdated(sessionConfig: SessionConfig|null): void;
+
+  /**
+   * Notify the app that the student activity has been updated.
+   * The entire payload would be sent.
+   */
+  onStudentActivityUpdated(studentActivity: IdentifiedActivity[]): void;
 }

@@ -4,9 +4,9 @@
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 
-import {ClientApi} from './boca_app.js';
+import {ClientApi, IdentifiedActivity} from './boca_app.js';
 import {ClientDelegateFactory} from './client_delegate.js';
-import {pageHandler} from './mojo_api_bootstrap.js';
+import {callbackRouter, pageHandler} from './mojo_api_bootstrap.js';
 
 /**
  * Returns the boca app if it can be found in the DOM.
@@ -21,6 +21,10 @@ function getApp(): ClientApi {
  */
 async function initializeApp(app: ClientApi) {
   app.setDelegate(new ClientDelegateFactory(pageHandler).getInstance());
+  callbackRouter.onStudentActivityUpdated.addListener(
+      (activities: IdentifiedActivity[]) => {
+        app.onStudentActivityUpdated(activities);
+      })
 }
 
 /**

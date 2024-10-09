@@ -90,6 +90,31 @@ struct OnTaskConfig {
   array<ControlledTab> tabs;
 };
 
+enum JoinMethod {
+  kRoster = 0,
+  kAccessCode = 1,
+};
+
+struct StudentActivity {
+  // If the current student status is active.
+  bool is_active;
+  // Current active tab title.
+  string? active_tab;
+  // If caption is enabled.
+  bool is_caption_enabled;
+  // If hand raised.
+  bool is_hand_raised;
+  // TODO(b/365191878): Remove this after refactoring existing schema to support
+  // multi-group.
+  JoinMethod join_method;
+};
+
+struct IdentifiedActivity{
+  // Same id as identity.
+  string id;
+  StudentActivity activity;
+};
+
 enum GetSessionError{
   kHTTPError,
   kEmpty,
@@ -133,7 +158,12 @@ interface PageHandler {
 };
 
 // Implemented by renderer process
-interface Page {};
+interface Page {
+  // Notifies when student activities updated.
+  OnStudentActivityUpdated(array<IdentifiedActivity> activities);
+  // Notifies when session config updated.
+  OnSessionConfigUpdated(Config config);
+};
 
 // Implemented in browser process to set up the communication between the Page
 // and PageHandler
