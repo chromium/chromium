@@ -111,25 +111,16 @@ class BrowserUserEducationInterface {
   virtual user_education::FeaturePromoHandle CloseFeaturePromoAndContinue(
       const base::Feature& iph_feature) = 0;
 
-  // Records that the user has performed an action that is relevant to a feature
-  // promo, but is not the "feature used" event. (For those, use
-  // `NotifyPromoFeatureUsed()` instead.)
-  //
-  // If you have access to a profile but not a browser window,
-  // `UserEducationService::MaybeNotifyPromoFeatureUsed()` does the same thing.
-  //
-  // Use this for events specified in
-  // `FeaturePromoSpecification::SetAdditionalConditions()`.
-  virtual void NotifyFeatureEngagementEvent(const char* event_name) = 0;
-
   // Records that the user has engaged the specific `feature` associated with an
-  // IPH promo or "New" Badge; this information is used to determine whether to
-  // show the promo or badge in the future.
-  //
-  // Prefer this to `NotifyFeatureEngagementEvent()` whenever possible; that
-  // method should only be used for additional events specified when calling
-  // `FeaturePromoSpecification::SetAdditionalConditions()`.
-  virtual void NotifyPromoFeatureUsed(const base::Feature& feature) = 0;
+  // IPH promo; this information is used to determine whether to show the promo
+  // in the future.
+  virtual void NotifyFeaturePromoFeatureUsed(const base::Feature& feature) = 0;
+
+  // Records that the user has performed an action that is specified in in a
+  // FeaturePromoSpecification by calling the `SetAdditionalConditions()`
+  // method; this information may be used to determine whether and when to show
+  // the promo in the future.
+  virtual void NotifyAdditionalConditionEvent(const char* event_name) = 0;
 
   // Returns whether a "New" Badge should be shown on the entry point for
   // `feature`; the badge must be registered for the feature in
@@ -137,6 +128,14 @@ class BrowserUserEducationInterface {
   // containing the badge will be shown to the user.
   virtual user_education::DisplayNewBadge MaybeShowNewBadgeFor(
       const base::Feature& feature) = 0;
+
+  // Records that the user has engaged the specific `feature` associated with a
+  // "New" Badge; this information is used to determine whether to show the
+  // badge in the future.
+  //
+  // You can also call `UserEducationService::MaybeNotifyNewBadgeFeatureUsed()`
+  // if you only have access ot a `BrowserContext` or `Profile`.
+  virtual void NotifyNewBadgeFeatureUsed(const base::Feature& feature) = 0;
 
   // Returns the interface associated with the browser containing `contents` in
   // its tabstrip, or null if `contents` is not a tab in any known browser.

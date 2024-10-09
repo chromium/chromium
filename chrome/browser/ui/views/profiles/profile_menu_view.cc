@@ -64,6 +64,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/signin/core/browser/signin_error_controller.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -198,8 +199,8 @@ void ProfileMenuView::BuildMenu() {
   }
 
   if (web_app::AppBrowserController::IsWebApp(browser())) {
-    browser()->window()->NotifyFeatureEngagementEvent(
-        "web_app_profile_menu_shown");
+    browser()->window()->NotifyFeaturePromoFeatureUsed(
+        feature_engagement::kIPHPasswordsWebAppProfileSwitchFeature);
   }
 }
 

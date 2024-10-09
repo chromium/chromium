@@ -193,7 +193,7 @@ void NotifyUserEducationAboutAcceptedSuggestion(content::WebContents* contents,
       if (auto* interface =
               BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
                   contents)) {
-        interface->NotifyPromoFeatureUsed(*suggestion.feature_for_iph);
+        interface->NotifyFeaturePromoFeatureUsed(*suggestion.feature_for_iph);
       }
 #endif
     }

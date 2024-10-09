@@ -639,10 +639,11 @@ class BrowserView : public BrowserWindow,
       user_education::EndFeaturePromoReason end_promo_reason) override;
   user_education::FeaturePromoHandle CloseFeaturePromoAndContinue(
       const base::Feature& iph_feature) override;
-  void NotifyFeatureEngagementEvent(const char* event_name) override;
-  void NotifyPromoFeatureUsed(const base::Feature& feature) override;
+  void NotifyFeaturePromoFeatureUsed(const base::Feature& feature) override;
+  void NotifyAdditionalConditionEvent(const char* event_name) override;
   user_education::DisplayNewBadge MaybeShowNewBadgeFor(
       const base::Feature& feature) override;
+  void NotifyNewBadgeFeatureUsed(const base::Feature& feature) override;
 
   void ShowIncognitoClearBrowsingDataDialog() override;
 

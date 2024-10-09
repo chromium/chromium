@@ -246,8 +246,6 @@ namespace {
 
 const char kOsOverrideForTabletSite[] = "Linux; Android 9; Chrome tablet";
 const char kChPlatformOverrideForTabletSite[] = "Android";
-const char kBackForwardNavigationIsTriggered[] =
-    "back_forward_navigation_is_triggered";
 
 // Creates a new tabbed browser window, with the same size, type and profile as
 // |original_browser|'s window, inserts |contents| into it, and shows it.
@@ -720,8 +718,6 @@ void GoBack(Browser* browser, WindowOpenDisposition disposition) {
     WebContents* new_tab = GetTabAndRevertIfNecessary(browser, disposition);
     new_tab->GetController().GoBack();
     MaybeShowFeatureBackNavigationMenuPromo(browser, new_tab);
-    browser->window()->NotifyFeatureEngagementEvent(
-        kBackForwardNavigationIsTriggered);
   }
 }
 
@@ -732,8 +728,6 @@ void GoBack(content::WebContents* web_contents) {
     web_contents->GetController().GoBack();
     Browser* browser = chrome::FindBrowserWithTab(web_contents);
     if (browser) {
-      browser->window()->NotifyFeatureEngagementEvent(
-          kBackForwardNavigationIsTriggered);
       MaybeShowFeatureBackNavigationMenuPromo(browser, web_contents);
     }
   }
@@ -756,8 +750,6 @@ void GoForward(Browser* browser, WindowOpenDisposition disposition) {
     GetTabAndRevertIfNecessary(browser, disposition)
         ->GetController()
         .GoForward();
-    browser->window()->NotifyFeatureEngagementEvent(
-        kBackForwardNavigationIsTriggered);
   }
 }
 
@@ -765,11 +757,6 @@ void GoForward(content::WebContents* web_contents) {
   base::RecordAction(UserMetricsAction("Forward"));
   if (CanGoForward(web_contents)) {
     web_contents->GetController().GoForward();
-    Browser* browser = chrome::FindBrowserWithTab(web_contents);
-    if (browser) {
-      browser->window()->NotifyFeatureEngagementEvent(
-          kBackForwardNavigationIsTriggered);
-    }
   }
 }
 
@@ -1614,7 +1601,7 @@ void StartTabOrganizationRequest(Browser* browser) {
       TabOrganizationServiceFactory::GetForProfile(browser->profile());
   UMA_HISTOGRAM_BOOLEAN("Tab.Organization.AllEntrypoints.Clicked", true);
   UMA_HISTOGRAM_BOOLEAN("Tab.Organization.ThreeDotMenu.Clicked", true);
-  browser->window()->NotifyPromoFeatureUsed(features::kTabOrganization);
+  browser->window()->NotifyNewBadgeFeatureUsed(features::kTabOrganization);
 
   service->RestartSessionAndShowUI(browser,
                                    TabOrganizationEntryPoint::kThreeDotMenu);
@@ -2305,7 +2292,7 @@ void ExecLensOverlay(Browser* browser) {
       LensOverlayController::GetController(web_contents);
   CHECK(controller);
   controller->ShowUI(lens::LensOverlayInvocationSource::kAppMenu);
-  browser->window()->NotifyPromoFeatureUsed(lens::features::kLensOverlay);
+  browser->window()->NotifyNewBadgeFeatureUsed(lens::features::kLensOverlay);
 }
 
 void ExecLensRegionSearch(Browser* browser) {

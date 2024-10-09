@@ -909,13 +909,13 @@ void SidePanelCoordinator::MaybeEndPinPromo(bool pinned) {
         user_education::EndFeaturePromoReason::kFeatureEngaged);
     if (pending_pin_promo_ ==
         &feature_engagement::kIPHSidePanelLensOverlayPinnableFeature) {
-      browser_view_->NotifyPromoFeatureUsed(
+      browser_view_->NotifyFeaturePromoFeatureUsed(
           feature_engagement::kIPHSidePanelLensOverlayPinnableFeature);
       browser_view_->MaybeShowFeaturePromo(
           feature_engagement::kIPHSidePanelLensOverlayPinnableFollowupFeature);
     } else {
-      browser_view_->NotifyFeatureEngagementEvent(
-          feature_engagement::events::kSidePanelPinned);
+      browser_view_->NotifyFeaturePromoFeatureUsed(
+          feature_engagement::kIPHSidePanelGenericPinnableFeature);
     }
   } else {
     browser_view_->EndFeaturePromo(

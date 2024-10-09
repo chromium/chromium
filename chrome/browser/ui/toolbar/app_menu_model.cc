@@ -98,6 +98,7 @@
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/url_utils.h"
 #include "components/feature_engagement/public/event_constants.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/password_manager/content/common/web_ui_constants.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -110,6 +111,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_education/common/feature_promo_controller.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/banners/install_banner_config.h"
@@ -1110,8 +1112,8 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_SHOW_BOOKMARK_SIDE_PANEL);
       // Close IPH for side panel menu, if shown.
-      browser()->window()->NotifyFeatureEngagementEvent(
-          feature_engagement::events::kSidePanelFromMenuShown);
+      browser()->window()->NotifyFeaturePromoFeatureUsed(
+          feature_engagement::kIPHPowerBookmarksSidePanelFeature);
       break;
     case IDC_SHOW_BOOKMARK_MANAGER:
       if (!uma_action_recorded_) {
@@ -1372,8 +1374,8 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_SHOW_READING_MODE_SIDE_PANEL);
       // Close IPH for side panel menu, if shown.
-      browser()->window()->NotifyFeatureEngagementEvent(
-          feature_engagement::events::kSidePanelFromMenuShown);
+      browser()->window()->NotifyFeaturePromoFeatureUsed(
+          feature_engagement::kIPHReadingModeSidePanelFeature);
       break;
     case IDC_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL:
       if (!uma_action_recorded_) {
@@ -1382,8 +1384,8 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
       }
       LogMenuAction(MENU_ACTION_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL);
       // Close IPH for side panel menu, if shown.
-      browser()->window()->NotifyFeatureEngagementEvent(
-          feature_engagement::events::kSidePanelFromMenuShown);
+      browser()->window()->NotifyFeaturePromoFeatureUsed(
+          feature_engagement::kIPHDesktopCustomizeChromeRefreshFeature);
       break;
     // Zoom menu
     case IDC_ZOOM_MINUS:

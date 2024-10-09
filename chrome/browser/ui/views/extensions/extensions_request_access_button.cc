@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_chip_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -160,9 +161,8 @@ bool ExtensionsRequestAccessButton::ShouldShowInkdropAfterIphInteraction() {
 
 void ExtensionsRequestAccessButton::OnButtonPressed() {
   // Record IPH usage.
-  browser_->window()->NotifyFeatureEngagementEvent(
-      feature_engagement::events::kExtensionsRequestAccessButtonClicked);
-
+  browser_->window()->NotifyFeaturePromoFeatureUsed(
+      feature_engagement::kIPHExtensionsRequestAccessButtonFeature);
   content::WebContents* web_contents = GetActiveWebContents();
   extensions::ExtensionActionRunner* action_runner =
       extensions::ExtensionActionRunner::GetForWebContents(web_contents);

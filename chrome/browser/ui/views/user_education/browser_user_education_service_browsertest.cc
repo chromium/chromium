@@ -659,7 +659,7 @@ IN_PROC_BROWSER_TEST_P(BrowserUserEducationServiceNewBadgeBrowserTest,
   // Ensure that the feature can be marked as used.
   for (int i = 0; i < user_education::features::GetNewBadgeFeatureUsedCount();
        i += 2) {
-    browser()->window()->NotifyPromoFeatureUsed(
+    browser()->window()->NotifyNewBadgeFeatureUsed(
         user_education::features::kNewBadgeTestFeature);
     UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
         browser()->profile(), user_education::features::kNewBadgeTestFeature);
@@ -684,7 +684,7 @@ IN_PROC_BROWSER_TEST_P(BrowserUserEducationServiceNewBadgeBrowserTest,
   // Ensure that the feature can be marked as used.
   for (int i = 0; i < user_education::features::GetNewBadgeFeatureUsedCount();
        i += 2) {
-    browser()->window()->NotifyPromoFeatureUsed(
+    browser()->window()->NotifyNewBadgeFeatureUsed(
         user_education::features::kNewBadgeTestFeature);
     UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
         browser()->profile(), user_education::features::kNewBadgeTestFeature);

@@ -56,8 +56,6 @@ using content::WebContents;
 const size_t BackForwardMenuModel::kMaxHistoryItems = 12;
 const size_t BackForwardMenuModel::kMaxChapterStops = 5;
 static const int kMaxBackForwardMenuWidth = 700;
-const char kBackNavigationMenuIsOpenedEvent[] =
-    "back_navigation_menu_is_opened";
 
 BackForwardMenuModel::BackForwardMenuModel(Browser* browser,
                                            ModelType model_type)
@@ -237,8 +235,8 @@ void BackForwardMenuModel::ActivatedAt(size_t index, int event_flags) {
 
 void BackForwardMenuModel::MenuWillShow() {
   base::RecordComputedAction(BuildActionName("Popup", std::nullopt));
-  browser_->window()->NotifyFeatureEngagementEvent(
-      kBackNavigationMenuIsOpenedEvent);
+  browser_->window()->NotifyFeaturePromoFeatureUsed(
+      feature_engagement::kIPHBackNavigationMenuFeature);
   requested_favicons_.clear();
   cancelable_task_tracker_.TryCancelAll();
   menu_model_open_timestamp_ = base::TimeTicks::Now();

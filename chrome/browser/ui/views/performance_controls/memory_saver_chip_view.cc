@@ -157,10 +157,6 @@ void MemorySaverChipView::OnExecuting(
   View* anchor_view = browser_view->toolbar_button_provider()->GetAnchorView(
       PageActionIconType::kMemorySaver);
   bubble_ = MemorySaverBubbleView::ShowBubble(browser_, anchor_view, this);
-  if (browser_->window() != nullptr) {
-    browser_->window()->NotifyFeatureEngagementEvent(
-        feature_engagement::events::kMemorySaverDialogShown);
-  }
 }
 
 const gfx::VectorIcon& MemorySaverChipView::GetVectorIcon() const {

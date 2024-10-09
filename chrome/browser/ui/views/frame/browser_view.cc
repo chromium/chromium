@@ -5383,24 +5383,18 @@ user_education::FeaturePromoHandle BrowserView::CloseFeaturePromoAndContinue(
   return feature_promo_controller_->CloseBubbleAndContinuePromo(iph_feature);
 }
 
-void BrowserView::NotifyFeatureEngagementEvent(const char* event_name) {
+void BrowserView::NotifyFeaturePromoFeatureUsed(const base::Feature& feature) {
+  if (feature_promo_controller_) {
+    feature_promo_controller_->NotifyFeatureUsedIfValid(feature);
+  }
+}
+
+void BrowserView::NotifyAdditionalConditionEvent(const char* event_name) {
   if (!feature_promo_controller_) {
     return;
   }
   feature_promo_controller_->feature_engagement_tracker()->NotifyEvent(
       event_name);
-}
-
-void BrowserView::NotifyPromoFeatureUsed(const base::Feature& feature) {
-  if (feature_promo_controller_) {
-    feature_promo_controller_->NotifyFeatureUsedIfValid(feature);
-  }
-  auto* const service =
-      UserEducationServiceFactory::GetForBrowserContext(GetProfile());
-  if (service && service->new_badge_registry() &&
-      service->new_badge_registry()->IsFeatureRegistered(feature)) {
-    service->new_badge_controller()->NotifyFeatureUsedIfValid(feature);
-  }
 }
 
 user_education::DisplayNewBadge BrowserView::MaybeShowNewBadgeFor(
@@ -5411,6 +5405,15 @@ user_education::DisplayNewBadge BrowserView::MaybeShowNewBadgeFor(
     return user_education::DisplayNewBadge();
   }
   return service->new_badge_controller()->MaybeShowNewBadge(feature);
+}
+
+void BrowserView::NotifyNewBadgeFeatureUsed(const base::Feature& feature) {
+  auto* const service =
+      UserEducationServiceFactory::GetForBrowserContext(GetProfile());
+  if (service && service->new_badge_registry() &&
+      service->new_badge_registry()->IsFeatureRegistered(feature)) {
+    service->new_badge_controller()->NotifyFeatureUsedIfValid(feature);
+  }
 }
 
 void BrowserView::ActivateAppModalDialog() const {

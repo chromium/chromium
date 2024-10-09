@@ -288,7 +288,7 @@ void CookieControlsIconView::ShowCookieControlsBubble() {
   browser_->window()->EndFeaturePromo(
       feature_engagement::kIPHCookieControlsFeature,
       user_education::EndFeaturePromoReason::kFeatureEngaged);
-  browser_->window()->NotifyPromoFeatureUsed(
+  browser_->window()->NotifyFeaturePromoFeatureUsed(
       feature_engagement::kIPHCookieControlsFeature);
   bubble_coordinator_->ShowBubble(
       delegate()->GetWebContentsForPageActionIconView(), controller_.get());

@@ -101,10 +101,8 @@ void BatterySaverButton::OnClicked() {
     BatterySaverBubbleView::CloseBubble(bubble_);
   } else {
     CloseFeaturePromo(user_education::EndFeaturePromoReason::kFeatureEngaged);
-
-    browser_view_->NotifyFeatureEngagementEvent(
-        feature_engagement::events::kBatterySaverDialogShown);
-
+    browser_view_->NotifyFeaturePromoFeatureUsed(
+        feature_engagement::kIPHBatterySaverModeFeature);
     bubble_ = BatterySaverBubbleView::CreateBubble(
         browser_view_->browser(), this, views::BubbleBorder::TOP_RIGHT, this);
   }

@@ -421,14 +421,19 @@ TestBrowserWindow::CloseFeaturePromoAndContinue(
              : user_education::FeaturePromoHandle();
 }
 
-void TestBrowserWindow::NotifyFeatureEngagementEvent(const char* event_name) {}
+void TestBrowserWindow::NotifyFeaturePromoFeatureUsed(
+    const base::Feature& feature) {}
 
-void TestBrowserWindow::NotifyPromoFeatureUsed(const base::Feature& feature) {}
+void TestBrowserWindow::NotifyAdditionalConditionEvent(const char* event_name) {
+}
 
 user_education::DisplayNewBadge TestBrowserWindow::MaybeShowNewBadgeFor(
     const base::Feature& new_badge_feature) {
   return user_education::DisplayNewBadge();
 }
+
+void TestBrowserWindow::NotifyNewBadgeFeatureUsed(
+    const base::Feature& feature) {}
 
 user_education::FeaturePromoController*
 TestBrowserWindow::SetFeaturePromoController(

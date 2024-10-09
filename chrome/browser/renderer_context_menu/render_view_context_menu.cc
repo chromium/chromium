@@ -4193,7 +4193,7 @@ void RenderViewContextMenu::ExecOpenCompose() {
         autofill::FieldGlobalId(
             frame_token, autofill::FieldRendererId(params_.field_renderer_id)),
         compose::ComposeManagerImpl::UiEntryPoint::kContextMenu);
-    GetBrowser()->window()->NotifyPromoFeatureUsed(
+    GetBrowser()->window()->NotifyNewBadgeFeatureUsed(
         compose::features::kEnableCompose);
   } else {
     compose::LogOpenComposeDialogResult(

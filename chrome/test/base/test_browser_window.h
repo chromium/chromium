@@ -264,10 +264,11 @@ class TestBrowserWindow : public BrowserWindow {
       user_education::EndFeaturePromoReason close_reason) override;
   user_education::FeaturePromoHandle CloseFeaturePromoAndContinue(
       const base::Feature& iph_feature) override;
-  void NotifyFeatureEngagementEvent(const char* event_name) override;
-  void NotifyPromoFeatureUsed(const base::Feature& feature) override;
+  void NotifyFeaturePromoFeatureUsed(const base::Feature& feature) override;
+  void NotifyAdditionalConditionEvent(const char* event_name) override;
   user_education::DisplayNewBadge MaybeShowNewBadgeFor(
       const base::Feature& new_badge_feature) override;
+  void NotifyNewBadgeFeatureUsed(const base::Feature& feature) override;
 
   // Sets the controller returned by GetFeaturePromoController().
   // Deletes the existing one, if any.
