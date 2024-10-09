@@ -16,6 +16,7 @@
 #include "chromeos/ash/components/boca/activity/active_tab_tracker.h"
 #include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
+#include "chromeos/ash/components/boca/on_task/on_task_extensions_manager.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
 #include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "url/gurl.h"
@@ -27,7 +28,8 @@ namespace ash::boca {
 class OnTaskSessionManager : public boca::BocaSessionManager::Observer {
  public:
   explicit OnTaskSessionManager(
-      std::unique_ptr<OnTaskSystemWebAppManager> system_web_app_manager);
+      std::unique_ptr<OnTaskSystemWebAppManager> system_web_app_manager,
+      std::unique_ptr<OnTaskExtensionsManager> extensions_manager);
   OnTaskSessionManager(const OnTaskSessionManager&) = delete;
   OnTaskSessionManager& operator=(const OnTaskSessionManager&) = delete;
   ~OnTaskSessionManager() override;
@@ -91,6 +93,8 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer {
   // map allows to remove all the related tabs to the url.
   base::flat_map<GURL, base::flat_set<SessionID>> provider_url_tab_ids_map_
       GUARDED_BY_CONTEXT(sequence_checker_);
+
+  const std::unique_ptr<OnTaskExtensionsManager> extensions_manager_;
 
   const std::unique_ptr<SystemWebAppLaunchHelper> system_web_app_launch_helper_;
 

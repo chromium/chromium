@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "chrome/browser/ash/boca/on_task/on_task_extensions_manager_impl.h"
 #include "chrome/browser/ash/boca/on_task/on_task_system_web_app_manager_impl.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
@@ -24,6 +25,7 @@
 #include "components/user_manager/user.h"
 
 namespace ash {
+
 BocaManager::BocaManager(
     std::unique_ptr<boca::OnTaskSessionManager> on_task_session_manager,
     std::unique_ptr<boca::SessionClientImpl> session_client_impl,
@@ -49,8 +51,11 @@ BocaManager::BocaManager(Profile* profile) {
   if (ash::boca_util::IsConsumer()) {
     auto on_task_system_web_app_manager =
         std::make_unique<boca::OnTaskSystemWebAppManagerImpl>(profile);
+    auto on_task_extensions_manager =
+        std::make_unique<boca::OnTaskExtensionsManagerImpl>(profile);
     on_task_session_manager_ = std::make_unique<boca::OnTaskSessionManager>(
-        std::move(on_task_system_web_app_manager));
+        std::move(on_task_system_web_app_manager),
+        std::move(on_task_extensions_manager));
   }
 
   gcm::GCMDriver* gcm_driver =
@@ -78,6 +83,7 @@ void BocaManager::Shutdown() {
     boca_session_manager_->RemoveObserver(&obs);
   }
 }
+
 void BocaManager::AddObservers() {
   boca_session_manager_->AddObserver(babel_orca_manager_.get());
   if (ash::boca_util::IsConsumer()) {

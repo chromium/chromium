@@ -9,6 +9,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
+#include "chromeos/ash/components/boca/on_task/on_task_extensions_manager.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
@@ -18,6 +19,7 @@
 #include "url/gurl.h"
 
 using ::testing::_;
+using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::Sequence;
 
@@ -63,23 +65,37 @@ class OnTaskSystemWebAppManagerMock : public OnTaskSystemWebAppManager {
               (override));
 };
 
+// Mock implementation of the `OnTaskExtensionsManager`.
+class OnTaskExtensionsManagerMock : public OnTaskExtensionsManager {
+ public:
+  OnTaskExtensionsManagerMock() = default;
+  ~OnTaskExtensionsManagerMock() override = default;
+
+  MOCK_METHOD(void, DisableExtensions, (), (override));
+
+  MOCK_METHOD(void, ReEnableExtensions, (), (override));
+};
+
 class OnTaskSessionManagerTest : public ::testing::Test {
  protected:
   void SetUp() override {
     auto system_web_app_manager =
-        std::make_unique<OnTaskSystemWebAppManagerMock>();
+        std::make_unique<NiceMock<OnTaskSystemWebAppManagerMock>>();
     system_web_app_manager_ptr_ = system_web_app_manager.get();
+    auto extensions_manager =
+        std::make_unique<NiceMock<OnTaskExtensionsManagerMock>>();
+    extensions_manager_ptr_ = extensions_manager.get();
     session_manager_ = std::make_unique<OnTaskSessionManager>(
-        std::move(system_web_app_manager));
+        std::move(system_web_app_manager), std::move(extensions_manager));
   }
 
   std::unique_ptr<OnTaskSessionManager> session_manager_;
-  raw_ptr<OnTaskSystemWebAppManagerMock> system_web_app_manager_ptr_;
+  raw_ptr<NiceMock<OnTaskSystemWebAppManagerMock>> system_web_app_manager_ptr_;
+  raw_ptr<NiceMock<OnTaskExtensionsManagerMock>> extensions_manager_ptr_;
 };
 
 TEST_F(OnTaskSessionManagerTest, ShouldLaunchBocaSWAOnSessionStart) {
   EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
-      .Times(2)
       .WillRepeatedly(Return(SessionID::InvalidValue()));
   EXPECT_CALL(*system_web_app_manager_ptr_, LaunchSystemWebAppAsync(_))
       .WillOnce([](base::OnceCallback<void(bool)> callback) {
@@ -99,12 +115,6 @@ TEST_F(OnTaskSessionManagerTest, ShouldPrepareBocaSWAOnLaunch) {
               SetWindowTrackerForSystemWebAppWindow(
                   kWindowId, session_manager_->active_tab_tracker()))
       .Times(1);
-  EXPECT_CALL(*system_web_app_manager_ptr_,
-              SetPinStateForSystemWebAppWindow(true, kWindowId))
-      .Times(1);
-  EXPECT_CALL(*system_web_app_manager_ptr_,
-              SetPinStateForSystemWebAppWindow(false, kWindowId))
-      .Times(1);
   EXPECT_CALL(*system_web_app_manager_ptr_, LaunchSystemWebAppAsync(_))
       .WillOnce([](base::OnceCallback<void(bool)> callback) {
         std::move(callback).Run(true);
@@ -119,10 +129,6 @@ TEST_F(OnTaskSessionManagerTest, ShouldClosePreExistingBocaSWAOnSessionStart) {
       .WillRepeatedly(Return(SessionID::InvalidValue()));
   EXPECT_CALL(*system_web_app_manager_ptr_, CloseSystemWebAppWindow(kWindowId))
       .Times(1);
-  EXPECT_CALL(*system_web_app_manager_ptr_, LaunchSystemWebAppAsync(_))
-      .WillOnce([](base::OnceCallback<void(bool)> callback) {
-        std::move(callback).Run(true);
-      });
   session_manager_->OnSessionStarted("test_session_id", ::boca::UserIdentity());
 }
 
@@ -132,6 +138,14 @@ TEST_F(OnTaskSessionManagerTest, ShouldCloseBocaSWAOnSessionEnd) {
       .WillOnce(Return(kWindowId));
   EXPECT_CALL(*system_web_app_manager_ptr_, CloseSystemWebAppWindow(kWindowId))
       .Times(1);
+  session_manager_->OnSessionEnded("test_session_id");
+}
+
+TEST_F(OnTaskSessionManagerTest, ShouldReEnableExtensionsOnSessionEnd) {
+  const SessionID kWindowId = SessionID::NewUnique();
+  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
+      .WillRepeatedly(Return(kWindowId));
+  EXPECT_CALL(*extensions_manager_ptr_, ReEnableExtensions).Times(1);
   session_manager_->OnSessionEnded("test_session_id");
 }
 
@@ -190,19 +204,6 @@ TEST_F(OnTaskSessionManagerTest,
         std::move(callback).Run(true);
       });
   EXPECT_CALL(*system_web_app_manager_ptr_,
-              SetWindowTrackerForSystemWebAppWindow(
-                  kWindowId, session_manager_->active_tab_tracker()))
-      .Times(1)
-      .InSequence(s);
-  EXPECT_CALL(*system_web_app_manager_ptr_,
-              SetPinStateForSystemWebAppWindow(true, kWindowId))
-      .Times(1)
-      .InSequence(s);
-  EXPECT_CALL(*system_web_app_manager_ptr_,
-              SetPinStateForSystemWebAppWindow(false, kWindowId))
-      .Times(1)
-      .InSequence(s);
-  EXPECT_CALL(*system_web_app_manager_ptr_,
               CreateBackgroundTabWithUrl(kWindowId, GURL(kTestUrl1), _))
       .InSequence(s)
       .WillOnce(Return(kTabId_1));
@@ -210,15 +211,6 @@ TEST_F(OnTaskSessionManagerTest,
               CreateBackgroundTabWithUrl(kWindowId, GURL(kTestUrl2), _))
       .InSequence(s)
       .WillOnce(Return(kTabId_2));
-  EXPECT_CALL(*system_web_app_manager_ptr_,
-              SetWindowTrackerForSystemWebAppWindow(
-                  kWindowId, session_manager_->active_tab_tracker()))
-      .Times(1)
-      .InSequence(s);
-  EXPECT_CALL(*system_web_app_manager_ptr_,
-              SetPinStateForSystemWebAppWindow(false, kWindowId))
-      .Times(1)
-      .InSequence(s);
 
   ::boca::Bundle bundle;
   bundle.add_content_configs()->set_url(kTestUrl1);
@@ -293,15 +285,11 @@ TEST_F(OnTaskSessionManagerTest, ShouldPinBocaSWAWhenLockedOnBundleUpdated) {
   const SessionID kWindowId = SessionID::NewUnique();
   const SessionID kTabId = SessionID::NewUnique();
   EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
-      .Times(2)
       .WillRepeatedly(Return(kWindowId));
   EXPECT_CALL(*system_web_app_manager_ptr_,
               CreateBackgroundTabWithUrl(kWindowId, GURL(kTestUrl1), _))
       .WillOnce(Return(kTabId));
-  EXPECT_CALL(*system_web_app_manager_ptr_,
-              SetWindowTrackerForSystemWebAppWindow(
-                  kWindowId, session_manager_->active_tab_tracker()))
-      .Times(1);
+  EXPECT_CALL(*extensions_manager_ptr_, DisableExtensions).Times(1);
   EXPECT_CALL(*system_web_app_manager_ptr_,
               SetPinStateForSystemWebAppWindow(true, kWindowId))
       .Times(1);
@@ -360,6 +348,54 @@ TEST_F(OnTaskSessionManagerTest, ShouldRemoveTabsWhenFewerTabsFoundInBundle) {
   ::boca::Bundle bundle_2;
   bundle_2.add_content_configs()->set_url(kTestUrl1);
   session_manager_->OnBundleUpdated(bundle_2);
+}
+
+TEST_F(OnTaskSessionManagerTest, ShouldDisableExtensionsOnLock) {
+  const SessionID kWindowId = SessionID::NewUnique();
+  const SessionID kTabId = SessionID::NewUnique();
+  Sequence s;
+  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
+      .WillRepeatedly(Return(kWindowId));
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              CreateBackgroundTabWithUrl(kWindowId, GURL(kTestUrl1), _))
+      .InSequence(s)
+      .WillOnce(Return(kTabId));
+  EXPECT_CALL(*extensions_manager_ptr_, DisableExtensions)
+      .Times(1)
+      .InSequence(s);
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              SetPinStateForSystemWebAppWindow(true, kWindowId))
+      .Times(1)
+      .InSequence(s);
+
+  ::boca::Bundle bundle;
+  bundle.add_content_configs()->set_url(kTestUrl1);
+  bundle.set_locked(true);
+  session_manager_->OnBundleUpdated(bundle);
+}
+
+TEST_F(OnTaskSessionManagerTest, ShouldReEnableExtensionsOnUnlock) {
+  const SessionID kWindowId = SessionID::NewUnique();
+  const SessionID kTabId = SessionID::NewUnique();
+  Sequence s;
+  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
+      .WillRepeatedly(Return(kWindowId));
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              CreateBackgroundTabWithUrl(kWindowId, GURL(kTestUrl1), _))
+      .InSequence(s)
+      .WillOnce(Return(kTabId));
+  EXPECT_CALL(*extensions_manager_ptr_, ReEnableExtensions)
+      .Times(1)
+      .InSequence(s);
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              SetPinStateForSystemWebAppWindow(false, kWindowId))
+      .Times(1)
+      .InSequence(s);
+
+  ::boca::Bundle bundle;
+  bundle.add_content_configs()->set_url(kTestUrl1);
+  bundle.set_locked(false);
+  session_manager_->OnBundleUpdated(bundle);
 }
 
 }  // namespace

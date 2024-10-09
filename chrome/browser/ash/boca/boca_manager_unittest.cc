@@ -130,7 +130,8 @@ class BocaManagerProducerTest : public BocaManagerTest {
                                           /*disabled_features=*/{});
 
     boca_manager_ = std::make_unique<BocaManager>(
-        std::make_unique<boca::OnTaskSessionManager>(nullptr),
+        std::make_unique<boca::OnTaskSessionManager>(
+            /*system_web_app_manager=*/nullptr, /*extensions_manager=*/nullptr),
         std::move(session_client_impl_), std::move(boca_session_manager_),
         std::move(invalidation_service_impl_),
         std::make_unique<boca::BabelOrcaManager>());
@@ -167,7 +168,8 @@ class BocaManagerConsumerTest : public BocaManagerTest {
                                 ash::features::kBocaConsumer},
         /* disabled_features */ {});
     boca_manager_ = std::make_unique<BocaManager>(
-        std::make_unique<boca::OnTaskSessionManager>(nullptr),
+        std::make_unique<boca::OnTaskSessionManager>(
+            /*system_web_app_manager=*/nullptr, /*extensions_manager=*/nullptr),
         std::move(session_client_impl_), std::move(boca_session_manager_),
         std::move(invalidation_service_impl_),
         std::make_unique<boca::BabelOrcaManager>());

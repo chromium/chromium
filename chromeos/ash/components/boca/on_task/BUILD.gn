@@ -10,6 +10,7 @@ static_library("on_task") {
   sources = [
     "on_task_blocklist.cc",
     "on_task_blocklist.h",
+    "on_task_extensions_manager.h",
     "on_task_prefs.cc",
     "on_task_prefs.h",
     "on_task_session_manager.cc",

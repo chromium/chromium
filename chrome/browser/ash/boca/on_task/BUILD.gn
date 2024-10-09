@@ -10,6 +10,8 @@ static_library("on_task") {
   sources = [
     "locked_session_window_tracker_factory.cc",
     "locked_session_window_tracker_factory.h",
+    "on_task_extensions_manager_impl.cc",
+    "on_task_extensions_manager_impl.h",
     "on_task_locked_session_navigation_throttle.cc",
     "on_task_locked_session_navigation_throttle.h",
     "on_task_locked_session_window_tracker.cc",
@@ -36,6 +38,7 @@ static_library("on_task") {
     # //chrome/browser/apps/almanac_api_client:almanac_api_client
     "//chrome/browser:primitives",
     "//chrome/browser/ash/boca",
+    "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/browser/ui/tabs:tab_strip",
@@ -46,8 +49,10 @@ static_library("on_task") {
     "//components/keyed_service/content",
     "//components/policy/core/browser",
     "//components/policy/core/common",
+    "//components/prefs",
     "//components/sessions",
     "//components/user_prefs",
+    "//extensions/browser",
     "//ui/base",
     "//ui/chromeos",
   ]
@@ -58,7 +63,10 @@ static_library("on_task") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "on_task_locked_session_window_tracker_unittest.cc" ]
+  sources = [
+    "on_task_extensions_manager_impl_unittest.cc",
+    "on_task_locked_session_window_tracker_unittest.cc",
+  ]
 
   deps = [
     ":on_task",
@@ -69,6 +77,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
     "//chromeos/ash/components/boca:activity",

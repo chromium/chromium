@@ -49,8 +49,10 @@ OnTaskBlocklist::RestrictionLevel NavigationTypeToRestrictionLevel(
 }  // namespace
 
 OnTaskSessionManager::OnTaskSessionManager(
-    std::unique_ptr<OnTaskSystemWebAppManager> system_web_app_manager)
+    std::unique_ptr<OnTaskSystemWebAppManager> system_web_app_manager,
+    std::unique_ptr<OnTaskExtensionsManager> extensions_manager)
     : system_web_app_manager_(std::move(system_web_app_manager)),
+      extensions_manager_(std::move(extensions_manager)),
       system_web_app_launch_helper_(
           std::make_unique<OnTaskSessionManager::SystemWebAppLaunchHelper>(
               system_web_app_manager_.get(),
@@ -85,6 +87,9 @@ void OnTaskSessionManager::OnSessionEnded(const std::string& session_id) {
     system_web_app_manager_->CloseSystemWebAppWindow(window_id);
   }
   provider_url_tab_ids_map_.clear();
+
+  // Re-enable extensions on session end to prepare for subsequent sessions.
+  extensions_manager_->ReEnableExtensions();
 }
 
 void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
@@ -130,9 +135,19 @@ void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
     // `OnTaskSystemWebAppManager`.
     system_web_app_manager_->SetWindowTrackerForSystemWebAppWindow(
         window_id, &active_tab_tracker_);
-    bool is_lock_mode = bundle.locked();
+
+    // Disable extensions in the context of OnTask before the window is locked.
+    // Re-enable them otherwise.
+    bool should_lock_window = bundle.locked();
+    if (should_lock_window) {
+      extensions_manager_->DisableExtensions();
+    } else {
+      extensions_manager_->ReEnableExtensions();
+    }
+
+    // Set appropriate pin state on the active window.
     system_web_app_manager_->SetPinStateForSystemWebAppWindow(
-        /*pinned=*/is_lock_mode, window_id);
+        /*pinned=*/should_lock_window, window_id);
   }
 }
 
@@ -207,8 +222,7 @@ void OnTaskSessionManager::SystemWebAppLaunchHelper::OnBocaSWALaunched(
     return;
   }
 
-  // Facilitate seamless transition between bundle modes by pre-configuring
-  // the Boca SWA.
+  // Set up window tracker for the newly launched Boca SWA.
   if (const SessionID window_id =
           system_web_app_manager_->GetActiveSystemWebAppWindowID();
       window_id.is_valid()) {
@@ -216,10 +230,6 @@ void OnTaskSessionManager::SystemWebAppLaunchHelper::OnBocaSWALaunched(
     // `OnTaskSystemWebAppManager`.
     system_web_app_manager_->SetWindowTrackerForSystemWebAppWindow(
         window_id, active_tab_tracker_);
-    system_web_app_manager_->SetPinStateForSystemWebAppWindow(
-        /*pinned=*/true, window_id);
-    system_web_app_manager_->SetPinStateForSystemWebAppWindow(
-        /*pinned=*/false, window_id);
   }
 }
 

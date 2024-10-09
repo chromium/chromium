@@ -31,6 +31,7 @@ static_library("boca") {
     "//components/gcm_driver",
     "//components/signin/public/identity_manager",
     "//components/user_manager",
+    "//extensions/browser",
     "//services/network/public/cpp",
   ]
 }
