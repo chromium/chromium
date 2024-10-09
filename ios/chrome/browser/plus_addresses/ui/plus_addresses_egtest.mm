@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/plus_addresses/features.h"
+#import "components/plus_addresses/grit/plus_addresses_strings.h"
 #import "components/plus_addresses/metrics/plus_address_metrics.h"
 #import "components/plus_addresses/plus_address_test_utils.h"
 #import "components/strings/grit/components_strings.h"

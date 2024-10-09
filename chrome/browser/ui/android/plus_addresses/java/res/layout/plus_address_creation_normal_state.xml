@@ -89,7 +89,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_weight="0"
         android:src="@drawable/ic_refresh_white_24dp"
-        android:contentDescription="@string/plus_address_model_refresh_button_accessible_name_android"
+        android:contentDescription="@string/plus_address_model_refresh_button_accessible_name_android_to_migrate"
         app:tint="@color/refresh_plus_address_icon_tint_list"
         android:tintMode="src_in"
         android:layout_gravity="center_vertical"

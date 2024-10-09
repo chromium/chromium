@@ -25,6 +25,7 @@
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/plus_addresses/features.h"
+#import "components/plus_addresses/grit/plus_addresses_strings.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_member.h"
 #import "components/prefs/pref_service.h"

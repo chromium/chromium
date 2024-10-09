@@ -99,6 +99,7 @@ source_set("settings") {
     "//components/keyed_service/core",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/common",
+    "//components/plus_addresses/resources/strings",
     "//components/prefs",
     "//components/prefs/ios",
     "//components/resources",

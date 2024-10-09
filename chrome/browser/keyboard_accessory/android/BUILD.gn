@@ -63,6 +63,7 @@ source_set("unit_test") {
     "//components/password_manager/core/browser:test_support",
     "//components/plus_addresses:features",
     "//components/plus_addresses:test_support",
+    "//components/plus_addresses/resources/strings",
     "//components/plus_addresses/settings:test_support",
     "//components/resources:android_resources",
     "//components/strings",

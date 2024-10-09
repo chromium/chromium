@@ -7,8 +7,11 @@ import("//build/util/branding.gni")
 import("//tools/grit/grit_rule.gni")
 
 grit("strings") {
-  # TODO(crbug.com/371923550): Reenable internal strings once migration is done.
-  source = "plus_addresses_strings.grd"
+  if (is_chrome_branded) {
+    source = "../internal/strings/plus_addresses_internal_strings.grd"
+  } else {
+    source = "plus_addresses_strings.grd"
+  }
   outputs = [ "../../grit/plus_addresses_strings.h" ] +
             process_file_template(
                 all_chrome_locales,

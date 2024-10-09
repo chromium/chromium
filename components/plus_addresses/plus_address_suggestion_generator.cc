@@ -22,7 +22,6 @@
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/settings/plus_address_setting_service.h"
-#include "components/strings/grit/components_strings.h"
 #include "net/http/http_status_code.h"
 #include "ui/base/l10n/l10n_util.h"
 
