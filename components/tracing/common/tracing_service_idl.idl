@@ -1,0 +1,122 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import "oaidl.idl";
+import "ocidl.idl";
+
+[
+  object,
+  oleautomation,
+  uuid(DB01E5CE-10CE-4A84-8FAE-DA5E46EEF1CF),
+  helpstring("ISystemTraceSession Interface"),
+  pointer_default(unique)
+]
+// A SystemTraceSession is exposed as methods on ISystemTraceSession, and
+// provides High Integrity actions. Any changes to add or change a method in
+// ISystemTraceSession will require a security review.
+interface ISystemTraceSession : IUnknown
+{
+  // Takes a mojo invitation on `server_name` containing a single message pipe,
+  // and returns the process ID of the process hosting the session. The service
+  // will then wait for a tracing::mojom::TracedProcess PendingReceiver to
+  // arrive on that message pipe. Tracing will be established upon its arrival.
+  // `server_name` must name the server endpoint of a named channel of the
+  // client.
+  HRESULT AcceptInvitation([in, string] const WCHAR* server_name,
+                           [out] DWORD* pid);
+};
+
+cpp_quote ("enum : HRESULT {")
+cpp_quote ("  kErrorSessionInProgress =")
+cpp_quote ("      MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA001),")
+cpp_quote ("  kErrorCouldNotObtainCallingProcess =")
+cpp_quote ("      MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA002),")
+cpp_quote ("  kErrorCouldNotGetCallingProcessPid =")
+cpp_quote ("      MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA003),")
+cpp_quote ("  kErrorCouldNotOpenCallingProcess =")
+cpp_quote ("      MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA004),")
+cpp_quote ("  kErrorCouldNotDuplicateHandleToClient =")
+cpp_quote ("      MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA005),")
+cpp_quote ("  kErrorTooManyInvitations =")
+cpp_quote ("      MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA006),")
+cpp_quote ("  kErrorSessionAlreadyActive =")
+cpp_quote ("      MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA007),")
+cpp_quote ("  kErrorNotWaitingForInvitation =")
+cpp_quote ("      MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0xA008),")
+cpp_quote ("};")
+
+// The interfaces below are all ISystemTraceSession with unique IIDs.
+// ISystemTraceSession is registered with unique IIDs for the various flavors of
+// Chrome and Chromium. This allows the different flavors of Chrome/Chromium to
+// co-exist without side effects.
+[
+  object,
+  oleautomation,
+  uuid(A3FD580A-FFD4-4075-9174-75D0B199D3CB),
+  helpstring("ISystemTraceSessionChromium Interface"),
+  pointer_default(unique)
+]
+interface ISystemTraceSessionChromium : ISystemTraceSession
+{
+};
+
+[
+  object,
+  oleautomation,
+  uuid(056B3371-1C09-475B-A8D7-9E58BF45533E),
+  helpstring("ISystemTraceSessionChrome Interface"),
+  pointer_default(unique)
+]
+interface ISystemTraceSessionChrome : ISystemTraceSession
+{
+};
+
+[
+  object,
+  oleautomation,
+  uuid(A69D7D7D-9A08-422A-B6C6-B7B8D376A12C),
+  helpstring("ISystemTraceSessionChromeBeta Interface"),
+  pointer_default(unique)
+]
+interface ISystemTraceSessionChromeBeta : ISystemTraceSession
+{
+};
+
+[
+  object,
+  oleautomation,
+  uuid(E08ADAE8-9334-46ED-B0CF-DD1780158D55),
+  helpstring("ISystemTraceSessionChromeDev Interface"),
+  pointer_default(unique)
+]
+interface ISystemTraceSessionChromeDev : ISystemTraceSession
+{
+};
+
+[
+  object,
+  oleautomation,
+  uuid(6EFB8558-68D1-4826-A612-A180B3570375),
+  helpstring("ISystemTraceSessionChromeCanary Interface"),
+  pointer_default(unique)
+]
+interface ISystemTraceSessionChromeCanary : ISystemTraceSession
+{
+};
+
+[
+  uuid(C9368104-11AE-4784-8C2D-115C5D421937),
+  version(1.0),
+  helpstring("SystemTraceSession 1.0 Type Library")
+]
+library SystemTraceSessionLib {
+  importlib("stdole2.tlb");
+
+  interface ISystemTraceSession;
+  interface ISystemTraceSessionChromium;
+  interface ISystemTraceSessionChrome;
+  interface ISystemTraceSessionChromeBeta;
+  interface ISystemTraceSessionChromeDev;
+  interface ISystemTraceSessionChromeCanary;
+};
