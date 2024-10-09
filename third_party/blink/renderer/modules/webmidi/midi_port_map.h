@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBMIDI_MIDI_PORT_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBMIDI_MIDI_PORT_MAP_H_
 
@@ -36,12 +31,13 @@ class MIDIPortMap : public ScriptWrappable, public Maplike<InterfaceType> {
  private:
   // We use HeapVector here to keep the entry order.
   using Entries = HeapVector<Member<ValueType>>;
-  using IteratorType = typename Entries::const_iterator;
+  using IteratorType = typename base::CheckedContiguousIterator<
+      const typename Entries::ValueType>;
 
   typename PairSyncIterable<InterfaceType>::IterationSource*
   CreateIterationSource(ScriptState*, ExceptionState&) override {
-    return MakeGarbageCollected<MapIterationSource>(this, entries_.begin(),
-                                                    entries_.end());
+    return MakeGarbageCollected<MapIterationSource>(
+        this, entries_.CheckedBegin(), entries_.CheckedEnd());
   }
 
   bool GetMapEntry(ScriptState*,

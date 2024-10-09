@@ -28,12 +28,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webmidi/midi_output.h"
+
+#include <array>
 
 #include "media/midi/midi_service.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -58,7 +55,7 @@ DOMUint8Array* ConvertUnsignedDataToUint8Array(
     Vector<unsigned> unsigned_data,
     ExceptionState& exception_state) {
   DOMUint8Array* array = DOMUint8Array::Create(unsigned_data.size());
-  DOMUint8Array::ValueType* array_data = array->Data();
+  auto array_data = array->ByteSpan();
   for (wtf_size_t i = 0; i < unsigned_data.size(); ++i) {
     if (unsigned_data[i] > 0xff) {
       exception_state.ThrowTypeError("The value at index " + String::Number(i) +
@@ -98,13 +95,12 @@ class MessageValidator {
   }
 
  private:
-  MessageValidator(DOMUint8Array* array)
-      : data_(array->Data()), length_(array->length()), offset_(0) {}
+  explicit MessageValidator(DOMUint8Array* array) : data_(array->ByteSpan()) {}
 
   bool Process(ExceptionState& exception_state, bool sysex_enabled) {
     // data_ is put into a WTF::Vector eventually, which only has wtf_size_t
     // space.
-    if (!base::CheckedNumeric<wtf_size_t>(length_).IsValid()) {
+    if (!base::CheckedNumeric<wtf_size_t>(data_.size()).IsValid()) {
       exception_state.ThrowRangeError(
           "Data exceeds the maximum supported length");
       return false;
@@ -159,7 +155,7 @@ class MessageValidator {
   }
 
  private:
-  bool IsEndOfData() { return offset_ >= length_; }
+  bool IsEndOfData() { return offset_ >= data_.size(); }
   bool IsSysex() { return data_[offset_] == 0xf0; }
   bool IsSystemMessage() { return data_[offset_] >= 0xf0; }
   bool IsEndOfSysex() { return data_[offset_] == 0xf7; }
@@ -202,9 +198,9 @@ class MessageValidator {
     DCHECK(!IsReservedStatusByte());
     DCHECK(!IsRealTimeMessage());
     DCHECK(!IsEndOfSysex());
-    static const int kChannelMessageLength[7] = {
+    static const std::array<int, 7> kChannelMessageLength = {
         3, 3, 3, 3, 2, 2, 3};  // for 0x8*, 0x9*, ..., 0xe*
-    static const int kSystemMessageLength[7] = {
+    static const std::array<int, 7> kSystemMessageLength = {
         2, 3, 2, 0, 0, 1, 0};  // for 0xf1, 0xf2, ..., 0xf7
     size_t length = IsSystemMessage()
                         ? kSystemMessageLength[data_[offset_] - 0xf1]
@@ -233,9 +229,8 @@ class MessageValidator {
            String::Number(static_cast<uint16_t>(data_[offset_])) + ").";
   }
 
-  const unsigned char* data_;
-  const size_t length_;
-  size_t offset_;
+  base::span<const uint8_t> data_;
+  size_t offset_ = 0;
 };
 
 }  // namespace
