@@ -20,7 +20,7 @@ SendTabToSelfInfoBarDelegate::Create(content::WebContents* web_contents,
       new SendTabToSelfInfoBarDelegate(web_contents, entry));
 }
 
-SendTabToSelfInfoBarDelegate::~SendTabToSelfInfoBarDelegate() {}
+SendTabToSelfInfoBarDelegate::~SendTabToSelfInfoBarDelegate() = default;
 
 std::u16string SendTabToSelfInfoBarDelegate::GetInfobarMessage() const {
   // TODO(crbug.com/40619532): Define real string.
