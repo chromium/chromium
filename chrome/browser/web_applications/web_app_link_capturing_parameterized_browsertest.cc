@@ -582,6 +582,10 @@ class WebAppLinkCapturingParameterizedBrowserTest
   virtual void MaybeCustomSetup(const webapps::AppId& app_a,
                                 const webapps::AppId& app_b) {}
 
+  virtual std::string GetTestClassName() const {
+    return "WebAppLinkCapturingParameterizedBrowserTest";
+  }
+
   // Listens for a DomMessage that starts with FinishedNavigating.
   //
   // @param message_queue The message queue expected to see the message.
@@ -944,6 +948,58 @@ class WebAppLinkCapturingParameterizedBrowserTest
         }));
   }
 
+  // This test verifies that there are no left-over expectations for tests that
+  // no longer exist in code but still exist in the expectations json file.
+  // Additionally if this test is run with the --rebaseline-link-capturing-test
+  // flag any left-over expectations will be cleaned up.
+  void PerformTestCleanupIfNeeded() {
+    std::set<std::string> test_cases;
+    const testing::UnitTest* unit_test = testing::UnitTest::GetInstance();
+    for (int i = 0; i < unit_test->total_test_suite_count(); ++i) {
+      const testing::TestSuite* test_suite = unit_test->GetTestSuite(i);
+      // We only care about link capturing parameterized tests.
+      if (std::string_view(test_suite->name()).find(GetTestClassName()) ==
+          std::string::npos) {
+        continue;
+      }
+      for (int j = 0; j < test_suite->total_test_count(); ++j) {
+        const char* name = test_suite->GetTestInfo(j)->name();
+        auto parts = base::SplitStringOnce(name, '/');
+        if (!parts.has_value()) {
+          // Not a parameterized test.
+          continue;
+        }
+        test_cases.insert(std::string(parts->second));
+      }
+    }
+
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::ScopedClosureRunner lock;
+    if (ShouldRebaseline()) {
+      lock = LockExpectationsFile();
+    }
+
+    base::Value::Dict& expectations = *test_expectations().EnsureDict("tests");
+    std::vector<std::string> tests_to_remove;
+    for (const auto [name, value] : expectations) {
+      if (!test_cases.contains(name)) {
+        tests_to_remove.push_back(name);
+      }
+    }
+    if (ShouldRebaseline()) {
+      for (const auto& name : tests_to_remove) {
+        LOG(INFO) << "Removing " << name;
+        expectations.Remove(name);
+      }
+      SaveExpectations();
+    } else {
+      EXPECT_THAT(tests_to_remove, testing::ElementsAre())
+          << "Run this test with --rebaseline-link-capturing-test to clean "
+             "this "
+             "up.";
+    }
+  }
+
   base::Value::Dict& test_expectations() {
     CHECK(test_expectations_.has_value() && test_expectations_->is_dict());
     return test_expectations_->GetDict();
@@ -1191,6 +1247,17 @@ IN_PROC_BROWSER_TEST_P(WebAppLinkCapturingParameterizedBrowserTest,
   RunTest();
 }
 
+// TODO(crbug.com/359600606): Enable on CrOS if needed.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_CleanupExpectations DISABLED_CleanupExpectations
+#else
+#define MAYBE_CleanupExpectations CleanupExpectations
+#endif  // BUILDFLAG(IS_CHROMEOS)
+IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingParameterizedBrowserTest,
+                       MAYBE_CleanupExpectations) {
+  PerformTestCleanupIfNeeded();
+}
+
 // Pro-tip: To run only one combination from the below list, supply this...
 // WebAppLinkCapturingParameterizedBrowserTest.CheckLinkCaptureCombinations/foo
 // Where foo can be:
@@ -1423,11 +1490,20 @@ class NavigationCapturingTestWithAppBLaunched
     // Launching a web app should listen to a single navigation message.
     WaitForNavigationFinishedMessages(&message_queue);
   }
+
+  std::string GetTestClassName() const override {
+    return "NavigationCapturingTestWithAppBLaunched";
+  }
 };
 
 IN_PROC_BROWSER_TEST_P(NavigationCapturingTestWithAppBLaunched,
                        CheckLinkCaptureCombinations) {
   RunTest();
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationCapturingTestWithAppBLaunched,
+                       MAYBE_CleanupExpectations) {
+  PerformTestCleanupIfNeeded();
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1458,69 +1534,6 @@ INSTANTIATE_TEST_SUITE_P(
             NavigationTarget::kNoFrame  // Target is non-existing frame.
             )),
     LinkCaptureTestParamToString);
-
-// This test verifies that there are no left-over expectations for tests that
-// no longer exist in code but still exist in the expectations json file.
-// Additionally if this test is run with the --rebaseline-link-capturing-test
-// flag any left-over expectations will be cleaned up.
-// TODO(crbug.com/359600606): Enable on CrOS if needed.
-// TODO(msiem): Configure this test to allow cleanup of
-// navigation_capture_test_launch_app_b.json.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_CleanupExpectations DISABLED_CleanupExpectations
-#else
-#define MAYBE_CleanupExpectations CleanupExpectations
-#endif  // BUILDFLAG(IS_CHROMEOS)
-using WebAppLinkCapturingParameterizedExpectationTest =
-    WebAppLinkCapturingParameterizedBrowserTest;
-IN_PROC_BROWSER_TEST_F(WebAppLinkCapturingParameterizedExpectationTest,
-                       MAYBE_CleanupExpectations) {
-  std::set<std::string> test_cases;
-  const testing::UnitTest* unit_test = testing::UnitTest::GetInstance();
-  for (int i = 0; i < unit_test->total_test_suite_count(); ++i) {
-    const testing::TestSuite* test_suite = unit_test->GetTestSuite(i);
-    // We only care about link capturing parameterized tests.
-    if (std::string_view(test_suite->name())
-            .find("WebAppLinkCapturingParameterizedBrowserTest") ==
-        std::string::npos) {
-      continue;
-    }
-    for (int j = 0; j < test_suite->total_test_count(); ++j) {
-      const char* name = test_suite->GetTestInfo(j)->name();
-      auto parts = base::SplitStringOnce(name, '/');
-      if (!parts.has_value()) {
-        // Not a parameterized test.
-        continue;
-      }
-      test_cases.insert(std::string(parts->second));
-    }
-  }
-
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  base::ScopedClosureRunner lock;
-  if (ShouldRebaseline()) {
-    lock = LockExpectationsFile();
-  }
-
-  base::Value::Dict& expectations = *test_expectations().EnsureDict("tests");
-  std::vector<std::string> tests_to_remove;
-  for (const auto [name, value] : expectations) {
-    if (!test_cases.contains(name)) {
-      tests_to_remove.push_back(name);
-    }
-  }
-  if (ShouldRebaseline()) {
-    for (const auto& name : tests_to_remove) {
-      LOG(INFO) << "Removing " << name;
-      expectations.Remove(name);
-    }
-    SaveExpectations();
-  } else {
-    EXPECT_THAT(tests_to_remove, testing::ElementsAre())
-        << "Run this test with --rebaseline-link-capturing-test to clean this "
-           "up.";
-  }
-}
 
 }  // namespace
 
