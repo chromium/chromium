@@ -146,15 +146,6 @@ void DidGetUsageAndQuotaStripOverride(
 int64_t QuotaManagerImpl::kSyncableStorageDefaultStorageKeyQuota =
     500 * kMBytes;
 
-constexpr int64_t QuotaManagerImpl::kGBytes;
-constexpr int64_t QuotaManagerImpl::kNoLimit;
-constexpr int QuotaManagerImpl::kEvictionIntervalInMilliSeconds;
-constexpr int QuotaManagerImpl::kThresholdOfErrorsToBeDenylisted;
-constexpr int QuotaManagerImpl::kThresholdRandomizationPercent;
-constexpr char QuotaManagerImpl::kDatabaseName[];
-constexpr char QuotaManagerImpl::kEvictedBucketAccessedCountHistogram[];
-constexpr char QuotaManagerImpl::kEvictedBucketDaysSinceAccessHistogram[];
-
 QuotaManagerImpl::QuotaOverride::QuotaOverride() = default;
 QuotaManagerImpl::QuotaOverride::~QuotaOverride() = default;
 
