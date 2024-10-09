@@ -10,6 +10,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "chrome/browser/ash/crostini/crostini_export_import.h"
+#include "chrome/browser/ash/crostini/crostini_export_import_factory.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/platform_util.h"
@@ -104,7 +105,7 @@ void CrostiniExportImportNotificationController::SetStatusRunningUI(
           return;
         }
         DCHECK_EQ(0, *button_index);
-        CrostiniExportImport::GetForProfile(profile)->CancelOperation(
+        CrostiniExportImportFactory::GetForProfile(profile)->CancelOperation(
             type, container_id);
       },
       profile_, type(), container_id_));

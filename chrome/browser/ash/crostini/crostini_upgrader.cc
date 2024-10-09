@@ -10,6 +10,7 @@
 #include "base/location.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/crostini/crostini_export_import.h"
+#include "chrome/browser/ash/crostini/crostini_export_import_factory.h"
 #include "chrome/browser/ash/crostini/crostini_export_import_status_tracker.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -163,12 +164,13 @@ void CrostiniUpgrader::Backup(
     bool show_file_chooser,
     base::WeakPtr<content::WebContents> web_contents) {
   if (show_file_chooser) {
-    CrostiniExportImport::GetForProfile(profile_)->ExportContainer(
+    CrostiniExportImportFactory::GetForProfile(profile_)->ExportContainer(
         container_id, web_contents.get(), MakeFactory());
     return;
   }
   base::FilePath default_path =
-      CrostiniExportImport::GetForProfile(profile_)->GetDefaultBackupPath();
+      CrostiniExportImportFactory::GetForProfile(profile_)
+          ->GetDefaultBackupPath();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&base::PathExists, default_path),
@@ -188,10 +190,10 @@ void CrostiniUpgrader::OnBackupPathChecked(
   }
 
   if (path_exists) {
-    CrostiniExportImport::GetForProfile(profile_)->ExportContainer(
+    CrostiniExportImportFactory::GetForProfile(profile_)->ExportContainer(
         container_id, web_contents.get(), MakeFactory());
   } else {
-    CrostiniExportImport::GetForProfile(profile_)->ExportContainer(
+    CrostiniExportImportFactory::GetForProfile(profile_)->ExportContainer(
         container_id, path, MakeFactory());
   }
 }
@@ -317,7 +319,7 @@ void CrostiniUpgrader::Restore(
     const guest_os::GuestId& container_id,
     base::WeakPtr<content::WebContents> web_contents) {
   if (!backup_path_.has_value()) {
-    CrostiniExportImport::GetForProfile(profile_)->ImportContainer(
+    CrostiniExportImportFactory::GetForProfile(profile_)->ImportContainer(
         container_id, web_contents.get(), MakeFactory());
     return;
   }
@@ -340,10 +342,10 @@ void CrostiniUpgrader::OnRestorePathChecked(
   }
 
   if (!path_exists) {
-    CrostiniExportImport::GetForProfile(profile_)->ImportContainer(
+    CrostiniExportImportFactory::GetForProfile(profile_)->ImportContainer(
         container_id, web_contents.get(), MakeFactory());
   } else {
-    CrostiniExportImport::GetForProfile(profile_)->ImportContainer(
+    CrostiniExportImportFactory::GetForProfile(profile_)->ImportContainer(
         container_id, path, MakeFactory());
   }
 }

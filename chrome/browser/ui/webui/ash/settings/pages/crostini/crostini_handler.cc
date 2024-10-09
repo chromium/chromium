@@ -14,6 +14,8 @@
 #include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_disk.h"
+#include "chrome/browser/ash/crostini/crostini_export_import.h"
+#include "chrome/browser/ash/crostini/crostini_export_import_factory.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_installer.h"
 #include "chrome/browser/ash/crostini/crostini_installer_factory.h"
@@ -231,7 +233,8 @@ void CrostiniHandler::OnJavascriptAllowed() {
   crostini_manager->AddCrostiniDialogStatusObserver(this);
   crostini_manager->AddCrostiniContainerPropertiesObserver(this);
   crostini_manager->AddContainerShutdownObserver(this);
-  crostini::CrostiniExportImport::GetForProfile(profile_)->AddObserver(this);
+  crostini::CrostiniExportImportFactory::GetForProfile(profile_)->AddObserver(
+      this);
   crostini::CrostiniPortForwarderFactory::GetForProfile(profile_)->AddObserver(
       this);
   guest_os::GuestOsSessionTracker::GetForProfile(profile_)
@@ -264,7 +267,8 @@ void CrostiniHandler::OnJavascriptDisallowed() {
   crostini_manager->RemoveCrostiniDialogStatusObserver(this);
   crostini_manager->RemoveCrostiniContainerPropertiesObserver(this);
   crostini_manager->RemoveContainerShutdownObserver(this);
-  crostini::CrostiniExportImport::GetForProfile(profile_)->RemoveObserver(this);
+  crostini::CrostiniExportImportFactory::GetForProfile(profile_)
+      ->RemoveObserver(this);
   crostini::CrostiniPortForwarderFactory::GetForProfile(profile_)
       ->RemoveObserver(this);
   guest_os::GuestOsSessionTracker::GetForProfile(profile_)
@@ -322,8 +326,8 @@ void CrostiniHandler::HandleExportCrostiniContainer(
   guest_os::GuestId container_id(args[0]);
   VLOG(1) << "Exporting  = " << container_id;
 
-  crostini::CrostiniExportImport::GetForProfile(profile_)->ExportContainer(
-      container_id, web_ui()->GetWebContents());
+  crostini::CrostiniExportImportFactory::GetForProfile(profile_)
+      ->ExportContainer(container_id, web_ui()->GetWebContents());
 }
 
 void CrostiniHandler::HandleImportCrostiniContainer(
@@ -331,8 +335,8 @@ void CrostiniHandler::HandleImportCrostiniContainer(
   CHECK_EQ(1U, args.size());
   guest_os::GuestId container_id(args[0]);
   VLOG(1) << "Importing  = " << container_id;
-  crostini::CrostiniExportImport::GetForProfile(profile_)->ImportContainer(
-      container_id, web_ui()->GetWebContents());
+  crostini::CrostiniExportImportFactory::GetForProfile(profile_)
+      ->ImportContainer(container_id, web_ui()->GetWebContents());
 }
 
 void CrostiniHandler::HandleCrostiniInstallerStatusRequest(
@@ -348,8 +352,9 @@ void CrostiniHandler::HandleCrostiniExportImportOperationStatusRequest(
     const base::Value::List& args) {
   AllowJavascript();
   CHECK_EQ(0U, args.size());
-  bool in_progress = crostini::CrostiniExportImport::GetForProfile(profile_)
-                         ->GetExportImportOperationStatus();
+  bool in_progress =
+      crostini::CrostiniExportImportFactory::GetForProfile(profile_)
+          ->GetExportImportOperationStatus();
   OnCrostiniExportImportOperationStatusChanged(in_progress);
 }
 
@@ -802,7 +807,7 @@ void CrostiniHandler::HandleCreateContainer(const base::Value::List& args) {
   if (isContainerBackupFile) {
     VLOG(1) << "backup_file = " << container_file
             << "will be used to create a new container.";
-    crostini::CrostiniExportImport::GetForProfile(profile_)
+    crostini::CrostiniExportImportFactory::GetForProfile(profile_)
         ->CreateContainerFromImport(
             container_id, container_file,
             base::BindOnce(&CrostiniHandler::OnContainerCreated,

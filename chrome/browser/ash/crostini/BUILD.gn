@@ -21,6 +21,8 @@ static_library("crostini") {
     "crostini_disk.h",
     "crostini_export_import.cc",
     "crostini_export_import.h",
+    "crostini_export_import_factory.cc",
+    "crostini_export_import_factory.h",
     "crostini_export_import_notification_controller.cc",
     "crostini_export_import_notification_controller.h",
     "crostini_export_import_status_tracker.cc",

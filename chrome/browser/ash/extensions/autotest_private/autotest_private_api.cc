@@ -110,6 +110,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crostini/crostini_export_import.h"
+#include "chrome/browser/ash/crostini/crostini_export_import_factory.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_installer.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
@@ -2714,11 +2715,13 @@ ExtensionFunction::ResponseAction AutotestPrivateExportCrostiniFunction::Run() {
     return RespondNow(Error("Invalid export path must not reference parent"));
   }
 
-  crostini::CrostiniExportImport::GetForProfile(profile)->ExportContainer(
-      crostini::DefaultContainerId(),
-      file_manager::util::GetDownloadsFolderForProfile(profile).Append(path),
-      base::BindOnce(&AutotestPrivateExportCrostiniFunction::CrostiniExported,
-                     this));
+  crostini::CrostiniExportImportFactory::GetForProfile(profile)
+      ->ExportContainer(
+          crostini::DefaultContainerId(),
+          file_manager::util::GetDownloadsFolderForProfile(profile).Append(
+              path),
+          base::BindOnce(
+              &AutotestPrivateExportCrostiniFunction::CrostiniExported, this));
 
   return RespondLater();
 }
@@ -2755,11 +2758,13 @@ ExtensionFunction::ResponseAction AutotestPrivateImportCrostiniFunction::Run() {
   if (path.ReferencesParent()) {
     return RespondNow(Error("Invalid import path must not reference parent"));
   }
-  crostini::CrostiniExportImport::GetForProfile(profile)->ImportContainer(
-      crostini::DefaultContainerId(),
-      file_manager::util::GetDownloadsFolderForProfile(profile).Append(path),
-      base::BindOnce(&AutotestPrivateImportCrostiniFunction::CrostiniImported,
-                     this));
+  crostini::CrostiniExportImportFactory::GetForProfile(profile)
+      ->ImportContainer(
+          crostini::DefaultContainerId(),
+          file_manager::util::GetDownloadsFolderForProfile(profile).Append(
+              path),
+          base::BindOnce(
+              &AutotestPrivateImportCrostiniFunction::CrostiniImported, this));
 
   return RespondLater();
 }

@@ -15,14 +15,12 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
-#include "chrome/browser/ash/crostini/crostini_manager_factory.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -31,7 +29,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/user_manager/user.h"
@@ -41,55 +38,6 @@
 #include "ui/shell_dialogs/selected_file_info.h"
 
 namespace crostini {
-
-class CrostiniExportImportFactory : public ProfileKeyedServiceFactory {
- public:
-  static CrostiniExportImport* GetForProfile(Profile* profile) {
-    return static_cast<CrostiniExportImport*>(
-        GetInstance()->GetServiceForBrowserContext(profile, true));
-  }
-
-  static CrostiniExportImportFactory* GetInstance() {
-    static base::NoDestructor<CrostiniExportImportFactory> factory;
-    return factory.get();
-  }
-
- private:
-  friend class base::NoDestructor<CrostiniExportImportFactory>;
-
-  CrostiniExportImportFactory()
-      : ProfileKeyedServiceFactory(
-            "CrostiniExportImportService",
-            ProfileSelections::Builder()
-                .WithRegular(ProfileSelection::kOriginalOnly)
-                // TODO(crbug.com/40257657): Check if this service is needed in
-                // Guest mode.
-                .WithGuest(ProfileSelection::kOriginalOnly)
-                // TODO(crbug.com/41488885): Check if this service is needed for
-                // Ash Internals.
-                .WithAshInternals(ProfileSelection::kOriginalOnly)
-                .Build()) {
-    DependsOn(guest_os::GuestOsSharePathFactory::GetInstance());
-    DependsOn(CrostiniManagerFactory::GetInstance());
-  }
-
-  ~CrostiniExportImportFactory() override = default;
-
-  // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override {
-    Profile* profile = Profile::FromBrowserContext(context);
-    return new CrostiniExportImport(profile);
-  }
-};
-
-void CrostiniExportImport::EnsureFactoryBuilt() {
-  CrostiniExportImportFactory::GetInstance();
-}
-
-CrostiniExportImport* CrostiniExportImport::GetForProfile(Profile* profile) {
-  return CrostiniExportImportFactory::GetForProfile(profile);
-}
 
 CrostiniExportImport::CrostiniExportImport(Profile* profile)
     : profile_(profile) {

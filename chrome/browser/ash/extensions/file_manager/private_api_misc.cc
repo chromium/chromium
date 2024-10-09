@@ -25,6 +25,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/crostini/crostini_export_import.h"
+#include "chrome/browser/ash/crostini/crostini_export_import_factory.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_package_service.h"
 #include "chrome/browser/ash/crostini/crostini_package_service_factory.h"
@@ -736,16 +737,17 @@ FileManagerPrivateInternalImportCrostiniImageFunction::Run() {
       file_system_context->CrackURLInFirstPartyContext(GURL(params->url))
           .path();
 
-  crostini::CrostiniExportImport::GetForProfile(profile)->ImportContainer(
-      crostini::DefaultContainerId(), path,
-      base::BindOnce(
-          [](base::FilePath path, crostini::CrostiniResult result) {
-            if (result != crostini::CrostiniResult::SUCCESS) {
-              LOG(ERROR) << "Error importing crostini image " << Redact(path)
-                         << ": " << (int)result;
-            }
-          },
-          path));
+  crostini::CrostiniExportImportFactory::GetForProfile(profile)
+      ->ImportContainer(
+          crostini::DefaultContainerId(), path,
+          base::BindOnce(
+              [](base::FilePath path, crostini::CrostiniResult result) {
+                if (result != crostini::CrostiniResult::SUCCESS) {
+                  LOG(ERROR) << "Error importing crostini image "
+                             << Redact(path) << ": " << (int)result;
+                }
+              },
+              path));
   return RespondNow(NoArguments());
 }
 
