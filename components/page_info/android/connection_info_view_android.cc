@@ -66,7 +66,7 @@ ConnectionInfoViewAndroid::ConnectionInfoViewAndroid(
   presenter_->InitializeUiState(this, base::DoNothing());
 }
 
-ConnectionInfoViewAndroid::~ConnectionInfoViewAndroid() {}
+ConnectionInfoViewAndroid::~ConnectionInfoViewAndroid() = default;
 
 void ConnectionInfoViewAndroid::Destroy(JNIEnv* env,
                                         const JavaParamRef<jobject>& obj) {
