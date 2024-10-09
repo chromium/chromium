@@ -4376,12 +4376,14 @@ crbug.com/1469418 html/details_summary/details-inline.html [ Failure ]
 crbug.com/1469418 virtual/details-styling-disabled/html/details_summary/details-inline.html [ Pass ]
 crbug.com/1469418 wpt_internal/html/rendering/the-details-element/details-pseudo-elements-disabled-001.tentative.html [ Failure ]
 crbug.com/1469418 virtual/details-styling-disabled/wpt_internal/html/rendering/the-details-element/details-pseudo-elements-disabled-001.tentative.html [ Pass ]
-# A test that expects the DetailsStyling feature to be enabled:
+# Tests that expect the DetailsStyling feature to be enabled:
 crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-display-type-001.html [ Failure ]
 crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-display-type-002.html [ Failure ]
 crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-pseudo-elements-001.html [ Failure ]
 crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-pseudo-elements-002.html [ Failure ]
 crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-pseudo-elements-003.html [ Failure ]
+crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-pseudo-elements-004.html [ Failure ]
+crbug.com/1469418 virtual/details-styling-disabled/external/wpt/html/rendering/the-details-element/details-pseudo-elements-005.html [ Failure ]
 
 # "in-multicol-child.html" is laid out in legacy layout due by "multicol" but
 # reference is laid out by LayoutNG.

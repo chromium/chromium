@@ -599,6 +599,8 @@ class CORE_EXPORT CSSSelector {
   bool MatchesPseudoElement() const;
   bool IsAllowedInParentPseudo() const;
   bool IsTreeAbidingPseudoElement() const;
+  bool IsPartLikePseudoElement() const;
+  static bool IsPartLikePseudoElement(CSSSelector::PseudoType pseudo);
   bool IsAllowedAfterPart() const;
 
   // Returns true if the immediately preceding simple selector is ::part.

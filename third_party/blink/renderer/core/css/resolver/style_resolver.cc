@@ -892,8 +892,16 @@ void MatchOuterScopeRules(const Element& matching_element,
         state = MatchingState::kPartAboveShadowPseudo;
       } else {
         // For now we only handle shadow pseudos in the parent scope.
-        // TODO(https://crbug.com/356158098): When we support part-like
-        // pseudo-elements, they can be chained, and we'll need to go further.
+        //
+        // TODO(https://crbug.com/356158098): In theory this should be an
+        // "else if (element->ShadowPseudoId().empty())", since there could be
+        // a chain of pseudo-elements in the next scope outside, and we should
+        // continue looping when there are more shadow pseudos to match.
+        // However, we don't currently parse any such selectors as valid
+        // right now, so it seems wasteful to gather rules from the second
+        // outer scope (for example, on an element that's conceptually
+        // ::-webkit-media-controls-timeline::-webkit-slider-container) when
+        // we know none of them will match.
         state = MatchingState::kDone;
       }
     } else {

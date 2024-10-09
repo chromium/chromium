@@ -1602,12 +1602,22 @@ bool CSSSelector::IsTreeAbidingPseudoElement() const {
           GetPseudoType() == kPseudoPlaceholder ||
           GetPseudoType() == kPseudoFileSelectorButton ||
           GetPseudoType() == kPseudoBackdrop ||
-          GetPseudoType() == kPseudoPicker ||
           GetPseudoType() == kPseudoViewTransition ||
           GetPseudoType() == kPseudoViewTransitionGroup ||
           GetPseudoType() == kPseudoViewTransitionImagePair ||
           GetPseudoType() == kPseudoViewTransitionOld ||
-          GetPseudoType() == kPseudoViewTransitionNew);
+          GetPseudoType() == kPseudoViewTransitionNew ||
+          IsPartLikePseudoElement(GetPseudoType()));
+}
+
+/* static */ bool CSSSelector::IsPartLikePseudoElement(
+    CSSSelector::PseudoType pseudo) {
+  return pseudo == kPseudoDetailsContent || pseudo == kPseudoPicker;
+}
+
+bool CSSSelector::IsPartLikePseudoElement() const {
+  return Match() == CSSSelector::kPseudoElement &&
+         IsPartLikePseudoElement(GetPseudoType());
 }
 
 bool CSSSelector::IsAllowedAfterPart() const {
