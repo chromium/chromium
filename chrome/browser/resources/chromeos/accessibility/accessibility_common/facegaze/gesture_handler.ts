@@ -89,10 +89,17 @@ export class GestureHandler {
           if (pref.value) {
             // Update the whole map from this preference.
             this.gestureToMacroName_.clear();
+
+            let hasScrollModeAction = false;
             for (const [gesture, assignedMacro] of Object.entries(pref.value)) {
               if (assignedMacro === MacroName.UNSPECIFIED) {
                 continue;
               }
+
+              if (assignedMacro === MacroName.TOGGLE_SCROLL_MODE) {
+                hasScrollModeAction = true;
+              }
+
               this.gestureToMacroName_.set(
                   gesture as FacialGesture, Number(assignedMacro));
               // Ensure the confidence for this gesture is set to the default,
@@ -103,6 +110,14 @@ export class GestureHandler {
                     gesture as FacialGesture,
                     GestureHandler.DEFAULT_CONFIDENCE_THRESHOLD);
               }
+            }
+
+            if (this.mouseController_.isScrollModeActive() &&
+                !hasScrollModeAction) {
+              // If the "toggle scroll mode" action is removed while scroll mode
+              // is active, then we should toggle out of scroll mode. Otherwise,
+              // the user will be stuck in scroll mode with no way to exit.
+              this.mouseController_.toggleScrollMode();
             }
           }
           break;

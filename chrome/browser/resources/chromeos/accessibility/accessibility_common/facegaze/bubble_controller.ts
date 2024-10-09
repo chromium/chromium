@@ -26,7 +26,7 @@ export class BubbleController {
   private setResetBubbleTimeout_(): void {
     this.clearTimeout_();
     this.resetBubbleTimeoutId_ = setTimeout(
-        () => this.resetBubble_(), BubbleController.RESET_BUBBLE_TIMEOUT_MS);
+        () => this.resetBubble(), BubbleController.RESET_BUBBLE_TIMEOUT_MS);
   }
 
   private clearTimeout_(): void {
@@ -36,7 +36,7 @@ export class BubbleController {
     }
   }
 
-  private resetBubble_(): void {
+  resetBubble(): void {
     this.baseText_ = [];
     const {paused, scrollModeActive} = this.getState_();
     // TODO(b/341770655): Localize these strings.

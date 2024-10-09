@@ -1629,3 +1629,67 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextStateAndActionMessages', async function() {
   assertEquals(
       'FaceGaze paused', this.mockAccessibilityPrivate.getFaceGazeBubbleText());
 });
+
+AX_TEST_F('FaceGazeTest', 'TurnOffActionsWhileInScrollMode', async function() {
+  const gestureToMacroName =
+      new Map().set(FacialGesture.JAW_OPEN, MacroName.TOGGLE_SCROLL_MODE);
+  const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.6);
+  const config = new Config()
+                     .withMouseLocation({x: 600, y: 400})
+                     .withBufferSize(1)
+                     .withCursorControlEnabled(true)
+                     .withGestureToMacroName(gestureToMacroName)
+                     .withGestureToConfidence(gestureToConfidence);
+  await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
+
+  // Toggle scroll mode on.
+  const result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.JAW_OPEN, 0.9);
+  this.processFaceLandmarkerResult(result);
+  assertTrue(this.getScrollModeController().active());
+
+  this.triggerBubbleControllerTimeout();
+  assertEquals(
+      'Scroll mode active',
+      this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+  // Turn off actions via pref.
+  await this.setPref(FaceGaze.PREF_ACTIONS_ENABLED, false);
+
+  // Ensure scroll mode automatically toggled off.
+  assertFalse(this.getScrollModeController().active());
+  assertEquals('', this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+});
+
+AX_TEST_F(
+    'FaceGazeTest', 'RemoveScrollModeActionWhileInScrollMode',
+    async function() {
+      const gestureToMacroName =
+          new Map().set(FacialGesture.JAW_OPEN, MacroName.TOGGLE_SCROLL_MODE);
+      const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.6);
+      const config = new Config()
+                         .withMouseLocation({x: 600, y: 400})
+                         .withBufferSize(1)
+                         .withCursorControlEnabled(true)
+                         .withGestureToMacroName(gestureToMacroName)
+                         .withGestureToConfidence(gestureToConfidence);
+      await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
+
+      // Toggle scroll mode on.
+      const result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+          MediapipeFacialGesture.JAW_OPEN, 0.9);
+      this.processFaceLandmarkerResult(result);
+      assertTrue(this.getScrollModeController().active());
+
+      this.triggerBubbleControllerTimeout();
+      assertEquals(
+          'Scroll mode active',
+          this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+
+      // Remove scroll mode action.
+      await this.setPref(GestureHandler.GESTURE_TO_MACRO_PREF, {});
+
+      // Ensure scroll mode automatically toggled off.
+      assertFalse(this.getScrollModeController().active());
+      assertEquals('', this.mockAccessibilityPrivate.getFaceGazeBubbleText());
+    });

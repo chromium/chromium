@@ -28,11 +28,6 @@ FaceGazeScrollModeControllerTest = class extends FaceGazeTestBase {
     this.getFaceGaze().mouseController_.toggleScrollMode();
   }
 
-  /** @return {!ScrollModeController} */
-  getScrollModeController() {
-    return this.getFaceGaze().mouseController_.scrollModeController_;
-  }
-
   /** @param {boolean} enabled */
   async waitForCursorControlPref(enabled) {
     const matches = async () => {

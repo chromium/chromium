@@ -33,15 +33,16 @@ export class FaceGaze {
           this.processFaceLandmarkerResult_(result, latency);
         });
 
-    this.mouseController_ = new MouseController();
-    this.gestureHandler_ = new GestureHandler(this.mouseController_);
-    this.metricsUtils_ = new MetricsUtils();
     this.bubbleController_ = new BubbleController(() => {
       return {
         paused: this.gestureHandler_.isPaused(),
         scrollModeActive: this.mouseController_.isScrollModeActive(),
       };
     });
+
+    this.mouseController_ = new MouseController(this.bubbleController_);
+    this.gestureHandler_ = new GestureHandler(this.mouseController_);
+    this.metricsUtils_ = new MetricsUtils();
     this.prefsListener_ = prefs => this.updateFromPrefs_(prefs);
     this.init_();
   }
@@ -142,6 +143,12 @@ export class FaceGaze {
       this.gestureHandler_.start();
     } else {
       this.gestureHandler_.stop();
+      if (this.mouseController_.isScrollModeActive()) {
+        // If actions are turned off while scroll mode is active, then we should
+        // toggle out of scroll mode. Otherwise, the user will be stuck in
+        // scroll mode with no way to exit.
+        this.mouseController_.toggleScrollMode();
+      }
     }
   }
 

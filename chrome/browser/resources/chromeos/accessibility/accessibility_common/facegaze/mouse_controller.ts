@@ -10,6 +10,7 @@ import {RectUtil} from '/common/rect_util.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 
+import {BubbleController} from './bubble_controller.js';
 import {ScrollModeController} from './scroll_mode_controller.js';
 
 import AutomationNode = chrome.automation.AutomationNode;
@@ -86,8 +87,10 @@ export class MouseController {
   private desktop_: AutomationNode|undefined;
 
   private scrollModeController_: ScrollModeController;
+  private bubbleController_: BubbleController;
 
-  constructor() {
+  constructor(bubbleController: BubbleController) {
+    this.bubbleController_ = bubbleController;
     this.onMouseMovedHandler_ = new EventHandler(
         [], chrome.automation.EventType.MOUSE_MOVED,
         event => this.onMouseMovedOrDragged_(event));
@@ -532,6 +535,9 @@ export class MouseController {
 
   toggleScrollMode(): void {
     this.scrollModeController_.toggle(this.mouseLocation_, this.screenBounds_);
+    if (!this.isScrollModeActive()) {
+      this.bubbleController_.resetBubble();
+    }
   }
 
   /** Listener for when the mouse position changes. */

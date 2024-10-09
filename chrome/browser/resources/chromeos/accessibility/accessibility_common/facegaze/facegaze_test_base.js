@@ -262,6 +262,11 @@ FaceGazeTestBase = class extends E2ETestBase {
     return accessibilityCommon.getFaceGazeForTest();
   }
 
+  /** @return {!ScrollModeController} */
+  getScrollModeController() {
+    return this.getFaceGaze().mouseController_.scrollModeController_;
+  }
+
   async startFacegazeWithConfigAndForeheadLocation_(
       config, forehead_x, forehead_y) {
     await this.configureFaceGaze(config);
