@@ -218,6 +218,9 @@ class IntegrationTest : public ::testing::Test {
     // that mess up the request expectations in the mock server.
     ASSERT_NO_FATAL_FAILURE(DMDeregisterDevice());
 
+    // Abandon the test if there are any non-fatal errors during setup.
+    ASSERT_FALSE(HasFailure());
+
     VLOG(2) << __func__ << "completed.";
   }
 
