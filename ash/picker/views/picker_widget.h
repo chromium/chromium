@@ -56,6 +56,8 @@ class ASH_EXPORT PickerWidget : public views::Widget {
 
   // Used to close the Picker widget when the user clicks outside of it.
   PickerBubbleEventFilter bubble_event_filter_;
+
+  raw_ptr<PickerViewDelegate> delegate_;
 };
 
 }  // namespace ash

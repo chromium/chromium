@@ -5,6 +5,7 @@
 #include "ash/picker/views/picker_widget.h"
 
 #include "ash/bubble/bubble_event_filter.h"
+#include "ash/picker/metrics/picker_session_metrics.h"
 #include "ash/picker/views/picker_positioning.h"
 #include "ash/picker/views/picker_style.h"
 #include "ash/picker/views/picker_view.h"
@@ -90,7 +91,10 @@ views::UniqueWidgetPtr PickerWidget::CreateCentered(
 void PickerWidget::OnNativeBlur() {
   SetVisibilityAnimationTransition(
       views::Widget::VisibilityTransition::ANIMATE_NONE);
-  // TODO: b/322280416 - Add a close reason here for metrics.
+  if (delegate_ != nullptr) {
+    delegate_->GetSessionMetrics().SetOutcome(
+        PickerSessionMetrics::SessionOutcome::kAbandoned);
+  }
   Close();
 }
 
@@ -102,7 +106,8 @@ PickerWidget::PickerWidget(PickerViewDelegate* delegate,
                                      anchor_bounds,
                                      position_type,
                                      trigger_event_timestamp)),
-      bubble_event_filter_(/*widget=*/this) {
+      bubble_event_filter_(/*widget=*/this),
+      delegate_(delegate) {
   SetVisibilityAnimationTransition(
       views::Widget::VisibilityTransition::ANIMATE_HIDE);
 }

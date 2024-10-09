@@ -126,6 +126,8 @@ TEST_F(PickerWidgetTest, LosingFocusClosesPickerWidget) {
   EXPECT_TRUE(window->HasFocus());
 
   EXPECT_TRUE(picker_widget->IsClosed());
+  EXPECT_EQ(delegate.GetSessionMetrics().GetOutcomeForTesting(),
+            PickerSessionMetrics::SessionOutcome::kAbandoned);
 }
 
 TEST_F(PickerWidgetTest, PreviewBubbleDoesNotStealFocusPickerWidget) {

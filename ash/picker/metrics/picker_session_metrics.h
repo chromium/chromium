@@ -74,6 +74,8 @@ class ASH_EXPORT PickerSessionMetrics {
   // Records if caps lock toggle is displayed in the zero state view.
   void SetCapsLockDisplayed(bool displayed);
 
+  SessionOutcome GetOutcomeForTesting() { return outcome_; }
+
  private:
   // Records CrOS event metrics when a picker session finishes.
   void OnFinishSession();

@@ -235,6 +235,8 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   void CloseWidgetThenInsertResultOnNextFocus(
       const PickerSearchResult& result) override {
     last_inserted_result_ = result;
+    session_metrics_.SetOutcome(
+        PickerSessionMetrics::SessionOutcome::kInsertedOrCopied);
   }
   void OpenResult(const PickerSearchResult& result) override {
     last_opened_result_ = result;
@@ -539,7 +541,8 @@ TEST_F(PickerViewTest, LeftClickSearchResultInsertsResult) {
   }
 
   cros_events::Picker_FinishSession expected_event;
-  expected_event.SetOutcome(cros_events::PickerSessionOutcome::UNKNOWN)
+  expected_event
+      .SetOutcome(cros_events::PickerSessionOutcome::INSERTED_OR_COPIED)
       .SetAction(cros_events::PickerAction::UNKNOWN)
       .SetResultSource(cros_events::PickerResultSource::UNKNOWN)
       .SetResultType(cros_events::PickerResultType::TEXT)
@@ -573,7 +576,8 @@ TEST_F(PickerViewTest, LeftClickZeroStateSuggestedResultInsertsResult) {
   }
 
   cros_events::Picker_FinishSession expected_event;
-  expected_event.SetOutcome(cros_events::PickerSessionOutcome::UNKNOWN)
+  expected_event
+      .SetOutcome(cros_events::PickerSessionOutcome::INSERTED_OR_COPIED)
       .SetAction(cros_events::PickerAction::UNKNOWN)
       .SetResultSource(cros_events::PickerResultSource::UNKNOWN)
       .SetResultType(cros_events::PickerResultType::TEXT)
@@ -644,7 +648,7 @@ TEST_F(PickerViewTest, SwitchesToCategoryView) {
   }
 
   cros_events::Picker_FinishSession expected_event;
-  expected_event.SetOutcome(cros_events::PickerSessionOutcome::UNKNOWN)
+  expected_event.SetOutcome(cros_events::PickerSessionOutcome::ABANDONED)
       .SetAction(cros_events::PickerAction::OPEN_LINKS)
       .SetResultSource(cros_events::PickerResultSource::UNKNOWN)
       .SetResultType(cros_events::PickerResultType::UNKNOWN)
