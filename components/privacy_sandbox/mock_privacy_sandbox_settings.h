@@ -16,7 +16,6 @@ class MockPrivacySandboxSettings
  public:
   MockPrivacySandboxSettings();
   ~MockPrivacySandboxSettings() override;
-  void SetUpDefaultResponse();
 
   // PrivacySandboxSettings:
   MOCK_METHOD(bool, IsTopicsAllowed, (), (override, const));
