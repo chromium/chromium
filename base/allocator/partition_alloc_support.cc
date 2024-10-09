@@ -846,8 +846,9 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
   CHECK(base::FeatureList::GetInstance());
 
   bool process_affected_by_brp_flag = false;
-#if (PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&  \
-     PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)) || \
+#if (PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&          \
+     PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&          \
+     !PA_BUILDFLAG(FORCE_DISABLE_BACKUP_REF_PTR_FEATURE)) || \
     PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocBackupRefPtr)) {
@@ -856,7 +857,8 @@ PartitionAllocSupport::GetBrpConfiguration(const std::string& process_type) {
         base::features::kBackupRefPtrEnabledProcessesParam.Get(), process_type);
   }
 #endif  // (PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
-        // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)) ||
+        // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)&&
+        // !PA_BUILDFLAG(FORCE_DISABLE_BACKUP_REF_PTR_FEATURE)) ||
         // PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
   const bool enable_brp =

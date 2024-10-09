@@ -145,6 +145,7 @@ pa_buildflag_header("buildflags") {
     "ENABLE_POINTER_SUBTRACTION_CHECK=$enable_pointer_subtraction_check",
     "ENABLE_SHADOW_METADATA_FOR_64_BITS_POINTERS=$enable_shadow_metadata",
     "ENABLE_THREAD_ISOLATION=$enable_pkeys",
+    "FORCE_DISABLE_BACKUP_REF_PTR_FEATURE=$force_disable_backup_ref_ptr_feature",
     "FORCE_ENABLE_RAW_PTR_EXCLUSION=$force_enable_raw_ptr_exclusion",
     "FORWARD_THROUGH_MALLOC=$forward_through_malloc",
     "GLUE_CORE_POOLS=$glue_core_pools",
