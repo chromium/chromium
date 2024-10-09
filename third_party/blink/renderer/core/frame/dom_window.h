@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_DOM_WINDOW_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "base/rand_util.h"
 #include "services/network/public/mojom/cross_origin_opener_policy.mojom-blink.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -244,6 +245,8 @@ class CORE_EXPORT DOMWindow : public WindowProperties {
     bool is_in_same_virtual_coop_related_group = false;
   };
   HeapVector<Member<CoopAccessMonitor>> coop_access_monitor_;
+  // Mutable: only used to downsample metrics, no change to observable state.
+  mutable base::MetricsSubSampler metrics_sub_sampler_;
 };
 
 }  // namespace blink
