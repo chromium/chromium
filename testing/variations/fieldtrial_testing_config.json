@@ -953,21 +953,6 @@
             ]
         }
     ],
-    "ArcSkipDropPageCache": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ArcSkipDropPageCache"
-                    ]
-                }
-            ]
-        }
-    ],
     "ArcVmBlkMultipleWorkers": [
         {
             "platforms": [
