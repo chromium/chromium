@@ -41,6 +41,8 @@ class FakeMahiWebContentsManager : public MahiWebContentsManagerImpl {
   void RequestContent(const base::UnguessableToken& page_id,
                       chromeos::mahi::GetContentCallback callback) override;
 
+  int GetNumberOfRequestContentCalls();
+
   bool is_pdf_focused_web_contents() { return is_pdf_focused_web_contents_; }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -50,6 +52,9 @@ class FakeMahiWebContentsManager : public MahiWebContentsManagerImpl {
   void BindMahiBrowserDelegateForTesting(
       mojo::PendingRemote<crosapi::mojom::MahiBrowserDelegate> pending_remote);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+ private:
+  int number_of_request_content_calls_ = 0;
 };
 
 }  // namespace mahi

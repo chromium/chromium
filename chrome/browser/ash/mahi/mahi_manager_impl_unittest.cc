@@ -41,9 +41,11 @@
 
 namespace {
 
+using mahi::FakeMahiWebContentsManager;
 using ::testing::IsNull;
 
 constexpr char kFakeSummary[] = "Fake summary";
+constexpr char kFakeContent[] = "Test page content";
 
 class FakeMahiProvider : public manta::MahiProvider {
  public:
@@ -135,6 +137,11 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
         mahi_manager_impl_->mahi_provider_.get());
   }
 
+  mahi::FakeMahiWebContentsManager* GetFakeMahiWebContentsManager() {
+    return static_cast<FakeMahiWebContentsManager*>(
+        chromeos::MahiWebContentsManager::Get());
+  }
+
   bool IsEnabled() const { return mahi_manager_impl_->IsEnabled(); }
 
   crosapi::mojom::MahiPageInfoPtr CreatePageInfo(const std::string& url,
@@ -154,6 +161,16 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
 
   void NotifyRefreshAvailability(bool available) {
     mahi_manager_impl_->NotifyRefreshAvailability(available);
+  }
+
+  void RequestContent(bool incognito = false,
+                      const std::string& url = "http://url1.com/abc#skip") {
+    // Sets the page that needed to get summary.
+    mahi_manager_impl_->SetCurrentFocusedPageInfo(
+        CreatePageInfo(url, /*title=*/u"Title of url1",
+                       /*is_incognito=*/incognito));
+    // Gets the content of the page.
+    mahi_manager_impl_->GetContent(base::DoNothing());
   }
 
   // void RequestSummary(const std::string& url = "http://url1.com/abc#skip",
@@ -186,6 +203,53 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
   network::TestURLLoaderFactory test_url_loader_factory_;
   signin::IdentityTestEnvironment identity_test_env_;
 };
+
+TEST_F(MahiManagerImplTest, CacheSavedForContentRequest) {
+  // No cache yet.
+  EXPECT_EQ(GetCacheManager()->size(), 0);
+
+  RequestContent();
+
+  // Summary is saved in the cache.
+  EXPECT_EQ(GetCacheManager()->size(), 1);
+  auto content = GetCacheManager()->GetPageContentForUrl("http://url1.com/abc");
+  EXPECT_EQ(base::UTF16ToUTF8(content), kFakeContent);
+}
+
+TEST_F(MahiManagerImplTest, NoContentCacheSavedForIncognitoPage) {
+  // No cache at the beginning.
+  EXPECT_EQ(GetCacheManager()->size(), 0);
+
+  // Request content from a incognito page.
+  RequestContent(/*incognito=*/true);
+
+  // Content is not saved in the cache.
+  EXPECT_EQ(GetCacheManager()->size(), 0);
+
+  // Request content from a normal page.
+  RequestSummary(/*incognito=*/false);
+  // Content is saved in the cache.
+  EXPECT_EQ(GetCacheManager()->size(), 1);
+}
+
+TEST_F(MahiManagerImplTest, NoContentCallWhenContentIsInCache) {
+  // Adds some content to the cache.
+  const std::u16string new_summary(u"new summary");
+  const std::u16string new_content(u"Page content");
+  GetCacheManager()->AddCacheForUrl(
+      "http://url1.com/abc#random",
+      MahiCacheManager::MahiData(
+          /*url=*/"http://url1.com/abc#skip", /*title=*/u"Title of url1",
+          /*page_content=*/new_content, /*favicon_image=*/std::nullopt,
+          /*summary=*/new_summary, /*previous_qa=*/{}));
+
+  RequestContent();
+
+  auto content = GetCacheManager()->GetPageContentForUrl("http://url1.com/abc");
+  EXPECT_EQ(GetFakeMahiWebContentsManager()->GetNumberOfRequestContentCalls(),
+            0);
+  EXPECT_EQ(content, new_content);
+}
 
 // Title is included in the request proto.
 TEST_F(MahiManagerImplTest, SendingTitleOnly) {
@@ -233,7 +297,7 @@ TEST_F(MahiManagerImplTest, CacheSavedForSummaryRequest) {
   EXPECT_EQ(base::UTF16ToUTF8(summary.value()), kFakeSummary);
 }
 
-TEST_F(MahiManagerImplTest, NoCacheSavedForIncognitoPage) {
+TEST_F(MahiManagerImplTest, NoSummaryCacheSavedForIncognitoPage) {
   // No cache at the beginning.
   EXPECT_EQ(GetCacheManager()->size(), 0);
 

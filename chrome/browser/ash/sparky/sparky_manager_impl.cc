@@ -126,6 +126,8 @@ GURL SparkyManagerImpl::GetContentUrl() {
   return current_page_info_->url;
 }
 
+void SparkyManagerImpl::GetContent(MahiContentCallback callback) {}
+
 void SparkyManagerImpl::GetSummary(MahiSummaryCallback callback) {
   chromeos::MahiWebContentsManager::Get()->RequestContent(
       current_page_info_->page_id,

@@ -32,6 +32,13 @@ struct COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiOutline {
   bool operator==(const MahiOutline&) const;
 };
 
+enum class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiGetContentResponseStatus {
+  // Error types can be fleshed out during implementation.
+  kSuccess = 0,
+  kContentExtractionError = 1,
+  kUnknownError = 2,
+};
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // List os possible response statuses for a Mahi request.
@@ -63,6 +70,11 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiManager {
   virtual std::u16string GetContentTitle() = 0;
   virtual gfx::ImageSkia GetContentIcon() = 0;
   virtual GURL GetContentUrl() = 0;
+
+  // Returns the text content on the corresponding surface.
+  using MahiContentCallback =
+      base::OnceCallback<void(std::u16string, MahiGetContentResponseStatus)>;
+  virtual void GetContent(MahiContentCallback callback) = 0;
 
   // Returns the quick summary of the current active content on the
   // corresponding surface.

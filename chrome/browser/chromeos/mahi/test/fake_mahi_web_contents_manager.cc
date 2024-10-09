@@ -27,6 +27,11 @@ void FakeMahiWebContentsManager::RequestContent(
   std::move(callback).Run(crosapi::mojom::MahiPageContent::New(
       /*client_id deprecated*/ base::UnguessableToken::Create(), page_id,
       u"Test page content"));
+  ++number_of_request_content_calls_;
+}
+
+int FakeMahiWebContentsManager::GetNumberOfRequestContentCalls() {
+  return number_of_request_content_calls_;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

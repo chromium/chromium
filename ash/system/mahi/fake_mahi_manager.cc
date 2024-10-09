@@ -12,8 +12,10 @@
 #include "ash/system/mahi/mahi_panel_widget.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
 #include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "ui/display/screen.h"
 #include "url/gurl.h"
 
@@ -40,6 +42,10 @@ const std::vector<chromeos::MahiOutline> kDefaultOutlines(
      chromeos::MahiOutline(/*id=*/4, u"Outline 4"),
      chromeos::MahiOutline(/*id=*/5, u"Outline 5")});
 
+constexpr char16_t kDefaultContentText[] =
+    u"fake content text\nfake content text\nfake content text\nfake content "
+    u"text\nfake content text";
+
 constexpr char16_t kDefaultSummaryText[] =
     u"fake summary text\nfake summary text\nfake summary text\nfake summary "
     u"text\nfake summary text";
@@ -65,6 +71,18 @@ gfx::ImageSkia FakeMahiManager::GetContentIcon() {
 
 GURL FakeMahiManager::GetContentUrl() {
   return GURL(kDefaultContentUrl);
+}
+
+void FakeMahiManager::GetContent(MahiContentCallback callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(std::move(callback),
+                     summary_text_.value_or(kDefaultContentText),
+                     chromeos::MahiGetContentResponseStatus::kSuccess),
+      g_use_zero_duration
+          ? base::TimeDelta()
+          : base::Seconds(
+                mahi_constants::kFakeMahiManagerGetContentDelaySeconds));
 }
 
 void FakeMahiManager::GetSummary(MahiSummaryCallback callback) {

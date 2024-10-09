@@ -103,6 +103,7 @@ inline constexpr SkScalar kCutoutConvexRadius = 10.f;
 inline constexpr SkScalar kCutoutConcaveRadius = 12.f;
 
 // Delays used in `FakeMahiManager` for testing.
+inline constexpr int kFakeMahiManagerGetContentDelaySeconds = 2;
 inline constexpr int kFakeMahiManagerLoadAnswerDelaySeconds = 3;
 inline constexpr int kFakeMahiManagerLoadSummaryDelaySeconds = 4;
 inline constexpr int kFakeMahiManagerLoadOutlinesDelaySeconds = 6;
