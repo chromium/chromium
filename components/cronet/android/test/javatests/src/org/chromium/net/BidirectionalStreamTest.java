@@ -1784,7 +1784,6 @@ public class BidirectionalStreamTest {
     @Test
     @SmallTest
     @RequiresMinApi(10) // Tagging support added in API level 10: crrev.com/c/chromium/src/+/937583
-    @RequiresMinAndroidApi(Build.VERSION_CODES.M) // crbug/1301957
     public void testTagging() throws Exception {
         if (!CronetTestUtil.nativeCanGetTaggedBytes()) {
             Log.i(TAG, "Skipping test - GetTaggedBytes unsupported.");
@@ -1842,7 +1841,6 @@ public class BidirectionalStreamTest {
     }
 
     @Test
-    @RequiresMinAndroidApi(Build.VERSION_CODES.M)
     @IgnoreFor(
             implementations = {CronetImplementation.AOSP_PLATFORM},
             reason = "b/309112420 BidiStream bindToNetwork API not exposed in AOSP")

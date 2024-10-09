@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 package org.chromium.net.impl;
 
-import android.os.Build;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -212,10 +211,6 @@ public class UrlRequestBuilderImpl extends ExperimentalUrlRequest.Builder {
 
     @Override
     public UrlRequestBuilderImpl bindToNetwork(long networkHandle) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            throw new UnsupportedOperationException(
-                    "The multi-network API is available starting from Android Marshmallow");
-        }
         mNetworkHandle = networkHandle;
         return this;
     }
