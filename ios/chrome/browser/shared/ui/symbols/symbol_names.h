@@ -257,6 +257,7 @@ extern NSString* const kPencilSymbol;
 extern NSString* const kMagicStackSymbol;
 extern NSString* const kDiscoverFeedSymbol;
 extern NSString* const kFilterSymbol;
+extern NSString* const kSelectedFilterSymbol;
 extern NSString* const kPersonTwoSymbol;
 extern NSString* const kSquareFilledOnSquareSymbol;
 extern NSString* const kPauseButton;

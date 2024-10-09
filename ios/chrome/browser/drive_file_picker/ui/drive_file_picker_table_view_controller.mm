@@ -811,6 +811,11 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
     default:
       break;
   }
+  BOOL filterSelected = filter != DriveFilePickerFilter::kShowAllFiles;
+  NSString* symbol = filterSelected ? kSelectedFilterSymbol : kFilterSymbol;
+  UIImage* filterIcon =
+      DefaultSymbolTemplateWithPointSize(symbol, kSymbolAccessoryPointSize);
+  _filterButton.image = filterIcon;
   // The menu needs to be reset for the new state to appear.
   _filterButton.menu = [self createFilterButtonMenu];
 }

@@ -266,6 +266,8 @@ NSString* const kPencilSymbol = @"pencil";
 NSString* const kMagicStackSymbol = @"wand.and.stars.inverse";
 NSString* const kDiscoverFeedSymbol = @"newspaper";
 NSString* const kFilterSymbol = @"line.3.horizontal.decrease.circle";
+NSString* const kSelectedFilterSymbol =
+    @"line.3.horizontal.decrease.circle.fill";
 NSString* const kPersonTwoSymbol = @"person.2";
 NSString* const kSquareFilledOnSquareSymbol = @"square.filled.on.square";
 NSString* const kPauseButton = @"pause.circle";
