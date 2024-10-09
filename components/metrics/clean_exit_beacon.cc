@@ -133,13 +133,10 @@ void MaybeIncrementCrashStreak(bool did_previous_session_exit_cleanly,
     // For platforms that do not use the beacon file, the crash streak is
     // scheduled to be written to disk later on in startup. At the latest, this
     // is done when a Local State write is scheduled via WriteBeaconFile(). A
-    // write is not scheduled here for three reasons.
+    // write is not scheduled here for two reasons.
     //
     // 1. It is an expensive operation.
-    // 2. Android WebLayer (one of the two platforms that does not use the
-    //    beacon file) did not appear to benefit from scheduling the write. See
-    //    crbug/1341850 for details.
-    // 3. Android WebView (the other beacon-file-less platform) has its own
+    // 2. Android WebView (which does not use the beacon file) has its own
     //    Variations Safe Mode mechanism and does not need the crash streak.
     local_state->SetInteger(kVariationsCrashStreak, num_crashes);
   }

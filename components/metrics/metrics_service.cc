@@ -832,10 +832,8 @@ void MetricsService::InitializeMetricsState() {
       // they do, it may not be possible to know at this point whether a session
       // is a background session.
       //
-      // TODO(crbug.com/40788576): On WebLayer, it is not possible to know
+      // TODO(crbug.com/40196247): On WebView, it is not possible to know
       // whether it's a background session at this point.
-      //
-      // TODO(crbug.com/40196247): Ditto for WebView.
       state_manager_->clean_exit_beacon()->WriteBeaconValue(true);
     }
 #endif  // BUILDFLAG(IS_ANDROID)
