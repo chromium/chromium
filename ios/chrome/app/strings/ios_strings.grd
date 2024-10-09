@@ -2528,6 +2528,15 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_LENS_LEARN_MORE" desc="The title for the overflow menu option leading to the 'Learn More' page for Lens Overlay [iOS only].">
         Learn more
       </message>
+      <message name="IDS_IOS_LENS_ALERT_CLOSE_ACTION" desc="The close button title for the Lens network connection alert [iOS only].">
+        Close
+      </message>
+      <message name="IDS_IOS_LENS_ALERT_SUBTITLE" desc="The title for the alert informing the user that something when wrong with Lens because of the network connection [iOS only].">
+        Check your connection and try again
+      </message>
+      <message name="IDS_IOS_LENS_ALERT_TITLE" desc="The title for the alert informing the user that something when wrong with Lens because of the network connection [iOS only].">
+        Something went wrong
+      </message>
       <message name="IDS_IOS_LENS_PROMO_INSTRUCTIONS_STEP1" desc="The text for step 1 in the Lens Promo instructions view.">
         Go to your homepage or keyboard
       </message>

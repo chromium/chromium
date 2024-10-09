@@ -599,6 +599,7 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
 
 - (void)handleSearchRequestErrored {
   [_resultMediator handleSearchRequestErrored];
+  [self showNoInternetAlert];
 }
 
 #pragma mark - LensOverlayConsentViewControllerDelegate
@@ -685,6 +686,33 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
 }
 
 #pragma mark - private
+
+- (void)showNoInternetAlert {
+  if (!_containerViewController) {
+    return;
+  }
+
+  UIAlertController* alert = [UIAlertController
+      alertControllerWithTitle:l10n_util::GetNSString(IDS_IOS_LENS_ALERT_TITLE)
+                       message:l10n_util::GetNSString(
+                                   IDS_IOS_LENS_ALERT_SUBTITLE)
+                preferredStyle:UIAlertControllerStyleAlert];
+
+  __weak __typeof(self) weakSelf = self;
+  UIAlertAction* defaultAction = [UIAlertAction
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_LENS_ALERT_CLOSE_ACTION)
+                style:UIAlertActionStyleDefault
+              handler:^(UIAlertAction* action) {
+                [weakSelf destroyLensUI:YES
+                                 reason:lens::LensOverlayDismissalSource::
+                                            kLensPermissionsDenied];
+              }];
+  [alert addAction:defaultAction];
+
+  [_containerViewController presentViewController:alert
+                                         animated:YES
+                                       completion:nil];
+}
 
 // Adjust the detents of the given sheet based on the sheet state.
 - (void)adjustDetentsOfBottomSheet:(UISheetPresentationController*)sheet
