@@ -279,7 +279,7 @@ std::optional<BiddingAndAuctionResponse> BiddingAndAuctionResponse::TryParse(
         }
 
         std::optional<int> maybe_update_if_older_than =
-            group_dict->FindInt("time");
+            group_dict->FindInt("updateIfOlderThanMs");
         if (!maybe_update_if_older_than) {
           continue;
         }

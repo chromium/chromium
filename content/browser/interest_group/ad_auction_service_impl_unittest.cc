@@ -16901,17 +16901,18 @@ TEST_F(AdAuctionServiceImplBAndAUpdateTest, OlderThan) {
     "interestGroupName": "interest-group-name",
     "interestGroupOwner": "https://a.test/",
     "updateGroups": {
-      "https://a.test": [{"index":0, "time":3600000}]
+      "https://a.test": [{"index":0, "updateIfOlderThanMs":3600000}]
     }
   }
   */
   // Converted to base64 with `cat | xxd -r -p | gzip |
-  //   xxd -ps -c0 | sed 's/^/020000009B/' | xxd -r -p | base64 -w0`
+  //   xxd -ps -c0 | sed 's/^/02000000A5/' | xxd -r -p | base64 -w0`
   EXPECT_TRUE(base::Base64Decode(
-      "AgAAAJsfiwgAAAAAAAADW5qdmBKUmpeSWhQa5FMhn1FSUlBspa+"
+      "AgAAAKUfiwgAAAAAAAADW5qdmBKUmpeSWhQa5FMhn1FSUlBspa+"
       "fWpGYW5CTqpecn6ufl1oeXwRWYpBTWpCSWJLqXpRfWlC8MA+"
-      "mOlGvJLW4pHFRSklmbqoUg9m7htRMoPoKhtykzJSUzLx0qIZ8VA36jQyFmXklqUVANliFX2J"
-      "uajFMRDcdJKSbBxQrQlHlX56XWoRuFAAozX4yyAAAAA==",
+      "mOlGvJLW4pHFRaiZQVQVDMUSVZ5p/"
+      "DlBTSEZinm+xFIPZu4bcpMyUlMy8dKj+fFT9+"
+      "o0MhZl5JalFQDZYhV9ibmoxTEQ3HSSkmwcUK0JR5V+el1qEbhQA39rq3dcAAAA=",
       &response));
 
   std::string encrypted_response =
