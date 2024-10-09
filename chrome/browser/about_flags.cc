@@ -11860,6 +11860,13 @@ const FeatureEntry kFeatureEntries[] = {
          payments::facilitated::kSupportMultipleServerRequestsForPixPayments)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+    {"autofill-enable-card-info-runtime-retrieval",
+     flag_descriptions::kAutofillEnableCardInfoRuntimeRetrievalName,
+     flag_descriptions::kAutofillEnableCardInfoRuntimeRetrievalDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableCardInfoRuntimeRetrieval)}
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

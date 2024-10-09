@@ -570,6 +570,12 @@ const char kAutofillEnableCardBenefitsSyncDescription[] =
     "When enabled, card benefits offered by issuers will be synced from the "
     "Payments server.";
 
+const char kAutofillEnableCardInfoRuntimeRetrievalName[] =
+    "Enable retrieval of card info(with CVC) from issuer for enrolled cards";
+const char kAutofillEnableCardInfoRuntimeRetrievalDescription[] =
+    "When enabled, runtime retrieval of CVC along with card number and expiry "
+    "from issuer for enrolled cards will be enabled during form fill.";
+
 const char kAutofillEnableCardProductNameName[] =
     "Enable showing card product name";
 const char kAutofillEnableCardProductNameDescription[] =

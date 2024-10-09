@@ -78,6 +78,12 @@ BASE_FEATURE(kAutofillEnableCardBenefitsSync,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
+// When enabled, runtime retrieval of CVC along with card number and expiry
+// from issuer for enrolled cards will be enabled during form fill.
+BASE_FEATURE(kAutofillEnableCardInfoRuntimeRetrieval,
+             "AutofillEnableCardInfoRuntimeRetrieval",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, card product name (instead of issuer network) will be shown in
 // Payments Autofill UI.
 BASE_FEATURE(kAutofillEnableCardProductName,

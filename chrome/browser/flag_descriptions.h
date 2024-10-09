@@ -348,6 +348,9 @@ extern const char kAutofillEnableCardBenefitsIphDescription[];
 extern const char kAutofillEnableCardBenefitsSyncName[];
 extern const char kAutofillEnableCardBenefitsSyncDescription[];
 
+extern const char kAutofillEnableCardInfoRuntimeRetrievalName[];
+extern const char kAutofillEnableCardInfoRuntimeRetrievalDescription[];
+
 extern const char kAutofillEnableCardProductNameName[];
 extern const char kAutofillEnableCardProductNameDescription[];
 

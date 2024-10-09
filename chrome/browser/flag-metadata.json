@@ -677,6 +677,11 @@
     "expiry_milestone": 135
   },
   {
+    "name": "autofill-enable-card-info-runtime-retrieval",
+    "owners": [ "hvs@google.com", "payments-autofill-team@google.com"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "autofill-enable-card-product-name",
     "owners": [ "vishwasuppoor@chromium.org", "siyua@chromium.org", "alexandertekle@chromium.org" ],
     "expiry_milestone": 130
