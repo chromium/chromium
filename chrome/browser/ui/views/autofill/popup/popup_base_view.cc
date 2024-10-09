@@ -559,7 +559,16 @@ bool PopupBaseView::DoUpdateBoundsAndRedrawPopup() {
 }
 
 void PopupBaseView::OnNativeFocusChanged(gfx::NativeView focused_now) {
-  if (GetWidget() && GetWidget()->GetNativeView() != focused_now) {
+  // TODO(crbug.com/330303918): The focus change is triggered sometimes
+  // (reproduced on a Linux release build, on a debug one - no) with
+  // `focused_now` == `nullptr` during activatable popup opening, no other
+  // widget gets focus then and this widget remains active.
+  // The `!GetWidget()->IsActive()` piece handles this case and prevents
+  // immediate popup closing.
+  // Investigate the reason and either fix it on the appropriate side or make
+  // this TODO a regular comment if it works as intended.
+  if (GetWidget() && GetWidget()->GetNativeView() != focused_now &&
+      !GetWidget()->IsActive()) {
     HideController(SuggestionHidingReason::kFocusChanged);
   }
 }
