@@ -1446,16 +1446,9 @@ void LoginAuthUserView::UpdateInputFieldMode() {
     return;
   }
 
-  if (features::IsAllowPasswordlessSetupEnabled()) {
-    if (!HasAuthMethod(AUTH_PASSWORD) && !HasAuthMethod(AUTH_PIN)) {
-      input_field_mode_ = InputFieldMode::kNone;
-      return;
-    }
-  } else {
-    if (!HasAuthMethod(AUTH_PASSWORD)) {
-      input_field_mode_ = InputFieldMode::kNone;
-      return;
-    }
+  if (!HasAuthMethod(AUTH_PASSWORD) && !HasAuthMethod(AUTH_PIN)) {
+    input_field_mode_ = InputFieldMode::kNone;
+    return;
   }
 
   if (!HasAuthMethod(AUTH_PIN)) {
@@ -1467,12 +1460,9 @@ void LoginAuthUserView::UpdateInputFieldMode() {
   const bool is_auto_submit_supported =
       LoginPinInputView::IsAutosubmitSupported(pin_length);
 
-  if (features::IsAllowPasswordlessSetupEnabled()) {
-    CHECK(HasAuthMethod(AUTH_PASSWORD) || HasAuthMethod(AUTH_PIN));
-    if (!HasAuthMethod(AUTH_PASSWORD)) {
-      input_field_mode_ = GetPinInputMode(/*has_password*/ false, pin_length);
-      return;
-    }
+  if (!HasAuthMethod(AUTH_PASSWORD)) {
+    input_field_mode_ = GetPinInputMode(/*has_password*/ false, pin_length);
+    return;
   }
 
   // Uses combined password/pin if autosubmit is disabled.

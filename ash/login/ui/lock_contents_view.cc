@@ -1952,11 +1952,7 @@ void LockContentsView::LayoutAuth(LoginBigUserView* to_update,
         // recover button and the pin delay message.
         HideAuthErrorMessage();
       } else {
-        if (features::IsAllowPasswordlessSetupEnabled()) {
-          to_update_auth = LoginAuthUserView::AUTH_NONE;
-        } else {
-          to_update_auth = LoginAuthUserView::AUTH_PASSWORD;
-        }
+        to_update_auth = LoginAuthUserView::AUTH_NONE;
         if (state->show_password) {
           to_update_auth |= LoginAuthUserView::AUTH_PASSWORD;
         }
