@@ -241,8 +241,7 @@ class CursorWindowDelegate : public aura::WindowDelegate {
 };
 
 CursorWindowController::CursorWindowController()
-    : delegate_(new CursorWindowDelegate()),
-      is_fast_ink_enabled_(features::IsFastInkForSoftwareCursorEnabled()) {}
+    : delegate_(new CursorWindowDelegate()) {}
 
 CursorWindowController::~CursorWindowController() {
   SetContainer(NULL);
@@ -407,6 +406,10 @@ void CursorWindowController::OnDockedMagnifierResizingStateChanged(
       RootWindowController::ForWindow(container_)->GetContainer(container_id));
 }
 
+void CursorWindowController::OnFullscreenMagnifierEnabled(bool enabled) {
+  UpdateCursorMode();
+}
+
 void CursorWindowController::UpdateLocation() {
   if (cursor_view_widget_) {
     gfx::Point cursor_location =
@@ -517,22 +520,7 @@ void CursorWindowController::SetContainer(aura::Window* container) {
   bounds_in_screen_ = display_.bounds();
   rotation_ = display_.rotation();
 
-  if (is_fast_ink_enabled_) {
-    UpdateCursorView();
-  } else {
-    delegate_->SetCursorWindow(nullptr);
-    // Reusing the window does not work when the display is disconnected.
-    // Just creates a new one instead. crbug.com/384218.
-    cursor_window_ = std::make_unique<aura::Window>(delegate_.get());
-    cursor_window_->SetTransparent(true);
-    cursor_window_->Init(ui::LAYER_TEXTURED);
-    cursor_window_->SetEventTargetingPolicy(aura::EventTargetingPolicy::kNone);
-    cursor_window_->set_owned_by_parent(false);
-    delegate_->SetCursorWindow(cursor_window_.get());
-    // Call UpdateCursorImage() to figure out |cursor_window_|'s desired size.
-    UpdateCursorImage();
-    container->AddChild(cursor_window_.get());
-  }
+  UpdateCursorMode();
   UpdateCursorVisibility();
   UpdateLocation();
 }
@@ -663,8 +651,42 @@ void CursorWindowController::UpdateCursorView() {
   UpdateCursorImage();
 }
 
+void CursorWindowController::UpdateCursorWindow() {
+  delegate_->SetCursorWindow(nullptr);
+  // Reusing the window does not work when the display is disconnected.
+  // Just creates a new one instead. crbug.com/384218.
+  cursor_window_ = std::make_unique<aura::Window>(delegate_.get());
+  cursor_window_->SetTransparent(true);
+  cursor_window_->Init(ui::LAYER_TEXTURED);
+  cursor_window_->SetEventTargetingPolicy(aura::EventTargetingPolicy::kNone);
+  cursor_window_->set_owned_by_parent(false);
+  delegate_->SetCursorWindow(cursor_window_.get());
+  // Call UpdateCursorImage() to figure out |cursor_window_|'s desired size.
+  UpdateCursorImage();
+  container_->AddChild(cursor_window_.get());
+}
+
 const gfx::ImageSkia& CursorWindowController::GetCursorImageForTest() const {
   return delegate_->cursor_images()[0];
+}
+
+bool CursorWindowController::ShouldUseFastInk() const {
+  return features::IsFastInkForSoftwareCursorEnabled() &&
+         !Shell::Get()->fullscreen_magnifier_controller()->IsEnabled();
+}
+
+void CursorWindowController::UpdateCursorMode() {
+  if (!container_) {
+    return;
+  }
+
+  if (ShouldUseFastInk()) {
+    cursor_window_.reset();
+    UpdateCursorView();
+  } else {
+    cursor_view_widget_.reset();
+    UpdateCursorWindow();
+  }
 }
 
 }  // namespace ash
