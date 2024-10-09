@@ -83,6 +83,16 @@ bool StructTraits<blink::mojom::ServiceWorkerRouterConditionDataView,
   return true;
 }
 
+bool StructTraits<blink::mojom::ServiceWorkerRouterRaceSourceDataView,
+                  blink::ServiceWorkerRouterRaceSource>::
+    Read(blink::mojom::ServiceWorkerRouterRaceSourceDataView data,
+         blink::ServiceWorkerRouterRaceSource* out) {
+  if (!data.ReadTarget(&out->target)) {
+    return false;
+  }
+  return true;
+}
+
 bool StructTraits<blink::mojom::ServiceWorkerRouterCacheSourceDataView,
                   blink::ServiceWorkerRouterCacheSource>::
     Read(blink::mojom::ServiceWorkerRouterCacheSourceDataView data,
