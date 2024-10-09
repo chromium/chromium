@@ -5,6 +5,7 @@
 #include "chrome/browser/ai/ai_manager_keyed_service.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_set.h"
@@ -35,6 +36,7 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/mojom/ai/ai_assistant.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
@@ -150,9 +152,8 @@ class CreateOnDeviceSessionTask
     : public AIContextBoundObject,
       public optimization_guide::OnDeviceModelAvailabilityObserver {
  public:
-  explicit CreateOnDeviceSessionTask(
-      content::BrowserContext& browser_context,
-      optimization_guide::ModelBasedCapabilityKey feature)
+  CreateOnDeviceSessionTask(content::BrowserContext& browser_context,
+                            optimization_guide::ModelBasedCapabilityKey feature)
       : service_(OptimizationGuideKeyedServiceFactory::GetForProfile(
             Profile::FromBrowserContext(&browser_context))),
         feature_(feature) {}
@@ -165,7 +166,6 @@ class CreateOnDeviceSessionTask
   CreateOnDeviceSessionTask& operator=(const CreateOnDeviceSessionTask&) =
       delete;
 
- protected:
   bool observing_availability() const { return observing_availability_; }
 
   // Attempts to create an on-device session.
@@ -201,6 +201,7 @@ class CreateOnDeviceSessionTask
     service_->AddOnDeviceModelAvailabilityChangeObserver(feature_, this);
   }
 
+ protected:
   // Cancels the creation task, and deletes itself.
   void Cancel() {
     CHECK(observing_availability_);
@@ -212,6 +213,9 @@ class CreateOnDeviceSessionTask
       std::unique_ptr<
           optimization_guide::OptimizationGuideModelExecutor::Session>
           session) = 0;
+
+  virtual void UpdateSessionConfigParams(
+      optimization_guide::SessionConfigParams* config_params) {}
 
  private:
   // `AIContextBoundObject` implementation.
@@ -236,6 +240,7 @@ class CreateOnDeviceSessionTask
         optimization_guide::SessionConfigParams{
             .execution_mode = optimization_guide::SessionConfigParams::
                 ExecutionMode::kOnDeviceOnly};
+    UpdateSessionConfigParams(&config_params);
     return service_->StartSession(feature_, config_params);
   }
 
@@ -338,6 +343,61 @@ class AIManagerReceiverRemover : public AIContextBoundObject {
   base::OnceClosure remove_callback_;
 };
 
+// Implementation of the `CreateOnDeviceSessionTask` base class for AIAssistant.
+class CreateAssistantOnDeviceSessionTask : public CreateOnDeviceSessionTask {
+ public:
+  CreateAssistantOnDeviceSessionTask(
+      content::BrowserContext& browser_context,
+      const blink::mojom::AIAssistantSamplingParamsPtr& sampling_params,
+      base::OnceCallback<
+          void(std::unique_ptr<
+               optimization_guide::OptimizationGuideModelExecutor::Session>)>
+          completion_callback)
+      : CreateOnDeviceSessionTask(
+            browser_context,
+            optimization_guide::ModelBasedCapabilityKey::kPromptApi),
+        completion_callback_(std::move(completion_callback)) {
+    if (sampling_params) {
+      sampling_params_ = optimization_guide::SamplingParams{
+          .top_k = std::min(sampling_params->top_k,
+                            uint32_t(GetAssistantModelMaxTopK())),
+          .temperature = sampling_params->temperature};
+    } else {
+      sampling_params_ = optimization_guide::SamplingParams{
+          .top_k = uint32_t(
+              optimization_guide::features::GetOnDeviceModelDefaultTopK()),
+          .temperature = float(GetAssistantModelDefaultTemperature())};
+    }
+  }
+  ~CreateAssistantOnDeviceSessionTask() override = default;
+
+  CreateAssistantOnDeviceSessionTask(
+      const CreateAssistantOnDeviceSessionTask&) = delete;
+  CreateAssistantOnDeviceSessionTask& operator=(
+      const CreateAssistantOnDeviceSessionTask&) = delete;
+
+ protected:
+  // `CreateOnDeviceSessionTask` implementation.
+  void OnFinish(std::unique_ptr<
+                optimization_guide::OptimizationGuideModelExecutor::Session>
+                    session) override {
+    std::move(completion_callback_).Run(std::move(session));
+  }
+
+  void UpdateSessionConfigParams(
+      optimization_guide::SessionConfigParams* config_params) override {
+    config_params->sampling_params = sampling_params_;
+  }
+
+ private:
+  std::optional<optimization_guide::SamplingParams> sampling_params_ =
+      std::nullopt;
+  base::OnceCallback<void(
+      std::unique_ptr<
+          optimization_guide::OptimizationGuideModelExecutor::Session>)>
+      completion_callback_;
+};
+
 }  // namespace
 
 AIManagerKeyedService::AIManagerKeyedService(
@@ -365,47 +425,41 @@ void AIManagerKeyedService::CanCreateAssistant(
                    std::move(callback));
 }
 
-std::unique_ptr<AIAssistant> AIManagerKeyedService::CreateAssistantInternal(
+void AIManagerKeyedService::CreateAssistantInternal(
     const blink::mojom::AIAssistantSamplingParamsPtr& sampling_params,
     AIContextBoundObjectSet* context_bound_object_set,
+    base::OnceCallback<void(std::unique_ptr<AIAssistant>)> callback,
     const std::optional<const AIAssistant::Context>& context) {
   CHECK(browser_context_);
-  OptimizationGuideKeyedService* service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context_.get()));
-  if (!service) {
-    return nullptr;
+  auto task = std::make_unique<CreateAssistantOnDeviceSessionTask>(
+      *browser_context_.get(), sampling_params,
+      base::BindOnce(
+          [](base::WeakPtr<content::BrowserContext> browser_context,
+             AIContextBoundObjectSet* context_bound_object_set,
+             const std::optional<const AIAssistant::Context>& context,
+             base::OnceCallback<void(std::unique_ptr<AIAssistant>)> callback,
+             std::unique_ptr<
+                 optimization_guide::OptimizationGuideModelExecutor::Session>
+                 session) {
+            if (!session) {
+              std::move(callback).Run(nullptr);
+              return;
+            }
+
+            mojo::PendingRemote<blink::mojom::AIAssistant> pending_remote;
+            std::move(callback).Run(std::make_unique<AIAssistant>(
+                std::move(session), browser_context, std::move(pending_remote),
+                context_bound_object_set, context));
+          },
+          browser_context_->GetWeakPtr(), context_bound_object_set, context,
+          std::move(callback)));
+  task->Run();
+  if (task->observing_availability()) {
+    // Put `task` to AIContextBoundObjectSet to continue observing the model
+    // availability.
+    AIContextBoundObjectSet::GetFromContext(browser_context_)
+        ->AddContextBoundObject(std::move(task));
   }
-
-  optimization_guide::SessionConfigParams config_params =
-      optimization_guide::SessionConfigParams{
-          .execution_mode = optimization_guide::SessionConfigParams::
-              ExecutionMode::kOnDeviceOnly};
-  if (sampling_params) {
-    config_params.sampling_params = optimization_guide::SamplingParams{
-        .top_k = std::min(sampling_params->top_k,
-                          uint32_t(GetAssistantModelMaxTopK())),
-        .temperature = sampling_params->temperature};
-  } else {
-    config_params.sampling_params = optimization_guide::SamplingParams{
-        .top_k = uint32_t(
-            optimization_guide::features::GetOnDeviceModelDefaultTopK()),
-        .temperature = float(GetAssistantModelDefaultTemperature())};
-  }
-
-  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-      session = service->StartSession(
-          optimization_guide::ModelBasedCapabilityKey::kPromptApi,
-          config_params);
-  if (!session) {
-    return nullptr;
-  }
-
-  mojo::PendingRemote<blink::mojom::AIAssistant> pending_remote;
-
-  return std::make_unique<AIAssistant>(
-      std::move(session), browser_context_->GetWeakPtr(),
-      std::move(pending_remote), context_bound_object_set, context);
 }
 
 void AIManagerKeyedService::CreateAssistant(
@@ -413,44 +467,61 @@ void AIManagerKeyedService::CreateAssistant(
     blink::mojom::AIAssistantCreateOptionsPtr options) {
   blink::mojom::AIAssistantSamplingParamsPtr sampling_params =
       std::move(options->sampling_params);
-  const std::optional<std::string>& system_prompt = options->system_prompt;
-  std::vector<blink::mojom::AIAssistantInitialPromptPtr>& initial_prompts =
-      options->initial_prompts;
+
   // Since this is a mojo IPC implementation, the context should be
   // non-null;
   AIContextBoundObjectSet* context_bound_object_set =
       AIContextBoundObjectSet::GetFromContext(receivers_.current_context());
-  std::unique_ptr<AIAssistant> session =
-      CreateAssistantInternal(sampling_params, context_bound_object_set);
-  mojo::Remote<blink::mojom::AIManagerCreateAssistantClient> client_remote(
-      std::move(client));
-  if (!session) {
-    // TODO(crbug.com/343325183): probably we should consider returning an error
-    // enum and throw a clear exception from the blink side.
-    client_remote->OnResult(mojo::PendingRemote<blink::mojom::AIAssistant>(),
-                            /*info=*/nullptr);
-    return;
-  }
 
-  if (system_prompt.has_value() || !initial_prompts.empty()) {
-    // If the initial prompt is provided, we need to set it and invoke the
-    // callback after this, because the token counting happens asynchronously.
-    session->SetInitialPrompts(
-        system_prompt, std::move(initial_prompts),
-        base::BindOnce(
-            [](mojo::Remote<blink::mojom::AIManagerCreateAssistantClient>
-                   client_remote,
-               mojo::PendingRemote<blink::mojom::AIAssistant> remote,
-               blink::mojom::AIAssistantInfoPtr info) {
-              client_remote->OnResult(std::move(remote), std::move(info));
-            },
-            std::move(client_remote)));
-  } else {
-    client_remote->OnResult(session->TakePendingRemote(),
-                            session->GetAssistantInfo());
-  }
+  CreateAssistantInternal(
+      sampling_params, context_bound_object_set,
+      base::BindOnce(
+          [](mojo::PendingRemote<blink::mojom::AIManagerCreateAssistantClient>
+                 client,
+             AIContextBoundObjectSet* context_bound_object_set,
+             blink::mojom::AIAssistantCreateOptionsPtr options,
+             std::unique_ptr<AIAssistant> assistant) {
+            mojo::Remote<blink::mojom::AIManagerCreateAssistantClient>
+                client_remote(std::move(client));
+            if (!assistant) {
+              // TODO(crbug.com/343325183): probably we should consider
+              // returning an error enum and throw a clear exception from
+              // the blink side.
+              client_remote->OnResult(
+                  mojo::PendingRemote<blink::mojom::AIAssistant>(),
+                  /*info=*/nullptr);
+              return;
+            }
 
-  context_bound_object_set->AddContextBoundObject(std::move(session));
+            const std::optional<std::string>& system_prompt =
+                options->system_prompt;
+            std::vector<blink::mojom::AIAssistantInitialPromptPtr>&
+                initial_prompts = options->initial_prompts;
+            if (system_prompt.has_value() || !initial_prompts.empty()) {
+              // If the initial prompt is provided, we need to set it and
+              // invoke the callback after this, because the token counting
+              // happens asynchronously.
+              assistant->SetInitialPrompts(
+                  system_prompt, std::move(initial_prompts),
+                  base::BindOnce(
+                      [](mojo::Remote<
+                             blink::mojom::AIManagerCreateAssistantClient>
+                             client_remote,
+                         mojo::PendingRemote<blink::mojom::AIAssistant> remote,
+                         blink::mojom::AIAssistantInfoPtr info) {
+                        client_remote->OnResult(std::move(remote),
+                                                std::move(info));
+                      },
+                      std::move(client_remote)));
+            } else {
+              client_remote->OnResult(assistant->TakePendingRemote(),
+                                      assistant->GetAssistantInfo());
+            }
+
+            context_bound_object_set->AddContextBoundObject(
+                std::move(assistant));
+          },
+          std::move(client), context_bound_object_set, std::move(options)));
 }
 
 void AIManagerKeyedService::CanCreateSummarizer(
@@ -565,17 +636,27 @@ void AIManagerKeyedService::CreateAssistantForCloning(
     AIContextBoundObjectSet* context_bound_object_set,
     const AIAssistant::Context& context,
     mojo::Remote<blink::mojom::AIManagerCreateAssistantClient> client_remote) {
-  std::unique_ptr<AIAssistant> session = CreateAssistantInternal(
-      sampling_params, context_bound_object_set, context);
-  if (!session) {
-    client_remote->OnResult(mojo::PendingRemote<blink::mojom::AIAssistant>(),
-                            /*info=*/nullptr);
-    return;
-  }
+  CreateAssistantInternal(
+      sampling_params, context_bound_object_set,
+      base::BindOnce(
+          [](AIContextBoundObjectSet* context_bound_object_set,
+             mojo::Remote<blink::mojom::AIManagerCreateAssistantClient>
+                 client_remote,
+             std::unique_ptr<AIAssistant> assistant) {
+            if (!assistant) {
+              client_remote->OnResult(
+                  mojo::PendingRemote<blink::mojom::AIAssistant>(),
+                  /*info=*/nullptr);
+              return;
+            }
 
-  client_remote->OnResult(session->TakePendingRemote(),
-                          session->GetAssistantInfo());
-  context_bound_object_set->AddContextBoundObject(std::move(session));
+            client_remote->OnResult(assistant->TakePendingRemote(),
+                                    assistant->GetAssistantInfo());
+            context_bound_object_set->AddContextBoundObject(
+                std::move(assistant));
+          },
+          context_bound_object_set, std::move(client_remote)),
+      context);
 }
 
 void AIManagerKeyedService::OnModelPathValidationComplete(

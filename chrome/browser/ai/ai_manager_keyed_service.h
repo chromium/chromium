@@ -74,9 +74,10 @@ class AIManagerKeyedService : public KeyedService,
 
   // Creates an `AIAssistant`, either as a new session, or as a clone of
   // an existing session with its context copied.
-  std::unique_ptr<AIAssistant> CreateAssistantInternal(
+  void CreateAssistantInternal(
       const blink::mojom::AIAssistantSamplingParamsPtr& sampling_params,
       AIContextBoundObjectSet* context_bound_object_set,
+      base::OnceCallback<void(std::unique_ptr<AIAssistant>)> callback,
       const std::optional<const AIAssistant::Context>& context = std::nullopt);
 
   // A `KeyedService` should never outlive the `BrowserContext`.
