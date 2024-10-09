@@ -54,6 +54,7 @@ def __step_config(ctx, step_config):
             "exclude_input_patterns": [
                 "*.h",
                 "*.o",
+                "*.sql",
                 "*.cc",
                 "*.a",
                 "*.info",
@@ -86,6 +87,16 @@ def __step_config(ctx, step_config):
             "indirect_inputs": {
                 "includes": ["*.dex", "*.ijar.jar", "*.turbine.jar"],
             },
+            "exclude_input_patterns": [
+                "*.h",
+                "*.o",
+                "*.sql",
+                "*.cc",
+                "*.a",
+                "*.info",
+                "*.pak",
+                "*.inc",
+            ],
             # *.dex files are intermediate files used in incremental builds.
             # Fo remote actions, let's ignore them, assuming remote cache hits compensate.
             "ignore_extra_input_pattern": ".*\\.dex",

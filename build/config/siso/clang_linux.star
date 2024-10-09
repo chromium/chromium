@@ -88,8 +88,30 @@ def __clang_compile_coverage(ctx, cmd):
     clang_command = clang_code_coverage_wrapper.run(ctx, list(cmd.args))
     ctx.actions.fix(args = clang_command)
 
+def __clang_link(ctx, cmd):
+    inputs = []
+    sysroot = ""
+    target = ""
+    for i, arg in enumerate(cmd.args):
+        if arg.startswith("--sysroot="):
+            sysroot = arg.removeprefix("--sysroot=")
+            sysroot = ctx.fs.canonpath(sysroot)
+        elif arg.startswith("--target="):
+            target = arg.removeprefix("--target=")
+
+    for arch in android_archs:
+        if target.startswith(arch):
+            android_ver = target.removeprefix(arch)
+            inputs.extend([
+                sysroot + "/usr/lib/" + arch + "/" + android_ver + ":link",
+            ])
+            break
+
+    ctx.actions.fix(inputs = cmd.inputs + inputs)
+
 __handlers = {
     "clang_compile_coverage": __clang_compile_coverage,
+    "clang_link": __clang_link,
 }
 
 def __step_config(ctx, step_config):
@@ -113,8 +135,10 @@ def __step_config(ctx, step_config):
             "third_party/llvm-build/Release+Asserts/bin/ld.lld",
             "third_party/llvm-build/Release+Asserts/bin/lld",
             "third_party/llvm-build/Release+Asserts/bin/llvm-nm",
+            "third_party/llvm-build/Release+Asserts/bin/llvm-objcopy",
             "third_party/llvm-build/Release+Asserts/bin/llvm-readelf",
             "third_party/llvm-build/Release+Asserts/bin/llvm-readobj",
+            "third_party/llvm-build/Release+Asserts/bin/llvm-strip",
             # The following inputs are used for sanitizer builds.
             # It might be better to add them only for sanitizer builds if there is a performance issue.
             "third_party/llvm-build/Release+Asserts/lib/clang:libs",
@@ -198,8 +222,8 @@ def __step_config(ctx, step_config):
         },
     ])
 
-    # TODO: b/316267242 - Enable remote links for Android and CrOS toolchain builds.
-    if not android.enabled(ctx) and not (cros.custom_toolchain(ctx) or cros.custom_sysroot(ctx)):
+    # TODO: crbug.com/372355740 - Enable remote links for CrOS toolchain builds.
+    if not (cros.custom_toolchain(ctx) or cros.custom_sysroot(ctx)):
         step_config["rules"].extend([
             {
                 "name": "clang/alink/llvm-ar",
@@ -226,6 +250,7 @@ def __step_config(ctx, step_config):
                 "name": "clang/solink/gcc_solink_wrapper",
                 "action": "(.*_)?solink",
                 "command_prefix": "\"python3\" \"../../build/toolchain/gcc_solink_wrapper.py\"",
+                "handler": "clang_link",
                 "inputs": [
                     # TODO: b/316267242 - Add inputs to GN config.
                     "build/toolchain/gcc_solink_wrapper.py",
@@ -250,6 +275,7 @@ def __step_config(ctx, step_config):
                 "name": "clang/link/gcc_link_wrapper",
                 "action": "(.*_)?link",
                 "command_prefix": "\"python3\" \"../../build/toolchain/gcc_link_wrapper.py\"",
+                "handler": "clang_link",
                 "inputs": [
                     # TODO: b/316267242 - Add inputs to GN config.
                     "build/toolchain/gcc_link_wrapper.py",
