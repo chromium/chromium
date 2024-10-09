@@ -1707,7 +1707,7 @@ const CSSValue* Bottom::ParseSingleValue(
   return css_parsing_utils::ConsumeMarginOrOffset(
       stream, context,
       css_parsing_utils::UnitlessUnlessShorthand(local_context),
-      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor));
+      kCSSAnchorQueryTypesAll);
 }
 
 bool Bottom::IsLayoutDependent(const ComputedStyle* style,
@@ -4858,7 +4858,7 @@ const CSSValue* InsetBlockEnd::ParseSingleValue(
     const CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeMarginOrOffset(
       stream, context, css_parsing_utils::UnitlessQuirk::kForbid,
-      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor));
+      kCSSAnchorQueryTypesAll);
 }
 
 bool InsetBlockEnd::IsLayoutDependent(const ComputedStyle* style,
@@ -4872,7 +4872,7 @@ const CSSValue* InsetBlockStart::ParseSingleValue(
     const CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeMarginOrOffset(
       stream, context, css_parsing_utils::UnitlessQuirk::kForbid,
-      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor));
+      kCSSAnchorQueryTypesAll);
 }
 
 bool InsetBlockStart::IsLayoutDependent(const ComputedStyle* style,
@@ -4886,7 +4886,7 @@ const CSSValue* InsetInlineEnd::ParseSingleValue(
     const CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeMarginOrOffset(
       stream, context, css_parsing_utils::UnitlessQuirk::kForbid,
-      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor));
+      kCSSAnchorQueryTypesAll);
 }
 
 bool InsetInlineEnd::IsLayoutDependent(const ComputedStyle* style,
@@ -4900,7 +4900,7 @@ const CSSValue* InsetInlineStart::ParseSingleValue(
     const CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeMarginOrOffset(
       stream, context, css_parsing_utils::UnitlessQuirk::kForbid,
-      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor));
+      kCSSAnchorQueryTypesAll);
 }
 
 bool InsetInlineStart::IsLayoutDependent(const ComputedStyle* style,
@@ -5612,7 +5612,7 @@ const CSSValue* Left::ParseSingleValue(
   return css_parsing_utils::ConsumeMarginOrOffset(
       stream, context,
       css_parsing_utils::UnitlessUnlessShorthand(local_context),
-      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor));
+      kCSSAnchorQueryTypesAll);
 }
 
 bool Left::IsLayoutDependent(const ComputedStyle* style,
@@ -5847,7 +5847,8 @@ const CSSValue* MarginBlockEnd::ParseSingleValue(
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeMarginOrOffset(
-      stream, context, css_parsing_utils::UnitlessQuirk::kForbid);
+      stream, context, css_parsing_utils::UnitlessQuirk::kForbid,
+      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize));
 }
 
 bool MarginBlockStart::IsLayoutDependent(const ComputedStyle* style,
@@ -5860,7 +5861,8 @@ const CSSValue* MarginBlockStart::ParseSingleValue(
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeMarginOrOffset(
-      stream, context, css_parsing_utils::UnitlessQuirk::kForbid);
+      stream, context, css_parsing_utils::UnitlessQuirk::kForbid,
+      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize));
 }
 
 const CSSValue* MarginBottom::ParseSingleValue(
@@ -5868,7 +5870,8 @@ const CSSValue* MarginBottom::ParseSingleValue(
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeMarginOrOffset(
-      stream, context, css_parsing_utils::UnitlessQuirk::kAllow);
+      stream, context, css_parsing_utils::UnitlessQuirk::kAllow,
+      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize));
 }
 
 bool MarginBottom::IsLayoutDependent(const ComputedStyle* style,
@@ -5900,7 +5903,8 @@ const CSSValue* MarginInlineEnd::ParseSingleValue(
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeMarginOrOffset(
-      stream, context, css_parsing_utils::UnitlessQuirk::kForbid);
+      stream, context, css_parsing_utils::UnitlessQuirk::kForbid,
+      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize));
 }
 
 bool MarginInlineStart::IsLayoutDependent(const ComputedStyle* style,
@@ -5913,7 +5917,8 @@ const CSSValue* MarginInlineStart::ParseSingleValue(
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeMarginOrOffset(
-      stream, context, css_parsing_utils::UnitlessQuirk::kForbid);
+      stream, context, css_parsing_utils::UnitlessQuirk::kForbid,
+      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize));
 }
 
 const CSSValue* MarginLeft::ParseSingleValue(
@@ -5921,7 +5926,8 @@ const CSSValue* MarginLeft::ParseSingleValue(
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeMarginOrOffset(
-      stream, context, css_parsing_utils::UnitlessQuirk::kAllow);
+      stream, context, css_parsing_utils::UnitlessQuirk::kAllow,
+      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize));
 }
 
 bool MarginLeft::IsLayoutDependent(const ComputedStyle* style,
@@ -5949,7 +5955,8 @@ const CSSValue* MarginRight::ParseSingleValue(
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeMarginOrOffset(
-      stream, context, css_parsing_utils::UnitlessQuirk::kAllow);
+      stream, context, css_parsing_utils::UnitlessQuirk::kAllow,
+      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize));
 }
 
 bool MarginRight::IsLayoutDependent(const ComputedStyle* style,
@@ -5977,7 +5984,8 @@ const CSSValue* MarginTop::ParseSingleValue(
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
   return css_parsing_utils::ConsumeMarginOrOffset(
-      stream, context, css_parsing_utils::UnitlessQuirk::kAllow);
+      stream, context, css_parsing_utils::UnitlessQuirk::kAllow,
+      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchorSize));
 }
 
 bool MarginTop::IsLayoutDependent(const ComputedStyle* style,
@@ -7578,7 +7586,7 @@ const CSSValue* Right::ParseSingleValue(
   return css_parsing_utils::ConsumeMarginOrOffset(
       stream, context,
       css_parsing_utils::UnitlessUnlessShorthand(local_context),
-      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor));
+      kCSSAnchorQueryTypesAll);
 }
 
 bool Right::IsLayoutDependent(const ComputedStyle* style,
@@ -9254,7 +9262,7 @@ const CSSValue* Top::ParseSingleValue(
   return css_parsing_utils::ConsumeMarginOrOffset(
       stream, context,
       css_parsing_utils::UnitlessUnlessShorthand(local_context),
-      static_cast<CSSAnchorQueryTypes>(CSSAnchorQueryType::kAnchor));
+      kCSSAnchorQueryTypesAll);
 }
 
 bool Top::IsLayoutDependent(const ComputedStyle* style,

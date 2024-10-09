@@ -282,7 +282,7 @@
     // See also AnchorScope::Mode.
     anchor_mode: {
       valid_values: [
-        // anchor()
+        // anchor() / anchor-size()
         "left",
         "right",
         "top",
@@ -3663,6 +3663,7 @@
       valid_for_limited_page_context: true,
       valid_for_page_context: true,
       invalidate: ["margin", "out-of-flow", "scroll-anchor"],
+      anchor_mode: "height",
     },
     {
       name: "margin-left",
@@ -3687,6 +3688,7 @@
       valid_for_limited_page_context: true,
       valid_for_page_context: true,
       invalidate: ["margin", "out-of-flow", "scroll-anchor"],
+      anchor_mode: "width",
     },
     {
       name: "margin-right",
@@ -3711,6 +3713,7 @@
       valid_for_limited_page_context: true,
       valid_for_page_context: true,
       invalidate: ["margin", "out-of-flow", "scroll-anchor"],
+      anchor_mode: "width",
     },
     {
       name: "margin-top",
@@ -3735,6 +3738,7 @@
       valid_for_limited_page_context: true,
       valid_for_page_context: true,
       invalidate: ["margin", "out-of-flow", "scroll-anchor"],
+      anchor_mode: "height",
     },
     {
       name: "marker-end",
