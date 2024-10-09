@@ -159,6 +159,7 @@ source_set("absl_full") {
       # part of Chrome.
       "//components/optimization_guide/internal/*",
       "//third_party/fuzztest:*",
+      "//third_party/webrtc/*",
 
       # GoogleTest doesn't actually need absl_full, but this makes gn check
       # happier.
