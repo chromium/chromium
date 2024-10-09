@@ -164,7 +164,7 @@ components/zucchini/testdata 26 4
 content/browser 9 4
 content/browser/bluetooth 1 1
 content/browser/device_sensors 1 1
-content/browser/fenced_frame 2 2
+content/browser/fenced_frame 4 3
 content/browser/loader 1 1
 content/browser/preloading/prefetch 1 1
 content/browser/renderer_host 3 3
@@ -799,7 +799,7 @@ third_party/xcbproto 2 1
 third_party/xcbproto/src/src 2 1
 third_party/zlib/contrib/minizip 2 2
 third_party/zlib/patches 2 2
-tools 1 1
+tools 3 3
 tools/android 1 1
 tools/android/touch_replay_benchmark 1 1
 tools/binary_size 1 1

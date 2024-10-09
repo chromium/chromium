@@ -1,6 +1,10 @@
 
 ## `bytemuck_derive` changelog
 
+## 1.8
+
+* [#257](https://github.com/Lokathor/bytemuck/pull/257): Allows deriving Zeroable on some enums.
+
 ## 1.7.1
 
 * Adds the `bytemuck` attribute to the `NoUninit` derive, allowing it to be used when re-exported.
