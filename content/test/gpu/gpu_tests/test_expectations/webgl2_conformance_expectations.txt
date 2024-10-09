@@ -552,14 +552,6 @@ crbug.com/1426916 [ chromeos chromeos-board-amd64-generic passthrough ] deqp/fun
 crbug.com/891953 [ mac ] WebglExtension_OVR_multiview2 [ Failure ]
 crbug.com/891953 [ android ] WebglExtension_OVR_multiview2 [ Failure ]
 
-# These tests fail until the tests are adapted upstream after an API change.
-crbug.com/370792790 conformance2/wasm/bufferdata-16gb-wasm-memory.html [ Failure ]
-crbug.com/370792790 conformance2/wasm/buffersubdata-16gb-wasm-memory.html [ Failure ]
-crbug.com/370792790 conformance2/wasm/getbuffersubdata-16gb-wasm-memory.html [ Failure ]
-crbug.com/370792790 conformance2/wasm/readpixels-16gb-wasm-memory.html [ Failure ]
-crbug.com/370792790 conformance2/wasm/teximage2d-16gb-wasm-memory.html [ Failure ]
-crbug.com/370792790 conformance2/wasm/texsubimage2d-16gb-wasm-memory.html [ Failure ]
-
 # Platform-independent failures due to a WebGL roll.
 crbug.com/371971708 conformance/context/context-lost-restored.html [ Failure ]
 crbug.com/371971708 conformance/context/context-lost.html [ Failure ]
