@@ -140,10 +140,11 @@ export class OsSettingsPeoplePageElement extends
         value: false,
       },
 
-      isGraduationEnabled_: {
+      showGraduationApp_: {
         type: Boolean,
         value: () => {
-          return loadTimeData.getBoolean('isGraduationEnabled');
+          return loadTimeData.getBoolean('isGraduationFlagEnabled') &&
+              loadTimeData.getBoolean('isGraduationAppEnabled');
         },
       },
 

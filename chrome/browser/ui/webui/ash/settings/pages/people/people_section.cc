@@ -478,11 +478,12 @@ void AddGraduationStrings(content::WebUIDataSource* html_source,
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  bool is_graduation_enabled =
-      features::IsGraduationEnabled() &&
+  bool is_graduation_app_enabled =
       profile->GetProfilePolicyConnector()->IsManaged() &&
       graduation::IsEligibleForGraduation(profile->GetPrefs());
-  html_source->AddBoolean("isGraduationEnabled", is_graduation_enabled);
+  html_source->AddBoolean("isGraduationFlagEnabled",
+                          features::IsGraduationEnabled());
+  html_source->AddBoolean("isGraduationAppEnabled", is_graduation_app_enabled);
 }
 
 bool IsSameAccount(const ::account_manager::AccountKey& account_key,

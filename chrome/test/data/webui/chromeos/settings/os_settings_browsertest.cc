@@ -239,6 +239,18 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Bool(),
     OSSettingsRevampMochaTestFaceGazeEnabled::DescribeParams);
 
+class OSSettingsRevampMochaTestGraduationEnabled
+    : public OSSettingsRevampMochaTest {
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{features::kGraduation};
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    RevampParameterized,
+    OSSettingsRevampMochaTestGraduationEnabled,
+    testing::Bool(),
+    OSSettingsRevampMochaTestGraduationEnabled::DescribeParams);
+
 class OSSettingsRevampMochaTestCaretBlinkSettingEnabled
     : public OSSettingsRevampMochaTest {
  private:
@@ -1646,6 +1658,11 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest, OsPeoplePage) {
   RunSettingsTest("os_people_page/os_people_page_test.js");
 }
 
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestGraduationEnabled,
+                       OsPeoplePage) {
+  RunSettingsTest("os_people_page/os_people_page_test.js");
+}
+
 IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
                        OsPeoplePageAccountManagerSettingsCard) {
   RunSettingsTest("os_people_page/account_manager_settings_card_test.js");
@@ -1670,7 +1687,7 @@ IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
   RunSettingsTest("os_people_page/fingerprint_list_subpage_test.js");
 }
 
-IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTest,
+IN_PROC_BROWSER_TEST_P(OSSettingsRevampMochaTestGraduationEnabled,
                        OsPeoplePageGraduationSettingsCard) {
   RunSettingsTest("os_people_page/graduation_settings_card_test.js");
 }
