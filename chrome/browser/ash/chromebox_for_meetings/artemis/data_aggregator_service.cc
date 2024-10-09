@@ -68,6 +68,8 @@ constexpr base::TimeDelta kExtendedCommandPollFrequency = base::Minutes(1);
 const char* kLocalCommandSourcesSlowPoll[] = {
     "df -h",
     "free -m",
+    "aplay -l",
+    "audio_diagnostics",
     // Hide kernelspace processes and show limited columns.
     "ps -o pid,user,group,args --ppid 2 -p 2 -N --sort=pid",
 };
