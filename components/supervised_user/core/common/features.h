@@ -92,6 +92,10 @@ BASE_DECLARE_FEATURE(kCloseSignTabsFromReauthenticationInterstitial);
 // supervised users when they try to access:
 // * Embedded YouTube videos if re-auth is forced for YouTube.
 // * Blocked sites in subframes if re-auth is forced for blocked sites.
+//
+// This flag is only effective if the flag
+// `kForceSupervisedUserReauthenticationForYouTube` or
+// `kForceSupervisedUserReauthenticationForBlockedSites` is enabled.
 BASE_DECLARE_FEATURE(kAllowSupervisedUserReauthenticationForSubframes);
 #endif
 
