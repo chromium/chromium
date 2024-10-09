@@ -892,8 +892,11 @@ void ServiceWorkerMainResourceLoader::DidDispatchFetchEvent(
   if (IsMatchedRouterSourceType(
           network::mojom::ServiceWorkerRouterSourceType::kCache)) {
     CHECK(cache_matcher_);
+    CHECK(response_head_->service_worker_router_info);
     response_head_->load_timing.service_worker_cache_lookup_start =
         cache_matcher_->cache_lookup_start();
+    response_head_->service_worker_router_info->cache_lookup_time =
+        cache_matcher_->cache_lookup_duration();
   }
 
   // Record the timing of when the fetch event is dispatched on the worker

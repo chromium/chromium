@@ -55,6 +55,9 @@ struct ServiceWorkerRouterInfo {
   // The router evaluation time calculated in us.
   mojo_base.mojom.TimeDelta router_evaluation_time;
 
+  // The cache lookup time calculated.
+  mojo_base.mojom.TimeDelta cache_lookup_time;
+
   // The state of the service worker when conducting router evaluation.
   ServiceWorkerStatus? evaluation_worker_status;
 };
