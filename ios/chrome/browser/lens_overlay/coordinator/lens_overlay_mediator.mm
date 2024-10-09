@@ -15,6 +15,7 @@
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator_delegate.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_consumer.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/edit_view_animatee.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
@@ -293,7 +294,7 @@
 }
 
 - (void)lensOverlayDidOpenOverlayMenu:(id<ChromeLensOverlay>)lensOverlay {
-  // TODO(crbug.com/359794018): Record metrics for this.
+  [self.delegate lensOverlayMediatorDidOpenOverlayMenu:self];
 }
 
 #pragma mark - Private

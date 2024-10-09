@@ -18,6 +18,7 @@
 @protocol ChromeLensOverlay;
 class LensOmniboxClient;
 @protocol LensOverlayCommands;
+@protocol LensOverlayMediatorDelegate;
 @protocol LensToolbarConsumer;
 @class OmniboxCoordinator;
 class TemplateURLService;
@@ -31,6 +32,9 @@ class WebState;
                                            LensOmniboxClientDelegate,
                                            LensToolbarMutator,
                                            OmniboxFocusDelegate>
+
+/// Delegate for this class.
+@property(nonatomic, weak) id<LensOverlayMediatorDelegate> delegate;
 
 @property(nonatomic, weak) id<LensOverlayResultConsumer> resultConsumer;
 

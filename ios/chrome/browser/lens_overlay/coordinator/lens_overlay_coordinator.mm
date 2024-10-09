@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client_delegate.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator_delegate.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_mediator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_web_state_delegate.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_entrypoint.h"
@@ -106,6 +107,7 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
 @interface LensOverlayCoordinator () <
     LensOverlayCommands,
     UISheetPresentationControllerDelegate,
+    LensOverlayMediatorDelegate,
     LensOverlayResultConsumer,
     LensResultPageWebStateDelegate,
     LensOverlayBottomSheetPresentationDelegate,
@@ -567,6 +569,13 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
       setOcclusionInsets:UIEdgeInsetsMake(0, 0, offsetNeeded, 0)
               reposition:YES
                 animated:YES];
+}
+
+#pragma mark - LensOverlayMediatorDelegate
+
+- (void)lensOverlayMediatorDidOpenOverlayMenu:(LensOverlayMediator*)mediator {
+  [self
+      recordFirstInteraction:lens::LensOverlayFirstInteractionType::kLensMenu];
 }
 
 #pragma mark - LensOverlayResultConsumer
