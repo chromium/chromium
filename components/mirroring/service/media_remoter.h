@@ -45,7 +45,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) MediaRemoter final
  public:
   class Client {
    public:
-    virtual ~Client() {}
+    virtual ~Client() = default;
 
     // Connects the |remoter| with a source tab.
     virtual void ConnectToRemotingSource(

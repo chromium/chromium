@@ -24,7 +24,7 @@ CapturedAudioInput::CapturedAudioInput(
   DCHECK(!stream_creator_callback_.is_null());
 }
 
-CapturedAudioInput::~CapturedAudioInput() {}
+CapturedAudioInput::~CapturedAudioInput() = default;
 
 void CapturedAudioInput::CreateStream(media::AudioInputIPCDelegate* delegate,
                                       const media::AudioParameters& params,

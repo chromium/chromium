@@ -37,8 +37,8 @@ class MockStream final : public media::mojom::AudioInputStream {
 
 class MockDelegate final : public media::AudioInputIPCDelegate {
  public:
-  MockDelegate() {}
-  ~MockDelegate() override {}
+  MockDelegate() = default;
+  ~MockDelegate() override = default;
 
   MOCK_METHOD0(StreamCreated, void());
   MOCK_METHOD1(OnError, void(AudioSourceErrorCode code));
@@ -56,7 +56,7 @@ class MockDelegate final : public media::AudioInputIPCDelegate {
 
 class CapturedAudioInputTest : public ::testing::Test {
  public:
-  CapturedAudioInputTest() {}
+  CapturedAudioInputTest() = default;
 
   CapturedAudioInputTest(const CapturedAudioInputTest&) = delete;
   CapturedAudioInputTest& operator=(const CapturedAudioInputTest&) = delete;
