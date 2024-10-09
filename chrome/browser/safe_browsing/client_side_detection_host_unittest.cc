@@ -429,6 +429,9 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
                                                 : AsyncMatch::NO_MATCH));
       EXPECT_CALL(*database_manager_.get(), CanCheckUrl(_))
           .WillOnce(Return(true));
+    } else {
+      EXPECT_CALL(*database_manager_.get(), CheckCsdAllowlistUrl(url, _))
+          .Times(0);
     }
     if (get_valid_cached_result) {
       EXPECT_CALL(*csd_service_, GetValidCachedResult(url, NotNull()))
@@ -1893,10 +1896,10 @@ TEST_F(ClientSideDetectionRTLookupResponseForceRequestTest,
   SetRTResponseInCacheManager(/*is_enforced=*/true);
 
   // get_valid_cached_result is set to nullptr, because the request type is not
-  // TRIGGER_MODELS.
-  ExpectPreClassificationChecks(example_url, &kFalse, &kFalse,
-                                /*get_valid_cached_result=*/nullptr, &kFalse,
-                                &kFalse);
+  // TRIGGER_MODELS. Force request triggers also bypass the CSD allowlist.
+  ExpectPreClassificationChecks(
+      example_url, &kFalse, /*match_csd_allowlist=*/nullptr,
+      /*get_valid_cached_result=*/nullptr, &kFalse, &kFalse);
   // This call should trigger preclassification check again.
   CompleteAsyncCheck();
 
@@ -1972,10 +1975,10 @@ TEST_F(ClientSideDetectionRTLookupResponseForceRequestTest,
   database_manager_->SetAllowlistLookupDetailsForUrl(example_url, true);
 
   // get_valid_cached_result is set to nullptr, because the request type is not
-  // TRIGGER_MODELS.
-  ExpectPreClassificationChecks(example_url, &kFalse, &kFalse,
-                                /*get_valid_cached_result=*/nullptr, &kFalse,
-                                &kFalse);
+  // TRIGGER_MODELS. Force request bypasses CSD allowlist check.
+  ExpectPreClassificationChecks(
+      example_url, &kFalse, /*match_csd_allowlist=*/nullptr,
+      /*get_valid_cached_result=*/nullptr, &kFalse, &kFalse);
   // This call should trigger preclassification check again.
   CompleteAsyncCheck();
 

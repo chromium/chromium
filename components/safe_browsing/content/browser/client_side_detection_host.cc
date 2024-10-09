@@ -362,8 +362,12 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
       return;
     }
 
-    if (ShouldSkipCSDAllowlist()) {
-      // Command line flag to skip the allowlist check has been set.
+    // If we get a suspcious verdict from RTLookupResponse, we should get a
+    // second opinion on CSD side, so we skip the allowlist. We also check the
+    // command line flag if the allowlist should be skipped.
+    if (phishing_detection_request_type_ ==
+            safe_browsing::ClientSideDetectionType::FORCE_REQUEST ||
+        ShouldSkipCSDAllowlist()) {
       OnAllowlistCheckDone(url, phishing_reason,
                            /*match_allowlist=*/false);
       return;
@@ -394,8 +398,8 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
     if (phishing_reason !=
         PreClassificationCheckResult::NO_CLASSIFY_NO_DATABASE_MANAGER) {
       // This check is also for logging purposes although the CSD allowlist
-      // could be matched. Once it completes, preclassification check will
-      // continue.
+      // could be matched or not checked at all. Once it completes,
+      // preclassification check will continue.
       database_manager_->CheckUrlForHighConfidenceAllowlist(
           url,
           base::BindOnce(&ClientSideDetectionHost::ShouldClassifyUrlRequest::
