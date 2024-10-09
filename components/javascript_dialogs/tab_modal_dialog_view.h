@@ -12,7 +12,7 @@ namespace javascript_dialogs {
 
 class TabModalDialogView {
  public:
-  virtual ~TabModalDialogView() {}
+  virtual ~TabModalDialogView() = default;
 
   // Closes the dialog without sending a callback. This is useful when the
   // TabModalDialogManager needs to make this dialog go away so that it can

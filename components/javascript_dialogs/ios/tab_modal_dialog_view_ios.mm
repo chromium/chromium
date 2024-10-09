@@ -32,7 +32,7 @@ base::WeakPtr<TabModalDialogViewIOS> TabModalDialogViewIOS::Create(
 }
 
 // TabModalDialogViewIOS:
-TabModalDialogViewIOS::~TabModalDialogViewIOS() {}
+TabModalDialogViewIOS::~TabModalDialogViewIOS() = default;
 
 void TabModalDialogViewIOS::CloseDialogWithoutCallback() {
   coordinator_ = nullptr;

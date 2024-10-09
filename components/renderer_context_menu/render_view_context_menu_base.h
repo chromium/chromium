@@ -39,7 +39,7 @@ class RenderViewContextMenuBase : public ui::SimpleMenuModel::Delegate,
   // the embedder.
   class ToolkitDelegate {
    public:
-    virtual ~ToolkitDelegate() {}
+    virtual ~ToolkitDelegate() = default;
     // Initialize the toolkit's menu.
     virtual void Init(ui::SimpleMenuModel* menu_model) = 0;
 

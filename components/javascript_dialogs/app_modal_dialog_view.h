@@ -9,7 +9,7 @@ namespace javascript_dialogs {
 
 class AppModalDialogView {
  public:
-  virtual ~AppModalDialogView() {}
+  virtual ~AppModalDialogView() = default;
 
   // Shows the dialog.
   virtual void ShowAppModalDialog() = 0;
