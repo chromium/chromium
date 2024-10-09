@@ -6,11 +6,13 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "chrome/browser/ui/android/plus_addresses/jni_headers/PlusAddressesHelper_jni.h"
 #include "components/plus_addresses/features.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/PlusAddressesHelper_jni.h"
 
 namespace plus_addresses {
 
