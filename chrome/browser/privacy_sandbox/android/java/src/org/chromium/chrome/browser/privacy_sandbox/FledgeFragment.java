@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.os.Bundle;
+import android.text.style.ClickableSpan;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -28,7 +29,6 @@ import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 import java.util.List;
@@ -101,26 +101,42 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
                         new SpanApplier.SpanInfo(
                                 "<link>",
                                 "</link>",
-                                new NoUnderlineClickableSpan(
-                                        getContext(), this::onLearnMoreClicked))));
+                                new ClickableSpan() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        onLearnMoreClicked(view);
+                                    }
+                                })));
         mFooterPreference.setSummary(
                 SpanApplier.applySpans(
                         getResources().getString(R.string.settings_fledge_page_footer_new),
                         new SpanApplier.SpanInfo(
                                 "<link1>",
                                 "</link1>",
-                                new NoUnderlineClickableSpan(
-                                        getContext(), this::onFledgeSettingsLinkClicked)),
+                                new ClickableSpan() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        onFledgeSettingsLinkClicked(view);
+                                    }
+                                }),
                         new SpanApplier.SpanInfo(
                                 "<link2>",
                                 "</link2>",
-                                new NoUnderlineClickableSpan(
-                                        getContext(), this::onCookieSettingsLink)),
+                                new ClickableSpan() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        onCookieSettingsLink(view);
+                                    }
+                                }),
                         new SpanApplier.SpanInfo(
                                 "<link3>",
                                 "</link3>",
-                                new NoUnderlineClickableSpan(
-                                        getContext(), this::onManagingAdPrivacyClicked))));
+                                new ClickableSpan() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        onManagingAdPrivacyClicked(view);
+                                    }
+                                })));
     }
 
     @Override
