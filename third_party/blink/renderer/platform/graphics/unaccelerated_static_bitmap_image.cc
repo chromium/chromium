@@ -135,11 +135,6 @@ UnacceleratedStaticBitmapImage::ConvertToColorSpace(
 }
 
 bool UnacceleratedStaticBitmapImage::CopyToResourceProvider(
-    CanvasResourceProvider* resource_provider) {
-  return CopyToResourceProvider(resource_provider, Rect());
-}
-
-bool UnacceleratedStaticBitmapImage::CopyToResourceProvider(
     CanvasResourceProvider* resource_provider,
     const gfx::Rect& copy_rect) {
   DCHECK(resource_provider);

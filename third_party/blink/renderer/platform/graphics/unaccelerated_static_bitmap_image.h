@@ -40,8 +40,6 @@ class PLATFORM_EXPORT UnacceleratedStaticBitmapImage final
 
   void Transfer() final;
 
-  bool CopyToResourceProvider(CanvasResourceProvider*) override;
-
   bool CopyToResourceProvider(CanvasResourceProvider* resource_provider,
                               const gfx::Rect& copy_rect) override;
 
