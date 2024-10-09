@@ -76,6 +76,19 @@ TEST_F(DBusSchedQOSStateHandlerTest, InitializeProcessPriority) {
                                resource_manager::ProcessState::kNormal)));
 }
 
+TEST_F(DBusSchedQOSStateHandlerTest, RecoverFromUnavailableService) {
+  // WaitForServiceToBeAvailable() notifies false and then true.
+  ASSERT_TRUE(resourced_client_->TriggerServiceAvailable(false));
+  task_environment_.RunUntilIdle();
+  task_environment_.FastForwardBy(base::Seconds(10));
+  ASSERT_TRUE(resourced_client_->TriggerServiceAvailable(true));
+  task_environment_.RunUntilIdle();
+  process_.InitializePriority();
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(resourced_client_->GetProcessStateHistory().size(), 1ul);
+}
+
 TEST_F(DBusSchedQOSStateHandlerTest, SetProcessPriority) {
   ASSERT_TRUE(resourced_client_->TriggerServiceAvailable(true));
   task_environment_.RunUntilIdle();

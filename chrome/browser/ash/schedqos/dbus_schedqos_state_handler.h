@@ -97,6 +97,8 @@ class DBusSchedQOSStateHandler
   explicit DBusSchedQOSStateHandler(
       scoped_refptr<base::SequencedTaskRunner> main_task_runner);
 
+  void WaitForResourcedAvailable();
+
   void CheckResourcedDisconnected(dbus::DBusResult result);
 
   void OnServiceConnected(bool success);
@@ -130,6 +132,7 @@ class DBusSchedQOSStateHandler
   SEQUENCE_CHECKER(sequence_checker_);
 
   bool is_connected_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool is_dbus_down_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   base::Lock process_state_map_lock_;
 

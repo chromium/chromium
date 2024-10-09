@@ -15,6 +15,7 @@
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/synchronization/lock.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ash/system/procfs_util.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
@@ -24,6 +25,8 @@
 namespace ash {
 
 namespace {
+
+constexpr base::TimeDelta kRetryServiceMonitorInterval = base::Seconds(10);
 
 DBusSchedQOSStateHandler::PidReuseResult GetPidReuseResult(bool is_pid_reused,
                                                            bool success) {
@@ -197,23 +200,37 @@ bool DBusSchedQOSStateHandler::HandleThreadTypeChange(
   return HandleThreadTypeChange(getpid(), thread_id, thread_type);
 }
 
+void DBusSchedQOSStateHandler::WaitForResourcedAvailable() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ash::ResourcedClient::Get()->WaitForServiceToBeAvailable(
+      base::BindOnce(&DBusSchedQOSStateHandler::OnServiceConnected,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
 void DBusSchedQOSStateHandler::CheckResourcedDisconnected(
     dbus::DBusResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_connected_ && result == dbus::DBusResult::kErrorServiceUnknown) {
     is_connected_ = false;
-    ash::ResourcedClient::Get()->WaitForServiceToBeAvailable(
-        base::BindOnce(&DBusSchedQOSStateHandler::OnServiceConnected,
-                       weak_ptr_factory_.GetWeakPtr()));
+    WaitForResourcedAvailable();
   }
 }
 
 void DBusSchedQOSStateHandler::OnServiceConnected(bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::UmaHistogramBoolean("Scheduling.DBusSchedQoS.ServiceConnectionSuccess",
+                            success);
   if (!success) {
-    LOG(ERROR) << "resourced service is not available";
+    LOG_IF(ERROR, !is_dbus_down_) << "resourced service is not available";
+    is_dbus_down_ = true;
+    main_task_runner_->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&DBusSchedQOSStateHandler::WaitForResourcedAvailable,
+                       weak_ptr_factory_.GetWeakPtr()),
+        kRetryServiceMonitorInterval);
     return;
   }
+  is_dbus_down_ = false;
 
   DCHECK(!is_connected_);
   if (is_connected_) {

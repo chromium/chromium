@@ -87,6 +87,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Scheduling.DBusSchedQoS.ServiceConnectionSuccess"
+    enum="Boolean" expires_after="2025-02-10">
+  <owner>kawasin@google.com</owner>
+  <owner>joelaf@google.com</owner>
+  <summary>
+    Records whether ResourcedClient::WaitForServiceToBeAvailable() succeeds or
+    not. It fails only when ObjectProxy::ConnectToNameOwnerChangedSignal() fails
+    which we expect to fail very rarely. This is emitted every time the callback
+    of ResourcedClient::WaitForServiceToBeAvailable() runs.
+  </summary>
+</histogram>
+
 <histogram name="Scheduling.DBusSchedQoS.SetProcessStateLatency"
     units="microseconds" expires_after="2025-02-10">
   <owner>kawasin@google.com</owner>
