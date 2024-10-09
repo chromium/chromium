@@ -12,9 +12,8 @@ class ErroredBytesConsumer final : public BytesConsumer {
  public:
   explicit ErroredBytesConsumer(const Error& error) : error_(error) {}
 
-  Result BeginRead(const char** buffer, size_t* available) override {
-    *buffer = nullptr;
-    *available = 0;
+  Result BeginRead(base::span<const char>& buffer) override {
+    buffer = {};
     return Result::kError;
   }
   Result EndRead(size_t read_size) override {
@@ -35,9 +34,8 @@ class ErroredBytesConsumer final : public BytesConsumer {
 
 class ClosedBytesConsumer final : public BytesConsumer {
  public:
-  Result BeginRead(const char** buffer, size_t* available) override {
-    *buffer = nullptr;
-    *available = 0;
+  Result BeginRead(base::span<const char>& buffer) override {
+    buffer = {};
     return Result::kDone;
   }
   Result EndRead(size_t read_size) override {
@@ -57,6 +55,15 @@ class ClosedBytesConsumer final : public BytesConsumer {
 };
 
 }  // namespace
+
+BytesConsumer::Result BytesConsumer::BeginRead(const char** buffer,
+                                               size_t* available) {
+  base::span<const char> buffer_span;
+  auto result = BeginRead(buffer_span);
+  *buffer = buffer_span.data();
+  *available = buffer_span.size();
+  return result;
+}
 
 BytesConsumer* BytesConsumer::CreateErrored(const BytesConsumer::Error& error) {
   return MakeGarbageCollected<ErroredBytesConsumer>(error);

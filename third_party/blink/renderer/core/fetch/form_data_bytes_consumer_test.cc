@@ -219,17 +219,18 @@ TEST_F(FormDataBytesConsumerTest, TwoPhaseReadFromComplexFormData) {
       GetFrame().DomWindow(), data, underlying);
   Checkpoint checkpoint;
 
-  const char* buffer = nullptr;
-  size_t available = 0;
+  base::span<const char> buffer_span;
 
   InSequence s;
   EXPECT_CALL(checkpoint, Call(1));
-  EXPECT_CALL(*underlying, BeginRead(&buffer, &available))
+  EXPECT_CALL(*underlying, BeginRead(buffer_span))
       .WillOnce(Return(Result::kOk));
   EXPECT_CALL(checkpoint, Call(2));
   EXPECT_CALL(*underlying, EndRead(0)).WillOnce(Return(Result::kOk));
   EXPECT_CALL(checkpoint, Call(3));
 
+  const char* buffer = nullptr;
+  size_t available = 0;
   checkpoint.Call(1);
   ASSERT_EQ(Result::kOk, consumer->BeginRead(&buffer, &available));
   checkpoint.Call(2);
@@ -401,13 +402,12 @@ TEST_F(FormDataBytesConsumerTest, BeginReadAffectsDrainingWithComplexFormData) {
   BytesConsumer* consumer = MakeGarbageCollected<FormDataBytesConsumer>(
       GetFrame().DomWindow(), ComplexFormData(), underlying);
 
-  const char* buffer = nullptr;
-  size_t available = 0;
+  base::span<const char> buffer_span;
   Checkpoint checkpoint;
 
   InSequence s;
   EXPECT_CALL(checkpoint, Call(1));
-  EXPECT_CALL(*underlying, BeginRead(&buffer, &available))
+  EXPECT_CALL(*underlying, BeginRead(buffer_span))
       .WillOnce(Return(Result::kOk));
   EXPECT_CALL(*underlying, EndRead(0)).WillOnce(Return(Result::kOk));
   EXPECT_CALL(checkpoint, Call(2));
@@ -420,6 +420,8 @@ TEST_F(FormDataBytesConsumerTest, BeginReadAffectsDrainingWithComplexFormData) {
       .WillOnce(Return(BytesConsumer::PublicState::kReadableOrWaiting));
   EXPECT_CALL(checkpoint, Call(5));
 
+  const char* buffer = nullptr;
+  size_t available = 0;
   checkpoint.Call(1);
   ASSERT_EQ(Result::kOk, consumer->BeginRead(&buffer, &available));
   ASSERT_EQ(Result::kOk, consumer->EndRead(0));

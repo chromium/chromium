@@ -40,9 +40,8 @@ class DataOnlyBytesConsumer : public BytesConsumer {
   }
 
   // BytesConsumer implementation
-  Result BeginRead(const char** buffer, size_t* available) override {
-    *buffer = nullptr;
-    *available = 0;
+  Result BeginRead(base::span<const char>& buffer) override {
+    buffer = {};
     if (form_data_) {
       form_data_->Flatten(flatten_form_data_);
       form_data_ = nullptr;
@@ -50,8 +49,7 @@ class DataOnlyBytesConsumer : public BytesConsumer {
     }
     if (flatten_form_data_offset_ == flatten_form_data_.size())
       return Result::kDone;
-    *buffer = flatten_form_data_.data() + flatten_form_data_offset_;
-    *available = flatten_form_data_.size() - flatten_form_data_offset_;
+    buffer = base::span(flatten_form_data_).subspan(flatten_form_data_offset_);
     return Result::kOk;
   }
   Result EndRead(size_t read_size) override {
@@ -123,9 +121,8 @@ class DataAndDataPipeBytesConsumer final : public BytesConsumer {
     iter_ = form_data_->MutableElements().begin();
   }
 
-  Result BeginRead(const char** buffer, size_t* available) override {
-    *buffer = nullptr;
-    *available = 0;
+  Result BeginRead(base::span<const char>& buffer) override {
+    buffer = {};
     if (state_ == PublicState::kClosed)
       return Result::kDone;
     if (state_ == PublicState::kErrored)
@@ -148,7 +145,7 @@ class DataAndDataPipeBytesConsumer final : public BytesConsumer {
           simple_consumer_->SetClient(client_);
       }
       // Read from the bytes consumer.
-      Result result = simple_consumer_->BeginRead(buffer, available);
+      Result result = simple_consumer_->BeginRead(buffer);
       if (result == Result::kError) {
         SetError();
         return Result::kError;
@@ -157,7 +154,7 @@ class DataAndDataPipeBytesConsumer final : public BytesConsumer {
       if (result == Result::kDone) {
         simple_consumer_ = nullptr;
         ++iter_;
-        return BeginRead(buffer, available);
+        return BeginRead(buffer);
       }
       return result;
     }
@@ -192,7 +189,7 @@ class DataAndDataPipeBytesConsumer final : public BytesConsumer {
       }
 
       // Read from the data pipe consumer.
-      Result result = data_pipe_consumer_->BeginRead(buffer, available);
+      Result result = data_pipe_consumer_->BeginRead(buffer);
       if (result == Result::kError) {
         SetError();
         return Result::kError;
@@ -203,7 +200,7 @@ class DataAndDataPipeBytesConsumer final : public BytesConsumer {
         data_pipe_consumer_ = nullptr;
         completion_notifier_ = nullptr;
         ++iter_;
-        return BeginRead(buffer, available);
+        return BeginRead(buffer);
       }
       return result;
     }
@@ -431,12 +428,12 @@ class DataAndEncodedFileOrBlobBytesConsumer final : public BytesConsumer {
   }
 
   // BytesConsumer implementation
-  Result BeginRead(const char** buffer, size_t* available) override {
+  Result BeginRead(base::span<const char>& buffer) override {
     form_data_ = nullptr;
     // Delegate the operation to the underlying consumer. This relies on
     // the fact that we appropriately notify the draining information to
     // the underlying consumer.
-    return blob_bytes_consumer_->BeginRead(buffer, available);
+    return blob_bytes_consumer_->BeginRead(buffer);
   }
   Result EndRead(size_t read_size) override {
     return blob_bytes_consumer_->EndRead(read_size);

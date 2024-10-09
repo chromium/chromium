@@ -21,7 +21,10 @@ class PLATFORM_EXPORT SharedBufferBytesConsumer final : public BytesConsumer {
       delete;
 
   // Implements BytesConsumer.
-  Result BeginRead(const char** buffer, size_t* available) override;
+  Result BeginRead(base::span<const char>& buffer) override;
+  Result BeginRead(const char** buffer, size_t* available) {
+    return BytesConsumer::BeginRead(buffer, available);
+  }
   Result EndRead(size_t read_size) override;
   void SetClient(Client* client) override {}
   void ClearClient() override {}

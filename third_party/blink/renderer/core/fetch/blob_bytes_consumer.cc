@@ -67,8 +67,8 @@ BlobBytesConsumer::BlobBytesConsumer(
 
 BlobBytesConsumer::~BlobBytesConsumer() = default;
 
-BytesConsumer::Result BlobBytesConsumer::BeginRead(const char** buffer,
-                                                   size_t* available) {
+BytesConsumer::Result BlobBytesConsumer::BeginRead(
+    base::span<const char>& buffer) {
   if (!nested_consumer_) {
     if (!blob_data_handle_)
       return Result::kDone;
@@ -105,7 +105,7 @@ BytesConsumer::Result BlobBytesConsumer::BeginRead(const char** buffer,
     blob_data_handle_ = nullptr;
     client_ = nullptr;
   }
-  return nested_consumer_->BeginRead(buffer, available);
+  return nested_consumer_->BeginRead(buffer);
 }
 
 BytesConsumer::Result BlobBytesConsumer::EndRead(size_t read) {

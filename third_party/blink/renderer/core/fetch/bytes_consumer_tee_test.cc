@@ -47,7 +47,7 @@ class FakeBlobBytesConsumer : public BytesConsumer {
       : blob_handle_(std::move(handle)) {}
   ~FakeBlobBytesConsumer() override {}
 
-  Result BeginRead(const char** buffer, size_t* available) override {
+  Result BeginRead(base::span<const char>& buffer) override {
     if (state_ == PublicState::kClosed)
       return Result::kDone;
     blob_handle_ = nullptr;
@@ -91,7 +91,7 @@ class FakeFormDataBytesConsumer : public BytesConsumer {
       : form_data_(std::move(form_data)) {}
   ~FakeFormDataBytesConsumer() override {}
 
-  Result BeginRead(const char** buffer, size_t* available) override {
+  Result BeginRead(base::span<const char>& buffer) override {
     if (state_ == PublicState::kClosed)
       return Result::kDone;
     form_data_ = nullptr;

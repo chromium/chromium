@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/fetch/bytes_consumer_tee.h"
 
 #include <string.h>
@@ -59,9 +54,8 @@ class TeeHelper final : public GarbageCollected<TeeHelper>,
     bool has_enqueued = false;
 
     while (true) {
-      const char* buffer = nullptr;
-      size_t available = 0;
-      auto result = src_->BeginRead(&buffer, &available);
+      base::span<const char> buffer;
+      auto result = src_->BeginRead(buffer);
       if (result == Result::kShouldWait) {
         if (has_enqueued && destination1_was_empty)
           destination1_->Notify();
@@ -71,9 +65,8 @@ class TeeHelper final : public GarbageCollected<TeeHelper>,
       }
       Chunk* chunk = nullptr;
       if (result == Result::kOk) {
-        chunk = MakeGarbageCollected<Chunk>(
-            buffer, base::checked_cast<wtf_size_t>(available));
-        result = src_->EndRead(available);
+        chunk = MakeGarbageCollected<Chunk>(buffer);
+        result = src_->EndRead(buffer.size());
       }
       switch (result) {
         case Result::kOk:
@@ -129,9 +122,10 @@ class TeeHelper final : public GarbageCollected<TeeHelper>,
   using Result = BytesConsumer::Result;
   class Chunk final : public GarbageCollected<Chunk> {
    public:
-    Chunk(const char* data, wtf_size_t size) {
-      buffer_.ReserveInitialCapacity(size);
-      buffer_.Append(data, size);
+    explicit Chunk(base::span<const char> data) {
+      buffer_.ReserveInitialCapacity(
+          base::checked_cast<wtf_size_t>(data.size()));
+      buffer_.AppendSpan(data);
       // Report buffer size to V8 so GC can be triggered appropriately.
       external_memory_accounter_.Increase(v8::Isolate::GetCurrent(),
                                           static_cast<int64_t>(buffer_.size()));
@@ -155,17 +149,15 @@ class TeeHelper final : public GarbageCollected<TeeHelper>,
     Destination(ExecutionContext* execution_context, TeeHelper* tee)
         : execution_context_(execution_context), tee_(tee) {}
 
-    Result BeginRead(const char** buffer, size_t* available) override {
+    Result BeginRead(base::span<const char>& buffer) override {
       DCHECK(!chunk_in_use_);
-      *buffer = nullptr;
-      *available = 0;
+      buffer = {};
       if (is_cancelled_ || is_closed_)
         return Result::kDone;
       if (!chunks_.empty()) {
         Chunk* chunk = chunks_[0];
         DCHECK_LE(offset_, chunk->size());
-        *buffer = chunk->data() + offset_;
-        *available = chunk->size() - offset_;
+        buffer = base::span(*chunk).subspan(offset_);
         chunk_in_use_ = chunk;
         return Result::kOk;
       }

@@ -21,8 +21,8 @@ ReplayingBytesConsumer::ReplayingBytesConsumer(
 
 ReplayingBytesConsumer::~ReplayingBytesConsumer() {}
 
-BytesConsumer::Result ReplayingBytesConsumer::BeginRead(const char** buffer,
-                                                        size_t* available) {
+BytesConsumer::Result ReplayingBytesConsumer::BeginRead(
+    base::span<const char>& buffer) {
   DCHECK(!is_in_two_phase_read_);
   ++notification_token_;
   if (commands_.empty()) {
@@ -40,8 +40,7 @@ BytesConsumer::Result ReplayingBytesConsumer::BeginRead(const char** buffer,
     case Command::kDataAndDone:
     case Command::kData:
       DCHECK_LE(offset_, command.Body().size());
-      *buffer = command.Body().data() + offset_;
-      *available = command.Body().size() - offset_;
+      buffer = base::span(command.Body()).subspan(offset_);
       is_in_two_phase_read_ = true;
       return Result::kOk;
     case Command::kDone:

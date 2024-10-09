@@ -55,11 +55,10 @@ DataPipeBytesConsumer::DataPipeBytesConsumer(
 
 DataPipeBytesConsumer::~DataPipeBytesConsumer() {}
 
-BytesConsumer::Result DataPipeBytesConsumer::BeginRead(const char** buffer,
-                                                       size_t* available) {
+BytesConsumer::Result DataPipeBytesConsumer::BeginRead(
+    base::span<const char>& buffer) {
   DCHECK(!is_in_two_phase_read_);
-  *buffer = nullptr;
-  *available = 0;
+  buffer = {};
   if (state_ == InternalState::kClosed)
     return Result::kDone;
   if (state_ == InternalState::kErrored)
@@ -72,13 +71,10 @@ BytesConsumer::Result DataPipeBytesConsumer::BeginRead(const char** buffer,
 
   base::span<const uint8_t> bytes;
   MojoResult rv = data_pipe_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, bytes);
-  base::span<const char> chars = base::as_chars(bytes);
-
   switch (rv) {
     case MOJO_RESULT_OK:
       is_in_two_phase_read_ = true;
-      *buffer = chars.data();
-      *available = chars.size();
+      buffer = base::as_chars(bytes);
       return Result::kOk;
     case MOJO_RESULT_SHOULD_WAIT:
       watcher_.ArmOrNotify();

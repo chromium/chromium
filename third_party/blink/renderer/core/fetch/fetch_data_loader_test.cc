@@ -28,14 +28,14 @@ namespace blink {
 
 namespace {
 
+using testing::_;
 using testing::ByMove;
+using testing::DoAll;
 using testing::InSequence;
 using testing::Return;
-using testing::DoAll;
-using testing::StrictMock;
-using testing::_;
 using testing::SaveArg;
-using testing::SetArgPointee;
+using testing::SetArgReferee;
+using testing::StrictMock;
 using Checkpoint = StrictMock<testing::MockFunction<void(int)>>;
 using MockFetchDataLoaderClient =
     BytesConsumerTestUtil::MockFetchDataLoaderClient;
@@ -162,17 +162,17 @@ TEST_F(FetchDataLoaderBlobTest, LoadAsBlob) {
   EXPECT_CALL(*consumer, GetPublicState())
       .WillOnce(Return(BytesConsumer::PublicState::kReadableOrWaiting));
   EXPECT_CALL(checkpoint, Call(2));
-  EXPECT_CALL(*consumer, BeginRead(_, _))
-      .WillOnce(DoAll(SetArgPointee<0>(nullptr), SetArgPointee<1>(0),
+  EXPECT_CALL(*consumer, BeginRead(_))
+      .WillOnce(DoAll(SetArgReferee<0>(base::span<const char>{}),
                       Return(Result::kShouldWait)));
   EXPECT_CALL(checkpoint, Call(3));
-  EXPECT_CALL(*consumer, BeginRead(_, _))
-      .WillOnce(DoAll(SetArgPointee<0>(kQuickBrownFox),
-                      SetArgPointee<1>(kQuickBrownFoxLengthWithTerminatingNull),
-                      Return(Result::kOk)));
+  EXPECT_CALL(*consumer, BeginRead(_))
+      .WillOnce(DoAll(
+          SetArgReferee<0>(base::span_with_nul_from_cstring(kQuickBrownFox)),
+          Return(Result::kOk)));
   EXPECT_CALL(*consumer, EndRead(kQuickBrownFoxLengthWithTerminatingNull))
       .WillOnce(Return(Result::kOk));
-  EXPECT_CALL(*consumer, BeginRead(_, _)).WillOnce(Return(Result::kDone));
+  EXPECT_CALL(*consumer, BeginRead(_)).WillOnce(Return(Result::kDone));
   EXPECT_CALL(*consumer, Cancel());
   EXPECT_CALL(*fetch_data_loader_client, DidFetchDataLoadedBlobHandleMock(_))
       .WillOnce(DoAll(SaveArg<0>(&blob_data_handle), QUITLOOP(&run_loop)));
@@ -215,17 +215,17 @@ TEST_F(FetchDataLoaderBlobTest, LoadAsBlobFailed) {
   EXPECT_CALL(*consumer, GetPublicState())
       .WillOnce(Return(BytesConsumer::PublicState::kReadableOrWaiting));
   EXPECT_CALL(checkpoint, Call(2));
-  EXPECT_CALL(*consumer, BeginRead(_, _))
-      .WillOnce(DoAll(SetArgPointee<0>(nullptr), SetArgPointee<1>(0),
+  EXPECT_CALL(*consumer, BeginRead(_))
+      .WillOnce(DoAll(SetArgReferee<0>(base::span<const char>{}),
                       Return(Result::kShouldWait)));
   EXPECT_CALL(checkpoint, Call(3));
-  EXPECT_CALL(*consumer, BeginRead(_, _))
-      .WillOnce(DoAll(SetArgPointee<0>(kQuickBrownFox),
-                      SetArgPointee<1>(kQuickBrownFoxLengthWithTerminatingNull),
-                      Return(Result::kOk)));
+  EXPECT_CALL(*consumer, BeginRead(_))
+      .WillOnce(DoAll(
+          SetArgReferee<0>(base::span_with_nul_from_cstring(kQuickBrownFox)),
+          Return(Result::kOk)));
   EXPECT_CALL(*consumer, EndRead(kQuickBrownFoxLengthWithTerminatingNull))
       .WillOnce(Return(Result::kOk));
-  EXPECT_CALL(*consumer, BeginRead(_, _)).WillOnce(Return(Result::kError));
+  EXPECT_CALL(*consumer, BeginRead(_)).WillOnce(Return(Result::kError));
   EXPECT_CALL(*consumer, Cancel());
   EXPECT_CALL(*fetch_data_loader_client, DidFetchDataLoadFailed());
   EXPECT_CALL(checkpoint, Call(4));
@@ -263,8 +263,8 @@ TEST_F(FetchDataLoaderBlobTest, LoadAsBlobCancel) {
   EXPECT_CALL(*consumer, GetPublicState())
       .WillOnce(Return(BytesConsumer::PublicState::kReadableOrWaiting));
   EXPECT_CALL(checkpoint, Call(2));
-  EXPECT_CALL(*consumer, BeginRead(_, _))
-      .WillOnce(DoAll(SetArgPointee<0>(nullptr), SetArgPointee<1>(0),
+  EXPECT_CALL(*consumer, BeginRead(_))
+      .WillOnce(DoAll(SetArgReferee<0>(base::span<const char>{}),
                       Return(Result::kShouldWait)));
   EXPECT_CALL(checkpoint, Call(3));
   EXPECT_CALL(*consumer, Cancel());
@@ -305,23 +305,23 @@ TEST_F(FetchDataLoaderBlobTest, LoadAsBlobNoClientCallbacksAfterCancel) {
   EXPECT_CALL(*consumer, GetPublicState())
       .WillOnce(Return(BytesConsumer::PublicState::kReadableOrWaiting));
   EXPECT_CALL(checkpoint, Call(2));
-  EXPECT_CALL(*consumer, BeginRead(_, _))
-      .WillOnce(DoAll(SetArgPointee<0>(nullptr), SetArgPointee<1>(0),
+  EXPECT_CALL(*consumer, BeginRead(_))
+      .WillOnce(DoAll(SetArgReferee<0>(base::span<const char>{}),
                       Return(Result::kShouldWait)));
   EXPECT_CALL(checkpoint, Call(3));
-  EXPECT_CALL(*consumer, BeginRead(_, _))
-      .WillOnce(DoAll(SetArgPointee<0>(kQuickBrownFox),
-                      SetArgPointee<1>(kQuickBrownFoxLengthWithTerminatingNull),
-                      Return(Result::kOk)));
+  EXPECT_CALL(*consumer, BeginRead(_))
+      .WillOnce(DoAll(
+          SetArgReferee<0>(base::span_with_nul_from_cstring(kQuickBrownFox)),
+          Return(Result::kOk)));
   EXPECT_CALL(*consumer, EndRead(kQuickBrownFoxLengthWithTerminatingNull))
       .WillOnce(Return(Result::kOk));
-  EXPECT_CALL(*consumer, BeginRead(_, _))
-      .WillOnce(DoAll(SetArgPointee<0>(nullptr), SetArgPointee<1>(0),
+  EXPECT_CALL(*consumer, BeginRead(_))
+      .WillOnce(DoAll(SetArgReferee<0>(base::span<const char>{}),
                       Return(Result::kShouldWait)));
   EXPECT_CALL(checkpoint, Call(4));
   EXPECT_CALL(*consumer, Cancel());
   EXPECT_CALL(checkpoint, Call(5));
-  EXPECT_CALL(*consumer, BeginRead(_, _)).WillOnce(Return(Result::kDone));
+  EXPECT_CALL(*consumer, BeginRead(_)).WillOnce(Return(Result::kDone));
   EXPECT_CALL(*consumer, Cancel());
   // This should never happen due to explicit FetchDataLoader::Cancel call.
   EXPECT_CALL(*fetch_data_loader_client, DidFetchDataLoadedBlobHandleMock(_))
@@ -443,17 +443,17 @@ TEST_F(FetchDataLoaderTest, LoadAsArrayBuffer) {
   InSequence s;
   EXPECT_CALL(checkpoint, Call(1));
   EXPECT_CALL(*consumer, SetClient(_)).WillOnce(SaveArg<0>(&client));
-  EXPECT_CALL(*consumer, BeginRead(_, _))
-      .WillOnce(DoAll(SetArgPointee<0>(nullptr), SetArgPointee<1>(0),
+  EXPECT_CALL(*consumer, BeginRead(_))
+      .WillOnce(DoAll(SetArgReferee<0>(base::span<const char>{}),
                       Return(Result::kShouldWait)));
   EXPECT_CALL(checkpoint, Call(2));
-  EXPECT_CALL(*consumer, BeginRead(_, _))
-      .WillOnce(DoAll(SetArgPointee<0>(kQuickBrownFox),
-                      SetArgPointee<1>(kQuickBrownFoxLengthWithTerminatingNull),
-                      Return(Result::kOk)));
+  EXPECT_CALL(*consumer, BeginRead(_))
+      .WillOnce(DoAll(
+          SetArgReferee<0>(base::span_with_nul_from_cstring(kQuickBrownFox)),
+          Return(Result::kOk)));
   EXPECT_CALL(*consumer, EndRead(kQuickBrownFoxLengthWithTerminatingNull))
       .WillOnce(Return(Result::kOk));
-  EXPECT_CALL(*consumer, BeginRead(_, _)).WillOnce(Return(Result::kDone));
+  EXPECT_CALL(*consumer, BeginRead(_)).WillOnce(Return(Result::kDone));
   EXPECT_CALL(*fetch_data_loader_client, DidFetchDataLoadedArrayBufferMock(_))
       .WillOnce(SaveArg<0>(&array_buffer));
   EXPECT_CALL(checkpoint, Call(3));
@@ -488,17 +488,17 @@ TEST_F(FetchDataLoaderTest, LoadAsArrayBufferFailed) {
   InSequence s;
   EXPECT_CALL(checkpoint, Call(1));
   EXPECT_CALL(*consumer, SetClient(_)).WillOnce(SaveArg<0>(&client));
-  EXPECT_CALL(*consumer, BeginRead(_, _))
-      .WillOnce(DoAll(SetArgPointee<0>(nullptr), SetArgPointee<1>(0),
+  EXPECT_CALL(*consumer, BeginRead(_))
+      .WillOnce(DoAll(SetArgReferee<0>(base::span<const char>{}),
                       Return(Result::kShouldWait)));
   EXPECT_CALL(checkpoint, Call(2));
-  EXPECT_CALL(*consumer, BeginRead(_, _))
-      .WillOnce(DoAll(SetArgPointee<0>(kQuickBrownFox),
-                      SetArgPointee<1>(kQuickBrownFoxLengthWithTerminatingNull),
-                      Return(Result::kOk)));
+  EXPECT_CALL(*consumer, BeginRead(_))
+      .WillOnce(DoAll(
+          SetArgReferee<0>(base::span_with_nul_from_cstring(kQuickBrownFox)),
+          Return(Result::kOk)));
   EXPECT_CALL(*consumer, EndRead(kQuickBrownFoxLengthWithTerminatingNull))
       .WillOnce(Return(Result::kOk));
-  EXPECT_CALL(*consumer, BeginRead(_, _)).WillOnce(Return(Result::kError));
+  EXPECT_CALL(*consumer, BeginRead(_)).WillOnce(Return(Result::kError));
   EXPECT_CALL(*fetch_data_loader_client, DidFetchDataLoadFailed());
   EXPECT_CALL(checkpoint, Call(3));
   EXPECT_CALL(*consumer, Cancel());
@@ -527,8 +527,8 @@ TEST_F(FetchDataLoaderTest, LoadAsArrayBufferCancel) {
   InSequence s;
   EXPECT_CALL(checkpoint, Call(1));
   EXPECT_CALL(*consumer, SetClient(_)).WillOnce(SaveArg<0>(&client));
-  EXPECT_CALL(*consumer, BeginRead(_, _))
-      .WillOnce(DoAll(SetArgPointee<0>(nullptr), SetArgPointee<1>(0),
+  EXPECT_CALL(*consumer, BeginRead(_))
+      .WillOnce(DoAll(SetArgReferee<0>(base::span<const char>{}),
                       Return(Result::kShouldWait)));
   EXPECT_CALL(checkpoint, Call(2));
   EXPECT_CALL(*consumer, Cancel());
@@ -555,17 +555,17 @@ TEST_F(FetchDataLoaderTest, LoadAsFormData) {
   InSequence s;
   EXPECT_CALL(checkpoint, Call(1));
   EXPECT_CALL(*consumer, SetClient(_)).WillOnce(SaveArg<0>(&client));
-  EXPECT_CALL(*consumer, BeginRead(_, _))
-      .WillOnce(DoAll(SetArgPointee<0>(nullptr), SetArgPointee<1>(0),
+  EXPECT_CALL(*consumer, BeginRead(_))
+      .WillOnce(DoAll(SetArgReferee<0>(base::span<const char>{}),
                       Return(Result::kShouldWait)));
   EXPECT_CALL(checkpoint, Call(2));
-  EXPECT_CALL(*consumer, BeginRead(_, _))
-      .WillOnce(DoAll(SetArgPointee<0>(kQuickBrownFoxFormData),
-                      SetArgPointee<1>(kQuickBrownFoxFormDataLength),
-                      Return(Result::kOk)));
+  EXPECT_CALL(*consumer, BeginRead(_))
+      .WillOnce(DoAll(
+          SetArgReferee<0>(base::span_from_cstring(kQuickBrownFoxFormData)),
+          Return(Result::kOk)));
   EXPECT_CALL(*consumer, EndRead(kQuickBrownFoxFormDataLength))
       .WillOnce(Return(Result::kOk));
-  EXPECT_CALL(*consumer, BeginRead(_, _)).WillOnce(Return(Result::kDone));
+  EXPECT_CALL(*consumer, BeginRead(_)).WillOnce(Return(Result::kDone));
   EXPECT_CALL(*fetch_data_loader_client, DidFetchDataLoadedFormDataMock(_))
       .WillOnce(SaveArg<0>(&form_data));
   EXPECT_CALL(checkpoint, Call(3));
@@ -623,17 +623,18 @@ TEST_F(FetchDataLoaderTest, LoadAsFormDataPartialInput) {
   InSequence s;
   EXPECT_CALL(checkpoint, Call(1));
   EXPECT_CALL(*consumer, SetClient(_)).WillOnce(SaveArg<0>(&client));
-  EXPECT_CALL(*consumer, BeginRead(_, _))
-      .WillOnce(DoAll(SetArgPointee<0>(nullptr), SetArgPointee<1>(0),
+  EXPECT_CALL(*consumer, BeginRead(_))
+      .WillOnce(DoAll(SetArgReferee<0>(base::span<const char>{}),
                       Return(Result::kShouldWait)));
   EXPECT_CALL(checkpoint, Call(2));
-  EXPECT_CALL(*consumer, BeginRead(_, _))
-      .WillOnce(DoAll(SetArgPointee<0>(kQuickBrownFoxFormData),
-                      SetArgPointee<1>(kQuickBrownFoxFormDataLength - 3u),
-                      Return(Result::kOk)));
+  EXPECT_CALL(*consumer, BeginRead(_))
+      .WillOnce(
+          DoAll(SetArgReferee<0>(base::span_from_cstring(kQuickBrownFoxFormData)
+                                     .first(kQuickBrownFoxFormDataLength - 3u)),
+                Return(Result::kOk)));
   EXPECT_CALL(*consumer, EndRead(kQuickBrownFoxFormDataLength - 3u))
       .WillOnce(Return(Result::kOk));
-  EXPECT_CALL(*consumer, BeginRead(_, _)).WillOnce(Return(Result::kDone));
+  EXPECT_CALL(*consumer, BeginRead(_)).WillOnce(Return(Result::kDone));
   EXPECT_CALL(*fetch_data_loader_client, DidFetchDataLoadFailed());
   EXPECT_CALL(checkpoint, Call(3));
   EXPECT_CALL(*consumer, Cancel());
@@ -662,17 +663,17 @@ TEST_F(FetchDataLoaderTest, LoadAsFormDataFailed) {
   InSequence s;
   EXPECT_CALL(checkpoint, Call(1));
   EXPECT_CALL(*consumer, SetClient(_)).WillOnce(SaveArg<0>(&client));
-  EXPECT_CALL(*consumer, BeginRead(_, _))
-      .WillOnce(DoAll(SetArgPointee<0>(nullptr), SetArgPointee<1>(0),
+  EXPECT_CALL(*consumer, BeginRead(_))
+      .WillOnce(DoAll(SetArgReferee<0>(base::span<const char>{}),
                       Return(Result::kShouldWait)));
   EXPECT_CALL(checkpoint, Call(2));
-  EXPECT_CALL(*consumer, BeginRead(_, _))
-      .WillOnce(DoAll(SetArgPointee<0>(kQuickBrownFoxFormData),
-                      SetArgPointee<1>(kQuickBrownFoxFormDataLength),
-                      Return(Result::kOk)));
+  EXPECT_CALL(*consumer, BeginRead(_))
+      .WillOnce(DoAll(
+          SetArgReferee<0>(base::span_from_cstring(kQuickBrownFoxFormData)),
+          Return(Result::kOk)));
   EXPECT_CALL(*consumer, EndRead(kQuickBrownFoxFormDataLength))
       .WillOnce(Return(Result::kOk));
-  EXPECT_CALL(*consumer, BeginRead(_, _)).WillOnce(Return(Result::kError));
+  EXPECT_CALL(*consumer, BeginRead(_)).WillOnce(Return(Result::kError));
   EXPECT_CALL(*fetch_data_loader_client, DidFetchDataLoadFailed());
   EXPECT_CALL(checkpoint, Call(3));
   EXPECT_CALL(*consumer, Cancel());
@@ -701,8 +702,8 @@ TEST_F(FetchDataLoaderTest, LoadAsFormDataCancel) {
   InSequence s;
   EXPECT_CALL(checkpoint, Call(1));
   EXPECT_CALL(*consumer, SetClient(_)).WillOnce(SaveArg<0>(&client));
-  EXPECT_CALL(*consumer, BeginRead(_, _))
-      .WillOnce(DoAll(SetArgPointee<0>(nullptr), SetArgPointee<1>(0),
+  EXPECT_CALL(*consumer, BeginRead(_))
+      .WillOnce(DoAll(SetArgReferee<0>(base::span<const char>{}),
                       Return(Result::kShouldWait)));
   EXPECT_CALL(checkpoint, Call(2));
   EXPECT_CALL(*consumer, Cancel());
@@ -728,17 +729,16 @@ TEST_F(FetchDataLoaderTest, LoadAsString) {
   InSequence s;
   EXPECT_CALL(checkpoint, Call(1));
   EXPECT_CALL(*consumer, SetClient(_)).WillOnce(SaveArg<0>(&client));
-  EXPECT_CALL(*consumer, BeginRead(_, _))
-      .WillOnce(DoAll(SetArgPointee<0>(nullptr), SetArgPointee<1>(0),
+  EXPECT_CALL(*consumer, BeginRead(_))
+      .WillOnce(DoAll(SetArgReferee<0>(base::span<const char>{}),
                       Return(Result::kShouldWait)));
   EXPECT_CALL(checkpoint, Call(2));
-  EXPECT_CALL(*consumer, BeginRead(_, _))
-      .WillOnce(DoAll(SetArgPointee<0>(kQuickBrownFox),
-                      SetArgPointee<1>(kQuickBrownFoxLength),
+  EXPECT_CALL(*consumer, BeginRead(_))
+      .WillOnce(DoAll(SetArgReferee<0>(base::span_from_cstring(kQuickBrownFox)),
                       Return(Result::kOk)));
   EXPECT_CALL(*consumer, EndRead(kQuickBrownFoxLength))
       .WillOnce(Return(Result::kOk));
-  EXPECT_CALL(*consumer, BeginRead(_, _)).WillOnce(Return(Result::kDone));
+  EXPECT_CALL(*consumer, BeginRead(_)).WillOnce(Return(Result::kDone));
   EXPECT_CALL(*fetch_data_loader_client,
               DidFetchDataLoadedString(String(kQuickBrownFox)));
   EXPECT_CALL(checkpoint, Call(3));
@@ -771,15 +771,16 @@ TEST_F(FetchDataLoaderTest, LoadAsStringWithNullBytes) {
   InSequence s;
   EXPECT_CALL(checkpoint, Call(1));
   EXPECT_CALL(*consumer, SetClient(_)).WillOnce(SaveArg<0>(&client));
-  EXPECT_CALL(*consumer, BeginRead(_, _))
-      .WillOnce(DoAll(SetArgPointee<0>(nullptr), SetArgPointee<1>(0),
+  EXPECT_CALL(*consumer, BeginRead(_))
+      .WillOnce(DoAll(SetArgReferee<0>(base::span<const char>{}),
                       Return(Result::kShouldWait)));
   EXPECT_CALL(checkpoint, Call(2));
-  EXPECT_CALL(*consumer, BeginRead(_, _))
-      .WillOnce(DoAll(SetArgPointee<0>(kPattern), SetArgPointee<1>(kLength),
-                      Return(Result::kOk)));
+  EXPECT_CALL(*consumer, BeginRead(_))
+      .WillOnce(
+          DoAll(SetArgReferee<0>(base::span_with_nul_from_cstring(kPattern)),
+                Return(Result::kOk)));
   EXPECT_CALL(*consumer, EndRead(16)).WillOnce(Return(Result::kOk));
-  EXPECT_CALL(*consumer, BeginRead(_, _)).WillOnce(Return(Result::kDone));
+  EXPECT_CALL(*consumer, BeginRead(_)).WillOnce(Return(Result::kDone));
   EXPECT_CALL(*fetch_data_loader_client,
               DidFetchDataLoadedString(String(kPattern, kLength)));
   EXPECT_CALL(checkpoint, Call(3));
@@ -809,17 +810,16 @@ TEST_F(FetchDataLoaderTest, LoadAsStringError) {
   InSequence s;
   EXPECT_CALL(checkpoint, Call(1));
   EXPECT_CALL(*consumer, SetClient(_)).WillOnce(SaveArg<0>(&client));
-  EXPECT_CALL(*consumer, BeginRead(_, _))
-      .WillOnce(DoAll(SetArgPointee<0>(nullptr), SetArgPointee<1>(0),
+  EXPECT_CALL(*consumer, BeginRead(_))
+      .WillOnce(DoAll(SetArgReferee<0>(base::span<const char>{}),
                       Return(Result::kShouldWait)));
   EXPECT_CALL(checkpoint, Call(2));
-  EXPECT_CALL(*consumer, BeginRead(_, _))
-      .WillOnce(DoAll(SetArgPointee<0>(kQuickBrownFox),
-                      SetArgPointee<1>(kQuickBrownFoxLength),
+  EXPECT_CALL(*consumer, BeginRead(_))
+      .WillOnce(DoAll(SetArgReferee<0>(base::span_from_cstring(kQuickBrownFox)),
                       Return(Result::kOk)));
   EXPECT_CALL(*consumer, EndRead(kQuickBrownFoxLength))
       .WillOnce(Return(Result::kOk));
-  EXPECT_CALL(*consumer, BeginRead(_, _)).WillOnce(Return(Result::kError));
+  EXPECT_CALL(*consumer, BeginRead(_)).WillOnce(Return(Result::kError));
   EXPECT_CALL(*fetch_data_loader_client, DidFetchDataLoadFailed());
   EXPECT_CALL(checkpoint, Call(3));
   EXPECT_CALL(*consumer, Cancel());
@@ -848,8 +848,8 @@ TEST_F(FetchDataLoaderTest, LoadAsStringCancel) {
   InSequence s;
   EXPECT_CALL(checkpoint, Call(1));
   EXPECT_CALL(*consumer, SetClient(_)).WillOnce(SaveArg<0>(&client));
-  EXPECT_CALL(*consumer, BeginRead(_, _))
-      .WillOnce(DoAll(SetArgPointee<0>(nullptr), SetArgPointee<1>(0),
+  EXPECT_CALL(*consumer, BeginRead(_))
+      .WillOnce(DoAll(SetArgReferee<0>(base::span<const char>{}),
                       Return(Result::kShouldWait)));
   EXPECT_CALL(checkpoint, Call(2));
   EXPECT_CALL(*consumer, Cancel());
@@ -923,24 +923,23 @@ TEST_F(FetchDataLoaderTest, LoadAsDataPipeFromDataPipe) {
   BytesConsumer* dest = client->GetDestination();
   ASSERT_TRUE(dest);
 
-  const char* buffer = nullptr;
-  size_t available = 0;
-  auto result = dest->BeginRead(&buffer, &available);
+  base::span<const char> buffer;
+  auto result = dest->BeginRead(buffer);
   ASSERT_EQ(result, BytesConsumer::Result::kOk);
-  EXPECT_EQ(available, 5u);
-  EXPECT_EQ(std::string(buffer, available), "hello");
-  result = dest->EndRead(available);
+  EXPECT_EQ(buffer.size(), 5u);
+  EXPECT_EQ(std::string(buffer.data(), buffer.size()), "hello");
+  result = dest->EndRead(buffer.size());
   ASSERT_EQ(result, BytesConsumer::Result::kOk);
 
-  result = dest->BeginRead(&buffer, &available);
+  result = dest->BeginRead(buffer);
   ASSERT_EQ(result, BytesConsumer::Result::kShouldWait);
 
   writable.reset();
-  result = dest->BeginRead(&buffer, &available);
+  result = dest->BeginRead(buffer);
   ASSERT_EQ(result, BytesConsumer::Result::kShouldWait);
 
   completion_notifier->SignalComplete();
-  result = dest->BeginRead(&buffer, &available);
+  result = dest->BeginRead(buffer);
   ASSERT_EQ(result, BytesConsumer::Result::kDone);
 }
 
