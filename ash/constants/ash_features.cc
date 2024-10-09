@@ -1468,7 +1468,7 @@ BASE_FEATURE(kGrowthCampaignsTriggerByEvent,
 // the feature introduces any unexpected behaviours.
 BASE_FEATURE(kGrowthCampaignsTriggerByRecordEvent,
              "GrowthCampaignsTriggerByRecordEvent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the growth nudge's triggering and the nudge widget
 // invisibility and inactivation event should be observed to conditionally
