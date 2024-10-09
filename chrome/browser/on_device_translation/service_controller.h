@@ -101,11 +101,16 @@ class OnDeviceTranslationServiceController {
   // Registers the language pack component.
   void RegisterLanguagePackComponent(on_device_translation::LanguagePackKey);
 
+  // Called when the TranslateKitBinaryPath pref is changed.
+  void OnTranslateKitBinaryPathChanged(const std::string& pref_name);
+
   // Called when the language pack key pref is changed.
   void OnLanguagePackKeyPrefChanged(const std::string& pref_name);
 
-  // Send the service config to the translation service.
-  void SendServiceConfig();
+  mojo::Remote<on_device_translation::mojom::OnDeviceTranslationService>&
+  GetRemote();
+
+  void MaybeRunPendingTasks();
 
   void CalculateLanguagePackRequirements(
       const std::string& source_lang,
@@ -125,7 +130,8 @@ class OnDeviceTranslationServiceController {
   // service crash.
   mojo::Remote<on_device_translation::mojom::OnDeviceTranslationService>
       service_remote_;
-  // Used to listen for changes on the pref values of language packs.
+  // Used to listen for changes on the pref values of TranslateKit component and
+  // language pack components.
   PrefChangeRegistrar pref_change_registrar_;
   // The language packs that are registered.
   std::set<on_device_translation::LanguagePackKey> registered_language_packs_;

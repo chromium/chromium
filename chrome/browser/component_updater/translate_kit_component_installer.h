@@ -28,7 +28,7 @@ class TranslateKitComponentInstallerPolicy : public ComponentInstallerPolicy {
       const TranslateKitComponentInstallerPolicy&) = delete;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(TranslateKitComponentInstallerTest,
+  FRIEND_TEST_ALL_PREFIXES(RegisterTranslateKitComponentTest,
                            VerifyInstallationDefaultEmpty);
 
   // `ComponentInstallerPolicy` overrides:

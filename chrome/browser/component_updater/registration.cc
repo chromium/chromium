@@ -77,7 +77,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
-#include "chrome/browser/component_updater/translate_kit_component_installer.h"
 #include "chrome/browser/component_updater/zxcvbn_data_component_installer.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "media/base/media_switches.h"
@@ -227,11 +226,6 @@ void RegisterComponentsForUpdate() {
   RegisterTpcdMetadataComponent(cus);
 
   RegisterPlusAddressBlocklistComponent(cus);
-
-#if !BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/364795294): Support Android platform.
-  RegisterTranslateKitComponent(cus, g_browser_process->local_state());
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   RegisterOpenCookieDatabaseComponent(cus);
 }

@@ -11,13 +11,11 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "components/prefs/pref_service.h"
-#include "components/services/on_device_translation/public/cpp/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -46,9 +44,9 @@ class TranslateKitComponentMockComponentUpdateService
   ~TranslateKitComponentMockComponentUpdateService() override = default;
 };
 
-class TranslateKitComponentInstallerTestBase : public ::testing::Test {
+class RegisterTranslateKitComponentTest : public ::testing::Test {
  public:
-  TranslateKitComponentInstallerTestBase() = default;
+  RegisterTranslateKitComponentTest() = default;
 
   void SetUp() override {
     ASSERT_TRUE(fake_install_dir_.CreateUniqueTempDir());
@@ -56,10 +54,10 @@ class TranslateKitComponentInstallerTestBase : public ::testing::Test {
   }
 
   // Not Copyable.
-  TranslateKitComponentInstallerTestBase(
-      const TranslateKitComponentInstallerTestBase&) = delete;
-  TranslateKitComponentInstallerTestBase& operator=(
-      const TranslateKitComponentInstallerTestBase&) = delete;
+  RegisterTranslateKitComponentTest(const RegisterTranslateKitComponentTest&) =
+      delete;
+  RegisterTranslateKitComponentTest& operator=(
+      const RegisterTranslateKitComponentTest&) = delete;
 
  protected:
   content::BrowserTaskEnvironment& env() { return env_; }
@@ -83,28 +81,7 @@ class TranslateKitComponentInstallerTestBase : public ::testing::Test {
   base::Value::Dict fake_manifest_;
 };
 
-using RegisterTranslateKitComponentTest =
-    TranslateKitComponentInstallerTestBase;
-
-TEST_F(RegisterTranslateKitComponentTest, ComponentDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      on_device_translation::kEnableTranslateKitComponent);
-
-  auto service =
-      std::make_unique<TranslateKitComponentMockComponentUpdateService>();
-
-  EXPECT_CALL(*service, RegisterComponent(_)).Times(0);
-  RegisterTranslateKitComponent(service.get(), pref_service());
-
-  env().RunUntilIdle();
-}
-
 TEST_F(RegisterTranslateKitComponentTest, ComponentRegistration) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      on_device_translation::kEnableTranslateKitComponent);
-
   auto service =
       std::make_unique<TranslateKitComponentMockComponentUpdateService>();
 
@@ -114,19 +91,7 @@ TEST_F(RegisterTranslateKitComponentTest, ComponentRegistration) {
   env().RunUntilIdle();
 }
 
-class TranslateKitComponentInstallerTest
-    : public TranslateKitComponentInstallerTestBase {
- public:
-  TranslateKitComponentInstallerTest() {
-    feature_list_.InitAndEnableFeature(
-        on_device_translation::kEnableTranslateKitComponent);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-TEST_F(TranslateKitComponentInstallerTest, VerifyInstallationDefaultEmpty) {
+TEST_F(RegisterTranslateKitComponentTest, VerifyInstallationDefaultEmpty) {
   TranslateKitComponentInstallerPolicy policy(pref_service());
 
   // An empty directory lacks all required files.

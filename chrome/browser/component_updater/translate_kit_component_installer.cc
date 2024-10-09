@@ -139,11 +139,6 @@ TranslateKitComponentInstallerPolicy::GetInstallerAttributes() const {
 void RegisterTranslateKitComponent(ComponentUpdateService* cus,
                                    PrefService* pref_service) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!base::FeatureList::IsEnabled(
-          on_device_translation::kEnableTranslateKitComponent)) {
-    return;
-  }
-
   VLOG(1) << "Registering TranslateKit component.";
   // TODO(crbug.com/362123222): Update when adding language model installer.
   auto installer = base::MakeRefCounted<ComponentInstaller>(

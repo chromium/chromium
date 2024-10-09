@@ -20,10 +20,6 @@ base::FilePath GetPathFromCommandLine(const char* switch_name) {
 
 }  // namespace
 
-BASE_FEATURE(kEnableTranslateKitComponent,
-             "EnableTranslateKitComponent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kTranslationAPIAcceptLanguagesCheck,
              "TranslationAPIAcceptLanguagesCheck",
              base::FEATURE_ENABLED_BY_DEFAULT);
