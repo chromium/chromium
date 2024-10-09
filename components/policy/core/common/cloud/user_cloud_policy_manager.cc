@@ -56,7 +56,7 @@ UserCloudPolicyManager::UserCloudPolicyManager(
       component_policy_cache_path_(component_policy_cache_path),
       external_data_manager_(std::move(external_data_manager)) {}
 
-UserCloudPolicyManager::~UserCloudPolicyManager() {}
+UserCloudPolicyManager::~UserCloudPolicyManager() = default;
 
 std::unique_ptr<UserCloudPolicyManager> UserCloudPolicyManager::Create(
     const base::FilePath& profile_path,

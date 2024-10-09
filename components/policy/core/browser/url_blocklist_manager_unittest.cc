@@ -730,7 +730,7 @@ TEST_F(URLBlocklistManagerTest, UseBlocklistState) {
 // Custom BlocklistSource implementation.
 class CustomBlocklistSource : public BlocklistSource {
  public:
-  CustomBlocklistSource() {}
+  CustomBlocklistSource() = default;
   CustomBlocklistSource(const CustomBlocklistSource&) = delete;
   CustomBlocklistSource& operator=(const CustomBlocklistSource&) = delete;
   ~CustomBlocklistSource() override = default;

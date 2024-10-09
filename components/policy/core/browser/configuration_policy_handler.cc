@@ -37,9 +37,9 @@ const size_t kMaxUrlFiltersPerPolicy = 1000;
 // ConfigurationPolicyHandler implementation
 // -----------------------------------
 
-ConfigurationPolicyHandler::ConfigurationPolicyHandler() {}
+ConfigurationPolicyHandler::ConfigurationPolicyHandler() = default;
 
-ConfigurationPolicyHandler::~ConfigurationPolicyHandler() {}
+ConfigurationPolicyHandler::~ConfigurationPolicyHandler() = default;
 
 void ConfigurationPolicyHandler::PrepareForDisplaying(
     PolicyMap* policies) const {}
@@ -68,7 +68,7 @@ TypeCheckingPolicyHandler::TypeCheckingPolicyHandler(
     base::Value::Type value_type)
     : NamedPolicyHandler(policy_name), value_type_(value_type) {}
 
-TypeCheckingPolicyHandler::~TypeCheckingPolicyHandler() {}
+TypeCheckingPolicyHandler::~TypeCheckingPolicyHandler() = default;
 
 bool TypeCheckingPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
                                                     PolicyErrorMap* errors) {
@@ -117,7 +117,7 @@ ListPolicyHandler::ListPolicyHandler(const char* policy_name,
     : TypeCheckingPolicyHandler(policy_name, base::Value::Type::LIST),
       list_entry_type_(list_entry_type) {}
 
-ListPolicyHandler::~ListPolicyHandler() {}
+ListPolicyHandler::~ListPolicyHandler() = default;
 
 bool ListPolicyHandler::CheckPolicySettings(const policy::PolicyMap& policies,
                                             policy::PolicyErrorMap* errors) {
@@ -196,7 +196,7 @@ bool IntRangePolicyHandlerBase::CheckPolicySettings(const PolicyMap& policies,
          EnsureInRange(value, nullptr, errors);
 }
 
-IntRangePolicyHandlerBase::~IntRangePolicyHandlerBase() {}
+IntRangePolicyHandlerBase::~IntRangePolicyHandlerBase() = default;
 
 bool IntRangePolicyHandlerBase::EnsureInRange(const base::Value* input,
                                               int* output,
@@ -241,7 +241,7 @@ StringMappingListPolicyHandler::StringMappingListPolicyHandler(
       pref_path_(pref_path),
       map_getter_(callback) {}
 
-StringMappingListPolicyHandler::~StringMappingListPolicyHandler() {}
+StringMappingListPolicyHandler::~StringMappingListPolicyHandler() = default;
 
 bool StringMappingListPolicyHandler::CheckPolicySettings(
     const PolicyMap& policies,
@@ -322,7 +322,7 @@ IntRangePolicyHandler::IntRangePolicyHandler(const char* policy_name,
     : IntRangePolicyHandlerBase(policy_name, min, max, clamp),
       pref_path_(pref_path) {}
 
-IntRangePolicyHandler::~IntRangePolicyHandler() {}
+IntRangePolicyHandler::~IntRangePolicyHandler() = default;
 
 void IntRangePolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                 PrefValueMap* prefs) {
@@ -346,7 +346,8 @@ IntPercentageToDoublePolicyHandler::IntPercentageToDoublePolicyHandler(
     : IntRangePolicyHandlerBase(policy_name, min, max, clamp),
       pref_path_(pref_path) {}
 
-IntPercentageToDoublePolicyHandler::~IntPercentageToDoublePolicyHandler() {}
+IntPercentageToDoublePolicyHandler::~IntPercentageToDoublePolicyHandler() =
+    default;
 
 void IntPercentageToDoublePolicyHandler::ApplyPolicySettings(
     const PolicyMap& policies,
@@ -368,7 +369,7 @@ SimplePolicyHandler::SimplePolicyHandler(const char* policy_name,
     : TypeCheckingPolicyHandler(policy_name, value_type),
       pref_path_(pref_path) {}
 
-SimplePolicyHandler::~SimplePolicyHandler() {}
+SimplePolicyHandler::~SimplePolicyHandler() = default;
 
 void SimplePolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                               PrefValueMap* prefs) {
@@ -460,7 +461,7 @@ SchemaValidatingPolicyHandler::SchemaValidatingPolicyHandler(
   DCHECK(schema_.valid());
 }
 
-SchemaValidatingPolicyHandler::~SchemaValidatingPolicyHandler() {}
+SchemaValidatingPolicyHandler::~SchemaValidatingPolicyHandler() = default;
 
 bool SchemaValidatingPolicyHandler::CheckPolicySettings(
     const PolicyMap& policies,
@@ -532,7 +533,8 @@ SimpleSchemaValidatingPolicyHandler::SimpleSchemaValidatingPolicyHandler(
       allow_recommended_(recommended_permission == RECOMMENDED_ALLOWED),
       allow_mandatory_(mandatory_permission == MANDATORY_ALLOWED) {}
 
-SimpleSchemaValidatingPolicyHandler::~SimpleSchemaValidatingPolicyHandler() {}
+SimpleSchemaValidatingPolicyHandler::~SimpleSchemaValidatingPolicyHandler() =
+    default;
 
 bool SimpleSchemaValidatingPolicyHandler::CheckPolicySettings(
     const PolicyMap& policies,
@@ -585,7 +587,7 @@ SimpleJsonStringSchemaValidatingPolicyHandler::
 }
 
 SimpleJsonStringSchemaValidatingPolicyHandler::
-    ~SimpleJsonStringSchemaValidatingPolicyHandler() {}
+    ~SimpleJsonStringSchemaValidatingPolicyHandler() = default;
 
 bool SimpleJsonStringSchemaValidatingPolicyHandler::CheckPolicySettings(
     const PolicyMap& policies,
@@ -740,7 +742,7 @@ LegacyPoliciesDeprecatingPolicyHandler::LegacyPoliciesDeprecatingPolicyHandler(
       new_policy_handler_(std::move(new_policy_handler)) {}
 
 LegacyPoliciesDeprecatingPolicyHandler::
-    ~LegacyPoliciesDeprecatingPolicyHandler() {}
+    ~LegacyPoliciesDeprecatingPolicyHandler() = default;
 
 bool LegacyPoliciesDeprecatingPolicyHandler::CheckPolicySettings(
     const PolicyMap& policies,

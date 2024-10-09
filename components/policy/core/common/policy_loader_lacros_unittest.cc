@@ -66,7 +66,7 @@ std::vector<uint8_t> GetValidPolicyFetchResponseWithAllPolicy() {
 class PolicyLoaderLacrosTest : public PolicyTestBase {
  protected:
   PolicyLoaderLacrosTest() = default;
-  ~PolicyLoaderLacrosTest() override {}
+  ~PolicyLoaderLacrosTest() override = default;
 
   void SetPolicy() {
     std::vector<uint8_t> data = GetValidPolicyFetchResponseWithAllPolicy();

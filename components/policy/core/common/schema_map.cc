@@ -12,11 +12,11 @@
 
 namespace policy {
 
-SchemaMap::SchemaMap() {}
+SchemaMap::SchemaMap() = default;
 
 SchemaMap::SchemaMap(DomainMap map) : map_(std::move(map)) {}
 
-SchemaMap::~SchemaMap() {}
+SchemaMap::~SchemaMap() = default;
 
 const DomainMap& SchemaMap::GetDomains() const {
   return map_;

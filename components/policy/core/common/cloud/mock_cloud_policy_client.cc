@@ -30,7 +30,7 @@ MockCloudPolicyClient::MockCloudPolicyClient(
                         std::move(url_loader_factory),
                         CloudPolicyClient::DeviceDMTokenCallback()) {}
 
-MockCloudPolicyClient::~MockCloudPolicyClient() {}
+MockCloudPolicyClient::~MockCloudPolicyClient() = default;
 
 void MockCloudPolicyClient::SetDMToken(const std::string& token) {
   dm_token_ = token;

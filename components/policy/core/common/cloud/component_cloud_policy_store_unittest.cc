@@ -68,7 +68,7 @@ bool True(const PolicyDomain domain, const std::string& ignored) {
 class MockComponentCloudPolicyStoreDelegate
     : public ComponentCloudPolicyStore::Delegate {
  public:
-  ~MockComponentCloudPolicyStoreDelegate() override {}
+  ~MockComponentCloudPolicyStoreDelegate() override = default;
 
   MOCK_METHOD0(OnComponentCloudPolicyStoreUpdated, void());
 };

@@ -64,7 +64,7 @@ const char kTestPolicy[] =
 class MockComponentCloudPolicyStoreDelegate
     : public ComponentCloudPolicyStore::Delegate {
  public:
-  ~MockComponentCloudPolicyStoreDelegate() override {}
+  ~MockComponentCloudPolicyStoreDelegate() override = default;
 
   MOCK_METHOD0(OnComponentCloudPolicyStoreUpdated, void());
 };

@@ -63,7 +63,7 @@ UserPolicySigninServiceBase::UserPolicySigninServiceBase(
       device_management_service_(device_management_service),
       system_url_loader_factory_(system_url_loader_factory) {}
 
-UserPolicySigninServiceBase::~UserPolicySigninServiceBase() {}
+UserPolicySigninServiceBase::~UserPolicySigninServiceBase() = default;
 
 void UserPolicySigninServiceBase::FetchPolicyForSignedInUser(
     const AccountId& account_id,

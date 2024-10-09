@@ -38,7 +38,7 @@ ConfigurationPolicyPrefStoreTest::ConfigurationPolicyPrefStoreTest()
       nullptr, policy_service_.get(), &handler_list_, POLICY_LEVEL_MANDATORY);
 }
 
-ConfigurationPolicyPrefStoreTest::~ConfigurationPolicyPrefStoreTest() {}
+ConfigurationPolicyPrefStoreTest::~ConfigurationPolicyPrefStoreTest() = default;
 
 void ConfigurationPolicyPrefStoreTest::PopulatePolicyHandlerParameters(
     PolicyHandlerParameters* parameters) {}

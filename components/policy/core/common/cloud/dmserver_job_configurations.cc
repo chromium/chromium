@@ -238,7 +238,7 @@ DMServerJobConfiguration::DMServerJobConfiguration(
                                    client->GetURLLoaderFactory(),
                                    std::move(callback))) {}
 
-DMServerJobConfiguration::~DMServerJobConfiguration() {}
+DMServerJobConfiguration::~DMServerJobConfiguration() = default;
 
 DeviceManagementStatus
 DMServerJobConfiguration::MapNetErrorAndResponseToDMStatus(

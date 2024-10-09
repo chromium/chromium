@@ -137,7 +137,7 @@ CombinedSchemaRegistry::CombinedSchemaRegistry()
   SetAllDomainsReady();
 }
 
-CombinedSchemaRegistry::~CombinedSchemaRegistry() {}
+CombinedSchemaRegistry::~CombinedSchemaRegistry() = default;
 
 void CombinedSchemaRegistry::Track(SchemaRegistry* registry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -19,7 +19,7 @@ ComponentCloudPolicyService::ComponentCloudPolicyService(
     scoped_refptr<base::SequencedTaskRunner> backend_task_runner)
     : policy_installed_(true), weak_ptr_factory_(this) {}
 
-ComponentCloudPolicyService::~ComponentCloudPolicyService() {}
+ComponentCloudPolicyService::~ComponentCloudPolicyService() = default;
 
 // static
 bool ComponentCloudPolicyService::SupportsDomain(PolicyDomain domain) {

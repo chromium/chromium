@@ -106,7 +106,7 @@ DesktopCloudPolicyStore::DesktopCloudPolicyStore(
       key_path_(key_path),
       policy_load_filter_(std::move(policy_load_filter)) {}
 
-DesktopCloudPolicyStore::~DesktopCloudPolicyStore() {}
+DesktopCloudPolicyStore::~DesktopCloudPolicyStore() = default;
 
 void DesktopCloudPolicyStore::LoadImmediately() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -386,7 +386,7 @@ UserCloudPolicyStore::UserCloudPolicyStore(
                               background_task_runner,
                               PolicyScope::POLICY_SCOPE_USER) {}
 
-UserCloudPolicyStore::~UserCloudPolicyStore() {}
+UserCloudPolicyStore::~UserCloudPolicyStore() = default;
 
 // static
 std::unique_ptr<UserCloudPolicyStore> UserCloudPolicyStore::Create(

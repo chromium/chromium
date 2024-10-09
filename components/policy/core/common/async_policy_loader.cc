@@ -47,7 +47,7 @@ AsyncPolicyLoader::AsyncPolicyLoader(
       periodic_updates_(periodic_updates),
       reload_interval_(kReloadInterval) {}
 
-AsyncPolicyLoader::~AsyncPolicyLoader() {}
+AsyncPolicyLoader::~AsyncPolicyLoader() = default;
 
 Time AsyncPolicyLoader::LastModificationTime() {
   return Time();
