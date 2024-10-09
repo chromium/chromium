@@ -13,7 +13,7 @@ class Browser;
 // user interface (and related model objects) to the application layer. Each
 // BrowserProvider is roughly equivalent to a window on a desktop browser --
 // a collection of tabs (a tab model) associated with a user profile (the
-// browser state) with the UI of the currently visible tab (the view controller)
+// profile) with the UI of the currently visible tab (the view controller)
 // and some other attributes as well.
 @protocol BrowserProvider
 // The active browser. This can never be nullptr once the UI initialization has

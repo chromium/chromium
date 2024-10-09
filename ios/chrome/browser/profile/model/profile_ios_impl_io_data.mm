@@ -142,7 +142,7 @@ ProfileIOSImplIOData::LazyParams::LazyParams() : cache_max_size(0) {}
 ProfileIOSImplIOData::LazyParams::~LazyParams() {}
 
 ProfileIOSImplIOData::ProfileIOSImplIOData()
-    : ProfileIOSIOData(ChromeBrowserStateType::REGULAR_BROWSER_STATE),
+    : ProfileIOSIOData(ProfileIOSType::REGULAR_PROFILE),
       app_cache_max_size_(0) {}
 
 ProfileIOSImplIOData::~ProfileIOSImplIOData() {}

@@ -111,9 +111,8 @@ ProfileIOSIOData::ProfileParams::ProfileParams()
 
 ProfileIOSIOData::ProfileParams::~ProfileParams() {}
 
-ProfileIOSIOData::ProfileIOSIOData(
-    ChromeBrowserStateType browser_state_type)
-    : initialized_(false), browser_state_type_(browser_state_type) {
+ProfileIOSIOData::ProfileIOSIOData(ProfileIOSType profile_type)
+    : initialized_(false), profile_type_(profile_type) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
 }
 
@@ -142,8 +141,7 @@ HostContentSettingsMap* ProfileIOSIOData::GetHostContentSettingsMap()
 }
 
 bool ProfileIOSIOData::IsOffTheRecord() const {
-  return browser_state_type() ==
-         ChromeBrowserStateType::INCOGNITO_BROWSER_STATE;
+  return profile_type() == ProfileIOSType::INCOGNITO_PROFILE;
 }
 
 void ProfileIOSIOData::InitializeMetricsEnabledStateOnUIThread() {

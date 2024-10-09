@@ -6,12 +6,12 @@
 #define IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_IOS_FORWARD_H_
 
 // Include this header in .h files instead of forward-declaring `ProfileIOS` or
-// `ChromeBrowserState`. This allows migration of the class name to proceed
+// `ProfileIOS`. This allows migration of the class name to proceed
 // without touching hundreds of files at once.
 // TODO(crbug.com/359821785): Remove this header and replace all usages with a
 // normal forward-declaration of `ProfileIOS` once the migration is complete.
 
-class ChromeBrowserState;
-using ProfileIOS = ChromeBrowserState;
+class ProfileIOS;
+using ChromeBrowserState = ProfileIOS;
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_PROFILE_IOS_FORWARD_H_

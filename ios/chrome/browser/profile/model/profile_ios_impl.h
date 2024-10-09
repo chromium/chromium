@@ -66,7 +66,7 @@ class ProfileIOSImpl final : public ProfileIOS {
   const std::string& GetWebKitStorageID() const override;
 
  private:
-  friend class ChromeBrowserState;
+  friend class ProfileIOS;
 
   ProfileIOSImpl(const base::FilePath& state_path,
                  std::string_view profile_name,

@@ -98,14 +98,6 @@ NSUInteger RegularBrowserCount() {
           .size());
 }
 
-ProfileIOS* GetOriginalBrowserState() {
-  return GetOriginalProfile();
-}
-
-ProfileIOS* GetCurrentIncognitoBrowserState() {
-  return GetCurrentIncognitoProfile();
-}
-
 ProfileIOS* GetOriginalProfile() {
   return GetProfile(false);
 }

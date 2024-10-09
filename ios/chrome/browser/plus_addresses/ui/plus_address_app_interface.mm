@@ -16,10 +16,9 @@
 namespace {
 
 plus_addresses::FakePlusAddressService* GetFakePlusAddressService() {
-  ChromeBrowserState* browserState =
-      chrome_test_util::GetOriginalBrowserState();
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   return static_cast<plus_addresses::FakePlusAddressService*>(
-      PlusAddressServiceFactory::GetForProfile(browserState));
+      PlusAddressServiceFactory::GetForProfile(profile));
 }
 
 }  // namespace

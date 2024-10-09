@@ -131,8 +131,7 @@ OffTheRecordProfileIOSIOData::Handle::GetAllContextGetters() {
 }
 
 OffTheRecordProfileIOSIOData::OffTheRecordProfileIOSIOData()
-    : ProfileIOSIOData(
-          ChromeBrowserStateType::INCOGNITO_BROWSER_STATE) {}
+    : ProfileIOSIOData(ProfileIOSType::INCOGNITO_PROFILE) {}
 
 OffTheRecordProfileIOSIOData::~OffTheRecordProfileIOSIOData() {}
 

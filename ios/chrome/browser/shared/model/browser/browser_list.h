@@ -22,9 +22,9 @@ class Browser;
 // This service doesn't modify the lifetimes of Browser objects; it keeps (and
 // vends) only weak pointers to them.
 //
-// There's a single service instance for both regular and OTR browser states;
-// fetching the service for the OTR browser state will return the regular
-// browser state's service instance.
+// There's a single service instance for both regular and OTR profiles;
+// fetching the service for the OTR profile will return the regular
+// profile's service instance.
 class BrowserList final : public KeyedService, public BrowserObserver {
  public:
   enum class BrowserType {

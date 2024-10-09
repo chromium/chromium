@@ -28,7 +28,7 @@
 #import "net/url_request/url_request_job_factory.h"
 
 class AcceptLanguagePrefWatcher;
-enum class ChromeBrowserStateType;
+enum class ProfileIOSType;
 class HostContentSettingsMap;
 class IOSChromeHttpUserAgentSettings;
 class IOSChromeURLRequestContextGetter;
@@ -73,9 +73,7 @@ class ProfileIOSIOData {
   content_settings::CookieSettings* GetCookieSettings() const;
   HostContentSettingsMap* GetHostContentSettingsMap() const;
 
-  ChromeBrowserStateType browser_state_type() const {
-    return browser_state_type_;
-  }
+  ProfileIOSType profile_type() const { return profile_type_; }
 
   bool IsOffTheRecord() const;
 
@@ -114,7 +112,7 @@ class ProfileIOSIOData {
     raw_ptr<void> profile;
   };
 
-  explicit ProfileIOSIOData(ChromeBrowserStateType browser_state_type);
+  explicit ProfileIOSIOData(ProfileIOSType profile_type);
 
   void InitializeOnUIThread(ProfileIOS* profile);
 
@@ -181,7 +179,7 @@ class ProfileIOSIOData {
   mutable std::unique_ptr<IOSChromeHttpUserAgentSettings>
       chrome_http_user_agent_settings_;
 
-  const ChromeBrowserStateType browser_state_type_;
+  const ProfileIOSType profile_type_;
 };
 
 #endif  // IOS_CHROME_BROWSER_PROFILE_MODEL_PROFILE_IOS_IO_DATA_H_
