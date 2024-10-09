@@ -224,9 +224,10 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
                        GuestProfileOTR_NeededServices) {
   // clang-format off
   std::set<std::string> guest_otr_active_services {
+    "LiveCaptionController",
+    "LiveTranslateController",
     "AIManagerKeyedService",
     "AlarmManager",
-    "AXMainNodeAnnotatorController",
     "BackgroundContentsService",
     "BackgroundSyncService",
     "BluetoothApiAdvertisementManager",
@@ -255,8 +256,6 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
 #endif
     "HidDeviceManager",
     "HostContentSettingsMap",
-    "LiveCaptionController",
-    "LiveTranslateController",
     "MediaRouter",
     "MediaRouterUIService",
     "NotificationDisplayService",
