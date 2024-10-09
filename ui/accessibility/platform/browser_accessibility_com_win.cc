@@ -1139,31 +1139,10 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_computedStyle(
     BSTR* style_properties,
     BSTR* style_values,
     USHORT* num_style_properties) {
-  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_computedStyle");
+  // JAWS/NVDA no longer use this (and we only supported "display" property,
+  // which is also exposed via the "display" object attribute).
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_COMPUTED_STYLE);
-  AddAccessibilityModeFlags(kScreenReaderAccessibilityMode);
-  if (!GetOwner()) {
-    return E_FAIL;
-  }
-
-  if (!style_properties || !style_values)
-    return E_INVALIDARG;
-
-  // We only cache a single style property for now: DISPLAY
-
-  std::u16string display;
-  if (max_style_properties == 0 ||
-      !GetOwner()->GetString16Attribute(ax::mojom::StringAttribute::kDisplay,
-                                        &display)) {
-    *num_style_properties = 0;
-    return S_OK;
-  }
-
-  *num_style_properties = 1;
-  style_properties[0] = SysAllocString(L"display");
-  style_values[0] = SysAllocString(base::as_wcstr(display));
-
-  return S_OK;
+  return E_NOTIMPL;
 }
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_computedStyleForProperties(
@@ -1171,31 +1150,10 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_computedStyleForProperties(
     boolean use_alternate_view,
     BSTR* style_properties,
     BSTR* style_values) {
-  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_computedStyleForProperties");
+  // JAWS/NVDA no longer use this (and we only supported "display" property,
+  // which is also exposed via the "display" object attribute).
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_COMPUTED_STYLE_FOR_PROPERTIES);
-  AddAccessibilityModeFlags(kScreenReaderAccessibilityMode);
-  if (!GetOwner()) {
-    return E_FAIL;
-  }
-
-  if (!style_properties || !style_values)
-    return E_INVALIDARG;
-
-  // We only cache a single style property for now: DISPLAY
-
-  for (USHORT i = 0; i < num_style_properties; ++i) {
-    std::u16string name =
-        base::ToLowerASCII(base::as_u16cstr(style_properties[i]));
-    if (name == u"display") {
-      std::u16string display = GetOwner()->GetString16Attribute(
-          ax::mojom::StringAttribute::kDisplay);
-      style_values[i] = SysAllocString(base::as_wcstr(display));
-    } else {
-      style_values[i] = NULL;
-    }
-  }
-
-  return S_OK;
+  return E_NOTIMPL;
 }
 
 IFACEMETHODIMP BrowserAccessibilityComWin::scrollTo(boolean placeTopLeft) {
