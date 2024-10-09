@@ -1,0 +1,8 @@
+{
+  "fuchsia-angle-builder": {
+    "additional_compile_targets": [
+      "angle_end2end_tests",
+      "angle_unittests"
+    ]
+  }
+}

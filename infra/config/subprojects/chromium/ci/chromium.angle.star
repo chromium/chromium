@@ -95,6 +95,7 @@ ci.gpu.linux_builder(
             "android_fastbuild",
         ],
     ),
+    targets = targets.bundle(),
     console_view_entry = consoles.console_view_entry(
         category = "Android|Builder|Chromium",
         short_name = "arm64",
@@ -126,6 +127,19 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-angle-archive",
         run_tests_serially = True,
+    ),
+    targets = targets.bundle(
+        targets = [
+            "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
+        ],
+        mixins = [
+            "chromium_pixel_2_pie",
+            "has_native_resultdb_integration",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.ANDROID_CHROMIUM,
+        os_type = targets.os_type.ANDROID,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Android|Pixel2|Chromium",
@@ -167,6 +181,12 @@ ci.gpu.linux_builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        additional_compile_targets = [
+            "angle_end2end_tests",
+            "angle_unittests",
+        ],
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Fuchsia|Builder|ANGLE",
         short_name = "x64",
@@ -205,6 +225,7 @@ ci.gpu.linux_builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(),
     console_view_entry = consoles.console_view_entry(
         category = "Linux|Builder|Chromium",
         short_name = "x64",
@@ -235,6 +256,19 @@ ci.thin_tester(
         build_gs_bucket = "chromium-angle-archive",
         run_tests_serially = True,
     ),
+    targets = targets.bundle(
+        targets = [
+            "gpu_common_gtests_passthrough",
+            "gpu_angle_linux_telemetry_tests",
+        ],
+        mixins = [
+            "linux_intel_uhd_630_stable",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE,
+        os_type = targets.os_type.LINUX,
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Linux|Intel|Chromium",
         short_name = "x64",
@@ -264,6 +298,19 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-angle-archive",
         run_tests_serially = True,
+    ),
+    targets = targets.bundle(
+        targets = [
+            "gpu_common_gtests_passthrough",
+            "gpu_angle_linux_telemetry_tests",
+        ],
+        mixins = [
+            "linux_nvidia_gtx_1660_stable",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE,
+        os_type = targets.os_type.LINUX,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Linux|NVIDIA|Chromium",
@@ -471,6 +518,7 @@ ci.gpu.mac_builder(
             "xctest",
         ],
     ),
+    targets = targets.bundle(),
     cores = None,
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
@@ -505,6 +553,23 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-angle-archive",
         run_tests_serially = True,
+    ),
+    targets = targets.bundle(
+        targets = [
+            "gpu_angle_ios_gtests",
+        ],
+        mixins = [
+            "mac_mini_intel_gpu_stable",
+            "has_native_resultdb_integration",
+            "isolate_profile_data",
+            "mac_toolchain",
+            "out_dir_arg",
+            "xcode_16_main",
+            "xctest",
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.MAC,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "iOS|Intel|ANGLE",
@@ -544,6 +609,7 @@ ci.gpu.windows_builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(),
     console_view_entry = consoles.console_view_entry(
         category = "Windows|Builder|Chromium",
         short_name = "x64",
@@ -575,6 +641,18 @@ ci.thin_tester(
         build_gs_bucket = "chromium-angle-archive",
         run_tests_serially = True,
     ),
+    targets = targets.bundle(
+        targets = [
+            "gpu_angle_win_intel_nvidia_telemetry_tests",
+        ],
+        mixins = [
+            "win10_intel_uhd_630_stable",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE_X64,
+        os_type = targets.os_type.WINDOWS,
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Windows|Intel|Chromium",
         short_name = "x64",
@@ -604,6 +682,18 @@ ci.thin_tester(
         ),
         build_gs_bucket = "chromium-angle-archive",
         run_tests_serially = True,
+    ),
+    targets = targets.bundle(
+        targets = [
+            "gpu_angle_win_intel_nvidia_telemetry_tests",
+        ],
+        mixins = [
+            "win10_nvidia_gtx_1660_stable",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE_X64,
+        os_type = targets.os_type.WINDOWS,
     ),
     console_view_entry = consoles.console_view_entry(
         category = "Windows|NVIDIA|Chromium",
@@ -641,6 +731,11 @@ ci.gpu.windows_builder(
             "dcheck_always_on",
             "win",
             "x86",
+        ],
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = [
+            "telemetry_gpu_integration_test",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
