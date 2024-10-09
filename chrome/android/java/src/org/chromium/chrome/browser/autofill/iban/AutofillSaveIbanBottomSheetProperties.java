@@ -41,7 +41,7 @@ import java.util.function.Consumer;
 
     static final ReadableObjectPropertyKey<String> DESCRIPTION = new ReadableObjectPropertyKey();
 
-    static final ReadableObjectPropertyKey<String> IBAN_LABEL = new ReadableObjectPropertyKey();
+    static final ReadableObjectPropertyKey<String> IBAN_VALUE = new ReadableObjectPropertyKey();
 
     static final ReadableObjectPropertyKey<String> ACCEPT_BUTTON_LABEL =
             new ReadableObjectPropertyKey();
@@ -62,7 +62,7 @@ import java.util.function.Consumer;
         LOGO_ICON,
         TITLE,
         DESCRIPTION,
-        IBAN_LABEL,
+        IBAN_VALUE,
         ACCEPT_BUTTON_LABEL,
         CANCEL_BUTTON_LABEL,
         ON_ACCEPT_BUTTON_CLICK_ACTION,

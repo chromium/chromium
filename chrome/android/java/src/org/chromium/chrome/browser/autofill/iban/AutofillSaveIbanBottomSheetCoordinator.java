@@ -74,8 +74,8 @@ public class AutofillSaveIbanBottomSheetCoordinator {
                                 AutofillSaveIbanBottomSheetProperties.DESCRIPTION,
                                 uiInfo.getDescriptionText())
                         .with(
-                                AutofillSaveIbanBottomSheetProperties.IBAN_LABEL,
-                                uiInfo.getIbanLabel())
+                                AutofillSaveIbanBottomSheetProperties.IBAN_VALUE,
+                                uiInfo.getIbanValue())
                         .with(
                                 AutofillSaveIbanBottomSheetProperties.ACCEPT_BUTTON_LABEL,
                                 uiInfo.getAcceptText())

@@ -92,10 +92,10 @@ public class AutofillSaveIbanBottomSheetViewBinderTest {
 
     @Test
     @SmallTest
-    public void testIbanLabel() {
+    public void testIbanValue() {
         verifyPropertyBoundToTextView(
-                mView.mContentView.findViewById(R.id.autofill_save_iban_label),
-                AutofillSaveIbanBottomSheetProperties.IBAN_LABEL);
+                mView.mContentView.findViewById(R.id.autofill_save_iban_value),
+                AutofillSaveIbanBottomSheetProperties.IBAN_VALUE);
     }
 
     @Test

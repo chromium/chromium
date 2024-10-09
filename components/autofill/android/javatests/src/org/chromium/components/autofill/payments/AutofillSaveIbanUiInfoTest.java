@@ -26,7 +26,7 @@ public class AutofillSaveIbanUiInfoTest {
                 .withAcceptText("")
                 .withCancelText("")
                 .withDescriptionText("")
-                .withIbanLabel("FR **0189")
+                .withIbanValue("CH5604835012345678009")
                 .withIsServerSave(false)
                 .withLegalMessageLines(Collections.EMPTY_LIST)
                 .withLogoIcon(0)
@@ -56,10 +56,11 @@ public class AutofillSaveIbanUiInfoTest {
     }
 
     @Test
-    public void testBuilder_setsIbanLabel() {
-        AutofillSaveIbanUiInfo uiInfo = defaultBuilder().withIbanLabel("DE **6789").build();
+    public void testBuilder_setsIbanValue() {
+        AutofillSaveIbanUiInfo uiInfo =
+                defaultBuilder().withIbanValue("CH9300762011623852957").build();
 
-        assertThat(uiInfo.getIbanLabel(), equalTo("DE **6789"));
+        assertThat(uiInfo.getIbanValue(), equalTo("CH9300762011623852957"));
     }
 
     @Test
@@ -98,7 +99,7 @@ public class AutofillSaveIbanUiInfoTest {
     }
 
     @Test
-    public void uiInfo_noIbanLabel() {
+    public void uiInfo_noIbanValue() {
         AssertionError error =
                 assertThrows(
                         AssertionError.class,
@@ -113,7 +114,7 @@ public class AutofillSaveIbanUiInfoTest {
     }
 
     @Test
-    public void uiInfo_emptyIbanLabel() {
+    public void uiInfo_emptyIbanValue() {
         AssertionError error =
                 assertThrows(
                         AssertionError.class,
@@ -121,7 +122,7 @@ public class AutofillSaveIbanUiInfoTest {
                                 new AutofillSaveIbanUiInfo.Builder()
                                         .withAcceptText("")
                                         .withCancelText("")
-                                        .withIbanLabel("")
+                                        .withIbanValue("")
                                         .withTitleText("")
                                         .build());
 

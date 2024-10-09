@@ -28,7 +28,7 @@ static base::android::ScopedJavaLocalRef<jobject> ConvertUiInfoToJavaObject(
     const AutofillSaveIbanUiInfo& ui_info) {
   return Java_AutofillSaveIbanUiInfo_Constructor(
       env, ui_info.accept_text, ui_info.cancel_text, ui_info.description_text,
-      ui_info.iban_label, ui_info.is_server_save,
+      ui_info.iban_value, ui_info.is_server_save,
       LegalMessageLineAndroid::ConvertToJavaLinkedList(
           ui_info.legal_message_lines),
       ResourceMapper::MapToJavaDrawableId(ui_info.logo_icon_id),

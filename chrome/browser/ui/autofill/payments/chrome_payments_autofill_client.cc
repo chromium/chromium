@@ -470,7 +470,8 @@ void ChromePaymentsAutofillClient::ConfirmSaveIbanLocally(
           std::move(callback), web_contents());
       AutofillSaveIbanUiInfo ui_info =
           AutofillSaveIbanUiInfo::CreateForLocalSave(
-              iban.GetIdentifierStringForAutofillDisplay());
+              iban.GetIdentifierStringForAutofillDisplay(
+                  /*is_value_masked=*/false));
       bridge->RequestShowContent(ui_info, std::move(save_iban_delegate));
     }
   }
@@ -491,7 +492,9 @@ void ChromePaymentsAutofillClient::ConfirmUploadIbanToCloud(
   if (base::FeatureList::IsEnabled(features::kAutofillEnableServerIban)) {
     AutofillSaveIbanUiInfo ui_info =
         AutofillSaveIbanUiInfo::CreateForUploadSave(
-            iban.GetIdentifierStringForAutofillDisplay(), legal_message_lines);
+            iban.GetIdentifierStringForAutofillDisplay(
+                /*is_value_masked=*/false),
+            legal_message_lines);
 
     // Upload a new IBAN to the server via a Bottom Sheet.
     if (auto* bridge = GetOrCreateAutofillSaveIbanBottomSheetBridge()) {

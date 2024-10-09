@@ -50,7 +50,7 @@ public final class AutofillSaveIbanBottomSheetBridgeTest {
                     .withAcceptText("Save")
                     .withCancelText("No thanks")
                     .withDescriptionText("")
-                    .withIbanLabel("FR **0189")
+                    .withIbanValue("CH5604835012345678009")
                     .withTitleText("Save IBAN?")
                     .withLegalMessageLines(Collections.EMPTY_LIST)
                     .withLogoIcon(0)
