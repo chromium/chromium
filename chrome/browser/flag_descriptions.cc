@@ -312,13 +312,6 @@ const char kTangibleSyncName[] = "Tangible Sync";
 const char kTangibleSyncDescription[] =
     "Enables the tangible sync when a user starts the sync consent flow";
 
-#if !BUILDFLAG(IS_ANDROID)
-const char kDirectSocketsWebApiName[] = "Direct Sockets API";
-const char kDirectSocketsWebApiDescription[] =
-    "Enable access to the Direct Sockets API. See "
-    "https://github.com/WICG/direct-sockets for details.";
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 const char kDisableInstanceLimitName[] = "Disable Instance Limit";
 const char kDisableInstanceLimitDescription[] =

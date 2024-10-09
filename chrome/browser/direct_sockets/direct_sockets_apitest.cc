@@ -267,11 +267,6 @@ auto PrivateNetworkAccessBlocked() {
   return testing::HasSubstr("Access to private network is blocked");
 }
 
-auto NotDefined(std::string_view symbol) {
-  return testing::HasSubstr(
-      base::StringPrintf("%s is not defined", symbol.data()));
-}
-
 auto ErrorIs(const auto& matcher) {
   return testing::Field(&content::EvalJsResult::error, matcher);
 }
@@ -422,11 +417,14 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpApiTest,
       InstallAndOpenChromeApp(GenerateManifest());
 
   static constexpr std::string_view kScript = R"(
-    const socket = new TCPSocket($1, $2);
+    (async () => {
+      const socket = new TCPSocket($1, $2);
+      await socket.opened;
+    })();
   )";
 
   EXPECT_THAT(EvalJs(app_frame, content::JsReplace(kScript, kHostname, 0)),
-              ErrorIs(NotDefined("TCPSocket")));
+              ErrorIs(AccessBlocked()));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpApiTest,
@@ -468,11 +466,14 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest,
       InstallAndOpenChromeApp(GenerateManifest());
 
   static constexpr std::string_view kScript = R"(
-    const socket = new UDPSocket({ remoteAddress: $1, remotePort: $2 });
+    (async () => {
+      const socket = new UDPSocket({ remoteAddress: $1, remotePort: $2 });
+      await socket.opened;
+    })();
   )";
 
   EXPECT_THAT(EvalJs(app_frame, content::JsReplace(kScript, kHostname, 0)),
-              ErrorIs(NotDefined("UDPSocket")));
+              ErrorIs(AccessBlocked()));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpApiTest,
@@ -552,11 +553,13 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerApiTest,
       InstallAndOpenChromeApp(GenerateManifest());
 
   static constexpr std::string_view kScript = R"(
-    const socket = new TCPServerSocket("::");
+    (async () => {
+      const socket = new TCPServerSocket("::");
+      await socket.opened;
+    })();
   )";
 
-  EXPECT_THAT(EvalJs(app_frame, kScript),
-              ErrorIs(NotDefined("TCPServerSocket")));
+  EXPECT_THAT(EvalJs(app_frame, kScript), ErrorIs(AccessBlocked()));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerApiTest,
@@ -614,14 +617,8 @@ class IsolatedWebAppApiTest : public web_app::IsolatedWebAppBrowserTestHarness {
   std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app_;
 };
 
-class IsolatedWebAppApiTestWithDirectSocketsEnabled
-    : public IsolatedWebAppApiTest {
- private:
-  base::test::ScopedFeatureList features_{blink::features::kDirectSockets};
-};
-
 using ChromeDirectSocketsTcpIsolatedWebAppTest =
-    ChromeDirectSocketsTcpTest<IsolatedWebAppApiTestWithDirectSocketsEnabled>;
+    ChromeDirectSocketsTcpTest<IsolatedWebAppApiTest>;
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppTest, TcpReadWrite) {
   content::RenderFrameHost* app_frame = InstallAndOpenIsolatedWebApp();
@@ -670,7 +667,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppTest,
 }
 
 using ChromeDirectSocketsUdpIsolatedWebAppTest =
-    ChromeDirectSocketsUdpTest<IsolatedWebAppApiTestWithDirectSocketsEnabled>;
+    ChromeDirectSocketsUdpTest<IsolatedWebAppApiTest>;
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest, UdpReadWrite) {
   content::RenderFrameHost* app_frame = InstallAndOpenIsolatedWebApp();
@@ -793,8 +790,7 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
               content::EvalJsResult::IsOk());
 }
 
-using ChromeDirectSocketsTcpServerIsolatedWebAppTest =
-    IsolatedWebAppApiTestWithDirectSocketsEnabled;
+using ChromeDirectSocketsTcpServerIsolatedWebAppTest = IsolatedWebAppApiTest;
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerIsolatedWebAppTest,
                        TcpServerExchangePacketWithTcpSocket) {
@@ -829,133 +825,5 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerIsolatedWebAppTest,
   ASSERT_THAT(EvalJs(app_frame, kTcpServerPortNumberHighEnough),
               content::EvalJsResult::IsOk());
 }
-
-enum class FeatureState {
-  kDefault,
-  kEnabled,
-  kDisabled,
-};
-
-template <typename TestHarness>
-class ChromeDirectSocketsApiAvailabilityTest
-    : public TestHarness,
-      public testing::WithParamInterface<FeatureState> {
- public:
-  ChromeDirectSocketsApiAvailabilityTest() {
-    switch (feature_state()) {
-      case FeatureState::kDefault:
-        break;
-      case FeatureState::kEnabled:
-        features_.InitAndEnableFeature(blink::features::kDirectSockets);
-        break;
-      case FeatureState::kDisabled:
-        features_.InitAndDisableFeature(blink::features::kDirectSockets);
-        break;
-    }
-  }
-
- protected:
-  FeatureState feature_state() const { return GetParam(); }
-
-  bool IsTCPSocketExposed(content::RenderFrameHost* rfh) {
-    return IsJsObjectDefined(rfh, "TCPSocket");
-  }
-  bool IsUDPSocketExposed(content::RenderFrameHost* rfh) {
-    return IsJsObjectDefined(rfh, "UDPSocket");
-  }
-  bool IsTCPServerSocketExposed(content::RenderFrameHost* rfh) {
-    return IsJsObjectDefined(rfh, "TCPServerSocket");
-  }
-
- private:
-  bool IsJsObjectDefined(content::RenderFrameHost* rfh,
-                         const std::string& object_name) {
-    return content::EvalJs(
-               rfh, base::ReplaceStringPlaceholders("typeof $1 !== 'undefined'",
-                                                    {object_name}, nullptr))
-        .ExtractBool();
-  }
-
-  base::test::ScopedFeatureList features_;
-};
-
-using ChromeDirectSocketsApiAvailabilityChromeAppsTest =
-    ChromeDirectSocketsApiAvailabilityTest<ChromeAppApiTest>;
-
-IN_PROC_BROWSER_TEST_P(ChromeDirectSocketsApiAvailabilityChromeAppsTest,
-                       WithFeatureState) {
-  // The exact socket permissions do not matter here since the API behavior
-  // itself is not tested -- the only important piece is to have an entry named
-  // "sockets" in the manifest.
-  content::RenderFrameHost* app_frame =
-      InstallAndOpenChromeApp(GenerateManifest(
-          /*socket_permissions=*/base::Value::Dict()));
-
-  // `kDirectSockets` is enabled by default or when the flag is forcefully set.
-  EXPECT_EQ(base::FeatureList::IsEnabled(blink::features::kDirectSockets),
-            feature_state() != FeatureState::kDisabled);
-
-  // The API symbols in Chrome Apps are supposed to be exposed unless they're
-  // force disabled.
-  EXPECT_EQ(IsTCPSocketExposed(app_frame),
-            feature_state() != FeatureState::kDisabled);
-  EXPECT_EQ(IsUDPSocketExposed(app_frame),
-            feature_state() != FeatureState::kDisabled);
-  EXPECT_EQ(IsTCPServerSocketExposed(app_frame),
-            feature_state() != FeatureState::kDisabled);
-}
-
-INSTANTIATE_TEST_SUITE_P(/**/,
-                         ChromeDirectSocketsApiAvailabilityChromeAppsTest,
-                         testing::Values(FeatureState::kDefault,
-                                         FeatureState::kEnabled,
-                                         FeatureState::kDisabled),
-                         [](const auto& info) {
-                           switch (info.param) {
-                             case FeatureState::kDefault:
-                               return "FeatureDefault";
-                             case FeatureState::kEnabled:
-                               return "FeatureEnabled";
-                             case FeatureState::kDisabled:
-                               return "FeatureDisabled";
-                           }
-                         });
-
-using ChromeDirectSocketsApiAvailabilityIsolatedWebAppsTest =
-    ChromeDirectSocketsApiAvailabilityTest<IsolatedWebAppApiTest>;
-
-IN_PROC_BROWSER_TEST_P(ChromeDirectSocketsApiAvailabilityIsolatedWebAppsTest,
-                       WithFeatureState) {
-  content::RenderFrameHost* app_frame = InstallAndOpenIsolatedWebApp();
-
-  // `kDirectSockets` is enabled by default or when the flag is forcefully set.
-  EXPECT_EQ(base::FeatureList::IsEnabled(blink::features::kDirectSockets),
-            feature_state() != FeatureState::kDisabled);
-
-  // However, the API symbols in Isolated Web Apps are only supposed to be
-  // exposed when the flag is force-enabled (and not in the default state).
-  EXPECT_EQ(IsTCPSocketExposed(app_frame),
-            feature_state() == FeatureState::kEnabled);
-  EXPECT_EQ(IsUDPSocketExposed(app_frame),
-            feature_state() == FeatureState::kEnabled);
-  EXPECT_EQ(IsTCPServerSocketExposed(app_frame),
-            feature_state() == FeatureState::kEnabled);
-}
-
-INSTANTIATE_TEST_SUITE_P(/**/,
-                         ChromeDirectSocketsApiAvailabilityIsolatedWebAppsTest,
-                         testing::Values(FeatureState::kDefault,
-                                         FeatureState::kEnabled,
-                                         FeatureState::kDisabled),
-                         [](const auto& info) {
-                           switch (info.param) {
-                             case FeatureState::kDefault:
-                               return "FeatureDefault";
-                             case FeatureState::kEnabled:
-                               return "FeatureEnabled";
-                             case FeatureState::kDisabled:
-                               return "FeatureDisabled";
-                           }
-                         });
 
 }  // namespace

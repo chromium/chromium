@@ -923,13 +923,6 @@ void ChromeContentBrowserClientExtensionsPart::
                        extension->id())) {
       command_line->AppendSwitch(::switches::kInitIsolateAsForeground);
     }
-
-    // Direct Sockets API is enabled for Chrome Apps with "sockets" permission.
-    if (base::FeatureList::IsEnabled(blink::features::kDirectSockets) &&
-        extension->is_platform_app() && SocketsManifestData::Get(extension)) {
-      command_line->AppendSwitchASCII(::switches::kEnableBlinkFeatures,
-                                      "DirectSockets");
-    }
   }
 }
 

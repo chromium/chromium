@@ -198,11 +198,6 @@ extern const char kDemoModeComponentUpdaterTestTagDescription[];
 extern const char kDevToolsPrivacyUIName[];
 extern const char kDevToolsPrivacyUIDescription[];
 
-#if !BUILDFLAG(IS_ANDROID)
-extern const char kDirectSocketsWebApiName[];
-extern const char kDirectSocketsWebApiDescription[];
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 extern const char kDisableInstanceLimitName[];
 extern const char kDisableInstanceLimitDescription[];

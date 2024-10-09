@@ -19619,7 +19619,6 @@ from previous Chrome versions.
   <int value="-298243336" label="ChromeOSAmbientModeNewUrl:disabled"/>
   <int value="-297716805"
       label="CrossOriginMediaPlaybackRequiresUserGesture:disabled"/>
-  <int value="-297663931" label="DirectSockets:disabled"/>
   <int value="-297488523" label="PrivacyGuidePreload:enabled"/>
   <int value="-297370583" label="RestoreSyncedPlaceholderTabs:disabled"/>
   <int value="-297225350" label="SensitiveContentWhileSwitchingTabs:disabled"/>
@@ -20748,7 +20747,6 @@ from previous Chrome versions.
   <int value="168429629" label="ContentIndexingNTP:enabled"/>
   <int value="168887810" label="ReadLaterReminderNotification:disabled"/>
   <int value="168955875" label="FullscreenAnimateTabs:disabled"/>
-  <int value="169302610" label="DirectSockets:enabled"/>
   <int value="169986702" label="FirmwareUpdateJelly:enabled"/>
   <int value="170101645" label="PageInfoAboutThisSiteMoreInfo:disabled"/>
   <int value="171273307" label="SystemEmojiPickerClipboard:disabled"/>

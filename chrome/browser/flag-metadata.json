@@ -2990,13 +2990,12 @@
     "expiry_milestone": 132
   },
   {
-    "name": "enable-direct-sockets-web-api",
-    "owners": [ "//content/browser/direct_sockets/OWNERS" ],
-    "expiry_milestone": 135
-  },
-  {
     "name": "enable-disco-feed-endpoint",
-    "owners": [ "tinazwang@chromium.org", "sczs@chromium.org", "bling-get-set-up@google.com" ],
+    "owners": [
+      "tinazwang@chromium.org",
+      "sczs@chromium.org",
+      "bling-get-set-up@google.com"
+    ],
     "expiry_milestone": 140
   },
   {
