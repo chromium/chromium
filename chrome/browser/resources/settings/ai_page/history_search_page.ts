@@ -54,6 +54,13 @@ export class SettingsHistorySearchPageElement extends
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('historySearchDataHomeUrl'));
   }
+
+  private onLearnMoreClick_(event: Event) {
+    // Stop the propagation of events, so that clicking on the 'Learn More' link
+    // won't trigger the external linkout action on the parent cr-link-row
+    // element.
+    event.stopPropagation();
+  }
 }
 
 declare global {

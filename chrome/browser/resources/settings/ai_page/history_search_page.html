@@ -30,9 +30,15 @@
 <template is="dom-if" if="[[enableAiSettingsPageRefresh_]]" restamp>
   <div class="settings-row first">
     <cr-link-row label="$i18n{historySearchSettingLabel}"
-        sub-label="$i18n{historySearchSettingSublabel}"
-        on-click="onHistorySearchLinkoutClick_"
-        external>
+        on-click="onHistorySearchLinkoutClick_" external>
+      <div slot="sub-label">
+        $i18n{historySearchSettingSublabel}
+        <a href="$i18n{historySearchLearnMoreUrl}"
+            aria-label="$i18n{historySearchLearnMoreA11yLabel}"
+            on-click="onLearnMoreClick_" target="_blank">
+          $i18n{learnMore}
+        </a>
+      </div>
     </cr-link-row>
     <div class="separator"></div>
     <settings-toggle-button aria-label="$i18n{historySearchSettingLabel}"

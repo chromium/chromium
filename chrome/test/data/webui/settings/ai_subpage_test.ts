@@ -115,4 +115,14 @@ suite('HistorySearchSubpage', function() {
     const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals(url, loadTimeData.getString('historySearchDataHomeUrl'));
   });
+
+  test('historySearchLearnMore', async () => {
+    await createPage();
+
+    const learnMoreLink = subpage.shadowRoot!.querySelector('a');
+    assertTrue(!!learnMoreLink);
+    assertEquals(
+        learnMoreLink.href,
+        loadTimeData.getString('historySearchLearnMoreUrl'));
+  });
 });
