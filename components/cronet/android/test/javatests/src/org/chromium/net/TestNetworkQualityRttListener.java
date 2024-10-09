@@ -25,9 +25,10 @@ class TestNetworkQualityRttListener extends NetworkQualityRttListener {
 
     private Thread mExecutorThread;
 
-    /*
+    /**
      * Constructs a NetworkQualityRttListener that can listen to the RTT observations at various
      * layers of the network stack.
+     *
      * @param executor The executor on which the observations are reported.
      */
     TestNetworkQualityRttListener(Executor executor) {

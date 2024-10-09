@@ -1943,7 +1943,7 @@ public class RootUiCoordinator
     }
 
     /**
-     * @returns whether the Android Edge To Edge Feature is supported for the current activity.
+     * @return whether the Android Edge To Edge Feature is supported for the current activity.
      */
     protected boolean supportsEdgeToEdge() {
         return false;

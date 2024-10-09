@@ -1166,7 +1166,8 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
 
     /**
      * Called by tests to set the network type.
-     * @isNetworkMetered Whether the network should appear to be metered.
+     *
+     * @param isNetworkMetered Whether the network should appear to be metered.
      */
     static void setIsNetworkMeteredForTest(boolean isNetworkMetered) {
         var oldValue = sIsNetworkMetered;

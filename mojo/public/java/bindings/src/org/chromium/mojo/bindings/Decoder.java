@@ -141,7 +141,7 @@ public class Decoder {
     }
 
     /**
-     * @returns a decoder suitable to decode an union defined as the root object of a message.
+     * @return a decoder suitable to decode an union defined as the root object of a message.
      */
     public Decoder decoderForSerializedUnion() {
         mValidator.claimMemory(0, BindingsHelper.UNION_SIZE);

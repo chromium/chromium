@@ -38,16 +38,20 @@ ERRORPRONE_CHECKS_TO_APPLY = []
 ERRORPRONE_WARNINGS_TO_DISABLE = [
     'InlineMeInliner',
     'InlineMeSuggester',
+    # These are all for Javadoc, which we don't really care about.
+    # vvv
+    'InvalidBlockTag',
     'InvalidParam',
     'InvalidLink',
     'InvalidInlineTag',
-    'EmptyBlockTag',
-    'InvalidBlockTag',
+    'MalformedInlineTag',
+    'MissingSummary',
+    'UnescapedEntity',
+    'UnrecognisedJavadocTag',
+    # ^^^
     'StaticAssignmentInConstructor',
     'MutablePublicArray',
-    'UnescapedEntity',
     'NonCanonicalType',
-    'AlmostJavadoc',
     'ReturnValueIgnored',
     'DoNotClaimAnnotations',
     'JavaUtilDate',
@@ -57,8 +61,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'ToStringReturnsNull',
     # Triggers in tests where this is useful to do.
     'StaticAssignmentOfThrowable',
-    # If possible, this should be automatically fixed if turned on:
-    'MalformedInlineTag',
     # TODO(crbug.com/41384349): Follow steps in bug.
     'CatchAndPrintStackTrace',
     # TODO(crbug.com/41364336): Follow steps in bug.
@@ -68,8 +70,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     # Android platform default is always UTF-8.
     # https://developer.android.com/reference/java/nio/charset/Charset.html#defaultCharset()
     'DefaultCharset',
-    # Low priority since there are lots of tags that don't fit this check.
-    'UnrecognisedJavadocTag',
     # Low priority since the alternatives still work.
     'JdkObsolete',
     # There are lots of times when we just want to post a task.
@@ -112,8 +112,6 @@ ERRORPRONE_WARNINGS_TO_DISABLE = [
     'SameNameButDifferent',
     # Does not apply to Android because it assumes no desugaring.
     'UnnecessaryLambda',
-    # Nice to have.
-    'MissingSummary',
     # Nice to have.
     'EmptyCatch',
     # Nice to have.

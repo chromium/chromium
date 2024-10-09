@@ -644,7 +644,6 @@ public class LoadDataWithBaseUrlTest extends AwParameterizedTest {
      *
      * @param baseUri Base URI to start from.
      * @param textUri The text URI to fetch the text from.
-     * @throws Throwable
      */
     private boolean verifyXhrForUrls(String baseUri, String textUri) throws Throwable {
         final String successMsg = "SUCCESS";

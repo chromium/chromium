@@ -38,7 +38,7 @@ class TabListEditorToolbar extends SelectableListToolbar<Integer> {
     public interface RelatedTabCountProvider {
         /**
          * @param tabIds the selected items.
-         * @returns the count of tabs including related tabs.
+         * @return the count of tabs including related tabs.
          */
         int getRelatedTabCount(List<Integer> tabIds);
     }

@@ -80,11 +80,7 @@ public class VariationsSeedFetcherTest {
         mPrefs = ContextUtils.getAppSharedPreferences();
     }
 
-    /**
-     * Test method for {@link VariationsSeedFetcher#fetchSeed()}.
-     *
-     * @throws IOException
-     */
+    /** Test method for {@link VariationsSeedFetcher#fetchSeed()}. */
     @Test
     public void testFetchSeed() throws IOException {
         // Pretend we are on a background thread; set the UI thread looper to something other than
@@ -304,8 +300,6 @@ public class VariationsSeedFetcherTest {
     /**
      * Test method for {@link VariationsSeedFetcher#downloadContent()} when no fetch is needed as
      * If-None-Match header matches.
-     *
-     * @throws IOException
      */
     @Test
     public void downloadContentNotModified() throws IOException {

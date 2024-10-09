@@ -63,12 +63,12 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
      * @param browserControlsStateProvider The BrowserControlsStateProvider for top controls.
      * @param tabContentManagerSupplier Supplier of the TabContentManager instance.
      * @param topUiThemeColorProvider ThemeColorProvider for top UI.
-     * @param lifecycleDispatcher @ActivityLifecycleDispatcher to be passed to TabStrip helper.
+     * @param lifecycleDispatcher ActivityLifecycleDispatcher to be passed to TabStrip helper.
      * @param hubLayoutDependencyHolder The dependency holder for creating HubLayout.
      * @param multiInstanceManager MultiInstanceManager passed to StripLayoutHelper to support tab
      *     drag and drop.
-     * @param dragAndDropDelegate @DragAndDropDelegate passed to StripLayoutHelperManager to
-     *     initiate tab drag and drop.
+     * @param dragAndDropDelegate DragAndDropDelegate passed to StripLayoutHelperManager to initiate
+     *     tab drag and drop.
      * @param toolbarContainerView View passed to StripLayoutHelper to support tab drag and drop.
      * @param tabHoverCardViewStub The ViewStub representing the strip tab hover card.
      * @param toolbarManager The ToolbarManager instance.

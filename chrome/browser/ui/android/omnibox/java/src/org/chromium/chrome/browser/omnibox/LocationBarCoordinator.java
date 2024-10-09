@@ -156,7 +156,7 @@ public class LocationBarCoordinator
      *     out of this region to be fully visible and interactable. This is used to ensure the
      *     suggestions list draws edge to edge when appropriate. This should only be used when the
      *     soft keyboard is not visible.
-     * @param onLongClickListener @{@link OnLongClickListener} for the url bar.
+     * @param onLongClickListener for the url bar.
      */
     public LocationBarCoordinator(
             View locationBarLayout,

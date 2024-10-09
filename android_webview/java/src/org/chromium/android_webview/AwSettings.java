@@ -752,16 +752,16 @@ public class AwSettings {
     }
 
     /**
-     * @returns the default User-Agent used by each WebContents instance, i.e. unless
-     * overridden by {@link #setUserAgentString()}
+     * @return the default User-Agent used by each WebContents instance, i.e. unless overridden by
+     *     {@link #setUserAgentString()}
      */
     public static String getDefaultUserAgent() {
         return LazyDefaultUserAgent.sInstance;
     }
 
     /**
-     * @returns the default metadata for user-agent client hints used by each WebContents instance,
-     * i.e. unless overridden by {@link #setUserAgentMetadata()}
+     * @return the default metadata for user-agent client hints used by each WebContents instance,
+     *     i.e. unless overridden by {@link #setUserAgentMetadata()}
      */
     public static AwUserAgentMetadata getDefaultUserAgentMetadata() {
         return LazyDefaultUserAgentMetadata.sInstance;

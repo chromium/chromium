@@ -41,7 +41,6 @@ public class WebApkServiceImpl extends IWebApkApi.Stub {
     /**
      * Creates an instance of WebApkServiceImpl.
      *
-     * @param context
      * @param bundle Bundle with additional constructor parameters.
      */
     public WebApkServiceImpl(Context context, Bundle bundle) {

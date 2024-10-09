@@ -290,10 +290,7 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
                         });
     }
 
-    /**
-     * Sets the version information, if available, to |installedApp|.
-     * @param installedApp
-     */
+    /** Sets the version information, if available, to |installedApp|. */
     private void setVersionInfo(RelatedApplication installedApp) {
         assert installedApp.id != null;
         try {

@@ -66,8 +66,8 @@ public class UrlBarCoordinator
      * @param keyboardVisibilityDelegate Delegate that allows querying and changing the keyboard's
      *     visibility.
      * @param isIncognitoBranded Whether incognito mode is initially enabled. This can later be
-     *     changed using {@link #setIncognitoColorsEnabled(boolean)}.
-     * @param onLongClickListener @{@link OnLongClickListener} for the url bar.
+     *     changed using {@link #setIncognitoColorsEnabled(boolean)}. @{@link OnLongClickListener}
+     *     for the url bar.
      */
     public UrlBarCoordinator(
             @NonNull Context context,

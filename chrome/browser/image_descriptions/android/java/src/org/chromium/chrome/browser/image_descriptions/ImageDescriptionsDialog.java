@@ -290,7 +290,7 @@ public class ImageDescriptionsDialog
     /**
      * Helper method to record metrics for user choice when interacting with dialog.
      *
-     * @param action    @ImageDescriptionsDialogAction int, action user has taken on the dialog
+     * @param action action user has taken on the dialog
      */
     private void recordHistogramMetric(@ImageDescriptionsDialogAction int action) {
         RecordHistogram.recordEnumeratedHistogram(

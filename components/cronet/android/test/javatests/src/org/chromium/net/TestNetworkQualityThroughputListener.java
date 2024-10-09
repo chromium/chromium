@@ -20,8 +20,9 @@ class TestNetworkQualityThroughputListener extends NetworkQualityThroughputListe
     private int mThroughputObservationCount;
     private Thread mExecutorThread;
 
-    /*
+    /**
      * Constructs a NetworkQualityThroughputListener that can listen to the throughput observations.
+     *
      * @param executor The executor on which the observations are reported.
      */
     TestNetworkQualityThroughputListener(Executor executor) {

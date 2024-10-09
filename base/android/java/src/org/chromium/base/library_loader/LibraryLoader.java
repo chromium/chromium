@@ -579,8 +579,8 @@ public class LibraryLoader {
     /**
      * Checks whether the native library is fully loaded.
      *
-     * @deprecated: please avoid using in new code:
-     * https://crsrc.org/c/base/android/jni_generator/README.md#testing-for-readiness-use-get
+     * @deprecated please avoid using in new code:
+     *     https://crsrc.org/c/base/android/jni_generator/README.md#testing-for-readiness-use-get
      */
     @Deprecated
     @VisibleForTesting
@@ -597,8 +597,8 @@ public class LibraryLoader {
     /**
      * Checks whether the native library is fully loaded and initialized.
      *
-     * @deprecated: please avoid using in new code:
-     * https://chromium.googlesource.com/chromium/src/+/main/base/android/jni_generator/README.md#testing-for-readiness_use
+     * @deprecated please avoid using in new code:
+     *     https://chromium.googlesource.com/chromium/src/+/main/base/android/jni_generator/README.md#testing-for-readiness_use
      */
     @Deprecated
     public boolean isInitialized() {
@@ -847,9 +847,8 @@ public class LibraryLoader {
     /**
      * Overrides the library loader (normally with a mock) for testing.
      *
-     * @deprecated: please avoid using in new code:
-     * https://chromium.googlesource.com/chromium/src/+/main/base/android/jni_generator/README.md#testing-for-readiness_use
-     *
+     * @deprecated please avoid using in new code:
+     *     https://chromium.googlesource.com/chromium/src/+/main/base/android/jni_generator/README.md#testing-for-readiness_use
      * @param loader the mock library loader.
      */
     @Deprecated

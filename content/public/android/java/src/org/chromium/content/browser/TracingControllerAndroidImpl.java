@@ -98,10 +98,7 @@ public class TracingControllerAndroidImpl implements TracingControllerAndroid {
                 context, getBroadcastReceiver(), getIntentFilter(), null);
     }
 
-    /**
-     * Unregister the GPU BroadcastReceiver in the given context.
-     * @param context
-     */
+    /** Unregister the GPU BroadcastReceiver in the given context. */
     public void unregisterReceiver(Context context) {
         context.unregisterReceiver(getBroadcastReceiver());
     }

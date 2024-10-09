@@ -38,7 +38,7 @@ public interface PrivacyPreferencesManager extends CrashReportingPermissionManag
      * Checks whether this client is in-sample for usage metrics. See {@link
      * org.chromium.chrome.browser.metrics.UmaUtils#isClientInSampleForMetrics} for details.
      *
-     * @returns boolean Whether client is in-sample for metrics.
+     * @return boolean Whether client is in-sample for metrics.
      */
     boolean isClientInSampleForMetrics();
 
@@ -52,7 +52,7 @@ public interface PrivacyPreferencesManager extends CrashReportingPermissionManag
      * Checks whether this client is in-sample for crash reporting. See {@link
      * org.chromium.chrome.browser.metrics.UmaUtils#isClientInSampleForCrashes} for details.
      *
-     * @returns boolean Whether client is in-sample for crash reporting.
+     * @return boolean Whether client is in-sample for crash reporting.
      */
     @Override
     boolean isClientInSampleForCrashes();

@@ -131,7 +131,6 @@ public class OptionalButtonCoordinator {
      * Updates the button to replace the current action with a new one. If animations are allowed
      * (according to the BooleanSupplier set with setIsAnimationAllowedPredicate) then this update
      * will be animated. Otherwise it'll instantly switch to the new icon.
-     * @param buttonData
      */
     public void updateButton(ButtonData buttonData) {
         if (buttonData != null
@@ -195,7 +194,6 @@ public class OptionalButtonCoordinator {
 
     /**
      * Updates the foreground color on the icons and label to match the current theme/website color.
-     * @param colorStateList
      */
     public void setIconForegroundColor(ColorStateList colorStateList) {
         mMediator.setIconForegroundColor(colorStateList);
@@ -207,8 +205,6 @@ public class OptionalButtonCoordinator {
      * #updateButton(ButtonData)} is called with a {@link
      * org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec} where {@code isDynamicAction()} is
      * true).
-     *
-     * @param backgroundColor
      */
     public void setBackgroundColorFilter(@ColorInt int backgroundColor) {
         mMediator.setBackgroundColorFilter(backgroundColor);

@@ -31,7 +31,8 @@ public class ApplicationLifetime {
 
     /**
      * Removes an observer from watching for application termination.
-     * @oparam observer The observer to remove.
+     *
+     * @param observer The observer to remove.
      */
     public static void removeObserver(Observer observer) {
         sObservers.removeObserver(observer);

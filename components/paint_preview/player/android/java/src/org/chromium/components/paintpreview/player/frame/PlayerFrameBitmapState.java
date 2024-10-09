@@ -363,10 +363,7 @@ public class PlayerFrameBitmapState {
             return ret;
         }
 
-        /**
-         * Called when bitmap is successfully composited.
-         * @param result
-         */
+        /** Called when bitmap is successfully composited. */
         @Override
         public void onResult(Bitmap result) {
             TraceEvent.begin("BitmapRequestHandler.onResult");

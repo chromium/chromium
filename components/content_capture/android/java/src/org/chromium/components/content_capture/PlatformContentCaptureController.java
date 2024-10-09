@@ -138,7 +138,9 @@ public class PlatformContentCaptureController {
         mContentCaptureManager.removeData(builder.build());
     }
 
-    /** @return  @return if any of the given allows to be captured. */
+    /**
+     * @return if any of the given allows to be captured.
+     */
     public boolean shouldCapture(String[] urls) {
         if (mAllowlist == null) return true;
         return mAllowlist.isAllowed(urls);

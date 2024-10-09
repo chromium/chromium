@@ -155,7 +155,7 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param desktopWindowStateProvider The {@link DesktopWindowStateProvider} instance.
      * @param tabStripTransitionDelegateSupplier Supplier for the {@link
      *     TabStripTransitionDelegate}.
-     * @param onLongClickListener @{@link OnLongClickListener} for the toolbar.
+     * @param onLongClickListener OnLongClickListener for the toolbar.
      */
     public TopToolbarCoordinator(
             ToolbarControlContainer controlContainer,

@@ -1093,8 +1093,8 @@ public class ShoppingPersistedTabData extends PersistedTabData {
 
     /**
      * Returns true if there is an incoming change for the price.
+     *
      * @param productPriceUpdate incoming price update data.
-     * @return
      */
     private boolean hasPriceChange(ProductPriceUpdate productPriceUpdate) {
         if (productPriceUpdate.getNewPrice().getAmountMicros() != mPriceDropData.priceMicros) {

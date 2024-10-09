@@ -3955,7 +3955,7 @@ public class AwContents implements SmartClipProvider {
      * @param requestId an id that will be returned from the callback invocation to allow
      * callers to match requests with callbacks.
      * @param callback the callback to be inserted
-     * @throw IllegalStateException if this method is invoked after {@link #destroy()} has been
+     * @throws IllegalStateException if this method is invoked after {@link #destroy()} has been
      * called.
      */
     public void insertVisualStateCallback(long requestId, VisualStateCallback callback) {

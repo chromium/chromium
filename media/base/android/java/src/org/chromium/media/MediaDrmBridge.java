@@ -1524,7 +1524,7 @@ public class MediaDrmBridge {
     /**
      * Provides the provision response to MediaDrm.
      *
-     * @returns false if the response is invalid or on error, true otherwise.
+     * @return false if the response is invalid or on error, true otherwise.
      */
     boolean provideProvisionResponse(byte[] response) {
         if (response == null || response.length == 0) {

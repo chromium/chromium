@@ -9,7 +9,6 @@ public class WebApkCommonUtils {
     /**
      * Returns name of "Runtime Dex" asset in Chrome APK based on version.
      *
-     * @param version
      * @return Dex asset name.
      */
     public static String getRuntimeDexName(int version) {

@@ -290,11 +290,7 @@ public class TopView extends RelativeLayout
         return checked;
     }
 
-    /**
-     * Updates the state of the checkbox to reflect whether everything is selected.
-     *
-     * @param allSelected
-     */
+    /** Updates the state of the checkbox to reflect whether everything is selected. */
     public void updateSelectAllCheckbox(boolean allSelected) {
         mIgnoreCheck = true;
         mSelectAllBox.setChecked(allSelected);

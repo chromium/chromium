@@ -30,7 +30,6 @@ class BackgroundNetworkStatusListener implements NetworkChangeNotifierAutoDetect
     interface Observer {
         /**
          * Called when {@link BackgroundNetworkStatusListener} is initialized on background thread.
-         * @param connectionType
          */
         void onNetworkStatusReady(@ConnectionType int connectionType);
 

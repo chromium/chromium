@@ -414,11 +414,7 @@ public class ChromeTabUtils {
         }
     }
 
-    /**
-     * Switch to the given TabIndex in the current tabModel.
-     *
-     * @param tabIndex
-     */
+    /** Switch to the given TabIndex in the current tabModel. */
     public static void switchTabInCurrentTabModel(
             final ChromeActivity activity, final int tabIndex) {
         ThreadUtils.runOnUiThreadBlocking(

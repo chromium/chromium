@@ -23,7 +23,8 @@ public class DuplicateDownloadDialogBridge {
 
     /**
      * Constructor, taking a pointer to the native instance.
-     * @nativeDuplicateDownloadDialogBridge Pointer to the native object.
+     *
+     * @param nativeDuplicateDownloadDialogBridge Pointer to the native object.
      */
     public DuplicateDownloadDialogBridge(long nativeDuplicateDownloadDialogBridge) {
         mNativeDuplicateDownloadDialogBridge = nativeDuplicateDownloadDialogBridge;

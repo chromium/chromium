@@ -170,7 +170,8 @@ public final class CastCrashUploader {
                 feedbackHeader.append(dumpFirstLine);
                 feedbackHeader.append("\n");
                 feedbackHeader.append(
-                        "Content-Disposition: form-data; name=\"application_feedback.txt\"; filename=\"application.txt\"\n");
+                        "Content-Disposition: form-data; name=\"application_feedback.txt\";"
+                            + " filename=\"application.txt\"\n");
                 feedbackHeader.append("Content-Type: text/plain\n\n");
                 feedbackHeader.append(mApplicationFeedback);
                 feedbackHeader.append("\n");
@@ -235,7 +236,6 @@ public final class CastCrashUploader {
      *
      * @param inStream the stream to read
      * @param outStream the stream to write to
-     * @throws IOException
      */
     private static void streamCopy(InputStream inStream, OutputStream outStream)
             throws IOException {
@@ -253,7 +253,6 @@ public final class CastCrashUploader {
      * Gets the first line from an input stream
      *
      * @return First line of the input stream.
-     * @throws IOException
      */
     private String getFirstLine(InputStream inputStream) throws IOException {
         try (InputStreamReader streamReader = new InputStreamReader(inputStream, "UTF-8");

@@ -409,12 +409,12 @@ public class StripLayoutHelperManager
      * @param lifecycleDispatcher The ActivityLifecycleDispatcher for registering this class to
      *     lifecycle events.
      * @param multiInstanceManager MultiInstanceManager passed to TabDragSource for drag and drop.
-     * @param dragDropDelegate @DragAndDropDelegate passed to @TabDragSource to initiate tab drag
-     *     and drop.
+     * @param dragDropDelegate DragAndDropDelegate passed to TabDragSource to initiate tab drag and
+     *     drop.
      * @param toolbarContainerView View passed to TabDragSource for drag and drop.
      * @param tabHoverCardViewStub The ViewStub representing the strip tab hover card.
      * @param tabContentManagerSupplier Supplier of the TabContentManager instance.
-     * @param browserControlsStateProvider @BrowserControlsStateProvider for drag drop.
+     * @param browserControlsStateProvider BrowserControlsStateProvider for drag drop.
      * @param toolbarManager The ToolbarManager instance.
      * @param desktopWindowStateProvider The DesktopWindowStateProvider for the app header.
      */

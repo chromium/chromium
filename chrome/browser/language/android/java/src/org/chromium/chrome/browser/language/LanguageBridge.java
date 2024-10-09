@@ -24,7 +24,6 @@ public class LanguageBridge {
      * Returns the TopULPMatchType for |language| and the top ULP language. Only language bases are
      * compared (e.g. en-US = en-GB).
      *
-     * @param profile
      * @param language String of language tag to check.
      * @return TopULPMatchType
      */

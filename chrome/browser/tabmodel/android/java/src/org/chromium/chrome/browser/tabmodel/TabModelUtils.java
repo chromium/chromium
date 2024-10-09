@@ -120,8 +120,9 @@ public class TabModelUtils {
 
     /**
      * Get the currently selected {@link Tab}.
+     *
      * @param model The {@link TabModel} to act on.
-     * @returns     The current {@link Tab} or {@code null} if no {@link Tab} is selected
+     * @return The current {@link Tab} or {@code null} if no {@link Tab} is selected
      */
     public static Tab getCurrentTab(TabList model) {
         int index = model.index();

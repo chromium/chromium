@@ -32,9 +32,8 @@ public class WebContentsDelegateAndroid {
     public static final int LOG_LEVEL_ERROR = 3;
 
     /**
-     * @param url
-     * @param disposition         The new tab disposition, defined in
-     *                            //ui/base/mojo/window_open_disposition.mojom.
+     * @param disposition The new tab disposition, defined in
+     *     //ui/base/mojo/window_open_disposition.mojom.
      * @param isRendererInitiated Whether or not the renderer initiated this action.
      */
     @CalledByNative

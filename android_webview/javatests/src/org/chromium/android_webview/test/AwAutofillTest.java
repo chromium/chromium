@@ -3656,8 +3656,7 @@ public class AwAutofillTest extends AwParameterizedTest {
      * @param currentCallCount The current call count to start from.
      * @param expectedEventArray The callback types that need to be verified.
      * @return The number of new callbacks since currentCallCount. This should be same as the length
-     *         of expectedEventArray.
-     * @throws TimeoutException
+     *     of expectedEventArray.
      */
     private int waitForCallbackAndVerifyTypes(int currentCallCount, Integer[] expectedEventArray)
             throws TimeoutException {
@@ -3707,14 +3706,12 @@ public class AwAutofillTest extends AwParameterizedTest {
     }
 
     /**
-     * Consumes all observed events from {@link mEventQueue} until the
-     * {@code expectedEvents} have been observed (in proper order). Calls
-     * {@code mCallbackHelper.waitForNext();} in case the {@link mEventQueue}
-     * runs out of events. Unexpected events are just ignored.
+     * Consumes all observed events from {@link mEventQueue} until the {@code expectedEvents} have
+     * been observed (in proper order). Calls {@code mCallbackHelper.waitForNext();} in case the
+     * {@link mEventQueue} runs out of events. Unexpected events are just ignored.
      *
      * @param expectedEvents the events that need to happen.
      * @return Whether the {@code expectedEvents} were observed.
-     * @throws TimeoutException
      */
     private boolean waitForEvents(Integer[] expectedEvents) throws TimeoutException {
         // Chosen arbitrarily.
@@ -3771,7 +3768,6 @@ public class AwAutofillTest extends AwParameterizedTest {
      *
      * @param htmlBody The body of the HTML snippet to be loaded.
      * @return The url where the loaded HTML can be found on the test web server.
-     * @throws Exception
      */
     private String loadHTML(String htmlBody) throws Exception {
         final String data =

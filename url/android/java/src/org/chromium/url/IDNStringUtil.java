@@ -9,18 +9,15 @@ import org.jni_zero.JNINamespace;
 
 import java.net.IDN;
 
-/**
- * This class is used to convert unicode IDN domain names to ASCII, when not
- * building with ICU.
- */
+/** This class is used to convert unicode IDN domain names to ASCII, when not building with ICU. */
 @JNINamespace("url::android")
 public class IDNStringUtil {
     /**
-     * Attempts to convert a Unicode string to an ASCII string using IDN rules.
-     * As of May 2014, the underlying Java function IDNA2003.
+     * Attempts to convert a Unicode string to an ASCII string using IDN rules. As of May 2014, the
+     * underlying Java function IDNA2003.
+     *
      * @param src String to convert.
-     * @return: String containing only ASCII characters on success, null on
-     *                 failure.
+     * @return String containing only ASCII characters on success, null on failure.
      */
     @CalledByNative
     private static String idnToASCII(String src) {

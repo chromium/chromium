@@ -91,7 +91,7 @@ public class OfflineBackgroundTask extends NativeBackgroundTask {
      * conditions and should be used together with {@link #checkConditions} to ensure that it
      * performs the tasks only when it is supposed to.
      *
-     * @returns Whether processing will be carried out and completion will be indicated through a
+     * @return Whether processing will be carried out and completion will be indicated through a
      *     callback.
      */
     @VisibleForTesting
@@ -106,7 +106,9 @@ public class OfflineBackgroundTask extends NativeBackgroundTask {
         return bridge.startScheduledProcessing(deviceConditions, callback);
     }
 
-    /** @returns Whether conditions for running the tasks are met. */
+    /**
+     * @return Whether conditions for running the tasks are met.
+     */
     @VisibleForTesting
     static boolean checkConditions(Context context, PersistableBundle taskExtras) {
         TriggerConditions triggerConditions =

@@ -261,11 +261,12 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
 
     /**
      * Called during {@link #attachBaseContext(Context)} to allow configuration overrides to be
-     * applied. If this methods return true, the overrides will be applied using
-     * {@link #applyOverrideConfiguration(Configuration)}.
+     * applied. If this methods return true, the overrides will be applied using {@link
+     * #applyOverrideConfiguration(Configuration)}.
+     *
      * @param baseContext The base {@link Context} attached to this class.
-     * @param overrideConfig The {@link Configuration} that will be passed to
-     *                       @link #applyOverrideConfiguration(Configuration)} if necessary.
+     * @param overrideConfig The {@link Configuration} that will be passed to {@link}
+     *     #applyOverrideConfiguration(Configuration)} if necessary.
      * @return True if any configuration overrides were applied, and false otherwise.
      */
     @CallSuper

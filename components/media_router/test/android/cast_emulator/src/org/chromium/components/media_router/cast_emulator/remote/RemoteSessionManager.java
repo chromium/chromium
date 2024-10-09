@@ -65,7 +65,6 @@ public class RemoteSessionManager implements DummyPlayer.Callback {
      * @param uri the URI of the video
      * @param mime the mime type
      * @param receiver the pending intent to use to send state changes
-     * @param contentPosition
      * @return the new media item
      */
     public MediaItem add(Uri uri, String mime, PendingIntent receiver, long contentPosition) {

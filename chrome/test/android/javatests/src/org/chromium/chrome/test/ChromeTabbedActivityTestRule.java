@@ -201,13 +201,10 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
     }
 
     /**
-     * Looks up the Omnibox in the view hierarchy and types the specified
-     * text into it, requesting focus and using an inter-character delay of
-     * 200ms.
+     * Looks up the Omnibox in the view hierarchy and types the specified text into it, requesting
+     * focus and using an inter-character delay of 200ms.
      *
      * @param oneCharAtATime Whether to type text one character at a time or all at once.
-     *
-     * @throws InterruptedException
      */
     public void typeInOmnibox(String text, boolean oneCharAtATime) throws InterruptedException {
         final UrlBar urlBar = getActivity().findViewById(R.id.url_bar);

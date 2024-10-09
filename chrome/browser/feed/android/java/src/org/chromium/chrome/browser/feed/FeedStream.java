@@ -1381,7 +1381,9 @@ public class FeedStream implements Stream {
         mShareHelper = shareWrapper;
     }
 
-    /** @returns True if this feed has been bound. */
+    /**
+     * @return True if this feed has been bound.
+     */
     public boolean getBoundStatusForTest() {
         return mContentManager != null;
     }

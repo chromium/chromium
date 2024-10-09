@@ -79,12 +79,11 @@ public interface PrintingController {
      * Sets the data required to initiate a printing process. The process can later be started using
      * {@link #startPendingPrint()}.
      *
-     * @param printable An object capable of starting native side PDF generation, i.e. typically
-     *     a Tab.
+     * @param printable An object capable of starting native side PDF generation, i.e. typically a
+     *     Tab.
      * @param printManager The print manager that manages the print job.
-     * @param renderProcessId
      * @param renderFrameId renderProcessId and renderFrameId are a pair of integers used to figure
-     *                      out which frame is going to be printed in native side.
+     *     out which frame is going to be printed in native side.
      */
     void setPendingPrint(
             final Printable printable,

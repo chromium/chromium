@@ -641,7 +641,7 @@ public class MultiWindowUtils implements ActivityStateListener {
     }
 
     /**
-     * @returns A map taskID : boolean containing the visible tasks.
+     * @return A map taskID : boolean containing the visible tasks.
      */
     public static SparseBooleanArray getVisibleTasks() {
         SparseBooleanArray visibleTasks = new SparseBooleanArray();

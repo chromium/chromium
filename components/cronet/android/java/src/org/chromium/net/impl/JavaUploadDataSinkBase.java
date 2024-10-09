@@ -267,22 +267,15 @@ public abstract class JavaUploadDataSinkBase extends UploadDataSink {
      * process.
      *
      * @return the number of bytes processed in this read
-     * @throws IOException
      */
     protected abstract int processSuccessfulRead(ByteBuffer buffer) throws IOException;
 
-    /**
-     * Finishes this upload. Called when the upload is complete.
-     *
-     * @throws IOException
-     */
+    /** Finishes this upload. Called when the upload is complete. */
     protected abstract void finish() throws IOException;
 
     /**
-     * Initializes the {@link UploadDataSink} before each call to {@code read} in the
-     * {@link UploadDataProvider}.
-     *
-     * @throws IOException
+     * Initializes the {@link UploadDataSink} before each call to {@code read} in the {@link
+     * UploadDataProvider}.
      */
     protected abstract void initializeRead() throws IOException;
 

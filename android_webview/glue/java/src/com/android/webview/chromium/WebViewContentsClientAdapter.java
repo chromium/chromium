@@ -287,7 +287,9 @@ class WebViewContentsClientAdapter extends SharedWebViewContentsClientAdapter {
         }
     }
 
-    /** @See AwContentsClient#onNewPicture(Picture) */
+    /**
+     * @see AwContentsClient#onNewPicture(Picture)
+     */
     @Override
     public void onNewPicture(Picture picture) {
         try (TraceEvent event =

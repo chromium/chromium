@@ -23,7 +23,8 @@ public class DangerousDownloadDialogBridge {
 
     /**
      * Constructor, taking a pointer to the native instance.
-     * @nativeDangerousDownloadDialogBridge Pointer to the native object.
+     *
+     * @param nativeDangerousDownloadDialogBridge Pointer to the native object.
      */
     public DangerousDownloadDialogBridge(long nativeDangerousDownloadDialogBridge) {
         mNativeDangerousDownloadDialogBridge = nativeDangerousDownloadDialogBridge;

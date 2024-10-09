@@ -56,7 +56,6 @@ public class DefaultBrowserPromoImpressionCounter {
      *   <li>Not enough time after a OS-level default browser selection was made.
      * </ol>
      *
-     * @param ignoreMaxCount
      * @return boolean if promo dialog can be displayed.
      */
     boolean shouldShowPromo(boolean ignoreMaxCount) {

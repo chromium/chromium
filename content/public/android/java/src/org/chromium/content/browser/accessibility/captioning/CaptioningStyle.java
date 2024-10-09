@@ -8,12 +8,11 @@ import android.graphics.Typeface;
 import android.view.accessibility.CaptioningManager.CaptionStyle;
 
 /**
- * This is an internal representation of the captioning. This class follows
- * the paradigm that was introduced in KitKat while not using that API directly so that it can be
- * used everywhere.
+ * This is an internal representation of the captioning. This class follows the paradigm that was
+ * introduced in KitKat while not using that API directly so that it can be used everywhere.
  *
- * For information on CaptionStyle, introduced in KitKat, see:
- * @link https://developer.android.com/reference/android/view/accessibility/CaptioningManager.CaptionStyle.html
+ * <p>For information on CaptionStyle, introduced in KitKat, see: {@link}
+ * https://developer.android.com/reference/android/view/accessibility/CaptioningManager.CaptionStyle.html
  */
 public class CaptioningStyle {
     private Integer mBackgroundColor;

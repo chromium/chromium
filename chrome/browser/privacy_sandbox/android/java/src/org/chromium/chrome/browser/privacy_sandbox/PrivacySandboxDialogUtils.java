@@ -29,7 +29,6 @@ public class PrivacySandboxDialogUtils {
     /**
      * Create an expand Drawable with its own animation.
      *
-     * @param context
      * @return an expandable/collapsible Drawable icon.
      */
     public static Drawable createExpandDrawable(Context context) {

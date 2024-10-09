@@ -21,10 +21,10 @@ import java.util.Locale;
 /**
  * API level agnostic delegate for getting updates about caption styles.
  *
- * This class is based on CaptioningManager.CaptioningChangeListener except it uses internal
+ * <p>This class is based on CaptioningManager.CaptioningChangeListener except it uses internal
  * classes instead of the API level dependent versions. Here is the documentation for that class:
  *
- * @link https://developer.android.com/reference/android/view/accessibility/CaptioningManager.CaptioningChangeListener.html
+ * <p>https://developer.android.com/reference/android/view/accessibility/CaptioningManager.CaptioningChangeListener.html
  */
 public class CaptioningChangeDelegate {
     private static final String FONT_STYLE_ITALIC = "italic";

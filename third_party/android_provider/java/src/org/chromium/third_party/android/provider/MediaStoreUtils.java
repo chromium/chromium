@@ -136,7 +136,7 @@ public class MediaStoreUtils {
         /**
          * Sets the expiration time of the download.
          *
-         * @time Epoch time in seconds.
+         * @param time Epoch time in seconds.
          */
         public void setExpirationTime(long time) {
             mInsertValues.put("date_expires", time);

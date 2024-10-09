@@ -2119,7 +2119,7 @@ public class ExternalNavigationHandler {
      * @param resolveActivity The resolving Activity |intent| matches against.
      * @param browserFallbackUrl The fallback URL if the user chooses not to leave this app.
      * @param intentTargetUrl The URL |intent| is targeting.
-     * @returns The OverrideUrlLoadingResult for starting (or not starting) the Activity.
+     * @return The OverrideUrlLoadingResult for starting (or not starting) the Activity.
      */
     protected OverrideUrlLoadingResult startActivity(
             Intent intent,

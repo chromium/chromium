@@ -4024,7 +4024,6 @@ public class AwSettingsTest {
      *
      * @param helper0 Test helper for the first ContentView
      * @param helper1 Test helper for the second ContentView
-     * @throws Throwable
      */
     private void runPerViewSettingsTest(
             AwSettingsTestHelper<?> helper0, AwSettingsTestHelper<?> helper1) throws Throwable {

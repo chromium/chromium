@@ -13,13 +13,12 @@ import org.chromium.content_public.browser.BrowserContextHandle;
 public interface AccessibilitySettingsDelegate {
     /** An interface to control a single integer preference. */
     interface IntegerPreferenceDelegate {
-        /** @return int - Current value of the preference of this instance. */
+        /**
+         * @return int - Current value of the preference of this instance.
+         */
         int getValue();
 
-        /**
-         * Sets a new value for the preference of this instance.
-         * @param value
-         */
+        /** Sets a new value for the preference of this instance. */
         void setValue(int value);
     }
 

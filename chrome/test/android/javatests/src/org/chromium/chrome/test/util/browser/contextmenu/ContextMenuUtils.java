@@ -42,10 +42,10 @@ public class ContextMenuUtils {
 
     /**
      * Opens a context menu.
-     * @param tab                   The tab to open a context menu for.
-     * @param openerDOMNodeId       The DOM node to long press to open the context menu for.
-     * @return                      The {@link ContextMenuCoordinator} of the context menu.
-     * @throws TimeoutException
+     *
+     * @param tab The tab to open a context menu for.
+     * @param openerDOMNodeId The DOM node to long press to open the context menu for.
+     * @return The {@link ContextMenuCoordinator} of the context menu.
      */
     public static ContextMenuCoordinator openContextMenu(Tab tab, String openerDOMNodeId)
             throws TimeoutException {
@@ -55,11 +55,10 @@ public class ContextMenuUtils {
 
     /**
      * Opens a context menu.
-     * @param tab                   The tab to open a context menu for.
-     * @param jsCode                The javascript to get the DOM node to long press to
-     *                              open the context menu for.
-     * @return                      The {@link ContextMenuCoordinator} of the context menu.
-     * @throws TimeoutException
+     *
+     * @param tab The tab to open a context menu for.
+     * @param jsCode The javascript to get the DOM node to long press to open the context menu for.
+     * @return The {@link ContextMenuCoordinator} of the context menu.
      */
     private static ContextMenuCoordinator openContextMenuByJs(Tab tab, String jsCode)
             throws TimeoutException {
@@ -75,11 +74,11 @@ public class ContextMenuUtils {
 
     /**
      * Opens and selects an item from a context menu.
-     * @param tab                   The tab to open a context menu for.
-     * @param openerDOMNodeId       The DOM node to long press to open the context menu for.
-     * @param itemId                The context menu item ID to select.
-     * @param activity              The activity to assert for gaining focus after click or null.
-     * @throws TimeoutException
+     *
+     * @param tab The tab to open a context menu for.
+     * @param openerDOMNodeId The DOM node to long press to open the context menu for.
+     * @param itemId The context menu item ID to select.
+     * @param activity The activity to assert for gaining focus after click or null.
      */
     public static void selectContextMenuItem(
             Instrumentation instrumentation,
@@ -94,16 +93,16 @@ public class ContextMenuUtils {
 
     /**
      * Opens and selects an item from a context menu asserting that an intent will be sent with a
-     * specific package name.
-     * the app will then send an intent to (which is verified by a downstream assertion).
-     * @param instrumentation       Instrumentation module used for executing test behavior.
-     * @param expectedActivity      The activity to assert for gaining focus after click or null.
-     * @param tab                   The tab to open a context menu for.
-     * @param openerDOMNodeId       The DOM node to long press to open the context menu for.
-     * @param itemId                The context menu item ID to select.
+     * specific package name. the app will then send an intent to (which is verified by a downstream
+     * assertion).
+     *
+     * @param instrumentation Instrumentation module used for executing test behavior.
+     * @param expectedActivity The activity to assert for gaining focus after click or null.
+     * @param tab The tab to open a context menu for.
+     * @param openerDOMNodeId The DOM node to long press to open the context menu for.
+     * @param itemId The context menu item ID to select.
      * @param expectedIntentPackage If firing an external intent the expected package name of the
-     *         target.
-     * @throws TimeoutException
+     *     target.
      */
     public static void selectContextMenuItemWithExpectedIntent(
             Instrumentation instrumentation,
@@ -119,16 +118,16 @@ public class ContextMenuUtils {
     }
 
     /**
-     * Selects the context menu chip asserting that an intent will be sent with a
-     * specific package name.  Note that this method does not open the context menu.
-     * @param instrumentation       Instrumentation module used for executing test behavior.
-     * @param expectedActivity      The activity to assert for gaining focus after click or null.
-     * @param menuCoordinator       The menu coordinator which manages the context menu.
-     * @param openerDOMNodeId       The DOM node to long press to open the context menu for.
-     * @param itemId                The context menu item ID to select.
+     * Selects the context menu chip asserting that an intent will be sent with a specific package
+     * name. Note that this method does not open the context menu.
+     *
+     * @param instrumentation Instrumentation module used for executing test behavior.
+     * @param expectedActivity The activity to assert for gaining focus after click or null.
+     * @param menuCoordinator The menu coordinator which manages the context menu.
+     * @param openerDOMNodeId The DOM node to long press to open the context menu for.
+     * @param itemId The context menu item ID to select.
      * @param expectedIntentPackage If firing an external intent the expected package name of the
-     *         target.
-     * @throws TimeoutException
+     *     target.
      */
     public static void selectAlreadyOpenedContextMenuChipWithExpectedIntent(
             Instrumentation instrumentation,
@@ -146,14 +145,13 @@ public class ContextMenuUtils {
 
     /**
      * Long presses to open and selects an item from a context menu.
-     * @param instrumentation       Instrumentation module used for executing test behavior.
-     * @param expectedActivity      The activity to assert for gaining focus after click or null.
-     * @param tab                   The tab to open a context menu for.
-     * @param jsCode                The javascript to get the DOM node to long press
-     *                              to open the context menu for.
-     * @param itemId                The context menu item ID to select.
+     *
+     * @param instrumentation Instrumentation module used for executing test behavior.
+     * @param expectedActivity The activity to assert for gaining focus after click or null.
+     * @param tab The tab to open a context menu for.
+     * @param jsCode The javascript to get the DOM node to long press to open the context menu for.
+     * @param itemId The context menu item ID to select.
      * @param expectedIntentPackage If expecting an external intent the expected package name.
-     * @throws TimeoutException
      */
     public static void selectContextMenuItemByJs(
             Instrumentation instrumentation,
@@ -172,12 +170,11 @@ public class ContextMenuUtils {
 
     /**
      * Long presses to open and selects an item from a context menu.
-     * @param tab                   The tab to open a context menu for.
-     * @param jsCode                The javascript to get the DOM node to long press
-     *                              to open the context menu for.
-     * @param itemId                The context menu item ID to select.
-     * @param activity              The activity to assert for gaining focus after click or null.
-     * @throws TimeoutException
+     *
+     * @param tab The tab to open a context menu for.
+     * @param jsCode The javascript to get the DOM node to long press to open the context menu for.
+     * @param itemId The context menu item ID to select.
+     * @param activity The activity to assert for gaining focus after click or null.
      */
     private static void selectContextMenuItemByJs(
             Instrumentation instrumentation,

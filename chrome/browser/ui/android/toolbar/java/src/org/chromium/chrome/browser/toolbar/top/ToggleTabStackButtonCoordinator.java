@@ -109,8 +109,8 @@ public class ToggleTabStackButtonCoordinator {
     /**
      * Post native initializations.
      *
-     * @param onClickListener @{@link OnClickListener} for view.
-     * @param onLongClickListener @{@link OnLongClickListener} for view.
+     * @param onClickListener OnClickListener for view.
+     * @param onLongClickListener OnLongClickListener for view.
      * @param tabCountSupplier Supplier for current tab count to show in view.
      * @param archivedTabCountSupplier Supplies the current archived tab count, used for displaying
      *     the associated IPH.

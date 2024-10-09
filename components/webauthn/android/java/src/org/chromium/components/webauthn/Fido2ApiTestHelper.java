@@ -479,7 +479,6 @@ public class Fido2ApiTestHelper {
      * Construct default options for a makeCredential request.
      *
      * @return Options for the Fido2 API.
-     * @throws Exception
      */
     public static PublicKeyCredentialCreationOptions createDefaultMakeCredentialOptions()
             throws Exception {
@@ -537,7 +536,6 @@ public class Fido2ApiTestHelper {
      * Constructs default options for a getAssertion request.
      *
      * @return Options for the Fido2 API
-     * @throws Exception
      */
     public static PublicKeyCredentialRequestOptions createDefaultGetAssertionOptions()
             throws Exception {

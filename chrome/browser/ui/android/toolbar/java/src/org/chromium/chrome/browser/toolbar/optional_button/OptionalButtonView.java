@@ -290,7 +290,6 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
     /**
      * Set a view to use as a root for all transition animations. It's used to animate sibling views
      * when this one changes width.
-     * @param transitionRoot
      */
     // TODO(salg): Consider getting rid of this property as it can be awkward to have a view
     // initiating an animation on its siblings.
@@ -334,11 +333,7 @@ class OptionalButtonView extends FrameLayout implements TransitionListener {
         return mAnimationImage;
     }
 
-    /**
-     * Constructor for inflating from XML.
-     * @param context
-     * @param attrs
-     */
+    /** Constructor for inflating from XML. */
     public OptionalButtonView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
 

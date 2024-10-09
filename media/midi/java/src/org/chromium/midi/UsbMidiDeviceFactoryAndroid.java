@@ -207,11 +207,7 @@ class UsbMidiDeviceFactoryAndroid {
     }
 
     /**
-     * Called when the user accepts or rejects the permission request requested by
-     * EnumerateDevices.
-     *
-     * @param context
-     * @param intent
+     * Called when the user accepts or rejects the permission request requested by EnumerateDevices.
      */
     private void onUsbDevicePermissionRequestDone(Context context, Intent intent) {
         UsbDevice device = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);

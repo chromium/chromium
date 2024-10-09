@@ -328,8 +328,8 @@ public class DisplayCutoutController implements InsetObserver.WindowInsetObserve
 
     /**
      * Converts a {@link ViewportFit} value into the Android P+ equivalent.
-     * @returns String containing the {@link LayoutParams} field name of the
-     *     equivalent value.
+     *
+     * @return String containing the {@link LayoutParams} field name of the equivalent value.
      */
     @VisibleForTesting
     @RequiresApi(Build.VERSION_CODES.P)

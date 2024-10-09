@@ -14,11 +14,6 @@ import java.util.List;
 abstract class ProcessContentCaptureDataTask extends NotificationTask {
     private final ContentCaptureFrame mContentCaptureData;
 
-    /**
-     * @param session
-     * @param contentCaptureData
-     * @param platformSession
-     */
     public ProcessContentCaptureDataTask(
             FrameSession session,
             ContentCaptureFrame contentCaptureData,

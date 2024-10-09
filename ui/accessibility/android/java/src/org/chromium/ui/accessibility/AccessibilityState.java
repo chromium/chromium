@@ -792,8 +792,6 @@ public class AccessibilityState {
     /**
      * Return a bitmask containing the union of all event types that running accessibility services
      * listen to.
-     *
-     * @return
      */
     @CalledByNative
     private static int getAccessibilityServiceEventTypeMask() {
@@ -804,7 +802,6 @@ public class AccessibilityState {
     /**
      * Return a bitmask containing the union of all feedback types that running accessibility
      * services provide.
-     * @return
      */
     @CalledByNative
     private static int getAccessibilityServiceFeedbackTypeMask() {
@@ -812,10 +809,7 @@ public class AccessibilityState {
         return sFeedbackTypeMask;
     }
 
-    /**
-     * Return a bitmask containing the union of all flags from running accessibility services.
-     * @return
-     */
+    /** Return a bitmask containing the union of all flags from running accessibility services. */
     @CalledByNative
     private static int getAccessibilityServiceFlagsMask() {
         if (!sInitialized) updateAccessibilityServices();
@@ -823,9 +817,8 @@ public class AccessibilityState {
     }
 
     /**
-     * Return a bitmask containing the union of all service capabilities from running
-     * accessibility services.
-     * @return
+     * Return a bitmask containing the union of all service capabilities from running accessibility
+     * services.
      */
     @CalledByNative
     private static int getAccessibilityServiceCapabilitiesMask() {
@@ -833,10 +826,7 @@ public class AccessibilityState {
         return sCapabilitiesMask;
     }
 
-    /**
-     * Return a list of ids of all running accessibility services.
-     * @return
-     */
+    /** Return a list of ids of all running accessibility services. */
     @CalledByNative
     private static String[] getAccessibilityServiceIds() {
         if (!sInitialized) updateAccessibilityServices();

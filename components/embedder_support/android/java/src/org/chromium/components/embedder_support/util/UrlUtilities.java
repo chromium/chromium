@@ -183,7 +183,6 @@ public class UrlUtilities {
      * Returns a new URL without the port in the hostname if it was present.
      *
      * @param url The url to process.
-     * @return
      */
     // TODO(crbug.com/40549331): Expose GURL::Replacements to Java.
     public static GURL clearPort(GURL url) {

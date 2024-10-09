@@ -1204,7 +1204,6 @@ public class Fido2CredentialRequest
     /**
      * Helper method to convert AuthenticatorErrorResponse errors.
      *
-     * @param errorCode
      * @return error code corresponding to an AuthenticatorStatus.
      */
     private static int convertError(Pair<Integer, String> error) {

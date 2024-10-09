@@ -68,7 +68,6 @@ public class InputMethodManagerWrapperImpl implements InputMethodManagerWrapper 
     /**
      * Get an Activity from WindowAndroid.
      *
-     * @param windowAndroid
      * @return The Activity. May return null if it fails.
      */
     private static Activity getActivityFromWindowAndroid(WindowAndroid windowAndroid) {

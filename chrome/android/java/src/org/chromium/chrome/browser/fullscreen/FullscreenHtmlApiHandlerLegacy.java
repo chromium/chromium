@@ -181,8 +181,9 @@ public class FullscreenHtmlApiHandlerLegacy extends FullscreenHtmlApiHandlerBase
         }
     }
 
-    /*
+    /**
      * Returns system ui flags to enable fullscreen mode based on the current options.
+     *
      * @return fullscreen flags to be applied to system UI visibility.
      */
     private int applyEnterFullscreenUIFlags(
@@ -209,9 +210,10 @@ public class FullscreenHtmlApiHandlerLegacy extends FullscreenHtmlApiHandlerBase
         return flags | systemUiVisibility;
     }
 
-    /*
+    /**
      * Returns system ui flags with any flags that might have been set during
      * applyEnterFullscreenUIFlags masked off.
+     *
      * @return fullscreen flags to be applied to system UI visibility.
      */
     private static int applyExitFullscreenUIFlags(int systemUiVisibility) {
