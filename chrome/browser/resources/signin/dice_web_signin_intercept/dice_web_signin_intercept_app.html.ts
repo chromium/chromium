@@ -6,6 +6,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {DiceWebSigninInterceptAppElement} from './dice_web_signin_intercept_app.js';
 
 export function getHtml(this: DiceWebSigninInterceptAppElement) {
+  // clang-format off
   return html`<!--_html_template_start_-->
 <div role="dialog" id="interceptDialog" aria-labelledby="title"
      aria-describedby="contents">
@@ -73,8 +74,7 @@ export function getHtml(this: DiceWebSigninInterceptAppElement) {
   </div>
 
   <div id="actionRow">
-    <paper-spinner-lite ?active="${this.acceptButtonClicked_}">
-    </paper-spinner-lite>
+    ${this.acceptButtonClicked_ ? html`<div class="spinner"></div>` : ''}
     <div class="action-container">
       <cr-button id="acceptButton" class="action-button" autofocus
           @click="${this.onAccept_}" ?disabled="${this.acceptButtonClicked_}">
@@ -88,4 +88,5 @@ export function getHtml(this: DiceWebSigninInterceptAppElement) {
   </div>
 </div>
 <!--_html_template_end_-->`;
+  // clang-format on
 }

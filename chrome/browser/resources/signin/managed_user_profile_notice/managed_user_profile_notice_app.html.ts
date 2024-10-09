@@ -6,6 +6,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ManagedUserProfileNoticeAppElement} from './managed_user_profile_notice_app.js';
 
 export function getHtml(this: ManagedUserProfileNoticeAppElement) {
+  // clang-format off
   return html`<!--_html_template_start_-->
 ${this.useUpdatedUi_ ? html`
   <div class="main-container tangible-sync-style">
@@ -30,8 +31,7 @@ ${this.useUpdatedUi_ ? html`
       ${this.showProcessing_ ? html`
         <managed-user-profile-notice-state id="processing"
             subtitle="${this.processingSubtitle_}" icon="cr:domain">
-              <paper-spinner-lite active class="thick">
-              </paper-spinner-lite>
+              <div class="spinner"></div>
         </managed-user-profile-notice-state>
       ` : ''}
       ${this.showSuccess_ ? html`
@@ -75,4 +75,5 @@ ${this.useUpdatedUi_ ? html`
   </div>
 ` : ''}
 <!--_html_template_end_-->`;
+  // clang-format on
 }

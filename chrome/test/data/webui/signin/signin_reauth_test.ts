@@ -55,14 +55,14 @@ suite('SigninReauthTest', function() {
     await browserProxy.whenCalled('initialize');
     assertFalse(isVisible(app.$.confirmButton));
     assertFalse(isVisible(app.$.cancelButton));
-    assertTrue(isVisible(app.shadowRoot!.querySelector('paper-spinner-lite')));
+    assertTrue(!!app.shadowRoot!.querySelector('.spinner'));
 
     webUIListenerCallback('reauth-type-determined');
     await microtasksFinished();
 
     assertTrue(isVisible(app.$.confirmButton));
     assertTrue(isVisible(app.$.cancelButton));
-    assertFalse(isVisible(app.shadowRoot!.querySelector('paper-spinner-lite')));
+    assertFalse(!!app.shadowRoot!.querySelector('.spinner'));
 
     assertDefaultLocale();
     assertEquals('Yes', app.$.confirmButton.textContent!.trim());

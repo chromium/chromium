@@ -66,7 +66,7 @@ export function getHtml(this: SyncConfirmationAppElement) {
   </div>
 </div>
 <div class="action-row ${this.getAnimationClass_()}">
-  <paper-spinner-lite ?active="${this.anyButtonClicked_}"></paper-spinner-lite>
+  ${this.anyButtonClicked_ ? html`<div class="spinner"></div>` : ''}
   <div class="action-container tangible-sync-style
       ${this.getMaybeDialogClass_()}">
     <cr-button id="confirmButton"

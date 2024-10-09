@@ -22,17 +22,16 @@ suite(`SigninSyncConfirmationTest`, function() {
         Array.from(app.shadowRoot!.querySelectorAll('cr-button'));
     const actionButton =
         app.shadowRoot!.querySelector<HTMLElement>(buttonSelector);
-    const spinner = app.shadowRoot!.querySelector('paper-spinner-lite');
 
     allButtons.forEach(button => assertFalse(button.disabled));
-    assertFalse(spinner!.active);
+    assertFalse(!!app.shadowRoot!.querySelector('.spinner'));
 
     assertTrue(!!actionButton);
     actionButton.click();
     await microtasksFinished();
 
     allButtons.forEach(button => assertTrue(button.disabled));
-    assertTrue(spinner!.active);
+    assertTrue(!!app.shadowRoot!.querySelector('.spinner'));
   }
 
   setup(async function() {
