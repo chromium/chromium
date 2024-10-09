@@ -1581,6 +1581,68 @@ mp4mux --track h265:glass-blowing2-dolby-vision-profile-8-1.hevc#dv_profile=8,dv
 mp4fragment glass-blowing2-dolby-vision-profile-8-1.mp4 glass-blowing2-dolby-vision-profile-8-1-frag.mp4
 ```
 
+#### color_pattern_24_dvhe05_1920x1080__dvh1_st-3sec-frag-cenc.mp4
+Original sample from `https://crbug.com/363270181#comment6`. Dolby Vision
+profile 5 video stream encrypted using [Shaka Packager] with the following
+commands:
+```
+ffmpeg -ss 0:00:11 -i color_pattern_24_dvhe05_1920x1080__dvh1_st.mp4 -t 3 -vcodec copy -an color_pattern_24_dvhe05_1920x1080__dvh1_st.hevc
+mp4mux --track h265:color_pattern_24_dvhe05_1920x1080__dvh1_st.hevc#dv_profile=5,dv_bc=0,format="dvh1",frame_rate=24,video color_pattern_24_dvhe05_1920x1080__dvh1_st-3sec.mp4
+mp4fragment color_pattern_24_dvhe05_1920x1080__dvh1_st-3sec.mp4 color_pattern_24_dvhe05_1920x1080__dvh1_st-3sec-frag.mp4
+
+packager in=color_pattern_24_dvhe05_1920x1080__dvh1_st-3sec-frag.mp4,stream=video,output=color_pattern_24_dvhe05_1920x1080__dvh1_st-3sec-frag-cenc.mp4 \
+         --enable_raw_key_encryption \
+         --protection_scheme cenc \
+         --segment_duration 0.5 \
+         --clear_lead 0 \
+         --keys label=:key_id=30313233343536373839303132333435:key=ebdd62f16814d27b68ef122afce4ae3c \
+         --pssh 000000327073736800000000EDEF8BA979D64ACEA3C827DCD51D21ED000000121210303132333435363738393031323334350000003470737368010000001077EFECC0B24D02ACE33C1E52E2FB4B000000013031323334353637383930313233343500000000
+```
+
+#### color_pattern_24_dvhe05_1920x1080__dvh1_st-3sec-frag-cenc-clearlead-2sec.mp4
+Dolby Vision profile 5 video stream with clear lead generated using
+[Shaka Packager] with the following commands:
+```
+packager in=color_pattern_24_dvhe05_1920x1080__dvh1_st-3sec-frag.mp4,stream=video,output=color_pattern_24_dvhe05_1920x1080__dvh1_st-3sec-frag-cenc-clearlead-2sec.mp4 \
+         --enable_raw_key_encryption \
+         --protection_scheme cenc \
+         --segment_duration 0.5 \
+         --clear_lead 2 \
+         --keys label=:key_id=30313233343536373839303132333435:key=ebdd62f16814d27b68ef122afce4ae3c \
+         --pssh 000000327073736800000000EDEF8BA979D64ACEA3C827DCD51D21ED000000121210303132333435363738393031323334350000003470737368010000001077EFECC0B24D02ACE33C1E52E2FB4B00000001303132333435363738393031323334350000000
+```
+
+#### color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st-3sec-frag-cenc.mp4
+Original sample from `https://crbug.com/363270181#comment6`. Dolby Vision
+profile 8.1 video stream encrypted using [Shaka Packager] with the following
+commands:
+```
+ffmpeg -ss 0:00:11 -i color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st.mp4 -t 3 -vcodec copy -an color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st.hevc
+mp4mux --track h265:color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st.hevc#dv_profile=5,dv_bc=0,format="dvh1",frame_rate=24,video color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st-3sec.mp4
+mp4fragment color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st-3sec.mp4 color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st-3sec-frag.mp4
+
+packager in=color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st-3sec-frag.mp4,stream=video,output=color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st-3sec-frag-cenc.mp4 \
+         --enable_raw_key_encryption \
+         --protection_scheme cenc \
+         --segment_duration 0.5 \
+         --clear_lead 0 \
+         --keys label=:key_id=30313233343536373839303132333435:key=ebdd62f16814d27b68ef122afce4ae3c \
+         --pssh 000000327073736800000000EDEF8BA979D64ACEA3C827DCD51D21ED000000121210303132333435363738393031323334350000003470737368010000001077EFECC0B24D02ACE33C1E52E2FB4B000000013031323334353637383930313233343500000000
+```
+
+#### color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st-3sec-frag-cenc-clearlead-2sec.mp4
+Dolby Vision profile 8.1 video stream with clear lead generated using
+[Shaka Packager] with the following commands:
+```
+packager in=color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st-3sec-frag.mp4,stream=video,output=color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st-3sec-frag-cenc-clearlead-2sec.mp4 \
+         --enable_raw_key_encryption \
+         --protection_scheme cenc \
+         --segment_duration 0.5 \
+         --clear_lead 2 \
+         --keys label=:key_id=30313233343536373839303132333435:key=ebdd62f16814d27b68ef122afce4ae3c \
+         --pssh 000000327073736800000000EDEF8BA979D64ACEA3C827DCD51D21ED000000121210303132333435363738393031323334350000003470737368010000001077EFECC0B24D02ACE33C1E52E2FB4B000000013031323334353637383930313233343500000000
+```
+
 ### Multi-track MP4 file
 
 (c) copyright 2008, Blender Foundation / www.bigbuckbunny.org
@@ -1719,9 +1781,9 @@ avc-bitstream-format-1.h264: Non-IDR
 
 ### reference-frame-scaling-test.ivf
 Video stream for testing reference frame scaling in AV1 files where resolution changes at various stages in a AV1 video stream.
-- 300 frames. 
+- 300 frames.
 - First 100 frames Resolution: 1920 x 1080.
-- Next 100 frames Resolution: 1280 x 720. 
+- Next 100 frames Resolution: 1280 x 720.
 - Last 100 frames Resolution: 960 x 540.
 
 ### hls/ directory

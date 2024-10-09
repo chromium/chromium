@@ -45,6 +45,8 @@
 #include "ui/gl/gl_switches.h"
 
 #if BUILDFLAG(IS_WIN)
+#include <mfapi.h>
+
 #include "base/win/windows_version.h"
 #include "chrome/browser/media/media_foundation_service_monitor.h"
 #include "content/public/browser/gpu_data_manager.h"
@@ -88,6 +90,16 @@ const char kEmeUnitTestFailure[] = "UNIT_TEST_FAILURE";
 
 const char kDefaultEmePlayer[] = "eme_player.html";
 const char kDefaultMseOnlyEmePlayer[] = "mse_different_containers.html";
+
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_PROPRIETARY_CODECS) && \
+    BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+static constexpr wchar_t kDolbyVisionProfile5[] = L"dvhe.05";
+static constexpr wchar_t kDolbyVisionProfile8[] = L"dvhe.08";
+#endif
 
 // The type of video src used to load media.
 enum class SrcType { SRC, MSE };
@@ -391,6 +403,10 @@ class EncryptedMediaTestBase : public MediaBrowserTest {
       }
     }
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
+    enabled_features.push_back({media::kPlatformEncryptedDolbyVision, {}});
+#endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
 
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
   }
@@ -1448,6 +1464,86 @@ class MediaFoundationEncryptedMediaTest : public EncryptedMediaTestBase {
 
     return true;
   }
+
+#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
+  bool IsVideoDecoderSupported(const GUID& video_decoder_guid) {
+    MFT_REGISTER_TYPE_INFO inputInfo{MFMediaType_Video, video_decoder_guid};
+    IMFActivate** activates;
+    unsigned int numActivates = 0;
+    auto result = MFTEnumEx(MFT_CATEGORY_VIDEO_DECODER, MFT_ENUM_FLAG_SYNCMFT,
+                            &inputInfo, nullptr, &activates, &numActivates);
+    if (result != S_OK || numActivates == 0) {
+      LOG(INFO) << "No decoders found!";
+      return false;
+    }
+
+    return true;
+  }
+
+  bool IsVideoRendererEffectSupported(const wchar_t* profile) {
+    bool supported = false;
+    IMFActivate** activates = nullptr;
+    unsigned int numActivates = 0;
+    auto result = MFTEnumEx(MFT_CATEGORY_VIDEO_RENDERER_EFFECT,
+                            MFT_ENUM_FLAG_SORTANDFILTER, nullptr, nullptr,
+                            &activates, &numActivates);
+    if (result != S_OK || numActivates == 0) {
+      LOG(INFO) << "No video renderer effect found!";
+      return false;
+    }
+
+    for (unsigned int i = 0; i < numActivates && !supported; i++) {
+      PROPVARIANT var;
+      PropVariantInit(&var);
+      auto hr = activates[i]->GetItem(MFT_ENUM_VIDEO_RENDERER_EXTENSION_PROFILE,
+                                      &var);
+      if (hr == S_OK && var.vt == VARTYPE(VT_VECTOR | VT_LPWSTR)) {
+        for (unsigned long j = 0; j < var.calpwstr.cElems; j++) {
+          auto elem = *(var.calpwstr.pElems + j);
+          if (_wcsicmp(elem, profile) == 0) {
+            supported = true;
+            break;
+          }
+        }
+      }
+
+      PropVariantClear(&var);
+    }
+
+    if (*activates) {
+      (*activates)->Release();
+    }
+
+    return supported;
+  }
+
+  // |profile| is a Dolby Vision renderer profile string which has always 7
+  // characters in MediaFoundation. For HEVC based profiles, it's either
+  // "dvhe.xx" or "dvh1.xx" where "xx" is a two-digit profile number. Note the
+  // DolbyVision level is ignored. See "Table 1: Dolby Vision bitstream
+  // profiles" at
+  // `https://professionalsupport.dolby.com/s/article/What-is-Dolby-Vision-Profile`.
+  bool IsDolbyVisionEncryptedPlaybackSupported(const wchar_t* profile) {
+    // Dolby Vision video playback requires both HEVC and Dolby Vision extension
+    // codecs.
+    bool is_hevc_decoder_supported =
+        IsVideoDecoderSupported(MFVideoFormat_HEVC);
+    bool is_dolbyvision_supported = IsVideoRendererEffectSupported(profile);
+    LOG(INFO) << "is_hevc_decoder_supported=" << is_hevc_decoder_supported;
+    LOG(INFO) << "is_dolbyvision_supported=" << is_dolbyvision_supported;
+
+    if (!is_hevc_decoder_supported || !is_dolbyvision_supported) {
+      LOG(INFO)
+          << "Test method "
+          << UnitTest::GetInstance()->current_test_info()->name()
+          << " is inconclusive since DolbyVisionEncrypted playback is not "
+             "supported.";
+      return false;
+    }
+
+    return true;
+  }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
 };
 
 IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
@@ -1539,4 +1635,72 @@ IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
                    {{"keySystem", media::kMediaFoundationClearKeyKeySystem}},
                    fallback_expected_title, /*http=*/true);
 }
+
+#if BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
+IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
+                       Playback_DolbyVisionProfile5CencVideo_Success) {
+  if (!IsMediaFoundationEncryptedPlaybackSupported()) {
+    GTEST_SKIP() << "MediaFoundationEncryptedPlayback not supported on device.";
+  }
+
+  if (!IsDolbyVisionEncryptedPlaybackSupported(kDolbyVisionProfile5)) {
+    GTEST_SKIP() << "DolbyVisionEncryptedPlayback not supported on device.";
+  }
+
+  // DolbyVision Profile 5
+  TestMediaFoundationPlayback(
+      "color_pattern_24_dvhe05_1920x1080__dvh1_st-3sec-frag-cenc.mp4");
+}
+
+IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
+                       Playback_DolbyVisionProfile81CencVideo_Success) {
+  if (!IsMediaFoundationEncryptedPlaybackSupported()) {
+    GTEST_SKIP() << "MediaFoundationEncryptedPlayback not supported on device.";
+  }
+
+  if (!IsDolbyVisionEncryptedPlaybackSupported(kDolbyVisionProfile8)) {
+    GTEST_SKIP() << "DolbyVisionEncryptedPlayback not supported on device.";
+  }
+
+  // DolbyVision Profile 8.1
+  TestMediaFoundationPlayback(
+      "color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st-3sec-frag-"
+      "cenc.mp4");
+}
+
+IN_PROC_BROWSER_TEST_F(MediaFoundationEncryptedMediaTest,
+                       Playback_DolbyVisionProfile5CencClearLeadVideo_Success) {
+  if (!IsMediaFoundationEncryptedPlaybackSupported()) {
+    GTEST_SKIP() << "MediaFoundationEncryptedPlayback not supported on device.";
+  }
+
+  if (!IsDolbyVisionEncryptedPlaybackSupported(kDolbyVisionProfile5)) {
+    GTEST_SKIP() << "DolbyVisionEncryptedPlayback not supported on device.";
+  }
+
+  // DolbyVision Profile 5
+  TestMediaFoundationPlayback(
+      "color_pattern_24_dvhe05_1920x1080__dvh1_st-3sec-frag-cenc-clearlead-"
+      "2sec.mp4");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    MediaFoundationEncryptedMediaTest,
+    Playback_DolbyVisionProfile81CencClearLeadVideo_Success) {
+  if (!IsMediaFoundationEncryptedPlaybackSupported()) {
+    GTEST_SKIP() << "MediaFoundationEncryptedPlayback not supported on device.";
+  }
+
+  if (!IsDolbyVisionEncryptedPlaybackSupported(kDolbyVisionProfile8)) {
+    GTEST_SKIP() << "DolbyVisionEncryptedPlayback not supported on device.";
+  }
+
+  // DolbyVision Profile 8.1
+  TestMediaFoundationPlayback(
+      "color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st-3sec-frag-"
+      "cenc-clearlead-2sec.mp4");
+}
+
+#endif  // BUILDFLAG(ENABLE_PLATFORM_ENCRYPTED_DOLBY_VISION)
+
 #endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_PROPRIETARY_CODECS)

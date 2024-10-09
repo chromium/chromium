@@ -329,6 +329,10 @@
 //media/test/data/bunny-opus-intensity-stereo.webm
 //media/test/data/butterfly-853x480.webm
 //media/test/data/cleaner.html
+//media/test/data/color_pattern_24_dvhe05_1920x1080__dvh1_st-3sec-frag-cenc-clearlead-2sec.mp4
+//media/test/data/color_pattern_24_dvhe05_1920x1080__dvh1_st-3sec-frag-cenc.mp4
+//media/test/data/color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st-3sec-frag-cenc-clearlead-2sec.mp4
+//media/test/data/color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st-3sec-frag-cenc.mp4
 //media/test/data/colour.webm
 //media/test/data/colour_unspecified_range.webm
 //media/test/data/corrupt.mp3
