@@ -36,7 +36,7 @@ class AudioChunk : public base::RefCountedThreadSafe<AudioChunk> {
 
  private:
   friend class base::RefCountedThreadSafe<AudioChunk>;
-  ~AudioChunk() {}
+  ~AudioChunk() = default;
 
   std::string data_string_;
   const int bytes_per_sample_;
