@@ -34,6 +34,7 @@ static_library("browser") {
     "//components/strings",
     "//components/user_annotations",
     "//components/user_annotations:user_annotations",
+    "//ui/native_theme:native_theme",
   ]
 }
 

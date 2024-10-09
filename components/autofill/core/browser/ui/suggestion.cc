@@ -223,6 +223,8 @@ std::string_view ConvertIconToPrintableString(Suggestion::Icon icon) {
       return "kSettings";
     case Suggestion::Icon::kAutofillPredictionImprovements:
       return "kAutofillPredictionImprovements";
+    case Suggestion::Icon::kAutofillPredictionImprovementsDark:
+      return "kAutofillPredictionImprovementsDark";
     case Suggestion::Icon::kSettingsAndroid:
       return "kSettingsAndroid";
     case Suggestion::Icon::kUndo:

@@ -31,6 +31,7 @@
 #include "components/user_annotations/user_annotations_features.h"
 #include "components/user_annotations/user_annotations_service.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/native_theme/native_theme.h"
 
 namespace autofill_prediction_improvements {
 
@@ -51,6 +52,15 @@ autofill::FieldTypeSet GetFieldTypesToFill() {
     }
   }
   return field_types_to_fill;
+}
+
+// Return the correct prediction improvements icon depending on the current
+// theme.
+// TODO(crbug.com/372405533): Move this decision inside UI code.
+autofill::Suggestion::Icon GetAutofillPredictionImprovementsIcon() {
+  return ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
+             ? autofill::Suggestion::Icon::kAutofillPredictionImprovementsDark
+             : autofill::Suggestion::Icon::kAutofillPredictionImprovements;
 }
 
 // Ignore `FieldFillingSkipReason::kNoFillableGroup` during filling because
@@ -81,8 +91,7 @@ autofill::Suggestion CreateChildSuggestionForFilling(
 autofill::Suggestion CreateLoadingSuggestion() {
   autofill::Suggestion loading_suggestion(
       autofill::SuggestionType::kPredictionImprovementsLoadingState);
-  loading_suggestion.icon =
-      autofill::Suggestion::Icon::kAutofillPredictionImprovements;
+  loading_suggestion.trailing_icon = GetAutofillPredictionImprovementsIcon();
   loading_suggestion.is_acceptable = false;
   return loading_suggestion;
 }
@@ -200,7 +209,7 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestions(
   auto payload = autofill::Suggestion::PredictionImprovementsPayload(
       GetValuesToFill(), GetFieldTypesToFill(), kIgnoreableSkipReasons);
   suggestion.payload = payload;
-  suggestion.icon = autofill::Suggestion::Icon::kAutofillPredictionImprovements;
+  suggestion.icon = GetAutofillPredictionImprovementsIcon();
   // Add a `kFillPredictionImprovements` suggestion with a separator to
   // `suggestion.children` before the field-by-field filling entries.
   {
@@ -275,15 +284,12 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestions(
 
 std::vector<autofill::Suggestion>
 AutofillPredictionImprovementsManager::CreateTriggerSuggestion() {
-  std::vector<autofill::Suggestion> suggestions;
   autofill::Suggestion retrieve_suggestion(
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_TRIGGER_SUGGESTION_MAIN_TEXT),
       autofill::SuggestionType::kRetrievePredictionImprovements);
-  retrieve_suggestion.icon =
-      autofill::Suggestion::Icon::kAutofillPredictionImprovements;
-  suggestions.emplace_back(retrieve_suggestion);
-  return suggestions;
+  retrieve_suggestion.icon = GetAutofillPredictionImprovementsIcon();
+  return {retrieve_suggestion};
 }
 
 bool AutofillPredictionImprovementsManager::HasImprovedPredictionsForField(

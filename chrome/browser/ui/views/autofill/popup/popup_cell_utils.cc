@@ -116,6 +116,8 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_GENERIC);
 
     case Suggestion::Icon::kAutofillPredictionImprovements:
+    case Suggestion::Icon::kAutofillPredictionImprovementsDark:
+
     case Suggestion::Icon::kAccount:
     case Suggestion::Icon::kClear:
     case Suggestion::Icon::kCode:
@@ -334,6 +336,7 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
 #endif
     case Suggestion::Icon::kIban:
     case Suggestion::Icon::kAutofillPredictionImprovements:
+    case Suggestion::Icon::kAutofillPredictionImprovementsDark:
     case Suggestion::Icon::kCreate:
     case Suggestion::Icon::kOfferTag:
     case Suggestion::Icon::kScanCreditCard:

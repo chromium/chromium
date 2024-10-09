@@ -5,4 +5,5 @@ include_rules = [
   "+components/user_annotations",
   "+components/strings/grit",
   "+ui/base",
+  "+ui/native_theme",
 ]

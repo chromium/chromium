@@ -283,7 +283,7 @@ void SaveAutofillPredictionImprovementsBubbleView::AddedToWidget() {
       ui::ImageModel::FromResourceId(
           IDR_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_LOGO),
       ui::ImageModel::FromResourceId(
-          IDR_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_LOGO),
+          IDR_AUTOFILL_PREDICTION_IMPROVEMENTS_SAVE_LOGO_DARK),
       base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
                           base::Unretained(this)));
   image->SetImageSize(kHeaderImageSize);
