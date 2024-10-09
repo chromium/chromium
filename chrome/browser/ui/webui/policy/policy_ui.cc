@@ -263,6 +263,8 @@ PolicyUI::~PolicyUI() = default;
 void PolicyUI::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(policy::policy_prefs::kPolicyTestPageEnabled,
                                 true);
+  registry->RegisterBooleanPref(
+      policy::policy_prefs::kHasDismissedPolicyPagePromotionBanner, false);
 }
 
 // static

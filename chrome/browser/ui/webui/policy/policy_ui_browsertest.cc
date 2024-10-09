@@ -19,6 +19,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/clock.h"
@@ -41,6 +42,7 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/schema.h"
 #include "components/policy/policy_constants.h"
@@ -989,14 +991,19 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 #if !BUILDFLAG(IS_ANDROID)
 
-class PolicyUIManagedStatusTest : public PolicyUITest {
+class PolicyUIManagedStatusTest : public PolicyUITest,
+                                  public ::testing::WithParamInterface<bool> {
  public:
   PolicyUIManagedStatusTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{policy::features::kEnablePolicyBanner},
-        /*disabled_features=*/{});
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          policy::features::kEnablePolicyBanner);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          policy::features::kEnablePolicyBanner);
+    }
   }
-
+  bool isFeatureEnabled() { return GetParam(); }
   PolicyUIManagedStatusTest(const PolicyUIManagedStatusTest&) = delete;
   PolicyUIManagedStatusTest& operator=(const PolicyUIManagedStatusTest&) =
       delete;
@@ -1013,16 +1020,31 @@ class PolicyUIManagedStatusTest : public PolicyUITest {
     })();
   )";
 
+  static constexpr std::string_view kPromotionBannerDismissJavaScript = R"(
+          document.getElementById('promotion-dismiss-button').click();
+  )";
+
+  static constexpr std::string_view kBannerVisible = "visible";
+  static constexpr std::string_view kBannerHidden = "hidden";
+
+ protected:
+  void SetPromotionBannerDismissedPref(bool is_dismissed) {
+    auto* prefs = browser()->profile()->GetPrefs();
+    prefs->SetBoolean(policy::policy_prefs::kHasDismissedPolicyPagePromotionBanner,
+                      is_dismissed);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(PolicyUIManagedStatusTest,
-                       HandleIsManagedStatusTestShown) {
+IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
+                       HandleGetShowPromotionTestShown) {
   policy::ScopedManagementServiceOverrideForTesting browser_management(
       policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
       policy::EnterpriseManagementAuthority::CLOUD);
 
+  SetPromotionBannerDismissedPref(false);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUIPolicyURL)));
 
@@ -1030,22 +1052,67 @@ IN_PROC_BROWSER_TEST_F(PolicyUIManagedStatusTest,
                        kPromotionBannerVisibilityJavaScript)
                     .ExtractString();
 
-  EXPECT_EQ(result, "visible");
+  if (isFeatureEnabled()) {
+    EXPECT_EQ(result, kBannerVisible);
+  } else {
+    EXPECT_EQ(result, kBannerHidden);
+  }
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyUIManagedStatusTest,
-                       HandleIsManagedStatusTestHidden) {
+IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
+                       HandleGetShowPromotionNotManagedHidden) {
   policy::ScopedManagementServiceOverrideForTesting browser_management(
       policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
       policy::EnterpriseManagementAuthority::NONE);
 
+  SetPromotionBannerDismissedPref(false);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUIPolicyURL)));
   auto result = EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                        kPromotionBannerVisibilityJavaScript)
                     .ExtractString();
 
-  EXPECT_EQ(result, "hidden");
+  EXPECT_EQ(result, kBannerHidden);
 }
 
+IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
+                       HandleGetShowPromotionDismisseddHidden) {
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  SetPromotionBannerDismissedPref(true);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIPolicyURL)));
+  auto result = EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                       kPromotionBannerVisibilityJavaScript)
+                    .ExtractString();
+
+  EXPECT_EQ(result, kBannerHidden);
+}
+
+IN_PROC_BROWSER_TEST_P(PolicyUIManagedStatusTest,
+                       HandleSetBannerDismissedHidden) {
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  SetPromotionBannerDismissedPref(false);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIPolicyURL)));
+
+  EXPECT_TRUE(ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                     kPromotionBannerDismissJavaScript));
+
+  auto result = EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                       kPromotionBannerVisibilityJavaScript)
+                    .ExtractString();
+  EXPECT_EQ(result, kBannerHidden);
+}
+
+INSTANTIATE_TEST_SUITE_P(PolicyManagedUITestInstance,
+                         PolicyUIManagedStatusTest,
+                         ::testing::Values(false, true));
 #endif

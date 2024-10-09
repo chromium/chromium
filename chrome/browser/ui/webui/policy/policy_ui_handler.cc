@@ -240,9 +240,14 @@ void PolicyUIHandler::RegisterMessages() {
       base::BindRepeating(&PolicyUIHandler::HandleGetAppliedTestPolicies,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
-      "isManagedStatus",
-      base::BindRepeating(&PolicyUIHandler::HandleIsManagedStatus,
+      "shouldShowPromotion",
+      base::BindRepeating(&PolicyUIHandler::HandleShouldShowPromotion,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "setBannerDismissed",
+      base::BindRepeating(&PolicyUIHandler::HandleSetBannerDismissed,
+                          base::Unretained(this)));
+
 #if !BUILDFLAG(IS_CHROMEOS)
   web_ui()->RegisterMessageCallback(
       "uploadReport", base::BindRepeating(&PolicyUIHandler::HandleUploadReport,
@@ -486,13 +491,21 @@ void PolicyUIHandler::SendStatus() {
       policy_value_and_status_aggregator_->GetAggregatedPolicyStatus());
 }
 
-void PolicyUIHandler::HandleIsManagedStatus(const base::Value::List& args) {
+void PolicyUIHandler::HandleShouldShowPromotion(const base::Value::List& args) {
   ResolveJavascriptCallback(
-      args[0], base::Value(base::FeatureList::IsEnabled(
-                               policy::features::kEnablePolicyBanner) &&
-                           policy::ManagementServiceFactory::GetForProfile(
-                               Profile::FromWebUI(web_ui()))
-                               ->IsAccountManaged()));
+      args[0],
+      base::Value(
+          base::FeatureList::IsEnabled(policy::features::kEnablePolicyBanner) &&
+          policy::ManagementServiceFactory::GetForProfile(
+              Profile::FromWebUI(web_ui()))
+              ->IsAccountManaged() &&
+          !Profile::FromWebUI(web_ui())->GetPrefs()->GetBoolean(
+              policy::policy_prefs::kHasDismissedPolicyPagePromotionBanner)));
+}
+
+void PolicyUIHandler::HandleSetBannerDismissed(const base::Value::List& args) {
+  Profile::FromWebUI(web_ui())->GetPrefs()->SetBoolean(
+      policy::policy_prefs::kHasDismissedPolicyPagePromotionBanner, true);
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

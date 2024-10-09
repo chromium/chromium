@@ -154,11 +154,11 @@ export class Page {
     addWebUiListener(
         'download-json', (json: string) => this.downloadJson(json));
 
-    sendWithPromise('isManagedStatus').then((isManaged: boolean) => {
-      const bannerSection = getRequiredElement('promotion-banner-section');
-      if(isManaged){
-        bannerSection.hidden = false;
-      }
+    sendWithPromise('shouldShowPromotion').then((shouldShowPromo: boolean) => {
+        const bannerSection = getRequiredElement('promotion-banner-section');
+            if(shouldShowPromo){
+              bannerSection.hidden = false;
+            }
     });
   }
 

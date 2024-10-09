@@ -6,12 +6,20 @@ import {Page} from './policy_base.js';
 import type {PolicyPrecedenceRowElement} from './policy_precedence_row.js';
 import type {PolicyRowElement} from './policy_row.js';
 import type {PolicyTableElement} from './policy_table.js';
+import {getRequiredElement} from 'chrome://resources/js/util.js';
+
 
 // Have the main initialization function be called when the page finishes
 // loading.
 const page: Page = Page.getInstance();
 document.addEventListener('DOMContentLoaded', () => {
   page.initialize();
+
+  const promotionDismissButton = document.getElementById('promotion-dismiss-button');
+  promotionDismissButton?.addEventListener('click' ,() => {
+    chrome.send('setBannerDismissed');
+    getRequiredElement('promotion-banner-section').hidden = true;
+  });
 });
 
 // Functions for tests that directly inject JS to access certain UI elements.

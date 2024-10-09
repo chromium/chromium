@@ -68,6 +68,7 @@ extern const char kBeforeunloadEventCancelByPreventDefaultEnabled[];
 extern const char kKeyboardFocusableScrollersEnabled[];
 extern const char kStandardizedBrowserZoomEnabled[];
 extern const char kPolicyTestPageEnabled[];
+extern const char kHasDismissedPolicyPagePromotionBanner[];
 extern const char kAllowBackForwardCacheForCacheControlNoStorePageEnabled[];
 extern const char kLocalTestPoliciesForNextStartup[];
 extern const char kMutationEventsEnabled[];

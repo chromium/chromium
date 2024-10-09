@@ -338,6 +338,14 @@ a {
   }
 }
 
+.dismiss-button {
+  height: 20px;
+  width: 20px;
+  background-color: transparent;
+  cursor: pointer;
+  border: none;
+}
+
 /* Remove the flex gap after the searchbar on smaller width devices. */
 @media only screen and (max-width: 440px) {
   #right-content {

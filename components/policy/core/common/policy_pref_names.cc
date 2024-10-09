@@ -145,6 +145,9 @@ const char kStandardizedBrowserZoomEnabled[] =
 // If this is set to True, the page will be accessible.
 const char kPolicyTestPageEnabled[] = "policy_test_page_enabled";
 
+const char kHasDismissedPolicyPagePromotionBanner[] =
+    "has_dismissed_policy_page_promotion_banner";
+
 // A boolean pref indicating whether the new the page with "Cache-Control:
 // no-store" header is allowed to be stored in back/forward cache.
 const char kAllowBackForwardCacheForCacheControlNoStorePageEnabled[] =
