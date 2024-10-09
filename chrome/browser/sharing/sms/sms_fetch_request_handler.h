@@ -53,8 +53,6 @@ class SmsFetchRequestHandler : public SharingMessageHandler {
                            SendSuccessMessageOnConfirm);
   FRIEND_TEST_ALL_PREFIXES(SmsFetchRequestHandlerTest,
                            SendFailureMessageOnDismiss);
-  FRIEND_TEST_ALL_PREFIXES(SmsFetchRequestHandlerTest, DefaultDeviceName);
-  FRIEND_TEST_ALL_PREFIXES(SmsFetchRequestHandlerTest, EmptyDeviceName);
   // Request represents an incoming request from a remote WebOTPService.
   // It manages subscribing and unsubscribing for SMSes in SmsFetcher and
   // responding to the callback.

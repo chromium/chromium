@@ -595,17 +595,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.SmsFetcherClientNameIsEmpty" enum="BooleanEmpty"
-    expires_after="2024-11-17">
-  <owner>yigu@chromium.org</owner>
-  <owner>src/content/browser/sms/OWNERS</owner>
-  <summary>
-    Records whether the remote client name is empty. This could happen on early
-    version of Chrome. This is logged once per notification when asking for user
-    permission to submit the one-time-passwords on the remote device.
-  </summary>
-</histogram>
-
 <histogram name="Sharing.SmsFetcherScreenOnAndUnlocked" enum="Boolean"
     expires_after="2025-03-30">
   <owner>yigu@chromium.org</owner>

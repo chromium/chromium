@@ -8,7 +8,6 @@
 
 #include "base/android/jni_string.h"
 #include "base/check.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -70,9 +69,7 @@ void SmsFetchRequestHandler::OnMessage(
       device ? device->client_name() : message.sender_device_name();
 
   // Empty client_name means that the message is from an unsupported version of
-  // Chrome.
-  base::UmaHistogramBoolean("Sharing.SmsFetcherClientNameIsEmpty",
-                            client_name.empty());
+  // Chrome. This is rare in practice.
   if (client_name.empty())
     return;
 
