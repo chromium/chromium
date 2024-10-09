@@ -8,8 +8,6 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
-#include "chrome/browser/apps/app_service/app_service_proxy.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_feature_test_support.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,6 +20,8 @@
 #include "chrome/browser/web_applications/test/debug_info_printer.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/interaction/dom_message_observer.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/user_education/views/help_bubble_view.h"
@@ -145,10 +145,11 @@ class WebAppNavigationCapturingIphUiTest
   auto OpenAppStartPage(const webapps::AppId& app_id) {
     auto steps = Steps(
         InstrumentNextTab(kStartPageId, AnyBrowser()), Do([this, app_id]() {
-          apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
-              ->Launch(app_id,
-                       /* event_flags= */ 0,
-                       apps::LaunchSource::kFromAppListGrid);
+          WebAppProvider* provider =
+              WebAppProvider::GetForWebApps(browser()->profile());
+          CHECK(provider);
+          provider->scheduler().LaunchApp(app_id, /*url=*/std::nullopt,
+                                          base::DoNothing());
         }),
         InAnyContext(WaitForShow(kStartPageId)),
         InSameContext(

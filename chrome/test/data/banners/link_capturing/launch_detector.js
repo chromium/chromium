@@ -7,8 +7,8 @@
 // the launches that occurred for this document.
 var launchParamsTargetUrls = [];
 
-// The most recent launch url sent that hasn't been sent do the
-// domAutomationController.
+// The most recent launch url sent that hasn't been sent to the test framework
+// via the domAutomationController.
 var unsentLaunchParamUrl = null;
 
 // This promise is used by `listenForNextLaunchParams` to wait for the next
@@ -69,8 +69,9 @@ function signalNavigationCompleteAndListenForNextLaunch(delay) {
     }
     console.log(message);
     domAutomationController.send('FinishedNavigating');
-    // Listen for the next launch param (which, in our tests, would occur in the
-    // 'focus-existing' client mode).
+
+    // Listen for the next launch param (which, in our tests, should occur in
+    // the 'focus-existing' client mode).
     listenForNextLaunchParams(delay);
   }, delay)
 }
