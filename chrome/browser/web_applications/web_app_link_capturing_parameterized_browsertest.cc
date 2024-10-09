@@ -372,7 +372,8 @@ base::Value::Dict RenderFrameHostToJson(content::RenderFrameHost& rfh) {
 
 // Serializes the state of a WebContents, including the state of all its iframes
 // as well as navigation history for the tab.
-base::Value::Dict WebContentsToJson(content::WebContents& web_contents) {
+base::Value::Dict WebContentsToJson(const Browser& browser,
+                                    content::WebContents& web_contents) {
   base::Value::Dict dict =
       RenderFrameHostToJson(*web_contents.GetPrimaryMainFrame());
   if (web_contents.HasOpener()) {
@@ -384,7 +385,8 @@ base::Value::Dict WebContentsToJson(content::WebContents& web_contents) {
 
   // The new tab page has inconsistent frames, so skip frame analysis there.
   if (last_committed_url != GURL("chrome://newtab") &&
-      last_committed_url != GURL("chrome://new-tab-page")) {
+      last_committed_url != GURL("chrome://new-tab-page") &&
+      last_committed_url != browser.GetNewTabURL()) {
     base::Value::List frames;
     web_contents.GetPrimaryMainFrame()->ForEachRenderFrameHost(
         [&](content::RenderFrameHost* frame) {
@@ -453,7 +455,8 @@ base::Value::Dict BrowserToJson(const Browser& browser) {
   base::Value::List tabs;
   const TabStripModel* tab_model = browser.tab_strip_model();
   for (int i = 0; i < tab_model->count(); ++i) {
-    base::Value::Dict tab = WebContentsToJson(*tab_model->GetWebContentsAt(i));
+    base::Value::Dict tab =
+        WebContentsToJson(browser, *tab_model->GetWebContentsAt(i));
     if (i == tab_model->active_index()) {
       tab.Set("active", true);
     }
