@@ -10,8 +10,6 @@ static_library("users") {
   sources = [
     "affiliation.cc",
     "affiliation.h",
-    "chrome_user_manager_impl.cc",
-    "chrome_user_manager_impl.h",
     "chrome_user_manager_util.cc",
     "chrome_user_manager_util.h",
     "policy_user_manager_controller.cc",

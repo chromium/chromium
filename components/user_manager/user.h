@@ -20,7 +20,6 @@
 class PrefService;
 
 namespace ash {
-class ChromeUserManagerImpl;
 class FakeChromeUserManager;
 class UserAddingScreenTest;
 class UserSessionManager;
@@ -200,7 +199,6 @@ class USER_MANAGER_EXPORT User {
 
  protected:
   friend class UserManagerImpl;
-  friend class ash::ChromeUserManagerImpl;
   friend class chromeos::SupervisedUserManagerImpl;
   friend class ash::UserImageManagerImpl;
   friend class ash::UserSessionManager;
