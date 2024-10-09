@@ -34,7 +34,8 @@ SecurityInterstitialControllerClient::SecurityInterstitialControllerClient(
       default_safe_page_(default_safe_page),
       settings_page_helper_(std::move(settings_page_helper)) {}
 
-SecurityInterstitialControllerClient::~SecurityInterstitialControllerClient() {}
+SecurityInterstitialControllerClient::~SecurityInterstitialControllerClient() =
+    default;
 
 void SecurityInterstitialControllerClient::GoBack() {
   // TODO(crbug.com/40688528): This method is left so class can be non abstract

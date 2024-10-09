@@ -25,7 +25,7 @@ bool IsInPrimaryMainFrameOrSubFrame(
 }  // namespace
 namespace security_interstitials {
 
-SecurityInterstitialTabHelper::~SecurityInterstitialTabHelper() {}
+SecurityInterstitialTabHelper::~SecurityInterstitialTabHelper() = default;
 
 void SecurityInterstitialTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {

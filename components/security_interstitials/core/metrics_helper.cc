@@ -137,7 +137,7 @@ void MaybeRecordInteractionAsAction(MetricsHelper::Interaction interaction,
 
 }  // namespace
 
-MetricsHelper::~MetricsHelper() {}
+MetricsHelper::~MetricsHelper() = default;
 
 MetricsHelper::ReportDetails::ReportDetails() {}
 

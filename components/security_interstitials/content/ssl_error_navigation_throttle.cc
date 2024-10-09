@@ -61,7 +61,7 @@ SSLErrorNavigationThrottle::SSLErrorNavigationThrottle(
               should_ignore_interstitial_because_navigation_defaulted_to_https_callback)) {
 }
 
-SSLErrorNavigationThrottle::~SSLErrorNavigationThrottle() {}
+SSLErrorNavigationThrottle::~SSLErrorNavigationThrottle() = default;
 
 content::NavigationThrottle::ThrottleCheckResult
 SSLErrorNavigationThrottle::WillFailRequest() {

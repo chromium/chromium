@@ -92,7 +92,7 @@ class CommonNameMismatchRedirectObserver
   CommonNameMismatchRedirectObserver& operator=(
       const CommonNameMismatchRedirectObserver&) = delete;
 
-  ~CommonNameMismatchRedirectObserver() override {}
+  ~CommonNameMismatchRedirectObserver() override = default;
 
   static void AddToConsoleAfterNavigation(
       content::WebContents* web_contents,

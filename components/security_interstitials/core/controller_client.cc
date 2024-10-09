@@ -28,7 +28,7 @@ ControllerClient::ControllerClient(
     : metrics_helper_(std::move(metrics_helper)),
       help_center_url_(kHelpCenterUrl) {}
 
-ControllerClient::~ControllerClient() {}
+ControllerClient::~ControllerClient() = default;
 
 MetricsHelper* ControllerClient::metrics_helper() const {
   return metrics_helper_.get();

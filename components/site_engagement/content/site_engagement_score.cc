@@ -226,7 +226,7 @@ SiteEngagementScore::SiteEngagementScore(base::Clock* clock,
 
 SiteEngagementScore::SiteEngagementScore(SiteEngagementScore&& other) = default;
 
-SiteEngagementScore::~SiteEngagementScore() {}
+SiteEngagementScore::~SiteEngagementScore() = default;
 
 SiteEngagementScore& SiteEngagementScore::operator=(
     SiteEngagementScore&& other) = default;

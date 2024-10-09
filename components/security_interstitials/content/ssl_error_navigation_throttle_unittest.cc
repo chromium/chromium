@@ -60,7 +60,7 @@ class FakeSSLBlockingPage
                       /*support_url=*/GURL(),
                       controller()) {}
 
-  ~FakeSSLBlockingPage() override {}
+  ~FakeSSLBlockingPage() override = default;
 
   // SecurityInterstitialPage:
   void OnInterstitialClosing() override {}
@@ -140,7 +140,7 @@ class SSLErrorNavigationThrottleTest
     : public content::RenderViewHostTestHarness,
       public testing::WithParamInterface<bool> {
  public:
-  SSLErrorNavigationThrottleTest() {}
+  SSLErrorNavigationThrottleTest() = default;
 
   SSLErrorNavigationThrottleTest(const SSLErrorNavigationThrottleTest&) =
       delete;

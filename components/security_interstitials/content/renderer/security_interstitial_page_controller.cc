@@ -52,7 +52,8 @@ SecurityInterstitialPageController::SecurityInterstitialPageController(
     content::RenderFrame* render_frame)
     : RenderFrameObserver(render_frame) {}
 
-SecurityInterstitialPageController::~SecurityInterstitialPageController() {}
+SecurityInterstitialPageController::~SecurityInterstitialPageController() =
+    default;
 
 void SecurityInterstitialPageController::DontProceed() {
   SendCommand(

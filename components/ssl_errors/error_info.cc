@@ -199,7 +199,7 @@ ErrorInfo ErrorInfo::CreateError(ErrorType error_type,
   return ErrorInfo(details, short_description);
 }
 
-ErrorInfo::~ErrorInfo() {}
+ErrorInfo::~ErrorInfo() = default;
 
 // static
 ErrorInfo::ErrorType ErrorInfo::NetErrorToErrorType(int net_error) {

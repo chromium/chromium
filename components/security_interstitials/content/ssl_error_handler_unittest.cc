@@ -292,14 +292,14 @@ class TestSSLErrorHandlerDelegate : public SSLErrorHandler::Delegate {
 class SSLErrorHandlerNameMismatchTest
     : public content::RenderViewHostTestHarness {
  public:
-  SSLErrorHandlerNameMismatchTest() {}
+  SSLErrorHandlerNameMismatchTest() = default;
 
   SSLErrorHandlerNameMismatchTest(const SSLErrorHandlerNameMismatchTest&) =
       delete;
   SSLErrorHandlerNameMismatchTest& operator=(
       const SSLErrorHandlerNameMismatchTest&) = delete;
 
-  ~SSLErrorHandlerNameMismatchTest() override {}
+  ~SSLErrorHandlerNameMismatchTest() override = default;
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
@@ -359,7 +359,7 @@ class SSLErrorHandlerNameMismatchTest
 class SSLErrorHandlerNameMismatchNoSANTest
     : public SSLErrorHandlerNameMismatchTest {
  public:
-  SSLErrorHandlerNameMismatchNoSANTest() {}
+  SSLErrorHandlerNameMismatchNoSANTest() = default;
 
   SSLErrorHandlerNameMismatchNoSANTest(
       const SSLErrorHandlerNameMismatchNoSANTest&) = delete;
