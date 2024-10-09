@@ -529,6 +529,21 @@ void NavigationTransitionUtils::SetSameDocumentNavigationEntryScreenshotToken(
 
   CHECK(GetHostFrameSinkManager());
 
+  // It is possible to issue two CopyOutputRequests against the last committed
+  // entry. This happens when a same-RFH navigation commits in the browser at
+  // the same time as a same-document navigation commits in the renderer. For
+  // example,
+  // 1. Browser has a navigation A->B. At ready to commit, browser sends a
+  // screenshot request for A.
+  // 2. Renderer commits a same-document navigation from A->A'. The renderer
+  // issues a copy request for A at the same time as sending the commit message.
+  // Bump the `copy_output_request_sequence()` to prevent double-caching the
+  // screenshot for A.
+  //
+  // TODO(https://crbug.com/372301997): We will miss caching a screenshot for A'
+  // in this case. Record that reason explicitly.
+  last_committed_entry->navigation_transition_data()
+      .increment_copy_output_request_sequence();
   int request_sequence = last_committed_entry->navigation_transition_data()
                              .copy_output_request_sequence();
 
