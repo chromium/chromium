@@ -30,7 +30,7 @@ class TestObserver : public OptimizationHintsComponentObserver {
   TestObserver(const TestObserver&) = delete;
   TestObserver& operator=(const TestObserver&) = delete;
 
-  ~TestObserver() override {}
+  ~TestObserver() override = default;
 
   void OnHintsComponentAvailable(const HintsComponentInfo& info) override {
     ++hints_component_notification_count_;
