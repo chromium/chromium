@@ -123,6 +123,15 @@ suite('ComposePage', function() {
     // Refresh flag is enabled.
     assertTrue(toggle2.classList.contains('hr'));
   });
+
+  test('ComposeLearnMore', async () => {
+    await createPage();
+
+    const learnMoreLink = page.shadowRoot!.querySelector('a');
+    assertTrue(!!learnMoreLink);
+    assertEquals(
+        learnMoreLink.href, loadTimeData.getString('composeLearnMorePageURL'));
+  });
 });
 
 // TODO(crbug.com/362225975): Remove after AiSettingsPageRefresh is launched.
