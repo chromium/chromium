@@ -56,7 +56,7 @@ suite('MobilePromoTest', () => {
     }
   }
 
-  test(`render hasQrCode=true`, async () => {
+  test('render hasQrCode=true', async () => {
     const hasQrCode = true;
     const mobilePromo = await createMobilePromo(hasQrCode);
     assertHasQrCode(hasQrCode, mobilePromo);
@@ -66,5 +66,50 @@ suite('MobilePromoTest', () => {
     const hasQrCode = false;
     const mobilePromo = await createMobilePromo(hasQrCode);
     assertHasQrCode(hasQrCode, mobilePromo);
+  });
+
+  test('mobile promo dismisses when dismiss is clicked', async () => {
+    newTabPageHandler.setResultFor(
+        'getMobilePromoQrCode', Promise.resolve({qrCode: 'abc'}));
+    const mobilePromo = await createMobilePromo(true);
+    assertTrue(isVisible(mobilePromo.$.promoContainer));
+    assertFalse(mobilePromo.$.dismissPromoButtonToast.open);
+
+    const parts = mobilePromo.$.titleAndDismissContainer.children;
+    assertEquals(2, parts.length);
+
+    const dismissPromoButton = parts[1] as HTMLElement;
+    dismissPromoButton.click();
+
+    await microtasksFinished();
+
+    assertFalse(isVisible(mobilePromo.$.promoContainer));
+    assertTrue(mobilePromo.$.dismissPromoButtonToast.open);
+  });
+
+  test('mobile promo dismissed can undo', async () => {
+    newTabPageHandler.setResultFor(
+        'getMobilePromoQrCode', Promise.resolve({qrCode: 'abc'}));
+    const mobilePromo = await (createMobilePromo(true));
+    assertTrue(isVisible(mobilePromo.$.promoContainer));
+    assertFalse(mobilePromo.$.dismissPromoButtonToast.open);
+
+    const parts = mobilePromo.$.titleAndDismissContainer.children;
+    assertEquals(2, parts.length);
+
+    const dismissPromoButton = parts[1] as HTMLElement;
+    dismissPromoButton.click();
+
+    await microtasksFinished();
+
+    assertFalse(isVisible(mobilePromo.$.promoContainer));
+    assertTrue(mobilePromo.$.dismissPromoButtonToast.open);
+
+    mobilePromo.$.undoDismissPromoButton.click();
+
+    await microtasksFinished();
+
+    assertTrue(isVisible(mobilePromo.$.promoContainer));
+    assertFalse(mobilePromo.$.dismissPromoButtonToast.open);
   });
 });

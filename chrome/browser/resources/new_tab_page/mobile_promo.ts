@@ -2,11 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './mobile_promo.css.js';
 import {getHtml} from './mobile_promo.html.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
+
+export interface MobilePromoElement {
+  $: {
+    dismissPromoButtonToast: CrToastElement,
+    titleAndDismissContainer: HTMLElement,
+    promoContainer: HTMLElement,
+    undoDismissPromoButton: HTMLElement,
+  };
+}
 
 /**
  * @fileoverview This file provides a custom element for displaying a mobile
@@ -30,7 +40,6 @@ export class MobilePromoElement extends CrLitElement {
       qrCode: {
         type: String,
         notify: true,
-        reflect: true,
       },
     };
   }
@@ -43,6 +52,18 @@ export class MobilePromoElement extends CrLitElement {
         ({qrCode}) => {
           this.qrCode = qrCode;
         });
+  }
+
+  protected onDismissButtonClick_() {
+    this.$.promoContainer.hidden = true;
+    this.$.dismissPromoButtonToast.show();
+    // TODO(crbub.com/372306118): Handle dismiss in C++.
+  }
+
+  protected onUndoDismissPromoButtonClick_() {
+    this.$.promoContainer.hidden = false;
+    this.$.dismissPromoButtonToast.hide();
+    // TODO(crbub.com/372306118): Handle dismiss in C++.
   }
 }
 
