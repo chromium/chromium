@@ -375,7 +375,10 @@ suite('AllBuilds', function() {
   });
 
   test('historySearchRow', () => {
-    loadTimeData.overrideValues({showHistorySearchControl: true});
+    loadTimeData.overrideValues({
+      showHistorySearchControl: true,
+      enableAiSettingsPageRefresh: false,
+    });
     resetRouterForTesting();
     buildTestElement();
 
@@ -384,7 +387,9 @@ suite('AllBuilds', function() {
     assertTrue(!!historySearchRow);
     assertTrue(isVisible(historySearchRow));
     historySearchRow.click();
-    assertEquals(routes.HISTORY_SEARCH, Router.getInstance().getCurrentRoute());
+    const currentRoute = Router.getInstance().getCurrentRoute();
+    assertEquals(routes.HISTORY_SEARCH, currentRoute);
+    assertEquals(routes.SYNC, currentRoute.parent);
 
     loadTimeData.overrideValues({showHistorySearchControl: false});
     buildTestElement();

@@ -78,6 +78,26 @@ suite('ExperimentalAdvancedPage', function() {
     assertFalse(isChildVisible(page, '#historySearchRow'));
   });
 
+  test('historySearchRow', async () => {
+    loadTimeData.overrideValues({
+      showAdvancedFeaturesMainControl: true,
+      showHistorySearchControl: true,
+    });
+    resetRouterForTesting();
+    await createPage();
+
+    const historySearchRow =
+        page.shadowRoot!.querySelector<HTMLElement>('#historySearchRowV2');
+
+    assertTrue(!!historySearchRow);
+    assertTrue(isVisible(historySearchRow));
+    historySearchRow.click();
+
+    const currentRoute = Router.getInstance().getCurrentRoute();
+    assertEquals(routes.HISTORY_SEARCH, currentRoute);
+    assertEquals(routes.AI, currentRoute.parent);
+  });
+
   test('tabOrganizationRow', async () => {
     loadTimeData.overrideValues({
       showAdvancedFeaturesMainControl: true,

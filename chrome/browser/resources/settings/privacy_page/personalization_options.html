@@ -107,7 +107,8 @@
           on-click="onPageContentRowClick_">
       </cr-link-row>
     </template>
-    <template is="dom-if" if="[[showHistorySearchControl_]]" restamp>
+    <template is="dom-if" if="[[shouldShowHistorySearchControl_(
+        showHistorySearchControl_, enableAiSettingsPageRefresh_)]]" restamp>
       <cr-link-row id="historySearchRow"
           class="hr"
           label="$i18n{historySearchSettingLabel}"

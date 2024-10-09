@@ -195,7 +195,8 @@ function createRoutes(): SettingsRoutes {
     if (loadTimeData.getBoolean('enablePageContentSetting')) {
       r.PAGE_CONTENT = r.SYNC.createChild('/syncSetup/pageContent');
     }
-    if (loadTimeData.getBoolean('showHistorySearchControl')) {
+    if (!loadTimeData.getBoolean('enableAiSettingsPageRefresh') &&
+        loadTimeData.getBoolean('showHistorySearchControl')) {
       r.HISTORY_SEARCH = r.SYNC.createChild('/historySearch');
     }
   }
@@ -206,9 +207,13 @@ function createRoutes(): SettingsRoutes {
       loadTimeData.getBoolean('showAdvancedFeaturesMainControl')) {
     r.AI = r.BASIC.createSection(
         '/ai', 'ai', loadTimeData.getString('aiPageTitle'));
-    if (loadTimeData.getBoolean('enableAiSettingsPageRefresh') &&
-        loadTimeData.getBoolean('showTabOrganizationControl')) {
-      r.AI_TAB_ORGANIZATION = r.AI.createChild('/ai/tabOrganizer');
+    if (loadTimeData.getBoolean('enableAiSettingsPageRefresh')) {
+      if (loadTimeData.getBoolean('showTabOrganizationControl')) {
+        r.AI_TAB_ORGANIZATION = r.AI.createChild('/ai/tabOrganizer');
+      }
+      if (loadTimeData.getBoolean('showHistorySearchControl')) {
+        r.HISTORY_SEARCH = r.AI.createChild('/ai/historySearch');
+      }
     }
   }
 

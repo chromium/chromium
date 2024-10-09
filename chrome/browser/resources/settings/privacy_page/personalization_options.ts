@@ -132,6 +132,11 @@ export class SettingsPersonalizationOptionsElement extends
       },
       // </if>
 
+      enableAiSettingsPageRefresh_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableAiSettingsPageRefresh'),
+      },
+
       enablePageContentSetting_: {
         type: Boolean,
         value() {
@@ -166,6 +171,7 @@ export class SettingsPersonalizationOptionsElement extends
   private chromeSigninUserChoiceInfo_: ChromeSigninUserChoiceInfo;
   // </if>
 
+  private enableAiSettingsPageRefresh_: boolean;
   private enablePageContentSetting_: boolean;
   private showHistorySearchControl_: boolean;
 
@@ -384,6 +390,10 @@ export class SettingsPersonalizationOptionsElement extends
   private onPageContentRowClick_() {
     const router = Router.getInstance();
     router.navigateTo(router.getRoutes().PAGE_CONTENT);
+  }
+
+  private shouldShowHistorySearchControl_(): boolean {
+    return this.showHistorySearchControl_ && !this.enableAiSettingsPageRefresh_;
   }
 
   private onHistorySearchRowClick_() {

@@ -7,20 +7,16 @@ import '../controls/settings_toggle_button.js';
 import '../settings_columned_section.css.js';
 import '../settings_shared.css.js';
 
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {FeatureOptInState} from './constants.js';
 import {getTemplate} from './history_search_page.html.js';
 
-// These values must stay in sync with
-// optimization_guide::prefs::FeatureOptInState in
-// components/optimization_guide/core/optimization_guide_prefs.h.
-export enum FeatureOptInState {
-  NOT_INITIALIZED = 0,
-  ENABLED = 1,
-  DISABLED = 2,
-}
+const SettingsHistorySearchPageElementBase = PrefsMixin(PolymerElement);
 
-export class SettingsHistorySearchPageElement extends PolymerElement {
+export class SettingsHistorySearchPageElement extends
+    SettingsHistorySearchPageElementBase {
   static get is() {
     return 'settings-history-search-page';
   }
@@ -41,13 +37,10 @@ export class SettingsHistorySearchPageElement extends PolymerElement {
         value: () =>
             [FeatureOptInState.DISABLED, FeatureOptInState.NOT_INITIALIZED],
       },
-
-      prefs: Object,
     };
   }
 
   private numericUncheckedValues_: FeatureOptInState[];
-  prefs: {[key: string]: any};
 }
 
 declare global {

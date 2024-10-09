@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import type {SettingsAiTabOrganizationSubpageElement} from 'chrome://settings/lazy_load.js';
+import type {SettingsAiTabOrganizationSubpageElement, SettingsHistorySearchPageElement} from 'chrome://settings/lazy_load.js';
 import {FeatureOptInState, SettingsAiPageFeaturePrefName as PrefName} from 'chrome://settings/lazy_load.js';
 import type {SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs} from 'chrome://settings/settings.js';
@@ -21,7 +21,7 @@ suite('TabOrganizationSubpage', function() {
     return CrSettingsPrefs.initialized;
   });
 
-  async function createPage() {
+  function createPage() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     subpage = document.createElement('settings-ai-tab-organization-subpage');
     subpage.prefs = settingsPrefs.prefs;
@@ -53,6 +53,51 @@ suite('TabOrganizationSubpage', function() {
     assertEquals(
         FeatureOptInState.DISABLED,
         subpage.getPref(PrefName.TAB_ORGANIZATION).value);
+    assertFalse(toggle.checked);
+  });
+});
+
+suite('HistorySearchSubpage', function() {
+  let subpage: SettingsHistorySearchPageElement;
+  let settingsPrefs: SettingsPrefsElement;
+
+  suiteSetup(function() {
+    settingsPrefs = document.createElement('settings-prefs');
+    return CrSettingsPrefs.initialized;
+  });
+
+  function createPage() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    subpage = document.createElement('settings-history-search-page');
+    subpage.prefs = settingsPrefs.prefs;
+    document.body.appendChild(subpage);
+    return flushTasks();
+  }
+
+  test('historySearchToggle', async () => {
+    await createPage();
+
+    const toggle = subpage.shadowRoot!.querySelector('settings-toggle-button');
+    assertTrue(!!toggle);
+
+    // Check NOT_INITIALIZED case.
+    assertEquals(
+        FeatureOptInState.NOT_INITIALIZED,
+        subpage.getPref(PrefName.HISTORY_SEARCH).value);
+    assertFalse(toggle.checked);
+
+    // Check ENABLED case.
+    toggle.click();
+    assertEquals(
+        FeatureOptInState.ENABLED,
+        subpage.getPref(PrefName.HISTORY_SEARCH).value);
+    assertTrue(toggle.checked);
+
+    // Check DISABLED case.
+    toggle.click();
+    assertEquals(
+        FeatureOptInState.DISABLED,
+        subpage.getPref(PrefName.HISTORY_SEARCH).value);
     assertFalse(toggle.checked);
   });
 });

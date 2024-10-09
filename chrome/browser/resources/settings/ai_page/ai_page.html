@@ -97,6 +97,17 @@
       </cr-link-row>
     </div>
 
+    <template is="dom-if" if="[[showHistorySearchControl_]]">
+      <template is="dom-if" route-path="/ai/historySearch">
+        <settings-subpage id="historySearch"
+            associated-control="[[$$('#historySearchRowV2')]]"
+            page-title="$i18n{historySearchSettingLabel}">
+          <settings-history-search-page prefs="{{prefs}}">
+          </settings-history-search-page>
+        </settings-subpage>
+      </template>
+    </template>
+
     <template is="dom-if" if="[[showTabOrganizationControl_]]">
       <template is="dom-if" route-path="/ai/tabOrganizer">
         <settings-subpage id="tabOrganization"

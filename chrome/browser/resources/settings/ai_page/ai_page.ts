@@ -84,6 +84,10 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
         value() {
           const map = new Map();
 
+          if (routes.HISTORY_SEARCH) {
+            map.set(routes.HISTORY_SEARCH.path, '#historySearchRowV2');
+          }
+
           if (routes.AI_TAB_ORGANIZATION) {
             map.set(routes.AI_TAB_ORGANIZATION.path, '#tabOrganizationRowV2');
           }
