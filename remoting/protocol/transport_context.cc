@@ -17,8 +17,8 @@
 #include "remoting/base/logging.h"
 #include "remoting/base/oauth_token_getter.h"
 #include "remoting/protocol/chromium_port_allocator_factory.h"
+#include "remoting/protocol/ice_config_fetcher.h"
 #include "remoting/protocol/port_allocator_factory.h"
-#include "remoting/protocol/remoting_ice_config_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/webrtc/rtc_base/socket_address.h"
 

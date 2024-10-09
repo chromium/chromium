@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_PROTOCOL_REMOTING_ICE_CONFIG_REQUEST_H_
-#define REMOTING_PROTOCOL_REMOTING_ICE_CONFIG_REQUEST_H_
+#ifndef REMOTING_PROTOCOL_ICE_CONFIG_FETCHER_DEFAULT_H_
+#define REMOTING_PROTOCOL_ICE_CONFIG_FETCHER_DEFAULT_H_
 
 #include <memory>
 
@@ -29,24 +29,24 @@ class OAuthTokenGetter;
 
 namespace protocol {
 
-// IceConfigRequest that fetches IceConfig from the remoting NetworkTraversal
+// IceConfigRequest that fetches IceConfig from the private v1 NetworkTraversal
 // service.
-class RemotingIceConfigRequest final : public IceConfigFetcher {
+class IceConfigFetcherDefault final : public protocol::IceConfigFetcher {
  public:
-  RemotingIceConfigRequest(
+  IceConfigFetcherDefault(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       OAuthTokenGetter* oauth_token_getter);
 
-  RemotingIceConfigRequest(const RemotingIceConfigRequest&) = delete;
-  RemotingIceConfigRequest& operator=(const RemotingIceConfigRequest&) = delete;
+  IceConfigFetcherDefault(const IceConfigFetcherDefault&) = delete;
+  IceConfigFetcherDefault& operator=(const IceConfigFetcherDefault&) = delete;
 
-  ~RemotingIceConfigRequest() override;
+  ~IceConfigFetcherDefault() override;
 
   // IceConfigFetcher implementation.
   void GetIceConfig(OnIceConfigCallback callback) override;
 
  private:
-  friend class RemotingIceConfigRequestTest;
+  friend class IceConfigFetcherDefaultTest;
 
   void OnResponse(const ProtobufHttpStatus& status,
                   std::unique_ptr<apis::v1::GetIceConfigResponse> response);
@@ -59,4 +59,4 @@ class RemotingIceConfigRequest final : public IceConfigFetcher {
 }  // namespace protocol
 }  // namespace remoting
 
-#endif  // REMOTING_PROTOCOL_REMOTING_ICE_CONFIG_REQUEST_H_
+#endif  // REMOTING_PROTOCOL_ICE_CONFIG_FETCHER_DEFAULT_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/protocol/remoting_ice_config_request.h"
+#include "remoting/protocol/ice_config_fetcher_default.h"
 
 #include <memory>
 #include <optional>
@@ -15,6 +15,7 @@
 #include "remoting/base/protobuf_http_test_responder.h"
 #include "remoting/proto/remoting/v1/network_traversal_messages.pb.h"
 #include "remoting/protocol/ice_config.h"
+#include "remoting/protocol/ice_config_fetcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -29,7 +30,7 @@ using MockOnResultCallback =
 
 }  // namespace
 
-class RemotingIceConfigRequestTest : public testing::Test {
+class IceConfigFetcherDefaultTest : public testing::Test {
  protected:
   std::unique_ptr<MockOnResultCallback> SendRequest(
       base::RunLoop* run_loop_to_quit,
@@ -40,17 +41,17 @@ class RemotingIceConfigRequestTest : public testing::Test {
           out_config = std::move(ice_config);
           run_loop_to_quit->Quit();
         });
-    request_.GetIceConfig(mock_on_result->Get());
+    fetcher_.GetIceConfig(mock_on_result->Get());
     return mock_on_result;
   }
 
   base::test::TaskEnvironment task_environment_;
   ProtobufHttpTestResponder test_responder_;
-  RemotingIceConfigRequest request_{test_responder_.GetUrlLoaderFactory(),
-                                    nullptr};
+  IceConfigFetcherDefault fetcher_{test_responder_.GetUrlLoaderFactory(),
+                                   nullptr};
 };
 
-TEST_F(RemotingIceConfigRequestTest, SuccessfulRequest) {
+TEST_F(IceConfigFetcherDefaultTest, SuccessfulRequest) {
   base::RunLoop run_loop;
   std::optional<IceConfig> received_config;
   auto mock_on_result = SendRequest(&run_loop, received_config);
@@ -78,7 +79,7 @@ TEST_F(RemotingIceConfigRequestTest, SuccessfulRequest) {
   EXPECT_EQ(1U, received_config->stun_servers.size());
 }
 
-TEST_F(RemotingIceConfigRequestTest, FailedRequest) {
+TEST_F(IceConfigFetcherDefaultTest, FailedRequest) {
   base::RunLoop run_loop;
   std::optional<IceConfig> received_config;
   auto mock_on_result = SendRequest(&run_loop, received_config);

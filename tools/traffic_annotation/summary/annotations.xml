@@ -174,7 +174,7 @@ Refer to README.md for content description and update process.
  <item id="remoting_directory_delete_host" added_in_milestone="86" content_hash_code="03ed762b" os_list="linux,windows,chromeos,android" file_path="remoting/base/directory_service_client.cc" />
  <item id="remoting_directory_get_host_list" added_in_milestone="86" content_hash_code="03933aa0" os_list="linux,windows,chromeos,android" file_path="remoting/base/directory_service_client.cc" />
  <item id="remoting_directory_register_host" added_in_milestone="86" content_hash_code="046c936d" os_list="linux,windows,chromeos,android" file_path="remoting/base/directory_service_client.cc" />
- <item id="remoting_ice_config_request" added_in_milestone="86" content_hash_code="001d0a98" os_list="linux,windows,chromeos,android" file_path="remoting/protocol/remoting_ice_config_request.cc" />
+ <item id="remoting_ice_config_request" added_in_milestone="86" content_hash_code="001d0a98" os_list="linux,windows,chromeos,android" file_path="remoting/protocol/ice_config_fetcher_default.cc" />
  <item id="remoting_log_to_server" added_in_milestone="86" content_hash_code="04dfdf0a" os_list="linux,windows,chromeos,android" file_path="remoting/signaling/remoting_log_to_server.cc" />
  <item id="remoting_register_support_host_request" added_in_milestone="86" content_hash_code="04fd7da8" os_list="linux,windows,chromeos" file_path="remoting/host/remoting_register_support_host_request.cc" />
  <item id="remoting_telemetry_log_writer" added_in_milestone="86" content_hash_code="04df471b" os_list="linux,windows,chromeos,android" file_path="remoting/base/telemetry_log_writer.cc" />

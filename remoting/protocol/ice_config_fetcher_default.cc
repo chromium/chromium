@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "remoting/protocol/remoting_ice_config_request.h"
+#include "remoting/protocol/ice_config_fetcher_default.h"
 
 #include <utility>
 
@@ -68,7 +68,7 @@ constexpr char kGetIceConfigPath[] = "/v1/networktraversal:geticeconfig";
 
 }  // namespace
 
-RemotingIceConfigRequest::RemotingIceConfigRequest(
+IceConfigFetcherDefault::IceConfigFetcherDefault(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     OAuthTokenGetter* oauth_token_getter)
     : http_client_(ServiceUrls::GetInstance()->remoting_server_endpoint(),
@@ -79,9 +79,9 @@ RemotingIceConfigRequest::RemotingIceConfigRequest(
   make_authenticated_requests_ = oauth_token_getter != nullptr;
 }
 
-RemotingIceConfigRequest::~RemotingIceConfigRequest() = default;
+IceConfigFetcherDefault::~IceConfigFetcherDefault() = default;
 
-void RemotingIceConfigRequest::GetIceConfig(OnIceConfigCallback callback) {
+void IceConfigFetcherDefault::GetIceConfig(OnIceConfigCallback callback) {
   DCHECK(!on_ice_config_callback_);
   DCHECK(callback);
 
@@ -101,11 +101,11 @@ void RemotingIceConfigRequest::GetIceConfig(OnIceConfigCallback callback) {
   auto request =
       std::make_unique<ProtobufHttpRequest>(std::move(request_config));
   request->SetResponseCallback(base::BindOnce(
-      &RemotingIceConfigRequest::OnResponse, base::Unretained(this)));
+      &IceConfigFetcherDefault::OnResponse, base::Unretained(this)));
   http_client_.ExecuteRequest(std::move(request));
 }
 
-void RemotingIceConfigRequest::OnResponse(
+void IceConfigFetcherDefault::OnResponse(
     const ProtobufHttpStatus& status,
     std::unique_ptr<apis::v1::GetIceConfigResponse> response) {
   DCHECK(!on_ice_config_callback_.is_null());

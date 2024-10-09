@@ -43,9 +43,9 @@
 #include "remoting/proto/ftl/v1/chromoting_message.pb.h"
 #include "remoting/protocol/auth_util.h"
 #include "remoting/protocol/chromium_port_allocator_factory.h"
+#include "remoting/protocol/ice_config_fetcher_default.h"
 #include "remoting/protocol/it2me_host_authenticator_factory.h"
 #include "remoting/protocol/jingle_session_manager.h"
-#include "remoting/protocol/remoting_ice_config_request.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/protocol/validating_authenticator.h"
 #include "remoting/signaling/log_to_server.h"
@@ -295,9 +295,8 @@ void It2MeHost::ConnectOnNetworkThread(
       base::BindOnce(&It2MeHost::OnReceivedSupportID,
                      weak_factory_.GetWeakPtr()));
 
-  auto ice_config_fetcher =
-      std::make_unique<protocol::RemotingIceConfigRequest>(
-          host_context_->url_loader_factory(), oauth_token_getter_.get());
+  auto ice_config_fetcher = std::make_unique<protocol::IceConfigFetcherDefault>(
+      host_context_->url_loader_factory(), oauth_token_getter_.get());
   auto transport_context = base::MakeRefCounted<protocol::TransportContext>(
       std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
       webrtc::ThreadWrapper::current()->SocketServer(),

@@ -33,12 +33,12 @@
 #include "remoting/protocol/auth_util.h"
 #include "remoting/protocol/chromium_port_allocator_factory.h"
 #include "remoting/protocol/host_authentication_config.h"
+#include "remoting/protocol/ice_config_fetcher_default.h"
 #include "remoting/protocol/jingle_session_manager.h"
 #include "remoting/protocol/me2me_host_authenticator_factory.h"
 #include "remoting/protocol/negotiating_client_authenticator.h"
 #include "remoting/protocol/network_settings.h"
 #include "remoting/protocol/pairing_registry.h"
-#include "remoting/protocol/remoting_ice_config_request.h"
 #include "remoting/protocol/transport.h"
 #include "remoting/protocol/transport_context.h"
 #include "remoting/signaling/ftl_signal_strategy.h"
@@ -261,9 +261,8 @@ void FtlSignalingPlayground::RegisterSession(
 void FtlSignalingPlayground::InitializeTransport() {
   protocol::NetworkSettings network_settings(
       protocol::NetworkSettings::NAT_TRAVERSAL_FULL);
-  auto ice_config_fetcher =
-      std::make_unique<protocol::RemotingIceConfigRequest>(
-          url_loader_factory_owner_->GetURLLoaderFactory(), nullptr);
+  auto ice_config_fetcher = std::make_unique<protocol::IceConfigFetcherDefault>(
+      url_loader_factory_owner_->GetURLLoaderFactory(), nullptr);
   auto transport_context = base::MakeRefCounted<protocol::TransportContext>(
       std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
       webrtc::ThreadWrapper::current()->SocketServer(),
