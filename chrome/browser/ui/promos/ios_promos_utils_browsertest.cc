@@ -93,3 +93,12 @@ IN_PROC_BROWSER_TEST_F(IOSPromosUtilsTest, InvokeUi_addresses) {
       BrowserView::GetBrowserViewForBrowser(browser())
           ->toolbar_button_provider());
 }
+
+IN_PROC_BROWSER_TEST_F(IOSPromosUtilsTest, InvokeUi_payments) {
+  ASSERT_TRUE(sync_harness()->SetupSync());
+
+  ios_promos_utils::VerifyIOSPromoEligibility(
+      IOSPromoType::kPayment, browser()->profile(),
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->toolbar_button_provider());
+}

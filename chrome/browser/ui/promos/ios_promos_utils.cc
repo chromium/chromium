@@ -43,8 +43,13 @@ void ShowIOSDesktopPromoBubble(IOSPromoType promo_type,
               PageActionIconType::kAutofillAddress),
           profile, IOSPromoType::kAddress);
       break;
-    default:
-      NOTREACHED_NORETURN();
+    case IOSPromoType::kPayment:
+      IOSPromoBubble::ShowPromoBubble(
+          toolbar_button_provider->GetAnchorView(PageActionIconType::kSaveCard),
+          toolbar_button_provider->GetPageActionIconView(
+              PageActionIconType::kSaveCard),
+          profile, IOSPromoType::kPayment);
+      break;
   }
 }
 
