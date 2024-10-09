@@ -85,7 +85,7 @@ class PosterThread : public base::SimpleThread {
     for (int i = 0; i < n_; ++i) {
       auto weak_ptr = weak_ptr_;
       auto sequence_number = sequence_number_;
-      task_runner_->PostTask([weak_ptr, i, sequence_number]() {
+      task_runner_->PostTask([weak_ptr, i, sequence_number] {
         weak_ptr->TestTask(i, sequence_number);
       });
     }

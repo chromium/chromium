@@ -219,7 +219,7 @@ MAYBE_TEST(ModuleCacheTest, UpdateNonNativeModulesRemoveModuleIsNotDestroyed) {
     std::vector<std::unique_ptr<const ModuleCache::Module>> modules;
     modules.push_back(std::make_unique<FakeModule>(
         1, 1, false,
-        BindLambdaForTesting([&was_destroyed]() { was_destroyed = true; })));
+        BindLambdaForTesting([&was_destroyed] { was_destroyed = true; })));
     const ModuleCache::Module* module = modules.back().get();
     cache.UpdateNonNativeModules({}, std::move(modules));
     cache.UpdateNonNativeModules({module}, {});
@@ -234,7 +234,7 @@ MAYBE_TEST(ModuleCacheTest, UpdateNonNativeModulesRemoveModuleIsNotDestroyed) {
 // https://crbug.com/1127466 case 2.
 MAYBE_TEST(ModuleCacheTest, UpdateNonNativeModulesPartitioning) {
   int destroyed_count = 0;
-  const auto record_destroyed = [&destroyed_count]() { ++destroyed_count; };
+  const auto record_destroyed = [&destroyed_count] { ++destroyed_count; };
   {
     ModuleCache cache;
     std::vector<std::unique_ptr<const ModuleCache::Module>> modules;
@@ -270,7 +270,7 @@ MAYBE_TEST(ModuleCacheTest, UpdateNonNativeModulesReplace) {
 MAYBE_TEST(ModuleCacheTest,
            UpdateNonNativeModulesMultipleRemovedModulesAtSameAddress) {
   int destroyed_count = 0;
-  const auto record_destroyed = [&destroyed_count]() { ++destroyed_count; };
+  const auto record_destroyed = [&destroyed_count] { ++destroyed_count; };
   ModuleCache cache;
 
   // Checks that non-native modules can be repeatedly added and removed at the

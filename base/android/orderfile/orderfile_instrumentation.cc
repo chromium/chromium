@@ -300,7 +300,7 @@ NO_INSTRUMENT_FUNCTION void StartDelayedDump() {
       g_orderfile_memory_dump_hook, "Orderfile", nullptr);
 #endif  // BUILDFLAG(DEVTOOLS_INSTRUMENTATION_DUMPING)
 
-  std::thread([pid, start_ns_since_epoch, tag]() {
+  std::thread([pid, start_ns_since_epoch, tag] {
     sleep(kInitialDelayInSeconds);
 #if BUILDFLAG(DEVTOOLS_INSTRUMENTATION_DUMPING)
     SwitchToNextPhaseOrDump(pid, start_ns_since_epoch, tag);

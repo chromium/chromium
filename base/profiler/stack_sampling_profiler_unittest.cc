@@ -1341,7 +1341,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, AddAuxUnwinder_BeforeStart) {
 
   int add_initial_modules_invocation_count = 0;
   const auto add_initial_modules_callback =
-      [&add_initial_modules_invocation_count]() {
+      [&add_initial_modules_invocation_count] {
         ++add_initial_modules_invocation_count;
       };
 
@@ -1372,7 +1372,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, AddAuxUnwinder_BeforeStart) {
 
   ASSERT_EQ(1, add_initial_modules_invocation_count);
 
-  // The sample should have one frame from the context values and one from the
+  // The sample should have one frame from the context values aFFnd one from the
   // TestAuxUnwinder.
   ASSERT_EQ(1u, profile.samples.size());
   const std::vector<Frame>& frames = profile.samples[0];
@@ -1391,7 +1391,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, AddAuxUnwinder_AfterStart) {
 
   int add_initial_modules_invocation_count = 0;
   const auto add_initial_modules_callback =
-      [&add_initial_modules_invocation_count]() {
+      [&add_initial_modules_invocation_count] {
         ++add_initial_modules_invocation_count;
       };
 

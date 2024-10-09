@@ -706,9 +706,9 @@ class HangWatcherSnapshotTest : public testing::Test {
 // report.
 TEST_F(HangWatcherSnapshotTest, NonActionableReport) {
   hang_watcher_.SetOnHangClosureForTesting(
-      base::BindLambdaForTesting([this]() { ++hang_capture_count_; }));
+      base::BindLambdaForTesting([this] { ++hang_capture_count_; }));
   hang_watcher_.SetAfterMonitorClosureForTesting(
-      base::BindLambdaForTesting([this]() { monitor_event_.Signal(); }));
+      base::BindLambdaForTesting([this] { monitor_event_.Signal(); }));
 
   hang_watcher_.Start();
 
@@ -753,7 +753,7 @@ TEST_F(HangWatcherSnapshotTest, NonActionableReport) {
 
 TEST_F(HangWatcherSnapshotTest, MAYBE_HungThreadIDs) {
   // During hang capture the list of hung threads should be populated.
-  hang_watcher_.SetOnHangClosureForTesting(base::BindLambdaForTesting([this]() {
+  hang_watcher_.SetOnHangClosureForTesting(base::BindLambdaForTesting([this] {
     EXPECT_EQ(hang_watcher_.GrabWatchStateSnapshotForTesting()
                   .PrepareHungThreadListCrashKey(),
               list_of_hung_thread_ids_during_capture_);
@@ -762,9 +762,7 @@ TEST_F(HangWatcherSnapshotTest, MAYBE_HungThreadIDs) {
 
   // When hang capture is over the list should be empty.
   hang_watcher_.SetAfterMonitorClosureForTesting(
-      base::BindLambdaForTesting([this]() {
-        monitor_event_.Signal();
-      }));
+      base::BindLambdaForTesting([this] { monitor_event_.Signal(); }));
 
   hang_watcher_.Start();
 
@@ -815,7 +813,7 @@ TEST_F(HangWatcherSnapshotTest, MAYBE_HungThreadIDs) {
 
 TEST_F(HangWatcherSnapshotTest, TimeSinceLastSystemPowerResumeCrashKey) {
   // Override the capture of hangs. Simulate a crash key capture.
-  hang_watcher_.SetOnHangClosureForTesting(base::BindLambdaForTesting([this]() {
+  hang_watcher_.SetOnHangClosureForTesting(base::BindLambdaForTesting([this] {
     ++hang_capture_count_;
     seconds_since_last_power_resume_crash_key_ =
         hang_watcher_.GetTimeSinceLastSystemPowerResumeCrashKeyValue();
@@ -823,7 +821,7 @@ TEST_F(HangWatcherSnapshotTest, TimeSinceLastSystemPowerResumeCrashKey) {
 
   // When hang capture is over, unblock the main thread.
   hang_watcher_.SetAfterMonitorClosureForTesting(
-      base::BindLambdaForTesting([this]() { monitor_event_.Signal(); }));
+      base::BindLambdaForTesting([this] { monitor_event_.Signal(); }));
 
   hang_watcher_.Start();
 
@@ -934,7 +932,7 @@ TEST_F(HangWatcherPeriodicMonitoringTest,
   // If a call to HangWatcher::Monitor() takes place the test will instantly
   // fail.
   hang_watcher_.SetAfterMonitorClosureForTesting(
-      base::BindLambdaForTesting([&run_loop]() {
+      base::BindLambdaForTesting([&run_loop] {
         ADD_FAILURE() << "Monitoring took place!";
         run_loop.Quit();
       }));
@@ -972,7 +970,7 @@ TEST_F(HangWatcherPeriodicMonitoringTest, PeriodicCallsTakePlace) {
   // Setup the HangWatcher to unblock run_loop when the Monitor() has been
   // invoked enough times.
   hang_watcher_.SetAfterMonitorClosureForTesting(BarrierClosure(
-      kMinimumMonitorCount, base::BindLambdaForTesting([&run_loop]() {
+      kMinimumMonitorCount, base::BindLambdaForTesting([&run_loop] {
         // Test condition are confirmed, stop monitoring.
         HangWatcher::StopMonitoringForTesting();
 
@@ -1005,7 +1003,7 @@ TEST_F(HangWatcherPeriodicMonitoringTest, NoMonitorOnOverSleep) {
   // If a call to HangWatcher::Monitor() takes place the test will instantly
   // fail.
   hang_watcher_.SetAfterMonitorClosureForTesting(
-      base::BindLambdaForTesting([&run_loop]() {
+      base::BindLambdaForTesting([&run_loop] {
         ADD_FAILURE() << "Monitoring took place!";
         run_loop.Quit();
       }));

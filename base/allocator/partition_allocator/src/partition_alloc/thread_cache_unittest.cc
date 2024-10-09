@@ -809,7 +809,7 @@ PA_NO_THREAD_SAFETY_ANALYSIS {
 
 TEST_P(PartitionAllocThreadCacheTest, PeriodicPurge) {
   auto& registry = ThreadCacheRegistry::Instance();
-  auto NextInterval = [&registry]() {
+  auto NextInterval = [&registry] {
     return internal::base::Microseconds(
         registry.GetPeriodicPurgeNextIntervalInMicroseconds());
   };
@@ -914,7 +914,7 @@ class ThreadDelegateForPeriodicPurgeSumsOverAllThreads
 TEST_P(PartitionAllocThreadCacheTest,
        DISABLED_PeriodicPurgeSumsOverAllThreads) {
   auto& registry = ThreadCacheRegistry::Instance();
-  auto NextInterval = [&registry]() {
+  auto NextInterval = [&registry] {
     return internal::base::Microseconds(
         registry.GetPeriodicPurgeNextIntervalInMicroseconds());
   };

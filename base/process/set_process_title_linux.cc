@@ -89,7 +89,7 @@ void setproctitle(const char* fmt, ...) {
   // Linux 4.18--5.2 have a bug where we can never set a process title
   // shorter than the initial argv. Check if the bug exists in the current
   // kernel on the first call of setproctitle.
-  static const bool buggy_kernel = [avail_size]() {
+  static const bool buggy_kernel = [avail_size] {
     // Attempt to set an empty title. This will set cmdline to:
     // ""                   (on Linux --4.17)
     // "\0\0\0...\0\0\0.\0" (on Linux 4.18--5.2)

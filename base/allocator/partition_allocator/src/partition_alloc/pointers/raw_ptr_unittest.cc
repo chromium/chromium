@@ -2249,7 +2249,7 @@ TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
   RawPtrCountingImpl::ClearCounters();
 
   uint32_t gen_val = 1;
-  std::generate(counting_ptr, counting_ptr_end, [&gen_val]() {
+  std::generate(counting_ptr, counting_ptr_end, [&gen_val] {
     gen_val ^= gen_val + 1;
     return gen_val;
   });

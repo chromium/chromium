@@ -278,7 +278,7 @@ TEST_F(TestFutureTest, ShouldSignalWhenSetValueIsInvoked) {
   const int expected_value = 111;
   TestFuture<int> future;
 
-  RunLater([&future]() { future.SetValue(expected_value); });
+  RunLater([&future] { future.SetValue(expected_value); });
 
   int actual_value = future.Get();
 
@@ -629,7 +629,7 @@ TEST_F(TestFutureWithoutValuesTest, IsReadyShouldBeTrueWhenSetValueIsInvoked) {
 TEST_F(TestFutureWithoutValuesTest, WaitShouldUnblockWhenSetValueIsInvoked) {
   TestFuture<void> future;
 
-  RunLater([&future]() { future.SetValue(); });
+  RunLater([&future] { future.SetValue(); });
 
   ASSERT_FALSE(future.IsReady());
   std::ignore = future.Wait();

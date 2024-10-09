@@ -93,7 +93,7 @@ TEST_F(RepeatingTestFutureTest, ShouldTakeElementsFiFo) {
 TEST_F(RepeatingTestFutureTest, WaitShouldBlockUntilElementArrives) {
   RepeatingTestFuture<std::string> future;
 
-  RunLater(BindLambdaForTesting([&future]() { future.AddValue("a value"); }));
+  RunLater(BindLambdaForTesting([&future] { future.AddValue("a value"); }));
   EXPECT_TRUE(future.IsEmpty());
 
   EXPECT_TRUE(future.Wait());
@@ -104,7 +104,7 @@ TEST_F(RepeatingTestFutureTest, WaitShouldBlockUntilElementArrives) {
 TEST_F(RepeatingTestFutureTest, WaitShouldReturnTrueWhenValueArrives) {
   RepeatingTestFuture<std::string> future;
 
-  RunLater(BindLambdaForTesting([&future]() { future.AddValue("a value"); }));
+  RunLater(BindLambdaForTesting([&future] { future.AddValue("a value"); }));
 
   EXPECT_TRUE(future.Wait());
 
@@ -138,7 +138,7 @@ TEST_F(RepeatingTestFutureTest, TakeShouldBlockUntilAnElementArrives) {
   RepeatingTestFuture<std::string> future;
 
   RunLater(BindLambdaForTesting(
-      [&future]() { future.AddValue("value pushed delayed"); }));
+      [&future] { future.AddValue("value pushed delayed"); }));
 
   EXPECT_EQ(future.Take(), "value pushed delayed");
 }
@@ -155,7 +155,7 @@ TEST_F(RepeatingTestFutureTest, TakeShouldWorkWithMoveOnlyValue) {
   RepeatingTestFuture<MoveOnlyValue> future;
 
   RunLater(BindLambdaForTesting(
-      [&future]() { future.AddValue(MoveOnlyValue("move only value")); }));
+      [&future] { future.AddValue(MoveOnlyValue("move only value")); }));
 
   MoveOnlyValue result = future.Take();
 

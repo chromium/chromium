@@ -385,7 +385,7 @@ void NotReachedError::TriggerNotReached() {
 NotReachedError::~NotReachedError() = default;
 
 NotReachedNoreturnError::NotReachedNoreturnError(const base::Location& location)
-    : CheckError([location]() {
+    : CheckError([location] {
         auto* const log_message = new NotReachedLogMessage(
             location, LOGGING_FATAL,
             base::NotFatalUntil::NoSpecifiedMilestoneInternal);

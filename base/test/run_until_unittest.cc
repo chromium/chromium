@@ -48,16 +48,16 @@ TEST_F(RunUntilTest, ShouldReturnTrueIfPredicateIsAlreadyFulfilled) {
 TEST_F(RunUntilTest, ShouldReturnTrueOncePredicateIsFulfilled) {
   bool done = false;
 
-  RunLater([&done]() { done = true; });
+  RunLater([&done] { done = true; });
 
-  EXPECT_TRUE(RunUntil([&done]() { return done; }));
+  EXPECT_TRUE(RunUntil([&done] { return done; }));
 }
 
 TEST_F(RunUntilTest, ShouldNotSimplyActivelyInvokePredicateInALoop) {
   bool done = false;
   int call_count = 0;
 
-  PostDelayedTask(base::BindLambdaForTesting([&done]() { done = true; }),
+  PostDelayedTask(base::BindLambdaForTesting([&done] { done = true; }),
                   base::Milliseconds(50));
 
   EXPECT_TRUE(RunUntil([&] {
@@ -74,7 +74,7 @@ TEST_F(RunUntilTest, ShouldNotSimplyReturnOnFirstIdle) {
 
   PostDelayedTask(base::DoNothing(), base::Milliseconds(1));
   PostDelayedTask(base::DoNothing(), base::Milliseconds(5));
-  PostDelayedTask(base::BindLambdaForTesting([&done]() { done = true; }),
+  PostDelayedTask(base::BindLambdaForTesting([&done] { done = true; }),
                   base::Milliseconds(10));
 
   EXPECT_TRUE(RunUntil([&] { return done; }));
@@ -98,7 +98,7 @@ TEST_F(RunUntilTest, ShouldWorkEvenWhenTimerIsRunning) {
   base::RepeatingTimer timer;
   timer.Start(FROM_HERE, base::Seconds(1), base::DoNothing());
 
-  PostDelayedTask(base::BindLambdaForTesting([&done]() { done = true; }),
+  PostDelayedTask(base::BindLambdaForTesting([&done] { done = true; }),
                   base::Milliseconds(10));
 
   EXPECT_TRUE(RunUntil([&] { return done; }));

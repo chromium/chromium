@@ -198,7 +198,7 @@ class CallCountingTickClock : public TickClock {
       : now_callback_(std::move(now_callback)) {}
   explicit CallCountingTickClock(TickClock* clock)
       : CallCountingTickClock(
-            BindLambdaForTesting([clock]() { return clock->NowTicks(); })) {}
+            BindLambdaForTesting([clock] { return clock->NowTicks(); })) {}
 
   ~CallCountingTickClock() override = default;
 
@@ -808,7 +808,7 @@ TEST_P(SequenceManagerTest, NonNestableTasksShutdownQueue) {
   tasks_to_post_from_nested_loop.emplace_back(
       BindOnce(&TestTask, 2, &run_order), true);
   tasks_to_post_from_nested_loop.emplace_back(
-      BindLambdaForTesting([&queue]() { queue.reset(); }), true);
+      BindLambdaForTesting([&queue] { queue.reset(); }), true);
 
   queue->task_runner()->PostTask(
       FROM_HERE, BindOnce(&PostFromNestedRunloop, queue->task_runner(),
@@ -6015,7 +6015,7 @@ TEST(
       SingleThreadTaskRunner::GetCurrentDefault();
 
   StrictMock<MockCallback<base::OnceCallback<void()>>> cb;
-  EXPECT_CALL(cb, Run).WillOnce(testing::Invoke([expected_task_runner]() {
+  EXPECT_CALL(cb, Run).WillOnce(testing::Invoke([expected_task_runner] {
     EXPECT_EQ(SingleThreadTaskRunner::GetCurrentDefault(),
               expected_task_runner);
   }));

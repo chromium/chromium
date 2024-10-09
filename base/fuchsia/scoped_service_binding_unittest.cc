@@ -240,7 +240,7 @@ TEST_F(ScopedServiceBindingTest, MultipleLastClientCallback) {
       ComponentContextForProcess()->outgoing().get(), &test_service_);
   int disconnect_count = 0;
   binding.SetOnLastClientCallback(
-      BindLambdaForTesting([&disconnect_count]() { ++disconnect_count; }));
+      BindLambdaForTesting([&disconnect_count] { ++disconnect_count; }));
 
   // Connect a client, verify it is functional.
   auto stub =
