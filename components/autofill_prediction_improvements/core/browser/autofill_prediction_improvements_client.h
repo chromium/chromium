@@ -40,6 +40,7 @@ class AutofillPredictionImprovementsClient {
   virtual AutofillPredictionImprovementsManager& GetManager() = 0;
 
   // Returns the filling engine associated with the client's web contents.
+  // TODO(crbug.com/372432481): Make this return a reference.
   virtual AutofillPredictionImprovementsFillingEngine* GetFillingEngine() = 0;
 
   // Returns the last committed URL of the primary main frame.
