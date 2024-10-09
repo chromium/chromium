@@ -2913,11 +2913,6 @@
     "expiry_milestone": 128
   },
   {
-    "name": "enable-cros-vm-memory-management-service",
-    "owners": [ "kalutes@google.com", "cwd@google.com", "cros-vm-technology@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-debug-for-secure-payment-confirmation",
     "owners": [ "rouslan@chromium.org", "web-payments-team@google.com" ],
     "expiry_milestone": 136
