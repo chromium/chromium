@@ -44,10 +44,7 @@ class HistoryEmbeddingsMlAnswererTest : public testing::Test {
  public:
   void SetUp() override {
     ml_answerer_ = std::make_unique<MlAnswerer>(&model_executor_);
-    token_limits_ = {0, 1000, 0, 0};
   }
-
-  optimization_guide::TokenLimits& GetTokenLimits() { return token_limits_; }
 
  protected:
   optimization_guide::StreamingResponse MakeResponse(
@@ -68,7 +65,6 @@ class HistoryEmbeddingsMlAnswererTest : public testing::Test {
   testing::NiceMock<MockModelExecutor> model_executor_;
   std::unique_ptr<MlAnswerer> ml_answerer_;
   testing::NiceMock<optimization_guide::MockSession> session_1_, session_2_;
-  optimization_guide::TokenLimits token_limits_;
 };
 
 TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerNoSession) {
@@ -80,11 +76,6 @@ TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerNoSession) {
       .WillByDefault(testing::WithArg<1>(testing::Invoke(
           [&](optimization_guide::OptimizationGuideModelSizeInTokenCallback
                   callback) { std::move(callback).Run(100); })));
-
-  ON_CALL(session_1_, GetTokenLimits())
-      .WillByDefault([&]() -> optimization_guide::TokenLimits& {
-        return GetTokenLimits();
-      });
 
   Answerer::Context context("1");
   context.url_passages_map.insert({"url_1", {"passage_11", "passage_12"}});
@@ -106,11 +97,6 @@ TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerExecutionFailure) {
       .WillByDefault(testing::WithArg<1>(testing::Invoke(
           [&](optimization_guide::OptimizationGuideModelSizeInTokenCallback
                   callback) { std::move(callback).Run(100); })));
-
-  ON_CALL(session_1_, GetTokenLimits())
-      .WillByDefault([&]() -> optimization_guide::TokenLimits& {
-        return GetTokenLimits();
-      });
 
   ON_CALL(session_1_, Score(_, _))
       .WillByDefault(testing::WithArg<1>(testing::Invoke(
@@ -155,11 +141,6 @@ TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerSingleUrl) {
       .WillByDefault(testing::WithArg<1>(testing::Invoke(
           [&](optimization_guide::OptimizationGuideModelSizeInTokenCallback
                   callback) { std::move(callback).Run(100); })));
-
-  ON_CALL(session_1_, GetTokenLimits())
-      .WillByDefault([&]() -> optimization_guide::TokenLimits& {
-        return GetTokenLimits();
-      });
 
   ON_CALL(session_1_, Score(_, _))
       .WillByDefault(testing::WithArg<1>(testing::Invoke(
@@ -214,16 +195,6 @@ TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerMultipleUrls) {
           [&](optimization_guide::OptimizationGuideModelSizeInTokenCallback
                   callback) { std::move(callback).Run(100); })));
 
-  ON_CALL(session_1_, GetTokenLimits())
-      .WillByDefault([&]() -> optimization_guide::TokenLimits& {
-        return GetTokenLimits();
-      });
-
-  ON_CALL(session_2_, GetTokenLimits())
-      .WillByDefault([&]() -> optimization_guide::TokenLimits& {
-        return GetTokenLimits();
-      });
-
   ON_CALL(session_1_, Score(_, _))
       .WillByDefault(testing::WithArg<1>(testing::Invoke(
           [&](optimization_guide::OptimizationGuideModelScoreCallback
@@ -271,11 +242,6 @@ TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerUnanswerable) {
       .WillByDefault(testing::WithArg<1>(testing::Invoke(
           [&](optimization_guide::OptimizationGuideModelSizeInTokenCallback
                   callback) { std::move(callback).Run(100); })));
-
-  ON_CALL(session_1_, GetTokenLimits())
-      .WillByDefault([&]() -> optimization_guide::TokenLimits& {
-        return GetTokenLimits();
-      });
 
   // Below the default 0.5 threshold.
   ON_CALL(session_1_, Score(_, _))

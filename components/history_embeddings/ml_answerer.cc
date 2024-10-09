@@ -139,7 +139,8 @@ class MlAnswerer::SessionManager {
                              base::OnceCallback<void(int)> session_added_cb,
                              std::vector<ModelInput> inputs) {
     HistoryAnswerRequest request;
-    int token_limit = session->GetTokenLimits().max_context_tokens;
+    // TODO(crbug.com/372535307): use actual model limit.
+    int token_limit = 1024;
     // Reserve space for preamble text.
     int token_count = kPreambleTokenBufferSize;
 
