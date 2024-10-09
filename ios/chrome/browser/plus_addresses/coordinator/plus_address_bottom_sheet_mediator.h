@@ -29,6 +29,9 @@ class UrlLoadingBrowserAgent;
 // Shows alert for the quota error.
 - (void)showQuotaErrorAlert;
 
+// Shows alert for the timeout error.
+- (void)showTimeoutErrorAlert;
+
 // Shows generic alert with the message.
 - (void)showGenericErrorAlert;
 

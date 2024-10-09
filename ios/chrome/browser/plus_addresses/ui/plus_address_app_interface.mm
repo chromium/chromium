@@ -66,6 +66,11 @@ plus_addresses::FakePlusAddressService* GetFakePlusAddressService() {
       shouldReturnQuotaError);
 }
 
++ (void)setShouldReturnTimeoutError:(BOOL)shouldReturnTimeoutError {
+  GetFakePlusAddressService()->set_should_return_timeout_error(
+      shouldReturnTimeoutError);
+}
+
 + (void)clearState {
   GetFakePlusAddressService()->ClearState();
 }

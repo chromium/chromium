@@ -39,6 +39,9 @@
 // Setter to return quota error on reserve/confirm.
 + (void)setShouldReturnQuotaError:(BOOL)shouldReturnQuotaError;
 
+// Setter to return timeout error on reserve/confirm.
++ (void)setShouldReturnTimeoutError:(BOOL)shouldReturnTimeoutError;
+
 // Resets the state of `FakePlusAddressService`.
 + (void)clearState;
 

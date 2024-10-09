@@ -173,12 +173,21 @@ void FakePlusAddressService::ReservePlusAddress(
             PlusAddressRequestErrorType::kNetworkError)));
     return;
   }
+
   if (should_return_quota_error_) {
     std::move(on_completed)
         .Run(base::unexpected(PlusAddressRequestError::AsNetworkError(
             net::HTTP_TOO_MANY_REQUESTS)));
     return;
   }
+
+  if (should_return_timeout_error_) {
+    std::move(on_completed)
+        .Run(base::unexpected(PlusAddressRequestError::AsNetworkError(
+            net::HTTP_REQUEST_TIMEOUT)));
+    return;
+  }
+
   std::move(on_completed)
       .Run(PlusProfile(kFakeProfileId, FacetURI::FromCanonicalSpec(kFacet),
                        PlusAddress(plus_addresses::test::kFakePlusAddress),
@@ -203,6 +212,13 @@ void FakePlusAddressService::ConfirmPlusAddress(
     return;
   }
 
+  if (should_return_timeout_error_) {
+    std::move(on_completed)
+        .Run(base::unexpected(PlusAddressRequestError::AsNetworkError(
+            net::HTTP_REQUEST_TIMEOUT)));
+    return;
+  }
+
   if (should_return_affiliated_plus_profile_on_confirm_) {
     std::move(on_completed)
         .Run(PlusProfile(
@@ -212,6 +228,7 @@ void FakePlusAddressService::ConfirmPlusAddress(
             true));
     return;
   }
+
   is_confirmed_ = true;
   PlusProfile profile(kFakeProfileId, FacetURI::FromCanonicalSpec(kFacet),
                       std::move(plus_address), is_confirmed_);
@@ -285,6 +302,7 @@ void FakePlusAddressService::ClearState() {
   should_return_no_affiliated_plus_profiles_ = false;
   should_return_affiliated_plus_profile_on_confirm_ = false;
   should_return_quota_error_ = false;
+  should_return_timeout_error_ = false;
 }
 
 }  // namespace plus_addresses

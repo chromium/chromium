@@ -215,6 +215,8 @@ enum class PlusAddressAction {
         if (errorStatesEnabled) {
           if (maybePlusProfile.error().IsQuotaError()) {
             [_delegate showQuotaErrorAlert];
+          } else if (maybePlusProfile.error().IsTimeoutError()) {
+            [_delegate showTimeoutErrorAlert];
           } else {
             showGenericError = YES;
           }
@@ -247,6 +249,8 @@ enum class PlusAddressAction {
         if (errorStatesEnabled) {
           if (maybePlusProfile.error().IsQuotaError()) {
             [_delegate showQuotaErrorAlert];
+          } else if (maybePlusProfile.error().IsTimeoutError()) {
+            [_delegate showTimeoutErrorAlert];
           } else {
             showGenericError = YES;
           }

@@ -153,16 +153,34 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
   [_alertCoordinator start];
 }
 
+- (void)showTimeoutErrorAlert {
+  [self
+      showAlertWithTryAgainButton:
+          l10n_util::GetNSString(IDS_PLUS_ADDRESS_TIMEOUT_ERROR_ALERT_TITLE_IOS)
+                          message:
+                              l10n_util::GetNSString(
+                                  IDS_PLUS_ADDRESS_TIMEOUT_ERROR_ALERT_MESSAGE_IOS)];
+}
+
 - (void)showGenericErrorAlert {
-  _alertCoordinator = [[AlertCoordinator alloc]
-      initWithBaseViewController:_viewController
-                         browser:self.browser
-                           title:
-                               l10n_util::GetNSString(
-                                   IDS_PLUS_ADDRESS_GENERIC_ERROR_ALERT_TITLE_IOS)
-                         message:
-                             l10n_util::GetNSString(
-                                 IDS_PLUS_ADDRESS_GENERIC_ERROR_ALERT_MESSAGE_IOS)];
+  [self
+      showAlertWithTryAgainButton:
+          l10n_util::GetNSString(IDS_PLUS_ADDRESS_GENERIC_ERROR_ALERT_TITLE_IOS)
+                          message:
+                              l10n_util::GetNSString(
+                                  IDS_PLUS_ADDRESS_GENERIC_ERROR_ALERT_MESSAGE_IOS)];
+}
+
+#pragma mark - Private
+
+// Shows an alert view with the "Try again" and "Cancel" buttons.
+- (void)showAlertWithTryAgainButton:(NSString*)title
+                            message:(NSString*)message {
+  _alertCoordinator =
+      [[AlertCoordinator alloc] initWithBaseViewController:_viewController
+                                                   browser:self.browser
+                                                     title:title
+                                                   message:message];
   __weak PlusAddressBottomSheetMediator* weakMediator = _mediator;
   [_alertCoordinator
       addItemWithTitle:l10n_util::GetNSString(
