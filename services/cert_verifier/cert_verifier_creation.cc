@@ -8,7 +8,6 @@
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/certificate_transparency/chrome_ct_policy_enforcer.h"
 #include "components/network_time/time_tracker/time_tracker.h"
 #include "crypto/sha2.h"
 #include "net/base/features.h"
