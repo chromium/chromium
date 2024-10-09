@@ -908,6 +908,7 @@ targets.legacy_compound_suite(
         "gpu_passthrough_telemetry_tests",
         "gpu_validating_telemetry_tests",
         "gpu_webcodecs_validating_telemetry_test",
+        "gpu_webcodecs_validating_graphite_telemetry_test",
         "gpu_webgl_conformance_gles_passthrough_graphite_telemetry_tests",
         "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
         "gpu_webgl_conformance_validating_telemetry_tests",

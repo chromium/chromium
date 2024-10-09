@@ -3015,6 +3015,21 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "gpu_webcodecs_validating_graphite_telemetry_test",
+    tests = {
+        "webcodecs_graphite_tests": targets.legacy_test_config(
+            mixins = [
+                "gpu_integration_test_common_args",
+            ],
+            args = [
+                "--extra-browser-args=--use-cmd-decoder=validating --enable-features=SkiaGraphite",
+            ],
+            ci_only = True,
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "gpu_webcodecs_validating_telemetry_test",
     tests = {
         "webcodecs_tests": targets.legacy_test_config(
