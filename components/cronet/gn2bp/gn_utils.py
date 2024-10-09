@@ -58,11 +58,9 @@ def repo_root():
     return os.path.join(os.path.realpath(os.path.dirname(__file__)),
                         os.path.pardir)
 
-
 def _get_build_path_from_label(target_name: str) -> str:
     """Returns the path to the BUILD file for which this target was declared."""
     return target_name[2:].split(":")[0]
-
 
 def _clean_string(str):
     return str.replace('\\', '').replace('../../', '').replace('"', '').strip()
@@ -170,14 +168,17 @@ class GnParser(object):
                 self.outputs = set()
                 self.args = []
                 self.response_file_contents = ''
+                self.rust_flags = list()
 
         def __init__(self, name, type):
             self.name = name  # e.g. //src/ipc:ipc
 
             VALID_TYPES = ('static_library', 'shared_library', 'executable',
                            'group', 'action', 'source_set', 'proto_library',
-                           'copy', 'action_foreach')
-            assert (type in VALID_TYPES)
+                           'copy', 'action_foreach', 'generated_file',
+                           "rust_library", "rust_proc_macro")
+            assert (type in VALID_TYPES
+                    ), f"Unable to parse target {name} with type {type}."
             self.type = type
             self.testonly = False
             self.toolchain = None
@@ -224,6 +225,8 @@ class GnParser(object):
             self.jar_path = ""
             self.sdk_version = ""
             self.build_file_path = ""
+            self.crate_name = None
+            self.crate_root = None
 
         # Properties to forward access to common arch.
         # TODO: delete these after the transition has been completed.
@@ -282,6 +285,14 @@ class GnParser(object):
         @deps.setter
         def deps(self, val):
             self.arch['common'].deps = val
+
+        @property
+        def rust_flags(self):
+            return self.arch['common'].rust_flags
+
+        @rust_flags.setter
+        def rust_flags(self, val):
+            self.arch['common'].rust_flags = val
 
         @property
         def include_dirs(self):
@@ -378,14 +389,15 @@ class GnParser(object):
 
             for key in ('sources', 'cflags', 'defines', 'include_dirs', 'deps',
                         'inputs', 'outputs', 'args', 'response_file_contents',
-                        'ldflags'):
+                        'ldflags', 'rust_flags'):
                 self._finalize_attribute(key)
 
         def get_target_name(self):
             return self.name[self.name.find(":") + 1:]
 
-    def __init__(self, builtin_deps):
+    def __init__(self, builtin_deps, build_script_outputs):
         self.builtin_deps = builtin_deps
+        self.build_script_outputs = build_script_outputs
         self.all_targets = {}
         self.jni_java_sources = set()
 
@@ -412,17 +424,17 @@ class GnParser(object):
 
     def _get_arch(self, toolchain):
         if toolchain == '//build/toolchain/android:android_clang_x86':
-            return 'android_x86'
+            return 'android_x86', 'x86'
         elif toolchain == '//build/toolchain/android:android_clang_x64':
-            return 'android_x86_64'
+            return 'android_x86_64', 'x64'
         elif toolchain == '//build/toolchain/android:android_clang_arm':
-            return 'android_arm'
+            return 'android_arm', 'arm'
         elif toolchain == '//build/toolchain/android:android_clang_arm64':
-            return 'android_arm64'
+            return 'android_arm64', 'arm64'
         elif toolchain == '//build/toolchain/android:android_clang_riscv64':
-            return 'android_riscv64'
+            return 'android_riscv64', 'riscv64'
         else:
-            return 'host'
+            return 'host', 'host'
 
     def get_target(self, gn_target_name):
         """Returns a Target object from the fully qualified GN target name.
@@ -450,7 +462,7 @@ class GnParser(object):
         target_name = label_without_toolchain(gn_target_name)
         desc = gn_desc[gn_target_name]
         type_ = desc['type']
-        arch = self._get_arch(desc['toolchain'])
+        arch, chromium_arch = self._get_arch(desc['toolchain'])
         metadata = desc.get("metadata", {})
 
         if is_test_target:
@@ -474,6 +486,13 @@ class GnParser(object):
             # return early, no need to parse any further as the module is a builtin.
             return target
 
+        if (target_name.startswith("//build/rust/std")
+                or desc.get("crate_name", "").endswith("_build_script")):
+            # We intentionally don't parse build/rust/std as we use AOSP's stdlib.
+            # Don't parse build_script as we can't execute them in AOSP, we use a different
+            # source of truth.
+            return target
+
         target.testonly = desc.get('testonly', False)
 
         deps = desc.get("deps", {})
@@ -487,6 +506,10 @@ class GnParser(object):
             target.arch[arch].sources.update(desc.get('sources', []))
             target.arch[arch].inputs.update(desc.get('inputs', []))
         elif target.type == 'source_set':
+            target.arch[arch].sources.update(
+                source for source in desc.get('sources', [])
+                if not source.startswith("//out"))
+        elif target.type == "rust_executable":
             target.arch[arch].sources.update(
                 source for source in desc.get('sources', [])
                 if not source.startswith("//out"))
@@ -544,9 +567,13 @@ class GnParser(object):
         elif target.type == 'group':
             # Groups are bubbled upward without creating an equivalent GN target.
             pass
+        elif target.type in ["rust_library", "rust_proc_macro"]:
+            target.arch[arch].sources.update(
+                source for source in desc.get('sources', [])
+                if not source.startswith("//out"))
         else:
             raise Exception(
-                f"Encountered GN target with unknown type\nCulprit target: {gn_target_name}\ntype: {type_}"
+                f"Encountered GN target with unknown type\nCulprit target: {gn_target_name}\ntype: {target.type}"
             )
 
         # Default for 'public' is //* - all headers in 'sources' are public.
@@ -564,6 +591,17 @@ class GnParser(object):
         target.arch[arch].defines.update(desc.get('defines', []))
         target.arch[arch].include_dirs.update(desc.get('include_dirs', []))
         target.output_name = desc.get('output_name', None)
+        target.crate_name = desc.get("crate_name", None)
+        target.crate_root = desc.get("crate_root", None)
+        target.arch[arch].rust_flags = desc.get("rustflags", list())
+        target.arch[arch].rust_flags.extend(
+            self.build_script_outputs.get(
+                label_without_toolchain(gn_target_name),
+                {}).get(chromium_arch, list()))
+        if target.type == "executable" and target.crate_root:
+            # Find a more decisive way to figure out that this is a rust executable.
+            # TODO: Add a metadata to the executable from Chromium side.
+            target.type = "rust_executable"
         if "-frtti" in target.arch[arch].cflags:
             target.rtti = True
 
@@ -591,11 +629,16 @@ class GnParser(object):
                     dep.transitive_jni_java_sources)
             elif dep.is_linker_unit_type():
                 target.arch[arch].deps.add(dep.name)
+            elif dep.type == "rust_executable":
+                target.arch[arch].deps.add(dep.name)
             elif dep.type == 'java_library':
                 target.deps.add(dep.name)
                 target.transitive_jni_java_sources.update(
                     dep.transitive_jni_java_sources)
-
+            elif dep.type in [
+                    'rust_binary', "rust_library", "rust_proc_macro"
+            ]:
+                target.arch[arch].deps.add(dep.name)
             if dep.type in ['static_library', 'source_set']:
                 # Bubble up static_libs and source_set. Necessary, since soong does not propagate
                 # static_libs up the build tree.

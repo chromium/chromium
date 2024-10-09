@@ -24,6 +24,7 @@ import("//url/features.gni")
 
 _templates_dir = "$target_gen_dir/templates"
 _gn_path = "//buildtools/linux64/gn"
+_ninja_path = "//third_party/ninja/ninja"
 
 assert(!is_component_build)
 assert(is_cronet_build)
@@ -1976,8 +1977,10 @@ action("gn2bp_check") {
   script = "//components/cronet/gn2bp/validate_gn2bp.py"
   sources = [
     "$_gn_path",
+    "$_ninja_path",
     "//components/cronet/gn2bp/gen_android_bp.py",
     "//components/cronet/gn2bp/gen_desc_json.sh",
+    "//components/cronet/gn2bp/generate_build_scripts_output.py",
     "//components/cronet/gn2bp/gn_utils.py",
     "//components/cronet/gn2bp/update_results.sh",
     "//components/cronet/license/constants.py",

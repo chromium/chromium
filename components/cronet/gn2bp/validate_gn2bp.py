@@ -5,6 +5,7 @@
 import os
 import sys
 import tempfile
+import pathlib
 import argparse
 from typing import List, Set
 
@@ -18,17 +19,27 @@ import build.android.gyp.util.build_utils as build_utils  # pylint: disable=wron
 _ARCHS = ["x86", "x64", "arm", "arm64"]
 _GN2BP_SCRIPT_PATH = os.path.join(REPOSITORY_ROOT,
                                   "components/cronet/gn2bp/gen_android_bp.py")
+_GENERATE_BUILD_SCRIPT_PATH = os.path.join(
+    REPOSITORY_ROOT,
+    "components/cronet/gn2bp/generate_build_scripts_output.py")
 _OUT_DIR = os.path.join(REPOSITORY_ROOT, "out")
 _EXTRA_GN_ARGS = ("is_cronet_for_aosp_build=true"),
 _GN_PATH = os.path.join(REPOSITORY_ROOT, 'buildtools/linux64/gn')
 
 
-def _run_gn2bp(desc_files: Set[tempfile.NamedTemporaryFile]) -> int:
+def _run_gn2bp(desc_files: Set[tempfile.NamedTemporaryFile],
+               skip_build_scripts: bool) -> int:
     with tempfile.NamedTemporaryFile(mode="w+",
-                                     encoding='utf-8') as android_bp:
+                                     encoding='utf-8') as build_script_output:
+
+        if skip_build_scripts:
+            pathlib.Path(build_script_output.name).write_text("{}")
+        elif _run_generate_build_scripts(build_script_output.name) != 0:
+            raise ValueError("Failed to generate build scripts output!")
+
         base_cmd = [
-            "python3", _GN2BP_SCRIPT_PATH, "--out", android_bp.name,
-            "--repo_root", REPOSITORY_ROOT
+            sys.executable, _GN2BP_SCRIPT_PATH, "--repo_root", REPOSITORY_ROOT,
+            "--build_script_output", build_script_output.name
         ]
         for desc_file in desc_files:
             # desc_file.name represents the absolute path.
@@ -36,11 +47,26 @@ def _run_gn2bp(desc_files: Set[tempfile.NamedTemporaryFile]) -> int:
         return cronet_utils.run(base_cmd)
 
 
+def _run_generate_build_scripts(output_path: str) -> int:
+    """Runs the generate_build_scripts_output.py
+
+    Args:
+      output_path: Path of the file that will contain the output.
+    """
+    return cronet_utils.run([
+        sys.executable,
+        _GENERATE_BUILD_SCRIPT_PATH,
+        "--output",
+        output_path,
+    ])
+
+
 def _get_args_for_aosp(arch: str) -> List[str]:
     default_args = cronet_utils.get_android_gn_args(True, arch)
     default_args += _EXTRA_GN_ARGS
     return ' '.join(
-        cronet_utils.filter_gn_args(default_args, ["use_remoteexec"]))
+        cronet_utils.filter_gn_args(default_args,
+                                    ["use_remoteexec", "enable_rust"]))
 
 
 def _write_desc_json(gn_out_dir: str,
@@ -58,6 +84,12 @@ def _main():
                         type=str,
                         help='Path to touch on success',
                         required=True)
+    parser.add_argument(
+        '--skip_build_scripts',
+        type=bool,
+        help=
+        'Skips building the build_scripts output, this should be only used for testing.'
+    )
     args = parser.parse_args()
     try:
         # Create empty temp file for each architecture.
@@ -87,7 +119,8 @@ def _main():
                         file.close()
                     sys.exit(-1)
 
-        res = _run_gn2bp(arch_to_temp_desc_file.values())
+        res = _run_gn2bp(arch_to_temp_desc_file.values(),
+                         args.skip_build_scripts)
     finally:
         for file in arch_to_temp_desc_file.values():
             # Close the temporary files so they can be deleted.
