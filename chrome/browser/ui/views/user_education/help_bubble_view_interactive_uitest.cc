@@ -216,9 +216,19 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest,
 // entering accessible keyboard navigation commands to try to read the help
 // bubble, or by trying to interact with the help bubble with the mouse to e.g.
 // close it.
+//
+// There's a race condition on at least Linux where the focus update happens
+// later than expected, on an OS message callback, which can kill the tab editor
+// bubble while we're trying to reactivate it below
+// (https://crbug.com/372283580).
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_BubblePreventsCloseOnLossOfFocus \
+  DISABLED_BubblePreventsCloseOnLossOfFocus
+#else
+#define MAYBE_BubblePreventsCloseOnLossOfFocus BubblePreventsCloseOnLossOfFocus
+#endif
 IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest,
-                       // TODO(crbug.com/372283580): Re-enable this test
-                       DISABLED_BubblePreventsCloseOnLossOfFocus) {
+                       MAYBE_BubblePreventsCloseOnLossOfFocus) {
   browser()->tab_strip_model()->AddToNewGroup({0});
 
   HelpBubbleParams params;
@@ -245,11 +255,6 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest,
 
       // Display a help bubble attached to the tab group editor.
       ShowHelpBubble(kTabGroupEditorBubbleId, std::move(params)),
-      // WithView(HelpBubbleView::kHelpBubbleElementIdForTesting,
-      //          [&help_bubble_native_view](HelpBubbleView* bubble) {
-      //            help_bubble_native_view =
-      //            bubble->GetWidget()->GetNativeView();
-      //          }),
 
       // Activate the help bubble. This should not cause the editor to close.
       ActivateSurface(HelpBubbleView::kHelpBubbleElementIdForTesting),
@@ -258,13 +263,6 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleViewInteractiveUiTest,
       // Close the help bubble.
       CloseHelpBubble(),
 
-      // Wait for focus to get reset to a valid surface.
-      //
-      // There's a race condition on at least Linux where the focus update
-      // happens later than expected, on an OS message callback, which can kill
-      // the tab editor bubble while we're trying to reactivate it below.
-      // WaitForState(views::test::kCurrentWidgetFocus,
-      //              testing::Ne(std::ref(help_bubble_native_view))),
       // Re-Activate the dialog. It may or may not receive activation when the
       // help bubble closes.
       ActivateSurface(kTabGroupEditorBubbleId),
