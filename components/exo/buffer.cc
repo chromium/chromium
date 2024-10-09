@@ -973,10 +973,8 @@ SkBitmap Buffer::CreateBitmap() {
   SkImageInfo image_info = SkImageInfo::Make(size.width(), size.height(),
                                              color_type, kPremul_SkAlphaType);
 
-  SkPixmap pixmap = SkPixmap(image_info, mapping->GetMemoryForPlane(0).data(),
-                             mapping->Stride(0));
   bitmap.allocPixels(image_info);
-  bitmap.writePixels(pixmap);
+  bitmap.writePixels(mapping->GetSkPixmapForPlane(0, image_info));
   bitmap.setImmutable();
   mapping.reset();
 
