@@ -118,8 +118,6 @@ std::vector<scoped_refptr<PolicyManagerInterface>> CreateManagers(
     managers.insert(managers.begin(), external_constants_policy_manager);
   }
 #if BUILDFLAG(IS_MAC)
-  // Managed preference policy manager is being deprecated and thus has a lower
-  // priority than DM policy manager.
   managers.push_back(CreateManagedPreferencePolicyManager(
       external_constants->IsMachineManaged()));
 #endif

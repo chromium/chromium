@@ -881,9 +881,9 @@ The `EnrollmentMandatory` `REG_DWORD` value is also read from
 #### macOS
 The enrollment token is searched in the order:
 
-* Managed Preference value with key `CloudManagementEnrollmentToken` in domain
+* Managed Preferences value with key `CloudManagementEnrollmentToken` in domain
  `{MAC_BROWSER_BUNDLE_IDENTIFIER}`.
-* Managed Preference value with key `EnrollmentToken` in domain
+* Managed Preferences value with key `EnrollmentToken` in domain
  `{MAC_BROWSER_BUNDLE_IDENTIFIER}`.
 * File
  `/Library/{COMPANY_SHORTNAME}/{BROWSER_NAME}/CloudManagementEnrollmentToken`.
@@ -951,8 +951,8 @@ Enterprise policies can control the updates of applications:
 
 Refer to chrome/updater/protos/omaha\_settings.proto for more details.
 
-Policies may be set by platform-specific means (group policy on Windows, managed
-preferences on macOS), or by communication with the device management server.
+Policies may be set by platform-specific means (Group Policy on Windows, Managed
+Preferences on macOS), or by communication with the device management server.
 
 For device management, the enterprise policies for Google applications are
 downloaded from the device management server periodically and stored at a fixed
@@ -969,17 +969,17 @@ The policy searching order:
 * Policy dictionary defined in
  [External constants](#external-constants-overrides)(testing overrides)
 * Group Policy
-* Device Management policy
+* Device Management policy (cloud policy)
 * Policy from default value provider
 >**_NOTE:_** If the global policy `CloudPolicyOverridesPlatformPolicy` is set
-to a non-zero DWORD value, then the search order of `Group policy` and
+to a non-zero DWORD value, then the search order of `Group Policy` and
 `Device Management policy` is reversed.
 
 
 ##### macOS
 * Policy dictionary defined in
  [External constants](#external-constants-overrides)(testing overrides)
-* Device management policy
+* Device management policy (cloud policy)
 * Policy from Managed Preferences
 * Policy from default value provider
 
