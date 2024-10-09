@@ -7,7 +7,7 @@
 
 namespace download {
 
-SimpleDownloadManager::SimpleDownloadManager() {}
+SimpleDownloadManager::SimpleDownloadManager() = default;
 
 SimpleDownloadManager::~SimpleDownloadManager() {
   for (auto& observer : simple_download_manager_observers_)

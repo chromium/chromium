@@ -184,7 +184,7 @@ class DownloadFileTest : public testing::Test {
         bytes_per_sec_(-1),
         quarantine_remote_(&quarantine_) {}
 
-  ~DownloadFileTest() override {}
+  ~DownloadFileTest() override = default;
 
   void SetUpdateDownloadInfo(
       int64_t bytes,

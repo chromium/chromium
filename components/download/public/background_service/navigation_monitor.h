@@ -53,7 +53,7 @@ class NavigationMonitor : public KeyedService {
                          base::TimeDelta navigation_timeout_delay) = 0;
 
  protected:
-  ~NavigationMonitor() override {}
+  ~NavigationMonitor() override = default;
 };
 
 }  // namespace download

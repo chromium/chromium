@@ -9,7 +9,7 @@
 
 namespace download {
 
-EmptyFileMonitor::EmptyFileMonitor() {}
+EmptyFileMonitor::EmptyFileMonitor() = default;
 
 EmptyFileMonitor::~EmptyFileMonitor() = default;
 

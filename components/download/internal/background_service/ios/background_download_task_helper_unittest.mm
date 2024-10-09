@@ -31,7 +31,7 @@ namespace download {
 class BackgroundDownloadTaskHelperTest
     : public test::BackgroundDownloadTestBase {
  protected:
-  BackgroundDownloadTaskHelperTest() {}
+  BackgroundDownloadTaskHelperTest() = default;
   ~BackgroundDownloadTaskHelperTest() override = default;
 
   void SetUp() override {

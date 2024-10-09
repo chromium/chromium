@@ -164,7 +164,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
 
   using ReceivedSlices = std::vector<DownloadItem::ReceivedSlice>;
 
-  ~DownloadItem() override {}
+  ~DownloadItem() override = default;
 
   // Observation ---------------------------------------------------------------
 

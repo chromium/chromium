@@ -31,7 +31,7 @@ class TaskScheduler {
   // Cancels a pre-scheduled task of type |task_type|.
   virtual void CancelTask(DownloadTaskType task_type) = 0;
 
-  virtual ~TaskScheduler() {}
+  virtual ~TaskScheduler() = default;
 };
 
 }  // namespace download

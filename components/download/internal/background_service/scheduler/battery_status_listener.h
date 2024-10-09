@@ -19,7 +19,7 @@ class BatteryStatusListener {
         base::PowerStateObserver::BatteryPowerStatus battery_power_status) = 0;
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
   virtual ~BatteryStatusListener() = default;
 
