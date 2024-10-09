@@ -154,6 +154,10 @@ enum class PlusAddressAction {
   [_consumer dismissBottomSheet];
 }
 
+- (void)didSelectTryAgainToConfirm {
+  [_consumer didSelectTryAgainToConfirm];
+}
+
 #pragma mark - Private
 
 // Runs the autofill callback and notifies the consumer of the successful
@@ -252,7 +256,7 @@ enum class PlusAddressAction {
   }
 
   if (showGenericError && errorStatesEnabled) {
-    // TODO(crbug.com/354881209): Show alert for generic error.
+    [_delegate showGenericErrorAlert];
   }
 }
 

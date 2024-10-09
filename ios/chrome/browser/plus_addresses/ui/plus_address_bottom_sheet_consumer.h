@@ -27,6 +27,9 @@
 // Used to dismiss the bottom sheet.
 - (void)dismissBottomSheet;
 
+// Used to indicate to try again to confirm the plus address.
+- (void)didSelectTryAgainToConfirm;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_PLUS_ADDRESSES_UI_PLUS_ADDRESS_BOTTOM_SHEET_CONSUMER_H_

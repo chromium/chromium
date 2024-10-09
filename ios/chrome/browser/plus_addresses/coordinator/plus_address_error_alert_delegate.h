@@ -15,6 +15,10 @@
 // Used to indicate that the user chose to cancel the alert.
 - (void)didCancelAlert;
 
+// Used to indicate that the user chose to try again the request to confirm the
+// plus address.
+- (void)didSelectTryAgainToConfirm;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_PLUS_ADDRESSES_COORDINATOR_PLUS_ADDRESS_ERROR_ALERT_DELEGATE_H_

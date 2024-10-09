@@ -242,18 +242,7 @@ UIImageView* BrandingImageView() {
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
-  self.primaryActionButton.enabled = NO;
-  // Make sure the user perceives that something is happening via a spinner.
-  if (_errorAndLoadingStatesEnabled) {
-    self.isLoading = YES;
-  } else {
-    [_activityIndicator startAnimating];
-  }
-
-  [_delegate confirmPlusAddress];
-  plus_addresses::metrics::RecordModalEvent(
-      plus_addresses::metrics::PlusAddressModalEvent::kModalConfirmed,
-      [_delegate shouldShowNotice]);
+  [self willConfirmPlusAddress];
 }
 
 - (void)confirmationAlertSecondaryAction {
@@ -310,6 +299,10 @@ UIImageView* BrandingImageView() {
 
 - (void)dismissBottomSheet {
   [self dismiss];
+}
+
+- (void)didSelectTryAgainToConfirm {
+  [self willConfirmPlusAddress];
 }
 
 #pragma mark - UITextViewDelegate
@@ -587,6 +580,22 @@ UIImageView* BrandingImageView() {
           kPlusAddressSheetBrandingIconContainerViewBottomPadding, 0));
 
   return outerView;
+}
+
+// Called when the user chose to confirm the plus address.
+- (void)willConfirmPlusAddress {
+  self.primaryActionButton.enabled = NO;
+  // Make sure the user perceives that something is happening via a spinner.
+  if (_errorAndLoadingStatesEnabled) {
+    self.isLoading = YES;
+  } else {
+    [_activityIndicator startAnimating];
+  }
+
+  [_delegate confirmPlusAddress];
+  plus_addresses::metrics::RecordModalEvent(
+      plus_addresses::metrics::PlusAddressModalEvent::kModalConfirmed,
+      [_delegate shouldShowNotice]);
 }
 
 @end

@@ -120,7 +120,8 @@ void ExpectModalTimeSample(
   }
 
   if ([self isRunningTest:@selector(testQuotaErrorAlertOnConfirm)] ||
-      [self isRunningTest:@selector(testAffiliationError)]) {
+      [self isRunningTest:@selector(testAffiliationError)] ||
+      [self isRunningTest:@selector(testGenericAlertOnConfirm)]) {
     config.features_enabled_and_params.push_back(
         {plus_addresses::features::kPlusAddressIOSErrorAndLoadingStatesEnabled,
          {}});
@@ -460,6 +461,44 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
                                  value:base::SysUTF8ToNSString(
                                            plus_addresses::test::
                                                kFakeAffiliatedPlusAddress)];
+}
+
+// Tests that a generic alert is shown when the plus address is failed to
+// confirm.
+- (void)testGenericAlertOnConfirm {
+  [self openCreatePlusAddressBottomSheet];
+
+  id<GREYMatcher> plusAddressLabelMatcher = GetMatcherForPlusAddressLabel(
+      base::SysUTF8ToNSString(plus_addresses::test::kFakePlusAddress));
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:plusAddressLabelMatcher];
+
+  // Set up after the reserve has been called so that it fails on confirm.
+  [PlusAddressAppInterface setShouldFailToConfirm:YES];
+
+  id<GREYMatcher> confirmButton =
+      chrome_test_util::ButtonWithAccessibilityLabelId(
+          IDS_PLUS_ADDRESS_BOTTOMSHEET_OK_TEXT_IOS);
+
+  // Click the okay button, confirming the plus address.
+  [[EarlGrey selectElementWithMatcher:confirmButton] performAction:grey_tap()];
+
+  id<GREYMatcher> error_alert = grey_text(
+      l10n_util::GetNSString(IDS_PLUS_ADDRESS_GENERIC_ERROR_ALERT_MESSAGE_IOS));
+
+  // Ensure the error alert is shown.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:error_alert];
+
+  // Ensure that "Try again" is successful.
+  [PlusAddressAppInterface setShouldFailToConfirm:NO];
+
+  id<GREYMatcher> tryAgainButton = grey_text(l10n_util::GetNSString(
+      IDS_PLUS_ADDRESS_ERROR_TRY_AGAIN_PRIMARY_BUTTON_IOS));
+  [[EarlGrey selectElementWithMatcher:tryAgainButton] performAction:grey_tap()];
+
+  [self verifyFieldWithIdHasBeenFilled:kEmailFieldId
+                                 value:base::SysUTF8ToNSString(
+                                           plus_addresses::test::
+                                               kFakePlusAddress)];
 }
 
 @end

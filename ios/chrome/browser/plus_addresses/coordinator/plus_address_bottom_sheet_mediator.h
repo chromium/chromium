@@ -29,6 +29,9 @@ class UrlLoadingBrowserAgent;
 // Shows alert for the quota error.
 - (void)showQuotaErrorAlert;
 
+// Shows generic alert with the message.
+- (void)showGenericErrorAlert;
+
 @end
 
 // Mediator for the plus_addresses bottom sheet. It is responsible for service

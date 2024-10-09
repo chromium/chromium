@@ -153,4 +153,32 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
   [_alertCoordinator start];
 }
 
+- (void)showGenericErrorAlert {
+  _alertCoordinator = [[AlertCoordinator alloc]
+      initWithBaseViewController:_viewController
+                         browser:self.browser
+                           title:
+                               l10n_util::GetNSString(
+                                   IDS_PLUS_ADDRESS_GENERIC_ERROR_ALERT_TITLE_IOS)
+                         message:
+                             l10n_util::GetNSString(
+                                 IDS_PLUS_ADDRESS_GENERIC_ERROR_ALERT_MESSAGE_IOS)];
+  __weak PlusAddressBottomSheetMediator* weakMediator = _mediator;
+  [_alertCoordinator
+      addItemWithTitle:l10n_util::GetNSString(
+                           IDS_PLUS_ADDRESS_ERROR_TRY_AGAIN_PRIMARY_BUTTON_IOS)
+                action:^{
+                  [weakMediator didSelectTryAgainToConfirm];
+                }
+                 style:UIAlertActionStyleDefault];
+
+  [_alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
+                               action:^{
+                                 [weakMediator didCancelAlert];
+                               }
+                                style:UIAlertActionStyleCancel];
+
+  [_alertCoordinator start];
+}
+
 @end
