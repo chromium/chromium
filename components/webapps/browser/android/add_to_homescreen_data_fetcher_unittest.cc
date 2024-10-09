@@ -63,7 +63,7 @@ class ObserverWaiter : public AddToHomescreenDataFetcher::Observer {
   ObserverWaiter(const ObserverWaiter&) = delete;
   ObserverWaiter& operator=(const ObserverWaiter&) = delete;
 
-  ~ObserverWaiter() override {}
+  ~ObserverWaiter() override = default;
 
   // Waits till the OnDataAvailable() callback is called.
   void WaitForDataAvailable() {
@@ -231,14 +231,14 @@ class TestInstallableManager : public InstallableManager {
 class AddToHomescreenDataFetcherTest
     : public content::RenderViewHostTestHarness {
  public:
-  AddToHomescreenDataFetcherTest() {}
+  AddToHomescreenDataFetcherTest() = default;
 
   AddToHomescreenDataFetcherTest(const AddToHomescreenDataFetcherTest&) =
       delete;
   AddToHomescreenDataFetcherTest& operator=(
       const AddToHomescreenDataFetcherTest&) = delete;
 
-  ~AddToHomescreenDataFetcherTest() override {}
+  ~AddToHomescreenDataFetcherTest() override = default;
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();

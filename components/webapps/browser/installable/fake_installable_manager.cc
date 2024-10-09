@@ -22,7 +22,7 @@ FakeInstallableManager::FakeInstallableManager(
       manifest_(blink::mojom::Manifest::New()),
       web_page_metadata_(mojom::WebPageMetadata::New()) {}
 
-FakeInstallableManager::~FakeInstallableManager() {}
+FakeInstallableManager::~FakeInstallableManager() = default;
 
 void FakeInstallableManager::GetData(const InstallableParams& params,
                                      InstallableCallback callback) {

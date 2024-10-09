@@ -35,22 +35,22 @@ bool IsWebApkDisplayMode(blink::mojom::DisplayMode display_mode) {
 
 using blink::mojom::DisplayMode;
 
-ShareTargetParamsFile::ShareTargetParamsFile() {}
+ShareTargetParamsFile::ShareTargetParamsFile() = default;
 
 ShareTargetParamsFile::ShareTargetParamsFile(
     const ShareTargetParamsFile& other) = default;
 
-ShareTargetParamsFile::~ShareTargetParamsFile() {}
+ShareTargetParamsFile::~ShareTargetParamsFile() = default;
 
-ShareTargetParams::ShareTargetParams() {}
+ShareTargetParams::ShareTargetParams() = default;
 
 ShareTargetParams::ShareTargetParams(const ShareTargetParams& other) = default;
 
-ShareTargetParams::~ShareTargetParams() {}
+ShareTargetParams::~ShareTargetParams() = default;
 
-ShareTarget::ShareTarget() {}
+ShareTarget::ShareTarget() = default;
 
-ShareTarget::~ShareTarget() {}
+ShareTarget::~ShareTarget() = default;
 
 ShortcutInfo::ShortcutInfo(const GURL& shortcut_url)
     : url(shortcut_url),
