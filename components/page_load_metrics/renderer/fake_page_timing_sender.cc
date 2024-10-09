@@ -15,7 +15,7 @@ namespace page_load_metrics {
 FakePageTimingSender::FakePageTimingSender(PageTimingValidator* validator)
     : validator_(validator) {}
 
-FakePageTimingSender::~FakePageTimingSender() {}
+FakePageTimingSender::~FakePageTimingSender() = default;
 
 void FakePageTimingSender::SendTiming(
     const mojom::PageLoadTimingPtr& timing,

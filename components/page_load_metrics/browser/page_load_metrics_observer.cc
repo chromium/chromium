@@ -48,7 +48,7 @@ ExtraRequestCompleteInfo::ExtraRequestCompleteInfo(
                            : std::make_unique<net::LoadTimingInfo>(
                                  *other.load_timing_info)) {}
 
-ExtraRequestCompleteInfo::~ExtraRequestCompleteInfo() {}
+ExtraRequestCompleteInfo::~ExtraRequestCompleteInfo() = default;
 
 FailedProvisionalLoadInfo::FailedProvisionalLoadInfo(
     base::TimeDelta interval,
@@ -58,7 +58,7 @@ FailedProvisionalLoadInfo::FailedProvisionalLoadInfo(
       error(error),
       discard_reason(discard_reason) {}
 
-FailedProvisionalLoadInfo::~FailedProvisionalLoadInfo() {}
+FailedProvisionalLoadInfo::~FailedProvisionalLoadInfo() = default;
 
 const char* PageLoadMetricsObserver::GetObserverName() const {
   return nullptr;

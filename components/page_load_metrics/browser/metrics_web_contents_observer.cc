@@ -172,7 +172,7 @@ void MetricsWebContentsObserver::BindPageLoadMetrics(
   observer->page_load_metrics_receivers_.Bind(rfh, std::move(receiver));
 }
 
-MetricsWebContentsObserver::~MetricsWebContentsObserver() {}
+MetricsWebContentsObserver::~MetricsWebContentsObserver() = default;
 
 void MetricsWebContentsObserver::WebContentsWillSoonBeDestroyed() {
   // TODO(crbug.com/40238907): Should not rely on this call.

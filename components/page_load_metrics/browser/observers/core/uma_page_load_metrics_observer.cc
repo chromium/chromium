@@ -322,7 +322,7 @@ UmaPageLoadMetricsObserver::UmaPageLoadMetricsObserver()
   base::trace_event::EmitNamedTrigger("navigation-start");
 }
 
-UmaPageLoadMetricsObserver::~UmaPageLoadMetricsObserver() {}
+UmaPageLoadMetricsObserver::~UmaPageLoadMetricsObserver() = default;
 
 const char* UmaPageLoadMetricsObserver::GetObserverName() const {
   static const char kName[] = "UmaPageLoadMetricsObserver";

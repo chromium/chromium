@@ -28,7 +28,7 @@ class PageLoadTracker;
 // Impl version is defined in components/page_load_metrics/browser.
 class PageLoadMetricsEmbedderInterface {
  public:
-  virtual ~PageLoadMetricsEmbedderInterface() {}
+  virtual ~PageLoadMetricsEmbedderInterface() = default;
   virtual bool IsNewTabPageUrl(const GURL& url) = 0;
   virtual void RegisterObservers(
       PageLoadTracker* metrics,
