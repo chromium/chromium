@@ -241,7 +241,6 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_USE_SRCOVER_FOR_FILTERS
 
-#define SK_IGNORE_ANGLE_VULKAN
 
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
 
