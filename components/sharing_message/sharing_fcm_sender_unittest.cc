@@ -154,7 +154,7 @@ class MockVapidKeyManager : public VapidKeyManager {
   MockVapidKeyManager()
       : VapidKeyManager(/*sharing_sync_preference=*/nullptr,
                         /*sync_service=*/nullptr) {}
-  ~MockVapidKeyManager() override {}
+  ~MockVapidKeyManager() override = default;
 
   MOCK_METHOD0(GetOrCreateKey, crypto::ECPrivateKey*());
 };

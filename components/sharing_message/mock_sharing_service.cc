@@ -15,7 +15,7 @@
 
 class FakeSharingDeviceRegistration : public SharingDeviceRegistration {
  public:
-  FakeSharingDeviceRegistration() {}
+  FakeSharingDeviceRegistration() = default;
   ~FakeSharingDeviceRegistration() override = default;
 
   void RegisterDevice(
