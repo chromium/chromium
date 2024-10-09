@@ -28,6 +28,8 @@
 namespace {
 
 using testing::_;
+using testing::Eq;
+using testing::Ne;
 
 const AccountId kTestAccount = AccountId::FromUserEmail("user@example.com");
 const base::TimeDelta kTestBuffer = base::Hours(1);
@@ -125,9 +127,8 @@ TEST_F(CertificateManagerTest, Sign_Denied) {
 
   auto status =
       certificate_manager()->Sign(key, "TEST_PAYLOAD", base::DoNothing());
-  EXPECT_THAT(
-      status,
-      testing::Eq(CertificateManager::CertificateResult::kDisallowedByPolicy));
+  EXPECT_THAT(status,
+              Eq(CertificateManager::CertificateResult::kDisallowedByPolicy));
 }
 
 // Request signing with an expired certificate.
@@ -141,9 +142,8 @@ TEST_F(CertificateManagerTest, Sign_Expired) {
 
   auto status =
       certificate_manager()->Sign(key, "TEST_PAYLOAD", base::DoNothing());
-  EXPECT_THAT(
-      status,
-      testing::Eq(CertificateManager::CertificateResult::kCertificateExpired));
+  EXPECT_THAT(status,
+              Eq(CertificateManager::CertificateResult::kCertificateExpired));
 }
 
 // Request signing with a key that is not from `GetCertificate()`.
@@ -158,8 +158,7 @@ TEST_F(CertificateManagerTest, Sign_InvalidKey) {
 
   auto status =
       certificate_manager()->Sign(key, "TEST_PAYLOAD", base::DoNothing());
-  EXPECT_THAT(status,
-              testing::Eq(CertificateManager::CertificateResult::kInvalidKey));
+  EXPECT_THAT(status, Eq(CertificateManager::CertificateResult::kInvalidKey));
 }
 
 // Request for signing is fulfilled.
@@ -182,7 +181,7 @@ TEST_F(CertificateManagerTest, Sign) {
                  [&](const std::optional<CertificateManager::Key>& key) {
                    // Check that the key is not null since retrieval should be
                    // successful.
-                   ASSERT_THAT(key, testing::Ne(std::nullopt));
+                   ASSERT_THAT(key, Ne(std::nullopt));
                    certificate_key.emplace(*key);
                  }));
   ASSERT_TRUE(cert_status);
@@ -197,7 +196,7 @@ TEST_F(CertificateManagerTest, Sign) {
            certificate);
 
   // Verify that we received a key.
-  ASSERT_THAT(certificate_key, testing::Ne(std::nullopt));
+  ASSERT_THAT(certificate_key, Ne(std::nullopt));
 
   base::RunLoop run_loop;
   auto status = certificate_manager()->Sign(
@@ -205,8 +204,7 @@ TEST_F(CertificateManagerTest, Sign) {
       base::IgnoreArgs<bool, const std::string&, const std::string&,
                        const std::vector<std::string>&>(
           run_loop.QuitClosure()));
-  EXPECT_THAT(status,
-              testing::Eq(CertificateManager::CertificateResult::kSuccess));
+  EXPECT_THAT(status, Eq(CertificateManager::CertificateResult::kSuccess));
 
   // Wait for the `FakeAttestationClient` to finish.
   run_loop.Run();
