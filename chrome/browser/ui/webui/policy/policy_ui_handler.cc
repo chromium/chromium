@@ -14,6 +14,7 @@
 #include "base/barrier_closure.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -33,6 +34,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/reporting/cloud_profile_reporting_service.h"
 #include "chrome/browser/enterprise/reporting/cloud_profile_reporting_service_factory.h"
 #include "chrome/browser/enterprise/util/affiliation.h"
@@ -46,6 +48,7 @@
 #include "chrome/browser/policy/value_provider/chrome_policies_value_provider.h"
 #include "chrome/browser/policy/value_provider/value_provider_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/webui/policy/policy_ui.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -63,6 +66,7 @@
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/local_test_policy_loader.h"
 #include "components/policy/core/common/local_test_policy_provider.h"
 #include "components/policy/core/common/policy_details.h"
@@ -234,6 +238,10 @@ void PolicyUIHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "getAppliedTestPolicies",
       base::BindRepeating(&PolicyUIHandler::HandleGetAppliedTestPolicies,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "isManagedStatus",
+      base::BindRepeating(&PolicyUIHandler::HandleIsManagedStatus,
                           base::Unretained(this)));
 #if !BUILDFLAG(IS_CHROMEOS)
   web_ui()->RegisterMessageCallback(
@@ -476,6 +484,15 @@ void PolicyUIHandler::SendStatus() {
   FireWebUIListener(
       "status-updated",
       policy_value_and_status_aggregator_->GetAggregatedPolicyStatus());
+}
+
+void PolicyUIHandler::HandleIsManagedStatus(const base::Value::List& args) {
+  ResolveJavascriptCallback(
+      args[0], base::Value(base::FeatureList::IsEnabled(
+                               policy::features::kEnablePolicyBanner) &&
+                           policy::ManagementServiceFactory::GetForProfile(
+                               Profile::FromWebUI(web_ui()))
+                               ->IsAccountManaged()));
 }
 
 #if !BUILDFLAG(IS_CHROMEOS)

@@ -10,6 +10,7 @@
 
 #include "base/cfi_buildflags.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
@@ -24,7 +25,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/policy/profile_policy_connector_builder.h"
 #include "chrome/browser/policy/schema_registry_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -35,6 +36,8 @@
 #include "components/policy/core/browser/webui/policy_status_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/policy/core/common/external_data_fetcher.h"
+#include "components/policy/core/common/features.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -983,3 +986,66 @@ INSTANTIATE_TEST_SUITE_P(All,
 );
 
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID)
+
+class PolicyUIManagedStatusTest : public PolicyUITest {
+ public:
+  PolicyUIManagedStatusTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{policy::features::kEnablePolicyBanner},
+        /*disabled_features=*/{});
+  }
+
+  PolicyUIManagedStatusTest(const PolicyUIManagedStatusTest&) = delete;
+  PolicyUIManagedStatusTest& operator=(const PolicyUIManagedStatusTest&) =
+      delete;
+
+  ~PolicyUIManagedStatusTest() override = default;
+
+  void SetUpOnMainThread() override { PolicyUITest::SetUpOnMainThread(); }
+
+  static constexpr std::string_view kPromotionBannerVisibilityJavaScript = R"(
+    (function () {
+      const element = document.getElementById('promotion-banner-section');
+      if (!element) return 'not-found';
+      return element.hidden ? 'hidden' : 'visible';
+    })();
+  )";
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PolicyUIManagedStatusTest,
+                       HandleIsManagedStatusTestShown) {
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
+      policy::EnterpriseManagementAuthority::CLOUD);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIPolicyURL)));
+
+  auto result = EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                       kPromotionBannerVisibilityJavaScript)
+                    .ExtractString();
+
+  EXPECT_EQ(result, "visible");
+}
+
+IN_PROC_BROWSER_TEST_F(PolicyUIManagedStatusTest,
+                       HandleIsManagedStatusTestHidden) {
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForProfile(browser()->profile()),
+      policy::EnterpriseManagementAuthority::NONE);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUIPolicyURL)));
+  auto result = EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                       kPromotionBannerVisibilityJavaScript)
+                    .ExtractString();
+
+  EXPECT_EQ(result, "hidden");
+}
+
+#endif

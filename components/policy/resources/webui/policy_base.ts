@@ -153,6 +153,13 @@ export class Page {
             this.onPoliciesReceived_(names, values));
     addWebUiListener(
         'download-json', (json: string) => this.downloadJson(json));
+
+    sendWithPromise('isManagedStatus').then((isManaged: boolean) => {
+      const bannerSection = getRequiredElement('promotion-banner-section');
+      if(isManaged){
+        bannerSection.hidden = false;
+      }
+    });
   }
 
   private onPoliciesReceived_(
