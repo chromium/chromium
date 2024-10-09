@@ -16,6 +16,7 @@
 #include "base/trace_event/named_trigger.h"
 #include "base/trace_event/typed_macros.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/timing/performance_mark.h"
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/renderer_resource_coordinator.h"
@@ -89,7 +90,8 @@ BackgroundTracingHelper::BackgroundTracingHelper(ExecutionContext* context) {
   auto* origin = context->GetSecurityOrigin();
   if (origin->IsLocal() || origin->IsOpaque() || origin->IsLocalhost())
     return;
-  if (origin->Protocol() != url::kHttpScheme &&
+  if (CommonSchemeRegistry::IsExtensionScheme(origin->Protocol().Ascii()) &&
+      origin->Protocol() != url::kHttpScheme &&
       origin->Protocol() != url::kHttpsScheme) {
     return;
   }
