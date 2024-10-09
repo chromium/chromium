@@ -47,7 +47,7 @@ void GenAiDefaultSettingsPolicyHandler::ApplyPolicySettings(
     return;
   }
 
-  for (auto policy : gen_ai_policies_) {
+  for (const auto& policy : gen_ai_policies_) {
     // If a policy value is already set for the feature policy, skip it as
     // it will be mapped to prefs by its own handler.
     if (policies.Get(policy.name)) {

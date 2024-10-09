@@ -26,8 +26,8 @@ class POLICY_EXPORT GenAiDefaultSettingsPolicyHandler
   // Struct containing the necessary info to set the default value of each
   // covered GenAI policy.
   struct GenAiPolicyDetails {
-    GenAiPolicyDetails(const std::string& name, const std::string& pref_path)
-        : name(name), pref_path(pref_path) {}
+    GenAiPolicyDetails(std::string name, std::string pref_path)
+        : name(std::move(name)), pref_path(std::move(pref_path)) {}
 
     std::string name;
     std::string pref_path;
