@@ -168,6 +168,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Lens.Overlay.GeneratedTab" enum="LensOverlayNewTabSource"
+    expires_after="2025-05-06">
+  <owner>christianxu@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded when the lens overlay opens a new tab, enumerated by the source
+    that opened it.
+  </summary>
+</histogram>
+
+<histogram name="Lens.Overlay.GeneratedTab.SessionCount" units="count"
+    expires_after="2025-05-06">
+  <owner>christianxu@chromium.org</owner>
+  <owner>lens-chrome@google.com</owner>
+  <summary>
+    Recorded once the Lens Overlay is dismissed. Measures the number of tabs
+    opened by the lens overlay from invocation to dismissal.
+  </summary>
+</histogram>
+
 <histogram name="Lens.Overlay.InvocationResultedInSearch" enum="Boolean"
     expires_after="2025-05-06">
   <owner>jdonnelly@chromium.org</owner>

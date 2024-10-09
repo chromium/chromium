@@ -22,7 +22,6 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator_delegate.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_mediator.h"
-#import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_web_state_delegate.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_entrypoint.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_snapshot_controller.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
@@ -109,7 +108,6 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
     UISheetPresentationControllerDelegate,
     LensOverlayMediatorDelegate,
     LensOverlayResultConsumer,
-    LensResultPageWebStateDelegate,
     LensOverlayBottomSheetPresentationDelegate,
     LensOverlayConsentViewControllerDelegate>
 
@@ -603,16 +601,6 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
   [_resultMediator handleSearchRequestErrored];
 }
 
-#pragma mark - LensResultPageWebStateDelegate
-
-- (void)lensResultPageWebStateDestroyed {
-  [self stopResultPage];
-}
-
-- (void)lensResultPageDidChangeActiveWebState:(web::WebState*)webState {
-  _mediator.webState = webState;
-}
-
 #pragma mark - LensOverlayConsentViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
@@ -778,7 +766,7 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
       HandlerForProtocol(browser->GetCommandDispatcher(), ApplicationCommands);
   _resultMediator.snackbarHandler =
       HandlerForProtocol(browser->GetCommandDispatcher(), SnackbarCommands);
-  _resultMediator.webStateDelegate = self;
+  _resultMediator.delegate = _mediator;
   _resultMediator.presentationDelegate = self;
   _mediator.resultConsumer = _resultMediator;
 
@@ -1123,6 +1111,9 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
   // Session duration metrics.
   base::TimeDelta sessionDuration = _invocationTime.Elapsed();
   lens::RecordSessionDuration(invocationSource, sessionDuration);
+
+  // Records number of tabs opened by the lens overlay during session.
+  lens::RecordGeneratedTabCount(_mediator.generatedTabCount);
 
   // Session end UKM metrics.
   lens::RecordUKMSessionEndMetrics(self.associatedTabSourceId,

@@ -13,7 +13,7 @@
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
-#import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_web_state_delegate.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_mediator_delegate.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -158,12 +158,10 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
   [_consumer setWebView:_webState->GetView()];
 }
 
-- (void)setWebStateDelegate:
-    (id<LensResultPageWebStateDelegate>)webStateDelegate {
-  _webStateDelegate = webStateDelegate;
+- (void)setDelegate:(id<LensResultPageMediatorDelegate>)delegate {
+  _delegate = delegate;
   if (_webState) {
-    [self.webStateDelegate
-        lensResultPageDidChangeActiveWebState:_webState.get()];
+    [self.delegate lensResultPageDidChangeActiveWebState:_webState.get()];
   }
 }
 
@@ -260,6 +258,9 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
                                   inBackground:NO
                                       appendTo:OpenPosition::kCurrentTab];
     [self.applicationHandler openURLInNewTab:command];
+    [self.delegate
+         lensResultPageMediator:self
+        didOpenNewTabFromSource:lens::LensOverlayNewTabSource::kWebNavigation];
   } else {
     decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Allow());
   }
@@ -406,6 +407,9 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
       l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_GO_TO_NEW_TAB);
   snackbarMessage.action = action;
   [self.snackbarHandler showSnackbarMessage:snackbarMessage bottomOffset:0];
+  [self.delegate
+       lensResultPageMediator:self
+      didOpenNewTabFromSource:lens::LensOverlayNewTabSource::kContextMenu];
 }
 
 #pragma mark - LensWebProvider
@@ -448,7 +452,7 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
     _webState->SetWebUsageEnabled(true);
     [self.consumer setWebView:_webState->GetView()];
   }
-  [self.webStateDelegate lensResultPageDidChangeActiveWebState:_webState.get()];
+  [self.delegate lensResultPageDidChangeActiveWebState:_webState.get()];
 }
 
 /// Activates the web state with the given `URL`.
@@ -469,7 +473,7 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
     _webStateObserverBridge.reset();
   }
 
-  [self.webStateDelegate lensResultPageWebStateDestroyed];
+  [self.delegate lensResultPageWebStateDestroyed];
 }
 
 @end

@@ -11,6 +11,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/lens/lens_overlay_metrics.h"
 #import "components/lens/proto/server/lens_overlay_response.pb.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
@@ -50,6 +51,8 @@
 /// Current lens result.
 @property(nonatomic, strong, readwrite) id<ChromeLensOverlayResult>
     currentLensResult;
+/// Number of tab opened by the lens overlay.
+@property(nonatomic, assign, readwrite) NSInteger generatedTabCount;
 
 @end
 
@@ -164,6 +167,7 @@
                                   inBackground:NO
                                       appendTo:OpenPosition::kCurrentTab];
     [self.applicationHandler openURLInNewTab:command];
+    [self recordNewTabGeneratedBy:lens::LensOverlayNewTabSource::kOmnibox];
     [self resetOmniboxToCurrentLensResult];
   } else {
     // Setting the query text generates new results.
@@ -297,6 +301,23 @@
   [self.delegate lensOverlayMediatorDidOpenOverlayMenu:self];
 }
 
+#pragma mark - LensResultPageMediatorDelegate
+
+- (void)lensResultPageWebStateDestroyed {
+  [self.commandsHandler
+      destroyLensUI:YES
+             reason:lens::LensOverlayDismissalSource::kTabClosed];
+}
+
+- (void)lensResultPageDidChangeActiveWebState:(web::WebState*)webState {
+  self.webState = webState;
+}
+
+- (void)lensResultPageMediator:(LensResultPageMediator*)mediator
+       didOpenNewTabFromSource:(lens::LensOverlayNewTabSource)newTabSource {
+  [self recordNewTabGeneratedBy:newTabSource];
+}
+
 #pragma mark - Private
 
 /// Resets the omnibox state to the `_currentLensResult` text and thumbnail.
@@ -333,6 +354,12 @@
 /// Updates the back button availability.
 - (void)updateBackButton {
   [self.toolbarConsumer setCanGoBack:_historyStack.count > 1];
+}
+
+/// Records lens overlay opening a new tab.
+- (void)recordNewTabGeneratedBy:(lens::LensOverlayNewTabSource)newTabSource {
+  self.generatedTabCount += 1;
+  lens::RecordNewTabGenerated(newTabSource);
 }
 
 @end

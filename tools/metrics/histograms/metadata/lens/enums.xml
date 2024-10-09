@@ -92,6 +92,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_invocation_source.h:LensOverlayInvocationSource) -->
 
+<!-- LINT.IfChange(LensOverlayNewTabSource) -->
+
+<enum name="LensOverlayNewTabSource">
+  <summary>The source opening a new tab from the lens overlay.</summary>
+  <int value="0" label="WebNavigation"/>
+  <int value="1" label="Omnibox"/>
+  <int value="2" label="ContextMenu"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/lens/lens_overlay_new_tab_source.h:LensOverlayNewTabSource) -->
+
 <!-- LINT.IfChange(LensOverlayUserAction) -->
 
 <enum name="LensOverlayUserAction">

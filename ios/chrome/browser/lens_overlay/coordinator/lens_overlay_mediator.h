@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client_delegate.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_mediator_delegate.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_bottom_sheet_presentation_delegate.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_result_consumer.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_mutator.h"
@@ -30,6 +31,7 @@ class WebState;
 /// Manages data flow between Selection, Omnibox and Results.
 @interface LensOverlayMediator : NSObject <ChromeLensOverlayDelegate,
                                            LensOmniboxClientDelegate,
+                                           LensResultPageMediatorDelegate,
                                            LensToolbarMutator,
                                            OmniboxFocusDelegate>
 
@@ -68,6 +70,8 @@ class WebState;
 /// Current lens result. Readonly.
 @property(nonatomic, strong, readonly) id<ChromeLensOverlayResult>
     currentLensResult;
+/// Number of tabs opened by the lens overlay during this session.
+@property(nonatomic, assign, readonly) NSInteger generatedTabCount;
 
 - (instancetype)initWithIsIncognito:(BOOL)isIncognito NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;

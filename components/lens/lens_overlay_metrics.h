@@ -10,6 +10,7 @@
 #include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/lens/lens_overlay_first_interaction_type.h"
 #include "components/lens/lens_overlay_invocation_source.h"
+#include "components/lens/lens_overlay_new_tab_source.h"
 #include "components/lens/lens_permission_user_action.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -61,6 +62,13 @@ void RecordTimeToFirstInteraction(
     base::TimeDelta time_to_first_interaction,
     LensOverlayFirstInteractionType first_interaction_type,
     ukm::SourceId source_id);
+
+// Records that a new tab has been generated from `tab_source`.
+void RecordNewTabGenerated(LensOverlayNewTabSource tab_source);
+
+// Records the number of tabs generated during the total lifetime of a lens
+// overlay.
+void RecordGeneratedTabCount(int generated_tab_count);
 
 // Records UKM session end metrics.
 void RecordUKMSessionEndMetrics(ukm::SourceId source_id,

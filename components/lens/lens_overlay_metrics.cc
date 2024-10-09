@@ -195,6 +195,15 @@ void RecordTimeToFirstInteraction(
       .Record(ukm::UkmRecorder::Get());
 }
 
+void RecordNewTabGenerated(LensOverlayNewTabSource tab_source) {
+  base::UmaHistogramEnumeration("Lens.Overlay.GeneratedTab", tab_source);
+}
+
+void RecordGeneratedTabCount(int generated_tab_count) {
+  base::UmaHistogramCounts100("Lens.Overlay.GeneratedTab.Count",
+                              generated_tab_count);
+}
+
 void RecordUKMSessionEndMetrics(ukm::SourceId source_id,
                                 LensOverlayInvocationSource invocation_source,
                                 bool search_performed_in_session,
