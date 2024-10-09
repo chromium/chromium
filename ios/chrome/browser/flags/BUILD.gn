@@ -46,6 +46,8 @@ source_set("flags") {
     "//components/safe_browsing/core/common",
     "//components/search_provider_logos",
     "//components/security_state/core",
+    "//components/segmentation_platform/embedder/home_modules:constants",
+    "//components/segmentation_platform/public",
     "//components/segmentation_platform/public",
     "//components/send_tab_to_self",
     "//components/shared_highlighting/core/common",

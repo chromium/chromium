@@ -18,12 +18,32 @@ static_library("home_modules") {
     "price_tracking_notification_promo.cc",
     "price_tracking_notification_promo.h",
   ]
+
+  if (is_ios) {
+    sources += [
+      "tips_ephemeral_module.h",
+      "tips_ephemeral_module.mm",
+    ]
+  }
+
   deps = [
+    ":constants",
     "//base",
     "//components/commerce/core:feature_list",
     "//components/prefs",
+    "//components/segmentation_platform/embedder/home_modules/tips_manager:constants",
+    "//components/segmentation_platform/embedder/home_modules/tips_manager:signal_constants",
     "//components/segmentation_platform/internal",
   ]
+}
+
+source_set("constants") {
+  sources = [
+    "tips_ephemeral_module_constants.cc",
+    "tips_ephemeral_module_constants.h",
+  ]
+  public_deps = [ "//base" ]
+  deps = [ "//components/segmentation_platform/embedder/home_modules/tips_manager:constants" ]
 }
 
 source_set("unit_tests") {
@@ -36,13 +56,21 @@ source_set("unit_tests") {
     "price_tracking_notification_promo_unittest.cc",
   ]
 
+  if (is_ios) {
+    sources += [ "tips_ephemeral_module_unittest.mm" ]
+  }
+
   deps = [
+    ":constants",
     ":home_modules",
     "//base",
     "//base/test:test_support",
     "//components/commerce/core:feature_list",
     "//components/prefs:test_support",
     "//components/segmentation_platform/embedder/default_model:default_model_test_base",
+    "//components/segmentation_platform/embedder/home_modules/tips_manager:constants",
+    "//components/segmentation_platform/embedder/home_modules/tips_manager:signal_constants",
+    "//components/segmentation_platform/public",
     "//testing/gmock",
     "//testing/gtest",
   ]

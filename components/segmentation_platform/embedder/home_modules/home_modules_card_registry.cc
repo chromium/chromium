@@ -9,6 +9,11 @@
 #include "components/segmentation_platform/embedder/home_modules/card_selection_info.h"
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
 #include "components/segmentation_platform/embedder/home_modules/price_tracking_notification_promo.h"
+#include "components/segmentation_platform/public/features.h"
+#if BUILDFLAG(IS_IOS)
+#include "components/segmentation_platform/embedder/home_modules/tips_ephemeral_module.h"
+#endif
+#include "components/segmentation_platform/embedder/home_modules/tips_ephemeral_module_constants.h"
 
 namespace segmentation_platform::home_modules {
 
@@ -52,6 +57,10 @@ void HomeModulesCardRegistry::NotifyCardShown(const char* card_name) {
         profile_prefs_->GetInteger(kPriceTrackingPromoImpressionCounterPref);
     profile_prefs_->SetInteger(kPriceTrackingPromoImpressionCounterPref,
                                freshness_impression_count + 1);
+  } else if (strcmp(card_name, kTipsEphemeralModule) == 0) {
+    // TODO(crbug.com/372415791): Implement `NotifyCardShown()` for individual
+    // tips once `TipsEphemeralModule` is broken up into multiple
+    // `CardSelectionInfo`.
   }
 #endif
 }
@@ -64,6 +73,10 @@ void HomeModulesCardRegistry::CreateAllCards() {
     all_cards_by_priority_.push_back(
         std::make_unique<PriceTrackingNotificationPromo>(
             price_tracking_promo_count));
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kSegmentationPlatformTipsEphemeralCard)) {
+    all_cards_by_priority_.push_back(std::make_unique<TipsEphemeralModule>());
   }
 #endif
   InitializeAfterAddingCards();

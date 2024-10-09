@@ -95,6 +95,7 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_mediator.h"
@@ -450,7 +451,9 @@ using segmentation_platform::TipIdentifier;
                       authService:self.authService
                       prefService:prefs
                        localState:GetApplicationContext()->GetLocalState()
-                  moduleMediators:moduleMediators];
+                  moduleMediators:moduleMediators
+                      tipsManager:TipsManagerIOSFactory::GetForProfile(
+                                      self.browser->GetProfile())];
   _magicStackRankingModel.contentSuggestionsMetricsRecorder =
       self.contentSuggestionsMetricsRecorder;
   self.contentSuggestionsMediator.magicStackRankingModel =
@@ -620,9 +623,7 @@ using segmentation_platform::TipIdentifier;
       break;
     case ContentSuggestionsModuleType::kTipsWithProductImage:
     case ContentSuggestionsModuleType::kTips:
-      // TODO(crbug.com/370484933): Integrate the Tips (Magic Stack) module with
-      // the Ephemeral module infrastructure. Once integrated, notify the
-      // registry that the Tips card was shown.
+      registry->NotifyCardShown(segmentation_platform::kTipsEphemeralModule);
       break;
     default:
       NOTREACHED();

@@ -7,8 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
+#import "base/feature_list.h"
+#import "base/metrics/field_trial_params.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/notifications_promo_view_constants.h"
 
 namespace base {
@@ -119,9 +119,6 @@ enum class SafetyCheckNotificationsImpressionTrigger {
   // Impression counted regardless of the Safety Check module's position.
   kAlways = 1,
 };
-
-// Feature flag to add the Tips module to the Magic Stack.
-BASE_DECLARE_FEATURE(kTipsMagicStack);
 
 // Name of the parameter that controls the experiment type for the Lens Shop
 // tip, determining whether or not a product image is displayed.
@@ -793,9 +790,6 @@ bool IsPinnedTabsEnabled();
 
 // Feature flag for caching the ios module ranker.
 BASE_DECLARE_FEATURE(kSegmentationPlatformIosModuleRankerCaching);
-
-// Feature to enable the Segmentation Tips Manager for Chrome iOS.
-BASE_DECLARE_FEATURE(kSegmentationTipsManager);
 
 // Whether the Segmentation Tips Manager is enabled for Chrome iOS.
 bool IsSegmentationTipsManagerEnabled();

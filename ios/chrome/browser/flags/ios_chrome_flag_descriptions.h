@@ -884,10 +884,10 @@ extern const char kSegmentationPlatformIosModuleRankerSplitBySurfaceName[];
 extern const char
     kSegmentationPlatformIosModuleRankerSplitBySurfaceDescription[];
 
-// Title and description for the flag to enable the Segmentation Tips Manager
-// for Chrome iOS.
-extern const char kSegmentationTipsManagerName[];
-extern const char kSegmentationTipsManagerDescription[];
+// Title and description for the flag to enable the Tips module in the Magic
+// Stack.
+extern const char kSegmentationPlatformTipsEphemeralCardName[];
+extern const char kSegmentationPlatformTipsEphemeralCardDescription[];
 
 // Title and description for the flag to enable personalized messaging for
 // Default Browser First Run, Set Up List, and video promos.
@@ -955,11 +955,6 @@ extern const char kTFLiteLanguageDetectionDescription[];
 // top toolbar.
 extern const char kThemeColorInTopToolbarName[];
 extern const char kThemeColorInTopToolbarDescription[];
-
-// Title and description for the flag to enable the Tips module in the Magic
-// Stack.
-extern const char kTipsMagicStackName[];
-extern const char kTipsMagicStackDescription[];
 
 // Title and description for the flag to enable the iOS Large Fakebox feature
 extern const char kIOSLargeFakeboxName[];

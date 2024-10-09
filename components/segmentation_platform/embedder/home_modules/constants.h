@@ -10,12 +10,14 @@ namespace segmentation_platform {
 // Input Context keys for emphemeral IOS modules.
 const char kIsNewUser[] = "is_new_user";
 const char kIsSynced[] = "is_sycned";
+const char kHasEnhancedSafeBrowsing[] = "has_enhanced_safe_browsing";
 
 // Placeholder output label for segmentation model executor.
 const char kPlaceholderEphemeralModuleLabel[] = "placeholder_module";
 
 // Labels for emphemeral IOS modules.
 const char kPriceTrackingNotificationPromo[] = "price_tracking_promo";
+const char kTipsEphemeralModule[] = "tips_ephemeral_module";
 
 // Commandline ASCII Switch key to indicate that the test module backend ranker
 // should be used.

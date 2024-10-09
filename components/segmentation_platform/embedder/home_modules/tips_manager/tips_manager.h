@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class PrefRegistrySimple;
@@ -81,6 +82,14 @@ class TipsManager : public KeyedService {
   // 2. Recording of the signal in UMA histograms.
   // 3. Persistence of the signal data in Prefs for future use.
   bool NotifySignal(std::string_view signal);
+
+  // Returns `true` if the given `signal` has ever been fired, or `false`
+  // otherwise.
+  bool WasSignalFired(std::string_view signal);
+
+  // Returns `true` if the given signal has been fired within the specified
+  // time `window`, or `false` otherwise.
+  bool WasSignalFiredWithin(std::string_view signal, base::TimeDelta window);
 
  private:
   // Records the given `signal` in `pref_service`, using the current time as the

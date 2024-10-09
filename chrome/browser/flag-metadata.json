@@ -8000,9 +8000,9 @@
     "expiry_milestone" : 115
   },
   {
-    "name": "segmentation-tips-manager",
-    "owners": ["bwwilliams@google.com","thegreenfrog@google.com", "bling-get-set-up@google.com"],
-    "expiry_milestone": 136
+    "name": "segmentation-platform-tips-ephemeral-card",
+    "owners": [ "bmcclure@google.com", "bwwilliams@google.com", "bling-flags@google.com", "bling-get-set-up@google.com"],
+    "expiry_milestone": 134
   },
   {
     "name": "segmented-default-browser-promo",
@@ -8781,11 +8781,6 @@
     // This flag is used for QA & development on ChromeOS, which has no way to
     // customize switches.
     "expiry_milestone": -1
-  },
-  {
-      "name": "tips-magic-stack",
-      "owners": [ "bmcclure@google.com", "bwwilliams@google.com", "bling-flags@google.com", "bling-get-set-up@google.com"],
-      "expiry_milestone": 134
   },
   {
     "name": "toolbar-phone-cleanup",

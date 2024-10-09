@@ -4,7 +4,9 @@
 
 #include "components/segmentation_platform/public/features.h"
 
+#include "base/strings/strcat.h"
 #include "build/build_config.h"
+#include "components/segmentation_platform/embedder/home_modules/tips_ephemeral_module_constants.h"
 
 namespace segmentation_platform::features {
 
@@ -176,6 +178,34 @@ BASE_FEATURE(kSegmentationPlatformEphemeralCardRanker,
 #else
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
+
+// Feature flag for enabling the Tips Emphemeral Card.
+BASE_FEATURE(kSegmentationPlatformTipsEphemeralCard,
+             "SegmentationPlatformTipsEphemeralCard",
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
+const char kTipsEphemeralCardExperimentTrainParam[] =
+    "TipsEphemeralCardExperimentTrainParam";
+
+std::string TipsExperimentTrainEnabled() {
+  return base::GetFieldTrialParamByFeatureAsString(
+      segmentation_platform::features::kSegmentationPlatformTipsEphemeralCard,
+      kTipsEphemeralCardExperimentTrainParam,
+      /*default_value=*/
+      base::StrCat(
+          {segmentation_platform::home_modules::kTipsLensSearchVariation, ",",
+           segmentation_platform::home_modules::kTipsSavePasswordsVariation,
+           ",",
+           segmentation_platform::home_modules::
+               kTipsEnhancedSafeBrowsingVariation,
+           ",",
+           segmentation_platform::home_modules::
+               kTipsAddressBarPositionVariation}));
+}
 
 BASE_FEATURE(kSegmentationSurveyPage,
              "SegmentationSurveyPage",

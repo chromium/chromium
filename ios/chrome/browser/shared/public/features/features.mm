@@ -7,6 +7,8 @@
 #import "base/containers/contains.h"
 #import "base/metrics/field_trial_params.h"
 #import "components/country_codes/country_codes.h"
+#import "components/segmentation_platform/embedder/home_modules/tips_ephemeral_module_constants.h"
+#import "components/segmentation_platform/public/features.h"
 #import "components/version_info/channel.h"
 #import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/browser/safety_check_notifications/utils/constants.h"
@@ -55,10 +57,6 @@ BASE_FEATURE(kSafetyCheckNotifications,
 
 BASE_FEATURE(kOmahaServiceRefactor,
              "OmahaServiceRefactor",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kTipsMagicStack,
-             "TipsMagicStack",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kTipsLensShopExperimentType[] = "TipsLensShopExperimentType";
@@ -382,16 +380,16 @@ int SafetyCheckNotificationsImpressionLimit() {
 }
 
 bool IsTipsMagicStackEnabled() {
-  return IsSegmentationTipsManagerEnabled() &&
-         base::FeatureList::IsEnabled(kTipsMagicStack);
+  return IsSegmentationTipsManagerEnabled();
 }
 
 TipsLensShopExperimentType TipsLensShopExperimentTypeEnabled() {
-  return static_cast<TipsLensShopExperimentType>(
-      base::GetFieldTrialParamByFeatureAsInt(
-          kTipsMagicStack, kTipsLensShopExperimentType,
-          /*default_value=*/
-          (int)TipsLensShopExperimentType::kWithoutProductImage));
+  return static_cast<
+      TipsLensShopExperimentType>(base::GetFieldTrialParamByFeatureAsInt(
+      segmentation_platform::features::kSegmentationPlatformTipsEphemeralCard,
+      kTipsLensShopExperimentType,
+      /*default_value=*/
+      (int)TipsLensShopExperimentType::kWithoutProductImage));
 }
 
 BASE_FEATURE(kIOSChooseFromDrive,
@@ -945,12 +943,9 @@ BASE_FEATURE(kSegmentationPlatformIosModuleRankerCaching,
              "SegmentationPlatformIosModuleRankerCaching",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSegmentationTipsManager,
-             "SegmentationTipsManager",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool IsSegmentationTipsManagerEnabled() {
-  return base::FeatureList::IsEnabled(kSegmentationTipsManager);
+  return base::FeatureList::IsEnabled(
+      segmentation_platform::features::kSegmentationPlatformTipsEphemeralCard);
 }
 
 BASE_FEATURE(kDefaultBrowserPromoIPadExperimentalString,

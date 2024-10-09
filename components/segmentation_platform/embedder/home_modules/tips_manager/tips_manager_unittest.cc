@@ -190,6 +190,65 @@ TEST_F(TipsManagerTest, RemoveUnusedSignalsFromProfilePrefs) {
   EXPECT_EQ(updated_signal_history, nullptr);
 }
 
+// Verifies that `WasSignalFired()` returns `true` for a signal that has been
+// fired.
+TEST_F(TipsManagerTest, WasSignalFiredReturnsTrueForFiredSignal) {
+  CreateTipsManager();
+
+  EXPECT_TRUE(manager_->NotifySignal(tips_manager::signals::kLensUsed));
+  EXPECT_TRUE(manager_->WasSignalFired(tips_manager::signals::kLensUsed));
+}
+
+// Verifies that `WasSignalFired()` returns `false` for a signal that has not
+// been fired.
+TEST_F(TipsManagerTest, WasSignalFiredReturnsFalseForUnfiredSignal) {
+  CreateTipsManager();
+
+  EXPECT_FALSE(manager_->WasSignalFired(tips_manager::signals::kLensUsed));
+}
+
+// Verifies that `WasSignalFiredWithin()` returns `true` for a signal fired
+// within the given window.
+TEST_F(TipsManagerTest, WasSignalFiredWithinReturnsTrueForSignalWithinWindow) {
+  CreateTipsManager();
+
+  EXPECT_TRUE(manager_->NotifySignal(tips_manager::signals::kLensUsed));
+  EXPECT_TRUE(
+      manager_->WasSignalFiredWithin(tips_manager::signals::kLensUsed,
+                                     base::Minutes(1)));  // Within 1 minute
+}
+
+// Verifies that `WasSignalFiredWithin()` returns `false` for a signal fired
+// outside the given window.
+TEST_F(TipsManagerTest,
+       WasSignalFiredWithinReturnsFalseForSignalOutsideWindow) {
+  CreateTipsManager();
+
+  EXPECT_TRUE(manager_->NotifySignal(tips_manager::signals::kLensUsed));
+
+  // Simulate the signal being fired a long time ago.
+  ScopedDictPrefUpdate update(&profile_pref_service_, kTipsSignalHistory);
+  base::Value::Dict* signal_history =
+      update->FindDict(tips_manager::signals::kLensUsed);
+  ASSERT_TRUE(signal_history);
+  signal_history->Set(kLastObservedTime,
+                      base::TimeToValue(base::Time::Now() - base::Days(1)));
+
+  EXPECT_FALSE(
+      manager_->WasSignalFiredWithin(tips_manager::signals::kLensUsed,
+                                     base::Minutes(1)));  // Within 1 minute
+}
+
+// Verifies that `WasSignalFiredWithin()` returns false for a signal that has
+// not been fired.
+TEST_F(TipsManagerTest, WasSignalFiredWithinReturnsFalseForUnfiredSignal) {
+  CreateTipsManager();
+
+  EXPECT_FALSE(
+      manager_->WasSignalFiredWithin(tips_manager::signals::kLensUsed,
+                                     base::Minutes(1)));  // Within 1 minute
+}
+
 }  // namespace
 
 }  // namespace segmentation_platform

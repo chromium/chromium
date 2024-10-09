@@ -116,8 +116,22 @@ extern const char kEphemeralCardRankerForceShowCardParam[];
 extern const char kEphemeralCardRankerForceHideCardParam[];
 extern const char kPriceTrackingPromoForceOverride[];
 
-// Feature flag for enabling the Emphemeral Card ranker.
+// Feature flag for enabling the Ephemeral Card ranker.
 BASE_DECLARE_FEATURE(kSegmentationPlatformEphemeralCardRanker);
+
+// Feature flag for enabling the Tips Ephemeral Card.
+BASE_DECLARE_FEATURE(kSegmentationPlatformTipsEphemeralCard);
+
+// Defines the sequence of tips variations for the experimental train. The
+// sequence uses the underlying variation labels defined in
+// `tips_ephemeral_module_constants`.
+extern const char kTipsEphemeralCardExperimentTrainParam[];
+
+// Returns the enabled experimental train for the Tips Ephemeral Card
+// experiment, as a comma-separated string of variation labels. The order of the
+// labels in the string determines the order in which the corresponding Tips
+// Ephemeral Card variations will be considered for display.
+std::string TipsExperimentTrainEnabled();
 
 BASE_DECLARE_FEATURE(kSegmentationSurveyPage);
 extern const base::FeatureParam<bool> kSegmentationSurveyInternalsPage;

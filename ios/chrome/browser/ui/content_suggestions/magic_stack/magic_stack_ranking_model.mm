@@ -6,14 +6,19 @@
 
 #import <optional>
 
+#import "base/check.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/shopping_service.h"
 #import "components/prefs/pref_service.h"
+#import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/segmentation_platform/embedder/home_modules/constants.h"
+#import "components/segmentation_platform/embedder/home_modules/tips_ephemeral_module.h"
+#import "components/segmentation_platform/embedder/home_modules/tips_ephemeral_module_constants.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
+#import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
 #import "components/segmentation_platform/public/constants.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
@@ -27,6 +32,7 @@
 #import "ios/chrome/browser/shared/model/utils/first_run_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
+#import "ios/chrome/browser/tips_manager/model/tips_manager_ios.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_config.h"
@@ -54,6 +60,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_module_state.h"
 
 using segmentation_platform::TipIdentifier;
+using segmentation_platform::home_modules::TipIdentifierForOutputLabel;
+using segmentation_platform::home_modules::TipsEphemeralModule;
 
 @interface MagicStackRankingModel () <MostVisitedTilesMediatorDelegate,
                                       ParcelTrackingMediatorDelegate,
@@ -91,6 +99,7 @@ using segmentation_platform::TipIdentifier;
   ShortcutsMediator* _shortcutsMediator;
   SafetyCheckMagicStackMediator* _safetyCheckMediator;
   TipsMagicStackMediator* _tipsMediator;
+  raw_ptr<TipsManagerIOS> _tipsManager;
   base::TimeTicks ranking_fetch_start_time_;
   ContentSuggestionsModuleType _ephemeralCardToShow;
 }
@@ -102,7 +111,8 @@ using segmentation_platform::TipIdentifier;
                     authService:(AuthenticationService*)authenticationService
                     prefService:(PrefService*)prefService
                      localState:(PrefService*)localState
-                moduleMediators:(NSArray*)moduleMediators {
+                moduleMediators:(NSArray*)moduleMediators
+                    tipsManager:(TipsManagerIOS*)tipsManager {
   self = [super init];
   if (self) {
     _segmentationService = segmentationService;
@@ -111,6 +121,11 @@ using segmentation_platform::TipIdentifier;
     _prefService = prefService;
     _localState = localState;
     _ephemeralCardToShow = ContentSuggestionsModuleType::kInvalid;
+
+    if (IsTipsMagicStackEnabled()) {
+      CHECK(tipsManager);
+      _tipsManager = tipsManager;
+    }
 
     for (id mediator in moduleMediators) {
       if ([mediator isKindOfClass:[MostVisitedTilesMediator class]]) {
@@ -159,6 +174,7 @@ using segmentation_platform::TipIdentifier;
   _shortcutsMediator = nil;
   _safetyCheckMediator = nil;
   _tipsMediator = nil;
+  _tipsManager = nil;
 }
 
 #pragma mark - Public
@@ -346,6 +362,62 @@ using segmentation_platform::TipIdentifier;
         segmentation_platform::processing::ProcessedValue::FromFloat(
             _shoppingService->IsShoppingListEligible()));
   }
+
+  if (IsTipsMagicStackEnabled() && _tipsManager) {
+    // Profile signals
+    inputContext->metadata_args.emplace(
+        segmentation_platform::tips_manager::signals::kLensUsed,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            _tipsManager->WasSignalFired(
+                segmentation_platform::tips_manager::signals::kLensUsed)));
+
+    inputContext->metadata_args.emplace(
+        segmentation_platform::tips_manager::signals::kOpenedShoppingWebsite,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            _tipsManager->WasSignalFired(segmentation_platform::tips_manager::
+                                             signals::kOpenedShoppingWebsite)));
+
+    inputContext->metadata_args.emplace(
+        segmentation_platform::tips_manager::signals::
+            kOpenedWebsiteInAnotherLanguage,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            _tipsManager->WasSignalFired(
+                segmentation_platform::tips_manager::signals::
+                    kOpenedWebsiteInAnotherLanguage)));
+
+    inputContext->metadata_args.emplace(
+        segmentation_platform::tips_manager::signals::kSavedPasswords,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            _tipsManager->WasSignalFired(segmentation_platform::tips_manager::
+                                             signals::kSavedPasswords)));
+
+    inputContext->metadata_args.emplace(
+        segmentation_platform::tips_manager::signals::kUsedGoogleTranslation,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            _tipsManager->WasSignalFired(segmentation_platform::tips_manager::
+                                             signals::kUsedGoogleTranslation)));
+
+    inputContext->metadata_args.emplace(
+        segmentation_platform::tips_manager::signals::kUsedPasswordAutofill,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            _tipsManager->WasSignalFired(segmentation_platform::tips_manager::
+                                             signals::kUsedPasswordAutofill)));
+
+    inputContext->metadata_args.emplace(
+        segmentation_platform::kHasEnhancedSafeBrowsing,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            _prefService->GetBoolean(prefs::kSafeBrowsingEnhanced)));
+
+    // Local signals
+    inputContext->metadata_args.emplace(
+        segmentation_platform::tips_manager::signals::
+            kAddressBarPositionChoiceScreenDisplayed,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            _tipsManager->WasSignalFired(
+                segmentation_platform::tips_manager::signals::
+                    kAddressBarPositionChoiceScreenDisplayed)));
+  }
+
   __weak MagicStackRankingModel* weakSelf = self;
   _segmentationService->GetClassificationResult(
       segmentation_platform::kEphemeralHomeModuleBackendKey, options,
@@ -376,34 +448,15 @@ using segmentation_platform::TipIdentifier;
         card = _priceTrackingPromoMediator.priceTrackingPromoItemToShow;
         break;
       }
-    }
+    } else if (TipsEphemeralModule::IsModuleLabel(label) &&
+               IsTipsMagicStackEnabled()) {
+      TipIdentifier tipIdentifier = TipIdentifierForOutputLabel(label);
 
-    // TODO(crbug.com/370484933): Integrate the Tips (Magic Stack) module with
-    // the Ephemeral module infrastructure. Once integrated, use the Ephemeral
-    // module's label targeting to determine which tip variation to show.
-    if (IsTipsMagicStackEnabled()) {
-      // Check if a forced tip state is set through Experimental Settings.
-      std::optional<int> forcedTipState =
-          experimental_flags::GetForcedTipsMagicStackState();
-
-      // Convert the forced tip state to a `TipIdentifier`, defaulting to
-      // `kUnknown` if no forced state is set.
-      TipIdentifier tipIdentifier =
-          static_cast<TipIdentifier>(forcedTipState.value_or(0));
-
-      // If not `kUnknown`, a forced tip state is active. Reconfigure the Tips
-      // mediator and module with the new forced tip, and add it to the Magic
-      // Stack.
       if (tipIdentifier != TipIdentifier::kUnknown) {
-        // Check if the 'TipsMagicStackLensShopWithImage' experimental override
-        // is set to determine whether to display a product image inside the
-        // Lens Shop tip.
-        BOOL displayLensShopWithImage =
-            tipIdentifier == TipIdentifier::kLensShop &&
-            experimental_flags::ShouldDisplayLensShopTipWithImage();
-
         _ephemeralCardToShow =
-            displayLensShopWithImage
+            (tipIdentifier == TipIdentifier::kLensShop &&
+             TipsLensShopExperimentTypeEnabled() ==
+                 TipsLensShopExperimentType::kWithProductImage)
                 ? ContentSuggestionsModuleType::kTipsWithProductImage
                 : ContentSuggestionsModuleType::kTips;
 

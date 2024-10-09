@@ -9,6 +9,8 @@ source_set("features") {
   ]
   deps = [
     "//components/country_codes",
+    "//components/segmentation_platform/embedder/home_modules:constants",
+    "//components/segmentation_platform/public",
     "//components/version_info:channel",
     "//ios/chrome/app:background_mode_buildflags",
     "//ios/chrome/browser/ntp/ui_bundled/feed_top_section:constants",

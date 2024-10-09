@@ -99,6 +99,50 @@ bool TipsManager::NotifySignal(std::string_view signal) {
   return false;
 }
 
+bool TipsManager::WasSignalFired(std::string_view signal) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Determine the correct pref service to use based on the `signal`.
+  PrefService* pref_service =
+      tips_manager::signals::kLocalSignalNames.contains(signal)
+          ? local_pref_service_
+          : profile_pref_service_;
+
+  const base::Value::Dict& signal_history =
+      pref_service->GetDict(kTipsSignalHistory);
+
+  return signal_history.contains(signal);
+}
+
+bool TipsManager::WasSignalFiredWithin(std::string_view signal,
+                                       base::TimeDelta window) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Determine the correct pref service to use based on the `signal`.
+  PrefService* pref_service =
+      tips_manager::signals::kLocalSignalNames.contains(signal)
+          ? local_pref_service_
+          : profile_pref_service_;
+
+  const base::Value::Dict& signal_history =
+      pref_service->GetDict(kTipsSignalHistory);
+
+  const base::Value::Dict* signal_data = signal_history.FindDict(signal);
+
+  if (!signal_data) {
+    return false;  // Signal not found in history.
+  }
+
+  std::optional<base::Time> last_observed_time =
+      base::ValueToTime(signal_data->Find(kLastObservedTime));
+
+  if (!last_observed_time.has_value()) {
+    return false;  // Invalid or missing timestamp.
+  }
+
+  return (base::Time::Now() - last_observed_time.value()) <= window;
+}
+
 bool TipsManager::RecordSignalToPref(std::string_view signal,
                                      PrefService* pref_service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
