@@ -38,7 +38,7 @@ class OWNERSHIP_EXPORT OwnerSettingsService : public KeyedService {
  public:
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
 
     // Called when signed policy was stored, or when an error happed during
     // policy storage..
