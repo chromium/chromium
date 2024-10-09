@@ -238,7 +238,7 @@ void ClipboardRecentContentIOS::GetRecentImageFromClipboard(
   }];
 }
 
-ClipboardRecentContentIOS::~ClipboardRecentContentIOS() {}
+ClipboardRecentContentIOS::~ClipboardRecentContentIOS() = default;
 
 base::TimeDelta ClipboardRecentContentIOS::GetClipboardContentAge() const {
   return base::Seconds(
