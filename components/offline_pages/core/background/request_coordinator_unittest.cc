@@ -142,7 +142,7 @@ class ObserverStub : public RequestCoordinator::Observer {
 
 class ActiveTabInfoStub : public RequestCoordinator::ActiveTabInfo {
  public:
-  ~ActiveTabInfoStub() override {}
+  ~ActiveTabInfoStub() override = default;
   bool DoesActiveTabMatch(const GURL&) override {
     return does_active_tab_match_;
   }
@@ -431,7 +431,7 @@ RequestCoordinatorTest::RequestCoordinatorTest()
                          kBatteryPercentageHigh,
                          net::NetworkChangeNotifier::CONNECTION_3G) {}
 
-RequestCoordinatorTest::~RequestCoordinatorTest() {}
+RequestCoordinatorTest::~RequestCoordinatorTest() = default;
 
 void RequestCoordinatorTest::SetUp() {
   coordinator_taco_ = std::make_unique<RequestCoordinatorStubTaco>();

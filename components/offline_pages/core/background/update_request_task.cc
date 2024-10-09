@@ -16,7 +16,7 @@ UpdateRequestTask::UpdateRequestTask(RequestQueueStore* store,
                                      RequestQueueStore::UpdateCallback callback)
     : store_(store), request_id_(request_id), callback_(std::move(callback)) {}
 
-UpdateRequestTask::~UpdateRequestTask() {}
+UpdateRequestTask::~UpdateRequestTask() = default;
 
 void UpdateRequestTask::Run() {
   ReadRequest();

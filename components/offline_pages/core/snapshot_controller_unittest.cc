@@ -50,7 +50,7 @@ SnapshotControllerTest::SnapshotControllerTest()
       snapshot_started_(true),
       snapshot_count_(0) {}
 
-SnapshotControllerTest::~SnapshotControllerTest() {}
+SnapshotControllerTest::~SnapshotControllerTest() = default;
 
 void SnapshotControllerTest::SetUp() {
   controller_ = std::make_unique<SnapshotController>(task_runner_, this);

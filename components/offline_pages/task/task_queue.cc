@@ -34,7 +34,7 @@ TaskQueue::TaskQueue(Delegate* delegate)
   DCHECK(delegate_);
 }
 
-TaskQueue::~TaskQueue() {}
+TaskQueue::~TaskQueue() = default;
 
 void TaskQueue::AddTask(std::unique_ptr<Task> task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

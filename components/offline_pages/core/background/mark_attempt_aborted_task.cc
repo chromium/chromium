@@ -14,7 +14,7 @@ MarkAttemptAbortedTask::MarkAttemptAbortedTask(
     RequestQueueStore::UpdateCallback callback)
     : UpdateRequestTask(store, request_id, std::move(callback)) {}
 
-MarkAttemptAbortedTask::~MarkAttemptAbortedTask() {}
+MarkAttemptAbortedTask::~MarkAttemptAbortedTask() = default;
 
 void MarkAttemptAbortedTask::UpdateRequestImpl(
     UpdateRequestsResult read_result) {

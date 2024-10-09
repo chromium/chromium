@@ -28,7 +28,7 @@ BackgroundLoaderContents::BackgroundLoaderContents(
   web_contents_->SetDelegate(this);
 }
 
-BackgroundLoaderContents::~BackgroundLoaderContents() {}
+BackgroundLoaderContents::~BackgroundLoaderContents() = default;
 
 void BackgroundLoaderContents::LoadPage(const GURL& url) {
   web_contents_->GetController().LoadURL(

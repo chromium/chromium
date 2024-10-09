@@ -17,7 +17,7 @@ ReconcileTask::ReconcileTask(RequestQueueStore* store,
                              RequestQueueStore::UpdateCallback callback)
     : store_(store), callback_(std::move(callback)) {}
 
-ReconcileTask::~ReconcileTask() {}
+ReconcileTask::~ReconcileTask() = default;
 
 void ReconcileTask::Run() {
   GetRequests();

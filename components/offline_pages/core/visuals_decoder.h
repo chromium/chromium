@@ -19,7 +19,7 @@ namespace offline_pages {
 class VisualsDecoder {
  public:
   using DecodeComplete = base::OnceCallback<void(const gfx::Image&)>;
-  virtual ~VisualsDecoder() {}
+  virtual ~VisualsDecoder() = default;
 
   // Decode a thumbnail or favicon image and crop it square. Calls
   // complete_callback when decoding completes successfully or otherwise. If

@@ -24,7 +24,7 @@ OfflinePageVisuals::OfflinePageVisuals(int64_t id,
 OfflinePageVisuals::OfflinePageVisuals(const OfflinePageVisuals& other) =
     default;
 OfflinePageVisuals::OfflinePageVisuals(OfflinePageVisuals&& other) = default;
-OfflinePageVisuals::~OfflinePageVisuals() {}
+OfflinePageVisuals::~OfflinePageVisuals() = default;
 
 bool OfflinePageVisuals::operator==(const OfflinePageVisuals& other) const {
   return offline_id == other.offline_id && expiration == other.expiration &&

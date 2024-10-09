@@ -22,7 +22,7 @@ namespace {
 
 class CleanupVisualsTaskTest : public ModelTaskTestBase {
  public:
-  ~CleanupVisualsTaskTest() override {}
+  ~CleanupVisualsTaskTest() override = default;
 
   std::unique_ptr<OfflinePageVisuals> ReadVisuals(int64_t offline_id) {
     std::unique_ptr<OfflinePageVisuals> visuals;

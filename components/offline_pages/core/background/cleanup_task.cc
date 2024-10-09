@@ -42,7 +42,7 @@ CleanupTask::CleanupTask(RequestQueueStore* store,
       notifier_(notifier),
       event_logger_(event_logger) {}
 
-CleanupTask::~CleanupTask() {}
+CleanupTask::~CleanupTask() = default;
 
 void CleanupTask::Run() {
   GetRequests();

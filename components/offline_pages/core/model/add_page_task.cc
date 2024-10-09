@@ -83,7 +83,7 @@ AddPageTask::AddPageTask(OfflinePageMetadataStore* store,
   DCHECK(!callback_.is_null());
 }
 
-AddPageTask::~AddPageTask() {}
+AddPageTask::~AddPageTask() = default;
 
 void AddPageTask::Run() {
   if (!store_) {
