@@ -65,10 +65,6 @@
 #include "chrome/browser/ui/views/side_panel/lens/lens_core_tab_side_panel_helper.h"
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "components/guest_view/browser/guest_view_manager.h"
-#endif
-
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 #include "chrome/browser/ui/views/lens/lens_side_panel_helper.h"
 #endif
@@ -443,22 +439,9 @@ bool CoreTabHelper::GetStatusTextForWebContents(std::u16string* status_text,
       << "ChromeContentBrowserClient::OverrideURLLoaderFactoryParams.";
   return false;
 #else
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  auto* guest_manager = guest_view::GuestViewManager::FromBrowserContext(
-      source->GetBrowserContext());
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   if (!source->IsLoading() ||
       source->GetLoadState().state == net::LOAD_STATE_IDLE) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-    if (!guest_manager)
-      return false;
-    return guest_manager->ForEachGuest(
-        source, [&](content::WebContents* contents) {
-          return GetStatusTextForWebContents(status_text, contents);
-        });
-#else  // !BUILDFLAG(ENABLE_EXTENSIONS)
     return false;
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   }
 
   switch (source->GetLoadState().state) {
@@ -531,17 +514,7 @@ bool CoreTabHelper::GetStatusTextForWebContents(std::u16string* status_text,
     case net::LOAD_STATE_OBSOLETE_WAITING_FOR_APPCACHE:
       break;
   }
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (!guest_manager)
-    return false;
-
-  return guest_manager->ForEachGuest(
-      source, [&](content::WebContents* contents) {
-        return GetStatusTextForWebContents(status_text, contents);
-      });
-#else  // !BUILDFLAG(ENABLE_EXTENSIONS)
   return false;
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

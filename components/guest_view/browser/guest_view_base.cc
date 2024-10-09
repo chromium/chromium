@@ -619,15 +619,6 @@ bool GuestViewBase::HandleKeyboardEvent(
       embedder_web_contents(), event);
 }
 
-void GuestViewBase::LoadingStateChanged(WebContents* source,
-                                        bool should_show_loading_ui) {
-  if (!attached() || !embedder_web_contents()->GetDelegate())
-    return;
-
-  embedder_web_contents()->GetDelegate()->LoadingStateChanged(
-      embedder_web_contents(), should_show_loading_ui);
-}
-
 void GuestViewBase::ResizeDueToAutoResize(WebContents* web_contents,
                                           const gfx::Size& new_size) {
   UpdateGuestSize(new_size, auto_size_enabled_);
