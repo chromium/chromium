@@ -21148,6 +21148,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Mobile.LensOverlay.FocusOmnibox">
+  <owner>christianxu@google.com</owner>
+  <owner>stkhapugin@google.com</owner>
+  <description>
+    Recorded when the user focuses the omnibox in the Lens Overlay.
+  </description>
+</action>
+
 <action name="Mobile.LensOverlay.NewResult">
   <owner>christianxu@google.com</owner>
   <owner>stkhapugin@google.com</owner>

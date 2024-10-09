@@ -179,6 +179,7 @@
 #pragma mark LensToolbarMutator
 
 - (void)focusOmnibox {
+  RecordAction(base::UserMetricsAction("Mobile.LensOverlay.FocusOmnibox"));
   [self.omniboxCoordinator focusOmnibox];
   [self.toolbarConsumer setOmniboxFocused:YES];
   [self.omniboxCoordinator.animatee setClearButtonFaded:NO];
