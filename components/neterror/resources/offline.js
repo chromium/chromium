@@ -5,8 +5,10 @@
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {HIDDEN_CLASS} from './constants.js';
-import {IS_IOS} from './dino_game/constants.js';
+import {Cloud} from './dino_game/cloud.js';
+import {IS_HIDPI, IS_IOS} from './dino_game/constants.js';
 import {GeneratedSoundFx} from './dino_game/generated_sound_fx.js';
+import {getRandomNum} from './dino_game/utils.js';
 import {CollisionBox, GAME_TYPE, spriteDefinitionByType} from './offline-sprite-definitions.js';
 
 /**
@@ -115,9 +117,6 @@ const DEFAULT_WIDTH = 600;
  * @const
  */
 const FPS = 60;
-
-/** @const */
-const IS_HIDPI = window.devicePixelRatio > 1;
 
 /** @const */
 const IS_MOBILE = /Android/.test(window.navigator.userAgent) || IS_IOS;
@@ -1558,16 +1557,6 @@ function getA11yString(stringName) {
   return loadTimeData && loadTimeData.valueExists(stringName) ?
       loadTimeData.getString(stringName) :
       '';
-}
-
-
-/**
- * Get random number.
- * @param {number} min
- * @param {number} max
- */
-function getRandomNum(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 
@@ -3166,101 +3155,7 @@ DistanceMeter.prototype = {
 
 //******************************************************************************
 
-/**
- * Cloud background item.
- * Similar to an obstacle object but without collision boxes.
- * @param {HTMLCanvasElement} canvas Canvas element.
- * @param {Object} spritePos Position of image in sprite.
- * @param {number} containerWidth
- * @constructor
- */
-function Cloud(canvas, spritePos, containerWidth) {
-  this.canvas = canvas;
-  this.canvasCtx =
-      /** @type {CanvasRenderingContext2D} */ (this.canvas.getContext('2d'));
-  this.spritePos = spritePos;
-  this.containerWidth = containerWidth;
-  this.xPos = containerWidth;
-  this.yPos = 0;
-  this.remove = false;
-  this.gap =
-      getRandomNum(Cloud.config.MIN_CLOUD_GAP, Cloud.config.MAX_CLOUD_GAP);
 
-  this.init();
-}
-
-
-/**
- * Cloud object config.
- * @enum {number}
- */
-Cloud.config = {
-  HEIGHT: 14,
-  MAX_CLOUD_GAP: 400,
-  MAX_SKY_LEVEL: 30,
-  MIN_CLOUD_GAP: 100,
-  MIN_SKY_LEVEL: 71,
-  WIDTH: 46,
-};
-
-
-Cloud.prototype = {
-  /**
-   * Initialise the cloud. Sets the Cloud height.
-   */
-  init() {
-    this.yPos = getRandomNum(Cloud.config.MAX_SKY_LEVEL,
-        Cloud.config.MIN_SKY_LEVEL);
-    this.draw();
-  },
-
-  /**
-   * Draw the cloud.
-   */
-  draw() {
-    this.canvasCtx.save();
-    let sourceWidth = Cloud.config.WIDTH;
-    let sourceHeight = Cloud.config.HEIGHT;
-    const outputWidth = sourceWidth;
-    const outputHeight = sourceHeight;
-    if (IS_HIDPI) {
-      sourceWidth = sourceWidth * 2;
-      sourceHeight = sourceHeight * 2;
-    }
-
-    this.canvasCtx.drawImage(Runner.imageSprite, this.spritePos.x,
-        this.spritePos.y,
-        sourceWidth, sourceHeight,
-        this.xPos, this.yPos,
-        outputWidth, outputHeight);
-
-    this.canvasCtx.restore();
-  },
-
-  /**
-   * Update the cloud position.
-   * @param {number} speed
-   */
-  update(speed) {
-    if (!this.remove) {
-      this.xPos -= Math.ceil(speed);
-      this.draw();
-
-      // Mark as removeable if no longer in the canvas.
-      if (!this.isVisible()) {
-        this.remove = true;
-      }
-    }
-  },
-
-  /**
-   * Check if the cloud is visible on the stage.
-   * @return {boolean}
-   */
-  isVisible() {
-    return this.xPos + Cloud.config.WIDTH > 0;
-  },
-};
 
 
 /**
