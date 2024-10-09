@@ -62,7 +62,8 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
 
 // static
 std::vector<ui::AXApiType::Type> AXInspectFactory::SupportedApis() {
-  return {ui::AXApiType::kBlink, ui::AXApiType::kAndroid};
+  return {ui::AXApiType::kBlink, ui::AXApiType::kAndroid,
+          ui::AXApiType::kAndroidExternal};
 }
 
 }  // namespace content
