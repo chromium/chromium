@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.ui.default_browser_promo;
 
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import android.text.format.DateUtils;
@@ -14,7 +15,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.FakeTimeTestRule;
@@ -26,11 +30,15 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.components.search_engines.SearchEngineChoiceService;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class DefaultBrowserPromoImpressionCounterTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public FakeTimeTestRule mClockRule = new FakeTimeTestRule();
+
+    @Mock private SearchEngineChoiceService mMockSearchEngineChoiceService;
 
     private DefaultBrowserPromoImpressionCounter mCounter;
     private SharedPreferencesManager mSharedPreferenceManager;
@@ -45,6 +53,9 @@ public class DefaultBrowserPromoImpressionCounterTest {
                 ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_PROMOED_COUNT);
         mSharedPreferenceManager.removeKey(
                 ChromePreferenceKeys.DEFAULT_BROWSER_PROMO_LAST_PROMO_TIME);
+
+        doReturn(false).when(mMockSearchEngineChoiceService).isDefaultBrowserPromoSuppressed();
+        SearchEngineChoiceService.setInstanceForTests(mMockSearchEngineChoiceService);
     }
 
     @After
@@ -197,6 +208,12 @@ public class DefaultBrowserPromoImpressionCounterTest {
         mClockRule.advanceMillis(DateUtils.DAY_IN_MILLIS * 3);
         Assert.assertTrue(mCounter.shouldShowPromo(/* ignoreMaxCount= */ false));
 
+        // If the SearchEngineChoiceService suppresses it, it should not show.
+        doReturn(true).when(mMockSearchEngineChoiceService).isDefaultBrowserPromoSuppressed();
+        Assert.assertFalse(mCounter.shouldShowPromo(/* ignoreMaxCount= */ false));
+
+        // Lift the suppression and trigger the 2nd display
+        doReturn(false).when(mMockSearchEngineChoiceService).isDefaultBrowserPromoSuppressed();
         mCounter.onPromoShown();
 
         // Advance 6 days, not showing the 3rd promo

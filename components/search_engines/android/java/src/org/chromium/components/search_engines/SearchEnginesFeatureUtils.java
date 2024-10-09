@@ -83,6 +83,19 @@ public final class SearchEnginesFeatureUtils {
         return clayBlockingFeatureParamAsInt("escape_hatch_block_limit", 0);
     }
 
+    /**
+     * Millis after the OS default browser choice has been made during which Chrome should not offer
+     * the user to set Chrome as their default browser.
+     *
+     * <p>Should be a positive value. Suppressing the default browser promo will not happen if an
+     * unexpected value (including {@code 0}) is provided.
+     */
+    public static int clayBlockingDialogDefaultBrowserPromoSuppressedMillis() {
+        // `Integer.MAX_VALUE` should give us a bit more than 24 days, enough for our purposes,
+        return clayBlockingFeatureParamAsInt(
+                "default_browser_promo_suppressed_millis", 24 * 60 * 60 * 1000);
+    }
+
     @VisibleForTesting
     static boolean clayBlockingFeatureParamAsBoolean(String param, boolean defaultValue) {
         assert SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)

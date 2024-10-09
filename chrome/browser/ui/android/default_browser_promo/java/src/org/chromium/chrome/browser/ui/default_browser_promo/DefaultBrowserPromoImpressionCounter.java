@@ -10,6 +10,7 @@ import org.chromium.base.TimeUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.components.search_engines.SearchEngineChoiceService;
 
 import java.util.concurrent.TimeUnit;
 
@@ -47,9 +48,13 @@ public class DefaultBrowserPromoImpressionCounter {
     /**
      * This decides whether the promo should be promoted base on the impression count.
      * Return false if any of following criteria is met:
-     * 1. A promo dialog has been displayed before, unless {@code ignoreMaxCount} is true.
-     * 2. Not enough sessions have been started before.
-     * 3. Less than the promo interval if re-promoting.
+     *
+     * <ol>
+     *   <li>A promo dialog has been displayed before, unless {@code ignoreMaxCount} is true.
+     *   <li>Not enough sessions have been started before.
+     *   <li>Less than the promo interval if re-promoting.
+     *   <li>Not enough time after a OS-level default browser selection was made.
+     * </ol>
      *
      * @param ignoreMaxCount
      * @return boolean if promo dialog can be displayed.
@@ -57,7 +62,8 @@ public class DefaultBrowserPromoImpressionCounter {
     boolean shouldShowPromo(boolean ignoreMaxCount) {
         return (ignoreMaxCount || getPromoCount() < getMaxPromoCount())
                 && getSessionCount() >= getMinSessionCount()
-                && getLastPromoInterval() >= getMinPromoInterval();
+                && getLastPromoInterval() >= getMinPromoInterval()
+                && !SearchEngineChoiceService.getInstance().isDefaultBrowserPromoSuppressed();
     }
 
     private void incrementPromoCount() {

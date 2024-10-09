@@ -24,6 +24,8 @@ import org.chromium.components.search_engines.SearchEngineCountryDelegate.Device
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.time.DateTimeException;
+import java.time.Instant;
 
 /**
  * Singleton responsible for communicating with device APIs to expose device-level properties that
@@ -159,6 +161,37 @@ public class SearchEngineChoiceService {
     public Promise<String> getDeviceCountry() {
         ThreadUtils.checkUiThread();
         return mDeviceCountryPromise;
+    }
+
+    /**
+     * Returns whether the promo offering the user to make Chrome their default browser should be
+     * suppressed. Works by checking whether a sufficient amount of time has passed since the user
+     * has completed the OS-level default browser choice.
+     */
+    public boolean isDefaultBrowserPromoSuppressed() {
+        if (!SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)) {
+            return false;
+        }
+
+        long suppressionPeriodMillis =
+                SearchEnginesFeatureUtils.clayBlockingDialogDefaultBrowserPromoSuppressedMillis();
+        if (suppressionPeriodMillis <= 0) {
+            return false;
+        }
+
+        @Nullable
+        Instant deviceBrowserSelectedTimestamp =
+                mDelegate == null ? null : mDelegate.getDeviceBrowserSelectedTimestamp();
+        if (deviceBrowserSelectedTimestamp == null) {
+            return false;
+        }
+
+        try {
+            return Instant.now()
+                    .isBefore(deviceBrowserSelectedTimestamp.plusMillis(suppressionPeriodMillis));
+        } catch (DateTimeException e) {
+            return false;
+        }
     }
 
     /**

@@ -115,6 +115,7 @@ android_library("junit") {
     "//base:supplier_java",
     "//components/search_engines/android:test_utils_java",
     "//third_party/android_deps:robolectric_all_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",

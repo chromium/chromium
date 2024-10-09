@@ -7,6 +7,7 @@ import android.content.Context;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -14,6 +15,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.time.Instant;
 
 /** Placeholder delegate class to get device country. Implemented in the internal code. */
 public abstract class SearchEngineCountryDelegate {
@@ -56,6 +58,14 @@ public abstract class SearchEngineCountryDelegate {
     /** Proxy for {@link SearchEngineChoiceService#launchDeviceChoiceScreens()}. */
     @MainThread
     public void launchDeviceChoiceScreens() {}
+
+    /**
+     * Returns the moment when the device recorded that the default browser has been selected by
+     * the user in the OS-level choice screens.
+     */
+    public @Nullable Instant getDeviceBrowserSelectedTimestamp() {
+        return null;
+    }
 
     @IntDef({
         DeviceChoiceEventType.BLOCK_SHOWN,

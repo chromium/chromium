@@ -43,6 +43,7 @@ import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessagesFactory;
+import org.chromium.components.search_engines.SearchEngineChoiceService;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
@@ -57,6 +58,7 @@ public class DefaultBrowserPromoUtilsTest {
     @Mock private Tracker mMockTracker;
     @Mock private Profile mProfile;
     @Mock private ManagedMessageDispatcher mMockMessageDispatcher;
+    @Mock private SearchEngineChoiceService mMockSearchEngineChoiceService;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -73,6 +75,7 @@ public class DefaultBrowserPromoUtilsTest {
                         mActivity, false, IntentRequestTracker.createFromActivity(mActivity));
         TrackerFactory.setTrackerForTests(mMockTracker);
         MessagesFactory.attachMessageDispatcher(mWindowAndroid, mMockMessageDispatcher);
+        SearchEngineChoiceService.setInstanceForTests(mMockSearchEngineChoiceService);
 
         mUtils = new DefaultBrowserPromoUtils(mCounter, mProvider);
         setDepsMockWithDefaultValues();
@@ -285,6 +288,8 @@ public class DefaultBrowserPromoUtilsTest {
     }
 
     private void setDepsMockWithDefaultValues() {
+        when(mMockSearchEngineChoiceService.isDefaultBrowserPromoSuppressed()).thenReturn(false);
+
         when(mCounter.shouldShowPromo(anyBoolean())).thenCallRealMethod();
         when(mCounter.getMinSessionCount()).thenReturn(3);
         when(mCounter.getSessionCount()).thenReturn(10);

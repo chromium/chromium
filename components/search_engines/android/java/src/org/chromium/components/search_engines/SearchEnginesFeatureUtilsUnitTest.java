@@ -118,4 +118,17 @@ public class SearchEnginesFeatureUtilsUnitTest {
         assertEquals(
                 SearchEnginesFeatureUtils.clayBlockingDialogSilentlyPendingDurationMillis(), 0);
     }
+
+    @Test
+    public void clayBlockingDialogDefaultBrowserPromoSuppressedMillis() {
+        configureClayBlockingFeatureParams(Map.of("default_browser_promo_suppressed_millis", "24"));
+        assertEquals(
+                24,
+                SearchEnginesFeatureUtils.clayBlockingDialogDefaultBrowserPromoSuppressedMillis());
+
+        configureClayBlockingFeatureParams(Map.of());
+        assertEquals(
+                24 * 60 * 60 * 1000,
+                SearchEnginesFeatureUtils.clayBlockingDialogDefaultBrowserPromoSuppressedMillis());
+    }
 }
