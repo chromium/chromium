@@ -48,6 +48,7 @@
 #include "third_party/liburlpattern/parse.h"
 #include "third_party/liburlpattern/pattern.h"
 #include "third_party/liburlpattern/utils.h"
+#include "url/gurl.h"
 #include "url/url_constants.h"
 #include "url/url_util.h"
 
@@ -130,14 +131,28 @@ FileHandlerLaunchTypeFromString(const std::string& launch_type) {
   return std::nullopt;
 }
 
+bool IsDefaultManifest(const mojom::blink::Manifest& manifest,
+                       const KURL& document_url) {
+  if (manifest.has_custom_id || manifest.has_valid_specified_start_url) {
+    return false;
+  }
+  auto default_manifest = mojom::blink::Manifest::New();
+  default_manifest->start_url = document_url;
+  KURL default_id = document_url;
+  default_id.RemoveFragmentIdentifier();
+  default_manifest->id = default_id;
+  default_manifest->scope = KURL(document_url.BaseAsString().ToString());
+  return manifest == *default_manifest;
+}
+
 static const char kUMAIdParseResult[] = "Manifest.ParseIdResult";
 
-// Record that the Manifest was successfully parsed. If it is an empty
+// Record that the Manifest was successfully parsed. If it is a default
 // Manifest, it will recorded as so and nothing will happen. Otherwise, the
 // presence of each properties will be recorded.
-void ParseSucceeded(const mojom::blink::ManifestPtr& manifest) {
-  auto empty_manifest = mojom::blink::Manifest::New();
-  if (manifest == empty_manifest) {
+void ParseSucceeded(const mojom::blink::ManifestPtr& manifest,
+                    const KURL& document_url) {
+  if (IsDefaultManifest(*manifest, document_url)) {
     return;
   }
 
@@ -367,7 +382,7 @@ bool ManifestParser::Parse() {
 
   manifest_->version = ParseVersion(root_object.get());
 
-  ParseSucceeded(manifest_);
+  ParseSucceeded(manifest_, document_url_);
   base::UmaHistogramEnumeration(kUMAIdParseResult, id_parse_result);
 
   return has_comments;
