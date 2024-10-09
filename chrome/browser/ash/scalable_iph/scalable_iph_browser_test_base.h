@@ -151,7 +151,7 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
   static std::unique_ptr<scalable_iph::ScalableIphDelegate> CreateMockDelegate(
       Profile* profile,
       scalable_iph::Logger* logger);
-  static void SetCanUseMantaService(Profile* profile);
+  static void SetCanUseMantaService(content::BrowserContext* browser_context);
 
   chromeos::network_config::FakeCrosNetworkConfig fake_cros_network_config_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;

@@ -7,10 +7,10 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/no_destructor.h"
-#include "chrome/browser/ash/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/scalable_iph/logger.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph_factory.h"
 
 // `ScalableIphFactoryImpl` is responsible for initializing `ScalableIphFactory`
 // instances. This is to circumvent dependencies on //chrome/browser,

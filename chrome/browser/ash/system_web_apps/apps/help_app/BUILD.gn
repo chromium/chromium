@@ -60,6 +60,7 @@ static_library("help_app") {
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
     "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/scalable_iph",
     "//chromeos/ash/components/scalable_iph:constants",
     "//chromeos/ash/components/system",
     "//chromeos/ash/services/multidevice_setup/public/cpp:prefs",

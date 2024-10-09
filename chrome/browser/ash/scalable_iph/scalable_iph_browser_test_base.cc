@@ -14,7 +14,6 @@
 #include "chrome/browser/ash/scalable_iph/customizable_test_env_browser_test_base.h"
 #include "chrome/browser/ash/scalable_iph/mock_scalable_iph_delegate.h"
 #include "chrome/browser/ash/scalable_iph/scalable_iph_delegate_impl.h"
-#include "chrome/browser/ash/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/ash/scalable_iph/scalable_iph_factory_impl.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -26,6 +25,7 @@
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph_factory.h"
 #include "chromeos/ash/services/network_config/in_process_instance.h"
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
@@ -482,13 +482,16 @@ ScalableIphBrowserTestBase::CreateMockDelegate(Profile* profile,
 }
 
 // static
-void ScalableIphBrowserTestBase::SetCanUseMantaService(Profile* profile) {
+void ScalableIphBrowserTestBase::SetCanUseMantaService(
+    content::BrowserContext* browser_context) {
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
+      IdentityManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context));
   CHECK(identity_manager);
 
   const user_manager::User* user =
-      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(profile);
+      ash::BrowserContextHelper::Get()->GetUserByBrowserContext(
+          browser_context);
   CHECK(user);
   AccountInfo account_info = identity_manager->FindExtendedAccountInfoByGaiaId(
       user->GetAccountId().GetGaiaId());

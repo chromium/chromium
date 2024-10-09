@@ -34,7 +34,6 @@
 #include "chrome/browser/ash/plugin_vm/plugin_vm_manager_factory.h"
 #include "chrome/browser/ash/policy/reporting/app_install_event_log_manager_wrapper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/ash/sparky/sparky_manager_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
@@ -58,6 +57,7 @@
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/network/network_cert_loader.h"
 #include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph_factory.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/live_caption/caption_util.h"
@@ -293,7 +293,7 @@ void UserSessionInitializer::InitializePrimaryProfileServices(
 void UserSessionInitializer::InitializeScalableIph(Profile* profile) {
   ScalableIphFactory* scalable_iph_factory = ScalableIphFactory::GetInstance();
   CHECK(scalable_iph_factory);
-  scalable_iph_factory->InitializeServiceForProfile(profile);
+  scalable_iph_factory->InitializeServiceForBrowserContext(profile);
 }
 
 void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {

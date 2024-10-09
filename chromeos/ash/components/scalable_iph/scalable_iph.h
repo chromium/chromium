@@ -9,6 +9,7 @@
 #include <ostream>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -77,9 +78,10 @@ namespace scalable_iph {
 //             as it is in //chromeos/ash/components. `ScalableIph` delegates
 //             them again to `ScalableIphDelegate`.
 //
-class ScalableIph : public KeyedService,
-                    public ScalableIphDelegate::Observer,
-                    public IphSession::Delegate {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH) ScalableIph
+    : public KeyedService,
+      public ScalableIphDelegate::Observer,
+      public IphSession::Delegate {
  public:
   // List of events ScalableIph supports.
   enum class Event {

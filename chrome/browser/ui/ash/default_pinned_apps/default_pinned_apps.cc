@@ -7,8 +7,8 @@
 #include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/web_app_id_constants.h"
-#include "chrome/browser/ash/scalable_iph/scalable_iph_factory.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph_factory.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/browser_context.h"
 

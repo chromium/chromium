@@ -12,9 +12,9 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
-#include "chrome/browser/ash/scalable_iph/scalable_iph_factory.h"
 #include "chromeos/ash/components/scalable_iph/logger.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph_factory.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 

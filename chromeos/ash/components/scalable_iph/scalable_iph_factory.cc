@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/scalable_iph/scalable_iph_factory.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph_factory.h"
 
 #include "base/check_is_test.h"
 #include "base/logging.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "content/public/browser/browser_context.h"
 
 namespace {
 
@@ -41,24 +40,25 @@ ScalableIphFactory* ScalableIphFactory::GetInstance() {
 scalable_iph::ScalableIph* ScalableIphFactory::GetForBrowserContext(
     content::BrowserContext* browser_context) {
   return static_cast<scalable_iph::ScalableIph*>(
-      // Service must be created via `InitializeServiceForProfile`.
+      // Service must be created via `InitializeServiceForBrowserContext`.
       GetInstance()->GetServiceForBrowserContext(browser_context,
                                                  /*create=*/false));
 }
 
-void ScalableIphFactory::InitializeServiceForProfile(Profile* profile) {
+void ScalableIphFactory::InitializeServiceForBrowserContext(
+    content::BrowserContext* browser_context) {
   // TODO(b/286604737): Disables ScalableIph services if multi-user sign-in is
   // used.
 
   if (!on_building_service_instance_for_testing_callback_.is_null()) {
     CHECK_IS_TEST();
-    on_building_service_instance_for_testing_callback_.Run(profile);
+    on_building_service_instance_for_testing_callback_.Run(browser_context);
   }
 
   // Create a `ScalableIph` service to start a timer for time tick event. Ignore
-  // a return value. It can be nullptr if the browser context (i.e. profile) is
-  // not eligible for `ScalableIph`.
-  GetServiceForBrowserContext(profile, /*create=*/true);
+  // a return value. It can be nullptr if the browser context (i.e.
+  // browser_context) is not eligible for `ScalableIph`.
+  GetServiceForBrowserContext(browser_context, /*create=*/true);
 }
 
 void ScalableIphFactory::SetOnBuildingServiceInstanceForTestingCallback(

@@ -122,7 +122,6 @@ static_library("shelf") {
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/ash/policy/handlers",
     "//chrome/browser/ash/profiles",
-    "//chrome/browser/ash/scalable_iph",
     "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
     "//chrome/browser/extensions",
     "//chrome/browser/image_decoder",
