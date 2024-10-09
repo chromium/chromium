@@ -141,6 +141,9 @@ extern const base::FeatureParam<base::TimeDelta> kEmbeddingsServiceTimeout;
 // history embeddings.
 extern const base::FeatureParam<bool> kEnableSidePanel;
 
+// The maximum number of URLs to use when building context for answerer.
+extern const base::FeatureParam<int> kMaxAnswererContextUrlCount;
+
 // These control score boosting from passage text word matching.
 extern const base::FeatureParam<double> kWordMatchMinEmbeddingScore;
 extern const base::FeatureParam<int> kWordMatchMinTermLength;

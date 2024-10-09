@@ -1027,7 +1027,12 @@ void HistoryEmbeddingsService::OnQueryIntentComputed(
   callback.Run(std::move(loadingResult));
 
   Answerer::Context context(result.session_id);
-  for (const ScoredUrlRow& scored_url_row : result.scored_url_rows) {
+  for (size_t url_index = 0;
+       url_index <
+       std::min(result.scored_url_rows.size(),
+                static_cast<size_t>(kMaxAnswererContextUrlCount.Get()));
+       url_index++) {
+    const ScoredUrlRow& scored_url_row = result.scored_url_rows[url_index];
     std::vector<size_t> best_indices = scored_url_row.GetBestScoreIndices(
         0, kContextPassagesMinimumWordCount.Get());
     std::vector<std::string>& best_passages =

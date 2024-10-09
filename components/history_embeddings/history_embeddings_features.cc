@@ -161,6 +161,11 @@ const base::FeatureParam<bool> kEnableSidePanel(&kHistoryEmbeddings,
                                                 "EnableSidePanel",
                                                 false);
 
+const base::FeatureParam<int> kMaxAnswererContextUrlCount(
+    &kHistoryEmbeddings,
+    "MaxAnswererContextUrlCount",
+    1);
+
 const base::FeatureParam<double> kWordMatchMinEmbeddingScore(
     &kHistoryEmbeddings,
     "WordMatchMinEmbeddingScore",
