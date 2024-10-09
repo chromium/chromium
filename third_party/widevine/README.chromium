@@ -1,7 +1,8 @@
 Name: Widevine Content Decryption Module
 Short Name: Widevine CDM
 URL: https://www.widevine.com
-Version: 0
+Version: N/A
+Revision: DEPS
 License: By exception only
 License File: LICENSE
 Security Critical: yes

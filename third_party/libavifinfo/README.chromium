@@ -1,8 +1,8 @@
 Name: libavif - Library for extracting metadata from .avif files
 Short Name: libavifinfo
 URL: https://aomedia.googlesource.com/libavifinfo/
-Version: 0
-Revision: DEPS controlled
+Version: N/A
+Revision: DEPS
 License: 2-Clause BSD
 License File: LICENSE
 Security Critical: yes

@@ -1,6 +1,7 @@
 Name: Android SDK manifest merger
 Short Name: manifest merger
-Version: unknown
+Version: N/A
+Revision: DEPS
 License: Apache Version 2.0
 License File: LICENSE
 Security Critical: No

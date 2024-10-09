@@ -1,6 +1,7 @@
 Name: Android SDK tool aapt2
 Short name: aapt2
-Version: unknown
+Version: N/A
+Revision: DEPS
 URL:  https://dl.google.com/dl/android/maven2/com/android/tools/build/aapt2/${Version}/aapt2-${Version}-linux.jar
 Security Critical: no
 Shipped: no

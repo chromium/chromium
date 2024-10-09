@@ -1,6 +1,7 @@
 Name: ChromiumUpdater
 URL: https://chromium.googlesource.com/chromium/src/+/main/chrome/updater/README.md
-Version: Varies
+Version: N/A
+Revision: DEPS
 License: BSD
 License File: LICENSE
 Security Critical: Yes

@@ -1,7 +1,8 @@
 Name: Google Test
 Short Name: googletest
 URL: https://github.com/google/googletest/
-Revision: See DEPS
+Version: N/A
+Revision: DEPS
 License: BSD 3-clause
 License File: googletest/googletest/LICENSE
 Security Critical: no
