@@ -27,17 +27,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_2D_LAYER_BRIDGE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/rand_util.h"
-#include "build/build_config.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/deque.h"
 
 namespace blink {
+
+class CanvasResourceHost;
+class CanvasResourceProvider;
 
 class PLATFORM_EXPORT Canvas2DLayerBridge {
  public:
