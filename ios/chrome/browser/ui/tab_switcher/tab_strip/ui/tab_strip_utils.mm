@@ -14,12 +14,16 @@
     return UIColor.blackColor;
   } else if (TabStripFeaturesUtils.hasDarkerBackground) {
     return [UIColor colorNamed:kTabStripBackgroundColor];
+  } else if (TabStripFeaturesUtils.hasDarkerBackgroundV3) {
+    return [UIColor colorNamed:kTabStripV3BackgroundColor];
   }
   return [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
 }
 
 + (UIColor*)newTabButtonSymbolColor {
-  if (TabStripFeaturesUtils.hasBlackBackground) {
+  if (TabStripFeaturesUtils.hasHighContrastNTB) {
+    return [UIColor colorNamed:kTextPrimaryColor];
+  } else if (TabStripFeaturesUtils.hasBlackBackground) {
     return [UIColor colorNamed:kStaticGrey600Color];
   } else if (TabStripFeaturesUtils.hasBiggerNTB) {
     return [UIColor colorNamed:kTabStripNewTabButtonColor];

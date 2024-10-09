@@ -75,7 +75,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
     else { return contentSize }
 
     var offset: CGFloat =
-      TabStripFeaturesUtils.hasCloserNTB ? 8 : 0
+      TabStripFeaturesUtils.hasCloserNTB ? 16 : 0
 
     // Compare with "width - 1" to avoid floating comparison issues.
     if contentSize.width >= collectionView.bounds.width - 1 {
@@ -360,6 +360,13 @@ class TabStripLayout: UICollectionViewFlowLayout {
     cell.setSeparatorsHeight(separatorHeight)
     cell.intersectsLeftEdge = intersectsLeftEdge
     cell.intersectsRightEdge = intersectsRightEdge
+
+    if TabStripFeaturesUtils.hasCloseButtonsVisible {
+      let visibilityChangeWidth = TabStripConstants.TabItem.closeButtonVisibilityWidth
+      let closeHiddenWidth = TabStripConstants.TabItem.minWidthV3 - visibilityChangeWidth
+      let visibility = (frame.width - closeHiddenWidth) / visibilityChangeWidth
+      cell.setCloseButtonVisibility(min(max(visibility, 0), 1))
+    }
 
     layoutAttributes.frame = frame
     return layoutAttributes
@@ -722,7 +729,11 @@ class TabStripLayout: UICollectionViewFlowLayout {
 
     var itemWidth: CGFloat =
       (collectionViewWidth - itemSpacingSum - groupCellWidthSum) / tabCellCount
-    itemWidth = max(itemWidth, TabStripConstants.TabItem.minWidth)
+    if TabStripFeaturesUtils.hasCloseButtonsVisible {
+      itemWidth = max(itemWidth, TabStripConstants.TabItem.minWidthV3)
+    } else {
+      itemWidth = max(itemWidth, TabStripConstants.TabItem.minWidth)
+    }
     itemWidth = min(itemWidth, TabStripConstants.TabItem.maxWidth)
 
     tabCellSize = CGSize(width: itemWidth, height: TabStripConstants.TabItem.height)

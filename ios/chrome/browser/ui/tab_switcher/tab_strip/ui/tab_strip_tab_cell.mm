@@ -6,6 +6,8 @@
 
 #import <MaterialComponents/MaterialActivityIndicator.h>
 
+#import <algorithm>
+
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
@@ -40,6 +42,9 @@ const CGFloat kCollapsedWidthThreshold = 150;
 // Separator constraints.
 const CGFloat kSeparatorHorizontalInset = 2;
 const CGFloat kSeparatorGradientWidth = 4;
+
+// Visibility constants.
+constexpr CGFloat kCloseButtonVisibilityThreshold = 0.3;
 
 // Content view constants.
 const CGFloat kFaviconLeadingMargin = 10;
@@ -384,6 +389,19 @@ UIImage* DefaultFavicon() {
   }
 }
 
+- (void)setCloseButtonVisibility:(CGFloat)visibility {
+  CGFloat closeButtonAlpha =
+      std::clamp<CGFloat>((visibility - kCloseButtonVisibilityThreshold) /
+                              (1 - kCloseButtonVisibilityThreshold),
+                          0, 1);
+  _closeButton.alpha = closeButtonAlpha;
+  // Check if the alpha is low and not just 0 to avoid potential rounding
+  // errors.
+  _closeButton.hidden = closeButtonAlpha < 0.01;
+  _titleContainerTrailingConstraint.constant =
+      -kTitleInset + (1 - visibility) * (kCloseButtonSize + kCloseButtonMargin);
+}
+
 #pragma mark - UICollectionViewCell
 
 - (void)applyLayoutAttributes:
@@ -502,6 +520,8 @@ UIImage* DefaultFavicon() {
 
 // Updates view colors.
 - (void)updateColors {
+  BOOL isSelected = self.isSelected;
+
   UIColor* backgroundColor;
   if (self.isHighlighted || self.configurationState.cellDragState !=
                                 UICellConfigurationDragStateNone) {
@@ -513,16 +533,28 @@ UIImage* DefaultFavicon() {
     backgroundColor = [UIColor colorNamed:kUpdatedTertiaryBackgroundColor];
   } else {
     backgroundColor =
-        self.isSelected ? [UIColor colorNamed:kGroupedSecondaryBackgroundColor]
-                        : [TabStripHelper backgroundColor];
+        isSelected ? [UIColor colorNamed:kGroupedSecondaryBackgroundColor]
+                   : [TabStripHelper backgroundColor];
   }
 
   if (TabStripFeaturesUtils.hasBlackBackground) {
-    if (self.isSelected) {
+    if (isSelected) {
       self.overrideUserInterfaceStyle = UIUserInterfaceStyleUnspecified;
     } else {
       self.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
     }
+  }
+
+  if (TabStripFeaturesUtils.hasHighContrastInactiveTabs) {
+    UIColor* inactiveColor = [UIColor
+        colorWithDynamicProvider:^UIColor*(UITraitCollection* traitCollection) {
+          if (traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+            return [UIColor colorNamed:kTextSecondaryColor];
+          }
+          return [UIColor colorNamed:kTextTertiaryColor];
+        }];
+    _titleLabel.textColor =
+        isSelected ? [UIColor colorNamed:kTextPrimaryColor] : inactiveColor;
   }
 
   // Needed to correctly update the `_titleGradientView` colors in incognito.
@@ -539,6 +571,10 @@ UIImage* DefaultFavicon() {
 
 // Hides the close button view if the cell is collapsed.
 - (void)updateCollapsedState {
+  if (TabStripFeaturesUtils.hasCloseButtonsVisible) {
+    return;
+  }
+
   BOOL collapsed = NO;
   if (self.frame.size.width < kCollapsedWidthThreshold) {
     // Don't hide the close button if the cell is selected.

@@ -595,18 +595,26 @@ const FeatureEntry::FeatureParam kModernTabStripBlackBackgroundOption[] = {
     {kModernTabStripBiggerNTB, "true"}};
 
 const FeatureEntry::FeatureParam kModernTabStripCloseButtonVisibleOption[] = {
-    {kModernTabStripCloseButtonsVisible, "true"}};
+    {kModernTabStripCloseButtonsVisible, "true"},
+    {kModernTabStripCloserNTB, "true"},
+    {kModernTabStripBiggerNTB, "true"}};
 const FeatureEntry::FeatureParam
     kModernTabStripInactiveTabsHighContrastOption[] = {
         {kModernTabStripInactiveTabsHighContrast, "true"},
-        {kModernTabStripDarkerBackgroundV3, "true"}};
+        {kModernTabStripCloserNTB, "true"},
+        {kModernTabStripDarkerBackgroundV3, "true"},
+        {kModernTabStripBiggerNTB, "true"}};
 const FeatureEntry::FeatureParam kModernTabStripHighContrastNTBOption[] = {
-    {kModernTabStripHighContrastNTB, "true"}};
+    {kModernTabStripHighContrastNTB, "true"},
+    {kModernTabStripCloserNTB, "true"},
+    {kModernTabStripBiggerNTB, "true"}};
 const FeatureEntry::FeatureParam kModernTabStripCloseV3AllOptions[] = {
     {kModernTabStripCloseButtonsVisible, "true"},
     {kModernTabStripInactiveTabsHighContrast, "true"},
+    {kModernTabStripCloserNTB, "true"},
     {kModernTabStripHighContrastNTB, "true"},
-    {kModernTabStripDarkerBackgroundV3, "true"}};
+    {kModernTabStripDarkerBackgroundV3, "true"},
+    {kModernTabStripBiggerNTB, "true"}};
 
 const FeatureEntry::FeatureVariation kModernTabStripVariations[] = {
     {"New tab button dynamic", kModernTabStripNTBDynamic,

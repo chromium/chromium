@@ -52,6 +52,7 @@ NSString* const kTabGroupFaviconBackgroundColor =
     @"tab_group_favicons_background_color";
 NSString* const kOmniboxPopoutOverlayColor = @"omnibox_popout_overlay_color";
 NSString* const kTabStripBackgroundColor = @"tab_strip_background_color";
+NSString* const kTabStripV3BackgroundColor = @"tab_strip_v3_background_color";
 NSString* const kTabStripNewTabButtonColor = @"tab_strip_new_tab_button_color";
 NSString* const kTabGroupPinkColor = @"tab_group_pink_color";
 NSString* const kTabGroupCyanColor = @"tab_group_cyan_color";
