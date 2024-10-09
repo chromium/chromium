@@ -3982,14 +3982,9 @@ TEST_P(PartitionAllocTest, FundamentalAlignment) {
     // Since slot size is multiples of kAlignment,
     // C % kAlignment == (slot_size - ExtraAllocSize(allocator)) % kAlignment.
     // C % kAlignment == (-ExtraAllocSize(allocator)) % kAlignment.
-    // Since kCookieSize is a multiple of kAlignment,
-    // C % kAlignment == (-sizeof(InSlotMetadata)) % kAlignment
-    // == (kAlignment - sizeof(InSlotMetadata)) % kAlignment.
     EXPECT_EQ(allocator.root()->AllocationCapacityFromSlotStart(slot_start) %
                   fundamental_alignment,
-              UseBRPPool()
-                  ? (-ExtraAllocSize(allocator) % fundamental_alignment)
-                  : 0);
+              -ExtraAllocSize(allocator) % fundamental_alignment);
 
     allocator.root()->Free(ptr);
     allocator.root()->Free(ptr2);

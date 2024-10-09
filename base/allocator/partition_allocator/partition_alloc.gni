@@ -161,6 +161,12 @@ declare_args() {
   # later verify the pattern remain unchanged to ensure there is no OOB write.
   # It comes with performance and memory cost, hence enabled only in debug.
   use_partition_cookie = is_debug || dcheck_always_on
+
+  # This will change partition cookie size to 4B or 8B, whichever equivalent to
+  # size of InSlotMetadata. This option is useful for InSlotMetadata corruption
+  # investigation.
+  # TODO(crbug.com/371135823): Remove upon completion of investigation.
+  smaller_partition_cookie = false
 }
 
 declare_args() {

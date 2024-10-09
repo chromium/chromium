@@ -9,13 +9,29 @@
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_check.h"
 
+#if PA_BUILDFLAG(SMALLER_PARTITION_COOKIE)
+#include "partition_alloc/in_slot_metadata.h"
+#endif  // PA_BUILDFLAG(SMALLER_PARTITION_COOKIE)
+
 namespace partition_alloc::internal {
 
+#if PA_BUILDFLAG(SMALLER_PARTITION_COOKIE)
+#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+static constexpr size_t kCookieSize =
+    AlignUpInSlotMetadataSizeForApple(sizeof(InSlotMetadata));
+static_assert(kCookieSize == kInSlotMetadataSizeAdjustment);
+#else
+// Size of `InSlotMetadata` is unknown: using 4 bytes as an estimate.
+static constexpr size_t kCookieSize = AlignUpInSlotMetadataSizeForApple(4);
+static_assert(kCookieSize <= 16);
+#endif  //  PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#else
 static constexpr size_t kCookieSize = 16;
+#endif  // PA_BUILDFLAG(SMALLER_PARTITION_COOKIE)
 
 #if PA_BUILDFLAG(USE_PARTITION_COOKIE)
 
-inline constexpr unsigned char kCookieValue[kCookieSize] = {
+inline constexpr unsigned char kCookieValue[] = {
     0xDE, 0xAD, 0xBE, 0xEF, 0xCA, 0xFE, 0xD0, 0x0D,
     0x13, 0x37, 0xF0, 0x05, 0xBA, 0x11, 0xAB, 0x1E};
 
