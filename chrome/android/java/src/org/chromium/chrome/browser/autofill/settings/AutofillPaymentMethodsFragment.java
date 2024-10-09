@@ -366,7 +366,8 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
         // Add 'Add IBAN' button. Tapping it brings up the IBAN editor which allows users to type in
         // a new IBAN.
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_LOCAL_IBAN)
-                && personalDataManager.isAutofillPaymentMethodsEnabled()) {
+                && personalDataManager.isAutofillPaymentMethodsEnabled()
+                && personalDataManager.shouldShowAddIbanButtonOnSettingsPage()) {
             Preference add_iban_pref = new Preference(getStyledContext());
             Drawable plusIcon = ApiCompatibilityUtils.getDrawable(getResources(), R.drawable.plus);
             plusIcon.mutate();

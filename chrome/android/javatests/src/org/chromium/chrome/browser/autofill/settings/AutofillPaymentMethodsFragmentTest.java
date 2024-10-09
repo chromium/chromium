@@ -1105,17 +1105,17 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({
-        ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE,
-    })
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_LOCAL_IBAN})
     @Policies.Add({@Policies.Item(key = "AutofillCreditCardEnabled", string = "true")})
-    public void testAddIbanButton_shownWhenAutofillEnabled() throws Exception {
+    public void testAddIbanButton_shownWhenAutofillEnabledAndIbanCriteriaMet() throws Exception {
+        // Enable `ShouldShowAddIbanButtonOnSettingsPage` through indicating that the user has used
+        // IBAN before.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.AUTOFILL_HAS_SEEN_IBAN, true);
+                });
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
-        // Verify that the preference on the initial screen map is only Save and Fill toggle +
-        // Reauth toggle + Add Card button + Add IBAN button + Payment Apps.
-        Assert.assertEquals(5, getPreferenceScreen(activity).getPreferenceCount());
         Assert.assertNotNull(
                 getPreferenceScreen(activity)
                         .findPreference(AutofillPaymentMethodsFragment.PREF_ADD_IBAN));
@@ -1125,7 +1125,30 @@ public class AutofillPaymentMethodsFragmentTest {
     @MediumTest
     @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_LOCAL_IBAN})
     @Policies.Add({@Policies.Item(key = "AutofillCreditCardEnabled", string = "true")})
-    public void testAddIbanButton_notShownWhenAutofillEnabledButFeatureDisabled() throws Exception {
+    public void testAddIbanButton_notShownWhenFeatureDisabled() throws Exception {
+        // Enable `ShouldShowAddIbanButtonOnSettingsPage` through indicating that the user has used
+        // IBAN before.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.AUTOFILL_HAS_SEEN_IBAN, true);
+                });
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        Assert.assertNull(
+                getPreferenceScreen(activity)
+                        .findPreference(AutofillPaymentMethodsFragment.PREF_ADD_IBAN));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_LOCAL_IBAN})
+    @Policies.Add({@Policies.Item(key = "AutofillCreditCardEnabled", string = "true")})
+    public void testAddIbanButton_notShownWhenIbanCriteriaNotMet() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.AUTOFILL_HAS_SEEN_IBAN, false);
+                });
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
         Assert.assertNull(
@@ -1138,6 +1161,13 @@ public class AutofillPaymentMethodsFragmentTest {
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_LOCAL_IBAN})
     @Policies.Add({@Policies.Item(key = "AutofillCreditCardEnabled", string = "false")})
     public void testAddIbanButton_notShownWhenAutofillDisabled() throws Exception {
+        // Enable `ShouldShowAddIbanButtonOnSettingsPage` through indicating that the user has used
+        // IBAN before.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.AUTOFILL_HAS_SEEN_IBAN, true);
+                });
+
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
         Assert.assertNull(
@@ -1149,6 +1179,12 @@ public class AutofillPaymentMethodsFragmentTest {
     @MediumTest
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_LOCAL_IBAN})
     public void testAddIbanButtonClicked_opensLocalIbanEditor() throws Exception {
+        // Enable `ShouldShowAddIbanButtonOnSettingsPage` through indicating that the user has used
+        // IBAN before.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.AUTOFILL_HAS_SEEN_IBAN, true);
+                });
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
         Preference addIbanPreference =
@@ -1308,6 +1344,12 @@ public class AutofillPaymentMethodsFragmentTest {
     })
     public void testAllToggles_mandatoryReauthEnabled_cvcStorageEnabled_localIbanEnabled()
             throws Exception {
+        // Enable `ShouldShowAddIbanButtonOnSettingsPage` through indicating that the user has used
+        // IBAN before.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    getPrefService().setBoolean(Pref.AUTOFILL_HAS_SEEN_IBAN, true);
+                });
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
         // Verify that the preference on the initial screen map is only Save and Fill toggle +

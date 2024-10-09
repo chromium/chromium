@@ -918,6 +918,12 @@ public class PersonalDataManager implements Destroyable {
         return PersonalDataManagerJni.get().isValidIban(mPersonalDataManagerAndroid, ibanValue);
     }
 
+    public boolean shouldShowAddIbanButtonOnSettingsPage() {
+        ThreadUtils.assertOnUiThread();
+        return PersonalDataManagerJni.get()
+                .shouldShowAddIbanButtonOnSettingsPage(mPersonalDataManagerAndroid);
+    }
+
     public BankAccount[] getMaskedBankAccounts() {
         ThreadUtils.assertOnUiThread();
         return PersonalDataManagerJni.get().getMaskedBankAccounts(mPersonalDataManagerAndroid);
@@ -1262,6 +1268,8 @@ public class PersonalDataManager implements Destroyable {
         String addOrUpdateLocalIban(long nativePersonalDataManagerAndroid, Iban iban);
 
         boolean isValidIban(long nativePersonalDataManagerAndroid, String ibanValue);
+
+        boolean shouldShowAddIbanButtonOnSettingsPage(long nativePersonalDataManagerAndroid);
 
         BankAccount[] getMaskedBankAccounts(long nativePersonalDataManagerAndroid);
     }

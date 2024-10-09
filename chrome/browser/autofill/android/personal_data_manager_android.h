@@ -235,6 +235,10 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& jiban_value);
 
+  // Returns whether the `Add IBAN` button should be shown on the payment
+  // methods settings page.
+  jboolean ShouldShowAddIbanButtonOnSettingsPage(JNIEnv* env);
+
   // Returns whether the Autofill feature is managed.
   jboolean IsAutofillManaged(JNIEnv* env);
 

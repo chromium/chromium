@@ -734,6 +734,14 @@ jboolean PersonalDataManagerAndroid::IsValidIban(
   return Iban::IsValid(ConvertJavaStringToUTF16(env, jiban_value));
 }
 
+jboolean PersonalDataManagerAndroid::ShouldShowAddIbanButtonOnSettingsPage(
+    JNIEnv* env) {
+  return ShouldShowIbanOnSettingsPage(
+      personal_data_manager_->payments_data_manager()
+          .GetCountryCodeForExperimentGroup(),
+      prefs_);
+}
+
 ScopedJavaLocalRef<jobjectArray>
 PersonalDataManagerAndroid::GetMaskedBankAccounts(JNIEnv* env) {
   std::vector<ScopedJavaLocalRef<jobject>> j_bank_accounts_list;
