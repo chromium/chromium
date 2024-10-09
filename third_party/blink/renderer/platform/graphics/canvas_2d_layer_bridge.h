@@ -26,9 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_2D_LAYER_BRIDGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_2D_LAYER_BRIDGE_H_
 
-#include <memory>
-#include <utility>
-
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/rand_util.h"
@@ -71,13 +68,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
     kMaxValue = kHibernationAbortedBecauseNoSurface,
   };
 
-  class PLATFORM_EXPORT Logger {
-   public:
-    virtual void ReportHibernationEvent(HibernationEvent);
-    virtual void DidStartHibernating() {}
-    virtual ~Logger() = default;
-  };
-
   CanvasResourceProvider* GetOrCreateResourceProvider();
 
   // Allow access to the hibernation handler while Canvas2DLayerBridge is being
@@ -94,7 +84,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
 
   CanvasHibernationHandler hibernation_handler_;
 
-  std::unique_ptr<Logger> logger_;
   bool hibernation_scheduled_ = false;
 
   raw_ptr<CanvasResourceHost> resource_host_;

@@ -51,6 +51,10 @@ namespace blink {
 
 namespace {
 
+void ReportHibernationEvent(Canvas2DLayerBridge::HibernationEvent event) {
+  UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.HibernationEvents", event);
+}
+
 gpu::ContextSupport* GetContextSupport() {
   if (!SharedGpuContext::ContextProviderWrapper() ||
       !SharedGpuContext::ContextProviderWrapper()->ContextProvider()) {
@@ -64,7 +68,7 @@ gpu::ContextSupport* GetContextSupport() {
 }  // namespace
 
 Canvas2DLayerBridge::Canvas2DLayerBridge(CanvasResourceHost* resource_host)
-    : logger_(std::make_unique<Logger>()), resource_host_(resource_host) {
+    : resource_host_(resource_host) {
   CHECK(resource_host_);
 
   // Used by browser tests to detect the use of a Canvas2DLayerBridge.
@@ -74,7 +78,7 @@ Canvas2DLayerBridge::Canvas2DLayerBridge(CanvasResourceHost* resource_host)
 
 Canvas2DLayerBridge::~Canvas2DLayerBridge() {
   if (hibernation_handler_.IsHibernating()) {
-    logger_->ReportHibernationEvent(kHibernationEndedWithTeardown);
+    ReportHibernationEvent(kHibernationEndedWithTeardown);
   }
 }
 
@@ -85,8 +89,7 @@ void Canvas2DLayerBridge::HibernateOrLogFailure(
   if (bridge) {
     bridge->Hibernate();
   } else {
-    Canvas2DLayerBridge::Logger local_logger;
-    local_logger.ReportHibernationEvent(
+    ReportHibernationEvent(
         Canvas2DLayerBridge::
             kHibernationAbortedDueToDestructionWhileHibernatePending);
   }
@@ -100,22 +103,22 @@ void Canvas2DLayerBridge::Hibernate() {
   hibernation_scheduled_ = false;
 
   if (!resource_host_->ResourceProvider()) {
-    logger_->ReportHibernationEvent(kHibernationAbortedBecauseNoSurface);
+    ReportHibernationEvent(kHibernationAbortedBecauseNoSurface);
     return;
   }
 
   if (resource_host_->IsPageVisible()) {
-    logger_->ReportHibernationEvent(kHibernationAbortedDueToVisibilityChange);
+    ReportHibernationEvent(kHibernationAbortedDueToVisibilityChange);
     return;
   }
 
   if (!resource_host_->IsResourceValid()) {
-    logger_->ReportHibernationEvent(kHibernationAbortedDueGpuContextLoss);
+    ReportHibernationEvent(kHibernationAbortedDueGpuContextLoss);
     return;
   }
 
   if (resource_host_->GetRasterMode() == RasterMode::kCPU) {
-    logger_->ReportHibernationEvent(
+    ReportHibernationEvent(
         kHibernationAbortedDueToSwitchToUnacceleratedRendering);
     return;
   }
@@ -128,13 +131,13 @@ void Canvas2DLayerBridge::Hibernate() {
   scoped_refptr<StaticBitmapImage> snapshot =
       resource_host_->ResourceProvider()->Snapshot(FlushReason::kHibernating);
   if (!snapshot) {
-    logger_->ReportHibernationEvent(kHibernationAbortedDueSnapshotFailure);
+    ReportHibernationEvent(kHibernationAbortedDueSnapshotFailure);
     return;
   }
   sk_sp<SkImage> sw_image =
       snapshot->PaintImageForCurrentFrame().GetSwSkImage();
   if (!sw_image) {
-    logger_->ReportHibernationEvent(kHibernationAbortedDueSnapshotFailure);
+    ReportHibernationEvent(kHibernationAbortedDueSnapshotFailure);
     return;
   }
   hibernation_handler_.SaveForHibernation(
@@ -146,7 +149,6 @@ void Canvas2DLayerBridge::Hibernate() {
 
   // shouldBeDirectComposited() may have changed.
   resource_host_->SetNeedsCompositingUpdate();
-  logger_->DidStartHibernating();
 
   // We've just used a large transfer cache buffer to get the snapshot, make
   // sure that it's collected. Calling `SetAggressivelyFreeResources()` also
@@ -207,13 +209,12 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
   }
 
   if (resource_provider->IsAccelerated()) {
-    logger_->ReportHibernationEvent(kHibernationEndedNormally);
+    ReportHibernationEvent(kHibernationEndedNormally);
   } else {
     if (!resource_host_->IsPageVisible()) {
-      logger_->ReportHibernationEvent(
-          kHibernationEndedWithSwitchToBackgroundRendering);
+      ReportHibernationEvent(kHibernationEndedWithSwitchToBackgroundRendering);
     } else {
-      logger_->ReportHibernationEvent(kHibernationEndedWithFallbackToSW);
+      ReportHibernationEvent(kHibernationEndedWithFallbackToSW);
     }
   }
 
@@ -252,7 +253,7 @@ void Canvas2DLayerBridge::PageVisibilityChanged() {
       resource_host_->GetRasterMode() == RasterMode::kGPU && !page_is_visible &&
       !hibernation_scheduled_) {
     resource_host_->ClearLayerTexture();
-    logger_->ReportHibernationEvent(kHibernationScheduled);
+    ReportHibernationEvent(kHibernationScheduled);
     hibernation_scheduled_ = true;
     ThreadScheduler::Current()->PostIdleTask(
         FROM_HERE, WTF::BindOnce(&Canvas2DLayerBridge::HibernateOrLogFailure,
@@ -286,11 +287,6 @@ void Canvas2DLayerBridge::PageVisibilityChanged() {
   if (page_is_visible && hibernation_handler_.IsHibernating()) {
     GetOrCreateResourceProvider();  // Rude awakening
   }
-}
-
-void Canvas2DLayerBridge::Logger::ReportHibernationEvent(
-    HibernationEvent event) {
-  UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.HibernationEvents", event);
 }
 
 }  // namespace blink
