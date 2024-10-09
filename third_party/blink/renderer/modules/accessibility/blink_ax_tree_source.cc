@@ -23,9 +23,8 @@
 namespace blink {
 
 BlinkAXTreeSource::BlinkAXTreeSource(AXObjectCacheImpl& ax_object_cache,
-                                     bool truncate_inline_textboxes)
-    : ax_object_cache_(ax_object_cache),
-      truncate_inline_textboxes_(truncate_inline_textboxes) {}
+                                     bool is_snapshot)
+    : ax_object_cache_(ax_object_cache), is_snapshot_(is_snapshot) {}
 
 BlinkAXTreeSource::~BlinkAXTreeSource() = default;
 
@@ -223,7 +222,7 @@ int32_t BlinkAXTreeSource::GetId(const AXObject* node) const {
 }
 
 size_t BlinkAXTreeSource::GetChildCount(const AXObject* node) const {
-  if (truncate_inline_textboxes_ &&
+  if (ShouldTruncateInlineTextBoxes() &&
       ui::CanHaveInlineTextBoxChildren(node->RoleValue())) {
     return 0;
   }
@@ -231,7 +230,7 @@ size_t BlinkAXTreeSource::GetChildCount(const AXObject* node) const {
 }
 
 AXObject* BlinkAXTreeSource::ChildAt(const AXObject* node, size_t index) const {
-  if (truncate_inline_textboxes_) {
+  if (ShouldTruncateInlineTextBoxes()) {
     CHECK(!ui::CanHaveInlineTextBoxChildren(node->RoleValue()));
   }
   auto* child = node->ChildAtIncludingIgnored(static_cast<int>(index));
@@ -306,7 +305,7 @@ void BlinkAXTreeSource::SerializeNode(const AXObject* src,
     return;
   }
 
-  src->Serialize(dst, ax_object_cache_->GetAXMode());
+  src->Serialize(dst, ax_object_cache_->GetAXMode(), is_snapshot_);
 }
 
 void BlinkAXTreeSource::Trace(Visitor* visitor) const {

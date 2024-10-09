@@ -5310,11 +5310,8 @@ bool AXObjectCacheImpl::SerializeEntireTree(
   CHECK(!Root()->IsDetached());
   CHECK(GetDocument().IsActive());
 
-  // Pass true for truncate_inline_textboxes, as they are just extra noise for
-  // consumers of the entire tree (e.g. AXTreeSnapshotter). This avoids passing
-  // the inline text boxes, even if a previous AXContext had loaded them.
   BlinkAXTreeSource* tree_source =
-      BlinkAXTreeSource::Create(*this, /* truncate inline textboxes */ true);
+      BlinkAXTreeSource::Create(*this, /* is_snapshot */ true);
   // The new tree source is frozen for its entire lifetime.
   tree_source->Freeze();
 

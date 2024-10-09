@@ -343,7 +343,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual AbstractInlineTextBox* GetInlineTextBox() const { return nullptr; }
 
   // Serialize the properties of this node into |node_data|.
-  void Serialize(ui::AXNodeData* node_data, ui::AXMode accessibility_mode) const;
+  void Serialize(ui::AXNodeData* node_data,
+                 ui::AXMode accessibility_mode,
+                 bool is_snapshot = false) const;
 
   // Determine subclass type.
   virtual bool IsImageMapLink() const;
@@ -1569,7 +1571,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   void SerializeStyleAttributes(ui::AXNodeData* node_data) const;
   void SerializeTableAttributes(ui::AXNodeData* node_data) const;
   void SerializeUnignoredAttributes(ui::AXNodeData* node_data,
-                                    ui::AXMode accessibility_mode) const;
+                                    ui::AXMode accessibility_mode,
+                                    bool is_snapshot) const;
   void SerializeComputedDetailsRelation(ui::AXNodeData* node_data) const;
 
   // Serialization implemented in specific subclasses.

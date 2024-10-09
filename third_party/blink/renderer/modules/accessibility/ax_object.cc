@@ -1383,7 +1383,8 @@ void SerializeAriaNotificationAttributes(const AriaNotifications& notifications,
 }  // namespace
 
 void AXObject::Serialize(ui::AXNodeData* node_data,
-                         ui::AXMode accessibility_mode) const {
+                         ui::AXMode accessibility_mode,
+                         bool is_snapshot) const {
   // Reduce redundant ancestor chain walking for display lock computations.
   auto memoization_scope =
       DisplayLockUtilities::CreateLockCheckMemoizationScope();
@@ -1466,7 +1467,7 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
     SerializeHTMLId(node_data);
   }
 
-  SerializeUnignoredAttributes(node_data, accessibility_mode);
+  SerializeUnignoredAttributes(node_data, accessibility_mode, is_snapshot);
 
   if (!accessibility_mode.has_mode(ui::AXMode::kScreenReader)) {
     // Return early. None of the following attributes are needed outside of
@@ -2321,12 +2322,27 @@ void AXObject::SerializeTableAttributes(ui::AXNodeData* node_data) const {
 
 // Attributes that don't need to be serialized on ignored nodes.
 void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
-                                            ui::AXMode accessibility_mode) const {
+                                            ui::AXMode accessibility_mode,
+                                            bool is_snapshot) const {
   SerializeNameAndDescriptionAttributes(accessibility_mode, node_data);
 
   if (accessibility_mode.has_mode(ui::AXMode::kScreenReader)) {
     SerializeMarkerAttributes(node_data);
+#if BUILDFLAG(IS_ANDROID)
+    // On Android, style attributes are only serialized for snapshots.
+    if (is_snapshot) {
+      SerializeStyleAttributes(node_data);
+    } else {
+      // For non-snapshots we include writing direction for image descriptions.
+      // TODO(mschillaci): Remove this after content is updated.
+      if (IsImage() &&
+          GetTextDirection() != ax::mojom::blink::WritingDirection::kNone) {
+        node_data->SetTextDirection(GetTextDirection());
+      }
+    }
+#else
     SerializeStyleAttributes(node_data);
+#endif
   }
 
   if (IsLinked()) {
