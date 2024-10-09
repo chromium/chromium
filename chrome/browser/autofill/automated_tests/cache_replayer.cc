@@ -222,7 +222,7 @@ bool IsSingleFormRequest(const AutofillPageQueryRequest& query) {
 // Validates, retrieves, and decodes node |node_name| from |request_node| and
 // returns it in |decoded_value|. Returns false if unsuccessful.
 bool RetrieveValueFromRequestNode(const base::Value::Dict& request_node,
-                                  const std::string node_name,
+                                  const std::string& node_name,
                                   std::string* decoded_value) {
   // Get and check field node string.
   std::string serialized_value;

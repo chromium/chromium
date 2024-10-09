@@ -372,7 +372,7 @@ class AutofillCapturedSitesInteractiveTest
  private:
   [[nodiscard]] testing::AssertionResult ShowAutofillSuggestion(
       const std::string& target_element_xpath,
-      const std::vector<std::string> iframe_path,
+      const std::vector<std::string>& iframe_path,
       content::RenderFrameHost* frame) {
     auto disable_popup_timing_checks = [&frame]() {
       auto* web_contents = content::WebContents::FromRenderFrameHost(frame);

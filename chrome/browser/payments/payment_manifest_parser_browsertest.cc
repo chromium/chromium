@@ -20,8 +20,8 @@ namespace payments {
 namespace {
 
 std::string CreatePaymentMethodManifestJson(
-    const std::vector<GURL> web_app_manifest_urls,
-    const std::vector<url::Origin> supported_origins) {
+    const std::vector<GURL>& web_app_manifest_urls,
+    const std::vector<url::Origin>& supported_origins) {
   std::string manifest =
       "{"
       "    \"default_applications\":[";

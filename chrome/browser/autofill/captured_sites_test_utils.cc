@@ -2106,7 +2106,7 @@ bool TestRecipeReplayer::ScrollElementIntoView(
 
 bool TestRecipeReplayer::PlaceFocusOnElement(
     const std::string& element_xpath,
-    const std::vector<std::string> iframe_path,
+    const std::vector<std::string>& iframe_path,
     content::RenderFrameHost* frame) {
   if (!ScrollElementIntoView(element_xpath, frame))
     return false;
@@ -2211,7 +2211,7 @@ bool TestRecipeReplayer::GetBoundingRectOfTargetElement(
 
 bool TestRecipeReplayer::GetBoundingRectOfTargetElement(
     const std::string& target_element_xpath,
-    const std::vector<std::string> iframe_path,
+    const std::vector<std::string>& iframe_path,
     content::RenderFrameHost* frame,
     gfx::Rect* output_rect) {
   gfx::Vector2d offset;
