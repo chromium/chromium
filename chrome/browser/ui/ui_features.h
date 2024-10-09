@@ -85,16 +85,6 @@ BASE_DECLARE_FEATURE(kIOSPromoRefreshedPasswordBubble);
 
 BASE_DECLARE_FEATURE(kIOSPromoAddressBubble);
 
-BASE_DECLARE_FEATURE(kIOSPromoBookmarkBubble);
-// This enum lists the possible params for the kIOSPromoBookmarkBubble promo.
-// The first is the launch candidate, the other one is for debugging/testing.
-enum class IOSPromoBookmarkBubbleActivation {
-  kContextual,
-  kAlwaysShowWithBookmarkBubble,
-};
-extern const base::FeatureParam<IOSPromoBookmarkBubbleActivation>
-    kIOSPromoBookmarkBubbleActivationParam;
-
 BASE_DECLARE_FEATURE(kIOSPromoPaymentBubble);
 #endif
 

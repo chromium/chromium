@@ -3043,19 +3043,6 @@ constexpr char kVcTrayMicIndicatorInternalName[] = "vc-tray-mic-indicator";
 constexpr char kVcTrayTitleHeaderInternalName[] = "vc-tray-title-header";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-constexpr FeatureEntry::FeatureParam kIOSPromoBookmarkBubbleContextual[] = {
-    {"activation", "contextual"}};
-constexpr FeatureEntry::FeatureParam kIOSPromoBookmarkBubbleAlwaysShow[] = {
-    {"activation", "always-show"}};
-
-constexpr FeatureEntry::FeatureVariation kIOSPromoBookmarkBubbleVariations[] = {
-    {"contextual activation", kIOSPromoBookmarkBubbleContextual,
-     std::size(kIOSPromoBookmarkBubbleContextual), nullptr},
-    {"always show activation", kIOSPromoBookmarkBubbleAlwaysShow,
-     std::size(kIOSPromoBookmarkBubbleAlwaysShow), nullptr}};
-#endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 #if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kLensOverlayNoOmniboxEntryPoint[] = {
     {"omnibox-entry-point", "false"},
@@ -10146,13 +10133,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"ios-promo-address-bubble", flag_descriptions::kIOSPromoAddressBubbleName,
      flag_descriptions::kIOSPromoAddressBubbleDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kIOSPromoAddressBubble)},
-
-    {"ios-promo-bookmark-bubble",
-     flag_descriptions::kIOSPromoBookmarkBubbleName,
-     flag_descriptions::kIOSPromoBookmarkBubbleDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kIOSPromoBookmarkBubble,
-                                    kIOSPromoBookmarkBubbleVariations,
-                                    "IOSPromoBookmarkBubble")},
 
     {"ios-promo-payment-bubble", flag_descriptions::kIOSPromoPaymentBubbleName,
      flag_descriptions::kIOSPromoPaymentBubbleDescription, kOsDesktop,
