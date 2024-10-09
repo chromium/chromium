@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/plus_addresses/coordinator/plus_address_bottom_sheet_coordinator.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/plus_addresses/grit/plus_addresses_strings.h"
 #import "components/plus_addresses/plus_address_service.h"
 #import "components/plus_addresses/plus_address_types.h"
 #import "components/plus_addresses/plus_address_ui_utils.h"

@@ -57,7 +57,6 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/strings/grit/components_strings.h"
 #include "components/webdata/common/web_database.h"
 #include "components/webdata/common/web_database_backend.h"
 #include "components/webdata/common/web_database_service.h"

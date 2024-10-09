@@ -6,7 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/notreached.h"
-#import "components/strings/grit/components_strings.h"
+#import "components/plus_addresses/grit/plus_addresses_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_action_cell.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_constants.h"
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address_cell.h"
