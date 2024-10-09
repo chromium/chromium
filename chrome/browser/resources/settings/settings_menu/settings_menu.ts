@@ -54,6 +54,11 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
        */
       pageVisibility: Object,
 
+      enableAiSettingsPageRefresh_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableAiSettingsPageRefresh'),
+      },
+
       showAdvancedFeaturesMainControl_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showAdvancedFeaturesMainControl'),
@@ -62,6 +67,7 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   }
 
   pageVisibility?: PageVisibility;
+  private enableAiSettingsPageRefresh_: boolean;
   private showAdvancedFeaturesMainControl_: boolean;
   private routes_: SettingsRoutes;
 
@@ -73,6 +79,11 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   private showExperimentalMenuItem_(): boolean {
     return this.showAdvancedFeaturesMainControl_ &&
         (!this.pageVisibility || this.pageVisibility.ai !== false);
+  }
+
+  private getAiPageIcon_(): string {
+    return this.enableAiSettingsPageRefresh_ ? 'settings20:magic' :
+                                               'settings20:ai';
   }
 
   override currentRouteChanged(newRoute: Route) {
