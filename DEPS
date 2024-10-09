@@ -226,6 +226,10 @@ vars = {
   # via a GN build arg (tests_have_location_tags).
   'generate_location_tags': True,
 
+  # By default, do not check out Copybara 3pp dependency that is specifically
+  # needed by Cronet gn2bp CI builder.
+  'checkout_copybara': False,
+
   # luci-go CIPD package version.
   # Make sure the revision is uploaded by infra-packagers builder.
   # https://ci.chromium.org/p/infra-internal/g/infra-packagers/console
@@ -1373,6 +1377,17 @@ deps = {
 
   'src/testing/libfuzzer/fuzzers/wasm_corpus':
     Var('chromium_git') + '/v8/fuzzer_wasm_corpus.git' + '@' +  'f650ff816f2ef227f61ea2e9f222aa69708ab367',
+
+  'src/tools/copybara': {
+      'packages' : [
+          {
+              'package': 'infra/3pp/tools/copybara',
+              'version': 'Hk6b79rXoJ1r6QWfiNoTYGqqIFuMpRvu4kPAGxPPULYC',
+          },
+      ],
+      'condition': 'host_os == "linux" and checkout_copybara',
+      'dep_type': 'cipd',
+  },
 
   'src/tools/luci-go': {
       'packages': [
