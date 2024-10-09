@@ -78,3 +78,21 @@ optimization_guide::proto::UserFeedback OptimizationFeedbackFromComposeFeedback(
       return optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
   }
 }
+
+optimization_guide::proto::ComposeUpfrontInputMode ComposeUpfrontInputMode(
+    compose::mojom::InputMode mode) {
+  switch (mode) {
+    case compose::mojom::InputMode::kPolish:
+      return optimization_guide::proto::ComposeUpfrontInputMode::
+          COMPOSE_POLISH_MODE;
+    case compose::mojom::InputMode::kElaborate:
+      return optimization_guide::proto::ComposeUpfrontInputMode::
+          COMPOSE_ELABORATE_MODE;
+    case compose::mojom::InputMode::kFormalize:
+      return optimization_guide::proto::ComposeUpfrontInputMode::
+          COMPOSE_FORMALIZE_MODE;
+    case compose::mojom::InputMode::kUnset:
+      return optimization_guide::proto::ComposeUpfrontInputMode::
+          COMPOSE_UNSPECIFIED_MODE;
+  }
+}

@@ -6178,6 +6178,25 @@
             ]
         }
     ],
+    "ComposeUpfrontInputeModes": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ComposeUpfrontInputModes"
+                    ]
+                }
+            ]
+        }
+    ],
     "CompressionDictionaryPreload": [
         {
             "platforms": [

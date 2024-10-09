@@ -71,6 +71,9 @@ webui::SetupWebUIDataSource(
       {"inputPlaceholderLine1", IDS_COMPOSE_INPUT_PLACEHOLDER_LINE_1},
       {"inputPlaceholderLine2", IDS_COMPOSE_INPUT_PLACEHOLDER_LINE_2},
       {"inputPlaceholderLine3", IDS_COMPOSE_INPUT_PLACEHOLDER_LINE_3},
+      {"inputModeChipPolish", IDS_COMPOSE_INPUT_MODE_POLISH},
+      {"inputModeChipElaborate", IDS_COMPOSE_INPUT_MODE_ELABORATE},
+      {"inputModeChipFormalize", IDS_COMPOSE_INPUT_MODE_FORMALIZE},
       {"inputFooter", IDS_COMPOSE_INPUT_FOOTER},
       {"submitButton", IDS_COMPOSE_SUBMIT_BUTTON},
       {"onDeviceUsedFooter", IDS_COMPOSE_FOOTER_FISHFOOD_ON_DEVICE_USED},
@@ -123,6 +126,9 @@ webui::SetupWebUIDataSource(
       "enableOnDeviceDogfoodFooter",
       base::FeatureList::IsEnabled(
           compose::features::kEnableComposeOnDeviceDogfoodFooter));
+  source->AddBoolean(
+    "enableUpfrontInputModes",
+    base::FeatureList::IsEnabled(compose::features::kComposeUpfrontInputModes));
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc,

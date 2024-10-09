@@ -92,13 +92,16 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="ComposeRequestReason">
-  <int value="0" label="Create button"/>
+  <int value="0" label="DEPRECATED: Create button">Removed in M131</int>
   <int value="1" label="Retry button"/>
   <int value="2" label="Update button"/>
   <int value="3" label="Shorten modifier"/>
   <int value="4" label="Elaborate modifier"/>
   <int value="5" label="Casual modifier"/>
   <int value="6" label="Formal modifier"/>
+  <int value="7" label="Create button using Polish mode"/>
+  <int value="8" label="Create button using Elaborate mode"/>
+  <int value="9" label="Create button using Formalize mode"/>
 </enum>
 
 <enum name="ComposeRequestStatus">

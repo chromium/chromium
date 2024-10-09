@@ -8327,6 +8327,10 @@ const char kComposeSegmentationPromotionDescription[] =
 const char kComposeSelectionNudgeName[] = "Compose Selection Nudge";
 const char kComposeSelectionNudgeDescription[] =
     "Enables nudge on selection for Compose";
+
+const char kComposeUpfrontInputModesName[] = "Compose Upfront Input Modes";
+const char kComposeUpfrontInputModesDescription[] =
+    "Enables upfront input modes in the Compose dialog";
 #endif  // BUILDFLAG(ENABLE_COMPOSE)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

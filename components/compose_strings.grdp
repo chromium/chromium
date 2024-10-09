@@ -38,6 +38,7 @@
   <message name="IDS_COMPOSE_GO_TO_SETTINGS_CHILD_SUGGESTION_TEXT" desc="Text a user sees in one of the Autofill popup child suggestions for the Help me write feature. When selected, the user is navigate to a decicated Help me write feature settings page.">
     Go to Settings
   </message>
+
   <!-- FRE dialog -->
   <message name="IDS_COMPOSE_FRE_TITLE" desc="The title of the Help me write disclaimer dialog.">
     Write with more confidence anywhere on the web
@@ -100,6 +101,15 @@
   <message name="IDS_COMPOSE_INPUT_FOOTER" desc="Privacy disclaimer in the input dialog.">
     Your text and page content are sent to Google and may be used to improve this feature.
   <ph name="BEGIN_LINK">&lt;a href=""&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_COMPOSE_INPUT_MODE_POLISH" desc="The chip title used to select the Polish mode for a Help me write request.">
+    Polish
+  </message>
+  <message name="IDS_COMPOSE_INPUT_MODE_ELABORATE" desc="The chip title used to select the Elaborate mode for a Help me write request.">
+    Elaborate
+  </message>
+  <message name="IDS_COMPOSE_INPUT_MODE_FORMALIZE" desc="The chip title used to select the Formalize mode for a Help me write request.">
+    Formalize
   </message>
   <message name="IDS_COMPOSE_SUBMIT_BUTTON" desc="The button to request Compose to generate text.">
     Create

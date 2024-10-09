@@ -59,6 +59,10 @@ enum class ComposeContextMenuCtrEvent {
 // Keep in sync with ComposeRequestReason in
 // src/tools/metrics/histograms/metadata/compose/enums.xml.
 enum class ComposeRequestReason {
+  // When the ComposeUpfrontInputModes featuer is enabled, the "first request"
+  // is split between one of three input modes.
+  // TODO(b/371054228): Deprecate the kFirstRequest bucket when upfront inputs
+  // launches.
   kFirstRequest = 0,
   kRetryRequest = 1,
   kUpdateRequest = 2,
@@ -66,7 +70,10 @@ enum class ComposeRequestReason {
   kLengthElaborateRequest = 4,
   kToneCasualRequest = 5,
   kToneFormalRequest = 6,
-  kMaxValue = kToneFormalRequest,
+  kFirstRequestPolishMode = 7,
+  kFirstRequestElaborateMode = 8,
+  kFirstRequestFormalizeMode = 9,
+  kMaxValue = kFirstRequestFormalizeMode,
 };
 
 // Close reasons for sessions that start with FRE or MSBB dialogs.
