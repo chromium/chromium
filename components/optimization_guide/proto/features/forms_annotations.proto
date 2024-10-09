@@ -57,4 +57,17 @@ message FormsAnnotationsResponse {
 
 message FormsAnnotationsQuality {
   UserFeedback user_feedback = 1;
+
+  // The action the user took when presented with the save prompt.
+  FormsAnnotationsSavePromptAction save_prompt_action = 3;
+}
+
+enum FormsAnnotationsSavePromptAction {
+  FORMS_ANNOTATIONS_SAVE_PROMPT_ACTION_UNSPECIFIED = 0;
+
+  // User explicitly accepted the save prompt.
+  FORMS_ANNOTATIONS_SAVE_PROMPT_ACTION_ACCEPTED = 1;
+
+  // User explicitly rejected the save prompt.
+  FORMS_ANNOTATIONS_SAVE_PROMPT_ACTION_REJECTED = 2;
 }
