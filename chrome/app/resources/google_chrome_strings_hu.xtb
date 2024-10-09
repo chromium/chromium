@@ -400,6 +400,7 @@
 <translation id="6060842547856900641">A Lens megnyitása</translation>
 <translation id="6069027071882229820">Másolás képként</translation>
 <translation id="6070348360322141662">A nagyobb biztonság érdekében a Google Chrome titkosítja az Ön adatait</translation>
+<translation id="6075300983329039771">Szervezete (<ph name="MANAGER" />) megköveteli a Chrome-ba történő bejelentkezést</translation>
 <translation id="608006075545470555">Munkaprofil hozzáadása a böngészőhöz</translation>
 <translation id="6097822892606850415">Nagyobb magabiztossággal írhat az AI segítségével</translation>
 <translation id="6113794647360055231">A Chrome még jobb lett</translation>
@@ -538,6 +539,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="7670287553302121848">A Chrome-fiók újbóli hitelesítést igényel</translation>
 <translation id="769538538642757151">A Chrome értesíti Önt, ha bármit érdemes áttekintenie</translation>
 <translation id="77283119132245232">Rendszerkövetési szolgáltatásokat biztosít a(z) <ph name="BROWSER_NAME" /> böngészőhöz. Ha ez a szolgáltatás le van tiltva, a böngésző által létrehozott teljesítménynyomok nem tartalmazzák a rendszerszintű eseményeket, például a kontextusváltási és a ready thread-eseményeket.</translation>
+<translation id="7736869414036750079">Szervezete megköveteli a Chrome-ba történő bejelentkezést</translation>
 <translation id="7747138024166251722">A telepítőnek nem sikerült létrehoznia az ideiglenes könyvtárat. Kérjük ellenőrizze, hogy van-e elegendő hely a lemezen, és rendelkezik-e engedéllyel a szoftvertelepítésre.</translation>
 <translation id="7761834446675418963">Kattintson a nevére a Chrome megnyitásához és a böngészés megkezdéséhez.</translation>
 <translation id="7763983146198734674">Mentheti jelszavait, és útközben is hozzájuk férhet</translation>

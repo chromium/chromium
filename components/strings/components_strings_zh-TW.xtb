@@ -1103,6 +1103,7 @@
 <translation id="301521992641321250">已自動封鎖</translation>
 <translation id="3016780570757425217">存取您的位置資訊</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />，按下 Tab 鍵再按下 Enter 鍵即可移除建議項目。</translation>
+<translation id="3022959067768579802">繼續撰寫</translation>
 <translation id="3023165109041533893">網站建議廣告有助於保護瀏覽記錄和身分，同時可讓網站向你顯示相關廣告。隨著你持續瀏覽，你造訪過的網站可以根據你的活動推薦相關廣告。你可以查看這些網站的清單，在設定中封鎖不適合的網站。</translation>
 <translation id="3024663005179499861">政策類型有誤</translation>
 <translation id="3030331669969285614">這些旗標是用來防止或還原破壞性變更，且只能在限定期間內使用。</translation>
@@ -1375,6 +1376,7 @@
 <translation id="350763432931695541">正在擷取接下來幾頁中的文字</translation>
 <translation id="3507869775212388416">法律相關工作</translation>
 <translation id="3507936815618196901">根據你的周遭環境建立 3D 地圖並追蹤攝影機位置</translation>
+<translation id="3510341387555916271">開啟即可繼續</translation>
 <translation id="3512163584740124171">由於相同政策群組中有其他政策的優先順序更高，因此系統已忽略這項政策。</translation>
 <translation id="351522771072578657">目前位在選單上</translation>
 <translation id="3517264445792388751">系統管理員已停用檔案系統</translation>
@@ -1742,6 +1744,7 @@
 <translation id="4152318981910038897">{COUNT,plural, =1{第 1 頁}other{第 {COUNT} 頁}}</translation>
 <translation id="4154277373259957087">Chrome 會先驗證你的身分，再填入付款方式。你隨時可以前往<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />更新相關資料。</translation>
 <translation id="4159784952369912983">紫色</translation>
+<translation id="4165422751765527461">在新分頁中開啟說明中心文章</translation>
 <translation id="4165986682804962316">網站設定</translation>
 <translation id="4169535189173047238">不允許</translation>
 <translation id="4171400957073367226">驗證簽名無效</translation>
@@ -2902,6 +2905,7 @@
 <translation id="6306713302480826305">這個地址將從這部裝置和其他已登入的裝置中刪除</translation>
 <translation id="6307968763353904914">你的銀行目前無法提供適用這個付款方式的虛擬卡片，不過你還是能使用 <ph name="CARD_LABEL" /> 線上付款。</translation>
 <translation id="6311410654831092784">卡片紙</translation>
+<translation id="6311642842034740437">已命名的位置</translation>
 <translation id="6312113039770857350">網頁無法使用</translation>
 <translation id="6316110367871394043">已暫停「<ph name="CLOUD_PROVIDER" />」檔案上傳作業</translation>
 <translation id="6316723751983724988">新功能：這裡套用了 Chrome 的 Family Link 選項</translation>

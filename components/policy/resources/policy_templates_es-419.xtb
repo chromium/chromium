@@ -801,6 +801,13 @@ Si no estableces esta política, los usuarios podrán agregar excepciones para p
       Si no estableces esta política para un sitio, se aplicará la política de <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> al sitio, si se establece. De lo contrario, el permiso seguirá la configuración predeterminada del navegador y permitirá a los usuarios escoger este permiso para cada sitio.</translation>
 <translation id="1574258262373444557">No usar <ph name="AES_KL_NAME" /> como el algoritmo de encriptación para la encriptación del almacenamiento de datos del usuario</translation>
 <translation id="1575015449587326319">Política de configuración para el Conector de Chrome Enterprise OnFileDownloaded</translation>
+<translation id="1578495851351913403">Si estableces esta política, se mostrará un nuevo botón de activación de la IU debajo de cada pantalla en la configuración de visualización. El modo de espejo normal convierte todas las pantallas en una, pero el nuevo botón de activación permite a los usuarios excluir una pantalla de la duplicación y que aparezca como una pantalla extendida.
+
+Si habilitas la política, aparecerá el botón para excluir la pantalla del modo de espejo, y los usuarios podrán elegir una para habilitarlo.
+
+Si no estableces la política o la inhabilitas, se ocultará el botón de activación.
+
+Nota: Esta política solo afectará la IU, y ChromeOS mantendrá la configuración existente cuando la IU esté oculta.</translation>
 <translation id="1583248206450240930">Utilizar <ph name="PRODUCT_FRAME_NAME" /> de manera predeterminada</translation>
 <translation id="1584963377073400553">Create Themes con IA les permite a los usuarios crear temas y fondos de pantalla personalizados con una selección previa de una lista de opciones.
 
@@ -3339,6 +3346,7 @@ Si no estableces la política, se impedirá la navegación en el navegador cuand
       A partir de la versión M88, esta política cancela la actualización en curso cuando finalice un intervalo de tiempo restringido. La siguiente actualización automática después de que finalice el intervalo de tiempo restringido reanudará automáticamente la actualización. Esta política no afectará a los dispositivos que se actualicen a una versión de corrección rápida.
       Si no estableces esta política o esta contiene intervalos de tiempo, esta política no bloqueará comprobaciones de actualizaciones automáticas. No obstante, es posible que haya otras políticas que sí lo hagan.
       Hasta la versión M88, esta función solo está disponible en dispositivos con <ph name="PRODUCT_OS_NAME" /> configurados como kioscos de inicio automático. Esta política no restringirá otros dispositivos. Sin embargo, a partir de la versión M89, esta política está habilitada en todos los dispositivos con <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="3456705177754697344">No hacer que la opción Exclude Display in Mirror Mode esté disponible para el usuario</translation>
 <translation id="3459509316159669723">Impresión</translation>
 <translation id="3460485593332210712">Permitir Chrome for Testing</translation>
 <translation id="3461279434465463233">Informar el estado de la energía</translation>
@@ -5801,6 +5809,8 @@ Si no la estableces, el valor predeterminado será 0 grados y los usuarios podr�
 <translation id="5257395339965216304">Datos de apps alojadas</translation>
 <translation id="5258445772095084618">Permitir que los usuarios no afiliados usen las máquinas virtuales necesarias para admitir apps de Linux</translation>
 <translation id="5262320080678421295">Inhabilitar la confianza en los certificados emitidos mediante la PKI heredada de Symantec Corporation</translation>
+<translation id="5265613843467285323">Mostrar un botón de IU para excluir una pantalla en modo de espejo.</translation>
+<translation id="5272332743749468542">Hacer que la opción Exclude Display in Mirror Mode esté disponible para el usuario</translation>
 <translation id="5273744932022326215">Habilita la función de accesibilidad de resaltar el cursor en la pantalla de acceso.
 
           Si se establece esta política como verdadera, la función de resaltar el cursor estará siempre habilitada en la pantalla de acceso.

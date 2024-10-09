@@ -1104,6 +1104,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="301521992641321250">Automatically blocked</translation>
 <translation id="3016780570757425217">Know your location</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, press tab then enter to remove suggestion.</translation>
+<translation id="3022959067768579802">Continue writing</translation>
 <translation id="3023165109041533893">Site-suggested ads help protect your browsing history and identity while enabling sites to show you relevant ads. Based on your activity, a site that you visited can suggest related ads as you continue browsing. You can see a list of these sites and block the ones that you don’t want in settings.</translation>
 <translation id="3024663005179499861">Wrong policy type</translation>
 <translation id="3030331669969285614">These flags prevent or revert a breaking change and will only be available for a limited time.</translation>
@@ -1377,6 +1378,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="350763432931695541">Extracting text in next few pages</translation>
 <translation id="3507869775212388416">Legal Jobs</translation>
 <translation id="3507936815618196901">Create a 3D map of your surroundings and track camera position</translation>
+<translation id="3510341387555916271">Open to resume</translation>
 <translation id="3512163584740124171">This policy is ignored because another policy from the same policy group has a higher priority.</translation>
 <translation id="351522771072578657">You are currently on a menu</translation>
 <translation id="3517264445792388751">The file system has been disabled by your administrator</translation>

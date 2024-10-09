@@ -20,6 +20,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall erkannt</translation>
 <translation id="1075811647922107217">Seitengröße</translation>
+<translation id="108084407137234521">Transkripte mit weniger als <ph name="MIN_WORD_LENGTH" /> Wörtern können nicht zusammengefasst werden</translation>
 <translation id="1082009148392559545">Bildschirmschoner wird herunterladen</translation>
 <translation id="1094693127011229778">IP-Adresse ist nicht verfügbar</translation>
 <translation id="1100902271996134409">Bilder werden erstellt…</translation>
@@ -413,6 +414,7 @@
 <translation id="3031560714565892478">Das Gerät ist eine Videokamera.</translation>
 <translation id="3042927241478734594">Soll die Aufnahme beendet werden?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
+<translation id="3055176406666937744">Transkripte mit mehr als <ph name="MAX_WORD_LENGTH" /> Wörtern können nicht zusammengefasst werden</translation>
 <translation id="3056720590588772262">Endpunkt</translation>
 <translation id="3060579846059757016">Übersicht</translation>
 <translation id="3061850252076394168">Funktion „Vorlesen“ aktivieren</translation>
@@ -449,6 +451,7 @@
 <translation id="3226657629376379887">Layout-Aktionsmenü</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> durch <ph name="CONVERSION_RATE" /> dividieren</translation>
 <translation id="3237710083340813756">Umformulieren</translation>
+<translation id="3245518008592055173">Für Transkripte mit weniger als <ph name="MIN_WORD_LENGTH" /> Wörtern können keine Namen erstellt werden</translation>
 <translation id="3246869037381808805">Druckaufträge, die älter als 1 Tag sind, werden entfernt</translation>
 <translation id="324961752321393509">Dein Administrator lässt das Schließen dieser App nicht zu</translation>
 <translation id="3263941347294171263">Trenne zum Fortsetzen des Updates die Verbindung des Geräts „<ph name="DEVICE_NAME" />“ und stell sie dann wieder her</translation>
@@ -609,6 +612,7 @@
 <translation id="409427325554347132">Testdetails speichern</translation>
 <translation id="409469431304488632">Test</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
+<translation id="4105182082354119881">Für Transkripte mit mehr als <ph name="MAX_WORD_LENGTH" /> Wörtern können keine Namen erstellt werden</translation>
 <translation id="4110686435123617899">Album <ph name="TITLE" /> <ph name="DESC" /> auswählen</translation>
 <translation id="4111761024568264522">USB-Touchpad</translation>
 <translation id="4113067922640381334">Neue <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />Hintergründe<ph name="END_LINK_WALLPAPER_SUBPAGE" /> jetzt verfügbar</translation>

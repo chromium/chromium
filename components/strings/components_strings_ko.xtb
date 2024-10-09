@@ -1104,6 +1104,7 @@
 <translation id="301521992641321250">자동으로 차단됨</translation>
 <translation id="3016780570757425217">내 위치 확인</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, 추천을 삭제하려면 Tab을 누른 다음 Enter 누르기</translation>
+<translation id="3022959067768579802">계속 작성</translation>
 <translation id="3023165109041533893">사이트 추천 광고는 내 방문 기록과 신원 정보를 보호하면서 사이트가 관련성 있는 광고를 표시하도록 지원합니다. 방문한 사이트에서는 내가 인터넷을 사용하는 동안 내 활동을 기반으로 관련 광고를 추천할 수 있습니다. 설정에서 이러한 사이트 목록을 확인하고 광고 추천을 원하지 않는 사이트를 차단할 수 있습니다.</translation>
 <translation id="3024663005179499861">잘못된 정책 유형</translation>
 <translation id="3030331669969285614">이 플래그는 브레이킹 체인지를 방지하거나 되돌리며 제한된 기간 동안만 사용할 수 있습니다.</translation>
@@ -1377,6 +1378,7 @@
 <translation id="350763432931695541">다음 몇 페이지에서 텍스트 추출</translation>
 <translation id="3507869775212388416">법률직</translation>
 <translation id="3507936815618196901">주변 환경의 3D 지도를 생성하고 카메라 위치를 추적</translation>
+<translation id="3510341387555916271">열어서 재개하기</translation>
 <translation id="3512163584740124171">동일한 정책 그룹에 있는 다른 정책이 우선순위가 높기 때문에 이 정책은 무시됩니다.</translation>
 <translation id="351522771072578657">현재 메뉴 표시 중</translation>
 <translation id="3517264445792388751">관리자가 파일 시스템을 사용 중지했습니다</translation>
@@ -1744,6 +1746,7 @@
 <translation id="4152318981910038897">{COUNT,plural, =1{페이지 1}other{페이지 {COUNT}}}</translation>
 <translation id="4154277373259957087">이제 Chrome에서 결제 수단을 입력하기 전에 본인 인증을 진행합니다. 언제든지 <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />에서 업데이트할 수 있습니다.</translation>
 <translation id="4159784952369912983">보라색</translation>
+<translation id="4165422751765527461">새 탭에서 고객센터 도움말을 엽니다</translation>
 <translation id="4165986682804962316">사이트 설정</translation>
 <translation id="4169535189173047238">허용 안함</translation>
 <translation id="4171400957073367226">잘못된 인증 서명입니다.</translation>
@@ -2904,6 +2907,7 @@
 <translation id="6306713302480826305">이 기기와 다른 로그인된 기기에서 주소가 삭제됩니다.</translation>
 <translation id="6307968763353904914">지금은 은행에서 이 결제 수단을 위한 가상 카드를 제공할 수 없지만 <ph name="CARD_LABEL" /> 카드를 사용하여 온라인에서 결제할 수는 있습니다.</translation>
 <translation id="6311410654831092784">카드 용지</translation>
+<translation id="6311642842034740437">이름이 지정된 위치</translation>
 <translation id="6312113039770857350">웹페이지를 사용할 수 없음</translation>
 <translation id="6316110367871394043"><ph name="CLOUD_PROVIDER" />에 대한 파일 업로드가 일시중지되었습니다</translation>
 <translation id="6316723751983724988">신규: Chrome에 대한 Family Link 선택사항이 여기에 적용됨</translation>

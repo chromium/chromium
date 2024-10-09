@@ -1105,6 +1105,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="301521992641321250">Diblokir secara otomatis</translation>
 <translation id="3016780570757425217">Mengetahui lokasi Anda</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, tekan Tab, lalu Enter untuk Menghapus Saran.</translation>
+<translation id="3022959067768579802">Lanjutkan menulis</translation>
 <translation id="3023165109041533893">Iklan yang disarankan situs membantu melindungi histori penjelajahan dan identitas Anda sekaligus memungkinkan situs menampilkan iklan yang relevan kepada Anda. Berdasarkan aktivitas Anda, situs yang Anda buka dapat menyarankan iklan terkait saat Anda melanjutkan penjelajahan. Anda dapat melihat daftar situs tersebut dan memblokir situs yang tidak diinginkan di setelan.</translation>
 <translation id="3024663005179499861">Jenis kebijakan salah</translation>
 <translation id="3030331669969285614">Tanda ini mencegah atau mengembalikan perubahan yang dapat menyebabkan gangguan dan hanya akan tersedia untuk waktu terbatas.</translation>
@@ -1377,6 +1378,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="350763432931695541">Mengekstrak teks di beberapa halaman berikutnya</translation>
 <translation id="3507869775212388416">Pekerjaan di Bidang Hukum</translation>
 <translation id="3507936815618196901">Membuat peta 3D untuk area di sekeliling Anda dan melacak posisi kamera</translation>
+<translation id="3510341387555916271">Buka untuk melanjutkan</translation>
 <translation id="3512163584740124171">Kebijakan ini diabaikan karena kebijakan lain dari grup kebijakan yang sama memiliki prioritas lebih tinggi.</translation>
 <translation id="351522771072578657">Anda saat ini ada di menu</translation>
 <translation id="3517264445792388751">Sistem file telah dinonaktifkan oleh administrator</translation>
@@ -1744,6 +1746,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="4152318981910038897">{COUNT,plural, =1{Halaman 1}other{Halaman {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome kini akan memverifikasi diri Anda sebelum mengisi metode pembayaran. Anda dapat memperbaruinya kapan saja di <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4159784952369912983">Ungu</translation>
+<translation id="4165422751765527461">Membuka artikel Pusat Bantuan di tab baru</translation>
 <translation id="4165986682804962316">Setelan situs</translation>
 <translation id="4169535189173047238">Jangan izinkan</translation>
 <translation id="4171400957073367226">Tanda tangan verifikasi tidak valid</translation>
@@ -2904,6 +2907,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6306713302480826305">Alamat ini akan dihapus dari perangkat ini dan perangkat lain yang Anda gunakan untuk login</translation>
 <translation id="6307968763353904914">Bank Anda saat ini tidak dapat menawarkan kartu virtual untuk metode pembayaran ini, tetapi Anda tetap dapat menggunakan <ph name="CARD_LABEL" /> untuk melakukan pembayaran online.</translation>
 <translation id="6311410654831092784">Stok Kartu</translation>
+<translation id="6311642842034740437">Lokasi bernama</translation>
 <translation id="6312113039770857350">Halaman web tidak tersedia</translation>
 <translation id="6316110367871394043">Proses upload file ke <ph name="CLOUD_PROVIDER" /> telah dijeda</translation>
 <translation id="6316723751983724988">Baru: Pilihan Family Link untuk Chrome berlaku di sini</translation>

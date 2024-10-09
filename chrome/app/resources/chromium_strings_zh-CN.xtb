@@ -66,6 +66,7 @@
 <translation id="1906696617298807388">当您在地址栏或搜索框中输入内容时，Chromium 会将您输入的内容发送至 Google 云端硬盘，以便获取内容建议。在无痕模式下，此设置处于关闭状态。</translation>
 <translation id="1911763535808217981">关闭此功能后，您无需登录 Chromium 即可登录 Gmail 等 Google 网站</translation>
 <translation id="1929939181775079593">Chromium 未响应。要立即重新启动吗？</translation>
+<translation id="1933341829955786215">贵组织 (<ph name="MANAGER" />) 要求您登录 Chromium</translation>
 <translation id="193439633299369377">需要重新启动 Chromium 操作系统以应用更新。</translation>
 <translation id="1951406923938785464">Chromium 阻止了此项下载操作，因为这不是常下载的文件类型，可能具有危险性</translation>
 <translation id="1953553007165777902">正在下载…还需 <ph name="MINUTE" /> 分钟</translation>
@@ -575,6 +576,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8852026904190808918">使用此语言显示 Chromium 中的菜单、设置、提醒和其他文字</translation>
 <translation id="8862326446509486874">您的权限不足，无法进行系统级安装。请尝试以管理员身份再次运行安装程序。</translation>
 <translation id="8880203542552872219">如果是的话，请修改您在 Chromium 中保存的密码，使它与您的新密码保持一致。</translation>
+<translation id="8891709362986793894">贵组织要求您登录 Chromium</translation>
 <translation id="8907580949721785412">Chromium正在尝试显示密码，请输入您的Windows密码以允许此操作。</translation>
 <translation id="8931379085695076764">Chromium 可以根据您在过去几周的浏览记录推测出您的兴趣。这些信息会保留在您的设备上。</translation>
 <translation id="8941642502866065432">无法更新 Chromium</translation>

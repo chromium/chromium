@@ -20,6 +20,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">已偵測到防火牆</translation>
 <translation id="1075811647922107217">網頁大小</translation>
+<translation id="108084407137234521">轉錄稿字數少於 <ph name="MIN_WORD_LENGTH" /> 個字，因此無法生成摘要</translation>
 <translation id="1082009148392559545">正在下載螢幕保護程式</translation>
 <translation id="1094693127011229778">缺少 IP 位址</translation>
 <translation id="1100902271996134409">正在生成圖片...</translation>
@@ -413,6 +414,7 @@
 <translation id="3031560714565892478">裝置類型為攝影機。</translation>
 <translation id="3042927241478734594">要停止錄音嗎？</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
+<translation id="3055176406666937744">轉錄稿字數超過 <ph name="MAX_WORD_LENGTH" /> 個字，因此無法生成摘要</translation>
 <translation id="3056720590588772262">端點</translation>
 <translation id="3060579846059757016">概要</translation>
 <translation id="3061850252076394168">啟用隨選朗讀</translation>
@@ -449,6 +451,7 @@
 <translation id="3226657629376379887">版面配置動作選單</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" />值除以 <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">重新編寫</translation>
+<translation id="3245518008592055173">轉錄稿字數少於 <ph name="MIN_WORD_LENGTH" /> 個字，因此無法命名</translation>
 <translation id="3246869037381808805">系統會移除 1 天前的列印工作</translation>
 <translation id="324961752321393509">系統管理員不允許關閉這個應用程式</translation>
 <translation id="3263941347294171263">請將「<ph name="DEVICE_NAME" />」的線拔除再重新接上，以繼續進行更新程序</translation>
@@ -609,6 +612,7 @@
 <translation id="409427325554347132">儲存測試詳細資料</translation>
 <translation id="409469431304488632">實驗功能</translation>
 <translation id="4095829376260267438">WPA2 和 WPA3</translation>
+<translation id="4105182082354119881">轉錄稿字數超過 <ph name="MAX_WORD_LENGTH" /> 個字，因此無法命名</translation>
 <translation id="4110686435123617899">選取相簿「<ph name="TITLE" />，<ph name="DESC" />」</translation>
 <translation id="4111761024568264522">USB 觸控板</translation>
 <translation id="4113067922640381334">現在起，你可以使用全新的<ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />桌布<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>

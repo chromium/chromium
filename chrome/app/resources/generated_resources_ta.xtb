@@ -2110,6 +2110,7 @@
 <translation id="2460356425461033301">உங்கள் உலாவியின் தரவைக் காப்புப் பிரதி எடுத்து எந்தச் சாதனத்தில் வேண்டுமானாலும் பயன்படுத்தலாம்</translation>
 <translation id="2460482211073772897">பிற ஃபோல்டர்களில்</translation>
 <translation id="2460826998961521840">Google கணக்கில் சேமித்த கடவுச்சாவிகளைப் பயன்படுத்த</translation>
+<translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> ஃபோல்டர் இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்பட்டுள்ளது. இந்த புக்மார்க்கை <ph name="LOCAL_FOLDER" /> ஃபோல்டருக்கு நகர்த்தினால், உங்களின் மற்ற சாதனங்களில் இதை அணுக முடியாது.</translation>
 <translation id="2461550163693930491">பகிர்ந்த பக்கங்களில் ஸ்க்ரோல் செய்யவும், அளவை மாற்றவும் அனுமதிக்காதே</translation>
 <translation id="2461593638794842577">உங்கள் கடவுச்சொற்களை இந்தச் சாதனத்தில் மட்டும் சேமிக்க இந்த அமைப்பை முடக்கலாம்</translation>
 <translation id="2462332841984057083">Steam ஏற்கெனவே அமைக்கப்பட்டுள்ளது. அமைவு நிறைவடையும் வரை காத்திருக்கவும்.</translation>
@@ -2363,6 +2364,7 @@
 <translation id="2645047101481282803">உங்கள் சாதனத்தை <ph name="PROFILE_NAME" /> நிர்வகிக்கிறது</translation>
 <translation id="2645388244376970260">இந்தப் பக்கத்தை <ph name="DEVICE_NAME" />க்கு அலைப்பரப்புகிறது</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">உங்கள் Google கணக்கில் உள்ள ஃபோல்டரில் சேமிக்கவா?</translation>
 <translation id="264897126871533291">புரோட்டனோமலி</translation>
 <translation id="2649045351178520408">Base64-குறியேற்றப்பட்ட ASCII, சான்றிதழ் சங்கிலி</translation>
 <translation id="265156376773362237">இயல்பான முன்கூட்டிய ஏற்றுதல்</translation>
@@ -2551,6 +2553,7 @@
 <translation id="2773288106548584039">லெகஸி உலாவி ஆதரவு</translation>
 <translation id="2773621783913034737">பக்கங்களை முடக்கு</translation>
 <translation id="2774876860084746535">சிந்தனை</translation>
+<translation id="2775047284666165174"><ph name="LOCAL_FOLDER" /> ஃபோல்டர் இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்பட்டுள்ளது. இந்த ஃபோல்டரை <ph name="LOCAL_FOLDER" /> ஃபோல்டருக்கு நகர்த்தினால், உங்களின் மற்ற சாதனங்களில் இதை அணுக முடியாது.</translation>
 <translation id="2775104091073479743">கைரேகைகளை மாற்று</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{சாதனங்களை "<ph name="EXTENSION" />" நீட்டிப்பு அணுகியது}=1{"<ph name="EXTENSION" />" நீட்டிப்பு {0} சாதனத்தை அணுகுகிறது}other{"<ph name="EXTENSION" />" நீட்டிப்பு {0} சாதனங்களை அணுகுகிறது}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{ஆதரிக்கப்படாத 1 ஆப்ஸை அகற்றுங்கள்}other{ஆதரிக்கப்படாத # ஆப்ஸை அகற்றுங்கள்}}</translation>
@@ -4952,6 +4955,7 @@
 <translation id="4527929807707405172">பின்னோக்கிய ஸ்க்ரோலிங்கை இயக்கு. <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">மொழிபெயர்ப்புப் பரிந்துரை</translation>
 <translation id="4528638190900283934">கூடுதல் அம்சங்களுக்கு உள்நுழையுங்கள்</translation>
+<translation id="4529052777398765334">இந்த ஃபோல்டர் இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்பட்டுள்ளது. இதை <ph name="ACCOUNT_FOLDER" /> ஃபோல்டரில் சேமித்தால், இந்த ஃபோல்டரும் உங்கள் கணக்கில் சேமிக்கப்படும்.</translation>
 <translation id="4529455689802245339">Chromeமின் உடனடி வசனம் அம்சம் வேலை செய்யாமல் போகலாம்</translation>
 <translation id="4531451811601110068">நீங்கள் மீண்டும் முயலலாம் அல்லது உதவிக்கு உங்கள் நிர்வாகியைத் தொடர்புகொள்ளலாம்</translation>
 <translation id="4531924570968473143"><ph name="DEVICE_TYPE" /> இல் யாரைச் சேர்க்க விரும்புகிறீர்கள்?</translation>
@@ -5538,6 +5542,7 @@
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> தெரிவுநிலை</translation>
 <translation id="4955710816792587366">பின்னைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">இந்தச் சாதனத்தில் மட்டுமே உள்ள ஃபோல்டரில் சேமிக்கவா?</translation>
 <translation id="4959262764292427323">கடவுச்சொற்களை வேறு சாதனங்களிலும் பயன்படுத்துவதற்காக, அவை உங்கள் Google கணக்கில் சேமிக்கப்பட்டுள்ளன</translation>
 <translation id="4960020053211143927">சில ஆப்ஸில் ஆதரிக்கப்படாது</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8464,6 +8469,7 @@
 <translation id="711840821796638741">நிர்வகிக்கப்பட்ட புக்மார்க்குகளைக் காட்டு</translation>
 <translation id="711985611146095797">நீங்கள் உள்நுழைந்துள்ள Google கணக்குகளை இந்தப் பக்கத்தில் நிர்வகிக்கலாம். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">VPN இணைக்கப்படும் வரை Chrome உலாவியும் Android டிராஃபிக்கும் தடுக்கப்படும்</translation>
+<translation id="7120904433567247946">இந்த புக்மார்க் இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்பட்டுள்ளது. இதை <ph name="ACCOUNT_FOLDER" /> ஃபோல்டரில் சேமித்தால், இந்த புக்மார்க்கும் உங்கள் கணக்கில் சேமிக்கப்படும்.</translation>
 <translation id="7121438501124788993">டெவெலப்பர் பயன்முறை</translation>
 <translation id="7121728544325372695">ஸ்மார்ட் டேஷ்கள்</translation>
 <translation id="7122605570852873914">பரவாயில்லை, வெளியேறு</translation>

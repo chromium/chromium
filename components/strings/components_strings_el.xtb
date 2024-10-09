@@ -1744,6 +1744,7 @@
 <translation id="4152318981910038897">{COUNT,plural, =1{Σελίδα 1}other{Σελίδα {COUNT}}}</translation>
 <translation id="4154277373259957087">Το Chrome θα επαληθεύσει τώρα την ταυτότητά σας πριν τη συμπλήρωση των τρόπων πληρωμής. Μπορείτε να ενημερώσετε αυτήν τη ρύθμιση ανά πάσα στιγμή στην ενότητα <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4159784952369912983">Μοβ</translation>
+<translation id="4165422751765527461">Ανοίγει ένα άρθρο Κέντρου βοήθειας σε νέα καρτέλα</translation>
 <translation id="4165986682804962316">Ρυθμίσεις ιστότοπου</translation>
 <translation id="4169535189173047238">Να μην επιτρέπεται</translation>
 <translation id="4171400957073367226">Εσφαλμένη υπογραφή επαλήθευσης</translation>
@@ -2905,6 +2906,7 @@
 <translation id="6306713302480826305">Η συγκεκριμένη διεύθυνση θα διαγραφεί από αυτήν και τις άλλες συνδεδεμένες συσκευές σας</translation>
 <translation id="6307968763353904914">Η τράπεζα δεν μπορεί να προσφέρει εικονικές κάρτες για αυτόν τον τρόπο πληρωμής προς το παρόν, αλλά μπορείτε να χρησιμοποιήσετε την κάρτα σας <ph name="CARD_LABEL" /> για να πληρώσετε στο διαδίκτυο.</translation>
 <translation id="6311410654831092784">Χαρτόνι</translation>
+<translation id="6311642842034740437">Τοποθεσία με ονομασία</translation>
 <translation id="6312113039770857350">Η ιστοσελίδα δεν είναι διαθέσιμη</translation>
 <translation id="6316110367871394043">Η μεταφόρτωση του αρχείου στο <ph name="CLOUD_PROVIDER" /> τέθηκε σε παύση</translation>
 <translation id="6316723751983724988">Νέο: Οι επιλογές του Family Link για το Chrome ισχύουν εδώ</translation>

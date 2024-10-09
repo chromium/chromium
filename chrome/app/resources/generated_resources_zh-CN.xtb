@@ -2085,6 +2085,7 @@
 <translation id="2460356425461033301">备份您的浏览器资料，以便在任意设备上使用</translation>
 <translation id="2460482211073772897">在其他文件夹中</translation>
 <translation id="2460826998961521840">使用您 Google 账号中保存的通行密钥</translation>
+<translation id="2461045498706592033">“<ph name="LOCAL_FOLDER" />”仅会保存到此设备上。如果您将此书签移至“<ph name="LOCAL_FOLDER" />”，您将无法再在其他设备上获取它。</translation>
 <translation id="2461550163693930491">不允许网站滚动和缩放分享的标签页</translation>
 <translation id="2461593638794842577">您可以关闭此设置，以便仅将密码保存在此设备上</translation>
 <translation id="2462332841984057083">已经在设置 Steam 了。请等待设置完成。</translation>
@@ -2337,6 +2338,7 @@
 <translation id="2645047101481282803">您的设备由 <ph name="PROFILE_NAME" /> 管理</translation>
 <translation id="2645388244376970260">正在将此标签页投放到“<ph name="DEVICE_NAME" />”</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">要保存到您 Google 账号中的文件夹吗？</translation>
 <translation id="264897126871533291">红色弱</translation>
 <translation id="2649045351178520408">Base64 编码 ASCII，证书链</translation>
 <translation id="265156376773362237">标准预加载</translation>
@@ -2525,6 +2527,7 @@
 <translation id="2773288106548584039">旧版浏览器支持</translation>
 <translation id="2773621783913034737">将标签页设为非活跃状态</translation>
 <translation id="2774876860084746535">理智</translation>
+<translation id="2775047284666165174">“<ph name="LOCAL_FOLDER" />”仅会保存到此设备上。如果您将此文件夹移至“<ph name="LOCAL_FOLDER" />”，您将无法再在其他设备上获取它。</translation>
 <translation id="2775104091073479743">修改指纹</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{扩展程序“<ph name="EXTENSION" />”刚刚访问了设备}=1{扩展程序“<ph name="EXTENSION" />”正在访问 {0} 部设备}other{扩展程序“<ph name="EXTENSION" />”正在在访问 {0} 部设备}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{移除 1 款不受支持的应用}other{移除 # 款不受支持的应用}}</translation>
@@ -4922,6 +4925,7 @@
 <translation id="4527929807707405172">启用反向滚动。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">建议翻译</translation>
 <translation id="4528638190900283934">登录即可获享更多功能</translation>
+<translation id="4529052777398765334">此文件夹仅会保存到此设备上。如果您将此文件夹保存到“<ph name="ACCOUNT_FOLDER" />”，它也会保存到您的账号中。</translation>
 <translation id="4529455689802245339">Chrome 实时字幕功能可能无法运行</translation>
 <translation id="4531451811601110068">您可以重试，或者向管理员求助</translation>
 <translation id="4531924570968473143">您想将谁添加到此 <ph name="DEVICE_TYPE" />？</translation>
@@ -5506,6 +5510,7 @@
 <translation id="4955707703665801001">“<ph name="FEATURE_NAME" />”功能的设备公开范围</translation>
 <translation id="4955710816792587366">选择 PIN 码</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">要保存到仅位于此设备上的某个文件夹吗？</translation>
 <translation id="4959262764292427323">系统会将密码保存在您的 Google 账号中，以便您在任意设备上使用密码</translation>
 <translation id="4960020053211143927">不适用于某些应用</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8424,6 +8429,7 @@
 <translation id="711840821796638741">显示受管理的书签</translation>
 <translation id="711985611146095797">您可在此页面中管理您已登录的 Google 账号。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">除非已连接 VPN，否则 Chrome 浏览器和 Android 流量将被屏蔽</translation>
+<translation id="7120904433567247946">此书签仅会保存到此设备上。如果您将此书签保存到“<ph name="ACCOUNT_FOLDER" />”，它也会保存到您的账号中。</translation>
 <translation id="7121438501124788993">开发者模式</translation>
 <translation id="7121728544325372695">智能破折号</translation>
 <translation id="7122605570852873914">仍然退出账号</translation>

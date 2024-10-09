@@ -1104,6 +1104,7 @@
 <translation id="301521992641321250">Blocată automat</translation>
 <translation id="3016780570757425217">Afle locația</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, apasă pe Tab, apoi pe Enter pentru a elimina sugestia.</translation>
+<translation id="3022959067768579802">Scrie în continuare</translation>
 <translation id="3023165109041533893">Anunțurile sugerate de site-uri contribuie la protejarea istoricului de navigare și a identității tale și le permit site-urilor să îți afișeze anunțuri relevante. Pe baza activității tale, un site pe care l-ai accesat poate sugera anunțuri similare pe măsură ce navighezi. În setări, poți să vezi o listă a acestor site-uri și să le blochezi pe cele care nu dorești să apară.</translation>
 <translation id="3024663005179499861">Tip de politică greșit</translation>
 <translation id="3030331669969285614">Aceste semnale împiedică sau anulează o modificare generatoare de conflicte și vor fi disponibile numai pentru o perioadă limitată.</translation>
@@ -1377,6 +1378,7 @@
 <translation id="350763432931695541">Se extrage textul din următoarele pagini</translation>
 <translation id="3507869775212388416">Locuri de muncă în domeniul juridic</translation>
 <translation id="3507936815618196901">să creeze o hartă 3D a lucrurilor din jurul tău și să urmărească poziția camerei video</translation>
+<translation id="3510341387555916271">Deschide pentru a relua</translation>
 <translation id="3512163584740124171">Această politică este ignorată deoarece o altă politică din același grup de politici are prioritate ridicată.</translation>
 <translation id="351522771072578657">Te afli într-un meniu</translation>
 <translation id="3517264445792388751">Sistemul de fișiere a fost dezactivat de administrator</translation>
@@ -1744,6 +1746,7 @@
 <translation id="4152318981910038897">{COUNT,plural, =1{Pagina 1}few{Pagina {COUNT}}other{Pagina {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome îți va confirma identitatea înainte să completeze metodele de plată. Poți actualiza oricând opțiunea în <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4159784952369912983">Mov</translation>
+<translation id="4165422751765527461">Deschide un articol din centrul de ajutor într-o filă nouă</translation>
 <translation id="4165986682804962316">Setări pentru site-uri</translation>
 <translation id="4169535189173047238">Nu permite</translation>
 <translation id="4171400957073367226">Semnătură de verificare nevalidă</translation>
@@ -2904,6 +2907,7 @@
 <translation id="6306713302480826305">Adresa va fi ștearsă de pe acest dispozitiv și de pe celelalte dispozitive conectate</translation>
 <translation id="6307968763353904914">Momentan, banca nu poate oferi carduri virtuale pentru această metodă de plată, dar poți folosi în continuare <ph name="CARD_LABEL" /> pentru a face plăți online.</translation>
 <translation id="6311410654831092784">Mucava</translation>
+<translation id="6311642842034740437">Locație denumită</translation>
 <translation id="6312113039770857350">Pagina web nu este disponibilă</translation>
 <translation id="6316110367871394043">Încărcarea fișierului în <ph name="CLOUD_PROVIDER" /> s-a întrerupt</translation>
 <translation id="6316723751983724988">Nou: opțiunile Family Link pentru Chrome se aplică aici</translation>
@@ -3134,7 +3138,7 @@
 <translation id="6710648923880003133">Sugerează o parolă puternică</translation>
 <translation id="671076103358959139">Indicativ de înregistrare:</translation>
 <translation id="6711464428925977395">A apărut o problemă la serverul proxy sau adresa nu este corectă.</translation>
-<translation id="6711700233707023861">Șirul variațiilor s-a copiat în clipboard</translation>
+<translation id="6711700233707023861">Șirul de variante s-a copiat în clipboard</translation>
 <translation id="6716039223770814796">Compară <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> articole</translation>
 <translation id="6716672519412350405"><ph name="URL" /> dorește să creeze o hartă 3D a lucrurilor din jurul tău și să urmărească poziția camerei video</translation>
 <translation id="6717692133381953670">Filă trimisă de pe <ph name="DEVICE_NAME" /></translation>

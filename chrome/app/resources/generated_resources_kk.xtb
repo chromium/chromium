@@ -2094,6 +2094,7 @@
 <translation id="2460356425461033301">Браузер материалдарының сақтық көшірмесін жасап, оларды кез келген құрылғыда пайдаланыңыз</translation>
 <translation id="2460482211073772897">Басқа қалталарда</translation>
 <translation id="2460826998961521840">Google аккаунтыңызға сақталған кіру кілттерін пайдалану үшін</translation>
+<translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> тек осы құрылғыға сақталды. Бұл бетбелгіні <ph name="LOCAL_FOLDER" /> қалтасына тасымалдасаңыз, ол басқа құрылғыларда болмайды.</translation>
 <translation id="2461550163693930491">Сайттарға ортақ қойындыларды айналдыру мен масштабтауға рұқсат бермеу</translation>
 <translation id="2461593638794842577">Құпия сөзіңізді тек осы құрылғыға сақтау үшін бұл параметрді өшіруге болады.</translation>
 <translation id="2462332841984057083">Steam қолданбасы бұрыннан реттеліп жатыр. Реттеу аяқталғанша күтіңіз.</translation>
@@ -2347,6 +2348,7 @@
 <translation id="2645047101481282803">Құрылғыңызды <ph name="PROFILE_NAME" /> басқарады.</translation>
 <translation id="2645388244376970260">Бұл қойынды <ph name="DEVICE_NAME" /> құрылғысына трансляциялануда</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">Google аккаунтындағы қалтаға сақтау қажет пе?</translation>
 <translation id="264897126871533291">Протаномалия</translation>
 <translation id="2649045351178520408">Base64 арқылы шифрланған ASCII, сертификаттар тізбегі</translation>
 <translation id="265156376773362237">Стандартты алдын ала жүктеу</translation>
@@ -2535,6 +2537,7 @@
 <translation id="2773288106548584039">Бұрынғы браузерді қолдау</translation>
 <translation id="2773621783913034737">Қойындыларды әрекетсіз қылу</translation>
 <translation id="2774876860084746535">Зияткерлік</translation>
+<translation id="2775047284666165174"><ph name="LOCAL_FOLDER" /> тек осы құрылғыға сақталды. Бұл қалтаны <ph name="LOCAL_FOLDER" /> қалтасына тасымалдасаңыз, ол басқа құрылғыларда болмайды.</translation>
 <translation id="2775104091073479743">Саусақ іздерін өңдеу</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{"<ph name="EXTENSION" />" кеңейтімі құрылғыларды пайдаланды}=1{"<ph name="EXTENSION" />" кеңейтімі {0} құрылғыны пайдаланып жатыр}other{"<ph name="EXTENSION" />" кеңейтімі {0} құрылғыны пайдаланып жатыр}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Қолдау көрсетілмейтін 1 қолданбаны жою}other{Қолдау көрсетілмейтін # қолданбаны жою}}</translation>
@@ -4934,6 +4937,7 @@
 <translation id="4527929807707405172">Кері айналдыруды қосу. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Аударма ұсынысы</translation>
 <translation id="4528638190900283934">Қосымша мүмкіндіктер үшін аккаунтқа кіру</translation>
+<translation id="4529052777398765334">Бұл қалта тек осы құрылғыға сақталды. Оны <ph name="ACCOUNT_FOLDER" /> қалтасына сақтасаңыз, ол аккаунтыңызға да сақталады.</translation>
 <translation id="4529455689802245339">Chrome Live Caption жұмыс істемеуі мүмкін.</translation>
 <translation id="4531451811601110068">Әрекетті қайталауыңызға немесе әкімшіге хабарласып, көмек сұрауыңызға болады.</translation>
 <translation id="4531924570968473143"><ph name="DEVICE_TYPE" /> құрылғысына кімді қосқыңыз келеді?</translation>
@@ -5519,6 +5523,7 @@
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> көру рұқсаты</translation>
 <translation id="4955710816792587366">PIN кодын таңдаңыз</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">Тек осы құрылғыдағы қалтаға сақтау қажет пе?</translation>
 <translation id="4959262764292427323">Құпия сөздер Google аккаунтыңызда сақталады және оларды кез келген құрылғыда пайдалана аласыз</translation>
 <translation id="4960020053211143927">Кейбір қолданбаларда қолдау көрсетілмейді</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8439,6 +8444,7 @@
 <translation id="711840821796638741">Басқарылатын бетбелгілерді көрсету</translation>
 <translation id="711985611146095797">Бұл бет Google аккаунттарыңызға кіруді басқаруға мүмкіндік береді. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">VPN қосылғанға дейін, Chrome браузері және Android трафигі бөгеледі.</translation>
+<translation id="7120904433567247946">Бұл бетбелгі тек осы құрылғыға сақталды. Оны <ph name="ACCOUNT_FOLDER" /> қалтасына сақтасаңыз, ол аккаунтыңызға да сақталады.</translation>
 <translation id="7121438501124788993">Әзірлеуші режимі</translation>
 <translation id="7121728544325372695">Смарт сызықшалар</translation>
 <translation id="7122605570852873914">Бәрібір шығу</translation>

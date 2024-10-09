@@ -184,6 +184,13 @@ Việc không đặt chính sách này sẽ không cho phép trường hợp ngo
 <translation id="1095209545735032039">Chặn API nối tiếp trên các trang web này</translation>
 <translation id="1096105751829466145">Nhà cung cấp dịch vụ tìm kiếm mặc định</translation>
 <translation id="1099282607296956954">Bật chính sách Cô lập trang web cho mọi trang web</translation>
+<translation id="1099858055878287525">Đối với hồ sơ công việc và hồ sơ trường học, theo mặc định, nhãn "Công việc" hoặc "Trường học" sẽ hiển thị bên cạnh hình đại diện trên thanh công cụ. Nhãn này chỉ hiển thị nếu tài khoản đã đăng nhập được quản lý.
+
+Nếu bạn đặt chính sách này thành <ph name="HIDE_EXPANDED_ENTERPRISE_TOOLBAR_BADGE" /> (giá trị 1) thì huy hiệu doanh nghiệp cho hồ sơ được quản lý sẽ được ẩn trên thanh công cụ.
+
+Nếu bạn không đặt hoặc đặt chính sách này thành <ph name="SHOW_EXPANDED_ENTERPRISE_TOOLBAR_BADGE" /> (giá trị 0) thì huy hiệu doanh nghiệp sẽ được hiển thị.
+
+Bạn có thể tuỳ chỉnh nhãn thông qua chính sách <ph name="ENTERPRISE_CUSTOM_LABEL_POLICY_NAME" /></translation>
 <translation id="1100840127293327071">Không chọn tuỳ chọn lưu giữ dữ liệu duyệt web hiện có theo mặc định</translation>
 <translation id="1105572260329131950">Sử dụng biểu tượng mặc định cho các kết nối an toàn</translation>
 <translation id="1105711894873068933">Sau khi <ph name="LACROS_NAME" /> tắt, tất cả dữ liệu người dùng sẽ bị xoá vào lần đăng nhập tiếp theo.</translation>
@@ -1285,6 +1292,7 @@ Nếu bạn đặt chính sách này thành Tắt, thì <ph name="PRODUCT_NAME" 
         Chính sách này chỉ dùng cho người dùng là trẻ em.
         Chính sách này sẽ bổ sung cho 'UsageTimeLimit'. Các giới hạn đã chỉ định trong 'UsageTimeLimit' như thời gian sử dụng thiết bị và giờ đi ngủ sẽ được thực thi bất kể 'PerAppTimeLimits' là như thế nào.</translation>
 <translation id="1913629775420987861">Hiện hộp thoại nhắc nhở khi người dùng định thoát</translation>
+<translation id="1915242485679279502">Hiển thị huy hiệu doanh nghiệp mở rộng trên thanh công cụ</translation>
 <translation id="1916266055944569995">Việc đặt chính sách này sẽ xác định giá trị mà API Cấu hình được quản lý trả về cho nguồn gốc đã cho.
 
       API Cấu hình được quản lý là cấu hình khóa-giá trị có thể truy cập qua lệnh gọi javascript navigator.managed.getManagedConfiguration(). API này chỉ dành cho các nguồn gốc tương ứng với các ứng dụng web bị buộc cài đặt qua <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
@@ -2248,6 +2256,17 @@ Người dùng có thể yên tâm rằng không có thêm ứng dụng nào có
 
 Nếu bạn đặt chính sách này thành Tắt, thì thiết bị sẽ không sử dụng quy trình chứng thực từ xa để bảo vệ nội dung và thiết bị không thể phát nội dung được bảo vệ.</translation>
 <translation id="262740370354162807">Cho phép gửi tài liệu tới <ph name="CLOUD_PRINT_NAME" /></translation>
+<translation id="2628738243936676400">Tìm thông tin trong nhật ký bằng AI là một tính năng cho phép người dùng tìm thông tin trong nhật ký duyệt web và nhận câu trả lời được tạo dựa trên nội dung trang chứ không chỉ dựa trên URL và tiêu đề trang.
+
+0 = Bật tính năng này cho người dùng và gửi dữ liệu liên quan cho hoạt động đào tạo hoặc cải tiến mô hình AI của Google. Dữ liệu liên quan có thể bao gồm câu lệnh, dữ liệu đầu vào, dữ liệu đầu ra và tài liệu nguồn, tuỳ thuộc vào tính năng. Các nhân viên có thể sẽ xem xét dữ liệu này nhằm mục đích duy nhất là cải tiến mô hình AI. 0 là giá trị mặc định, trừ phi có ghi chú bên dưới.
+
+1 = Bật tính năng này cho người dùng nhưng không gửi dữ liệu cho hoạt động đào tạo hoặc cải tiến mô hình AI của Google. 1 là giá trị mặc định cho Người dùng doanh nghiệp do <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> quản lý và Tài khoản thuộc tổ chức giáo dục do <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> quản lý.
+
+2 = Tắt tính năng này.
+
+Nếu bạn không đặt chính sách này thì chế độ mặc định là 0 đối với người dùng thông thường và là 2 đối với người dùng được quản lý trên <ph name="PRODUCT_OS_NAME" />.
+
+Để biết thêm thông tin về cách xử lý dữ liệu cho các tính năng AI tạo sinh, vui lòng truy cập https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="2633084400146331575">Bật tính năng phản hồi bằng giọng nói</translation>
 <translation id="2633907568797306353">Cho phép bật thông báo của Trung tâm điều khiển điện thoại</translation>
 <translation id="2634265675787412567"><ph name="PRODUCT_NAME" /> có thể trực tiếp chuyển các yêu cầu tạo khoá truy cập/WebAuthn đến Chuỗi khoá iCloud trên macOS 13.5 trở lên. Nếu tính năng đồng bộ hoá Chuỗi khoá iCloud chưa bật, thì chính sách này sẽ nhắc người dùng đăng nhập bằng iCloud hoặc có thể nhắc họ bật tính năng đồng bộ hoá Chuỗi khoá iCloud.
@@ -2447,6 +2466,19 @@ Nếu bạn không đặt chính sách này, <ph name="BLOCK_POPUPS_POLICY_NAME"
 <translation id="2801065672151277034">Các tùy chọn quản lý chứng chỉ</translation>
 <translation id="2801155097555584385">Đặt mức phần trăm bắt đầu sạc pin tùy chỉnh</translation>
 <translation id="2801378553855965587">Tắt tính năng tích hợp <ph name="GOOGLE_CALENDAR_NAME" />.</translation>
+<translation id="2804159858652849094">Chính sách này kiểm soát một nhãn tuỳ chỉnh dùng để xác định người đã quản lý một hồ sơ hoặc trình duyệt.
+
+Nhãn này sẽ hiển thị trên thanh công cụ.
+
+Nếu bạn đặt chính sách này ở cấp trình duyệt thì tất cả hồ sơ sẽ có nhãn này trên thanh công cụ.
+
+Nếu bạn đặt chính sách này ở cấp hồ sơ thì chỉ hồ sơ đó mới có nhãn này.
+
+Không giống như các chính sách khác, chính sách này được thiết lập ở cấp hồ sơ sẽ được ưu tiên hơn chính sách thiết lập ở cấp trình duyệt.
+
+Nhãn tuỳ chỉnh này sẽ không được dịch.
+
+Xin lưu ý rằng chính sách này sẽ không có hiệu lực nếu bạn đặt chính sách <ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR_SETTINGS" /> thành <ph name="HIDE_EXPANDED_ENTERPRISE_TOOLBAR_BADGE" /> (giá trị 1).</translation>
 <translation id="2805707493867224476">Cho phép tất cả các trang web hiển thị cửa sổ bật lên</translation>
 <translation id="2806804577787377637">Chính sách này không còn được dùng nữa và không được hỗ trợ, vui lòng dùng <ph name="PER_APP_TIME_LIMITS_ALLOWLIST" />.</translation>
 <translation id="2815701930753942156">Chính sách này chỉ định một danh sách các khoảng thời gian hằng tuần không thể sử dụng thiết bị <ph name="PRODUCT_OS_NAME" />. Hệ thống sẽ đóng mọi phiên đang diễn ra và chặn hoạt động đăng nhập.
@@ -4730,6 +4762,21 @@ Các mẫu URL không được xung đột với <ph name="DIRECT_SOCKETS_ALLOWE
 <translation id="4557134566541205630">URL trang thẻ mới của nhà cung cấp dịch vụ tìm kiếm mặc định</translation>
 <translation id="4558166110367609724">Tự động bỏ qua Điều khoản dịch vụ (ToS) và tải trình duyệt.</translation>
 <translation id="4559846397119102037">Cho phép sử dụng <ph name="LACROS_NAME" /></translation>
+<translation id="456018799964679771">Chính sách cấp thiết bị này định cấu hình việc <ph name="PRODUCT_OS_NAME" /> có đề xuất thuật toán của thoả thuận về khoá hậu lượng tử trong TLS bằng tiêu chuẩn ML-KEM của NIST hay không. Trước <ph name="PRODUCT_OS_NAME" /> 131, thuật toán này là Kyber, một phiên bản nháp trước đó của tiêu chuẩn. Điều này cho phép các máy chủ hỗ trợ bảo vệ lưu lượng truy cập của người dùng khỏi bị máy tính lượng tử giải mã sau này.
+
+Nếu bạn Bật chính sách này, <ph name="PRODUCT_OS_NAME" /> sẽ đề xuất thoả thuận về khoá hậu lượng tử trong kết nối TLS. Khi đó, lưu lượng truy cập của người dùng sẽ được bảo vệ khỏi máy tính lượng tử khi giao tiếp với máy chủ tương thích.
+
+Nếu bạn Tắt chính sách này, <ph name="PRODUCT_OS_NAME" /> sẽ không đề xuất thoả thuận về khoá hậu lượng tử trong kết nối TLS. Khi đó, lưu lượng truy cập của người dùng sẽ không được bảo vệ khỏi máy tính lượng tử.
+
+Nếu bạn không đặt chính sách này, <ph name="PRODUCT_OS_NAME" /> sẽ tuân theo quy trình phát hành mặc định về việc đề xuất thoả thuận khoá hậu lượng tử.
+
+Việc đề xuất Kyber có khả năng tương thích ngược. Các máy chủ TLS hiện có và phần mềm trung gian kết nối mạng dự kiến sẽ bỏ qua lựa chọn mới và tiếp tục chọn các lựa chọn trước đó.
+
+Tuy nhiên, các thiết bị không triển khai TLS đúng cách có thể gặp sự cố khi được đề xuất lựa chọn mới. Ví dụ: Các thiết bị có thể ngắt kết nối trong quá trình phản hồi các lựa chọn không xác định hoặc các tin nhắn phóng to hơn. Những thiết bị này chưa sẵn sàng cho hậu lượng tử và sẽ can thiệp vào quá trình chuyển đổi hậu lượng tử của doanh nghiệp. Nếu gặp sự cố, quản trị viên nên liên hệ với nhà cung cấp để khắc phục.
+
+Chính sách này chỉ là biện pháp tạm thời và sẽ bị xoá sau phiên bản 141 của <ph name="PRODUCT_OS_NAME" />. Bạn có thể Bật chính sách này để kiểm tra sự cố và có thể Tắt chính sách này trong khi sự cố đang được giải quyết.
+
+Nếu bạn đặt cả chính sách này và chính sách PostQuantumKeyAgreementEnabled, thì chính sách này sẽ được ưu tiên.</translation>
 <translation id="4561560385824323005">Cho phép người dùng chọn một bố cục màn hình được thiết lập sẵn để tải</translation>
 <translation id="4561940244682063697">Không cho phép các trang web nhắc người dùng chia sẻ luồng video màn hình</translation>
 <translation id="4562165737444703281">Cho phép người dùng [bật/định cấu hình] dịch vụ chuyển tiếp cổng vào Crostini</translation>
@@ -6251,6 +6298,7 @@ Khi bạn đặt chính sách này cho Kiosk <ph name="PRODUCT_OS_NAME" />, chí
 <translation id="5622590774455244290">Các ứng dụng Android có thể tự do lựa chọn tuân thủ danh sách này nên bạn không thể buộc các ứng dụng đó tuân thủ.</translation>
 <translation id="5622924058222112599">Cho phép thực hiện quy trình phát hành mặc định đối với thuật toán CECPQ2</translation>
 <translation id="5623304306796942802">Lời nhắc khi có nhiều chứng chỉ khớp</translation>
+<translation id="5624310713789233422">Kiểm soát chế độ hiển thị huy hiệu hồ sơ doanh nghiệp trên thanh công cụ</translation>
 <translation id="5624334866248253262">Định cấu hình danh sách các quy tắc Kiểm soát dữ liệu để ngăn chặn rò rỉ dữ liệu.
 
       Mỗi quy tắc đều bao gồm nội dung sau:
@@ -9554,6 +9602,19 @@ Chính sách này sẽ không có hiệu lực khi bạn đặt chính sách <ph
       Chính sách này đã bị loại bỏ trong phiên bản Chrome 88 và sẽ bị bỏ qua nếu bạn đặt.
 
       Vui lòng xem tại https://www.chromestatus.com/feature/5989473649164288.</translation>
+<translation id="8137301668000005268">Chính sách này định cấu hình việc <ph name="PRODUCT_NAME" /> có đề xuất thuật toán của thoả thuận về khoá hậu lượng tử trong TLS bằng tiêu chuẩn ML-KEM của NIST hay không. Trước <ph name="PRODUCT_NAME" /> 131, thuật toán này là Kyber, một phiên bản nháp trước đó của tiêu chuẩn. Điều này cho phép các máy chủ hỗ trợ bảo vệ lưu lượng truy cập của người dùng khỏi bị máy tính lượng tử giải mã sau này.
+
+Nếu bạn Bật chính sách này, thì <ph name="PRODUCT_NAME" /> sẽ đề xuất thoả thuận về khoá hậu lượng tử trong kết nối TLS. Khi đó, lưu lượng truy cập của người dùng sẽ được bảo vệ khỏi máy tính lượng tử khi giao tiếp với máy chủ tương thích.
+
+Nếu bạn Tắt chính sách này, thì <ph name="PRODUCT_NAME" /> sẽ không đề xuất thoả thuận về khoá hậu lượng tử trong kết nối TLS. Khi đó, lưu lượng truy cập của người dùng sẽ không được bảo vệ khỏi máy tính lượng tử.
+
+Nếu bạn không đặt chính sách này, thì <ph name="PRODUCT_NAME" /> sẽ tuân theo quy trình phát hành mặc định để đề xuất thoả thuận khoá hậu lượng tử.
+
+Việc đề xuất thoả thuận khoá hậu lượng tử có khả năng tương thích ngược. Các máy chủ TLS hiện có và phần mềm trung gian kết nối mạng dự kiến sẽ bỏ qua lựa chọn mới và tiếp tục chọn các lựa chọn trước đó.
+
+Tuy nhiên, các thiết bị không triển khai TLS đúng cách có thể gặp sự cố khi được đề xuất lựa chọn mới. Ví dụ: Các thiết bị có thể ngắt kết nối trong quá trình phản hồi các lựa chọn không xác định hoặc các tin nhắn phóng to hơn. Những thiết bị này chưa sẵn sàng cho hậu lượng tử và sẽ can thiệp vào quá trình chuyển đổi hậu lượng tử của doanh nghiệp. Nếu gặp sự cố, quản trị viên nên liên hệ với nhà cung cấp để khắc phục.
+
+Chính sách này chỉ là biện pháp tạm thời và sẽ bị xoá sau phiên bản 141 của <ph name="PRODUCT_NAME" />. Bạn có thể Bật chính sách này để kiểm tra sự cố và có thể Tắt chính sách này trong khi sự cố đang được giải quyết.</translation>
 <translation id="8137443729340035928">Hỏi người dùng có khôi phục phiên trước đó khi đăng nhập hay không.</translation>
 <translation id="8141795997560411818">Chính sách này không ngăn người dùng sử dụng ứng dụng Google Drive trên Android. Nếu muốn ngăn việc truy cập vào Google Drive, bạn cũng phải không cho phép cài đặt ứng dụng Google Drive trên Android.</translation>
 <translation id="8142894094385450823">Đặt ngôn ngữ đề xuất cho phiên được quản lý</translation>

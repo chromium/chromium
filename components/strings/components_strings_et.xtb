@@ -1104,6 +1104,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="301521992641321250">Automaatselt blokeeritud</translation>
 <translation id="3016780570757425217">Teada teie asukohta</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, vajutage tabulaatorit ja seejärel sisestusklahvi, et soovitus eemaldada.</translation>
+<translation id="3022959067768579802">Jätka kirjutamist</translation>
 <translation id="3023165109041533893">Saidi soovitatud reklaamid aitavad kaitsta teie sirvimisajalugu ja identiteeti, võimaldades samas saitidel esitada teile asjakohaseid reklaame. Kui jätkate sirvimist, võib teie külastatud sait teie tegevuse alusel seotud reklaame soovitada. Seadetes saate vaadata nende saitide loendit ja blokeerida soovimatud saidid.</translation>
 <translation id="3024663005179499861">Reegli tüüp on vale</translation>
 <translation id="3030331669969285614">Need märgistused hoiavad ära või ennistavad probleeme põhjustava muudatuse ja on saadaval vaid piiratud aja.</translation>
@@ -1377,6 +1378,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="350763432931695541">Paari järgmise lehe teksti ekstraktimine</translation>
 <translation id="3507869775212388416">Õigusvaldkonna töökohad</translation>
 <translation id="3507936815618196901">Teid ümbritsevast 3D-kaardi loomine ja kaamera asendi jälgimine</translation>
+<translation id="3510341387555916271">Jätkamiseks avage</translation>
 <translation id="3512163584740124171">Seda reeglit eiratakse, kuna sama reegligrupi teisel reeglil on kõrgem prioriteet.</translation>
 <translation id="351522771072578657">Olete praegu menüüs</translation>
 <translation id="3517264445792388751">Teie administraator on failisüsteemi keelanud</translation>
@@ -1744,6 +1746,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4152318981910038897">{COUNT,plural, =1{Leht 1}other{Leht {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome kinnitab nüüd teie isiku enne makseviiside sisestamist. Saate seda igal ajal jaotises <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> värskendada.</translation>
 <translation id="4159784952369912983">Lilla</translation>
+<translation id="4165422751765527461">Avab abikeskuse artikli uuel vahelehel</translation>
 <translation id="4165986682804962316">Saidi seaded</translation>
 <translation id="4169535189173047238">Ära luba</translation>
 <translation id="4171400957073367226">Sobimatu kinnitusallkiri</translation>
@@ -2904,6 +2907,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6306713302480826305">See aadress kustutatakse sellest ja muudest seadmetest, kus olete sisse logitud</translation>
 <translation id="6307968763353904914">Teie pank ei paku praegu sellele makseviisile virtuaalkaarti, kuid saate endiselt kaardiga <ph name="CARD_LABEL" /> veebis maksta.</translation>
 <translation id="6311410654831092784">Kartong</translation>
+<translation id="6311642842034740437">Nimega asukoht</translation>
 <translation id="6312113039770857350">Veebileht ei ole saadaval</translation>
 <translation id="6316110367871394043">Faili üleslaadimine kohta <ph name="CLOUD_PROVIDER" /> on peatatud</translation>
 <translation id="6316723751983724988">Uus: siin kehtivad Chrome'i Family Linki valikud</translation>

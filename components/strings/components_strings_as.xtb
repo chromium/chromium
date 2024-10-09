@@ -1741,6 +1741,7 @@
 <translation id="4152318981910038897">{COUNT,plural, =1{পৃষ্ঠা ১}one{পৃষ্ঠা {COUNT}}other{পৃষ্ঠা {COUNT}}}</translation>
 <translation id="4154277373259957087">Chromeএ এতিয়া পৰিশোধ পদ্ধতি পূৰ কৰাৰ আগতে এইগৰাকী আপুনিয়েই বুলি সত্যাপন কৰিব। আপুনি <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />ত যিকোনো সময়তে এইটো আপডে’ট কৰিব পাৰে।</translation>
 <translation id="4159784952369912983">বেঙুনীয়া</translation>
+<translation id="4165422751765527461">এটা নতুন টেবত এটা সহায় কেন্দ্ৰৰ প্ৰবন্ধ খোলে</translation>
 <translation id="4165986682804962316">ছাইটৰ ছেটিংসমূহ</translation>
 <translation id="4169535189173047238">অনুমতি নিদিব</translation>
 <translation id="4171400957073367226">সত্যাপনৰ স্বাক্ষৰটো বেয়া</translation>
@@ -2899,6 +2900,7 @@
 <translation id="6306713302480826305">এই ঠিকনাটো এইটো আৰু আপোনাৰ অন্য ছাইন-ইন কৰা ডিভাইচসমূহৰ পৰা মচি পেলোৱা হ’ব</translation>
 <translation id="6307968763353904914">এই মুহূৰ্তত আপোনাৰ বেংকে এই পৰিশোধ পদ্ধতিটোৰ বাবে ভাৰ্ছুৱেল কাৰ্ড প্ৰদান কৰিব নোৱাৰে, কিন্তু আপুনি তথাপি অনলাইনত পৰিশোধ কৰিবলৈ আপোনাৰ <ph name="CARD_LABEL" /> ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="6311410654831092784">কাৰ্ড ষ্টক</translation>
+<translation id="6311642842034740437">নাম দিয়া অৱস্থান</translation>
 <translation id="6312113039770857350">ৱেবপৃষ্ঠা উপলব্ধ নহয়</translation>
 <translation id="6316110367871394043"><ph name="CLOUD_PROVIDER" />ত ফাইল আপল’ড কৰাটো পজ কৰা হৈছে</translation>
 <translation id="6316723751983724988">নতুন: Chromeৰ বাবে Family Linkৰ পচন্দসমূহ ইয়াত প্ৰযোজ্য হয়</translation>

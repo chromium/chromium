@@ -460,6 +460,7 @@
 <translation id="3098745985164956033">‏آپ کے لیے تفصیلات میں بہتری لانے کے لیے Google کو کچھ تصاویر بھیجی جاتی ہیں</translation>
 <translation id="3114507951000454849">آج کی خبریں پڑھیں <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">اعلانات</translation>
+<translation id="3131961580615093332"><ph name="GIVEN_NAME" /> نے ٹیب "<ph name="TAB_NAME" />" کو تبدیل کر دیا ہے</translation>
 <translation id="3148237711805373460">مجھے وہاں لے جائیں</translation>
 <translation id="314939179385989105">‏Chrome کا ہوم پیج</translation>
 <translation id="3158667104057012316">دستی ترتیب کے لحاظ سے ترتیب دیا جا رہا ہے</translation>
@@ -637,6 +638,7 @@
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> کے ساتھ <ph name="SITE_ETLD_PLUS_ONE" /> کو جاری رکھیں</translation>
 <translation id="404352903042073578">بغیر نام کے گروپ</translation>
 <translation id="4044708993631234325">نیچے کی شیٹ</translation>
+<translation id="4045441967987592849">دوبارہ کھولیں</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{اشتراک کردہ ٹیب گروپس میں نئی سرگرمی کے ساتھ <ph name="TABS_COUNT_ONE" /> معیاری ٹیب}other{اشتراک کردہ ٹیب گروپس میں نئی سرگرمی کے ساتھ <ph name="TABS_COUNT_MANY" /> معیاری ٹیبز}}</translation>
 <translation id="405365679581583349">‏Google Play سروسز اپ ڈیٹ کریں</translation>
 <translation id="405399507749852140">کسی بھی سائٹ پر قیمت میں گراوٹ ہونے پر الرٹس حاصل کریں</translation>
@@ -844,6 +846,7 @@
 <translation id="4943703118917034429">ورچوئل رئیلٹی</translation>
 <translation id="4943872375798546930">کوئی نتائج نہیں ہیں</translation>
 <translation id="4950924971025849764">آپ کے سائن ان ہونے پر دیگر آلات اس فون کو بطور سیکیورٹی کلید استعمال کر سکتے ہیں۔</translation>
+<translation id="4953833914914492602">اب "<ph name="TAB_GROUP_NAME" />" ٹیب گروپ دستیاب نہیں ہے</translation>
 <translation id="4957722034734105353">مزید جانیں…</translation>
 <translation id="4961107849584082341">اس صفحہ کا کسی بھی زبان میں ترجمہ کریں</translation>
 <translation id="4964614743143953889">‏‫Chrome آپ کو غیر محفوظ سائٹس اور ڈاؤن لوڈز کے بارے میں خبردار کرتا ہے</translation>
@@ -957,6 +960,7 @@
 <translation id="5526281268548144413">متعدد ونڈوز میں بند نہیں کیا جا سکتا</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# منٹ پہلے}other{# منٹ پہلے}}</translation>
 <translation id="5548606607480005320">سیفٹی چیک</translation>
+<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> نے "<ph name="TAB_GROUP_NAME" />" ٹیب گروپ میں شمولیت اختیار کی ہے</translation>
 <translation id="5554520618550346933">‏آپ کے پاس ورڈ استعمال کرنے پر، Chrome آپ کو پاس ورڈ آن لائن شائع ہونے پر متنبہ کرتا ہے۔ ایسا کرتے وقت، آپ کے پاس ورڈز اور صارف نام مرموز ہوتے ہیں، تاکہ Google سمیت کوئی بھی انہیں پڑھ نہ سکے۔</translation>
 <translation id="5555525474779371165">اپنا محفوظ براؤزنگ کا تحفظ منتخب کریں</translation>
 <translation id="5556459405103347317">دوبارہ لوڈ کریں</translation>
@@ -1079,6 +1083,7 @@
 <translation id="6085886413119427067">کسی محفوظ کنکشن پر ویب سائٹس سے منسلک ہونے کے طریقے کا تعین کرتا ہے</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> گھنٹے باقی</translation>
 <translation id="6095578583683628124">‏اگر Google بھی آپ کا ڈیفالٹ سرچ انجن ہے تو آپ کو بہتر، سیاق و سباق کے لحاظ سے متعلقہ تجاویز دکھائی دیں گی</translation>
+<translation id="610630277578876674">پیغامات اور بہت کچھ میں لنکس کو جلدی سے کھولیں</translation>
 <translation id="6108923351542677676">سیٹ اپ جاری ہے…</translation>
 <translation id="6112702117600201073">صفحہ کو ریفریش کرنا</translation>
 <translation id="6122831415929794347">محفوظ براؤزنگ آن کریں؟</translation>
@@ -1245,6 +1250,7 @@
 <translation id="6775840696761158817">جب آپ ایڈریس بار یا سرچ باکس پر تھپتھپاتے ہیں یا اس میں ٹائپ کرتے ہیں تو آپ کو اپنے ڈیفالٹ سرچ انجن سے تجاویز نظر آئیں گی۔ یہ پوشیدگی میں آف ہے۔</translation>
 <translation id="6785476624617658922">‏Chrome اور ChromeOS کی اضافی سروس کی شرائط</translation>
 <translation id="6795633245022906657">فوری طور پر ایک نیا ٹیب کھولیں۔ اس شارٹ کٹ میں ترمیم کرنے کے لیے، ترتیبات پر جائیں۔</translation>
+<translation id="679588508577699489">‏‫Chrome کو اپنا ڈیفالٹ بنائیں</translation>
 <translation id="679956319013005046">‏آٹو فل کے لیے اپنی ترجیحی سروس سیٹ کرنے کے لیے، پہلے <ph name="BEGIN_LINK" />Android کی ترتیبات<ph name="END_LINK" /> میں سروس شامل کریں۔</translation>
 <translation id="6802555630140434547">ونڈو بند کر دی جائے گی</translation>
 <translation id="6803791793483522764">اطلاعات کا جائزہ لیں</translation>
@@ -1616,6 +1622,7 @@
 <translation id="8282297628636750033">ممکن ہو تو سائٹس پر گہری تھیم لاگو کریں</translation>
 <translation id="8282950411412455249">سیکیورٹی کی ترتیبات پر جائیں</translation>
 <translation id="829672787777123339">آپ کے آلے سے منسلک ہو رہا ہے…</translation>
+<translation id="8307517230426267469"><ph name="GIVEN_NAME" /> نے ٹیب "<ph name="TAB_NAME" />" کو ہٹا دیا ہے</translation>
 <translation id="831192587911042850">موجودہ ویب سائٹ کو ان ویب سائٹس کی فہرست میں شامل کرتا ہے جن کی آپ پیروی کر رہے ہیں۔</translation>
 <translation id="8342727528718219152">‏‫Chrome آپ کو ان سائٹس کے بارے میں مطلع کرے گا جو ہو سکتا ہے کہ بہت زیادہ اطلاعات بھیج رہی ہوں</translation>
 <translation id="834313815369870491">سائٹس کا کبھی بھی ترجمہ نہ کریں</translation>
@@ -1736,6 +1743,7 @@
 <translation id="8863714995118816041"><ph name="SITE_NAME" /> کے لیے اجازتوں کو دوبارہ اجازت مل گئی</translation>
 <translation id="8865415417596392024">‏آپ کے اکاؤنٹ میں Chrome کا ڈیٹا</translation>
 <translation id="8888527824584402177">وہ ٹیبز جنہیں آپ نے <ph name="DAYS_INACTIVE" /> دنوں سے استعمال نہیں کیا ہے وہ یہاں منتقل کر دیے جاتے ہیں<ph name="AUTODELETE_SECTION" />۔ آپ اسے <ph name="SETTINGS_TITLE" /> میں کسی بھی وقت تبدیل کر سکتے ہیں۔</translation>
+<translation id="8890668505403261809">اپنے پوشیدگی ٹیبز تلاش کریں</translation>
 <translation id="8898822736010347272">‏آپ کے ملاحظہ کئے جانے والے چند صفحات کے URLs، سسٹم کی محدود معلومات اور صفحے کا کچھ مواد Google کو بھیجتا ہے تاکہ نئے خطرات کا پتا لگانے اور ویب پر موجود سبھی کی حفاظت میں مدد مل سکے۔</translation>
 <translation id="8909135823018751308">اشتراک کریں…</translation>
 <translation id="8921980840204105660">اپنے دیگر آلات سے اپنے بُک مارکس حاصل کرنے کے لیے مطابقت پذیری کریں</translation>

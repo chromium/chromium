@@ -20,6 +20,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">방화벽 감지됨</translation>
 <translation id="1075811647922107217">페이지 크기</translation>
+<translation id="108084407137234521">길이가 <ph name="MIN_WORD_LENGTH" />단어(영문 기준) 미만인 스크립트는 요약할 수 없습니다.</translation>
 <translation id="1082009148392559545">화면 보호기 다운로드 중</translation>
 <translation id="1094693127011229778">IP 주소를 사용할 수 없습니다.</translation>
 <translation id="1100902271996134409">이미지 만드는 중…</translation>
@@ -413,6 +414,7 @@
 <translation id="3031560714565892478">비디오 카메라 기기입니다.</translation>
 <translation id="3042927241478734594">녹음을 종료하시겠습니까?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
+<translation id="3055176406666937744">길이가 <ph name="MAX_WORD_LENGTH" />단어(영문 기준)를 초과하는 스크립트는 요약할 수 없습니다.</translation>
 <translation id="3056720590588772262">엔드포인트</translation>
 <translation id="3060579846059757016">개요</translation>
 <translation id="3061850252076394168">텍스트 읽어주기 사용 설정</translation>
@@ -449,6 +451,7 @@
 <translation id="3226657629376379887">레이아웃 작업 메뉴</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> 값을 <ph name="CONVERSION_RATE" />(으)로 나눕니다.</translation>
 <translation id="3237710083340813756">재작성하기</translation>
+<translation id="3245518008592055173">길이가 <ph name="MIN_WORD_LENGTH" />단어 미만인 스크립트의 이름은 생성할 수 없습니다.</translation>
 <translation id="3246869037381808805">1일 이상 경과한 인쇄 작업은 삭제됩니다.</translation>
 <translation id="324961752321393509">관리자가 이 앱의 종료를 허용하지 않습니다.</translation>
 <translation id="3263941347294171263">업데이트를 계속하려면 <ph name="DEVICE_NAME" />에서 전원을 분리했다가 다시 연결하세요.</translation>
@@ -609,6 +612,7 @@
 <translation id="409427325554347132">테스트 세부정보 저장</translation>
 <translation id="409469431304488632">실험 버전</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
+<translation id="4105182082354119881">길이가 <ph name="MAX_WORD_LENGTH" />단어(영문 기준)를 초과하는 스크립트의 이름은 생성할 수 없습니다.</translation>
 <translation id="4110686435123617899">앨범 <ph name="TITLE" /> <ph name="DESC" /> 선택</translation>
 <translation id="4111761024568264522">USB 터치패드</translation>
 <translation id="4113067922640381334">이제 새로운 <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />배경화면<ph name="END_LINK_WALLPAPER_SUBPAGE" />에 액세스할 수 있습니다.</translation>

@@ -1079,6 +1079,7 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="6085886413119427067">Hubainisha jinsi ya kuunganisha kwenye tovuti kupitia muunganisho salama</translation>
 <translation id="60923314841986378">Zimesalia saa <ph name="HOURS" /></translation>
 <translation id="6095578583683628124">Ikiwa Google pia ni mtambo wako chaguomsingi wa kutafuta, utaona mapendekezo bora, ya kimuktadha yanayofaa</translation>
+<translation id="610630277578876674">Fungua kwa haraka viungo kwenye ujumbe na zaidi</translation>
 <translation id="6108923351542677676">Usanidi unaendelea...</translation>
 <translation id="6112702117600201073">Inaonyesha upya ukurasa</translation>
 <translation id="6122831415929794347">Ungependa kuzima kipengele cha Kuvinjari Salama?</translation>
@@ -1245,6 +1246,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="6775840696761158817">Unapogusa au kuandika katika sehemu ya anwani au kisanduku cha kutafutia, utaona mapendekezo kutoka kwenye mtambo wako chaguomsingi wa kutafuta. Kipengele hiki huwa kimezimwa katika Hali fiche.</translation>
 <translation id="6785476624617658922">Sheria na Masharti ya Ziada ya Chrome na Mfumo wa Uendeshaji wa Chrome</translation>
 <translation id="6795633245022906657">Fungua kichupo kipya kwa haraka. Ili ubadilishe njia hii ya mkato, nenda kwenye Mipangilio.</translation>
+<translation id="679588508577699489">Fanya Chrome iwe Kivinjari chako Chaguomsingi</translation>
 <translation id="679956319013005046">Ili uweke huduma unayopendelea ya kujaza kiotomatiki, weka kwanza huduma hiyo katika <ph name="BEGIN_LINK" />Mipangilio ya Android<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">Dirisha hili litafungwa</translation>
 <translation id="6803791793483522764">Kagua arifa</translation>
@@ -1736,6 +1738,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="8863714995118816041">Umeipatia tena ruhusa tovuti ya <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Data ya Chrome kwenye akaunti yako</translation>
 <translation id="8888527824584402177">Vichupo ambavyo hujavitumia kwa siku <ph name="DAYS_INACTIVE" /> huhamishiwa hapa<ph name="AUTODELETE_SECTION" />. Unaweza kubadilisha hali hii wakati wowote katika <ph name="SETTINGS_TITLE" />.</translation>
+<translation id="8890668505403261809">Tafuta kwenye vichupo vya Faragha</translation>
 <translation id="8898822736010347272">Hutuma URL za baadhi ya kurasa unazotembelea, maelezo machache ya mfumo na baadhi ya maudhui ya kurasa kwa Google, ili kusaidia kugundua na kuzuia vitisho vipya na kulinda kila mtu kwenye wavuti.</translation>
 <translation id="8909135823018751308">Shiriki...</translation>
 <translation id="8921980840204105660">Sawazisha ili upate alamisho zako kutoka kwenye vifaa vyako vingine</translation>

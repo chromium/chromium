@@ -460,6 +460,7 @@
 <translation id="3098745985164956033">Някои изображения се изпращат до Google с цел подобряване на описанията за вас</translation>
 <translation id="3114507951000454849">Прочетете днешните новини <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Съобщения</translation>
+<translation id="3131961580615093332"><ph name="GIVEN_NAME" /> промени раздела „<ph name="TAB_NAME" />“</translation>
 <translation id="3148237711805373460">Към Google Мениджър на пароли</translation>
 <translation id="314939179385989105">Началната страница на Chrome</translation>
 <translation id="3158667104057012316">Сортиране по ръчен ред</translation>
@@ -637,6 +638,7 @@
 <translation id="4042941173059740150">Продължаване към <ph name="SITE_ETLD_PLUS_ONE" /> чрез <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="404352903042073578">Група без име</translation>
 <translation id="4044708993631234325">Долен лист</translation>
+<translation id="4045441967987592849">Повторно отваряне</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> стандартен раздел с нова активност в споделените групи раздели}other{<ph name="TABS_COUNT_MANY" /> стандартни раздела с нова активност в споделените групи раздели}}</translation>
 <translation id="405365679581583349">Актуализиране на услугите за Google Play</translation>
 <translation id="405399507749852140">Получаване на сигнали при понижение на цената в който и да е сайт</translation>
@@ -844,6 +846,7 @@
 <translation id="4943703118917034429">Виртуална реалност</translation>
 <translation id="4943872375798546930">Няма резултати</translation>
 <translation id="4950924971025849764">Когато сте влезли в един и същ профил в Google, другите устройства могат да използват този телефон като ключ за сигурност.</translation>
+<translation id="4953833914914492602">Групата раздели „<ph name="TAB_GROUP_NAME" />“ вече не е налице</translation>
 <translation id="4957722034734105353">Научете повече...</translation>
 <translation id="4961107849584082341">Превод на тази страница на който и да е език</translation>
 <translation id="4964614743143953889">Chrome ви предупреждава за опасни сайтове и изтегляния</translation>
@@ -957,6 +960,7 @@
 <translation id="5526281268548144413">Затварянето в няколко прозореца не е възможно</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{Преди # мин}other{Преди # мин}}</translation>
 <translation id="5548606607480005320">Проверка на безопасността</translation>
+<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> се присъедини към групата раздели „<ph name="TAB_GROUP_NAME" />“</translation>
 <translation id="5554520618550346933">Когато използвате парола, Chrome ще ви предупреди, ако тя е публикувана онлайн. Когато го прави, паролите и потребителските ви имена са шифровани, така че да не могат да бъдат прочетени от никого, включително от Google.</translation>
 <translation id="5555525474779371165">Изберете нивото на защита от Безопасно сърфиране</translation>
 <translation id="5556459405103347317">Повторно зареждане</translation>
@@ -1616,6 +1620,7 @@
 <translation id="8282297628636750033">Тъмна тема за сайтовете при възможност</translation>
 <translation id="8282950411412455249">Към настройките за сигурност</translation>
 <translation id="829672787777123339">Установява се връзка с устройството ви…</translation>
+<translation id="8307517230426267469"><ph name="GIVEN_NAME" /> премахна раздела „<ph name="TAB_NAME" />“</translation>
 <translation id="831192587911042850">Добавя текущия уебсайт към списъка с тези, които следвате.</translation>
 <translation id="8342727528718219152">Chrome ще ви уведомява за сайтовете, които може да изпращат твърде много известия</translation>
 <translation id="834313815369870491">Сайтове, които никога да не се превеждат</translation>

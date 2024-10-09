@@ -67,6 +67,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="1906696617298807388">Kui sisestate aadressiribale või otsingukasti teksti, saadab Chromium sisestatud teksti üksusesoovituste hankimiseks Google Drive’i. See on inkognito režiimis välja lülitatud.</translation>
 <translation id="1911763535808217981">Kui selle välja lülitate, saate Google'i saitidele (nt Gmaili) sisse logida ilma Chromiumisse sisse logimata</translation>
 <translation id="1929939181775079593">Chromium ei reageeri. Kas soovite kohe taaskäivitada?</translation>
+<translation id="1933341829955786215">Teie organisatsioon (<ph name="MANAGER" />) nõuab, et logiksite Chromiumi sisse</translation>
 <translation id="193439633299369377">Chromium OS tuleb värskenduse rakendamiseks taaskäivitada.</translation>
 <translation id="1951406923938785464">Chromium blokeeris selle allalaadimise, kuna seda faili tüüpi ei laadita sageli alla ja see võib olla ohtlik</translation>
 <translation id="1953553007165777902">Allalaadimine … <ph name="MINUTE" /> minut(it) jäänud</translation>
@@ -576,6 +577,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="8852026904190808918">Selles keeles kuvatakse Chromiumi menüüd, seaded, hoiatused ja muu tekst</translation>
 <translation id="8862326446509486874">Teil ei ole süsteemi tasemel installimiseks sobivaid õigusi. Proovige installijat administraatorina uuesti käivitada.</translation>
 <translation id="8880203542552872219">Sellisel juhul muutke Chromiumis oma salvestatud parooli, et see ühtiks teie uue parooliga.</translation>
+<translation id="8891709362986793894">Teie organisatsioon nõuab, et logiksite Chromiumi sisse</translation>
 <translation id="8907580949721785412">Chromium proovib kuvada paroole. Selle lubamiseks sisestage Windowsi parool.</translation>
 <translation id="8931379085695076764">Chromium suudab prognoosida teie huvisid, võttes aluseks teie viimase mõne nädala sirvimisajaloo. See teave jääb teie seadmesse.</translation>
 <translation id="8941642502866065432">Chromiumi ei saa värskendada</translation>

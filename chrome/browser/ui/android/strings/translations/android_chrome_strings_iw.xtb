@@ -460,6 +460,7 @@
 <translation id="3098745985164956033">‏חלק מהתמונות נשלחות אל Google כדי לשפר עבורך את התיאורים</translation>
 <translation id="3114507951000454849">קראת חדשות היום? <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">הודעות</translation>
+<translation id="3131961580615093332">הכרטיסייה '<ph name="TAB_NAME" />' שונתה על ידי <ph name="GIVEN_NAME" /></translation>
 <translation id="3148237711805373460">קחו אותי לשם</translation>
 <translation id="314939179385989105">‏דף הבית של Chrome</translation>
 <translation id="3158667104057012316">בתהליך מיון לפי סדר ידני</translation>
@@ -637,6 +638,7 @@
 <translation id="4042941173059740150">יש לך אפשרות להמשיך לאתר <ph name="SITE_ETLD_PLUS_ONE" /> עם החשבון <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="404352903042073578">קבוצה ללא שם</translation>
 <translation id="4044708993631234325">גיליון תחתון</translation>
+<translation id="4045441967987592849">פתיחה מחדש</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{כרטיסייה רגילה אחת (<ph name="TABS_COUNT_ONE" />) עם פעילות חדשה בקבוצות המשותפות של הכרטיסיות}one{‫<ph name="TABS_COUNT_MANY" /> כרטיסיות רגילות עם פעילות חדשה בקבוצות המשותפות של הכרטיסיות}two{‫<ph name="TABS_COUNT_MANY" /> כרטיסיות רגילות עם פעילות חדשה בקבוצות המשותפות של הכרטיסיות}other{‫<ph name="TABS_COUNT_MANY" /> כרטיסיות רגילות עם פעילות חדשה בקבוצות המשותפות של הכרטיסיות}}</translation>
 <translation id="405365679581583349">‏צריך לעדכן את Google Play Services</translation>
 <translation id="405399507749852140">קבלת התראות על הנחות באתר כלשהו</translation>
@@ -844,6 +846,7 @@
 <translation id="4943703118917034429">מציאות מדומה</translation>
 <translation id="4943872375798546930">אין תוצאות</translation>
 <translation id="4950924971025849764">‏אם נכנסת לאותו חשבון Google במכשירים אחרים, הטלפון הזה יכול לשמש בהם כמפתח אבטחה.</translation>
+<translation id="4953833914914492602">קבוצת הכרטיסיות '<ph name="TAB_GROUP_NAME" />' לא זמינה יותר</translation>
 <translation id="4957722034734105353">למידע נוסף...</translation>
 <translation id="4961107849584082341">אפשר לתרגם את הדף הזה לשפה כלשהי</translation>
 <translation id="4964614743143953889">‏ב-Chrome מוצגות אזהרות מפני הורדות ואתרים לא בטוחים</translation>
@@ -957,6 +960,7 @@
 <translation id="5526281268548144413">אי אפשר לסגור בכמה חלונות</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{לפני דקה}one{# min ago}two{לפני # דקות}other{לפני # דקות}}</translation>
 <translation id="5548606607480005320">בדיקת אבטחה</translation>
+<translation id="5551564597369878730">‫<ph name="GIVEN_NAME" /> הצטרף/ה לקבוצת הכרטיסיות '<ph name="TAB_GROUP_NAME" />'</translation>
 <translation id="5554520618550346933">‏אם משתמשים בסיסמה והיא פורסמה באינטרנט, מוצגת אזהרה ב-Chrome. כשהבדיקה הזו מתבצעת, הסיסמאות ושמות המשתמשים מוצפנים, כך שאיש לא יכול לקרוא אותם, כולל Google.</translation>
 <translation id="5555525474779371165">בחירת סוג ההגנה במסגרת 'גלישה בטוחה'</translation>
 <translation id="5556459405103347317">טעינה מחדש</translation>
@@ -1079,6 +1083,7 @@
 <translation id="6085886413119427067">קביעת אופן ההתחברות לאתרים באמצעות קישור מאובטח</translation>
 <translation id="60923314841986378">נותרו <ph name="HOURS" /> שעות</translation>
 <translation id="6095578583683628124">‏אם Google הוא גם מנוע החיפוש המוגדר אצלך כברירת מחדל, יוצגו לך הצעות משופרות ורלוונטיות מבחינת הקשר.</translation>
+<translation id="610630277578876674">פתיחת קישורים בהודעות במהירות ועוד</translation>
 <translation id="6108923351542677676">ההגדרה מתבצעת…</translation>
 <translation id="6112702117600201073">רענון הדף מתבצע</translation>
 <translation id="6122831415929794347">להשבית את 'גלישה בטוחה'?</translation>
@@ -1245,6 +1250,7 @@
 <translation id="6775840696761158817">כשמקלידים טקסט בסרגל הכתובות או בתיבת החיפוש או מקישים עליהם, מופיעות הצעות ממנוע החיפוש שמוגדר כברירת מחדל. האפשרות הזו מושבתת במצב הפרטי.</translation>
 <translation id="6785476624617658922">‏תנאים והגבלות נוספים של Chrome ושל ChromeOS</translation>
 <translation id="6795633245022906657">פתיחת כרטיסייה חדשה במהירות. ניתן לערוך את קיצור הדרך ב'הגדרות'.</translation>
+<translation id="679588508577699489">‏הגדרת Chrome כדפדפן ברירת המחדל</translation>
 <translation id="679956319013005046">‏כדי להגדיר את השירות המועדף למילוי אוטומטי, צריך קודם להוסיף את השירות ב<ph name="BEGIN_LINK" />הגדרות Android<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">החלון הזה ייסגר</translation>
 <translation id="6803791793483522764">בדיקת ההתראות</translation>
@@ -1616,6 +1622,7 @@
 <translation id="8282297628636750033">החלת עיצוב כהה על אתרים, כשאפשר</translation>
 <translation id="8282950411412455249">אל הגדרות האבטחה</translation>
 <translation id="829672787777123339">מתבצע חיבור למכשיר…</translation>
+<translation id="8307517230426267469">הכרטיסייה '<ph name="TAB_NAME" />' הוסרה על ידי <ph name="GIVEN_NAME" /></translation>
 <translation id="831192587911042850">הוספת אתר האינטרנט שפתוח כרגע לרשימת אתרי האינטרנט שבמעקב.</translation>
 <translation id="8342727528718219152">‏‫Chrome יודיע לך על אתרים שעלולים לשלוח יותר מדי התראות</translation>
 <translation id="834313815369870491">אין לתרגם את האתרים אף פעם</translation>
@@ -1736,6 +1743,7 @@
 <translation id="8863714995118816041">הרשאות ניתנו מחדש לאתר <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">‏נתוני Chrome בחשבון שלך</translation>
 <translation id="8888527824584402177">כרטיסיות שלא השתמשת בהן במשך <ph name="DAYS_INACTIVE" /> ימים מועברות לכאן<ph name="AUTODELETE_SECTION" />. תמיד אפשר לשנות את זה ב'<ph name="SETTINGS_TITLE" />'.</translation>
+<translation id="8890668505403261809">חיפוש בכרטיסיות הפרטיות</translation>
 <translation id="8898822736010347272">‏שולח ל-Google כתובות URL של חלק מהדפים שאליהם נכנסת, פרטים מוגבלים לגבי המערכת וחלק מתוכן הדפים. פעולה זו עוזרת לזהות איומים חדשים ולהגן על כל המשתמשים באינטרנט.</translation>
 <translation id="8909135823018751308">שיתוף…</translation>
 <translation id="8921980840204105660">אפשר לבצע סנכרון כדי להוסיף את הסימניות מהמכשירים האחרים שלך</translation>

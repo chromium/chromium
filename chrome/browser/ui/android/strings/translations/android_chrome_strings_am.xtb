@@ -460,6 +460,7 @@
 <translation id="3098745985164956033">ለእርስዎ መግለጫዎችን ለማሻሻል አንዳንድ ምስሎች ወደ Google ይላካሉ</translation>
 <translation id="3114507951000454849">የዛሬውን ዜና ያንብቡ <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">ማስታወቂያዎች</translation>
+<translation id="3131961580615093332"><ph name="GIVEN_NAME" /> ትር «<ph name="TAB_NAME" />»ን ለውጠዋል</translation>
 <translation id="3148237711805373460">እዚያ ውሰደኝ</translation>
 <translation id="314939179385989105">የChrome መነሻ ገፅ</translation>
 <translation id="3158667104057012316">በእጅ ቅደም ተከተል በመደርደር ላይ</translation>
@@ -637,6 +638,7 @@
 <translation id="4042941173059740150">በ<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> አማካኝነት ወደ <ph name="SITE_ETLD_PLUS_ONE" /> ይቀጥሉ</translation>
 <translation id="404352903042073578">ያልተሰየመ ቡድን</translation>
 <translation id="4044708993631234325">የግርጌ ሉህ</translation>
+<translation id="4045441967987592849">ዳግም ክፈት</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{የተጋሩ የትር ቡድኖች ውስጥ አዲስ እንቅስቃሴ ያለው <ph name="TABS_COUNT_ONE" /> መደበኛ ትር}one{የተጋሩ የትር ቡድኖች ውስጥ አዲስ እንቅስቃሴ ያለው <ph name="TABS_COUNT_MANY" /> መደበኛ ትር}other{የተጋሩ የትር ቡድኖች ውስጥ አዲስ እንቅስቃሴ ያላቸው <ph name="TABS_COUNT_MANY" /> መደበኛ ትሮች}}</translation>
 <translation id="405365679581583349">Google Play አገልግሎቶችን ያዘምኑ</translation>
 <translation id="405399507749852140">በማንኛውም ጣቢያ ላይ ዋጋው ቢቀንስ ማንቂያዎችን ያግኙ</translation>
@@ -844,6 +846,7 @@
 <translation id="4943703118917034429">ምናባዊ እውነታ</translation>
 <translation id="4943872375798546930">ውጤቶች የሉም</translation>
 <translation id="4950924971025849764">ወደ ተመሳሳዩ Google መለያ ሲገቡ ሌሎች መሳሪያዎች ይህን ስልክ እንደ የደህንነት ቁልፍ ሊጠቀሙበት ይችላሉ።</translation>
+<translation id="4953833914914492602">የ«<ph name="TAB_GROUP_NAME" />» የትር ቡድን ከእንግዲህ አይገኝም</translation>
 <translation id="4957722034734105353">ተጨማሪ ለመረዳት...</translation>
 <translation id="4961107849584082341">ይህን ገፅ ወደ ማንኛውም ቋንቋ ያስተርጉሙ</translation>
 <translation id="4964614743143953889">Chrome ደህንነታቸው ስላልተጠበቀ ጣቢያዎች እና ውርዶች ያስጠነቅቅዎታል</translation>
@@ -957,6 +960,7 @@
 <translation id="5526281268548144413">በብዙ መስኮቶች ላይ መዝጋት አልተቻለም</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{ከ# ደቂቃ በፊት}one{ከ# ደቂቃ በፊት}other{ከ# ደቂቃ በፊት}}</translation>
 <translation id="5548606607480005320">የደህንነት ፍተሻ</translation>
+<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> የ«<ph name="TAB_GROUP_NAME" />» የትር ቡድንን ተቀላቅለዋል</translation>
 <translation id="5554520618550346933">የይለፍ ቃል ሲጠቀሙ Chrome በመስመር ላይ ታትሞ ከነበረ ያስጠነቅቅዎታል። ይህን በሚያደርግበት ጊዜ የእርስዎ የይለፍ ቃሎች እና የተጠቃሚ ስሞች Googleን ጨምሮ በማንኛውም ሰው እንዳይነበቡ ይመሰጠራሉ።</translation>
 <translation id="5555525474779371165">የእርስዎን ደህንነቱ የተጠበቀ የአሰሳ ጥበቃን ይምረጡ</translation>
 <translation id="5556459405103347317">ዳግም ጫን</translation>
@@ -1079,6 +1083,7 @@
 <translation id="6085886413119427067">እንዴት ደህንነቱ በተጠበቀ ግንኙነት ላይ ከድር ጣቢያዎች ጋር እንደሚገናኙ ይወስናል</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> ሰዓቶች ይቀራሉ</translation>
 <translation id="6095578583683628124">Google እንዲሁ የእርስዎ ነባሪ የፍለጋ ፕሮግራምዎ ከሆነ፣ የተሻለ፣ ከአውድ ጋር ተዛማጅነት ያላቸውን አስተያየቶች ያያሉ።</translation>
+<translation id="610630277578876674">በመልዕክቶች ውስጥ አገናኞችን በፍጥነት ይክፈቱ እና ሌሎችንም ያድርጉ</translation>
 <translation id="6108923351542677676">ማዋቀር በሂደት ላይ…</translation>
 <translation id="6112702117600201073">ገፅ በማደስ ላይ</translation>
 <translation id="6122831415929794347">የጥንቃቄ አሰሳ ይጥፋ?</translation>
@@ -1245,6 +1250,7 @@
 <translation id="6775840696761158817">የአድራሻ አሞሌው ወይም የፍለጋ ሳጥኑ ውስጥ መታ ሲያደርጉ ወይም ሲተይቡ ከእርስዎ ነባሪ የፍለጋ ፕሮግራም ጥቆማዎችን ይመለከታሉ። ይህ ማንነት የማያሳውቅ ውስጥ ጠፍቷል።</translation>
 <translation id="6785476624617658922">የChrome እና የChromeOS ተጨማሪ አገልግሎት ውል</translation>
 <translation id="6795633245022906657">አዲስ ትር በፍጥነት ይክፈቱ። ይህን አቋራጭ ለማርትዕ ወደ ቅንብሮች ይሂዱ።</translation>
+<translation id="679588508577699489">Chromeን የእርስዎ ነባሪ ያድርጉ</translation>
 <translation id="679956319013005046">ለራስ-ሙላ የመረጡትን አገልግሎት ለማቀናበር፣ መጀመሪያ አገልግሎቱን <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ያክሉ።</translation>
 <translation id="6802555630140434547">መስኮቱ ይዘጋል</translation>
 <translation id="6803791793483522764">ማሳወቂያዎችን ይገምግሙ</translation>
@@ -1616,6 +1622,7 @@
 <translation id="8282297628636750033">በሚቻልበት ጊዜ ጠቆር ያለ ገጽታን ጣቢያዎች ላይ ተግብር</translation>
 <translation id="8282950411412455249">ወደ ደህንነት ቅንብሮች ሂድ</translation>
 <translation id="829672787777123339">ከእርስዎ መሣሪያ ጋር በመገናኘት ላይ…</translation>
+<translation id="8307517230426267469"><ph name="GIVEN_NAME" /> ትር «<ph name="TAB_NAME" />»ን አስወግደዋል</translation>
 <translation id="831192587911042850">የአሁኑን ድር ጣቢያ እርስዎ በሚከተሏቸው የድር ጣቢያዎች ዝርዝር ውስጥ ያክላል።</translation>
 <translation id="8342727528718219152">Chrome በጣም ብዙ ማሳወቂያዎችን እየላኩ ሊሆኑ ስለሚችሉ ጣቢያዎች ያሳውቅዎታል</translation>
 <translation id="834313815369870491">ጣቢያዎችን በጭራሽ አይተርጉሙ</translation>
@@ -1736,6 +1743,7 @@
 <translation id="8863714995118816041">ለ<ph name="SITE_NAME" /> ፈቃዶች እንደገና ተፈቅደዋል</translation>
 <translation id="8865415417596392024">በመለያዎ ውስጥ የChrome ውሂብ</translation>
 <translation id="8888527824584402177">ለ<ph name="DAYS_INACTIVE" /> ቀናት ያልተጠቀሙባቸው ትሮች ወደዚህ<ph name="AUTODELETE_SECTION" /> ይንቀሳቀሳሉ። ይህን በማንኛውም ጊዜ በ<ph name="SETTINGS_TITLE" /> ውስጥ መለወጥ ይችላሉ።</translation>
+<translation id="8890668505403261809">ማንነት የማያሳውቅ ትሮችዎን ይፈልጉ</translation>
 <translation id="8898822736010347272">አዲስ ስጋቶችን ለማግኘት እንዲያግዝ እና በድር ላይ ያለ ሁሉንም ሰው ለመጠበቅ የጎበኟቸው የአንዳንድ ገጾች ዩአርኤሎችን፣ የተወሰነ የስርዓት መረጃን እና አንዳንድ የገጽ ይዘትን ወደ Google ይልካል።</translation>
 <translation id="8909135823018751308">አጋራ…</translation>
 <translation id="8921980840204105660">የእርስዎን እልባቶች ከሌሎች መሣሪያዎችዎ ለማግኘት ያስምሩ</translation>

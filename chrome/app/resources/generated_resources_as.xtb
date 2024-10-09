@@ -1700,6 +1700,7 @@
 <translation id="2184515124301515068">ছাইটসমূহে কেতিয়া ধ্বনি বজাব পাৰিব সেয়া Chromeক বাছনি কৰিবলৈ দিয়ক (আমি চুপাৰিছ কৰোঁ)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">অন্য এটা ডিভাইচৰ পৰা শ্বেয়াৰ কৰা পৃষ্ঠা</translation>
+<translation id="2187569197737151508">এইটো পুনৰ সক্ষম কৰিবলৈ ৫ বাৰ Esc টিপক</translation>
 <translation id="2187675480456493911">আপোনাৰ একাউণ্টত থকা অন্য ডিভাইচসমূহৰ সৈতে ছিংক কৰা হৈছে। অন্য ব্যৱহাৰকাৰীসকলে সংশোধন কৰা ছেটিংসমূহ ছিংক কৰা নহ’ব। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">ছাৰ্ভাৰৰ প্ৰমাণপত্ৰ আমদানি কৰাত আসোঁৱাহ</translation>
 <translation id="2187906491731510095">এক্সটেনশ্বন আপডে'ট কৰা হৈছে</translation>
@@ -2740,6 +2741,7 @@
 <translation id="2908122561561557160">Word, Excel আৰু PowerPoint ফাইলসমূহ খোলক</translation>
 <translation id="2908162660801918428">ডাইৰেক্টৰী অনুযায়ী মিডিয়া গেলাৰী যোগ কৰক</translation>
 <translation id="2908358077082926882">আবণ্টন আঁতৰাবলৈ পুনৰ “<ph name="CURRENTKEY" />” টিপক আৰু <ph name="RESPONSE" /></translation>
+<translation id="2909487040556589351">আপোনাৰ ম’বাইল ডিভাইচত Chrome লাভ কৰক</translation>
 <translation id="2909506265808101667">Googleৰ সেৱাৰ সৈতে সংযোগ কৰিব পৰা নগ’ল। আপোনাৰ নেটৱৰ্ক সংযোগ পৰীক্ষা কৰক আৰু পুনৰ চেষ্টা কৰক। আসোঁৱাহ ক’ড: <ph name="ERROR_CODE" />।</translation>
 <translation id="2910318910161511225">কোনো নেটৱর্কত সংযোগ কৰক আৰু আকৌ চেষ্টা কৰক</translation>
 <translation id="2910678330803525229">আপুনি এতিয়া ব্ৰাউজ কৰিবলৈ আৰম্ভ কৰিব পাৰে</translation>
@@ -4840,6 +4842,7 @@
 <translation id="4434611816075088065">বৰ্তমান আন একোতে আপোনাৰ মনোযোগৰ প্ৰয়োজন নাই</translation>
 <translation id="443475966875174318">অমিল এপ্লিকেশ্বনসমূহ আপডে’ট কৰক বা আঁতৰাওক</translation>
 <translation id="443503224864902151">অধিকাংশ ছাইটৰ পৰা আপোনাক ছাইন আউট কৰায়। আপোনাৰ ছিংক কৰা ডেটা মচিবলৈ আপুনি নিজৰ Google একাউণ্টত ছাইন ইন হৈ থাকিব।</translation>
+<translation id="4436573279088520291">ব্যৱহাৰ নকৰা টেবসমূহ বন্ধ কৰক</translation>
 <translation id="4437879751057074691">পাছৱৰ্ড আৰু পাছকী ছেভ কৰাৰ অফাৰ</translation>
 <translation id="4437947179446780764">কাষ্টম DNS সেৱা প্ৰদানকাৰী যোগ দিয়ক</translation>
 <translation id="4438043733494739848">স্বচ্ছ</translation>
@@ -9932,6 +9935,7 @@
 <translation id="816704878106051517">{COUNT,plural, =1{এটা ফ’ন নম্বৰ}one{# টা ফ’ন নম্বৰ}other{# টা ফ’ন নম্বৰ}}</translation>
 <translation id="8168435359814927499">সমল</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{পঢ়াৰ সূচীত টেব যোগ দিয়ক}one{পঢ়াৰ সূচীত টেব যোগ দিয়ক}other{পঢ়াৰ সূচীত টেব যোগ দিয়ক}}</translation>
+<translation id="8169177848833352618">দুৰ্ভাগ্যবশতঃ এই মেচিনটোৱে Bruschetta ইনষ্টল কৰাৰ বাবে থকা প্ৰয়োজনীয়তাসমূহ পূৰণ নকৰে। আসোঁৱাহ ক’ডটো হৈছে <ph name="ERROR" />।</translation>
 <translation id="8174047975335711832">ডিভাইচৰ তথ্য</translation>
 <translation id="8176332201990304395">গুলপীয়া আৰু বগা</translation>
 <translation id="8176529144855282213">মাইক্ৰ’ফ’নৰ এক্সেছ অন কৰিবলৈ, আপোনাৰ ডিভাইচত মাইক্ৰ’ফ’নৰ কায়িক ছুইচটো অন কৰক</translation>

@@ -20,6 +20,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Kinga mtandao imetambuliwa</translation>
 <translation id="1075811647922107217">Ukubwa wa ukurasa</translation>
+<translation id="108084407137234521">Haiwezi kuandaa muhtasari wa manukuu yenye chini ya maneno <ph name="MIN_WORD_LENGTH" /></translation>
 <translation id="1082009148392559545">Kupakua taswira ya skrini</translation>
 <translation id="1094693127011229778">Anwani ya IP haipatikani</translation>
 <translation id="1100902271996134409">Inatayarisha picha...</translation>
@@ -413,6 +414,7 @@
 <translation id="3031560714565892478">Kifaa hiki ni kamera ya video.</translation>
 <translation id="3042927241478734594">Ungependa kuacha kurekodi?</translation>
 <translation id="3054177598518735801">mA <ph name="CURRENT_VALUE" /></translation>
+<translation id="3055176406666937744">Haiwezi kuandaa muhtasari wa manukuu yenye zaidi ya maneno <ph name="MAX_WORD_LENGTH" /></translation>
 <translation id="3056720590588772262">Anwani halisi</translation>
 <translation id="3060579846059757016">Muhtasari</translation>
 <translation id="3061850252076394168">washa kipengele cha chagua ili izungumze</translation>
@@ -449,6 +451,7 @@
 <translation id="3226657629376379887">Menyu ya vitendo vya kuweka miundo</translation>
 <translation id="3227186760713762082">Gawanya thamani ya <ph name="CATEGORY_TEXT" /> kwa <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">Andika upya</translation>
+<translation id="3245518008592055173">Haiwezi kubuni majina ya manukuu yenye chini ya maneno <ph name="MIN_WORD_LENGTH" /></translation>
 <translation id="3246869037381808805">Kazi za kuchapisha zilizohifadhiwa kwa zaidi ya siku moja zitaondolewa</translation>
 <translation id="324961752321393509">Msimamizi wako haruhusu kufunga programu hii</translation>
 <translation id="3263941347294171263">Chomoa kisha uchomeke upya kebo ya <ph name="DEVICE_NAME" /> ili uendelee na mchakato wa kusasisha</translation>
@@ -609,6 +612,7 @@
 <translation id="409427325554347132">Hifadhi maelezo ya jaribio</translation>
 <translation id="409469431304488632">Jaribio</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
+<translation id="4105182082354119881">Haiwezi kubuni majina ya manukuu yenye zaidi ya maneno <ph name="MAX_WORD_LENGTH" /></translation>
 <translation id="4110686435123617899">Chagua albamu ya <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Padi ya kugusa yenye USB</translation>
 <translation id="4113067922640381334">Sasa unaweza kufikia <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />mandhari mpya<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>
@@ -1006,7 +1010,7 @@
 <translation id="6075872808778243331">Muda wa Kusubiri Maombi ya HTTP (Android)</translation>
 <translation id="6078323886959318429">Ongeza njia ya mkato</translation>
 <translation id="6091080061796993741">rangi ya njano</translation>
-<translation id="6093853427925392522">Hakikisha kuwa unatumia programu ya Uhamishaji wa Maudhui kutoka Google kuhamishia data ya akaunti yako ya shule kwenye akaunti binafsi kabla hujapoteza ufikiaji.</translation>
+<translation id="6093853427925392522">Hakikisha kuwa unatumia programu ya Google ya Uhamishaji wa Maudhui kuhamishia data ya akaunti yako ya shule kwenye akaunti yako ya binafsi kabla hujapoteza ufikiaji.</translation>
 <translation id="6104112872696127344">Uchanganuzi umeghairiwa</translation>
 <translation id="6106186594183574873">Ili ukamilishe, weka nenosiri lako la awali</translation>
 <translation id="6108689792487843350">Imeshindwa kufikia lango</translation>

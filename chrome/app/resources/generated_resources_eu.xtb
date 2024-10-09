@@ -2097,6 +2097,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2460356425461033301">Egin zure arakatzaileko gauzen babeskopiak, edozein gailutan erabil ditzazun</translation>
 <translation id="2460482211073772897">Beste karpeta batzuetan</translation>
 <translation id="2460826998961521840">Google-ko kontuan gordetako sarbide-gakoak erabiltzeko</translation>
+<translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> gailu honetan soilik dago gordeta. Laster-marka hau <ph name="LOCAL_FOLDER" /> karpetara eramaten baduzu, aurrerantzean ez duzu izango beste gailuetan.</translation>
 <translation id="2461550163693930491">Ez eman fitxa partekatuetan gora/behera egiteko eta zooma erabiltzeko baimena webguneei</translation>
 <translation id="2461593638794842577">Pasahitzak gailu honetan soilik gordetzeko, desaktibatu ezarpena</translation>
 <translation id="2462332841984057083">Steam konfiguratzen ari da jada. Itxaron amaitu arte.</translation>
@@ -2350,6 +2351,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2645047101481282803"><ph name="PROFILE_NAME" /> da gailuaren kudeatzailea</translation>
 <translation id="2645388244376970260">Fitxa hau <ph name="DEVICE_NAME" /> gailura igortzen</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">Google-ko kontuko karpeta batean gorde nahi duzu?</translation>
 <translation id="264897126871533291">Protanomalia</translation>
 <translation id="2649045351178520408">Base64 bidez kodetutako ASCII kodea, ziurtagiri-katea</translation>
 <translation id="265156376773362237">Aurrez kargatzeko modu arrunta</translation>
@@ -2538,6 +2540,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2773288106548584039">Arakatzaile zaharrekiko bateragarritasuna</translation>
 <translation id="2773621783913034737">Ezarri fitxak inaktibo</translation>
 <translation id="2774876860084746535">Intelektuala</translation>
+<translation id="2775047284666165174"><ph name="LOCAL_FOLDER" /> gailu honetan soilik dago gordeta. Karpeta hau <ph name="LOCAL_FOLDER" /> karpetara eramaten baduzu, aurrerantzean ez duzu izango beste gailuetan.</translation>
 <translation id="2775104091073479743">Editatu hatz-markak</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{<ph name="EXTENSION" /> luzapena gailuak erabiltzen ari zen}=1{<ph name="EXTENSION" /> luzapena {0} gailu erabiltzen ari da}other{<ph name="EXTENSION" /> luzapena {0} gailu erabiltzen ari da}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Ezabatu bateragarria ez den aplikazio bat}other{Ezabatu bateragarriak ez diren # aplikazio}}</translation>
@@ -4937,6 +4940,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4527929807707405172">Gaitu gora eta behera alderantziz egiteko aukera. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Itzulpen-iradokizuna</translation>
 <translation id="4528638190900283934">Eginbide gehigarriak lortzeko, hasi saioa</translation>
+<translation id="4529052777398765334">Karpeta hau gailu honetan soilik dago gordeta. <ph name="ACCOUNT_FOLDER" /> karpetan gordetzen baduzu, kontuan ere gordeko da karpeta.</translation>
 <translation id="4529455689802245339">Baliteke Chrome-ren Istanteko azpitituluak eginbideak ez funtzionatzea</translation>
 <translation id="4531451811601110068">Saiatu berriro, edo jarri administratzailearekin harremanetan laguntza eskatzeko</translation>
 <translation id="4531924570968473143">Nor gehitu nahi duzu <ph name="DEVICE_TYPE" /> gailuan?</translation>
@@ -5522,6 +5526,7 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> eginbidearen ikusgaitasun-ezarpenak</translation>
 <translation id="4955710816792587366">Aukeratu PIN bat</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">Gailu honetan soilik dagoen karpeta batean gorde nahi duzu?</translation>
 <translation id="4959262764292427323">Pasahitzak Google-ko kontuan gordetzen dira, edozein gailutan eskura izan ditzazun</translation>
 <translation id="4960020053211143927">Aplikazio batzuek ez dute onartzen</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8442,6 +8447,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="711840821796638741">Erakutsi kudeatutako laster-markak</translation>
 <translation id="711985611146095797">Orri honen bitartez, saioa hasita daukaten Google-ko kontuak kudea ditzakezu. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Chrome arakatzailea eta Android-eko trafikoa blokeatu egingo dira VPN bat konektatzen ez bada</translation>
+<translation id="7120904433567247946">Laster-marka hau gailu honetan soilik dago gordeta. <ph name="ACCOUNT_FOLDER" /> karpetan gordetzen baduzu, kontuan ere gordeko da laster-marka.</translation>
 <translation id="7121438501124788993">Garatzaile modua</translation>
 <translation id="7121728544325372695">Marra adimendunak</translation>
 <translation id="7122605570852873914">Amaitu saioa halere</translation>
@@ -8468,7 +8474,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7139627972753429585"><ph name="APP_NAME" /> mikrofonoa erabiltzen ari da</translation>
 <translation id="7140785920919278717">Instalatzailearen aplikazioa</translation>
 <translation id="7141105143012495934">Ezin izan da hasi saioa, ezin izan direlako eskuratu kontuaren xehetasunak. Jarri administratzailearekin harremanetan edo saiatu berriro.</translation>
-<translation id="7141470099673912333">Content Transfer</translation>
+<translation id="7141470099673912333">Eduki-transferentzia</translation>
 <translation id="7141844554192012199">Egiaztapena</translation>
 <translation id="714301620504747562">Arakatzea eta bilatzea modu estandarrean aurrez kargatzea baino bizkorragoa da</translation>
 <translation id="7143207342074048698">Konektatzen</translation>

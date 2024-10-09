@@ -407,6 +407,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6060842547856900641">Ouvrir Lentille</translation>
 <translation id="6069027071882229820">Copier en tant qu'image</translation>
 <translation id="6070348360322141662">Pour une sécurité accrue, Google Chrome va crypter vos données</translation>
+<translation id="6075300983329039771">Votre organisation, <ph name="MANAGER" />, vous demande de vous connecter à Chrome</translation>
 <translation id="608006075545470555">Ajouter le profil professionnel à ce navigateur</translation>
 <translation id="6097822892606850415">Rédigez avec plus d'assurance grâce à l'IA</translation>
 <translation id="6113794647360055231">Google Chrome vient de s'améliorer</translation>
@@ -545,6 +546,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="7670287553302121848">Le compte Chrome nécessite une réauthentification</translation>
 <translation id="769538538642757151">Chrome vous informera si vous devez examiner quelque chose</translation>
 <translation id="77283119132245232">Fournit des services de traçage système pour <ph name="BROWSER_NAME" />. Si ce service est désactivé, les traces de la performance créées par le navigateur ne comprendront pas les événements à l'échelle du système tels que les événements ReadyThread et de changement de contexte.</translation>
+<translation id="7736869414036750079">Votre organisation vous demande de vous connecter à Chrome</translation>
 <translation id="7747138024166251722">Le programme d'installation n'a pas pu créer de répertoire temporaire. Vérifiez que le disque a suffisamment d'espace libre et que vous disposez des autorisations nécessaires pour installer le logiciel.</translation>
 <translation id="7761834446675418963">Cliquez sur votre nom pour ouvrir Chrome et commencer à naviguer.</translation>
 <translation id="7763983146198734674">Enregistrez vos mots de passe et accédez-y en déplacement</translation>

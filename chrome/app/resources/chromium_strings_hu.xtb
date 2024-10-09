@@ -67,6 +67,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="1906696617298807388">Amikor beír valamit a címsávba vagy a keresőmezőbe, a Chromium elküldi a beírt szöveget a Google Drive-nak, hogy elemeket javasolhasson. Inkognitó módban ki van kapcsolva ez a funkció.</translation>
 <translation id="1911763535808217981">A beállítás kikapcsolásával anélkül jelentkezhet be a Google-webhelyekre (pl. Gmail), hogy a Chromiumba is bejelentkezne</translation>
 <translation id="1929939181775079593">A Chromium nem válaszol. Újraindítja most?</translation>
+<translation id="1933341829955786215">Szervezete (<ph name="MANAGER" />) megköveteli a Chromiumba történő bejelentkezést</translation>
 <translation id="193439633299369377">A frissítés alkalmazásához újra kell indítani a Chromium OS-t.</translation>
 <translation id="1951406923938785464">A Chromium letiltotta ezt a letöltést, mert ezt a fájltípust nem töltik le gyakran, és veszélyes lehet</translation>
 <translation id="1953553007165777902">Letöltés… <ph name="MINUTE" /> perc van hátra</translation>
@@ -574,6 +575,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8852026904190808918">A Chromium ezt a nyelvet használja a menük, beállítások, figyelmeztetések és egyéb szövegek megjelenítésére</translation>
 <translation id="8862326446509486874">Nincsenek meg a megfelelő jogai a rendszerszintű telepítéshez. Indítsa újra a telepítőt rendszergazdaként.</translation>
 <translation id="8880203542552872219">Ha igen, akkor módosítsa a Chromium böngészőben mentett jelszót az új jelszóra.</translation>
+<translation id="8891709362986793894">Szervezete megköveteli a Chromiumba történő bejelentkezést</translation>
 <translation id="8907580949721785412">A Chromium megkísérli megjeleníteni a jelszavakat. Ennek engedélyezéséhez írja be Windows-jelszavát.</translation>
 <translation id="8931379085695076764">A Chromium meg tudja becsülni az Ön érdeklődési köreit a legutóbbi pár hétben végzett böngészési tevékenységei alapján. Ezek az információk nem hagyják el az eszközt.</translation>
 <translation id="8941642502866065432">Nem sikerült a Chromium frissítése</translation>

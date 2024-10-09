@@ -2110,6 +2110,7 @@
 <translation id="2460356425461033301">तुमच्या ब्राउझर डेटाचा बॅकअप घ्या आणि तो कोणत्याही डिव्हाइसवर वापरा</translation>
 <translation id="2460482211073772897">इतर फोल्डरमध्ये</translation>
 <translation id="2460826998961521840">तुमच्या Google खाते मध्ये सेव्ह केलेल्या पासकी वापरण्यासाठी</translation>
+<translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> फक्त या डिव्हाइसवर सेव्ह केला आहे. तुम्ही हा बुकमार्क <ph name="LOCAL_FOLDER" /> मध्ये हलवल्यास, तुम्हाला तो आता तुमच्या इतर डिव्हाइसवर मिळणार नाही.</translation>
 <translation id="2461550163693930491">साइटना शेअर केलेले टॅब स्क्रोल आणि झूम करण्याची अनुमती देऊ नका</translation>
 <translation id="2461593638794842577">तुमचे पासवर्ड फक्त या डिव्हाइसवर सेव्ह करण्यासाठी तुम्ही हे सेटिंग बंद करू शकता</translation>
 <translation id="2462332841984057083">Steam आधीपासून सेट करत आहे. सेटअप पूर्ण होण्याची प्रतीक्षा करा.</translation>
@@ -2363,6 +2364,7 @@
 <translation id="2645047101481282803">तुमचे डिव्हाइस <ph name="PROFILE_NAME" /> द्वारे व्यवस्थापित केले आहे</translation>
 <translation id="2645388244376970260"><ph name="DEVICE_NAME" /> वर हा टॅब कास्ट करत आहे</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">तुमच्या Google खाते मधील फोल्डरमध्ये सेव्ह करायचा आहे का?</translation>
 <translation id="264897126871533291">प्रथमवर्ण दृष्टिक्षीणता</translation>
 <translation id="2649045351178520408">Base64-encoded ASCII, सर्टिफिकेट श्रृंखला</translation>
 <translation id="265156376773362237">साधारण प्रीलोडिंग</translation>
@@ -2551,6 +2553,7 @@
 <translation id="2773288106548584039">लेगसी ब्राउझर सपोर्ट</translation>
 <translation id="2773621783913034737">टॅब इनॅक्टिव्ह करा</translation>
 <translation id="2774876860084746535">बौद्धिक</translation>
+<translation id="2775047284666165174"><ph name="LOCAL_FOLDER" /> फक्त या डिव्हाइसवर सेव्ह केले आहे. तुम्ही हे फोल्डर <ph name="LOCAL_FOLDER" /> मध्ये हलवल्यास, तुम्हाला ते आता तुमच्या इतर डिव्हाइसवर मिळणार नाही.</translation>
 <translation id="2775104091073479743">फिंगरप्रिंट संपादित करा</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{Extension "<ph name="EXTENSION" />" was accessing devices}=1{"<ph name="EXTENSION" />" हे एक्स्टेंशन {0} डिव्हाइस अ‍ॅक्सेस करत आहे}other{"<ph name="EXTENSION" />" हे एक्स्टेंशन {0} डिव्हाइस अ‍ॅक्सेस करत आहे}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{सपोर्ट नसलेले एक अ‍ॅप काढून टाका}other{सपोर्ट नसलेली # अ‍ॅप्स काढून टाका}}</translation>
@@ -4952,6 +4955,7 @@
 <translation id="4527929807707405172">रिव्हर्स स्क्रोलिंग सुरू करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">भाषांतर सूचना</translation>
 <translation id="4528638190900283934">अतिरिक्त वैशिष्‍ट्यांसाठी साइन इन करा</translation>
+<translation id="4529052777398765334">हे फोल्डर फक्त या डिव्हाइसवर सेव्ह केले आहे. तुम्ही ते <ph name="ACCOUNT_FOLDER" /> वर सेव्ह केल्यास, हे फोल्डर तुमच्या खात्यामध्येदेखील सेव्ह केले जाईल.</translation>
 <translation id="4529455689802245339">Chrome लाइव्ह कॅप्शन कदाचित काम करणार नाही</translation>
 <translation id="4531451811601110068">तुम्ही पुन्हा प्रयत्न करू शकता किंवा मदतीसाठी तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधू शकता</translation>
 <translation id="4531924570968473143">तुम्हाला या <ph name="DEVICE_TYPE" /> वर कोणाला जोडायचे आहे?</translation>
@@ -5538,6 +5542,7 @@
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> ची दृश्यमानता</translation>
 <translation id="4955710816792587366">तुमचा पिन निवडा</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">फक्त या डिव्हाइसवरील फोल्डरमध्ये सेव्ह करायचा आहे का?</translation>
 <translation id="4959262764292427323">तुम्हाला कोणत्याही डिव्हाइसवर वापरता यावे यासाठी तुमच्या Google खात्यामध्ये पासवर्ड सेव्ह केले जातात</translation>
 <translation id="4960020053211143927">काही ॲप्स सपोर्ट करत नाहीत</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8466,6 +8471,7 @@ I feel - विटांची इमारत</translation>
 <translation id="711840821796638741">व्यवस्थापित बुकमार्क दर्शवा</translation>
 <translation id="711985611146095797">हे पेज तुम्हाला तुमची साइन-इन केलेली Google खाती व्यवस्थापित करू देते. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">VPN कनेक्ट करेपर्यंत Chrome ब्राउझर आणि Android ट्रॅफिक ब्लॉक केले जाईल</translation>
+<translation id="7120904433567247946">हा बुकमार्क फक्त या डिव्हाइसवर सेव्ह केला आहे. तुम्ही तो <ph name="ACCOUNT_FOLDER" /> वर सेव्ह केल्यास, हा बुकमार्क तुमच्या खात्यामध्येदेखील सेव्ह केले जाईल.</translation>
 <translation id="7121438501124788993">डेव्हलपर मोड</translation>
 <translation id="7121728544325372695">स्मार्ट डॅश</translation>
 <translation id="7122605570852873914">तरीही साइन आउट करा</translation>

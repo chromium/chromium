@@ -66,6 +66,7 @@
 <translation id="1906696617298807388">Chromium 會將你在網址列或搜尋框中輸入的內容傳送至 Google 雲端硬碟，以提供項目建議。這項功能在無痕模式中為關閉狀態。</translation>
 <translation id="1911763535808217981">關閉這項功能後，你可以單獨登入 Gmail 等這類 Google 網站，不必同時登入 Chromium</translation>
 <translation id="1929939181775079593">Chromium 沒有回應，要立即重新啟動嗎？</translation>
+<translation id="1933341829955786215">貴機構 (<ph name="MANAGER" />) 要求你登入 Chromium</translation>
 <translation id="193439633299369377">Chromium OS 必須重新啟動，才能套用更新。</translation>
 <translation id="1951406923938785464">這不是常有人下載的檔案類型，可能有危險，因此 Chromium 已禁止下載</translation>
 <translation id="1953553007165777902">下載中… 還剩 <ph name="MINUTE" /> 分鐘</translation>
@@ -576,6 +577,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8852026904190808918">這個語言會用於顯示 Chromium 中的選單、設定、快訊和其他文字</translation>
 <translation id="8862326446509486874">你沒有在系統層級進行安裝的權限，請以管理員的身分執行安裝檔。</translation>
 <translation id="8880203542552872219">如果是的話，請編輯你儲存在 Chromium 中的密碼，使其與新密碼相符。</translation>
+<translation id="8891709362986793894">貴機構要求你登入 Chromium</translation>
 <translation id="8907580949721785412">Chromium 現在會嘗試顯示密碼。如果你同意的話，請輸入你的 Windows 密碼。</translation>
 <translation id="8931379085695076764">Chromium 可以根據過去幾週的瀏覽記錄，推測你的興趣喜好。這項資訊會儲存在你的裝置上。</translation>
 <translation id="8941642502866065432">無法更新 Chromium</translation>

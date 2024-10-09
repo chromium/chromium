@@ -1104,6 +1104,7 @@
 <translation id="301521992641321250">በራስ-ሰር ታግዷል</translation>
 <translation id="3016780570757425217">የእርስዎን መገኛ አካባቢ ይወቁ</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />፣ የአስተያየት ጥቆማዎችን ለማስወገድ ትርን ከዚያ አስገባን ይጫኑ።</translation>
+<translation id="3022959067768579802">መጻፍ ይቀጥሉ</translation>
 <translation id="3023165109041533893">በጣቢያ የተጠቆሙ ማስታወቂያዎች ጣቢያዎች አግባብነት ያሏቸው ማስታወቂያዎችን ለእርስዎ እንዲያሳዩ እያስቻሉ ሳለ የእርስዎን የአሰሳ ታሪክ እና ማንነት ለመጠበቅ ያግዛሉ። በእንቅስቃሴዎ መሠረት እርስዎ የጎበኙት ጣቢያ ማሰስ ሲቀጥሉ ተዛማጅ ማስታወቂያዎችን መጠቆም ይችላል። የእነዚህን ጣቢያዎች ዝርዝር ማየት እና የማይፈልጓቸውን በቅንብሮች ውስጥ ማገድ ይችላሉ።</translation>
 <translation id="3024663005179499861">የተሳሳተ የመምሪያ ዓይነት</translation>
 <translation id="3030331669969285614">እነዚህ ጠቋሚዎች ሰበር ለውጥን ይከላከላሉ ወይም ያድህራሉ እና ለተገደበ ጊዜ ብቻ ይገኛሉ።</translation>
@@ -1376,6 +1377,7 @@
 <translation id="350763432931695541">በሚቀጥሉት ጥቂት ገፆች ውስጥ ጽሁፍ በማውጣት ላይ</translation>
 <translation id="3507869775212388416">የህግ ስራዎች</translation>
 <translation id="3507936815618196901">የዙሪያዎ የ3ል ካርታ መፍጠር ወይም የካሜራ ቦታን መከታተል</translation>
+<translation id="3510341387555916271">ከቆመበት ለመቀጠል ይክፈቱ</translation>
 <translation id="3512163584740124171">ይህ መመሪያ ከተመሳሳይ የመመሪያ ቡድን የመጣ ሌላ መመሪያ ከፍተኛ ተቀዳሚነት ስላለው ችላ ተብሏል።</translation>
 <translation id="351522771072578657">በአሁኑ ጊዜ በምናሌ ላይ ነዎት</translation>
 <translation id="3517264445792388751">የፋይል ሥርዓቱ በአስተዳዳሪዎ ተሰናክሏል</translation>
@@ -1743,6 +1745,7 @@
 <translation id="4152318981910038897">{COUNT,plural, =1{ገፅ 1}one{ገፅ {COUNT}}other{ገፅ {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome የመክፈያ ዘዴዎችን ከመሞላቱ በፊት እርስዎ መሆንዎን ያረጋግጣል። በ<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> ውስጥ በማንኛውም ጊዜ ይህ ማዘመን ይችላሉ።</translation>
 <translation id="4159784952369912983">ሐምራዊ</translation>
+<translation id="4165422751765527461">በአዲስ ትር ውስጥ የእገዛ ማዕከል ጽሁፍ ይከፍታል</translation>
 <translation id="4165986682804962316">የጣቢያ ቅንብሮች</translation>
 <translation id="4169535189173047238">አትፍቀድ</translation>
 <translation id="4171400957073367226">መጥፎ የማረጋገጫ ፊርማ</translation>
@@ -2903,6 +2906,7 @@
 <translation id="6306713302480826305">ይህ አድራሻ ከዚህ እና ከሌሎች በመለያ የገቡባቸው መሣሪያዎች ይሰረዛል</translation>
 <translation id="6307968763353904914">ባንክዎ አሁን ለዚህ የመክፈያ ዘዴ ምናባዊ ካርዶችን ማቅረብ አይችልም፣ ነገር ግን በመስመር ላይ ለመክፈል አሁንም የእርስዎን <ph name="CARD_LABEL" /> መጠቀም ይችላሉ።</translation>
 <translation id="6311410654831092784">የካርድ ክምችት</translation>
+<translation id="6311642842034740437">የተሰየመ አካባቢ</translation>
 <translation id="6312113039770857350">ድረ-ገፅ አይገኝም</translation>
 <translation id="6316110367871394043">ወደ <ph name="CLOUD_PROVIDER" /> የተደረገው የፋይል ሰቀላ ባለበት ቆሟል</translation>
 <translation id="6316723751983724988">አዲስ፦ የChrome የFamily Link ምርጫዎች እዚህ ይተገበራሉ</translation>

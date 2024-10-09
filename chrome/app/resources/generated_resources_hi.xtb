@@ -2111,6 +2111,7 @@
 <translation id="2460356425461033301">अपने ब्राउज़र के डेटा का बैक अप लें और इसे किसी भी डिवाइस पर इस्तेमाल करें</translation>
 <translation id="2460482211073772897">अन्य फ़ोल्डर में</translation>
 <translation id="2460826998961521840">इससे Google खाते में सेव की गई पासकी इस्तेमाल की जा सकेंगी</translation>
+<translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> को सिर्फ़ इस डिवाइस में सेव किया गया है. अगर इस बुकमार्क को <ph name="LOCAL_FOLDER" /> में मूव किया जाता है, तो यह आपके दूसरे डिवाइसों पर नहीं दिखेगा.</translation>
 <translation id="2461550163693930491">साइटों को शेयर किए गए टैब में स्क्रोल और ज़ूम करने की अनुमति न दें</translation>
 <translation id="2461593638794842577">सिर्फ़ इस डिवाइस पर अपने पासवर्ड सेव करने के लिए, इस सेटिंग को बंद किया जा सकता है</translation>
 <translation id="2462332841984057083">Steam को पहले से ही सेट अप किया जा रहा है. सेटअप पूरा होने का इंतज़ार करें.</translation>
@@ -2364,6 +2365,7 @@
 <translation id="2645047101481282803">आपके डिवाइस को <ph name="PROFILE_NAME" /> मैनेज करता है</translation>
 <translation id="2645388244376970260">इस टैब को <ph name="DEVICE_NAME" /> पर कास्ट किया जा रहा है</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">क्या आपको यह बुकमार्क अपने Google खाते के किसी फ़ोल्डर में सेव करना है?</translation>
 <translation id="264897126871533291">लाल-हरे रंग की पहचान न कर पाने की समस्या</translation>
 <translation id="2649045351178520408">Base64 में एन्कोड किया गया ASCII प्रमाणपत्र चेन</translation>
 <translation id="265156376773362237">पहले से लोड करने की स्टैंडर्ड सुविधा</translation>
@@ -2552,6 +2554,7 @@
 <translation id="2773288106548584039">पुराने ब्राउज़र के लिए मदद</translation>
 <translation id="2773621783913034737">टैब बंद करें</translation>
 <translation id="2774876860084746535">बौद्धिक</translation>
+<translation id="2775047284666165174"><ph name="LOCAL_FOLDER" /> को सिर्फ़ इस डिवाइस में सेव किया गया है. अगर इस फ़ोल्डर को <ph name="LOCAL_FOLDER" /> में मूव किया जाता है, तो यह आपके दूसरे डिवाइसों पर नहीं दिखेगा.</translation>
 <translation id="2775104091073479743">फ़िंगरप्रिंट में बदलाव करें</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{"<ph name="EXTENSION" />" एक्सटेंशन, डिवाइसों को ऐक्सेस कर रहा था}=1{"<ph name="EXTENSION" />" एक्सटेंशन, {0} डिवाइस को ऐक्सेस कर रहा है}one{"<ph name="EXTENSION" />" एक्सटेंशन, {0} डिवाइस को ऐक्सेस कर रहा है}other{"<ph name="EXTENSION" />" एक्सटेंशन, {0} डिवाइसों को ऐक्सेस कर रहा है}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{1 ऐसा ऐप्लिकेशन मिटाएं जो अब उपलब्ध नहीं है}one{# ऐसा ऐप्लिकेशन मिटाएं जो अब उपलब्ध नहीं है}other{# ऐसे ऐप्लिकेशन मिटाएं जो अब उपलब्ध नहीं हैं}}</translation>
@@ -4952,6 +4955,7 @@
 <translation id="4527929807707405172">उलटी दिशा में स्क्रोल करने की सुविधा चालू करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">अनुवाद के सुझाव</translation>
 <translation id="4528638190900283934">अतिरिक्त सुविधाएं पाने के लिए साइन इन करें</translation>
+<translation id="4529052777398765334">यह फ़ोल्डर सिर्फ़ इस डिवाइस में सेव किया गया है. अगर आपने इसे <ph name="ACCOUNT_FOLDER" /> में सेव किया है, तो यह फ़ोल्डर आपके खाते में भी सेव हो जाएगा.</translation>
 <translation id="4529455689802245339">हो सकता है कि Chrome की लाइव कैप्शन सुविधा काम न करे</translation>
 <translation id="4531451811601110068">फिर से कोशिश करें या मदद पाने के लिए, अपने एडमिन से संपर्क करें</translation>
 <translation id="4531924570968473143">आप इस <ph name="DEVICE_TYPE" /> पर किसे जोड़ना चाहते हैं?</translation>
@@ -5537,6 +5541,7 @@
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> के लिए, 'किसको दिखे' सेटिंग</translation>
 <translation id="4955710816792587366">अनलॉक करने के लिए अपना पिन चुनें</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">क्या आपको बुकमार्क सिर्फ़ इस डिवाइस के फ़ोल्डर में सेव करना है?</translation>
 <translation id="4959262764292427323">पासवर्ड आपके Google खाते में सेव किए जाते हैं ताकि आप किसी भी डिवाइस पर उनका इस्तेमाल कर सकें</translation>
 <translation id="4960020053211143927">कुछ ऐप्लिकेशन पर काम नहीं करती</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8463,6 +8468,7 @@
 <translation id="711840821796638741">प्रबंधित बुकमार्क दिखाएं</translation>
 <translation id="711985611146095797">इस पेज पर, आप अपने साइन इन किए गए Google खाते मैनेज कर सकते हैं. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">वीपीएन कनेक्ट नहीं होने तक, Chrome ब्राउज़र और Android ट्रैफ़िक ब्लॉक रहेगा</translation>
+<translation id="7120904433567247946">यह बुकमार्क सिर्फ़ इस डिवाइस में सेव किया गया है. अगर आपने इसे <ph name="ACCOUNT_FOLDER" /> में सेव किया है, तो यह बुकमार्क आपके खाते में भी सेव हो जाएगा.</translation>
 <translation id="7121438501124788993">डेवलपर मोड</translation>
 <translation id="7121728544325372695">Smart Dashes</translation>
 <translation id="7122605570852873914">फिर भी साइन आउट करें</translation>

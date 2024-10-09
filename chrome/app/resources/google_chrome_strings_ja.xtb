@@ -399,6 +399,7 @@
 <translation id="6060842547856900641">レンズを開く</translation>
 <translation id="6069027071882229820">画像としてコピー</translation>
 <translation id="6070348360322141662">セキュリティ強化のため、データは Google Chrome で暗号化されます</translation>
+<translation id="6075300983329039771">組織（<ph name="MANAGER" />）が Chrome にログインするよう求めています</translation>
 <translation id="608006075545470555">このブラウザに仕事用プロファイルを追加</translation>
 <translation id="6097822892606850415">AI のサポートで文書を作成できます</translation>
 <translation id="6113794647360055231">進化する Chrome</translation>
@@ -537,6 +538,7 @@
 <translation id="7670287553302121848">Chrome アカウントの再認証が必要です</translation>
 <translation id="769538538642757151">確認の必要な項目がありましたらお知らせします</translation>
 <translation id="77283119132245232"><ph name="BROWSER_NAME" /> のシステム トレース サービスを提供します。このサービスを無効にした場合、ブラウザによって作成されるパフォーマンス トレースに、コンテキスト切り替えやスレッドの準備完了などのシステム全体のイベントは含められません。</translation>
+<translation id="7736869414036750079">組織が Chrome にログインするよう求めています</translation>
 <translation id="7747138024166251722">インストーラーの一時ディレクトリを作成できませんでした。ディスクの空き領域とソフトウェアのインストール許可があることを確認してください。</translation>
 <translation id="7761834446675418963">Chrome を開いてブラウジングを始めるには、名前をクリックしてください。</translation>
 <translation id="7763983146198734674">パスワードを保存して、外出先でもアクセスできます</translation>

@@ -460,6 +460,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="3098745985164956033">Sommige prente word na Google toe gestuur om hul beskrywings vir jou te verbeter</translation>
 <translation id="3114507951000454849">Lees vandag se nuus <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Aankondigings</translation>
+<translation id="3131961580615093332"><ph name="GIVEN_NAME" /> het “<ph name="TAB_NAME" />”-oortjie verander</translation>
 <translation id="3148237711805373460">Neem my daarheen</translation>
 <translation id="314939179385989105">Chrome se tuisblad</translation>
 <translation id="3158667104057012316">Sorteer tans orde handmatig</translation>
@@ -637,6 +638,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="4042941173059740150">Gaan voort na <ph name="SITE_ETLD_PLUS_ONE" /> met <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="404352903042073578">Naamlose groep</translation>
 <translation id="4044708993631234325">Onderste blad</translation>
+<translation id="4045441967987592849">Heropen</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standaardoortjie met nuwe aktiwiteit in gedeelde oortjiegroepe}other{<ph name="TABS_COUNT_MANY" /> standaardoortjies met nuwe aktiwiteit in gedeelde oortjiegroepe}}</translation>
 <translation id="405365679581583349">Dateer Google Play Dienste op</translation>
 <translation id="405399507749852140">Kry kennisgewings as die prys op enige werf daal</translation>
@@ -844,6 +846,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4943703118917034429">Virtuele realiteit</translation>
 <translation id="4943872375798546930">Geen resultate nie</translation>
 <translation id="4950924971025849764">As jy by dieselfde Google-rekening aangemeld is, kan ander toestelle hierdie foon as 'n sekuriteitsleutel gebruik.</translation>
+<translation id="4953833914914492602">Die “<ph name="TAB_GROUP_NAME" />” -oortjiegroep is nie meer beskikbaar nie</translation>
 <translation id="4957722034734105353">Kom meer te wete …</translation>
 <translation id="4961107849584082341">Vertaal hierdie bladsy in enige taal</translation>
 <translation id="4964614743143953889">Chrome waarsku jou oor onveilige werwe en aflaaie</translation>
@@ -957,6 +960,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5526281268548144413">Kan nie op verskeie vensters toegemaak word nie</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# min. gelede}other{# min. gelede}}</translation>
 <translation id="5548606607480005320">Veiligheidskontrole</translation>
+<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> het by “<ph name="TAB_GROUP_NAME" />”-oortjiegroep aangesluit</translation>
 <translation id="5554520618550346933">Wanneer jy ’n wagwoord gebruik, waarsku Chrome jou as dit aanlyn gepubliseer is. Wanneer dit gedoen word, word jou wagwoorde en gebruikername geënkripteer sodat niemand, insluitend Google, hulle kan lees nie.</translation>
 <translation id="5555525474779371165">Kies jou Veiligblaai-beskerming</translation>
 <translation id="5556459405103347317">Herlaai</translation>
@@ -1616,6 +1620,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8282297628636750033">Pas donkertema op werwe toe, as jy kan</translation>
 <translation id="8282950411412455249">Gaan na sekuriteitinstellings</translation>
 <translation id="829672787777123339">Koppel tans aan jou toestel …</translation>
+<translation id="8307517230426267469"><ph name="GIVEN_NAME" /> het “<ph name="TAB_NAME" />”-oortjie verwyder</translation>
 <translation id="831192587911042850">Voeg die huidige webwerf by die lys webwerwe wat jy tans volg.</translation>
 <translation id="8342727528718219152">Chrome sal jou laat weet van werwe wat moontlik te veel kennisgewings stuur</translation>
 <translation id="834313815369870491">Moet nooit werwe vertaal nie</translation>

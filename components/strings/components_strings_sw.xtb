@@ -1104,6 +1104,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="301521992641321250">Imezuiwa kiotomatiki</translation>
 <translation id="3016780570757425217">kujua mahali ulipo</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, bonyeza kitufe cha "Tab" kisha "Enter" ili Uondoe Pendekezo.</translation>
+<translation id="3022959067768579802">Endelea kuandika</translation>
 <translation id="3023165109041533893">Matangazo yanayopendekezwa na tovuti husaidia kulinda historia ya kuvinjari na utambulisho wako huku yakiwezesha tovuti kukuonyesha matangazo yanayokufaa. Kulingana na shughuli zako, tovuti uliyotembelea inaweza kupendekeza matangazo yanayohusiana kadiri unavyoendelea kuvinjari. Unaweza kuona orodha ya tovuti hizi na kuzuia zile ambazo huhitaji kwenye mipangilio.</translation>
 <translation id="3024663005179499861">Aina mbaya ya sera</translation>
 <translation id="3030331669969285614">Alama hizi huzuia au kurejesha mabadiliko yanayosababisha hitilafu na zitapatikana kwa muda mfupi pekee.</translation>
@@ -1377,6 +1378,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="350763432931695541">Inadondoa maandishi kwenye kurasa chache zinazofuata</translation>
 <translation id="3507869775212388416">Kazi za Sheria</translation>
 <translation id="3507936815618196901">Kubuni ramani ya 3D ya mazingira yako na kufuatilia mkao wa kamera</translation>
+<translation id="3510341387555916271">Fungua ili uendelee</translation>
 <translation id="3512163584740124171">Sera hii haitumiki kwa sababu sera nyingine kutoka kundi sawa la sera inapewa kipaumbele zaidi.</translation>
 <translation id="351522771072578657">Kwa sasa upo kwenye menyu</translation>
 <translation id="3517264445792388751">Mfumo wa faili umezimwa na msimamizi wako</translation>
@@ -1744,6 +1746,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="4152318981910038897">{COUNT,plural, =1{Ukurasa wa kwanza}other{Ukurasa wa {COUNT}}}</translation>
 <translation id="4154277373259957087">Sasa Chrome itathibitisha kuwa ni wewe kabla ya kujaza njia za kulipa. Sasa unaweza kusasisha ruhusa hii wakati wowote kwenye <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4159784952369912983">Zambarau</translation>
+<translation id="4165422751765527461">Hufungua makala ya Kituo cha Usaidizi katika kichupo kipya</translation>
 <translation id="4165986682804962316">Mipangilio ya tovuti</translation>
 <translation id="4169535189173047238">Usiruhusu</translation>
 <translation id="4171400957073367226">Sahihi mbaya ya uthibitishaji</translation>
@@ -2904,6 +2907,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="6306713302480826305">Anwani hii itafutwa kwenye kifaa hiki na vifaa vingine ulivyotumia kuingia katika akaunti</translation>
 <translation id="6307968763353904914">Benki yako imeshindwa kutoa kadi pepe kwa njia hii ya kulipa kwa sasa, lakini unaweza kutumia <ph name="CARD_LABEL" /> yako kulipa mtandaoni.</translation>
 <translation id="6311410654831092784">Karatasi ya Kadi</translation>
+<translation id="6311642842034740437">Mahali palipopewa jina</translation>
 <translation id="6312113039770857350">Ukurasa wa wavuti haupatikani</translation>
 <translation id="6316110367871394043">Imesitisha kupakia faili kwenye <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="6316723751983724988">Mpya: Chaguo za Family Link kwa ajili ya Chrome zinatumika hapa</translation>

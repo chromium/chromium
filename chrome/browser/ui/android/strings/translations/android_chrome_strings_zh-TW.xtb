@@ -460,6 +460,7 @@
 <translation id="3098745985164956033">系統會將某些圖片傳送到 Google，為你提供更完善的圖片說明</translation>
 <translation id="3114507951000454849">閱讀今日新聞 <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">公告事項</translation>
+<translation id="3131961580615093332"><ph name="GIVEN_NAME" />變更了「<ph name="TAB_NAME" />」分頁</translation>
 <translation id="3148237711805373460">立即前往</translation>
 <translation id="314939179385989105">Chrome 首頁</translation>
 <translation id="3158667104057012316">手動排序</translation>
@@ -637,6 +638,7 @@
 <translation id="4042941173059740150">繼續透過 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 使用 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="404352903042073578">未命名的群組</translation>
 <translation id="4044708993631234325">底部功能表</translation>
+<translation id="4045441967987592849">重新開啟</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{共用分頁群組中的 <ph name="TABS_COUNT_ONE" /> 個標準分頁有新活動}other{共用分頁群組中的 <ph name="TABS_COUNT_MANY" /> 個標準分頁有新活動}}</translation>
 <translation id="405365679581583349">更新 Google Play 服務</translation>
 <translation id="405399507749852140">如果產品在任何網站上降價，你會收到通知</translation>
@@ -844,6 +846,7 @@
 <translation id="4943703118917034429">虛擬實境</translation>
 <translation id="4943872375798546930">沒有結果</translation>
 <translation id="4950924971025849764">登入相同的 Google 帳戶後，其他裝置就可以使用這支手機做為安全金鑰。</translation>
+<translation id="4953833914914492602">「<ph name="TAB_GROUP_NAME" />」分頁群組已無法使用</translation>
 <translation id="4957722034734105353">瞭解詳情...</translation>
 <translation id="4961107849584082341">將這個網頁翻譯成任何語言</translation>
 <translation id="4964614743143953889">偵測到不安全的網站和下載內容時，Chrome 會顯示警告</translation>
@@ -957,6 +960,7 @@
 <translation id="5526281268548144413">無法關閉多個視窗中的分頁</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# 分鐘前}other{# 分鐘前}}</translation>
 <translation id="5548606607480005320">安全檢查</translation>
+<translation id="5551564597369878730"><ph name="GIVEN_NAME" />加入了「<ph name="TAB_GROUP_NAME" />」分頁群組</translation>
 <translation id="5554520618550346933">如果你使用的密碼已公布在網路上，Chrome 就會發出警告。在比對過程中，系統會加密你的密碼和使用者名稱，因此任何人 (包括 Google) 都無法讀取。</translation>
 <translation id="5555525474779371165">選擇安全瀏覽防護設定</translation>
 <translation id="5556459405103347317">重新載入</translation>
@@ -1079,6 +1083,7 @@
 <translation id="6085886413119427067">判斷如何透過安全連線連上網站</translation>
 <translation id="60923314841986378">還剩 <ph name="HOURS" /> 小時</translation>
 <translation id="6095578583683628124">如果 Google 也是預設的搜尋引擎，你將能取得更實用、更符合需求的建議</translation>
+<translation id="610630277578876674">快速開啟訊息中的連結及其他項目</translation>
 <translation id="6108923351542677676">設定中…</translation>
 <translation id="6112702117600201073">重新整理網頁</translation>
 <translation id="6122831415929794347">要停用安全瀏覽功能嗎？</translation>
@@ -1245,6 +1250,7 @@
 <translation id="6775840696761158817">當你輕觸網址列/搜尋框，或在當中輸入內容時，預設搜尋引擎會顯示建議。這項功能在無痕模式中為關閉狀態。</translation>
 <translation id="6785476624617658922">Chrome 和 Chrome OS 的《附加服務條款》</translation>
 <translation id="6795633245022906657">快速開啟新分頁。如要編輯這個捷徑，請前往 [設定]。</translation>
+<translation id="679588508577699489">將 Chrome 設為預設瀏覽器</translation>
 <translation id="679956319013005046">如要設定偏好的自動填入服務，請先在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中新增該項服務。</translation>
 <translation id="6802555630140434547">視窗即將關閉</translation>
 <translation id="6803791793483522764">檢查通知權限</translation>
@@ -1616,6 +1622,7 @@
 <translation id="8282297628636750033">盡可能對網站套用深色主題</translation>
 <translation id="8282950411412455249">前往安全性設定</translation>
 <translation id="829672787777123339">正在連線至裝置…</translation>
+<translation id="8307517230426267469"><ph name="GIVEN_NAME" />移除了「<ph name="TAB_NAME" />」分頁</translation>
 <translation id="831192587911042850">將目前的網站加到你追蹤的網站清單中。</translation>
 <translation id="8342727528718219152">Chrome 會通知你哪些網站可能傳送太多通知</translation>
 <translation id="834313815369870491">一律不翻譯的網站</translation>
@@ -1736,6 +1743,7 @@
 <translation id="8863714995118816041">你已重新授權給 <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">你帳戶中的 Chrome 資料</translation>
 <translation id="8888527824584402177">閒置 <ph name="DAYS_INACTIVE" /> 天後，分頁會移到這裡<ph name="AUTODELETE_SECTION" />。你隨時可以前往「<ph name="SETTINGS_TITLE" />」變更。</translation>
+<translation id="8890668505403261809">搜尋無痕分頁</translation>
 <translation id="8898822736010347272">將部分已造訪網頁的網址、特定的系統資訊和部分網頁內容傳送至 Google，以協助發現新威脅並保障所有網路使用者的安全。</translation>
 <translation id="8909135823018751308">分享…</translation>
 <translation id="8921980840204105660">進行同步處理，取得你在其他裝置上的書籤</translation>

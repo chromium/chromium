@@ -20,6 +20,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Firewall terdeteksi</translation>
 <translation id="1075811647922107217">Ukuran halaman</translation>
+<translation id="108084407137234521">Tidak dapat membuat ringkasan untuk transkrip yang berisi kurang dari <ph name="MIN_WORD_LENGTH" /> kata</translation>
 <translation id="1082009148392559545">Mendownload screensaver</translation>
 <translation id="1094693127011229778">Alamat IP tidak tersedia</translation>
 <translation id="1100902271996134409">Membuat gambar...</translation>
@@ -413,6 +414,7 @@
 <translation id="3031560714565892478">Perangkat adalah kamera video.</translation>
 <translation id="3042927241478734594">Keluar dari rekaman?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
+<translation id="3055176406666937744">Tidak dapat membuat ringkasan untuk transkrip yang berisi lebih dari <ph name="MAX_WORD_LENGTH" /> kata</translation>
 <translation id="3056720590588772262">Endpoint</translation>
 <translation id="3060579846059757016">Kerangka</translation>
 <translation id="3061850252076394168">aktifkan fitur klik untuk diucapkan</translation>
@@ -449,6 +451,7 @@
 <translation id="3226657629376379887">Menu tindakan tata letak</translation>
 <translation id="3227186760713762082">Bagi nilai <ph name="CATEGORY_TEXT" /> dengan <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">Tulis ulang</translation>
+<translation id="3245518008592055173">Tidak dapat membuat nama untuk transkrip yang berisi kurang dari <ph name="MIN_WORD_LENGTH" /> kata</translation>
 <translation id="3246869037381808805">Tugas pencetakan yang sudah lebih dari 1 hari akan dihapus</translation>
 <translation id="324961752321393509">Administrator tidak mengizinkan penutupan aplikasi ini</translation>
 <translation id="3263941347294171263">Cabut dan colokkan kembali <ph name="DEVICE_NAME" /> untuk melanjutkan proses update</translation>
@@ -609,6 +612,7 @@
 <translation id="409427325554347132">Simpan detail pengujian</translation>
 <translation id="409469431304488632">Eksperimen</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
+<translation id="4105182082354119881">Tidak dapat membuat nama untuk transkrip yang berisi lebih dari <ph name="MAX_WORD_LENGTH" /> kata</translation>
 <translation id="4110686435123617899">Pilih album <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Touchpad USB</translation>
 <translation id="4113067922640381334">Anda kini memiliki akses ke <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />wallpaper<ph name="END_LINK_WALLPAPER_SUBPAGE" /> baru</translation>

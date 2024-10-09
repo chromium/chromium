@@ -1079,6 +1079,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="6085886413119427067">Bestemmer, hvordan der skal oprettes forbindelse til websites via en sikker forbindelse</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> timer tilbage</translation>
 <translation id="6095578583683628124">Hvis Google også er din standardsøgemaskine, får du bedre og mere relevante forslag</translation>
+<translation id="610630277578876674">Åbn hurtigt links i beskeder og meget mere</translation>
 <translation id="6108923351542677676">Konfigurationen er i gang...</translation>
 <translation id="6112702117600201073">Opdaterer siden</translation>
 <translation id="6122831415929794347">Vil du deaktivere Beskyttet browsing?</translation>
@@ -1245,6 +1246,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6775840696761158817">Når du trykker på eller indtaster noget i adresselinjen eller søgefeltet, får du vist forslag fra din standardsøgemaskine. Dette er deaktiveret i inkognito.</translation>
 <translation id="6785476624617658922">Yderligere servicevilkår for Google Chrome og ChromeOS</translation>
 <translation id="6795633245022906657">Åbn hurtigt en ny fane. Gå til Indstillinger for at redigere denne genvej.</translation>
+<translation id="679588508577699489">Gør Chrome til din standardbrowser</translation>
 <translation id="679956319013005046">For at angive din foretrukne tjeneste til autofyld skal du først tilføje tjenesten i <ph name="BEGIN_LINK" />Android-indstillingerne<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">Vinduet lukkes</translation>
 <translation id="6803791793483522764">Gennemgå notifikationer</translation>
@@ -1736,6 +1738,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8863714995118816041">Der er igen givet tilladelser for <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Chrome-data på din konto</translation>
 <translation id="8888527824584402177">Faner, du ikke har brugt i <ph name="DAYS_INACTIVE" /> dage, flyttes hertil<ph name="AUTODELETE_SECTION" />. Du kan til enhver tid ændre dette i <ph name="SETTINGS_TITLE" />.</translation>
+<translation id="8890668505403261809">Søg i dine inkognitofaner</translation>
 <translation id="8898822736010347272">Sender webadresser på visse sider, du besøger, begrænsede systemoplysninger og indhold fra visse sider til Google med henblik på at opdage nye trusler og beskytte brugerne på nettet.</translation>
 <translation id="8909135823018751308">Del…</translation>
 <translation id="8921980840204105660">Synkroniser for at få dine bogmærker fra dine andre enheder</translation>

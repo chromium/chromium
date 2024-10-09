@@ -940,7 +940,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2687555958734450033">Bedste format</translation>
 <translation id="2688186765492306706">500 x 760 mm</translation>
 <translation id="2688969097326701645">Ja, fortsæt</translation>
-<translation id="2690699652723742414">De seneste 30 dage</translation>
+<translation id="2690699652723742414">Seneste 30 dage</translation>
 <translation id="2691924980723297736">Sikkerhedsadvarsel</translation>
 <translation id="2699273987028089219">Der er en tilgængelig undermenu. Brug <ph name="SHORTCUT" /> til at gå til yderligere valgmuligheder.</translation>
 <translation id="2701514975700770343">Forside nedad</translation>
@@ -1104,6 +1104,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="301521992641321250">Automatisk blokering</translation>
 <translation id="3016780570757425217">Kende din lokation</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, tryk på Tab-tasten og derefter Enter for at fjerne forslaget.</translation>
+<translation id="3022959067768579802">Fortsæt med at skrive</translation>
 <translation id="3023165109041533893">Foreslåede annoncer fra websites hjælper med at beskytte din browserhistorik og identitet og giver websites mulighed for at vise dig relevante annoncer. Baseret på din aktivitet kan et website, du har besøgt, foreslå relaterede annoncer, når du fortsætter med at browse. Du kan se en liste over disse websites og blokere dem, du ikke er interesseret i, ved at gå til indstillingerne.</translation>
 <translation id="3024663005179499861">Forkert politiktype</translation>
 <translation id="3030331669969285614">Disse demofunktioner forhindrer eller fortryder en fejlskabende ændring og er kun tilgængelige i en begrænset periode.</translation>
@@ -1377,6 +1378,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="350763432931695541">Udtrækning af tekst på de næste par sider</translation>
 <translation id="3507869775212388416">Jobs inden for jura</translation>
 <translation id="3507936815618196901">Oprette et 3D-kort over dine omgivelser og registrere kamerapositionen</translation>
+<translation id="3510341387555916271">Åbn for at genoptage</translation>
 <translation id="3512163584740124171">Politikken ignoreres, da en anden politik fra samme politikgruppe har højere prioritet.</translation>
 <translation id="351522771072578657">Du bruger en menu i øjeblikket</translation>
 <translation id="3517264445792388751">Filsystemet er blevet deaktiveret af din administrator</translation>
@@ -1744,6 +1746,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4152318981910038897">{COUNT,plural, =1{Side 1}one{Side {COUNT}}other{Side {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome verificerer nu din identitet, inden du angiver betalingsmetoder. Du kan til enhver tid opdatere dette i <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4159784952369912983">Lilla</translation>
+<translation id="4165422751765527461">Åbner en artikel i Hjælp på en ny fane</translation>
 <translation id="4165986682804962316">Websiteindstillinger</translation>
 <translation id="4169535189173047238">Tillad ikke</translation>
 <translation id="4171400957073367226">Ugyldig verifikationssignatur</translation>
@@ -2904,6 +2907,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6306713302480826305">Denne adresse slettes fra denne enhed og de øvrige enheder, du er logget ind på</translation>
 <translation id="6307968763353904914">Din bank tilbyder ikke virtuelle kort for denne betalingsmetode i øjeblikket, men du kan stadig bruge <ph name="CARD_LABEL" /> til onlinebetaling.</translation>
 <translation id="6311410654831092784">Karton</translation>
+<translation id="6311642842034740437">Stednavn</translation>
 <translation id="6312113039770857350">Websiden er ikke tilgængelig</translation>
 <translation id="6316110367871394043">Filupload til <ph name="CLOUD_PROVIDER" /> er blevet sat på pause</translation>
 <translation id="6316723751983724988">Nyhed! Family Link-valgmuligheder for Chrome gælder her</translation>

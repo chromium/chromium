@@ -460,6 +460,7 @@
 <translation id="3098745985164956033">ଆପଣଙ୍କ ପାଇଁ ବର୍ଣ୍ଣନାକୁ ଉନ୍ନତ କରିବା ନିମନ୍ତେ କିଛି ଛବି Googleକୁ ପଠାଯାଇଛି</translation>
 <translation id="3114507951000454849">ଆଜିର ସମାଚାର ପଢ଼ନ୍ତୁ <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">ଘୋଷଣାଗୁଡ଼ିକ</translation>
+<translation id="3131961580615093332"><ph name="GIVEN_NAME" /> “<ph name="TAB_NAME" />” ଟାବକୁ ପରିବର୍ତ୍ତନ କରିଛନ୍ତି</translation>
 <translation id="3148237711805373460">ମୋତେ ସେଠାକୁ ନିଅନ୍ତୁ</translation>
 <translation id="314939179385989105">Chromeର ମୂଳପୃଷ୍ଠା</translation>
 <translation id="3158667104057012316">ମାନୁଆଲ କ୍ରମରେ ସର୍ଟ କରାଯାଉଛି</translation>
@@ -637,6 +638,7 @@
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ମାଧ୍ୟମରେ <ph name="SITE_ETLD_PLUS_ONE" /> ସହ ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="404352903042073578">ବେନାମୀ ଗ୍ରୁପ</translation>
 <translation id="4044708993631234325">ବଟମ ସିଟ</translation>
+<translation id="4045441967987592849">ପୁଣି ଖୋଲନ୍ତୁ</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{ସେୟାର କରାଯାଇଥିବା ଟାବ ଗ୍ରୁପଗୁଡ଼ିକରେ ନୂଆ କାର୍ଯ୍ୟକଳାପ ସହିତ <ph name="TABS_COUNT_ONE" /> ଷ୍ଟାଣ୍ଡାର୍ଡ ଟାବ}other{ସେୟାର କରାଯାଇଥିବା ଟାବ ଗ୍ରୁପଗୁଡ଼ିକରେ ନୂଆ କାର୍ଯ୍ୟକଳାପ ସହିତ <ph name="TABS_COUNT_MANY" /> ଷ୍ଟାଣ୍ଡାର୍ଡ ଟାବ}}</translation>
 <translation id="405365679581583349">Google Play ସେବାଗୁଡ଼ିକୁ ଅପଡେଟ କରନ୍ତୁ</translation>
 <translation id="405399507749852140">ଯଦି କୌଣସି ସାଇଟରେ ମୂଲ୍ୟ ହ୍ରାସ ପାଏ, ତେବେ ଆଲର୍ଟ ପାଆନ୍ତୁ</translation>
@@ -844,6 +846,7 @@
 <translation id="4943703118917034429">ଭର୍ଚୁଆଲ୍ ରିଅଲିଟି</translation>
 <translation id="4943872375798546930">କୌଣସି ଫଳାଫଳ ନାହିଁ</translation>
 <translation id="4950924971025849764">ଆପଣ ସମାନ Google ଆକାଉଣ୍ଟରେ ସାଇନ ଇନ କଲେ, ଅନ୍ୟ ଡିଭାଇସଗୁଡ଼ିକ ଏହି ଫୋନକୁ ଏକ ସୁରକ୍ଷା କୀ ଭାବେ ବ୍ୟବହାର କରିପାରିବ।</translation>
+<translation id="4953833914914492602">“<ph name="TAB_GROUP_NAME" />” ଟାବ ଗ୍ରୁପ ଆଉ ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="4957722034734105353">ଅଧିକ ଜାଣନ୍ତୁ...</translation>
 <translation id="4961107849584082341">ଏହି ପୃଷ୍ଠାକୁ ଯେକୌଣସି ଭାଷାରେ ଅନୁବାଦ କରନ୍ତୁ</translation>
 <translation id="4964614743143953889">ଅସୁରକ୍ଷିତ ସାଇଟ ଏବଂ ଡାଉନଲୋଡଗୁଡ଼ିକ ବିଷୟରେ Chrome ଆପଣଙ୍କୁ ଚେତାବନୀ ଦିଏ</translation>
@@ -957,6 +960,7 @@
 <translation id="5526281268548144413">ଏକାଧିକ ୱିଣ୍ଡୋରେ ବନ୍ଦ କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# ମିନିଟ ପୂର୍ବେ}other{# ମିନିଟ ପୂର୍ବେ}}</translation>
 <translation id="5548606607480005320">ସୁରକ୍ଷା ଯାଞ୍ଚ</translation>
+<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> “<ph name="TAB_GROUP_NAME" />” ଟାବ ଗ୍ରୁପରେ ଯୋଗ ଦେଇଛନ୍ତି</translation>
 <translation id="5554520618550346933">ଆପଣ ଏକ ପାସୱାର୍ଡ ବ୍ୟବହାର କରିବା ସମୟରେ, ଯଦି ଏହାକୁ ଅନଲାଇନରେ ବ୍ୟବହାର କରାଯାଇଛି ତେବେ Chrome ଆପଣଙ୍କୁ ଚେତାବନୀ ଦିଏ। ଏହା କରିବା ସମୟରେ, ଆପଣଙ୍କ ପାସୱାର୍ଡ ଏବଂ ଉପଯୋଗକର୍ତ୍ତାନାମଗୁଡ଼ିକୁ ଏନକ୍ରିପ୍ଟ କରାଯାଇଥାଏ, ତେଣୁ Google ସମେତ କୌଣସି ବ୍ୟକ୍ତି ସେଗୁଡ଼ିକୁ ପଢ଼ିପାରିବେ ନାହିଁ।</translation>
 <translation id="5555525474779371165">ଆପଣଙ୍କ ସୁରକ୍ଷିତ ବ୍ରାଉଜିଂ ସୁରକ୍ଷା ବାଛନ୍ତୁ</translation>
 <translation id="5556459405103347317">ପୁନଃ ଲୋଡ୍ କରନ୍ତୁ</translation>
@@ -1616,6 +1620,7 @@
 <translation id="8282297628636750033">ଯଦି ସମ୍ଭବ ସାଇଟରେ ଗାଢ଼ା ଥିମ ଲାଗୁକର</translation>
 <translation id="8282950411412455249">ସୁରକ୍ଷା ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="829672787777123339">ଆପଣଙ୍କ ଡିଭାଇସ୍ ସହ ସଂଯୋଗ କରାଯାଉଛି…</translation>
+<translation id="8307517230426267469"><ph name="GIVEN_NAME" /> “<ph name="TAB_NAME" />” ଟାବକୁ କାଢ଼ି ଦେଇଛନ୍ତି</translation>
 <translation id="831192587911042850">ଆପଣ ଅନୁସରଣ କରୁଥିବା ୱେବସାଇଟଗୁଡ଼ିକର ତାଲିକାରେ ବର୍ତ୍ତମାନର ୱେବସାଇଟକୁ ଯୋଗ କରେ।</translation>
 <translation id="8342727528718219152">ବହୁତ ଅଧିକ ବିଜ୍ଞପ୍ତି ପଠାଉଥିବା ସାଇଟଗୁଡ଼ିକ ବିଷୟରେ Chrome ଆପଣଙ୍କୁ ଜଣାଇବ</translation>
 <translation id="834313815369870491">ସାଇଟଗୁଡ଼ିକୁ କେବେ ବି ଅନୁବାଦ କରନ୍ତୁ ନାହିଁ</translation>

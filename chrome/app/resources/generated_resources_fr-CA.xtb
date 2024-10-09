@@ -2098,6 +2098,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2460356425461033301">Sauvegarder vos données et les utiliser sur n'importe quel appareil</translation>
 <translation id="2460482211073772897">Dans d'autres dossiers</translation>
 <translation id="2460826998961521840">Pour user des clés d'accès dans votre compte</translation>
+<translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> est enregistré uniquement sur cet appareil. Si vous déplacez ce favori vers <ph name="LOCAL_FOLDER" />, il ne se trouvera plus sur vos autres appareils.</translation>
 <translation id="2461550163693930491">Ne pas autoriser les sites à faire défiler et à zoomer les onglets partagés</translation>
 <translation id="2461593638794842577">Vous pouvez désactiver ce paramètre pour enregistrer vos mots de passe uniquement sur cet appareil</translation>
 <translation id="2462332841984057083">Steam est déjà en cours de configuration. Attendez la fin de la configuration.</translation>
@@ -2352,6 +2353,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2645047101481282803">Votre appareil est géré par <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">Diffusion de cet onglet sur <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">Enregistrer dans un dossier de votre compte Google?</translation>
 <translation id="264897126871533291">Protanomalie</translation>
 <translation id="2649045351178520408">Chaîne de certificats codés Base 64 ASCII</translation>
 <translation id="265156376773362237">Préchargement standard</translation>
@@ -2540,6 +2542,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2773288106548584039">Prise en charge de navigateurs hérités</translation>
 <translation id="2773621783913034737">Rendre les onglets inactifs</translation>
 <translation id="2774876860084746535">Intellectuel</translation>
+<translation id="2775047284666165174"><ph name="LOCAL_FOLDER" /> est enregistré uniquement sur cet appareil. Si vous déplacez ce dossier vers <ph name="LOCAL_FOLDER" />, il ne se trouvera plus sur vos autres appareils.</translation>
 <translation id="2775104091073479743">Modifier les empreintes digitales</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Retirer 1 application non prise en charge}one{Retirer # application non prise en charge}other{Retirer # applications non prises en charge}}</translation>
 <translation id="2776515114087183002">Afficher les sites</translation>
@@ -4942,6 +4945,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4527929807707405172">Activer le défilement inversé. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Suggestion de traduction</translation>
 <translation id="4528638190900283934">Connectez-vous et profitez de plus de fonctionnalités</translation>
+<translation id="4529052777398765334">Ce dossier est enregistré uniquement sur cet appareil. Si vous l'enregistrez dans <ph name="ACCOUNT_FOLDER" />, ce dossier sera également enregistré dans votre compte.</translation>
 <translation id="4529455689802245339">Les sous-titres instantanés de Chrome pourraient ne pas fonctionner</translation>
 <translation id="4531451811601110068">Vous pouvez réessayer ou communiquer avec votre administrateur pour obtenir de l'aide</translation>
 <translation id="4531924570968473143">Qui souhaitez-vous ajouter à cet appareil (<ph name="DEVICE_TYPE" />)?</translation>
@@ -5527,6 +5531,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4955707703665801001">Visibilité pour le <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Choisir votre NIP</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">Enregistrer dans un dossier uniquement sur cet appareil?</translation>
 <translation id="4959262764292427323">Les mots de passe sont enregistrés dans votre compte Google afin que vous puissiez les utiliser sur n'importe quel appareil</translation>
 <translation id="4960020053211143927">N'est pas pris en charge par certaines applications</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -8452,6 +8457,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="711840821796638741">Afficher les favoris gérés</translation>
 <translation id="711985611146095797">Cette page vous permet de gérer les comptes Google auxquels vous êtes connecté. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">À moins qu'un RPV soit connecté, le trafic du navigateur Chrome et d'Android sera bloqué</translation>
+<translation id="7120904433567247946">Ce favori est enregistré uniquement sur cet appareil. Si vous l'enregistrez dans <ph name="ACCOUNT_FOLDER" />, il sera également enregistré dans votre compte.</translation>
 <translation id="7121438501124788993">Mode Développeur</translation>
 <translation id="7121728544325372695">Tirets intelligents</translation>
 <translation id="7122605570852873914">Se déconnecter quand même</translation>

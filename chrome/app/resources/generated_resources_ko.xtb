@@ -1703,6 +1703,7 @@
 <translation id="2184515124301515068">사이트의 소리 재생 여부를 Chrome이 결정(권장)</translation>
 <translation id="2186206192313702726">Google 렌즈</translation>
 <translation id="2186711480981247270">다른 기기에서 공유된 페이지</translation>
+<translation id="2187569197737151508">Esc 키를 5번 눌러 다시 사용 설정합니다</translation>
 <translation id="2187675480456493911">계정에 연결된 다른 기기와 동기화되어 있습니다. 다른 사용자가 수정한 설정은 동기화되지 않습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">서버 인증서 가져오기 오류</translation>
 <translation id="2187906491731510095">확장 프로그램 업데이트됨</translation>
@@ -2744,6 +2745,7 @@
 <translation id="2908122561561557160">Word, Excel, PowerPoint 파일 열기</translation>
 <translation id="2908162660801918428">디렉터리별 미디어 갤러리 추가</translation>
 <translation id="2908358077082926882">할당을 삭제하고 <ph name="RESPONSE" />하려면 “<ph name="CURRENTKEY" />” 키를 다시 누르세요.</translation>
+<translation id="2909487040556589351">휴대기기에 Chrome 다운로드</translation>
 <translation id="2909506265808101667">Google 서비스에 연결할 수 없습니다. 네트워크 연결을 확인한 후 다시 시도해 보세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="2910318910161511225">네트워크에 연결하고 다시 시도해 주세요</translation>
 <translation id="2910678330803525229">이제 탐색을 시작할 수 있습니다</translation>
@@ -4843,6 +4845,7 @@
 <translation id="4434611816075088065">지금은 확인이 필요한 항목이 없습니다</translation>
 <translation id="443475966875174318">호환되지 않는 애플리케이션 업데이트 또는 삭제</translation>
 <translation id="443503224864902151">대부분의 사이트에서 로그아웃됩니다. 동기화된 데이터를 삭제할 수 있도록 Google 계정에서는 로그아웃되지 않습니다.</translation>
+<translation id="4436573279088520291">사용하지 않는 탭 닫기</translation>
 <translation id="4437879751057074691">비밀번호 및 패스키 저장 여부 확인</translation>
 <translation id="4437947179446780764">맞춤 DNS 서비스 제공업체 추가</translation>
 <translation id="4438043733494739848">투명</translation>
@@ -9936,6 +9939,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{전화번호 1개}other{전화번호 #개}}</translation>
 <translation id="8168435359814927499">콘텐츠</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{읽기 목록에 탭 추가}other{읽기 목록에 탭 추가}}</translation>
+<translation id="8169177848833352618">이 머신은 Bruschetta 설치 요구사항을 충족하지 않습니다. 오류 코드는 <ph name="ERROR" />입니다.</translation>
 <translation id="8174047975335711832">기기 정보</translation>
 <translation id="8176332201990304395">분홍색 및 흰색</translation>
 <translation id="8176529144855282213">마이크 액세스를 사용 설정하려면 기기에서 실제 마이크 스위치를 켜세요.</translation>

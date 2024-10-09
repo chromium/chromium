@@ -2099,6 +2099,7 @@
 <translation id="2460356425461033301">Պահուստավորեք ձեր դիտարկիչի տվյալները և օգտագործեք դրանք ցանկացած սարքում</translation>
 <translation id="2460482211073772897">Այլ պանակներում</translation>
 <translation id="2460826998961521840">Ձեր Google հաշվում պահված մուտքի բանալիներն օգտագործելու համար</translation>
+<translation id="2461045498706592033">«<ph name="LOCAL_FOLDER" />» պանակը պահվում է միայն այս սարքում։ Եթե այս էջանիշը տեղափոխեք «<ph name="LOCAL_FOLDER" />» պանակ, այն այլևս չեք տեսնի ձեր մյուս սարքերում։</translation>
 <translation id="2461550163693930491">Թույլ չտալ կայքերին ընդհանուր ներդիրների մասշտաբը փոփոխել ոլորումով</translation>
 <translation id="2461593638794842577">Դուք կարող եք անջատել այս կարգավորումը՝ ձեր գաղտնաբառերը միայն այս սարքում պահելու համար</translation>
 <translation id="2462332841984057083">Steam-ն արդեն կարգավորվում է։ Սպասեք, մինչև կարգավորումն ավարտվի։</translation>
@@ -2350,6 +2351,7 @@
 <translation id="2645047101481282803">Ձեր սարքը կառավարվում է <ph name="PROFILE_NAME" /> տիրույթի կողմից</translation>
 <translation id="2645388244376970260">Այս ներդիրը հեռարձակվում է «<ph name="DEVICE_NAME" />» սարքին</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">Պահե՞լ ձեր Google հաշվի պանակում</translation>
 <translation id="264897126871533291">Պրոտանոմալիա</translation>
 <translation id="2649045351178520408">Base64-գաղտնագրված ASCII, վկայագրերի շղթա</translation>
 <translation id="265156376773362237">Սովորական նախաբեռնում</translation>
@@ -2538,6 +2540,7 @@
 <translation id="2773288106548584039">Հնացած դիտարկիչների աջակցում</translation>
 <translation id="2773621783913034737">Ապակտիվացնել ներդիրները</translation>
 <translation id="2774876860084746535">Մտավոր</translation>
+<translation id="2775047284666165174">«<ph name="LOCAL_FOLDER" />» պանակը պահվում է միայն այս սարքում։ Եթե այս պանակը տեղափոխեք «<ph name="LOCAL_FOLDER" />», այն այլևս չեք տեսնի ձեր մյուս սարքերում։</translation>
 <translation id="2775104091073479743">Փոխել մատնահետքը</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{«<ph name="EXTENSION" />» ընդլայնումը մուտք էր գործում սարքեր}=1{«<ph name="EXTENSION" />» ընդլայնումը մուտք է գործում {0} սարք}one{«<ph name="EXTENSION" />» ընդլայնումը մուտք է գործում {0} սարք}other{«<ph name="EXTENSION" />» ընդլայնումը մուտք է գործում {0} սարք}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Հեռացնել 1 չաջակցվող հավելված}one{Հեռացնել # չաջակցվող հավելված}other{Հեռացնել # չաջակցվող հավելված}}</translation>
@@ -4937,6 +4940,7 @@
 <translation id="4527929807707405172">Միացնել հետադարձ ոլորումը։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Թարգմանության առաջարկ</translation>
 <translation id="4528638190900283934">Մուտք գործեք՝ լրացուցիչ գործառույթներից օգտվելու համար</translation>
+<translation id="4529052777398765334">Այս պանակը պահվում է միայն այս սարքում։ Եթե այն պահեք «<ph name="ACCOUNT_FOLDER" />» պանակում, այս պանակը նույնպես կպահվի ձեր հաշվում։</translation>
 <translation id="4529455689802245339">Chrome-ի Կենդանի ենթագրերը կարող են չաշխատել</translation>
 <translation id="4531451811601110068">Կարող եք նորից փորձել կամ դիմել ադմինիստրատորին՝ օգնություն ստանալու համար</translation>
 <translation id="4531924570968473143">Ո՞ւմ եք ուզում ավելացնել այս <ph name="DEVICE_TYPE" /> սարքում</translation>
@@ -5523,6 +5527,7 @@
 <translation id="4955707703665801001">«<ph name="FEATURE_NAME" />» գործառույթի տեսանելիությունը</translation>
 <translation id="4955710816792587366">Ընտրեք ձեր PIN-ը</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">Պահե՞լ այս սարքի պանակում</translation>
 <translation id="4959262764292427323">Գաղտնաբառերը պահվում են ձեր Google հաշվում, որպեսզի կարողանաք օգտագործել դրանք ցանկացած սարքում</translation>
 <translation id="4960020053211143927">Չի աջակցվում որոշ հավելվածների կողմից</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -8445,6 +8450,7 @@
 <translation id="711840821796638741">Ցուցադրել կառավարվող էջանիշները</translation>
 <translation id="711985611146095797">Այս էջում կարող եք կառավարել ձեր Google հաշիվները, որոնցում մուտք եք գործել։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Chrome դիտարկիչի և Android սարքի թրաֆիկը կարգելահանվեն, երբ VPN-ի հետ կապը վերականգնվի</translation>
+<translation id="7120904433567247946">Այս էջանիշը պահվում է միայն այս սարքում։ Եթե այն պահեք «<ph name="ACCOUNT_FOLDER" />» պանակում, այս էջանիշը նույնպես կպահվի ձեր հաշվում։</translation>
 <translation id="7121438501124788993">Մշակողի ռեժիմ</translation>
 <translation id="7121728544325372695">Խելացի գծիկներ</translation>
 <translation id="7122605570852873914">Դուրս գալ հաշվից</translation>

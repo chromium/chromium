@@ -80,7 +80,7 @@
 <translation id="1049743911850919806">無痕模式</translation>
 <translation id="1049795001945932310">語言設定(&amp;L)</translation>
 <translation id="1050693411695664090">不佳</translation>
-<translation id="1053898984916097744">在工作過程中，開始新任務或取得協助。</translation>
+<translation id="1053898984916097744">開始新任務，或在工作過程中取得協助。</translation>
 <translation id="1054048317165655285">在手機上完成設定</translation>
 <translation id="1054153489933238809">在新分頁中開啟原始圖片(&amp;I)</translation>
 <translation id="1054187194995068149">你好，這是預覽畫面</translation>
@@ -1692,6 +1692,7 @@
 <translation id="2184515124301515068">讓 Chrome 自行判斷何時允許網站播放音訊 (建議使用)</translation>
 <translation id="2186206192313702726">Google 智慧鏡頭</translation>
 <translation id="2186711480981247270">透過其他裝置分享的網頁</translation>
+<translation id="2187569197737151508">按 Esc 鍵 5 次即可重新啟用</translation>
 <translation id="2187675480456493911">已與你帳戶中的其他裝置同步。系統不會同步處理其他使用者修改的設定。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">伺服器憑證匯入錯誤</translation>
 <translation id="2187906491731510095">擴充功能已更新</translation>
@@ -2097,6 +2098,7 @@
 <translation id="2460356425461033301">備份瀏覽器資料即可在任何裝置上使用</translation>
 <translation id="2460482211073772897">在其他資料夾中</translation>
 <translation id="2460826998961521840">使用儲存在 Google 帳戶中的密碼金鑰</translation>
+<translation id="2461045498706592033">「<ph name="LOCAL_FOLDER" />」只會儲存到這部裝置。如果移到「<ph name="LOCAL_FOLDER" />」，你將無法在其他裝置上使用這個書籤。</translation>
 <translation id="2461550163693930491">不允許網站捲動及縮放已分享的分頁</translation>
 <translation id="2461593638794842577">你可以關閉這項設定，只將密碼儲存在這部裝置</translation>
 <translation id="2462332841984057083">其他程序正在設定 Steam，請等待設定完成。</translation>
@@ -2350,6 +2352,7 @@
 <translation id="2645047101481282803">你的裝置是由 <ph name="PROFILE_NAME" /> 管理</translation>
 <translation id="2645388244376970260">正在將這個分頁投放到「<ph name="DEVICE_NAME" />」</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">要儲存到 Google 帳戶的資料夾嗎？</translation>
 <translation id="264897126871533291">紅色弱</translation>
 <translation id="2649045351178520408">Base64 編碼 ASCII，憑證鏈結</translation>
 <translation id="265156376773362237">標準預先載入模式</translation>
@@ -2538,6 +2541,7 @@
 <translation id="2773288106548584039">舊版瀏覽器支援</translation>
 <translation id="2773621783913034737">設為閒置分頁</translation>
 <translation id="2774876860084746535">知性</translation>
+<translation id="2775047284666165174">「<ph name="LOCAL_FOLDER" />」只會儲存到這部裝置。如果移到「<ph name="LOCAL_FOLDER" />」，就無法在其他裝置上使用這個資料夾。</translation>
 <translation id="2775104091073479743">編輯指紋</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{擴充功能「<ph name="EXTENSION" />」當時正在存取裝置}=1{擴充功能「<ph name="EXTENSION" />」正在存取 {0} 部裝置}other{擴充功能「<ph name="EXTENSION" />」正在存取 {0} 部裝置}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{移除 1 個不支援的應用程式}other{移除 # 個不支援的應用程式}}</translation>
@@ -2726,6 +2730,7 @@
 <translation id="2908122561561557160">開啟 Word、Excel 和 PowerPoint 檔案</translation>
 <translation id="2908162660801918428">依目錄新增媒體庫</translation>
 <translation id="2908358077082926882">再次按下「<ph name="CURRENTKEY" />」鍵即可移除指派設定並<ph name="RESPONSE" /></translation>
+<translation id="2909487040556589351">在行動裝置上取得 Chrome</translation>
 <translation id="2909506265808101667">無法連上 Google 服務。請檢查網路連線，然後再試一次。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="2910318910161511225">請連線至網路，然後再試一次</translation>
 <translation id="2910678330803525229">現在可以使用這個設定檔上網了</translation>
@@ -4823,6 +4828,7 @@
 <translation id="4434611816075088065">目前沒有需要處理的事項</translation>
 <translation id="443475966875174318">更新或移除不相容的應用程式</translation>
 <translation id="443503224864902151">你會從大多數網站登出，但不會因此登出 Google 帳戶，所以仍可刪除同步資料。</translation>
+<translation id="4436573279088520291">關閉未使用的分頁</translation>
 <translation id="4437879751057074691">提供儲存密碼和密碼金鑰的選項</translation>
 <translation id="4437947179446780764">新增自訂 DNS 服務供應商</translation>
 <translation id="4438043733494739848">透明</translation>
@@ -4935,6 +4941,7 @@
 <translation id="4527929807707405172">啟用反向捲動功能。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">翻譯建議</translation>
 <translation id="4528638190900283934">登入即可使用額外的實用功能</translation>
+<translation id="4529052777398765334">這個資料夾只會儲存到這部裝置。如果儲存到「<ph name="ACCOUNT_FOLDER" />」，這個資料夾也會儲存到你的帳戶。</translation>
 <translation id="4529455689802245339">Chrome 即時字幕可能無法運作</translation>
 <translation id="4531451811601110068">你可以再試一次，也可以向系統管理員尋求協助</translation>
 <translation id="4531924570968473143">你想要將誰加入這部 <ph name="DEVICE_TYPE" />？</translation>
@@ -5520,6 +5527,7 @@
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" />瀏覽權限</translation>
 <translation id="4955710816792587366">選擇 PIN 碼</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">要儲存到這部裝置的資料夾嗎？</translation>
 <translation id="4959262764292427323">系統會將密碼儲存在你的 Google 帳戶中，方便你在任何裝置上使用密碼</translation>
 <translation id="4960020053211143927">部分應用程式不支援這項功能</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -7374,7 +7382,7 @@
 <translation id="6341850831632289108">偵測你的實際位置</translation>
 <translation id="6342069812937806050">剛剛</translation>
 <translation id="6343003829431264373">僅限偶數頁</translation>
-<translation id="6343262564968371601">搜尋 Google、檔案、應用程式等內容，尋找所需資訊</translation>
+<translation id="6343262564968371601">搜尋 Google、檔案、應用程式等，尋找所需資訊</translation>
 <translation id="6343981313228733146">視窗已向右上方移動</translation>
 <translation id="6344170822609224263">存取網路連線清單</translation>
 <translation id="6344576354370880196">已儲存的印表機</translation>
@@ -8440,6 +8448,7 @@
 <translation id="711840821796638741">顯示受管理書籤</translation>
 <translation id="711985611146095797">你可以在這個頁面管理已登入的 Google 帳戶。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">除非連上 VPN，否則系統將封鎖 Chrome 瀏覽器和 Android 流量</translation>
+<translation id="7120904433567247946">這個書籤只會儲存到這部裝置。如果儲存到<ph name="ACCOUNT_FOLDER" />，這個書籤也會儲存到你的帳戶。</translation>
 <translation id="7121438501124788993">開發人員模式</translation>
 <translation id="7121728544325372695">智慧型破折號</translation>
 <translation id="7122605570852873914">仍要登出</translation>
@@ -9906,6 +9915,7 @@
 <translation id="816704878106051517">{COUNT,plural, =1{1 組電話號碼}other{# 組電話號碼}}</translation>
 <translation id="8168435359814927499">內容</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{將分頁新增至閱讀清單}other{將分頁新增至閱讀清單}}</translation>
+<translation id="8169177848833352618">很抱歉，這部電腦不符合 Bruschetta 的安裝需求。錯誤代碼：<ph name="ERROR" />。</translation>
 <translation id="8174047975335711832">裝置資訊</translation>
 <translation id="8176332201990304395">粉紅色與白色</translation>
 <translation id="8176529144855282213">如要開啟麥克風存取權，請打開裝置的麥克風實體開關</translation>

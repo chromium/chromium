@@ -67,6 +67,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="1906696617298807388">Când introduci text în bara de adrese sau în caseta de căutare, Chromium trimite ceea ce introduci la Google Drive pentru a primi sugestii de elemente. Această opțiune este dezactivată în modul incognito.</translation>
 <translation id="1911763535808217981">Dacă dezactivezi, te poți conecta la site-uri Google ca Gmail fără a te conecta la Chromium</translation>
 <translation id="1929939181775079593">Chromium nu mai răspunde. Îl reporniți acum?</translation>
+<translation id="1933341829955786215">Organizația ta, <ph name="MANAGER" />, îți solicită să te conectezi la Chromium</translation>
 <translation id="193439633299369377">Pentru a se aplica actualizarea, sistemul de operare Chromium trebuie să fie repornit.</translation>
 <translation id="1951406923938785464">Chromium a blocat descărcarea, deoarece tipul de fișier nu este descărcat frecvent și ar putea fi periculos</translation>
 <translation id="1953553007165777902">Se descarcă… Timp rămas: <ph name="MINUTE" /> minute</translation>
@@ -576,6 +577,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8852026904190808918">Această limbă se folosește pentru a afișa meniuri, setări, alerte și alte texte în Chromium</translation>
 <translation id="8862326446509486874">Nu ai drepturile adecvate pentru instalarea la nivel de sistem. Încearcă să rulezi din nou programul de instalare ca Administrator.</translation>
 <translation id="8880203542552872219">Dacă da, modifică parola salvată în Chromium, astfel încât să corespundă cu noua parolă.</translation>
+<translation id="8891709362986793894">Organizația îți solicită să te conectezi la Chromium</translation>
 <translation id="8907580949721785412">Chromium încearcă să afișeze parolele. Pentru a permite acest lucru, introduceți parola pentru Windows.</translation>
 <translation id="8931379085695076764">Chromium îți poate estima interesele pe baza istoricului tău de navigare din ultimele câteva săptămâni. Aceste informații rămân pe dispozitivul tău.</translation>
 <translation id="8941642502866065432">Chromium nu se poate actualiza</translation>

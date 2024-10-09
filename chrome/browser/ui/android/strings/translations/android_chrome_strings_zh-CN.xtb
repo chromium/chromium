@@ -460,6 +460,7 @@
 <translation id="3098745985164956033">系统会将部分图片发送给 Google 以便为您改进说明</translation>
 <translation id="3114507951000454849">阅读今日新闻 <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">通告</translation>
+<translation id="3131961580615093332"><ph name="GIVEN_NAME" />更改了标签页“<ph name="TAB_NAME" />”</translation>
 <translation id="3148237711805373460">立即前往</translation>
 <translation id="314939179385989105">Chrome 主页</translation>
 <translation id="3158667104057012316">手动排序</translation>
@@ -637,6 +638,7 @@
 <translation id="4042941173059740150">继续通过 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 使用 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="404352903042073578">未命名分组</translation>
 <translation id="4044708993631234325">底部动作条</translation>
+<translation id="4045441967987592849">重新打开</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> 个标准标签页，在分享的标签页分组中有新活动}other{<ph name="TABS_COUNT_MANY" /> 个标准标签页，在分享的标签页分组中有新活动}}</translation>
 <translation id="405365679581583349">更新 Google Play 服务</translation>
 <translation id="405399507749852140">当任一网站上的商品降价时，您会收到提醒</translation>
@@ -844,6 +846,7 @@
 <translation id="4943703118917034429">虚拟现实</translation>
 <translation id="4943872375798546930">找不到结果</translation>
 <translation id="4950924971025849764">当您登录同一 Google 账号后，其他设备便可将此手机用作安全密钥。</translation>
+<translation id="4953833914914492602">“<ph name="TAB_GROUP_NAME" />”标签页分组已不可用</translation>
 <translation id="4957722034734105353">了解详情...</translation>
 <translation id="4961107849584082341">将此页面翻译成任何语言</translation>
 <translation id="4964614743143953889">在检测到不安全的网站和下载内容时，Chrome 会向您发出警告</translation>
@@ -957,6 +960,7 @@
 <translation id="5526281268548144413">无法在多个窗口中关闭</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# 分钟前}other{# 分钟前}}</translation>
 <translation id="5548606607480005320">安全检查</translation>
+<translation id="5551564597369878730"><ph name="GIVEN_NAME" />加入了“<ph name="TAB_GROUP_NAME" />”标签页分组</translation>
 <translation id="5554520618550346933">当您使用某个密码时，如果发现它已被在线发布，Chrome 会向您发出警告。当 Chrome 进行这项检查时，您的密码和用户名都会被加密，所以绝不会被任何人员/任何一方（包括 Google）读取。</translation>
 <translation id="5555525474779371165">选择所需的“安全浏览”功能保护级别</translation>
 <translation id="5556459405103347317">重新加载</translation>
@@ -1614,6 +1618,7 @@
 <translation id="8282297628636750033">尽可能对网站应用深色主题</translation>
 <translation id="8282950411412455249">前往安全设置</translation>
 <translation id="829672787777123339">正在连接您的设备…</translation>
+<translation id="8307517230426267469"><ph name="GIVEN_NAME" />移除了标签页“<ph name="TAB_NAME" />”</translation>
 <translation id="831192587911042850">将当前网站添加到您关注的网站的列表中。</translation>
 <translation id="8342727528718219152">Chrome 会通知您哪些网站可能发送了过多通知</translation>
 <translation id="834313815369870491">一律不翻译网站</translation>

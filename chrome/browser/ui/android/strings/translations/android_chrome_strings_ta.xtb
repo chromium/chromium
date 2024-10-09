@@ -460,6 +460,7 @@
 <translation id="3098745985164956033">உங்களுக்கான விளக்கங்களை மேம்படுத்த, படங்கள் Googleளுக்கு அனுப்பப்படும்</translation>
 <translation id="3114507951000454849">இன்றைய செய்திகளைப் படியுங்கள் <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">அறிவிப்புகள்</translation>
+<translation id="3131961580615093332">“<ph name="TAB_NAME" />” பக்கத்தை <ph name="GIVEN_NAME" /> மாற்றியுள்ளார்</translation>
 <translation id="3148237711805373460">அங்கு செல்</translation>
 <translation id="314939179385989105">Chromeமின் முகப்புப்பக்கம்</translation>
 <translation id="3158667104057012316">மேனுவலாக வரிசைப்படுத்துகிறது</translation>
@@ -637,6 +638,7 @@
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> மூலம் <ph name="SITE_ETLD_PLUS_ONE" /> இணையதளத்தில் தொடருங்கள்</translation>
 <translation id="404352903042073578">பெயரிடப்படாத குழு</translation>
 <translation id="4044708993631234325">அடிப்புறத் தாள்</translation>
+<translation id="4045441967987592849">மீண்டும் திற</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{பகிர்ந்த பக்கக் குழுக்களில் புதிய செயல்பாட்டுடன் உள்ள <ph name="TABS_COUNT_ONE" /> வழக்கமான பக்கம்}other{பகிர்ந்த பக்கக் குழுக்களில் புதிய செயல்பாட்டுடன் உள்ள <ph name="TABS_COUNT_MANY" /> வழக்கமான பக்கங்கள்}}</translation>
 <translation id="405365679581583349">Google Play சேவைகளைப் புதுப்பியுங்கள்</translation>
 <translation id="405399507749852140">எந்தத் தளத்திலாவது விலை குறைந்தால் அதுகுறித்து அறிவிப்பைப் பெறுவீர்கள்</translation>
@@ -844,6 +846,7 @@
 <translation id="4943703118917034429">விர்ச்சுவல் ரியாலிட்டி</translation>
 <translation id="4943872375798546930">முடிவுகள் இல்லை</translation>
 <translation id="4950924971025849764">ஒரே Google கணக்கில் உள்நுழைந்திருக்கும்போது பிற சாதனங்கள் இந்த ஃபோனைப் பாதுகாப்பு விசையாகப் பயன்படுத்தலாம்.</translation>
+<translation id="4953833914914492602">“<ph name="TAB_GROUP_NAME" />” பக்கக் குழு இனி கிடைக்காது</translation>
 <translation id="4957722034734105353">மேலும் அறிக...</translation>
 <translation id="4961107849584082341">இந்தப் பக்கத்தை எந்தவொரு மொழியிலும் மொழிபெயர்க்கலாம்</translation>
 <translation id="4964614743143953889">பாதுகாப்பற்ற தளங்கள் மற்றும் பதிவிறக்கங்கள் குறித்து Chrome உங்களை எச்சரிக்கும்</translation>
@@ -957,6 +960,7 @@
 <translation id="5526281268548144413">பல சாளரங்களில் உள்ள பக்கங்கள் மூடப்படாது</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# நிமி முன்பு}other{# நிமி முன்பு}}</translation>
 <translation id="5548606607480005320">பாதுகாப்புச் சரிபார்ப்பு</translation>
+<translation id="5551564597369878730">“<ph name="TAB_GROUP_NAME" />” பக்கக் குழுவில் <ph name="GIVEN_NAME" /> சேர்ந்துள்ளார்</translation>
 <translation id="5554520618550346933">நீங்கள் ஒரு கடவுச்சொல்லைப் பயன்படுத்தும்போது, அது ஆன்லைனில் ஏற்கெனவே வெளியாகி இருந்தால் அது குறித்து Chrome உங்களை எச்சரிக்கும். இதைச் செய்யும்போது உங்கள் கடவுச்சொற்களும் பயனர்பெயர்களும் என்கிரிப்ஷன் செய்யப்படுவதால் Google உட்பட எவராலும் அவற்றைக் கண்டறிய முடியாது.</translation>
 <translation id="5555525474779371165">பாதுகாப்பு உலாவல் முறையைத் தேர்வுசெய்யுங்கள்</translation>
 <translation id="5556459405103347317">மீண்டும் ஏற்று</translation>
@@ -1616,6 +1620,7 @@
 <translation id="8282297628636750033">சாத்தியமானால், தளங்களுக்கு டார்க் தீமினைப் பயன்படுத்து</translation>
 <translation id="8282950411412455249">பாதுகாப்பு அமைப்புகளைக் காட்டு</translation>
 <translation id="829672787777123339">உங்கள் சாதனத்துடன் இணைக்கிறது…</translation>
+<translation id="8307517230426267469">“<ph name="TAB_NAME" />” பக்கத்தை <ph name="GIVEN_NAME" /> அகற்றியுள்ளார்</translation>
 <translation id="831192587911042850">நீங்கள் பின்தொடரும் இணையதளங்களின் பட்டியலில் இதையும் சேர்க்கும்.</translation>
 <translation id="8342727528718219152">அதிகமான அறிவிப்புகளை அனுப்பக்கூடிய தளங்கள் குறித்து Chrome உங்களுக்குத் தெரியப்படுத்தும்</translation>
 <translation id="834313815369870491">மொழிபெயர்க்கக்கூடாத தளங்கள்</translation>

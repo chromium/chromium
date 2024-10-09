@@ -2106,6 +2106,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2460356425461033301">Създавайте резервни копия на нещата в браузъра си и ги използвайте на всяко устройство</translation>
 <translation id="2460482211073772897">В други папки</translation>
 <translation id="2460826998961521840">За да използвате ключовете за достъп, запазени в профила ви в Google</translation>
+<translation id="2461045498706592033">Папката „<ph name="LOCAL_FOLDER" />“ е запазена само на това устройство. Ако преместите тази отметка в(ъв) „<ph name="LOCAL_FOLDER" />“, тя вече няма да се показва на другите ви устройства.</translation>
 <translation id="2461550163693930491">Да не се разрешава на сайтовете да превъртат и променят мащаба на споделените раздели</translation>
 <translation id="2461593638794842577">Можете да изключите тази настройка, ако искате паролите ви да се запазват само на това устройство</translation>
 <translation id="2462332841984057083">Steam вече се настройва. Изчакайте процесът да завърши.</translation>
@@ -2359,6 +2360,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2645047101481282803">Устройството ви се управлява от <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">Този раздел се предава към <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">Да се запази ли в папка в профила ви в Google?</translation>
 <translation id="264897126871533291">Протаномалия</translation>
 <translation id="2649045351178520408">ASCII с кодиране Base64, верига сертификати</translation>
 <translation id="265156376773362237">Стандартно предварит. зареждане</translation>
@@ -2547,6 +2549,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2773288106548584039">Поддръжка на наследени браузъри</translation>
 <translation id="2773621783913034737">Деактивиране на разделите</translation>
 <translation id="2774876860084746535">Интелектуално</translation>
+<translation id="2775047284666165174">Папката „<ph name="LOCAL_FOLDER" />“ е запазена само на това устройство. Ако я преместите в(ъв) „<ph name="LOCAL_FOLDER" />“, тя вече няма да се показва на другите ви устройства.</translation>
 <translation id="2775104091073479743">Редактиране на отпечатъците</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{Разширението „<ph name="EXTENSION" />“ осъществяваше достъп до устройствата}=1{Разширението „<ph name="EXTENSION" />“ осъществява достъп до {0} устройство}other{Разширението „<ph name="EXTENSION" />“ осъществява достъп до {0} устройства}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Премахване на 1 неподдържано приложение}other{Премахване на # неподдържани приложения}}</translation>
@@ -4949,6 +4952,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4527929807707405172">Активиране на обратното превъртане. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Предложение за превод</translation>
 <translation id="4528638190900283934">За допълнителни функции влезте в профила си</translation>
+<translation id="4529052777398765334">Тази папка е запазена само на това устройство. Ако я запазите в(ъв) „<ph name="ACCOUNT_FOLDER" />“, тя ще се запази и в профила ви.</translation>
 <translation id="4529455689802245339">Функцията „Надписи на живо“ в Chrome може да не работи</translation>
 <translation id="4531451811601110068">Можете да опитате отново или да се свържете с администратора си за помощ</translation>
 <translation id="4531924570968473143">Кого искате да добавите към това устройство <ph name="DEVICE_TYPE" />?</translation>
@@ -5535,6 +5539,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="4955707703665801001">Видимост за „<ph name="FEATURE_NAME" />“</translation>
 <translation id="4955710816792587366">Изберете ПИН код</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">Да се запази ли в папка само на това устройство?</translation>
 <translation id="4959262764292427323">Паролите се запазват в профила ви в Google, за да можете да ги използвате на всяко устройство</translation>
 <translation id="4960020053211143927">Не се поддържа от някои приложения</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -8461,6 +8466,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="711840821796638741">Показване на управляваните отметки</translation>
 <translation id="711985611146095797">От тази страница можете да управлявате профилите си в Google, в които сте влезли. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Трафикът в браузъра Chrome и Android ще бъде блокиран, освен ако не е свързана VPN</translation>
+<translation id="7120904433567247946">Тази отметка е запазена само на това устройство. Ако я запазите в(ъв) „<ph name="ACCOUNT_FOLDER" />“, тя ще се запази и в профила ви.</translation>
 <translation id="7121438501124788993">Режим за програмисти</translation>
 <translation id="7121728544325372695">Smart Dashes</translation>
 <translation id="7122605570852873914">Излизане от профила въпреки това</translation>

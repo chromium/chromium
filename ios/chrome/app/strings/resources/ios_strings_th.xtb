@@ -969,7 +969,7 @@
 <translation id="5646284034397250191">สร้างป้ายกำกับแล้ว ยังไม่กำหนดวันที่</translation>
 <translation id="5647096944343801045">จุดแรกเข้าขนาดใหญ่</translation>
 <translation id="5647193778876139879">แตะที่อยู่ค้างไว้</translation>
-<translation id="5648166631817621825">7 วันที่แล้ว</translation>
+<translation id="5648166631817621825">7 วันที่ผ่านมา</translation>
 <translation id="5652623411397330904">ผลิตภัณฑ์ที่คุณติดตามจะแสดงที่นี่</translation>
 <translation id="5657156137487675418">อนุญาตคุกกี้ทั้งหมด</translation>
 <translation id="5659593005791499971">อีเมล</translation>
@@ -1081,6 +1081,7 @@
 <translation id="6140948187512243695">แสดงรายละเอียด</translation>
 <translation id="6144589619057374135">เปิด ${url} ในโหมดไม่ระบุตัวตน</translation>
 <translation id="6151006591088192882">ปลดล็อกแท็บที่ไม่ระบุตัวตนด้วย <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="6152340033632117531">ไม่ได้ใช้งาน</translation>
 <translation id="6152406514676263192">ซิงค์เพื่อดูเนื้อหาที่เกี่ยวข้องที่สุดตามความสนใจของคุณ</translation>
 <translation id="6159839020698489198">ไม่บังคับ</translation>
 <translation id="6160780110287872296">ดาวน์โหลดไฟล์ใช่ไหม</translation>

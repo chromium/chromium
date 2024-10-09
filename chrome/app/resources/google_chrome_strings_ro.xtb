@@ -70,7 +70,7 @@
 <translation id="1919130412786645364">Permite conectarea la Chrome</translation>
 <translation id="1953553007165777902">Se descarcă… Timp rămas: <ph name="MINUTE" /> minute</translation>
 <translation id="1982647487457769627">Chrome funcționează pe toate platformele pentru a-ți oferi o experiență familiară, indiferent de dispozitiv</translation>
-<translation id="19955905961160405">Caută pe ecran folosind Google Lens</translation>
+<translation id="19955905961160405">Caută conținutul de pe ecran folosind Google Lens</translation>
 <translation id="2001586581944147178">Împiedică persoanele care au acces la traficul tău de internet să vadă ce site-uri accesezi. Chrome folosește o conexiune securizată pentru a căuta adresa IP a unui site în DNS (Sistemul denumirilor de domenii).</translation>
 <translation id="2008942457798486387">{NUM_EXTENSIONS,plural, =1{Extensia nu mai este acceptată. Chrome recomandă să o elimini.}few{Aceste extensii nu mai sunt acceptate. Chrome recomandă să le elimini.}other{Aceste extensii nu mai sunt acceptate. Chrome recomandă să le elimini.}}</translation>
 <translation id="2018528049276128029">Fiecare profil conține propriile informații Chrome, cum ar fi marcaje, istoric, parole și altele</translation>
@@ -400,6 +400,7 @@
 <translation id="6060842547856900641">Deschide Lens</translation>
 <translation id="6069027071882229820">Copiază ca imagine</translation>
 <translation id="6070348360322141662">Pentru un plus de securitate, Google Chrome îți va cripta datele</translation>
+<translation id="6075300983329039771">Organizația ta, <ph name="MANAGER" />, îți solicită să te conectezi la Chrome</translation>
 <translation id="608006075545470555">Adaugă un profil de serviciu în acest browser</translation>
 <translation id="6097822892606850415">Scrie cu mai multă încredere cu ajutorul AI</translation>
 <translation id="6113794647360055231">Chrome a devenit și mai bun</translation>
@@ -538,6 +539,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="7670287553302121848">Este necesară reautentificarea în contul Chrome</translation>
 <translation id="769538538642757151">Chrome te va anunța dacă trebuie să examinezi ceva</translation>
 <translation id="77283119132245232">Oferă servicii de urmărire a sistemului pentru <ph name="BROWSER_NAME" />. Dacă acest serviciu este dezactivat, monitorizările performanței create de browser nu vor include evenimente la nivel de sistem, cum ar fi evenimentele de schimbare a contextului și de fire pregătite.</translation>
+<translation id="7736869414036750079">Organizația ta îți solicită să te conectezi la Chrome</translation>
 <translation id="7747138024166251722">Programul de instalare nu a putut crea un director temporar. Verifică dacă există suficient spațiu liber și dacă ai drepturile necesare pentru a instala software-ul.</translation>
 <translation id="7761834446675418963">Dați clic pe numele dvs. pentru a deschide Chrome și a începe să navigați.</translation>
 <translation id="7763983146198734674">Salvează-ți parolele și accesează-le din mers</translation>

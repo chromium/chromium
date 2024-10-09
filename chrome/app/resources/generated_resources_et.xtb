@@ -1693,6 +1693,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2184515124301515068">Luba Chrome'il valida, millal saidid võivad heli esitada (soovitatav)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">Muust seadmest jagatud leht</translation>
+<translation id="2187569197737151508">Selle uuesti lubamiseks vajutage viis korda paoklahvi</translation>
 <translation id="2187675480456493911">Sünkroonitud muude teie kontol olevate seadmetega. Teiste kasutajate muudetud seadeid ei sünkroonita. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Serveri sertifikaadi impordi viga</translation>
 <translation id="2187906491731510095">Laiendused on värskendatud</translation>
@@ -2101,6 +2102,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2460356425461033301">Varundage oma brauseri sisu ja kasutage seda mis tahes seadmes</translation>
 <translation id="2460482211073772897">Teistes kaustades</translation>
 <translation id="2460826998961521840">Teie Google'i kontole salvestatud pääsuvõtmete kasutamiseks</translation>
+<translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> on salvestatud ainult sellesse seadmesse. Kui teisaldate selle järjehoidja kausta <ph name="LOCAL_FOLDER" />, ei saa te seda enam teistesse seadmetesse.</translation>
 <translation id="2461550163693930491">Ära luba saitidel jagatud vahelehti kerida ega suumida</translation>
 <translation id="2461593638794842577">Saate selle seade välja lülitada, et salvestada oma paroolid ainult sellesse seadmesse</translation>
 <translation id="2462332841984057083">Steami juba seadistatakse. Oodake, kuni seadistus jõuab lõpule.</translation>
@@ -2354,6 +2356,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2645047101481282803">Teie seadet haldab <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">Seda vahelehte kantakse üle seadmesse <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">Kas salvestada teie Google'i konto kausta?</translation>
 <translation id="264897126871533291">Protanomaalia</translation>
 <translation id="2649045351178520408">Base64 kodeeritud ASCII, sertifikaadiahel</translation>
 <translation id="265156376773362237">Standardne eellaadimine</translation>
@@ -2542,6 +2545,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2773288106548584039">Pärandbrauserite tugi</translation>
 <translation id="2773621783913034737">Tee vahekaardid interaktiivseks</translation>
 <translation id="2774876860084746535">Intellektuaalne</translation>
+<translation id="2775047284666165174"><ph name="LOCAL_FOLDER" /> on salvestatud ainult sellesse seadmesse. Kui teisaldate selle kausta kausta <ph name="LOCAL_FOLDER" />, ei saa te seda enam teistesse seadmetesse.</translation>
 <translation id="2775104091073479743">Sõrmejälgede muutmine</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{Laiendus „<ph name="EXTENSION" />” pääses seadmetele juurde}=1{Laiendus „<ph name="EXTENSION" />” pääseb juurde {0} seadmele}other{Laiendus „<ph name="EXTENSION" />” pääseb juurde {0} seadmele}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Eemalda 1 toetamata rakendus}other{Eemalda # toetamata rakendust}}</translation>
@@ -2730,6 +2734,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2908122561561557160">Wordi, Exceli ja PowerPointi failide avamine</translation>
 <translation id="2908162660801918428">Meediagalerii lisamine kataloogiga</translation>
 <translation id="2908358077082926882">Selleks, et määratud toiming kinnitada ja <ph name="RESPONSE" />, vajutage uuesti klahvi <ph name="CURRENTKEY" />.</translation>
+<translation id="2909487040556589351">Hankige Chrome oma mobiilseadmesse</translation>
 <translation id="2909506265808101667">Google'i teenustega ei õnnestunud ühendust luua. Kontrollige võrguühendust ja proovige uuesti. Veakood: <ph name="ERROR_CODE" />.</translation>
 <translation id="2910318910161511225">Looge võrguühendus ja proovige uuesti</translation>
 <translation id="2910678330803525229">Nüüd saate sirvimist alustada</translation>
@@ -4831,6 +4836,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4434611816075088065">Muu ei vaja praegu teie tähelepanu</translation>
 <translation id="443475966875174318">Ühildumatute rakenduste värskendamine või eemaldamine</translation>
 <translation id="443503224864902151">Teid logitakse enamikult saitidelt välja. Jääte oma Google'i kontole sisselogituks, et teie sünkroonitud andmed saaks kustutada.</translation>
+<translation id="4436573279088520291">Kasutamata vahelehtede sulgemine</translation>
 <translation id="4437879751057074691">Paku paroolide ja pääsuvõtmete salvestamist</translation>
 <translation id="4437947179446780764">Lisa kohandatud DNS-i teenusepakkuja</translation>
 <translation id="4438043733494739848">Läbipaistev</translation>
@@ -4943,6 +4949,7 @@ See võib hõlmata teavet installitud tarkvara, failide, teie brauseri ja seadme
 <translation id="4527929807707405172">Lubage tagurpidi kerimine. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Tõlkesoovitus</translation>
 <translation id="4528638190900283934">Lisafunktsioonide kasutamiseks logige sisse</translation>
+<translation id="4529052777398765334">See kaust on salvestatud ainult sellesse seadmesse. Kui salvestate selle kausta <ph name="ACCOUNT_FOLDER" />, salvestatakse see kaust ka teie kontole.</translation>
 <translation id="4529455689802245339">Chrome'i reaalajas subtiitrid ei pruugi toimida</translation>
 <translation id="4531451811601110068">Võite uuesti proovida või võtta abi saamiseks ühendust administraatoriga</translation>
 <translation id="4531924570968473143">Keda sooviksite lisada selle seadmele (<ph name="DEVICE_TYPE" />)?</translation>
@@ -5529,6 +5536,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4955707703665801001">Funktsiooni <ph name="FEATURE_NAME" /> nähtavus</translation>
 <translation id="4955710816792587366">Valige PIN-kood</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">Kas salvestada ainult selle seadme kausta?</translation>
 <translation id="4959262764292427323">Paroolid salvestatakse teie Google'i kontole, et saaksite neid kasutada mis tahes seadmes</translation>
 <translation id="4960020053211143927">Ei toetata osades rakendustes</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -8454,6 +8462,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="711840821796638741">Kuva hallatud järjehoidjad</translation>
 <translation id="711985611146095797">See leht võimaldab teil hallata oma Google'i kontosid, millele olete sisse logitud. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Chrome'i brauseri ja Androidi liiklus blokeeritakse, kui VPN-i ei ühendata</translation>
+<translation id="7120904433567247946">See järjehoidja on salvestatud ainult sellesse seadmesse. Kui salvestate selle kausta <ph name="ACCOUNT_FOLDER" />, salvestatakse see järjehoidja ka teie kontole.</translation>
 <translation id="7121438501124788993">Arendaja režiim</translation>
 <translation id="7121728544325372695">Nutikad sidekriipsud</translation>
 <translation id="7122605570852873914">Logi ikkagi välja</translation>
@@ -9920,6 +9929,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="816704878106051517">{COUNT,plural, =1{telefoninumber}other{# telefoninumbrit}}</translation>
 <translation id="8168435359814927499">Sisu</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Vahelehe lisamine lugemisloendisse}other{Vahelehtede lisamine lugemisloendisse}}</translation>
+<translation id="8169177848833352618">Kahjuks ei vasta see masin Bruschetta installimise nõuetele. Veakood on <ph name="ERROR" />.</translation>
 <translation id="8174047975335711832">Seadme teave</translation>
 <translation id="8176332201990304395">Roosa ja valge</translation>
 <translation id="8176529144855282213">Mikrofonile juurdepääsu sisselülitamiseks lülitage oma seadmes sisse mikrofoni füüsiline lüliti</translation>

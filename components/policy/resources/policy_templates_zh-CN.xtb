@@ -368,6 +368,19 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
       如果您未设置此政策，那么，倘若 <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> 已设置，系统便会将它应用于所有网站，否则就会应用用户的个人设置。
 
       如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://chromeenterprise.google/intl/zh_cn/policies/url-patterns/。允许使用通配符 <ph name="WILDCARD_VALUE" />。</translation>
+<translation id="1279062904578504503">此政策会为受管理的用户启用 Content Transfer 应用。Content Transfer 应用可帮助用户将其数据从受管理的账号转移到消费者账号。
+
+如果 <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> 设置为 <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE_TRUE" />，系统会根据当地时间在开始日期和结束日期当天以及这两个日期之间的日期显示 Content Transfer 应用。
+
+    如果 <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> 设置为 <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE_FALSE" /> 或未设置，系统将不会显示该应用。
+
+如果未设置 <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" />，则系统会一直显示该应用，直至结束日期。
+
+如果未设置 <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_END_DATE_VALUE" />，则系统会自开始日期起无限期地显示该应用。
+
+如果 <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" /> 和 <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_END_DATE_VALUE" /> 均未设置，则系统会无限期地显示该应用。如果开始日期和结束日期无效，则系统不会显示 Content Transfer 应用。这包括提供的日期不存在或结束日期早于开始日期的情况。
+
+还需要启用通过“导出”应用进行数据传输的功能，才能让 Content Transfer 应用正常运行。如需了解详情，请访问 https://support.google.com/a/answer/6364687。</translation>
 <translation id="1285819498003746288">Event.path API 将不可用。</translation>
 <translation id="1290722184971934486">如果此政策设为 <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" />（值 2），默认情况下，系统会自动拒绝向网站授予窗口管理权限。此设置会限制网站的以下功能：查看设备屏幕的相关信息，以及使用该信息在特定屏幕上打开并放置窗口或者请求进入全屏模式。
 
@@ -1690,6 +1703,9 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="2258126710006312594">允许远程访问用户将文件传到主机或接收从主机传出的文件</translation>
 <translation id="225830954785359083">禁止页面在卸载期间显示弹出式窗口</translation>
 <translation id="2261648512244797294">停用已弃用的 Privet 本地打印</translation>
+<translation id="2262153510491523927">如果此政策设为 False，受支持的链接将默认在 Android 应用中打开。
+如果此政策设为 True，则所有链接都会默认在 Chrome 浏览器中打开。
+如果此政策未设置，受支持的链接将默认在 Android 应用中打开。</translation>
 <translation id="2263881357524831360">允许在 <ph name="ANDROID_NAME" /> 设备上的 <ph name="PRODUCT_NAME" /> 中使用第三方密码管理工具</translation>
 <translation id="2264286153777425328">在达到 <ph name="IDLE_TIMEOUT_POLICY_NAME" /> 政策所设的超时时限后要运行的一系列操作。
 
@@ -2495,6 +2511,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
           可以发送多个替换值，最新的有效条目会得到应用。</translation>
 <translation id="2901725272378498025">针对命令行标记启用安全警告功能</translation>
 <translation id="2905984450136807296">身份验证数据缓存期限</translation>
+<translation id="2906532308470098188">允许使用自动填充预测功能并改进 AI 模型。</translation>
 <translation id="2906874737073861391">AppPack 扩展程序列表</translation>
 <translation id="2908277604670530363">可同时连接到代理服务器的连接数上限</translation>
 <translation id="2912366658685903301">配置浏览器主题的颜色</translation>
@@ -2745,6 +2762,18 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="3092059499596000593">在打印预览中将系统默认打印机设为默认选项</translation>
 <translation id="309416443108680956">此政策用于指定：当通过安全令牌（例如使用智能卡）验证身份的用户在会话过程中移除该令牌时，会发生什么情况。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />：不会发生任何情况。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />：屏幕会被锁定，直到用户重新验证身份为止。<ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />：会话会被结束，并且用户会被强制退出。如果此政策未设置，它将默认等同于已设为 <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />。</translation>
 <translation id="3096595567015595053">已启用插件的列表</translation>
+<translation id="30986061650205557"><ph name="PRODUCT_NAME" /> 开发者工具中的这些功能采用生成式 AI 模型来提供额外的调试信息。如需使用这些功能，<ph name="PRODUCT_NAME" /> 必须收集错误消息、堆栈轨迹、代码段和网络请求等数据，并将这些数据发送到归 Google 所有的服务器，该服务器会运行生成式 AI 模型。网络请求中的响应正文或身份验证信息和 Cookie 标头不会包含在发送至服务器的数据中。
+
+0 表示为用户启用此功能，并向 Google 发送相关数据来帮助训练或改进 AI 模型。相关数据可能包括提示、输入、输出和来源资料，具体取决于相应功能。工作人员可能会仅出于改进 AI 模型的目的而审核这些数据。除非下文另有说明，否则默认值是 0。
+
+1 表示为用户启用此功能，但不向 Google 发送数据来训练或改进 AI 模型。对于受 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企业用户和受 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版账号，默认值是 1。
+
+2 表示停用此功能。
+
+开发者工具的生成式 AI 功能包括：
+
+- 控制台数据分析：解释控制台消息，并建议如何修复控制台错误。
+- AI 助理：借助依托 AI 技术的数据洞见，帮助用户了解 CSS 样式。</translation>
 <translation id="309885424548342662">启用 Microsoft® 云身份验证</translation>
 <translation id="3101035417394748390">可通过剪贴板同步功能在客户端和主机之间传输的数据的大小上限（以字节为单位）</translation>
 <translation id="3101501961102569744">选择如何指定代理服务器设置</translation>
@@ -3115,6 +3144,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="3380801667330555918">为 Kerberos 票据更改预填充配置</translation>
 <translation id="338149029069528354">不清除本地用户数据</translation>
 <translation id="3381968327636295719">默认情况下托管主机浏览器</translation>
+<translation id="3383857097929929678">默认在 Android 应用中打开链接</translation>
 <translation id="3387117557265712991">停用应用绑定加密</translation>
 <translation id="3387211681524224831">如果此政策已启用，系统将不会保存浏览记录，并且会停用标签页同步功能，用户则无法更改相关设置。
 
@@ -4722,6 +4752,13 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="4661889655253181651">“内容设置”可用来指定对特定类型内容（例如 Cookie、图片或 JavaScript）的处理方式。</translation>
 <translation id="4663509616441994711">禁止合并用户级云政策。</translation>
 <translation id="4663588423815449593">强制 <ph name="PEPPER_NAME" /> 使用旧版视频解码器。</translation>
+<translation id="4664668637713610113">启用自动填充预测设置。
+
+ 0 表示为用户启用此功能，并向 Google 发送相关数据来帮助训练或改进 AI 模型。相关数据可能包括提示、输入、输出和来源资料，具体取决于相应功能。工作人员可能会仅出于改进 AI 模型的目的而审核这些数据。除非下文另有说明，否则默认值是 0。
+
+ 1 表示为用户启用此功能，但不向 Google 发送数据来训练或改进 AI 模型。对于受 <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />管理的企业用户和受 <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> 管理的教育版账号，默认值是 1。
+
+ 2 表示停用此功能。</translation>
 <translation id="4665897631924472251">扩展程序管理设置</translation>
 <translation id="4666930704271463612">指定系统在寻找服务器打印机时，应查询符合哪种条件的打印服务器。
 
@@ -5582,6 +5619,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="5321624917465764266">如果此政策已启用或未设置，系统将可以删除 Chrome 中的浏览器历史记录和下载记录，并且用户无法更改此设置。
 
 如果此政策已停用，系统将无法删除浏览器历史记录和下载记录。即使此政策停用，浏览和下载记录也不一定会保留。用户可能能够直接修改或删除历史记录数据库文件，而且浏览器本身也可能会随时将任意或所有历史记录项设为失效或进行归档。</translation>
+<translation id="5321859912083346284">不允许使用自动填充预测功能。</translation>
 <translation id="5323200200131319468">在登录屏幕上启用语音反馈</translation>
 <translation id="5323271643727095577">针对 beforeunload 事件调用 event.preventDefault() 时不显示取消对话框。当 beforeunload 事件的 event.returnValue 是空字符串时，显示取消对话框。</translation>
 <translation id="5324430722441910403">网站搜索设置</translation>
@@ -7929,6 +7967,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="7047495632846973438">指定是让系统遵循还是忽略显示面截取权限政策。</translation>
 <translation id="7055022222176591388">禁止使用已过时的 <ph name="FLASH_PLUGIN_NAME" /></translation>
 <translation id="7056040036973126753">系统可能会根据 Chrome 用户指标 (UMA) 政策将网域可靠性数据发送给 Google</translation>
+<translation id="7056873645513072903">自动填充预测设置的设置</translation>
 <translation id="7062803946218028349">允许启用 Phone Hub</translation>
 <translation id="7066292150801784098">禁止远程用户在远程协助会话中操控提权后的窗口</translation>
 <translation id="706669471845501145">允许网站显示桌面通知</translation>
@@ -8366,6 +8405,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果此政策已停用或未设置，则意味着已注册的设备既不会记录也不会报告 TPM 安全状态。
       例外情况：对于 M95 及更低版本，TPM 信息由 <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> 控制。</translation>
 <translation id="739556497251174388">允许将 <ph name="PRODUCT_OS_NAME" />登录凭据重用于网络身份验证</translation>
+<translation id="7400208209734208176">默认在 Chrome 浏览器中打开链接</translation>
 <translation id="7402257017733669351">阻止浏览器进程创建动态代码</translation>
 <translation id="7402772023599097052">如果已启用或未设置此政策，当您使用可能不安全的命令行 flag 启动 Chrome 时，系统会显示安全警告。
 
@@ -8844,6 +8884,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果此政策设为 true，系统会报告这类设备上的网络事件。</translation>
 <translation id="780629758750905699">允许向设备添加 Family Link 账号</translation>
 <translation id="7807139251387225825">应从同步操作中排除的类型列表</translation>
+<translation id="7808219497358175018">配置 <ph name="PRODUCT_OS_NAME" /> Content Transfer 工具可用的时间</translation>
 <translation id="781268256210530471">插件设置</translation>
 <translation id="7816326058023670173">孩子设备和家长设备共用的密钥。</translation>
 <translation id="7818131573217430250">设置登录屏幕上高反差模式的默认状态</translation>
@@ -10320,6 +10361,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果某个网址格式同时存在于此政策和 <ph name="SENSORS_BLOCKED_FOR_URLS_POLICY_NAME" /> 政策中，后者的优先级更高，因此系统会禁止相应网站使用移动传感器或光传感器。
 
       如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://chromeenterprise.google/intl/zh_cn/policies/url-patterns/。允许使用通配符 <ph name="WILDCARD_VALUE" />。</translation>
+<translation id="900032518062285306">允许使用自动填充预测功能，但不改进 AI 模型。</translation>
 <translation id="9003823644527627017">在 <ph name="PRODUCT_OS_NAME" /> 上配置 Bruschetta 虚拟机</translation>
 <translation id="9004469022085379212">如果此政策已启用，系统会允许设备在 <ph name="PRODUCT_OS_NAME" /> 下运行虚拟机。<ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> 和 <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> 必须均已启用，才能使用 <ph name="PRODUCT_CROSTINI_NAME" />。如果此政策已停用，意味着设备无法运行虚拟机。如果将此政策的状态改为已停用，此政策将开始应用于新启动的虚拟机，而非应用于已在运行的虚拟机。
 

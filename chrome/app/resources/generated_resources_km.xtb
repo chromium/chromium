@@ -2822,7 +2822,7 @@
 <translation id="2970982365449313350">Chrome ដោយប្រើ​គណនី Google នេះ</translation>
 <translation id="2972557485845626008">កម្មវិធីបង្កប់</translation>
 <translation id="2972581237482394796">ធ្វើវិញ</translation>
-<translation id="2972831370061805967">កម្រងព័ត៌មាននេះស្ថិតក្រោមការគ្រប់គ្រងរបស់ <ph name="PROFILE_MANAGER" /> ដែលអាច​មើលប្រភេទ​ព័ត៌មាន​ជាក់លាក់ រួមមាន</translation>
+<translation id="2972831370061805967">កម្រងព័ត៌មាននេះគ្រប់គ្រងដោយ <ph name="PROFILE_MANAGER" /> ដែលអាច​មើលប្រភេទ​ព័ត៌មាន​ជាក់លាក់ រួមមាន</translation>
 <translation id="2973324205039581528">បិទសំឡេង​គេហទំព័រ</translation>
 <translation id="2975761176769946178">តម្រូវ​ឱ្យ​មាន URL</translation>
 <translation id="2976547701881428815">ឧបករណ៍ និង​សកម្មភាព</translation>
@@ -7981,7 +7981,7 @@
     <ph name="BEGIN_PARAGRAPH2" />អ្នកអាច​បិទសេវាកម្មនេះ​នៅក្នុងការកំណត់។<ph name="END_PARAGRAPH2" /></translation>
 <translation id="6781978626986383437">បានបោះបង់​ការបម្រុងទុក Linux</translation>
 <translation id="6782067259631821405">លេខ​កូដ PIN ​មិន​ត្រឹមត្រូវ</translation>
-<translation id="6782364580635609607">កម្រងព័ត៌មាននេះស្ថិតក្រោម​ការគ្រប់គ្រង​របស់​ស្ថាប័នអ្នក ដែលអាច​មើលប្រភេទ​ព័ត៌មាន​ជាក់លាក់ រួមមាន</translation>
+<translation id="6782364580635609607">កម្រងព័ត៌មាននេះគ្រប់គ្រង​ដោយ​ស្ថាប័នរបស់អ្នក ដែលអាច​មើលប្រភេទ​ព័ត៌មាន​ជាក់លាក់ រួមមាន</translation>
 <translation id="6783036716881942511">បំភ្លេច​ឧបករណ៍​នេះ​ឬ?</translation>
 <translation id="6783667414610055871">ការកំណត់ Microsoft OneDrive</translation>
 <translation id="6784523122863989144">មិនអាចប្រើកម្រងព័ត៌មានបានទេ</translation>

@@ -460,6 +460,7 @@
 <translation id="3098745985164956033">तुमच्यासाठी वर्णनांमध्ये सुधारणा करण्याकरिता काही इमेज Google कडे पाठवल्या जातात</translation>
 <translation id="3114507951000454849">आजच्या बातम्या वाचा <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">घोषणा</translation>
+<translation id="3131961580615093332"><ph name="GIVEN_NAME" /> यांनी “<ph name="TAB_NAME" />” टॅब बदलला आहे</translation>
 <translation id="3148237711805373460">मला तिथे न्या</translation>
 <translation id="314939179385989105">Chrome चे होम पेज</translation>
 <translation id="3158667104057012316">मॅन्युअल ऑर्डरनुसार क्रमाने लावत आहे</translation>
@@ -637,6 +638,7 @@
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> सह <ph name="SITE_ETLD_PLUS_ONE" /> वर पुढे सुरू ठेवा</translation>
 <translation id="404352903042073578">निनावी गट</translation>
 <translation id="4044708993631234325">तळाशी असलेली शीट</translation>
+<translation id="4045441967987592849">पुन्हा उघडा</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{शेअर केलेल्या टॅब गटांमध्ये नवीन अ‍ॅक्टिव्हिटी असलेला <ph name="TABS_COUNT_ONE" /> साधारण टॅब आहे}other{शेअर केलेल्या टॅब गटांमध्ये नवीन अ‍ॅक्टिव्हिटी असलेले <ph name="TABS_COUNT_MANY" /> साधारण टॅब आहेत}}</translation>
 <translation id="405365679581583349">Google Play सेवा अपडेट करा</translation>
 <translation id="405399507749852140">कोणत्याही साइटवर किंमत कमी झाल्यास सूचना मिळवा</translation>
@@ -844,6 +846,7 @@
 <translation id="4943703118917034429">आभासी वास्तविकता</translation>
 <translation id="4943872375798546930">परिणाम नाहीत</translation>
 <translation id="4950924971025849764">तुम्ही त्याच Google खाते मध्ये साइन इन केलेले असल्यास, इतर डिव्हाइस हा फोन सिक्युरिटी की म्हणून वापरू शकतात.</translation>
+<translation id="4953833914914492602">“<ph name="TAB_GROUP_NAME" />” टॅब गट आता उपलब्ध नाही</translation>
 <translation id="4957722034734105353">अधिक जाणून घ्या...</translation>
 <translation id="4961107849584082341">या पेजचे कोणत्याही भाषेत भाषांतर करा</translation>
 <translation id="4964614743143953889">Chrome तुम्हाला असुरक्षित साइट आणि डाउनलोडविषयी चेतावणी देते</translation>
@@ -957,6 +960,7 @@
 <translation id="5526281268548144413">एकाहून अधिक विंडोवर बंद केले जाऊ शकत नाहीत</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# मिनिटापूर्वी}other{# मिनिटांपूर्वी}}</translation>
 <translation id="5548606607480005320">सुरक्षा तपासणी</translation>
+<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> हे “<ph name="TAB_GROUP_NAME" />” टॅब गटामध्ये सामील झाले आहेत</translation>
 <translation id="5554520618550346933">तुम्ही पासवर्ड वापरता, तेव्हा तो ऑनलाइन प्रकाशित झाला असल्यास Chrome तुम्हाला चेतावणी देते. हे करत असताना, तुमचे पासवर्ड आणि वापरकर्ता नावे या गोष्टी एंक्रिप्ट केल्या जातात, जेणेकरून Google च्या समावेशासह इतर कोणीही त्या वाचू शकणार नाही.</translation>
 <translation id="5555525474779371165">तुमचे सुरक्षित ब्राउझिंग संरक्षण निवडा</translation>
 <translation id="5556459405103347317">रीलोड करा</translation>
@@ -1618,6 +1622,7 @@
 <translation id="8282297628636750033">शक्य असेल तेव्हा, साइटवर गडद थीम लागू करा</translation>
 <translation id="8282950411412455249">सुरक्षा सेटिंग्जवर जा</translation>
 <translation id="829672787777123339">तुमच्या डिव्हाइसशी कनेक्ट करत आहे…</translation>
+<translation id="8307517230426267469"><ph name="GIVEN_NAME" /> यांनी “<ph name="TAB_NAME" />” टॅब काढून टाकला आहे</translation>
 <translation id="831192587911042850">तुम्ही फॉलो करत असलेल्या वेबसाइटच्या सूचीमध्ये सध्याची वेबसाइट जोडते.</translation>
 <translation id="8342727528718219152">Chrome हे अशा साइटविषयी तुम्हाला कळवू शकते, ज्या कदाचित खूप जास्त नोटिफिकेशन पाठवत असतील</translation>
 <translation id="834313815369870491">साइटचे कधीही भाषांतर करू नका</translation>

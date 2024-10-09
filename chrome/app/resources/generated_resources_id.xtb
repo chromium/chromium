@@ -1702,6 +1702,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2184515124301515068">Izinkan Chrome memilih kapan situs dapat memutar suara (direkomendasikan)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">Halaman yang dibagikan dari perangkat lain</translation>
+<translation id="2187569197737151508">Tekan esc 5 kali untuk mengaktifkannya kembali</translation>
 <translation id="2187675480456493911">Disinkronkan dengan perangkat lain di akun Anda. Setelan yang diubah oleh pengguna lain tidak akan disinkronkan. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Kesalahan Impor Sertifikat Server</translation>
 <translation id="2187906491731510095">Ekstensi diupdate</translation>
@@ -2110,6 +2111,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2460356425461033301">Cadangkan data browser Anda dan gunakan di perangkat mana pun</translation>
 <translation id="2460482211073772897">Di folder lain</translation>
 <translation id="2460826998961521840">Untuk menggunakan kunci sandi yang disimpan di Akun Google Anda</translation>
+<translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> hanya disimpan ke perangkat ini. Jika Anda memindahkan bookmark ini ke <ph name="LOCAL_FOLDER" />, Anda tidak akan lagi melihatnya di perangkat lain.</translation>
 <translation id="2461550163693930491">Jangan izinkan situs men-scroll dan memperbesar/memperkecil tab yang dibagikan</translation>
 <translation id="2461593638794842577">Anda dapat menonaktifkan setelan untuk hanya menyimpan sandi Anda di perangkat ini</translation>
 <translation id="2462332841984057083">Steam sedang disiapkan. Tunggu hingga penyiapan selesai.</translation>
@@ -2363,6 +2365,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2645047101481282803">Perangkat Anda dikelola oleh <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">Mentransmisikan tab ini ke <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">Simpan ke folder di Akun Google Anda?</translation>
 <translation id="264897126871533291">Protanomali</translation>
 <translation id="2649045351178520408">ASCII bersandiaksara Base64, rantai sertifikat</translation>
 <translation id="265156376773362237">Pramuat standar</translation>
@@ -2551,6 +2554,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2773288106548584039">Dukungan Browser Lama</translation>
 <translation id="2773621783913034737">Nonaktifkan Tab</translation>
 <translation id="2774876860084746535">Intelektual</translation>
+<translation id="2775047284666165174"><ph name="LOCAL_FOLDER" /> hanya disimpan ke perangkat ini. Jika Anda memindahkan folder ini ke <ph name="LOCAL_FOLDER" />, Anda tidak akan lagi melihatnya di perangkat lain.</translation>
 <translation id="2775104091073479743">Edit Sidik Jari</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{Ekstensi "<ph name="EXTENSION" />" telah mengakses perangkat}=1{Ekstensi "<ph name="EXTENSION" />" sedang mengakses {0} perangkat}other{Ekstensi "<ph name="EXTENSION" />" sedang mengakses {0} perangkat}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Hapus 1 aplikasi yang tidak didukung}other{Hapus # aplikasi yang tidak didukung}}</translation>
@@ -2739,6 +2743,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2908122561561557160">Buka file Word, Excel, dan PowerPoint</translation>
 <translation id="2908162660801918428">Tambahkan Galeri Media menurut Direktori</translation>
 <translation id="2908358077082926882">Tekan "<ph name="CURRENTKEY" />" lagi untuk menghapus penetapan dan <ph name="RESPONSE" /></translation>
+<translation id="2909487040556589351">Dapatkan Chrome di perangkat seluler Anda</translation>
 <translation id="2909506265808101667">Tidak dapat terhubung dengan layanan Google. Periksa koneksi jaringan Anda, lalu coba lagi. Kode error: <ph name="ERROR_CODE" />.</translation>
 <translation id="2910318910161511225">Sambungkan ke jaringan dan coba lagi</translation>
 <translation id="2910678330803525229">Sekarang Anda dapat mulai menjelajah</translation>
@@ -4840,6 +4845,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4434611816075088065">Tidak ada yang perlu Anda perhatikan untuk saat ini</translation>
 <translation id="443475966875174318">Update atau hapus aplikasi yang tidak kompatibel</translation>
 <translation id="443503224864902151">Membuat Anda logout dari sebagian besar situs. Anda akan tetap login di Akun Google Anda sehingga data yang disinkronkan dapat dihapus.</translation>
+<translation id="4436573279088520291">Tutup Tab yang Tidak Digunakan</translation>
 <translation id="4437879751057074691">Tawarkan penyimpanan sandi dan kunci sandi</translation>
 <translation id="4437947179446780764">Tambahkan penyedia layanan DNS kustom</translation>
 <translation id="4438043733494739848">Transparan</translation>
@@ -4952,6 +4958,7 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4527929807707405172">Aktifkan scroll terbalik. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Saran terjemahan</translation>
 <translation id="4528638190900283934">Login untuk mendapatkan fitur tambahan</translation>
+<translation id="4529052777398765334">Folder ini hanya disimpan ke perangkat ini. Jika Anda menyimpannya ke <ph name="ACCOUNT_FOLDER" />, folder ini juga akan disimpan di akun Anda.</translation>
 <translation id="4529455689802245339">Teks Otomatis Chrome mungkin tidak berfungsi</translation>
 <translation id="4531451811601110068">Anda dapat mencoba lagi atau menghubungi administrator Anda untuk meminta bantuan</translation>
 <translation id="4531924570968473143">Siapa yang ingin Anda tambahkan ke <ph name="DEVICE_TYPE" /> ini?</translation>
@@ -5538,6 +5545,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="4955707703665801001">Visibilitas <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Pilih PIN Anda</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">Simpan ke folder hanya di perangkat ini?</translation>
 <translation id="4959262764292427323">Sandi disimpan di Akun Google agar Anda dapat menggunakannya di perangkat mana pun</translation>
 <translation id="4960020053211143927">Tidak didukung oleh beberapa aplikasi</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8463,6 +8471,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="711840821796638741">Tampilkan Bookmark yang Dikelola</translation>
 <translation id="711985611146095797">Halaman ini memungkinkan Anda mengelola Akun Google yang Anda gunakan untuk login. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Browser Chrome dan traffic Android akan diblokir kecuali jika VPN terhubung</translation>
+<translation id="7120904433567247946">Bookmark ini hanya disimpan ke perangkat ini. Jika Anda menyimpannya ke <ph name="ACCOUNT_FOLDER" />, bookmark ini juga akan disimpan di akun Anda.</translation>
 <translation id="7121438501124788993">Mode Developer</translation>
 <translation id="7121728544325372695">Smart Dashes</translation>
 <translation id="7122605570852873914">Tetap logout</translation>
@@ -9928,6 +9937,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="816704878106051517">{COUNT,plural, =1{1 nomor telepon}other{# nomor telepon}}</translation>
 <translation id="8168435359814927499">Konten</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Tambahkan Tab ke Daftar Bacaan}other{Tambahkan Tab ke Daftar Bacaan}}</translation>
+<translation id="8169177848833352618">Sayangnya, mesin ini tidak memenuhi persyaratan untuk menginstal Bruschetta. Kode error adalah <ph name="ERROR" />.</translation>
 <translation id="8174047975335711832">Informasi perangkat</translation>
 <translation id="8176332201990304395">Merah muda dan putih</translation>
 <translation id="8176529144855282213">Untuk mengaktifkan akses mikrofon, aktifkan tombol mikrofon fisik di perangkat</translation>

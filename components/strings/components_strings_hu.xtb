@@ -1743,6 +1743,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4152318981910038897">{COUNT,plural, =1{1. oldal}other{{COUNT}. oldal}}</translation>
 <translation id="4154277373259957087">A Chrome most ellenőrzi a személyazonosságát, mielőtt kitöltené a fizetési módokat. Ezt bármikor módosíthatja itt: <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4159784952369912983">Lila</translation>
+<translation id="4165422751765527461">Súgócikket nyit meg egy új lapon</translation>
 <translation id="4165986682804962316">Webhelybeállítások</translation>
 <translation id="4169535189173047238">Tiltás</translation>
 <translation id="4171400957073367226">Hibás igazoló aláírás.</translation>
@@ -2903,6 +2904,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6306713302480826305">Ez a cím törlődni fog erről és a többi bejelentkezett eszközről</translation>
 <translation id="6307968763353904914">Bankja jelenleg nem tud virtuális kártyát adni ehhez a fizetési módhoz, de online használhatja <ph name="CARD_LABEL" />-kártyáját.</translation>
 <translation id="6311410654831092784">Kartonlapok</translation>
+<translation id="6311642842034740437">Elnevezett hely</translation>
 <translation id="6312113039770857350">A weboldal nem érhető el</translation>
 <translation id="6316110367871394043">A(z) <ph name="CLOUD_PROVIDER" /> szolgáltatásba való fájlfeltöltés szünetel</translation>
 <translation id="6316723751983724988">Új: Itt érvényesek a Family Link Chrome-ra vonatkozó beállításai</translation>

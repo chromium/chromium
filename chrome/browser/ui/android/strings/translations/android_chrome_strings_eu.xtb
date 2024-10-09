@@ -460,6 +460,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="3098745985164956033">Jasotzen dituzun deskribapenak hobetzeko bidaltzen zaizkio irudi batzuk Google-ri</translation>
 <translation id="3114507951000454849">Irakurri gaurko albisteak <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Iragarpenak</translation>
+<translation id="3131961580615093332"><ph name="GIVEN_NAME" /> erabiltzaileak "<ph name="TAB_NAME" />" fitxa aldatu du</translation>
 <translation id="3148237711805373460">Eraman nazazue hara</translation>
 <translation id="314939179385989105">Chrome-ren orri nagusia</translation>
 <translation id="3158667104057012316">Eskuz ordenatzen</translation>
@@ -637,6 +638,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="4042941173059740150">Sartu <ph name="SITE_ETLD_PLUS_ONE" /> webgunean <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hornitzailearekin</translation>
 <translation id="404352903042073578">Izenik gabeko taldea</translation>
 <translation id="4044708993631234325">Pantailaren behealdean ainguratutako orria</translation>
+<translation id="4045441967987592849">Ireki berriro</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{Jarduera berriak dituen fitxa estandar <ph name="TABS_COUNT_ONE" /> dago fitxa talde partekatuetan}other{Jarduera berriak dituzten <ph name="TABS_COUNT_MANY" /> fitxa estandar daude fitxa talde partekatuetan}}</translation>
 <translation id="405365679581583349">Eguneratu Google Play Services</translation>
 <translation id="405399507749852140">Jaso alertak webguneren batean prezioa jaisten bada</translation>
@@ -844,6 +846,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="4943703118917034429">Errealitate birtuala</translation>
 <translation id="4943872375798546930">Ez dago emaitzarik</translation>
 <translation id="4950924971025849764">Google-ko kontu berean saioa hasita daukaten gainerako gailuek telefono hau erabil dezakete segurtasun-giltza gisa.</translation>
+<translation id="4953833914914492602">"<ph name="TAB_GROUP_NAME" />" fitxa taldea jada ez dago erabilgarri</translation>
 <translation id="4957722034734105353">Lortu informazio gehiago…</translation>
 <translation id="4961107849584082341">Itzuli orria edozein hizkuntzatara</translation>
 <translation id="4964614743143953889">Chrome-k abisatu egiten dizu webgune edo deskarga bat segurua ez bada</translation>
@@ -957,6 +960,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="5526281268548144413">Ezin dira itxi leiho batean baino gehiagotan</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{Duela # min}other{Duela # min}}</translation>
 <translation id="5548606607480005320">Segurtasun-egiaztapena</translation>
+<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> "<ph name="TAB_GROUP_NAME" />" fitxa taldean sartu da</translation>
 <translation id="5554520618550346933">Pasahitz bat erabiltzen duzunean, Chrome-k sarean argitaratu den ala ez jakinarazten dizu. Horretarako, pasahitzak eta erabiltzaile-izenak enkriptatzen ditu inork irakurri ezin ditzan, ezta Google-k ere.</translation>
 <translation id="5555525474779371165">Aukeratu Arakatze segurua eginbidearen babesa</translation>
 <translation id="5556459405103347317">Kargatu berriro</translation>
@@ -1616,6 +1620,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="8282297628636750033">Aplikatu gai iluna webguneetan, ahal denean</translation>
 <translation id="8282950411412455249">Joan segurtasun-ezarpenetara</translation>
 <translation id="829672787777123339">Gailura konektatzen…</translation>
+<translation id="8307517230426267469"><ph name="GIVEN_NAME" /> erabiltzaileak "<ph name="TAB_NAME" />" fitxa kendu du</translation>
 <translation id="831192587911042850">Webgune hau jarraitzaile zaituzten webguneen zerrendan gehitzen du.</translation>
 <translation id="8342727528718219152">Chrome-k agian jakinarazpen gehiegi bidaltzen ari diren webguneen berri emango dizu</translation>
 <translation id="834313815369870491">Inoiz itzuli behar ez diren webguneak</translation>

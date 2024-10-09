@@ -1693,6 +1693,7 @@
 <translation id="2184515124301515068">‏Chrome کو منتخب کرنے دیں کہ سائٹس کب آواز چلا سکتی ہیں (تجویز کردہ)</translation>
 <translation id="2186206192313702726">‏Google لینز</translation>
 <translation id="2186711480981247270">صفحہ کا اشتراک دوسرے آلے سے کیا گیا</translation>
+<translation id="2187569197737151508">‏اسے دوبارہ فعال کرنے کے لیے 5 بار Esc دبائیں</translation>
 <translation id="2187675480456493911">آپ کے اکاؤنٹ پر موجود دیگر آلات کے ساتھ مطابقت پذیر۔ دوسرے صارفین کے ذریعے ترمیم کی گئی ترتیبات کو مطابقت پذیر نہیں کیا جائے گا۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">سرور سرٹیفکیٹ کی درآمد میں خرابی</translation>
 <translation id="2187906491731510095">ایکسٹینشنز اپ ڈیٹ ہو گئیں</translation>
@@ -2099,6 +2100,7 @@
 <translation id="2460356425461033301">اپنے براؤزر کے ڈیٹا کا بیک اپ لیں اور اسے کسی بھی آلے پر استعمال کریں</translation>
 <translation id="2460482211073772897">دیگر فولڈرز میں</translation>
 <translation id="2460826998961521840">‏اپنے Google اکاؤنٹ میں محفوظ کردہ پاس کیز استعمال کرنے کے لیے</translation>
+<translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> صرف اس آلے پر محفوظ ہے۔ اگر آپ اس بُک مارک کو <ph name="LOCAL_FOLDER" /> میں منتقل کرتے ہیں تو آپ اسے مزید اپنے دیگر آلات پر نہیں حاصل کر سکیں گے۔</translation>
 <translation id="2461550163693930491">سائٹس کو مشترکہ ٹیبز کو اسکرول اور زوم کرنے کی اجازت نہ دیں</translation>
 <translation id="2461593638794842577">آپ صرف اس آلے پر اپنے پاس ورڈز کو محفوظ کرنے کے لیے اس ترتیب کو بند کر سکتے ہیں</translation>
 <translation id="2462332841984057083">‏Steam کو پہلے سے ہی سیٹ اپ کیا جا رہا ہے۔ سیٹ اپ مکمل ہونے کا انتظار کریں۔</translation>
@@ -2352,6 +2354,7 @@
 <translation id="2645047101481282803">آپ کا آلہ <ph name="PROFILE_NAME" /> کے زیر انتظام ہے</translation>
 <translation id="2645388244376970260">اس ٹیب کو <ph name="DEVICE_NAME" /> پر کاسٹ کیا جا رہا ہے</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">‏آپ کے Google اکاؤنٹ میں ایک فولڈر میں محفوظ کریں؟</translation>
 <translation id="264897126871533291">سرخ اور سبز کی بے قاعدہ رنگ بینی</translation>
 <translation id="2649045351178520408">‏Base64-ان کوڈ کردہ ASCII، سرٹیفکیٹ چین</translation>
 <translation id="265156376773362237">معیاری پیشگی لوڈنگ</translation>
@@ -2540,6 +2543,7 @@
 <translation id="2773288106548584039">پرانے براؤزر کیلئے سپورٹ</translation>
 <translation id="2773621783913034737">ٹیبز کو غیر فعال بنائیں</translation>
 <translation id="2774876860084746535">دانشور</translation>
+<translation id="2775047284666165174"><ph name="LOCAL_FOLDER" /> صرف اس آلے پر محفوظ ہے۔ اگر آپ اس فولڈر کو <ph name="LOCAL_FOLDER" /> میں منتقل کرتے ہیں تو آپ اسے مزید اپنے دیگر آلات پر نہیں حاصل کر سکیں گے۔</translation>
 <translation id="2775104091073479743">فنگر پرنٹس میں ترمیم کریں</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{"<ph name="EXTENSION" />" ایکسٹینشن آلات تک رسائی حاصل کر رہی تھی}=1{"<ph name="EXTENSION" />" ایکسٹینشن {0} آلہ تک رسائی حاصل کر رہی ہے}other{"<ph name="EXTENSION" />" ایکسٹینشن {0} آلات تک رسائی حاصل کر رہی ہے}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{غیر تعاون یافتہ 1 ایپ ہٹائیں}other{غیر تعاون یافتہ # ایپس ہٹائیں}}</translation>
@@ -2728,6 +2732,7 @@
 <translation id="2908122561561557160">‏Word, Excel اور PowerPoint فائلز کھولیں</translation>
 <translation id="2908162660801918428">ڈائریکٹری کے لحاظ سے میڈیا گیلری شامل کریں</translation>
 <translation id="2908358077082926882">تفویض اور <ph name="RESPONSE" /> ہٹانے کے لیے "<ph name="CURRENTKEY" />" دوبارہ دبائيں</translation>
+<translation id="2909487040556589351">‏اپنے موبائل آلے پر Chrome حاصل کریں</translation>
 <translation id="2909506265808101667">‏Google سروسز سے منسلک نہیں کیا جا سکا۔ اپنا نیٹ ورک کنکشن چیک کریں اور دوبارہ کوشش کریں۔ خرابی کا کوڈ: <ph name="ERROR_CODE" />۔</translation>
 <translation id="2910318910161511225">نیٹ ورک سے منسلک ہو کر دوبارہ کوشش کریں</translation>
 <translation id="2910678330803525229">اب آپ براؤزنگ شروع کر سکتے ہیں</translation>
@@ -4827,6 +4832,7 @@
 <translation id="4434611816075088065">ابھی کسی اور چیز کو آپ کی توجہ کی ضرورت نہیں ہے</translation>
 <translation id="443475966875174318">ناموافق ایپلیکیشنز کو اپ ڈیٹ کریں یا ہٹائیں</translation>
 <translation id="443503224864902151">‏ایسا کرنے پر آپ بیشتر سائٹس سے سائن آؤٹ ہو جاتے ہیں۔ تاہم، آپ اپنے Google اکاؤنٹ میں سائن ان رہیں گے تاکہ آپ کے مطابقت پذیر کردہ ڈیٹا کو حذف کیا جا سکے۔</translation>
+<translation id="4436573279088520291">غیر استعمال شدہ ٹیبز کو بند کریں</translation>
 <translation id="4437879751057074691">پاس ورڈز اور پاس کیز کو محفوظ کرنے کی پیشکش کریں</translation>
 <translation id="4437947179446780764">‏حسب ضرورت DNS سروس فراہم کنندہ شامل کریں</translation>
 <translation id="4438043733494739848">شفاف</translation>
@@ -4939,6 +4945,7 @@
 <translation id="4527929807707405172">معکوس اسکرولنگ کو فعال کریں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">ترجمہ کی تجویز</translation>
 <translation id="4528638190900283934">اضافی خصوصیات کے لیے سائن ان کریں</translation>
+<translation id="4529052777398765334">یہ فولڈر صرف اس آلے پر محفوظ ہے۔ اگر آپ اسے <ph name="ACCOUNT_FOLDER" /> میں محفوظ کرتے ہیں تو یہ فولڈر بھی آپ کے اکاؤنٹ میں محفوظ ہو جائے گا۔</translation>
 <translation id="4529455689802245339">‏ہو سکتا ہے Chrome لائیو کیپشن کام نہ کرے</translation>
 <translation id="4531451811601110068">آپ دوبارہ کوشش کر سکتے ہیں یا اپنے منتظم سے مدد کیلئے رابطہ کر سکتے ہیں</translation>
 <translation id="4531924570968473143">آپ اس <ph name="DEVICE_TYPE" /> میں کس کو شامل کرنا چاہیں گے؟</translation>
@@ -5524,6 +5531,7 @@
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> کی مرئیت</translation>
 <translation id="4955710816792587366">‏اپنا PIN منتخب کریں</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">صرف اس آلے پر کسی فولڈر میں محفوظ کریں؟</translation>
 <translation id="4959262764292427323">‏آپ کے Google اکاؤنٹ میں پاس ورڈز محفوظ ہیں اس لیے آپ انہیں کسی بھی آلہ پر استعمال کر سکتے ہیں</translation>
 <translation id="4960020053211143927">کچھ ایپس کے ذریعے تعاون یافتہ نہیں ہے</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8446,6 +8454,7 @@
 <translation id="711840821796638741">منظم کردہ بُک مارکس دکھائیں</translation>
 <translation id="711985611146095797">‏یہ صفحہ آپ کو اپنے سائن ان کردہ Google اکاؤنٹس کا نظم کرنے کی اجازت دیتا ہے۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">‏Chrome براؤزر اور Android ٹریفک VPN کے منسلک ہونے تک مسدود رہے گا</translation>
+<translation id="7120904433567247946">یہ بُک مارک صرف اس آلے پر محفوظ ہے۔ اگر آپ اسے <ph name="ACCOUNT_FOLDER" /> میں محفوظ کرتے ہیں تو یہ بُک مارک بھی آپ کے اکاؤنٹ میں محفوظ ہو جائے گا۔</translation>
 <translation id="7121438501124788993">ڈویلپر وضع</translation>
 <translation id="7121728544325372695">اسمارٹ ڈیشز</translation>
 <translation id="7122605570852873914">بہرحال سائن آؤٹ کریں</translation>
@@ -9911,6 +9920,7 @@
 <translation id="816704878106051517">{COUNT,plural, =1{ایک فون نمبر}other{# فون نمبرز}}</translation>
 <translation id="8168435359814927499">مواد</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{پڑھنے کی فہرست میں ٹیب شامل کریں}other{پڑھنے کی فہرست میں ٹیبز شامل کریں}}</translation>
+<translation id="8169177848833352618">‏بدقسمتی سے، یہ مشین Bruschetta کو انسٹال کرنے سے تقاضوں کو پورا نہیں کرتا ہے۔ خرابی کا کوڈ <ph name="ERROR" /> ہے۔</translation>
 <translation id="8174047975335711832">آلہ کی معلومات</translation>
 <translation id="8176332201990304395">گلابی اور سفید</translation>
 <translation id="8176529144855282213">مائیکروفون تک رسائی کو آن کرنے کے لیے، اپنے آلے پر فزیکل مائیکروفون سوئچ کو آن کریں</translation>

@@ -2110,6 +2110,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2460356425461033301">Rugsteun jou blaaiergoed en gebruik dit op enige toestel</translation>
 <translation id="2460482211073772897">In ander vouers</translation>
 <translation id="2460826998961521840">Om toegangsleutels te gebruik wat in jou Google-rekening gestoor is</translation>
+<translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> word net op hierdie toestel gestoor. As jy hierdie boekmerk na <ph name="LOCAL_FOLDER" /> skuif, sal jy dit nie meer op jou ander toestelle kry nie.</translation>
 <translation id="2461550163693930491">Moenie werwe toelaat om gedeelde oortjies te rollees en te zoem nie</translation>
 <translation id="2461593638794842577">Jy kan hierdie instelling afskakel om jou wagwoorde slegs op hierdie toestel te stoor</translation>
 <translation id="2462332841984057083">Steam is reeds opgestel. Wag vir opstelling om klaar te maak.</translation>
@@ -2363,6 +2364,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2645047101481282803">Jou toestel word bestuur deur <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">Saai tans hierdie oortjie uit na <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">Stoor in ’n vouer in jou Google-rekening?</translation>
 <translation id="264897126871533291">Protanomalie</translation>
 <translation id="2649045351178520408">Basis64-geënkodeerde ASCII, sertifikaatketting</translation>
 <translation id="265156376773362237">Standaardvooraflaai</translation>
@@ -2551,6 +2553,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2773288106548584039">Steun vir vorige blaaiers</translation>
 <translation id="2773621783913034737">Maak oortjies onaktief</translation>
 <translation id="2774876860084746535">Intellektueel</translation>
+<translation id="2775047284666165174"><ph name="LOCAL_FOLDER" /> word net op hierdie toestel gestoor. As jy hierdie vouer na <ph name="LOCAL_FOLDER" /> skuif, sal jy dit nie meer op jou ander toestelle kry nie.</translation>
 <translation id="2775104091073479743">Wysig vingerafdrukke</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{Uitbreiding “<ph name="EXTENSION" />” het toegang tot toestelle gehad}=1{Uitbreiding “<ph name="EXTENSION" />” het tans toegang tot {0} toestel}other{Uitbreiding “<ph name="EXTENSION" />” het tans toegang tot {0} toestelle}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Verwyder 1 ongesteunde program}other{Verwyder # ongesteunde programme}}</translation>
@@ -4952,6 +4955,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4527929807707405172">Aktiveer omgekeerde rollees. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Vertalingvoorstel</translation>
 <translation id="4528638190900283934">Meld aan vir bykomende kenmerke</translation>
+<translation id="4529052777398765334">Hierdie vouer word net op hierdie toestel gestoor. As jy dit in <ph name="ACCOUNT_FOLDER" /> stoor, sal die vouer ook in jou rekening gestoor word.</translation>
 <translation id="4529455689802245339">Chrome se Intydse Onderskrifte sal dalk nie werk nie</translation>
 <translation id="4531451811601110068">Jy kan weer probeer of jou administrateur kontak vir hulp</translation>
 <translation id="4531924570968473143">Wie wil jy graag by hierdie <ph name="DEVICE_TYPE" /> voeg?</translation>
@@ -5538,6 +5542,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" />-sigbaarheid</translation>
 <translation id="4955710816792587366">Kies jou PIN</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">Stoor net in 'n vouer op hierdie toestel?</translation>
 <translation id="4959262764292427323">Wagwoorde word in jou Google-rekening gestoor sodat jy hulle op enige toestel kan gebruik</translation>
 <translation id="4960020053211143927">Word nie deur sommige apps gesteun nie</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -8463,6 +8468,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="711840821796638741">Wys bestuurde boekmerke</translation>
 <translation id="711985611146095797">Met hierdie bladsy kan jy jou aangemelde Google-rekeninge bestuur. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Chrome-blaaier en Android-verkeer sal geblokkeer word, tensy 'n VPN gekoppel is</translation>
+<translation id="7120904433567247946">HIerdie boekmerk is net op hierdie toestel gestoor. As jy dit in <ph name="ACCOUNT_FOLDER" /> stoor, sal hierdie boekmerk ook in jou rekening gestoor word.</translation>
 <translation id="7121438501124788993">Ontwikkelaarmodus</translation>
 <translation id="7121728544325372695">Slimaandagstrepe</translation>
 <translation id="7122605570852873914">Meld in elk geval af</translation>

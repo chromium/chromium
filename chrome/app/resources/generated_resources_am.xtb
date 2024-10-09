@@ -1700,6 +1700,7 @@
 <translation id="2184515124301515068">Chrome ጣቢያዎች መቼ ድምጽን ማጫወት እንደሚችሉ እንዲመርጥ ይፍቀዱ (የሚመከር)</translation>
 <translation id="2186206192313702726">Google ሌንስ</translation>
 <translation id="2186711480981247270">ከሌላ መሣሪያ የተጋራ ገፅ</translation>
+<translation id="2187569197737151508">እንደገና ለማንቃት esc 5 ጊዜ ይጫኑ</translation>
 <translation id="2187675480456493911">በመለያዎ ላይ ካሉ ሌሎች መሣሪያዎች ጋር ሰምሯል። በሌሎች ተጠቃሚዎች የተቀየሩ ቅንብሮች አይሰምሩም። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">የአገልጋይ ዕውቅና ማረጋገጫ ስህተት</translation>
 <translation id="2187906491731510095">ቅጥያዎች ተዘምነዋል</translation>
@@ -2106,6 +2107,7 @@
 <translation id="2460356425461033301">የእርስዎን የአሳሽ ነገሮች ምትኬ ያስቀምጡ እና በማንኛውም መሣሪያ ላይ ይጠቀሙበት</translation>
 <translation id="2460482211073772897">በሌሎች አቃፊዎች ውስጥ</translation>
 <translation id="2460826998961521840">በGoogle መለያዎ ውስጥ የተቀመጡ የይለፍ ቁልፎችን ለመጠቀም</translation>
+<translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> በዚሀ መሣሪያ ላይ ብቻ ተቀምጧል። ይህን ዕልባት ወደ <ph name="LOCAL_FOLDER" /> ካንቀሳቀሱት ከእንግዲህ በሌሎቹ መሣሪያዎችዎ ላይ አያገኙትም።</translation>
 <translation id="2461550163693930491">ጣቢያዎች የተጋሩ ትሮችን እንዲያሸበልሉ እና እንዲያጉሉ አይፍቀዱ</translation>
 <translation id="2461593638794842577">የይለፍ ቃላትዎን በዚህ መሣሪያ ላይ ብቻ ለማስቀመጥ ይህን ቅንብር ማጥፋት ይችላሉ።</translation>
 <translation id="2462332841984057083">Steam አስቀድሞ ተዋቅሯል። ማዋቀር እስከሚጠናቀቅ ድረስ ይጠብቁ።</translation>
@@ -2359,6 +2361,7 @@
 <translation id="2645047101481282803">የእርስዎ መሣሪያ በ<ph name="PROFILE_NAME" /> ነው የሚተዳደረው</translation>
 <translation id="2645388244376970260">ይህን ትር ወደ <ph name="DEVICE_NAME" /> cast በማድረግ ላይ</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">የGoogle መለያዎ ውስጥ ወዳለው አቃፊ ይቀመጥ?</translation>
 <translation id="264897126871533291">ፕሮታኖማሊ</translation>
 <translation id="2649045351178520408">Base64-encoded ASCII፣ የሰርቲፊኬት ሰንሰለት</translation>
 <translation id="265156376773362237">መደበኛ ቅድሚያ መጫን</translation>
@@ -2547,6 +2550,7 @@
 <translation id="2773288106548584039">የቆየ የአሳሽ ድጋፍ</translation>
 <translation id="2773621783913034737">ትሮችን አቦዝን</translation>
 <translation id="2774876860084746535">አዕምሯዊ</translation>
+<translation id="2775047284666165174"><ph name="LOCAL_FOLDER" /> በዚሀ መሣሪያ ላይ ብቻ ተቀምጧል። ይህን አቃፊ ወደ <ph name="LOCAL_FOLDER" /> ካንቀሳቀሱት ከእንግዲህ በሌሎቹ መሣሪያዎችዎ ላይ አያገኙትም።</translation>
 <translation id="2775104091073479743">የጣት አሻራዎችን አርትዕ</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{ቅጥያ «<ph name="EXTENSION" />» መሣሪያዎችን እየደረሰ ነበር}=1{ቅጥያ «<ph name="EXTENSION" />» {0} መሣሪያ እየደረሰ ነው}one{ቅጥያ «<ph name="EXTENSION" />» {0} መሣሪያ እየደረሰ ነው}other{ቅጥያ «<ph name="EXTENSION" />» {0} መሣሪያዎችን እየደረሰ ነው}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{1 የማይደገፍ መተግበሪያን አስወግድ}one{# የማይደገፉ መተግበሪያዎችን አስወግድ}other{# የማይደገፉ መተግበሪያዎችን አስወግድ}}</translation>
@@ -2735,6 +2739,7 @@
 <translation id="2908122561561557160">Word፣ Excel እና PowerPoint ፋይሎችን ይክፈቱ</translation>
 <translation id="2908162660801918428">የሚዲያ ማዕከለ ስዕላት በአቃፊ ያክሉ</translation>
 <translation id="2908358077082926882">ምደባን እና <ph name="RESPONSE" />ን ለማስወገድ «<ph name="CURRENTKEY" />»ን በድጋሜ ይጫኑ።</translation>
+<translation id="2909487040556589351">Chromeን በተንቀሳቃሽ መሣሪያዎ ላይ ያግኙ</translation>
 <translation id="2909506265808101667">ከGoogle አገልግሎቶች ጋር መገናኘት አልተቻለም። የአውታረ መረብ ግንኙነትዎን ይፈትሹ እና እንደገና ይሞክሩ። የስህተት ኮድ፦ <ph name="ERROR_CODE" />።</translation>
 <translation id="2910318910161511225">ከአውታረ መረብ ጋር ያገናኙና እንደገና ይሞክሩ</translation>
 <translation id="2910678330803525229">አሁን ማሰስ መጀመር ይችላሉ</translation>
@@ -4834,6 +4839,7 @@
 <translation id="4434611816075088065">አሁን ትኩረትዎን የሚፈልግ ምንም ነገር የለም</translation>
 <translation id="443475966875174318">ተኳኋኝ ያልሆኑ መተግበሪያዎችን ያዘምኑ ወይም ያስወግዱ</translation>
 <translation id="443503224864902151">ከአብዛኛዎቹ ጣቢያዎች ዘግተው ያስወጣዎታል። በእርስዎ የGoogle መለያ ውስጥ በመለያ እንደገቡ ስለሚቆዩ የእርስዎ የሰመረ ውሂብ ሊሰረዝ ይችላል።</translation>
+<translation id="4436573279088520291">ጥቅም ላይ ያልዋሉ ትሮችን ይዝጉ</translation>
 <translation id="4437879751057074691">የይለፍ ቃሎትን እና የይለፍ ቁልፎችን ለማስቀመጥ አቅራቦት</translation>
 <translation id="4437947179446780764">ብጁ የዲኤንኤስ ግልጋሎት ሰጪን ያክሉ</translation>
 <translation id="4438043733494739848">ግልፅ</translation>
@@ -4946,6 +4952,7 @@
 <translation id="4527929807707405172">ኋልዮሽ መሸብለልን አንቃ <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">የትርጉም አስተያየት ጥቆማ</translation>
 <translation id="4528638190900283934">ለተጨማሪ ባህሪያት ይመዝገቡ</translation>
+<translation id="4529052777398765334">ይህ አቃፊ የተቀመጠው በዚሀ መሣሪያ ላይ ብቻ ነው። ወደ <ph name="ACCOUNT_FOLDER" /> ካስቀመጡት፣ ይህ አቃፊ መለያዎ ውስጥ ይቀመጣል።</translation>
 <translation id="4529455689802245339">የChrome የቀጥታ መግለጫ ጽሁፍ ላይሰራ ይችላል</translation>
 <translation id="4531451811601110068">እንደገና መሞከር ወይም ለእገዛ አስተዳዳሪዎን ማነጋገር ይችላሉ</translation>
 <translation id="4531924570968473143">ማንን ወደዚህ <ph name="DEVICE_TYPE" /> ማከል ይፈልጋል?</translation>
@@ -5532,6 +5539,7 @@
 <translation id="4955707703665801001">የ<ph name="FEATURE_NAME" /> ታይነት ደረጃ</translation>
 <translation id="4955710816792587366">የእርስዎን ፒን ይምረጡ</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">በዚህ መሣሪያ ላይ ብቻ ወደ አቃፊ ይቀመጥ?</translation>
 <translation id="4959262764292427323">በማናቸውም መሣሪያ ላይ እርስዎ ሊጠቀሙባቸው እንዲችሉ የይለፍ ቃላት በእርስዎ Google መለያ ውስጥ ይቀመጣሉ</translation>
 <translation id="4960020053211143927">በአንዳንድ መተግበሪያዎች አይደገፍም</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8459,6 +8467,7 @@
 <translation id="711840821796638741">የሚቀናበሩ ዕልባቶችን አሳይ</translation>
 <translation id="711985611146095797">ይህ ገፅ በመለያ የገቡትን የGoogle መለያዎችዎን እንዲያስተዳድሩ ያስችልዎታል። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">VPN ካልተገናኘ በስተቀር የChrome አሳሽ እና የAndroid ትራፊክ ይታገዳሉ</translation>
+<translation id="7120904433567247946">ይህ ዕልባት ብቻ በዚህ መሣሪያ ላይ ተቀምጧል። ወደ <ph name="ACCOUNT_FOLDER" /> ካስቀመጡት፣ ይህ ዕልባት መለያዎ ውስጥ ይቀመጣል።</translation>
 <translation id="7121438501124788993">የገንቢ ሁነታ</translation>
 <translation id="7121728544325372695">ዘመናዊ ዳሾች</translation>
 <translation id="7122605570852873914">ቢሆንም ዘግተህ ውጣ</translation>
@@ -9930,6 +9939,7 @@ nil</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{ስልክ ቁጥር}one{# ስልክ ቁጥሮች}other{# ስልክ ቁጥሮች}}</translation>
 <translation id="8168435359814927499">ይዘት</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{ትርን ወደ ንባብ ዝርዝር ያክሉ}one{ትሮችን ወደ ንባብ ዝርዝር ያክሉ}other{ትሮችን ወደ ንባብ ዝርዝር ያክሉ}}</translation>
+<translation id="8169177848833352618">እንዳለመታደል ሆኖ ይህ ማሽን Bruschetta የመጫን መስፈርቶችን አያሟላም። የስሕተት ኮድ <ph name="ERROR" /> ነው።</translation>
 <translation id="8174047975335711832">የመሣሪያ መረጃ</translation>
 <translation id="8176332201990304395">ሮዝ እና ነጭ</translation>
 <translation id="8176529144855282213">የማይክሮፎን መዳረሻን ለማብራት በመሣሪያዎ ላይ ያለውን አካላዊ የማይክሮፎን ማብሪያ/ማጥፊያ ያብሩ</translation>

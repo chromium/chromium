@@ -460,6 +460,7 @@
 <translation id="3098745985164956033">ನಿಮಗಾಗಿ ವಿವರಣೆಗಳನ್ನು ಸುಧಾರಿಸಲು, ಕೆಲವು ಚಿತ್ರಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗಿದೆ</translation>
 <translation id="3114507951000454849">ಇಂದಿನ ಸುದ್ದಿಗಳನ್ನು ಓದಿ <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">ಪ್ರಕಟಣೆಗಳು</translation>
+<translation id="3131961580615093332"><ph name="GIVEN_NAME" /> ಅವರು ಬದಲಿಸಿದ ಟ್ಯಾಬ್ “<ph name="TAB_NAME" />” ಆಗಿದೆ</translation>
 <translation id="3148237711805373460">ನನ್ನನ್ನು ಅಲ್ಲಿಗೆ ಕರೆದೊಯ್ಯಿರಿ</translation>
 <translation id="314939179385989105">Chrome ನ ಮುಖಪುಟ</translation>
 <translation id="3158667104057012316">ಹಸ್ತಚಾಲಿತ ಕ್ರಮದ ಪ್ರಕಾರವಾಗಿ ವಿಂಗಡಿಸುವುದು</translation>
@@ -637,6 +638,7 @@
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ಜೊತೆಗಿನ <ph name="SITE_ETLD_PLUS_ONE" /> ಬಳಕೆಯನ್ನು ಮುಂದುವರಿಸಿ</translation>
 <translation id="404352903042073578">ಹೆಸರಿಸದ ಗುಂಪು</translation>
 <translation id="4044708993631234325">ಕೆಳಭಾಗದ ಶೀಟ್</translation>
+<translation id="4045441967987592849">ಪುನಃ ತೆರೆಯಿರಿ</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{ಹಂಚಿಕೊಂಡ ಟ್ಯಾಬ್ ಗುಂಪುಗಳಲ್ಲಿನ ಹೊಸ ಚಟುವಟಿಕೆಯ <ph name="TABS_COUNT_ONE" /> ಪ್ರಮಾಣಿತ ಟ್ಯಾಬ್}one{ಹಂಚಿಕೊಂಡ ಟ್ಯಾಬ್ ಗುಂಪುಗಳಲ್ಲಿನ ಹೊಸ ಚಟುವಟಿಕೆಯ <ph name="TABS_COUNT_MANY" /> ಪ್ರಮಾಣಿತ ಟ್ಯಾಬ್‌ಗಳು}other{ಹಂಚಿಕೊಂಡ ಟ್ಯಾಬ್ ಗುಂಪುಗಳಲ್ಲಿನ ಹೊಸ ಚಟುವಟಿಕೆಯ <ph name="TABS_COUNT_MANY" /> ಪ್ರಮಾಣಿತ ಟ್ಯಾಬ್‌ಗಳು}}</translation>
 <translation id="405365679581583349">Google Play ಸೇವೆಗಳನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಿ</translation>
 <translation id="405399507749852140">ಯಾವುದೇ ಸೈಟ್‌ನಲ್ಲಿ ಬೆಲೆ ಕಡಿಮೆಯಾದರೆ ಅಲರ್ಟ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
@@ -843,6 +845,7 @@
 <translation id="4943703118917034429">ವರ್ಚುವಲ್ ರಿಯಾಲಿಟಿ</translation>
 <translation id="4943872375798546930">ಯಾವುದೇ ಫಲಿತಾಂಶಗಳಿಲ್ಲ</translation>
 <translation id="4950924971025849764">ನೀವು ಅದೇ Google ಖಾತೆಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗ, ಇತರ ಸಾಧನಗಳು ಈ ಫೋನ್ ಅನ್ನು ಭದ್ರತಾ ಕೀಯಾಗಿ ಬಳಸಬಹುದು.</translation>
+<translation id="4953833914914492602">"<ph name="TAB_GROUP_NAME" />" ಟ್ಯಾಬ್ ಗುಂಪು ಇನ್ನು ಮುಂದೆ ಲಭ್ಯವಿರುವುದಿಲ್ಲ</translation>
 <translation id="4957722034734105353">ಇನ್ನಷ್ಟು ತಿಳಿದುಕೊಳ್ಳಿ...</translation>
 <translation id="4961107849584082341">ಈ ಪುಟವನ್ನು ಯಾವ ಭಾಷೆಗಾದರೂ ಅನುವಾದಿಸಿ</translation>
 <translation id="4964614743143953889">ಸುರಕ್ಷಿತವಲ್ಲದ ಸೈಟ್‌ಗಳು ಮತ್ತು ಡೌನ್‌ಲೋಡ್‌ಗಳ ಕುರಿತು Chrome ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡುತ್ತದೆ</translation>
@@ -956,6 +959,7 @@
 <translation id="5526281268548144413">ಅನೇಕ ವಿಂಡೋಗಳಾದ್ಯಂತ ಮುಚ್ಚಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# ನಿಮಿಷದ ಹಿಂದೆ}one{# ನಿಮಿಷದ ಹಿಂದೆ}other{# ನಿಮಿಷದ ಹಿಂದೆ}}</translation>
 <translation id="5548606607480005320">ಸುರಕ್ಷತೆಯ ಪರಿಶೀಲನೆ</translation>
+<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> ಅವರು "<ph name="TAB_GROUP_NAME" />" ಟ್ಯಾಬ್ ಗುಂಪಿಗೆ ಸೇರಿದ್ದಾರೆ</translation>
 <translation id="5554520618550346933">ಪಾಸ್‌ವರ್ಡ್ ಆನ್‌ಲೈನ್‌ನಲ್ಲಿ ಪ್ರಕಟವಾಗಿದ್ದರೆ, ನೀವು ಅದನ್ನು ಬಳಸುವಾಗ Chrome ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡುತ್ತದೆ. ಪರಿಶೀಲಿಸುವಾಗ, ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಮತ್ತು ಬಳಕೆದಾರರ ಹೆಸರುಗಳನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಲಾಗುತ್ತದೆ, ಆದ್ದರಿಂದ ಅವುಗಳನ್ನು Google ಸೇರಿದಂತೆ ಯಾರಿಂದಲೂ ಓದಲು ಸಾಧ್ಯವಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="5555525474779371165">ನಿಮ್ಮ ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್ ರಕ್ಷಣೆಯನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="5556459405103347317">ಮರುಲೋಡ್‌</translation>
@@ -1617,6 +1621,7 @@
 <translation id="8282297628636750033">ಸೈಟ್‌ಗೆ ಡಾರ್ಕ್ ಥೀಮ್ ಅನ್ವಯಿಸಿ</translation>
 <translation id="8282950411412455249">ಭದ್ರತೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ ಹೋಗಿ</translation>
 <translation id="829672787777123339">ನಿಮ್ಮ ಸಾಧನಕ್ಕೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗುತ್ತಿದೆ…</translation>
+<translation id="8307517230426267469"><ph name="GIVEN_NAME" /> ಅವರು ತೆಗೆದುಹಾಕಲಾದ ಟ್ಯಾಬ್ “<ph name="TAB_NAME" />” ಆಗಿದೆ</translation>
 <translation id="831192587911042850">ನೀವು ಫಾಲೋ ಮಾಡುತ್ತಿರುವ ವೆಬ್ ಸೈಟ್‌ಗಳ ಪಟ್ಟಿಗೆ ಪ್ರಸ್ತುತ ವೆಬ್‌ ಸೈಟ್ ಅನ್ನು ಸೇರಿಸುತ್ತದೆ.</translation>
 <translation id="8342727528718219152">ಹಲವಾರು ನೋಟಿಫಿಕೇಶನ್‌ಗಳನ್ನು ಕಳುಹಿಸುವ ಸೈಟ್‌ಗಳ ಕುರಿತು Chrome ನಿಮಗೆ ತಿಳಿಸುತ್ತದೆ</translation>
 <translation id="834313815369870491">ಸೈಟ್‌ಗಳನ್ನು ಎಂದಿಗೂ ಅನುವಾದಿಸಬೇಡಿ</translation>

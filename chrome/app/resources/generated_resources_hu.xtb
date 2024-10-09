@@ -1701,6 +1701,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2184515124301515068">A Chrome dönthet arról, hogy a webhelyek lejátszhatnak-e hangot (ajánlott)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">Másik eszközről megosztott oldal</translation>
+<translation id="2187569197737151508">Az újbóli engedélyezéshez nyomja meg ötször az Esc billentyűt</translation>
 <translation id="2187675480456493911">Szinkronizálva van a fiókjában lévő egyéb eszközökkel. A más felhasználók által módosított beállításokat a rendszer nem szinkronizálja majd. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="2187895286714876935">Hiba a szervertanúsítvány importálásánál</translation>
 <translation id="2187906491731510095">Bővítmények frissítve</translation>
@@ -2109,6 +2110,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2460356425461033301">Biztonsági másolatot készíthet a böngészőhöz tartozó adatairól, és bármely eszközön használatja őket</translation>
 <translation id="2460482211073772897">Más mappákban</translation>
 <translation id="2460826998961521840">A Google-fiókjába mentett azonosítókulcsok használatához</translation>
+<translation id="2461045498706592033">A(z) <ph name="LOCAL_FOLDER" /> csak ezen az eszközön kerül mentésre. Ha áthelyezi ezt a könyvjelzőt a(z) <ph name="LOCAL_FOLDER" /> mappába, akkor a többi eszközén már nem fog tudni hozzáférni.</translation>
 <translation id="2461550163693930491">A webhelyek nem görgethetnek és nagyíthatnak a megosztott lapokon</translation>
 <translation id="2461593638794842577">Kikapcsolhatja ezt a beállítást, ha csak ezen az eszközön szeretné menteni a jelszavait.</translation>
 <translation id="2462332841984057083">A Steam beállítása már folyamatban van. Várja meg a beállítás befejeződését.</translation>
@@ -2362,6 +2364,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2645047101481282803">Az eszközét a következő kezeli: <ph name="PROFILE_NAME" />.</translation>
 <translation id="2645388244376970260">Az aktuális lap átküldése folyamatban van ide: <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">Menti a könyvjelzőt a Google-fiókja egyik mappájába?</translation>
 <translation id="264897126871533291">Protanomália</translation>
 <translation id="2649045351178520408">Base64 kódolású ASCII, tanúsítványlánc</translation>
 <translation id="265156376773362237">Normál előtöltés</translation>
@@ -2550,6 +2553,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2773288106548584039">Régi böngészők támogatása</translation>
 <translation id="2773621783913034737">Lapok inaktiválása</translation>
 <translation id="2774876860084746535">Intellektuális</translation>
+<translation id="2775047284666165174">A(z) <ph name="LOCAL_FOLDER" /> csak ezen az eszközön kerül mentésre. Ha áthelyezi ezt a mappát a(z) <ph name="LOCAL_FOLDER" /> mappába, akkor a többi eszközén már nem fog tudni hozzáférni.</translation>
 <translation id="2775104091073479743">Ujjlenyomatok szerkesztése</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{A(z) „<ph name="EXTENSION" />” bővítmény hozzáfért eszközökhöz}=1{A(z) „<ph name="EXTENSION" />” bővítmény hozzáfér {0} eszközhöz}other{A(z) „<ph name="EXTENSION" />” bővítmény hozzáfér {0} eszközhöz}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{1 nem támogatott alkalmazás eltávolítása}other{# nem támogatott alkalmazás eltávolítása}}</translation>
@@ -2738,6 +2742,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2908122561561557160">Word-, Excel- és PowerPoint-fájlok megnyitása</translation>
 <translation id="2908162660801918428">Médiagaléria hozzáadása könyvtár szerint</translation>
 <translation id="2908358077082926882">Nyomja le újra a(z) „<ph name="CURRENTKEY" />” billentyűt a hozzárendelés megszüntetéséhez és <ph name="RESPONSE" />.</translation>
+<translation id="2909487040556589351">A Chrome beszerzése mobileszközre</translation>
 <translation id="2909506265808101667">Nem sikerült csatlakozni a Google-szolgáltatásokhoz. Ellenőrizze a hálózati kapcsolatot, és próbálja újra. Hibakód: <ph name="ERROR_CODE" />.</translation>
 <translation id="2910318910161511225">Csatlakozzon egy hálózathoz, és próbálja újra</translation>
 <translation id="2910678330803525229">Most már elkezdheti a böngészést</translation>
@@ -4838,6 +4843,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4434611816075088065">Jelenleg semmi más nem igényel beavatkozást</translation>
 <translation id="443475966875174318">Nem kompatibilis alkalmazások frissítése és eltávolítása</translation>
 <translation id="443503224864902151">A rendszer kijelentkezteti a legtöbb webhelyről. Google-fiókjába bejelentkezve marad, hogy lehetséges legyen a szinkronizált adatok törlése.</translation>
+<translation id="4436573279088520291">A nem használt lapok bezárása</translation>
 <translation id="4437879751057074691">Jelszavak és azonosítókulcsok mentésének felajánlása</translation>
 <translation id="4437947179446780764">Egyéni DNS-szolgáltató hozzáadása</translation>
 <translation id="4438043733494739848">Átlátszó</translation>
@@ -4950,6 +4956,7 @@ Ide tartozhatnak a telepített szoftverekkel, valamint a fájlokkal, a böngész
 <translation id="4527929807707405172">A fordított görgetés engedélyezése. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="4528494169189661126">Fordítási javaslat</translation>
 <translation id="4528638190900283934">Jelentkezzen be, hogy még több funkciót használhasson.</translation>
+<translation id="4529052777398765334">Ez a mappa csak ezen az eszközön kerül mentésre. Ha a(z) <ph name="ACCOUNT_FOLDER" /> mappába menti, akkor a fiókjába is elmenti ezt a mappát a rendszer.</translation>
 <translation id="4529455689802245339">Előfordulhat, hogy a Chrome Élő feliratozás funkciója nem működik</translation>
 <translation id="4531451811601110068">Próbálkozzon újra, vagy forduljon a rendszergazdához segítségért</translation>
 <translation id="4531924570968473143">Kit szeretne hozzáadni ehhez az eszközhöz (<ph name="DEVICE_TYPE" />)?</translation>
@@ -5536,6 +5543,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" />-láthatóság</translation>
 <translation id="4955710816792587366">PIN-kód kiválasztása</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">Csak az ezen az eszközön lévő mappába menti a könyvjelzőt?</translation>
 <translation id="4959262764292427323">A jelszavakat Google-fiókjába mentjük, hogy bármelyik eszközén használhassa őket</translation>
 <translation id="4960020053211143927">Egyes alkalmazások nem támogatják</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -8462,6 +8470,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="711840821796638741">Kezelt könyvjelzők megjelenítése</translation>
 <translation id="711985611146095797">Ezen az oldalon kezelheti a bejelentkezett Google-fiókjait. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">A Chrome böngésző és az androidos adatforgalom le lesz tiltva addig, amíg létre nem jön a VPN-kapcsolat</translation>
+<translation id="7120904433567247946">Ez a könyvjelző csak ezen az eszközön kerül mentésre. Ha a(z) <ph name="ACCOUNT_FOLDER" /> mappába menti, akkor a fiókjába is elmenti ezt a könyvjelzőt a rendszer.</translation>
 <translation id="7121438501124788993">Fejlesztői mód</translation>
 <translation id="7121728544325372695">Intelligens kötőjelek</translation>
 <translation id="7122605570852873914">Kijelentkezés mindenképpen</translation>
@@ -9927,6 +9936,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="816704878106051517">{COUNT,plural, =1{egy telefonszámot}other{# telefonszámot}}</translation>
 <translation id="8168435359814927499">Tartalom</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Lap hozzáadása olvasási listához}other{Lapok hozzáadása olvasási listához}}</translation>
+<translation id="8169177848833352618">Sajnos ez a gép nem felel meg a Bruschetta telepítéséhez szükséges követelményeknek. A hibakód: <ph name="ERROR" />.</translation>
 <translation id="8174047975335711832">Eszközadatok</translation>
 <translation id="8176332201990304395">Rózsaszín-fehér</translation>
 <translation id="8176529144855282213">A mikrofonhoz való hozzáférés engedélyezéséhez kapcsolja be az eszköz mikrofonjának fizikai kapcsolóját</translation>

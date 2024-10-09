@@ -176,6 +176,13 @@ Se il criterio non viene configurato, non sono consentite eccezioni a <ph name="
 <translation id="1096105751829466145">Provider di ricerca predefinito</translation>
 <translation id="1099282607296956954">Attiva isolamento dei siti per ogni sito
 </translation>
+<translation id="1099858055878287525">Per i profili di lavoro e della scuola, nella barra degli strumenti verrà mostrata per impostazione predefinita un'etichetta "Lavoro" o "Scuola" accanto all'avatar della barra degli strumenti. L'etichetta verrà mostrata solo se l'account a cui è stato eseguito l'accesso è gestito.
+
+Se questo criterio viene impostato su <ph name="HIDE_EXPANDED_ENTERPRISE_TOOLBAR_BADGE" /> (valore 1), il badge aziendale per un profilo gestito nella barra degli strumenti verrà nascosto.
+
+Se questo criterio non viene configurato o se viene impostato su <ph name="SHOW_EXPANDED_ENTERPRISE_TOOLBAR_BADGE" /> (valore 0), il badge aziendale verrà mostrato.
+
+L'etichetta è personalizzabile tramite il criterio <ph name="ENTERPRISE_CUSTOM_LABEL_POLICY_NAME" />.</translation>
 <translation id="1100840127293327071">Non selezionare l'opzione per mantenere i dati di navigazione esistenti per impostazione predefinita</translation>
 <translation id="1105572260329131950">Vengono usate icone predefinite per le connessioni sicure</translation>
 <translation id="1105711894873068933">Dopo la disattivazione di <ph name="LACROS_NAME" />, tutti i dati utente vengono rimossi all'accesso successivo.</translation>
@@ -1301,6 +1308,7 @@ Se il criterio viene disattivato, <ph name="PRODUCT_NAME" /> chiude la scheda do
         |TIME_LIMITS| consente di applicare un limite di utilizzo giornaliero e di non rendere disponibile l'app una volta raggiunto il limite nella giornata specifica. Il limite di utilizzo viene specificato tramite |daily_limit_mins| e viene reimpostato ogni giorno all'orario UTC impostato tramite |reset_at|.
         Questo criterio viene usato soltanto per i bambini ed è complementare al criterio "UsageTimeLimit". I limiti specificati nel criterio "UsageTimeLimit", ad esempio relativi al tempo di utilizzo e di interruzione dell'uso, verranno applicati a prescindere dal criterio "PerAppTimeLimits".</translation>
 <translation id="1913629775420987861">Mostra una finestra di dialogo di avviso quando l'utente sta tentando di uscire</translation>
+<translation id="1915242485679279502">Mostra badge aziendale espanso nella barra degli strumenti</translation>
 <translation id="1916266055944569995">La configurazione del criterio consente di definire il valore restituito dell'API Managed Configuration per una determinata origine.
 
       L'API Managed Configuration è una configurazione di coppie chiave-valore accessibile tramite chiamata JavaScript navigator.managed.getManagedConfiguration(). Questa API è disponibile soltanto per le origini che corrispondono ad applicazioni web con installazione forzata tramite <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
@@ -2272,6 +2280,17 @@ L'utente avrà la certezza che, dopo l'accesso, le altre app non saranno in grad
 
 Se il criterio viene impostato su Disattivato, il dispositivo non utilizza l'attestazione remota per la protezione dei contenuti e non può riprodurre contenuti protetti.</translation>
 <translation id="262740370354162807">Attiva l'invio di documenti a <ph name="CLOUD_PRINT_NAME" /></translation>
+<translation id="2628738243936676400">La funzionalità di ricerca nella cronologia basata sull'AI consente agli utenti di effettuare ricerche nella loro cronologia di navigazione e di ricevere risposte generate in base ai contenuti della pagina, non solo al titolo e all'URL.
+
+0 = Attiva la funzionalità per gli utenti e invia i dati pertinenti a Google per contribuire ad addestrare o migliorare i modelli di AI. A seconda della funzionalità, tra i dati pertinenti sono inclusi prompt, input, output e materiali originali. Possono essere esaminati da persone al solo scopo di migliorare i modelli di AI. 0 è il valore predefinito, ad eccezione dei casi riportati di seguito.
+
+1 = Attiva la funzionalità per gli utenti, ma non invia dati a Google per addestrare o migliorare i modelli di AI. 1 è il valore predefinito per gli utenti aziendali gestiti da <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> e per gli account Education gestiti da <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Disattiva la funzionalità.
+
+Se il criterio non viene configurato, il comportamento predefinito è 0 per gli utenti regolari e 2 per gli utenti gestiti su <ph name="PRODUCT_OS_NAME" />.
+
+Per maggiori informazioni sulla gestione dei dati per le funzionalità di AI generativa, visita la pagina https://support.google.com/chrome/a?p=generative_ai_settings.</translation>
 <translation id="2633084400146331575">Attiva la funzione di lettura vocale</translation>
 <translation id="2633907568797306353">Consenti l'attivazione delle notifiche Phone Hub</translation>
 <translation id="2634265675787412567"><ph name="PRODUCT_NAME" /> può indirizzare le richieste di creazione di passkey/WebAuthn direttamente al portachiavi iCloud su macOS 13.5 o versioni successive. Se la sincronizzazione del portachiavi iCloud non è stata ancora abilitata, all'utente verrà richiesto di eseguire l'accesso con iCloud oppure potrebbe essergli chiesto di attivare la sincronizzazione del portachiavi iCloud.
@@ -2471,6 +2490,19 @@ Se non viene configurato, si applica il criterio <ph name="BLOCK_POPUPS_POLICY_N
 <translation id="2801065672151277034">Impostazioni di gestione dei certificati</translation>
 <translation id="2801155097555584385">Imposta il valore personalizzato espresso in percentuale raggiunto il quale la batteria avvia la ricarica</translation>
 <translation id="2801378553855965587">Disattiva integrazione di <ph name="GOOGLE_CALENDAR_NAME" />.</translation>
+<translation id="2804159858652849094">Questo criterio controlla un'etichetta personalizzata utilizzata per identificare chi ha gestito un profilo o un browser.
+
+Questa etichetta verrà mostrata nella barra degli strumenti.
+
+Se il criterio viene configurato a livello di browser, tutti i profili avranno questa etichetta nella barra degli strumenti.
+
+Se il criterio viene impostato a livello di profilo, solo quel profilo avrà questa etichetta.
+
+A differenza di altri, quando impostato a livello di profilo, questo criterio ha la precedenza su un criterio impostato a livello di browser.
+
+L'etichetta personalizzata non verrà tradotta.
+
+Tieni presente che questo criterio non ha alcun effetto se il criterio <ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR_SETTINGS" /> viene impostato su <ph name="HIDE_EXPANDED_ENTERPRISE_TOOLBAR_BADGE" /> (valore 1).</translation>
 <translation id="2805707493867224476">Consenti la visualizzazione di popup in tutti i siti</translation>
 <translation id="2806804577787377637">Questo criterio è stato deprecato e non è supportato. Utilizza il criterio <ph name="PER_APP_TIME_LIMITS_ALLOWLIST" />.</translation>
 <translation id="2815701930753942156">Questo criterio specifica un elenco di intervalli settimanali durante i quali il dispositivo <ph name="PRODUCT_OS_NAME" /> non può essere utilizzato. Eventuali sessioni in corso verranno chiuse e l'accesso verrà bloccato.
@@ -4721,6 +4753,21 @@ Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cl
 <translation id="4557134566541205630">URL pagina Nuova scheda provider di ricerca predefinito</translation>
 <translation id="4558166110367609724">Salta automaticamente TdS e carica il browser</translation>
 <translation id="4559846397119102037">Consenti l'utilizzo di <ph name="LACROS_NAME" /></translation>
+<translation id="456018799964679771">Questo criterio a livello di dispositivo consente di configurare se <ph name="PRODUCT_OS_NAME" /> offrirà un algoritmo di accordo chiave post-quantistico in TLS utilizzando lo standard ML-KEM NIST. Prima di <ph name="PRODUCT_OS_NAME" /> versione 131, l'algoritmo era Kyber, un'iterazione bozza precedente dello standard. In questo modo, i server di supporto possono proteggere il traffico degli utenti dalla decrittografia successiva dei computer quantistici.
+
+Se questo criterio viene attivato, <ph name="PRODUCT_OS_NAME" /> offrirà un accordo chiave post-quantistico nelle connessioni TLS. Il traffico degli utenti sarà poi protetto dai computer quantistici durante la comunicazione con i server compatibili.
+
+Se questo criterio viene disattivato, <ph name="PRODUCT_OS_NAME" /> non offrirà un accordo chiave post-quantistico nelle connessioni TLS. In questo modo, il traffico degli utenti non verrà protetto dai computer quantistici.
+
+Se questo criterio non viene configurato, <ph name="PRODUCT_OS_NAME" /> seguirà la procedura di implementazione predefinita per l'offerta di un accordo chiave post-quantistico.
+
+L'offerta di Kyber è compatibile con le versioni precedenti. I server TLS e il middleware di rete esistenti dovrebbero ignorare la nuova opzione e continuare a selezionare le opzioni precedenti.
+
+Tuttavia, i dispositivi che non implementano correttamente TLS potrebbero non funzionare correttamente se viene offerta la nuova opzione. Ad esempio, potrebbero disconnettersi in risposta a opzioni non riconosciute o ai messaggi di dimensioni maggiori che ne derivano. Questi dispositivi non sono adatti alla tecnologia post-quantistica e interferiranno con la relativa transizione di un'azienda. In questo caso, gli amministratori dovrebbero contattare il fornitore per risolvere il problema.
+
+Questo criterio è una misura temporanea e verrà rimosso in un momento successivo alla versione 141 di <ph name="PRODUCT_OS_NAME" />. Potrebbe essere attivato per consentirti di testare i problemi e potrebbe essere disattivato durante la risoluzione di questi ultimi.
+
+Se vengono impostati sia questo criterio sia il criterio PostQuantumKeyAgreementEnabled, questo criterio avrà la precedenza.</translation>
 <translation id="4561560385824323005">Consente agli utenti di selezionare un layout desktop preconfigurato da caricare</translation>
 <translation id="4561940244682063697">Non consentire ai siti di richiedere all'utente la condivisione di un video stream del suo schermo</translation>
 <translation id="4562165737444703281">Consenti agli utenti di [attivare/configurare] il port forwarding in Crostini</translation>
@@ -6209,6 +6256,7 @@ Se viene configurato per il kiosk <ph name="PRODUCT_OS_NAME" />, questo criterio
 <translation id="5622590774455244290">Le app per Android potrebbero decidere volontariamente se rispettare o meno questo elenco. Non è possibile imporre il rispetto dell'elenco.</translation>
 <translation id="5622924058222112599">Viene attivata la procedura di lancio predefinita di CECPQ2</translation>
 <translation id="5623304306796942802">Mostra richiesta in caso di più certificati corrispondenti</translation>
+<translation id="5624310713789233422">Controlla la visibilità del badge del profilo aziendale nella barra degli strumenti</translation>
 <translation id="5624334866248253262">Consente di configurare un elenco di regole di controllo dati per prevenire le fughe di dati.
 
       Ciascuna regola prevede quanto segue:
@@ -9496,6 +9544,19 @@ Questo criterio non avrà alcun effetto se il criterio <ph name="SCREENSAVER_LOC
       Questo criterio è stato rimosso nella versione 88 di Chrome e viene ignorato se viene impostato.
 
       Visita la pagina https://www.chromestatus.com/feature/5989473649164288.</translation>
+<translation id="8137301668000005268">Questo criterio consente di configurare se <ph name="PRODUCT_NAME" /> offrirà un algoritmo di accordo chiave post-quantistico in TLS utilizzando lo standard NIST ML-KEM. Prima di <ph name="PRODUCT_NAME" /> versione 131, l'algoritmo era Kyber, un'iterazione bozza precedente dello standard. In questo modo, i server di supporto possono proteggere il traffico degli utenti dalla decrittografia successiva dei computer quantistici.
+
+Se questo criterio viene attivato, <ph name="PRODUCT_NAME" /> offrirà un accordo chiave post-quantistico nelle connessioni TLS. Il traffico degli utenti sarà poi protetto dai computer quantistici durante la comunicazione con i server compatibili.
+
+Se questo criterio viene disattivato, <ph name="PRODUCT_NAME" /> non offrirà un accordo chiave post-quantistico nelle connessioni TLS. In questo modo, il traffico degli utenti non verrà protetto dai computer quantistici.
+
+Se questo criterio non viene configurato, <ph name="PRODUCT_NAME" /> seguirà la procedura di implementazione predefinita per l'offerta di un accordo chiave post-quantistico.
+
+L'offerta di un accordo chiave post-quantistico è compatibile con le versioni precedenti. I server TLS e il middleware di rete esistenti dovrebbero ignorare la nuova opzione e continuare a selezionare le opzioni precedenti.
+
+Tuttavia, i dispositivi che non implementano correttamente TLS potrebbero non funzionare correttamente se viene offerta la nuova opzione. Ad esempio, potrebbero disconnettersi in risposta a opzioni non riconosciute o ai messaggi di dimensioni maggiori che ne derivano. Questi dispositivi non sono adatti alla tecnologia post-quantistica e interferiranno con la relativa transizione di un'azienda. In questo caso, gli amministratori dovrebbero contattare il fornitore per risolvere il problema.
+
+Questo criterio è una misura temporanea e verrà rimosso in un momento successivo alla versione 141 di <ph name="PRODUCT_NAME" />. Potrebbe essere attivato per consentirti di testare i problemi e potrebbe essere disattivato durante la risoluzione di questi ultimi.</translation>
 <translation id="8137443729340035928">Chiedi all'utente all'accesso se ripristinare l'ultima sessione.</translation>
 <translation id="8141795997560411818">Questa norma non impedisce all'utente di utilizzare l'app Google Drive per Android. Se vuoi impedire l'accesso a Google Drive, non devi consentire l'installazione dell'app Google Drive per Android.</translation>
 <translation id="8142894094385450823">Questa norma consente di impostare le impostazioni internazionali consigliate per una sessione gestita</translation>
