@@ -45,6 +45,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -214,7 +215,7 @@ public class ToolbarPhoneTest {
                                     () -> false,
                                     mThemeColorProvider,
                                     () -> null,
-                                    () -> {},
+                                    CallbackUtils.emptyRunnable(),
                                     R.id.menu_button_wrapper);
                     mToolbar.setMenuButtonCoordinatorForTesting(realMenuButtonCoordinator);
                     mToolbar.updateOptionalButton(

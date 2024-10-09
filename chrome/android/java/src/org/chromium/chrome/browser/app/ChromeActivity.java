@@ -41,6 +41,7 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.InputHintChecker;
@@ -2582,7 +2583,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                     mSnackbarManager,
                     getResources(),
                     currentTab.getProfile(),
-                    (success) -> {});
+                    CallbackUtils.emptyCallback());
             RecordUserAction.record("MobileMenuDisablePriceTracking");
             return true;
         }

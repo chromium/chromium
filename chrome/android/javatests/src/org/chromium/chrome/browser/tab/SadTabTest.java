@@ -17,6 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -204,7 +205,10 @@ public class SadTabTest {
                 () -> {
                     SadTab sadTab = SadTab.from(tab);
                     sadTab.removeIfPresent();
-                    sadTab.show(tab.getContext(), () -> {}, () -> {});
+                    sadTab.show(
+                            tab.getContext(),
+                            CallbackUtils.emptyRunnable(),
+                            CallbackUtils.emptyRunnable());
                 });
     }
 

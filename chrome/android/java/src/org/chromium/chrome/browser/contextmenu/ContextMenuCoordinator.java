@@ -23,6 +23,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -495,7 +496,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         ChipRenderParams chipRenderParamsForTesting = new ChipRenderParams();
         chipRenderParamsForTesting.titleResourceId =
                 R.string.contextmenu_shop_image_with_google_lens;
-        chipRenderParamsForTesting.onClickCallback = () -> {};
+        chipRenderParamsForTesting.onClickCallback = CallbackUtils.emptyRunnable();
         mChipController.showChip(chipRenderParamsForTesting);
     }
 
@@ -506,7 +507,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         ChipRenderParams chipRenderParamsForTesting = new ChipRenderParams();
         chipRenderParamsForTesting.titleResourceId =
                 R.string.contextmenu_translate_image_with_google_lens;
-        chipRenderParamsForTesting.onClickCallback = () -> {};
+        chipRenderParamsForTesting.onClickCallback = CallbackUtils.emptyRunnable();
         mChipController.showChip(chipRenderParamsForTesting);
     }
 

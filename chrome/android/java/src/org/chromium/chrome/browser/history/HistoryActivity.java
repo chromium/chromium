@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
@@ -84,7 +85,7 @@ public class HistoryActivity extends SnackbarActivity {
         mBottomSheetController =
                 BottomSheetControllerFactory.createBottomSheetController(
                         () -> scrim,
-                        (sheet) -> {},
+                        CallbackUtils.emptyCallback(),
                         getWindow(),
                         KeyboardVisibilityDelegate.getInstance(),
                         () -> sheetContainer,

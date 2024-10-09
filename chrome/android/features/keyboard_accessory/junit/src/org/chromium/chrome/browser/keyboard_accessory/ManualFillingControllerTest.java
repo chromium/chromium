@@ -59,6 +59,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -1376,8 +1377,8 @@ public class ManualFillingControllerTest {
 
     @Test
     public void testCallsHelperToConfirmDeletion() {
-        Runnable testConfirmRunnable = () -> {};
-        Runnable testDeclineRunnable = () -> {};
+        Runnable testConfirmRunnable = CallbackUtils.emptyRunnable();
+        Runnable testDeclineRunnable = CallbackUtils.emptyRunnable();
         mMediator.confirmOperation(
                 "Suggestion", "Delete it?", testConfirmRunnable, testDeclineRunnable);
         verify(mMockConfirmationHelper)

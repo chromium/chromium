@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.RectF;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -123,7 +124,7 @@ public class ToolbarSwipeLayout extends Layout {
                     new TopToolbarOverlayCoordinator(
                             getContext(),
                             layoutManager,
-                            (info) -> {},
+                            CallbackUtils.emptyCallback(),
                             mLeftTabSupplier,
                             mBrowserControlsStateProvider,
                             () -> mRenderHost.getResourceManager(),
@@ -137,7 +138,7 @@ public class ToolbarSwipeLayout extends Layout {
                     new TopToolbarOverlayCoordinator(
                             getContext(),
                             layoutManager,
-                            (info) -> {},
+                            CallbackUtils.emptyCallback(),
                             mRightTabSupplier,
                             mBrowserControlsStateProvider,
                             () -> mRenderHost.getResourceManager(),

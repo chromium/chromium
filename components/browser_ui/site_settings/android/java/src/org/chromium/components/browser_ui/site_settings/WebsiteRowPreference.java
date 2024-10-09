@@ -20,6 +20,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 import androidx.preference.PreferenceViewHolder;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.FaviconViewUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -50,7 +51,7 @@ public class WebsiteRowPreference extends ChromeImageViewPreference {
         mSiteEntry = siteEntry;
         mLayoutInflater = layoutInflater;
         // Initialize with an empty callback.
-        mOnDeleteCallback = () -> {};
+        mOnDeleteCallback = CallbackUtils.emptyRunnable();
 
         // To make sure the layout stays stable throughout, we assign a
         // transparent drawable as the icon initially. This is so that

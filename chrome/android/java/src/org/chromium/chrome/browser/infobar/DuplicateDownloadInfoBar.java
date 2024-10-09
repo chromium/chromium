@@ -10,6 +10,7 @@ import android.view.View;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.DownloadOpenSource;
@@ -99,7 +100,7 @@ public class DuplicateDownloadInfoBar extends ConfirmInfoBar {
                     new DuplicateDownloadClickableSpan(
                             context,
                             mFilePath,
-                            () -> {},
+                            CallbackUtils.emptyRunnable(),
                             mOTRProfileID,
                             DownloadOpenSource.INFO_BAR);
             layout.setMessage(

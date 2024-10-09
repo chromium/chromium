@@ -12,6 +12,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.UserData;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.Supplier;
@@ -87,7 +88,7 @@ public class WebFeedRecommendationFollowAcceleratorController {
                         appMenuHandler,
                         menuButtonAnchorView,
                         /* featureEngagementTracker= */ null,
-                        /* introDismissedCallback= */ () -> {});
+                        /* introDismissedCallback= */ CallbackUtils.emptyRunnable());
     }
 
     /** Dismiss the Follow bubble if it is showing. */
@@ -162,8 +163,8 @@ public class WebFeedRecommendationFollowAcceleratorController {
 
         mWebFeedFollowIntroView.showAccelerator(
                 onTouchListener,
-                /* introShownCallback= */ () -> {},
-                /*introNotShownCallback*/ () -> {});
+                /* introShownCallback= */ CallbackUtils.emptyRunnable(),
+                /*introNotShownCallback*/ CallbackUtils.emptyRunnable());
     }
 
     private void performFollowWithAccelerator(byte[] webFeedId) {

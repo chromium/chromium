@@ -21,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -72,14 +73,14 @@ public final class AutofillVcnEnrollBottomSheetLifecycleTest {
     @Test
     public void cannotBeginTwice() {
         when(mLayoutStateProvider.isLayoutVisible(LayoutType.BROWSING)).thenReturn(true);
-        mLifecycle.begin(/* onEndOfLifecycle= */ () -> {});
+        mLifecycle.begin(/* onEndOfLifecycle= */ CallbackUtils.emptyRunnable());
 
         assertFalse(mLifecycle.canBegin());
     }
 
     @Test
     public void testBeginStartsObservingLayoutAndTabModelSelectorSupplier() {
-        mLifecycle.begin(/* onEndOfLifecycle= */ () -> {});
+        mLifecycle.begin(/* onEndOfLifecycle= */ CallbackUtils.emptyRunnable());
 
         verify(mLayoutStateProvider).addObserver(eq(mLifecycle));
         verify(mTabModelSelectorSupplier).addObserver(eq(mLifecycle));

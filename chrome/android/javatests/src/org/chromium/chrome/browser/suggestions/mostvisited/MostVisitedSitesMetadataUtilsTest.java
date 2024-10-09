@@ -17,6 +17,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -100,7 +101,7 @@ public class MostVisitedSitesMetadataUtilsTest {
     @Test
     @SmallTest
     public void testCurrentNotNull() {
-        mMostVisitedSitesMetadataUtils.setCurrentTaskForTesting(() -> {});
+        mMostVisitedSitesMetadataUtils.setCurrentTaskForTesting(CallbackUtils.emptyRunnable());
 
         Runnable task1 =
                 () ->

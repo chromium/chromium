@@ -20,6 +20,7 @@ import androidx.browser.trusted.TrustedWebActivityDisplayMode.ImmersiveMode;
 
 import dagger.Lazy;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.blink.mojom.DisplayMode;
@@ -571,7 +572,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 tab,
                 tabModelSelector,
                 mEphemeralTabCoordinatorSupplier,
-                () -> {},
+                CallbackUtils.emptyRunnable(),
                 () -> mSnackbarManager.get(),
                 () -> mBottomSheetController.get(),
                 mModalDialogManagerSupplier);

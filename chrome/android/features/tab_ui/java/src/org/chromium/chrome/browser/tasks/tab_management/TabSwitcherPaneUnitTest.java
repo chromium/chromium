@@ -46,6 +46,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -647,7 +648,7 @@ public class TabSwitcherPaneUnitTest {
 
         TabSwitcherCustomViewManager customViewManager =
                 mTabSwitcherPane.getTabSwitcherCustomViewManager();
-        Runnable r = () -> {};
+        Runnable r = CallbackUtils.emptyRunnable();
         assertTrue(customViewManager.requestView(mCustomView, r, true));
         verify(mCustomViewManagerDelegate).addCustomView(mCustomView, r, true);
 

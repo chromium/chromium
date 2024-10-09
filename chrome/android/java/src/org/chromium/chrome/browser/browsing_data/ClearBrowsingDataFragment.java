@@ -36,6 +36,7 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -801,7 +802,7 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
                         ((SnackbarManager.SnackbarManageable) getActivity()).getSnackbarManager(),
                         SignoutReason.USER_CLICKED_SIGNOUT_FROM_CLEAR_BROWSING_DATA_PAGE,
                         /* showConfirmDialog= */ true,
-                        () -> {});
+                        CallbackUtils.emptyRunnable());
     }
 
     /**

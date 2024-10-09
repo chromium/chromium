@@ -28,6 +28,7 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 import org.robolectric.shadow.api.Shadow;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -83,7 +84,10 @@ public class SurveyUiDelegateBridgeUnitTest {
         SurveyUiDelegate delegate = SurveyUiDelegateBridge.create(TEST_NATIVE_POINTER);
         assertNotNull(delegate);
 
-        delegate.showSurveyInvitation(() -> {}, () -> {}, () -> {});
+        delegate.showSurveyInvitation(
+                CallbackUtils.emptyRunnable(),
+                CallbackUtils.emptyRunnable(),
+                CallbackUtils.emptyRunnable());
         verify(mMockSurveyUiDelegateBridge)
                 .showSurveyInvitation(eq(TEST_NATIVE_POINTER), notNull(), notNull(), notNull());
 

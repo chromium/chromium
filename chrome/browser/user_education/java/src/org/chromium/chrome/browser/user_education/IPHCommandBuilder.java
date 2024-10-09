@@ -11,6 +11,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
@@ -19,7 +20,6 @@ import org.chromium.ui.widget.ViewRectProvider;
 
 /** Builder for (@see IPHCommand.java). Use this instead of constructing an IPHCommand directly. */
 public class IPHCommandBuilder {
-    private static final Runnable NO_OP_RUNNABLE = () -> {};
 
     private Resources mResources;
     private final String mFeatureName;
@@ -249,14 +249,14 @@ public class IPHCommandBuilder {
     public IPHCommand build() {
         try (TraceEvent te = TraceEvent.scoped("IPHCommandBuilder::build")) {
             if (mOnDismissCallback == null) {
-                mOnDismissCallback = NO_OP_RUNNABLE;
+                mOnDismissCallback = CallbackUtils.emptyRunnable();
             }
             if (mOnShowCallback == null) {
-                mOnShowCallback = NO_OP_RUNNABLE;
+                mOnShowCallback = CallbackUtils.emptyRunnable();
             }
 
             if (mOnBlockedCallback == null) {
-                mOnBlockedCallback = NO_OP_RUNNABLE;
+                mOnBlockedCallback = CallbackUtils.emptyRunnable();
             }
 
             return new IPHCommand(

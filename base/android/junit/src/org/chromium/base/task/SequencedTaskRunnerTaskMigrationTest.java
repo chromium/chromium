@@ -12,6 +12,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 
@@ -67,8 +68,8 @@ public class SequencedTaskRunnerTaskMigrationTest {
         SequencedTaskRunnerImpl taskRunner = new SequencedTaskRunnerImpl(TaskTraits.USER_VISIBLE);
 
         taskRunner.execute(preNativeTask);
-        // Dummy task that is planned to be executed on native pool.
-        taskRunner.execute(() -> {});
+        // Empty task that is planned to be executed on native pool.
+        taskRunner.execute(CallbackUtils.emptyRunnable());
 
         // Ensure that first task is running on pre-native thread pool: avoid race between
         // starting the task and requesting native task runner's init.

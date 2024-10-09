@@ -30,6 +30,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -128,7 +129,7 @@ public class StatusIndicatorTest {
                                 Color.WHITE,
                                 Color.BLACK,
                                 Color.BLACK,
-                                () -> {}));
+                                CallbackUtils.emptyRunnable()));
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         // The Android view should be visible.
@@ -254,7 +255,12 @@ public class StatusIndicatorTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mStatusIndicatorCoordinator.updateContent(
-                            "Exit status", null, Color.WHITE, Color.BLACK, Color.BLACK, () -> {});
+                            "Exit status",
+                            null,
+                            Color.WHITE,
+                            Color.BLACK,
+                            Color.BLACK,
+                            CallbackUtils.emptyRunnable());
                     mStatusIndicatorCoordinator
                             .getMediatorForTesting()
                             .finishAnimationsForTesting();
@@ -333,7 +339,12 @@ public class StatusIndicatorTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mStatusIndicatorCoordinator.updateContent(
-                            "Exit status", null, Color.WHITE, Color.BLACK, Color.BLACK, () -> {});
+                            "Exit status",
+                            null,
+                            Color.WHITE,
+                            Color.BLACK,
+                            Color.BLACK,
+                            CallbackUtils.emptyRunnable());
                     mStatusIndicatorCoordinator
                             .getMediatorForTesting()
                             .finishAnimationsForTesting();

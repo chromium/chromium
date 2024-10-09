@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileProviderUtils;
 import org.chromium.base.FileUtils;
@@ -542,7 +543,7 @@ public class ExportFlow implements ExportFlowInterface {
                         } else if (which == AlertDialog.BUTTON_NEGATIVE) {
                             // Re-enable exporting, the current one was just cancelled.
                             mDelegate.onExportFlowCanceled();
-                            mProgressBarManager.hide(() -> {});
+                            mProgressBarManager.hide(CallbackUtils.emptyRunnable());
                             mExportState = ExportState.INACTIVE;
                             mExportFileUri = null;
                         }

@@ -29,6 +29,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
 import org.chromium.base.CallbackController;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordUserAction;
@@ -877,7 +878,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 mSnackbarManagerSupplier.get(),
                 SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
                 /* showConfirmDialog= */ false,
-                () -> {},
+                CallbackUtils.emptyRunnable(),
                 /* suppressSnackbar= */ true);
     }
 
@@ -896,7 +897,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 mSnackbarManagerSupplier.get(),
                 SignoutReason.USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS,
                 /* showConfirmDialog= */ false,
-                () -> {});
+                CallbackUtils.emptyRunnable());
     }
 
     private void showAdressesNotEncryptedDialog(Preference preference) {
@@ -1129,7 +1130,7 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                                 ? SignoutReason.USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS
                                 : SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
                         /* showConfirmDialog= */ false,
-                        () -> {});
+                        CallbackUtils.emptyRunnable());
                 return;
             case SyncError.PASSPHRASE_REQUIRED:
                 displayPassphraseDialog();

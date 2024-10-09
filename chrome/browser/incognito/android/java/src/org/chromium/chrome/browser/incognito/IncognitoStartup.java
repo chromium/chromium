@@ -11,6 +11,7 @@ import android.app.ActivityManager.RecentTaskInfo;
 import android.util.Pair;
 
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
@@ -36,7 +37,7 @@ public class IncognitoStartup {
                         componentNames)) {
             ProfileManager.destroyWhenAppropriate(profileProvider.getOffTheRecordProfile(false));
         } else {
-            cookiesFetcher.restoreCookies(() -> {});
+            cookiesFetcher.restoreCookies(CallbackUtils.emptyRunnable());
         }
     }
 

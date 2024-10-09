@@ -21,6 +21,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceScreen;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -255,7 +256,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                                     mSnackbarManagerSupplier.get(),
                                     SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
                                     /* showConfirmDialog= */ false,
-                                    () -> {});
+                                    CallbackUtils.emptyRunnable());
                             return true;
                         }
 
@@ -273,7 +274,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                                     mSnackbarManagerSupplier.get(),
                                     SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
                                     /* showConfirmDialog= */ false,
-                                    () -> {});
+                                    CallbackUtils.emptyRunnable());
                         } else {
                             IdentityServicesProvider.get()
                                     .getSigninManager(getProfile())

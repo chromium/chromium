@@ -40,6 +40,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 import org.robolectric.annotation.LooperMode.Mode;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisabledTest;
@@ -313,7 +314,7 @@ public class PartialCustomTabDisplayManagerTest {
                 "Bottom-Sheet should be the active strategy",
                 PartialCustomTabType.BOTTOM_SHEET,
                 displayManager.getActiveStrategyType());
-        displayManager.onShowSoftInput(() -> {});
+        displayManager.onShowSoftInput(CallbackUtils.emptyRunnable());
         PartialCustomTabTestRule.waitForAnimationToFinish();
         assertTrue(displayManager.getSizeStrategyForTesting().isMaximized());
 

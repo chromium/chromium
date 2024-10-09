@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.usage_stats;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.Promise;
 import org.chromium.chrome.browser.notifications.NotificationSuspender;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -81,7 +82,7 @@ public class SuspensionTracker {
                                 // on the returned promise, so they expect
                                 // there to be one on the root promise.
                             },
-                            (e) -> {});
+                            CallbackUtils.emptyCallback());
                 });
 
         mWritePromise = newWritePromise;

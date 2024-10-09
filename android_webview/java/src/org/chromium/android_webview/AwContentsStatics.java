@@ -18,6 +18,7 @@ import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.ProductionSupportedFlagList;
 import org.chromium.android_webview.safe_browsing.AwSafeBrowsingSafeModeAction;
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
@@ -94,7 +95,7 @@ public class AwContentsStatics {
     public static void setSafeBrowsingAllowlist(List<String> urls, Callback<Boolean> callback) {
         String[] urlArray = urls.toArray(new String[urls.size()]);
         if (callback == null) {
-            callback = b -> {};
+            callback = CallbackUtils.emptyCallback();
         }
         AwContentsStaticsJni.get().setSafeBrowsingAllowlist(urlArray, callback);
     }

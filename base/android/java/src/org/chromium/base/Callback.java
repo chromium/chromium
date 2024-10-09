@@ -17,6 +17,7 @@ import java.util.Optional;
  */
 @FunctionalInterface
 public interface Callback<T> {
+
     /** Invoked with the result of a computation. */
     void onResult(T result);
 

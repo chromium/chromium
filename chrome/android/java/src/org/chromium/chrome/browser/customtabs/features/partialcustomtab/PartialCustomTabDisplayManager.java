@@ -18,6 +18,7 @@ import androidx.annotation.AnimRes;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
@@ -271,7 +272,9 @@ public class PartialCustomTabDisplayManager extends CustomTabHeightStrategy
         // |calculatePartialCustomTabType| won't need the object and will early out.
         Supplier<Integer> displayWidthDpSupplier =
                 () -> {
-                    var versionCompat = PartialCustomTabVersionCompat.create(activity, () -> {});
+                    var versionCompat =
+                            PartialCustomTabVersionCompat.create(
+                                    activity, CallbackUtils.emptyRunnable());
                     return versionCompat.getDisplayWidthDp();
                 };
         @PartialCustomTabType

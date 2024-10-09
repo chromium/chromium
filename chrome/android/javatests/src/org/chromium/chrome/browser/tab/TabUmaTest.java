@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.jank_tracker.PlaceholderJankTracker;
 import org.chromium.base.metrics.RecordHistogram;
@@ -82,7 +83,7 @@ public class TabUmaTest {
                 visibilityDelegate,
                 new ObservableSupplierImpl<ShareDelegate>(),
                 null,
-                () -> {},
+                CallbackUtils.emptyRunnable(),
                 rootUiCoordinator.getBottomSheetController(),
                 /* chromeActivityNativeDelegate= */ cta,
                 /* isCustomTab= */ false,

@@ -10,6 +10,7 @@ import android.view.View;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.Log;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuItemDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
@@ -84,7 +85,7 @@ public class AwContextMenuHelper {
 
                     mCurrentPopulator.onItemSelected(result);
                 };
-        Runnable onMenuShown = () -> {};
+        Runnable onMenuShown = CallbackUtils.emptyRunnable();
         Runnable onMenuClosed =
                 () -> {
                     mCurrentContextMenu = null;

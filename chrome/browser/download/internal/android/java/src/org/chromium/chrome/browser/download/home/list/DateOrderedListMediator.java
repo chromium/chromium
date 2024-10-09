@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.DiscardableReferencePool;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -412,7 +413,7 @@ class DateOrderedListMediator implements BackPressHandler {
             OfflineItem item, int iconWidthPx, int iconHeightPx, VisualsCallback callback) {
         if (!UiUtils.canHaveThumbnails(item) || iconWidthPx == 0 || iconHeightPx == 0) {
             mHandler.post(() -> callback.onVisualsAvailable(item.id, null));
-            return () -> {};
+            return CallbackUtils.emptyRunnable();
         }
 
         ThumbnailRequest request =

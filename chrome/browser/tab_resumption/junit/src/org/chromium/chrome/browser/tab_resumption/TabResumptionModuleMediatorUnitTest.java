@@ -31,6 +31,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
@@ -131,8 +132,8 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupportExtended {
                             ++mReloadSessionCounter;
                             mReloadSessionCallbackHelper.notifyCalled();
                         },
-                        /* statusChangedCallback= */ () -> {},
-                        /* seeMoreLinkClickCallback= */ () -> {},
+                        /* statusChangedCallback= */ CallbackUtils.emptyRunnable(),
+                        /* seeMoreLinkClickCallback= */ CallbackUtils.emptyRunnable(),
                         /* suggestionClickCallback= */ mClickCallback);
         mMediator.startSession(mDataProvider);
 

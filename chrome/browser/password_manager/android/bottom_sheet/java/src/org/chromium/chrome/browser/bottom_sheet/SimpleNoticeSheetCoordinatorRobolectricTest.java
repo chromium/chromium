@@ -27,6 +27,7 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
@@ -78,7 +79,9 @@ public class SimpleNoticeSheetCoordinatorRobolectricTest {
                         .with(SimpleNoticeSheetProperties.SHEET_TITLE, sTitle)
                         .with(SimpleNoticeSheetProperties.SHEET_TEXT, sText)
                         .with(SimpleNoticeSheetProperties.BUTTON_TITLE, sButtonText)
-                        .with(SimpleNoticeSheetProperties.BUTTON_ACTION, () -> {})
+                        .with(
+                                SimpleNoticeSheetProperties.BUTTON_ACTION,
+                                CallbackUtils.emptyRunnable())
                         .build();
         mCoordinator.showSheet(model);
         verify(mBottomSheetController).requestShowContent(any(), anyBoolean());

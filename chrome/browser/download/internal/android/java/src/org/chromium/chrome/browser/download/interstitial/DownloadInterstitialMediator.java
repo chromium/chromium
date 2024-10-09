@@ -24,6 +24,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Pair;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
@@ -105,7 +106,7 @@ class DownloadInterstitialMediator {
         mModel.set(ListProperties.CALLBACK_CANCEL, this::onCancelItem);
         mModel.set(ListProperties.CALLBACK_SHARE, this::onShareItem);
         mModel.set(ListProperties.CALLBACK_REMOVE, this::onDeleteItem);
-        mModel.set(ListProperties.PROVIDER_VISUALS, (i, w, h, c) -> (() -> {}));
+        mModel.set(ListProperties.PROVIDER_VISUALS, (i, w, h, c) -> CallbackUtils.emptyRunnable());
         mModel.set(ListProperties.CALLBACK_RENAME, this::onRenameItem);
         mModel.set(ListProperties.CALLBACK_SELECTION, (item) -> {});
 

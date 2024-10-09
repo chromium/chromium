@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.usage_stats;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.Promise;
 
 import java.util.ArrayList;
@@ -36,14 +37,13 @@ public class TokenTracker {
         // call variants of then() that don't take a single callback. These variants set an
         // exception handler on the returned promise, so they expect there to be one on the root
         // promise.
-        mRootPromise.except((e) -> {});
+        mRootPromise.except(CallbackUtils.emptyCallback());
     }
 
     /**
-     * Associate a new token with FQDN, and return that token.
-     * If we're already tracking FQDN, return the corresponding token.
-     * The returned promise will be fulfilled once persistence succeeds, and rejected if persistence
-     * fails.
+     * Associate a new token with FQDN, and return that token. If we're already tracking FQDN,
+     * return the corresponding token. The returned promise will be fulfilled once persistence
+     * succeeds, and rejected if persistence fails.
      */
     public Promise<String> startTrackingWebsite(String fqdn) {
         Promise<String> writePromise = new Promise<>();
@@ -70,7 +70,7 @@ public class TokenTracker {
                                 }
                             });
                 },
-                (e) -> {});
+                CallbackUtils.emptyCallback());
 
         return writePromise;
     }
@@ -104,7 +104,7 @@ public class TokenTracker {
                                 }
                             });
                 },
-                (e) -> {});
+                CallbackUtils.emptyCallback());
 
         return writePromise;
     }

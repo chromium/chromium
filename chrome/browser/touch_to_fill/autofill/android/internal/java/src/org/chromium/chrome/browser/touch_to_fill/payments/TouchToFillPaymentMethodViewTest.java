@@ -68,6 +68,7 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -758,7 +759,7 @@ public class TouchToFillPaymentMethodViewTest {
                                                     VIRTUAL_CARD,
                                                     NON_ACCEPTABLE_VIRTUAL_CARD_SUGGESTION,
                                                     new FillableItemCollectionInfo(1, 1),
-                                                    () -> {})));
+                                                    CallbackUtils.emptyRunnable())));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -970,7 +971,8 @@ public class TouchToFillPaymentMethodViewTest {
             CreditCard card,
             AutofillSuggestion suggestion,
             FillableItemCollectionInfo collectionInfo) {
-        return createCardSuggestionModel(card, suggestion, collectionInfo, () -> {});
+        return createCardSuggestionModel(
+                card, suggestion, collectionInfo, CallbackUtils.emptyRunnable());
     }
 
     private static PropertyModel createCardSuggestionModel(
@@ -995,7 +997,7 @@ public class TouchToFillPaymentMethodViewTest {
     }
 
     private static PropertyModel createIbanModel(Iban iban) {
-        return createIbanModel(iban, () -> {});
+        return createIbanModel(iban, CallbackUtils.emptyRunnable());
     }
 
     private static PropertyModel createIbanModel(Iban iban, Runnable actionCallback) {

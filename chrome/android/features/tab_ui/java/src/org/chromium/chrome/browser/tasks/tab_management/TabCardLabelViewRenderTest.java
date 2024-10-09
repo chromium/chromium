@@ -27,6 +27,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
@@ -65,7 +66,7 @@ public class TabCardLabelViewRenderTest {
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     private TabCardLabelView mTabCardLabelView;
-    private Runnable mCancelRunnable = () -> {};
+    private Runnable mCancelRunnable = CallbackUtils.emptyRunnable();
 
     public TabCardLabelViewRenderTest(boolean nightModeEnabled) {
         NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);

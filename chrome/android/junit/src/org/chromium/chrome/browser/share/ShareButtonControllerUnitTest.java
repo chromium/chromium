@@ -28,6 +28,7 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -104,7 +105,7 @@ public final class ShareButtonControllerUnitTest {
                         () -> mTracker,
                         mShareUtils,
                         mModalDialogManager,
-                        () -> {});
+                        CallbackUtils.emptyRunnable());
 
         TrackerFactory.setTrackerForTests(mTracker);
     }

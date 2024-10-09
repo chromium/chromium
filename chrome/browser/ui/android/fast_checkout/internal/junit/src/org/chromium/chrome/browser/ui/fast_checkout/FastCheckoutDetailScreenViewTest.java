@@ -42,6 +42,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -236,7 +237,7 @@ public class FastCheckoutDetailScreenViewTest {
                         AutofillProfileItemProperties.create(
                                 sSampleProfile1,
                                 /* isSelected= */ true,
-                                /* onClickListener= */ () -> {})));
+                                /* onClickListener= */ CallbackUtils.emptyRunnable())));
 
         models.add(
                 new ListItem(
@@ -244,7 +245,7 @@ public class FastCheckoutDetailScreenViewTest {
                         AutofillProfileItemProperties.create(
                                 emptyFieldsProfile,
                                 /* isSelected= */ false,
-                                /* onClickListener= */ () -> {})));
+                                /* onClickListener= */ CallbackUtils.emptyRunnable())));
 
         mModel.set(DETAIL_SCREEN_MODEL_LIST, models);
 
@@ -296,21 +297,21 @@ public class FastCheckoutDetailScreenViewTest {
                         CreditCardItemProperties.create(
                                 sSampleCard1,
                                 /* isSelected= */ true,
-                                /* onClickListener= */ () -> {})));
+                                /* onClickListener= */ CallbackUtils.emptyRunnable())));
         models.add(
                 new ListItem(
                         DetailItemType.CREDIT_CARD,
                         CreditCardItemProperties.create(
                                 sampleCardNoName,
                                 /* isSelected= */ false,
-                                /* onClickListener= */ () -> {})));
+                                /* onClickListener= */ CallbackUtils.emptyRunnable())));
         models.add(
                 new ListItem(
                         DetailItemType.CREDIT_CARD,
                         CreditCardItemProperties.create(
                                 sampleCardEmptyFields,
                                 /* isSelected= */ false,
-                                /* onClickListener= */ () -> {})));
+                                /* onClickListener= */ CallbackUtils.emptyRunnable())));
         mModel.set(DETAIL_SCREEN_MODEL_LIST, models);
 
         // Check that the sheet is populated properly.

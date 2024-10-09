@@ -26,6 +26,7 @@ import androidx.core.util.Function;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
@@ -141,7 +142,9 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                 @Override
                 public void goBack() {
                     if (mTabActionState == TabActionState.CLOSABLE) {
-                        hide(ANIM_DURATION_MS, /* animationFinishCallback= */ () -> {});
+                        hide(
+                                ANIM_DURATION_MS,
+                                /* animationFinishCallback= */ CallbackUtils.emptyRunnable());
                     } else {
                         moveToState(TabActionState.CLOSABLE);
                     }
@@ -157,7 +160,8 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                 if (count == 0 && !ArchivedTabsDialogCoordinator.this.mIsOpeningLastTab) {
                     // Post task to allow the last tab to be unregistered.
                     PostTask.postTask(
-                            TaskTraits.UI_DEFAULT, () -> hide(ANIM_DURATION_MS, () -> {}));
+                            TaskTraits.UI_DEFAULT,
+                            () -> hide(ANIM_DURATION_MS, CallbackUtils.emptyRunnable()));
                     return;
                 }
                 updateTitle();
@@ -214,7 +218,9 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                     mSnackbarManager.popParentViewFromOverrideStack(mSnackbarOverrideToken);
                     // In case we were hidden by TabListEditor in some other case, force the
                     // animation to finish.
-                    animateOut(/* duration= */ 0, /* animationFinishCallback= */ () -> {});
+                    animateOut(
+                            /* duration= */ 0,
+                            /* animationFinishCallback= */ CallbackUtils.emptyRunnable());
                     mRootView.removeView(mDialogView);
                 }
 
@@ -351,7 +357,9 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
     public void destroy() {
         if (mTabListEditorCoordinator != null
                 && mTabListEditorCoordinator.getController().isVisible()) {
-            hide(/* animationDuration= */ 0, /* animationFinishCallback= */ () -> {});
+            hide(
+                    /* animationDuration= */ 0,
+                    /* animationFinishCallback= */ CallbackUtils.emptyRunnable());
         }
     }
 

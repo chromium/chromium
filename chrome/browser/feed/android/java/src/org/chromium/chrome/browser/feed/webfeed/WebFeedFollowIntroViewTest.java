@@ -22,6 +22,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -65,7 +66,7 @@ public final class WebFeedFollowIntroViewTest {
         FeatureList.setTestFeatures(new HashMap<String, Boolean>());
 
         // Build the class under test.
-        Runnable noOp = () -> {};
+        Runnable noOp = CallbackUtils.emptyRunnable();
         mWebFeedFollowIntroView =
                 new WebFeedFollowIntroView(
                         mActivity,
@@ -81,7 +82,8 @@ public final class WebFeedFollowIntroViewTest {
         FeatureList.TestValues baseTestValues = new FeatureList.TestValues();
         FeatureList.setTestValues(baseTestValues);
 
-        mWebFeedFollowIntroView.showIPH(mHelper, () -> {}, () -> {});
+        mWebFeedFollowIntroView.showIPH(
+                mHelper, CallbackUtils.emptyRunnable(), CallbackUtils.emptyRunnable());
         verify(mHelper, times(1)).requestShowIPH(any());
     }
 }
