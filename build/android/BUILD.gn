@@ -54,6 +54,7 @@ if (enable_java_templates) {
       "java/src/org/chromium/build/annotations/MockedInTests.java",
       "java/src/org/chromium/build/annotations/ServiceImpl.java",
       "java/src/org/chromium/build/annotations/UsedByReflection.java",
+      "java/src/org/chromium/build/annotations/UsedReflectively.java",
     ]
 
     jar_excluded_patterns = [ "*/build/BuildConfig.class" ]

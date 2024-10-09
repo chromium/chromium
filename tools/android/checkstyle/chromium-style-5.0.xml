@@ -92,6 +92,7 @@
         <message key="name.invalidPattern" value="Method names should start with a lower case letter (e.g. getWidth())"/>
     </module>
     <module name="ParameterName">
+      <property name="format" value="^(unused_)?[a-z][a-zA-Z0-9]*$"/>
       <property name="severity" value="error"/>
     </module>
     <module name="LocalFinalVariableName">
