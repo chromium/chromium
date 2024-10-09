@@ -179,28 +179,6 @@ clang_v8_toolchain("clang_x64_v8_loong64") {
   }
 }
 
-# In a LaCrOS build, this toolchain is intended to be used as an alternate
-# toolchain to build Ash-Chrome in a subdirectory.
-# This is a test-only toolchain.
-clang_toolchain("ash_clang_x64") {
-  toolchain_args = {
-    # This turns the toolchain into the "Linux ChromeOS" build
-    current_os = "chromeos"
-    target_os = "chromeos"
-    current_cpu = current_cpu
-
-    # This turns off all of the LaCrOS-specific flags.
-    also_build_ash_chrome = false
-    chromeos_is_browser_only = false
-    use_clang_coverage = false
-
-    # Never build ash with asan. It is too slow for builders and cause
-    # tests being flaky.
-    is_asan = false
-    is_lsan = false
-  }
-}
-
 gcc_toolchain("x64") {
   cc = "gcc"
   cxx = "g++"

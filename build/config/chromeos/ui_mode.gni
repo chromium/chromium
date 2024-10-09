@@ -17,13 +17,6 @@ declare_args() {
   # is_chromeos_lacros = chromeos_product == "browser"
   # is_chromeos_ash = chromeos_product == "ash"
   chromeos_is_browser_only = false
-
-  # Setting this to true when building linux Lacros-chrome will cause it to
-  # *also* build linux ash-chrome in a subdirectory using an alternate
-  # toolchain.
-  # Don't set this unless you're sure you want it, because it'll double
-  # your build time.
-  also_build_ash_chrome = false
 }
 
 # is_chromeos_{ash,lacros} is used to specify that it is specific to either

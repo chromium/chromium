@@ -214,12 +214,6 @@ test("midi_unittests") {
   if (use_alsa && use_udev) {
     sources += [ "midi_manager_alsa_unittest.cc" ]
   }
-
-  # On LaCrOS, tests use ash-chrome as a window manager, thus the dependency.
-  # On other platforms, this target should not require the Chrome to run.
-  if (!is_chromeos_lacros) {
-    assert_no_deps = [ "//chrome" ]
-  }
 }
 
 fuzzer_test("midi_webmidi_data_validator_fuzzer") {

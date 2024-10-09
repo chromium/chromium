@@ -14,13 +14,6 @@ gn_args.config(
 )
 
 gn_args.config(
-    name = "also_build_ash_chrome",
-    args = {
-        "also_build_ash_chrome": True,
-    },
-)
-
-gn_args.config(
     name = "amd64-generic",
     args_file = "//build/args/chromeos/amd64-generic.gni",
 )

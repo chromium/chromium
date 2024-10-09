@@ -12128,21 +12128,6 @@ if (is_chromeos_ash) {
       "//ui/base:test_support",
     ]
 
-    # crbug.com/1223310 There is an issue that for the second toolchain the built
-    # nacl_irt_x86_64.nexe is not in subfolder ash_clang_x64.
-    # This action will copy the related files to the correct folder.
-    if (enable_nacl && current_cpu == "x64" && also_build_ash_chrome) {
-      copy("copy_files_to_ash_clang_x64") {
-        sources = [
-          "${root_build_dir}/nacl_irt_x86_64.nexe",
-          "${root_build_dir}/nacl_irt_x86_64.nexe.debug",
-        ]
-        outputs = [ "${root_build_dir}/ash_clang_x64/{{source_file_part}}" ]
-        deps = [ "//ppapi/native_client:irt" ]
-      }
-      deps += [ ":copy_files_to_ash_clang_x64" ]
-    }
-
     if (use_ozone) {
       deps += [ "//ui/ozone" ]
     }

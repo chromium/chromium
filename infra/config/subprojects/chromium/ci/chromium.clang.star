@@ -729,7 +729,6 @@ ci.builder(
         configs = [
             "lacros_on_linux",
             "release",
-            "also_build_ash_chrome",
             "clang_tot",
             "x64",
         ],
@@ -769,7 +768,6 @@ ci.builder(
         configs = [
             "lacros_on_linux",
             "debug",
-            "also_build_ash_chrome",
             "clang_tot",
             "x64",
         ],

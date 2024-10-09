@@ -1074,9 +1074,6 @@ template("test") {
 
       write_runtime_deps = _runtime_deps_file
       deps += [ ":$_gen_runner_target" ]
-      if (_use_ash_chrome && also_build_ash_chrome) {
-        data_deps += [ "//chrome/test:test_ash_chrome(//build/toolchain/linux:ash_clang_x64)" ]
-      }
     }
   } else if (!is_nacl) {
     if (is_mac || is_win) {
