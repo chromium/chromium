@@ -3234,6 +3234,16 @@ const char kSensitiveContentDescription[] =
     "are present on the page, the entire content area is redacted during "
     "screen sharing, screen recording, and similar actions. This feature "
     "works only on Android V or above.";
+
+const char kSensitiveContentWhileSwitchingTabsName[] =
+    "Redact sensitive content while switching tabs during screen sharing, "
+    "screen recording, and similar actions";
+
+const char kSensitiveContentWhileSwitchingTabsDescription[] =
+    "When enabled, if a tab switching surface provides a preview of a tab that "
+    "contains sensitive content, the screen is redacted during screen sharing, "
+    "screen recording, and similar actions. This feature works only on Android "
+    "V or above, and if #sensitive-content is also enabled.";
 #endif  // BUILDFLAG(IS_ANDROID)
 
 const char kSettingsAppNotificationSettingsName[] =

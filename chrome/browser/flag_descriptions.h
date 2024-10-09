@@ -1848,6 +1848,9 @@ extern const char kSendTabToSelfIOSPushNotificationsDescription[];
 #if BUILDFLAG(IS_ANDROID)
 extern const char kSensitiveContentName[];
 extern const char kSensitiveContentDescription[];
+
+extern const char kSensitiveContentWhileSwitchingTabsName[];
+extern const char kSensitiveContentWhileSwitchingTabsDescription[];
 #endif  // BUILDFLAG(IS_ANDROID)
 
 extern const char kSettingsAppNotificationSettingsName[];

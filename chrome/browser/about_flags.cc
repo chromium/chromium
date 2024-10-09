@@ -11600,6 +11600,13 @@ const FeatureEntry kFeatureEntries[] = {
          sensitive_content::features::kSensitiveContent,
          kSensitiveContentVariations,
          "SensitiveContent")},
+
+    {"sensitive-content-while-switching-tabs",
+     flag_descriptions::kSensitiveContentWhileSwitchingTabsName,
+     flag_descriptions::kSensitiveContentWhileSwitchingTabsDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         sensitive_content::features::kSensitiveContentWhileSwitchingTabs)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"data-sharing", flag_descriptions::kDataSharingName,

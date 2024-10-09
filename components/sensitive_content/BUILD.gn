@@ -28,6 +28,7 @@ source_set("sensitive_content") {
     sources += [
       "android/android_sensitive_content_client.cc",
       "android/android_sensitive_content_client.h",
+      "android/sensitive_content_feature_map.cc",
     ]
     deps += [ ":jni_headers" ]
   }
@@ -61,8 +62,12 @@ component("features") {
 
 if (is_android) {
   android_library("java") {
-    sources = [ "android/java/src/org/chromium/chrome/browser/sensitive_content/SensitiveContentClient.java" ]
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/sensitive_content/SensitiveContentClient.java",
+      "android/java/src/org/chromium/chrome/browser/sensitive_content/SensitiveContentFeatureMap.java",
+    ]
     deps = [
+      ":sensitive_content_features_java",
       "//base:base_java",
       "//content/public/android:content_full_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
@@ -74,7 +79,10 @@ if (is_android) {
 
   generate_jni("jni_headers") {
     visibility = [ ":*" ]
-    sources = [ "android/java/src/org/chromium/chrome/browser/sensitive_content/SensitiveContentClient.java" ]
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/sensitive_content/SensitiveContentClient.java",
+      "android/java/src/org/chromium/chrome/browser/sensitive_content/SensitiveContentFeatureMap.java",
+    ]
   }
 
   robolectric_library("junit") {
