@@ -194,8 +194,7 @@ ASPasskeyAssertionCredential* PerformPasskeyAssertion(
   // Update the credential's last used time.
   credential.lastUsedTime =
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds();
-  // TODO(crbug.com/355047898): Save the last used time of the credential to
-  //                            update it the next time Chrome syncs.
+  SaveCredential(credential);
 
   return [ASPasskeyAssertionCredential
       credentialWithUserHandle:credential.userId

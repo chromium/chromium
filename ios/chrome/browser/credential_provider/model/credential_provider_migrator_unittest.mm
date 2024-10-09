@@ -94,7 +94,8 @@ TEST_F(CredentialProviderMigratorTest, Migration) {
   id<Credential> credential = TestPasswordCredential();
   [store addCredential:credential];
   [store saveDataWithCompletion:^(NSError* error) {
-    EXPECT_TRUE(error == nil);
+    EXPECT_TRUE(error == nil)
+        << SysNSStringToUTF8([error localizedDescription]);
   }];
   EXPECT_EQ(store.credentials.count, 1u);
 
@@ -112,7 +113,8 @@ TEST_F(CredentialProviderMigratorTest, Migration) {
   __block BOOL blockWaitCompleted = false;
   [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
     EXPECT_TRUE(success);
-    EXPECT_FALSE(error);
+    EXPECT_TRUE(error == nil)
+        << SysNSStringToUTF8([error localizedDescription]);
     blockWaitCompleted = true;
   }];
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^bool {
@@ -155,7 +157,8 @@ TEST_F(CredentialProviderMigratorTest, PasskeyMigration) {
   __block BOOL blockWaitCompleted = false;
   [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
     EXPECT_TRUE(success);
-    EXPECT_FALSE(error);
+    EXPECT_TRUE(error == nil)
+        << SysNSStringToUTF8([error localizedDescription]);
     blockWaitCompleted = true;
   }];
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^bool {
@@ -182,6 +185,40 @@ TEST_F(CredentialProviderMigratorTest, PasskeyMigration) {
   EXPECT_EQ(passkeys[0].creation_time(), expected.creation_time());
   EXPECT_EQ(passkeys[0].last_used_time_windows_epoch_micros(),
             expected.last_used_time_windows_epoch_micros());
+
+  // Try to only update the last used time.
+  credential.lastUsedTime = kJan1st2024 + 10;
+  [store updateCredential:credential];
+  [store saveDataWithCompletion:^(NSError* error) {
+    EXPECT_TRUE(error == nil)
+        << SysNSStringToUTF8([error localizedDescription]);
+  }];
+  EXPECT_EQ(store.credentials.count, 1u);
+
+  blockWaitCompleted = false;
+  [migrator startMigrationWithCompletion:^(BOOL success, NSError* error) {
+    EXPECT_TRUE(success);
+    EXPECT_TRUE(error == nil)
+        << SysNSStringToUTF8([error localizedDescription]);
+    blockWaitCompleted = true;
+  }];
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^bool {
+    return blockWaitCompleted;
+  }));
+
+  // Reload temp store.
+  store =
+      [[UserDefaultsCredentialStore alloc] initWithUserDefaults:user_defaults_
+                                                            key:store_key_];
+  // Verify credentials are empty
+  EXPECT_EQ(store.credentials.count, 0u);
+
+  // Verify that we still have only 1 passkey and that its last used time was
+  // updated.
+  passkeys = test_passkey_model_.GetAllPasskeys();
+  EXPECT_EQ(passkeys.size(), 1u);
+  EXPECT_EQ(passkeys[0].last_used_time_windows_epoch_micros(),
+            credential.lastUsedTime);
 }
 
 }  // namespace

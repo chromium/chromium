@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/credential_provider/model/credential_provider_migrator.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "components/sync/protocol/webauthn_credential_specifics.pb.h"
@@ -81,9 +82,26 @@ typedef enum : NSInteger {
         continue;
       }
 
-      sync_pb::WebauthnCredentialSpecifics passkey =
-          PasskeyFromCredential(credential);
-      _passkeyStore->CreatePasskey(passkey);
+      std::string rpId = base::SysNSStringToUTF8(credential.rpId);
+      std::string credentialId(
+          static_cast<const char*>(credential.credentialId.bytes),
+          credential.credentialId.length);
+      std::optional<sync_pb::WebauthnCredentialSpecifics> credential_specifics =
+          _passkeyStore->GetPasskeyByCredentialId(rpId, credentialId);
+      if (credential_specifics) {
+        // If the passkey already exists, only update its last used time, and
+        // only do so if it's newer.
+        if (credential_specifics->last_used_time_windows_epoch_micros() <
+            credential.lastUsedTime) {
+          _passkeyStore->UpdatePasskeyTimestamp(
+              credentialId, base::Time::FromDeltaSinceWindowsEpoch(
+                                base::Microseconds(credential.lastUsedTime)));
+        }
+      } else {
+        sync_pb::WebauthnCredentialSpecifics passkey =
+            PasskeyFromCredential(credential);
+        _passkeyStore->CreatePasskey(passkey);
+      }
     } else {
       password_manager::PasswordForm form =
           PasswordFormFromCredential(credential);
