@@ -385,6 +385,7 @@ try_.builder(
             "ci/linux-chromeos-dbg",
         ],
     ),
+    ssd = 1,
 )
 
 try_.builder(
