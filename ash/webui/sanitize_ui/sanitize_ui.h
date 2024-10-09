@@ -25,6 +25,7 @@ class SanitizeDialogUIConfig : public ChromeOSWebUIConfig<SanitizeDialogUI> {
       : ChromeOSWebUIConfig(content::kChromeUIScheme,
                             ash::kChromeUISanitizeAppHost,
                             create_controller_func) {}
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
 // The WebDialogUI for chrome://sanitize
@@ -45,6 +46,7 @@ class SanitizeDialogUI : public ui::MojoWebDialogUI {
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
+
   // The color change handler notifies the WebUI when the color provider
   // changes.
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;

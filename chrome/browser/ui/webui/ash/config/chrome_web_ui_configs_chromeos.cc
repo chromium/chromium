@@ -122,7 +122,6 @@
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/kiosk/vision/webui/ui_controller.h"
-#include "components/user_manager/user_manager.h"
 #if !defined(OFFICIAL_BUILD)
 #include "ash/webui/sample_system_web_app_ui/sample_system_web_app_ui.h"
 #if !defined(USE_REAL_DBUS_CLIENTS)
@@ -216,19 +215,6 @@ std::unique_ptr<content::WebUIConfig> MakeEcheAppUIConfig() {
       });
 
   return std::make_unique<eche_app::EcheAppUIConfig>(create_controller_func);
-}
-
-bool IsSanitizeAllowed() {
-  if (!user_manager::UserManager::IsInitialized()) {
-    return false;
-  }
-  auto* manager = user_manager::UserManager::Get();
-  bool is_child_user = manager->IsLoggedInAsChildUser();
-  bool is_guest_mode_active = manager->IsLoggedInAsGuest() ||
-                              manager->IsLoggedInAsManagedGuestSession();
-  return !ash::InstallAttributes::Get()->IsEnterpriseManaged() &&
-         !is_guest_mode_active && !is_child_user &&
-         base::FeatureList::IsEnabled(ash::features::kSanitize);
 }
 
 void RegisterAshChromeWebUIConfigs() {
@@ -338,12 +324,9 @@ void RegisterAshChromeWebUIConfigs() {
       MakeComponentConfigWithDelegate<RecorderAppUIConfig, RecorderAppUI,
                                       ChromeRecorderAppUIDelegate>());
   map.AddWebUIConfig(std::make_unique<RemoteMaintenanceCurtainUIConfig>());
-  if (IsSanitizeAllowed()) {
-    map.AddWebUIConfig(
-        MakeComponentConfigWithDelegate<SanitizeDialogUIConfig,
-                                        SanitizeDialogUI,
-                                        ChromeSanitizeUIDelegate>());
-  }
+  map.AddWebUIConfig(
+      MakeComponentConfigWithDelegate<SanitizeDialogUIConfig, SanitizeDialogUI,
+                                      ChromeSanitizeUIDelegate>());
   map.AddWebUIConfig(
       MakeComponentConfigWithDelegate<ScanningUIConfig, ScanningUI,
                                       ChromeScanningAppDelegate>());

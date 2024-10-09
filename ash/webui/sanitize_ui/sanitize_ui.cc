@@ -9,11 +9,15 @@
 
 #include "ash/webui/sanitize_ui/sanitize_ui.h"
 
+#include "ash/constants/ash_features.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/grit/ash_sanitize_app_resources.h"
 #include "ash/webui/grit/ash_sanitize_app_resources_map.h"
 #include "ash/webui/sanitize_ui/sanitize_ui_delegate.h"
 #include "ash/webui/sanitize_ui/url_constants.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/resources/grit/webui_resources.h"
@@ -28,6 +32,20 @@ bool ShowDone(const GURL url) {
 
 }  // namespace
 namespace ash {
+
+bool SanitizeDialogUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  auto* session_controller = Shell::Get()->session_controller();
+  bool is_managed_user = session_controller->IsActiveAccountManaged();
+  bool is_child_user = session_controller->IsUserChild();
+  bool is_guest_mode_active = session_controller->IsUserGuest();
+  bool is_managed_device =
+      !ash::InstallAttributes::Get()->IsEnterpriseManaged();
+  return ChromeOSWebUIConfig::IsWebUIEnabled(browser_context) &&
+         is_managed_device && !is_managed_user && !is_guest_mode_active &&
+         !is_child_user &&
+         base::FeatureList::IsEnabled(ash::features::kSanitize);
+}
 
 class SanitizeSettingsResetter : public sanitize_ui::mojom::SettingsResetter {
  public:
