@@ -232,9 +232,10 @@ source_set("cronet_static") {
 }
 
 config("hide_all_but_jni_onload_and_cronet") {
-  ldflags = [ "-Wl,--version-script=" +
-              rebase_path("android_only_jni_onload_and_cronet_exports.lst",
-                          root_out_dir) ]
+  _version_script = "android_only_jni_onload_and_cronet_exports.lst"
+  inputs = [ _version_script ]
+  ldflags =
+      [ "-Wl,--version-script=" + rebase_path(_version_script, root_out_dir) ]
 }
 
 _cronet_shared_lib_name = "cronet.$chrome_version_full"
