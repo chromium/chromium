@@ -250,7 +250,7 @@ bool GPUAdapter::isCompatibilityMode() const {
 }
 
 void GPUAdapter::OnRequestDeviceCallback(
-    ScriptState* script_state,
+    GPUDevice* device,
     const GPUDeviceDescriptor* descriptor,
     ScriptPromiseResolver<GPUDevice>* resolver,
     wgpu::RequestDeviceStatus status,
@@ -273,11 +273,7 @@ void GPUAdapter::OnRequestDeviceCallback(
       }
       is_consumed_ = true;
 
-      ExecutionContext* execution_context =
-          ExecutionContext::From(script_state);
-      auto* device = MakeGarbageCollected<GPUDevice>(
-          execution_context, GetDawnControlClient(), this,
-          std::move(dawn_device), descriptor, device_lost_info);
+      device->Initialize(dawn_device, descriptor, device_lost_info);
 
       if (device_lost_info) {
         // Ensure the Dawn device is marked as lost as well.
@@ -288,9 +284,10 @@ void GPUAdapter::OnRequestDeviceCallback(
 
       resolver->Resolve(device);
 
-      ukm::builders::ClientRenderingAPI(execution_context->UkmSourceID())
+      ukm::builders::ClientRenderingAPI(
+          device->GetExecutionContext()->UkmSourceID())
           .SetGPUDevice(static_cast<int>(true))
-          .Record(execution_context->UkmRecorder());
+          .Record(device->GetExecutionContext()->UkmRecorder());
       break;
     }
 
@@ -298,15 +295,13 @@ void GPUAdapter::OnRequestDeviceCallback(
     case wgpu::RequestDeviceStatus::Unknown:
     case wgpu::RequestDeviceStatus::InstanceDropped:
       if (dawn_device) {
-        // Immediately force the device to be lost.
-        auto* device_lost_info = MakeGarbageCollected<GPUDeviceLostInfo>(
-            wgpu::DeviceLostReason::Unknown,
-            StringFromASCIIAndUTF8(error_message));
-        ExecutionContext* execution_context =
-            ExecutionContext::From(script_state);
-        auto* device = MakeGarbageCollected<GPUDevice>(
-            execution_context, GetDawnControlClient(), this,
-            std::move(dawn_device), descriptor, device_lost_info);
+        // A device provided with an error is already a lost device on the Dawn
+        // side, reflect that by resolving the lost property immediately.
+        device->Initialize(dawn_device, descriptor,
+                           MakeGarbageCollected<GPUDeviceLostInfo>(
+                               wgpu::DeviceLostReason::Unknown,
+                               StringFromASCIIAndUTF8(error_message)));
+
         // Resolve with the lost device.
         resolver->Resolve(device);
       } else {
@@ -371,9 +366,21 @@ ScriptPromise<GPUDevice> GPUAdapter::requestDevice(
     dawn_desc.defaultQueue.label = queueLabel.c_str();
   }
 
+  // Create a GPUDevice without the handle, so that we can set up its callbacks
+  // in the wgpu::DeviceDescriptor.
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  auto* device = MakeGarbageCollected<GPUDevice>(
+      execution_context, GetDawnControlClient(), this, descriptor->label());
+  dawn_desc.SetUncapturedErrorCallback(
+      device->error_callback()->UnboundCallback(),
+      device->error_callback()->AsUserdata());
+  dawn_desc.SetDeviceLostCallback(wgpu::CallbackMode::AllowSpontaneous,
+                                  device->lost_callback()->UnboundCallback(),
+                                  device->lost_callback()->AsUserdata());
+
   auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
       WTF::BindOnce(&GPUAdapter::OnRequestDeviceCallback, WrapPersistent(this),
-                    WrapPersistent(script_state), WrapPersistent(descriptor))));
+                    WrapPersistent(device), WrapPersistent(descriptor))));
 
   GetHandle().RequestDevice(&dawn_desc, wgpu::CallbackMode::AllowSpontaneous,
                             callback->UnboundCallback(),

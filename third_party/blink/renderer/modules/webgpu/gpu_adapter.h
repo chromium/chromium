@@ -63,7 +63,7 @@ class GPUAdapter final : public ScriptWrappable, DawnObject<wgpu::Adapter> {
   bool isXRCompatible() const { return is_xr_compatible_; }
 
  private:
-  void OnRequestDeviceCallback(ScriptState* script_state,
+  void OnRequestDeviceCallback(GPUDevice* device,
                                const GPUDeviceDescriptor* descriptor,
                                ScriptPromiseResolver<GPUDevice>* resolver,
                                wgpu::RequestDeviceStatus status,
