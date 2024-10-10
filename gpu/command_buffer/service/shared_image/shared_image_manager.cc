@@ -35,6 +35,7 @@
 #endif
 
 #if BUILDFLAG(IS_OZONE)
+#include "gpu/config/gpu_finch_features.h"
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
@@ -55,15 +56,6 @@
 namespace gpu {
 
 namespace {
-
-#if BUILDFLAG(IS_OZONE)
-// TODO(crbug.com/330865436): It turns out that `supports_overlays` is
-// currently set only in the browser process; we need to ensure that it is set
-// in the GPU process before we can re-enable this feature.
-BASE_FEATURE(kSupportScanoutOnOzoneOnlyIfOverlaysSupported,
-             "SupportScanoutOnOzoneOnlyIfOverlaysSupported",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
 
 // `DCHECKS` and dumps without crashing that `backing`'s usage overlaps with
 // `usage`.
@@ -619,7 +611,7 @@ bool SharedImageManager::SupportsScanoutImages() {
   // buffers can actually be scanned out. This killswitch guards the rollout.
   // TODO(crbug.com/330865436): Remove killswitch post-safe rollout.
   if (base::FeatureList::IsEnabled(
-          kSupportScanoutOnOzoneOnlyIfOverlaysSupported)) {
+          features::kSharedImageSupportScanoutOnOzoneOnlyIfOverlaysSupported)) {
     return ui::OzonePlatform::GetInstance()
         ->GetPlatformRuntimeProperties()
         .supports_overlays;

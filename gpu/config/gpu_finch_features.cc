@@ -322,6 +322,17 @@ const base::FeatureParam<std::string> kDrDcBlockListByAndroidBuildFP{
     &kEnableDrDc, "BlockListByAndroidBuildFP", ""};
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_OZONE)
+// On Ozone, compute SharedImage scanout support based on overlays being
+// supported rather than native pixmaps being supported.
+// TODO(crbug.com/330865436): It turns out that `supports_overlays` is
+// currently set only in the browser process; we need to ensure that it is set
+// in the GPU process before we can re-enable this feature.
+BASE_FEATURE(kSharedImageSupportScanoutOnOzoneOnlyIfOverlaysSupported,
+             "SharedImageSupportScanoutOnOzoneOnlyIfOverlaysSupported",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 // Enable Skia Graphite. This will use the Dawn backend by default, but can be
 // overridden with command line flags for testing on non-official developer
 // builds. See --skia-graphite-backend flag in gpu_switches.h.
