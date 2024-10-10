@@ -24,6 +24,10 @@ struct MappedMemoryRegion {
     PRIVATE = 1 << 3,  // If set, region is private, otherwise it is shared.
   };
 
+  MappedMemoryRegion();
+  MappedMemoryRegion(const MappedMemoryRegion&);
+  MappedMemoryRegion(MappedMemoryRegion&&);
+
   // The address range [start,end) of mapped memory.
   uintptr_t start;
   uintptr_t end;
@@ -36,6 +40,10 @@ struct MappedMemoryRegion {
 
   // Bitmask of read/write/execute/private/shared permissions.
   uint8_t permissions;
+
+  uint8_t dev_major;
+  uint8_t dev_minor;
+  long inode;
 
   // Name of the file mapped into memory.
   //

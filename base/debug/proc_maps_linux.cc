@@ -25,6 +25,10 @@
 namespace base {
 namespace debug {
 
+MappedMemoryRegion::MappedMemoryRegion() = default;
+MappedMemoryRegion::MappedMemoryRegion(const MappedMemoryRegion&) = default;
+MappedMemoryRegion::MappedMemoryRegion(MappedMemoryRegion&&) = default;
+
 // Scans |proc_maps| starting from |pos| returning true if the gate VMA was
 // found, otherwise returns false.
 static bool ContainsGateVMA(std::string* proc_maps, size_t pos) {
@@ -130,6 +134,10 @@ bool ParseProcMaps(const std::string& input,
       DPLOG(WARNING) << "sscanf failed for line: " << line;
       return false;
     }
+
+    region.inode = inode;
+    region.dev_major = dev_major;
+    region.dev_minor = dev_minor;
 
     region.permissions = 0;
 
