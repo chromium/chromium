@@ -62,6 +62,7 @@ class IDBOpenDBRequest;
 class IDBRequest;
 class IDBRequestQueueItem;
 class ScriptState;
+class V8IDBTransactionDurability;
 
 class MODULES_EXPORT IDBTransaction final
     : public EventTarget,
@@ -131,7 +132,7 @@ class MODULES_EXPORT IDBTransaction final
 
   // Implement the IDBTransaction IDL
   V8IDBTransactionMode mode() const;
-  const String& durability() const;
+  V8IDBTransactionDurability durability() const;
   DOMStringList* objectStoreNames() const;
   IDBDatabase& db() { return *database_; }
   DOMException* error() const { return error_.Get(); }

@@ -44,6 +44,7 @@
 #include "third_party/blink/public/platform/web_url_response.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_idb_request_ready_state.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
@@ -198,7 +199,7 @@ TEST_F(IDBRequestTest, EventsAfterEarlyDeathStop) {
       IDBRequest::Create(scope.GetScriptState(), store_.Get(),
                          transaction_.Get(), IDBRequest::AsyncTraceState());
 
-  EXPECT_EQ(request->readyState(), "pending");
+  EXPECT_EQ(request->readyState(), V8IDBRequestReadyState::Enum::kPending);
   ASSERT_TRUE(!scope.GetExceptionState().HadException());
   ASSERT_TRUE(request->transaction());
   scope.GetExecutionContext()->NotifyContextDestroyed();
@@ -252,7 +253,7 @@ TEST_F(IDBRequestTest, EventsAfterEarlyDeathStopWithQueuedResult) {
   IDBRequest* request =
       IDBRequest::Create(scope.GetScriptState(), store_.Get(),
                          transaction_.Get(), IDBRequest::AsyncTraceState());
-  EXPECT_EQ(request->readyState(), "pending");
+  EXPECT_EQ(request->readyState(), V8IDBRequestReadyState::Enum::kPending);
   ASSERT_TRUE(!scope.GetExceptionState().HadException());
   ASSERT_TRUE(request->transaction());
   request->HandleResponse(CreateIDBValueForTesting(scope.GetIsolate(), true));
@@ -295,8 +296,8 @@ TEST_F(IDBRequestTest, MAYBE_EventsAfterEarlyDeathStopWithTwoQueuedResults) {
   IDBRequest* request2 =
       IDBRequest::Create(scope.GetScriptState(), store_.Get(),
                          transaction_.Get(), IDBRequest::AsyncTraceState());
-  EXPECT_EQ(request1->readyState(), "pending");
-  EXPECT_EQ(request2->readyState(), "pending");
+  EXPECT_EQ(request1->readyState(), V8IDBRequestReadyState::Enum::kPending);
+  EXPECT_EQ(request2->readyState(), V8IDBRequestReadyState::Enum::kPending);
   ASSERT_TRUE(!scope.GetExceptionState().HadException());
   ASSERT_TRUE(request1->transaction());
   ASSERT_TRUE(request2->transaction());
@@ -399,7 +400,7 @@ TEST_F(IDBRequestTest, ConnectionsAfterStopping) {
         scope.GetScriptState(), mojo::NullAssociatedReceiver(),
         std::move(transaction_remote), kTransactionId, kVersion,
         IDBRequest::AsyncTraceState(), mojo::NullRemote());
-    EXPECT_EQ(request->readyState(), "pending");
+    EXPECT_EQ(request->readyState(), V8IDBRequestReadyState::Enum::kPending);
     std::unique_ptr<IDBFactoryClient> factory_client =
         request->CreateFactoryClient();
 
@@ -427,7 +428,7 @@ TEST_F(IDBRequestTest, ConnectionsAfterStopping) {
         scope.GetScriptState(), mojo::NullAssociatedReceiver(),
         std::move(transaction_remote), kTransactionId, kVersion,
         IDBRequest::AsyncTraceState(), mojo::NullRemote());
-    EXPECT_EQ(request->readyState(), "pending");
+    EXPECT_EQ(request->readyState(), V8IDBRequestReadyState::Enum::kPending);
     std::unique_ptr<IDBFactoryClient> factory_client =
         request->CreateFactoryClient();
 

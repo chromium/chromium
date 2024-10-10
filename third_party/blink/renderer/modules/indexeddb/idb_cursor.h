@@ -86,7 +86,7 @@ class MODULES_EXPORT IDBCursor : public ScriptWrappable {
       v8::Local<v8::Object> wrapper) override;
 
   // Implement the IDL
-  const String& direction() const;
+  V8IDBCursorDirection direction() const;
   ScriptValue key(ScriptState*);
   ScriptValue primaryKey(ScriptState*);
   ScriptValue value(ScriptState*);

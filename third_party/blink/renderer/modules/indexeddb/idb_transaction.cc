@@ -32,6 +32,7 @@
 #include "base/format_macros.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable_creation_key.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_idb_transaction_durability.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -598,16 +599,19 @@ V8IDBTransactionMode IDBTransaction::mode() const {
   }
 }
 
-const String& IDBTransaction::durability() const {
+V8IDBTransactionDurability IDBTransaction::durability() const {
   switch (durability_) {
     case mojom::blink::IDBTransactionDurability::Default:
-      return indexed_db_names::kDefault;
+      return V8IDBTransactionDurability(
+          V8IDBTransactionDurability::Enum::kDefault);
 
     case mojom::blink::IDBTransactionDurability::Strict:
-      return indexed_db_names::kStrict;
+      return V8IDBTransactionDurability(
+          V8IDBTransactionDurability::Enum::kStrict);
 
     case mojom::blink::IDBTransactionDurability::Relaxed:
-      return indexed_db_names::kRelaxed;
+      return V8IDBTransactionDurability(
+          V8IDBTransactionDurability::Enum::kRelaxed);
   }
 
   NOTREACHED_IN_MIGRATION();

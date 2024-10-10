@@ -60,8 +60,9 @@ class DOMException;
 class ExceptionState;
 class IDBCursor;
 class IDBValue;
-class V8UnionIDBCursorOrIDBIndexOrIDBObjectStore;
 class ScriptState;
+class V8IDBRequestReadyState;
+class V8UnionIDBCursorOrIDBIndexOrIDBObjectStore;
 
 class MODULES_EXPORT IDBRequest : public EventTarget,
                                   public ActiveScriptWrappable<IDBRequest>,
@@ -237,7 +238,7 @@ class MODULES_EXPORT IDBRequest : public EventTarget,
   // Defined in the IDL
   enum ReadyState { PENDING = 1, DONE = 2, kEarlyDeath = 3 };
 
-  const String& readyState() const;
+  V8IDBRequestReadyState readyState() const;
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(success, kSuccess)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(error, kError)

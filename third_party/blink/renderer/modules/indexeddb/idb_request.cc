@@ -39,6 +39,7 @@
 #include "third_party/blink/public/platform/web_blob_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_idb_request_ready_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_idbcursor_idbindex_idbobjectstore.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_idbindex_idbobjectstore.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -320,18 +321,18 @@ const IDBRequest::Source* IDBRequest::source(ScriptState* script_state) const {
   return source_.Get();
 }
 
-const String& IDBRequest::readyState() const {
+V8IDBRequestReadyState IDBRequest::readyState() const {
   if (!GetExecutionContext()) {
     DCHECK(ready_state_ == DONE || ready_state_ == kEarlyDeath);
-    return indexed_db_names::kDone;
+    return V8IDBRequestReadyState(V8IDBRequestReadyState::Enum::kDone);
   }
 
   DCHECK(ready_state_ == PENDING || ready_state_ == DONE);
 
   if (ready_state_ == PENDING)
-    return indexed_db_names::kPending;
+    return V8IDBRequestReadyState(V8IDBRequestReadyState::Enum::kPending);
 
-  return indexed_db_names::kDone;
+  return V8IDBRequestReadyState(V8IDBRequestReadyState::Enum::kDone);
 }
 
 void IDBRequest::Abort(bool queue_dispatch) {

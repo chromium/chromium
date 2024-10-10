@@ -487,24 +487,21 @@ void IDBCursor::ResetCursorPrefetchCaches(int64_t transaction_id,
   }
 }
 
-const String& IDBCursor::direction() const {
+V8IDBCursorDirection IDBCursor::direction() const {
   switch (direction_) {
     case mojom::IDBCursorDirection::Next:
-      return indexed_db_names::kNext;
+      return V8IDBCursorDirection(V8IDBCursorDirection::Enum::kNext);
 
     case mojom::IDBCursorDirection::NextNoDuplicate:
-      return indexed_db_names::kNextunique;
+      return V8IDBCursorDirection(V8IDBCursorDirection::Enum::kNextunique);
 
     case mojom::IDBCursorDirection::Prev:
-      return indexed_db_names::kPrev;
+      return V8IDBCursorDirection(V8IDBCursorDirection::Enum::kPrev);
 
     case mojom::IDBCursorDirection::PrevNoDuplicate:
-      return indexed_db_names::kPrevunique;
-
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return indexed_db_names::kNext;
+      return V8IDBCursorDirection(V8IDBCursorDirection::Enum::kPrevunique);
   }
+  NOTREACHED();
 }
 
 void IDBCursor::AdvanceImpl(uint32_t count, IDBRequest* request) {
