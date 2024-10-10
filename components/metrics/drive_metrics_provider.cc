@@ -6,14 +6,10 @@
 
 #include "base/base_paths.h"
 #include "base/check_op.h"
-#include "base/files/drive_info.h"
-#include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -72,12 +68,6 @@ void DriveMetricsProvider::QuerySeekPenalty(
     return;
 
   response->success = HasSeekPenalty(path, &response->has_seek_penalty);
-  std::optional<base::DriveInfo> drive_info = base::GetFileDriveInfo(path);
-  response->success_base =
-      drive_info.has_value() && drive_info->has_seek_penalty.has_value();
-  if (response->success_base) {
-    response->has_seek_penalty_base = *drive_info->has_seek_penalty;
-  }
 }
 
 void DriveMetricsProvider::GotDriveMetrics(
@@ -91,22 +81,8 @@ void DriveMetricsProvider::GotDriveMetrics(
 void DriveMetricsProvider::FillDriveMetrics(
     const DriveMetricsProvider::SeekPenaltyResponse& response,
     metrics::SystemProfileProto::Hardware::Drive* drive) {
-  if (response.success) {
+  if (response.success)
     drive->set_has_seek_penalty(response.has_seek_penalty);
-  }
-
-  base::UmaHistogramEnumeration(
-      "UMA.SeekPenaltyResult.Provider",
-      !response.success
-          ? SeekPenaltyRecord::kUnknown
-          : (response.has_seek_penalty ? SeekPenaltyRecord::kTrue
-                                       : SeekPenaltyRecord::kFalse));
-  base::UmaHistogramEnumeration(
-      "UMA.SeekPenaltyResult.Base",
-      !response.success_base
-          ? SeekPenaltyRecord::kUnknown
-          : (response.has_seek_penalty_base ? SeekPenaltyRecord::kTrue
-                                            : SeekPenaltyRecord::kFalse));
 }
 
 }  // namespace metrics
