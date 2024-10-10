@@ -23,6 +23,8 @@ component("media") {
     "cdm_result_promise_helper.h",
     "cdm_session_adapter.cc",
     "cdm_session_adapter.h",
+    "create_cdm_uma_helper.cc",
+    "create_cdm_uma_helper.h",
     "interval_map.h",
     "key_system_config_selector.cc",
     "multi_buffer.cc",

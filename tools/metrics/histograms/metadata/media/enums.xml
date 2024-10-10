@@ -407,8 +407,8 @@ chromium-metrics-reviews@google.com.
       label="Disconnection error. The remote process dropped the callback.
              e.g. in case of crash."/>
   <int value="14" label="EME use is not allowed on unique origins."/>
-  <int value="15" label="MediaDrmBridge creation failed."/>
-  <int value="16" label="MediaCrypto not available."/>
+  <int value="15" label="Android: MediaDrmBridge creation failed."/>
+  <int value="16" label="Android: MediaCrypto not available."/>
   <int value="17" label="CrOs: Only one instance allowed."/>
   <int value="18" label="CrOs: Insufficient GPU memory available."/>
   <int value="19" label="CrOs: Verified Access is disabled."/>
