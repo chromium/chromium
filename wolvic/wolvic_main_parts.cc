@@ -25,6 +25,9 @@ int WolvicMainParts::PreEarlyInitialization() {
 }
 
 int WolvicMainParts::PreMainMessageLoopRun() {
+  // Required before profile creation).
+  PreProfileInit();
+
   set_browser_context(new WolvicBrowserContext(false));
   set_off_the_record_browser_context(new WolvicBrowserContext(true));
   content::ShellDevToolsManagerDelegate::StartHttpHandler(
@@ -33,6 +36,13 @@ int WolvicMainParts::PreMainMessageLoopRun() {
   PostBrowserStart();
 
   return 0;
+}
+
+void WolvicMainParts::PreProfileInit() {
+  EnsureBrowserContextKeyedServiceFactoriesBuilt();
+}
+
+void WolvicMainParts::EnsureBrowserContextKeyedServiceFactoriesBuilt() {
 }
 
 void WolvicMainParts::PostMainMessageLoopRun() {

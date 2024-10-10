@@ -27,6 +27,7 @@ class WolvicMainParts : public content::BrowserMainParts {
 
   // Inspired from the //chrome ChromeBrowserMainParts, but we don't need such complex Parts achitectuture in Wolvic.
   // TODO(jfernandez): Do we need to implement an actual Profile feature ?
+  void PreProfileInit();
   void PostBrowserStart();
 
   WolvicBrowserContext* browser_context() { return browser_context_.get(); }
@@ -37,6 +38,13 @@ class WolvicMainParts : public content::BrowserMainParts {
  private:
   void set_browser_context(WolvicBrowserContext*);
   void set_off_the_record_browser_context(WolvicBrowserContext*);
+
+  // Instantiates all the KeyedService factories used in Wolvic, which is
+  // especially important for services that should be created at profile
+  // creation time as compared to lazily on first access.
+  // TODO(jfernandez): Inspired by //chrome/profiles ChromeBrowserMainExtraPartProfiles, but we may need to simplify
+  // this logic if we don't need to depend on a Profiles logic.
+  static void EnsureBrowserContextKeyedServiceFactoriesBuilt();
 
   std::unique_ptr<WolvicBrowserContext> browser_context_;
   std::unique_ptr<WolvicBrowserContext> off_the_record_browser_context_;
