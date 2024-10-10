@@ -223,7 +223,6 @@ class WebViewImpl : public WebView {
                                          const std::string& context_id,
                                          const std::string& object_group_name,
                                          const std::string& expected_loader_id,
-                                         bool w3c_compliant,
                                          const Timeout& timeout,
                                          base::Value& arg,
                                          base::Value::List& nodes);
@@ -231,7 +230,6 @@ class WebViewImpl : public WebView {
                                          const std::string& context_id,
                                          const std::string& object_group_name,
                                          const std::string& expected_loader_id,
-                                         bool w3c_compliant,
                                          const Timeout& timeout,
                                          base::Value::Dict& arg_dict,
                                          base::Value::List& nodes);
@@ -239,7 +237,6 @@ class WebViewImpl : public WebView {
                                          const std::string& context_id,
                                          const std::string& object_group_name,
                                          const std::string& expected_loader_id,
-                                         bool w3c_compliant,
                                          const Timeout& timeout,
                                          base::Value::List& arg_list,
                                          base::Value::List& nodes);

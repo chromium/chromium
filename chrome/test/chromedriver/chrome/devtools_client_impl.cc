@@ -49,6 +49,8 @@ const char kNoNodeWithGivenIdFoundError[] = "No node with given id found";
 const char kExecutionContextWasDestroyed[] = "Execution context was destroyed.";
 const char kInspectedTargetNavigatedOrClosed[] =
     "Inspected target navigated or closed";
+const char kFrameDosNotBelongToTarget[] =
+    "Frame with the given id does not belong to the target.";
 
 static constexpr int kSessionNotFoundInspectorCode = -32001;
 static constexpr int kCdpMethodNotFoundCode = -32601;
@@ -571,6 +573,7 @@ Status DevToolsClientImpl::SetUpDevTools() {
         "window.cdc_adoQpoasnfa76pfcZLmcfl_Proxy = window.Proxy;"
         "window.cdc_adoQpoasnfa76pfcZLmcfl_Symbol = window.Symbol;"
         "window.cdc_adoQpoasnfa76pfcZLmcfl_JSON = window.JSON;"
+        "window.cdc_adoQpoasnfa76pfcZLmcfl_Window = window.Window;"
         "}) ();";
     params.Set("source", script);
     Status status = SendCommandAndIgnoreResponse(
@@ -1468,7 +1471,8 @@ Status ParseInspectorError(const std::string& error_json) {
     } else if (error_message == kInspectorPushPermissionError ||
                error_message == kInspectorOpaqueOrigins) {
       return Status(kInvalidArgument, error_message);
-    } else if (error_message == kInspectorNoSuchFrameError) {
+    } else if (error_message == kInspectorNoSuchFrameError ||
+               error_message == kFrameDosNotBelongToTarget) {
       // As the server returns the generic error code: SERVER_ERROR = -32000
       // we have to rely on the error message content.
       return Status(kNoSuchFrame, error_message);

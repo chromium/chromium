@@ -602,6 +602,8 @@ TEST(GetBackendNodeId, ElementW3C) {
   WebViewImpl view(client_ptr->GetId(), true, nullptr, &browser_info,
                    std::move(client_uptr), std::nullopt,
                    PageLoadStrategy::kEager, true);
+  view.GetFrameTracker()->SetContextIdForFrame("root", "irrelevant");
+  view.GetFrameTracker()->SetContextIdForFrame("good", "irrelevant");
   {
     // Good 1
     base::Value::Dict node_ref;
@@ -654,6 +656,8 @@ TEST(GetBackendNodeId, ShadowRootW3C) {
   WebViewImpl view(client_ptr->GetId(), true, nullptr, &browser_info,
                    std::move(client_uptr), std::nullopt,
                    PageLoadStrategy::kEager, true);
+  view.GetFrameTracker()->SetContextIdForFrame("root", "irrelevant");
+  view.GetFrameTracker()->SetContextIdForFrame("good", "irrelevant");
   {
     // Good 1
     base::Value::Dict node_ref;

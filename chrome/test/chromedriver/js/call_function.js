@@ -36,6 +36,16 @@ var ELEMENT_KEY = 'ELEMENT';
  */
 const SHADOW_ROOT_KEY = 'shadow-6066-11e4-a52e-4f735466cecf';
 const W3C_ELEMENT_KEY = 'element-6066-11e4-a52e-4f735466cecf';
+const FRAME_KEY = 'frame-075b-4da1-b6ba-e579c2d3230a';
+const WINDOW_KEY = 'window-fcc6-11e5-b4f8-330a88ab9d7f';
+
+const REF_KEYS = [
+    W3C_ELEMENT_KEY,
+    SHADOW_ROOT_KEY,
+    FRAME_KEY,
+    WINDOW_KEY,
+    ELEMENT_KEY,
+];
 
 /**
  * True if using W3C Element references.
@@ -64,8 +74,10 @@ function newError(message, code) {
 }
 
 function isNodeReachable(node) {
+  const Window = window.cdc_adoQpoasnfa76pfcZLmcfl_Window || window.Window;
   const nodeRoot = getNodeRootThroughAnyShadows(node);
-  return (nodeRoot == document.documentElement.parentNode);
+  return (nodeRoot == document.documentElement.parentNode)
+      || (nodeRoot instanceof Window);
 }
 
 /**
@@ -245,7 +257,14 @@ function preprocessResult(item, seen, nodes) {
     return serializationGuard(ret);
   }
 
-  // TODO(crbug.com/40229283): Implement WindowProxy serialization.
+  const Window = item.cdc_adoQpoasnfa76pfcZLmcfl_Window || item.Window
+      || window.cdc_adoQpoasnfa76pfcZLmcfl_Window || window.Window;
+  if (item instanceof Window) {
+    const ret = {};
+    ret[WINDOW_KEY] = nodes.length;
+    nodes.push(item);
+    return serializationGuard(ret);
+  }
 
   if (Object.hasOwn(item, 'toJSON') && typeof item.toJSON === 'function') {
       // Not guarded because we want item.toJSON to be invoked by
@@ -274,15 +293,16 @@ function resolveReferencesRecursive(item, seen, nodes) {
       typeof item === 'string' ||
       typeof item === 'function')
     return item;
-  if (item.hasOwnProperty(ELEMENT_KEY) ||
-      item.hasOwnProperty(SHADOW_ROOT_KEY)) {
-    let idx = item[ELEMENT_KEY];
-    if (item.hasOwnProperty(SHADOW_ROOT_KEY))
-      idx = item[SHADOW_ROOT_KEY];
+  for (const key of REF_KEYS) {
+    if (!item.hasOwnProperty(key))
+      continue;
+    let idx = item[key];
     if (idx < 0 || idx >= nodes.length) {
       throw newError('unable to resove node reference. '
           + 'Node index is out of range.', StatusCode.JAVA_SCRIPT_ERROR);
     }
+    if (key == FRAME_KEY)
+      return nodes[idx].contentWindow;
     return nodes[idx];
   }
   if (isCollection(item) || typeof item === 'object')
@@ -331,7 +351,6 @@ function callFunction(func, args, w3c, nodes) {
   if (w3c) {
     w3cEnabled = true;
     ELEMENT_KEY = W3C_ELEMENT_KEY;
-
   }
 
   function buildError(error) {

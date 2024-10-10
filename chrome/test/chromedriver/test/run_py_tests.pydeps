@@ -83,9 +83,11 @@
 ../client/chromedriver.py
 ../client/command_executor.py
 ../client/exceptions.py
+../client/framereference.py
 ../client/webelement.py
 ../client/webshadowroot.py
 ../client/websocket_connection.py
+../client/windowreference.py
 ../server/server.py
 ../util.py
 run_py_tests.py

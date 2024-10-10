@@ -47,9 +47,11 @@ sys.path.remove(_PARENT_DIR)
 
 sys.path.insert(1, _CLIENT_DIR)
 import chromedriver
-import websocket_connection
+import framereference
 import webelement
 import webshadowroot
+import websocket_connection
+import windowreference
 from websocket_connection import WebSocketConnection
 sys.path.remove(_CLIENT_DIR)
 
@@ -101,6 +103,8 @@ _NEGATIVE_FILTER = [
     'ChromeDriverSiteIsolation.testClickNavigateRemoteToSameRemote',
     # crbug.com/350916212
     'BidiTest.testFocusInFirstTab',
+    # crbug.com/372153090
+    'ChromeDriverTest.testCreateWindowFromScript',
 ]
 
 
@@ -4110,6 +4114,58 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
         break
       except chromedriver.NoSuchElement:
         pass
+
+  def testSerializeWindowProxy(self):
+    self._driver.Load(self.GetHttpUrlForFile(
+        '/chromedriver/outer.html'))
+    window = self._driver.ExecuteScript('window.magic_123="22"; return window')
+    self.assertTrue(isinstance(window, windowreference.WindowReference))
+    self.assertEqual('22',self._driver.ExecuteScript(
+            'return arguments[0].magic_123',
+            window))
+    self.assertTrue(self._driver.ExecuteScript(
+            'return arguments[0] === window',
+            window))
+
+  def testSerializeFrame(self):
+    self._driver.Load(self.GetHttpUrlForFile(
+        '/chromedriver/outer.html'))
+    self.assertEqual('Inner iframe',self._driver.ExecuteScript(
+            'return window.frames[0].document.title'))
+    frame = self._driver.ExecuteScript(
+            'return window.frames[0]')
+    self.assertTrue(isinstance(frame, framereference.FrameReference))
+    self.assertTrue(self._driver.ExecuteScript(
+            'return arguments[0] === window.frames[0]',
+            frame))
+    self.assertEqual('Inner iframe',self._driver.ExecuteScript(
+            'return arguments[0].document.title',
+            frame))
+    # Navigation must invalidate the reference
+    self._driver.Load(self.GetHttpUrlForFile(
+        '/chromedriver/outer.html'))
+    with self.assertRaises(chromedriver.NoSuchFrame):
+        self._driver.ExecuteScript(
+                'return arguments[0] === window.frames[0]',
+                frame)
+
+  def testCreateWindowFromScript(self):
+    new_window = self._driver.ExecuteScript(
+      'window.foo = window.open(); return window.foo;')
+    self.assertTrue(self._driver.ExecuteScript(
+        'return (arguments[0] == window.foo)',
+        new_window))
+    self.assertTrue(self._driver.ExecuteScript(
+        'return (arguments[0] instanceof Window)',
+        new_window))
+    self.assertTrue(
+        self.WaitForCondition(
+            lambda: len(self._driver.GetWindowHandles()) == 2))
+    new_window = self._driver.ExecuteScript(
+            'arguments[0].close()', new_window);
+    self.assertTrue(
+        self.WaitForCondition(
+            lambda: len(self._driver.GetWindowHandles()) == 1))
 
 class ChromeDriverBackgroundTest(ChromeDriverBaseTestWithWebServer):
   def setUp(self):

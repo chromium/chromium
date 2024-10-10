@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cstring>
+#include <map>
 #include <memory>
 #include <queue>
 #include <utility>
@@ -59,64 +60,70 @@ const int kWaitForNavigationStopSeconds = 10;
 const char kElementKey[] = "ELEMENT";
 const char kElementKeyW3C[] = "element-6066-11e4-a52e-4f735466cecf";
 const char kShadowRootKey[] = "shadow-6066-11e4-a52e-4f735466cecf";
+const char kFrameKey[] = "frame-075b-4da1-b6ba-e579c2d3230a";
+const char kWindowKey[] = "window-fcc6-11e5-b4f8-330a88ab9d7f";
 
-struct ElementId {
-  std::string frame_id;
-  std::string loader_id;
-  int backend_node_id = 0;
+const char kElementNotFoundMessage[] = "element not found";
+const char kShadowRootNotFoundMessage[] = "shadow root not found";
+const char kStaleElementMessage[] = "stale element not found";
+const char kDetachedShadowRootMessage[] = "detached shadow root not found";
 
-  bool IsValid() const { return !frame_id.empty() && !loader_id.empty(); }
-
-  explicit operator bool() const { return IsValid(); }
-};
-
-std::optional<std::string> GetBackendNodeIdKey(const base::Value::Dict& element,
-                                               bool w3c_compliant) {
-  if (element.contains(kShadowRootKey)) {
-    return kShadowRootKey;
+const char* GetDefaultMessage(StatusCode code) {
+  static const char kUnknownCodeMessage[] = "";
+  switch (code) {
+    case kNoSuchElement:
+      return kElementNotFoundMessage;
+    case kNoSuchShadowRoot:
+      return kShadowRootNotFoundMessage;
+    case kStaleElementReference:
+      return kStaleElementMessage;
+    case kDetachedShadowRoot:
+      return kDetachedShadowRootMessage;
+    default:
+      return kUnknownCodeMessage;
   }
-  if (w3c_compliant && element.contains(kElementKeyW3C)) {
-    return kElementKeyW3C;
-  }
-  if (!w3c_compliant && element.contains(kElementKey)) {
-    return kElementKey;
+}
+
+std::optional<std::string> GetElementIdKey(const base::Value::Dict& element,
+                                           bool w3c_compliant) {
+  std::string_view element_key = w3c_compliant ? kElementKeyW3C : kElementKey;
+  std::vector<std::string_view> keys = {
+      element_key,
+      kShadowRootKey,
+      kWindowKey,
+      kFrameKey,
+  };
+  for (const std::string_view& key : keys) {
+    if (element.contains(key)) {
+      return std::string(key);
+    }
   }
   return std::nullopt;
 }
 
-ElementId GetElementId(const base::Value::Dict& element, std::string key) {
-  const std::string* element_id = element.FindString(std::move(key));
-  if (element_id == nullptr) {
-    return ElementId{};
-  }
-  if (!base::MatchPattern(*element_id, "f.*.d.*.e.*")) {
-    return ElementId{};
+Status SplitElementId(const std::string& element_id,
+                      StatusCode no_such_element,
+                      std::string& frame_id,
+                      std::string& loader_id,
+                      int& backend_node_id) {
+  if (!base::MatchPattern(element_id, "f.*.d.*.e.*")) {
+    return Status{no_such_element, "the element id string is malformed"};
   }
 
   std::vector<std::string> components = base::SplitString(
-      *element_id, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+      element_id, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   if (components.size() != 6) {
-    return ElementId{};
+    return Status{no_such_element, "too many components in element id"};
   }
 
-  std::string frame_id = components[1];
-  std::string loader_id = components[3];
   std::string backend_node_id_str = components[5];
-  int backend_node_id;
   if (!base::StringToInt(backend_node_id_str, &backend_node_id)) {
-    return ElementId{};
+    return Status{no_such_element, "backendNodeId is not integer"};
   }
 
-  return ElementId{frame_id, loader_id, backend_node_id};
-}
-
-ElementId GetElementId(const base::Value::Dict& element, bool w3c_compliant) {
-  std::optional<std::string> key = GetBackendNodeIdKey(element, w3c_compliant);
-  if (!key) {
-    return ElementId{};
-  }
-
-  return GetElementId(element, std::move(*key));
+  frame_id = components[1];
+  loader_id = components[3];
+  return Status{kOk};
 }
 
 Status GetContextIdForFrame(WebViewImpl* web_view,
@@ -372,6 +379,35 @@ class BidiTrackerGuard {
   base::raw_ref<DevToolsClient> client_;
   BidiTracker bidi_tracker_;
 };
+
+Status ResolveNode(DevToolsClient& client,
+                   int backend_node_id,
+                   const std::string& object_group_name,
+                   const Timeout* timeout,
+                   std::string& object_id) {
+  base::Value::Dict params;
+  base::Value::Dict resolve_result;
+  params.Set("backendNodeId", backend_node_id);
+  // TODO(crbug.com/42323411): add support of uniqueContextId to
+  // DOM.resolveNode params.Set("uniqueContextId", context_id);
+  if (!object_group_name.empty()) {
+    params.Set("objectGroup", object_group_name);
+  }
+  Status status = client.SendCommandAndGetResultWithTimeout(
+      "DOM.resolveNode", params, timeout, &resolve_result);
+  if (status.IsError()) {
+    return status;
+  }
+  std::string* maybe_object_id =
+      resolve_result.FindStringByDottedPath("object.objectId");
+  if (!maybe_object_id) {
+    return Status{
+        kUnknownError,
+        "object.objectId is missing in the response to DOM.resolveNode"};
+  }
+  object_id = *maybe_object_id;
+  return status;
+}
 
 }  // namespace
 
@@ -817,9 +853,9 @@ Status WebViewImpl::CallFunctionWithTimeoutInternal(
 
   base::Value::List nodes;
   // Resolving the references in the execution context obtained earlier.
-  status = ResolveElementReferencesInPlace(
-      frame_id, context_id, object_group.name(), loader_id, w3c_compliant_,
-      local_timeout, args, nodes);
+  status =
+      ResolveElementReferencesInPlace(frame_id, context_id, object_group.name(),
+                                      loader_id, local_timeout, args, nodes);
   object_group.SetEmpty(nodes.empty());
   // kNoSuchElement is handled in special way:
   // If loader id has changed then the node was not resolved due to the
@@ -1087,14 +1123,29 @@ Status WebViewImpl::GetFrameByFunction(const std::string& frame,
     return Status{kNoSuchFrame};
   }
 
-  ElementId maybe_element_id = GetElementId(result->GetDict(), w3c_compliant_);
-  if (!maybe_element_id) {
+  const base::Value::Dict& element_dict = result->GetDict();
+
+  const std::string element_key = w3c_compliant_ ? kElementKeyW3C : kElementKey;
+  const std::string* element_id = element_dict.FindString(element_key);
+  if (element_id == nullptr) {
+    element_id = element_dict.FindString(kShadowRootKey);
+  }
+  if (element_id == nullptr) {
     return Status{kNoSuchFrame, "invalid element id"};
   }
 
+  std::string extracted_frame_id;
+  std::string extracted_loader_id;
+  int backend_node_id;
+  status = SplitElementId(*element_id, kNoSuchFrame, extracted_frame_id,
+                          extracted_loader_id, backend_node_id);
+  if (status.IsError()) {
+    return status;
+  }
+
   bool found_node = false;
-  status = GetFrameIdForBackendNodeId(
-      client_.get(), maybe_element_id.backend_node_id, &found_node, out_frame);
+  status = GetFrameIdForBackendNodeId(client_.get(), backend_node_id,
+                                      &found_node, out_frame);
   if (status.IsError()) {
     return status;
   }
@@ -1545,30 +1596,47 @@ Status WebViewImpl::GetBackendNodeIdByElement(const std::string& frame,
                                               const base::Value& element,
                                               int* backend_node_id) {
   Status status{kOk};
+
+  WebView* target = GetTargetForFrame(frame);
+  if (target == nullptr || target->IsDetached()) {
+    return Status(kNoSuchWindow, "frame not found");
+  }
+
   if (!element.is_dict())
     return Status(kUnknownError, "'element' is not a dictionary");
 
-  std::optional<std::string> maybe_key =
-      GetBackendNodeIdKey(element.GetDict(), w3c_compliant_);
-  if (!maybe_key) {
-    return Status{kNoSuchElement, "invalid element id"};
+  const base::Value::Dict& element_dict = element.GetDict();
+
+  const std::string element_key = w3c_compliant_ ? kElementKeyW3C : kElementKey;
+  StatusCode no_such_element = kNoSuchElement;
+  StatusCode stale_element = kStaleElementReference;
+  const std::string* element_id = element_dict.FindString(element_key);
+  if (element_id == nullptr) {
+    no_such_element = kNoSuchShadowRoot;
+    stale_element = kDetachedShadowRoot;
+    element_id = element_dict.FindString(kShadowRootKey);
+  }
+  if (element_id == nullptr) {
+    if (element_dict.contains(element_key) ||
+        element_dict.contains(kShadowRootKey)) {
+      return Status{kInvalidArgument, "invalid element id"};
+    }
+    return Status{kNoSuchElement,
+                  "element id does not refer an element or a shadow root"};
   }
 
-  // From this point 'key' can have either of the following two values:
-  // * ELEMENT_KEY ("ELEMENT" or "element-6066-11e4-a52e-4f735466cecf")
-  // * SHADOW_ROOT_KEY ("shadow-6066-11e4-a52e-4f735466cecf")
-  std::string key = *maybe_key;
-  ElementId element_id = GetElementId(element.GetDict(), key);
-  if (!element_id) {
-    return Status{kNoSuchElement, "invalid element id"};
+  std::string extracted_frame_id;
+  std::string extracted_loader_id;
+  int extracted_backend_node_id;
+  status = SplitElementId(*element_id, no_such_element, extracted_frame_id,
+                          extracted_loader_id, extracted_backend_node_id);
+  if (status.IsError()) {
+    return status;
   }
+
   std::string frame_id = frame.empty() ? id_ : frame;
-  if (frame_id != element_id.frame_id) {
-    if (key == kShadowRootKey) {
-      return Status{kNoSuchShadowRoot, "shadow root not found"};
-    } else {
-      return Status{kNoSuchElement, "element not found"};
-    }
+  if (frame_id != extracted_frame_id) {
+    return Status{no_such_element, GetDefaultMessage(no_such_element)};
   }
   Timeout local_timeout(base::TimeDelta::Max());
   std::string loader_id;
@@ -1576,15 +1644,11 @@ Status WebViewImpl::GetBackendNodeIdByElement(const std::string& frame,
   if (status.IsError()) {
     return status;
   }
-  if (loader_id != element_id.loader_id) {
-    if (key == kShadowRootKey) {
-      return Status{kDetachedShadowRoot, "detached shadow root not found"};
-    } else {
-      return Status{kStaleElementReference, "stale element not found"};
-    }
+  if (loader_id != extracted_loader_id) {
+    return Status{stale_element, GetDefaultMessage(stale_element)};
   }
 
-  *backend_node_id = element_id.backend_node_id;
+  *backend_node_id = extracted_backend_node_id;
   return status;
 }
 
@@ -1618,19 +1682,10 @@ Status WebViewImpl::SetFileInputFiles(const std::string& frame,
   if (append) {
     // Convert the node_id to a Runtime.RemoteObject
     std::string inner_remote_object_id;
-    {
-      base::Value::Dict cmd_result;
-      base::Value::Dict params;
-      params.Set("backendNodeId", backend_node_id);
-      status = client_->SendCommandAndGetResult("DOM.resolveNode", params,
-                                                &cmd_result);
-      if (status.IsError())
-        return status;
-      std::string* object_id =
-          cmd_result.FindStringByDottedPath("object.objectId");
-      if (!object_id)
-        return Status(kUnknownError, "DevTools didn't return objectId");
-      inner_remote_object_id = std::move(*object_id);
+    status = ResolveNode(*client_, backend_node_id, "", nullptr,
+                         inner_remote_object_id);
+    if (status.IsError()) {
+      return status;
     }
 
     // figure out how many files there are
@@ -1926,40 +1981,36 @@ std::unique_ptr<base::Value> WebViewImpl::GetCastIssueMessage() {
   return base::Value::ToUniquePtrValue(cast_tracker_->issue().Clone());
 }
 
-Status WebViewImpl::ResolveElementReferencesInPlace(
-    const std::string& expected_frame_id,
-    const std::string& context_id,
-    const std::string& object_group_name,
-    const std::string& expected_loader_id,
-    bool w3c_compliant,
-    const Timeout& timeout,
-    base::Value::Dict& arg_dict,
-    base::Value::List& nodes) {
+namespace {
+
+Status ResolveElementReferenceInPlace(DevToolsClient& client,
+                                      const std::string& expected_frame_id,
+                                      const std::string& context_id,
+                                      const std::string& object_group_name,
+                                      const std::string& expected_loader_id,
+                                      const std::string& key,
+                                      const Timeout& timeout,
+                                      base::Value::Dict& arg_dict,
+                                      base::Value::List& nodes) {
   Status status{kOk};
-  std::optional<std::string> maybe_key =
-      GetBackendNodeIdKey(arg_dict, w3c_compliant);
-  if (!maybe_key) {
-    for (auto it = arg_dict.begin(); status.IsOk() && it != arg_dict.end();
-         ++it) {
-      status = ResolveElementReferencesInPlace(
-          expected_frame_id, context_id, object_group_name, expected_loader_id,
-          w3c_compliant, timeout, it->second, nodes);
-    }
+  const StatusCode no_such_element =
+      key == kShadowRootKey ? kNoSuchShadowRoot : kNoSuchElement;
+  const StatusCode stale_element =
+      key == kShadowRootKey ? kDetachedShadowRoot : kStaleElementReference;
+
+  const std::string* element_id = arg_dict.FindString(key);
+  if (element_id == nullptr) {
+    return Status{kInvalidArgument, "invalid element id"};
+  }
+
+  std::string frame_id;
+  std::string loader_id;
+  int backend_node_id;
+  status = SplitElementId(*element_id, no_such_element, frame_id, loader_id,
+                          backend_node_id);
+  if (status.IsError()) {
     return status;
   }
-
-  // From this point 'key' can have either of the following two values:
-  // * ELEMENT_KEY ("ELEMENT" or "element-6066-11e4-a52e-4f735466cecf")
-  // * SHADOW_ROOT_KEY ("shadow-6066-11e4-a52e-4f735466cecf")
-  std::string key = *maybe_key;
-  ElementId maybe_element_id = GetElementId(arg_dict, key);
-  if (!maybe_element_id) {
-    return Status{kNoSuchElement, "invalid element id"};
-  }
-
-  const std::string& frame_id = maybe_element_id.frame_id;
-  const std::string& loader_id = maybe_element_id.loader_id;
-  int backend_node_id = maybe_element_id.backend_node_id;
 
   // The following two conditionals mimic a weak map without storing any
   // returned references. If the reference was indeed returned in this or in a
@@ -1967,67 +2018,180 @@ Status WebViewImpl::ResolveElementReferencesInPlace(
   // with the current frame id. Otherwise the reference is unknown for this
   // frame.
   if (frame_id != expected_frame_id) {
-    if (key == kShadowRootKey) {
-      // TODO (crbug.com/chromedriver/4379): solve the ambiguity.
-      // The following is not mentioned exactly by the standard as the
-      // definition "deserialize a shadow root" is not used anywhere.
-      // Still some WPT rely on this:
-      // * webdriver/tests/classic/execute_async_script/arguments.py
-      //    :test_no_such_shadow_root_from_other_window_handle
-      // * webdriver/tests/classic/execute_script/arguments.py
-      //    :test_no_such_shadow_root_from_other_window_handle
-      return Status{kNoSuchShadowRoot, "shadow root not found"};
-    } else {
-      return Status{kNoSuchElement, "element not found"};
-    }
+    return Status{no_such_element, GetDefaultMessage(no_such_element)};
   }
   // Any reference returned in the current navigation must have a matching
   // loader id. Otherwise the reference is stale.
   if (loader_id != expected_loader_id) {
-    if (key == kShadowRootKey) {
-      // TODO (crbug.com/chromedriver/4379): solve the ambiguity.
-      // This is also not stated in the standard however some WPT rely on this.
-      // We either need to fix the tests or the standard. Probably the later.
-      return Status{kDetachedShadowRoot, "detached shadow root not found"};
-    } else {
-      return Status{kStaleElementReference, "stale element not found"};
-    }
+    return Status{stale_element, GetDefaultMessage(stale_element)};
   }
 
-  base::Value::Dict params;
-  base::Value::Dict resolve_result;
-  params.Set("backendNodeId", backend_node_id);
-  // TODO(crbug.com/chromedriver:4381): add support of uniqueContextId to
-  // DOM.resolveNode params.Set("uniqueContextId", context_id);
-  params.Set("objectGroup", object_group_name);
-  status = client_->SendCommandAndGetResultWithTimeout(
-      "DOM.resolveNode", params, &timeout, &resolve_result);
-  if (status.code() == kNoSuchElement) {
-    // If the node with given backend node id is not found then it was removed
-    // and therefore the reference is stale.
-    if (key == kShadowRootKey) {
-      return Status{kDetachedShadowRoot, "detached shadow root not found"};
-    } else {
-      return Status{kStaleElementReference, "stale element not found"};
-    }
-  }
+  std::string object_id;
+  status = ResolveNode(client, backend_node_id, object_group_name, &timeout,
+                       object_id);
   if (status.IsError()) {
+    if (status.code() == kNoSuchElement) {
+      // If the node with given backend node id is not found then it was removed
+      // and therefore the reference is stale.
+      return Status{stale_element, GetDefaultMessage(stale_element)};
+    }
     return status;
-  }
-
-  std::string* object_id =
-      resolve_result.FindStringByDottedPath("object.objectId");
-  if (!object_id) {
-    return Status{
-        kUnknownError,
-        "object.objectId is missing in the response to DOM.resolveNode"};
   }
 
   arg_dict.Set(std::move(key), static_cast<int>(nodes.size()));
 
   base::Value::Dict node;
+  node.Set("objectId", std::move(object_id));
+  nodes.Append(std::move(node));
+  return status;
+}
+
+Status ResolveWindowReferenceInPlace(DevToolsClient& client,
+                                     const std::string& expected_frame_id,
+                                     const std::string& context_id,
+                                     const std::string& object_group_name,
+                                     const Timeout& timeout,
+                                     base::Value::Dict& arg_dict,
+                                     base::Value::List& nodes) {
+  Status status{kOk};
+
+  const std::string* element_id = arg_dict.FindString(kWindowKey);
+  if (element_id == nullptr) {
+    return Status{kInvalidArgument, "invalid element id"};
+  }
+
+  const std::string& frame_id = *element_id;
+
+  if (frame_id != expected_frame_id) {
+    // (crbug.com/372153090) References on dynamic windows are not yet
+    // supported
+    return Status(kNoSuchWindow, "Window with such id was not found");
+  }
+
+  base::Value::Dict params;
+  params.Set("objectGroup", object_group_name);
+  params.Set("expression", "window");
+  params.Set("awaitPromise", true);
+  if (!context_id.empty()) {
+    params.Set("uniqueContextId", context_id);
+  }
+  base::Value::Dict evaluate_result;
+  status = client.SendCommandAndGetResultWithTimeout(
+      "Runtime.evaluate", params, &timeout, &evaluate_result);
+  if (status.IsError()) {
+    return status;
+  }
+  std::string* object_id =
+      evaluate_result.FindStringByDottedPath("result.objectId");
+  if (!object_id) {
+    return Status{
+        kUnknownError,
+        "object.objectId is missing in the response to Runtime.evaluate"};
+  }
+
+  arg_dict.Set(kWindowKey, static_cast<int>(nodes.size()));
+
+  base::Value::Dict node;
   node.Set("objectId", std::move(*object_id));
   nodes.Append(std::move(node));
+  return status;
+}
+
+Status ResolveFrameReferenceInPlace(DevToolsClient& client,
+                                    const std::string& expected_frame_id,
+                                    const std::string& context_id,
+                                    const std::string& object_group_name,
+                                    const Timeout& timeout,
+                                    base::Value::Dict& arg_dict,
+                                    base::Value::List& nodes) {
+  Status status{kOk};
+
+  const std::string* element_id = arg_dict.FindString(kFrameKey);
+  if (element_id == nullptr) {
+    return Status{kInvalidArgument, "invalid element id"};
+  }
+
+  const std::string& frame_id = *element_id;
+
+  base::Value::Dict params;
+  base::Value::Dict get_frame_owner_result;
+  params.Set("frameId", frame_id);
+  status = client.SendCommandAndGetResultWithTimeout(
+      "DOM.getFrameOwner", params, &timeout, &get_frame_owner_result);
+  if (status.IsError()) {
+    return status;
+  }
+  std::optional<int> maybe_backend_node_id =
+      get_frame_owner_result.FindInt("backendNodeId");
+  if (!maybe_backend_node_id.has_value()) {
+    return Status{kUnknownError, "Unable to find backendNodeId for the frame"};
+  }
+  int backend_node_id = maybe_backend_node_id.value();
+
+  std::string object_id;
+  status = ResolveNode(client, backend_node_id, object_group_name, &timeout,
+                       object_id);
+  if (status.IsError()) {
+    if (status.code() == kNoSuchElement) {
+      // If the node with given backend node id is not found then it was removed
+      // and therefore the reference is stale.
+      status =
+          Status{kNoSuchFrame, "frame was deleted while being dereferenced"};
+    }
+    return status;
+  }
+
+  arg_dict.Set(kFrameKey, static_cast<int>(nodes.size()));
+
+  base::Value::Dict node;
+  node.Set("objectId", std::move(object_id));
+  nodes.Append(std::move(node));
+  return status;
+}
+
+}  // namespace
+
+Status WebViewImpl::ResolveElementReferencesInPlace(
+    const std::string& expected_frame_id,
+    const std::string& context_id,
+    const std::string& object_group_name,
+    const std::string& expected_loader_id,
+    const Timeout& timeout,
+    base::Value::Dict& arg_dict,
+    base::Value::List& nodes) {
+  if (w3c_compliant_ && arg_dict.contains(kElementKeyW3C)) {
+    return ResolveElementReferenceInPlace(
+        *client_, expected_frame_id, context_id, object_group_name,
+        expected_loader_id, kElementKeyW3C, timeout, arg_dict, nodes);
+  }
+  if (!w3c_compliant_ && arg_dict.contains(kElementKey)) {
+    return ResolveElementReferenceInPlace(
+        *client_, expected_frame_id, context_id, object_group_name,
+        expected_loader_id, kElementKey, timeout, arg_dict, nodes);
+  }
+  if (arg_dict.contains(kShadowRootKey)) {
+    return ResolveElementReferenceInPlace(
+        *client_, expected_frame_id, context_id, object_group_name,
+        expected_loader_id, kShadowRootKey, timeout, arg_dict, nodes);
+  }
+  if (arg_dict.contains(kWindowKey)) {
+    return ResolveWindowReferenceInPlace(*client_, expected_frame_id,
+                                         context_id, object_group_name, timeout,
+                                         arg_dict, nodes);
+  }
+  if (arg_dict.contains(kFrameKey)) {
+    return ResolveFrameReferenceInPlace(*client_, expected_frame_id, context_id,
+                                        object_group_name, timeout, arg_dict,
+                                        nodes);
+  }
+
+  Status status{kOk};
+  for (auto it = arg_dict.begin(); status.IsOk() && it != arg_dict.end();
+       ++it) {
+    status = ResolveElementReferencesInPlace(
+        expected_frame_id, context_id, object_group_name, expected_loader_id,
+        timeout, it->second, nodes);
+  }
   return status;
 }
 
@@ -2036,7 +2200,6 @@ Status WebViewImpl::ResolveElementReferencesInPlace(
     const std::string& context_id,
     const std::string& object_group_name,
     const std::string& expected_loader_id,
-    bool w3c_compliant,
     const Timeout& timeout,
     base::Value::List& arg_list,
     base::Value::List& nodes) {
@@ -2045,7 +2208,7 @@ Status WebViewImpl::ResolveElementReferencesInPlace(
        ++it) {
     status = ResolveElementReferencesInPlace(
         expected_frame_id, context_id, object_group_name, expected_loader_id,
-        w3c_compliant, timeout, *it, nodes);
+        timeout, *it, nodes);
   }
   return status;
 }
@@ -2055,19 +2218,18 @@ Status WebViewImpl::ResolveElementReferencesInPlace(
     const std::string& context_id,
     const std::string& object_group_name,
     const std::string& expected_loader_id,
-    bool w3c_compliant,
     const Timeout& timeout,
     base::Value& arg,
     base::Value::List& nodes) {
   if (arg.is_list()) {
     return ResolveElementReferencesInPlace(
         expected_frame_id, context_id, object_group_name, expected_loader_id,
-        w3c_compliant, timeout, arg.GetList(), nodes);
+        timeout, arg.GetList(), nodes);
   }
   if (arg.is_dict()) {
     return ResolveElementReferencesInPlace(
         expected_frame_id, context_id, object_group_name, expected_loader_id,
-        w3c_compliant, timeout, arg.GetDict(), nodes);
+        timeout, arg.GetDict(), nodes);
   }
   return Status{kOk};
 }
@@ -2090,7 +2252,7 @@ Status WebViewImpl::CreateElementReferences(const std::string& frame_id,
   if (res.is_dict()) {
     base::Value::Dict& dict = res.GetDict();
     std::optional<std::string> maybe_key =
-        GetBackendNodeIdKey(dict, w3c_compliant_);
+        GetElementIdKey(dict, w3c_compliant_);
     if (maybe_key) {
       std::optional<int> maybe_node_idx = dict.FindInt(*maybe_key);
       if (!maybe_node_idx) {
@@ -2104,15 +2266,37 @@ Status WebViewImpl::CreateElementReferences(const std::string& frame_id,
         return Status{kUnknownError, "serialized node is not a dictionary"};
       }
       const base::Value::Dict& node = nodes[*maybe_node_idx].GetDict();
-      std::optional<int> maybe_backend_node_id =
-          node.FindIntByDottedPath("value.backendNodeId");
-      if (!maybe_backend_node_id) {
-        return Status{kUnknownError, "backendNodeId is missing in a node"};
+
+      std::string shared_id;
+      std::string key = *maybe_key;
+      if (*maybe_key == kWindowKey) {
+        const std::string* context =
+            node.FindStringByDottedPath("value.context");
+        if (!context) {
+          return Status{kUnknownError, "context is missing in a node"};
+        }
+        shared_id = *context;
+        if (*context == client_->GetId() ||
+            GetTargetForFrame(*context) == nullptr) {
+          // The reference either points to the top level window/tab or to some
+          // dynamically created window.
+          key = kWindowKey;
+        } else {
+          key = kFrameKey;
+        }
+        dict.Remove(*maybe_key);
+      } else {
+        std::optional<int> maybe_backend_node_id =
+            node.FindIntByDottedPath("value.backendNodeId");
+        if (!maybe_backend_node_id) {
+          return Status{kUnknownError, "backendNodeId is missing in a node"};
+        }
+        shared_id =
+            base::StringPrintf("f.%s.d.%s.e.%d", frame_id.c_str(),
+                               loader_id.c_str(), *maybe_backend_node_id);
       }
-      std::string shared_id =
-          base::StringPrintf("f.%s.d.%s.e.%d", frame_id.c_str(),
-                             loader_id.c_str(), *maybe_backend_node_id);
-      dict.Set(std::move(*maybe_key), std::move(shared_id));
+
+      dict.Set(std::move(key), std::move(shared_id));
       return status;
     }
 
