@@ -124,6 +124,7 @@ _CONFIG = [
             'base::Process',
             'base::RadToDeg',
             'base::ranges::.+',
+            'base::raw_span',
             'base::RefCountedData',
             'base::RemoveChars',
             'base::RepeatingTimer',
@@ -972,7 +973,7 @@ _CONFIG = [
             'gpu::ExportedSharedImage', 'gpu::SHARED_IMAGE_USAGE_DISPLAY_READ',
             'gpu::SHARED_IMAGE_USAGE_SCANOUT',
             'gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE',
-            'gpu::SharedImageUsageSet'
+            'gpu::SharedImageUsageSet',
         ],
     },
     {
