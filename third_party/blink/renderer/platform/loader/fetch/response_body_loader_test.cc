@@ -124,13 +124,12 @@ class ResponseBodyLoaderTest : public testing::Test {
 
     void OnStateChangeInternal() {
       while (true) {
-        const char* buffer = nullptr;
-        size_t available = 0;
-        Result result = bytes_consumer_->BeginRead(&buffer, &available);
+        base::span<const char> buffer;
+        Result result = bytes_consumer_->BeginRead(buffer);
         if (result == Result::kShouldWait)
           return;
         if (result == Result::kOk) {
-          result = bytes_consumer_->EndRead(available);
+          result = bytes_consumer_->EndRead(buffer.size());
         }
         if (result != Result::kOk)
           return;
@@ -929,9 +928,8 @@ TEST_F(ResponseBodyLoaderDrainedBytesConsumerNotificationOutOfOnStateChangeTest,
       MakeResponseBodyLoader(*original_consumer, *client, task_runner);
   BytesConsumer& consumer = body_loader->DrainAsBytesConsumer();
 
-  const char* buffer = nullptr;
-  size_t available = 0;
-  Result result = consumer.BeginRead(&buffer, &available);
+  base::span<const char> buffer;
+  Result result = consumer.BeginRead(buffer);
 
   EXPECT_EQ(result, Result::kShouldWait);
   EXPECT_FALSE(client->LoadingIsCancelled());
@@ -943,14 +941,14 @@ TEST_F(ResponseBodyLoaderDrainedBytesConsumerNotificationOutOfOnStateChangeTest,
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
 
-  result = consumer.BeginRead(&buffer, &available);
+  result = consumer.BeginRead(buffer);
   EXPECT_EQ(result, Result::kOk);
-  ASSERT_EQ(available, 5u);
+  ASSERT_EQ(buffer.size(), 5u);
   EXPECT_FALSE(client->LoadingIsCancelled());
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
 
-  result = consumer.EndRead(available);
+  result = consumer.EndRead(buffer.size());
   EXPECT_EQ(result, Result::kDone);
   EXPECT_FALSE(client->LoadingIsCancelled());
   EXPECT_FALSE(client->LoadingIsFinished());
@@ -977,9 +975,8 @@ TEST_F(ResponseBodyLoaderDrainedBytesConsumerNotificationOutOfOnStateChangeTest,
       MakeResponseBodyLoader(*original_consumer, *client, task_runner);
   BytesConsumer& consumer = body_loader->DrainAsBytesConsumer();
 
-  const char* buffer = nullptr;
-  size_t available = 0;
-  Result result = consumer.BeginRead(&buffer, &available);
+  base::span<const char> buffer;
+  Result result = consumer.BeginRead(buffer);
 
   EXPECT_EQ(result, Result::kShouldWait);
   EXPECT_FALSE(client->LoadingIsCancelled());
@@ -991,20 +988,20 @@ TEST_F(ResponseBodyLoaderDrainedBytesConsumerNotificationOutOfOnStateChangeTest,
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
 
-  result = consumer.BeginRead(&buffer, &available);
+  result = consumer.BeginRead(buffer);
   EXPECT_EQ(result, Result::kOk);
-  ASSERT_EQ(available, 5u);
+  ASSERT_EQ(buffer.size(), 5u);
   EXPECT_FALSE(client->LoadingIsCancelled());
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
 
-  result = consumer.EndRead(available);
+  result = consumer.EndRead(buffer.size());
   EXPECT_EQ(result, Result::kOk);
   EXPECT_FALSE(client->LoadingIsCancelled());
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
 
-  result = consumer.BeginRead(&buffer, &available);
+  result = consumer.BeginRead(buffer);
   EXPECT_EQ(result, Result::kError);
   EXPECT_FALSE(client->LoadingIsCancelled());
   EXPECT_FALSE(client->LoadingIsFinished());
@@ -1030,9 +1027,8 @@ TEST_F(ResponseBodyLoaderDrainedBytesConsumerNotificationOutOfOnStateChangeTest,
       MakeResponseBodyLoader(*original_consumer, *client, task_runner);
   BytesConsumer& consumer = body_loader->DrainAsBytesConsumer();
 
-  const char* buffer = nullptr;
-  size_t available = 0;
-  Result result = consumer.BeginRead(&buffer, &available);
+  base::span<const char> buffer;
+  Result result = consumer.BeginRead(buffer);
 
   EXPECT_EQ(result, Result::kShouldWait);
   EXPECT_FALSE(client->LoadingIsCancelled());
@@ -1044,20 +1040,20 @@ TEST_F(ResponseBodyLoaderDrainedBytesConsumerNotificationOutOfOnStateChangeTest,
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
 
-  result = consumer.BeginRead(&buffer, &available);
+  result = consumer.BeginRead(buffer);
   EXPECT_EQ(result, Result::kOk);
   EXPECT_FALSE(client->LoadingIsCancelled());
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
-  ASSERT_EQ(5u, available);
-  EXPECT_EQ(String(buffer, available), "hello");
+  ASSERT_EQ(5u, buffer.size());
+  EXPECT_EQ(String(buffer.data(), buffer.size()), "hello");
 
   task_runner->RunUntilIdle();
   EXPECT_FALSE(client->LoadingIsCancelled());
   EXPECT_FALSE(client->LoadingIsFinished());
   EXPECT_FALSE(client->LoadingIsFailed());
 
-  result = consumer.EndRead(available);
+  result = consumer.EndRead(buffer.size());
   EXPECT_EQ(result, Result::kDone);
   EXPECT_FALSE(client->LoadingIsCancelled());
   EXPECT_FALSE(client->LoadingIsFinished());
@@ -1150,10 +1146,9 @@ TEST_F(ResponseBodyLoaderDrainedBytesConsumerNotificationInOnStateChangeTest,
   auto* reading_client = MakeGarbageCollected<ReadingClient>(consumer, *client);
   consumer.SetClient(reading_client);
 
-  const char* buffer = nullptr;
-  size_t available = 0;
+  base::span<const char> buffer;
   // This BeginRead posts a task which calls OnStateChange.
-  Result result = consumer.BeginRead(&buffer, &available);
+  Result result = consumer.BeginRead(buffer);
   EXPECT_EQ(result, Result::kShouldWait);
 
   // We'll see the change without waiting for another task.
@@ -1191,10 +1186,9 @@ TEST_F(ResponseBodyLoaderDrainedBytesConsumerNotificationInOnStateChangeTest,
   auto* reading_client = MakeGarbageCollected<ReadingClient>(consumer, *client);
   consumer.SetClient(reading_client);
 
-  const char* buffer = nullptr;
-  size_t available = 0;
+  base::span<const char> buffer;
   // This BeginRead posts a task which calls OnStateChange.
-  Result result = consumer.BeginRead(&buffer, &available);
+  Result result = consumer.BeginRead(buffer);
   EXPECT_EQ(result, Result::kShouldWait);
 
   // We'll see the change without waiting for another task.
@@ -1232,10 +1226,9 @@ TEST_F(ResponseBodyLoaderDrainedBytesConsumerNotificationInOnStateChangeTest,
   auto* reading_client = MakeGarbageCollected<ReadingClient>(consumer, *client);
   consumer.SetClient(reading_client);
 
-  const char* buffer = nullptr;
-  size_t available = 0;
+  base::span<const char> buffer;
   // This BeginRead posts a task which calls OnStateChange.
-  Result result = consumer.BeginRead(&buffer, &available);
+  Result result = consumer.BeginRead(buffer);
   EXPECT_EQ(result, Result::kShouldWait);
 
   // We'll see the change without waiting for another task.

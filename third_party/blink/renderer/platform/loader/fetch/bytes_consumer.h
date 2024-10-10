@@ -92,7 +92,6 @@ class PLATFORM_EXPORT BytesConsumer : public GarbageCollected<BytesConsumer> {
   //
   // `buffer` will be set to empty if not readable.
   [[nodiscard]] virtual Result BeginRead(base::span<const char>& buffer) = 0;
-  [[nodiscard]] Result BeginRead(const char** buffer, size_t* available);
 
   // Ends a two-phase read.
   // This function can modify this BytesConsumer's state.

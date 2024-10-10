@@ -204,29 +204,26 @@ class FetchDataLoaderForWasmStreaming final : public FetchDataLoader,
     // available any more (handled below).
     while (streaming_) {
       // |buffer| is owned by |consumer_|.
-      const char* buffer = nullptr;
-      size_t available = 0;
-      BytesConsumer::Result result = consumer_->BeginRead(&buffer, &available);
+      base::span<const char> buffer;
+      BytesConsumer::Result result = consumer_->BeginRead(buffer);
 
       if (result == BytesConsumer::Result::kShouldWait)
         return;
       if (result == BytesConsumer::Result::kOk) {
         // Ignore more bytes after an abort (streaming == nullptr).
-        if (available > 0) {
+        if (!buffer.empty()) {
           if (code_cache_state_ == CodeCacheState::kBeforeFirstByte)
             code_cache_state_ = MaybeConsumeCodeCache();
 
-          DCHECK_NE(buffer, nullptr);
+          auto bytes = base::as_bytes(buffer);
           if (code_cache_state_ == CodeCacheState::kUseCodeCache) {
             TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
                          "v8.wasm.compileDigestForConsume");
-            digestor_.Update(
-                base::as_bytes(base::make_span(buffer, available)));
+            digestor_.Update(bytes);
           }
-          streaming_->OnBytesReceived(reinterpret_cast<const uint8_t*>(buffer),
-                                      available);
+          streaming_->OnBytesReceived(bytes.data(), bytes.size());
         }
-        result = consumer_->EndRead(available);
+        result = consumer_->EndRead(buffer.size());
       }
       switch (result) {
         case BytesConsumer::Result::kShouldWait:

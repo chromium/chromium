@@ -14,10 +14,8 @@ namespace {
 TEST(BytesConusmerTest, ClosedBytesConsumer) {
   BytesConsumer* consumer = BytesConsumer::CreateClosed();
 
-  const char* buffer = nullptr;
-  size_t available = 0;
-  EXPECT_EQ(BytesConsumer::Result::kDone,
-            consumer->BeginRead(&buffer, &available));
+  base::span<const char> buffer;
+  EXPECT_EQ(BytesConsumer::Result::kDone, consumer->BeginRead(buffer));
   EXPECT_EQ(BytesConsumer::PublicState::kClosed, consumer->GetPublicState());
 }
 
@@ -25,10 +23,8 @@ TEST(BytesConusmerTest, ErroredBytesConsumer) {
   BytesConsumer::Error error("hello");
   BytesConsumer* consumer = BytesConsumer::CreateErrored(error);
 
-  const char* buffer = nullptr;
-  size_t available = 0;
-  EXPECT_EQ(BytesConsumer::Result::kError,
-            consumer->BeginRead(&buffer, &available));
+  base::span<const char> buffer;
+  EXPECT_EQ(BytesConsumer::Result::kError, consumer->BeginRead(buffer));
   EXPECT_EQ(BytesConsumer::PublicState::kErrored, consumer->GetPublicState());
   EXPECT_EQ(error.Message(), consumer->GetError().Message());
 

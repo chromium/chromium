@@ -17,9 +17,6 @@ class CORE_EXPORT PlaceHolderBytesConsumer final : public BytesConsumer {
  public:
   // BytesConsumer implementation
   Result BeginRead(base::span<const char>& buffer) override;
-  Result BeginRead(const char** buffer, size_t* available) {
-    return BytesConsumer::BeginRead(buffer, available);
-  }
   Result EndRead(size_t read_size) override;
   scoped_refptr<BlobDataHandle> DrainAsBlobDataHandle(
       BlobSizePolicy policy) override;

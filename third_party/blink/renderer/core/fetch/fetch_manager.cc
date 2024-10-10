@@ -412,13 +412,11 @@ class FetchManager::Loader final
 
       Result result = Result::kOk;
       while (result == Result::kOk) {
-        const char* buffer;
-        size_t available;
-        result = body_->BeginRead(&buffer, &available);
+        base::span<const char> buffer;
+        result = body_->BeginRead(buffer);
         if (result == Result::kOk) {
-          buffer_.Append(base::make_span(
-              buffer, base::checked_cast<wtf_size_t>(available)));
-          result = body_->EndRead(available);
+          buffer_.Append(buffer);
+          result = body_->EndRead(buffer.size());
         }
         if (result == Result::kShouldWait)
           return;

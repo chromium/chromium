@@ -24,8 +24,7 @@ class PlaceHolderBytesConsumerTest : public testing::Test {
 TEST_F(PlaceHolderBytesConsumerTest, Construct) {
   auto* consumer = MakeGarbageCollected<PlaceHolderBytesConsumer>();
 
-  const char* buffer;
-  size_t available;
+  base::span<const char> buffer;
 
   EXPECT_EQ(consumer->GetPublicState(), PublicState::kReadableOrWaiting);
   EXPECT_FALSE(consumer->DrainAsBlobDataHandle(
@@ -33,10 +32,9 @@ TEST_F(PlaceHolderBytesConsumerTest, Construct) {
   EXPECT_FALSE(consumer->DrainAsFormData());
   EXPECT_FALSE(consumer->DrainAsDataPipe());
 
-  Result result = consumer->BeginRead(&buffer, &available);
+  Result result = consumer->BeginRead(buffer);
   EXPECT_EQ(result, Result::kShouldWait);
-  EXPECT_EQ(buffer, nullptr);
-  EXPECT_EQ(available, 0u);
+  EXPECT_TRUE(buffer.empty());
 }
 
 TEST_F(PlaceHolderBytesConsumerTest, Update) {
@@ -47,21 +45,20 @@ TEST_F(PlaceHolderBytesConsumerTest, Update) {
       MakeGarbageCollected<ReplayingBytesConsumer>(task_runner);
   actual_bytes_consumer->Add(Command(Command::kDataAndDone, "hello"));
 
-  const char* buffer;
-  size_t available;
+  base::span<const char> buffer;
 
   EXPECT_EQ(PublicState::kReadableOrWaiting, consumer->GetPublicState());
-  ASSERT_EQ(Result::kShouldWait, consumer->BeginRead(&buffer, &available));
+  ASSERT_EQ(Result::kShouldWait, consumer->BeginRead(buffer));
   consumer->Update(actual_bytes_consumer);
 
   EXPECT_EQ(consumer->GetPublicState(), PublicState::kReadableOrWaiting);
 
-  Result result = consumer->BeginRead(&buffer, &available);
+  Result result = consumer->BeginRead(buffer);
   EXPECT_EQ(result, Result::kOk);
-  ASSERT_EQ(available, 5u);
-  EXPECT_EQ(String(buffer, available), "hello");
+  ASSERT_EQ(buffer.size(), 5u);
+  EXPECT_EQ(String(buffer.data(), buffer.size()), "hello");
 
-  result = consumer->EndRead(available);
+  result = consumer->EndRead(buffer.size());
   EXPECT_EQ(result, Result::kDone);
 
   EXPECT_EQ(consumer->GetPublicState(), PublicState::kClosed);
@@ -99,26 +96,23 @@ TEST_F(PlaceHolderBytesConsumerTest, Cancel) {
   actual_bytes_consumer->Add(Command(Command::kData, "hello"));
   auto* consumer = MakeGarbageCollected<PlaceHolderBytesConsumer>();
 
-  const char* buffer;
-  size_t available;
+  base::span<const char> buffer;
 
   EXPECT_EQ(consumer->GetPublicState(), PublicState::kReadableOrWaiting);
 
   consumer->Cancel();
 
   EXPECT_EQ(consumer->GetPublicState(), PublicState::kClosed);
-  Result result = consumer->BeginRead(&buffer, &available);
+  Result result = consumer->BeginRead(buffer);
   EXPECT_EQ(result, Result::kDone);
-  EXPECT_EQ(buffer, nullptr);
-  EXPECT_EQ(available, 0u);
+  EXPECT_TRUE(buffer.empty());
 
   consumer->Update(actual_bytes_consumer);
 
   EXPECT_EQ(consumer->GetPublicState(), PublicState::kClosed);
-  result = consumer->BeginRead(&buffer, &available);
+  result = consumer->BeginRead(buffer);
   EXPECT_EQ(result, Result::kDone);
-  EXPECT_EQ(buffer, nullptr);
-  EXPECT_EQ(available, 0u);
+  EXPECT_TRUE(buffer.empty());
 }
 
 }  // namespace

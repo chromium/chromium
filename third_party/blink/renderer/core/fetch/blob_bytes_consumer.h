@@ -27,9 +27,6 @@ class CORE_EXPORT BlobBytesConsumer final : public BytesConsumer {
 
   // BytesConsumer implementation
   Result BeginRead(base::span<const char>& buffer) override;
-  Result BeginRead(const char** buffer, size_t* available) {
-    return BytesConsumer::BeginRead(buffer, available);
-  }
   Result EndRead(size_t read_size) override;
   scoped_refptr<BlobDataHandle> DrainAsBlobDataHandle(BlobSizePolicy) override;
   scoped_refptr<EncodedFormData> DrainAsFormData() override;

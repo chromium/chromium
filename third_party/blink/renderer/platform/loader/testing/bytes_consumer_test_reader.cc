@@ -16,15 +16,14 @@ BytesConsumerTestReader::BytesConsumerTestReader(BytesConsumer* consumer)
 
 void BytesConsumerTestReader::OnStateChange() {
   while (true) {
-    const char* buffer = nullptr;
-    size_t available = 0;
-    auto result = consumer_->BeginRead(&buffer, &available);
+    base::span<const char> buffer;
+    auto result = consumer_->BeginRead(buffer);
     if (result == BytesConsumer::Result::kShouldWait)
       return;
     if (result == BytesConsumer::Result::kOk) {
       wtf_size_t read =
-          static_cast<wtf_size_t>(std::min(max_chunk_size_, available));
-      data_.Append(buffer, read);
+          static_cast<wtf_size_t>(std::min(max_chunk_size_, buffer.size()));
+      data_.AppendSpan(buffer.first(read));
       result = consumer_->EndRead(read);
     }
     DCHECK_NE(result, BytesConsumer::Result::kShouldWait);

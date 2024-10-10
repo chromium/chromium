@@ -56,15 +56,6 @@ class ClosedBytesConsumer final : public BytesConsumer {
 
 }  // namespace
 
-BytesConsumer::Result BytesConsumer::BeginRead(const char** buffer,
-                                               size_t* available) {
-  base::span<const char> buffer_span;
-  auto result = BeginRead(buffer_span);
-  *buffer = buffer_span.data();
-  *available = buffer_span.size();
-  return result;
-}
-
 BytesConsumer* BytesConsumer::CreateErrored(const BytesConsumer::Error& error) {
   return MakeGarbageCollected<ErroredBytesConsumer>(error);
 }

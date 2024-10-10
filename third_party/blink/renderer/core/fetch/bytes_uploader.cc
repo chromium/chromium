@@ -109,11 +109,10 @@ void BytesUploader::WriteDataOnPipe() {
     return;
 
   while (true) {
-    const char* buffer;
-    size_t available;
-    auto consumer_result = consumer_->BeginRead(&buffer, &available);
+    base::span<const char> buffer;
+    auto consumer_result = consumer_->BeginRead(buffer);
     DVLOG(3) << "  consumer_->BeginRead()=" << consumer_result
-             << ", available=" << available;
+             << ", available=" << buffer.size();
     switch (consumer_result) {
       case BytesConsumer::Result::kError:
         CloseOnError();
@@ -127,14 +126,11 @@ void BytesUploader::WriteDataOnPipe() {
         break;
     }
     DCHECK_EQ(consumer_result, BytesConsumer::Result::kOk);
-    // SAFETY: `BeginRead` promises to return a valid pointer and size.
-    base::span<const char> chars =
-        UNSAFE_BUFFERS(base::span(buffer, available));
-    base::span<const uint8_t> bytes = base::as_bytes(chars);
 
     size_t actually_written_bytes = 0;
     const MojoResult mojo_result = upload_pipe_->WriteData(
-        bytes, MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes);
+        base::as_bytes(buffer), MOJO_WRITE_DATA_FLAG_NONE,
+        actually_written_bytes);
     DVLOG(3) << "  upload_pipe_->WriteData()=" << mojo_result
              << ", mojo_written=" << actually_written_bytes;
     if (mojo_result == MOJO_RESULT_SHOULD_WAIT) {

@@ -534,9 +534,8 @@ void BodyStreamBuffer::ProcessData(ExceptionState& exception_state) {
 
   base::AutoReset<bool> auto_reset(&in_process_data_, true);
   while (stream_needs_more_) {
-    const char* buffer = nullptr;
-    size_t available = 0;
-    auto result = consumer_->BeginRead(&buffer, &available);
+    base::span<const char> buffer;
+    auto result = consumer_->BeginRead(buffer);
     if (result == BytesConsumer::Result::kShouldWait)
       return;
     DOMUint8Array* array = nullptr;
@@ -548,19 +547,18 @@ void BodyStreamBuffer::ProcessData(ExceptionState& exception_state) {
         if (ReadableStreamBYOBRequest* request =
                 byte_controller->byobRequest()) {
           DOMArrayBufferView* view = request->view().Get();
-          available = std::min(view->byteLength(), available);
+          buffer = buffer.first(std::min(view->byteLength(), buffer.size()));
           memcpy(
               static_cast<char*>(view->buffer()->Data()) + view->byteOffset(),
-              buffer, available);
+              buffer.data(), buffer.size());
           byob_view = view;
         }
       }
       if (!byob_view) {
         CHECK(!array);
-        array = DOMUint8Array::CreateOrNull(UNSAFE_TODO(base::span(
-            reinterpret_cast<const unsigned char*>(buffer), available)));
+        array = DOMUint8Array::CreateOrNull(base::as_bytes(buffer));
       }
-      result = consumer_->EndRead(available);
+      result = consumer_->EndRead(buffer.size());
       if (!array && !byob_view) {
         RaiseOOMError();
         return;
@@ -578,7 +576,7 @@ void BodyStreamBuffer::ProcessData(ExceptionState& exception_state) {
               To<ReadableByteStreamController>(stream_->GetController());
           if (byob_view) {
             ReadableByteStreamController::Respond(
-                script_state_, byte_controller, available,
+                script_state_, byte_controller, buffer.size(),
                 PassThroughException(script_state_->GetIsolate()));
           } else {
             CHECK(array);
