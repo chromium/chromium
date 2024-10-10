@@ -106,7 +106,7 @@ def _Load(avd_proto_path):
   """
   with open(avd_proto_path) as avd_proto_file:
     # python generated codes are simplified since Protobuf v3.20.0 and cause
-    # pylint error. See https://github.com/protocolbuffers/protobuf/issues/9730
+    # pylint error: https://github.com/protocolbuffers/protobuf/issues/9730
     # pylint: disable=no-member
     return text_format.Merge(avd_proto_file.read(), avd_pb2.Avd())
 
@@ -347,6 +347,14 @@ class AvdConfig:
     return self._config.avd_settings
 
   @property
+  def avd_variants(self):
+    """Get the AvdVairants in the avd proto file as a map.
+
+    An AvdVariant can include additional AvdSettings to apply to the AVD.
+    """
+    return self._config.avd_variants
+
+  @property
   def avd_launch_settings(self):
     """The AvdLaunchSettings in the avd proto file.
 
@@ -426,12 +434,24 @@ class AvdConfig:
 
     return os.path.join(qt_config_dir, 'Emulator.conf')
 
+  def GetMetadata(self):
+    """Return a dict containing metadata of this avd config.
+
+    Including avd config file path, avd name, avd variant names, and etc.
+    """
+    return {
+        'avd_config_file_path': self.avd_proto_path,
+        'avd_variants': list(self.avd_variants.keys()) or None,
+        'is_available': self.IsAvailable(),
+    }
+
   def HasSnapshot(self, snapshot_name):
     """Check if a given snapshot exists or not."""
     snapshot_path = os.path.join(self._avd_dir, 'snapshots', snapshot_name)
     return os.path.exists(snapshot_path)
 
   def Create(self,
+             avd_variant_name=None,
              force=False,
              snapshot=False,
              keep=False,
@@ -453,6 +473,8 @@ class AvdConfig:
      - optionally deletes the AVD (default yes)
 
     Args:
+      avd_variant_name: The name of the AvdVariant to use. Extra avd settings
+        from the variant will be applied during creation.
       force: bool indicating whether to force create the AVD.
       snapshot: bool indicating whether to snapshot the AVD before creating
         the CIPD package.
@@ -468,6 +490,9 @@ class AvdConfig:
       dry_run: When set to True, it will skip the CIPD package creation
         after creating the AVD.
     """
+    avd_settings = self.GetAvdSettings(avd_variant_name)
+    logging.info('avd_settings: %r', avd_settings)
+
     logging.info('Installing required packages.')
     self._InstallCipdPackages(_PACKAGES_CREATION)
 
@@ -491,38 +516,9 @@ class AvdConfig:
         # creation. So explicitly clear its content to exclude any leftover
         # from previous creation.
         f_ini_contents.clear()
-        f_ini_contents.update(self.avd_settings.advanced_features)
+        f_ini_contents.update(avd_settings.advanced_features)
 
-      with ini.update_ini_file(self._config_ini_path) as config_ini_contents:
-        # Update avd_properties first so that they won't override settings
-        # like screen and ram_size
-        config_ini_contents.update(self.avd_settings.avd_properties)
-
-        height = self.avd_settings.screen.height or _DEFAULT_SCREEN_HEIGHT
-        width = self.avd_settings.screen.width or _DEFAULT_SCREEN_WIDTH
-        density = self.avd_settings.screen.density or _DEFAULT_SCREEN_DENSITY
-
-        config_ini_contents.update({
-            'disk.dataPartition.size': '4G',
-            'hw.keyboard': 'yes',
-            'hw.lcd.density': density,
-            'hw.lcd.height': height,
-            'hw.lcd.width': width,
-            'hw.mainKeys': 'no',  # Show nav buttons on screen
-        })
-
-        if self.avd_settings.ram_size:
-          config_ini_contents['hw.ramSize'] = self.avd_settings.ram_size
-
-        config_ini_contents['hw.sdCard'] = 'yes'
-        if self.avd_settings.sdcard.size:
-          sdcard_path = os.path.join(self._avd_dir, _SDCARD_NAME)
-          cmd_helper.RunCmd([
-              self.mksdcard_path,
-              self.avd_settings.sdcard.size,
-              sdcard_path,
-          ])
-          config_ini_contents['hw.sdCard.path'] = sdcard_path
+      self._UpdateAvdConfigFile(self._config_ini_path, avd_settings)
 
       if not additional_apks:
         additional_apks = []
@@ -682,6 +678,62 @@ class AvdConfig:
       if not keep:
         logging.info('Deleting AVD.')
         avd_manager.Delete(avd_name=self.avd_name)
+
+  def GetAvdSettings(self, avd_variant_name=None):
+    # python generated codes are simplified since Protobuf v3.20.0 and cause
+    # pylint error: https://github.com/protocolbuffers/protobuf/issues/9730
+    # pylint: disable=no-member
+    avd_settings = avd_pb2.AvdSettings()
+    avd_settings.MergeFrom(self.avd_settings)
+
+    if self.avd_variants:
+      if avd_variant_name is None:
+        raise AvdException('Avd variant not set for the avd config.')
+      if avd_variant_name not in self.avd_variants:
+        raise AvdException(
+            'Avd variant %r not found in avd config. Must be one of %r' %
+            (avd_variant_name, list(self.avd_variants.keys())))
+
+      avd_settings.MergeFrom(self.avd_variants[avd_variant_name])
+    elif avd_variant_name is not None:
+      raise AvdException('The avd config has no avd variants.')
+
+    return avd_settings
+
+  def _UpdateAvdConfigFile(self, config_file_path, avd_settings):
+    config_contents = {
+        'disk.dataPartition.size': '4G',
+        'hw.keyboard': 'yes',
+        'hw.mainKeys': 'no',  # Show nav buttons on screen
+        'hw.sdCard': 'yes',
+    }
+    # Update avd_properties first so that they won't override settings
+    # like screen and ram_size
+    config_contents.update(avd_settings.avd_properties)
+
+    height = avd_settings.screen.height or _DEFAULT_SCREEN_HEIGHT
+    width = avd_settings.screen.width or _DEFAULT_SCREEN_WIDTH
+    density = avd_settings.screen.density or _DEFAULT_SCREEN_DENSITY
+    config_contents.update({
+        'hw.lcd.density': density,
+        'hw.lcd.height': height,
+        'hw.lcd.width': width,
+    })
+
+    if avd_settings.ram_size:
+      config_contents['hw.ramSize'] = avd_settings.ram_size
+
+    if avd_settings.sdcard.size:
+      sdcard_path = os.path.join(self._avd_dir, _SDCARD_NAME)
+      cmd_helper.RunCmd([
+          self.mksdcard_path,
+          avd_settings.sdcard.size,
+          sdcard_path,
+      ])
+      config_contents['hw.sdCard.path'] = sdcard_path
+
+    with ini.update_ini_file(config_file_path) as config_ini_contents:
+      config_ini_contents.update(config_contents)
 
   def IsAvailable(self):
     """Returns whether emulator is up-to-date."""

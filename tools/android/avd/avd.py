@@ -6,6 +6,7 @@
 import argparse
 import os
 import logging
+import json
 import pathlib
 import sys
 
@@ -23,11 +24,11 @@ import devil_chromium
 from pylib.local.emulator import avd
 
 
-def _add_avd_config_argument(parser):
+def _add_avd_config_argument(parser, required=True):
   parser.add_argument('--avd-config',
                       type=os.path.realpath,
                       metavar='PATH',
-                      required=True,
+                      required=required,
                       help='Path to an AVD config text protobuf.')
 
 
@@ -71,12 +72,19 @@ def main(raw_args):
   _add_common_arguments(subparser)
   _add_avd_config_argument(subparser)
   subparser.add_argument(
+      '--avd-variant',
+      help='The name of the AVD variant to use during creation. Will error out '
+      'if the name is set but avd config has no variants or the name is not '
+      'found in the avd config.')
+  subparser.add_argument(
       '--snapshot',
       action='store_true',
       help='Snapshot the AVD before creating the CIPD package.')
-  subparser.add_argument('--force',
-                         action='store_true',
-                         help='Pass --force to AVD creation.')
+  subparser.add_argument(
+      '--force',
+      action='store_true',
+      help='Pass --force to AVD creation. This is useful when an AVD with '
+      'the same name already exists.')
   subparser.add_argument('--keep',
                          action='store_true',
                          help='Keep the AVD after creating the CIPD package.')
@@ -111,7 +119,9 @@ def main(raw_args):
       help='Skip the CIPD package creation after creating the AVD.')
 
   def create_cmd(args):
-    avd.AvdConfig(args.avd_config).Create(
+    avd_config = avd.AvdConfig(args.avd_config)
+    avd_config.Create(
+        avd_variant_name=args.avd_variant,
         force=args.force,
         snapshot=args.snapshot,
         keep=args.keep,
@@ -217,22 +227,42 @@ def main(raw_args):
       help='Shows possible values for --avd-config.',
       formatter_class=argparse.ArgumentDefaultsHelpFormatter)
   _add_common_arguments(subparser)
+  _add_avd_config_argument(subparser, required=False)
+  subparser.add_argument(
+      '--avd-config-dir',
+      type=os.path.realpath,
+      metavar='DIR_PATH',
+      help='Path to the dir that contains the avd config files. '
+      'Default to the sibling dir "proto" of this "avd.py" script, if neither '
+      '"--avd-config-path" nor this argument is set.')
+  subparser.add_argument(
+      '--json-output',
+      type=os.path.realpath,
+      metavar='PATH',
+      help='Dump json output to the given path.')
 
   def list_cmd(args):
-    files = pathlib.Path(__file__).parent.glob('proto/*.textpb')
-    avd_configs = [avd.AvdConfig(os.path.relpath(f)) for f in files]
-    avd_configs.sort(key=lambda c: c.avd_proto_path)
-    fmt_string = '{:70} {:40} {}'
-    print(
-        fmt_string.format('Possible values for --avd-config:', 'Name',
-                          'Active & Up-to-date'))
-    for avd_config in avd_configs:
-      print(
-          fmt_string.format(avd_config.avd_proto_path, avd_config.avd_name,
-                            avd_config.IsAvailable()))
-    print()
-    print('Warning: playstore images currently require --wipe-data. '
-          'See: https://crbug.com/1116196')
+    files = set()
+    if args.avd_config:
+      files.add(args.avd_config)
+    if args.avd_config_dir:
+      files.update(pathlib.Path(args.avd_config_dir).glob('*.textpb'))
+    if not args.avd_config and not args.avd_config_dir:
+      files.update(pathlib.Path(__file__).parent.glob('proto/*.textpb'))
+
+    if not files:
+      print('No avd config files found.')
+      return 0
+
+    avd_configs = [avd.AvdConfig(os.path.relpath(f)) for f in sorted(files)]
+    metadata = [config.GetMetadata() for config in avd_configs]
+    if args.json_output:
+      with open(args.json_output, 'w') as json_file:
+        json.dump(metadata, json_file, indent=2)
+    else:
+      # Import tabulate only when needed, in case it is not listed in .vpython3.
+      tabulate = __import__('tabulate')
+      print(tabulate.tabulate(metadata, headers='keys'))
     return 0
 
   subparser.set_defaults(func=list_cmd)
