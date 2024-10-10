@@ -40,7 +40,6 @@ per-file password_manager_strings.grdp=file://components/password_manager/OWNERS
 per-file payments_strings.grdp=file://components/payments/OWNERS
 per-file permissions_strings.grdp=file://components/permissions/OWNERS
 per-file pdf_strings.grdp=file://pdf/OWNERS
-per-file plus_addresses_strings.grdp=file://components/plus_addresses/OWNERS
 per-file policy_strings.grdp=file://components/policy/OWNERS
 per-file print_media_strings.grdp=file://components/printing/OWNERS
 per-file printing_component_strings.grdp=file://components/printing/OWNERS
