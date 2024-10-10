@@ -44,8 +44,8 @@ void ProtobufHttpClient::ExecuteRequest(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!request->config().authenticated) {
-    DoExecuteRequest(std::move(request), OAuthTokenGetter::Status::SUCCESS, {},
-                     {}, {});
+    DoExecuteRequest(std::move(request), OAuthTokenGetter::Status::SUCCESS,
+                     OAuthTokenInfo());
     return;
   }
 
@@ -71,9 +71,7 @@ bool ProtobufHttpClient::HasPendingRequests() const {
 void ProtobufHttpClient::DoExecuteRequest(
     std::unique_ptr<ProtobufHttpRequestBase> request,
     OAuthTokenGetter::Status status,
-    const std::string& user_email,
-    const std::string& access_token,
-    const std::string& scopes) {
+    const OAuthTokenInfo& token_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (status != OAuthTokenGetter::Status::SUCCESS) {
@@ -105,9 +103,10 @@ void ProtobufHttpClient::DoExecuteRequest(
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   resource_request->method = request->config().method;
 
-  if (status == OAuthTokenGetter::Status::SUCCESS && !access_token.empty()) {
-    resource_request->headers.AddHeaderFromString(
-        base::StringPrintf(kAuthorizationHeaderFormat, access_token.c_str()));
+  if (status == OAuthTokenGetter::Status::SUCCESS &&
+      !token_info.access_token().empty()) {
+    resource_request->headers.AddHeaderFromString(base::StringPrintf(
+        kAuthorizationHeaderFormat, token_info.access_token().c_str()));
   } else {
     VLOG(1) << "Attempting to execute request without access token";
   }

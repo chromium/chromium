@@ -127,18 +127,6 @@ RemotingAuthenticationStatus oauthStatusToRemotingAuthenticationStatus(
 }
 
 - (void)callbackWithAccessToken:(AccessTokenCallback)onAccessToken {
-  // Be careful here since a failure to reset onAccessToken will end up with
-  // retain cycle and memory leakage.
-  if (_tokenGetter) {
-    _tokenGetter->CallWithToken(base::BindOnce(
-        ^(remoting::OAuthTokenGetter::Status status,
-          const std::string& user_email, const std::string& access_token,
-          const std::string& scopes) {
-          onAccessToken(oauthStatusToRemotingAuthenticationStatus(status),
-                        base::SysUTF8ToNSString(user_email),
-                        base::SysUTF8ToNSString(access_token));
-        }));
-  }
 }
 
 - (void)logout {

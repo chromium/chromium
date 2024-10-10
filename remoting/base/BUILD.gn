@@ -222,6 +222,8 @@ source_set("authorization") {
     "oauth_token_getter_impl.h",
     "oauth_token_getter_proxy.cc",
     "oauth_token_getter_proxy.h",
+    "oauth_token_info.cc",
+    "oauth_token_info.h",
     "passthrough_oauth_token_getter.cc",
     "passthrough_oauth_token_getter.h",
   ]

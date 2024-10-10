@@ -12,10 +12,8 @@ namespace remoting {
 PassthroughOAuthTokenGetter::PassthroughOAuthTokenGetter() = default;
 
 PassthroughOAuthTokenGetter::PassthroughOAuthTokenGetter(
-    const std::string& username,
-    const std::string& access_token,
-    const std::string& scopes)
-    : username_(username), access_token_(access_token), scopes_(scopes) {}
+    const OAuthTokenInfo& token_info)
+    : token_info_(token_info) {}
 
 PassthroughOAuthTokenGetter::~PassthroughOAuthTokenGetter() = default;
 
@@ -23,8 +21,8 @@ void PassthroughOAuthTokenGetter::CallWithToken(
     OAuthTokenGetter::TokenCallback on_access_token) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(on_access_token),
-                                OAuthTokenGetter::Status::SUCCESS, username_,
-                                access_token_, scopes_));
+                                OAuthTokenGetter::Status::SUCCESS,
+                                OAuthTokenInfo(token_info_)));
 }
 
 void PassthroughOAuthTokenGetter::InvalidateCache() {

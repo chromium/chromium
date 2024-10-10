@@ -57,10 +57,7 @@ class OAuthTokenGetterImpl : public OAuthTokenGetter,
   void OnNetworkError(int response_code) override;
 
   void UpdateAccessToken(const std::string& access_token, int expires_seconds);
-  void NotifyTokenCallbacks(Status status,
-                            const std::string& user_email,
-                            const std::string& access_token,
-                            const std::string& scopes);
+  void NotifyTokenCallbacks(Status status, const OAuthTokenInfo& token_info);
   void GetOAuthTokensFromAuthCode();
   void RefreshAccessToken();
 
