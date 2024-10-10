@@ -9,36 +9,36 @@
 
 namespace blink {
 
+class GPUDevice;
 class XRGPUBinding;
-class XRGPULayerTextureSwapChain;
+class XRGPUSwapChain;
 
 class XRGPUProjectionLayer final : public XRProjectionLayer {
  public:
   XRGPUProjectionLayer(XRGPUBinding*,
-                       XRGPULayerTextureSwapChain* color_swap_chain,
-                       XRGPULayerTextureSwapChain* depth_stencil_swap_chain_);
+                       XRGPUSwapChain* color_swap_chain,
+                       XRGPUSwapChain* depth_stencil_swap_chain);
   ~XRGPUProjectionLayer() override = default;
 
-  // TODO(crbug.com/359428629): Implement WebGPU layer submission
-  void OnFrameStart(
-      const std::optional<gpu::MailboxHolder>& buffer_mailbox_holder,
-      const std::optional<gpu::MailboxHolder>& camera_image_mailbox_holder)
-      override {}
-  void OnFrameEnd() override {}
-  void OnResize() override {}
+  uint16_t textureWidth() const override;
+  uint16_t textureHeight() const override;
+  uint16_t textureArrayLength() const override;
 
-  XRGPULayerTextureSwapChain* color_swap_chain() {
-    return color_swap_chain_.Get();
-  }
-  XRGPULayerTextureSwapChain* depth_stencil_swap_chain() {
+  void OnFrameStart() override;
+  void OnFrameEnd() override;
+  void OnResize() override;
+
+  XRGPUSwapChain* color_swap_chain() { return color_swap_chain_.Get(); }
+  XRGPUSwapChain* depth_stencil_swap_chain() {
     return depth_stencil_swap_chain_.Get();
   }
 
   void Trace(Visitor*) const override;
 
  private:
-  Member<XRGPULayerTextureSwapChain> color_swap_chain_;
-  Member<XRGPULayerTextureSwapChain> depth_stencil_swap_chain_;
+  Member<GPUDevice> device_;
+  Member<XRGPUSwapChain> color_swap_chain_;
+  Member<XRGPUSwapChain> depth_stencil_swap_chain_;
 };
 
 }  // namespace blink

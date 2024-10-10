@@ -15,23 +15,12 @@ namespace blink {
 
 class ExceptionState;
 class GPUDevice;
-class GPUTexture;
 class V8GPUTextureFormat;
 class XRSession;
 class XRView;
 class XRProjectionLayer;
 class XRGPUProjectionLayerInit;
 class XRGPUSubImage;
-
-class XRGPULayerTextureSwapChain
-    : public GarbageCollected<XRGPULayerTextureSwapChain> {
- public:
-  virtual GPUTexture* GetCurrentTexture() = 0;
-  virtual void OnFrameStart();
-  virtual void OnFrameEnd();
-
-  virtual void Trace(Visitor* visitor) const;
-};
 
 class XRGPUBinding final : public ScriptWrappable, public XRGraphicsBinding {
   DEFINE_WRAPPERTYPEINFO();

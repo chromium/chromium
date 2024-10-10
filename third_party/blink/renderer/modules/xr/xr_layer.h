@@ -13,6 +13,7 @@
 namespace blink {
 
 class XRSession;
+struct XRLayerMailboxes;
 
 class XRLayer : public EventTarget {
   DEFINE_WRAPPERTYPEINFO();
@@ -23,9 +24,7 @@ class XRLayer : public EventTarget {
 
   XRSession* session() const { return session_.Get(); }
 
-  virtual void OnFrameStart(
-      const std::optional<gpu::MailboxHolder>& buffer_mailbox_holder,
-      const std::optional<gpu::MailboxHolder>& camera_image_mailbox_holder) = 0;
+  virtual void OnFrameStart() = 0;
   virtual void OnFrameEnd() = 0;
   virtual void OnResize() = 0;
 
@@ -33,10 +32,14 @@ class XRLayer : public EventTarget {
   ExecutionContext* GetExecutionContext() const override;
   const AtomicString& InterfaceName() const override;
 
+  uint32_t layer_id() const { return layer_id_; }
+  const XRLayerMailboxes& GetMailboxes() const;
+
   void Trace(Visitor*) const override;
 
  private:
   const Member<XRSession> session_;
+  const uint32_t layer_id_;
 };
 
 }  // namespace blink

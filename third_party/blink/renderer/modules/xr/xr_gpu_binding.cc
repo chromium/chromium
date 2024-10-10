@@ -13,9 +13,12 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_limits.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
+#include "third_party/blink/renderer/modules/xr/xr_frame_provider.h"
 #include "third_party/blink/renderer/modules/xr/xr_gpu_projection_layer.h"
 #include "third_party/blink/renderer/modules/xr/xr_gpu_sub_image.h"
+#include "third_party/blink/renderer/modules/xr/xr_gpu_swap_chain.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
+#include "third_party/blink/renderer/modules/xr/xr_system.h"
 #include "third_party/blink/renderer/modules/xr/xr_view.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "ui/gfx/geometry/size.h"
@@ -30,11 +33,11 @@ const double kMinScaleFactor = 0.2;
 
 // A texture swap chain that is not communicated back to the compositor, used
 // for things like depth/stencil attachments that don't assist reprojection.
-class XRGPUStaticTextureLayerSwapChain : public XRGPULayerTextureSwapChain {
+class XRGPUStaticSwapChain : public XRGPUSwapChain {
  public:
-  XRGPUStaticTextureLayerSwapChain(GPUDevice* device,
-                                   const wgpu::TextureDescriptor* desc) {
-    texture_ = GPUTexture::Create(device, desc);
+  XRGPUStaticSwapChain(GPUDevice* device, const wgpu::TextureDescriptor& desc) {
+    texture_ = GPUTexture::Create(device, &desc);
+    descriptor_ = desc;
   }
 
   GPUTexture* GetCurrentTexture() override { return texture_; }
@@ -47,20 +50,21 @@ class XRGPUStaticTextureLayerSwapChain : public XRGPULayerTextureSwapChain {
     // cleared.
   }
 
+  const wgpu::TextureDescriptor& descriptor() const override {
+    return descriptor_;
+  }
+
   void Trace(Visitor* visitor) const override {
     visitor->Trace(texture_);
-    XRGPULayerTextureSwapChain::Trace(visitor);
+    XRGPUSwapChain::Trace(visitor);
   }
 
  private:
   Member<GPUTexture> texture_;
+  wgpu::TextureDescriptor descriptor_;
 };
 
 }  // namespace
-
-void XRGPULayerTextureSwapChain::OnFrameStart() {}
-void XRGPULayerTextureSwapChain::OnFrameEnd() {}
-void XRGPULayerTextureSwapChain::Trace(Visitor* visitor) const {}
 
 XRGPUBinding* XRGPUBinding::Create(XRSession* session,
                                    GPUDevice* device,
@@ -152,12 +156,18 @@ XRProjectionLayer* XRGPUBinding::createProjectionLayer(
                      static_cast<uint32_t>(session()->array_texture_layers())};
   color_desc.dimension = wgpu::TextureDimension::e2D;
 
-  XRGPUStaticTextureLayerSwapChain* color_swap_chain =
-      MakeGarbageCollected<XRGPUStaticTextureLayerSwapChain>(device_,
-                                                             &color_desc);
+  XRGPUSwapChain* color_swap_chain;
+  if (session()->xr()->frameProvider()->DrawingIntoSharedBuffer()) {
+    color_swap_chain =
+        MakeGarbageCollected<XRGPUMailboxSwapChain>(device_, color_desc);
+  } else {
+    // TODO(crbug.com/359418629): Replace with a shared image swap chain.
+    color_swap_chain =
+        MakeGarbageCollected<XRGPUStaticSwapChain>(device_, color_desc);
+  }
 
   // Create the depth/stencil swap chain
-  XRGPUStaticTextureLayerSwapChain* depth_stencil_swap_chain = nullptr;
+  XRGPUStaticSwapChain* depth_stencil_swap_chain = nullptr;
   if (init->hasDepthStencilFormat()) {
     wgpu::TextureDescriptor depth_stencil_desc = {};
     depth_stencil_desc.label = "XRProjectionLayer Depth/Stencil";
@@ -171,8 +181,7 @@ XRProjectionLayer* XRGPUBinding::createProjectionLayer(
     depth_stencil_desc.dimension = wgpu::TextureDimension::e2D;
 
     depth_stencil_swap_chain =
-        MakeGarbageCollected<XRGPUStaticTextureLayerSwapChain>(
-            device_, &depth_stencil_desc);
+        MakeGarbageCollected<XRGPUStaticSwapChain>(device_, depth_stencil_desc);
   }
 
   return MakeGarbageCollected<XRGPUProjectionLayer>(this, color_swap_chain,
@@ -195,7 +204,7 @@ XRGPUSubImage* XRGPUBinding::getViewSubImage(XRProjectionLayer* layer,
       gpu_layer->color_swap_chain()->GetCurrentTexture();
 
   GPUTexture* depth_stencil_texture = nullptr;
-  XRGPULayerTextureSwapChain* depth_stencil_swap_chain =
+  XRGPUSwapChain* depth_stencil_swap_chain =
       gpu_layer->depth_stencil_swap_chain();
   if (depth_stencil_swap_chain) {
     depth_stencil_texture = depth_stencil_swap_chain->GetCurrentTexture();

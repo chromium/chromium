@@ -73,6 +73,8 @@ class XRFrameProvider final : public GarbageCollected<XRFrameProvider> {
   // by Oilpan when they are destroyed, and their WeakMember becomes null.
   void AddImmersiveSessionObserver(ImmersiveSessionObserver*);
 
+  bool DrawingIntoSharedBuffer() const;
+
   virtual void Trace(Visitor*) const;
 
  private:

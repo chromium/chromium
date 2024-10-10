@@ -337,30 +337,31 @@ WebGLTexture* XRWebGLLayer::GetCameraTexture() {
   return camera_image_texture_.Get();
 }
 
-void XRWebGLLayer::OnFrameStart(
-    const std::optional<gpu::MailboxHolder>& buffer_mailbox_holder,
-    const std::optional<gpu::MailboxHolder>& camera_image_mailbox_holder) {
+void XRWebGLLayer::OnFrameStart() {
   if (framebuffer_) {
     framebuffer_->MarkOpaqueBufferComplete(true);
     framebuffer_->SetContentsChanged(false);
-    if (buffer_mailbox_holder) {
-      drawing_buffer_->UseSharedBuffer(buffer_mailbox_holder.value());
-      DVLOG(3) << __func__ << ": buffer_mailbox_holder->mailbox="
-               << buffer_mailbox_holder->mailbox.ToDebugString();
+
+    const XRLayerMailboxes& layer_mailboxes = GetMailboxes();
+    if (layer_mailboxes.color_mailbox_holder) {
+      drawing_buffer_->UseSharedBuffer(
+          layer_mailboxes.color_mailbox_holder.value());
+      DVLOG(3) << __func__ << ": color_mailbox_holder->mailbox="
+               << layer_mailboxes.color_mailbox_holder->mailbox.ToDebugString();
       is_direct_draw_frame = true;
     } else {
       is_direct_draw_frame = false;
     }
 
-    if (camera_image_mailbox_holder) {
+    if (layer_mailboxes.camera_image_mailbox_holder) {
       DVLOG(3) << __func__ << ":camera_image_mailbox_holder->mailbox="
-               << camera_image_mailbox_holder->mailbox.ToDebugString();
-      camera_image_mailbox_holder_ = camera_image_mailbox_holder;
+               << layer_mailboxes.camera_image_mailbox_holder->mailbox
+                      .ToDebugString();
       camera_image_texture_id_ =
-          GetBufferTextureId(camera_image_mailbox_holder_);
+          GetBufferTextureId(layer_mailboxes.camera_image_mailbox_holder);
       DVLOG(3) << __func__
                << ": camera_image_texture_id_=" << camera_image_texture_id_;
-      BindCameraBufferTexture(camera_image_mailbox_holder_);
+      BindCameraBufferTexture(layer_mailboxes.camera_image_mailbox_holder);
     }
   }
 }
@@ -426,8 +427,9 @@ void XRWebGLLayer::OnFrameEnd() {
       // `SubmitWebGLLayer` so that we stop using it before the sync token
       // that `SubmitWebGLLayer` will generate.
       if (camera_image_texture_id_) {
+        const XRLayerMailboxes& layer_mailboxes = GetMailboxes();
         // We shouldn't ever have a camera texture if the holder wasn't present:
-        DCHECK(camera_image_mailbox_holder_);
+        CHECK(layer_mailboxes.camera_image_mailbox_holder);
 
         DVLOG(3) << __func__
                  << ": deleting camera image texture, camera_image_texture_id_="
@@ -447,7 +449,6 @@ void XRWebGLLayer::OnFrameEnd() {
         }
 
         camera_image_texture_id_ = 0;
-        camera_image_mailbox_holder_ = std::nullopt;
       }
 
       // Always call submit, but notify if the contents were changed or not.

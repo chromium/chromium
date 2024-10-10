@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_graphics_binding.h"
 #include "third_party/blink/renderer/modules/xr/xr_input_source.h"
 #include "third_party/blink/renderer/modules/xr/xr_input_source_array.h"
+#include "third_party/blink/renderer/modules/xr/xr_layer_mailbox_manager.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -410,6 +411,12 @@ class XRSession final : public EventTarget,
   uint64_t GetTraceId() const { return trace_id_; }
   base::TimeDelta TakeAnimationFrameTimerAverage();
 
+  const XRLayerMailboxManager& LayerMailboxManager() {
+    return layer_mailbox_manager_;
+  }
+
+  uint32_t GetNextLayerId() { return ++last_layer_id_; }
+
  private:
   class XRSessionResizeObserverDelegate;
 
@@ -642,6 +649,7 @@ class XRSession final : public EventTarget,
   bool sensorless_session_ = false;
 
   int16_t last_frame_id_ = -1;
+  uint32_t last_layer_id_ = 0;
 
   bool emulated_position_ = false;
 
@@ -650,6 +658,8 @@ class XRSession final : public EventTarget,
   uint64_t trace_id_;
 
   AverageTimer page_animation_frame_timer_;
+
+  XRLayerMailboxManager layer_mailbox_manager_;
 };
 
 }  // namespace blink

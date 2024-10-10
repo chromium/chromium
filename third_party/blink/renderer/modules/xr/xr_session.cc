@@ -1974,6 +1974,8 @@ void XRSession::OnFrame(
   if (ended_)
     return;
 
+  layer_mailbox_manager_.Reset();
+
   if (pending_frame_) {
     pending_frame_ = false;
 
@@ -1986,10 +1988,13 @@ void XRSession::OnFrame(
       // submit a frame back to the runtime, as all "GetFrameData" calls need a
       // matching submit.
       if (prev_base_layer_) {
+        layer_mailbox_manager_.SetLayerMailboxes(prev_base_layer_,
+                                                 output_mailbox_holder,
+                                                 camera_image_mailbox_holder);
+
         DVLOG(2) << __func__
                  << ": prev_base_layer_ is valid, submitting frame to it";
-        prev_base_layer_->OnFrameStart(output_mailbox_holder,
-                                       camera_image_mailbox_holder);
+        prev_base_layer_->OnFrameStart();
         prev_base_layer_->OnFrameEnd();
         prev_base_layer_ = nullptr;
       }
@@ -2006,8 +2011,10 @@ void XRSession::OnFrame(
     }
 
     XRLayer* frame_base_layer = render_state_->GetFirstLayer();
-    frame_base_layer->OnFrameStart(output_mailbox_holder,
-                                   camera_image_mailbox_holder);
+    layer_mailbox_manager_.SetLayerMailboxes(
+        frame_base_layer, output_mailbox_holder, camera_image_mailbox_holder);
+
+    frame_base_layer->OnFrameStart();
 
     // Don't allow frames to be processed if the session's visibility state is
     // "hidden".

@@ -791,6 +791,10 @@ void XRFrameProvider::OnRenderComplete() {
   submit_frame_time_.StopTimer();
 }
 
+bool XRFrameProvider::DrawingIntoSharedBuffer() const {
+  return frame_transport_->DrawingIntoSharedBuffer();
+}
+
 void XRFrameProvider::Trace(Visitor* visitor) const {
   visitor->Trace(xr_);
   visitor->Trace(frame_transport_);
