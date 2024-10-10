@@ -51,6 +51,9 @@ bool g_needs_set_up_for_test_case = true;
   [[GREYConfiguration sharedConfiguration]
           setValue:@YES
       forConfigKey:kGREYConfigKeyIgnoreHiddenAnimations];
+  [[GREYConfiguration sharedConfiguration]
+          setValue:@YES
+      forConfigKey:kGREYConfigKeyAutoUntrackMDCActivityIndicators];
 }
 
 // Invoked upon starting each test method in a test case.
