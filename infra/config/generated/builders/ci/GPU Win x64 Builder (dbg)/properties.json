@@ -80,7 +80,8 @@
           "builder": "gpu-try-win-nvidia-dbg",
           "group": "tryserver.chromium.win"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/GPU Win x64 Builder (dbg)/targets"
     }
   },
   "$build/reclient": {

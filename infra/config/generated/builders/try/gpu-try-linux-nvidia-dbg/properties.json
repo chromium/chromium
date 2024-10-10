@@ -74,7 +74,8 @@
           "builder": "Linux Debug (NVIDIA)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/gpu-try-linux-nvidia-dbg/targets"
     }
   },
   "$build/reclient": {

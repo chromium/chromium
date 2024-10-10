@@ -1735,6 +1735,7 @@ targets.mixin(
 
 targets.mixin(
     name = "puppet_production",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "puppet_env": "production",

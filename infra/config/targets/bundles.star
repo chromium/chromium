@@ -1123,6 +1123,52 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "gpu_common_linux_telemetry_tests",
+    targets = [
+        "gpu_common_and_optional_telemetry_tests",
+        "gpu_passthrough_telemetry_tests",
+        "gpu_webgl_conformance_telemetry_tests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_common_metal_passthrough_graphite_telemetry_tests",
+    targets = [
+        "gpu_common_and_optional_telemetry_tests",
+        "gpu_metal_passthrough_graphite_telemetry_tests",
+        "gpu_webgl_conformance_metal_passthrough_graphite_telemetry_tests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_common_win_telemetry_tests",
+    targets = [
+        "gpu_common_and_optional_telemetry_tests",
+        "gpu_passthrough_telemetry_tests",
+        "gpu_webgl_conformance_d3d11_passthrough_telemetry_tests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_desktop_passthrough_gtests",
+    targets = [
+        "gpu_angle_unit_gtests",
+        "gpu_common_gtests_passthrough",
+        "gpu_desktop_specific_gtests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_win_gtests",
+    targets = [
+        "gpu_angle_unit_gtests",
+        "gpu_common_gtests_passthrough",
+        "gpu_default_and_optional_win_specific_gtests",
+        "gpu_desktop_specific_gtests",
+    ],
+)
+
+targets.bundle(
     name = "ios_clang_tot_device_tests",
     targets = [
         targets.bundle(

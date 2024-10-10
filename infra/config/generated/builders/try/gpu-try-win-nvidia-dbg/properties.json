@@ -74,7 +74,8 @@
           "builder": "Win10 x64 Debug (NVIDIA)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/gpu-try-win-nvidia-dbg/targets"
     }
   },
   "$build/reclient": {

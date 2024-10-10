@@ -418,33 +418,6 @@ targets.legacy_compound_suite(
     ],
 )
 
-targets.legacy_compound_suite(
-    name = "gpu_common_linux_telemetry_tests",
-    basic_suites = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_telemetry_tests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "gpu_common_metal_passthrough_graphite_telemetry_tests",
-    basic_suites = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_metal_passthrough_graphite_telemetry_tests",
-        "gpu_webgl_conformance_metal_passthrough_graphite_telemetry_tests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "gpu_common_win_telemetry_tests",
-    basic_suites = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_d3d11_passthrough_telemetry_tests",
-    ],
-)
-
 # Same as gpu_dawn_isolated_scripts, but with some suites removed:
 # * telemetry_gpu_unittests since those aren't built for Android
 # * SwiftShader-related tests since SwiftShader is not used on Android.
@@ -575,15 +548,6 @@ targets.legacy_compound_suite(
     name = "gpu_dawn_tsan_gtests",
     basic_suites = [
         "gpu_dawn_gtests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "gpu_desktop_passthrough_gtests",
-    basic_suites = [
-        "gpu_angle_unit_gtests",
-        "gpu_common_gtests_passthrough",
-        "gpu_desktop_specific_gtests",
     ],
 )
 
@@ -921,16 +885,6 @@ targets.legacy_compound_suite(
     name = "gpu_swangle_telemetry_tests",
     basic_suites = [
         "gpu_webgl_conformance_swangle_passthrough_telemetry_tests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "gpu_win_gtests",
-    basic_suites = [
-        "gpu_angle_unit_gtests",
-        "gpu_common_gtests_passthrough",
-        "gpu_default_and_optional_win_specific_gtests",
-        "gpu_desktop_specific_gtests",
     ],
 )
 

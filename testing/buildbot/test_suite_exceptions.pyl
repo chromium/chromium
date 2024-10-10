@@ -2092,15 +2092,6 @@
       },
     },
   },
-  'pixel_test':{
-    'modifications': {
-      'Android Release (Nexus 5X)': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
-    },
-  },
   'ppapi_unittests': {
     # If you change this, make similar changes in nacl_loader_unittests
     'remove_from': [
@@ -2279,9 +2270,6 @@
   'tab_capture_end2end_tests': {
     # Run these only on Release bots.
     'remove_from': [
-      'Linux Debug (NVIDIA)',
-      'Mac Debug (Intel)',
-      'Mac Retina Debug (AMD)',
       'Win10 FYI x64 Debug (NVIDIA)',
       # Disabled due to dbus crashes crbug.com/927465
       'Linux FYI Release (Intel UHD 630)',
@@ -2356,11 +2344,6 @@
       # compared to other devices, so increase sharding to offset the increased
       # runtime.
       'Android FYI Release (Nexus 5X)': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
-      'Android Release (Nexus 5X)': {
         'swarming': {
           'shards': 2,
         },

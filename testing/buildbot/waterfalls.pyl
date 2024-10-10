@@ -18,6 +18,7 @@
   #   chromium.cft
   #   chromium.fuchsia
   #   chromium.fuchsia.fyi
+  #   chromium.gpu
   #   chromium.mac
   #   chromium.win
   {
@@ -2400,90 +2401,6 @@
           'isolated_scripts': 'headless_shell_wpt_tests_isolated_scripts',
         },
         'os_type': 'win',
-      },
-    },
-  },
-  {
-    # The following builders in this group have been migrated to set their
-    # targets in the builders' declarations in
-    # //infra/config/subprojects/ci/chromium.gpu.star
-    #   Android Release (Pixel 2)
-    #   GPU Linux Builder
-    #   GPU Mac Builder
-    #   GPU Win x64 Builder
-    #   Linux Release (NVIDIA)
-    #   Mac Release (Intel)
-    #   Mac Retina Release (AMD)
-    #   Win10 x64 Release (NVIDIA)
-    'name': 'chromium.gpu',
-    'forbid_script_tests': True,
-    'mixins': [
-      'chromium-tester-service-account',
-      'swarming_containment_auto',
-      'timeout_30m',
-    ],
-    'machines': {
-      'Android Release (Nexus 5X)': {
-        'browser_config': 'android-chromium',
-        'os_type': 'android',
-        'skip_merge_script': True,
-        'mixins': [
-          'chromium_nexus_5x_oreo',
-        ],
-        'test_suites': {
-          'gpu_telemetry_tests': 'gpu_common_android_telemetry_tests',
-        },
-      },
-      'GPU Linux Builder (dbg)': {},
-      'GPU Mac Builder (dbg)': {},
-      'Linux Debug (NVIDIA)': {
-        'browser_config': 'debug',
-        'os_type': 'linux',
-        'mixins': [
-          'linux_nvidia_gtx_1660_stable',
-          # TODO(crbug.com/331756538): Specify the puppet_production mixin once
-          # testing is moved to Ubuntu 22.
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_desktop_passthrough_gtests',
-          'gpu_telemetry_tests': 'gpu_common_linux_telemetry_tests',
-        },
-      },
-      'Mac Debug (Intel)': {
-        'browser_config': 'debug',
-        'os_type': 'mac',
-        'mixins': [
-          'mac_mini_intel_gpu_stable',
-          'puppet_production',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_desktop_passthrough_gtests',
-          'gpu_telemetry_tests': 'gpu_common_metal_passthrough_graphite_telemetry_tests',
-        },
-      },
-      'Mac Retina Debug (AMD)': {
-        'browser_config': 'debug',
-        'os_type': 'mac',
-        'mixins': [
-          'mac_retina_amd_gpu_stable',
-          'puppet_production',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_desktop_passthrough_gtests',
-          'gpu_telemetry_tests': 'gpu_common_metal_passthrough_graphite_telemetry_tests',
-        },
-      },
-      'Win10 x64 Debug (NVIDIA)': {
-        'browser_config': 'debug_x64',
-        'os_type': 'win',
-        'mixins': [
-          'win10_nvidia_gtx_1660_stable',
-          'puppet_production',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_win_gtests',
-          'gpu_telemetry_tests': 'gpu_common_win_telemetry_tests',
-        },
       },
     },
   },

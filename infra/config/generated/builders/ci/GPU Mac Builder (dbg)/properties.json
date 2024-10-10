@@ -118,7 +118,8 @@
           "builder": "gpu-try-mac-intel-dbg",
           "group": "tryserver.chromium.mac"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/GPU Mac Builder (dbg)/targets"
     }
   },
   "$build/reclient": {
