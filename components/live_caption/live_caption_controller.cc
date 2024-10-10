@@ -96,9 +96,6 @@ void LiveCaptionController::RegisterProfilePrefs(
       prefs::kLiveCaptionBubbleExpanded, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
-      prefs::kLiveCaptionBubblePinned, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(
       prefs::kLiveCaptionEnabled, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(

@@ -142,16 +142,6 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
                        : nullptr;
   }
 
-  views::Button* GetPinButton() {
-    return controller_ ? controller_->caption_bubble_->pin_button_.get()
-                       : nullptr;
-  }
-
-  views::Button* GetUnpinButton() {
-    return controller_ ? controller_->caption_bubble_->unpin_button_.get()
-                       : nullptr;
-  }
-
   views::View* GetErrorMessage() {
     return controller_
                ? controller_->caption_bubble_->generic_error_message_.get()
@@ -299,10 +289,6 @@ class CaptionBubbleControllerViewsTest : public InProcessBrowserTest {
   void SetWindowBounds(const gfx::Rect& bounds) {
     browser()->window()->SetBounds(bounds);
     base::RunLoop().RunUntilIdle();
-  }
-
-  void SetTickClockForTesting(const base::TickClock* tick_clock) {
-    GetController()->caption_bubble_->set_tick_clock_for_testing(tick_clock);
   }
 
   void CaptionSettingsButtonPressed() {
@@ -1017,41 +1003,12 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, ExpandsAndCollapses) {
   EXPECT_EQ(line_height, GetLabel()->GetBoundsInScreen().height());
 }
 
-IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, PinAndUnpin) {
-  base::ScopedMockTimeMessageLoopTaskRunner test_task_runner;
-  SetTickClockForTesting(test_task_runner->GetMockTickClock());
-  EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
-      prefs::kLiveCaptionBubblePinned));
-
-  OnPartialTranscription(
-      "Sea otters have the densest fur of any mammal at about 1 million "
-      "hairs "
-      "per square inch.");
-  EXPECT_TRUE(GetPinButton()->GetVisible());
-  EXPECT_FALSE(GetUnpinButton()->GetVisible());
-
-  ClickButton(GetPinButton());
-  EXPECT_FALSE(GetPinButton()->GetVisible());
-  EXPECT_TRUE(GetUnpinButton()->GetVisible());
-  EXPECT_TRUE(browser()->profile()->GetPrefs()->GetBoolean(
-      prefs::kLiveCaptionBubblePinned));
-
-  ASSERT_TRUE(GetBubble()->GetInactivityTimerForTesting()->IsRunning());
-  // The bubble should hide after 15 seconds.
-  test_task_runner->FastForwardBy(base::Seconds(15));
-  EXPECT_TRUE(IsWidgetVisible());
-
-  SetTickClockForTesting(nullptr);
-}
-
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, AccessibleProperties) {
   base::ScopedMockTimeMessageLoopTaskRunner test_task_runner;
-  SetTickClockForTesting(test_task_runner->GetMockTickClock());
   OnPartialTranscription(
       "Sea otters have the densest fur of any mammal at about 1 million "
       "hairs "
       "per square inch.");
-  ClickButton(GetPinButton());
 
   ui::AXNodeData data;
   GetBubble()->GetViewAccessibility().GetAccessibleNodeData(&data);
@@ -1069,8 +1026,6 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, AccessibleProperties) {
             u"Sample Accessible Name");
   EXPECT_EQ(GetBubble()->GetViewAccessibility().GetCachedName(),
             u"Sample Accessible Name");
-
-  SetTickClockForTesting(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, NonAsciiCharacter) {
@@ -1195,98 +1150,6 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
 #endif
 }
 
-// Disable due to flaky, https://crbug.com/1206677
-IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
-                       DISABLED_HidesAfterInactivity) {
-  // Use a ScopedMockTimeMessageLoopTaskRunner to test the inactivity timer
-  // with a mock tick clock that replaces the default tick clock with mock
-  // time.
-  base::ScopedMockTimeMessageLoopTaskRunner test_task_runner;
-  SetTickClockForTesting(test_task_runner->GetMockTickClock());
-
-  // Caption bubble hides after 5 seconds without receiving a transcription.
-  OnPartialTranscription("Bowhead whales can live for over 200 years.");
-  EXPECT_TRUE(IsWidgetVisible());
-  EXPECT_EQ("Bowhead whales can live for over 200 years.", GetLabelText());
-  ASSERT_TRUE(GetBubble()->GetInactivityTimerForTesting()->IsRunning());
-  // TODO(crbug.com/40119836): Change this to 5 seconds. For some reasons tests
-  // need to wait 10 seconds, but testing the feature only requires a 5 second
-  // wait.
-  test_task_runner->FastForwardBy(base::Seconds(10));
-  EXPECT_FALSE(IsWidgetVisible());
-  EXPECT_EQ("", GetLabelText());
-
-  // Caption bubble becomes visible when transcription is received, and stays
-  // visible if transcriptions are received before 5 seconds have passed.
-  OnPartialTranscription("Killer whales");
-  EXPECT_TRUE(IsWidgetVisible());
-  EXPECT_EQ("Killer whales", GetLabelText());
-  test_task_runner->FastForwardBy(base::Seconds(4));
-  EXPECT_TRUE(IsWidgetVisible());
-  OnPartialTranscription("Killer whales travel in matrifocal groups");
-  EXPECT_TRUE(IsWidgetVisible());
-  EXPECT_EQ("Killer whales travel in matrifocal groups", GetLabelText());
-  test_task_runner->FastForwardBy(base::Seconds(4));
-  EXPECT_TRUE(IsWidgetVisible());
-  OnFinalTranscription(
-      "Killer whales travel in matrifocal groups--a family unit centered on "
-      "the mother.");
-  EXPECT_TRUE(IsWidgetVisible());
-  EXPECT_EQ(
-      "Killer whales travel in matrifocal groups--a family unit centered on "
-      "the mother.",
-      GetLabelText());
-  test_task_runner->FastForwardBy(base::Seconds(4));
-  EXPECT_TRUE(IsWidgetVisible());
-
-  // Test that widget doesn't hide when focused.
-  GetCaptionWidget()->Activate();
-  views::test::WaitForWidgetActive(GetCaptionWidget(), true);
-  test_task_runner->FastForwardBy(base::Seconds(10));
-  EXPECT_TRUE(IsWidgetVisible());
-
-  SetTickClockForTesting(nullptr);
-}
-
-// TODO(crbug.com/40181252): Flaky test.
-#if BUILDFLAG(IS_OZONE)
-#define MAYBE_ClearsTextAfterInactivity DISABLED_ClearsTextAfterInactivity
-#else
-#define MAYBE_ClearsTextAfterInactivity ClearsTextAfterInactivity
-#endif
-IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
-                       MAYBE_ClearsTextAfterInactivity) {
-  // Use a ScopedMockTimeMessageLoopTaskRunner to test the inactivity timer
-  // with a mock tick clock that replaces the default tick clock with mock
-  // time.
-  base::ScopedMockTimeMessageLoopTaskRunner test_task_runner;
-  SetTickClockForTesting(test_task_runner->GetMockTickClock());
-
-  // Caption bubble hides after 5 seconds without receiving a transcription.
-  OnPartialTranscription("Bowhead whales can live for over 200 years.");
-  EXPECT_TRUE(IsWidgetVisible());
-  EXPECT_EQ("Bowhead whales can live for over 200 years.", GetLabelText());
-  ASSERT_TRUE(GetBubble()->GetInactivityTimerForTesting()->IsRunning());
-  // TODO(crbug.com/40119836): Change this to 5 seconds. For some reasons tests
-  // need to wait 10 seconds, but testing the feature only requires a 5 second
-  // wait.
-  test_task_runner->FastForwardBy(base::Seconds(10));
-  EXPECT_FALSE(IsWidgetVisible());
-  EXPECT_EQ("", GetLabelText());
-
-  // Caption bubble stays hidden when receiving a final transcription.
-  OnFinalTranscription("Bowhead whales can live for over 200 years.");
-  EXPECT_FALSE(IsWidgetVisible());
-  EXPECT_EQ("", GetLabelText());
-
-  // Caption bubble reappears when receiving a partial transcription.
-  OnPartialTranscription("Killer whales");
-  EXPECT_TRUE(IsWidgetVisible());
-  EXPECT_EQ("Killer whales", GetLabelText());
-
-  SetTickClockForTesting(nullptr);
-}
-
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
                        HasAccessibleWindowTitle) {
   OnPartialTranscription("A turtle's shell is part of its skeleton.");
@@ -1305,38 +1168,6 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
   EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
   // TODO(crbug.com/40119836): Test that browser window is active. It works in
   // app but the tests aren't working.
-}
-
-IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest,
-                       ErrorHidesAfterInactivity) {
-  // Use a ScopedMockTimeMessageLoopTaskRunner to test the inactivity timer
-  // with a mock tick clock that replaces the default tick clock with mock
-  // time.
-  base::ScopedMockTimeMessageLoopTaskRunner test_task_runner;
-  SetTickClockForTesting(test_task_runner->GetMockTickClock());
-
-  OnError();
-  test_task_runner->RunUntilIdle();
-
-  EXPECT_TRUE(IsWidgetVisible());
-  EXPECT_FALSE(HasMediaFoundationError());
-  EXPECT_EQ("", GetLabelText());
-  ASSERT_TRUE(GetBubble()->GetInactivityTimerForTesting()->IsRunning());
-
-  // Verify that the caption bubble hides due to inactivity.
-  test_task_runner->FastForwardBy(base::Seconds(15));
-  EXPECT_FALSE(IsWidgetVisible());
-  EXPECT_EQ("", GetLabelText());
-
-  OnMediaFoundationError();
-  EXPECT_TRUE(IsWidgetVisible());
-  EXPECT_TRUE(HasMediaFoundationError());
-  EXPECT_EQ("", GetLabelText());
-  ASSERT_TRUE(GetBubble()->GetInactivityTimerForTesting()->IsRunning());
-  EXPECT_TRUE(IsWidgetVisible());
-  EXPECT_EQ("", GetLabelText());
-
-  SetTickClockForTesting(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, LiveTranslateLabel) {
@@ -1393,7 +1224,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, HeaderView) {
                    left_header_container->GetLayoutManager())
                    ->inside_border_insets()
                    .left());
-  EXPECT_EQ(464, left_header_container->GetPreferredSize().width());
+  EXPECT_EQ(488, left_header_container->GetPreferredSize().width());
 
   EXPECT_EQ(u"English",
             static_cast<views::LabelButton*>(language_label)->GetText());
