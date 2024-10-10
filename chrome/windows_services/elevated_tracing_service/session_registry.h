@@ -5,6 +5,8 @@
 #ifndef CHROME_WINDOWS_SERVICES_ELEVATED_TRACING_SERVICE_SESSION_REGISTRY_H_
 #define CHROME_WINDOWS_SERVICES_ELEVATED_TRACING_SERVICE_SESSION_REGISTRY_H_
 
+#include <unknwn.h>
+
 #include <atomic>
 #include <memory>
 
@@ -13,7 +15,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/process/process.h"
 #include "chrome/windows_services/elevated_tracing_service/process_watcher.h"
-#include "unknwn.h"
 
 namespace elevated_tracing_service {
 
@@ -50,8 +51,9 @@ class SessionRegistry : public base::RefCountedThreadSafe<SessionRegistry> {
       IUnknown* session,
       base::Process client_process);
 
-  // Returns true if the instance is tracking an active session.
-  bool HasActiveSessionForTesting() const;
+  // Sets a closure to be run (on an arbitrary thread) when the active session
+  // is cleared.
+  void SetSessionClearedClosureForTesting(base::OnceClosure on_session_cleared);
 
  private:
   class SessionCore;
@@ -67,7 +69,15 @@ class SessionRegistry : public base::RefCountedThreadSafe<SessionRegistry> {
   // (on an arbitrary thread pool thread).
   void OnClientTerminated(scoped_refptr<SessionCore> core);
 
+  // Clears the active session following either its destruction or termination
+  // of the client.
+  void ClearActiveSession(SessionCore* core);
+
   std::atomic<SessionCore*> active_session_ = nullptr;
+
+  // An optional closure to be run (on an arbitrary thread) when the active
+  // session is cleared.
+  base::OnceClosure on_session_cleared_;
 };
 
 }  // namespace elevated_tracing_service

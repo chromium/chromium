@@ -86,8 +86,9 @@ SessionRegistry::RegisterActiveSession(IUnknown* session,
              : nullptr;
 }
 
-bool SessionRegistry::HasActiveSessionForTesting() const {
-  return active_session_.load();
+void SessionRegistry::SetSessionClearedClosureForTesting(
+    base::OnceClosure on_session_cleared) {
+  on_session_cleared_ = std::move(on_session_cleared);
 }
 
 void SessionRegistry::OnSessionDestroyed(scoped_refptr<SessionCore> core) {
@@ -98,8 +99,7 @@ void SessionRegistry::OnSessionDestroyed(scoped_refptr<SessionCore> core) {
     // This task is handling session destruction before the termination task, so
     // take responsibility of clearing the active session. From this point
     // onward, a new call to RegisterActiveSession() will succeed.
-    SessionCore* expected_core = core.get();
-    active_session_.compare_exchange_strong(expected_core, nullptr);
+    ClearActiveSession(core.get());
   }
 }
 
@@ -113,8 +113,15 @@ void SessionRegistry::OnClientTerminated(scoped_refptr<SessionCore> core) {
     // This task is handling client termination before the session is destroyed,
     // so take responsibility of clearing the active session. From this point
     // onward, a new call to RegisterActiveSession() will succeed.
-    SessionCore* expected_core = core.get();
-    active_session_.compare_exchange_strong(expected_core, nullptr);
+    ClearActiveSession(core.get());
+  }
+}
+
+void SessionRegistry::ClearActiveSession(SessionCore* core) {
+  SessionCore* expected_core = core;
+  if (active_session_.compare_exchange_strong(expected_core, nullptr) &&
+      on_session_cleared_) {
+    std::move(on_session_cleared_).Run();
   }
 }
 

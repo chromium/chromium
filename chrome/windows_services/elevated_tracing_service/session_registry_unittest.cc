@@ -9,8 +9,8 @@
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
+#include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/test/run_until.h"
 #include "base/win/scoped_com_initializer.h"
 #include "chrome/windows_services/elevated_tracing_service/with_child_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -91,6 +91,9 @@ TEST_F(SessionRegistryTest, ClientTerminates) {
       dummy->CastToUnknown(), child_process.Duplicate());
   ASSERT_TRUE(session);
 
+  base::RunLoop run_loop;
+  session_registry().SetSessionClearedClosureForTesting(run_loop.QuitClosure());
+
   // Tell the child to terminate.
   std::move(child_stopper).Invoke();
 
@@ -98,9 +101,8 @@ TEST_F(SessionRegistryTest, ClientTerminates) {
   ASSERT_EQ(::WaitForSingleObject(child_process.Handle(), INFINITE),
             WAIT_OBJECT_0);
 
-  // Run tasks until registry notices that the child has terminated.
-  ASSERT_TRUE(base::test::RunUntil(
-      [this] { return !session_registry().HasActiveSessionForTesting(); }));
+  // Wait for the registry to clear the session.
+  run_loop.Run();
 
   // It should now be possible to register a new session.
   child_process = SpawnChildWithEventHandles(kExitWhenSignaled);
