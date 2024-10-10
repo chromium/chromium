@@ -9126,11 +9126,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "use-v4l2-flat-stateful-video-decoder",
-    "owners": [ "mcasas@chromium.org", "chromeos-gfx-video@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "use-wallpaper-staging-url",
     "owners": [ "cros-customization@google.com", "hsuregan@chromium.org", "khorimoto@chromium.org" ],
     // This flag is required for QA and dogfood testing.

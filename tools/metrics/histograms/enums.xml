@@ -18339,8 +18339,6 @@ from previous Chrome versions.
   <int value="-797152302" label="ScreenlockReauthPromoCard:enabled"/>
   <int value="-796775379" label="FoldableJankFix:disabled"/>
   <int value="-795600188" label="disable-async-dns"/>
-  <int value="-794599236"
-      label="use-v4l2-flat-stateful-video-decoder:disabled"/>
   <int value="-793921836" label="ShowAllDialogsWithViewsToolkit:disabled"/>
   <int value="-793383355" label="StrictOriginIsolation:enabled"/>
   <int value="-792785226" label="TemporaryUnexpireFlagsM78:disabled"/>
@@ -21212,7 +21210,6 @@ from previous Chrome versions.
   <int value="375032683" label="CellularAllowPerNetworkRoaming:enabled"/>
   <int value="375485858" label="EnableZeroStateMixedTypesRanker:disabled"/>
   <int value="375785554" label="UserActivationV2:disabled"/>
-  <int value="375799847" label="use-v4l2-flat-stateful-video-decoder:enabled"/>
   <int value="375934458" label="PortalsCrossOrigin:enabled"/>
   <int value="376825548" label="CloudGamingDevice:enabled"/>
   <int value="377093001" label="WebRtcHWH264Encoding:disabled"/>
