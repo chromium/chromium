@@ -239,6 +239,71 @@ TEST_F(AutofillManagerTest, UpdateAndRemoveSameForms) {
   OnFormsSeenWithExpectations(manager(), forms, GetFormIds(forms), forms);
 }
 
+// Tests that events update the form cache. Since there are so many events and
+// so many properties of forms that may change, the test only covers a small
+// fraction:
+// - Events: OnFormsSeen(), OnTextFieldDidChange(), OnFocusOnFormField()
+// - Properties: AutofillField::value(ValueSemantics::kCurrent)
+TEST_F(AutofillManagerTest, FormCacheUpdatesValue) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillFixValueSemantics);
+  EXPECT_CALL(manager(), ShouldParseForms)
+      .Times(AtLeast(0))
+      .WillRepeatedly(Return(true));
+  TestAutofillManagerWaiter waiter(manager());
+
+  FormData form = test::CreateTestAddressFormData();
+  FormGlobalId form_id = form.global_id();
+  auto current_cached_value = [this,
+                               &form_id]() -> std::optional<std::u16string> {
+    FormStructure* cached_form = manager().FindCachedFormById(form_id);
+    if (!cached_form || cached_form->fields().empty()) {
+      return std::nullopt;
+    }
+    return cached_form->fields()[0]->value(ValueSemantics::kCurrent);
+  };
+
+  EXPECT_EQ(current_cached_value(), std::nullopt);
+
+  // Triggers a parse.
+  test_api(form).field(0).set_value(u"first seen value");
+  manager().OnFormsSeen({form}, {});
+  ASSERT_TRUE(waiter.Wait());
+  EXPECT_EQ(current_cached_value(), u"first seen value");
+
+  // Triggers a reparse.
+  test_api(form).field(0).set_value(u"second seen value");
+  manager().OnFormsSeen({form}, {});
+  ASSERT_TRUE(waiter.Wait());
+  EXPECT_EQ(current_cached_value(), u"second seen value");
+
+  // Triggers no reparse.
+  test_api(form).field(0).set_value(u"first changed value");
+  manager().OnTextFieldDidChange(form, form.fields()[0].global_id(), {});
+  ASSERT_TRUE(waiter.Wait());
+  EXPECT_EQ(current_cached_value(), u"first changed value");
+
+  // Triggers no reparse.
+  test_api(form).field(0).set_value(u"second changed value");
+  manager().OnTextFieldDidChange(form, form.fields()[0].global_id(), {});
+  ASSERT_TRUE(waiter.Wait());
+  EXPECT_EQ(current_cached_value(), u"second changed value");
+
+  // Triggers a reparse.
+  test_api(form).Remove(-1);
+  test_api(form).field(0).set_value(u"first reparse value");
+  manager().OnFocusOnFormField(form, form.fields()[0].global_id());
+  ASSERT_TRUE(waiter.Wait());
+  EXPECT_EQ(current_cached_value(), u"first reparse value");
+
+  // Triggers a second reparse.
+  test_api(form).Remove(-1);
+  test_api(form).field(0).set_value(u"second reparse value");
+  manager().OnFocusOnFormField(form, form.fields()[0].global_id());
+  ASSERT_TRUE(waiter.Wait());
+  EXPECT_EQ(current_cached_value(), u"second reparse value");
+}
+
 TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillPageLanguageDetection};

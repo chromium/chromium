@@ -444,9 +444,12 @@ bool FormStructure::ShouldBeUploaded() const {
 void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
                                       RetrieveFromCacheReason reason) {
   // Build a table to lookup AutofillFields by their FieldGlobalId.
-  std::map<FieldGlobalId, const AutofillField*> cached_fields_by_id;
-  for (const std::unique_ptr<autofill::AutofillField>& field : cached_form)
-    cached_fields_by_id[field->global_id()] = field.get();
+  auto cached_fields_by_id =
+      base::MakeFlatMap<FieldGlobalId, const AutofillField*>(
+          cached_form.fields(), {},
+          [](const std::unique_ptr<AutofillField>& field) {
+            return std::make_pair(field->global_id(), field.get());
+          });
 
   // Lookup field by global_id in cached_fields_by_id.
   auto find_field_by_id = [&cached_fields_by_id](FieldGlobalId global_id) {
@@ -495,7 +498,8 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
     // TODO: crbug.com/40227496 - Update the comments when the experiments are
     // launched.
     switch (reason) {
-      case RetrieveFromCacheReason::kFormParsing:
+      case RetrieveFromCacheReason::kFormCacheUpdateAfterParsing:
+      case RetrieveFromCacheReason::kFormCacheUpdateWithoutParsing:
         // If kAutofillFixValueSemantics is disabled: During form parsing (as in
         // "assigning field types to fields") the `value` represents the initial
         // value found at page load and needs to be preserved.
@@ -556,7 +560,8 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
     field->set_server_predictions(cached_field->server_predictions());
 
     // Preserve state whether the field was autofilled before.
-    if (reason == RetrieveFromCacheReason::kFormParsing) {
+    if (reason == RetrieveFromCacheReason::kFormCacheUpdateWithoutParsing ||
+        reason == RetrieveFromCacheReason::kFormCacheUpdateAfterParsing) {
       field->set_is_autofilled(cached_field->is_autofilled());
     }
     field->set_autofill_source_profile_guid(
@@ -573,8 +578,10 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
     // and information derived from the autocomplete attribute as those are
     // either regenerated or copied from the form that the renderer sent.
     // During import, no parsing happens and we want to preserve the last field
-    // classification.
-    if (reason == RetrieveFromCacheReason::kFormImport) {
+    // classification. Similarly, if the renderer sends an update that does not
+    // trigger parsing, we want to preserve the last field classification
+    if (reason == RetrieveFromCacheReason::kFormCacheUpdateWithoutParsing ||
+        reason == RetrieveFromCacheReason::kFormImport) {
       // Transfer attributes of the cached AutofillField to the newly created
       // AutofillField.
       for (int i = 0; i <= static_cast<int>(HeuristicSource::kMaxValue); ++i) {
