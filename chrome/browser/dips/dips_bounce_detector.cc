@@ -1068,14 +1068,13 @@ void DIPSBounceDetector::DidFinishNavigation(
   size_t offset =
       access_types.size() - (server_state->server_redirects.size() + 1);
   for (size_t i = 0; i < server_state->server_redirects.size(); i++) {
-    // The next item in the redirect chain should be equal to the destination
-    // URL recorded by the corresponding redirect navigation.
-    DCHECK_EQ(
-        navigation_handle->GetRedirectChain()[i + offset + 1].host_piece(),
-        server_state->server_redirects[i].destination_url.host_piece());
-    DCHECK_EQ(
-        navigation_handle->GetRedirectChain()[i + offset + 1].path_piece(),
-        server_state->server_redirects[i].destination_url.path_piece());
+    // Note that the next item in the redirect chain should be equal to the
+    // destination URL recorded by the corresponding redirect navigation.
+    // However, there are no precondition checks here, as this invariant appears
+    // to be untrue when running on Windows.
+    //
+    // TODO(crbug.com/371802472): Add back the checks removed during
+    // crrev.com/c/5912983 after investigating why the checks fail on Windows.
     redirects.push_back(std::make_unique<DIPSRedirectInfo>(
         /*url=*/UrlAndSourceId(
             navigation_handle->GetRedirectChain()[i + offset],
