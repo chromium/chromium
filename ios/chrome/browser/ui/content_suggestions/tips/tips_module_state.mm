@@ -6,6 +6,7 @@
 
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
+#import "ios/chrome/browser/ui/content_suggestions/tips/tips_module_audience.h"
 
 using segmentation_platform::TipIdentifier;
 

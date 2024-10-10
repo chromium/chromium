@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol ContentSuggestionsViewControllerAudience;
 @class TipsModuleState;
 namespace segmentation_platform {
 enum class TipIdentifier;
@@ -17,6 +18,10 @@ enum class TipIdentifier;
 
 // Used by the Tips module for the current module state.
 @property(nonatomic, strong, readonly) TipsModuleState* state;
+
+// Audience for presentation actions.
+@property(nonatomic, weak) id<ContentSuggestionsViewControllerAudience>
+    presentationAudience;
 
 // Default initializer.
 - (instancetype)initWithIdentifier:

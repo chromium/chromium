@@ -1179,7 +1179,7 @@ struct EnhancedSafeBrowsingActivePromoData
   return [self detailItemWithType:SettingsItemTypeTableCellCatalog
                              text:@"TableView Cell Catalog"
                        detailText:nil
-                           symbol:DefaultSettingsRootSymbol(@"cart")
+                           symbol:DefaultSettingsRootSymbol(kCartSymbol)
             symbolBackgroundColor:[UIColor colorNamed:kGrey400Color]
           accessibilityIdentifier:nil];
 }

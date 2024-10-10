@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/tips/tips_module_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_module_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_module_view.h"
 
@@ -192,6 +193,8 @@
 
 - (UIView*)tipsViewForConfig:(TipsModuleState*)state {
   TipsModuleView* view = [[TipsModuleView alloc] initWithState:state];
+
+  view.audience = state.audience;
 
   return view;
 }

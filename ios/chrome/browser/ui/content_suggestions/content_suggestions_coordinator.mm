@@ -80,7 +80,9 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/credential_provider_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
@@ -135,6 +137,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_magic_stack_mediator.h"
+#import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_confirmation_presenter.h"
@@ -403,6 +406,7 @@ using segmentation_platform::TipIdentifier;
   if (IsTipsMagicStackEnabled()) {
     _tipsMediator = [[TipsMagicStackMediator alloc]
         initWithIdentifier:TipIdentifier::kUnknown];
+    _tipsMediator.presentationAudience = self;
     [moduleMediators addObject:_tipsMediator];
   }
 
@@ -571,6 +575,52 @@ using segmentation_platform::TipIdentifier;
 - (void)viewWillDisappear {
   DiscoverFeedServiceFactory::GetForProfile(self.browser->GetProfile())
       ->SetIsShownOnStartSurface(false);
+}
+
+- (void)didSelectTip:(segmentation_platform::TipIdentifier)tip {
+  // TODO(crbug.com/369457289): Track user interactions with the Tips module
+  // using new metrics.
+  switch (tip) {
+    case TipIdentifier::kUnknown:
+      NOTREACHED();
+    case TipIdentifier::kLensSearch:
+    case TipIdentifier::kLensShop:
+    case TipIdentifier::kLensTranslate: {
+      LensEntrypoint entryPoint = tip == TipIdentifier::kLensTranslate
+                                      ? LensEntrypoint::TranslateOnebox
+                                      : LensEntrypoint::HomeScreenWidget;
+
+      OpenLensInputSelectionCommand* command =
+          [[OpenLensInputSelectionCommand alloc]
+                  initWithEntryPoint:entryPoint
+                   presentationStyle:LensInputSelectionPresentationStyle::
+                                         SlideFromRight
+              presentationCompletion:nil];
+
+      command.presentNTPLensIconBubbleOnDismiss = YES;
+
+      // TODO(crbug.com/372489225): Conditionally show Lens shop result page
+      // with product image.
+      [HandlerForProtocol(self.browser->GetCommandDispatcher(), LensCommands)
+          openLensInputSelection:command];
+
+      break;
+    }
+    case TipIdentifier::kAddressBarPosition:
+      [HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                          BrowserCoordinatorCommands)
+          showOmniboxPositionChoice];
+      break;
+    case TipIdentifier::kEnhancedSafeBrowsing:
+      [HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                          SettingsCommands) showSafeBrowsingSettings];
+      break;
+    case TipIdentifier::kSavePasswords:
+    case TipIdentifier::kAutofillPasswords:
+      // TODO(crbug.com/372491399): Implement animated promo screens for
+      // `kSavePasswords` and `kAutofillPasswords`.
+      break;
+  }
 }
 
 #pragma mark - MagicStackCollectionViewAudience

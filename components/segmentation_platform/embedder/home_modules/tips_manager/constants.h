@@ -6,6 +6,7 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_EMBEDDER_HOME_MODULES_TIPS_MANAGER_CONSTANTS_H_
 
 #include <string>
+#include <string_view>
 
 namespace segmentation_platform {
 
@@ -39,8 +40,13 @@ enum class TipIdentifier {
 };
 // LINT.ThenChange(/components/segmentation_platform/embedder/home_modules/tips_manager/constants.cc:NameForTipIdentifier)
 
-// Returns the string representation of `tip`.
+// Returns the human-readable string representation of the given `tip`.
 std::string NameForTipIdentifier(TipIdentifier tip);
+
+// Returns the `TipIdentifier` corresponding to the given string representation,
+// `name`. If the input string is invalid or unknown, this function returns
+// `TipIdentifier::kUnknown`.
+TipIdentifier TipIdentifierForName(std::string_view name);
 
 // Represents the context in which a tip is presented to the user. This is
 // used for tracking, analysis, and potentially adapting tip behavior or

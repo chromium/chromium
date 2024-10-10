@@ -10,6 +10,9 @@
 enum class ContentSuggestionsModuleType;
 enum class SafetyCheckItemType;
 @class SetUpListItemView;
+namespace segmentation_platform {
+enum class TipIdentifier;
+}  // namespace segmentation_platform
 
 // Audience for the ContentSuggestions, getting information from it.
 @protocol
@@ -23,6 +26,9 @@ enum class SafetyCheckItemType;
 
 // Indicates that the user has tapped the given `view`.
 - (void)didTapSetUpListItemView:(SetUpListItemView*)view;
+
+// Indicates that the user has tapped the given `tip`.
+- (void)didSelectTip:(segmentation_platform::TipIdentifier)tip;
 
 @end
 

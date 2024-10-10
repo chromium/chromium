@@ -7,6 +7,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module.h"
 
+@protocol TipsModuleAudience;
 namespace segmentation_platform {
 enum class TipIdentifier;
 }  // namespace segmentation_platform
@@ -23,6 +24,9 @@ enum class TipIdentifier;
 
 // The product image URL associated with the tip. Can be `nil`.
 @property(nonatomic, readwrite) NSURL* productImageURL;
+
+// The object that should handle user events.
+@property(nonatomic, weak) id<TipsModuleAudience> audience;
 
 @end
 

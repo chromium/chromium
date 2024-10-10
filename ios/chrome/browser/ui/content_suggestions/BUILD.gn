@@ -108,6 +108,7 @@ source_set("content_suggestions") {
     "//ios/chrome/browser/ui/content_suggestions/set_up_list:utils",
     "//ios/chrome/browser/ui/content_suggestions/tab_resumption",
     "//ios/chrome/browser/ui/content_suggestions/tips",
+    "//ios/chrome/browser/ui/lens:lens_entrypoint",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/push_notification:notifications_opt_in",
     "//ios/chrome/browser/ui/push_notification:opt_in_alert_coordinator",

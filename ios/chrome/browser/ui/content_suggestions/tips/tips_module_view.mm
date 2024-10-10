@@ -4,10 +4,16 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_module_view.h"
 
+#import <string>
+
 #import "base/check.h"
+#import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/segmentation_platform/embedder/home_modules/tips_ephemeral_module_constants.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/icon_detail_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/tips/tips_module_audience.h"
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_module_state.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -15,7 +21,9 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
+using segmentation_platform::NameForTipIdentifier;
 using segmentation_platform::TipIdentifier;
+using segmentation_platform::TipIdentifierForName;
 
 namespace {
 
@@ -51,7 +59,48 @@ NSString* const kAutofillPasswordsAccessibilityID =
 NSString* const kEnhancedSafeBrowsingAccessibilityID =
     @"kEnhancedSafeBrowsingAccessibilityID";
 
+// This struct represents configuration information for a Tips-related symbol.
+struct SymbolConfig {
+  const std::string name;
+  bool is_default_symbol;
+};
+
+// Returns the `SymbolConfig` for the given `tip`.
+SymbolConfig GetSymbolConfigForTip(TipIdentifier tip) {
+  switch (tip) {
+    case TipIdentifier::kUnknown:
+      return {base::SysNSStringToUTF8(kListBulletClipboardSymbol), true};
+    case TipIdentifier::kLensSearch:
+    case TipIdentifier::kLensShop:
+    case TipIdentifier::kLensTranslate:
+      return {base::SysNSStringToUTF8(kCameraLensSymbol), false};
+    case TipIdentifier::kAddressBarPosition:
+      return {base::SysNSStringToUTF8(kGlobeAmericasSymbol), true};
+    case TipIdentifier::kSavePasswords:
+    case TipIdentifier::kAutofillPasswords:
+      return {base::SysNSStringToUTF8(kPasswordSymbol), false};
+    case TipIdentifier::kEnhancedSafeBrowsing:
+      return {base::SysNSStringToUTF8(kPrivacySymbol), false};
+  }
+}
+
+// Returns the `SymbolConfig` for the badge symbol of the given `tip`, or a
+// default-constructed `SymbolConfig` if the tip doesn't have a badge.
+SymbolConfig GetBadgeSymbolConfigForTip(TipIdentifier tip) {
+  switch (tip) {
+    case TipIdentifier::kLensShop:
+      return {base::SysNSStringToUTF8(kCartSymbol), true};
+    case TipIdentifier::kLensTranslate:
+      return {base::SysNSStringToUTF8(kLanguageSymbol), false};
+    default:
+      NOTREACHED();
+  }
+}
+
 }  // namespace
+
+@interface TipsModuleView () <IconDetailViewTapDelegate>
+@end
 
 @implementation TipsModuleView {
   // The current state of the Tips module.
@@ -77,6 +126,19 @@ NSString* const kEnhancedSafeBrowsingAccessibilityID =
   [self createSubviews];
 }
 
+#pragma mark - IconDetailViewTapDelegate
+
+- (void)didTapIconDetailView:(IconDetailView*)view {
+  CHECK(view.identifier != nil);
+
+  TipIdentifier tip =
+      TipIdentifierForName(base::SysNSStringToUTF8(view.identifier));
+
+  CHECK_NE(tip, TipIdentifier::kUnknown);
+
+  [self.audience didSelectTip:tip];
+}
+
 #pragma mark - Private methods
 
 - (void)createSubviews {
@@ -86,92 +148,43 @@ NSString* const kEnhancedSafeBrowsingAccessibilityID =
   }
 
   self.translatesAutoresizingMaskIntoConstraints = NO;
+
   self.accessibilityIdentifier = kTipsModuleViewID;
 
-  TipIdentifier tip = _state.identifier;
-
-  NSString* symbolName = [self symbolNameForTip:tip];
-
-  // `kListBulletClipboardSymbol` and `kGlobeAmericasSymbol` are the only
-  // default symbols used.
-  BOOL isDefaultSymbol =
-      [symbolName isEqualToString:kListBulletClipboardSymbol] ||
-      [symbolName isEqualToString:kGlobeAmericasSymbol];
-
-  // Determine the background color of the symbol based on the
-  // name of the tip.
-  UIColor* symbolBackgroundColor;
-  switch (tip) {
-    case segmentation_platform::TipIdentifier::kAddressBarPosition:
-      symbolBackgroundColor = [UIColor colorNamed:kPurple500Color];
-      break;
-    case segmentation_platform::TipIdentifier::kSavePasswords:
-    case segmentation_platform::TipIdentifier::kAutofillPasswords:
-      symbolBackgroundColor = [UIColor colorNamed:kYellow500Color];
-      break;
-    case segmentation_platform::TipIdentifier::kEnhancedSafeBrowsing:
-      symbolBackgroundColor = [UIColor colorNamed:kBlueColor];
-      break;
-    default:
-      symbolBackgroundColor = [UIColor colorNamed:kBackgroundColor];
-  }
-
-  // Determine how the Tip should be initialized based on if it has a Badge
-  // Icon. If the Tip has a badge, pass additional parameters to customize the
-  // Badge Icon.
-  switch (tip) {
-    case segmentation_platform::TipIdentifier::kLensShop:
-      _contentView = [[IconDetailView alloc]
-                    initWithTitle:[self titleText:tip]
-                      description:[self descriptionTextForTip:tip]
-                       layoutType:IconDetailViewLayoutType::kHero
-                       symbolName:symbolName
-               symbolColorPalette:@[ [UIColor whiteColor] ]
-            symbolBackgroundColor:symbolBackgroundColor
-                usesDefaultSymbol:isDefaultSymbol
-                    showCheckmark:NO
-                  badgeSymbolName:@"cart"
-             badgeBackgroundColor:[UIColor colorNamed:kPink500Color]
-           badgeUsesDefaultSymbol:YES
-          accessibilityIdentifier:[self accessibilityIdentifierForTip:tip]];
-
-      break;
-    case segmentation_platform::TipIdentifier::kLensTranslate:
-      _contentView = [[IconDetailView alloc]
-                    initWithTitle:[self titleText:tip]
-                      description:[self descriptionTextForTip:tip]
-                       layoutType:IconDetailViewLayoutType::kHero
-                       symbolName:symbolName
-               symbolColorPalette:@[ [UIColor whiteColor] ]
-            symbolBackgroundColor:symbolBackgroundColor
-                usesDefaultSymbol:isDefaultSymbol
-                    showCheckmark:NO
-                  badgeSymbolName:kLanguageSymbol
-             badgeBackgroundColor:[UIColor colorNamed:kBlue500Color]
-           badgeUsesDefaultSymbol:NO
-          accessibilityIdentifier:[self accessibilityIdentifierForTip:tip]];
-
-      break;
-    default:
-      _contentView = [[IconDetailView alloc]
-                    initWithTitle:[self titleText:tip]
-                      description:[self descriptionTextForTip:tip]
-                       layoutType:IconDetailViewLayoutType::kHero
-                       symbolName:symbolName
-               symbolColorPalette:@[ [UIColor whiteColor] ]
-            symbolBackgroundColor:symbolBackgroundColor
-                usesDefaultSymbol:isDefaultSymbol
-                    showCheckmark:NO
-          accessibilityIdentifier:[self accessibilityIdentifierForTip:tip]];
-
-      break;
-  }
+  _contentView = [self iconDetailView:_state.identifier];
 
   [self addSubview:_contentView];
 
   AddSameConstraints(_contentView, self);
 
   return;
+}
+
+// Creates and returns an `IconDetailView` configured for the `tip`.
+- (IconDetailView*)iconDetailView:(TipIdentifier)tip {
+  SymbolConfig symbol = GetSymbolConfigForTip(tip);
+
+  SymbolConfig badgeSymbol = GetBadgeSymbolConfigForTip(tip);
+
+  IconDetailView* view = [[IconDetailView alloc]
+                initWithTitle:[self titleText:tip]
+                  description:[self descriptionText:tip]
+                   layoutType:IconDetailViewLayoutType::kHero
+                   symbolName:base::SysUTF8ToNSString(symbol.name)
+           symbolColorPalette:[self symbolColorPalette:tip]
+        symbolBackgroundColor:[self symbolBackgroundColor:tip]
+            usesDefaultSymbol:symbol.is_default_symbol
+                showCheckmark:NO
+              badgeSymbolName:base::SysUTF8ToNSString(badgeSymbol.name)
+         badgeBackgroundColor:[self badgeBackgroundColor:tip]
+       badgeUsesDefaultSymbol:badgeSymbol.is_default_symbol
+      accessibilityIdentifier:[self accessibilityIdentifier:tip]];
+
+  view.identifier = base::SysUTF8ToNSString(NameForTipIdentifier(tip));
+
+  view.tapDelegate = self;
+
+  return view;
 }
 
 // Returns the title text for the given `tip`.
@@ -202,7 +215,7 @@ NSString* const kEnhancedSafeBrowsingAccessibilityID =
 }
 
 // Returns the description text for the given `tip`.
-- (NSString*)descriptionTextForTip:(TipIdentifier)tip {
+- (NSString*)descriptionText:(TipIdentifier)tip {
   switch (tip) {
     case TipIdentifier::kUnknown:
       // An unknown tip does not use a description.
@@ -231,27 +244,49 @@ NSString* const kEnhancedSafeBrowsingAccessibilityID =
   }
 }
 
-// Returns the symbol name for the given `tip`.
-- (NSString*)symbolNameForTip:(TipIdentifier)tip {
+// Returns the color palette for the symbol based on the `tip`.
+- (NSArray<UIColor*>*)symbolColorPalette:(TipIdentifier)tip {
   switch (tip) {
-    case TipIdentifier::kUnknown:
-      return kListBulletClipboardSymbol;
-    case TipIdentifier::kLensSearch:
-    case TipIdentifier::kLensShop:
-    case TipIdentifier::kLensTranslate:
-      return kCameraLensSymbol;
-    case TipIdentifier::kAddressBarPosition:
-      return kGlobeAmericasSymbol;
-    case TipIdentifier::kSavePasswords:
-    case TipIdentifier::kAutofillPasswords:
-      return kPasswordSymbol;
-    case TipIdentifier::kEnhancedSafeBrowsing:
-      return kPrivacySymbol;
+    case segmentation_platform::TipIdentifier::kAddressBarPosition:
+    case segmentation_platform::TipIdentifier::kSavePasswords:
+    case segmentation_platform::TipIdentifier::kAutofillPasswords:
+    case segmentation_platform::TipIdentifier::kEnhancedSafeBrowsing:
+      return @[ [UIColor whiteColor] ];
+    default:
+      return nil;
+  }
+}
+
+// Returns the symbol background color based on the `tip`.
+- (UIColor*)symbolBackgroundColor:(TipIdentifier)tip {
+  switch (tip) {
+    case segmentation_platform::TipIdentifier::kAddressBarPosition:
+      return [UIColor colorNamed:kPurple500Color];
+    case segmentation_platform::TipIdentifier::kSavePasswords:
+    case segmentation_platform::TipIdentifier::kAutofillPasswords:
+      return [UIColor colorNamed:kYellow500Color];
+    case segmentation_platform::TipIdentifier::kEnhancedSafeBrowsing:
+      return [UIColor colorNamed:kBlueColor];
+    default:
+      return [UIColor colorNamed:kBackgroundColor];
+  }
+}
+
+// Returns the badge background color based on the `tip`, or `nil` if the tip
+// doesn't have a badge.
+- (UIColor*)badgeBackgroundColor:(TipIdentifier)tip {
+  switch (tip) {
+    case segmentation_platform::TipIdentifier::kLensShop:
+      return [UIColor colorNamed:kPink500Color];
+    case segmentation_platform::TipIdentifier::kLensTranslate:
+      return [UIColor colorNamed:kBlue500Color];
+    default:
+      return nil;
   }
 }
 
 // Returns the accessibility identifier for the specified `tip`.
-- (NSString*)accessibilityIdentifierForTip:(TipIdentifier)tip {
+- (NSString*)accessibilityIdentifier:(TipIdentifier)tip {
   switch (tip) {
     case TipIdentifier::kUnknown:
       return kUnknownAccessibilityID;

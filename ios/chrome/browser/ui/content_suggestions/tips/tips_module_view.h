@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol TipsModuleAudience;
 @class TipsModuleState;
 
 // A view displaying the Tips module in the Magic Stack.
@@ -14,6 +15,9 @@
 
 // Initializes the `TipsModuleView` with `state`.
 - (instancetype)initWithState:(TipsModuleState*)state;
+
+// The object that should handle user events.
+@property(nonatomic, weak) id<TipsModuleAudience> audience;
 
 @end
 

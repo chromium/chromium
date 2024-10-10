@@ -29,6 +29,30 @@ std::string NameForTipIdentifier(TipIdentifier tip) {
 }
 // LINT.ThenChange(/components/segmentation_platform/embedder/home_modules/tips_manager/constants.h:TipIdentifier)
 
+// LINT.IfChange(TipIdentifierForName)
+TipIdentifier TipIdentifierForName(std::string_view name) {
+  if (name == "Unknown") {
+    return TipIdentifier::kUnknown;
+  } else if (name == "LensSearch") {
+    return TipIdentifier::kLensSearch;
+  } else if (name == "LensShop") {
+    return TipIdentifier::kLensShop;
+  } else if (name == "LensTranslate") {
+    return TipIdentifier::kLensTranslate;
+  } else if (name == "AddressBarPosition") {
+    return TipIdentifier::kAddressBarPosition;
+  } else if (name == "SavePasswords") {
+    return TipIdentifier::kSavePasswords;
+  } else if (name == "AutofillPasswords") {
+    return TipIdentifier::kAutofillPasswords;
+  } else if (name == "EnhancedSafeBrowsing") {
+    return TipIdentifier::kEnhancedSafeBrowsing;
+  } else {
+    return TipIdentifier::kUnknown;  // Default to unknown if not found.
+  }
+}
+// LINT.ThenChange(/components/segmentation_platform/embedder/home_modules/tips_manager/constants.h:TipIdentifier)
+
 // LINT.IfChange(NameForTipPresentationContext)
 std::string NameForTipPresentationContext(TipPresentationContext context) {
   switch (context) {
