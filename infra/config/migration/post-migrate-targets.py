@@ -92,7 +92,7 @@ def _convert_basic_suite(
           raise Exception(
               f'unhandled key in basic suite test definition: {key}')
 
-  modifications_builder['mixins'] = mixins_builder or anonymous_mixin_builder
+    modifications_builder['mixins'] = mixins_builder or anonymous_mixin_builder
 
   return {
       'targets': targets_builder.output(),
