@@ -65,15 +65,15 @@ class CORE_EXPORT CachedMatchedProperties final
            const MatchedPropertiesVector&);
   void Clear();
 
-  bool DependenciesEqual(const StyleResolverState&);
+  bool DependenciesEqual(const StyleResolverState&) const;
 
   void Trace(Visitor* visitor) const {
     visitor->Trace(computed_style);
     visitor->Trace(parent_computed_style);
   }
 
-  bool operator==(const MatchedPropertiesVector& properties);
-  bool operator!=(const MatchedPropertiesVector& properties);
+  bool operator==(const MatchedPropertiesVector& properties) const;
+  bool operator!=(const MatchedPropertiesVector& properties) const;
 };
 
 class CORE_EXPORT MatchedPropertiesCache {

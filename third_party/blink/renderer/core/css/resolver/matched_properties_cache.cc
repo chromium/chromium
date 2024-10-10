@@ -80,7 +80,7 @@ void CachedMatchedProperties::Clear() {
 }
 
 bool CachedMatchedProperties::DependenciesEqual(
-    const StyleResolverState& state) {
+    const StyleResolverState& state) const {
   if (!state.ParentStyle()) {
     return false;
   }
@@ -165,7 +165,7 @@ const CachedMatchedProperties* MatchedPropertiesCache::Find(
 }
 
 bool CachedMatchedProperties::operator==(
-    const MatchedPropertiesVector& properties) {
+    const MatchedPropertiesVector& properties) const {
   if (properties.size() != matched_properties.size()) {
     return false;
   }
@@ -202,7 +202,7 @@ bool CachedMatchedProperties::operator==(
 }
 
 bool CachedMatchedProperties::operator!=(
-    const MatchedPropertiesVector& properties) {
+    const MatchedPropertiesVector& properties) const {
   return !(*this == properties);
 }
 
