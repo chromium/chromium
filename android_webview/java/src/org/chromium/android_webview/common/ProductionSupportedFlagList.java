@@ -223,6 +223,7 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.GMS_CORE_EMOJI,
                 "Enables retrieval of the emoji font through GMS Core "
                         + "improving emoji glyph coverage."),
+        Flag.baseFeature("AffiliationsGroupInfoEnabled", "Enables group affiliations on Android."),
         Flag.baseFeature(
                 AndroidAutofillFeatures.ANDROID_AUTOFILL_BOTTOM_SHEET_WORKAROUND_NAME,
                 "Enable the workaround for autofill bottom sheet platform bug."),
@@ -253,11 +254,17 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_FIX_VALUE_SEMANTICS,
                 "Fixes the overloaded meaning of FormFieldData::value"),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_FIX_VALUE_SEMANTICS,
+                "Fixes the overloaded meaning of FormFieldData::value"),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_FIX_INITIAL_VALUE_OF_SELECT,
                 "Sets the AutofillField's initial value for select elements"),
         Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_FIX_CURRENT_VALUE_IN_IMPORT,
                 "Prevents the AutofillField's current value from being reset for import"),
+        Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_INFER_COUNTRY_CALLING_CODE,
+                "Infers the country calling code from the profile's country, if available."),
         Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_INFER_COUNTRY_CALLING_CODE,
                 "Infers the country calling code from the profile's country, if available."),
