@@ -53,7 +53,8 @@ class VariationsServiceClient {
   // Returns the current form factor of the device.
   virtual Study::FormFactor GetCurrentFormFactor();
 
-  // Returns the directory in which to store variations seed files.
+  // Returns the directory in which to store variations seed files. Only clients
+  // on platforms that support dedicated seed files should override this.
   virtual base::FilePath GetVariationsSeedFileDir();
 
   // If a native variations service that directly fetches the seed from the
