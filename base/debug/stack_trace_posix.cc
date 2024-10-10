@@ -33,6 +33,11 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
+#pragma allow_unsafe_buffers
+#endif
+
 // Controls whether `dladdr(...)` is used to print the callstack. This is
 // only used on iOS Official build where `backtrace_symbols(...)` prints
 // misleading symbols (as the binary is stripped).
