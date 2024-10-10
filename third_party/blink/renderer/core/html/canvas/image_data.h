@@ -47,6 +47,8 @@ namespace blink {
 
 class ExceptionState;
 class ImageBitmapOptions;
+class V8ImageDataStorageFormat;
+class V8PredefinedColorSpace;
 
 class CORE_EXPORT ImageData final : public ScriptWrappable,
                                     public ImageBitmapSource {
@@ -179,8 +181,8 @@ class CORE_EXPORT ImageData final : public ScriptWrappable,
   gfx::Size Size() const { return size_; }
   int width() const { return size_.width(); }
   int height() const { return size_.height(); }
-  String colorSpace() const;
-  String storageFormat() const;
+  V8PredefinedColorSpace colorSpace() const;
+  V8ImageDataStorageFormat storageFormat() const;
 
   // TODO(https://crbug.com/1198606): Remove this.
   ImageDataSettings* getSettings() const;

@@ -312,12 +312,34 @@ ImageDataStorageFormat ImageData::GetImageDataStorageFormat() const {
   return storage_format_;
 }
 
-String ImageData::colorSpace() const {
-  return PredefinedColorSpaceName(color_space_);
+V8PredefinedColorSpace ImageData::colorSpace() const {
+  switch (color_space_) {
+    case PredefinedColorSpace::kSRGB:
+      return V8PredefinedColorSpace(V8PredefinedColorSpace::Enum::kSRGB);
+    case PredefinedColorSpace::kRec2020:
+      return V8PredefinedColorSpace(V8PredefinedColorSpace::Enum::kRec2020);
+    case PredefinedColorSpace::kP3:
+      return V8PredefinedColorSpace(V8PredefinedColorSpace::Enum::kDisplayP3);
+    case PredefinedColorSpace::kRec2100HLG:
+      return V8PredefinedColorSpace(V8PredefinedColorSpace::Enum::kRec2100Hlg);
+    case PredefinedColorSpace::kRec2100PQ:
+      return V8PredefinedColorSpace(V8PredefinedColorSpace::Enum::kRec2100Pq);
+    case PredefinedColorSpace::kSRGBLinear:
+      return V8PredefinedColorSpace(V8PredefinedColorSpace::Enum::kSRGBLinear);
+  }
+  NOTREACHED();
 }
 
-String ImageData::storageFormat() const {
-  return ImageDataStorageFormatName(storage_format_);
+V8ImageDataStorageFormat ImageData::storageFormat() const {
+  switch (storage_format_) {
+    case ImageDataStorageFormat::kUint8:
+      return V8ImageDataStorageFormat(V8ImageDataStorageFormat::Enum::kUint8);
+    case ImageDataStorageFormat::kUint16:
+      return V8ImageDataStorageFormat(V8ImageDataStorageFormat::Enum::kUint16);
+    case ImageDataStorageFormat::kFloat32:
+      return V8ImageDataStorageFormat(V8ImageDataStorageFormat::Enum::kFloat32);
+  }
+  NOTREACHED();
 }
 
 bool ImageData::IsBufferBaseDetached() const {
