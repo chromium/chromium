@@ -330,24 +330,6 @@ CA_NAME="req_ca_dn" \
     -out ../certificates/may_2018.pem \
     -config ca.cnf
 
-# Issued after 1 July 2019 (The macOS 10.15+ date for additional
-# policies for locally-trusted certificates - see
-# https://support.apple.com/en-us/HT210176 ) and valid for >825
-# days, even accounting for rounding issues.
-openssl req \
-  -config ../scripts/ee.cnf \
-  -newkey rsa:2048 \
-  -text \
-  -out out/900_days_after_2019_07_01.req
-CA_NAME="req_ca_dn" \
-  openssl ca \
-    -batch \
-    -extensions user_cert \
-    -days 900 \
-    -in out/900_days_after_2019_07_01.req \
-    -out ../certificates/900_days_after_2019_07_01.pem \
-    -config ca.cnf
-
 ## Certificates for testing EV display (DN set with different variations)
 SUBJECT_NAME="req_ev_dn" \
   openssl req -x509 -days ${CERT_LIFETIME} \

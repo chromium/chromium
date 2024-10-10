@@ -12,7 +12,6 @@ data/quic_http_response_cache_data_with_push/test.example.com/index2.html
 data/quic_http_response_cache_data_with_push/test.example.com/kitten-1.jpg
 data/ssl/certificates/2029_globalsign_com_cert.pem
 data/ssl/certificates/2_client_certs_1_key.p12
-data/ssl/certificates/900_days_after_2019_07_01.pem
 data/ssl/certificates/BUILD.gn
 data/ssl/certificates/README
 data/ssl/certificates/bad_validity.pem

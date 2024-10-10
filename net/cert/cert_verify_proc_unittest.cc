@@ -1283,15 +1283,16 @@ TEST(CertVerifyProcTest, TestHasTooLongValidity) {
 }
 
 // Integration test for CertVerifyProc::HasTooLongValidity.
-// There isn't a way to add test entries to the known roots list for testing
-// the full CertVerifyProc implementations, but HasTooLongValidity is checked
-// by the outer CertVerifyProc::Verify. Thus the test can mock the
-// VerifyInternal result to pretend there was a successful verification with
-// is_issued_by_known_root and see that Verify overrides that with error.
+// HasTooLongValidity is checked by the outer CertVerifyProc::Verify. Thus the
+// test can mock the VerifyInternal result to pretend there was a successful
+// verification with is_issued_by_known_root and see that Verify overrides that
+// with error.
+// TODO(mattm): consider if there would be any benefit to using
+// ScopedTestKnownRoot and testing with the real CertVerifyProc subclasses?
 TEST(CertVerifyProcTest, VerifyCertValidityTooLong) {
-  scoped_refptr<X509Certificate> cert(ImportCertFromFile(
-      GetTestCertsDirectory(), "900_days_after_2019_07_01.pem"));
-  ASSERT_TRUE(cert);
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
+  base::Time not_before = base::Time::Now() - base::Days(1);
+  leaf->SetValidity(not_before, not_before + base::Days(399));
 
   {
     // Locally trusted cert should be ok.
@@ -1300,7 +1301,8 @@ TEST(CertVerifyProcTest, VerifyCertValidityTooLong) {
     auto verify_proc = base::MakeRefCounted<MockCertVerifyProc>(dummy_result);
     CertVerifyResult verify_result;
     int error = verify_proc->Verify(
-        cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
+        leaf->GetX509Certificate().get(), "www.example.com",
+        /*ocsp_response=*/std::string(),
         /*sct_list=*/std::string(), 0, &verify_result, NetLogWithSource());
     EXPECT_THAT(error, IsOk());
     EXPECT_EQ(0u, verify_result.cert_status & CERT_STATUS_ALL_ERRORS);
@@ -1314,12 +1316,11 @@ TEST(CertVerifyProcTest, VerifyCertValidityTooLong) {
     auto verify_proc = base::MakeRefCounted<MockCertVerifyProc>(dummy_result);
     CertVerifyResult verify_result;
     int error = verify_proc->Verify(
-        cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
+        leaf->GetX509Certificate().get(), "www.example.com",
+        /*ocsp_response=*/std::string(),
         /*sct_list=*/std::string(), 0, &verify_result, NetLogWithSource());
     EXPECT_THAT(error, IsError(ERR_CERT_VALIDITY_TOO_LONG));
-    // TODO(mattm): generate a dedicated cert or use CertBuilder so that this
-    // test doesn't also hit CERT_STATUS_NON_UNIQUE_NAME.
-    EXPECT_EQ(CERT_STATUS_VALIDITY_TOO_LONG | CERT_STATUS_NON_UNIQUE_NAME,
+    EXPECT_EQ(CERT_STATUS_VALIDITY_TOO_LONG,
               verify_result.cert_status & CERT_STATUS_ALL_ERRORS);
   }
 
@@ -1334,13 +1335,11 @@ TEST(CertVerifyProcTest, VerifyCertValidityTooLong) {
         dummy_result, ERR_CERT_AUTHORITY_INVALID);
     CertVerifyResult verify_result;
     int error = verify_proc->Verify(
-        cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
+        leaf->GetX509Certificate().get(), "www.example.com",
+        /*ocsp_response=*/std::string(),
         /*sct_list=*/std::string(), 0, &verify_result, NetLogWithSource());
     EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
-    // TODO(mattm): generate a dedicated cert or use CertBuilder so that this
-    // test doesn't also hit CERT_STATUS_NON_UNIQUE_NAME.
-    EXPECT_EQ(CERT_STATUS_AUTHORITY_INVALID | CERT_STATUS_VALIDITY_TOO_LONG |
-                  CERT_STATUS_NON_UNIQUE_NAME,
+    EXPECT_EQ(CERT_STATUS_AUTHORITY_INVALID | CERT_STATUS_VALIDITY_TOO_LONG,
               verify_result.cert_status & CERT_STATUS_ALL_ERRORS);
   }
 }
