@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -21,6 +22,7 @@
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/aura/test/window_occlusion_tracker_test_api.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
@@ -563,10 +565,10 @@ class DesktopAuraTopLevelWindowTest : public aura::WindowObserver {
         owned_window_, widget_.GetNativeView()->GetRootWindow(),
         gfx::Rect(0, 0, 1900, 1600), display::kInvalidDisplayId);
     owned_window_->Show();
-    owned_window_->AddObserver(this);
+    window_observations_.AddObservation(owned_window_);
 
     ASSERT_TRUE(owned_window_->parent() != nullptr);
-    owned_window_->parent()->AddObserver(this);
+    window_observations_.AddObservation(owned_window_->parent());
 
     top_level_widget_ =
         views::Widget::GetWidgetForNativeView(owned_window_->parent());
@@ -577,8 +579,7 @@ class DesktopAuraTopLevelWindowTest : public aura::WindowObserver {
     ASSERT_TRUE(owned_window_ != nullptr);
     // If async mode is off then clean up state here.
     if (!use_async_mode_) {
-      owned_window_->RemoveObserver(this);
-      owned_window_->parent()->RemoveObserver(this);
+      window_observations_.RemoveAllObservations();
       owner_destroyed_ = true;
       owned_window_destroyed_ = true;
       delete owned_window_.ExtractAsDangling();
@@ -595,7 +596,9 @@ class DesktopAuraTopLevelWindowTest : public aura::WindowObserver {
   }
 
   void OnWindowDestroying(aura::Window* window) override {
-    window->RemoveObserver(this);
+    if (window_observations_.IsObservingSource(window)) {
+      window_observations_.RemoveObservation(window);
+    }
     if (window == owned_window_) {
       owned_window_destroyed_ = true;
       owned_window_ = nullptr;
@@ -617,6 +620,8 @@ class DesktopAuraTopLevelWindowTest : public aura::WindowObserver {
   views::Widget widget_;
   raw_ptr<views::Widget> top_level_widget_ = nullptr;
   raw_ptr<aura::Window> owned_window_ = nullptr;
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      window_observations_{this};
   bool owner_destroyed_ = false;
   bool owned_window_destroyed_ = false;
   aura::test::TestWindowDelegate child_window_delegate_;

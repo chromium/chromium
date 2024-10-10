@@ -13,6 +13,7 @@
 #include "base/mac/mac_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -50,6 +51,7 @@
 #include "ui/views/widget/native_widget_mac.h"
 #include "ui/views/widget/native_widget_private.h"
 #include "ui/views/widget/widget_interactive_uitest_utils.h"
+#include "ui/views/widget/widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace {
@@ -1749,7 +1751,7 @@ class ParentCloseMonitor : public WidgetObserver {
  public:
   explicit ParentCloseMonitor(Widget* parent) {
     child_widget_ = std::make_unique<Widget>();
-    child_widget_->AddObserver(this);
+    widget_observation_.Observe(child_widget_.get());
     Widget::InitParams init_params(Widget::InitParams::CLIENT_OWNS_WIDGET,
                                    Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     init_params.parent = parent->GetNativeView();
@@ -1771,9 +1773,7 @@ class ParentCloseMonitor : public WidgetObserver {
   ParentCloseMonitor(const ParentCloseMonitor&) = delete;
   ParentCloseMonitor& operator=(const ParentCloseMonitor&) = delete;
 
-  ~ParentCloseMonitor() override {
-    EXPECT_TRUE(child_closed_);  // Otherwise the observer wasn't removed.
-  }
+  ~ParentCloseMonitor() override = default;
 
   void OnWidgetDestroying(Widget* child) override {
     // Upon a parent-triggered close, the NSWindow relationship will still exist
@@ -1784,7 +1784,7 @@ class ParentCloseMonitor : public WidgetObserver {
     EXPECT_TRUE([parent_nswindow_ isVisible]);
     EXPECT_FALSE([parent_nswindow_ delegate]);
 
-    EXPECT_FALSE(child_closed_);
+    EXPECT_FALSE(DidChildClose());
   }
 
   void OnWidgetDestroyed(Widget* child) override {
@@ -1792,17 +1792,16 @@ class ParentCloseMonitor : public WidgetObserver {
     EXPECT_TRUE([parent_nswindow_ isVisible]);
     EXPECT_FALSE([parent_nswindow_ delegate]);
 
-    EXPECT_FALSE(child_closed_);
-    child->RemoveObserver(this);
-    child_closed_ = true;
+    EXPECT_FALSE(DidChildClose());
+    widget_observation_.Reset();
   }
 
-  bool child_closed() const { return child_closed_; }
+  bool DidChildClose() const { return !widget_observation_.IsObserving(); }
 
  private:
   NSWindow* __strong parent_nswindow_;
-  bool child_closed_ = false;
   std::unique_ptr<Widget> child_widget_;
+  base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
 };
 
 // Ensures when a parent window is destroyed, and triggers its child windows to
@@ -1816,7 +1815,7 @@ TEST_F(NativeWidgetMacTest, NoParentDelegateDuringTeardown) {
     parent->Show();
     ParentCloseMonitor monitor(parent);
     [parent->GetNativeWindow().GetNativeNSWindow() close];
-    EXPECT_TRUE(monitor.child_closed());
+    EXPECT_TRUE(monitor.DidChildClose());
   }
 
   // Test the Widget::CloseNow() flow.
@@ -1826,7 +1825,7 @@ TEST_F(NativeWidgetMacTest, NoParentDelegateDuringTeardown) {
     parent->Show();
     ParentCloseMonitor monitor(parent);
     parent->CloseNow();
-    EXPECT_TRUE(monitor.child_closed());
+    EXPECT_TRUE(monitor.DidChildClose());
   }
 
   // Test the WIDGET_OWNS_NATIVE_WIDGET flow.
@@ -1841,7 +1840,7 @@ TEST_F(NativeWidgetMacTest, NoParentDelegateDuringTeardown) {
 
     ParentCloseMonitor monitor(parent.get());
     parent.reset();
-    EXPECT_TRUE(monitor.child_closed());
+    EXPECT_TRUE(monitor.DidChildClose());
   }
 
   // Test the CLIENT_OWNS_WIDGET flow.
@@ -1856,7 +1855,7 @@ TEST_F(NativeWidgetMacTest, NoParentDelegateDuringTeardown) {
 
     ParentCloseMonitor monitor(parent.get());
     parent->CloseNow();
-    EXPECT_TRUE(monitor.child_closed());
+    EXPECT_TRUE(monitor.DidChildClose());
   }
 }
 

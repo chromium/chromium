@@ -14,6 +14,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -2157,7 +2158,9 @@ namespace {
 // Widget observer which grabs capture when the widget is activated.
 class CaptureOnActivationObserver : public WidgetObserver {
  public:
-  CaptureOnActivationObserver() = default;
+  explicit CaptureOnActivationObserver(Widget* widget) {
+    widget_observation_.Observe(widget);
+  }
 
   CaptureOnActivationObserver(const CaptureOnActivationObserver&) = delete;
   CaptureOnActivationObserver& operator=(const CaptureOnActivationObserver&) =
@@ -2177,6 +2180,7 @@ class CaptureOnActivationObserver : public WidgetObserver {
 
  private:
   bool activation_observed_ = false;
+  base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
 };
 
 }  // namespace
@@ -2199,8 +2203,7 @@ TEST_F(WidgetCaptureTest, SetCaptureToNonToplevel) {
   child_params.context = toplevel->GetNativeWindow();
   child->Init(std::move(child_params));
 
-  CaptureOnActivationObserver observer;
-  child->AddObserver(&observer);
+  CaptureOnActivationObserver observer(child.get());
   child->Show();
 
 #if BUILDFLAG(IS_MAC)
@@ -2213,8 +2216,6 @@ TEST_F(WidgetCaptureTest, SetCaptureToNonToplevel) {
 
   EXPECT_TRUE(observer.activation_observed());
   EXPECT_TRUE(child->HasCapture());
-
-  child->RemoveObserver(&observer);
 }
 
 #if BUILDFLAG(IS_WIN)

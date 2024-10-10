@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -3959,7 +3960,9 @@ class AnimationEndObserver : public ui::ImplicitAnimationObserver {
 // An observer that registers the bounds of a widget on destruction.
 class WidgetBoundsObserver : public WidgetObserver {
  public:
-  WidgetBoundsObserver() = default;
+  explicit WidgetBoundsObserver(Widget* widget) {
+    widget_observation_.Observe(widget);
+  }
 
   WidgetBoundsObserver(const WidgetBoundsObserver&) = delete;
   WidgetBoundsObserver& operator=(const WidgetBoundsObserver&) = delete;
@@ -3973,10 +3976,12 @@ class WidgetBoundsObserver : public WidgetObserver {
     EXPECT_TRUE(widget->GetNativeWindow());
     EXPECT_TRUE(Widget::GetWidgetForNativeWindow(widget->GetNativeWindow()));
     bounds_ = widget->GetWindowBoundsInScreen();
+    widget_observation_.Reset();
   }
 
  private:
   gfx::Rect bounds_;
+  base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
 };
 
 // Verifies Close() results in destroying.
@@ -4010,7 +4015,7 @@ TEST_F(WidgetTest, CloseWidgetWhileAnimating) {
   std::unique_ptr<Widget> widget =
       CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   AnimationEndObserver animation_observer;
-  WidgetBoundsObserver widget_observer;
+  WidgetBoundsObserver widget_observer(widget.get());
   gfx::Rect bounds(100, 100, 50, 50);
   {
     // Normal animations for tests have ZERO_DURATION, make sure we are actually
@@ -4020,7 +4025,6 @@ TEST_F(WidgetTest, CloseWidgetWhileAnimating) {
     ui::ScopedLayerAnimationSettings animation_settings(
         widget->GetLayer()->GetAnimator());
     animation_settings.AddObserver(&animation_observer);
-    widget->AddObserver(&widget_observer);
     widget->Show();
 
     // Animate the bounds change.
@@ -4056,8 +4060,7 @@ TEST_F(DesktopWidgetTest, ValidDuringOnNativeWidgetDestroyingFromCloseNow) {
   widget->Show();
   gfx::Rect screen_rect(50, 50, 100, 100);
   widget->SetBounds(screen_rect);
-  WidgetBoundsObserver observer;
-  widget->AddObserver(&observer);
+  WidgetBoundsObserver observer(widget);
   widget->CloseNow();
   EXPECT_EQ(screen_rect, observer.bounds());
 }
@@ -4069,8 +4072,7 @@ TEST_F(DesktopWidgetTest, ValidDuringOnNativeWidgetDestroyingFromClose) {
   widget->Show();
   gfx::Rect screen_rect(50, 50, 100, 100);
   widget->SetBounds(screen_rect);
-  WidgetBoundsObserver observer;
-  widget->AddObserver(&observer);
+  WidgetBoundsObserver observer(widget);
   widget->Close();
   EXPECT_EQ(gfx::Rect(), observer.bounds());
   base::RunLoop().RunUntilIdle();
@@ -4949,9 +4951,8 @@ TEST_F(DesktopWidgetTest, FullscreenStatePropagated_DesktopWidget) {
 // Used to delete the widget when the supplied bounds changes.
 class DestroyingWidgetBoundsObserver : public WidgetObserver {
  public:
-  explicit DestroyingWidgetBoundsObserver(std::unique_ptr<Widget> widget)
-      : widget_(std::move(widget)) {
-    widget_->AddObserver(this);
+  explicit DestroyingWidgetBoundsObserver(Widget* widget) {
+    widget_observation_.Observe(widget);
   }
 
   // There are no assertions here as not all platforms call
@@ -4961,12 +4962,11 @@ class DestroyingWidgetBoundsObserver : public WidgetObserver {
   // WidgetObserver:
   void OnWidgetBoundsChanged(Widget* widget,
                              const gfx::Rect& new_bounds) override {
-    widget_->RemoveObserver(this);
-    widget_.reset();
+    widget_observation_.Reset();
   }
 
  private:
-  std::unique_ptr<Widget> widget_;
+  base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
 };
 
 // Deletes a Widget when the bounds change as part of toggling fullscreen.
@@ -4986,7 +4986,7 @@ TEST_F(DesktopWidgetTest, MAYBE_DeleteInSetFullscreen) {
   params.ownership = Widget::InitParams::CLIENT_OWNS_WIDGET;
   widget->Init(std::move(params));
   Widget* w = widget.get();
-  DestroyingWidgetBoundsObserver destroyer(std::move(widget));
+  DestroyingWidgetBoundsObserver destroyer(w);
   w->SetFullscreen(true);
 }
 
@@ -5068,14 +5068,22 @@ namespace {
 // OnWindowDestroying.
 class IsActiveFromDestroyObserver : public WidgetObserver {
  public:
-  IsActiveFromDestroyObserver() = default;
+  explicit IsActiveFromDestroyObserver(Widget* widget) {
+    widget_observation_.Observe(widget);
+  }
 
   IsActiveFromDestroyObserver(const IsActiveFromDestroyObserver&) = delete;
   IsActiveFromDestroyObserver& operator=(const IsActiveFromDestroyObserver&) =
       delete;
 
   ~IsActiveFromDestroyObserver() override = default;
-  void OnWidgetDestroying(Widget* widget) override { widget->IsActive(); }
+  void OnWidgetDestroying(Widget* widget) override {
+    widget->IsActive();
+    widget_observation_.Reset();
+  }
+
+ private:
+  base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
 };
 
 }  // namespace
@@ -5105,14 +5113,13 @@ class ChildDesktopWidgetTest : public DesktopWidgetTest {
 // WidgetObserver::OnWidgetDestroying() in a child widget doesn't crash.
 TEST_F(ChildDesktopWidgetTest, IsActiveFromDestroy) {
   // Create two widgets, one a child of the other.
-  IsActiveFromDestroyObserver observer;
   std::unique_ptr<Widget> parent_widget =
       CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   parent_widget->Show();
 
   std::unique_ptr<Widget> child_widget =
       CreateChildWidget(parent_widget->GetNativeWindow());
-  child_widget->AddObserver(&observer);
+  IsActiveFromDestroyObserver observer(child_widget.get());
   child_widget->Show();
 
   parent_widget->CloseNow();

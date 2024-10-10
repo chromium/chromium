@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/uuid.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -299,14 +300,14 @@ TEST_F(NativeWidgetAuraTest, GetWorkspace) {
 // A WindowObserver that counts kShowStateKey property changes.
 class TestWindowObserver : public aura::WindowObserver {
  public:
-  explicit TestWindowObserver(gfx::NativeWindow window) : window_(window) {
-    window_->AddObserver(this);
+  explicit TestWindowObserver(gfx::NativeWindow window) {
+    window_observation_.Observe(window);
   }
 
   TestWindowObserver(const TestWindowObserver&) = delete;
   TestWindowObserver& operator=(const TestWindowObserver&) = delete;
 
-  ~TestWindowObserver() override { window_->RemoveObserver(this); }
+  ~TestWindowObserver() override = default;
 
   // aura::WindowObserver:
   void OnWindowPropertyChanged(aura::Window* window,
@@ -315,7 +316,8 @@ class TestWindowObserver : public aura::WindowObserver {
     if (key != aura::client::kShowStateKey)
       return;
     count_++;
-    state_ = window_->GetProperty(aura::client::kShowStateKey);
+    state_ = window_observation_.GetSource()->GetProperty(
+        aura::client::kShowStateKey);
   }
 
   int count() const { return count_; }
@@ -323,7 +325,8 @@ class TestWindowObserver : public aura::WindowObserver {
   void Reset() { count_ = 0; }
 
  private:
-  gfx::NativeWindow window_;
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
   int count_ = 0;
   ui::mojom::WindowShowState state_ = ui::mojom::WindowShowState::kDefault;
 };
