@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import {FileSuggestionHandlerRemote} from 'chrome://new-tab-page/file_suggestion.mojom-webui.js';
-import type {DisableModuleEvent, DismissModuleEvent, FileSuggestionModuleElement} from 'chrome://new-tab-page/lazy_load.js';
-import {FileProxy, fileSuggestionDescriptor} from 'chrome://new-tab-page/lazy_load.js';
+import type {DisableModuleEvent, DismissModuleEvent, DriveModuleV2Element} from 'chrome://new-tab-page/lazy_load.js';
+import {driveModuleV2Descriptor, FileProxy} from 'chrome://new-tab-page/lazy_load.js';
 import type {CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -71,7 +71,7 @@ suite('FileSuggestionV2Module', () => {
     handler.setResultFor('getFiles', Promise.resolve(data));
 
     const module =
-        await fileSuggestionDescriptor.initialize(0) as FileSuggestionModuleElement;
+        await driveModuleV2Descriptor.initialize(0) as DriveModuleV2Element;
     assertTrue(!!module);
     document.body.append(module);
     await handler.whenCalled('getFiles');
@@ -104,7 +104,7 @@ suite('FileSuggestionV2Module', () => {
     handler.setResultFor('getFiles', Promise.resolve(data));
 
     const module =
-        await fileSuggestionDescriptor.initialize(0) as FileSuggestionModuleElement;
+        await driveModuleV2Descriptor.initialize(0) as DriveModuleV2Element;
     assertTrue(!!module);
     document.body.append(module);
     await handler.whenCalled('getFiles');
@@ -134,7 +134,7 @@ suite('FileSuggestionV2Module', () => {
   test('module does not render if there are no files', async () => {
     handler.setResultFor('getFiles', Promise.resolve({files: []}));
 
-    const module = await fileSuggestionDescriptor.initialize(0);
+    const module = await driveModuleV2Descriptor.initialize(0);
     await handler.whenCalled('getFiles');
     assertFalse(!!module);
   });
@@ -154,7 +154,7 @@ suite('FileSuggestionV2Module', () => {
     };
     handler.setResultFor('getFiles', Promise.resolve(data));
     const driveModule =
-        await fileSuggestionDescriptor.initialize(0) as FileSuggestionModuleElement;
+        await driveModuleV2Descriptor.initialize(0) as DriveModuleV2Element;
     assertTrue(!!driveModule);
     document.body.append(driveModule);
     await microtasksFinished();
@@ -187,7 +187,7 @@ suite('FileSuggestionV2Module', () => {
         };
         handler.setResultFor('getFiles', Promise.resolve(data));
         const driveModule =
-            await fileSuggestionDescriptor.initialize(0) as FileSuggestionModuleElement;
+            await driveModuleV2Descriptor.initialize(0) as DriveModuleV2Element;
         document.body.append(driveModule);
         await microtasksFinished();
 
@@ -220,7 +220,7 @@ suite('FileSuggestionV2Module', () => {
     };
     handler.setResultFor('getFiles', Promise.resolve(data));
     const moduleElement =
-        await fileSuggestionDescriptor.initialize(0) as FileSuggestionModuleElement;
+        await driveModuleV2Descriptor.initialize(0) as DriveModuleV2Element;
     assertTrue(!!moduleElement);
     document.body.append(moduleElement);
     await microtasksFinished();

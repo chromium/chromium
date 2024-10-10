@@ -13,25 +13,25 @@ import {FileProxy} from '../../drive/file_module_proxy.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
 import type {MenuItem, ModuleHeaderElement} from '../module_header.js';
 
-import {getCss} from './module.css.js';
-import {getHtml} from './module.html.js';
+import {getCss} from './drive_module.css.js';
+import {getHtml} from './drive_module.html.js';
 
-export interface ModuleElement {
+export interface DriveModuleElement {
   $: {
     files: HTMLElement,
     moduleHeaderElementV2: ModuleHeaderElement,
   };
 }
 
-const ModuleElementBase = I18nMixinLit(CrLitElement);
+const DriveModuleElementBase = I18nMixinLit(CrLitElement);
 
 /**
  * The File module, which serves as an inside look in to recent activity within
  * a user's Google Drive or Microsoft Sharepoint.
  */
-export class ModuleElement extends ModuleElementBase {
+export class DriveModuleElement extends DriveModuleElementBase {
   static get is() {
-    return 'ntp-file-module-redesigned';
+    return 'ntp-drive-module-redesigned';
   }
 
   static override get styles() {
@@ -133,17 +133,17 @@ export class ModuleElement extends ModuleElementBase {
   }
 }
 
-customElements.define(ModuleElement.is, ModuleElement);
+customElements.define(DriveModuleElement.is, DriveModuleElement);
 
-async function createFileElement(): Promise<ModuleElement|null> {
+async function createFileElement(): Promise<DriveModuleElement|null> {
   const {files} = await FileProxy.getHandler().getFiles();
   if (files.length === 0) {
     return null;
   }
-  const element = new ModuleElement();
+  const element = new DriveModuleElement();
   element.files = files;
   return element;
 }
 
-export const fileSuggestionDescriptor: ModuleDescriptor = new ModuleDescriptor(
+export const driveModuleV2Descriptor: ModuleDescriptor = new ModuleDescriptor(
     /*id*/ 'drive', createFileElement);
