@@ -62,82 +62,102 @@ async function sendToOffscreenDocument(
       });
 }
 
-// Handle imageLoaderPrivate calls on behalf of the offscreen document.
-chrome.runtime.onMessage.addListener(
-    (msg: PrivateApi, sender: chrome.runtime.MessageSender,
-     sendResponse: (thumbnailDataUrl: string) => void) => {
-      if (sender.id !== EXTENSION_ID) {
-        return false;
-      } else if (msg.apiMethod === 'getArcDocumentsProviderThumbnail') {
-        chrome.imageLoaderPrivate.getArcDocumentsProviderThumbnail(
-            msg.params.url,
-            msg.params.widthHint,
-            msg.params.heightHint,
-            sendResponse,
-        );
-        return true;
-      } else if (msg.apiMethod === 'getDriveThumbnail') {
-        chrome.imageLoaderPrivate.getDriveThumbnail(
-            msg.params.url,
-            msg.params.cropToSquare,
-            sendResponse,
-        );
-        return true;
-      } else if (msg.apiMethod === 'getPdfThumbnail') {
-        chrome.imageLoaderPrivate.getPdfThumbnail(
-            msg.params.url,
-            msg.params.width,
-            msg.params.height,
-            sendResponse,
-        );
-        return true;
-      }
-      return false;
-    });
-
-// Listen to messages from the Files app SWA.
-chrome.runtime.onMessageExternal.addListener(
-    (msg: LoadImageRequest, sender: chrome.runtime.MessageSender,
-     sendResponse: (r: LoadImageResponse) => void) => {
-      if (!msg || (sender.origin !== ALLOW_LISTED_FILE_MANAGER_SWA)) {
-        return false;
-      }
-      sendToOffscreenDocument(msg, ALLOW_LISTED_FILE_MANAGER_SWA, sendResponse);
-      // Return true (or false) if the runtime should keep sendResponse
-      // valid-to-call (or invalid) after this closure returns.
-      //
-      // If msg.cancel is truthy then sendToOffscreenDocument will not call
-      // sendResponse, so we can return false.
-      //
-      // If msg.cancel is falsy then sendToOffscreenDocument will call it, but
-      // also asynchronously, so return true.
-      return !msg.cancel;
-    });
-
-// Listen to messages from ash-chrome itself, e.g. thumbnails in the "tote"
-// (also known as the "holding space"), after taking a screenshot.
+// Compare the hard-coded-at-compile-or-package-time script version with the
+// loaded-at-runtime manifest version. Chrome has a service worker script
+// cache, which is usually flushed whenever a Chrome extension is upgraded to a
+// new version. But the ChromeOS Files App (and its image loader Chrome
+// extension) is unusual (for a Chrome extension) in that it's built in to the
+// OS image and does not go through an extension's typical "uninstall the old;
+// install the new" mechanisms. Even when the OS image ships a newer version,
+// the service worker script cache will serve the older, stale version. This
+// conditional chrome.runtime.reload() call works around that.
 //
-// Each native connection is expected to send a single request only, so we
-// disconnect after handling a message.
-chrome.runtime.onConnectNative.addListener((port: chrome.runtime.Port) => {
-  assert(port.sender);
-  if (port.sender.nativeApplication !== ALLOW_LISTED_NATIVE) {
-    port.disconnect();
-    return;
-  }
+// https://groups.google.com/a/google.com/g/chromeos-files-syd/c/dBhXhPGGkg0/m/pw3Gv3TLAAAJ
+//
+// When updating this '0.4' string, keep it synchronized with what's in
+// manifest.json near the §.
+if (chrome.runtime.getManifest().version !== '0.4') {
+  chrome.runtime.reload();
 
-  port.onMessage.addListener((msg: LoadImageRequest) => {
-    if (!msg) {
+} else {
+  // Handle imageLoaderPrivate calls on behalf of the offscreen document.
+  chrome.runtime.onMessage.addListener(
+      (msg: PrivateApi, sender: chrome.runtime.MessageSender,
+       sendResponse: (thumbnailDataUrl: string) => void) => {
+        if (sender.id !== EXTENSION_ID) {
+          return false;
+        } else if (msg.apiMethod === 'getArcDocumentsProviderThumbnail') {
+          chrome.imageLoaderPrivate.getArcDocumentsProviderThumbnail(
+              msg.params.url,
+              msg.params.widthHint,
+              msg.params.heightHint,
+              sendResponse,
+          );
+          return true;
+        } else if (msg.apiMethod === 'getDriveThumbnail') {
+          chrome.imageLoaderPrivate.getDriveThumbnail(
+              msg.params.url,
+              msg.params.cropToSquare,
+              sendResponse,
+          );
+          return true;
+        } else if (msg.apiMethod === 'getPdfThumbnail') {
+          chrome.imageLoaderPrivate.getPdfThumbnail(
+              msg.params.url,
+              msg.params.width,
+              msg.params.height,
+              sendResponse,
+          );
+          return true;
+        }
+        return false;
+      });
+
+  // Listen to messages from the Files app SWA.
+  chrome.runtime.onMessageExternal.addListener(
+      (msg: LoadImageRequest, sender: chrome.runtime.MessageSender,
+       sendResponse: (r: LoadImageResponse) => void) => {
+        if (!msg || (sender.origin !== ALLOW_LISTED_FILE_MANAGER_SWA)) {
+          return false;
+        }
+        sendToOffscreenDocument(
+            msg, ALLOW_LISTED_FILE_MANAGER_SWA, sendResponse);
+        // Return true (or false) if the runtime should keep sendResponse
+        // valid-to-call (or invalid) after this closure returns.
+        //
+        // If msg.cancel is truthy then sendToOffscreenDocument will not call
+        // sendResponse, so we can return false.
+        //
+        // If msg.cancel is falsy then sendToOffscreenDocument will call it,
+        // but also asynchronously, so return true.
+        return !msg.cancel;
+      });
+
+  // Listen to messages from ash-chrome itself, e.g. thumbnails in the "tote"
+  // (also known as the "holding space"), after taking a screenshot.
+  //
+  // Each native connection is expected to send a single request only, so we
+  // disconnect after handling a message.
+  chrome.runtime.onConnectNative.addListener((port: chrome.runtime.Port) => {
+    assert(port.sender);
+    if (port.sender.nativeApplication !== ALLOW_LISTED_NATIVE) {
       port.disconnect();
       return;
-    } else if (msg.cancel) {
-      port.disconnect();
     }
-    sendToOffscreenDocument(
-        msg, ALLOW_LISTED_NATIVE, (response: LoadImageResponse) => {
-          assert(!msg.cancel);
-          port.postMessage(response);
-          port.disconnect();
-        });
+
+    port.onMessage.addListener((msg: LoadImageRequest) => {
+      if (!msg) {
+        port.disconnect();
+        return;
+      } else if (msg.cancel) {
+        port.disconnect();
+      }
+      sendToOffscreenDocument(
+          msg, ALLOW_LISTED_NATIVE, (response: LoadImageResponse) => {
+            assert(!msg.cancel);
+            port.postMessage(response);
+            port.disconnect();
+          });
+    });
   });
-});
+}

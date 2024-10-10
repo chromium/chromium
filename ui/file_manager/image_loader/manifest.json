@@ -2,6 +2,8 @@
   // chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp
   "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDowC9B4+K6zbl4PnALNyOUgra/MPdD8gZ39Fk/IAJWt03qrN7vz1gd/mmrBg0EEIsyLRmUmfyVEfvcIUOZxFqn4A9D2aaRSvNHy9qkasZMBDEql8Nt2iNZm/kGS7sizidDV6Bc/vyLNiH1gKOXBQ42JIxKjgtrmnhGV2giw2vJGwIDAQAB",
   "name": "Image loader",
+  // When updating this "0.4" string, keep it synchronized with what's in
+  // service_worker.ts near the §.
   "version": "0.4",
   "description": "Image loader",
   "incognito" : "split",
