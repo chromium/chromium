@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_CAPABILITIES_H_
-#define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_CAPABILITIES_H_
+#ifndef COMPONENTS_SUPERVISED_USER_CORE_BROWSER_FAMILY_LINK_USER_CAPABILITIES_H_
+#define COMPONENTS_SUPERVISED_USER_CORE_BROWSER_FAMILY_LINK_USER_CAPABILITIES_H_
 
 #include "base/containers/flat_map.h"
 #include "base/scoped_observation.h"
@@ -27,19 +27,19 @@ signin::Tribool IsPrimaryAccountSubjectToParentalControls(
 
 // Wrapper of IdentityManager::Observer, processing account capabilities
 // relevant to supervised users.
-class SupervisedUserCapabilitiesObserver
+class FamilyLinkUserCapabilitiesObserver
     : public signin::IdentityManager::Observer {
  public:
-  explicit SupervisedUserCapabilitiesObserver(
+  explicit FamilyLinkUserCapabilitiesObserver(
       signin::IdentityManager* identity_manager);
 
-  SupervisedUserCapabilitiesObserver(
-      const SupervisedUserCapabilitiesObserver&) = delete;
+  FamilyLinkUserCapabilitiesObserver(
+      const FamilyLinkUserCapabilitiesObserver&) = delete;
 
-  SupervisedUserCapabilitiesObserver& operator=(
-      const SupervisedUserCapabilitiesObserver&) = delete;
+  FamilyLinkUserCapabilitiesObserver& operator=(
+      const FamilyLinkUserCapabilitiesObserver&) = delete;
 
-  ~SupervisedUserCapabilitiesObserver() override;
+  ~FamilyLinkUserCapabilitiesObserver() override;
 
   // Called when the IsSubjectToParentalControls capability for the primary
   // account become available or unavailable.
@@ -69,4 +69,4 @@ class SupervisedUserCapabilitiesObserver
 
 }  // namespace supervised_user
 
-#endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_CAPABILITIES_H_
+#endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_FAMILY_LINK_USER_CAPABILITIES_H_

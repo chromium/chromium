@@ -37,7 +37,7 @@
 #include "third_party/re2/src/re2/re2.h"
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "components/supervised_user/core/browser/supervised_user_capabilities.h"
+#include "components/supervised_user/core/browser/family_link_user_capabilities.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #endif
 

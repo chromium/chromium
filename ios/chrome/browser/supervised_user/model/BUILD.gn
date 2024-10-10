@@ -59,10 +59,10 @@ source_set("model") {
 
 source_set("capabilities") {
   sources = [
+    "family_link_user_capabilities_observer_bridge.h",
+    "family_link_user_capabilities_observer_bridge.mm",
     "supervised_user_capabilities.h",
     "supervised_user_capabilities.mm",
-    "supervised_user_capabilities_observer_bridge.h",
-    "supervised_user_capabilities_observer_bridge.mm",
   ]
   deps = [
     "//base",

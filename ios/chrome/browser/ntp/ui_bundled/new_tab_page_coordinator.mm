@@ -108,7 +108,7 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
-#import "ios/chrome/browser/supervised_user/model/supervised_user_capabilities_observer_bridge.h"
+#import "ios/chrome/browser/supervised_user/model/family_link_user_capabilities_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/account_menu/account_menu_coordinator_delegate.h"
@@ -155,7 +155,7 @@
                                      OverscrollActionsControllerDelegate,
                                      ProfileStateObserver,
                                      SceneStateObserver,
-                                     SupervisedUserCapabilitiesObserving> {
+                                     FamilyLinkUserCapabilitiesObserving> {
   // Observes changes in the IdentityManager.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityObserverBridge;
@@ -168,8 +168,8 @@
       _authServiceObserverBridge;
 
   // Observer to track changes to supervision-related capabilities.
-  std::unique_ptr<supervised_user::SupervisedUserCapabilitiesObserverBridge>
-      _supervisedUserCapabilitiesObserverBridge;
+  std::unique_ptr<supervised_user::FamilyLinkUserCapabilitiesObserverBridge>
+      _familyLinkUserCapabilitiesObserverBridge;
 
   BubbleViewControllerPresenter* _fakeboxLensIconBubblePresenter;
 }
@@ -457,7 +457,7 @@
   [self.feedMenuCoordinator stop];
   self.feedMenuCoordinator = nil;
 
-  _supervisedUserCapabilitiesObserverBridge.reset();
+  _familyLinkUserCapabilitiesObserverBridge.reset();
   _discoverFeedObserverBridge.reset();
   _identityObserverBridge.reset();
   _authServiceObserverBridge.reset();
@@ -661,9 +661,9 @@
       std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
                                                               self);
 
-  // Start observing supervised user capabilities.
-  _supervisedUserCapabilitiesObserverBridge = std::make_unique<
-      supervised_user::SupervisedUserCapabilitiesObserverBridge>(
+  // Start observing Family Link user capabilities.
+  _familyLinkUserCapabilitiesObserverBridge = std::make_unique<
+      supervised_user::FamilyLinkUserCapabilitiesObserverBridge>(
       identityManager, self);
 
   // Start observing DiscoverFeedService.
@@ -1554,7 +1554,7 @@
   }
 }
 
-#pragma mark - SupervisedUserCapabilitiesObserving
+#pragma mark - FamilyLinkUserCapabilitiesObserving
 
 - (void)onIsSubjectToParentalControlsCapabilityChanged:
     (supervised_user::CapabilityUpdateState)capabilityUpdateState {

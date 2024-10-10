@@ -12,7 +12,7 @@
 #import "components/prefs/pref_change_registrar.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/tribool.h"
-#import "components/supervised_user/core/browser/supervised_user_capabilities.h"
+#import "components/supervised_user/core/browser/family_link_user_capabilities.h"
 #import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/pref_names.h"
@@ -22,7 +22,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
-#import "ios/chrome/browser/supervised_user/model/supervised_user_capabilities_observer_bridge.h"
+#import "ios/chrome/browser/supervised_user/model/family_link_user_capabilities_observer_bridge.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
@@ -40,7 +40,7 @@
 
 @interface IncognitoGridMediator () <IncognitoReauthObserver,
                                      PrefObserverDelegate,
-                                     SupervisedUserCapabilitiesObserving>
+                                     FamilyLinkUserCapabilitiesObserving>
 @end
 
 @implementation IncognitoGridMediator {
@@ -56,9 +56,9 @@
   // supervision status. This identity manager is not available for
   // the incognito profile and need to be passed in.
   raw_ptr<signin::IdentityManager> _identityManager;
-  // Observer to track changes to supervision-related capabilities.
-  std::unique_ptr<supervised_user::SupervisedUserCapabilitiesObserverBridge>
-      _supervisedUserCapabilitiesObserver;
+  // Observer to track changes to Family Link user state.
+  std::unique_ptr<supervised_user::FamilyLinkUserCapabilitiesObserverBridge>
+      _familyLinkUserCapabilitiesObserver;
 }
 
 // TODO(crbug.com/40273478): Refactor the grid commands to have the same
@@ -148,7 +148,7 @@
 - (void)disconnect {
   _prefChangeRegistrar.reset();
   _prefObserverBridge.reset();
-  _supervisedUserCapabilitiesObserver.reset();
+  _familyLinkUserCapabilitiesObserver.reset();
   _identityManager = nil;
   [_reauthSceneAgent removeObserver:self];
   [super disconnect];
@@ -270,7 +270,7 @@
   }
 }
 
-#pragma mark - SupervisedUserCapabilitiesObserving
+#pragma mark - FamilyLinkUserCapabilitiesObserving
 
 - (void)onIsSubjectToParentalControlsCapabilityChanged:
     (supervised_user::CapabilityUpdateState)capabilityUpdateState {
@@ -289,15 +289,15 @@
 
 #pragma mark - Public
 
-- (void)initializeSupervisedUserCapabilitiesObserver:
+- (void)initializeFamilyLinkUserCapabilitiesObserver:
     (signin::IdentityManager*)identityManager {
   if (base::FeatureList::IsEnabled(
           supervised_user::
               kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS)) {
     DCHECK(identityManager);
     _identityManager = identityManager;
-    _supervisedUserCapabilitiesObserver = std::make_unique<
-        supervised_user::SupervisedUserCapabilitiesObserverBridge>(
+    _familyLinkUserCapabilitiesObserver = std::make_unique<
+        supervised_user::FamilyLinkUserCapabilitiesObserverBridge>(
         _identityManager, self);
     _incognitoDisabled = [self isIncognitoModeDisabled];
   }

@@ -23,7 +23,7 @@ class AccountCapabilitiesFetcherIOS;
 }  // namespace ios
 
 namespace supervised_user {
-class SupervisedUserCapabilitiesObserver;
+class FamilyLinkUserCapabilitiesObserver;
 }  // namespace supervised_user
 
 // Stores the information about account capabilities. Capabilities provide
@@ -137,7 +137,7 @@ class AccountCapabilities {
 #endif
   friend class AccountCapabilitiesTestMutator;
   friend class AccountTrackerService;
-  friend class supervised_user::SupervisedUserCapabilitiesObserver;
+  friend class supervised_user::FamilyLinkUserCapabilitiesObserver;
 
   // Returns the capability state using the service name.
   signin::Tribool GetCapabilityByName(const std::string& name) const;

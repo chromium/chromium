@@ -63,6 +63,8 @@ static_library("browser") {
   sources = [
     "child_account_service.cc",
     "child_account_service.h",
+    "family_link_user_capabilities.cc",
+    "family_link_user_capabilities.h",
     "family_link_user_log_record.cc",
     "family_link_user_log_record.h",
     "kids_chrome_management_url_checker_client.cc",
@@ -74,8 +76,6 @@ static_library("browser") {
     "permission_request_creator_impl.h",
     "remote_web_approvals_manager.cc",
     "remote_web_approvals_manager.h",
-    "supervised_user_capabilities.cc",
-    "supervised_user_capabilities.h",
     "supervised_user_content_settings_provider.cc",
     "supervised_user_content_settings_provider.h",
     "supervised_user_error_page.cc",
@@ -153,6 +153,7 @@ source_set("unit_tests") {
   sources = [
     "api_access_token_fetcher_unittest.cc",
     "child_account_service_unittest.cc",
+    "family_link_user_capabilities_unittest.cc",
     "family_link_user_log_record_unittest.cc",
     "fetcher_config_unittest.cc",
     "kids_chrome_management_url_checker_client_unittest.cc",
@@ -162,7 +163,6 @@ source_set("unit_tests") {
     "proto_fetcher_status_unittest.cc",
     "proto_fetcher_unittest.cc",
     "remote_web_approvals_manager_unittest.cc",
-    "supervised_user_capabilities_unittest.cc",
     "supervised_user_content_settings_provider_unittest.cc",
     "supervised_user_error_page_unittest.cc",
     "supervised_user_metrics_service_unittest.cc",

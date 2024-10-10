@@ -9,8 +9,6 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "chrome/browser/ui/views/profiles/profile_menu_view.h"
-
 #include <stddef.h>
 
 #include "base/callback_list.h"
@@ -59,6 +57,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_coordinator.h"
+#include "chrome/browser/ui/views/profiles/profile_menu_view.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view_base.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_test_helper.h"
@@ -88,7 +87,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
-#include "components/supervised_user/core/browser/supervised_user_capabilities.h"
+#include "components/supervised_user/core/browser/family_link_user_capabilities.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
 #include "components/sync/service/sync_service.h"

@@ -9,7 +9,7 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/tribool.h"
-#import "components/supervised_user/core/browser/supervised_user_capabilities.h"
+#import "components/supervised_user/core/browser/family_link_user_capabilities.h"
 #import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "components/supervised_user/core/common/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"

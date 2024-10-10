@@ -23,9 +23,8 @@ class IdentityManager;
 // The reauth scene agent to handle the button enabled state.
 @property(nonatomic, weak) IncognitoReauthSceneAgent* reauthSceneAgent;
 
-// Initializes the capabilities observer to determine supervision status, as
-// incognito mode is disabled for supervised users.
-- (void)initializeSupervisedUserCapabilitiesObserver:
+// Initializes the capabilities observer to track changes to Family Link state.
+- (void)initializeFamilyLinkUserCapabilitiesObserver:
     (signin::IdentityManager*)identityManager;
 
 @end

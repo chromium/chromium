@@ -19,7 +19,7 @@
 #import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/pref_names.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
-#import "ios/chrome/browser/supervised_user/model/supervised_user_capabilities_observer_bridge.h"
+#import "ios/chrome/browser/supervised_user/model/family_link_user_capabilities_observer_bridge.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
@@ -28,7 +28,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_page_mutator.h"
 
 @interface TabGridMediator () <PrefObserverDelegate,
-                               SupervisedUserCapabilitiesObserving,
+                               FamilyLinkUserCapabilitiesObserving,
                                TabGridModeObserving>
 @end
 
@@ -45,9 +45,9 @@
   PrefChangeRegistrar _prefChangeRegistrar;
   // Identity manager providing AccountInfo capabilities.
   raw_ptr<signin::IdentityManager> _identityManager;
-  // Observer to track changes to supervision-related capabilities.
-  std::unique_ptr<supervised_user::SupervisedUserCapabilitiesObserverBridge>
-      _supervisedUserCapabilitiesObserver;
+  // Observer to track changes to Family Link user state.
+  std::unique_ptr<supervised_user::FamilyLinkUserCapabilitiesObserverBridge>
+      _familyLinkUserCapabilitiesObserver;
   // Holder for the current mode of the TabGrid.
   TabGridModeHolder* _modeHolder;
 }
@@ -71,8 +71,8 @@
             supervised_user::
                 kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS)) {
       _identityManager = identityManager;
-      _supervisedUserCapabilitiesObserver = std::make_unique<
-          supervised_user::SupervisedUserCapabilitiesObserverBridge>(
+      _familyLinkUserCapabilitiesObserver = std::make_unique<
+          supervised_user::FamilyLinkUserCapabilitiesObserverBridge>(
           _identityManager, self);
     } else {
       _prefService = prefService;
@@ -91,7 +91,7 @@
   _prefChangeRegistrar.RemoveAll();
   _prefObserverBridge.reset();
   _prefService = nil;
-  _supervisedUserCapabilitiesObserver.reset();
+  _familyLinkUserCapabilitiesObserver.reset();
   _identityManager = nil;
   _consumer = nil;
 
@@ -138,7 +138,7 @@
   }
 }
 
-#pragma mark - SupervisedUserCapabilitiesObserving
+#pragma mark - FamilyLinkUserCapabilitiesObserving
 
 - (void)onIsSubjectToParentalControlsCapabilityChanged:
     (supervised_user::CapabilityUpdateState)capabilityUpdateState {

@@ -877,7 +877,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
   self.incognitoTabsMediator = _incognitoGridCoordinator.incognitoGridMediator;
   [self.incognitoTabsMediator
-      initializeSupervisedUserCapabilitiesObserver:IdentityManagerFactory::
+      initializeFamilyLinkUserCapabilitiesObserver:IdentityManagerFactory::
                                                        GetForProfile(profile)];
 
   baseViewController.incognitoGridHandler =

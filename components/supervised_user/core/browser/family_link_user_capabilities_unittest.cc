@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/supervised_user/core/browser/supervised_user_capabilities.h"
+#include "components/supervised_user/core/browser/family_link_user_capabilities.h"
 
 #include "base/test/task_environment.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
@@ -15,14 +15,14 @@ namespace supervised_user {
 namespace {
 constexpr char kEmail[] = "name@gmail.com";
 
-class MockSupervisedUserCapabilitiesObserver
-    : SupervisedUserCapabilitiesObserver {
+class MockFamilyLinkUserCapabilitiesObserver
+    : FamilyLinkUserCapabilitiesObserver {
  public:
-  explicit MockSupervisedUserCapabilitiesObserver(
+  explicit MockFamilyLinkUserCapabilitiesObserver(
       signin::IdentityManager* identity_manager)
-      : SupervisedUserCapabilitiesObserver(identity_manager) {}
+      : FamilyLinkUserCapabilitiesObserver(identity_manager) {}
 
-  ~MockSupervisedUserCapabilitiesObserver() override = default;
+  ~MockFamilyLinkUserCapabilitiesObserver() override = default;
 
   MOCK_METHOD1(OnIsSubjectToParentalControlsCapabilityChanged,
                void(CapabilityUpdateState));
@@ -30,16 +30,16 @@ class MockSupervisedUserCapabilitiesObserver
 
 }  // namespace
 
-class SupervisedUserCapabilitiesTest : public ::testing::Test {
+class FamilyLinkUserCapabilitiesTest : public ::testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   signin::IdentityTestEnvironment identity_test_env_;
 };
 
-TEST_F(SupervisedUserCapabilitiesTest,
+TEST_F(FamilyLinkUserCapabilitiesTest,
        SignedOutUserNotSubjectToParentalControls) {
   // Expect no change to account capabilities state.
-  MockSupervisedUserCapabilitiesObserver observer(
+  MockFamilyLinkUserCapabilitiesObserver observer(
       identity_test_env_.identity_manager());
   EXPECT_CALL(observer, OnIsSubjectToParentalControlsCapabilityChanged)
       .Times(0);
@@ -49,11 +49,11 @@ TEST_F(SupervisedUserCapabilitiesTest,
             signin::Tribool::kFalse);
 }
 
-TEST_F(SupervisedUserCapabilitiesTest,
+TEST_F(FamilyLinkUserCapabilitiesTest,
        SignedInAdultNotSubjectToParentalControls) {
   // Expect account capabilities to notify of parental controls change.
   base::RunLoop run_loop;
-  MockSupervisedUserCapabilitiesObserver observer(
+  MockFamilyLinkUserCapabilitiesObserver observer(
       identity_test_env_.identity_manager());
   EXPECT_CALL(observer, OnIsSubjectToParentalControlsCapabilityChanged)
       .WillOnce([&](supervised_user::CapabilityUpdateState state) {
@@ -72,10 +72,10 @@ TEST_F(SupervisedUserCapabilitiesTest,
             signin::Tribool::kFalse);
 }
 
-TEST_F(SupervisedUserCapabilitiesTest, SignedInChildSubjectToParentalControls) {
+TEST_F(FamilyLinkUserCapabilitiesTest, SignedInChildSubjectToParentalControls) {
   // Expect account capabilities to notify of parental controls change.
   base::RunLoop run_loop;
-  MockSupervisedUserCapabilitiesObserver observer(
+  MockFamilyLinkUserCapabilitiesObserver observer(
       identity_test_env_.identity_manager());
   EXPECT_CALL(observer, OnIsSubjectToParentalControlsCapabilityChanged)
       .WillOnce([&](supervised_user::CapabilityUpdateState state) {
@@ -94,10 +94,10 @@ TEST_F(SupervisedUserCapabilitiesTest, SignedInChildSubjectToParentalControls) {
             signin::Tribool::kTrue);
 }
 
-TEST_F(SupervisedUserCapabilitiesTest,
+TEST_F(FamilyLinkUserCapabilitiesTest,
        SignedInUnknownIsSubjectToParentalControls) {
   // Expect no change to account capabilities state.
-  MockSupervisedUserCapabilitiesObserver observer(
+  MockFamilyLinkUserCapabilitiesObserver observer(
       identity_test_env_.identity_manager());
   EXPECT_CALL(observer, OnIsSubjectToParentalControlsCapabilityChanged)
       .Times(0);
@@ -111,14 +111,14 @@ TEST_F(SupervisedUserCapabilitiesTest,
 
 // ChromeOS does not support sign-out in tests.
 #if !BUILDFLAG(IS_CHROMEOS)
-TEST_F(SupervisedUserCapabilitiesTest,
+TEST_F(FamilyLinkUserCapabilitiesTest,
        SignOutTriggersIsSubjectToParentalControlsUpdate) {
   AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
       kEmail, signin::ConsentLevel::kSignin);
 
   // Expect detached account capabilities update.
   base::RunLoop run_loop;
-  MockSupervisedUserCapabilitiesObserver observer(
+  MockFamilyLinkUserCapabilitiesObserver observer(
       identity_test_env_.identity_manager());
   EXPECT_CALL(observer, OnIsSubjectToParentalControlsCapabilityChanged)
       .WillOnce([&](supervised_user::CapabilityUpdateState state) {
