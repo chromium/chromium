@@ -259,6 +259,25 @@ public class AuxiliarySearchProviderTest {
 
     @Test
     @SmallTest
+    public void testTabToAuxiliarySearchEntry() {
+        int id = 111;
+        long now = System.currentTimeMillis();
+        MockTab tab = mMockNormalTabModel.addTab(id);
+        String expectedUrl = TAB_URL + Integer.toString(id);
+        tab.setGurlOverrideForTesting(new GURL(expectedUrl));
+        String expectedTitle = TAB_TITLE + Integer.toString(id);
+        tab.setTitle(expectedTitle);
+        tab.setTimestampMillis(now + id);
+
+        AuxiliarySearchEntry entry = AuxiliarySearchProvider.tabToAuxiliarySearchEntry(tab);
+        assertEquals(id, entry.getId());
+        assertEquals(expectedUrl, entry.getUrl());
+        assertEquals(expectedTitle, entry.getTitle());
+        assertEquals(now + id, tab.getTimestampMillis());
+    }
+
+    @Test
+    @SmallTest
     public void configuredTabsAgeCannotBeZero() {
         var config = new TestValues();
         config.addFieldTrialParamOverride(

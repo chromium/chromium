@@ -158,7 +158,11 @@ public class AuxiliarySearchProvider {
         GURL url = tab.getUrl();
         if (TextUtils.isEmpty(title) || url == null || !url.isValid()) return null;
 
-        var tabBuilder = AuxiliarySearchEntry.newBuilder().setTitle(title).setUrl(url.getSpec());
+        var tabBuilder =
+                AuxiliarySearchEntry.newBuilder()
+                        .setTitle(title)
+                        .setUrl(url.getSpec())
+                        .setId(tab.getId());
         final long lastAccessTime = tab.getTimestampMillis();
         if (lastAccessTime != Tab.INVALID_TIMESTAMP) {
             tabBuilder.setLastAccessTimestamp(lastAccessTime);
