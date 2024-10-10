@@ -57,6 +57,8 @@ void TranscriptReceiver::StartReceivingInternal() {
                                                base::Unretained(this)));
   ReceiveMessagesRequest request;
   *request.mutable_header() = GetRequestHeaderTemplate();
+  request.mutable_header()->set_auth_token_payload(
+      request_data_provider_->tachyon_token());
   std::unique_ptr<RequestDataWrapper> request_data =
       std::make_unique<RequestDataWrapper>(
           network_traffic_annotation_, kReceiveMessagesUrl, /*max_retries=*/0,

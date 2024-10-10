@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
@@ -17,6 +18,7 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_tachyon_authed_client.h"
 #include "chromeos/ash/components/boca/babelorca/fakes/fake_tachyon_request_data_provider.h"
+#include "chromeos/ash/components/boca/babelorca/proto/tachyon.pb.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_authed_client.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_response.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_streaming_client.h"
@@ -332,6 +334,16 @@ TEST_F(TranscriptReceiverTest, NewRequestResetsTranscriptBuilder) {
   VerifyMessage(&result_future, kText1, /*is_final=*/false);
   VerifyMessage(&result_future, kText2, /*is_final=*/false);
   EXPECT_TRUE(result_future.IsEmpty());
+}
+
+TEST_F(TranscriptReceiverTest, RequestHasTachyonToken) {
+  ReceiveMessagesRequest request;
+
+  receiver_->StartReceiving(base::DoNothing(), base::DoNothing());
+
+  ASSERT_TRUE(request.ParseFromString(authed_client_ptr_->GetRequestString()));
+  EXPECT_EQ(request.header().auth_token_payload(),
+            data_provider_.tachyon_token());
 }
 
 }  // namespace
