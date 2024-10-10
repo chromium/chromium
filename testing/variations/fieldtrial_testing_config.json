@@ -1486,30 +1486,6 @@
             ]
         }
     ],
-    "AutofillChangeDisusedAddressSuggestionTreatment": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "ignored-suggestions": "3"
-                    },
-                    "enable_features": [
-                        "AutofillChangeDisusedAddressSuggestionTreatment"
-                    ]
-                }
-            ]
-        }
-    ],
     "AutofillCreditCardUserPerceptionSurvey": [
         {
             "platforms": [
