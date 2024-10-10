@@ -299,7 +299,7 @@ BASE_FEATURE(kIPHReadAloudAppMenuFeature,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHReadAloudExpandedPlayerFeature,
              "IPH_ReadAloudExpandedPlayerFeature",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHReadLaterContextMenuFeature,
              "IPH_ReadLaterContextMenu",
              base::FEATURE_ENABLED_BY_DEFAULT);

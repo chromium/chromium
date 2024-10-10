@@ -15922,46 +15922,6 @@
             ]
         }
     ],
-    "OptionalToolbarButton": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Segmentation_5_Button_ML_Model_Aggressive_20240409",
-                    "enable_features": [
-                        "AdaptiveButtonInTopToolbarAddToBookmarks",
-                        "AdaptiveButtonInTopToolbarCustomizationV2",
-                        "AdaptiveButtonInTopToolbarTranslate",
-                        "SegmentationPlatformAdaptiveToolbarV2Feature"
-                    ]
-                },
-                {
-                    "name": "Segmentation_Fixed_Random_6_Button_Forced_Refresh_60_Days_1_20240604",
-                    "enable_features": [
-                        "AdaptiveButtonInTopToolbarAddToBookmarks",
-                        "AdaptiveButtonInTopToolbarCustomizationV2",
-                        "AdaptiveButtonInTopToolbarTranslate",
-                        "ReadAloudInMultiWindow",
-                        "SegmentationPlatformAdaptiveToolbarV2Feature"
-                    ]
-                },
-                {
-                    "name": "Segmentation_Fixed_Random_6_Button_Forced_Refresh_60_Days_20240703",
-                    "enable_features": [
-                        "AdaptiveButtonInTopToolbarAddToBookmarks",
-                        "AdaptiveButtonInTopToolbarCustomizationV2",
-                        "AdaptiveButtonInTopToolbarTranslate",
-                        "IPH_ReadAloudExpandedPlayerFeature",
-                        "ReadAloudBackgroundPlayback",
-                        "ReadAloudInMultiWindow",
-                        "SegmentationPlatformAdaptiveToolbarV2Feature"
-                    ]
-                }
-            ]
-        }
-    ],
     "OrcaEnabled": [
         {
             "platforms": [
