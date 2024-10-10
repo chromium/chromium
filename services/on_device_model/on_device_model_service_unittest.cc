@@ -9,6 +9,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/on_device_model/fake/fake_chrome_ml_api.h"
 #include "services/on_device_model/fake/on_device_model_fake.h"
 #include "services/on_device_model/ml/chrome_ml_types.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
@@ -153,8 +154,10 @@ class OnDeviceModelServiceTest : public testing::Test {
 
   void FlushService() { service_.FlushForTesting(); }
 
- private:
+ protected:
   base::test::TaskEnvironment task_environment_;
+
+ private:
   mojo::Remote<mojom::OnDeviceModelService> service_;
   OnDeviceModelService service_impl_;
 };
@@ -432,6 +435,30 @@ TEST_F(OnDeviceModelServiceTest, LoadsAdaptation) {
               ElementsAre("Adaptation: Adapt1\n", "Input: foo\n"));
   EXPECT_THAT(GetResponses(*adaptation2, "foo"),
               ElementsAre("Adaptation: Adapt2\n", "Input: foo\n"));
+}
+
+TEST_F(OnDeviceModelServiceTest, DestroysAdaptationSession) {
+  FakeFile weights1("Adapt1");
+  FakeFile weights2("Adapt2");
+  auto model = LoadModel();
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(fake_ml::GetActiveNonCloneSessions(), 1);
+
+  auto adaptation1 = LoadAdaptation(*model, weights1.Open());
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(fake_ml::GetActiveNonCloneSessions(), 2);
+
+  auto adaptation2 = LoadAdaptation(*model, weights2.Open());
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(fake_ml::GetActiveNonCloneSessions(), 3);
+
+  adaptation1.reset();
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(fake_ml::GetActiveNonCloneSessions(), 2);
+
+  adaptation2.reset();
+  task_environment_.RunUntilIdle();
+  EXPECT_EQ(fake_ml::GetActiveNonCloneSessions(), 1);
 }
 
 TEST_F(OnDeviceModelServiceTest, LoadsAdaptationWithPath) {

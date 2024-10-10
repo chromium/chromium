@@ -386,6 +386,17 @@ void DestroyModel(const ChromeML* chrome_ml, ChromeMLModel model) {
   chrome_ml->api().DestroyModel(model);
 }
 
+OnDeviceModelExecutor::ScopedAdaptation::ScopedAdaptation(
+    base::WeakPtr<OnDeviceModelExecutor> executor,
+    uint32_t adaptation_id)
+    : executor_(std::move(executor)), adaptation_id_(adaptation_id) {}
+
+OnDeviceModelExecutor::ScopedAdaptation::~ScopedAdaptation() {
+  if (executor_) {
+    executor_->base_sessions_.erase(adaptation_id_);
+  }
+}
+
 OnDeviceModelExecutor::OnDeviceModelExecutor(
     base::PassKey<OnDeviceModelExecutor>,
     const ChromeML& chrome_ml)
@@ -418,7 +429,11 @@ OnDeviceModelExecutor::CreateWithResult(
 }
 
 std::unique_ptr<SessionImpl> OnDeviceModelExecutor::CreateSession(
-    std::optional<uint32_t> adaptation_id) {
+    const ScopedAdaptation* adaptation) {
+  std::optional<uint32_t> adaptation_id;
+  if (adaptation) {
+    adaptation_id = adaptation->adaptation_id();
+  }
   auto it = base_sessions_.find(adaptation_id);
   CHECK(it != base_sessions_.end());
   return std::make_unique<SessionImpl>(
@@ -427,7 +442,9 @@ std::unique_ptr<SessionImpl> OnDeviceModelExecutor::CreateSession(
 }
 
 DISABLE_CFI_DLSYM
-base::expected<uint32_t, LoadModelResult> OnDeviceModelExecutor::LoadAdaptation(
+base::expected<std::unique_ptr<OnDeviceModelExecutor::ScopedAdaptation>,
+               LoadModelResult>
+OnDeviceModelExecutor::LoadAdaptation(
     on_device_model::mojom::LoadAdaptationParamsPtr params,
     base::OnceClosure on_complete) {
   on_device_model::AdaptationAssets assets = std::move(params->assets);
@@ -436,7 +453,8 @@ base::expected<uint32_t, LoadModelResult> OnDeviceModelExecutor::LoadAdaptation(
       {next_id, SessionAccessor::Create(chrome_ml_.get(), model_task_runner_,
                                         model_, std::move(assets))});
   model_task_runner_->PostTask(FROM_HERE, std::move(on_complete));
-  return base::ok(next_id++);
+  return base::ok(std::make_unique<ScopedAdaptation>(
+      weak_ptr_factory_.GetWeakPtr(), next_id++));
 }
 
 DISABLE_CFI_DLSYM

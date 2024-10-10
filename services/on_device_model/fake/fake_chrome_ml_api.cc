@@ -26,7 +26,14 @@ std::string PieceToString(const ml::InputPiece& piece) {
       return " End.";
   }
 }
+
+int g_active_non_clone_sessions = 0;
+
 }  // namespace
+
+int GetActiveNonCloneSessions() {
+  return g_active_non_clone_sessions;
+}
 
 void InitDawnProcs(const DawnProcTable& procs) {}
 
@@ -54,6 +61,7 @@ struct FakeModelInstance {
 struct FakeSessionInstance {
   std::string adaptation_data_;
   std::vector<std::string> context_;
+  bool cloned;
 };
 
 struct FakeTsModelInstance {
@@ -95,6 +103,7 @@ ChromeMLSafetyResult ClassifyTextSafety(ChromeMLModel model,
 
 ChromeMLSession CreateSession(ChromeMLModel model,
                               const ChromeMLAdaptationDescriptor* descriptor) {
+  g_active_non_clone_sessions++;
   auto* model_instance = reinterpret_cast<FakeModelInstance*>(model);
   auto* instance = new FakeSessionInstance{};
   if (descriptor) {
@@ -115,11 +124,15 @@ ChromeMLSession CloneSession(ChromeMLSession session) {
   return reinterpret_cast<ChromeMLSession>(new FakeSessionInstance{
       .adaptation_data_ = instance->adaptation_data_,
       .context_ = instance->context_,
+      .cloned = true,
   });
 }
 
 void DestroySession(ChromeMLSession session) {
   auto* instance = reinterpret_cast<FakeSessionInstance*>(session);
+  if (!instance->cloned) {
+    g_active_non_clone_sessions--;
+  }
   delete instance;
 }
 

@@ -3,10 +3,12 @@
 # found in the LICENSE file.
 
 component("fake") {
-  public = [ "on_device_model_fake.h" ]
+  public = [
+    "fake_chrome_ml_api.h",
+    "on_device_model_fake.h",
+  ]
   sources = [
     "fake_chrome_ml_api.cc",
-    "fake_chrome_ml_api.h",
     "on_device_model_fake.cc",
   ]
   deps = [
