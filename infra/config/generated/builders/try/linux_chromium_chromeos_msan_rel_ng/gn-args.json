@@ -7,7 +7,6 @@
     "msan_track_origins": 2,
     "target_cpu": "x64",
     "target_os": "chromeos",
-    "use_reclient": false,
     "use_remoteexec": true,
     "use_siso": true
   }

@@ -25,7 +25,6 @@ try_.defaults.set(
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     siso_enabled = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
-    siso_remote_linking = True,
 )
 
 consoles.list_view(
@@ -384,6 +383,7 @@ try_.orchestrator_builder(
         "chromium.use_per_builder_build_dir_name": 100,
     },
     main_list_view = "try",
+    siso_remote_linking = True,
     # TODO(crbug.com/40241638): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
@@ -407,6 +407,7 @@ try_.orchestrator_builder(
     gn_args = "try/linux-rel",
     compilator = "linux-full-remote-rel-compilator",
     contact_team_email = "chrome-build-team@google.com",
+    siso_remote_linking = True,
     tryjob = try_.job(
         experiment_percentage = 10,
     ),
