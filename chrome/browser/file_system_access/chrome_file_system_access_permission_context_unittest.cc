@@ -756,6 +756,43 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
                 HandleType::kDirectory, UserAction::kOpen),
             SensitiveDirectoryResult::kAllowed);
 }
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       ConfirmSensitiveEntryAccess_BlockAllChildren_RootApplicationsDir) {
+  // Root Applications directory should be blocked.
+  base::FilePath root_applications_dir(FILE_PATH_LITERAL("/Applications"));
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathInfo(root_applications_dir),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
+
+  // Paths within /Applications should be blocked.
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(root_applications_dir.AppendASCII("foo")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       ConfirmSensitiveEntryAccess_BlockAllChildren_UserApplicationsDir) {
+  base::FilePath home_dir = temp_dir_.GetPath().AppendASCII("home");
+  base::ScopedPathOverride home_override(base::DIR_HOME, home_dir, true, true);
+
+  // User's Applications directory should be blocked.
+  base::FilePath user_applications_dir(home_dir.AppendASCII("Applications"));
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathInfo(user_applications_dir),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
+
+  // Paths within $HOME/Applications should be blocked.
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(),
+                PathInfo(user_applications_dir.AppendASCII("foo")),
+                HandleType::kDirectory, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
+}
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_WIN)

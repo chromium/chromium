@@ -313,6 +313,10 @@ const struct {
 #if BUILDFLAG(IS_MAC)
     // Similar Mac specific blocks.
     {base::DIR_APP_DATA, nullptr, kBlockAllChildren},
+    // Block access to the user's Applications directory.
+    {base::DIR_HOME, FILE_PATH_LITERAL("Applications"), kBlockAllChildren},
+    // Block access to the root Applications directory.
+    {kNoBasePathKey, FILE_PATH_LITERAL("/Applications"), kBlockAllChildren},
     {base::DIR_HOME, FILE_PATH_LITERAL("Library"), kBlockAllChildren},
     // Allow access to other cloud files, such as Google Drive.
     {base::DIR_HOME, FILE_PATH_LITERAL("Library/CloudStorage"),
