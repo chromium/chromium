@@ -203,18 +203,16 @@ void FormActivityTabHelper::FormSubmissionHandler(
   FieldDataManager* fieldDataManager =
       FieldDataManagerFactoryIOS::FromWebFrame(sender_frame);
 
-  std::vector<FormData> forms;
-
-  bool success = autofill::ExtractFormsData(
+  std::optional<std::vector<FormData>> forms = autofill::ExtractFormsData(
       base::SysUTF8ToNSString(form_data), true, base::UTF8ToUTF16(form_name),
       web_state->GetLastCommittedURL(), sender_frame->GetSecurityOrigin(),
-      *fieldDataManager, sender_frame->GetFrameId(), &forms);
+      *fieldDataManager, sender_frame->GetFrameId());
 
-  if (!success || forms.size() != 1) {
+  if (!forms || forms->size() != 1) {
     return;
   }
 
-  FormData form = forms[0];
+  FormData form = forms.value()[0];
 
   for (auto& observer : observers_) {
     observer.DocumentSubmitted(web_state, sender_frame, form,

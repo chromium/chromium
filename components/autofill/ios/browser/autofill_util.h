@@ -10,6 +10,7 @@
 
 #import "base/unguessable_token.h"
 #import "base/values.h"
+#import "components/autofill/core/common/unique_ids.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 
 class GURL;
@@ -40,33 +41,33 @@ std::optional<base::UnguessableToken> DeserializeJavaScriptFrameId(
     const std::string& frame_id);
 
 // Processes the JSON form data extracted from the page into the format expected
-// by BrowserAutofillManager and fills it in |forms_data|.
-// |forms_data| cannot be nil.
-// |filtered| and |form_name| limit the field that will be returned in
-// |forms_data|.
-// Returns a bool indicating the success value and the vector of form data.
-bool ExtractFormsData(NSString* form_json,
-                      bool filtered,
-                      const std::u16string& form_name,
-                      const GURL& main_frame_url,
-                      const GURL& frame_origin,
-                      const FieldDataManager& field_data_manager,
-                      const std::string& frame_id,
-                      std::vector<FormData>* forms_data);
+// by BrowserAutofillManager.
+// |filtered| and |form_name| limit the field that will be returned.
+// Returns an std::optional that contains the extracted vector of FormData or
+// nullopt if the data was invalid.
+std::optional<std::vector<FormData>> ExtractFormsData(
+    NSString* form_json,
+    bool filtered,
+    const std::u16string& form_name,
+    const GURL& main_frame_url,
+    const GURL& frame_origin,
+    const FieldDataManager& field_data_manager,
+    const std::string& frame_id);
 
-// Converts |form| into |form_data|.
-// Returns false if a form can not be extracted.
-// Returns false if |filtered| == true and |form["name"]| !=
+// Converts |form| into FormData.
+// Returns nullopt if a form can not be extracted.
+// Returns nullopt if |filtered| == true and |form["name"]| !=
 // |formName|. Returns false if |form["origin"]| !=
-// |form_frame_origin|. Returns true if the conversion succeeds.
-bool ExtractFormData(const base::Value::Dict& form,
-                     bool filtered,
-                     const std::u16string& form_name,
-                     const GURL& main_frame_url,
-                     const GURL& form_frame_origin,
-                     const FieldDataManager& field_data_manager,
-                     const std::string& frame_id,
-                     FormData* form_data);
+// |form_frame_origin|. Returns an std::optional that contains a FormData if the
+// conversion succeeds.
+std::optional<FormData> ExtractFormData(
+    const base::Value::Dict& form,
+    bool filtered,
+    const std::u16string& form_name,
+    const GURL& main_frame_url,
+    const GURL& form_frame_origin,
+    const FieldDataManager& field_data_manager,
+    const std::string& frame_id);
 
 // Extracts a single form field from the JSON dictionary into a FormFieldData
 // object.

@@ -123,7 +123,7 @@ struct AutofillData {
 // The type of the completion handler callback for
 // |fetchFormsWithName:completionHandler|
 using FetchFormsCompletionHandler =
-    base::OnceCallback<void(BOOL, const FormDataVector&)>;
+    base::OnceCallback<void(std::optional<FormDataVector>)>;
 
 // Delay for setting an utterance to be queued, it is required to ensure that
 // standard announcements have already been started and thus would not interrupt
@@ -275,11 +275,11 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
                            base::WeakPtr<web::WebFrame> frame,
                            base::WeakPtr<web::WebState> webState,
                            SuggestionsAvailableCompletion completion,
-                           BOOL success, const FormDataVector& forms) {
-    if (success && forms.size() == 1) {
+                           std::optional<FormDataVector> forms) {
+    if (forms && forms->size() == 1) {
       // Once the active form and field are extracted, send a query to the
       // BrowserAutofillManager for suggestions.
-      [agent queryAutofillForForm:forms[0]
+      [agent queryAutofillForForm:forms.value()[0]
                   fieldIdentifier:formQuery.fieldRendererID
                              type:formQuery.type
                        typedValue:formQuery.typedValue
@@ -552,12 +552,12 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
                     inFrame:(web::WebFrame*)webFrame {
   __weak __typeof(self) weakSelf = self;
   const auto callback = [](__weak AutofillAgent* agent,
-                           base::WeakPtr<web::WebFrame> frame, BOOL success,
-                           const FormDataVector& forms) {
-    if (!success || forms.empty()) {
+                           base::WeakPtr<web::WebFrame> frame,
+                           std::optional<FormDataVector> forms) {
+    if (!forms || forms->empty()) {
       return;
     }
-    [agent notifyFormsSeen:forms inFrame:frame.get()];
+    [agent notifyFormsSeen:*std::move(forms) inFrame:frame.get()];
   };
   // The document has now been fully loaded. Scan for forms to be extracted.
   [self fetchFormsFiltered:NO
@@ -836,11 +836,11 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
   __weak __typeof(self) weakSelf = self;
   const auto callback =
       [](__weak AutofillAgent* agent, base::WeakPtr<web::WebFrame> frame,
-         FieldRendererId fieldId, BOOL success, const FormDataVector& forms) {
-        [agent onFormsFetched:success
-                    formsData:forms
-                     webFrame:frame
-              fieldIdentifier:fieldId];
+         FieldRendererId fieldId, std::optional<FormDataVector> forms) {
+        if (!forms) {
+          return;
+        }
+        [agent onFormsFetched:*forms webFrame:frame fieldIdentifier:fieldId];
       };
 
   // Extract the active form and field only.
@@ -1108,11 +1108,10 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
 // -webState:didRegisterFormActivity:inFrame:. Due to the asynchronous
 // invocation, WebState* and WebFrame* may both have been destroyed, so
 // the method needs to check for those edge cases.
-- (void)onFormsFetched:(BOOL)success
-             formsData:(const FormDataVector&)forms
+- (void)onFormsFetched:(const FormDataVector&)forms
               webFrame:(base::WeakPtr<web::WebFrame>)webFrame
        fieldIdentifier:(FieldRendererId)fieldIdentifier {
-  if (!success || forms.size() != 1 || !_webState || !webFrame) {
+  if (forms.size() != 1 || !_webState || !webFrame) {
     return;
   }
 
@@ -1223,11 +1222,10 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
                            const GURL& pageURL, const GURL& frameOrigin,
                            scoped_refptr<FieldDataManager> fieldDataManager,
                            const std::string& frame_id, NSString* formJSON) {
-    std::vector<FormData> formData;
-    bool success = autofill::ExtractFormsData(
-        formJSON, filtered, formName, pageURL, frameOrigin, *fieldDataManager,
-        frame_id, &formData);
-    std::move(completion).Run(success, formData);
+    std::optional<std::vector<FormData>> formData =
+        autofill::ExtractFormsData(formJSON, filtered, formName, pageURL,
+                                   frameOrigin, *fieldDataManager, frame_id);
+    std::move(completion).Run(std::move(formData));
   };
   AutofillJavaScriptFeature::GetInstance()->FetchForms(
       frame, base::BindOnce(callback, std::move(completionHandler), filtered,

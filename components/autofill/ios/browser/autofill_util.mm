@@ -115,71 +115,74 @@ std::optional<base::UnguessableToken> DeserializeJavaScriptFrameId(
   return base::UnguessableToken::Deserialize(high, low);
 }
 
-bool ExtractFormsData(NSString* forms_json,
-                      bool filtered,
-                      const std::u16string& form_name,
-                      const GURL& main_frame_url,
-                      const GURL& frame_origin,
-                      const FieldDataManager& field_data_manager,
-                      const std::string& frame_id,
-                      std::vector<FormData>* forms_data) {
-  DCHECK(forms_data);
+std::optional<std::vector<FormData>> ExtractFormsData(
+    NSString* forms_json,
+    bool filtered,
+    const std::u16string& form_name,
+    const GURL& main_frame_url,
+    const GURL& frame_origin,
+    const FieldDataManager& field_data_manager,
+    const std::string& frame_id) {
   std::unique_ptr<base::Value> forms_value = ParseJson(forms_json);
   if (!forms_value) {
-    return false;
+    return std::nullopt;
   }
 
   // Returned data should be a list of forms.
   if (!forms_value->is_list()) {
-    return false;
+    return std::nullopt;
   }
 
   // Iterate through all the extracted forms and copy the data from JSON into
   // BrowserAutofillManager structures.
-  for (const auto& form_value : forms_value->GetList()) {
+  const base::Value::List& form_list = forms_value->GetList();
+  std::vector<FormData> forms_data;
+  forms_data.reserve(form_list.size());
+  for (const auto& form_value : form_list) {
     const auto* form_dict = form_value.GetIfDict();
     if (!form_dict) {
       continue;
     }
-    autofill::FormData form;
-    if (ExtractFormData(*form_dict, filtered, form_name, main_frame_url,
-                        frame_origin, field_data_manager, frame_id, &form)) {
-      forms_data->push_back(std::move(form));
+
+    if (std::optional<FormData> form =
+            ExtractFormData(*form_dict, filtered, form_name, main_frame_url,
+                            frame_origin, field_data_manager, frame_id)) {
+      forms_data.push_back(*std::move(form));
     }
   }
-  return true;
+  return forms_data;
 }
 
-bool ExtractFormData(const base::Value::Dict& form,
-                     bool filtered,
-                     const std::u16string& form_name,
-                     const GURL& main_frame_url,
-                     const GURL& form_frame_origin,
-                     const FieldDataManager& field_data_manager,
-                     const std::string& frame_id,
-                     autofill::FormData* form_data) {
-  DCHECK(form_data);
+std::optional<FormData> ExtractFormData(
+    const base::Value::Dict& form,
+    bool filtered,
+    const std::u16string& form_name,
+    const GURL& main_frame_url,
+    const GURL& form_frame_origin,
+    const FieldDataManager& field_data_manager,
+    const std::string& frame_id) {
+  FormData form_data;
   // Form data is copied into a FormData object field-by-field.
   const std::string* name = form.FindString("name");
   if (!name) {
-    return false;
+    return std::nullopt;
   }
-  form_data->set_name(base::UTF8ToUTF16(*name));
-  if (filtered && form_name != form_data->name()) {
-    return false;
+  form_data.set_name(base::UTF8ToUTF16(*name));
+  if (filtered && form_name != form_data.name()) {
+    return std::nullopt;
   }
 
   // Origin is mandatory.
   const std::string* origin_ptr = form.FindString("origin");
   if (!origin_ptr) {
-    return false;
+    return std::nullopt;
   }
   std::u16string origin = base::UTF8ToUTF16(*origin_ptr);
 
   // Use GURL object to verify origin of host frame URL.
-  form_data->set_url(GURL(origin));
-  if (form_data->url().DeprecatedGetOriginAsURL() != form_frame_origin) {
-    return false;
+  form_data.set_url(GURL(origin));
+  if (form_data.url().DeprecatedGetOriginAsURL() != form_frame_origin) {
+    return std::nullopt;
   }
 
   bool include_frame_metadata = base::FeatureList::IsEnabled(
@@ -192,16 +195,16 @@ bool ExtractFormData(const base::Value::Dict& form,
   // Frame ID of the frame containing this form is mandatory.
   const std::string* host_frame_param = form.FindString("host_frame");
   if (!host_frame_param) {
-    return false;
+    return std::nullopt;
   }
 
   std::optional<base::UnguessableToken> host_frame =
       DeserializeJavaScriptFrameId(*host_frame_param);
   if (!host_frame) {
-    return false;
+    return std::nullopt;
   }
 
-  form_data->set_host_frame(LocalFrameToken(*host_frame));
+  form_data.set_host_frame(LocalFrameToken(*host_frame));
 
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillAcrossIframesIos) &&
@@ -209,19 +212,19 @@ bool ExtractFormData(const base::Value::Dict& form,
     // Invalidate parsing when the the frame for which extraction was done
     // doesn't correspond to the frame where extraction actually happened.
     // This is to prevent associating the form data with the wrong frame.
-    return false;
+    return std::nullopt;
   }
 
   // main_frame_origin is used for logging UKM.
-  form_data->set_main_frame_origin(url::Origin::Create(main_frame_url));
+  form_data.set_main_frame_origin(url::Origin::Create(main_frame_url));
 
   const std::string* renderer_id = form.FindString("renderer_id");
   if (renderer_id && !renderer_id->empty()) {
     FormRendererId form_renderer_id;
     StringToUint(*renderer_id, &form_renderer_id.value());
-    form_data->set_renderer_id(form_renderer_id);
+    form_data.set_renderer_id(form_renderer_id);
   } else {
-    form_data->set_renderer_id(FormRendererId());
+    form_data.set_renderer_id(FormRendererId());
   }
 
   // Action is optional.
@@ -229,14 +232,14 @@ bool ExtractFormData(const base::Value::Dict& form,
   if (const std::string* action_ptr = form.FindString("action")) {
     action = base::UTF8ToUTF16(*action_ptr);
   }
-  form_data->set_action(GURL(action));
+  form_data.set_action(GURL(action));
 
   // Optional fields.
   if (const std::string* name_attribute = form.FindString("name_attribute")) {
-    form_data->set_name_attribute(base::UTF8ToUTF16(*name_attribute));
+    form_data.set_name_attribute(base::UTF8ToUTF16(*name_attribute));
   }
   if (const std::string* id_attribute = form.FindString("id_attribute")) {
-    form_data->set_id_attribute(base::UTF8ToUTF16(*id_attribute));
+    form_data.set_id_attribute(base::UTF8ToUTF16(*id_attribute));
   }
 
   if (include_frame_metadata) {
@@ -251,14 +254,14 @@ bool ExtractFormData(const base::Value::Dict& form,
           child_frames.push_back(std::move(token));
         }
       }
-      form_data->set_child_frames(std::move(child_frames));
+      form_data.set_child_frames(std::move(child_frames));
     }
   }
 
   // Field list (mandatory) is extracted.
   const base::Value::List* fields_list = form.FindList("fields");
   if (!fields_list) {
-    return false;
+    return std::nullopt;
   }
   std::vector<FormFieldData> fields;
   fields.reserve(fields_list->size());
@@ -269,28 +272,28 @@ bool ExtractFormData(const base::Value::Dict& form,
                              &field_data)) {
       // Some data is extracted at the form level, but also appears at the
       // field level. Reuse the extracted values.
-      field_data.set_host_form_id(form_data->renderer_id());
-      field_data.set_host_frame(form_data->host_frame());
+      field_data.set_host_form_id(form_data.renderer_id());
+      field_data.set_host_frame(form_data.host_frame());
       if (include_frame_metadata) {
         field_data.set_origin(frame_origin_object);
       }
 
       fields.push_back(std::move(field_data));
     } else {
-      return false;
+      return std::nullopt;
     }
   }
-  form_data->set_fields(std::move(fields));
+  form_data.set_fields(std::move(fields));
 
   if (include_frame_metadata) {
-    FormSignature form_signature = CalculateFormSignature(*form_data);
-    std::vector<FormFieldData> form_fields = form_data->ExtractFields();
+    FormSignature form_signature = CalculateFormSignature(form_data);
+    std::vector<FormFieldData> form_fields = form_data.ExtractFields();
     for (FormFieldData& field : form_fields) {
       field.set_host_form_signature(form_signature);
     }
-    form_data->set_fields(std::move(form_fields));
+    form_data.set_fields(std::move(form_fields));
   }
-  return true;
+  return form_data;
 }
 
 bool ExtractFormFieldData(const base::Value::Dict& field,

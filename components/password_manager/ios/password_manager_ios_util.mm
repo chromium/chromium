@@ -6,6 +6,7 @@
 
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
+#import "components/autofill/core/common/form_data.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #include "components/security_state/ios/security_state_utils.h"
 #import "ios/web/public/web_state.h"
@@ -41,24 +42,24 @@ bool WebStateContentIsSecureHtml(const web::WebState* web_state) {
   return security_state::IsSslCertificateValid(security_level);
 }
 
-bool JsonStringToFormData(NSString* json_string,
-                          autofill::FormData* form_data,
-                          const GURL& page_url,
-                          const autofill::FieldDataManager& field_data_manager,
-                          const std::string& frame_id) {
+std::optional<autofill::FormData> JsonStringToFormData(
+    NSString* json_string,
+    const GURL& page_url,
+    const autofill::FieldDataManager& field_data_manager,
+    const std::string& frame_id) {
   std::unique_ptr<base::Value> formValue = autofill::ParseJson(json_string);
   if (!formValue) {
-    return false;
+    return std::nullopt;
   }
 
   auto* dict = formValue->GetIfDict();
   if (!dict) {
-    return false;
+    return std::nullopt;
   }
 
   return autofill::ExtractFormData(*dict, false, std::u16string(), page_url,
                                    page_url.DeprecatedGetOriginAsURL(),
-                                   field_data_manager, frame_id, form_data);
+                                   field_data_manager, frame_id);
 }
 
 bool IsCrossOriginIframe(web::WebState* web_state,

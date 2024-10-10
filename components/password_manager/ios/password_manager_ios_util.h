@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import <optional>
+
 #include "url/gurl.h"
 
 namespace web {
@@ -24,13 +26,12 @@ namespace password_manager {
 // ignore API calls from insecure context.
 bool WebStateContentIsSecureHtml(const web::WebState* web_state);
 
-// Extracts password form data from |json_string| to |form_data| and returns
-// whether the xtraction was successful.
-bool JsonStringToFormData(NSString* json_string,
-                          autofill::FormData* form_data,
-                          const GURL& page_url,
-                          const autofill::FieldDataManager& field_data_manager,
-                          const std::string& frame_id);
+// Converts password form data from |json_string| to autofill::FormData.
+std::optional<autofill::FormData> JsonStringToFormData(
+    NSString* json_string,
+    const GURL& page_url,
+    const autofill::FieldDataManager& field_data_manager,
+    const std::string& frame_id);
 
 // Whether the |origin| matches the last committed URl in the |web_state|.
 bool OriginMatchesLastCommittedURLOrigin(web::WebState* web_state,
