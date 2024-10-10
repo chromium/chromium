@@ -32,6 +32,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.JavaExceptionReporter;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.ValueChangedCallback;
@@ -218,6 +219,8 @@ public class ToolbarManager
     private final ObservableSupplierImpl<Boolean> mHomepageEnabledSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
+    private final ObservableSupplierImpl<Boolean> mIsNtpShowingSupplier =
+            new ObservableSupplierImpl<>();
     private final ConstraintsProxy mConstraintsProxy = new ConstraintsProxy();
     private ObservableSupplierImpl<BottomControlsCoordinator> mBottomControlsCoordinatorSupplier =
             new ObservableSupplierImpl<>();
@@ -327,6 +330,7 @@ public class ToolbarManager
     private boolean mBackGestureInProgress;
     private boolean mStartNavDuringOngoingGesture;
     private WindowAndroid.ProgressBarConfig.Provider mProgressBarConfigProvider;
+    private ToolbarPositionController mToolbarPositionController;
 
     private static class TabObscuringCallback implements Callback<Boolean> {
         private final TabObscuringHandler mTabObscuringHandler;
@@ -1313,8 +1317,25 @@ public class ToolbarManager
                     }
                 };
         mWindowAndroid.setProgressBarConfigProvider(mProgressBarConfigProvider);
+        initializeToolbarPositionController();
 
         TraceEvent.end("ToolbarManager.ToolbarManager");
+    }
+
+    private void initializeToolbarPositionController() {
+        if (ToolbarPositionController.isToolbarPositionCustomizationEnabled(
+                mActivity, mIsCustomTab)) {
+            mIsNtpShowingSupplier.set(getNewTabPageForCurrentTab() != null);
+            mToolbarPositionController =
+                    new ToolbarPositionController(
+                            mBrowserControlsSizer,
+                            ContextUtils.getAppSharedPreferences(),
+                            mIsNtpShowingSupplier,
+                            mOmniboxFocusStateSupplier,
+                            mActivity
+                                    .getResources()
+                                    .getDimensionPixelSize(R.dimen.toolbar_height_no_shadow));
+        }
     }
 
     // TODO(b/315204103): add tests
@@ -2412,6 +2433,9 @@ public class ToolbarManager
             ntp.setOmniboxStub(mLocationBar.getOmniboxStub());
             mLocationBarModel.notifyNtpStartedLoading();
             maybeShowPriceDropIPH();
+            mIsNtpShowingSupplier.set(true);
+        } else {
+            mIsNtpShowingSupplier.set(false);
         }
     }
 
