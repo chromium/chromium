@@ -1249,38 +1249,36 @@ TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, RootUnknownSha256) {
 
 TEST(CertVerifyProcTest, TestHasTooLongValidity) {
   struct {
-    const char* const file;
+    const char* const test_name;
+    base::Time not_before;
+    base::TimeDelta validity;
     bool is_valid_too_long;
   } tests[] = {
-      {"start_after_expiry.pem", true},
-      {"pre_br_validity_ok.pem", true},
-      {"pre_br_validity_bad_121.pem", true},
-      {"pre_br_validity_bad_2020.pem", true},
-      {"10_year_validity.pem", true},
-      {"11_year_validity.pem", true},
-      {"39_months_after_2015_04.pem", true},
-      {"40_months_after_2015_04.pem", true},
-      {"60_months_after_2012_07.pem", true},
-      {"61_months_after_2012_07.pem", true},
-      {"825_days_after_2018_03_01.pem", true},
-      {"826_days_after_2018_03_01.pem", true},
-      {"825_days_1_second_after_2018_03_01.pem", true},
-      {"39_months_based_on_last_day.pem", true},
-      {"398_days_after_2020_09_01.pem", false},
-      {"399_days_after_2020_09_01.pem", true},
-      {"398_days_1_second_after_2020_09_01.pem", true},
+      {"start after expiry", base::Time::Now(), -base::Days(1), true},
+      {"399 days, before BRs",
+       base::Time::FromMillisecondsSinceUnixEpoch(1199145600000),  // 2008-01-01
+       base::Days(399), true},
+      {"399 days, before 2020-09-01",
+       base::Time::FromMillisecondsSinceUnixEpoch(1598832000000),  // 2020-08-31
+       base::Days(399), true},
+      {"398 days, after 2020-09-01",
+       base::Time::FromMillisecondsSinceUnixEpoch(1599004800000),  // 2020-09-02
+       base::Days(398), false},
+      {"399 days, after 2020-09-01",
+       base::Time::FromMillisecondsSinceUnixEpoch(1599004800000),  // 2020-09-02
+       base::Days(399), true},
+      {"398 days 1 second, after 2020-09-01",
+       base::Time::FromMillisecondsSinceUnixEpoch(1599004800000),  // 2020-09-02
+       base::Days(398) + base::Seconds(1), true},
   };
 
-  base::FilePath certs_dir = GetTestCertsDirectory();
-
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
   for (const auto& test : tests) {
-    SCOPED_TRACE(test.file);
+    SCOPED_TRACE(test.test_name);
 
-    scoped_refptr<X509Certificate> certificate =
-        ImportCertFromFile(certs_dir, test.file);
-    ASSERT_TRUE(certificate);
+    leaf->SetValidity(test.not_before, test.not_before + test.validity);
     EXPECT_EQ(test.is_valid_too_long,
-              CertVerifyProc::HasTooLongValidity(*certificate));
+              CertVerifyProc::HasTooLongValidity(*leaf->GetX509Certificate()));
   }
 }
 
