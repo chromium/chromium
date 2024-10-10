@@ -16,9 +16,10 @@ example_value:
 features:
   dynamic_refresh: true
   per_profile: true
+supported_on:
+- chrome_os:131-
 future_on:
 - chrome.*
-- chrome_os
 owners:
 - file://content/browser/direct_sockets/OWNERS
 schema:

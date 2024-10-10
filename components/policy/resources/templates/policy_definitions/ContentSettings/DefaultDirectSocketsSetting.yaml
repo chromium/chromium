@@ -11,9 +11,10 @@ example_value: 1
 features:
   dynamic_refresh: true
   per_profile: true
+supported_on:
+- chrome_os:131-
 future_on:
 - chrome.*
-- chrome_os
 items:
 - caption: Allow Isolated Web App origins to use Direct Sockets
   name: AllowDirectSockets
