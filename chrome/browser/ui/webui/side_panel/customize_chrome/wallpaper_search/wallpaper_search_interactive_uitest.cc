@@ -280,10 +280,11 @@ class WallpaperSearchOptimizationGuideInteractiveTest
           mock_optimization_guide_keyed_service(),
           ExecuteModel(
               optimization_guide::ModelBasedCapabilityKey::kWallpaperSearch,
-              testing::_, testing::_))
+              testing::_, testing::_, testing::_))
           .WillOnce(testing::Invoke(
               [](optimization_guide::ModelBasedCapabilityKey feature_arg,
                  const google::protobuf::MessageLite& request_arg,
+                 const std::optional<base::TimeDelta>& execution_timeout,
                  optimization_guide::
                      OptimizationGuideModelExecutionResultCallback
                          done_callback_arg) {

@@ -210,6 +210,7 @@ class ModelExecutionBrowserTestBase : public InProcessBrowserTest {
     base::RunLoop run_loop;
     GetOptimizationGuideKeyedService(profile)->ExecuteModel(
         ToModelBasedCapabilityKey(feature), request_metadata,
+        /*execution_timeout=*/std::nullopt,
         base::BindOnce(&ModelExecutionBrowserTestBase::OnModelExecutionResponse,
                        base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();

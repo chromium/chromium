@@ -33,6 +33,7 @@ class MockOptimizationGuideModelExecutor
               ExecuteModel,
               (ModelBasedCapabilityKey feature,
                const google::protobuf::MessageLite& request_metadata,
+               const std::optional<base::TimeDelta>& execution_timeout,
                OptimizationGuideModelExecutionResultCallback callback),
               (override));
 };

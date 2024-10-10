@@ -637,6 +637,7 @@ OptimizationGuideKeyedService::StartSession(
 void OptimizationGuideKeyedService::ExecuteModel(
     optimization_guide::ModelBasedCapabilityKey feature,
     const google::protobuf::MessageLite& request_metadata,
+    const std::optional<base::TimeDelta>& execution_timeout,
     optimization_guide::OptimizationGuideModelExecutionResultCallback
         callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -651,10 +652,9 @@ void OptimizationGuideKeyedService::ExecuteModel(
     return;
   }
   // TODO: crbug.com/372395424 - Propagate from feature.
-  model_execution_manager_->ExecuteModel(feature, request_metadata,
-                                         /*timeout=*/std::nullopt,
-                                         /*log_ai_data_request=*/nullptr,
-                                         std::move(callback));
+  model_execution_manager_->ExecuteModel(
+      feature, request_metadata, execution_timeout,
+      /*log_ai_data_request=*/nullptr, std::move(callback));
 }
 
 void OptimizationGuideKeyedService::AddOnDeviceModelAvailabilityChangeObserver(

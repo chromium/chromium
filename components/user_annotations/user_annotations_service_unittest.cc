@@ -248,10 +248,10 @@ TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
         *model_executor(),
         ExecuteModel(
             optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations,
-            EqualsProto(expected_request),
+            EqualsProto(expected_request), _,
             An<optimization_guide::
                    OptimizationGuideModelExecutionResultCallback>()))
-        .WillOnce(base::test::RunOnceCallback<2>(
+        .WillOnce(base::test::RunOnceCallback<3>(
             test_request.forms_annotations_response, CreateLogEntry()));
 
     EXPECT_FALSE(
@@ -282,9 +282,10 @@ TEST_P(UserAnnotationsServiceTest, RetrieveAllEntriesWithInsert) {
         *model_executor(),
         ExecuteModel(
             optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, _,
+            _,
             An<optimization_guide::
                    OptimizationGuideModelExecutionResultCallback>()))
-        .WillOnce(base::test::RunOnceCallback<2>(any, CreateLogEntry()));
+        .WillOnce(base::test::RunOnceCallback<3>(any, CreateLogEntry()));
 
     autofill::FormData empty_form_data;
     optimization_guide::proto::AXTreeUpdate ax_tree;
@@ -312,10 +313,10 @@ TEST_P(UserAnnotationsServiceTest, ExecuteFailed) {
   EXPECT_CALL(
       *model_executor(),
       ExecuteModel(
-          optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, _,
+          optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, _, _,
           An<optimization_guide::
                  OptimizationGuideModelExecutionResultCallback>()))
-      .WillOnce(base::test::RunOnceCallback<2>(
+      .WillOnce(base::test::RunOnceCallback<3>(
           base::unexpected(
               optimization_guide::OptimizationGuideModelExecutionError::
                   FromModelExecutionError(
@@ -349,10 +350,10 @@ TEST_P(UserAnnotationsServiceTest, UnexpectedResponseType) {
   EXPECT_CALL(
       *model_executor(),
       ExecuteModel(
-          optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, _,
+          optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, _, _,
           An<optimization_guide::
                  OptimizationGuideModelExecutionResultCallback>()))
-      .WillOnce(base::test::RunOnceCallback<2>(any, CreateLogEntry()));
+      .WillOnce(base::test::RunOnceCallback<3>(any, CreateLogEntry()));
 
   autofill::FormFieldData form_field_data;
   form_field_data.set_label(u"label");
@@ -378,10 +379,10 @@ TEST_P(UserAnnotationsServiceTest, RemoveEntry) {
   EXPECT_CALL(
       *model_executor(),
       ExecuteModel(
-          optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, _,
+          optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, _, _,
           An<optimization_guide::
                  OptimizationGuideModelExecutionResultCallback>()))
-      .WillOnce(base::test::RunOnceCallback<2>(
+      .WillOnce(base::test::RunOnceCallback<3>(
           test_request.forms_annotations_response, CreateLogEntry()));
 
   EXPECT_FALSE(
@@ -416,10 +417,10 @@ TEST_P(UserAnnotationsServiceTest, RemoveAllEntries) {
   EXPECT_CALL(
       *model_executor(),
       ExecuteModel(
-          optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, _,
+          optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, _, _,
           An<optimization_guide::
                  OptimizationGuideModelExecutionResultCallback>()))
-      .WillOnce(base::test::RunOnceCallback<2>(
+      .WillOnce(base::test::RunOnceCallback<3>(
           test_request.forms_annotations_response, CreateLogEntry()));
 
   EXPECT_FALSE(
@@ -443,10 +444,10 @@ TEST_P(UserAnnotationsServiceTest, FormNotImported) {
   EXPECT_CALL(
       *model_executor(),
       ExecuteModel(
-          optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, _,
+          optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, _, _,
           An<optimization_guide::
                  OptimizationGuideModelExecutionResultCallback>()))
-      .WillOnce(base::test::RunOnceCallback<2>(
+      .WillOnce(base::test::RunOnceCallback<3>(
           test_request.forms_annotations_response, CreateLogEntry()));
 
   service()->AddFormSubmission(
@@ -468,10 +469,10 @@ TEST_P(UserAnnotationsServiceTest, FormImportTimeout) {
   EXPECT_CALL(
       *model_executor(),
       ExecuteModel(
-          optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, _,
+          optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, _, _,
           An<optimization_guide::
                  OptimizationGuideModelExecutionResultCallback>()))
-      .WillOnce(base::test::RunOnceCallback<2>(
+      .WillOnce(base::test::RunOnceCallback<3>(
           test_request.forms_annotations_response, CreateLogEntry()));
 
   base::OnceCallback<void(bool)> prompt_acceptance_callback;
@@ -506,7 +507,7 @@ TEST_P(UserAnnotationsServiceTest, ModelExecuteTimeout) {
   EXPECT_CALL(
       *model_executor(),
       ExecuteModel(
-          optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, _,
+          optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, _, _,
           An<optimization_guide::
                  OptimizationGuideModelExecutionResultCallback>()))
       .Times(1);
@@ -539,11 +540,11 @@ TEST_P(UserAnnotationsServiceTest, ParallelFormSubmissions) {
   EXPECT_CALL(
       *model_executor(),
       ExecuteModel(
-          optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, _,
+          optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, _, _,
           An<optimization_guide::
                  OptimizationGuideModelExecutionResultCallback>()))
-      .WillOnce(MoveArg<2>(&first_execute_callback))
-      .WillOnce(MoveArg<2>(&second_execute_callback));
+      .WillOnce(MoveArg<3>(&first_execute_callback))
+      .WillOnce(MoveArg<3>(&second_execute_callback));
 
   service()->AddFormSubmission(
       first_test_request.url, first_test_request.title,

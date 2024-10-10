@@ -76,6 +76,7 @@ class MockOptimizationGuideKeyedService : public OptimizationGuideKeyedService {
       ExecuteModel,
       (optimization_guide::ModelBasedCapabilityKey,
        const google::protobuf::MessageLite&,
+       const std::optional<base::TimeDelta>&,
        optimization_guide::OptimizationGuideModelExecutionResultCallback));
   MOCK_METHOD(void,
               AddOnDeviceModelAvailabilityChangeObserver,

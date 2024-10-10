@@ -658,11 +658,12 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_Success) {
       done_callback;
   base::OnceCallback<void(const gfx::Image&)> decoder_callback1;
   base::OnceCallback<void(const gfx::Image&)> decoder_callback2;
-  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
+  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _, _))
       .WillOnce(Invoke(
           [&request, &done_callback](
               optimization_guide::ModelBasedCapabilityKey feature_arg,
               const google::protobuf::MessageLite& request_arg,
+              const std::optional<base::TimeDelta>& execution_timeout,
               optimization_guide::OptimizationGuideModelExecutionResultCallback
                   done_callback_arg) {
             ASSERT_EQ(request.GetTypeName(), request_arg.GetTypeName());
@@ -803,11 +804,12 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_MultipleRequests) {
   optimization_guide::proto::WallpaperSearchRequest request1;
   optimization_guide::OptimizationGuideModelExecutionResultCallback
       done_callback1;
-  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
+  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _, _))
       .WillOnce(Invoke(
           [&request1, &done_callback1](
               optimization_guide::ModelBasedCapabilityKey feature_arg,
               const google::protobuf::MessageLite& request_arg,
+              const std::optional<base::TimeDelta>& execution_timeout,
               optimization_guide::OptimizationGuideModelExecutionResultCallback
                   done_callback_arg) {
             ASSERT_EQ(request1.GetTypeName(), request_arg.GetTypeName());
@@ -864,11 +866,12 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_MultipleRequests) {
   optimization_guide::proto::WallpaperSearchRequest request2;
   optimization_guide::OptimizationGuideModelExecutionResultCallback
       done_callback2;
-  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
+  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _, _))
       .WillOnce(Invoke(
           [&request2, &done_callback2](
               optimization_guide::ModelBasedCapabilityKey feature_arg,
               const google::protobuf::MessageLite& request_arg,
+              const std::optional<base::TimeDelta>& execution_timeout,
               optimization_guide::OptimizationGuideModelExecutionResultCallback
                   done_callback_arg) {
             ASSERT_EQ(request2.GetTypeName(), request_arg.GetTypeName());
@@ -955,11 +958,12 @@ TEST_F(WallpaperSearchHandlerTest,
        GetWallpaperSearchResults_TwoDescriptorsQueryFormatCorrect) {
   optimization_guide::proto::WallpaperSearchRequest request;
   base::OnceCallback<void(const gfx::Image&)> decoder_callback1;
-  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
+  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _, _))
       .WillOnce(Invoke(
           [&request](
               optimization_guide::ModelBasedCapabilityKey feature_arg,
               const google::protobuf::MessageLite& request_arg,
+              const std::optional<base::TimeDelta>& execution_timeout,
               optimization_guide::OptimizationGuideModelExecutionResultCallback
                   done_callback_arg) {
             ASSERT_EQ(request.GetTypeName(), request_arg.GetTypeName());
@@ -989,11 +993,12 @@ TEST_F(WallpaperSearchHandlerTest,
 TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_ConvertsHueToHex) {
   optimization_guide::proto::WallpaperSearchRequest request;
   base::OnceCallback<void(const gfx::Image&)> decoder_callback1;
-  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
+  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _, _))
       .WillOnce(Invoke(
           [&request](
               optimization_guide::ModelBasedCapabilityKey feature_arg,
               const google::protobuf::MessageLite& request_arg,
+              const std::optional<base::TimeDelta>& execution_timeout,
               optimization_guide::OptimizationGuideModelExecutionResultCallback
                   done_callback_arg) {
             ASSERT_EQ(request.GetTypeName(), request_arg.GetTypeName());
@@ -1025,11 +1030,12 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoResponse) {
       done_callback;
   base::OnceCallback<void(const gfx::Image&)> decoder_callback1;
   base::OnceCallback<void(const gfx::Image&)> decoder_callback2;
-  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
+  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _, _))
       .WillOnce(Invoke(
           [&request, &done_callback](
               optimization_guide::ModelBasedCapabilityKey feature_arg,
               const google::protobuf::MessageLite& request_arg,
+              const std::optional<base::TimeDelta>& execution_timeout,
               optimization_guide::OptimizationGuideModelExecutionResultCallback
                   done_callback_arg) {
             ASSERT_EQ(request.GetTypeName(), request_arg.GetTypeName());
@@ -1092,11 +1098,12 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_NoImages) {
       done_callback;
   base::OnceCallback<void(const gfx::Image&)> decoder_callback1;
   base::OnceCallback<void(const gfx::Image&)> decoder_callback2;
-  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
+  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _, _))
       .WillOnce(Invoke(
           [&request, &done_callback](
               optimization_guide::ModelBasedCapabilityKey feature_arg,
               const google::protobuf::MessageLite& request_arg,
+              const std::optional<base::TimeDelta>& execution_timeout,
               optimization_guide::OptimizationGuideModelExecutionResultCallback
                   done_callback_arg) {
             ASSERT_EQ(request.GetTypeName(), request_arg.GetTypeName());
@@ -1159,11 +1166,12 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_RequestThrottled) {
       done_callback;
   base::OnceCallback<void(const gfx::Image&)> decoder_callback1;
   base::OnceCallback<void(const gfx::Image&)> decoder_callback2;
-  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
+  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _, _))
       .WillOnce(Invoke(
           [&request, &done_callback](
               optimization_guide::ModelBasedCapabilityKey feature_arg,
               const google::protobuf::MessageLite& request_arg,
+              const std::optional<base::TimeDelta>& execution_timeout,
               optimization_guide::OptimizationGuideModelExecutionResultCallback
                   done_callback_arg) {
             ASSERT_EQ(request.GetTypeName(), request_arg.GetTypeName());
@@ -1229,7 +1237,7 @@ TEST_F(WallpaperSearchHandlerTest, GetWallpaperSearchResults_SignedOut) {
   EXPECT_CALL(callback, Run(_, _))
       .WillOnce(DoAll(SaveArg<0>(&status), MoveArg<1>(&images)));
   // Search should not be initiated.
-  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
+  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _, _))
       .Times(0);
 
 // ChromeOs doesn't support signing out the primary account.
@@ -1343,11 +1351,12 @@ TEST_F(WallpaperSearchHandlerTest, SetBackgroundToWallpaperSearchResult) {
       done_callback;
   base::OnceCallback<void(const gfx::Image&)> decoder_callback1;
   base::OnceCallback<void(const gfx::Image&)> decoder_callback2;
-  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
+  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _, _))
       .WillOnce(Invoke(
           [&request, &done_callback](
               optimization_guide::ModelBasedCapabilityKey feature_arg,
               const google::protobuf::MessageLite& request_arg,
+              const std::optional<base::TimeDelta>& execution_timeout,
               optimization_guide::OptimizationGuideModelExecutionResultCallback
                   done_callback_arg) {
             ASSERT_EQ(request.GetTypeName(), request_arg.GetTypeName());
@@ -1516,11 +1525,12 @@ TEST_F(WallpaperSearchHandlerTest, SetUserFeedback) {
   optimization_guide::proto::WallpaperSearchRequest request1;
   optimization_guide::OptimizationGuideModelExecutionResultCallback
       done_callback1;
-  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
+  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _, _))
       .WillOnce(Invoke(
           [&request1, &done_callback1](
               optimization_guide::ModelBasedCapabilityKey feature_arg,
               const google::protobuf::MessageLite& request_arg,
+              const std::optional<base::TimeDelta>& execution_timeout,
               optimization_guide::OptimizationGuideModelExecutionResultCallback
                   done_callback_arg) {
             request1.CheckTypeAndMergeFrom(request_arg);
@@ -1559,11 +1569,12 @@ TEST_F(WallpaperSearchHandlerTest, SetUserFeedback) {
   optimization_guide::proto::WallpaperSearchRequest request2;
   optimization_guide::OptimizationGuideModelExecutionResultCallback
       done_callback2;
-  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _))
+  EXPECT_CALL(mock_optimization_guide_keyed_service(), ExecuteModel(_, _, _, _))
       .WillOnce(Invoke(
           [&request2, &done_callback2](
               optimization_guide::ModelBasedCapabilityKey feature_arg,
               const google::protobuf::MessageLite& request_arg,
+              const std::optional<base::TimeDelta>& execution_timeout,
               optimization_guide::OptimizationGuideModelExecutionResultCallback
                   done_callback_arg) {
             ASSERT_EQ(request2.GetTypeName(), request_arg.GetTypeName());

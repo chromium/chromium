@@ -60,6 +60,7 @@ void FormSubmissionHandler::ExecuteModelWithEntries(
                                 std::make_move_iterator(entries.end())};
   user_annotations_service_->model_executor()->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kFormsAnnotations, request,
+      /*execution_timeout=*/std::nullopt,
       base::BindOnce(&FormSubmissionHandler::OnModelExecuted,
                      weak_ptr_factory_.GetWeakPtr()));
 }

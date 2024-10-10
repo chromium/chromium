@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
+#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
@@ -77,6 +78,7 @@ void AutofillPredictionImprovementsFillingEngineImpl::
 
   model_executor_->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kFormsPredictions, request,
+      kExecutionTimeout.Get(),
       base::BindOnce(
           &AutofillPredictionImprovementsFillingEngineImpl::OnModelExecuted,
           weak_ptr_factory_.GetWeakPtr(), std::move(form_data),

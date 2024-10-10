@@ -115,10 +115,10 @@ TEST_F(AutofillPredictionImprovementsFillingEngineImplTest, EndToEnd) {
   EXPECT_CALL(
       *model_executor(),
       ExecuteModel(
-          optimization_guide::ModelBasedCapabilityKey::kFormsPredictions, _,
+          optimization_guide::ModelBasedCapabilityKey::kFormsPredictions, _, _,
           An<optimization_guide::
                  OptimizationGuideModelExecutionResultCallback>()))
-      .WillOnce(base::test::RunOnceCallback<2>(any, /*log_entry=*/nullptr));
+      .WillOnce(base::test::RunOnceCallback<3>(any, /*log_entry=*/nullptr));
 
   autofill::test::FormDescription form_description = {
       .fields = {
@@ -171,7 +171,7 @@ TEST_F(AutofillPredictionImprovementsFillingEngineImplTest,
   user_annotations_service()->ReplaceAllEntries({});
 
   // Make sure model executor not called.
-  EXPECT_CALL(*model_executor(), ExecuteModel(_, _, _)).Times(0);
+  EXPECT_CALL(*model_executor(), ExecuteModel(_, _, _, _)).Times(0);
 
   autofill::FormFieldData form_field_data;
   form_field_data.set_label(u"label");
@@ -199,10 +199,10 @@ TEST_F(AutofillPredictionImprovementsFillingEngineImplTest,
   EXPECT_CALL(
       *model_executor(),
       ExecuteModel(
-          optimization_guide::ModelBasedCapabilityKey::kFormsPredictions, _,
+          optimization_guide::ModelBasedCapabilityKey::kFormsPredictions, _, _,
           An<optimization_guide::
                  OptimizationGuideModelExecutionResultCallback>()))
-      .WillOnce(base::test::RunOnceCallback<2>(
+      .WillOnce(base::test::RunOnceCallback<3>(
           base::unexpected(
               optimization_guide::OptimizationGuideModelExecutionError::
                   FromModelExecutionError(
@@ -237,10 +237,10 @@ TEST_F(AutofillPredictionImprovementsFillingEngineImplTest,
   EXPECT_CALL(
       *model_executor(),
       ExecuteModel(
-          optimization_guide::ModelBasedCapabilityKey::kFormsPredictions, _,
+          optimization_guide::ModelBasedCapabilityKey::kFormsPredictions, _, _,
           An<optimization_guide::
                  OptimizationGuideModelExecutionResultCallback>()))
-      .WillOnce(base::test::RunOnceCallback<2>(any, /*log_entry=*/nullptr));
+      .WillOnce(base::test::RunOnceCallback<3>(any, /*log_entry=*/nullptr));
 
   autofill::FormFieldData form_field_data;
   form_field_data.set_label(u"label");

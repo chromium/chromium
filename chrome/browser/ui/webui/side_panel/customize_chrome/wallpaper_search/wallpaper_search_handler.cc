@@ -384,6 +384,7 @@ void WallpaperSearchHandler::GetWallpaperSearchResults(
   }
   optimization_guide_keyed_service->ExecuteModel(
       optimization_guide::ModelBasedCapabilityKey::kWallpaperSearch, request,
+      /*execution_timeout=*/std::nullopt,
       base::BindOnce(&WallpaperSearchHandler::OnWallpaperSearchResultsRetrieved,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      base::ElapsedTimer()));

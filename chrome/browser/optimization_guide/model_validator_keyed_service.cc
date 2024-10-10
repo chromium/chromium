@@ -148,6 +148,7 @@ void ModelValidatorKeyedService::StartModelExecutionValidation() {
   request.set_value(model_execution_input);
   opt_guide_service->ExecuteModel(
       ModelBasedCapabilityKey::kTest, request,
+      /*execution_timeout=*/std::nullopt,
       base::BindOnce(&ModelValidatorKeyedService::OnModelExecuteResponse,
                      weak_ptr_factory_.GetWeakPtr()));
 }

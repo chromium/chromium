@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 
 namespace autofill_prediction_improvements {
 
@@ -31,6 +32,10 @@ inline constexpr base::FeatureParam<int>
 inline constexpr base::FeatureParam<bool> kTriggerAutomatically{
     &kAutofillPredictionImprovements, /*name=*/"trigger_automatically",
     /*default_value=*/false};
+
+inline constexpr base::FeatureParam<base::TimeDelta> kExecutionTimeout{
+    &kAutofillPredictionImprovements, /*name=*/"execution_timeout",
+    /*default_value=*/base::Seconds(10)};
 
 bool IsAutofillPredictionImprovementsEnabled();
 
