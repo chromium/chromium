@@ -236,7 +236,6 @@ source_set("headers") {
     "messaging/web_message_port.h",
     "metrics/accept_language_and_content_language_usage.h",
     "metrics/document_update_reason.h",
-    "metrics/form_element_pii_type.h",
     "mime_util/mime_util.h",
     "navigation/impression.h",
     "navigation/navigation_params.h",

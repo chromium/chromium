@@ -97,23 +97,6 @@ constexpr base::TimeDelta kWaitTimeForOptionsChanges = base::Milliseconds(50);
 
 using FormAndField = std::pair<FormData, raw_ref<const FormFieldData>>;
 
-// TODO(crbug.com/40753022): Move this to the browser process.
-blink::FormElementPiiType MapTypePredictionToFormElementPiiType(
-    std::string_view type) {
-  if (type == "NO_SERVER_DATA" || type == "UNKNOWN_TYPE" ||
-      type == "EMPTY_TYPE" || type == "") {
-    return blink::FormElementPiiType::kUnknown;
-  }
-
-  if (type.starts_with("EMAIL_")) {
-    return blink::FormElementPiiType::kEmail;
-  }
-  if (type.starts_with("PHONE_")) {
-    return blink::FormElementPiiType::kPhone;
-  }
-  return blink::FormElementPiiType::kOthers;
-}
-
 std::string GetButtonTitlesString(const ButtonTitleList& titles_list) {
   std::vector<std::string> titles;
   titles.reserve(titles_list.size());
@@ -159,12 +142,6 @@ bool ShowPredictions(const WebDocument& document,
       continue;
     }
     const FormFieldDataPredictions& field = form.fields[i];
-
-    // TODO(crbug.com/40753022): Move this to the browser process so
-    // FormDataPredictions doesn't have to be sent to the renderer
-    // unconditionally.
-    element.SetFormElementPiiType(
-        MapTypePredictionToFormElementPiiType(field.overall_type));
 
     // If the flag is enabled, attach the prediction to the field.
     if (attach_predictions_to_dom) {

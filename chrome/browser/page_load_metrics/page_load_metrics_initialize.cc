@@ -18,7 +18,6 @@
 #include "chrome/browser/page_load_metrics/observers/core/ukm_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/document_write_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/foreground_duration_ukm_observer.h"
-#include "chrome/browser/page_load_metrics/observers/formfill_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/from_gws_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/gws_hp_page_load_metrics_observer.h"
 #include "chrome/browser/page_load_metrics/observers/gws_page_load_metrics_observer.h"
@@ -222,7 +221,6 @@ void PageLoadMetricsEmbedder::RegisterObservers(
       tracker->AddObserver(std::move(ads_observer));
 
     tracker->AddObserver(std::make_unique<ThirdPartyMetricsObserver>());
-    tracker->AddObserver(std::make_unique<FormfillPageLoadMetricsObserver>());
 
     std::unique_ptr<page_load_metrics::PageLoadMetricsObserver> ukm_observer =
         UkmPageLoadMetricsObserver::CreateIfNeeded();

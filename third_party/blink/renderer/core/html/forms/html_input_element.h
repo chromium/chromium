@@ -372,14 +372,6 @@ class CORE_EXPORT HTMLInputElement
   bool IsDraggedSlider() const;
 
   mojom::blink::FormControlType FormControlType() const final;
-  FormElementPiiType GetFormElementPiiType() const override {
-    return form_element_pii_type_;
-  }
-
-  void SetFormElementPiiType(
-      FormElementPiiType form_element_pii_type) override {
-    form_element_pii_type_ = form_element_pii_type;
-  }
 
   bool isMutable();
   void showPicker(ExceptionState&);
@@ -520,8 +512,6 @@ class CORE_EXPORT HTMLInputElement
   // element lives on.
   Member<HTMLImageLoader> image_loader_;
   Member<ListAttributeTargetObserver> list_attribute_target_observer_;
-
-  FormElementPiiType form_element_pii_type_ = FormElementPiiType::kUnknown;
 
   FRIEND_TEST_ALL_PREFIXES(HTMLInputElementTest, RadioKeyDownDCHECKFailure);
 };

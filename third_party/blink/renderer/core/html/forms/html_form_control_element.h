@@ -25,7 +25,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_FORM_CONTROL_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_HTML_FORM_CONTROL_ELEMENT_H_
 
-#include "third_party/blink/public/common/metrics/form_element_pii_type.h"
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-blink.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_autofill_state.h"
@@ -129,14 +128,6 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
 
   void SetHovered(bool hovered) override;
   void HandlePopoverInvokerHovered(bool hovered);
-
-  // Getter and setter for the PII type of the element derived from the autofill
-  // field semantic prediction.
-  virtual FormElementPiiType GetFormElementPiiType() const {
-    return FormElementPiiType::kUnknown;
-  }
-  virtual void SetFormElementPiiType(FormElementPiiType form_element_pii_type) {
-  }
 
   bool willValidate() const override;
 

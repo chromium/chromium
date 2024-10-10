@@ -9134,10 +9134,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3376" label="SecurePaymentConfirmation"/>
   <int value="3377" label="OBSOLETE_CSSInvalidVariableUnset"/>
   <int value="3378" label="ElementInternalsShadowRoot"/>
-  <int value="3379" label="UserDataFieldFilled_PredictedTypeMatch"/>
-  <int value="3380" label="EmailFieldFilled_PredictedTypeMatch"/>
-  <int value="3381" label="PhoneFieldFilled_PredictedTypeMatch"/>
-  <int value="3382" label="EmailFieldFilled_PatternMatch"/>
+  <int value="3379" label="OBSOLETE_UserDataFieldFilled_PredictedTypeMatch"/>
+  <int value="3380" label="OBSOLETE_EmailFieldFilled_PredictedTypeMatch"/>
+  <int value="3381" label="OBSOLETE_PhoneFieldFilled_PredictedTypeMatch"/>
+  <int value="3382" label="OBSOLETE_EmailFieldFilled_PatternMatch"/>
   <int value="3383" label="OBSOLETE_LastLetterSpacingAffectsRendering"/>
   <int value="3384" label="V8FontData_GetTables_Method"/>
   <int value="3385" label="V8FontData_Blob_Method"/>
@@ -9762,7 +9762,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3979" label="V8NavigatorManagedData_GetSerialNumber_Method"/>
   <int value="3980" label="V8NavigatorManagedData_GetAnnotatedAssetId_Method"/>
   <int value="3981" label="V8NavigatorManagedData_GetAnnotatedLocation_Method"/>
-  <int value="3982" label="UserDataFieldFilledPreviously"/>
+  <int value="3982" label="OBSOLETE_UserDataFieldFilledPreviously"/>
   <int value="3983" label="TableCollapsedBorderDifferentToVisual"/>
   <int value="3984" label="HighlightAPIRegisterHighlight"/>
   <int value="3985" label="OBSOLETE_ReadOrWriteWebDatabaseThirdPartyContext"/>
