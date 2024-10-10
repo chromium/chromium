@@ -10,7 +10,6 @@
 #import "base/scoped_observation.h"
 #import "base/sequence_checker.h"
 #import "ios/chrome/app/app_startup_parameters.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/application_delegate/tab_opening.h"
 #import "ios/chrome/browser/shared/coordinator/scene/connection_information.h"

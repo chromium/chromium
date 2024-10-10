@@ -14,6 +14,7 @@
 #import "base/test/scoped_command_line.h"
 #import "base/test/task_environment.h"
 #import "base/test/with_feature_override.h"
+#import "base/types/cxx23_to_underlying.h"
 #import "base/values.h"
 #import "components/handoff/handoff_utility.h"
 #import "components/policy/core/common/policy_pref_names.h"
@@ -24,6 +25,8 @@
 #import "ios/chrome/app/app_startup_parameters.h"
 #import "ios/chrome/app/application_mode.h"
 #import "ios/chrome/app/main_controller.h"
+#import "ios/chrome/app/profile/profile_init_stage.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/spotlight/actions_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/spotlight_util.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
@@ -111,10 +114,9 @@ class UserActivityBrowserAgentTest : public PlatformTest {
   UserActivityBrowserAgentTest() {
     profile_ = TestProfileIOS::Builder().Build();
 
-    AppState* app_state = CreateMockAppState(AppInitStage::kFinal);
-
-    scene_state_ = [[FakeSceneState alloc] initWithAppState:app_state
+    scene_state_ = [[FakeSceneState alloc] initWithAppState:nil
                                                     profile:profile_.get()];
+    InstallMockProfileState(ProfileInitStage::kFinal);
 
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
     scene_controller_ =
@@ -150,11 +152,12 @@ class UserActivityBrowserAgentTest : public PlatformTest {
     return mock_user_activity;
   }
 
-  // Mock & stub an AppState object with an arbitrary `init_stage` property.
-  id CreateMockAppState(AppInitStage init_stage) {
-    id mock_app_state = OCMClassMock([AppState class]);
-    OCMStub([(AppState*)mock_app_state initStage]).andReturn(init_stage);
-    return mock_app_state;
+  // Mock & stub a ProfileState object with a given `init_stage` and install
+  // as the SceneState's ProfileState.
+  void InstallMockProfileState(ProfileInitStage init_stage) {
+    profile_state_ = OCMClassMock([ProfileState class]);
+    OCMStub([profile_state_ initStage]).andReturn(init_stage);
+    scene_state_.profileState = profile_state_;
   }
 
   // Set pref kIncognitoModeAvailability to kForced and make it a managed pref.
@@ -189,6 +192,7 @@ class UserActivityBrowserAgentTest : public PlatformTest {
   }
 
   raw_ptr<UserActivityBrowserAgent> user_activity_browser_agent_;
+  ProfileState* profile_state_;
   FakeSceneState* scene_state_;
   FakeSceneController* scene_controller_;
   id<ConnectionInformation> connection_information_;
@@ -726,7 +730,8 @@ TEST_F(UserActivityBrowserAgentTest,
 TEST_F(UserActivityBrowserAgentTest,
        PerformActionForShortcutItemWithFirstRunUI) {
   // Setup.
-  scene_state_.appState = CreateMockAppState(AppInitStage::kFirstRun);
+  InstallMockProfileState(static_cast<ProfileInitStage>(
+      base::to_underlying(ProfileInitStage::kFinal) - 1));
   UIApplicationShortcutItem* shortcut =
       [[UIApplicationShortcutItem alloc] initWithType:kShortcutNewSearch
                                        localizedTitle:kShortcutNewSearch];
@@ -764,7 +769,8 @@ TEST_F(UserActivityBrowserAgentTest, ContinueUserActivityBookmarks) {
 // due to still being in first run.
 TEST_F(UserActivityBrowserAgentTest,
        ContinueUserActivityBookmarksFailsFirstRun) {
-  scene_state_.appState = CreateMockAppState(AppInitStage::kFirstRun);
+  InstallMockProfileState(static_cast<ProfileInitStage>(
+      base::to_underlying(ProfileInitStage::kFinal) - 1));
   NSUserActivity* user_activity = [[NSUserActivity alloc]
       initWithActivityType:kSiriShortcutAddBookmarkToChrome];
 
@@ -852,7 +858,8 @@ TEST_F(UserActivityBrowserAgentTest, ContinueUserActivityAddToReadingList) {
 // items intent due to still being in first run.
 TEST_F(UserActivityBrowserAgentTest,
        ContinueUserActivityAddToReadingListFailsFirstRun) {
-  scene_state_.appState = CreateMockAppState(AppInitStage::kFirstRun);
+  InstallMockProfileState(static_cast<ProfileInitStage>(
+      base::to_underlying(ProfileInitStage::kFinal) - 1));
   NSUserActivity* user_activity = [[NSUserActivity alloc]
       initWithActivityType:kSiriShortcutAddReadingListItemToChrome];
 

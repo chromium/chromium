@@ -235,7 +235,6 @@ source_set("unit_tests") {
     "//components/supervised_user/test_support",
     "//components/variations",
     "//components/variations:test_support",
-    "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/profile",
     "//ios/chrome/browser/bookmarks/model",
     "//ios/chrome/browser/favicon/model",
