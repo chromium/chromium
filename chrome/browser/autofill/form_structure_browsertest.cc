@@ -217,6 +217,7 @@ FormStructureBrowserTest::FormStructureBrowserTest()
           features::kAutofillInferCountryCallingCode,
           // TODO(crbug.com/40266396): Remove once launched.
           features::kAutofillEnableExpirationDateImprovements,
+          features::kAutofillUseITAddressModel,
       },
       // Disabled
       {// TODO(crbug.com/40220393): Remove once launched.
