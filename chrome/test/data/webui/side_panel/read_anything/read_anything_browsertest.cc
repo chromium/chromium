@@ -22,7 +22,8 @@ class ReadAnythingMochaBrowserTest : public WebUIMochaBrowserTest {
     set_test_loader_scheme(content::kChromeUIUntrustedScheme);
     scoped_feature_list_.InitWithFeatures(
         {features::kReadAnythingReadAloud,
-         features::kReadAloudLanguagePackDownloading},
+         features::kReadAloudLanguagePackDownloading,
+         features::kReadAnythingImagesViaAlgorithm},
         {});
   }
 
@@ -53,6 +54,10 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, CheckmarkVisibleOnSelected) {
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Common) {
   RunSidePanelTest("side_panel/read_anything/common_test.js", "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Images) {
+  RunSidePanelTest("side_panel/read_anything/image_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Logger) {

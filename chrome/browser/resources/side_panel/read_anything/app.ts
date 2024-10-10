@@ -689,7 +689,9 @@ export class AppElement extends AppElementBase {
 
     this.willDrawAgainSoon_ = chrome.readingMode.requiresDistillation;
     const node = this.buildSubtree_(rootId);
-    if (!node.textContent) {
+    // If there is not text or images in the node, do not prodeed. The empty
+    // state container will show instead.
+    if (!node.textContent && this.imageNodeIdsToFetch_.size === 0) {
       return;
     }
 
@@ -717,6 +719,7 @@ export class AppElement extends AppElementBase {
     if (data && element && element instanceof HTMLCanvasElement) {
       element.width = data.width;
       element.height = data.height;
+      element.style.zoom = data.scale.toString();
       const context = element.getContext('2d');
       // Context should not be null unless another was already requested.
       assert(context);

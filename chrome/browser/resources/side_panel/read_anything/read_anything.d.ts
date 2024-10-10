@@ -353,12 +353,10 @@ declare namespace chrome {
 
     // Should be called in onImageDownloaded. This function gets the bitmap data
     // as a byte array along with the height and width of the image so that the
-    // bitmap can be rendered to a canvas.
+    // bitmap can be rendered to a canvas. The scale is the factor by which the
+    // width of the bitmap must scale to match the website's desired size.
     function getImageBitmap(nodeId: number):
-        {data: Uint8ClampedArray, width: number, height: number};
-
-    // Gets the stored image data url from the AXNode.
-    function getImageDataUrl(nodeId: number): string;
+        {data: Uint8ClampedArray, width: number, height: number, scale: number};
 
     // Gets the readable name for a locale code
     function getDisplayNameForLocale(locale: string, displayLocale: string):

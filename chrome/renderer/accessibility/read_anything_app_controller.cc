@@ -1387,7 +1387,13 @@ v8::Local<v8::Value> ReadAnythingAppController::GetImageBitmap(
     v8::Local<v8::Uint8ClampedArray> array =
         v8::Uint8ClampedArray::New(buffer, 0, size);
 
-    // Create an object with the image data and height.
+    // Create an object with the image data and height, as well as a scale
+    // factor.
+    ui::AXNode* node = model_.GetAXNode(node_id);
+    CHECK(node);
+    int width = bitmap.width();
+    int height = bitmap.height();
+    float scale = (node->data().relative_bounds.bounds.width()) / width;
     v8::Local<v8::Object> obj = v8::Object::New(isolate);
     auto created = obj->DefineOwnProperty(
         isolate->GetCurrentContext(),
@@ -1395,11 +1401,16 @@ v8::Local<v8::Value> ReadAnythingAppController::GetImageBitmap(
     created = obj->DefineOwnProperty(
         isolate->GetCurrentContext(),
         v8::String::NewFromUtf8(isolate, "width").ToLocalChecked(),
-        v8::Number::New(isolate, bitmap.width()));
+        v8::Number::New(isolate, width));
     created = obj->DefineOwnProperty(
         isolate->GetCurrentContext(),
         v8::String::NewFromUtf8(isolate, "height").ToLocalChecked(),
-        v8::Number::New(isolate, bitmap.height()));
+        v8::Number::New(isolate, height));
+    created = obj->DefineOwnProperty(
+        isolate->GetCurrentContext(),
+        v8::String::NewFromUtf8(isolate, "scale").ToLocalChecked(),
+        v8::Number::New(isolate, scale));
+
     return obj;
   }
   // If there wasn't an image, return undefined.
