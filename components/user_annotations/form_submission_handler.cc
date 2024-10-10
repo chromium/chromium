@@ -41,9 +41,7 @@ void FormSubmissionHandler::Start() {
 }
 
 void FormSubmissionHandler::OnCompletionTimeout() {
-  SendFormSubmissionResult(
-      base::unexpected(UserAnnotationsExecutionResult::kResponseTimedOut),
-      /*log_entry=*/nullptr);
+  // TODO: 372715386 - Handle the timeout and notify the save prompt UX.
 }
 
 void FormSubmissionHandler::ExecuteModelWithEntries(
