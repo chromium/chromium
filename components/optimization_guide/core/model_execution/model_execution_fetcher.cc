@@ -195,6 +195,7 @@ void ModelExecutionFetcher::ExecuteModel(
     ModelBasedCapabilityKey feature,
     signin::IdentityManager* identity_manager,
     const google::protobuf::MessageLite& request_metadata,
+    std::optional<base::TimeDelta> timeout,
     ModelExecuteResponseCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -223,11 +224,13 @@ void ModelExecutionFetcher::ExecuteModel(
       identity_manager,
       {GaiaConstants::kOptimizationGuideServiceModelExecutionOAuth2Scope},
       base::BindOnce(&ModelExecutionFetcher::OnAccessTokenReceived,
-                     weak_ptr_factory_.GetWeakPtr(), serialized_request));
+                     weak_ptr_factory_.GetWeakPtr(), serialized_request,
+                     timeout));
 }
 
 void ModelExecutionFetcher::OnAccessTokenReceived(
     const std::string& serialized_request,
+    std::optional<base::TimeDelta> timeout,
     const std::string& access_token) {
   if (access_token.empty()) {
     RecordRequestStatusHistogram(*model_execution_feature_,
@@ -242,6 +245,9 @@ void ModelExecutionFetcher::OnAccessTokenReceived(
   auto resource_request = std::make_unique<network::ResourceRequest>();
   if (!access_token.empty()) {
     PopulateAuthorizationRequestHeader(resource_request.get(), access_token);
+  }
+  if (timeout && timeout->is_positive()) {
+    PopulateServerTimeoutRequestHeader(resource_request.get(), *timeout);
   }
 
   resource_request->url = optimization_guide_service_url_;

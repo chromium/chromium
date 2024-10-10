@@ -68,6 +68,7 @@ class ModelExecutionManager : public OptimizationTargetModelObserver {
   void ExecuteModel(
       ModelBasedCapabilityKey feature,
       const google::protobuf::MessageLite& request_metadata,
+      std::optional<base::TimeDelta> timeout,
       std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request,
       OptimizationGuideModelExecutionResultCallback callback);
 

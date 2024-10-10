@@ -202,7 +202,7 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelEmptyAccessToken) {
   request.mutable_generate_params()->set_user_input("a user typed this");
   base::RunLoop run_loop;
   model_execution_manager()->ExecuteModel(
-      ModelBasedCapabilityKey::kCompose, request,
+      ModelBasedCapabilityKey::kCompose, request, /*timeout=*/std::nullopt,
       /*log_ai_data_request=*/nullptr,
       base::BindOnce(
           [](base::RunLoop* run_loop,
@@ -230,7 +230,7 @@ TEST_F(ModelExecutionManagerTest, ExecuteModelWithUserSignIn) {
   identity_test_env()->MakePrimaryAccountAvailable(
       "test_email", signin::ConsentLevel::kSignin);
   model_execution_manager()->ExecuteModel(
-      ModelBasedCapabilityKey::kCompose, request,
+      ModelBasedCapabilityKey::kCompose, request, /*timeout=*/std::nullopt,
       /*log_ai_data_request=*/nullptr,
       base::BindOnce(
           [](base::RunLoop* run_loop,
@@ -670,7 +670,7 @@ TEST_F(ModelExecutionManagerTest, TestMultipleParallelRequests) {
       "test_email", signin::ConsentLevel::kSignin);
 
   model_execution_manager()->ExecuteModel(
-      ModelBasedCapabilityKey::kCompose, request,
+      ModelBasedCapabilityKey::kCompose, request, /*timeout=*/std::nullopt,
       /*log_ai_data_request=*/nullptr,
       base::BindOnce(
           [](base::RunLoop* run_loop,
@@ -685,7 +685,7 @@ TEST_F(ModelExecutionManagerTest, TestMultipleParallelRequests) {
           &run_loop_old));
 
   model_execution_manager()->ExecuteModel(
-      ModelBasedCapabilityKey::kCompose, request,
+      ModelBasedCapabilityKey::kCompose, request, /*timeout=*/std::nullopt,
       /*log_ai_data_request=*/nullptr,
       base::BindOnce(
           [](base::RunLoop* run_loop,

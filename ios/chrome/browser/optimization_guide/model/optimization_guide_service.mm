@@ -399,9 +399,9 @@ void OptimizationGuideService::ExecuteModel(
         nullptr);
     return;
   }
-  model_execution_manager_->ExecuteModel(feature, request_metadata,
-                                         /*log_ai_data_request=*/nullptr,
-                                         std::move(callback));
+  model_execution_manager_->ExecuteModel(
+      feature, request_metadata, /*timeout=*/std::nullopt,
+      /*log_ai_data_request=*/nullptr, std::move(callback));
 }
 
 void OptimizationGuideService::AddOnDeviceModelAvailabilityChangeObserver(

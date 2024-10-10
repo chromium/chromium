@@ -111,6 +111,12 @@ void PopulateAuthorizationRequestHeader(
 void PopulateApiKeyRequestHeader(network::ResourceRequest* resource_request,
                                  std::string_view api_key);
 
+// Populates the x-server-timeout header for the `resource_request` in the right
+// format with `timeout`.
+void PopulateServerTimeoutRequestHeader(
+    network::ResourceRequest* resource_request,
+    base::TimeDelta timeout);
+
 // Returns whether model validator service should be started to validate various
 // model executions such as, TFLite, server-side AI, on-device AI models. Used
 // for integration testing purposes.

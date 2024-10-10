@@ -329,7 +329,7 @@ void SessionImpl::ExecuteModel(
     CancelPendingResponse(ExecuteModelResult::kCancelled);
     DestroyOnDeviceState();
     execute_remote_fn_.Run(
-        feature_, *last_message_,
+        feature_, *last_message_, on_device_execution_timeout_,
         /*log_ai_data_request=*/nullptr,
         base::BindOnce(&InvokeStreamingCallbackWithRemoteResult,
                        std::move(callback)));
@@ -796,7 +796,8 @@ void SessionImpl::DestroyOnDeviceStateAndFallbackToRemote(
   auto callback = std::move(on_device_state_->callback);
   DestroyOnDeviceState();
   execute_remote_fn_.Run(
-      feature_, *last_message_, std::move(log_ai_data_request),
+      feature_, *last_message_, on_device_execution_timeout_,
+      std::move(log_ai_data_request),
       base::BindOnce(&InvokeStreamingCallbackWithRemoteResult,
                      std::move(callback)));
 }
@@ -838,6 +839,7 @@ void SessionImpl::RunTextSafetyRemoteFallbackAndCompletionCallback(
 
   execute_remote_fn_.Run(
       ModelBasedCapabilityKey::kTextSafety, *ts_request,
+      on_device_execution_timeout_,
       /*log_ai_data_request=*/nullptr,
       base::BindOnce(&SessionImpl::OnTextSafetyRemoteResponse,
                      on_device_state_->session_weak_ptr_factory_.GetWeakPtr(),

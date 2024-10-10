@@ -102,6 +102,7 @@ void RecordModelExecutionResultHistogram(ModelBasedCapabilityKey feature,
 void NoOpExecuteRemoteFn(
     ModelBasedCapabilityKey feature,
     const google::protobuf::MessageLite& request,
+    std::optional<base::TimeDelta> timeout,
     std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request,
     OptimizationGuideModelExecutionResultCallback callback) {
   std::move(callback).Run(
@@ -216,6 +217,7 @@ void ModelExecutionManager::Shutdown() {
 void ModelExecutionManager::ExecuteModel(
     ModelBasedCapabilityKey feature,
     const google::protobuf::MessageLite& request_metadata,
+    std::optional<base::TimeDelta> timeout,
     std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request,
     OptimizationGuideModelExecutionResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -278,7 +280,7 @@ void ModelExecutionManager::ExecuteModel(
       std::forward_as_tuple(url_loader_factory_, model_execution_service_url_,
                             optimization_guide_logger_));
   fetcher_it.first->second.ExecuteModel(
-      feature, identity_manager_, request_metadata,
+      feature, identity_manager_, request_metadata, /*timeout=*/std::nullopt,
       base::BindOnce(&ModelExecutionManager::OnModelExecuteResponse,
                      weak_ptr_factory_.GetWeakPtr(), feature,
                      std::move(log_ai_data_request), std::move(callback)));

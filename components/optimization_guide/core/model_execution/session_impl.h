@@ -34,6 +34,7 @@ class OnDeviceModelFeatureAdapter;
 using ExecuteRemoteFn = base::RepeatingCallback<void(
     ModelBasedCapabilityKey feature,
     const google::protobuf::MessageLite&,
+    std::optional<base::TimeDelta> timeout,
     std::unique_ptr<proto::LogAiDataRequest>,
     OptimizationGuideModelExecutionResultCallback)>;
 

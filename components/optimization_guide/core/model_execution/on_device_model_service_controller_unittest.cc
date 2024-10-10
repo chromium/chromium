@@ -76,6 +76,7 @@ const std::string& GetCheckText(
 
 void FailRemote(ModelBasedCapabilityKey key,
                 const google::protobuf::MessageLite& req,
+                std::optional<base::TimeDelta> timeout,
                 std::unique_ptr<proto::LogAiDataRequest> log,
                 OptimizationGuideModelExecutionResultCallback callback) {
   EXPECT_TRUE(false) << "Unexpected use of remote fallback";
@@ -127,6 +128,7 @@ class ExpectedRemoteFallback final {
   struct FallbackArgs {
     ModelBasedCapabilityKey feature;
     std::unique_ptr<google::protobuf::MessageLite> request;
+    std::optional<base::TimeDelta> timeout;
     std::unique_ptr<proto::LogAiDataRequest> log;
     OptimizationGuideModelExecutionResultCallback callback;
 
@@ -141,6 +143,7 @@ class ExpectedRemoteFallback final {
     return base::BindLambdaForTesting(
         [&](ModelBasedCapabilityKey feature,
             const google::protobuf::MessageLite& m,
+            std::optional<base::TimeDelta> t,
             std::unique_ptr<proto::LogAiDataRequest> l,
             OptimizationGuideModelExecutionResultCallback c) {
           auto request = base::WrapUnique(m.New());
@@ -148,6 +151,7 @@ class ExpectedRemoteFallback final {
           future_.GetCallback().Run(FallbackArgs{
               feature,
               std::move(request),
+              t,
               std::move(l),
               std::move(c),
           });
@@ -238,6 +242,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     return base::BindLambdaForTesting(
         [=, this](ModelBasedCapabilityKey feature,
                   const google::protobuf::MessageLite& m,
+                  std::optional<base::TimeDelta> t,
                   std::unique_ptr<proto::LogAiDataRequest> l,
                   OptimizationGuideModelExecutionResultCallback c) {
           remote_execute_called_ = true;
