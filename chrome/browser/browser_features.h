@@ -127,10 +127,6 @@ BASE_DECLARE_FEATURE(kSecretPortalKeyProviderUseForEncryption);
 
 BASE_DECLARE_FEATURE(kSupportSearchSuggestionForPrerender2);
 
-#if !BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kTaskManagerDesktopRefresh);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 BASE_DECLARE_FEATURE(kTriggerNetworkDataMigration);
 
 #if BUILDFLAG(IS_CHROMEOS)

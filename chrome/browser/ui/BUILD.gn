@@ -398,6 +398,8 @@ static_library("ui") {
     "//chrome/browser/signin:impl",
     "//chrome/browser/storage_access_api",
     "//chrome/browser/sync",
+    "//chrome/browser/task_manager/common",
+    "//chrome/browser/task_manager/common:impl",
     "//chrome/browser/ui/autofill",
     "//chrome/browser/ui/autofill:impl",
     "//chrome/browser/ui/autofill/payments",

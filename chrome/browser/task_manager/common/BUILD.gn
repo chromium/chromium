@@ -1,0 +1,22 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+# The public interface for task_manager does not allow circular dependencies.
+source_set("common") {
+  sources = [ "task_manager_features.h" ]
+
+  public_deps = [ "//base" ]
+}
+
+# The implementation must be linked into the same binary as the public
+# interface.This does have circular dependencies with //chrome/browser and
+# //chrome/browser/ui.
+source_set("impl") {
+  sources = [ "task_manager_features.cc" ]
+
+  deps = [
+    ":common",
+    "//base",
+  ]
+}
