@@ -407,7 +407,7 @@ TEST(OutgoingStreamTest, AbortWithWebTransportError) {
   v8::Local<v8::Value> error =
       WebTransportError::Create(isolate,
                                 /*stream_error_code=*/std::nullopt, "foobar",
-                                WebTransportError::Source::kStream);
+                                V8WebTransportErrorSource::Enum::kStream);
 
   auto* writer =
       outgoing_stream->Writable()->getWriter(script_state, ASSERT_NO_EXCEPTION);
@@ -427,9 +427,10 @@ TEST(OutgoingStreamTest, AbortWithWebTransportErrorWithCode) {
   EXPECT_CALL(stream_creator.GetMockClient(), Reset(8));
   EXPECT_CALL(stream_creator.GetMockClient(), ForgetStream());
 
-  v8::Local<v8::Value> error = WebTransportError::Create(
-      isolate,
-      /*stream_error_code=*/8, "foobar", WebTransportError::Source::kStream);
+  v8::Local<v8::Value> error =
+      WebTransportError::Create(isolate,
+                                /*stream_error_code=*/8, "foobar",
+                                V8WebTransportErrorSource::Enum::kStream);
 
   auto* writer =
       outgoing_stream->Writable()->getWriter(script_state, ASSERT_NO_EXCEPTION);

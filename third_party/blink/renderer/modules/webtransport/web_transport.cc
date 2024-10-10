@@ -902,14 +902,14 @@ void WebTransport::close(WebTransportCloseInfo* close_info) {
     v8::Local<v8::Value> error =
         WebTransportError::Create(isolate, /*stream_error_code=*/std::nullopt,
                                   "close() is called while connecting.",
-                                  WebTransportError::Source::kSession);
+                                  V8WebTransportErrorSource::Enum::kSession);
     Cleanup(nullptr, error, /*abruptly=*/true);
     return;
   }
 
   v8::Local<v8::Value> error = WebTransportError::Create(
       isolate, /*stream_error_code=*/std::nullopt, "The session is closed.",
-      WebTransportError::Source::kSession);
+      V8WebTransportErrorSource::Enum::kSession);
 
   network::mojom::blink::WebTransportCloseInfoPtr close_info_to_pass;
   if (close_info) {
@@ -1023,7 +1023,7 @@ void WebTransport::OnHandshakeFailed(
   v8::Local<v8::Value> error_to_pass = WebTransportError::Create(
       script_state_->GetIsolate(),
       /*stream_error_code=*/std::nullopt, "Opening handshake failed.",
-      WebTransportError::Source::kSession);
+      V8WebTransportErrorSource::Enum::kSession);
   Cleanup(nullptr, error_to_pass, /*abruptly=*/true);
 }
 
@@ -1069,7 +1069,7 @@ void WebTransport::OnReceivedResetStream(uint32_t stream_id,
   ScriptState::Scope scope(script_state_);
   v8::Local<v8::Value> error = WebTransportError::Create(
       script_state_->GetIsolate(), stream_error_code, "Received RESET_STREAM.",
-      WebTransportError::Source::kStream);
+      V8WebTransportErrorSource::Enum::kStream);
   stream->Error(ScriptValue(script_state_->GetIsolate(), error));
 }
 
@@ -1087,7 +1087,7 @@ void WebTransport::OnReceivedStopSending(uint32_t stream_id,
   ScriptState::Scope scope(script_state_);
   v8::Local<v8::Value> error = WebTransportError::Create(
       script_state_->GetIsolate(), stream_error_code, "Received STOP_SENDING.",
-      WebTransportError::Source::kStream);
+      V8WebTransportErrorSource::Enum::kStream);
   stream->Error(ScriptValue(script_state_->GetIsolate(), error));
 }
 
@@ -1107,7 +1107,7 @@ void WebTransport::OnClosed(
 
   v8::Local<v8::Value> error = WebTransportError::Create(
       isolate, /*stream_error_code=*/std::nullopt, "The session is closed.",
-      WebTransportError::Source::kSession);
+      V8WebTransportErrorSource::Enum::kSession);
 
   Cleanup(idl_close_info, error, /*abruptly=*/false);
 }
@@ -1259,7 +1259,7 @@ void WebTransport::Init(const String& url_for_diagnostics,
             /*stream_error_code=*/std::nullopt,
             "Refused to connect to '" + url_.ElidedString() +
                 "' because it violates the document's Content Security Policy",
-            WebTransportError::Source::kSession));
+            V8WebTransportErrorSource::Enum::kSession));
 
     connection_pending_ = false;
     ready_->Reject(error);
@@ -1456,7 +1456,7 @@ void WebTransport::OnConnectionError() {
   v8::Local<v8::Value> error = WebTransportError::Create(
       isolate,
       /*stream_error_code=*/std::nullopt, "Connection lost.",
-      WebTransportError::Source::kSession);
+      V8WebTransportErrorSource::Enum::kSession);
 
   Cleanup(nullptr, error, /*abruptly=*/true);
 }
