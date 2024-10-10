@@ -1586,6 +1586,51 @@ ci.builder(
 )
 
 ci.builder(
+    name = "android-cronet-arm64-gn2bp-dbg",
+    description_html = "Builds the gn2bp verification workflow.",
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = ["android"],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            apply_configs = [
+                "cronet_builder",
+                "mb",
+            ],
+            build_config = builder_config.build_config.DEBUG,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(config = "main_builder"),
+        build_gs_bucket = "chromium-android-archive",
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "android_builder_without_codecs",
+            "cronet_android",
+            "debug_static_builder",
+            "remoteexec",
+            "arm64",
+        ],
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = [
+            "cronet_package",
+            "cronet_package_ci",
+        ],
+    ),
+    gardener_rotations = args.ignore_default(None),
+    console_view_entry = consoles.console_view_entry(
+        category = "cronet|gn2bp",
+        short_name = "gn2bp",
+    ),
+    contact_team_email = "cronet-team@google.com",
+    notifies = ["cronet"],
+)
+
+ci.builder(
     name = "android-cronet-arm64-rel",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(

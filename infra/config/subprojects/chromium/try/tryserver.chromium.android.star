@@ -513,6 +513,14 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-cronet-arm64-gn2bp-dbg",
+    mirrors = ["ci/android-cronet-arm64-gn2bp-dbg"],
+    gn_args = "ci/android-cronet-arm64-gn2bp-dbg",
+    contact_team_email = "cronet-team@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "android-cronet-arm64-rel",
     mirrors = ["ci/android-cronet-arm64-rel"],
     # TODO(crbug.com/40462241): Switch this back to debug try builder when cronet's
