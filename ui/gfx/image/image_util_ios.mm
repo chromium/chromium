@@ -122,12 +122,7 @@ Image ResizedImageForSearchByImage(const Image& image) {
 
 #if BUILDFLAG(USE_BLINK)
 Image ImageFrom1xJPEGEncodedData(base::span<const uint8_t> input) {
-  std::unique_ptr<SkBitmap> bitmap(gfx::JPEGCodec::Decode(input));
-  if (bitmap.get()) {
-    return Image::CreateFrom1xBitmap(*bitmap);
-  }
-
-  return Image();
+  return Image::CreateFrom1xBitmap(gfx::JPEGCodec::Decode(input));
 }
 #endif  // BUILDFLAG(USE_BLINK)
 
