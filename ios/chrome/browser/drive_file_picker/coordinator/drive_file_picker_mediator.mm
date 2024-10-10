@@ -205,11 +205,25 @@ constexpr int kFetchedImageResizeDimension = 64;
     return;
   }
   _identity = selectedIdentity;
-  [_consumer setSelectedUserIdentityEmail:_identity.userEmail];
+
+  [self setShouldShowSearchItems:NO];
   [self setSelectedFile:std::nullopt];
+  _searchBarFocused = NO;
+  _searchText = nil;
+  [_consumer setSelectedUserIdentityEmail:_identity.userEmail];
+  [self clearItems];
   [self configureConsumerIdentitiesMenu];
+  [self updateTitle];
   _driveList = _driveService->CreateList(_identity);
   _driveDownloader = _driveService->CreateFileDownloader(_identity);
+  [_consumer setFilter:_filter];
+  [_consumer setAllFilesEnabled:_ignoreAcceptedTypes];
+  [_consumer setSortingCriteria:_sortingCriteria direction:_sortingDirection];
+  [_consumer setBackground:DriveFilePickerBackground::kLoadingIndicator];
+  [_consumer setCancelButtonVisible:_collectionType ==
+                                    DriveFilePickerCollectionType::kRoot];
+  [_consumer setSearchBarFocused:NO searchText:nil];
+  [self loadFirstPage];
 }
 
 - (void)setPendingFilter:(DriveFilePickerFilter)filter
@@ -855,7 +869,9 @@ constexpr int kFetchedImageResizeDimension = 64;
                                         block:actionResult];
   // TODO(crbug.com/344812396): Add the new account block.
   UIAction* addAccountAction =
-      [actionFactory actionToAddAccountForDriveWithBlock:nil];
+      [actionFactory actionToAddAccountForDriveWithBlock:^{
+        [weakSelf.delegate mediatorDidTapAddAccount:weakSelf];
+      }];
   [self.consumer setEmailsMenu:[UIMenu menuWithChildren:@[
                    addAccountAction, identitiesMenu
                  ]]];

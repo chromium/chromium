@@ -18,13 +18,17 @@
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_table_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
+#import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_completion_info.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -212,6 +216,10 @@
                       ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes {
 }
 
+- (void)mediatorDidTapAddAccount:(DriveFilePickerMediator*)mediator {
+  [self showAddAccount];
+}
+
 #pragma mark - BrowseDriveFilePickerCoordinatorDelegate
 
 - (void)coordinatorShouldStop:(ChromeCoordinator*)coordinator {
@@ -231,6 +239,34 @@
               sortingCriteria:sortingCriteria
              sortingDirection:sortingDirection
           ignoreAcceptedTypes:ignoreAcceptedTypes];
+}
+
+- (void)coordinatorDidTapAddAccount:(ChromeCoordinator*)coordinator {
+  [self showAddAccount];
+}
+
+#pragma mark - Private
+
+// Initiate the add account flow.
+- (void)showAddAccount {
+  __weak __typeof(self) weakSelf = self;
+  id<ApplicationCommands> applicationCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  ShowSigninCommand* addAccountCommand = [[ShowSigninCommand alloc]
+      initWithOperation:AuthenticationOperation::kAddAccount
+               identity:nil
+            accessPoint:signin_metrics::AccessPoint::
+                            ACCESS_POINT_DRIVE_FILE_PICKER_IOS
+            promoAction:signin_metrics::PromoAction::
+                            PROMO_ACTION_NO_SIGNIN_PROMO
+               callback:^(SigninCoordinatorResult result,
+                          SigninCompletionInfo* completionInfo) {
+                 if (result == SigninCoordinatorResultSuccess) {
+                   [weakSelf setSelectedIdentity:completionInfo.identity];
+                 }
+               }];
+  [applicationCommandsHandler showSignin:addAccountCommand
+                      baseViewController:_navigationController];
 }
 
 @end

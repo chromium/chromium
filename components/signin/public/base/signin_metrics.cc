@@ -442,6 +442,7 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_SETTINGS_SIGNOUT_CONFIRMATION_PROMPT:
     case AccessPoint::ACCESS_POINT_WEBAUTHN_MODAL_DIALOG:
     case AccessPoint::ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
+    case AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
       NOTREACHED_IN_MIGRATION()
           << "Access point " << static_cast<int>(access_point)
           << " is not supposed to log signin user actions.";
@@ -721,6 +722,7 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_ACCOUNT_MENU:
     case AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH:
     case AccessPoint::ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
+    case AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
     case AccessPoint::ACCESS_POINT_MAX:
       NOTREACHED_IN_MIGRATION() << "Signin_Impression_From* user actions"
                                 << " are not recorded for access point "

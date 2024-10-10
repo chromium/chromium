@@ -155,6 +155,7 @@ NSString* GetPromoLabelString(
     case signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE:
     case signin_metrics::AccessPoint::
         ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
+    case signin_metrics::AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
       // Nothing prevents instantiating ConsistencyDefaultAccountViewController
       // with an arbitrary entry point, API-wise. In doubt, no label is a good,
       // generic default that fits all entry points.

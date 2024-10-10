@@ -85,6 +85,9 @@
                       ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes {
 }
 
+- (void)mediatorDidTapAddAccount:(DriveFilePickerMediator*)mediator {
+}
+
 @end
 
 // Fake consumer for `DriveFilePickerMediator`.

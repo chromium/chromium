@@ -42,6 +42,9 @@
                              (DriveItemsSortingOrder)sortingDirection
                       ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes;
 
+// Called when "Add account" button is triggered.
+- (void)mediatorDidTapAddAccount:(DriveFilePickerMediator*)mediator;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_COORDINATOR_DRIVE_FILE_PICKER_MEDIATOR_DELEGATE_H_

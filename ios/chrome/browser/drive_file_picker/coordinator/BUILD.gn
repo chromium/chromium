@@ -33,6 +33,8 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:system_identity",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
+    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/web/model/choose_file",
     "//ios/chrome/common/ui/util:image_util",

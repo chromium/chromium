@@ -212,6 +212,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "AddressBubble";
       case AccessPoint::ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
         return "CctAccountMismatchNotification";
+      case AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
+        return "DriveFilePickerIOS";
       case AccessPoint::ACCESS_POINT_MAX:
         NOTREACHED_IN_MIGRATION();
         return "";

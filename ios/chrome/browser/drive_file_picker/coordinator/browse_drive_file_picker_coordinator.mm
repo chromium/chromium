@@ -207,6 +207,10 @@
                               ignoreAcceptedTypes:ignoreAcceptedTypes];
 }
 
+- (void)mediatorDidTapAddAccount:(DriveFilePickerMediator*)mediator {
+  [self.delegate coordinatorDidTapAddAccount:self];
+}
+
 #pragma mark - DriveFilePickerTableViewControllerDelegate
 
 - (void)viewControllerDidDisappear:(UIViewController*)viewController {
@@ -239,6 +243,10 @@
                                   sortingCriteria:sortingCriteria
                                  sortingDirection:sortingDirection
                               ignoreAcceptedTypes:ignoreAcceptedTypes];
+}
+
+- (void)coordinatorDidTapAddAccount:(ChromeCoordinator*)coordinator {
+  [self.delegate coordinatorDidTapAddAccount:self];
 }
 
 @end

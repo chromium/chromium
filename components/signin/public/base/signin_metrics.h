@@ -247,6 +247,8 @@ enum class AccessPoint : int {
   // A message notification displayed on CCTs embedded in 1P apps when there is
   // an account mismatch between Chrome and the 1P app. Android only.
   ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION = 71,
+  // Access point for the Drive file picker on iOS.
+  ACCESS_POINT_DRIVE_FILE_PICKER_IOS = 72,
 
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
