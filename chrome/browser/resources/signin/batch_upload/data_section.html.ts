@@ -12,7 +12,7 @@ export function getHtml(this: DataSectionElement) {
     <div class="data-section">
       <div class="data-section-header">
         <div id="sectionTitle">
-          ${this.getSectionTitle_()}
+          ${this.title_}
         </div>
         <cr-expand-button id="expandButton" no-hover
             ?hidden="${this.disabled_}"

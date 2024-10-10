@@ -12,6 +12,7 @@ import type {CrCollapseElement} from '//resources/cr_elements/cr_collapse/cr_col
 import type {CrExpandButtonElement} from '//resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import type {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.js';
 import {assert} from '//resources/js/assert.js';
+import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -57,6 +58,7 @@ export class DataSectionElement extends CrLitElement {
   static override get properties() {
     return {
       dataContainer: {type: Object},
+      title_: {type: String},
       expanded_: {type: Boolean},
       disabled_: {type: Boolean},
       dataSelectedCount_: {type: Number},
@@ -65,6 +67,10 @@ export class DataSectionElement extends CrLitElement {
 
   // Data to be displayed.
   dataContainer: DataContainer = createEmptyContainer();
+
+  // Title of the section, updated on each item checkbox selection based on the
+  // number of selected items.
+  protected title_: string = '';
 
   // If the collapse section is exapnded.
   protected expanded_: boolean = false;
@@ -97,7 +103,7 @@ export class DataSectionElement extends CrLitElement {
         this.collapseAnimationDuration_ / UPDATE_REQUEST_COUNT;
   }
 
-  override willUpdate(changedProperties: PropertyValues<this>) {
+  override async willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
 
     // Cast necessary since `expanded_` is protected.
@@ -109,6 +115,16 @@ export class DataSectionElement extends CrLitElement {
         this.updateViewHeightInterval_(
             this.intervalDurationOfUpdateHeightRequests_);
       }, this.intervalDurationOfUpdateHeightRequests_);
+    }
+
+    if (changedPrivateProperties.has('dataSelectedCount_')) {
+      // Make sure the id is valid before requesting the string. In tests this
+      // id may be empty.
+      if (this.dataContainer.sectionTitle &&
+          this.dataContainer.sectionTitle.length > 0) {
+        this.title_ = await PluralStringProxyImpl.getInstance().getPluralString(
+            this.dataContainer.sectionTitle, this.dataSelectedCount_);
+      }
     }
   }
 
@@ -147,20 +163,6 @@ export class DataSectionElement extends CrLitElement {
     this.disabled_ = disabled;
   }
 
-  // Secondary part of the title as '(N)' with N being the number of item
-  // selected if greater than 0; otherwise return an empty string.
-  private getSectionTitleExtraInfo_() {
-    if (this.dataSelectedCount_ === 0) {
-      return '';
-    }
-
-    return ' (' + this.dataSelectedCount_ + ')';
-  }
-
-  protected getSectionTitle_(): string {
-    return this.dataContainer.sectionTitle + this.getSectionTitleExtraInfo_();
-  }
-
   // Fire repetitive updates to the parent view height separated by the computed
   // interval, until the animation duration elapsed.
   private updateViewHeightInterval_(timeElapsed: number) {
@@ -185,7 +187,7 @@ export class DataSectionElement extends CrLitElement {
 
   // Needs to react to both property change (through a reset caused from all
   // checkboxes being unselected) and user action.
-  protected onToggleChanged_(e: CustomEvent<{value: boolean}>) {
+  protected async onToggleChanged_(e: CustomEvent<{value: boolean}>) {
     this.resetWithState_(/*disabled=*/ !e.detail.value);
 
     // Notify the parent with the new toggle value.

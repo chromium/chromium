@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iterator>
 
+#include "base/strings/to_string.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_controller.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_data_provider.h"
 #include "chrome/browser/ui/webui/signin/batch_upload/batch_upload.mojom.h"
@@ -43,8 +44,9 @@ batch_upload::mojom::BatchUploadDataPtr ConstructMojoBatchUploadData(
 
     batch_upload::mojom::DataContainerPtr data_container_mojo =
         batch_upload::mojom::DataContainer::New();
+    // TODO(crbug.com/372450941): Adadpt the mojo variable name.
     data_container_mojo->section_title =
-        l10n_util::GetStringUTF8(container.section_title_id);
+        base::ToString(container.section_title_id);
 
     for (const auto& data_item : container.items) {
       batch_upload::mojom::DataItemPtr data_item_mojo =

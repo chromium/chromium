@@ -40,8 +40,9 @@ suite('BatchUploadViewTest', function() {
       subtitle: 'username2',
     };
     const passwordSection: DataContainer = {
-      sectionTitle: 'Passwords',
       dataItems: [],
+      // Keep empty not to request string of unavailable id.
+      sectionTitle: '',
     };
     passwordSection.dataItems.push(password1);
     passwordSection.dataItems.push(password2);
@@ -55,7 +56,8 @@ suite('BatchUploadViewTest', function() {
     };
     const addressSection: DataContainer = {
       dataItems: [],
-      sectionTitle: 'Addresses',
+      // Keep empty not to request string of unavailable id.
+      sectionTitle: '',
     };
     addressSection.dataItems.push(address);
 

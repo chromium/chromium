@@ -15,11 +15,6 @@ enum class BatchUploadDataType;
 
 // Representation of a single item to be displayed in the BatchUpload dialog.
 struct BatchUploadDataItemModel {
-  BatchUploadDataItemModel();
-  ~BatchUploadDataItemModel();
-  BatchUploadDataItemModel(BatchUploadDataItemModel&& other);
-  BatchUploadDataItemModel& operator=(BatchUploadDataItemModel&& other);
-
   // Strong Alias ID which is reprenseted as an int.
   using Id = base::IdType32<BatchUploadDataItemModel>;
 
@@ -46,12 +41,23 @@ struct BatchUploadDataItemModel {
 
   // TODO(b/359150954): handle optional data logic -- e.g. passwords with reveal
   // callback, this may be handled in the controller/dialog directly.
+
+  BatchUploadDataItemModel();
+  ~BatchUploadDataItemModel();
+  // Not copyable.
+  BatchUploadDataItemModel(const BatchUploadDataItemModel&) = delete;
+  BatchUploadDataItemModel& operator=(const BatchUploadDataItemModel&) = delete;
+  // Movable.
+  BatchUploadDataItemModel(BatchUploadDataItemModel&& other);
+  BatchUploadDataItemModel& operator=(BatchUploadDataItemModel&& other);
 };
 
 // Container representing a data type section in the BatchUpload dialog.
 struct BatchUploadDataContainer {
   // Used as the section title message id for the name in the Batch Upload
-  // dialog.
+  // dialog. Along with its string representation as the message name, it will
+  // be used to compute the section title in WebUi. The generated string in
+  // WebUi supports Plural casing with an integer param.
   int section_title_id;
 
   // Message id used as part of the text in the Batch Upload dialog for the main

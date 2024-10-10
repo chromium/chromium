@@ -30,7 +30,8 @@ suite('BatchUploadViewTest', function() {
       subtitle: 'username2',
     };
     const passwordSection: DataContainer = {
-      sectionTitle: 'Passwords',
+      // Keep empty not to request string of unavailable id.
+      sectionTitle: '',
       dataItems: [],
     };
     passwordSection.dataItems.push(password1);
@@ -49,7 +50,6 @@ suite('BatchUploadViewTest', function() {
   test('MainSectionComponents', function() {
     assertTrue(isVisible(dataSectionElement));
 
-    assertTrue(isChildVisible(dataSectionElement, '#sectionTitle'));
     assertTrue(isChildVisible(dataSectionElement, '#expandButton'));
     assertTrue(isChildVisible(dataSectionElement, '#separator'));
     assertTrue(isChildVisible(dataSectionElement, '#toggle'));
@@ -59,12 +59,10 @@ suite('BatchUploadViewTest', function() {
   test('SectionTitles', async function() {
     assertTrue(isVisible(dataSectionElement));
 
-    const sectionTitle = dataSectionElement.$.sectionTitle;
     const numberOfItems = TEST_DATA.dataItems.length;
     await microtasksFinished();
-    // All items are selected by default and should be shown in the title.
-    assertTrue(
-        sectionTitle.textContent!.trim().includes('(' + numberOfItems + ')'));
+    // All items are selected by default.
+    assertEquals(numberOfItems, dataSectionElement.dataSelected.size);
 
     // Uncheck the first item.
     const checkboxes =
@@ -77,9 +75,8 @@ suite('BatchUploadViewTest', function() {
     // Waiting for the Ui update that would affect the section title.
     await microtasksFinished();
 
-    // Selected items items count should show, so 1 less.
-    assertTrue(sectionTitle.textContent!.trim().includes(
-        '(' + (numberOfItems - 1) + ')'));
+    // Selected items count should show, so 1 less.
+    assertEquals(numberOfItems - 1, dataSectionElement.dataSelected.size);
   });
 
   test('ExpandingSections', async function() {
@@ -147,12 +144,9 @@ suite('BatchUploadViewTest', function() {
     assertTrue(isVisible(dataSectionElement));
     await microtasksFinished();
 
-    const sectionTitle = dataSectionElement.$.sectionTitle;
     const numberOfItemsInSection = TEST_DATA.dataItems.length;
-    const expectedInitialTitleExtraInfo = '(' + numberOfItemsInSection + ')';
-    // Initial title name check.
-    assertTrue(sectionTitle.textContent!.trim().includes(
-        expectedInitialTitleExtraInfo));
+    // Initial count of selected items.
+    assertEquals(numberOfItemsInSection, dataSectionElement.dataSelected.size);
 
     // Initial section divs state.
     const separator = dataSectionElement.$.separator;
@@ -172,11 +166,8 @@ suite('BatchUploadViewTest', function() {
     toggle.click();
     await microtasksFinished();
 
-    // Info about selected count should not be present anymore.
-    assertFalse(sectionTitle.textContent!.trim().includes(
-        expectedInitialTitleExtraInfo));
-    // Text should actually be only equal to the section title.
-    assertEquals(TEST_DATA.sectionTitle, sectionTitle.textContent!.trim());
+    // No more selected items.
+    assertEquals(0, dataSectionElement.dataSelected.size);
     assertFalse(isVisible(separator));
     assertFalse(isVisible(expandButton));
     assertFalse(collapseSection.opened);

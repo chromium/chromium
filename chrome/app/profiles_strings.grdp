@@ -952,11 +952,17 @@
       <!-- TODO(b/365954465): Incomplete string that might get more complex. -->
       N items are saved only to this device. To use them on your other devices, save them in your Google Account.
     </message>
-    <message translateable="false" name="IDS_BATCH_UPLOAD_SECTION_TITLE_PASSWORDS" desc="">
-      Passwords
+    <message name="IDS_BATCH_UPLOAD_SECTION_TITLE_PASSWORDS" desc="Title of the Passwords section in the Batch Upload dialog. Shows the number of selected passwords in the section of the dialog if any.">
+      {SELECTED_ITEMS, plural,
+      =0 {Passwords}
+      other {Passwords ({SELECTED_ITEMS})}
+      }
     </message>
-    <message translateable="false" name="IDS_BATCH_UPLOAD_SECTION_TITLE_ADDRESSES" desc="">
-      Addresses
+    <message name="IDS_BATCH_UPLOAD_SECTION_TITLE_ADDRESSES" desc="Title of the Addresses section in the Batch Upload dialog. Shows the number of selected addresses in the section of the dialog if any.">
+      {SELECTED_ITEMS, plural,
+      =0 {Addresses}
+      other {Addresses ({SELECTED_ITEMS})}
+      }
     </message>
     <message name="IDS_BATCH_UPLOAD_SAVE_TO_ACCOUNT_OK_BUTTON_LABEL" desc="Text of the button that triggers the saving of the selected items in the Batch Upload dialog. When pressing the button, selected items are moved to the account storage (Saved in account) and the dialog is then closed.">
       Save in account
