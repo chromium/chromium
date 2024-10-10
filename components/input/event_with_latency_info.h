@@ -33,7 +33,7 @@ class EventWithLatencyInfo {
                        const ui::LatencyInfo& l)
       : event(type, modifiers, time_stamp), latency(l) {}
 
-  EventWithLatencyInfo() {}
+  EventWithLatencyInfo() = default;
 
   [[nodiscard]] bool CanCoalesceWith(const EventWithLatencyInfo& other) const {
     if (other.event.GetType() != event.GetType())

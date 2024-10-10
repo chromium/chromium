@@ -74,7 +74,7 @@ class SurfaceSynchronizationTest : public testing::Test {
   SurfaceSynchronizationTest& operator=(const SurfaceSynchronizationTest&) =
       delete;
 
-  ~SurfaceSynchronizationTest() override {}
+  ~SurfaceSynchronizationTest() override = default;
 
   CompositorFrameSinkSupport& display_support() {
     return *supports_[kDisplayFrameSink];

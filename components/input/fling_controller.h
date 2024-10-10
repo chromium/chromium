@@ -27,7 +27,7 @@ inline constexpr float kDefaultPixelsPerInch = 96.0f;
 // events.
 class COMPONENT_EXPORT(INPUT) FlingControllerEventSenderClient {
  public:
-  virtual ~FlingControllerEventSenderClient() {}
+  virtual ~FlingControllerEventSenderClient() = default;
 
   virtual void SendGeneratedWheelEvent(
       const MouseWheelEventWithLatencyInfo& wheel_event) = 0;
@@ -42,7 +42,7 @@ class COMPONENT_EXPORT(INPUT) FlingControllerEventSenderClient {
 // Interface with which the fling progress gets scheduled.
 class COMPONENT_EXPORT(INPUT) FlingControllerSchedulerClient {
  public:
-  virtual ~FlingControllerSchedulerClient() {}
+  virtual ~FlingControllerSchedulerClient() = default;
 
   virtual void ScheduleFlingProgress(
       base::WeakPtr<FlingController> fling_controller) = 0;

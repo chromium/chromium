@@ -178,7 +178,7 @@ class DisplayTest : public testing::Test {
         task_runner_(new base::NullTaskRunner),
         client_(std::make_unique<StubDisplayClient>()) {}
 
-  ~DisplayTest() override {}
+  ~DisplayTest() override = default;
 
   void SetUpSoftwareDisplay(const RendererSettings& settings) {
     std::unique_ptr<FakeSoftwareOutputSurface> output_surface;

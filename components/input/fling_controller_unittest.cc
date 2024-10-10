@@ -48,7 +48,7 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
   FlingControllerTest(const FlingControllerTest&) = delete;
   FlingControllerTest& operator=(const FlingControllerTest&) = delete;
 
-  ~FlingControllerTest() override {}
+  ~FlingControllerTest() override = default;
 
   void SetUp() override {
     fling_controller_ = std::make_unique<FakeFlingController>(

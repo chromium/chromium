@@ -55,7 +55,7 @@ TouchActionFilter::TouchActionFilter() {
   ResetTouchAction();
 }
 
-TouchActionFilter::~TouchActionFilter() {}
+TouchActionFilter::~TouchActionFilter() = default;
 
 FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
     WebGestureEvent* gesture_event) {

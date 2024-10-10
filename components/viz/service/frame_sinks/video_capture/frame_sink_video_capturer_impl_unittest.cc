@@ -212,7 +212,7 @@ class MockFrameSinkManager : public FrameSinkVideoCapturerManager {
 
 class MockConsumer : public mojom::FrameSinkVideoConsumer {
  public:
-  MockConsumer() {}
+  MockConsumer() = default;
 
   MOCK_METHOD0(OnFrameCapturedMock, void());
   MOCK_METHOD1(OnNewSubCaptureTargetVersion, void(uint32_t));

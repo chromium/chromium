@@ -37,7 +37,7 @@ class GpuServiceTest : public testing::Test {
   GpuServiceTest(const GpuServiceTest&) = delete;
   GpuServiceTest& operator=(const GpuServiceTest&) = delete;
 
-  ~GpuServiceTest() override {}
+  ~GpuServiceTest() override = default;
 
   GpuServiceImpl* gpu_service() { return gpu_service_.get(); }
 

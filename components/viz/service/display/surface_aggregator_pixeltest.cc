@@ -44,7 +44,7 @@ class SurfaceAggregatorPixelTest : public VizPixelTestWithParam {
             &manager_,
             kArbitraryRootFrameSinkId,
             kIsRoot)) {}
-  ~SurfaceAggregatorPixelTest() override {}
+  ~SurfaceAggregatorPixelTest() override = default;
 
   base::TimeTicks GetNextDisplayTime() {
     base::TimeTicks display_time = next_display_time_;

@@ -67,6 +67,6 @@ NativeWebKeyboardEvent& NativeWebKeyboardEvent::operator=(
   return *this;
 }
 
-NativeWebKeyboardEvent::~NativeWebKeyboardEvent() {}
+NativeWebKeyboardEvent::~NativeWebKeyboardEvent() = default;
 
 }  // namespace input

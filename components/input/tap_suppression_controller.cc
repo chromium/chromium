@@ -16,7 +16,7 @@ TapSuppressionController::TapSuppressionController(const Config& config)
     : state_(config.enabled ? NOTHING : DISABLED),
       max_cancel_to_down_time_(config.max_cancel_to_down_time) {}
 
-TapSuppressionController::~TapSuppressionController() {}
+TapSuppressionController::~TapSuppressionController() = default;
 
 void TapSuppressionController::GestureFlingCancelStoppedFling() {
   base::TimeTicks event_time = Now();

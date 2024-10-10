@@ -58,7 +58,7 @@ class RenderWidgetTargeter {
 
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     virtual RenderWidgetTargetResult FindTargetSynchronouslyAtPoint(
         RenderWidgetHostViewInput* root_view,

@@ -46,7 +46,7 @@ class GestureEventQueueTest : public testing::Test,
         acked_gesture_event_count_(0),
         sent_gesture_event_count_(0) {}
 
-  ~GestureEventQueueTest() override {}
+  ~GestureEventQueueTest() override = default;
 
   // testing::Test
   void SetUp() override {

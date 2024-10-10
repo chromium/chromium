@@ -31,7 +31,7 @@ class TouchTimeoutHandler;
 // dispatch touch event responses.
 class COMPONENT_EXPORT(INPUT) PassthroughTouchEventQueueClient {
  public:
-  virtual ~PassthroughTouchEventQueueClient() {}
+  virtual ~PassthroughTouchEventQueueClient() = default;
 
   virtual void SendTouchEventImmediately(
       const TouchEventWithLatencyInfo& event) = 0;

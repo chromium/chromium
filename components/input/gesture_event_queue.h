@@ -28,7 +28,7 @@ class GestureEventQueueTest;
 // dispatch gesture event responses.
 class COMPONENT_EXPORT(INPUT) GestureEventQueueClient {
  public:
-  virtual ~GestureEventQueueClient() {}
+  virtual ~GestureEventQueueClient() = default;
 
   virtual void SendGestureEventImmediately(
       const GestureEventWithLatencyInfo& event) = 0;

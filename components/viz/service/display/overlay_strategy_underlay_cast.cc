@@ -39,7 +39,7 @@ OverlayStrategyUnderlayCast::OverlayStrategyUnderlayCast(
     OverlayProcessorUsingStrategy* capability_checker)
     : OverlayStrategyUnderlay(capability_checker) {}
 
-OverlayStrategyUnderlayCast::~OverlayStrategyUnderlayCast() {}
+OverlayStrategyUnderlayCast::~OverlayStrategyUnderlayCast() = default;
 
 void OverlayStrategyUnderlayCast::Propose(
     const SkM44& output_color_matrix,

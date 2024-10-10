@@ -21,7 +21,7 @@ OverlayStrategyUnderlay::OverlayStrategyUnderlay(
   DCHECK(capability_checker);
 }
 
-OverlayStrategyUnderlay::~OverlayStrategyUnderlay() {}
+OverlayStrategyUnderlay::~OverlayStrategyUnderlay() = default;
 
 void OverlayStrategyUnderlay::Propose(
     const SkM44& output_color_matrix,

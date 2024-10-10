@@ -27,7 +27,7 @@ MockBeginFrameObserver::MockBeginFrameObserver()
       .WillByDefault(::testing::Return(false));
 }
 
-MockBeginFrameObserver::~MockBeginFrameObserver() {}
+MockBeginFrameObserver::~MockBeginFrameObserver() = default;
 
 const BeginFrameArgs MockBeginFrameObserver::kDefaultBeginFrameArgs =
     CreateBeginFrameArgsForTesting(

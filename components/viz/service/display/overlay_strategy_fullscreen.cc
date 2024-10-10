@@ -51,7 +51,7 @@ OverlayStrategyFullscreen::OverlayStrategyFullscreen(
   DCHECK(capability_checker);
 }
 
-OverlayStrategyFullscreen::~OverlayStrategyFullscreen() {}
+OverlayStrategyFullscreen::~OverlayStrategyFullscreen() = default;
 
 void OverlayStrategyFullscreen::Propose(
     const SkM44& output_color_matrix,

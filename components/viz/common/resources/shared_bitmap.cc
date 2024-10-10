@@ -15,7 +15,7 @@ namespace viz {
 
 SharedBitmap::SharedBitmap(uint8_t* pixels) : pixels_(pixels) {}
 
-SharedBitmap::~SharedBitmap() {}
+SharedBitmap::~SharedBitmap() = default;
 
 // static
 SharedBitmapId SharedBitmap::GenerateId() {

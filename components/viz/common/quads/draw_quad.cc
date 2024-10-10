@@ -46,7 +46,7 @@ void DrawQuad::SetAll(const SharedQuadState* quad_state,
   DCHECK(material != Material::kInvalid);
 }
 
-DrawQuad::~DrawQuad() {}
+DrawQuad::~DrawQuad() = default;
 
 void DrawQuad::AsValueInto(base::trace_event::TracedValue* value) const {
   value->SetInteger("material", static_cast<int>(material));

@@ -20,7 +20,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorStub
   OverlayProcessorStub(const OverlayProcessorStub&) = delete;
   OverlayProcessorStub& operator=(const OverlayProcessorStub&) = delete;
 
-  ~OverlayProcessorStub() override {}
+  ~OverlayProcessorStub() override = default;
 
   // Overrides OverlayProcessorInterface's pure virtual functions.
   bool IsOverlaySupported() const final;

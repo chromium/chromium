@@ -97,7 +97,7 @@ SoftwareRenderer::SoftwareRenderer(
                      overlay_processor),
       output_device_(output_surface->software_device()) {}
 
-SoftwareRenderer::~SoftwareRenderer() {}
+SoftwareRenderer::~SoftwareRenderer() = default;
 
 bool SoftwareRenderer::CanPartialSwap() {
   return true;

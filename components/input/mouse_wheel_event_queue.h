@@ -44,7 +44,7 @@ class COMPONENT_EXPORT(INPUT) MouseWheelEventQueueClient {
       const MouseWheelEventWithLatencyInfo& ack_event,
       blink::mojom::InputEventResultSource ack_source,
       blink::mojom::InputEventResultState ack_result)>;
-  virtual ~MouseWheelEventQueueClient() {}
+  virtual ~MouseWheelEventQueueClient() = default;
   virtual void SendMouseWheelEventImmediately(
       const MouseWheelEventWithLatencyInfo& event,
       MouseWheelEventHandledCallback callback) = 0;

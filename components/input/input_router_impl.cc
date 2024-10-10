@@ -98,7 +98,7 @@ InputRouterImpl::InputRouterImpl(
   UpdateTouchAckTimeoutEnabled();
 }
 
-InputRouterImpl::~InputRouterImpl() {}
+InputRouterImpl::~InputRouterImpl() = default;
 
 void InputRouterImpl::SendMouseEvent(
     const MouseEventWithLatencyInfo& mouse_event,

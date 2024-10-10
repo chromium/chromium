@@ -109,7 +109,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
 #endif
 
    protected:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
   };
 
   struct VIZ_HOST_EXPORT InitParams {

@@ -29,7 +29,7 @@ class StylusInterface {
 
 class COMPONENT_EXPORT(INPUT) InputRouterClient {
  public:
-  virtual ~InputRouterClient() {}
+  virtual ~InputRouterClient() = default;
 
   // Called just prior to events being sent to the renderer, giving the client
   // a chance to perform in-process event filtering.

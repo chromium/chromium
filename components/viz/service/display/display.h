@@ -66,7 +66,7 @@ class OcclusionCuller;
 
 class VIZ_SERVICE_EXPORT DisplayObserver {
  public:
-  virtual ~DisplayObserver() {}
+  virtual ~DisplayObserver() = default;
 
   virtual void OnDisplayDidFinishFrame(const BeginFrameAck& ack) = 0;
   virtual void OnDisplayDestroyed() = 0;

@@ -29,7 +29,7 @@ SoftwareOutputDeviceMac::SoftwareOutputDeviceMac(
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : SoftwareOutputDevice(std::move(task_runner)) {}
 
-SoftwareOutputDeviceMac::~SoftwareOutputDeviceMac() {}
+SoftwareOutputDeviceMac::~SoftwareOutputDeviceMac() = default;
 
 void SoftwareOutputDeviceMac::Resize(const gfx::Size& pixel_size,
                                      float scale_factor) {

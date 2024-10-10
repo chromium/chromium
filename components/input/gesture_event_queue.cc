@@ -39,7 +39,7 @@ GestureEventQueue::GestureEventQueue(
   DCHECK(fling_scheduler_client);
 }
 
-GestureEventQueue::~GestureEventQueue() {}
+GestureEventQueue::~GestureEventQueue() = default;
 
 bool GestureEventQueue::DebounceOrForwardEvent(
     const GestureEventWithLatencyInfo& gesture_event) {
