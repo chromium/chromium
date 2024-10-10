@@ -2063,6 +2063,55 @@ suite('NewTabPageRealboxTest', () => {
         // TODO(crbug.com/328270499): Uncomment once flakiness is fixed.
         // assertFavicon(realbox.$.icon, matches[0]!.destinationUrl.url);
       });
+  test('lens searchboxes always use default icons in searchbox', async () => {
+    // Arrange.
+    loadTimeData.overrideValues({
+      searchboxDefaultIcon: 'hello.svg',
+      isLensSearchbox: true,
+    });
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    realbox = document.createElement('cr-searchbox');
+    document.body.appendChild(realbox);
+    await waitAfterNextRender(realbox);
+
+    assertIconMaskImageUrl(realbox.$.icon, 'hello.svg');  // Default icon.
+
+    realbox.$.input.value = 'hello';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+
+    const matches = [
+      createUrlMatch({iconUrl: 'page.svg'}),
+    ];
+    testProxy.callbackRouterRemote.autocompleteResultChanged({
+      input: stringToMojoString16(realbox.$.input.value.trimStart()),
+      matches,
+      suggestionGroupsMap: {},
+    });
+    assertTrue(await areMatchesShowing());
+
+    const matchEls =
+        realbox.$.matches.shadowRoot!.querySelectorAll('cr-searchbox-match');
+    assertEquals(1, matchEls.length);
+
+    // Select the first match.
+    const arrowDownEvent = new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+      key: 'ArrowDown',
+    });
+    realbox.$.input.dispatchEvent(arrowDownEvent);
+    assertTrue(arrowDownEvent.defaultPrevented);
+
+    // First match is selected.
+    assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
+    // Icon is still default while match is selected.
+    assertIconMaskImageUrl(realbox.$.icon, 'hello.svg');
+    // Restore.
+    loadTimeData.overrideValues({
+      searchboxDefaultIcon: 'search.svg',
+    });
+  });
 
   //============================================================================
   // Test suggestion groups

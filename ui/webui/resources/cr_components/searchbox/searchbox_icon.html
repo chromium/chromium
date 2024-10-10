@@ -90,6 +90,10 @@
     width: 24px;
   }
 
+  :host([in-searchbox][is-lens-searchbox_]) #icon {
+    background-color: var(--color-searchbox-google-g-background);
+  }
+
   :host-context(cr-searchbox-match[has-image]) #icon {
     display: none;
   }

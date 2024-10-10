@@ -148,6 +148,7 @@ export class SearchboxIconElement extends PolymerElement {
   private iconStyle_: string;
   private imageSrc_: string;
   private imageLoading_: boolean;
+  private isLensSearchbox_: boolean;
 
   //============================================================================
   // Helpers
@@ -189,6 +190,10 @@ export class SearchboxIconElement extends PolymerElement {
   }
 
   private computeMaskImage_(): string {
+    // Lens searchboxes should always have the Google G in the searchbox.
+    if (this.isLensSearchbox_ && this.inSearchbox) {
+      return `url(${this.defaultIcon})`;
+    }
     if (this.match && (!this.match.isRichSuggestion || !this.inSearchbox)) {
       return `url(${this.match.iconUrl})`;
     } else {
