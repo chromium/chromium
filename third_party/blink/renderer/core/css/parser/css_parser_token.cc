@@ -118,16 +118,6 @@ CSSValueID CSSParserToken::Id() const {
   return static_cast<CSSValueID>(id_);
 }
 
-CSSValueID CSSParserToken::FunctionId() const {
-  if (type_ != kFunctionToken) {
-    return CSSValueID::kInvalid;
-  }
-  if (id_ < 0) {
-    id_ = static_cast<int>(CssValueKeywordID(Value()));
-  }
-  return static_cast<CSSValueID>(id_);
-}
-
 bool CSSParserToken::HasStringBacking() const {
   CSSParserTokenType token_type = GetType();
   if (value_is_inline_) {

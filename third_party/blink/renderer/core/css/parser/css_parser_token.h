@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptors.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_mode.h"
+#include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
@@ -99,10 +100,10 @@ class CORE_EXPORT CSSParserToken {
   // The resulting CSSParserToken may hold a reference to the data in value.
   CSSParserToken(CSSParserTokenType type,
                  StringView value,
-                 BlockType block_type = kNotBlock)
-      : type_(type), block_type_(block_type) {
+                 BlockType block_type = kNotBlock,
+                 int id = -1)
+      : type_(type), block_type_(block_type), id_(id) {
     InitValueFromStringView(value);
-    id_ = -1;
   }
 
   CSSParserToken(CSSParserTokenType, UChar);  // for DelimiterToken
@@ -166,8 +167,15 @@ class CORE_EXPORT CSSParserToken {
     DCHECK_EQ(type_, static_cast<unsigned>(kUnicodeRangeToken));
     return unicode_range_.end;
   }
+
   CSSValueID Id() const;
-  CSSValueID FunctionId() const;
+
+  CSSValueID FunctionId() const {
+    if (type_ != kFunctionToken) {
+      return CSSValueID::kInvalid;
+    }
+    return static_cast<CSSValueID>(id_);
+  }
 
   bool HasStringBacking() const;
 

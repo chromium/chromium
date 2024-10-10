@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 
 #include "third_party/blink/renderer/core/css/parser/css_parser_idioms.h"
+#include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/parser/input_stream_preprocessor.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
@@ -73,9 +74,11 @@ CSSParserToken CSSTokenizer::BlockStart(CSSParserTokenType type) {
 
 CSSParserToken CSSTokenizer::BlockStart(CSSParserTokenType block_type,
                                         CSSParserTokenType type,
-                                        StringView name) {
+                                        StringView name,
+                                        CSSValueID id) {
   block_stack_.push_back(block_type);
-  return CSSParserToken(type, name, CSSParserToken::kBlockStart);
+  return CSSParserToken(type, name, CSSParserToken::kBlockStart,
+                        static_cast<int>(id));
 }
 
 CSSParserToken CSSTokenizer::BlockEnd(CSSParserTokenType type,
@@ -384,7 +387,8 @@ CSSParserToken CSSTokenizer::ConsumeIdentLikeToken() {
         return ConsumeUrlToken();
       }
     }
-    return BlockStart(kLeftParenthesisToken, kFunctionToken, name);
+    return BlockStart(kLeftParenthesisToken, kFunctionToken, name,
+                      CssValueKeywordID(name));
   }
   return CSSParserToken(kIdentToken, name);
 }
