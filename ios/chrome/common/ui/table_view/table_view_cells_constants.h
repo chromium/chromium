@@ -28,6 +28,9 @@ extern const CGFloat kTableViewVerticalSpacing;
 // The large vertical spacing between views and the container view of a cell.
 extern const CGFloat kTableViewLargeVerticalSpacing;
 
+// Padding between the top of the view and teh top of the image.
+extern const CGFloat kTopLargePadding;
+
 // The horizontal spacing between subviews within the container view.
 extern const CGFloat kTableViewSubViewHorizontalSpacing;
 
@@ -53,6 +56,9 @@ extern const CGFloat kTableViewImagePadding;
 // Padding used between the trailing content and the trailing of the
 // contentView.
 extern const CGFloat kTableViewTrailingContentPadding;
+
+// Padding between the top of the view and teh top of the image.
+extern const CGFloat kTopLargePadding;
 
 // A masked password string(e.g. "••••••••").
 extern NSString* const kMaskedPassword;

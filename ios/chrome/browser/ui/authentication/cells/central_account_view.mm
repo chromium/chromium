@@ -52,6 +52,12 @@ UIImage* GetEnterpriseIcon() {
   NSString* _email;
   // True if the "Managed by your organization" label is present.
   BOOL _managed;
+  // The account avatar.
+  UIImageView* _imageView;
+  // Whether to use large margin.
+  BOOL _useLargeMargins;
+  // The constraint for the top padding.
+  NSLayoutConstraint* _topPaddingConstraint;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -67,6 +73,7 @@ UIImage* GetEnterpriseIcon() {
     _avatarImage = avatarImage;
     _name = name ? name : email;
     _email = name ? email : nil;
+    _useLargeMargins = useLargeMargins;
     _managed = managementState.is_profile_managed();
 
     self.isAccessibilityElement = YES;
@@ -74,13 +81,13 @@ UIImage* GetEnterpriseIcon() {
         _email ? [NSString stringWithFormat:@"%@, %@", _name, _email] : _name;
     self.accessibilityTraits |= UIAccessibilityTraitHeader;
 
-    UIImageView* imageView = [[UIImageView alloc] initWithImage:_avatarImage];
+    _imageView = [[UIImageView alloc] initWithImage:_avatarImage];
     // Creates the image rounded corners.
-    imageView.layer.cornerRadius =
+    _imageView.layer.cornerRadius =
         GetSizeForIdentityAvatarSize(IdentityAvatarSize::Large).width / 2.0f;
-    imageView.clipsToBounds = YES;
-    imageView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self addSubview:imageView];
+    _imageView.clipsToBounds = YES;
+    _imageView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self addSubview:_imageView];
 
     UILabel* titleLabel = [[UILabel alloc] init];
     titleLabel.text = _name;
@@ -105,6 +112,10 @@ UIImage* GetEnterpriseIcon() {
         [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
     subtitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:subtitleLabel];
+    CGFloat bottomMargin =
+        _useLargeMargins
+            ? (2 * kTableViewLargeVerticalSpacing)
+            : (kTableViewLargeVerticalSpacing + kTableViewVerticalSpacing);
 
     if (_managed) {
       UIImage* managementIcon = GetEnterpriseIcon();
@@ -163,37 +174,29 @@ UIImage* GetEnterpriseIcon() {
             constraintLessThanOrEqualToAnchor:self.trailingAnchor
                                      constant:-kTableViewHorizontalSpacing],
 
-        [self.bottomAnchor
-            constraintEqualToAnchor:horizontalStack.bottomAnchor
-                           constant:(useLargeMargins
-                                         ? 2 * kTableViewLargeVerticalSpacing
-                                         : kTableViewLargeVerticalSpacing +
-                                               kTableViewVerticalSpacing)],
+        [self.bottomAnchor constraintEqualToAnchor:horizontalStack.bottomAnchor
+                                          constant:bottomMargin],
       ]];
     } else {
-      [self.bottomAnchor
-          constraintEqualToAnchor:subtitleLabel.bottomAnchor
-                         constant:(useLargeMargins
-                                       ? 2 * kTableViewLargeVerticalSpacing
-                                       : kTableViewLargeVerticalSpacing +
-                                             kTableViewVerticalSpacing)]
+      [self.bottomAnchor constraintEqualToAnchor:subtitleLabel.bottomAnchor
+                                        constant:bottomMargin]
           .active = YES;
     }
-
+    _topPaddingConstraint = [_imageView.topAnchor
+        constraintEqualToAnchor:self.topAnchor
+                       constant:(_useLargeMargins
+                                     ? kTableViewLargeVerticalSpacing
+                                     : kTopLargePadding)];
     [NSLayoutConstraint activateConstraints:@[
-      [imageView.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
-      [imageView.topAnchor
-          constraintEqualToAnchor:self.topAnchor
-                         constant:(useLargeMargins
-                                       ? kTableViewLargeVerticalSpacing
-                                       : kTableViewVerticalSpacing)],
-      [imageView.widthAnchor
+      [_imageView.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
+      _topPaddingConstraint,
+      [_imageView.widthAnchor
           constraintEqualToConstant:GetSizeForIdentityAvatarSize(
                                         IdentityAvatarSize::Large)
                                         .width],
-      [imageView.heightAnchor constraintEqualToAnchor:imageView.widthAnchor],
+      [_imageView.heightAnchor constraintEqualToAnchor:_imageView.widthAnchor],
 
-      [titleLabel.topAnchor constraintEqualToAnchor:imageView.bottomAnchor
+      [titleLabel.topAnchor constraintEqualToAnchor:_imageView.bottomAnchor
                                            constant:kTableViewVerticalSpacing],
       [titleLabel.leadingAnchor
           constraintEqualToAnchor:self.leadingAnchor
@@ -209,16 +212,20 @@ UIImage* GetEnterpriseIcon() {
       [subtitleLabel.trailingAnchor
           constraintEqualToAnchor:titleLabel.trailingAnchor],
     ]];
-
-    CGSize size =
-        [self systemLayoutSizeFittingSize:self.frame.size
-            withHorizontalFittingPriority:UILayoutPriorityRequired
-                  verticalFittingPriority:UILayoutPriorityFittingSizeLevel];
-    CGRect newFrame = CGRectZero;
-    newFrame.size = size;
-    self.frame = newFrame;
+    [self updateFrame];
   }
   return self;
+}
+
+// Updates the frame size.
+- (void)updateFrame {
+  CGSize size =
+      [self systemLayoutSizeFittingSize:self.frame.size
+          withHorizontalFittingPriority:UILayoutPriorityRequired
+                verticalFittingPriority:UILayoutPriorityFittingSizeLevel];
+  CGRect newFrame = CGRectZero;
+  newFrame.size = size;
+  self.frame = newFrame;
 }
 
 - (UIImage*)avatarImage {
@@ -235,6 +242,13 @@ UIImage* GetEnterpriseIcon() {
 
 - (BOOL)managed {
   return _managed;
+}
+
+- (void)updateTopPadding:(CGFloat)existingPadding {
+  CGFloat topPadding =
+      (_useLargeMargins ? kTableViewLargeVerticalSpacing : kTopLargePadding);
+  _topPaddingConstraint.constant = topPadding - existingPadding;
+  [self updateFrame];
 }
 
 @end

@@ -95,6 +95,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   UITableViewDiffableDataSource* _accountMenuDataSource;
   UIButton* _closeButton;
   UIButton* _ellipsisButton;
+  CentralAccountView* _identityAccountView;
 }
 
 #pragma mark - UIViewController
@@ -121,11 +122,17 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 
 #pragma mark - Private
 
+// Returns the height of the navigation bar.
+- (CGFloat)navigationBarHeight {
+  return self.navigationController.navigationBar.frame.size.height;
+}
+
 // Resizes the view for current content.
 - (void)resize {
   // Update the bottom sheet height.
   [self.sheetPresentationController invalidateDetents];
   // Update the popover height.
+  [_identityAccountView updateTopPadding:[self navigationBarHeight]];
   CGFloat height =
       [self.tableView
           systemLayoutSizeFittingSize:self.popoverPresentationController
@@ -330,14 +337,14 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
   presentationController.widthFollowsPreferredContentSizeWhenEdgeAttached = YES;
   presentationController.preferredCornerRadius = kHalfSheetCornerRadius;
   __weak __typeof(self) weakSelf = self;
-  auto preferredHeightForContent = ^CGFloat(
+  auto preferredHeightForSheetContent = ^CGFloat(
       id<UISheetPresentationControllerDetentResolutionContext> context) {
-    return [weakSelf preferredHeightForContent];
+    return [weakSelf preferredHeightForSheetContent];
   };
   UISheetPresentationControllerDetent* customDetent =
       [UISheetPresentationControllerDetent
           customDetentWithIdentifier:kCustomMinimizedDetentIdentifier
-                            resolver:preferredHeightForContent];
+                            resolver:preferredHeightForSheetContent];
   presentationController.detents = @[ customDetent ];
   presentationController.selectedDetentIdentifier =
       kCustomMinimizedDetentIdentifier;
@@ -399,14 +406,14 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 }
 
 // Returns preferred height according to the container view width.
-- (CGFloat)preferredHeightForContent {
+- (CGFloat)preferredHeightForSheetContent {
   // Get the size of the container view which is the maximum available size.
   UIView* containerView = self.sheetPresentationController.containerView;
   CGSize fittingSize = containerView.bounds.size;
   CGFloat height =
       [self.tableView systemLayoutSizeFittingSize:fittingSize].height;
   // Add the navigation bar.
-  height += self.navigationController.navigationBar.frame.size.height;
+  height += [self navigationBarHeight];
   return height;
 }
 
@@ -478,14 +485,15 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 #pragma mark - AccountMenuConsumer
 
 - (void)updatePrimaryAccount {
-  CentralAccountView* identityAccountItem = [[CentralAccountView alloc]
+  _identityAccountView = [[CentralAccountView alloc]
         initWithFrame:CGRectMake(0, 0, self.tableView.frame.size.width, 0)
           avatarImage:self.dataSource.primaryAccountAvatar
                  name:self.dataSource.primaryAccountUserFullName
                 email:self.dataSource.primaryAccountEmail
       managementState:self.dataSource.managementState
       useLargeMargins:NO];
-  self.tableView.tableHeaderView = identityAccountItem;
+  [_identityAccountView updateTopPadding:[self navigationBarHeight]];
+  self.tableView.tableHeaderView = _identityAccountView;
   [self.tableView reloadData];
 }
 
