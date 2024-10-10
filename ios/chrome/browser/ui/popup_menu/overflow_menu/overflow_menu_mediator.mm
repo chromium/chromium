@@ -1337,7 +1337,8 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
   if (IsLensOverlayAvailable()) {
     self.lensOverlayAction.enabled =
-        search_engines::SupportsSearchImageWithLens(self.templateURLService);
+        search_engines::SupportsSearchImageWithLens(self.templateURLService) &&
+        !IsCompactHeight(self.baseViewController.traitCollection);
   }
 }
 
