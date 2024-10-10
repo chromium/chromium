@@ -228,27 +228,6 @@ SearchResultPtr CreateBaseResult(const AutocompleteMatch& match,
 
 }  // namespace
 
-int ProviderTypesPicker(bool bookmarks, bool history, bool open_tabs) {
-  int providers = 0;
-
-  if (bookmarks) {
-    providers |= AutocompleteProvider::TYPE_BOOKMARK;
-  }
-
-  if (history) {
-    providers |= AutocompleteProvider::TYPE_HISTORY_QUICK |
-                 AutocompleteProvider::TYPE_HISTORY_URL |
-                 AutocompleteProvider::TYPE_HISTORY_FUZZY |
-                 AutocompleteProvider::TYPE_HISTORY_EMBEDDINGS;
-  }
-
-  if (open_tabs) {
-    providers |= AutocompleteProvider::TYPE_OPEN_TAB;
-  }
-
-  return providers;
-}
-
 // Convert from our Mojo page transition type into the UI equivalent.
 ui::PageTransition PageTransitionToUiPageTransition(
     SearchResult::PageTransition transition) {

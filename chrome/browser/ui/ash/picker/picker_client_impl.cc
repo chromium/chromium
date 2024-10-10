@@ -556,7 +556,7 @@ PickerClientImpl::CreateOmniboxProvider(bool bookmarks,
                                         bool open_tabs) {
   return std::make_unique<app_list::OmniboxProvider>(
       profile_, GetEmptyAppListControllerDelegate(),
-      crosapi::ProviderTypesPicker(bookmarks, history, open_tabs));
+      LauncherSearchProviderTypes(bookmarks, history, open_tabs));
 }
 
 std::unique_ptr<app_list::SearchProvider>
@@ -610,4 +610,27 @@ void PickerClientImpl::ShowLobster(std::optional<std::string> query) {
   if (lobster_trigger_ != nullptr) {
     lobster_trigger_->Fire(query);
   }
+}
+
+int PickerClientImpl::LauncherSearchProviderTypes(bool bookmarks,
+                                                  bool history,
+                                                  bool open_tabs) {
+  int providers = 0;
+
+  if (bookmarks) {
+    providers |= AutocompleteProvider::TYPE_BOOKMARK;
+  }
+
+  if (history) {
+    providers |= AutocompleteProvider::TYPE_HISTORY_QUICK |
+                 AutocompleteProvider::TYPE_HISTORY_URL |
+                 AutocompleteProvider::TYPE_HISTORY_FUZZY |
+                 AutocompleteProvider::TYPE_HISTORY_EMBEDDINGS;
+  }
+
+  if (open_tabs) {
+    providers |= AutocompleteProvider::TYPE_OPEN_TAB;
+  }
+
+  return providers;
 }

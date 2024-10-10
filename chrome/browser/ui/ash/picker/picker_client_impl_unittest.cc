@@ -44,6 +44,7 @@
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
+#include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "content/public/test/test_utils.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -829,6 +830,67 @@ TEST_F(PickerClientImplEditorTest, AnnounceSendsLiveRegionChanges) {
   client.Announce(u"hello");
 
   counter.WaitForEvent(ax::mojom::Event::kLiveRegionChanged);
+}
+
+TEST_F(PickerClientImplEditorTest, LauncherSearchProviderTypesAll) {
+  ash::PickerController controller;
+  PickerClientImpl client(&controller, user_manager());
+  const int types =
+      client.LauncherSearchProviderTypes(/*bookmarks=*/true, /*history=*/true,
+                                         /*open_tabs=*/true);
+
+  EXPECT_TRUE(types & AutocompleteProvider::TYPE_BOOKMARK);
+  EXPECT_TRUE(types & AutocompleteProvider::TYPE_HISTORY_FUZZY);
+  EXPECT_TRUE(types & AutocompleteProvider::TYPE_HISTORY_QUICK);
+  EXPECT_TRUE(types & AutocompleteProvider::TYPE_HISTORY_URL);
+  EXPECT_TRUE(types & AutocompleteProvider::TYPE_OPEN_TAB);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_DOCUMENT);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_SEARCH);
+}
+
+TEST_F(PickerClientImplEditorTest, LauncherSearchProviderTypesBookmarks) {
+  ash::PickerController controller;
+  PickerClientImpl client(&controller, user_manager());
+  const int types =
+      client.LauncherSearchProviderTypes(/*bookmarks=*/true, /*history=*/false,
+                                         /*open_tabs=*/false);
+  EXPECT_TRUE(types & AutocompleteProvider::TYPE_BOOKMARK);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_HISTORY_FUZZY);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_HISTORY_QUICK);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_HISTORY_URL);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_OPEN_TAB);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_DOCUMENT);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_SEARCH);
+}
+
+TEST_F(PickerClientImplEditorTest, LauncherSearchProviderTypesHistory) {
+  ash::PickerController controller;
+  PickerClientImpl client(&controller, user_manager());
+  const int types =
+      client.LauncherSearchProviderTypes(/*bookmarks=*/false, /*history=*/true,
+                                         /*open_tabs=*/false);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_BOOKMARK);
+  EXPECT_TRUE(types & AutocompleteProvider::TYPE_HISTORY_FUZZY);
+  EXPECT_TRUE(types & AutocompleteProvider::TYPE_HISTORY_QUICK);
+  EXPECT_TRUE(types & AutocompleteProvider::TYPE_HISTORY_URL);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_OPEN_TAB);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_DOCUMENT);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_SEARCH);
+}
+
+TEST_F(PickerClientImplEditorTest, LauncherSearchProviderTypesOpenTab) {
+  ash::PickerController controller;
+  PickerClientImpl client(&controller, user_manager());
+  const int types =
+      client.LauncherSearchProviderTypes(/*bookmarks=*/false, /*history=*/false,
+                                         /*open_tabs=*/true);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_BOOKMARK);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_HISTORY_FUZZY);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_HISTORY_QUICK);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_HISTORY_URL);
+  EXPECT_TRUE(types & AutocompleteProvider::TYPE_OPEN_TAB);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_DOCUMENT);
+  EXPECT_FALSE(types & AutocompleteProvider::TYPE_SEARCH);
 }
 
 // TODO: b/325540366 - Add PickerClientImpl tests.

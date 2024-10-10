@@ -96,6 +96,10 @@ class PickerClientImpl
     return link_suggester_.get();
   }
 
+  // Returns a bitmask of `AutocompleteProvider::Type` for Picker's
+  // `SearchController`.
+  int LauncherSearchProviderTypes(bool bookmarks, bool history, bool open_tabs);
+
  private:
   void OnCrosSearchResultsUpdated(
       CrosSearchResultsCallback callback,
