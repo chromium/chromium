@@ -6,7 +6,6 @@
 
 #include "base/notimplemented.h"
 #include "base/strings/strcat.h"
-#include "proceed_until_response_navigation_throttle.h"
 
 ProceedUntilResponseNavigationThrottle::Client::Client(
     content::NavigationHandle* navigation_handle)
@@ -148,8 +147,12 @@ void ProceedUntilResponseNavigationThrottle::ResolveDeferredResult(
       NOTREACHED_NORETURN();
     case DeferredState::kDeferredNotExposed:
       // An asynchronous task finished before the next navigation event arrives.
-      // Remember the result to return it when the next event arrives.
-      result_ = std::move(result);
+      // Remember the result only if the `proceed` is false, to return it when
+      // the next event arrives. If the `proceed` is true, `result` may contain
+      // a junk.
+      if (!proceed) {
+        result_ = std::move(result);
+      }
       deferred_state_ = DeferredState::kNotDeferred;
       break;
     case DeferredState::kDeferredExposed:
