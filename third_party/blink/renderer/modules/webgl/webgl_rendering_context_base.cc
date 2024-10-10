@@ -6360,14 +6360,17 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
       gfx::SizeToSkISize(dest_rect.size()), kN32_SkColorType,
       media::IsOpaque(media_video_frame->format()) ? kOpaque_SkAlphaType
                                                    : kPremul_SkAlphaType,
-      media_video_frame->CompatRGBColorSpace().ToSkColorSpace());
+      params.unpack_colorspace_conversion
+          ? media_video_frame->CompatRGBColorSpace().ToSkColorSpace()
+          : SkColorSpace::MakeSRGB());
 
   // Since TexImageStaticBitmapImage() and TexImageGPU() don't know how to
   // handle tagged orientation, we set |prefer_tagged_orientation| to false.
   scoped_refptr<StaticBitmapImage> image = CreateImageFromVideoFrame(
       std::move(media_video_frame), kAllowZeroCopyImages,
       image_cache.GetCanvasResourceProvider(resource_provider_info),
-      video_renderer, dest_rect, /*prefer_tagged_orientation=*/false);
+      video_renderer, dest_rect, /*prefer_tagged_orientation=*/false,
+      /*reinterpret_video_as_srgb=*/!params.unpack_colorspace_conversion);
   if (!image)
     return;
 
