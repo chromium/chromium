@@ -79,7 +79,7 @@
 }
 
 - (SceneState*)foregroundActiveScene {
-  if (self.initStage < ProfileInitStage::kUIReady) {
+  if (_initStage < ProfileInitStage::kUIReady) {
     return nil;
   }
 
@@ -93,7 +93,7 @@
 }
 
 - (NSArray<SceneState*>*)connectedScenes {
-  if (self.initStage < ProfileInitStage::kUIReady) {
+  if (_initStage < ProfileInitStage::kUIReady) {
     return nil;
   }
 
@@ -101,7 +101,7 @@
 }
 
 - (NSArray<SceneState*>*)foregroundScenes {
-  if (self.initStage < ProfileInitStage::kUIReady) {
+  if (_initStage < ProfileInitStage::kUIReady) {
     return nil;
   }
 
@@ -177,16 +177,15 @@
   CHECK(observer);
   [_observers addObserver:observer];
 
-  const ProfileInitStage initStage = self.initStage;
-  if (initStage > ProfileInitStage::kStart &&
+  if (_initStage > ProfileInitStage::kStart &&
       [observer respondsToSelector:@selector
                 (profileState:didTransitionToInitStage:fromInitStage:)]) {
     const ProfileInitStage prevStage =
-        static_cast<ProfileInitStage>(base::to_underlying(initStage) - 1);
+        static_cast<ProfileInitStage>(base::to_underlying(_initStage) - 1);
 
     // Trigger an update on the newly added observer.
     [observer profileState:self
-        didTransitionToInitStage:initStage
+        didTransitionToInitStage:_initStage
                    fromInitStage:prevStage];
   }
 }
@@ -199,7 +198,7 @@
 - (void)sceneStateConnected:(SceneState*)sceneState {
   [sceneState addObserver:self];
   [_connectedSceneStates addObject:sceneState];
-  if (self.initStage >= ProfileInitStage::kUIReady) {
+  if (_initStage >= ProfileInitStage::kUIReady) {
     [_observers profileState:self sceneConnected:sceneState];
   }
 }
@@ -210,8 +209,8 @@
   // object. Until then forward the call to AppState if the object is the
   // "main" profile. This allow converting incrementally the AppAgents to
   // ProfileStateAgents.
-  if (self.appState.mainProfile == self) {
-    [self.appState queueTransitionToNextInitStage];
+  if (_appState.mainProfile == self) {
+    [_appState queueTransitionToNextInitStage];
   }
 }
 
@@ -235,7 +234,7 @@
       break;
 
     case SceneActivationLevelForegroundActive:
-      if (self.initStage >= ProfileInitStage::kUIReady) {
+      if (_initStage >= ProfileInitStage::kUIReady) {
         [_observers profileState:self sceneDidBecomeActive:sceneState];
       }
       break;
@@ -243,7 +242,7 @@
 }
 
 - (void)sceneStateDidEnableUI:(SceneState*)sceneState {
-  DCHECK_GE(self.initStage, ProfileInitStage::kPrepareUI);
+  DCHECK_GE(_initStage, ProfileInitStage::kPrepareUI);
   if (!_firstSceneHasInitializedUI) {
     _firstSceneHasInitializedUI = YES;
     [_observers profileState:self firstSceneHasInitializedUI:sceneState];
