@@ -41,7 +41,8 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 
 /** Base class for First Run Experience. */
-// TODO(b/41493788): Consider renaming it now that it is also the base for the upgrade promo.
+// TODO(crbug.com/349787455): Consider renaming it now that it is also the base for non-FRE
+// fullscreen sign-in flows.
 public abstract class FirstRunActivityBase extends AsyncInitializationActivity
         implements BackPressHandler {
     private static final String TAG = "FirstRunActivity";

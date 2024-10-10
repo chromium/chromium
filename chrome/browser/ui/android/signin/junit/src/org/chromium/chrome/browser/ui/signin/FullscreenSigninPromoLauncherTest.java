@@ -80,7 +80,7 @@ public class FullscreenSigninPromoLauncherTest {
 
     @Mock private SyncConsentActivityLauncher mSyncPromoLauncherMock;
 
-    @Mock private SigninAndHistorySyncActivityLauncher mUpgradePromoLauncherMock;
+    @Mock private SigninAndHistorySyncActivityLauncher mFullscreenSigninLauncherMock;
 
     @Mock private Profile mProfile;
 
@@ -116,12 +116,12 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
-                        mUpgradePromoLauncherMock,
+                        mFullscreenSigninLauncherMock,
                         CURRENT_MAJOR_VERSION));
         Assert.assertEquals(38, mPrefManager.getSigninPromoLastShownVersion());
         verify(mSyncPromoLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
-        verify(mUpgradePromoLauncherMock, never())
-                .launchUpgradePromoActivityIfAllowed(any(), any());
+        verify(mFullscreenSigninLauncherMock, never())
+                .launchFullscreenSigninActivityIfAllowed(any(), any());
     }
 
     @Test
@@ -133,7 +133,7 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
-                        mUpgradePromoLauncherMock,
+                        mFullscreenSigninLauncherMock,
                         CURRENT_MAJOR_VERSION));
         Assert.assertEquals(42, mPrefManager.getSigninPromoLastShownVersion());
         verify(mFakeAccountManagerFacade, never()).getCoreAccountInfos();
@@ -149,12 +149,12 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
-                        mUpgradePromoLauncherMock,
+                        mFullscreenSigninLauncherMock,
                         CURRENT_MAJOR_VERSION));
         verify(mSyncPromoLauncherMock)
                 .launchActivityIfAllowed(mContext, SigninAccessPoint.SIGNIN_PROMO);
-        verify(mUpgradePromoLauncherMock, never())
-                .launchUpgradePromoActivityIfAllowed(any(), any());
+        verify(mFullscreenSigninLauncherMock, never())
+                .launchFullscreenSigninActivityIfAllowed(any(), any());
     }
 
     @EnableFeatures({
@@ -169,10 +169,11 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
-                        mUpgradePromoLauncherMock,
+                        mFullscreenSigninLauncherMock,
                         CURRENT_MAJOR_VERSION));
         verify(mSyncPromoLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
-        verify(mUpgradePromoLauncherMock).launchUpgradePromoActivityIfAllowed(mContext, mProfile);
+        verify(mFullscreenSigninLauncherMock)
+                .launchFullscreenSigninActivityIfAllowed(mContext, mProfile);
     }
 
     @Test
@@ -190,11 +191,11 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
-                        mUpgradePromoLauncherMock,
+                        mFullscreenSigninLauncherMock,
                         CURRENT_MAJOR_VERSION));
         verify(mSyncPromoLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
-        verify(mUpgradePromoLauncherMock, never())
-                .launchUpgradePromoActivityIfAllowed(mContext, mProfile);
+        verify(mFullscreenSigninLauncherMock, never())
+                .launchFullscreenSigninActivityIfAllowed(mContext, mProfile);
     }
 
     @Test
@@ -209,12 +210,12 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
-                        mUpgradePromoLauncherMock,
+                        mFullscreenSigninLauncherMock,
                         CURRENT_MAJOR_VERSION));
         verify(mFakeAccountManagerFacade, never()).getCoreAccountInfos();
         verify(mSyncPromoLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
-        verify(mUpgradePromoLauncherMock, never())
-                .launchUpgradePromoActivityIfAllowed(any(), any());
+        verify(mFullscreenSigninLauncherMock, never())
+                .launchFullscreenSigninActivityIfAllowed(any(), any());
     }
 
     @Test
@@ -229,12 +230,12 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
-                        mUpgradePromoLauncherMock,
+                        mFullscreenSigninLauncherMock,
                         CURRENT_MAJOR_VERSION));
         verify(mFakeAccountManagerFacade, never()).getCoreAccountInfos();
         verify(mSyncPromoLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
-        verify(mUpgradePromoLauncherMock, never())
-                .launchUpgradePromoActivityIfAllowed(any(), any());
+        verify(mFullscreenSigninLauncherMock, never())
+                .launchFullscreenSigninActivityIfAllowed(any(), any());
     }
 
     @Test
@@ -247,12 +248,12 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
-                        mUpgradePromoLauncherMock,
+                        mFullscreenSigninLauncherMock,
                         CURRENT_MAJOR_VERSION));
         verify(mFakeAccountManagerFacade, never()).getCoreAccountInfos();
         verify(mSyncPromoLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
-        verify(mUpgradePromoLauncherMock, never())
-                .launchUpgradePromoActivityIfAllowed(any(), any());
+        verify(mFullscreenSigninLauncherMock, never())
+                .launchFullscreenSigninActivityIfAllowed(any(), any());
     }
 
     @Test
@@ -264,12 +265,12 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
-                        mUpgradePromoLauncherMock,
+                        mFullscreenSigninLauncherMock,
                         CURRENT_MAJOR_VERSION));
         verify(mFakeAccountManagerFacade).getCoreAccountInfos();
         verify(mSyncPromoLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
-        verify(mUpgradePromoLauncherMock, never())
-                .launchUpgradePromoActivityIfAllowed(any(), any());
+        verify(mFullscreenSigninLauncherMock, never())
+                .launchFullscreenSigninActivityIfAllowed(any(), any());
     }
 
     @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
@@ -286,12 +287,12 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
-                        mUpgradePromoLauncherMock,
+                        mFullscreenSigninLauncherMock,
                         CURRENT_MAJOR_VERSION));
         verify(mSyncPromoLauncherMock)
                 .launchActivityIfAllowed(mContext, SigninAccessPoint.SIGNIN_PROMO);
-        verify(mUpgradePromoLauncherMock, never())
-                .launchUpgradePromoActivityIfAllowed(any(), any());
+        verify(mFullscreenSigninLauncherMock, never())
+                .launchFullscreenSigninActivityIfAllowed(any(), any());
         Assert.assertEquals(CURRENT_MAJOR_VERSION, mPrefManager.getSigninPromoLastShownVersion());
         Assert.assertArrayEquals(
                 mPrefManager.getSigninPromoLastAccountEmails().toArray(),
@@ -319,10 +320,11 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
-                        mUpgradePromoLauncherMock,
+                        mFullscreenSigninLauncherMock,
                         CURRENT_MAJOR_VERSION));
         verify(mSyncPromoLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
-        verify(mUpgradePromoLauncherMock).launchUpgradePromoActivityIfAllowed(mContext, mProfile);
+        verify(mFullscreenSigninLauncherMock)
+                .launchFullscreenSigninActivityIfAllowed(mContext, mProfile);
         Assert.assertEquals(CURRENT_MAJOR_VERSION, mPrefManager.getSigninPromoLastShownVersion());
         Assert.assertArrayEquals(
                 mPrefManager.getSigninPromoLastAccountEmails().toArray(),
@@ -352,11 +354,11 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
-                        mUpgradePromoLauncherMock,
+                        mFullscreenSigninLauncherMock,
                         CURRENT_MAJOR_VERSION));
         verify(mSyncPromoLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
-        verify(mUpgradePromoLauncherMock, never())
-                .launchUpgradePromoActivityIfAllowed(mContext, mProfile);
+        verify(mFullscreenSigninLauncherMock, never())
+                .launchFullscreenSigninActivityIfAllowed(mContext, mProfile);
         Assert.assertEquals(40, mPrefManager.getSigninPromoLastShownVersion());
         Assert.assertEquals(null, mPrefManager.getSigninPromoLastAccountEmails());
     }
@@ -371,12 +373,12 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
-                        mUpgradePromoLauncherMock,
+                        mFullscreenSigninLauncherMock,
                         CURRENT_MAJOR_VERSION));
         verify(mSyncPromoLauncherMock, never())
                 .launchActivityIfAllowed(mContext, SigninAccessPoint.SIGNIN_PROMO);
-        verify(mUpgradePromoLauncherMock, never())
-                .launchUpgradePromoActivityIfAllowed(any(), any());
+        verify(mFullscreenSigninLauncherMock, never())
+                .launchFullscreenSigninActivityIfAllowed(any(), any());
     }
 
     @Test
@@ -389,11 +391,12 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
-                        mUpgradePromoLauncherMock,
+                        mFullscreenSigninLauncherMock,
                         CURRENT_MAJOR_VERSION));
         verify(mSyncPromoLauncherMock, never())
                 .launchActivityIfAllowed(mContext, SigninAccessPoint.SIGNIN_PROMO);
-        verify(mUpgradePromoLauncherMock).launchUpgradePromoActivityIfAllowed(mContext, mProfile);
+        verify(mFullscreenSigninLauncherMock)
+                .launchFullscreenSigninActivityIfAllowed(mContext, mProfile);
     }
 
     @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
@@ -412,12 +415,12 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
-                        mUpgradePromoLauncherMock,
+                        mFullscreenSigninLauncherMock,
                         CURRENT_MAJOR_VERSION));
         verify(mSyncPromoLauncherMock)
                 .launchActivityIfAllowed(mContext, SigninAccessPoint.SIGNIN_PROMO);
-        verify(mUpgradePromoLauncherMock, never())
-                .launchUpgradePromoActivityIfAllowed(any(), any());
+        verify(mFullscreenSigninLauncherMock, never())
+                .launchFullscreenSigninActivityIfAllowed(any(), any());
         Assert.assertEquals(CURRENT_MAJOR_VERSION, mPrefManager.getSigninPromoLastShownVersion());
         Assert.assertEquals(2, mPrefManager.getSigninPromoLastAccountEmails().size());
     }
@@ -439,10 +442,11 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
-                        mUpgradePromoLauncherMock,
+                        mFullscreenSigninLauncherMock,
                         CURRENT_MAJOR_VERSION));
         verify(mSyncPromoLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
-        verify(mUpgradePromoLauncherMock).launchUpgradePromoActivityIfAllowed(mContext, mProfile);
+        verify(mFullscreenSigninLauncherMock)
+                .launchFullscreenSigninActivityIfAllowed(mContext, mProfile);
         Assert.assertEquals(CURRENT_MAJOR_VERSION, mPrefManager.getSigninPromoLastShownVersion());
         Assert.assertEquals(2, mPrefManager.getSigninPromoLastAccountEmails().size());
     }
@@ -465,11 +469,11 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
-                        mUpgradePromoLauncherMock,
+                        mFullscreenSigninLauncherMock,
                         CURRENT_MAJOR_VERSION));
         verify(mSyncPromoLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
-        verify(mUpgradePromoLauncherMock, never())
-                .launchUpgradePromoActivityIfAllowed(mContext, mProfile);
+        verify(mFullscreenSigninLauncherMock, never())
+                .launchFullscreenSigninActivityIfAllowed(mContext, mProfile);
         Assert.assertEquals(40, mPrefManager.getSigninPromoLastShownVersion());
         Assert.assertArrayEquals(
                 new String[] {AccountManagerTestRule.TEST_ACCOUNT_1.getEmail()},
@@ -488,12 +492,12 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
-                        mUpgradePromoLauncherMock,
+                        mFullscreenSigninLauncherMock,
                         CURRENT_MAJOR_VERSION));
         verify(mFakeAccountManagerFacade).getCoreAccountInfos();
         verify(mSyncPromoLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
-        verify(mUpgradePromoLauncherMock, never())
-                .launchUpgradePromoActivityIfAllowed(any(), any());
+        verify(mFullscreenSigninLauncherMock, never())
+                .launchFullscreenSigninActivityIfAllowed(any(), any());
         Assert.assertEquals(40, mPrefManager.getSigninPromoLastShownVersion());
         Assert.assertArrayEquals(
                 mPrefManager.getSigninPromoLastAccountEmails().toArray(),
@@ -512,12 +516,12 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
-                        mUpgradePromoLauncherMock,
+                        mFullscreenSigninLauncherMock,
                         CURRENT_MAJOR_VERSION));
         verify(mFakeAccountManagerFacade).getCoreAccountInfos();
         verify(mSyncPromoLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
-        verify(mUpgradePromoLauncherMock, never())
-                .launchUpgradePromoActivityIfAllowed(any(), any());
+        verify(mFullscreenSigninLauncherMock, never())
+                .launchFullscreenSigninActivityIfAllowed(any(), any());
         Assert.assertEquals(40, mPrefManager.getSigninPromoLastShownVersion());
         Assert.assertArrayEquals(
                 mPrefManager.getSigninPromoLastAccountEmails().toArray(),
@@ -538,12 +542,12 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
-                        mUpgradePromoLauncherMock,
+                        mFullscreenSigninLauncherMock,
                         CURRENT_MAJOR_VERSION));
         verify(mFakeAccountManagerFacade).getCoreAccountInfos();
         verify(mSyncPromoLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
-        verify(mUpgradePromoLauncherMock, never())
-                .launchUpgradePromoActivityIfAllowed(any(), any());
+        verify(mFullscreenSigninLauncherMock, never())
+                .launchFullscreenSigninActivityIfAllowed(any(), any());
         Assert.assertEquals(40, mPrefManager.getSigninPromoLastShownVersion());
         Assert.assertEquals(2, mPrefManager.getSigninPromoLastAccountEmails().size());
     }
@@ -562,12 +566,12 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
-                        mUpgradePromoLauncherMock,
+                        mFullscreenSigninLauncherMock,
                         CURRENT_MAJOR_VERSION));
         verify(mFakeAccountManagerFacade).getCoreAccountInfos();
         verify(mSyncPromoLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
-        verify(mUpgradePromoLauncherMock, never())
-                .launchUpgradePromoActivityIfAllowed(any(), any());
+        verify(mFullscreenSigninLauncherMock, never())
+                .launchFullscreenSigninActivityIfAllowed(any(), any());
         Assert.assertEquals(40, mPrefManager.getSigninPromoLastShownVersion());
         Assert.assertEquals(2, mPrefManager.getSigninPromoLastAccountEmails().size());
     }
@@ -585,12 +589,12 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
-                        mUpgradePromoLauncherMock,
+                        mFullscreenSigninLauncherMock,
                         CURRENT_MAJOR_VERSION));
 
         verify(mSyncPromoLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
-        verify(mUpgradePromoLauncherMock, never())
-                .launchUpgradePromoActivityIfAllowed(any(), any());
+        verify(mFullscreenSigninLauncherMock, never())
+                .launchFullscreenSigninActivityIfAllowed(any(), any());
     }
 
     @Test
@@ -606,11 +610,12 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
-                        mUpgradePromoLauncherMock,
+                        mFullscreenSigninLauncherMock,
                         CURRENT_MAJOR_VERSION));
 
         verify(mSyncPromoLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
-        verify(mUpgradePromoLauncherMock).launchUpgradePromoActivityIfAllowed(mContext, mProfile);
+        verify(mFullscreenSigninLauncherMock)
+                .launchFullscreenSigninActivityIfAllowed(mContext, mProfile);
     }
 
     @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
@@ -631,13 +636,13 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
-                        mUpgradePromoLauncherMock,
+                        mFullscreenSigninLauncherMock,
                         CURRENT_MAJOR_VERSION));
 
         verify(mSyncPromoLauncherMock)
                 .launchActivityIfAllowed(mContext, SigninAccessPoint.SIGNIN_PROMO);
-        verify(mUpgradePromoLauncherMock, never())
-                .launchUpgradePromoActivityIfAllowed(any(), any());
+        verify(mFullscreenSigninLauncherMock, never())
+                .launchFullscreenSigninActivityIfAllowed(any(), any());
     }
 
     @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
@@ -658,10 +663,11 @@ public class FullscreenSigninPromoLauncherTest {
                         mContext,
                         mProfile,
                         mSyncPromoLauncherMock,
-                        mUpgradePromoLauncherMock,
+                        mFullscreenSigninLauncherMock,
                         CURRENT_MAJOR_VERSION));
 
         verify(mSyncPromoLauncherMock, never()).launchActivityIfAllowed(any(), anyInt());
-        verify(mUpgradePromoLauncherMock).launchUpgradePromoActivityIfAllowed(mContext, mProfile);
+        verify(mFullscreenSigninLauncherMock)
+                .launchFullscreenSigninActivityIfAllowed(mContext, mProfile);
     }
 }

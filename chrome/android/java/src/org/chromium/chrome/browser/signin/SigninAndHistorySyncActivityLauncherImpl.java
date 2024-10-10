@@ -119,11 +119,11 @@ public final class SigninAndHistorySyncActivityLauncherImpl
     }
 
     @Override
-    public void launchUpgradePromoActivityIfAllowed(Context context, Profile profile) {
+    public void launchFullscreenSigninActivityIfAllowed(Context context, Profile profile) {
         if (SigninAndHistorySyncCoordinator.willShowSigninUI(profile)
                 || SigninAndHistorySyncCoordinator.willShowHistorySyncUI(
                         profile, SigninAndHistorySyncCoordinator.HistoryOptInMode.OPTIONAL)) {
-            Intent intent = SigninAndHistorySyncActivity.createIntentForUpgradePromo(context);
+            Intent intent = SigninAndHistorySyncActivity.createIntentForFullscreenSignin(context);
             context.startActivity(intent);
         }
     }

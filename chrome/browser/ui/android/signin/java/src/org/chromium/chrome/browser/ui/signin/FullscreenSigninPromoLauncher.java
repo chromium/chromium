@@ -64,7 +64,7 @@ public final class FullscreenSigninPromoLauncher {
             if (ChromeFeatureList.isEnabled(
                             ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
                     && !BuildInfo.getInstance().isAutomotive) {
-                signinAndHistorySyncActivityLauncher.launchUpgradePromoActivityIfAllowed(
+                signinAndHistorySyncActivityLauncher.launchFullscreenSigninActivityIfAllowed(
                         context, profile);
             } else {
                 syncConsentActivityLauncher.launchActivityIfAllowed(

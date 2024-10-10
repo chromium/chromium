@@ -87,7 +87,7 @@ import org.chromium.ui.test.util.ViewUtils;
     DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
     GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_20W02
 })
-public class UpgradePromoIntegrationTest {
+public class FullscreenSigninAndHistorySyncIntegrationTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
@@ -257,9 +257,11 @@ public class UpgradePromoIntegrationTest {
         // Verify that the view switcher is displayed with the correct layout.
         onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
         if (SigninUtils.shouldShowDualPanesHorizontalLayout(mActivity)) {
-            onViewWaiting(withId(R.id.upgrade_promo_landscape)).check(matches(isDisplayed()));
+            onViewWaiting(withId(R.id.fullscreen_signin_and_history_sync_landscape))
+                    .check(matches(isDisplayed()));
         } else {
-            onView(withId(R.id.upgrade_promo_portrait)).check(matches(isDisplayed()));
+            onView(withId(R.id.fullscreen_signin_and_history_sync_portrait))
+                    .check(matches(isDisplayed()));
         }
 
         // Sign in.
@@ -268,15 +270,18 @@ public class UpgradePromoIntegrationTest {
         // Verify that the view is displayed with the correct layout.
         onView(withId(R.id.history_sync)).check(matches(isDisplayed()));
         if (SigninUtils.shouldShowDualPanesHorizontalLayout(mActivity)) {
-            onView(withId(R.id.upgrade_promo_landscape)).check(matches(isDisplayed()));
+            onView(withId(R.id.fullscreen_signin_and_history_sync_landscape))
+                    .check(matches(isDisplayed()));
         } else {
-            onView(withId(R.id.upgrade_promo_portrait)).check(matches(isDisplayed()));
+            onView(withId(R.id.fullscreen_signin_and_history_sync_portrait))
+                    .check(matches(isDisplayed()));
         }
 
         // Rotate the screen back.
         ActivityTestUtils.rotateActivityToOrientation(
                 mActivity, Configuration.ORIENTATION_PORTRAIT);
-        onView(withId(R.id.upgrade_promo_portrait)).check(matches(isDisplayed()));
+        onView(withId(R.id.fullscreen_signin_and_history_sync_portrait))
+                .check(matches(isDisplayed()));
 
         // Accept history sync.
         onView(allOf(withId(R.id.button_primary), isCompletelyDisplayed())).perform(click());
@@ -375,7 +380,7 @@ public class UpgradePromoIntegrationTest {
 
     private void launchActivity(boolean shouldReplaceProgressBars) {
         Intent intent =
-                SigninAndHistorySyncActivity.createIntentForUpgradePromo(
+                SigninAndHistorySyncActivity.createIntentForFullscreenSignin(
                         ApplicationProvider.getApplicationContext());
         mActivityTestRule.launchActivity(intent);
         mActivity = mActivityTestRule.getActivity();

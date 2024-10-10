@@ -39,7 +39,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /** Parent coordinator for the re-FRE promo */
-public final class UpgradePromoCoordinator
+public final class FullscreenSigninAndHistorySyncCoordinator
         implements HistorySyncCoordinator.HistorySyncDelegate,
                 FullscreenSigninCoordinator.Delegate {
     public interface Delegate {
@@ -67,7 +67,7 @@ public final class UpgradePromoCoordinator
 
     /**
      * The view switcher child UIs and their order. The order matches the order of the children
-     * views in upgrade_promo_portrait/landscape_view.xml
+     * views in fullscreen_signin_and_history_sync_portrait/landscape_view.xml
      */
     @IntDef({
         ChildView.SIGNIN,
@@ -95,7 +95,7 @@ public final class UpgradePromoCoordinator
     private FullscreenSigninCoordinator mSigninCoordinator;
     private HistorySyncCoordinator mHistorySyncCoordinator;
 
-    public UpgradePromoCoordinator(
+    public FullscreenSigninAndHistorySyncCoordinator(
             Activity activity,
             ModalDialogManager modalDialogManager,
             OneshotSupplier<ProfileProvider> profileSupplier,
@@ -270,8 +270,10 @@ public final class UpgradePromoCoordinator
                         LayoutInflater.from(mActivity)
                                 .inflate(
                                         useLandscapeLayout
-                                                ? R.layout.upgrade_promo_landscape_view
-                                                : R.layout.upgrade_promo_portrait_view,
+                                                ? R.layout
+                                                        .fullscreen_signin_and_history_sync_landscape_view
+                                                : R.layout
+                                                        .fullscreen_signin_and_history_sync_portrait_view,
                                         null);
         mFullscreenSigninView = viewBundle.findViewById(R.id.fullscreen_signin);
         mHistorySyncView = viewBundle.findViewById(R.id.history_sync);

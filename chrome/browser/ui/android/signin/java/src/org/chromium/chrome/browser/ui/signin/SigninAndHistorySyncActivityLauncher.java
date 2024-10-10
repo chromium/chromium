@@ -87,9 +87,9 @@ public interface SigninAndHistorySyncActivityLauncher {
             @SigninAccessPoint int signinAccessPoint);
 
     /**
-     * Launches the upgrade promo flavor of the {@link SigninAndHistorySyncActivity} if sign-in and
+     * Launches the fullscreen flavor of the {@link SigninAndHistorySyncActivity} if sign-in and
      * history opt-in are allowed.
      */
     @MainThread
-    void launchUpgradePromoActivityIfAllowed(Context context, Profile profile);
+    void launchFullscreenSigninActivityIfAllowed(Context context, Profile profile);
 }

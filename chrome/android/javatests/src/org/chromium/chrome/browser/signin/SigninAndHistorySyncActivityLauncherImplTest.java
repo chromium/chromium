@@ -37,7 +37,6 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -361,14 +360,14 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
 
     @Test
     @MediumTest
-    public void testLaunchUpgradePromoActivityIfAllowed() {
+    public void testLaunchFullscreenSigninActivityIfAllowed() {
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninAndHistorySyncActivityLauncherImpl.get()
-                            .launchUpgradePromoActivityIfAllowed(mContextMock, mProfileMock);
+                            .launchFullscreenSigninActivityIfAllowed(mContextMock, mProfileMock);
                 });
 
         verify(mContextMock).startActivity(notNull());
@@ -376,7 +375,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
 
     @Test
     @MediumTest
-    public void testLaunchUpgradePromoActivityIfAllowedWhenSigninNotAllowed() {
+    public void testLaunchFullscreenSigninActivityIfAllowedWhenSigninNotAllowed() {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(false);
@@ -386,15 +385,15 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninAndHistorySyncActivityLauncherImpl.get()
-                            .launchUpgradePromoActivityIfAllowed(mContextMock, mProfileMock);
+                            .launchFullscreenSigninActivityIfAllowed(mContextMock, mProfileMock);
                 });
 
-       verify(mContextMock, never()).startActivity(notNull());
+        verify(mContextMock, never()).startActivity(notNull());
     }
 
     @Test
     @MediumTest
-    public void testLaunchUpgradePromoActivityIfAllowedWhenAlreadySignedIn() {
+    public void testLaunchFullscreenSigninActivityIfAllowedWhenAlreadySignedIn() {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(true);
@@ -406,7 +405,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninAndHistorySyncActivityLauncherImpl.get()
-                            .launchUpgradePromoActivityIfAllowed(mContextMock, mProfileMock);
+                            .launchFullscreenSigninActivityIfAllowed(mContextMock, mProfileMock);
                 });
 
         verify(mContextMock).startActivity(notNull());
@@ -414,7 +413,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
 
     @Test
     @MediumTest
-    public void testLaunchUpgradePromoActivityIfAllowedWhenSignedInAndHistorySyncNotAllowed() {
+    public void testLaunchFullscreenSigninActivityIfAllowedWhenSignedInAndHistorySyncNotAllowed() {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(true);
@@ -425,7 +424,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninAndHistorySyncActivityLauncherImpl.get()
-                            .launchUpgradePromoActivityIfAllowed(mContextMock, mProfileMock);
+                            .launchFullscreenSigninActivityIfAllowed(mContextMock, mProfileMock);
                 });
 
         verify(mContextMock, never()).startActivity(notNull());
@@ -433,7 +432,8 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
 
     @Test
     @MediumTest
-    public void testLaunchUpgradePromoActivityIfAllowedWhenSignedInAndHistorySyncDeclinedOften() {
+    public void
+            testLaunchFullscreenSigninActivityIfAllowedWhenSignedInAndHistorySyncDeclinedOften() {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(true);
@@ -444,7 +444,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     SigninAndHistorySyncActivityLauncherImpl.get()
-                            .launchUpgradePromoActivityIfAllowed(mContextMock, mProfileMock);
+                            .launchFullscreenSigninActivityIfAllowed(mContextMock, mProfileMock);
                 });
 
         verify(mContextMock, never()).startActivity(notNull());

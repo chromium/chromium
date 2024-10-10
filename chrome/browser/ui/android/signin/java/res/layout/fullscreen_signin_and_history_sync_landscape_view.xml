@@ -7,15 +7,15 @@ found in the LICENSE file.
 
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/upgrade_promo_portrait"
+    android:id="@+id/fullscreen_signin_and_history_sync_landscape"
     android:background="@macro/default_bg_color"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <include
         android:id="@+id/fullscreen_signin"
-        layout="@layout/fullscreen_signin_portrait_view"/>
+        layout="@layout/fullscreen_signin_landscape_view"/>
     <include
         android:id="@+id/history_sync"
-        layout="@layout/history_sync_portrait_view"/>
+        layout="@layout/history_sync_landscape_view"/>
 </FrameLayout>

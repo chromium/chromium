@@ -34,12 +34,12 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils.State;
 import org.chromium.chrome.browser.ui.signin.DialogWhenLargeContentLayout;
+import org.chromium.chrome.browser.ui.signin.FullscreenSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator.HistoryOptInMode;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator.NoAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
-import org.chromium.chrome.browser.ui.signin.UpgradePromoCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
@@ -64,7 +64,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
  * by the history sync opt-in. This is why the dependency on {@link FirstRunActivityBase} is needed.
  */
 public class SigninAndHistorySyncActivity extends FirstRunActivityBase
-        implements SigninAndHistorySyncCoordinator.Delegate, UpgradePromoCoordinator.Delegate {
+        implements SigninAndHistorySyncCoordinator.Delegate,
+                FullscreenSigninAndHistorySyncCoordinator.Delegate {
     private static final String ARGUMENT_ACCESS_POINT = "SigninAndHistorySyncActivity.AccessPoint";
     private static final String ARGUMENT_BOTTOM_SHEET_STRINGS_TITLE =
             "SigninAndHistorySyncActivity.BottomSheetStringsTitle";
@@ -80,22 +81,22 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
             "SigninAndHistorySyncActivity.HistoryOptInMode";
     private static final String ARGUMENT_IS_HISTORY_SYNC_DEDICATED_FLOW =
             "SigninAndHistorySyncActivity.IsHistorySyncDedicatedFlow";
-    private static final String ARGUMENT_IS_UPGRADE_PROMO =
-            "SigninAndHistorySyncActivity.IsUpgradePromo";
+    private static final String ARGUMENT_IS_FULLSCREEN_SIGNIN =
+            "SigninAndHistorySyncActivity.IsFullscreenSignin";
     private static final String ARGUMENT_SELECTED_CORE_ACCOUNT_ID =
             "SigninAndHistorySyncActivity.SelectedCoreAccountId";
 
     private static final int ADD_ACCOUNT_REQUEST_CODE = 1;
 
     private final OneshotSupplierImpl<Profile> mProfileSupplier = new OneshotSupplierImpl<>();
-    // TODO(b/41493788): Move this to FirstRunActivityBase
+    // TODO(crbug.com/349787455): Move this to FirstRunActivityBase.
     private final Promise<Void> mNativeInitializationPromise = new Promise<>();
     // These two coordinators are mutually exclusive: if one is initialized the other should be
     // null.
     // TODO(b/326019991): Consider making each of these implement a common interface to skip the
     // redundancy.
-    private SigninAndHistorySyncCoordinator mCoordinator;
-    private UpgradePromoCoordinator mUpgradePromoCoordinator;
+    private SigninAndHistorySyncCoordinator mBottomSheetSigninCoordinator;
+    private FullscreenSigninAndHistorySyncCoordinator mFullscreenSigninCoordinator;
 
     // Set to true when the add account activity is started, and is not persisted in saved instance
     // state. Therefore when onActivityResultWithNavitve is called with the add account activity's
@@ -117,17 +118,17 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
         super.triggerLayoutInflation();
 
         Intent intent = getIntent();
-        if (intent.getBooleanExtra(ARGUMENT_IS_UPGRADE_PROMO, false)) {
-            updateSystemUiForUpgradePromo();
-            mUpgradePromoCoordinator =
-                    new UpgradePromoCoordinator(
+        if (intent.getBooleanExtra(ARGUMENT_IS_FULLSCREEN_SIGNIN, false)) {
+            updateSystemUiForFullscreenSignin();
+            mFullscreenSigninCoordinator =
+                    new FullscreenSigninAndHistorySyncCoordinator(
                             this,
                             getModalDialogManager(),
                             getProfileProviderSupplier(),
                             PrivacyPreferencesManagerImpl.getInstance(),
                             this);
 
-            setInitialContentView(mUpgradePromoCoordinator.getView());
+            setInitialContentView(mFullscreenSigninCoordinator.getView());
             onInitialLayoutInflationComplete();
             return;
         }
@@ -160,7 +161,7 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
                 intent.getBooleanExtra(ARGUMENT_IS_HISTORY_SYNC_DEDICATED_FLOW, false);
         @Nullable String accountId = intent.getStringExtra(ARGUMENT_SELECTED_CORE_ACCOUNT_ID);
 
-        mCoordinator =
+        mBottomSheetSigninCoordinator =
                 new SigninAndHistorySyncCoordinator(
                         getWindowAndroid(),
                         this,
@@ -176,7 +177,7 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
                         isHistorySyncDedicatedFlow,
                         accountId == null ? null : new CoreAccountId(accountId));
 
-        setInitialContentView(mCoordinator.getView());
+        setInitialContentView(mBottomSheetSigninCoordinator.getView());
         onInitialLayoutInflationComplete();
     }
 
@@ -224,7 +225,7 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
 
     /**
      * Implements {@link SigninAndHistorySyncCoordinator.Delegate} and {@link
-     * UpgradePromoCoordinator.Delegate}.
+     * FullscreenSigninAndHistorySyncCoordinator.Delegate}.
      */
     @Override
     public void onFlowComplete() {
@@ -249,10 +250,10 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
     @Override
     public void performOnConfigurationChanged(Configuration newConfig) {
         super.performOnConfigurationChanged(newConfig);
-        if (mCoordinator != null) {
-            mCoordinator.switchHistorySyncLayout();
+        if (mBottomSheetSigninCoordinator != null) {
+            mBottomSheetSigninCoordinator.switchHistorySyncLayout();
         } else {
-            mUpgradePromoCoordinator.recreateLayoutAfterConfigurationChange();
+            mFullscreenSigninCoordinator.recreateLayoutAfterConfigurationChange();
         }
     }
 
@@ -282,11 +283,11 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
 
     @Override
     protected void onDestroy() {
-        if (mCoordinator != null) {
-            mCoordinator.destroy();
+        if (mBottomSheetSigninCoordinator != null) {
+            mBottomSheetSigninCoordinator.destroy();
         }
-        if (mUpgradePromoCoordinator != null) {
-            mUpgradePromoCoordinator.destroy();
+        if (mFullscreenSigninCoordinator != null) {
+            mFullscreenSigninCoordinator.destroy();
         }
         super.onDestroy();
     }
@@ -294,8 +295,8 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
     /** Implements {@link FirstRunActivityBase} */
     @Override
     public @BackPressResult int handleBackPress() {
-        if (mUpgradePromoCoordinator != null) {
-            mUpgradePromoCoordinator.handleBackPress();
+        if (mFullscreenSigninCoordinator != null) {
+            mFullscreenSigninCoordinator.handleBackPress();
             return BackPressResult.SUCCESS;
         }
         return BackPressResult.UNKNOWN;
@@ -351,14 +352,14 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
         return intent;
     }
 
-    public static @NonNull Intent createIntentForUpgradePromo(Context context) {
+    public static @NonNull Intent createIntentForFullscreenSignin(Context context) {
         Intent intent = new Intent(context, SigninAndHistorySyncActivity.class);
-        intent.putExtra(ARGUMENT_IS_UPGRADE_PROMO, true);
+        intent.putExtra(ARGUMENT_IS_FULLSCREEN_SIGNIN, true);
         return intent;
     }
 
     /**
-     * Implements {@link UpgradePromoCoordinator.Delegate} and {@link
+     * Implements {@link FullscreenSigninAndHistorySyncCoordinator.Delegate} and {@link
      * SigninAndHistorySyncCoordinator.Delegate}
      */
     @Override
@@ -386,7 +387,7 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
                         });
     }
 
-    /** Implements {@link UpgradePromoCoordinator.Delegate} */
+    /** Implements {@link FullscreenSigninAndHistorySyncCoordinator.Delegate} */
     @Override
     public Promise<Void> getNativeInitializationPromise() {
         return mNativeInitializationPromise;
@@ -396,9 +397,9 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
         assert view.getParent() == null;
 
         Intent intent = getIntent();
-        if (intent.getBooleanExtra(ARGUMENT_IS_UPGRADE_PROMO, false)) {
-            // Identically to the FRE, wrap the upgrade promo view inside a custom layout which
-            // mimic DialogWhenLarge theme behavior.
+        if (intent.getBooleanExtra(ARGUMENT_IS_FULLSCREEN_SIGNIN, false)) {
+            // Identically to the FRE, wrap the fullscreen sign-in flow UI inside a custom layout
+            // which mimic DialogWhenLarge theme behavior.
             super.setContentView(SigninUtils.wrapInDialogWhenLargeLayout(view));
             return;
         }
@@ -406,7 +407,7 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
         super.setContentView(view);
     }
 
-    private void updateSystemUiForUpgradePromo() {
+    private void updateSystemUiForFullscreenSignin() {
         if (DialogWhenLargeContentLayout.shouldShowAsDialog(this)) {
             // Set status bar and navigation bar to dark if the promo is shown as a dialog.
             setStatusBarColor(Color.BLACK);
@@ -418,7 +419,7 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
                 UiUtils.setNavigationBarIconColor(window.getDecorView().getRootView(), false);
             }
         } else {
-            // Set the status bar color to the upgrade promo background color.
+            // Set the status bar color to the fullsceen sign-in background color.
             setStatusBarColor(SemanticColorUtils.getDefaultBgColor(this));
         }
     }
@@ -430,8 +431,8 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
                         : IntentUtils.safeGetStringExtra(data, AccountManager.KEY_ACCOUNT_NAME);
 
         if (resultCode != Activity.RESULT_OK || accountEmail == null) {
-            if (mCoordinator != null) {
-                mCoordinator.onAddAccountCanceled();
+            if (mBottomSheetSigninCoordinator != null) {
+                mBottomSheetSigninCoordinator.onAddAccountCanceled();
             }
 
             // Record NULL_ACCOUNT_NAME if the add account activity successfully returns but
@@ -445,11 +446,11 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
         }
 
         SigninMetricsUtils.logAddAccountStateHistogram(State.SUCCEEDED);
-        if (mUpgradePromoCoordinator != null) {
-            mUpgradePromoCoordinator.onAccountSelected(accountEmail);
+        if (mFullscreenSigninCoordinator != null) {
+            mFullscreenSigninCoordinator.onAccountSelected(accountEmail);
         } else {
-            assert mCoordinator != null;
-            mCoordinator.onAccountAdded(accountEmail);
+            assert mBottomSheetSigninCoordinator != null;
+            mBottomSheetSigninCoordinator.onAccountAdded(accountEmail);
         }
     }
 }
