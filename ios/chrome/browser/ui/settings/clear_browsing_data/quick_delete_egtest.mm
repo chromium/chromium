@@ -59,7 +59,7 @@ using chrome_test_util::TabGroupCreationView;
 constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
 // GURL inserted into the history service to mock history entries.
-const GURL mockURL("http://not-a-real-site.test/");
+const GURL kMockURL("http://not-a-real-site.test/");
 
 // Link for my activity page.
 const char kMyActivityURL[] = "myactivity.google.com";
@@ -612,13 +612,64 @@ NSString* CapitalizeFirstLetter(NSString* string) {
       DeleteBrowsingDataDialogAction::kLast15MinutesSelected);
 }
 
+// Tests that the browsing data summary is updated when the time range changes.
+- (void)testSummaryUpdatesWhenTimeRangeChanges {
+  // Set pref to the last hour.
+  [ChromeEarlGrey
+      setIntegerValue:static_cast<int>(browsing_data::TimePeriod::LAST_HOUR)
+          forUserPref:browsing_data::prefs::kDeleteTimePeriod];
+
+  // Create an entry in History which took place half an hour ago on `URL`.
+  const base::Time halfAnHourAgo = base::Time::Now() - base::Minutes(30);
+  [ChromeEarlGrey addHistoryServiceTypedURL:kMockURL
+                             visitTimestamp:halfAnHourAgo];
+
+  [self openQuickDeleteFromThreeDotMenu];
+
+  // Check that Quick Delete is presented.
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
+      assertWithMatcher:grey_notNil()];
+
+  // Check that the correct time range, last hour, is selected.
+  [[EarlGrey selectElementWithMatcher:
+                 PopupCellWithTimeRange(l10n_util::GetNSString(
+                     IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_PAST_HOUR))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Check that the browsing data summary shows there is an history entry in
+  // scope of the deletion.
+  [[EarlGrey selectElementWithMatcher:
+                 ContainsPartialText(l10n_util::GetPluralNSStringF(
+                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES, 1))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap on the time range button and tap on the last 15 minutes option on the
+  // popup menu.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_SELECTOR_TITLE))]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          PopupCellMenuItemWithTimeRange(l10n_util::GetNSString(
+              IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_15_MINUTES))]
+      performAction:grey_tap()];
+
+  // Confirm that the browsing data summary no longer shows any history in scope
+  // of the deletion.
+  [[EarlGrey selectElementWithMatcher:
+                 ContainsPartialText(l10n_util::GetPluralNSStringF(
+                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES, 1))]
+      assertWithMatcher:grey_nil()];
+}
+
 // Tests that the number of browsing history items is shown on the browsing data
 // row when browsing history is selected as a data type to be deleted. It also
 // tests that the history entries get deleted when the deletion of browsing data
 // is selected.
 - (void)testBrowsingHistoryForDeletion {
   // Add entry to the history service.
-  [ChromeEarlGrey addHistoryServiceTypedURL:mockURL];
+  [ChromeEarlGrey addHistoryServiceTypedURL:kMockURL];
 
   // Set pref to select deletion of browsing history.
   [ChromeEarlGrey setBoolValue:true
@@ -677,8 +728,8 @@ NSString* CapitalizeFirstLetter(NSString* string) {
   [self signInAndEnableHistorySync];
 
   // Add entry to the history service and wait for it to show up on the server.
-  [ChromeEarlGrey addHistoryServiceTypedURL:mockURL];
-  [ChromeEarlGrey waitForSyncServerHistoryURLs:@[ net::NSURLWithGURL(mockURL) ]
+  [ChromeEarlGrey addHistoryServiceTypedURL:kMockURL];
+  [ChromeEarlGrey waitForSyncServerHistoryURLs:@[ net::NSURLWithGURL(kMockURL) ]
                                        timeout:kSyncOperationTimeout];
 
   // Set pref to select deletion of browsing history.
@@ -715,7 +766,7 @@ NSString* CapitalizeFirstLetter(NSString* string) {
 // of browsing data is selected.
 - (void)testKeepBrowsingHistory {
   // Add entry to the history service.
-  [ChromeEarlGrey addHistoryServiceTypedURL:mockURL];
+  [ChromeEarlGrey addHistoryServiceTypedURL:kMockURL];
 
   // Set pref to keep browsing history.
   [ChromeEarlGrey setBoolValue:false

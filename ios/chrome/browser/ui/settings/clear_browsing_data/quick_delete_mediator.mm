@@ -235,6 +235,7 @@ void RecordCookieOrCacheDeletedFromDialogHistogram(
   }
 
   _selectedTimeRange = timeRange;
+  [self restartCounters];
 }
 
 - (void)triggerDeletion {
