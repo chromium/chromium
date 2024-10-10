@@ -499,9 +499,6 @@ void GraphImplCoreml::DidPredictFromCompute(
         coreml_name_to_operand_name_.at(base::SysNSStringToUTF8(feature_name));
 
     MLMultiArray* multi_array_value = feature_value.multiArrayValue;
-    mojo_base::BigBuffer output_buffer(compute_resource_info()
-                                           .output_names_to_descriptors.at(name)
-                                           .PackedByteLength());
     ReadFromMLMultiArray(
         multi_array_value,
         base::BindOnce(
