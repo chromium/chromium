@@ -37,6 +37,7 @@
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gamepad_mapping_type.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
@@ -100,7 +101,7 @@ void RecordGamepadsForIdentifiabilityStudy(
           .AddValue(gp->buttons().size())
           .AddValue(gp->connected())
           .AddToken(IdentifiabilityBenignStringToken(gp->id()))
-          .AddToken(IdentifiabilityBenignStringToken(gp->mapping()))
+          .AddToken(IdentifiabilityBenignStringToken(gp->mapping().AsString()))
           .AddValue(gp->timestamp());
       if (auto* vb = gp->vibrationActuator()) {
         builder.AddToken(
