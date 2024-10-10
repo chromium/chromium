@@ -12,6 +12,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_idle_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_screen_idle_state.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_user_idle_state.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/modules/idle/idle_manager.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -78,8 +80,8 @@ TEST(IdleDetectorTest, Start) {
   auto* listener = MakeGarbageCollected<MockEventListener>();
   detector->addEventListener(event_type_names::kChange, listener);
   EXPECT_CALL(*listener, Invoke).WillOnce(WithoutArgs(Invoke([detector]() {
-    EXPECT_EQ("active", detector->userState());
-    EXPECT_EQ("unlocked", detector->screenState());
+    EXPECT_EQ(V8UserIdleState::Enum::kActive, detector->userState());
+    EXPECT_EQ(V8ScreenIdleState::Enum::kUnlocked, detector->screenState());
   })));
 
   auto* options = IdleOptions::Create();
@@ -112,8 +114,8 @@ TEST(IdleDetectorTest, StartIdleWithLongThreshold) {
   auto* listener = MakeGarbageCollected<MockEventListener>();
   detector->addEventListener(event_type_names::kChange, listener);
   EXPECT_CALL(*listener, Invoke).WillOnce(WithoutArgs(Invoke([detector]() {
-    EXPECT_EQ("active", detector->userState());
-    EXPECT_EQ("unlocked", detector->screenState());
+    EXPECT_EQ(V8UserIdleState::Enum::kActive, detector->userState());
+    EXPECT_EQ(V8ScreenIdleState::Enum::kUnlocked, detector->screenState());
   })));
 
   auto* options = IdleOptions::Create();
@@ -127,8 +129,8 @@ TEST(IdleDetectorTest, StartIdleWithLongThreshold) {
   testing::Mock::VerifyAndClearExpectations(listener);
 
   EXPECT_CALL(*listener, Invoke).WillOnce(WithoutArgs(Invoke([detector]() {
-    EXPECT_EQ("idle", detector->userState());
-    EXPECT_EQ("unlocked", detector->screenState());
+    EXPECT_EQ(V8UserIdleState::Enum::kIdle, detector->userState());
+    EXPECT_EQ(V8ScreenIdleState::Enum::kUnlocked, detector->screenState());
   })));
   task_runner->FastForwardBy(base::Seconds(30));
   testing::Mock::VerifyAndClearExpectations(listener);
@@ -157,8 +159,8 @@ TEST(IdleDetectorTest, LockScreen) {
   detector->addEventListener(event_type_names::kChange, listener);
   EXPECT_CALL(*listener, Invoke)
       .WillOnce(WithoutArgs(Invoke([detector, &loop]() {
-        EXPECT_EQ("active", detector->userState());
-        EXPECT_EQ("locked", detector->screenState());
+        EXPECT_EQ(V8UserIdleState::Enum::kActive, detector->userState());
+        EXPECT_EQ(V8ScreenIdleState::Enum::kLocked, detector->screenState());
         loop.Quit();
       })));
   idle_service.SetState(/*idle_time=*/std::nullopt, /*screen_locked=*/true);
@@ -187,8 +189,8 @@ TEST(IdleDetectorTest, BecomeIdle) {
   detector->addEventListener(event_type_names::kChange, listener);
   EXPECT_CALL(*listener, Invoke)
       .WillOnce(WithoutArgs(Invoke([detector, &loop]() {
-        EXPECT_EQ("idle", detector->userState());
-        EXPECT_EQ("unlocked", detector->screenState());
+        EXPECT_EQ(V8UserIdleState::Enum::kIdle, detector->userState());
+        EXPECT_EQ(V8ScreenIdleState::Enum::kUnlocked, detector->screenState());
         loop.Quit();
       })));
   idle_service.SetState(/*idle_time=*/base::Seconds(0),
@@ -218,8 +220,8 @@ TEST(IdleDetectorTest, BecomeIdleAndLockScreen) {
   detector->addEventListener(event_type_names::kChange, listener);
   EXPECT_CALL(*listener, Invoke)
       .WillOnce(WithoutArgs(Invoke([detector, &loop]() {
-        EXPECT_EQ("idle", detector->userState());
-        EXPECT_EQ("locked", detector->screenState());
+        EXPECT_EQ(V8UserIdleState::Enum::kIdle, detector->userState());
+        EXPECT_EQ(V8ScreenIdleState::Enum::kLocked, detector->screenState());
         loop.Quit();
       })));
   idle_service.SetState(/*idle_time=*/base::Seconds(0), /*screen_locked=*/true);
@@ -252,16 +254,16 @@ TEST(IdleDetectorTest, BecomeIdleAndLockScreenWithLongThreshold) {
   detector->addEventListener(event_type_names::kChange, listener);
 
   EXPECT_CALL(*listener, Invoke).WillOnce(WithoutArgs(Invoke([detector]() {
-    EXPECT_EQ("active", detector->userState());
-    EXPECT_EQ("locked", detector->screenState());
+    EXPECT_EQ(V8UserIdleState::Enum::kActive, detector->userState());
+    EXPECT_EQ(V8ScreenIdleState::Enum::kLocked, detector->screenState());
   })));
   idle_service.SetState(/*idle_time=*/base::Seconds(0), /*screen_locked=*/true);
   task_runner->FastForwardBy(base::Seconds(0));
   testing::Mock::VerifyAndClearExpectations(listener);
 
   EXPECT_CALL(*listener, Invoke).WillOnce(WithoutArgs(Invoke([detector]() {
-    EXPECT_EQ("idle", detector->userState());
-    EXPECT_EQ("locked", detector->screenState());
+    EXPECT_EQ(V8UserIdleState::Enum::kIdle, detector->userState());
+    EXPECT_EQ(V8ScreenIdleState::Enum::kLocked, detector->screenState());
   })));
   task_runner->FastForwardBy(base::Seconds(30));
   EXPECT_FALSE(task_runner->HasPendingTask());
@@ -304,8 +306,8 @@ TEST(IdleDetectorTest, BecomeIdleAndLockAfterWithLongThreshold) {
   // to be reached.
   task_runner->FastForwardBy(base::Seconds(15));
   EXPECT_CALL(*listener, Invoke).WillOnce(WithoutArgs(Invoke([detector]() {
-    EXPECT_EQ("active", detector->userState());
-    EXPECT_EQ("locked", detector->screenState());
+    EXPECT_EQ(V8UserIdleState::Enum::kActive, detector->userState());
+    EXPECT_EQ(V8ScreenIdleState::Enum::kLocked, detector->screenState());
   })));
   idle_service.SetState(/*idle_time=*/base::Seconds(15),
                         /*screen_locked=*/true);
@@ -314,8 +316,8 @@ TEST(IdleDetectorTest, BecomeIdleAndLockAfterWithLongThreshold) {
 
   // Finally the idle threshold has been reached.
   EXPECT_CALL(*listener, Invoke).WillOnce(WithoutArgs(Invoke([detector]() {
-    EXPECT_EQ("idle", detector->userState());
-    EXPECT_EQ("locked", detector->screenState());
+    EXPECT_EQ(V8UserIdleState::Enum::kIdle, detector->userState());
+    EXPECT_EQ(V8ScreenIdleState::Enum::kLocked, detector->screenState());
   })));
   task_runner->FastForwardBy(base::Seconds(15));
 
@@ -395,8 +397,8 @@ TEST(IdleDetectorTest, SetAndClearOverrides) {
   // Simulate DevTools specifying an override. Even though the threshold is
   // 90 seconds the state should be updated immediately.
   EXPECT_CALL(*listener, Invoke).WillOnce(WithoutArgs(Invoke([detector]() {
-    EXPECT_EQ("idle", detector->userState());
-    EXPECT_EQ("locked", detector->screenState());
+    EXPECT_EQ(V8UserIdleState::Enum::kIdle, detector->userState());
+    EXPECT_EQ(V8ScreenIdleState::Enum::kLocked, detector->screenState());
   })));
   idle_service.SetState(/*idle_time=*/base::Seconds(0),
                         /*screen_locked=*/true, /*override=*/true);
@@ -407,8 +409,8 @@ TEST(IdleDetectorTest, SetAndClearOverrides) {
   // actually been idle for 15 seconds but the threshold hasn't been reached.
   // Only the lock state updates immediately.
   EXPECT_CALL(*listener, Invoke).WillOnce(WithoutArgs(Invoke([detector]() {
-    EXPECT_EQ("active", detector->userState());
-    EXPECT_EQ("unlocked", detector->screenState());
+    EXPECT_EQ(V8UserIdleState::Enum::kActive, detector->userState());
+    EXPECT_EQ(V8ScreenIdleState::Enum::kUnlocked, detector->screenState());
   })));
   idle_service.SetState(/*idle_time=*/base::Seconds(15),
                         /*screen_locked=*/false, /*override=*/false);
@@ -417,8 +419,8 @@ TEST(IdleDetectorTest, SetAndClearOverrides) {
 
   // After the threshold has been reached the idle state updates as well.
   EXPECT_CALL(*listener, Invoke).WillOnce(WithoutArgs(Invoke([detector]() {
-    EXPECT_EQ("idle", detector->userState());
-    EXPECT_EQ("unlocked", detector->screenState());
+    EXPECT_EQ(V8UserIdleState::Enum::kIdle, detector->userState());
+    EXPECT_EQ(V8ScreenIdleState::Enum::kUnlocked, detector->screenState());
   })));
   task_runner->FastForwardBy(base::Seconds(15));
 

@@ -26,6 +26,8 @@ namespace blink {
 
 class ExceptionState;
 class V8PermissionState;
+class V8ScreenIdleState;
+class V8UserIdleState;
 
 class MODULES_EXPORT IdleDetector final
     : public EventTarget,
@@ -54,8 +56,8 @@ class MODULES_EXPORT IdleDetector final
   bool HasPendingActivity() const final;
 
   // IdleDetector IDL interface.
-  String userState() const;
-  String screenState() const;
+  std::optional<V8UserIdleState> userState() const;
+  std::optional<V8ScreenIdleState> screenState() const;
   static ScriptPromise<V8PermissionState> requestPermission(ScriptState*,
                                                             ExceptionState&);
   ScriptPromise<IDLUndefined> start(ScriptState*,
