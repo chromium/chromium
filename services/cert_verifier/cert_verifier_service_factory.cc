@@ -4,11 +4,8 @@
 
 #include "services/cert_verifier/cert_verifier_service_factory.h"
 
-#include <map>
 #include <memory>
-#include <string>
 #include <string_view>
-#include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -164,12 +161,13 @@ scoped_refptr<net::CRLSet> ParseCRLSet(mojo_base::BigBuffer crl_set) {
 
 #if BUILDFLAG(IS_CT_SUPPORTED)
 // Filters `log_list` for disqualified logs, returning them as sorted vectors
-// in `disqualified_logs`. Stores the operator history and log type of all logs
-// in `log_info`, suitable for use with a `CTPolicyEnforcer`.
-void ComputeCTLogInfo(
+// in `disqualified_logs`, and stores the operator history of all logs in
+// `operator_history`, suitable for use with a `CTPolicyEnforcer`.
+void GetCTPolicyConfigForCTLogInfo(
     const std::vector<network::mojom::CTLogInfoPtr>& log_list,
     std::vector<std::pair<std::string, base::Time>>* disqualified_logs,
-    std::map<std::string, certificate_transparency::LogInfo>* log_info) {
+    std::map<std::string, certificate_transparency::OperatorHistoryEntry>*
+        operator_history) {
   for (const auto& log : log_list) {
     std::string log_id = crypto::SHA256HashString(log->public_key);
     if (log->disqualified_at) {
@@ -181,15 +179,11 @@ void ComputeCTLogInfo(
       entry.previous_operators_.emplace_back(previous_operator->name,
                                              previous_operator->end_time);
     }
-    certificate_transparency::LogInfo info;
-    info.operator_history = entry;
-    info.log_type = log->log_type;
-    (*log_info)[log_id] = info;
+    (*operator_history)[log_id] = entry;
   }
 
   std::sort(std::begin(*disqualified_logs), std::end(*disqualified_logs));
 }
-
 #endif
 
 }  // namespace
@@ -264,14 +258,15 @@ void CertVerifierServiceFactoryImpl::UpdateCtLogList(
   proc_params_.ct_logs = std::move(ct_logs);
 
   std::vector<std::pair<std::string, base::Time>> disqualified_logs;
-  std::map<std::string, certificate_transparency::LogInfo> log_info;
-  ComputeCTLogInfo(log_list, &disqualified_logs, &log_info);
+  std::map<std::string, certificate_transparency::OperatorHistoryEntry>
+      log_operator_history;
+  GetCTPolicyConfigForCTLogInfo(log_list, &disqualified_logs,
+                                &log_operator_history);
 
   proc_params_.ct_policy_enforcer =
       base::MakeRefCounted<certificate_transparency::ChromeCTPolicyEnforcer>(
-          update_time, std::move(disqualified_logs), std::move(log_info),
-          base::FeatureList::IsEnabled(
-              net::features::kEnableStaticCTAPIEnforcement));
+          update_time, std::move(disqualified_logs),
+          std::move(log_operator_history));
 
   UpdateVerifierServices();
 

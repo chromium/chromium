@@ -56,12 +56,10 @@ OperatorHistoryEntry::OperatorHistoryEntry(const OperatorHistoryEntry& other) =
 ChromeCTPolicyEnforcer::ChromeCTPolicyEnforcer(
     base::Time log_list_date,
     std::vector<std::pair<std::string, base::Time>> disqualified_logs,
-    std::map<std::string, LogInfo> log_info,
-    bool enable_static_ct_api_enforcement)
+    std::map<std::string, OperatorHistoryEntry> log_operator_history)
     : disqualified_logs_(std::move(disqualified_logs)),
-      log_info_(std::move(log_info)),
-      log_list_date_(log_list_date),
-      enable_static_ct_api_enforcement_(enable_static_ct_api_enforcement) {}
+      log_operator_history_(std::move(log_operator_history)),
+      log_list_date_(log_list_date) {}
 
 ChromeCTPolicyEnforcer::~ChromeCTPolicyEnforcer() = default;
 
@@ -162,7 +160,6 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
   bool has_valid_embedded_sct = false;
   bool has_valid_nonembedded_sct = false;
   bool has_diverse_log_operators = false;
-  bool has_rfc6962_log = false;
   std::vector<std::string_view> embedded_log_ids;
   std::string first_seen_operator;
   for (const auto& sct : verified_scts) {
@@ -197,11 +194,6 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
         has_diverse_log_operators |= first_seen_operator != sct_operator;
       }
     }
-
-    if (enable_static_ct_api_enforcement_) {
-      has_rfc6962_log |= (GetLogType(sct->log_id) ==
-                          network::mojom::CTLogInfo::LogType::kRFC6962);
-    }
   }
 
   // Option 1:
@@ -213,8 +205,7 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
   // Note: Because SCTs embedded via TLS or OCSP can be updated on the fly,
   // the issuance date is irrelevant, as any policy changes can be
   // accommodated.
-  if (has_valid_nonembedded_sct && has_diverse_log_operators &&
-      (!enable_static_ct_api_enforcement_ || has_rfc6962_log)) {
+  if (has_valid_nonembedded_sct && has_diverse_log_operators) {
     return CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS;
   }
   // Note: If has_valid_nonembedded_sct was true, but Option 2 isn't met,
@@ -241,12 +232,6 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
   if (!has_diverse_log_operators) {
     return CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS;
   }
-
-  // ... AND at least one of the SCTs must come from an RFC6962 log.
-  if (enable_static_ct_api_enforcement_ && !has_rfc6962_log) {
-    return CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS;
-  }
-
   // ... AND the certificate embeds SCTs from AT LEAST the number of logs
   //   once or currently qualified shown in Table 1 of the CT Policy.
   base::TimeDelta lifetime = cert.valid_expiry() - cert.valid_start();
@@ -266,9 +251,8 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
   size_t num_embedded_scts =
       std::distance(embedded_log_ids.begin(), sorted_end);
 
-  if (num_embedded_scts >= num_required_embedded_scts) {
+  if (num_embedded_scts >= num_required_embedded_scts)
     return CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS;
-  }
 
   // Under Option 2, there weren't enough SCTs, and potentially under Option
   // 1, there weren't diverse enough SCTs. Try to signal the error that is
@@ -279,11 +263,10 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
 }
 
 std::string ChromeCTPolicyEnforcer::GetOperatorForLog(
-    const std::string& log_id,
+    std::string log_id,
     base::Time timestamp) const {
-  DCHECK(log_info_.find(log_id) != log_info_.end());
-  const OperatorHistoryEntry& log_history =
-      log_info_.at(log_id).operator_history;
+  DCHECK(log_operator_history_.find(log_id) != log_operator_history_.end());
+  OperatorHistoryEntry log_history = log_operator_history_.at(log_id);
   for (auto operator_entry : log_history.previous_operators_) {
     if (timestamp < operator_entry.second)
       return operator_entry.first;
@@ -291,12 +274,6 @@ std::string ChromeCTPolicyEnforcer::GetOperatorForLog(
   // Either the log has only ever had one operator, or the timestamp is after
   // the last operator change.
   return log_history.current_operator_;
-}
-
-network::mojom::CTLogInfo::LogType ChromeCTPolicyEnforcer::GetLogType(
-    const std::string& log_id) const {
-  DCHECK(log_info_.find(log_id) != log_info_.end());
-  return log_info_.at(log_id).log_type;
 }
 
 }  // namespace certificate_transparency

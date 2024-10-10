@@ -26,7 +26,6 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
-#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/task/thread_pool.h"
@@ -105,22 +104,6 @@ std::string LoadBinaryProtoFromDisk(const base::FilePath& pb_path) {
     result.clear();
   }
   return result;
-}
-
-// Ideally we'd use EnumTraits for this method, but the conversion is only done
-// once here so it's not worth it.
-network::mojom::CTLogInfo::LogType ProtoLogTypeToLogType(
-    ::chrome_browser_certificate_transparency::CTLog_LogType log_type) {
-  switch (log_type) {
-    case ::chrome_browser_certificate_transparency::CTLog::LOG_TYPE_UNSPECIFIED:
-      return network::mojom::CTLogInfo::LogType::kUnspecified;
-    case ::chrome_browser_certificate_transparency::CTLog::RFC6962:
-      return network::mojom::CTLogInfo::LogType::kRFC6962;
-    case ::chrome_browser_certificate_transparency::CTLog::STATIC_CT_API:
-      return network::mojom::CTLogInfo::LogType::kStaticCTAPI;
-    default:
-      NOTREACHED();
-  }
 }
 
 }  // namespace
@@ -353,7 +336,6 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceCTListOnUI(
     }
 
     log_ptr->mmd = base::Seconds(log.mmd_secs());
-    log_ptr->log_type = ProtoLogTypeToLogType(log.log_type());
     log_list_mojo_clone_network_service.push_back(log_ptr.Clone());
     log_list_mojo.push_back(std::move(log_ptr));
   }

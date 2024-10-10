@@ -35,7 +35,6 @@ component("certificate_transparency") {
     "//components/url_formatter",
     "//components/url_matcher",
     "//net",
-    "//services/network/public/mojom",
     "//url",
   ]
 }

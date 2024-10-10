@@ -18,7 +18,6 @@
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "net/cert/ct_policy_enforcer.h"
-#include "services/network/public/mojom/ct_log_info.mojom.h"
 
 namespace certificate_transparency {
 
@@ -32,13 +31,6 @@ struct COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) OperatorHistoryEntry {
   OperatorHistoryEntry();
   ~OperatorHistoryEntry();
   OperatorHistoryEntry(const OperatorHistoryEntry& other);
-};
-
-struct COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) LogInfo {
-  // Operator history for this log.
-  OperatorHistoryEntry operator_history;
-  // Type of the log.
-  network::mojom::CTLogInfo::LogType log_type;
 };
 
 // A CTPolicyEnforcer that enforces the "Certificate Transparency in Chrome"
@@ -57,12 +49,11 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeCTPolicyEnforcer
   // to disqualification date.  (Log IDs are the SHA-256 hash of the log's
   // DER-encoded SubjectPublicKeyInfo.)  |log_list_date| is the time at which
   // the other two arguments were generated.  Both lists of logs must be sorted
-  // by log ID. |log_info| contains operator history and log types of the logs.
+  // by log ID.
   ChromeCTPolicyEnforcer(
       base::Time log_list_date,
       std::vector<std::pair<std::string, base::Time>> disqualified_logs,
-      std::map<std::string, LogInfo> log_info,
-      bool enable_static_ct_api_enforcement);
+      std::map<std::string, OperatorHistoryEntry> log_operator_history);
 
   net::ct::CTPolicyCompliance CheckCompliance(
       net::X509Certificate* cert,
@@ -85,8 +76,9 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeCTPolicyEnforcer
     return disqualified_logs_;
   }
 
-  const std::map<std::string, LogInfo>& log_info_for_testing() const {
-    return log_info_;
+  const std::map<std::string, OperatorHistoryEntry>&
+  operator_history_for_testing() {
+    return log_operator_history_;
   }
 
  protected:
@@ -115,22 +107,16 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeCTPolicyEnforcer
       const net::ct::SCTList& verified_scts,
       base::Time current_time) const;
 
-  std::string GetOperatorForLog(const std::string& log_id,
-                                base::Time timestamp) const;
-
-  network::mojom::CTLogInfo::LogType GetLogType(
-      const std::string& log_id) const;
+  std::string GetOperatorForLog(std::string log_id, base::Time timestamp) const;
 
   // Map of SHA-256(SPKI) to log disqualification date.
   const std::vector<std::pair<std::string, base::Time>> disqualified_logs_;
 
-  const std::map<std::string, LogInfo> log_info_;
+  const std::map<std::string, OperatorHistoryEntry> log_operator_history_;
 
   // The time at which |disqualified_logs_| and |log_operator_history_| were
   // generated.
   const base::Time log_list_date_;
-
-  const bool enable_static_ct_api_enforcement_;
 };
 
 }  // namespace certificate_transparency
