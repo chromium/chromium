@@ -25,12 +25,12 @@ namespace safe_browsing {
 
 class MockFileTypePolicies : public FileTypePolicies {
  public:
-  MockFileTypePolicies() {}
+  MockFileTypePolicies() = default;
 
   MockFileTypePolicies(const MockFileTypePolicies&) = delete;
   MockFileTypePolicies& operator=(const MockFileTypePolicies&) = delete;
 
-  ~MockFileTypePolicies() override {}
+  ~MockFileTypePolicies() override = default;
 
   MOCK_METHOD2(RecordUpdateMetrics, void(UpdateResult, const std::string&));
 };

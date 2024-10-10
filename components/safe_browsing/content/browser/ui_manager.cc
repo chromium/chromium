@@ -53,7 +53,7 @@ SafeBrowsingUIManager::SafeBrowsingUIManager(
       blocking_page_factory_(std::move(blocking_page_factory)),
       default_safe_page_(default_safe_page) {}
 
-SafeBrowsingUIManager::~SafeBrowsingUIManager() {}
+SafeBrowsingUIManager::~SafeBrowsingUIManager() = default;
 
 void SafeBrowsingUIManager::Stop(bool shutdown) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

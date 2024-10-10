@@ -122,7 +122,7 @@ ReferrerChainData::ReferrerChainData(
       referrer_chain_length_(referrer_chain_length),
       recent_navigations_to_collect_(recent_navigations_to_collect) {}
 
-ReferrerChainData::~ReferrerChainData() {}
+ReferrerChainData::~ReferrerChainData() = default;
 
 ReferrerChain* ReferrerChainData::GetReferrerChain() {
   return referrer_chain_.get();

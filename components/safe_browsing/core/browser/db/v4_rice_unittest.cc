@@ -13,7 +13,7 @@ namespace safe_browsing {
 
 class V4RiceTest : public PlatformTest {
  public:
-  V4RiceTest() {}
+  V4RiceTest() = default;
 
   struct RiceDecodingTestInfo {
     uint32_t rice_parameter;

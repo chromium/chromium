@@ -64,7 +64,7 @@ bool ThreatDetailsCacheCollector::HasStarted() {
   return has_started_;
 }
 
-ThreatDetailsCacheCollector::~ThreatDetailsCacheCollector() {}
+ThreatDetailsCacheCollector::~ThreatDetailsCacheCollector() = default;
 
 // Fetch a URL and advance to the next one when done.
 void ThreatDetailsCacheCollector::OpenEntry() {

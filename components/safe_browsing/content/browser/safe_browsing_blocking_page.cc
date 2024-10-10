@@ -130,7 +130,7 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
   }
 }
 
-SafeBrowsingBlockingPage::~SafeBrowsingBlockingPage() {}
+SafeBrowsingBlockingPage::~SafeBrowsingBlockingPage() = default;
 
 security_interstitials::SecurityInterstitialPage::TypeID
 SafeBrowsingBlockingPage::GetTypeForTesting() {

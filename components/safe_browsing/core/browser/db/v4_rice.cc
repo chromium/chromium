@@ -163,7 +163,7 @@ V4RiceDecoder::V4RiceDecoder(const int rice_parameter,
   current_word_bit_index_ = kMaxBitIndex;
 }
 
-V4RiceDecoder::~V4RiceDecoder() {}
+V4RiceDecoder::~V4RiceDecoder() = default;
 
 bool V4RiceDecoder::HasAnotherValue() const {
   return num_entries_ > 0;

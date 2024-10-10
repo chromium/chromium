@@ -433,6 +433,6 @@ ListInfo::ListInfo(const bool fetch_updates,
   DCHECK_NE(SBThreatType::SB_THREAT_TYPE_SAFE, sb_threat_type_);
 }
 
-ListInfo::~ListInfo() {}
+ListInfo::~ListInfo() = default;
 
 }  // namespace safe_browsing

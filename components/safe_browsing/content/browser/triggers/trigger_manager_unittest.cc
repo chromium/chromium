@@ -28,12 +28,12 @@ namespace safe_browsing {
 // Mock ThreatDetails class that makes FinishCollection a no-op.
 class MockThreatDetails : public ThreatDetails {
  public:
-  MockThreatDetails() {}
+  MockThreatDetails() = default;
 
   MockThreatDetails(const MockThreatDetails&) = delete;
   MockThreatDetails& operator=(const MockThreatDetails&) = delete;
 
-  ~MockThreatDetails() override {}
+  ~MockThreatDetails() override = default;
   MOCK_METHOD4(
       FinishCollection,
       void(bool did_proceed,
@@ -45,7 +45,7 @@ class MockThreatDetails : public ThreatDetails {
 
 class MockThreatDetailsFactory : public ThreatDetailsFactory {
  public:
-  ~MockThreatDetailsFactory() override {}
+  ~MockThreatDetailsFactory() override = default;
 
   std::unique_ptr<ThreatDetails> CreateThreatDetails(
       BaseUIManager* ui_manager,
@@ -73,7 +73,7 @@ class TriggerManagerTest : public ::testing::Test {
   TriggerManagerTest(const TriggerManagerTest&) = delete;
   TriggerManagerTest& operator=(const TriggerManagerTest&) = delete;
 
-  ~TriggerManagerTest() override {}
+  ~TriggerManagerTest() override = default;
 
   void SetUp() override {
     ThreatDetails::RegisterFactory(&mock_threat_details_factory_);

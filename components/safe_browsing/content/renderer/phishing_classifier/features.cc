@@ -12,8 +12,8 @@ namespace safe_browsing {
 
 const size_t FeatureMap::kMaxFeatureMapSize = 10000;
 
-FeatureMap::FeatureMap() {}
-FeatureMap::~FeatureMap() {}
+FeatureMap::FeatureMap() = default;
+FeatureMap::~FeatureMap() = default;
 
 bool FeatureMap::AddBooleanFeature(const std::string& name) {
   return AddRealFeature(name, 1.0);

@@ -51,7 +51,7 @@ class MockSafeBrowsingSyncObserver : public SafeBrowsingSyncObserver {
 
 class VerdictCacheManagerTest : public ::testing::Test {
  public:
-  VerdictCacheManagerTest() {}
+  VerdictCacheManagerTest() = default;
 
   void SetUp() override {
     test_pref_service_.registry()->RegisterBooleanPref(

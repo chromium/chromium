@@ -91,7 +91,7 @@ class RemoteDatabaseManagerTest : public testing::Test {
  protected:
   using enum SBThreatType;
 
-  RemoteDatabaseManagerTest() {}
+  RemoteDatabaseManagerTest() = default;
 
   void SetUp() override {
     test_shared_loader_factory_ =

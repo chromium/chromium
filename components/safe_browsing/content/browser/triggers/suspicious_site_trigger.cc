@@ -76,7 +76,7 @@ SuspiciousSiteTrigger::SuspiciousSiteTrigger(
       referrer_chain_provider_(referrer_chain_provider),
       task_runner_(content::GetUIThreadTaskRunner({})) {}
 
-SuspiciousSiteTrigger::~SuspiciousSiteTrigger() {}
+SuspiciousSiteTrigger::~SuspiciousSiteTrigger() = default;
 
 bool SuspiciousSiteTrigger::MaybeStartReport() {
   SBErrorOptions error_options =

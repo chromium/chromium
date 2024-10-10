@@ -31,7 +31,7 @@ using ::testing::UnorderedElementsAre;
 
 class V4StoreTest : public PlatformTest {
  public:
-  V4StoreTest() {}
+  V4StoreTest() = default;
 
   void SetUp() override {
     PlatformTest::SetUp();

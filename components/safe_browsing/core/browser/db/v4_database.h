@@ -89,7 +89,7 @@ using ListInfos = std::vector<ListInfo>;
 // databases for testing.
 class V4DatabaseFactory {
  public:
-  virtual ~V4DatabaseFactory() {}
+  virtual ~V4DatabaseFactory() = default;
   virtual std::unique_ptr<V4Database, base::OnTaskRunnerDeleter> Create(
       const scoped_refptr<base::SequencedTaskRunner>& db_task_runner,
       std::unique_ptr<StoreMap> store_map);

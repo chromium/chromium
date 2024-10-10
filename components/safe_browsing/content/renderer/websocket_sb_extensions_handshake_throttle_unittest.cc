@@ -33,7 +33,7 @@ constexpr char kTestExtensionUrl[] =
 class FakeExtensionWebRequestReporter
     : public mojom::ExtensionWebRequestReporter {
  public:
-  FakeExtensionWebRequestReporter() {}
+  FakeExtensionWebRequestReporter() = default;
 
   void SendWebRequestData(
       const std::string& origin_extension_id,

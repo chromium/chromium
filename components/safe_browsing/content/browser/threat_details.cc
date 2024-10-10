@@ -285,7 +285,7 @@ class ThreatDetailsFactoryImpl : public ThreatDetailsFactory {
  private:
   friend struct base::LazyInstanceTraitsBase<ThreatDetailsFactoryImpl>;
 
-  ThreatDetailsFactoryImpl() {}
+  ThreatDetailsFactoryImpl() = default;
 };
 
 static base::LazyInstance<ThreatDetailsFactoryImpl>::DestructorAtExit

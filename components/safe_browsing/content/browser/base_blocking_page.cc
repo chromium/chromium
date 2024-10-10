@@ -71,7 +71,7 @@ BaseBlockingPage::BaseBlockingPage(
           /* created_prior_to_navigation */
           IsMainPageLoadPending(unsafe_resources))) {}
 
-BaseBlockingPage::~BaseBlockingPage() {}
+BaseBlockingPage::~BaseBlockingPage() = default;
 
 // static
 const security_interstitials::BaseSafeBrowsingErrorUI::SBErrorDisplayOptions

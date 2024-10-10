@@ -61,8 +61,8 @@ class SafeBrowsingServiceInterface
 #endif
 
  protected:
-  SafeBrowsingServiceInterface() {}
-  virtual ~SafeBrowsingServiceInterface() {}
+  SafeBrowsingServiceInterface() = default;
+  virtual ~SafeBrowsingServiceInterface() = default;
 
  private:
   friend struct content::BrowserThread::DeleteOnThread<
@@ -78,13 +78,13 @@ class SafeBrowsingServiceInterface
 // Factory for creating SafeBrowsingServiceInterface.  Useful for tests.
 class SafeBrowsingServiceFactory {
  public:
-  SafeBrowsingServiceFactory() {}
+  SafeBrowsingServiceFactory() = default;
 
   SafeBrowsingServiceFactory(const SafeBrowsingServiceFactory&) = delete;
   SafeBrowsingServiceFactory& operator=(const SafeBrowsingServiceFactory&) =
       delete;
 
-  virtual ~SafeBrowsingServiceFactory() {}
+  virtual ~SafeBrowsingServiceFactory() = default;
 
   // TODO(crbug.com/41437292): Once callers of this function are no longer
   // downcasting it to the SafeBrowsingService, we can make this a

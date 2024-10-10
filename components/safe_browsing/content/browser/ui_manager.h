@@ -55,8 +55,8 @@ class SafeBrowsingUIManager : public BaseUIManager {
     virtual void OnSafeBrowsingHit(const UnsafeResource& resource) = 0;
 
    protected:
-    Observer() {}
-    virtual ~Observer() {}
+    Observer() = default;
+    virtual ~Observer() = default;
   };
 
   // Interface via which the embedder supplies contextual information to

@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/content/browser/triggers/ad_sampler_trigger.h"
 
+#include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
@@ -37,8 +38,8 @@ const char kNonAdName[] = "foo";
 
 class AdSamplerTriggerTest : public content::RenderViewHostTestHarness {
  public:
-  AdSamplerTriggerTest() : task_runner_(new base::TestSimpleTaskRunner) {}
-  ~AdSamplerTriggerTest() override {}
+  AdSamplerTriggerTest() = default;
+  ~AdSamplerTriggerTest() override = default;
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
@@ -97,7 +98,8 @@ class AdSamplerTriggerTest : public content::RenderViewHostTestHarness {
   TestingPrefServiceSimple prefs_;
   MockTriggerManager trigger_manager_;
   base::HistogramTester histograms_;
-  scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
+  scoped_refptr<base::TestSimpleTaskRunner> task_runner_ =
+      base::MakeRefCounted<base::TestSimpleTaskRunner>();
 };
 
 TEST_F(AdSamplerTriggerTest, TriggerDisabledBySamplingFrequency) {

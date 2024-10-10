@@ -523,8 +523,8 @@ void JNI_SafeBrowsingApiBridge_OnVerifyAppsEnabledDone(JNIEnv* env,
 //
 // SafeBrowsingApiHandlerBridge
 //
-SafeBrowsingApiHandlerBridge::SafeBrowsingApiHandlerBridge() {}
-SafeBrowsingApiHandlerBridge::~SafeBrowsingApiHandlerBridge() {}
+SafeBrowsingApiHandlerBridge::SafeBrowsingApiHandlerBridge() = default;
+SafeBrowsingApiHandlerBridge::~SafeBrowsingApiHandlerBridge() = default;
 
 void SafeBrowsingApiHandlerBridge::ClearArtificialDatabase() {
   artificially_marked_phishing_urls_.clear();

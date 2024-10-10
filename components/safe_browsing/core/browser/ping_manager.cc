@@ -241,7 +241,7 @@ PingManager::PingManager(
       kReadPersistedReportsDelay);
 }
 
-PingManager::~PingManager() {}
+PingManager::~PingManager() = default;
 
 // All SafeBrowsing request responses are handled here.
 void PingManager::OnURLLoaderComplete(

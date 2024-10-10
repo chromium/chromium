@@ -375,7 +375,7 @@ class FakeV4LocalDatabaseManager : public V4LocalDatabaseManager {
   }
 
  private:
-  ~FakeV4LocalDatabaseManager() override {}
+  ~FakeV4LocalDatabaseManager() override = default;
 
   bool perform_full_hash_check_called_;
 };

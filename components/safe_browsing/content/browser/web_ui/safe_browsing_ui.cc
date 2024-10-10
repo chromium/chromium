@@ -2241,7 +2241,7 @@ SafeBrowsingUI::SafeBrowsingUI(
       "trusted-types static-types;");
 }
 
-SafeBrowsingUI::~SafeBrowsingUI() {}
+SafeBrowsingUI::~SafeBrowsingUI() = default;
 
 SafeBrowsingUIHandler::SafeBrowsingUIHandler(
     content::BrowserContext* context,
@@ -3122,7 +3122,7 @@ void SafeBrowsingUIHandler::SetWebUIForTesting(content::WebUI* web_ui) {
   set_web_ui(web_ui);
 }
 
-CrSBLogMessage::CrSBLogMessage() {}
+CrSBLogMessage::CrSBLogMessage() = default;
 
 CrSBLogMessage::~CrSBLogMessage() {
   WebUIInfoSingleton::GetInstance()->LogMessage(stream_.str());

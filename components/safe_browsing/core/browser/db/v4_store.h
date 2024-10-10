@@ -109,7 +109,7 @@ enum StoreWriteResult {
 // stores for testing.
 class V4StoreFactory {
  public:
-  virtual ~V4StoreFactory() {}
+  virtual ~V4StoreFactory() = default;
 
   virtual V4StorePtr CreateV4Store(
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,

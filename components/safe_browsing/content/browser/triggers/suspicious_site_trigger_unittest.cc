@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_simple_task_runner.h"
 #include "build/build_config.h"
@@ -41,8 +42,8 @@ MATCHER_P(ResourceHasUrl, gurl, "") {
 
 class SuspiciousSiteTriggerTest : public content::RenderViewHostTestHarness {
  public:
-  SuspiciousSiteTriggerTest() : task_runner_(new base::TestSimpleTaskRunner) {}
-  ~SuspiciousSiteTriggerTest() override {}
+  SuspiciousSiteTriggerTest() = default;
+  ~SuspiciousSiteTriggerTest() override = default;
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
@@ -163,7 +164,8 @@ class SuspiciousSiteTriggerTest : public content::RenderViewHostTestHarness {
   TestingPrefServiceSimple prefs_;
   MockTriggerManager trigger_manager_;
   base::HistogramTester histograms_;
-  scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
+  scoped_refptr<base::TestSimpleTaskRunner> task_runner_ =
+      base::MakeRefCounted<base::TestSimpleTaskRunner>();
 };
 
 TEST_F(SuspiciousSiteTriggerTest, RegularPageNonSuspicious) {

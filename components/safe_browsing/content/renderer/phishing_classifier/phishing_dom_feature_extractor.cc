@@ -88,7 +88,7 @@ struct PhishingDOMFeatureExtractor::PageFeatureState {
         start_time(start_time_ticks),
         num_iterations(0) {}
 
-  ~PageFeatureState() {}
+  ~PageFeatureState() = default;
 };
 
 // Per-frame state

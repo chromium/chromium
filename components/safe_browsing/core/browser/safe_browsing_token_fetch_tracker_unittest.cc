@@ -13,7 +13,7 @@ namespace safe_browsing {
 
 class SafeBrowsingTokenFetchTrackerTest : public ::testing::Test {
  public:
-  SafeBrowsingTokenFetchTrackerTest() {}
+  SafeBrowsingTokenFetchTrackerTest() = default;
 
  protected:
   base::test::TaskEnvironment task_environment_{

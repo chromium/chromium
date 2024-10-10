@@ -110,7 +110,7 @@ class UrlCheckerDelegate
 
  protected:
   friend class base::RefCountedThreadSafe<UrlCheckerDelegate>;
-  virtual ~UrlCheckerDelegate() {}
+  virtual ~UrlCheckerDelegate() = default;
 };
 
 }  // namespace safe_browsing
