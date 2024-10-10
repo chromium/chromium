@@ -4259,6 +4259,15 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_ADAPTIVE_TOOLBAR_EDIT_SHORTCUT" desc="The accesibility text describing the adaptive toolbar settings page." is_accessibility_with_no_ui="true">
         Edit toolbar shortcut
       </message>
+      <message name="IDS_TOOLBAR_MOVE_TO_THE_BOTTOM" desc="The menu option for moving address bar th the bottom.">
+        Move address bar to the bottom
+      </message>
+      <message name="IDS_TOOLBAR_MOVE_TO_THE_TOP" desc="The menu option for moving address bar th the top.">
+        Move address bar to the top
+      </message>
+      <message name="IDS_TOOLBAR_COPY_LINK" desc="The menu option for copying link in the address bar.">
+        Copy link
+      </message>
 
       <!-- Main menu items -->
       <message name="IDS_MENU_UPDATE" desc="Menu item for updating chrome. [CHAR_LIMIT=24]">
