@@ -81,10 +81,6 @@ const user_manager::User* FakeUserManager::AddPublicAccountUser(
   return user;
 }
 
-const UserList& FakeUserManager::GetUsers() const {
-  return users_;
-}
-
 UserList FakeUserManager::GetUsersAllowedForMultiProfile() const {
   UserList result;
   for (UserList::const_iterator it = users_.begin(); it != users_.end(); ++it) {
@@ -226,23 +222,6 @@ bool FakeUserManager::IsKnownUser(const AccountId& account_id) const {
   return true;
 }
 
-const User* FakeUserManager::FindUser(const AccountId& account_id) const {
-  if (active_user_ != nullptr && active_user_->GetAccountId() == account_id)
-    return active_user_;
-
-  for (const User* user : users_) {
-    if (user->GetAccountId() == account_id) {
-      return user;
-    }
-  }
-
-  return nullptr;
-}
-
-User* FakeUserManager::FindUserAndModify(const AccountId& account_id) {
-  return const_cast<User*>(FindUser(account_id));
-}
-
 std::optional<std::string> FakeUserManager::GetOwnerEmail() {
   return GetLocalState() ? UserManagerImpl::GetOwnerEmail() : std::nullopt;
 }
@@ -257,31 +236,6 @@ bool FakeUserManager::IsUserLoggedIn() const {
 
 bool FakeUserManager::IsLoggedInAsUserWithGaiaAccount() const {
   return true;
-}
-
-bool FakeUserManager::IsLoggedInAsManagedGuestSession() const {
-  const User* active_user = GetActiveUser();
-  return active_user && active_user->GetType() == UserType::kPublicAccount;
-}
-
-bool FakeUserManager::IsLoggedInAsGuest() const {
-  const User* active_user = GetActiveUser();
-  return active_user && active_user->GetType() == UserType::kGuest;
-}
-
-bool FakeUserManager::IsLoggedInAsKioskApp() const {
-  const User* active_user = GetActiveUser();
-  return active_user ? active_user->GetType() == UserType::kKioskApp : false;
-}
-
-bool FakeUserManager::IsLoggedInAsWebKioskApp() const {
-  const User* active_user = GetActiveUser();
-  return active_user ? active_user->GetType() == UserType::kWebKioskApp : false;
-}
-
-bool FakeUserManager::IsLoggedInAsAnyKioskApp() const {
-  const User* active_user = GetActiveUser();
-  return active_user && active_user->IsKioskType();
 }
 
 bool FakeUserManager::IsLoggedInAsStub() const {

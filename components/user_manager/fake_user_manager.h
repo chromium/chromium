@@ -61,7 +61,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerImpl {
                                       bool is_ephemeral);
 
   // UserManager overrides.
-  const UserList& GetUsers() const override;
   UserList GetUsersAllowedForMultiProfile() const override;
   void UpdateUserAccountData(const AccountId& account_id,
                              const UserAccountData& account_data) override;
@@ -85,8 +84,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerImpl {
   const AccountId& GetOwnerAccountId() const override;
   void OnSessionStarted() override {}
   bool IsKnownUser(const AccountId& account_id) const override;
-  const User* FindUser(const AccountId& account_id) const override;
-  User* FindUserAndModify(const AccountId& account_id) override;
   void SaveUserOAuthStatus(const AccountId& account_id,
                            User::OAuthTokenStatus oauth_token_status) override {
   }
@@ -98,11 +95,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerImpl {
   bool IsCurrentUserNonCryptohomeDataEphemeral() const override;
   bool IsUserLoggedIn() const override;
   bool IsLoggedInAsUserWithGaiaAccount() const override;
-  bool IsLoggedInAsManagedGuestSession() const override;
-  bool IsLoggedInAsGuest() const override;
-  bool IsLoggedInAsKioskApp() const override;
-  bool IsLoggedInAsWebKioskApp() const override;
-  bool IsLoggedInAsAnyKioskApp() const override;
   bool IsLoggedInAsStub() const override;
   bool IsUserNonCryptohomeDataEphemeral(
       const AccountId& account_id) const override;
