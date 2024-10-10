@@ -7133,6 +7133,26 @@
             ]
         }
     ],
+    "CrabbyAvif": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_CrabbyAvif",
+                    "enable_features": [
+                        "CrabbyAvif"
+                    ]
+                }
+            ]
+        }
+    ],
     "CreditCardInfobarDisplayLength": [
         {
             "platforms": [
