@@ -166,7 +166,6 @@ int QuicSessionAttempt::DoCreateSession() {
       NetLogEventType::QUIC_SESSION_POOL_JOB_CONNECT, NetLogEventPhase::BEGIN,
       "require_confirmation", require_confirmation);
 
-  int rv;
   if (proxy_stream_) {
     std::string user_agent;
     if (http_user_agent_settings_) {
@@ -174,36 +173,35 @@ int QuicSessionAttempt::DoCreateSession() {
     }
     // Proxied connections are not on any specific network.
     network_ = handles::kInvalidNetworkHandle;
-    rv = pool()->CreateSessionOnProxyStream(
+    pool()->CreateSessionOnProxyStream(
         base::BindOnce(&QuicSessionAttempt::OnCreateSessionComplete,
                        weak_ptr_factory_.GetWeakPtr()),
         key(), quic_version_, cert_verify_flags_, require_confirmation,
         std::move(local_endpoint_), std::move(ip_endpoint_),
-        std::move(proxy_stream_), user_agent, net_log(), &session_, &network_);
+        std::move(proxy_stream_), user_agent, net_log(), network_);
+    return ERR_IO_PENDING;
   } else {
     if (base::FeatureList::IsEnabled(net::features::kAsyncQuicSession)) {
-      return pool()->CreateSessionAsync(
+      pool()->CreateSessionAsync(
           base::BindOnce(&QuicSessionAttempt::OnCreateSessionComplete,
                          weak_ptr_factory_.GetWeakPtr()),
           key(), quic_version_, cert_verify_flags_, require_confirmation,
           ip_endpoint_, metadata_, dns_resolution_start_time_,
-          dns_resolution_end_time_, net_log(), &session_, &network_);
+          dns_resolution_end_time_, net_log(), network_);
+      return ERR_IO_PENDING;
     }
-    rv = pool()->CreateSessionSync(
+    int rv = pool()->CreateSessionSync(
         key(), quic_version_, cert_verify_flags_, require_confirmation,
         ip_endpoint_, metadata_, dns_resolution_start_time_,
         dns_resolution_end_time_, net_log(), &session_, &network_);
-
+    if (rv == ERR_QUIC_PROTOCOL_ERROR) {
+      DCHECK(!session_);
+      HistogramProtocolErrorLocation(
+          JobProtocolErrorLocation::kCreateSessionFailedSync);
+    }
     DVLOG(1) << "Created session on network: " << network_;
+    return rv;
   }
-
-  if (rv == ERR_QUIC_PROTOCOL_ERROR) {
-    DCHECK(!session_);
-    HistogramProtocolErrorLocation(
-        JobProtocolErrorLocation::kCreateSessionFailedSync);
-  }
-
-  return rv;
 }
 
 int QuicSessionAttempt::DoCreateSessionComplete(int rv) {
@@ -355,19 +353,21 @@ int QuicSessionAttempt::DoConfirmConnection(int rv) {
   return OK;
 }
 
-void QuicSessionAttempt::OnCreateSessionComplete(int rv) {
+void QuicSessionAttempt::OnCreateSessionComplete(
+    base::expected<CreateSessionResult, int> result) {
   CHECK_EQ(next_state_, State::kCreateSessionComplete);
-
-  if (rv == ERR_QUIC_PROTOCOL_ERROR) {
-    HistogramProtocolErrorLocation(
-        JobProtocolErrorLocation::kCreateSessionFailedAsync);
-  }
-  if (rv == OK) {
-    DCHECK(session_);
+  if (result.has_value()) {
+    session_ = result->session;
+    network_ = result->network;
     DVLOG(1) << "Created session on network: " << network_;
+  } else {
+    if (result.error() == ERR_QUIC_PROTOCOL_ERROR) {
+      HistogramProtocolErrorLocation(
+          JobProtocolErrorLocation::kCreateSessionFailedAsync);
+    }
   }
 
-  rv = DoLoop(rv);
+  int rv = DoLoop(result.error_or(OK));
 
   delegate_->OnQuicSessionCreationComplete(rv);
 

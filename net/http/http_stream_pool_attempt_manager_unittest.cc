@@ -4742,4 +4742,72 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   DestroyHttpNetworkSession();
 }
 
+// Regression test for crbug.com/371894055.
+TEST_F(HttpStreamPoolAttemptManagerTest,
+       AsyncQuicSessionDestroyRequestBeforeSessionCreation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kAsyncQuicSession);
+
+  constexpr std::string_view kAltDestination = "https://alt.example.org";
+  const IPEndPoint kCommonEndPoint = MakeIPEndPoint("2001:db8::1", 443);
+
+  // Precondition: Create a QUIC session that can be shared for destinations
+  // that are resolved to kCommonEndPoint.
+  AddQuicData();
+
+  SequencedSocketData tcp_data1;
+  tcp_data1.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(&tcp_data1);
+
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(
+          ServiceEndpointBuilder().add_ip_endpoint(kCommonEndPoint).endpoint())
+      .CompleteStartSynchronously(OK);
+
+  StreamRequester requester1;
+  requester1.set_destination(kDefaultDestination)
+      .set_quic_version(quic_version())
+      .RequestStream(pool());
+  requester1.WaitForResult();
+  EXPECT_THAT(requester1.result(), Optional(IsOk()));
+
+  // Actual test: Create a request that starts a QuicSessionAttempt, which
+  // is later destroyed since there is a matching IP session.
+
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  MockConnectCompleter quic_completer;
+  MockQuicData quic_data(quic_version());
+  quic_data.AddConnect(&quic_completer);
+  quic_data.AddSocketDataToFactory(socket_factory());
+
+  SequencedSocketData tcp_data2;
+  tcp_data2.set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
+  socket_factory()->AddSocketDataProvider(&tcp_data2);
+
+  StreamRequester requester2;
+  requester2.set_destination(kAltDestination)
+      .set_quic_version(quic_version())
+      .RequestStream(pool());
+  ASSERT_FALSE(requester2.result().has_value());
+
+  // Provide a different IP address to start a QUIC attempt.
+  endpoint_request->set_crypto_ready(true)
+      .add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CallOnServiceEndpointsUpdated();
+  ASSERT_FALSE(requester2.result().has_value());
+
+  // Provide kCommonEndPoint so that the corresponding attempt manager cancel
+  // the in-flight QUIC attempt and use the existing session.
+  endpoint_request->set_crypto_ready(true)
+      .add_endpoint(
+          ServiceEndpointBuilder().add_ip_endpoint(kCommonEndPoint).endpoint())
+      .CallOnServiceEndpointsUpdated();
+
+  // Resume the QUIC attempt. This should not detect a dangling pointer.
+  quic_completer.Complete(OK);
+  requester2.WaitForResult();
+}
+
 }  // namespace net

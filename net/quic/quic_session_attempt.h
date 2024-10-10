@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/connection_endpoint_metadata.h"
 #include "net/base/http_user_agent_settings.h"
@@ -32,6 +33,13 @@ class QuicSessionPool;
 // retry on an alternate network if the system supports non-default networks.
 class NET_EXPORT_PRIVATE QuicSessionAttempt {
  public:
+  // Represents a successful QUIC session creation. Used for QUIC session
+  // creations that could complete asynchronously.
+  struct CreateSessionResult {
+    raw_ptr<QuicChromiumClientSession> session;
+    handles::NetworkHandle network = handles::kInvalidNetworkHandle;
+  };
+
   class Delegate {
    public:
     virtual ~Delegate() = default;
@@ -113,7 +121,7 @@ class NET_EXPORT_PRIVATE QuicSessionAttempt {
   int DoCryptoConnect(int rv);
   int DoConfirmConnection(int rv);
 
-  void OnCreateSessionComplete(int rv);
+  void OnCreateSessionComplete(base::expected<CreateSessionResult, int> result);
   void OnCryptoConnectComplete(int rv);
 
   void ResetSession();
