@@ -1325,23 +1325,29 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserServices.VerificationResult"
-    enum="BrowserServicesVerificationResult" expires_after="M114">
+    enum="BrowserServicesVerificationResult" expires_after="2025-03-15">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     The result of Digital Asset Link verification performed when starting a
     Trusted Web Activity.
+
+    Warning: this histogram was expired from M114 to 2024-10-10; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="BrowserServices.VerificationTime.Offline" units="ms"
-    expires_after="2024-09-15">
+    expires_after="2025-03-15">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     Triggered when Trusted Web Activity verification completes. Records how long
     it takes the device to realise it is offline and fall back to the cached
     result.
+
+    Warning: this histogram was expired from 2024-09-15 to 2024-10-10; data may
+    be missing.
   </summary>
 </histogram>
 
