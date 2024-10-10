@@ -14,6 +14,7 @@
 @protocol ProfileStateAgent;
 @protocol ProfileStateObserver;
 @class SceneState;
+@protocol StartupInformation;
 
 // Represents the state for a single Profile and responds to the state
 // changes and system events.
@@ -41,6 +42,9 @@
 // All agents that have been attached. Use -addAgent: and -removeAgent: to
 // add and remove agents.
 @property(nonatomic, readonly) NSArray<id<ProfileStateAgent>>* connectedAgents;
+
+// Container for startup information.
+@property(nonatomic, weak, readonly) id<StartupInformation> startupInformation;
 
 // The designated initializer.
 - (instancetype)initWithAppState:(AppState*)appState NS_DESIGNATED_INITIALIZER;

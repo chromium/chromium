@@ -96,6 +96,7 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/prefs:test_support",
     "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/application_delegate:test_support",
     "//ios/chrome/app/profile/test:test_support",
     "//ios/chrome/browser/promos_manager/model",
     "//ios/chrome/browser/promos_manager/model:constants",

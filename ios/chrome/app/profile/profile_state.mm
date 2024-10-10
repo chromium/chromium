@@ -8,15 +8,13 @@
 #import "base/ios/crb_protocol_observers.h"
 #import "base/memory/weak_ptr.h"
 #import "base/types/cxx23_to_underlying.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/profile/profile_state_agent.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-
-// TODO(crbug.com/353683675): Remove once each ProfileState -initStage is
-// managed separately (this requires some refactoring before it can happen).
-#import "ios/chrome/app/application_delegate/app_state.h"
 
 // A sub-class of CRBProtocolObservers that declares it conforms to the
 // ProfileStateObserver protocol to please the compiler as it can't see
@@ -153,6 +151,10 @@
       }
     }
   }
+}
+
+- (id<StartupInformation>)startupInformation {
+  return _appState.startupInformation;
 }
 
 #pragma mark - Public

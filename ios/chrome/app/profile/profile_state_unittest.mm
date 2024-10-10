@@ -7,6 +7,8 @@
 #import <optional>
 
 #import "base/test/task_environment.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/application_delegate/fake_startup_information.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/app/profile/profile_state_test_utils.h"
@@ -219,4 +221,17 @@ TEST_F(ProfileStateTest, foregroundScenes) {
   // The -foregroundScenes should now contains both scene2 and scene3.
   SetProfileStateInitStage(state, ProfileInitStage::kUIReady);
   EXPECT_NSEQ(state.foregroundScenes, (@[ scene2, scene3 ]));
+}
+
+// Ensures that startupInformation property is correctly set.
+TEST_F(ProfileStateTest, startupInformation) {
+  ProfileState* state = [[ProfileState alloc] initWithAppState:nil];
+  EXPECT_EQ(state.startupInformation, nil);
+
+  FakeStartupInformation* startupInformation =
+      [[FakeStartupInformation alloc] init];
+  AppState* appState =
+      [[AppState alloc] initWithStartupInformation:startupInformation];
+  state = [[ProfileState alloc] initWithAppState:appState];
+  EXPECT_EQ(state.startupInformation, startupInformation);
 }
