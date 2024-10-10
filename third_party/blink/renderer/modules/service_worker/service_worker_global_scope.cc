@@ -1523,12 +1523,10 @@ void ServiceWorkerGlobalScope::AbortCallbackForFetchEvent(
 void ServiceWorkerGlobalScope::StartFetchEvent(
     mojom::blink::DispatchFetchEventParamsPtr params,
     base::WeakPtr<CrossOriginResourcePolicyChecker> corp_checker,
-    std::optional<base::TimeTicks> created_time,
+    base::TimeTicks created_time,
     int event_id) {
   DCHECK(IsContextThread());
-  if (created_time.has_value()) {
-    RecordQueuingTime(created_time.value());
-  }
+  RecordQueuingTime(created_time);
 
   // This TRACE_EVENT is used for perf benchmark to confirm if all of fetch
   // events have completed. (crbug.com/736697)
