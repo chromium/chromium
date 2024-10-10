@@ -6,6 +6,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/ranges.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/solid_color_layer.h"
 #include "cc/slim/surface_layer.h"
@@ -304,6 +305,20 @@ scoped_refptr<cc::slim::SolidColorLayer> AddRoundedRectangle(
   return rrect;
 }
 
+static constexpr float kFloatTolerance = 0.001f;
+
+[[nodiscard]] bool AlmostEqual(float a, float b) {
+  return base::IsApproximatelyEqual(a, b, kFloatTolerance);
+}
+
+[[nodiscard]] bool IsLessThanOrEqual(float a, float b) {
+  return a < b || AlmostEqual(a, b);
+}
+
+[[nodiscard]] bool IsGreaterThanOrEqual(float a, float b) {
+  return a > b || AlmostEqual(a, b);
+}
+
 }  // namespace
 
 std::unique_ptr<BackForwardTransitionAnimator>
@@ -451,10 +466,8 @@ void BackForwardTransitionAnimator::OnGestureProgressed(
   CHECK_EQ(state_, State::kStarted);
   // `gesture.progress()` goes from 0.0 to 1.0 regardless of the edge being
   // swiped.
-  CHECK_GE(gesture.progress(), 0.f);
-  CHECK_LE(gesture.progress(), 1.f);
-  // TODO(crbug.com/40287990): Should check the number of KeyFrameModels
-  // is 1 (for scrim).
+  CHECK(IsGreaterThanOrEqual(gesture.progress(), 0.f));
+  CHECK(IsLessThanOrEqual(gesture.progress(), 1.f));
 
   float progress_delta =
       gesture.progress() - latest_progress_gesture_.progress();
@@ -1738,8 +1751,8 @@ BackForwardTransitionAnimator::ComputeAnimationValues(
     values.screenshot_offset_px *= -1;
   }
 
-  CHECK_GE(values.progress, 0.f);
-  CHECK_LE(values.progress, 1.f);
+  CHECK(IsGreaterThanOrEqual(values.progress, 0.f));
+  CHECK(IsLessThanOrEqual(values.progress, 1.f));
 
   return values;
 }
