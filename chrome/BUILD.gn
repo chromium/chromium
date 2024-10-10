@@ -1706,110 +1706,112 @@ if (is_win && enable_resource_allowlist_generation) {
 }
 
 if (is_linux || is_chromeos) {
-  group("linux_symbols") {
-    deps = [
-      ":angle_egl_symbols",
-      ":angle_gles_symbols",
-      ":chrome_crashpad_symbols",
-      ":chrome_symbols",
-    ]
-    if (is_linux) {
-      deps += [ ":swiftshader_vk_symbols" ]
+  if (!use_debug_fission) {
+    group("linux_symbols") {
+      deps = [
+        ":angle_egl_symbols",
+        ":angle_gles_symbols",
+        ":chrome_crashpad_symbols",
+        ":chrome_symbols",
+      ]
+      if (is_linux) {
+        deps += [ ":swiftshader_vk_symbols" ]
+      }
+      if (!is_chromeos) {
+        deps += [ ":angle_libvulkan_symbols" ]
+      }
+      if (build_with_internal_optimization_guide) {
+        deps += [ ":optimization_guide_symbols" ]
+      }
+    }
+    extract_symbols("chrome_symbols") {
+      binary = "$root_out_dir/chrome"
+
+      if (current_cpu == "x86") {
+        # GYP used "ia32" so keep that naming for back-compat.
+        symbol_file = "$root_out_dir/chrome.breakpad.ia32"
+      } else {
+        symbol_file = "$root_out_dir/chrome.breakpad.$current_cpu"
+      }
+
+      deps = [ ":chrome" ]
+    }
+    extract_symbols("chrome_crashpad_symbols") {
+      binary = "$root_out_dir/chrome_crashpad_handler"
+
+      if (current_cpu == "x86") {
+        # GYP used "ia32" so keep that naming for back-compat.
+        symbol_file = "$root_out_dir/crashpad.breakpad.ia32"
+      } else {
+        symbol_file = "$root_out_dir/crashpad.breakpad.$current_cpu"
+      }
+
+      deps = [ "//components/crash/core/app:chrome_crashpad_handler" ]
+    }
+    extract_symbols("swiftshader_vk_symbols") {
+      binary = "$root_out_dir/libvk_swiftshader.so"
+
+      if (current_cpu == "x86") {
+        # GYP used "ia32" so keep that naming for back-compat.
+        symbol_file = "$root_out_dir/libvk_swiftshader.breakpad.ia32"
+      } else {
+        symbol_file = "$root_out_dir/libvk_swiftshader.breakpad.$current_cpu"
+      }
+
+      deps = [ "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan" ]
+    }
+    extract_symbols("angle_egl_symbols") {
+      binary = "$root_out_dir/libEGL.so"
+
+      if (current_cpu == "x86") {
+        # GYP used "ia32" so keep that naming for back-compat.
+        symbol_file = "$root_out_dir/angle_libegl.breakpad.ia32"
+      } else {
+        symbol_file = "$root_out_dir/angle_libegl.breakpad.$current_cpu"
+      }
+
+      deps = [ "//third_party/angle:libEGL" ]
+    }
+    extract_symbols("angle_gles_symbols") {
+      binary = "$root_out_dir/libGLESv2.so"
+
+      if (current_cpu == "x86") {
+        # GYP used "ia32" so keep that naming for back-compat.
+        symbol_file = "$root_out_dir/angle_libgles.breakpad.ia32"
+      } else {
+        symbol_file = "$root_out_dir/angle_libgles.breakpad.$current_cpu"
+      }
+
+      deps = [ "//third_party/angle:libGLESv2" ]
     }
     if (!is_chromeos) {
-      deps += [ ":angle_libvulkan_symbols" ]
+      extract_symbols("angle_libvulkan_symbols") {
+        binary = "$root_out_dir/libvulkan.so.1"
+
+        if (current_cpu == "x86") {
+          # GYP used "ia32" so keep that naming for back-compat.
+          symbol_file = "$root_out_dir/angle_libvulkan.breakpad.ia32"
+        } else {
+          symbol_file = "$root_out_dir/angle_libvulkan.breakpad.$current_cpu"
+        }
+
+        deps = [ "//third_party/vulkan-loader/src:libvulkan" ]
+      }
     }
     if (build_with_internal_optimization_guide) {
-      deps += [ ":optimization_guide_symbols" ]
-    }
-  }
-  extract_symbols("chrome_symbols") {
-    binary = "$root_out_dir/chrome"
+      extract_symbols("optimization_guide_symbols") {
+        binary = "$root_out_dir/liboptimization_guide_internal.so"
+        if (current_cpu == "x86") {
+          # GYP used "ia32" so keep that naming for back-compat.
+          symbol_file =
+              "$root_out_dir/optimization_guide_internal.breakpad.ia32"
+        } else {
+          symbol_file =
+              "$root_out_dir/optimization_guide_internal.breakpad.$current_cpu"
+        }
 
-    if (current_cpu == "x86") {
-      # GYP used "ia32" so keep that naming for back-compat.
-      symbol_file = "$root_out_dir/chrome.breakpad.ia32"
-    } else {
-      symbol_file = "$root_out_dir/chrome.breakpad.$current_cpu"
-    }
-
-    deps = [ ":chrome" ]
-  }
-  extract_symbols("chrome_crashpad_symbols") {
-    binary = "$root_out_dir/chrome_crashpad_handler"
-
-    if (current_cpu == "x86") {
-      # GYP used "ia32" so keep that naming for back-compat.
-      symbol_file = "$root_out_dir/crashpad.breakpad.ia32"
-    } else {
-      symbol_file = "$root_out_dir/crashpad.breakpad.$current_cpu"
-    }
-
-    deps = [ "//components/crash/core/app:chrome_crashpad_handler" ]
-  }
-  extract_symbols("swiftshader_vk_symbols") {
-    binary = "$root_out_dir/libvk_swiftshader.so"
-
-    if (current_cpu == "x86") {
-      # GYP used "ia32" so keep that naming for back-compat.
-      symbol_file = "$root_out_dir/libvk_swiftshader.breakpad.ia32"
-    } else {
-      symbol_file = "$root_out_dir/libvk_swiftshader.breakpad.$current_cpu"
-    }
-
-    deps = [ "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan" ]
-  }
-  extract_symbols("angle_egl_symbols") {
-    binary = "$root_out_dir/libEGL.so"
-
-    if (current_cpu == "x86") {
-      # GYP used "ia32" so keep that naming for back-compat.
-      symbol_file = "$root_out_dir/angle_libegl.breakpad.ia32"
-    } else {
-      symbol_file = "$root_out_dir/angle_libegl.breakpad.$current_cpu"
-    }
-
-    deps = [ "//third_party/angle:libEGL" ]
-  }
-  extract_symbols("angle_gles_symbols") {
-    binary = "$root_out_dir/libGLESv2.so"
-
-    if (current_cpu == "x86") {
-      # GYP used "ia32" so keep that naming for back-compat.
-      symbol_file = "$root_out_dir/angle_libgles.breakpad.ia32"
-    } else {
-      symbol_file = "$root_out_dir/angle_libgles.breakpad.$current_cpu"
-    }
-
-    deps = [ "//third_party/angle:libGLESv2" ]
-  }
-  if (!is_chromeos) {
-    extract_symbols("angle_libvulkan_symbols") {
-      binary = "$root_out_dir/libvulkan.so.1"
-
-      if (current_cpu == "x86") {
-        # GYP used "ia32" so keep that naming for back-compat.
-        symbol_file = "$root_out_dir/angle_libvulkan.breakpad.ia32"
-      } else {
-        symbol_file = "$root_out_dir/angle_libvulkan.breakpad.$current_cpu"
+        deps = [ "//components/optimization_guide/internal:optimization_guide_internal" ]
       }
-
-      deps = [ "//third_party/vulkan-loader/src:libvulkan" ]
-    }
-  }
-  if (build_with_internal_optimization_guide) {
-    extract_symbols("optimization_guide_symbols") {
-      binary = "$root_out_dir/liboptimization_guide_internal.so"
-      if (current_cpu == "x86") {
-        # GYP used "ia32" so keep that naming for back-compat.
-        symbol_file =
-            "$root_out_dir/optimization_guide_internal.breakpad.ia32"
-      } else {
-        symbol_file =
-            "$root_out_dir/optimization_guide_internal.breakpad.$current_cpu"
-      }
-
-      deps = [ "//components/optimization_guide/internal:optimization_guide_internal" ]
     }
   }
 
