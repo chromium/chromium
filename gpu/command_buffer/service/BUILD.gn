@@ -489,6 +489,7 @@ target(link_target_type, "gles2_sources") {
         "shared_image/dawn_ozone_image_representation.cc",
         "shared_image/dawn_ozone_image_representation.h",
       ]
+      deps += [ "//third_party/libsync" ]
     }
   }
 
