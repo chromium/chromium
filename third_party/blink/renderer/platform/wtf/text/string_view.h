@@ -234,6 +234,11 @@ class WTF_EXPORT StringView {
 
   const void* Bytes() const { return bytes_; }
 
+  base::span<const uint8_t> RawByteSpan() const {
+    return {reinterpret_cast<const uint8_t*>(bytes_),
+            length_ * (Is8Bit() ? sizeof(LChar) : sizeof(UChar))};
+  }
+
   // This is not named impl() like String because it has different semantics.
   // String::impl() is never null if String::isNull() is false. For StringView
   // sharedImpl() can be null if the StringView was created with a non-zero

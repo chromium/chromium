@@ -263,9 +263,7 @@ ParkableStringImpl::HashString(StringImpl* string) {
   // Also include encoding in the digest, otherwise two strings with identical
   // byte content but different encoding will be assumed equal, leading to
   // crashes when one is replaced by the other one.
-  std::array<uint8_t, 1> is_8bit;
-  is_8bit[0] = string->Is8Bit();
-  digestor.Update(is_8bit);
+  UpdateDigestWithEncoding(&digestor, string->Is8Bit());
   digestor.Finish(digest_result);
 
   // The only case where this can return false in BoringSSL is an allocation
@@ -279,6 +277,14 @@ ParkableStringImpl::HashString(StringImpl* string) {
   // Unless SHA256 is... not 256 bits?
   DCHECK(digest_result.size() == kDigestSize);
   return std::make_unique<SecureDigest>(digest_result);
+}
+
+// static
+void ParkableStringImpl::UpdateDigestWithEncoding(Digestor* digestor,
+                                                  bool is_8bit) {
+  std::array<uint8_t, 1> extra_data;
+  extra_data[0] = is_8bit ? 1 : 0;
+  digestor->Update(extra_data);
 }
 
 // static

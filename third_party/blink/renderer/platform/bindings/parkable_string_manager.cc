@@ -183,8 +183,19 @@ scoped_refptr<ParkableStringImpl> ParkableStringManager::Add(
   ScheduleAgingTaskIfNeeded();
 
   auto string_impl = string;
-  if (!digest)
+  if (!digest) {
     digest = ParkableStringImpl::HashString(string_impl.get());
+  } else {
+#if DCHECK_IS_ON()
+    // Verify that the provided hash is the same that we would have computed.
+    // Otherwise the lookups below would not correctly deduplicate strings.
+    std::unique_ptr<ParkableStringImpl::SecureDigest> expected_digest =
+        ParkableStringImpl::HashString(string_impl.get());
+    base::span<const uint8_t> expected_span(*expected_digest);
+    base::span<const uint8_t> provided_span(*digest);
+    CHECK_EQ(expected_span, provided_span);
+#endif  // DCHECK_IS_ON()
+  }
   DCHECK(digest.get());
 
   auto it = unparked_strings_.find(digest.get());
