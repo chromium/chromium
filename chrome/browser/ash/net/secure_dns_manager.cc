@@ -491,9 +491,9 @@ void SecureDnsManager::ResetShillState() {
   }
   auto* handler = NetworkHandler::Get()->network_configuration_handler();
   handler->SetManagerProperty(shill::kDOHIncludedDomainsProperty,
-                              base::Value());
+                              base::Value(base::Value::List()));
   handler->SetManagerProperty(shill::kDOHExcludedDomainsProperty,
-                              base::Value());
+                              base::Value(base::Value::List()));
   handler->SetManagerProperty(
       shill::kDNSProxyDOHProvidersProperty,
       base::Value(GetProviders(SecureDnsConfig::kModeOff, /*templates=*/"")));
