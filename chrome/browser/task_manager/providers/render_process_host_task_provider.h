@@ -18,9 +18,9 @@ namespace task_manager {
 
 class ChildProcessTask;
 
-// This provides tasks that represent RenderProcessHost processes. It does so by
-// listening to the notification service for the creation and destruction of the
-// RenderProcessHost.
+// This provides tasks that represent RenderProcessHost processes. It tracks the
+// RPHs through the RenderProcessHostCreationObserver and
+// RenderProcessHostObserver observer interfaces.
 class RenderProcessHostTaskProvider
     : public TaskProvider,
       public content::RenderProcessHostCreationObserver,
