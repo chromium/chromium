@@ -242,6 +242,13 @@ void LensOmniboxClient::OnAutocompleteAccept(
                  thumbnailRemoved:thumbnail_removed_in_session_];
 }
 
+void LensOmniboxClient::OnThumbnailOnlyAccept() {
+  // The destinationURL is not used for multimodal suggestions.
+  [delegate_ omniboxDidAcceptText:u""
+                   destinationURL:GURL()
+                 thumbnailRemoved:NO];
+}
+
 base::WeakPtr<OmniboxClient> LensOmniboxClient::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }

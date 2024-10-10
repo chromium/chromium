@@ -260,6 +260,11 @@ class OmniboxClient {
       const AutocompleteMatch& alternative_nav_match,
       IDNA2008DeviationCharacter deviation_char_in_hostname) = 0;
 
+  // Called when the input is accepted with a thumbnail and no user text. This
+  // is required because there is no verbatim match when the input is just an
+  // image without text.
+  virtual void OnThumbnailOnlyAccept() {}
+
   // Called when the view should update itself without restoring any tab state.
   virtual void OnInputInProgress(bool in_progress) {}
 

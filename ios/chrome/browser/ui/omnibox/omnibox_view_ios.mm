@@ -518,10 +518,16 @@ void OmniboxViewIOS::OnAccept() {
   base::RecordAction(UserMetricsAction("MobileOmniboxUse"));
   base::RecordAction(UserMetricsAction("IOS.Omnibox.AcceptDefaultSuggestion"));
 
-  // TODO(crbug.com/359150039): handle accept with empty text.
   if (model()) {
     AcceptThumbnailEdits();
-    model()->OpenSelection();
+    // The omnibox edit model doesn't support accepting input with no text.
+    // Delegate the call to the client instead.
+    if (OmniboxClient* client = controller()->client();
+        client && !field_.text.length) {
+      client->OnThumbnailOnlyAccept();
+    } else {
+      model()->OpenSelection();
+    }
   }
   RevertAll();
 }
