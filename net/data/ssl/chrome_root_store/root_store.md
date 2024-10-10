@@ -1,6 +1,6 @@
 <!-- mdformat off(generated) -->
 <!-- mdlint off(generated) -->
-Version: 16
+Version: 17
 
 SHA 256 Hash | Subject | NotBefore | NotAfter
 ---|---|---|---
@@ -106,7 +106,6 @@ d43af9b35473755c9684fc06d7d8cb70ee5c28e773fb294eb41ee71722924d24 | CN=UCA Extend
 3417bb06cc6007da1b961c920b8ab4ce3fad820e4aa30b9acbc4a74ebdcebc65 | CN=SSL.com Root Certification Authority ECC,O=SSL Corporation,L=Houston,ST=Texas,C=US | 2016-02-12 | 2041-02-12
 85666a562ee0be5ce925c1d8890a6f76a87ec16d4d7d5f29ea7419cf20123b69 | CN=SSL.com Root Certification Authority RSA,O=SSL Corporation,L=Houston,ST=Texas,C=US | 2016-02-12 | 2041-02-12
 62dd0be9b9f50a163ea0f8e75c053b1eca57ea55c8688f647c6881f2c8357b95 | CN=SwissSign Gold CA - G2,O=SwissSign AG,C=CH | 2006-10-25 | 2036-10-25
-be6c4da2bbb9ba59b6f3939768374246c3c005993fa98f020d1dedbed48a81d5 | CN=SwissSign Silver CA - G2,O=SwissSign AG,C=CH | 2006-10-25 | 2036-10-25
 59769007f7685d0fcd50872f9f95d5755a5b2b457d81f3692b610a98672f0e1b | CN=TWCA Global Root CA,OU=Root CA,O=TAIWAN-CA,C=TW | 2012-06-27 | 2030-12-31
 bfd88fe1101c41ae3e801bf8be56350ee9bad1a6b9bd515edc5c6d5b8711ac44 | CN=TWCA Root Certification Authority,OU=Root CA,O=TAIWAN-CA,C=TW | 2008-08-28 | 2030-12-31
 dd6936fe21f8f077c123a1a521c12224f72255b73e03a7260693e8a24b0fa389 | CN=TeliaSonera Root CA v1,O=TeliaSonera | 2007-10-18 | 2032-10-18
