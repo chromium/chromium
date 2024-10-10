@@ -5,13 +5,13 @@
 package org.chromium.chrome.browser.tabmodel;
 
 /**
- * A factory that creates a concrete subclass of {@link TabGroupModelFilterBase} for {@link
+ * A factory that creates a concrete subclass of {@link TabGroupModelFilterInternal} for {@link
  * TabModel}s.
  */
-public interface TabGroupModelFilterFactory {
+interface TabGroupModelFilterFactory {
     /**
      * @param model The {@link TabModel} to serve as base for the new filter.
      * @return A new {@link TabGroupModelFilterBase} for {@code model}.
      */
-    TabGroupModelFilterBase createTabGroupModelFilter(TabModel model);
+    /*package*/ TabGroupModelFilterInternal createTabGroupModelFilter(TabModel model);
 }
