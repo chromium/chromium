@@ -1,19 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
     <!-- Experimental enterprise plus_addresses feature strings -->
-    <!-- TODO(crbug.com/371923550): Remove this file once the pending Android
-         strings have also been migrated. -->
-    <message name="IDS_PLUS_ADDRESS_MODEL_REFRESH_BUTTON_ACCESSIBLE_NAME_ANDROID_TO_MIGRATE" desc="The acessible name of the refresh button on the plus address modal" formatter_data="android_java" translateable="false">
-      Refresh
-    </message>
-    <message name="IDS_PLUS_ADDRESS_MODEL_REFRESH_TEMPORARY_LABEL_CONTENT_ANDROID_TO_MIGRATE" desc="The content shown in the plus address label of the modal while a refresh is ongoing" formatter_data="android_java" translateable="false">
-      Refreshing...
-    </message>
-    <!-- Android settings management entry -->
-    <message name="IDS_PLUS_ADDRESS_SETTINGS_ENTRY_TITLE" desc="Settings entry title for the setting preference that opens plus address management UI." translateable="false" formatter_data="android_java">
-      Plus Addresses
-    </message>
-    <message name="IDS_PLUS_ADDRESS_SETTINGS_ENTRY_SUMMARY" desc="Settings entry summary for the setting preference that opens plus address management UI." translateable="false" formatter_data="android_java">
-      Manage plus addresses you've created
-    </message>
+    <!-- TODO(crbug.com/371923550): Remove this file. -->
 </grit-part>

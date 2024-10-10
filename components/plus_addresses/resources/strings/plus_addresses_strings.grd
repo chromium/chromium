@@ -111,6 +111,94 @@ if we want to translate this file.
     <!-- Pseudolocales -->
     <output filename="plus_addresses_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
     <output filename="plus_addresses_strings_en-XA.pak" type="data_package" lang="en-XA" />
+    <!-- On Android, output some strings into Android's xml string format.
+         These strings are tagged with formatter_data="android_java" -->
+    <if expr="is_android">
+      <output filename="java/res/values-af/plus_addresses_strings.xml" lang="af" type="android" context="android_java" />
+      <output filename="java/res/values-am/plus_addresses_strings.xml" lang="am" type="android" context="android_java" />
+      <output filename="java/res/values-ar/plus_addresses_strings.xml" lang="ar" type="android" context="android_java" />
+      <output filename="java/res/values-as/plus_addresses_strings.xml" lang="as" type="android" context="android_java" />
+      <output filename="java/res/values-az/plus_addresses_strings.xml" lang="az" type="android" context="android_java" />
+      <output filename="java/res/values-be/plus_addresses_strings.xml" lang="be" type="android" context="android_java" />
+      <output filename="java/res/values-bg/plus_addresses_strings.xml" lang="bg" type="android" context="android_java" />
+      <output filename="java/res/values-bn/plus_addresses_strings.xml" lang="bn" type="android" context="android_java" />
+      <output filename="java/res/values-bs/plus_addresses_strings.xml" lang="bs" type="android" context="android_java" />
+      <output filename="java/res/values-ca/plus_addresses_strings.xml" lang="ca" type="android" context="android_java" />
+      <output filename="java/res/values-cs/plus_addresses_strings.xml" lang="cs" type="android" context="android_java" />
+      <output filename="java/res/values-da/plus_addresses_strings.xml" lang="da" type="android" context="android_java" />
+      <output filename="java/res/values-de/plus_addresses_strings.xml" lang="de" type="android" context="android_java" />
+      <output filename="java/res/values-el/plus_addresses_strings.xml" lang="el" type="android" context="android_java" />
+      <output filename="java/res/values/plus_addresses_strings.xml" lang="en" type="android" context="android_java" />
+      <output filename="java/res/values-en-rGB/plus_addresses_strings.xml" lang="en-GB" type="android" context="android_java" />
+      <output filename="java/res/values-es/plus_addresses_strings.xml" lang="es" type="android" context="android_java" />
+      <output filename="java/res/values-es-rUS/plus_addresses_strings.xml" lang="es-419" type="android" context="android_java" />
+      <output filename="java/res/values-et/plus_addresses_strings.xml" lang="et" type="android" context="android_java" />
+      <output filename="java/res/values-eu/plus_addresses_strings.xml" lang="eu" type="android" context="android_java" />
+      <output filename="java/res/values-fa/plus_addresses_strings.xml" lang="fa" type="android" context="android_java" />
+      <output filename="java/res/values-fi/plus_addresses_strings.xml" lang="fi" type="android" context="android_java" />
+      <output filename="java/res/values-tl/plus_addresses_strings.xml" lang="fil" type="android" context="android_java" />
+      <output filename="java/res/values-fr/plus_addresses_strings.xml" lang="fr" type="android" context="android_java" />
+      <output filename="java/res/values-fr-rCA/plus_addresses_strings.xml" lang="fr-CA" type="android" context="android_java" />
+      <output filename="java/res/values-gl/plus_addresses_strings.xml" lang="gl" type="android" context="android_java" />
+      <output filename="java/res/values-gu/plus_addresses_strings.xml" lang="gu" type="android" context="android_java" />
+      <output filename="java/res/values-iw/plus_addresses_strings.xml" lang="he" type="android" context="android_java" />
+      <output filename="java/res/values-hi/plus_addresses_strings.xml" lang="hi" type="android" context="android_java" />
+      <output filename="java/res/values-hr/plus_addresses_strings.xml" lang="hr" type="android" context="android_java" />
+      <output filename="java/res/values-hu/plus_addresses_strings.xml" lang="hu" type="android" context="android_java" />
+      <output filename="java/res/values-hy/plus_addresses_strings.xml" lang="hy" type="android" context="android_java" />
+      <output filename="java/res/values-in/plus_addresses_strings.xml" lang="id" type="android" context="android_java" />
+      <output filename="java/res/values-is/plus_addresses_strings.xml" lang="is" type="android" context="android_java" />
+      <output filename="java/res/values-it/plus_addresses_strings.xml" lang="it" type="android" context="android_java" />
+      <output filename="java/res/values-ja/plus_addresses_strings.xml" lang="ja" type="android" context="android_java" />
+      <output filename="java/res/values-ka/plus_addresses_strings.xml" lang="ka" type="android" context="android_java" />
+      <output filename="java/res/values-kk/plus_addresses_strings.xml" lang="kk" type="android" context="android_java" />
+      <output filename="java/res/values-km/plus_addresses_strings.xml" lang="km" type="android" context="android_java" />
+      <output filename="java/res/values-kn/plus_addresses_strings.xml" lang="kn" type="android" context="android_java" />
+      <output filename="java/res/values-ko/plus_addresses_strings.xml" lang="ko" type="android" context="android_java" />
+      <output filename="java/res/values-ky/plus_addresses_strings.xml" lang="ky" type="android" context="android_java" />
+      <output filename="java/res/values-lo/plus_addresses_strings.xml" lang="lo" type="android" context="android_java" />
+      <output filename="java/res/values-lt/plus_addresses_strings.xml" lang="lt" type="android" context="android_java" />
+      <output filename="java/res/values-lv/plus_addresses_strings.xml" lang="lv" type="android" context="android_java" />
+      <output filename="java/res/values-mk/plus_addresses_strings.xml" lang="mk" type="android" context="android_java" />
+      <output filename="java/res/values-ml/plus_addresses_strings.xml" lang="ml" type="android" context="android_java" />
+      <output filename="java/res/values-mn/plus_addresses_strings.xml" lang="mn" type="android" context="android_java" />
+      <output filename="java/res/values-mr/plus_addresses_strings.xml" lang="mr" type="android" context="android_java" />
+      <output filename="java/res/values-ms/plus_addresses_strings.xml" lang="ms" type="android" context="android_java" />
+      <output filename="java/res/values-my/plus_addresses_strings.xml" lang="my" type="android" context="android_java" />
+      <output filename="java/res/values-ne/plus_addresses_strings.xml" lang="ne" type="android" context="android_java" />
+      <output filename="java/res/values-nl/plus_addresses_strings.xml" lang="nl" type="android" context="android_java" />
+      <output filename="java/res/values-nb/plus_addresses_strings.xml" lang="no" type="android" context="android_java" />
+      <output filename="java/res/values-or/plus_addresses_strings.xml" lang="or" type="android" context="android_java" />
+      <output filename="java/res/values-pa/plus_addresses_strings.xml" lang="pa" type="android" context="android_java" />
+      <output filename="java/res/values-pl/plus_addresses_strings.xml" lang="pl" type="android" context="android_java" />
+      <output filename="java/res/values-pt-rBR/plus_addresses_strings.xml" lang="pt-BR" type="android" context="android_java" />
+      <output filename="java/res/values-pt-rPT/plus_addresses_strings.xml" lang="pt-PT" type="android" context="android_java" />
+      <output filename="java/res/values-ro/plus_addresses_strings.xml" lang="ro" type="android" context="android_java" />
+      <output filename="java/res/values-ru/plus_addresses_strings.xml" lang="ru" type="android" context="android_java" />
+      <output filename="java/res/values-si/plus_addresses_strings.xml" lang="si" type="android" context="android_java" />
+      <output filename="java/res/values-sk/plus_addresses_strings.xml" lang="sk" type="android" context="android_java" />
+      <output filename="java/res/values-sl/plus_addresses_strings.xml" lang="sl" type="android" context="android_java" />
+      <output filename="java/res/values-sq/plus_addresses_strings.xml" lang="sq" type="android" context="android_java" />
+      <output filename="java/res/values-sr/plus_addresses_strings.xml" lang="sr" type="android" context="android_java" />
+      <output filename="java/res/values-b+sr+Latn/plus_addresses_strings.xml" lang="sr-Latn" type="android" context="android_java" />
+      <output filename="java/res/values-sv/plus_addresses_strings.xml" lang="sv" type="android" context="android_java" />
+      <output filename="java/res/values-sw/plus_addresses_strings.xml" lang="sw" type="android" context="android_java" />
+      <output filename="java/res/values-ta/plus_addresses_strings.xml" lang="ta" type="android" context="android_java" />
+      <output filename="java/res/values-te/plus_addresses_strings.xml" lang="te" type="android" context="android_java" />
+      <output filename="java/res/values-th/plus_addresses_strings.xml" lang="th" type="android" context="android_java" />
+      <output filename="java/res/values-tr/plus_addresses_strings.xml" lang="tr" type="android" context="android_java" />
+      <output filename="java/res/values-uk/plus_addresses_strings.xml" lang="uk" type="android" context="android_java" />
+      <output filename="java/res/values-ur/plus_addresses_strings.xml" lang="ur" type="android" context="android_java" />
+      <output filename="java/res/values-uz/plus_addresses_strings.xml" lang="uz" type="android" context="android_java" />
+      <output filename="java/res/values-vi/plus_addresses_strings.xml" lang="vi" type="android" context="android_java" />
+      <output filename="java/res/values-zh-rCN/plus_addresses_strings.xml" lang="zh-CN" type="android" context="android_java" />
+      <output filename="java/res/values-zh-rHK/plus_addresses_strings.xml" lang="zh-HK" type="android" context="android_java" />
+      <output filename="java/res/values-zh-rTW/plus_addresses_strings.xml" lang="zh-TW" type="android" context="android_java" />
+      <output filename="java/res/values-zu/plus_addresses_strings.xml" lang="zu" type="android" context="android_java" />
+      <!-- Pseudolocales -->
+      <output filename="java/res/values-ar-rXB/plus_addresses_strings.xml" lang="ar-XB" type="android" context="android_java" />
+      <output filename="java/res/values-en-rXA/plus_addresses_strings.xml" lang="en-XA" type="android" context="android_java" />
+    </if>
   </outputs>
   <translations>
     <!-- TODO(crbug.com/...)
@@ -465,6 +553,16 @@ if we want to translate this file.
       <message name="IDS_PLUS_ADDRESS_ALL_PLUS_ADDRESSES_BOTTOMSHEET_QUERY_HINT_ANDROID" desc="The text shown in the search field of the bottom sheet that shows the user the list of all plus addresses." translateable="false">
         Search hint placeholder
       </message>
+
+            <!-- Android settings management entry -->
+      <if expr="is_android">
+        <message name="IDS_PLUS_ADDRESS_SETTINGS_ENTRY_TITLE" desc="Settings entry title for the setting preference that opens plus address management UI on Android." translateable="false" formatter_data="android_java">
+          Plus Addresses
+        </message>
+        <message name="IDS_PLUS_ADDRESS_SETTINGS_ENTRY_SUMMARY" desc="Settings entry summary for the setting preference that opens plus address management UI on Android." translateable="false" formatter_data="android_java">
+          Manage plus addresses you've created
+        </message>
+      </if>
     </messages>
   </release>
 </grit>
