@@ -24,6 +24,7 @@
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
 #include "ui/events/ozone/evdev/event_device_util.h"
 #include "ui/events/ozone/evdev/numberpad_metrics.h"
+#include "ui/events/ozone/features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/events/ozone/evdev/numberpad_metrics.h"
@@ -39,6 +40,10 @@ const int kKeyRepeatValue = 2;
 
 // Values for the EV_SW code.
 const int kSwitchStylusInserted = SW_PEN_INSERTED;
+
+// Telephony Device Page (0x0B) Phone Mute (0x2F) is defined in
+// https://usb.org/sites/default/files/hut1_5.pdf.
+const int kTelephonyDevicePhoneMute = 0x0b002f;
 
 constexpr unsigned int kModifierEvdevCodes[] = {
     KEY_LEFTALT,  KEY_RIGHTALT,  KEY_LEFTMETA,  KEY_RIGHTMETA,
@@ -84,6 +89,10 @@ EventConverterEvdevImpl::EventConverterEvdevImpl(
     if (EvdevBitIsSet(key_bits.data(), i)) {
       EvdevSetUint64Bit(key_bits_.data(), i);
     }
+  }
+
+  if (base::FeatureList::IsEnabled(kBlockTelephonyDevicePhoneMute)) {
+    block_telephony_device_phone_mute_ = true;
   }
 }
 
@@ -276,6 +285,18 @@ void EventConverterEvdevImpl::OnKeyChange(unsigned int key,
                                           const base::TimeTicks& timestamp) {
   if (key > KEY_MAX)
     return;
+
+  // TODO: crbug.com/356306613 - Sync mute state between telephony devices and
+  // CrOS
+  if (block_telephony_device_phone_mute_) {
+    // Ignore Telephony Phone Mute scan code so that it does not toggle system
+    // mic mute to resolve user confusions. We don't want to block `KEY_MICMUTE`
+    // as there are other scan codes that map to the same key code. Not suitable
+    // to use `blocked_keys_`.
+    if (key == KEY_MICMUTE && last_scan_code_ == kTelephonyDevicePhoneMute) {
+      return;
+    }
+  }
 
   if (down == key_state_.test(key))
     return;

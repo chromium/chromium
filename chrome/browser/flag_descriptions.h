@@ -3536,6 +3536,9 @@ extern const char kAutocorrectUseReplaceSurroundingTextDescription[];
 extern const char kBatteryBadgeIconName[];
 extern const char kBatteryBadgeIconDescription[];
 
+extern const char kBlockTelephonyDevicePhoneMuteName[];
+extern const char kBlockTelephonyDevicePhoneMuteDescription[];
+
 extern const char kBluetoothAudioLEAudioOnlyName[];
 extern const char kBluetoothAudioLEAudioOnlyDescription[];
 

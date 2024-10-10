@@ -7783,6 +7783,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAllowScrollSettingsDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kAllowScrollSettings)},
 
+    {"block-telephony-device-phone-mute",
+     flag_descriptions::kBlockTelephonyDevicePhoneMuteName,
+     flag_descriptions::kBlockTelephonyDevicePhoneMuteDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ui::kBlockTelephonyDevicePhoneMute)},
+
     {"enable-fast-ink-for-software-cursor",
      flag_descriptions::kEnableFastInkForSoftwareCursorName,
      flag_descriptions::kEnableFastInkForSoftwareCursorDescription, kOsCrOS,

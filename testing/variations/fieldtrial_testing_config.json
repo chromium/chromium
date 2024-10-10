@@ -3373,6 +3373,21 @@
             ]
         }
     ],
+    "BlockTelephonyDevicePhoneMute": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "BlockTelephonyDevicePhoneMute"
+                    ]
+                }
+            ]
+        }
+    ],
     "BluetoothQualityReport": [
         {
             "platforms": [

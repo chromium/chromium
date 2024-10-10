@@ -6145,6 +6145,12 @@ const char kBatteryBadgeIconDescription[] =
     "Enables smaller battery badge icons for increased legibility of the "
     "battery percentage.";
 
+const char kBlockTelephonyDevicePhoneMuteName[] =
+    "Block Telephony Device Phone Mute";
+const char kBlockTelephonyDevicePhoneMuteDescription[] =
+    "Block telephony device phone mute HID code so it does not toggle ChromeOS "
+    "system microphone mute.";
+
 const char kBluetoothAudioLEAudioOnlyName[] = "Bluetooth Audio LE Audio Only";
 const char kBluetoothAudioLEAudioOnlyDescription[] =
     "Enable Bluetooth LE audio and disable classic profiles "
