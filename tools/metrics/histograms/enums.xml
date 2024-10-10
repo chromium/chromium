@@ -1720,16 +1720,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="1" label="Consistent"/>
 </enum>
 
-<enum name="BooleanContainsPrice">
-  <int value="0" label="Does not contain price"/>
-  <int value="1" label="Contains price"/>
-</enum>
-
-<enum name="BooleanContainsPriceDrop">
-  <int value="0" label="Does not contain price drop"/>
-  <int value="1" label="Contains price drop"/>
-</enum>
-
 <enum name="BooleanCorrect">
   <int value="0" label="Incorrect"/>
   <int value="1" label="Correct"/>
@@ -1861,11 +1851,6 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="1" label="Foreground"/>
 </enum>
 
-<enum name="BooleanIsAddToCart">
-  <int value="0" label="Not Add-to-cart"/>
-  <int value="1" label="Is Add-to-cart"/>
-</enum>
-
 <enum name="BooleanIsDarkColorScheme">
   <summary>
     A boolean for whether the web content is dark or light color scheme
@@ -1879,19 +1864,9 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="1" label="File backed"/>
 </enum>
 
-<enum name="BooleanIsProductDetailPage">
-  <int value="0" label="Is not a product detail page"/>
-  <int value="1" label="Is a product detail page"/>
-</enum>
-
 <enum name="BooleanIsTopLevel">
   <int value="0" label="Not Top Level"/>
   <int value="1" label="Top Level"/>
-</enum>
-
-<enum name="BooleanIsTransaction">
-  <int value="0" label="Not Transaction"/>
-  <int value="1" label="Is Transaction"/>
 </enum>
 
 <enum name="BooleanKnown">
@@ -2921,21 +2896,6 @@ Called by update_net_error_codes.py.-->
   <int value="505" label="505: HTTP Version Not Supported"/>
 </enum>
 
-<enum name="CommerceHeuristicsDataSource">
-  <summary>Sources of commerce heuristics data.</summary>
-  <int value="0" label="FromComponent"/>
-  <int value="1" label="FromResource"/>
-  <int value="2" label="FromFeatureParameter"/>
-  <int value="3" label="Missing"/>
-</enum>
-
-<enum name="CommerceIconInteractionState">
-  <int value="0" label="Clicked (not expanded)"/>
-  <int value="1" label="Clicked (after expansion)"/>
-  <int value="2" label="Not clicked (not expanded)"/>
-  <int value="3" label="Not clicked (after expansion)"/>
-</enum>
-
 <enum name="Companion.PhFeedback">
   <int value="1" label="Thumbs up"/>
   <int value="2" label="Thumbs down"/>
@@ -2983,26 +2943,6 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Changed from Unavailable To Available"/>
   <int value="2" label="Changed from Available To Unavailable"/>
   <int value="3" label="Changed from Available To Available"/>
-</enum>
-
-<enum name="CompareEntryPointTrigger">
-  <summary>
-    The different ways to trigger a compare proactive entry point.
-  </summary>
-  <int value="0" label="From Selection"/>
-  <int value="1" label="From Navigation"/>
-</enum>
-
-<enum name="CompareTableColumnAction">
-  <summary>
-    The different ways a comparison table's columns can be modified.
-  </summary>
-  <int value="0" label="Remove"/>
-  <int value="1" label="Changed order (drag-and-drop)"/>
-  <int value="2" label="Add from suggested"/>
-  <int value="3" label="Update from suggested"/>
-  <int value="4" label="Add from recently viewed"/>
-  <int value="5" label="Update from recently viewed"/>
 </enum>
 
 <enum name="ComponentAvailability">
@@ -4541,16 +4481,6 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="5" label="CORS"/>
   <int value="6" label="EnterprisePolicy"/>
 </enum>
-
-<!-- LINT.IfChange(DiscountClusterType) -->
-
-<enum name="DiscountClusterType">
-  <int value="0" label="Unspecified"/>
-  <int value="1" label="OfferLevel"/>
-  <int value="2" label="PageLevel"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/commerce/core/commerce_types.h:DiscountClusterType) -->
 
 <enum name="DiskCacheError">
   <summary>Error codes defined in net/disk_cache/errors.h</summary>
@@ -26855,20 +26785,6 @@ Called by update_use_counter_css.py.-->
   <int value="10" label="Adjust Selection Reset"/>
 </enum>
 
-<enum name="MerchantTrustBottomSheetOpenedSource">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="From message"/>
-  <int value="2" label="From page info"/>
-</enum>
-
-<enum name="MerchantTrustMessageClearReason">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Navigate to same domain"/>
-  <int value="2" label="Navigate to different domain"/>
-  <int value="3" label="Message context is no longer valid"/>
-  <int value="4" label="Switch to different webcontents"/>
-</enum>
-
 <enum name="MessageAction">
   <int value="0" label="Dismiss"/>
   <int value="1" label="Snooze"/>
@@ -28104,14 +28020,6 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Before Commit"/>
   <int value="2" label="Before First Paint"/>
   <int value="3" label="After First Paint"/>
-</enum>
-
-<enum name="ParcelRequestStatus">
-  <summary>Request status from parcel tracking server</summary>
-  <int value="0" label="Request succeeded"/>
-  <int value="1" label="Invalid parcel identifiers"/>
-  <int value="2" label="Server error"/>
-  <int value="3" label="Error parsing server response"/>
 </enum>
 
 <enum name="PasswordAccessLossWarningTriggers">
@@ -29436,39 +29344,9 @@ Called by update_net_error_codes.py.-->
   <int value="23" label="Page load not predicted to be painful."/>
 </enum>
 
-<enum name="PriceInsightsIconLabelType">
-  <int value="0" label="No label"/>
-  <int value="1" label="Price is low"/>
-  <int value="2" label="Price is high"/>
-</enum>
-
-<enum name="PriceInsightsPriceBucket">
-  <int value="0" label="Price bucket unknown"/>
-  <int value="1" label="Price low"/>
-  <int value="2" label="Price typical"/>
-  <int value="3" label="Price high"/>
-</enum>
-
-<enum name="PriceNotificationEmailState">
-  <int value="0" label="Enabled"/>
-  <int value="1" label="Disabled"/>
-  <int value="2" label="Not responded"/>
-</enum>
-
-<enum name="PriceNotificationProductStatus">
-  <int value="0" label="Product is Tracked"/>
-  <int value="1" label="Product is Untracked"/>
-</enum>
-
 <enum name="PriceNotificationTrackingSource">
   <int value="0" label="Price tracking"/>
   <int value="1" label="Price insights"/>
-</enum>
-
-<enum name="PriceTrackingPromoOptInFlow">
-  <int value="0" label="First time"/>
-  <int value="1" label="Enable Price Tracking"/>
-  <int value="2" label="Re-enable Notifications"/>
 </enum>
 
 <enum name="PrimaryButtonRight">
@@ -29714,17 +29592,6 @@ Called by update_net_error_codes.py.-->
   <int value="12" label="PROFILE_IMPORT"/>
   <int value="13" label="NACL"/>
   <int value="14" label="NACL_BROKER_PROCESS"/>
-</enum>
-
-<enum name="ProductImageAvailability">
-  <summary>
-    The different possible states of product image availability for the product
-    info API in the shopping service.
-  </summary>
-  <int value="0" label="Server Only"/>
-  <int value="1" label="Local Only"/>
-  <int value="2" label="Both Available"/>
-  <int value="3" label="Neither Available"/>
 </enum>
 
 <enum name="ProfileEligibilityMismatch">
@@ -31752,54 +31619,6 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="Discounts"/>
 </enum>
 
-<enum name="ShoppingDataProviderFallback">
-  <summary>
-    The different kinds of fallback data used by the ShoppingDataProvider.
-  </summary>
-  <int value="0" label="Title"/>
-  <int value="1" label="Lead Image"/>
-  <int value="2" label="Fallback Image"/>
-  <int value="3" label="Price"/>
-</enum>
-
-<enum name="ShoppingDiscountsFetchResult">
-  <int value="0" label="We got info back from OptGuide"/>
-  <int value="1"
-      label="We found valid info in local db. This is only recorded when we
-             don't get info back from OptGuide."/>
-  <int value="2"
-      label="We found invalid info in local db. This is only recorded when we
-             don't get info back from OptGuide."/>
-  <int value="3"
-      label="We don't get info back from OptGuide and don't find any info in
-             local db."/>
-</enum>
-
-<enum name="ShoppingFeatureIneligibilityReason">
-  <summary>
-    The different reasons a user might be ineligible for a shopping feature.
-  </summary>
-  <int value="0" label="Other"/>
-  <int value="1" label="Unsupported country or locale"/>
-  <int value="2" label="Blocked by enterprise policy"/>
-  <int value="3" label="Not signed in"/>
-  <int value="4" label="Not syncing"/>
-  <int value="5" label="MSBB not enabled"/>
-  <int value="6" label="WAA not enabled"/>
-  <int value="7" label="Blocked by parental controls"/>
-</enum>
-
-<enum name="ShoppingPDPDetectionMethod">
-  <summary>
-    The different ways a product details page can be detected which includes
-    options for local detection.
-  </summary>
-  <int value="0" label="Not PDP"/>
-  <int value="1" label="PDP detected by server only"/>
-  <int value="2" label="PDP detected with local meta only"/>
-  <int value="3" label="PDP detected by server and local meta"/>
-</enum>
-
 <enum name="ShoppingPDPState">
   <summary>
     The different states a page can be in as a product description page.
@@ -31807,25 +31626,6 @@ Called by update_net_error_codes.py.-->
   <int value="0" label="Not PDP"/>
   <int value="1" label="PDP without cluster ID"/>
   <int value="2" label="PDP with cluster ID"/>
-</enum>
-
-<enum name="ShoppingSubscriptionsRequestStatus">
-  <summary>The different statuses of a shopping subscriptions request.</summary>
-  <int value="0" label="Successfully added or removed on server"/>
-  <int value="1" label="Server failed to parse the request"/>
-  <int value="2"
-      label="Server successfully parsed the request, but failed afterwards"/>
-  <int value="3"
-      label="Local storage failed to load, create, or delete subscriptions"/>
-  <int value="4" label="Dropped since last sync with server failed"/>
-  <int value="5" label="Invalid argument"/>
-  <int value="6"
-      label="The request was lost somewhere unknown and never came back. This
-             is used for monitoring purpose only and should never happen if
-             the subscriptions work correctly."/>
-  <int value="7"
-      label="No action taken because the product is already tracked/untracked
-             on the server."/>
 </enum>
 
 <enum name="ShortcutActionSource">

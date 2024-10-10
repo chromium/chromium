@@ -1,0 +1,231 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="BooleanContainsPrice">
+  <int value="0" label="Does not contain price"/>
+  <int value="1" label="Contains price"/>
+</enum>
+
+<enum name="BooleanContainsPriceDrop">
+  <int value="0" label="Does not contain price drop"/>
+  <int value="1" label="Contains price drop"/>
+</enum>
+
+<enum name="BooleanIsAddToCart">
+  <int value="0" label="Not Add-to-cart"/>
+  <int value="1" label="Is Add-to-cart"/>
+</enum>
+
+<enum name="BooleanIsProductDetailPage">
+  <int value="0" label="Is not a product detail page"/>
+  <int value="1" label="Is a product detail page"/>
+</enum>
+
+<enum name="BooleanIsTransaction">
+  <int value="0" label="Not Transaction"/>
+  <int value="1" label="Is Transaction"/>
+</enum>
+
+<enum name="CommerceHeuristicsDataSource">
+  <summary>Sources of commerce heuristics data.</summary>
+  <int value="0" label="FromComponent"/>
+  <int value="1" label="FromResource"/>
+  <int value="2" label="FromFeatureParameter"/>
+  <int value="3" label="Missing"/>
+</enum>
+
+<enum name="CommerceIconInteractionState">
+  <int value="0" label="Clicked (not expanded)"/>
+  <int value="1" label="Clicked (after expansion)"/>
+  <int value="2" label="Not clicked (not expanded)"/>
+  <int value="3" label="Not clicked (after expansion)"/>
+</enum>
+
+<enum name="CompareEntryPointTrigger">
+  <summary>
+    The different ways to trigger a compare proactive entry point.
+  </summary>
+  <int value="0" label="From Selection"/>
+  <int value="1" label="From Navigation"/>
+</enum>
+
+<enum name="CompareTableColumnAction">
+  <summary>
+    The different ways a comparison table's columns can be modified.
+  </summary>
+  <int value="0" label="Remove"/>
+  <int value="1" label="Changed order (drag-and-drop)"/>
+  <int value="2" label="Add from suggested"/>
+  <int value="3" label="Update from suggested"/>
+  <int value="4" label="Add from recently viewed"/>
+  <int value="5" label="Update from recently viewed"/>
+</enum>
+
+<!-- LINT.IfChange(DiscountClusterType) -->
+
+<enum name="DiscountClusterType">
+  <int value="0" label="Unspecified"/>
+  <int value="1" label="OfferLevel"/>
+  <int value="2" label="PageLevel"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/commerce/core/commerce_types.h:DiscountClusterType) -->
+
+<enum name="MerchantTrustBottomSheetOpenedSource">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="From message"/>
+  <int value="2" label="From page info"/>
+</enum>
+
+<enum name="MerchantTrustMessageClearReason">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Navigate to same domain"/>
+  <int value="2" label="Navigate to different domain"/>
+  <int value="3" label="Message context is no longer valid"/>
+  <int value="4" label="Switch to different webcontents"/>
+</enum>
+
+<enum name="ParcelRequestStatus">
+  <summary>Request status from parcel tracking server</summary>
+  <int value="0" label="Request succeeded"/>
+  <int value="1" label="Invalid parcel identifiers"/>
+  <int value="2" label="Server error"/>
+  <int value="3" label="Error parsing server response"/>
+</enum>
+
+<enum name="PriceInsightsIconLabelType">
+  <int value="0" label="No label"/>
+  <int value="1" label="Price is low"/>
+  <int value="2" label="Price is high"/>
+</enum>
+
+<enum name="PriceInsightsPriceBucket">
+  <int value="0" label="Price bucket unknown"/>
+  <int value="1" label="Price low"/>
+  <int value="2" label="Price typical"/>
+  <int value="3" label="Price high"/>
+</enum>
+
+<enum name="PriceNotificationEmailState">
+  <int value="0" label="Enabled"/>
+  <int value="1" label="Disabled"/>
+  <int value="2" label="Not responded"/>
+</enum>
+
+<enum name="PriceNotificationProductStatus">
+  <int value="0" label="Product is Tracked"/>
+  <int value="1" label="Product is Untracked"/>
+</enum>
+
+<enum name="PriceTrackingPromoOptInFlow">
+  <int value="0" label="First time"/>
+  <int value="1" label="Enable Price Tracking"/>
+  <int value="2" label="Re-enable Notifications"/>
+</enum>
+
+<enum name="ProductImageAvailability">
+  <summary>
+    The different possible states of product image availability for the product
+    info API in the shopping service.
+  </summary>
+  <int value="0" label="Server Only"/>
+  <int value="1" label="Local Only"/>
+  <int value="2" label="Both Available"/>
+  <int value="3" label="Neither Available"/>
+</enum>
+
+<enum name="ShoppingDataProviderFallback">
+  <summary>
+    The different kinds of fallback data used by the ShoppingDataProvider.
+  </summary>
+  <int value="0" label="Title"/>
+  <int value="1" label="Lead Image"/>
+  <int value="2" label="Fallback Image"/>
+  <int value="3" label="Price"/>
+</enum>
+
+<enum name="ShoppingDiscountsFetchResult">
+  <int value="0" label="We got info back from OptGuide"/>
+  <int value="1"
+      label="We found valid info in local db. This is only recorded when we
+             don't get info back from OptGuide."/>
+  <int value="2"
+      label="We found invalid info in local db. This is only recorded when we
+             don't get info back from OptGuide."/>
+  <int value="3"
+      label="We don't get info back from OptGuide and don't find any info in
+             local db."/>
+</enum>
+
+<enum name="ShoppingFeatureIneligibilityReason">
+  <summary>
+    The different reasons a user might be ineligible for a shopping feature.
+  </summary>
+  <int value="0" label="Other"/>
+  <int value="1" label="Unsupported country or locale"/>
+  <int value="2" label="Blocked by enterprise policy"/>
+  <int value="3" label="Not signed in"/>
+  <int value="4" label="Not syncing"/>
+  <int value="5" label="MSBB not enabled"/>
+  <int value="6" label="WAA not enabled"/>
+  <int value="7" label="Blocked by parental controls"/>
+</enum>
+
+<enum name="ShoppingPDPDetectionMethod">
+  <summary>
+    The different ways a product details page can be detected which includes
+    options for local detection.
+  </summary>
+  <int value="0" label="Not PDP"/>
+  <int value="1" label="PDP detected by server only"/>
+  <int value="2" label="PDP detected with local meta only"/>
+  <int value="3" label="PDP detected by server and local meta"/>
+</enum>
+
+<enum name="ShoppingSubscriptionsRequestStatus">
+  <summary>The different statuses of a shopping subscriptions request.</summary>
+  <int value="0" label="Successfully added or removed on server"/>
+  <int value="1" label="Server failed to parse the request"/>
+  <int value="2"
+      label="Server successfully parsed the request, but failed afterwards"/>
+  <int value="3"
+      label="Local storage failed to load, create, or delete subscriptions"/>
+  <int value="4" label="Dropped since last sync with server failed"/>
+  <int value="5" label="Invalid argument"/>
+  <int value="6"
+      label="The request was lost somewhere unknown and never came back. This
+             is used for monitoring purpose only and should never happen if
+             the subscriptions work correctly."/>
+  <int value="7"
+      label="No action taken because the product is already tracked/untracked
+             on the server."/>
+</enum>
+
+</enums>
+
+</histogram-configuration>

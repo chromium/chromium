@@ -46,6 +46,7 @@ histograms_xml_files = [
   "//tools/metrics/histograms/metadata/chromeos_hps/histograms.xml",
   "//tools/metrics/histograms/metadata/chromeos_settings/enums.xml",
   "//tools/metrics/histograms/metadata/chromeos_settings/histograms.xml",
+  "//tools/metrics/histograms/metadata/commerce/enums.xml",
   "//tools/metrics/histograms/metadata/commerce/histograms.xml",
   "//tools/metrics/histograms/metadata/companion/histograms.xml",
   "//tools/metrics/histograms/metadata/compose/enums.xml",
