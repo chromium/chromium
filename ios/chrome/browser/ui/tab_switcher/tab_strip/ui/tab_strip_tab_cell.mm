@@ -79,7 +79,7 @@ UIImage* DefaultFavicon() {
   // Decoration views, visible when the cell is selected.
   UIView* _leftTailView;
   UIView* _rightTailView;
-  UIView* _bottomTailView;
+  UIView* _selectedBackground;
 
   // Cell separator.
   UIView* _leadingSeparatorView;
@@ -87,12 +87,10 @@ UIImage* DefaultFavicon() {
   UIView* _leadingSeparatorGradientView;
   UIView* _trailingSeparatorGradientView;
 
-  // Background views displayed when the selected cell in on an edge.
+  // Background views displayed when the selected cell in on an edge. Used to
+  // hide the cells passing behind the selected cell.
   UIView* _leadingSelectedBorderBackgroundView;
   UIView* _trailingSelectedBorderBackgroundView;
-
-  // Whether the decoration layers have been updated.
-  BOOL _decorationLayersUpdated;
 
   // Circular spinner that shows the loading state of the tab.
   MDCActivityIndicator* _activityIndicator;
@@ -127,7 +125,6 @@ UIImage* DefaultFavicon() {
 - (instancetype)initWithFrame:(CGRect)frame {
   if ((self = [super initWithFrame:frame])) {
     self.layer.masksToBounds = NO;
-    _decorationLayersUpdated = NO;
     _hovered = NO;
     _separatorHeight = 0;
 
@@ -175,8 +172,8 @@ UIImage* DefaultFavicon() {
     _rightTailView = [self createDecorationView];
     [self addSubview:_rightTailView];
 
-    _bottomTailView = [self createDecorationView];
-    [self insertSubview:_bottomTailView belowSubview:contentView];
+    _selectedBackground = [self createSelectedBackgroundView];
+    [self insertSubview:_selectedBackground belowSubview:contentView];
 
     _leadingSeparatorView = [self createSeparatorView];
     [self addSubview:_leadingSeparatorView];
@@ -290,6 +287,10 @@ UIImage* DefaultFavicon() {
 
 - (void)setLeadingSelectedBorderBackgroundViewHidden:
     (BOOL)leadingSelectedBorderBackgroundViewHidden {
+  if (_leadingSelectedBorderBackgroundViewHidden ==
+      leadingSelectedBorderBackgroundViewHidden) {
+    return;
+  }
   _leadingSelectedBorderBackgroundViewHidden =
       leadingSelectedBorderBackgroundViewHidden;
   _leadingSelectedBorderBackgroundView.hidden =
@@ -298,6 +299,10 @@ UIImage* DefaultFavicon() {
 
 - (void)setTrailingSelectedBorderBackgroundViewHidden:
     (BOOL)trailingSelectedBorderBackgroundViewHidden {
+  if (_trailingSelectedBorderBackgroundViewHidden ==
+      trailingSelectedBorderBackgroundViewHidden) {
+    return;
+  }
   _trailingSelectedBorderBackgroundViewHidden =
       trailingSelectedBorderBackgroundViewHidden;
   _trailingSelectedBorderBackgroundView.hidden =
@@ -333,7 +338,6 @@ UIImage* DefaultFavicon() {
   // Update decoration views visibility.
   _leftTailView.hidden = !selected;
   _rightTailView.hidden = !selected;
-  _bottomTailView.hidden = !selected;
   [self setLeadingSelectedBorderBackgroundViewHidden:YES];
   [self setTrailingSelectedBorderBackgroundViewHidden:YES];
 
@@ -514,8 +518,6 @@ UIImage* DefaultFavicon() {
   } else {
     _leadingSeparatorGradientView.transform = CGAffineTransformMakeScale(-1, 1);
   }
-
-  _decorationLayersUpdated = YES;
 }
 
 // Updates view colors.
@@ -561,7 +563,7 @@ UIImage* DefaultFavicon() {
   backgroundColor =
       [backgroundColor resolvedColorWithTraitCollection:self.traitCollection];
 
-  _accessibilityContainerView.backgroundColor = backgroundColor;
+  _selectedBackground.backgroundColor = backgroundColor;
   _faviconView.tintColor = self.selected
                                ? [UIColor colorNamed:kCloseButtonColor]
                                : [UIColor colorNamed:kGrey500Color];
@@ -830,7 +832,7 @@ UIImage* DefaultFavicon() {
         constraintEqualToAnchor:_accessibilityContainerView.centerYAnchor],
   ]];
 
-  /// `_leftTailView`, `_rightTailView` and `_bottomTailView` constraints.
+  /// `_leftTailView`, `_rightTailView` and `_selectedBackground` constraints.
   [NSLayoutConstraint activateConstraints:@[
     [_leftTailView.rightAnchor constraintEqualToAnchor:contentView.leftAnchor],
     [_leftTailView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
@@ -842,12 +844,14 @@ UIImage* DefaultFavicon() {
     [_rightTailView.widthAnchor constraintEqualToConstant:kCornerSize],
     [_rightTailView.heightAnchor constraintEqualToConstant:kCornerSize],
 
-    [_bottomTailView.leadingAnchor
-        constraintEqualToAnchor:contentView.leadingAnchor],
-    [_bottomTailView.trailingAnchor
-        constraintEqualToAnchor:contentView.trailingAnchor],
-    [_bottomTailView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
-    [_bottomTailView.heightAnchor constraintEqualToConstant:kCornerSize],
+    [_selectedBackground.topAnchor
+        constraintEqualToAnchor:_accessibilityContainerView.topAnchor],
+    [_selectedBackground.rightAnchor
+        constraintEqualToAnchor:_accessibilityContainerView.rightAnchor],
+    [_selectedBackground.leftAnchor
+        constraintEqualToAnchor:_accessibilityContainerView.leftAnchor],
+    [_selectedBackground.bottomAnchor
+        constraintEqualToAnchor:self.bottomAnchor],
   ]];
 
   /// `_leadingSeparatorView` constraints.
@@ -1029,6 +1033,16 @@ UIImage* DefaultFavicon() {
   backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
   backgroundView.hidden = YES;
   return backgroundView;
+}
+
+// Returns a new background view for the selected cell.
+- (UIView*)createSelectedBackgroundView {
+  UIView* selectedBackground = [[UIView alloc] init];
+  selectedBackground.translatesAutoresizingMaskIntoConstraints = NO;
+  selectedBackground.layer.cornerRadius = kCornerSize;
+  selectedBackground.layer.maskedCorners =
+      kCALayerMaxXMinYCorner | kCALayerMinXMinYCorner;
+  return selectedBackground;
 }
 
 - (void)updateAccessibilityValue {
