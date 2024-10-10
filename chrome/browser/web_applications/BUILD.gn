@@ -547,9 +547,6 @@ source_set("web_applications") {
 
     if (is_chromeos) {
       sources += [
-        # TODO(crbug.com/358173556): Remove internal sources.
-        "//chrome/browser/resources/preinstalled_web_apps/internal/container_util.cc",
-        "//chrome/browser/resources/preinstalled_web_apps/internal/container_util.h",
         "preinstalled_web_apps/app_mall.cc",
         "preinstalled_web_apps/app_mall.h",
         "preinstalled_web_apps/calculator.cc",

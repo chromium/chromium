@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/apps/user_type_filter.h"
-#include "chrome/browser/resources/preinstalled_web_apps/internal/container_util.h"
 #include "chrome/browser/web_applications/external_install_options.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_app_definition_utils.h"
@@ -27,6 +26,20 @@
 
 namespace web_app {
 namespace {
+
+// Returns the appropriate activation time threshold to use `for_debug`.
+base::Time::Exploded GetActivationTimeThreshold(bool for_debug) {
+  return for_debug ? base::Time::Exploded{.year = 2024,
+                                          .month = 10,
+                                          .day_of_month = 1}
+                   : base::Time::Exploded{
+                         .year = 2024, .month = 5, .day_of_month = 28};
+}
+
+// Returns the appropriate activation URL param to use `for_debug`.
+std::string GetActivationUrlParam(bool for_debug) {
+  return for_debug ? "cros_standard_activation=true" : "cros_activation=true";
+}
 
 // Returns launch query params given the specified `device_info`.
 std::string GetLaunchQueryParams(const std::optional<DeviceInfo>& device_info) {
@@ -45,13 +58,8 @@ std::string GetLaunchQueryParams(const std::optional<DeviceInfo>& device_info) {
   // Fall back to the actual activation time threshold.
   // See PRD for more information re: the threshold (http://shortn/_a762eSA1pF).
   if (activation_time_threshold.is_null()) {
-    const container_util::ActivationTimeThreshold threshold =
-        container_util::GetActivationTimeThreshold(for_debug);
-    CHECK(base::Time::FromUTCExploded(
-        base::Time::Exploded{.year = threshold.year,
-                             .month = threshold.month,
-                             .day_of_month = threshold.day_of_month},
-        &activation_time_threshold));
+    CHECK(base::Time::FromUTCExploded(GetActivationTimeThreshold(for_debug),
+                                      &activation_time_threshold));
   }
 
   // Assume activation time is now unless that can be confirmed not to be the
@@ -61,8 +69,7 @@ std::string GetLaunchQueryParams(const std::optional<DeviceInfo>& device_info) {
   if (device_info.value_or(DeviceInfo{})
           .oobe_timestamp.value_or(base::Time::Now()) >=
       activation_time_threshold) {
-    launch_query_params.emplace_back(
-        container_util::GetActivationUrlParam(for_debug));
+    launch_query_params.emplace_back(GetActivationUrlParam(for_debug));
   }
 
   return base::JoinString(launch_query_params, "&");
