@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/ash/components/carrier_lock/provisioning_config_fetcher_impl.h"
-
 #include "base/base64.h"
+#include "base/json/json_reader.h"
 #include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "chromeos/ash/components/carrier_lock/provisioning_config_fetcher_impl.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -25,6 +25,7 @@ const char kProvisioningUrl[] =
 
 const char kManufacturer[] = "Google";
 const char kModel[] = "Pixel 20";
+const char kAttestedId[] = "012345678ABCD";
 const char kSerial[] = "5CD203JBP8";
 const char kImei[] = "862146050085792";
 const char kFcmToken[] =
@@ -81,7 +82,7 @@ TEST_F(ProvisioningConfigFetcherTest, CarrierLockRequestConfigSuccess) {
   // Send configuration request
   base::test::TestFuture<Result> future;
   config_->RequestConfig(kSerial, kImei, kManufacturer, kModel, kFcmToken,
-                         future.GetCallback());
+                         kAttestedId, future.GetCallback());
 
   // Send fake response
   base::Base64Decode(kConfigResponse, &response);
@@ -100,9 +101,9 @@ TEST_F(ProvisioningConfigFetcherTest, CarrierLockRequestConfigTwice) {
   // Send configuration request twice
   base::test::TestFuture<Result> future;
   config_->RequestConfig(kSerial, kImei, kManufacturer, kModel, kFcmToken,
-                         future.GetCallback());
+                         kAttestedId, future.GetCallback());
   config_->RequestConfig(kSerial, kImei, kManufacturer, kModel, kFcmToken,
-                         future.GetCallback());
+                         kAttestedId, future.GetCallback());
 
   // Wait for callback
   EXPECT_EQ(Result::kHandlerBusy, future.Get());
@@ -114,7 +115,7 @@ TEST_F(ProvisioningConfigFetcherTest, CarrierLockRequestConfigInvalidResponse) {
 
   // Send configuration request
   config_->RequestConfig(kSerial, kImei, kManufacturer, kModel, kFcmToken,
-                         future.GetCallback());
+                         kAttestedId, future.GetCallback());
 
   // Send empty response
   EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
@@ -132,7 +133,7 @@ TEST_F(ProvisioningConfigFetcherTest, CarrierLockRequestConfigNoConfig) {
   // Send configuration request
   base::test::TestFuture<Result> future;
   config_->RequestConfig(kSerial, kImei, kManufacturer, kModel, kFcmToken,
-                         future.GetCallback());
+                         kAttestedId, future.GetCallback());
 
   // Send response without configuration
   base::Base64Decode(kConfigResponseEmpty, &response);
@@ -151,7 +152,7 @@ TEST_F(ProvisioningConfigFetcherTest, CarrierLockRequestConfigInvalidConfig) {
   // Send configuration request
   base::test::TestFuture<Result> future;
   config_->RequestConfig(kSerial, kImei, kManufacturer, kModel, kFcmToken,
-                         future.GetCallback());
+                         kAttestedId, future.GetCallback());
 
   // Send response with invalid configuration
   base::Base64Decode(kConfigResponseInvalid, &response);
@@ -162,6 +163,100 @@ TEST_F(ProvisioningConfigFetcherTest, CarrierLockRequestConfigInvalidConfig) {
   // Wait for callback
   EXPECT_EQ(Result::kInvalidConfiguration, future.Get());
   EXPECT_EQ(std::string(), config_->GetFcmTopic());
+}
+
+TEST_F(ProvisioningConfigFetcherTest, CarrierLockRequestVerifyParameters) {
+  std::string response;
+
+  // Send configuration request
+  base::test::TestFuture<Result> result;
+  config_->RequestConfig(kSerial, kImei, kManufacturer, kModel, kFcmToken,
+                         kAttestedId, result.GetCallback());
+
+  // Read request body
+  const std::vector<network::TestURLLoaderFactory::PendingRequest>& pending =
+      *test_url_loader_factory_.pending_requests();
+  ASSERT_EQ(1u, pending.size());
+  const network::ResourceRequest& request = pending[0].request;
+  std::optional<base::Value> request_value =
+      base::JSONReader::Read(network::GetUploadData(request));
+  ASSERT_TRUE(request_value.has_value());
+  base::Value::Dict* request_body = request_value->GetIfDict();
+  ASSERT_NE(nullptr, request_body);
+
+  // Verify gcm registration id
+  std::string* value = request_body->FindString("gcm_registration_id");
+  ASSERT_NE(nullptr, value);
+  EXPECT_EQ(kFcmToken, *value);
+
+  // Verify all device parameters
+  base::Value::Dict* device_id = request_body->FindDict("deviceIdentifier");
+  ASSERT_NE(nullptr, device_id);
+
+  value = device_id->FindString("serialNumber");
+  ASSERT_NE(nullptr, value);
+  EXPECT_EQ(kSerial, *value);
+
+  value = device_id->FindString("manufacturer");
+  ASSERT_NE(nullptr, value);
+  EXPECT_EQ(kManufacturer, *value);
+
+  value = device_id->FindString("model");
+  ASSERT_NE(nullptr, value);
+  EXPECT_EQ(kModel, *value);
+
+  value = device_id->FindString("imei");
+  ASSERT_NE(nullptr, value);
+  EXPECT_EQ(kImei, *value);
+
+  value = device_id->FindString("chromeOsAttestedDeviceId");
+  ASSERT_NE(nullptr, value);
+  EXPECT_EQ(kAttestedId, *value);
+}
+
+TEST_F(ProvisioningConfigFetcherTest, CarrierLockRequestEmptyAttestedId) {
+  std::string response;
+  std::string* value;
+
+  // Send configuration request
+  base::test::TestFuture<Result> result;
+  config_->RequestConfig(kSerial, kImei, kManufacturer, kModel, kFcmToken, "",
+                         result.GetCallback());
+
+  // Read request body
+  const std::vector<network::TestURLLoaderFactory::PendingRequest>& pending =
+      *test_url_loader_factory_.pending_requests();
+  ASSERT_EQ(1u, pending.size());
+  const network::ResourceRequest& request = pending[0].request;
+  std::optional<base::Value> request_value =
+      base::JSONReader::Read(network::GetUploadData(request));
+  ASSERT_TRUE(request_value.has_value());
+  base::Value::Dict* request_body = request_value->GetIfDict();
+  ASSERT_NE(nullptr, request_body);
+
+  // Verify all device parameters
+  base::Value::Dict* device_id = request_body->FindDict("deviceIdentifier");
+  ASSERT_NE(nullptr, device_id);
+
+  value = device_id->FindString("serialNumber");
+  ASSERT_NE(nullptr, value);
+  EXPECT_EQ(kSerial, *value);
+
+  value = device_id->FindString("manufacturer");
+  ASSERT_NE(nullptr, value);
+  EXPECT_EQ(kManufacturer, *value);
+
+  value = device_id->FindString("model");
+  ASSERT_NE(nullptr, value);
+  EXPECT_EQ(kModel, *value);
+
+  value = device_id->FindString("imei");
+  ASSERT_NE(nullptr, value);
+  EXPECT_EQ(kImei, *value);
+
+  value = device_id->FindString("chromeOsAttestedDeviceId");
+  ASSERT_NE(nullptr, value);
+  EXPECT_EQ(kSerial, *value);
 }
 
 }  // namespace ash::carrier_lock

@@ -31,6 +31,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CARRIER_LOCK)
                              const std::string& manufacturer,
                              const std::string& model,
                              const std::string& fcm_token,
+                             const std::string& attested_id,
                              Callback callback) = 0;
 
   // Return FCM topic from received Carrier Lock configuration.

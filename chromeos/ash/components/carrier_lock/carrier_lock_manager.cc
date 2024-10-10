@@ -49,6 +49,7 @@ const char kFirmwareVariantPath[] =
 const char kManufacturerNamePath[] =
     "/run/chromeos-config/v1/branding/oem-name";
 const char kModelNamePath[] = "/run/chromeos-config/v1/name";
+const char kMachineAttestedId[] = "attested_device_id";
 const char kMachineModelName[] = "model_name";
 const char kMachineOemName[] = "oem_name";
 
@@ -604,6 +605,11 @@ void CarrierLockManager::CheckState() {
       manufacturer_ = oem.value();
       LOG(WARNING) << "Manufacturer changed to " << manufacturer_ << ".";
     }
+    if (const std::optional<std::string_view> attested_id =
+            statistics->GetMachineStatistic(kMachineAttestedId)) {
+      attested_id_ = attested_id.value();
+      LOG(WARNING) << "Attested ID set to " << attested_id_ << ".";
+    }
   }
 
   // First configuration, check PSM claim.
@@ -712,6 +718,7 @@ void CarrierLockManager::RequestConfig() {
   }
 
   config_->RequestConfig(serial_, imei_, manufacturer_, model_, fcm_token_,
+                         attested_id_,
                          base::BindOnce(&CarrierLockManager::ConfigCallback,
                                         weak_ptr_factory_.GetWeakPtr()));
 }
