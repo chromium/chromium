@@ -38,6 +38,8 @@
 #include "base/strings/utf_string_conversions.h"
 #endif  // BUILDFLAG(IS_WIN)
 
+using on_device_translation::GetComponentPathPrefName;
+using on_device_translation::GetRegisteredFlagPrefName;
 using on_device_translation::kLanguagePackComponentConfigMap;
 using on_device_translation::LanguagePackKey;
 using on_device_translation::ToLanguageCode;
@@ -63,6 +65,12 @@ base::FilePath GetFilePathFromGlobalPrefs(std::string_view pref_name) {
   return path_in_pref;
 }
 
+bool GetBooleanFromGlobalPrefs(std::string_view pref_name) {
+  PrefService* global_prefs = g_browser_process->local_state();
+  CHECK(global_prefs);
+  return global_prefs->GetBoolean(pref_name);
+}
+
 base::FilePath GetTranslateKitLibraryPath() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(on_device_translation::kTranslateKitBinaryPath)) {
@@ -81,15 +89,27 @@ std::string ToString(base::FilePath path) {
 #endif  // BUILDFLAG(IS_WIN)
 }
 
-// Returns the language packs that are installed.
+// Returns the language packs that were installed and ready to use.
 std::set<LanguagePackKey> GetInstalledLanguagePacks() {
   std::set<LanguagePackKey> insalled_pack_keys;
   for (const auto& it : kLanguagePackComponentConfigMap) {
-    if (!GetFilePathFromGlobalPrefs(it.second->config_path_pref).empty()) {
+    if (!GetFilePathFromGlobalPrefs(GetComponentPathPrefName(*it.second))
+             .empty()) {
       insalled_pack_keys.insert(it.first);
     }
   }
   return insalled_pack_keys;
+}
+
+// Returns the language packs that were registered.
+std::set<LanguagePackKey> GetRegisteredLanguagePacks() {
+  std::set<LanguagePackKey> registered_pack_keys;
+  for (const auto& it : kLanguagePackComponentConfigMap) {
+    if (GetBooleanFromGlobalPrefs(GetRegisteredFlagPrefName(*it.second))) {
+      registered_pack_keys.insert(it.first);
+    }
+  }
+  return registered_pack_keys;
 }
 
 }  // namespace
@@ -256,13 +276,11 @@ OnDeviceTranslationServiceController::OnDeviceTranslationServiceController()
     // Start listening to pref changes for language pack keys.
     for (const auto& it : kLanguagePackComponentConfigMap) {
       pref_change_registrar_.Add(
-          it.second->config_path_pref,
+          GetComponentPathPrefName(*it.second),
           base::BindRepeating(&OnDeviceTranslationServiceController::
                                   OnLanguagePackKeyPrefChanged,
                               base::Unretained(this)));
     }
-    // Register all the installed language pack components.
-    RegisterInstalledLanguagePackComponent();
   }
 }
 
@@ -279,11 +297,11 @@ void OnDeviceTranslationServiceController::CreateTranslator(
   // If the language packs are set by the command line, we don't need to check
   // the installed language packs.
   if (!language_packs_from_command_line_) {
-    std::vector<LanguagePackKey> to_be_downloaded_packs;
+    std::vector<LanguagePackKey> to_be_registered_packs;
     CalculateLanguagePackRequirements(source_lang, target_lang, required_packs,
                                       required_not_installed_packs,
-                                      to_be_downloaded_packs);
-    for (const auto& language_pack : to_be_downloaded_packs) {
+                                      to_be_registered_packs);
+    for (const auto& language_pack : to_be_registered_packs) {
       // Register the language pack component.
       RegisterLanguagePackComponent(language_pack);
     }
@@ -343,7 +361,8 @@ OnDeviceTranslationServiceController::GetLanguagePackInfo() {
 
   std::vector<OnDeviceTranslationServiceController::LanguagePackInfo> packages;
   for (const auto& it : kLanguagePackComponentConfigMap) {
-    auto file_path = GetFilePathFromGlobalPrefs(it.second->config_path_pref);
+    auto file_path =
+        GetFilePathFromGlobalPrefs(GetComponentPathPrefName(*it.second));
     if (!file_path.empty()) {
       OnDeviceTranslationServiceController::LanguagePackInfo package;
       package.language1 = ToLanguageCode(it.second->language1);
@@ -355,25 +374,16 @@ OnDeviceTranslationServiceController::GetLanguagePackInfo() {
   return packages;
 }
 
-// Register the installed language pack components.
-void OnDeviceTranslationServiceController::
-    RegisterInstalledLanguagePackComponent() {
-  for (const auto& language_pack : GetInstalledLanguagePacks()) {
-    RegisterLanguagePackComponent(language_pack);
-  }
-}
-
 // Register the language pack component.
 void OnDeviceTranslationServiceController::RegisterLanguagePackComponent(
     LanguagePackKey language_pack) {
-  CHECK(!registered_language_packs_.contains(language_pack));
-  registered_language_packs_.insert(language_pack);
   component_updater::RegisterTranslateKitLanguagePackComponent(
       g_browser_process->component_updater(), g_browser_process->local_state(),
-      language_pack, base::BindOnce([]() {
-        // TODO(crbug.com/358030919): Consider calling
-        // OnDemandUpdater::OnDemandUpdate() to trigger an update check.
-      }));
+      language_pack,
+      base::BindOnce(
+          &component_updater::TranslateKitLanguagePackComponentInstallerPolicy::
+              UpdateComponentOnDemand,
+          language_pack));
 }
 
 // Called when the TranslateKitBinaryPath pref is changed.
@@ -476,19 +486,19 @@ void OnDeviceTranslationServiceController::CalculateLanguagePackRequirements(
     const std::string& target_lang,
     std::set<LanguagePackKey>& required_packs,
     std::vector<LanguagePackKey>& required_not_installed_packs,
-    std::vector<LanguagePackKey>& to_be_downloaded_packs) {
+    std::vector<LanguagePackKey>& to_be_registered_packs) {
   CHECK(required_packs.empty());
   CHECK(required_not_installed_packs.empty());
-  CHECK(to_be_downloaded_packs.empty());
+  CHECK(to_be_registered_packs.empty());
   required_packs = on_device_translation::CalculateRequiredLanguagePacks(
       source_lang, target_lang);
   const auto installed_packs = GetInstalledLanguagePacks();
   base::ranges::set_difference(
       required_packs, installed_packs,
       std::back_inserter(required_not_installed_packs));
-  base::ranges::set_difference(required_not_installed_packs,
-                               registered_language_packs_,
-                               std::back_inserter(to_be_downloaded_packs));
+  const auto registered_packs = GetRegisteredLanguagePacks();
+  base::ranges::set_difference(required_not_installed_packs, registered_packs,
+                               std::back_inserter(to_be_registered_packs));
 }
 
 // static

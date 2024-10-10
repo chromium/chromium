@@ -29,8 +29,9 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // Register language pack config path preferences.
   for (const auto& it :
        on_device_translation::kLanguagePackComponentConfigMap) {
-    registry->RegisterFilePathPref(it.second->config_path_pref,
+    registry->RegisterFilePathPref(GetComponentPathPrefName(*it.second),
                                    base::FilePath());
+    registry->RegisterBooleanPref(GetRegisteredFlagPrefName(*it.second), false);
   }
 }
 

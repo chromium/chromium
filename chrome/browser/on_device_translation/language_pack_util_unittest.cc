@@ -38,20 +38,30 @@ TEST(LanguagePackUtilTest, GetLanguagePackComponentConfig) {
             SupportedLanguage::kEn);
   EXPECT_EQ(GetLanguagePackComponentConfig(LanguagePackKey::kEn_Es).language2,
             SupportedLanguage::kEs);
-  EXPECT_THAT(
-      std::string(GetLanguagePackComponentConfig(LanguagePackKey::kEn_Es)
-                      .config_path_pref),
-      std::string(kTranslateKitEnEsPath));
 
   // En to Ja.
   EXPECT_EQ(GetLanguagePackComponentConfig(LanguagePackKey::kEn_Ja).language1,
             SupportedLanguage::kEn);
   EXPECT_EQ(GetLanguagePackComponentConfig(LanguagePackKey::kEn_Ja).language2,
             SupportedLanguage::kJa);
-  EXPECT_THAT(
-      std::string(GetLanguagePackComponentConfig(LanguagePackKey::kEn_Ja)
-                      .config_path_pref),
-      std::string(kTranslateKitEnJaPath));
+}
+
+TEST(LanguagePackUtilTest, GetComponentPathPrefName) {
+  EXPECT_THAT(GetComponentPathPrefName(
+                  GetLanguagePackComponentConfig(LanguagePackKey::kEn_Es)),
+              "on_device_translation.translate_kit_packages.en_es_path");
+  EXPECT_THAT(GetComponentPathPrefName(
+                  GetLanguagePackComponentConfig(LanguagePackKey::kEn_Ja)),
+              "on_device_translation.translate_kit_packages.en_ja_path");
+}
+
+TEST(LanguagePackUtilTest, GetRegisteredFlagPrefName) {
+  EXPECT_THAT(GetRegisteredFlagPrefName(
+                  GetLanguagePackComponentConfig(LanguagePackKey::kEn_Es)),
+              "on_device_translation.translate_kit_packages.en_es_registered");
+  EXPECT_THAT(GetRegisteredFlagPrefName(
+                  GetLanguagePackComponentConfig(LanguagePackKey::kEn_Ja)),
+              "on_device_translation.translate_kit_packages.en_ja_registered");
 }
 
 TEST(LanguagePackUtilTest, CalculateRequiredLanguagePacks) {

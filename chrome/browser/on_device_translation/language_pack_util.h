@@ -39,23 +39,28 @@ enum class LanguagePackKey {
 struct LanguagePackComponentConfig {
   const SupportedLanguage language1;
   const SupportedLanguage language2;
-  const char* config_path_pref;
   const uint8_t public_key_sha[32];
 };
 
-// The fully-qualified path to the installed TranslateKit en-es language pack.
-const char kTranslateKitEnEsPath[] =
-    "on_device_translation.translate_kit_packages.en_es_path";
+// Returns the pref name of the fully-qualified path to the installed language
+// pack. This pref is populated only when the language pack component is fully
+// initialized and ready for use.
+//   Eg: "on_device_translation.translate_kit_packages.en_es_path"
+std::string GetComponentPathPrefName(const LanguagePackComponentConfig& config);
 
-// The fully-qualified path to the installed TranslateKit en-ja language pack.
-const char kTranslateKitEnJaPath[] =
-    "on_device_translation.translate_kit_packages.en_ja_path";
+// Returns the pref name of the boolean value which indicates whether the
+// language pack component has been registered.
+// This pref is set regardless of whether the component is currently ready for
+// use. For example, the component might be tried to install but not yet
+// initialized.
+//   Eg: "on_device_translation.translate_kit_packages.en_es_registered"
+std::string GetRegisteredFlagPrefName(
+    const LanguagePackComponentConfig& config);
 
 // The config for the TranslateKit en-es language pack.
 const LanguagePackComponentConfig kTranslateKitEnEsConfig = {
     .language1 = SupportedLanguage::kEn,
     .language2 = SupportedLanguage::kEs,
-    .config_path_pref = kTranslateKitEnEsPath,
     .public_key_sha = {0x63, 0xbd, 0x10, 0x98, 0x4e, 0xaa, 0xc3, 0xbe,
                        0x3b, 0xe0, 0x87, 0xba, 0x03, 0x5d, 0x7d, 0x6e,
                        0x44, 0x7e, 0xaa, 0x02, 0xbb, 0x0c, 0xcc, 0x51,
@@ -66,7 +71,6 @@ const LanguagePackComponentConfig kTranslateKitEnEsConfig = {
 const LanguagePackComponentConfig kTranslateKitEnJaConfig = {
     .language1 = SupportedLanguage::kEn,
     .language2 = SupportedLanguage::kJa,
-    .config_path_pref = kTranslateKitEnJaPath,
     .public_key_sha = {0x7d, 0x22, 0x33, 0x74, 0x1c, 0xa8, 0x62, 0x58,
                        0x77, 0xdc, 0x88, 0x87, 0x2d, 0x0e, 0x6e, 0x4b,
                        0xad, 0xbf, 0x37, 0x29, 0x06, 0xff, 0xc7, 0x7b,

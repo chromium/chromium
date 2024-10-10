@@ -12,6 +12,11 @@
 namespace on_device_translation {
 namespace {
 
+constexpr char kPrefNamePrefix[] =
+    "on_device_translation.translate_kit_packages.";
+constexpr char kComponentPathPrefNameSuffix[] = "_path";
+constexpr char kRegisteredFlagPrefNameSuffix[] = "_registered";
+
 // Currently we always translate via English, so the number of
 // SupportedLanguages needs to include English in addition to all the
 // LanguagePackKeys.
@@ -69,6 +74,20 @@ std::optional<SupportedLanguage> ToSupportedLanguage(
     return it->second;
   }
   return std::nullopt;
+}
+
+std::string GetComponentPathPrefName(
+    const LanguagePackComponentConfig& config) {
+  return base::StrCat({kPrefNamePrefix, ToLanguageCode(config.language1), "_",
+                       ToLanguageCode(config.language2),
+                       kComponentPathPrefNameSuffix});
+}
+
+std::string GetRegisteredFlagPrefName(
+    const LanguagePackComponentConfig& config) {
+  return base::StrCat({kPrefNamePrefix, ToLanguageCode(config.language1), "_",
+                       ToLanguageCode(config.language2),
+                       kRegisteredFlagPrefNameSuffix});
 }
 
 // Returns the config for a language pack component.

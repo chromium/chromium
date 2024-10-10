@@ -95,9 +95,6 @@ class OnDeviceTranslationServiceController {
   // Returns the language packs that are installed or set by the command line.
   std::vector<LanguagePackInfo> GetLanguagePackInfo();
 
-  // Registers the installed language pack components.
-  void RegisterInstalledLanguagePackComponent();
-
   // Registers the language pack component.
   void RegisterLanguagePackComponent(on_device_translation::LanguagePackKey);
 
@@ -119,7 +116,7 @@ class OnDeviceTranslationServiceController {
       std::vector<on_device_translation::LanguagePackKey>&
           required_not_installed_packs,
       std::vector<on_device_translation::LanguagePackKey>&
-          to_be_downloaded_packs);
+          to_be_registered_packs);
 
   // Get a list of LanguagePackInfo from the command line flag
   // `--translate-kit-packages`.
@@ -133,8 +130,6 @@ class OnDeviceTranslationServiceController {
   // Used to listen for changes on the pref values of TranslateKit component and
   // language pack components.
   PrefChangeRegistrar pref_change_registrar_;
-  // The language packs that are registered.
-  std::set<on_device_translation::LanguagePackKey> registered_language_packs_;
   // The LanguagePackInfo from the command line. This is nullopt if the command
   // line flag `--translate-kit-packages` is not set.
   const std::optional<std::vector<LanguagePackInfo>>

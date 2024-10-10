@@ -230,6 +230,7 @@ class OnDemandUpdater {
   friend class SodaComponentInstallerPolicy;
   friend class SodaLanguagePackComponentInstallerPolicy;
   friend class TranslateKitComponentInstallerPolicy;
+  friend class TranslateKitLanguagePackComponentInstallerPolicy;
   friend class ::extensions::AutotestPrivateLoadSmartDimComponentFunction;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   friend class ash::SmartDimComponentIntegrationTest;

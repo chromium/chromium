@@ -84,6 +84,7 @@
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/component_updater/translate_kit_component_installer.h"
+#include "chrome/browser/component_updater/translate_kit_language_pack_component_installer.h"
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -236,6 +237,8 @@ void RegisterComponentsForUpdate() {
   RegisterTranslateKitComponent(cus, g_browser_process->local_state(),
                                 /*force_install=*/false,
                                 /*registered_callback=*/base::OnceClosure());
+  RegisterTranslateKitLanguagePackComponentsForUpdate(
+      cus, g_browser_process->local_state());
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   RegisterOpenCookieDatabaseComponent(cus);
