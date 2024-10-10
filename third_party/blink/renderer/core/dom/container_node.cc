@@ -699,10 +699,14 @@ void ContainerNode::WillRemoveChildren() {
     DispatchChildRemovalEvents(child);
   }
 
-  CHECK(!GetDocument().StatePreservingAtomicMoveInProgress());
-  ChildFrameDisconnector(
-      *this, ChildFrameDisconnector::DisconnectReason::kDisconnectSelf)
-      .Disconnect(ChildFrameDisconnector::kDescendantsOnly);
+  // Only disconnect subframes in the non-state-preserving-atomic-move case,
+  // i.e., the traditional case where we intend to *fully* remove a node from
+  // the tree, instead of atomically re-inserting it.
+  if (!GetDocument().StatePreservingAtomicMoveInProgress()) {
+    ChildFrameDisconnector(
+        *this, ChildFrameDisconnector::DisconnectReason::kDisconnectSelf)
+        .Disconnect(ChildFrameDisconnector::kDescendantsOnly);
+  }
 }
 
 LayoutBox* ContainerNode::GetLayoutBoxForScrolling() const {
