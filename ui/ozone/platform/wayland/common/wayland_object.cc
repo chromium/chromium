@@ -20,6 +20,7 @@
 #include <keyboard-extension-unstable-v1-client-protocol.h>
 #include <keyboard-shortcuts-inhibit-unstable-v1-client-protocol.h>
 #include <linux-dmabuf-unstable-v1-client-protocol.h>
+#include <linux-drm-syncobj-v1-client-protocol.h>
 #include <linux-explicit-synchronization-unstable-v1-client-protocol.h>
 #include <overlay-prioritizer-client-protocol.h>
 #include <pointer-constraints-unstable-v1-client-protocol.h>
@@ -252,6 +253,9 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(wp_cursor_shape_device_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(wp_cursor_shape_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(wp_fractional_scale_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(wp_fractional_scale_v1)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(wp_linux_drm_syncobj_manager_v1)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(wp_linux_drm_syncobj_surface_v1)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(wp_linux_drm_syncobj_timeline_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_activation_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_activation_token_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(xdg_popup)

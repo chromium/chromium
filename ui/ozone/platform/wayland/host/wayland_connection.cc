@@ -14,7 +14,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -89,6 +88,7 @@ constexpr uint32_t kMaxTextInputManagerV1Version = 1;
 constexpr uint32_t kMaxTextInputManagerV3Version = 1;
 constexpr uint32_t kMaxTextInputExtensionVersion = 14;
 constexpr uint32_t kMaxExplicitSyncVersion = 2;
+constexpr uint32_t kMaxLinuxDrmSyncobjVersion = 1;
 constexpr uint32_t kMaxAlphaCompositingVersion = 1;
 constexpr uint32_t kMaxXdgDecorationVersion = 1;
 constexpr uint32_t kMaxExtendedDragVersion = 1;
@@ -661,6 +661,16 @@ void WaylandConnection::HandleGlobal(wl_registry* registry,
     if (!linux_explicit_synchronization_) {
       LOG(ERROR) << "Failed to bind zwp_linux_explicit_synchronization_v1";
       return;
+    }
+  } else if (!linux_drm_syncobj_manager_ &&
+             (strcmp(interface, "wp_linux_drm_syncobj_manager_v1") == 0)) {
+    if (base::FeatureList::IsEnabled(features::kWaylandLinuxDrmSyncobj)) {
+      linux_drm_syncobj_manager_ = wl::Bind<wp_linux_drm_syncobj_manager_v1>(
+          registry, name, std::min(version, kMaxLinuxDrmSyncobjVersion));
+      if (!linux_drm_syncobj_manager_) {
+        LOG(ERROR) << "Failed to bind wp_linux_drm_syncobj_manager_v1";
+        return;
+      }
     }
   } else if (!content_type_manager_v1_ &&
              (strcmp(interface, "wp_content_type_manager_v1") == 0)) {
