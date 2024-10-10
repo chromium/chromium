@@ -38,7 +38,6 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
     private static final String TP_STATUS_PREFERENCE = "tp_status";
     private static final String STORAGE_IN_USE_PREFERENCE = "storage_in_use";
     private static final String RWS_IN_USE_PREFERENCE = "rws_in_use";
-    private static final String TPC_SUMMARY = "tpc_summary";
     private static final String MANAGED_TITLE = "managed_title";
     private static final String MANAGED_STATUS = "managed_status";
     private static final int EXPIRATION_FOR_TESTING = 33;
@@ -52,12 +51,10 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
     private TrackingProtectionStatusPreference mManagedStatus;
     private Runnable mOnClearCallback;
     private Runnable mOnCookieSettingsLinkClicked;
-    private Callback<Activity> mOnFeedbackClicked;
     private Dialog mConfirmationDialog;
     private boolean mDeleteDisabled;
     private boolean mDataUsed;
     private CharSequence mHostName;
-    private RWSCookieInfo mRWSInfo;
     private boolean mBlockAll3PC;
     private boolean mIsIncognito;
     // Used to have a constant # of days until expiration to prevent test flakiness.
@@ -162,7 +159,6 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
         updateStorageDeleteButton();
 
         mOnClearCallback = params.onClearCallback;
-        mOnFeedbackClicked = params.onFeedbackLinkClicked;
         mHostName = params.hostName;
     }
 
@@ -264,7 +260,6 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
      * @return a boolean indicating if the RWS info has been shown or not.
      */
     public boolean maybeShowRWSInfo(RWSCookieInfo rwsInfo, String currentOrigin) {
-        mRWSInfo = rwsInfo;
         if (rwsInfo == null || mRWSInUse == null) {
             return false;
         }

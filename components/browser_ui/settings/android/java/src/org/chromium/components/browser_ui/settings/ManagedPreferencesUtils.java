@@ -190,8 +190,8 @@ public class ManagedPreferencesUtils {
         if (view.findViewById(R.id.managed_disclaimer_text) != null
                 && delegate.isPreferenceControlledByPolicy(preference)) {
             // Hide the icon since it will be shown on the highlighted managed disclaimer.
-            hideManagedIcon(preference, view);
-            setSummaryWithHighlightedManagedInfo(preference.getContext(), descriptionText, view);
+            hideManagedIcon(view);
+            setSummaryWithHighlightedManagedInfo(descriptionText, view);
         } else {
             CharSequence managedDisclaimerText = getManagedDisclaimerText(delegate, preference);
             setSummaryWithManagedInfo(descriptionText, managedDisclaimerText, view);
@@ -320,12 +320,11 @@ public class ManagedPreferencesUtils {
     }
 
     /**
-     * @param context The context for a given preference.
      * @param descriptionText A description or a state for a given preference.
      * @param view The view corresponding to a given preference.
      */
     private static void setSummaryWithHighlightedManagedInfo(
-            Context context, @Nullable CharSequence descriptionText, View view) {
+            @Nullable CharSequence descriptionText, View view) {
         if (TextUtils.isEmpty(descriptionText)) {
             hideSummaryView(view);
         } else {
@@ -338,11 +337,10 @@ public class ManagedPreferencesUtils {
     /**
      * Hide the managed icon, to be used when the preference defines a custom layout and is managed
      * by policy. In that case, the icon will be shown on the managed disclaimer view.
-     * @param preference The {@link Preference} that is being show to the user for a given
-     *         preference.
+     *
      * @param view The view corresponding to a given preference.
      */
-    private static void hideManagedIcon(Preference preference, View view) {
+    private static void hideManagedIcon(View view) {
         final ImageView imageView = (ImageView) view.findViewById(android.R.id.icon);
         if (imageView != null) {
             imageView.setVisibility(View.GONE);

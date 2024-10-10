@@ -35,17 +35,16 @@ public class PlatformContentCaptureConsumer implements ContentCaptureConsumer {
      *     isn't AiAi service.
      */
     public static ContentCaptureConsumer create(
-            Context context, View view, ViewStructure structure, WebContents webContents) {
+            Context context, View view, ViewStructure structure, WebContents unused_webContents) {
         if (PlatformContentCaptureController.getInstance() == null) {
             PlatformContentCaptureController.init(context.getApplicationContext());
         }
 
         if (!PlatformContentCaptureController.getInstance().shouldStartCapture()) return null;
-        return new PlatformContentCaptureConsumer(view, structure, webContents);
+        return new PlatformContentCaptureConsumer(view, structure);
     }
 
-    private PlatformContentCaptureConsumer(
-            View view, ViewStructure viewStructure, WebContents webContents) {
+    private PlatformContentCaptureConsumer(View view, ViewStructure viewStructure) {
         mView = new WeakReference(view);
         if (viewStructure != null) {
             mPlatformSession =

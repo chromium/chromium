@@ -107,9 +107,6 @@ class BottomSheet extends FrameLayout
     /** The height of the view that contains the bottom sheet. */
     private int mContainerHeight;
 
-    /** The width of the bottom sheet content view. */
-    private int mContentWidth;
-
     /** The desired height of the current content view. */
     private float mContentDesiredHeight = HEIGHT_UNSPECIFIED;
 
@@ -323,7 +320,6 @@ class BottomSheet extends FrameLayout
 
         mContainerWidth = mSheetContainer.getWidth();
         mContainerHeight = mSheetContainer.getHeight();
-        mContentWidth = mContainerWidth;
         mAlwaysFullWidth = alwaysFullWidth;
 
         sizeAndPositionSheetInParent();
@@ -1340,7 +1336,6 @@ class BottomSheet extends FrameLayout
             int oldBottom) {
         // When there is a device rotation, mContentWidth needs to be updated before the new
         // view is drawn.
-        mContentWidth = right - left;
         invalidateContentDesiredHeight();
         ensureContentIsWrapped(/* animate= */ true);
 

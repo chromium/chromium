@@ -22,8 +22,6 @@ import org.chromium.content_public.browser.WebContentsObserver;
  */
 @JNINamespace("payments::android")
 public class PaymentRequestWebContentsData extends WebContentsObserver implements UserData {
-    private static final Class<PaymentRequestWebContentsData> USER_DATA_KEY =
-            PaymentRequestWebContentsData.class;
     private static PaymentRequestWebContentsData sInstanceForTesting;
 
     private static final class UserDataFactoryLazyHolder {

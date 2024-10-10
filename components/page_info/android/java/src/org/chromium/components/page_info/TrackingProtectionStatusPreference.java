@@ -39,12 +39,6 @@ public class TrackingProtectionStatusPreference extends Preference {
     private TextView mIpStatus;
     private TextView mFingerprintStatus;
 
-    // Which managed icon to show for each element, if any.
-    private Drawable mManagedCookieIcon;
-    private Drawable mManagedIpIcon;
-    private Drawable mManagedFingerprintIcon;
-
-    private boolean mStatus;
     private List<UpdateAction> mStatusUpdates;
 
     /** Constructor for Java code. */
@@ -56,7 +50,6 @@ public class TrackingProtectionStatusPreference extends Preference {
     public TrackingProtectionStatusPreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         mStatusUpdates = new ArrayList<UpdateAction>();
-        mStatus = true;
         setLayoutResource(R.layout.tracking_protection_status);
     }
 

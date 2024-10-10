@@ -29,9 +29,6 @@ public class FormData {
     public final String mName;
     public final String mHost;
     public final List<FormFieldData> mFields;
-    // Every node must have an Autofill id. We (arbitrarily, but consistently) choose the
-    // maximum value for the form node.
-    private static final short FORM_NODE_ID = Short.MAX_VALUE;
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     @CalledByNative

@@ -225,7 +225,7 @@ public class RedirectHandler {
         boolean isSameNavigationChain = isRedirect || (isRendererInitiated && !hasUserGesture);
 
         if (mNavigationChainState != null && isSameNavigationChain) {
-            updateNavigationChainState(pageTransType);
+            updateNavigationChainState();
         } else {
             resetNavigationChainState(
                     pageTransType,
@@ -238,7 +238,7 @@ public class RedirectHandler {
         if (isBackOrForward) mNavigationChainState.mUsedBackOrForward = true;
     }
 
-    private void updateNavigationChainState(int pageTransType) {
+    private void updateNavigationChainState() {
         mNavigationChainState.mIsOnFirstLoadInChain = false;
     }
 

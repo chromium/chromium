@@ -50,8 +50,6 @@ class MessageBannerMediator implements SwipeHandler {
         int IDLE = 2;
         // User gesture
         int GESTURE = 3;
-
-        int NUM_ENTRIES = 4;
     }
 
     private static final int ENTER_DURATION_MS = 550;
@@ -136,7 +134,6 @@ class MessageBannerMediator implements SwipeHandler {
                 true,
                 true,
                 0,
-                false,
                 toIndex == Position.BACK ? mPeekingMarginTop + verticalOffset : mDefaultMarginTop,
                 messageShown);
     }
@@ -167,7 +164,7 @@ class MessageBannerMediator implements SwipeHandler {
             messageHidden.run();
             return null;
         }
-        return startAnimation(true, false, translateTo, false, mDefaultMarginTop, messageHidden);
+        return startAnimation(true, false, translateTo, mDefaultMarginTop, messageHidden);
     }
 
     void setOnTouchRunnable(Runnable runnable) {
@@ -250,7 +247,6 @@ class MessageBannerMediator implements SwipeHandler {
                         isVertical,
                         isShow,
                         translateTo,
-                        false,
                         mDefaultMarginTop,
                         isShow ? () -> {} : mMessageDismissed));
     }
@@ -290,7 +286,6 @@ class MessageBannerMediator implements SwipeHandler {
                         isVertical(mSwipeDirection),
                         isShow,
                         translateTo,
-                        velocity != 0,
                         mDefaultMarginTop,
                         isShow ? () -> {} : mMessageDismissed));
     }
@@ -311,7 +306,6 @@ class MessageBannerMediator implements SwipeHandler {
      * @param vertical Whether the message is being animated vertically.
      * @param isShow Whether the message is going to be shown.
      * @param translateTo Target translation value for the animation.
-     * @param didFling Whether the animation is the result of a fling gesture.
      * @param marginTo The marginTop value the view should move to.
      * @param onEndCallback Callback that will be called after the animation.
      * @return The animator which can trigger the animation.
@@ -320,12 +314,10 @@ class MessageBannerMediator implements SwipeHandler {
             boolean vertical,
             boolean isShow,
             float translateTo,
-            boolean didFling,
             int marginTo,
             Runnable onEndCallback) {
         final long duration = isShow ? ENTER_DURATION_MS : EXIT_DURATION_MS;
         List<Animator> animators = new ArrayList<>();
-        Animator alphaAnimation = null;
 
         if (vertical) {
             final Animator expand =
@@ -336,7 +328,8 @@ class MessageBannerMediator implements SwipeHandler {
         }
 
         final float alphaTo = isShow ? 1.f : 0.f;
-        alphaAnimation = PropertyModelAnimatorFactory.ofFloat(mModel, CONTENT_ALPHA, alphaTo);
+        Animator alphaAnimation =
+                PropertyModelAnimatorFactory.ofFloat(mModel, CONTENT_ALPHA, alphaTo);
         alphaAnimation.setInterpolator(EXIT_INTERPOLATOR);
         alphaAnimation.setDuration(duration);
         animators.add(alphaAnimation);

@@ -155,7 +155,6 @@ public class InstalledAppProviderImpl implements InstalledAppProvider {
             final FilterInstalledApps_Response callback) {
         GURL url = mRenderFrameHost.getLastCommittedURL();
         final GURL frameUrl = url == null ? GURL.emptyGURL() : url;
-        int delayMillis = 0;
         int numTasks = Math.min(relatedApps.length, MAX_ALLOWED_RELATED_APPS);
         ResultHolder resultHolder = new ResultHolder(numTasks, callback);
 

@@ -51,8 +51,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     private boolean mDataUsed;
     private CharSequence mHostName;
     private RWSCookieInfo mRWSInfo;
-    private boolean mBlockAll3PC;
-    private boolean mIsIncognito;
     private PageInfoControllerDelegate mPageInfoControllerDelegate;
 
     /** Parameters to configure the cookie controls view. */
@@ -99,8 +97,6 @@ public class PageInfoCookiesSettings extends BaseSiteSettingsFragment {
     }
 
     public void setParams(PageInfoCookiesViewParams params) {
-        mBlockAll3PC = params.blockAll3PC;
-        mIsIncognito = params.isIncognito;
         mOnCookieSettingsLinkClicked = params.onCookieSettingsLinkClicked;
         Preference cookieSummary = findPreference(COOKIE_SUMMARY_PREFERENCE);
         ClickableSpan linkSpan =

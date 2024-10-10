@@ -5,7 +5,6 @@
 package org.chromium.components.browser_ui.sms;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.SystemClock;
 import android.view.View;
 
@@ -82,7 +81,6 @@ public class WebOTPServiceInfoBar extends ConfirmInfoBar {
             }
         }
 
-        Context context = layout.getContext();
         InfoBarControlLayout control = layout.addControlLayout();
         control.addDescription(mMessage);
     }

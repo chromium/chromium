@@ -55,8 +55,6 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
                 OnPreferenceClickListener,
                 SiteAddedCallback,
                 EmbeddableSettingsPage {
-    // Must match keys in tracking_protection_preferences.xml.
-    private static final String OFFBOARDING_NOTICE = "offboarding_notice";
     private static final String PREF_BLOCK_ALL_TOGGLE = "block_all_3pcd_toggle";
     private static final String PREF_IP_PROTECTION_TOGGLE = "ip_protection_toggle";
     private static final String PREF_IP_PROTECTION_LEARN_MORE = "ip_protection_learn_more";

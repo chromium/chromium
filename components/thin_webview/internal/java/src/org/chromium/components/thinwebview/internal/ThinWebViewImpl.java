@@ -32,7 +32,6 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
     private final CompositorView mCompositorView;
     private final WindowAndroid mWindowAndroid;
     private long mNativeThinWebViewImpl;
-    private WebContents mWebContents;
     private View mContentView;
     // Passed to native and stored as a weak reference, so ensure this strong
     // reference is not optimized away by R8.
@@ -79,7 +78,6 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
             @Nullable View contentView,
             @Nullable WebContentsDelegateAndroid delegate) {
         if (mNativeThinWebViewImpl == 0) return;
-        mWebContents = webContents;
         // Native code holds only a weak reference to this object.
         mWebContentsDelegate = delegate;
         setContentView(contentView);

@@ -37,7 +37,6 @@ public class MaterialSwitchWithTitleAndSummary extends LinearLayout
     private final MaterialSwitch mSwitch;
     private final TextView mTitleTextView;
     private final TextView mSummaryTextView;
-    private Listener mListener;
 
     public MaterialSwitchWithTitleAndSummary(Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);

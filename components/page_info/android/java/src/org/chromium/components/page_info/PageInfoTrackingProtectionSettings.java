@@ -45,7 +45,6 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
     private ChromeImageViewPreference mRWSInUse;
     private TextMessagePreference mThirdPartyCookiesTitle;
     private Preference mThirdPartyCookiesSummary;
-    private TrackingProtectionStatusPreference mTpStatus;
     private Runnable mOnClearCallback;
     private Runnable mOnCookieSettingsLinkClicked;
     private Callback<Activity> mOnFeedbackClicked;
@@ -53,7 +52,6 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
     private boolean mDeleteDisabled;
     private boolean mDataUsed;
     private CharSequence mHostName;
-    private RWSCookieInfo mRWSInfo;
     private boolean mBlockAll3PC;
     private boolean mIsIncognito;
     // Used to have a constant # of days until expiration to prevent test flakiness.
@@ -88,7 +86,6 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
 
         mCookieSwitch = findPreference(TP_SWITCH_PREFERENCE);
 
-        mTpStatus = findPreference(TP_STATUS_PREFERENCE);
         mStorageInUse = findPreference(STORAGE_IN_USE_PREFERENCE);
         mRWSInUse = findPreference(RWS_IN_USE_PREFERENCE);
         mRWSInUse.setVisible(false);
@@ -301,7 +298,6 @@ public class PageInfoTrackingProtectionSettings extends BaseSiteSettingsFragment
      * @return a boolean indicating if the RWS info has been shown or not.
      */
     public boolean maybeShowRWSInfo(RWSCookieInfo rwsInfo, String currentOrigin) {
-        mRWSInfo = rwsInfo;
         if (rwsInfo == null || mRWSInUse == null) {
             return false;
         }

@@ -40,9 +40,7 @@ public class PageInfoTrackingProtectionLaunchController extends PageInfoPreferen
     private boolean mCookieControlsVisible;
     private boolean mProtectionsOn;
     private List<TrackingProtectionFeature> mFeatures;
-    private boolean mIsEnforced;
     private long mExpiration;
-    private boolean mShouldDisplaySiteBreakageString;
     private Website mWebsite;
     private boolean mBlockAll3PC;
     private boolean mIsIncognito;
@@ -73,7 +71,6 @@ public class PageInfoTrackingProtectionLaunchController extends PageInfoPreferen
         rowParams.decreaseIconSize = true;
         rowParams.clickCallback = this::launchSubpage;
         mRowView.setParams(rowParams);
-        mShouldDisplaySiteBreakageString = false;
         updateRowViewSubtitle();
     }
 
@@ -203,7 +200,6 @@ public class PageInfoTrackingProtectionLaunchController extends PageInfoPreferen
 
     @Override
     public void onHighlightCookieControl(boolean shouldHighlight) {
-        mShouldDisplaySiteBreakageString = shouldHighlight;
         updateRowViewSubtitle();
     }
 

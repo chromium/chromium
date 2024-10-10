@@ -584,10 +584,7 @@ public class ExternalNavigationHandler {
         if (result.getResultType() == OverrideUrlLoadingResultType.NO_OVERRIDE) {
             result =
                     handleFallbackUrl(
-                            params,
-                            targetIntent,
-                            browserFallbackUrl,
-                            canLaunchExternalFallbackResult.get());
+                            params, browserFallbackUrl, canLaunchExternalFallbackResult.get());
         }
         if (debug()) printDebugShouldOverrideUrlLoadingResultType(result);
 
@@ -604,7 +601,6 @@ public class ExternalNavigationHandler {
 
     private OverrideUrlLoadingResult handleFallbackUrl(
             ExternalNavigationParams params,
-            Intent targetIntent,
             GURL browserFallbackUrl,
             boolean canLaunchExternalFallback) {
         if (browserFallbackUrl.isEmpty()) {
@@ -976,7 +972,6 @@ public class ExternalNavigationHandler {
      */
     private @NavigationChainResult int navigationChainBlocksExternalNavigation(
             ExternalNavigationParams params,
-            Intent targetIntent,
             QueryIntentActivitiesSupplier resolvingInfos,
             boolean isExternalProtocol,
             boolean shouldReturnAsResult) {
@@ -1213,7 +1208,6 @@ public class ExternalNavigationHandler {
     private boolean isInsecureIntentToOtherBrowser(
             Intent targetIntent,
             QueryIntentActivitiesSupplier resolveInfos,
-            boolean isIntentWithSupportedProtocol,
             ResolveActivitySupplier resolveActivity,
             boolean intentHasExtras) {
         // If an intent has Extras or a data URI it may be used to launch arbitrary URIs in insecure
@@ -1450,7 +1444,7 @@ public class ExternalNavigationHandler {
             }
         }
 
-        OverrideUrlLoadingResult result = handleFallbackUrl(params, intent, fallbackUrl, false);
+        OverrideUrlLoadingResult result = handleFallbackUrl(params, fallbackUrl, false);
         if (params.getRequiredAsyncActionTakenCallback() != null) {
             if (result.getResultType() == OverrideUrlLoadingResultType.NO_OVERRIDE) {
                 // There was no fallback URL and we can't handle the URL the intent was targeting.
@@ -1637,11 +1631,7 @@ public class ExternalNavigationHandler {
         @NavigationChainResult
         int navigationChainResult =
                 navigationChainBlocksExternalNavigation(
-                        params,
-                        targetIntent,
-                        resolvingInfos,
-                        isExternalProtocol,
-                        shouldReturnAsResult);
+                        params, resolvingInfos, isExternalProtocol, shouldReturnAsResult);
 
         // Short-circuit expensive quertyIntentActivities calls below since we won't prompt anyways
         // for protocols the browser can handle.
@@ -1723,11 +1713,7 @@ public class ExternalNavigationHandler {
         } else {
             requiresIntentChooser =
                     isInsecureIntentToOtherBrowser(
-                            targetIntent,
-                            resolvingInfos,
-                            isIntentWithSupportedProtocol,
-                            resolveActivity,
-                            intentHasExtras);
+                            targetIntent, resolvingInfos, resolveActivity, intentHasExtras);
 
             if (shouldAvoidShowingDisambiguationPrompt(
                     isExternalProtocol, intentTargetUrl, resolvingInfos, resolveActivity)) {
@@ -1824,12 +1810,12 @@ public class ExternalNavigationHandler {
 
         // The intent is staying in the app, so we can simply navigate to the intent's URL,
         // while staying in incognito.
-        return handleFallbackUrl(params, targetIntent, fallbackUrl, false);
+        return handleFallbackUrl(params, fallbackUrl, false);
     }
 
     /**
-     * Sanitize intent to be passed to {@link queryIntentActivities()}
-     * ensuring that web pages cannot bypass browser security.
+     * Sanitize intent to be passed to {@link queryIntentActivities()} ensuring that web pages
+     * cannot bypass browser security.
      */
     public static void sanitizeQueryIntentActivitiesIntent(Intent intent) {
         intent.setFlags(intent.getFlags() & ALLOWED_INTENT_FLAGS);

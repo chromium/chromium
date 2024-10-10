@@ -38,7 +38,6 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
     private boolean mCookieControlsVisible;
     private boolean mThirdPartyCookiesBlocked;
     private int mEnforcement;
-    private boolean mIsEnforced;
     private long mExpiration;
     private boolean mShouldDisplaySiteBreakageString;
     private Website mWebsite;

@@ -40,7 +40,6 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
     private final boolean mIsFullyVisibileCallbackEnabled;
     private boolean mMessageDismissed;
     private boolean mFullyVisibleBefore;
-    private boolean mFullyVisibleCallbackInvoked;
     private final boolean mAreExtraHistogramsEnabled;
 
     private long mMessageEnqueuedTime;
@@ -236,7 +235,6 @@ public class SingleActionMessage implements MessageStateHandler, MessageContaine
         var callback = getOnFullyVisibleCallback();
         if (callback == null) return;
         if (fullyVisible == mModel.get(MessageBannerProperties.IS_FULLY_VISIBLE)) return;
-        mFullyVisibleCallbackInvoked = true;
 
         mModel.set(MessageBannerProperties.IS_FULLY_VISIBLE, fullyVisible);
         callback.onResult(fullyVisible);

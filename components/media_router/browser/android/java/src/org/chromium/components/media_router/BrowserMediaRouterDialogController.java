@@ -17,13 +17,11 @@ import org.chromium.components.media_router.caf.remoting.RemotingMediaSource;
 import org.chromium.content_public.browser.WebContents;
 
 /**
- * Implements the JNI interface called from the C++ Media Router dialog controller implementation
- * on Android.
+ * Implements the JNI interface called from the C++ Media Router dialog controller implementation on
+ * Android.
  */
 @JNINamespace("media_router")
 public class BrowserMediaRouterDialogController implements MediaRouteDialogDelegate {
-    private static final String MEDIA_ROUTE_CONTROLLER_DIALOG_FRAGMENT =
-            "android.support.v7.mediarouter:MediaRouteControllerDialogFragment";
 
     private final long mNativeDialogController;
     private BaseMediaRouteDialogManager mDialogManager;

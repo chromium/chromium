@@ -148,7 +148,6 @@ public class AutofillProviderUMA {
         public static final int EVENT_FIELD_CHANGED_VISIBILITY = 1 << 5;
         public static final int EVENT_FORM_SUBMITTED = 1 << 6;
         public static final int EVENT_BOTTOM_SHEET_SHOWN = 1 << 7;
-        public static final int EVENT_MAX = 1 << 8;
 
         private Long mSuggestionTimeMillis;
 

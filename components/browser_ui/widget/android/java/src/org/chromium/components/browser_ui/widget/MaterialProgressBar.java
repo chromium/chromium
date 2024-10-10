@@ -7,7 +7,6 @@ package org.chromium.components.browser_ui.widget;
 import android.animation.ValueAnimator;
 import android.animation.ValueAnimator.AnimatorUpdateListener;
 import android.content.Context;
-import android.content.res.Resources;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
@@ -154,7 +153,6 @@ public class MaterialProgressBar extends View implements AnimatorUpdateListener 
     }
 
     private void initialize(Context context, AttributeSet attrs, int defStyle) {
-        Resources resources = context.getResources();
         int backgroundColor = context.getColor(R.color.progress_bar_bg_color_list);
         int progressColor = SemanticColorUtils.getProgressBarForeground(context);
         int secondaryProgressColor = context.getColor(R.color.progress_bar_secondary);

@@ -440,11 +440,9 @@ public class PlatformAPIWrapperTest {
                 createContentCapturedTask(),
                 toIntArray(
                         PlatformAPIWrapperTestHelper.CREATE_CONTENT_CAPTURE_SESSION,
-                        PlatformAPIWrapperTestHelper.NEW_AUTOFILL_ID,
                         PlatformAPIWrapperTestHelper.NEW_VIRTUAL_VIEW_STRUCTURE,
                         PlatformAPIWrapperTestHelper.NOTIFY_VIEW_APPEARED,
                         PlatformAPIWrapperTestHelper.CREATE_CONTENT_CAPTURE_SESSION,
-                        PlatformAPIWrapperTestHelper.NEW_AUTOFILL_ID,
                         PlatformAPIWrapperTestHelper.NEW_VIRTUAL_VIEW_STRUCTURE,
                         PlatformAPIWrapperTestHelper.NOTIFY_VIEW_APPEARED,
                         PlatformAPIWrapperTestHelper.NEW_VIRTUAL_VIEW_STRUCTURE,
@@ -483,8 +481,6 @@ public class PlatformAPIWrapperTest {
         InOrder inOrder = Mockito.inOrder(mPlatformAPIWrapperTestHelperSpy);
         inOrder.verify(mPlatformAPIWrapperTestHelperSpy)
                 .createContentCaptureSession(mMockedRootContentCaptureSession, MAIN_URL, FAVICON);
-        inOrder.verify(mPlatformAPIWrapperTestHelperSpy)
-                .newAutofillId(mMockedRootContentCaptureSession, mMockedRootAutofillId, MAIN_ID);
 
         // Verifies the ViewStructure for the main frame.
         inOrder.verify(mPlatformAPIWrapperTestHelperSpy)
@@ -502,11 +498,6 @@ public class PlatformAPIWrapperTest {
                         mPlatformAPIWrapperTestHelper.mCreatedContentCaptureSessions.get(0),
                         CHILD_URL,
                         null);
-        inOrder.verify(mPlatformAPIWrapperTestHelperSpy)
-                .newAutofillId(
-                        mPlatformAPIWrapperTestHelper.mCreatedContentCaptureSessions.get(0),
-                        mMockedRootAutofillId,
-                        CHILD_FRAME_ID);
 
         // Verifies the ViewStructure for the child frame.
         inOrder.verify(mPlatformAPIWrapperTestHelperSpy)
@@ -553,7 +544,7 @@ public class PlatformAPIWrapperTest {
         inOrder.verify(mPlatformAPIWrapperTestHelperSpy)
                 .notifyViewTextChanged(
                         mPlatformAPIWrapperTestHelper.mCreatedContentCaptureSessions.get(1),
-                        mPlatformAPIWrapperTestHelper.mCreatedAutofilIds.get(2),
+                        mPlatformAPIWrapperTestHelper.mCreatedAutofilIds.get(0),
                         CHILD2_NEW_TEXT);
 
         // Removes the child1 and child2
@@ -585,7 +576,7 @@ public class PlatformAPIWrapperTest {
         inOrder.verify(mPlatformAPIWrapperTestHelperSpy)
                 .notifyViewTextChanged(
                         mMockedRootContentCaptureSession,
-                        mPlatformAPIWrapperTestHelper.mCreatedAutofilIds.get(3),
+                        mPlatformAPIWrapperTestHelper.mCreatedAutofilIds.get(1),
                         UPDATED_MAIN_TITLE);
 
         // Update the favicon
@@ -613,20 +604,6 @@ public class PlatformAPIWrapperTest {
     }
 
     @Test
-    public void testNewAutofillIdException() throws Throwable {
-        PlatformAPIWrapperTestHelper mockedApiWrapperTestHelper =
-                Mockito.spy(mPlatformAPIWrapperTestHelper);
-        PlatformAPIWrapper.setPlatformAPIWrapperImplForTesting(mockedApiWrapperTestHelper);
-        doThrow(createMainContentCaptureSessionException())
-                .when(mockedApiWrapperTestHelper)
-                .newAutofillId(
-                        ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.anyLong());
-        runTaskAndVerifyCallbackWithException(
-                createContentCapturedTask(),
-                toIntArray(PlatformAPIWrapperTestHelper.CREATE_CONTENT_CAPTURE_SESSION));
-    }
-
-    @Test
     public void testNewVirtualViewStructureException() throws Throwable {
         PlatformAPIWrapperTestHelper mockedApiWrapperTestHelper =
                 Mockito.spy(mPlatformAPIWrapperTestHelper);
@@ -637,9 +614,7 @@ public class PlatformAPIWrapperTest {
                         ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.anyLong());
         runTaskAndVerifyCallbackWithException(
                 createContentCapturedTask(),
-                toIntArray(
-                        PlatformAPIWrapperTestHelper.CREATE_CONTENT_CAPTURE_SESSION,
-                        PlatformAPIWrapperTestHelper.NEW_AUTOFILL_ID));
+                toIntArray(PlatformAPIWrapperTestHelper.CREATE_CONTENT_CAPTURE_SESSION));
     }
 
     @Test
@@ -654,7 +629,6 @@ public class PlatformAPIWrapperTest {
                 createContentCapturedTask(),
                 toIntArray(
                         PlatformAPIWrapperTestHelper.CREATE_CONTENT_CAPTURE_SESSION,
-                        PlatformAPIWrapperTestHelper.NEW_AUTOFILL_ID,
                         PlatformAPIWrapperTestHelper.NEW_VIRTUAL_VIEW_STRUCTURE));
     }
 

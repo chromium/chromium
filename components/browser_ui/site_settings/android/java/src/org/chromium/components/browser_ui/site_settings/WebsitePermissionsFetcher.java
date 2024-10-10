@@ -474,7 +474,6 @@ public class WebsitePermissionsFetcher {
 
         private class PermissionInfoFetcher extends Task {
             final @ContentSettingsType.EnumType int mType;
-            private boolean mIsEmbeddedPermission;
 
             public PermissionInfoFetcher(@ContentSettingsType.EnumType int type) {
                 mType = type;

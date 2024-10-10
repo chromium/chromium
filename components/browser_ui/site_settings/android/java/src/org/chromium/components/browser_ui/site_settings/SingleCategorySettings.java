@@ -171,8 +171,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
     private boolean mIsInitialRun = true;
     // The number of sites that are on the Allowed list.
     private int mAllowedSiteCount;
-    // The websites that are currently displayed to the user.
-    private List<WebsitePreference> mWebsites;
     // Whether tri-state ContentSetting is required.
     private @GlobalToggleLayout int mGlobalToggleLayout = GlobalToggleLayout.BINARY_TOGGLE;
     // The "notifications_quiet_ui" preference to allow hiding/showing it.
@@ -255,7 +253,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             // This method may be called after the activity has been destroyed.
             // In that case, bail out.
             if (getActivity() == null) return;
-            mWebsites = null;
 
             resetList();
 
@@ -1039,7 +1036,6 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
             if (!mManagedListExpanded) managedGroup.removeAll();
         }
 
-        mWebsites = websites;
         updateBlockedHeader(blocked);
         updateAllowedHeader(mAllowedSiteCount, !isBlocked());
         updateManagedHeader(managed);
@@ -1640,7 +1636,7 @@ public class SingleCategorySettings extends BaseSiteSettingsFragment
         };
     }
 
-    private void onOffboardingCardCloseClick(View button) {
+    private void onOffboardingCardCloseClick() {
         mCardPreference.setVisible(false);
     }
 

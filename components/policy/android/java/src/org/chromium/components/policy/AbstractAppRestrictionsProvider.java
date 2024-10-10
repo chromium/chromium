@@ -86,7 +86,6 @@ public abstract class AbstractAppRestrictionsProvider extends PolicyProvider {
         // no way of reading policies (or cached policies from a previous run) without doing
         // a disk read, so we have to disable strict mode here.
         StrictMode.ThreadPolicy policy = StrictMode.allowThreadDiskReads();
-        long startTime = System.currentTimeMillis();
         final Bundle bundle = getApplicationRestrictions(mContext.getPackageName());
         StrictMode.setThreadPolicy(policy);
 

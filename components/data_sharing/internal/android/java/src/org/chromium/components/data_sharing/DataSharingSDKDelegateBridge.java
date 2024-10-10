@@ -31,7 +31,6 @@ import org.chromium.components.data_sharing.protocol.RemoveMemberParams;
 public class DataSharingSDKDelegateBridge {
 
     private DataSharingSDKDelegate mSDKDelegateImpl;
-    private long mNativePtr;
 
     @CalledByNative
     private static DataSharingSDKDelegateBridge create(
@@ -40,14 +39,11 @@ public class DataSharingSDKDelegateBridge {
     }
 
     private DataSharingSDKDelegateBridge(long nativePtr, DataSharingSDKDelegate delegate) {
-        mNativePtr = nativePtr;
         mSDKDelegateImpl = delegate;
     }
 
     @CalledByNative
-    private void clearNativePtr() {
-        mNativePtr = 0;
-    }
+    private void clearNativePtr() {}
 
     @CalledByNative
     public void initialize(DataSharingNetworkLoader networkLoader) {

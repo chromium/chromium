@@ -148,17 +148,16 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
 
         if (mCreateConfirmationUiDelegate != null) {
             if (!mCreateConfirmationUiDelegate.show(
-                    () -> continueMakeCredential(options, callback),
+                    () -> continueMakeCredential(options),
                     () -> onError(AuthenticatorStatus.NOT_ALLOWED_ERROR))) {
-                continueMakeCredential(options, callback);
+                continueMakeCredential(options);
             }
         } else {
-            continueMakeCredential(options, callback);
+            continueMakeCredential(options);
         }
     }
 
-    private void continueMakeCredential(
-            PublicKeyCredentialCreationOptions options, MakeCredential_Response callback) {
+    private void continueMakeCredential(PublicKeyCredentialCreationOptions options) {
         mPendingFido2CredentialRequest = getFido2CredentialRequest();
         mPendingFido2CredentialRequest.handleMakeCredentialRequest(
                 options,

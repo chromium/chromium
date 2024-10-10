@@ -29,7 +29,6 @@ public class RemotingMediaSource implements MediaSource {
     // Needs to be in sync with
     // third_party/blink/public/platform/modules/remoteplayback/remote_playback_source.h.
     private static final String SOURCE_PREFIX = "remote-playback:";
-    private static final String SOURCE_PATH = "media-element";
     private static final String ENCODED_SOURCE_KEY = "source";
 
     // Needs to be in sync with AndroidManifest meta-data key (used both by Clank and WebLayer
