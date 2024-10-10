@@ -6,6 +6,7 @@ import("//extensions/buildflags/buildflags.gni")
 
 source_set("profiler") {
   public = [
+    "chrome_thread_group_profiler_client.h",
     "chrome_thread_profiler_client.h",
     "main_thread_stack_sampling_profiler.h",
     "process_type.h",
@@ -14,6 +15,7 @@ source_set("profiler") {
   ]
 
   sources = [
+    "chrome_thread_group_profiler_client.cc",
     "chrome_thread_profiler_client.cc",
     "main_thread_stack_sampling_profiler.cc",
     "process_type.cc",

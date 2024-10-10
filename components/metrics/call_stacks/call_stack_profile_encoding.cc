@@ -49,6 +49,8 @@ Thread ToExecutionContextThread(sampling_profiler::ProfilerThreadType thread) {
       return COMPOSITOR_THREAD;
     case sampling_profiler::ProfilerThreadType::kServiceWorker:
       return SERVICE_WORKER_THREAD;
+    case sampling_profiler::ProfilerThreadType::kThreadPoolWorker:
+      return THREAD_POOL_THREAD;
   }
   NOTREACHED_IN_MIGRATION();
   return UNKNOWN_THREAD;

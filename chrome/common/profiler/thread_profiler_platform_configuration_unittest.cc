@@ -149,6 +149,12 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
          j <= static_cast<int>(sampling_profiler::ProfilerThreadType::kMax);
          ++j) {
       const auto thread = static_cast<sampling_profiler::ProfilerThreadType>(j);
+      // TODO(crbug.com/40226611): Remove exception once ThreadPoolWorker
+      // profile sampling is enabled.
+      if (thread == sampling_profiler::ProfilerThreadType::kThreadPoolWorker) {
+        // Skip checking kThreadPoolWorker threads.
+        continue;
+      }
 
 #if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARM64)
       if (process == sampling_profiler::ProfilerProcessType::kBrowser &&
@@ -199,5 +205,23 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
                                                version_info::Channel::DEV));
 #endif
     }
+  }
+}
+
+// TODO(crbug.com/40226611): Remove test once ThreadPoolWorker profile sampling
+// is enabled.
+MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
+                             IsDisabledForThreadPoolWorkerThread) {
+  for (int i = 0;
+       i <= static_cast<int>(sampling_profiler::ProfilerProcessType::kMax);
+       ++i) {
+    const auto process = static_cast<sampling_profiler::ProfilerProcessType>(i);
+    const auto thread =
+        sampling_profiler::ProfilerThreadType::kThreadPoolWorker;
+
+    EXPECT_FALSE(config()->IsEnabledForThread(process, thread,
+                                              version_info::Channel::CANARY));
+    EXPECT_FALSE(config()->IsEnabledForThread(process, thread,
+                                              version_info::Channel::DEV));
   }
 }
