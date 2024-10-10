@@ -11,11 +11,12 @@ import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
@@ -231,7 +232,7 @@ public final class TabGroupSyncLocalObserver {
             }
 
             @Override
-            public void didCreateNewGroup(Tab destinationTab, TabGroupModelFilter filter) {
+            public void didCreateNewGroup(Tab destinationTab, TabModelFilter filter) {
                 if (!mIsObserving) return;
                 LogUtils.log(TAG, "didCreateNewGroup");
                 LocalTabGroupId localTabGroupId =

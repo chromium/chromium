@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tasks.tab_groups;
+package org.chromium.chrome.browser.tabmodel;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
@@ -127,7 +127,7 @@ public interface TabGroupModelFilterObserver {
      * @param destinationTab The destination tab of the group after merge.
      * @param filter The {@link TabGroupModelFilter} that the new group event triggers on.
      */
-    default void didCreateNewGroup(Tab destinationTab, TabGroupModelFilter filter) {}
+    default void didCreateNewGroup(Tab destinationTab, TabModelFilter filter) {}
 
     /**
      * This method is called after a new title is set on a tab group.
