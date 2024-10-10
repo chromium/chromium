@@ -5508,6 +5508,23 @@
             ]
         }
     ],
+    "ClassifyUrlOnProcessResponseEventLinuxMacAndWindows": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ClassifyUrlOnProcessResponseEvent"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClayBlocking": [
         {
             "platforms": [
