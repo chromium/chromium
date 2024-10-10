@@ -92,8 +92,6 @@ _NEGATIVE_FILTER = [
     'ChromeDriverTest.testAlertOnNewWindow',
     # Flaky https://bugs.chromium.org/p/chromium/issues/detail?id=1143940
     'ChromeDriverTest.testTakeLargeElementFullPageScreenshot',
-    # crbug.com/chromedriver/4362
-    'BidiTest.testSwitchWindows',
     'BidiTest.testOpenMultipleTabsInJavaScript',
     # crbug.com/350916212
     'BidiTest.testFocusInFirstTab',
