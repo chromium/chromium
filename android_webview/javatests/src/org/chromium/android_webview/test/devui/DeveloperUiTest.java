@@ -58,6 +58,7 @@ import org.chromium.android_webview.nonembedded_util.WebViewPackageHelper;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.ui.test.util.ViewUtils;
@@ -68,6 +69,7 @@ import org.chromium.ui.test.util.ViewUtils;
  */
 @RunWith(AwJUnit4ClassRunner.class)
 @DoNotBatch(reason = "Batching causes flakes.")
+@DisabledTest(message = "https:/crbug.com/369532182")
 public class DeveloperUiTest {
     // The package name of the test shell. This is acting both as the client app and the WebView
     // provider.
