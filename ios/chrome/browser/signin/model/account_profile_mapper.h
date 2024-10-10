@@ -100,14 +100,19 @@ class AccountProfileMapper {
                                         id<RefreshAccessTokenError> error);
 
   // Invokes `OnIdentityListChanged(...)` for all observers in
-  // `profile_names_to_notify`.
+  // `profile_names_to_notify`. If `kSeparateProfilesForManagedAccounts` is
+  // disabled, all observers are notified, and `profile_names_to_notify` is
+  // ignored.
   void NotifyIdentityListChanged(
       const std::set<std::string>& profile_names_to_notify);
-  // Invokes `OnIdentityUpdated(...)` for all observers for `profile_name`.
+  // Invokes `OnIdentityUpdated(...)` for all observers for `profile_name`. If
+  // `kSeparateProfilesForManagedAccounts` is disabled, all observers are
+  // notified, and `profile_name` is ignored.
   void NotifyIdentityUpdated(id<SystemIdentity> identity,
                              std::string_view profile_name);
   // Invokes `OnIdentityAccessTokenRefreshFailed(...)` for all observers for
-  // the profile with `profile_name`.
+  // the profile with `profile_name`. If `kSeparateProfilesForManagedAccounts`
+  // is disabled, all observers are notified, and `profile_name` is ignored.
   void NotifyAccessTokenRefreshFailed(id<SystemIdentity> identity,
                                       id<RefreshAccessTokenError> error,
                                       std::string_view profile_name);
