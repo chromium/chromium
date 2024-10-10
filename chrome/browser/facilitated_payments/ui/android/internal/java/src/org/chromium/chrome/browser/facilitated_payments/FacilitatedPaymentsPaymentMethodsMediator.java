@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_DRAWABLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_ICON_BITMAP;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_SUMMARY;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_TRANSACTION_LIMIT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_NAME;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.ON_BANK_ACCOUNT_CLICK_ACTION;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ErrorScreenProperties.PRIMARY_BUTTON_CALLBACK;
@@ -60,6 +61,8 @@ import java.util.stream.StreamSupport;
  * reacts to events like clicks.
  */
 class FacilitatedPaymentsPaymentMethodsMediator {
+    static final String PIX_BANK_ACCOUNT_TRANSACTION_LIMIT = "500";
+
     private Context mContext;
     private PropertyModel mModel;
     private Delegate mDelegate;
@@ -185,6 +188,9 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                                 BANK_ACCOUNT_SUMMARY,
                                 getBankAccountSummaryString(context, bankAccount))
                         .with(
+                                BANK_ACCOUNT_TRANSACTION_LIMIT,
+                                getBankAccountTransactionLimit(context))
+                        .with(
                                 ON_BANK_ACCOUNT_CLICK_ACTION,
                                 () -> this.onBankAccountSelected(bankAccount));
         Optional<Bitmap> bankIconOptional = Optional.empty();
@@ -216,6 +222,13 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                         R.string.settings_pix_bank_account_identifer,
                         getBankAccountTypeString(context, bankAccount.getAccountType()),
                         bankAccount.getAccountNumberSuffix());
+    }
+
+    static String getBankAccountTransactionLimit(Context context) {
+        return context.getResources()
+                .getString(
+                        R.string.pix_bank_account_transaction_limit,
+                        PIX_BANK_ACCOUNT_TRANSACTION_LIMIT);
     }
 
     @VisibleForTesting

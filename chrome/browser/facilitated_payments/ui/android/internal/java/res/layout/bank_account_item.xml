@@ -40,14 +40,19 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.TextLarge.Primary"/>
+            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
 
         <TextView
             android:id="@+id/bank_account_summary"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:maxLines="1"
-            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
 
+        <TextView
+            android:id="@+id/bank_account_additional_info"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
     </LinearLayout>
 </LinearLayout>

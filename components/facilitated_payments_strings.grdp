@@ -18,6 +18,9 @@
   <message name="IDS_SETTINGS_PIX_BANK_ACCOUNT_IDENTIFER" desc="Identifier for bank account that can be used for the Pix payment platform." formatter_data="android_java" translateable="false">
     Pix  •  <ph name="BANK_ACCOUNT_TYPE">%1$s<ex>Checking</ex></ph> ••••<ph name="ACCOUNT_NUMBER_SUFFIX">%2$s<ex>1234</ex></ph>
   </message>
+  <message name="IDS_PIX_BANK_ACCOUNT_TRANSACTION_LIMIT" desc="A note shown in the Pix bank account suggestions informing users of the transaction limits set by their bank on purchases. It is shown for every bank suggestion in the Pix form-of-payment selector. R$ is the symbol of the Brazilian Real currency. R$ is not translatable and should always be R$." formatter_data="android_java">
+    Limit per Pix R$ <ph name="TRANSACTION_LIMIT">%1$s<ex>500</ex></ph>
+  </message>
   <message name="IDS_BANK_ACCOUNT_TYPE_CHECKING" desc="A checking bank account is for users to transact their regular expenses. This is the string to describe a checking bank account." formatter_data="android_java">
     Checking
   </message>
