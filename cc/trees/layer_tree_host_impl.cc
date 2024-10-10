@@ -3037,7 +3037,6 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
 
   // TODO(b/368050735): future-proof this event against early returns.
   TRACE_EVENT_END("viz,benchmark,graphics.pipeline",
-                  perfetto::Flow::Global(CurrentBeginFrameArgs().trace_id),
                   [&](perfetto::EventContext ctx) {
                     auto* event =
                         ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
