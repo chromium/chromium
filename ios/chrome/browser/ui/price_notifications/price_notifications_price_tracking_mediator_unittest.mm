@@ -493,3 +493,34 @@ TEST_F(PriceNotificationsPriceTrackingMediatorTest,
 
   EXPECT_OCMOCK_VERIFY(mock_notification_center_);
 }
+
+TEST_F(PriceNotificationsPriceTrackingMediatorTest,
+       TrackWhenNotificationAuthorizationAuthorized) {
+  SetupMockNotificationCenter();
+  id settings = OCMClassMock([UNNotificationSettings class]);
+  OCMStub([mock_notification_center_
+      getNotificationSettingsWithCompletionHandler:
+          ([OCMArg invokeBlockWithArgs:settings, nil])]);
+  OCMStub([settings authorizationStatus])
+      .andReturn(UNAuthorizationStatusAuthorized);
+
+  commerce::ProductInfo product_info;
+  product_info.title = kBookmarkTitle;
+  product_info.product_cluster_id = std::make_optional(kClusterId);
+  std::optional<commerce::ProductInfo> optional_product_info;
+  optional_product_info.emplace(product_info);
+  shopping_service_->SetResponseForGetProductInfoForUrl(optional_product_info);
+
+  price_insights_consumer_.didPriceTrack = NO;
+  price_insights_consumer_.didPresentPushNotificationPermissionAlertForItem =
+      NO;
+  mediator_.priceInsightsConsumer = price_insights_consumer_;
+  [mediator_ tryPriceInsightsTrackItem:GetPriceInsightsItem()];
+
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, true, ^bool {
+        return price_insights_consumer_.didPriceTrack;
+      }));
+
+  EXPECT_OCMOCK_VERIFY(mock_notification_center_);
+}
