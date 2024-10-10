@@ -287,6 +287,10 @@ public final class ProductionSupportedFlagList {
                 "When enabled, Autofill will always prefer the phone number parsed using "
                         + "libphonenumber over the format provided by the field during imports."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_PREFER_SAVED_FORM_AS_SUBMITTED_FORM,
+                "When enabled, Autofill will start preferring the saved form over performing form "
+                        + "extraction at submission time, and only use the latter as a fallback."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_REPLACE_CACHED_WEB_ELEMENTS_BY_RENDERER_IDS,
                 "When enabled, AutofillAgent will store its cached form and fields as renderer ids "
                         + "instead of holding strong references to blink::WebElement objects."),
@@ -318,6 +322,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_USE_PL_ADDRESS_MODEL,
                 "When enabled, Autofill uses a custom address model for Poland."),
+        Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_USE_SUBMITTED_FORM_IN_HTML_SUBMISSION,
+                "When enabled, Autofill will start falling back to the saved form when HTML"
+                        + " submission happens and form extraction fails."),
         Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_GREEK_REGEXES,
                 "When enabled, Greek regexes are used for parsing in branded builds."),

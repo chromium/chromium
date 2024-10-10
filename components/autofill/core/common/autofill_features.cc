@@ -316,19 +316,36 @@ BASE_FEATURE(kAutofillAcceptDomMutationAfterAutofillSubmission,
 // can decide what sources to use and what sources to ignore. Also, fixes
 // submission deduplication so that it ignores password submissions that PWM
 // doesn't act upon.
+// TODO(crbug.com/40281981): Remove when launched.
 BASE_FEATURE(kAutofillFixFormTracking,
              "AutofillFixFormTracking",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Unifies the tracking of the last interacted elements between FormTracker and
 // AutofillAgent and fixes inconsistencies in this tracking.
+// TODO(crbug.com/40281981): Remove when launched.
 BASE_FEATURE(kAutofillUnifyAndFixFormTracking,
              "AutofillUnifyAndFixFormTracking",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Uses AutofillAgent::GetSubmittedForm() in HTML submissions.
+// TODO(crbug.com/40281981): Remove when launched.
+BASE_FEATURE(kAutofillUseSubmittedFormInHtmlSubmission,
+             "AutofillUseSubmittedFormInHtmlSubmission",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Replaces blink::WebFormElementObserver usage in FormTracker by updated logic
 // for tracking the disappearance of forms as well as other submission
 // triggering events.
+// TODO(crbug.com/40281981): Remove when launched.
+BASE_FEATURE(kAutofillPreferSavedFormAsSubmittedForm,
+             "AutofillPreferSavedFormAsSubmittedForm",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Replaces blink::WebFormElementObserver usage in FormTracker by updated logic
+// for tracking the disappearance of forms as well as other submission
+// triggering events.
+// TODO(crbug.com/40281981): Remove when launched.
 BASE_FEATURE(kAutofillReplaceFormElementObserver,
              "AutofillReplaceFormElementObserver",
              base::FEATURE_DISABLED_BY_DEFAULT);

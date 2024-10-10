@@ -522,8 +522,12 @@ class FormAutocompleteSubmissionTest : public FormAutocompleteTest,
                                        public testing::WithParamInterface<int> {
  public:
   FormAutocompleteSubmissionTest() {
-    EXPECT_LE(GetParam(), 2);
+    EXPECT_LE(GetParam(), 6);
     std::vector<base::test::FeatureRef> features = {
+        features::kAutofillUnifyAndFixFormTracking,
+        features::kAutofillFixFormTracking,
+        features::kAutofillUseSubmittedFormInHtmlSubmission,
+        features::kAutofillPreferSavedFormAsSubmittedForm,
         features::kAutofillReplaceCachedWebElementsByRendererIds,
         features::kAutofillReplaceFormElementObserver};
 
@@ -540,7 +544,7 @@ class FormAutocompleteSubmissionTest : public FormAutocompleteTest,
 
 INSTANTIATE_TEST_SUITE_P(AutofillSubmissionTest,
                          FormAutocompleteSubmissionTest,
-                         ::testing::Values(0, 1, 2));
+                         ::testing::Values(0, 1, 2, 3, 4, 5, 6));
 
 // Tests that submitting a form generates FormSubmitted message with the form
 // fields.
@@ -588,6 +592,14 @@ TEST_P(FormAutocompleteSubmissionTest, SubmitEventPrevented) {
 TEST_P(FormAutocompleteSubmissionTest, DomMutationAfterAutofill) {
   base::test::ScopedFeatureList scoped_feature_list{
       features::kAutofillAcceptDomMutationAfterAutofillSubmission};
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillUnifyAndFixFormTracking)) {
+    // The test is parameterized by many configurations of enabled/disabled
+    // features. Among those we skip the configurations where the feature above
+    // is disabled. This is because this test is meant to test a feature which
+    // has `kAutofillUnifyAndFixFormTracking` as a prerequisite feature.
+    GTEST_SKIP();
+  }
   LoadHTML(
       "<html><form id='myForm' action='http://example.com/blade.php'>"
       "<input name='fname' id='fname'/>"

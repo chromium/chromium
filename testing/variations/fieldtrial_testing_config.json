@@ -2125,6 +2125,28 @@
             ]
         }
     ],
+    "AutofillImproveSubmittedFormComputation": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_All",
+                    "enable_features": [
+                        "AutofillPreferSavedFormAsSubmittedForm",
+                        "AutofillUseSubmittedFormInHtmlSubmission"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillKeyboardAccessory": [
         {
             "platforms": [

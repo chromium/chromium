@@ -727,8 +727,12 @@ class AutofillAgentSubmissionTest : public AutofillAgentTest,
                                     public testing::WithParamInterface<int> {
  public:
   AutofillAgentSubmissionTest() {
-    EXPECT_LE(GetParam(), 2);
+    EXPECT_LE(GetParam(), 6);
     std::vector<base::test::FeatureRef> features = {
+        features::kAutofillUnifyAndFixFormTracking,
+        features::kAutofillFixFormTracking,
+        features::kAutofillUseSubmittedFormInHtmlSubmission,
+        features::kAutofillPreferSavedFormAsSubmittedForm,
         features::kAutofillReplaceCachedWebElementsByRendererIds,
         features::kAutofillReplaceFormElementObserver};
 
@@ -739,9 +743,9 @@ class AutofillAgentSubmissionTest : public AutofillAgentTest,
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
-  bool improved_submission_detection() {
+  bool prefer_saved_form() {
     return base::FeatureList::IsEnabled(
-        features::kAutofillReplaceFormElementObserver);
+        features::kAutofillPreferSavedFormAsSubmittedForm);
   }
 
  private:
@@ -750,7 +754,7 @@ class AutofillAgentSubmissionTest : public AutofillAgentTest,
 
 INSTANTIATE_TEST_SUITE_P(AutofillSubmissionTest,
                          AutofillAgentSubmissionTest,
-                         ::testing::Values(0, 1, 2));
+                         ::testing::Values(0, 1, 2, 3, 4, 5, 6));
 
 // Test that AutofillAgent::JavaScriptChangedValue updates the
 // last interacted saved state.
@@ -1031,7 +1035,7 @@ TEST_P(AutofillAgentSubmissionTest,
   SimulateUserInputChangeForElementById("name", "Ariel");
   SimulateUserInputChangeForElementById("address", "Atlantica");
 
-  if (improved_submission_detection()) {
+  if (prefer_saved_form()) {
     EXPECT_CALL(autofill_driver(),
                 FormSubmitted(AllOf(FieldsAre(HasFieldIdAttribute(u"name"),
                                               HasFieldIdAttribute(u"address")),

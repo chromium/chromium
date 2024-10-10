@@ -206,7 +206,7 @@ class AutofillAgent : public content::RenderFrameObserver,
                                const blink::WebFormControlElement& element,
                                SaveFormReason source) override;
   void OnProbablyFormSubmitted() override;
-  void OnFormSubmitted(const blink::WebFormElement& form) override;
+  void OnFormSubmitted(const blink::WebFormElement& form_element) override;
   void OnInferredFormSubmission(mojom::SubmissionSource source) override;
 
   void AddFormObserver(Observer* observer);
@@ -388,10 +388,19 @@ class AutofillAgent : public content::RenderFrameObserver,
   // Hides any currently showing Autofill popup.
   void HidePopup();
 
-  // Attempt to get submitted FormData from last_interacted_form_ or
-  // provisionally_saved_form_, return the form in question if found, and
-  // std::nullopt otherwise.
-  std::optional<FormData> GetSubmittedForm() const;
+  // Returns an approximation of the submitted form. The candidates are:
+  // - `provisionally_saved_form_` , because it may be the last-known complete
+  //   state of the form (i.e., the form or some fields in the form may have
+  //   been removed afterwards).
+  // - `last_interacted_form_`'s current `FormData`, because this corresponds to
+  //   the last form element the user interacted with.
+  // - `known_submitted_form_element`'s current `FormData`, because the caller
+  //    specified that this is the form element that was submitted, regardless
+  //    of autofill's tracking.
+  // When `known_submitted_form_element` is provided the function makes sure
+  // that the returned form corresponds to that DOM element.
+  std::optional<FormData> GetSubmittedForm(
+      std::optional<blink::WebFormElement> known_submitted_form_element) const;
 
   void ResetLastInteractedElements();
   // A form_id means that the user last interacted with a FormElement.
