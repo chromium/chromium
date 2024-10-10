@@ -158,6 +158,10 @@ class AutofillPredictionImprovementsManager
   // Returns values to fill based on the `cache_`.
   base::flat_map<autofill::FieldGlobalId, std::u16string> GetValuesToFill();
 
+  // Handles what suggestions to show when the main filling suggestions
+  // generation fails.
+  void OnFailedToGenerateSuggestions();
+
   // Current state for retrieving predictions.
   PredictionRetrievalState prediction_retrieval_state_ =
       PredictionRetrievalState::kReady;

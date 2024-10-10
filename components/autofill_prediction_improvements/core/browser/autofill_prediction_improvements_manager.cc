@@ -416,17 +416,16 @@ void AutofillPredictionImprovementsManager::
         const autofill::FormFieldData& trigger_field) {
   switch (prediction_retrieval_state_) {
     case PredictionRetrievalState::kDoneSuccess:
+      // TODO(crbug.com/365512352): CHECK that `cache_` should not be null here.
       if (cache_ && cache_->empty()) {
-        // TODO(crbug.com/371924310): If the predictions map in the `cache_` is
-        // empty, update to an appropriate suggestion instead of the error one.
-        UpdateSuggestions(CreateErrorSuggestions());
+        OnFailedToGenerateSuggestions();
       } else {
         UpdateSuggestions(
             CreateFillingSuggestions(trigger_field, autofill_suggestions_));
       }
       break;
     case PredictionRetrievalState::kDoneError:
-      UpdateSuggestions(CreateErrorSuggestions());
+      OnFailedToGenerateSuggestions();
       break;
     case PredictionRetrievalState::kReady:
     case PredictionRetrievalState::kIsLoadingPredictions:
@@ -631,6 +630,20 @@ bool AutofillPredictionImprovementsManager::ShouldDisplayIph(
 
 void AutofillPredictionImprovementsManager::GoToSettings() const {
   client_->OpenPredictionImprovementsSettings();
+}
+
+void AutofillPredictionImprovementsManager::OnFailedToGenerateSuggestions() {
+  if (!autofill_suggestions_.empty()) {
+    // Fallback to regular autofill suggestions if any instead of showing an
+    // error directly.
+    UpdateSuggestions(autofill_suggestions_);
+    return;
+  }
+  // TODO(crbug.com/370693653): Also add logic to fallback to autocomplete
+  // suggestions if possible.
+  // TODO(crbug.com/371924310): Parameterize the error suggestion depending on
+  // `prediction_retrieval_state_`.
+  UpdateSuggestions(CreateErrorSuggestions());
 }
 
 }  // namespace autofill_prediction_improvements
