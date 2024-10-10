@@ -25,7 +25,7 @@ class SpellingEngine* CreateNativeSpellingEngine(
 // Interface to different spelling engines.
 class SpellingEngine {
  public:
-  virtual ~SpellingEngine() {}
+  virtual ~SpellingEngine() = default;
 
   // Initialize spelling engine with browser-side info. Must be called before
   // any other functions are called.

@@ -135,7 +135,7 @@ class SpellCheck::SpellcheckRequest {
   SpellcheckRequest(const SpellcheckRequest&) = delete;
   SpellcheckRequest& operator=(const SpellcheckRequest&) = delete;
 
-  ~SpellcheckRequest() {}
+  ~SpellcheckRequest() = default;
 
   std::u16string text() { return text_; }
   blink::WebTextCheckingCompletion* completion() { return completion_.get(); }

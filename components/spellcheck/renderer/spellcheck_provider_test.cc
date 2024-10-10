@@ -44,7 +44,7 @@ FakeTextCheckingCompletion::FakeTextCheckingCompletion(
     FakeTextCheckingResult* result)
     : result_(result) {}
 
-FakeTextCheckingCompletion::~FakeTextCheckingCompletion() {}
+FakeTextCheckingCompletion::~FakeTextCheckingCompletion() = default;
 
 void FakeTextCheckingCompletion::DidFinishCheckingText(
     const blink::WebVector<blink::WebTextCheckingResult>& results) {
@@ -242,4 +242,4 @@ base::WeakPtr<SpellCheckProvider> TestingSpellCheckProvider::GetWeakPtr() {
 
 SpellCheckProviderTest::SpellCheckProviderTest()
     : provider_(&embedder_provider_) {}
-SpellCheckProviderTest::~SpellCheckProviderTest() {}
+SpellCheckProviderTest::~SpellCheckProviderTest() = default;

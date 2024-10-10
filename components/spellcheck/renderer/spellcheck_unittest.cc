@@ -93,7 +93,7 @@ class SpellCheckTest : public testing::Test {
 #endif
   }
 
-  ~SpellCheckTest() override {}
+  ~SpellCheckTest() override = default;
 
   SpellCheck* spell_check() { return spell_check_.get(); }
 
