@@ -1704,7 +1704,7 @@ void ChromeMainDelegate::SandboxInitialized(const std::string& process_type) {
           /*persistent_histograms_enabled=*/true,
           /*storage=*/kPersistentHistogramStorageMappedFile);
     } else {
-      NOTREACHED_IN_MIGRATION();
+      DUMP_WILL_BE_NOTREACHED();
     }
   }
 

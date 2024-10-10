@@ -200,7 +200,7 @@ void StyleInvalidator::PushInvalidationSetsForContainerNode(
     SiblingData& sibling_data) {
   auto pending_invalidations_iterator = pending_invalidation_map_.find(&node);
   if (pending_invalidations_iterator == pending_invalidation_map_.end()) {
-    NOTREACHED_IN_MIGRATION()
+    DUMP_WILL_BE_NOTREACHED()
         << "We should strictly not have marked an element for "
            "invalidation without any pending invalidations.";
     return;

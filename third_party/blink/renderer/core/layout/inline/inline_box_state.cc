@@ -1090,7 +1090,7 @@ InlineLayoutStateStack::ApplyBaselineShift(InlineBoxState* box,
             baseline_shift = text_bottom - child.metrics.descent;
             break;
           }
-          NOTREACHED_IN_MIGRATION();
+          DUMP_WILL_BE_NOTREACHED();
           break;
         case EVerticalAlign::kTop:
         case EVerticalAlign::kBottom:

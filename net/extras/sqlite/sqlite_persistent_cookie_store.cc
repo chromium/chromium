@@ -1536,7 +1536,7 @@ void SQLitePersistentCookieStore::Backend::BatchOperation(
     if (!background_task_runner()->PostDelayedTask(
             FROM_HERE, base::BindOnce(&Backend::Commit, this),
             kCommitInterval)) {
-      NOTREACHED_IN_MIGRATION() << "background_task_runner() is not running.";
+      DUMP_WILL_BE_NOTREACHED() << "background_task_runner() is not running.";
     }
   } else if (num_pending == kCommitAfterBatchSize) {
     // We've reached a big enough batch, fire off a commit now.

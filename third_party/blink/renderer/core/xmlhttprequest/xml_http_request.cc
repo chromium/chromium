@@ -898,7 +898,7 @@ void XMLHttpRequest::send(Blob* body, ExceptionState& exception_state) {
       if (!file->GetPath().empty())
         http_body->AppendFile(file->GetPath(), file->LastModifiedTime());
       else
-        NOTREACHED_IN_MIGRATION();
+        DUMP_WILL_BE_NOTREACHED();
     } else {
       http_body->AppendBlob(body->Uuid(), body->GetBlobDataHandle());
     }

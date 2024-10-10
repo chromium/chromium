@@ -131,7 +131,7 @@ void SetSinkIdResolver::OnSetSinkIdComplete(media::OutputDeviceStatus status) {
               String(sink_descriptor_.SinkId()) + " is timed out."));
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      DUMP_WILL_BE_NOTREACHED();
   }
 
   auto& resolvers = audio_context_->GetSetSinkIdResolver();

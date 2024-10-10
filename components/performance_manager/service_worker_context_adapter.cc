@@ -165,7 +165,7 @@ void ServiceWorkerContextAdapterImpl::OnControlleeAdded(
   bool inserted =
       service_worker_clients_[version_id].insert(client_uuid).second;
   if (!inserted) {
-    NOTREACHED_IN_MIGRATION();
+    DUMP_WILL_BE_NOTREACHED();
     return;
   }
 

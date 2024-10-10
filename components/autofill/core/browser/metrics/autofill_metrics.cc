@@ -3264,7 +3264,7 @@ std::string AutofillMetrics::GetHistogramStringForCardType(
       case PaymentsRpcCardType::kVirtualCard:
         return ".VirtualCard";
       case PaymentsRpcCardType::kUnknown:
-        NOTREACHED_IN_MIGRATION();
+        DUMP_WILL_BE_NOTREACHED();
         break;
     }
   } else if (absl::holds_alternative<CreditCard::RecordType>(card_type)) {

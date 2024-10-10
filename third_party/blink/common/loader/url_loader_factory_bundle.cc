@@ -98,7 +98,7 @@ network::mojom::URLLoaderFactory* URLLoaderFactoryBundle::GetFactory(
     // Hitting the NOTREACHED below means that a subresource load has
     // unexpectedly happened in a speculative frame (or in a test frame created
     // via RenderViewTest).  This most likely indicates a bug somewhere else.
-    NOTREACHED_IN_MIGRATION();
+    DUMP_WILL_BE_NOTREACHED();
 
     // TODO(https://crbug.com/1300973): Once known issues are fixed, remove the
     // NotImplementedURLLoaderFactory (i.e. trust the NOTREACHED above, replace

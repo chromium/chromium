@@ -380,7 +380,7 @@ void FFmpegDemuxerStream::EnqueuePacket(ScopedAVPacket packet) {
   }
 
   if (!demuxer_ || end_of_stream_) {
-    NOTREACHED_IN_MIGRATION()
+    DUMP_WILL_BE_NOTREACHED()
         << "Attempted to enqueue packet on a stopped stream";
     return;
   }

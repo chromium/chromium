@@ -619,7 +619,8 @@ void UpdateButtonForLeftSide(const Gamepad& src_pad,
       case BUTTON_INDEX_LEFT_THUMBSTICK:
         break;
       default:
-        NOTREACHED();
+        DUMP_WILL_BE_NOTREACHED();
+        break;
     }
   }
   dst_pad.buttons[remapped_index] = src_pad.buttons[button_index];

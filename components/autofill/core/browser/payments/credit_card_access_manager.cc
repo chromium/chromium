@@ -1569,7 +1569,7 @@ void CreditCardAccessManager::OnVirtualCardUnmaskCancelled() {
     case UnmaskAuthFlowType::kFido:
     case UnmaskAuthFlowType::kCvcThenFido:
     case UnmaskAuthFlowType::kCvcFallbackFromFido:
-      NOTREACHED_IN_MIGRATION();
+      DUMP_WILL_BE_NOTREACHED();
       ABSL_FALLTHROUGH_INTENDED;
     case UnmaskAuthFlowType::kThreeDomainSecure:
       // TODO(crbug.com/40240970): Add a flow type for the kThreeDomainSecure

@@ -1425,7 +1425,7 @@ void InlineCursor::SlowMoveToNextForSameLayoutObject(
 void InlineCursor::MoveTo(const LayoutObject& layout_object) {
   DCHECK(layout_object.IsInLayoutNGInlineFormattingContext());
   if (layout_object.IsOutOfFlowPositioned()) [[unlikely]] {
-    NOTREACHED_IN_MIGRATION();
+    DUMP_WILL_BE_NOTREACHED();
     MakeNull();
     return;
   }

@@ -331,7 +331,7 @@ SharedImageFormatToBufferFormatRestrictedUtils::ToBufferFormat(
   } else if (format == MultiPlaneFormat::kP010) {
     return gfx::BufferFormat::P010;
   }
-  NOTREACHED_IN_MIGRATION() << "format=" << format.ToString();
+  DUMP_WILL_BE_NOTREACHED() << "format=" << format.ToString();
   return gfx::BufferFormat::RGBA_8888;
 }
 

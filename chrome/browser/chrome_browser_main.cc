@@ -848,7 +848,7 @@ int ChromeBrowserMainParts::PreEarlyInitialization() {
     if (!upgrade_util::RelaunchChromeBrowser(
             *base::CommandLine::ForCurrentProcess())) {
       // The relaunch failed. Feel free to panic now.
-      NOTREACHED_IN_MIGRATION();
+      DUMP_WILL_BE_NOTREACHED();
     }
 
     // Note, cannot return RESULT_CODE_NORMAL_EXIT here as this code needs to

@@ -161,8 +161,7 @@ pid_t ZygoteCommunication::ForkRequest(
                       sizeof(kZygoteChildPingMessage))) {
         // Zygote children should still be trustworthy when they're supposed to
         // ping us, so something's broken if we don't receive a valid ping.
-        LOG(ERROR) << "Did not receive ping from zygote child";
-        NOTREACHED_IN_MIGRATION();
+        DUMP_WILL_BE_NOTREACHED() << "Did not receive ping from zygote child";
         real_pid = -1;
       }
       my_sock.reset();

@@ -847,7 +847,7 @@ void PasswordAccessoryControllerImpl::FillSelection(
     const AccessorySheetField& selection) {
   if (!AppearsInSuggestions(selection.display_text(), selection.is_obfuscated(),
                             GetFocusedFrameOrigin())) {
-    NOTREACHED_IN_MIGRATION() << "Tried to fill '" << selection.display_text()
+    DUMP_WILL_BE_NOTREACHED() << "Tried to fill '" << selection.display_text()
                               << "' into " << GetFocusedFrameOrigin();
     return;  // Never fill across different origins!
   }
