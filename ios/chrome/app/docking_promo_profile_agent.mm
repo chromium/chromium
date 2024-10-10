@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/app/docking_promo_app_agent.h"
+#import "ios/chrome/app/docking_promo_profile_agent.h"
 
 #import <optional>
 
@@ -10,8 +10,8 @@
 #import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/app/application_delegate/app_state_observer.h"
+#import "ios/chrome/app/profile/profile_init_stage.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/docking_promo/model/utils.h"
 #import "ios/chrome/browser/promos_manager/model/constants.h"
@@ -23,44 +23,28 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_util.h"
 
-@interface DockingPromoAppAgent () <AppStateObserver>
-@end
+@implementation DockingPromoProfileAgent
 
-@implementation DockingPromoAppAgent {
-  // The app state for the app.
-  __weak AppState* _appState;
-}
+#pragma mark - ProfileStateObserver
 
-#pragma mark - AppStateAgent
-
-- (void)setAppState:(AppState*)appState {
-  // `-setAppState:appState` should only be called once!
-  CHECK(!_appState);
-
-  _appState = appState;
-  [appState addObserver:self];
-}
-
-#pragma mark - AppStateObserver
-
-- (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(AppInitStage)previousInitStage {
-  if (_appState.initStage == AppInitStage::kFinal) {
-    switch (DockingPromoExperimentTypeEnabled()) {
-      case DockingPromoDisplayTriggerArm::kDuringFRE:
-        break;
-      case DockingPromoDisplayTriggerArm::kAfterFRE:
-        if (previousInitStage != AppInitStage::kFirstRun) {
-          break;
-        }
-        [[fallthrough]];
-      case DockingPromoDisplayTriggerArm::kAppLaunch:
-        [self maybeRegisterPromo];
-    }
-
-    [_appState removeObserver:self];
-    [_appState removeAgent:self];
+- (void)profileState:(ProfileState*)profileState
+    didTransitionToInitStage:(ProfileInitStage)nextInitStage
+               fromInitStage:(ProfileInitStage)fromInitStage {
+  if (nextInitStage != ProfileInitStage::kFinal) {
+    return;
   }
+
+  switch (DockingPromoExperimentTypeEnabled()) {
+    case DockingPromoDisplayTriggerArm::kDuringFRE:
+      break;
+    case DockingPromoDisplayTriggerArm::kAfterFRE:
+    case DockingPromoDisplayTriggerArm::kAppLaunch:
+      [self maybeRegisterPromo];
+      break;
+  }
+
+  [profileState removeObserver:self];
+  [profileState removeAgent:self];
 }
 
 #pragma mark - Private
@@ -72,11 +56,11 @@
     return;
   }
 
-  std::optional<base::TimeDelta> timeSinceLastForeground =
-      MinTimeSinceLastForeground(_appState.foregroundScenes);
+  const base::TimeDelta timeSinceLastForeground =
+      MinTimeSinceLastForeground(self.profileState.foregroundScenes)
+          .value_or(base::TimeDelta::Min());
 
-  if (!CanShowDockingPromo(
-          timeSinceLastForeground.value_or(base::TimeDelta::Min()))) {
+  if (!CanShowDockingPromo(timeSinceLastForeground)) {
     if (!base::FeatureList::IsEnabled(
             kIOSDockingPromoPreventDeregistrationKillswitch)) {
       [self deregisterPromo];
@@ -100,21 +84,16 @@
 
 // Registers the Docking Promo with the PromosManager.
 - (void)registerPromo {
-  for (ProfileIOS* profile :
-       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
-    PromosManager* promosManager = PromosManagerFactory::GetForProfile(profile);
-    promosManager->RegisterPromoForSingleDisplay(
-        promos_manager::Promo::DockingPromo);
-  }
+  DCHECK(self.profileState.profile);
+  PromosManagerFactory::GetForProfile(self.profileState.profile)
+      ->RegisterPromoForSingleDisplay(promos_manager::Promo::DockingPromo);
 }
 
 // Deregisters the Docking Promo from the PromosManager.
 - (void)deregisterPromo {
-  for (ProfileIOS* profile :
-       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
-    PromosManager* promosManager = PromosManagerFactory::GetForProfile(profile);
-    promosManager->DeregisterPromo(promos_manager::Promo::DockingPromo);
-  }
+  DCHECK(self.profileState.profile);
+  PromosManagerFactory::GetForProfile(self.profileState.profile)
+      ->DeregisterPromo(promos_manager::Promo::DockingPromo);
 }
 
 @end

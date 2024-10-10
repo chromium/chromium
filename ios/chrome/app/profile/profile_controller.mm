@@ -7,12 +7,14 @@
 #import <memory>
 
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/docking_promo_profile_agent.h"
 #import "ios/chrome/app/profile/post_restore_profile_agent.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/app/search_engine_choice_profile_agent.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_profile_agent.h"
 #import "ios/chrome/browser/profile_metrics/model/profile_activity_profile_agent.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/device_orientation/scoped_force_portrait_orientation.h"
 
 @interface ProfileController () <ProfileStateObserver>
@@ -82,6 +84,17 @@
   [_state addAgent:[[ProfileActivityProfileAgent alloc] init]];
   [_state addAgent:[[PostRestoreProfileAgent alloc] init]];
   [_state addAgent:[[SearchEngineChoiceProfileAgent alloc] init]];
+
+  if (IsDockingPromoEnabled()) {
+    switch (DockingPromoExperimentTypeEnabled()) {
+      case DockingPromoDisplayTriggerArm::kDuringFRE:
+        break;
+      case DockingPromoDisplayTriggerArm::kAfterFRE:
+      case DockingPromoDisplayTriggerArm::kAppLaunch:
+        [_state addAgent:[[DockingPromoProfileAgent alloc] init]];
+        break;
+    }
+  }
 }
 
 @end

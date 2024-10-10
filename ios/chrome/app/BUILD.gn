@@ -392,15 +392,16 @@ source_set("first_run_app_state_agent") {
   ]
 }
 
-source_set("docking_promo_app_agent") {
+source_set("docking_promo_profile_agent") {
   sources = [
-    "docking_promo_app_agent.h",
-    "docking_promo_app_agent.mm",
+    "docking_promo_profile_agent.h",
+    "docking_promo_profile_agent.mm",
   ]
   deps = [
     "//base",
     "//components/prefs",
     "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/profile",
     "//ios/chrome/browser/default_browser/model:utils",
     "//ios/chrome/browser/docking_promo/model:utils",
     "//ios/chrome/browser/promos_manager/model",
@@ -465,7 +466,6 @@ source_set("app_internal") {
     ":app",
     ":app_metrics_app_state_agent",
     ":blocking_scene_commands",
-    ":docking_promo_app_agent",
     ":enterprise_app_agent",
     ":fast_app_terminate_buildflags",
     ":first_run_app_state_agent",
