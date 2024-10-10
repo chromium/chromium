@@ -89,10 +89,7 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
   // Reset the encoder's compression session by destroying the existing one and
   // creating a new one. The new session is configured using
   // ConfigureCompressionSession().
-  bool ResetCompressionSession(VideoCodec codec);
-
-  // Create a compression session.
-  bool CreateCompressionSession(VideoCodec codec, const gfx::Size& input_size);
+  bool ResetCompressionSession();
 
   // Configure the current compression session using current encoder settings.
   bool ConfigureCompressionSession(VideoCodec codec);
