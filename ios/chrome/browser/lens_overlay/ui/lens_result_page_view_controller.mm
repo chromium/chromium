@@ -34,8 +34,10 @@ const CGFloat kCancelButtonHorizontalInset = 8;
 /// Font size for the cancel button.
 const CGFloat kCancelButtonFontSize = 15;
 
+/// Minimum leading and trailing padding for the focused omnibox container.
+const CGFloat kFocusedOmniboxContainerHorizontalPadding = 10;
 /// Minimum leading and trailing padding for the omnibox container.
-const CGFloat kOmniboxContainerHorizontalPadding = 10;
+const CGFloat kOmniboxContainerHorizontalPadding = 16;
 
 /// Minimum height of the omnibox container.
 const CGFloat kOmniboxContainerMinimumHeight = 52;
@@ -88,6 +90,7 @@ const CGFloat kButtonAnimationDuration = 0.2f;
   LensOverlayProgressBar* _progressBar;
   /// Whether the web view should be hidden.
   BOOL _webViewHidden;
+  NSLayoutConstraint* _omniboxLeadingConstraint;
 }
 
 - (instancetype)init {
@@ -203,11 +206,10 @@ const CGFloat kButtonAnimationDuration = 0.2f;
   [_progressBar setHidden:YES animated:NO completion:nil];
   [_omniboxContainer addSubview:_progressBar];
 
-  NSLayoutConstraint* omniboxLeadingConstraint =
-      [_omniboxContainer.leadingAnchor
-          constraintEqualToAnchor:self.view.leadingAnchor
-                         constant:kOmniboxContainerHorizontalPadding];
-  omniboxLeadingConstraint.priority = UILayoutPriorityDefaultHigh;
+  _omniboxLeadingConstraint = [_omniboxContainer.leadingAnchor
+      constraintEqualToAnchor:self.view.leadingAnchor
+                     constant:kOmniboxContainerHorizontalPadding];
+  _omniboxLeadingConstraint.priority = UILayoutPriorityDefaultHigh;
 
   [NSLayoutConstraint activateConstraints:@[
     [_horizontalStackView.topAnchor
@@ -217,7 +219,7 @@ const CGFloat kButtonAnimationDuration = 0.2f;
     [_horizontalStackView.heightAnchor
         constraintGreaterThanOrEqualToConstant:kOmniboxContainerMinimumHeight],
     [_backButton.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
-    omniboxLeadingConstraint,
+    _omniboxLeadingConstraint,
     [self.view.trailingAnchor
         constraintEqualToAnchor:_horizontalStackView.trailingAnchor
                        constant:kOmniboxContainerHorizontalPadding],
@@ -394,6 +396,9 @@ const CGFloat kButtonAnimationDuration = 0.2f;
 
 - (void)setOmniboxFocused:(BOOL)isFocused {
   _omniboxFocused = isFocused;
+  _omniboxLeadingConstraint.constant =
+      isFocused ? kFocusedOmniboxContainerHorizontalPadding
+                : kOmniboxContainerHorizontalPadding;
   [self updateBackButtonVisibilityAnimated:YES];
 
   // Visible when omnibox is focused.
