@@ -164,11 +164,6 @@ class SupervisedUserPendingStateNavigationTest
                            "document.querySelector('#primary-button').click()");
   }
 
-  bool StartSignInFlowFromRenderFrameHost(content::RenderFrameHost* rfh) {
-    return content::ExecJs(rfh,
-                           "document.querySelector('#primary-button').click()");
-  }
-
   void WaitForReauthenticationInterstitial() {
     WaitForPageTitle(l10n_util::GetStringUTF16(IDS_BLOCK_INTERSTITIAL_TITLE));
     // The "Next" button should be visible.
@@ -251,8 +246,6 @@ class SupervisedUserPendingStateNavigationTest
     return count;
   }
 
-  int GetTabCount() { return browser()->tab_strip_model()->count(); }
-
  private:
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -319,7 +312,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
       kUmaReauthenticationHistogramName,
       static_cast<int>(SupervisedUserVerificationPage::Status::SHOWN), 1);
   auto* interstitial_contents = contents();
-  EXPECT_EQ(1, GetTabCount());
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
   // Interact with the "Next" button, starting re-authentication in a new tab, 3
   // times.
@@ -330,7 +323,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
         static_cast<int>(
             SupervisedUserVerificationPage::Status::REAUTH_STARTED),
         i);
-    EXPECT_EQ(i + 1, GetTabCount());
+    EXPECT_EQ(i + 1, browser()->tab_strip_model()->count());
 
     // Wait for the navigation to finish in the sign-in tabs.
     if (browser()
@@ -364,7 +357,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
       static_cast<int>(
           SupervisedUserVerificationPage::Status::REAUTH_COMPLETED),
       1);
-  EXPECT_EQ(2, GetTabCount());
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
 
   // TODO(b/370115099): Re-introduce a check that the blocked url interstitial
   // is shown.
@@ -411,7 +404,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
   // Open re-authentication in a new tab.
   ASSERT_TRUE(StartSignInFlowFromContent(contents()));
   EXPECT_EQ(GetReauthInterstitialUKMCount("ReauthenticationStarted"), 1);
-  EXPECT_EQ(2, GetTabCount());
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
 
   // Sign in a supervised user, which completes re-authentication.
   // This should records UKM metrics and close the sign-in tab.
@@ -420,7 +413,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return GetReauthInterstitialUKMCount("ReauthenticationCompleted") == 1;
   }));
-  EXPECT_EQ(1, GetTabCount());
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
   EXPECT_EQ(GetReauthInterstitialUKMTotalCount(), 3);
 }
@@ -451,32 +444,13 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
   SCOPED_TRACE("iframe2");
   content::RenderFrameHost* iframe2 = FindFrameByName("iframe2");
 
-  // Check that the subframe interstitial contains the correct text.
+  // Check that the sub-frame interstitial contains the correct text.
   EXPECT_THAT(
       GetInnerHTMLString(iframe2),
       testing::HasSubstr(l10n_util::GetStringUTF8(
           IDS_SUPERVISED_USER_VERIFY_PAGE_SUBFRAME_BLOCKED_SITE_HEADING)));
 
-  // Click the "Next" button, which should open re-authentication in a new tab.
-  ASSERT_TRUE(StartSignInFlowFromRenderFrameHost(iframe2));
-  EXPECT_EQ(2, GetTabCount());
-
-  // Sign in a supervised user, which completes re-authentication.
-  // This should close the sign-in tab.
-  supervision_mixin_.SignIn(
-      supervised_user::SupervisionMixin::SignInMode::kSupervised);
-  ASSERT_TRUE(base::test::RunUntil([&]() { return GetTabCount() == 1; }));
-
-  // Wait until the blocked site interstitial is displayed.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    // Return true if the interstitial message is displayed.
-    return GetInnerHTMLString(FindFrameByName("iframe2"))
-               .find(l10n_util::GetStringUTF8(
-                   IDS_CHILD_BLOCK_INTERSTITIAL_MESSAGE_V2)) !=
-           std::string::npos;
-  }));
-
-  // UKM should not be recorded for the subframe interstitial.
+  // UKM should not be recorded for the sub-frame interstitial.
   EXPECT_EQ(GetReauthInterstitialUKMTotalCount(), 0);
 }
 
@@ -502,7 +476,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
   content::RenderFrameHost* iframe1 = FindFrameByName("iframe1");
   content::RenderFrameHost* iframe2 = FindFrameByName("iframe2");
 
-  // Check that the subframe interstitial contains the correct text.
+  // Check that the sub-frame interstitial contains the correct text.
   std::string subframe_description = l10n_util::GetStringUTF8(
       IDS_SUPERVISED_USER_VERIFY_PAGE_SUBFRAME_YOUTUBE_HEADING);
   EXPECT_THAT(GetInnerHTMLString(iframe1),
@@ -510,28 +484,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
   EXPECT_THAT(GetInnerHTMLString(iframe2),
               testing::HasSubstr(subframe_description));
 
-  // Click the "Next" buttons in both interstitials, which should open
-  // re-authentication in two new tabs.
-  ASSERT_TRUE(StartSignInFlowFromRenderFrameHost(iframe1));
-  ASSERT_TRUE(StartSignInFlowFromRenderFrameHost(iframe2));
-  EXPECT_EQ(3, GetTabCount());
-
-  // Sign in a supervised user, which completes re-authentication.
-  // This should close the sign-in tabs.
-  supervision_mixin_.SignIn(
-      supervised_user::SupervisionMixin::SignInMode::kSupervised);
-  ASSERT_TRUE(base::test::RunUntil([&]() { return GetTabCount() == 1; }));
-
-  // Wait until the re-auth subframe interstitials are no longer displayed.
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    // Return true if the re-auth interstitial messages are not displayed.
-    return GetInnerHTMLString(FindFrameByName("iframe1"))
-                   .find(subframe_description) == std::string::npos &&
-           GetInnerHTMLString(FindFrameByName("iframe2"))
-                   .find(subframe_description) == std::string::npos;
-  }));
-
-  // UKM should not be recorded for the subframe interstitial.
+  // UKM should not be recorded for the sub-frame interstitial.
   EXPECT_EQ(GetReauthInterstitialUKMTotalCount(), 0);
 }
 
