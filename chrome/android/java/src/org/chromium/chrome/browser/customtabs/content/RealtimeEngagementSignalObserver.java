@@ -176,6 +176,16 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
         mSuspendSessionEnded = true;
     }
 
+    /** Collect any user interaction on the given tab. */
+    void collectUserInteraction(Tab tab) {
+        if (!shouldSendEngagementSignal(tab)) return;
+
+        TabInteractionRecorder recorder = TabInteractionRecorder.getFromTab(tab);
+        if (recorder == null) return;
+
+        mDidGetUserInteraction |= recorder.didGetUserInteraction();
+    }
+
     /**
      * Create |mScrollState| and |mGestureStateListener| and start sending real-time engagement
      * signals through {@link androidx.browser.customtabs.CustomTabsCallback}.
@@ -283,15 +293,6 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
         mWebContents.addObserver(mEngagementSignalWebContentsObserver);
     }
 
-    private void collectUserInteraction(Tab tab) {
-        if (!shouldSendEngagementSignal(tab)) return;
-
-        TabInteractionRecorder recorder = TabInteractionRecorder.getFromTab(tab);
-        if (recorder == null) return;
-
-        mDidGetUserInteraction |= recorder.didGetUserInteraction();
-    }
-
     private void removeWebContentsDependencies(@Nullable WebContents webContents) {
         if (webContents != null) {
             if (mGestureStateListener != null) {
@@ -370,6 +371,10 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
 
     boolean getSuspendSessionEndedForTesting() {
         return mSuspendSessionEnded;
+    }
+
+    public boolean getDidGetUserInteractionForTesting() {
+        return mDidGetUserInteraction;
     }
 
     /** Parameter tracking the entire scrolling journey for the associated tab. */

@@ -305,10 +305,12 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         } else if (id == R.id.open_in_browser_id) {
             // Need to get tab before calling openCurrentUrlInBrowser or else it will be null.
             Tab tab = mTabProvider.getTab();
-            if (mNavigationController.openCurrentUrlInBrowser()) {
+            if (tab != null) {
                 RecordUserAction.record("CustomTabsMenuOpenInChrome");
-                WebContents webContents = tab == null ? null : tab.getWebContents();
-                mConnection.notifyOpenInBrowser(mSession, webContents);
+                // Need to notify *before* opening in browser, to ensure engagement signal will be
+                // fired correctly.
+                mConnection.notifyOpenInBrowser(mSession, tab);
+                mNavigationController.openCurrentUrlInBrowser();
             }
             return true;
         } else if (id == R.id.info_menu_id) {

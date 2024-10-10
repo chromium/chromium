@@ -1770,16 +1770,23 @@ public class CustomTabsConnection {
     }
 
     /**
-     * Notifies the application that the user has selected to open the page in their browser.
+     * Notifies the application and {@link EngagementSignalsHandler} that the user has selected to
+     * open the page in their browser. This method should be called before initiating the transfer.
      *
      * @param session Session identifier.
-     * @param webContents the WebContents of the tab being taken out of CCT.
-     * @return true if success. To protect Chrome exceptions in the client application are swallowed
-     *     and false is returned.
+     * @param tab the tab being taken out of CCT.
+     * @return true if application was successfully notified. To protect Chrome exceptions in the
+     *     client application are swallowed and false is returned.
      */
-    public boolean notifyOpenInBrowser(CustomTabsSessionToken session, WebContents webContents) {
+    public boolean notifyOpenInBrowser(CustomTabsSessionToken session, Tab tab) {
+        EngagementSignalsHandler engagementSignalsHandler = getEngagementSignalsHandler(session);
+        if (tab != null && engagementSignalsHandler != null) {
+            engagementSignalsHandler.notifyOpenInBrowser(tab);
+        }
         // Reset the client data header for the WebContents since it's not a CCT tab anymore.
-        if (webContents != null) CustomTabsConnectionJni.get().setClientDataHeader(webContents, "");
+        if (tab != null && tab.getWebContents() != null) {
+            CustomTabsConnectionJni.get().setClientDataHeader(tab.getWebContents(), "");
+        }
         return safeExtraCallback(
                 session,
                 OPEN_IN_BROWSER_CALLBACK,

@@ -58,6 +58,7 @@ import org.chromium.chrome.browser.customtabs.content.EngagementSignalsHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.tab.Tab;
 
 /** Tests for some parts of {@link CustomTabsConnection}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -70,6 +71,7 @@ public class CustomTabsConnectionUnitTest {
     @Mock private CustomTabsCallback mCallback;
     @Mock private PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
     @Mock private EngagementSignalsCallback mEngagementSignalsCallback;
+    @Mock private Tab mTab;
 
     private CustomTabsConnection mConnection;
 
@@ -251,6 +253,17 @@ public class CustomTabsConnectionUnitTest {
         assertNotNull(bundle);
         assertTrue(bundle.containsKey(CustomTabsConnection.EPHEMERAL_BROWSING_SUPPORTED_KEY));
         assertFalse(bundle.getBoolean(CustomTabsConnection.EPHEMERAL_BROWSING_SUPPORTED_KEY));
+    }
+
+    @Test
+    public void notifyOpenInBrowser() {
+        initSession();
+
+        mConnection.notifyOpenInBrowser(mSession, mTab);
+
+        verify(mCallback)
+                .extraCallback(
+                        eq(CustomTabsConnection.OPEN_IN_BROWSER_CALLBACK), any(Bundle.class));
     }
 
     // TODO(https://crrev.com/c/4118209) Add more tests for Feature enabling/disabling.

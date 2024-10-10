@@ -32,7 +32,10 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
+import org.chromium.chrome.browser.customtabs.features.TabInteractionRecorder;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.content_public.browser.WebContents;
 
 /** Unit tests for {@link EngagementSignalsHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -44,6 +47,9 @@ public class EngagementSignalsHandlerUnitTest {
     @Mock private EngagementSignalsCallback mCallback;
     @Mock private TabObserverRegistrar mTabObserverRegistrar;
     @Mock private PrivacyPreferencesManagerImpl mPrivacyPreferencesManager;
+    @Mock private TabInteractionRecorder mTabInteractionRecorder;
+    @Mock private Tab mTab;
+    @Mock private WebContents mWebContents;
 
     private EngagementSignalsHandler mEngagementSignalsHandler;
     private ObservableSupplierImpl<Boolean> mCrashUploadPermittedSupplier =
@@ -52,10 +58,12 @@ public class EngagementSignalsHandlerUnitTest {
     @Before
     public void setUp() {
         PrivacyPreferencesManagerImpl.setInstanceForTesting(mPrivacyPreferencesManager);
+        TabInteractionRecorder.setInstanceForTesting(mTabInteractionRecorder);
         when(mPrivacyPreferencesManager.getUsageAndCrashReportingPermittedObservableSupplier())
                 .thenReturn(mCrashUploadPermittedSupplier);
         when(mPrivacyPreferencesManager.isUsageAndCrashReportingPermitted())
                 .thenAnswer(inv -> mCrashUploadPermittedSupplier.get());
+        when(mTab.getWebContents()).thenReturn(mWebContents);
         mCrashUploadPermittedSupplier.set(true);
         mEngagementSignalsHandler = new EngagementSignalsHandler(mConnection, mSession);
     }
@@ -125,5 +133,33 @@ public class EngagementSignalsHandlerUnitTest {
         var observer = mEngagementSignalsHandler.getEngagementSignalsObserverForTesting();
         // #notifyTabWillCloseAndReopenWithSessionReuse should suspend #onSessionEnded signals.
         assertTrue(observer.getSuspendSessionEndedForTesting());
+    }
+
+    @Test
+    public void testNotifyOpenInBrowser_tabHadUserInteraction() {
+        when(mTabInteractionRecorder.didGetUserInteraction()).thenReturn(false);
+        mEngagementSignalsHandler.setEngagementSignalsCallback(mCallback);
+        mEngagementSignalsHandler.setTabObserverRegistrar(mTabObserverRegistrar);
+        when(mTabInteractionRecorder.didGetUserInteraction()).thenReturn(true);
+
+        var observer = mEngagementSignalsHandler.getEngagementSignalsObserverForTesting();
+        assertFalse(observer.getDidGetUserInteractionForTesting());
+
+        mEngagementSignalsHandler.notifyOpenInBrowser(mTab);
+
+        assertTrue(observer.getDidGetUserInteractionForTesting());
+    }
+
+    @Test
+    public void testNotifyOpenInBrowser_tabDidNotHaveUserInteraction() {
+        when(mTabInteractionRecorder.didGetUserInteraction()).thenReturn(false);
+        mEngagementSignalsHandler.setEngagementSignalsCallback(mCallback);
+        mEngagementSignalsHandler.setTabObserverRegistrar(mTabObserverRegistrar);
+        when(mTabInteractionRecorder.didGetUserInteraction()).thenReturn(false);
+
+        mEngagementSignalsHandler.notifyOpenInBrowser(mTab);
+
+        var observer = mEngagementSignalsHandler.getEngagementSignalsObserverForTesting();
+        assertFalse(observer.getDidGetUserInteractionForTesting());
     }
 }

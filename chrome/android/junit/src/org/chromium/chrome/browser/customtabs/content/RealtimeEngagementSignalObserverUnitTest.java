@@ -883,6 +883,32 @@ public class RealtimeEngagementSignalObserverUnitTest {
                 .onGreatestScrollPercentageIncreased(eq(35), any(Bundle.class));
     }
 
+    @Test
+    public void collectUserInteraction_hasInteraction() {
+        initializeTabForTest();
+        Tab tab = mock(Tab.class);
+        doReturn(mock(WebContents.class)).when(tab).getWebContents();
+        when(mTabInteractionRecorder.didGetUserInteraction()).thenReturn(true);
+
+        assertFalse(mEngagementSignalObserver.getDidGetUserInteractionForTesting());
+
+        mEngagementSignalObserver.collectUserInteraction(tab);
+
+        assertTrue(mEngagementSignalObserver.getDidGetUserInteractionForTesting());
+    }
+
+    @Test
+    public void collectUserInteraction_hasNoInteraction() {
+        initializeTabForTest();
+        Tab tab = mock(Tab.class);
+        doReturn(mock(WebContents.class)).when(tab).getWebContents();
+        when(mTabInteractionRecorder.didGetUserInteraction()).thenReturn(false);
+
+        mEngagementSignalObserver.collectUserInteraction(tab);
+
+        assertFalse(mEngagementSignalObserver.getDidGetUserInteractionForTesting());
+    }
+
     private void advanceTime(long millis) {
         SystemClock.setCurrentTimeMillis(CURRENT_TIME_MS + millis);
     }

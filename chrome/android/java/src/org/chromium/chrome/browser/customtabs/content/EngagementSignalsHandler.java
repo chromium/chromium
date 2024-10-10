@@ -15,10 +15,11 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.tab.Tab;
 
 /**
- * Handles the initialization of Engagement Signals when the client sets an
- * {@link androidx.browser.customtabs.EngagementSignalsCallback}.
+ * Handles the initialization of Engagement Signals when the client sets an {@link
+ * androidx.browser.customtabs.EngagementSignalsCallback}.
  */
 public class EngagementSignalsHandler {
     private final CustomTabsConnection mConnection;
@@ -68,6 +69,19 @@ public class EngagementSignalsHandler {
     public void notifyTabWillCloseAndReopenWithSessionReuse() {
         if (mObserver != null) {
             mObserver.suppressNextSessionEndedCall();
+        }
+    }
+
+    /** Notify that Open in Browser is being invoked on the given tab. */
+    public void notifyOpenInBrowser(Tab tab) {
+        // When Open in Browser is tapped we need to manually collect user interactions, to ensure
+        // the ensuing invocation of EngagementSignalsCallback#onSessionEnded correctly signals
+        // whether user interactions occurred. We need to do this manually because the usual
+        // triggers for collecting user interactions (TabObserver#webContentsWillSwap,
+        // TabObserver#onClosingStateChanged, and TabObserver#onDestroyed) do not get invoked when
+        // Open in Browser is used.
+        if (mObserver != null) {
+            mObserver.collectUserInteraction(tab);
         }
     }
 
