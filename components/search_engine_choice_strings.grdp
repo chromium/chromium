@@ -140,6 +140,6 @@
   </message>
 
   <message name="IDS_SEARCH_ENGINE_CHOICE_GUEST_SESSION_CHECKBOX" desc="This label is displayed on a checkbox. When selected, Chrome will remember the chosen search engine and apply it to all future Guest profiles. If your language requires an object noun for the verb, you can phrase it as 'Use this choice for all guests'; however, please try to keep this string concise, because the rest of the screen provides a lot of obvious context. A terse tone is acceptable.">
-    Use for all guests
+    Use for all Guest profiles
   </message>
 </grit-part>
