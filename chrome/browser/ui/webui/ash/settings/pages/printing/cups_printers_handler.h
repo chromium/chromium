@@ -195,6 +195,7 @@ class CupsPrintersHandler : public ::settings::SettingsPageUIHandler,
   // Called when we get a response from
   // PrintscanmgrClient::CupsRetrievePrinterPpd.
   void OnRetrieveCupsPrinterPpd(
+      const std::string& printer_id,
       const std::string& printer_name,
       const std::string& eula,
       std::optional<printscanmgr::CupsRetrievePpdResponse> response);

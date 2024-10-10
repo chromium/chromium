@@ -531,7 +531,8 @@ PrinterQueryResult GetPrinterInfo(const std::string& address,
   http_addrlist_t* addr_list = httpAddrGetList(
       address.c_str(), AF_UNSPEC, base::NumberToString(port).c_str());
   if (!addr_list) {
-    LOG(WARNING) << "Unable to resolve IP address from hostname";
+    LOG(WARNING) << "Unable to resolve IP address from hostname " << address
+                 << ": " << cupsLastErrorString();
     return PrinterQueryResult::kHostnameResolution;
   }
 
@@ -540,7 +541,8 @@ PrinterQueryResult GetPrinterInfo(const std::string& address,
       encrypted ? HTTP_ENCRYPTION_ALWAYS : HTTP_ENCRYPTION_IF_REQUESTED, 0,
       kHttpConnectTimeoutMs, nullptr);
   if (!http) {
-    LOG(WARNING) << "Could not connect to host";
+    LOG(WARNING) << "Could not connect to host " << address << ":" << port
+                 << ": " << cupsLastErrorString();
     return PrinterQueryResult::kUnreachable;
   }
 
@@ -559,7 +561,7 @@ PrinterQueryResult GetPrinterInfo(const std::string& address,
       http.get(), printer_uri, resource, kPrinterInfoAndStatus.size(),
       kPrinterInfoAndStatus.data(), &status);
   if (StatusError(status) || response.get() == nullptr) {
-    LOG(WARNING) << "Get attributes failure: "
+    LOG(WARNING) << "Failed to get attributes from " << printer_uri << ": "
                  << base::StringPrintf("0x%04x", status);
     return PrinterQueryResult::kUnknownFailure;
   }
@@ -582,8 +584,11 @@ bool GetPrinterStatus(http_t* http,
       GetPrinterAttributes(http, printer_uri, "/", kPrinterAttributes.size(),
                            kPrinterAttributes.data(), &status);
 
-  if (status != IPP_STATUS_OK)
+  if (status != IPP_STATUS_OK) {
+    LOG(WARNING) << "Failed to get printer status from " << printer_uri << ": "
+                 << cupsLastErrorString();
     return false;
+  }
 
   ParsePrinterStatus(response.get(), printer_status);
 
@@ -617,7 +622,8 @@ bool GetCupsJobs(http_t* http,
                nullptr, which == COMPLETED ? kCompleted : kNotCompleted);
 
   if (ippValidateAttributes(request.get()) != 1) {
-    LOG(WARNING) << "Could not validate ipp request: " << cupsLastErrorString();
+    LOG(WARNING) << "Could not validate Get-Jobs ipp request: "
+                 << cupsLastErrorString();
     return false;
   }
 

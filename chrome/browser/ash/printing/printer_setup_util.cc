@@ -64,7 +64,9 @@ void LogPrinterSetup(const chromeos::Printer& printer,
     case PrinterSetupResult::kPpdUnretrievable:
       // Prompt user to update configuration or check internet connection.
       // TODO(skau): Fill me in
-      LOG(WARNING) << ResultCodeToMessage(result);
+      LOG(WARNING) << printer.id() << ": printer setup failed for "
+                   << printer.make_and_model() << ": "
+                   << ResultCodeToMessage(result);
       break;
     case PrinterSetupResult::kFatalError:
     case PrinterSetupResult::kDbusError:
@@ -80,13 +82,16 @@ void LogPrinterSetup(const chromeos::Printer& printer,
     case PrinterSetupResult::kPrinterRemoved:
     case PrinterSetupResult::kPrintscanmgrDbusNoReply:
     case PrinterSetupResult::kDebugdDbusNoReply:
-      LOG(ERROR) << ResultCodeToMessage(result);
+      LOG(ERROR) << printer.id() << ": printer setup failed for "
+                 << printer.make_and_model() << ": "
+                 << ResultCodeToMessage(result);
       break;
     case PrinterSetupResult::kInvalidPrinterUpdate:
     case PrinterSetupResult::kEditSuccess:
     case PrinterSetupResult::kPrinterIsNotAutoconfigurable:
     case PrinterSetupResult::kComponentUnavailable:
-      LOG(ERROR) << "Unexpected error in printer setup: "
+      LOG(ERROR) << printer.id() << ": unexpected error in printer setup for "
+                 << printer.make_and_model() << ": "
                  << ResultCodeToMessage(result);
       break;
   }
