@@ -40,6 +40,10 @@ class ASH_EXPORT ErrorMessageToast : public views::FlexLayoutView {
       delete;
   ~ErrorMessageToast() override = default;
 
+  // views::FlexLayoutView:
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
+
   views::Label* error_message_label() { return error_message_label_; }
   views::LabelButton* action_button() { return action_button_; }
 
