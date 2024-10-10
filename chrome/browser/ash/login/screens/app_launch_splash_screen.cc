@@ -170,7 +170,7 @@ void AppLaunchSplashScreen::SetAppData(Data data) {
     return;
   }
 
-  base::Value::Dict screen_data = GetScreenData(data);
+  base::Value::Dict screen_data = GetScreenData(app_data_);
   view_->SetAppData(std::move(screen_data));
 }
 
