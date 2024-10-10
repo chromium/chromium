@@ -1789,7 +1789,12 @@ void InputHandler::ScrollLatchedScroller(ScrollState& scroll_state,
   did_scroll_x_for_scroll_gesture_ |= scroll_state.caused_scroll_x();
   did_scroll_y_for_scroll_gesture_ |= scroll_state.caused_scroll_y();
 
-  if (snap_strategy_offset && !scroll_state.is_in_inertial_phase()) {
+  if (scroll_state.is_in_inertial_phase()) {
+    // We cannot know what position a fling will settle at. So, reset the snap
+    // strategy so that we snap from the correct position at the end of the
+    // fling.
+    snap_strategy_.reset();
+  } else if (snap_strategy_offset) {
     // We use |last_scroll_update_state_| instead of |scroll_state| as that more
     // closely matches what InputHandler::SnapAtScrollend would use.
     //

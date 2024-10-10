@@ -24,8 +24,9 @@ namespace blink {
 namespace {
 // This is experimentally determined and corresponds to the UA decided
 // parameter as mentioned in spec.
-// If changing this, consider modifying
-// web_tests/fast/scrolling/area-at-exact-proximity-range-doesnt-crash.html
+// If changing this, consider modifying the following tests:
+// - web_tests/fast/scrolling/area-at-exact-proximity-range-doesnt-crash.html
+// - web_tests/fast/scroll-snap/scroll-snap-proximity-gesture.html
 // accordingly.
 constexpr float kProximityRatio = 1.0 / 3.0;
 

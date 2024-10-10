@@ -18974,12 +18974,8 @@ TEST_P(LayerTreeHostImplTest, FlingSnapStrategyCurrentOffset) {
   scroll_update_state.set_is_in_inertial_phase(true);
   handler.ScrollUpdate(scroll_update_state);
 
-  // Still be aware that the snap strategy should be based on the final snap
-  // position, despite the scroll update's delta being only 100px.
-  EXPECT_EQ(handler.snap_strategy_for_testing()->current_position(),
-            initial_offset);
-  EXPECT_EQ(handler.snap_strategy_for_testing()->intended_position(),
-            target_offset);
+  // Snap strategy should be reset.
+  EXPECT_EQ(handler.snap_strategy_for_testing().get(), nullptr);
 }
 
 namespace {
