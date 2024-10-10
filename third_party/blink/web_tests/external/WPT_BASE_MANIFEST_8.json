@@ -76542,7 +76542,7 @@
        ]
       ],
       "background-repeat-space.xht": [
-       "8867520c56eb70a6d590b9fa3ffe7e20f53519d0",
+       "7ec7b47525a5b2bba83d511c5a18611d3a6ca8aa",
        [
         null,
         [
@@ -76562,7 +76562,7 @@
             ],
             [
              0,
-             2796
+             5532
             ]
            ]
           ]
@@ -76769,7 +76769,7 @@
       ]
      ],
      "background-repeat-space-10.html": [
-      "cb1c782116355f25254852b1c0568db8c4c2cba2",
+      "21e565f855000b2c1b010df54bb9cb63d643aa01",
       [
        null,
        [
@@ -76789,7 +76789,7 @@
            ],
            [
             0,
-            990
+            1680
            ]
           ]
          ]
@@ -77072,7 +77072,7 @@
       ]
      ],
      "background-repeat-space-9.html": [
-      "79f4c0c0a140d268060bafaf48cd25406d5f2f63",
+      "7ec236f474cd73eab099b9e3c003b518d951d5ce",
       [
        null,
        [
@@ -77092,7 +77092,7 @@
            ],
            [
             0,
-            981
+            1680
            ]
           ]
          ]
@@ -81234,7 +81234,7 @@
       ]
      ],
      "border-image-repeat-002.htm": [
-      "a0c081863d42cd4c0ea24996e23ace8537c7a133",
+      "e1d4490c70c8938254c467e99d6af2075b0e2980",
       [
        null,
        [
@@ -81243,7 +81243,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            20
+           ],
+           [
+            0,
+            2160
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "border-image-repeat-004.htm": [
@@ -243398,7 +243414,7 @@
        ]
       ],
       "no-view-transition-with-cross-origin-redirect.sub.html": [
-       "8780310af2ff2942de48a824919c8c4b950519cb",
+       "c2ad21bad94ef7d5700cd355dcac253fbb29651a",
        [
         null,
         [
@@ -315510,10 +315526,6 @@
      ],
      "anchor-scroll-scrollable-anchor-ref.html": [
       "3528b565fccb1d32dff6fe732c9497446e5f525e",
-      []
-     ],
-     "anchor-size-parse-valid-expected.txt": [
-      "90a9fa1ac385fe1e178a529dcaf28f301c47a56a",
       []
      ],
      "parsing": {
@@ -411503,7 +411515,7 @@
       []
      ],
      "webauthn-subframe.sub.html": [
-      "c97255924e14e3242ed88b87abf74c69afb4fb8c",
+      "1d0984c33bdcdd52502b7d861d68e70e4917b1f9",
       []
      ]
     }
@@ -413478,30 +413490,6 @@
       "ad844ec4c80a9367245f2066aa720a337a68f04d",
       []
      ],
-     "subgraph.https.any.worker_cpu-expected.txt": [
-      "126aa888c0cd39087422b68d82ee007813adf526",
-      []
-     ],
-     "subgraph.https.any.worker_gpu-expected.txt": [
-      "126aa888c0cd39087422b68d82ee007813adf526",
-      []
-     ],
-     "subgraph.https.any.worker_npu-expected.txt": [
-      "126aa888c0cd39087422b68d82ee007813adf526",
-      []
-     ],
-     "subgraph.https.any_cpu-expected.txt": [
-      "126aa888c0cd39087422b68d82ee007813adf526",
-      []
-     ],
-     "subgraph.https.any_gpu-expected.txt": [
-      "126aa888c0cd39087422b68d82ee007813adf526",
-      []
-     ],
-     "subgraph.https.any_npu-expected.txt": [
-      "126aa888c0cd39087422b68d82ee007813adf526",
-      []
-     ],
      "where.https.any.worker_cpu-expected.txt": [
       "367a47132547637d6059290073c26086cdc2c951",
       []
@@ -413518,40 +413506,6 @@
      ],
      "utils_validation.js": [
       "f491801bf3a6c04385ff49c2bf8b54cb5e355113",
-      []
-     ]
-    },
-    "validation_tests": {
-     "dequantizeLinear.https.any.worker_cpu-expected.txt": [
-      "8c04d9cc41e52d64fc7d9e221e0659406f5323b5",
-      []
-     ],
-     "dequantizeLinear.https.any.worker_npu-expected.txt": [
-      "8c04d9cc41e52d64fc7d9e221e0659406f5323b5",
-      []
-     ],
-     "dequantizeLinear.https.any_cpu-expected.txt": [
-      "8c04d9cc41e52d64fc7d9e221e0659406f5323b5",
-      []
-     ],
-     "dequantizeLinear.https.any_npu-expected.txt": [
-      "8c04d9cc41e52d64fc7d9e221e0659406f5323b5",
-      []
-     ],
-     "quantizeLinear.https.any.worker_cpu-expected.txt": [
-      "e600a2c23990795de4e6778f77e22c18c6e5ce5b",
-      []
-     ],
-     "quantizeLinear.https.any.worker_npu-expected.txt": [
-      "e600a2c23990795de4e6778f77e22c18c6e5ce5b",
-      []
-     ],
-     "quantizeLinear.https.any_cpu-expected.txt": [
-      "e600a2c23990795de4e6778f77e22c18c6e5ce5b",
-      []
-     ],
-     "quantizeLinear.https.any_npu-expected.txt": [
-      "e600a2c23990795de4e6778f77e22c18c6e5ce5b",
       []
      ]
     }
@@ -458421,7 +458375,7 @@
       ]
      ],
      "anchor-invalid-fallback.html": [
-      "15ccada17949518aede5eef33e51cf988c643218",
+      "254ba185c62c6e684457b2dd58de85b5c3f970f3",
       [
        null,
        {}
@@ -458519,7 +458473,7 @@
       ]
      ],
      "anchor-parse-invalid.html": [
-      "04b19b25301cbbb84e48ec0ebc561baeb6963389",
+      "795722972a2ab79f133842c1d146550ed885038b",
       [
        null,
        {}
@@ -458925,7 +458879,7 @@
       ]
      ],
      "anchor-size-001.html": [
-      "4beab33f057367ea227575869868f10bedad24e0",
+      "0da442d28764f3ed4ff04417be5570863f8bd544",
       [
        null,
        {}
@@ -550539,7 +550493,7 @@
       ]
      ],
      "server-response.https.window.js": [
-      "adc079f015ac43748643f4e9016b12028a84336e",
+      "1d272fb59a82c638834e1f2e6560d6204e8dbaf1",
       [
        "fledge/tentative/server-response.https.window.html?1-4",
        {
@@ -570546,7 +570500,7 @@
          ]
         ],
         "canvas-createImageBitmap-resize.html": [
-         "782c7e130c3c5957aad0b4b2f2ab8b52d339f2ed",
+         "76b1c9d30d24a78e1147e0dfcc9b5db957f24e81",
          [
           null,
           {}
@@ -694178,7 +694132,7 @@
      ]
     ],
     "createcredential-nested-frame.https.html": [
-     "ca5fdb8aa9ca8501f423bf6e64c6ef8ebc6f20e5",
+     "b839e1c71d3ccfd7b8c3f1862691a2f7a6f728a9",
      [
       null,
       {
@@ -694355,7 +694309,7 @@
      ]
     ],
     "getcredential-nested-frame.https.html": [
-     "e6d12751a62a8cf067de695f3f6a0a48743e939b",
+     "18e9f81ddb2a543aef4a9220db075356f49f8c27",
      [
       null,
       {
@@ -751845,10 +751799,21 @@
       ]
      ],
      "sandboxed_iframe.https.window.js": [
-      "0311db8849186ee2ae553c9e1a2247e3fa948b6a",
+      "fa2c3d7f8bd907aa86a91b899916fd89cd37c6d1",
       [
        "webusb/requestDevice/sandboxed_iframe.https.window.html",
-       {}
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
+         ]
+        ]
+       }
       ]
      ]
     },
