@@ -364,31 +364,23 @@ source_set("enterprise_app_agent_ui") {
   ]
 }
 
-source_set("first_run_app_state_agent") {
+source_set("first_run_profile_agent") {
   sources = [
-    "first_run_app_state_agent.h",
-    "first_run_app_state_agent.mm",
+    "first_run_profile_agent.h",
+    "first_run_profile_agent.mm",
   ]
   deps = [
     "//base",
-    "//ios/chrome/app:blocking_scene_commands",
     "//ios/chrome/app/application_delegate:app_state_header",
-    "//ios/chrome/app/application_delegate:application_delegate_internal",
-    "//ios/chrome/browser/blocking_overlay/ui_bundled",
-    "//ios/chrome/browser/browser_view/ui_bundled",
-    "//ios/chrome/browser/browsing_data/model",
+    "//ios/chrome/app/profile",
     "//ios/chrome/browser/first_run/ui_bundled",
-    "//ios/chrome/browser/first_run/ui_bundled:field_trial",
     "//ios/chrome/browser/first_run/ui_bundled:first_run_provider",
-    "//ios/chrome/browser/first_run/ui_bundled:utils",
-    "//ios/chrome/browser/geolocation/model",
-    "//ios/chrome/browser/shared/coordinator/scene:observing_scene_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
-    "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/public/commands:commands",
-    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_observer",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/signin/model",
-    "//ios/chrome/browser/ui/screen:screen_provider",
+    "//ios/chrome/browser/signin/model:signin_util",
+    "//ios/chrome/browser/ui/scoped_ui_blocker",
   ]
 }
 
@@ -468,7 +460,6 @@ source_set("app_internal") {
     ":blocking_scene_commands",
     ":enterprise_app_agent",
     ":fast_app_terminate_buildflags",
-    ":first_run_app_state_agent",
     ":identity_confirmation_app_agent",
     ":launch_screen_ui",
     ":mode",

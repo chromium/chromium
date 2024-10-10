@@ -35,6 +35,7 @@ source_set("profile_controller") {
     ":profile",
     "//base",
     "//ios/chrome/app:docking_promo_profile_agent",
+    "//ios/chrome/app:first_run_profile_agent",
     "//ios/chrome/app:search_engine_choice_profile_agent",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/profile:post_restore_profile_agent",
