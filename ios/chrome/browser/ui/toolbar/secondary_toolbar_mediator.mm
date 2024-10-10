@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button_style.h"
+#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_group_state.h"
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_consumer.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state.h"
@@ -99,10 +99,9 @@
     const int active_index = webStateList->active_index();
     if (active_index != WebStateList::kInvalidIndex &&
         webStateList->GetGroupOfWebStateAt(active_index) != nullptr) {
-      [self.consumer
-          setTabGridButtonStyle:ToolbarTabGridButtonStyle::kTabGroup];
+      [self.consumer updateTabGroupState:ToolbarTabGroupState::kTabGroup];
     } else {
-      [self.consumer setTabGridButtonStyle:ToolbarTabGridButtonStyle::kNormal];
+      [self.consumer updateTabGroupState:ToolbarTabGroupState::kNormal];
     }
   }
 

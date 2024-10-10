@@ -17,7 +17,7 @@
 - (instancetype)init NS_UNAVAILABLE;
 
 // Style of this configuration.
-@property(nonatomic, assign) ToolbarStyle style;
+@property(nonatomic, readonly) ToolbarStyle style;
 
 // Background color of the NTP. Used to do as if the toolbar was transparent and
 // the NTP is visible behind it.
@@ -53,6 +53,10 @@
 // color. Even with a `visibilityFactor` of 1, the final color could is
 // translucent.
 - (UIColor*)locationBarBackgroundColorWithVisibility:(CGFloat)visibilityFactor;
+
+// Returns the appropriate accessibility label to set on the Open New Tab
+// button, based on whether the current tab is grouped or not.
+- (NSString*)accessibilityLabelForOpenNewTabButtonInGroup:(BOOL)inGroup;
 
 @end
 

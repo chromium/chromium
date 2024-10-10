@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button.h"
-#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button_style.h"
+#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_group_state.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_constants.h"
@@ -513,8 +513,12 @@
       .active = YES;
 }
 
-- (void)setTabGridButtonStyle:(ToolbarTabGridButtonStyle)tabGridButtonStyle {
-  self.tabGridButton.tabGridButtonStyle = tabGridButtonStyle;
+- (void)updateTabGroupState:(ToolbarTabGroupState)tabGroupState {
+  const BOOL inGroup = tabGroupState == ToolbarTabGroupState::kTabGroup;
+  self.openNewTabButton.accessibilityLabel =
+      [self.buttonFactory.toolbarConfiguration
+          accessibilityLabelForOpenNewTabButtonInGroup:inGroup];
+  self.tabGridButton.tabGroupState = tabGroupState;
 }
 
 - (NSArray<ToolbarButton*>*)allButtons {

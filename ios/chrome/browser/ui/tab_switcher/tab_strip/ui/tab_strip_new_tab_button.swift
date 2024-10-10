@@ -111,7 +111,7 @@ class TabStripNewTabButton: UIView {
   private func updateAccessibilityIdentifier() {
     button.accessibilityLabel = L10nUtils.stringWithFixup(
       messageId: isIncognito
-        ? IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB
-        : IDS_IOS_TOOLS_MENU_NEW_TAB)
+        ? IDS_IOS_TOOLBAR_OPEN_NEW_TAB_INCOGNITO
+        : IDS_IOS_TOOLBAR_OPEN_NEW_TAB)
   }
 }

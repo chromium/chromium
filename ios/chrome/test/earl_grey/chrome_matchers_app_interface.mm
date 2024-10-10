@@ -533,7 +533,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 + (id<GREYMatcher>)openNewTabButton {
   return grey_allOf(
       [ChromeMatchersAppInterface
-          buttonWithAccessibilityLabelID:(IDS_IOS_TOOLS_MENU_NEW_TAB)],
+          buttonWithAccessibilityLabelID:(IDS_IOS_TOOLBAR_OPEN_NEW_TAB)],
       grey_sufficientlyVisible(), nil);
 }
 

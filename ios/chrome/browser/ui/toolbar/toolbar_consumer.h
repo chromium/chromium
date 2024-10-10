@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-enum class ToolbarTabGridButtonStyle;
+enum class ToolbarTabGroupState;
 
 // ToolbarConsumer sets the current appearance of the Toolbar.
 @protocol ToolbarConsumer
@@ -33,8 +33,8 @@ enum class ToolbarTabGridButtonStyle;
 - (void)setPageThemeColor:(UIColor*)themeColor;
 // Sets the under page background color.
 - (void)setUnderPageBackgroundColor:(UIColor*)underPageBackgroundColor;
-// Sets the Tab Grid button style.
-- (void)setTabGridButtonStyle:(ToolbarTabGridButtonStyle)tabGridButtonStyle;
+// Updates the toolbar for the given TabGroup state.
+- (void)updateTabGroupState:(ToolbarTabGroupState)tabGroupState;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_TOOLBAR_CONSUMER_H_

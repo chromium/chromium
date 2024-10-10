@@ -15,7 +15,7 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_visibility_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button.h"
-#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button_style.h"
+#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_group_state.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -86,19 +86,19 @@ const CGFloat kSymbolToolbarPointSize = 24;
 }
 
 - (ToolbarTabGridButton*)tabGridButton {
-  auto styledImageBlock = ^UIImage*(ToolbarTabGridButtonStyle style) {
-    switch (style) {
-      case ToolbarTabGridButtonStyle::kNormal:
+  auto imageBlock = ^UIImage*(ToolbarTabGroupState tabGroupState) {
+    switch (tabGroupState) {
+      case ToolbarTabGroupState::kNormal:
         return CustomSymbolWithPointSize(kSquareNumberSymbol,
                                          kSymbolToolbarPointSize);
-      case ToolbarTabGridButtonStyle::kTabGroup:
+      case ToolbarTabGroupState::kTabGroup:
         return DefaultSymbolWithPointSize(kSquareFilledOnSquareSymbol,
                                           kSymbolToolbarPointSize);
     }
   };
 
-  ToolbarTabGridButton* tabGridButton =
-      [[ToolbarTabGridButton alloc] initWithStyledImageLoader:styledImageBlock];
+  ToolbarTabGridButton* tabGridButton = [[ToolbarTabGridButton alloc]
+      initWithTabGroupStateImageLoader:imageBlock];
 
   [self configureButton:tabGridButton width:kAdaptiveToolbarButtonWidth];
   [tabGridButton addTarget:self.actionHandler
@@ -222,7 +222,7 @@ const CGFloat kSymbolToolbarPointSize = 24;
                                // The color of the 'plus'.
                                buttonsTintColorIPHHighlighted,
                                // The filling color of the circle.
-                               buttonsIPHHighlightColor
+                               buttonsIPHHighlightColor,
                              ]);
   };
 
@@ -233,13 +233,11 @@ const CGFloat kSymbolToolbarPointSize = 24;
   [newTabButton addTarget:self.actionHandler
                    action:@selector(newTabAction:)
          forControlEvents:UIControlEventTouchUpInside];
-  BOOL isIncognito = self.style == ToolbarStyle::kIncognito;
 
   [self configureButton:newTabButton width:kAdaptiveToolbarButtonWidth];
 
-  newTabButton.accessibilityLabel =
-      l10n_util::GetNSString(isIncognito ? IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB
-                                         : IDS_IOS_TOOLS_MENU_NEW_TAB);
+  newTabButton.accessibilityLabel = [self.toolbarConfiguration
+      accessibilityLabelForOpenNewTabButtonInGroup:NO];
 
   newTabButton.accessibilityIdentifier = kToolbarNewTabButtonIdentifier;
 

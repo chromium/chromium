@@ -27,7 +27,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/lens/lens_availability.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
-#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button_style.h"
+#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_group_state.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_consumer.h"
 #import "ios/chrome/browser/url_loading/model/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -169,7 +169,7 @@
     return;
   }
 
-  [self.consumer setTabGridButtonStyle:[self tabGridButtonStyleToDisplay]];
+  [self.consumer updateTabGroupState:[self tabGroupStateToDisplay]];
 
   const int tabCount = [self tabCountToDisplay];
   switch (change.type()) {
@@ -206,7 +206,7 @@
 
 - (void)webStateListBatchOperationEnded:(WebStateList*)webStateList {
   DCHECK_EQ(_webStateList, webStateList);
-  [self.consumer setTabGridButtonStyle:[self tabGridButtonStyleToDisplay]];
+  [self.consumer updateTabGroupState:[self tabGroupStateToDisplay]];
   [self.consumer setTabCount:[self tabCountToDisplay] addedInBackground:NO];
 }
 
@@ -526,32 +526,29 @@
   return isGoogleDefaultSearchProvider;
 }
 
-// Returns the tab count to display in the Tab Grid button.
-- (int)tabCountToDisplay {
+// Returns the tab group of the active web state, if any.
+- (const TabGroup*)activeWebStateTabGroup {
   if (IsTabGroupIndicatorEnabled()) {
     const int active_index = _webStateList->active_index();
     if (active_index != WebStateList::kInvalidIndex) {
-      const TabGroup* activeTabGroup =
-          _webStateList->GetGroupOfWebStateAt(active_index);
-      if (activeTabGroup) {
-        return activeTabGroup->range().count();
-      }
+      return _webStateList->GetGroupOfWebStateAt(active_index);
     }
   }
-  return _webStateList->count();
+  return nullptr;
 }
 
-// Returns the style to display in the Tab Grid button.
-- (ToolbarTabGridButtonStyle)tabGridButtonStyleToDisplay {
-  if (IsTabGroupIndicatorEnabled()) {
-    const int active_index = _webStateList->active_index();
-    if (active_index != WebStateList::kInvalidIndex) {
-      if (_webStateList->GetGroupOfWebStateAt(active_index)) {
-        return ToolbarTabGridButtonStyle::kTabGroup;
-      }
-    }
-  }
-  return ToolbarTabGridButtonStyle::kNormal;
+// Returns the tab count to display in the Tab Grid button.
+- (int)tabCountToDisplay {
+  const TabGroup* activeTabGroup = [self activeWebStateTabGroup];
+  return activeTabGroup ? activeTabGroup->range().count()
+                        : _webStateList->count();
+}
+
+// Returns the tab group state to display in the Tab Grid button.
+- (ToolbarTabGroupState)tabGroupStateToDisplay {
+  return [self activeWebStateTabGroup] != nullptr
+             ? ToolbarTabGroupState::kTabGroup
+             : ToolbarTabGroupState::kNormal;
 }
 
 @end

@@ -5812,6 +5812,18 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TOOLBAR_MENU_TOP_OMNIBOX" desc="The iOS menu item for moving the address bar to the top of the screen [iOS only].">
         Move address bar to top
       </message>
+      <message name="IDS_IOS_TOOLBAR_OPEN_NEW_TAB" desc="The accessibility label for the toolbar open new tab button in Regular mode and out of a tab group [iOS only].">
+        New tab
+      </message>
+      <message name="IDS_IOS_TOOLBAR_OPEN_NEW_TAB_INCOGNITO" desc="The accessibility label for the toolbar open new tab button in Incognito mode and out of a tab group [iOS only].">
+        New Incognito tab
+      </message>
+      <message name="IDS_IOS_TOOLBAR_OPEN_NEW_TAB_IN_GROUP" desc="The accessibility label for the toolbar open new tab button in Regular mode and inside a tab group [iOS only].">
+        New tab in group
+      </message>
+      <message name="IDS_IOS_TOOLBAR_OPEN_NEW_TAB_INCOGNITO_IN_GROUP" desc="The accessibility label for the toolbar open new tab button in Incognito mode and inside a tab group [iOS only].">
+        New Incognito tab in group
+      </message>
       <message name="IDS_IOS_TOOLBAR_SEARCH" desc="Label of the button allowing the user to focus the address bar when tapped. As usual, when the address bar is focused, the user can type a URL or a text to be searched on the internet. Read by Text-to-Speech." meaning="Search the internet. Read by Text-to-Speech.">
         Search
       </message>

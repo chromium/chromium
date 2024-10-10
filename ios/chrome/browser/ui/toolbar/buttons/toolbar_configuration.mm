@@ -6,10 +6,10 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util.h"
 
 @implementation ToolbarConfiguration
-
-@synthesize style = _style;
 
 - (instancetype)initWithStyle:(ToolbarStyle)style {
   self = [super init];
@@ -61,6 +61,19 @@
     case ToolbarStyle::kIncognito:
       return [[UIColor colorNamed:@"omnibox_incognito_background_color"]
           colorWithAlphaComponent:visibilityFactor];
+  }
+}
+
+- (NSString*)accessibilityLabelForOpenNewTabButtonInGroup:(BOOL)inGroup {
+  switch (self.style) {
+    case ToolbarStyle::kNormal:
+      return l10n_util::GetNSString(inGroup
+                                        ? IDS_IOS_TOOLBAR_OPEN_NEW_TAB_IN_GROUP
+                                        : IDS_IOS_TOOLBAR_OPEN_NEW_TAB);
+    case ToolbarStyle::kIncognito:
+      return l10n_util::GetNSString(
+          inGroup ? IDS_IOS_TOOLBAR_OPEN_NEW_TAB_INCOGNITO_IN_GROUP
+                  : IDS_IOS_TOOLBAR_OPEN_NEW_TAB_INCOGNITO);
   }
 }
 

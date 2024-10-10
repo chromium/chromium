@@ -12,9 +12,9 @@
 @class ToolbarButton;
 @class ToolbarButtonActionsHandler;
 @class ToolbarButtonVisibilityConfiguration;
+@class ToolbarConfiguration;
 @class ToolbarTabGridButton;
 @class ToolbarToolsMenuButton;
-@class ToolbarConfiguration;
 
 // ToolbarButton Factory protocol to create ToolbarButton objects with certain
 // style and configuration, depending of the implementation.
