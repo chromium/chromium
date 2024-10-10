@@ -32,7 +32,7 @@ class LensOverlayTabHelper : public LensOverlaySnapshotControllerDelegate,
   // Enters fullscreen and captures a new snapshot when the animation is
   // complete. If there is no snapshot controller set, then this callback will
   // be invoked with `nil`.
-  void CaptureFullscreenSnapshot(SnapshotCallback);
+  void CaptureFullscreenSnapshot(CGSize size, SnapshotCallback callback);
 
   // Whether the lens overlay is displayed by the current tab helper.
   bool IsLensOverlayShown() { return is_showing_lens_overlay_; }

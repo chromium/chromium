@@ -40,7 +40,7 @@ class LensOverlaySnapshotController final
 
   // Enters fullscreen and captures a new snapshot when the animation is
   // complete.
-  void CaptureFullscreenSnapshot(SnapshotCallback);
+  void CaptureFullscreenSnapshot(CGSize, SnapshotCallback);
 
   // Tears down any in flight screenshot requests.
   void CancelOngoingCaptures();
@@ -48,10 +48,8 @@ class LensOverlaySnapshotController final
   // Returns the dimensions for the inset area of the lens overlay snapshot.
   UIEdgeInsets GetSnapshotInsets();
 
-  // Sets whether the current web state is of a PDF document or not.
-  void SetIsPDFDocument(bool is_pdf_document) {
-    is_pdf_document_ = is_pdf_document;
-  }
+  // Sets whether the current page is an NTP or not.
+  void SetIsNTP(bool is_NTP) { is_NTP_ = is_NTP; }
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
@@ -66,7 +64,9 @@ class LensOverlaySnapshotController final
   std::vector<SnapshotCallback> pending_snapshot_callbacks_;
   bool is_capturing_ = false;
   bool is_bottom_omnibox_ = false;
-  bool is_pdf_document_ = false;
+  bool is_NTP_ = false;
+  CGSize expected_window_size_;
+
   base::WeakPtrFactory<LensOverlaySnapshotController> weak_ptr_factory_{this};
 
   void FullscreenDidAnimate(FullscreenController* controller,

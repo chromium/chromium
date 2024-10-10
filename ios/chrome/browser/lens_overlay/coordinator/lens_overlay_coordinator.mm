@@ -975,7 +975,13 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
           FullscreenController::FromBrowser(browser),
           IsCurrentLayoutBottomOmnibox(browser)));
 
-  _associatedTabHelper->CaptureFullscreenSnapshot(base::BindOnce(completion));
+  UIWindow* sceneWindow = self.browser->GetSceneState().window;
+  if (!sceneWindow) {
+    completion(nil);
+    return;
+  }
+  _associatedTabHelper->CaptureFullscreenSnapshot(sceneWindow.bounds.size,
+                                                  base::BindOnce(completion));
 }
 
 - (void)lowMemoryWarningReceived {

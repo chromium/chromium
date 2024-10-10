@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_consent_view_controller.h"
 #import "ios/chrome/browser/omnibox/model/omnibox_position_browser_agent.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -79,7 +80,11 @@ class LensOverlayCoordinatorTest : public PlatformTest {
     AuthenticationService* authentication_service =
         AuthenticationServiceFactory::GetForProfile(profile_);
 
-    browser_ = std::make_unique<TestBrowser>(profile_);
+    SceneState* mock_scene_state = OCMClassMock([SceneState class]);
+    UIWindow* window =
+        [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, 320, 520)];
+    OCMStub([mock_scene_state window]).andReturn(window);
+    browser_ = std::make_unique<TestBrowser>(profile_, mock_scene_state);
     dispatcher_ = [[CommandDispatcher alloc] init];
 
     GetApplicationContext()->GetLocalState()->SetInteger(

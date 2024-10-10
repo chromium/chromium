@@ -144,6 +144,7 @@ LensOverlaySnapshotController::~LensOverlaySnapshotController() {
 }
 
 void LensOverlaySnapshotController::CaptureFullscreenSnapshot(
+    CGSize expected_window_size,
     SnapshotCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pending_snapshot_callbacks_.push_back(std::move(callback));
@@ -158,6 +159,7 @@ void LensOverlaySnapshotController::CaptureFullscreenSnapshot(
   task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
 
   BeginCapturing();
+  expected_window_size_ = expected_window_size;
 
   // When the omnibox is positioned at the top, the infill is evenly distributed
   // on top and bottom, removing the need to enter fullscreen mode."
@@ -206,7 +208,7 @@ void LensOverlaySnapshotController::FullscreenDidAnimate(
 // snapshot is taken.
 UIEdgeInsets
 LensOverlaySnapshotController::GetContentInsetsOnSnapshotCapture() {
-  if (!is_bottom_omnibox_) {
+  if (!is_bottom_omnibox_ || is_NTP_) {
     return fullscreen_controller_->GetMaxViewportInsets();
   }
 
@@ -216,6 +218,11 @@ LensOverlaySnapshotController::GetContentInsetsOnSnapshotCapture() {
 }
 
 UIEdgeInsets LensOverlaySnapshotController::GetSnapshotInsets() {
+  // The NTP does not require snapshot insetting.
+  if (is_NTP_) {
+    return UIEdgeInsetsZero;
+  }
+
   // If the fullscreen mode is achieved by adjusting the size of the scroll
   // view, the WebState view is already positioned correctly within the viewable
   // area and doesn't require any further adjustments.
@@ -324,12 +331,18 @@ void LensOverlaySnapshotController::OnRawSnapshotCaptured(UIImage* snapshot) {
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
 
   UIEdgeInsets viewportInsets = GetContentInsetsOnSnapshotCapture();
-  CGFloat newSnapshotHeight =
-      snapshot.size.height + viewportInsets.top + viewportInsets.bottom;
-  CGSize newSnapshotSize = CGSizeMake(snapshot.size.width, newSnapshotHeight);
+  // On NTP we cannot rely on the top component of the content insets.
+  if (is_NTP_) {
+    // However, as the snapshot is fullscreen, the top inset is computed as the
+    // remaining space after accounting for the bottom inset and the raw
+    // snapshot height.
+    CGFloat topInsetForNTP = expected_window_size_.height -
+                             viewportInsets.bottom - snapshot.size.height;
+    viewportInsets.top = topInsetForNTP;
+  }
 
   auto preprocessCallback =
-      base::BindOnce(&PreprocessSnapshot, snapshot, newSnapshotSize,
+      base::BindOnce(&PreprocessSnapshot, snapshot, expected_window_size_,
                      viewportInsets, std::move(callbackOnInitialSequence));
   backgroundRunner->PostTask(FROM_HERE, std::move(preprocessCallback));
 }
