@@ -150,8 +150,12 @@ void MachPortRendezvousServerBase::HandleRequest() {
     return;
   }
 
+#if BUILDFLAG(IS_IOS)
+  MachPortsForRendezvous ports_to_send = PortsForPid(0);
+#else
   pid_t sender_pid = audit_token_to_pid(request.trailer.msgh_audit);
   MachPortsForRendezvous ports_to_send = PortsForPid(sender_pid);
+#endif
 
   if (ports_to_send.empty()) {
     return;

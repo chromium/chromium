@@ -268,6 +268,9 @@ class BASE_EXPORT MachPortRendezvousClientIOS final
   static bool Initialize(apple::ScopedMachSendRight server_port);
 
  private:
+  MachPortRendezvousClientIOS();
+  ~MachPortRendezvousClientIOS() override;
+
   // Helper method to look up the server in the bootstrap namespace and send
   // the acquisition request message.
   bool AcquirePorts(apple::ScopedMachSendRight server_port);
