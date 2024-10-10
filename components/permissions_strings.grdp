@@ -323,6 +323,9 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     <message name="IDS_KEYBOARD_LOCK_PERMISSION_CHIP" desc="Chip UI text representing a request from a website to lock and use keyboard input.">
       Lock your keyboard?
     </message>
+    <message name="IDS_KEYBOARD_AND_POINTER_LOCK_PERMISSION_CHIP" desc="Chip UI text representing a request from a website to lock and use keyboard and mouseinput.">
+      Lock your keyboard and mouse?
+    </message>
     <message name="IDS_POINTER_LOCK_PERMISSION_CHIP" desc="Chip UI text representing a request from a website to lock and use mouse input.">
       Lock your mouse?
     </message>
