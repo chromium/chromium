@@ -38,6 +38,7 @@ extern NSString* const kCustomizationToggleSetUpListIdentifier;
 extern NSString* const kCustomizationToggleSafetyCheckIdentifier;
 extern NSString* const kCustomizationToggleTabResumptionIdentifier;
 extern NSString* const kCustomizationToggleParcelTrackingIdentifier;
+extern NSString* const kCustomizationToggleTipsIdentifier;
 
 // The identifiers for the navigable portions of the main page toggle cells.
 extern NSString* const kCustomizationToggleMostVisitedNavigableIdentifier;
@@ -80,6 +81,7 @@ enum class CustomizationToggleType : NSInteger {
   kDiscover,
 
   // Magic Stack page toggles.
+  kTips,
   kSetUpList,
   kSafetyCheck,
   kTapResumption,

@@ -11,14 +11,20 @@ source_set("tips") {
     "tips_module_state.mm",
     "tips_module_view.h",
     "tips_module_view.mm",
+    "tips_prefs.h",
+    "tips_prefs.mm",
   ]
   public_deps =
       [ "//ios/chrome/browser/ui/content_suggestions/magic_stack:public" ]
   deps = [
     "//base",
+    "//components/prefs",
+    "//components/prefs/ios",
     "//components/segmentation_platform/embedder/home_modules:constants",
     "//components/segmentation_platform/embedder/home_modules/tips_manager:constants",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/content_suggestions:public",
@@ -42,8 +48,11 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//components/segmentation_platform/embedder/home_modules/tips_manager:constants",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/ui/content_suggestions:public",
     "//ios/chrome/browser/ui/content_suggestions/cells",
+    "//ios/chrome/test:test_support",
     "//testing/gtest",
   ]
   frameworks = [ "Foundation.framework" ]

@@ -26,6 +26,8 @@ const char kTabResumptionToggledAction[] =
     "IOS.HomeCustomization.MagicStackPage.TabResumption.Toggled";
 const char kParcelTrackingToggledAction[] =
     "IOS.HomeCustomization.MagicStackPage.ParcelTracking.Toggled";
+const char kTipsToggledAction[] =
+    "IOS.HomeCustomization.MagicStackPage.Tips.Toggled";
 
 }  // namespace
 
@@ -56,6 +58,9 @@ const char kParcelTrackingToggledAction[] =
       return;
     case CustomizationToggleType::kParcelTracking:
       base::RecordAction(base::UserMetricsAction(kParcelTrackingToggledAction));
+      return;
+    case CustomizationToggleType::kTips:
+      base::RecordAction(base::UserMetricsAction(kTipsToggledAction));
       return;
   }
 }

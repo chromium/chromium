@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/home_customization/utils/home_customization_metrics_recorder.h"
 #import "ios/chrome/browser/parcel_tracking/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "url/gurl.h"
 
@@ -71,6 +72,11 @@
                       [self isMagicStackCardEnabledForType:
                                 CustomizationToggleType::kParcelTracking]});
   }
+  if (IsTipsMagicStackEnabled()) {
+    toggleMap.insert(
+        {CustomizationToggleType::kTips,
+         [self isMagicStackCardEnabledForType:CustomizationToggleType::kTips]});
+  }
   [self.magicStackPageConsumer populateToggles:toggleMap];
 }
 
@@ -108,6 +114,11 @@
     case CustomizationToggleType::kParcelTracking:
       return _prefService->GetBoolean(
           prefs::kHomeCustomizationMagicStackParcelTrackingEnabled);
+    case CustomizationToggleType::kTips: {
+      CHECK(IsTipsMagicStackEnabled());
+      return _prefService->GetBoolean(
+          prefs::kHomeCustomizationMagicStackTipsEnabled);
+    }
     default:
       NOTREACHED();
   }
@@ -149,6 +160,12 @@
       _prefService->SetBoolean(
           prefs::kHomeCustomizationMagicStackParcelTrackingEnabled, enabled);
       break;
+    case CustomizationToggleType::kTips: {
+      CHECK(IsTipsMagicStackEnabled());
+      _prefService->SetBoolean(prefs::kHomeCustomizationMagicStackTipsEnabled,
+                               enabled);
+      break;
+    }
   }
 }
 

@@ -14435,6 +14435,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IOS.HomeCustomization.MagicStackPage.Tips.Toggled">
+  <owner>bwwilliams@google.com</owner>
+  <owner>adamta@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <description>
+    Reported when the Tips cell is toggled from the Magic Stack page in the Home
+    Customization menu.
+  </description>
+</action>
+
 <action name="IOS.HomeCustomization.MainPage.Feed.Toggled">
   <owner>adamta@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>

@@ -106,14 +106,20 @@ const float kCornerRadius = 24;
 
 #pragma mark - Helpers
 
-// Returns the list of actions for the long-press /  context menu.
+// Returns the list of actions for the long-press/context menu.
 - (NSArray<UIAction*>*)contextMenuActions {
   NSMutableArray<UIAction*>* actions = [[NSMutableArray alloc] init];
 
-  if ((IsSetUpListModuleType(_type) && IsIOSTipsNotificationsEnabled()) ||
-      (_type == ContentSuggestionsModuleType::kSafetyCheck &&
-       IsSafetyCheckNotificationsEnabled())) {
-    [actions addObject:[self toggleNotificationsActionForModuleType:self.type]];
+  BOOL canShowTipsNotificationsOptIn =
+      IsIOSTipsNotificationsEnabled() &&
+      (IsSetUpListModuleType(_type) || IsTipsModuleType(_type));
+
+  BOOL canShowSafetyCheckNotificationsOptIn =
+      _type == ContentSuggestionsModuleType::kSafetyCheck &&
+      IsSafetyCheckNotificationsEnabled();
+
+  if (canShowTipsNotificationsOptIn || canShowSafetyCheckNotificationsOptIn) {
+    [actions addObject:[self toggleNotificationsActionForModuleType:_type]];
   }
 
   [actions addObject:[self hideAction]];
@@ -165,6 +171,8 @@ const float kCornerRadius = 24;
     case ContentSuggestionsModuleType::kCompactedSetUpList:
     case ContentSuggestionsModuleType::kParcelTracking:
     case ContentSuggestionsModuleType::kPriceTrackingPromo:
+    case ContentSuggestionsModuleType::kTipsWithProductImage:
+    case ContentSuggestionsModuleType::kTips:
       return YES;
     default:
       return NO;
@@ -217,14 +225,14 @@ const float kCornerRadius = 24;
 - (PushNotificationClientId)pushNotificationClientId:
     (ContentSuggestionsModuleType)type {
   // This is only supported for Set Up List and Safety Check modules.
-  CHECK(IsSetUpListModuleType(type) ||
+  CHECK(IsSetUpListModuleType(type) || IsTipsModuleType(type) ||
         type == ContentSuggestionsModuleType::kSafetyCheck);
 
   if (type == ContentSuggestionsModuleType::kSafetyCheck) {
     return PushNotificationClientId::kSafetyCheck;
   }
 
-  if (IsSetUpListModuleType(type)) {
+  if (IsSetUpListModuleType(type) || IsTipsModuleType(type)) {
     return PushNotificationClientId::kTips;
   }
 
@@ -237,7 +245,7 @@ const float kCornerRadius = 24;
 // modules.
 - (int)pushNotificationTitleMessageId:(ContentSuggestionsModuleType)type {
   // This is only supported for Set Up List and Safety Check modules.
-  CHECK(IsSetUpListModuleType(type) ||
+  CHECK(IsSetUpListModuleType(type) || IsTipsModuleType(type) ||
         type == ContentSuggestionsModuleType::kSafetyCheck);
 
   if (type == ContentSuggestionsModuleType::kSafetyCheck) {
@@ -246,6 +254,10 @@ const float kCornerRadius = 24;
 
   if (IsSetUpListModuleType(type)) {
     return content_suggestions::SetUpListTitleStringID();
+  }
+
+  if (IsTipsModuleType(type)) {
+    return IDS_IOS_MAGIC_STACK_TIP_TITLE;
   }
 
   NOTREACHED();
@@ -285,6 +297,10 @@ const float kCornerRadius = 24;
       return l10n_util::GetNSString(IDS_IOS_PARCEL_TRACKING_CONTEXT_MENU_TITLE);
     case ContentSuggestionsModuleType::kPriceTrackingPromo:
       return @"";
+    case ContentSuggestionsModuleType::kTipsWithProductImage:
+    case ContentSuggestionsModuleType::kTips:
+      return l10n_util::GetNSString(
+          IDS_IOS_MAGIC_STACK_TIP_CONTEXT_MENU_DESCRIPTION);
     default:
       NOTREACHED();
   }
@@ -316,6 +332,12 @@ const float kCornerRadius = 24;
     case ContentSuggestionsModuleType::kPriceTrackingPromo:
       return l10n_util::GetNSString(
           IDS_IOS_CONTENT_SUGGESTIONS_PRICE_TRACKING_PROMO_HIDE_CARD);
+    case ContentSuggestionsModuleType::kTipsWithProductImage:
+    case ContentSuggestionsModuleType::kTips:
+      return l10n_util::GetNSStringF(
+          IDS_IOS_MAGIC_STACK_TIP_CONTEXT_MENU_HIDE_CHROME_TIPS,
+          base::SysNSStringToUTF16(
+              l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_TIP_TITLE)));
     default:
       NOTREACHED();
   }

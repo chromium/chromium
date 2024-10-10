@@ -1416,6 +1416,13 @@
                    [self isStartSurface]);
 }
 
+- (void)tipsOpened {
+  RecordMagicStackClick(ContentSuggestionsModuleType::kTips,
+                        [self isStartSurface]);
+  RecordHomeAction(IOSHomeActionType::kTips, [self isStartSurface]);
+  [self dismissCustomizationMenu];
+}
+
 #pragma mark - OverscrollActionsControllerDelegate
 
 - (void)overscrollActionNewTab:(OverscrollActionsController*)controller {
@@ -1792,13 +1799,15 @@
             prefs::kHomeCustomizationMagicStackTabResumptionEnabled);
         BOOL parcelTrackingEnabled = prefService->GetBoolean(
             prefs::kHomeCustomizationMagicStackParcelTrackingEnabled);
+        BOOL tipsEnabled = prefService->GetBoolean(
+            prefs::kHomeCustomizationMagicStackTipsEnabled);
         [self.NTPMetricsRecorder
             recordMagicStackCustomizationStateWithSetUpList:setUpListEnabled
                                                 safetyCheck:safetyCheckEnabled
-
                                               tabResumption:tabResumptionEnabled
                                              parcelTracking:
-                                                 parcelTrackingEnabled];
+                                                 parcelTrackingEnabled
+                                                       tips:tipsEnabled];
       }
 
       // TODO(crbug.com/350990359): Deprecate IOS.NTP.Impression when Home

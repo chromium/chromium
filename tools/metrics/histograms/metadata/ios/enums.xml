@@ -353,6 +353,7 @@ the generic promo launch. -->
   <int value="8" label="Parcel Tracking tile"/>
   <int value="9" label="Distant tab resumption tile"/>
   <int value="10" label="Price Tracking Promo tile"/>
+  <int value="11" label="Tips tile"/>
 </enum>
 
 <enum name="IOSHomeCustomizationEntrypoint">

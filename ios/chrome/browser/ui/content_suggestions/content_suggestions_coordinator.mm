@@ -137,6 +137,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_magic_stack_mediator.h"
+#import "ios/chrome/browser/ui/content_suggestions/tips/tips_prefs.h"
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
@@ -403,9 +404,11 @@ using segmentation_platform::TipIdentifier;
     [moduleMediators addObject:_safetyCheckMediator];
   }
 
-  if (IsTipsMagicStackEnabled()) {
+  if (IsTipsMagicStackEnabled() &&
+      !tips_prefs::IsTipsInMagicStackDisabled(prefs)) {
     _tipsMediator = [[TipsMagicStackMediator alloc]
-        initWithIdentifier:TipIdentifier::kUnknown];
+        initWithIdentifier:TipIdentifier::kUnknown
+        profilePrefService:prefs];
     _tipsMediator.presentationAudience = self;
     [moduleMediators addObject:_tipsMediator];
   }
@@ -487,6 +490,7 @@ using segmentation_platform::TipIdentifier;
   _shortcutsMediator = nil;
   [_safetyCheckMediator disconnect];
   _safetyCheckMediator = nil;
+  [_tipsMediator disconnect];
   _tipsMediator = nil;
   [_setUpListMediator disconnect];
   _setUpListMediator = nil;
@@ -578,6 +582,8 @@ using segmentation_platform::TipIdentifier;
 }
 
 - (void)didSelectTip:(segmentation_platform::TipIdentifier)tip {
+  CHECK(IsTipsMagicStackEnabled());
+
   // TODO(crbug.com/369457289): Track user interactions with the Tips module
   // using new metrics.
   switch (tip) {
@@ -621,6 +627,8 @@ using segmentation_platform::TipIdentifier;
       // `kSavePasswords` and `kAutofillPasswords`.
       break;
   }
+
+  [self.NTPActionsDelegate tipsOpened];
 }
 
 #pragma mark - MagicStackCollectionViewAudience
@@ -727,6 +735,11 @@ using segmentation_platform::TipIdentifier;
       [_priceTrackingPromoMediator disableModule];
       break;
     }
+    case ContentSuggestionsModuleType::kTipsWithProductImage:
+    case ContentSuggestionsModuleType::kTips: {
+      [_tipsMediator disableModule];
+      break;
+    }
     default:
       break;
   }
@@ -737,15 +750,15 @@ using segmentation_platform::TipIdentifier;
 // and Safety Check modules.
 - (PushNotificationClientId)pushNotificationClientId:
     (ContentSuggestionsModuleType)type {
-  // This is only supported for Set Up List and Safety Check modules.
-  CHECK(IsSetUpListModuleType(type) ||
+  // This is only supported for Set Up List, Tips, and Safety Check modules.
+  CHECK(IsSetUpListModuleType(type) || IsTipsModuleType(type) ||
         type == ContentSuggestionsModuleType::kSafetyCheck);
 
   if (type == ContentSuggestionsModuleType::kSafetyCheck) {
     return PushNotificationClientId::kSafetyCheck;
   }
 
-  if (IsSetUpListModuleType(type)) {
+  if (IsSetUpListModuleType(type) || IsTipsModuleType(type)) {
     return PushNotificationClientId::kTips;
   }
 
@@ -757,8 +770,8 @@ using segmentation_platform::TipIdentifier;
 // notifications are exclusively supported by the Set Up List and Safety Check
 // modules.
 - (int)pushNotificationTitleMessageId:(ContentSuggestionsModuleType)type {
-  // This is only supported for Set Up List and Safety Check modules.
-  CHECK(IsSetUpListModuleType(type) ||
+  // This is only supported for Set Up List, Tips, and Safety Check modules.
+  CHECK(IsSetUpListModuleType(type) || IsTipsModuleType(type) ||
         type == ContentSuggestionsModuleType::kSafetyCheck);
 
   if (type == ContentSuggestionsModuleType::kSafetyCheck) {
@@ -769,12 +782,16 @@ using segmentation_platform::TipIdentifier;
     return content_suggestions::SetUpListTitleStringID();
   }
 
+  if (IsTipsModuleType(type)) {
+    return IDS_IOS_MAGIC_STACK_TIP_TITLE;
+  }
+
   NOTREACHED();
 }
 
 - (void)enableNotifications:(ContentSuggestionsModuleType)type {
-  // This is only supported for Set Up List and Safety Check modules.
-  CHECK(IsSetUpListModuleType(type) ||
+  // This is only supported for Set Up List, Tips, and Safety Check modules.
+  CHECK(IsSetUpListModuleType(type) || IsTipsModuleType(type) ||
         type == ContentSuggestionsModuleType::kSafetyCheck);
 
   // Ask user for permission to opt-in to notifications.
@@ -802,8 +819,8 @@ using segmentation_platform::TipIdentifier;
 }
 
 - (void)disableNotifications:(ContentSuggestionsModuleType)type {
-  // This is only supported for Set Up List and Safety Check modules.
-  CHECK(IsSetUpListModuleType(type) ||
+  // This is only supported for Set Up List, Tips, and Safety Check modules.
+  CHECK(IsSetUpListModuleType(type) || IsTipsModuleType(type) ||
         type == ContentSuggestionsModuleType::kSafetyCheck);
 
   id<SystemIdentity> identity =

@@ -17,6 +17,7 @@
 #import "components/ntp_tiles/icon_cacher.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/segmentation_platform/embedder/home_modules/constants.h"
+#import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "components/segmentation_platform/public/constants.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
@@ -71,6 +72,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_helper_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_mediator.h"
+#import "ios/chrome/browser/ui/content_suggestions/tips/tips_magic_stack_mediator.h"
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -208,6 +210,7 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
     MostVisitedTilesMediatorDelegate,
     ParcelTrackingMediatorDelegate,
     SafetyCheckMagicStackMediatorDelegate,
+    TipsMagicStackMediatorDelegate,
     TabResumptionHelperDelegate>
 @property(nonatomic, assign, readonly) BOOL hasReceivedMagicStackResponse;
 @property(nonatomic, assign, readonly) BOOL hasReceivedEphemericalCardResponse;
@@ -334,6 +337,10 @@ class MagicStackRankingModelTest : public PlatformTest {
                          userState:GetProfile()->GetPrefs()
                       profileState:nil];
 
+    _tipsMediator = [[TipsMagicStackMediator alloc]
+        initWithIdentifier:segmentation_platform::TipIdentifier::kUnknown
+        profilePrefService:GetProfile()->GetPrefs()];
+
     _priceTrackingPromoMediator = [[PriceTrackingPromoMediator alloc]
         initWithShoppingService:commerce::ShoppingServiceFactory::GetForProfile(
                                     GetProfile())
@@ -363,6 +370,7 @@ class MagicStackRankingModelTest : public PlatformTest {
                       _tabResumptionMediator,
                       _mostVisitedTilesMediator,
                       _safetyCheckMediator,
+                      _tipsMediator,
                       _priceTrackingPromoMediator,
                     ]
                         tipsManager:TipsManagerIOSFactory::GetForProfile(
@@ -390,6 +398,7 @@ class MagicStackRankingModelTest : public PlatformTest {
     [_shortcutsMediator disconnect];
     [_mostVisitedTilesMediator disconnect];
     [_safetyCheckMediator disconnect];
+    [_tipsMediator disconnect];
     [_priceTrackingPromoMediator disconnect];
   }
 
@@ -429,6 +438,7 @@ class MagicStackRankingModelTest : public PlatformTest {
   FakeTabResumptionMediator* _tabResumptionMediator;
   ShortcutsMediator* _shortcutsMediator;
   SafetyCheckMagicStackMediator* _safetyCheckMediator;
+  TipsMagicStackMediator* _tipsMediator;
   MostVisitedTilesMediator* _mostVisitedTilesMediator;
   PriceTrackingPromoMediator* _priceTrackingPromoMediator;
   MagicStackRankingModel* _magicStackRankingModel;
@@ -634,6 +644,33 @@ TEST_F(MagicStackRankingModelTest,
   OCMExpect([mockDelegate magicStackRankingModel:[OCMArg any]
                                    didRemoveItem:[OCMArg any]]);
   [_magicStackRankingModel removeSafetyCheckModule];
+  EXPECT_OCMOCK_VERIFY(mockDelegate);
+}
+
+// Verifies that the ranking model correctly emits removal signals to its
+// delegate in response to feature delegate signals.
+TEST_F(MagicStackRankingModelTest, TestTipsMediatorDelegateCallsRemoval) {
+  // Assert that delegate API isn't called if rank has not been received yet.
+  id mockDelegate =
+      OCMStrictProtocolMock(@protocol(MagicStackRankingModelDelegate));
+  _magicStackRankingModel.delegate = mockDelegate;
+  [_magicStackRankingModel removeTipsModule];
+  EXPECT_OCMOCK_VERIFY(mockDelegate);
+
+  FakeMagicStackRankingModelDelegate* fakeDelegate =
+      [[FakeMagicStackRankingModelDelegate alloc] init];
+  _magicStackRankingModel.delegate = fakeDelegate;
+  [_magicStackRankingModel fetchLatestMagicStackRanking];
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_timeout(), true, ^bool() {
+        base::RunLoop().RunUntilIdle();
+        return [fakeDelegate.rank count] > 0;
+      }));
+
+  _magicStackRankingModel.delegate = mockDelegate;
+  OCMExpect([mockDelegate magicStackRankingModel:[OCMArg any]
+                                   didRemoveItem:[OCMArg any]]);
+  [_magicStackRankingModel removeTipsModule];
   EXPECT_OCMOCK_VERIFY(mockDelegate);
 }
 

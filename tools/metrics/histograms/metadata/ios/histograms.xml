@@ -1596,6 +1596,17 @@ the generic promo launch. -->
   </summary>
 </histogram>
 
+<histogram name="IOS.HomeCustomization.MagicStack.Tips.Enabled" enum="Boolean"
+    expires_after="2025-08-11">
+  <owner>bwwilliams@google.com</owner>
+  <owner>adamta@google.com</owner>
+  <owner>bling-get-set-up@google.com</owner>
+  <summary>
+    Records whether the Tips module is currently enabled in the Magic Stack from
+    the Home Customization menu. Logged on each NTP impression.
+  </summary>
+</histogram>
+
 <histogram name="IOS.HomeCustomization.Opened"
     enum="IOSHomeCustomizationEntrypoint" expires_after="2025-08-11">
   <owner>adamta@google.com</owner>

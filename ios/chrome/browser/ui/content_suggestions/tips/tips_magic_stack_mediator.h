@@ -8,10 +8,19 @@
 #import <UIKit/UIKit.h>
 
 @protocol ContentSuggestionsViewControllerAudience;
+class PrefService;
 @class TipsModuleState;
 namespace segmentation_platform {
 enum class TipIdentifier;
 }  // namespace segmentation_platform
+
+// Handles Tips module events.
+@protocol TipsMagicStackMediatorDelegate
+
+// Indicates to receiver that the Tips module should be removed.
+- (void)removeTipsModule;
+
+@end
 
 // Mediator for managing the state of the Tips (Magic Stack) module.
 @interface TipsMagicStackMediator : NSObject
@@ -19,19 +28,30 @@ enum class TipIdentifier;
 // Used by the Tips module for the current module state.
 @property(nonatomic, strong, readonly) TipsModuleState* state;
 
+// Delegate.
+@property(nonatomic, weak) id<TipsMagicStackMediatorDelegate> delegate;
+
 // Audience for presentation actions.
 @property(nonatomic, weak) id<ContentSuggestionsViewControllerAudience>
     presentationAudience;
 
 // Default initializer.
 - (instancetype)initWithIdentifier:
-    (segmentation_platform::TipIdentifier)identifier NS_DESIGNATED_INITIALIZER;
+                    (segmentation_platform::TipIdentifier)identifier
+                profilePrefService:(PrefService*)profilePrefService
+    NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
+
+// Disconnects the mediator.
+- (void)disconnect;
 
 // Reconfigures `TipsMagicStackMediator` with a new tip `identifier`.
 - (void)reconfigureWithTipIdentifier:
     (segmentation_platform::TipIdentifier)identifier;
+
+// Disables and hides the Tips module in the Magic Stack.
+- (void)disableModule;
 
 @end
 

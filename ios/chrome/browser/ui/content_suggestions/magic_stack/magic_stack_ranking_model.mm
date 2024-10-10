@@ -58,6 +58,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_magic_stack_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_module_state.h"
+#import "ios/chrome/browser/ui/content_suggestions/tips/tips_prefs.h"
 
 using segmentation_platform::TipIdentifier;
 using segmentation_platform::home_modules::TipIdentifierForOutputLabel;
@@ -67,6 +68,7 @@ using segmentation_platform::home_modules::TipsEphemeralModule;
                                       ParcelTrackingMediatorDelegate,
                                       PriceTrackingPromoMediatorDelegate,
                                       SafetyCheckMagicStackMediatorDelegate,
+                                      TipsMagicStackMediatorDelegate,
                                       SetUpListMediatorAudience,
                                       ShortcutsMediatorDelegate,
                                       TabResumptionHelperDelegate>
@@ -156,6 +158,7 @@ using segmentation_platform::home_modules::TipsEphemeralModule;
         _safetyCheckMediator.delegate = self;
       } else if ([mediator isKindOfClass:[TipsMagicStackMediator class]]) {
         _tipsMediator = static_cast<TipsMagicStackMediator*>(mediator);
+        _tipsMediator.delegate = self;
       } else {
         // Known module mediators need to be handled.
         NOTREACHED_IN_MIGRATION();
@@ -226,6 +229,19 @@ using segmentation_platform::home_modules::TipsEphemeralModule;
                                 ContentSuggestionsModuleType::kSafetyCheck);
   [self.delegate magicStackRankingModel:self
                           didRemoveItem:_safetyCheckMediator.safetyCheckState];
+}
+
+#pragma mark - TipsMagicStackMediatorDelegate
+
+- (void)removeTipsModule {
+  if (![self isMagicStackOrderReady]) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration(kMagicStackModuleDisabledHistogram,
+                                ContentSuggestionsModuleType::kTips);
+
+  [self.delegate magicStackRankingModel:self didRemoveItem:_tipsMediator.state];
 }
 
 #pragma mark - TabResumptionHelperDelegate
@@ -449,7 +465,8 @@ using segmentation_platform::home_modules::TipsEphemeralModule;
         break;
       }
     } else if (TipsEphemeralModule::IsModuleLabel(label) &&
-               IsTipsMagicStackEnabled()) {
+               IsTipsMagicStackEnabled() &&
+               !tips_prefs::IsTipsInMagicStackDisabled(_prefService)) {
       TipIdentifier tipIdentifier = TipIdentifierForOutputLabel(label);
 
       if (tipIdentifier != TipIdentifier::kUnknown) {

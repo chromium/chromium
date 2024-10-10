@@ -37,6 +37,8 @@
     case CustomizationToggleType::kParcelTracking:
       return l10n_util::GetNSString(
           IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_TITLE_PARCEL_TRACKING);
+    case CustomizationToggleType::kTips:
+      return l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_TIP_TITLE);
   }
 }
 
@@ -66,6 +68,9 @@
     case CustomizationToggleType::kParcelTracking:
       return l10n_util::GetNSString(
           IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_SUBTITLE_PARCEL_TRACKING);
+    case CustomizationToggleType::kTips:
+      return l10n_util::GetNSString(
+          IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_SUBTITLE_TIPS);
   }
 }
 
@@ -94,6 +99,9 @@
     case CustomizationToggleType::kParcelTracking:
       return DefaultSymbolWithPointSize(kShippingBoxSymbol,
                                         kToggleIconPointSize);
+    case CustomizationToggleType::kTips:
+      return DefaultSymbolWithPointSize(kListBulletClipboardSymbol,
+                                        kToggleIconPointSize);
   }
 }
 
@@ -117,6 +125,8 @@
       return kCustomizationToggleTabResumptionIdentifier;
     case CustomizationToggleType::kParcelTracking:
       return kCustomizationToggleParcelTrackingIdentifier;
+    case CustomizationToggleType::kTips:
+      return kCustomizationToggleTipsIdentifier;
   }
 }
 
@@ -139,6 +149,8 @@
     case CustomizationToggleType::kTapResumption:
       return nil;
     case CustomizationToggleType::kParcelTracking:
+      return nil;
+    case CustomizationToggleType::kTips:
       return nil;
   }
 }
