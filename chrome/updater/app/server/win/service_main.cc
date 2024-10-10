@@ -22,6 +22,7 @@
 #include "chrome/updater/app/app_server_win.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/util/win_util.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace updater {
 
@@ -119,17 +120,17 @@ void ServiceMain::ServiceMainImpl(const base::CommandLine& command_line) {
     return;
   }
   SetServiceStatus(SERVICE_RUNNING);
+  absl::Cleanup service_stopped = [&] { SetServiceStatus(SERVICE_STOPPED); };
 
   // When the Run function returns, the service has stopped.
-  // `hr` can be either an HRESULT or a Windows error code.
+  // `hr` can be either a HRESULT or a Windows error code.
   const HRESULT hr = Run(command_line);
-  if (hr != S_OK) {
-    VLOG(2) << "Run returned: " << std::hex << hr;
-    service_status_.dwWin32ExitCode = ERROR_SERVICE_SPECIFIC_ERROR;
-    service_status_.dwServiceSpecificExitCode = hr;
+  if (hr == S_OK) {
+    return;
   }
-
-  SetServiceStatus(SERVICE_STOPPED);
+  VLOG(2) << "Run returned: " << std::hex << hr;
+  service_status_.dwWin32ExitCode = ERROR_SERVICE_SPECIFIC_ERROR;
+  service_status_.dwServiceSpecificExitCode = hr;
 }
 
 int ServiceMain::RunInteractive() {
