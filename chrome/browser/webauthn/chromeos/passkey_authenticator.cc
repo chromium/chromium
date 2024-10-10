@@ -111,9 +111,9 @@ std::string PasskeyAuthenticator::GetId() const {
 }
 
 std::optional<base::span<const int32_t>> PasskeyAuthenticator::GetAlgorithms() {
-  constexpr std::array<int32_t, 1> kAlgorithms{
+  static const int32_t kAlgorithms[] = {
       static_cast<int32_t>(CoseAlgorithmIdentifier::kEs256)};
-  return kAlgorithms;
+  return base::span(kAlgorithms);
 }
 
 const AuthenticatorSupportedOptions& PasskeyAuthenticator::Options() const {
