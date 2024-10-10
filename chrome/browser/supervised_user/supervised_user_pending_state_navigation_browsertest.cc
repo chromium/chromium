@@ -2,9 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <map>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <vector>
+
 #include "base/functional/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -42,6 +49,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -50,18 +58,53 @@ namespace {
 static constexpr std::string_view kUmaReauthenticationHistogramName =
     "FamilyLinkUser.BlockedSiteVerifyItsYouInterstitialState";
 
+class ThrottleTestParam {
+ public:
+  enum class FeatureStatus : bool {
+    // ClassifyUrlOnProcessResponseEvent feature disabled: uses
+    // SupervisedUserNavigationThrottle
+    kDisabled = false,
+    // ClassifyUrlOnProcessResponseEvent feature enabled: uses
+    // supervised_user::ClassifyUrlNavigationThrottle
+    kEnabled = true,
+  };
+  static auto Values() {
+    return ::testing::Values(FeatureStatus::kDisabled, FeatureStatus::kEnabled);
+  }
+  static std::string ToString(FeatureStatus status) {
+    switch (status) {
+      case FeatureStatus::kDisabled:
+        return "SupervisedUserNavigationThrottle";
+      case FeatureStatus::kEnabled:
+        return "ClassifyUrlNavigationThrottle";
+      default:
+        NOTREACHED();
+    }
+  }
+};
+
 class SupervisedUserPendingStateNavigationTest
-    : public MixinBasedInProcessBrowserTest {
+    : public MixinBasedInProcessBrowserTest,
+      public ::testing::WithParamInterface<ThrottleTestParam::FeatureStatus> {
  public:
   SupervisedUserPendingStateNavigationTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {supervised_user::kForceSupervisedUserReauthenticationForBlockedSites,
-         supervised_user::kCloseSignTabsFromReauthenticationInterstitial,
-         supervised_user::kUncredentialedFilteringFallbackForSupervisedUsers,
-         supervised_user::kForceSupervisedUserReauthenticationForYouTube,
-         supervised_user::kAllowSupervisedUserReauthenticationForSubframes},
-        /*disabled_features=*/{});
+    std::vector<base::test::FeatureRef> enabled_features = {
+        supervised_user::kForceSupervisedUserReauthenticationForBlockedSites,
+        supervised_user::kCloseSignTabsFromReauthenticationInterstitial,
+        supervised_user::kUncredentialedFilteringFallbackForSupervisedUsers,
+        supervised_user::kForceSupervisedUserReauthenticationForYouTube,
+        supervised_user::kAllowSupervisedUserReauthenticationForSubframes};
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (GetParam() == ThrottleTestParam::FeatureStatus::kEnabled) {
+      enabled_features.push_back(
+          supervised_user::kClassifyUrlOnProcessResponseEvent);
+    } else {
+      disabled_features.push_back(
+          supervised_user::kClassifyUrlOnProcessResponseEvent);
+    }
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
  protected:
@@ -208,8 +251,17 @@ class SupervisedUserPendingStateNavigationTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    SupervisedUserPendingStateNavigationTest,
+    ThrottleTestParam::Values(),
+    [](const testing::TestParamInfo<ThrottleTestParam::FeatureStatus>& info) {
+      return base::StrCat(
+          {"WithThrottle", ThrottleTestParam::ToString(info.param)});
+    });
+
 // Tests the blocked site main frame re-authentication interstitial.
-IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
+IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
                        DISABLED_TestBlockedSiteMainFrameReauthInterstitial) {
   kids_management_api_mock().RestrictSubsequentClassifyUrl();
   supervision_mixin_.SetPendingStateForPrimaryAccount();
@@ -242,15 +294,16 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
 #define MAYBE_TestReauthInterstitialClosesSignInTabsAndReloads \
   TestReauthInterstitialClosesSignInTabsAndReloads
 #endif
-IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
+IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
                        MAYBE_TestReauthInterstitialClosesSignInTabsAndReloads) {
   base::HistogramTester histogram_tester;
 
   kids_management_api_mock().RestrictSubsequentClassifyUrl();
   supervision_mixin_.SetPendingStateForPrimaryAccount();
   // Navigate to the requested URL and wait for the interstitial.
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com/")));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL("/supervised_user/simple.html")));
   ASSERT_TRUE(WaitForRenderFrameReady(contents()->GetPrimaryMainFrame()));
 
   // Wait for the re-authentication interstitial. It should be the only tab.
@@ -310,7 +363,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
   // is shown.
 }
 
-IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
+IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
                        TestManualBlockedSiteMainFrameReauthInterstitial) {
   supervision_mixin_.SetPendingStateForPrimaryAccount();
 
@@ -326,7 +379,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
 }
 
 // Tests the YouTube main frame re-authentication interstitial.
-IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
+IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
                        TestYouTubeMainFrameReauthInterstitial) {
   supervision_mixin_.SetPendingStateForPrimaryAccount();
   kids_management_api_mock().AllowSubsequentClassifyUrl();
@@ -366,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
 }
 
 // Tests the blocked site subframe re-authentication interstitial.
-IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
+IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
                        TestBlockedSiteSubFrameReauthInterstitial) {
   supervision_mixin_.SetPendingStateForPrimaryAccount();
 
@@ -402,7 +455,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
 }
 
 // Tests the YouTube subframe re-authentication interstitial.
-IN_PROC_BROWSER_TEST_F(SupervisedUserPendingStateNavigationTest,
+IN_PROC_BROWSER_TEST_P(SupervisedUserPendingStateNavigationTest,
                        TestYouTubeSubFrameReauthInterstitial) {
   supervision_mixin_.SetPendingStateForPrimaryAccount();
   kids_management_api_mock().AllowSubsequentClassifyUrl();

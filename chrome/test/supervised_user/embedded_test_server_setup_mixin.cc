@@ -67,6 +67,7 @@ void EmbeddedTestServerSetupMixin::SetUpCommandLine(
 }
 
 void EmbeddedTestServerSetupMixin::SetUpOnMainThread() {
+  embedded_test_server_->ServeFilesFromSourceDirectory("chrome/test/data");
   embedded_test_server_->StartAcceptingConnections();
 }
 
