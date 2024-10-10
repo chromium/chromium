@@ -58,10 +58,9 @@ enum class AppInitStage {
   // initialized when the scene transitions to the foreground.
   kNormalUI,
 
-  // TODO(crbug.com/40760618): Decouple FRE from Browser views to be able to go
-  // through this stage before kNormalUI.
-  // The app is considering presenting the FRE UI. Will remain in that state
-  // when presenting the FRE.
+  // TODO(crbug.com/333863468): code should no longer check this enum value,
+  // instead it should use ProfileInitStage::kFirstRun. The enum will be
+  // removed once the AppInitStage and ProfileInitStage are fully decoupled.
   kFirstRun,
 
   // TODO(crbug.com/333863468): code should no longer check this enum value,
