@@ -9,6 +9,8 @@ import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutU
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.REORDER_OVERLAP_SWITCH_PERCENTAGE;
 
 import android.animation.Animator;
+import android.animation.Animator.AnimatorListener;
+import android.animation.AnimatorListenerAdapter;
 
 import androidx.annotation.Nullable;
 
@@ -19,6 +21,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.ui.base.LocalizationUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** Delegate to manage the reordering logic for the tab strip. */
@@ -33,11 +36,15 @@ public class ReorderDelegate {
     // Tab Strip State.
     ScrollDelegate mScrollDelegate;
 
-    // Internal state.
+    // Internal State.
     private boolean mInitialized;
 
-    // Reorder state
+    // Reorder State
     boolean mInReorderMode;
+
+    /** Indicates a group title sliding due to a tab being dragged over it during reorder. */
+    boolean mGroupTitleSliding;
+
     StripLayoutTab mInteractingTab;
 
     boolean getInReorderMode() {
@@ -54,6 +61,11 @@ public class ReorderDelegate {
 
     void setInteractingTab(StripLayoutTab interactingTab) {
         mInteractingTab = interactingTab;
+    }
+
+    boolean getGroupTitleSliding() {
+        // TODO(crbug.com/372546700): Remove once we animate using OFFSET_X instead.
+        return mGroupTitleSliding;
     }
 
     /**
@@ -157,6 +169,64 @@ public class ReorderDelegate {
     }
 
     /**
+     * This method animates a tab being merged to or removed from a tab group.
+     *
+     * @param animationHost The {@link AnimationHost} to handle animations.
+     * @param stripViews The list of {@link StripLayoutView} that are being reordered.
+     * @param stripTabs The list of {@link StripLayoutTab} that are being reordered.
+     * @param targetGroupTitle The interacting tab's current group title.
+     * @param interactingGroupTitle The title of the tab group the tab is dragging past, which
+     *     occurs when a tab is being dragged to merge into or move out of the tab group through
+     *     group title.
+     * @param curIndex The index of the interacting tab.
+     * @param effectiveTabWidth The width of a tab, accounting for overlap.
+     * @param isMovingOutOfGroup Whether the action is merging/removing a tab to/from a group.
+     * @param towardEnd True if the interacting tab is being dragged toward the end of the strip.
+     */
+    void animateGroupIndicatorForTabReorder(
+            AnimationHost animationHost,
+            StripLayoutView[] stripViews,
+            StripLayoutTab[] stripTabs,
+            StripLayoutGroupTitle targetGroupTitle,
+            StripLayoutGroupTitle interactingGroupTitle,
+            int curIndex,
+            float effectiveTabWidth,
+            boolean isMovingOutOfGroup,
+            boolean towardEnd) {
+        List<Animator> animators = new ArrayList();
+
+        // Add the group title swapping animation if the tab is merging into or moving out of tab
+        // group through group title.
+        boolean throughGroupTitle = interactingGroupTitle != null;
+        AnimatorListener groupTitleAnimListener = null;
+        if (throughGroupTitle) {
+            animators.add(
+                    getReorderStripViewAnimator(
+                            animationHost,
+                            stripViews,
+                            stripTabs,
+                            curIndex,
+                            effectiveTabWidth,
+                            towardEnd));
+            groupTitleAnimListener = getGroupTitleSlidingAnimatorListener();
+        }
+
+        // Add bottom indicator animation.
+        // TODO(crbug.com/372546700): Disable animations in tests using CompositorAnimationHandler.
+        animators.add(
+                StripLayoutUtils.getBottomIndicatorAnimatorForMergeOrMoveOutOfGroup(
+                        animationHost.getAnimationHandler(),
+                        targetGroupTitle,
+                        StripLayoutUtils.getNumOfTabsInGroup(
+                                mTabGroupModelFilter, targetGroupTitle),
+                        effectiveTabWidth,
+                        isMovingOutOfGroup,
+                        throughGroupTitle));
+
+        animationHost.startAnimations(animators, groupTitleAnimListener);
+    }
+
+    /**
      * This method reorders the StripLayoutView when tab drag is interacting with group title.
      *
      * @param animationHost The {@link AnimationHost} to handle animations.
@@ -165,17 +235,15 @@ public class ReorderDelegate {
      * @param oldIndex The starting index of the reorder.
      * @param effectiveTabWidth The width of a tab, accounting for overlap.
      * @param towardEnd True if the interacting tab is being dragged toward the end of the strip.
-     * @param animate Whether to animate the view swapping.
      * @return The animator for the reorder, if any. Null otherwise.
      */
-    Animator getReorderStripViewAnimator(
+    private Animator getReorderStripViewAnimator(
             AnimationHost animationHost,
             StripLayoutView[] stripViews,
             StripLayoutTab[] stripTabs,
             int oldIndex,
             float effectiveTabWidth,
-            boolean towardEnd,
-            boolean animate) {
+            boolean towardEnd) {
         // TODO(crbug.com/372546700): Pass in indices, instead of the view/tab arrays.
         int oldIndexInStripView =
                 StripLayoutUtils.findStripViewIndexForStripTab(stripViews, stripTabs, oldIndex);
@@ -202,13 +270,14 @@ public class ReorderDelegate {
 
         // 2. Check if it's the view we are dragging, but we have an old source index.  Ignore in
         // this case because we probably just already moved it.
+        // TODO:(crbug.com/372546700): Dedup this code; We have very similar checks in #reorderTab.
         if (mInReorderMode && curIndexInStripView != oldIndexInStripView) {
             return null;
         }
 
         CompositorAnimator animator = null;
         // 3. Animate if necessary.
-        if (animate && mAnimationsDisabledForTesting) {
+        if (!mAnimationsDisabledForTesting) {
             // TODO(crbug.com/372546700): Fold into #reorderTab. i.e. compute initial positions for
             //  all views after reordering, then animate using offsets to smoothly transition.
             final float animationLength =
@@ -235,6 +304,20 @@ public class ReorderDelegate {
         }
         StripLayoutUtils.moveElement(stripViews, curIndexInStripView, newIndexInStripView);
         return animator;
+    }
+
+    private AnimatorListener getGroupTitleSlidingAnimatorListener() {
+        return new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                mGroupTitleSliding = true;
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mGroupTitleSliding = false;
+            }
+        };
     }
 
     /** Disables animations for testing purposes. */

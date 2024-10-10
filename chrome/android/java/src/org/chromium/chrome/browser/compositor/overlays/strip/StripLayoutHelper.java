@@ -428,7 +428,6 @@ public class StripLayoutHelper
     private boolean mNewTabButtonAnimRunning;
     private boolean mTabGroupMarginAnimRunning;
     private boolean mTabResizeAnimRunning;
-    private boolean mGroupTitleSliding;
 
     // TabModel info available before the tab state is actually initialized. Determined from frozen
     // tab metadata.
@@ -3359,7 +3358,10 @@ public class StripLayoutHelper
 
         // 3. Calculate the tab stacking and ensure that tabs are sized correctly.
         mStripStacker.setViewOffsets(
-                mStripViews, mMultiStepTabCloseAnimRunning, mGroupTitleSliding, mCachedTabWidth);
+                mStripViews,
+                mMultiStepTabCloseAnimRunning,
+                mReorderDelegate.getGroupTitleSliding(),
+                mCachedTabWidth);
 
         // 4. Calculate which tabs are visible.
         float stripWidth = getVisibleRightBound() - getVisibleLeftBound();
@@ -3427,7 +3429,7 @@ public class StripLayoutHelper
                     drawXOffset = mCachedTabWidth - view.getWidth() - drawXOffset;
                 }
 
-                if (!mGroupTitleSliding) {
+                if (!mReorderDelegate.getGroupTitleSliding()) {
                     view.setIdealX(tabPosition + drawXOffset);
                 }
                 delta = view.getWidth() - mGroupTitleOverlapWidth;
@@ -3993,8 +3995,16 @@ public class StripLayoutHelper
             StripLayoutGroupTitle targetGroupTitle = findGroupTitle(destinationTab.getRootId());
             // Run indicator animations.
             if (targetGroupTitle != null) {
-                runIndicatorAnimationForMergeOrMoveOutOfGroup(
-                        targetGroupTitle, interactingGroupTitle, curIndex, true, towardEnd);
+                mReorderDelegate.animateGroupIndicatorForTabReorder(
+                        /* animationHost= */ this,
+                        mStripViews,
+                        mStripTabs,
+                        targetGroupTitle,
+                        interactingGroupTitle,
+                        curIndex,
+                        /* effectiveTabWidth= */ mCachedTabWidth - mTabOverlapWidth,
+                        /* isMovingOutOfGroup= */ true,
+                        towardEnd);
             }
 
             if (isLastTabInGroup(tabId)
@@ -4060,8 +4070,16 @@ public class StripLayoutHelper
 
         // Run indicator animations.
         if (targetGroupTitle != null) {
-            runIndicatorAnimationForMergeOrMoveOutOfGroup(
-                    targetGroupTitle, interactingGroupTitle, curIndex, false, towardEnd);
+            mReorderDelegate.animateGroupIndicatorForTabReorder(
+                    /* animationHost= */ this,
+                    mStripViews,
+                    mStripTabs,
+                    targetGroupTitle,
+                    interactingGroupTitle,
+                    curIndex,
+                    /* effectiveTabWidth= */ mCachedTabWidth - mTabOverlapWidth,
+                    /* isMovingOutOfGroup= */ false,
+                    towardEnd);
         }
         mTabGroupModelFilter.mergeTabsToGroup(
                 mReorderDelegate.getInteractingTab().getTabId(), destTab.getTabId(), true);
@@ -4069,59 +4087,6 @@ public class StripLayoutHelper
         RecordUserAction.record("MobileToolbarReorderTab.TabAddedToGroup");
 
         return curIndex;
-    }
-
-    private AnimatorListener getGroupTitleSlidingAnimatorListener() {
-        return new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationStart(Animator animation) {
-                mGroupTitleSliding = true;
-            }
-
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                mGroupTitleSliding = false;
-            }
-        };
-    }
-
-    private void runIndicatorAnimationForMergeOrMoveOutOfGroup(
-            StripLayoutGroupTitle targetGroupTitle,
-            StripLayoutGroupTitle interactingGroupTitle,
-            int curIndex,
-            boolean isMovingOutOfGroup,
-            boolean towardEnd) {
-        List<Animator> animators = new ArrayList();
-
-        // Add the group title swapping animation if the tab is merging into or moving out of tab
-        // group through group title.
-        boolean throughGroupTitle = interactingGroupTitle != null;
-        AnimatorListener groupTitleAnimListener = null;
-        if (throughGroupTitle) {
-            animators.add(
-                    mReorderDelegate.getReorderStripViewAnimator(
-                            /* animationHost= */ this,
-                            mStripViews,
-                            mStripTabs,
-                            curIndex,
-                            /* effectiveTabWidth= */ mCachedTabWidth - mTabOverlapWidth,
-                            towardEnd,
-                            /* animate= */ true));
-            groupTitleAnimListener = getGroupTitleSlidingAnimatorListener();
-        }
-
-        // Add bottom indicator animation.
-        animators.add(
-                StripLayoutUtils.getBottomIndicatorAnimatorForMergeOrMoveOutOfGroup(
-                        mUpdateHost.getAnimationHandler(),
-                        targetGroupTitle,
-                        StripLayoutUtils.getNumOfTabsInGroup(
-                                mTabGroupModelFilter, targetGroupTitle),
-                        /* effectiveTabWidth= */ mCachedTabWidth - mTabOverlapWidth,
-                        isMovingOutOfGroup,
-                        throughGroupTitle));
-
-        startAnimations(animators, groupTitleAnimListener);
     }
 
     /**
@@ -4874,7 +4839,7 @@ public class StripLayoutHelper
      * @return Whether group title sliding animation is running.
      */
     boolean getGroupTitleSlidingForTesting() {
-        return mGroupTitleSliding;
+        return mReorderDelegate.getGroupTitleSliding();
     }
 
     void setRunningAnimatorForTesting(Animator animator) {
