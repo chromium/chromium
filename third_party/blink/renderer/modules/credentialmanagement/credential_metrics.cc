@@ -59,7 +59,7 @@ void CredentialMetrics::RecordWebAuthnConditionalUiCall() {
   ukm::builders::WebAuthn_ConditionalUiGetCall(
       document->domWindow()->UkmSourceID())
       .SetTimeSinceDomContentLoaded(delta.InMilliseconds())
-      .Record(ukm::UkmRecorder::Get());
+      .Record(document->UkmRecorder());
 }
 
 }  // namespace blink
