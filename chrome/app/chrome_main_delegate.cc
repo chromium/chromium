@@ -131,7 +131,6 @@
 #include "base/apple/foundation_util.h"
 #include "chrome/app/chrome_main_mac.h"
 #include "chrome/browser/chrome_browser_application_mac.h"
-#include "chrome/browser/headless/headless_mode_util.h"
 #include "chrome/browser/mac/relauncher.h"
 #include "chrome/browser/shell_integration.h"
 #include "components/crash/core/common/objc_zombie.h"
@@ -1688,15 +1687,15 @@ void ChromeMainDelegate::SandboxInitialized(const std::string& process_type) {
   SuppressWindowsErrorDialogs();
 #endif
 
-  // If this is a browser process, initialize the persistent histograms system.
-  // This is done as soon as possible to ensure metrics collection coverage.
-  // For Fuchsia, persistent histogram initialization is done after field trial
-  // initialization (so that it can be controlled from the serverside and
-  // experimented with).
-  // Note: this is done before field trial initialization, so the values of
+  // If this is a browser process, initialize the persistent histograms system
+  // unless headless mode is in effect. This is done as soon as possible to
+  // ensure metrics collection coverage. For Fuchsia, persistent histogram
+  // initialization is done after field trial initialization (so that it can be
+  // controlled from the serverside and experimented with). Note: this is done
+  // before field trial initialization, so the values of
   // `kPersistentHistogramsFeature` and `kPersistentHistogramsStorage` will
   // not be used. Persist histograms to a memory-mapped file.
-  if (process_type.empty()) {
+  if (process_type.empty() && !headless::IsHeadlessMode()) {
     base::FilePath metrics_dir;
     if (base::PathService::Get(chrome::DIR_USER_DATA, &metrics_dir)) {
       InstantiatePersistentHistograms(
