@@ -1279,9 +1279,11 @@ public class TabGridDialogMediator
     }
 
     private void updateOnMatch(PersistentMessage message) {
-        if (message.attribution.localTabGroupId == null) return;
+        if (message.attribution.tabGroupMetadata == null
+                || message.attribution.tabGroupMetadata.localTabGroupId == null) return;
         @Nullable Token token = getCurrentTabGroupId();
-        if (Objects.equals(token, message.attribution.localTabGroupId.tabGroupId)) {
+        if (Objects.equals(
+                token, message.attribution.tabGroupMetadata.localTabGroupId.tabGroupId)) {
             showOrUpdateCollaborationActivityMessageCard();
         }
     }

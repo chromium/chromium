@@ -44,6 +44,7 @@ import org.chromium.components.tab_group_sync.messaging.InstantMessage;
 import org.chromium.components.tab_group_sync.messaging.InstantNotificationLevel;
 import org.chromium.components.tab_group_sync.messaging.MessageAttribution;
 import org.chromium.components.tab_group_sync.messaging.MessagingBackendService;
+import org.chromium.components.tab_group_sync.messaging.TabGroupMessageMetadata;
 import org.chromium.components.tab_group_sync.messaging.UserAction;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -84,7 +85,8 @@ public class InstantMessageDelegateImplUnitTest {
 
     private InstantMessage newInstantMessage(@UserAction int action) {
         MessageAttribution attribution = new MessageAttribution();
-        attribution.localTabGroupId = new LocalTabGroupId(TAB_GROUP_ID);
+        attribution.tabGroupMetadata = new TabGroupMessageMetadata();
+        attribution.tabGroupMetadata.localTabGroupId = new LocalTabGroupId(TAB_GROUP_ID);
         attribution.triggeringUser = SharedGroupTestHelper.GROUP_MEMBER1;
         InstantMessage instantMessage = new InstantMessage();
         instantMessage.attribution = attribution;

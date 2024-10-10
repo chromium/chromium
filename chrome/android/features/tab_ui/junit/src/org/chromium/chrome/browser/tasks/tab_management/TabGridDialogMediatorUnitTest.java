@@ -110,6 +110,8 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_group_sync.messaging.MessageAttribution;
 import org.chromium.components.tab_group_sync.messaging.MessagingBackendService;
 import org.chromium.components.tab_group_sync.messaging.PersistentMessage;
+import org.chromium.components.tab_group_sync.messaging.TabGroupMessageMetadata;
+import org.chromium.components.tab_group_sync.messaging.TabMessageMetadata;
 import org.chromium.components.tab_group_sync.messaging.UserAction;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -1775,8 +1777,10 @@ public class TabGridDialogMediatorUnitTest {
 
     private PersistentMessage makePersistentMessage(@UserAction int action) {
         MessageAttribution attribution = new MessageAttribution();
-        attribution.localTabId = TAB1_ID;
-        attribution.localTabGroupId = new LocalTabGroupId(TAB_GROUP_ID);
+        attribution.tabMetadata = new TabMessageMetadata();
+        attribution.tabMetadata.localTabId = TAB1_ID;
+        attribution.tabGroupMetadata = new TabGroupMessageMetadata();
+        attribution.tabGroupMetadata.localTabGroupId = new LocalTabGroupId(TAB_GROUP_ID);
         PersistentMessage message = new PersistentMessage();
         message.attribution = attribution;
         message.action = action;

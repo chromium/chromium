@@ -13,6 +13,7 @@
 #include "base/uuid.h"
 #include "components/data_sharing/public/group_data.h"
 #include "components/saved_tab_groups/public/types.h"
+#include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 
 namespace tab_groups::messaging {
@@ -78,6 +79,50 @@ enum class PersistentNotificationType {
   DIRTY_TAB_GROUP,
 };
 
+// Metadata about the tab group a message is attributed to.
+struct TabGroupMessageMetadata {
+ public:
+  TabGroupMessageMetadata();
+  TabGroupMessageMetadata(const TabGroupMessageMetadata& other);
+  ~TabGroupMessageMetadata();
+
+  // The tab group this message is associated with (if any).
+  std::optional<LocalTabGroupID> local_tab_group_id;
+
+  // The tab group sync GUID this message is associated with (if any).
+  std::optional<base::Uuid> sync_tab_group_id;
+
+  // In the case where the tab group is no longer available, this contains the
+  // last known title.
+  std::optional<std::string> last_known_title;
+
+  // In the case where the tab group is no longer available, this contains the
+  // last known color.
+  std::optional<tab_groups::TabGroupColorId> last_known_color;
+};
+
+// Metadata about the tab a message is attributed to.
+struct TabMessageMetadata {
+ public:
+  TabMessageMetadata();
+  TabMessageMetadata(const TabMessageMetadata& other);
+  ~TabMessageMetadata();
+
+  // The tab this message is associated with (if any).
+  std::optional<LocalTabID> local_tab_id;
+
+  // The sync GUID of the tab this message is associated with (if any).
+  std::optional<base::Uuid> sync_tab_id;
+
+  // In the case where the tab is no longer available, this contains the last
+  // known URL (or empty string if unknown).
+  std::optional<std::string> last_known_url;
+
+  // In the case where the tab is no longer available, this contains the last
+  // known title (or empty string if unknown).
+  std::optional<std::string> last_known_title;
+};
+
 // A list of attribution data for a message, which can be used to associate it
 // with particular tabs, tab groups, or people.
 struct MessageAttribution {
@@ -92,17 +137,11 @@ struct MessageAttribution {
   // The collaboration this message is associated with (if any).
   data_sharing::GroupId collaboration_id;
 
-  // The tab group this message is associated with (if any).
-  std::optional<LocalTabGroupID> local_tab_group_id;
+  // Metadata about the relevant tab group.
+  std::optional<TabGroupMessageMetadata> tab_group_metadata;
 
-  // The tab group sync GUID this message is associated with (if any).
-  std::optional<base::Uuid> sync_tab_group_id;
-
-  // The tab this message is associated with (if any).
-  std::optional<LocalTabID> local_tab_id;
-
-  // The sync GUID of the tab this message is associated with (if any).
-  std::optional<base::Uuid> sync_tab_id;
+  // Metadata about the relevant tab.
+  std::optional<TabMessageMetadata> tab_metadata;
 
   // The user the related action applies to (if any).
   std::optional<data_sharing::GroupMember> affected_user;

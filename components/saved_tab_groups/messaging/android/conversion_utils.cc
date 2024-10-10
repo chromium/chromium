@@ -23,6 +23,14 @@ using base::android::ScopedJavaLocalRef;
 
 namespace tab_groups::messaging::android {
 namespace {
+ScopedJavaLocalRef<jstring> JavaStringOrNullFromOptionalString(
+    JNIEnv* env,
+    std::optional<std::string> str) {
+  if (!str.has_value()) {
+    return ScopedJavaLocalRef<jstring>();
+  }
+  return ConvertUTF8ToJavaString(env, (*str));
+}
 
 ScopedJavaLocalRef<jstring> OptionalUuidToLowercaseJavaString(
     JNIEnv* env,
@@ -33,29 +41,62 @@ ScopedJavaLocalRef<jstring> OptionalUuidToLowercaseJavaString(
   return ConvertUTF8ToJavaString(env, (*uuid).AsLowercaseString());
 }
 
+// Helper method to provide a consistent way to create a MessageAttribution
+// across multiple entry points.
 ScopedJavaLocalRef<jobject> MessageAttributionToJava(
     JNIEnv* env,
     const MessageAttribution& attribution) {
-  ScopedJavaLocalRef<jobject> jaffected_user = nullptr;
+  ScopedJavaLocalRef<jstring> j_collaboration_id =
+      ConvertUTF8ToJavaString(env, attribution.collaboration_id.value());
+  ScopedJavaLocalRef<jobject> j_local_tab_group_id = nullptr;
+  ScopedJavaLocalRef<jstring> j_sync_tab_group_id = nullptr;
+  ScopedJavaLocalRef<jstring> j_last_known_tab_group_title = nullptr;
+  jint j_last_known_tab_group_color = -1;
+  if (attribution.tab_group_metadata.has_value()) {
+    j_local_tab_group_id = TabGroupSyncConversionsBridge::ToJavaTabGroupId(
+        env, attribution.tab_group_metadata->local_tab_group_id);
+    j_sync_tab_group_id = OptionalUuidToLowercaseJavaString(
+        env, attribution.tab_group_metadata->sync_tab_group_id);
+    j_last_known_tab_group_title = JavaStringOrNullFromOptionalString(
+        env, attribution.tab_group_metadata->last_known_title);
+    if (attribution.tab_group_metadata->last_known_color.has_value()) {
+      j_last_known_tab_group_color =
+          static_cast<jint>(*attribution.tab_group_metadata->last_known_color);
+    }
+  }
+
+  jint j_local_tab_id = -1;
+  ScopedJavaLocalRef<jstring> j_sync_tab_id = nullptr;
+  ScopedJavaLocalRef<jstring> j_last_known_tab_url = nullptr;
+  ScopedJavaLocalRef<jstring> j_last_known_tab_title = nullptr;
+  if (attribution.tab_metadata.has_value()) {
+    j_local_tab_id = ToJavaTabId((*attribution.tab_metadata).local_tab_id);
+    j_sync_tab_id = OptionalUuidToLowercaseJavaString(
+        env, attribution.tab_metadata->sync_tab_id);
+
+    j_last_known_tab_url = JavaStringOrNullFromOptionalString(
+        env, attribution.tab_metadata->last_known_url);
+    j_last_known_tab_title = JavaStringOrNullFromOptionalString(
+        env, attribution.tab_metadata->last_known_title);
+  }
+
+  ScopedJavaLocalRef<jobject> j_affected_user = nullptr;
   if (attribution.affected_user.has_value()) {
-    jaffected_user = data_sharing::conversion::CreateJavaGroupMember(
+    j_affected_user = data_sharing::conversion::CreateJavaGroupMember(
         env, attribution.affected_user.value());
   }
 
-  ScopedJavaLocalRef<jobject> jtriggering_user = nullptr;
+  ScopedJavaLocalRef<jobject> j_triggering_user = nullptr;
   if (attribution.triggering_user.has_value()) {
-    jtriggering_user = data_sharing::conversion::CreateJavaGroupMember(
+    j_triggering_user = data_sharing::conversion::CreateJavaGroupMember(
         env, attribution.triggering_user.value());
   }
 
   return Java_ConversionUtils_createAttributionFrom(
-      env, ConvertUTF8ToJavaString(env, attribution.collaboration_id.value()),
-      TabGroupSyncConversionsBridge::ToJavaTabGroupId(
-          env, attribution.local_tab_group_id),
-      OptionalUuidToLowercaseJavaString(env, attribution.sync_tab_group_id),
-      ToJavaTabId(attribution.local_tab_id),
-      OptionalUuidToLowercaseJavaString(env, attribution.sync_tab_id),
-      jaffected_user, jtriggering_user);
+      env, j_collaboration_id, j_local_tab_group_id, j_sync_tab_group_id,
+      j_last_known_tab_group_title, j_last_known_tab_group_color,
+      j_local_tab_id, j_sync_tab_id, j_last_known_tab_title,
+      j_last_known_tab_url, j_affected_user, j_triggering_user);
 }
 
 // Helper method to provide a consistent way to create a PersistentMessage

@@ -18,9 +18,13 @@ import org.chromium.components.tab_group_sync.messaging.InstantNotificationType;
 import org.chromium.components.tab_group_sync.messaging.MessageAttribution;
 import org.chromium.components.tab_group_sync.messaging.PersistentMessage;
 import org.chromium.components.tab_group_sync.messaging.PersistentNotificationType;
+import org.chromium.components.tab_group_sync.messaging.TabGroupMessageMetadata;
+import org.chromium.components.tab_group_sync.messaging.TabMessageMetadata;
 import org.chromium.components.tab_group_sync.messaging.UserAction;
+import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 /**
  * Helper class meant to be called by native. Used to create Java objects from C++ objects. Do not
@@ -33,16 +37,40 @@ class ConversionUtils {
             String collaborationId,
             @Nullable LocalTabGroupId localTabGroupId,
             @Nullable String syncTabGroupId,
+            @Nullable String lastKnownTabGroupTitle,
+            @TabGroupColorId int lastKnownTabGroupColor,
             int localTabId,
             @Nullable String syncTabId,
+            @Nullable String lastKnownTabTitle,
+            @Nullable String lastKnownTabUrl,
             @Nullable GroupMember affectedUser,
             GroupMember triggeringUser) {
         MessageAttribution attribution = new MessageAttribution();
         attribution.collaborationId = collaborationId;
-        attribution.localTabGroupId = localTabGroupId;
-        attribution.syncTabGroupId = syncTabGroupId;
-        attribution.localTabId = localTabId;
-        attribution.syncTabId = syncTabId;
+        if (localTabGroupId != null
+                || syncTabGroupId != null
+                || lastKnownTabGroupTitle != null
+                || lastKnownTabGroupColor != -1) {
+            attribution.tabGroupMetadata = new TabGroupMessageMetadata();
+            attribution.tabGroupMetadata.localTabGroupId = localTabGroupId;
+            attribution.tabGroupMetadata.syncTabGroupId = syncTabGroupId;
+            attribution.tabGroupMetadata.lastKnownTitle = lastKnownTabGroupTitle;
+            if (lastKnownTabGroupColor == -1) {
+                attribution.tabGroupMetadata.lastKnownColor = Optional.of(lastKnownTabGroupColor);
+            } else {
+                attribution.tabGroupMetadata.lastKnownColor = Optional.empty();
+            }
+        }
+        if (localTabId != -1
+                || syncTabId != null
+                || lastKnownTabTitle != null
+                || lastKnownTabUrl != null) {
+            attribution.tabMetadata = new TabMessageMetadata();
+            attribution.tabMetadata.localTabId = localTabId;
+            attribution.tabMetadata.syncTabId = syncTabId;
+            attribution.tabMetadata.lastKnownTitle = lastKnownTabTitle;
+            attribution.tabMetadata.lastKnownUrl = lastKnownTabUrl;
+        }
         attribution.affectedUser = affectedUser;
         attribution.triggeringUser = triggeringUser;
         return attribution;

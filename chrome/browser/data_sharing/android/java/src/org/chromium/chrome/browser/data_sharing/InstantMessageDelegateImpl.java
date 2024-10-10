@@ -118,13 +118,14 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
         }
 
         if (messageAttribution == null
-                || messageAttribution.localTabGroupId == null
-                || messageAttribution.localTabGroupId.tabGroupId == null) {
+                || messageAttribution.tabGroupMetadata == null
+                || messageAttribution.tabGroupMetadata.localTabGroupId == null
+                || messageAttribution.tabGroupMetadata.localTabGroupId.tabGroupId == null) {
             // Message doesn't link to a window, show it arbitrarily.
             return mAttachList.get(0);
         }
 
-        @NonNull Token tabGroupId = messageAttribution.localTabGroupId.tabGroupId;
+        @NonNull Token tabGroupId = messageAttribution.tabGroupMetadata.localTabGroupId.tabGroupId;
         for (Pair<WindowAndroid, TabGroupModelFilter> attach : mAttachList) {
             TabGroupModelFilter tabGroupModelFilter = attach.second;
             int rootId = tabGroupModelFilter.getRootIdFromStableId(tabGroupId);

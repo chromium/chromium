@@ -43,6 +43,8 @@ android_library("java") {
     "java/src/org/chromium/components/tab_group_sync/messaging/MessagingBackendService.java",
     "java/src/org/chromium/components/tab_group_sync/messaging/MessagingBackendServiceBridge.java",
     "java/src/org/chromium/components/tab_group_sync/messaging/PersistentMessage.java",
+    "java/src/org/chromium/components/tab_group_sync/messaging/TabGroupMessageMetadata.java",
+    "java/src/org/chromium/components/tab_group_sync/messaging/TabMessageMetadata.java",
     "java/src/org/chromium/components/tab_group_sync/messaging/bridge/ConversionUtils.java",
   ]
 

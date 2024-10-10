@@ -11,4 +11,14 @@ MessageAttribution::MessageAttribution(const MessageAttribution& other) =
     default;
 MessageAttribution::~MessageAttribution() = default;
 
+TabGroupMessageMetadata::TabGroupMessageMetadata() = default;
+TabGroupMessageMetadata::TabGroupMessageMetadata(
+    const TabGroupMessageMetadata& other) = default;
+TabGroupMessageMetadata::~TabGroupMessageMetadata() = default;
+
+TabMessageMetadata::TabMessageMetadata() = default;
+TabMessageMetadata::TabMessageMetadata(const TabMessageMetadata& other) =
+    default;
+TabMessageMetadata::~TabMessageMetadata() = default;
+
 }  // namespace tab_groups::messaging
