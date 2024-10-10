@@ -140,3 +140,5 @@ specific_include_rules = {
     "+tools/v8_context_snapshot/buildflags.h",
   ],
 }
+
+new_usages_require_review = True
