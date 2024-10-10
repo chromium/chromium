@@ -5,15 +5,15 @@
 import {FileSuggestionHandlerRemote} from 'chrome://new-tab-page/file_suggestion.mojom-webui.js';
 import type {DisableModuleEvent, DismissModuleEvent, DriveModuleV2Element} from 'chrome://new-tab-page/lazy_load.js';
 import {driveModuleV2Descriptor, FileProxy} from 'chrome://new-tab-page/lazy_load.js';
-import type {CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {installMock} from '../../../test_support.js';
 
-suite('FileSuggestionV2Module', () => {
+suite('DriveModuleV2', () => {
   let handler: TestMock<FileSuggestionHandlerRemote>;
 
   setup(() => {
@@ -21,115 +21,68 @@ suite('FileSuggestionV2Module', () => {
     handler = installMock(FileSuggestionHandlerRemote, FileProxy.setHandler);
   });
 
-  test('shows all retrieved files on render', async () => {
-    const data = {
-      files: [
-        {
-          justificationText: 'Edited last week',
-          title: 'Foo',
-          id: '123',
-          mimeType: 'application/vnd.google-apps.spreadsheet',
-          itemUrl: {url: 'https://foo.com'},
-        },
-        {
-          justificationText: 'Edited yesterday',
-          title: 'Bar',
-          id: '132',
-          mimeType: 'application/vnd.google-apps.document',
-          itemUrl: {url: 'https://bar.com'},
-        },
-        {
-          justificationText: 'Created today',
-          title: 'Baz',
-          id: '213',
-          mimeType: 'application/vnd.google-apps.presentation',
-          itemUrl: {url: 'https://baz.com'},
-        },
-        {
-          justificationText: 'Created yesterday',
-          title: 'Qux',
-          id: '231',
-          mimeType: 'application/vnd.google-apps.presentation',
-          itemUrl: {url: 'https://qux.com'},
-        },
-        {
-          justificationText: 'Edited last week',
-          title: 'FooBar',
-          id: '312',
-          mimeType: 'application/vnd.google-apps.spreadsheet',
-          itemUrl: {url: 'https://foo.com'},
-        },
-        {
-          justificationText: 'Edited yesterday',
-          title: 'BazQux',
-          id: '321',
-          mimeType: 'application/vnd.google-apps.document',
-          itemUrl: {url: 'https://bar.com'},
-        },
-      ],
-    };
-    handler.setResultFor('getFiles', Promise.resolve(data));
+  test(
+      'setting files via handler populates `ntp-file-suggestion`', async () => {
+        const data = {
+          files: [
+            {
+              justificationText: 'Edited last week',
+              title: 'Foo',
+              id: '123',
+              mimeType: 'application/vnd.google-apps.spreadsheet',
+              itemUrl: {url: 'https://foo.com'},
+            },
+            {
+              justificationText: 'Edited yesterday',
+              title: 'Bar',
+              id: '132',
+              mimeType: 'application/vnd.google-apps.document',
+              itemUrl: {url: 'https://bar.com'},
+            },
+            {
+              justificationText: 'Created today',
+              title: 'Baz',
+              id: '213',
+              mimeType: 'application/vnd.google-apps.presentation',
+              itemUrl: {url: 'https://baz.com'},
+            },
+            {
+              justificationText: 'Created yesterday',
+              title: 'Qux',
+              id: '231',
+              mimeType: 'application/vnd.google-apps.presentation',
+              itemUrl: {url: 'https://qux.com'},
+            },
+            {
+              justificationText: 'Edited last week',
+              title: 'FooBar',
+              id: '312',
+              mimeType: 'application/vnd.google-apps.spreadsheet',
+              itemUrl: {url: 'https://foo.com'},
+            },
+            {
+              justificationText: 'Edited yesterday',
+              title: 'BazQux',
+              id: '321',
+              mimeType: 'application/vnd.google-apps.document',
+              itemUrl: {url: 'https://bar.com'},
+            },
+          ],
+        };
+        handler.setResultFor('getFiles', Promise.resolve(data));
 
-    const module =
-        await driveModuleV2Descriptor.initialize(0) as DriveModuleV2Element;
-    assertTrue(!!module);
-    document.body.append(module);
-    await handler.whenCalled('getFiles');
-    await microtasksFinished();
-    const items = Array.from(module.shadowRoot!.querySelectorAll('.file'));
+        const module =
+            await driveModuleV2Descriptor.initialize(0) as DriveModuleV2Element;
+        assertTrue(!!module);
+        document.body.append(module);
+        await handler.whenCalled('getFiles');
+        await microtasksFinished();
+        const fileSuggestion = module.$.fileSuggestion;
+        const items =
+            Array.from(fileSuggestion.shadowRoot!.querySelectorAll('.file'));
 
-    assertTrue(isVisible(module.$.files));
-    assertEquals(6, items.length);
-  });
-
-  test('parses file data correctly', async () => {
-    const data = {
-      files: [
-        {
-          justificationText: 'Edited last week',
-          title: 'Foo',
-          id: '123',
-          mimeType: 'application/vnd.google-apps.spreadsheet',
-          itemUrl: {url: 'https://foo.com'},
-        },
-        {
-          justificationText: 'Edited yesterday',
-          title: 'Bar',
-          id: '132',
-          mimeType: 'application/vnd.google-apps.document',
-          itemUrl: {url: 'https://bar.com'},
-        },
-      ],
-    };
-    handler.setResultFor('getFiles', Promise.resolve(data));
-
-    const module =
-        await driveModuleV2Descriptor.initialize(0) as DriveModuleV2Element;
-    assertTrue(!!module);
-    document.body.append(module);
-    await handler.whenCalled('getFiles');
-    await microtasksFinished();
-    const items = Array.from(module.shadowRoot!.querySelectorAll('.file'));
-    const urls =
-        module.shadowRoot!.querySelectorAll<HTMLAnchorElement>('.file');
-
-    assertTrue(isVisible(module.$.files));
-    assertEquals(2, items.length);
-    assertEquals(
-        'Bar',
-        items[1]!.querySelector<HTMLElement>('.file-title')!.textContent);
-    assertEquals(
-        'Edited yesterday',
-        items[1]!.querySelector<HTMLElement>('.file-description')!.textContent);
-    assertEquals(
-        'https://drive-thirdparty.googleusercontent.com/32/type/application/vnd.google-apps.spreadsheet',
-        items[0]!.querySelector<CrAutoImgElement>('.file-icon')!.autoSrc);
-    assertEquals(
-        'https://drive-thirdparty.googleusercontent.com/32/type/application/vnd.google-apps.document',
-        items[1]!.querySelector<CrAutoImgElement>('.file-icon')!.autoSrc);
-    assertEquals('https://foo.com/', urls[0]!.href);
-    assertEquals('https://bar.com/', urls[1]!.href);
-  });
+        assertEquals(6, items.length);
+      });
 
   test('module does not render if there are no files', async () => {
     handler.setResultFor('getFiles', Promise.resolve({files: []}));
@@ -243,5 +196,39 @@ suite('FileSuggestionV2Module', () => {
 
     // Assert.
     assertEquals(1, handler.getCallCount('restoreModule'));
+  });
+
+  test('clicking file records correct metrics', async () => {
+    const metrics = fakeMetricsPrivate();
+
+    // Arrange.
+    const data = {
+      files: [
+        {
+          justificationText: 'Edited yesterday',
+          title: 'Abc',
+          id: '012',
+          mimeType: 'application/vnd.google-apps.presentation',
+          itemUrl: {url: 'https://abc.com'},
+        },
+      ],
+    };
+    handler.setResultFor('getFiles', Promise.resolve(data));
+    const driveModule =
+        await driveModuleV2Descriptor.initialize(0) as DriveModuleV2Element;
+    assertTrue(!!driveModule);
+    document.body.append(driveModule);
+    await microtasksFinished();
+
+    // Act.
+    const fileSuggestion = driveModule.$.fileSuggestion;
+    const file = $$<HTMLElement>(fileSuggestion, '.file');
+    assertTrue(!!file);
+    file.click();
+    await microtasksFinished();
+
+    // Assert.
+    assertEquals(1, metrics.count('NewTabPage.Drive.FileClick'));
+    assertEquals(1, metrics.count('NewTabPage.Drive.FileClick', 0));
   });
 });

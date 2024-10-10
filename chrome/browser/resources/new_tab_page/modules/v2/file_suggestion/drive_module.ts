@@ -4,6 +4,7 @@
 
 import '../../info_dialog.js';
 import '../../module_header.js';
+import './file_suggestion.js';
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -15,10 +16,14 @@ import type {MenuItem, ModuleHeaderElement} from '../module_header.js';
 
 import {getCss} from './drive_module.css.js';
 import {getHtml} from './drive_module.html.js';
+import type {FileSuggestionElement} from './file_suggestion.js';
+
+const DRIVE_ICON_BASE_URL: string =
+    'https://drive-thirdparty.googleusercontent.com/32/type/';
 
 export interface DriveModuleElement {
   $: {
-    files: HTMLElement,
+    fileSuggestion: FileSuggestionElement,
     moduleHeaderElementV2: ModuleHeaderElement,
   };
 }
@@ -26,8 +31,8 @@ export interface DriveModuleElement {
 const DriveModuleElementBase = I18nMixinLit(CrLitElement);
 
 /**
- * The File module, which serves as an inside look in to recent activity within
- * a user's Google Drive or Microsoft Sharepoint.
+ * The Drive module, which serves as an inside look to recent activity within a
+ * user's Google Drive.
  */
 export class DriveModuleElement extends DriveModuleElementBase {
   static get is() {
@@ -45,17 +50,14 @@ export class DriveModuleElement extends DriveModuleElementBase {
   static override get properties() {
     return {
       files: {type: Array},
+      imageSourceBaseUrl_: {type: String},
       showInfoDialog_: {type: Boolean},
     };
   }
 
   files: File[] = [];
+  protected imageSourceBaseUrl_: string = DRIVE_ICON_BASE_URL;
   protected showInfoDialog_: boolean = false;
-
-  protected getImageSrc_(file: File): string {
-    return 'https://drive-thirdparty.googleusercontent.com/32/type/' +
-        file.mimeType;
-  }
 
   protected getMenuItemGroups_(): MenuItem[][] {
     return [
@@ -110,14 +112,6 @@ export class DriveModuleElement extends DriveModuleElementBase {
         restoreCallback: () => FileProxy.getHandler().restoreModule(),
       },
     }));
-  }
-
-  protected onFileClick_(e: Event) {
-    const clickFileEvent = new Event('usage', {composed: true, bubbles: true});
-    this.dispatchEvent(clickFileEvent);
-    const currentTarget = e.currentTarget as HTMLElement;
-    const index = Number(currentTarget.dataset['index']);
-    chrome.metricsPrivate.recordSmallCount('NewTabPage.Drive.FileClick', index);
   }
 
   protected onInfoButtonClick_() {
