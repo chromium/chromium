@@ -155,7 +155,8 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
             @NonNull DragShadowBuilder dragShadowBuilder,
             @NonNull DropDataAndroid dropData) {
         ClipData clipdata = buildClipData(dropData);
-        if (clipdata == null) {
+        if (clipdata == null
+                && !UiAndroidFeatureMap.isEnabled(UiAndroidFeatureList.DRAG_DROP_EMPTY)) {
             return false;
         }
 
@@ -455,7 +456,8 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
         // Only record metrics when drop does not happen for ContentView.
         if (!mIsDropOnView) {
             assert mDragStartSystemElapsedTime > 0;
-            assert mDragTargetType != DragTargetType.INVALID;
+            assert mDragTargetType != DragTargetType.INVALID
+                    || UiAndroidFeatureMap.isEnabled(UiAndroidFeatureList.DRAG_DROP_EMPTY);
             long dragDuration = SystemClock.elapsedRealtime() - mDragStartSystemElapsedTime;
             recordDragDurationAndResult(dragDuration, dragResult);
             recordDragTargetType(mDragTargetType);

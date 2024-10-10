@@ -562,7 +562,9 @@ public class EventForwarder {
         }
 
         if (event.getAction() == DragEvent.ACTION_DRAG_STARTED) {
-            return mimeTypes != null && mimeTypes.length > 0 && mIsDragDropEnabled;
+            return mIsDragDropEnabled
+                    && ((mimeTypes != null && mimeTypes.length > 0)
+                            || UiAndroidFeatureMap.isEnabled(UiAndroidFeatureList.DRAG_DROP_EMPTY));
         }
 
         String content = "";
@@ -574,7 +576,7 @@ public class EventForwarder {
             try {
                 StringBuilder contentBuilder = new StringBuilder("");
                 ClipData clipData = event.getClipData();
-                final int itemCount = clipData.getItemCount();
+                final int itemCount = clipData == null ? 0 : clipData.getItemCount();
                 for (int i = 0; i < itemCount; i++) {
                     if (!dragDropFilesEnabled) {
                         ClipData.Item item = clipData.getItemAt(i);
