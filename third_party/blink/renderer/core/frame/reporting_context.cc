@@ -197,9 +197,8 @@ void ReportingContext::SendToReportingAPI(Report* report,
         body->referrer(), body->blockedURL(),
         body->effectiveDirective() ? body->effectiveDirective() : "",
         body->originalPolicy() ? body->originalPolicy() : "",
-        body->sourceFile(), body->sample(),
-        body->disposition() ? body->disposition() : "", body->statusCode(),
-        line_number, column_number);
+        body->sourceFile(), body->sample(), body->disposition().AsString(),
+        body->statusCode(), line_number, column_number);
   } else if (type == ReportType::kDeprecation) {
     // Send the deprecation report.
     const DeprecationReportBody* body =
