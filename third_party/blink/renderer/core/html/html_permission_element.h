@@ -94,7 +94,7 @@ class CORE_EXPORT HTMLPermissionElement final
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementIntersectionTest,
                            IntersectionChangedDisableEnableDisable);
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementIntersectionTest,
-                           OccludedPseudoClass);
+                           ClickingDisablePseudoClass);
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementIntersectionTest,
                            ContainerDivRotates);
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementIntersectionTest,
@@ -311,6 +311,14 @@ class CORE_EXPORT HTMLPermissionElement final
 
   // Callback triggered when the `disable_reason_expire_timer_` fires.
   void DisableReasonExpireTimerFired(TimerBase*);
+
+  void StopTimerDueToIndefiniteReason(DisableReason reason) {
+    if (disable_reason_expire_timer_.IsActive() &&
+        disable_reason_expire_timer_.reason() == reason) {
+      disable_reason_expire_timer_.Stop();
+    }
+    MaybeDispatchValidationChangeEvent();
+  }
 
   // Dispatch validation status change event if necessary.
   void MaybeDispatchValidationChangeEvent();

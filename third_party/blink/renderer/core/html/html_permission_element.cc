@@ -963,13 +963,7 @@ bool HTMLPermissionElement::ValidateSnapshot() {
 }
 
 bool HTMLPermissionElement::NotifyClickingDisablePseudoStateChanged() {
-  ClickingDisablePseudoState new_state(
-      invalidReason() ==
-          DisableReasonToInvalidReasonString(DisableReason::kInvalidStyle),
-      invalidReason() ==
-          DisableReasonToInvalidReasonString(
-              DisableReason::kIntersectionVisibilityOccludedOrDistorted));
-
+  ClickingDisablePseudoState new_state(HasInvalidStyle(), IsOccluded());
   if (new_state.is_occluded != pseudo_state_.is_occluded) {
     PseudoStateChanged(CSSSelector::kPseudoPermissionElementOccluded);
   }
@@ -1042,10 +1036,7 @@ bool HTMLPermissionElement::IsClickingEnabled() {
 
 void HTMLPermissionElement::DisableClickingIndefinitely(DisableReason reason) {
   clicking_disabled_reasons_.Set(reason, base::TimeTicks::Max());
-  if (disable_reason_expire_timer_.IsActive()) {
-    disable_reason_expire_timer_.Stop();
-  }
-  MaybeDispatchValidationChangeEvent();
+  StopTimerDueToIndefiniteReason(reason);
 }
 
 void HTMLPermissionElement::DisableClickingTemporarily(
@@ -1145,9 +1136,7 @@ void HTMLPermissionElement::RefreshDisableReasonsAndUpdateTimer() {
   for (auto it = clicking_disabled_reasons_.begin();
        it != clicking_disabled_reasons_.end(); ++it) {
     if (it->value == base::TimeTicks::Max()) {
-      if (disable_reason_expire_timer_.IsActive()) {
-        disable_reason_expire_timer_.Stop();
-      }
+      StopTimerDueToIndefiniteReason(it->key);
       return;
     }
 
@@ -1247,6 +1236,12 @@ void HTMLPermissionElement::OnIntersectionChanged(
           DisableReason::kIntersectionVisibilityOutOfViewPortOrClipped);
       break;
   }
+
+  // TODO(crbug.com/342330035): revisit it when we write spec for <permission>
+  // element.
+  GetTaskRunner()->PostTask(
+      FROM_HERE, WTF::BindOnce(&HTMLPermissionElement::UpdateSnapshot,
+                               WrapWeakPersistent(this)));
 }
 
 bool HTMLPermissionElement::IsStyleValid() {

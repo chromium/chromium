@@ -1370,7 +1370,7 @@ TEST_F(HTMLPemissionElementIntersectionTest,
                                          /*expected_enabled*/ false);
 }
 
-TEST_F(HTMLPemissionElementIntersectionTest, OccludedPseudoClass) {
+TEST_F(HTMLPemissionElementIntersectionTest, ClickingDisablePseudoClass) {
   SimRequest main_resource("https://example.test/", "text/html");
   LoadURL("https://example.test/");
   main_resource.Complete(R"HTML(
@@ -1396,6 +1396,26 @@ TEST_F(HTMLPemissionElementIntersectionTest, OccludedPseudoClass) {
                    GetDocument().QuerySelector(AtomicString("permission")))
                    ->matches(AtomicString(":occluded")));
 
+  permission_element->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("color: red; background-color: white;"));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
+                                         /*expected_enabled=*/true);
+  EXPECT_FALSE(To<HTMLPermissionElement>(
+                   GetDocument().QuerySelector(AtomicString("permission")))
+                   ->matches(AtomicString(":invalid-style")));
+
+  // Red on purple is not sufficient contrast.
+  permission_element->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("color: red; background-color: purple;"));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  checker.CheckClickingEnabled(/*enabled=*/false);
+  EXPECT_TRUE(To<HTMLPermissionElement>(
+                  GetDocument().QuerySelector(AtomicString("permission")))
+                  ->matches(AtomicString(":invalid-style")));
+
   // Move the div to overlap the Permission Element
   div->SetInlineStyleProperty(CSSPropertyID::kTop, "0px");
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
@@ -1413,6 +1433,17 @@ TEST_F(HTMLPemissionElementIntersectionTest, OccludedPseudoClass) {
   EXPECT_FALSE(To<HTMLPermissionElement>(
                    GetDocument().QuerySelector(AtomicString("permission")))
                    ->matches(AtomicString(":occluded")));
+
+  permission_element->setAttribute(
+      html_names::kStyleAttr,
+      AtomicString("color: yellow; background-color: purple;"));
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+  checker.CheckClickingEnabled(/*enabled=*/false);
+  checker.CheckClickingEnabledAfterDelay(kDefaultTimeout,
+                                         /*expected_enabled=*/true);
+  EXPECT_FALSE(To<HTMLPermissionElement>(
+                   GetDocument().QuerySelector(AtomicString("permission")))
+                   ->matches(AtomicString(":invalid-style")));
 }
 
 TEST_F(HTMLPemissionElementIntersectionTest, ContainerDivRotates) {
