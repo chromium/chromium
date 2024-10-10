@@ -9,6 +9,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 
 import org.chromium.webapk.lib.common.WebApkConstants;
@@ -58,7 +59,17 @@ public class HostBrowserLauncher {
         } else {
             intent = new Intent(Intent.ACTION_VIEW, Uri.parse(params.getStartUrl()));
         }
-        intent.setPackage(params.getHostBrowserPackageName());
+
+        String hostBrowserPackageName = params.getHostBrowserPackageName();
+        // Sending a VIEW intent with package="android" fails, even though
+        // PackageManager.resolveActivity() suggests it should succeed.
+        //
+        // Luckily, package="android" indicates that there is no default browser set, so we can just
+        // send an intent without a package and it will be forwarded by the disambiguation dialog.
+        if (!TextUtils.equals(hostBrowserPackageName, "android")) {
+            intent.setPackage(hostBrowserPackageName);
+        }
+
         intent.setFlags(flags);
 
         Bundle copiedExtras = params.getOriginalIntent().getExtras();
