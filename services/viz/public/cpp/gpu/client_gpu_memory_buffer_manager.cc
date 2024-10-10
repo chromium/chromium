@@ -176,12 +176,14 @@ void ClientGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
     return;
   }
 
-  if (gpu_direct_) {
-    gpu_direct_->CopyGpuMemoryBuffer(
-        std::move(buffer_handle), std::move(memory_region),
-        mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
-                                                    /*result=*/false));
+  if (!gpu_direct_) {
+    std::move(callback).Run(false);
+    return;
   }
+  gpu_direct_->CopyGpuMemoryBuffer(
+      std::move(buffer_handle), std::move(memory_region),
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
+                                                  /*result=*/false));
 }
 
 bool ClientGpuMemoryBufferManager::CopyGpuMemoryBufferSync(
