@@ -50,17 +50,6 @@ class MessagePumpIOSForIOTest : public testing::Test {
 
 namespace {
 
-// Concrete implementation of MessagePumpIOSForIO::FdWatcher that does
-// nothing useful.
-class StupidWatcher : public MessagePumpIOSForIO::FdWatcher {
- public:
-  ~StupidWatcher() override = default;
-
-  // base:MessagePumpIOSForIO::FdWatcher interface
-  void OnFileCanReadWithoutBlocking(int fd) override {}
-  void OnFileCanWriteWithoutBlocking(int fd) override {}
-};
-
 class BaseWatcher : public MessagePumpIOSForIO::FdWatcher {
  public:
   BaseWatcher(MessagePumpIOSForIO::FdWatchController* controller)
