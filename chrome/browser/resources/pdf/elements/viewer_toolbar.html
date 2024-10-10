@@ -44,8 +44,7 @@
             '$i18nPolymer{tooltipFitToWidth}')}"
         @click="${this.onFitToButtonClick_}">
     </cr-icon-button>
-    <cr-icon-button
-        iron-icon="${this.iconsetName_()}:rotate-left"
+    <cr-icon-button id="rotate" .ironIcon="${this.iconsetName_()}:rotate-left"
         suppress-rtl-flip
 <if expr="enable_ink">
         ?disabled="${this.annotationMode}"

@@ -44,8 +44,8 @@ const tests = [
     chrome.test.assertTrue(shouldIgnoreKeyEvents());
 
     // Test case where another field is focused.
-    const rotateButton = toolbar.shadowRoot!.querySelector<HTMLElement>(
-        'cr-icon-button[iron-icon=\'pdf:rotate-left\']')!;
+    const rotateButton =
+        toolbar.shadowRoot!.querySelector<HTMLElement>('#rotate')!;
     rotateButton.focus();
     chrome.test.assertFalse(shouldIgnoreKeyEvents());
 
