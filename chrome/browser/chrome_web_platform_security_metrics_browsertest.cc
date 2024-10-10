@@ -159,6 +159,9 @@ class ChromeWebPlatformSecurityMetricsBrowserTest : public policy::PolicyTest {
         // feature flags prevent that:
         blink::features::kOriginAgentClusterDefaultEnabled,
         features::kOriginKeyedProcessesByDefault,
+        // Subsampling metrics recording makes the test observing the metrics
+        // fail almost every time. Disable subsampling.
+        blink::features::kSubSampleWindowProxyUsageMetrics,
     };
   }
 
