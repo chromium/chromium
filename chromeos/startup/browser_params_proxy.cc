@@ -320,10 +320,6 @@ bool BrowserParamsProxy::IsMahiEnabled() const {
   return BrowserInitParams::Get()->is_mahi_enabled;
 }
 
-bool BrowserParamsProxy::IsContainerAppPreinstallEnabled() const {
-  return BrowserInitParams::Get()->is_container_app_preinstall_enabled;
-}
-
 bool BrowserParamsProxy::IsOrcaUseL10nStringsEnabled() const {
   return BrowserInitParams::Get()->is_orca_use_l10n_strings_enabled;
 }

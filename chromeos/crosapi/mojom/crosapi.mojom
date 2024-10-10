@@ -1648,9 +1648,8 @@ struct BrowserInitParams {
   [MinVersion=82]
   bool is_mahi_enabled@82;
 
-  // If true, the container app should be preinstalled.
   [MinVersion=83]
-  bool is_container_app_preinstall_enabled@83;
+  bool REMOVED_83@83;
 
   // If true, Orca will use l10n strings, otherwise, en-us strings are used.
   [MinVersion=84]

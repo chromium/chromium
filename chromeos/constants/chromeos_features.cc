@@ -361,14 +361,10 @@ bool IsBlinkExtensionDiagnosticsEnabled() {
 }
 
 bool IsContainerAppPreinstallEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()->IsContainerAppPreinstallEnabled();
-#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
   return (base::FeatureList::IsEnabled(
               kFeatureManagementContainerAppPreinstall) ||
           IsContainerAppPreinstallDebugEnabled()) &&
          base::FeatureList::IsEnabled(kContainerAppPreinstall);
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 bool IsContainerAppPreinstallDebugEnabled() {

@@ -962,9 +962,6 @@ void InjectBrowserInitParams(
 
   params->is_mahi_enabled = chromeos::features::IsMahiEnabled();
 
-  params->is_container_app_preinstall_enabled =
-      chromeos::features::IsContainerAppPreinstallEnabled();
-
   params->is_file_system_provider_content_cache_enabled =
       chromeos::features::IsFileSystemProviderContentCacheEnabled();
 }
