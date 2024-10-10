@@ -417,11 +417,14 @@ void ZeroSuggestProvider::RunZeroSuggestPrefetch(const AutocompleteInput& input,
 
   const auto* template_url_service = client()->GetTemplateURLService();
   // Create a loader for the appropriate page context and take ownership of it.
+  // Prefetching zero-prefix suggestions in OTR contexts is not allowed.
+  DCHECK(!client()->IsOffTheRecord());
   *prefetch_loader =
       client()
           ->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
           ->StartZeroPrefixSuggestionsRequest(
               RemoteRequestType::kZeroSuggestPrefetch,
+              client()->IsOffTheRecord(),
               template_url_service->GetDefaultSearchProvider(),
               search_terms_args, template_url_service->search_terms_data(),
               base::BindOnce(&ZeroSuggestProvider::OnPrefetchURLLoadComplete,
@@ -475,11 +478,13 @@ void ZeroSuggestProvider::Start(const AutocompleteInput& input,
 
   const auto* template_url_service = client()->GetTemplateURLService();
   // Create a loader for the request and take ownership of it.
+  // Request for zero-prefix suggestions in OTR contexts is not allowed.
+  DCHECK(!client()->IsOffTheRecord());
   loader_ =
       client()
           ->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
           ->StartZeroPrefixSuggestionsRequest(
-              RemoteRequestType::kZeroSuggest,
+              RemoteRequestType::kZeroSuggest, client()->IsOffTheRecord(),
               template_url_service->GetDefaultSearchProvider(),
               search_terms_args, template_url_service->search_terms_data(),
               base::BindOnce(&ZeroSuggestProvider::OnURLLoadComplete,

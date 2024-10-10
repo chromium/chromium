@@ -158,6 +158,7 @@ class RemoteSuggestionsService : public KeyedService {
   // `completion_callback` will be invoked when the transfer is done.
   std::unique_ptr<network::SimpleURLLoader> StartSuggestionsRequest(
       RemoteRequestType request_type,
+      bool is_off_the_record,
       const TemplateURL* template_url,
       TemplateURLRef::SearchTermsArgs search_terms_args,
       const SearchTermsData& search_terms_data,
@@ -173,6 +174,7 @@ class RemoteSuggestionsService : public KeyedService {
   // `completion_callback` will be invoked when the transfer is done.
   std::unique_ptr<network::SimpleURLLoader> StartZeroPrefixSuggestionsRequest(
       RemoteRequestType request_type,
+      bool is_off_the_record,
       const TemplateURL* template_url,
       TemplateURLRef::SearchTermsArgs search_terms_args,
       const SearchTermsData& search_terms_data,
@@ -183,7 +185,7 @@ class RemoteSuggestionsService : public KeyedService {
   using DocumentStartCallback = base::OnceCallback<void(
       std::unique_ptr<network::SimpleURLLoader> loader)>;
   void CreateDocumentSuggestionsRequest(const std::u16string& query,
-                                        bool is_incognito,
+                                        bool is_off_the_record,
                                         DocumentStartCallback start_callback,
                                         CompletionCallback completion_callback);
 
@@ -197,6 +199,7 @@ class RemoteSuggestionsService : public KeyedService {
   // `completion_callback` will be invoked when the transfer is done.
   std::unique_ptr<network::SimpleURLLoader> StartDeletionRequest(
       const std::string& deletion_url,
+      bool is_off_the_record,
       CompletionCallback completion_callback);
 
   void AddObserver(Observer* observer);
@@ -228,6 +231,8 @@ class RemoteSuggestionsService : public KeyedService {
                          const network::SimpleURLLoader* source,
                          std::unique_ptr<std::string> response_body);
 
+  // May be nullptr in OTR profiles. Otherwise guaranteed to outlive this due to
+  // the factories' dependency.
   raw_ptr<DocumentSuggestionsService> document_suggestions_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   // Observers being notified of request start and completion events.

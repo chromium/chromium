@@ -489,10 +489,13 @@ void DocumentProvider::Start(const AutocompleteInput& input,
 }
 
 void DocumentProvider::Run() {
+  // DocumentSuggestionsServiceFactory does not create a service instance for
+  // OTR profiles. We should not get this far for those profiles.
+  DCHECK(!client_->IsOffTheRecord());
   time_run_invoked_ = base::TimeTicks::Now();
   client_->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
       ->CreateDocumentSuggestionsRequest(
-          input_.text(), client_->IsOffTheRecord(),
+          input_.text(), /*is_off_the_record=*/false,
           base::BindOnce(
               &DocumentProvider::OnDocumentSuggestionsLoaderAvailable,
               weak_ptr_factory_.GetWeakPtr()),

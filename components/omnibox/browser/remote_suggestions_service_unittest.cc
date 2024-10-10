@@ -141,7 +141,7 @@ TEST_F(RemoteSuggestionsServiceTest, AttachCookies_ZeroPrefixSuggest) {
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.current_page_url = "https://www.google.com/";
   auto loader = service.StartZeroPrefixSuggestionsRequest(
-      RemoteRequestType::kZeroSuggest,
+      RemoteRequestType::kZeroSuggest, /*is_off_the_record=*/false,
       template_url_service().GetDefaultSearchProvider(), search_terms_args,
       template_url_service().search_terms_data(), base::DoNothing());
 
@@ -169,7 +169,7 @@ TEST_F(RemoteSuggestionsServiceTest, AttachCookies_Suggest) {
   TemplateURLRef::SearchTermsArgs search_terms_args;
   search_terms_args.current_page_url = "https://www.google.com/";
   auto loader = service.StartSuggestionsRequest(
-      RemoteRequestType::kSearch,
+      RemoteRequestType::kSearch, /*is_off_the_record=*/false,
       template_url_service().GetDefaultSearchProvider(), search_terms_args,
       template_url_service().search_terms_data(), base::DoNothing());
 
@@ -193,7 +193,8 @@ TEST_F(RemoteSuggestionsServiceTest, AttachCookies_DeleteSuggest) {
   RemoteSuggestionsService service(/*document_suggestions_service_=*/nullptr,
                                    GetUrlLoaderFactory());
   auto loader = service.StartDeletionRequest(
-      "https://google.com/complete/delete", base::DoNothing());
+      "https://google.com/complete/delete",
+      /*is_off_the_record=*/false, base::DoNothing());
 
   base::RunLoop().RunUntilIdle();
 
@@ -216,7 +217,7 @@ TEST_F(RemoteSuggestionsServiceTest, BypassCache) {
   search_terms_args.current_page_url = "https://www.google.com/";
   search_terms_args.bypass_cache = true;
   auto loader = service.StartZeroPrefixSuggestionsRequest(
-      RemoteRequestType::kZeroSuggest,
+      RemoteRequestType::kZeroSuggest, /*is_off_the_record=*/false,
       template_url_service().GetDefaultSearchProvider(), search_terms_args,
       template_url_service().search_terms_data(), base::DoNothing());
 
@@ -245,7 +246,7 @@ TEST_F(RemoteSuggestionsServiceTest, Observer) {
                                    GetUrlLoaderFactory());
   TestObserver observer(&service);
   auto loader = service.StartZeroPrefixSuggestionsRequest(
-      RemoteRequestType::kZeroSuggest,
+      RemoteRequestType::kZeroSuggest, /*is_off_the_record=*/false,
       template_url_service().GetDefaultSearchProvider(),
       TemplateURLRef::SearchTermsArgs(),
       template_url_service().search_terms_data(),
@@ -315,7 +316,7 @@ TEST_F(RemoteSuggestionsServiceTest, Delegate) {
           }));
 
   auto loader = service.StartZeroPrefixSuggestionsRequest(
-      RemoteRequestType::kZeroSuggest,
+      RemoteRequestType::kZeroSuggest, /*is_off_the_record=*/false,
       template_url_service().GetDefaultSearchProvider(),
       TemplateURLRef::SearchTermsArgs(),
       template_url_service().search_terms_data(),

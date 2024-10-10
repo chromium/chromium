@@ -30,12 +30,15 @@ void LogSuggestRequestSent(RemoteRequestType request_type) {
   base::UmaHistogramEnumeration("Omnibox.SuggestRequestsSent", request_type);
 }
 
-void AddVariationHeaders(network::ResourceRequest* request) {
-  // Note: It's OK to pass InIncognito::kNo since we are expected to be in
-  // non-incognito state here (i.e. remote suggestions are not served in
-  // incognito mode).
+void AddVariationHeaders(network::ResourceRequest* request,
+                         bool is_off_the_record) {
+  // We only care about the experiment IDs from the variations server which do
+  // not require knowing the signed-in state.
   variations::AppendVariationsHeaderUnknownSignedIn(
-      request->url, variations::InIncognito::kNo, request);
+      request->url,
+      is_off_the_record ? variations::InIncognito::kYes
+                        : variations::InIncognito::kNo,
+      request);
 }
 
 // Adds query params to the url from the search terms args
@@ -149,6 +152,7 @@ GURL RemoteSuggestionsService::EndpointUrl(
 std::unique_ptr<network::SimpleURLLoader>
 RemoteSuggestionsService::StartSuggestionsRequest(
     RemoteRequestType request_type,
+    bool is_off_the_record,
     const TemplateURL* template_url,
     TemplateURLRef::SearchTermsArgs search_terms_args,
     const SearchTermsData& search_terms_data,
@@ -195,7 +199,7 @@ RemoteSuggestionsService::StartSuggestionsRequest(
   // Set the SiteForCookies to the request URL's site to avoid cookie blocking.
   request->site_for_cookies = net::SiteForCookies::FromUrl(suggest_url);
   // Add Chrome experiment state to the request headers.
-  AddVariationHeaders(request.get());
+  AddVariationHeaders(request.get(), is_off_the_record);
 
   // Create a unique identifier for the request.
   const base::UnguessableToken request_id = base::UnguessableToken::Create();
@@ -226,6 +230,7 @@ RemoteSuggestionsService::StartSuggestionsRequest(
 std::unique_ptr<network::SimpleURLLoader>
 RemoteSuggestionsService::StartZeroPrefixSuggestionsRequest(
     RemoteRequestType request_type,
+    bool is_off_the_record,
     const TemplateURL* template_url,
     TemplateURLRef::SearchTermsArgs search_terms_args,
     const SearchTermsData& search_terms_data,
@@ -277,7 +282,7 @@ RemoteSuggestionsService::StartZeroPrefixSuggestionsRequest(
   // Set the SiteForCookies to the request URL's site to avoid cookie blocking.
   request->site_for_cookies = net::SiteForCookies::FromUrl(suggest_url);
   // Add Chrome experiment state to the request headers.
-  AddVariationHeaders(request.get());
+  AddVariationHeaders(request.get(), is_off_the_record);
 
   // Create a unique identifier for the request.
   const base::UnguessableToken request_id = base::UnguessableToken::Create();
@@ -307,14 +312,18 @@ RemoteSuggestionsService::StartZeroPrefixSuggestionsRequest(
 
 void RemoteSuggestionsService::CreateDocumentSuggestionsRequest(
     const std::u16string& query,
-    bool is_incognito,
+    bool is_off_the_record,
     DocumentStartCallback start_callback,
     CompletionCallback completion_callback) {
+  if (!document_suggestions_service_) {
+    return;
+  }
+
   // Create a unique identifier for the request.
   const base::UnguessableToken request_id = base::UnguessableToken::Create();
 
   document_suggestions_service_->CreateDocumentSuggestionsRequest(
-      query, is_incognito,
+      query, is_off_the_record,
       base::BindOnce(
           &RemoteSuggestionsService::OnDocumentSuggestionsRequestAvailable,
           weak_ptr_factory_.GetWeakPtr(), request_id),
@@ -328,12 +337,15 @@ void RemoteSuggestionsService::CreateDocumentSuggestionsRequest(
 }
 
 void RemoteSuggestionsService::StopCreatingDocumentSuggestionsRequest() {
-  document_suggestions_service_->StopCreatingDocumentSuggestionsRequest();
+  if (document_suggestions_service_) {
+    document_suggestions_service_->StopCreatingDocumentSuggestionsRequest();
+  }
 }
 
 std::unique_ptr<network::SimpleURLLoader>
 RemoteSuggestionsService::StartDeletionRequest(
     const std::string& deletion_url,
+    bool is_off_the_record,
     CompletionCallback completion_callback) {
   const GURL url(deletion_url);
   DCHECK(url.is_valid());
@@ -378,7 +390,7 @@ RemoteSuggestionsService::StartDeletionRequest(
   // Set the SiteForCookies to the request URL's site to avoid cookie blocking.
   request->site_for_cookies = net::SiteForCookies::FromUrl(url);
   // Add Chrome experiment state to the request headers.
-  AddVariationHeaders(request.get());
+  AddVariationHeaders(request.get(), is_off_the_record);
 
   // Create a unique identifier for the request.
   const base::UnguessableToken request_id = base::UnguessableToken::Create();

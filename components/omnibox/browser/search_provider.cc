@@ -936,12 +936,14 @@ std::unique_ptr<network::SimpleURLLoader> SearchProvider::CreateSuggestLoader(
   // If the request is from omnibox focus, send empty search term args. The
   // purpose of such a request is to signal the server to warm up; no info
   // is required.
+  // Request for suggestions in OTR contexts is not allowed.
+  DCHECK(!client()->IsOffTheRecord());
   return client()
       ->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
       ->StartSuggestionsRequest(
           input.IsZeroSuggest() ? RemoteRequestType::kSearchWarmup
                                 : RemoteRequestType::kSearch,
-          template_url,
+          client()->IsOffTheRecord(), template_url,
           input.IsZeroSuggest() ? TemplateURLRef::SearchTermsArgs()
                                 : search_term_args,
           search_terms_data,
