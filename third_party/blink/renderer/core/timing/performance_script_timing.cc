@@ -8,6 +8,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_script_invoker_type.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
@@ -39,22 +40,22 @@ PerformanceScriptTiming::PerformanceScriptTiming(
   time_origin_ = time_origin;
   cross_origin_isolated_capability_ = cross_origin_isolated_capability;
   if (!info_->Window() || !source) {
-    window_attribution_ = AtomicString("other");
+    window_attribution_ = V8ScriptWindowAttribution::Enum::kOther;
   } else if (info_->Window() == source) {
-    window_attribution_ = AtomicString("self");
+    window_attribution_ = V8ScriptWindowAttribution::Enum::kSelf;
   } else if (!info_->Window()->GetFrame()) {
-    window_attribution_ = AtomicString("other");
+    window_attribution_ = V8ScriptWindowAttribution::Enum::kOther;
   } else if (info_->Window()->GetFrame()->Tree().IsDescendantOf(
                  source->GetFrame())) {
-    window_attribution_ = AtomicString("descendant");
+    window_attribution_ = V8ScriptWindowAttribution::Enum::kDescendant;
   } else if (source->GetFrame()->Tree().IsDescendantOf(
                  info_->Window()->GetFrame())) {
-    window_attribution_ = AtomicString("ancestor");
+    window_attribution_ = V8ScriptWindowAttribution::Enum::kAncestor;
   } else if (source->GetFrame()->Tree().Top() ==
              info_->Window()->GetFrame()->Top()) {
-    window_attribution_ = AtomicString("same-page");
+    window_attribution_ = V8ScriptWindowAttribution::Enum::kSamePage;
   } else {
-    window_attribution_ = AtomicString("other");
+    window_attribution_ = V8ScriptWindowAttribution::Enum::kOther;
   }
 }
 
@@ -140,25 +141,26 @@ LocalDOMWindow* PerformanceScriptTiming::window() const {
   return info_->Window();
 }
 
-const AtomicString& PerformanceScriptTiming::windowAttribution() const {
-  return window_attribution_;
+V8ScriptWindowAttribution PerformanceScriptTiming::windowAttribution() const {
+  return V8ScriptWindowAttribution(window_attribution_);
 }
 
-AtomicString PerformanceScriptTiming::invokerType() const {
+V8ScriptInvokerType PerformanceScriptTiming::invokerType() const {
   switch (info_->GetInvokerType()) {
     case ScriptTimingInfo::InvokerType::kClassicScript:
-      return AtomicString("classic-script");
+      return V8ScriptInvokerType(V8ScriptInvokerType::Enum::kClassicScript);
     case ScriptTimingInfo::InvokerType::kModuleScript:
-      return AtomicString("module-script");
+      return V8ScriptInvokerType(V8ScriptInvokerType::Enum::kModuleScript);
     case ScriptTimingInfo::InvokerType::kEventHandler:
-      return AtomicString("event-listener");
+      return V8ScriptInvokerType(V8ScriptInvokerType::Enum::kEventListener);
     case ScriptTimingInfo::InvokerType::kUserCallback:
-      return AtomicString("user-callback");
+      return V8ScriptInvokerType(V8ScriptInvokerType::Enum::kUserCallback);
     case ScriptTimingInfo::InvokerType::kPromiseResolve:
-      return AtomicString("resolve-promise");
+      return V8ScriptInvokerType(V8ScriptInvokerType::Enum::kResolvePromise);
     case ScriptTimingInfo::InvokerType::kPromiseReject:
-      return AtomicString("reject-promise");
+      return V8ScriptInvokerType(V8ScriptInvokerType::Enum::kRejectPromise);
   }
+  NOTREACHED();
 }
 
 WTF::String PerformanceScriptTiming::sourceURL() const {
@@ -178,8 +180,8 @@ PerformanceEntryType PerformanceScriptTiming::EntryTypeEnum() const {
 void PerformanceScriptTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   PerformanceEntry::BuildJSONValue(builder);
   builder.AddString("invoker", invoker());
-  builder.AddString("invokerType", invokerType());
-  builder.AddString("windowAttribution", windowAttribution());
+  builder.AddString("invokerType", invokerType().AsString());
+  builder.AddString("windowAttribution", windowAttribution().AsString());
   builder.AddNumber("executionStart", executionStart());
   builder.AddNumber("forcedStyleAndLayoutDuration",
                     forcedStyleAndLayoutDuration());

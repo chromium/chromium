@@ -48,6 +48,8 @@
 
 namespace blink {
 
+class V8RenderBlockingStatusType;
+
 class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   DEFINE_WRAPPERTYPEINFO();
   friend class PerformanceResourceTimingTest;
@@ -69,7 +71,7 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   AtomicString initiatorType() const { return initiator_type_; }
   virtual AtomicString deliveryType() const;
   AtomicString nextHopProtocol() const;
-  virtual AtomicString renderBlockingStatus() const;
+  virtual V8RenderBlockingStatusType renderBlockingStatus() const;
   virtual AtomicString contentType() const;
   DOMHighResTimeStamp workerStart() const;
   DOMHighResTimeStamp workerRouterEvaluationStart() const;

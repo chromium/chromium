@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_render_blocking_status_type.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
@@ -142,9 +143,12 @@ AtomicString PerformanceResourceTiming::deliveryType() const {
   return info_->allow_timing_details ? GetDeliveryType() : g_empty_atom;
 }
 
-AtomicString PerformanceResourceTiming::renderBlockingStatus() const {
-  return AtomicString(info_->render_blocking_status ? "blocking"
-                                                    : "non-blocking");
+V8RenderBlockingStatusType PerformanceResourceTiming::renderBlockingStatus()
+    const {
+  return V8RenderBlockingStatusType(
+      info_->render_blocking_status
+          ? V8RenderBlockingStatusType::Enum::kBlocking
+          : V8RenderBlockingStatusType::Enum::kNonBlocking);
 }
 
 AtomicString PerformanceResourceTiming::contentType() const {
@@ -486,7 +490,8 @@ void PerformanceResourceTiming::BuildJSONValue(V8ObjectBuilder& builder) const {
   builder.AddString("deliveryType", deliveryType());
   builder.AddString("nextHopProtocol", nextHopProtocol());
   if (RuntimeEnabledFeatures::RenderBlockingStatusEnabled()) {
-    builder.AddString("renderBlockingStatus", renderBlockingStatus());
+    builder.AddString("renderBlockingStatus",
+                      renderBlockingStatus().AsString());
   }
   if (RuntimeEnabledFeatures::ResourceTimingContentTypeEnabled()) {
     builder.AddString("contentType", contentType());
