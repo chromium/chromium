@@ -44,7 +44,9 @@ TEST_F(VirtualDisplayUtilWinInteractiveUitest, DISABLED_IsAPIAvailable) {
   EXPECT_TRUE(virtual_display_util_win_.IsAPIAvailable());
 }
 
-TEST_F(VirtualDisplayUtilWinInteractiveUitest, AddDisplay) {
+// M130 Only: crrev.com/1356257 changes too many files to be safely merged and
+// crrev.com/1357809 removes this test.
+TEST_F(VirtualDisplayUtilWinInteractiveUitest, DISABLED_AddDisplay) {
   int initial_display_count = screen()->GetNumDisplays();
   int64_t display_id = virtual_display_util_win_.AddDisplay(
       1, display::test::VirtualDisplayUtilWin::k1920x1080);
