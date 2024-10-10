@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_decrypt_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_subsample_entry.h"
 #include "third_party/blink/renderer/modules/webcodecs/test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -21,7 +22,7 @@ namespace {
 TEST(EncodedAudioChunkTest, ConstructorAndAttributes) {
   test::TaskEnvironment task_environment;
   V8TestingScope v8_scope;
-  String type = "key";
+  V8EncodedAudioChunkType::Enum type = V8EncodedAudioChunkType::Enum::kKey;
   int64_t timestamp = 1000000;
   std::string data = "test";
   auto* init = EncodedAudioChunkInit::Create();
@@ -40,7 +41,7 @@ TEST(EncodedAudioChunkTest, ConstructorAndAttributes) {
 TEST(EncodedAudioChunkTest, ConstructorWithDuration) {
   test::TaskEnvironment task_environment;
   V8TestingScope v8_scope;
-  String type = "key";
+  V8EncodedAudioChunkType::Enum type = V8EncodedAudioChunkType::Enum::kKey;
   int64_t timestamp = 1000000;
   uint64_t duration = 16667;
   std::string data = "test";

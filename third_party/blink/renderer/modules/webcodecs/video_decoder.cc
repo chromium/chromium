@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_color_space_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_support.h"
@@ -622,7 +623,7 @@ VideoDecoder::MakeInput(const InputType& chunk, bool verify_key_frame) {
     decoder_buffer->set_duration(chunk.buffer()->duration());
   }
 
-  bool is_key_frame = chunk.type() == "key";
+  bool is_key_frame = chunk.type() == V8EncodedVideoChunkType::Enum::kKey;
   if (verify_key_frame) {
     if (current_codec_ == media::VideoCodec::kVP9 ||
         current_codec_ == media::VideoCodec::kVP8) {

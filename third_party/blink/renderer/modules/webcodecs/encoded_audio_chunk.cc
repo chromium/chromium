@@ -78,8 +78,10 @@ EncodedAudioChunk* EncodedAudioChunk::Create(ScriptState* script_state,
 EncodedAudioChunk::EncodedAudioChunk(scoped_refptr<media::DecoderBuffer> buffer)
     : buffer_(std::move(buffer)) {}
 
-String EncodedAudioChunk::type() const {
-  return buffer_->is_key_frame() ? "key" : "delta";
+V8EncodedAudioChunkType EncodedAudioChunk::type() const {
+  return V8EncodedAudioChunkType(buffer_->is_key_frame()
+                                     ? V8EncodedAudioChunkType::Enum::kKey
+                                     : V8EncodedAudioChunkType::Enum::kDelta);
 }
 
 int64_t EncodedAudioChunk::timestamp() const {
