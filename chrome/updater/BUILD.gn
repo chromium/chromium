@@ -617,7 +617,10 @@ if (is_win || is_mac || is_linux) {
         "win/win_constants.h",
       ]
 
-      deps += [ "//chrome/updater/app/server/win:updater_idl" ]
+      deps += [
+        "//chrome/updater/app/server/win:updater_idl",
+        "//chrome/windows_services/service_program:common",
+      ]
 
       configs -= [ "//build/config/win:winver" ]
       configs += [

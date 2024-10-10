@@ -76,6 +76,7 @@
 #include "chrome/updater/win/scoped_handle.h"
 #include "chrome/updater/win/user_info.h"
 #include "chrome/updater/win/win_constants.h"
+#include "chrome/windows_services/service_program/scoped_client_impersonation.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace updater {
@@ -428,19 +429,17 @@ HResultOr<bool> IsUserNonElevatedAdmin() {
 }
 
 HResultOr<bool> IsCOMCallerAdmin() {
-  HRESULT hr = ::CoImpersonateClient();
-  if (hr == RPC_E_CALL_COMPLETE) {
+  ScopedClientImpersonation impersonate_client;
+  if (!impersonate_client.is_valid()) {
     // RPC_E_CALL_COMPLETE indicates that the caller is in-proc.
+    if (impersonate_client.result() != RPC_E_CALL_COMPLETE) {
+      return base::unexpected(impersonate_client.result());
+    }
     return base::ok(::IsUserAnAdmin());
-  }
-
-  if (FAILED(hr)) {
-    return base::unexpected(hr);
   }
 
   HResultOr<ScopedKernelHANDLE> token = []() -> decltype(token) {
     ScopedKernelHANDLE token;
-    absl::Cleanup co_revert_to_self = [] { ::CoRevertToSelf(); };
     if (!::OpenThreadToken(::GetCurrentThread(), TOKEN_QUERY, TRUE,
                            ScopedKernelHANDLE::Receiver(token).get())) {
       HRESULT hr = HRESULTFromLastError();

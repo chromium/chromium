@@ -35,6 +35,7 @@ shared_library("msi_custom_action") {
   ]
 
   configs += [ "//build/config/win:windowed" ]
+  libs = [ "rpcrt4.lib" ]
 }
 
 source_set("lib") {
