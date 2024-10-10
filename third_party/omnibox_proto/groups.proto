@@ -82,6 +82,7 @@ enum GroupId {
   GROUP_MOBILE_QUERY_TILES = 30003;  // E.g. "News", "Films", "Sports", ...
   GROUP_MOBILE_RICH_ANSWER = 30004;  // Visually rich answer suggestion.
   GROUP_MOBILE_OPEN_TABS = 30005;    // Tabs which are currently open.
+  GROUP_MOBILE_CROSS_DEVICE_TABS = 30006;  // Tabs opened on another device.
 
   // Reserved for personalized zero-prefix suggestions.
   // Produced by LocalHistoryZeroSuggestProvider and maybe ZeroSuggestProvider.
@@ -161,4 +162,8 @@ enum GroupSection {
   SECTION_OTHER_NAVS = 102;
   SECTION_DOCUMENT = 103;
   SECTION_HISTORY_CLUSTER = 104;
+
+  // Android-specific auxiliary suggestions. These suggestions are sourced on
+  // device, and appear above any other content.
+  SECTION_MOBILE_OPEN_TABS = 200;
 }
