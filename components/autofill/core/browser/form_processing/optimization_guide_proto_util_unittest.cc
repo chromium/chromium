@@ -43,13 +43,18 @@ AutofillField& AddSelect(FormStructure& form,
 
 TEST(AutofillOptimizationGuideProtoUtilTest, ToFormDataProto) {
   FormStructure form{autofill::FormData()};
-  AddInputField(form, u"label", u"name", u"val", /*is_sensitive=*/false);
-  AddInputField(form, u"label2", u"name2", u"sensitive_value",
-                /*is_sensitive=*/true);
-  AddSelect(
+  AutofillField& field =
+      AddInputField(form, u"label", u"name", u"val", /*is_sensitive=*/false);
+  field.set_field_is_eligible_for_prediction_improvements(true);
+  AutofillField& field2 =
+      AddInputField(form, u"label2", u"name2", u"sensitive_value",
+                    /*is_sensitive=*/true);
+  field2.set_field_is_eligible_for_prediction_improvements(false);
+  AutofillField& field3 = AddSelect(
       form, u"select", u"", u"",
       {{.value = u"1", .text = u"text1"}, {.value = u"2", .text = u"text2"}},
       /*is_sensitive=*/false);
+  field3.set_field_is_eligible_for_prediction_improvements(false);
 
   optimization_guide::proto::FormData form_data_proto = ToFormDataProto(form);
   EXPECT_EQ(form_data_proto.fields_size(), 3);
@@ -60,6 +65,7 @@ TEST(AutofillOptimizationGuideProtoUtilTest, ToFormDataProto) {
   EXPECT_EQ(field_data1.field_label(), "label");
   EXPECT_EQ(field_data1.field_value(), "val");
   EXPECT_EQ(field_data1.field_name(), "name");
+  EXPECT_TRUE(field_data1.is_eligible());
 
   // The second field should contain an empty value because it was marked as
   // sensitive.
@@ -68,6 +74,7 @@ TEST(AutofillOptimizationGuideProtoUtilTest, ToFormDataProto) {
   EXPECT_EQ(field_data2.field_label(), "label2");
   EXPECT_EQ(field_data2.field_value(), "");
   EXPECT_EQ(field_data2.field_name(), "name2");
+  EXPECT_FALSE(field_data2.is_eligible());
 
   // Check that the options are corectly extracted from the select element.
   optimization_guide::proto::FormFieldData field_data3 =
@@ -84,6 +91,7 @@ TEST(AutofillOptimizationGuideProtoUtilTest, ToFormDataProto) {
       field_data3.select_options(1);
   EXPECT_EQ("2", select_option2.value());
   EXPECT_EQ("text2", select_option2.text());
+  EXPECT_FALSE(field_data3.is_eligible());
 }
 
 }  // namespace
