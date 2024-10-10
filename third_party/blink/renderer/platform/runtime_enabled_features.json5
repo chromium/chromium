@@ -4306,7 +4306,10 @@
     {
       name: "TranslationAPI",
       status: "test",
+      origin_trial_feature_name: "TranslationAPI",
       base_feature: "EnableTranslationAPI",
+      base_feature_status: "enabled",
+      copied_from_base_feature_if: "overridden",
     },
     {
       name: "TranslationAPIEntryPoint",
