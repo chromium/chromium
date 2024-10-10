@@ -51,8 +51,8 @@ typedef NS_ENUM(NSInteger, TableViewAccountMode) {
 @property(nonatomic, readonly, strong) UILabel* textLabel;
 // Cell subtitle.
 @property(nonatomic, readonly, strong) UILabel* detailTextLabel;
-// Error icon that will be displayed on the left side of the cell.
-@property(nonatomic, readonly, strong) UIImageView* errorIcon;
+// Set the error image. `errorImage` can be nil.
+- (void)setErrorImage:(UIImage*)errorImage;
 
 @end
 
