@@ -48,6 +48,9 @@ enum class DriveItemType : NSUInteger {
 // Whether the icon should be fetched. No by default.
 @property(nonatomic, assign) BOOL shouldFetchIcon;
 
+// Whether the icon is a thumbnail. NO by default.
+@property(nonatomic, assign) BOOL iconIsThumbnail;
+
 // Convenience factory methods to create root drive items.
 + (instancetype)myDriveItem;
 + (instancetype)sharedDrivesItem;

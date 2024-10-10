@@ -43,8 +43,10 @@ constexpr base::TimeDelta kFetchItemsDelayToRetryMin = base::Seconds(0.5);
 constexpr base::TimeDelta kFetchItemsDelayToRetryMax = base::Seconds(10.0);
 // folder_identifier parameter for the My Drive view.
 NSString* kMyDriveFolderIdentifier = @"root";
-// Size to which fetched images should be resized before caching.
-constexpr int kFetchedImageResizeDimension = 64;
+// Dimension to resize background images for shared drives.
+constexpr int kBackgroundImageResizeDimension = 64;
+// Dimension to resize thumbnails.
+constexpr int kThumbnailResizeDimension = 64;
 
 }  // namespace
 
@@ -366,45 +368,55 @@ constexpr int kFetchedImageResizeDimension = 64;
   CHECK(driveItem);
   NSString* imageLink = GetImageLinkForDriveItem(*driveItem);
   CHECK(imageLink);
+  BOOL isThumbnail = [imageLink isEqualToString:driveItem->thumbnail_link];
+  BOOL isBackgroundImage =
+      [imageLink isEqualToString:driveItem->background_image_link];
   __weak __typeof(self) weakSelf = self;
-  // If there is a cached image, use it.
-  UIImage* cachedImage = [_imageCache objectForKey:imageLink];
-  if (cachedImage) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(
-                       [](DriveFilePickerMediator* mediator,
-                          UIImage* cachedImage, NSString* imageLink) {
-                         [mediator setIcon:cachedImage
-                             forItemsWithImageLink:imageLink];
-                       },
-                       weakSelf, cachedImage, imageLink));
-    // Since `setIcon:` has to be called asynchronously, if there were other
-    // cells with the same image appearing in this cycle for which
-    // `shouldFetchIcon` is also YES, then this task would be posted once for
-    // each cell, which is duplicated work. To avoid this, set `shouldFetchIcon`
-    // to NO for all these items synchronously.
-    [self setShouldFetchIcon:NO forItemsWithImageLink:imageLink];
-    return;
+  if (!isThumbnail) {
+    // If there is a cached image, use it.
+    UIImage* cachedImage = [_imageCache objectForKey:imageLink];
+    if (cachedImage) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              [](DriveFilePickerMediator* mediator, UIImage* cachedImage,
+                 NSString* imageLink, BOOL isThumbnail) {
+                [mediator setFetchedIcon:cachedImage
+                    forItemsWithImageLink:imageLink
+                              isThumbnail:isThumbnail];
+              },
+              weakSelf, cachedImage, imageLink, isThumbnail));
+      // Since `setIcon:` has to be called asynchronously, if there were other
+      // cells with the same image appearing in this cycle for which
+      // `shouldFetchIcon` is also YES, then this task would be posted once for
+      // each cell, which is duplicated work. To avoid this, set
+      // `shouldFetchIcon` to NO for all these items synchronously.
+      [self setShouldFetchIcon:NO forItemsWithImageLink:imageLink];
+      return;
+    }
   }
-  // If the image is being fetched, it should be in the cache next time.
+  // If the image is being fetched, do nothing.
   if ([_imagesPending containsObject:imageLink]) {
     return;
   }
-  // Otherwise fetch the image.
   [_imagesPending addObject:imageLink];
+  // Otherwise fetch the image.
   GURL imageURL = GURL(base::SysNSStringToUTF16(imageLink));
   _imageFetcher->FetchImageData(
       imageURL,
       base::BindOnce(
           [](DriveFilePickerMediator* mediator, NSString* imageLink,
-             NSString* itemIdentifier, const std::string& imageData,
+             NSString* itemIdentifier, BOOL isThumbnail, BOOL isBackgroundImage,
+             const std::string& imageData,
              const image_fetcher::RequestMetadata& metadata) {
             NSData* imageNSData = [NSData dataWithBytes:imageData.data()
                                                  length:imageData.length()];
             [mediator processUnsafeImageData:imageNSData
-                             fetchedFromLink:imageLink];
+                             fetchedFromLink:imageLink
+                                 isThumbnail:isThumbnail
+                           isBackgroundImage:isBackgroundImage];
           },
-          weakSelf, imageLink, itemIdentifier),
+          weakSelf, imageLink, itemIdentifier, isThumbnail, isBackgroundImage),
       NO_TRAFFIC_ANNOTATION_YET);
 }
 
@@ -885,15 +897,21 @@ constexpr int kFetchedImageResizeDimension = 64;
 // Transcodes `unsafeImageData` into `safeImageData` and forwards
 // `safeImageData` to `processSafeImageData:`.
 - (void)processUnsafeImageData:(NSData*)unsafeImageData
-               fetchedFromLink:(NSString*)imageLink {
+               fetchedFromLink:(NSString*)imageLink
+                   isThumbnail:(BOOL)isThumbnail
+             isBackgroundImage:(BOOL)isBackgroundImage {
+  NSNumber* resizedWidth = nil;
+  NSNumber* resizedHeight = nil;
+  if (isBackgroundImage) {
+    resizedWidth = resizedHeight = @(kBackgroundImageResizeDimension);
+  }
   __weak __typeof(self) weakSelf = self;
   _imageTranscoder->TranscodeImage(
-      unsafeImageData, @"image/png", @(kFetchedImageResizeDimension),
-      @(kFetchedImageResizeDimension), nil,
+      unsafeImageData, @"image/png", resizedWidth, resizedHeight, nil,
       base::BindOnce(
           [](DriveFilePickerMediator* mediator,
              NSMutableSet<NSString*>* imagesPending, NSString* imageLink,
-             NSData* safeImageData, NSError* error) {
+             BOOL isThumbnail, NSData* safeImageData, NSError* error) {
             if (!safeImageData) {
               // If there is no data, then remove `imageLink` from
               // `imagesPending` and try again next time the item appears on the
@@ -902,19 +920,29 @@ constexpr int kFetchedImageResizeDimension = 64;
               return;
             }
             [mediator processSafeImageData:safeImageData
-                           fetchedFromLink:imageLink];
+                           fetchedFromLink:imageLink
+                               isThumbnail:isThumbnail];
           },
-          weakSelf, _imagesPending, imageLink));
+          weakSelf, _imagesPending, imageLink, isThumbnail));
 }
 
 // Decodes and caches `imageData` using `imageLink` as key and updates the
 // consumer items associated with image link `imageLink`.
 - (void)processSafeImageData:(NSData*)imageData
-             fetchedFromLink:(NSString*)imageLink {
+             fetchedFromLink:(NSString*)imageLink
+                 isThumbnail:(BOOL)isThumbnail {
   UIImage* image = [UIImage imageWithData:imageData];
-  [_imageCache setObject:image forKey:imageLink];
+  if (isThumbnail) {
+    image = ResizeImage(
+        image, CGSizeMake(kThumbnailResizeDimension, kThumbnailResizeDimension),
+        ProjectionMode::kAspectFill);
+  } else {
+    [_imageCache setObject:image forKey:imageLink];
+  }
   [_imagesPending removeObject:imageLink];
-  [self setIcon:image forItemsWithImageLink:imageLink];
+  [self setFetchedIcon:image
+      forItemsWithImageLink:imageLink
+                isThumbnail:isThumbnail];
 }
 
 // Set `shouldFetchIcon` for all consumer items associated with image link
@@ -931,9 +959,11 @@ constexpr int kFetchedImageResizeDimension = 64;
   [self.consumer setShouldFetchIcon:shouldFetchIcon forItems:itemsToUpdate];
 }
 
-// Sets `image` as icon for all consumer items associated with image link
+// Sets `fetchedIcon` as icon for all consumer items associated with image link
 // `imageLink`.
-- (void)setIcon:(UIImage*)image forItemsWithImageLink:(NSString*)imageLink {
+- (void)setFetchedIcon:(UIImage*)fetchedIcon
+    forItemsWithImageLink:(NSString*)imageLink
+              isThumbnail:(BOOL)isThumbnail {
   // Update items with the same image link in the consumer.
   NSMutableSet<NSString*>* itemsToUpdate = [NSMutableSet set];
   for (const DriveItem& item : _fetchedDriveItems) {
@@ -941,7 +971,9 @@ constexpr int kFetchedImageResizeDimension = 64;
       [itemsToUpdate addObject:item.identifier];
     }
   }
-  [self.consumer setFetchedIcon:image forItems:itemsToUpdate];
+  [self.consumer setFetchedIcon:fetchedIcon
+                       forItems:itemsToUpdate
+                    isThumbnail:isThumbnail];
 }
 
 // Check if the pending sorting criteria and filter are different from the

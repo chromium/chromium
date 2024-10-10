@@ -274,6 +274,7 @@ NSString* const kPauseButton = @"pause.circle";
 NSString* const kPlayButton = @"play.circle";
 NSString* const kFolderSymbol = @"folder";
 NSString* const kCartSymbol = @"cart";
+NSString* const kArrowUTurnForwardSymbol = @"arrow.uturn.forward";
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

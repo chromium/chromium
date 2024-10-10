@@ -46,7 +46,8 @@
 
 // Sets the icon to `iconImage` for items with identifier in `itemIdentifiers`.
 - (void)setFetchedIcon:(UIImage*)iconImage
-              forItems:(NSSet<NSString*>*)itemIdentifiers;
+              forItems:(NSSet<NSString*>*)itemIdentifiers
+           isThumbnail:(BOOL)isThumbnail;
 
 // Reconfigures items matching `identifiers`.
 - (void)reconfigureItemsWithIdentifiers:(NSArray<NSString*>*)identifiers;

@@ -30,7 +30,10 @@
 
 namespace {
 
-constexpr CGFloat kCellImageDimension = 24.0;
+constexpr CGFloat kCellImageDimensionDefault = 24.0;
+constexpr CGFloat kCellImageDimensionSharedDrive = 30.0;
+constexpr CGFloat kCellImageDimensionThumbnail = 30.0;
+constexpr CGFloat kCellImageDimensionThumbnailCornerRadius = 4.0;
 constexpr CGFloat kCellVerticalMarginsText = 12.0;
 constexpr CGFloat kCellVerticalMarginsTextAndSecondaryText = 8.0;
 constexpr CGFloat kCellTextToSecondaryTextVerticalPadding = 4.0;
@@ -522,17 +525,30 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   contentConfiguration.image = item.icon;
   imageProperties.reservedLayoutSize = CGSizeMake(
       UIListContentImageStandardDimension, UIListContentImageStandardDimension);
-  imageProperties.maximumSize =
-      CGSize(kCellImageDimension, kCellImageDimension);
   // Set image tint color.
+  imageProperties.tintColor =
+      item.icon.isSymbolImage ? [UIColor colorNamed:kGrey600Color] : nil;
   if (item.icon.isSymbolImage) {
-    imageProperties.tintColor = [UIColor colorNamed:kGrey600Color];
     imageProperties.cornerRadius = 0;
+    imageProperties.maximumSize =
+        CGSize(kCellImageDimensionDefault, kCellImageDimensionDefault);
+  } else if (item.type == DriveItemType::kSharedDrive) {
+    imageProperties.cornerRadius = kCellImageDimensionSharedDrive / 2.0;
+    imageProperties.maximumSize =
+        CGSize(kCellImageDimensionSharedDrive, kCellImageDimensionSharedDrive);
+  } else if (item.iconIsThumbnail) {
+    imageProperties.cornerRadius = kCellImageDimensionThumbnailCornerRadius;
+    CGSize maximumSize = CGSizeZero;
+    if (item.icon.size.width > item.icon.size.height) {
+      maximumSize.height = kCellImageDimensionThumbnail;
+    } else {
+      maximumSize.width = kCellImageDimensionThumbnail;
+    }
+    imageProperties.maximumSize = maximumSize;
   } else {
-    imageProperties.tintColor = nil;
-    imageProperties.cornerRadius = item.type == DriveItemType::kSharedDrive
-                                       ? kCellImageDimension / 2.0
-                                       : 0;
+    imageProperties.cornerRadius = 0;
+    imageProperties.maximumSize =
+        CGSize(kCellImageDimensionDefault, kCellImageDimensionDefault);
   }
 
   // Set up text.
@@ -720,12 +736,14 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 }
 
 - (void)setFetchedIcon:(UIImage*)iconImage
-              forItems:(NSSet<NSString*>*)itemIdentifiers {
+              forItems:(NSSet<NSString*>*)itemIdentifiers
+           isThumbnail:(BOOL)isThumbnail {
   NSMutableArray<NSString*>* itemsToReconfigure = [NSMutableArray array];
   for (DriveFilePickerItem* primaryItem in _primaryItems) {
     if ([itemIdentifiers containsObject:primaryItem.identifier]) {
       primaryItem.icon = iconImage;
       primaryItem.shouldFetchIcon = NO;
+      primaryItem.iconIsThumbnail = isThumbnail;
       [itemsToReconfigure addObject:primaryItem.identifier];
     }
   }
@@ -733,6 +751,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
     if ([itemIdentifiers containsObject:secondaryItem.identifier]) {
       secondaryItem.icon = iconImage;
       secondaryItem.shouldFetchIcon = NO;
+      secondaryItem.iconIsThumbnail = isThumbnail;
       [itemsToReconfigure addObject:secondaryItem.identifier];
     }
   }

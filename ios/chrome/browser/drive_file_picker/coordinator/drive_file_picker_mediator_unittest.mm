@@ -145,7 +145,8 @@
 }
 
 - (void)setFetchedIcon:(UIImage*)iconImage
-              forItems:(NSSet<NSString*>*)itemIdentifiers {
+              forItems:(NSSet<NSString*>*)itemIdentifiers
+           isThumbnail:(BOOL)isThumbnail {
 }
 
 - (void)setDownloadStatus:(DriveFileDownloadStatus)downloadStatus {

@@ -84,6 +84,10 @@ NSString* kOnlyShowPDFsExtraTerm =
      " mimeType='application/pdf')";
 // Prefix of MIME types associated with Google apps.
 NSString* kGoogleAppsMIMETypePrefix = @"application/vnd.google-apps.";
+// MIME type for shortcut items.
+NSString* kShortcutMIMEType = @"application/vnd.google-apps.shortcut";
+// Prefix of MIME types associated with images.
+NSString* kImageMIMETypePrefix = @"image/";
 // Prefix of links to icons in the Drive third-party icon repository.
 NSString* kDriveIconRepositoryPrefix =
     @"https://drive-thirdparty.googleusercontent.com/";
@@ -412,6 +416,8 @@ DriveFilePickerItem* DriveItemToDriveFilePickerItem(
                     type:type];
   drive_file_picker_item.shouldFetchIcon =
       (fetched_icon == nil && fetched_icon_link != nil);
+  drive_file_picker_item.iconIsThumbnail =
+      [fetched_icon_link isEqualToString:item.thumbnail_link];
   return drive_file_picker_item;
 }
 
@@ -450,6 +456,9 @@ UIImage* GetPlaceholderIconForDriveItem(const DriveItem& item) {
   } else if (item.is_folder) {
     return DefaultSymbolWithPointSize(kFolderSymbol,
                                       kDriveFilePickerItemIconSize);
+  } else if ([item.mime_type isEqualToString:kShortcutMIMEType]) {
+    return DefaultSymbolWithPointSize(kArrowUTurnForwardSymbol,
+                                      kDriveFilePickerItemIconSize);
   } else {
     return DefaultSymbolWithPointSize(kDocSymbol, kDriveFilePickerItemIconSize);
   }
@@ -460,6 +469,13 @@ NSString* GetImageLinkForDriveItem(const DriveItem& item) {
   if (item.is_shared_drive) {
     // If this is a shared drive, the background image link should be fetched.
     imageLink = item.background_image_link;
+  } else if ([item.mime_type hasPrefix:kImageMIMETypePrefix] &&
+             item.thumbnail_link) {
+    imageLink = item.thumbnail_link;
+  } else if ([item.mime_type isEqualToString:kShortcutMIMEType]) {
+    // TODO(crbug.com/372214672): When target MIME type is known, use the asset
+    // which matches that MIME type.
+    imageLink = nil;
   } else {
     // Otherwise the icon link should be fetched.
     // By default drive api provides a 16 resolution icons, replacing 16 by 64
@@ -473,11 +489,6 @@ NSString* GetImageLinkForDriveItem(const DriveItem& item) {
         [kDriveIconRepositoryPrefix stringByAppendingString:@"64"];
     imageLink = [imageLink stringByReplacingOccurrencesOfString:target
                                                      withString:replacement];
-  }
-  if (![imageLink hasPrefix:kDriveIconRepositoryPrefix] &&
-      ![imageLink hasPrefix:kSharedDriveBackgroundImageGalleryPrefix]) {
-    // If the image link is not a known source, return nil.
-    return nil;
   }
   return imageLink;
 }
