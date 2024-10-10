@@ -87,9 +87,9 @@ id<GREYMatcher> IdentityButtonMatcher(NSString* email) {
                       DriveFilePickerNavigationViewControllerMatcher()];
   [[EarlGrey selectElementWithMatcher:ConfirmButtonMatcher(NO)]
       assertWithMatcher:grey_notNil()];
-  [[EarlGrey selectElementWithMatcher:SortButtonMatcher(YES)]
+  [[EarlGrey selectElementWithMatcher:SortButtonMatcher(NO)]
       assertWithMatcher:grey_notNil()];
-  [[EarlGrey selectElementWithMatcher:FilterButtonMatcher(YES)]
+  [[EarlGrey selectElementWithMatcher:FilterButtonMatcher(NO)]
       assertWithMatcher:grey_notNil()];
   [[EarlGrey
       selectElementWithMatcher:IdentityButtonMatcher(fakeIdentity.userEmail)]

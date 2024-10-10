@@ -198,6 +198,8 @@ constexpr int kFetchedImageResizeDimension = 64;
   [_consumer setBackground:DriveFilePickerBackground::kLoadingIndicator];
   [_consumer setCancelButtonVisible:_collectionType ==
                                     DriveFilePickerCollectionType::kRoot];
+  [_consumer setFilterMenuEnabled:[self filterMenuShouldBeEnabled]];
+  [_consumer setSortingMenuEnabled:[self sortingMenuShouldBeEnabled]];
 }
 
 - (void)setSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
@@ -478,6 +480,7 @@ constexpr int kFetchedImageResizeDimension = 64;
     [self clearItems];
     [self.consumer setBackground:DriveFilePickerBackground::kLoadingIndicator];
   }
+  [_consumer setSortingMenuEnabled:[self sortingMenuShouldBeEnabled]];
   // Fetching new items is delayed when `_searchText` is modified, to ensure
   // modifying it very frequently does not equally too frequent API calls. This
   // works because only one pending fetch request is ever allowed at a time.
@@ -588,6 +591,7 @@ constexpr int kFetchedImageResizeDimension = 64;
   // is cleared and the loading indicator is presented.
   [self clearItems];
   [self.consumer setBackground:DriveFilePickerBackground::kLoadingIndicator];
+  [_consumer setSortingMenuEnabled:[self sortingMenuShouldBeEnabled]];
   [self updateTitle];
   [self loadItemsAppending:NO delayed:NO animated:YES];
 }
@@ -987,6 +991,26 @@ constexpr int kFetchedImageResizeDimension = 64;
   if (refreshAcceptedItems) {
     [self updateAcceptableItems];
   }
+}
+
+// Helper function to compute whether the filter menu should be enabled.
+- (BOOL)filterMenuShouldBeEnabled {
+  if (_shouldShowSearchItems) {
+    return YES;
+  }
+  return _collectionType != DriveFilePickerCollectionType::kRoot &&
+         _collectionType != DriveFilePickerCollectionType::kSharedDrives;
+}
+
+// Helper function to compute whether the sorting menu should be enabled.
+- (BOOL)sortingMenuShouldBeEnabled {
+  if (_shouldShowSearchItems) {
+    return _searchText.length > 0;
+  }
+
+  return _collectionType != DriveFilePickerCollectionType::kRoot &&
+         _collectionType != DriveFilePickerCollectionType::kRecent &&
+         _collectionType != DriveFilePickerCollectionType::kSharedDrives;
 }
 
 @end

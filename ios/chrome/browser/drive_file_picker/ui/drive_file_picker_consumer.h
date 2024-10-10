@@ -63,10 +63,17 @@
 // Sets which filter should appear as enabled.
 - (void)setFilter:(DriveFilePickerFilter)filter;
 
+// Sets whether the filter menu is enabled.
+- (void)setFilterMenuEnabled:(BOOL)enabled;
+
 // Sets which sorting criteria and direction appear as enabled.
 - (void)setSortingCriteria:(DriveItemsSortingType)criteria
                  direction:(DriveItemsSortingOrder)direction;
 
+// Sets whether the sorting menu is enabled.
+- (void)setSortingMenuEnabled:(BOOL)enabled;
+
+// Sets the identity displayed in the bottom bar.
 - (void)setSelectedItemIdentifier:(NSString*)selectedIdentifier;
 
 // Sets whether the search bar is focused and the text it contains.

@@ -820,6 +820,10 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   _filterButton.menu = [self createFilterButtonMenu];
 }
 
+- (void)setFilterMenuEnabled:(BOOL)enabled {
+  _filterButton.enabled = enabled;
+}
+
 - (void)setSortingCriteria:(DriveItemsSortingType)criteria
                  direction:(DriveItemsSortingOrder)direction {
   _sortByNameAction.state = UIMenuElementStateOff;
@@ -835,6 +839,10 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   enabledSortingAction.state = UIMenuElementStateOn;
   // The menu needs to be reset for the new state to appear.
   _sortButton.menu = [self createSortButtonMenu];
+}
+
+- (void)setSortingMenuEnabled:(BOOL)enabled {
+  _sortButton.enabled = enabled;
 }
 
 - (void)setSelectedItemIdentifier:(NSString*)selectedIdentifier {

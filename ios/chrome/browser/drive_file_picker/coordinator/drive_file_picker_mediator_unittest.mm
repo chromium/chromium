@@ -161,10 +161,16 @@
 - (void)setFilter:(DriveFilePickerFilter)filter {
 }
 
+- (void)setFilterMenuEnabled:(BOOL)enabled {
+}
+
 - (void)setSortingCriteria:(DriveItemsSortingType)criteria
                  direction:(DriveItemsSortingOrder)direction {
   self.sortingCriteria = criteria;
   self.sortingDirection = direction;
+}
+
+- (void)setSortingMenuEnabled:(BOOL)enabled {
 }
 
 - (void)setSelectedItemIdentifier:(NSString*)selectedIdentifier {
