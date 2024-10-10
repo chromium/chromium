@@ -265,14 +265,21 @@ export class BrowsingContextProcessor {
         );
       });
 
-      if (params.promptUnload) {
-        await context.close();
-      } else {
-        await this.#browserCdpClient.sendCommand('Target.closeTarget', {
-          targetId: params.context,
-        });
+      try {
+        if (params.promptUnload) {
+          await context.close();
+        } else {
+          await this.#browserCdpClient.sendCommand('Target.closeTarget', {
+            targetId: params.context,
+          });
+        }
+      } catch (error: any) {
+        // Swallow error that arise from the session being destroyed. Rely on the
+        // `detachedFromTargetPromise` event to be resolved.
+        if (!this.#browserCdpClient.isCloseError(error)) {
+          throw error;
+        }
       }
-
       // Sometimes CDP command finishes before `detachedFromTarget` event,
       // sometimes after. Wait for the CDP command to be finished, and then wait
       // for `detachedFromTarget` if it hasn't emitted.

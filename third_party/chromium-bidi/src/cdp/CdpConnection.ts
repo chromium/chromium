@@ -28,6 +28,7 @@ interface CdpCallbacks {
   resolve: (result: CdpMessage<any>['result']) => void;
   reject: (error: object) => void;
   error: Error;
+  sessionId?: Protocol.Target.SessionID;
 }
 
 export interface CdpConnection {
@@ -103,6 +104,7 @@ export class MapperCdpConnection implements CdpConnection {
     return new Promise((resolve, reject) => {
       const id = this.#nextId++;
       this.#commandCallbacks.set(id, {
+        sessionId,
         resolve,
         reject,
         error: new CloseError(
@@ -162,6 +164,12 @@ export class MapperCdpConnection implements CdpConnection {
         if (client) {
           this.#sessionCdpClients.delete(sessionId);
           client.removeAllListeners();
+        }
+        // Reject all the pending commands for the detached session.
+        for (const callback of this.#commandCallbacks.values()) {
+          if (callback.sessionId === sessionId) {
+            callback.reject(callback.error);
+          }
         }
       }
     }

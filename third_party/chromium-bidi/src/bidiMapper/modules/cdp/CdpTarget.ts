@@ -347,8 +347,9 @@ export class CdpTarget {
   #isExpectedError(err: unknown): boolean {
     const error = err as {code?: unknown; message?: unknown};
     return (
-      error.code === -32001 &&
-      error.message === 'Session with given id not found.'
+      (error.code === -32001 &&
+        error.message === 'Session with given id not found.') ||
+      this.#cdpClient.isCloseError(err)
     );
   }
 
