@@ -202,7 +202,6 @@ source_set("unit_tests") {
     "//components/segmentation_platform/embedder/home_modules",
     "//components/segmentation_platform/public",
     "//components/sync_preferences:test_support",
-    "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/default_browser/model:test_support",
     "//ios/chrome/browser/favicon/model",

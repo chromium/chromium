@@ -11,9 +11,9 @@
 @protocol ContentSuggestionsViewControllerAudience;
 class IOSChromeSafetyCheckManager;
 class PrefService;
+@class ProfileState;
 @class SafetyCheckMagicStackMediator;
 @class SafetyCheckState;
-@class AppState;
 
 // Handles Safety Check Module events.
 @protocol SafetyCheckMagicStackMediatorDelegate
@@ -45,7 +45,7 @@ class PrefService;
                     (IOSChromeSafetyCheckManager*)safetyCheckManager
                                 localState:(PrefService*)localState
                                  userState:(PrefService*)userState
-                                  appState:(AppState*)appState
+                              profileState:(ProfileState*)profileState
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

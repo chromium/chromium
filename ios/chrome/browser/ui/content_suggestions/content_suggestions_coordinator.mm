@@ -398,7 +398,7 @@ using segmentation_platform::TipIdentifier;
         initWithSafetyCheckManager:safetyCheckManager
                         localState:GetApplicationContext()->GetLocalState()
                          userState:prefs
-                          appState:self.browser->GetSceneState().appState];
+                      profileState:self.browser->GetSceneState().profileState];
     _safetyCheckMediator.presentationAudience = self;
     [moduleMediators addObject:_safetyCheckMediator];
   }

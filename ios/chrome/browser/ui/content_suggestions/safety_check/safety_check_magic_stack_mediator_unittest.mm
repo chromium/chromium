@@ -9,7 +9,6 @@
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
@@ -60,13 +59,11 @@ class SafetyCheckMagicStackMediatorTest : public PlatformTest {
     safety_check_manager_ =
         IOSChromeSafetyCheckManagerFactory::GetForProfile(profile);
 
-    mock_app_state_ = OCMClassMock([AppState class]);
-
     mediator_ = [[SafetyCheckMagicStackMediator alloc]
         initWithSafetyCheckManager:safety_check_manager_.get()
                         localState:local_pref_service_.get()
                          userState:pref_service_.get()
-                          appState:mock_app_state_];
+                      profileState:nil];
 
     safety_check_magic_stack_consumer_ =
         OCMProtocolMock(@protocol(SafetyCheckMagicStackConsumer));
@@ -82,7 +79,6 @@ class SafetyCheckMagicStackMediatorTest : public PlatformTest {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
-  id mock_app_state_;
   raw_ptr<PrefService> pref_service_;
   raw_ptr<PrefService> local_pref_service_;
   SafetyCheckMagicStackMediator* mediator_;

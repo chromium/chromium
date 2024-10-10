@@ -11,8 +11,9 @@
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/app/application_delegate/app_state_observer.h"
+#import "ios/chrome/app/profile/profile_init_stage.h"
+#import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
@@ -59,7 +60,7 @@ int ImpressionsCount(const base::Value::List& impressions,
 }  // namespace
 
 @interface SafetyCheckMagicStackMediator () <
-    AppStateObserver,
+    ProfileStateObserver,
     MagicStackModuleDelegate,
     NotificationsSettingsObserverDelegate,
     PrefObserverDelegate,
@@ -82,7 +83,7 @@ int ImpressionsCount(const base::Value::List& impressions,
   raw_ptr<PrefService> _localState;
   // User prefs.
   raw_ptr<PrefService> _userState;
-  AppState* _appState;
+  ProfileState* _profileState;
   // Used by the Safety Check (Magic Stack) module for the current Safety Check
   // state.
   SafetyCheckState* _safetyCheckState;
@@ -96,15 +97,14 @@ int ImpressionsCount(const base::Value::List& impressions,
                     (IOSChromeSafetyCheckManager*)safetyCheckManager
                                 localState:(PrefService*)localState
                                  userState:(PrefService*)userState
-                                  appState:(AppState*)appState {
+                              profileState:(ProfileState*)profileState {
   self = [super init];
   if (self) {
     _safetyCheckManager = safetyCheckManager;
     _localState = localState;
     _userState = userState;
-    _appState = appState;
-
-    [_appState addObserver:self];
+    _profileState = profileState;
+    [_profileState addObserver:self];
 
     if (IsSafetyCheckNotificationsEnabled()) {
       _notificationsObserver = [[NotificationsSettingsObserver alloc]
@@ -154,8 +154,8 @@ int ImpressionsCount(const base::Value::List& impressions,
       _safetyCheckManagerObserver =
           std::make_unique<SafetyCheckObserverBridge>(self, safetyCheckManager);
 
-      if (_appState.initStage > AppInitStage::kNormalUI &&
-          _appState.firstSceneHasInitializedUI &&
+      if (_profileState.initStage > ProfileInitStage::kUIReady &&
+          _profileState.firstSceneHasInitializedUI &&
           _safetyCheckState.runningState == RunningSafetyCheckState::kRunning) {
         // When the Safety Check Notifications feature is enabled, the Magic
         // Stack should never initiate a Safety Check run.
@@ -184,7 +184,8 @@ int ImpressionsCount(const base::Value::List& impressions,
 
     _prefObserverBridge.reset();
   }
-  [_appState removeObserver:self];
+  [_profileState removeObserver:self];
+  _profileState = nil;
 }
 
 - (SafetyCheckState*)safetyCheckState {
@@ -274,19 +275,20 @@ int ImpressionsCount(const base::Value::List& impressions,
   _safetyCheckManagerObserver.reset();
 }
 
-#pragma mark - AppStateObserver
+#pragma mark - ProfileStateObserver
 
 // Conditionally starts the Safety Check if the upcoming init stage is
-// `AppInitStage::kFinal` and the Safety Check state indicates it's running.
+// `ProfileInitStage::kFinal` and the Safety Check state indicates it's running.
 //
 // NOTE: It's safe to call `StartSafetyCheck()` multiple times, because calling
 // `StartSafetyCheck()` on an already-running Safety Check is a no-op.
-- (void)appState:(AppState*)appState
-    willTransitionToInitStage:(AppInitStage)nextInitStage {
+- (void)profileState:(ProfileState*)profileState
+    willTransitionToInitStage:(ProfileInitStage)nextInitStage
+                fromInitStage:(ProfileInitStage)fromInitStage {
   if (!safety_check_prefs::IsSafetyCheckInMagicStackDisabled(
           IsHomeCustomizationEnabled() ? _userState : _localState) &&
-      nextInitStage == AppInitStage::kFinal &&
-      appState.firstSceneHasInitializedUI &&
+      nextInitStage == ProfileInitStage::kFinal &&
+      profileState.firstSceneHasInitializedUI &&
       _safetyCheckState.runningState == RunningSafetyCheckState::kRunning) {
     // When the Safety Check Notifications feature is enabled, the Magic
     // Stack should never initiate a Safety Check run.

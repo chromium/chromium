@@ -22,7 +22,6 @@
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_cache_factory.h"
@@ -328,14 +327,12 @@ class MagicStackRankingModelTest : public PlatformTest {
                  largeIconCache:cache
          URLLoadingBrowserAgent:url_loader_];
 
-    id mockAppState = OCMClassMock([AppState class]);
-
     _safetyCheckMediator = [[SafetyCheckMagicStackMediator alloc]
         initWithSafetyCheckManager:IOSChromeSafetyCheckManagerFactory::
                                        GetForProfile(GetProfile())
                         localState:GetLocalState()
                          userState:GetProfile()->GetPrefs()
-                          appState:mockAppState];
+                      profileState:nil];
 
     _priceTrackingPromoMediator = [[PriceTrackingPromoMediator alloc]
         initWithShoppingService:commerce::ShoppingServiceFactory::GetForProfile(
