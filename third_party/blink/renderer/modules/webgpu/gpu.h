@@ -42,6 +42,7 @@ class GPURequestAdapterOptions;
 class NavigatorBase;
 class ScriptState;
 class DawnControlClientHolder;
+class V8GPUTextureFormat;
 class WGSLLanguageFeatures;
 
 struct BoxedMappableWGPUBufferHandles
@@ -84,7 +85,7 @@ class MODULES_EXPORT GPU final : public ScriptWrappable,
   ScriptPromise<IDLNullable<GPUAdapter>> requestAdapter(
       ScriptState* script_state,
       const GPURequestAdapterOptions* options);
-  String getPreferredCanvasFormat();
+  V8GPUTextureFormat getPreferredCanvasFormat();
   WGSLLanguageFeatures* wgslLanguageFeatures() const;
 
   static wgpu::TextureFormat preferred_canvas_format();

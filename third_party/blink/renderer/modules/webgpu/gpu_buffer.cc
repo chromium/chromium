@@ -12,6 +12,7 @@
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_buffer_descriptor.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_buffer_map_state.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -234,7 +235,7 @@ uint32_t GPUBuffer::usage() const {
   return static_cast<uint32_t>(GetHandle().GetUsage());
 }
 
-String GPUBuffer::mapState() const {
+V8GPUBufferMapState GPUBuffer::mapState() const {
   return FromDawnEnum(GetHandle().GetMapState());
 }
 

@@ -427,8 +427,9 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
     default:
       device_->InjectError(
           wgpu::ErrorType::Validation,
-          ("Unsupported canvas context format \"" +
-           std::string(FromDawnEnum(texture_descriptor_.format)) + "\"")
+          ((String)("Unsupported canvas context format \"" +
+                    FromDawnEnum(texture_descriptor_.format).AsString() + "\""))
+              .Utf8()
               .c_str());
       return;
   }
@@ -604,10 +605,7 @@ GPUCanvasConfiguration* GPUCanvasContext::getConfiguration() {
 
   Vector<V8GPUTextureFormat> view_formats;
   for (size_t i = 0; i < texture_descriptor_.viewFormatCount; ++i) {
-    std::optional<V8GPUTextureFormat> format =
-        V8GPUTextureFormat::Create(FromDawnEnum(view_formats_[i]));
-    CHECK(format.has_value());
-    view_formats.push_back(format.value());
+    view_formats.push_back(FromDawnEnum(view_formats_[i]));
   }
   configuration->setViewFormats(view_formats);
 

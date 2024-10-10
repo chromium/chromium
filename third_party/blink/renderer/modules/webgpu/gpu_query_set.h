@@ -11,6 +11,7 @@
 namespace blink {
 
 class GPUQuerySetDescriptor;
+class V8GPUQueryType;
 
 class GPUQuerySet : public DawnObject<wgpu::QuerySet> {
   DEFINE_WRAPPERTYPEINFO();
@@ -27,7 +28,7 @@ class GPUQuerySet : public DawnObject<wgpu::QuerySet> {
 
   // gpu_queryset.idl
   void destroy();
-  String type() const;
+  V8GPUQueryType type() const;
   uint32_t count() const;
 
  private:

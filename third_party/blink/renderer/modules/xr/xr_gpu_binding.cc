@@ -209,7 +209,7 @@ XRGPUSubImage* XRGPUBinding::getViewSubImage(XRProjectionLayer* layer,
       depth_stencil_texture);
 }
 
-String XRGPUBinding::getPreferredColorFormat() {
+V8GPUTextureFormat XRGPUBinding::getPreferredColorFormat() {
   return FromDawnEnum(GPU::preferred_canvas_format());
 }
 

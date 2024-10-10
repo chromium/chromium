@@ -283,11 +283,11 @@ uint32_t GPUTexture::sampleCount() const {
   return GetHandle().GetSampleCount();
 }
 
-String GPUTexture::dimension() const {
+V8GPUTextureDimension GPUTexture::dimension() const {
   return FromDawnEnum(GetHandle().GetDimension());
 }
 
-String GPUTexture::format() const {
+V8GPUTextureFormat GPUTexture::format() const {
   return FromDawnEnum(GetHandle().GetFormat());
 }
 

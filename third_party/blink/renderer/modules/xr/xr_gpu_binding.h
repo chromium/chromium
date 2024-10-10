@@ -16,6 +16,7 @@ namespace blink {
 class ExceptionState;
 class GPUDevice;
 class GPUTexture;
+class V8GPUTextureFormat;
 class XRSession;
 class XRView;
 class XRProjectionLayer;
@@ -50,7 +51,7 @@ class XRGPUBinding final : public ScriptWrappable, public XRGraphicsBinding {
                                  XRView* view,
                                  ExceptionState& exception_state);
 
-  String getPreferredColorFormat();
+  V8GPUTextureFormat getPreferredColorFormat();
 
   GPUDevice* device() const { return device_.Get(); }
 

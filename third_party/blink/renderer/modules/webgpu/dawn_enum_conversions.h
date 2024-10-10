@@ -6,6 +6,7 @@
 namespace blink {
 
 class V8GPUBufferBindingType;
+class V8GPUBufferMapState;
 class V8GPUSamplerBindingType;
 class V8GPUTextureSampleType;
 class V8GPUStorageTextureAccess;
@@ -71,10 +72,10 @@ wgpu::TextureAspect AsDawnEnum(const V8GPUTextureAspect& webgpu_enum);
 wgpu::ErrorFilter AsDawnEnum(const V8GPUErrorFilter& webgpu_enum);
 
 // Convert Dawn enums to WebGPU IDL enums.
-const char* FromDawnEnum(wgpu::QueryType dawn_enum);
-const char* FromDawnEnum(wgpu::TextureDimension dawn_enum);
-const char* FromDawnEnum(wgpu::TextureFormat dawn_enum);
-const char* FromDawnEnum(wgpu::BufferMapState dawn_enum);
+V8GPUQueryType FromDawnEnum(wgpu::QueryType dawn_enum);
+V8GPUTextureDimension FromDawnEnum(wgpu::TextureDimension dawn_enum);
+V8GPUTextureFormat FromDawnEnum(wgpu::TextureFormat dawn_enum);
+V8GPUBufferMapState FromDawnEnum(wgpu::BufferMapState dawn_enum);
 const char* FromDawnEnum(wgpu::BackendType dawn_enum);
 const char* FromDawnEnum(wgpu::AdapterType dawn_enum);
 [[nodiscard]] bool FromDawnEnum(wgpu::WGSLFeatureName dawn_enum,

@@ -3796,15 +3796,14 @@ V8GPUTextureFormat BaseRenderingContext2D::getTextureFormat() const {
   std::optional<V8GPUTextureFormat> format;
   if (const CanvasRenderingContextHost* host =
           GetCanvasRenderingContextHost()) {
-    format = V8GPUTextureFormat::Create(FromDawnEnum(
-        AsDawnType(host->GetRenderingContextSkColorInfo().colorType())));
+    format = FromDawnEnum(
+        AsDawnType(host->GetRenderingContextSkColorInfo().colorType()));
   }
 
   // If that did not work (e.g., the canvas host does not yet exist), we can
   // return the preferred canvas format.
   if (!format.has_value()) {
-    format = V8GPUTextureFormat::Create(
-        FromDawnEnum(GPU::preferred_canvas_format()));
+    format = FromDawnEnum(GPU::preferred_canvas_format());
   }
 
   // If the preferred canvas format cannot be represented as a GPUTextureFormat,

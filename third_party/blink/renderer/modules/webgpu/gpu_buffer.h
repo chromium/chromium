@@ -20,6 +20,7 @@ class GPUBufferDescriptor;
 class GPUMappedDOMArrayBuffer;
 struct BoxedMappableWGPUBufferHandles;
 class ScriptState;
+class V8GPUBufferMapState;
 
 class GPUBuffer : public DawnObject<wgpu::Buffer> {
   DEFINE_WRAPPERTYPEINFO();
@@ -60,7 +61,7 @@ class GPUBuffer : public DawnObject<wgpu::Buffer> {
   void destroy(v8::Isolate* isolate);
   uint64_t size() const;
   uint32_t usage() const;
-  String mapState() const;
+  V8GPUBufferMapState mapState() const;
 
   void DetachMappedArrayBuffers(v8::Isolate* isolate);
 

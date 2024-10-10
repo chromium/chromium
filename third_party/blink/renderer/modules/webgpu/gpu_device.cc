@@ -246,13 +246,13 @@ void GPUDevice::AddSingletonWarning(GPUSingletonWarning type) {
   if (!singleton_warning_fired_[index]) [[unlikely]] {
     singleton_warning_fired_[index] = true;
 
-    std::string message;
+    String message;
     switch (type) {
       case GPUSingletonWarning::kNonPreferredFormat:
         message =
             "WebGPU canvas configured with a different format than is "
             "preferred by this device (\"" +
-            std::string(FromDawnEnum(GPU::preferred_canvas_format())) +
+            FromDawnEnum(GPU::preferred_canvas_format()).AsString() +
             "\"). This requires an extra copy, which may impact performance.";
         break;
       case GPUSingletonWarning::kDepthKey:
@@ -269,8 +269,7 @@ void GPUDevice::AddSingletonWarning(GPUSingletonWarning type) {
     if (execution_context) {
       auto* console_message = MakeGarbageCollected<ConsoleMessage>(
           mojom::blink::ConsoleMessageSource::kRendering,
-          mojom::blink::ConsoleMessageLevel::kWarning,
-          StringFromASCIIAndUTF8(message.c_str()));
+          mojom::blink::ConsoleMessageLevel::kWarning, message);
       execution_context->AddConsoleMessage(console_message);
     }
   }
