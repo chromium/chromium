@@ -11423,7 +11423,6 @@
     "HttpsFirstModeV2ForEngagedSites": [
         {
             "platforms": [
-                "android",
                 "windows",
                 "chromeos",
                 "chromeos_lacros",
@@ -11449,7 +11448,6 @@
     "HttpsFirstModeV2ForTypicallySecureUsers": [
         {
             "platforms": [
-                "android",
                 "chromeos",
                 "chromeos_lacros",
                 "linux",
