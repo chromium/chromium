@@ -1425,6 +1425,16 @@
     "expiry_milestone": 140
   },
   {
+    "name": "cct-open-in-browser-button-if-allowed-by-embedder",
+    "owners": ["kamalchoudhury@google.com", "edmundw@google.com"],
+    "expiry_milestone": 140
+  },
+  {
+    "name": "cct-open-in-browser-button-if-enabled-by-embedder",
+    "owners": ["kamalchoudhury@google.com", "edmundw@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "cct-prevent-touches",
     "owners": [ "jinsukkim@chromium.org", "kgrosu@google.com", "twellington@chromium.org" ],
     "expiry_milestone": 140

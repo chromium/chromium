@@ -7491,6 +7491,18 @@ const FeatureEntry kFeatureEntries[] = {
          chrome::android::kCCTGoogleBottomBarVariantLayouts,
          kCCTGoogleBottomBarVariantLayoutsVariations,
          "CCTGoogleBottomBarVariantLayoutsVariations")},
+    {"cct-open-in-browser-button-if-allowed-by-embedder",
+     flag_descriptions::kCCTOpenInBrowserButtonIfAllowedByEmbedderName,
+     flag_descriptions::kCCTOpenInBrowserButtonIfAllowedByEmbedderDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         chrome::android::kCCTOpenInBrowserButtonIfAllowedByEmbedder)},
+    {"cct-open-in-browser-button-if-enabled-by-embedder",
+     flag_descriptions::kCCTOpenInBrowserButtonIfEnabledByEmbedderName,
+     flag_descriptions::kCCTOpenInBrowserButtonIfEnabledByEmbedderDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         chrome::android::kCCTOpenInBrowserButtonIfEnabledByEmbedder)},
     {"cct-revamped-branding", flag_descriptions::kCCTRevampedBrandingName,
      flag_descriptions::kCCTRevampedBrandingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kCCTRevampedBranding)},

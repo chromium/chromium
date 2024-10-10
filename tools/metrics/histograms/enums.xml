@@ -15944,6 +15944,8 @@ from previous Chrome versions.
       label="OmniboxSpeculativeServiceWorkerStartOnQueryInput:enabled"/>
   <int value="-1780174878" label="SplitTabStrip:disabled"/>
   <int value="-1779753607" label="VizDisplayCompositor:disabled"/>
+  <int value="-1779180655"
+      label="CCTOpenInBrowserButtonIfAllowedByEmbedder:enabled"/>
   <int value="-1778993296" label="ContextualSearchMlTapSuppression:disabled"/>
   <int value="-1778760568"
       label="OmniboxFocusTriggersContextualWebZeroSuggest:enabled"/>
@@ -16035,6 +16037,8 @@ from previous Chrome versions.
   <int value="-1734666001" label="SafeBrowsingEnhancedProtection:enabled"/>
   <int value="-1734254845" label="ash-enable-night-light"/>
   <int value="-1733673658" label="ComposeUpfrontInputModes:enabled"/>
+  <int value="-1733227150"
+      label="CCTOpenInBrowserButtonIfEnabledByEmbedder:enabled"/>
   <int value="-1732940196" label="MultiCalendarSupport:disabled"/>
   <int value="-1732888954" label="UseButtonTranslateBubbleUI:enabled"/>
   <int value="-1732777136" label="SignInProfileCreationFlow:disabled"/>
@@ -17731,6 +17735,8 @@ from previous Chrome versions.
   <int value="-1048011353" label="LongPressBackNewDesign:disabled"/>
   <int value="-1046641729" label="TranslateUI:enabled"/>
   <int value="-1046627610" label="password-import:enabled"/>
+  <int value="-1046335898"
+      label="CCTOpenInBrowserButtonIfEnabledByEmbedder:disabled"/>
   <int value="-1045900007" label="NoCreditCardAbort:disabled"/>
   <int value="-1045882995" label="UseNewDoodleApi:enabled"/>
   <int value="-1044956739" label="OptimizationGuidePushNotifications:enabled"/>
@@ -19268,6 +19274,8 @@ from previous Chrome versions.
       label="DisruptiveNotificationPermissionRevocation:disabled"/>
   <int value="-412736561" label="EnableZeroStateMixedTypesRanker:enabled"/>
   <int value="-410852857" label="ImprovedA2HS:disabled"/>
+  <int value="-408800711"
+      label="CCTOpenInBrowserButtonIfAllowedByEmbedder:disabled"/>
   <int value="-408769228" label="ArcGraphicBuffersVisualizationTool:disabled"/>
   <int value="-408180142" label="PassExplicitSyncPassphraseToGmsCore:disabled"/>
   <int value="-406850932" label="EnableEmojiContextMenu:enabled"/>

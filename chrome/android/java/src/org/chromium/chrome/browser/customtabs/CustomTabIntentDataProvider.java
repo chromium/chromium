@@ -181,6 +181,10 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     public static final String EXTRA_OPEN_IN_BROWSER_STATE =
             "androidx.browser.customtabs.extra.OPEN_IN_BROWSER_STATE";
 
+    @VisibleForTesting
+    static final String EXTRA_OPEN_IN_BROWSER_BUTTON_ALLOWED =
+            "androidx.browser.customtabs.extra.OPEN_IN_BROWSER_BUTTON_ALLOWED";
+
     @IntDef({
         CustomTabsButtonState.BUTTON_STATE_OFF,
         CustomTabsButtonState.BUTTON_STATE_ON,
@@ -942,11 +946,21 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
                         EXTRA_OPEN_IN_BROWSER_STATE,
                         CustomTabsButtonState.BUTTON_STATE_DEFAULT);
 
+        if (openInBrowserState == CustomTabsButtonState.BUTTON_STATE_ON
+                && !ChromeFeatureList.sCctOpenInBrowserButtonIfEnabledByEmbedder.isEnabled()) {
+            openInBrowserState = CustomTabsButtonState.BUTTON_STATE_DEFAULT;
+        }
+
         if (openInBrowserState == CustomTabsButtonState.BUTTON_STATE_DEFAULT) {
-            openInBrowserState =
-                    usingInteractiveOmnibox
-                            ? CustomTabsButtonState.BUTTON_STATE_ON
-                            : CustomTabsButtonState.BUTTON_STATE_OFF;
+            if (usingInteractiveOmnibox) {
+                openInBrowserState = CustomTabsButtonState.BUTTON_STATE_ON;
+            } else if (ChromeFeatureList.sCctOpenInBrowserButtonIfAllowedByEmbedder.isEnabled()
+                    && IntentUtils.safeGetBooleanExtra(
+                            intent, EXTRA_OPEN_IN_BROWSER_BUTTON_ALLOWED, false)) {
+                openInBrowserState = CustomTabsButtonState.BUTTON_STATE_ON;
+            } else {
+                openInBrowserState = CustomTabsButtonState.BUTTON_STATE_OFF;
+            }
         }
 
         if (openInBrowserState == CustomTabsButtonState.BUTTON_STATE_ON) {

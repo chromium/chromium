@@ -269,6 +269,10 @@ public abstract class ChromeFeatureList {
             "CCTGoogleBottomBarVariantLayouts";
     // NOTE: Do not query this feature directly, use
     // WarmupManager#isCCTPrewarmTabFeatureEnabled.
+    public static final String CCT_OPEN_IN_BROWSER_BUTTON_IF_ALLOWED_BY_EMBEDDER =
+            "CCTOpenInBrowserButtonIfAllowedByEmbedder";
+    public static final String CCT_OPEN_IN_BROWSER_BUTTON_IF_ENABLED_BY_EMBEDDER =
+            "CCTOpenInBrowserButtonIfEnabledByEmbedder";
     public static final String CCT_PREWARM_TAB = "CCTPrewarmTab";
     public static final String CCT_REPORT_PARALLEL_REQUEST_STATUS =
             "CCTReportParallelRequestStatus";
@@ -622,6 +626,10 @@ public abstract class ChromeFeatureList {
             newCachedFlag(CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS, false);
     public static final CachedFlag sCctResizableForThirdParties =
             newCachedFlag(CCT_RESIZABLE_FOR_THIRD_PARTIES, true);
+    public static final CachedFlag sCctOpenInBrowserButtonIfAllowedByEmbedder =
+            newCachedFlag(CCT_OPEN_IN_BROWSER_BUTTON_IF_ALLOWED_BY_EMBEDDER, false);
+    public static final CachedFlag sCctOpenInBrowserButtonIfEnabledByEmbedder =
+            newCachedFlag(CCT_OPEN_IN_BROWSER_BUTTON_IF_ENABLED_BY_EMBEDDER, true);
     public static final CachedFlag sCctRevampedBranding =
             newCachedFlag(CCT_REVAMPED_BRANDING, false);
     public static final CachedFlag sCctNestedSecurityIcon =
@@ -780,6 +788,8 @@ public abstract class ChromeFeatureList {
                     sCctNavigationalPrefetch,
                     sCctGoogleBottomBar,
                     sCctGoogleBottomBarVariantLayouts,
+                    sCctOpenInBrowserButtonIfAllowedByEmbedder,
+                    sCctOpenInBrowserButtonIfEnabledByEmbedder,
                     sCctResizableForThirdParties,
                     sCctRevampedBranding,
                     sCctNestedSecurityIcon,

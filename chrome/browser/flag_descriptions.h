@@ -2507,6 +2507,12 @@ extern const char kCCTGoogleBottomBarDescription[];
 extern const char kCCTGoogleBottomBarVariantLayoutsName[];
 extern const char kCCTGoogleBottomBarVariantLayoutsDescription[];
 
+extern const char kCCTOpenInBrowserButtonIfAllowedByEmbedderName[];
+extern const char kCCTOpenInBrowserButtonIfAllowedByEmbedderDescription[];
+
+extern const char kCCTOpenInBrowserButtonIfEnabledByEmbedderName[];
+extern const char kCCTOpenInBrowserButtonIfEnabledByEmbedderDescription[];
+
 extern const char kCCTResizableForThirdPartiesName[];
 extern const char kCCTResizableForThirdPartiesDescription[];
 

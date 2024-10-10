@@ -4328,6 +4328,16 @@ const char kCCTGoogleBottomBarVariantLayoutsName[] =
 const char kCCTGoogleBottomBarVariantLayoutsDescription[] =
     "Show different layouts on Google Bottom Bar.";
 
+const char kCCTOpenInBrowserButtonIfAllowedByEmbedderName[] =
+    "Open in Browser Button in CCT if allowed by Embedder";
+const char kCCTOpenInBrowserButtonIfAllowedByEmbedderDescription[] =
+    "Open in Browser Button in CCT if allowed by Embedder";
+
+const char kCCTOpenInBrowserButtonIfEnabledByEmbedderName[] =
+    "Open in Browser Button in CCT if enabled by Embedder";
+const char kCCTOpenInBrowserButtonIfEnabledByEmbedderDescription[] =
+    "Open in Browser Button in CCT if enabled by Embedder";
+
 const char kCCTResizableForThirdPartiesName[] =
     "Bottom sheet Custom Tabs (third party)";
 const char kCCTResizableForThirdPartiesDescription[] =
