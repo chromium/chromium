@@ -19,7 +19,7 @@ class WebHistoryServiceObserver {
   virtual void OnWebHistoryDeleted() = 0;
 
  protected:
-  virtual ~WebHistoryServiceObserver() {}
+  virtual ~WebHistoryServiceObserver() = default;
 };
 
 }  // history

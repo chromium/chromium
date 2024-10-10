@@ -45,7 +45,7 @@ class TestingWebHistoryService : public WebHistoryService {
   TestingWebHistoryService(const TestingWebHistoryService&) = delete;
   TestingWebHistoryService& operator=(const TestingWebHistoryService&) = delete;
 
-  ~TestingWebHistoryService() override {}
+  ~TestingWebHistoryService() override = default;
 
   WebHistoryService::Request* CreateRequest(
       const GURL& url,
@@ -123,7 +123,7 @@ class TestRequest : public WebHistoryService::Request {
   TestRequest(const TestRequest&) = delete;
   TestRequest& operator=(const TestRequest&) = delete;
 
-  ~TestRequest() override {}
+  ~TestRequest() override = default;
 
   // history::Request overrides
   bool IsPending() override { return is_pending_; }
@@ -223,7 +223,7 @@ class WebHistoryServiceTest : public testing::Test {
   WebHistoryServiceTest(const WebHistoryServiceTest&) = delete;
   WebHistoryServiceTest& operator=(const WebHistoryServiceTest&) = delete;
 
-  ~WebHistoryServiceTest() override {}
+  ~WebHistoryServiceTest() override = default;
 
   void TearDown() override {
     base::RunLoop run_loop;

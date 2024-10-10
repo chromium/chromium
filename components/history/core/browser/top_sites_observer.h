@@ -22,12 +22,12 @@ class TopSitesObserver {
     FORCED_URL,
   };
 
-  TopSitesObserver() {}
+  TopSitesObserver() = default;
 
   TopSitesObserver(const TopSitesObserver&) = delete;
   TopSitesObserver& operator=(const TopSitesObserver&) = delete;
 
-  virtual ~TopSitesObserver() {}
+  virtual ~TopSitesObserver() = default;
 
   // Is called when TopSites finishes loading.
   virtual void TopSitesLoaded(TopSites* top_sites) = 0;
