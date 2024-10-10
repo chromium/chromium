@@ -1148,7 +1148,7 @@ TEST_F(FasterSplitScreenTest,
   EXPECT_FALSE(IsInOverviewSession());
 }
 
-TEST_F(FasterSplitScreenTest, NoCrashOnDisplayChange) {
+TEST_F(FasterSplitScreenTest, NoCrashOnDisplayRemoval) {
   UpdateDisplay("800x600,1000x600");
   display::test::DisplayManagerTestApi display_manager_test(display_manager());
 
@@ -9272,7 +9272,7 @@ TEST_F(SnapGroupMultiDisplayTest, NoGapAfterSnapGroupCreation) {
 
 // Tests that removing a display during split view overview session doesn't
 // crash.
-TEST_F(SnapGroupMultiDisplayTest, RemoveDisplay) {
+TEST_F(SnapGroupMultiDisplayTest, RemoveDisplayInSplitViewSetupSession) {
   UpdateDisplay("800x600,801+0-800x600");
   display::test::DisplayManagerTestApi display_manager_test(display_manager());
 
@@ -9298,6 +9298,65 @@ TEST_F(SnapGroupMultiDisplayTest, RemoveDisplay) {
   // Disconnect the second display. Test no crash.
   UpdateDisplay("800x600");
   base::RunLoop().RunUntilIdle();
+}
+
+// Verify that `SnapGroup::RefreshSnapGroup()` handles cases where `window1_`
+// and `window2_` have different root windows without crashing. Regression test
+// for http://b/370508358.
+TEST_F(SnapGroupMultiDisplayTest, NoCrashOnDisplayMetricsChange) {
+  UpdateDisplay("800x700,801+0-900x600");
+
+  display::DisplayManager* display_manager = Shell::Get()->display_manager();
+  const auto& displays = display_manager->active_display_list();
+  ASSERT_EQ(2U, displays.size());
+
+  display::DisplayIdList display_ids =
+      display_manager->GetConnectedDisplayIdList();
+
+  Shelf* primary_shelf = RootWindowController::ForWindow(
+                             Shell::GetRootWindowForDisplayId(display_ids[0]))
+                             ->shelf();
+  primary_shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+  Shelf* secondary_shelf = RootWindowController::ForWindow(
+                               Shell::GetRootWindowForDisplayId(display_ids[1]))
+                               ->shelf();
+  secondary_shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+
+  // Create a Snap Group on display #2.
+  std::unique_ptr<aura::Window> w1(
+      CreateAppWindow(gfx::Rect(900, 0, 200, 100)));
+  std::unique_ptr<aura::Window> w2(
+      CreateAppWindow(gfx::Rect(1000, 50, 100, 200)));
+  auto* event_generator = GetEventGenerator();
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true, event_generator);
+  wm::ActivateWindow(w1.get());
+  auto* snap_group =
+      SnapGroupController::Get()->GetSnapGroupForGivenWindow(w1.get());
+  ASSERT_TRUE(snap_group);
+  // Verify that both windows and divider are visible on display #2.
+  VerifySnapGroupOnDisplay(snap_group, display_ids[1]);
+
+  // `DisplayManager::UpdateWorkAreaOfDisplay` only notifies display metrics
+  // changes when its internal `workarea_changed` flag is true. Explicitly
+  // update the work area insets to trigger it.
+  display_manager->UpdateWorkAreaOfDisplay(display_ids[0], gfx::Insets(5));
+
+  // Disconnect the secondary display and verify that `snap_group` will be moved
+  // to the primary display.
+  std::vector<display::ManagedDisplayInfo> display_info_list;
+  display_info_list.push_back(display_manager->GetDisplayInfo(display_ids[0]));
+  display_manager->OnNativeDisplaysChanged(display_info_list);
+  EXPECT_EQ(1u, display_manager->GetNumDisplays());
+  EXPECT_TRUE(SnapGroupController::Get()->GetSnapGroupForGivenWindow(w1.get()));
+  VerifySnapGroupOnDisplay(snap_group, display_ids[0]);
+
+  // Reconnect the secondary display and verify that `snap_group` will be moved
+  // back to the secondary display.
+  display_info_list.insert(display_info_list.begin(),
+                           display_manager->GetDisplayInfo(display_ids[1]));
+  display_manager->OnNativeDisplaysChanged(display_info_list);
+  EXPECT_EQ(2u, display_manager->GetNumDisplays());
+  VerifySnapGroupOnDisplay(snap_group, display_ids[1]);
 }
 
 // Tests to verify that when a window is dragged out of a snap group and onto

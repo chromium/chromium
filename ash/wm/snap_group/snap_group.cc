@@ -522,8 +522,9 @@ SnapPosition SnapGroup::GetPositionOfSnappedWindow(
 
 void SnapGroup::OnDisplayMetricsChanged(const display::Display& display,
                                         uint32_t metrics) {
-  if (window1_->GetRootWindow() !=
-      Shell::GetRootWindowForDisplayId(display.id())) {
+  aura::Window* display_root = Shell::GetRootWindowForDisplayId(display.id());
+  if (window1_->GetRootWindow() != display_root ||
+      window2_->GetRootWindow() != display_root) {
     return;
   }
 
