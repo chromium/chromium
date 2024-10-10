@@ -7,6 +7,7 @@
 #include "third_party/blink/public/mojom/frame/lifecycle.mojom-shared.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_permission_state.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/event_target_modules_names.h"
@@ -84,9 +85,10 @@ void PermissionStatus::ContextLifecycleStateChanged(
     StopListening();
 }
 
-String PermissionStatus::state() const {
-  if (!listener_)
-    return String();
+V8PermissionState PermissionStatus::state() const {
+  if (!listener_) {
+    return V8PermissionState(V8PermissionState::Enum::kDenied);
+  }
   return listener_->state();
 }
 

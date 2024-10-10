@@ -16,7 +16,9 @@ enum PermissionState {
     Exposed=(Window,Worker),
     RuntimeEnabled=Permissions
 ] interface PermissionStatus : EventTarget {
-    readonly attribute PermissionName name;
+    // TODO(crbug.com/1395451): This cannot be PermissionName because
+    // it is the wrong format.
+    readonly attribute DOMString name;
     readonly attribute PermissionState state;
              attribute EventHandler onchange;
 };
