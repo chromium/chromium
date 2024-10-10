@@ -37,15 +37,14 @@ public class AwPicture extends Picture {
         }
     }
 
-    private CleanupReference mCleanupReference;
-
     /**
-     * @param nativeAwPicture is an instance of the AwPicture native class. Ownership is
-     *                        taken by this java instance.
+     * @param nativeAwPicture is an instance of the AwPicture native class. Ownership is taken by
+     *     this java instance.
      */
     public AwPicture(long nativeAwPicture) {
         mNativeAwPicture = nativeAwPicture;
-        mCleanupReference = new CleanupReference(this, new DestroyRunnable(nativeAwPicture));
+        // Constructor has side-effects, so no need to store this in a field.
+        new CleanupReference(this, new DestroyRunnable(nativeAwPicture));
     }
 
     @Override

@@ -28,13 +28,11 @@ import org.chromium.content_public.browser.WebContents;
 /** A class that handles selection action mode for Android WebView. */
 @Lifetime.WebView
 public class AwActionModeCallback extends ActionModeCallback {
-    private final Context mContext;
     private final AwContents mAwContents;
     private final ActionModeCallbackHelper mHelper;
     private int mAllowedMenuItems;
 
     public AwActionModeCallback(Context context, AwContents awContents, WebContents webContents) {
-        mContext = context;
         mAwContents = awContents;
         mHelper =
                 SelectionPopupController.fromWebContents(webContents).getActionModeCallbackHelper();

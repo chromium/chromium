@@ -1208,8 +1208,7 @@ public class AwContents implements SmartClipProvider {
             return mAttachedWebviews;
         }
 
-        public static AwFrameMetricsListener onAttachedToWindow(
-                Window window, AwContents awContents) {
+        public static AwFrameMetricsListener onAttachedToWindow(Window window) {
             AwFrameMetricsListener listener = sWindowMap.get(window);
             if (listener == null) {
                 listener = new AwFrameMetricsListener();
@@ -1220,7 +1219,7 @@ public class AwContents implements SmartClipProvider {
             return listener;
         }
 
-        public static void onDetachedFromWindow(Window window, AwContents awContents) {
+        public static void onDetachedFromWindow(Window window) {
             AwFrameMetricsListener listener = sWindowMap.get(window);
             listener.decrementAttachedWebviews();
             if (listener.getAttachedWebviews() >= 1) return;
@@ -3612,7 +3611,7 @@ public class AwContents implements SmartClipProvider {
         if (AwFeatureMap.isEnabled(BaseFeatures.COLLECT_ANDROID_FRAME_TIMELINE_METRICS)) {
             Window window = mWindowAndroid.getWindowAndroid().getWindow();
             if (window != null && mContainerView.isHardwareAccelerated()) {
-                mAwFrameMetricsListener = AwFrameMetricsListener.onAttachedToWindow(window, this);
+                mAwFrameMetricsListener = AwFrameMetricsListener.onAttachedToWindow(window);
             }
         }
 
@@ -3651,7 +3650,7 @@ public class AwContents implements SmartClipProvider {
         if (mAwFrameMetricsListener != null) {
             Window window = mWindowAndroid.getWindowAndroid().getWindow();
             if (window != null && mContainerView.isHardwareAccelerated()) {
-                AwFrameMetricsListener.onDetachedFromWindow(window, this);
+                AwFrameMetricsListener.onDetachedFromWindow(window);
                 mAwFrameMetricsListener = null;
             }
         }

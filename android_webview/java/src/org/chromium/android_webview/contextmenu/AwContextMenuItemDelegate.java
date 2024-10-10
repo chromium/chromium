@@ -19,14 +19,12 @@ import org.chromium.url.GURL;
 public class AwContextMenuItemDelegate implements ContextMenuItemDelegate {
     private final Activity mActivity;
     private final WebContents mWebContents;
-    private final ContextMenuParams mParams;
 
     /** Builds a {@link AwContextMenuItemDelegate} instance. */
     public AwContextMenuItemDelegate(
             Activity activity, WebContents webContents, ContextMenuParams params) {
         mActivity = activity;
         mWebContents = webContents;
-        mParams = params;
     }
 
     @Override

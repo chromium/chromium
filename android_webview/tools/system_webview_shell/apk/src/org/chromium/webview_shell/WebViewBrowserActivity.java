@@ -408,7 +408,6 @@ public class WebViewBrowserActivity extends AppCompatActivity {
 
     private class TracingLogger extends FileOutputStream {
         private long mByteCount;
-        private long mChunkCount;
         private final Activity mActivity;
 
         public TracingLogger(String fileName, Activity activity) throws FileNotFoundException {
@@ -419,7 +418,6 @@ public class WebViewBrowserActivity extends AppCompatActivity {
         @Override
         public void write(byte[] chunk) throws IOException {
             mByteCount += chunk.length;
-            mChunkCount++;
             super.write(chunk);
         }
 
