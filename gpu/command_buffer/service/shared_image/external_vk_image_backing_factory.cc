@@ -4,6 +4,7 @@
 
 #include "gpu/command_buffer/service/shared_image/external_vk_image_backing_factory.h"
 
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/resources/shared_image_format.h"
@@ -11,6 +12,7 @@
 #include "gpu/command_buffer/service/shared_image/external_vk_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/vulkan/vulkan_command_buffer.h"
 #include "gpu/vulkan/vulkan_command_pool.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
@@ -24,6 +26,39 @@
 namespace gpu {
 
 namespace {
+
+// Serves as killswitch for rolling out restriction of SCANOUT support to
+// Fuchsia.
+// TODO(crbug.com/330865436): Eliminate post safe-rollout.
+BASE_FEATURE(kRestrictExternalVkImageBackingScanoutSupportToFuchsia,
+             "RestrictExternalVkImageBackingScanoutSupportToFuchsia",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Determines whether SCANOUT support can be restricted to Fuchsia.
+// TODO(crbug.com/330865436): Eliminate once killswitches checked within this
+// function roll out safely.
+bool RestrictScanoutSupportToFuchsia() {
+  // Restricting SCANOUT support here requires that SW VideoFrames are
+  // guarding their addition of SCANOUT usage by SCANOUT support being present
+  // in SharedImageCapabilities.
+  if (!base::FeatureList::IsEnabled(
+          features::kSWVideoFrameAddScanoutUsageOnlyIfSupportedBySharedImage)) {
+    return false;
+  }
+
+#if BUILDFLAG(IS_OZONE)
+  // On Ozone, It also requires that we are computing SCANOUT support in
+  // SharedImageCapabilities by overlays being supported rather than the
+  // too-generous native pixmaps being supported.
+  if (!base::FeatureList::IsEnabled(
+          features::kSharedImageSupportScanoutOnOzoneOnlyIfOverlaysSupported)) {
+    return false;
+  }
+#endif
+
+  return base::FeatureList::IsEnabled(
+      kRestrictExternalVkImageBackingScanoutSupportToFuchsia);
+}
 
 VkImageUsageFlags GetMaximalImageUsageFlags(
     VkFormatFeatureFlags feature_flags) {
@@ -139,26 +174,38 @@ bool IsFormatSupported(viz::SharedImageFormat format,
   return true;
 }
 
-}  // namespace
-
-constexpr SharedImageUsageSet kSupportedUsage =
+SharedImageUsageSet SupportedUsage() {
+  SharedImageUsageSet supported_usage =
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DAWN)
-    SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE |
-    SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
-    SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE |
+      SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE |
+      SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
+      SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE |
 #endif
-    SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
-    SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY |
-    SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ |
-    SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
-    SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY |
-    SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_SCANOUT |
-    SHARED_IMAGE_USAGE_VIDEO_DECODE | SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU |
-    SHARED_IMAGE_USAGE_CPU_UPLOAD | SHARED_IMAGE_USAGE_CPU_WRITE;
+      SHARED_IMAGE_USAGE_GLES2_READ | SHARED_IMAGE_USAGE_GLES2_WRITE |
+      SHARED_IMAGE_USAGE_GLES2_FOR_RASTER_ONLY |
+      SHARED_IMAGE_USAGE_DISPLAY_WRITE | SHARED_IMAGE_USAGE_DISPLAY_READ |
+      SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE |
+      SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY |
+      SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_VIDEO_DECODE |
+      SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_CPU_UPLOAD |
+      SHARED_IMAGE_USAGE_CPU_WRITE;
+
+  if (RestrictScanoutSupportToFuchsia()) {
+#if BUILDFLAG(IS_FUCHSIA)
+    supported_usage |= SHARED_IMAGE_USAGE_SCANOUT;
+#endif
+  } else {
+    supported_usage |= SHARED_IMAGE_USAGE_SCANOUT;
+  }
+
+  return supported_usage;
+}
+
+}  // namespace
 
 ExternalVkImageBackingFactory::ExternalVkImageBackingFactory(
     scoped_refptr<SharedContextState> context_state)
-    : SharedImageBackingFactory(kSupportedUsage),
+    : SharedImageBackingFactory(SupportedUsage()),
       context_state_(std::move(context_state)),
       command_pool_(context_state_->vk_context_provider()
                         ->GetDeviceQueue()
