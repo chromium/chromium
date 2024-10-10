@@ -2463,9 +2463,16 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.MiniMap.ConsentOutcome" enum="IOSMiniMapConsentOutcome"
-    expires_after="2025-03-09">
+    expires_after="2025-10-09">
   <owner>olivierrobin@chromium.org</owner>
-  <owner>djean@chromium.org</owner>
+  <owner>bling-squid-squad@google.com</owner>
+  <summary>Outcome of the MiniMap consent screen.</summary>
+</histogram>
+
+<histogram name="IOS.MiniMap.Outcome" enum="IOSMiniMapOutcome"
+    expires_after="2025-10-09">
+  <owner>olivierrobin@chromium.org</owner>
+  <owner>bling-squid-squad@google.com</owner>
   <summary>Outcome of the MiniMap consent screen.</summary>
 </histogram>
 

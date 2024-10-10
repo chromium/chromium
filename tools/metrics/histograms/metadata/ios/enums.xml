@@ -425,6 +425,14 @@ the generic promo launch. -->
   <int value="6" label="Popover displayed"/>
 </enum>
 
+<enum name="IOSMiniMapOutcome">
+  <int value="0" label="User exited normally"/>
+  <int value="1" label="User opened a URL"/>
+  <int value="2" label="User reported an issue"/>
+  <int value="3" label="User opened settings"/>
+  <int value="4" label="User opened a query"/>
+</enum>
+
 <enum name="IOSMultiWindowConfiguration">
   <int value="0" label="Unspecified"/>
   <int value="1" label="Fullscreen"/>

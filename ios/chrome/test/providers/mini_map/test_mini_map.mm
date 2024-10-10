@@ -17,11 +17,13 @@ namespace provider {
 
 id<MiniMapController> CreateMiniMapController(
     NSString* address,
-    MiniMapControllerCompletion completion) {
+    MiniMapControllerCompletionWithURL completion,
+    MiniMapControllerCompletionWithString completionWithQuery) {
   // Mini map is not supported in Tests.
   return [g_mini_map_controller_factory
       createMiniMapControllerForString:address
-                            completion:completion];
+                            completion:completion
+                   completionWithQuery:completionWithQuery];
 }
 
 namespace test {

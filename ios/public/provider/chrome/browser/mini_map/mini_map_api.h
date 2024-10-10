@@ -54,13 +54,6 @@ namespace provider {
 // Creates a one time MiniMapController to present the mini map for `address`.
 // `completion` is called after the minimap is dismissed with an optional URL.
 // If present, it indicates that the user requested to open the URL.
-id<MiniMapController> CreateMiniMapController(
-    NSString* address,
-    MiniMapControllerCompletion completion);
-
-// Creates a one time MiniMapController to present the mini map for `address`.
-// `completion` is called after the minimap is dismissed with an optional URL.
-// If present, it indicates that the user requested to open the URL.
 // In case of error, `completion_with_query` is called with a query to open in
 // a new tab.
 id<MiniMapController> CreateMiniMapController(

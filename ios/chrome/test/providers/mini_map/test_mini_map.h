@@ -12,7 +12,10 @@
 
 - (id<MiniMapController>)
     createMiniMapControllerForString:(NSString*)address
-                          completion:(MiniMapControllerCompletion)completion;
+                          completion:
+                              (MiniMapControllerCompletionWithURL)completion
+                 completionWithQuery:
+                     (MiniMapControllerCompletionWithString)completionWithQuery;
 
 @end
 

@@ -13,6 +13,7 @@
 #import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/mini_map/ui_bundled/mini_map_mediator.h"
 #import "ios/chrome/browser/mini_map/ui_bundled/mini_map_mediator_delegate.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -46,7 +47,11 @@ typedef void (^BlockWithViewController)(UIViewController*);
 @property(nonatomic, copy) NSString* lastAddress;
 
 // Records the last completion that has been passed to the factory
-@property(nonatomic, copy) MiniMapControllerCompletion lastCompletion;
+@property(nonatomic, copy) MiniMapControllerCompletionWithURL lastCompletion;
+
+// Records the last completion with query that has been passed to the factory
+@property(nonatomic, copy)
+    MiniMapControllerCompletionWithString lastCompletionWithQuery;
 
 // The controller the factory will return.
 @property(nonatomic, weak) id<MiniMapController> controller;
@@ -56,9 +61,13 @@ typedef void (^BlockWithViewController)(UIViewController*);
 
 - (id<MiniMapController>)
     createMiniMapControllerForString:(NSString*)address
-                          completion:(MiniMapControllerCompletion)completion {
+                          completion:
+                              (MiniMapControllerCompletionWithURL)completion
+                 completionWithQuery:(MiniMapControllerCompletionWithString)
+                                         completionWithQuery {
   _lastAddress = address;
   _lastCompletion = completion;
+  _lastCompletionWithQuery = completionWithQuery;
   return _controller;
 }
 
@@ -69,6 +78,9 @@ class MiniMapCoordinatorTest : public PlatformTest {
  protected:
   MiniMapCoordinatorTest() {
     TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
+        ios::TemplateURLServiceFactory::GetInstance(),
+        ios::TemplateURLServiceFactory::GetDefaultFactory());
     builder.SetPrefService(CreatePrefService());
     profile_ = std::move(builder).Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
@@ -358,6 +370,38 @@ TEST_F(MiniMapCoordinatorTest, TestOpenURL) {
   factory_.lastCompletion([NSURL URLWithString:@"https://www.example.org"]);
   // Expect url outcome.
   histogram_tester.ExpectBucketCount("IOS.MiniMap.Outcome", 1, 1);
+  EXPECT_OCMOCK_VERIFY(mini_map_controller);
+}
+
+// Tests that the query is opened if requested on dismiss.
+TEST_F(MiniMapCoordinatorTest, TestOpenQuery) {
+  if (!base::ios::IsRunningOnOrLater(16, 4, 0)) {
+    GTEST_SKIP() << "Feature only available on iOS16.4+";
+  }
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(web::features::kOneTapForMaps);
+  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
+  id mini_map_controller = OCMStrictProtocolMock(@protocol(MiniMapController));
+  factory_.controller = mini_map_controller;
+
+  OCMExpect([mini_map_controller configureFooterWithTitle:[OCMArg any]
+                                       leadingButtonTitle:[OCMArg any]
+                                      trailingButtonTitle:[OCMArg any]
+                                      leadingButtonAction:[OCMArg any]
+                                     trailingButtonAction:[OCMArg any]]);
+
+  OCMExpect([mini_map_controller
+      presentMapsWithPresentingViewController:[OCMArg any]]);
+  SetupCoordinator(NO, MiniMapMode::kMap);
+  OCMExpect([mock_mini_map_command_handler_ hideMiniMap]);
+  OCMExpect([mock_application_command_handler_ openURLInNewTab:[OCMArg any]]);
+
+  factory_.lastCompletionWithQuery(@"Query test");
+  // Expect url outcome.
+  histogram_tester.ExpectBucketCount("IOS.MiniMap.Outcome", 4 /*kOpenedQuery*/,
+                                     1);
   EXPECT_OCMOCK_VERIFY(mini_map_controller);
 }
 
