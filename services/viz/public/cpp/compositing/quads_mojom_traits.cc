@@ -9,6 +9,7 @@
 
 #include "services/viz/public/cpp/compositing/quads_mojom_traits.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/notreached.h"
@@ -130,6 +131,8 @@ bool StructTraits<viz::mojom::SolidColorQuadStateDataView, viz::DrawQuad>::Read(
   quad->force_anti_aliasing_off = data.force_anti_aliasing_off();
   if (!data.ReadColor(&quad->color))
     return false;
+  // Clamp the alpha component of the color to the range of [0, 1].
+  quad->color.fA = std::clamp(quad->color.fA, 0.0f, 1.0f);
   return true;
 }
 
