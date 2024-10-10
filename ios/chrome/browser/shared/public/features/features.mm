@@ -512,7 +512,7 @@ BASE_FEATURE(kOmniboxColorIcons,
 
 BASE_FEATURE(kClearDeviceDataOnSignOutForManagedUsers,
              "ClearDeviceDataOnSignOutForManagedUsers",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDownloadedPDFOpening,
              "DownloadedPDFOpening",

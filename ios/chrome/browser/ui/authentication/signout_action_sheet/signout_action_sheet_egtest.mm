@@ -71,9 +71,6 @@ void ClickSignOutInAccountSettings() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  // Enable the feature that shows the clear data on signout dialog for managed
-  // accounts.
-  config.features_enabled.push_back(kClearDeviceDataOnSignOutForManagedUsers);
   if ([self isRunningTest:@selector(testSignoutFromAccountsTableView)] ||
       [self isRunningTest:@selector(testCancelSignoutForManagedIdentity)] ||
       [self

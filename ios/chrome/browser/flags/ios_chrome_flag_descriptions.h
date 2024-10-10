@@ -160,11 +160,6 @@ extern const char kBottomOmniboxDefaultSettingDescription[];
 extern const char kBreakpadNoDelayInitialUploadName[];
 extern const char kBreakpadNoDelayInitialUploadDescription[];
 
-// Title and description for the flag that enables clearing data for managed
-// users on signout.
-extern const char kClearDeviceDataOnSignOutForManagedUsersName[];
-extern const char kClearDeviceDataOnSignOutForManagedUsersDescription[];
-
 // Title and description for the flag that enables deleting undecryptable
 // passwords.
 extern const char kClearUndecryptablePasswordsName[];

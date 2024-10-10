@@ -515,13 +515,9 @@ TEST_F(AuthenticationServiceTest, SignedInManagedAccountSignOut) {
   EXPECT_EQ(ClearBrowsingDataCount(), 0);
 }
 
-// Tests that local data is cleared on signout when
-// `kClearDeviceDataOnSignOutForManagedUsers` is enabled for a managed account.
-TEST_F(
-    AuthenticationServiceTest,
-    SignedInManagedAccountSignOutWithClearDataFeatureEnabled_UnmanagedBrowser) {
-  scoped_feature_list_.InitWithFeatures(
-      {kClearDeviceDataOnSignOutForManagedUsers}, {});
+// Tests that local data is cleared on signout for a managed account.
+TEST_F(AuthenticationServiceTest,
+       SignedInManagedAccountSignOutWithClearData_UnmanagedBrowser) {
   FakeSystemIdentity* fake_system_identity =
       [FakeSystemIdentity fakeManagedIdentity];
   fake_system_identity_manager()->AddIdentity(fake_system_identity);
@@ -545,14 +541,11 @@ TEST_F(
   EXPECT_EQ(ClearBrowsingDataFromSigninCount(), 1);
 }
 
-// Tests that local data is not cleared on managed user's signout when
-// `kClearDeviceDataOnSignOutForManagedUsers` is enabled for a managed account
-// and the browser is managed.
+// Tests that local data is not cleared on managed user's signout for a managed
+// account and the browser is managed.
 TEST_F(
     AuthenticationServiceTest,
     SignedInManagedAccountSignOutWithClearDataFeatureEnabled_ManagedBrowser) {
-  scoped_feature_list_.InitWithFeatures(
-      {kClearDeviceDataOnSignOutForManagedUsers}, {});
   // Add managed configuration so the browser is managed.
   NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
   NSDictionary* dict = @{@"key" : @"value"};
@@ -585,9 +578,7 @@ TEST_F(
 // Tests that all local data is cleared (not just the data from sign-in time)
 // when the user has the sync consent.
 TEST_F(AuthenticationServiceTest,
-       SignedInManagedAccountSignOutWithClearDataFeatureEnabled_SyncMigration) {
-  scoped_feature_list_.InitWithFeatures(
-      {kClearDeviceDataOnSignOutForManagedUsers}, {});
+       SignedInManagedAccountSignOutWithClearData_SyncMigration) {
   FakeSystemIdentity* fake_system_identity =
       [FakeSystemIdentity fakeManagedIdentity];
   fake_system_identity_manager()->AddIdentity(fake_system_identity);

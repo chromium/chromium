@@ -145,12 +145,10 @@ void ClearRelevantData() {
   }
   if ([self isRunningTest:@selector
             (testManagedAccountClearsDataForSignedInPeriod)]) {
-    config.features_enabled.push_back(kClearDeviceDataOnSignOutForManagedUsers);
     config.features_disabled.push_back(kIdentityDiscAccountMenu);
   }
   if ([self isRunningTest:@selector
             (testManagedAccountClearsDataAndTabsForSignedInPeriod)]) {
-    config.features_enabled.push_back(kClearDeviceDataOnSignOutForManagedUsers);
     config.features_enabled.push_back(kIdentityDiscAccountMenu);
   }
 

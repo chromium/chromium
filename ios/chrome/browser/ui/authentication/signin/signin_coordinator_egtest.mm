@@ -147,8 +147,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
-  config.features_enabled.push_back(kClearDeviceDataOnSignOutForManagedUsers);
-
   if ([self isRunningTest:@selector(testOpenManageSyncSettingsFromNTP)] ||
       [self isRunningTest:@selector
             (FLAKY_testAccessiblityStringForSignedInUserWithoutName)]) {

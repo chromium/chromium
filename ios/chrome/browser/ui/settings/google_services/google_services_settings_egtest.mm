@@ -124,12 +124,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   return config;
 }
 
-- (AppLaunchConfiguration)appConfigurationForManagedSignoutTestCase {
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.features_enabled.push_back(kClearDeviceDataOnSignOutForManagedUsers);
-  return config;
-}
-
 // Opens the Google services settings view, and closes it.
 - (void)testOpenGoogleServicesSettings {
   [self openGoogleServicesSettings];
@@ -232,12 +226,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 // Similar to `testToggleAllowChromeSignin`, but also verifies that an
 // informational message about data loss will be added in the prompt.
 - (void)testToggleAllowChromeSigninForManagedUser {
-  // Restart the app to enable enable the
-  // `kClearDeviceDataOnSignOutForManagedUsers` feature on relaunch.
-  [[AppLaunchManager sharedManager]
-      ensureAppLaunchedWithConfiguration:
-          [self appConfigurationForManagedSignoutTestCase]];
-
   // Sign in with a managed identity.
   FakeSystemIdentity* fakeManagedIdentity =
       [FakeSystemIdentity fakeManagedIdentity];

@@ -227,33 +227,6 @@ TEST_F(SignoutActionSheetCoordinatorTest, ShouldShowActionSheetIfUnsyncedData) {
   histogram_tester.ExpectTotalCount("Sync.SignoutWithUnsyncedData", 0u);
 }
 
-// Same as ShouldShowActionSheetIfUnsyncedData, but for a managed user.
-TEST_F(SignoutActionSheetCoordinatorTest,
-       ShouldShowActionSheetIfUnsyncedDataForManagedUser) {
-  // Sign in with a *managed* account.
-  authentication_service()->SignIn(
-      managed_identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-  ASSERT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
-      signin::ConsentLevel::kSignin));
-
-  CreateCoordinator();
-  // Mock returning unsynced datatypes, and ensure that this does get called -
-  // the action sheet should *not* automatically get shown for a managed user.
-  EXPECT_CALL(*sync_service_mock_, GetTypesWithUnsyncedData)
-      .Times(testing::AtLeast(1))
-      .WillRepeatedly(
-          [](syncer::DataTypeSet requested_types,
-             base::OnceCallback<void(syncer::DataTypeSet)> callback) {
-            constexpr syncer::DataTypeSet kUnsyncedTypes = {
-                syncer::BOOKMARKS, syncer::PREFERENCES};
-            std::move(callback).Run(
-                base::Intersection(kUnsyncedTypes, requested_types));
-          });
-  EXPECT_CALL(completion_callback_, Run);
-
-  [signout_coordinator_ start];
-}
-
 TEST_F(SignoutActionSheetCoordinatorTest,
        ShouldShowActionSheetForManagedUserMigratedFromSyncing) {
   // Sign in with a *managed* account.
@@ -287,9 +260,6 @@ TEST_F(SignoutActionSheetCoordinatorTest,
 
 TEST_F(SignoutActionSheetCoordinatorTest,
        ShouldShowActionSheetForManagedUserWithClearDataonSignoutFeature) {
-  scoped_feature_list_.InitWithFeatures(
-      {kClearDeviceDataOnSignOutForManagedUsers}, {});
-
   // Sign in with a *managed* account.
   authentication_service()->SignIn(
       managed_identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);

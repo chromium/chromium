@@ -33,8 +33,6 @@ class IdleTimeoutPolicyUtilsTest : public PlatformTest {
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    scoped_feature_list_.InitWithFeatures(
-        {kClearDeviceDataOnSignOutForManagedUsers}, {});
     profile_ = std::move(builder).Build();
     AuthenticationServiceFactory::CreateAndInitializeForProfile(
         profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
@@ -66,7 +64,6 @@ class IdleTimeoutPolicyUtilsTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<PrefService> pref_service_;
   raw_ptr<AuthenticationService> authentication_service_;
