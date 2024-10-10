@@ -363,6 +363,10 @@ blink::mojom::PermissionStatus WolvicPermissionManager::GetPermissionStatus(
     blink::PermissionType permission,
     const GURL& requesting_origin,
     const GURL& embedding_origin) {
+  if (permission == blink::PermissionType::PAYMENT_HANDLER) {
+    return blink::mojom::PermissionStatus::GRANTED;
+  }
+
   // We don't save any permissions statuses on Chromium side, so return 'ASK'
   // here to make sure that any permissions are requested from Wolvic.
   return blink::mojom::PermissionStatus::ASK;

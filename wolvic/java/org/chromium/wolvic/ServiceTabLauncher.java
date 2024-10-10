@@ -8,6 +8,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Log;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.components.payments.PaymentRequestService;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.mojom.WindowOpenDisposition;
@@ -53,9 +54,16 @@ public class ServiceTabLauncher {
       }
 
       // Open popup window in custom tab.
-      PostTask.postTask(
-                        TaskTraits.UI_DEFAULT,
-                        () -> onWebContentsForRequestAvailable(requestId, null));
+      // Note that this is used by PaymentRequestEvent.openWindow().
+      WebContents paymentHandlerWebContent =
+        PaymentRequestService.openPaymentHandlerWindow(url);
+      if (paymentHandlerWebContent != null) {
+        onWebContentsForRequestAvailable(requestId, paymentHandlerWebContent);
+      } else {
+        PostTask.postTask(
+                          TaskTraits.UI_DEFAULT,
+                          () -> onWebContentsForRequestAvailable(requestId, null));
+      }
     }
 
     /**

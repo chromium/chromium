@@ -1,3 +1,7 @@
+// Copyright 2024 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 #include "wolvic/browser/service_tab_launcher.h"
 
 #include "base/android/jni_string.h"
@@ -31,7 +35,8 @@ ServiceTabLauncher* ServiceTabLauncher::GetInstance() {
 ServiceTabLauncher::ServiceTabLauncher() {}
 ServiceTabLauncher::~ServiceTabLauncher() {}
 
-// TODO (jfernandez): Explose an alternate approach based on the TabModelJniBridge::HandlePopupNavigation
+// TODO (jfernandez): Explose an alternate approach based on the
+// TabModelJniBridge::HandlePopupNavigation
 void ServiceTabLauncher::LaunchTab(content::BrowserContext* browser_context,
                                    const content::OpenURLParams& params,
                                    TabLaunchedCallback callback) {
@@ -45,8 +50,8 @@ void ServiceTabLauncher::LaunchTab(content::BrowserContext* browser_context,
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> referrer_url =
       ConvertUTF8ToJavaString(env, params.referrer.url.spec());
-  ScopedJavaLocalRef<jstring> headers = ConvertUTF8ToJavaString(
-      env, params.extra_headers);
+  ScopedJavaLocalRef<jstring> headers =
+      ConvertUTF8ToJavaString(env, params.extra_headers);
 
   ScopedJavaLocalRef<jobject> post_data;
 
@@ -67,7 +72,8 @@ void ServiceTabLauncher::OnTabLaunched(int request_id,
   TabLaunchedCallback* callback = tab_launched_callbacks_.Lookup(request_id);
   // TODO(crbug.com/962873): The Lookup() can fail though we don't expect that
   // it should be able to. It would be nice if this was a DCHECK() instead.
-  if (callback)
+  if (callback) {
     std::move(*callback).Run(web_contents);
+  }
   tab_launched_callbacks_.Remove(request_id);
 }
