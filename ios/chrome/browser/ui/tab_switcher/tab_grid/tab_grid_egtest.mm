@@ -1332,6 +1332,11 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
   GREYWaitForAppToIdle(@"App failed to idle");
 
+  // For unknown reasons the drag below sometimes fails to recognize the second
+  // window as a drop point. Triggering a background / foreground seems to
+  // reduce this flake.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
   // DnD first tab of left window to left edge of first tab in second window.
   // Note: move to left half of the destination tile, to avoid unwanted
   // scrolling that would happen closer to the left edge.
@@ -1422,6 +1427,11 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       selectElementWithMatcher:chrome_test_util::TabGridEditSelectAllButton()]
       performAction:grey_tap()];
 
+  // For unknown reasons the drag below sometimes fails to recognize the second
+  // window as a drop point. Triggering a background / foreground seems to
+  // reduce this flake.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
+
   // DnD first tab of left window to left edge of first tab in second window.
   // Note: move to left half of the destination tile, to avoid unwanted
   // scrolling that would happen closer to the left edge.
@@ -1500,6 +1510,11 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SelectedStateTitleSelection(1)]
       assertWithMatcher:grey_sufficientlyVisible()];
+
+  // For unknown reasons the drag below sometimes fails to recognize the second
+  // window as a drop point. Triggering a background / foreground seems to
+  // reduce this flake.
+  [[AppLaunchManager sharedManager] backgroundAndForegroundApp];
 
   // DnD first tab of left window to left edge of first tab in second window.
   // Note: move to left half of the destination tile, to avoid unwanted
