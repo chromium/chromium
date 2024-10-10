@@ -688,10 +688,11 @@ class FileURLLoader : public network::mojom::URLLoader {
       // applicable. This will always fit in the pipe (see DCHECK above, and
       // assertions near network::features::GetDataPipeDefaultAllocationSize()).
       base::span<const uint8_t> bytes_to_write =
-          base::as_byte_span(initial_read_buffer).subspan(first_byte_to_send);
-      bytes_to_write = bytes_to_write.first(
-          std::min(bytes_to_write.size(),
-                   base::checked_cast<size_t>(total_bytes_to_send)));
+          base::as_byte_span(initial_read_buffer)
+              .subspan(base::checked_cast<size_t>(first_byte_to_send));
+      bytes_to_write = bytes_to_write.first(base::checked_cast<size_t>(std::min(
+          static_cast<uint64_t>(bytes_to_write.size()), total_bytes_to_send)));
+
       size_t actually_written_bytes = 0;
       MojoResult result = producer_handle->WriteData(
           bytes_to_write, MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes);
