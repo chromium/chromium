@@ -80,6 +80,11 @@ class MockObserver : public BocaSessionManager::Observer {
               (const std::string& group_name,
                const std::vector<::boca::UserIdentity>& consumers),
               (override));
+  MOCK_METHOD(
+      void,
+      OnConsumerActivityUpdated,
+      ((const std::map<std::string, ::boca::StudentStatus>& activities)),
+      (override));
   MOCK_METHOD(void, OnAppReloaded, (), (override));
 };
 
@@ -730,6 +735,107 @@ TEST_F(BocaSessionManagerTest, UpdateTabActivityWithInactiveSession) {
   boca_session_manager()->UpdateCurrentSession(
       std::make_unique<::boca::Session>(session), false);
   boca_session_manager()->UpdateTabActivity(u"any");
+}
+
+TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenSessionActivityUpdated) {
+  auto session_1 = std::make_unique<::boca::Session>();
+  session_1->set_session_state(::boca::Session::ACTIVE);
+  ::boca::StudentStatus status;
+  ::boca::StudentDevice device;
+  auto* activity = device.mutable_activity();
+  activity->mutable_active_tab()->set_title("google");
+  (*status.mutable_devices())["device1"] = std::move(device);
+  (*session_1->mutable_student_statuses())["1"] = std::move(status);
+  auto session_2 = std::make_unique<::boca::Session>();
+  session_2->set_session_state(::boca::Session::ACTIVE);
+  ::boca::StudentStatus status_1;
+  ::boca::StudentDevice device_1;
+  auto* activity_1 = device_1.mutable_activity();
+  activity_1->mutable_active_tab()->set_title("youtube");
+  (*status_1.mutable_devices())["device1"] = std::move(device_1);
+  (*session_2->mutable_student_statuses())["1"] = std::move(status);
+
+  EXPECT_CALL(*session_client_impl(), GetSession(_))
+      .WillOnce(testing::InvokeWithoutArgs([&]() {
+        boca_session_manager()->ParseSessionResponse(std::move(session_1));
+      }))
+      .WillOnce(testing::InvokeWithoutArgs([&]() {
+        boca_session_manager()->ParseSessionResponse(std::move(session_2));
+      }));
+
+  EXPECT_CALL(*observer(), OnConsumerActivityUpdated(_)).Times(2);
+
+  // Have updated two sessions.
+  task_environment()->FastForwardBy(BocaSessionManager::kPollingInterval * 2 +
+                                    base::Seconds(1));
+}
+
+TEST_F(BocaSessionManagerTest, NotifySessionUpdateWhenStudentStateUpdated) {
+  auto session_1 = std::make_unique<::boca::Session>();
+  session_1->set_session_state(::boca::Session::ACTIVE);
+  ::boca::StudentStatus status;
+  status.set_state(::boca::StudentStatus::ACTIVE);
+  (*session_1->mutable_student_statuses())["1"] = std::move(status);
+  ::boca::StudentStatus status_1;
+  status.set_state(::boca::StudentStatus::ADDED);
+  (*session_1->mutable_student_statuses())["2"] = std::move(status_1);
+  auto session_2 = std::make_unique<::boca::Session>();
+  session_2->set_session_state(::boca::Session::ACTIVE);
+  ::boca::StudentStatus status_2;
+  status.set_state(::boca::StudentStatus::ADDED);
+  (*session_2->mutable_student_statuses())["1"] = std::move(status_2);
+  ::boca::StudentStatus status_3;
+  status.set_state(::boca::StudentStatus::ADDED);
+  (*session_2->mutable_student_statuses())["2"] = std::move(status);
+
+  EXPECT_CALL(*session_client_impl(), GetSession(_))
+      .WillOnce(testing::InvokeWithoutArgs([&]() {
+        boca_session_manager()->ParseSessionResponse(std::move(session_1));
+      }))
+      .WillOnce(testing::InvokeWithoutArgs([&]() {
+        boca_session_manager()->ParseSessionResponse(std::move(session_2));
+      }));
+
+  EXPECT_CALL(*observer(), OnConsumerActivityUpdated(_)).Times(2);
+
+  // Have updated two sessions.
+  task_environment()->FastForwardBy(BocaSessionManager::kPollingInterval * 2 +
+                                    base::Seconds(1));
+}
+
+TEST_F(BocaSessionManagerTest,
+       DoNotNotifySessionUpdateWhenSessionActivityNotChanged) {
+  auto session_1 = std::make_unique<::boca::Session>();
+  session_1->set_session_state(::boca::Session::ACTIVE);
+  ::boca::StudentStatus status;
+  ::boca::StudentDevice device;
+  auto* activity = device.mutable_activity();
+  activity->mutable_active_tab()->set_title("google");
+  (*status.mutable_devices())["device1"] = std::move(device);
+  (*session_1->mutable_student_statuses())["1"] = std::move(status);
+  auto session_2 = std::make_unique<::boca::Session>();
+  session_2->set_session_state(::boca::Session::ACTIVE);
+  ::boca::StudentStatus status_1;
+  ::boca::StudentDevice device_1;
+  auto* activity_1 = device_1.mutable_activity();
+  activity_1->mutable_active_tab()->set_title("google");
+  (*status_1.mutable_devices())["device1"] = std::move(device_1);
+  (*session_2->mutable_student_statuses())["1"] = std::move(status_1);
+
+  EXPECT_CALL(*session_client_impl(), GetSession(_))
+      .WillOnce(testing::InvokeWithoutArgs([&]() {
+        boca_session_manager()->ParseSessionResponse(std::move(session_1));
+      }))
+      .WillOnce(testing::InvokeWithoutArgs([&]() {
+        boca_session_manager()->ParseSessionResponse(std::move(session_2));
+      }));
+
+  // Only notify once for the initial update
+  EXPECT_CALL(*observer(), OnConsumerActivityUpdated(_)).Times(1);
+
+  // Have updated two sessions.
+  task_environment()->FastForwardBy(BocaSessionManager::kPollingInterval * 2 +
+                                    base::Seconds(1));
 }
 }  // namespace
 }  // namespace ash::boca

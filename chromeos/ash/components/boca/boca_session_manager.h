@@ -102,6 +102,10 @@ class BocaSessionManager
 
     // Notifies when boca app reloaded.
     virtual void OnAppReloaded();
+    // Notifies when consumer acitivity updated. Will emit when only elements
+    // order changed in the vector too.
+    virtual void OnConsumerActivityUpdated(
+        const std::map<std::string, ::boca::StudentStatus>& activities);
   };
   // CrosNetworkConfigObserver
   void OnNetworkStateChanged(
@@ -146,6 +150,7 @@ class BocaSessionManager
   void NotifyOnTaskUpdate();
   void NotifyCaptionConfigUpdate();
   void NotifyRosterUpdate();
+  void NotifyConsumerActivityUpdate();
 
   base::ObserverList<Observer> observers_;
   // Timer used for periodic session polling.

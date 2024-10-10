@@ -58,6 +58,9 @@ void BocaSessionManager::Observer::OnSessionRosterUpdated(
 
 void BocaSessionManager::Observer::OnAppReloaded() {}
 
+void BocaSessionManager::Observer::OnConsumerActivityUpdated(
+    const std::map<std::string, ::boca::StudentStatus>& activities) {}
+
 void BocaSessionManager::OnNetworkStateChanged(
     chromeos::network_config::mojom::NetworkStatePropertiesPtr network_state) {
   // Check network types comment here:
@@ -131,6 +134,7 @@ void BocaSessionManager::UpdateCurrentSession(
     NotifyOnTaskUpdate();
     NotifyCaptionConfigUpdate();
     NotifyRosterUpdate();
+    NotifyConsumerActivityUpdate();
   }
 }
 
@@ -271,6 +275,27 @@ void BocaSessionManager::NotifyRosterUpdate() {
       observer.OnSessionRosterUpdated(
           kMainStudentGroupName, std::vector<::boca::UserIdentity>(
                                      student_list.begin(), student_list.end()));
+    }
+  }
+}
+
+void BocaSessionManager::NotifyConsumerActivityUpdate() {
+  if (!current_session_ || !previous_session_) {
+    return;
+  }
+  auto current_activity = current_session_->student_statuses();
+  auto previous_activity = previous_session_->student_statuses();
+  for (auto status : current_activity) {
+    auto key = status.first;
+    if (!previous_activity.contains(key) ||
+        (previous_activity.at(key).SerializeAsString() !=
+         status.second.SerializeAsString())) {
+      for (auto& observer : observers_) {
+        observer.OnConsumerActivityUpdated(
+            std::map<std::string, ::boca::StudentStatus>(
+                current_activity.begin(), current_activity.end()));
+      }
+      return;
     }
   }
 }
