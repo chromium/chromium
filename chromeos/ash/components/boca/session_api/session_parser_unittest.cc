@@ -30,7 +30,20 @@ constexpr char kFullSessionResponse[] = R"(
       "state": "ADDED"
     },
     "3": {
-      "state": "ACTIVE"
+      "state": "ACTIVE",
+       "devices":
+        {
+          "kDummyDeviceId":
+         {
+            "info": {"device_id":"kDummyDeviceId"},
+            "state":"ACTIVE",
+            "activity": {
+              "activeTab": {
+                "title": "google"
+                }
+              }
+         }
+        }
     }
   },
   "roster": {
@@ -258,6 +271,13 @@ TEST_F(SessionParserTest, TestParseStudentStatusProtoFromJson) {
   EXPECT_EQ(::boca::StudentStatus::ACTIVE,
             session_full->student_statuses().at("3").state());
 
+  EXPECT_EQ("google", session_full->student_statuses()
+                          .at("3")
+                          .devices()
+                          .at("kDummyDeviceId")
+                          .activity()
+                          .active_tab()
+                          .title());
   ParseStudentStatusProtoFromJson(session_dict_partial->GetIfDict(),
                                   session_partial.get());
   EXPECT_EQ(0u, session_partial->student_statuses().size());
