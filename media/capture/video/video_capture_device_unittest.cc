@@ -341,13 +341,14 @@ class VideoCaptureDeviceTest
                   base::BindOnce(&VideoCaptureDeviceTest::OnFrameCaptured,
                                  base::Unretained(this), frame_format));
             })));
-    ON_CALL(*result, OnIncomingCapturedGfxBuffer)
+    ON_CALL(*result, OnIncomingCapturedImage)
         .WillByDefault(WithArgs<0, 1>(
-            Invoke([this](gfx::GpuMemoryBuffer* buffer,
+            Invoke([this](scoped_refptr<gpu::ClientSharedImage> shared_image,
                           const media::VideoCaptureFormat& frame_format) {
-              ASSERT_TRUE(buffer);
-              ASSERT_GT(buffer->GetSize().width() * buffer->GetSize().height(),
-                        0);
+              ASSERT_TRUE(shared_image);
+              ASSERT_GT(
+                  shared_image->size().width() * shared_image->size().height(),
+                  0);
               main_thread_task_runner_->PostTask(
                   FROM_HERE,
                   base::BindOnce(&VideoCaptureDeviceTest::OnFrameCaptured,

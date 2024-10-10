@@ -166,7 +166,7 @@ enum VideoCaptureError {
   kCrosHalV3DeviceDelegateWrongNumberOfStreamsConfigured,
   kCrosHalV3DeviceDelegateFailedToGetDefaultRequestSettings,
   kCrosHalV3BufferManagerHalRequestedTooManyBuffers,
-  kCrosHalV3BufferManagerFailedToCreateGpuMemoryBuffer,
+  kCrosHalV3BufferManagerFailedToCreateMappableSI,
   kCrosHalV3BufferManagerFailedToMapGpuMemoryBuffer,
   kCrosHalV3BufferManagerUnsupportedVideoPixelFormat,
   kCrosHalV3BufferManagerFailedToDupFd,
