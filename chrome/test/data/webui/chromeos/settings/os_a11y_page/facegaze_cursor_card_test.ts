@@ -15,7 +15,6 @@ import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {clearBody} from '../utils.js';
 
-const DEFAULT_CURSOR_SMOOTHING = 7;
 const DEFAULT_CURSOR_SPEED = 10;
 const DEFAULT_VELOCITY_THRESHOLD = 9;
 
@@ -411,16 +410,6 @@ suite('<facegaze-cursor-card>', () => {
     assertEquals(
         prefs.velocity_threshold.value, DEFAULT_VELOCITY_THRESHOLD - 1);
 
-    const cursorSmoothingSlider =
-        faceGazeCursorCard.shadowRoot!.querySelector<SettingsSliderElement>(
-            '#cursorSmoothingSlider');
-    assert(cursorSmoothingSlider);
-    assertTrue(isVisible(cursorSmoothingSlider));
-    assertEquals(prefs.cursor_smoothing.value, DEFAULT_CURSOR_SMOOTHING);
-    pressArrowOnSlider(cursorSmoothingSlider, /*isRight=*/ true);
-    flush();
-    assertEquals(prefs.cursor_smoothing.value, DEFAULT_CURSOR_SMOOTHING + 1);
-
     const accelerationButton =
         faceGazeCursorCard.shadowRoot!
             .querySelector<SettingsToggleButtonElement>('#accelerationButton');
@@ -441,7 +430,6 @@ suite('<facegaze-cursor-card>', () => {
 
     assertFalse(prefs.adjust_speed_separately.value);
     assertEquals(prefs.velocity_threshold.value, DEFAULT_VELOCITY_THRESHOLD);
-    assertEquals(prefs.cursor_smoothing.value, DEFAULT_CURSOR_SMOOTHING);
     assertTrue(prefs.cursor_use_acceleration.value);
     assertEquals(prefs.cursor_speed_up.value, DEFAULT_CURSOR_SPEED);
     assertEquals(prefs.cursor_speed_down.value, DEFAULT_CURSOR_SPEED);

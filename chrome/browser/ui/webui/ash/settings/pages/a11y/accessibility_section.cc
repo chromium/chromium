@@ -1066,10 +1066,6 @@ void AccessibilitySection::AddLoadTimeData(
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_ACCELERATION_LABEL},
       {"faceGazeCursorAccelerationDescription",
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_ACCELERATION_DESCRIPTION},
-      {"faceGazeCursorSmoothingLabel",
-       IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SMOOTHING_LABEL},
-      {"faceGazeCursorSmoothingDescription",
-       IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SMOOTHING_DESCRIPTION},
       {"faceGazeCursorDownSpeedLabel",
        IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SPEED_DOWN_LABEL},
       {"faceGazeCursorLeftSpeedLabel",
@@ -1430,8 +1426,6 @@ void AccessibilitySection::AddLoadTimeData(
 
   html_source->AddInteger("defaultFaceGazeCursorSpeed",
                           ash::kDefaultFaceGazeCursorSpeed);
-  html_source->AddInteger("defaultFaceGazeCursorSmoothing",
-                          ash::kDefaultFaceGazeCursorSmoothing);
   html_source->AddBoolean("defaultFaceGazeCursorUseAcceleration",
                           ash::kDefaultFaceGazeCursorUseAcceleration);
   html_source->AddInteger("defaultFaceGazeVelocityThreshold",

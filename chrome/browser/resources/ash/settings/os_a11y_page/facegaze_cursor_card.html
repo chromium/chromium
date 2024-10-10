@@ -138,25 +138,6 @@
         label-max="Stable">
     </settings-slider>
   </div>
-  <div class="settings-box">
-    <div class="start settings-box-text">
-      <div class="label" aria-hidden="true" id="faceGazeCursorSmoothingLabel">
-        $i18n{faceGazeCursorSmoothingLabel}
-      </div>
-      <div class="secondary label">
-        $i18n{faceGazeCursorSmoothingDescription}
-      </div>
-    </div>
-    <settings-slider
-        id="cursorSmoothingSlider"
-        pref="{{prefs.settings.a11y.face_gaze.cursor_smoothing}}"
-        min="[[minCursorTuning]]" max="[[maxCursorTuning]]"
-        ticks="[[tuningTicks]]"
-        label-aria="$i18n{faceGazeCursorSmoothingLabel}"
-        label-min="$i18n{faceGazeCursorSliderLabelResponsive}"
-        label-max="$i18n{faceGazeCursorSliderLabelSmooth}">
-    </settings-slider>
-  </div>
   <settings-toggle-button
       class="hr"
       id="accelerationButton"

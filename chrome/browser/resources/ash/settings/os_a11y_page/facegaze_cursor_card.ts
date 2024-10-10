@@ -151,9 +151,6 @@ export class FaceGazeCursorCardElement extends FaceGazeCursorCardElementBase {
         'settings.a11y.face_gaze.cursor_use_acceleration',
         loadTimeData.getBoolean('defaultFaceGazeCursorUseAcceleration'));
     this.setPrefValue(
-        'settings.a11y.face_gaze.cursor_smoothing',
-        loadTimeData.getInteger('defaultFaceGazeCursorSmoothing'));
-    this.setPrefValue(
         'settings.a11y.face_gaze.velocity_threshold',
         loadTimeData.getInteger('defaultFaceGazeVelocityThreshold'));
   }
