@@ -42,7 +42,8 @@
 namespace growth {
 namespace {
 
-inline constexpr char kEventKey[] = "event_to_be_checked";
+constexpr char kEventKey[] = "event_to_be_checked";
+constexpr char kInternalLogLineSeparator[] = "--------------------------------";
 
 base::Time GetDeviceCurrentTimeForScheduling() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -433,6 +434,7 @@ bool CampaignsMatcher::IsCampaignMatched(const Campaign* campaign,
 
   const auto campaign_id = GetCampaignId(campaign).value();
 
+  CAMPAIGNS_LOG(DEBUG) << kInternalLogLineSeparator;
   CAMPAIGNS_LOG(DEBUG) << "Evaluating campaign: " << campaign_id
                        << ". In prematch: " << ToString(is_prematch);
 
@@ -441,7 +443,9 @@ bool CampaignsMatcher::IsCampaignMatched(const Campaign* campaign,
 
   CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
                        << " is matched: " << ToString(is_matched)
-                       << " In prematch: " << ToString(is_prematch);
+                       << ". In prematch: " << ToString(is_prematch);
+  CAMPAIGNS_LOG(DEBUG) << kInternalLogLineSeparator;
+
   return is_matched;
 }
 
@@ -498,22 +502,38 @@ bool CampaignsMatcher::MaybeMatchDemoModeTargeting(
   if (!client_->IsDeviceInDemoMode()) {
     // Return early if it is not in demo mode while the campaign is targeting
     // demo mode.
+    CAMPAIGNS_LOG(DEBUG) << "Not in Demo Mode.";
     return false;
   }
 
   if (!MatchDemoModeAppVersion(targeting)) {
+    CAMPAIGNS_LOG(DEBUG) << "Demo Mode app version is NOT matched.";
     return false;
   }
 
   if (!MatchDemoModeTier(targeting)) {
+    CAMPAIGNS_LOG(DEBUG) << "Demo Mode tier is NOT matched.";
     return false;
   }
 
-  return MatchRetailers(targeting.GetRetailers()) &&
-         MatchPref(targeting.GetStoreIds(), ash::prefs::kDemoModeStoreId,
-                   local_state_) &&
-         MatchPref(targeting.GetCountries(), ash::prefs::kDemoModeCountry,
-                   local_state_);
+  if (!MatchRetailers(targeting.GetRetailers())) {
+    CAMPAIGNS_LOG(DEBUG) << "Demo Mode retailers are NOT matched.";
+    return false;
+  }
+
+  if (!MatchPref(targeting.GetStoreIds(), ash::prefs::kDemoModeStoreId,
+                 local_state_)) {
+    CAMPAIGNS_LOG(DEBUG) << "Demo Mode store IDs are NOT matched.";
+    return false;
+  }
+
+  if (!MatchPref(targeting.GetCountries(), ash::prefs::kDemoModeCountry,
+                 local_state_)) {
+    CAMPAIGNS_LOG(DEBUG) << "Demo Mode store countries are NOT matched.";
+    return false;
+  }
+
+  return true;
 }
 
 bool CampaignsMatcher::MatchMilestone(const DeviceTargeting& targeting) const {
@@ -813,7 +833,12 @@ bool CampaignsMatcher::MatchHotseatAppIcon(
     // Ignore if app id is missing from the targeting.
     return true;
   }
-  return client_->IsAppIconOnShelf(*app_id);
+
+  const bool is_matched = client_->IsAppIconOnShelf(*app_id);
+  if (!is_matched) {
+    CAMPAIGNS_LOG(DEBUG) << "Hotseat app icon targeting is NOT matched.";
+  }
+  return is_matched;
 }
 
 bool CampaignsMatcher::MatchEvents(std::unique_ptr<EventsTargeting> config,
@@ -830,6 +855,8 @@ bool CampaignsMatcher::MatchEvents(std::unique_ptr<EventsTargeting> config,
                    ReachCap("Group", group_id.value(), "Dismissed",
                             config->GetGroupDismissalCap()))) {
     // Reached group impression cap or dismissal cap.
+    CAMPAIGNS_LOG(DEBUG)
+        << "Events are NOT matched. Reached group impression/dismissal caps.";
     return false;
   }
 
@@ -838,6 +865,8 @@ bool CampaignsMatcher::MatchEvents(std::unique_ptr<EventsTargeting> config,
                config->GetImpressionCap()) ||
       ReachCap("Campaign", campaign_id, "Dismissed",
                config->GetDismissalCap())) {
+    CAMPAIGNS_LOG(DEBUG) << "Events are NOT matched. Reached campaign "
+                            "impression/dismissal caps.";
     return false;
   }
 
@@ -855,7 +884,8 @@ bool CampaignsMatcher::MatchEvents(std::unique_ptr<EventsTargeting> config,
     if (!condition.is_list()) {
       RecordCampaignsManagerError(
           CampaignsManagerError::kInvalidEventTargetingCondition);
-      CAMPAIGNS_LOG(ERROR) << "Invalid events targeting conditions.";
+      CAMPAIGNS_LOG(ERROR)
+          << "Events are NOT matched. Invalid events targeting conditions.";
       return false;
     }
 
@@ -864,7 +894,8 @@ bool CampaignsMatcher::MatchEvents(std::unique_ptr<EventsTargeting> config,
       if (!param.is_string()) {
         RecordCampaignsManagerError(
             CampaignsManagerError::kInvalidEventTargetingConditionParam);
-        CAMPAIGNS_LOG(ERROR) << "Invalid events targeting condition.";
+        CAMPAIGNS_LOG(ERROR)
+            << "Events are NOT matched. Invalid events targeting condition.";
         return false;
       }
 
@@ -929,8 +960,12 @@ bool CampaignsMatcher::MatchMinorUser(
     return false;
   }
 
-  bool isMinor = capability == signin::Tribool::kFalse;
-  return isMinor == minor_user_targeting.value();
+  const bool isMinor = capability == signin::Tribool::kFalse;
+  const bool is_matched = isMinor == minor_user_targeting.value();
+  if (!is_matched) {
+    CAMPAIGNS_LOG(DEBUG) << "Please check MinorUser targeting.";
+  }
+  return is_matched;
 }
 
 bool CampaignsMatcher::MatchOwner(std::optional<bool> is_owner) const {
@@ -939,7 +974,11 @@ bool CampaignsMatcher::MatchOwner(std::optional<bool> is_owner) const {
     return true;
   }
 
-  return is_owner.value() == is_user_owner_;
+  const bool is_matched = is_owner.value() == is_user_owner_;
+  if (!is_matched) {
+    CAMPAIGNS_LOG(DEBUG) << "Owner targeting is NOT matched.";
+  }
+  return is_matched;
 }
 
 bool CampaignsMatcher::MatchSessionTargeting(
@@ -953,19 +992,16 @@ bool CampaignsMatcher::MatchSessionTargeting(
   is_matched = MatchExperimentTags(targeting.GetExperimentTags(),
                                    targeting.GetFeature());
   if (!is_matched) {
-    CAMPAIGNS_LOG(DEBUG) << " ExperimentTags targeting is NOT matched.";
     return false;
   }
 
   is_matched = MatchMinorUser(targeting.GetMinorUser());
   if (!is_matched) {
-    CAMPAIGNS_LOG(DEBUG) << "Please check MinorUser targeting.";
     return false;
   }
 
   is_matched = MatchOwner(targeting.GetIsOwner());
   if (!is_matched) {
-    CAMPAIGNS_LOG(DEBUG) << "Owner targeting is NOT matched.";
     return false;
   }
 
@@ -984,43 +1020,31 @@ bool CampaignsMatcher::MatchRuntimeTargeting(
   bool is_matched = false;
   is_matched = MatchSchedulings(targeting.GetSchedulings());
   if (!is_matched) {
-    CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
-                         << " Schedulings targeting is NOT matched.";
     return false;
   }
 
   is_matched = MatchHotseatAppIcon(targeting.GetHotseatAppIcon());
   if (!is_matched) {
-    CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
-                         << " Hotseat app icon targeting is NOT matched.";
     return false;
   }
 
   is_matched = MatchOpenedApp(targeting.GetAppsOpened());
   if (!is_matched) {
-    CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
-                         << " Trigger targeting is NOT matched.";
     return false;
   }
 
   is_matched = MatchActiveUrlRegexes(targeting.GetActiveUrlRegexes());
   if (!is_matched) {
-    CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
-                         << " ActiveUrlRegexes targeting is NOT matched.";
     return false;
   }
 
   is_matched = MatchEvents(targeting.GetEventsConfig(), campaign_id, group_id);
   if (!is_matched) {
-    CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
-                         << " Events targeting is NOT matched.";
     return false;
   }
 
   is_matched = MatchUserPrefs(prefs_, targeting.GetUserPrefTargetings());
   if (!is_matched) {
-    CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
-                         << " UserPrefs targeting is NOT matched.";
     return false;
   }
 
@@ -1045,8 +1069,6 @@ bool CampaignsMatcher::Matched(const Targeting* targeting,
 
   bool is_matched = MaybeMatchDemoModeTargeting(DemoModeTargeting(targeting));
   if (!is_matched) {
-    CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
-                         << " Demo Mode targeting is NOT matched.";
     return false;
   }
 
@@ -1056,8 +1078,6 @@ bool CampaignsMatcher::Matched(const Targeting* targeting,
   if (runtime_targeting.IsValid()) {
     is_matched = MatchTriggerTargeting(runtime_targeting.GetTriggers());
     if (!is_matched) {
-      CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
-                           << " Trigger targeting is NOT matched.";
       return false;
     }
   }
