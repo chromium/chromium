@@ -100,12 +100,12 @@ TEST_F(PasswordUtilKeychainTest, CheckRestoreOfSavedPasswords) {
 
 // Tests retrieval of saved passwords, using an empty string as arg.
 TEST_F(PasswordUtilKeychainTest, EmptyArgument) {
-  EXPECT_NSEQ(PasswordWithKeychainIdentifier(@""), @"");
+  EXPECT_NSEQ(PasswordWithKeychainIdentifier(@""), nil);
 }
 
 // Tests retrieval of saved passwords, nil as arg.
 TEST_F(PasswordUtilKeychainTest, NilArgument) {
-  EXPECT_NSEQ(PasswordWithKeychainIdentifier(nil), @"");
+  EXPECT_NSEQ(PasswordWithKeychainIdentifier(nil), nil);
 }
 
 // Tests storing passwords with StorePassword.
