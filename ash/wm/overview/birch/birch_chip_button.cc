@@ -10,6 +10,8 @@
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
+#include "ash/system/mahi/resources/grit/mahi_resources.h"
+#include "ash/wm/overview/birch/birch_animation_utils.h"
 #include "ash/wm/overview/birch/birch_bar_constants.h"
 #include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "ash/wm/overview/birch/birch_bar_util.h"
@@ -21,12 +23,14 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/context_menu_controller.h"
+#include "ui/views/controls/animated_image_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -76,6 +80,10 @@ constexpr TypographyToken kTitleFont = TypographyToken::kCrosButton1;
 constexpr ui::ColorId kTitleColorId = cros_tokens::kCrosSysOnSurface;
 constexpr TypographyToken kSubtitleFont = TypographyToken::kCrosAnnotation1;
 constexpr ui::ColorId kSubtitleColorId = cros_tokens::kCrosSysOnSurfaceVariant;
+
+//
+constexpr gfx::Size kLoadingAnimationSize = gfx::Size(100, 20);
+constexpr int kLoadingAnimationRadius = 10;
 
 BirchSuggestionType GetSuggestionTypeFromItemType(BirchItemType item_type) {
   switch (item_type) {
@@ -142,8 +150,6 @@ BirchChipButton::BirchChipButton()
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
       .SetInteriorMargin(kInteriorMarginsNoAddon);
 
-  raw_ptr<views::BoxLayoutView> titles_container = nullptr;
-
   // Build up the chip's contents.
   views::Builder<BirchChipButtonBase>(this)
       .SetLayoutManager(std::move(flex_layout))
@@ -163,7 +169,7 @@ BirchChipButton::BirchChipButton()
                   views::Builder<views::ImageView>().CopyAddressTo(
                       &secondary_icon_view_)),
           views::Builder<views::BoxLayoutView>()
-              .CopyAddressTo(&titles_container)
+              .CopyAddressTo(&titles_container_)
               .SetProperty(views::kFlexBehaviorKey,
                            views::FlexSpecification(
                                views::MinimumFlexSizeRule::kScaleToZero,
@@ -225,6 +231,25 @@ void BirchChipButton::Init(BirchItem* item) {
           item->GetAddonAccessibleName());
       button->SetTooltipText(item->GetAddonAccessibleName());
       SetAddon(std::move(button));
+      // Show loading animation for title if `item` has a dummy title.
+      if (item_->title() == u"CoralTitle") {
+        title_->SetVisible(false);
+
+        BuildTitleLoadingAnimation();
+        title_loading_animated_image_->Play(
+            birch_animation_utils::GetLottiePlaybackConfig(
+                *title_loading_animated_image_->animated_image()->skottie(),
+                // TODO(yulunwu) replace loading animation when available.
+                IDR_MAHI_LOADING_OUTLINES_ANIMATION));
+      } else {
+        // Show title and delete the loading animation.
+        title_->SetVisible(true);
+        if (!!title_loading_animated_image_) {
+          title_loading_animated_image_->Stop();
+          titles_container_->RemoveChildViewT(
+              std::exchange(title_loading_animated_image_, nullptr));
+        }
+      }
       break;
     }
     case BirchAddonType::kWeatherTempLabelC:
@@ -466,6 +491,26 @@ void BirchChipButton::OnCoralAddonClicked() {
   } else {
     tab_app_selection_widget_->Hide();
   }
+}
+
+void BirchChipButton::BuildTitleLoadingAnimation() {
+  // Build `title_loading_animated_image_` and insert into the
+  // front of `titles_container_`.
+  // TODO(yulunwu) update animation file when available.
+  std::unique_ptr<views::AnimatedImageView> title_loading_animated_image =
+      views::Builder<views::AnimatedImageView>()
+          .SetAnimatedImage(birch_animation_utils::GetLottieAnimationData(
+              IDR_MAHI_LOADING_OUTLINES_ANIMATION))
+          .SetImageSize(kLoadingAnimationSize)
+          .SetVisible(true)
+          .Build();
+  // Setup rounder corners for `title_loading_animated_image_`.
+  title_loading_animated_image->SetPaintToLayer();
+  title_loading_animated_image->layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(kLoadingAnimationRadius));
+  title_loading_animated_image_ =
+      titles_container_->AddChildViewAt(std::move(title_loading_animated_image),
+                                        /*index=*/0);
 }
 
 BEGIN_METADATA(BirchChipButton)

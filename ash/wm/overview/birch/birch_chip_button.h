@@ -15,6 +15,8 @@
 #include "ui/views/metadata/view_factory.h"
 
 namespace views {
+class AnimatedImageView;
+class BoxLayoutView;
 class FlexLayout;
 class ImageView;
 class Label;
@@ -79,6 +81,9 @@ class ASH_EXPORT BirchChipButton : public BirchChipButtonBase,
   // item.
   void OnCoralAddonClicked();
 
+  // Builds `title_loading_animated_image_`.
+  void BuildTitleLoadingAnimation();
+
   // The chip context menu controller.
   std::unique_ptr<ChipMenuController> chip_menu_controller_;
 
@@ -90,7 +95,9 @@ class ASH_EXPORT BirchChipButton : public BirchChipButtonBase,
   raw_ptr<views::View> icon_parent_view_ = nullptr;
   raw_ptr<views::ImageView> primary_icon_view_ = nullptr;
   raw_ptr<views::ImageView> secondary_icon_view_ = nullptr;
+  raw_ptr<views::BoxLayoutView> titles_container_ = nullptr;
   raw_ptr<views::Label> title_ = nullptr;
+  raw_ptr<views::AnimatedImageView> title_loading_animated_image_ = nullptr;
   raw_ptr<views::Label> subtitle_ = nullptr;
   raw_ptr<views::View> addon_view_ = nullptr;
 
