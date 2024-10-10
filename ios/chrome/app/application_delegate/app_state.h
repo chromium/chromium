@@ -99,7 +99,6 @@ enum class PostCrashAction {
 
 // YES if the application is getting terminated.
 @property(nonatomic, readonly) BOOL appIsTerminating;
-@property(nonatomic, assign, readwrite) BOOL overridePortraitOnly;
 
 // All agents that have been attached. Use -addAgent: and -removeAgent: to
 // add and remove agents.
