@@ -806,6 +806,7 @@ public class Fido2ApiTestHelper {
     /** Callback class to pass to Fido2CredentialRequest WebAuthn operations. */
     public static class AuthenticatorCallback {
         private Integer mStatus;
+        private Integer mOutcome;
         private MakeCredentialAuthenticatorResponse mMakeCredentialResponse;
         private GetAssertionAuthenticatorResponse mGetAssertionAuthenticatorResponse;
         private List<byte[]> mGetMatchingCredentialIdsResponse;
@@ -840,8 +841,17 @@ public class Fido2ApiTestHelper {
             unblock();
         }
 
+        public void onRequestOutcome(int outcome) {
+            assert mOutcome == null;
+            mOutcome = outcome;
+        }
+
         public Integer getStatus() {
             return mStatus;
+        }
+
+        public Integer getOutcome() {
+            return mOutcome;
         }
 
         public MakeCredentialAuthenticatorResponse getMakeCredentialResponse() {

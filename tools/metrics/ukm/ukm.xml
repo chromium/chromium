@@ -24609,7 +24609,8 @@ be describing additional metrics about the same event.
   <owner>chrome-webauthn@google.com</owner>
   <summary>
     Information about the completion of a request to register a new Web
-    Authentication credential.
+    Authentication credential. This was added for desktop platforms in M128 and
+    for Android in M131.
   </summary>
   <metric name="RegisterCompletionResult"
       enum="WebAuthenticationMakeCredentialOutcome">
@@ -24630,7 +24631,8 @@ be describing additional metrics about the same event.
   <owner>chrome-webauthn@google.com</owner>
   <summary>
     Information about the completion of a request for a signed assertion by a
-    Web Authentication credential.
+    Web Authentication credential. This was added for desktop platforms in M128
+    and for Android in M131.
   </summary>
   <metric name="RequestMode" enum="WebAuthenticationRequestMode">
     <summary>

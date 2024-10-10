@@ -53,7 +53,8 @@ public class MockFido2CredentialRequest extends Fido2CredentialRequest {
             Origin origin,
             Origin topOrigin,
             MakeCredentialResponseCallback callback,
-            FidoErrorResponseCallback errorCallback) {
+            FidoErrorResponseCallback errorCallback,
+            RecordOutcomeCallback recordingCallback) {
         errorCallback.onError(AuthenticatorStatus.NOT_IMPLEMENTED);
     }
 
@@ -65,7 +66,8 @@ public class MockFido2CredentialRequest extends Fido2CredentialRequest {
             Origin topOrigin,
             PaymentOptions payment,
             GetAssertionResponseCallback callback,
-            FidoErrorResponseCallback errorCallback) {
+            FidoErrorResponseCallback errorCallback,
+            RecordOutcomeCallback recordingCallback) {
         errorCallback.onError(AuthenticatorStatus.NOT_IMPLEMENTED);
     }
 

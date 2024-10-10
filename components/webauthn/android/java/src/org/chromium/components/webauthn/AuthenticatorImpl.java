@@ -27,6 +27,7 @@ import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialReportOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.WebAuthnClientCapability;
+import org.chromium.components.ukm.MultiMetricUkmRecorder;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.mojo.system.MojoException;
@@ -64,6 +65,10 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
     private GetAssertion_Response mGetAssertionCallback;
     private Fido2CredentialRequest mPendingFido2CredentialRequest;
     private Set<Fido2CredentialRequest> mUnclosedFido2CredentialRequests = new HashSet<>();
+
+    // Information about the request cached here for metric reporting purposes.
+    private boolean mIsConditionalRequest;
+    private boolean mIsPaymentRequest;
 
     // StaticFieldLeak complains that this is a memory leak because
     // `Fido2CredentialRequest` contains a `Context`. But this field is only
@@ -139,10 +144,12 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
             return;
         }
 
+        mIsPaymentRequest = options.isPaymentCredentialCreation;
         mMakeCredentialCallback = callback;
         mIsOperationPending = true;
         if (!GmsCoreUtils.isWebauthnSupported()
                 || (!isChrome(mWebContents) && !GmsCoreUtils.isResultReceiverSupported())) {
+            recordOutcomeEvent(MakeCredentialOutcome.OTHER_FAILURE);
             onError(AuthenticatorStatus.NOT_IMPLEMENTED);
             return;
         }
@@ -150,7 +157,10 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         if (mCreateConfirmationUiDelegate != null) {
             if (!mCreateConfirmationUiDelegate.show(
                     () -> continueMakeCredential(options),
-                    () -> onError(AuthenticatorStatus.NOT_ALLOWED_ERROR))) {
+                    () -> {
+                        recordOutcomeEvent(MakeCredentialOutcome.USER_CANCELLATION);
+                        onError(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+                    })) {
                 continueMakeCredential(options);
             }
         } else {
@@ -167,7 +177,8 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
                 mOrigin,
                 mTopOrigin,
                 this::onRegisterResponse,
-                this::onError);
+                this::onError,
+                this::recordOutcomeEvent);
     }
 
     private @Nullable Bundle maybeCreateBrowserOptions() {
@@ -189,9 +200,12 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
 
         mGetAssertionCallback = callback;
         mIsOperationPending = true;
+        mIsPaymentRequest = mPayment != null;
+        mIsConditionalRequest = options.isConditional;
 
         if (!GmsCoreUtils.isWebauthnSupported()
                 || (!isChrome(mWebContents) && !GmsCoreUtils.isResultReceiverSupported())) {
+            recordOutcomeEvent(MakeCredentialOutcome.OTHER_FAILURE);
             onError(AuthenticatorStatus.NOT_IMPLEMENTED);
             return;
         }
@@ -204,7 +218,8 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
                 mTopOrigin,
                 mPayment,
                 this::onSignResponse,
-                this::onError);
+                this::onError,
+                this::recordOutcomeEvent);
     }
 
     @Override
@@ -358,7 +373,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
 
         assert mMakeCredentialCallback != null;
         assert status == AuthenticatorStatus.SUCCESS;
-        mMakeCredentialCallback.call(status, response, null);
+        mMakeCredentialCallback.call(AuthenticatorStatus.SUCCESS, response, null);
         cleanupRequest();
     }
 
@@ -385,6 +400,39 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         }
         if (mPendingFido2CredentialRequest != null) mPendingFido2CredentialRequest.destroyBridge();
         cleanupRequest();
+    }
+
+    /** Record outcome UKM at the request's completion time. */
+    private void recordOutcomeEvent(int resultMetricValue) {
+        // mWebContents can be null in tests.
+        if (mWebContents == null || !isChrome(mWebContents)) {
+            return;
+        }
+        String event;
+        String resultMetricName;
+        if (mGetAssertionCallback != null) {
+            event = "WebAuthn.SignCompletion";
+            resultMetricName = "SignCompletionResult";
+        } else if (mMakeCredentialCallback != null) {
+            event = "WebAuthn.RegisterCompletion";
+            resultMetricName = "RegisterCompletionResult";
+        } else {
+            return;
+        }
+
+        @AuthenticationRequestMode int mode = AuthenticationRequestMode.MODAL_WEB_AUTHN;
+        if (mIsConditionalRequest) {
+            mode = AuthenticationRequestMode.CONDITIONAL;
+        } else if (mIsPaymentRequest) {
+            mode = AuthenticationRequestMode.PAYMENT;
+        }
+        new MultiMetricUkmRecorder.Builder()
+                .setWebContents(mWebContents)
+                .setEventName(event)
+                .addMetric(resultMetricName, resultMetricValue)
+                .addMetric("RequestMode", mode)
+                .build()
+                .record();
     }
 
     private void cleanupRequest() {

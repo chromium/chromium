@@ -65,6 +65,7 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/webauth/authenticator_common_impl.h"
 #include "content/browser/webauth/authenticator_environment.h"
+#include "content/browser/webauth/authenticator_request_outcome_enums.h"
 #include "content/browser/webauth/client_data_json.h"
 #include "content/browser/webauth/virtual_authenticator.h"
 #include "content/browser/webauth/virtual_authenticator_manager_impl.h"
@@ -164,10 +165,6 @@
 namespace content {
 
 using ::testing::_;
-
-using GetAssertionOutcome = AuthenticatorCommonImpl::GetAssertionOutcome;
-using MakeCredentialOutcome = AuthenticatorCommonImpl::MakeCredentialOutcome;
-using RequestMode = AuthenticatorCommonImpl::RequestMode;
 
 using blink::mojom::AttestationConveyancePreference;
 using blink::mojom::AuthenticationExtensionsClientInputs;
@@ -885,7 +882,7 @@ class AuthenticatorImplTest : public AuthenticatorTestBase {
 
   void VerifyGetAssertionOutcomeUkm(uint32_t index,
                                     GetAssertionOutcome outcome,
-                                    RequestMode mode) {
+                                    AuthenticationRequestMode mode) {
     auto entries = GetTestUkmRecorder()->GetEntriesByName(
         ukm::builders::WebAuthn_SignCompletion::kEntryName);
     ASSERT_GT(entries.size(), index);
@@ -897,7 +894,7 @@ class AuthenticatorImplTest : public AuthenticatorTestBase {
 
   void VerifyMakeCredentialOutcomeUkm(uint32_t index,
                                       MakeCredentialOutcome outcome,
-                                      RequestMode mode) {
+                                      AuthenticationRequestMode mode) {
     auto entries = GetTestUkmRecorder()->GetEntriesByName(
         ukm::builders::WebAuthn_RegisterCompletion::kEntryName);
     ASSERT_GT(entries.size(), index);
@@ -1038,7 +1035,7 @@ TEST_F(AuthenticatorImplTest, MakeCredentialOriginAndRpIds) {
         (test_case.expected_status == AuthenticatorStatus::SUCCESS)
             ? MakeCredentialOutcome::kSuccess
             : MakeCredentialOutcome::kSecurityError,
-        RequestMode::kModalWebAuthn);
+        AuthenticationRequestMode::kModalWebAuthn);
   }
 }
 
@@ -1068,7 +1065,7 @@ TEST_F(AuthenticatorImplTest, MakeCredentialResidentKeyUnsupported) {
   EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
             AuthenticatorStatus::RESIDENT_CREDENTIALS_UNSUPPORTED);
   VerifyMakeCredentialOutcomeUkm(0, MakeCredentialOutcome::kRkNotSupported,
-                                 RequestMode::kModalWebAuthn);
+                                 AuthenticationRequestMode::kModalWebAuthn);
 }
 
 // Test that MakeCredential request times out with NOT_ALLOWED_ERROR if a
@@ -1085,7 +1082,7 @@ TEST_F(AuthenticatorImplTest, MakeCredentialPlatformAuthenticator) {
       AuthenticatorMakeCredentialAndWaitForTimeout(std::move(options)).status,
       AuthenticatorStatus::NOT_ALLOWED_ERROR);
   VerifyMakeCredentialOutcomeUkm(0, MakeCredentialOutcome::kUiTimeout,
-                                 RequestMode::kModalWebAuthn);
+                                 AuthenticationRequestMode::kModalWebAuthn);
 }
 
 TEST_F(AuthenticatorImplTest, GetClientCapabilities) {
@@ -1219,7 +1216,7 @@ TEST_F(AuthenticatorImplTest, TestMakeCredentialTimeout) {
       "WebAuthentication.MakeCredential.Result",
       AuthenticatorCommonImpl::CredentialRequestResult::kTimeout, 1);
   VerifyMakeCredentialOutcomeUkm(0, MakeCredentialOutcome::kUiTimeout,
-                                 RequestMode::kModalWebAuthn);
+                                 AuthenticationRequestMode::kModalWebAuthn);
 }
 
 // Verify behavior for various combinations of origins and RP IDs.
@@ -1492,7 +1489,7 @@ TEST_F(AuthenticatorImplTest, TestGetAssertionTimeout) {
       "WebAuthentication.GetAssertion.Result",
       AuthenticatorCommonImpl::CredentialRequestResult::kTimeout, 1);
   VerifyGetAssertionOutcomeUkm(0, GetAssertionOutcome::kUiTimeout,
-                               RequestMode::kModalWebAuthn);
+                               AuthenticationRequestMode::kModalWebAuthn);
 }
 
 TEST_F(AuthenticatorImplTest, OversizedCredentialId) {
@@ -1605,7 +1602,7 @@ TEST_F(AuthenticatorImplTest, GetAssertionWithEmptyAllowCredentials) {
   EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
             AuthenticatorStatus::RESIDENT_CREDENTIALS_UNSUPPORTED);
   VerifyGetAssertionOutcomeUkm(0, GetAssertionOutcome::kRkNotSupported,
-                               RequestMode::kModalWebAuthn);
+                               AuthenticationRequestMode::kModalWebAuthn);
 }
 
 TEST_F(AuthenticatorImplTest, MakeCredentialAlreadyRegistered) {
@@ -1621,7 +1618,7 @@ TEST_F(AuthenticatorImplTest, MakeCredentialAlreadyRegistered) {
   EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
             AuthenticatorStatus::CREDENTIAL_EXCLUDED);
   VerifyMakeCredentialOutcomeUkm(0, MakeCredentialOutcome::kCredentialExcluded,
-                                 RequestMode::kModalWebAuthn);
+                                 AuthenticationRequestMode::kModalWebAuthn);
 }
 
 TEST_F(AuthenticatorImplTest, MakeCredentialPendingRequest) {
@@ -1772,7 +1769,7 @@ TEST_F(AuthenticatorImplTest, Ctap2AssertionWithUnknownCredential) {
         AuthenticatorStatus::NOT_ALLOWED_ERROR);
     VerifyGetAssertionOutcomeUkm(0,
                                  GetAssertionOutcome::kCredentialNotRecognized,
-                                 RequestMode::kModalWebAuthn);
+                                 AuthenticationRequestMode::kModalWebAuthn);
     // The user must have pressed the authenticator for the operation to
     // resolve.
     EXPECT_TRUE(pressed);
@@ -2461,7 +2458,7 @@ TEST_F(AuthenticatorContentBrowserClientTest, MakeCredentialTLSError) {
   EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
             AuthenticatorStatus::CERTIFICATE_ERROR);
   VerifyMakeCredentialOutcomeUkm(0, MakeCredentialOutcome::kOtherFailure,
-                                 RequestMode::kModalWebAuthn);
+                                 AuthenticationRequestMode::kModalWebAuthn);
 }
 
 TEST_F(AuthenticatorContentBrowserClientTest, GetAssertionTLSError) {
@@ -2472,7 +2469,7 @@ TEST_F(AuthenticatorContentBrowserClientTest, GetAssertionTLSError) {
   EXPECT_EQ(AuthenticatorGetAssertion(std::move(options)).status,
             AuthenticatorStatus::CERTIFICATE_ERROR);
   VerifyGetAssertionOutcomeUkm(0, GetAssertionOutcome::kOtherFailure,
-                               RequestMode::kModalWebAuthn);
+                               AuthenticationRequestMode::kModalWebAuthn);
 }
 
 TEST_F(AuthenticatorContentBrowserClientTest,
@@ -2518,7 +2515,7 @@ TEST_F(AuthenticatorContentBrowserClientTest, TestGetAssertionCancel) {
       "WebAuthentication.GetAssertion.Result",
       AuthenticatorCommonImpl::CredentialRequestResult::kUserCancelled, 1);
   VerifyGetAssertionOutcomeUkm(0, GetAssertionOutcome::kUserCancellation,
-                               RequestMode::kModalWebAuthn);
+                               AuthenticationRequestMode::kModalWebAuthn);
 }
 
 TEST_F(AuthenticatorContentBrowserClientTest, TestMakeCredentialCancel) {
@@ -2532,7 +2529,7 @@ TEST_F(AuthenticatorContentBrowserClientTest, TestMakeCredentialCancel) {
       "WebAuthentication.MakeCredential.Result",
       AuthenticatorCommonImpl::CredentialRequestResult::kUserCancelled, 1);
   VerifyMakeCredentialOutcomeUkm(0, MakeCredentialOutcome::kUserCancellation,
-                                 RequestMode::kModalWebAuthn);
+                                 AuthenticationRequestMode::kModalWebAuthn);
 }
 
 // Test that credentials can be created and used from an extension origin when
@@ -4710,7 +4707,7 @@ TEST_F(AuthenticatorImplTest, AlgorithmsOmitted) {
     EXPECT_EQ(result.status, AuthenticatorStatus::NOT_ALLOWED_ERROR);
     VerifyMakeCredentialOutcomeUkm(
         1, MakeCredentialOutcome::kAlgorithmNotSupported,
-        RequestMode::kModalWebAuthn);
+        AuthenticationRequestMode::kModalWebAuthn);
     EXPECT_TRUE(touched);
   }
 }
@@ -5687,7 +5684,7 @@ TEST_F(PINAuthenticatorImplTest, MakeCredentialSoftLock) {
   EXPECT_EQ(InterestingFailureReason::kSoftPINBlock,
             *test_client_.failure_reason);
   VerifyMakeCredentialOutcomeUkm(0, MakeCredentialOutcome::kSoftPinBlock,
-                                 RequestMode::kModalWebAuthn);
+                                 AuthenticationRequestMode::kModalWebAuthn);
 }
 
 TEST_F(PINAuthenticatorImplTest, MakeCredentialHardLock) {
@@ -5702,7 +5699,7 @@ TEST_F(PINAuthenticatorImplTest, MakeCredentialHardLock) {
   EXPECT_EQ(InterestingFailureReason::kHardPINBlock,
             *test_client_.failure_reason);
   VerifyMakeCredentialOutcomeUkm(0, MakeCredentialOutcome::kHardPinBlock,
-                                 RequestMode::kModalWebAuthn);
+                                 AuthenticationRequestMode::kModalWebAuthn);
 }
 
 TEST_F(PINAuthenticatorImplTest, MakeCredentialWrongPINFirst) {
@@ -6097,7 +6094,7 @@ TEST_F(PINAuthenticatorImplTest, GetAssertionSoftLock) {
   EXPECT_EQ(InterestingFailureReason::kSoftPINBlock,
             *test_client_.failure_reason);
   VerifyGetAssertionOutcomeUkm(0, GetAssertionOutcome::kSoftPinBlock,
-                               RequestMode::kModalWebAuthn);
+                               AuthenticationRequestMode::kModalWebAuthn);
 }
 
 TEST_F(PINAuthenticatorImplTest, GetAssertionHardLock) {
@@ -6116,7 +6113,7 @@ TEST_F(PINAuthenticatorImplTest, GetAssertionHardLock) {
   EXPECT_EQ(InterestingFailureReason::kHardPINBlock,
             *test_client_.failure_reason);
   VerifyGetAssertionOutcomeUkm(0, GetAssertionOutcome::kHardPinBlock,
-                               RequestMode::kModalWebAuthn);
+                               AuthenticationRequestMode::kModalWebAuthn);
 }
 
 TEST_F(PINAuthenticatorImplTest, GetAssertionSkipPINTouch) {
@@ -6813,7 +6810,7 @@ TEST_F(UVTokenAuthenticatorImplTest, GetAssertionUvFails) {
   EXPECT_EQ(AuthenticatorGetAssertion(get_credential_options()).status,
             AuthenticatorStatus::NOT_ALLOWED_ERROR);
   VerifyGetAssertionOutcomeUkm(0, GetAssertionOutcome::kUvNotSupported,
-                               RequestMode::kModalWebAuthn);
+                               AuthenticationRequestMode::kModalWebAuthn);
   EXPECT_EQ(0, expected_retries);
 }
 
@@ -7486,7 +7483,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, StorageFull) {
   EXPECT_EQ(AuthenticatorMakeCredential(make_credential_options()).status,
             AuthenticatorStatus::NOT_ALLOWED_ERROR);
   VerifyMakeCredentialOutcomeUkm(0, MakeCredentialOutcome::kStorageFull,
-                                 RequestMode::kModalWebAuthn);
+                                 AuthenticationRequestMode::kModalWebAuthn);
 }
 
 TEST_F(ResidentKeyAuthenticatorImplTest,
@@ -8915,7 +8912,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, ConditionalUI) {
   GetAssertionResult result = AuthenticatorGetAssertion(std::move(options));
   EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
   VerifyGetAssertionOutcomeUkm(0, GetAssertionOutcome::kSuccess,
-                               RequestMode::kConditional);
+                               AuthenticationRequestMode::kConditional);
 }
 
 // Tests that the AuthenticatorRequestDelegate can choose a known platform

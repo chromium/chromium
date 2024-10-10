@@ -198,7 +198,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 mOrigin,
                 mCallback::onRegisterResponse,
-                mCallback::onError);
+                mCallback::onError,
+                mCallback::onRequestOutcome);
 
         verify(mCredManHelperMock, times(1))
                 .startMakeRequest(any(), any(), any(), any(), any(), any());
@@ -221,7 +222,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 mOrigin,
                 mCallback::onRegisterResponse,
-                mCallback::onError);
+                mCallback::onError,
+                mCallback::onRequestOutcome);
 
         verify(mCredManHelperMock, times(0))
                 .startMakeRequest(any(), any(), any(), any(), any(), any());
@@ -245,7 +247,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 mOrigin,
                 mCallback::onRegisterResponse,
-                mCallback::onError);
+                mCallback::onError,
+                mCallback::onRequestOutcome);
 
         verify(mCredManHelperMock, times(1))
                 .startMakeRequest(any(), any(), any(), any(), any(), any());
@@ -266,7 +269,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 mOrigin,
                 mCallback::onRegisterResponse,
-                mCallback::onError);
+                mCallback::onError,
+                mCallback::onRequestOutcome);
 
         verify(mCredManHelperMock, times(0))
                 .startMakeRequest(any(), any(), any(), any(), any(), any());
@@ -285,7 +289,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 mOrigin,
                 mCallback::onRegisterResponse,
-                mCallback::onError);
+                mCallback::onError,
+                mCallback::onRequestOutcome);
 
         assertThat(mFido2ApiCallHelper.mMakeCredentialCalled).isTrue();
         assertThat(mFido2ApiCallHelper.getChannelExtraOrNull()).isEqualTo(TEST_CHANNEL_EXTRA);
@@ -307,7 +312,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 mOrigin,
                 mCallback::onRegisterResponse,
-                mCallback::onError);
+                mCallback::onError,
+                mCallback::onRequestOutcome);
 
         assertThat(mFido2ApiCallHelper.mMakeCredentialCalled).isTrue();
         verifyNoInteractions(mCredManHelperMock);
@@ -327,7 +333,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 mOrigin,
                 mCallback::onRegisterResponse,
-                mCallback::onError);
+                mCallback::onError,
+                mCallback::onRequestOutcome);
 
         assertThat(mFido2ApiCallHelper.mMakeCredentialCalled).isTrue();
         verifyNoInteractions(mCredManHelperMock);
@@ -347,7 +354,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 mOrigin,
                 mCallback::onRegisterResponse,
-                mCallback::onError);
+                mCallback::onError,
+                mCallback::onRequestOutcome);
 
         assertThat(mFido2ApiCallHelper.mMakeCredentialCalled).isFalse();
         verify(mCredManHelperMock)
@@ -374,7 +382,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 mOrigin,
                 mCallback::onRegisterResponse,
-                mCallback::onError);
+                mCallback::onError,
+                mCallback::onRequestOutcome);
 
         assertThat(mFido2ApiCallHelper.mMakeCredentialCalled).isTrue();
         verifyNoInteractions(mCredManHelperMock);
@@ -391,7 +400,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 mCallback::onSignResponse,
-                mCallback::onError);
+                mCallback::onError,
+                mCallback::onRequestOutcome);
 
         String originString = Fido2CredentialRequest.convertOriginToString(mOrigin);
         verify(mCredManHelperMock)
@@ -423,7 +433,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 mCallback::onSignResponse,
-                mCallback::onError);
+                mCallback::onError,
+                mCallback::onRequestOutcome);
 
         ArgumentCaptor<Runnable> fido2ApiCallSuccessfulRunback =
                 ArgumentCaptor.forClass(Runnable.class);
@@ -462,7 +473,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 (responseStatus, response) -> mCallback.onSignResponse(responseStatus, response),
-                mCallback::onError);
+                mCallback::onError,
+                mCallback::onRequestOutcome);
 
         verifyNoInteractions(mCredManHelperMock);
     }
@@ -483,7 +495,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 mCallback::onSignResponse,
-                mCallback::onError);
+                mCallback::onError,
+                mCallback::onRequestOutcome);
 
         verify(mCredManHelperMock)
                 .startGetRequest(
@@ -512,7 +525,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 mCallback::onSignResponse,
-                mCallback::onError);
+                mCallback::onError,
+                mCallback::onRequestOutcome);
 
         verifyNoInteractions(mCredManHelperMock);
     }
@@ -532,7 +546,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 mCallback::onSignResponse,
-                mCallback::onError);
+                mCallback::onError,
+                mCallback::onRequestOutcome);
 
         verifyNoInteractions(mCredManHelperMock);
         assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isTrue();
@@ -551,7 +566,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 mCallback::onSignResponse,
-                mCallback::onError);
+                mCallback::onError,
+                mCallback::onRequestOutcome);
 
         ArgumentCaptor<Runnable> setNoCredentialsParamCaptor =
                 ArgumentCaptor.forClass(Runnable.class);
@@ -586,7 +602,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 mCallback::onSignResponse,
-                mCallback::onError);
+                mCallback::onError,
+                mCallback::onRequestOutcome);
 
         verify(mCredManHelperMock)
                 .startGetRequest(
@@ -613,7 +630,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 mCallback::onSignResponse,
-                mCallback::onError);
+                mCallback::onError,
+                mCallback::onRequestOutcome);
 
         verify(mCredManHelperMock)
                 .startGetRequest(
@@ -635,7 +653,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 (responseStatus, response) -> mCallback.onSignResponse(responseStatus, response),
-                mCallback::onError);
+                mCallback::onError,
+                mCallback::onRequestOutcome);
 
         verifyNoInteractions(mCredManHelperMock);
         assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isTrue();
@@ -664,7 +683,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 (responseStatus, response) -> mCallback.onSignResponse(responseStatus, response),
-                mCallback::onError);
+                mCallback::onError,
+                mCallback::onRequestOutcome);
 
         verify(mCredManHelperMock)
                 .startGetRequest(
@@ -689,7 +709,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 mCallback::onSignResponse,
-                mCallback::onError);
+                mCallback::onError,
+                mCallback::onRequestOutcome);
 
         verifyNoInteractions(mCredManHelperMock);
         assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isTrue();
@@ -716,7 +737,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 mCallback::onSignResponse,
-                mCallback::onError);
+                mCallback::onError,
+                mCallback::onRequestOutcome);
 
         verifyNoInteractions(mCredManHelperMock);
         assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isFalse();
@@ -736,7 +758,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 mCallback::onSignResponse,
-                mCallback::onError);
+                mCallback::onError,
+                mCallback::onRequestOutcome);
 
         String originString = Fido2CredentialRequest.convertOriginToString(mOrigin);
         verify(mCredManHelperMock, times(1))
@@ -770,7 +793,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 mCallback::onSignResponse,
-                mCallback::onError);
+                mCallback::onError,
+                mCallback::onRequestOutcome);
 
         ArgumentCaptor<Runnable> fido2ApiCallSuccessfulRunback =
                 ArgumentCaptor.forClass(Runnable.class);
@@ -807,7 +831,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 mCallback::onSignResponse,
-                mCallback::onError);
+                mCallback::onError,
+                mCallback::onRequestOutcome);
 
         assertThat(mCallback.getStatus()).isEqualTo(AuthenticatorStatus.NOT_IMPLEMENTED);
         verifyNoInteractions(mCredManHelperMock);
@@ -826,7 +851,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 mCallback::onSignResponse,
-                mCallback::onError);
+                mCallback::onError,
+                mCallback::onRequestOutcome);
 
         mRequest.cancelConditionalGetAssertion();
 
@@ -856,7 +882,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 mCallback::onSignResponse,
-                mCallback::onError);
+                mCallback::onError,
+                mCallback::onRequestOutcome);
 
         ArgumentCaptor<Runnable> fido2ApiCallSuccessfulRunback =
                 ArgumentCaptor.forClass(Runnable.class);
@@ -894,7 +921,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 mCallback::onSignResponse,
-                mCallback::onError);
+                mCallback::onError,
+                mCallback::onRequestOutcome);
 
         // The request should have requested RP ID validation.
         assertThat(rpIdValidationCallback[0]).isNotNull();
@@ -931,7 +959,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 mCallback::onSignResponse,
-                mCallback::onError);
+                mCallback::onError,
+                mCallback::onRequestOutcome);
 
         assertThat(mCallback.getStatus()).isEqualTo(AuthenticatorStatus.NOT_IMPLEMENTED);
         verifyNoInteractions(mCredManHelperMock);
@@ -956,7 +985,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 mCallback::onSignResponse,
-                mCallback::onError);
+                mCallback::onError,
+                mCallback::onRequestOutcome);
 
         verifyNoInteractions(mCredManHelperMock);
         assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isTrue();
@@ -982,7 +1012,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 mCallback::onSignResponse,
-                mCallback::onError);
+                mCallback::onError,
+                mCallback::onRequestOutcome);
 
         assertThat(mCallback.getStatus()).isNull();
         verify(mCredManHelperMock, times(1))
@@ -1009,7 +1040,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 mOrigin,
                 /* payment= */ null,
                 mCallback::onSignResponse,
-                mCallback::onError);
+                mCallback::onError,
+                mCallback::onRequestOutcome);
 
         verify(mCredManHelperMock, times(1))
                 .startGetRequest(any(), any(), any(), any(), any(), any(), anyBoolean());

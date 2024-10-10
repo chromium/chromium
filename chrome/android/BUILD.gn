@@ -1983,6 +1983,7 @@ if (current_toolchain == default_toolchain) {
       "//components/sync/protocol:protocol_java",
       "//components/sync_device_info:sync_device_info_java",
       "//components/tab_groups:tab_groups_java",
+      "//components/ukm/android:java",
       "//components/url_formatter/android:url_formatter_java",
       "//components/user_prefs/android:java",
       "//components/webapk:proto_java",

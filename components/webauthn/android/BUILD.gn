@@ -18,6 +18,7 @@ generate_jni("jni_headers") {
 
 java_cpp_enum("java_enums_srcjar") {
   sources = [
+    "//content/browser/webauth/authenticator_request_outcome_enums.h",
     "cred_man_support.h",
     "webauthn_mode.h",
   ]
@@ -49,6 +50,7 @@ android_library("java") {
     "java/src/org/chromium/components/webauthn/InternalAuthenticator.java",
     "java/src/org/chromium/components/webauthn/IsUvpaaResponseCallback.java",
     "java/src/org/chromium/components/webauthn/MakeCredentialResponseCallback.java",
+    "java/src/org/chromium/components/webauthn/RecordOutcomeCallback.java",
     "java/src/org/chromium/components/webauthn/WebauthnBrowserBridge.java",
     "java/src/org/chromium/components/webauthn/WebauthnCredentialDetails.java",
     "java/src/org/chromium/components/webauthn/WebauthnModeProvider.java",
@@ -73,6 +75,7 @@ android_library("java") {
     "//base/version_info/android:version_constants_java",
     "//build/android:build_java",
     "//components/externalauth/android:java",
+    "//components/ukm/android:java",
     "//content/public/android:content_java",
     "//content/public/common:common_java",
     "//mojo/public/java:bindings_java",
@@ -154,6 +157,7 @@ source_set("android") {
     ":jni_headers",
     "//base",
     "//components/cbor",
+    "//components/ukm/android:ukm_recorder",
     "//components/webauthn/core/browser",
     "//components/webauthn/json",
     "//content/public/browser",

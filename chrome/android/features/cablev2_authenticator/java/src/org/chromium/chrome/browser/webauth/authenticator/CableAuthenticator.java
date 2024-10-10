@@ -175,7 +175,8 @@ class CableAuthenticator implements AuthenticationContextProvider {
 
                     mUi.onAuthenticatorResult(
                             isInvalidStateError ? Result.REGISTER_OK : Result.REGISTER_ERROR);
-                });
+                },
+                (status) -> {});
     }
 
     @CalledByNative
@@ -211,7 +212,8 @@ class CableAuthenticator implements AuthenticationContextProvider {
                                             .onAuthenticatorAssertionResponse(
                                                     CTAP2_ERR_OPERATION_DENIED, null));
                     mUi.onAuthenticatorResult(Result.SIGN_ERROR);
-                });
+                },
+                (status) -> {});
     }
 
     @Override

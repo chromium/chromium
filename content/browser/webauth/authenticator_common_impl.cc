@@ -29,6 +29,7 @@
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webauth/authenticator_environment.h"
+#include "content/browser/webauth/authenticator_request_outcome_enums.h"
 #include "content/browser/webauth/client_data_json.h"
 #include "content/browser/webauth/virtual_authenticator.h"
 #include "content/browser/webauth/virtual_authenticator_manager_impl.h"
@@ -112,9 +113,6 @@ enum class AttestationErasureOption {
   kEraseAttestationAndAaguid,
 };
 
-using GetAssertionOutcome = AuthenticatorCommonImpl::GetAssertionOutcome;
-using MakeCredentialOutcome = AuthenticatorCommonImpl::MakeCredentialOutcome;
-using RequestMode = AuthenticatorCommonImpl::RequestMode;
 using MakeCredentialCallback =
     blink::mojom::Authenticator::MakeCredentialCallback;
 using GetAssertionCallback = blink::mojom::Authenticator::GetAssertionCallback;
@@ -585,18 +583,18 @@ CredentialRequestResultFromCode(bool success, device::AuthenticatorType type) {
   }
 }
 
-void RecordRegisterOutcomeMetric(std::optional<RequestMode> mode,
+void RecordRegisterOutcomeMetric(std::optional<AuthenticationRequestMode> mode,
                                  ukm::SourceId source_id,
                                  MakeCredentialOutcome outcome) {
   CHECK(mode.has_value());
-  CHECK(*mode != RequestMode::kConditional);
+  CHECK(*mode != AuthenticationRequestMode::kConditional);
   ukm::builders::WebAuthn_RegisterCompletion(source_id)
       .SetRegisterCompletionResult(static_cast<int>(outcome))
       .SetRequestMode(static_cast<int>(*mode))
       .Record(ukm::UkmRecorder::Get());
 }
 
-void RecordSignOutcomeMetric(std::optional<RequestMode> mode,
+void RecordSignOutcomeMetric(std::optional<AuthenticationRequestMode> mode,
                              ukm::SourceId source_id,
                              GetAssertionOutcome outcome) {
   CHECK(mode.has_value());
@@ -765,7 +763,7 @@ struct AuthenticatorCommonImpl::RequestState {
   bool discoverable_credential_request = false;
   // Indicates whether the current request is a modal WebAuthn call, a
   // conditional UI WebAuthn call, or a payment-related request.
-  std::optional<RequestMode> mode;
+  std::optional<AuthenticationRequestMode> mode;
   // The hints set by the request, if any.
   base::flat_set<blink::mojom::Hint> hints;
   std::optional<CredentialRequestResult> request_result;
@@ -989,9 +987,9 @@ void AuthenticatorCommonImpl::MakeCredential(
   req_state_->hints.insert(options->hints.begin(), options->hints.end());
 
   if (options->is_payment_credential_creation) {
-    req_state_->mode = RequestMode::kPayment;
+    req_state_->mode = AuthenticationRequestMode::kPayment;
   } else {
-    req_state_->mode = RequestMode::kModalWebAuthn;
+    req_state_->mode = AuthenticationRequestMode::kModalWebAuthn;
   }
 
   BeginRequestTimeout(options->timeout);
@@ -1353,11 +1351,11 @@ void AuthenticatorCommonImpl::GetAssertion(
 
   req_state_->response_callback = std::move(callback);
   if (!payment_options.is_null()) {
-    req_state_->mode = RequestMode::kPayment;
+    req_state_->mode = AuthenticationRequestMode::kPayment;
   } else if (options->is_conditional) {
-    req_state_->mode = RequestMode::kConditional;
+    req_state_->mode = AuthenticationRequestMode::kConditional;
   } else {
-    req_state_->mode = RequestMode::kModalWebAuthn;
+    req_state_->mode = AuthenticationRequestMode::kModalWebAuthn;
   }
   req_state_->hints.insert(options->hints.begin(), options->hints.end());
 
@@ -2855,7 +2853,7 @@ AuthenticatorCommonImpl::RequestSource() const {
   if (serving_requests_for_ == ServingRequestsFor::kInternalUses) {
     return AuthenticatorRequestClientDelegate::RequestSource::kInternal;
   }
-  if (req_state_->mode == RequestMode::kPayment) {
+  if (req_state_->mode == AuthenticationRequestMode::kPayment) {
     return AuthenticatorRequestClientDelegate::RequestSource::
         kSecurePaymentConfirmation;
   }
