@@ -370,7 +370,14 @@ void GPUDevice::OnUncapturedError(const wgpu::Device& device,
   }
 }
 
+#if defined(WGPU_BREAKING_CHANGE_STRING_VIEW_CALLBACKS)
+void GPUDevice::OnLogging(WGPULoggingType cLoggingType,
+                          WGPUStringView message) {
+  std::string_view messageView = {message.data, message.length};
+#else   // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_CALLBACKS)
 void GPUDevice::OnLogging(WGPULoggingType cLoggingType, const char* message) {
+  std::string_view messageView = message;
+#endif  // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_CALLBACKS)
   wgpu::LoggingType loggingType = static_cast<wgpu::LoggingType>(cLoggingType);
   // Callback function for WebGPU logging return command
   mojom::blink::ConsoleMessageLevel level;
@@ -400,7 +407,7 @@ void GPUDevice::OnLogging(WGPULoggingType cLoggingType, const char* message) {
   if (execution_context) {
     auto* console_message = MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kRendering, level,
-        StringFromASCIIAndUTF8(message));
+        StringFromASCIIAndUTF8(messageView));
     execution_context->AddConsoleMessage(console_message);
   }
 }

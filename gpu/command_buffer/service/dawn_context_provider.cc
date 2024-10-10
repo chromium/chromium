@@ -390,15 +390,24 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
 
   // Provided to wgpu::Device as logging callback.
   static void LogInfo(WGPULoggingType type,
-                      char const* message,
-                      void* userdata) {
+#if defined(WGPU_BREAKING_CHANGE_STRING_VIEW_CALLBACKS)
+                      WGPUStringView message,
+#else   // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_CALLBACKS)
+                      const char* message,
+#endif  // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_CALLBACKS)
+                      void*) {
+#if defined(WGPU_BREAKING_CHANGE_STRING_VIEW_CALLBACKS)
+    std::string_view view = {message.data, message.length};
+#else   // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_CALLBACKS)
+    std::string_view view = message;
+#endif  // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_CALLBACKS)
     switch (static_cast<wgpu::LoggingType>(type)) {
       case wgpu::LoggingType::Warning:
-        LOG(WARNING) << message;
+        LOG(WARNING) << view;
         break;
       case wgpu::LoggingType::Error:
-        LOG(ERROR) << message;
-        SetDawnErrorCrashKey(message);
+        LOG(ERROR) << view;
+        SetDawnErrorCrashKey(view);
         base::debug::DumpWithoutCrashing();
         break;
       default:

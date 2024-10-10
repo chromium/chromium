@@ -128,6 +128,25 @@ void ChainStruct(T1& head, T2* struct_to_chain) {
   head.nextInChain = struct_to_chain;
 }
 
+#if defined(WGPU_BREAKING_CHANGE_STRING_VIEW_CALLBACKS)
+// A few helpers to make WGPUStringViews since the C version of the structure
+// doesn't have helpers that do implicit conversion from other types of strings.
+template <size_t N>
+WGPUStringView MakeStringView(const char (&s)[N]) {
+  return {s, N};
+}
+WGPUStringView MakeStringView(const char* s) {
+  return {s, std::strlen(s)};
+}
+WGPUStringView MakeStringView() {
+  return {nullptr, 0};
+}
+#else   // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_CALLBACKS)
+const char* MakeStringView(const char* s = nullptr) {
+  return s;
+}
+#endif  // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_CALLBACKS)
+
 class WebGPUDecoderImpl final : public WebGPUDecoder {
  public:
   WebGPUDecoderImpl(
@@ -1321,12 +1340,12 @@ WGPUFuture WebGPUDecoderImpl::RequestAdapterImpl(
   if (adapter == nullptr) {
     // There are no adapters to return since webgpu is not supported here
     callback_info.callback(WGPURequestAdapterStatus_Unavailable, nullptr,
-                           "No available adapters.", callback_info.userdata1,
-                           callback_info.userdata2);
+                           MakeStringView("No available adapters."),
+                           callback_info.userdata1, callback_info.userdata2);
     return {};
   }
   callback_info.callback(WGPURequestAdapterStatus_Success,
-                         adapter.MoveToCHandle(), nullptr,
+                         adapter.MoveToCHandle(), MakeStringView(),
                          callback_info.userdata1, callback_info.userdata2);
   return {};
 }
@@ -1399,7 +1418,7 @@ WGPUFuture WebGPUDecoderImpl::RequestDeviceImpl(
     for (const wgpu::FeatureName& feature : required_features) {
       if (!IsFeatureExposed(feature)) {
         callback_info.callback(WGPURequestDeviceStatus_Error, nullptr,
-                               "Disallowed feature requested.",
+                               MakeStringView("Disallowed feature requested."),
                                callback_info.userdata1,
                                callback_info.userdata2);
         return {};
@@ -1504,7 +1523,7 @@ WGPUFuture WebGPUDecoderImpl::RequestDeviceImpl(
         wgpu::Device device_copy = device;
         // Forward to the original callback.
         callback_info.callback(static_cast<WGPURequestDeviceStatus>(status),
-                               device.MoveToCHandle(), message,
+                               device.MoveToCHandle(), MakeStringView(message),
                                callback_info.userdata1,
                                callback_info.userdata2);
         if (device_copy) {
@@ -1599,10 +1618,10 @@ WebGPUDecoderImpl::CreateQueuedRequestDeviceCallback(
           decoder->RequestDeviceImpl(adapter.Get(), descriptor.get(),
                                      callback_info);
         } else {
-          callback_info.callback(WGPURequestDeviceStatus_Unknown, nullptr,
-                                 "Queued device request cancelled.",
-                                 callback_info.userdata1,
-                                 callback_info.userdata2);
+          callback_info.callback(
+              WGPURequestDeviceStatus_Unknown, nullptr,
+              MakeStringView("Queued device request cancelled."),
+              callback_info.userdata1, callback_info.userdata2);
         }
       },
       base::Unretained(this), adapter, std::move(desc), callback_info);

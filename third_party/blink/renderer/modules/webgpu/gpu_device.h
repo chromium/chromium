@@ -204,7 +204,12 @@ class GPUDevice final : public EventTarget,
   void OnUncapturedError(const wgpu::Device& device,
                          wgpu::ErrorType errorType,
                          const char* message);
+#if defined(WGPU_BREAKING_CHANGE_STRING_VIEW_CALLBACKS)
+  void OnLogging(WGPULoggingType loggingType, WGPUStringView message);
+#else   // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_CALLBACKS)
   void OnLogging(WGPULoggingType loggingType, const char* message);
+#endif  // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_CALLBACKS)
+
   void OnDeviceLostError(const wgpu::Device& device,
                          wgpu::DeviceLostReason reason,
                          const char* message);
@@ -241,8 +246,13 @@ class GPUDevice final : public EventTarget,
   std::unique_ptr<WGPURepeatingCallback<
       void(const wgpu::Device&, wgpu::ErrorType, const char*)>>
       error_callback_;
+#if defined(WGPU_BREAKING_CHANGE_STRING_VIEW_CALLBACKS)
+  std::unique_ptr<WGPURepeatingCallback<void(WGPULoggingType, WGPUStringView)>>
+      logging_callback_;
+#else   // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_CALLBACKS)
   std::unique_ptr<WGPURepeatingCallback<void(WGPULoggingType, const char*)>>
       logging_callback_;
+#endif  // defined(WGPU_BREAKING_CHANGE_STRING_VIEW_CALLBACKS)
   // lost_callback_ is stored as a unique_ptr since it may never be called.
   // We need to be sure to free it on deletion of the device.
   // Inside OnDeviceLostError we'll release the unique_ptr to avoid a double
