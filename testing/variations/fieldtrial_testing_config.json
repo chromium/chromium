@@ -753,6 +753,13 @@
                         "CrosMall",
                         "CrosMallSwa"
                     ]
+                },
+                {
+                    "name": "Enabled_20241010",
+                    "enable_features": [
+                        "CrosMall",
+                        "CrosMallSwa"
+                    ]
                 }
             ]
         }
