@@ -14,7 +14,8 @@ found in the LICENSE file.
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:id="@+id/batch_upload_dialog">
 
         <TextView
             android:id="@android:id/message"
@@ -31,8 +32,9 @@ found in the LICENSE file.
             android:visibility="gone"/>
 
         <View
-          android:id="@+id/account_settings_bulk_upload_dialog_bookmarks_separator"
-          style="@style/HorizontalDivider" />
+          android:id="@+id/account_settings_bulk_upload_dialog_passwords_top_separator"
+          style="@style/HorizontalDivider"
+          android:visibility="gone"/>
 
         <org.chromium.components.browser_ui.widget.MaterialSwitchWithTitleAndSummary
             android:id="@+id/account_settings_bulk_upload_dialog_passwords"
@@ -41,8 +43,9 @@ found in the LICENSE file.
             android:visibility="gone"/>
 
         <View
-          android:id="@+id/account_settings_bulk_upload_dialog_passwords_separator"
-          style="@style/HorizontalDivider" />
+          android:id="@+id/account_settings_bulk_upload_dialog_reading_list_top_separator"
+          style="@style/HorizontalDivider"
+          android:visibility="gone"/>
 
         <org.chromium.components.browser_ui.widget.MaterialSwitchWithTitleAndSummary
             android:id="@+id/account_settings_bulk_upload_dialog_reading_list"
@@ -50,8 +53,5 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:visibility="gone"/>
 
-        <View
-          android:id="@+id/account_settings_bulk_upload_dialog_reading_list_separator"
-          style="@style/HorizontalDivider" />
     </LinearLayout>
 </ScrollView>
