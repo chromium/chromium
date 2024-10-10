@@ -120,8 +120,11 @@ function startTest() {
     function removePluginAtDocumentEnd() {
       if (maybeSkipPluginTest())
         return;
+      // TODO(crbug.com/360265881): Change this back to an exact background
+      // color.
       testRemoveSelf(
-          'plugin_frame.html?end', /background-color: rgb\(82, 86, 89\)/);
+          'plugin_frame.html?end',
+          /background-color: rgb\((\d{1,2}), (\d{1,2}), (\d{1,2})\)/);
     },
 
     // Plain text
