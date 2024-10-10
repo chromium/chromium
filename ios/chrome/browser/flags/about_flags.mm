@@ -607,10 +607,12 @@ const FeatureEntry::FeatureParam
         {kModernTabStripBiggerNTB, "true"}};
 const FeatureEntry::FeatureParam kModernTabStripHighContrastNTBOption[] = {
     {kModernTabStripHighContrastNTB, "true"},
+    {kModernTabStripNTBNoBackground, "true"},
     {kModernTabStripCloserNTB, "true"},
     {kModernTabStripBiggerNTB, "true"}};
 const FeatureEntry::FeatureParam kModernTabStripCloseV3AllOptions[] = {
     {kModernTabStripCloseButtonsVisible, "true"},
+    {kModernTabStripNTBNoBackground, "true"},
     {kModernTabStripInactiveTabsHighContrast, "true"},
     {kModernTabStripCloserNTB, "true"},
     {kModernTabStripHighContrastNTB, "true"},

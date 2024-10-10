@@ -72,12 +72,8 @@ class TabStripNewTabButton: UIView {
       TabStripFeaturesUtils.hasBiggerNTB
       ? TabStripConstants.NewTabButton.symbolBiggerPointSize
       : TabStripConstants.NewTabButton.symbolPointSize
-    let closeSymbol =
-      TabStripFeaturesUtils.hasHighContrastNTB
-      ? DefaultSymbolWithPointSize(
-        kNewTabActionSymbol, symbolSize)
-      : DefaultSymbolWithPointSize(
-        kPlusSymbol, symbolSize)
+    let closeSymbol = DefaultSymbolWithPointSize(
+      kPlusSymbol, symbolSize)
 
     var configuration = UIButton.Configuration.borderless()
     configuration.contentInsets = .zero
@@ -87,9 +83,7 @@ class TabStripNewTabButton: UIView {
     button.configuration = configuration
     button.contentMode = .center
     button.imageView?.contentMode = .center
-    if TabStripFeaturesUtils.hasHighContrastNTB {
-      button.layer.cornerRadius = TabStripConstants.NewTabButton.highContrastCornerRadius
-    } else if TabStripFeaturesUtils.hasBiggerNTB {
+    if TabStripFeaturesUtils.hasBiggerNTB {
       button.layer.cornerRadius = TabStripConstants.NewTabButton.diameter / 2.0
     } else {
       button.layer.cornerRadius = TabStripConstants.NewTabButton.legacyCornerRadius

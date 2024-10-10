@@ -59,7 +59,6 @@ public struct TabStripConstants {
     public static let leadingInset: CGFloat = 4
     public static let trailingInset: CGFloat = 10
     public static let diameter: CGFloat = 36
-    public static let highContrastCornerRadius: CGFloat = 11
     public static let legacyCornerRadius: CGFloat = 16
     public static let symbolPointSize: CGFloat = 16
     public static let symbolBiggerPointSize: CGFloat = 18
