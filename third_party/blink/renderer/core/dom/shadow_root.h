@@ -45,6 +45,8 @@ class Document;
 class ExceptionState;
 class SlotAssignment;
 class ReferenceTargetIdObserver;
+class V8ShadowRootMode;
+class V8SlotAssignmentMode;
 class WhitespaceAttacher;
 
 enum class ShadowRootMode { kOpen, kClosed, kUserAgent };
@@ -76,18 +78,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
     return *To<Element>(ParentOrShadowHostNode());
   }
   ShadowRootMode GetMode() const { return static_cast<ShadowRootMode>(mode_); }
-  String mode() const {
-    switch (GetMode()) {
-      case ShadowRootMode::kOpen:
-        return "open";
-      case ShadowRootMode::kClosed:
-        return "closed";
-      case ShadowRootMode::kUserAgent:
-        // UA ShadowRoot should not be exposed to the Web.
-        NOTREACHED_IN_MIGRATION();
-        return "";
-    }
-  }
+  V8ShadowRootMode mode() const;
 
   bool IsOpen() const { return GetMode() == ShadowRootMode::kOpen; }
   bool IsUserAgent() const { return GetMode() == ShadowRootMode::kUserAgent; }
@@ -154,9 +145,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   SlotAssignmentMode GetSlotAssignmentMode() const {
     return static_cast<SlotAssignmentMode>(slot_assignment_mode_);
   }
-  String slotAssignment() const {
-    return IsManualSlotting() ? "manual" : "named";
-  }
+  V8SlotAssignmentMode slotAssignment() const;
 
   void SetIsDeclarativeShadowRoot(bool flag) {
     DCHECK(!flag || GetMode() == ShadowRootMode::kOpen ||

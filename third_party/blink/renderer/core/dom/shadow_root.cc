@@ -28,6 +28,8 @@
 
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_observable_array_css_style_sheet.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_shadow_root_mode.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_slot_assignment_mode.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -213,6 +215,25 @@ void ShadowRoot::RemovedFrom(ContainerNode& insertion_point) {
   }
 
   DocumentFragment::RemovedFrom(insertion_point);
+}
+
+V8ShadowRootMode ShadowRoot::mode() const {
+  switch (GetMode()) {
+    case ShadowRootMode::kOpen:
+      return V8ShadowRootMode(V8ShadowRootMode::Enum::kOpen);
+    case ShadowRootMode::kClosed:
+      return V8ShadowRootMode(V8ShadowRootMode::Enum::kClosed);
+    case ShadowRootMode::kUserAgent:
+      // UA ShadowRoot should not be exposed to the Web.
+      break;
+  }
+  NOTREACHED();
+}
+
+V8SlotAssignmentMode ShadowRoot::slotAssignment() const {
+  return V8SlotAssignmentMode(IsManualSlotting()
+                                  ? V8SlotAssignmentMode::Enum::kManual
+                                  : V8SlotAssignmentMode::Enum::kNamed);
 }
 
 void ShadowRoot::SetNeedsAssignmentRecalc() {
