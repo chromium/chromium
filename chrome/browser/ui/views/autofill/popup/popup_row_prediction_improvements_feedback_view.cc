@@ -269,15 +269,49 @@ bool PopupRowPredictionImprovementsFeedbackView::HandleKeyPressEvent(
   return PopupRowView::HandleKeyPressEvent(event);
 }
 
-void PopupRowPredictionImprovementsFeedbackView::UpdateFocusedControl(
-    std::optional<FocusableControl> focused_control) {
-  focused_control_ = focused_control;
+views::View&
+PopupRowPredictionImprovementsFeedbackView::GetFocusableControlView(
+    FocusableControl focused_control) {
+  switch (focused_control) {
+    case FocusableControl::kManagePredictionImprovementsLink:
+      return *this;
+    case FocusableControl::kThumbsUp:
+      return *thumbs_up_button_;
+    case FocusableControl::kThumbsDown:
+      return *thumbs_down_button_;
+  }
+}
 
-  SetHoverStyleImageButton(thumbs_up_button_, /*hover=*/focused_control_ ==
+void PopupRowPredictionImprovementsFeedbackView::UpdateFocusedControl(
+    std::optional<FocusableControl> new_focused_control) {
+  if (focused_control_ == new_focused_control) {
+    return;
+  }
+
+  const std::optional<FocusableControl>& current_focused_control =
+      focused_control_;
+
+  if (current_focused_control) {
+    GetFocusableControlView(*current_focused_control)
+        .GetViewAccessibility()
+        .SetIsSelected(false);
+    NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
+  }
+
+  if (new_focused_control) {
+    views::View& view = GetFocusableControlView(*new_focused_control);
+    GetA11ySelectionDelegate().NotifyAXSelection(view);
+    view.GetViewAccessibility().SetIsSelected(true);
+    NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
+  }
+
+  SetHoverStyleImageButton(thumbs_up_button_, /*hover=*/new_focused_control ==
                                                   FocusableControl::kThumbsUp);
   SetHoverStyleImageButton(
       thumbs_down_button_,
-      /*hover=*/focused_control_ == FocusableControl::kThumbsDown);
+      /*hover=*/new_focused_control == FocusableControl::kThumbsDown);
+
+  focused_control_ = new_focused_control;
 }
 
 BEGIN_METADATA(PopupRowPredictionImprovementsFeedbackView)

@@ -23,16 +23,29 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
 
 namespace autofill {
 
+namespace {
+bool IsA11ySelected(const views::View& view) {
+  ui::AXNodeData node_data;
+  view.GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  return node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
+}
+}  // namespace
+
+using ::testing::InSequence;
+using ::testing::MockFunction;
 using ::testing::NiceMock;
+using ::testing::Ref;
 using ::testing::VariantWith;
 
 class PopupRowPredictionImprovementsFeedbackViewTest
@@ -274,5 +287,51 @@ TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
               PredictionImprovementsButtonActions::kThumbsDownClicked)));
 
   EXPECT_TRUE(SimulateKeyPress(ui::VKEY_RETURN));
+}
+
+TEST_F(PopupRowPredictionImprovementsFeedbackViewTest,
+       A11yFocusIsSetToFocusedControl) {
+  CreateFeedbackRowAndGetButtons();
+  MockFunction<void()> check;
+  {
+    InSequence s;
+
+    // Default content selection is not suppressed, but it makes no difference
+    // to the UX.
+    EXPECT_CALL(a11y_selection_delegate(),
+                NotifyAXSelection(Ref(view().GetContentView())));
+    EXPECT_CALL(a11y_selection_delegate(), NotifyAXSelection(Ref(view())));
+    EXPECT_CALL(check, Call);
+
+    EXPECT_CALL(a11y_selection_delegate(),
+                NotifyAXSelection(Ref(*view().GetThumbsUpButtonForTest())));
+    EXPECT_CALL(check, Call);
+
+    EXPECT_CALL(a11y_selection_delegate(),
+                NotifyAXSelection(Ref(*view().GetThumbsDownButtonForTest())));
+    EXPECT_CALL(check, Call);
+
+    EXPECT_CALL(a11y_selection_delegate(), NotifyAXSelection(Ref(view())));
+    EXPECT_CALL(check, Call);
+  }
+
+  view().SetSelectedCell(PopupRowView::CellType::kContent);
+  check.Call();
+  EXPECT_TRUE(IsA11ySelected(view()));
+
+  SimulateKeyPress(ui::VKEY_RIGHT);
+  check.Call();
+  EXPECT_FALSE(IsA11ySelected(view()));
+  EXPECT_TRUE(IsA11ySelected(*view().GetThumbsUpButtonForTest()));
+
+  SimulateKeyPress(ui::VKEY_RIGHT);
+  check.Call();
+  EXPECT_FALSE(IsA11ySelected(*view().GetThumbsUpButtonForTest()));
+  EXPECT_TRUE(IsA11ySelected(*view().GetThumbsDownButtonForTest()));
+
+  SimulateKeyPress(ui::VKEY_RIGHT);
+  check.Call();
+  EXPECT_FALSE(IsA11ySelected(*view().GetThumbsDownButtonForTest()));
+  EXPECT_TRUE(IsA11ySelected(view()));
 }
 }  // namespace autofill

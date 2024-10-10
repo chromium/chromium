@@ -59,6 +59,7 @@ class PopupRowPredictionImprovementsFeedbackView : public PopupRowView {
   }
 
  private:
+  views::View& GetFocusableControlView(FocusableControl focused_control);
   void UpdateFocusedControl(std::optional<FocusableControl> focused_control);
 
   // The FocusableControl currently focused. Pressing enter will run their

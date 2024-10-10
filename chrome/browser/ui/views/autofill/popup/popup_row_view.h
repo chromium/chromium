@@ -135,11 +135,11 @@ class PopupRowView : public views::View, public views::ViewObserver {
 
   int line_number() const { return line_number_; }
 
- private:
   AccessibilitySelectionDelegate& GetA11ySelectionDelegate() {
     return a11y_selection_delegate_.get();
   }
 
+ private:
   // Updates all UI parts that may have changed based on the current state,
   // for now they are the background and expand control visibility.
   void UpdateUI();
