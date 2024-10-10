@@ -222,6 +222,7 @@ void FileSystemAccessObserverObservation::OnChanges(
   FileSystemAccessManagerImpl* manager = handle_base.manager();
   const storage::FileSystemURL& handle_url = handle_base.url();
   std::vector<blink::mojom::FileSystemAccessChangePtr> mojo_changes;
+  bool observation_root_disappeared = false;
   for (const auto& change : changes_or_error.value()) {
     // TODO(crbug.com/40105284): Consider refactoring to keep the "scope"
     // concept within the WatcherManager and its associated classes. This method
@@ -317,11 +318,23 @@ void FileSystemAccessObserverObservation::OnChanges(
         break;
     }
 
+    observation_root_disappeared =
+        (observation_->scope().GetWatchType() ==
+             FileSystemAccessWatchScope::WatchType::kDirectoryRecursive ||
+         observation_->scope().GetWatchType() ==
+             FileSystemAccessWatchScope::WatchType::kDirectoryNonRecursive) &&
+        mojo_change_type->is_disappeared() &&
+        observation_->scope().root_url() == change.url;
+
     mojo_changes.emplace_back(blink::mojom::FileSystemAccessChange::New(
         blink::mojom::FileSystemAccessChangeMetadata::New(
             std::move(root_entry), std::move(changed_entry),
             GetRelativePathAsVectorOfStrings(relative_modified_path.value())),
         std::move(mojo_change_type)));
+
+    if (observation_root_disappeared) {
+      break;
+    }
   }
 
   // Report the number of events in a 1s time window.
@@ -336,6 +349,12 @@ void FileSystemAccessObserverObservation::OnChanges(
   callback_count_++;
 
   remote_->OnFileChanges(std::move(mojo_changes));
+
+  // Send an "errored" event and destruct if the root of the observation
+  // disappeared.
+  if (observation_root_disappeared) {
+    HandleError();
+  }
 }
 
 void FileSystemAccessObserverObservation::HandleError() {
