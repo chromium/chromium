@@ -6604,8 +6604,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_EXTENSIONS_MENU_CANT_ACCESS_SITE_DATA" desc="Longer explanation for section of extensions that can't access the current site's data">
         These extensions don't need to see and change information on this site.
       </message>
-      <message name="IDS_EXTENSIONS_MENU_SITE_SETTINGS_LABEL" desc="Text of the label next to the site settings toggle button that allows extensions on site pointed by $1.">
+      <message name="IDS_EXTENSIONS_MENU_SITE_SETTINGS_LABEL" desc="Text on the menu that informs the user they can change the site settings of extensions on $1.">
         Allow extensions on <ph name="SITE_NAME">$1<ex>google.com</ex></ph>
+      </message>
+      <message name="IDS_EXTENSIONS_MENU_SITE_SETTINGS_NOT_ALLOWED_LABEL" desc="Text on the menu that informs the user they cannot change the site settings of extensions on $1.">
+        Extensions are not allowed on <ph name="SITE_NAME">$1<ex>google.com</ex></ph>
       </message>
       <message name="IDS_EXTENSIONS_MENU_SITE_SETTINGS_TOGGLE_ON_TOOLTIP" desc="Tooltip text for the site setting toggle button when is on.">
         Extensions allowed on this site

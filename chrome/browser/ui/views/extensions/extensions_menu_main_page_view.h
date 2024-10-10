@@ -81,6 +81,7 @@ class ExtensionsMenuMainPageView : public views::View {
 
   // Updates the site settings views with the given parameters.
   void UpdateSiteSettings(const std::u16string& current_site,
+                          int label_id,
                           bool is_site_settings_toggle_visible,
                           bool is_site_settings_toggle_on);
 

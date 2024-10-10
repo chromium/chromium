@@ -1144,16 +1144,13 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, RestrictedSite) {
   auto restricted_origin = url::Origin::Create(restricted_url);
   web_contents_tester()->NavigateAndCommit(restricted_url);
 
-  // By default, site settings is set to "customize by extension".
-  PermissionsManager* permissions_manager = PermissionsManager::Get(profile());
-  EXPECT_EQ(permissions_manager->GetUserSiteSetting(restricted_origin),
-            PermissionsManager::UserSiteSetting::kCustomizeByExtension);
-
   ShowMenu();
   ASSERT_EQ(menu_items().size(), 2u);
 
   // Verify site setting toggle is not visible, since no extension can customize
   // a restricted site.
+  EXPECT_EQ(main_page()->GetSiteSettingLabelForTesting(),
+            u"Extensions are not allowed on chrome://extensions");
   EXPECT_FALSE(main_page()->GetSiteSettingsToggleForTesting()->GetVisible());
 
   // Verify both extensions':
@@ -1209,6 +1206,8 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest, PolicyBlockedSite) {
 
   // Verify site setting toggle is not visible, since no extension can customize
   // a policy-blocked site.
+  EXPECT_EQ(main_page()->GetSiteSettingLabelForTesting(),
+            u"Extensions are not allowed on policy-blocked.com");
   EXPECT_FALSE(main_page()->GetSiteSettingsToggleForTesting()->GetVisible());
 
   // Retrieve menu items.

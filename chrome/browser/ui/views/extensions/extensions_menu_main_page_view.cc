@@ -752,17 +752,16 @@ void ExtensionsMenuMainPageView::RemoveMenuItem(
 
 void ExtensionsMenuMainPageView::UpdateSiteSettings(
     const std::u16string& current_site,
-    bool is_site_settings_toggle_visible,
-    bool is_site_settings_toggle_on) {
-  // TODO(crbug.com/40879945): Text should be different when site is restricted,
-  // since site settings toggle cannot be selected. This means we no longer need
-  // MessageSectionState::kRestrictedAccess.
-  site_settings_label_->SetText(l10n_util::GetStringFUTF16(
-      IDS_EXTENSIONS_MENU_SITE_SETTINGS_LABEL, current_site));
-  site_settings_toggle_->SetVisible(is_site_settings_toggle_visible);
-  site_settings_toggle_->SetIsOn(is_site_settings_toggle_on);
-  site_settings_toggle_->SetTooltipText(
-      GetSiteSettingToggleText(is_site_settings_toggle_on));
+    int label_id,
+    bool is_toggle_visible,
+    bool is_toggle_on) {
+  // TODO(crbug.com/40879945): Add info tooltip when an enterprise extension
+  // can still access the site.
+  site_settings_label_->SetText(
+      l10n_util::GetStringFUTF16(label_id, current_site));
+  site_settings_toggle_->SetVisible(is_toggle_visible);
+  site_settings_toggle_->SetIsOn(is_toggle_on);
+  site_settings_toggle_->SetTooltipText(GetSiteSettingToggleText(is_toggle_on));
 }
 
 void ExtensionsMenuMainPageView::UpdateMessageSection(

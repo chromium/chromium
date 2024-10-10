@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_site_permissions_page_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/permissions_manager.h"
@@ -40,6 +41,41 @@ namespace {
 
 using PermissionsManager = extensions::PermissionsManager;
 using SitePermissionsHelper = extensions::SitePermissionsHelper;
+
+// Returns the state for the main page in the menu.
+enum class MainPageState {
+  // Site is restricted to all extensions.
+  kRestrictedSite,
+  // Site is restricted all non-enterprise extensions by policy.
+  kPolicyBlockedSite,
+  // User blocked all extensions access to the site.
+  kUserBlockedSite,
+  // User can customize each extension's access to the site.
+  kUserCustomizedSite,
+};
+
+MainPageState GetMainPageState(Profile& profile,
+                               const ToolbarActionsModel& toolbar_model,
+                               content::WebContents& web_contents) {
+  const GURL& url = web_contents.GetLastCommittedURL();
+  if (toolbar_model.IsRestrictedUrl(url)) {
+    return MainPageState::kRestrictedSite;
+  }
+
+  if (toolbar_model.IsPolicyBlockedHost(url)) {
+    return MainPageState::kPolicyBlockedSite;
+  }
+
+  PermissionsManager::UserSiteSetting site_setting =
+      PermissionsManager::Get(&profile)->GetUserSiteSetting(
+          web_contents.GetPrimaryMainFrame()->GetLastCommittedOrigin());
+  if (site_setting ==
+      PermissionsManager::UserSiteSetting::kBlockAllExtensions) {
+    return MainPageState::kUserBlockedSite;
+  }
+
+  return MainPageState::kUserCustomizedSite;
+}
 
 // Returns the extension for `extension_id`.
 const extensions::Extension* GetExtension(
@@ -99,23 +135,6 @@ bool HasEnterpriseForcedAccess(const extensions::Extension& extension,
       extensions::ExtensionSystem::Get(&profile)->management_policy();
   return !policy->UserMayModifySettings(&extension, nullptr) ||
          policy->MustRemainInstalled(&extension, nullptr);
-}
-
-// Returns whether the site setting toggle for `web_contents` should be visible.
-bool IsSiteSettingsToggleVisible(const ToolbarActionsModel& toolbar_model,
-                                 content::WebContents* web_contents) {
-  const GURL& url = web_contents->GetLastCommittedURL();
-  return !toolbar_model.IsRestrictedUrl(url) &&
-         !toolbar_model.IsPolicyBlockedHost(url);
-}
-
-// Returns whether the site settings toggle for `web_contents` should be on.
-bool IsSiteSettingsToggleOn(Browser* browser,
-                            content::WebContents* web_contents) {
-  auto origin = web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
-  return PermissionsManager::Get(browser->profile())
-             ->GetUserSiteSetting(origin) ==
-         PermissionsManager::UserSiteSetting::kCustomizeByExtension;
 }
 
 // Returns whether the site permissions button should be visible.
@@ -594,11 +613,34 @@ void ExtensionsMenuViewController::UpdateMainPage(
 
   // Update site settings.
   std::u16string current_site = GetCurrentHost(web_contents);
-  bool is_site_settings_toggle_visible =
-      IsSiteSettingsToggleVisible(*toolbar_model_, web_contents);
-  bool is_site_settings_toggle_on =
-      IsSiteSettingsToggleOn(browser_, web_contents);
-  main_page->UpdateSiteSettings(current_site, is_site_settings_toggle_visible,
+  int site_settings_label_id;
+  bool is_site_settings_toggle_visible = false;
+  bool is_site_settings_toggle_on = false;
+
+  MainPageState state =
+      GetMainPageState(*browser_->profile(), *toolbar_model_, *web_contents);
+  switch (state) {
+    case MainPageState::kRestrictedSite:
+    case MainPageState::kPolicyBlockedSite:
+      site_settings_label_id =
+          IDS_EXTENSIONS_MENU_SITE_SETTINGS_NOT_ALLOWED_LABEL;
+      is_site_settings_toggle_visible = false;
+      is_site_settings_toggle_on = false;
+      break;
+    case MainPageState::kUserBlockedSite:
+      site_settings_label_id = IDS_EXTENSIONS_MENU_SITE_SETTINGS_LABEL;
+      is_site_settings_toggle_visible = true;
+      is_site_settings_toggle_on = false;
+      break;
+    case MainPageState::kUserCustomizedSite:
+      site_settings_label_id = IDS_EXTENSIONS_MENU_SITE_SETTINGS_LABEL;
+      is_site_settings_toggle_visible = true;
+      is_site_settings_toggle_on = true;
+      break;
+  }
+
+  main_page->UpdateSiteSettings(current_site, site_settings_label_id,
+                                is_site_settings_toggle_visible,
                                 is_site_settings_toggle_on);
 
   // Update message section.

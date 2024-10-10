@@ -401,11 +401,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
   browser()->tab_strip_model()->ActivateTabAt(1);
 
   ShowUi("");
-  // TODO(crbug.com/40879945): This label should be 'No extensions need access
-  // to chrome://extensions'. Change once such label is moved from the message
-  // to the site settings label.
+
   EXPECT_EQ(main_page()->GetSiteSettingLabelForTesting(),
-            u"Allow extensions on chrome://extensions");
+            u"Extensions are not allowed on chrome://extensions");
 
   // Update the title of the unfocused tab.
   browser()->set_update_ui_immediately_for_testing();
@@ -423,12 +421,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuMainPageViewInteractiveUITest,
 
   // Verify extensions menu content wasn't affected by checking the site
   // displayed on the menu's subtitle.
-  // TODO(crbug.com/40879945): This label should be 'No extensions need access
-  // to chrome://extensions'. Change once such label is moved from the message
-  // to the site settings label.
   ASSERT_EQ(browser()->tab_strip_model()->active_index(), 1);
   EXPECT_EQ(main_page()->GetSiteSettingLabelForTesting(),
-            u"Allow extensions on chrome://extensions");
+            u"Extensions are not allowed on chrome://extensions");
 }
 
 // Verifies extensions can add site access requests on active and inactive tabs,
