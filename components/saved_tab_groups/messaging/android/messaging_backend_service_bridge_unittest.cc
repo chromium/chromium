@@ -22,9 +22,17 @@
 #include "components/saved_tab_groups/messaging/android/native_j_unittests_jni_headers/MessagingBackendServiceBridgeUnitTestCompanion_jni.h"
 
 using testing::_;
+using testing::Eq;
 using testing::Return;
 
 namespace tab_groups::messaging::android {
+namespace {
+
+MATCHER_P(ActivityLogQueryParamsEq, expected, "") {
+  return arg.collaboration_id == expected.collaboration_id;
+}
+
+}  // namespace
 
 class MockMessagingBackendService : public MessagingBackendService {
  public:
@@ -194,6 +202,38 @@ TEST_F(MessagingBackendServiceBridgeTest, TestDisplayingInstantMessageFailure) {
   Java_MessagingBackendServiceBridgeUnitTestCompanion_invokeInstantMessageSuccessCallback(
       base::android::AttachCurrentThread(), j_companion(), /*success=*/false);
   EXPECT_EQ(1U, success_callback_invocation_count());
+}
+
+TEST_F(MessagingBackendServiceBridgeTest, TestGetActivityLog) {
+  // Create two activity log items.
+  ActivityLogItem activity_log_item1;
+  activity_log_item1.user_action_type = UserAction::TAB_NAVIGATED;
+  activity_log_item1.title_text = "title 1";
+  activity_log_item1.description_text = "description 1";
+  activity_log_item1.timestamp_text = "timestamp 1";
+
+  ActivityLogItem activity_log_item2;
+  activity_log_item2.user_action_type = UserAction::COLLABORATION_USER_JOINED;
+  activity_log_item2.title_text = "title 2";
+  activity_log_item2.description_text = "description 2";
+  activity_log_item2.timestamp_text = "timestamp 2";
+
+  std::vector<ActivityLogItem> activity_log_items;
+  activity_log_items.emplace_back(activity_log_item1);
+  activity_log_items.emplace_back(activity_log_item2);
+
+  ActivityLogQueryParams params;
+  params.collaboration_id = data_sharing::GroupId("collaboration1");
+  EXPECT_CALL(service(), GetActivityLog(ActivityLogQueryParamsEq(params)))
+      .WillRepeatedly(Return(activity_log_items));
+
+  params.collaboration_id = data_sharing::GroupId("collaboration2");
+  EXPECT_CALL(service(), GetActivityLog(ActivityLogQueryParamsEq(params)))
+      .WillOnce(Return(std::vector<ActivityLogItem>()));
+
+  // Invoke GetActivityLog from Java and verify.
+  Java_MessagingBackendServiceBridgeUnitTestCompanion_invokeGetActivityLogAndVerify(
+      base::android::AttachCurrentThread(), j_companion());
 }
 
 }  // namespace tab_groups::messaging::android

@@ -11,6 +11,7 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.messaging.ActivityLogItem;
 import org.chromium.components.tab_group_sync.messaging.InstantMessage;
 import org.chromium.components.tab_group_sync.messaging.InstantNotificationLevel;
 import org.chromium.components.tab_group_sync.messaging.InstantNotificationType;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
  */
 @JNINamespace("tab_groups::messaging::android")
 class ConversionUtils {
+    @CalledByNative
     private static MessageAttribution createAttributionFrom(
             String collaborationId,
             @Nullable LocalTabGroupId localTabGroupId,
@@ -54,25 +56,11 @@ class ConversionUtils {
     @CalledByNative
     private static PersistentMessage createPersistentMessageAndMaybeAddToList(
             @Nullable ArrayList<PersistentMessage> list,
-            String collaborationId,
-            @Nullable LocalTabGroupId localTabGroupId,
-            @Nullable String syncTabGroupId,
-            int localTabId,
-            @Nullable String syncTabId,
-            @Nullable GroupMember affectedUser,
-            GroupMember triggeringUser,
+            MessageAttribution attribution,
             @UserAction int action,
             @PersistentNotificationType int type) {
         PersistentMessage message = new PersistentMessage();
-        message.attribution =
-                createAttributionFrom(
-                        collaborationId,
-                        localTabGroupId,
-                        syncTabGroupId,
-                        localTabId,
-                        syncTabId,
-                        affectedUser,
-                        triggeringUser);
+        message.attribution = attribution;
         message.action = action;
         message.type = type;
 
@@ -85,30 +73,43 @@ class ConversionUtils {
 
     @CalledByNative
     private static InstantMessage createInstantMessage(
-            String collaborationId,
-            @Nullable LocalTabGroupId localTabGroupId,
-            @Nullable String syncTabGroupId,
-            int localTabId,
-            @Nullable String syncTabId,
-            @Nullable GroupMember affectedUser,
-            GroupMember triggeringUser,
+            MessageAttribution attribution,
             @UserAction int action,
             @InstantNotificationLevel int level,
             @InstantNotificationType int type) {
         InstantMessage message = new InstantMessage();
-        message.attribution =
-                createAttributionFrom(
-                        collaborationId,
-                        localTabGroupId,
-                        syncTabGroupId,
-                        localTabId,
-                        syncTabId,
-                        affectedUser,
-                        triggeringUser);
+        message.attribution = attribution;
         message.action = action;
         message.level = level;
         message.type = type;
 
         return message;
+    }
+
+    @CalledByNative
+    private static ArrayList<ActivityLogItem> createActivityLogItemList() {
+        return new ArrayList<ActivityLogItem>();
+    }
+
+    @CalledByNative
+    private static ActivityLogItem createActivityLogItemAndMaybeAddToList(
+            @Nullable ArrayList<ActivityLogItem> list,
+            @UserAction int userActionType,
+            String titleText,
+            String descriptionText,
+            String timestampText,
+            MessageAttribution activityMetadata) {
+        ActivityLogItem activityLogItem = new ActivityLogItem();
+        activityLogItem.userActionType = userActionType;
+        activityLogItem.titleText = titleText;
+        activityLogItem.descriptionText = descriptionText;
+        activityLogItem.timestampText = timestampText;
+        activityLogItem.activityMetadata = activityMetadata;
+
+        if (list != null) {
+            list.add(activityLogItem);
+        }
+
+        return activityLogItem;
     }
 }

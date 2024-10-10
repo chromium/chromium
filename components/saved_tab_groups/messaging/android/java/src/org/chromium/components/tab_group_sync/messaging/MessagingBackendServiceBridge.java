@@ -139,6 +139,16 @@ import java.util.Optional;
                 .getMessages(mNativeMessagingBackendServiceBridge, this, type_int);
     }
 
+    @Override
+    public List<ActivityLogItem> getActivityLog(ActivityLogQueryParams params) {
+        if (mNativeMessagingBackendServiceBridge == 0) {
+            return new ArrayList<ActivityLogItem>();
+        }
+
+        return MessagingBackendServiceBridgeJni.get()
+                .getActivityLog(mNativeMessagingBackendServiceBridge, this, params.collaborationId);
+    }
+
     @CalledByNative
     private static MessagingBackendServiceBridge create(long nativeMessagingBackendServiceBridge) {
         return new MessagingBackendServiceBridge(nativeMessagingBackendServiceBridge);
@@ -210,6 +220,11 @@ import java.util.Optional;
                 long nativeMessagingBackendServiceBridge,
                 MessagingBackendServiceBridge caller,
                 @PersistentNotificationType int type);
+
+        List<ActivityLogItem> getActivityLog(
+                long nativeMessagingBackendServiceBridge,
+                MessagingBackendServiceBridge caller,
+                String collaborationId);
 
         void runInstantaneousMessageSuccessCallback(
                 long nativeMessagingBackendServiceBridge,

@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.tab_group_sync.messaging;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.components.tab_group_sync.messaging.ActivityLogItem;
+import org.chromium.components.tab_group_sync.messaging.ActivityLogQueryParams;
 import org.chromium.components.tab_group_sync.messaging.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.messaging.EitherId.EitherTabId;
 import org.chromium.components.tab_group_sync.messaging.MessagingBackendService;
@@ -52,5 +54,11 @@ class TestMessagingBackendService implements MessagingBackendService {
     public List<PersistentMessage> getMessages(
             Optional</* @PersistentNotificationType */ Integer> type) {
         return new ArrayList<PersistentMessage>();
+    }
+
+    @Override
+    @NonNull
+    public List<ActivityLogItem> getActivityLog(ActivityLogQueryParams params) {
+        return new ArrayList<ActivityLogItem>();
     }
 }

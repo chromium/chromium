@@ -18,6 +18,8 @@ import org.mockito.ArgumentCaptor;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 
+import java.util.List;
+
 /** A companion object to the native MessagingBackendServiceBridgeTest. */
 @JNINamespace("tab_groups::messaging")
 public class MessagingBackendServiceBridgeUnitTestCompanion {
@@ -79,5 +81,27 @@ public class MessagingBackendServiceBridgeUnitTestCompanion {
     @CalledByNative
     private void invokeInstantMessageSuccessCallback(boolean success) {
         mInstantMessageCallbackCaptor.getValue().onResult(success);
+    }
+
+    @CalledByNative
+    private void invokeGetActivityLogAndVerify() {
+        ActivityLogQueryParams queryParams = new ActivityLogQueryParams();
+        queryParams.collaborationId = "collaboration1";
+        List<ActivityLogItem> logItems = mService.getActivityLog(queryParams);
+        Assert.assertEquals(2, logItems.size());
+
+        Assert.assertEquals(UserAction.TAB_NAVIGATED, logItems.get(0).userActionType);
+        Assert.assertEquals("title 1", logItems.get(0).titleText);
+        Assert.assertEquals("description 1", logItems.get(0).descriptionText);
+        Assert.assertEquals("timestamp 1", logItems.get(0).timestampText);
+
+        Assert.assertEquals(UserAction.COLLABORATION_USER_JOINED, logItems.get(1).userActionType);
+        Assert.assertEquals("title 2", logItems.get(1).titleText);
+        Assert.assertEquals("description 2", logItems.get(1).descriptionText);
+        Assert.assertEquals("timestamp 2", logItems.get(1).timestampText);
+
+        queryParams.collaborationId = "collaboration2";
+        logItems = mService.getActivityLog(queryParams);
+        Assert.assertEquals(0, logItems.size());
     }
 }

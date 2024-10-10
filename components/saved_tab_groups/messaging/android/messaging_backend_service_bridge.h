@@ -56,6 +56,10 @@ class MessagingBackendServiceBridge
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& j_caller,
       jint j_type);
+  base::android::ScopedJavaLocalRef<jobject> GetActivityLog(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& j_caller,
+      jstring j_collaboration_id);
   void RunInstantaneousMessageSuccessCallback(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& j_caller,

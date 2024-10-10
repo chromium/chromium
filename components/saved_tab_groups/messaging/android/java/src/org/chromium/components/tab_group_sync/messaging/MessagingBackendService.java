@@ -107,4 +107,15 @@ public interface MessagingBackendService {
      */
     @NonNull
     List<PersistentMessage> getMessages(Optional</* @PersistentNotificationType */ Integer> type);
+
+    /**
+     * Queries for all {@link ActivityLogItem}s.
+     *
+     * <p>Will return an empty result if the service has not yet been initialized. Use {@link
+     * #isInitialized()} to check initialization state.
+     *
+     * @param params The query params (e.g. collaboration ID).
+     */
+    @NonNull
+    List<ActivityLogItem> getActivityLog(ActivityLogQueryParams params);
 }

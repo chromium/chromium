@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "components/saved_tab_groups/messaging/activity_log.h"
 #include "components/saved_tab_groups/messaging/android/conversion_utils.h"
 #include "components/saved_tab_groups/messaging/message.h"
 #include "components/saved_tab_groups/public/android/tab_group_sync_conversions_bridge.h"
@@ -21,6 +22,8 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/saved_tab_groups/messaging/android/jni_headers/MessagingBackendServiceBridge_jni.h"
+
+using base::android::ConvertJavaStringToUTF16;
 
 namespace tab_groups::messaging::android {
 namespace {
@@ -157,6 +160,18 @@ MessagingBackendServiceBridge::GetMessages(
   }
   auto messages = service_->GetMessages(type_opt);
   return PersistentMessagesToJava(env, messages);
+}
+
+base::android::ScopedJavaLocalRef<jobject>
+MessagingBackendServiceBridge::GetActivityLog(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& j_caller,
+    jstring j_collaboration_id) {
+  ActivityLogQueryParams query_params;
+  query_params.collaboration_id = data_sharing::GroupId(
+      base::android::ConvertJavaStringToUTF8(env, j_collaboration_id));
+  auto activity_log_items = service_->GetActivityLog(query_params);
+  return ActivityLogItemsToJava(env, activity_log_items);
 }
 
 void MessagingBackendServiceBridge::RunInstantaneousMessageSuccessCallback(

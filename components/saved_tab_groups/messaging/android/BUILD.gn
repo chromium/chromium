@@ -35,6 +35,8 @@ generate_jni("jni_headers") {
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/components/tab_group_sync/messaging/ActivityLogItem.java",
+    "java/src/org/chromium/components/tab_group_sync/messaging/ActivityLogQueryParams.java",
     "java/src/org/chromium/components/tab_group_sync/messaging/EitherId.java",
     "java/src/org/chromium/components/tab_group_sync/messaging/InstantMessage.java",
     "java/src/org/chromium/components/tab_group_sync/messaging/MessageAttribution.java",
