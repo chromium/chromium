@@ -689,7 +689,8 @@ public class SyncPromoController {
                         SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                 .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                         mHistoryOptInMode,
-                        mAccessPoint);
+                        mAccessPoint,
+                        /* selectedCoreAccountId= */ null);
             }
         } else {
             mSyncConsentActivityLauncher.launchActivityForPromoAddAccountFlow(
@@ -718,7 +719,8 @@ public class SyncPromoController {
                         SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                 .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                         mHistoryOptInMode,
-                        mAccessPoint);
+                        mAccessPoint,
+                        /* selectedCoreAccountId= */ null);
             }
         } else {
             mSyncConsentActivityLauncher.launchActivityForPromoDefaultFlow(
@@ -747,7 +749,8 @@ public class SyncPromoController {
                         SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                 .CHOOSE_ACCOUNT_BOTTOM_SHEET,
                         mHistoryOptInMode,
-                        mAccessPoint);
+                        mAccessPoint,
+                        /* selectedCoreAccountId= */ null);
             }
         } else {
             mSyncConsentActivityLauncher.launchActivityForPromoChooseAccountFlow(

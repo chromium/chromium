@@ -15,6 +15,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
@@ -279,7 +280,8 @@ public class SyncPromoControllerUITest {
                         eq(NoAccountSigninMode.BOTTOM_SHEET),
                         eq(WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET),
                         eq(HistoryOptInMode.NONE),
-                        eq(SigninAccessPoint.BOOKMARK_MANAGER));
+                        eq(SigninAccessPoint.BOOKMARK_MANAGER),
+                        isNull());
     }
 
     @Test
@@ -371,7 +373,8 @@ public class SyncPromoControllerUITest {
                         eq(NoAccountSigninMode.BOTTOM_SHEET),
                         eq(WithAccountSigninMode.CHOOSE_ACCOUNT_BOTTOM_SHEET),
                         eq(HistoryOptInMode.NONE),
-                        eq(SigninAccessPoint.BOOKMARK_MANAGER));
+                        eq(SigninAccessPoint.BOOKMARK_MANAGER),
+                        isNull());
     }
 
     @Test

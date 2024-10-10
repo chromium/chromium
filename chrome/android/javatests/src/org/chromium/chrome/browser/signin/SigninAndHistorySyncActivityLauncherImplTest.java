@@ -37,6 +37,7 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -48,6 +49,7 @@ import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomS
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -102,7 +104,32 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                     SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                                     SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
-                                    SigninAccessPoint.NTP_SIGNED_OUT_ICON);
+                                    SigninAccessPoint.NTP_SIGNED_OUT_ICON,
+                                    null);
+                });
+
+        verify(mContextMock).startActivity(notNull());
+    }
+
+    @Test
+    @MediumTest
+    public void testLaunchActivityIfAllowedWithSpecifiedAccountId() {
+        when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    SigninAndHistorySyncActivityLauncherImpl.get()
+                            .launchActivityIfAllowed(
+                                    mContextMock,
+                                    mProfileMock,
+                                    BOTTOM_SHEET_STRINGS,
+                                    SigninAndHistorySyncCoordinator.NoAccountSigninMode
+                                            .BOTTOM_SHEET,
+                                    SigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                            .DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                    SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
+                                    SigninAccessPoint.NTP_SIGNED_OUT_ICON,
+                                    AccountManagerTestRule.TEST_ACCOUNT_1.getId());
                 });
 
         verify(mContextMock).startActivity(notNull());
@@ -128,7 +155,8 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                     SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                                     SigninAndHistorySyncCoordinator.HistoryOptInMode.REQUIRED,
-                                    SigninAccessPoint.NTP_SIGNED_OUT_ICON);
+                                    SigninAccessPoint.NTP_SIGNED_OUT_ICON,
+                                    /* selectedCoreAccountId= */ null);
                 });
 
         verify(mContextMock).startActivity(notNull());
@@ -176,7 +204,8 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                     SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                                     SigninAndHistorySyncCoordinator.HistoryOptInMode.REQUIRED,
-                                    SigninAccessPoint.NTP_SIGNED_OUT_ICON);
+                                    SigninAccessPoint.NTP_SIGNED_OUT_ICON,
+                                    /* selectedCoreAccountId= */ null);
                 });
 
         verify(mContextMock, never()).startActivity(notNull());
@@ -202,7 +231,8 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                     SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                                     SigninAndHistorySyncCoordinator.HistoryOptInMode.REQUIRED,
-                                    SigninAccessPoint.NTP_SIGNED_OUT_ICON);
+                                    SigninAccessPoint.NTP_SIGNED_OUT_ICON,
+                                    /* selectedCoreAccountId= */ null);
                 });
 
         verify(mContextMock, never()).startActivity(notNull());
@@ -229,7 +259,8 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                     SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                                     SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
-                                    SigninAccessPoint.NTP_SIGNED_OUT_ICON);
+                                    SigninAccessPoint.NTP_SIGNED_OUT_ICON,
+                                    /* selectedCoreAccountId= */ null);
                 });
 
         verify(mContextMock, never()).startActivity(notNull());
@@ -284,7 +315,8 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                     SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                                     SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
-                                    SigninAccessPoint.NTP_SIGNED_OUT_ICON);
+                                    SigninAccessPoint.NTP_SIGNED_OUT_ICON,
+                                    /* selectedCoreAccountId= */ null);
                 });
 
         onView(withText(R.string.managed_by_your_organization))
@@ -330,6 +362,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
     @Test
     @MediumTest
     public void testLaunchUpgradePromoActivityIfAllowed() {
+        when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -347,6 +380,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(false);
+        when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -364,6 +398,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(true);
+        when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
         when(mHistorySyncHelperMock.shouldSuppressHistorySync()).thenReturn(false);
         when(mHistorySyncHelperMock.isDeclinedOften()).thenReturn(false);
@@ -383,6 +418,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(true);
+        when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
         when(mHistorySyncHelperMock.shouldSuppressHistorySync()).thenReturn(true);
 
@@ -401,6 +437,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
         when(mIdentityManagerMock.hasPrimaryAccount(eq(ConsentLevel.SIGNIN))).thenReturn(true);
+        when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(false);
         when(mHistorySyncHelperMock.isDeclinedOften()).thenReturn(true);
 

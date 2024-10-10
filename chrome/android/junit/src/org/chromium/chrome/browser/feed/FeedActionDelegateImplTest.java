@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.feed;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -129,7 +130,8 @@ public final class FeedActionDelegateImplTest {
                                 SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                         .DEFAULT_ACCOUNT_BOTTOM_SHEET),
                         eq(SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE),
-                        eq(SigninAccessPoint.NTP_FEED_TOP_PROMO));
+                        eq(SigninAccessPoint.NTP_FEED_TOP_PROMO),
+                        isNull());
     }
 
     @Test
@@ -147,7 +149,8 @@ public final class FeedActionDelegateImplTest {
                                 SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                         .DEFAULT_ACCOUNT_BOTTOM_SHEET),
                         eq(SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE),
-                        eq(SigninAccessPoint.NTP_FEED_TOP_PROMO));
+                        eq(SigninAccessPoint.NTP_FEED_TOP_PROMO),
+                        isNull());
     }
 
     @Test
@@ -166,7 +169,8 @@ public final class FeedActionDelegateImplTest {
                                 SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                         .DEFAULT_ACCOUNT_BOTTOM_SHEET),
                         eq(SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE),
-                        eq(SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO));
+                        eq(SigninAccessPoint.NTP_FEED_CARD_MENU_PROMO),
+                        isNull());
     }
 
     @Test

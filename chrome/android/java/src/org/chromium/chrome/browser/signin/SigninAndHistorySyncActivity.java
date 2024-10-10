@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -81,6 +82,8 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
             "SigninAndHistorySyncActivity.IsHistorySyncDedicatedFlow";
     private static final String ARGUMENT_IS_UPGRADE_PROMO =
             "SigninAndHistorySyncActivity.IsUpgradePromo";
+    private static final String ARGUMENT_SELECTED_CORE_ACCOUNT_ID =
+            "SigninAndHistorySyncActivity.SelectedCoreAccountId";
 
     private static final int ADD_ACCOUNT_REQUEST_CODE = 1;
 
@@ -155,6 +158,7 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
                 intent.getIntExtra(ARGUMENT_HISTORY_OPT_IN_MODE, HistoryOptInMode.OPTIONAL);
         boolean isHistorySyncDedicatedFlow =
                 intent.getBooleanExtra(ARGUMENT_IS_HISTORY_SYNC_DEDICATED_FLOW, false);
+        @Nullable String accountId = intent.getStringExtra(ARGUMENT_SELECTED_CORE_ACCOUNT_ID);
 
         mCoordinator =
                 new SigninAndHistorySyncCoordinator(
@@ -169,7 +173,8 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
                         withAccountSigninMode,
                         historyOptInMode,
                         signinAccessPoint,
-                        isHistorySyncDedicatedFlow);
+                        isHistorySyncDedicatedFlow,
+                        accountId == null ? null : new CoreAccountId(accountId));
 
         setInitialContentView(mCoordinator.getView());
         onInitialLayoutInflationComplete();
@@ -307,7 +312,8 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
             @NoAccountSigninMode int noAccountSigninMode,
             @WithAccountSigninMode int withAccountSigninMode,
             @HistoryOptInMode int historyOptInMode,
-            @SigninAccessPoint int signinAccessPoint) {
+            @SigninAccessPoint int signinAccessPoint,
+            @Nullable CoreAccountId selectedCoreAccountId) {
         assert bottomSheetStrings != null;
 
         Intent intent = new Intent(context, SigninAndHistorySyncActivity.class);
@@ -320,6 +326,9 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
         intent.putExtra(ARGUMENT_WITH_ACCOUNT_SIGNIN_MODE, withAccountSigninMode);
         intent.putExtra(ARGUMENT_HISTORY_OPT_IN_MODE, historyOptInMode);
         intent.putExtra(ARGUMENT_ACCESS_POINT, signinAccessPoint);
+        if (selectedCoreAccountId != null) {
+            intent.putExtra(ARGUMENT_SELECTED_CORE_ACCOUNT_ID, selectedCoreAccountId.getId());
+        }
         return intent;
     }
 
@@ -336,7 +345,8 @@ public class SigninAndHistorySyncActivity extends FirstRunActivityBase
                         noAccountSigninMode,
                         withAccountSigninMode,
                         HistoryOptInMode.REQUIRED,
-                        signinAccessPoint);
+                        signinAccessPoint,
+                        /* selectedCoreAccountId= */ null);
         intent.putExtra(ARGUMENT_IS_HISTORY_SYNC_DEDICATED_FLOW, true);
         return intent;
     }

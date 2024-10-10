@@ -114,7 +114,8 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
                     SigninAndHistorySyncCoordinator.WithAccountSigninMode
                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                     SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
-                    SigninAccessPoint.SAFETY_CHECK);
+                    SigninAccessPoint.SAFETY_CHECK,
+                    /* selectedCoreAccountId= */ null);
         } else {
             // Open the sync page.
             mSyncLauncher.launchActivityIfAllowed(context, SigninAccessPoint.SAFETY_CHECK);

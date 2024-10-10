@@ -375,7 +375,8 @@ public class IdentityDiscController
                                 SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                         .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                                 SigninAndHistorySyncCoordinator.HistoryOptInMode.OPTIONAL,
-                                SigninAccessPoint.NTP_SIGNED_OUT_ICON);
+                                SigninAccessPoint.NTP_SIGNED_OUT_ICON,
+                                /* selectedCoreAccountId= */ null);
             } else {
                 SyncConsentActivityLauncherImpl.get()
                         .launchActivityIfAllowed(mContext, SigninAccessPoint.NTP_SIGNED_OUT_ICON);

@@ -14,6 +14,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -31,6 +32,7 @@ import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -66,6 +68,7 @@ public class SigninAndHistorySyncCoordinator
     private final @NoAccountSigninMode int mNoAccountSigninMode;
     private final @WithAccountSigninMode int mWithAccountSigninMode;
     private final @HistoryOptInMode int mHistoryOptInMode;
+    private final @Nullable CoreAccountId mCoreAccountId;
 
     private SigninAccountPickerCoordinator mAccountPickerCoordinator;
     private HistorySyncCoordinator mHistorySyncCoordinator;
@@ -168,17 +171,23 @@ public class SigninAndHistorySyncCoordinator
      * @param signinAccessPoint The entry point for the sign-in.
      * @param isHistorySyncDedicatedFlow Whether the flow is dedicated to enabling history sync
      *     (recent tabs for example).
+     * @param accountId If not null, the identifier of the default account to display on the signin
+     *     bottom sheet.
      */
-    public SigninAndHistorySyncCoordinator(@NonNull WindowAndroid windowAndroid,
-            @NonNull ComponentActivity activity, @NonNull Delegate delegate,
+    public SigninAndHistorySyncCoordinator(
+            @NonNull WindowAndroid windowAndroid,
+            @NonNull ComponentActivity activity,
+            @NonNull Delegate delegate,
             @NonNull DeviceLockActivityLauncher deviceLockActivityLauncher,
             @NonNull OneshotSupplier<Profile> profileSupplier,
             @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
             @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
             @NoAccountSigninMode int noAccountSigninMode,
             @WithAccountSigninMode int withAccountSigninMode,
-            @HistoryOptInMode int historyOptInMode, @SigninAccessPoint int signinAccessPoint,
-            boolean isHistorySyncDedicatedFlow) {
+            @HistoryOptInMode int historyOptInMode,
+            @SigninAccessPoint int signinAccessPoint,
+            boolean isHistorySyncDedicatedFlow,
+            @Nullable CoreAccountId accountId) {
         mWindowAndroid = windowAndroid;
         mActivity = activity;
         mDelegate = delegate;
@@ -192,6 +201,7 @@ public class SigninAndHistorySyncCoordinator
         mHistoryOptInMode = historyOptInMode;
         mSigninAccessPoint = signinAccessPoint;
         mIsHistorySyncDedicatedFlow = isHistorySyncDedicatedFlow;
+        mCoreAccountId = accountId;
         mContainerView =
                 (ViewGroup)
                         LayoutInflater.from(mActivity)
@@ -408,7 +418,8 @@ public class SigninAndHistorySyncCoordinator
                         signinManager,
                         mBottomSheetStrings,
                         accountPickerMode,
-                        mSigninAccessPoint);
+                        mSigninAccessPoint,
+                        mCoreAccountId);
         mDidShowSigninStep = true;
     }
 

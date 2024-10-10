@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncActivityLaunche
 import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
+import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 /**
@@ -57,7 +58,8 @@ public final class SigninAndHistorySyncActivityLauncherImpl
             @SigninAndHistorySyncCoordinator.NoAccountSigninMode int noAccountSigninMode,
             @SigninAndHistorySyncCoordinator.WithAccountSigninMode int withAccountSigninMode,
             @SigninAndHistorySyncCoordinator.HistoryOptInMode int historyOptInMode,
-            @AccessPoint int accessPoint) {
+            @AccessPoint int accessPoint,
+            @Nullable CoreAccountId selectedCoreAccountId) {
         Intent intent =
                 SigninAndHistorySyncActivity.createIntent(
                         context,
@@ -65,7 +67,8 @@ public final class SigninAndHistorySyncActivityLauncherImpl
                         noAccountSigninMode,
                         withAccountSigninMode,
                         historyOptInMode,
-                        accessPoint);
+                        accessPoint,
+                        selectedCoreAccountId);
         return launchActivityOrShowError(context, profile, intent, historyOptInMode, accessPoint);
     }
 

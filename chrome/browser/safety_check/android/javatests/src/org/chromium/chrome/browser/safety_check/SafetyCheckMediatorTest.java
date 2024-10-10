@@ -13,6 +13,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -797,7 +798,8 @@ public class SafetyCheckMediatorTest {
                                 SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                         .DEFAULT_ACCOUNT_BOTTOM_SHEET),
                         eq(SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE),
-                        eq(SigninAccessPoint.SAFETY_CHECK));
+                        eq(SigninAccessPoint.SAFETY_CHECK),
+                        isNull());
     }
 
     @Test

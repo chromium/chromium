@@ -37,7 +37,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninMetricsUtilsJni;
@@ -67,7 +66,6 @@ public class SigninAccountPickerCoordinatorTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Mock private Profile mProfileMock;
     @Mock private CoreAccountInfo mCoreAccountInfoMock;
     @Mock private AccountManagerFacade mAccountManagerFacadeMock;
     @Mock private SigninManager mSigninManagerMock;
@@ -112,7 +110,8 @@ public class SigninAccountPickerCoordinatorTest {
                         mSigninManagerMock,
                         bottomSheetStrings,
                         AccountPickerLaunchMode.DEFAULT,
-                        mAccessPoint);
+                        mAccessPoint,
+                        /* selectedCoreAccountId= */ null);
     }
 
     @Test

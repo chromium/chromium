@@ -610,9 +610,15 @@ public class SigninAndHistorySyncIntegrationTest {
                 new AccountPickerBottomSheetStrings.Builder(
                                 R.string.signin_account_picker_bottom_sheet_title)
                         .build();
-        Intent intent = SigninAndHistorySyncActivity.createIntent(
-                ApplicationProvider.getApplicationContext(), bottomSheetStrings,
-                noAccountSigninMode, withAccountSigninMode, historyOptInMode, mSigninAccessPoint);
+        Intent intent =
+                SigninAndHistorySyncActivity.createIntent(
+                        ApplicationProvider.getApplicationContext(),
+                        bottomSheetStrings,
+                        noAccountSigninMode,
+                        withAccountSigninMode,
+                        historyOptInMode,
+                        mSigninAccessPoint,
+                        /* selectedCoreAccountId= */ null);
         mActivityTestRule.launchActivity(intent);
         mActivity = mActivityTestRule.getActivity();
     }

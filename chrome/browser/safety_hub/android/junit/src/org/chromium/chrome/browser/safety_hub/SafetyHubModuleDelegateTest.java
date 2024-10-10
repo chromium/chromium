@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.safety_hub;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -95,7 +96,8 @@ public class SafetyHubModuleDelegateTest {
                                 SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                         .DEFAULT_ACCOUNT_BOTTOM_SHEET),
                         eq(SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE),
-                        eq(SigninAccessPoint.SAFETY_CHECK));
+                        eq(SigninAccessPoint.SAFETY_CHECK),
+                        isNull());
     }
 
     @Test

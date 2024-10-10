@@ -217,7 +217,8 @@ public class SignInPreference extends Preference
                                         SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                                 .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                                         SigninAndHistorySyncCoordinator.HistoryOptInMode.OPTIONAL,
-                                        SigninAccessPoint.SETTINGS);
+                                        SigninAccessPoint.SETTINGS,
+                                        /* selectedCoreAccountId= */ null);
                     } else {
                         SyncConsentActivityLauncherImpl.get()
                                 .launchActivityIfAllowed(

@@ -22,6 +22,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -524,7 +525,8 @@ public class MainSettingsFragmentTest {
                                 SigninAndHistorySyncCoordinator.WithAccountSigninMode
                                         .DEFAULT_ACCOUNT_BOTTOM_SHEET),
                         eq(SigninAndHistorySyncCoordinator.HistoryOptInMode.OPTIONAL),
-                        eq(SigninAccessPoint.SETTINGS));
+                        eq(SigninAccessPoint.SETTINGS),
+                        isNull());
     }
 
     @Test

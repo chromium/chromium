@@ -30,6 +30,12 @@ final class AccountPickerBottomSheetTestUtil {
                 return new AccountPickerBottomSheetStrings.Builder(
                                 R.string.signin_account_picker_bottom_sheet_title)
                         .build();
+            case SigninAccessPoint.CCT_ACCOUNT_MISMATCH_NOTIFICATION:
+                return new AccountPickerBottomSheetStrings.Builder(
+                                R.string.signin_account_picker_bottom_sheet_title)
+                        .setSubtitleStringId(
+                                R.string.signin_account_picker_bottom_sheet_benefits_subtitle)
+                        .build();
             default:
                 throw new IllegalArgumentException("Access point strings not handled in tests.");
         }
