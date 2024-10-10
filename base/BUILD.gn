@@ -1546,6 +1546,7 @@ component("base") {
       "debug/crash_logging.h",
       "debug/stack_trace.cc",
       "debug/stack_trace.h",
+      "files/drive_info.h",
       "files/file_enumerator.cc",
       "files/file_enumerator.h",
       "files/file_proxy.cc",
@@ -1645,6 +1646,7 @@ component("base") {
 
     if (is_posix && !is_apple) {
       sources += [
+        "files/drive_info_posix.cc",
         "native_library_posix.cc",
         "posix/can_lower_nice_to.cc",
         "posix/can_lower_nice_to.h",
@@ -1738,6 +1740,7 @@ component("base") {
       "enterprise_util_win.cc",
       "file_version_info_win.cc",
       "file_version_info_win.h",
+      "files/drive_info_win.cc",
       "files/file_enumerator_win.cc",
       "files/file_path_watcher_win.cc",
       "files/file_util_win.cc",
@@ -1996,6 +1999,7 @@ component("base") {
       "apple/scoped_typeref.h",
       "file_version_info_apple.h",
       "file_version_info_apple.mm",
+      "files/drive_info_apple.mm",
       "files/file_util_apple.mm",
       "memory/platform_shared_memory_mapper_apple.cc",
       "memory/platform_shared_memory_region_apple.cc",
@@ -2100,6 +2104,7 @@ component("base") {
       "ApplicationServices.framework",
       "AppKit.framework",
       "CoreFoundation.framework",
+      "DiskArbitration.framework",
       "IOKit.framework",
       "OpenDirectory.framework",
     ]
@@ -3948,6 +3953,7 @@ test("base_unittests") {
     sources += [ "message_loop/message_pump_kqueue_unittest.cc" ]
     frameworks += [
       "CoreFoundation.framework",
+      "IOKit.framework",
       "Foundation.framework",
     ]
     deps += [ ":base_profiler_test_support_library" ]

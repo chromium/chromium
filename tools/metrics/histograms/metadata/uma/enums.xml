@@ -338,6 +338,12 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Unset pre-sending logs state"/>
 </enum>
 
+<enum name="SeekPenaltyRecord">
+  <int value="0" label="Couldn't determine seek penalty"/>
+  <int value="1" label="No seek penalty"/>
+  <int value="2" label="Seek penalty"/>
+</enum>
+
 <enum name="StartupVisibility">
   <int value="0" label="Unknown"/>
   <int value="1" label="Background"/>

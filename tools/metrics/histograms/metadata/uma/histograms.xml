@@ -800,6 +800,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UMA.SeekPenaltyResult.{Implementation}"
+    enum="SeekPenaltyRecord" expires_after="2025-02-28">
+  <owner>spvw@chromium.org</owner>
+  <owner>chrome-catan@chromium.org</owner>
+  <summary>
+    Whether the hard drive containing either the user profile or chrome binary
+    was able to be queried for seek delay using the {Implementation}
+    implementation, and if so, the result of this query.
+  </summary>
+  <token key="Implementation">
+    <variant name="Base"/>
+    <variant name="Provider"/>
+  </token>
+</histogram>
+
 <histogram name="UMA.Startup.LocalStateFileExistence" enum="BooleanExists"
     expires_after="2025-02-28">
   <owner>caitlinfischer@google.com</owner>
