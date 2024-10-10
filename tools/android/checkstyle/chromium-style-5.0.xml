@@ -109,11 +109,12 @@
       <!-- https://source.android.com/docs/setup/contribute/code-style#treat-acronyms-as-words -->
       <property name="severity" value="warning"/>
       <property name="allowedAbbreviationLength" value="0"/>
-      <!-- Fixing/changing GURL is not happening. Single letter variable names
-      do not have trailing lower case letters, and often must be in the middle
-      of an associated method name, especially when the name needs ForTesting
-      suffix. -->
-      <property name="allowedAbbreviations" value="GURL,X,Y,Z"/>
+      <!-- Fixing/changing GURL is not happening. X/Y/Z variable names
+      implicitly have meaning without any trailing lower case letters, and often
+      must be in the middle of an associated method name, especially when the
+      name needs ForTesting suffix. J allows JUnit which we want to exactly
+      match and is defined externally. -->
+      <property name="allowedAbbreviations" value="GURL,X,Y,Z,J"/>
     </module>
     <module name="FallThrough">
       <property name="severity" value="error"/>
