@@ -24,6 +24,27 @@ constexpr char kDataUrlTemplate[] =
     "data:text/html,<html><body><span style=\"position: absolute; left: %ipx; "
     "top: %ipx;\">%s</body></html>";
 
+void NavigateToDataUrl(
+    content::WebContents* web_contents,
+    const QuickAnswersBrowserTestBase::ShowMenuParams& params) {
+  const std::string text =
+      params.is_password_field
+          ? base::StrCat(
+                {"<input type=\"password\">", params.selected_text, "</input>"})
+          : params.selected_text;
+  const std::string data_url =
+      base::StringPrintf(kDataUrlTemplate, params.x, params.y, text.c_str());
+  ASSERT_TRUE(content::NavigateToURL(web_contents, GURL(data_url)));
+}
+
+void RightClick(content::WebContents* web_contents,
+                const QuickAnswersBrowserTestBase::ShowMenuParams& params) {
+  // Right click on a word shows a context menu with selecting it.
+  content::SimulateMouseClickAt(web_contents, 0,
+                                blink::WebMouseEvent::Button::kRight,
+                                gfx::Point(params.x, params.y));
+}
+
 }  // namespace
 
 QuickAnswersBrowserTestBase::QuickAnswersBrowserTestBase() {
@@ -48,33 +69,25 @@ bool QuickAnswersBrowserTestBase::IsMagicBoostEnabled() const {
   return GetParam();
 }
 
-// `ShowMenu` generates a web page with `params.selected_text` at a position of
-// (`params.x`, `params.y`) and right click on it.
 void QuickAnswersBrowserTestBase::ShowMenu(
     const QuickAnswersBrowserTestBase::ShowMenuParams& params) {
   content::WebContents* web_contents =
       chrome_test_utils::GetActiveWebContents(this);
 
-  const std::string text =
-      params.is_password_field
-          ? base::StrCat(
-                {"<input type=\"password\">", params.selected_text, "</input>"})
-          : params.selected_text;
-  const std::string data_url =
-      base::StringPrintf(kDataUrlTemplate, params.x, params.y, text.c_str());
-  ASSERT_TRUE(content::NavigateToURL(web_contents, GURL(data_url)));
+  NavigateToDataUrl(web_contents, params);
+  RightClick(web_contents, params);
+}
 
-  content::RenderFrameHost* main_frame = web_contents->GetPrimaryMainFrame();
+void QuickAnswersBrowserTestBase::ShowMenuAndWait(
+    const QuickAnswersBrowserTestBase::ShowMenuParams& params) {
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
 
-  // Right click on a word shows a context menu with selecting it.
-  content::ContextMenuInterceptor context_menu_interceptor(main_frame);
-  content::SimulateMouseClickAt(web_contents, 0,
-                                blink::WebMouseEvent::Button::kRight,
-                                gfx::Point(params.x, params.y));
+  NavigateToDataUrl(web_contents, params);
 
-  // Wait until the context menu is shown. Note that this only waits context
-  // menu. Quick answers might require additional async operations before it's
-  // shown.
+  content::ContextMenuInterceptor context_menu_interceptor(
+      web_contents->GetPrimaryMainFrame());
+  RightClick(web_contents, params);
   context_menu_interceptor.Wait();
 }
 

@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_stage_button.h"
 
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/button_controller.h"
@@ -50,6 +52,8 @@ QuickAnswersStageButton::QuickAnswersStageButton() {
       views::ButtonController::NotifyAction::kOnPress);
 
   UpdateBackground();
+
+  GetViewAccessibility().SetRole(ax::mojom::Role::kNone);
 }
 
 QuickAnswersStageButton::~QuickAnswersStageButton() = default;

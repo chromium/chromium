@@ -20,7 +20,7 @@ IN_PROC_BROWSER_TEST_P(QuickAnswersControllerTest, FeatureIneligible) {
   ShowMenuParams params;
   params.selected_text = "test";
 
-  ShowMenu(params);
+  ShowMenuAndWait(params);
 
   // Quick Answers UI should stay hidden since the feature is not eligible.
   ASSERT_EQ(QuickAnswersVisibility::kClosed,
@@ -34,7 +34,7 @@ IN_PROC_BROWSER_TEST_P(QuickAnswersControllerTest, PasswordField) {
   params.selected_text = "test";
   params.is_password_field = true;
 
-  ShowMenu(params);
+  ShowMenuAndWait(params);
 
   // Quick Answers UI should stay hidden since the input field is password
   // field.
@@ -45,7 +45,7 @@ IN_PROC_BROWSER_TEST_P(QuickAnswersControllerTest, PasswordField) {
 IN_PROC_BROWSER_TEST_P(QuickAnswersControllerTest, NoSelectedText) {
   QuickAnswersState::Get()->SetEligibilityForTesting(true);
 
-  ShowMenu(ShowMenuParams());
+  ShowMenuAndWait(ShowMenuParams());
 
   // Quick Answers UI should stay hidden since no text is selected.
   ASSERT_EQ(QuickAnswersVisibility::kClosed,
@@ -61,7 +61,7 @@ IN_PROC_BROWSER_TEST_P(QuickAnswersControllerTest, QuickAnswersPending) {
 
   ShowMenuParams params;
   params.selected_text = "test";
-  ShowMenu(params);
+  ShowMenuAndWait(params);
 
   // Quick Answers UI should be pending.
   ASSERT_EQ(QuickAnswersVisibility::kPending,

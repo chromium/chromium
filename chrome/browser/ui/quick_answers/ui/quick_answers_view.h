@@ -76,6 +76,7 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
   views::FocusTraversable* GetPaneFocusTraversable() override;
   gfx::Size GetMaximumSize() const override;
   void UpdateBoundsForQuickAnswers() override;
+  bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
 
   // Called when a click happens to trigger Assistant Query.
   void SendQuickAnswersQuery();
@@ -126,7 +127,7 @@ class QuickAnswersView : public chromeos::ReadWriteCardsView {
       const quick_answers::PhoneticsInfo& phonetics_info);
 
   void UpdateUiText();
-  void UpdateAccessibleName();
+  void UpdateViewAccessibility();
   void UpdateIcon();
 
   base::WeakPtr<QuickAnswersUiController> controller_;

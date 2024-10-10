@@ -264,11 +264,13 @@ class QuickAnswersPixelTestBase
 };
 
 using QuickAnswersPixelTest = QuickAnswersPixelTestBase;
+using QuickAnswersPixelTestResultTypes = QuickAnswersPixelTestBase;
 using QuickAnswersPixelTestInternal = QuickAnswersPixelTestBase;
 using QuickAnswersPixelTestLoading = QuickAnswersPixelTestBase;
 using QuickAnswersPixelTestResultView = QuickAnswersPixelTestBase;
 using QuickAnswersPixelTestUserConsentView = QuickAnswersPixelTestBase;
 
+// `QuickAnswersPixelTest` tests the most various design/layout variants.
 INSTANTIATE_TEST_SUITE_P(
     PixelTest,
     QuickAnswersPixelTest,
@@ -278,6 +280,19 @@ INSTANTIATE_TEST_SUITE_P(
                      testing::Values(Design::kCurrent,
                                      Design::kRefresh,
                                      Design::kMagicBoost),
+                     /*is_internal=*/testing::Values(false)),
+    &GenerateParamName);
+
+// `QuickAnswersPixelTestResultTypes` tests variants of result types. There
+// won't be definition result type variant in this group as it's covered by
+// `QuickAnswersPixelTest.Result`.
+INSTANTIATE_TEST_SUITE_P(
+    PixelTest,
+    QuickAnswersPixelTestResultTypes,
+    testing::Combine(/*is_dark_mode=*/testing::Values(false),
+                     /*is_rtl=*/testing::Values(false),
+                     /*is_narrow=*/testing::Values(false),
+                     testing::Values(Design::kRefresh, Design::kMagicBoost),
                      /*is_internal=*/testing::Values(false)),
     &GenerateParamName);
 
@@ -387,6 +402,63 @@ IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTest, UserConsent) {
   // in user_consent_view.cc.
   EXPECT_TRUE(pixel_diff_->CompareViewScreenshot(
       GetScreenshotName("UserConsent", GetParam()),
+      GetWidget()->GetContentsView()));
+}
+
+// Params for message id screenshots:
+// (See `QuickAnswersPixelTestBase` class comment on details)
+//
+// MESSAGE_ID=IDS_QUICK_ANSWERS_VIEW_A11Y_INFO_DESCRIPTION_TEMPLATE
+// TEST_NAME=QuickAnswersPixelTestResultTypes.Unit/LightLtrWideMagicBoost
+// SCREENSHOT_NAME=ResultTypeUnit
+// VARIANT=Light.Ltr.Wide.MagicBoost.ash
+//
+// MESSAGE_ID=IDS_QUICK_ANSWERS_VIEW_A11Y_INFO_DESCRIPTION_WITH_INTENT_TEMPLATE
+// TEST_NAME=QuickAnswersPixelTestResultTypes.Unit/LightLtrWideRefresh
+// SCREENSHOT_NAME=ResultTypeUnit
+// VARIANT=Light.Ltr.Wide.Refresh.ash
+IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTestResultTypes, Unit) {
+  CreateAndShowQuickAnswersViewForLoading(Intent::kUnitConversion);
+
+  StructuredResult structured_result;
+  structured_result.unit_conversion_result =
+      std::make_unique<UnitConversionResult>();
+  structured_result.unit_conversion_result->source_text = "10 kg";
+  structured_result.unit_conversion_result->result_text = "22.04 pounds";
+  GetQuickAnswersUiController()->RenderQuickAnswersViewWithResult(
+      structured_result);
+
+  EXPECT_TRUE(pixel_diff_->CompareViewScreenshot(
+      GetScreenshotName("ResultTypeUnit", GetParam()),
+      GetWidget()->GetContentsView()));
+}
+
+// Params for message id screenshots:
+// (See `QuickAnswersPixelTestBase` class comment on details)
+//
+// MESSAGE_ID=IDS_QUICK_ANSWERS_VIEW_A11Y_INFO_DESCRIPTION_WITH_SUBTEXT_TEMPLATE
+// TEST_NAME=QuickAnswersPixelTestResultTypes.Translate/LightLtrWideMagicBoost
+// SCREENSHOT_NAME=ResultTypeTranslate
+// VARIANT=Light.Ltr.Wide.MagicBoost.ash
+//
+// MESSAGE_ID=IDS_QUICK_ANSWERS_VIEW_A11Y_INFO_DESCRIPTION_WITH_INTENT_AND_SUBTEXT_TEMPLATE
+// TEST_NAME=QuickAnswersPixelTestResultTypes.Translate/LightLtrWideRefresh
+// SCREENSHOT_NAME=ResultTypeTranslate
+// VARIANT=Light.Ltr.Wide.Refresh.ash
+IN_PROC_BROWSER_TEST_P(QuickAnswersPixelTestResultTypes, Translate) {
+  CreateAndShowQuickAnswersViewForLoading(Intent::kTranslation);
+
+  StructuredResult structured_result;
+  structured_result.translation_result = std::make_unique<TranslationResult>();
+  structured_result.translation_result->text_to_translate =
+      kTextToTranslateLong;
+  structured_result.translation_result->translated_text = kTranslatedText;
+  structured_result.translation_result->source_locale = kSourceLocaleJaJp;
+  GetQuickAnswersUiController()->RenderQuickAnswersViewWithResult(
+      structured_result);
+
+  EXPECT_TRUE(pixel_diff_->CompareViewScreenshot(
+      GetScreenshotName("ResultTypeTranslate", GetParam()),
       GetWidget()->GetContentsView()));
 }
 

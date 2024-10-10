@@ -423,8 +423,9 @@ UserConsentView::UserConsentView(
   GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
   GetViewAccessibility().SetDescription(l10n_util::GetStringFUTF8(
       IDS_QUICK_ANSWERS_USER_NOTICE_VIEW_A11Y_INFO_DESC_TEMPLATE,
-      l10n_util::GetStringUTF16(
-          IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_DESC_TEXT)));
+      l10n_util::GetStringUTF16(use_refreshed_design_
+                                    ? kDescriptionRefreshedMessageId
+                                    : kDescriptionMessageId)));
   // Read out user-consent text if screen-reader is active.
   GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
       IDS_QUICK_ANSWERS_USER_NOTICE_VIEW_A11Y_INFO_ALERT_TEXT));
@@ -521,7 +522,9 @@ void UserConsentView::UpdateUiText() {
                       ? GetTitleForRefreshedUi(intent_type_, intent_text_)
                       : GetTitle(intent_type_, intent_text_));
 
-  GetViewAccessibility().SetName(GetTitle(intent_type_, intent_text_));
+  GetViewAccessibility().SetName(
+      use_refreshed_design_ ? GetTitleForRefreshedUi(intent_type_, intent_text_)
+                            : GetTitle(intent_type_, intent_text_));
 }
 
 BEGIN_METADATA(UserConsentView)

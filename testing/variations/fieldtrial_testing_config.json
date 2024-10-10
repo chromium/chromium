@@ -18837,21 +18837,6 @@
             ]
         }
     ],
-    "QuickAnswersRichCard": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "QuickAnswersRichCard"
-                    ]
-                }
-            ]
-        }
-    ],
     "QuickDeleteAndroidFollowup": [
         {
             "platforms": [

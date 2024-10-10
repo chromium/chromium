@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
 #include "chrome/browser/ui/quick_answers/test/chrome_quick_answers_test_base.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
+#include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -135,6 +137,7 @@ class QuickAnswersViewsTest : public ChromeQuickAnswersTestBase {
   // Create a QuickAnswersView instance with custom anchor-bounds.
   void CreateQuickAnswersView(const gfx::Rect anchor_bounds,
                               std::optional<Intent> intent,
+                              QuickAnswersState::FeatureType feature_type,
                               bool is_internal) {
     // Set up a companion menu before creating the QuickAnswersView.
     CreateAndShowBasicMenu();
@@ -147,8 +150,7 @@ class QuickAnswersViewsTest : public ChromeQuickAnswersTestBase {
         ->SetVisibility(QuickAnswersVisibility::kQuickAnswersVisible);
     // TODO(b/222422130): Rewrite QuickAnswersViewsTest to expand coverage.
     GetUiController()->CreateQuickAnswersView(
-        GetProfile(), "title", kTestQuery, intent,
-        QuickAnswersState::FeatureType::kQuickAnswers, is_internal);
+        GetProfile(), "title", kTestQuery, intent, feature_type, is_internal);
   }
 
   void SendResult(const DefinitionResult& definition_result) {
@@ -255,6 +257,7 @@ class QuickAnswersViewsTest : public ChromeQuickAnswersTestBase {
 TEST_F(QuickAnswersViewsTest, DefaultLayoutAroundAnchor) {
   gfx::Rect anchor_bounds = GetAnchorBounds();
   CreateQuickAnswersView(anchor_bounds, Intent::kDefinition,
+                         QuickAnswersState::FeatureType::kQuickAnswers,
                          /*is_internal=*/false);
   gfx::Rect view_bounds = GetQuickAnswersView()->GetBoundsInScreen();
 
@@ -273,6 +276,7 @@ TEST_F(QuickAnswersViewsTest, PositionedBelowAnchorIfLessSpaceAbove) {
   anchor_bounds.set_y(kSmallTop);
 
   CreateQuickAnswersView(anchor_bounds, Intent::kDefinition,
+                         QuickAnswersState::FeatureType::kQuickAnswers,
                          /*is_internal=*/false);
   gfx::Rect view_bounds = GetQuickAnswersView()->GetBoundsInScreen();
 
@@ -282,6 +286,7 @@ TEST_F(QuickAnswersViewsTest, PositionedBelowAnchorIfLessSpaceAbove) {
 
 TEST_F(QuickAnswersViewsTest, FocusProperties) {
   CreateQuickAnswersView(GetAnchorBounds(), Intent::kDefinition,
+                         QuickAnswersState::FeatureType::kQuickAnswers,
                          /*is_internal=*/false);
   CHECK(views::MenuController::GetActiveInstance() &&
         views::MenuController::GetActiveInstance()->owner());
@@ -300,6 +305,7 @@ TEST_F(QuickAnswersViewsTest, Retry) {
   FakeOnRetryPressed();
 
   CreateQuickAnswersView(GetAnchorBounds(), Intent::kDefinition,
+                         QuickAnswersState::FeatureType::kQuickAnswers,
                          /*is_internal=*/false);
 
   TriggerNetworkError();
@@ -317,6 +323,7 @@ TEST_F(QuickAnswersViewsTest, Retry) {
 
 TEST_F(QuickAnswersViewsTest, Result) {
   CreateQuickAnswersView(GetAnchorBounds(), Intent::kDefinition,
+                         QuickAnswersState::FeatureType::kQuickAnswers,
                          /*is_internal=*/false);
 
   DefinitionResult definition_result;
@@ -332,6 +339,7 @@ TEST_F(QuickAnswersViewsTest, Result) {
 
 TEST_F(QuickAnswersViewsTest, ResultWithPhoneticsAudio) {
   CreateQuickAnswersView(GetAnchorBounds(), Intent::kDefinition,
+                         QuickAnswersState::FeatureType::kQuickAnswers,
                          /*is_internal=*/false);
   MockGenerateTtsCallback();
   EXPECT_CALL(*mock_quick_answers_client(), OnQuickAnswerClick(testing::_))
@@ -377,6 +385,7 @@ TEST_F(QuickAnswersViewsTest, OpenSettings) {
       ShowChromePageForProfile(testing::_, testing::_, testing::_, testing::_));
 
   CreateQuickAnswersView(GetAnchorBounds(), Intent::kDefinition,
+                         QuickAnswersState::FeatureType::kQuickAnswers,
                          /*is_internal=*/false);
   EXPECT_CALL(*mock_quick_answers_client(), OnQuickAnswerClick(testing::_))
       .Times(0);
@@ -400,6 +409,7 @@ TEST_F(QuickAnswersViewsTest, OpenSettings) {
 
 TEST_F(QuickAnswersViewsTest, OpenFeedbackPage) {
   CreateQuickAnswersView(GetAnchorBounds(), Intent::kDefinition,
+                         QuickAnswersState::FeatureType::kQuickAnswers,
                          /*is_internal=*/true);
   MockOpenFeedbackPageCallback();
   EXPECT_CALL(*mock_quick_answers_client(), OnQuickAnswerClick(testing::_))
@@ -427,6 +437,7 @@ TEST_F(QuickAnswersViewsTest, OpenFeedbackPage) {
 
 TEST_F(QuickAnswersViewsTest, ClickResultCard) {
   CreateQuickAnswersView(GetAnchorBounds(), Intent::kDefinition,
+                         QuickAnswersState::FeatureType::kQuickAnswers,
                          /*is_internal=*/false);
   MockOpenWebUrlCallback();
   EXPECT_CALL(*mock_quick_answers_client(), OnQuickAnswerClick(testing::_))
@@ -451,6 +462,7 @@ TEST_F(QuickAnswersViewsTest, ClickResultCard) {
 
 TEST_F(QuickAnswersViewsTest, ClickLoadingCard) {
   CreateQuickAnswersView(GetAnchorBounds(), Intent::kDefinition,
+                         QuickAnswersState::FeatureType::kQuickAnswers,
                          /*is_internal=*/false);
   MockOpenWebUrlCallback();
   EXPECT_CALL(*mock_quick_answers_client(), OnQuickAnswerClick(testing::_))
@@ -470,6 +482,7 @@ TEST_F(QuickAnswersViewsTest, ClickLoadingCard) {
 
 TEST_F(QuickAnswersViewsTest, ClickRetryCard) {
   CreateQuickAnswersView(GetAnchorBounds(), Intent::kDefinition,
+                         QuickAnswersState::FeatureType::kQuickAnswers,
                          /*is_internal=*/false);
   MockOpenWebUrlCallback();
   EXPECT_CALL(*mock_quick_answers_client(), OnQuickAnswerClick(testing::_))
@@ -500,6 +513,7 @@ TEST_F(QuickAnswersViewsTest, ClickRetryCard) {
 
 TEST_F(QuickAnswersViewsTest, Definition) {
   CreateQuickAnswersView(GetAnchorBounds(), Intent::kDefinition,
+                         QuickAnswersState::FeatureType::kQuickAnswers,
                          /*is_internal=*/false);
 
   DefinitionResult definition_result;
@@ -522,6 +536,7 @@ TEST_F(QuickAnswersViewsTest, Definition) {
 
 TEST_F(QuickAnswersViewsTest, Translation) {
   CreateQuickAnswersView(GetAnchorBounds(), Intent::kTranslation,
+                         QuickAnswersState::FeatureType::kQuickAnswers,
                          /*is_internal=*/false);
 
   TranslationResult translation_result;
@@ -542,6 +557,7 @@ TEST_F(QuickAnswersViewsTest, Translation) {
 
 TEST_F(QuickAnswersViewsTest, UnitConversion) {
   CreateQuickAnswersView(GetAnchorBounds(), Intent::kUnitConversion,
+                         QuickAnswersState::FeatureType::kQuickAnswers,
                          /*is_internal=*/false);
 
   UnitConversionResult unit_conversion_result;
@@ -557,6 +573,7 @@ TEST_F(QuickAnswersViewsTest, UnitConversion) {
 
 TEST_F(QuickAnswersViewsTest, IntentTransition) {
   CreateQuickAnswersView(GetAnchorBounds(), /*intent=*/std::nullopt,
+                         QuickAnswersState::FeatureType::kQuickAnswers,
                          /*is_internal=*/false);
   EXPECT_EQ(std::nullopt, GetQuickAnswersView()->GetIntent());
 
@@ -570,6 +587,7 @@ TEST_F(QuickAnswersViewsTest, IntentTransition) {
 TEST_F(QuickAnswersViewsTest, AccessibleProperties) {
   FakeOnRetryPressed();
   CreateQuickAnswersView(GetAnchorBounds(), Intent::kDefinition,
+                         QuickAnswersState::FeatureType::kQuickAnswers,
                          /*is_internal=*/false);
 
   TriggerNetworkError();
@@ -592,10 +610,67 @@ TEST_F(QuickAnswersViewsTest, AccessibleProperties) {
       retry_view->retry_label_button()->GetBoundsInScreen().CenterPoint());
   GetEventGenerator()->ClickLeftButton();
   EXPECT_FALSE(retry_view->GetVisible());
-  data = ui::AXNodeData();
-  GetQuickAnswersView()->GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(data.GetStringAttribute(ax::mojom::StringAttribute::kName),
-            l10n_util::GetStringUTF8(IDS_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT));
+  EXPECT_EQ(GetQuickAnswersView()->GetViewAccessibility().GetCachedName(),
+            l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT));
+}
+
+TEST_F(QuickAnswersViewsTest, AccessibilityDescriptionMagicBoost) {
+  CreateQuickAnswersView(GetAnchorBounds(), Intent::kDefinition,
+                         QuickAnswersState::FeatureType::kHmr,
+                         /*is_internal=*/false);
+
+  DefinitionResult definition_result;
+  definition_result.word = kWord;
+  definition_result.sense.definition = kDefinition;
+  definition_result.phonetics_info.text = kPhoneticsInfoText;
+  definition_result.phonetics_info.query_text = kPhoneticsInfoQueryText;
+  definition_result.phonetics_info.phonetics_audio =
+      GURL(kPhoneticsInfoAudioUrl);
+  definition_result.phonetics_info.tts_audio_enabled = true;
+  SendResult(definition_result);
+
+  EXPECT_EQ(GetQuickAnswersView()->GetAccessibleDescription(),
+            u"Word \xb7 /PhoneticsInfoText/; Definition");
+}
+
+TEST_F(QuickAnswersViewsTest, AccessibilityDescriptionRefresh) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      chromeos::features::kQuickAnswersMaterialNextUI);
+
+  CreateQuickAnswersView(GetAnchorBounds(), Intent::kDefinition,
+                         QuickAnswersState::FeatureType::kQuickAnswers,
+                         /*is_internal=*/false);
+
+  DefinitionResult definition_result;
+  definition_result.word = kWord;
+  definition_result.sense.definition = kDefinition;
+  definition_result.phonetics_info.text = kPhoneticsInfoText;
+  definition_result.phonetics_info.query_text = kPhoneticsInfoQueryText;
+  definition_result.phonetics_info.phonetics_audio =
+      GURL(kPhoneticsInfoAudioUrl);
+  definition_result.phonetics_info.tts_audio_enabled = true;
+  SendResult(definition_result);
+
+  EXPECT_EQ(GetQuickAnswersView()->GetAccessibleDescription(),
+            u"Define; Word \xb7 /PhoneticsInfoText/; Definition");
+}
+
+TEST_F(QuickAnswersViewsTest, AccessibilityDescriptionSubTextRefresh) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      chromeos::features::kQuickAnswersMaterialNextUI);
+
+  CreateQuickAnswersView(GetAnchorBounds(), Intent::kDefinition,
+                         QuickAnswersState::FeatureType::kQuickAnswers,
+                         /*is_internal=*/false);
+
+  TranslationResult translation_result;
+  translation_result.source_locale = kSourceLocaleJaJp;
+  translation_result.text_to_translate = kTextToTranslate;
+  translation_result.translated_text = kTranslatedText;
+  SendResult(translation_result);
+
+  EXPECT_EQ(GetQuickAnswersView()->GetAccessibleDescription(),
+            u"Translate; TextToTranslate; Japanese; TranslatedText");
 }
 
 }  // namespace quick_answers

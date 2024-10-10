@@ -46,7 +46,6 @@ class ResultView : public views::FlexLayoutView {
   void SetSecondLineText(const std::u16string& second_line_text);
   std::u16string GetSecondLineText() const;
   void SetGenerateTtsCallback(GenerateTtsCallback generate_tts_callback);
-  std::u16string GetA11yDescription() const;
 
   void SetDesign(Design design);
 

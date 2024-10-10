@@ -29,7 +29,15 @@ class QuickAnswersBrowserTestBase : public InProcessBrowserTest,
   bool IsMagicBoostEnabled() const;
 
  protected:
+  // `ShowMenu` generates a web page with `params.selected_text` at a position
+  // of (`params.x`, `params.y`) and right click on it.
   void ShowMenu(const ShowMenuParams& params);
+
+  // Show a context menu and wait until it's shown. Note that this only waits
+  // context menu. Quick answers might require additional async operations
+  // before it's shown.
+  void ShowMenuAndWait(const ShowMenuParams& params);
+
   QuickAnswersController* controller() { return QuickAnswersController::Get(); }
 
  private:

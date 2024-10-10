@@ -210,29 +210,6 @@ TEST_F(QuickAnswersUiControllerTest, QuickAnswersViewAccessibleProperties) {
   EXPECT_EQ(data.role, ax::mojom::Role::kDialog);
 }
 
-TEST_F(QuickAnswersUiControllerTest, UserConsentViewAccessibleProperties) {
-  CreateAndShowBasicMenu();
-  GetQuickAnswersController()->OnContextMenuShown(/*profile=*/nullptr);
-  EXPECT_TRUE(MaybeShowConsentView());
-
-  quick_answers::UserConsentView* user_consent_view =
-      ui_controller()->user_consent_view();
-  ui::AXNodeData data;
-  auto expected_name =
-      l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_USER_NOTICE_VIEW_TITLE_TEXT);
-  auto expected_desc = l10n_util::GetStringFUTF8(
-      IDS_QUICK_ANSWERS_USER_NOTICE_VIEW_A11Y_INFO_DESC_TEMPLATE,
-      l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_USER_CONSENT_VIEW_DESC_TEXT));
-
-  ASSERT_TRUE(user_consent_view);
-  user_consent_view->GetViewAccessibility().GetAccessibleNodeData(&data);
-  EXPECT_EQ(data.role, ax::mojom::Role::kDialog);
-  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-            expected_name);
-  EXPECT_EQ(data.GetStringAttribute(ax::mojom::StringAttribute::kDescription),
-            expected_desc);
-}
-
 TEST_F(QuickAnswersUiControllerTest, OpenSettingsQuickAnswers) {
   MockSettingsWindowManager mock_settings_window_manager;
   chrome::SettingsWindowManager::SetInstanceForTesting(

@@ -174,12 +174,6 @@ void ResultView::SetGenerateTtsCallback(
   generate_tts_callback_ = generate_tts_callback;
 }
 
-std::u16string ResultView::GetA11yDescription() const {
-  return l10n_util::GetStringFUTF16(
-      IDS_QUICK_ANSWERS_VIEW_A11Y_INFO_DESC_TEMPLATE_V2,
-      first_line_label_->GetText(), second_line_label_->GetText());
-}
-
 void ResultView::SetDesign(Design design) {
   first_line_label_->SetFontList(GetFirstLineFontList(design));
   first_line_label_->SetLineHeight(GetFirstLineHeight(design));
@@ -222,7 +216,6 @@ BEGIN_METADATA(ResultView)
 ADD_PROPERTY_METADATA(std::u16string, FirstLineText)
 ADD_PROPERTY_METADATA(std::u16string, FirstLineSubText)
 ADD_PROPERTY_METADATA(std::u16string, SecondLineText)
-ADD_READONLY_PROPERTY_METADATA(std::u16string, A11yDescription)
 END_METADATA
 
 }  // namespace quick_answers

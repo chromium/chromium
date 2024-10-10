@@ -37,6 +37,8 @@
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -326,6 +328,38 @@ views::Builder<views::BoxLayoutView> GetMagicBoostHeader() {
       .AddChild(views::Builder<chromeos::ExperimentBadge>());
 }
 
+std::string GetResultA11yDescription(ResultView* result_view,
+                                     std::optional<Intent> intent,
+                                     Design design) {
+  bool include_intent = design == Design::kRefresh && intent;
+  bool include_second_line_text = !result_view->GetFirstLineSubText().empty();
+
+  if (include_intent) {
+    if (include_second_line_text) {
+      return l10n_util::GetStringFUTF8(
+          IDS_QUICK_ANSWERS_VIEW_A11Y_INFO_DESCRIPTION_WITH_INTENT_AND_SUBTEXT_TEMPLATE,
+          GetIntentName(intent), result_view->GetFirstLineText(),
+          result_view->GetFirstLineSubText(), result_view->GetSecondLineText());
+    }
+
+    return l10n_util::GetStringFUTF8(
+        IDS_QUICK_ANSWERS_VIEW_A11Y_INFO_DESCRIPTION_WITH_INTENT_TEMPLATE,
+        GetIntentName(intent), result_view->GetFirstLineText(),
+        result_view->GetSecondLineText());
+  }
+
+  if (include_second_line_text) {
+    return l10n_util::GetStringFUTF8(
+        IDS_QUICK_ANSWERS_VIEW_A11Y_INFO_DESCRIPTION_WITH_SUBTEXT_TEMPLATE,
+        result_view->GetFirstLineText(), result_view->GetFirstLineSubText(),
+        result_view->GetSecondLineText());
+  }
+
+  return l10n_util::GetStringFUTF8(
+      IDS_QUICK_ANSWERS_VIEW_A11Y_INFO_DESCRIPTION_TEMPLATE,
+      result_view->GetFirstLineText(), result_view->GetSecondLineText());
+}
+
 }  // namespace
 
 // QuickAnswersView -----------------------------------------------------------
@@ -357,8 +391,6 @@ QuickAnswersView::QuickAnswersView(
           .CopyAddressTo(&quick_answers_stage_button_)
           .SetCallback(base::BindRepeating(
               &QuickAnswersView::SendQuickAnswersQuery, base::Unretained(this)))
-          .SetAccessibleName(
-              l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT))
           .SetLayoutManager(std::move(main_view_layout))
           .AddChild(views::Builder<views::ImageView>().CopyAddressTo(&icon_))
           .AddChild(
@@ -461,8 +493,7 @@ QuickAnswersView::QuickAnswersView(
   SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
   set_suppress_default_focus_handling();
 
-  GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
-  UpdateAccessibleName();
+  UpdateViewAccessibility();
   UpdateIcon();
   UpdateUiText();
 }
@@ -507,7 +538,11 @@ void QuickAnswersView::UpdateUiText() {
   refreshed_ui_header_->SetText(GetIntentName(intent_));
 }
 
-void QuickAnswersView::UpdateAccessibleName() {
+void QuickAnswersView::UpdateViewAccessibility() {
+  GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
+  GetViewAccessibility().SetDefaultActionVerb(
+      ax::mojom::DefaultActionVerb::kNone);
+
   // The view itself is not focused for retry-mode, so should not be announced
   // by the screen reader.
   if (retry_view_->GetVisible()) {
@@ -518,6 +553,24 @@ void QuickAnswersView::UpdateAccessibleName() {
 
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF8(IDS_QUICK_ANSWERS_VIEW_A11Y_NAME_TEXT));
+
+  if (result_view_->GetVisible()) {
+    GetViewAccessibility().SetDefaultActionVerb(
+        ax::mojom::DefaultActionVerb::kClick);
+    GetViewAccessibility().SetDescription(
+        GetResultA11yDescription(result_view_, intent_, design_));
+  }
+}
+
+// A11y actions are sent to `QuickAnswersView`. Route default action as a click.
+bool QuickAnswersView::HandleAccessibleAction(
+    const ui::AXActionData& action_data) {
+  if (action_data.action == ax::mojom::Action::kDoDefault) {
+    quick_answers_stage_button_->button_controller()->NotifyClick();
+    return true;
+  }
+
+  return views::View::HandleAccessibleAction(action_data);
 }
 
 void QuickAnswersView::UpdateIcon() {
@@ -555,8 +608,9 @@ void QuickAnswersView::SwitchTo(views::View* view) {
 
   loading_view_->SetVisible(view == loading_view_);
   retry_view_->SetVisible(view == retry_view_);
-  UpdateAccessibleName();
   result_view_->SetVisible(view == result_view_);
+
+  UpdateViewAccessibility();
 }
 
 void QuickAnswersView::ShowRetryView() {
@@ -631,8 +685,6 @@ void QuickAnswersView::SetResult(const StructuredResult& structured_result) {
       break;
   }
 
-  GetViewAccessibility().SetDescription(result_view_->GetA11yDescription());
-
   // Restore focus if the view had one prior to updating the answer.
   if (pane_already_had_focus) {
     RequestFocus();
@@ -641,6 +693,8 @@ void QuickAnswersView::SetResult(const StructuredResult& structured_result) {
     GetViewAccessibility().AnnounceText(
         l10n_util::GetStringUTF16(IDS_QUICK_ANSWERS_VIEW_A11Y_INFO_ALERT_TEXT));
   }
+
+  UpdateViewAccessibility();
 }
 
 // TODO(b/335701090): Move this out from QuickAnswersView to the controller.
