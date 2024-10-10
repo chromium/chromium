@@ -6,6 +6,8 @@
 
 #include <d3d11_1.h>
 
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/win/scoped_handle.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
@@ -785,6 +787,71 @@ bool D3DImageBackingFactory::SupportsBGRA8UnormStorage() {
   return supports_bgra8unorm_storage_.value();
 }
 
+bool D3DImageBackingFactory::CanCreateNV12Texture(const gfx::Size& size) {
+  // Without D3D11, we cannot do shared images. This will happen if we're
+  // running with Vulkan, D3D12, D3D9, GL or with the non-passthrough command
+  // decoder in tests.
+  if (!d3d11_device_) {
+    LOG(ERROR) << "D3D11 device is not supported!";
+    return false;
+  }
+
+  UINT format_support;
+  DXGI_FORMAT dxgi_format = DXGI_FORMAT_NV12;
+  HRESULT hr = d3d11_device_->CheckFormatSupport(dxgi_format, &format_support);
+  constexpr auto kRequiredUsage = D3D11_FORMAT_SUPPORT_TEXTURE2D |
+                                  D3D11_FORMAT_SUPPORT_SHADER_SAMPLE |
+                                  D3D11_FORMAT_SUPPORT_RENDER_TARGET;
+  bool has_required_format_support =
+      (format_support & kRequiredUsage) == kRequiredUsage;
+  if (!SUCCEEDED(hr) || !has_required_format_support) {
+    // Set crash keys for the format support, error code.
+    SCOPED_CRASH_KEY_STRING32("d3d image backing", "d3d11 format support",
+                              base::NumberToString(format_support));
+    SCOPED_CRASH_KEY_STRING32("d3d image backing", "nv12 error",
+                              base::NumberToString(hr));
+    // DumpWithoutCrashing to get crash reports for cases where d3d11 device
+    // does not support NV12 textures.
+    base::debug::DumpWithoutCrashing();
+    return false;
+  }
+
+  D3D11_TEXTURE2D_DESC desc;
+  desc.Width = size.width();
+  desc.Height = size.height();
+  desc.MipLevels = 1;
+  desc.ArraySize = 1;
+  desc.Format = dxgi_format;
+  desc.SampleDesc.Count = 1;
+  desc.SampleDesc.Quality = 0;
+  desc.Usage = D3D11_USAGE_DEFAULT;
+  desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
+  desc.CPUAccessFlags = 0;
+  desc.MiscFlags = 0;
+
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture;
+  hr = d3d11_device_->CreateTexture2D(&desc, nullptr, &d3d11_texture);
+  if (!SUCCEEDED(hr)) {
+    LOG(ERROR) << "CanCreateNV12Texture failed with size " << size.ToString()
+               << " error " << std::hex << hr;
+    // Set crash keys for the size, error code.
+    SCOPED_CRASH_KEY_STRING32("d3d image backing", "nv12 size",
+                              size.ToString());
+    SCOPED_CRASH_KEY_STRING32("d3d image backing", "nv12 error",
+                              base::NumberToString(hr));
+    // DumpWithoutCrashing to get crash reports for cases where d3d11 device
+    // does not support NV12 textures.
+    base::debug::DumpWithoutCrashing();
+
+    min_nv12_size_unsupported_ =
+        std::min(size.GetArea(), min_nv12_size_unsupported_);
+    return false;
+  }
+
+  max_nv12_size_supported_ = std::max(size.GetArea(), max_nv12_size_supported_);
+  return true;
+}
+
 bool D3DImageBackingFactory::IsSupported(SharedImageUsageSet usage,
                                          viz::SharedImageFormat format,
                                          const gfx::Size& size,
@@ -823,6 +890,22 @@ bool D3DImageBackingFactory::IsSupported(SharedImageUsageSet usage,
     }
   } else {
     return false;
+  }
+
+  if (format == viz::MultiPlaneFormat::kNV12) {
+    // We know current size is within `max_nv12_size_supported_` and nv12
+    // creation is supported for `max_nv12_size_supported_`.
+    if (size.GetArea() <= max_nv12_size_supported_) {
+      return true;
+    }
+    // We know current size is larger than `min_nv12_size_unsupported_` and nv12
+    // creation is unsupported for `min_nv12_size_unsupported_`.
+    if (size.GetArea() >= min_nv12_size_unsupported_) {
+      return false;
+    }
+    if (!CanCreateNV12Texture(size)) {
+      return false;
+    }
   }
 
   return true;
