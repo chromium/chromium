@@ -19,7 +19,6 @@
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle_provider.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_factory.h"
-#include "third_party/blink/renderer/platform/loader/internet_disconnected_url_loader.h"
 
 namespace blink {
 
@@ -117,9 +116,6 @@ void WebServiceWorkerFetchContextImpl::InitializeOnWorkerThread(
           std::move(pending_url_loader_factory_)),
       cors_exempt_header_list_, terminate_sync_load_event_);
 
-  internet_disconnected_url_loader_factory_ =
-      std::make_unique<InternetDisconnectedURLLoaderFactory>();
-
   if (pending_script_loader_factory_) {
     web_script_loader_factory_ = std::make_unique<URLLoaderFactory>(
         network::SharedURLLoaderFactory::Create(
@@ -131,8 +127,6 @@ void WebServiceWorkerFetchContextImpl::InitializeOnWorkerThread(
 }
 
 URLLoaderFactory* WebServiceWorkerFetchContextImpl::GetURLLoaderFactory() {
-  if (is_offline_mode_)
-    return internet_disconnected_url_loader_factory_.get();
   return url_loader_factory_.get();
 }
 
@@ -234,10 +228,6 @@ void WebServiceWorkerFetchContextImpl::NotifyUpdate(
 
 WebString WebServiceWorkerFetchContextImpl::GetAcceptLanguages() const {
   return WebString::FromUTF8(renderer_preferences_.accept_languages);
-}
-
-void WebServiceWorkerFetchContextImpl::SetIsOfflineMode(bool is_offline_mode) {
-  is_offline_mode_ = is_offline_mode;
 }
 
 }  // namespace blink
