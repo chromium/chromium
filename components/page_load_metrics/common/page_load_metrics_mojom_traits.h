@@ -184,6 +184,11 @@ class StructTraits<
     return d.total_router_evaluation_time_for_subresources;
   }
 
+  static base::TimeDelta total_cache_lookup_time_for_subresources(
+      const blink::ServiceWorkerSubresourceLoadMetrics& d) {
+    return d.total_cache_lookup_time_for_subresources;
+  }
+
   static bool Read(
       page_load_metrics::mojom::ServiceWorkerSubresourceLoadMetricsDataView
           data,

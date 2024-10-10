@@ -446,6 +446,10 @@ struct ServiceWorkerSubresourceLoadMetrics {
   // Total router evaluation time of ServiceWorker Static Routing API for
   // sub-resources.
   mojo_base.mojom.TimeDelta total_router_evaluation_time_for_subresources;
+
+  // Total cache lookup time of ServiceWorker Static Routing API for
+  // sub-resources.
+  mojo_base.mojom.TimeDelta total_cache_lookup_time_for_subresources;
 };
 
 // Enumeration of distinct cache types.

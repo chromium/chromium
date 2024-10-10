@@ -496,6 +496,7 @@ void WebURLResponse::SetServiceWorkerRouterInfo(
   info->SetRouteRuleNum(value.route_rule_num);
   info->SetEvaluationWorkerStatus(value.evaluation_worker_status);
   info->SetRouterEvaluationTime(value.router_evaluation_time);
+  info->SetCacheLookupTime(value.cache_lookup_time);
   resource_response_->SetServiceWorkerRouterInfo(std::move(info));
 }
 

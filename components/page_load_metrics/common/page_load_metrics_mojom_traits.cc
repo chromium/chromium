@@ -69,6 +69,10 @@ bool StructTraits<
           &out->total_router_evaluation_time_for_subresources)) {
     return false;
   }
+  if (!data.ReadTotalCacheLookupTimeForSubresources(
+          &out->total_cache_lookup_time_for_subresources)) {
+    return false;
+  }
   return true;
 }
 

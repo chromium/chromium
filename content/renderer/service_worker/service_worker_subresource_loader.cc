@@ -1521,12 +1521,16 @@ void ServiceWorkerSubresourceLoader::TransitionToStatus(Status new_status) {
 void ServiceWorkerSubresourceLoader::DidCacheStorageMatch(
     base::TimeTicks event_dispatch_time,
     blink::mojom::MatchResultPtr result) {
+  CHECK(response_head_->service_worker_router_info);
   auto timing = blink::mojom::ServiceWorkerFetchEventTiming::New();
+  auto cache_lookup_time = base::TimeTicks::Now() - event_dispatch_time;
   response_head_->load_timing.service_worker_cache_lookup_start =
       event_dispatch_time;
+  response_head_->service_worker_router_info->cache_lookup_time =
+      cache_lookup_time;
   base::UmaHistogramTimes(
       "ServiceWorker.StaticRouter.Subresource.CacheLookupDuration",
-      base::TimeTicks::Now() - event_dispatch_time);
+      cache_lookup_time);
   switch (result->which()) {
     case blink::mojom::MatchResult::Tag::kStatus:  // error fallback.
       base::UmaHistogramEnumeration(
@@ -1547,7 +1551,6 @@ void ServiceWorkerSubresourceLoader::DidCacheStorageMatch(
         // third_party/blink/renderer/modules/cache_storage/cache_storage.cc)
         result->get_response()->parsed_headers.reset();
       }
-      CHECK(response_head_->service_worker_router_info);
       response_head_->service_worker_router_info->actual_source_type =
           network::mojom::ServiceWorkerRouterSourceType::kCache;
       OnResponse(std::move(result->get_response()), std::move(timing));
