@@ -128,11 +128,23 @@ class CONTENT_EXPORT PrefetchDocumentManager
   // Helper function to get the |PrefetchService| associated with |this|.
   PrefetchService* GetPrefetchService() const;
 
+  bool IsPrefetchAttemptFailedOrDiscardedInternal(
+      const GURL& url,
+      PreloadingType planned_max_preloading_type);
+
   blink::DocumentToken document_token_;
 
   // This map holds references to all |PrefetchContainer| associated with
   // |this|.
-  std::map<GURL, base::WeakPtr<PrefetchContainer>> all_prefetches_;
+  //
+  // Keyed with `(url, planned_max_preloading_type)`.
+  // `planned_max_preloading_type == kPrerender` indicates it's ahead of
+  // prerender.
+  //
+  // We allow normal prefetch and prefetch ahead of prerender with the same key
+  // here, to handle and merge them in `PrefetchService`.
+  std::map<std::pair<GURL, PreloadingType>, base::WeakPtr<PrefetchContainer>>
+      all_prefetches_;
 
   // Stores whether or not canary checks have been started for this page.
   bool have_canary_checks_started_{false};

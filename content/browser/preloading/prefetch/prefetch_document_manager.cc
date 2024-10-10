@@ -146,13 +146,23 @@ void PrefetchDocumentManager::ProcessCandidates(
   }
   base::flat_set<GURL> url_set(std::move(urls_from_candidates));
   std::vector<base::WeakPtr<PrefetchContainer>> prefetches_to_evict;
-  for (const auto& [url, prefetch] : all_prefetches_) {
+  for (const auto& [all_prefetches_key, prefetch] : all_prefetches_) {
+    const auto& [url, planned_max_preloading_type] = all_prefetches_key;
+
+    // Don't evict prefetch ahead of prerender, which is initiated by
+    // `PrerenderImpl`, as `PrefetchDocumentManager::ProcessCandidates()` is
+    // only called for prefeches managed by `Prefetcher`.
+    if (planned_max_preloading_type != PreloadingType::kPrefetch) {
+      continue;
+    }
+
     if (prefetch && !base::Contains(url_set, url)) {
       prefetches_to_evict.push_back(prefetch);
     }
   }
   for (const auto& prefetch : prefetches_to_evict) {
-    all_prefetches_.erase(prefetch->GetURL());
+    all_prefetches_.erase(
+        std::make_pair(prefetch->GetURL(), PreloadingType::kPrefetch));
     switch (prefetch->GetLoadState()) {
       case PrefetchContainer::LoadState::kNotStarted:
       case PrefetchContainer::LoadState::kEligible:
@@ -235,8 +245,11 @@ void PrefetchDocumentManager::PrefetchUrl(
     const blink::mojom::Referrer& referrer,
     const network::mojom::NoVarySearchPtr& mojo_no_vary_search_expected,
     base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer) {
-  // Skip any prefetches that have already been requested.
-  auto prefetch_container_iter = all_prefetches_.find(url);
+  const std::pair<GURL, PreloadingType> all_prefetches_key =
+      std::make_pair(url, planned_max_preloading_type);
+
+  // Skip prefetches that have already been requested.
+  auto prefetch_container_iter = all_prefetches_.find(all_prefetches_key);
   if (prefetch_container_iter != all_prefetches_.end() &&
       prefetch_container_iter->second != nullptr) {
     if (prefetch_container_iter->second->GetPrefetchType() != prefetch_type) {
@@ -294,7 +307,7 @@ void PrefetchDocumentManager::PrefetchUrl(
       weak_method_factory_.GetWeakPtr(), attempt->GetWeakPtr());
   container->SetDevToolsObserver(std::move(devtools_observer));
   DVLOG(1) << *container << ": created";
-  all_prefetches_[url] = container->GetWeakPtr();
+  all_prefetches_[all_prefetches_key] = container->GetWeakPtr();
 
   referring_page_metrics_.prefetch_attempted_count++;
 
@@ -305,7 +318,17 @@ void PrefetchDocumentManager::PrefetchUrl(
 
 bool PrefetchDocumentManager::IsPrefetchAttemptFailedOrDiscarded(
     const GURL& url) {
-  auto it = all_prefetches_.find(url);
+  return IsPrefetchAttemptFailedOrDiscardedInternal(
+             url, PreloadingType::kPrefetch) &&
+         IsPrefetchAttemptFailedOrDiscardedInternal(url,
+                                                    PreloadingType::kPrerender);
+}
+
+bool PrefetchDocumentManager::IsPrefetchAttemptFailedOrDiscardedInternal(
+    const GURL& url,
+    PreloadingType planned_max_preloading_type) {
+  auto it =
+      all_prefetches_.find(std::make_pair(url, planned_max_preloading_type));
   if (it == all_prefetches_.end() || !it->second)
     return true;
 
