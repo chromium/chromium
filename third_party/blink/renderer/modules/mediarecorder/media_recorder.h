@@ -21,6 +21,8 @@ class Blob;
 class BlobData;
 enum class DOMExceptionCode;
 class ExceptionState;
+class V8BitrateMode;
+class V8RecordingState;
 
 class MODULES_EXPORT MediaRecorder
     : public EventTarget,
@@ -47,10 +49,10 @@ class MODULES_EXPORT MediaRecorder
 
   MediaStream* stream() const { return stream_.Get(); }
   const String& mimeType() const { return mime_type_; }
-  String state() const;
+  V8RecordingState state() const;
   uint32_t videoBitsPerSecond() const { return video_bits_per_second_; }
   uint32_t audioBitsPerSecond() const { return audio_bits_per_second_; }
-  String audioBitrateMode() const;
+  V8BitrateMode audioBitrateMode() const;
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(start, kStart)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(stop, kStop)

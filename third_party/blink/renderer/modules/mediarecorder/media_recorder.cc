@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_error_event_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_recording_state.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/events/error_event.h"
@@ -59,30 +60,27 @@ const int kSmallestPossibleVpxBitRate = 75000;
 const int kDefaultVideoBitRate = 2500e3;  // 2.5Mbps
 const int kDefaultAudioBitRate = 128e3;   // 128kbps
 
-String StateToString(MediaRecorder::State state) {
+V8RecordingState::Enum StateToV8Enum(MediaRecorder::State state) {
   switch (state) {
     case MediaRecorder::State::kInactive:
-      return "inactive";
+      return V8RecordingState::Enum::kInactive;
     case MediaRecorder::State::kRecording:
-      return "recording";
+      return V8RecordingState::Enum::kRecording;
     case MediaRecorder::State::kPaused:
-      return "paused";
+      return V8RecordingState::Enum::kPaused;
   }
-
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
-String BitrateModeToString(AudioTrackRecorder::BitrateMode bitrateMode) {
+V8BitrateMode::Enum BitrateModeToV8Enum(
+    AudioTrackRecorder::BitrateMode bitrateMode) {
   switch (bitrateMode) {
     case AudioTrackRecorder::BitrateMode::kConstant:
-      return "constant";
+      return V8BitrateMode::Enum::kConstant;
     case AudioTrackRecorder::BitrateMode::kVariable:
-      return "variable";
+      return V8BitrateMode::Enum::kVariable;
   }
-
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 AudioTrackRecorder::BitrateMode GetBitrateModeFromOptions(
@@ -246,17 +244,18 @@ MediaRecorder::MediaRecorder(ExecutionContext* context,
 
 MediaRecorder::~MediaRecorder() = default;
 
-String MediaRecorder::state() const {
-  return StateToString(state_);
+V8RecordingState MediaRecorder::state() const {
+  return V8RecordingState(StateToV8Enum(state_));
 }
 
-String MediaRecorder::audioBitrateMode() const {
+V8BitrateMode MediaRecorder::audioBitrateMode() const {
   if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed()) {
     // Return a valid enum value; variable is the default.
-    return BitrateModeToString(AudioTrackRecorder::BitrateMode::kVariable);
+    return V8BitrateMode(V8BitrateMode::Enum::kVariable);
   }
   DCHECK(recorder_handler_);
-  return BitrateModeToString(recorder_handler_->AudioBitrateMode());
+  return V8BitrateMode(
+      BitrateModeToV8Enum(recorder_handler_->AudioBitrateMode()));
 }
 
 void MediaRecorder::start(ExceptionState& exception_state) {
@@ -272,7 +271,7 @@ void MediaRecorder::start(int time_slice, ExceptionState& exception_state) {
   if (state_ != State::kInactive) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "The MediaRecorder's state is '" + StateToString(state_) + "'.");
+        "The MediaRecorder's state is '" + state().AsString() + "'.");
     return;
   }
 
@@ -334,7 +333,7 @@ void MediaRecorder::pause(ExceptionState& exception_state) {
   if (state_ == State::kInactive) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "The MediaRecorder's state is '" + StateToString(state_) + "'.");
+        "The MediaRecorder's state is 'inactive'.");
     return;
   }
   if (state_ == State::kPaused)
@@ -356,7 +355,7 @@ void MediaRecorder::resume(ExceptionState& exception_state) {
   if (state_ == State::kInactive) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "The MediaRecorder's state is '" + StateToString(state_) + "'.");
+        "The MediaRecorder's state is 'inactive'.");
     return;
   }
   if (state_ == State::kRecording)
@@ -377,7 +376,7 @@ void MediaRecorder::requestData(ExceptionState& exception_state) {
   if (state_ == State::kInactive) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "The MediaRecorder's state is '" + StateToString(state_) + "'.");
+        "The MediaRecorder's state is 'inactive'.");
     return;
   }
 
