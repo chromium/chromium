@@ -18,6 +18,39 @@
 
 namespace {
 
+// The subtitle of the dialog depends on which type of data is shown and the
+// number of different types.
+// If the first type represents a "hero" type, it will have a specific treatment
+// with a different string. In addition if other types exists as well, it will
+// add to its string the "and other items" part. Currently the only "hero" type
+// available is passwords.
+// If the first type is not a "hero" type, then simply items will be mentioned
+// in the subtitle.
+// All strings take into account the plural aspect based on the count. The count
+// is either the "hero" type count if applicable, or the total item count in the
+// generic case.
+std::string ComputeBatchUploadSubtitle(BatchUploadDataType first_type,
+                                       size_t first_type_item_count,
+                                       size_t number_of_types,
+                                       size_t total_item_count) {
+  // Check for the "hero" type availability.
+  if (first_type == BatchUploadDataType::kPasswords) {
+    if (number_of_types > 1) {
+      // Returns "passwords + other items" combo string.
+      return l10n_util::GetPluralStringFUTF8(
+          IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_PASSWORDS_COMBO,
+          first_type_item_count);
+    }
+    // Returns the passwords only string.
+    return l10n_util::GetPluralStringFUTF8(
+        IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_PASSWORDS, first_type_item_count);
+  }
+
+  // Returns the generic items string.
+  return l10n_util::GetPluralStringFUTF8(
+      IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_ITEMS, total_item_count);
+}
+
 // Construct the `BatchUploadData` structure to be used in the Ui. Combining the
 // account info, dialog subtitle and a list of data containers.
 // The Data contaiers are a list items to be shown on the batch upload ui.
@@ -37,6 +70,8 @@ batch_upload::mojom::BatchUploadDataPtr ConstructMojoBatchUploadData(
   account_info_mojo->data_picture_url =
       signin::GetAccountPictureUrl(account_info);
 
+  size_t total_item_count = 0;
+  std::optional<size_t> first_type_item_count;
   std::vector<batch_upload::mojom::DataContainerPtr> data_containers_mojo;
   for (const auto& data_provider : data_providers_list) {
     BatchUploadDataContainer container = data_provider->GetLocalData();
@@ -59,16 +94,24 @@ batch_upload::mojom::BatchUploadDataPtr ConstructMojoBatchUploadData(
       data_container_mojo->data_items.push_back(std::move(data_item_mojo));
     }
     data_containers_mojo.push_back(std::move(data_container_mojo));
+
+    total_item_count += container.items.size();
+    // Used to compute the first section item count without needing to perform
+    // another call to `GetLocalData()`.
+    if (!first_type_item_count) {
+      first_type_item_count = container.items.size();
+    }
   }
 
   batch_upload::mojom::BatchUploadDataPtr batch_upload_mojo =
       batch_upload::mojom::BatchUploadData::New();
 
   batch_upload_mojo->account_info = std::move(account_info_mojo);
-  // TODO(b/365954465): This string is still not comlpete and should depend on
-  // the first `container` input.
-  batch_upload_mojo->dialog_subtitle =
-      l10n_util::GetStringUTF8(IDS_BATCH_UPLOAD_SUBTITLE);
+  CHECK(first_type_item_count.has_value());
+  CHECK(first_type_item_count.value() != 0);
+  batch_upload_mojo->dialog_subtitle = ComputeBatchUploadSubtitle(
+      data_providers_list[0]->GetDataType(), first_type_item_count.value(),
+      data_providers_list.size(), total_item_count);
   batch_upload_mojo->data_containers = std::move(data_containers_mojo);
 
   return batch_upload_mojo;

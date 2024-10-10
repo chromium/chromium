@@ -27,8 +27,7 @@ class BatchUploadDataProviderFake : public BatchUploadDataProvider {
   bool HasLocalData() const override { return has_local_data_; }
 
   BatchUploadDataContainer GetLocalData() const override {
-    BatchUploadDataContainer container(/*section_name_id=*/123,
-                                       /*dialog_subtitle_id=*/456);
+    BatchUploadDataContainer container(/*section_name_id=*/123);
     if (has_local_data_) {
       // Add an arbitrary item.
       container.items.emplace_back();

@@ -44,9 +44,7 @@ class BatchUploadDataProviderFake : public BatchUploadDataProvider {
   bool HasLocalData() const override { return item_count_ > 0; }
 
   BatchUploadDataContainer GetLocalData() const override {
-    BatchUploadDataContainer container(
-        section_name_id_,
-        /*dialog_subtitle_id=*/IDS_BATCH_UPLOAD_SUBTITLE);
+    BatchUploadDataContainer container(section_name_id_);
 
     // Add arbitrary items.
     for (int i = 0; i < item_count_; ++i) {
@@ -78,7 +76,7 @@ class BatchUploadDataProviderFake : public BatchUploadDataProvider {
 struct TestParam {
   std::string test_suffix = "";
   bool use_dark_theme = false;
-  std::vector<std::pair<int, BatchUploadDataType>> section_item_count_name = {
+  std::vector<std::pair<int, BatchUploadDataType>> section_item_count_type = {
       {2, BatchUploadDataType::kPasswords},
       {1, BatchUploadDataType::kAddresses},
   };
@@ -98,12 +96,40 @@ const TestParam kTestParams[] = {
 
     {.test_suffix = "MultipleSectionsScrollbar",
      // Multiple sections with the same type just for testing purposes.
-     .section_item_count_name = {{2, BatchUploadDataType::kPasswords},
+     .section_item_count_type = {{2, BatchUploadDataType::kPasswords},
                                  {1, BatchUploadDataType::kPasswords},
                                  {10, BatchUploadDataType::kAddresses},
                                  {15, BatchUploadDataType::kAddresses},
                                  {16, BatchUploadDataType::kAddresses},
                                  {10, BatchUploadDataType::kPasswords},
+                                 {5, BatchUploadDataType::kPasswords}}},
+
+    // Hero type means the type will be shown in the subtitle of the dialog.
+    // Password is a hero type.
+    {.test_suffix = "SingleSectionHeroTypeWithOneItem",
+     .section_item_count_type = {{1, BatchUploadDataType::kPasswords}}},
+    {.test_suffix = "SingleSectionHeroTypeWithMultipleItems",
+     .section_item_count_type = {{5, BatchUploadDataType::kPasswords}}},
+
+    // Hero type with multiple sections. Should show "and other items" in the
+    // subtitle of the dialog.
+    {.test_suffix = "MultipleSectionsHeroTypeWithOneItem",
+     .section_item_count_type = {{1, BatchUploadDataType::kPasswords},
+                                 {3, BatchUploadDataType::kAddresses}}},
+    {.test_suffix = "MultipleSectionsHeroTypeWithMultipleItems",
+     .section_item_count_type = {{5, BatchUploadDataType::kPasswords},
+                                 {3, BatchUploadDataType::kAddresses}}},
+
+    // Addresses is not a hero type. It should not show in the subtitle.
+    {.test_suffix = "SingleSectionNonHeroTypeWithOneItem",
+     .section_item_count_type = {{1, BatchUploadDataType::kAddresses}}},
+    {.test_suffix = "SingleSectionNonHeroTypeWithMultipleItems",
+     .section_item_count_type = {{5, BatchUploadDataType::kAddresses}}},
+
+    // Addresses is not a hero type. It should not show in the subtitle even if
+    // other hero types exists.
+    {.test_suffix = "MultipleSectionsWithNonHeroTypeAsPrimarySection",
+     .section_item_count_type = {{5, BatchUploadDataType::kAddresses},
                                  {5, BatchUploadDataType::kPasswords}}},
 };
 
@@ -114,7 +140,7 @@ class BatchUploadDialogViewPixelTest
       public testing::WithParamInterface<TestParam> {
  public:
   BatchUploadDialogViewPixelTest() {
-    for (const auto& input_section : GetParam().section_item_count_name) {
+    for (const auto& input_section : GetParam().section_item_count_type) {
       fake_providers_.emplace_back(input_section.second, input_section.first);
     }
 

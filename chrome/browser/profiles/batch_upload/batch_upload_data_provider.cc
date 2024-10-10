@@ -11,10 +11,8 @@ BatchUploadDataItemModel::BatchUploadDataItemModel(
 BatchUploadDataItemModel& BatchUploadDataItemModel::operator=(
     BatchUploadDataItemModel&& other) = default;
 
-BatchUploadDataContainer::BatchUploadDataContainer(int section_title_id,
-                                                   int dialog_subtitle_id)
-    : section_title_id(section_title_id),
-      dialog_subtitle_id(dialog_subtitle_id) {}
+BatchUploadDataContainer::BatchUploadDataContainer(int section_title_id)
+    : section_title_id(section_title_id) {}
 
 BatchUploadDataContainer::BatchUploadDataContainer(
     BatchUploadDataContainer&& other) = default;

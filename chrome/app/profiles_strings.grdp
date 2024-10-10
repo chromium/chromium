@@ -944,13 +944,26 @@
     </message>
 
     <!-- Batch Upload Desktop -->
-    <!-- TODO(b/365954368): All batch upload strings to be finalized and translated. -->
     <message name="IDS_BATCH_UPLOAD_TITLE" desc="Title of the Batch Upload dialog on Desktop.">
       Save items in account
     </message>
-    <message translateable="false" name="IDS_BATCH_UPLOAD_SUBTITLE" desc="">
-      <!-- TODO(b/365954465): Incomplete string that might get more complex. -->
-      N items are saved only to this device. To use them on your other devices, save them in your Google Account.
+    <message name="IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_ITEMS" desc="Subtitle of the Batch Upload dialog if no special type exists. It only mentions the total number of items that are shown. A special type will have its type name shown first instead of 'items' and potentially show 'and other items' if multiple section exists, in different strings.">
+      {ITEM_COUNT, plural,
+      =1 {1 item is saved only to this device. To use it on your other devices, save it in your Google Account}
+      other {{ITEM_COUNT} items are saved only to this device. To use them on your other devices, save them in your Google Account}
+      }
+    </message>
+    <message name="IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_PASSWORDS" desc="Subtitle of the Batch Upload dialog if password type exists with no other types. It mentions the number of passwords items in the section.">
+      {PASSWORD_COUNT, plural,
+      =1 {1 password is saved only to this device. To use it on your other devices, save it in your Google Account}
+      other {{PASSWORD_COUNT} passwords are saved only to this device. To use them on your other devices, save them in your Google Account}
+      }
+    </message>
+    <message name="IDS_BATCH_UPLOAD_SUBTITLE_DESCRIPTION_PASSWORDS_COMBO" desc="Subtitle of the Batch Upload dialog if password type is the first type and it is not the only one. It mentions the number of passwords items in the section as well as 'and other items' to reference the other types.">
+      {PASSWORD_COUNT, plural,
+      =1 {1 password and other items are saved only to this device. To use it on your other devices, save it in your Google Account}
+      other {{PASSWORD_COUNT} passwords and other items are saved only to this device. To use them on your other devices, save them in your Google Account}
+      }
     </message>
     <message name="IDS_BATCH_UPLOAD_SECTION_TITLE_PASSWORDS" desc="Title of the Passwords section in the Batch Upload dialog. Shows the number of selected passwords in the section of the dialog if any.">
       {SELECTED_ITEMS, plural,

@@ -38,8 +38,7 @@ class DummyBatchUploadDataProvider : public BatchUploadDataProvider {
   bool HasLocalData() const override { return item_count_ > 0; }
 
   BatchUploadDataContainer GetLocalData() const override {
-    BatchUploadDataContainer container(/*section_name_id=*/title_id_,
-                                       /*dialog_subtitle_id=*/456);
+    BatchUploadDataContainer container(/*section_name_id=*/title_id_);
     for (int i = 0; i < item_count_; ++i) {
       BatchUploadDataItemModel item;
       item.id = BatchUploadDataItemModel::Id(i);

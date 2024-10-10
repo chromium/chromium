@@ -60,16 +60,11 @@ struct BatchUploadDataContainer {
   // WebUi supports Plural casing with an integer param.
   int section_title_id;
 
-  // Message id used as part of the text in the Batch Upload dialog for the main
-  // (first) section displayed. The text may be plural, depending on the number
-  // of elements in `items`.
-  int dialog_subtitle_id;
-
   // List of items to be displayed in a specific section of a data type in the
   // Batch Upload dialog.
   std::vector<BatchUploadDataItemModel> items;
 
-  BatchUploadDataContainer(int section_name_id, int dialog_subtitle_id);
+  explicit BatchUploadDataContainer(int section_name_id);
   // Not copyable.
   BatchUploadDataContainer(const BatchUploadDataContainer&) = delete;
   BatchUploadDataContainer& operator=(const BatchUploadDataContainer&) = delete;

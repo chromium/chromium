@@ -42,8 +42,7 @@ class BatchUploadDataProviderFake : public BatchUploadDataProvider {
   BatchUploadDataContainer GetLocalData() const override {
     // IDs used here are arbitrary and should not be checked.
     BatchUploadDataContainer container(
-        /*section_name_id=*/IDS_BATCH_UPLOAD_SECTION_TITLE_PASSWORDS,
-        /*dialog_subtitle_id=*/IDS_BATCH_UPLOAD_SUBTITLE);
+        /*section_name_id=*/IDS_BATCH_UPLOAD_SECTION_TITLE_PASSWORDS);
     if (has_local_data_) {
       // Add an arbitrary item.
       BatchUploadDataItemModel item;
