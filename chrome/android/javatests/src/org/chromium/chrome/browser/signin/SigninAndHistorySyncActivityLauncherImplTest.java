@@ -8,8 +8,10 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -38,7 +40,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -297,7 +298,6 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
     @Test
     @MediumTest
     // TODO(crbug.com/41493758): Update this test when the error UI will be implemented.
-    @DisabledTest(message = "https://crbug.com/352314425")
     public void testLaunchActivityForHistorySyncDedicatedFlowWhenSigninIsDisabledByPolicy() {
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mIdentityManagerMock);
@@ -322,9 +322,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                 });
 
         onView(withText(R.string.managed_by_your_organization))
-                .inRoot(
-                        withDecorView(
-                                not(mActivityTestRule.getActivity().getWindow().getDecorView())))
+                .inRoot(withDecorView(allOf(withId(R.id.toast_text))))
                 .check(matches(isDisplayed()));
         watchSigninDisabledToastShownHistogram.assertExpected();
     }
