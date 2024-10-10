@@ -3135,6 +3135,9 @@ extern const char kTabReorganizationDescription[];
 extern const char kTabReorganizationDividerName[];
 extern const char kTabReorganizationDividerDescription[];
 
+extern const char kTabstripDeclutterName[];
+extern const char kTabstripDeclutterDescription[];
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 extern const char kIOSPromoRefreshedPasswordBubbleName[];
 extern const char kIOSPromoRefreshedPasswordBubbleDescription[];

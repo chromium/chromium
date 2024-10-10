@@ -1869,6 +1869,21 @@ const FeatureEntry::FeatureVariation kTabScrollingVariations[] = {
     {" - tabs don't shrink", kMinimumTabWidthSettingFull,
      std::size(kMinimumTabWidthSettingFull), nullptr}};
 #endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+const FeatureEntry::FeatureParam kTabstripDeclutterQuickModeParams[] = {
+    {"stale_threshold_duration", "10s"},
+    {"declutter_timer_interval", "10s"},
+    {"nudge_timer_interval", "30s"},
+};
+
+const FeatureEntry::FeatureVariation kTabstripDeclutterVariations[] = {
+    {"Quick Mode", kTabstripDeclutterQuickModeParams,
+     std::size(kTabstripDeclutterQuickModeParams)},
+};
+#endif
+
 const FeatureEntry::FeatureParam kTabScrollingButtonPositionRight[] = {
     {features::kTabScrollingButtonPositionParameterName, "0"}};
 const FeatureEntry::FeatureParam kTabScrollingButtonPositionLeft[] = {
@@ -11496,6 +11511,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabReorganizationDividerName,
      flag_descriptions::kTabReorganizationDividerDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kTabReorganizationDivider)},
+
+    {"tabstrip-declutter", flag_descriptions::kTabstripDeclutterName,
+     flag_descriptions::kTabstripDeclutterDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kTabstripDeclutter,
+                                    kTabstripDeclutterVariations,
+                                    "TabstripDeclutter")},
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

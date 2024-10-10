@@ -5437,6 +5437,11 @@ const char kTabReorganizationDividerDescription[] =
     "Shows a divider in Auto Tab Groups suggestions for existing groups, "
     "indicating which tabs in the group are new.";
 
+const char kTabstripDeclutterName[] = "Tab Declutter";
+const char kTabstripDeclutterDescription[] =
+    "Enables the Tab Declutter feature, which can be found within the Tab "
+    "Search bubble.";
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const char kIOSPromoRefreshedPasswordBubbleName[] =
     "Chrome for iOS promo : passwords";
