@@ -255,7 +255,7 @@ class AudioContextTest : public PageTestBase {
   }
 
   void SetContextState(AudioContext* audio_context,
-                       AudioContext::AudioContextState state) {
+                       V8AudioContextState::Enum state) {
     audio_context->SetContextState(state);
   }
 
@@ -367,7 +367,7 @@ TEST_F(AudioContextTest, AudioContextAudibility_ServiceUnbind) {
 
   audio_context->set_was_audible_for_testing(true);
   ResetAudioContextManagerForAudioContext(audio_context);
-  SetContextState(audio_context, AudioContext::AudioContextState::kSuspended);
+  SetContextState(audio_context, V8AudioContextState::Enum::kSuspended);
 
   platform()->RunUntilIdle();
 }
@@ -405,8 +405,7 @@ TEST_F(AudioContextTest, OnRenderErrorFromPlatformDestination) {
   AudioContextOptions* options = AudioContextOptions::Create();
   AudioContext* audio_context = AudioContext::Create(
       GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
-  EXPECT_EQ(audio_context->ContextState(),
-            AudioContext::AudioContextState::kRunning);
+  EXPECT_EQ(audio_context->ContextState(), V8AudioContextState::Enum::kRunning);
 
   audio_context->invoke_onrendererror_from_platform_for_testing();
   EXPECT_TRUE(audio_context->render_error_occurred_);
@@ -705,7 +704,7 @@ TEST_F(AudioContextTest, ChannelCountRunning) {
   // destination playing.
   AudioContext* context = AudioContext::Create(
       execution_context, AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
-  EXPECT_EQ(context->ContextState(), BaseAudioContext::kRunning);
+  EXPECT_EQ(context->ContextState(), V8AudioContextState::Enum::kRunning);
   EXPECT_TRUE(context->GetRealtimeAudioDestinationNode()
                   ->GetOwnHandler()
                   .get_platform_destination_is_playing_for_testing());
@@ -714,7 +713,7 @@ TEST_F(AudioContextTest, ChannelCountRunning) {
   // playing state.
   context->destination()->setChannelCount(
       context->destination()->maxChannelCount(), ASSERT_NO_EXCEPTION);
-  EXPECT_EQ(context->ContextState(), BaseAudioContext::kRunning);
+  EXPECT_EQ(context->ContextState(), V8AudioContextState::Enum::kRunning);
   EXPECT_TRUE(context->GetRealtimeAudioDestinationNode()
                   ->GetOwnHandler()
                   .get_platform_destination_is_playing_for_testing());
@@ -741,7 +740,7 @@ TEST_F(AudioContextTest, ChannelCountSuspended) {
   // destination playing.
   AudioContext* context = AudioContext::Create(
       execution_context, AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
-  EXPECT_EQ(context->ContextState(), BaseAudioContext::kRunning);
+  EXPECT_EQ(context->ContextState(), V8AudioContextState::Enum::kRunning);
   EXPECT_TRUE(context->GetRealtimeAudioDestinationNode()
                   ->GetOwnHandler()
                   .get_platform_destination_is_playing_for_testing());
@@ -749,7 +748,7 @@ TEST_F(AudioContextTest, ChannelCountSuspended) {
   // Suspending the AudioContext should result in the context being suspended
   // and the destination not playing.
   context->suspendContext(script_state, ASSERT_NO_EXCEPTION);
-  EXPECT_EQ(context->ContextState(), BaseAudioContext::kSuspended);
+  EXPECT_EQ(context->ContextState(), V8AudioContextState::Enum::kSuspended);
   EXPECT_FALSE(context->GetRealtimeAudioDestinationNode()
                    ->GetOwnHandler()
                    .get_platform_destination_is_playing_for_testing());
@@ -758,7 +757,7 @@ TEST_F(AudioContextTest, ChannelCountSuspended) {
   // suspended or playing states.
   context->destination()->setChannelCount(
       context->destination()->maxChannelCount(), ASSERT_NO_EXCEPTION);
-  EXPECT_EQ(context->ContextState(), BaseAudioContext::kSuspended);
+  EXPECT_EQ(context->ContextState(), V8AudioContextState::Enum::kSuspended);
   EXPECT_FALSE(context->GetRealtimeAudioDestinationNode()
                    ->GetOwnHandler()
                    .get_platform_destination_is_playing_for_testing());
@@ -769,7 +768,7 @@ TEST_F(AudioContextTest, ChannelCountSuspended) {
   renderer->Init();
   renderer->Render(128, base::Milliseconds(0), {});
   platform()->RunUntilIdle();
-  EXPECT_EQ(context->ContextState(), BaseAudioContext::kRunning);
+  EXPECT_EQ(context->ContextState(), V8AudioContextState::Enum::kRunning);
   EXPECT_TRUE(context->GetRealtimeAudioDestinationNode()
                   ->GetOwnHandler()
                   .get_platform_destination_is_playing_for_testing());
@@ -791,7 +790,7 @@ TEST_F(AudioContextTest, SetSinkIdRunning) {
   AudioContext* context = AudioContext::Create(
       execution_context, AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
   FlushMediaDevicesDispatcherHost();
-  EXPECT_EQ(context->ContextState(), BaseAudioContext::kRunning);
+  EXPECT_EQ(context->ContextState(), V8AudioContextState::Enum::kRunning);
   EXPECT_TRUE(context->GetRealtimeAudioDestinationNode()
                   ->GetOwnHandler()
                   .get_platform_destination_is_playing_for_testing());
@@ -803,7 +802,7 @@ TEST_F(AudioContextTest, SetSinkIdRunning) {
       MakeGarbageCollected<V8UnionAudioSinkOptionsOrString>(kFakeAudioOutput1),
       ASSERT_NO_EXCEPTION);
   FlushMediaDevicesDispatcherHost();
-  EXPECT_EQ(context->ContextState(), BaseAudioContext::kRunning);
+  EXPECT_EQ(context->ContextState(), V8AudioContextState::Enum::kRunning);
   EXPECT_TRUE(context->GetRealtimeAudioDestinationNode()
                   ->GetOwnHandler()
                   .get_platform_destination_is_playing_for_testing());
@@ -825,7 +824,7 @@ TEST_F(AudioContextTest, SetSinkIdSuspended) {
   AudioContext* context = AudioContext::Create(
       execution_context, AudioContextOptions::Create(), ASSERT_NO_EXCEPTION);
   FlushMediaDevicesDispatcherHost();
-  EXPECT_EQ(context->ContextState(), BaseAudioContext::kRunning);
+  EXPECT_EQ(context->ContextState(), V8AudioContextState::Enum::kRunning);
   EXPECT_TRUE(context->GetRealtimeAudioDestinationNode()
                   ->GetOwnHandler()
                   .get_platform_destination_is_playing_for_testing());
@@ -834,7 +833,7 @@ TEST_F(AudioContextTest, SetSinkIdSuspended) {
   // and the destination not playing.
   context->suspendContext(script_state, ASSERT_NO_EXCEPTION);
   FlushMediaDevicesDispatcherHost();
-  EXPECT_EQ(context->ContextState(), BaseAudioContext::kSuspended);
+  EXPECT_EQ(context->ContextState(), V8AudioContextState::Enum::kSuspended);
   EXPECT_FALSE(context->GetRealtimeAudioDestinationNode()
                    ->GetOwnHandler()
                    .get_platform_destination_is_playing_for_testing());
@@ -846,7 +845,7 @@ TEST_F(AudioContextTest, SetSinkIdSuspended) {
                          kInvalidAudioOutput),
                      ASSERT_NO_EXCEPTION);
   FlushMediaDevicesDispatcherHost();
-  EXPECT_EQ(context->ContextState(), BaseAudioContext::kSuspended);
+  EXPECT_EQ(context->ContextState(), V8AudioContextState::Enum::kSuspended);
   EXPECT_FALSE(context->GetRealtimeAudioDestinationNode()
                    ->GetOwnHandler()
                    .get_platform_destination_is_playing_for_testing());
@@ -858,7 +857,7 @@ TEST_F(AudioContextTest, SetSinkIdSuspended) {
       MakeGarbageCollected<V8UnionAudioSinkOptionsOrString>(kFakeAudioOutput1),
       ASSERT_NO_EXCEPTION);
   FlushMediaDevicesDispatcherHost();
-  EXPECT_EQ(context->ContextState(), BaseAudioContext::kSuspended);
+  EXPECT_EQ(context->ContextState(), V8AudioContextState::Enum::kSuspended);
   EXPECT_FALSE(context->GetRealtimeAudioDestinationNode()
                    ->GetOwnHandler()
                    .get_platform_destination_is_playing_for_testing());
@@ -870,7 +869,7 @@ TEST_F(AudioContextTest, SetSinkIdSuspended) {
   renderer->Init();
   renderer->Render(128, base::Milliseconds(0), {});
   platform()->RunUntilIdle();
-  EXPECT_EQ(context->ContextState(), BaseAudioContext::kRunning);
+  EXPECT_EQ(context->ContextState(), V8AudioContextState::Enum::kRunning);
   EXPECT_TRUE(context->GetRealtimeAudioDestinationNode()
                   ->GetOwnHandler()
                   .get_platform_destination_is_playing_for_testing());

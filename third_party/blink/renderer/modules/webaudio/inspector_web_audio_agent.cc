@@ -27,16 +27,14 @@ String GetContextTypeEnum(BaseAudioContext* context) {
 
 String GetContextStateEnum(BaseAudioContext* context) {
   switch (context->ContextState()) {
-    case BaseAudioContext::AudioContextState::kSuspended:
+    case V8AudioContextState::Enum::kSuspended:
       return protocol::WebAudio::ContextStateEnum::Suspended;
-    case BaseAudioContext::AudioContextState::kRunning:
+    case V8AudioContextState::Enum::kRunning:
       return protocol::WebAudio::ContextStateEnum::Running;
-    case BaseAudioContext::AudioContextState::kClosed:
+    case V8AudioContextState::Enum::kClosed:
       return protocol::WebAudio::ContextStateEnum::Closed;
-    default:
-      NOTREACHED_IN_MIGRATION();
-      break;
   }
+  NOTREACHED();
 }
 
 // Strips "Node" from the node name string. For example, "GainNode" will return

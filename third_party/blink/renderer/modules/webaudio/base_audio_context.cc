@@ -637,22 +637,11 @@ PeriodicWave* BaseAudioContext::GetPeriodicWave(int type) {
   }
 }
 
-String BaseAudioContext::state() const {
-  // These strings had better match the strings for AudioContextState in
-  // AudioContext.idl.
-  switch (control_thread_state_) {
-    case kSuspended:
-      return "suspended";
-    case kRunning:
-      return "running";
-    case kClosed:
-      return "closed";
-  }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+V8AudioContextState BaseAudioContext::state() const {
+  return V8AudioContextState(control_thread_state_);
 }
 
-void BaseAudioContext::SetContextState(AudioContextState new_state) {
+void BaseAudioContext::SetContextState(V8AudioContextState::Enum new_state) {
   DCHECK(IsMainThread());
 
   // If there's no change in the current state, there's nothing that needs to be
@@ -664,20 +653,20 @@ void BaseAudioContext::SetContextState(AudioContextState new_state) {
   // Validate the transitions.  The valid transitions are Suspended->Running,
   // Running->Suspended, and anything->Closed.
   switch (new_state) {
-    case kSuspended:
-      DCHECK_EQ(control_thread_state_, kRunning);
+    case V8AudioContextState::Enum::kSuspended:
+      DCHECK_EQ(control_thread_state_, V8AudioContextState::Enum::kRunning);
       break;
-    case kRunning:
-      DCHECK_EQ(control_thread_state_, kSuspended);
+    case V8AudioContextState::Enum::kRunning:
+      DCHECK_EQ(control_thread_state_, V8AudioContextState::Enum::kSuspended);
       break;
-    case kClosed:
-      DCHECK_NE(control_thread_state_, kClosed);
+    case V8AudioContextState::Enum::kClosed:
+      DCHECK_NE(control_thread_state_, V8AudioContextState::Enum::kClosed);
       break;
   }
 
   control_thread_state_ = new_state;
 
-  if (new_state == kClosed) {
+  if (new_state == V8AudioContextState::Enum::kClosed) {
     GetDeferredTaskHandler().StopAcceptingTailProcessing();
   }
 
@@ -768,12 +757,12 @@ void BaseAudioContext::PerformCleanupOnMainThread() {
 
   if (is_resolving_resume_promises_) {
     for (auto& resolver : pending_promises_resolvers_) {
-      if (control_thread_state_ == kClosed) {
+      if (control_thread_state_ == V8AudioContextState::Enum::kClosed) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kInvalidStateError,
             "Cannot resume a context that has been closed"));
       } else {
-        SetContextState(kRunning);
+        SetContextState(V8AudioContextState::Enum::kRunning);
         resolver->Resolve();
       }
     }
@@ -838,7 +827,7 @@ void BaseAudioContext::StartRendering() {
   DCHECK(IsMainThread());
   DCHECK(destination_node_);
 
-  if (control_thread_state_ == kSuspended) {
+  if (control_thread_state_ == V8AudioContextState::Enum::kSuspended) {
     destination()->GetAudioDestinationHandler().StartRendering();
   }
 }
@@ -886,12 +875,12 @@ void BaseAudioContext::NotifyWorkletIsReady() {
   }
 
   switch (ContextState()) {
-    case kRunning:
+    case V8AudioContextState::Enum::kRunning:
       // If the context is running, restart the destination to switch the render
       // thread with the worklet thread right away.
       destination()->GetAudioDestinationHandler().RestartRendering();
       break;
-    case kSuspended:
+    case V8AudioContextState::Enum::kSuspended:
       // For the suspended context, the destination will use the worklet task
       // runner for rendering. This also prevents the regular audio thread from
       // touching worklet-related objects by blocking an invalid transitory
@@ -899,7 +888,7 @@ void BaseAudioContext::NotifyWorkletIsReady() {
       // running. See: crbug.com/1403515
       destination()->GetAudioDestinationHandler().PrepareTaskRunnerForWorklet();
       break;
-    case kClosed:
+    case V8AudioContextState::Enum::kClosed:
       // When the context is closed, no preparation for the worklet operations
       // is necessary.
       return;

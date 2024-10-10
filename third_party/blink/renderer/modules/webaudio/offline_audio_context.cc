@@ -158,7 +158,8 @@ ScriptPromise<AudioBuffer> OfflineAudioContext::startOfflineRendering(
   // Calling close() on an OfflineAudioContext is not supported/allowed,
   // but it might well have been stopped by its execution context.
   // See: crbug.com/435867
-  if (IsContextCleared() || ContextState() == AudioContextState::kClosed) {
+  if (IsContextCleared() ||
+      ContextState() == V8AudioContextState::Enum::kClosed) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "cannot call startRendering on an OfflineAudioContext in a stopped "
@@ -168,10 +169,11 @@ ScriptPromise<AudioBuffer> OfflineAudioContext::startOfflineRendering(
 
   // If the context is not in the suspended state (i.e. running), reject the
   // promise.
-  if (ContextState() != AudioContextState::kSuspended) {
+  if (ContextState() != V8AudioContextState::Enum::kSuspended) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "cannot startRendering when an OfflineAudioContext is " + state());
+        "cannot startRendering when an OfflineAudioContext is " +
+            state().AsString());
     return EmptyPromise();
   }
 
@@ -207,7 +209,7 @@ ScriptPromise<AudioBuffer> OfflineAudioContext::startOfflineRendering(
 
   // Start rendering and return the promise.
   is_rendering_started_ = true;
-  SetContextState(kRunning);
+  SetContextState(V8AudioContextState::Enum::kRunning);
   static_cast<OfflineAudioDestinationNode*>(destination())
       ->SetDestinationBuffer(render_target);
   DestinationHandler().InitializeOfflineRenderThread(render_target);
@@ -223,7 +225,7 @@ ScriptPromise<IDLUndefined> OfflineAudioContext::suspendContext(
   DCHECK(IsMainThread());
 
   // If the rendering is finished, reject the promise.
-  if (ContextState() == AudioContextState::kClosed) {
+  if (ContextState() == V8AudioContextState::Enum::kClosed) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "the rendering is already finished");
     return EmptyPromise();
@@ -325,7 +327,8 @@ ScriptPromise<IDLUndefined> OfflineAudioContext::resumeContext(
 
   // If the context is in a closed state or it really is closed (cleared),
   // reject the promise.
-  if (IsContextCleared() || ContextState() == AudioContextState::kClosed) {
+  if (IsContextCleared() ||
+      ContextState() == V8AudioContextState::Enum::kClosed) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "cannot resume a closed offline context");
     return EmptyPromise();
@@ -333,16 +336,16 @@ ScriptPromise<IDLUndefined> OfflineAudioContext::resumeContext(
 
   // If the context is already running, resolve the promise without altering
   // the current state or starting the rendering loop.
-  if (ContextState() == AudioContextState::kRunning) {
+  if (ContextState() == V8AudioContextState::Enum::kRunning) {
     return ToResolvedUndefinedPromise(script_state);
   }
 
-  DCHECK_EQ(ContextState(), AudioContextState::kSuspended);
+  DCHECK_EQ(ContextState(), V8AudioContextState::Enum::kSuspended);
 
   // If the context is suspended, resume rendering by setting the state to
   // "Running". and calling startRendering(). Note that resuming is possible
   // only after the rendering started.
-  SetContextState(kRunning);
+  SetContextState(V8AudioContextState::Enum::kRunning);
   DestinationHandler().StartRendering();
 
   // Resolve the promise immediately.
@@ -358,7 +361,7 @@ void OfflineAudioContext::FireCompletionEvent() {
 
   // We set the state to closed here so that the oncomplete event handler sees
   // that the context has been closed.
-  SetContextState(kClosed);
+  SetContextState(V8AudioContextState::Enum::kClosed);
 
   // Avoid firing the event if the document has already gone away.
   if (GetExecutionContext()) {
@@ -435,7 +438,7 @@ void OfflineAudioContext::ResolveSuspendOnMainThread(size_t frame) {
   DCHECK(IsMainThread());
 
   // Suspend the context first. This will fire onstatechange event.
-  SetContextState(kSuspended);
+  SetContextState(V8AudioContextState::Enum::kSuspended);
 
   {
     base::AutoLock locker(suspend_frames_lock_);
@@ -494,7 +497,7 @@ bool OfflineAudioContext::IsPullingAudioGraph() const {
   // For an offline context, we're rendering only while the context is running.
   // Unlike an AudioContext, there's no audio device that keeps pulling on graph
   // after the context has finished rendering.
-  return ContextState() == BaseAudioContext::kRunning;
+  return ContextState() == V8AudioContextState::Enum::kRunning;
 }
 
 bool OfflineAudioContext::ShouldSuspend() {

@@ -137,9 +137,8 @@ void RealtimeAudioDestinationHandler::SetChannelCount(
   // in turn can activate the audio rendering thread.
   AudioContext* context = Context();
   CHECK(context);
-  if (context->ContextState() == AudioContext::kClosed ||
-      ChannelCount() == old_channel_count ||
-      exception_state.HadException()) {
+  if (context->ContextState() == V8AudioContextState::Enum::kClosed ||
+      ChannelCount() == old_channel_count || exception_state.HadException()) {
     return;
   }
 
@@ -461,7 +460,7 @@ void RealtimeAudioDestinationHandler::StopPlatformDestination() {
 
 void RealtimeAudioDestinationHandler::PrepareTaskRunnerForWorklet() {
   DCHECK(IsMainThread());
-  DCHECK_EQ(Context()->ContextState(), BaseAudioContext::kSuspended);
+  DCHECK_EQ(Context()->ContextState(), V8AudioContextState::Enum::kSuspended);
   DCHECK(Context()->audioWorklet());
   DCHECK(Context()->audioWorklet()->IsReady());
 
@@ -487,7 +486,7 @@ void RealtimeAudioDestinationHandler::SetSinkDescriptor(
   // turn can activate the audio rendering thread.
   AudioContext* context = Context();
   CHECK(context);
-  if (context->ContextState() == AudioContext::kClosed) {
+  if (context->ContextState() == V8AudioContextState::Enum::kClosed) {
     std::move(callback).Run(
         media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_INTERNAL);
     return;

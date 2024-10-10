@@ -77,7 +77,7 @@ void AudioNode::Dispose() {
   // the handler still needs to be added in case the context is resumed.
   DCHECK(context());
   if (context()->IsPullingAudioGraph() ||
-      context()->ContextState() == BaseAudioContext::kSuspended) {
+      context()->ContextState() == V8AudioContextState::Enum::kSuspended) {
     context()->GetDeferredTaskHandler().AddRenderingOrphanHandler(
         std::move(handler_));
   }
