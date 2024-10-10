@@ -246,7 +246,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         super.finishNativeInitialization();
         if (SigninFeatureMap.isEnabled(SigninFeatures.CCT_SIGN_IN_PROMPT)) {
             mConnection.maybeShowAccountMismatchNotification(
-                    mSession, getIntent(), getWindowAndroid(), getProfileProviderSupplier());
+                    mSession, getIntent(), this, getWindowAndroid(), getProfileProviderSupplier());
         }
     }
 
