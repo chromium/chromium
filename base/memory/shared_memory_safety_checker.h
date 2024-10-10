@@ -9,6 +9,8 @@
 #include <atomic>
 #include <type_traits>
 
+#include "base/containers/span.h"
+
 namespace base::subtle {
 
 // Constraints on types that can be copied across memory spaces. This is a
@@ -27,6 +29,12 @@ struct SharedMemorySafetyChecker {
 template <typename T>
   requires(std::is_pointer_v<T> || std::is_member_pointer_v<T>)
 struct SharedMemorySafetyChecker<T> {
+  static constexpr bool kIsAllowed = false;
+};
+
+// Spans can't be shared across memory spaces.
+template <typename ElementType, size_t Extent, typename InternalPtrType>
+struct SharedMemorySafetyChecker<span<ElementType, Extent, InternalPtrType>> {
   static constexpr bool kIsAllowed = false;
 };
 

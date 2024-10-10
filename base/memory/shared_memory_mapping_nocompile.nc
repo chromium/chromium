@@ -13,7 +13,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
-#include "base/memory/raw_span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/safe_ref.h"
@@ -48,7 +47,6 @@ static_assert(!NotLockFreeAtomic::is_always_lock_free);
 static_assert(!std::is_trivially_copyable_v<std::unique_ptr<int>>);
 static_assert(!std::is_trivially_copyable_v<raw_ptr<int>>);
 static_assert(!std::is_trivially_copyable_v<raw_ref<int>>);
-static_assert(!std::is_trivially_copyable_v<raw_span<int>>);
 static_assert(!std::is_trivially_copyable_v<base::SafeRef<int>>);
 static_assert(!std::is_trivially_copyable_v<base::WeakPtr<int>>);
 
