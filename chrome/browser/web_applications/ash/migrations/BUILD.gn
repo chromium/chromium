@@ -17,6 +17,9 @@ static_library("migrations") {
   deps = [
     "//ash/constants",
     "//base",
+    "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
+    "//chrome/browser/web_applications/proto",
+    "//chrome/browser/web_applications/proto:proto_helpers",
     "//chrome/common",
   ]
 }

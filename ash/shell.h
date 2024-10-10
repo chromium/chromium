@@ -22,7 +22,6 @@
 #include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
 #include "ash/system/input_device_settings/touchscreen_metrics_recorder.h"
 #include "ash/system/toast/system_nudge_pause_manager_impl.h"
-#include "ash/wm/coral/coral_controller.h"
 #include "ash/wm/system_modal_container_event_filter_delegate.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"

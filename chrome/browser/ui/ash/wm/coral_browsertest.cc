@@ -11,6 +11,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "ash/wm/coral/coral_controller.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/mru_window_tracker.h"
@@ -61,9 +62,7 @@ std::vector<GURL> CollectTabURLsFromWindows(
 
 class CoralBrowserTest : public InProcessBrowserTest {
  public:
-  CoralBrowserTest() {
-    set_launch_browser_for_testing(nullptr);
-  }
+  CoralBrowserTest() { set_launch_browser_for_testing(nullptr); }
   CoralBrowserTest(const CoralBrowserTest&) = delete;
   CoralBrowserTest& operator=(const CoralBrowserTest&) = delete;
   ~CoralBrowserTest() override = default;
