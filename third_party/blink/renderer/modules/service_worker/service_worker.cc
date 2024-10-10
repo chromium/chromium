@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/post_message_helper.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_post_message_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_service_worker_state.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -142,23 +143,22 @@ String ServiceWorker::scriptURL() const {
   return url_.GetString();
 }
 
-String ServiceWorker::state() const {
+V8ServiceWorkerState ServiceWorker::state() const {
   switch (state_) {
     case mojom::blink::ServiceWorkerState::kParsed:
-      return "parsed";
+      return V8ServiceWorkerState(V8ServiceWorkerState::Enum::kParsed);
     case mojom::blink::ServiceWorkerState::kInstalling:
-      return "installing";
+      return V8ServiceWorkerState(V8ServiceWorkerState::Enum::kInstalling);
     case mojom::blink::ServiceWorkerState::kInstalled:
-      return "installed";
+      return V8ServiceWorkerState(V8ServiceWorkerState::Enum::kInstalled);
     case mojom::blink::ServiceWorkerState::kActivating:
-      return "activating";
+      return V8ServiceWorkerState(V8ServiceWorkerState::Enum::kActivating);
     case mojom::blink::ServiceWorkerState::kActivated:
-      return "activated";
+      return V8ServiceWorkerState(V8ServiceWorkerState::Enum::kActivated);
     case mojom::blink::ServiceWorkerState::kRedundant:
-      return "redundant";
+      return V8ServiceWorkerState(V8ServiceWorkerState::Enum::kRedundant);
   }
-  NOTREACHED_IN_MIGRATION();
-  return g_null_atom;
+  NOTREACHED();
 }
 
 ServiceWorker* ServiceWorker::From(

@@ -3,19 +3,23 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/modules/service_worker/service_worker_client.h"
-#include "third_party/blink/renderer/modules/service_worker/service_worker_window_client.h"
 
 #include <memory>
+
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/callback_promise_adapter.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/post_message_helper.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_post_message_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_client_lifecycle_state.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_client_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_context_frame_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
+#include "third_party/blink/renderer/modules/service_worker/service_worker_window_client.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -32,51 +36,46 @@ ServiceWorkerClient::ServiceWorkerClient(
 
 ServiceWorkerClient::~ServiceWorkerClient() = default;
 
-String ServiceWorkerClient::type() const {
+V8ClientType ServiceWorkerClient::type() const {
   switch (type_) {
     case mojom::ServiceWorkerClientType::kWindow:
-      return "window";
+      return V8ClientType(V8ClientType::Enum::kWindow);
     case mojom::ServiceWorkerClientType::kDedicatedWorker:
-      return "worker";
+      return V8ClientType(V8ClientType::Enum::kWorker);
     case mojom::ServiceWorkerClientType::kSharedWorker:
-      return "sharedworker";
+      return V8ClientType(V8ClientType::Enum::kSharedworker);
     case mojom::ServiceWorkerClientType::kAll:
-      NOTREACHED_IN_MIGRATION();
-      return String();
+      // Should not happen.
+      break;
   }
-
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
-String ServiceWorkerClient::frameType(ScriptState* script_state) const {
+V8ContextFrameType ServiceWorkerClient::frameType(
+    ScriptState* script_state) const {
   UseCounter::Count(ExecutionContext::From(script_state),
                     WebFeature::kServiceWorkerClientFrameType);
   switch (frame_type_) {
     case mojom::RequestContextFrameType::kAuxiliary:
-      return "auxiliary";
+      return V8ContextFrameType(V8ContextFrameType::Enum::kAuxiliary);
     case mojom::RequestContextFrameType::kNested:
-      return "nested";
+      return V8ContextFrameType(V8ContextFrameType::Enum::kNested);
     case mojom::RequestContextFrameType::kNone:
-      return "none";
+      return V8ContextFrameType(V8ContextFrameType::Enum::kNone);
     case mojom::RequestContextFrameType::kTopLevel:
-      return "top-level";
+      return V8ContextFrameType(V8ContextFrameType::Enum::kTopLevel);
   }
-
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
-String ServiceWorkerClient::lifecycleState() const {
+V8ClientLifecycleState ServiceWorkerClient::lifecycleState() const {
   switch (lifecycle_state_) {
     case mojom::ServiceWorkerClientLifecycleState::kActive:
-      return "active";
+      return V8ClientLifecycleState(V8ClientLifecycleState::Enum::kActive);
     case mojom::ServiceWorkerClientLifecycleState::kFrozen:
-      return "frozen";
+      return V8ClientLifecycleState(V8ClientLifecycleState::Enum::kFrozen);
   }
-
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 void ServiceWorkerClient::postMessage(ScriptState* script_state,
