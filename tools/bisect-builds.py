@@ -1377,6 +1377,12 @@ class IOSSimulatorReleaseBuild(ReleaseBuild):
     self.device_id = options.device_id
     if not self.device_id:
       raise BisectException('--device-id is required for iOS Simulator.')
+    retcode, stdout, stderr = self._run(
+        ['xcrun', 'simctl', 'boot', self.device_id])
+    if retcode:
+      print(f'Warning: Boot Simulator error, code:{retcode}\n'
+            f'stdout:\n{stdout}\n'
+            f'stderr:\n{stderr}')
 
   def _get_release_bucket(self):
     return IOS_ARCHIVE_BASE_URL

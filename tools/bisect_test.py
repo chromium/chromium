@@ -1254,7 +1254,8 @@ class IOSSimulatorReleaseBuildTest(BisectTestCase):
               'gs://bling-archive/128.0.6536.0/20240613011356/Chromium.tar.gz',
           ]
       ])
-  def test_list_rev(self, mock_GsutilList):
+  @patch('bisect-builds.ArchiveBuild._run', return_value=(0, '', ''))
+  def test_list_rev(self, mock_run, mock_GsutilList):
     options = bisect_builds.ParseCommandLine([
         '-r', '-a', 'ios-simulator', '--device-id', '321', '-g', '128.0.6534.0',
         '-b', '128.0.6536.0', '--no-local-cache'
@@ -1262,6 +1263,7 @@ class IOSSimulatorReleaseBuildTest(BisectTestCase):
     build = bisect_builds.create_archive_build(options)
     self.assertIsInstance(build, bisect_builds.IOSSimulatorReleaseBuild)
     self.assertEqual(build.get_rev_list(), ['128.0.6534.0', '128.0.6536.0'])
+    mock_run.assert_called_once_with(['xcrun', 'simctl', 'boot', '321'])
     mock_GsutilList.assert_any_call('gs://bling-archive')
     mock_GsutilList.assert_any_call(*[
         'gs://bling-archive/%s/*/Chromium.tar.gz' % x for x in [
@@ -1286,6 +1288,7 @@ class IOSSimulatorReleaseBuildTest(BisectTestCase):
                                                     'tempdir')
     self.assertEqual(mock_glob.call_count, 2)
     mock_run.assert_has_calls([
+        call(['xcrun', 'simctl', 'boot', '321']),
         call(['xcrun', 'simctl', 'install', '321', ANY]),
         call(['plutil', '-extract', 'CFBundleIdentifier', 'raw', 'Info.plist']),
     ])
@@ -1320,6 +1323,7 @@ class IOSSimulatorReleaseBuildTest(BisectTestCase):
     with tempfile.TemporaryDirectory(prefix='bisect_tmp') as tempdir:
       build.run_revision(download, tempdir, options.args)
     mock_run.assert_has_calls([
+        call(['xcrun', 'simctl', 'boot', '321']),
         call(['xcrun', 'simctl', 'install', '321', ANY]),
         call(['plutil', '-extract', 'CFBundleIdentifier', 'raw', ANY]),
         call(['xcrun', 'simctl', 'launch', '321', 'stdout'])
