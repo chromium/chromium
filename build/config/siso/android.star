@@ -113,6 +113,20 @@ def __step_config(ctx, step_config):
             "canonicalize_dir": True,
             "timeout": "2m",
         },
+        {
+            "name": "android/generate_resource_allowlist",
+            "command_prefix": "python3 ../../tools/resources/generate_resource_allowlist.py",
+            "indirect_inputs": {
+                "includes": ["*.o", "*.a"],
+            },
+            # When remote linking without bytes enabled, .o, .a files don't
+            # exist on the local file system.
+            # This step also should run remortely to avoid downloading them.
+            "remote": config.get(ctx, "remote-link"),
+            "platform_ref": "large",
+            "canonicalize_dir": True,
+            "timeout": "2m",
+        },
     ])
     return step_config
 
