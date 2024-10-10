@@ -2851,6 +2851,9 @@ void ServiceWorkerVersion::OnStoppedInternal(
         FROM_HERE, base::BindOnce(
                        [](base::WeakPtr<ServiceWorkerContextCore> context,
                           const GURL scope, const blink::StorageKey key) {
+                         if (!context) {
+                           return;
+                         }
                          context->wrapper()->WarmUpServiceWorker(
                              scope, key, base::DoNothing());
                        },
