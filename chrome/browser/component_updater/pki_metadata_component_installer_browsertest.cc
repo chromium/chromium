@@ -268,6 +268,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest, TestCTUpdate) {
     log->set_log_id(log1_id_base64);
     log->set_key(log1_spki_base64);
     log->set_purpose(chrome_browser_certificate_transparency::CTLog::PROD);
+    log->set_log_type(chrome_browser_certificate_transparency::CTLog::RFC6962);
     log->mutable_temporal_interval()->mutable_start()->set_seconds(kLogStart);
     log->mutable_temporal_interval()->mutable_end()->set_seconds(kLogEnd);
     chrome_browser_certificate_transparency::CTLog_State* log_state =
@@ -349,6 +350,138 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest, TestCTUpdate) {
   PKIMetadataComponentInstallerService::GetInstance()
       ->ReconfigureAfterNetworkRestart();
   WaitForPKIConfiguration(3);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_ok.GetURL("example.com", "/simple.html")));
+  if (GetParam() == CTEnforcement::kEnabled) {
+    EXPECT_NE(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
+  } else {
+    EXPECT_EQ(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest,
+                       TestAtLeastOneRFC6962LogPolicy) {
+  const std::string kLog1OperatorName = "log operator 1";
+  std::unique_ptr<crypto::ECPrivateKey> log1_private_key =
+      crypto::ECPrivateKey::Create();
+  std::vector<uint8_t> log1_spki;
+  ASSERT_TRUE(log1_private_key->ExportPublicKey(&log1_spki));
+  const std::string log1_spki_base64 = base::Base64Encode(log1_spki);
+  const std::string log1_id =
+      crypto::SHA256HashString(std::string(log1_spki.begin(), log1_spki.end()));
+  const std::string log1_id_base64 = base::Base64Encode(log1_id);
+
+  const std::string kLog2OperatorName = "log operator 2";
+  std::unique_ptr<crypto::ECPrivateKey> log2_private_key =
+      crypto::ECPrivateKey::Create();
+  std::vector<uint8_t> log2_spki;
+  ASSERT_TRUE(log2_private_key->ExportPublicKey(&log2_spki));
+  const std::string log2_spki_base64 = base::Base64Encode(log2_spki);
+  const std::string log2_id =
+      crypto::SHA256HashString(std::string(log2_spki.begin(), log2_spki.end()));
+  const std::string log2_id_base64 = base::Base64Encode(log2_id);
+
+  const int64_t kLogStart =
+      SecondsSinceEpoch(base::Time::Now() - base::Days(1));
+  const int64_t kLogEnd = SecondsSinceEpoch(base::Time::Now() + base::Days(1));
+
+  // Make the test root be interpreted as a known root so that CT will be
+  // required.
+  scoped_refptr<net::X509Certificate> root_cert =
+      net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
+  ASSERT_TRUE(root_cert);
+  net::ScopedTestKnownRoot scoped_known_root(root_cert.get());
+
+  // Start a test server that uses a certificate with SCTs for the above test
+  // logs.
+  net::EmbeddedTestServer https_server_ok(net::EmbeddedTestServer::TYPE_HTTPS);
+  net::EmbeddedTestServer::ServerCertificateConfig server_config;
+  // The same hostname is used for each request, which verifies that the CT log
+  // updates cause verifier caches and socket pool invalidation, so that the
+  // next request for the same host will use the updated CT state.
+  server_config.dns_names = {"example.com"};
+  server_config.embedded_scts.emplace_back(
+      log1_id, bssl::UpRef(log1_private_key->key()), base::Time::Now());
+  server_config.embedded_scts.emplace_back(
+      log2_id, bssl::UpRef(log2_private_key->key()), base::Time::Now());
+  https_server_ok.SetSSLConfig(server_config);
+
+  https_server_ok.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_server_ok.Start());
+
+  // Check that the page is blocked depending on CT enforcement.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_ok.GetURL("example.com", "/simple.html")));
+  content::WebContents* tab = chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(WaitForRenderFrameReady(tab->GetPrimaryMainFrame()));
+  if (GetParam() == CTEnforcement::kEnabled) {
+    EXPECT_NE(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
+  } else {
+    EXPECT_EQ(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
+  }
+
+  // Update with a CT configuration that trusts log1 and log2. Neither of
+  // these logs is RFC6962, so the SCTs will not pass validation.
+  //
+  // Set up a configuration that will enable or disable CT enforcement
+  // depending on the test parameter.
+  chrome_browser_certificate_transparency::CTConfig ct_config;
+  ct_config.set_disable_ct_enforcement(GetParam() ==
+                                       CTEnforcement::kDisabledByProto);
+  ct_config.mutable_log_list()->mutable_timestamp()->set_seconds(
+      SecondsSinceEpoch(base::Time::Now()));
+  {
+    chrome_browser_certificate_transparency::CTLog* log =
+        ct_config.mutable_log_list()->add_logs();
+    log->set_log_id(log1_id_base64);
+    log->set_key(log1_spki_base64);
+    log->set_purpose(chrome_browser_certificate_transparency::CTLog::PROD);
+    log->set_log_type(
+        chrome_browser_certificate_transparency::CTLog::LOG_TYPE_UNSPECIFIED);
+    log->mutable_temporal_interval()->mutable_start()->set_seconds(kLogStart);
+    log->mutable_temporal_interval()->mutable_end()->set_seconds(kLogEnd);
+    chrome_browser_certificate_transparency::CTLog_State* log_state =
+        log->add_state();
+    log_state->set_current_state(
+        chrome_browser_certificate_transparency::CTLog::USABLE);
+    log_state->mutable_state_start()->set_seconds(kLogStart);
+    chrome_browser_certificate_transparency::CTLog_OperatorChange*
+        operator_history = log->add_operator_history();
+    operator_history->set_name(kLog1OperatorName);
+    operator_history->mutable_operator_start()->set_seconds(kLogStart);
+  }
+  {
+    chrome_browser_certificate_transparency::CTLog* log =
+        ct_config.mutable_log_list()->add_logs();
+    log->set_log_id(log2_id_base64);
+    log->set_key(log2_spki_base64);
+    log->set_purpose(chrome_browser_certificate_transparency::CTLog::PROD);
+    log->set_log_type(
+        chrome_browser_certificate_transparency::CTLog::STATIC_CT_API);
+    log->mutable_temporal_interval()->mutable_start()->set_seconds(kLogStart);
+    log->mutable_temporal_interval()->mutable_end()->set_seconds(kLogEnd);
+    chrome_browser_certificate_transparency::CTLog_State* log_state =
+        log->add_state();
+    log_state->set_current_state(
+        chrome_browser_certificate_transparency::CTLog::USABLE);
+    log_state->mutable_state_start()->set_seconds(kLogStart);
+    chrome_browser_certificate_transparency::CTLog_OperatorChange*
+        operator_history = log->add_operator_history();
+    operator_history->set_name(kLog2OperatorName);
+    operator_history->mutable_operator_start()->set_seconds(kLogStart);
+  }
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(PKIMetadataComponentInstallerService::GetInstance()
+                    ->WriteCTDataForTesting(GetComponentDirPath(),
+                                            ct_config.SerializeAsString()));
+  }
+
+  // Should be untrusted since at least one RFC6962 log is required for
+  // diversity.
+  PKIMetadataComponentInstallerService::GetInstance()
+      ->ReconfigureAfterNetworkRestart();
+  WaitForPKIConfiguration(2);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_ok.GetURL("example.com", "/simple.html")));
   if (GetParam() == CTEnforcement::kEnabled) {
@@ -775,6 +908,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentCtAndCrsUpdaterTest,
     log->set_log_id(log1_id_base64);
     log->set_key(log1_spki_base64);
     log->set_purpose(chrome_browser_certificate_transparency::CTLog::PROD);
+    log->set_log_type(chrome_browser_certificate_transparency::CTLog::RFC6962);
     log->mutable_temporal_interval()->mutable_start()->set_seconds(kLogStart);
     log->mutable_temporal_interval()->mutable_end()->set_seconds(kLogEnd);
     chrome_browser_certificate_transparency::CTLog_State* log_state =

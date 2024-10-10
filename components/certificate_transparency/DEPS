@@ -6,4 +6,5 @@ include_rules = [
   "+crypto",
   "+net",
   "+third_party/boringssl/src/pki",
+  "+services/network/public/mojom/ct_log_info.mojom.h",
 ]
