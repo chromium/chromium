@@ -75,13 +75,23 @@ bool ScreenlockReauthPromo::ShouldShowPromo() const {
 }
 
 std::u16string ScreenlockReauthPromo::GetTitle() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return l10n_util::GetStringUTF16(
+      IDS_PASSWORD_MANAGER_UI_SCREENLOCK_REAUTH_PROMO_CARD_TITLE_CHROMEOS);
+#else
   return l10n_util::GetStringUTF16(
       IDS_PASSWORD_MANAGER_UI_SCREENLOCK_REAUTH_PROMO_CARD_TITLE);
+#endif
 }
 
 std::u16string ScreenlockReauthPromo::GetDescription() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return l10n_util::GetStringUTF16(
+      IDS_PASSWORD_MANAGER_UI_SCREENLOCK_REAUTH_PROMO_CARD_DESCRIPTION_CHROMEOS);
+#else
   return l10n_util::GetStringUTF16(
       IDS_PASSWORD_MANAGER_UI_SCREENLOCK_REAUTH_PROMO_CARD_DESCRIPTION);
+#endif
 }
 
 std::u16string ScreenlockReauthPromo::GetActionButtonText() const {

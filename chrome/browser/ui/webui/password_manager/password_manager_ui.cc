@@ -393,8 +393,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       {"passwordManager",
        IDS_PASSWORD_BUBBLES_PASSWORD_MANAGER_LINK_TEXT_SYNCED_TO_ACCOUNT},
       // Header for the page, always "Password Manager".
-      {"passwordManagerDescription",
-       IDS_PASSWORD_MANAGER_UI_DESCRIPTION},
+      {"passwordManagerDescription", IDS_PASSWORD_MANAGER_UI_DESCRIPTION},
       {"passwordManagerPinChanged", IDS_PASSWORD_MANAGER_PIN_CHANGED},
       {"passwordManagerString", IDS_PASSWORD_MANAGER_UI_TITLE},
       // Page title, branded. "Google Password Manager" or "Password Manager"
@@ -424,9 +423,12 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       {"save", IDS_SAVE},
       {"savePasswordsLabel",
        IDS_PASSWORD_MANAGER_UI_SAVE_PASSWORDS_TOGGLE_LABEL},
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
       {"screenlockReauthPromoConfirmation",
        IDS_PASSWORD_MANAGER_UI_SCREENLOCK_REAUTH_PROMO_CARD_CONFIRMATION},
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+      {"screenlockReauthPromoConfirmation",
+       IDS_PASSWORD_MANAGER_UI_SCREENLOCK_REAUTH_PROMO_CARD_CONFIRMATION_CHROMEOS},
 #endif
       {"share", IDS_PASSWORD_MANAGER_UI_SHARE},
       {"shareDialogTitle", IDS_PASSWORD_MANAGER_UI_SHARE_DIALOG_TITLE},
