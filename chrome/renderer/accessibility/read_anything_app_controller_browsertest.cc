@@ -2403,10 +2403,10 @@ TEST_F(ReadAnythingAppControllerTest, Selection_IsCollapsed) {
   update.tree_data.sel_anchor_offset = 3;
   update.tree_data.sel_focus_offset = 3;
   AccessibilityEventReceived({update});
-  EXPECT_EQ(2, StartNodeId());
-  EXPECT_EQ(2, EndNodeId());
-  EXPECT_EQ(3, StartOffset());
-  EXPECT_EQ(3, EndOffset());
+  EXPECT_EQ(ui::kInvalidAXNodeID, StartNodeId());
+  EXPECT_EQ(ui::kInvalidAXNodeID, EndNodeId());
+  EXPECT_EQ(-1, StartOffset());
+  EXPECT_EQ(-1, EndOffset());
   EXPECT_EQ(false, HasSelection());
 }
 

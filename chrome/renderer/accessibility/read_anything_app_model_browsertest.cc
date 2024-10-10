@@ -895,8 +895,9 @@ TEST_F(ReadAnythingAppModelTest, PostProcessSelectionFromAction_DoesNotDraw) {
   ASSERT_FALSE(ProcessSelection());
 }
 
-TEST_F(ReadAnythingAppModelTest,
-       PostProcessSelection_OnFirstOpen_DrawsWithNonEmptySelectionInside) {
+TEST_F(
+    ReadAnythingAppModelTest,
+    PostProcessSelection_OnFirstOpen_DoesNotDrawWithNonEmptySelectionInside) {
   ProcessDisplayNodes({2, 3});
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
@@ -908,11 +909,11 @@ TEST_F(ReadAnythingAppModelTest,
   AccessibilityEventReceived({update});
   SetSelectionFromAction(false);
 
-  ASSERT_TRUE(ProcessSelection());
+  ASSERT_FALSE(ProcessSelection());
 }
 
 TEST_F(ReadAnythingAppModelTest,
-       PostProcessSelection_OnFirstOpen_DrawsWithEmptySelectionInside) {
+       PostProcessSelection_OnFirstOpen_DoesNotDrawWithEmptySelectionInside) {
   ProcessDisplayNodes({2, 3});
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
@@ -924,7 +925,7 @@ TEST_F(ReadAnythingAppModelTest,
   AccessibilityEventReceived({update});
   SetSelectionFromAction(false);
 
-  ASSERT_TRUE(ProcessSelection());
+  ASSERT_FALSE(ProcessSelection());
 }
 
 TEST_F(ReadAnythingAppModelTest,
@@ -944,7 +945,7 @@ TEST_F(ReadAnythingAppModelTest,
 }
 
 TEST_F(ReadAnythingAppModelTest,
-       PostProcessSelection__OnFirstOpen_DrawsWithEmptySelectionOutside) {
+       PostProcessSelection__OnFirstOpen_DoesNotDrawWithEmptySelectionOutside) {
   ProcessDisplayNodes({2, 3});
   ui::AXTreeUpdate update;
   SetUpdateTreeID(&update);
@@ -956,7 +957,7 @@ TEST_F(ReadAnythingAppModelTest,
   AccessibilityEventReceived({update});
   SetSelectionFromAction(false);
 
-  ASSERT_TRUE(ProcessSelection());
+  ASSERT_FALSE(ProcessSelection());
 }
 
 TEST_F(ReadAnythingAppModelTest,

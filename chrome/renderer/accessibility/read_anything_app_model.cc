@@ -128,18 +128,18 @@ bool ReadAnythingAppModel::PostProcessSelection() {
   bool was_empty = is_empty();
   requires_post_process_selection_ = false;
 
-  // If the new selection came from the side panel, we don't need to draw
+  // If the new selection came from the side panel, we never need to draw
   // anything in the side panel, since whatever was being selected had to have
   // been drawn already.
-  // If the previous selection was inside the distilled content, that means we
-  // are currently displaying the distilled content in Read Anything. We may not
-  // need to redraw the distilled content if the user's new selection is inside
-  // the distilled content.
-  // If the previous selection was non-empty and outside the distilled content,
-  // we will always redraw either a) the new selected content or b) the original
-  // distilled content if the new selection is inside that or if the selection
-  // was cleared.
-  bool need_to_draw = !selection_from_action_ && !SelectionInsideDisplayNodes();
+  // If there is no previous selection, we never need to check whether it was
+  // inside the distilled content. In this case, we will only draw if the new
+  // selection is outside the distilled content. See [1] below.
+  // If there was a previous selection outside the distilled content, we always
+  // redraw. This will be either a) the new selected content or b) the original
+  // distilled content if the new selection is inside that or was cleared.
+  bool need_to_draw = !selection_from_action_ && has_selection_ &&
+                      !SelectionInsideDisplayNodes();
+
   // Save the current selection
   UpdateSelection();
 
@@ -150,7 +150,7 @@ bool ReadAnythingAppModel::PostProcessSelection() {
     tree_infos_.at(active_tree_id_)->num_selections++;
   }
 
-  // If the main panel selection contains content outside of the distilled
+  // [1] If the main panel selection contains content outside of the distilled
   // content, we need to find the selected nodes to display instead of the
   // distilled content.
   if (has_selection_ && !SelectionInsideDisplayNodes()) {
@@ -168,6 +168,10 @@ void ReadAnythingAppModel::UpdateSelection() {
   has_selection_ = selection.anchor_object_id != ui::kInvalidAXNodeID &&
                    selection.focus_object_id != ui::kInvalidAXNodeID &&
                    !selection.IsCollapsed();
+
+  if (!has_selection_) {
+    return;
+  }
 
   // Identify the start and end node ids and offsets. The start node comes
   // earlier than end node in the tree order. We need to send the selection to
