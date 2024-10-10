@@ -36,17 +36,10 @@ public class SharedImageTilesCoordinator {
 
     // The maximum amount of tiles that can show, including icon tile and count tile.
     private static final int MAX_TILES_UI_LIMIT = 3;
-    // The maximum number appearing on the count number tile.
-    private static final int MAX_COUNT_TILE_NUMBER = 99;
-    // The maximum single digit number for the count number tile.
-    private static final int MAX_SINGLE_DIGIT_NUMBER = 9;
 
-    private final SharedImageTilesMediator mMediator;
     private final Context mContext;
     private final PropertyModel mModel;
     private final SharedImageTilesView mView;
-    private final @SharedImageTilesType int mType;
-    private final @SharedImageTilesColor int mColor;
     private final @NonNull DataSharingService mDataSharingService;
     private @NonNull String mCollaborationId;
     private int mAvailableMemberCount;
@@ -70,8 +63,6 @@ public class SharedImageTilesCoordinator {
                         .with(SharedImageTilesProperties.COLOR_THEME, color)
                         .build();
         mContext = context;
-        mType = type;
-        mColor = color;
         mDataSharingService = dataSharingService;
 
         mView =
@@ -79,7 +70,7 @@ public class SharedImageTilesCoordinator {
                         LayoutInflater.from(mContext).inflate(R.layout.shared_image_tiles, null);
 
         PropertyModelChangeProcessor.create(mModel, mView, SharedImageTilesViewBinder::bind);
-        mMediator = new SharedImageTilesMediator(mModel);
+        new SharedImageTilesMediator(mModel);
     }
 
     /** Cleans up any resources or observers this class used. */

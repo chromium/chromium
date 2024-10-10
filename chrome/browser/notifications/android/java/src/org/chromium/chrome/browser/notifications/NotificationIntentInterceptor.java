@@ -73,18 +73,18 @@ public class NotificationIntentInterceptor {
     public static final class Receiver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
-            processIntent(context, intent);
+            processIntent(intent);
         }
     }
 
     public static final class ServiceImpl extends NotificationIntentInterceptorService.Impl {
         @Override
         protected void onHandleIntent(Intent intent) {
-            processIntent(ContextUtils.getApplicationContext(), intent);
+            processIntent(intent);
         }
     }
 
-    private static void processIntent(Context context, Intent intent) {
+    private static void processIntent(Intent intent) {
         @IntentType int intentType = intent.getIntExtra(EXTRA_INTENT_TYPE, IntentType.UNKNOWN);
         @NotificationUmaTracker.SystemNotificationType
         int notificationType =
@@ -124,7 +124,7 @@ public class NotificationIntentInterceptor {
         @Override
         protected void onCreate(@Nullable Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            processIntent(getApplicationContext(), getIntent());
+            processIntent(getIntent());
             finish();
         }
     }

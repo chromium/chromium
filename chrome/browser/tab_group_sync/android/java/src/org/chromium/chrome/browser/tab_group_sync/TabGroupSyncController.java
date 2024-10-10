@@ -127,10 +127,7 @@ public final class TabGroupSyncController implements TabGroupUiActionHandler {
 
         mLocalMutationHelper =
                 new LocalTabGroupMutationHelper(
-                        mTabGroupModelFilter,
-                        mTabGroupSyncService,
-                        mTabCreationDelegate,
-                        mNavigationTracker);
+                        mTabGroupModelFilter, mTabGroupSyncService, mTabCreationDelegate);
         mRemoteMutationHelper =
                 new RemoteTabGroupMutationHelper(mTabGroupModelFilter, mTabGroupSyncService);
 

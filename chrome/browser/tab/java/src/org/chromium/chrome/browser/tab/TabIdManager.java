@@ -4,54 +4,32 @@
 
 package org.chromium.chrome.browser.tab;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-
-import androidx.annotation.VisibleForTesting;
-
-import org.chromium.base.ContextUtils;
-import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Maintains a monotonically increasing ID that is used for uniquely identifying {@link Tab}s.  This
+ * Maintains a monotonically increasing ID that is used for uniquely identifying {@link Tab}s. This
  * class is responsible for ensuring that Tabs created in the same process, across every TabModel,
- * are allocated a unique ID.  Note that only the browser process should be generating Tab IDs to
+ * are allocated a unique ID. Note that only the browser process should be generating Tab IDs to
  * prevent collisions.
  *
- * Calling {@link TabIdManager#incrementIdCounterTo(int)} will ensure new {@link Tab}s get IDs
- * greater than or equal to the parameter passed to that method.  This should be used when doing
- * things like loading persisted {@link Tab}s from disk on process start to ensure all new
- * {@link Tab}s don't have id collision.
+ * <p>Calling {@link TabIdManager#incrementIdCounterTo(int)} will ensure new {@link Tab}s get IDs
+ * greater than or equal to the parameter passed to that method. This should be used when doing
+ * things like loading persisted {@link Tab}s from disk on process start to ensure all new {@link
+ * Tab}s don't have id collision.
  *
- * TODO(dfalcantara): Tab ID generation prior to M45 is haphazard and dependent on which Activity is
- *                    started first.  Unify the ways the maximum Tab ID is set (crbug.com/502384).
+ * <p>TODO(dfalcantara): Tab ID generation prior to M45 is haphazard and dependent on which Activity
+ * is started first. Unify the ways the maximum Tab ID is set (crbug.com/502384).
  */
 public class TabIdManager {
-    private static final Object INSTANCE_LOCK = new Object();
+    private static TabIdManager sInstance = new TabIdManager();
 
-    @SuppressLint("StaticFieldLeak")
-    private static TabIdManager sInstance;
-
-    private final Context mContext;
     private final AtomicInteger mIdCounter = new AtomicInteger();
-
-    private SharedPreferencesManager mPreferences;
 
     /** Returns the Singleton instance of the TabIdManager. */
     public static TabIdManager getInstance() {
-        return getInstance(ContextUtils.getApplicationContext());
-    }
-
-    /** Returns the Singleton instance of the TabIdManager. */
-    @VisibleForTesting
-    static TabIdManager getInstance(Context context) {
-        synchronized (INSTANCE_LOCK) {
-            if (sInstance == null) sInstance = new TabIdManager(context);
-        }
         return sInstance;
     }
 
@@ -83,20 +61,20 @@ public class TabIdManager {
         // It's possible idCounter has been incremented between the get and the add but that's OK --
         // in the worst case mIdCounter will just be overly incremented.
         mIdCounter.addAndGet(diff);
-        mPreferences.writeInt(ChromePreferenceKeys.TAB_ID_MANAGER_NEXT_ID, mIdCounter.get());
+        ChromeSharedPreferences.getInstance()
+                .writeInt(ChromePreferenceKeys.TAB_ID_MANAGER_NEXT_ID, mIdCounter.get());
     }
 
-    private TabIdManager(Context context) {
-        mContext = context;
-
+    private TabIdManager() {
         // Read the shared preference.  This has to be done on the critical path to ensure that the
         // myriad Activities that serve as entries into Chrome are all synchronized on the correct
         // maximum Tab ID.
-        mPreferences = ChromeSharedPreferences.getInstance();
-        mIdCounter.set(mPreferences.readInt(ChromePreferenceKeys.TAB_ID_MANAGER_NEXT_ID));
+        mIdCounter.set(
+                ChromeSharedPreferences.getInstance()
+                        .readInt(ChromePreferenceKeys.TAB_ID_MANAGER_NEXT_ID));
     }
 
     public static void resetInstanceForTesting() {
-        sInstance = null;
+        sInstance = new TabIdManager();
     }
 }

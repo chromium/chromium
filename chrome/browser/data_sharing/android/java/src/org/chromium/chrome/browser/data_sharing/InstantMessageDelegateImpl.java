@@ -95,9 +95,9 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
 
                 @UserAction int userAction = message.action;
                 if (userAction == UserAction.TAB_REMOVED) {
-                    showTabRemoved(message, context, messageDispatcher, tabGroupModelFilter);
+                    showTabRemoved(message, context, messageDispatcher);
                 } else if (userAction == UserAction.TAB_NAVIGATED) {
-                    showTabChange(message, context, messageDispatcher, tabGroupModelFilter);
+                    showTabChange(message, context, messageDispatcher);
                 } else if (userAction == UserAction.COLLABORATION_USER_JOINED) {
                     showCollaborationUserJoined(message, context, messageDispatcher);
                 } else if (userAction == UserAction.COLLABORATION_REMOVED) {
@@ -142,33 +142,30 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
         return message.attribution.triggeringUser.givenName;
     }
 
-    private String tabTitleFromMessage(InstantMessage message) {
+    private String tabTitleFromMessage() {
         // TODO(https://crbug.com/369163940): Once the message stores this, we can return it.
         return "ph1";
     }
 
-    private String tabGroupTitleFromMessage(InstantMessage message) {
+    private String tabGroupTitleFromMessage() {
         // TODO(https://crbug.com/369163940): Once the message stores this, we can return it.
         return "ph2";
     }
 
-    private Drawable iconFromMessage(InstantMessage message, Context context) {
+    private Drawable iconFromMessage(Context context) {
         // TODO(https://crbug.com/369163940): Fetch this, potentially async.
         return ContextCompat.getDrawable(context, R.drawable.ic_features_24dp);
     }
 
     private void showTabRemoved(
-            InstantMessage message,
-            Context context,
-            MessageDispatcher messageDispatcher,
-            TabGroupModelFilter tabGroupModelFilter) {
+            InstantMessage message, Context context, MessageDispatcher messageDispatcher) {
         String givenName = givenNameFromMessage(message);
-        String tabTitle = tabTitleFromMessage(message);
+        String tabTitle = tabTitleFromMessage();
         String title =
                 context.getString(
                         R.string.data_sharing_browser_message_removed_tab, givenName, tabTitle);
         String buttonText = context.getString(R.string.data_sharing_browser_message_reopen);
-        Drawable icon = iconFromMessage(message, context);
+        Drawable icon = iconFromMessage(context);
         // TODO(https://crbug.com/369163940): Once the message has the url, we can restore.
         showGenericMessage(
                 messageDispatcher,
@@ -180,17 +177,14 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
     }
 
     private void showTabChange(
-            InstantMessage message,
-            Context context,
-            MessageDispatcher messageDispatcher,
-            TabGroupModelFilter tabGroupModelFilter) {
+            InstantMessage message, Context context, MessageDispatcher messageDispatcher) {
         String givenName = givenNameFromMessage(message);
-        String tabTitle = tabTitleFromMessage(message);
+        String tabTitle = tabTitleFromMessage();
         String title =
                 context.getString(
                         R.string.data_sharing_browser_message_changed_tab, givenName, tabTitle);
         String buttonText = context.getString(R.string.data_sharing_browser_message_reopen);
-        Drawable icon = iconFromMessage(message, context);
+        Drawable icon = iconFromMessage(context);
         // TODO(https://crbug.com/369163940): Once the message has the url, we can restore.
         showGenericMessage(
                 messageDispatcher,
@@ -204,14 +198,14 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
     private void showCollaborationUserJoined(
             InstantMessage message, Context context, MessageDispatcher messageDispatcher) {
         String givenName = givenNameFromMessage(message);
-        String tabGroupTitle = tabGroupTitleFromMessage(message);
+        String tabGroupTitle = tabGroupTitleFromMessage();
         String title =
                 context.getString(
                         R.string.data_sharing_browser_message_joined_tab_group,
                         givenName,
                         tabGroupTitle);
         String buttonText = context.getString(R.string.data_sharing_browser_message_manage);
-        Drawable icon = iconFromMessage(message, context);
+        Drawable icon = iconFromMessage(context);
         // TODO(https://crbug.com/369163940): Action should open manage sheet.
         showGenericMessage(
                 messageDispatcher,
@@ -224,7 +218,7 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
 
     private void showCollaborationRemoved(
             InstantMessage message, Context context, MessageDispatcher messageDispatcher) {
-        String tabGroupTitle = tabGroupTitleFromMessage(message);
+        String tabGroupTitle = tabGroupTitleFromMessage();
         String title =
                 context.getString(
                         R.string.data_sharing_browser_message_not_available, tabGroupTitle);

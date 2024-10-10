@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordi
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.BaseButtonDataProvider;
-import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
@@ -39,10 +38,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 public class PriceInsightsButtonController extends BaseButtonDataProvider {
 
     private final Context mContext;
-    private final SnackbarManager mSnackbarManager;
     private final BottomSheetController mBottomSheetController;
     private final BottomSheetObserver mBottomSheetObserver;
-    private final ButtonSpec mButtonSpec;
     private final Supplier<ShoppingService> mShoppingServiceSupplier;
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final Supplier<Tab> mTabSupplier;
@@ -78,8 +75,6 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
                 /* showHoverHighlight= */ false);
 
         mContext = context;
-        mButtonSpec = mButtonData.getButtonSpec();
-        mSnackbarManager = snackbarManager;
         mBottomSheetController = bottomSheetController;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mShoppingServiceSupplier = shoppingServiceSupplier;

@@ -32,7 +32,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.JavaExceptionReporter;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.ValueChangedCallback;
@@ -101,7 +100,6 @@ import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomiza
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingUtilities;
-import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -329,7 +327,6 @@ public class ToolbarManager
     private boolean mBackGestureInProgress;
     private boolean mStartNavDuringOngoingGesture;
     private WindowAndroid.ProgressBarConfig.Provider mProgressBarConfigProvider;
-    private ToolbarPositionController mToolbarPositionController;
 
     private static class TabObscuringCallback implements Callback<Boolean> {
         private final TabObscuringHandler mTabObscuringHandler;
@@ -846,7 +843,6 @@ public class ToolbarManager
                             mActivity.findViewById(R.id.location_bar),
                             toolbarLayout,
                             profileSupplier,
-                            PrivacyPreferencesManagerImpl.getInstance(),
                             mLocationBarModel,
                             mActionModeController.getActionModeCallback(),
                             new WindowDelegate(mActivity.getWindow()),
@@ -1317,20 +1313,7 @@ public class ToolbarManager
                 };
         mWindowAndroid.setProgressBarConfigProvider(mProgressBarConfigProvider);
 
-        initializeToolbarPositionController();
-
         TraceEvent.end("ToolbarManager.ToolbarManager");
-    }
-
-    private void initializeToolbarPositionController() {
-        if (ToolbarPositionController.isToolbarPositionCustomizationEnabled(
-                mActivity, mIsCustomTab)) {
-            mToolbarPositionController =
-                    new ToolbarPositionController(
-                            mBrowserControlsSizer,
-                            mBottomControlsStacker,
-                            ContextUtils.getAppSharedPreferences());
-        }
     }
 
     // TODO(b/315204103): add tests

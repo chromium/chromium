@@ -77,7 +77,6 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     private final ViewFlipper mViewFlipper;
     private final RecyclerView mAccountListView;
     private final View mSelectedAccountView;
-    private final View mSigninInProgressView;
     private final ButtonCompat mDismissButton;
     private final Space mDismissButtonGoneMarginSpace;
     private @Nullable @ViewState Integer mCurrentViewState;
@@ -111,10 +110,6 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
                 mViewFlipper
                         .getChildAt(ViewState.COLLAPSED_ACCOUNT_LIST)
                         .findViewById(R.id.account_picker_selected_account);
-        mSigninInProgressView =
-                mViewFlipper
-                        .getChildAt(ViewState.SIGNIN_IN_PROGRESS)
-                        .findViewById(R.id.account_picker_state_signin_in_progress);
         mDismissButton =
                 mViewFlipper
                         .getChildAt(ViewState.COLLAPSED_ACCOUNT_LIST)

@@ -61,7 +61,6 @@ public class AutofillAddress extends EditableOption {
     private AutofillProfile mProfile;
     @Nullable private String mShippingLabelWithCountry;
     @Nullable private String mShippingLabelWithoutCountry;
-    @Nullable private String mBillingLabel;
 
     /**
      * Builds the autofill address.
@@ -113,7 +112,6 @@ public class AutofillAddress extends EditableOption {
         // labels are recomputed next time they are needed.
         mShippingLabelWithCountry = null;
         mShippingLabelWithoutCountry = null;
-        mBillingLabel = null;
 
         mProfile = profile;
         updateIdentifierAndLabels(

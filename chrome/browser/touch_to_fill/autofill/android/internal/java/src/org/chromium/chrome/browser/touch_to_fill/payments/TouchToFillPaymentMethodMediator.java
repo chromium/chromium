@@ -32,7 +32,6 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.CARD_BENEFITS_TERMS_AVAILABLE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 
-import android.content.Context;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.IntDef;
@@ -134,8 +133,6 @@ class TouchToFillPaymentMethodMediator {
     static final String TOUCH_TO_FILL_NUMBER_OF_IBANS_SHOWN =
             "Autofill.TouchToFill.Iban.NumberOfIbansShown";
 
-    // TODO(crbug.com/40246126): Remove the Context from the Mediator.
-    private Context mContext;
     private TouchToFillPaymentMethodComponent.Delegate mDelegate;
     private PropertyModel mModel;
     private List<CreditCard> mCards;
@@ -145,12 +142,8 @@ class TouchToFillPaymentMethodMediator {
     private InputProtector mInputProtector = new InputProtector();
 
     void initialize(
-            Context context,
-            Delegate delegate,
-            PropertyModel model,
-            BottomSheetFocusHelper bottomSheetFocusHelper) {
+            Delegate delegate, PropertyModel model, BottomSheetFocusHelper bottomSheetFocusHelper) {
         assert delegate != null;
-        mContext = context;
         mDelegate = delegate;
         mModel = model;
         mBottomSheetFocusHelper = bottomSheetFocusHelper;

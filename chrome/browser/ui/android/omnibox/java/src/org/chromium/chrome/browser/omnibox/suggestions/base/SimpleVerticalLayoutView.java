@@ -37,7 +37,6 @@ public class SimpleVerticalLayoutView extends ViewGroup {
         // Apply measured dimensions to all children.
         for (int index = 0; index < getChildCount(); ++index) {
             View v = getChildAt(index);
-            LayoutParams p = v.getLayoutParams();
             v.measure(
                     MeasureSpec.makeMeasureSpec(viewWidth, MeasureSpec.EXACTLY),
                     MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));

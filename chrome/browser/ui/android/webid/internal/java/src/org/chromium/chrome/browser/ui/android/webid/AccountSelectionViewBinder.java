@@ -686,9 +686,7 @@ class AccountSelectionViewBinder {
             String subtitle =
                     computeHeaderSubtitle(
                             resources,
-                            headerType,
                             model.get(HeaderProperties.RP_FOR_DISPLAY),
-                            model.get(HeaderProperties.IDP_FOR_DISPLAY),
                             model.get(HeaderProperties.RP_MODE),
                             model.get(HeaderProperties.IS_MULTIPLE_ACCOUNT_CHOOSER));
             if (!subtitle.isEmpty()) {
@@ -866,9 +864,7 @@ class AccountSelectionViewBinder {
 
     private static String computeHeaderSubtitle(
             Resources resources,
-            HeaderProperties.HeaderType type,
             String rpUrl,
-            String idpUrl,
             @RpMode.EnumType int rpMode,
             Boolean isMultipleAccountChooser) {
         if (rpMode == RpMode.PASSIVE) return "";

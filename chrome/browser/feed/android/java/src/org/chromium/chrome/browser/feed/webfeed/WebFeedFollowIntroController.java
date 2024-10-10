@@ -47,6 +47,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * Controls when and how the Web Feed follow intro is shown.
  *
+ * <pre>
  * Main requirements for the presentation of the intro (all must be true):
  *  1. The URL is recommended.
  *  2. This site was visited enough times in day-boolean visits and in total visits.
@@ -57,16 +58,13 @@ import java.util.concurrent.TimeUnit;
  *
  * If the intro debug mode pref is enabled then only 1. is checked for.
  *
- * Note: The feature engagement tracker check happens only later, and it includes checking for
- * a weekly limit.
+ * Note: The feature engagement tracker check happens only later, and it includes checking for a
+ * weekly limit.
+ * </pre>
  */
 public class WebFeedFollowIntroController {
     private static final String TAG = "WFFollowIntroCtrl";
 
-    // Intro style control
-    private static final String PARAM_INTRO_STYLE = "intro_style";
-    private static final String INTRO_STYLE_IPH = "IPH";
-    private static final String INTRO_STYLE_ACCELERATOR = "accelerator";
     // In-page time delay to show the intro.
     private static final int DEFAULT_WAIT_TIME_MILLIS = 3 * 1000;
     // Visit history requirements.
@@ -396,7 +394,6 @@ public class WebFeedFollowIntroController {
         private static class Request {
             public Tab tab;
             public GURL url;
-            public long fetchStartTime;
             public Callback<RecommendedWebFeedInfo> callback;
         }
 
@@ -418,7 +415,6 @@ public class WebFeedFollowIntroController {
             request.tab = tab;
             request.url = url;
             request.callback = callback;
-            request.fetchStartTime = System.nanoTime();
 
             PostTask.postDelayedTask(
                     TaskTraits.UI_DEFAULT,

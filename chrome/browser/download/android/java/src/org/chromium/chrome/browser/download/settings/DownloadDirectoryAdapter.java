@@ -243,7 +243,6 @@ public class DownloadDirectoryAdapter extends ArrayAdapter<Object> {
 
         // If there is a suggested option, set it as default directory and return its position.
         if (suggestedId != NO_SELECTED_ITEM_ID) {
-            DirectoryOption suggestedOption = (DirectoryOption) getItem(suggestedId);
             mSelectedPosition = suggestedId;
             return suggestedId;
         }

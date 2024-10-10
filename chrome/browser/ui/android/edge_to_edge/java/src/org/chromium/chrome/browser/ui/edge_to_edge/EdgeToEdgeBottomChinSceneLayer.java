@@ -44,8 +44,6 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
     /** Attributes for the divider. */
     private int mDividerColor;
 
-    private boolean mIsDividerVisible;
-
     /** Build a bottom chin scene layer. */
     public EdgeToEdgeBottomChinSceneLayer() {}
 

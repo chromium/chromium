@@ -9,7 +9,6 @@ import androidx.annotation.NonNull;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
-import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -19,8 +18,6 @@ public class LoadProgressCoordinator {
     private final LoadProgressMediator mMediator;
     private final ToolbarProgressBar mProgressBarView;
     private final LoadProgressViewBinder mLoadProgressViewBinder;
-    private final PropertyModelChangeProcessor<PropertyModel, ToolbarProgressBar, PropertyKey>
-            mPropertyModelChangeProcessor;
 
     /**
      * @param tabSupplier An observable supplier of the current {@link Tab}.
@@ -34,9 +31,8 @@ public class LoadProgressCoordinator {
         mMediator = new LoadProgressMediator(tabSupplier, mModel);
         mLoadProgressViewBinder = new LoadProgressViewBinder();
 
-        mPropertyModelChangeProcessor =
-                PropertyModelChangeProcessor.create(
-                        mModel, mProgressBarView, mLoadProgressViewBinder::bind);
+        PropertyModelChangeProcessor.create(
+                mModel, mProgressBarView, mLoadProgressViewBinder::bind);
     }
 
     /** Simulates progressbar being filled over a short time. */

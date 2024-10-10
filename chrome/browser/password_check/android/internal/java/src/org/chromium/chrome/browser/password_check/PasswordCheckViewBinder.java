@@ -535,16 +535,12 @@ class PasswordCheckViewBinder {
         // TODO(crbug.com/40710602): Set default values for header properties.
         if (status == PasswordCheckUIStatus.IDLE && compromisedCredentialsCount == null) return;
         TextView statusSubtitle = view.findViewById(R.id.check_status_subtitle);
-        statusSubtitle.setText(
-                getSubtitleText(view, status, showStatusSubtitle, compromisedCredentialsCount));
+        statusSubtitle.setText(getSubtitleText(view, status, compromisedCredentialsCount));
         statusSubtitle.setVisibility(showStatusSubtitle ? View.VISIBLE : View.GONE);
     }
 
     private static String getSubtitleText(
-            View view,
-            @PasswordCheckUIStatus int status,
-            boolean showStatusSubtitle,
-            Integer compromisedCredentialsCount) {
+            View view, @PasswordCheckUIStatus int status, Integer compromisedCredentialsCount) {
         switch (status) {
             case PasswordCheckUIStatus.IDLE:
                 assert compromisedCredentialsCount != null;

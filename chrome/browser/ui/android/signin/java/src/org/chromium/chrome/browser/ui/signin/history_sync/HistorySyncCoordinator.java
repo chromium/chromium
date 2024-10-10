@@ -31,7 +31,6 @@ public class HistorySyncCoordinator {
     }
 
     private final Activity mActivity;
-    private final HistorySyncDelegate mDelegate;
     private final Profile mProfile;
     private @Nullable HistorySyncView mView;
     private final HistorySyncMediator mMediator;
@@ -61,7 +60,6 @@ public class HistorySyncCoordinator {
             boolean shouldSignOutOnDecline,
             @Nullable HistorySyncView view) {
         mActivity = activity;
-        mDelegate = delegate;
         mProfile = profile;
         mView = view;
 

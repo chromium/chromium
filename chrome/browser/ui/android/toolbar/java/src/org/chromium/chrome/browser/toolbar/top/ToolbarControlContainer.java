@@ -415,7 +415,6 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 this::onCompositorInMotionChange;
 
         @Nullable private Toolbar mToolbar;
-        private int mTabStripHeightPx;
         @Nullable private ConstraintsChecker mConstraintsObserver;
         @Nullable private Supplier<Tab> mTabSupplier;
         @Nullable private ObservableSupplier<Boolean> mCompositorInMotionSupplier;
@@ -464,7 +463,6 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 FullscreenManager fullscreenManager) {
             assert mToolbar == null;
             mToolbar = toolbar;
-            mTabStripHeightPx = mToolbar.getTabStripHeight();
 
             // These dependencies only matter when ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES is
             // enabled. Unfortunately this method is often called before native is initialized,

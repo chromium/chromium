@@ -276,14 +276,12 @@ public class WebApkUmaRecorder {
         final String sysStorageThresholdMaxBytes = "sys_storage_threshold_max_bytes";
 
         ContentResolver resolver = ContextUtils.getApplicationContext().getContentResolver();
-        int minFreePercent = 0;
-        long minFreeBytes = 0;
 
         // Retrieve platform-appropriate values first
-        minFreePercent =
+        int minFreePercent =
                 Settings.Global.getInt(
                         resolver, sysStorageThresholdPercentage, defaultThresholdPercentage);
-        minFreeBytes =
+        long minFreeBytes =
                 Settings.Global.getLong(
                         resolver, sysStorageThresholdMaxBytes, defaultThresholdMaxBytes);
 

@@ -76,8 +76,6 @@ public class PasswordManagerHelper {
         int GET_PASSWORD_CHECKUP_INTENT = 2;
     }
 
-    private static final String UPM_VARIATION_FEATURE_PARAM = "stage";
-
     // Loading dialog is dismissed with this delay after sending an intent to prevent
     // the old activity from showing up before the new one is shown.
     private static final long LOADING_DIALOG_DISMISS_DELAY_MS = 300L;

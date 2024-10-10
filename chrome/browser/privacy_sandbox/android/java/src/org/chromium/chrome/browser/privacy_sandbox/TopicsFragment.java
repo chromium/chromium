@@ -46,7 +46,6 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
 
     private ChromeSwitchPreference mTopicsTogglePreference;
     private TextMessagePreference mTopicsExplanationPreference;
-    private PreferenceCategoryWithClickableSummary mTopicsHeadingPreference;
     private PreferenceCategory mCurrentTopicsCategory;
     private TextMessagePreference mEmptyTopicsPreference;
     private TextMessagePreference mDisabledTopicsPreference;
@@ -79,7 +78,6 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
 
         mTopicsTogglePreference = findPreference(TOPICS_TOGGLE_PREFERENCE);
         mTopicsExplanationPreference = findPreference(TOPICS_EXPLANATION_PREFERENCE);
-        mTopicsHeadingPreference = findPreference(TOPICS_HEADING_PREFERENCE);
         mCurrentTopicsCategory = findPreference(CURRENT_TOPICS_PREFERENCE);
         mEmptyTopicsPreference = findPreference(EMPTY_TOPICS_PREFERENCE);
         mDisabledTopicsPreference = findPreference(DISABLED_TOPICS_PREFERENCE);

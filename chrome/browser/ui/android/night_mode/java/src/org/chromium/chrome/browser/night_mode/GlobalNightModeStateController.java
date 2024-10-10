@@ -16,8 +16,6 @@ import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
-import org.chromium.base.shared_preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
 /** Maintains and provides the night mode state for the entire application. */
 class GlobalNightModeStateController
@@ -26,7 +24,6 @@ class GlobalNightModeStateController
                 ApplicationStatus.ApplicationStateListener {
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private final SystemNightModeMonitor mSystemNightModeMonitor;
-    private final SharedPreferencesManager mSharedPreferencesManager;
     private final PowerSavingModeMonitor mPowerSaveModeMonitor;
 
     private final Runnable mPowerSaveModeObserver = this::updateNightMode;
@@ -43,21 +40,18 @@ class GlobalNightModeStateController
     private boolean mIsStarted;
 
     /**
-     * Should not directly instantiate unless for testing purpose. Use
-     * {@link GlobalNightModeStateProviderHolder#getInstance()} instead.
+     * Should not directly instantiate unless for testing purpose. Use {@link
+     * GlobalNightModeStateProviderHolder#getInstance()} instead.
+     *
      * @param systemNightModeMonitor The {@link SystemNightModeMonitor} that maintains the system
-     *                               night mode state.
+     *     night mode state.
      * @param powerSaveModeMonitor The {@link PowerSavingModeMonitor} that maintains the system
-     *                              power saving setting.
-     * @param sharedPreferencesManager The {@link ChromeSharedPreferences} that maintains shared
-     *                                preferences.
+     *     power saving setting.
      */
     GlobalNightModeStateController(
             @NonNull SystemNightModeMonitor systemNightModeMonitor,
-            @NonNull PowerSavingModeMonitor powerSaveModeMonitor,
-            @NonNull SharedPreferencesManager sharedPreferencesManager) {
+            @NonNull PowerSavingModeMonitor powerSaveModeMonitor) {
         mSystemNightModeMonitor = systemNightModeMonitor;
-        mSharedPreferencesManager = sharedPreferencesManager;
         mPowerSaveModeMonitor = powerSaveModeMonitor;
 
         mPreferenceListener =

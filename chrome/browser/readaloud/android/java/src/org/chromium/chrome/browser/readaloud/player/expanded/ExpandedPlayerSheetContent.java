@@ -50,8 +50,6 @@ public class ExpandedPlayerSheetContent implements BottomSheetContent {
     private OptionsMenuSheetContent mOptionsMenu;
     private SpeedMenuSheetContent mSpeedMenu;
     private TextView mSpeedButton;
-    private boolean mHighlightingEnabled;
-    private boolean mHighlightingSupported;
 
     private LinearLayout mNormalLayout;
     private LinearLayout mErrorLayout;

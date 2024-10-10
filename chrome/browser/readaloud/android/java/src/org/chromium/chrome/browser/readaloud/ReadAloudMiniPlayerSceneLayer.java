@@ -37,7 +37,6 @@ public class ReadAloudMiniPlayerSceneLayer extends SceneOverlayLayer implements 
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     private boolean mIsVisible;
-    private int mWidth;
     private int mHeight;
     private @ColorInt int mColorArgb;
 
@@ -67,7 +66,6 @@ public class ReadAloudMiniPlayerSceneLayer extends SceneOverlayLayer implements 
      * @param height Height in pixels.
      */
     public void setSize(int width, int height) {
-        mWidth = width;
         mHeight = height;
     }
 

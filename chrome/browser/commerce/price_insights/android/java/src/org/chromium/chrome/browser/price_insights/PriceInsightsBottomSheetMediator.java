@@ -46,7 +46,6 @@ import org.chromium.url.GURL;
 public class PriceInsightsBottomSheetMediator {
     private final Context mContext;
     private final Tab mTab;
-    private final ShoppingService mShoppingService;
     private final TabModelSelector mTabModelSelector;
     private final PropertyModel mPropertyModel;
     private final PriceInsightsDelegate mPriceInsightsDelegate;
@@ -66,7 +65,6 @@ public class PriceInsightsBottomSheetMediator {
         mContext = context;
         mTab = tab;
         mTabModelSelector = tabModelSelector;
-        mShoppingService = shoppingService;
         mPriceInsightsDelegate = priceInsightsDelegate;
         mPropertyModel = propertyModel;
 

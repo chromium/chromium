@@ -58,7 +58,6 @@ public class ScreenshotMonitorImpl extends ScreenshotMonitor {
             if (uri == null) return;
 
             Log.d(TAG, "Detected change to the media database " + uri);
-            String uriPath = uri.toString();
             // Validate the uri before processing it.
             if (uri == null || !uri.toString().startsWith(Media.EXTERNAL_CONTENT_URI.toString())) {
                 Log.w(TAG, "uri: %s is not valid. Returning without processing screenshot", uri);

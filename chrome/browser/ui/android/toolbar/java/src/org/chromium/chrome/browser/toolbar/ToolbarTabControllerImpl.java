@@ -128,7 +128,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
             RecordUserAction.record("Navigation.Home.NotChromeInternal");
         }
 
-        recordHomeButtonUseForIPH(homePageUrl);
+        recordHomeButtonUseForIPH();
         currentTab.loadUrl(new LoadUrlParams(homePageUrl, PageTransition.HOME_PAGE));
     }
 
@@ -151,7 +151,7 @@ public class ToolbarTabControllerImpl implements ToolbarTabController {
     }
 
     /** Record that homepage button was used for IPH reasons */
-    private void recordHomeButtonUseForIPH(String homepageUrl) {
+    private void recordHomeButtonUseForIPH() {
         Tab tab = mTabSupplier.get();
         Tracker tracker = mTrackerSupplier.get();
         if (tab == null || tracker == null) return;

@@ -56,7 +56,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxActionDelegateImpl;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
-import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -309,7 +308,6 @@ public class SearchActivity extends AsyncInitializationActivity
                         mSearchBox,
                         anchorView,
                         mProfileSupplier,
-                        PrivacyPreferencesManagerImpl.getInstance(),
                         mSearchBoxDataProvider,
                         null,
                         new WindowDelegate(getWindow()),

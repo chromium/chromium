@@ -820,7 +820,7 @@ class AutocompleteMediator
      * @return The url to navigate to.
      */
     private @NonNull GURL updateSuggestionUrlIfNeeded(
-            @NonNull AutocompleteMatch suggestion, int matchIndex, @NonNull GURL url) {
+            @NonNull AutocompleteMatch suggestion, @NonNull GURL url) {
         if (mAutocomplete.isEmpty()) return url;
         // TODO(crbug.com/40279214): this should exclude TILE variants when horizontal render group
         // is
@@ -997,7 +997,7 @@ class AutocompleteMediator
 
             mOmniboxFocusResultedInNavigation = true;
             if (shouldUpdateSuggestionUrl) {
-                url = updateSuggestionUrlIfNeeded(suggestion, matchIndex, url);
+                url = updateSuggestionUrlIfNeeded(suggestion, url);
             }
 
             // loadUrl modifies AutocompleteController's state clearing the native

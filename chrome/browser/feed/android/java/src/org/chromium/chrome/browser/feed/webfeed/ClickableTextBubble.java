@@ -20,40 +20,41 @@ import org.chromium.ui.widget.RectProvider;
  * UI component that handles showing a clickable text callout bubble.
  *
  * <p>This has special styling specific to clickable text bubbles:
+ *
  * <ul>
- *     <li>No arrow
- *     <li>Rounder corners
- *     <li>Smaller padding
- *     <li>Optional loading UI
+ *   <li>No arrow
+ *   <li>Rounder corners
+ *   <li>Smaller padding
+ *   <li>Optional loading UI
  * </ul>
  *
  * <p>A loading UI using {@link LoadingView} can be shown using {@link #showLoadingUI(int)}. This
- * should be used if there is a possibility of a response time >500ms, after which the loading
- * view will show. To hide the LoadingView and dismiss the bubble, call
- * {@link #hideLoadingUI(LoadingView.Observer)}, which takes in a {@link LoadingView.Observer},
- * for when further actions should be taken after the UI is hidden (such as showing another UI
- * element). Example below:
+ * should be used if there is a possibility of a response time >500ms, after which the loading view
+ * will show. To hide the LoadingView and dismiss the bubble, call {@link
+ * #hideLoadingUI(LoadingView.Observer)}, which takes in a {@link LoadingView.Observer}, for when
+ * further actions should be taken after the UI is hidden (such as showing another UI element).
+ * Example below:
  *
- *  <pre>{@code
- *      ClickableTextBubble clickableTextBubble;
- *      OnTouchListener onTouchListener = (view, motionEvent) -> {
- *          performPotentiallyLongRequest();
- *          clickableTextBubble.showLoadingUI(loadingViewContentDescriptionId);
- *      };
+ * <pre>{@code
+ * ClickableTextBubble clickableTextBubble;
+ * OnTouchListener onTouchListener = (view, motionEvent) -> {
+ *     performPotentiallyLongRequest();
+ *     clickableTextBubble.showLoadingUI(loadingViewContentDescriptionId);
+ * };
  *
- *      void potentiallyLongRequestFinished() {
- *          clickableTextBubble.hideLoadingUI(new LoadingView.Observer() {
- *              public void onHideLoadingUIComplete() {
- *                  // show another UI element (eg. bubble, snackbar)
- *              }
- *          }
- *      }
- *  }</pre>
+ * void potentiallyLongRequestFinished() {
+ *     clickableTextBubble.hideLoadingUI(new LoadingView.Observer() {
+ *         public void onHideLoadingUIComplete() {
+ *             // show another UI element (eg. bubble, snackbar)
+ *         }
+ *     }
+ * }
+ *
+ * }</pre>
  */
 public class ClickableTextBubble extends TextBubble {
     private final Context mContext;
     private final LoadingView mLoadingView;
-    private final boolean mInverseColor;
 
     /**
      * Constructs a {@link ClickableTextBubble} instance.
@@ -65,7 +66,7 @@ public class ClickableTextBubble extends TextBubble {
      * @param anchorRectProvider The {@link RectProvider} used to anchor the text bubble.
      * @param imageDrawableId The resource id of the image to show at the start of the text bubble.
      * @param isAccessibilityEnabled Whether accessibility mode is enabled. Used to determine bubble
-     * text and dismiss UX.
+     *     text and dismiss UX.
      * @param onTouchListener The callback for all touch events being dispatched to the bubble.
      */
     public ClickableTextBubble(
@@ -90,7 +91,6 @@ public class ClickableTextBubble extends TextBubble {
                 /* inverseColor= */ inverseColor,
                 isAccessibilityEnabled);
         mContext = context;
-        mInverseColor = inverseColor;
         setTouchInterceptor(onTouchListener);
         mLoadingView = mContentView.findViewById(R.id.loading_view);
     }

@@ -43,7 +43,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdow
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsVisualState;
 import org.chromium.chrome.browser.omnibox.suggestions.basic.BasicSuggestionProcessor.BookmarkState;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
-import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.share.ShareDelegate;
@@ -93,7 +92,6 @@ public class LocationBarCoordinator
     private UrlBarCoordinator mUrlCoordinator;
     private AutocompleteCoordinator mAutocompleteCoordinator;
     private StatusCoordinator mStatusCoordinator;
-    private WindowDelegate mWindowDelegate;
     private WindowAndroid mWindowAndroid;
     private LocationBarMediator mLocationBarMediator;
     private View mUrlBar;
@@ -119,7 +117,6 @@ public class LocationBarCoordinator
      * @param locationBarLayout Inflated {@link LocationBarLayout}. {@code LocationBarCoordinator}
      *     takes ownership and will destroy this object.
      * @param profileObservableSupplier The supplier of the active profile.
-     * @param privacyPreferencesManager Privacy preference settings manager.
      * @param locationBarDataProvider {@link LocationBarDataProvider} to be used for accessing
      *     Toolbar state.
      * @param actionModeCallback The default callback for text editing action bar to use.
@@ -162,7 +159,6 @@ public class LocationBarCoordinator
             View locationBarLayout,
             View autocompleteAnchorView,
             ObservableSupplier<Profile> profileObservableSupplier,
-            PrivacyPreferencesManager privacyPreferencesManager,
             LocationBarDataProvider locationBarDataProvider,
             ActionMode.Callback actionModeCallback,
             WindowDelegate windowDelegate,
@@ -196,7 +192,6 @@ public class LocationBarCoordinator
             Supplier<Integer> bottomWindowPaddingSupplier,
             @Nullable OnLongClickListener onLongClickListener) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
-        mWindowDelegate = windowDelegate;
         mWindowAndroid = windowAndroid;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
@@ -226,7 +221,6 @@ public class LocationBarCoordinator
                         locationBarDataProvider,
                         uiOverrides,
                         profileObservableSupplier,
-                        privacyPreferencesManager,
                         overrideUrlLoadingDelegate,
                         LocaleManager.getInstance(),
                         templateUrlServiceSupplier,

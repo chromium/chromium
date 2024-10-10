@@ -30,10 +30,8 @@ class SurveyClientBridge implements SurveyClient {
     private static final String TAG = "SurveyClient";
 
     private @NonNull final SurveyClient mDelegate;
-    private final long mNativeSurveyClient;
 
     private SurveyClientBridge(long nativeSurveyClient, @NonNull SurveyClient delegate) {
-        mNativeSurveyClient = nativeSurveyClient;
         mDelegate = delegate;
     }
 

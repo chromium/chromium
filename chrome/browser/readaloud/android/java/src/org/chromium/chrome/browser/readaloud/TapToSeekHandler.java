@@ -60,7 +60,7 @@ public class TapToSeekHandler {
                         .replaceAll("\\s+", " "); // replaces any white-spaces with a space.
         int found = BoyerMoore.indexOf(fullText, needle.toCharArray());
         if (found > 0) {
-            maybeTapToSeek(found + beginOffset - substringStartIndex, content, playback, playing);
+            maybeTapToSeek(found + beginOffset - substringStartIndex, playback, playing);
         } else {
             // Last needle not matched, try with the word and -15 characters.
             substringStartIndex = Math.max(0, beginOffset - 15);
@@ -74,8 +74,7 @@ public class TapToSeekHandler {
                             .replaceAll("\\s+", " "); // replaces any white-spaces with a space.
             found = BoyerMoore.indexOf(fullText, needle.toCharArray());
             if (found > 0) {
-                maybeTapToSeek(
-                        found + beginOffset - substringStartIndex, content, playback, playing);
+                maybeTapToSeek(found + beginOffset - substringStartIndex, playback, playing);
             } else {
                 // Last needle not matched, try with the word and +15 characters.
                 substringStartIndex = beginOffset;
@@ -89,7 +88,7 @@ public class TapToSeekHandler {
                                 .replaceAll("\\s+", " "); // replaces any white-space with a space.
                 found = BoyerMoore.indexOf(fullText, needle.toCharArray());
                 if (found > 0) {
-                    maybeTapToSeek(found, content, playback, playing);
+                    maybeTapToSeek(found, playback, playing);
                 } else {
                     // TODO: b/325654229 Improve heuristics with more substrings to match with.
                     ReadAloudMetrics.recordHasTapToSeekFoundMatch(false);
@@ -114,8 +113,7 @@ public class TapToSeekHandler {
      * @param content selected word and surrounding content
      * @param playback playback that will be seeked
      */
-    private static void maybeTapToSeek(
-            int index, String content, Playback playback, boolean playing) {
+    private static void maybeTapToSeek(int index, Playback playback, boolean playing) {
         int paragraphIndex = findParagraph(playback.getMetadata().paragraphs(), index);
         int wordIndex = findWord(playback.getMetadata().paragraphs()[paragraphIndex], index);
         if (wordIndex < 0) {

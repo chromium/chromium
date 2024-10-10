@@ -129,13 +129,10 @@ public class ExportFlow implements ExportFlowInterface {
     @Nullable private Integer mEntriesCount;
 
     // Histogram values for "PasswordManager.Android.ExportPasswordsProgressBarUsage". Never remove
-    // or reuse them, only add new ones if needed (and update PROGRESS_COUNT), to keep past and
-    // future UMA reports compatible.
+    // or reuse them, only add new ones if needed to keep past and future UMA reports compatible.
     @VisibleForTesting public static final int PROGRESS_NOT_SHOWN = 0;
     @VisibleForTesting public static final int PROGRESS_HIDDEN_DIRECTLY = 1;
     @VisibleForTesting public static final int PROGRESS_HIDDEN_DELAYED = 2;
-    // The number of the other PROGRESS_* constants.
-    private static final int PROGRESS_COUNT = 3;
 
     /**
      * Converts a {@link DialogManager.HideActions} value to a value for the

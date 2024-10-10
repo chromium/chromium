@@ -22,23 +22,14 @@ import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
-import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Coordinator responsible for Read Aloud mini player lifecycle. */
 public class MiniPlayerCoordinator {
     private static ViewStub sViewStubForTesting;
-    private final PropertyModelChangeProcessor<PropertyModel, MiniPlayerLayout, PropertyKey>
-            mPlayerModelChangeProcessor;
-    private final PropertyModelChangeProcessor<
-                    PropertyModel, MiniPlayerViewBinder.ViewHolder, PropertyKey>
-            mMiniPlayerModelChangeProcessor;
     private final MiniPlayerMediator mMediator;
     private final MiniPlayerLayout mLayout;
-    // Compositor layer to be shown during show and hide while browser controls are
-    // resizing.
-    private final ReadAloudMiniPlayerSceneLayer mSceneLayer;
     private final PlayerCoordinator mPlayerCoordinator;
     private final UserEducationHelper mUserEducationHelper;
     /*  View-inflation-capable Context for read_aloud_playback isolated split */
@@ -98,21 +89,18 @@ public class MiniPlayerCoordinator {
         mMediator.setCoordinator(this);
         mLayout = layout;
         assert layout != null;
-        mSceneLayer = sceneLayer;
         sceneLayer.setIsVisible(true);
         if (layoutManager != null) {
             layoutManager.addSceneOverlay(sceneLayer);
         }
         mPlayerCoordinator = playerCoordinator;
         mUserEducationHelper = userEducationHelper;
-        mPlayerModelChangeProcessor =
-                PropertyModelChangeProcessor.create(
-                        sharedModel, mLayout, MiniPlayerViewBinder::bindPlayerProperties);
-        mMiniPlayerModelChangeProcessor =
-                PropertyModelChangeProcessor.create(
-                        mMediator.getModel(),
-                        new MiniPlayerViewBinder.ViewHolder(layout, sceneLayer),
-                        MiniPlayerViewBinder::bindMiniPlayerProperties);
+        PropertyModelChangeProcessor.create(
+                sharedModel, mLayout, MiniPlayerViewBinder::bindPlayerProperties);
+        PropertyModelChangeProcessor.create(
+                mMediator.getModel(),
+                new MiniPlayerViewBinder.ViewHolder(layout, sceneLayer),
+                MiniPlayerViewBinder::bindMiniPlayerProperties);
     }
 
     public void destroy() {

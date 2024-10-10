@@ -21,11 +21,10 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 import org.chromium.ui.widget.Toast;
 
 /**
- * Sets up the model, adapter, and mediator for FollowManagement surface.  It is based on the doc at
+ * Sets up the model, adapter, and mediator for FollowManagement surface. It is based on the doc at
  * https://chromium.googlesource.com/chromium/src/+/HEAD/docs/ui/android/mvc_simple_list_tutorial.md
  */
 public class FollowManagementCoordinator {
-    private FollowManagementMediator mMediator;
     private AppCompatActivity mActivity;
     private final View mView;
 
@@ -56,12 +55,8 @@ public class FollowManagementCoordinator {
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
 
-        mMediator =
-                new FollowManagementMediator(
-                        activity,
-                        listItems,
-                        new MediatorObserver(),
-                        WebFeedFaviconFetcher.createDefault());
+        new FollowManagementMediator(
+                activity, listItems, new MediatorObserver(), WebFeedFaviconFetcher.createDefault());
     }
 
     public View getView() {

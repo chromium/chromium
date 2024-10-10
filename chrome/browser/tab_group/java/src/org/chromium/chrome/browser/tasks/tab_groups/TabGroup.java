@@ -26,16 +26,10 @@ class TabGroup {
     static final int INVALID_POSITION_IN_GROUP = -1;
 
     private final LinkedHashSet<Integer> mTabIds = new LinkedHashSet<>();
-    private final int mRootId;
 
     private int mLastShownTabId = Tab.INVALID_TAB_ID;
 
-    /**
-     * @param rootId The root identifier of all tabs in the tab group.
-     */
-    TabGroup(int rootId) {
-        mRootId = rootId;
-    }
+    TabGroup() {}
 
     /**
      * Adds a tab to the tab group.

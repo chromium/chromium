@@ -76,7 +76,6 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridgeJni;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
-import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -185,7 +184,6 @@ public class LocationBarMediatorTest {
     @Mock private AutocompleteCoordinator mAutocompleteCoordinator;
     @Mock private UrlBarCoordinator mUrlCoordinator;
     @Mock private StatusCoordinator mStatusCoordinator;
-    @Mock private PrivacyPreferencesManager mPrivacyPreferencesManager;
     @Mock private OmniboxPrerender.Natives mPrerenderJni;
     @Mock private TextView mView;
     @Mock private KeyEvent mKeyEvent;
@@ -252,7 +250,6 @@ public class LocationBarMediatorTest {
                         mLocationBarDataProvider,
                         mUiOverrides,
                         mProfileSupplier,
-                        mPrivacyPreferencesManager,
                         mOverrideUrlLoadingDelegate,
                         mLocaleManager,
                         templateUrlServiceSupplier,
@@ -275,7 +272,6 @@ public class LocationBarMediatorTest {
                         mLocationBarDataProvider,
                         mUiOverrides,
                         mProfileSupplier,
-                        mPrivacyPreferencesManager,
                         mOverrideUrlLoadingDelegate,
                         mLocaleManager,
                         templateUrlServiceSupplier,
@@ -959,7 +955,6 @@ public class LocationBarMediatorTest {
                         mLocationBarDataProvider,
                         mUiOverrides,
                         mProfileSupplier,
-                        mPrivacyPreferencesManager,
                         mOverrideUrlLoadingDelegate,
                         mLocaleManager,
                         templateUrlServiceSupplier,

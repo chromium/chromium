@@ -19,12 +19,10 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
-import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 public class ExpandedPlayerCoordinator implements ConfigurationChangedObserver {
-    private final Context mContext;
     private final Delegate mDelegate;
     private boolean mSheetVisible;
 
@@ -93,8 +91,6 @@ public class ExpandedPlayerCoordinator implements ConfigurationChangedObserver {
             };
     private PropertyModel mModel;
     private ExpandedPlayerSheetContent mSheetContent;
-    private PropertyModelChangeProcessor<PropertyModel, ExpandedPlayerSheetContent, PropertyKey>
-            mModelChangeProcessor;
     private ExpandedPlayerMediator mMediator;
 
     public ExpandedPlayerCoordinator(Context context, Delegate delegate, PropertyModel model) {
@@ -114,15 +110,12 @@ public class ExpandedPlayerCoordinator implements ConfigurationChangedObserver {
             PropertyModel model,
             ExpandedPlayerMediator mediator,
             ExpandedPlayerSheetContent content) {
-        mContext = context;
         mDelegate = delegate;
         mModel = model;
         mMediator = mediator;
         mSheetContent = content;
         mDelegate.getBottomSheetController().addObserver(mBottomSheetObserver);
-        mModelChangeProcessor =
-                PropertyModelChangeProcessor.create(
-                        mModel, mSheetContent, ExpandedPlayerViewBinder::bind);
+        PropertyModelChangeProcessor.create(mModel, mSheetContent, ExpandedPlayerViewBinder::bind);
     }
 
     public void show() {

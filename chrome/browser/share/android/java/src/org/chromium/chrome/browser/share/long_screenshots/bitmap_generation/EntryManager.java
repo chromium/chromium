@@ -35,7 +35,6 @@ public class EntryManager {
     private ObserverList<BitmapGeneratorObserver> mGeneratorObservers;
     private @EntryStatus int mGeneratorStatus;
     private ScreenshotBoundsManager mBoundsManager;
-    private int mMemoryUsedInKb;
 
     /**
      * Users of the {@link EntryManager} can implement this interface to be notified of changes to
@@ -91,8 +90,7 @@ public class EntryManager {
      */
     public LongScreenshotsEntry generateFullpageEntry() {
         LongScreenshotsEntry entry =
-                new LongScreenshotsEntry(
-                        mGenerator, mBoundsManager.getFullEntryBounds(), this::updateMemoryUsage);
+                new LongScreenshotsEntry(mGenerator, mBoundsManager.getFullEntryBounds(), null);
         processEntry(entry, false, false);
         return entry;
     }
@@ -154,10 +152,6 @@ public class EntryManager {
         for (BitmapGeneratorObserver observer : mGeneratorObservers) {
             observer.onStatusChange(mGeneratorStatus);
         }
-    }
-
-    private void updateMemoryUsage(int bytedUsed) {
-        mMemoryUsedInKb += (bytedUsed / KB_IN_BYTES);
     }
 
     public void addBitmapGeneratorObserver(BitmapGeneratorObserver observer) {

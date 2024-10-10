@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.uid;
 
-import android.content.Context;
-
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -17,11 +15,9 @@ import java.util.UUID;
 /** Generates unique IDs that are {@link UUID} strings. */
 public class UuidBasedUniqueIdentificationGenerator implements UniqueIdentificationGenerator {
     public static final String GENERATOR_ID = "UUID";
-    private final Context mContext;
     private final String mPreferenceKey;
 
-    public UuidBasedUniqueIdentificationGenerator(Context context, String preferenceKey) {
-        mContext = context;
+    public UuidBasedUniqueIdentificationGenerator(String preferenceKey) {
         mPreferenceKey = preferenceKey;
     }
 

@@ -842,7 +842,7 @@ public class TabGroupModelFilter extends TabModelFilterBase {
                 }
             }
         } else {
-            TabGroup tabGroup = new TabGroup(tab.getRootId());
+            TabGroup tabGroup = new TabGroup();
             tabGroup.addTab(tab.getId(), getTabModel());
             mRootIdToGroupMap.put(rootId, tabGroup);
             if (mIsResetting || getTabModel().indexOf(tab) == getTabModel().getCount() - 1) {

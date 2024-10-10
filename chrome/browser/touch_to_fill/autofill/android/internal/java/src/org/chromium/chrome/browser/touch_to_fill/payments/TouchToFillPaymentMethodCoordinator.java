@@ -62,8 +62,7 @@ public class TouchToFillPaymentMethodCoordinator implements TouchToFillPaymentMe
                                 metaData.iconId,
                                 ImageSize.LARGE,
                                 /* showCustomIcon= */ true);
-        mMediator.initialize(
-                context, delegate, mTouchToFillPaymentMethodModel, bottomSheetFocusHelper);
+        mMediator.initialize(delegate, mTouchToFillPaymentMethodModel, bottomSheetFocusHelper);
         setUpModelChangeProcessors(
                 mTouchToFillPaymentMethodModel,
                 new TouchToFillPaymentMethodView(context, sheetController));

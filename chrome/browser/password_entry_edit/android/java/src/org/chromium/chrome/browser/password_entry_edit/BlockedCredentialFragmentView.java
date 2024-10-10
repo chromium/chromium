@@ -20,7 +20,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
  * blocked from saving.
  */
 public class BlockedCredentialFragmentView extends CredentialEntryFragmentViewBase {
-    private Runnable mDeleteDelegate;
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override

@@ -15,17 +15,16 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
  * owns the native object. Make sure to call destroy() after this object is not used anymore.
  */
 public class LocaleTemplateUrlLoader {
-    private final String mLocaleId;
     private long mNativeLocaleTemplateUrlLoader;
     private boolean mAddedToService;
 
     /**
      * Creates a {@link LocaleTemplateUrlLoader} that handles changes for the given locale.
+     *
      * @param localeId Country id of the locale. Should be 2 characters long.
      */
     public LocaleTemplateUrlLoader(String localeId) {
         assert localeId.length() == 2;
-        mLocaleId = localeId;
         // TODO(b/344633755): Remove getLastUsedRegularProfile().
         mNativeLocaleTemplateUrlLoader =
                 LocaleTemplateUrlLoaderJni.get()

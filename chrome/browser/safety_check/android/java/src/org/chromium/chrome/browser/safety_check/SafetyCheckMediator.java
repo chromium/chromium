@@ -127,9 +127,6 @@ class SafetyCheckMediator {
     /** Callbacks and related objects to show the checking state for at least 1 second. */
     private Handler mHandler;
 
-    /** Stores the callback updating the password check state in the UI after the delay. */
-    private Runnable mRunnablePasswords;
-
     /** Stores the callback updating the safe browsing check state in the UI after the delay. */
     private Runnable mRunnableSafeBrowsing;
 

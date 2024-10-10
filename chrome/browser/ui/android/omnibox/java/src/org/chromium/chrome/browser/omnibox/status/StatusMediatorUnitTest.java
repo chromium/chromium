@@ -103,7 +103,6 @@ public final class StatusMediatorUnitTest {
     @Mock private Tracker mTracker;
 
     Context mContext;
-    Resources mResources;
 
     PropertyModel mModel;
     StatusMediator mMediator;
@@ -115,7 +114,6 @@ public final class StatusMediatorUnitTest {
         mContext =
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
-        mResources = mContext.getResources();
         mWindowAndroid = new WindowAndroid(mContext);
 
         SearchEngineUtils.setInstanceForTesting(mSearchEngineUtils);
@@ -152,7 +150,6 @@ public final class StatusMediatorUnitTest {
         mMediator =
                 new StatusMediator(
                         mModel,
-                        mResources,
                         mContext,
                         mUrlBarEditingTextStateProvider,
                         isTablet,

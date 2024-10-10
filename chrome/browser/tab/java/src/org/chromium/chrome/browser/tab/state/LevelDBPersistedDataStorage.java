@@ -77,10 +77,7 @@ public class LevelDBPersistedDataStorage implements PersistedDataStorage {
         makeNativeAssertion();
         LevelDBPersistedDataStorageJni.get()
                 .performMaintenance(
-                        mNativePersistedStateDB,
-                        getMasterKeysToKeep(keysToKeep, dataId),
-                        dataId,
-                        null);
+                        mNativePersistedStateDB, getMasterKeysToKeep(keysToKeep), dataId, null);
     }
 
     protected void performMaintenanceForTesting(
@@ -89,12 +86,12 @@ public class LevelDBPersistedDataStorage implements PersistedDataStorage {
         LevelDBPersistedDataStorageJni.get()
                 .performMaintenance(
                         mNativePersistedStateDB,
-                        getMasterKeysToKeep(keysToKeep, dataId),
+                        getMasterKeysToKeep(keysToKeep),
                         dataId,
                         onComplete);
     }
 
-    private String[] getMasterKeysToKeep(String[] keysToKeep, String dataId) {
+    private String[] getMasterKeysToKeep(String[] keysToKeep) {
         String[] masterKeysToKeep = new String[keysToKeep.length];
         for (int i = 0; i < keysToKeep.length; i++) {
             masterKeysToKeep[i] = getMasterKey(keysToKeep[i]);

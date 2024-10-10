@@ -23,8 +23,6 @@ public class IPHCommandBuilder {
 
     private Resources mResources;
     private final String mFeatureName;
-    private String mContentString;
-    private String mAccessibilityText;
     private boolean mDismissOnTouch = true;
     @StringRes private int mStringId;
     private Object[] mStringArgs;
@@ -93,6 +91,7 @@ public class IPHCommandBuilder {
 
     /**
      * Constructor for IPHCommandBuilder when you have your strings pre-resolved.
+     *
      * @param resources Resources object used to resolve strings and dimensions.
      * @param featureName String identifier for the feature from FeatureConstants.
      * @param contentString String displayed to the user.
@@ -105,12 +104,9 @@ public class IPHCommandBuilder {
             String accessibilityText) {
         mResources = resources;
         mFeatureName = featureName;
-        mContentString = contentString;
-        mAccessibilityText = accessibilityText;
     }
 
     /**
-     *
      * @param anchorView the view that the IPH bubble should be anchored to.
      */
     public IPHCommandBuilder setAnchorView(View anchorView) {

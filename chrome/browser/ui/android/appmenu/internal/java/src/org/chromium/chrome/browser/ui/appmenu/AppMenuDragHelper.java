@@ -188,7 +188,6 @@ class AppMenuDragHelper {
         // After this line, drag scrolling is happening.
         if (!mDragScrolling.isRunning()) return false;
 
-        boolean didPerformClick = false;
         @ItemAction int itemAction = ItemAction.CLEAR_HIGHLIGHT_ALL;
         switch (eventActionMasked) {
             case MotionEvent.ACTION_DOWN:
@@ -201,7 +200,7 @@ class AppMenuDragHelper {
             default:
                 break;
         }
-        didPerformClick = menuItemAction(roundedRawX, roundedRawY, itemAction);
+        boolean didPerformClick = menuItemAction(roundedRawX, roundedRawY, itemAction);
 
         if (eventActionMasked == MotionEvent.ACTION_UP && !didPerformClick) {
             RecordUserAction.record("MobileUsingMenuBySwButtonDragging");

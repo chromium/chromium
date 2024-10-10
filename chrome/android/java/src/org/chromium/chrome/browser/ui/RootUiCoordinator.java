@@ -105,7 +105,6 @@ import org.chromium.chrome.browser.paint_preview.DemoPaintPreview;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.pdf.PdfPage;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_insights.PriceInsightsButtonController;
 import org.chromium.chrome.browser.price_tracking.CurrentTabPriceTrackingStateSupplier;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingButtonController;
@@ -1491,8 +1490,7 @@ public class RootUiCoordinator
                             mActivityLifecycleDispatcher,
                             mProfileSupplier,
                             new AdaptiveButtonActionMenuCoordinator(),
-                            mWindowAndroid,
-                            ChromeSharedPreferences.getInstance());
+                            mWindowAndroid);
             PageSummaryButtonController pageSummaryButtonController =
                     new PageSummaryButtonController(
                             mActivity,

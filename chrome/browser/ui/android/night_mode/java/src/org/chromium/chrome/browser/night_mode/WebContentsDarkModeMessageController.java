@@ -153,7 +153,7 @@ public class WebContentsDarkModeMessageController {
                         .with(
                                 MessageBannerProperties.ON_DISMISSED,
                                 (dismissReason) -> {
-                                    onOptOutMessageDismissed(profile, dismissReason);
+                                    onOptOutMessageDismissed(profile);
                                 })
                         .build();
         messageDispatcher.enqueueWindowScopedMessage(message, false);
@@ -195,11 +195,7 @@ public class WebContentsDarkModeMessageController {
                                 MessageBannerProperties.ON_DISMISSED,
                                 (dismissReason) -> {
                                     onOptInMessageDismissed(
-                                            activity,
-                                            profile,
-                                            webContents,
-                                            messageDispatcher,
-                                            dismissReason);
+                                            activity, profile, messageDispatcher, dismissReason);
                                 })
                         .build();
         messageDispatcher.enqueueWindowScopedMessage(message, false);
@@ -230,8 +226,7 @@ public class WebContentsDarkModeMessageController {
     }
 
     /** Record that the opt-out message was dismissed. */
-    private static void onOptOutMessageDismissed(
-            Profile profile, @DismissReason int dismissReason) {
+    private static void onOptOutMessageDismissed(Profile profile) {
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
         tracker.dismissed(FeatureConstants.AUTO_DARK_USER_EDUCATION_MESSAGE_FEATURE);
     }
@@ -243,7 +238,6 @@ public class WebContentsDarkModeMessageController {
     private static void onOptInMessageDismissed(
             Activity activity,
             Profile profile,
-            WebContents webContents,
             MessageDispatcher messageDispatcher,
             @DismissReason int dismissReason) {
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);

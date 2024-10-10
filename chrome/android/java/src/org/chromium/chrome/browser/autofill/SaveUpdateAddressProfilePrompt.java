@@ -102,7 +102,6 @@ public class SaveUpdateAddressProfilePrompt {
                                 PersonalDataManagerFactory.getForProfile(browserProfile)),
                         userFlow,
                         /* saveToDisk= */ false);
-        mAddressEditor.setShouldTriggerDoneCallbackBeforeCloseAnimation(true);
         mDialogView
                 .findViewById(R.id.edit_button)
                 .setOnClickListener(

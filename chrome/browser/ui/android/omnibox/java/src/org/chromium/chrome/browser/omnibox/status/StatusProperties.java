@@ -196,7 +196,7 @@ public class StatusProperties {
             int width = ViewUtils.dpToPx(context, OMNIBOX_ICON_DP);
             Bitmap bitmap = Bitmap.createBitmap(width, width, Bitmap.Config.ARGB_8888);
             Canvas canvas = new Canvas(bitmap);
-            drawCircleBackground(canvas, context, resources);
+            drawCircleBackground(canvas, context);
             drawCenteredIcon(context, canvas, icon);
             return new BitmapDrawable(resources, bitmap);
         }
@@ -212,7 +212,7 @@ public class StatusProperties {
         }
 
         /** Draws a circle background on canvas. */
-        private void drawCircleBackground(Canvas canvas, Context context, Resources resources) {
+        private void drawCircleBackground(Canvas canvas, Context context) {
             float radius = 0.5f * canvas.getWidth();
             Paint paint = new Paint();
             // Use the dark mode color if in incognito mode.

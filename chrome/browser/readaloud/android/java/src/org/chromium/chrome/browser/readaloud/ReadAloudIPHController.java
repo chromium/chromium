@@ -30,7 +30,6 @@ public class ReadAloudIPHController {
     private final AppMenuHandler mAppMenuHandler;
     private final View mToolbarMenuButton;
     private final ObservableSupplier<ReadAloudController> mReadAloudControllerSupplier;
-    @Nullable private ObservableSupplier<String> mReadAloudReadabilitySupplier;
     private final Supplier<Tab> mCurrentTabSupplier;
     private boolean mShowAppMenuTextBubble;
     private final Runnable mReadabilityUpdateListener = this::maybeShowReadAloudAppMenuIPH;

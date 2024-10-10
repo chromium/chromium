@@ -427,15 +427,14 @@ public class EditorDialogView extends AlwaysDismissedDialog
             }
 
             if (useFullLine || isLastField) {
-                addFieldViewToEditor(mContentView, fieldItem, showRequiredIndicator);
+                addFieldViewToEditor(mContentView, fieldItem);
             } else {
                 // Create a LinearLayout to put it and the next view side by side.
                 LinearLayout rowLayout = new LinearLayout(mActivity);
                 mContentView.addView(rowLayout);
 
-                View firstView = addFieldViewToEditor(rowLayout, fieldItem, showRequiredIndicator);
-                View lastView =
-                        addFieldViewToEditor(rowLayout, nextFieldItem, showRequiredIndicator);
+                View firstView = addFieldViewToEditor(rowLayout, fieldItem);
+                View lastView = addFieldViewToEditor(rowLayout, nextFieldItem);
 
                 LinearLayout.LayoutParams firstParams =
                         (LinearLayout.LayoutParams) firstView.getLayoutParams();
@@ -486,8 +485,7 @@ public class EditorDialogView extends AlwaysDismissedDialog
         }
     }
 
-    private View addFieldViewToEditor(
-            ViewGroup parent, final FieldItem fieldItem, boolean showRequiredIndicator) {
+    private View addFieldViewToEditor(ViewGroup parent, final FieldItem fieldItem) {
         View childView = null;
 
         switch (fieldItem.type) {

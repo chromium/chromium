@@ -41,7 +41,6 @@ public class StartupPaintPreview implements PlayerManager.Listener {
     private Runnable mOnDismissed;
     private SnackbarManager.SnackbarController mSnackbarController;
     private TabObserver mStartupTabObserver;
-    private Callback<Long> mVisibleContentCallback;
 
     private @State int mState;
     private boolean mFirstMeaningfulPaintHappened;

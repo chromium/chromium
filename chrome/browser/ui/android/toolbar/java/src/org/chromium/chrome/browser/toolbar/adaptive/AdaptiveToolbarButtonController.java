@@ -22,7 +22,6 @@ import org.chromium.base.FeatureList;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneShotCallback;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -76,7 +75,6 @@ public class AdaptiveToolbarButtonController
 
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final AndroidPermissionDelegate mAndroidPermissionDelegate;
-    private final SharedPreferencesManager mSharedPreferencesManager;
     private final CallbackController mCallbackController;
     private final Callback<AdaptiveToolbarStatePredictor.UiState> mUiStateCallback;
 
@@ -105,8 +103,7 @@ public class AdaptiveToolbarButtonController
             ActivityLifecycleDispatcher lifecycleDispatcher,
             ObservableSupplier<Profile> profileSupplier,
             AdaptiveButtonActionMenuCoordinator menuCoordinator,
-            AndroidPermissionDelegate androidPermissionDelegate,
-            SharedPreferencesManager sharedPreferencesManager) {
+            AndroidPermissionDelegate androidPermissionDelegate) {
         mContext = context;
         mMenuClickListener =
                 id -> {
@@ -121,7 +118,6 @@ public class AdaptiveToolbarButtonController
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
         mMenuCoordinator = menuCoordinator;
-        mSharedPreferencesManager = sharedPreferencesManager;
         mScreenWidthDp = context.getResources().getConfiguration().screenWidthDp;
         mAndroidPermissionDelegate = androidPermissionDelegate;
         mCallbackController = new CallbackController();

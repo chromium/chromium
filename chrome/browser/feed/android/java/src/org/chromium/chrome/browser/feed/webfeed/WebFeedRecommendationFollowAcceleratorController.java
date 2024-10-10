@@ -191,10 +191,6 @@ public class WebFeedRecommendationFollowAcceleratorController {
                                                 == WebFeedSubscriptionRequestStatus.SUCCESS) {
                                             mWebFeedFollowIntroView.showFollowingBubble();
                                         }
-                                        byte[] followId =
-                                                results.metadata != null
-                                                        ? results.metadata.id
-                                                        : null;
                                         mWebFeedSnackbarController.showPostFollowHelp(
                                                 currentTab,
                                                 results,

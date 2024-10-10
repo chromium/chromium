@@ -36,19 +36,14 @@ public class LocalTabGroupMutationHelper {
     private final TabGroupSyncService mTabGroupSyncService;
     private final TabCreationDelegate mTabCreationDelegate;
 
-    // TODO(shaktisahu): This is unnecessary now. Remove passing this from constructor.
-    private final NavigationTracker mNavigationTracker;
-
     /** Constructor. */
     public LocalTabGroupMutationHelper(
             TabGroupModelFilter tabGroupModelFilter,
             TabGroupSyncService tabGroupSyncService,
-            TabCreationDelegate tabCreationDelegate,
-            NavigationTracker navigationTracker) {
+            TabCreationDelegate tabCreationDelegate) {
         mTabGroupModelFilter = tabGroupModelFilter;
         mTabGroupSyncService = tabGroupSyncService;
         mTabCreationDelegate = tabCreationDelegate;
-        mNavigationTracker = navigationTracker;
     }
 
     /**

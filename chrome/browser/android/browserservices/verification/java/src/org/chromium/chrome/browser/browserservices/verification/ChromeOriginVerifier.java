@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.browserservices.verification;
 import static org.chromium.chrome.browser.browserservices.metrics.OriginVerifierMetricsRecorder.recordVerificationResult;
 import static org.chromium.chrome.browser.browserservices.metrics.OriginVerifierMetricsRecorder.recordVerificationTime;
 
-import android.content.pm.PackageManager;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
@@ -21,7 +20,6 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.CommandLine;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.ThreadUtils;
@@ -151,10 +149,10 @@ public class ChromeOriginVerifier extends OriginVerifier {
     /**
      * Returns whether an origin is first-party relative to a given package name.
      *
-     * This only returns data from previously cached relations, and does not trigger an asynchronous
-     * validation. This cache is persisted across Chrome restarts. If you have an instance of
-     * OriginVerifier, use {@link #wasPreviouslyVerified(Origin)} instead as that avoids recomputing
-     * the signatureFingerprint of the package.
+     * <p>This only returns data from previously cached relations, and does not trigger an
+     * asynchronous validation. This cache is persisted across Chrome restarts. If you have an
+     * instance of OriginVerifier, use {@link #wasPreviouslyVerified(Origin)} instead as that avoids
+     * recomputing the signatureFingerprint of the package.
      *
      * @param packageName The package name.
      * @param origin The origin to verify.
@@ -162,7 +160,6 @@ public class ChromeOriginVerifier extends OriginVerifier {
      */
     public static boolean wasPreviouslyVerified(
             String packageName, Origin origin, @Relation int relation) {
-        PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
         List<String> fingerprints =
                 PackageUtils.getCertificateSHA256FingerprintForPackage(packageName);
 

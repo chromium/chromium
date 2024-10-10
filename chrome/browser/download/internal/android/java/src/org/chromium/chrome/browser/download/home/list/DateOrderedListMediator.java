@@ -108,7 +108,6 @@ class DateOrderedListMediator implements BackPressHandler {
     private final DateOrderedListMutator mListMutator;
     private final ListMutationController mListMutationController;
     private final ThumbnailProvider mThumbnailProvider;
-    private final MediatorSelectionObserver mSelectionObserver;
     private final SelectionDelegate<ListItem> mSelectionDelegate;
     private final DownloadManagerUiConfig mUiConfig;
 
@@ -218,7 +217,7 @@ class DateOrderedListMediator implements BackPressHandler {
                         discardableReferencePool,
                         config.inMemoryThumbnailCacheSizeBytes,
                         ThumbnailProviderImpl.ClientType.DOWNLOAD_HOME);
-        mSelectionObserver = new MediatorSelectionObserver(selectionDelegate);
+        new MediatorSelectionObserver(selectionDelegate);
 
         mModel.getProperties().set(ListProperties.ENABLE_ITEM_ANIMATIONS, true);
         mModel.getProperties().set(ListProperties.CALLBACK_OPEN, this::onOpenItem);

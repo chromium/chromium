@@ -18,7 +18,6 @@ class SpeedMenuSheetContent extends SingleMenuSheetContent {
     private static final String TAG = "ReadAloudSpeed";
     private final Context mContext;
     private final PropertyModel mModel;
-    private InteractionHandler mInteractionHandler;
     private float[] mSpeeds = {0.5f, 0.8f, 1.0f, 1.2f, 1.5f, 2.0f, 3.0f, 4.0f};
 
     SpeedMenuSheetContent(
@@ -44,7 +43,6 @@ class SpeedMenuSheetContent extends SingleMenuSheetContent {
     }
 
     void setInteractionHandler(InteractionHandler handler) {
-        mInteractionHandler = handler;
         mMenu.setRadioTrueHandler(
                 (itemId) -> {
                     handler.onSpeedChange(mSpeeds[itemId]);

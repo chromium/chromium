@@ -109,7 +109,6 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         mMediator =
                 new StatusMediator(
                         mModel,
-                        mStatusView.getResources(),
                         mStatusView.getContext(),
                         urlBarEditingTextStateProvider,
                         isTablet,

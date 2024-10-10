@@ -54,12 +54,12 @@ public abstract class ListItem {
     }
 
     /** A {@link ListItem} that involves a {@link Date}. */
-    private abstract static class DateListItem extends ListItem {
+    public abstract static class DateListItem extends ListItem {
         public final Date date;
 
         /**
-         * Creates a {@link DateListItem} instance. with a predefined {@code stableId} and
-         * {@code date}.
+         * Creates a {@link DateListItem} instance. with a predefined {@code stableId} and {@code
+         * date}.
          */
         public DateListItem(long stableId, Date date) {
             super(stableId);
@@ -68,7 +68,7 @@ public abstract class ListItem {
     }
 
     /** A {@link ListItem} representing group card decoration such as header or footer. */
-    private static class CardDecorationListItem extends ListItem {
+    public static class CardDecorationListItem extends ListItem {
         public final Pair<Date, String> dateAndDomain;
 
         /** Creates a {@link CardDecorationListItem} instance. */

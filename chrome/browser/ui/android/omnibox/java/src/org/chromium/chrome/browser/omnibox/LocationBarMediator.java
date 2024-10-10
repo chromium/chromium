@@ -56,7 +56,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
-import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -75,7 +74,6 @@ import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxFeatures;
-import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ResourceRequestBody;
@@ -170,13 +168,11 @@ class LocationBarMediator
     private OmniboxPrerender mOmniboxPrerender;
     private UrlBarCoordinator mUrlCoordinator;
     private ObservableSupplier<Profile> mProfileSupplier;
-    private PrivacyPreferencesManager mPrivacyPreferencesManager;
     private CallbackController mCallbackController = new CallbackController();
     private final OverrideUrlLoadingDelegate mOverrideUrlLoadingDelegate;
     private final LocaleManager mLocaleManager;
     private final List<Runnable> mDeferredNativeRunnables = new ArrayList<>();
     private final OneshotSupplier<TemplateUrlService> mTemplateUrlServiceSupplier;
-    private TemplateUrl mSearchEngine;
     private final Context mContext;
     private final BackKeyBehaviorDelegate mBackKeyBehavior;
     private final WindowAndroid mWindowAndroid;
@@ -218,7 +214,6 @@ class LocationBarMediator
             @NonNull LocationBarDataProvider locationBarDataProvider,
             @NonNull LocationBarEmbedderUiOverrides embedderUiOverrides,
             @NonNull ObservableSupplier<Profile> profileSupplier,
-            @NonNull PrivacyPreferencesManager privacyPreferencesManager,
             @NonNull OverrideUrlLoadingDelegate overrideUrlLoadingDelegate,
             @NonNull LocaleManager localeManager,
             @NonNull OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
@@ -242,7 +237,6 @@ class LocationBarMediator
         mVoiceRecognitionHandler.addObserver(this);
         mProfileSupplier = profileSupplier;
         mProfileSupplier.addObserver(mCallbackController.makeCancelable(this::setProfile));
-        mPrivacyPreferencesManager = privacyPreferencesManager;
         mTemplateUrlServiceSupplier = templateUrlServiceSupplier;
         mBackKeyBehavior = backKeyBehavior;
         mWindowAndroid = windowAndroid;
@@ -283,7 +277,6 @@ class LocationBarMediator
         mStatusCoordinator = null;
         mAutocompleteCoordinator = null;
         mUrlCoordinator = null;
-        mPrivacyPreferencesManager = null;
         mVoiceRecognitionHandler.removeObserver(this);
         mVoiceRecognitionHandler.destroy();
         mVoiceRecognitionHandler = null;

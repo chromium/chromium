@@ -48,7 +48,6 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
     private static final String FOOTER_PREFERENCE = "fledge_page_footer";
 
     private ChromeSwitchPreference mFledgeTogglePreference;
-    private TextMessagePreference mFledgeDescriptionPreference;
     private PreferenceCategoryWithClickableSummary mHeadingPreference;
     private PreferenceCategory mCurrentSitesCategory;
     private TextMessagePreference mEmptyFledgePreference;
@@ -81,7 +80,6 @@ public class FledgeFragment extends PrivacySandboxSettingsBaseFragment
         SettingsUtils.addPreferencesFromResource(this, R.xml.fledge_preference);
 
         mFledgeTogglePreference = findPreference(FLEDGE_TOGGLE_PREFERENCE);
-        mFledgeDescriptionPreference = findPreference(FLEDGE_DESCRIPTION_PREFERENCE);
         mHeadingPreference = findPreference(HEADING_PREFERENCE);
         mCurrentSitesCategory = findPreference(CURRENT_SITES_PREFERENCE);
         mEmptyFledgePreference = findPreference(EMPTY_FLEDGE_PREFERENCE);

@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.partnercustomizations;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
-import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,7 +39,6 @@ import java.util.Objects;
 /** Reads and caches partner browser customizations information if it exists. */
 public class PartnerBrowserCustomizations {
     private static final String TAG = "PartnerCustomize";
-    private static final String PROVIDER_AUTHORITY = "com.android.partnerbrowsercustomizations";
 
     /** Default timeout in ms for reading PartnerBrowserCustomizations provider. */
     private static final int DEFAULT_TIMEOUT_MS = 10_000;
@@ -54,9 +52,6 @@ public class PartnerBrowserCustomizations {
 
     @VisibleForTesting
     static final String PARTNER_DISABLE_INCOGNITO_MODE_PATH = "disableincognitomode";
-
-    private static Boolean sIgnoreSystemPackageCheck;
-    private static Boolean sValid;
 
     private static volatile PartnerBrowserCustomizations sInstance;
 
@@ -205,7 +200,6 @@ public class PartnerBrowserCustomizations {
         final AsyncTask<Void> initializeAsyncTask =
                 new AsyncTask<Void>() {
                     private boolean mHomepageUriChanged;
-                    private long mStartTime = SystemClock.elapsedRealtime();
 
                     @Override
                     protected Void doInBackground() {

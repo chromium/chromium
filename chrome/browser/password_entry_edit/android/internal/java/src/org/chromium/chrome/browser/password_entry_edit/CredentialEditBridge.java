@@ -30,8 +30,6 @@ class CredentialEditBridge implements UiDismissalHandler, CredentialActionDelega
         return sCredentialEditBridge;
     }
 
-    private CredentialEditBridge(long nativeCredentialEditBridge) {}
-
     private CredentialEditBridge() {}
 
     @CalledByNative

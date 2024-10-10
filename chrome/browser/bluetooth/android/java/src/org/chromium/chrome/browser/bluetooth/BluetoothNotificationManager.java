@@ -273,7 +273,7 @@ public class BluetoothNotificationManager {
     }
 
     private static boolean shouldStartService(
-            Context context, @BluetoothType int bluetoothType, int notificationTabId) {
+            @BluetoothType int bluetoothType, int notificationTabId) {
         if (!ContentFeatureMap.isEnabled(
                 ContentFeatureList.WEB_BLUETOOTH_NEW_PERMISSIONS_BACKEND)) {
             return false;
@@ -290,6 +290,7 @@ public class BluetoothNotificationManager {
     /**
      * Send an intent to the bluetooth notification service to either create or destroy the
      * notification identified by notificationTabId.
+     *
      * @param context The activity context.
      * @param service The bluetooth notification service class.
      * @param notificationTabId The tab id.
@@ -305,7 +306,7 @@ public class BluetoothNotificationManager {
             GURL url,
             boolean isIncognito) {
         @BluetoothType int bluetoothType = getBluetoothType(webContents);
-        if (!shouldStartService(context, bluetoothType, notificationTabId)) return;
+        if (!shouldStartService(bluetoothType, notificationTabId)) return;
         Intent intent = new Intent(context, service);
         intent.setAction(ACTION_BLUETOOTH_UPDATE);
         intent.putExtra(NOTIFICATION_ID_EXTRA, notificationTabId);

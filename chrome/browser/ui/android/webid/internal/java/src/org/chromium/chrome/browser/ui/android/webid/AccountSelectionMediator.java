@@ -422,10 +422,7 @@ class AccountSelectionMediator {
     }
 
     private void updateAccounts(
-            String idpForDisplay,
-            List<Account> accounts,
-            boolean areAccountsClickable,
-            boolean showAddAccountRow) {
+            List<Account> accounts, boolean areAccountsClickable, boolean showAddAccountRow) {
         mSheetAccountItems.clear();
         if (accounts == null) return;
         // In the request permission dialog, account is shown as an account chip instead of in the
@@ -730,10 +727,7 @@ class AccountSelectionMediator {
         boolean isSingleAccountChooser = accounts != null && accounts.size() == 1;
 
         updateAccounts(
-                mIdpForDisplay,
-                accounts,
-                areAccountsClickable,
-                supportsAddAccount && !isSingleAccountChooser);
+                accounts, areAccountsClickable, supportsAddAccount && !isSingleAccountChooser);
         // If there is a change in the header, setFocusView() will be called and focus will land on
         // the header when screen reader is on. Since the header is updated before any item is
         // created, the header will always take precedence for focus. Do not reorder this

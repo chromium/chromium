@@ -75,7 +75,6 @@ public class InstanceSwitcherCoordinator {
     private final Drawable mArrowBackIcon;
 
     private PropertyModel mDialog;
-    private PropertyModel mConfirmDialog;
     private InstanceInfo mItemToDelete;
     private PropertyModel mNewWindowModel;
     private boolean mNewWindowEnabled;
@@ -155,12 +154,11 @@ public class InstanceSwitcherCoordinator {
         enableNewWindowCommand(newWindowEnabled);
         mModelList.add(new ModelListAdapter.ListItem(EntryType.COMMAND, mNewWindowModel));
 
-        mDialog = createDialog(mDialogView, mModelList, items);
+        mDialog = createDialog(mDialogView);
         mModalDialogManager.showDialog(mDialog, ModalDialogType.APP);
     }
 
-    private PropertyModel createDialog(
-            View dialogView, ModelList modelList, List<InstanceInfo> items) {
+    private PropertyModel createDialog(View dialogView) {
         ModalDialogProperties.Controller controller =
                 new ModalDialogProperties.Controller() {
                     @Override

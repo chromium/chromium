@@ -70,10 +70,7 @@ public class GlobalNightModeStateControllerTest {
         captureObservers();
 
         mGlobalNightModeStateController =
-                new GlobalNightModeStateController(
-                        mSystemNightModeMonitor,
-                        mPowerSavingMonitor,
-                        ChromeSharedPreferences.getInstance());
+                new GlobalNightModeStateController(mSystemNightModeMonitor, mPowerSavingMonitor);
 
         mGlobalNightModeStateController.onApplicationStateChange(HAS_RUNNING_ACTIVITIES);
 

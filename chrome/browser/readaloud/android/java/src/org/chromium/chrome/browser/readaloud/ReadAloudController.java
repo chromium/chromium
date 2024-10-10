@@ -123,7 +123,6 @@ public class ReadAloudController
     private final TabModel mIncognitoTabModel;
     @Nullable private Player mPlayerCoordinator;
     private final ObservableSupplier<LayoutManager> mLayoutManagerSupplier;
-    private TapToSeekSelectionManager mTapToSeekSelectionManager;
     private final UserEducationHelper mUserEducationHelper;
 
     private TabModelTabObserver mTabObserver;
@@ -521,8 +520,7 @@ public class ReadAloudController
                         activity, mProfileSupplier, new Handler(Looper.getMainLooper()));
         mActivePlaybackTabSupplier = new ObservableSupplierImpl<>();
         if (ReadAloudFeatures.isTapToSeekEnabled()) {
-            mTapToSeekSelectionManager =
-                    new TapToSeekSelectionManager(this, mActivePlaybackTabSupplier);
+            new TapToSeekSelectionManager(this, mActivePlaybackTabSupplier);
         }
         if (NetworkChangeNotifier.isInitialized()) {
             NetworkChangeNotifier.addConnectionTypeObserver(this);

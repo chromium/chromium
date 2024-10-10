@@ -109,8 +109,7 @@ public class FeedManagementMediator {
         Intent fakeIntent = new Intent();
         ComponentName fakeComponentName = new ComponentName(mContext.getPackageName(), "FakeClass");
         fakeIntent.setComponent(fakeComponentName);
-        int mutabililtyFlag = 0;
-        mutabililtyFlag = PendingIntent.FLAG_IMMUTABLE;
+        int mutabililtyFlag = PendingIntent.FLAG_IMMUTABLE;
         return PendingIntent.getActivity(mContext, 0, fakeIntent, mutabililtyFlag);
     }
 
