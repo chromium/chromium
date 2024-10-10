@@ -16743,6 +16743,25 @@
             ]
         }
     ],
+    "PdfCr23": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PdfCr23"
+                    ]
+                }
+            ]
+        }
+    ],
     "PdfOutOfProcessIframe": [
         {
             "platforms": [
