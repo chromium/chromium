@@ -22,10 +22,6 @@ class BookmarkModel;
 
 namespace crosapi {
 
-// Returns the UI page transition that corresponds to the given crosapi page
-// transition.
-ui::PageTransition PageTransitionToUiPageTransition(
-    mojom::SearchResult::PageTransition transition);
 
 // Creates an Omnibox answer card result from the AutocompleteMatch. Match must
 // either have its answer field populated or be a calculator result.

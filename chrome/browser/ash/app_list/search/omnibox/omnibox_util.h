@@ -12,6 +12,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "ui/base/page_transition_types.h"
 
 class GURL;
 
@@ -67,6 +68,10 @@ bool IsDriveUrl(const GURL& url);
 void RemoveDuplicateResults(
     std::vector<std::unique_ptr<OmniboxResult>>& results);
 
+// Returns the UI page transition that corresponds to the given crosapi page
+// transition.
+ui::PageTransition PageTransitionToUiPageTransition(
+    crosapi::mojom::SearchResult::PageTransition transition);
 }  // namespace app_list
 
 #endif  // CHROME_BROWSER_ASH_APP_LIST_SEARCH_OMNIBOX_OMNIBOX_UTIL_H_

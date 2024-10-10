@@ -228,20 +228,6 @@ SearchResultPtr CreateBaseResult(const AutocompleteMatch& match,
 
 }  // namespace
 
-// Convert from our Mojo page transition type into the UI equivalent.
-ui::PageTransition PageTransitionToUiPageTransition(
-    SearchResult::PageTransition transition) {
-  switch (transition) {
-    case SearchResult::PageTransition::kTyped:
-      return ui::PAGE_TRANSITION_TYPED;
-    case SearchResult::PageTransition::kGenerated:
-      return ui::PAGE_TRANSITION_GENERATED;
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return ui::PAGE_TRANSITION_FIRST;
-  }
-}
-
 SearchResultPtr CreateAnswerResult(const AutocompleteMatch& match,
                                    AutocompleteController* controller,
                                    std::u16string_view query,

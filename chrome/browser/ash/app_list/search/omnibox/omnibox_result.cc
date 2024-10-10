@@ -160,10 +160,10 @@ std::optional<GURL> OmniboxResult::url() const {
 }
 
 void OmniboxResult::Open(int event_flags) {
-  list_controller_->OpenURL(profile_, *search_result_->destination_url,
-                            crosapi::PageTransitionToUiPageTransition(
-                                search_result_->page_transition),
-                            ui::DispositionFromEventFlags(event_flags));
+  list_controller_->OpenURL(
+      profile_, *search_result_->destination_url,
+      PageTransitionToUiPageTransition(search_result_->page_transition),
+      ui::DispositionFromEventFlags(event_flags));
 }
 
 ash::SearchResultType OmniboxResult::GetSearchResultType() const {

@@ -84,8 +84,7 @@ OpenTabResult::~OpenTabResult() {
 void OpenTabResult::Open(int event_flags) {
   list_controller_->OpenURL(
       profile_, *search_result_->destination_url,
-      crosapi::PageTransitionToUiPageTransition(
-          search_result_->page_transition),
+      PageTransitionToUiPageTransition(search_result_->page_transition),
       ui::DispositionFromEventFlags(event_flags,
                                     WindowOpenDisposition::SWITCH_TO_TAB));
 }

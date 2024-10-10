@@ -64,4 +64,21 @@ void RemoveDuplicateResults(
   }
 }
 
+// TODO(crbug.com/371119767): Remove the crosapi usage here, as part of the
+// Lacros and crosapi sunsetting plan.
+//
+// Convert from our Mojo page transition type into the UI equivalent.
+ui::PageTransition PageTransitionToUiPageTransition(
+    crosapi::mojom::SearchResult::PageTransition transition) {
+  switch (transition) {
+    case crosapi::mojom::SearchResult::PageTransition::kTyped:
+      return ui::PAGE_TRANSITION_TYPED;
+    case crosapi::mojom::SearchResult::PageTransition::kGenerated:
+      return ui::PAGE_TRANSITION_GENERATED;
+    default:
+      NOTREACHED_IN_MIGRATION();
+      return ui::PAGE_TRANSITION_FIRST;
+  }
+}
+
 }  // namespace app_list

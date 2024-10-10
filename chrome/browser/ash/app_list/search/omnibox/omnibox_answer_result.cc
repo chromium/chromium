@@ -162,10 +162,10 @@ OmniboxAnswerResult::~OmniboxAnswerResult() {
 
 void OmniboxAnswerResult::Open(int event_flags) {
   DCHECK(search_result_->destination_url.has_value());
-  list_controller_->OpenURL(profile_, *search_result_->destination_url,
-                            crosapi::PageTransitionToUiPageTransition(
-                                search_result_->page_transition),
-                            ui::DispositionFromEventFlags(event_flags));
+  list_controller_->OpenURL(
+      profile_, *search_result_->destination_url,
+      PageTransitionToUiPageTransition(search_result_->page_transition),
+      ui::DispositionFromEventFlags(event_flags));
 }
 
 void OmniboxAnswerResult::OnColorModeChanged(bool dark_mode_enabled) {
