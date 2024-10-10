@@ -716,6 +716,14 @@ bool HttpResponseHeaders::GetNormalizedHeader(std::string_view name,
   return found;
 }
 
+std::optional<std::string> HttpResponseHeaders::GetNormalizedHeader(
+    std::string_view name) const {
+  std::string value;
+  return GetNormalizedHeader(name, &value)
+             ? std::make_optional(std::move(value))
+             : std::nullopt;
+}
+
 std::string HttpResponseHeaders::GetStatusLine() const {
   // copy up to the null byte.
   return std::string(raw_headers_.c_str());
@@ -1138,31 +1146,28 @@ bool HttpResponseHeaders::IsRedirect(std::string* location) const {
 
 bool HttpResponseHeaders::HasStorageAccessRetryHeader(
     const std::string* expected_origin) const {
-  size_t iter = 0;
-  std::optional<std::string_view> header_value;
-  while (
-      (header_value = EnumerateHeader(&iter, kActivateStorageAccessHeader))) {
-    const std::optional<structured_headers::ParameterizedItem> item =
-        structured_headers::ParseItem(*header_value);
-    if (!item || !item->item.is_token() || item->item.GetString() != "retry") {
-      continue;
-    }
-    if (base::ranges::any_of(
-            item->params, [&](const auto& key_and_value) -> bool {
-              const auto [key, value] = key_and_value;
-              if (key != "allowed-origin") {
-                return false;
-              }
-              if (value.is_token() && value.GetString() == "*") {
-                return true;
-              }
-              return expected_origin && value.is_string() &&
-                     value.GetString() == *expected_origin;
-            })) {
-      return true;
-    }
+  std::optional<std::string> header_value =
+      GetNormalizedHeader(kActivateStorageAccessHeader);
+  if (!header_value) {
+    return false;
   }
-  return false;
+  const std::optional<structured_headers::ParameterizedItem> item =
+      structured_headers::ParseItem(*header_value);
+  if (!item || !item->item.is_token() || item->item.GetString() != "retry") {
+    return false;
+  }
+  return base::ranges::any_of(
+      item->params, [&](const auto& key_and_value) -> bool {
+        const auto [key, value] = key_and_value;
+        if (key != "allowed-origin") {
+          return false;
+        }
+        if (value.is_token() && value.GetString() == "*") {
+          return true;
+        }
+        return expected_origin && value.is_string() &&
+               value.GetString() == *expected_origin;
+      });
 }
 
 // static

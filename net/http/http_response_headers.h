@@ -211,7 +211,22 @@ class NET_EXPORT HttpResponseHeaders
   // that would be returned from repeated calls to EnumerateHeader, joined by
   // the string ", ".
   //
-  // Returns false if this header wasn't found.
+  // Returns std::nullopt if this header wasn't found.
+  //
+  // Example:
+  //   Foo: a, b,c
+  //   Foo: d
+  //
+  //   std::optional<std::string> value = GetNormalizedHeader("Foo");
+  //   // Now, |value| is "a, b, c, d".
+  //
+  // NOTE: Do not make any assumptions about the encoding of this output
+  // string.  It may be non-ASCII, and the encoding used by the server is not
+  // necessarily known to us.  Do not assume that this output is UTF-8!
+  std::optional<std::string> GetNormalizedHeader(std::string_view name) const;
+
+  // Deprecated version of the above. `value` must not be nullptr. Returns false
+  // if this header wasn't found.
   //
   // Example:
   //   Foo: a, b,c
@@ -219,10 +234,6 @@ class NET_EXPORT HttpResponseHeaders
   //
   //   string value;
   //   GetNormalizedHeader("Foo", &value);  // Now, |value| is "a, b, c, d".
-  //
-  // NOTE: Do not make any assumptions about the encoding of this output
-  // string.  It may be non-ASCII, and the encoding used by the server is not
-  // necessarily known to us.  Do not assume that this output is UTF-8!
   bool GetNormalizedHeader(std::string_view name, std::string* value) const;
 
   // Returns the normalized status line.

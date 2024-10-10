@@ -13591,15 +13591,15 @@ const StorageAccessHeaderRetryData storage_access_header_retry_tests[] = {
     // Origin header, non-wildcard (non-matching).
     {url::Origin::Create(GURL("https://example.test:123")),
      "retry; allowed-origin=\"https://example.test\"", false},
-    // Origin header, multiple items, first matches.
+    // Origin header, list, first matches.
     {url::Origin::Create(GURL("https://example.test")),
-     "retry; allowed-origin=\"https://example.test\", foo, bar", true},
-    // Origin header, multiple items, non-first non-last matches.
+     "retry; allowed-origin=\"https://example.test\", foo, bar", false},
+    // Origin header, list, non-first non-last matches.
     {url::Origin::Create(GURL("https://example.test")),
-     "foo, retry; allowed-origin=\"https://example.test\", bar", true},
-    // Origin header, multiple items, last matches.
+     "foo, retry; allowed-origin=\"https://example.test\", bar", false},
+    // Origin header, list, last matches.
     {url::Origin::Create(GURL("https://example.test")),
-     "foo, bar, retry; allowed-origin=\"https://example.test\"", true},
+     "foo, bar, retry; allowed-origin=\"https://example.test\"", false},
     // Origin header, multiple params, first matches.
     {url::Origin::Create(GURL("https://example.test")),
      "retry; allowed-origin=\"https://example.test\"; foo; bar", true},

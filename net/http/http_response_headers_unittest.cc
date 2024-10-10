@@ -766,8 +766,7 @@ TEST_P(ContentTypeTest, GetMimeType) {
   value.clear();
   EXPECT_EQ(test.has_charset, parsed->GetCharset(&value));
   EXPECT_EQ(test.charset, value);
-  EXPECT_TRUE(parsed->GetNormalizedHeader("content-type", &value));
-  EXPECT_EQ(test.all_content_type, value);
+  EXPECT_EQ(parsed->GetNormalizedHeader("content-type"), test.all_content_type);
 }
 
 // clang-format off
@@ -1478,11 +1477,17 @@ const HasStorageAccessRetryTestData has_storage_access_retry_tests[] = {
      R"(Activate-Storage-Access: retry; allowed-origin="https://example.com")"
      "\n",
      "https://example.com:123", false},
-    // Unrelated items are ignored.
+    // This is a list, not an item, so it is ignored.
     {"HTTP/1.1 200 OK\n"
      R"(Activate-Storage-Access: foo, retry; allowed-origin=*, bar)"
      "\n",
-     "https://example.com", true},
+     "https://example.com", false},
+    // This is a list (supplied in multiple field lines), not an item, so it is
+    // ignored.
+    {"HTTP/1.1 200 OK\n"
+     "Activate-Storage-Access: foo\n"
+     "Activate-Storage-Access: retry; allowed-origin=*, bar\n",
+     "https://example.com", false},
 };
 
 INSTANTIATE_TEST_SUITE_P(HttpResponseHeaders,
@@ -1912,18 +1917,23 @@ TEST(HttpResponseHeadersTest, GetNormalizedHeaderWithEmptyValues) {
   HeadersToRaw(&headers);
   auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
   std::string value;
+  auto verify = [&](std::string_view name,
+                    std::optional<std::string_view> expected,
+                    const base::Location& location = FROM_HERE) {
+    EXPECT_EQ(parsed->GetNormalizedHeader(name, &value), expected.has_value())
+        << location.ToString();
+    EXPECT_EQ(value, expected.has_value() ? expected : "")
+        << location.ToString();
+    EXPECT_EQ(parsed->GetNormalizedHeader(name), expected)
+        << location.ToString();
+  };
 
-  EXPECT_TRUE(parsed->GetNormalizedHeader("a", &value));
-  EXPECT_EQ(value, ", , ");
-  EXPECT_TRUE(parsed->GetNormalizedHeader("b", &value));
-  EXPECT_EQ(value, ", *");
-  EXPECT_TRUE(parsed->GetNormalizedHeader("c", &value));
-  EXPECT_EQ(value, "*, ");
-  EXPECT_TRUE(parsed->GetNormalizedHeader("d", &value));
-  EXPECT_EQ(value, "*, *");
-  EXPECT_TRUE(parsed->GetNormalizedHeader("e", &value));
-  EXPECT_EQ(value, "");
-  EXPECT_FALSE(parsed->GetNormalizedHeader("f", &value));
+  verify("a", ", , ");
+  verify("b", ", *");
+  verify("c", "*, ");
+  verify("d", "*, *");
+  verify("e", "");
+  verify("f", std::nullopt);
 }
 
 TEST(HttpResponseHeadersTest, GetNormalizedHeaderWithCommas) {
@@ -1938,20 +1948,25 @@ TEST(HttpResponseHeadersTest, GetNormalizedHeaderWithCommas) {
   HeadersToRaw(&headers);
   auto parsed = base::MakeRefCounted<HttpResponseHeaders>(headers);
   std::string value;
+  auto verify = [&](std::string_view name,
+                    std::optional<std::string_view> expected,
+                    const base::Location& location = FROM_HERE) {
+    EXPECT_EQ(parsed->GetNormalizedHeader(name, &value), expected.has_value())
+        << location.ToString();
+    EXPECT_EQ(value, expected.has_value() ? expected : "")
+        << location.ToString();
+    EXPECT_EQ(parsed->GetNormalizedHeader(name), expected)
+        << location.ToString();
+  };
 
   // TODO(mmenke): "Normalized" headers probably should preserve the
   // leading/trailing whitespace from the original headers.
-  ASSERT_TRUE(parsed->GetNormalizedHeader("a", &value));
-  EXPECT_EQ("foo, bar, ,", value);
-  ASSERT_TRUE(parsed->GetNormalizedHeader("b", &value));
-  EXPECT_EQ(", foo, bar,", value);
-  ASSERT_TRUE(parsed->GetNormalizedHeader("c", &value));
-  EXPECT_EQ(",,,", value);
-  ASSERT_TRUE(parsed->GetNormalizedHeader("d", &value));
-  EXPECT_EQ(",  ,  ,", value);
-  ASSERT_TRUE(parsed->GetNormalizedHeader("e", &value));
-  EXPECT_EQ(",\t,\t,", value);
-  EXPECT_FALSE(parsed->GetNormalizedHeader("f", &value));
+  verify("a", "foo, bar, ,");
+  verify("b", ", foo, bar,");
+  verify("c", ",,,");
+  verify("d", ",  ,  ,");
+  verify("e", ",\t,\t,");
+  verify("f", std::nullopt);
 }
 
 TEST(HttpResponseHeadersTest, AddHeader) {
