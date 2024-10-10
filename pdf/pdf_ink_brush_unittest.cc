@@ -14,10 +14,9 @@ namespace chrome_pdf {
 
 namespace {
 
-std::unique_ptr<chrome_pdf::PdfInkBrush> CreatePdfInkBrush(float size) {
-  return std::make_unique<chrome_pdf::PdfInkBrush>(
-      chrome_pdf::PdfInkBrush::Type::kPen,
-      chrome_pdf::PdfInkBrush::Params{SK_ColorBLACK, size});
+std::unique_ptr<PdfInkBrush> CreatePdfInkBrush(float size) {
+  return std::make_unique<PdfInkBrush>(
+      PdfInkBrush::Type::kPen, PdfInkBrush::Params{SK_ColorBLACK, size});
 }
 
 }  // namespace

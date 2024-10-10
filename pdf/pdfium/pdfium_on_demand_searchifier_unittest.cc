@@ -4,6 +4,7 @@
 
 #include "pdf/pdfium/pdfium_on_demand_searchifier.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -20,9 +21,11 @@
 #include "pdf/test/test_client.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 
+namespace chrome_pdf {
+
 namespace {
 
-void WaitUntilIdle(chrome_pdf::PDFiumOnDemandSearchifier* searchifier,
+void WaitUntilIdle(PDFiumOnDemandSearchifier* searchifier,
                    base::OnceClosure callback) {
   if (searchifier->IsIdleForTesting()) {
     std::move(callback).Run();
@@ -35,7 +38,7 @@ void WaitUntilIdle(chrome_pdf::PDFiumOnDemandSearchifier* searchifier,
       base::Milliseconds(100));
 }
 
-void WaitUntilFailure(chrome_pdf::PDFiumOnDemandSearchifier* searchifier,
+void WaitUntilFailure(PDFiumOnDemandSearchifier* searchifier,
                       base::OnceClosure callback) {
   if (searchifier->HasFailed()) {
     std::move(callback).Run();
@@ -65,8 +68,6 @@ screen_ai::mojom::VisualAnnotationPtr CreateDummyAnnotation(int call_number) {
 }
 
 }  // namespace
-
-namespace chrome_pdf {
 
 class PDFiumOnDemandSearchifierTest : public PDFiumTestBase {
  public:
@@ -114,9 +115,8 @@ class PDFiumOnDemandSearchifierTest : public PDFiumTestBase {
   }
 
   // Returns all characters in the page.
-  std::string GetPageText(chrome_pdf::PDFiumPage& page) {
-    return base::UTF16ToUTF8(
-        chrome_pdf::PDFiumRange::AllTextOnPage(&page).GetText());
+  std::string GetPageText(PDFiumPage& page) {
+    return base::UTF16ToUTF8(PDFiumRange::AllTextOnPage(&page).GetText());
   }
 
   int performed_ocrs() const { return performed_ocrs_; }

@@ -140,8 +140,7 @@ std::optional<gfx::SizeF> GetPDFPageSizeByIndex(
     base::span<const uint8_t> pdf_buffer,
     int page_index) {
   ScopedSdkInitializer scoped_sdk_initializer(/*enable_v8=*/true);
-  chrome_pdf::PDFiumEngineExports* engine_exports =
-      chrome_pdf::PDFiumEngineExports::Get();
+  PDFiumEngineExports* engine_exports = PDFiumEngineExports::Get();
   return engine_exports->GetPDFPageSizeByIndex(pdf_buffer, page_index);
 }
 
