@@ -29,7 +29,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
-#include "base/time/time.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/disks/disk.h"
 #include "chromeos/ash/components/disks/suspend_unmount_manager.h"
@@ -160,10 +159,9 @@ class DiskMountManagerImpl : public DiskMountManager,
             mount_file_path)) {
       VLOG(1) << "Dropping ARC caches for " << Redact(mount_path);
       arc_delegate_->PrepareForRemovableMediaUnmount(
-          mount_file_path, base::Seconds(3) /* timeout */,
-          BindOnce(&DiskMountManagerImpl::UnmountPathContinue,
-                   weak_ptr_factory_.GetWeakPtr(), mount_path,
-                   std::move(callback)));
+          mount_file_path, BindOnce(&DiskMountManagerImpl::UnmountPathContinue,
+                                    weak_ptr_factory_.GetWeakPtr(), mount_path,
+                                    std::move(callback)));
       return;
     }
 

@@ -307,47 +307,82 @@ void ArcVolumeMounterBridge::OnMountEvent(
 
 void ArcVolumeMounterBridge::PrepareForRemovableMediaUnmount(
     const base::FilePath& mount_path,
-    const base::TimeDelta& timeout,
     DiskMountManager::ArcDelegate::PreparationCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(
       ash::CrosDisksClient::GetRemovableDiskMountPoint().IsParent(mount_path));
 
-  if (prepare_removable_media_unmount_callback_) {
-    // TODO: crbug.com/317944073 - Support the case where this method is called
-    // again before the previous callback hasn't run yet.
-    std::move(callback).Run(false);
+  VLOG(1) << "Queueing unmount request for " << mount_path;
+  unmount_requests_.emplace(mount_path, std::move(callback));
+
+  if (unmount_callback_.is_null()) {
+    ProcessPendingRemovableMediaUnmountRequest();
+  }
+}
+
+void ArcVolumeMounterBridge::ProcessPendingRemovableMediaUnmountRequest() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(unmount_callback_.is_null());
+
+  if (unmount_requests_.empty()) {
+    // No pending requests.
     return;
   }
+
+  // Process the oldest pending request.
+  base::FilePath mount_path;
+  std::tie(mount_path, unmount_callback_) =
+      std::move(unmount_requests_.front());
+  unmount_requests_.pop();
+
   mojom::VolumeMounterInstance* volume_mounter_instance =
       ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->volume_mounter(),
                                   PrepareForRemovableMediaUnmount);
   if (!volume_mounter_instance) {
-    std::move(callback).Run(false);
+    std::move(unmount_callback_).Run(false);
+    ProcessPendingRemovableMediaUnmountRequest();
     return;
   }
 
-  // This will run when the mojo method callback runs or the `timeout` has
-  // elapsed, whichever that happens first.
-  prepare_removable_media_unmount_callback_ = std::move(callback);
+  // `unmount_callback_` will run when the mojo method callback runs or the
+  // `unmount_timeout_` has elapsed, whichever that happens first. The timeout
+  // is set to ensure that host-side unmount is not blocked for too long even
+  // when ARC is not responsive or takes too long to drop caches.
+
+  unmount_mojo_callback_.Reset(base::BindPostTask(
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      base::BindOnce(
+          &ArcVolumeMounterBridge::OnArcPreparedForRemovableMediaUnmount,
+          weak_ptr_factory_.GetWeakPtr(), mount_path)));
 
   volume_mounter_instance->PrepareForRemovableMediaUnmount(
-      mount_path,
-      base::BindOnce(
-          &ArcVolumeMounterBridge::OnArcPreparedForRemovableMediaUnmount,
-          weak_ptr_factory_.GetWeakPtr()));
+      mount_path, unmount_mojo_callback_.callback());
 
-  prepare_removable_media_unmount_timer_.Start(
-      FROM_HERE, timeout,
+  unmount_timer_.Start(
+      FROM_HERE, unmount_timeout_,
       base::BindOnce(
           &ArcVolumeMounterBridge::OnArcPreparedForRemovableMediaUnmount,
-          weak_ptr_factory_.GetWeakPtr(), false /* success */));
+          weak_ptr_factory_.GetWeakPtr(), mount_path, false /* success */));
 }
 
 void ArcVolumeMounterBridge::OnArcPreparedForRemovableMediaUnmount(
+    const base::FilePath& mount_path,
     bool success) {
-  if (prepare_removable_media_unmount_callback_) {
-    std::move(prepare_removable_media_unmount_callback_).Run(success);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(1) << __func__ << " called for " << mount_path;
+
+  if (unmount_callback_.is_null()) {
+    LOG(ERROR) << __func__ << " was unexpectedly called with null callback";
+    return;
   }
+  std::move(unmount_callback_).Run(success);
+
+  // Cancel the other un-run callback so that this method won't be called twice
+  // for the same `UnmountRequest`.
+  unmount_mojo_callback_.Cancel();
+  unmount_timer_.Stop();
+
+  ProcessPendingRemovableMediaUnmountRequest();
 }
 
 void ArcVolumeMounterBridge::SendMountEventForRemovableMedia(

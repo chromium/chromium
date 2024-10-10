@@ -15,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/observer_list_types.h"
-#include "base/time/time.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/disks/disk.h"
 
@@ -165,7 +164,6 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DISKS) DiskMountManager {
     // `mount_path` by dropping any references to the volume.
     virtual void PrepareForRemovableMediaUnmount(
         const base::FilePath& mount_path,
-        const base::TimeDelta& timeout,
         PreparationCallback callback) {}
   };
 
