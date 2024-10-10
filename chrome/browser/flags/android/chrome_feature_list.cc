@@ -105,6 +105,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillEnableSaveCardLoadingAndConfirmation,
     &autofill::features::kAutofillEnableSyncingOfPixBankAccounts,
     &autofill::features::kAutofillEnableVcnEnrollLoadingAndConfirmation,
+    &autofill::features::kAutofillEnableVirtualCardJavaPaymentsDataManager,
     &blink::features::kBackForwardTransitions,
     &blink::features::kForceWebContentsDarkMode,
     &blink::features::kPrerender2,

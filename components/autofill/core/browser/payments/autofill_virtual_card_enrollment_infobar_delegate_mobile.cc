@@ -58,6 +58,26 @@ AutofillVirtualCardEnrollmentInfoBarDelegateMobile::GetIssuerIcon() const {
       .card_art_image;
 }
 
+int AutofillVirtualCardEnrollmentInfoBarDelegateMobile::
+    GetNetworkIconResourceId() const {
+  return CreditCard::IconResourceId(
+      virtual_card_enroll_bubble_controller_->GetUiModel()
+          .enrollment_fields()
+          .credit_card.network());
+}
+
+GURL AutofillVirtualCardEnrollmentInfoBarDelegateMobile::GetIssuerIconUrl()
+    const {
+  const CreditCard& credit_card =
+      virtual_card_enroll_bubble_controller_->GetUiModel()
+          .enrollment_fields()
+          .credit_card;
+  if (credit_card.HasRichCardArtImageFromMetadata()) {
+    return credit_card.card_art_url();
+  }
+  return GURL();
+}
+
 std::u16string
 AutofillVirtualCardEnrollmentInfoBarDelegateMobile::GetCardLabel() const {
   return virtual_card_enroll_bubble_controller_->GetUiModel()

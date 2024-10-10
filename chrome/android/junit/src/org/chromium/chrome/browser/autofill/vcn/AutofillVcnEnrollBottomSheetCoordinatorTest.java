@@ -17,6 +17,8 @@ import static org.mockito.Mockito.when;
 import static org.robolectric.Robolectric.buildActivity;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 
 import androidx.test.filters.SmallTest;
 
@@ -29,30 +31,44 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils.CardIconSpecs;
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.autofill.AutofillFeatures;
+import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
+
+import java.util.Optional;
 
 /** Unit test for {@link AutofillVcnEnrollBottomSheetCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @SmallTest
+@EnableFeatures({
+    ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES,
+    AutofillFeatures.AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER
+})
 public final class AutofillVcnEnrollBottomSheetCoordinatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ManagedBottomSheetController mBottomSheetController;
     @Mock private LayoutStateProvider mLayoutStateProvider;
     @Mock private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    @Mock private Profile mProfile;
+    @Mock private PersonalDataManager mPersonalDataManager;
 
     private WindowAndroid mWindow;
     private AutofillVcnEnrollBottomSheetCoordinator mCoordinator;
@@ -61,19 +77,17 @@ public final class AutofillVcnEnrollBottomSheetCoordinatorTest {
 
     @Before
     public void setUp() {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(
-                ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES, false);
-        FeatureList.mergeTestValues(testValues, false);
-
         when(mLayoutStateProvider.isLayoutVisible(LayoutType.BROWSING)).thenReturn(true);
 
+        PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
         Activity activity = buildActivity(Activity.class).create().get();
         mWindow = new WindowAndroid(activity);
         BottomSheetControllerFactory.attach(mWindow, mBottomSheetController);
+        setUpCreditCardWithCardArtUrl();
         mCoordinator =
                 new AutofillVcnEnrollBottomSheetCoordinator(
                         mWindow.getContext().get(),
+                        mProfile,
                         new PropertyModel.Builder(AutofillVcnEnrollBottomSheetProperties.ALL_KEYS),
                         mLayoutStateProvider,
                         mTabModelSelectorSupplier,
@@ -91,6 +105,18 @@ public final class AutofillVcnEnrollBottomSheetCoordinatorTest {
                             @Override
                             public void onDismiss() {}
                         });
+    }
+
+    private void setUpCreditCardWithCardArtUrl() {
+        String cardArtUrl = "http://example.test/card.png";
+        Bitmap bitmap = Bitmap.createBitmap(/* width= */ 5, /* height= */ 5, Config.ARGB_8888);
+        when(mPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(
+                        new GURL(cardArtUrl),
+                        CardIconSpecs.create(mWindow.getContext().get(), ImageSize.SMALL)))
+                .thenReturn(Optional.of(bitmap));
+        when(mPersonalDataManager.getCustomImageForAutofillSuggestionIfAvailable(
+                        /* customImageUrl= */ any(), /* cardIconSpecs= */ any()))
+                .thenReturn(Optional.empty());
     }
 
     @After

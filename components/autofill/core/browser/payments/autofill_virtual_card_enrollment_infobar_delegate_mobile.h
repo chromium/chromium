@@ -43,8 +43,17 @@ class AutofillVirtualCardEnrollmentInfoBarDelegateMobile
   // Text of the learn more link in the description.
   std::u16string GetLearnMoreLinkText() const;
 
-  // Issuer icon for the card.
+  // Issuer icon for the card. (Deprecated)
   const gfx::ImageSkia* GetIssuerIcon() const;
+
+  // Network icon resource id for the card. This will be used if no issuer
+  // icon url has been set or as a fallback if the issuer icon url has not yet
+  // been fetched and cached by the image fetcher.
+  int GetNetworkIconResourceId() const;
+
+  // The issuer icon url for the card. This should take precedence over the
+  // network icon resource id.
+  GURL GetIssuerIconUrl() const;
 
   // The label for the card to show in the content of the infobar.
   std::u16string GetCardLabel() const;

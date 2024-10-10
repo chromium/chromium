@@ -121,6 +121,15 @@ BASE_FEATURE(kAutofillEnableFpanRiskBasedAuthentication,
              "AutofillEnableFpanRiskBasedAuthentication",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, the Virtual Card enrollment bottom sheet uses the Java
+// payments data manager and associated image fetcher to retrieve the cached
+// card art images (when available on Android). When not enabled, the native
+// payments data manager and associated image fetcher are used, where the image
+// is not cached.
+BASE_FEATURE(kAutofillEnableVirtualCardJavaPaymentsDataManager,
+             "AutofillEnableVirtualCardJavaPaymentsDataManager",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // When enabled, saving and autofilling local IBANs (International Bank Account
 // Numbers) will be offered.

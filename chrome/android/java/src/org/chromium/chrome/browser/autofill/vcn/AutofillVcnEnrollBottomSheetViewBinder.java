@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill.vcn;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -18,11 +19,17 @@ import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.Description;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.IssuerIcon;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.LegalMessages;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.function.Function;
+
 /** The view-binder of the autofill virtual card enrollment bottom sheet UI. */
 /*package*/ class AutofillVcnEnrollBottomSheetViewBinder {
+    private AutofillVcnEnrollBottomSheetViewBinder() {}
+
     /**
      * Updates the view based on changes in the model.
      *
@@ -30,7 +37,7 @@ import org.chromium.ui.modelutil.PropertyModel;
      * @param view The view to update.
      * @param propertyKey The property of the model that has changed.
      */
-    static void bind(
+    /*package*/ static void bind(
             PropertyModel model, AutofillVcnEnrollBottomSheetView view, PropertyKey propertyKey) {
         if (AutofillVcnEnrollBottomSheetProperties.MESSAGE_TEXT == propertyKey) {
             view.mDialogTitle.setText(
@@ -49,9 +56,21 @@ import org.chromium.ui.modelutil.PropertyModel;
                             AutofillVcnEnrollBottomSheetProperties
                                     .CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION));
 
-        } else if (AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON == propertyKey) {
-            view.mIssuerIcon.setImageBitmap(
-                    scaleBitmap(model.get(AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON)));
+        } else if (AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON == propertyKey
+                || AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON_FETCH_CALLBACK
+                        == propertyKey) {
+            if (ChromeFeatureList.isEnabled(
+                    AutofillFeatures.AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER)) {
+                Function<IssuerIcon, Drawable> iconFetcher =
+                        model.get(
+                                AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON_FETCH_CALLBACK);
+                view.mIssuerIcon.setImageDrawable(
+                        iconFetcher.apply(
+                                model.get(AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON)));
+            } else if (AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON == propertyKey) {
+                view.mIssuerIcon.setImageBitmap(
+                        scaleBitmap(model.get(AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON)));
+            }
 
         } else if (AutofillVcnEnrollBottomSheetProperties.CARD_LABEL == propertyKey) {
             view.mCardLabel.setText(model.get(AutofillVcnEnrollBottomSheetProperties.CARD_LABEL));
