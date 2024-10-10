@@ -412,9 +412,6 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   // number of scripts and the total bytes of scripts.
   void CountScriptInternal(size_t script_size, size_t cached_metadata_size);
 
-  // Called by ServiceWorkerEventQueue just before they start an event.
-  void OnBeforeStartEvent();
-
   // Called by ServiceWorkerEventQueue when a certain time has passed since
   // the last task finished.
   void OnIdleTimeout();

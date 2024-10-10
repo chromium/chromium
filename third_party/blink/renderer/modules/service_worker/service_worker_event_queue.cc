@@ -47,21 +47,17 @@ ServiceWorkerEventQueue::StayAwakeToken::~StayAwakeToken() {
 }
 
 ServiceWorkerEventQueue::ServiceWorkerEventQueue(
-    BeforeStartEventCallback before_start_event_callback,
     base::RepeatingClosure idle_callback,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : ServiceWorkerEventQueue(std::move(before_start_event_callback),
-                              std::move(idle_callback),
+    : ServiceWorkerEventQueue(std::move(idle_callback),
                               std::move(task_runner),
                               base::DefaultTickClock::GetInstance()) {}
 
 ServiceWorkerEventQueue::ServiceWorkerEventQueue(
-    BeforeStartEventCallback before_start_event_callback,
     base::RepeatingClosure idle_callback,
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     const base::TickClock* tick_clock)
     : task_runner_(std::move(task_runner)),
-      before_start_event_callback_(std::move(before_start_event_callback)),
       idle_callback_(std::move(idle_callback)),
       tick_clock_(tick_clock) {
   if (!base::FeatureList::IsEnabled(
@@ -165,8 +161,6 @@ void ServiceWorkerEventQueue::ProcessEvents() {
 void ServiceWorkerEventQueue::StartEvent(int event_id,
                                          std::unique_ptr<Event> event) {
   DCHECK(HasEvent(event_id));
-  if (before_start_event_callback_)
-    before_start_event_callback_.Run();
   std::move(event->start_callback).Run(event_id);
 }
 

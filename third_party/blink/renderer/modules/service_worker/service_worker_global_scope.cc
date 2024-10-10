@@ -262,8 +262,6 @@ ServiceWorkerGlobalScope::ServiceWorkerGlobalScope(
   // service workers, but basically that won't be big problem because we have
   // ping-pong timer and that will kill paused service workers.
   event_queue_ = std::make_unique<ServiceWorkerEventQueue>(
-      WTF::BindRepeating(&ServiceWorkerGlobalScope::OnBeforeStartEvent,
-                         WrapWeakPersistent(this)),
       WTF::BindRepeating(&ServiceWorkerGlobalScope::OnIdleTimeout,
                          WrapWeakPersistent(this)),
       GetTaskRunner(TaskType::kInternalDefault));
@@ -1374,10 +1372,6 @@ mojom::blink::ServiceWorkerHost*
 ServiceWorkerGlobalScope::GetServiceWorkerHost() {
   DCHECK(service_worker_host_.is_bound());
   return service_worker_host_.get();
-}
-
-void ServiceWorkerGlobalScope::OnBeforeStartEvent() {
-  DCHECK(IsContextThread());
 }
 
 void ServiceWorkerGlobalScope::OnIdleTimeout() {
