@@ -126,10 +126,6 @@ if (use_allocator_shim && is_win) {
 declare_args() {
   use_freeslot_bitmap = false
 
-  # Puts the regular and BRP pools right next to each other, so that we can
-  # check "belongs to one of the two pools" with a single bitmask operation.
-  glue_core_pools = use_partition_alloc_as_malloc
-
   # Introduces pointer compression support in PA. These are 4-byte
   # pointers that can point within the core pools (regular and BRP).
   #

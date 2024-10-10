@@ -29,9 +29,6 @@ record_alloc_info = false
 # GWP-ASan is tied to BRP's enablement.
 enable_gwp_asan_support = enable_backup_ref_ptr_support
 
-# Pools are a logical concept when address space is 32-bit.
-glue_core_pools = glue_core_pools && has_64_bit_pointers
-
 # Pointer compression requires 64-bit pointers.
 enable_pointer_compression =
     enable_pointer_compression_support && has_64_bit_pointers
@@ -148,7 +145,6 @@ pa_buildflag_header("buildflags") {
     "FORCE_DISABLE_BACKUP_REF_PTR_FEATURE=$force_disable_backup_ref_ptr_feature",
     "FORCE_ENABLE_RAW_PTR_EXCLUSION=$force_enable_raw_ptr_exclusion",
     "FORWARD_THROUGH_MALLOC=$forward_through_malloc",
-    "GLUE_CORE_POOLS=$glue_core_pools",
     "HAS_64_BIT_POINTERS=$has_64_bit_pointers",
     "HAS_MEMORY_TAGGING=$has_memory_tagging",
     "IS_ANDROID=$is_android",
