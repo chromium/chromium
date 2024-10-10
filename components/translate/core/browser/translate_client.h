@@ -37,7 +37,7 @@ class TranslateInfoBarDelegate;
 // TranslateManager is used (e.g. a single tab).
 class TranslateClient {
  public:
-  virtual ~TranslateClient() {}
+  virtual ~TranslateClient() = default;
 
   // Gets the TranslateDriver associated with the client.
   virtual TranslateDriver* GetTranslateDriver() = 0;

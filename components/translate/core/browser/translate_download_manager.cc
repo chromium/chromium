@@ -22,7 +22,7 @@ TranslateDownloadManager::TranslateDownloadManager()
     : language_list_(std::make_unique<TranslateLanguageList>()),
       script_(std::make_unique<TranslateScript>()) {}
 
-TranslateDownloadManager::~TranslateDownloadManager() {}
+TranslateDownloadManager::~TranslateDownloadManager() = default;
 
 void TranslateDownloadManager::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

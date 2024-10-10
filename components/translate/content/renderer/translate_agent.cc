@@ -109,7 +109,7 @@ TranslateAgent::TranslateAgent(content::RenderFrame* render_frame, int world_id)
       blink::TaskType::kInternalTranslation);
 }
 
-TranslateAgent::~TranslateAgent() {}
+TranslateAgent::~TranslateAgent() = default;
 
 void TranslateAgent::SeedLanguageDetectionModelForTesting(
     base::File model_file) {

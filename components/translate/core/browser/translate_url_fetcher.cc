@@ -26,7 +26,7 @@ const int kMaxRetry = 16;
 TranslateURLFetcher::TranslateURLFetcher()
     : state_(IDLE), retry_count_(0), max_retry_on_5xx_(0) {}
 
-TranslateURLFetcher::~TranslateURLFetcher() {}
+TranslateURLFetcher::~TranslateURLFetcher() = default;
 
 bool TranslateURLFetcher::Request(const GURL& url,
                                   TranslateURLFetcher::Callback callback,
