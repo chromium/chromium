@@ -757,6 +757,8 @@
   E_CPONLY(kColorTabSearchButtonCRForegroundFrameActive) \
   E_CPONLY(kColorTabSearchButtonCRForegroundFrameInactive) \
   E_CPONLY(kColorTabSearchCardBackground) \
+  E_CPONLY(kColorTabSearchDisabled) \
+  E_CPONLY(kColorTabSearchDisabledContainer) \
   E_CPONLY(kColorTabSearchDivider) \
   E_CPONLY(kColorTabSearchFooterBackground) \
   E_CPONLY(kColorTabSearchImageTabContentBottom) \

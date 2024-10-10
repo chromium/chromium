@@ -53,6 +53,11 @@ cr-button:focus-visible {
   font-weight: 500;
 }
 
+:host([disabled]) #buttonContent,
+:host([disabled]) #heading {
+  color: var(--color-tab-search-disabled);
+}
+
 #iconTextRow {
   align-items: center;
   display: flex;
@@ -75,4 +80,9 @@ cr-button:focus-visible {
   height: 32px;
   justify-content: center;
   width: 32px;
+}
+
+:host([disabled]) #prefixIcon {
+  background: var(--color-tab-search-disabled-container);
+  color: var(--color-tab-search-disabled);
 }

@@ -140,6 +140,9 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabSearchButtonBackground] = {ui::kColorSysSurface2};
   mixer[kColorTabSearchCardBackground] = {ui::kColorSysSurface5};
   mixer[kColorTabSearchBackground] = {ui::kColorSysSurface};
+  mixer[kColorTabSearchDisabled] = {ui::kColorSysStateDisabled};
+  mixer[kColorTabSearchDisabledContainer] = {
+      ui::kColorSysStateDisabledContainer};
   mixer[kColorTabSearchDivider] = {ui::kColorSysDivider};
   mixer[kColorTabSearchFooterBackground] = {ui::kColorSysNeutralContainer};
   mixer[kColorTabSearchImageTabContentBottom] = {ui::kColorSysHeaderContainer};
