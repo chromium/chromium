@@ -531,18 +531,13 @@ TEST_P(OnBeginFrameAcksCompositorFrameSinkSupportTest,
   int release_counts[] = {1, 1, 1};
   UnrefResources(first_frame_ids, release_counts, std::size(first_frame_ids));
 
-  if (ShouldAckOnSurfaceActivationWhenInteractive() &&
-      !BeginFrameAcksEnabled()) {
-    EXPECT_EQ(3u, fake_support_client_.returned_resources().size());
-  } else {
-    // Without early-ack-on-activate, none are returned to the client since
-    // DidReceiveCompositorAck is not invoked.
-    //
-    // If it is, and we're doing begin frame acks, although we will get an ack,
-    // we will also not have returned resources. They will be instead be
-    // enqueued in `surface_returned_resources_` since we need a begin frame.
-    EXPECT_EQ(0u, fake_support_client_.returned_resources().size());
-  }
+  // None are returned to the client since DidReceiveCompositorAck is not
+  // invoked.
+  //
+  // If it is, and we're doing begin frame acks, although we will get an ack,
+  // we will also not have returned resources. They will be instead be
+  // enqueued in `surface_returned_resources_` since we need a begin frame.
+  EXPECT_EQ(0u, fake_support_client_.returned_resources().size());
 
   // Submitting an empty frame causes previous resources referenced by the
   // previous frame to be returned to client.
@@ -770,17 +765,8 @@ TEST_P(OnBeginFrameAcksCompositorFrameSinkSupportTest, ResourceLifetime) {
   // is not invoked.
   {
     SCOPED_TRACE("fourth frame, first unref");
-    if (ShouldAckOnSurfaceActivationWhenInteractive() &&
-        !BeginFrameAcksEnabled()) {
-      ResourceId expected_returned_ids[] = {ResourceId(10), ResourceId(11)};
-      int expected_returned_counts[] = {1, 1};
-      CheckReturnedResourcesMatchExpected(
-          expected_returned_ids, expected_returned_counts,
-          std::size(expected_returned_counts), consumer_sync_token_);
-    } else {
-      CheckReturnedResourcesMatchExpected(nullptr, nullptr, 0,
-                                          consumer_sync_token_);
-    }
+    CheckReturnedResourcesMatchExpected(nullptr, nullptr, 0,
+                                        consumer_sync_token_);
   }
 
   {
@@ -800,21 +786,12 @@ TEST_P(OnBeginFrameAcksCompositorFrameSinkSupportTest, ResourceLifetime) {
   {
     SCOPED_TRACE("fourth frame, second unref");
     MaybeTestOnBeginFrame(3);
-    if (ShouldAckOnSurfaceActivationWhenInteractive() &&
-        !BeginFrameAcksEnabled()) {
-      ResourceId expected_returned_ids[] = {ResourceId(12), ResourceId(13)};
-      int expected_returned_counts[] = {2, 2};
-      CheckReturnedResourcesMatchExpected(
-          expected_returned_ids, expected_returned_counts,
-          std::size(expected_returned_counts), consumer_sync_token_);
-    } else {
-      ResourceId expected_returned_ids[] = {ResourceId(10), ResourceId(11),
-                                            ResourceId(12), ResourceId(13)};
-      int expected_returned_counts[] = {1, 1, 2, 2};
-      CheckReturnedResourcesMatchExpected(
-          expected_returned_ids, expected_returned_counts,
-          std::size(expected_returned_counts), consumer_sync_token_);
-    }
+    ResourceId expected_returned_ids[] = {ResourceId(10), ResourceId(11),
+                                          ResourceId(12), ResourceId(13)};
+    int expected_returned_counts[] = {1, 1, 2, 2};
+    CheckReturnedResourcesMatchExpected(
+        expected_returned_ids, expected_returned_counts,
+        std::size(expected_returned_counts), consumer_sync_token_);
   }
 }
 
@@ -836,23 +813,12 @@ TEST_P(OnBeginFrameAcksCompositorFrameSinkSupportTest, AddDuringEviction) {
     surface_manager->GarbageCollectSurfaces();
   };
 
-  if (ShouldAckOnSurfaceActivationWhenInteractive() &&
-      !BeginFrameAcksEnabled()) {
-    // The upcoming call to SubmitCompositorFrame will cause us to Ack
-    // immediately if the AckOnSurfaceActivationWhenInteractive feature is
-    // enabled and provided we're not sending begin frame acks.
-    EXPECT_CALL(mock_client, DidReceiveCompositorFrameAck(_))
-        .WillOnce(submit_compositor_frame)
-        .WillRepeatedly(testing::Return());
-  }
-
   LocalSurfaceId local_surface_id(6, kArbitraryToken);
   support->SubmitCompositorFrame(
       local_surface_id,
       MakeDefaultInteractiveCompositorFrame(kBeginFrameSourceId));
 
-  if (BeginFrameAcksEnabled() ||
-      ShouldAckOnSurfaceActivationWhenInteractive()) {
+  if (BeginFrameAcksEnabled()) {
     EXPECT_CALL(mock_client, DidReceiveCompositorFrameAck(_)).Times(0);
   } else {
     EXPECT_CALL(mock_client, DidReceiveCompositorFrameAck(_))
@@ -867,12 +833,7 @@ TEST_P(OnBeginFrameAcksCompositorFrameSinkSupportTest, AddDuringEviction) {
     submit_compositor_frame();
     testing::Mock::VerifyAndClearExpectations(&mock_client);
   }
-
-  if (ShouldAckOnSurfaceActivationWhenInteractive()) {
-    EXPECT_EQ(0, num_pending_frames(support.get()));
-  } else {
-    EXPECT_EQ(1, num_pending_frames(support.get()));
-  }
+  EXPECT_EQ(1, num_pending_frames(support.get()));
 }
 
 // Verifies that only monotonically increasing LocalSurfaceIds are accepted.
@@ -997,15 +958,6 @@ TEST_P(OnBeginFrameAcksCompositorFrameSinkSupportTest,
                    .SetBeginFrameSourceId(kBeginFrameSourceId)
                    .SetIsHandlingInteraction(true)
                    .Build();
-  if (ShouldAckOnSurfaceActivationWhenInteractive() &&
-      !BeginFrameAcksEnabled()) {
-    // We'll get an immediate ack, but won't have reclaimed resource yet. This
-    // should happen at surface destruction.
-    EXPECT_CALL(mock_client, DidReceiveCompositorFrameAck(_))
-        .WillOnce([](std::vector<ReturnedResource> got) {
-          EXPECT_TRUE(got.empty());
-        });
-  }
   support->SubmitCompositorFrame(local_surface_id, std::move(frame));
   EXPECT_EQ(surface_observer_->last_created_surface_id().local_surface_id(),
             local_surface_id);
@@ -1019,8 +971,7 @@ TEST_P(OnBeginFrameAcksCompositorFrameSinkSupportTest,
   };
   // If always ack is enabled, in the compositor frame ack case, we we would
   // have already received the ack so we shouldn't get one later.
-  if (BeginFrameAcksEnabled() ||
-      ShouldAckOnSurfaceActivationWhenInteractive()) {
+  if (BeginFrameAcksEnabled()) {
     EXPECT_CALL(mock_client, DidReceiveCompositorFrameAck(_)).Times(0);
     EXPECT_CALL(mock_client, ReclaimResources(_))
         .WillOnce(expected_returned_resources);
@@ -1413,36 +1364,17 @@ TEST_P(OnBeginFrameAcksCompositorFrameSinkSupportTest,
   args = CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 1, 2);
   begin_frame_source_.TestOnBeginFrame(args);
   received_args = GetLastUsedBeginFrameArgs(support_.get());
-  if (BeginFrameAcksEnabled() &&
-      ShouldAckOnSurfaceActivationWhenInteractive()) {
-    // In this case, we will have acked immediately due to the above
-    // `SubmitCompositorFrame` and, as a result, will have a non-zero
-    // ack_queued_for_client_count_. This, combined with the fact that
-    // ShouldMergeBeginFrameWithAcks() returns true will mean that the call to
-    // `SetNeedsBeginFrame(false)` will not actually cause `needs_begin_frame_`
-    // to be false and we will actually get the begin frame causing these args
-    // to be equivalent.
-    EXPECT_TRUE(BeginFrameArgsAreEquivalent(args, received_args));
-  } else {
-    EXPECT_FALSE(BeginFrameArgsAreEquivalent(args, received_args));
-  }
+  EXPECT_FALSE(BeginFrameArgsAreEquivalent(args, received_args));
 
-  if (!ShouldAckOnSurfaceActivationWhenInteractive()) {
-    // The ACK from the last submitted frame arrives. If BeginFrameAcks is
-    // enabled this results in the client immediately receiving a MISSED
-    // begin-frame.
-    support_->SendCompositorFrameAck();
-  }
+  // The ACK from the last submitted frame arrives. If BeginFrameAcks is
+  // enabled this results in the client immediately receiving a MISSED
+  // begin-frame.
+  support_->SendCompositorFrameAck();
 
   if (BeginFrameAcksEnabled()) {
     received_args = GetLastUsedBeginFrameArgs(support_.get());
     EXPECT_TRUE(BeginFrameArgsAreEquivalent(args, received_args));
-
-    if (ShouldAckOnSurfaceActivationWhenInteractive()) {
-      EXPECT_EQ(received_args.type, BeginFrameArgs::NORMAL);
-    } else {
-      EXPECT_EQ(received_args.type, BeginFrameArgs::MISSED);
-    }
+    EXPECT_EQ(received_args.type, BeginFrameArgs::MISSED);
 
     // Issue a new BeginFrame. This time, the client should not receive it since
     // it has stopped asking for begin-frames.
