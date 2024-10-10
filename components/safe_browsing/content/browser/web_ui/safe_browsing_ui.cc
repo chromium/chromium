@@ -855,11 +855,6 @@ base::Value::Dict SerializeChromeUserPopulation(
                         population.number_of_loaded_profiles());
   }
 
-  if (population.has_number_of_open_profiles()) {
-    population_dict.Set("number_of_open_profiles",
-                        population.number_of_open_profiles());
-  }
-
   base::Value::List page_load_tokens;
   for (const ChromeUserPopulation::PageLoadToken& token :
        population.page_load_tokens()) {

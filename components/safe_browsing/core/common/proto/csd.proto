@@ -81,10 +81,8 @@ message ChromeUserPopulation {
   // profiles may be inactive.
   optional int32 number_of_loaded_profiles = 11;
 
-  // The number of profiles that are currently open, i.e. have open browsers or
-  // were open the last time Chrome was running. Profiles that fail to
-  // initialize are skipped.
-  optional int32 number_of_open_profiles = 12;
+  // Deprecated: number_of_open_profiles
+  reserved 12;
 
   // Server-side only field.
   reserved 13;
