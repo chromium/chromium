@@ -34,7 +34,15 @@ typedef ([AllowShared] ArrayBuffer or [AllowShared] ArrayBufferView) AllowShared
   // Area of this frame's pixel data that is not padding.
   readonly attribute DOMRectReadOnly? visibleRect;
 
-  // Display aspect ratio of visible rect.
+  // Rotation to apply when rendering, in degrees clockwise.
+  [RuntimeEnabled=WebCodecsOrientation]
+  readonly attribute unsigned long rotation;
+
+  // Whether the rendering is flipped horizontally after rotation.
+  [RuntimeEnabled=WebCodecsOrientation]
+  readonly attribute boolean flip;
+
+  // Display aspect ratio of visible rect, after accounting for rotation.
   readonly attribute unsigned long displayWidth;
   readonly attribute unsigned long displayHeight;
 

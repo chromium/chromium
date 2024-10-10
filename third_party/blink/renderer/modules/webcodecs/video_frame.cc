@@ -1118,6 +1118,37 @@ DOMRectReadOnly* VideoFrame::visibleRect() {
   return visible_rect_.Get();
 }
 
+uint32_t VideoFrame::rotation() const {
+  auto local_frame = handle_->frame();
+  if (!local_frame) {
+    return 0;
+  }
+
+  const auto transform =
+      local_frame->metadata().transformation.value_or(media::kNoTransformation);
+  switch (transform.rotation) {
+    case media::VIDEO_ROTATION_0:
+      return 0;
+    case media::VIDEO_ROTATION_90:
+      return 90;
+    case media::VIDEO_ROTATION_180:
+      return 180;
+    case media::VIDEO_ROTATION_270:
+      return 270;
+  }
+}
+
+bool VideoFrame::flip() const {
+  auto local_frame = handle_->frame();
+  if (!local_frame) {
+    return false;
+  }
+
+  const auto transform =
+      local_frame->metadata().transformation.value_or(media::kNoTransformation);
+  return transform.mirrored;
+}
+
 uint32_t VideoFrame::displayWidth() const {
   auto local_frame = handle_->frame();
   if (!local_frame)
@@ -1125,8 +1156,7 @@ uint32_t VideoFrame::displayWidth() const {
 
   const auto transform =
       local_frame->metadata().transformation.value_or(media::kNoTransformation);
-  if (transform == media::kNoTransformation ||
-      transform.rotation == media::VIDEO_ROTATION_0 ||
+  if (transform.rotation == media::VIDEO_ROTATION_0 ||
       transform.rotation == media::VIDEO_ROTATION_180) {
     return local_frame->natural_size().width();
   }
@@ -1137,10 +1167,10 @@ uint32_t VideoFrame::displayHeight() const {
   auto local_frame = handle_->frame();
   if (!local_frame)
     return 0;
+
   const auto transform =
       local_frame->metadata().transformation.value_or(media::kNoTransformation);
-  if (transform == media::kNoTransformation ||
-      transform.rotation == media::VIDEO_ROTATION_0 ||
+  if (transform.rotation == media::VIDEO_ROTATION_0 ||
       transform.rotation == media::VIDEO_ROTATION_180) {
     return local_frame->natural_size().height();
   }

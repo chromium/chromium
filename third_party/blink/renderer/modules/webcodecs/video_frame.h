@@ -90,6 +90,9 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   DOMRectReadOnly* codedRect();
   DOMRectReadOnly* visibleRect();
 
+  uint32_t rotation() const;
+  bool flip() const;
+
   uint32_t displayWidth() const;
   uint32_t displayHeight() const;
 
