@@ -57,6 +57,14 @@ enum TabOrganizationModelStrategy {
   kDomain,
 };
 
+// These values are persisted and must not be renumbered or reordered.
+[Stable, Extensible]
+enum TabSearchSection {
+  [Default] kNone = 0,
+  kSearch = 1,
+  kOrganize = 2,
+};
+
 //TODO(b/311697865) move this to a common location.
 enum UserFeedback {
   kUserFeedBackUnspecified,
@@ -262,6 +270,9 @@ interface PageHandler {
   // Get all tabs that are considered stale based on their last active time.
   GetStaleTabs() => (array<Tab> tabs);
 
+  // Get the currently active section of the tab search bubble.
+  GetTabSearchSection() => (TabSearchSection section);
+
   // Get the currently active tab organization feature.
   GetTabOrganizationFeature() => (TabOrganizationFeature feature);
 
@@ -295,7 +306,7 @@ interface PageHandler {
 
   // Set the user preference for which tab the tab search UI should display
   // when next shown.
-  SetTabIndex(int32 index);
+  SetTabSearchSection(TabSearchSection section);
 
   // Set the user preference for which feature the tab organization selector
   // should display when next shown.
@@ -355,7 +366,7 @@ interface Page {
   TabsRemoved(TabsRemovedInfo tabsRemovedInfo);
 
   // Called when the top level bubble tab should change.
-  TabSearchTabIndexChanged(int32 index);
+  TabSearchSectionChanged(TabSearchSection section);
 
   // Called when the feature shown by the tab organization selector should
   // change.

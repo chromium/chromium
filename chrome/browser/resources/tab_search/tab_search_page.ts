@@ -28,6 +28,7 @@ import type {SelectableLazyListElement} from './selectable_lazy_list.js';
 import {NO_SELECTION, selectorNavigationKeys} from './selectable_lazy_list.js';
 import {ariaLabel, getHostname, getTabGroupTitle, getTitle, type ItemData, normalizeURL, TabData, TabGroupData, TabItemType, tokenEquals, tokenToString} from './tab_data.js';
 import type {ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TabGroup, TabsRemovedInfo, TabUpdateInfo} from './tab_search.mojom-webui.js';
+import {TabSearchSection} from './tab_search.mojom-webui.js';
 import type {TabSearchApiProxy} from './tab_search_api_proxy.js';
 import {TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 import type {TabSearchGroupItemElement} from './tab_search_group_item.js';
@@ -147,7 +148,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
   private initiallySelectedIndex_: number = NO_SELECTION;
   private documentVisibilityChangedListener_: () => void;
   private elementVisibilityChangedListener_: IntersectionObserver;
-  private wasInactive_: boolean = loadTimeData.getInteger('tabIndex') !== 0;
+  private wasInactive_: boolean = false;
 
   constructor() {
     super();
@@ -198,6 +199,10 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
         'visibilitychange', this.documentVisibilityChangedListener_);
 
     this.elementVisibilityChangedListener_.observe(this);
+
+    this.apiProxy_.getTabSearchSection().then(
+        ({section}) => this.wasInactive_ =
+            section !== TabSearchSection.kSearch);
 
     const callbackRouter = this.apiProxy_.getCallbackRouter();
     this.listenerIds_.push(

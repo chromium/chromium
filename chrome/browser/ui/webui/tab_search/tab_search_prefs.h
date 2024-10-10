@@ -27,6 +27,12 @@ extern const char kTabOrganizationModelStrategy[];
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
+tab_search::mojom::TabSearchSection GetTabSearchSectionFromInt(
+    const int section);
+
+int GetIntFromTabSearchSection(
+    const tab_search::mojom::TabSearchSection section);
+
 tab_search::mojom::TabOrganizationFeature GetTabOrganizationFeatureFromInt(
     const int feature);
 

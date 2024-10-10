@@ -1861,9 +1861,9 @@ void FindInPage(Browser* browser, bool find_next, bool forward_direction) {
 }
 
 void ShowTabSearch(Browser* browser) {
-  const int tab_search_tab_index = 0;
   browser->window()->CreateTabSearchBubble(
-      tab_search_tab_index, tab_search::mojom::TabOrganizationFeature::kNone);
+      tab_search::mojom::TabSearchSection::kSearch,
+      tab_search::mojom::TabOrganizationFeature::kNone);
 }
 
 void CloseTabSearch(Browser* browser) {
@@ -1871,9 +1871,8 @@ void CloseTabSearch(Browser* browser) {
 }
 
 void ShowTabDeclutter(Browser* browser) {
-  const int tab_organization_tab_index = 1;
   browser->window()->CreateTabSearchBubble(
-      tab_organization_tab_index,
+      tab_search::mojom::TabSearchSection::kOrganize,
       tab_search::mojom::TabOrganizationFeature::kDeclutter);
 }
 

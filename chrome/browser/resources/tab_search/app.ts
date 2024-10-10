@@ -9,11 +9,13 @@ import './tab_search_page.js';
 import 'chrome://resources/cr_elements/cr_tabs/cr_tabs.js';
 import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
+import {TabSearchSection} from './tab_search.mojom-webui.js';
 import type {TabSearchApiProxy} from './tab_search_api_proxy.js';
 import {TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 
@@ -24,7 +26,7 @@ export class TabSearchAppElement extends CrLitElement {
 
   static override get properties() {
     return {
-      selectedTabIndex_: {type: Number},
+      selectedTabSection_: {type: Object},
       tabNames_: {type: Array},
       tabIcons_: {type: Array},
       tabOrganizationEnabled_: {type: Boolean},
@@ -34,7 +36,7 @@ export class TabSearchAppElement extends CrLitElement {
 
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
-  protected selectedTabIndex_: number = loadTimeData.getInteger('tabIndex');
+  protected selectedTabSection_: TabSearchSection = TabSearchSection.kNone;
   protected tabNames_: string[] = [
     loadTimeData.getString('tabSearchTabName'),
     loadTimeData.getString('tabOrganizationTabName'),
@@ -57,9 +59,11 @@ export class TabSearchAppElement extends CrLitElement {
   override connectedCallback() {
     super.connectedCallback();
 
+    this.apiProxy_.getTabSearchSection().then(
+        ({section}) => this.selectedTabSection_ = section);
     const callbackRouter = this.apiProxy_.getCallbackRouter();
-    this.listenerIds_.push(callbackRouter.tabSearchTabIndexChanged.addListener(
-        this.onTabIndexChanged_.bind(this)));
+    this.listenerIds_.push(callbackRouter.tabSearchSectionChanged.addListener(
+        this.onTabSectionChanged_.bind(this)));
     this.listenerIds_.push(
         callbackRouter.tabOrganizationEnabledChanged.addListener(
             this.onTabOrganizationEnabledChanged_.bind(this)));
@@ -71,9 +75,9 @@ export class TabSearchAppElement extends CrLitElement {
         id => this.apiProxy_.getCallbackRouter().removeListener(id));
   }
 
-  private onTabIndexChanged_(index: number) {
-    this.selectedTabIndex_ = index;
-    if (index === 1) {
+  private onTabSectionChanged_(section: TabSearchSection) {
+    this.selectedTabSection_ = section;
+    if (section === TabSearchSection.kOrganize) {
       const organizationSelector =
           this.shadowRoot!.querySelector('tab-organization-selector');
       if (organizationSelector) {
@@ -86,14 +90,43 @@ export class TabSearchAppElement extends CrLitElement {
     this.tabOrganizationEnabled_ = enabled;
   }
 
-  protected onSelectedTabChanged_(e: CustomEvent<{value: number}>) {
-    this.selectedTabIndex_ = e.detail.value;
-    if (this.selectedTabIndex_ === 1 && !this.declutterEnabled_) {
+  protected sectionToIndex_(section: TabSearchSection): number {
+    switch (section) {
+      case TabSearchSection.kNone:
+        return -1;
+      case TabSearchSection.kSearch:
+        return 0;
+      case TabSearchSection.kOrganize:
+        return 1;
+      default:
+        assertNotReached();
+    }
+  }
+
+  private indexToSection(index: number): TabSearchSection {
+    switch (index) {
+      case -1:
+        return TabSearchSection.kNone;
+      case 0:
+        return TabSearchSection.kSearch;
+      case 1:
+        return TabSearchSection.kOrganize;
+      default:
+        assertNotReached();
+    }
+  }
+
+  protected onSelectedTabIndexChanged_(e: CustomEvent<{value: number}>) {
+    this.selectedTabSection_ = this.indexToSection(e.detail.value);
+    if (this.selectedTabSection_ === TabSearchSection.kOrganize &&
+        !this.declutterEnabled_) {
       const autoTabGroupsPage =
           this.shadowRoot!.querySelector('auto-tab-groups-page')!;
       autoTabGroupsPage.classList.toggle('changed-state', false);
     }
-    this.apiProxy_.setTabIndex(this.selectedTabIndex_);
+    if (this.selectedTabSection_ !== TabSearchSection.kNone) {
+      this.apiProxy_.setTabSearchSection(this.selectedTabSection_);
+    }
   }
 }
 

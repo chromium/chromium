@@ -589,9 +589,9 @@ class BrowserWindow : public ui::BaseWindow,
   virtual void ShowCaretBrowsingDialog() = 0;
 
   // Create and open the tab search bubble. Optionally force it to open to the
-  // given tab index and organization feature index.
+  // given section and organization feature.
   virtual void CreateTabSearchBubble(
-      int tab_index,
+      tab_search::mojom::TabSearchSection section,
       tab_search::mojom::TabOrganizationFeature organization_feature) = 0;
   // Closes the tab search bubble if open for the given browser instance.
   virtual void CloseTabSearchBubble() = 0;

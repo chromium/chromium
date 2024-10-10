@@ -33,13 +33,26 @@ const char kTabOrganizationModelStrategy[] = "tab_organization.model_strategy";
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kTabSearchRecentlyClosedSectionExpanded, true);
-  registry->RegisterIntegerPref(kTabSearchTabIndex, 0);
+  registry->RegisterIntegerPref(
+      kTabSearchTabIndex,
+      GetIntFromTabSearchSection(tab_search::mojom::TabSearchSection::kSearch));
   registry->RegisterIntegerPref(
       kTabOrganizationFeature,
       GetIntFromTabOrganizationFeature(
           tab_search::mojom::TabOrganizationFeature::kSelector));
   registry->RegisterBooleanPref(kTabOrganizationShowFRE, true);
   registry->RegisterIntegerPref(kTabOrganizationModelStrategy, 0);
+}
+
+tab_search::mojom::TabSearchSection GetTabSearchSectionFromInt(
+    const int section) {
+  return ToKnownEnumValue(
+      static_cast<tab_search::mojom::TabSearchSection>(section));
+}
+
+int GetIntFromTabSearchSection(
+    const tab_search::mojom::TabSearchSection section) {
+  return base::to_underlying(section);
 }
 
 tab_search::mojom::TabOrganizationFeature GetTabOrganizationFeatureFromInt(

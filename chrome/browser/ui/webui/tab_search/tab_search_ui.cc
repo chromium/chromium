@@ -192,7 +192,6 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       "tabOrganizationModelStrategyEnabled",
       base::FeatureList::IsEnabled(features::kTabOrganizationModelStrategy));
 
-  source->AddInteger("tabIndex", TabIndex());
   source->AddBoolean("showTabOrganizationFRE", ShowTabOrganizationFRE());
   source->AddBoolean(
       "declutterEnabled",
@@ -292,9 +291,4 @@ void TabSearchUI::InstallTabDeclutterController(
   if (page_handler_) {
     page_handler_->TabDeclutterControllerInstalled();
   }
-}
-
-int TabSearchUI::TabIndex() {
-  PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
-  return prefs->GetInteger(tab_search_prefs::kTabSearchTabIndex);
 }

@@ -123,13 +123,13 @@ void TabSearchBubbleHost::OnWidgetVisibilityChanged(views::Widget* widget,
             webui_bubble_manager_->bubble_using_cached_web_contents(),
             webui_bubble_manager_->contents_warmup_level()));
     const PrefService* prefs = profile_->GetPrefs();
-    const int tab_index =
-        prefs->GetInteger(tab_search_prefs::kTabSearchTabIndex);
-    const tab_search::mojom::TabOrganizationFeature organization_feature =
+    const auto section = tab_search_prefs::GetTabSearchSectionFromInt(
+        prefs->GetInteger(tab_search_prefs::kTabSearchTabIndex));
+    const auto organization_feature =
         tab_search_prefs::GetTabOrganizationFeatureFromInt(
             prefs->GetInteger(tab_search_prefs::kTabOrganizationFeature));
     bubble_created_time_.reset();
-    if (tab_index == 0) {
+    if (section == tab_search::mojom::TabSearchSection::kSearch) {
       return;
     }
     if (organization_feature ==
@@ -170,9 +170,8 @@ void TabSearchBubbleHost::OnOrganizationAccepted(const Browser* browser) {
 
 void TabSearchBubbleHost::OnUserInvokedFeature(const Browser* browser) {
   if (browser == GetBrowser()) {
-    const int tab_organization_tab_index = 1;
     ShowTabSearchBubble(
-        false, tab_organization_tab_index,
+        false, tab_search::mojom::TabSearchSection::kOrganize,
         tab_search::mojom::TabOrganizationFeature::kAutoTabGroups);
   }
 }
@@ -215,13 +214,14 @@ void TabSearchBubbleHost::BeforeBubbleWidgetShowed(views::Widget* widget) {
 
 bool TabSearchBubbleHost::ShowTabSearchBubble(
     bool triggered_by_keyboard_shortcut,
-    int tab_index,
+    tab_search::mojom::TabSearchSection section,
     tab_search::mojom::TabOrganizationFeature organization_feature) {
   TRACE_EVENT0("ui", "TabSearchBubbleHost::ShowTabSearchBubble");
   base::trace_event::EmitNamedTrigger("show-tab-search-bubble");
-  if (tab_index >= 0) {
-    profile_->GetPrefs()->SetInteger(tab_search_prefs::kTabSearchTabIndex,
-                                     tab_index);
+  if (section != tab_search::mojom::TabSearchSection::kNone) {
+    profile_->GetPrefs()->SetInteger(
+        tab_search_prefs::kTabSearchTabIndex,
+        tab_search_prefs::GetIntFromTabSearchSection(section));
   }
 
   if (organization_feature !=

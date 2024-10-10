@@ -94,7 +94,9 @@ class MockPage : public tab_search::mojom::Page {
   MOCK_METHOD(void, TabsChanged, (tab_search::mojom::ProfileDataPtr));
   MOCK_METHOD(void, TabUpdated, (tab_search::mojom::TabUpdateInfoPtr));
   MOCK_METHOD(void, TabsRemoved, (tab_search::mojom::TabsRemovedInfoPtr));
-  MOCK_METHOD(void, TabSearchTabIndexChanged, (int32_t));
+  MOCK_METHOD(void,
+              TabSearchSectionChanged,
+              (tab_search::mojom::TabSearchSection));
   MOCK_METHOD(void,
               TabOrganizationFeatureChanged,
               (tab_search::mojom::TabOrganizationFeature));

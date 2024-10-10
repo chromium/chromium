@@ -421,6 +421,15 @@ void TabSearchPageHandler::GetStaleTabs(GetStaleTabsCallback callback) {
   std::move(callback).Run(FindStaleTabs());
 }
 
+void TabSearchPageHandler::GetTabSearchSection(
+    GetTabSearchSectionCallback callback) {
+  PrefService* prefs = Profile::FromWebUI(web_ui_)->GetPrefs();
+  const tab_search::mojom::TabSearchSection section =
+      tab_search_prefs::GetTabSearchSectionFromInt(
+          prefs->GetInteger(tab_search_prefs::kTabSearchTabIndex));
+  std::move(callback).Run(section);
+}
+
 void TabSearchPageHandler::GetTabOrganizationFeature(
     GetTabOrganizationFeatureCallback callback) {
   PrefService* prefs = Profile::FromWebUI(web_ui_)->GetPrefs();
@@ -648,9 +657,11 @@ void TabSearchPageHandler::SaveRecentlyClosedExpandedPref(bool expanded) {
                : TabSearchRecentlyClosedToggleAction::kCollapse);
 }
 
-void TabSearchPageHandler::SetTabIndex(int32_t index) {
+void TabSearchPageHandler::SetTabSearchSection(
+    tab_search::mojom::TabSearchSection section) {
   Profile::FromWebUI(web_ui_)->GetPrefs()->SetInteger(
-      tab_search_prefs::kTabSearchTabIndex, index);
+      tab_search_prefs::kTabSearchTabIndex,
+      tab_search_prefs::GetIntFromTabSearchSection(section));
 }
 
 void TabSearchPageHandler::SetOrganizationFeature(
@@ -1264,9 +1275,10 @@ void TabSearchPageHandler::NotifyTabsChanged() {
 }
 
 void TabSearchPageHandler::NotifyTabIndexPrefChanged(const Profile* profile) {
-  const int32_t index =
+  const int32_t section_int =
       profile->GetPrefs()->GetInteger(tab_search_prefs::kTabSearchTabIndex);
-  page_->TabSearchTabIndexChanged(index);
+  page_->TabSearchSectionChanged(
+      tab_search_prefs::GetTabSearchSectionFromInt(section_int));
 }
 
 void TabSearchPageHandler::NotifyOrganizationFeaturePrefChanged(

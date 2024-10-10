@@ -90,6 +90,7 @@ class TabSearchPageHandler
   void ExcludeFromStaleTabs(int32_t tab_id) override;
   void GetProfileData(GetProfileDataCallback callback) override;
   void GetStaleTabs(GetStaleTabsCallback callback) override;
+  void GetTabSearchSection(GetTabSearchSectionCallback callback) override;
   void GetTabOrganizationFeature(
       GetTabOrganizationFeatureCallback callback) override;
   void GetTabOrganizationSession(
@@ -106,7 +107,8 @@ class TabSearchPageHandler
   void RejectSession(int32_t session_id) override;
   void RestartSession() override;
   void SaveRecentlyClosedExpandedPref(bool expanded) override;
-  void SetTabIndex(int32_t index) override;
+  void SetTabSearchSection(
+      tab_search::mojom::TabSearchSection section) override;
   void SetOrganizationFeature(
       tab_search::mojom::TabOrganizationFeature feature) override;
   void StartTabGroupTutorial() override;

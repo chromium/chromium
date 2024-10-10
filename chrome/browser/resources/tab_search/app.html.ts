@@ -13,10 +13,10 @@ ${(this.tabOrganizationEnabled_ || this.declutterEnabled_) ? html`
   <cr-tabs
       .tabNames="${this.tabNames_}"
       .tabIcons="${this.tabIcons_}"
-      .selected="${this.selectedTabIndex_}"
-      @selected-changed="${this.onSelectedTabChanged_}">
+      .selected="${this.sectionToIndex_(this.selectedTabSection_)}"
+      @selected-changed="${this.onSelectedTabIndexChanged_}">
   </cr-tabs>
-  <cr-page-selector .selected="${this.selectedTabIndex_}">
+  <cr-page-selector .selected="${this.sectionToIndex_(this.selectedTabSection_)}">
     <tab-search-page></tab-search-page>
     ${getOrganizationPage(this.tabOrganizationEnabled_, this.declutterEnabled_)}
   </cr-page-selector>
