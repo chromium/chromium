@@ -297,14 +297,19 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   }
   DISABLE_CFI_PERF LayoutUnit BorderAndPaddingBlockSize() const {
     NOT_DESTROYED();
-    return (StyleRef().HasBorder() || StyleRef().MayHavePadding())
-               ? BorderAndPaddingBlockStart() + BorderAndPaddingBlockEnd()
-               : LayoutUnit();
+    if (!StyleRef().HasBorder() && !StyleRef().MayHavePadding()) {
+      return LayoutUnit();
+    }
+    return IsHorizontalWritingMode() ? BorderAndPaddingHeight()
+                                     : BorderAndPaddingWidth();
   }
   DISABLE_CFI_PERF LayoutUnit BorderAndPaddingInlineSize() const {
     NOT_DESTROYED();
-    return StyleRef().IsHorizontalWritingMode() ? BorderAndPaddingWidth()
-                                                : BorderAndPaddingHeight();
+    if (!StyleRef().HasBorder() && !StyleRef().MayHavePadding()) {
+      return LayoutUnit();
+    }
+    return IsHorizontalWritingMode() ? BorderAndPaddingWidth()
+                                     : BorderAndPaddingHeight();
   }
   DISABLE_CFI_PERF LayoutUnit BorderAndPaddingInlineStart() const {
     NOT_DESTROYED();
