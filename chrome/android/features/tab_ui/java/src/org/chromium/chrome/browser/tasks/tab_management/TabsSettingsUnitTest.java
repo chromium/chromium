@@ -43,7 +43,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterImpl;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupFeatureUtils;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.prefs.PrefService;
@@ -186,7 +186,7 @@ public class TabsSettingsUnitTest {
     @Test
     @SmallTest
     public void testLaunchTabsSettingsGroupCreationDialogEnabled() {
-        TabGroupModelFilterImpl.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(true);
+        TabGroupFeatureUtils.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(true);
 
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher(

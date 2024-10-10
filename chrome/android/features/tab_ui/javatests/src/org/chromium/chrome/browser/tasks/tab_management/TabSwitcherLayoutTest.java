@@ -95,7 +95,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterImpl;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupFeatureUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -1016,7 +1016,7 @@ public class TabSwitcherLayoutTest {
         ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID,
     })
     public void testNoTabGroupDialogSingleTab() {
-        TabGroupModelFilterImpl.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(true);
+        TabGroupFeatureUtils.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(true);
 
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         SnackbarManager snackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
@@ -1036,7 +1036,7 @@ public class TabSwitcherLayoutTest {
                 });
         verifyTabSwitcherCardCount(cta, 1);
 
-        TabGroupModelFilterImpl.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(false);
+        TabGroupFeatureUtils.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(false);
     }
 
     @Test

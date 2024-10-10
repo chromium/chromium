@@ -409,7 +409,7 @@ public class TabGroupModelFilterImplUnitTest {
 
     @Before
     public void setUp() {
-        TabGroupModelFilterImpl.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(false);
+        TabGroupFeatureUtils.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(false);
         // After setUp, TabModel has 6 tabs in the following order: mTab1, mTab2, mTab3, mTab4,
         // mTab5, mTab6. While mTab2 and mTab3 are in a group, and mTab5 and mTab6 are in a separate
         // group.
@@ -637,7 +637,7 @@ public class TabGroupModelFilterImplUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void addTab_TabLaunchedFromLongPressBackgroundInGroupToExistingGroup() {
-        TabGroupModelFilterImpl.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
+        TabGroupFeatureUtils.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
 
         Tab newTab = prepareTab(NEW_TAB_ID_0, NEW_TAB_ID_0, null, TAB1_ID);
         doReturn(TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP).when(newTab).getLaunchType();
@@ -957,7 +957,7 @@ public class TabGroupModelFilterImplUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void moveTabOutOfGroup_LastTab_WithTabGroupId() {
-        TabGroupModelFilterImpl.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
+        TabGroupFeatureUtils.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
 
         List<Tab> expectedTabModelBeforeUngroup =
                 new ArrayList<>(Arrays.asList(mTab1, mTab2, mTab3, mTab4, mTab5, mTab6));
@@ -1131,7 +1131,7 @@ public class TabGroupModelFilterImplUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void mergeOneTabToTab_Forward() {
-        TabGroupModelFilterImpl.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
+        TabGroupFeatureUtils.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
 
         List<Tab> expectedGroup = new ArrayList<>(Arrays.asList(mTab1, mTab4));
         List<Tab> expectedTabModel =
@@ -1218,7 +1218,7 @@ public class TabGroupModelFilterImplUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void mergeOneTabToTab_Backward() {
-        TabGroupModelFilterImpl.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
+        TabGroupFeatureUtils.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
 
         List<Tab> expectedGroup = new ArrayList<>(Arrays.asList(mTab4, mTab1));
         List<Tab> expectedTabModel =
@@ -1336,7 +1336,7 @@ public class TabGroupModelFilterImplUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void mergeListOfTabsToGroup_AllForward() {
-        TabGroupModelFilterImpl.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
+        TabGroupFeatureUtils.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
 
         Tab newTab = addTabToTabModel();
         List<Tab> tabsToMerge = new ArrayList<>(Arrays.asList(mTab4, newTab));
@@ -1367,7 +1367,7 @@ public class TabGroupModelFilterImplUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void mergeListOfTabsToGroup_AnyDirection() {
-        TabGroupModelFilterImpl.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
+        TabGroupFeatureUtils.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
 
         Tab newTab = addTabToTabModel();
         List<Tab> tabsToMerge = new ArrayList<>(Arrays.asList(mTab1, newTab));
@@ -1398,7 +1398,7 @@ public class TabGroupModelFilterImplUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void mergeListOfTabsToGroup_InOrder() {
-        TabGroupModelFilterImpl.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
+        TabGroupFeatureUtils.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
 
         Tab newTab0 = prepareTab(NEW_TAB_ID_0, NEW_TAB_ID_0, null, Tab.INVALID_TAB_ID);
         addTabToTabModel(-1, newTab0);
@@ -1521,7 +1521,7 @@ public class TabGroupModelFilterImplUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void merge_OtherGroupsLastShownIdUnchanged() {
-        TabGroupModelFilterImpl.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
+        TabGroupFeatureUtils.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
 
         List<Tab> expectedGroup = new ArrayList<>(Arrays.asList(mTab1, mTab4));
         List<Tab> expectedTabModel =
@@ -1674,7 +1674,7 @@ public class TabGroupModelFilterImplUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void undoGroupedTab_Forward_UpdateTabModel() {
-        TabGroupModelFilterImpl.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
+        TabGroupFeatureUtils.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
 
         List<Tab> expectedTabModel =
                 new ArrayList<>(Arrays.asList(mTab1, mTab2, mTab3, mTab4, mTab5, mTab6));
@@ -1717,7 +1717,7 @@ public class TabGroupModelFilterImplUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void undoGroupedTab_Backward_UpdateTabModel() {
-        TabGroupModelFilterImpl.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
+        TabGroupFeatureUtils.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
 
         List<Tab> expectedTabModel =
                 new ArrayList<>(Arrays.asList(mTab1, mTab2, mTab3, mTab4, mTab5, mTab6));
@@ -2148,7 +2148,7 @@ public class TabGroupModelFilterImplUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void mergeTabToTab_notifyFilterObserver() {
-        TabGroupModelFilterImpl.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
+        TabGroupFeatureUtils.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
 
         // Override the setup behaviour for color SharedPreferences since after #didCreateNewGroup
         // is emitted, a color will have been set.
@@ -2180,7 +2180,7 @@ public class TabGroupModelFilterImplUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void mergeTabToTab_doNotNotifyFilterObserver() {
-        TabGroupModelFilterImpl.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
+        TabGroupFeatureUtils.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
 
         Token tabGroupId = new Token(33L, 28L);
         when(mTokenJniMock.createRandom()).thenReturn(tabGroupId);

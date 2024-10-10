@@ -17,12 +17,9 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -35,7 +32,6 @@ import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver.DidRemov
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.ArrayList;
@@ -64,24 +60,6 @@ import java.util.stream.Collectors;
  * root ID.
  */
 public class TabGroupModelFilterImpl extends TabGroupModelFilterBase {
-    // This is not a great place for this, but due to dependency issues it cannot go in
-    // TabUiFeatureUtilities so this is the best place since we need it here.
-    private static final String SKIP_TAB_GROUP_CREATION_DIALOG_PARAM =
-            "skip_tab_group_creation_dialog";
-    public static final BooleanCachedFieldTrialParameter SKIP_TAB_GROUP_CREATION_DIALOG =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
-                    SKIP_TAB_GROUP_CREATION_DIALOG_PARAM,
-                    true);
-
-    public static final String SHOW_TAB_GROUP_CREATION_DIALOG_SETTING_PARAM =
-            "show_tab_group_creation_dialog_setting";
-    public static final BooleanCachedFieldTrialParameter SHOW_TAB_GROUP_CREATION_DIALOG_SETTING =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID,
-                    SHOW_TAB_GROUP_CREATION_DIALOG_SETTING_PARAM,
-                    false);
-
     /**
      * Class to hold metadata while fixRootIds still exists. Delete when rootId is removed.
      * Instanced to allow easy setting of fields in constructor.
@@ -202,7 +180,7 @@ public class TabGroupModelFilterImpl extends TabGroupModelFilterBase {
         // If this is a new tab group creation that will show a dialog, do not trigger a snackbar.
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()
                 && !shouldSkipGroupCreationDialog(
-                        shouldShowGroupCreationDialogViaSettingsSwitch())) {
+                        TabGroupFeatureUtils.shouldShowGroupCreationDialogViaSettingsSwitch())) {
             notify = false;
         }
 
@@ -330,7 +308,8 @@ public class TabGroupModelFilterImpl extends TabGroupModelFilterBase {
                     // snackbar.
                     if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()
                             && !shouldSkipGroupCreationDialog(
-                                    shouldShowGroupCreationDialogViaSettingsSwitch())) {
+                                    TabGroupFeatureUtils
+                                            .shouldShowGroupCreationDialogViaSettingsSwitch())) {
                         continue;
                     }
                 }
@@ -474,7 +453,8 @@ public class TabGroupModelFilterImpl extends TabGroupModelFilterBase {
                     willMergingCreateNewGroup
                             && ChromeFeatureList.sTabGroupParityAndroid.isEnabled()
                             && !shouldSkipGroupCreationDialog(
-                                    shouldShowGroupCreationDialogViaSettingsSwitch());
+                                    TabGroupFeatureUtils
+                                            .shouldShowGroupCreationDialogViaSettingsSwitch());
             if (notify && !skipSnackbarForCreation) {
                 observer.didCreateGroup(
                         mergedTabs,
@@ -1660,22 +1640,7 @@ public class TabGroupModelFilterImpl extends TabGroupModelFilterBase {
         if (ChromeFeatureList.sTabGroupCreationDialogAndroid.isEnabled()) {
             return !shouldShow;
         } else {
-            return SKIP_TAB_GROUP_CREATION_DIALOG.getValue();
-        }
-    }
-
-    /**
-     * Returns whether the group creation dialog should be shown based on the setting switch for
-     * auto showing under tab settings. If it is not enabled, return true since that is the default
-     * case for all callsites.
-     */
-    public static boolean shouldShowGroupCreationDialogViaSettingsSwitch() {
-        if (SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.getValue()) {
-            SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
-            return prefsManager.readBoolean(
-                    ChromePreferenceKeys.SHOW_TAB_GROUP_CREATION_DIALOG, true);
-        } else {
-            return true;
+            return TabGroupFeatureUtils.SKIP_TAB_GROUP_CREATION_DIALOG.getValue();
         }
     }
 }

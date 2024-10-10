@@ -13,7 +13,7 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterImpl;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupFeatureUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabGroupCreationDialogResultAction;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabGroupCreationFinalSelections;
 import org.chromium.chrome.tab_ui.R;
@@ -162,7 +162,7 @@ public class TabGroupCreationDialogManager {
         if (ChromeFeatureList.sTabGroupCreationDialogAndroid.isEnabled()) {
             return !shouldShow;
         } else {
-            return TabGroupModelFilterImpl.SKIP_TAB_GROUP_CREATION_DIALOG.getValue();
+            return TabGroupFeatureUtils.SKIP_TAB_GROUP_CREATION_DIALOG.getValue();
         }
     }
 
@@ -172,6 +172,6 @@ public class TabGroupCreationDialogManager {
      * case for all callsites.
      */
     public static boolean shouldShowGroupCreationDialogViaSettingsSwitch() {
-        return TabGroupModelFilterImpl.shouldShowGroupCreationDialogViaSettingsSwitch();
+        return TabGroupFeatureUtils.shouldShowGroupCreationDialogViaSettingsSwitch();
     }
 }
