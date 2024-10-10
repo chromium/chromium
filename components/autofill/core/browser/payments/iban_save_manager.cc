@@ -204,7 +204,6 @@ bool IbanSaveManager::AttemptToOfferUploadSave(Iban& import_candidate) {
       ->GetIbanUploadDetails(
           client_->GetPersonalDataManager()->app_locale(),
           payments::GetBillingCustomerId(&payments_data_manager()),
-          payments::kUploadPaymentMethodBillableServiceNumber,
           import_candidate.GetCountryCode(),
           base::BindOnce(&IbanSaveManager::OnDidGetUploadDetails,
                          weak_ptr_factory_.GetWeakPtr(), show_save_prompt,
@@ -350,8 +349,6 @@ void IbanSaveManager::SendUploadRequest(const Iban& import_candidate,
   }
   payments::UploadIbanRequestDetails details;
   details.app_locale = client_->GetPersonalDataManager()->app_locale();
-  details.billable_service_number =
-      payments::kUploadPaymentMethodBillableServiceNumber;
   details.billing_customer_number =
       payments::GetBillingCustomerId(&payments_data_manager());
   details.context_token = context_token_;

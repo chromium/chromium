@@ -21,7 +21,6 @@ class MockTestPaymentsNetworkInterface : public payments::TestPaymentsNetworkInt
               GetIbanUploadDetails,
               (const std::string&,
                int64_t,
-               int,
                const std::string&,
                (base::OnceCallback<
                    void(payments::PaymentsAutofillClient::PaymentsRpcResult,

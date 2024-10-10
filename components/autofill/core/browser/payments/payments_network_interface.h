@@ -149,9 +149,7 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
 
   // Determine if the user meets the Payments service conditions for upload.
   // The service uses `app_locale` and `billing_customer_number` to determine
-  // which legal message to display. `billable_service_number` is defined in
-  // the Payments server to distinguish different requests and is set in the
-  // GetIbanUploadDetails request. `country_code` is the first two characters
+  // which legal message to display. `country_code` is the first two characters
   // of the IBAN, representing its country of origin. `callback` is the
   // callback function that is triggered when a response is received from the
   // server, and the callback is triggered with that response's result. The
@@ -163,7 +161,6 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
   virtual void GetIbanUploadDetails(
       const std::string& app_locale,
       int64_t billing_customer_number,
-      int billable_service_number,
       const std::string& country_code,
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult result,
                               const std::u16string& validation_regex,

@@ -139,7 +139,6 @@ struct UnmaskIbanRequestDetails {
   UnmaskIbanRequestDetails(const UnmaskIbanRequestDetails& other);
   ~UnmaskIbanRequestDetails();
 
-  int billable_service_number = 0;
   int64_t billing_customer_number = 0;
   int64_t instrument_id;
 };
@@ -325,7 +324,6 @@ struct UploadIbanRequestDetails {
   ~UploadIbanRequestDetails();
 
   std::string app_locale;
-  int billable_service_number = 0;
   int64_t billing_customer_number = 0;
   std::u16string context_token;
   std::u16string value;

@@ -96,8 +96,6 @@ void IbanAccessManager::FetchValue(const Suggestion::BackendId& backend_id,
   client_->GetPersonalDataManager()->payments_data_manager().RecordUseOfIban(
       iban_copy);
   payments::UnmaskIbanRequestDetails request_details;
-  request_details.billable_service_number =
-      payments::kUnmaskPaymentMethodBillableServiceNumber;
   request_details.billing_customer_number = payments::GetBillingCustomerId(
       &client_->GetPersonalDataManager()->payments_data_manager());
   request_details.instrument_id = instrument_id;

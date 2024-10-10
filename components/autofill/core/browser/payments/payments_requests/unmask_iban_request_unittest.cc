@@ -11,7 +11,6 @@
 namespace autofill::payments {
 namespace {
 
-constexpr int kBillableServiceNumber = 12345678;
 constexpr int64_t kBillingCustomerNumber = 111222333;
 constexpr int64_t kInstrumentId = 1122334455;
 
@@ -19,7 +18,6 @@ class UnmaskIbanRequestTest : public testing::Test {
  public:
   void SetUp() override {
     UnmaskIbanRequestDetails request_details;
-    request_details.billable_service_number = kBillableServiceNumber;
     request_details.billing_customer_number = kBillingCustomerNumber;
     request_details.instrument_id = kInstrumentId;
     request_ = std::make_unique<UnmaskIbanRequest>(
@@ -48,8 +46,8 @@ TEST_F(UnmaskIbanRequestTest, GetRequestContent) {
   ASSERT_FALSE(GetRequest()->GetRequestContent().empty());
   EXPECT_NE(GetRequest()->GetRequestContent().find("billable_service"),
             std::string::npos);
-  EXPECT_NE(GetRequest()->GetRequestContent().find(
-                base::NumberToString(kBillableServiceNumber)),
+  EXPECT_NE(GetRequest()->GetRequestContent().find(base::NumberToString(
+                kUnmaskPaymentMethodBillableServiceNumber)),
             std::string::npos);
   EXPECT_NE(GetRequest()->GetRequestContent().find("customer_context"),
             std::string::npos);

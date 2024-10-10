@@ -12,7 +12,6 @@ namespace autofill::payments {
 namespace {
 
 constexpr char kAppLocale[] = "pt-BR";
-constexpr int kBillableServiceNumber = 12345678;
 constexpr int64_t kBillingCustomerNumber = 111222333;
 constexpr char16_t kContextToken[] = u"somecontexttoken";
 constexpr char16_t kValue[] = u"CH5604835012345678009";
@@ -23,7 +22,6 @@ class UploadIbanRequestTest : public testing::Test {
   void SetUp() override {
     UploadIbanRequestDetails request_details;
     request_details.app_locale = kAppLocale;
-    request_details.billable_service_number = kBillableServiceNumber;
     request_details.billing_customer_number = kBillingCustomerNumber;
     request_details.context_token = kContextToken;
     request_details.value = kValue;
@@ -49,8 +47,8 @@ TEST_F(UploadIbanRequestTest, GetRequestContent) {
             std::string::npos);
   EXPECT_NE(GetRequest().GetRequestContent().find("billable_service"),
             std::string::npos);
-  EXPECT_NE(GetRequest().GetRequestContent().find(
-                base::NumberToString(kBillableServiceNumber)),
+  EXPECT_NE(GetRequest().GetRequestContent().find(base::NumberToString(
+                kUploadPaymentMethodBillableServiceNumber)),
             std::string::npos);
   EXPECT_NE(GetRequest().GetRequestContent().find("customer_context"),
             std::string::npos);
