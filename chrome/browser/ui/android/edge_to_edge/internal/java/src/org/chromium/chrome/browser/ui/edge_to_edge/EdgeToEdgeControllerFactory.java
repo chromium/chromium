@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.components.browser_ui.edge_to_edge.SystemBarColorHelper;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -44,6 +45,8 @@ public class EdgeToEdgeControllerFactory {
      * @param windowAndroid The current {@link WindowAndroid} to allow drawing under System Bars.
      * @param tabObservableSupplier Supplies an {@Link Observer} that is notified whenever the Tab
      *     changes.
+     * @param edgeToEdgeStateProvider Provides the edge-to-edge state and allows for requests to
+     *     draw edge-to-edge.
      * @param browserControlsStateProvider Provides the state of the BrowserControls so we can tell
      *     if the Toolbar is changing.
      * @param layoutManagerSupplier The supplier of {@link LayoutManager} for checking the active
@@ -55,6 +58,7 @@ public class EdgeToEdgeControllerFactory {
             Activity activity,
             WindowAndroid windowAndroid,
             @NonNull ObservableSupplier<Tab> tabObservableSupplier,
+            @NonNull EdgeToEdgeStateProvider edgeToEdgeStateProvider,
             BrowserControlsStateProvider browserControlsStateProvider,
             ObservableSupplier<LayoutManager> layoutManagerSupplier,
             FullscreenManager fullscreenManager) {
@@ -65,6 +69,7 @@ public class EdgeToEdgeControllerFactory {
                 windowAndroid,
                 tabObservableSupplier,
                 null,
+                edgeToEdgeStateProvider,
                 browserControlsStateProvider,
                 layoutManagerSupplier,
                 fullscreenManager);

@@ -11,7 +11,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
@@ -68,6 +67,7 @@ import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.InsetObserver;
@@ -97,6 +97,7 @@ public class EdgeToEdgeControllerTest {
             Insets.of(0, TOP_INSET_LANDSCAPE, 0, BOTTOM_INSET_LANDSCAPE);
     private static final Insets IME_INSETS_NO_KEYBOARD = Insets.of(0, 0, 0, 0);
     private static final Insets IME_INSETS_KEYBOARD = Insets.of(0, 0, 0, BOTTOM_KEYBOARD_INSET);
+    private static final int EDGE_TO_EDGE_STATUS_TOKEN = 12345;
 
     private static final WindowInsetsCompat SYSTEM_BARS_WINDOW_INSETS =
             new WindowInsetsCompat.Builder()
@@ -133,6 +134,7 @@ public class EdgeToEdgeControllerTest {
     @Mock private WebContents mWebContents;
 
     @Mock private EdgeToEdgeOSWrapper mOsWrapper;
+    @Mock private EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
 
     @Captor private ArgumentCaptor<WindowInsetsConsumer> mWindowInsetsListenerCaptor;
 
@@ -170,7 +172,9 @@ public class EdgeToEdgeControllerTest {
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mKeyNativePage.supportsEdgeToEdge()).thenReturn(true);
 
-        doNothing().when(mOsWrapper).setDecorFitsSystemWindows(any(), anyBoolean());
+        doReturn(EDGE_TO_EDGE_STATUS_TOKEN)
+                .when(mEdgeToEdgeStateProvider)
+                .acquireSetDecorFitsSystemWindowToken();
         doNothing().when(mOsWrapper).setPadding(any(), anyInt(), anyInt(), anyInt(), anyInt());
         doNothing().when(mInsetObserver).addInsetsConsumer(mWindowInsetsListenerCaptor.capture());
         doAnswer(
@@ -188,11 +192,12 @@ public class EdgeToEdgeControllerTest {
                         mWindowAndroid,
                         mTabProvider,
                         mOsWrapper,
+                        mEdgeToEdgeStateProvider,
                         mBrowserControlsStateProvider,
                         mLayoutManagerSupplier,
                         mFullscreenManager);
         assertNotNull(mEdgeToEdgeControllerImpl);
-        verify(mOsWrapper, times(1)).setDecorFitsSystemWindows(any(), eq(false));
+        verify(mEdgeToEdgeStateProvider, times(1)).acquireSetDecorFitsSystemWindowToken();
         verify(mOsWrapper, times(1))
                 .setPadding(
                         any(),
@@ -369,6 +374,7 @@ public class EdgeToEdgeControllerTest {
                                 mActivity,
                                 mWindowAndroid,
                                 liveSupplier,
+                                mEdgeToEdgeStateProvider,
                                 mBrowserControlsStateProvider,
                                 mLayoutManagerSupplier,
                                 mFullscreenManager);

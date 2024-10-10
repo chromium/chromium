@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.components.browser_ui.util.AutomotiveUtils;
 import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.ui.display.DisplaySwitches;
@@ -108,6 +109,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     private NightModeStateProvider mNightModeStateProvider;
     private LinkedHashSet<Integer> mThemeResIds = new LinkedHashSet<>();
     private ServiceTracingProxyProvider mServiceTracingProxyProvider;
+    private EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -167,6 +169,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         GlobalAppLocaleController.getInstance().maybeOverrideContextConfig(this);
 
         setDefaultTaskDescription();
+        mEdgeToEdgeStateProvider = new EdgeToEdgeStateProvider(getWindow());
     }
 
     @Override
@@ -471,6 +474,14 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         } else {
             return AutomotiveToolbarImplementation.WITH_TOOLBAR_VIEW;
         }
+    }
+
+    /**
+     * Returns the {@link EdgeToEdgeStateProvider} for checking and requesting changes to the
+     * edge-to-edge state.
+     */
+    protected EdgeToEdgeStateProvider getEdgeToEdgeStateProvider() {
+        return mEdgeToEdgeStateProvider;
     }
 
     private void setAutomotiveToolbarBackButtonAction() {

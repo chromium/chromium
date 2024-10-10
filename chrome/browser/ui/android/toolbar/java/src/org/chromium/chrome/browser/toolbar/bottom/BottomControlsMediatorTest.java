@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerImpl;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObserver;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.TestActivity;
@@ -84,6 +85,7 @@ public class BottomControlsMediatorTest {
     @Mock KeyboardVisibilityDelegate mKeyboardDelegate;
     @Mock Supplier<Boolean> mReadAloudRestoringSupplier;
     @Mock InsetObserver mInsetObserver;
+    @Mock EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
 
     private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private ObservableSupplierImpl<Tab> mTabObservableSupplier = new ObservableSupplierImpl();
@@ -170,6 +172,7 @@ public class BottomControlsMediatorTest {
                         mWindowAndroid,
                         mTabObservableSupplier,
                         null,
+                        mEdgeToEdgeStateProvider,
                         mBrowserControlsStateProvider,
                         new ObservableSupplierImpl<>(mLayoutManager),
                         mFullscreenManager);
@@ -201,6 +204,7 @@ public class BottomControlsMediatorTest {
                         mWindowAndroid,
                         mTabObservableSupplier,
                         null,
+                        mEdgeToEdgeStateProvider,
                         mBrowserControlsStateProvider,
                         new ObservableSupplierImpl<>(mLayoutManager),
                         mFullscreenManager);
