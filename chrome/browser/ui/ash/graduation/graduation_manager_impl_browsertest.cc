@@ -11,8 +11,12 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_mock_time_task_runner.h"
+#include "base/time/time.h"
+#include "base/time/time_override.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -32,6 +36,7 @@
 
 namespace ash {
 namespace {
+constexpr char kSessionStartTime[] = "30 Sep 2024 00:00:00 PST";
 apps::AppServiceProxy* GetAppServiceProxy(Profile* profile) {
   return apps::AppServiceProxyFactory::GetForProfile(profile);
 }
@@ -63,8 +68,44 @@ class GraduationManagerTest : public SystemWebAppBrowserTestBase {
   void SetUpOnMainThread() override {
     SystemWebAppBrowserTestBase::SetUpOnMainThread();
     logged_in_user_mixin_.LogInUser();
+    SetMockClocksAndTaskRunner();
     WaitForTestSystemAppInstall();
     WaitForAppRegistryCommands(browser()->profile());
+  }
+
+  static void SetTimeNow(base::Time new_time_now) { time_now_ = new_time_now; }
+
+  static base::Time GetTimeNow() { return time_now_; }
+
+  void SetMockClocksAndTaskRunner() {
+    // Set the system time in the task runner.
+    base::Time start_time;
+    EXPECT_TRUE(base::Time::FromUTCString(kSessionStartTime, &start_time));
+    task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>(
+        start_time, base::TimeTicks::UnixEpoch());
+
+    ash::graduation::GraduationManagerImpl::Get()->SetClocksForTesting(
+        task_runner_->GetMockClock(), task_runner_->GetMockTickClock());
+
+    // Override base::Time::Now() so the util functions work properly.
+    SetTimeNow(start_time);
+
+    time_override_ = std::make_unique<base::subtle::ScopedTimeClockOverrides>(
+        /*time_override=*/&GraduationManagerTest::GetTimeNow,
+        /*time_ticks_override=*/nullptr,
+        /*thread_ticks_override=*/nullptr);
+  }
+
+  void AdvanceTimeBy(base::TimeDelta advance_length) {
+    task_runner_->FastForwardBy(advance_length);
+    SetTimeNow(base::Time::Now() + advance_length);
+    ResumeTimer();
+  }
+
+  // task_runner_->FastForwardBy(TimeDelta) doesn't trigger the midnight timer
+  // so it needs to be manually resumed.
+  void ResumeTimer() {
+    ash::graduation::GraduationManagerImpl::Get()->ResumeTimerForTesting();
   }
 
   bool IsItemPinned(const std::string& item_id) {
@@ -95,6 +136,36 @@ class GraduationManagerTest : public SystemWebAppBrowserTestBase {
         prefs::kGraduationEnablementStatus, status.Clone());
   }
 
+  void SetGraduationEnablementWithStartDate(bool is_enabled,
+                                            int day,
+                                            int month,
+                                            int year) {
+    base::Value::Dict status;
+    status.Set("is_enabled", is_enabled);
+    base::Value::Dict start_date;
+    start_date.Set("day", day);
+    start_date.Set("month", month);
+    start_date.Set("year", year);
+    status.Set("start_date", start_date.Clone());
+    browser()->profile()->GetPrefs()->SetDict(
+        prefs::kGraduationEnablementStatus, status.Clone());
+  }
+
+  void SetGraduationEnablementWithEndDate(bool is_enabled,
+                                          int day,
+                                          int month,
+                                          int year) {
+    base::Value::Dict status;
+    status.Set("is_enabled", is_enabled);
+    base::Value::Dict end_date;
+    end_date.Set("day", day);
+    end_date.Set("month", month);
+    end_date.Set("year", year);
+    status.Set("end_date", end_date.Clone());
+    browser()->profile()->GetPrefs()->SetDict(
+        prefs::kGraduationEnablementStatus, status.Clone());
+  }
+
   std::string GetLanguageCode() {
     return ash::graduation::GraduationManagerImpl::Get()->GetLanguageCode();
   }
@@ -102,10 +173,19 @@ class GraduationManagerTest : public SystemWebAppBrowserTestBase {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
+
+  std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_override_;
+
+  static base::Time time_now_;
+
   LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_, /*test_base=*/this, embedded_test_server(),
       LoggedInUserMixin::LogInType::kManaged};
 };
+
+// static
+base::Time GraduationManagerTest::time_now_;
 
 IN_PROC_BROWSER_TEST_F(GraduationManagerTest, PRE_AppPinnedWhenPolicyEnabled) {
   // Set pref value in PRE_ to ensure that the pref value is set at the time of
@@ -123,6 +203,70 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest, AppPinnedWhenPolicyEnabled) {
 
   EXPECT_FALSE(IsItemPinned(web_app::kGraduationAppId));
   EXPECT_EQ(apps::Readiness::kDisabledByPolicy,
+            GetAppReadiness(web_app::kGraduationAppId));
+}
+
+IN_PROC_BROWSER_TEST_F(GraduationManagerTest,
+                       PRE_AppPinnedWhenStartDateIsReached) {
+  // Set pref value in PRE_ to ensure that the pref value is set at the time of
+  // user session start in the test.
+  SetGraduationEnablementWithStartDate(true, 1, 10, 2024);
+}
+
+IN_PROC_BROWSER_TEST_F(GraduationManagerTest, AppPinnedWhenStartDateIsReached) {
+  EXPECT_EQ(apps::Readiness::kDisabledByPolicy,
+            GetAppReadiness(web_app::kGraduationAppId));
+  EXPECT_FALSE(IsItemPinned(web_app::kGraduationAppId));
+
+  // Fast forward to the policy enablement start date set in the pre-test.
+  AdvanceTimeBy(base::Days(1));
+  WaitForAppRegistryCommands(browser()->profile());
+
+  EXPECT_TRUE(IsItemPinned(web_app::kGraduationAppId));
+  EXPECT_EQ(apps::Readiness::kReady,
+            GetAppReadiness(web_app::kGraduationAppId));
+}
+
+IN_PROC_BROWSER_TEST_F(GraduationManagerTest,
+                       PRE_AppPinnedWhenStartDateIsReachedInMoreThanOneDay) {
+  // Set pref value in PRE_ to ensure that the pref value is set at the time of
+  // user session start in the test.
+  SetGraduationEnablementWithStartDate(true, 2, 10, 2024);
+}
+
+IN_PROC_BROWSER_TEST_F(GraduationManagerTest,
+                       AppPinnedWhenStartDateIsReachedInMoreThanOneDay) {
+  EXPECT_EQ(apps::Readiness::kDisabledByPolicy,
+            GetAppReadiness(web_app::kGraduationAppId));
+  EXPECT_FALSE(IsItemPinned(web_app::kGraduationAppId));
+
+  // Fast forward to the policy enablement start date set in the pre-test.
+  AdvanceTimeBy(base::Days(2));
+  WaitForAppRegistryCommands(browser()->profile());
+
+  EXPECT_TRUE(IsItemPinned(web_app::kGraduationAppId));
+  EXPECT_EQ(apps::Readiness::kReady,
+            GetAppReadiness(web_app::kGraduationAppId));
+}
+
+IN_PROC_BROWSER_TEST_F(GraduationManagerTest, PRE_AppPinnedOnEndDate) {
+  // Set pref value in PRE_ to ensure that the pref value is set at the time of
+  // user session start in the test.
+  SetGraduationEnablementWithEndDate(true, 1, 10, 2024);
+}
+
+IN_PROC_BROWSER_TEST_F(GraduationManagerTest, AppPinnedOnEndDate) {
+  EXPECT_TRUE(IsItemPinned(web_app::kGraduationAppId));
+  EXPECT_EQ(apps::Readiness::kReady,
+            GetAppReadiness(web_app::kGraduationAppId));
+
+  // Fast forward to the policy enablement end date set in the pre-test.
+  AdvanceTimeBy(base::Days(1));
+  WaitForAppRegistryCommands(browser()->profile());
+
+  // Since this is the last day the app is available, the app should be pinned.
+  EXPECT_TRUE(IsItemPinned(web_app::kGraduationAppId));
+  EXPECT_EQ(apps::Readiness::kReady,
             GetAppReadiness(web_app::kGraduationAppId));
 }
 
@@ -157,6 +301,28 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest, AppUnpinnedWhenPolicyDisabled) {
   EXPECT_EQ(apps::Readiness::kReady,
             GetAppReadiness(web_app::kGraduationAppId));
   EXPECT_TRUE(IsItemPinned(web_app::kGraduationAppId));
+}
+
+IN_PROC_BROWSER_TEST_F(GraduationManagerTest,
+                       PRE_AppUnpinnedWhenEndDateHasPassed) {
+  // Set pref value in PRE_ to ensure that the pref value is set at the time of
+  // user session start in the test.
+  SetGraduationEnablementWithEndDate(true, 1, 10, 2024);
+}
+
+IN_PROC_BROWSER_TEST_F(GraduationManagerTest, AppUnpinnedWhenEndDateHasPassed) {
+  EXPECT_TRUE(IsItemPinned(web_app::kGraduationAppId));
+  EXPECT_EQ(apps::Readiness::kReady,
+            GetAppReadiness(web_app::kGraduationAppId));
+
+  // Fast forward to one day past the policy enablement end date set in the
+  // pre-test.
+  AdvanceTimeBy(base::Days(2));
+  WaitForAppRegistryCommands(browser()->profile());
+
+  EXPECT_EQ(apps::Readiness::kDisabledByPolicy,
+            GetAppReadiness(web_app::kGraduationAppId));
+  EXPECT_FALSE(IsItemPinned(web_app::kGraduationAppId));
 }
 
 IN_PROC_BROWSER_TEST_F(GraduationManagerTest, GetLanguageCode) {

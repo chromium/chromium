@@ -9,6 +9,11 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 
+namespace base {
+class Clock;
+class TickClock;
+}  // namespace base
+
 namespace ash::graduation {
 
 // Creates interface to access browser-side functionalities in
@@ -24,6 +29,14 @@ class ASH_PUBLIC_EXPORT GraduationManager {
 
   // Returns the language code of the device's current locale.
   virtual const std::string GetLanguageCode() const = 0;
+
+  // Used by browser tests to set and fast-forward the system time.
+  virtual void SetClocksForTesting(const base::Clock* clock,
+                                   const base::TickClock* tick_clock) = 0;
+
+  // Used by browser tests to resume the timer after it is paused (e.g. during
+  // fast-forwarding).
+  virtual void ResumeTimerForTesting() = 0;
 };
 
 }  // namespace ash::graduation

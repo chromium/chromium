@@ -18,6 +18,12 @@
 
 class Profile;
 
+namespace base {
+class Clock;
+class TickClock;
+class WallClockTimer;
+}  // namespace base
+
 namespace ash::graduation {
 
 // Manages the state of the Transfer app depending on the status of the
@@ -33,6 +39,9 @@ class GraduationManagerImpl : public ash::graduation::GraduationManager,
 
   // ash::graduation::GraduationManager:
   const std::string GetLanguageCode() const override;
+  void SetClocksForTesting(const base::Clock* clock,
+                           const base::TickClock* tick_clock) override;
+  void ResumeTimerForTesting() override;
 
   // session_manager::SessionManagerObserver:
   void OnUserSessionStarted(bool is_primary) override;
@@ -41,6 +50,10 @@ class GraduationManagerImpl : public ash::graduation::GraduationManager,
   void OnAppsSynchronized();
   void OnWebAppProviderReady();
   void UpdateAppPinnedState();
+  void OnPrefChanged();
+  void OnMidnightTimer();
+  void MaybeScheduleAppStatusUpdate();
+  void UpdateAppReadiness();
 
   PrefChangeRegistrar pref_change_registrar_;
 
@@ -49,6 +62,14 @@ class GraduationManagerImpl : public ash::graduation::GraduationManager,
 
   // The GraduationNudgeController is created during `OnUserSessionStarted`.
   std::unique_ptr<GraduationNudgeController> nudge_controller_;
+
+  // The midnight timer is created during `OnUserSessionStarted`.
+  std::unique_ptr<base::WallClockTimer> midnight_timer_;
+
+  // Clocks that can be mocked in tests to set and fast-forward the time.
+  // They are set to the default clock and tick clock instances when not mocked.
+  raw_ptr<const base::Clock> clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>

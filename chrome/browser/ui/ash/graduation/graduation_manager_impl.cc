@@ -9,6 +9,12 @@
 #include "ash/edusumer/graduation_utils.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/functional/bind.h"
+#include "base/time/clock.h"
+#include "base/time/default_clock.h"
+#include "base/time/default_tick_clock.h"
+#include "base/time/tick_clock.h"
+#include "base/time/time.h"
+#include "base/timer/wall_clock_timer.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
@@ -17,13 +23,22 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash::graduation {
 
-GraduationManagerImpl::GraduationManagerImpl() {
+namespace {
+base::Time GetNextDayLocalMidnight(base::Time date) {
+  return (date.LocalMidnight() + base::Days(1)).LocalMidnight();
+}
+}  // namespace
+
+GraduationManagerImpl::GraduationManagerImpl()
+    : clock_(base::DefaultClock::GetInstance()),
+      tick_clock_(base::DefaultTickClock::GetInstance()) {
   // SessionManager may be unset in unit tests.
   auto* session_manager = session_manager::SessionManager::Get();
   if (session_manager) {
@@ -33,11 +48,25 @@ GraduationManagerImpl::GraduationManagerImpl() {
 
 GraduationManagerImpl::~GraduationManagerImpl() {
   pref_change_registrar_.Reset();
+  midnight_timer_.reset();
 }
 
 const std::string GraduationManagerImpl::GetLanguageCode() const {
   return google_util::GetGoogleLocale(
       g_browser_process->GetApplicationLocale());
+}
+
+void GraduationManagerImpl::SetClocksForTesting(
+    const base::Clock* clock,
+    const base::TickClock* tick_clock) {
+  clock_ = clock;
+  tick_clock_ = tick_clock;
+}
+
+void GraduationManagerImpl::ResumeTimerForTesting() {
+  if (midnight_timer_ && midnight_timer_->IsRunning()) {
+    midnight_timer_->OnResume();
+  }
 }
 
 void GraduationManagerImpl::OnUserSessionStarted(bool is_primary) {
@@ -49,6 +78,8 @@ void GraduationManagerImpl::OnUserSessionStarted(bool is_primary) {
 
   nudge_controller_ =
       std::make_unique<GraduationNudgeController>(profile_->GetPrefs());
+
+  midnight_timer_ = std::make_unique<base::WallClockTimer>(clock_, tick_clock_);
 
   SystemWebAppManager* swa_manager = SystemWebAppManager::Get(profile_);
   CHECK(swa_manager);
@@ -67,15 +98,15 @@ void GraduationManagerImpl::OnAppsSynchronized() {
 }
 
 void GraduationManagerImpl::OnWebAppProviderReady() {
-  // Set initial app pinned state.
   UpdateAppPinnedState();
+  MaybeScheduleAppStatusUpdate();
 
   PrefService* pref_service = profile_->GetPrefs();
   CHECK(pref_service);
   pref_change_registrar_.Init(pref_service);
   pref_change_registrar_.Add(
       prefs::kGraduationEnablementStatus,
-      base::BindRepeating(&GraduationManagerImpl::UpdateAppPinnedState,
+      base::BindRepeating(&GraduationManagerImpl::OnPrefChanged,
                           base::Unretained(this)));
 }
 
@@ -102,5 +133,37 @@ void GraduationManagerImpl::UpdateAppPinnedState() {
   if (browser) {
     browser->window()->Close();
   }
+}
+
+void GraduationManagerImpl::OnPrefChanged() {
+  UpdateAppPinnedState();
+  MaybeScheduleAppStatusUpdate();
+}
+
+void GraduationManagerImpl::OnMidnightTimer() {
+  UpdateAppReadiness();
+  UpdateAppPinnedState();
+  MaybeScheduleAppStatusUpdate();
+}
+
+void GraduationManagerImpl::MaybeScheduleAppStatusUpdate() {
+  CHECK(profile_);
+  if (!HasUpcomingGraduationEnablementChange(profile_->GetPrefs())) {
+    midnight_timer_->Stop();
+    return;
+  }
+
+  const base::Time midnight = GetNextDayLocalMidnight(/*date=*/clock_->Now());
+  CHECK(midnight_timer_);
+  midnight_timer_->Start(FROM_HERE, midnight,
+                         base::BindOnce(&GraduationManagerImpl::OnMidnightTimer,
+                                        weak_ptr_factory_.GetWeakPtr()));
+}
+
+void GraduationManagerImpl::UpdateAppReadiness() {
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebApps(profile_);
+  CHECK(provider);
+  provider->policy_manager().OnDisableListPolicyChanged();
 }
 }  // namespace ash::graduation
