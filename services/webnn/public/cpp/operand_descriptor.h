@@ -23,11 +23,9 @@ enum class OperandDataType {
   kUint64,
   kInt8,
   kUint8,
-  kInt4,
-  kUint4,
 
   kMinValue = kFloat32,
-  kMaxValue = kUint4,
+  kMaxValue = kUint8,
 };
 
 class COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) OperandDescriptor {
@@ -44,7 +42,7 @@ class COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) OperandDescriptor {
       OperandDataType data_type,
       base::span<const uint32_t> shape);
 
-  static size_t GetBitsPerElement(OperandDataType data_type);
+  static size_t GetBytesPerElement(OperandDataType data_type);
 
   // Creates an invalid instance for use with Mojo deserialization, which
   // requires types to be default-constructible.

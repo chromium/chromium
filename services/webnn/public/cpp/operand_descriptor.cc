@@ -32,15 +32,10 @@ base::expected<OperandDescriptor, std::string> OperandDescriptor::Create(
         "Invalid descriptor: All dimensions must be in the range of int32_t.");
   }
 
-  // Since the data stored in memory are in 8-bits bytes, here we need to make
-  // up an integer multiple of 8 to calculate the `checked_number_of_bytes`.
-  base::CheckedNumeric<size_t> checked_number_of_bytes =
-      (std::accumulate(
-           shape.begin(), shape.end(),
-           base::CheckedNumeric<size_t>(GetBitsPerElement(data_type)),
-           std::multiplies()) +
-       7) /
-      8;
+  base::CheckedNumeric<size_t> checked_number_of_bytes = std::accumulate(
+      shape.begin(), shape.end(),
+      base::CheckedNumeric<size_t>(GetBytesPerElement(data_type)),
+      std::multiplies());
 
   size_t number_of_bytes;
   if (!checked_number_of_bytes.AssignIfValid(&number_of_bytes)) {
@@ -67,27 +62,24 @@ OperandDescriptor OperandDescriptor::UnsafeCreateForTesting(
 }
 
 // static
-size_t OperandDescriptor::GetBitsPerElement(OperandDataType data_type) {
+size_t OperandDescriptor::GetBytesPerElement(OperandDataType data_type) {
   switch (data_type) {
     case OperandDataType::kFloat32:
-      return sizeof(float) * 8;
+      return sizeof(float);
     case OperandDataType::kFloat16:
-      return sizeof(uint16_t) * 8;
+      return sizeof(uint16_t);
     case OperandDataType::kInt32:
-      return sizeof(int32_t) * 8;
+      return sizeof(int32_t);
     case OperandDataType::kUint32:
-      return sizeof(uint32_t) * 8;
+      return sizeof(uint32_t);
     case OperandDataType::kInt64:
-      return sizeof(int64_t) * 8;
+      return sizeof(int64_t);
     case OperandDataType::kUint64:
-      return sizeof(uint64_t) * 8;
+      return sizeof(uint64_t);
     case OperandDataType::kInt8:
-      return sizeof(int8_t) * 8;
+      return sizeof(int8_t);
     case OperandDataType::kUint8:
-      return sizeof(uint8_t) * 8;
-    case OperandDataType::kInt4:
-    case OperandDataType::kUint4:
-      return 4;
+      return sizeof(uint8_t);
   }
 }
 
@@ -110,8 +102,8 @@ size_t OperandDescriptor::PackedByteLength() const {
   // Overflow checks are not needed here because this same calculation is
   // performed with overflow checking in `Create()`. `this` would not exist if
   // those checks failed.
-
-  return (GetBitsPerElement(data_type_) * NumberOfElements() + 7) / 8;
+  return std::accumulate(shape_.begin(), shape_.end(),
+                         GetBytesPerElement(data_type_), std::multiplies());
 }
 
 size_t OperandDescriptor::NumberOfElements() const {
