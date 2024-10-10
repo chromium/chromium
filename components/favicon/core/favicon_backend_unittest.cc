@@ -837,8 +837,8 @@ TEST_F(FaviconBackendTest, MergeFaviconMaxFaviconBitmapsPerIconURL) {
 
   std::vector<unsigned char> data;
   data.push_back('a');
-  scoped_refptr<base::RefCountedMemory> bitmap_data =
-      base::RefCountedBytes::TakeVector(&data);
+  auto bitmap_data =
+      base::MakeRefCounted<base::RefCountedBytes>(std::move(data));
 
   int pixel_size = 1;
   for (size_t i = 0; i < kMaxFaviconBitmapsPerIconURL + 1; ++i) {
@@ -1244,8 +1244,8 @@ TEST_F(FaviconBackendTest, GetFaviconsForUrlExpired) {
 
   std::vector<unsigned char> data;
   data.push_back('a');
-  scoped_refptr<base::RefCountedBytes> bitmap_data(
-      base::RefCountedBytes::TakeVector(&data));
+  auto bitmap_data =
+      base::MakeRefCounted<base::RefCountedBytes>(std::move(data));
   base::Time last_updated = base::Time::FromTimeT(0);
   favicon_base::FaviconID icon_id = backend_->db()->AddFavicon(
       icon_url, IconType::kFavicon, bitmap_data, FaviconBitmapType::ON_VISIT,

@@ -249,8 +249,8 @@ std::unique_ptr<gfx::GpuMemoryBuffer> GLManager::CreateGpuMemoryBuffer(
         new IOSurfaceGpuMemoryBuffer(size, format));
   }
 #endif  // BUILDFLAG(IS_MAC)
-  std::vector<uint8_t> data(gfx::BufferSizeForBufferFormat(size, format), 0);
-  auto bytes = base::RefCountedBytes::TakeVector(&data);
+  auto bytes = base::MakeRefCounted<base::RefCountedBytes>(
+      gfx::BufferSizeForBufferFormat(size, format));
   return base::WrapUnique<gfx::GpuMemoryBuffer>(
       new GpuMemoryBufferImplTest(bytes.get(), size, format));
 }

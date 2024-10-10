@@ -355,8 +355,10 @@ scoped_refptr<base::RefCountedMemory> ReadFileData(const base::FilePath& path) {
         std::vector<unsigned char> raw_data;
         raw_data.resize(size);
         char* data = reinterpret_cast<char*>(&(raw_data.front()));
-        if (file.ReadAtCurrentPos(data, size) == length)
-          return base::RefCountedBytes::TakeVector(&raw_data);
+        if (file.ReadAtCurrentPos(data, size) == length) {
+          return base::MakeRefCounted<base::RefCountedBytes>(
+              std::move(raw_data));
+        }
       }
     }
   }
@@ -1972,7 +1974,7 @@ void BrowserThemePack::RepackImages(const ImageCache& images,
       int raw_id = GetRawIDByPersistentID(
           image.first, ui::GetSupportedResourceScaleFactor(rep.scale()));
       (*reencoded_images)[raw_id] =
-          base::RefCountedBytes::TakeVector(&bitmap_data);
+          base::MakeRefCounted<base::RefCountedBytes>(std::move(bitmap_data));
     }
   }
 }
@@ -2103,6 +2105,6 @@ void BrowserThemePack::GenerateRawImageForAllSupportedScales(
       break;
     }
     image_memory_[scaled_raw_id] =
-        base::RefCountedBytes::TakeVector(&bitmap_data);
+        base::MakeRefCounted<base::RefCountedBytes>(std::move(bitmap_data));
   }
 }

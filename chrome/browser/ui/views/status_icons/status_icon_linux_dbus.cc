@@ -123,7 +123,8 @@ auto MakeDbusImage(const gfx::ImageSkia& image) {
   }
   return MakeDbusArray(MakeDbusStruct(
       DbusInt32(width), DbusInt32(height),
-      DbusByteArray(base::RefCountedBytes::TakeVector(&color_data))));
+      DbusByteArray(
+          base::MakeRefCounted<base::RefCountedBytes>(std::move(color_data)))));
 }
 
 auto MakeDbusToolTip(const std::string& text) {

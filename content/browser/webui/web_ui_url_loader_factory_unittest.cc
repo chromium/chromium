@@ -55,9 +55,8 @@ class TestWebUIDataSource final : public URLDataSource {
       const GURL& /*url*/,
       const content::WebContents::Getter& /*wc_getter*/,
       content::URLDataSource::GotDataCallback callback) override {
-    std::vector<unsigned char> raw_resource = GetResource(resource_size_);
-    auto resource = base::RefCountedBytes::TakeVector(&raw_resource);
-    std::move(callback).Run(std::move(resource));
+    std::move(callback).Run(base::MakeRefCounted<base::RefCountedBytes>(
+        GetResource(resource_size_)));
   }
 
   std::string GetMimeType(const GURL& url) override { return "video/webm"; }

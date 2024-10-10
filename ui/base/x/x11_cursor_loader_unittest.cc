@@ -21,8 +21,9 @@ std::vector<XCursorLoader::Image> ParseFile(base::span<const uint32_t> data,
     auto bytes = base::span(vec).subspan(i * 4u).first<4u>();
     bytes.copy_from(base::numerics::U32ToLittleEndian(data[i]));
   }
-  return ParseCursorFile(base::RefCountedBytes::TakeVector(&vec),
-                         preferred_size);
+  return ParseCursorFile(
+      base::MakeRefCounted<base::RefCountedBytes>(std::move(vec)),
+      preferred_size);
 }
 
 }  // namespace

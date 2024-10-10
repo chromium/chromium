@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
+#include "base/containers/span.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
 #endif
-
-#include "ui/ozone/platform/wayland/host/wayland_clipboard.h"
 
 #include <linux/input.h>
 #include <wayland-server.h>
@@ -18,6 +19,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
@@ -34,6 +36,7 @@
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/ozone/platform/wayland/host/wayland_clipboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_keyboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
@@ -65,11 +68,9 @@ namespace {
 
 constexpr char kSampleClipboardText[] = "This is a sample text for clipboard.";
 
-template <typename StringType>
-ui::PlatformClipboard::Data ToClipboardData(const StringType& data_string) {
-  std::vector<uint8_t> data_vector;
-  data_vector.assign(data_string.begin(), data_string.end());
-  return base::RefCountedBytes::TakeVector(&data_vector);
+ui::PlatformClipboard::Data ToClipboardData(std::string_view data_string) {
+  return base::MakeRefCounted<base::RefCountedBytes>(
+      base::ToVector(base::as_byte_span(data_string)));
 }
 
 // This must be called on the server thread.
@@ -239,8 +240,8 @@ class WaylandClipboardTest : public WaylandClipboardTestBase {
   void OfferData(ClipboardBuffer buffer,
                  std::string_view data,
                  const std::string& mime_type) {
-    std::vector<uint8_t> data_vector(data.begin(), data.end());
-    offered_data_[mime_type] = base::RefCountedBytes::TakeVector(&data_vector);
+    offered_data_[mime_type] = base::MakeRefCounted<base::RefCountedBytes>(
+        base::ToVector(base::as_byte_span(data)));
 
     base::MockCallback<PlatformClipboard::OfferDataClosure> offer_callback;
     EXPECT_CALL(offer_callback, Run()).Times(1);
@@ -361,7 +362,7 @@ TEST_P(WaylandClipboardTest, ReadFromClipboard) {
         auto* device = GetSelectionDevice(server, buffer);
         auto* data_offer = device->OnDataOffer();
         data_offer->OnOffer(kMimeTypeTextUtf8,
-                            ToClipboardData(std::string(kSampleClipboardText)));
+                            ToClipboardData(kSampleClipboardText));
         device->OnSelection(data_offer);
       });
 
@@ -385,10 +386,8 @@ TEST_P(WaylandClipboardTest, ReadFromClipboardPrioritizeUtf) {
   PostToServerAndWait(
       [buffer = WhichBufferToUse()](wl::TestWaylandServerThread* server) {
         auto* data_offer = GetSelectionDevice(server, buffer)->OnDataOffer();
-        data_offer->OnOffer(kMimeTypeText,
-                            ToClipboardData(std::string("ascii_text")));
-        data_offer->OnOffer(kMimeTypeTextUtf8,
-                            ToClipboardData(std::string("utf8_text")));
+        data_offer->OnOffer(kMimeTypeText, ToClipboardData("ascii_text"));
+        data_offer->OnOffer(kMimeTypeTextUtf8, ToClipboardData("utf8_text"));
         GetSelectionDevice(server, buffer)->OnSelection(data_offer);
       });
 
@@ -447,7 +446,7 @@ TEST_P(WaylandClipboardTest, OverlapReadingFromDifferentBuffers) {
       [buffer = WhichBufferToUse()](wl::TestWaylandServerThread* server) {
         auto* data_offer = GetSelectionDevice(server, buffer)->OnDataOffer();
         data_offer->OnOffer(kMimeTypeTextUtf8,
-                            ToClipboardData(std::string(kSampleClipboardText)));
+                            ToClipboardData(kSampleClipboardText));
         GetSelectionDevice(server, buffer)->OnSelection(data_offer);
       });
 
@@ -493,7 +492,7 @@ TEST_P(WaylandClipboardTest, ClipboardChangeNotifications) {
       [buffer = WhichBufferToUse()](wl::TestWaylandServerThread* server) {
         auto* data_offer = GetSelectionDevice(server, buffer)->OnDataOffer();
         data_offer->OnOffer(kMimeTypeTextUtf8,
-                            ToClipboardData(std::string(kSampleClipboardText)));
+                            ToClipboardData(kSampleClipboardText));
         GetSelectionDevice(server, buffer)->OnSelection(data_offer);
       });
   EXPECT_FALSE(clipboard_->IsSelectionOwner(buffer));
@@ -537,8 +536,8 @@ TEST_P(CopyPasteOnlyClipboardTest, DISABLED_OverlappingReadRequests) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     auto* data_device = server->data_device_manager()->data_device();
     auto* data_offer = data_device->OnDataOffer();
-    data_offer->OnOffer(kMimeTypeText, ToClipboardData(std::string("text")));
-    data_offer->OnOffer(kMimeTypeHTML, ToClipboardData(std::string("html")));
+    data_offer->OnOffer(kMimeTypeText, ToClipboardData("text"));
+    data_offer->OnOffer(kMimeTypeHTML, ToClipboardData("html"));
     data_device->OnSelection(data_offer);
   });
 

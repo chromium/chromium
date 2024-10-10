@@ -277,8 +277,8 @@ favicon_base::FaviconRawBitmapResult ResizeFaviconBitmapResult(
     return favicon_base::FaviconRawBitmapResult();
   }
 
-  bitmap_result.bitmap_data = base::RefCountedBytes::TakeVector(
-      &resized_bitmap_data);
+  bitmap_result.bitmap_data = base::MakeRefCounted<base::RefCountedBytes>(
+      std::move(resized_bitmap_data));
   bitmap_result.pixel_size =
       gfx::Size(desired_size_in_pixel, desired_size_in_pixel);
 

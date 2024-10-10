@@ -177,8 +177,8 @@ class ClipboardOzone::AsyncClipboardOzone {
 
   void InsertData(std::vector<uint8_t> data,
                   const std::set<std::string>& mime_types) {
-    auto wrapped_data = scoped_refptr<base::RefCountedBytes>(
-        base::RefCountedBytes::TakeVector(&data));
+    auto wrapped_data =
+        base::MakeRefCounted<base::RefCountedBytes>(std::move(data));
     for (const auto& mime_type : mime_types) {
       DCHECK_EQ(data_to_offer_.count(mime_type), 0U);
       data_to_offer_[mime_type] = wrapped_data;

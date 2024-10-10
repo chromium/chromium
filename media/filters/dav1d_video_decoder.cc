@@ -421,12 +421,11 @@ scoped_refptr<VideoFrame> Dav1dVideoDecoder::BindImageToVideoFrame(
     if (!fake_uv_data_ || fake_uv_data_->size() != size_needed) {
       if (pic->p.bpc == 8) {
         // Avoid having base::RefCountedBytes zero initialize the memory just to
-        // fill it with a different value.
+        // fill it with a different value. When we resize, existing frames will
+        // keep their refs on the old data.
         constexpr uint8_t kBlankUV = 256 / 2;
-        std::vector<unsigned char> empty_data(size_needed, kBlankUV);
-
-        // When we resize, existing frames will keep their refs on the old data.
-        fake_uv_data_ = base::RefCountedBytes::TakeVector(&empty_data);
+        fake_uv_data_ = base::MakeRefCounted<base::RefCountedBytes>(
+            std::vector<uint8_t>(size_needed, kBlankUV));
       } else {
         DCHECK(pic->p.bpc == 10 || pic->p.bpc == 12);
         const uint16_t kBlankUV = (1 << pic->p.bpc) / 2;

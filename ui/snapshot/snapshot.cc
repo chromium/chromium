@@ -42,7 +42,7 @@ scoped_refptr<base::RefCountedMemory> EncodeImageAsJPEG(
   if (!result.has_value()) {
     return nullptr;
   }
-  return base::RefCountedBytes::TakeVector(&result.value());
+  return base::MakeRefCounted<base::RefCountedBytes>(std::move(result).value());
 }
 
 void EncodeImageAndScheduleCallback(

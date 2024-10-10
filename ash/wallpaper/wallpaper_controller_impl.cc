@@ -290,7 +290,8 @@ scoped_refptr<base::RefCountedMemory> EncodeAndResizeImage(
   std::optional<std::vector<uint8_t>> jpg_buffer =
       gfx::JPEG1xEncodedDataFromImage(gfx::Image(resized), /*quality=*/90);
   if (jpg_buffer) {
-    return base::RefCountedBytes::TakeVector(&jpg_buffer.value());
+    return base::MakeRefCounted<base::RefCountedBytes>(
+        std::move(jpg_buffer).value());
   }
   return base::MakeRefCounted<base::RefCountedBytes>(0);
 }

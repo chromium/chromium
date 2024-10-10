@@ -250,7 +250,8 @@ void FaviconSource::SendDefaultResponse(
   std::vector<unsigned char> bitmap_data;
   bool result = gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &bitmap_data);
   DCHECK(result);
-  std::move(callback).Run(base::RefCountedBytes::TakeVector(&bitmap_data));
+  std::move(callback).Run(
+      base::MakeRefCounted<base::RefCountedBytes>(std::move(bitmap_data)));
 }
 
 void FaviconSource::SendDefaultResponse(

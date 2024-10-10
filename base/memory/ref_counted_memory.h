@@ -110,15 +110,6 @@ class BASE_EXPORT RefCountedBytes : public RefCountedMemory {
   RefCountedBytes(const RefCountedBytes&) = delete;
   RefCountedBytes& operator=(const RefCountedBytes&) = delete;
 
-  // Constructs a RefCountedBytes object by performing a swap. (To non
-  // destructively build a RefCountedBytes, use the constructor that takes a
-  // vector.)
-  //
-  // TODO(danakj): This can be removed, as callers can now move() the vector to
-  // the ctor instead.
-  static scoped_refptr<RefCountedBytes> TakeVector(
-      std::vector<uint8_t>* to_destroy);
-
   const std::vector<uint8_t>& as_vector() const { return bytes_; }
   std::vector<uint8_t>& as_vector() { return bytes_; }
 

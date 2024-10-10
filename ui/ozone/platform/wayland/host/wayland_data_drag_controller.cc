@@ -649,8 +649,9 @@ void WaylandDataDragController::PostDataFetchingTask(
       }
 
       VLOG(1) << "did fetch " << contents.size() << " bytes.";
-      fetched_data->AddData(base::RefCountedBytes::TakeVector(&contents),
-                            mime_type);
+      fetched_data->AddData(
+          base::MakeRefCounted<base::RefCountedBytes>(std::move(contents)),
+          mime_type);
     }
 
     return std::make_unique<OSExchangeData>(std::move(fetched_data));

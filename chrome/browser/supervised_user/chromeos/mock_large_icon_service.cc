@@ -49,7 +49,8 @@ MockLargeIconService::MockLargeIconService() {
         gfx::PNGCodec::EncodeBGRASkBitmap(
             favicon_, /*discard_transparency=*/false, &png_bytes);
 
-        result.bitmap_data = base::RefCountedBytes::TakeVector(&png_bytes);
+        result.bitmap_data =
+            base::MakeRefCounted<base::RefCountedBytes>(std::move(png_bytes));
         std::move(callback).Run(favicon_base::LargeIconResult(result));
         return kTaskId;
       });
