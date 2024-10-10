@@ -162,7 +162,6 @@ public class JsonSanitizer {
             // A lone surrogate is not allowed.
             if (Character.isLowSurrogate(c)) return false;
 
-            int codePoint;
             if (Character.isHighSurrogate(c)) {
                 // A high surrogate has to be followed by a low surrogate.
                 char high = c;
@@ -170,13 +169,9 @@ public class JsonSanitizer {
 
                 char low = string.charAt(i);
                 if (!Character.isLowSurrogate(low)) return false;
-
-                // Decode the high-low pair into a code point.
-                codePoint = Character.toCodePoint(high, low);
             } else {
                 // The code point is neither a low surrogate nor a high surrogate, so
                 // it's a valid Unicode character.
-                codePoint = c;
             }
         }
         return true;

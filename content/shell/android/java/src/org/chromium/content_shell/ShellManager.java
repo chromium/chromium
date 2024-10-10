@@ -27,8 +27,6 @@ public class ShellManager extends FrameLayout {
     private WindowAndroid mWindow;
     private Shell mActiveShell;
 
-    private String mStartupUrl = DEFAULT_SHELL_URL;
-
     // The target for all content rendering.
     private ContentViewRenderView mContentViewRenderView;
 
@@ -58,11 +56,6 @@ public class ShellManager extends FrameLayout {
     /** Get the ContentViewRenderView. */
     public ContentViewRenderView getContentViewRenderView() {
         return mContentViewRenderView;
-    }
-
-    /** Sets the startup URL for new shell windows. */
-    public void setStartupUrl(String url) {
-        mStartupUrl = url;
     }
 
     /**

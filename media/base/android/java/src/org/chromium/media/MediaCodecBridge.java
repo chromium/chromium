@@ -35,17 +35,6 @@ import java.util.Queue;
 class MediaCodecBridge {
     private static final String TAG = "MediaCodecBridge";
 
-    // After a flush(), dequeueOutputBuffer() can often produce empty presentation timestamps
-    // for several frames. As a result, the player may find that the time does not increase
-    // after decoding a frame. To detect this, we check whether the presentation timestamp from
-    // dequeueOutputBuffer() is larger than input_timestamp - MAX_PRESENTATION_TIMESTAMP_SHIFT_US
-    // after a flush. And we set the presentation timestamp from dequeueOutputBuffer() to be
-    // non-decreasing for the remaining frames.
-    private static final long MAX_PRESENTATION_TIMESTAMP_SHIFT_US = 100000;
-
-    // We use only one output audio format (PCM16) that has 2 bytes per sample
-    private static final int PCM16_BYTES_PER_SAMPLE = 2;
-
     private static final int MEDIA_CODEC_UNKNOWN_CIPHER_MODE = -1;
 
     // TODO(qinmin): Use MediaFormat constants when part of the public API.

@@ -73,9 +73,6 @@ public class ContentShellActivity extends Activity {
                 mShellManager.getContentViewRenderView().getSurfaceView());
 
         mStartupUrl = getUrlFromIntent(getIntent());
-        if (!TextUtils.isEmpty(mStartupUrl)) {
-            mShellManager.setStartupUrl(Shell.sanitizeUrl(mStartupUrl));
-        }
 
         if (CommandLine.getInstance().hasSwitch(RUN_WEB_TESTS_SWITCH)) {
             BrowserStartupController.getInstance()

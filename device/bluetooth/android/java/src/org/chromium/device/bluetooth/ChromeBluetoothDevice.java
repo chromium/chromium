@@ -186,10 +186,10 @@ final class ChromeBluetoothDevice {
                     status,
                     status == android.bluetooth.BluetoothGatt.GATT_SUCCESS ? "OK" : "Error");
             Wrappers.ThreadUtilsWrapper.getInstance()
-                    .runOnUiThread(() -> onServicesDiscoveredUiThread(status));
+                    .runOnUiThread(() -> onServicesDiscoveredUiThread());
         }
 
-        private void onServicesDiscoveredUiThread(int status) {
+        private void onServicesDiscoveredUiThread() {
             if (mNativeBluetoothDeviceAndroid != 0) {
                 // When the device disconnects it deletes mBluetoothGatt, so we need to check it's
                 // not null.

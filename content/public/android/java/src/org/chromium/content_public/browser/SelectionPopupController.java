@@ -49,13 +49,6 @@ public interface SelectionPopupController {
     }
 
     /**
-     * Makes {@link SelectionPopupcontroller} only use the WebContents context when inflating menus.
-     */
-    static void setMustUseWebContentsContext() {
-        SelectionPopupControllerImpl.setMustUseWebContentsContext();
-    }
-
-    /**
      * Makes {@link SelectionPopupcontroller} to use the readback view from {@link WindowAndroid}
      */
     static void setShouldGetReadbackViewFromWindowAndroid() {

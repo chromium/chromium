@@ -48,8 +48,6 @@ public class PrintingControllerImpl implements PrintingController, PdfGenerator 
 
     private String mErrorMessage;
 
-    private PrintingContext mPrintingContext;
-
     private int mRenderProcessId;
     private int mRenderFrameId;
 
@@ -141,11 +139,6 @@ public class PrintingControllerImpl implements PrintingController, PdfGenerator 
     @Override
     public boolean isBusy() {
         return mIsBusy;
-    }
-
-    @Override
-    public void setPrintingContext(final PrintingContext printingContext) {
-        mPrintingContext = printingContext;
     }
 
     @Override
@@ -291,7 +284,6 @@ public class PrintingControllerImpl implements PrintingController, PdfGenerator 
     @Override
     public void onFinish() {
         mPages = null;
-        mPrintingContext = null;
 
         mRenderProcessId = -1;
         mRenderFrameId = -1;

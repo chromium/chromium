@@ -26,9 +26,6 @@ public class MediaServerCrashListener implements MediaPlayer.OnErrorListener {
     // Watchdog player. Used to listen to all media server crashes.
     private MediaPlayer mPlayer;
 
-    // Protecting the creation/release of the watchdog player.
-    private final Object mLock = new Object();
-
     // Approximate time necessary for the MediaServer to restart after a crash.
     private static final int APPROX_MEDIA_SERVER_RESTART_TIME_IN_MS = 5000;
 

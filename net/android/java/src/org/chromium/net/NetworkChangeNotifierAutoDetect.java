@@ -927,7 +927,6 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
     }
 
     private static final String TAG = NetworkChangeNotifierAutoDetect.class.getSimpleName();
-    private static final int UNKNOWN_LINK_SPEED = -1;
 
     // {@link Looper} for the thread this object lives on.
     private final Looper mLooper;

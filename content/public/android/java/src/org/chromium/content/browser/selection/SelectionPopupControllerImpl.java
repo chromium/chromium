@@ -116,11 +116,6 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     // most such trailing, async delays.
     private static final int SHOW_DELAY_MS = 300;
 
-    // A large value to force text processing menu items to be at the end of the
-    // context menu. Chosen to be bigger than the order of possible items in the
-    // XML template.
-    private static final int MENU_ITEM_ORDER_TEXT_PROCESS_START = 100;
-
     // A flag to determine if we should get readback view from WindowAndroid.
     // The readback view could be the ContainerView, which WindowAndroid has no control on that.
     // Embedders should set this properly to use the correct view for readback.
@@ -128,13 +123,6 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     // Allow using magnifer built using surface control instead of the system-proivded one.
     private static boolean sAllowSurfaceControlMagnifier;
-
-    // A flag to determine if we must only use the context from the associated web contents
-    // to inflate menus. By default we use the context held by the ActionMode, because this
-    // enables correct theming, but in cases where we rely on the wrapping of contexts for
-    // correct resource lookup, this is not correct. In that case we must directly inflate
-    // menus from the context.
-    private static boolean sMustUseWebContentsContext;
 
     private static boolean sDisableMagnifierForTesting;
 
@@ -255,16 +243,13 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         sAllowSurfaceControlMagnifier = true;
     }
 
-    public static void setMustUseWebContentsContext() {
-        sMustUseWebContentsContext = true;
-    }
-
     /**
-     * Get {@link SelectionPopupController} object used for the give WebContents.
-     * {@link #create()} should precede any calls to this.
+     * Get {@link SelectionPopupController} object used for the give WebContents. {@link #create()}
+     * should precede any calls to this.
+     *
      * @param webContents {@link WebContents} object.
-     * @return {@link SelectionPopupController} object. {@code null} if not available because
-     *         {@link #create()} is not called yet.
+     * @return {@link SelectionPopupController} object. {@code null} if not available because {@link
+     *     #create()} is not called yet.
      */
     public static SelectionPopupControllerImpl fromWebContents(WebContents webContents) {
         return ((WebContentsImpl) webContents)

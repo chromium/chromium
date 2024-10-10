@@ -108,7 +108,6 @@ public class ToastManager {
             return true;
         }
 
-        CharSequence text = toast.getText();
         Iterator it = mToastQueue.iterator();
         while (it.hasNext()) {
             Toast t = (Toast) it.next();

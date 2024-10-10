@@ -410,11 +410,9 @@ public class InputDialogContainer {
     }
 
     private class DateTimeListener implements OnDateTimeSetListener {
-        private final boolean mLocal;
         private final int mDialogType;
 
         public DateTimeListener(int dialogType) {
-            mLocal = dialogType == TextInputType.DATE_TIME_LOCAL;
             mDialogType = dialogType;
         }
 

@@ -251,7 +251,6 @@ class AudioDeviceListener {
                     private static final int STATE_UNPLUGGED = 0;
                     private static final int STATE_PLUGGED = 1;
                     private static final int HAS_NO_MIC = 0;
-                    private static final int HAS_MIC = 1;
 
                     @Override
                     public void onReceive(Context context, Intent intent) {

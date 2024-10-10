@@ -49,9 +49,6 @@ public class DialogOverlayImpl
     // Has close() been run yet?
     private boolean mClosed;
 
-    // Temporary, so we don't need to keep allocating arrays.
-    private final int[] mCompositorOffset = new int[2];
-
     // The last rect passed to scheduleLayout().
     private Rect mLastRect;
 

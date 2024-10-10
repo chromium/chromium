@@ -92,7 +92,6 @@ public class DropDataProviderImpl {
 
     private int mClearCachedDataIntervalMs = DEFAULT_CLEAR_CACHED_DATA_INTERVAL_MS;
     private byte[] mImageBytes;
-    private String mEncodingFormat;
     private String mImageFilename;
     private String mMimeType;
 
@@ -147,7 +146,6 @@ public class DropDataProviderImpl {
             // Set new data.
             mLastUriCreatedTimestamp = elapsedRealtime;
             this.mImageBytes = imageBytes;
-            this.mEncodingFormat = encodingFormat;
             mImageFilename = filename;
             mMimeType = mimeType;
             mDragEndTime = 0;
@@ -203,7 +201,6 @@ public class DropDataProviderImpl {
     /** Clear the image data of Drag and Drop. */
     private void clearCacheData() {
         mImageBytes = null;
-        mEncodingFormat = null;
         mImageFilename = null;
         mMimeType = null;
         if (mContentProviderUri != null) {

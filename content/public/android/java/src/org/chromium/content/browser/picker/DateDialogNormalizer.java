@@ -61,10 +61,7 @@ public class DateDialogNormalizer {
     }
 
     private static void setLimits(
-            DatePicker picker,
-            long currentMillisForPicker,
-            long minMillisForPicker,
-            long maxMillisForPicker) {
+            DatePicker picker, long minMillisForPicker, long maxMillisForPicker) {
         // On KitKat and earlier, DatePicker requires the minDate is always less than maxDate, even
         // during the process of setting those values (eek), so set them in an order that preserves
         // this invariant throughout.
@@ -111,11 +108,7 @@ public class DateDialogNormalizer {
             currentDate = maxDate;
         }
 
-        setLimits(
-                picker,
-                currentDate.millisForPicker,
-                minDate.millisForPicker,
-                maxDate.millisForPicker);
+        setLimits(picker, minDate.millisForPicker, maxDate.millisForPicker);
         picker.init(currentDate.year, currentDate.month, currentDate.day, listener);
     }
 }

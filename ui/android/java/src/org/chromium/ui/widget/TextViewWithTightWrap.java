@@ -38,7 +38,6 @@ public class TextViewWithTightWrap extends TextView {
         if (layout != null && layout.getLineCount() > 1) {
             int width =
                     getMaxLineWidth(layout) + getCompoundPaddingLeft() + getCompoundPaddingRight();
-            int height = getMeasuredHeight();
             if (width < getMeasuredWidth()) {
                 super.onMeasure(
                         MeasureSpec.makeMeasureSpec(width, MeasureSpec.AT_MOST), heightMeasureSpec);

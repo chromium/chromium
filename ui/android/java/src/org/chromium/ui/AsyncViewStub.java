@@ -75,7 +75,7 @@ public class AsyncViewStub extends View implements AsyncLayoutInflater.OnInflate
     public void onInflateFinished(@NonNull View view, int resId, ViewGroup parent) {
         mInflatedView = view;
         replaceSelfWithView(view, parent);
-        callListeners(view, resId, parent);
+        callListeners(view);
     }
 
     /**
@@ -104,7 +104,7 @@ public class AsyncViewStub extends View implements AsyncLayoutInflater.OnInflate
         }
     }
 
-    private void callListeners(View view, int resId, ViewGroup parent) {
+    private void callListeners(View view) {
         try (TraceEvent te = TraceEvent.scoped("AsyncViewStub.callListeners")) {
             ThreadUtils.assertOnUiThread();
             for (Callback<View> listener : mListeners) {

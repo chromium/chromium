@@ -39,12 +39,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Android implementation of the NFC mojo service defined in
- * services/device/public/mojom/nfc.mojom.
+ * Android implementation of the NFC mojo service defined in services/device/public/mojom/nfc.mojom.
  */
 public class NfcImpl implements Nfc {
     private static final String TAG = "NfcImpl";
-    private static final String ANY_PATH = "/*";
     private static final long MIN_TIME_BETWEEN_VIBRATIONS_MS = 1000;
     private static final long DELAY_TO_DISABLE_READER_MODE_MS = 500;
 

@@ -16,9 +16,6 @@ import org.chromium.content.browser.picker.TwoFieldDatePicker.OnMonthOrWeekChang
 public abstract class TwoFieldDatePickerDialog extends AlertDialog
         implements OnClickListener, OnMonthOrWeekChangedListener {
 
-    private static final String YEAR = "year";
-    private static final String POSITION_IN_YEAR = "position_in_year";
-
     protected final TwoFieldDatePicker mPicker;
     protected final OnValueSetListener mCallBack;
 

@@ -39,7 +39,6 @@ import java.lang.annotation.RetentionPolicy;
  * <p>TODO(majidvp): rename legacy Verification name to more appropriate name ( e.g., BrowserCode.
  */
 public class SmsVerificationReceiver extends BroadcastReceiver {
-    private static final int CODE_PERMISSION_REQUEST = 1;
     private static final String TAG = "SmsVerification";
     private static final boolean DEBUG = false;
     private final SmsProviderGms mProvider;

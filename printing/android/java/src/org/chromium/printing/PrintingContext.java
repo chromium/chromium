@@ -101,14 +101,9 @@ public class PrintingContext {
     public void askUserForSettings(final int maxPages) {
         ThreadUtils.assertOnUiThread();
         // If the printing dialog has already finished, tell Chromium that operation is cancelled.
-        if (mController.hasPrintingFinished()) {
-            // NOTE: We don't call PrintingContextJni.get().askUserForSettingsReply (hence Chromium
-            // callback in AskUserForSettings callback) twice.
-            askUserForSettingsReply(false);
-        } else {
-            mController.setPrintingContext(this);
-            askUserForSettingsReply(true);
-        }
+        // NOTE: We don't call PrintingContextJni.get().askUserForSettingsReply (hence Chromium
+        // callback in AskUserForSettings callback) twice.
+        askUserForSettingsReply(!mController.hasPrintingFinished());
     }
 
     private void askUserForSettingsReply(boolean success) {

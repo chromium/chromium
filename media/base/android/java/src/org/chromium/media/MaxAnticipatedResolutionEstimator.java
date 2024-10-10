@@ -18,12 +18,10 @@ import org.chromium.base.Log;
 import org.chromium.media.MediaCodecUtil.MimeTypes;
 
 /**
- * A utility class to make an estimate for the hints provided to MediaFormat as
- * to the expected maximum resolution to prepare for.
+ * A utility class to make an estimate for the hints provided to MediaFormat as to the expected
+ * maximum resolution to prepare for.
  */
 public class MaxAnticipatedResolutionEstimator {
-    private Context mContext;
-    private DisplayManager mDisplayManager;
     private static final String TAG = "EstimateResolution";
     private static final int SCREEN_WIDTH_4K = 3840;
     private static final int SCREEN_HEIGHT_4K = 2160;
