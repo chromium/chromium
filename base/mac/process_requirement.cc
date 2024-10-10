@@ -349,13 +349,14 @@ std::optional<ProcessRequirement> ProcessRequirement::Builder::Build() && {
   ValidationCategory validation_category =
       validation_category_.value_or(ValidationCategory::None);
 
-  if (validation_category == ValidationCategory::None) {
-    // A validation category of none with a non-empty team ID is not a valid
-    // combination, but should not be treated as programmer error if the
+  if (validation_category == ValidationCategory::None ||
+      validation_category == ValidationCategory::Platform) {
+    // A validation category of None or Platform with a non-empty team ID is not
+    // a valid combination, but should not be treated as programmer error if the
     // validation category came from the kernel.
     if (team_identifier_.size() && has_same_certificate_type_called_) {
       VLOG(2) << "ProcessRequirement::Builder::Build: have team ID but kernel "
-                 "returned validation category of none -> nullopt";
+                 "returned validation category of none or platform -> nullopt";
       return std::nullopt;
     }
 
@@ -427,11 +428,17 @@ bool ProcessRequirement::RequiresSignatureValidation() const {
     return for_testing_.value() == ForTesting::NeverMatches;
   }
 
-  // All validation categories besides none (ad-hoc signature or unsigned)
-  // require validation.
-  // It is not useful to validate an ad-hoc signature as anyone can create
-  // an ad-hoc signature that matches this requirement.
-  return validation_category_ != ValidationCategory::None;
+  // All validation categories besides none (ad-hoc signature or unsigned) and
+  // platform require validation.
+  //
+  // It is not useful to validate an ad-hoc signature as anyone can create an
+  // ad-hoc signature that matches this requirement.
+  //
+  // Being classified as a platform binary indicates that the
+  // `amfi_get_out_of_my_way=1` boot argument is set and there are no
+  // guarantees around process integrity.
+  return validation_category_ != ValidationCategory::None &&
+         validation_category_ != ValidationCategory::Platform;
 }
 
 ScopedCFTypeRef<SecRequirementRef> ProcessRequirement::AsSecRequirement()
@@ -554,31 +561,21 @@ void ProcessRequirement::MaybeGatherMetrics() {
 
 namespace {
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// This separate helper ensures that each of the calls to DumpWithoutCrashing
-// see the same caller location so at most one dump will occur.
-void RecordHasExpectedValue(const std::string& histogram_prefix,
-                            bool has_expected_value) {
-  base::UmaHistogramBoolean(histogram_prefix + ".HasExpectedValue",
-                            has_expected_value);
-  if (!has_expected_value) {
-    debug::DumpWithoutCrashing();
-  }
-}
-#endif
-
 template <typename T>
-void RecordOperationHistogram(const std::string& histogram_prefix,
-                              const base::expected<T, int>& value,
-                              T expected_value_if_chrome) {
-  base::UmaHistogramSparse(histogram_prefix + ".Result", value.error_or(0));
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (value.has_value()) {
-    RecordHasExpectedValue(histogram_prefix,
-                           *value == expected_value_if_chrome);
-  }
-#endif
+void RecordResultHistogram(const std::string& field_name,
+                           const base::expected<T, int>& value) {
+  base::UmaHistogramSparse("Mac.ProcessRequirement." + field_name + ".Result",
+                           value.error_or(0));
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+void RecordHasExpectedValueHistogram(const std::string& field_name,
+                                     bool has_expected_value) {
+  base::UmaHistogramBoolean(
+      "Mac.ProcessRequirement." + field_name + ".HasExpectedValue",
+      has_expected_value);
+}
+#endif
 
 template <typename T>
 std::string StringForCrashKey(const base::expected<T, int>& value) {
@@ -601,28 +598,63 @@ void ProcessRequirement::GatherMetrics() {
   auto fallback_validation_category =
       FallbackValidationCategoryOfCurrentProcess();
 
-  SCOPED_CRASH_KEY_STRING32("ProcessRequirement", "TeamIdentifier",
-                            StringForCrashKey(team_id));
-  SCOPED_CRASH_KEY_STRING32("ProcessRequirement", "Category",
-                            StringForCrashKey(validation_category));
-  SCOPED_CRASH_KEY_STRING32("ProcessRequirement", "FallbackCategory",
-                            StringForCrashKey(fallback_validation_category));
+  RecordResultHistogram("TeamIdentifier", team_id);
 
-  RecordOperationHistogram("Mac.ProcessRequirement.TeamIdentifier", team_id,
+  RecordResultHistogram("ValidationCategory", validation_category);
+
+  RecordResultHistogram("FallbackValidationCategory",
+                        fallback_validation_category);
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-                           std::string("EQHXZ8M8AV")
-#else
-                           std::string()
+  bool team_id_has_expected_value = team_id == std::string("EQHXZ8M8AV");
+  if (team_id.has_value()) {
+    RecordHasExpectedValueHistogram("TeamIdentifier",
+                                    team_id_has_expected_value);
+  }
+
+  bool validation_category_has_expected_value =
+      validation_category == ValidationCategory::DeveloperId;
+  if (validation_category.has_value()) {
+    RecordHasExpectedValueHistogram("ValidationCategory",
+                                    validation_category_has_expected_value);
+  }
+
+  bool fallback_validation_category_has_expected_value =
+      fallback_validation_category == ValidationCategory::DeveloperId;
+  if (fallback_validation_category.has_value()) {
+    RecordHasExpectedValueHistogram(
+        "FallbackValidationCategory",
+        fallback_validation_category_has_expected_value);
+  }
+
+  bool all_fields_have_expected_values =
+      team_id_has_expected_value && validation_category_has_expected_value &&
+      fallback_validation_category_has_expected_value;
+
+  if (!all_fields_have_expected_values) {
+    // Use `DumpWithoutCrashing` to understand unexpected values, except in
+    // specific situations where "unexpected" values are expected.
+    if (validation_category == ValidationCategory::None &&
+        fallback_validation_category == ValidationCategory::None &&
+        team_id == base::unexpected(ENOENT)) {
+      // A build with Chrome branding that is unsigned or ad-hoc signed,
+      // such as for local development.
+    } else if (validation_category == ValidationCategory::Platform) {
+      // Being reported as a platform binary indicates that
+      // `amfi_get_out_of_my_way=1` is set in the boot arguments.
+    } else {
+      SCOPED_CRASH_KEY_STRING32("ProcessRequirement", "TeamIdentifier",
+                                StringForCrashKey(team_id));
+      SCOPED_CRASH_KEY_STRING32("ProcessRequirement", "Category",
+                                StringForCrashKey(validation_category));
+      SCOPED_CRASH_KEY_STRING32(
+          "ProcessRequirement", "FallbackCategory",
+          StringForCrashKey(fallback_validation_category));
+
+      debug::DumpWithoutCrashing();
+    }
+  }
 #endif
-  );
-
-  RecordOperationHistogram("Mac.ProcessRequirement.ValidationCategory",
-                           validation_category,
-                           ValidationCategory::DeveloperId);
-
-  RecordOperationHistogram("Mac.ProcessRequirement.FallbackValidationCategory",
-                           fallback_validation_category,
-                           ValidationCategory::DeveloperId);
 
   std::optional<ProcessRequirement> requirement;
   {
