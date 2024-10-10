@@ -1085,7 +1085,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     full_card_request->OnUnmaskPromptAccepted(details);
 
     // Mock payments response.
-    payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
+    payments::UnmaskResponseDetails response;
     response.card_type = is_virtual_card ? payments::PaymentsAutofillClient::
                                                PaymentsRpcCardType::kVirtualCard
                                          : payments::PaymentsAutofillClient::

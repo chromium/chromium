@@ -61,8 +61,7 @@ class IbanAccessManagerTest : public testing::Test {
                            int latency_ms = 0) {
     ON_CALL(*payments_network_interface(), UnmaskIban)
         .WillByDefault(
-            [=, this](const payments::PaymentsNetworkInterface::
-                          UnmaskIbanRequestDetails&,
+            [=, this](const payments::UnmaskIbanRequestDetails&,
                       base::OnceCallback<void(
                           payments::PaymentsAutofillClient::PaymentsRpcResult,
                           const std::u16string&)> callback) {

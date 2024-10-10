@@ -14,7 +14,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/otp_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
 
 namespace autofill {
 
@@ -119,8 +119,7 @@ class CreditCardOtpAuthenticator : public OtpUnmaskDelegate {
   // the correct error message and end the session.
   void OnDidGetRealPan(
       payments::PaymentsAutofillClient::PaymentsRpcResult result,
-      const payments::PaymentsNetworkInterface::UnmaskResponseDetails&
-          response_details);
+      const payments::UnmaskResponseDetails& response_details);
 
   // Reset the authenticator to initial states.
   virtual void Reset();
@@ -172,13 +171,11 @@ class CreditCardOtpAuthenticator : public OtpUnmaskDelegate {
 
   // This contains the details of the SelectChallengeOption request to be sent
   // to the server.
-  std::unique_ptr<
-      payments::PaymentsNetworkInterface::SelectChallengeOptionRequestDetails>
+  std::unique_ptr<payments::SelectChallengeOptionRequestDetails>
       select_challenge_option_request_;
 
   // This contains the details of the Unmask request to be sent to the server.
-  std::unique_ptr<payments::PaymentsNetworkInterface::UnmaskRequestDetails>
-      unmask_request_;
+  std::unique_ptr<payments::UnmaskRequestDetails> unmask_request_;
 
   // The timestamps when the requests are sent. Used for logging.
   std::optional<base::TimeTicks> select_challenge_option_request_timestamp_;

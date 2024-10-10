@@ -253,7 +253,7 @@ TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
   EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
                   ->risk_based_authentication_invoked());
   // Mock server response with valid card information.
-  payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
+  payments::UnmaskResponseDetails response;
   response.real_pan = "4111111111111111";
   response.dcvv = "321";
   response.expiration_month = test::NextMonth();

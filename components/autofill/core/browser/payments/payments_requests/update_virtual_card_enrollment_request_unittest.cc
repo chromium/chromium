@@ -36,8 +36,7 @@ class UpdateVirtualCardEnrollmentRequestTest
   // parameters, and stores it in `request_`. Can be re-called to recreate the
   // request as needed.
   void CreateRequest() {
-    PaymentsNetworkInterface::UpdateVirtualCardEnrollmentRequestDetails
-        request_details;
+    UpdateVirtualCardEnrollmentRequestDetails request_details;
     request_details.virtual_card_enrollment_request_type =
         std::get<0>(GetParam());
     request_details.virtual_card_enrollment_source = std::get<1>(GetParam());

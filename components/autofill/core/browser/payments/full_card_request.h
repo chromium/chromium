@@ -15,7 +15,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "url/origin.h"
 
@@ -167,21 +167,18 @@ class FullCardRequest final : public CardUnmaskDelegate {
       std::optional<std::string> context_token = std::nullopt);
 
   // Called by the PaymentsNetworkInterface when a card has been unmasked.
-  void OnDidGetRealPan(
-      PaymentsAutofillClient::PaymentsRpcResult result,
-      const PaymentsNetworkInterface::UnmaskResponseDetails& response_details);
+  void OnDidGetRealPan(PaymentsAutofillClient::PaymentsRpcResult result,
+                       const UnmaskResponseDetails& response_details);
 
   // Called when verification is cancelled. This is used only by
   // CreditCardFidoAuthenticator to cancel the flow for opted-in users.
   void OnFIDOVerificationCancelled();
 
-  PaymentsNetworkInterface::UnmaskResponseDetails unmask_response_details()
-      const {
+  UnmaskResponseDetails unmask_response_details() const {
     return unmask_response_details_;
   }
 
-  PaymentsNetworkInterface::UnmaskRequestDetails*
-  GetUnmaskRequestDetailsForTesting() const {
+  UnmaskRequestDetails* GetUnmaskRequestDetailsForTesting() const {
     return request_.get();
   }
 
@@ -234,7 +231,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
   void OnDidGetUnmaskRiskData(const std::string& risk_data);
 
   // Makes final preparations for the unmask request and calls
-  // PaymentsNetworkInterface::UnmaskCard().
+  // UnmaskCard().
   void SendUnmaskCardRequest();
 
   // Resets the state of the request.
@@ -256,7 +253,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
   base::WeakPtr<UIDelegate> ui_delegate_;
 
   // The pending request to get a card's full PAN and CVC.
-  std::unique_ptr<PaymentsNetworkInterface::UnmaskRequestDetails> request_;
+  std::unique_ptr<UnmaskRequestDetails> request_;
 
   // Whether the card unmask request should be sent to the payment server.
   bool should_unmask_card_;
@@ -266,7 +263,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
   base::TimeTicks real_pan_request_timestamp_;
 
   // Includes all details from GetRealPan response.
-  PaymentsNetworkInterface::UnmaskResponseDetails unmask_response_details_;
+  UnmaskResponseDetails unmask_response_details_;
 
   // Enables destroying FullCardRequest while CVC prompt is showing or a server
   // communication is pending.

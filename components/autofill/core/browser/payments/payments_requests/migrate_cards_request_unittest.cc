@@ -14,7 +14,6 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
-#include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/test/autofill_payments_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -30,7 +29,7 @@ std::unique_ptr<MigrateCardsRequest> CreateMigrateCardsRequest(
   CHECK(migratable_credit_cards);
   CHECK(migratable_credit_cards->empty());
 
-  PaymentsNetworkInterface::MigrationRequestDetails request_details;
+  MigrationRequestDetails request_details;
   request_details.context_token = u"context token";
   request_details.risk_data = "some risk data";
   request_details.app_locale = "language-LOCALE";

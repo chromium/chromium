@@ -74,7 +74,7 @@ class CreditCardOtpAuthenticatorTestBase : public testing::Test {
       payments::PaymentsAutofillClient::PaymentsRpcResult result,
       const std::string& real_pan,
       bool server_returned_decline_details = false) {
-    payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
+    payments::UnmaskResponseDetails response;
     if (result !=
         payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
       if (server_returned_decline_details) {
@@ -99,7 +99,7 @@ class CreditCardOtpAuthenticatorTestBase : public testing::Test {
 
   void OnDidGetRealPanWithFlowStatus(const std::string& flow_status,
                                      const std::string& context_token) {
-    payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
+    payments::UnmaskResponseDetails response;
     response.flow_status = flow_status;
     response.context_token = context_token;
     response.card_type =
@@ -115,9 +115,8 @@ class CreditCardOtpAuthenticatorTestBase : public testing::Test {
 
   void verifySelectChallengeOptionRequest(const std::string& context_token,
                                           int64_t billing_customer_number) {
-    const payments::PaymentsNetworkInterface::
-        SelectChallengeOptionRequestDetails* request =
-            payments_network_interface_->select_challenge_option_request();
+    const payments::SelectChallengeOptionRequestDetails* request =
+        payments_network_interface_->select_challenge_option_request();
     EXPECT_EQ(request->context_token, context_token);
     EXPECT_EQ(request->billing_customer_number, billing_customer_number);
     // Selected challenge option should stay the same for the entire session.

@@ -176,8 +176,7 @@ class CreditCardAccessManager
           response) override;
   void OnVirtualCardRiskBasedAuthenticationResponseReceived(
       payments::PaymentsAutofillClient::PaymentsRpcResult result,
-      const payments::PaymentsNetworkInterface::UnmaskResponseDetails&
-          response_details) override;
+      const payments::UnmaskResponseDetails& response_details) override;
 
  private:
   friend class CreditCardAccessManagerTestApi;
@@ -220,7 +219,7 @@ class CreditCardAccessManager
   // not opted-in for FIDO auth, or if user does not select a card.
   void OnDidGetUnmaskDetails(
       payments::PaymentsAutofillClient::PaymentsRpcResult result,
-      payments::PaymentsNetworkInterface::UnmaskDetails& unmask_details);
+      payments::UnmaskDetails& unmask_details);
 
   // Determines what type of authentication is required. `fido_auth_enabled`
   // suggests whether the server has offered FIDO auth as an option.
@@ -418,14 +417,12 @@ class CreditCardAccessManager
   // Struct to store necessary information to start an authentication. It is
   // populated before an authentication is offered. It includes suggested
   // authentication methods and other information to facilitate card unmasking.
-  payments::PaymentsNetworkInterface::UnmaskDetails unmask_details_;
+  payments::UnmaskDetails unmask_details_;
 
   // Structs to store information passed to and fetched from the server for
   // virtual card unmasking.
-  payments::PaymentsNetworkInterface::UnmaskRequestDetails
-      virtual_card_unmask_request_details_;
-  payments::PaymentsNetworkInterface::UnmaskResponseDetails
-      virtual_card_unmask_response_details_;
+  payments::UnmaskRequestDetails virtual_card_unmask_request_details_;
+  payments::UnmaskResponseDetails virtual_card_unmask_response_details_;
 
   // Struct to store response returned by CreditCardRiskBasedAuthenticator.
   CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse

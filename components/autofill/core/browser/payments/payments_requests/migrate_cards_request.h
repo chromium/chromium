@@ -11,7 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 
 namespace base {
@@ -20,10 +20,24 @@ class Value;
 
 namespace autofill::payments {
 
+// TODO(crbug.com/362785288): This now lives in this file and
+// PaymentsNetworkInterface. Clean it up in a separate CL.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Callback type for MigrateCards callback. `result` is the Payments Rpc result.
+// `save_result` is an unordered_map parsed from the response whose key is the
+// unique id (guid) for each card and value is the server save result string.
+// `display_text` is the returned tip from Payments to show on the UI.
+typedef base::OnceCallback<void(
+    PaymentsAutofillClient::PaymentsRpcResult result,
+    std::unique_ptr<std::unordered_map<std::string, std::string>> save_result,
+    const std::string& display_text)>
+    MigrateCardsCallback;
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+
 class MigrateCardsRequest : public PaymentsRequest {
  public:
   MigrateCardsRequest(
-      const PaymentsNetworkInterface::MigrationRequestDetails& request_details,
+      const MigrationRequestDetails& request_details,
       base::span<const MigratableCreditCard> migratable_credit_cards,
       const bool full_sync_enabled,
       MigrateCardsCallback callback);
@@ -49,7 +63,7 @@ class MigrateCardsRequest : public PaymentsRequest {
                            const std::string& app_locale,
                            const std::string& pan_field_name);
 
-  const PaymentsNetworkInterface::MigrationRequestDetails request_details_;
+  const MigrationRequestDetails request_details_;
   const std::vector<MigratableCreditCard> migratable_credit_cards_;
   const bool full_sync_enabled_;
   MigrateCardsCallback callback_;

@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/metrics/payments/better_auth_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -144,7 +145,7 @@ void FullCardRequest::GetFullCardImpl(
     return;
   }
 
-  request_ = std::make_unique<PaymentsNetworkInterface::UnmaskRequestDetails>();
+  request_ = std::make_unique<UnmaskRequestDetails>();
   request_->card = card;
   request_->last_committed_primary_main_frame_origin =
       last_committed_primary_main_frame_origin;
@@ -274,7 +275,7 @@ void FullCardRequest::SendUnmaskCardRequest() {
 
 void FullCardRequest::OnDidGetRealPan(
     PaymentsRpcResult result,
-    const PaymentsNetworkInterface::UnmaskResponseDetails& response_details) {
+    const UnmaskResponseDetails& response_details) {
   // If the CVC field is populated, that means the user performed a CVC check.
   // If FIDO AssertionInfo is populated, then the user must have performed FIDO
   // authentication. Exactly one of these fields must be populated.
@@ -411,7 +412,7 @@ void FullCardRequest::Reset() {
   ui_delegate_ = nullptr;
   request_.reset();
   should_unmask_card_ = false;
-  unmask_response_details_ = PaymentsNetworkInterface::UnmaskResponseDetails();
+  unmask_response_details_ = UnmaskResponseDetails();
 }
 
 }  // namespace payments

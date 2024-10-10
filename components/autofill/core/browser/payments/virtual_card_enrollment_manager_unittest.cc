@@ -99,7 +99,7 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
     ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(resource_id);
   }
 
-  payments::PaymentsNetworkInterface::GetDetailsForEnrollmentResponseDetails
+  payments::GetDetailsForEnrollmentResponseDetails
   SetUpOnDidGetDetailsForEnrollResponse(
       const TestLegalMessageLine& google_legal_message,
       const TestLegalMessageLine& issuer_legal_message,
@@ -117,8 +117,7 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
     }
     state->virtual_card_enrollment_fields.credit_card = *card_;
 
-    payments::PaymentsNetworkInterface::GetDetailsForEnrollmentResponseDetails
-        response;
+    payments::GetDetailsForEnrollmentResponseDetails response;
     response.vcn_context_token = kTestVcnContextToken;
     response.google_legal_message = {google_legal_message};
     response.issuer_legal_message = {issuer_legal_message};
@@ -230,7 +229,7 @@ TEST_F(VirtualCardEnrollmentManagerTest,
       virtual_card_enrollment_manager_->GetVirtualCardEnrollmentProcessState();
   state->risk_data.reset();
   SetValidCardArtImageForCard(*card_);
-  payments::PaymentsNetworkInterface::GetDetailsForEnrollmentResponseDetails
+  payments::GetDetailsForEnrollmentResponseDetails
       get_details_for_enrollment_response_details;
   TestLegalMessageLine google_test_legal_message_line{
       "google_test_legal_message"};
@@ -242,8 +241,7 @@ TEST_F(VirtualCardEnrollmentManagerTest,
       issuer_test_legal_message_line};
   get_details_for_enrollment_response_details.vcn_context_token =
       "vcn_context_token";
-  std::optional<payments::PaymentsNetworkInterface::
-                    GetDetailsForEnrollmentResponseDetails>
+  std::optional<payments::GetDetailsForEnrollmentResponseDetails>
       get_details_for_enrollment_response_details_optional =
           get_details_for_enrollment_response_details;
   virtual_card_enrollment_manager_->InitVirtualCardEnroll(
@@ -279,9 +277,8 @@ TEST_F(VirtualCardEnrollmentManagerTest, OnRiskDataLoadedForVirtualCard) {
   virtual_card_enrollment_manager_->OnRiskDataLoadedForVirtualCard(
       kTestRiskData);
 
-  payments::PaymentsNetworkInterface::GetDetailsForEnrollmentRequestDetails
-      request_details = payments_network_interface()
-                            .get_details_for_enrollment_request_details();
+  payments::GetDetailsForEnrollmentRequestDetails request_details =
+      payments_network_interface().get_details_for_enrollment_request_details();
 
   EXPECT_EQ(request_details.risk_data, state->risk_data.value_or(""));
   EXPECT_EQ(request_details.app_locale, personal_data_manager().app_locale());
@@ -319,8 +316,8 @@ TEST_F(VirtualCardEnrollmentManagerTest, OnDidGetDetailsForEnrollResponse) {
       virtual_card_enrollment_manager_
           ->get_details_for_enrollment_request_sent_timestamp_ =
           base::Time::Now();
-      payments::PaymentsNetworkInterface::GetDetailsForEnrollmentResponseDetails
-          response = std::move(SetUpOnDidGetDetailsForEnrollResponse(
+      payments::GetDetailsForEnrollmentResponseDetails response =
+          std::move(SetUpOnDidGetDetailsForEnrollResponse(
               google_legal_message, issuer_legal_message, make_image_present));
       auto* state = virtual_card_enrollment_manager_
                         ->GetVirtualCardEnrollmentProcessState();
@@ -398,8 +395,8 @@ TEST_F(VirtualCardEnrollmentManagerTest,
       TestLegalMessageLine("google_test_legal_message");
   const TestLegalMessageLine issuer_legal_message =
       TestLegalMessageLine("issuer_test_legal_message");
-  payments::PaymentsNetworkInterface::GetDetailsForEnrollmentResponseDetails
-      response = std::move(SetUpOnDidGetDetailsForEnrollResponse(
+  payments::GetDetailsForEnrollmentResponseDetails response =
+      std::move(SetUpOnDidGetDetailsForEnrollResponse(
           google_legal_message, issuer_legal_message,
           /*make_image_present=*/true));
   auto* state =
@@ -448,8 +445,7 @@ TEST_F(VirtualCardEnrollmentManagerTest,
     virtual_card_enrollment_manager_->SetResetCalled(false);
 
     virtual_card_enrollment_manager_->OnDidGetDetailsForEnrollResponse(
-        result, payments::PaymentsNetworkInterface::
-                    GetDetailsForEnrollmentResponseDetails());
+        result, payments::GetDetailsForEnrollmentResponseDetails());
 
     EXPECT_TRUE(virtual_card_enrollment_manager_->GetResetCalled());
   }
@@ -464,8 +460,7 @@ TEST_F(VirtualCardEnrollmentManagerTest,
     virtual_card_enrollment_manager_->SetResetCalled(false);
 
     virtual_card_enrollment_manager_->OnDidGetDetailsForEnrollResponse(
-        result, payments::PaymentsNetworkInterface::
-                    GetDetailsForEnrollmentResponseDetails());
+        result, payments::GetDetailsForEnrollmentResponseDetails());
 
     EXPECT_TRUE(virtual_card_enrollment_manager_->GetResetCalled());
   }
@@ -501,10 +496,9 @@ TEST_F(VirtualCardEnrollmentManagerTest, Enroll) {
     virtual_card_enrollment_manager_->Enroll(
         /*virtual_card_enrollment_update_response_callback=*/std::nullopt);
 
-    payments::PaymentsNetworkInterface::
-        UpdateVirtualCardEnrollmentRequestDetails request_details =
-            payments_network_interface()
-                .update_virtual_card_enrollment_request_details();
+    payments::UpdateVirtualCardEnrollmentRequestDetails request_details =
+        payments_network_interface()
+            .update_virtual_card_enrollment_request_details();
     EXPECT_TRUE(request_details.vcn_context_token.has_value());
     EXPECT_EQ(request_details.vcn_context_token, kTestVcnContextToken);
     EXPECT_EQ(request_details.virtual_card_enrollment_source,
@@ -566,9 +560,9 @@ TEST_F(VirtualCardEnrollmentManagerTest, Unenroll) {
       /*instrument_id=*/9223372036854775807,
       /*virtual_card_enrollment_update_response_callback=*/std::nullopt);
 
-  payments::PaymentsNetworkInterface::UpdateVirtualCardEnrollmentRequestDetails
-      request_details = payments_network_interface()
-                            .update_virtual_card_enrollment_request_details();
+  payments::UpdateVirtualCardEnrollmentRequestDetails request_details =
+      payments_network_interface()
+          .update_virtual_card_enrollment_request_details();
   EXPECT_EQ(request_details.virtual_card_enrollment_source,
             VirtualCardEnrollmentSource::kSettingsPage);
   EXPECT_EQ(request_details.virtual_card_enrollment_request_type,

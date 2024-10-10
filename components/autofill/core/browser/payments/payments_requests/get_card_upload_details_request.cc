@@ -32,7 +32,7 @@ GetCardUploadDetailsRequest::GetCardUploadDetailsRequest(
                             std::vector<std::pair<int, int>>)> callback,
     const int billable_service_number,
     const int64_t billing_customer_number,
-    PaymentsNetworkInterface::UploadCardSource upload_card_source)
+    UploadCardSource upload_card_source)
     : addresses_(addresses),
       detected_values_(detected_values),
       client_behavior_signals_(client_behavior_signals),
@@ -86,25 +86,23 @@ std::string GetCardUploadDetailsRequest::GetRequestContent() {
   request_dict.Set("detected_values", detected_values_);
 
   switch (upload_card_source_) {
-    case PaymentsNetworkInterface::UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE:
+    case UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE:
       request_dict.Set("upload_card_source", "UNKNOWN_UPLOAD_CARD_SOURCE");
       break;
-    case PaymentsNetworkInterface::UploadCardSource::UPSTREAM_CHECKOUT_FLOW:
+    case UploadCardSource::UPSTREAM_CHECKOUT_FLOW:
       request_dict.Set("upload_card_source", "UPSTREAM_CHECKOUT_FLOW");
       break;
-    case PaymentsNetworkInterface::UploadCardSource::UPSTREAM_SETTINGS_PAGE:
+    case UploadCardSource::UPSTREAM_SETTINGS_PAGE:
       request_dict.Set("upload_card_source", "UPSTREAM_SETTINGS_PAGE");
       break;
-    case PaymentsNetworkInterface::UploadCardSource::UPSTREAM_CARD_OCR:
+    case UploadCardSource::UPSTREAM_CARD_OCR:
       request_dict.Set("upload_card_source", "UPSTREAM_CARD_OCR");
       break;
-    case PaymentsNetworkInterface::UploadCardSource::
-        LOCAL_CARD_MIGRATION_CHECKOUT_FLOW:
+    case UploadCardSource::LOCAL_CARD_MIGRATION_CHECKOUT_FLOW:
       request_dict.Set("upload_card_source",
                        "LOCAL_CARD_MIGRATION_CHECKOUT_FLOW");
       break;
-    case PaymentsNetworkInterface::UploadCardSource::
-        LOCAL_CARD_MIGRATION_SETTINGS_PAGE:
+    case UploadCardSource::LOCAL_CARD_MIGRATION_SETTINGS_PAGE:
       request_dict.Set("upload_card_source",
                        "LOCAL_CARD_MIGRATION_SETTINGS_PAGE");
       break;

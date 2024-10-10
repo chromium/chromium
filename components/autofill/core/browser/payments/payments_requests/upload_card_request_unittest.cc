@@ -9,7 +9,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/test/autofill_payments_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -48,7 +47,7 @@ struct UploadCardOptions {
 
 std::unique_ptr<UploadCardRequest> CreateUploadCardRequest(
     UploadCardOptions upload_card_options) {
-  PaymentsNetworkInterface::UploadCardRequestDetails request_details;
+  UploadCardRequestDetails request_details;
   request_details.billing_customer_number =
       upload_card_options.billing_customer_number;
   request_details.card = test::GetCreditCard();
@@ -77,8 +76,7 @@ TEST(UploadCardRequestTest, UploadIncludesNonLocationData) {
   // Verify that the recipient name field and test names do appear in the upload
   // data.
   EXPECT_TRUE(request->GetRequestContent().find(
-                  PaymentsNetworkInterface::kRecipientName) !=
-              std::string::npos);
+                  PaymentsRequest::kRecipientName) != std::string::npos);
   EXPECT_TRUE(request->GetRequestContent().find("John") != std::string::npos);
   EXPECT_TRUE(request->GetRequestContent().find("Smith") != std::string::npos);
   EXPECT_TRUE(request->GetRequestContent().find("Pat") != std::string::npos);
@@ -87,7 +85,7 @@ TEST(UploadCardRequestTest, UploadIncludesNonLocationData) {
   // Verify that the phone number field and test numbers do appear in the upload
   // data.
   EXPECT_TRUE(request->GetRequestContent().find(
-                  PaymentsNetworkInterface::kPhoneNumber) != std::string::npos);
+                  PaymentsRequest::kPhoneNumber) != std::string::npos);
   EXPECT_TRUE(request->GetRequestContent().find("212") != std::string::npos);
   EXPECT_TRUE(request->GetRequestContent().find("555") != std::string::npos);
   EXPECT_TRUE(request->GetRequestContent().find("0162") != std::string::npos);

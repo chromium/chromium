@@ -22,7 +22,7 @@
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/strike_databases/payments/credit_card_save_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/payments/cvc_storage_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/payments/local_card_migration_strike_database.h"
@@ -177,8 +177,7 @@ class CreditCardSaveManager {
   // for the card on the server. Exposed for testing.
   virtual void OnDidUploadCard(
       payments::PaymentsAutofillClient::PaymentsRpcResult result,
-      const payments::PaymentsNetworkInterface::UploadCardResponseDetails&
-          upload_card_response_details);
+      const payments::UploadCardResponseDetails& upload_card_response_details);
 
  private:
   friend class CreditCardSaveManagerTest;
@@ -200,8 +199,7 @@ class CreditCardSaveManager {
   // prompt before showing virtual card enrollment prompt.
   void InitVirtualCardEnroll(
       const CreditCard& credit_card,
-      std::optional<payments::PaymentsNetworkInterface::
-                        GetDetailsForEnrollmentResponseDetails>
+      std::optional<payments::GetDetailsForEnrollmentResponseDetails>
           get_details_for_enrollment_response_details);
 
   // Returns the CreditCardSaveStrikeDatabase for |client_|.
@@ -243,8 +241,7 @@ class CreditCardSaveManager {
   // contain countries.
   void SetProfilesForCreditCardUpload(
       const CreditCard& card,
-      payments::PaymentsNetworkInterface::UploadCardRequestDetails*
-          upload_request);
+      payments::UploadCardRequestDetails* upload_request);
 
   // Analyzes the decisions made while importing address profile and credit card
   // data in preparation for upload credit card save, in order to determine what
@@ -370,7 +367,7 @@ class CreditCardSaveManager {
   CreditCard card_save_candidate_;
 
   // Collected information about a pending upload request.
-  payments::PaymentsNetworkInterface::UploadCardRequestDetails upload_request_;
+  payments::UploadCardRequestDetails upload_request_;
 
   // A bitmask of |AutofillMetrics::CardUploadDecisionMetric| representing the
   // decisions made when determining if credit card upload save should be

@@ -1808,7 +1808,7 @@ TEST_F(CreditCardAccessManagerTest,
   EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
                   ->risk_based_authentication_invoked());
   // Mock server response with valid card information.
-  payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
+  payments::UnmaskResponseDetails response;
   response.real_pan = "4111111111111111";
   response.dcvv = "321";
   response.expiration_month = test::NextMonth();
@@ -1929,7 +1929,7 @@ TEST_F(CreditCardAccessManagerTest,
                                     accessor_->GetWeakPtr()));
 
   // Mock server response with information regarding VCN auth.
-  payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
+  payments::UnmaskResponseDetails response;
   response.context_token = "fake_context_token";
   response.card_unmask_challenge_options = test::GetCardUnmaskChallengeOptions(
       {CardUnmaskChallengeOptionType::kThreeDomainSecure});
@@ -2177,7 +2177,7 @@ TEST_F(CreditCardAccessManagerTest,
   EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
                   ->risk_based_authentication_invoked());
   // Mock server response with information regarding FIDO auth.
-  payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
+  payments::UnmaskResponseDetails response;
   response.context_token = "fake_context_token";
   response.fido_request_options = GetTestRequestOptions();
   credit_card_access_manager()
@@ -2239,7 +2239,7 @@ TEST_F(
   EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
                   ->risk_based_authentication_invoked());
   // Mock server response with information regarding both FIDO and OTP auth.
-  payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
+  payments::UnmaskResponseDetails response;
   response.context_token = "fake_context_token";
   CardUnmaskChallengeOption challenge_option =
       test::GetCardUnmaskChallengeOptions(
@@ -2365,7 +2365,7 @@ TEST_F(
   EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
                   ->risk_based_authentication_invoked());
   // Mock server response with information regarding FIDO auth.
-  payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
+  payments::UnmaskResponseDetails response;
   response.context_token = "fake_context_token";
   response.fido_request_options = GetTestRequestOptions();
   credit_card_access_manager()
@@ -2416,7 +2416,7 @@ TEST_F(CreditCardAccessManagerTest,
   EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
                   ->risk_based_authentication_invoked());
   // Mock server response with no challenge options.
-  payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
+  payments::UnmaskResponseDetails response;
   response.context_token = "fake_context_token";
   credit_card_access_manager()
       .OnVirtualCardRiskBasedAuthenticationResponseReceived(
@@ -2464,7 +2464,7 @@ TEST_F(CreditCardAccessManagerTest,
   EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
                   ->risk_based_authentication_invoked());
   // Mock server response with no challenge options.
-  payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
+  payments::UnmaskResponseDetails response;
   credit_card_access_manager()
       .OnVirtualCardRiskBasedAuthenticationResponseReceived(
           PaymentsRpcResult::kVcnRetrievalPermanentFailure, response);
@@ -2503,7 +2503,7 @@ TEST_F(CreditCardAccessManagerTest,
   autofill_error_dialog_context.server_returned_description =
       "test_server_returned_description";
 
-  payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
+  payments::UnmaskResponseDetails response;
   response.autofill_error_dialog_context = autofill_error_dialog_context;
   credit_card_access_manager()
       .OnVirtualCardRiskBasedAuthenticationResponseReceived(

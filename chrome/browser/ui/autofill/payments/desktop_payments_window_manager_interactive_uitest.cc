@@ -304,11 +304,11 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   auto* autofill_client = client();
   EXPECT_TRUE(autofill_client->GetPaymentsAutofillClient()
                   ->autofill_progress_dialog_shown());
-  const std::optional<payments::PaymentsNetworkInterface::UnmaskRequestDetails>&
-      unmask_request = static_cast<payments::TestPaymentsNetworkInterface*>(
-                           autofill_client->GetPaymentsAutofillClient()
-                               ->GetPaymentsNetworkInterface())
-                           ->unmask_request();
+  const std::optional<payments::UnmaskRequestDetails>& unmask_request =
+      static_cast<payments::TestPaymentsNetworkInterface*>(
+          autofill_client->GetPaymentsAutofillClient()
+              ->GetPaymentsNetworkInterface())
+          ->unmask_request();
   ASSERT_TRUE(unmask_request.has_value());
   EXPECT_EQ(unmask_request->card,
             test_api(window_manager()).GetVcn3dsContext()->card);
@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
 
   // Simulate a response for the UnmaskCardRequest and ensure the callback is
   // run with the correct information.
-  PaymentsNetworkInterface::UnmaskResponseDetails response_details;
+  UnmaskResponseDetails response_details;
   response_details.with_real_pan("1111222233334444");
   response_details.with_dcvv("123");
   response_details.expiration_month = "01";
@@ -376,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Simulate a response for the UnmaskCardRequest and ensure the callback is
   // run with the correct information.
-  PaymentsNetworkInterface::UnmaskResponseDetails response_details;
+  UnmaskResponseDetails response_details;
   response_details.with_real_pan("1111222233334444");
   response_details.with_dcvv("123");
   response_details.expiration_month = "01";
@@ -466,12 +466,10 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   // with the correct fields set, and the progress dialog was shown.
   EXPECT_TRUE(
       client()->GetPaymentsAutofillClient()->autofill_progress_dialog_shown());
-  const std::optional<payments::PaymentsNetworkInterface::UnmaskRequestDetails>&
-      unmask_request = static_cast<payments::TestPaymentsNetworkInterface*>(
-                           client()
-                               ->GetPaymentsAutofillClient()
-                               ->GetPaymentsNetworkInterface())
-                           ->unmask_request();
+  const std::optional<payments::UnmaskRequestDetails>& unmask_request =
+      static_cast<payments::TestPaymentsNetworkInterface*>(
+          client()->GetPaymentsAutofillClient()->GetPaymentsNetworkInterface())
+          ->unmask_request();
   ASSERT_TRUE(unmask_request.has_value());
   EXPECT_EQ(unmask_request->card,
             test_api(window_manager()).GetVcn3dsContext()->card);
@@ -485,7 +483,7 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   test_api(window_manager())
       .OnVcn3dsAuthenticationResponseReceived(
           PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
-          PaymentsNetworkInterface::UnmaskResponseDetails());
+          UnmaskResponseDetails());
 
   std::optional<PaymentsWindowManager::Vcn3dsAuthenticationResponse> response =
       authentication_response();
@@ -520,7 +518,7 @@ IN_PROC_BROWSER_TEST_F(
   test_api(window_manager())
       .OnVcn3dsAuthenticationResponseReceived(
           PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
-          PaymentsNetworkInterface::UnmaskResponseDetails());
+          UnmaskResponseDetails());
 
   histogram_tester_.ExpectBucketCount(
       kVcn3dsFlowEventsHistogramName,
@@ -552,12 +550,10 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
 
   // Check that the flow was ended and no UnmaskCardRequest was triggered.
-  const std::optional<payments::PaymentsNetworkInterface::UnmaskRequestDetails>&
-      unmask_request = static_cast<payments::TestPaymentsNetworkInterface*>(
-                           client()
-                               ->GetPaymentsAutofillClient()
-                               ->GetPaymentsNetworkInterface())
-                           ->unmask_request();
+  const std::optional<payments::UnmaskRequestDetails>& unmask_request =
+      static_cast<payments::TestPaymentsNetworkInterface*>(
+          client()->GetPaymentsAutofillClient()->GetPaymentsNetworkInterface())
+          ->unmask_request();
   ASSERT_FALSE(unmask_request.has_value());
   std::optional<PaymentsWindowManager::Vcn3dsAuthenticationResponse> response =
       authentication_response();
@@ -609,12 +605,10 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
 
   // Check that the flow was ended and no UnmaskCardRequest was triggered.
-  const std::optional<payments::PaymentsNetworkInterface::UnmaskRequestDetails>&
-      unmask_request = static_cast<payments::TestPaymentsNetworkInterface*>(
-                           client()
-                               ->GetPaymentsAutofillClient()
-                               ->GetPaymentsNetworkInterface())
-                           ->unmask_request();
+  const std::optional<payments::UnmaskRequestDetails>& unmask_request =
+      static_cast<payments::TestPaymentsNetworkInterface*>(
+          client()->GetPaymentsAutofillClient()->GetPaymentsNetworkInterface())
+          ->unmask_request();
   ASSERT_FALSE(unmask_request.has_value());
   std::optional<PaymentsWindowManager::Vcn3dsAuthenticationResponse> response =
       authentication_response();
@@ -665,12 +659,10 @@ IN_PROC_BROWSER_TEST_F(DesktopPaymentsWindowManagerInteractiveUiTest,
   EXPECT_TRUE(test_api(window_manager()).NoOngoingFlow());
 
   // Check that the flow was ended and no UnmaskCardRequest was triggered.
-  const std::optional<payments::PaymentsNetworkInterface::UnmaskRequestDetails>&
-      unmask_request = static_cast<payments::TestPaymentsNetworkInterface*>(
-                           client()
-                               ->GetPaymentsAutofillClient()
-                               ->GetPaymentsNetworkInterface())
-                           ->unmask_request();
+  const std::optional<payments::UnmaskRequestDetails>& unmask_request =
+      static_cast<payments::TestPaymentsNetworkInterface*>(
+          client()->GetPaymentsAutofillClient()->GetPaymentsNetworkInterface())
+          ->unmask_request();
   ASSERT_FALSE(unmask_request.has_value());
   std::optional<PaymentsWindowManager::Vcn3dsAuthenticationResponse> response =
       authentication_response();

@@ -179,7 +179,7 @@ void AutofillMetricsBaseTest::OnDidGetRealPan(
   details.cvc = u"123";
   full_card_request->OnUnmaskPromptAccepted(details);
 
-  payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
+  payments::UnmaskResponseDetails response;
   response.card_type =
       is_virtual_card
           ? payments::PaymentsAutofillClient::PaymentsRpcCardType::kVirtualCard
@@ -201,7 +201,7 @@ void AutofillMetricsBaseTest::OnDidGetRealPanWithNonHttpOkResponse() {
   details.cvc = u"123";
   full_card_request->OnUnmaskPromptAccepted(details);
 
-  payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
+  payments::UnmaskResponseDetails response;
   // Don't set |response.card_type|, so that it stays as kUnknown.
   full_card_request->OnDidGetRealPan(
       payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,

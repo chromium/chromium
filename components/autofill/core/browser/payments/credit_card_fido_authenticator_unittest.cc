@@ -175,7 +175,7 @@ class CreditCardFidoAuthenticatorTest : public testing::Test {
                   const std::string& real_pan,
                   bool is_virtual_card = false) {
     DCHECK(fido_authenticator().full_card_request_);
-    payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
+    payments::UnmaskResponseDetails response;
     response.card_type = is_virtual_card ? payments::PaymentsAutofillClient::
                                                PaymentsRpcCardType::kVirtualCard
                                          : payments::PaymentsAutofillClient::
@@ -189,7 +189,7 @@ class CreditCardFidoAuthenticatorTest : public testing::Test {
                  bool user_is_opted_in,
                  bool include_creation_options = false,
                  bool include_request_options = false) {
-    payments::PaymentsNetworkInterface::OptChangeResponseDetails response;
+    payments::OptChangeResponseDetails response;
     response.user_is_opted_in = user_is_opted_in;
     if (include_creation_options) {
       response.fido_creation_options =
@@ -244,7 +244,7 @@ TEST_F(CreditCardFidoAuthenticatorTest,
        GetUserOptInIntention_IntentToOptIn_Android) {
   // If payments is offering to opt-in, then that means user is not opted in
   // from payments.
-  payments::PaymentsNetworkInterface::UnmaskDetails unmask_details;
+  payments::UnmaskDetails unmask_details;
   unmask_details.offer_fido_opt_in = true;
   // Set the local preference to be enabled, which denotes user manually opted
   // in from settings page, and Payments did not update the status in time.
@@ -262,7 +262,7 @@ TEST_F(CreditCardFidoAuthenticatorTest,
        GetUserOptInIntention_IntentToOptIn_Desktop) {
   // If payments is offering to opt-in, then that means user is not opted in
   // from payments.
-  payments::PaymentsNetworkInterface::UnmaskDetails unmask_details;
+  payments::UnmaskDetails unmask_details;
   unmask_details.offer_fido_opt_in = true;
   // Set the local preference to be enabled, which denotes user manually opted
   // in from settings page and Payments did not update the status in time, or
@@ -282,7 +282,7 @@ TEST_F(CreditCardFidoAuthenticatorTest,
 TEST_F(CreditCardFidoAuthenticatorTest, GetUserOptInIntention_IntentToOptOut) {
   // If payments is requesting a FIDO auth, then that means user is opted in
   // from payments.
-  payments::PaymentsNetworkInterface::UnmaskDetails unmask_details;
+  payments::UnmaskDetails unmask_details;
   unmask_details.unmask_auth_method =
       payments::PaymentsAutofillClient::UnmaskAuthMethod::kFido;
   // Set the local preference to be disabled, which denotes user manually opted

@@ -114,7 +114,7 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest,
   authenticator_->Authenticate(card_, requester_->GetWeakPtr());
 
   // Mock server response with valid masked server card information.
-  payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
+  payments::UnmaskResponseDetails response;
   response.card_type =
       payments::PaymentsAutofillClient::PaymentsRpcCardType::kServerCard;
   response.real_pan = kTestNumber;
@@ -133,7 +133,7 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest, AuthenticateServerCardSuccess) {
   authenticator_->Authenticate(card_, requester_->GetWeakPtr());
 
   // Mock server response with valid masked server card information.
-  payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
+  payments::UnmaskResponseDetails response;
   response.card_type =
       payments::PaymentsAutofillClient::PaymentsRpcCardType::kServerCard;
   response.real_pan = kTestNumber;
@@ -161,7 +161,7 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest, AuthenticateServerCardFailure) {
   authenticator_->Authenticate(card_, requester_->GetWeakPtr());
 
   // Payment server response when unmask request fails is empty.
-  payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
+  payments::UnmaskResponseDetails response;
 
   authenticator_->OnUnmaskResponseReceivedForTesting(
       payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
@@ -201,7 +201,7 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest,
   authenticator_->Authenticate(card_, requester_->GetWeakPtr());
 
   // Mock server response with context token.
-  payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
+  payments::UnmaskResponseDetails response;
   response.context_token = "fake_context_token";
 
   authenticator_->OnUnmaskResponseReceivedForTesting(
@@ -226,7 +226,7 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest,
   authenticator_->Authenticate(card_, requester_->GetWeakPtr());
 
   // Mock server response with FIDO request options.
-  payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
+  payments::UnmaskResponseDetails response;
   response.fido_request_options = GetTestRequestOptions();
 
   authenticator_->OnUnmaskResponseReceivedForTesting(
@@ -277,7 +277,7 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest, VirtualCardUnmaskSuccess) {
                   ->last_committed_primary_main_frame_origin.has_value());
 
   // Mock server response with valid virtual card information.
-  payments::PaymentsNetworkInterface::UnmaskResponseDetails mocked_response;
+  payments::UnmaskResponseDetails mocked_response;
   mocked_response.real_pan = kTestVirtualCardNumber;
   mocked_response.card_type =
       payments::PaymentsAutofillClient::PaymentsRpcCardType::kVirtualCard;
@@ -319,7 +319,7 @@ TEST_F(CreditCardRiskBasedAuthenticatorTest, VirtualCardUnmaskFailure) {
                   ->unmask_request()
                   ->last_committed_primary_main_frame_origin.has_value());
   // Payment server response when unmask request fails is empty.
-  payments::PaymentsNetworkInterface::UnmaskResponseDetails mocked_response;
+  payments::UnmaskResponseDetails mocked_response;
 
   authenticator_->OnUnmaskResponseReceivedForTesting(
       payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,

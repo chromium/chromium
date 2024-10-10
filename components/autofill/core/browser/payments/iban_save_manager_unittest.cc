@@ -115,8 +115,7 @@ class IbanSaveManagerTest : public testing::Test {
     ON_CALL(*payments_network_interface(), UploadIban)
         .WillByDefault(
             [is_successful](
-                const payments::PaymentsNetworkInterface::
-                    UploadIbanRequestDetails& request_details,
+                const payments::UploadIbanRequestDetails& request_details,
                 base::OnceCallback<void(
                     payments::PaymentsAutofillClient::PaymentsRpcResult)>
                     callback) {

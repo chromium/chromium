@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/metrics/payments/payments_window_metrics.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_requests/unmask_card_request.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/payments_window_manager_util.h"
@@ -252,7 +253,7 @@ void DesktopPaymentsWindowManager::OnDidLoadRiskDataForVcn3ds(
 
 void DesktopPaymentsWindowManager::OnVcn3dsAuthenticationResponseReceived(
     PaymentsAutofillClient::PaymentsRpcResult result,
-    const PaymentsNetworkInterface::UnmaskResponseDetails& response_details) {
+    const UnmaskResponseDetails& response_details) {
   Vcn3dsAuthenticationResponse response =
       CreateVcn3dsAuthenticationResponseFromServerResult(
           result, response_details, std::move(vcn_3ds_context_->card));

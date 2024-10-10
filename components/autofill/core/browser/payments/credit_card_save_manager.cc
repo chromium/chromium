@@ -43,6 +43,7 @@
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
@@ -94,12 +95,10 @@ std::u16string RemoveMiddleInitial(const std::u16string& name) {
 // Prepares uploaded card for virtual card enrollment and returns details of
 // enrollment response if uploaded card is eligible for virtual card
 // enrollment.
-std::optional<
-    payments::PaymentsNetworkInterface::GetDetailsForEnrollmentResponseDetails>
+std::optional<payments::GetDetailsForEnrollmentResponseDetails>
 PrepareForVirtualCardEnroll(
     bool card_saved,
-    payments::PaymentsNetworkInterface::UploadCardResponseDetails
-        upload_card_response_details,
+    payments::UploadCardResponseDetails upload_card_response_details,
     CreditCard* uploaded_card) {
   // `upload_card_response_details` has fields in the response that will be
   // required for server requests in the virtual card enrollment flow, so we set
@@ -257,8 +256,7 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
   if (!payments_network_interface) {
     return;
   }
-  upload_request_ =
-      payments::PaymentsNetworkInterface::UploadCardRequestDetails();
+  upload_request_ = payments::UploadCardRequestDetails();
   upload_request_.card = card;
   uploading_local_card_ = uploading_local_card;
   show_save_prompt_.reset();
@@ -406,8 +404,7 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
                      weak_ptr_factory_.GetWeakPtr()),
       payments::kUploadPaymentMethodBillableServiceNumber,
       payments::GetBillingCustomerId(&payments_data_manager()),
-      payments::PaymentsNetworkInterface::UploadCardSource::
-          UPSTREAM_CHECKOUT_FLOW);
+      payments::UploadCardSource::UPSTREAM_CHECKOUT_FLOW);
 }
 
 void CreditCardSaveManager::AttemptToOfferCvcUploadSave(
@@ -447,8 +444,7 @@ bool CreditCardSaveManager::IsCreditCardUploadEnabled() {
 
 void CreditCardSaveManager::OnDidUploadCard(
     PaymentsRpcResult result,
-    const payments::PaymentsNetworkInterface::UploadCardResponseDetails&
-        upload_card_response_details) {
+    const payments::UploadCardResponseDetails& upload_card_response_details) {
   if (observer_for_testing_) {
     observer_for_testing_->OnReceivedUploadCardResponse();
   }
@@ -502,8 +498,7 @@ void CreditCardSaveManager::OnDidUploadCard(
 
   // Prepare for virtual card enrollment if uploaded card is eligible for
   // virtual card enrollment.
-  std::optional<payments::PaymentsNetworkInterface::
-                    GetDetailsForEnrollmentResponseDetails>
+  std::optional<payments::GetDetailsForEnrollmentResponseDetails>
       get_details_for_enrollment_response_details = PrepareForVirtualCardEnroll(
           /*card_saved=*/result == PaymentsRpcResult::kSuccess,
           std::move(upload_card_response_details),
@@ -540,8 +535,7 @@ void CreditCardSaveManager::OnDidUploadCard(
 
 void CreditCardSaveManager::InitVirtualCardEnroll(
     const CreditCard& credit_card,
-    std::optional<payments::PaymentsNetworkInterface::
-                      GetDetailsForEnrollmentResponseDetails>
+    std::optional<payments::GetDetailsForEnrollmentResponseDetails>
         get_details_for_enrollment_response_details) {
   // Hides save card confirmation dialog if still showing.
   client_->GetPaymentsAutofillClient()->HideSaveCardPrompt();
@@ -886,8 +880,7 @@ void CreditCardSaveManager::LogStrikesPresentWhenCardSaved(
 
 void CreditCardSaveManager::SetProfilesForCreditCardUpload(
     const CreditCard& card,
-    payments::PaymentsNetworkInterface::UploadCardRequestDetails*
-        upload_request) {
+    payments::UploadCardRequestDetails* upload_request) {
   std::vector<AutofillProfile> candidate_profiles;
   const base::Time now = AutofillClock::Now();
   const base::TimeDelta fifteen_minutes = base::Minutes(15);

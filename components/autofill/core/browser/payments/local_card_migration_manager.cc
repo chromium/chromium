@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
@@ -150,8 +151,7 @@ void LocalCardMigrationManager::AttemptToOfferLocalCardMigration(
   if (!payments_network_interface) {
     return;
   }
-  migration_request_ =
-      payments::PaymentsNetworkInterface::MigrationRequestDetails();
+  migration_request_ = payments::MigrationRequestDetails();
 
   if (observer_for_testing_)
     observer_for_testing_->OnDecideToRequestLocalCardMigration();
@@ -165,10 +165,8 @@ void LocalCardMigrationManager::AttemptToOfferLocalCardMigration(
       payments::kMigrateCardsBillableServiceNumber,
       payments::GetBillingCustomerId(&payments_data_manager()),
       is_from_settings_page
-          ? payments::PaymentsNetworkInterface::UploadCardSource::
-                LOCAL_CARD_MIGRATION_SETTINGS_PAGE
-          : payments::PaymentsNetworkInterface::UploadCardSource::
-                LOCAL_CARD_MIGRATION_CHECKOUT_FLOW);
+          ? payments::UploadCardSource::LOCAL_CARD_MIGRATION_SETTINGS_PAGE
+          : payments::UploadCardSource::LOCAL_CARD_MIGRATION_CHECKOUT_FLOW);
 }
 
 // Callback function when user agrees to migration on the intermediate dialog.

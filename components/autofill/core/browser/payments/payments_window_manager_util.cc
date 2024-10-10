@@ -54,13 +54,12 @@ ParseUrlForVcn3ds(const GURL& url,
                               kAuthenticationNotCompleted);
 }
 
-PaymentsNetworkInterface::UnmaskRequestDetails
-CreateUnmaskRequestDetailsForVcn3ds(
+UnmaskRequestDetails CreateUnmaskRequestDetailsForVcn3ds(
     AutofillClient& client,
     const PaymentsWindowManager::Vcn3dsContext& context,
     PaymentsWindowManager::RedirectCompletionResult
         redirect_completion_result) {
-  payments::PaymentsNetworkInterface::UnmaskRequestDetails request_details;
+  UnmaskRequestDetails request_details;
   request_details.card = context.card;
   request_details.billing_customer_number = GetBillingCustomerId(
       &client.GetPersonalDataManager()->payments_data_manager());
@@ -82,7 +81,7 @@ CreateUnmaskRequestDetailsForVcn3ds(
 PaymentsWindowManager::Vcn3dsAuthenticationResponse
 CreateVcn3dsAuthenticationResponseFromServerResult(
     PaymentsAutofillClient::PaymentsRpcResult result,
-    const PaymentsNetworkInterface::UnmaskResponseDetails& response_details,
+    const UnmaskResponseDetails& response_details,
     CreditCard card) {
   PaymentsWindowManager::Vcn3dsAuthenticationResponse response;
   if (result == PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {

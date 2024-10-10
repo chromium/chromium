@@ -18,7 +18,7 @@ constexpr int64_t kInstrumentId = 1122334455;
 class UnmaskIbanRequestTest : public testing::Test {
  public:
   void SetUp() override {
-    PaymentsNetworkInterface::UnmaskIbanRequestDetails request_details;
+    UnmaskIbanRequestDetails request_details;
     request_details.billable_service_number = kBillableServiceNumber;
     request_details.billing_customer_number = kBillingCustomerNumber;
     request_details.instrument_id = kInstrumentId;

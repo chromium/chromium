@@ -147,23 +147,20 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
 
   void TearDown() override { payments_network_interface_.reset(); }
 
-  void OnDidGetUnmaskDetails(
-      PaymentsRpcResult result,
-      payments::PaymentsNetworkInterface::UnmaskDetails& unmask_details) {
+  void OnDidGetUnmaskDetails(PaymentsRpcResult result,
+                             payments::UnmaskDetails& unmask_details) {
     result_ = result;
     unmask_details_ = unmask_details;
   }
 
-  void OnDidGetRealPan(
-      PaymentsRpcResult result,
-      const PaymentsNetworkInterface::UnmaskResponseDetails& response) {
+  void OnDidGetRealPan(PaymentsRpcResult result,
+                       const UnmaskResponseDetails& response) {
     result_ = result;
     unmask_response_details_ = response;
   }
 
-  void OnDidGetOptChangeResult(
-      PaymentsRpcResult result,
-      PaymentsNetworkInterface::OptChangeResponseDetails& response) {
+  void OnDidGetOptChangeResult(PaymentsRpcResult result,
+                               OptChangeResponseDetails& response) {
     result_ = result;
     opt_change_response_.user_is_opted_in = response.user_is_opted_in;
     opt_change_response_.fido_creation_options =
@@ -184,8 +181,7 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
 
   void OnDidUploadCard(
       PaymentsRpcResult result,
-      const PaymentsNetworkInterface::UploadCardResponseDetails&
-          upload_card_respone_details) {
+      const UploadCardResponseDetails& upload_card_respone_details) {
     result_ = result;
     upload_card_response_details_ = upload_card_respone_details;
   }
@@ -210,9 +206,8 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
 
   void OnDidGetVirtualCardEnrollmentDetails(
       PaymentsRpcResult result,
-      const payments::PaymentsNetworkInterface::
-          GetDetailsForEnrollmentResponseDetails&
-              get_details_for_enrollment_response_fields) {
+      const payments::GetDetailsForEnrollmentResponseDetails&
+          get_details_for_enrollment_response_fields) {
     result_ = result;
     get_details_for_enrollment_response_fields_ =
         get_details_for_enrollment_response_fields;
@@ -237,7 +232,7 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
   // Issue an UnmaskCard request. This requires an OAuth token before starting
   // the request.
   void StartUnmasking(CardUnmaskOptions options) {
-    PaymentsNetworkInterface::UnmaskRequestDetails request_details;
+    UnmaskRequestDetails request_details;
     request_details.billing_customer_number = 111222333444;
 
     request_details.card = options.use_only_non_legacy_id
@@ -274,9 +269,8 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
 
   // If |opt_in| is set to true, then opts the user in to use FIDO
   // authentication for card unmasking. Otherwise opts the user out.
-  void StartOptChangeRequest(
-      PaymentsNetworkInterface::OptChangeRequestDetails::Reason reason) {
-    PaymentsNetworkInterface::OptChangeRequestDetails request_details;
+  void StartOptChangeRequest(OptChangeRequestDetails::Reason reason) {
+    OptChangeRequestDetails request_details;
     request_details.reason = reason;
     payments_network_interface_->OptChange(
         request_details,
@@ -295,13 +289,13 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
         /*billable_service_number=*/12345,
         /*billing_customer_number=*/111222333444L,
         /*upload_card_source=*/
-        PaymentsNetworkInterface::UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE);
+        UploadCardSource::UNKNOWN_UPLOAD_CARD_SOURCE);
   }
 
   // Issue an UploadCard request. This requires an OAuth token before starting
   // the request.
   void StartUploading() {
-    PaymentsNetworkInterface::UploadCardRequestDetails request_details;
+    UploadCardRequestDetails request_details;
     request_details.billing_customer_number = 111222333444L;
     request_details.card = test::GetCreditCard();
     request_details.context_token = u"context token";
@@ -315,7 +309,7 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   void StartMigrating() {
-    PaymentsNetworkInterface::MigrationRequestDetails request_details;
+    MigrationRequestDetails request_details;
     request_details.context_token = u"context token";
     request_details.risk_data = "some risk data";
     request_details.app_locale = "language-LOCALE";
@@ -334,7 +328,7 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
       CardUnmaskChallengeOptionType challenge_type =
           CardUnmaskChallengeOptionType::kSmsOtp,
       std::string challenge_id = "arbitrary id") {
-    PaymentsNetworkInterface::SelectChallengeOptionRequestDetails request_details;
+    SelectChallengeOptionRequestDetails request_details;
     request_details.billing_customer_number = 555666777888;
     request_details.context_token = "fake context token";
 
@@ -401,10 +395,10 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
     EXPECT_TRUE(GetUploadData().find(field_name_or_value) == std::string::npos);
   }
 
-  const PaymentsNetworkInterface::UnmaskDetails* unmask_details() const {
+  const UnmaskDetails* unmask_details() const {
     return unmask_details_ ? &unmask_details_.value() : nullptr;
   }
-  const PaymentsNetworkInterface::UnmaskResponseDetails* unmask_response_details() const {
+  const UnmaskResponseDetails* unmask_response_details() const {
     return unmask_response_details_ ? &unmask_response_details_.value()
                                     : nullptr;
   }
@@ -417,11 +411,11 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
   PaymentsRpcResult result_ = PaymentsRpcResult::kNone;
 
   // Server ID of a saved card via credit card upload save.
-  PaymentsNetworkInterface::UploadCardResponseDetails upload_card_response_details_;
+  UploadCardResponseDetails upload_card_response_details_;
   // The OptChangeResponseDetails retrieved from an OptChangeRequest.
-  PaymentsNetworkInterface::OptChangeResponseDetails opt_change_response_;
+  OptChangeResponseDetails opt_change_response_;
   // The response details retrieved from an GetDetailsForEnrollmentRequest.
-  PaymentsNetworkInterface::GetDetailsForEnrollmentResponseDetails
+  GetDetailsForEnrollmentResponseDetails
       get_details_for_enrollment_response_fields_;
   // The legal message returned from a GetDetails upload save preflight call.
   std::unique_ptr<base::Value::Dict> legal_message_;
@@ -442,10 +436,9 @@ class PaymentsNetworkInterfaceTest : public PaymentsNetworkInterfaceTestBase,
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
  private:
-  std::optional<PaymentsNetworkInterface::UnmaskDetails> unmask_details_;
+  std::optional<UnmaskDetails> unmask_details_;
   // The UnmaskResponseDetails retrieved from an UnmaskRequest.  Includes PAN.
-  std::optional<PaymentsNetworkInterface::UnmaskResponseDetails>
-      unmask_response_details_;
+  std::optional<UnmaskResponseDetails> unmask_response_details_;
   base::WeakPtrFactory<PaymentsNetworkInterfaceTest> weak_ptr_factory_{this};
 };
 
@@ -877,8 +870,7 @@ TEST_F(PaymentsNetworkInterfaceTest, UnmaskResponseIncludesEmptyDeclineDetails) 
 }
 
 TEST_F(PaymentsNetworkInterfaceTest, OptInSuccess) {
-  StartOptChangeRequest(
-      PaymentsNetworkInterface::OptChangeRequestDetails::ENABLE_FIDO_AUTH);
+  StartOptChangeRequest(OptChangeRequestDetails::ENABLE_FIDO_AUTH);
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{ \"fido_authentication_info\": { \"user_status\": "
@@ -888,8 +880,7 @@ TEST_F(PaymentsNetworkInterfaceTest, OptInSuccess) {
 }
 
 TEST_F(PaymentsNetworkInterfaceTest, OptInServerUnresponsive) {
-  StartOptChangeRequest(
-      PaymentsNetworkInterface::OptChangeRequestDetails::ENABLE_FIDO_AUTH);
+  StartOptChangeRequest(OptChangeRequestDetails::ENABLE_FIDO_AUTH);
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_REQUEST_TIMEOUT,
                  "");
@@ -898,8 +889,7 @@ TEST_F(PaymentsNetworkInterfaceTest, OptInServerUnresponsive) {
 }
 
 TEST_F(PaymentsNetworkInterfaceTest, OptOutSuccess) {
-  StartOptChangeRequest(
-      PaymentsNetworkInterface::OptChangeRequestDetails::DISABLE_FIDO_AUTH);
+  StartOptChangeRequest(OptChangeRequestDetails::DISABLE_FIDO_AUTH);
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{ \"fido_authentication_info\": { \"user_status\": "
@@ -909,8 +899,7 @@ TEST_F(PaymentsNetworkInterfaceTest, OptOutSuccess) {
 }
 
 TEST_F(PaymentsNetworkInterfaceTest, EnrollAttemptReturnsCreationOptions) {
-  StartOptChangeRequest(
-      PaymentsNetworkInterface::OptChangeRequestDetails::ENABLE_FIDO_AUTH);
+  StartOptChangeRequest(OptChangeRequestDetails::ENABLE_FIDO_AUTH);
   IssueOAuthToken();
   ReturnResponse(payments_network_interface_.get(), net::HTTP_OK,
                  "{ \"fido_authentication_info\": { \"user_status\": "
@@ -1644,7 +1633,7 @@ class UpdateVirtualCardEnrollmentTest
   void StartUpdateVirtualCardEnrollment(
       VirtualCardEnrollmentSource virtual_card_enrollment_source,
       VirtualCardEnrollmentRequestType virtual_card_enrollment_request_type) {
-    PaymentsNetworkInterface::UpdateVirtualCardEnrollmentRequestDetails request_details;
+    UpdateVirtualCardEnrollmentRequestDetails request_details;
     request_details.virtual_card_enrollment_request_type =
         virtual_card_enrollment_request_type;
     request_details.virtual_card_enrollment_source =
@@ -1725,7 +1714,7 @@ TEST_P(GetVirtualCardEnrollmentDetailsTest,
        GetVirtualCardEnrollmentDetailsTest_TestAllFlows) {
   VirtualCardEnrollmentSource source = std::get<0>(GetParam());
 
-  PaymentsNetworkInterface::GetDetailsForEnrollmentRequestDetails request_details;
+  GetDetailsForEnrollmentRequestDetails request_details;
   request_details.source = source;
   request_details.instrument_id = 12345678;
   request_details.billing_customer_number = 555666777888;

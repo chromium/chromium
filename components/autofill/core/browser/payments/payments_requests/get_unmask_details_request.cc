@@ -17,7 +17,7 @@ const char kGetUnmaskDetailsRequestPath[] =
 
 GetUnmaskDetailsRequest::GetUnmaskDetailsRequest(
     base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
-                            PaymentsNetworkInterface::UnmaskDetails&)> callback,
+                            UnmaskDetails&)> callback,
     const std::string& app_locale,
     const bool full_sync_enabled)
     : callback_(std::move(callback)),

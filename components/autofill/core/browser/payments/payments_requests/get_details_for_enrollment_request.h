@@ -6,7 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUESTS_GET_DETAILS_FOR_ENROLLMENT_REQUEST_H_
 
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 
 namespace autofill::payments {
@@ -16,11 +16,9 @@ namespace autofill::payments {
 class GetDetailsForEnrollmentRequest : public PaymentsRequest {
  public:
   GetDetailsForEnrollmentRequest(
-      const PaymentsNetworkInterface::GetDetailsForEnrollmentRequestDetails&
-          request_details,
+      const GetDetailsForEnrollmentRequestDetails& request_details,
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
-                              const PaymentsNetworkInterface::
-                                  GetDetailsForEnrollmentResponseDetails&)>
+                              const GetDetailsForEnrollmentResponseDetails&)>
           callback);
   GetDetailsForEnrollmentRequest(const GetDetailsForEnrollmentRequest&) =
       delete;
@@ -41,18 +39,15 @@ class GetDetailsForEnrollmentRequest : public PaymentsRequest {
   friend class GetDetailsForEnrollmentRequestTest;
 
   // Used to store information to be populated to the request.
-  PaymentsNetworkInterface::GetDetailsForEnrollmentRequestDetails
-      request_details_;
+  GetDetailsForEnrollmentRequestDetails request_details_;
 
   // Used to store information parsed from the response. Will be passed into the
   // |callback_| function as a param.
-  PaymentsNetworkInterface::GetDetailsForEnrollmentResponseDetails
-      response_details_;
+  GetDetailsForEnrollmentResponseDetails response_details_;
 
   // The callback function to be invoked when the response is received.
-  base::OnceCallback<void(
-      PaymentsAutofillClient::PaymentsRpcResult,
-      const PaymentsNetworkInterface::GetDetailsForEnrollmentResponseDetails&)>
+  base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
+                          const GetDetailsForEnrollmentResponseDetails&)>
       callback_;
 };
 

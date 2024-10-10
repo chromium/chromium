@@ -201,7 +201,7 @@ bool CreditCardAccessManagerTestBase::GetRealPanForCVCAuth(
                              /*enable_fido=*/test_fido_request_options_type !=
                                  TestFidoRequestOptionsType::kNotPresent);
 
-  payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
+  payments::UnmaskResponseDetails response;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   response.card_authorization_token = "dummy_card_authorization_token";
   if (test_fido_request_options_type == TestFidoRequestOptionsType::kValid) {
@@ -277,7 +277,7 @@ bool CreditCardAccessManagerTestBase::GetRealPanForFIDOAuth(
     return false;
   }
 
-  payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
+  payments::UnmaskResponseDetails response;
   response.card_type = is_virtual_card ? PaymentsRpcCardType::kVirtualCard
                                        : PaymentsRpcCardType::kServerCard;
   full_card_request->OnDidGetRealPan(
@@ -289,7 +289,7 @@ void CreditCardAccessManagerTestBase::OptChange(PaymentsRpcResult result,
                                                 bool user_is_opted_in,
                                                 bool include_creation_options,
                                                 bool include_request_options) {
-  payments::PaymentsNetworkInterface::OptChangeResponseDetails response;
+  payments::OptChangeResponseDetails response;
   response.user_is_opted_in = user_is_opted_in;
   if (include_creation_options) {
     response.fido_creation_options = GetTestCreationOptions();
@@ -375,7 +375,7 @@ void CreditCardAccessManagerTestBase::
   EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
                   ->risk_based_authentication_invoked());
   // Mock server response with information regarding VCN auth.
-  payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
+  payments::UnmaskResponseDetails response;
   response.context_token = "fake_context_token";
   response.card_unmask_challenge_options = challenge_options;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
@@ -434,9 +434,8 @@ void CreditCardAccessManagerTestBase::
     case CardUnmaskChallengeOptionType::kCvc: {
       CreditCardCvcAuthenticator& cvc_authenticator =
           autofill_client_.GetPaymentsAutofillClient()->GetCvcAuthenticator();
-      payments::PaymentsNetworkInterface::UnmaskRequestDetails*
-          request_details =
-              cvc_authenticator.GetFullCardRequest()->request_.get();
+      payments::UnmaskRequestDetails* request_details =
+          cvc_authenticator.GetFullCardRequest()->request_.get();
       EXPECT_EQ(request_details->card.record_type(),
                 CreditCard::RecordType::kVirtualCard);
       EXPECT_EQ(request_details->card.number(),

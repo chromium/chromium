@@ -24,8 +24,7 @@ class GetDetailsForEnrollmentRequestTest
   ~GetDetailsForEnrollmentRequestTest() override = default;
 
   void SetUp() override {
-    PaymentsNetworkInterface::GetDetailsForEnrollmentRequestDetails
-        request_details;
+    GetDetailsForEnrollmentRequestDetails request_details;
     request_details.instrument_id = 11223344;
     request_details.app_locale = "en";
     request_details.billing_customer_number = 55667788;
@@ -37,8 +36,7 @@ class GetDetailsForEnrollmentRequestTest
 
   GetDetailsForEnrollmentRequest* GetRequest() const { return request_.get(); }
 
-  const PaymentsNetworkInterface::GetDetailsForEnrollmentResponseDetails&
-  GetParsedResponse() const {
+  const GetDetailsForEnrollmentResponseDetails& GetParsedResponse() const {
     return request_->response_details_;
   }
 

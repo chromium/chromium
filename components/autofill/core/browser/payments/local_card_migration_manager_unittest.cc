@@ -597,8 +597,7 @@ TEST_F(LocalCardMigrationManagerTest,
   UseLocalCardWithOtherLocalCardsOnFile();
 
   // Confirm that the preflight request contained the correct UploadCardSource.
-  EXPECT_EQ(payments::PaymentsNetworkInterface::UploadCardSource::
-                LOCAL_CARD_MIGRATION_CHECKOUT_FLOW,
+  EXPECT_EQ(payments::UploadCardSource::LOCAL_CARD_MIGRATION_CHECKOUT_FLOW,
             payments_network_interface_->upload_card_source_in_request());
 }
 
@@ -623,8 +622,7 @@ TEST_F(LocalCardMigrationManagerTest,
   EXPECT_TRUE(local_card_migration_manager_->MainPromptWasShown());
 
   // Confirm that the preflight request contained the correct UploadCardSource.
-  EXPECT_EQ(payments::PaymentsNetworkInterface::UploadCardSource::
-                LOCAL_CARD_MIGRATION_SETTINGS_PAGE,
+  EXPECT_EQ(payments::UploadCardSource::LOCAL_CARD_MIGRATION_SETTINGS_PAGE,
             payments_network_interface_->upload_card_source_in_request());
 }
 

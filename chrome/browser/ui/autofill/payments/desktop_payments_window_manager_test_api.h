@@ -28,7 +28,7 @@ class DesktopPaymentsWindowManagerTestApi {
 
   void OnVcn3dsAuthenticationResponseReceived(
       PaymentsAutofillClient::PaymentsRpcResult result,
-      const PaymentsNetworkInterface::UnmaskResponseDetails& response_details) {
+      const UnmaskResponseDetails& response_details) {
     window_manager_->OnVcn3dsAuthenticationResponseReceived(result,
                                                             response_details);
   }

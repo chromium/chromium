@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 
@@ -50,8 +51,7 @@ void CreditCardRiskBasedAuthenticator::Authenticate(
   // Authenticate should not be called while there is an existing authentication
   // underway.
   DCHECK(!requester_);
-  unmask_request_details_ = std::make_unique<
-      payments::PaymentsNetworkInterface::UnmaskRequestDetails>();
+  unmask_request_details_ = std::make_unique<payments::UnmaskRequestDetails>();
   card_ = std::move(card);
   requester_ = requester;
 
@@ -104,8 +104,7 @@ void CreditCardRiskBasedAuthenticator::OnDidGetUnmaskRiskData(
 
 void CreditCardRiskBasedAuthenticator::OnUnmaskResponseReceived(
     PaymentsRpcResult result,
-    const payments::PaymentsNetworkInterface::UnmaskResponseDetails&
-        response_details) {
+    const payments::UnmaskResponseDetails& response_details) {
   if (unmask_card_request_timestamp_.has_value()) {
     autofill_metrics::LogRiskBasedAuthLatency(
         base::TimeTicks::Now() - unmask_card_request_timestamp_.value(),

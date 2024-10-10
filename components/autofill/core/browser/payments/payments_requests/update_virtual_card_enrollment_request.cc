@@ -20,8 +20,7 @@ const char kUnenrollRequestPath[] = "payments/apis/virtualcardservice/unenroll";
 }  // namespace
 
 UpdateVirtualCardEnrollmentRequest::UpdateVirtualCardEnrollmentRequest(
-    const PaymentsNetworkInterface::UpdateVirtualCardEnrollmentRequestDetails&
-        request_details,
+    const UpdateVirtualCardEnrollmentRequestDetails& request_details,
     base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult)>
         callback)
     : request_details_(request_details), callback_(std::move(callback)) {}

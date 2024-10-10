@@ -256,8 +256,7 @@ class MockVirtualCardEnrollmentManager
       InitVirtualCardEnroll,
       (const CreditCard& credit_card,
        VirtualCardEnrollmentSource virtual_card_enrollment_source,
-       std::optional<payments::PaymentsNetworkInterface::
-                         GetDetailsForEnrollmentResponseDetails>
+       std::optional<payments::GetDetailsForEnrollmentResponseDetails>
            get_details_for_enrollment_response_details,
        PrefService* user_prefs,
        VirtualCardEnrollmentManager::RiskAssessmentFunction
@@ -1267,8 +1266,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NotSavedLocally) {
 
   credit_card_save_manager_->SetCreditCardUploadEnabled(true);
 
-  payments::PaymentsNetworkInterface::UploadCardResponseDetails
-      upload_card_response_details;
+  payments::UploadCardResponseDetails upload_card_response_details;
   payments_network_interface().SetUploadCardResponseDetailsForUploadCard(
       upload_card_response_details);
 
@@ -4746,8 +4744,7 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Confirm that the preflight request contained the correct UploadCardSource.
   FormSubmitted(credit_card_form);
-  EXPECT_EQ(payments::PaymentsNetworkInterface::UploadCardSource::
-                UPSTREAM_CHECKOUT_FLOW,
+  EXPECT_EQ(payments::UploadCardSource::UPSTREAM_CHECKOUT_FLOW,
             payments_network_interface().upload_card_source_in_request());
 }
 
@@ -5305,8 +5302,7 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NumStrikesLoggedOnAdd) {
 // bubble is shown.
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_NumStrikesLoggedOnUploadNotSuccess) {
-  payments::PaymentsNetworkInterface::UploadCardResponseDetails
-      upload_card_response_details;
+  payments::UploadCardResponseDetails upload_card_response_details;
   payments_network_interface().SetUploadCardResponseDetailsForUploadCard(
       upload_card_response_details);
   TestCreditCardSaveStrikeDatabase credit_card_save_strike_database =
@@ -5328,8 +5324,7 @@ TEST_F(CreditCardSaveManagerTest,
 // bubble is shown.
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_NumStrikesLoggedOnUploadClientSideTimeout) {
-  payments::PaymentsNetworkInterface::UploadCardResponseDetails
-      upload_card_response_details;
+  payments::UploadCardResponseDetails upload_card_response_details;
   payments_network_interface().SetUploadCardResponseDetailsForUploadCard(
       upload_card_response_details);
   TestCreditCardSaveStrikeDatabase credit_card_save_strike_database =
@@ -5620,8 +5615,7 @@ TEST_P(SaveCvcTest, OnDidUploadCard_SaveServerCvc) {
 
   // Set up upload card response and upload.
   const int64_t kInstrumentId = 12345L;
-  payments::PaymentsNetworkInterface::UploadCardResponseDetails
-      upload_card_response_details;
+  payments::UploadCardResponseDetails upload_card_response_details;
   upload_card_response_details.instrument_id = kInstrumentId;
 
   // Confirm CVC is added to PaymentsAutofillTable only if CVC storage feature
@@ -5935,8 +5929,7 @@ TEST_F(CreditCardSaveManagerTest,
   credit_card_save_manager_->set_upload_request_card(card);
 
   // Set up upload card response and upload.
-  payments::PaymentsNetworkInterface::UploadCardResponseDetails
-      upload_card_response_details;
+  payments::UploadCardResponseDetails upload_card_response_details;
   upload_card_response_details.instrument_id = 12345L;
 
   // Confirm CVC is not added to PaymentsAutofillTable if CVC was empty.
@@ -5962,7 +5955,7 @@ TEST_F(CreditCardSaveManagerTest,
   credit_card_save_manager_->set_upload_request_card(card);
 
   // Set up upload card response without instrument_id and upload.
-  payments::PaymentsNetworkInterface::UploadCardResponseDetails
+  payments::UploadCardResponseDetails
       upload_card_response_details_without_instrument_id;
 
   // Confirm CVC is not added to PaymentsAutofillTable if instrument_id was
@@ -5977,7 +5970,7 @@ TEST_F(CreditCardSaveManagerTest,
 // Tests that `InitVirtualCardEnroll` hides the save card prompt before calling
 // `VirtualCardEnrollmentManager::InitVirtualCardEnroll`.
 TEST_F(CreditCardSaveManagerTest, InitVirtualCardEnroll) {
-  payments::PaymentsNetworkInterface::GetDetailsForEnrollmentResponseDetails
+  payments::GetDetailsForEnrollmentResponseDetails
       get_details_for_enrollment_response_details;
   EXPECT_CALL(payments_client(), HideSaveCardPrompt);
   EXPECT_CALL(*static_cast<MockVirtualCardEnrollmentManager*>(
@@ -6010,7 +6003,7 @@ TEST_F(CreditCardSaveManagerWithLocalSaveFallbackTest,
 
   credit_card_save_manager_->OnDidUploadCard(
       payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
-      payments::PaymentsNetworkInterface::UploadCardResponseDetails());
+      payments::UploadCardResponseDetails());
 }
 
 // Tests that the local card save is skipped if the card is missing the
@@ -6025,7 +6018,7 @@ TEST_F(CreditCardSaveManagerWithLocalSaveFallbackTest,
 
   credit_card_save_manager_->OnDidUploadCard(
       payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
-      payments::PaymentsNetworkInterface::UploadCardResponseDetails());
+      payments::UploadCardResponseDetails());
 }
 
 // Tests that the `RanLocalSaveFallback` metric records that a new local card
@@ -6041,7 +6034,7 @@ TEST_F(CreditCardSaveManagerWithLocalSaveFallbackTest,
   credit_card_save_manager_->set_upload_request_card(test::GetCreditCard());
   credit_card_save_manager_->OnDidUploadCard(
       payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
-      payments::PaymentsNetworkInterface::UploadCardResponseDetails());
+      payments::UploadCardResponseDetails());
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.CreditCardUpload.RanLocalSaveFallback", true, 1);
@@ -6060,7 +6053,7 @@ TEST_F(CreditCardSaveManagerWithLocalSaveFallbackTest,
   credit_card_save_manager_->set_upload_request_card(test::GetCreditCard());
   credit_card_save_manager_->OnDidUploadCard(
       payments::PaymentsAutofillClient::PaymentsRpcResult::kPermanentFailure,
-      payments::PaymentsNetworkInterface::UploadCardResponseDetails());
+      payments::UploadCardResponseDetails());
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.CreditCardUpload.RanLocalSaveFallback", false, 1);
@@ -6088,13 +6081,12 @@ TEST_P(CreditCardSaveManagerWithLoadingAndConfirmation,
       features::kAutofillEnableSaveCardLoadingAndConfirmation,
       IsSaveCardLoadingAndConfirmationEnabled());
 
-  payments::PaymentsNetworkInterface::UploadCardResponseDetails
-      upload_card_response_details;
+  payments::UploadCardResponseDetails upload_card_response_details;
   upload_card_response_details.instrument_id = 9223372036854775807;
   upload_card_response_details.virtual_card_enrollment_state =
       CreditCard::VirtualCardEnrollmentState::kUnenrolledAndEligible;
 
-  payments::PaymentsNetworkInterface::GetDetailsForEnrollmentResponseDetails
+  payments::GetDetailsForEnrollmentResponseDetails
       get_details_for_enrollment_response_details;
   get_details_for_enrollment_response_details.vcn_context_token =
       "test_context_token";
@@ -6145,14 +6137,13 @@ TEST_P(CreditCardSaveManagerWithVirtualCardEnrollTestParameterized,
        PrepareUploadedCardForVirtualCardEnrollment) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillEnableSaveCardLoadingAndConfirmation};
-  payments::PaymentsNetworkInterface::UploadCardResponseDetails
-      upload_card_response_details;
+  payments::UploadCardResponseDetails upload_card_response_details;
   upload_card_response_details.card_art_url = GURL("https://www.example.com/");
   upload_card_response_details.instrument_id = 9223372036854775807;
   upload_card_response_details.virtual_card_enrollment_state =
       GetEnrollmentState();
 
-  payments::PaymentsNetworkInterface::GetDetailsForEnrollmentResponseDetails
+  payments::GetDetailsForEnrollmentResponseDetails
       get_details_for_enrollment_response_details;
   get_details_for_enrollment_response_details.vcn_context_token =
       "test_context_token";
@@ -6165,8 +6156,7 @@ TEST_P(CreditCardSaveManagerWithVirtualCardEnrollTestParameterized,
 
   CreditCard arg_credit_card;
   VirtualCardEnrollmentSource arg_virtual_card_enrollment_source;
-  std::optional<payments::PaymentsNetworkInterface::
-                    GetDetailsForEnrollmentResponseDetails>
+  std::optional<payments::GetDetailsForEnrollmentResponseDetails>
       arg_get_details_for_enrollment_response_details;
 
   EXPECT_CALL(payments_client(),

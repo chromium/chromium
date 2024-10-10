@@ -21,7 +21,7 @@ const char kUploadIbanRequestFormat[] =
 }  // namespace
 
 UploadIbanRequest::UploadIbanRequest(
-    const PaymentsNetworkInterface::UploadIbanRequestDetails& details,
+    const UploadIbanRequestDetails& details,
     bool full_sync_enabled,
     base::OnceCallback<
         void(payments::PaymentsAutofillClient::PaymentsRpcResult)> callback)

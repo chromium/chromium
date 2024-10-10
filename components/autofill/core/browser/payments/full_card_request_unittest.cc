@@ -173,7 +173,7 @@ class FullCardRequestTest : public testing::Test {
   void OnDidGetRealPan(PaymentsRpcResult result,
                        const std::string& real_pan,
                        bool is_virtual_card = false) {
-    payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
+    payments::UnmaskResponseDetails response;
     response.card_type = is_virtual_card ? PaymentsRpcCardType::kVirtualCard
                                          : PaymentsRpcCardType::kServerCard;
     request_->OnDidGetRealPan(result, response.with_real_pan(real_pan));
@@ -183,7 +183,7 @@ class FullCardRequestTest : public testing::Test {
                                const std::string& real_pan,
                                const std::string& dcvv,
                                bool is_virtual_card = false) {
-    payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
+    payments::UnmaskResponseDetails response;
     response.card_type = is_virtual_card ? PaymentsRpcCardType::kVirtualCard
                                          : PaymentsRpcCardType::kServerCard;
     request_->OnDidGetRealPan(result,
@@ -366,7 +366,7 @@ TEST_F(FullCardRequestTest,
       result_delegate()->AsWeakPtr(), ui_delegate()->AsWeakPtr(),
       GURL("https://example.com/"), "test_context_token", challenge_option);
   ASSERT_TRUE(request()->GetShouldUnmaskCardForTesting());
-  payments::PaymentsNetworkInterface::UnmaskRequestDetails* request_details =
+  payments::UnmaskRequestDetails* request_details =
       request()->GetUnmaskRequestDetailsForTesting();
   EXPECT_EQ(request_details->selected_challenge_option->type,
             CardUnmaskChallengeOptionType::kCvc);
@@ -382,7 +382,7 @@ TEST_F(FullCardRequestTest,
   details.exp_year = base::UTF8ToUTF16(test::NextYear());
   details.enable_fido_auth = false;
   card_unmask_delegate()->OnUnmaskPromptAccepted(details);
-  payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
+  payments::UnmaskResponseDetails response;
   response.real_pan = "4111";
   response.dcvv = "123";
   response.expiration_month = "12";
@@ -646,7 +646,7 @@ TEST_F(FullCardRequestTest, VirtualCardTryAgainFailure) {
   CardUnmaskDelegate::UserProvidedUnmaskDetails user_provided_details;
   user_provided_details.cvc = u"321";
   card_unmask_delegate()->OnUnmaskPromptAccepted(user_provided_details);
-  PaymentsNetworkInterface::UnmaskResponseDetails response_details;
+  UnmaskResponseDetails response_details;
   response_details.card_type = PaymentsRpcCardType::kVirtualCard;
   response_details.context_token = "test_context_token";
   request()->OnDidGetRealPan(PaymentsRpcResult::kTryAgainFailure,

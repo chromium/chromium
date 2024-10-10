@@ -442,6 +442,8 @@ static_library("browser") {
     "payments/payments_network_interface.h",
     "payments/payments_network_interface_base.cc",
     "payments/payments_network_interface_base.h",
+    "payments/payments_request_details.cc",
+    "payments/payments_request_details.h",
     "payments/payments_requests/get_card_upload_details_request.cc",
     "payments/payments_requests/get_card_upload_details_request.h",
     "payments/payments_requests/get_details_for_enrollment_request.cc",

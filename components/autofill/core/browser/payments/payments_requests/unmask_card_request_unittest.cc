@@ -44,8 +44,7 @@ class UnmaskCardRequestTest : public testing::Test {
 
   // Returns the response details that was created for the current test
   // instance.
-  const PaymentsNetworkInterface::UnmaskResponseDetails& GetParsedResponse()
-      const {
+  const UnmaskResponseDetails& GetParsedResponse() const {
     return request_->GetResponseDetailsForTesting();
   }
 
@@ -55,9 +54,8 @@ class UnmaskCardRequestTest : public testing::Test {
   // initial test set up.
   std::unique_ptr<UnmaskCardRequest> request_;
 
-  PaymentsNetworkInterface::UnmaskRequestDetails
-  GetDefaultUnmaskRequestDetails() {
-    PaymentsNetworkInterface::UnmaskRequestDetails request_details;
+  UnmaskRequestDetails GetDefaultUnmaskRequestDetails() {
+    UnmaskRequestDetails request_details;
     request_details.billing_customer_number = 111222333444;
     request_details.card = test::GetMaskedServerCard();
     request_details.card.set_server_id("test server id");
@@ -114,8 +112,7 @@ TEST_F(UnmaskCardRequestTest, FidoChallengeReturned_ParseResponse) {
   ASSERT_TRUE(response.has_value());
   GetRequest()->ParseResponse(response->GetDict());
 
-  const PaymentsNetworkInterface::UnmaskResponseDetails& response_details =
-      GetParsedResponse();
+  const UnmaskResponseDetails& response_details = GetParsedResponse();
   EXPECT_EQ("fake_context_token", response_details.context_token);
   // Verify the FIDO request challenge is correctly parsed.
   EXPECT_EQ("fake_fido_challenge",
@@ -195,7 +192,7 @@ class VirtualCardUnmaskCardRequestTest
   // Sets up `request_` specifically for the Virtual Card CVC Unmask Card
   // Request test case.
   void SetUpVirtualCardCvcUnmaskCardRequestTest() {
-    PaymentsNetworkInterface::UnmaskRequestDetails request_details;
+    UnmaskRequestDetails request_details;
     request_details.billing_customer_number = 111222333444;
     request_details.card = test::GetVirtualCard();
     request_details.card.set_server_id("test server id");
@@ -274,8 +271,7 @@ TEST_P(VirtualCardUnmaskCardRequestTest,
   ASSERT_TRUE(response.has_value());
   GetRequest()->ParseResponse(response->GetDict());
 
-  const PaymentsNetworkInterface::UnmaskResponseDetails& response_details =
-      GetParsedResponse();
+  const UnmaskResponseDetails& response_details = GetParsedResponse();
   EXPECT_EQ("fake_context_token", response_details.context_token);
   // Verify the FIDO request challenge is correctly parsed.
   EXPECT_EQ("fake_fido_challenge",

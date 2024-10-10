@@ -45,8 +45,7 @@ TestPaymentsNetworkInterface::TestPaymentsNetworkInterface(
 TestPaymentsNetworkInterface::~TestPaymentsNetworkInterface() = default;
 
 void TestPaymentsNetworkInterface::GetUnmaskDetails(
-    base::OnceCallback<void(PaymentsRpcResult,
-                            PaymentsNetworkInterface::UnmaskDetails&)> callback,
+    base::OnceCallback<void(PaymentsRpcResult, UnmaskDetails&)> callback,
     const std::string& app_locale) {
   if (should_return_unmask_details_)
     std::move(callback).Run(PaymentsRpcResult::kSuccess, unmask_details_);
@@ -70,7 +69,7 @@ void TestPaymentsNetworkInterface::GetCardUploadDetails(
                             std::vector<std::pair<int, int>>)> callback,
     const int billable_service_number,
     const int64_t billing_customer_number,
-    PaymentsNetworkInterface::UploadCardSource upload_card_source) {
+    UploadCardSource upload_card_source) {
   upload_details_addresses_ = addresses;
   detected_values_ = detected_values;
   client_behavior_signals_ = client_behavior_signals;
@@ -85,11 +84,9 @@ void TestPaymentsNetworkInterface::GetCardUploadDetails(
 }
 
 void TestPaymentsNetworkInterface::UploadCard(
-    const payments::PaymentsNetworkInterface::UploadCardRequestDetails&
-        request_details,
-    base::OnceCallback<void(
-        PaymentsRpcResult,
-        const PaymentsNetworkInterface::UploadCardResponseDetails&)> callback) {
+    const payments::UploadCardRequestDetails& request_details,
+    base::OnceCallback<void(PaymentsRpcResult,
+                            const UploadCardResponseDetails&)> callback) {
   upload_card_addresses_ = request_details.profiles;
   client_behavior_signals_ = request_details.client_behavior_signals;
   std::move(callback).Run(PaymentsRpcResult::kSuccess,
@@ -124,15 +121,13 @@ void TestPaymentsNetworkInterface::SelectChallengeOption(
 void TestPaymentsNetworkInterface::GetVirtualCardEnrollmentDetails(
     const GetDetailsForEnrollmentRequestDetails& request_details,
     base::OnceCallback<void(PaymentsRpcResult,
-                            const payments::PaymentsNetworkInterface::
-                                GetDetailsForEnrollmentResponseDetails&)>
+                            const GetDetailsForEnrollmentResponseDetails&)>
         callback) {
   get_details_for_enrollment_request_details_ = std::move(request_details);
 }
 
 void TestPaymentsNetworkInterface::UpdateVirtualCardEnrollment(
-    const TestPaymentsNetworkInterface::
-        UpdateVirtualCardEnrollmentRequestDetails& request_details,
+    const UpdateVirtualCardEnrollmentRequestDetails& request_details,
     base::OnceCallback<void(PaymentsRpcResult)> callback) {
   update_virtual_card_enrollment_request_details_ = std::move(request_details);
   std::move(callback).Run(update_virtual_card_enrollment_result_.value_or(
@@ -190,8 +185,7 @@ void TestPaymentsNetworkInterface::SetFidoRequestOptionsInUnmaskDetails(
 }
 
 void TestPaymentsNetworkInterface::SetUploadCardResponseDetailsForUploadCard(
-    const PaymentsNetworkInterface::UploadCardResponseDetails&
-        upload_card_response_details) {
+    const UploadCardResponseDetails& upload_card_response_details) {
   upload_card_response_details_ = upload_card_response_details;
 }
 

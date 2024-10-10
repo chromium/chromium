@@ -348,7 +348,7 @@ void IbanSaveManager::SendUploadRequest(const Iban& import_candidate,
   if (observer_for_testing_) {
     observer_for_testing_->OnSentUploadRequest();
   }
-  payments::PaymentsNetworkInterface::UploadIbanRequestDetails details;
+  payments::UploadIbanRequestDetails details;
   details.app_locale = client_->GetPersonalDataManager()->app_locale();
   details.billable_service_number =
       payments::kUploadPaymentMethodBillableServiceNumber;

@@ -177,7 +177,7 @@ bool CreditCardFidoAuthenticator::IsUserOptedIn() {
 }
 
 UserOptInIntention CreditCardFidoAuthenticator::GetUserOptInIntention(
-    payments::PaymentsNetworkInterface::UnmaskDetails& unmask_details) {
+    payments::UnmaskDetails& unmask_details) {
   // This local pref can be affected by the user toggling on the settings page.
   // And payments might not update in time. We derive user opt in/out intention
   // when we see the mismatch.
@@ -359,23 +359,23 @@ void CreditCardFidoAuthenticator::MakeCredential(
 
 void CreditCardFidoAuthenticator::OptChange(
     base::Value::Dict authenticator_response) {
-  payments::PaymentsNetworkInterface::OptChangeRequestDetails request_details;
+  payments::OptChangeRequestDetails request_details;
   request_details.app_locale =
       autofill_client_->GetPersonalDataManager()->app_locale();
 
   switch (current_flow_) {
     case OPT_IN_WITH_CHALLENGE_FLOW:
     case OPT_IN_FETCH_CHALLENGE_FLOW:
-      request_details.reason = payments::PaymentsNetworkInterface::
-          OptChangeRequestDetails::ENABLE_FIDO_AUTH;
+      request_details.reason =
+          payments::OptChangeRequestDetails::ENABLE_FIDO_AUTH;
       break;
     case OPT_OUT_FLOW:
-      request_details.reason = payments::PaymentsNetworkInterface::
-          OptChangeRequestDetails::DISABLE_FIDO_AUTH;
+      request_details.reason =
+          payments::OptChangeRequestDetails::DISABLE_FIDO_AUTH;
       break;
     case FOLLOWUP_AFTER_CVC_AUTH_FLOW:
-      request_details.reason = payments::PaymentsNetworkInterface::
-          OptChangeRequestDetails::ADD_CARD_FOR_FIDO_AUTH;
+      request_details.reason =
+          payments::OptChangeRequestDetails::ADD_CARD_FOR_FIDO_AUTH;
       break;
     default:
       NOTREACHED_IN_MIGRATION();
@@ -461,7 +461,7 @@ void CreditCardFidoAuthenticator::OnDidMakeCredential(
 
 void CreditCardFidoAuthenticator::OnDidGetOptChangeResult(
     payments::PaymentsAutofillClient::PaymentsRpcResult result,
-    payments::PaymentsNetworkInterface::OptChangeResponseDetails& response) {
+    payments::OptChangeResponseDetails& response) {
   DCHECK(current_flow_ == OPT_IN_FETCH_CHALLENGE_FLOW ||
          current_flow_ == OPT_OUT_FLOW ||
          current_flow_ == OPT_IN_WITH_CHALLENGE_FLOW ||

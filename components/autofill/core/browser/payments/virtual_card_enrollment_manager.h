@@ -12,7 +12,7 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/strike_databases/payments/virtual_card_enrollment_strike_database.h"
 #include "ui/gfx/geometry/rect.h"
@@ -131,8 +131,7 @@ class VirtualCardEnrollmentManager {
       // GetDetailsForEnrollmentResponseDetails from the
       // UploadCardResponseDetails, so we can then skip the
       // GetDetailsForEnroll request in the Virtual Card Enrollment flow.
-      std::optional<payments::PaymentsNetworkInterface::
-                        GetDetailsForEnrollmentResponseDetails>
+      std::optional<payments::GetDetailsForEnrollmentResponseDetails>
           get_details_for_enrollment_response_details = std::nullopt,
       // |user_prefs| will be populated if we are in the Android settings page,
       // to then be used for loading risk data. Otherwise it will always be
@@ -304,8 +303,7 @@ class VirtualCardEnrollmentManager {
   // current process' state.
   void OnDidGetDetailsForEnrollResponse(
       payments::PaymentsAutofillClient::PaymentsRpcResult result,
-      const payments::PaymentsNetworkInterface::
-          GetDetailsForEnrollmentResponseDetails& response);
+      const payments::GetDetailsForEnrollmentResponseDetails& response);
 
   // Sets the corresponding fields in |state_| from the
   // GetDetailsForEnrollmentResponseDetails in |response|. This function is used
@@ -314,8 +312,7 @@ class VirtualCardEnrollmentManager {
   // GetDetailsForEnrollmentResponseDetails is returned in the upload card
   // response.
   void SetGetDetailsForEnrollmentResponseDetails(
-      const payments::PaymentsNetworkInterface::
-          GetDetailsForEnrollmentResponseDetails& response);
+      const payments::GetDetailsForEnrollmentResponseDetails& response);
 
   // Should always be called right before showing virtual card enrollment UI.
   // This function attempts to set the card art image in |state_|, and if the
@@ -331,9 +328,8 @@ class VirtualCardEnrollmentManager {
   // Returns true if the passed in GetDetailsForEnrollmentResponseDetails is
   // valid.
   bool IsValidGetDetailsForEnrollmentResponseDetails(
-      const payments::PaymentsNetworkInterface::
-          GetDetailsForEnrollmentResponseDetails&
-              get_details_for_enrollment_response_details);
+      const payments::GetDetailsForEnrollmentResponseDetails&
+          get_details_for_enrollment_response_details);
 
   FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest, Enroll);
   FRIEND_TEST_ALL_PREFIXES(VirtualCardEnrollmentManagerTest,

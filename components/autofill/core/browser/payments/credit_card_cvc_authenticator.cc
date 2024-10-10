@@ -88,7 +88,7 @@ void CreditCardCvcAuthenticator::OnFullCardRequestSucceeded(
   if (!requester_)
     return;
 
-  payments::PaymentsNetworkInterface::UnmaskResponseDetails response =
+  payments::UnmaskResponseDetails response =
       full_card_request.unmask_response_details();
   requester_->OnCvcAuthenticationComplete(
       CvcAuthenticationResponse()
