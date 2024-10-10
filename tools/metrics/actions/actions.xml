@@ -9196,6 +9196,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="CustomTabs.ToolbarOpenInBrowserClicked">
+  <owner>ender@google.com</owner>
+  <description>
+    User tapped the Open in Browser button on the toolbar in custom tabs. Note
+    that taps on overflow menu item with same function are recorded under
+    CustomTabsMenuOpenInChrome.
+  </description>
+</action>
+
 <action name="CustomTabsCustomActionButtonClick">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>

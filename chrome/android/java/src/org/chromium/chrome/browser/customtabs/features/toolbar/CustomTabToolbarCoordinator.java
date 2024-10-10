@@ -173,6 +173,7 @@ public class CustomTabToolbarCoordinator {
                             /* shareDirectly= */ false,
                             ShareDelegate.ShareOrigin.CUSTOM_TAB_SHARE_BUTTON);
         } else if (params.getType() == CustomButtonParams.ButtonType.CCT_OPEN_IN_BROWSER_BUTTON) {
+            RecordUserAction.record("CustomTabs.ToolbarOpenInBrowserClicked");
             // Need to notify *before* opening in browser, to ensure engagement signal will be fired
             // correctly.
             mConnection.notifyOpenInBrowser(mIntentDataProvider.getSession(), tab);
