@@ -97,8 +97,6 @@ _NEGATIVE_FILTER = [
     # crbug.com/chromedriver/4362
     'BidiTest.testSwitchWindows',
     'BidiTest.testOpenMultipleTabsInJavaScript',
-    # crbug.com/chromedriver/4513
-    'ChromeDriverSiteIsolation.testClickNavigateRemoteToSameRemote',
     # crbug.com/350916212
     'BidiTest.testFocusInFirstTab',
     # crbug.com/372153090
