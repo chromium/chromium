@@ -181,6 +181,9 @@ def _compute_edits(
       case 'swarming':
         anonymous_mixin_builder['swarming'] = values.convert_swarming(value)
 
+      case 'use_swarming':
+        settings_builder[key] = values.convert_direct(value)
+
       case _:
         raise Exception(f'unhandled key in builder config: "{key}"')
 
