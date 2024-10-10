@@ -114,6 +114,46 @@ def _test_expansion(*, spec, source):
         mixins_to_ignore = set(),
     )
 
+def _replace_args(args, replacements):
+    new_args = []
+    skip = False
+    for arg in args:
+        # This is the value for a 2-argument flag, it was handled in the
+        # previous iteration
+        if skip:
+            skip = False
+            continue
+
+        # The flag might be a magic arg, which is a struct not a string
+        flag = arg
+        if type(arg) == type("") and "=" in arg:
+            flag = arg.split("=", 1)[0]
+
+        if flag not in replacements:
+            new_args.append(arg)
+            continue
+
+        # This is the behavior from generate_buildbot_json.py:
+        # * If the replacement value is None, then remove the flag argument,
+        #   there is no support for removing a flag that has a separate value
+        #   argument
+        # * If the replacement value is not None, then if it's a separate flag
+        #   and value, replace it with a separate flag and the replacement
+        #   value, otherwise replace it with --flag=replacement_value
+        value = replacements[flag]
+        if value != None:
+            # Separate flag and value
+            if flag == arg:
+                new_args.append(flag)
+                new_args.append(value)
+                skip = True
+            else:
+                new_args.append("{}={}".format(flag, value))
+
+    # TODO: crbug.com/40258588 - Check that all replacements are used, output an
+    # error message indicating the bundle, test and attribute being worked on
+    return new_args
+
 def _get_bundle_resolver():
     def resolved_bundle(*, additional_compile_targets, test_expansion_by_name):
         return struct(
@@ -254,6 +294,20 @@ def _get_bundle_resolver():
                 # from the parent to the child
                 for mixin in graph.children(per_test_modification.key, _targets_nodes.MIXIN.kind, graph.DEFINITION_ORDER):
                     update_spec_with_mixin(name, test_expansion_by_name[name], mixin)
+
+                replacements = per_test_modification.props.replacements
+                update = {}
+                test_expansion = test_expansion_by_name[name]
+                spec = test_expansion.spec
+                for a in dir(replacements):
+                    args_to_replace = getattr(replacements, a)
+                    if not args_to_replace:
+                        continue
+                    update[a] = _replace_args(spec.value[a], args_to_replace)
+                if update:
+                    spec_value = dict(spec.value)
+                    spec_value.update(update)
+                    test_expansion_by_name[name] = structs.evolve(test_expansion, spec = structs.evolve(spec, value = spec_value))
 
             resolved_bundle_by_bundle_node[n] = resolved_bundle(
                 additional_compile_targets = additional_compile_targets,

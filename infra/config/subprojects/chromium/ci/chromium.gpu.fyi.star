@@ -1917,6 +1917,76 @@ ci.thin_tester(
         ),
         run_tests_serially = True,
     ),
+    targets = targets.bundle(
+        targets = [
+            "gpu_fyi_win_gtests",
+            "gpu_fyi_win_release_telemetry_tests",
+        ],
+        mixins = [
+            "win11_qualcomm_adreno_690_stable",
+        ],
+        per_test_modifications = {
+            "context_lost_passthrough_graphite_tests": targets.remove(
+                reason = "Test is not high priority and win11/arm has limited capacity.",
+            ),
+            "context_lost_passthrough_tests": targets.per_test_modification(
+                mixins = targets.mixin(
+                    # These devices have issues running these tests in parallel.
+                    args = [
+                        "--jobs=1",
+                    ],
+                ),
+                replacements = targets.replacements(
+                    # Magic substitution happens after regular replacement, so remove it
+                    # now since we are manually applying the number of jobs above.
+                    args = {
+                        targets.magic_args.GPU_PARALLEL_JOBS: None,
+                    },
+                ),
+            ),
+            "gl_unittests": targets.mixin(
+                args = [
+                    # crbug.com/1523061
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/win.win_arm64.gl_unittests.filter",
+                ],
+            ),
+            "services_webnn_unittests": targets.mixin(
+                args = [
+                    # crbug.com/1522972
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/win.win_arm64.services_webnn_unittests.filter",
+                ],
+            ),
+            "webcodecs_tests": targets.per_test_modification(
+                mixins = targets.mixin(
+                    # These devices have issues running these tests in parallel.
+                    # TODO(crbug.com/346406092): Once addressed, remove this block.
+                    args = [
+                        "--jobs=1",
+                    ],
+                ),
+                replacements = targets.replacements(
+                    # Magic substitution happens after regular replacement, so remove it
+                    # now since we are manually applying the number of jobs above.
+                    args = {
+                        targets.magic_args.GPU_PARALLEL_JOBS: None,
+                    },
+                ),
+            ),
+            "webgl_conformance_d3d9_passthrough_tests": targets.remove(
+                reason = "Per discussion on crbug.com/1523698, we aren't interested in testing D3D9 on this newer hardware.",
+            ),
+            "webgl_conformance_vulkan_passthrough_tests": targets.remove(
+                reason = "Vulkan is not supported on these devices.",
+            ),
+            "xr_browser_tests": targets.remove(
+                reason = "No Windows arm64 devices currently support XR features, so don't bother running related tests.",
+            ),
+        },
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE,
+        os_type = targets.os_type.WINDOWS,
+    ),
     console_view_entry = consoles.console_view_entry(
         category = "Windows|11|arm64|Qualcomm",
         short_name = "rel",

@@ -953,12 +953,6 @@
       'Mac FYI Retina ASAN (AMD)',
     ],
   },
-  'context_lost_passthrough_graphite_tests': {
-    'remove_from': [
-      # Test is not high priority and win11/arm has limited capacity.
-      'Win11 FYI arm64 Release (Qualcomm Adreno 690)',
-    ],
-  },
   'context_lost_passthrough_tests': {
     'modifications': {
       'Win10 FYI x64 Experimental Release (Intel)': {
@@ -968,22 +962,9 @@
           '--jobs=2',
         ],
       },
-      'Win11 FYI arm64 Release (Qualcomm Adreno 690)': {
-        'args': [
-          # These devices have issues running these tests in parallel.
-          '--jobs=1',
-        ],
-      },
     },
     'replacements': {
       'Win10 FYI x64 Experimental Release (Intel)': {
-        'args': {
-          # Magic substitution happens after regular replacement, so remove it
-          # now since we are manually applying the number of jobs above.
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs': None,
-        },
-      },
-      'Win11 FYI arm64 Release (Qualcomm Adreno 690)': {
         'args': {
           # Magic substitution happens after regular replacement, so remove it
           # now since we are manually applying the number of jobs above.
@@ -1448,12 +1429,6 @@
       'Win10 FYI x64 Release (AMD RX 5500 XT)': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/win.amd.5500xt.gl_unittests.filter',
-        ],
-      },
-      'Win11 FYI arm64 Release (Qualcomm Adreno 690)': {
-        'args': [
-          # crbug.com/1523061
-          '--test-launcher-filter-file=../../testing/buildbot/filters/win.win_arm64.gl_unittests.filter',
         ],
       },
     },
@@ -2173,16 +2148,6 @@
       },
     }
   },
-  'services_webnn_unittests': {
-    'modifications': {
-      'Win11 FYI arm64 Release (Qualcomm Adreno 690)': {
-        'args': [
-          # crbug.com/1522972
-          '--test-launcher-filter-file=../../testing/buildbot/filters/win.win_arm64.services_webnn_unittests.filter',
-        ],
-      },
-    },
-  },
   'sync_integration_tests': {
     'modifications': {
       'Linux ASan LSan Tests (1)': {
@@ -2559,23 +2524,9 @@
           '--jobs=2',
         ],
       },
-      'Win11 FYI arm64 Release (Qualcomm Adreno 690)': {
-        'args': [
-          # These devices have issues running these tests in parallel.
-          # TODO(crbug.com/346406092): Once addressed, remove this block.
-          '--jobs=1',
-        ],
-      },
     },
     'replacements': {
       'Win10 FYI x64 Experimental Release (Intel)': {
-        'args': {
-          # Magic substitution happens after regular replacement, so remove it
-          # now since we are manually applying the number of jobs above.
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs': None,
-        },
-      },
-      'Win11 FYI arm64 Release (Qualcomm Adreno 690)': {
         'args': {
           # Magic substitution happens after regular replacement, so remove it
           # now since we are manually applying the number of jobs above.
@@ -2709,13 +2660,6 @@
       },
     },
   },
-  'webgl_conformance_d3d9_passthrough_tests': {
-    'remove_from': [
-      # Per discussion on crbug.com/1523698, we aren't interested in testing
-      # D3D9 on this newer hardware.
-      'Win11 FYI arm64 Release (Qualcomm Adreno 690)',
-    ],
-  },
   'webgl_conformance_metal_passthrough_ganesh_tests': {
     'remove_from': [
       # crbug.com/1270755
@@ -2752,12 +2696,6 @@
         },
       },
     },
-  },
-  'webgl_conformance_vulkan_passthrough_tests': {
-    'remove_from': [
-      # Vulkan is not supported on these devices.
-      'Win11 FYI arm64 Release (Qualcomm Adreno 690)',
-    ],
   },
   'webgpu_blink_web_tests': {
     'remove_from': [
@@ -3163,11 +3101,6 @@
     }
   },
   'xr_browser_tests': {
-    'remove_from': [
-      # No Windows arm64 devices currently support XR features, so don't bother
-      # running related tests.
-      'Win11 FYI arm64 Release (Qualcomm Adreno 690)',
-    ],
     'modifications': {
       'Win10 FYI x64 Experimental Release (Intel)': {
         'args': [

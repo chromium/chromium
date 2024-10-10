@@ -2414,6 +2414,7 @@
     #   Android FYI Release (Pixel 6)
     #   Android FYI Release (Samsung S23)
     #   GPU FYI Android arm64 Builder
+    #   Win11 FYI arm64 Release (Qualcomm Adreno 690)
     'name': 'chromium.gpu.fyi',
     'forbid_script_tests': True,
     'mixins': [
@@ -2979,17 +2980,6 @@
         'test_suites': {
           'gtest_tests': 'gpu_fyi_win_gtests',
           'isolated_scripts': 'gpu_fyi_win_optional_isolated_scripts',
-          'gpu_telemetry_tests': 'gpu_fyi_win_release_telemetry_tests',
-        },
-      },
-      'Win11 FYI arm64 Release (Qualcomm Adreno 690)': {
-        'browser_config': 'release',
-        'os_type': 'win',
-        'mixins': [
-          "win11_qualcomm_adreno_690_stable",
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_win_gtests',
           'gpu_telemetry_tests': 'gpu_fyi_win_release_telemetry_tests',
         },
       },

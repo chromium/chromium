@@ -2064,6 +2064,7 @@ targets.mixin(
 
 targets.mixin(
     name = "win11_qualcomm_adreno_690_stable",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "display_attached": "1",
