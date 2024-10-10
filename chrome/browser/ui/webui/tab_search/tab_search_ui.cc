@@ -154,6 +154,8 @@ TabSearchUI::TabSearchUI(content::WebUI* web_ui)
       {"thumbsDown", IDS_TAB_ORGANIZATION_THUMBS_DOWN},
       {"thumbsUp", IDS_TAB_ORGANIZATION_THUMBS_UP},
       // Declutter UI strings
+      {"declutterEmptyBody", IDS_DECLUTTER_EMPTY_BODY},
+      {"declutterEmptyTitle", IDS_DECLUTTER_EMPTY_TITLE},
       {"declutterTimestamp", IDS_DECLUTTER_TIMESTAMP},
       {"declutterTitle", IDS_DECLUTTER_TITLE},
       // Selector UI strings

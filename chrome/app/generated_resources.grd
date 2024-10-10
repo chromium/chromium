@@ -9716,6 +9716,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_DECLUTTER_BODY" desc="The body text for the declutter UI">
         These tabs have been unused for <ph name="COUNT">$1<ex>7</ex></ph> or more days.
       </message>
+      <message name="IDS_DECLUTTER_EMPTY_TITLE" desc="The header text for the declutter empty state UI">
+        Your tabs are tidy!
+      </message>
+      <message name="IDS_DECLUTTER_EMPTY_BODY" desc="The body text for the declutter empty state UI">
+        No inactive tabs right now
+      </message>
       <message name="IDS_TOOLTIP_TAB_DECLUTTER" desc="The tooltip for the Tab Declutter button.">
         Close unused tabs?
       </message>

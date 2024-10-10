@@ -4,8 +4,8 @@
 
 import type {DeclutterPageElement, Tab} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createTab} from './tab_search_test_data.js';
 import {TestTabSearchApiProxy} from './test_tab_search_api_proxy.js';
@@ -14,11 +14,11 @@ suite('DeclutterPageTest', () => {
   let declutterPage: DeclutterPageElement;
   let testApiProxy: TestTabSearchApiProxy;
 
-  function declutterPageSetup() {
+  function declutterPageSetup(tabCount: number = 3) {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     testApiProxy = new TestTabSearchApiProxy();
-    const staleTabs = createStaleTabs();
+    const staleTabs = createStaleTabs(tabCount);
     testApiProxy.setStaleTabs(staleTabs);
     TabSearchApiProxyImpl.setInstance(testApiProxy);
 
@@ -27,20 +27,22 @@ suite('DeclutterPageTest', () => {
     return microtasksFinished();
   }
 
-  function createStaleTabs(): Tab[] {
-    return [
-      createTab({title: 'Tab 1', url: {url: 'https://tab-1.com/'}}),
-      createTab({title: 'Tab 2', url: {url: 'https://tab-2.com/'}}),
-      createTab({title: 'Tab 3', url: {url: 'https://tab-3.com/'}}),
-    ];
+  function createStaleTabs(count: number): Tab[] {
+    const tabList: Tab[] = [];
+    for (let i = 0; i < count; i++) {
+      tabList.push(
+          createTab({title: 'Tab ' + count, url: {url: 'https://tab.com/'}}));
+    }
+    return tabList;
   }
 
   test('Shows correct tab count', async () => {
-    await declutterPageSetup();
+    const tabCount = 3;
+    await declutterPageSetup(tabCount);
     assertEquals(1, testApiProxy.getCallCount('getStaleTabs'));
     const staleTabElements =
         declutterPage.shadowRoot!.querySelectorAll('tab-search-item');
-    assertEquals(3, staleTabElements.length);
+    assertEquals(tabCount, staleTabElements.length);
   });
 
   test('Closes tabs', async () => {
@@ -71,5 +73,25 @@ suite('DeclutterPageTest', () => {
 
     const [tabId] = await testApiProxy.whenCalled('excludeFromStaleTabs');
     assertEquals(staleTabElement.data.tab.tabId, tabId);
+  });
+
+  test('Shows tab list on nonzero stale tabs', async () => {
+    await declutterPageSetup(1);
+    const tabList = declutterPage.shadowRoot!.querySelector('#tabList');
+    assertTrue(!!tabList);
+    assertTrue(isVisible(tabList));
+    const emptyState =
+        declutterPage.shadowRoot!.querySelector('.empty-content');
+    assertFalse(!!emptyState);
+  });
+
+  test('Shows empty state on zero stale tabs', async () => {
+    await declutterPageSetup(0);
+    const tabList = declutterPage.shadowRoot!.querySelector('#tabList');
+    assertFalse(!!tabList);
+    const emptyState =
+        declutterPage.shadowRoot!.querySelector('.empty-content');
+    assertTrue(!!emptyState);
+    assertTrue(isVisible(emptyState));
   });
 });

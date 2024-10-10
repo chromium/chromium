@@ -20,24 +20,35 @@ export function getHtml(this: DeclutterPageElement) {
                             ''}
       <div id="headerText">
         <div class="title">$i18n{declutterTitle}</div>
-        <div class="subheading">$i18n{declutterBody}</div>
+        ${this.staleTabDatas_.length === 0 ? '' : html`
+          <div class="subheading">$i18n{declutterBody}</div>
+        `}
       </div>
     </div>
-    <div id="scrollable">
-      <div id="tabList">
-        ${this.staleTabDatas_.map((item, index) => html`
-            <tab-search-item class="mwb-list-item" .data="${item}"
-                close-button-icon="tab-search:remove"
-                role="option"
-                data-index="${index}"
-                @close="${this.onTabRemove_}"
-                hide-url>
-            </tab-search-item>
-        `)}
+    ${
+      this.staleTabDatas_.length === 0 ? html`
+      <div class="empty-content">
+        <div class="empty-title">$i18n{declutterEmptyTitle}</div>
+        <div class="empty-subheading">$i18n{declutterEmptyBody}</div>
       </div>
-    </div>
-    <cr-button class="action-button" @click="${this.onCloseTabsClick_}">
-      Close tabs
-    </cr-button>
+    ` :
+                                         html`
+      <div id="scrollable">
+        <div id="tabList">
+          ${this.staleTabDatas_.map((item, index) => html`
+              <tab-search-item class="mwb-list-item" .data="${item}"
+                  close-button-icon="tab-search:remove"
+                  role="option"
+                  data-index="${index}"
+                  @close="${this.onTabRemove_}"
+                  hide-url>
+              </tab-search-item>
+          `)}
+        </div>
+      </div>
+      <cr-button class="action-button" @click="${this.onCloseTabsClick_}">
+        Close tabs
+      </cr-button>
+    `}
   </div><!--_html_template_end_-->`;
 }

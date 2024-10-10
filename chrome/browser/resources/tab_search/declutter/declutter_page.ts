@@ -25,12 +25,6 @@ function getEventTargetIndex(e: Event): number {
   return Number((e.currentTarget as HTMLElement).dataset['index']);
 }
 
-export interface DeclutterPageElement {
-  $: {
-    scrollable: HTMLElement,
-  };
-}
-
 export class DeclutterPageElement extends CrLitElement {
   static get is() {
     return 'declutter-page';
@@ -99,7 +93,10 @@ export class DeclutterPageElement extends CrLitElement {
   }
 
   override firstUpdated() {
-    this.$.scrollable.addEventListener('scroll', this.updateScroll_.bind(this));
+    const scrollable = this.shadowRoot!.querySelector('#scrollable');
+    if (scrollable) {
+      scrollable.addEventListener('scroll', this.updateScroll_.bind(this));
+    }
   }
 
   logCtrValue(event: DeclutterCTREvent) {
@@ -110,14 +107,16 @@ export class DeclutterPageElement extends CrLitElement {
 
   private async updateScroll_() {
     await this.updateComplete;
-    const scrollable = this.$.scrollable;
-    scrollable.classList.toggle(
-        'can-scroll', scrollable.clientHeight < scrollable.scrollHeight);
-    scrollable.classList.toggle('is-scrolled', scrollable.scrollTop > 0);
-    scrollable.classList.toggle(
-        'scrolled-to-bottom',
-        scrollable.scrollTop + MAX_SCROLLABLE_HEIGHT >=
-            scrollable.scrollHeight);
+    const scrollable = this.shadowRoot!.querySelector('#scrollable');
+    if (scrollable) {
+      scrollable.classList.toggle(
+          'can-scroll', scrollable.clientHeight < scrollable.scrollHeight);
+      scrollable.classList.toggle('is-scrolled', scrollable.scrollTop > 0);
+      scrollable.classList.toggle(
+          'scrolled-to-bottom',
+          scrollable.scrollTop + MAX_SCROLLABLE_HEIGHT >=
+              scrollable.scrollHeight);
+    }
   }
 
   protected onBackClick_() {
