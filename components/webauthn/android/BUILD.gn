@@ -31,6 +31,7 @@ android_library("java") {
   ]
   sources = [
     "java/src/org/chromium/components/webauthn/AuthenticationContextProvider.java",
+    "java/src/org/chromium/components/webauthn/AuthenticatorConstants.java",
     "java/src/org/chromium/components/webauthn/AuthenticatorFactory.java",
     "java/src/org/chromium/components/webauthn/AuthenticatorImpl.java",
     "java/src/org/chromium/components/webauthn/Barrier.java",
@@ -181,6 +182,7 @@ source_set("unit_tests") {
 
 robolectric_library("junit") {
   sources = [
+    "junit/src/org/chromium/components/webauthn/AuthenticatorImplTest.java",
     "junit/src/org/chromium/components/webauthn/BarrierTest.java",
     "junit/src/org/chromium/components/webauthn/Fido2CredentialRequestRobolectricTest.java",
     "junit/src/org/chromium/components/webauthn/ShadowWebContentStatics.java",
@@ -210,6 +212,7 @@ robolectric_library("junit") {
     "//content/public/android:content_java",
     "//net/android:net_java",
     "//services/device/public/java:device_feature_list_java",
+    "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/blink/public/mojom:android_mojo_bindings_java",
     "//third_party/google-truth:google_truth_java",

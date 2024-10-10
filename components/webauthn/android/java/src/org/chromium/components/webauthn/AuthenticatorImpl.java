@@ -26,6 +26,7 @@ import org.chromium.blink.mojom.PaymentOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialReportOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
+import org.chromium.blink.mojom.WebAuthnClientCapability;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.mojo.system.MojoException;
@@ -211,6 +212,17 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
         callback.call(AuthenticatorStatus.NOT_IMPLEMENTED, null);
     }
 
+    private boolean couldSupportConditionalMediation() {
+        return GmsCoreUtils.isWebauthnSupported()
+                && isChrome(mWebContents)
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P;
+    }
+
+    private boolean couldSupportUvpaa() {
+        return GmsCoreUtils.isWebauthnSupported()
+                && (isChrome(mWebContents) || GmsCoreUtils.isResultReceiverSupported());
+    }
+
     @Override
     public void isUserVerifyingPlatformAuthenticatorAvailable(
             final IsUserVerifyingPlatformAuthenticatorAvailable_Response callback) {
@@ -221,8 +233,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
                     callback.call(isUvpaa);
                 };
 
-        if (!GmsCoreUtils.isWebauthnSupported()
-                || (!isChrome(mWebContents) && !GmsCoreUtils.isResultReceiverSupported())) {
+        if (!couldSupportUvpaa()) {
             decoratedCallback.call(false);
             return;
         }
@@ -234,7 +245,53 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
 
     @Override
     public void getClientCapabilities(final GetClientCapabilities_Response callback) {
-        // TODO(crbug.com/360327828): Implement.
+        ArrayList<WebAuthnClientCapability> capabilities = new ArrayList<>();
+        capabilities.add(
+                createWebAuthnClientCapability(
+                        AuthenticatorConstants.CAPABILITY_RELATED_ORIGINS, true));
+        // This assumes GMSCore is available and up-to-date, hence this should report "true". This
+        // assumption should be revisited if it proves insufficient.
+        capabilities.add(
+                createWebAuthnClientCapability(
+                        AuthenticatorConstants.CAPABILITY_HYBRID_TRANSPORT, true));
+        // passkeyPlatformAuthenticator is supported if (IsUVPAA OR hybridTransport) is supported.
+        // Since we assume that hybridTransport is always true on Android,
+        // passkeyPlatformAuthenticator is also always true.
+        capabilities.add(
+                createWebAuthnClientCapability(AuthenticatorConstants.CAPABILITY_PPAA, true));
+
+        if (!couldSupportConditionalMediation() && !couldSupportUvpaa()) {
+            capabilities.add(
+                    createWebAuthnClientCapability(
+                            AuthenticatorConstants.CAPABILITY_CONDITIONAL_GET, false));
+            capabilities.add(
+                    createWebAuthnClientCapability(AuthenticatorConstants.CAPABILITY_UVPAA, false));
+            callback.call(capabilities.toArray(new WebAuthnClientCapability[0]));
+            return;
+        }
+
+        getFido2CredentialRequest()
+                .handleIsUserVerifyingPlatformAuthenticatorAvailableRequest(
+                        isUvpaa -> {
+                            capabilities.add(
+                                    createWebAuthnClientCapability(
+                                            AuthenticatorConstants.CAPABILITY_CONDITIONAL_GET,
+                                            couldSupportConditionalMediation() && isUvpaa));
+                            capabilities.add(
+                                    createWebAuthnClientCapability(
+                                            AuthenticatorConstants.CAPABILITY_UVPAA,
+                                            couldSupportUvpaa() && isUvpaa));
+                            callback.call(capabilities.toArray(new WebAuthnClientCapability[0]));
+                        });
+    }
+
+    // Helper function to create WebAuthnClientCapability instances
+    private WebAuthnClientCapability createWebAuthnClientCapability(
+            String name, boolean supported) {
+        WebAuthnClientCapability capability = new WebAuthnClientCapability();
+        capability.name = name;
+        capability.supported = supported;
+        return capability;
     }
 
     /**
@@ -268,9 +325,7 @@ public final class AuthenticatorImpl implements Authenticator, AuthenticationCon
     @Override
     public void isConditionalMediationAvailable(
             final IsConditionalMediationAvailable_Response callback) {
-        if (!GmsCoreUtils.isWebauthnSupported()
-                || Build.VERSION.SDK_INT < Build.VERSION_CODES.P
-                || !isChrome(mWebContents)) {
+        if (!couldSupportConditionalMediation()) {
             callback.call(false);
             return;
         }

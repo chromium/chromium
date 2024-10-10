@@ -45,4 +45,8 @@ public class GmsCoreUtils {
     static boolean isResultReceiverSupported() {
         return getGmsCoreVersion() >= GMSCORE_MIN_VERSION_RESULT_RECEIVER;
     }
+
+    public static void setGmsCoreVersionForTesting(int version) {
+        sGmsCorePackageVersion = version;
+    }
 }
