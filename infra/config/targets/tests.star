@@ -45,6 +45,7 @@ targets.tests.gtest_test(
 
 targets.tests.gpu_telemetry_test(
     name = "android_webview_pixel_skia_gold_test",
+    is_android_webview = True,
     telemetry_test_name = "pixel",
     mixins = [
         "skia_gold_test",

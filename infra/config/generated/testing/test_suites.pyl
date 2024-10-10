@@ -3659,24 +3659,6 @@
       },
     },
 
-    'gpu_webcodecs_validating_graphite_telemetry_test': {
-      'webcodecs_graphite_tests': {
-        'test_common': {
-          'mixins': [
-            'has_native_resultdb_integration',
-          ],
-        },
-        'telemetry_test_name': 'webcodecs',
-        'mixins': [
-          'gpu_integration_test_common_args',
-        ],
-        'args': [
-          '--extra-browser-args=--use-cmd-decoder=validating --enable-features=SkiaGraphite',
-        ],
-        'ci_only': True,
-      },
-    },
-
     'gpu_webcodecs_validating_telemetry_test': {
       'webcodecs_tests': {
         'test_common': {
@@ -3907,27 +3889,6 @@
         ],
         'swarming': {
           'shards': 2,
-        },
-      },
-    },
-
-    'gpu_webgl_conformance_gles_passthrough_graphite_telemetry_tests': {
-      'webgl_conformance_gles_passthrough_graphite_tests': {
-        'test_common': {
-          'mixins': [
-            'has_native_resultdb_integration',
-          ],
-        },
-        'telemetry_test_name': 'webgl1_conformance',
-        'mixins': [
-          'gpu_integration_test_common_args',
-        ],
-        'args': [
-          '--extra-browser-args=--use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu --enable-features=SkiaGraphite',
-          '$$MAGIC_SUBSTITUTION_GPUWebGLRuntimeFile',
-        ],
-        'swarming': {
-          'shards': 3,
         },
       },
     },
@@ -6379,14 +6340,6 @@
       'gpu_webgl_conformance_vulkan_passthrough_telemetry_tests',
     ],
 
-    'gpu_nexus5x_telemetry_tests': [
-      'gpu_common_and_optional_telemetry_tests',
-      'gpu_validating_telemetry_tests',
-      'gpu_webcodecs_validating_telemetry_test',
-      'gpu_webgl_conformance_gles_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_validating_telemetry_tests',
-    ],
-
     'gpu_nexus5x_telemetry_tests_v8': [
       'gpu_common_and_optional_telemetry_tests',
       'gpu_validating_telemetry_tests',
@@ -6401,20 +6354,6 @@
       'gpu_webcodecs_validating_telemetry_test',
       'gpu_webgl2_conformance_gles_passthrough_telemetry_tests',
       'gpu_webgl2_conformance_validating_telemetry_tests',
-      'gpu_webgl_conformance_gles_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_validating_telemetry_tests',
-    ],
-
-    'gpu_pixel_6_telemetry_tests': [
-      'gpu_common_and_optional_telemetry_tests',
-      'gpu_passthrough_graphite_telemetry_tests',
-      'gpu_passthrough_telemetry_tests',
-      'gpu_validating_telemetry_tests',
-      'gpu_webcodecs_validating_graphite_telemetry_test',
-      'gpu_webcodecs_validating_telemetry_test',
-      'gpu_webgl2_conformance_gles_passthrough_telemetry_tests',
-      'gpu_webgl2_conformance_validating_telemetry_tests',
-      'gpu_webgl_conformance_gles_passthrough_graphite_telemetry_tests',
       'gpu_webgl_conformance_gles_passthrough_telemetry_tests',
       'gpu_webgl_conformance_validating_telemetry_tests',
     ],

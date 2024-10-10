@@ -866,6 +866,7 @@ targets.mixin(
 
 targets.mixin(
     name = "gpu_samsung_s23_stable",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             # Unfortunately, "s23" is not exposed as a dimension. "dm1q" appears
@@ -1584,6 +1585,7 @@ targets.mixin(
 
 targets.mixin(
     name = "motorola_moto_g_power_5g",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "device_type": "devonn",

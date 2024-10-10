@@ -21,11 +21,12 @@ _BINARY_NAME_BY_BROWSER_CONFIG = {
     _targets_common.browser_config.ANDROID_WEBVIEW: "telemetry_gpu_integration_test_android_webview",
 }
 
-def _get_gpu_telemetry_test_binary_node(settings):
+def _get_gpu_telemetry_test_binary_node(settings, is_android_webview):
     if settings.is_android:
-        # TODO: crbug.com/40258588 - Handle equivalent of test_suites key
-        # android_webview_gpu_telemetry_tests: telemetry_gpu_integration_test_android_webview
-        binary_name = _BINARY_NAME_BY_BROWSER_CONFIG[settings.browser_config]
+        if is_android_webview:
+            binary_name = "telemetry_gpu_integration_test_android_webview"
+        else:
+            binary_name = _BINARY_NAME_BY_BROWSER_CONFIG[settings.browser_config]
     elif settings.is_fuchsia:
         binary_name = "telemetry_gpu_integration_test_fuchsia"
     else:
@@ -33,15 +34,19 @@ def _get_gpu_telemetry_test_binary_node(settings):
     return graph.node(_targets_nodes.BINARY.key(binary_name))
 
 def _gpu_telemetry_test_spec_init(node, settings):
-    binary_node = _get_gpu_telemetry_test_binary_node(settings)
+    is_android_webview = node.props.details.is_android_webview
+
+    binary_node = _get_gpu_telemetry_test_binary_node(settings, is_android_webview)
     spec_value = _isolated_script_test_spec_handler.init(node, settings, binary_node = binary_node)
+
+    browser_config = "android-webview-instrumentation" if is_android_webview else settings.browser_config
+    spec_value["browser_config"] = browser_config
     spec_value["telemetry_test_name"] = node.props.details.telemetry_test_name
+
     return spec_value
 
 def _gpu_telemetry_test_spec_finalize(builder_name, test_name, settings, spec_value):
-    browser_config = settings.browser_config
-    # TODO: crbug.com/40258588 - Handle browser for
-    # android_webview_gpu_telemetry_tests and cast_streaming_tests keys
+    browser_config = spec_value.pop("browser_config")
 
     extra_browser_args = []
 
@@ -100,6 +105,7 @@ def gpu_telemetry_test(
         *,
         name,
         telemetry_test_name = None,
+        is_android_webview = False,
         args = None,
         mixins = None):
     """Define a GPU telemetry test.
@@ -134,6 +140,7 @@ def gpu_telemetry_test(
             args = args,
             additional_fields = dict(
                 telemetry_test_name = telemetry_test_name,
+                is_android_webview = is_android_webview,
             ),
         ),
         mixins = mixins,

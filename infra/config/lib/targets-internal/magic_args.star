@@ -157,11 +157,11 @@ def _gpu_expected_vendor_id(_, settings, spec_value):
     # We don't specify GPU on things like Android and certain CrOS devices, so
     # default to 0.
     if not gpus:
-        return ["--expected-vendor-id", "0"]
+        vulkan_device = _get_android_vulkan_device(settings, spec_value)
+        if vulkan_device:
+            return ["--expected-vendor-id", vulkan_device.vendor]
 
-    vulkan_device = _get_android_vulkan_device(settings, spec_value)
-    if vulkan_device:
-        return ["--expected-vendor-id", vulkan_device.vendor]
+        return ["--expected-vendor-id", "0"]
 
     vendor_ids = set()
     for gpu_and_driver in gpus:
@@ -195,16 +195,16 @@ def _gpu_expected_device_id(_, settings, spec_value):
 
     # We don't specify GPU on things like Android/CrOS devices, so default to 0.
     if not gpus:
-        return ["--expected-device-id", "0"]
+        vulkan_device = _get_android_vulkan_device(settings, spec_value)
+        if vulkan_device:
+            device_ids = vulkan_device.device.split(",")
+            commands = []
+            for index, device_id in enumerate(device_ids):
+                commands.append("--expected-device-id")
+                commands.append(device_ids[index])
+            return commands
 
-    vulkan_device = _get_android_vulkan_device(settings, spec_value)
-    if vulkan_device:
-        device_ids = vulkan_device.device.split(",")
-        commands = []
-        for index, device_id in enumerate(device_ids):
-            commands.append("--expected-device-id")
-            commands.append(device_ids[index])
-        return commands
+        return ["--expected-device-id", "0"]
 
     device_ids = set()
     for gpu_and_driver in gpus:

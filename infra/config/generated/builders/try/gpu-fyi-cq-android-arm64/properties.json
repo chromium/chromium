@@ -82,7 +82,8 @@
           "project": "chromium"
         }
       ],
-      "retry_failed_shards": false
+      "retry_failed_shards": false,
+      "targets_spec_directory": "src/infra/config/generated/builders/try/gpu-fyi-cq-android-arm64/targets"
     }
   },
   "$build/flakiness": {

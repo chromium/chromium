@@ -400,17 +400,6 @@
       },
     },
   },
-  'gpu_samsung_s23_stable': {
-    'swarming': {
-      'dimensions': {
-        'device_type': 'dm1q',
-        'device_os': 'UP1A.231005.007',
-        'device_os_type': 'user',
-        'os': 'Android',
-        'pool': 'chromium.tests.gpu',
-      },
-    },
-  },
   'gpu_samsung_s24_stable': {
     'swarming': {
       'dimensions': {
@@ -887,18 +876,6 @@
           'revision': 'git_revision:a18b7d95d26f3c6bf9591978b19cf0ca8268ac7d',
         },
       ],
-    },
-  },
-  'motorola_moto_g_power_5g': {
-    'swarming': {
-      'dimensions': {
-        'device_type': 'devonn',
-        'device_os': 'T',
-        'device_os_flavor': 'motorola',
-        'device_os_type': 'user',
-        'os': 'Android',
-        'pool': 'chromium.tests.gpu',
-      },
     },
   },
   'no_gpu': {

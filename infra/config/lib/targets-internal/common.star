@@ -577,7 +577,7 @@ def _spec_finalize(builder_name, settings, spec_value, default_merge_script):
     # build type was not specified.
     if swarming and settings.is_android:
         dimensions = swarming.get("dimensions", {})
-        if dimensions.get("os") == "Android" and "device_type_os" not in dimensions:
+        if dimensions.get("os") == "Android" and "device_os_type" not in dimensions:
             swarming["dimensions"] = dimensions | {"device_os_type": "userdebug"}
     if swarming and not spec_value["merge"]:
         spec_value["merge"] = _merge(

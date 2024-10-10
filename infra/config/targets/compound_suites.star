@@ -830,17 +830,6 @@ targets.legacy_compound_suite(
 )
 
 targets.legacy_compound_suite(
-    name = "gpu_nexus5x_telemetry_tests",
-    basic_suites = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_validating_telemetry_tests",
-        "gpu_webcodecs_validating_telemetry_test",
-        "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_validating_telemetry_tests",
-    ],
-)
-
-targets.legacy_compound_suite(
     name = "gpu_nexus5x_telemetry_tests_v8",
     basic_suites = [
         "gpu_common_and_optional_telemetry_tests",
@@ -857,23 +846,6 @@ targets.legacy_compound_suite(
         "gpu_passthrough_telemetry_tests",
         "gpu_validating_telemetry_tests",
         "gpu_webcodecs_validating_telemetry_test",
-        "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_validating_telemetry_tests",
-        "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
-        "gpu_webgl2_conformance_validating_telemetry_tests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "gpu_pixel_6_telemetry_tests",
-    basic_suites = [
-        "gpu_passthrough_graphite_telemetry_tests",
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_passthrough_telemetry_tests",
-        "gpu_validating_telemetry_tests",
-        "gpu_webcodecs_validating_telemetry_test",
-        "gpu_webcodecs_validating_graphite_telemetry_test",
-        "gpu_webgl_conformance_gles_passthrough_graphite_telemetry_tests",
         "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
         "gpu_webgl_conformance_validating_telemetry_tests",
         "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",

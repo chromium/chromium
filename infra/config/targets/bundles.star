@@ -1159,6 +1159,73 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "gpu_nexus5x_telemetry_tests",
+    targets = [
+        "gpu_common_and_optional_telemetry_tests",
+        "gpu_validating_telemetry_tests",
+        "gpu_webcodecs_validating_telemetry_test",
+        "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
+        "gpu_webgl_conformance_validating_telemetry_tests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_pixel_6_telemetry_tests",
+    targets = [
+        "gpu_common_and_optional_telemetry_tests",
+        "gpu_passthrough_graphite_telemetry_tests",
+        "gpu_passthrough_telemetry_tests",
+        "gpu_validating_telemetry_tests",
+        "gpu_webcodecs_validating_graphite_telemetry_test",
+        "gpu_webcodecs_validating_telemetry_test",
+        "gpu_webgl2_conformance_gles_passthrough_telemetry_tests",
+        "gpu_webgl2_conformance_validating_telemetry_tests",
+        "gpu_webgl_conformance_gles_passthrough_graphite_telemetry_tests",
+        "gpu_webgl_conformance_gles_passthrough_telemetry_tests",
+        "gpu_webgl_conformance_validating_telemetry_tests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_webcodecs_validating_graphite_telemetry_test",
+    targets = [
+        "webcodecs_graphite_tests",
+    ],
+    per_test_modifications = {
+        "webcodecs_graphite_tests": [
+            targets.mixin(
+                args = [
+                    "--extra-browser-args=--use-cmd-decoder=validating --enable-features=SkiaGraphite",
+                ],
+                ci_only = True,
+            ),
+            "gpu_integration_test_common_args",
+        ],
+    },
+)
+
+targets.bundle(
+    name = "gpu_webgl_conformance_gles_passthrough_graphite_telemetry_tests",
+    targets = [
+        "webgl_conformance_gles_passthrough_graphite_tests",
+    ],
+    per_test_modifications = {
+        "webgl_conformance_gles_passthrough_graphite_tests": [
+            targets.mixin(
+                args = [
+                    "--extra-browser-args=--use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu --enable-features=SkiaGraphite",
+                    targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
+                ],
+                swarming = targets.swarming(
+                    shards = 3,
+                ),
+            ),
+            "gpu_integration_test_common_args",
+        ],
+    },
+)
+
+targets.bundle(
     name = "gpu_win_gtests",
     targets = [
         "gpu_angle_unit_gtests",

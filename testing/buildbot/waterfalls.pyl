@@ -2405,6 +2405,15 @@
     },
   },
   {
+    # The following builders in this group have been migrated to set their
+    # targets in the builders' declarations in
+    # //infra/config/subprojects/ci/chromium.gpu.fyi.star
+    #   Android FYI Experimental Release (Pixel 6)
+    #   Android FYI Release (Motorola Moto G Power 5G)
+    #   Android FYI Release (Nexus 5X)
+    #   Android FYI Release (Pixel 6)
+    #   Android FYI Release (Samsung S23)
+    #   GPU FYI Android arm64 Builder
     'name': 'chromium.gpu.fyi',
     'forbid_script_tests': True,
     'mixins': [
@@ -2413,36 +2422,6 @@
       'timeout_30m',
     ],
     'machines': {
-      'Android FYI Experimental Release (Pixel 6)': {
-        'browser_config': 'android-chromium',
-        'os_type': 'android',
-        'skip_merge_script': True,
-        'mixins': [
-          'has_native_resultdb_integration',
-          'gpu_pixel_6_experimental',
-          'limited_capacity_bot',
-        ],
-        # If the experimental configuration is the same as stable, this should
-        # only be running 'gpu_noop_sleep_telemetry_test'. Otherwise, this
-        # should be running the same tests as 'Android FYI Release (Pixel 6)'.
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_android_gtests',
-          'gpu_telemetry_tests': 'gpu_pixel_6_telemetry_tests',
-        },
-      },
-      'Android FYI Release (Motorola Moto G Power 5G)': {
-        'browser_config': 'android-chromium',
-        'os_type': 'android',
-        'skip_merge_script': True,
-        'mixins': [
-          'has_native_resultdb_integration',
-          'motorola_moto_g_power_5g',
-          'limited_capacity_bot',
-        ],
-        'test_suites': {
-          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test',
-        },
-      },
       'Android FYI Release (NVIDIA Shield TV)': {
         'browser_config': 'android-chromium',
         'os_type': 'android',
@@ -2454,20 +2433,6 @@
         'test_suites': {
           'gtest_tests': 'gpu_fyi_android_shieldtv_gtests',
           'gpu_telemetry_tests': 'gpu_common_android_telemetry_tests',
-        },
-      },
-      'Android FYI Release (Nexus 5X)': {
-        'browser_config': 'android-chromium',
-        'os_type': 'android',
-        'skip_merge_script': True,
-        'mixins': [
-          'chromium_nexus_5x_oreo',
-          'has_native_resultdb_integration',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_android_gtests',
-          'gpu_telemetry_tests': 'gpu_nexus5x_telemetry_tests',
-          'android_webview_gpu_telemetry_tests': 'android_webview_gpu_telemetry_tests',
         },
       },
       'Android FYI Release (Pixel 2)': {
@@ -2499,19 +2464,6 @@
           'android_webview_gpu_telemetry_tests': 'android_webview_gpu_telemetry_tests',
         },
       },
-      'Android FYI Release (Pixel 6)': {
-        'browser_config': 'android-chromium',
-        'os_type': 'android',
-        'skip_merge_script': True,
-        'mixins': [
-          'has_native_resultdb_integration',
-          'gpu_pixel_6_stable',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_android_gtests',
-          'gpu_telemetry_tests': 'gpu_pixel_6_telemetry_tests',
-        },
-      },
       'Android FYI Release (Samsung A13)': {
         'browser_config': 'android-chromium',
         'os_type': 'android',
@@ -2533,20 +2485,6 @@
         'mixins': [
           'has_native_resultdb_integration',
           'gpu_samsung_a23_stable',
-          'limited_capacity_bot',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_android_gtests',
-          'gpu_telemetry_tests': 'gpu_common_android_telemetry_tests',
-        },
-      },
-      'Android FYI Release (Samsung S23)': {
-        'browser_config': 'android-chromium',
-        'os_type': 'android',
-        'skip_merge_script': True,
-        'mixins': [
-          'has_native_resultdb_integration',
-          'gpu_samsung_s23_stable',
           'limited_capacity_bot',
         ],
         'test_suites': {
@@ -2583,7 +2521,6 @@
         },
       },
       'GPU FYI Android arm Builder': {},
-      'GPU FYI Android arm64 Builder': {},
       'GPU FYI Linux Builder' : {},
       'GPU FYI Linux Builder (dbg)' : {},
       'GPU FYI Mac Builder' : {},

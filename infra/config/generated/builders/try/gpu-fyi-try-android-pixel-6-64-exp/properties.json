@@ -81,7 +81,8 @@
           "builder": "Android FYI Experimental Release (Pixel 6)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/gpu-fyi-try-android-pixel-6-64-exp/targets"
     }
   },
   "$build/reclient": {

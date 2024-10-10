@@ -1538,7 +1538,6 @@ try_.gpu.optional_tests_builder(
             cq.location_filter(path_regexp = "media/renderers/.+"),
             cq.location_filter(path_regexp = "media/video/.+"),
             cq.location_filter(path_regexp = "services/viz/.+"),
-            cq.location_filter(path_regexp = "testing/buildbot/chromium.gpu.fyi.json"),
             cq.location_filter(path_regexp = "testing/trigger_scripts/.+"),
             cq.location_filter(path_regexp = "third_party/blink/renderer/modules/mediastream/.+"),
             cq.location_filter(path_regexp = "third_party/blink/renderer/modules/webcodecs/.+"),

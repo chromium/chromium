@@ -80,7 +80,8 @@
           "builder": "Android FYI Release (Nexus 5X)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/gpu-fyi-try-android-m-nexus-5x-64/targets"
     }
   },
   "$build/reclient": {

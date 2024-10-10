@@ -75,8 +75,6 @@
   },
   'angle_unittests': {
     'remove_from': [
-      # On Android, these are already run on the main waterfall.
-      'Android FYI Release (Nexus 5X)',
       # Times out listing tests crbug.com/1167314
       'android-asan',
     ],
@@ -1332,11 +1330,6 @@
       'Linux MSan Tests',
     ],
     'modifications': {
-      'Android FYI Release (Motorola Moto G Power 5G)': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.moto_g_power_5g.gl_tests.filter',
-        ],
-      },
       'Dawn Linux x64 Experimental Release (Intel UHD 630)': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux.uhd_630.gl_tests_passthrough.filter',
@@ -1415,11 +1408,6 @@
   },
   'gl_tests_validating': {
     'modifications': {
-      'Android FYI Release (Motorola Moto G Power 5G)': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.moto_g_power_5g.gl_tests.filter',
-        ],
-      },
       'Android FYI Release (Samsung A13)': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.samsung_a13.gl_tests.filter',
@@ -1445,9 +1433,6 @@
   },
   'gl_unittests': {
     'remove_from': [
-      # On Android, these are already run on the main waterfall.
-      # Run them on the one-off Android FYI bots, though.
-      'Android FYI Release (Nexus 5X)',
       # TODO(crbug.com/40238674): Enable these once they're shown to work on
       # Android.
       'Dawn Android arm DEPS Release (Pixel 4)',
@@ -2339,15 +2324,6 @@
   },
   'trace_test': {
     'modifications': {
-      # The browser is restarted after every test in this suite, which includes
-      # re-applying permissions. Nexus 5Xs are very slow to apply permissions
-      # compared to other devices, so increase sharding to offset the increased
-      # runtime.
-      'Android FYI Release (Nexus 5X)': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
       'Win10 FYI x64 Experimental Release (Intel)': {
         'args': [
           # TODO(crbug.com/41496675): Apply this via magic subustitutions if it
@@ -2653,11 +2629,6 @@
   },
   'webgl2_conformance_gles_passthrough_tests': {
     'remove_from': [
-      # Currently not enough capacity to run these tests on this config.
-      # TODO(crbug.com/40208926): Re-enable once more of the Pixel 6 capacity
-      # is deployed.
-      'Android FYI Release (Pixel 6)',
-      'Android FYI Experimental Release (Pixel 6)',
       # Not enough CrOS hardware capacity to run both on anything other than
       # VMs. See https://crbug.com/1238070.
       'Linux Wayland FYI Release (Intel)',
@@ -2722,13 +2693,6 @@
     },
   },
   'webgl2_conformance_validating_tests': {
-    'remove_from': [
-      # Currently not enough capacity to run these tests on this config.
-      # TODO(crbug.com/40208926): Re-enable once more of the Pixel 6 capacity
-      # is deployed.
-      'Android FYI Release (Pixel 6)',
-      'Android FYI Experimental Release (Pixel 6)',
-    ],
     'modifications': {
       # This VM configuration is known to be significantly slower than other
       # CrOS configurations, so increase the shards.

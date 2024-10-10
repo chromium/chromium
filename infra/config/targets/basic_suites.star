@@ -3015,21 +3015,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "gpu_webcodecs_validating_graphite_telemetry_test",
-    tests = {
-        "webcodecs_graphite_tests": targets.legacy_test_config(
-            mixins = [
-                "gpu_integration_test_common_args",
-            ],
-            args = [
-                "--extra-browser-args=--use-cmd-decoder=validating --enable-features=SkiaGraphite",
-            ],
-            ci_only = True,
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "gpu_webcodecs_validating_telemetry_test",
     tests = {
         "webcodecs_tests": targets.legacy_test_config(
@@ -3238,25 +3223,6 @@ targets.legacy_basic_suite(
             ],
             swarming = targets.swarming(
                 shards = 6,
-            ),
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "gpu_webgl_conformance_gles_passthrough_graphite_telemetry_tests",
-    tests = {
-        "webgl_conformance_gles_passthrough_graphite_tests": targets.legacy_test_config(
-            mixins = [
-                "gpu_integration_test_common_args",
-            ],
-            args = [
-                # On dual-GPU devices we want the high-performance GPU to be active
-                "--extra-browser-args=--use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu --enable-features=SkiaGraphite",
-                targets.magic_args.GPU_WEBGL_RUNTIME_FILE,
-            ],
-            swarming = targets.swarming(
-                shards = 3,
             ),
         ),
     },

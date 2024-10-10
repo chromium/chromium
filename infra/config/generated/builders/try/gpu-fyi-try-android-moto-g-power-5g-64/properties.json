@@ -78,7 +78,8 @@
           "builder": "Android FYI Release (Motorola Moto G Power 5G)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/gpu-fyi-try-android-moto-g-power-5g-64/targets"
     }
   },
   "$build/reclient": {

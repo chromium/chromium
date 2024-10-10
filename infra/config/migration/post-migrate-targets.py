@@ -59,7 +59,7 @@ def _convert_basic_suite(
               | 'test_common'):
           pass
 
-        case 'use_isolated_scripts_api':
+        case 'ci_only' | 'use_isolated_scripts_api':
           anonymous_mixin_builder[key] = values.convert_direct(value)
 
         case 'args':

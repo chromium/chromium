@@ -102,6 +102,7 @@ rules {
         # tests
         arg: "test"
         arg: "results_handler"
+        arg: "is_android_webview"
         arg: "telemetry_test_name"
         arg: "tast_expr"
         arg: "test_level_retries"
