@@ -580,7 +580,7 @@
 <translation id="3828924571679282172">{COUNT,plural, =1{1 способ оплаты}one{# способ оплаты}few{# способа оплаты}many{# способов оплаты}other{# способа оплаты}}</translation>
 <translation id="3832419617903252251">Пароль сохранен только на этом устройстве</translation>
 <translation id="3835964409414434850">Перейти на следующую вкладку</translation>
-<translation id="383781833195845844">Продолжить просмотр этой вкладки</translation>
+<translation id="383781833195845844">Снова открыть эту вкладку</translation>
 <translation id="3838691874161539578">Чтобы надежнее защитить свои данные в интернете, проверьте безопасность сохраненных паролей</translation>
 <translation id="385051799172605136">Назад</translation>
 <translation id="3851938967634752633">Пароли для <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> и ещё нескольких сайтов (<ph name="NUMBER_OF_ACCOUNTS" />) будут удалены. При этом сохранятся другие данные аккаунтов для этих сайтов.</translation>
