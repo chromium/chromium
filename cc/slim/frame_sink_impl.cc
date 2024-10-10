@@ -113,12 +113,13 @@ bool FrameSinkImpl::BindToClient(FrameSinkImplClient* client) {
       viz::mojom::CompositorFrameSinkType::kLayerTree);
 
 #if BUILDFLAG(IS_ANDROID)
-  std::vector<int32_t> thread_ids;
-  thread_ids.push_back(base::PlatformThread::CurrentId());
+  std::vector<viz::Thread> threads;
+  threads.push_back(
+      {base::PlatformThread::CurrentId(), viz::Thread::Type::kMain});
   if (io_thread_id_ != base::kInvalidThreadId) {
-    thread_ids.push_back(io_thread_id_);
+    threads.push_back({io_thread_id_, viz::Thread::Type::kIO});
   }
-  frame_sink_->SetThreadIds(thread_ids);
+  frame_sink_->SetThreads(threads);
 #endif
   return true;
 }

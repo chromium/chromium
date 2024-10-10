@@ -65,7 +65,7 @@ class CompositorFrameSinkImpl : public mojom::CompositorFrameSink {
       mojom::CompositorFrameSinkType type) override;
   void BindLayerContext(mojom::PendingLayerContextPtr context) override;
 #if BUILDFLAG(IS_ANDROID)
-  void SetThreadIds(const std::vector<int32_t>& thread_ids) override;
+  void SetThreads(const std::vector<Thread>& threads) override;
 #endif
 
  private:

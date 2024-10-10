@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/read_only_shared_memory_region.h"
+#include "components/viz/common/performance_hint_utils.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "gpu/ipc/common/mailbox.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -70,7 +71,7 @@ class MockCompositorFrameSink : public viz::mojom::blink::CompositorFrameSink {
                void(viz::mojom::CompositorFrameSinkType));
   MOCK_METHOD1(BindLayerContext,
                void(viz::mojom::blink::PendingLayerContextPtr));
-  MOCK_METHOD1(SetThreadIds, void(const WTF::Vector<int32_t>&));
+  MOCK_METHOD1(SetThreads, void(const WTF::Vector<viz::Thread>&));
 
  private:
   mojo::Receiver<viz::mojom::blink::CompositorFrameSink> receiver_{this};

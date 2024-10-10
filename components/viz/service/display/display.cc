@@ -1044,9 +1044,10 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     for (const auto& surface_id : aggregator_->previous_contained_surfaces()) {
       surface = surface_manager_->GetSurfaceForId(surface_id);
       if (surface) {
-        base::flat_set<base::PlatformThreadId> surface_thread_ids =
-            surface->GetThreadIds();
-        thread_ids.insert(surface_thread_ids.begin(), surface_thread_ids.end());
+        std::vector<Thread> surface_threads = surface->GetThreads();
+        for (const auto& thread : surface_threads) {
+          thread_ids.insert(thread.id);
+        }
       }
     }
 

@@ -256,14 +256,14 @@ void SynchronousCompositorProxy::SinkDestroyed() {
   layer_tree_frame_sink_ = nullptr;
 }
 
-void SynchronousCompositorProxy::SetThreadIds(
-    const Vector<base::PlatformThreadId>& thread_ids) {
-  if (thread_ids_ == thread_ids) {
+void SynchronousCompositorProxy::SetThreads(
+    const Vector<viz::Thread>& threads) {
+  if (threads_ == threads) {
     return;
   }
-  thread_ids_ = thread_ids;
+  threads_ = threads;
   if (host_) {
-    host_->SetThreadIds(thread_ids_);
+    host_->SetThreads(threads_);
   }
 }
 
@@ -406,8 +406,8 @@ void SynchronousCompositorProxy::BindChannel(
 
   if (needs_begin_frames_)
     host_->SetNeedsBeginFrames(true);
-  if (!thread_ids_.empty()) {
-    host_->SetThreadIds(thread_ids_);
+  if (!threads_.empty()) {
+    host_->SetThreads(threads_);
   }
 }
 

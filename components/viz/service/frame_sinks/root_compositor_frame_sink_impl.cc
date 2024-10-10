@@ -577,10 +577,9 @@ void RootCompositorFrameSinkImpl::BindLayerContext(
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void RootCompositorFrameSinkImpl::SetThreadIds(
-    const std::vector<int32_t>& thread_ids) {
-  support_->SetThreadIds(/*from_untrusted_client=*/false,
-                         base::MakeFlatSet<base::PlatformThreadId>(thread_ids));
+void RootCompositorFrameSinkImpl::SetThreads(
+    const std::vector<Thread>& threads) {
+  support_->SetThreads(/*from_untrusted_client=*/false, threads);
 }
 #endif
 

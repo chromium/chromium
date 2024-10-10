@@ -414,9 +414,8 @@ bool CompositorFrameSinkSupport::IsVideoCaptureStarted() {
   return number_clients_capturing_ > 0;
 }
 
-base::flat_set<base::PlatformThreadId>
-CompositorFrameSinkSupport::GetThreadIds() {
-  return thread_ids_;
+std::vector<Thread> CompositorFrameSinkSupport::GetThreads() {
+  return threads_;
 }
 
 void CompositorFrameSinkSupport::OnSurfaceDestroyed(Surface* surface) {
@@ -624,26 +623,34 @@ void CompositorFrameSinkSupport::BindLayerContext(
   layer_context_ = std::make_unique<LayerContextImpl>(this, context);
 }
 
-void CompositorFrameSinkSupport::SetThreadIds(
+void CompositorFrameSinkSupport::SetThreads(
     bool from_untrusted_client,
-    base::flat_set<base::PlatformThreadId> unverified_thread_ids) {
+    std::vector<Thread> unverified_threads) {
   if (!from_untrusted_client) {
-    thread_ids_ = std::move(unverified_thread_ids);
+    threads_ = std::move(unverified_threads);
     return;
   }
+  base::flat_set<base::PlatformThreadId> thread_ids;
+  for (const auto& thread : unverified_threads) {
+    thread_ids.insert(thread.id);
+  }
   frame_sink_manager_->VerifySandboxedThreadIds(
-      unverified_thread_ids,
+      thread_ids,
       base::BindOnce(
           &CompositorFrameSinkSupport::UpdateThreadIdsPostVerification,
-          weak_factory_.GetWeakPtr(), unverified_thread_ids));
+          weak_factory_.GetWeakPtr(), unverified_threads));
 }
 
 void CompositorFrameSinkSupport::UpdateThreadIdsPostVerification(
-    base::flat_set<base::PlatformThreadId> thread_ids,
+    std::vector<Thread> threads,
     bool passed_verification) {
   if (passed_verification) {
-    thread_ids_ = std::move(thread_ids);
+    threads_ = std::move(threads);
   } else {
+    std::vector<base::PlatformThreadId> thread_ids;
+    for (const auto& thread : threads) {
+      thread_ids.push_back(thread.id);
+    }
     TRACE_EVENT_INSTANT("viz,android.adpf",
                         "FailedToUpdateThreadIdsPostVerification", "thread_ids",
                         thread_ids);

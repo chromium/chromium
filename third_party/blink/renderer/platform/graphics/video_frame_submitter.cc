@@ -193,8 +193,8 @@ class VideoFrameSubmitter::FrameSinkBundleProxy
       viz::mojom::blink::PendingLayerContextPtr context) override {}
 
 #if BUILDFLAG(IS_ANDROID)
-  void SetThreadIds(const WTF::Vector<int32_t>& thread_ids) override {
-    bundle_->SetThreadIds(frame_sink_id_.sink_id(), thread_ids);
+  void SetThreads(const WTF::Vector<viz::Thread>& threads) override {
+    bundle_->SetThreads(frame_sink_id_.sink_id(), threads);
   }
 #endif
 
@@ -697,10 +697,12 @@ void VideoFrameSubmitter::StartSubmitting() {
                        : viz::mojom::CompositorFrameSinkType::kVideo);
 
 #if BUILDFLAG(IS_ANDROID)
-  WTF::Vector<base::PlatformThreadId> thread_ids;
-  thread_ids.push_back(base::PlatformThread::CurrentId());
-  thread_ids.push_back(Platform::Current()->GetIOThreadId());
-  compositor_frame_sink_->SetThreadIds(thread_ids);
+  WTF::Vector<viz::Thread> threads;
+  threads.push_back(viz::Thread{base::PlatformThread::CurrentId(),
+                                viz::Thread::Type::kVideo});
+  threads.push_back(viz::Thread{Platform::Current()->GetIOThreadId(),
+                                viz::Thread::Type::kIO});
+  compositor_frame_sink_->SetThreads(threads);
 #endif
 
   UpdateSubmissionState();

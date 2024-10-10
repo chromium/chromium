@@ -137,9 +137,8 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
       mojom::CompositorFrameSinkType* type) const;
   void InitializeCompositorFrameSinkType(mojom::CompositorFrameSinkType type);
   void BindLayerContext(mojom::PendingLayerContext& context);
-  void SetThreadIds(
-      bool from_untrusted_client,
-      base::flat_set<base::PlatformThreadId> unverified_thread_ids);
+  void SetThreads(bool from_untrusted_client,
+                  std::vector<Thread> unverified_threads);
 
   // Throttles the BeginFrames to send at |interval| if |interval| is greater
   // than zero, or clears previously set throttle if zero.
@@ -179,7 +178,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
                           const gfx::SwapTimings& swap_timings,
                           const gfx::PresentationFeedback& feedback) override;
   bool IsVideoCaptureStarted() override;
-  base::flat_set<base::PlatformThreadId> GetThreadIds() override;
+  std::vector<Thread> GetThreads() override;
 
   // mojom::CompositorFrameSink helpers.
   void SetNeedsBeginFrame(bool needs_begin_frame);
@@ -356,9 +355,8 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   // conditions are met.
   void ApplyPreferredFrameRate(uint64_t source_id);
 
-  void UpdateThreadIdsPostVerification(
-      base::flat_set<base::PlatformThreadId> thread_ids,
-      bool passed_verification);
+  void UpdateThreadIdsPostVerification(std::vector<Thread> threads,
+                                       bool passed_verification);
 
   void ForAllReservedResourceDelegates(
       base::FunctionRef<void(ReservedResourceDelegate&)> func);
@@ -558,7 +556,7 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   raw_ptr<ReservedResourceDelegate> external_reserved_resource_delegate_ =
       nullptr;
 
-  base::flat_set<base::PlatformThreadId> thread_ids_;
+  std::vector<Thread> threads_;
 
   // Number of frames skipped during throttling since last BeginFrame sent.
   uint64_t frames_throttled_since_last_ = 0;

@@ -165,7 +165,7 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
 
   void AddBeginFrameCompletionCallback(base::OnceClosure callback) override;
 
-  void SetThreadIds(const std::vector<int32_t>& thread_ids) override;
+  void SetThreads(const std::vector<viz::Thread>& threads) override;
 
   // CompositorFrameProducer overrides
   base::WeakPtr<CompositorFrameProducer> GetWeakPtr() override;
@@ -297,7 +297,7 @@ class BrowserViewRenderer : public content::SynchronousCompositorClient,
 
   std::unique_ptr<BeginFrameSourceWebView> begin_frame_source_;
 
-  std::vector<int32_t> renderer_thread_ids_;
+  std::vector<viz::Thread> renderer_threads_;
   base::PlatformThreadId browser_io_thread_id_ = base::kInvalidThreadId;
 
   base::WeakPtrFactory<BrowserViewRenderer> weak_ptr_factory_{this};

@@ -22,6 +22,7 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "services/viz/public/mojom/compositing/thread.mojom.h"
 
 namespace cc {
 namespace mojo_embedder {
@@ -140,14 +141,15 @@ bool AsyncLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
       viz::mojom::CompositorFrameSinkType::kLayerTree);
 
 #if BUILDFLAG(IS_ANDROID)
-  std::vector<int32_t> thread_ids;
-  thread_ids.push_back(base::PlatformThread::CurrentId());
+  std::vector<viz::Thread> threads;
+  threads.push_back(
+      {base::PlatformThread::CurrentId(), viz::Thread::Type::kCompositor});
   if (io_thread_id_ != base::kInvalidThreadId)
-    thread_ids.push_back(io_thread_id_);
+    threads.push_back({io_thread_id_, viz::Thread::Type::kIO});
   if (main_thread_id_ != base::kInvalidThreadId) {
-    thread_ids.push_back(main_thread_id_);
+    threads.push_back({main_thread_id_, viz::Thread::Type::kMain});
   }
-  compositor_frame_sink_ptr_->SetThreadIds(thread_ids);
+  compositor_frame_sink_ptr_->SetThreads(threads);
 #endif
 
   return true;

@@ -360,10 +360,10 @@ void FrameSinkBundleImpl::DidAllocateSharedBitmap(
 }
 
 #if BUILDFLAG(IS_ANDROID)
-void FrameSinkBundleImpl::SetThreadIds(uint32_t sink_id,
-                                       const std::vector<int32_t>& thread_ids) {
+void FrameSinkBundleImpl::SetThreads(uint32_t sink_id,
+                                     const std::vector<Thread>& threads) {
   if (auto* sink = GetFrameSink(sink_id)) {
-    sink->SetThreadIds(thread_ids);
+    sink->SetThreads(threads);
   }
 }
 #endif

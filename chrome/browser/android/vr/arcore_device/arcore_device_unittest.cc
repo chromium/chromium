@@ -259,7 +259,7 @@ class StubCompositorFrameSink
   void InitializeCompositorFrameSinkType(
       viz::mojom::CompositorFrameSinkType type) override {}
   void BindLayerContext(viz::mojom::PendingLayerContextPtr context) override {}
-  void SetThreadIds(const std::vector<int32_t>& thread_ids) override {}
+  void SetThreads(const std::vector<viz::Thread>& threads) override {}
 
   // mojom::ExternalBeginFrameController implementation.
   void IssueExternalBeginFrame(

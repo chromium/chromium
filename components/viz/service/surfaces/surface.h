@@ -247,7 +247,7 @@ class VIZ_SERVICE_EXPORT Surface final {
   // capture. We don't want to constantly switch between overlay and non-overlay
   // during video playback.
   bool IsVideoCaptureOnFromClient();
-  base::flat_set<base::PlatformThreadId> GetThreadIds();
+  std::vector<Thread> GetThreads();
 
   const base::flat_set<SurfaceId>& active_referenced_surfaces() const {
     return active_referenced_surfaces_;

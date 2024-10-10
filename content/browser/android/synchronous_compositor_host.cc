@@ -610,9 +610,9 @@ void SynchronousCompositorHost::SetNeedsBeginFrames(bool needs_begin_frames) {
     ClearBeginFrameRequest(PERSISTENT_BEGIN_FRAME);
 }
 
-void SynchronousCompositorHost::SetThreadIds(
-    const std::vector<int32_t>& thread_ids) {
-  client_->SetThreadIds(thread_ids);
+void SynchronousCompositorHost::SetThreads(
+    const std::vector<viz::Thread>& threads) {
+  client_->SetThreads(threads);
 }
 
 void SynchronousCompositorHost::LayerTreeFrameSinkCreated() {

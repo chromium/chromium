@@ -11,6 +11,7 @@ import "services/viz/public/mojom/compositing/compositor_frame_metadata.mojom";
 import "services/viz/public/mojom/compositing/frame_timing_details.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
 import "services/viz/public/mojom/compositing/returned_resource.mojom";
+import "services/viz/public/mojom/compositing/thread.mojom";
 import "services/viz/public/mojom/hit_test/hit_test_region_list.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/transform.mojom";
@@ -141,8 +142,8 @@ interface SynchronousCompositorHost {
   // Passes IDs of threads involved in frame production to the compositor.
   // The IDs are then passed through HWUI to the Android PerformanceHint API
   // to dynamically adjust performance.
-  // This is similar to CompositorFrameSink.SetThreadIds, but for WebView.
-  SetThreadIds(array<int32> thread_ids);
+  // This is similar to CompositorFrameSink.SetThreads, but for WebView.
+  SetThreads(array<viz.mojom.Thread> threads);
 };
 
 // Interface that runs on the IO thread of the browser. To be used for responses

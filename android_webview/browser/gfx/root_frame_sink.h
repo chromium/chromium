@@ -132,7 +132,7 @@ class RootFrameSink : public base::RefCounted<RootFrameSink>,
   std::unique_ptr<viz::ExternalBeginFrameSource> begin_frame_source_;
 
   std::unique_ptr<ChildCompositorFrameSink> child_sink_support_;
-  base::flat_set<base::PlatformThreadId> child_frame_renderer_thread_ids_;
+  std::vector<viz::Thread> child_frame_renderer_threads_;
 
   bool clients_need_begin_frames_ = false;
   bool needs_begin_frames_ = false;

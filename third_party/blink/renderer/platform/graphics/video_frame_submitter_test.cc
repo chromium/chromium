@@ -123,7 +123,7 @@ class VideoMockCompositorFrameSink
                void(viz::mojom::CompositorFrameSinkType));
   MOCK_METHOD1(BindLayerContext,
                void(viz::mojom::blink::PendingLayerContextPtr));
-  MOCK_METHOD1(SetThreadIds, void(const WTF::Vector<int32_t>&));
+  MOCK_METHOD1(SetThreads, void(const WTF::Vector<viz::Thread>&));
 
  private:
   mojo::Receiver<viz::mojom::blink::CompositorFrameSink> receiver_{this};

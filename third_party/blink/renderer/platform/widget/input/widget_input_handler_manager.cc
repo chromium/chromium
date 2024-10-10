@@ -147,17 +147,20 @@ class SynchronousCompositorProxyRegistry
     proxy_->Init();
 
     if (base::FeatureList::IsEnabled(::features::kWebViewEnableADPF)) {
-      Vector<base::PlatformThreadId> renderer_thread_ids;
-      renderer_thread_ids.push_back(base::PlatformThread::CurrentId());
+      Vector<viz::Thread> renderer_threads;
+      renderer_threads.push_back(viz::Thread{base::PlatformThread::CurrentId(),
+                                             viz::Thread::Type::kCompositor});
       if (io_thread_id_ != base::kInvalidThreadId) {
-        renderer_thread_ids.push_back(io_thread_id_);
+        renderer_threads.push_back(
+            viz::Thread{io_thread_id_, viz::Thread::Type::kIO});
       }
       if (main_thread_id_ != base::kInvalidThreadId &&
           base::FeatureList::IsEnabled(
               ::features::kWebViewEnableADPFRendererMain)) {
-        renderer_thread_ids.push_back(main_thread_id_);
+        renderer_threads.push_back(
+            viz::Thread{main_thread_id_, viz::Thread::Type::kMain});
       }
-      proxy_->SetThreadIds(renderer_thread_ids);
+      proxy_->SetThreads(renderer_threads);
     }
 
     if (sink_)
