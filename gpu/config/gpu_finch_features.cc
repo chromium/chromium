@@ -374,7 +374,7 @@ BASE_FEATURE(kSWVideoFrameAddScanoutUsageOnlyIfSupportedBySharedImage,
 // Enable persistent storage of VkPipelineCache data.
 BASE_FEATURE(kEnableVkPipelineCache,
              "EnableVkPipelineCache",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enabling this will make the GPU decode path use a mock implementation of
 // discardable memory.
