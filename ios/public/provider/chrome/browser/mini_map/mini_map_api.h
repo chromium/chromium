@@ -10,7 +10,6 @@
 // The completion handler that will be called at the end of the Mini Map flow.
 // If the passed URL is not nil, it indicates that the user requested to open
 // this URL.
-using MiniMapControllerCompletion = void (^)(NSURL*);
 using MiniMapControllerCompletionWithURL = void (^)(NSURL*);
 
 // The completion handler that will be called at the end of the Mini Map flow.
