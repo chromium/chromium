@@ -590,6 +590,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/372252512")
     public void testDismissSearchViewByBackPress() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

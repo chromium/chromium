@@ -17,6 +17,3 @@
 
 # crbug.com/1431321
 -org.chromium.ui.resources.dynamics.HardwareDrawTest.testStartBitmapCapture_raceCondition
-
-# crbug.com/372252512
--org.chromium.chrome.browser.download.home.DownloadActivityV2Test.*
