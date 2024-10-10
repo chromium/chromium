@@ -61,7 +61,7 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerImpl {
                                       bool is_ephemeral);
 
   // UserManager overrides.
-  UserList GetUsersAllowedForMultiProfile() const override;
+  UserList GetUsersAllowedForMultiUserSignIn() const override;
   void UpdateUserAccountData(const AccountId& account_id,
                              const UserAccountData& account_data) override;
 

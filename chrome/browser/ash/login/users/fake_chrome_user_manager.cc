@@ -190,8 +190,8 @@ void FakeChromeUserManager::SwitchActiveUser(const AccountId& account_id) {
 
 void FakeChromeUserManager::OnSessionStarted() {}
 
-user_manager::UserList FakeChromeUserManager::GetUsersAllowedForMultiProfile()
-    const {
+user_manager::UserList
+FakeChromeUserManager::GetUsersAllowedForMultiUserSignIn() const {
   // Supervised users are not allowed to use multi-profiles.
   if (GetLoggedInUsers().size() == 1 &&
       GetPrimaryUser()->GetType() != user_manager::UserType::kRegular) {

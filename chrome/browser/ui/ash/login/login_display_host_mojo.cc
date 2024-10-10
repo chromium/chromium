@@ -452,7 +452,7 @@ void LoginDisplayHostMojo::OnStartUserAdding() {
 
   SystemTrayClientImpl::Get()->SetPrimaryTrayVisible(/*visible=*/true);
   existing_user_controller_->Init(
-      user_manager::UserManager::Get()->GetUsersAllowedForMultiProfile());
+      user_manager::UserManager::Get()->GetUsersAllowedForMultiUserSignIn());
 }
 
 void LoginDisplayHostMojo::CancelUserAdding() {

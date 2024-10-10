@@ -1034,7 +1034,8 @@ void ExistingUserController::DeviceSettingsChanged() {
     // Signed settings or user list changed. Notify views and update them.
     const user_manager::UserList& users =
         UserAddingScreen::Get()->IsRunning()
-            ? user_manager::UserManager::Get()->GetUsersAllowedForMultiProfile()
+            ? user_manager::UserManager::Get()
+                  ->GetUsersAllowedForMultiUserSignIn()
             : user_manager::UserManager::Get()->GetUsers();
 
     UpdateLoginDisplay(users);

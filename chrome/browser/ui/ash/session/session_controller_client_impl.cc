@@ -284,7 +284,7 @@ void SessionControllerClientImpl::ShowMultiProfileLogin() {
          session_manager::kMaximumNumberOfUserSessions);
 
   // Launch sign in screen to add another user to current session.
-  DCHECK(!UserManager::Get()->GetUsersAllowedForMultiProfile().empty());
+  DCHECK(!UserManager::Get()->GetUsersAllowedForMultiUserSignIn().empty());
 
   // Lacros and multiprofile are mutually exclusive.
   const auto* primary_user = UserManager::Get()->GetPrimaryUser();
@@ -386,7 +386,7 @@ bool SessionControllerClientImpl::IsMultiProfileAvailable() {
   size_t users_logged_in = UserManager::Get()->GetLoggedInUsers().size();
   // Does not include users that are logged in.
   size_t users_available_to_add =
-      UserManager::Get()->GetUsersAllowedForMultiProfile().size();
+      UserManager::Get()->GetUsersAllowedForMultiUserSignIn().size();
   return (users_logged_in + users_available_to_add) > 1;
 }
 
@@ -456,8 +456,9 @@ SessionControllerClientImpl::GetAddUserSessionPolicy() {
     return ash::AddUserSessionPolicy::ERROR_LOCKED_TO_SINGLE_USER;
 
   UserManager* const user_manager = UserManager::Get();
-  if (user_manager->GetUsersAllowedForMultiProfile().empty())
+  if (user_manager->GetUsersAllowedForMultiUserSignIn().empty()) {
     return ash::AddUserSessionPolicy::ERROR_NO_ELIGIBLE_USERS;
+  }
 
   if (user_manager::GetMultiUserSignInPolicy(user_manager->GetPrimaryUser()) ==
       user_manager::MultiUserSignInPolicy::kNotAllowed) {

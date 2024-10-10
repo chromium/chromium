@@ -199,7 +199,7 @@ class USER_MANAGER_EXPORT UserManager {
   // are regular users (i.e. not a public session/supervised etc.).
   // Returns an empty list in case when primary user is not a regular one or
   // has a policy that prohibits it to be part of multi-profile session.
-  virtual UserList GetUsersAllowedForMultiProfile() const = 0;
+  virtual UserList GetUsersAllowedForMultiUserSignIn() const = 0;
 
   // Returns users allowed on login screen in the given `users` list.
   virtual UserList FindLoginAllowedUsersFrom(const UserList& users) const = 0;

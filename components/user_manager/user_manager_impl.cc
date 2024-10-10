@@ -197,8 +197,8 @@ const UserList& UserManagerImpl::GetUsers() const {
   return users_;
 }
 
-UserList UserManagerImpl::GetUsersAllowedForMultiProfile() const {
-  // Supervised users are not allowed to use multi-profiles.
+UserList UserManagerImpl::GetUsersAllowedForMultiUserSignIn() const {
+  // Supervised users are not allowed to use multi-user sign-in.
   if (logged_in_users_.size() == 1 &&
       primary_user_->GetType() != UserType::kRegular) {
     return {};
@@ -1809,7 +1809,9 @@ void UserManagerImpl::SendMultiUserSignInMetrics() {
   }
 
   // Write the user number as UMA stat when a multi user session is possible.
-  if (users + GetUsersAllowedForMultiProfile().size() > 1) {
+  if (users + GetUsersAllowedForMultiUserSignIn().size() > 1) {
+    // Keep MultiProfile name here for compatibility of historical reason.
+    // It is for multi-user sign-in.
     UMA_HISTOGRAM_COUNTS_100("MultiProfile.UsersPerSessionIncremental", users);
   }
 }

@@ -81,7 +81,7 @@ const user_manager::User* FakeUserManager::AddPublicAccountUser(
   return user;
 }
 
-UserList FakeUserManager::GetUsersAllowedForMultiProfile() const {
+UserList FakeUserManager::GetUsersAllowedForMultiUserSignIn() const {
   UserList result;
   for (UserList::const_iterator it = users_.begin(); it != users_.end(); ++it) {
     if ((*it)->GetType() == UserType::kRegular && !(*it)->is_logged_in()) {
