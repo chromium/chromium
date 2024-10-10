@@ -27,9 +27,8 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
-#include "base/test/simple_test_clock.h"
-#include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_future.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -142,9 +141,15 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
+#include "ui/base/idle/idle_polling_service.h"
+#include "ui/base/idle/idle_time_provider.h"
+#include "ui/base/test/idle_test_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/events/test/event_generator.h"
+
+using testing::NiceMock;
+using ui::test::ScopedIdleProviderForTest;
 
 namespace ash {
 
@@ -919,6 +924,19 @@ IN_PROC_BROWSER_TEST_F(WebviewDeviceOwnedLoginTest, AllowNewUser) {
   test::OobeJS().ExpectTrue(frame_url + ".search('flow=nosignup') != -1");
 }
 
+class MockIdleTimeProvider : public ui::IdleTimeProvider {
+ public:
+  MockIdleTimeProvider() = default;
+
+  MockIdleTimeProvider(const MockIdleTimeProvider&) = delete;
+  MockIdleTimeProvider& operator=(const MockIdleTimeProvider&) = delete;
+
+  ~MockIdleTimeProvider() override = default;
+
+  MOCK_METHOD(base::TimeDelta, CalculateIdleTime, (), (override));
+  MOCK_METHOD(bool, CheckIdleStateIsLocked, (), (override));
+};
+
 // TODO(b/360829605) Add browser tests for case where proxy auth is required.
 // Class for testing `DeviceAuthenticationFlowAutoReloadInterval` policy cases.
 class AutoReloadWebviewLoginTest : public WebviewLoginTest {
@@ -964,25 +982,14 @@ class AutoReloadWebviewLoginTest : public WebviewLoginTest {
   }
 
   void AdvanceTime(base::TimeDelta time_change) {
-    // Advance() doesn't trigger the scheduled timer so we need to resume the
-    // timer in order to get the updated clock time
-    // TODO(b/353919505): Add method to WallClockTimer for resuming clock for
-    // testing.
-    test_clock_->Advance(time_change);
+    // TODO(b/353919505): Introduce a function for testing to advance time and
+    // reschedule the timer in one call.
+    task_runner()->FastForwardBy(time_change);
     LoginDisplayHost::default_host()
         ->GetOobeUI()
         ->GetHandler<GaiaScreenHandler>()
         ->GetAutoReloadManagerForTesting()
         .ResumeTimerForTesting();
-  }
-
-  void SetUpTestClocks() {
-    base::Time now = base::Time::Now();
-    test_clock_ = std::make_unique<base::SimpleTestClock>();
-    test_clock_->SetNow(now);
-    base::TimeTicks now_ticks = base::TimeTicks::Now();
-    test_tick_clock_ = std::make_unique<base::SimpleTestTickClock>();
-    test_tick_clock_->SetNowTicks(now_ticks);
   }
 
   void SetUpOnMainThread() override {
@@ -995,9 +1002,14 @@ class AutoReloadWebviewLoginTest : public WebviewLoginTest {
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    SetUpTestClocks();
+    task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+
+    polling_service().SetTaskRunnerForTest(task_runner_);
+    // The default 15s polling interval causes tests to time out.
+    polling_service().SetPollIntervalForTest(base::Seconds(1));
+
     AuthenticationFlowAutoReloadManager::SetClockForTesting(
-        test_clock_.get(), test_tick_clock_.get());
+        task_runner_->GetMockClock(), task_runner_->GetMockTickClock());
 
     WebviewLoginTest::SetUpInProcessBrowserTestFixture();
   }
@@ -1008,22 +1020,31 @@ class AutoReloadWebviewLoginTest : public WebviewLoginTest {
     WebviewLoginTest::TearDownOnMainThread();
   }
 
+  ui::IdlePollingService& polling_service() {
+    return *ui::IdlePollingService::GetInstance();
+  }
+
+  base::TestMockTimeTaskRunner* task_runner() { return task_runner_.get(); }
+
+  NetworkStateTestHelper* network_state_test_helper() {
+    return network_state_test_helper_.get();
+  }
+
  protected:
   bool IsAutoReloadActive() {
     return LoginDisplayHost::default_host()
         ->GetOobeUI()
         ->GetHandler<GaiaScreenHandler>()
         ->GetAutoReloadManagerForTesting()
-        .IsTimerActiveForTesting();
+        .IsActiveForTesting();
   }
-
-  std::unique_ptr<base::SimpleTestClock> test_clock_;
-  std::unique_ptr<base::SimpleTestTickClock> test_tick_clock_;
-
-  std::unique_ptr<NetworkStateTestHelper> network_state_test_helper_;
 
  private:
   policy::DevicePolicyBuilder device_policy_builder_;
+
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
+
+  std::unique_ptr<NetworkStateTestHelper> network_state_test_helper_;
 
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
@@ -1041,8 +1062,7 @@ IN_PROC_BROWSER_TEST_F(AutoReloadWebviewLoginTest,
   EXPECT_FALSE(IsAutoReloadActive());
 
   std::string frame_url = "$('gaia-signin').authenticator.reloadUrl_";
-  test::OobeJS().ExpectTrue(frame_url +
-                            ".search('auto_reload_attempts') == -1");
+  test::OobeJS().ExpectEQ(frame_url + ".search('auto_reload_attempts')", -1);
 }
 
 IN_PROC_BROWSER_TEST_F(AutoReloadWebviewLoginTest, NewUserWithAutoReloadSet) {
@@ -1055,15 +1075,13 @@ IN_PROC_BROWSER_TEST_F(AutoReloadWebviewLoginTest, NewUserWithAutoReloadSet) {
   WaitForGaiaPageReload();
 
   std::string frame_url = "$('gaia-signin').authenticator.reloadUrl_";
-  test::OobeJS().ExpectTrue(frame_url +
-                            ".search('auto_reload_attempts=1') != -1");
+  test::OobeJS().ExpectNE(frame_url + ".search('auto_reload_attempts=1')", -1);
 
   AdvanceTime(base::Minutes(10));
 
   WaitForGaiaPageReload();
 
-  test::OobeJS().ExpectTrue(frame_url +
-                            ".search('auto_reload_attempts=2') != -1");
+  test::OobeJS().ExpectNE(frame_url + ".search('auto_reload_attempts=2')", -1);
 }
 
 IN_PROC_BROWSER_TEST_F(AutoReloadWebviewLoginTest,
@@ -1094,7 +1112,7 @@ IN_PROC_BROWSER_TEST_F(AutoReloadWebviewLoginTest,
   EXPECT_TRUE(IsAutoReloadActive());
 
   // Disconnect from all networks in order to trigger the network screen.
-  network_state_test_helper_->service_test()->ClearServices();
+  network_state_test_helper()->service_test()->ClearServices();
   base::RunLoop().RunUntilIdle();
 
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
@@ -1102,7 +1120,7 @@ IN_PROC_BROWSER_TEST_F(AutoReloadWebviewLoginTest,
   EXPECT_FALSE(IsAutoReloadActive());
 
   // Reconnect network.
-  network_state_test_helper_->service_test()->AddService(
+  network_state_test_helper()->service_test()->AddService(
       /*service_path=*/kWifiServicePath, /*guid=*/kWifiServicePath,
       /*name=*/kWifiServicePath, /*type=*/shill::kTypeWifi,
       /*state=*/shill::kStateOnline, /*visible=*/true);
@@ -1111,6 +1129,52 @@ IN_PROC_BROWSER_TEST_F(AutoReloadWebviewLoginTest,
   WaitForGaiaPageReload();
 
   EXPECT_TRUE(IsAutoReloadActive());
+}
+
+IN_PROC_BROWSER_TEST_F(AutoReloadWebviewLoginTest,
+                       PostponeAutoreloadOnUserActive) {
+  const int auto_reload_value = 10;  // 10 minutes
+  SetAutoReloadInterval(auto_reload_value);
+
+  EnterUsernameAndGoToPasswordPage();
+
+  AdvanceTime(base::Minutes(auto_reload_value) - base::Seconds(5));
+  EXPECT_TRUE(IsAutoReloadActive());
+
+  // Simulate user action by force returning the value for `CalculateIdleTime()`
+  // which will be used by `OnIdleStateChange()` in
+  // AuthenticationFlowAutoReloadManager.
+  auto mock_time_provider = std::make_unique<NiceMock<MockIdleTimeProvider>>();
+
+  EXPECT_CALL(*mock_time_provider, CalculateIdleTime())
+      // Simulates a user going back to active.
+      .WillRepeatedly(testing::Return(base::Seconds(0)));
+
+  ui::test::ScopedIdleProviderForTest scoped_idle_provider(
+      std::move(mock_time_provider));
+
+  // Advance time to be just past the original `auto_reload_value` reload
+  // interval. Here, the time passed would now be `auto_reload_value minutes` +
+  // 5 seconds.
+  AdvanceTime(base::Seconds(10));
+
+  // No autoreload should have fired yet.
+  std::string frame_url = "$('gaia-signin').authenticator.reloadUrl_";
+  test::OobeJS().ExpectEQ(frame_url + ".search('auto_reload_attempts=1')", -1);
+
+  // Advance time to pass the postponed time interval.
+  const base::TimeDelta postpone_interval =
+      LoginDisplayHost::default_host()
+          ->GetOobeUI()
+          ->GetHandler<GaiaScreenHandler>()
+          ->GetAutoReloadManagerForTesting()
+          .kPostponeInterval;
+  AdvanceTime(postpone_interval - base::Seconds(5));
+  EXPECT_TRUE(IsAutoReloadActive());
+
+  // A reload should take place after kPostponeInterval has passed.
+  WaitForGaiaPageReload();
+  test::OobeJS().ExpectNE(frame_url + ".search('auto_reload_attempts=1')", -1);
 }
 
 class ReauthWebviewLoginTest : public WebviewLoginTest {

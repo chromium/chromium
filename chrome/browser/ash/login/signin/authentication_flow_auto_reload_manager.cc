@@ -13,9 +13,14 @@
 
 namespace ash {
 
-base::Clock* AuthenticationFlowAutoReloadManager::clock_for_testing_ = nullptr;
-base::TickClock* AuthenticationFlowAutoReloadManager::tick_clock_for_testing_ =
-    nullptr;
+namespace {
+
+base::Clock* clock_for_testing = nullptr;
+const base::TickClock* tick_clock_for_testing = nullptr;
+
+}  // namespace
+
+static constexpr base::TimeDelta kIdleThreshold = base::Seconds(15);
 
 AuthenticationFlowAutoReloadManager::AuthenticationFlowAutoReloadManager() {
   local_state_registrar_.Init(g_browser_process->local_state());
@@ -23,17 +28,17 @@ AuthenticationFlowAutoReloadManager::AuthenticationFlowAutoReloadManager() {
       prefs::kAuthenticationFlowAutoReloadInterval,
       base::BindRepeating(&AuthenticationFlowAutoReloadManager::OnPolicyUpdated,
                           base::Unretained(this)));
-  if (clock_for_testing_ && tick_clock_for_testing_) {
+  if (clock_for_testing && tick_clock_for_testing) {
     auto_reload_timer_ = std::make_unique<base::WallClockTimer>(
-        clock_for_testing_, tick_clock_for_testing_);
+        clock_for_testing, tick_clock_for_testing);
   } else {
     auto_reload_timer_ = std::make_unique<base::WallClockTimer>();
   }
 }
 
 AuthenticationFlowAutoReloadManager::~AuthenticationFlowAutoReloadManager() {
-  clock_for_testing_ = nullptr;
-  tick_clock_for_testing_ = nullptr;
+  clock_for_testing = nullptr;
+  tick_clock_for_testing = nullptr;
 }
 
 void AuthenticationFlowAutoReloadManager::Activate(base::OnceClosure callback) {
@@ -42,11 +47,14 @@ void AuthenticationFlowAutoReloadManager::Activate(base::OnceClosure callback) {
     return;
   }
 
+  idle_state_observer_.Reset();
+  idle_state_observer_.Observe(ui::IdlePollingService::GetInstance());
+  reload_postponed_ = false;
   callback_ = std::move(callback);
 
   // Start timer for automatic reload of authentication flow
   const base::Time now =
-      clock_for_testing_ ? clock_for_testing_->Now() : base::Time::Now();
+      clock_for_testing ? clock_for_testing->Now() : base::Time::Now();
   const base::Time desired_run_time = now + reload_interval_.value();
 
   // Start will override previously scheduled reload if Activate was already
@@ -59,12 +67,40 @@ void AuthenticationFlowAutoReloadManager::Activate(base::OnceClosure callback) {
 }
 
 void AuthenticationFlowAutoReloadManager::ReloadAuthenticationFlow() {
-  // TODO(b/352023469): postpone reload if user started typing
-  ++auto_reload_attempts_;
-  std::move(callback_).Run();
+  // If user was not active in the last `kIdleThreshold` seconds or the user is
+  // active but the automatic reload has already been postponed once before,
+  // reload the auth flow.
+  if (is_idle_ || reload_postponed_) {
+    ++auto_reload_attempts_;
+    std::move(callback_).Run();
+  } else {
+    auto_reload_timer_->Stop();
+    reload_postponed_ = true;
+
+    const base::Time now =
+        clock_for_testing ? clock_for_testing->Now() : base::Time::Now();
+
+    auto_reload_timer_->Start(
+        FROM_HERE, now + kPostponeInterval,
+        base::BindOnce(
+            &AuthenticationFlowAutoReloadManager::ReloadAuthenticationFlow,
+            base::Unretained(this)));
+  }
+}
+
+void AuthenticationFlowAutoReloadManager::OnIdleStateChange(
+    const ui::IdlePollingService::State& state) {
+  if (state.idle_time < kIdleThreshold) {
+    // User activity detected less than `kIdleThreshold` seconds ago.
+    is_idle_ = false;
+  } else {
+    // No user activity detected in the last `kIdleThreshold` seconds.
+    is_idle_ = true;
+  }
 }
 
 void AuthenticationFlowAutoReloadManager::Terminate() {
+  idle_state_observer_.Reset();
   auto_reload_timer_->Stop();
   auto_reload_attempts_ = 0;
 }
@@ -98,9 +134,9 @@ AuthenticationFlowAutoReloadManager::GetAutoReloadInterval() {
 // static
 void AuthenticationFlowAutoReloadManager::SetClockForTesting(
     base::Clock* clock,
-    base::TickClock* tick_clock) {
-  clock_for_testing_ = clock;
-  tick_clock_for_testing_ = tick_clock;
+    const base::TickClock* tick_clock) {
+  clock_for_testing = clock;
+  tick_clock_for_testing = tick_clock;
 }
 
 void AuthenticationFlowAutoReloadManager::ResumeTimerForTesting() {
@@ -109,8 +145,8 @@ void AuthenticationFlowAutoReloadManager::ResumeTimerForTesting() {
   }
 }
 
-bool AuthenticationFlowAutoReloadManager::IsTimerActiveForTesting() {
-  return auto_reload_timer_->IsRunning();
+bool AuthenticationFlowAutoReloadManager::IsActiveForTesting() {
+  return auto_reload_timer_->IsRunning() && idle_state_observer_.IsObserving();
 }
 
 int AuthenticationFlowAutoReloadManager::GetAttemptsCount() const {
