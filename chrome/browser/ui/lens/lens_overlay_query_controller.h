@@ -44,6 +44,14 @@ class VariationsClient;
 
 namespace lens {
 
+// The possible page content types for a contextual query.
+enum class PageContentMimeType {
+  kNone = 0,
+  kPdf = 1,
+  kHtml = 2,
+  kPlainText = 3,
+};
+
 // Callback type alias for the lens overlay full image response.
 using LensOverlayFullImageResponseCallback =
     base::RepeatingCallback<void(std::vector<lens::mojom::OverlayObjectPtr>,
@@ -88,7 +96,7 @@ class LensOverlayQueryController {
       std::optional<std::string> page_title,
       std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
       base::span<const uint8_t> underlying_content_bytes,
-      const std::string& underlying_content_type,
+      lens::PageContentMimeType underlying_content_type,
       float ui_scale_factor);
 
   // Clears the state and resets stored values.
@@ -523,9 +531,9 @@ class LensOverlayQueryController {
   // could be provided.
   base::span<const uint8_t> underlying_content_bytes_;
 
-  // The mime type of underlying_content_bytes. Will be empty if
+  // The mime type of underlying_content_bytes. Will be kNone if
   // underlying_content_bytes_ is empty.
-  std::string underlying_content_type_;
+  lens::PageContentMimeType underlying_content_type_;
 
   // Whether or not the parent interaction query has been sent. This should
   // always be the first interaction in a query flow.

@@ -374,7 +374,7 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
       std::optional<std::string> page_title,
       std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
       base::span<const uint8_t> underlying_content_bytes,
-      const std::string& underlying_content_type,
+      lens::PageContentMimeType underlying_content_type,
       float ui_scale_factor) override {
     // Send response for full image callback / HandleStartQueryResponse.
     std::vector<lens::mojom::OverlayObjectPtr> test_objects;
@@ -463,7 +463,7 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
     last_queried_text_.clear();
     last_queried_region_bytes_ = std::nullopt;
     last_sent_underlying_content_bytes_ = base::span<const uint8_t>();
-    last_sent_underlying_content_type_ = "";
+    last_sent_underlying_content_type_ = lens::PageContentMimeType::kNone;
   }
 
   bool full_image_request_should_return_error_ = false;
@@ -472,7 +472,7 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
   lens::mojom::CenterRotatedBoxPtr last_queried_region_;
   std::optional<SkBitmap> last_queried_region_bytes_;
   base::span<const uint8_t> last_sent_underlying_content_bytes_;
-  std::string last_sent_underlying_content_type_;
+  lens::PageContentMimeType last_sent_underlying_content_type_;
   std::optional<lens::mojom::UserAction> last_user_action_;
 };
 
@@ -3887,7 +3887,7 @@ IN_PROC_BROWSER_TEST_P(LensOverlayControllerBrowserPDFContextualizationTest,
       controller->get_lens_overlay_query_controller_for_testing());
   ASSERT_FALSE(
       fake_query_controller->last_sent_underlying_content_bytes_.empty());
-  ASSERT_EQ("application/pdf",
+  ASSERT_EQ(lens::PageContentMimeType::kPdf,
             fake_query_controller->last_sent_underlying_content_type_);
 
   // Verify the searchbox was shown.
@@ -4220,7 +4220,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
       controller->get_lens_overlay_query_controller_for_testing());
   ASSERT_FALSE(
       fake_query_controller->last_sent_underlying_content_bytes_.empty());
-  ASSERT_EQ("text/plain",
+  ASSERT_EQ(lens::PageContentMimeType::kPlainText,
             fake_query_controller->last_sent_underlying_content_type_);
 
   // Verify the bytes are actually what we expect them to be.
@@ -4263,7 +4263,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerInnerHtmlEnabledTest,
       controller->get_lens_overlay_query_controller_for_testing());
   ASSERT_FALSE(
       fake_query_controller->last_sent_underlying_content_bytes_.empty());
-  ASSERT_EQ("text/html",
+  ASSERT_EQ(lens::PageContentMimeType::kHtml,
             fake_query_controller->last_sent_underlying_content_type_);
 
   // Verify the bytes are actually what we expect them to be.
@@ -4417,8 +4417,8 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
       controller->get_lens_overlay_query_controller_for_testing());
   ASSERT_TRUE(
       fake_query_controller->last_sent_underlying_content_bytes_.empty());
-  ASSERT_TRUE(
-      fake_query_controller->last_sent_underlying_content_type_.empty());
+  ASSERT_EQ(lens::PageContentMimeType::kNone,
+      fake_query_controller->last_sent_underlying_content_type_);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,

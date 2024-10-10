@@ -70,9 +70,12 @@ constexpr char kOAuthConsumerName[] = "LensOverlayQueryController";
 constexpr char kStartTimeQueryParameter[] = "qsubts";
 constexpr char kGen204IdentifierQueryParameter[] = "plla";
 constexpr char kVisualSearchInteractionDataQueryParameterKey[] = "vsint";
+constexpr char kPdfMimeType[] = "application/pdf";
+constexpr char kPlainTextMimeType[] = "text/plain";
+constexpr char kHtmlMimeType[] = "text/html";
 constexpr char kVisualInputTypeQueryParameterKey[] = "vit";
-// TODO(b/362997636): Video is temporary for prototyping. Needs to change once
-// the server is ready.
+constexpr char kPdfVisualInputTypeQueryParameterValue[] = "pdf";
+constexpr char kWebpageVisualInputTypeQueryParameterValue[] = "wp";
 constexpr char kContextualVisualInputTypeQueryParameterValue[] = "video";
 
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotationTag =
@@ -178,6 +181,44 @@ std::map<std::string, std::string> AddStartTimeQueryParam(
   return additional_search_query_params;
 }
 
+std::map<std::string, std::string> AddVisualInputTypeQueryParam(
+    std::map<std::string, std::string> additional_search_query_params,
+    PageContentMimeType content_type) {
+  // Default contextual visual input type.
+  std::string vitValue = kContextualVisualInputTypeQueryParameterValue;
+  switch (content_type) {
+    case PageContentMimeType::kPdf:
+      if (lens::features::UsePdfVitParam()) {
+        vitValue = kPdfVisualInputTypeQueryParameterValue;
+      }
+      break;
+    case PageContentMimeType::kHtml:
+    case PageContentMimeType::kPlainText:
+      if (lens::features::UseWebpageVitParam()) {
+        vitValue = kWebpageVisualInputTypeQueryParameterValue;
+      }
+      break;
+    case PageContentMimeType::kNone:
+      break;
+  }
+  additional_search_query_params.insert(
+      {kVisualInputTypeQueryParameterKey, vitValue});
+  return additional_search_query_params;
+}
+
+std::string ContentTypeToString(PageContentMimeType content_type) {
+  switch (content_type) {
+    case PageContentMimeType::kPdf:
+      return kPdfMimeType;
+    case PageContentMimeType::kHtml:
+      return kHtmlMimeType;
+    case PageContentMimeType::kPlainText:
+      return kPlainTextMimeType;
+    case PageContentMimeType::kNone:
+      return "";
+  }
+}
+
 lens::LensOverlayClientLogs::LensOverlayEntryPoint
 LenOverlayEntryPointFromInvocationSource(
     lens::LensOverlayInvocationSource invocation_source) {
@@ -239,7 +280,7 @@ void LensOverlayQueryController::StartQueryFlow(
     std::optional<std::string> page_title,
     std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes,
     base::span<const uint8_t> underlying_content_bytes,
-    const std::string& underlying_content_type,
+    PageContentMimeType underlying_content_type,
     float ui_scale_factor) {
   original_screenshot_ = screenshot;
   page_url_ = page_url;
@@ -318,9 +359,8 @@ void LensOverlayQueryController::SendTextOnlyQuery(
   // Lens request, instead of going straight through GWS.
   if (!underlying_content_bytes_.empty()) {
     // Include the vit to get contextualized results.
-    additional_search_query_params.insert(
-        {kVisualInputTypeQueryParameterKey,
-         kContextualVisualInputTypeQueryParameterValue});
+    additional_search_query_params = AddVisualInputTypeQueryParam(
+        additional_search_query_params, underlying_content_type_);
 
     // TODO(b/362816047): Send the correct selection type once it is ready.
     SendInteraction(/*region=*/nullptr, query_text,
@@ -605,7 +645,7 @@ void LensOverlayQueryController::
     lens::Payload payload;
     payload.mutable_content_data()->assign(underlying_content_bytes_.begin(),
                                            underlying_content_bytes_.end());
-    payload.set_content_type(underlying_content_type_);
+    payload.set_content_type(ContentTypeToString(underlying_content_type_));
     request.mutable_objects_request()->mutable_payload()->CopyFrom(payload);
   }
 
@@ -785,7 +825,7 @@ void LensOverlayQueryController::PrepareAndFetchPageContentRequest() {
   lens::Payload payload;
   payload.mutable_content_data()->assign(underlying_content_bytes_.begin(),
                                          underlying_content_bytes_.end());
-  payload.set_content_type(underlying_content_type_);
+  payload.set_content_type(ContentTypeToString(underlying_content_type_));
   request.mutable_objects_request()->mutable_payload()->CopyFrom(payload);
 
   page_content_access_token_fetcher_ = CreateOAuthHeadersAndContinue(

@@ -111,9 +111,6 @@ constexpr base::TimeDelta kFadeoutAnimationTimeout = base::Milliseconds(300);
 // The url query param key for the search query.
 inline constexpr char kTextQueryParameterKey[] = "q";
 
-inline constexpr char kPdfMimeType[] = "application/pdf";
-inline constexpr char kPlainTextMimeType[] = "text/plain";
-
 // Allows lookup of a LensOverlayController from a WebContents associated with a
 // tab.
 class LensOverlayControllerTabLookup
@@ -1435,7 +1432,7 @@ void LensOverlayController::OnPdfBytesReceived(
   // TODO(b/370530197): Show user error message if status is not success.
   if (status == pdf::mojom::PdfListener::GetPdfBytesStatus::kSuccess) {
     initialization_data->page_content_bytes_ = bytes;
-    initialization_data->page_content_type_ = kPdfMimeType;
+    initialization_data->page_content_type_ = lens::PageContentMimeType::kPdf;
   }
   InitializeOverlay(std::move(initialization_data));
 }
@@ -1447,7 +1444,8 @@ void LensOverlayController::OnInnerTextReceived(
   if (result) {
     initialization_data->page_content_bytes_ = std::vector<uint8_t>(
         result->inner_text.begin(), result->inner_text.end());
-    initialization_data->page_content_type_ = kPlainTextMimeType;
+    initialization_data->page_content_type_ =
+        lens::PageContentMimeType::kPlainText;
   }
   InitializeOverlay(std::move(initialization_data));
 }
@@ -1458,7 +1456,7 @@ void LensOverlayController::OnInnerHtmlReceived(
   if (result.has_value()) {
     initialization_data->page_content_bytes_ =
         std::vector<uint8_t>(result->begin(), result->end());
-    initialization_data->page_content_type_ = "text/html";
+    initialization_data->page_content_type_ = lens::PageContentMimeType::kHtml;
   }
   InitializeOverlay(std::move(initialization_data));
 }

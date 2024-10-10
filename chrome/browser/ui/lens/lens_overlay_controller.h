@@ -562,9 +562,10 @@ class LensOverlayController : public LensSearchboxClient,
     // retrieved.
     std::vector<uint8_t> page_content_bytes_;
 
-    // The mime type of page_content_bytes_. Empty if
-    // page_content_bytes_is empty.
-    std::string page_content_type_;
+    // The mime type of page_content_bytes_. kNone if page_content_bytes_is
+    // empty.
+    lens::PageContentMimeType page_content_type_ =
+        lens::PageContentMimeType::kNone;
 
     // Bounding boxes for significant regions identified in the screenshot.
     std::vector<lens::mojom::CenterRotatedBoxPtr> significant_region_boxes_;

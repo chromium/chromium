@@ -281,6 +281,12 @@ constexpr base::FeatureParam<size_t> kLensOverlayFileUploadLimitBytes{
 const base::FeatureParam<base::TimeDelta> kLensOverlaySurveyResultsTime{
     &kLensOverlaySurvey, "results-time", base::Seconds(1)};
 
+constexpr base::FeatureParam<bool> kUsePdfVitParam{
+    &kLensOverlayContextualSearchbox, "use-pdf-vit-param", false};
+
+constexpr base::FeatureParam<bool> kUseWebpageVitParam{
+    &kLensOverlayContextualSearchbox, "use-webpage-vit-param", false};
+
 constexpr base::FeatureParam<std::string> kHomepageURLForLens{
     &kLensStandalone, "lens-homepage-url", "https://lens.google.com/v3/"};
 
@@ -527,6 +533,14 @@ uint32_t GetLensOverlayFileUploadLimitBytes() {
   return base::IsValueInRangeForNumericType<uint32_t>(limit)
              ? static_cast<uint32_t>(limit)
              : 0;
+}
+
+bool UsePdfVitParam() {
+  return kUsePdfVitParam.Get();
+}
+
+bool UseWebpageVitParam() {
+  return kUseWebpageVitParam.Get();
 }
 
 bool UsePdfsAsContext() {

@@ -360,6 +360,14 @@ extern std::string GetLensOverlayClusterInfoEndpointUrl();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern uint32_t GetLensOverlayFileUploadLimitBytes();
 
+// Returns whether to use the &vit=pdf param for the search request.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool UsePdfVitParam();
+
+// Returns whether to use the &vit=wp param for the search request.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool UseWebpageVitParam();
+
 // Returns whether to include PDFs from the underlying page in the request to be
 // used as page context.
 COMPONENT_EXPORT(LENS_FEATURES)

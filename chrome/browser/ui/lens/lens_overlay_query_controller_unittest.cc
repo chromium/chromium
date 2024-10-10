@@ -338,7 +338,9 @@ class LensOverlayQueryControllerTest : public testing::Test {
     feature_list_.InitAndEnableFeatureWithParameters(
         lens::features::kLensOverlayContextualSearchbox,
         {{"use-video-context-for-text-only-requests", "true"},
-         {"use-optimized-request-flow", "true"}});
+         {"use-optimized-request-flow", "true"},
+         {"use-pdf-vit-param", "true"},
+         {"use-webpage-vit-param", "true"}});
   }
 };
 
@@ -357,7 +359,7 @@ TEST_F(LensOverlayQueryControllerTest, FetchInitialQuery_ReturnsResponse) {
       bitmap, std::make_optional<GURL>(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*underlying_content_bytes=*/{}, /*underlying_content_type=*/"", 0);
+      /*underlying_content_bytes=*/{}, lens::PageContentMimeType::kNone, 0);
 
   task_environment_.RunUntilIdle();
   query_controller.EndQuery();
@@ -408,7 +410,7 @@ TEST_F(LensOverlayQueryControllerTest,
       bitmap, std::make_optional<GURL>(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*underlying_content_bytes=*/{}, /*underlying_content_type=*/"", 0);
+      /*underlying_content_bytes=*/{}, lens::PageContentMimeType::kNone, 0);
 
   task_environment_.RunUntilIdle();
   query_controller.EndQuery();
@@ -454,7 +456,7 @@ TEST_F(LensOverlayQueryControllerTest,
       bitmap, std::make_optional<GURL>(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*underlying_content_bytes=*/{}, /*underlying_content_type=*/"", 0);
+      /*underlying_content_bytes=*/{}, lens::PageContentMimeType::kNone, 0);
   task_environment_.RunUntilIdle();
 
   auto region = lens::mojom::CenterRotatedBox::New();
@@ -504,7 +506,7 @@ TEST_F(LensOverlayQueryControllerTest,
       bitmap, std::make_optional<GURL>(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*underlying_content_bytes=*/{}, /*underlying_content_type=*/"", 0);
+      /*underlying_content_bytes=*/{}, lens::PageContentMimeType::kNone, 0);
   task_environment_.RunUntilIdle();
 
   auto region = lens::mojom::CenterRotatedBox::New();
@@ -597,7 +599,7 @@ TEST_F(LensOverlayQueryControllerTest,
       viewport_bitmap, std::make_optional<GURL>(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*underlying_content_bytes=*/{}, /*underlying_content_type=*/"", 0);
+      /*underlying_content_bytes=*/{}, lens::PageContentMimeType::kNone, 0);
   task_environment_.RunUntilIdle();
 
   SkBitmap region_bitmap = CreateNonEmptyBitmap(100, 100);
@@ -700,7 +702,7 @@ TEST_F(LensOverlayQueryControllerTest,
       bitmap, std::make_optional<GURL>(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*underlying_content_bytes=*/{}, /*underlying_content_type=*/"", 0);
+      /*underlying_content_bytes=*/{}, lens::PageContentMimeType::kNone, 0);
   task_environment_.RunUntilIdle();
 
   auto region = lens::mojom::CenterRotatedBox::New();
@@ -792,7 +794,7 @@ TEST_F(LensOverlayQueryControllerTest,
       bitmap, std::make_optional<GURL>(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*underlying_content_bytes=*/{}, /*underlying_content_type=*/"", 0);
+      /*underlying_content_bytes=*/{}, lens::PageContentMimeType::kNone, 0);
   task_environment_.RunUntilIdle();
 
   query_controller.SendTextOnlyQuery("", TextOnlyQueryType::kLensTextSelection,
@@ -821,7 +823,7 @@ TEST_F(LensOverlayQueryControllerTest,
 }
 
 TEST_F(LensOverlayQueryControllerTest,
-       FetchTextOnlyInteractionWithContentBytes_ReturnsResponse) {
+       FetchTextOnlyInteractionWithPdfBytes_ReturnsResponse) {
   base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
                          lens::mojom::TextPtr, bool>
       full_image_response_future;
@@ -850,7 +852,7 @@ TEST_F(LensOverlayQueryControllerTest,
       bitmap, std::make_optional<GURL>(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(), fake_content_bytes,
-      "application/pdf", 0);
+      lens::PageContentMimeType::kPdf, 0);
   task_environment_.RunUntilIdle();
   query_controller.SendTextOnlyQuery(kTestQueryText,
                                      TextOnlyQueryType::kLensTextSelection,
@@ -910,7 +912,201 @@ TEST_F(LensOverlayQueryControllerTest,
             lens::UNKNOWN_SELECTION_TYPE);
   ASSERT_TRUE(has_start_time);
   ASSERT_TRUE(has_visual_input_type);
-  ASSERT_EQ(visual_input_type, "video");
+  ASSERT_EQ(visual_input_type, "pdf");
+  ASSERT_TRUE(has_invocation_source);
+  ASSERT_EQ(invocation_source, "chrome.cr.menu");
+  ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent_, 1);
+  ASSERT_TRUE(url_response_future.Get().has_url());
+}
+
+TEST_F(LensOverlayQueryControllerTest,
+       FetchTextOnlyInteractionWithHtml_ReturnsResponse) {
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
+      url_response_future;
+  base::test::TestFuture<lens::proto::LensOverlaySuggestInputs>
+      interaction_data_response_future;
+  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  LensOverlayQueryControllerMock query_controller(
+      full_image_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(),
+      interaction_data_response_future.GetRepeatingCallback(),
+      thumbnail_created_future.GetRepeatingCallback(),
+      fake_variations_client_.get(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false, GetGen204Controller());
+  query_controller.fake_objects_response_.mutable_cluster_info()
+      ->set_server_session_id(kTestServerSessionId);
+  query_controller.fake_interaction_response_.set_encoded_response(
+      kTestSuggestSignals);
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  std::map<std::string, std::string> additional_search_query_params;
+  std::vector<uint8_t> fake_content_bytes({1, 2, 3, 4});
+  query_controller.StartQueryFlow(
+      bitmap, std::make_optional<GURL>(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(), fake_content_bytes,
+      lens::PageContentMimeType::kHtml, 0);
+  task_environment_.RunUntilIdle();
+  query_controller.SendTextOnlyQuery(kTestQueryText,
+                                     TextOnlyQueryType::kLensTextSelection,
+                                     additional_search_query_params);
+  task_environment_.RunUntilIdle();
+  query_controller.EndQuery();
+
+  ASSERT_TRUE(full_image_response_future.IsReady());
+
+  // Verify the content bytes were not included with the image bytes request.
+  auto full_image_request = query_controller.sent_full_image_objects_request_;
+  ASSERT_EQ(full_image_request.image_data().image_metadata().width(), 100);
+  ASSERT_EQ(full_image_request.image_data().image_metadata().height(), 100);
+  ASSERT_TRUE(full_image_request.payload().content_data().empty());
+
+  // Verify the content bytes were included in a followup request.
+  auto page_content_request =
+      query_controller.sent_page_content_objects_request_;
+  ASSERT_FALSE(page_content_request.payload().content_data().empty());
+  ASSERT_EQ(page_content_request.payload().content_type(), "text/html");
+
+  // The full image and page content requests should have the same request id.
+  ASSERT_EQ(full_image_request.request_context().request_id().sequence_id(),
+            page_content_request.request_context().request_id().sequence_id());
+
+  // Check interaction request is correct.
+  auto sent_interaction_request = query_controller.sent_interaction_request_;
+  ASSERT_TRUE(interaction_data_response_future.IsReady());
+  ASSERT_EQ(
+      sent_interaction_request.request_context().request_id().sequence_id(), 3);
+  ASSERT_EQ(
+      sent_interaction_request.interaction_request_metadata().type(),
+      lens::LensOverlayInteractionRequestMetadata::CONTEXTUAL_SEARCH_QUERY);
+  ASSERT_EQ(sent_interaction_request.interaction_request_metadata()
+                .query_metadata()
+                .text_query()
+                .query(),
+            kTestQueryText);
+  ASSERT_FALSE(sent_interaction_request.interaction_request_metadata()
+                   .has_selection_metadata());
+
+  // Check search URL is correct.
+  ASSERT_TRUE(url_response_future.IsReady());
+  std::string unused_start_time;
+  bool has_start_time =
+      net::GetValueForKeyInQuery(GURL(url_response_future.Get().url()),
+                                 kStartTimeQueryParam, &unused_start_time);
+  std::string visual_input_type;
+  bool has_visual_input_type = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()), kVisualInputTypeParameterKey,
+      &visual_input_type);
+  std::string invocation_source;
+  bool has_invocation_source = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()), kInvocationSourceParameterKey,
+      &invocation_source);
+  ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
+            lens::UNKNOWN_SELECTION_TYPE);
+  ASSERT_TRUE(has_start_time);
+  ASSERT_TRUE(has_visual_input_type);
+  ASSERT_EQ(visual_input_type, "wp");
+  ASSERT_TRUE(has_invocation_source);
+  ASSERT_EQ(invocation_source, "chrome.cr.menu");
+  ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent_, 1);
+  ASSERT_TRUE(url_response_future.Get().has_url());
+}
+
+TEST_F(LensOverlayQueryControllerTest,
+       FetchTextOnlyInteractionWithHtmlInnerText_ReturnsResponse) {
+  base::test::TestFuture<std::vector<lens::mojom::OverlayObjectPtr>,
+                         lens::mojom::TextPtr, bool>
+      full_image_response_future;
+  base::test::TestFuture<lens::proto::LensOverlayUrlResponse>
+      url_response_future;
+  base::test::TestFuture<lens::proto::LensOverlaySuggestInputs>
+      interaction_data_response_future;
+  base::test::TestFuture<const std::string&> thumbnail_created_future;
+  LensOverlayQueryControllerMock query_controller(
+      full_image_response_future.GetRepeatingCallback(),
+      url_response_future.GetRepeatingCallback(),
+      interaction_data_response_future.GetRepeatingCallback(),
+      thumbnail_created_future.GetRepeatingCallback(),
+      fake_variations_client_.get(),
+      IdentityManagerFactory::GetForProfile(profile()), profile(),
+      lens::LensOverlayInvocationSource::kAppMenu,
+      /*use_dark_mode=*/false, GetGen204Controller());
+  query_controller.fake_objects_response_.mutable_cluster_info()
+      ->set_server_session_id(kTestServerSessionId);
+  query_controller.fake_interaction_response_.set_encoded_response(
+      kTestSuggestSignals);
+  SkBitmap bitmap = CreateNonEmptyBitmap(100, 100);
+  std::map<std::string, std::string> additional_search_query_params;
+  std::vector<uint8_t> fake_content_bytes({1, 2, 3, 4});
+  query_controller.StartQueryFlow(
+      bitmap, std::make_optional<GURL>(kTestPageUrl),
+      std::make_optional<std::string>(kTestPageTitle),
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(), fake_content_bytes,
+      lens::PageContentMimeType::kPlainText, 0);
+  task_environment_.RunUntilIdle();
+  query_controller.SendTextOnlyQuery(kTestQueryText,
+                                     TextOnlyQueryType::kLensTextSelection,
+                                     additional_search_query_params);
+  task_environment_.RunUntilIdle();
+  query_controller.EndQuery();
+
+  ASSERT_TRUE(full_image_response_future.IsReady());
+
+  // Verify the content bytes were not included with the image bytes request.
+  auto full_image_request = query_controller.sent_full_image_objects_request_;
+  ASSERT_EQ(full_image_request.image_data().image_metadata().width(), 100);
+  ASSERT_EQ(full_image_request.image_data().image_metadata().height(), 100);
+  ASSERT_TRUE(full_image_request.payload().content_data().empty());
+
+  // Verify the content bytes were included in a followup request.
+  auto page_content_request =
+      query_controller.sent_page_content_objects_request_;
+  ASSERT_FALSE(page_content_request.payload().content_data().empty());
+  ASSERT_EQ(page_content_request.payload().content_type(), "text/plain");
+
+  // The full image and page content requests should have the same request id.
+  ASSERT_EQ(full_image_request.request_context().request_id().sequence_id(),
+            page_content_request.request_context().request_id().sequence_id());
+
+  // Check interaction request is correct.
+  auto sent_interaction_request = query_controller.sent_interaction_request_;
+  ASSERT_TRUE(interaction_data_response_future.IsReady());
+  ASSERT_EQ(
+      sent_interaction_request.request_context().request_id().sequence_id(), 3);
+  ASSERT_EQ(
+      sent_interaction_request.interaction_request_metadata().type(),
+      lens::LensOverlayInteractionRequestMetadata::CONTEXTUAL_SEARCH_QUERY);
+  ASSERT_EQ(sent_interaction_request.interaction_request_metadata()
+                .query_metadata()
+                .text_query()
+                .query(),
+            kTestQueryText);
+  ASSERT_FALSE(sent_interaction_request.interaction_request_metadata()
+                   .has_selection_metadata());
+
+  // Check search URL is correct.
+  ASSERT_TRUE(url_response_future.IsReady());
+  std::string unused_start_time;
+  bool has_start_time =
+      net::GetValueForKeyInQuery(GURL(url_response_future.Get().url()),
+                                 kStartTimeQueryParam, &unused_start_time);
+  std::string visual_input_type;
+  bool has_visual_input_type = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()), kVisualInputTypeParameterKey,
+      &visual_input_type);
+  std::string invocation_source;
+  bool has_invocation_source = net::GetValueForKeyInQuery(
+      GURL(url_response_future.Get().url()), kInvocationSourceParameterKey,
+      &invocation_source);
+  ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
+            lens::UNKNOWN_SELECTION_TYPE);
+  ASSERT_TRUE(has_start_time);
+  ASSERT_TRUE(has_visual_input_type);
+  ASSERT_EQ(visual_input_type, "wp");
   ASSERT_TRUE(has_invocation_source);
   ASSERT_EQ(invocation_source, "chrome.cr.menu");
   ASSERT_EQ(query_controller.num_full_page_objects_gen204_pings_sent_, 1);
@@ -951,7 +1147,8 @@ TEST_F(LensOverlayQueryControllerTest,
       bitmap, std::make_optional<GURL>(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*underlying_content_bytes=*/{}, /*underlying_content_type=*/"", /**/ 0);
+      /*underlying_content_bytes=*/{}, lens::PageContentMimeType::kNone,
+      /**/ 0);
   task_environment_.RunUntilIdle();
 
   ASSERT_TRUE(full_image_response_future.IsReady());
@@ -1009,7 +1206,7 @@ TEST_F(LensOverlayQueryControllerTest,
       bitmap, std::make_optional<GURL>(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*underlying_content_bytes=*/{}, /*underlying_content_type=*/"", 0);
+      /*underlying_content_bytes=*/{}, lens::PageContentMimeType::kNone, 0);
   task_environment_.RunUntilIdle();
 
   ASSERT_TRUE(full_image_response_future.IsReady());
@@ -1060,7 +1257,7 @@ TEST_F(LensOverlayQueryControllerTest,
       bitmap, std::make_optional<GURL>(kTestPageUrl),
       std::make_optional<std::string>(kTestPageTitle),
       std::vector<lens::mojom::CenterRotatedBoxPtr>(),
-      /*underlying_content_bytes=*/{}, /*underlying_content_type=*/"", 0);
+      /*underlying_content_bytes=*/{}, lens::PageContentMimeType::kNone, 0);
   ASSERT_TRUE(full_image_response_future.Wait());
 
   // Check initial fetch objects request id is correct.
