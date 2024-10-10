@@ -451,6 +451,9 @@ void AutofillPredictionImprovementsManager::UserClickedLearnMore() {
 
 bool AutofillPredictionImprovementsManager::ShouldProvidePredictionImprovements(
     const GURL& url) const {
+  if (MlExecutionDisabled()) {
+    return false;
+  }
   if (!IsUserEligible()) {
     return false;
   }

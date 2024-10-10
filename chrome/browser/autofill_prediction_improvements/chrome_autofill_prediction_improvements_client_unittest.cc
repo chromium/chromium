@@ -16,6 +16,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/user_annotations/test_user_annotations_service.h"
 #include "content/public/test/web_contents_tester.h"
@@ -90,17 +91,41 @@ TEST_F(ChromeAutofillPredictionImprovementsClientTest,
 
 TEST_F(ChromeAutofillPredictionImprovementsClientTest,
        EligibilityOfNotSignedInUser) {
-  signin::MakeAccountAvailable(
+  AccountInfo account_info = signin::MakeAccountAvailable(
       IdentityManagerFactory::GetForProfile(profile()),
       signin::AccountAvailabilityOptionsBuilder().Build("example@gmail.com"));
+
+  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+  mutator.set_can_use_model_execution_features(true);
+
   EXPECT_FALSE(client()->IsUserEligible());
 }
 
 TEST_F(ChromeAutofillPredictionImprovementsClientTest,
-       EligibilityOfSignedInUser) {
-  signin::MakePrimaryAccountAvailable(
-      IdentityManagerFactory::GetForProfile(profile()), "example@gmail.com",
-      signin::ConsentLevel::kSignin);
+       EligibilityOfSignedInUserWithMlDisabled) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile());
+  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+      identity_manager, "example@gmail.com", signin::ConsentLevel::kSignin);
+
+  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+  mutator.set_can_use_model_execution_features(false);
+  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+
+  EXPECT_FALSE(client()->IsUserEligible());
+}
+
+TEST_F(ChromeAutofillPredictionImprovementsClientTest,
+       EligibilityOfSignedInUserWithMlEnabled) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile());
+  AccountInfo account_info = signin::MakePrimaryAccountAvailable(
+      identity_manager, "example@gmail.com", signin::ConsentLevel::kSignin);
+
+  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+  mutator.set_can_use_model_execution_features(true);
+  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+
   EXPECT_TRUE(client()->IsUserEligible());
 }
 

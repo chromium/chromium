@@ -5,6 +5,7 @@
 #include "chrome/browser/autofill_prediction_improvements/chrome_autofill_prediction_improvements_client.h"
 
 #include "base/check_deref.h"
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/feedback/public/feedback_source.h"
@@ -23,6 +24,7 @@
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_annotations/user_annotations_service.h"
 #include "content/public/browser/web_contents.h"
@@ -176,10 +178,26 @@ bool ChromeAutofillPredictionImprovementsClient::IsUserEligible() {
   if (!identity_manager) {
     return false;
   }
-  signin_util::SignedInState state =
+
+  // The user needs to be in a syncing or signed-in state.
+  const signin_util::SignedInState state =
       signin_util::GetSignedInState(identity_manager);
-  return state == signin_util::SignedInState::kSignedIn ||
-         state == signin_util::SignedInState::kSyncing;
+  if (state != signin_util::SignedInState::kSignedIn &&
+      state != signin_util::SignedInState::kSyncing) {
+    return false;
+  }
+
+  // Exclude users that are not eligible for ML including supervised users.
+  if (identity_manager
+          ->FindExtendedAccountInfo(identity_manager->GetPrimaryAccountInfo(
+              signin::ConsentLevel::kSignin))
+          .capabilities.can_use_model_execution_features() !=
+      signin::Tribool::kTrue) {
+    std::cout << "capabilities not enabled" << std::endl;
+    return false;
+  }
+
+  return true;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeAutofillPredictionImprovementsClient);

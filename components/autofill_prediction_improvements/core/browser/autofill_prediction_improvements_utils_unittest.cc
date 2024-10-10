@@ -4,8 +4,10 @@
 
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_utils.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
+#include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill_prediction_improvements {
@@ -84,6 +86,23 @@ INSTANTIATE_TEST_SUITE_P(
             .has_prediction_improvement_type = false,
             .autofill_type = autofill::ADDRESS_HOME_LINE1}));
 
+// Test that an empty form is not eligible.
+TEST(AutofillPredictionImprovementsUtilsTest, MlExecutionDisabled) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(
+      optimization_guide::features::internal::kModelExecutionCapabilityDisable);
+
+  EXPECT_TRUE(MlExecutionDisabled());
+}
+
+// Test that an empty form is not eligible.
+TEST(AutofillPredictionImprovementsUtilsTest, MlExecutionEnabled) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndDisableFeature(
+      optimization_guide::features::internal::kModelExecutionCapabilityDisable);
+
+  EXPECT_FALSE(MlExecutionDisabled());
+}
 // Test that an empty form is not eligible.
 TEST(AutofillPredictionImprovementsUtilsTest,
      IsFormEligibleForFillingByFieldTypeCriteria_EmptyForm) {
