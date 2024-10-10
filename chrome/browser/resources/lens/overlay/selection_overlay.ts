@@ -209,6 +209,7 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       },
       selectionOverlayRect: Object,
       isSearchboxFocused: Boolean,
+      areLanguagePickersOpen: Boolean,
     };
   }
 
@@ -237,6 +238,9 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   // Whether the users focus is currently in the overlay searchbox. Passed in
   // from parent.
   private isSearchboxFocused: boolean;
+  // Whether any of the language pickers are currently open. Passed in from
+  // parent.
+  private areLanguagePickersOpen: boolean;
 
   // The selected region on which the context menu is being displayed. Used as
   // argument for copy and save as image calls.
@@ -645,8 +649,9 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     };
 
     // If searchbox is stealing focus, we only want to respond to drag gestures,
-    // so wait to send gesture started until a drag has happened.
-    if (!this.isSearchboxFocused) {
+    // so wait to send gesture started until a drag has happened. This is also
+    // the case if the language pickers are currently open.
+    if (!this.isSearchboxFocused && !this.areLanguagePickersOpen) {
       // If searchbox isn't stealing focus, start the gesture ASAP.
       this.handleGestureStart();
     }
@@ -1122,6 +1127,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
   setSearchboxFocusForTesting(isFocused: boolean) {
     this.isSearchboxFocused = isFocused;
+  }
+
+  setLanguagePickersOpenForTesting(open: boolean) {
+    this.areLanguagePickersOpen = open;
   }
 }
 

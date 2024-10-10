@@ -35,7 +35,6 @@ import {recordLensOverlayInteraction, recordTimeToWebUIReady} from './metrics_ut
 import type {SelectionOverlayElement} from './selection_overlay.js';
 import type {TranslateButtonElement} from './translate_button.js';
 
-
 export let INVOCATION_SOURCE: string = 'Unknown';
 
 export interface LensOverlayAppElement {
@@ -119,6 +118,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
         type: Boolean,
         reflectToAttribute: true,
       },
+      areLanguagePickersOpen: Boolean,
       toastMessage: String,
     };
   }
@@ -153,6 +153,8 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   private toastMessage: string = '';
   // Whether the user is current focused into the searchbox.
   private isSearchboxFocused: boolean = false;
+  // Whether the translate language pickers are open.
+  private areLanguagePickersOpen: boolean = false;
 
   private eventTracker_: EventTracker = new EventTracker();
 
@@ -210,6 +212,12 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
               this.$.translateButton.getTranslateEnableButton());
           this.browserProxy.handler.maybeShowTranslateFeaturePromo();
         });
+    this.eventTracker_.add(document, 'language-picker-closed', () => {
+      this.handleLanguagePickerClosed();
+    });
+    this.eventTracker_.add(document, 'language-picker-opened', () => {
+      this.handleLanguagePickersOpened();
+    });
   }
 
   override disconnectedCallback() {
@@ -257,6 +265,14 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
 
   private handleSearchboxBlurred() {
     this.isSearchboxFocused = false;
+  }
+
+  private handleLanguagePickersOpened() {
+    this.areLanguagePickersOpen = true;
+  }
+
+  private handleLanguagePickerClosed() {
+    this.areLanguagePickersOpen = false;
   }
 
   private onBackgroundScrimClicked() {
@@ -372,8 +388,6 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   private onHideToastClick() {
     this.$.toast.hide();
   }
-
-
 
   private updateCursorPosition(event: PointerEvent) {
     // Cancel the previous animation frame to prevent the code from running more

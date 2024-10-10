@@ -159,7 +159,7 @@ suite('OverlayTranslateButton', function() {
     assertFalse(isRendered(overlayTranslateButtonElement.$.languagePicker));
   });
 
-  test('SourceLanguageButtonClick', () => {
+  test('SourceLanguageButtonClick', async () => {
     assertFalse(
         isVisible(overlayTranslateButtonElement.$.sourceLanguageButton));
 
@@ -172,15 +172,18 @@ suite('OverlayTranslateButton', function() {
     assertFalse(
         isVisible(overlayTranslateButtonElement.$.sourceLanguagePickerMenu));
 
+    const languagePickerOpenEventPromise =
+        eventToPromise('language-picker-opened', document);
     // Clicking the source language button should open the picker menu.
     overlayTranslateButtonElement.$.sourceLanguageButton.click();
+    await languagePickerOpenEventPromise;
 
     // The source language picker menu is visible.
     assertTrue(
         isVisible(overlayTranslateButtonElement.$.sourceLanguagePickerMenu));
   });
 
-  test('TargetLanguageButtonClick', () => {
+  test('TargetLanguageButtonClick', async () => {
     assertFalse(
         isVisible(overlayTranslateButtonElement.$.targetLanguageButton));
 
@@ -193,8 +196,11 @@ suite('OverlayTranslateButton', function() {
     assertFalse(
         isVisible(overlayTranslateButtonElement.$.targetLanguagePickerMenu));
 
+    const languagePickerOpenEventPromise =
+        eventToPromise('language-picker-opened', document);
     // Clicking the target language button should open the picker menu.
     overlayTranslateButtonElement.$.targetLanguageButton.click();
+    await languagePickerOpenEventPromise;
 
     // The target language picker menu is visible.
     assertTrue(
@@ -228,7 +234,10 @@ suite('OverlayTranslateButton', function() {
             .querySelector<CrButtonElement>(
                 'cr-button:not(#sourceAutoDetectButton)');
     assertTrue(sourceLanguageMenuItem !== null);
+    let languagePickerCloseEventPromise =
+        eventToPromise('language-picker-closed', document);
     sourceLanguageMenuItem.click();
+    await languagePickerCloseEventPromise;
 
     // The source language button should be updated with the text of the new
     // source language.
@@ -262,10 +271,13 @@ suite('OverlayTranslateButton', function() {
     // Clicking the auto detect button should reset the source language button
     // text. Reset handler so we can recheck the request sent.
     testBrowserProxy.handler.reset();
+    languagePickerCloseEventPromise =
+        eventToPromise('language-picker-closed', document);
     overlayTranslateButtonElement.$.sourceAutoDetectButton.click();
     assertEquals(
         overlayTranslateButtonElement.$.sourceLanguageButton.innerText,
         loadTimeData.getString('detectLanguage'));
+    await languagePickerCloseEventPromise;
 
     // Verify a new translate full image request was sent with auto detect.
     args = await testBrowserProxy.handler.whenCalled(
@@ -321,7 +333,10 @@ suite('OverlayTranslateButton', function() {
         });
     assertTrue(filteredMenuItems.length > 0);
     const targetLanguageMenuItem = filteredMenuItems[0] as CrButtonElement;
+    const languagePickerCloseEventPromise =
+        eventToPromise('language-picker-closed', document);
     targetLanguageMenuItem.click();
+    await languagePickerCloseEventPromise;
 
     // Verify the target language is updated in the new full image request.
     const args = await testBrowserProxy.handler.whenCalled(

@@ -1308,6 +1308,91 @@ suite('SelectionOverlay', function() {
     assertNotEquals(postSelectionBounds.y, newPostSelectionBounds.y);
   });
 
+  test('NoTextSelectionIfLanguagePickersOpen', async () => {
+    await addWordsWithTranslations();
+
+    dispatchTranslateStateEvent(
+        selectionOverlayElement.$.textSelectionLayer, true, 'es');
+    await waitAfterNextRender(selectionOverlayElement);
+
+    selectionOverlayElement.setLanguagePickersOpenForTesting(true);
+    let wordEl = selectionOverlayElement.$.textSelectionLayer
+                     .getTranslatedWordNodesForTesting()[0]!;
+    await simulateClick(selectionOverlayElement, {
+      x: wordEl.getBoundingClientRect().left,
+      y: wordEl.getBoundingClientRect().top,
+    });
+    assertEquals(
+        0,
+        metrics.count(
+            'Lens.Overlay.Overlay.UserAction',
+            UserAction.kTranslateTextSelection));
+    assertEquals(
+        0,
+        metrics.count(
+            'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
+            UserAction.kTranslateTextSelection));
+
+    selectionOverlayElement.setLanguagePickersOpenForTesting(false);
+    wordEl = selectionOverlayElement.$.textSelectionLayer
+                 .getTranslatedWordNodesForTesting()[0]!;
+    await simulateClick(selectionOverlayElement, {
+      x: wordEl.getBoundingClientRect().left,
+      y: wordEl.getBoundingClientRect().top,
+    });
+    const textQuery =
+        await testBrowserProxy.handler.whenCalled('issueTextSelectionRequest');
+    assertDeepEquals('wow', textQuery);
+    assertEquals(
+        0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.UserAction',
+            UserAction.kTranslateTextSelection));
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
+            UserAction.kTranslateTextSelection));
+  });
+
+  test('TextSelectionDragIfLanguagePickersOpen', async () => {
+    await addWordsWithTranslations();
+
+    dispatchTranslateStateEvent(
+        selectionOverlayElement.$.textSelectionLayer, true, 'es');
+    await waitAfterNextRender(selectionOverlayElement);
+    selectionOverlayElement.setLanguagePickersOpenForTesting(true);
+
+    const wordEl = selectionOverlayElement.$.textSelectionLayer
+                       .getTranslatedWordNodesForTesting()[0]!;
+    await simulateDrag(
+        selectionOverlayElement, {
+          x: wordEl.getBoundingClientRect().left,
+          y: wordEl.getBoundingClientRect().top,
+        },
+        {x: 80, y: 40});
+
+    const textQuery =
+        await testBrowserProxy.handler.whenCalled('issueTextSelectionRequest');
+    assertDeepEquals('wow a translation no', textQuery);
+    assertEquals(
+        0, testBrowserProxy.handler.getCallCount('issueLensRegionRequest'));
+    assertFalse(
+        selectionOverlayElement.getShowSelectedRegionContextMenuForTesting());
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.UserAction',
+            UserAction.kTranslateTextSelection));
+    assertEquals(
+        1,
+        metrics.count(
+            'Lens.Overlay.Overlay.ByInvocationSource.AppMenu.UserAction',
+            UserAction.kTranslateTextSelection));
+  });
+
   suite('InvocationSourceContextMenuImage', function() {
     setup(async function() {
       loadTimeData.overrideValues({

@@ -152,6 +152,23 @@ export class TranslateButtonElement extends PolymerElement {
             this.contentLanguage = e.detail.contentLanguage;
           }
         });
+    this.eventTracker_.add(
+        this.$.sourceLanguagePickerMenu, 'focusout', (event: FocusEvent) => {
+          const targetWithFocus = event.relatedTarget;
+          if (!targetWithFocus || !(targetWithFocus instanceof Node) ||
+              !this.$.sourceLanguagePickerMenu.contains(targetWithFocus)) {
+            this.hideLanguagePickerMenus(/*shouldFocus=*/ false);
+          }
+        });
+    this.eventTracker_.add(
+        this.$.targetLanguagePickerMenu, 'focusout', (event: FocusEvent) => {
+          const targetWithFocus = event.relatedTarget;
+          if (!targetWithFocus || !(targetWithFocus instanceof Node) ||
+              !this.$.targetLanguagePickerMenu.contains(targetWithFocus)) {
+            this.hideLanguagePickerMenus(/*shouldFocus=*/ false);
+          }
+        });
+
     // Set up listener to listen to events from C++.
     this.listenerIds = [
       this.browserProxy.callbackRouter.setTranslateMode.addListener(
@@ -209,6 +226,7 @@ export class TranslateButtonElement extends PolymerElement {
   }
 
   private onSourceLanguageButtonClick() {
+    this.notifyLanguagePickerOpened();
     this.sourceLanguageMenuVisible = !this.sourceLanguageMenuVisible;
     this.targetLanguageMenuVisible = false;
     // We need to wait for the language picker to render before focusing.
@@ -218,6 +236,7 @@ export class TranslateButtonElement extends PolymerElement {
   }
 
   private onTargetLanguageButtonClick() {
+    this.notifyLanguagePickerOpened();
     this.targetLanguageMenuVisible = !this.targetLanguageMenuVisible;
     this.sourceLanguageMenuVisible = false;
     // We need to wait for the language picker to render before focusing.
@@ -369,17 +388,20 @@ export class TranslateButtonElement extends PolymerElement {
     }));
   }
 
-  private hideLanguagePickerMenus() {
+  private hideLanguagePickerMenus(shouldFocus = true) {
     this.$.sourceLanguagePickerMenu.scroll(0, 0);
     this.$.targetLanguagePickerMenu.scroll(0, 0);
     // Depending on which language picker menu was opened, return focus to
     // the corresponding language button.
-    if (this.sourceLanguageMenuVisible) {
-      this.$.sourceLanguageButton.focus();
-    } else {
-      this.$.targetLanguageButton.focus();
+    if (shouldFocus) {
+      if (this.sourceLanguageMenuVisible) {
+        this.$.sourceLanguageButton.focus();
+      } else {
+        this.$.targetLanguageButton.focus();
+      }
     }
 
+    this.notifyLanguagePickerClosed();
     this.targetLanguageMenuVisible = false;
     this.sourceLanguageMenuVisible = false;
   }
@@ -423,6 +445,20 @@ export class TranslateButtonElement extends PolymerElement {
       }
     }
     return '';
+  }
+
+  private notifyLanguagePickerOpened() {
+    document.dispatchEvent(new CustomEvent('language-picker-opened', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  private notifyLanguagePickerClosed() {
+    document.dispatchEvent(new CustomEvent('language-picker-closed', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   private computeShouldShowStarsIcon(): boolean {

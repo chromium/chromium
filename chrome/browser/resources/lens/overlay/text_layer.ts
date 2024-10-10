@@ -446,6 +446,9 @@ export class TextLayerElement extends PolymerElement {
       return;
     }
 
+    if (this.selectionStartIndex === undefined) {
+      this.selectionStartIndex = words.indexOf(hit);
+    }
     this.selectionEndIndex = words.indexOf(hit);
   }
 
@@ -457,8 +460,8 @@ export class TextLayerElement extends PolymerElement {
     // Return early if we are not in translate mode or there are no rendered
     // translate words.
     if (!this.shouldRenderTranslateWords ||
-        !(this.renderedTranslateLines.length > 0) ||
-        !(this.renderedTranslateWords.length > 0)) {
+        !(this.renderedTranslateLines?.length > 0) ||
+        !(this.renderedTranslateWords?.length > 0)) {
       return;
     }
 
