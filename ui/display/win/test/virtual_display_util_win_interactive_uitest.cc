@@ -38,7 +38,9 @@ class VirtualDisplayUtilWinInteractiveUitest : public testing::Test {
   display::test::VirtualDisplayUtilWin virtual_display_util_win_;
 };
 
-TEST_F(VirtualDisplayUtilWinInteractiveUitest, IsAPIAvailable) {
+// TODO(crbug.com/371121282): Re-enable the test.
+// TODO(crbug.com/365126887): Re-enable the test.
+TEST_F(VirtualDisplayUtilWinInteractiveUitest, DISABLED_IsAPIAvailable) {
   EXPECT_TRUE(virtual_display_util_win_.IsAPIAvailable());
 }
 
