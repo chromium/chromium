@@ -9018,22 +9018,6 @@
             ]
         }
     ],
-    "EnableCertManagementUIV2": [
-        {
-            "platforms": [
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableCertManagementUIV2"
-                    ]
-                }
-            ]
-        }
-    ],
     "EnableConfigurableThreadCacheMultiplier": [
         {
             "platforms": [
