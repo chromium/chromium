@@ -364,7 +364,6 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
         origin.GetURL(), origin.GetURL(), type, value);
   }
 
-#if !BUILDFLAG(IS_ANDROID)
   // Triggers the Restore permission prompt from two dormant grants
   // (`kTestPathInfo` and `kTestPathInfo2`). Note that the scoped references to
   // active grants are gone after this call, and the active grants may not exist
@@ -406,13 +405,20 @@ class ChromeFileSystemAccessPermissionContextTest : public testing::Test {
           RestorePermissionPromptOutcome::kAllowed, 1);
       EXPECT_EQ(grant1->GetStatus(), PermissionStatus::GRANTED);
       EXPECT_EQ(grant2->GetStatus(), PermissionStatus::GRANTED);
+#if BUILDFLAG(IS_ANDROID)
+    } else if (result == PermissionRequestOutcome::kUserGranted) {
+      // Android does not support persistent permissions and requests again.
+      // TODO(crbug.com/40101963): Remove when android persisted permissions are
+      // implemented.
+      EXPECT_EQ(grant1->GetStatus(), PermissionStatus::GRANTED);
+      EXPECT_EQ(grant2->GetStatus(), PermissionStatus::ASK);
+#endif
     } else {
       EXPECT_EQ(grant1->GetStatus(), PermissionStatus::ASK);
       EXPECT_EQ(grant2->GetStatus(), PermissionStatus::ASK);
     }
     return result;
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   ChromeFileSystemAccessPermissionContext* permission_context() {
     return permission_context_.get();
@@ -1330,6 +1336,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, kTestPathInfo, HandleType::kFile, GrantType::kWrite));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(
     ChromeFileSystemAccessPermissionContextNoPersistenceTest,
@@ -1345,6 +1352,9 @@ TEST_F(
   EXPECT_EQ(grant->GetStatus(), PermissionStatus::ASK);
 }
 
+// TODO(crbug.com/40101963): Enable when android persisted permissions are
+// implemented.
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        GetWritePermissionGrant_GrantIsAutoGrantedViaPersistentPermissions) {
   permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
@@ -1510,7 +1520,7 @@ TEST_F(
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, kTestPathInfo, HandleType::kFile, GrantType::kWrite));
 }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(
     ChromeFileSystemAccessPermissionContextTest,
@@ -1568,9 +1578,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextNoPersistenceTest,
   EXPECT_EQ(kTestPathInfo.path, granted_paths[0]);
 }
 
-// TODO(crbug.com/40101963): Enable when android persisted permissions are
-// implemented.
-#if !BUILDFLAG(IS_ANDROID)
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        GetOriginsWithGrants_ForGrantedActiveGrantsOnly) {
   auto grant = permission_context()->GetReadPermissionGrant(
@@ -1591,7 +1598,14 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
       ->set_auto_response_for_test(PermissionAction::GRANTED);
   auto result =
       TriggerRestorePermissionPromptAfterBeingBackgrounded(kTestOrigin);
+#if BUILDFLAG(IS_ANDROID)
+  // Android does not support persistent permissions and requests again.
+  // TODO(crbug.com/40101963): Remove when android persisted permissions are
+  // implemented.
+  EXPECT_EQ(result, PermissionRequestOutcome::kUserGranted);
+#else
   EXPECT_EQ(result, PermissionRequestOutcome::kGrantedByRestorePrompt);
+#endif
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
@@ -1640,11 +1654,19 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   base::test::TestFuture<PermissionRequestOutcome> future;
   grant1_from_storage->RequestPermission(
       frame_id(), UserActivationState::kNotRequired, future.GetCallback());
+#if BUILDFLAG(IS_ANDROID)
+  // Android does not support persistent permissions and requests again.
+  // TODO(crbug.com/40101963): Remove when android persisted permissions are
+  // implemented.
+  EXPECT_EQ(future.Get(), PermissionRequestOutcome::kUserGranted);
+  EXPECT_EQ(grant1_from_storage->GetStatus(), PermissionStatus::GRANTED);
+  EXPECT_EQ(grant2_from_storage->GetStatus(), PermissionStatus::ASK);
+#else
   EXPECT_EQ(future.Get(), PermissionRequestOutcome::kGrantedByRestorePrompt);
   EXPECT_EQ(grant1_from_storage->GetStatus(), PermissionStatus::GRANTED);
   EXPECT_EQ(grant2_from_storage->GetStatus(), PermissionStatus::GRANTED);
-}
 #endif
+}
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        RestorePermissionPrompt_NotTriggered_HandleNotLoadedFromStorage) {
@@ -1713,9 +1735,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
             PermissionRequestOutcome::kGrantedByRestorePrompt);
 }
 
-// TODO(crbug.com/40101963): Enable when android persisted permissions are
-// implemented.
-#if !BUILDFLAG(IS_ANDROID)
 TEST_F(
     ChromeFileSystemAccessPermissionContextTest,
     RestorePermissionPrompt_NotTriggered_WhenRequestingWriteAccessToReadGrant) {
@@ -1773,6 +1792,9 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
             PermissionRequestOutcome::kGrantedByRestorePrompt);
 }
 
+// TODO(crbug.com/40101963): Enable when android persisted permissions are
+// implemented.
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        RestorePermissionPrompt_AllowEveryTime) {
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
@@ -2141,6 +2163,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
               ContentSettingsType::FILE_SYSTEM_ACCESS_RESTORE_PERMISSION);
   EXPECT_TRUE(origin_is_embargoed_after_ignore_limit);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // TODO(crbug.com/40101962): Expand upon this test case to cover checking that
 // dormant grants are not revoked, when backgrounded dormant grants exist.
@@ -2164,6 +2187,9 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
               testing::IsEmpty());
 }
 
+// TODO(crbug.com/40101963): Enable when android persisted permissions are
+// implemented.
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        OnLastPageFromOriginClosed_PersistedGrantStatusUpdated) {
   // Create a current grant by triggering the restore prompt, and accepting it.
@@ -2450,7 +2476,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, file_path, HandleType::kFile, GrantType::kWrite));
 }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        PersistedPermission_RevokeGrantByFilePath) {
@@ -2518,7 +2544,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, kTestPathInfo, HandleType::kDirectory, GrantType::kWrite));
 }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        RequestPermission_ClearOutdatedDormantGrants) {
@@ -2596,6 +2622,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest, RequestPermission_Granted) {
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, kTestPathInfo, HandleType::kFile, GrantType::kWrite));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest, RequestPermission_Denied) {
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
@@ -2615,6 +2642,9 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest, RequestPermission_Denied) {
       kTestOrigin, kTestPathInfo, HandleType::kFile, GrantType::kWrite));
 }
 
+// TODO(crbug.com/40101963): Enable when android persisted permissions are
+// implemented.
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        RequestPermission_NoUserActivation) {
   permission_context()->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
@@ -2670,7 +2700,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, kTestPathInfo, HandleType::kFile, GrantType::kWrite));
 }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        RequestPermission_GlobalGuardBlockedBeforeOpenGrant) {
@@ -3027,7 +3057,7 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
   EXPECT_TRUE(permission_context()->HasExtendedPermissionForTesting(
       kTestOrigin, new_path, HandleType::kFile, GrantType::kWrite));
 }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ReadGrantDestroyedOnRevokeActiveGrants) {

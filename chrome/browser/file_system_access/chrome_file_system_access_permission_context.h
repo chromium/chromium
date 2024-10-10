@@ -23,9 +23,9 @@
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom-forward.h"
 
-#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/permissions/one_time_permissions_tracker.h"
 #include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #endif
@@ -35,9 +35,7 @@
 #endif
 
 class HostContentSettingsMap;
-#if !BUILDFLAG(IS_ANDROID)
 class OneTimePermissionsTracker;
-#endif
 enum ContentSetting;
 
 namespace content {
@@ -63,10 +61,10 @@ class BrowserContext;
 // All methods must be called on the UI thread.
 class ChromeFileSystemAccessPermissionContext
     : public content::FileSystemAccessPermissionContext,
-      public permissions::ObjectPermissionContextBase
+      public permissions::ObjectPermissionContextBase,
+      public OneTimePermissionsTrackerObserver
 #if !BUILDFLAG(IS_ANDROID)
     ,
-      public OneTimePermissionsTrackerObserver,
       public web_app::WebAppInstallManagerObserver
 #endif
 {
@@ -143,7 +141,6 @@ class ChromeFileSystemAccessPermissionContext
   std::u16string GetObjectDisplayName(const base::Value::Dict& object) override;
   std::set<url::Origin> GetOriginsWithGrants() override;
 
-#if !BUILDFLAG(IS_ANDROID)
   // OneTimePermissionsTrackerObserver:
   void OnAllTabsInBackgroundTimerExpired(
       const url::Origin& origin,
@@ -152,6 +149,7 @@ class ChromeFileSystemAccessPermissionContext
   void OnLastPageFromOriginClosed(const url::Origin& origin) override;
   void OnShutdown() override;
 
+#if !BUILDFLAG(IS_ANDROID)
   // WebAppInstallManagerObserver:
   void OnWebAppInstalled(const webapps::AppId& app_id) override;
   // TODO(crbug.com/340952100): Remove after the InstallState is saved in the
@@ -520,10 +518,10 @@ class ChromeFileSystemAccessPermissionContext
 
   scoped_refptr<HostContentSettingsMap> content_settings_;
 
-#if !BUILDFLAG(IS_ANDROID)
   base::ScopedObservation<OneTimePermissionsTracker,
                           OneTimePermissionsTrackerObserver>
       one_time_permissions_tracker_{this};
+#if !BUILDFLAG(IS_ANDROID)
   base::ScopedObservation<web_app::WebAppInstallManager,
                           web_app::WebAppInstallManagerObserver>
       install_manager_observation_{this};

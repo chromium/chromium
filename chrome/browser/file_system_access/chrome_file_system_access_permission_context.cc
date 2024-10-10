@@ -35,6 +35,8 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
+#include "chrome/browser/permissions/one_time_permissions_tracker_factory.h"
+#include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -69,9 +71,9 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #else
-#include "chrome/browser/permissions/one_time_permissions_tracker_factory.h"
-#include "chrome/browser/permissions/one_time_permissions_tracker_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -1177,7 +1179,10 @@ ChromeFileSystemAccessPermissionContext::
   content_settings_ = base::WrapRefCounted(
       HostContentSettingsMapFactory::GetForProfile(profile_));
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  one_time_permissions_tracker_.Observe(
+      OneTimePermissionsTrackerFactory::GetForBrowserContext(context));
+#else
   auto* provider = web_app::WebAppProvider::GetForWebApps(
       Profile::FromBrowserContext(profile_));
   if (provider) {
@@ -2287,13 +2292,15 @@ bool ChromeFileSystemAccessPermissionContext::OriginHasWriteAccess(
 // All tabs for a given origin have been backgrounded or cleared in the past
 // 16 hours. When this happens, we update the given origin's `OriginState` to
 // note that all tabs were recently backgrounded.
-#if !BUILDFLAG(IS_ANDROID)
 void ChromeFileSystemAccessPermissionContext::OnAllTabsInBackgroundTimerExpired(
     const url::Origin& origin,
     const OneTimePermissionsTrackerObserver::BackgroundExpiryType&
         expiry_type) {
-  if (!base::FeatureList::IsEnabled(
+  if (
+#if !BUILDFLAG(IS_ANDROID)
+      !base::FeatureList::IsEnabled(
           features::kFileSystemAccessPersistentPermissions) ||
+#endif
       expiry_type != BackgroundExpiryType::kLongTimeout) {
     return;
   }
@@ -2315,6 +2322,7 @@ void ChromeFileSystemAccessPermissionContext::OnShutdown() {
   one_time_permissions_tracker_.Reset();
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void ChromeFileSystemAccessPermissionContext::OnWebAppInstalled(
     const webapps::AppId& app_id) {
   if (!base::FeatureList::IsEnabled(
@@ -2450,17 +2458,23 @@ void ChromeFileSystemAccessPermissionContext::TriggerTimersForTesting() {
 void ChromeFileSystemAccessPermissionContext::MaybeCleanupPermissions(
     const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-#if !BUILDFLAG(IS_ANDROID)
-  // Iterate over all top-level frames by iterating over all browsers, and all
-  // tabs within those browsers. This also counts PWAs in windows without
-  // tab strips, as those are still implemented as a Browser with a single
-  // tab.
+  // Iterate over all top-level frames by iterating over all tabs in all browser
+  // windows. This also counts PWAs in windows without tab strips.
+#if BUILDFLAG(IS_ANDROID)
+  for (TabModel* tabs : TabModelList::models()) {
+    if (tabs->GetProfile() != profile()) {
+      continue;
+    }
+    int tab_count = tabs->GetTabCount();
+#else
   for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->profile() != profile()) {
       continue;
     }
     TabStripModel* tabs = browser->tab_strip_model();
-    for (int i = 0; i < tabs->count(); ++i) {
+    int tab_count = tabs->count();
+#endif
+    for (int i = 0; i < tab_count; ++i) {
       content::WebContents* web_contents = tabs->GetWebContentsAt(i);
       url::Origin tab_origin = url::Origin::Create(
           permissions::PermissionUtil::GetLastCommittedOriginAsURL(
@@ -2472,7 +2486,6 @@ void ChromeFileSystemAccessPermissionContext::MaybeCleanupPermissions(
     }
   }
   CleanupPermissions(origin);
-#endif
 }
 
 void ChromeFileSystemAccessPermissionContext::CleanupPermissions(
@@ -2639,8 +2652,8 @@ bool ChromeFileSystemAccessPermissionContext::
         UserAction user_action,
         GrantType grant_type) {
 #if BUILDFLAG(IS_ANDROID)
-  // The File System Access API is not supported on Android (see
-  // crbug.com/1011535). If this ever changes, we'll need to revisit this.
+  // TODO(crbug.com/40101963): Enable when android persisted permissions are
+  // implemented.
   return false;
 #else
   if (!base::FeatureList::IsEnabled(
@@ -2850,8 +2863,8 @@ bool ChromeFileSystemAccessPermissionContext::OriginHasExtendedPermission(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
 #if BUILDFLAG(IS_ANDROID)
-  // The File System Access API is not supported on Android (see
-  // crbug.com/1011535). If this ever changes, we'll need to revisit this.
+  // TODO(crbug.com/40101963): Enable when android persisted permissions are
+  // implemented.
   return false;
 #else
   if (!base::FeatureList::IsEnabled(
