@@ -317,8 +317,10 @@ void SearchEnginesHandler::HandleSetDefaultSearchEngine(
     return;
   }
 
-  // TODO(b/364256844): Decide what to do with the subpage search engine UI.
-  // CHECK(!args[2].is_none());
+  if (args[2].is_none()) {
+    return;
+  }
+
   bool saveGuestChoice = args[2].GetBool();
   if (!saveGuestChoice) {
     choice_service->SetSavedSearchEngineBetweenGuestSessions(std::nullopt);

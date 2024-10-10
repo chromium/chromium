@@ -294,8 +294,24 @@ TEST_F(SearchEnginesHandlerTest, UpdateSavedGuestSearch) {
     args.Append(true);  // saveGuestChoice
     web_ui()->HandleReceivedMessage("setDefaultSearchEngine", args);
   }
+  // Check that saved guest DSE is updated.
   EXPECT_EQ(TemplateURLPrepopulateData::bing.id,
             choice_service->GetSavedSearchEngineBetweenGuestSessions());
+
+  {
+    base::Value::List args;
+    // Search engine model id.
+    args.Append(0);
+    args.Append(static_cast<int>(
+        search_engines::ChoiceMadeLocation::kSearchEngineSettings));
+    args.Append(base::Value());  // saveGuestChoice
+    web_ui()->HandleReceivedMessage("setDefaultSearchEngine", args);
+  }
+  // Check that saved DSE doesn't change if a null saveGuestChoice parameter is
+  // passed in.
+  EXPECT_EQ(TemplateURLPrepopulateData::bing.id,
+            choice_service->GetSavedSearchEngineBetweenGuestSessions());
+
   {
     base::Value::List args;
     // Search engine model id.
@@ -305,6 +321,7 @@ TEST_F(SearchEnginesHandlerTest, UpdateSavedGuestSearch) {
     args.Append(false);  // saveGuestChoice
     web_ui()->HandleReceivedMessage("setDefaultSearchEngine", args);
   }
+  // Check that saved DSE is removed when saveGuestChoice is off.
   EXPECT_EQ(std::nullopt,
             choice_service->GetSavedSearchEngineBetweenGuestSessions());
 }
