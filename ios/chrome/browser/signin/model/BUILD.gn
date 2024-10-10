@@ -16,6 +16,8 @@ source_set("model") {
     "account_consistency_service_factory.mm",
     "account_investigator_factory.h",
     "account_investigator_factory.mm",
+    "account_profile_mapper.h",
+    "account_profile_mapper.mm",
     "account_reconcilor_factory.cc",
     "account_reconcilor_factory.h",
     "authentication_service.h",
@@ -185,8 +187,6 @@ source_set("system_identity") {
 
 source_set("system_identity_manager") {
   sources = [
-    "account_profile_mapper.h",
-    "account_profile_mapper.mm",
     "refresh_access_token_error.h",
     "system_identity_interaction_manager.h",
     "system_identity_manager.h",

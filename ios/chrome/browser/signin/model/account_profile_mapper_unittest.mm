@@ -9,6 +9,7 @@
 #import "components/signin/public/base/signin_pref_names.h"
 #import "ios/chrome/browser/profile/model/constants.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
+#import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -54,12 +55,14 @@ class MockObserver : public AccountProfileMapper::Observer {
 class AccountProfileMapperTest : public PlatformTest {
  public:
   AccountProfileMapperTest() {
-    TestProfileIOS::Builder builder;
-    profile_ = std::move(builder).Build();
-
     system_identity_manager_ =
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
+
+    profile_manager_.GetProfileAttributesStorage()->AddProfile(
+        kDefaultProfileName);
+    profile_manager_.GetProfileAttributesStorage()->AddProfile(
+        kTestProfile1Name);
   }
 
   ~AccountProfileMapperTest() override {
@@ -84,7 +87,7 @@ class AccountProfileMapperTest : public PlatformTest {
  protected:
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestProfileIOS> profile_;
+  TestProfileManagerIOS profile_manager_;
   raw_ptr<FakeSystemIdentityManager> system_identity_manager_;
   std::unique_ptr<AccountProfileMapper> account_profile_mapper_;
 };
@@ -92,8 +95,8 @@ class AccountProfileMapperTest : public PlatformTest {
 // Tests that AccountProfileMapper list no identity when there is no identity
 // and one profile.
 TEST_F(AccountProfileMapperTest, TestWithNoIdentity) {
-  account_profile_mapper_ =
-      std::make_unique<AccountProfileMapper>(system_identity_manager_);
+  account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+      system_identity_manager_, &profile_manager_);
   testing::StrictMock<MockObserver> mock_observer0;
   account_profile_mapper_->AddObserver(&mock_observer0, kDefaultProfileName);
   // Check profile identities and observer.
@@ -106,8 +109,8 @@ TEST_F(AccountProfileMapperTest, TestWithNoIdentity) {
 
 // Tests that all 3 identities are listed in the only profile.
 TEST_F(AccountProfileMapperTest, TestWithThreeIdentitiesOneProfile) {
-  account_profile_mapper_ =
-      std::make_unique<AccountProfileMapper>(system_identity_manager_);
+  account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+      system_identity_manager_, &profile_manager_);
   testing::StrictMock<MockObserver> mock_observer0;
   account_profile_mapper_->AddObserver(&mock_observer0, kDefaultProfileName);
   EXPECT_CALL(mock_observer0, OnIdentityListChanged()).Times(1);
@@ -131,8 +134,8 @@ TEST_F(AccountProfileMapperTest, TestWithFlagDisabled) {
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(kSeparateProfilesForManagedAccounts);
 
-  account_profile_mapper_ =
-      std::make_unique<AccountProfileMapper>(system_identity_manager_);
+  account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+      system_identity_manager_, &profile_manager_);
   testing::StrictMock<MockObserver> mock_observer0;
   account_profile_mapper_->AddObserver(&mock_observer0, kDefaultProfileName);
   testing::StrictMock<MockObserver> mock_observer1;
@@ -164,8 +167,8 @@ TEST_F(AccountProfileMapperTest, TestWithTwoIdentitiesTwoProfiles) {
   [[NSUserDefaults standardUserDefaults]
       setInteger:1
           forKey:experimental_flags::kDisplaySwitchProfile];
-  account_profile_mapper_ =
-      std::make_unique<AccountProfileMapper>(system_identity_manager_);
+  account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+      system_identity_manager_, &profile_manager_);
   testing::StrictMock<MockObserver> mock_observer0;
   account_profile_mapper_->AddObserver(&mock_observer0, kDefaultProfileName);
   testing::StrictMock<MockObserver> mock_observer1;
@@ -194,8 +197,8 @@ TEST_F(AccountProfileMapperTest, TestWithTwoIdentitiesOneManagedTwoProfiles) {
   [[NSUserDefaults standardUserDefaults]
       setInteger:1
           forKey:experimental_flags::kDisplaySwitchProfile];
-  account_profile_mapper_ =
-      std::make_unique<AccountProfileMapper>(system_identity_manager_);
+  account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+      system_identity_manager_, &profile_manager_);
   testing::StrictMock<MockObserver> mock_observer0;
   account_profile_mapper_->AddObserver(&mock_observer0, kDefaultProfileName);
   testing::StrictMock<MockObserver> mock_observer1;
@@ -237,8 +240,8 @@ TEST_F(AccountProfileMapperTest, TestWithTwoIdentitiesTwoManagedTwoProfiles) {
   [[NSUserDefaults standardUserDefaults]
       setInteger:1
           forKey:experimental_flags::kDisplaySwitchProfile];
-  account_profile_mapper_ =
-      std::make_unique<AccountProfileMapper>(system_identity_manager_);
+  account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+      system_identity_manager_, &profile_manager_);
   testing::StrictMock<MockObserver> mock_observer0;
   account_profile_mapper_->AddObserver(&mock_observer0, kDefaultProfileName);
   testing::StrictMock<MockObserver> mock_observer1;
@@ -273,8 +276,8 @@ TEST_F(AccountProfileMapperTest, TestRemoveIdentity) {
   [[NSUserDefaults standardUserDefaults]
       setInteger:1
           forKey:experimental_flags::kDisplaySwitchProfile];
-  account_profile_mapper_ =
-      std::make_unique<AccountProfileMapper>(system_identity_manager_);
+  account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+      system_identity_manager_, &profile_manager_);
   testing::StrictMock<MockObserver> mock_observer0;
   account_profile_mapper_->AddObserver(&mock_observer0, kDefaultProfileName);
   testing::StrictMock<MockObserver> mock_observer1;

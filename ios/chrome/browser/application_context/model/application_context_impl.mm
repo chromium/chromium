@@ -519,8 +519,8 @@ SystemIdentityManager* ApplicationContextImpl::GetSystemIdentityManager() {
 AccountProfileMapper* ApplicationContextImpl::GetAccountProfileMapper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!account_profile_mapper_) {
-    account_profile_mapper_ =
-        std::make_unique<AccountProfileMapper>(GetSystemIdentityManager());
+    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+        GetSystemIdentityManager(), GetProfileManager());
   }
   return account_profile_mapper_.get();
 }
