@@ -81,6 +81,16 @@ chrome_internal_verifier(
 ### Optional builders ###
 
 chrome_internal_verifier(
+    branch_selector = branches.selector.ANDROID_BRANCHES,
+    builder = "android-arm32-pgo",
+)
+
+chrome_internal_verifier(
+    branch_selector = branches.selector.ANDROID_BRANCHES,
+    builder = "android-arm64-pgo",
+)
+
+chrome_internal_verifier(
     builder = "android-internal-binary-size",
 )
 
