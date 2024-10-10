@@ -184,6 +184,7 @@ source_set("unit_tests") {
     "//components/feature_engagement/test:test_support",
     "//components/ntp_tiles",
     "//components/reading_list/core",
+    "//components/reading_list/core:test_support",
     "//components/sync_preferences:test_support",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/favicon/ui_bundled",

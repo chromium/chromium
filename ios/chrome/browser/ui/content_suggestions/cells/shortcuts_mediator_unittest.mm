@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_mediator.h"
 
+#import "base/time/default_clock.h"
 #import "components/feature_engagement/test/mock_tracker.h"
+#import "components/reading_list/core/fake_reading_list_model_storage.h"
 #import "components/reading_list/core/reading_list_model_impl.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
@@ -25,13 +27,6 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-namespace {
-std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
-    web::BrowserState* browser_state) {
-  return std::make_unique<feature_engagement::test::MockTracker>();
-}
-}  // namespace
-
 @protocol
     ShortcutsMediatorDispatcher <BrowserCoordinatorCommands, WhatsNewCommands>
 @end
@@ -42,37 +37,37 @@ class ShortcutsMediatorTest : public PlatformTest {
   ShortcutsMediatorTest() {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
-        ReadingListModelFactory::GetInstance(),
-        base::BindRepeating(&BuildReadingListModelWithFakeStorage,
-                            std::vector<scoped_refptr<ReadingListEntry>>()));
-    builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
-    builder.AddTestingFactory(
-        feature_engagement::TrackerFactory::GetInstance(),
-        base::BindRepeating(&BuildFeatureEngagementMockTracker));
     profile_ = std::move(builder).Build();
     AuthenticationServiceFactory::CreateAndInitializeForProfile(
         profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
 
-    dispatcher_ = OCMProtocolMock(@protocol(ShortcutsMediatorDispatcher));
+    auto storage = std::make_unique<FakeReadingListModelStorage>();
+    base::WeakPtr<FakeReadingListModelStorage> storage_ptr =
+        storage->AsWeakPtr();
+    reading_list_model_ = std::make_unique<ReadingListModelImpl>(
+        std::move(storage), syncer::StorageType::kUnspecified,
+        syncer::WipeModelUponSyncDisabledBehavior::kNever,
+        base::DefaultClock::GetInstance());
+    storage_ptr->TriggerLoadCompletion();
 
-    ReadingListModel* readingListModel =
-        ReadingListModelFactory::GetForProfile(profile_.get());
-    feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForProfile(profile_.get());
+    dispatcher_ = OCMProtocolMock(@protocol(ShortcutsMediatorDispatcher));
+    mock_delegate_ = OCMProtocolMock(@protocol(ShortcutsMediatorDelegate));
+    mock_ntp_actions_delegate_ =
+        OCMProtocolMock(@protocol(NewTabPageActionsDelegate));
+
     AuthenticationService* authentication_service =
         AuthenticationServiceFactory::GetForProfile(profile_.get());
     mediator_ = [[ShortcutsMediator alloc]
-        initWithReadingListModel:readingListModel
-        featureEngagementTracker:(feature_engagement::Tracker*)tracker
+        initWithReadingListModel:reading_list_model_.get()
+        featureEngagementTracker:&tracker_
                      authService:authentication_service];
 
     mediator_.contentSuggestionsMetricsRecorder = metrics_recorder_;
     mediator_.dispatcher = dispatcher_;
-    mediator_.delegate = OCMProtocolMock(@protocol(ShortcutsMediatorDelegate));
-    mediator_.NTPActionsDelegate =
-        OCMProtocolMock(@protocol(NewTabPageActionsDelegate));
+    mediator_.delegate = mock_delegate_;
+    mediator_.NTPActionsDelegate = mock_ntp_actions_delegate_;
   }
 
  protected:
@@ -81,17 +76,19 @@ class ShortcutsMediatorTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   ShortcutsMediator* mediator_;
   ContentSuggestionsMetricsRecorder* metrics_recorder_;
+  feature_engagement::test::MockTracker tracker_;
+  std::unique_ptr<ReadingListModel> reading_list_model_;
   id dispatcher_;
+  id mock_delegate_;
+  id mock_ntp_actions_delegate_;
 };
 
 // Tests that the command is sent to the dispatcher when opening the Reading
 // List.
-// TODO(crbug.com/370727489): Re-enable
-TEST_F(ShortcutsMediatorTest, DISABLED_TestOpenReadingList) {
+TEST_F(ShortcutsMediatorTest, TestOpenReadingList) {
   OCMExpect([dispatcher_ showReadingList]);
-
-  OCMExpect([mediator_.NTPActionsDelegate shortcutTileOpened]);
-  OCMExpect([mediator_.delegate
+  OCMExpect([mock_ntp_actions_delegate_ shortcutTileOpened]);
+  OCMExpect([mock_delegate_
       logMagicStackEngagementForType:ContentSuggestionsModuleType::kShortcuts]);
 
   // Action.
@@ -107,15 +104,15 @@ TEST_F(ShortcutsMediatorTest, DISABLED_TestOpenReadingList) {
 
   // Test.
   EXPECT_OCMOCK_VERIFY(dispatcher_);
+  EXPECT_OCMOCK_VERIFY(mock_ntp_actions_delegate_);
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
 }
 
 // Tests that the command is sent to the dispatcher when opening the What's new.
-// TODO(crbug.com/370727489): Re-enable
-TEST_F(ShortcutsMediatorTest, DISABLED_TestOpenWhatsNew) {
+TEST_F(ShortcutsMediatorTest, TestOpenWhatsNew) {
   OCMExpect([dispatcher_ showWhatsNew]);
-
-  OCMExpect([mediator_.NTPActionsDelegate shortcutTileOpened]);
-  OCMExpect([mediator_.delegate
+  OCMExpect([mock_ntp_actions_delegate_ shortcutTileOpened]);
+  OCMExpect([mock_delegate_
       logMagicStackEngagementForType:ContentSuggestionsModuleType::kShortcuts]);
 
   // Action.
@@ -130,4 +127,6 @@ TEST_F(ShortcutsMediatorTest, DISABLED_TestOpenWhatsNew) {
   [mediator_ shortcutsTapped:recognizer];
   // Test.
   EXPECT_OCMOCK_VERIFY(dispatcher_);
+  EXPECT_OCMOCK_VERIFY(mock_ntp_actions_delegate_);
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
 }
