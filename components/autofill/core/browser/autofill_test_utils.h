@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
+#include "components/autofill/core/browser/data_model/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_benefit.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
@@ -398,6 +399,9 @@ sync_pb::PaymentInstrument CreatePaymentInstrumentWithIban(
 // Returns a payment instrument with an eWallet account filled with fake data.
 sync_pb::PaymentInstrument CreatePaymentInstrumentWithEwalletAccount(
     int64_t instrument_id);
+
+// Returns a BNPL issuer with fake data.
+BnplIssuer GetTestBnplIssuer();
 
 }  // namespace test
 }  // namespace autofill

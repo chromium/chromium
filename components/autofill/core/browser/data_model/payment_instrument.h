@@ -32,7 +32,10 @@ class PaymentInstrument final {
     kPix = 1,
     // Payment Rail used for Ewallet.
     kPaymentHyperlink = 2,
-    kMaxValue = kPaymentHyperlink,
+    // Payment Rail used for making payments via card numbers. Example use
+    // cases: Buy Now Pay Later (BNPL), eWallet Fronting cards.
+    kCardNumber = 3,
+    kMaxValue = kCardNumber,
   };
 
   PaymentInstrument(int64_t instrument_id,
