@@ -200,6 +200,14 @@ export class SettingsSecurityPageElement extends
         },
       },
 
+      enableEsbAiStringUpdate_: {
+        type: Boolean,
+        readOnly: true,
+        value() {
+          return loadTimeData.getBoolean('enableEsbAiStringUpdate');
+        },
+      },
+
       hideExtendedReportingRadioButton_: {
         type: Boolean,
         value() {
@@ -259,6 +267,7 @@ export class SettingsSecurityPageElement extends
   private safeBrowsingStateOnOpen_: SafeBrowsingSetting;
   private isRouteSecurity_: boolean;
   private eventTracker_: EventTracker = new EventTracker();
+  private enableEsbAiStringUpdate_: boolean;
   private hideExtendedReportingRadioButton_: boolean;
 
   private browserProxy_: PrivacyPageBrowserProxy =
@@ -451,6 +460,11 @@ export class SettingsSecurityPageElement extends
         SafeBrowsingSetting.STANDARD;
   }
 
+  private getSafeBrowsingEnhancedSubLabel_(): string {
+    return this.i18n(
+        this.enableEsbAiStringUpdate_ ? 'safeBrowsingEnhancedDescUpdated' :
+                                        'safeBrowsingEnhancedDesc');
+  }
 
   private getSafeBrowsingStandardSubLabel_(): string {
     return this.i18n(

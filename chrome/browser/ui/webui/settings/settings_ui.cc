@@ -373,6 +373,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           false);
 #endif
 
+  html_source->AddBoolean(
+      "enableEsbAiStringUpdate",
+      base::FeatureList::IsEnabled(safe_browsing::kEsbAiStringUpdate));
+
   html_source->AddBoolean("enableHashPrefixRealTimeLookups",
                           safe_browsing::hash_realtime_utils::
                               IsHashRealTimeLookupEligibleInSession());

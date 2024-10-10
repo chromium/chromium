@@ -345,6 +345,7 @@ suite('FlagsDisabled', function() {
       enableHashPrefixRealTimeLookups: false,
       enableHttpsFirstModeNewSettings: false,
       enableCertManagementUIV2: false,
+      enableEsbAiStringUpdate: false,
       extendedReportingRemovePrefDependency: false,
       hashPrefixRealTimeLookupsSamplePing: false,
     });
@@ -594,6 +595,20 @@ suite('FlagsDisabled', function() {
         assertTrue(page.$.safeBrowsingStandard.expanded);
         assertTrue(isChildVisible(page, '#safeBrowsingReportingToggle'));
       });
+
+  // TODO(crbug.com/372743989): Remove the test once the EsbAiStringUpdate is
+  // fully launched. This tests the old string before the AI addition to the
+  // description.
+  test('EnhancedProtectionTextIsRendered', async () => {
+    const enhancedProtection = page.$.safeBrowsingEnhanced;
+    const epSubLabel = loadTimeData.getString('safeBrowsingEnhancedDesc');
+    assertEquals(epSubLabel, enhancedProtection.subLabel);
+
+    page.$.safeBrowsingEnhanced.click();
+    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
+    // Learn more label should be visible.
+    assertTrue(isChildVisible(page, '#learnMoreLabelContainer'));
+  });
 });
 
 // Separate test suite for tests specifically related to Safe Browsing controls.
@@ -1020,19 +1035,24 @@ suite('SafeBrowsing', function() {
     assertEquals(passwordLeakSubLabel, passwordsLeakToggle.subLabel);
   });
 
-  test('EnhancedProtectionText', async () => {
+  // TODO(crbug.com/372743989): Update test when EsbAiStringUpdate is fully
+  // launched.
+  test('EnhancedProtectionTextWithAI', async () => {
     const enhancedProtection = page.$.safeBrowsingEnhanced;
-    const epSubLabel = loadTimeData.getString('safeBrowsingEnhancedDesc');
+    const epSubLabel =
+        loadTimeData.getString('safeBrowsingEnhancedDescUpdated');
     assertEquals(epSubLabel, enhancedProtection.subLabel);
-
-    const noProtection = page.$.safeBrowsingDisabled;
-    const npSubLabel = loadTimeData.getString('safeBrowsingNoneDesc');
-    assertEquals(npSubLabel, noProtection.subLabel);
 
     page.$.safeBrowsingEnhanced.click();
     await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
     // Learn more label should be visible.
     assertTrue(isChildVisible(page, '#learnMoreLabelContainer'));
+  });
+
+  test('NoProtectionText', async () => {
+    const noProtection = page.$.safeBrowsingDisabled;
+    const npSubLabel = loadTimeData.getString('safeBrowsingNoneDesc');
+    assertEquals(npSubLabel, noProtection.subLabel);
   });
 
   test('LearnMoreLinkClickableWhenControlledByPolicy', async () => {

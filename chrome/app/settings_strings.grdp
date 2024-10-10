@@ -2091,6 +2091,9 @@ Data may be seen by human reviewers to improve this feature
   <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_DESC" desc="Description of safe browsing enhanced protection mode">
     Real-time, proactive protection against dangerous sites, downloads, and extensions that's based on your browsing data getting sent to Google
   </message>
+  <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_DESC_UPDATED" desc="Description of safe browsing enhanced protection mode">
+    Real-time, AI-powered protection against dangerous sites, downloads, and extensions that's based on your browsing data getting sent to Google
+  </message>
   <message name="IDS_SETTINGS_SAFEBROWSING_ENHANCED_EXPAND_ACCESSIBILITY_LABEL" desc="Label for the button that toggles showing the detailed description of safe browsing enhanced protection. Only visible by screen reader software.">
     Show enhanced protection details
   </message>

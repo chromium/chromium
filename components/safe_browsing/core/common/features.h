@@ -101,6 +101,10 @@ extern const base::FeatureParam<int> kDownloadWarningSurveyType;
 // potentially show the survey for ignoring a download bubble warning.
 extern const base::FeatureParam<int> kDownloadWarningSurveyIgnoreDelaySeconds;
 
+// Enables string update on the enhanced protection description on
+// chrome://settings/security to mention the use of AI.
+BASE_DECLARE_FEATURE(kEsbAiStringUpdate);
+
 // Controls whether Safe Browsing Extended Reporting (SBER) is deprecated.
 // When this feature flag is enabled:
 // - the Extended Reporting toggle will not be displayed on
