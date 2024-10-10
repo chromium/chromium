@@ -60,6 +60,7 @@ inline constexpr char kMaxDemoModeAppVersion[] = "appVersion.max";
 // Device Targeting paths.
 inline constexpr char kDeviceTargeting[] = "device";
 inline constexpr char kApplicationLocales[] = "locales";
+inline constexpr char kBoards[] = "boards";
 inline constexpr char kUserLocales[] = "userLocales";
 inline constexpr char kIncludedCountries[] = "includedCountries";
 inline constexpr char kExcludedCountries[] = "excludedCountries";
@@ -117,6 +118,10 @@ inline constexpr char kTimeWindowEnd[] = "end";
 // Number Range Targeting paths.
 inline constexpr char kNumberRangeStart[] = "start";
 inline constexpr char kNumberRangeEnd[] = "end";
+
+// String List Targeting paths.
+inline constexpr char kStringListIncludes[] = "includes";
+inline constexpr char kStringListExcludes[] = "excludes";
 
 // Opened App Targeting paths.
 inline constexpr char kAppsOpenedTargetings[] = "appsOpened";
@@ -425,6 +430,15 @@ DeviceTargeting::DeviceTargeting(const Targeting* targeting_dict)
 
 DeviceTargeting::~DeviceTargeting() = default;
 
+const std::unique_ptr<StringListTargeting> DeviceTargeting::GetBoards() const {
+  auto* string_list_dict = GetDictCriteria(kBoards);
+  if (!string_list_dict) {
+    return nullptr;
+  }
+
+  return std::make_unique<StringListTargeting>(string_list_dict);
+}
+
 const base::Value::List* DeviceTargeting::GetLocales() const {
   return GetListCriteria(kApplicationLocales);
 }
@@ -473,12 +487,12 @@ std::unique_ptr<TimeWindowTargeting> DeviceTargeting::GetRegisteredTime()
 
 const std::unique_ptr<NumberRangeTargeting> DeviceTargeting::GetDeviceAge()
     const {
-  auto* number_rage_dict = GetDictCriteria(kDeviceAgeInHours);
-  if (!number_rage_dict) {
+  auto* number_range_dict = GetDictCriteria(kDeviceAgeInHours);
+  if (!number_range_dict) {
     return nullptr;
   }
 
-  return std::make_unique<NumberRangeTargeting>(number_rage_dict);
+  return std::make_unique<NumberRangeTargeting>(number_range_dict);
 }
 
 // Apps Targeting.
@@ -571,6 +585,21 @@ const std::optional<int> NumberRangeTargeting::GetStart() const {
 
 const std::optional<int> NumberRangeTargeting::GetEnd() const {
   return number_range_dict_->FindInt(kNumberRangeEnd);
+}
+
+// String List Targeting.
+StringListTargeting::StringListTargeting(
+    const base::Value::Dict* string_list_dict)
+    : string_list_dict_(string_list_dict) {}
+
+StringListTargeting::~StringListTargeting() = default;
+
+const base::Value::List* StringListTargeting::GetIncludes() const {
+  return string_list_dict_->FindList(kStringListIncludes);
+}
+
+const base::Value::List* StringListTargeting::GetExcludes() const {
+  return string_list_dict_->FindList(kStringListExcludes);
 }
 
 // Session Targeting.

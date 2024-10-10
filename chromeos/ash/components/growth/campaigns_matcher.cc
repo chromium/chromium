@@ -17,7 +17,9 @@
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/logging.h"
+#include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
+#include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "base/version_info/version_info.h"
@@ -415,6 +417,10 @@ void CampaignsMatcher::SetMantaCapabilityForTesting(signin::Tribool value) {
   manta_capability_for_testing_ = value;
 }
 
+void CampaignsMatcher::SetBoardForTesting(std::optional<std::string> board) {
+  board_for_testing_ = board;
+}
+
 bool CampaignsMatcher::IsCampaignMatched(const Campaign* campaign,
                                          bool is_prematch) const {
   if (!campaign || !IsCampaignValid(campaign)) {
@@ -538,6 +544,11 @@ bool CampaignsMatcher::MatchDeviceTargeting(
     return true;
   }
 
+  const auto boards = targeting.GetBoards();
+  if (!MatchBoard(boards.get())) {
+    return false;
+  }
+
   auto target_feature_aware_device = targeting.GetFeatureAwareDevice();
   if (target_feature_aware_device &&
       target_feature_aware_device.value() !=
@@ -592,6 +603,50 @@ bool CampaignsMatcher::MatchRegisteredTime(
   // TODO: b/333458177 - The `oobe_complete_time_` is not available when testing
   // in x11 emulator. Add support make it testable in x11 emulator.
   return MatchTimeWindow(*registered_time_targeting, oobe_compelete_time_);
+}
+
+bool CampaignsMatcher::MatchBoard(
+    const StringListTargeting* boards_targeting) const {
+  if (!boards_targeting) {
+    // Match campaign if there is no boards targeting.
+    return true;
+  }
+
+  std::string board;
+  if (board_for_testing_.has_value()) {
+    board = board_for_testing_.value();
+  } else {
+    // Refer to comment describing base::SysInfo::GetLsbReleaseBoard for why
+    // splitting the Lsb Release Board string is needed.
+    std::vector<std::string> board_info =
+        base::SplitString(base::SysInfo::GetLsbReleaseBoard(), "-",
+                          base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+    if (board_info.empty()) {
+      // If no board info is available, return false.
+      RecordCampaignsManagerError(CampaignsManagerError::kNoBoardInfo);
+      CAMPAIGNS_LOG(ERROR) << "Board info is not available.";
+      return false;
+    }
+
+    board = board_info[0];
+  }
+
+  const auto* includes = boards_targeting->GetIncludes();
+
+  // If the `includes` is empty, then it will not match.
+  if (includes && !Contains(*includes, board)) {
+    CAMPAIGNS_LOG(DEBUG) << "Board is not in the includes list " << board;
+    return false;
+  }
+
+  const auto* excludes = boards_targeting->GetExcludes();
+  if (excludes && Contains(*excludes, board)) {
+    CAMPAIGNS_LOG(DEBUG) << "Board is in the excludes list " << board;
+    return false;
+  }
+
+  return true;
 }
 
 bool CampaignsMatcher::MatchDeviceAge(

@@ -259,6 +259,28 @@ class NumberRangeTargeting {
   raw_ptr<const base::Value::Dict> number_range_dict_;
 };
 
+// Wrapper around a dictionary, which includes and excludes a string list
+// targeting criteria.
+//
+// The structure looks like:
+// {
+//   includes: ["brya"];
+//   excludes: ["reven", "betty"];
+// }
+class StringListTargeting {
+ public:
+  explicit StringListTargeting(const base::Value::Dict* string_list_dict);
+  StringListTargeting(const StringListTargeting&) = delete;
+  StringListTargeting& operator=(const StringListTargeting) = delete;
+  ~StringListTargeting();
+
+  const base::Value::List* GetIncludes() const;
+  const base::Value::List* GetExcludes() const;
+
+ private:
+  raw_ptr<const base::Value::Dict> string_list_dict_;
+};
+
 // Wrapper around Device targeting dictionary. The structure looks like:
 // {
 //   "locales": ["en-US", "zh-CN"];
@@ -274,6 +296,7 @@ class DeviceTargeting : public TargetingBase {
   DeviceTargeting& operator=(const DeviceTargeting) = delete;
   ~DeviceTargeting();
 
+  const std::unique_ptr<StringListTargeting> GetBoards() const;
   const base::Value::List* GetLocales() const;
   const base::Value::List* GetUserLocales() const;
   const base::Value::List* GetIncludedCountries() const;

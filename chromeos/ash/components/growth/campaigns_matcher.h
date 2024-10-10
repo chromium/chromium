@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_GROWTH_CAMPAIGNS_MATCHER_H_
 #define CHROMEOS_ASH_COMPONENTS_GROWTH_CAMPAIGNS_MATCHER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/strings/cstring_view.h"
@@ -54,6 +55,7 @@ class CampaignsMatcher {
   const Campaign* GetCampaignBySlot(Slot slot) const;
 
   void SetMantaCapabilityForTesting(signin::Tribool value);
+  void SetBoardForTesting(std::optional<std::string> board);
 
  private:
   bool IsCampaignMatched(const Campaign* campaign, bool is_prematch) const;
@@ -78,6 +80,7 @@ class CampaignsMatcher {
   bool MatchRuntimeTargeting(const RuntimeTargeting& targeting,
                              int campaign_id,
                              std::optional<int> group_id) const;
+  bool MatchBoard(const StringListTargeting* board_targeting) const;
   bool MatchDeviceAge(
       const std::unique_ptr<NumberRangeTargeting>& device_age_in_hours) const;
   bool MatchEvents(std::unique_ptr<EventsTargeting> config,
@@ -108,7 +111,8 @@ class CampaignsMatcher {
   base::Time oobe_compelete_time_;
   bool is_user_owner_ = false;
   Trigger trigger_{TriggerType::kUnSpecified};
-  std::optional<signin::Tribool> manta_capability_for_testing_;
+  std::optional<signin::Tribool> manta_capability_for_testing_ = std::nullopt;
+  std::optional<std::string> board_for_testing_ = std::nullopt;
 };
 
 }  // namespace growth

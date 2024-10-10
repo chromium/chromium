@@ -455,6 +455,10 @@ void CampaignsManager::SetMantaCapabilityForTesting(signin::Tribool value) {
   matcher_.SetMantaCapabilityForTesting(value);  // IN-TEST
 }
 
+void CampaignsManager::SetBoardForTesting(std::optional<std::string> board) {
+  matcher_.SetBoardForTesting(board);  // IN-TEST
+}
+
 void CampaignsManager::SetOobeCompleteTimeForTesting(base::Time time) {
   oobe_complete_time_for_test_ = time;
 }

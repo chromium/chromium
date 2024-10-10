@@ -71,8 +71,9 @@ enum class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH)
       kHotseatAppIconNotPresent = 48,
       kRecordEventBeforeCampaignsLoaded = 49,
       kNudgeSheflIconAnchorViewNotFound = 50,
+      kNoBoardInfo = 51,
 
-      kMaxValue = kNudgeSheflIconAnchorViewNotFound,
+      kMaxValue = kNoBoardInfo,
     };
 
 // Records errors encountered during the campaigns loading and matching flow.

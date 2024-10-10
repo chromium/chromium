@@ -122,6 +122,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   void RecordEvent(const std::string& event, bool trigger_campaigns = false);
 
   void SetMantaCapabilityForTesting(signin::Tribool value);
+  void SetBoardForTesting(std::optional<std::string> board);
   void SetOobeCompleteTimeForTesting(base::Time time);
   void SetTrackerInitializedForTesting();
   const Campaigns* GetCampaignsBySlotForTesting(Slot slot) const;
