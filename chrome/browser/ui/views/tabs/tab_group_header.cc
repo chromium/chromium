@@ -48,6 +48,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -106,6 +107,9 @@ TabGroupHeader::TabGroupHeader(TabSlotController& tab_slot_controller,
           title_chip_->AddChildView(std::make_unique<views::ImageView>())),
       group_style_(style),
       tab_style_(TabStyle::Get()),
+      group_title_(u""),
+      color_(tab_slot_controller_->GetPaintedGroupColor(
+          tab_slot_controller_->GetGroupColorId(group))),
       editor_bubble_tracker_(tab_slot_controller) {
   set_group(group);
   set_context_menu_controller(this);
@@ -390,112 +394,20 @@ int TabGroupHeader::GetDesiredWidth() const {
 }
 
 void TabGroupHeader::VisualsChanged() {
+  // TODO(crbug.com/372296676): Make TabGroupHeader observe the group for
+  // changes to cut down on the number of times we recalculate the view.
   const tab_groups::TabGroupId tab_group_id = group().value();
-  const std::u16string title =
-      tab_slot_controller_->GetGroupTitle(tab_group_id);
-  const tab_groups::TabGroupColorId color_id =
-      tab_slot_controller_->GetGroupColorId(tab_group_id);
-  const SkColor color = tab_slot_controller_->GetPaintedGroupColor(color_id);
+  group_title_ = tab_slot_controller_->GetGroupTitle(tab_group_id);
+  color_ = tab_slot_controller_->GetPaintedGroupColor(
+      tab_slot_controller_->GetGroupColorId(tab_group_id));
+  should_show_sync_icon_ = ShouldShowSyncIcon();
 
-  title_->SetText(title);
-
-  if (ShouldShowSyncIcon()) {
-    sync_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-        kTabGroupsSyncIcon, color_utils::GetColorWithMaxContrast(color),
-        group_style_->GetSyncIconWidth()));
-  }
-
-  sync_icon_->SetVisible(ShouldShowSyncIcon());
-
-  if (title.empty()) {
-    title_chip_->SetBoundsRect(group_style_->GetEmptyTitleChipBounds(this));
-    title_chip_->SetBackground(
-        group_style_->GetEmptyTitleChipBackground(color));
-
-    if (ShouldShowSyncIcon()) {
-      // The `sync_icon` should be centered in the title chip.
-      gfx::Rect sync_icon_bounds = title_chip_->GetLocalBounds();
-      sync_icon_bounds.ClampToCenteredSize(gfx::Size(
-          group_style_->GetSyncIconWidth(), group_style_->GetSyncIconWidth()));
-      sync_icon_->SetBoundsRect(sync_icon_bounds);
-    } else {
-      sync_icon_->SetBounds(0, 0, 0, 0);
-    }
+  UpdateTitleView();
+  UpdateSyncIconView();
+  if (group_title_.empty()) {
+    CreateHeaderWithoutTitle();
   } else {
-    // If the title is set, the chip is a rounded rect that matches the active
-    // tab shape, particularly the tab's corner radius.
-    title_->SetEnabledColor(color_utils::GetColorWithMaxContrast(color));
-
-    // Set the radius such that the chip nestles snugly against the tab corner
-    // radius, taking into account the group underline stroke.
-    const int corner_radius = group_style_->GetChipCornerRadius();
-
-    // TODO(crbug.com/40893761): The math of the layout in this function is done
-    // arithmetically and can be hard to understand. This should instead be done
-    // by a layout manager.
-    const int text_height =
-        title_->GetPreferredSize(views::SizeBounds(title_->width(), {}))
-            .height();
-
-    const gfx::Size sync_icon_size =
-        ShouldShowSyncIcon()
-            ? gfx::Size(group_style_->GetSyncIconWidth(), text_height)
-            : gfx::Size();
-
-    const int padding_between_label_sync_icon =
-        ShouldShowSyncIcon() ? kSyncIconPaddingFromLabel : 0;
-
-    // The max width of the content should be half the standard tab width (not
-    // counting overlap).
-    const int text_max_width =
-        (tab_style_->GetStandardWidth() - tab_style_->GetTabOverlap()) / 2 -
-        sync_icon_size.width() - padding_between_label_sync_icon;
-
-    const int text_width = std::min(
-        title_->GetPreferredSize(views::SizeBounds(title_->width(), {}))
-            .width(),
-        text_max_width);
-
-    // width of the content including the text label, sync icon and the padding
-    // between them
-    const int content_width =
-        text_width + sync_icon_size.width() + padding_between_label_sync_icon;
-
-    // horizontal and vertical insets of the title chip.
-    const gfx::Insets title_chip_insets =
-        group_style_->GetInsetsForHeaderChip(ShouldShowSyncIcon());
-    const int title_chip_vertical_inset = 0;
-    const int title_chip_horizontal_inset_left = title_chip_insets.left();
-    const int title_chip_horizontal_inset_right = title_chip_insets.right();
-
-    // Width of title chip should atleast be the width of an empty title chip.
-    const int title_chip_width =
-        std::max(group_style_->GetEmptyTitleChipBounds(this).width(),
-                 content_width + title_chip_horizontal_inset_left +
-                     title_chip_horizontal_inset_right);
-
-    // The bounds and background for the `title_chip_` is set here.
-    const gfx::Point title_chip_origin =
-        group_style_->GetTitleChipOffset(text_height);
-    title_chip_->SetBounds(title_chip_origin.x(), title_chip_origin.y(),
-                           title_chip_width,
-                           text_height + 2 * title_chip_vertical_inset);
-    title_chip_->SetBackground(
-        views::CreateRoundedRectBackground(color, corner_radius));
-
-    // Bounds and background of the `title_` and the `sync_icon` are set here.
-    const int start_of_sync_icon = title_chip_horizontal_inset_left;
-    if (!ShouldShowSyncIcon()) {
-      sync_icon_->SetBounds(0, 0, 0, 0);
-      title_->SetBounds(title_chip_horizontal_inset_left,
-                        title_chip_vertical_inset, text_width, text_height);
-    } else {
-      sync_icon_->SetBounds(start_of_sync_icon, title_chip_vertical_inset,
-                            sync_icon_size.width(), text_height);
-      title_->SetBounds(start_of_sync_icon + sync_icon_size.width() +
-                            padding_between_label_sync_icon,
-                        title_chip_vertical_inset, text_width, text_height);
-    }
+    CreateHeaderWithTitle();
   }
 
   if (views::FocusRing::Get(this)) {
@@ -540,6 +452,97 @@ void TabGroupHeader::UpdateIsCollapsed() {
     GetViewAccessibility().SetIsCollapsed();
   } else {
     GetViewAccessibility().SetIsExpanded();
+  }
+}
+
+void TabGroupHeader::UpdateTitleView() {
+  title_->SetText(group_title_);
+
+  if (!group_title_.empty()) {
+    title_->SetEnabledColor(color_utils::GetColorWithMaxContrast(color_));
+  }
+}
+
+void TabGroupHeader::UpdateSyncIconView() {
+  sync_icon_->SetVisible(should_show_sync_icon_);
+  if (should_show_sync_icon_) {
+    sync_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+        kTabGroupsSyncIcon, color_utils::GetColorWithMaxContrast(color_),
+        group_style_->GetSyncIconWidth()));
+  }
+}
+
+void TabGroupHeader::CreateHeaderWithoutTitle() {
+  title_chip_->SetBoundsRect(group_style_->GetEmptyTitleChipBounds(this));
+  title_chip_->SetBackground(group_style_->GetEmptyTitleChipBackground(color_));
+
+  if (should_show_sync_icon_) {
+    // The `sync_icon` should be centered in the title chip.
+    gfx::Rect sync_icon_bounds = title_chip_->GetLocalBounds();
+    sync_icon_bounds.ClampToCenteredSize(gfx::Size(
+        group_style_->GetSyncIconWidth(), group_style_->GetSyncIconWidth()));
+    sync_icon_->SetBoundsRect(sync_icon_bounds);
+  } else {
+    sync_icon_->SetBounds(0, 0, 0, 0);
+  }
+}
+
+void TabGroupHeader::CreateHeaderWithTitle() {
+  // TODO(crbug.com/40893761): The math of the layout in this function is done
+  // arithmetically and can be hard to understand. This should instead be done
+  // by a layout manager.
+  // Visual representation of tab group header:
+  //               [         Total Content Width         ]
+  // [ Left Inset ][ Sync Icon ][ Padding ][ Group Title ][ Right Inset ]
+  const int sync_icon_width =
+      should_show_sync_icon_ ? group_style_->GetSyncIconWidth() : 0;
+  const int padding_between_label_sync_icon =
+      should_show_sync_icon_ ? kSyncIconPaddingFromLabel : 0;
+
+  // The max width of the content should be half the standard tab width (not
+  // counting overlap).
+  const int text_max_width =
+      (tab_style_->GetStandardWidth() - tab_style_->GetTabOverlap()) / 2 -
+      sync_icon_width - padding_between_label_sync_icon;
+  const int text_width = std::min(
+      title_->GetPreferredSize(views::SizeBounds(title_->width(), {})).width(),
+      text_max_width);
+
+  // Width of title chip should at least be the width of an empty title chip.
+  const int total_content_width =
+      text_width + sync_icon_width + padding_between_label_sync_icon;
+  const gfx::Insets title_chip_insets =
+      group_style_->GetInsetsForHeaderChip(should_show_sync_icon_);
+  const int title_chip_width =
+      std::max(group_style_->GetEmptyTitleChipBounds(this).width(),
+               total_content_width + title_chip_insets.width());
+
+  const int text_height =
+      title_->GetPreferredSize(views::SizeBounds(title_->width(), {})).height();
+
+  // The title chip's radius should nestle snuggly against the tab corner
+  // radius, taking into account the group underline stroke.
+  const gfx::Point title_chip_origin =
+      group_style_->GetTitleChipOffset(text_height);
+  const int corner_radius = group_style_->GetChipCornerRadius();
+  title_chip_->SetBounds(title_chip_origin.x(), title_chip_origin.y(),
+                         title_chip_width, text_height);
+  title_chip_->SetBackground(
+      views::CreateRoundedRectBackground(color_, corner_radius));
+
+  // Set the bounds of the sync icon first, followed by the title.
+  const int start_of_sync_icon = title_chip_insets.left();
+  const int title_chip_vertical_inset = 0;
+  if (!should_show_sync_icon_) {
+    sync_icon_->SetBounds(0, 0, 0, 0);
+    title_->SetBounds(title_chip_insets.left(), title_chip_vertical_inset,
+                      text_width, text_height);
+  } else {
+    sync_icon_->SetBounds(start_of_sync_icon, title_chip_vertical_inset,
+                          sync_icon_width, text_height);
+    title_->SetBounds(
+        sync_icon_->bounds().right() + padding_between_label_sync_icon,
+        title_chip_vertical_inset, text_width, text_height);
   }
 }
 
