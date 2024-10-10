@@ -228,8 +228,16 @@ AdjustBackwardPositionToAvoidCrossingEditingBoundariesTemplate(
 
   // Return empty position if |pos| is not somewhere inside the editable
   // region containing this position
-  if (highest_root && !pos.AnchorNode()->IsDescendantOf(highest_root))
-    return PositionWithAffinityTemplate<Strategy>();
+  if (RuntimeEnabledFeatures::
+          CheckIfHighestRootContainsPositionAnchorNodeEnabled()) {
+    if (highest_root && !highest_root->contains(pos.AnchorNode())) {
+      return PositionWithAffinityTemplate<Strategy>();
+    }
+  } else {
+    if (highest_root && !pos.AnchorNode()->IsDescendantOf(highest_root)) {
+      return PositionWithAffinityTemplate<Strategy>();
+    }
+  }
 
   // Return |pos| itself if the two are from the very same editable region, or
   // both are non-editable
