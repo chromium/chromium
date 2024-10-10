@@ -47,7 +47,16 @@
 
 namespace {
 
-enum class CTEnforcement { kEnabled, kDisabledByProto, kDisabledByFeature };
+enum class CTEnforcement {
+  // Enables CT enforcement.
+  kEnabled,
+  // Enables CT with Static CT API policy enforcement.
+  kEnabledWithStaticCTEnforcement,
+  // Disables CT enforcement via component updater proto.
+  kDisabledByProto,
+  // Disables CT enforcement via feature flag.
+  kDisabledByFeature
+};
 
 int64_t SecondsSinceEpoch(base::Time t) {
   return (t - base::Time::UnixEpoch()).InSeconds();
@@ -64,12 +73,32 @@ class PKIMetadataComponentUpdaterTest
       public PKIMetadataComponentInstallerService::Observer {
  public:
   PKIMetadataComponentUpdaterTest() {
-    if (GetParam() == CTEnforcement::kDisabledByFeature) {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kCertificateTransparencyAskBeforeEnabling);
-    } else {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kCertificateTransparencyAskBeforeEnabling);
+    switch (GetParam()) {
+      case CTEnforcement::kEnabled:
+        scoped_feature_list_.InitWithFeatures(
+            /*enabled_features=*/
+            {features::kCertificateTransparencyAskBeforeEnabling},
+            /*disabled_features=*/{
+                net::features::kEnableStaticCTAPIEnforcement});
+        break;
+
+      case CTEnforcement::kEnabledWithStaticCTEnforcement:
+        scoped_feature_list_.InitWithFeatures(
+            /*enabled_features=*/{features::
+                                      kCertificateTransparencyAskBeforeEnabling,
+                                  net::features::kEnableStaticCTAPIEnforcement},
+            /*disabled_features=*/{});
+        break;
+
+      case CTEnforcement::kDisabledByProto:
+        scoped_feature_list_.InitAndEnableFeature(
+            features::kCertificateTransparencyAskBeforeEnabling);
+        break;
+
+      case CTEnforcement::kDisabledByFeature:
+        scoped_feature_list_.InitAndDisableFeature(
+            features::kCertificateTransparencyAskBeforeEnabling);
+        break;
     }
   }
 
@@ -125,6 +154,11 @@ class PKIMetadataComponentUpdaterTest
     return component_dir_.GetPath();
   }
 
+  bool is_ct_enforced() const {
+    return GetParam() == CTEnforcement::kEnabled ||
+           GetParam() == CTEnforcement::kEnabledWithStaticCTEnforcement;
+  }
+
  private:
   void OnCTLogListConfigured() override {
     ++pki_metadata_configured_times_;
@@ -170,7 +204,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest,
   // Check that the page is blocked depending on CT enforcement.
   content::WebContents* tab = chrome_test_utils::GetActiveWebContents(this);
   ASSERT_TRUE(WaitForRenderFrameReady(tab->GetPrimaryMainFrame()));
-  if (GetParam() == CTEnforcement::kEnabled) {
+  if (is_ct_enforced()) {
     EXPECT_NE(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
   } else {
     EXPECT_EQ(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
@@ -186,7 +220,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_ok.GetURL(kHostname, "/simple.html")));
   ASSERT_TRUE(WaitForRenderFrameReady(tab->GetPrimaryMainFrame()));
-  if (GetParam() == CTEnforcement::kEnabled) {
+  if (is_ct_enforced()) {
     EXPECT_NE(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
   } else {
     EXPECT_EQ(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
@@ -247,7 +281,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest, TestCTUpdate) {
       browser(), https_server_ok.GetURL("example.com", "/simple.html")));
   content::WebContents* tab = chrome_test_utils::GetActiveWebContents(this);
   ASSERT_TRUE(WaitForRenderFrameReady(tab->GetPrimaryMainFrame()));
-  if (GetParam() == CTEnforcement::kEnabled) {
+  if (is_ct_enforced()) {
     EXPECT_NE(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
   } else {
     EXPECT_EQ(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
@@ -352,17 +386,15 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest, TestCTUpdate) {
   WaitForPKIConfiguration(3);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_ok.GetURL("example.com", "/simple.html")));
-  if (GetParam() == CTEnforcement::kEnabled) {
+  if (is_ct_enforced()) {
     EXPECT_NE(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
   } else {
     EXPECT_EQ(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
   }
 }
 
-// TODO(crbug.com/372681255): Re-enable this test with and without the feature
-// flag.
 IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest,
-                       DISABLED_TestAtLeastOneRFC6962LogPolicy) {
+                       TestAtLeastOneRFC6962LogPolicy) {
   const std::string kLog1OperatorName = "log operator 1";
   std::unique_ptr<crypto::ECPrivateKey> log1_private_key =
       crypto::ECPrivateKey::Create();
@@ -416,7 +448,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest,
       browser(), https_server_ok.GetURL("example.com", "/simple.html")));
   content::WebContents* tab = chrome_test_utils::GetActiveWebContents(this);
   ASSERT_TRUE(WaitForRenderFrameReady(tab->GetPrimaryMainFrame()));
-  if (GetParam() == CTEnforcement::kEnabled) {
+  if (is_ct_enforced()) {
     EXPECT_NE(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
   } else {
     EXPECT_EQ(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
@@ -486,18 +518,20 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest,
   WaitForPKIConfiguration(2);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_ok.GetURL("example.com", "/simple.html")));
-  if (GetParam() == CTEnforcement::kEnabled) {
+  if (GetParam() == CTEnforcement::kEnabledWithStaticCTEnforcement) {
     EXPECT_NE(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
   } else {
     EXPECT_EQ(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(PKIMetadataComponentUpdater,
-                         PKIMetadataComponentUpdaterTest,
-                         testing::Values(CTEnforcement::kEnabled,
-                                         CTEnforcement::kDisabledByProto,
-                                         CTEnforcement::kDisabledByFeature));
+INSTANTIATE_TEST_SUITE_P(
+    PKIMetadataComponentUpdater,
+    PKIMetadataComponentUpdaterTest,
+    testing::Values(CTEnforcement::kEnabled,
+                    CTEnforcement::kEnabledWithStaticCTEnforcement,
+                    CTEnforcement::kDisabledByProto,
+                    CTEnforcement::kDisabledByFeature));
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
@@ -975,6 +1009,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentCtAndCrsUpdaterTest,
       browser(), https_server_ok.GetURL("c.example.com", "/simple.html")));
   switch (GetParam()) {
     case CTEnforcement::kEnabled:
+    case CTEnforcement::kEnabledWithStaticCTEnforcement:
     case CTEnforcement::kDisabledByFeature:
       // Should be trusted if CT is enabled since the SCTNotAfter constraint is
       // satisfied by the SCT from log1. Should be trusted if CT feature is
@@ -1010,6 +1045,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentCtAndCrsUpdaterTest,
       browser(), https_server_ok.GetURL("c.example.com", "/simple.html")));
   switch (GetParam()) {
     case CTEnforcement::kEnabled:
+    case CTEnforcement::kEnabledWithStaticCTEnforcement:
     case CTEnforcement::kDisabledByProto:
       // Should be distrusted if CT is enabled. The SCTNotAfter constraint is
       // not satisfied by any valid SCT. The SCT from the unknown log is not
@@ -1047,6 +1083,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentCtAndCrsUpdaterTest,
       browser(), https_server_ok.GetURL("c.example.com", "/simple.html")));
   switch (GetParam()) {
     case CTEnforcement::kEnabled:
+    case CTEnforcement::kEnabledWithStaticCTEnforcement:
     case CTEnforcement::kDisabledByFeature:
       // Should be trusted if CT is enabled since the SCTAlltAfter constraint is
       // satisfied by the SCT from both logs.
@@ -1083,6 +1120,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentCtAndCrsUpdaterTest,
       browser(), https_server_ok.GetURL("c.example.com", "/simple.html")));
   switch (GetParam()) {
     case CTEnforcement::kEnabled:
+    case CTEnforcement::kEnabledWithStaticCTEnforcement:
     case CTEnforcement::kDisabledByProto:
       // Should be distrusted since one of the SCTs was before the SCTAllAfter
       // constraint.
@@ -1101,11 +1139,13 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentCtAndCrsUpdaterTest,
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(PKIMetadataComponentUpdater,
-                         PKIMetadataComponentCtAndCrsUpdaterTest,
-                         testing::Values(CTEnforcement::kEnabled,
-                                         CTEnforcement::kDisabledByProto,
-                                         CTEnforcement::kDisabledByFeature));
+INSTANTIATE_TEST_SUITE_P(
+    PKIMetadataComponentUpdater,
+    PKIMetadataComponentCtAndCrsUpdaterTest,
+    testing::Values(CTEnforcement::kEnabled,
+                    CTEnforcement::kEnabledWithStaticCTEnforcement,
+                    CTEnforcement::kDisabledByProto,
+                    CTEnforcement::kDisabledByFeature));
 
 // TODO(crbug.com/40816087) additional Chrome Root Store browser tests to
 // add:
