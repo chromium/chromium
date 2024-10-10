@@ -12196,6 +12196,26 @@
             ]
         }
     ],
+    "IOSTabResumption2": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Tab_Resumption_2_Random_Data_20241001",
+                    "params": {
+                        "use_random_score": "true"
+                    },
+                    "enable_features": [
+                        "PageContentAnnotations",
+                        "SegmentationPlatformURLVisitResumptionRanker",
+                        "TabResumption2"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSTipsNotifications": [
         {
             "platforms": [
