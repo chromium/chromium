@@ -115,14 +115,9 @@
     background-color: var(--color-searchbox-answer-icon-foreground);
   }
 
-  /* TODO(b/343732131): Switch color token once UX direction is set. */
   :host(:not([in-searchbox])[is-lens-searchbox_]) #container {
-    background-color: #F1F3F4;
+    background-color: var(--color-searchbox-results-icon-container-background);
     border-radius: 4000px;
-  }
-
-  :host-context([dark-mode]):host(:not([in-searchbox])[is-lens-searchbox_]) #container {
-    background-color: #303134;
   }
 
 </style>
