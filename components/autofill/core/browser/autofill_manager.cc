@@ -611,7 +611,7 @@ void AutofillManager::ParseFormsAsync(
       // determining the heuristics.
       form_structure->RetrieveFromCache(
           *cached_form_structure,
-          FormStructure::RetrieveFromCacheReason::kFormCacheUpdateAfterParsing);
+          FormStructure::RetrieveFromCacheReason::kFormParsing);
 
       // Not updating signatures of credit card forms is legacy behaviour. We
       // believe that the signatures are kept stable for voting purposes.
@@ -747,15 +747,6 @@ void AutofillManager::ParseFormAsync(
   if (FormStructure* cached_form_structure =
           FindCachedFormById(form_data.global_id())) {
     if (!CachedFormNeedsUpdate(form_data, *cached_form_structure)) {
-      if (base::FeatureList::IsEnabled(features::kAutofillFixValueSemantics)) {
-        // Update the cache to the latest data from the renderer in the form
-        // cache (in particular, the current field values) while preserving all
-        // other information (in particular, the field types).
-        form_structure->RetrieveFromCache(
-            *cached_form_structure, FormStructure::RetrieveFromCacheReason::
-                                        kFormCacheUpdateWithoutParsing);
-        form_structures_[form_data.global_id()] = std::move(form_structure);
-      }
       std::move(callback).Run(*this, form_data);
       return;
     }
@@ -764,7 +755,7 @@ void AutofillManager::ParseFormAsync(
     // determining the heuristics.
     form_structure->RetrieveFromCache(
         *cached_form_structure,
-        FormStructure::RetrieveFromCacheReason::kFormCacheUpdateAfterParsing);
+        FormStructure::RetrieveFromCacheReason::kFormParsing);
   }
   form_structure->set_current_page_language(GetCurrentPageLanguage());
 
