@@ -6,6 +6,7 @@
 
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_test_util_internal.h"
+#include "content/browser/preloading/preload_pipeline_info.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/test/test_renderer_host.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -106,7 +107,8 @@ class NoVarySearchHelperTester final {
                          blink::mojom::SpeculationEagerness::kEager),
             blink::mojom::Referrer(),
             /*no_vary_search_expected=*/std::nullopt,
-            /*prefetch_document_manager=*/nullptr);
+            /*prefetch_document_manager=*/nullptr,
+            base::MakeRefCounted<PreloadPipelineInfo>());
 
     MakeServableStreamingURLLoaderForTest(prefetch_container.get(),
                                           std::move(head), "test body");

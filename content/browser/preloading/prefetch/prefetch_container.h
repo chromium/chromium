@@ -17,6 +17,7 @@
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader_common_types.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
+#include "content/browser/preloading/preload_pipeline_info.h"
 #include "content/browser/preloading/speculation_host_devtools_observer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
@@ -105,6 +106,7 @@ class CONTENT_EXPORT PrefetchContainer {
       const blink::mojom::Referrer& referrer,
       std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
       base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager,
+      scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
       base::WeakPtr<PreloadingAttempt> attempt = nullptr);
 
   // Ctor used for browser-initiated prefetch.
@@ -776,6 +778,7 @@ class CONTENT_EXPORT PrefetchContainer {
       base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager,
       base::WeakPtr<BrowserContext> browser_context,
       ukm::SourceId ukm_source_id,
+      scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
       base::WeakPtr<PreloadingAttempt> attempt,
       std::optional<PreloadingHoldbackStatus> holdback_status_override,
       std::optional<base::UnguessableToken> initiator_devtools_navigation_token,
@@ -935,6 +938,9 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // Weak pointer to DevTools observer
   base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer_;
+
+  // Information of preload pipeline that this prefetch belongs to.
+  scoped_refptr<PreloadPipelineInfo> preload_pipeline_info_;
 
   // `PreloadingAttempt` is used to track the lifecycle of the preloading event,
   // and reports various statuses to UKM dashboard. It is initialised along with

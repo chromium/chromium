@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "content/browser/preloading/preload_pipeline_info.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
 #include "content/public/browser/preloading.h"
@@ -46,6 +47,7 @@ struct CONTENT_EXPORT PrerenderAttributes {
           url_match_predicate,
       base::RepeatingCallback<void(NavigationHandle&)>
           prerender_navigation_handle_callback,
+      scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
       // TODO(crbug.com/40246462): use pattern other than default parameter.
       const std::optional<base::UnguessableToken>&
           initiator_devtools_navigation_token = std::nullopt);
@@ -122,6 +124,9 @@ struct CONTENT_EXPORT PrerenderAttributes {
 
   base::RepeatingCallback<void(NavigationHandle&)>
       prerender_navigation_handle_callback;
+
+  // Information of preload pipeline that this prerender belongs to.
+  scoped_refptr<PreloadPipelineInfo> preload_pipeline_info;
 
   // This is std::nullopt when prerendering is initiated by the browser.
   std::optional<base::UnguessableToken> initiator_devtools_navigation_token;

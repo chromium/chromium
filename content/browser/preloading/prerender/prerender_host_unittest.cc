@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/browser/preloading/prerender/prerender_host.h"
+
 #include <memory>
 
 #include "base/functional/bind.h"
@@ -12,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/browser/preloading/preload_pipeline_info.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/prerender/prerender_attributes.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
@@ -289,7 +291,8 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
         rfh->GetFrameToken(), rfh->GetFrameTreeNodeId(),
         rfh->GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
         /*should_warm_up_compositor=*/false, std::move(url_match_predicate),
-        /*prerender_navigation_handle_callback=*/{});
+        /*prerender_navigation_handle_callback=*/{},
+        base::MakeRefCounted<PreloadPipelineInfo>());
   }
 
   void ExpectFinalStatus(PrerenderFinalStatus status) {

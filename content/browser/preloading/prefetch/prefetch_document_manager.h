@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
+#include "content/browser/preloading/preload_pipeline_info.h"
 #include "content/browser/preloading/speculation_host_devtools_observer.h"
 #include "content/common/content_export.h"
 #include "content/common/features.h"
@@ -63,8 +64,10 @@ class CONTENT_EXPORT PrefetchDocumentManager
       const PreloadingPredictor& enacting_predictor,
       base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer);
 
-  void PrefetchAheadOfPrerender(blink::mojom::SpeculationCandidatePtr candidate,
-                                const PreloadingPredictor& enacting_predictor);
+  void PrefetchAheadOfPrerender(
+      scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
+      blink::mojom::SpeculationCandidatePtr candidate,
+      const PreloadingPredictor& enacting_predictor);
 
   // Starts the process to prefetch |url| with the given |prefetch_type|.
   void PrefetchUrl(
@@ -74,6 +77,7 @@ class CONTENT_EXPORT PrefetchDocumentManager
       PreloadingType planned_max_preloading_type,
       const blink::mojom::Referrer& referrer,
       const network::mojom::NoVarySearchPtr& no_vary_search_expected,
+      scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
       base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer);
 
   // Checking the canary cache can be a slow and blocking operation (see

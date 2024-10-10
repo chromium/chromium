@@ -38,6 +38,7 @@ PrerenderAttributes::PrerenderAttributes(
         url_match_predicate,
     base::RepeatingCallback<void(NavigationHandle&)>
         prerender_navigation_handle_callback,
+    scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
     const std::optional<base::UnguessableToken>&
         initiator_devtools_navigation_token)
     : prerendering_url(prerendering_url),
@@ -58,6 +59,7 @@ PrerenderAttributes::PrerenderAttributes(
       url_match_predicate(std::move(url_match_predicate)),
       prerender_navigation_handle_callback(
           std::move(prerender_navigation_handle_callback)),
+      preload_pipeline_info(std::move(preload_pipeline_info)),
       initiator_devtools_navigation_token(initiator_devtools_navigation_token) {
   CHECK(!IsBrowserInitiated() ||
         !initiator_devtools_navigation_token.has_value());

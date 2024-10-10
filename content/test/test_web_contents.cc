@@ -11,6 +11,7 @@
 #include "base/no_destructor.h"
 #include "content/browser/browser_url_handler_impl.h"
 #include "content/browser/display_cutout/display_cutout_host_impl.h"
+#include "content/browser/preloading/preload_pipeline_info.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
@@ -483,7 +484,8 @@ FrameTreeNodeId TestWebContents::AddPrerender(const GURL& url) {
       ui::PAGE_TRANSITION_LINK,
       /*should_warm_up_compositor=*/false,
       /*url_match_predicate=*/{},
-      /*prerender_navigation_handle_callback=*/{}));
+      /*prerender_navigation_handle_callback=*/{},
+      base::MakeRefCounted<PreloadPipelineInfo>()));
 }
 
 TestRenderFrameHost* TestWebContents::AddPrerenderAndCommitNavigation(

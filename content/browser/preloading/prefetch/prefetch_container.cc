@@ -487,6 +487,7 @@ PrefetchContainer::PrefetchContainer(
     const blink::mojom::Referrer& referrer,
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint,
     base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager,
+    scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
     base::WeakPtr<PreloadingAttempt> attempt)
     : PrefetchContainer(
           referring_render_frame_host.GetGlobalId(),
@@ -500,6 +501,7 @@ PrefetchContainer::PrefetchContainer(
           prefetch_document_manager,
           referring_render_frame_host.GetBrowserContext()->GetWeakPtr(),
           GetUkmSourceId(referring_render_frame_host),
+          std::move(preload_pipeline_info),
           std::move(attempt),
           /*holdback_status_override=*/std::nullopt,
           referring_render_frame_host.GetDevToolsNavigationToken(),
@@ -532,6 +534,7 @@ PrefetchContainer::PrefetchContainer(
           /*prefetch_document_manager=*/nullptr,
           referring_web_contents.GetBrowserContext()->GetWeakPtr(),
           ukm::kInvalidSourceId,
+          base::MakeRefCounted<PreloadPipelineInfo>(),
           std::move(attempt),
           holdback_status_override,
           /*initiator_devtools_navigation_token=*/std::nullopt,
@@ -564,6 +567,7 @@ PrefetchContainer::PrefetchContainer(
                         /*prefetch_document_manager=*/nullptr,
                         browser_context->GetWeakPtr(),
                         ukm::kInvalidSourceId,
+                        base::MakeRefCounted<PreloadPipelineInfo>(),
                         std::move(attempt),
                         /*holdback_status_override=*/std::nullopt,
                         /*initiator_devtools_navigation_token=*/std::nullopt,
@@ -584,6 +588,7 @@ PrefetchContainer::PrefetchContainer(
     base::WeakPtr<PrefetchDocumentManager> prefetch_document_manager,
     base::WeakPtr<BrowserContext> browser_context,
     ukm::SourceId ukm_source_id,
+    scoped_refptr<PreloadPipelineInfo> preload_pipeline_info,
     base::WeakPtr<PreloadingAttempt> attempt,
     std::optional<PreloadingHoldbackStatus> holdback_status_override,
     std::optional<base::UnguessableToken> initiator_devtools_navigation_token,
@@ -600,6 +605,7 @@ PrefetchContainer::PrefetchContainer(
       browser_context_(std::move(browser_context)),
       ukm_source_id_(ukm_source_id),
       request_id_(base::UnguessableToken::Create().ToString()),
+      preload_pipeline_info_(std::move(preload_pipeline_info)),
       attempt_(std::move(attempt)),
       holdback_status_override_(holdback_status_override),
       initiator_devtools_navigation_token_(

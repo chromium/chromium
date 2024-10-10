@@ -291,6 +291,7 @@ bool PrerendererImpl::MaybePrerender(
       /*should_warm_up_compositor=*/false,
       /*url_match_predicate=*/{},
       /*prerender_navigation_handle_callback=*/{},
+      base::MakeRefCounted<PreloadPipelineInfo>(),
       rfhi.GetDevToolsNavigationToken());
 
   PreloadingTriggerType trigger_type =
@@ -324,7 +325,8 @@ bool PrerendererImpl::MaybePrerender(
               content::PrefetchDocumentManager::GetOrCreateForCurrentDocument(
                   web_contents->GetPrimaryMainFrame());
           prefetch_document_manager->PrefetchAheadOfPrerender(
-              candidate.Clone(), enacting_predictor);
+              attributes.preload_pipeline_info, candidate.Clone(),
+              enacting_predictor);
         }
 
         // Create new PreloadingAttempt and pass all the values corresponding to

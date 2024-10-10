@@ -8,6 +8,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/browser/preloading/preload_pipeline_info.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_confidence.h"
 #include "content/browser/preloading/preloading_config.h"
@@ -202,7 +203,8 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
             ui::PAGE_TRANSITION_LINK,
             /*should_warm_up_compositor=*/false,
             /*url_match_predicate=*/{},
-            /*prerender_navigation_handle_callback=*/{});
+            /*prerender_navigation_handle_callback=*/{},
+            base::MakeRefCounted<PreloadPipelineInfo>());
       case PreloadingTriggerType::kEmbedder:
         return PrerenderAttributes(
             url, trigger_type, embedder_histogram_suffix,
@@ -220,7 +222,8 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
                                       ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
             /*should_warm_up_compositor=*/false,
             /*url_match_predicate=*/{},
-            /*prerender_navigation_handle_callback=*/{});
+            /*prerender_navigation_handle_callback=*/{},
+            base::MakeRefCounted<PreloadPipelineInfo>());
     }
   }
 

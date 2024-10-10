@@ -481,7 +481,8 @@ class PrefetchURLLoaderInterceptorTestBase : public RenderViewHostTestHarness {
         *main_rfhi(), referring_document_token, prefetch_url,
         std::move(prefetch_type), blink::mojom::Referrer(),
         /*no_vary_search_expected=*/std::nullopt,
-        /*prefetch_document_manager=*/nullptr, attempt->GetWeakPtr());
+        /*prefetch_document_manager=*/nullptr,
+        base::MakeRefCounted<PreloadPipelineInfo>(), attempt->GetWeakPtr());
   }
 
   std::unique_ptr<PrefetchContainer> CreateSpeculationRulesPrefetchContainer(

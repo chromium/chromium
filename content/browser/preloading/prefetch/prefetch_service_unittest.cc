@@ -29,6 +29,7 @@
 #include "content/browser/preloading/prefetch/prefetch_serving_page_metrics_container.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
+#include "content/browser/preloading/preload_pipeline_info.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
 #include "content/browser/preloading/preloading_config.h"
@@ -345,7 +346,8 @@ class PrefetchServiceTestBase : public RenderViewHostTestHarness {
     prefetch_document_manager->PrefetchUrl(
         prefetch_url, prefetch_type,
         GetPredictorForPreloadingTriggerType(prefetch_type.trigger_type()),
-        planned_max_preloading_type, referrer, no_vary_search_hint, nullptr);
+        planned_max_preloading_type, referrer, no_vary_search_hint,
+        base::MakeRefCounted<PreloadPipelineInfo>(), nullptr);
   }
 
   void MakePrefetchFromEmbedder(
@@ -6530,7 +6532,8 @@ class PrefetchServiceAddPrefetchContainerTest : public PrefetchServiceTestBase {
         static_cast<content::RenderFrameHostImpl&>(*main_rfh()), document_token,
         prefetch_url, std::move(prefetch_type), blink::mojom::Referrer(),
         /*no_vary_search_expected=*/std::nullopt,
-        /*prefetch_document_manager=*/nullptr, attempt->GetWeakPtr());
+        /*prefetch_document_manager=*/nullptr,
+        base::MakeRefCounted<PreloadPipelineInfo>(), attempt->GetWeakPtr());
   }
 
   void AddPrefetchContainerWithoutStartingPrefetchForTesting(
