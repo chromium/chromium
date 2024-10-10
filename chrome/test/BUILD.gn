@@ -7182,8 +7182,6 @@ test("unit_tests") {
       "../browser/commerce/coupons/coupon_service_unittest.cc",
       "../browser/component_updater/soda_component_installer_unittest.cc",
       "../browser/component_updater/soda_language_pack_component_installer_unittest.cc",
-      "../browser/component_updater/translate_kit_component_installer_unittest.cc",
-      "../browser/component_updater/translate_kit_language_pack_component_installer_unittest.cc",
       "../browser/component_updater/zxcvbn_data_component_installer_unittest.cc",
       "../browser/data_sharing/desktop/data_sharing_conversion_utils_unittest.cc",
       "../browser/device_identity/device_oauth2_token_service_unittest.cc",
@@ -7620,10 +7618,13 @@ test("unit_tests") {
 
     if (is_linux || is_mac || is_win) {
       sources += [
+        "../browser/component_updater/translate_kit_component_installer_unittest.cc",
+        "../browser/component_updater/translate_kit_language_pack_component_installer_unittest.cc",
         "../browser/supervised_user/linux_mac_windows/supervised_user_extensions_metrics_delegate_impl_unittest.cc",
         "../browser/ui/sync/sync_passphrase_dialog_unittest.cc",
         "../browser/ui/webui/settings/accessibility_main_handler_unittest.cc",
       ]
+      deps += [ "//chrome/browser/on_device_translation:prefs" ]
     }
 
     sources += [

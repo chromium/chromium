@@ -82,6 +82,10 @@
 #include "media/base/media_switches.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#include "chrome/browser/component_updater/translate_kit_component_installer.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/component_updater/smart_dim_component_installer.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -226,6 +230,13 @@ void RegisterComponentsForUpdate() {
   RegisterTpcdMetadataComponent(cus);
 
   RegisterPlusAddressBlocklistComponent(cus);
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // TODO(crbug.com/364795294): Support other platforms.
+  RegisterTranslateKitComponent(cus, g_browser_process->local_state(),
+                                /*force_install=*/false,
+                                /*registered_callback=*/base::OnceClosure());
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   RegisterOpenCookieDatabaseComponent(cus);
 }

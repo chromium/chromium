@@ -10,9 +10,11 @@
 
 namespace prefs {
 
-// The fully-qualified path to the installed TranslateKit binary.
 const char kTranslateKitBinaryPath[] =
     "on_device_translation.translate_kit_binary_path";
+
+const char kTranslateKitPreviouslyRegistered[] =
+    "on_device_translation.translate_kit_registered";
 
 }  // namespace prefs
 
@@ -21,6 +23,8 @@ namespace on_device_translation {
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterFilePathPref(prefs::kTranslateKitBinaryPath,
                                  base::FilePath());
+  registry->RegisterBooleanPref(prefs::kTranslateKitPreviouslyRegistered,
+                                false);
 
   // Register language pack config path preferences.
   for (const auto& it :

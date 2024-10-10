@@ -245,7 +245,12 @@ OnDeviceTranslationServiceController::OnDeviceTranslationServiceController()
     // Registers the TranslateKit component.
     component_updater::RegisterTranslateKitComponent(
         g_browser_process->component_updater(),
-        g_browser_process->local_state());
+        g_browser_process->local_state(),
+        /*force_install=*/true,
+        /*registered_callback=*/
+        base::BindOnce(
+            &component_updater::TranslateKitComponentInstallerPolicy::
+                UpdateComponentOnDemand));
   }
   if (!language_packs_from_command_line_) {
     // Start listening to pref changes for language pack keys.
