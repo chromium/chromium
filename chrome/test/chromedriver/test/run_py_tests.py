@@ -4141,6 +4141,15 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
     self.assertEqual('Inner iframe',self._driver.ExecuteScript(
             'return arguments[0].document.title',
             frame))
+    # Step down into the frame and dereference it as a window
+    window = windowreference.WindowReference(
+            frame._chromedriver,
+            frame._id)
+    frame_elem = self._driver.FindElement('tag name', 'iframe')
+    self._driver.SwitchToFrame(frame_elem)
+    self.assertEqual('Inner iframe',self._driver.ExecuteScript(
+            'return arguments[0].document.title',
+            window))
     # Navigation must invalidate the reference
     self._driver.Load(self.GetHttpUrlForFile(
         '/chromedriver/outer.html'))
@@ -5860,6 +5869,38 @@ class ChromeDriverSiteIsolation(ChromeDriverBaseTestWithWebServer):
     self.assertTrue(self.WaitForCondition(
         lambda: len(self._driver.GetWindowHandles()) <= 1,
         timeout=10))
+
+  def testSerializeRemoteFrame(self):
+    remote_url = self.ReplaceHostName(self.GetHttpUrlForFile('/remote.html'),
+                                      'localhost')
+    self._http_server.SetDataForPath('/remote.html',
+      bytes('<title>OOPIF</title>', 'utf-8'))
+    self._http_server.SetDataForPath('/main.html',
+      bytes('<iframe src="%s">' % remote_url, 'utf-8'))
+    self._driver.Load(self.GetHttpUrlForFile(
+        '/main.html'))
+    frame = self._driver.ExecuteScript(
+            'return window.frames[0]')
+    self.assertTrue(isinstance(frame, framereference.FrameReference))
+    self.assertTrue(self._driver.ExecuteScript(
+            'return arguments[0] === window.frames[0]',
+            frame))
+    # Step down into the frame and dereference it as a window
+    window = windowreference.WindowReference(
+            frame._chromedriver,
+            frame._id)
+    frame_elem = self._driver.FindElement('tag name', 'iframe')
+    self._driver.SwitchToFrame(frame_elem)
+    self.assertEqual('OOPIF',self._driver.ExecuteScript(
+            'return arguments[0].document.title',
+            window))
+    # Navigation must invalidate the reference
+    self._driver.Load(self.GetHttpUrlForFile(
+        '/chromedriver/outer.html'))
+    with self.assertRaises(chromedriver.NoSuchFrame):
+        self._driver.ExecuteScript(
+                'return arguments[0] === window.frames[0]',
+                frame)
 
 
 class ChromeDriverPageLoadTimeoutTest(ChromeDriverBaseTestWithWebServer):

@@ -118,12 +118,17 @@ function isElement(value) {
   // since this does not work with frames/iframes, for example
   // frames[0].document.body instanceof Object == false even though
   // typeof(frames[0].document.body) == 'object'.
-  return ((typeof(value) == 'object' && value != null) ||
-            (typeof(value) == 'function' && value.nodeName &&
-            value.nodeType == NodeType.ELEMENT)) &&
-          (value.nodeType == NodeType.ELEMENT   ||
-           value.nodeType == NodeType.DOCUMENT  ||
-           (SHADOW_DOM_ENABLED && value instanceof ShadowRoot));
+  try {
+    return ((typeof(value) == 'object' && value != null) ||
+              (typeof(value) == 'function' && value.nodeName &&
+              value.nodeType == NodeType.ELEMENT)) &&
+            (value.nodeType == NodeType.ELEMENT   ||
+             value.nodeType == NodeType.DOCUMENT  ||
+             (SHADOW_DOM_ENABLED && value instanceof ShadowRoot));
+  } catch {
+    // OOPIF content window
+    return false;
+  }
 }
 
 /**
@@ -257,9 +262,16 @@ function preprocessResult(item, seen, nodes) {
     return serializationGuard(ret);
   }
 
-  const Window = item.cdc_adoQpoasnfa76pfcZLmcfl_Window || item.Window
-      || window.cdc_adoQpoasnfa76pfcZLmcfl_Window || window.Window;
-  if (item instanceof Window) {
+  let WindowProxy = window.cdc_adoQpoasnfa76pfcZLmcfl_Window || window.Window;
+  let is_oopif = false;
+  try {
+    WindowProxy = item.cdc_adoQpoasnfa76pfcZLmcfl_Window || item.Window
+        || WindowProxy;
+  } catch {
+    is_oopif = true;
+  }
+
+  if (is_oopif || item instanceof WindowProxy) {
     const ret = {};
     ret[WINDOW_KEY] = nodes.length;
     nodes.push(item);
