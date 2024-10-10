@@ -8,6 +8,7 @@
 
 external/wpt/longtask-timing/*
 external/wpt/picture-in-picture/*
+external/wpt/preload/*
 external/wpt/selection/*
 external/wpt/signed-exchange/*
 external/wpt/webauthn/*
