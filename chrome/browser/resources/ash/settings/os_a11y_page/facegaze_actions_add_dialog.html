@@ -283,11 +283,13 @@
             id="faceGazeGestureThresholdDecrementButton"
             iron-icon="os-settings:chevron-left"
             class="slider-button"
+            aria-label="$i18n{faceGazeActionsDialogGestureThresholdDecreaseButtonLabel}"
             on-click="onDecreaseThresholdButtonClick_">
         </cr-icon-button>
         <cr-slider
             id="faceGazeGestureThresholdSlider"
             label_="$i18n{faceGazeActionsDialogGestureThresholdKnobLabel}"
+            aria-label="$i18n{faceGazeActionsDialogGestureThresholdSliderLabel}"
             value="[[gestureThresholdValue_]]"
             on-cr-slider-value-changed="onThresholdSliderChanged_"
             key-press-slider-increment="5"
@@ -297,6 +299,7 @@
             id="faceGazeGestureThresholdIncrementButton"
             iron-icon="os-settings:chevron-right"
             class="slider-button"
+            aria-label="$i18n{faceGazeActionsDialogGestureThresholdIncreaseButtonLabel}"
             on-click="onIncreaseThresholdButtonClick_">
         </cr-icon-button>
       </div>

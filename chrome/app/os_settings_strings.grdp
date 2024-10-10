@@ -1364,6 +1364,15 @@
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_GESTURE_THRESHOLD_KNOB_LABEL" desc="Label for knob on slider indicating the confidence threshold for detecting a gesture.">
     Detection threshold
   </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_GESTURE_THRESHOLD_DECREASE_BUTTON_LABEL" desc="Spoken description when focus is on the button to decrease the confidence threshold for detecting a gesture on the slider." is_accessibility_with_no_ui="true">
+    Decrease threshold
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_GESTURE_THRESHOLD_INCREASE_BUTTON_LABEL" desc="Spoken description when focus is on the button to increase the confidence threshold for detecting a gesture on the slider" is_accessibility_with_no_ui="true">
+    Increase threshold
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_GESTURE_THRESHOLD_SLIDER_LABEL" desc="Spoken description when focus is on the slider indicating the confidence threshold for detecting a gesture." is_accessibility_with_no_ui="true">
+    Gesture detection threshold
+  </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_LABEL_TOGGLE_FACEGAZE" desc="This text describes an action that a user can take on their computer to pause or resume face control.">
     Pause or resume face control
   </message>
