@@ -301,7 +301,7 @@ DeviceEventLogImpl::DeviceEventLogImpl(
   DCHECK(task_runner_);
 }
 
-DeviceEventLogImpl::~DeviceEventLogImpl() {}
+DeviceEventLogImpl::~DeviceEventLogImpl() = default;
 
 void DeviceEventLogImpl::AddEntry(const char* file,
                                   int file_line,
