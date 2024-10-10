@@ -8592,6 +8592,33 @@
             ]
         }
     ],
+    "DiskCacheBackendExperiment": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Simple",
+                    "params": {
+                        "backend": "simple"
+                    },
+                    "enable_features": [
+                        "DiskCacheBackendExperiment"
+                    ]
+                },
+                {
+                    "name": "Blockfile",
+                    "params": {
+                        "backend": "blockfile"
+                    },
+                    "enable_features": [
+                        "DiskCacheBackendExperiment"
+                    ]
+                }
+            ]
+        }
+    ],
     "DlpRegionalizedEndpoints": [
         {
             "platforms": [
