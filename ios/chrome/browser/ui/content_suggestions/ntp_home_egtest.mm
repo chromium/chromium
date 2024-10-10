@@ -175,9 +175,17 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   config.additional_args.push_back(std::string("--") +
                                    switches::kEnableDiscoverFeed);
   // Show doodle to make sure tests cover async callback logic updating logo.
-  config.additional_args.push_back(
-      std::string("-google-doodle-url=https://www.gstatic.com/chrome/ntp/"
-                  "doodle_test/ddljson_android0.json"));
+  // Note: This makes testPositionRestoredWithShiftingOffset and
+  // testPositionRestoredWithoutShiftingOffset flaky. Find a better way to hide
+  // the doodle for these tests, or wait for the doodle to display (which is the
+  // result of a real network request).
+  if (![self isRunningTest:@selector(testPositionRestoredWithShiftingOffset)] &&
+      ![self
+          isRunningTest:@selector(testPositionRestoredWithoutShiftingOffset)]) {
+    config.additional_args.push_back(
+        std::string("-google-doodle-url=https://www.gstatic.com/chrome/ntp/"
+                    "doodle_test/ddljson_android0.json"));
+  }
   config.features_disabled.push_back(kEnableFeedAblation);
   config.features_disabled.push_back(kSafetyCheckMagicStack);
 
