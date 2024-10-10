@@ -413,7 +413,7 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   void CountScriptInternal(size_t script_size, size_t cached_metadata_size);
 
   // Called by ServiceWorkerEventQueue just before they start an event.
-  void OnBeforeStartEvent(bool is_offline_event);
+  void OnBeforeStartEvent();
 
   // Called by ServiceWorkerEventQueue when a certain time has passed since
   // the last task finished.
