@@ -102,8 +102,7 @@ uintptr_t PartitionAddressSpace::pool_shadow_address_ =
 #error Dynamic pool size is only supported on iOS.
 #endif
 
-namespace {
-bool IsIOSTestProcess() {
+bool PartitionAddressSpace::IsIOSTestProcess() {
   // On iOS, only applications with the extended virtual addressing entitlement
   // can use a large address space. Since Earl Grey test runner apps cannot get
   // entitlements, they must use a much smaller pool size. Similarly,
@@ -133,15 +132,6 @@ bool IsIOSTestProcess() {
   };
 
   return has_suffix("Runner") || has_suffix("ios_web_view_inttests");
-}
-}  // namespace
-
-PA_ALWAYS_INLINE size_t PartitionAddressSpace::RegularPoolSize() {
-  return IsIOSTestProcess() ? kRegularPoolSizeForIOSTestProcess
-                            : kRegularPoolSize;
-}
-PA_ALWAYS_INLINE size_t PartitionAddressSpace::BRPPoolSize() {
-  return IsIOSTestProcess() ? kBRPPoolSizeForIOSTestProcess : kBRPPoolSize;
 }
 #endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 

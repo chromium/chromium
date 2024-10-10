@@ -346,8 +346,15 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
 
  private:
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-  PA_ALWAYS_INLINE static size_t RegularPoolSize();
-  PA_ALWAYS_INLINE static size_t BRPPoolSize();
+  static bool IsIOSTestProcess();
+
+  PA_ALWAYS_INLINE static size_t RegularPoolSize() {
+    return IsIOSTestProcess() ? kRegularPoolSizeForIOSTestProcess
+                              : kRegularPoolSize;
+  }
+  PA_ALWAYS_INLINE static size_t BRPPoolSize() {
+    return IsIOSTestProcess() ? kBRPPoolSizeForIOSTestProcess : kBRPPoolSize;
+  }
 #else
   // The pool sizes should be as large as maximum whenever possible.
   PA_ALWAYS_INLINE static constexpr size_t RegularPoolSize() {
