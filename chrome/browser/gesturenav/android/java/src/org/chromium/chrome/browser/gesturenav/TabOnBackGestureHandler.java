@@ -40,8 +40,9 @@ public class TabOnBackGestureHandler implements UserData {
         TabOnBackGestureHandlerJni.get().onBackStarted(mNativePtr, progress, edge, forward);
     }
 
-    public void onBackProgressed(float progress, @BackGestureEventSwipeEdge int edge) {
-        TabOnBackGestureHandlerJni.get().onBackProgressed(mNativePtr, progress, edge);
+    public void onBackProgressed(
+            float progress, @BackGestureEventSwipeEdge int edge, boolean forward) {
+        TabOnBackGestureHandlerJni.get().onBackProgressed(mNativePtr, progress, edge, forward);
     }
 
     public void onBackCancelled() {
@@ -69,7 +70,8 @@ public class TabOnBackGestureHandler implements UserData {
         void onBackStarted(
                 long nativeTabOnBackGestureHandler, float progress, int edge, boolean forward);
 
-        void onBackProgressed(long nativeTabOnBackGestureHandler, float progress, int edge);
+        void onBackProgressed(
+                long nativeTabOnBackGestureHandler, float progress, int edge, boolean forward);
 
         void onBackCancelled(long nativeTabOnBackGestureHandler);
 

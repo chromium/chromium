@@ -454,7 +454,8 @@ public class ToolbarManager
                     backEvent.getProgress(),
                     backEvent.getSwipeEdge() == BackEventCompat.EDGE_LEFT
                             ? BackGestureEventSwipeEdge.LEFT
-                            : BackGestureEventSwipeEdge.RIGHT);
+                            : BackGestureEventSwipeEdge.RIGHT,
+                    isForward());
         }
 
         @Override
@@ -477,9 +478,7 @@ public class ToolbarManager
 
             mHandler = TabOnBackGestureHandler.from(mActivityTabProvider.get());
 
-            // Gestural navigation navigates backwards from both edges since this is an OS-level
-            // gesture; users expect both edges to take them back.
-            boolean navigatesForward = false;
+            boolean navigatesForward = isForward();
             if (TabOnBackGestureHandler.shouldAnimateNavigationTransition(
                     navigatesForward, backEvent.getSwipeEdge())) {
                 // Always force to show the top control at the start of the gesture.
@@ -2630,5 +2629,11 @@ public class ToolbarManager
 
     public ToggleTabStackButtonCoordinator getTabSwitcherButtonCoordinatorForTesting() {
         return mTabSwitcherButtonCoordinator;
+    }
+
+    private boolean isForward() {
+        // Gestural navigation navigates backwards from both edges since this is an OS-level
+        // gesture; users expect both edges to take them back.
+        return false;
     }
 }

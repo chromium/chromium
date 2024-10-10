@@ -37,7 +37,8 @@ class TabOnBackGestureHandler {
                      bool forward);
   void OnBackProgressed(JNIEnv* env,
                         float progress,
-                        /* ui::BackGestureEventSwipeEdge */ int edge);
+                        /* ui::BackGestureEventSwipeEdge */ int edge,
+                        bool forward);
   void OnBackCancelled(JNIEnv* env);
   void OnBackInvoked(JNIEnv* env);
   void Destroy(JNIEnv* env);

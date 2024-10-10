@@ -274,13 +274,7 @@ class NavigationHandler implements TouchEventObserver {
 
         mInitiatingEdge = initiatingEdge;
 
-        boolean forward = mInitiatingEdge == BackGestureEventSwipeEdge.RIGHT;
-
-        // If the UI uses an RTL layout, it may be necessary to flip the meaning of each edge so
-        // that the left edge goes forward and the right goes back.
-        if (LocalizationUtils.shouldMirrorBackForwardGestures()) {
-            forward = !forward;
-        }
+        boolean forward = isForward();
 
         mModel.set(DIRECTION, forward);
         mModel.set(EDGE, mInitiatingEdge);
@@ -421,7 +415,7 @@ class NavigationHandler implements TouchEventObserver {
             mModel.set(BUBBLE_OFFSET, mPullOffsetX);
         }
         if (mTabOnBackGestureHandler != null) {
-            mTabOnBackGestureHandler.onBackProgressed(getProgress(), mInitiatingEdge);
+            mTabOnBackGestureHandler.onBackProgressed(getProgress(), mInitiatingEdge, isForward());
         }
     }
 
@@ -484,5 +478,16 @@ class NavigationHandler implements TouchEventObserver {
 
     TabOnBackGestureHandler getTabOnBackGestureHandlerForTesting() {
         return mTabOnBackGestureHandler;
+    }
+
+    private boolean isForward() {
+        boolean forward = mInitiatingEdge == BackGestureEventSwipeEdge.RIGHT;
+
+        // If the UI uses an RTL layout, it may be necessary to flip the meaning of each edge so
+        // that the left edge goes forward and the right goes back.
+        if (LocalizationUtils.shouldMirrorBackForwardGestures()) {
+            forward = !forward;
+        }
+        return forward;
     }
 }

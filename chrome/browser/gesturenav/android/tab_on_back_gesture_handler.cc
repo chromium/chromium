@@ -60,13 +60,23 @@ void TabOnBackGestureHandler::OnBackStarted(JNIEnv* env,
 
 void TabOnBackGestureHandler::OnBackProgressed(JNIEnv* env,
                                                float progress,
-                                               int edge) {
+                                               int edge,
+                                               bool forward) {
   CHECK(is_in_progress_);
 
   content::WebContents* web_contents = tab_android_->web_contents();
   AssertHasWindowAndCompositor(web_contents);
 
-  CHECK_EQ(started_edge_, static_cast<ui::BackGestureEventSwipeEdge>(edge));
+  // Ideally the edge value should not be changed during a navigation however,
+  // we see multiple instances with different edge values from start to
+  // progress. See crbug.com/370105609.
+  if (started_edge_ != static_cast<ui::BackGestureEventSwipeEdge>(edge)) {
+    base::debug::DumpWithoutCrashing();
+    OnBackCancelled(env);
+    CHECK(!is_in_progress_);
+    OnBackStarted(env, progress, edge, forward);
+    return;
+  }
 
   if (progress > 1.f) {
     // TODO(crbug.com/41483519): Happens in fling. Should figure out why
