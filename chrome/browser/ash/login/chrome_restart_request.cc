@@ -44,6 +44,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "components/user_manager/user_names.h"
+#include "components/variations/variations_switches.h"
 #include "components/viz/common/switches.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
@@ -159,6 +160,9 @@ void DeriveCommandLine(const GURL& start_url,
       ::switches::kEnableWebGPUDeveloperFeatures,
       ::switches::kOzonePlatform,
       switches::kAshClearFastInkBuffer,
+      switches::kAshConstrainPointerToRoot,
+      switches::kAshDebugShortcuts,
+      switches::kAshDeveloperShortcuts,
       switches::kAshEnablePaletteOnAllDisplays,
       switches::kAshEnableTabletMode,
       switches::kAshEnableWaylandServer,
@@ -230,6 +234,7 @@ void DeriveCommandLine(const GURL& start_url,
       chromeos::switches::kSystemInDevMode,
       switches::kTouchscreenUsableWhileScreenOff,
       policy::switches::kDeviceManagementUrl,
+      variations::switches::kEnableFieldTrialTestingConfig,
       wm::switches::kWindowAnimationsDisabled,
   };
   command_line->CopySwitchesFrom(base_command_line, kForwardSwitches);
