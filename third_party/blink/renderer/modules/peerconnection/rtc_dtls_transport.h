@@ -17,6 +17,7 @@ namespace blink {
 class DtlsTransportProxy;
 class DOMArrayBuffer;
 class RTCIceTransport;
+class V8RTCDtlsTransportState;
 
 enum class RTCDtlsTransportState {
   kNew,
@@ -45,7 +46,7 @@ class MODULES_EXPORT RTCDtlsTransport final
 
   // rtc_dtls_transport.idl
   RTCIceTransport* iceTransport() const;
-  String state() const;
+  V8RTCDtlsTransportState state() const;
   const HeapVector<Member<DOMArrayBuffer>>& getRemoteCertificates() const;
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(statechange, kStatechange)

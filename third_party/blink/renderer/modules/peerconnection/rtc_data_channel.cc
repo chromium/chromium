@@ -36,6 +36,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/webrtc/thread_wrapper.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_data_channel_state.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_priority_type.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -393,35 +395,34 @@ std::optional<uint16_t> RTCDataChannel::id() const {
   return id;
 }
 
-String RTCDataChannel::priority() const {
+V8RTCPriorityType RTCDataChannel::priority() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   webrtc::PriorityValue priority = channel()->priority();
   if (priority <= webrtc::PriorityValue(webrtc::Priority::kVeryLow)) {
-    return "very-low";
+    return V8RTCPriorityType(V8RTCPriorityType::Enum::kVeryLow);
   }
   if (priority <= webrtc::PriorityValue(webrtc::Priority::kLow)) {
-    return "low";
+    return V8RTCPriorityType(V8RTCPriorityType::Enum::kLow);
   }
   if (priority <= webrtc::PriorityValue(webrtc::Priority::kMedium)) {
-    return "medium";
+    return V8RTCPriorityType(V8RTCPriorityType::Enum::kMedium);
   }
-  return "high";
+  return V8RTCPriorityType(V8RTCPriorityType::Enum::kHigh);
 }
 
-String RTCDataChannel::readyState() const {
+V8RTCDataChannelState RTCDataChannel::readyState() const {
   switch (state_) {
     case webrtc::DataChannelInterface::kConnecting:
-      return "connecting";
+      return V8RTCDataChannelState(V8RTCDataChannelState::Enum::kConnecting);
     case webrtc::DataChannelInterface::kOpen:
-      return "open";
+      return V8RTCDataChannelState(V8RTCDataChannelState::Enum::kOpen);
     case webrtc::DataChannelInterface::kClosing:
-      return "closing";
+      return V8RTCDataChannelState(V8RTCDataChannelState::Enum::kClosing);
     case webrtc::DataChannelInterface::kClosed:
-      return "closed";
+      return V8RTCDataChannelState(V8RTCDataChannelState::Enum::kClosed);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 unsigned RTCDataChannel::bufferedAmount() const {

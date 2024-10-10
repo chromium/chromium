@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_RTP_ACKS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_RTP_ACKS_H_
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_explicit_congestion_notification.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_ack.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -20,7 +21,7 @@ class MODULES_EXPORT RTCRtpAcks final : public ScriptWrappable {
   RTCRtpAcks(HeapVector<Member<RTCRtpAck>> acks,
              uint64_t remote_send_timestamp,
              double received_time,
-             String explicit_congestion_notification)
+             V8ExplicitCongestionNotification explicit_congestion_notification)
       : acks_(acks),
         remote_send_timestamp_(remote_send_timestamp),
         received_time_(received_time),
@@ -32,7 +33,7 @@ class MODULES_EXPORT RTCRtpAcks final : public ScriptWrappable {
 
   DOMHighResTimeStamp receivedTime() { return received_time_; }
 
-  String explicitCongestionNotification() {
+  V8ExplicitCongestionNotification explicitCongestionNotification() {
     return explicit_congestion_notification_;
   }
 
@@ -45,7 +46,7 @@ class MODULES_EXPORT RTCRtpAcks final : public ScriptWrappable {
   HeapVector<Member<RTCRtpAck>> acks_;
   uint64_t remote_send_timestamp_;
   DOMHighResTimeStamp received_time_;
-  String explicit_congestion_notification_;
+  const V8ExplicitCongestionNotification explicit_congestion_notification_;
 };
 
 }  // namespace blink

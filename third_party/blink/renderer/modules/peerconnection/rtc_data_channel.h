@@ -52,6 +52,8 @@ class Blob;
 class DOMArrayBuffer;
 class DOMArrayBufferView;
 class ExceptionState;
+class V8RTCDataChannelState;
+class V8RTCPriorityType;
 
 class MODULES_EXPORT RTCDataChannel final
     : public EventTarget,
@@ -82,7 +84,7 @@ class MODULES_EXPORT RTCDataChannel final
   String protocol() const;
   bool negotiated() const;
   std::optional<uint16_t> id() const;
-  String readyState() const;
+  V8RTCDataChannelState readyState() const;
   unsigned bufferedAmount() const;
 
   unsigned bufferedAmountLowThreshold() const;
@@ -91,7 +93,7 @@ class MODULES_EXPORT RTCDataChannel final
   V8BinaryType binaryType() const;
   void setBinaryType(const V8BinaryType&);
 
-  String priority() const;
+  V8RTCPriorityType priority() const;
 
   // Functions called from RTCPeerConnection's DidAddRemoteDataChannel
   // in order to make things happen in the specified order when announcing

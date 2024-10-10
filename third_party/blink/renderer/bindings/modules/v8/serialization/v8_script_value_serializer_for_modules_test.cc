@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_restriction_target.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_certificate.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_data_channel.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_data_channel_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
@@ -1935,7 +1936,8 @@ TEST(V8ScriptValueSerializerForModulesTest, TransferRTCDataChannel) {
 
   // The transfer should have closed the original channel but not the underlying
   // transport.
-  EXPECT_EQ(original_channel->readyState(), "closed");
+  EXPECT_EQ(original_channel->readyState(),
+            V8RTCDataChannelState::Enum::kClosed);
   EXPECT_FALSE(native_channel->close_was_called());
   EXPECT_EQ(native_channel->unregister_call_count(), 0);
 

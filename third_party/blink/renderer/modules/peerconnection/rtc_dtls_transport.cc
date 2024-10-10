@@ -9,6 +9,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_dtls_transport_state.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/deprecation/deprecation.h"
@@ -27,22 +28,24 @@
 namespace blink {
 
 namespace {
-String TransportStateToString(webrtc::DtlsTransportState state) {
+V8RTCDtlsTransportState::Enum TransportStateToEnum(
+    webrtc::DtlsTransportState state) {
   switch (state) {
     case webrtc::DtlsTransportState::kNew:
-      return String("new");
+      return V8RTCDtlsTransportState::Enum::kNew;
     case webrtc::DtlsTransportState::kConnecting:
-      return String("connecting");
+      return V8RTCDtlsTransportState::Enum::kConnecting;
     case webrtc::DtlsTransportState::kConnected:
-      return String("connected");
+      return V8RTCDtlsTransportState::Enum::kConnected;
     case webrtc::DtlsTransportState::kClosed:
-      return String("closed");
+      return V8RTCDtlsTransportState::Enum::kClosed;
     case webrtc::DtlsTransportState::kFailed:
-      return String("failed");
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return String("failed");
+      return V8RTCDtlsTransportState::Enum::kFailed;
+    case webrtc::DtlsTransportState::kNumValues:
+      // Should not happen.
+      break;
   }
+  NOTREACHED();
 }
 
 std::unique_ptr<DtlsTransportProxy> CreateProxy(
@@ -73,11 +76,11 @@ RTCDtlsTransport::RTCDtlsTransport(
 
 RTCDtlsTransport::~RTCDtlsTransport() {}
 
-String RTCDtlsTransport::state() const {
+V8RTCDtlsTransportState RTCDtlsTransport::state() const {
   if (closed_from_owner_) {
-    return TransportStateToString(webrtc::DtlsTransportState::kClosed);
+    return V8RTCDtlsTransportState(V8RTCDtlsTransportState::Enum::kClosed);
   }
-  return TransportStateToString(current_state_.state());
+  return V8RTCDtlsTransportState(TransportStateToEnum(current_state_.state()));
 }
 
 const HeapVector<Member<DOMArrayBuffer>>&
