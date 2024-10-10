@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_OZONE_PLATFORM_WAYLAND_GPU_DRM_RENDER_NODE_HANDLE_H_
-#define UI_OZONE_PLATFORM_WAYLAND_GPU_DRM_RENDER_NODE_HANDLE_H_
+#ifndef UI_OZONE_PLATFORM_WAYLAND_COMMON_DRM_RENDER_NODE_HANDLE_H_
+#define UI_OZONE_PLATFORM_WAYLAND_COMMON_DRM_RENDER_NODE_HANDLE_H_
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
@@ -30,4 +30,4 @@ class DrmRenderNodeHandle {
 
 }  // namespace ui
 
-#endif  // UI_OZONE_PLATFORM_WAYLAND_GPU_DRM_RENDER_NODE_HANDLE_H_
+#endif  // UI_OZONE_PLATFORM_WAYLAND_COMMON_DRM_RENDER_NODE_HANDLE_H_

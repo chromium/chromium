@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "ui/ozone/platform/wayland/gpu/drm_render_node_path_finder.h"
+#include "ui/ozone/platform/wayland/common/drm_render_node_path_finder.h"
 
 #include <fcntl.h>
 #include <gbm.h>
@@ -54,8 +54,9 @@ void DrmRenderNodePathFinder::FindDrmRenderNodePath() {
         base::StringPrintf("/sys/dev/char/%d:%d/device", kDrmMajor, i));
     char device_link[256];
     ssize_t len = readlink(node_link.c_str(), device_link, sizeof(device_link));
-    if (len < 0 || len == sizeof(device_link))
+    if (len < 0 || len == sizeof(device_link)) {
       continue;
+    }
 
     // Convert device_link to a string for safe substring comparison.
     std::string device_link_str(device_link, len);
@@ -67,14 +68,16 @@ void DrmRenderNodePathFinder::FindDrmRenderNodePath() {
 
     std::string dri_render_node(base::StringPrintf(kDriRenderNodeTemplate, i));
     base::ScopedFD drm_fd(open(dri_render_node.c_str(), O_RDWR));
-    if (drm_fd.get() < 0)
+    if (drm_fd.get() < 0) {
       continue;
+    }
 
     // In case the first node /dev/dri/renderD128 can be opened but fails to
     // create gbm device on certain driver (E.g. PowerVR). Skip such paths.
     ScopedGbmDevice device(gbm_create_device(drm_fd.get()));
-    if (!device)
+    if (!device) {
       continue;
+    }
 
     drm_render_node_path_ = base::FilePath(dri_render_node);
     break;

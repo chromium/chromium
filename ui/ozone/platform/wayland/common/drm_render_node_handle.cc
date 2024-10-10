@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/ozone/platform/wayland/gpu/drm_render_node_handle.h"
+#include "ui/ozone/platform/wayland/common/drm_render_node_handle.h"
 
 #include <fcntl.h>
 #include <xf86drm.h>
@@ -27,8 +27,9 @@ DrmRenderNodeHandle::~DrmRenderNodeHandle() = default;
 
 bool DrmRenderNodeHandle::Initialize(const base::FilePath& path) {
   base::ScopedFD drm_fd(open(path.value().c_str(), O_RDWR));
-  if (drm_fd.get() < 0)
+  if (drm_fd.get() < 0) {
     return false;
+  }
 
   ScopedDrmVersionPtr version(drmGetVersion(drm_fd.get()));
   if (!version) {

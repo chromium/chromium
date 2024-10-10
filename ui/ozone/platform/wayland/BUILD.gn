@@ -369,10 +369,10 @@ source_set("wayland") {
   if (use_wayland_gbm) {
     defines += [ "WAYLAND_GBM" ]
     sources += [
-      "gpu/drm_render_node_handle.cc",
-      "gpu/drm_render_node_handle.h",
-      "gpu/drm_render_node_path_finder.cc",
-      "gpu/drm_render_node_path_finder.h",
+      "common/drm_render_node_handle.cc",
+      "common/drm_render_node_handle.h",
+      "common/drm_render_node_path_finder.cc",
+      "common/drm_render_node_path_finder.h",
       "gpu/gbm_pixmap_wayland.cc",
       "gpu/gbm_pixmap_wayland.h",
       "gpu/gbm_surfaceless_wayland.cc",

@@ -79,7 +79,7 @@
 #if defined(WAYLAND_GBM)
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/gfx/linux/gbm_device.h"
-#include "ui/ozone/platform/wayland/gpu/drm_render_node_path_finder.h"
+#include "ui/ozone/platform/wayland/common/drm_render_node_path_finder.h"
 #endif
 
 namespace ui {
