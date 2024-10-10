@@ -19,13 +19,13 @@
 
 class FullscreenControlPopupTest : public views::test::WidgetTest {
  public:
-  FullscreenControlPopupTest() {}
+  FullscreenControlPopupTest() = default;
 
   FullscreenControlPopupTest(const FullscreenControlPopupTest&) = delete;
   FullscreenControlPopupTest& operator=(const FullscreenControlPopupTest&) =
       delete;
 
-  ~FullscreenControlPopupTest() override {}
+  ~FullscreenControlPopupTest() override = default;
 
   // views::test::WidgetTest:
   void SetUp() override {

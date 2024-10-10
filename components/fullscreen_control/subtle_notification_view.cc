@@ -218,7 +218,7 @@ SubtleNotificationView::SubtleNotificationView() : instruction_view_(nullptr) {
                           base::Unretained(this)));
 }
 
-SubtleNotificationView::~SubtleNotificationView() {}
+SubtleNotificationView::~SubtleNotificationView() = default;
 
 void SubtleNotificationView::UpdateContent(
     const std::u16string& instruction_text) {
