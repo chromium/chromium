@@ -2080,7 +2080,7 @@ CSSValue* ConsumeColorContrast(CSSParserTokenStream& stream,
 namespace {
 
 bool SystemAccentColorAllowed(const CSSParserContext& context) {
-  if (!RuntimeEnabledFeatures::CSSSystemAccentColorEnabled()) {
+  if (!RuntimeEnabledFeatures::CSSAccentColorKeywordEnabled()) {
     return false;
   }
 

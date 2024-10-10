@@ -270,6 +270,7 @@ std::optional<SkColor> GetAccentColor(const ComputedStyle& style,
     mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
     LayoutTheme& layout_theme = LayoutTheme::GetTheme();
     if (!document.InForcedColorsMode() &&
+        RuntimeEnabledFeatures::CSSSystemAccentColorEnabled() &&
         layout_theme.IsAccentColorCustomized(color_scheme)) {
       return layout_theme.GetSystemAccentColor(color_scheme).Rgb();
     }

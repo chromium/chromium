@@ -903,6 +903,11 @@
       status: "experimental",
     },
     {
+      // The AccentColor And AccentColorText CSS system color keywords
+      name: "CSSAccentColorKeyword",
+      status: "experimental",
+    },
+    {
       // CSS attr() function that accepts not only string types
       // and can be used in all properties.
       // https://drafts.csswg.org/css-values-4/#attr-notation
@@ -1258,7 +1263,7 @@
       status: "stable",
     },
     {
-      // The AccentColor And AccentColorText CSS system color keywords
+      // Allows the CSS "accent-color" property to support the system accent color as the default option.
       name: "CSSSystemAccentColor",
       status: "experimental",
     },

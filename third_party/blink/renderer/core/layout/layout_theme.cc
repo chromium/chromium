@@ -139,6 +139,11 @@ void ResetPadding(ComputedStyleBuilder& builder) {
   builder.ResetPaddingLeft();
 }
 
+bool SystemAccentColorAllowed() {
+  return RuntimeEnabledFeatures::CSSSystemAccentColorEnabled() ||
+         RuntimeEnabledFeatures::CSSAccentColorKeywordEnabled();
+}
+
 }  // namespace
 
 LayoutTheme& LayoutTheme::GetTheme() {
@@ -559,11 +564,11 @@ Color LayoutTheme::DefaultSystemColor(CSSValueID css_value_id,
 
   switch (css_value_id) {
     case CSSValueID::kAccentcolor:
-      return RuntimeEnabledFeatures::CSSSystemAccentColorEnabled()
+      return RuntimeEnabledFeatures::CSSAccentColorKeywordEnabled()
                  ? GetAccentColorOrDefault(color_scheme, is_in_web_app_scope)
                  : Color();
     case CSSValueID::kAccentcolortext:
-      return RuntimeEnabledFeatures::CSSSystemAccentColorEnabled()
+      return RuntimeEnabledFeatures::CSSAccentColorKeywordEnabled()
                  ? GetAccentColorText(color_scheme, is_in_web_app_scope)
                  : Color();
     case CSSValueID::kActivetext:
@@ -864,7 +869,7 @@ Color LayoutTheme::GetCustomFocusRingColor() const {
 
 bool LayoutTheme::IsAccentColorCustomized(
     mojom::blink::ColorScheme color_scheme) const {
-  if (!RuntimeEnabledFeatures::CSSSystemAccentColorEnabled()) {
+  if (!SystemAccentColorAllowed()) {
     return false;
   }
 
@@ -875,7 +880,7 @@ bool LayoutTheme::IsAccentColorCustomized(
 
 Color LayoutTheme::GetSystemAccentColor(
     mojom::blink::ColorScheme color_scheme) const {
-  if (!RuntimeEnabledFeatures::CSSSystemAccentColorEnabled()) {
+  if (!SystemAccentColorAllowed()) {
     return Color();
   }
 
@@ -897,7 +902,8 @@ Color LayoutTheme::GetAccentColorOrDefault(
   // Currently OS-defined accent color is exposed via System AccentColor keyword
   // ONLY for installed WebApps where fingerprinting risk is not as large of a
   // risk.
-  if (is_in_web_app_scope) {
+  if (RuntimeEnabledFeatures::CSSAccentColorKeywordEnabled() &&
+      is_in_web_app_scope) {
     accent_color = GetSystemAccentColor(color_scheme);
   }
   return accent_color == Color() ? kDefaultAccentColor : accent_color;

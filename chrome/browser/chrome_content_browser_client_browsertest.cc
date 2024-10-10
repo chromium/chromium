@@ -317,7 +317,7 @@ class SystemAccentColorTest : public InProcessBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "CSSSystemAccentColor");
+                                    "CSSAccentColorKeyword");
   }
 
   void SetWebAppScope(const GURL web_app_scope) {
