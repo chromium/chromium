@@ -1339,7 +1339,7 @@ public class CronetUrlRequestContextTest {
 
             @Override
             public void onFailed(UrlRequest request, UrlResponseInfo info, CronetException error) {
-                throw new AssertionError("Unexpected");
+                throw new AssertionError("Unexpected", error);
             }
         }
         Executor directExecutor =
