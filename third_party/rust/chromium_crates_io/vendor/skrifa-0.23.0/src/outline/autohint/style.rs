@@ -391,7 +391,27 @@ include!("../../../generated/generated_autohint_styles.rs");
 #[cfg(test)]
 mod tests {
     use super::{super::shape::ShaperMode, *};
-    use crate::{raw::TableProvider, FontRef};
+    use crate::{raw::TableProvider, FontRef, MetadataProvider};
+
+    /// Ensure that style mapping accurately applies the DIGIT bit to
+    /// ASCII digit glyphs.
+    #[test]
+    fn capture_digit_styles() {
+        let font = FontRef::new(font_test_data::AHEM).unwrap();
+        let shaper = Shaper::new(&font, ShaperMode::Nominal);
+        let num_glyphs = font.maxp().unwrap().num_glyphs() as u32;
+        let style_map = GlyphStyleMap::new(num_glyphs, &shaper);
+        let charmap = font.charmap();
+        let mut digit_count = 0;
+        for (ch, gid) in charmap.mappings() {
+            let style = style_map.style(gid).unwrap();
+            let is_char_digit = char::from_u32(ch).unwrap().is_ascii_digit();
+            assert_eq!(style.is_digit(), is_char_digit);
+            digit_count += is_char_digit as u32;
+        }
+        // This font has all 10 ASCII digits
+        assert_eq!(digit_count, 10);
+    }
 
     #[test]
     fn glyph_styles() {

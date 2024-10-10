@@ -36,9 +36,6 @@ pub mod instance;
 pub mod metrics;
 pub mod outline;
 
-#[cfg(feature = "std")]
-pub mod patchmap;
-
 pub mod setting;
 pub mod string;
 
