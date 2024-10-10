@@ -150,7 +150,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                 FacilitatedPaymentsPaymentMethodsProperties.ItemType.HEADER,
                 new PropertyModel.Builder(HeaderProperties.ALL_KEYS)
                         .with(DESCRIPTION_ID, R.string.pix_payment_methods_bottom_sheet_description)
-                        .with(IMAGE_DRAWABLE_ID, R.drawable.pix_gpay_logo)
+                        .with(IMAGE_DRAWABLE_ID, R.drawable.gpay_pix_logo)
                         .with(TITLE_ID, R.string.pix_payment_methods_bottom_sheet_title)
                         .build());
     }
