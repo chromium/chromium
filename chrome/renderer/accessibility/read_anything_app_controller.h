@@ -149,6 +149,8 @@ class ReadAnythingAppController
   void SetLanguageCode(const std::string& code) override;
   void SetDefaultLanguageCode(const std::string& code) override;
   void ScreenAIServiceReady() override;
+  void OnGetVoicePackInfo(
+      read_anything::mojom::VoicePackInfoPtr voice_pack_info) override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnDeviceLocked() override;
 #endif
@@ -201,8 +203,6 @@ class ReadAnythingAppController
   std::string GetUrl(ui::AXNodeID ax_node_id) const;
   std::string GetAltText(ui::AXNodeID ax_node_id) const;
   void SendGetVoicePackInfoRequest(const std::string& language) const;
-  void OnGetVoicePackInfoResponse(
-      read_anything::mojom::VoicePackInfoPtr voice_pack_info);
   void SendInstallVoicePackRequest(const std::string& language) const;
   void OnInstallVoicePackResponse(
       read_anything::mojom::VoicePackInfoPtr voice_pack_info);

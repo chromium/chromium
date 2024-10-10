@@ -1219,12 +1219,11 @@ std::string ReadAnythingAppController::GetUrl(ui::AXNodeID ax_node_id) const {
 void ReadAnythingAppController::SendGetVoicePackInfoRequest(
     const std::string& language) const {
   page_handler_->GetVoicePackInfo(
-      language,
-      base::BindOnce(&ReadAnythingAppController::OnGetVoicePackInfoResponse,
-                     weak_ptr_factory_.GetSafeRef()));
+      language, base::BindOnce(&ReadAnythingAppController::OnGetVoicePackInfo,
+                               weak_ptr_factory_.GetSafeRef()));
 }
 
-void ReadAnythingAppController::OnGetVoicePackInfoResponse(
+void ReadAnythingAppController::OnGetVoicePackInfo(
     read_anything::mojom::VoicePackInfoPtr voice_pack_info) {
   std::string status =
       voice_pack_info->pack_state->is_installation_state()

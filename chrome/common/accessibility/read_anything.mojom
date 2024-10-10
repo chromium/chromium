@@ -223,6 +223,10 @@ interface UntrustedPage {
                              array<ax.mojom.AXTreeUpdate> updates,
                              array<ax.mojom.AXEvent> events);
 
+  // Send a voice pack status change notification to the WebUI. The WebUI can
+  // then show informational or error messages depending on the status.
+  OnGetVoicePackInfo(VoicePackInfo voice_pack_info);
+
   // Send a location change notification to the WebUI. The WebUI updates the
   // locations for each node in the vector. This does not trigger a distillation.
   [RuntimeFeature=ax.mojom.features.kReadAnythingDocsIntegration]

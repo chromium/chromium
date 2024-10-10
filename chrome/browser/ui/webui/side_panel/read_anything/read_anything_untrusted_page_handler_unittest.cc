@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
+#include "chrome/common/accessibility/read_anything.mojom-forward.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -80,6 +81,9 @@ class MockPage : public read_anything::mojom::UntrustedPage {
   MOCK_METHOD(void, SetLanguageCode, (const std::string&));
   MOCK_METHOD(void, SetDefaultLanguageCode, (const std::string&));
   MOCK_METHOD(void, ScreenAIServiceReady, ());
+  MOCK_METHOD(void,
+              OnGetVoicePackInfo,
+              (read_anything::mojom::VoicePackInfoPtr voice_pack_info));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   MOCK_METHOD(void, OnDeviceLocked, ());
 #endif
