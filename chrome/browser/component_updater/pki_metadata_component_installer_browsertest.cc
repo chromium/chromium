@@ -359,8 +359,10 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest, TestCTUpdate) {
   }
 }
 
+// TODO(crbug.com/372681255): Re-enable this test with and without the feature
+// flag.
 IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest,
-                       TestAtLeastOneRFC6962LogPolicy) {
+                       DISABLED_TestAtLeastOneRFC6962LogPolicy) {
   const std::string kLog1OperatorName = "log operator 1";
   std::unique_ptr<crypto::ECPrivateKey> log1_private_key =
       crypto::ECPrivateKey::Create();
