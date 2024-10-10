@@ -1352,11 +1352,6 @@ void AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
     FormInteractionsUkmLogger* form_interactions_ukm_logger,
     const FormStructure& form,
     const AutofillField& field) {
-  const std::string aggregate_histogram =
-      "Autofill.EditedAutofilledFieldAtSubmission2.Aggregate";
-  const std::string type_specific_histogram =
-      "Autofill.EditedAutofilledFieldAtSubmission2.ByFieldType";
-
   AutofilledFieldUserEditingStatusMetric editing_metric =
       field.previously_autofilled()
           ? AutofilledFieldUserEditingStatusMetric::AUTOFILLED_FIELD_WAS_EDITED
@@ -1364,12 +1359,20 @@ void AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
                 AUTOFILLED_FIELD_WAS_NOT_EDITED;
 
   // Record the aggregated UMA statistics.
-  base::UmaHistogramEnumeration(aggregate_histogram, editing_metric);
+  base::UmaHistogramEnumeration(
+      "Autofill.EditedAutofilledFieldAtSubmission2.Aggregate", editing_metric);
 
   // Record the type specific UMA statistics.
-  base::UmaHistogramSparse(type_specific_histogram,
-                           GetFieldTypeUserEditStatusMetric(
-                               field.Type().GetStorableType(), editing_metric));
+  base::UmaHistogramSparse(
+      "Autofill.EditedAutofilledFieldAtSubmission2.ByFieldType",
+      GetFieldTypeUserEditStatusMetric(field.Type().GetStorableType(),
+                                       editing_metric));
+
+  // Record the metric for FormsAI specific fields.
+  if (field.filling_product() == FillingProduct::kPredictionImprovements) {
+    base::UmaHistogramEnumeration(
+        "Autofill.FormsAI.EditedAutofilledFieldAtSubmission", editing_metric);
+  }
 
   // Record the UMA statistics spliced by the autocomplete attribute value.
   FormType form_type = FieldTypeGroupToFormType(field.Type().group());

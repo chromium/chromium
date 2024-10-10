@@ -2802,6 +2802,16 @@ AutofillSaveCreditCardPromptDestination.
   </summary>
 </histogram>
 
+<histogram name="Autofill.FormsAI.EditedAutofilledFieldAtSubmission"
+    enum="AutofilledFieldUserEditingStatus" expires_after="2024-12-12">
+  <owner>jihadghanna@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    On submission time, this metric emits for every field that was autofilled
+    with FormsAI, if the filling was accepted or subsequently corrected.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.FormSubmission.PerProfileType"
     enum="BrowserProfileType" expires_after="2025-02-10">
   <owner>arabm@google.com</owner>
