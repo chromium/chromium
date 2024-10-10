@@ -172,7 +172,7 @@ struct BaseState {
  protected:
   // Since there is no virtual destructor, must not delete directly as a
   // BaseState.
-  ~BaseState() {}
+  ~BaseState() = default;
 };
 
 struct EncryptState : public BaseState {

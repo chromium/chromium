@@ -117,7 +117,7 @@ Status SignHmac(const std::vector<uint8_t>& raw_key,
 
 class HmacImplementation : public AlgorithmImplementation {
  public:
-  HmacImplementation() {}
+  HmacImplementation() = default;
 
   Status GenerateKey(const blink::WebCryptoAlgorithm& algorithm,
                      bool extractable,
