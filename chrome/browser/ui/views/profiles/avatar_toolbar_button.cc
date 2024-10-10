@@ -20,7 +20,9 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/avatar_menu.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
@@ -84,6 +86,7 @@ AvatarToolbarButton::AvatarToolbarButton(BrowserView* browser_view)
                                         /*is_source_accelerator=*/false)),
       browser_(browser_view->browser()),
       creation_time_(base::TimeTicks::Now()) {
+  CHECK(browser_);
   delegate_ = std::make_unique<AvatarToolbarButtonDelegate>(this, browser_);
 
   // Activate on press for left-mouse-button only to mimic other MenuButtons
@@ -343,20 +346,30 @@ void AvatarToolbarButton::MaybeShowProfileSwitchIPH() {
   }
 }
 
-void AvatarToolbarButton::MaybeShowSupervisedUserSignInIPH(
-    const AccountInfo& account_info) {
+void AvatarToolbarButton::MaybeShowSupervisedUserSignInIPH() {
   // TODO(b/351333491): Likely to need a delaying mechanism similar to
   // `MaybeShowProfileSwitchIPH`. To be decided when implementing the
   // invocation.
+  signin::IdentityManager* const identity_manager =
+      IdentityManagerFactory::GetForProfile(browser_->profile());
+  CHECK(identity_manager);
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return;
+  }
+
+  auto account_info = identity_manager->FindExtendedAccountInfoByAccountId(
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
   if (account_info.capabilities.is_subject_to_parental_controls() !=
       signin::Tribool::kTrue) {
     return;
   }
-  user_education::FeaturePromoParams params(
-      feature_engagement::kIPHSupervisedUserProfileSigninFeature,
-      account_info.gaia);
-  params.title_params = base::UTF8ToUTF16(account_info.given_name);
+  if (account_info.IsEmpty()) {
+    return;
+  }
 
+  user_education::FeaturePromoParams params(
+      feature_engagement::kIPHSupervisedUserProfileSigninFeature);
+  params.title_params = base::UTF8ToUTF16(account_info.given_name);
   browser_->window()->MaybeShowFeaturePromo(std::move(params));
 }
 

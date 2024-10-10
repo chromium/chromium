@@ -84,8 +84,8 @@ class AvatarToolbarButton : public ToolbarButton {
   void MaybeShowProfileSwitchIPH();
 
   // Attempts showing the In-Produce-Help when a supervised user signs-in in a
-  // profile or takes over an existing non-signed in profile.
-  void MaybeShowSupervisedUserSignInIPH(const AccountInfo& account_info);
+  // profile.
+  void MaybeShowSupervisedUserSignInIPH();
 
   // Attempts showing the In-Product-Help in a subsequent web sign-in when the
   // explicit browser sign-in preference was remembered.

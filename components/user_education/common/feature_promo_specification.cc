@@ -40,6 +40,7 @@ bool IsAllowedActionableAlert(const base::Feature& promo_feature) {
   static const char* const kAllowedPromoNames[] = {
       "IPH_DownloadEsbPromo",
       "IPH_HighEfficiencyMode",
+      "IPH_SupervisedUserProfileSignin",
   };
   for (const auto* promo_name : kAllowedPromoNames) {
     if (!strcmp(promo_feature.name, promo_name)) {

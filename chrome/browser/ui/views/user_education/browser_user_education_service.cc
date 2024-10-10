@@ -827,8 +827,8 @@ void MaybeRegisterChromeFeaturePromos(
                     "SupervisedUserProfileSignIn_IPHPromo_"
                     "ParentalControlsPageOpened"));
               }))
-          // TODO(b/351333491): Clarify if we need to mark and approve as a
-          // keyed promo, displaying the IPH once per key per device.
+          .SetPromoSubtype(user_education::FeaturePromoSpecification::
+                               PromoSubtype::kActionableAlert)
           .SetBubbleIcon(&vector_icons::kFamilyLinkIcon)
           .SetBubbleTitleText(IDS_SUPERVISED_USER_PROFILE_SIGNIN_IPH_TITLE)
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
