@@ -79,10 +79,10 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
@@ -129,7 +129,7 @@ public class TabDragSourceTest {
     @Mock private MultiInstanceManager mSourceMultiInstanceManager;
     @Mock private MultiInstanceManager mDestMultiInstanceManager;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
-    @Mock private TabModelFilterProvider mTabModelFilterProvider;
+    @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
     private TabDragSource mSourceInstance;
     private TabDragSource mDestInstance;
 
@@ -177,8 +177,10 @@ public class TabDragSourceTest {
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
 
         when(mTabStripHeightSupplier.get()).thenReturn(mTabStripHeight);
-        when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
-        when(mTabModelFilterProvider.getCurrentTabModelFilter()).thenReturn(mTabGroupModelFilter);
+        when(mTabModelSelector.getTabGroupModelFilterProvider())
+                .thenReturn(mTabGroupModelFilterProvider);
+        when(mTabGroupModelFilterProvider.getCurrentTabGroupModelFilter())
+                .thenReturn(mTabGroupModelFilter);
 
         mSourceInstance =
                 new TabDragSource(

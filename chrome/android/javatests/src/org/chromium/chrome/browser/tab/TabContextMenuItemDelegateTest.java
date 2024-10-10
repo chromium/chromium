@@ -29,7 +29,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -97,10 +96,9 @@ public class TabContextMenuItemDelegateTest {
                     ChromeTabbedActivity cta = sActivityTestRule.getActivity();
                     var tabModelSelector = cta.getTabModelSelectorSupplier().get();
                     var filter =
-                            (TabGroupModelFilter)
-                                    tabModelSelector
-                                            .getTabModelFilterProvider()
-                                            .getTabModelFilter(false);
+                            tabModelSelector
+                                    .getTabGroupModelFilterProvider()
+                                    .getTabGroupModelFilter(false);
                     var tab = cta.getActivityTab();
                     filter.createSingleTabGroup(tab, /* notify= */ false);
                 });

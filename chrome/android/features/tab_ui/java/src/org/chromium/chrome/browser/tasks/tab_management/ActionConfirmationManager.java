@@ -19,7 +19,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationDialog.ConfirmationDialogResult;
 import org.chromium.chrome.browser.tasks.tab_management.StrictButtonPressController.ButtonClickResult;
 import org.chromium.chrome.tab_ui.R;

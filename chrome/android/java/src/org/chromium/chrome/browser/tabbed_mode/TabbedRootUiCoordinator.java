@@ -118,9 +118,9 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarController;
 import org.chromium.chrome.browser.toolbar.ToolbarButtonInProductHelpController;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
@@ -1193,9 +1193,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             mInstantMessageDelegateImpl =
                                     InstantMessageDelegateFactory.getForProfile(profile);
                             TabGroupModelFilter tabGroupModelFilter =
-                                    (TabGroupModelFilter)
-                                            selector.getTabModelFilterProvider()
-                                                    .getTabModelFilter(/* incognito= */ false);
+                                    selector.getTabGroupModelFilterProvider()
+                                            .getTabGroupModelFilter(/* incognito= */ false);
                             mInstantMessageDelegateImpl.attachWindow(
                                     mWindowAndroid, tabGroupModelFilter);
                         });

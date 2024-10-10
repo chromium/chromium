@@ -50,7 +50,6 @@ import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabCreatorManager;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.ui.base.WindowAndroid;
@@ -116,7 +115,8 @@ public class TabModelSelectorImplTest {
 
         assertTrue(currentTabModelSupplierHasObservers());
         assertNull(mTabModelSelector.getCurrentTabModelSupplier().get());
-        assertNull(mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter());
+        assertNull(
+                mTabModelSelector.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter());
 
         mTabCreatorManager.initialize(mTabModelSelector);
         mTabModelSelector.onNativeLibraryReadyInternal(
@@ -131,8 +131,8 @@ public class TabModelSelectorImplTest {
         assertEquals(
                 mTabModelSelector.getCurrentModel(),
                 mTabModelSelector
-                        .getTabModelFilterProvider()
-                        .getCurrentTabModelFilter()
+                        .getTabGroupModelFilterProvider()
+                        .getCurrentTabGroupModelFilter()
                         .getTabModel());
     }
 
@@ -161,8 +161,8 @@ public class TabModelSelectorImplTest {
         assertEquals(
                 mTabModelSelector.getModel(false),
                 mTabModelSelector
-                        .getTabModelFilterProvider()
-                        .getCurrentTabModelFilter()
+                        .getTabGroupModelFilterProvider()
+                        .getCurrentTabGroupModelFilter()
                         .getTabModel());
         ShadowLooper.runUiThreadTasks();
         verify(mTabSupplierObserverMock).onResult(eq(normalTab));
@@ -180,8 +180,8 @@ public class TabModelSelectorImplTest {
         assertEquals(
                 mTabModelSelector.getModel(false),
                 mTabModelSelector
-                        .getTabModelFilterProvider()
-                        .getCurrentTabModelFilter()
+                        .getTabGroupModelFilterProvider()
+                        .getCurrentTabGroupModelFilter()
                         .getTabModel());
 
         mTabModelSelector.selectModel(true);
@@ -189,8 +189,8 @@ public class TabModelSelectorImplTest {
         assertEquals(
                 mTabModelSelector.getModel(true),
                 mTabModelSelector
-                        .getTabModelFilterProvider()
-                        .getCurrentTabModelFilter()
+                        .getTabGroupModelFilterProvider()
+                        .getCurrentTabGroupModelFilter()
                         .getTabModel());
         ShadowLooper.runUiThreadTasks();
         verify(mTabSupplierObserverMock).onResult(eq(incognitoTab));
@@ -200,8 +200,8 @@ public class TabModelSelectorImplTest {
         assertEquals(
                 mTabModelSelector.getModel(false),
                 mTabModelSelector
-                        .getTabModelFilterProvider()
-                        .getCurrentTabModelFilter()
+                        .getTabGroupModelFilterProvider()
+                        .getCurrentTabGroupModelFilter()
                         .getTabModel());
         ShadowLooper.runUiThreadTasks();
         verify(mTabSupplierObserverMock, times(2)).onResult(eq(normalTab));
@@ -402,8 +402,7 @@ public class TabModelSelectorImplTest {
         MockTab tab0 = mRegularTabModel.addTab(0);
         MockTab tab1 = mRegularTabModel.addTab(1);
         TabGroupModelFilter filter =
-                (TabGroupModelFilter)
-                        mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(false);
+                mTabModelSelector.getTabGroupModelFilterProvider().getTabGroupModelFilter(false);
         assertEquals(filter.getTabModel(), mRegularTabModel);
         assertEquals(0, TabModelUtils.getTabIndexById(mRegularTabModel, tab0.getId()));
         assertEquals(1, TabModelUtils.getTabIndexById(mRegularTabModel, tab1.getId()));

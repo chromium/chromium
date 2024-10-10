@@ -31,13 +31,12 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabWebContentsObserver;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -801,12 +800,11 @@ public class ChromeTabUtils {
         // Verify that the two tabs do not belong with different models.
         Assert.assertEquals(tab1.isIncognito(), tab2.isIncognito());
         final TabModelSelector selector = getTabModelSelector(tab1.getWindowAndroid());
-        final TabModelFilter filter =
-                selector.getTabModelFilterProvider().getTabModelFilter(tab1.isIncognito());
-        Assert.assertTrue(filter instanceof TabGroupModelFilter);
-        TabGroupModelFilter groupingFilter = (TabGroupModelFilter) filter;
+        final TabGroupModelFilter filter =
+                selector.getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(tab1.isIncognito());
 
-        groupingFilter.mergeTabsToGroup(tab1.getId(), tab2.getId());
+        filter.mergeTabsToGroup(tab1.getId(), tab2.getId());
         Assert.assertEquals(getRootId(tab1), getRootId(tab2));
     }
 

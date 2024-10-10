@@ -47,7 +47,7 @@ include_rules = [
   "+chrome/browser/incognito/android/java/src/org/chromium/chrome/browser/incognito/IncognitoUtils.java",
   "+chrome/browser/password_check/android/java/src/org/chromium/chrome/browser/password_check/PasswordCheckUkmRecorder.java",
   "+chrome/browser/profiles/android/java/src/org/chromium/chrome/browser/profiles/Profile.java",
-  "+chrome/browser/tab_group/java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupModelFilter.java",
+  "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupModelFilter.java",
   "+chrome/browser/ui/messages/android/java/src/org/chromium/chrome/browser/ui/messages/snackbar/SnackbarManager.java",
   "+chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/TabObscuringHandler.java",
   "+chrome/browser/feature_engagement/java/src/org/chromium/chrome/browser/feature_engagement/TrackerFactory.java",
@@ -68,12 +68,11 @@ specific_include_rules = {
   'HistoricalTabModelObserver\.java': [
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabList.java",
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModel.java",
-    "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModelFilter.java",
+    "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabGroupModelFilter.java",
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModelObserver.java",
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelector.java",
     "+chrome/browser/tab_group/java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupColorUtils.java",
     "+chrome/browser/tab_group/java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupTitleUtils.java",
-    "+chrome/browser/tab_group/java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupModelFilter.java",
   ],
   'HistoricalTabSaver\.java': [
     "+chrome/browser/tabmodel/android/java/src/org/chromium/chrome/browser/tabmodel/TabModel.java",

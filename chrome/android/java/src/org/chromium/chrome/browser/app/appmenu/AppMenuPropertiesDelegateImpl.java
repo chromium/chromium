@@ -601,8 +601,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
                         && isMenuSelectTabsVisible
                         && mTabModelSelector.isTabStateInitialized()
                         && mTabModelSelector
-                                        .getTabModelFilterProvider()
-                                        .getCurrentTabModelFilter()
+                                        .getTabGroupModelFilterProvider()
+                                        .getCurrentTabGroupModelFilter()
                                         .getCount()
                                 != 0;
 

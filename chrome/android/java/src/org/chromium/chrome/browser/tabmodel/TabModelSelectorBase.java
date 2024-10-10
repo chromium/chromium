@@ -21,7 +21,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterImpl;
 import org.chromium.content_public.browser.LoadUrlParams;
 
 import java.util.ArrayList;
@@ -46,10 +46,11 @@ public abstract class TabModelSelectorBase
     private IncognitoTabModel mIncognitoTabModel;
 
     /**
-     * This is a placeholder implementation intended to stub out TabModelFilterProvider before
+     * This is a placeholder implementation intended to stub out TabGroupModelFilterProvider before
      * native is ready.
      */
-    private TabModelFilterProvider mTabModelFilterProvider = new TabModelFilterProvider();
+    private TabGroupModelFilterProvider mTabGroupModelFilterProvider =
+            new TabGroupModelFilterProvider();
 
     private final ObservableSupplierImpl<TabModel> mTabModelSupplier =
             new ObservableSupplierImpl<>();
@@ -99,7 +100,7 @@ public abstract class TabModelSelectorBase
         mIncognitoTabModel = incognitoModel;
         int activeModelIndex = getModelIndex(mStartIncognito);
         assert activeModelIndex != MODEL_NOT_FOUND;
-        mTabModelFilterProvider.init(TabGroupModelFilter::new, this, getModels());
+        mTabGroupModelFilterProvider.init(TabGroupModelFilterImpl::new, this, getModels());
 
         TabModelObserver tabModelObserver =
                 new TabModelObserver() {
@@ -124,7 +125,7 @@ public abstract class TabModelSelectorBase
                     }
                 };
 
-        mTabModelFilterProvider.addTabModelFilterObserver(tabModelObserver);
+        mTabGroupModelFilterProvider.addTabGroupModelFilterObserver(tabModelObserver);
 
         if (sObserverForTesting != null) {
             addObserver(sObserverForTesting);
@@ -237,8 +238,8 @@ public abstract class TabModelSelectorBase
     }
 
     @Override
-    public TabModelFilterProvider getTabModelFilterProvider() {
-        return mTabModelFilterProvider;
+    public TabGroupModelFilterProvider getTabGroupModelFilterProvider() {
+        return mTabGroupModelFilterProvider;
     }
 
     @Override
@@ -385,7 +386,7 @@ public abstract class TabModelSelectorBase
     public void destroy() {
         for (TabModelSelectorObserver listener : mObservers) listener.onDestroyed();
         mTabModelSupplier.removeObserver(mIncognitoReauthDialogDelegateCallback);
-        mTabModelFilterProvider.destroy();
+        mTabGroupModelFilterProvider.destroy();
 
         if (mIncognitoTabModel != null) {
             mIncognitoTabModel.removeIncognitoObserver(this);

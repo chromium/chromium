@@ -31,8 +31,7 @@ import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.hub.ResourceButtonData;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
@@ -44,7 +43,7 @@ import java.util.function.DoubleConsumer;
 /** A {@link Pane} representing the tab group UI. Contains opened and closed tab groups. */
 public class TabGroupsPane implements Pane {
     private final Context mContext;
-    private final LazyOneshotSupplier<TabModelFilter> mTabModelFilterSupplier;
+    private final LazyOneshotSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
     private final DoubleConsumer mOnToolbarAlphaChange;
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
     private final Supplier<PaneManager> mPaneManagerSupplier;
@@ -63,7 +62,7 @@ public class TabGroupsPane implements Pane {
 
     /**
      * @param context Used to inflate UI.
-     * @param tabModelFilterSupplier Used to pull tab data from.
+     * @param tabGroupModelFilterSupplier Used to pull tab data from.
      * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
      * @param profileProviderSupplier Used to fetch the current profile.
      * @param paneManagerSupplier Used to switch and communicate with other panes.
@@ -73,7 +72,7 @@ public class TabGroupsPane implements Pane {
      */
     TabGroupsPane(
             @NonNull Context context,
-            @NonNull LazyOneshotSupplier<TabModelFilter> tabModelFilterSupplier,
+            @NonNull LazyOneshotSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier,
             @NonNull DoubleConsumer onToolbarAlphaChange,
             @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
             @NonNull Supplier<PaneManager> paneManagerSupplier,
@@ -81,7 +80,7 @@ public class TabGroupsPane implements Pane {
             @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
             @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         mContext = context;
-        mTabModelFilterSupplier = tabModelFilterSupplier;
+        mTabGroupModelFilterSupplier = tabGroupModelFilterSupplier;
         mOnToolbarAlphaChange = onToolbarAlphaChange;
         mProfileProviderSupplier = profileProviderSupplier;
         mPaneManagerSupplier = paneManagerSupplier;
@@ -142,7 +141,7 @@ public class TabGroupsPane implements Pane {
             mTabGroupListCoordinator =
                     new TabGroupListCoordinator(
                             mContext,
-                            (TabGroupModelFilter) mTabModelFilterSupplier.get(),
+                            mTabGroupModelFilterSupplier.get(),
                             mProfileProviderSupplier.get(),
                             mPaneManagerSupplier.get(),
                             mTabGroupUiActionHandlerSupplier.get(),

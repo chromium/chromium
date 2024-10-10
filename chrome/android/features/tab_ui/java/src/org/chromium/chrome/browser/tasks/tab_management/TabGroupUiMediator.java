@@ -37,12 +37,12 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStateObserver;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.DialogController;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator.BottomControlsVisibilityController;
@@ -311,10 +311,12 @@ public class TabGroupUiMediator implements BackPressHandler {
                     }
                 };
 
-        var filterProvider = mTabModelSelector.getTabModelFilterProvider();
-        ((TabGroupModelFilter) filterProvider.getTabModelFilter(false))
+        var filterProvider = mTabModelSelector.getTabGroupModelFilterProvider();
+        filterProvider
+                .getTabGroupModelFilter(false)
                 .addTabGroupObserver(mTabGroupModelFilterObserver);
-        ((TabGroupModelFilter) filterProvider.getTabModelFilter(true))
+        filterProvider
+                .getTabGroupModelFilter(true)
                 .addTabGroupObserver(mTabGroupModelFilterObserver);
 
         mOmniboxFocusObserver =
@@ -335,7 +337,7 @@ public class TabGroupUiMediator implements BackPressHandler {
                     setBottomControlsBackgroundColor(isIncognito);
                 };
 
-        filterProvider.addTabModelFilterObserver(mTabModelObserver);
+        filterProvider.addTabGroupModelFilterObserver(mTabModelObserver);
         mTabModelSelector.getCurrentTabModelSupplier().addObserver(mCurrentTabModelObserver);
 
         if (layoutStateProvider != null) {
@@ -501,8 +503,7 @@ public class TabGroupUiMediator implements BackPressHandler {
     }
 
     private TabGroupModelFilter getCurrentTabGroupModelFilter() {
-        return (TabGroupModelFilter)
-                mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
+        return mTabModelSelector.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter();
     }
 
     public boolean onBackPressed() {
@@ -528,14 +529,16 @@ public class TabGroupUiMediator implements BackPressHandler {
 
     public void destroy() {
         if (mTabModelSelector != null) {
-            var filterProvider = mTabModelSelector.getTabModelFilterProvider();
+            var filterProvider = mTabModelSelector.getTabGroupModelFilterProvider();
 
-            filterProvider.removeTabModelFilterObserver(mTabModelObserver);
+            filterProvider.removeTabGroupModelFilterObserver(mTabModelObserver);
             mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
             if (mTabGroupModelFilterObserver != null) {
-                ((TabGroupModelFilter) filterProvider.getTabModelFilter(false))
+                filterProvider
+                        .getTabGroupModelFilter(false)
                         .removeTabGroupObserver(mTabGroupModelFilterObserver);
-                ((TabGroupModelFilter) filterProvider.getTabModelFilter(true))
+                filterProvider
+                        .getTabGroupModelFilter(true)
                         .removeTabGroupObserver(mTabGroupModelFilterObserver);
             }
         }

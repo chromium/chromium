@@ -35,11 +35,10 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -109,9 +108,9 @@ public class RecentlyClosedBridgeTest {
         mActivity = sActivityTestRule.getActivity();
         mTabModelSelector = mActivity.getTabModelSelectorSupplier().get();
         mTabModel = mTabModelSelector.getModel(false);
-        TabModelFilter filter =
-                mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(false);
-        mTabGroupModelFilter = (TabGroupModelFilter) filter;
+        TabGroupModelFilter filter =
+                mTabModelSelector.getTabGroupModelFilterProvider().getTabGroupModelFilter(false);
+        mTabGroupModelFilter = filter;
         final Tab tab = mActivity.getActivityTab();
         ChromeTabUtils.waitForInteractable(tab);
     }
@@ -1705,9 +1704,7 @@ public class RecentlyClosedBridgeTest {
         mTabModelSelector = mActivity.getTabModelSelectorSupplier().get();
         CriteriaHelper.pollUiThread(mTabModelSelector::isTabStateInitialized);
         mTabModel = mTabModelSelector.getModel(false);
-        TabModelFilter filter =
-                mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(false);
-        assert filter instanceof TabGroupModelFilter;
-        mTabGroupModelFilter = (TabGroupModelFilter) filter;
+        mTabGroupModelFilter =
+                mTabModelSelector.getTabGroupModelFilterProvider().getTabGroupModelFilter(false);
     }
 }

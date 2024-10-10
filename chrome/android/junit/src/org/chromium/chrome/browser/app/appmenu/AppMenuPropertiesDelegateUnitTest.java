@@ -83,9 +83,9 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuUiState;
@@ -150,8 +150,8 @@ public class AppMenuPropertiesDelegateUnitTest {
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private Profile mProfile;
     @Mock private PrefService mPrefService;
-    @Mock private TabModelFilterProvider mTabModelFilterProvider;
-    @Mock private TabModelFilter mTabModelFilter;
+    @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
+    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock public WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
     @Mock public BookmarkModel mBookmarkModel;
     @Mock private IdentityManager mIdentityManagerMock;
@@ -203,9 +203,11 @@ public class AppMenuPropertiesDelegateUnitTest {
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         when(mTabModelSelector.getModel(true)).thenReturn(mIncognitoTabModel);
-        when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
-        when(mTabModelFilterProvider.getCurrentTabModelFilter()).thenReturn(mTabModelFilter);
-        when(mTabModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabModelSelector.getTabGroupModelFilterProvider())
+                .thenReturn(mTabGroupModelFilterProvider);
+        when(mTabGroupModelFilterProvider.getCurrentTabGroupModelFilter())
+                .thenReturn(mTabGroupModelFilter);
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.isIncognito()).thenReturn(false);
         when(mIncognitoTabModel.isIncognito()).thenReturn(true);
         PageZoomCoordinator.setShouldShowMenuItemForTesting(false);
@@ -1100,8 +1102,8 @@ public class AppMenuPropertiesDelegateUnitTest {
     public void testSelectTabsOption_IsEnabledOneTab_InRegularMode_IndependentOfIncognitoReauth() {
         setUpMocksForOverviewMenu(LayoutType.TAB_SWITCHER);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
-        when(mTabModelFilter.getTabModel()).thenReturn(mTabModel);
-        when(mTabModelFilter.getCount()).thenReturn(1);
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabGroupModelFilter.getCount()).thenReturn(1);
         when(mTabModel.getCount()).thenReturn(1);
         Tab mockTab1 = mock(Tab.class);
         when(mTabModel.getTabAt(0)).thenReturn(mockTab1);
@@ -1744,12 +1746,12 @@ public class AppMenuPropertiesDelegateUnitTest {
     private void verifyManagedByMenuItem(boolean chromeManagementPageEnabled) {}
 
     /**
-     * Preparation to mock the "final" method TabModelFilter#getTabsWithNoOtherRelatedTabs which
-     * plays a part to enable group tabs.
+     * Preparation to mock the "final" method TabGroupModelFilter#getTabsWithNoOtherRelatedTabs
+     * which plays a part to enable group tabs.
      */
     private void prepareMocksForGroupTabsOnTabModel(@NonNull TabModel tabmodel) {
-        when(mTabModelFilter.getTabModel()).thenReturn(tabmodel);
-        when(mTabModelFilter.getCount()).thenReturn(2);
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(tabmodel);
+        when(mTabGroupModelFilter.getCount()).thenReturn(2);
         when(tabmodel.getCount()).thenReturn(2);
         Tab mockTab1 = mock(Tab.class);
         Tab mockTab2 = mock(Tab.class);

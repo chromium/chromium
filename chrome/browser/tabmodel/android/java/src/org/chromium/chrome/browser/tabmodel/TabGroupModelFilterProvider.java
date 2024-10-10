@@ -16,41 +16,41 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * This class is responsible for creating {@link TabModelFilter}s to be applied on the {@link
- * TabModel}s. It always owns two {@link TabModelFilter}s, one for normal {@link TabModel} and one
- * for incognito {@link TabModel}.
+ * This class is responsible for creating {@link TabGroupModelFilter}s to be applied on the {@link
+ * TabModel}s. It always owns two {@link TabGroupModelFilter}s, one for normal {@link TabModel} and
+ * one for incognito {@link TabModel}.
  */
-public class TabModelFilterProvider {
+public class TabGroupModelFilterProvider {
     private final List<TabModelObserver> mPendingTabModelObserver = new ArrayList<>();
-    private final ObservableSupplierImpl<TabModelFilter> mCurrentTabModelFilterSupplier =
+    private final ObservableSupplierImpl<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier =
             new ObservableSupplierImpl<>();
     private final Callback<TabModel> mCurrentTabModelObserver = this::onCurrentTabModelChanged;
 
-    private List<TabModelFilterBase> mTabModelFilterBaseList = Collections.emptyList();
+    private List<TabGroupModelFilterBase> mTabGroupModelFilterBaseList = Collections.emptyList();
     private TabModelSelector mTabModelSelector;
     private CallbackController mCallbackController = new CallbackController();
 
-    /*package*/ TabModelFilterProvider() {}
+    /*package*/ TabGroupModelFilterProvider() {}
 
     /*package*/ void init(
-            @NonNull TabModelFilterFactory tabModelFilterFactory,
+            @NonNull TabGroupModelFilterFactory tabGroupModelFilterFactory,
             @NonNull TabModelSelector tabModelSelector,
             @NonNull List<TabModel> tabModels) {
-        assert mTabModelFilterBaseList.isEmpty();
+        assert mTabGroupModelFilterBaseList.isEmpty();
         assert tabModels.size() > 0;
 
         mTabModelSelector = tabModelSelector;
 
-        List<TabModelFilterBase> filters = new ArrayList<>();
+        List<TabGroupModelFilterBase> filters = new ArrayList<>();
         for (TabModel tabModel : tabModels) {
-            filters.add(tabModelFilterFactory.createTabModelFilter(tabModel));
+            filters.add(tabGroupModelFilterFactory.createTabGroupModelFilter(tabModel));
         }
 
-        mTabModelFilterBaseList = Collections.unmodifiableList(filters);
+        mTabGroupModelFilterBaseList = Collections.unmodifiableList(filters);
         // Registers the pending observers.
         for (TabModelObserver observer : mPendingTabModelObserver) {
-            for (TabModelFilter tabModelFilter : mTabModelFilterBaseList) {
-                tabModelFilter.addObserver(observer);
+            for (TabGroupModelFilter tabGroupModelFilter : mTabGroupModelFilterBaseList) {
+                tabGroupModelFilter.addObserver(observer);
             }
         }
         mPendingTabModelObserver.clear();
@@ -65,47 +65,47 @@ public class TabModelFilterProvider {
     }
 
     /**
-     * This method adds {@link TabModelObserver} to both {@link TabModelFilter}s. Caches the
-     * observer until {@link TabModelFilter}s are created.
+     * This method adds {@link TabModelObserver} to both {@link TabGroupModelFilter}s. Caches the
+     * observer until {@link TabGroupModelFilter}s are created.
      *
      * @param observer {@link TabModelObserver} to add.
      */
-    public void addTabModelFilterObserver(TabModelObserver observer) {
-        if (mTabModelFilterBaseList.isEmpty()) {
+    public void addTabGroupModelFilterObserver(TabModelObserver observer) {
+        if (mTabGroupModelFilterBaseList.isEmpty()) {
             mPendingTabModelObserver.add(observer);
             return;
         }
 
-        for (TabModelFilter filter : mTabModelFilterBaseList) {
+        for (TabGroupModelFilter filter : mTabGroupModelFilterBaseList) {
             filter.addObserver(observer);
         }
     }
 
     /**
-     * This method removes {@link TabModelObserver} from both {@link TabModelFilter}s.
+     * This method removes {@link TabModelObserver} from both {@link TabGroupModelFilter}s.
      *
      * @param observer {@link TabModelObserver} to remove.
      */
-    public void removeTabModelFilterObserver(TabModelObserver observer) {
-        if (mTabModelFilterBaseList.isEmpty() && !mPendingTabModelObserver.isEmpty()) {
+    public void removeTabGroupModelFilterObserver(TabModelObserver observer) {
+        if (mTabGroupModelFilterBaseList.isEmpty() && !mPendingTabModelObserver.isEmpty()) {
             mPendingTabModelObserver.remove(observer);
             return;
         }
 
-        for (TabModelFilter filter : mTabModelFilterBaseList) {
+        for (TabGroupModelFilter filter : mTabGroupModelFilterBaseList) {
             filter.removeObserver(observer);
         }
     }
 
     /**
-     * This method returns a specific {@link TabModelFilter}.
+     * This method returns a specific {@link TabGroupModelFilter}.
      *
-     * @param isIncognito Use to indicate which {@link TabModelFilter} to return.
-     * @return A {@link TabModelFilter}. This returns null, if this called before native library is
-     *     initialized.
+     * @param isIncognito Use to indicate which {@link TabGroupModelFilter} to return.
+     * @return A {@link TabGroupModelFilter}. This returns null, if this called before native
+     *     library is initialized.
      */
-    public TabModelFilter getTabModelFilter(boolean isIncognito) {
-        for (TabModelFilter filter : mTabModelFilterBaseList) {
+    public TabGroupModelFilter getTabGroupModelFilter(boolean isIncognito) {
+        for (TabGroupModelFilter filter : mTabGroupModelFilterBaseList) {
             if (filter.isIncognito() == isIncognito) {
                 return filter;
             }
@@ -114,26 +114,27 @@ public class TabModelFilterProvider {
     }
 
     /**
-     * This method returns the current {@link TabModelFilter}.
-     * @return The current {@link TabModelFilter}. This returns null, if this called before native
-     * library is initialized.
+     * This method returns the current {@link TabGroupModelFilter}.
+     *
+     * @return The current {@link TabGroupModelFilter}. This returns null, if this called before
+     *     native library is initialized.
      */
-    public TabModelFilter getCurrentTabModelFilter() {
-        return mCurrentTabModelFilterSupplier.get();
+    public TabGroupModelFilter getCurrentTabGroupModelFilter() {
+        return mCurrentTabGroupModelFilterSupplier.get();
     }
 
     /** Returns an observable supplier for the current tab model filter. */
-    public ObservableSupplier<TabModelFilter> getCurrentTabModelFilterSupplier() {
-        return mCurrentTabModelFilterSupplier;
+    public ObservableSupplier<TabGroupModelFilter> getCurrentTabGroupModelFilterSupplier() {
+        return mCurrentTabGroupModelFilterSupplier;
     }
 
-    /** This method destroys all owned {@link TabModelFilter}. */
+    /** This method destroys all owned {@link TabGroupModelFilter}. */
     public void destroy() {
         if (mCallbackController != null) {
             mCallbackController.destroy();
             mCallbackController = null;
         }
-        for (TabModelFilter filter : mTabModelFilterBaseList) {
+        for (TabGroupModelFilter filter : mTabGroupModelFilterBaseList) {
             filter.destroy();
         }
         mPendingTabModelObserver.clear();
@@ -141,20 +142,21 @@ public class TabModelFilterProvider {
     }
 
     private void markTabStateInitialized() {
-        for (TabModelFilterBase filter : mTabModelFilterBaseList) {
+        for (TabGroupModelFilterBase filter : mTabGroupModelFilterBaseList) {
             filter.markTabStateInitialized();
         }
     }
 
     private void onCurrentTabModelChanged(TabModel model) {
-        for (TabModelFilter filter : mTabModelFilterBaseList) {
+        for (TabGroupModelFilter filter : mTabGroupModelFilterBaseList) {
             if (filter.isCurrentlySelectedFilter()) {
-                mCurrentTabModelFilterSupplier.set(filter);
+                mCurrentTabGroupModelFilterSupplier.set(filter);
                 return;
             }
         }
-        assert model == null : "Non-null current TabModel should set an active TabModelFilter.";
-        mCurrentTabModelFilterSupplier.set(null);
+        assert model == null
+                : "Non-null current TabModel should set an active TabGroupModelFilter.";
+        mCurrentTabGroupModelFilterSupplier.set(null);
     }
 
     private void cleanupTabModelSelectorObservers() {
@@ -164,9 +166,9 @@ public class TabModelFilterProvider {
     }
 
     /** Reset the internal filter list to allow initialization again. */
-    public void resetTabModelFilterListForTesting() {
-        mTabModelFilterBaseList = Collections.emptyList();
-        mCurrentTabModelFilterSupplier.set(null);
+    public void resetTabGroupModelFilterListForTesting() {
+        mTabGroupModelFilterBaseList = Collections.emptyList();
+        mCurrentTabGroupModelFilterSupplier.set(null);
         cleanupTabModelSelectorObservers();
         mCallbackController = new CallbackController();
     }

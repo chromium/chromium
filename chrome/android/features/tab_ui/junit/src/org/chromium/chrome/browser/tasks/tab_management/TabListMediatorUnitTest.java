@@ -131,11 +131,10 @@ import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFavicon;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceTabData;
@@ -338,7 +337,7 @@ public class TabListMediatorUnitTest {
 
     @Captor ArgumentCaptor<RecyclerView.OnScrollListener> mOnScrollListenerCaptor;
 
-    private final ObservableSupplierImpl<TabModelFilter> mCurrentTabModelFilterSupplier =
+    private final ObservableSupplierImpl<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier =
             new ObservableSupplierImpl<>();
 
     private Tab mTab1;
@@ -404,7 +403,7 @@ public class TabListMediatorUnitTest {
 
         doReturn(mTabModel).when(mTabGroupModelFilter).getTabModel();
         doReturn(mIncognitoTabModel).when(mIncognitoTabGroupModelFilter).getTabModel();
-        mCurrentTabModelFilterSupplier.set(mTabGroupModelFilter);
+        mCurrentTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
         doNothing().when(mTabGroupModelFilter).addObserver(mTabModelObserverCaptor.capture());
         doReturn(mTab1).when(mTabModel).getTabAt(POSITION1);
         doReturn(mTab2).when(mTabModel).getTabAt(POSITION2);
@@ -1621,7 +1620,7 @@ public class TabListMediatorUnitTest {
                         mModel,
                         TabListMode.GRID,
                         mModalDialogManager,
-                        mCurrentTabModelFilterSupplier,
+                        mCurrentTabGroupModelFilterSupplier,
                         getTabThumbnailCallback(),
                         mTabListFaviconProvider,
                         true,
@@ -3113,7 +3112,7 @@ public class TabListMediatorUnitTest {
         assertThat(mModel.size(), equalTo(1));
         verify(mTab2).removeObserver(any());
 
-        // Assume that TabModelFilter is already updated to reflect closed tab is undone.
+        // Assume that TabGroupModelFilter is already updated to reflect closed tab is undone.
         doReturn(2).when(mTabGroupModelFilter).getCount();
         doReturn(mTab1).when(mTabGroupModelFilter).getTabAt(POSITION1);
         doReturn(mTab2).when(mTabGroupModelFilter).getTabAt(POSITION2);
@@ -3327,7 +3326,7 @@ public class TabListMediatorUnitTest {
                         mModel,
                         TabListMode.GRID,
                         mModalDialogManager,
-                        mCurrentTabModelFilterSupplier,
+                        mCurrentTabGroupModelFilterSupplier,
                         getTabThumbnailCallback(),
                         mTabListFaviconProvider,
                         true,
@@ -3360,7 +3359,7 @@ public class TabListMediatorUnitTest {
                         mModel,
                         TabListMode.GRID,
                         mModalDialogManager,
-                        mCurrentTabModelFilterSupplier,
+                        mCurrentTabGroupModelFilterSupplier,
                         getTabThumbnailCallback(),
                         mTabListFaviconProvider,
                         true,
@@ -3895,7 +3894,7 @@ public class TabListMediatorUnitTest {
                         mModel,
                         TabListMode.GRID,
                         mModalDialogManager,
-                        mCurrentTabModelFilterSupplier,
+                        mCurrentTabGroupModelFilterSupplier,
                         getTabThumbnailCallback(),
                         mTabListFaviconProvider,
                         true,
@@ -3939,7 +3938,7 @@ public class TabListMediatorUnitTest {
                         mModel,
                         TabListMode.GRID,
                         mModalDialogManager,
-                        mCurrentTabModelFilterSupplier,
+                        mCurrentTabGroupModelFilterSupplier,
                         getTabThumbnailCallback(),
                         mTabListFaviconProvider,
                         true,
@@ -3983,7 +3982,7 @@ public class TabListMediatorUnitTest {
                         mModel,
                         TabListMode.GRID,
                         mModalDialogManager,
-                        mCurrentTabModelFilterSupplier,
+                        mCurrentTabGroupModelFilterSupplier,
                         getTabThumbnailCallback(),
                         mTabListFaviconProvider,
                         true,
@@ -4035,8 +4034,8 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
-    public void testChangingTabModelFilters() {
-        mCurrentTabModelFilterSupplier.set(mIncognitoTabGroupModelFilter);
+    public void testChangingTabGroupModelFilters() {
+        mCurrentTabGroupModelFilterSupplier.set(mIncognitoTabGroupModelFilter);
 
         verify(mTabGroupModelFilter).removeObserver(any());
         verify(mTabGroupModelFilter).removeTabGroupObserver(any());
@@ -4211,7 +4210,7 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void testOnMenuItemClickedCallback_UngroupInTabSwitcher_IncognitoNoShow() {
-        mCurrentTabModelFilterSupplier.set(mIncognitoTabGroupModelFilter);
+        mCurrentTabGroupModelFilterSupplier.set(mIncognitoTabGroupModelFilter);
         when(mIncognitoTabModel.isIncognito()).thenReturn(true);
 
         List<Tab> tabs = new ArrayList<>();
@@ -4235,7 +4234,7 @@ public class TabListMediatorUnitTest {
 
     @Test
     public void testOnMenuItemClickedCallback_DeleteGroupInTabSwitcher_IncognitoNoShow() {
-        mCurrentTabModelFilterSupplier.set(mIncognitoTabGroupModelFilter);
+        mCurrentTabGroupModelFilterSupplier.set(mIncognitoTabGroupModelFilter);
         when(mIncognitoTabModel.isIncognito()).thenReturn(true);
         when(mIncognitoTabGroupModelFilter.isIncognitoBranded()).thenReturn(true);
 
@@ -4346,7 +4345,7 @@ public class TabListMediatorUnitTest {
                         mModel,
                         TabListMode.GRID,
                         mModalDialogManager,
-                        mCurrentTabModelFilterSupplier,
+                        mCurrentTabGroupModelFilterSupplier,
                         getTabThumbnailCallback(),
                         mTabListFaviconProvider,
                         true,
@@ -4710,7 +4709,7 @@ public class TabListMediatorUnitTest {
                         mModel,
                         mode,
                         mModalDialogManager,
-                        mCurrentTabModelFilterSupplier,
+                        mCurrentTabGroupModelFilterSupplier,
                         thumbnailProvider,
                         mTabListFaviconProvider,
                         actionOnRelatedTabs,

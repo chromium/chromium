@@ -16,14 +16,10 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Interface for getting a filtered view of the tabs in the {@link TabModel}. The filtering logic is
- * delegated to the implementation. If no filter is active, this represents the same {@link TabList}
- * as {@link TabModel} does.
- */
-public interface TabModelFilter extends TabList, Destroyable {
+/** Interface for getting tab groups for the tabs in the {@link TabModel}. */
+public interface TabGroupModelFilter extends TabList, Destroyable {
     /**
-     * Adds a {@link TabModelObserver} to be notified on {@link TabModelFilter} changes.
+     * Adds a {@link TabModelObserver} to be notified on {@link TabGroupModelFilter} changes.
      *
      * @param observer The {@link TabModelObserver} to add.
      */

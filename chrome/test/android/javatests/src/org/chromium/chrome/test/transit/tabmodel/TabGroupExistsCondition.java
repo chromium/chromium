@@ -7,8 +7,8 @@ package org.chromium.chrome.test.transit.tabmodel;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.UiThreadCondition;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,11 +33,10 @@ public class TabGroupExistsCondition extends UiThreadCondition {
     @Override
     protected ConditionStatus checkWithSuppliers() {
         TabGroupModelFilter groupFilter =
-                (TabGroupModelFilter)
-                        mTabModelSelectorSupplier
-                                .get()
-                                .getTabModelFilterProvider()
-                                .getTabModelFilter(mIncognito);
+                mTabModelSelectorSupplier
+                        .get()
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(mIncognito);
         List<Integer> relatedTabIds =
                 new ArrayList<>(groupFilter.getRelatedTabIds(mTabIdsToGroup.get(0)));
         if (relatedTabIds.isEmpty()) {

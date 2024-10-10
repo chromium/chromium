@@ -88,11 +88,10 @@ import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -188,7 +187,7 @@ public class TabGridDialogMediatorUnitTest {
     private ArgumentCaptor<MessagingBackendService.PersistentMessageObserver>
             mPersistentMessageObserverCaptor;
 
-    private final ObservableSupplierImpl<TabModelFilter> mCurrentTabModelFilterSupplier =
+    private final ObservableSupplierImpl<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier =
             new ObservableSupplierImpl<>();
 
     private UserActionTester mActionTester;
@@ -221,7 +220,7 @@ public class TabGridDialogMediatorUnitTest {
         List<Tab> tabs1 = new ArrayList<>(Arrays.asList(mTab1));
         List<Tab> tabs2 = new ArrayList<>(Arrays.asList(mTab2));
 
-        mCurrentTabModelFilterSupplier.set(mTabGroupModelFilter);
+        mCurrentTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
         doReturn(mProfile).when(mTabModel).getProfile();
         doReturn(mTabModel).when(mTabGroupModelFilter).getTabModel();
         doReturn(POSITION1).when(mTabGroupModelFilter).indexOf(mTab1);
@@ -1556,7 +1555,7 @@ public class TabGridDialogMediatorUnitTest {
         mMediator.destroy();
 
         verify(mTabGroupModelFilter).removeObserver(mTabModelObserverCaptor.capture());
-        assertFalse(mCurrentTabModelFilterSupplier.hasObservers());
+        assertFalse(mCurrentTabGroupModelFilterSupplier.hasObservers());
         verify(mDesktopWindowStateProvider).removeObserver(mMediator);
         verify(mMessagingBackendService).removePersistentMessageObserver(any());
     }
@@ -1700,7 +1699,7 @@ public class TabGridDialogMediatorUnitTest {
                         mActivity,
                         mDialogController,
                         mModel,
-                        mCurrentTabModelFilterSupplier,
+                        mCurrentTabGroupModelFilterSupplier,
                         mTabCreatorManager,
                         withResetHandler ? mTabSwitcherResetHandler : null,
                         mRecyclerViewPositionSupplier,

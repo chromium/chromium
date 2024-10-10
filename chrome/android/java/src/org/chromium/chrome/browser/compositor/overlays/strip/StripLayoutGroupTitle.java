@@ -209,7 +209,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
 
     /**
      * @param rootId The tab group's new rootId. Should be synced with the {@link
-     *     org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter}.
+     *     org.chromium.chrome.browser.tabmodel.TabGroupModelFilter}.
      */
     protected void updateRootId(int rootId) {
         mRootId = rootId;

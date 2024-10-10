@@ -23,7 +23,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ActionDelegate;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
@@ -33,7 +33,7 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabListEditorRestoreAllArchivedTabsActionUnitTest {
-    @Mock private TabGroupModelFilter mTabModelFilter;
+    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private SelectionDelegate<Integer> mSelectionDelegate;
     @Mock private ActionDelegate mDelegate;
     @Mock private Profile mProfile;
@@ -53,8 +53,8 @@ public class TabListEditorRestoreAllArchivedTabsActionUnitTest {
                         TabListEditorRestoreAllArchivedTabsAction.createAction(
                                 mActivity, mArchiveDelegate);
         mTabModel = spy(new MockTabModel(mProfile, null));
-        when(mTabModelFilter.getTabModel()).thenReturn(mTabModel);
-        mAction.configure(() -> mTabModelFilter, mSelectionDelegate, mDelegate, false);
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+        mAction.configure(() -> mTabGroupModelFilter, mSelectionDelegate, mDelegate, false);
     }
 
     @Test

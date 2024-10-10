@@ -143,7 +143,6 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
@@ -459,8 +458,8 @@ public class TabGridDialogTest {
                                             TabLaunchType.FROM_SYNC_BACKGROUND,
                                             null,
                                             TabModel.INVALID_TAB_INDEX);
-                    ((TabGroupModelFilter)
-                                    selector.getTabModelFilterProvider().getTabModelFilter(false))
+                    selector.getTabGroupModelFilterProvider()
+                            .getTabGroupModelFilter(false)
                             .mergeListOfTabsToGroup(
                                     List.of(tab), destinationTab, /* notify= */ false);
                 });

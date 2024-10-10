@@ -70,25 +70,25 @@ public class TabGroupsTest {
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
-    @Mock private TabModelObserver mTabModelFilterObserver;
+    @Mock private TabModelObserver mTabGroupModelFilterObserver;
 
     private TabModel mTabModel;
-    private TabGroupModelFilter mTabGroupModelFilter;
+    private TabGroupModelFilterImpl mTabGroupModelFilter;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mTabModel = sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
         mTabGroupModelFilter =
-                (TabGroupModelFilter)
+                (TabGroupModelFilterImpl)
                         sActivityTestRule
                                 .getActivity()
                                 .getTabModelSelector()
-                                .getTabModelFilterProvider()
-                                .getTabModelFilter(false);
+                                .getTabGroupModelFilterProvider()
+                                .getTabGroupModelFilter(false);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.addObserver(mTabModelFilterObserver);
+                    mTabGroupModelFilter.addObserver(mTabGroupModelFilterObserver);
                 });
     }
 
@@ -96,7 +96,7 @@ public class TabGroupsTest {
     public void tearDown() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mTabGroupModelFilter.removeObserver(mTabModelFilterObserver);
+                    mTabGroupModelFilter.removeObserver(mTabGroupModelFilterObserver);
                 });
     }
 
@@ -360,7 +360,7 @@ public class TabGroupsTest {
 
     @Test
     @SmallTest
-    public void testTabModelFilterObserverUndoClosure() {
+    public void testTabGroupModelFilterObserverUndoClosure() {
         // Four tabs plus the first blank one.
         prepareTabs(Arrays.asList(new Integer[] {3, 1}));
         final List<Tab> tabs = getCurrentTabs();
@@ -379,7 +379,7 @@ public class TabGroupsTest {
         ChromeTabbedActivity cta = (ChromeTabbedActivity) sActivityTestRule.getActivity();
         LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
 
-        InOrder calledInOrder = inOrder(mTabModelFilterObserver);
+        InOrder calledInOrder = inOrder(mTabGroupModelFilterObserver);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     for (Tab tab : tabs) {
@@ -388,15 +388,15 @@ public class TabGroupsTest {
                 });
         // Ensure didSelectTab is called and the call occurs after the tab closure is actually
         // undone.
-        calledInOrder.verify(mTabModelFilterObserver).tabClosureUndone(eq(tabs.get(0)));
+        calledInOrder.verify(mTabGroupModelFilterObserver).tabClosureUndone(eq(tabs.get(0)));
         calledInOrder
-                .verify(mTabModelFilterObserver)
+                .verify(mTabGroupModelFilterObserver)
                 .didSelectTab(
                         eq(tabs.get(0)), eq(TabSelectionType.FROM_UNDO), /* lastId= */ eq(-1));
-        calledInOrder.verify(mTabModelFilterObserver).tabClosureUndone(eq(tabs.get(1)));
-        calledInOrder.verify(mTabModelFilterObserver).tabClosureUndone(eq(tabs.get(2)));
-        calledInOrder.verify(mTabModelFilterObserver).tabClosureUndone(eq(tabs.get(3)));
-        calledInOrder.verify(mTabModelFilterObserver).tabClosureUndone(eq(tabs.get(4)));
+        calledInOrder.verify(mTabGroupModelFilterObserver).tabClosureUndone(eq(tabs.get(1)));
+        calledInOrder.verify(mTabGroupModelFilterObserver).tabClosureUndone(eq(tabs.get(2)));
+        calledInOrder.verify(mTabGroupModelFilterObserver).tabClosureUndone(eq(tabs.get(3)));
+        calledInOrder.verify(mTabGroupModelFilterObserver).tabClosureUndone(eq(tabs.get(4)));
 
         // Exit the tab switcher.
         ThreadUtils.runOnUiThreadBlocking(() -> cta.onBackPressed());

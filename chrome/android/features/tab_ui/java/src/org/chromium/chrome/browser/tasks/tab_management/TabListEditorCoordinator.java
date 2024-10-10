@@ -26,7 +26,7 @@ import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManagerThumbnailProvider;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListItemSizeChangedObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
@@ -228,7 +228,8 @@ class TabListEditorCoordinator {
     private final ViewGroup mRootView;
     private final ViewGroup mParentView;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
-    private final @NonNull ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
+    private final @NonNull ObservableSupplier<TabGroupModelFilter>
+            mCurrentTabGroupModelFilterSupplier;
     private final TabListEditorLayout mTabListEditorLayout;
     private final SelectionDelegate<Integer> mSelectionDelegate = new SelectionDelegate<>();
     private final PropertyModel mModel;
@@ -256,7 +257,7 @@ class TabListEditorCoordinator {
      *     rootView if no custom view is being used, or a sub-view which is then attached to
      *     rootView.
      * @param browserControlsStateProvider Provides the browser controls state.
-     * @param currentTabModelFilterSupplier Supplies the current TabModelFilter.
+     * @param currentTabGroupModelFilterSupplier Supplies the current TabGroupModelFilter.
      * @param tabContentManager Provides thumbnails for tabs.
      * @param clientTabListRecyclerViewPositionSetter Allows setting the recycler view position.
      * @param mode Modes of showing the list of tabs. Can be used in GRID or STRIP.
@@ -273,7 +274,7 @@ class TabListEditorCoordinator {
             ViewGroup rootView,
             ViewGroup parentView,
             BrowserControlsStateProvider browserControlsStateProvider,
-            @NonNull ObservableSupplier<TabModelFilter> currentTabModelFilterSupplier,
+            @NonNull ObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
             TabContentManager tabContentManager,
             Callback<RecyclerViewPosition> clientTabListRecyclerViewPositionSetter,
             @TabListMode int mode,
@@ -290,7 +291,7 @@ class TabListEditorCoordinator {
             mRootView = rootView;
             mParentView = parentView;
             mBrowserControlsStateProvider = browserControlsStateProvider;
-            mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
+            mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
             mClientTabListRecyclerViewPositionSetter = clientTabListRecyclerViewPositionSetter;
             mTabListMode = mode;
             mDisplayGroups = displayGroups;
@@ -314,7 +315,7 @@ class TabListEditorCoordinator {
             mTabListEditorMediator =
                     new TabListEditorMediator(
                             mContext,
-                            mCurrentTabModelFilterSupplier,
+                            mCurrentTabGroupModelFilterSupplier,
                             mModel,
                             mSelectionDelegate,
                             displayGroups,
@@ -427,7 +428,7 @@ class TabListEditorCoordinator {
 
     private void createTabListCoordinator() {
         Profile regularProfile =
-                mCurrentTabModelFilterSupplier
+                mCurrentTabGroupModelFilterSupplier
                         .get()
                         .getTabModel()
                         .getProfile()
@@ -477,7 +478,7 @@ class TabListEditorCoordinator {
                         mContext,
                         mBrowserControlsStateProvider,
                         mModalDialogManager,
-                        mCurrentTabModelFilterSupplier,
+                        mCurrentTabGroupModelFilterSupplier,
                         thumbnailProvider,
                         mDisplayGroups,
                         /* actionConfirmationManager= */ null,
@@ -555,7 +556,7 @@ class TabListEditorCoordinator {
                             mContext,
                             mBrowserControlsStateProvider,
                             tabContentManager,
-                            mCurrentTabModelFilterSupplier);
+                            mCurrentTabGroupModelFilterSupplier);
             return mMultiThumbnailCardProvider;
         }
         return new TabContentManagerThumbnailProvider(tabContentManager);

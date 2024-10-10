@@ -24,8 +24,8 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
@@ -153,7 +153,7 @@ public class TabSwitcherPaneCoordinatorFactory {
         return new TabSwitcherPaneCoordinator(
                 mActivity,
                 mProfileProviderSupplier,
-                createTabModelFilterSupplier(isIncognito),
+                createTabGroupModelFilterSupplier(isIncognito),
                 mTabContentManager,
                 mTabCreatorManager,
                 mBrowserControlsStateProvider,
@@ -209,8 +209,8 @@ public class TabSwitcherPaneCoordinatorFactory {
     }
 
     @VisibleForTesting
-    ObservableSupplier<TabModelFilter> createTabModelFilterSupplier(boolean isIncognito) {
-        ObservableSupplierImpl<TabModelFilter> tabModelFilterSupplier =
+    ObservableSupplier<TabGroupModelFilter> createTabGroupModelFilterSupplier(boolean isIncognito) {
+        ObservableSupplierImpl<TabGroupModelFilter> tabGroupModelFilterSupplier =
                 new ObservableSupplierImpl<>();
         // This implementation doesn't wait for isTabStateInitialized because we want to be able to
         // show the TabSwitcherPane before tab state initialization finishes. Tab state
@@ -219,24 +219,24 @@ public class TabSwitcherPaneCoordinatorFactory {
         // TabSwitcherPaneMediator to properly refresh the list in the event the contents changed.
         TabModelSelector selector = mTabModelSelector;
         if (!selector.getModels().isEmpty()) {
-            tabModelFilterSupplier.set(
-                    selector.getTabModelFilterProvider().getTabModelFilter(isIncognito));
+            tabGroupModelFilterSupplier.set(
+                    selector.getTabGroupModelFilterProvider().getTabGroupModelFilter(isIncognito));
         } else {
             selector.addObserver(
                     new TabModelSelectorObserver() {
                         @Override
                         public void onChange() {
                             assert !selector.getModels().isEmpty();
-                            TabModelFilter filter =
-                                    selector.getTabModelFilterProvider()
-                                            .getTabModelFilter(isIncognito);
+                            TabGroupModelFilter filter =
+                                    selector.getTabGroupModelFilterProvider()
+                                            .getTabGroupModelFilter(isIncognito);
                             assert filter != null;
                             selector.removeObserver(this);
-                            tabModelFilterSupplier.set(filter);
+                            tabGroupModelFilterSupplier.set(filter);
                         }
                     });
         }
-        return tabModelFilterSupplier;
+        return tabGroupModelFilterSupplier;
     }
 
     private void onMessageManagerTokenStateChanged() {
@@ -247,8 +247,8 @@ public class TabSwitcherPaneCoordinatorFactory {
                             mActivity,
                             mLifecycleDispatcher,
                             mTabModelSelector
-                                    .getTabModelFilterProvider()
-                                    .getCurrentTabModelFilterSupplier(),
+                                    .getTabGroupModelFilterProvider()
+                                    .getCurrentTabGroupModelFilterSupplier(),
                             mMultiWindowModeStateDispatcher,
                             mSnackbarManager,
                             mModalDialogManager,

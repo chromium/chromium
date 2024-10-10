@@ -90,8 +90,8 @@ public class TabGroupUiOneshotSupplier extends OneshotSupplierImpl<TabGroupUi> {
 
             boolean isInTabGroup =
                     mTabModelSelector
-                            .getTabModelFilterProvider()
-                            .getTabModelFilter(tab.isIncognito())
+                            .getTabGroupModelFilterProvider()
+                            .getTabGroupModelFilter(tab.isIncognito())
                             .isTabInTabGroup(tab);
             if (!isInTabGroup) return;
 

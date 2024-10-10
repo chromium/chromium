@@ -14,8 +14,8 @@ import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.protocol.EntitySpecifics;
@@ -273,12 +273,11 @@ public class TabGroupSyncIntegrationTestHelper {
 
     /** Returns the regular tab model filter. */
     public TabGroupModelFilter getTabGroupFilter() {
-        return (TabGroupModelFilter)
-                mSyncTestRule
-                        .getActivity()
-                        .getTabModelSelector()
-                        .getTabModelFilterProvider()
-                        .getTabModelFilter(false);
+        return mSyncTestRule
+                .getActivity()
+                .getTabModelSelector()
+                .getTabGroupModelFilterProvider()
+                .getTabGroupModelFilter(false);
     }
 
     /** Gets the {@link SyncEntity} for a particular sync GUID. */

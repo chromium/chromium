@@ -35,8 +35,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupUtils;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.tab_ui.R;
@@ -134,8 +134,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
     private ActionConfirmationManager createActionConfirmationManager() {
         Profile profile = mTabModelSelector.getModel(false).getProfile();
         TabGroupModelFilter regularFilter =
-                (TabGroupModelFilter)
-                        mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(false);
+                mTabModelSelector.getTabGroupModelFilterProvider().getTabGroupModelFilter(false);
         return new ActionConfirmationManager(
                 profile, mActivity, regularFilter, mModalDialogManager);
     }
@@ -144,15 +143,17 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
         assert mTabGridDialogControllerSupplier != null;
         if (mTabGridDialogCoordinator != null) return mTabGridDialogCoordinator;
 
-        var currentTabModelFilterSupplier =
-                mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilterSupplier();
+        var currentTabGroupModelFilterSupplier =
+                mTabModelSelector
+                        .getTabGroupModelFilterProvider()
+                        .getCurrentTabGroupModelFilterSupplier();
         mTabGridDialogCoordinator =
                 new TabGridDialogCoordinator(
                         mActivity,
                         mBrowserControlsStateProvider,
                         mBottomSheetController,
                         mDataSharingTabManager,
-                        currentTabModelFilterSupplier,
+                        currentTabGroupModelFilterSupplier,
                         mTabContentManager,
                         mTabCreatorManager,
                         mActivity.findViewById(R.id.coordinator),
@@ -173,8 +174,10 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
             Activity activity,
             BottomControlsCoordinator.BottomControlsVisibilityController visibilityController,
             Callback<Object> onModelTokenChange) {
-        var currentTabModelFilterSupplier =
-                mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilterSupplier();
+        var currentTabGroupModelFilterSupplier =
+                mTabModelSelector
+                        .getTabGroupModelFilterProvider()
+                        .getCurrentTabGroupModelFilterSupplier();
         try (TraceEvent e = TraceEvent.scoped("TabGroupUiCoordinator.initializeWithNative")) {
             mTabStripCoordinator =
                     new TabListCoordinator(
@@ -182,7 +185,7 @@ public class TabGroupUiCoordinator implements TabGroupUiMediator.ResetHandler, T
                             mContext,
                             mBrowserControlsStateProvider,
                             mModalDialogManager,
-                            currentTabModelFilterSupplier,
+                            currentTabGroupModelFilterSupplier,
                             /* thumbnailProvider= */ null,
                             /* actionOnRelatedTabs= */ false,
                             mActionConfirmationSupplier.get(),

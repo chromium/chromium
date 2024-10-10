@@ -48,10 +48,9 @@ import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.DialogController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.GridCardOnClickListenerProvider;
@@ -155,7 +154,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     /**
      * @param activity The {@link Activity} that hosts the pane.
      * @param profileProviderSupplier The supplier for profiles.
-     * @param tabModelFilterSupplier The supplier of the tab model filter fo rthis pane.
+     * @param tabGroupModelFilterSupplier The supplier of the tab model filter fo rthis pane.
      * @param tabContentManager For management of thumbnails.
      * @param tabCreatorManager For creating new tabs.
      * @param browserControlsStateProvider For determining thumbnail size.
@@ -181,7 +180,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
     public TabSwitcherPaneCoordinator(
             @NonNull Activity activity,
             @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
-            @NonNull ObservableSupplier<TabModelFilter> tabModelFilterSupplier,
+            @NonNull ObservableSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier,
             @NonNull TabContentManager tabContentManager,
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
@@ -233,7 +232,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
             mContainerViewModel = containerViewModel;
 
-            TabGroupModelFilter filter = (TabGroupModelFilter) tabModelFilterSupplier.get();
+            TabGroupModelFilter filter = tabGroupModelFilterSupplier.get();
             Profile profile = mProfileProviderSupplier.get().getOriginalProfile();
             ActionConfirmationManager actionConfirmationManager =
                     filter.isIncognitoBranded()
@@ -250,7 +249,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                                                 browserControlsStateProvider,
                                                 bottomSheetController,
                                                 dataSharingTabManager,
-                                                tabModelFilterSupplier,
+                                                tabGroupModelFilterSupplier,
                                                 tabContentManager,
                                                 tabCreatorManager,
                                                 coordinatorView,
@@ -269,7 +268,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
             mMediator =
                     new TabSwitcherPaneMediator(
                             resetHandler,
-                            tabModelFilterSupplier,
+                            tabGroupModelFilterSupplier,
                             mDialogControllerSupplier,
                             containerViewModel,
                             parentView,
@@ -284,7 +283,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             activity,
                             browserControlsStateProvider,
                             tabContentManager,
-                            tabModelFilterSupplier);
+                            tabGroupModelFilterSupplier);
 
             var recyclerViewTimer = new UptimeMillisTimer();
 
@@ -299,7 +298,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             activity,
                             browserControlsStateProvider,
                             mModalDialogManager,
-                            tabModelFilterSupplier,
+                            tabGroupModelFilterSupplier,
                             mMultiThumbnailCardProvider,
                             /* actionOnRelatedTabs= */ true,
                             actionConfirmationManager,
@@ -362,7 +361,7 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             coordinatorView,
                             /* rootView= */ parentView,
                             browserControlsStateProvider,
-                            tabModelFilterSupplier,
+                            tabGroupModelFilterSupplier,
                             tabContentManager,
                             tabListCoordinator,
                             bottomSheetController,

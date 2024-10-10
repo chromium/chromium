@@ -36,11 +36,11 @@ public interface TabModelSelector {
     TabModel getModel(boolean incognito);
 
     /**
-     * Get the {@link TabModelFilterProvider} that provides {@link TabModelFilter}.
+     * Get the {@link TabGroupModelFilterProvider} that provides {@link TabGroupModelFilter}.
      *
      * @return Never returns null. Returns a stub when real model is uninitialized.
      */
-    TabModelFilterProvider getTabModelFilterProvider();
+    TabGroupModelFilterProvider getTabGroupModelFilterProvider();
 
     /** Returns a list for the underlying models */
     List<TabModel> getModels();

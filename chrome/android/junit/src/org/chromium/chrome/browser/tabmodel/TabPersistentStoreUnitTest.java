@@ -48,7 +48,7 @@ import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabModelSelectorMetadata;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabRestoreDetails;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterImpl;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
@@ -79,14 +79,14 @@ public class TabPersistentStoreUnitTest {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mNormalTabModel;
     @Mock private TabModel mIncognitoTabModel;
-    @Mock private TabModelFilterProvider mTabModelFilterProvider;
+    @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private TabCreator mNormalTabCreator;
     @Mock private TabCreator mIncognitoTabCreator;
     @Mock private TabWindowManager mTabWindowManager;
 
-    private TabModelFilter mNormalTabModelFilter;
-    private TabModelFilter mIncognitoTabModelFilter;
+    private TabGroupModelFilter mNormalTabGroupModelFilter;
+    private TabGroupModelFilter mIncognitoTabGroupModelFilter;
     private TabPersistentStore mPersistentStore;
     private CipherFactory mCipherFactory;
 
@@ -104,11 +104,14 @@ public class TabPersistentStoreUnitTest {
         when(mPersistencePolicy.isMergeInProgress()).thenReturn(false);
         when(mPersistencePolicy.performInitialization(any(TaskRunner.class))).thenReturn(false);
 
-        when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
-        mNormalTabModelFilter = new TabGroupModelFilter(mNormalTabModel);
-        mIncognitoTabModelFilter = new TabGroupModelFilter(mIncognitoTabModel);
-        when(mTabModelFilterProvider.getTabModelFilter(false)).thenReturn(mNormalTabModelFilter);
-        when(mTabModelFilterProvider.getTabModelFilter(true)).thenReturn(mIncognitoTabModelFilter);
+        when(mTabModelSelector.getTabGroupModelFilterProvider())
+                .thenReturn(mTabGroupModelFilterProvider);
+        mNormalTabGroupModelFilter = new TabGroupModelFilterImpl(mNormalTabModel);
+        mIncognitoTabGroupModelFilter = new TabGroupModelFilterImpl(mIncognitoTabModel);
+        when(mTabGroupModelFilterProvider.getTabGroupModelFilter(false))
+                .thenReturn(mNormalTabGroupModelFilter);
+        when(mTabGroupModelFilterProvider.getTabGroupModelFilter(true))
+                .thenReturn(mIncognitoTabGroupModelFilter);
 
         mCipherFactory = new CipherFactory();
     }

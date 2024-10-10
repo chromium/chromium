@@ -45,8 +45,8 @@ import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
@@ -110,7 +110,7 @@ public class TabListCoordinator
     private final @TabListMode int mMode;
     private final Context mContext;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
-    private final ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
+    private final ObservableSupplier<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier;
     private final TabListModel mModel;
     private final boolean mHasEmptyView;
     private final @DrawableRes int mEmptyStateImageResId;
@@ -138,7 +138,7 @@ public class TabListCoordinator
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} for top
      *     controls.
      * @param modalDialogManager Used for managing the modal dialogs.
-     * @param tabModelFilterSupplier The supplier for the current tab model filter.
+     * @param tabGroupModelFilterSupplier The supplier for the current tab model filter.
      * @param thumbnailProvider Provider to provide screenshot related details.
      * @param actionOnRelatedTabs Whether tab-related actions should be operated on all related
      *     tabs.
@@ -170,7 +170,7 @@ public class TabListCoordinator
             Context context,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull ModalDialogManager modalDialogManager,
-            @NonNull ObservableSupplier<TabModelFilter> tabModelFilterSupplier,
+            @NonNull ObservableSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier,
             @Nullable ThumbnailProvider thumbnailProvider,
             boolean actionOnRelatedTabs,
             @Nullable ActionConfirmationManager actionConfirmationManager,
@@ -194,7 +194,7 @@ public class TabListCoordinator
         mTabActionState = initialTabActionState;
         mContext = context;
         mBrowserControlsStateProvider = browserControlsStateProvider;
-        mCurrentTabModelFilterSupplier = tabModelFilterSupplier;
+        mCurrentTabGroupModelFilterSupplier = tabGroupModelFilterSupplier;
         mModel = new TabListModel();
         mAdapter =
                 new SimpleRecyclerViewAdapter(mModel) {
@@ -297,7 +297,7 @@ public class TabListCoordinator
                         mModel,
                         mMode,
                         modalDialogManager,
-                        tabModelFilterSupplier,
+                        tabGroupModelFilterSupplier,
                         thumbnailProvider,
                         tabListFaviconProvider,
                         actionOnRelatedTabs,
@@ -862,7 +862,7 @@ public class TabListCoordinator
         int index = mModel.indexFromId(tabId);
         if (index != TabModel.INVALID_TAB_INDEX) return index;
 
-        TabModel tabModel = mCurrentTabModelFilterSupplier.get().getTabModel();
+        TabModel tabModel = mCurrentTabGroupModelFilterSupplier.get().getTabModel();
         Tab tab = tabModel.getTabById(tabId);
         if (tab == null) return TabModel.INVALID_TAB_INDEX;
 

@@ -16,11 +16,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/**
- * Abstract base class that is responsible for filtering tabs from {@link TabModel}. The filtering
- * logic is delegated to the concrete class that extends this abstract class.
- */
-public abstract class TabModelFilterBase implements TabModelFilter, TabModelObserver {
+/** Abstract base class of {@link TabGroupModelFilter}. */
+public abstract class TabGroupModelFilterBase implements TabGroupModelFilter, TabModelObserver {
     private static final List<Tab> sEmptyRelatedTabList =
             Collections.unmodifiableList(new ArrayList<Tab>());
     private static final List<Integer> sEmptyRelatedTabIds =
@@ -33,7 +30,7 @@ public abstract class TabModelFilterBase implements TabModelFilter, TabModelObse
     /**
      * @param tabModel The tab model to filter.
      */
-    public TabModelFilterBase(TabModel tabModel) {
+    public TabGroupModelFilterBase(TabModel tabModel) {
         mTabModel = tabModel;
         mTabModel.addObserver(this);
     }
@@ -162,8 +159,8 @@ public abstract class TabModelFilterBase implements TabModelFilter, TabModelObse
     }
 
     /**
-     * Mark TabState initialized, and TabModelFilter ready to use. This should only be called once,
-     * and should only be called by {@link TabModelFilterProvider}.
+     * Mark TabState initialized, and TabGroupModelFilter ready to use. This should only be called
+     * once, and should only be called by {@link TabGroupModelFilterProvider}.
      */
     protected void markTabStateInitialized() {
         assert !mTabStateInitialized;

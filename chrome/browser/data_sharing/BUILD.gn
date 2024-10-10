@@ -146,6 +146,7 @@ if (is_android) {
       "//chrome/browser/tab:java",
       "//chrome/browser/tab_group:java",
       "//chrome/browser/tab_group_sync/messaging/android:factory_java",
+      "//chrome/browser/tabmodel:java",
       "//components/data_sharing/public:public_java",
       "//components/messages/android:java",
       "//components/saved_tab_groups/messaging/android:java",

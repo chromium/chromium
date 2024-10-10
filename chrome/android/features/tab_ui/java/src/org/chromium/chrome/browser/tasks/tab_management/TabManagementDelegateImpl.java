@@ -35,7 +35,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -131,29 +131,35 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
 
         TabSwitcherPaneBase pane;
         if (isIncognito) {
-            Supplier<TabModelFilter> incongitorTabModelFilterSupplier =
-                    () -> tabModelSelector.getTabModelFilterProvider().getTabModelFilter(true);
+            Supplier<TabGroupModelFilter> incongitorTabGroupModelFilterSupplier =
+                    () ->
+                            tabModelSelector
+                                    .getTabGroupModelFilterProvider()
+                                    .getTabGroupModelFilter(true);
             pane =
                     new IncognitoTabSwitcherPane(
                             activity,
                             profileProviderSupplier,
                             factory,
-                            incongitorTabModelFilterSupplier,
+                            incongitorTabGroupModelFilterSupplier,
                             newTabButtonOnClickListener,
                             incognitoReauthControllerSupplier,
                             onToolbarAlphaChange,
                             userEducationHelper,
                             edgeToEdgeSupplier);
         } else {
-            Supplier<TabModelFilter> tabModelFilterSupplier =
-                    () -> tabModelSelector.getTabModelFilterProvider().getTabModelFilter(false);
+            Supplier<TabGroupModelFilter> tabGroupModelFilterSupplier =
+                    () ->
+                            tabModelSelector
+                                    .getTabGroupModelFilterProvider()
+                                    .getTabGroupModelFilter(false);
             pane =
                     new TabSwitcherPane(
                             activity,
                             ContextUtils.getAppSharedPreferences(),
                             profileProviderSupplier,
                             factory,
-                            tabModelFilterSupplier,
+                            tabGroupModelFilterSupplier,
                             newTabButtonOnClickListener,
                             new TabSwitcherPaneDrawableCoordinator(activity, tabModelSelector),
                             onToolbarAlphaChange,
@@ -173,15 +179,15 @@ public class TabManagementDelegateImpl implements TabManagementDelegate {
             @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
             @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
             @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
-        LazyOneshotSupplier<TabModelFilter> tabModelFilterSupplier =
+        LazyOneshotSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier =
                 LazyOneshotSupplier.fromSupplier(
                         () ->
                                 tabModelSelector
-                                        .getTabModelFilterProvider()
-                                        .getTabModelFilter(false));
+                                        .getTabGroupModelFilterProvider()
+                                        .getTabGroupModelFilter(false));
         return new TabGroupsPane(
                 context,
-                tabModelFilterSupplier,
+                tabGroupModelFilterSupplier,
                 onToolbarAlphaChange,
                 profileProviderSupplier,
                 () -> hubManagerSupplier.get().getPaneManager(),

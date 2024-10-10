@@ -118,8 +118,8 @@ public class LayoutManagerImpl
             };
     private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
 
-    // An observer for watching TabModelFilters changes events.
-    private TabModelObserver mTabModelFilterObserver;
+    // An observer for watching TabGroupModelFilters changes events.
+    private TabModelObserver mTabGroupModelFilterObserver;
 
     // External Observers
     private final ObserverList<LayoutStateObserver> mLayoutObservers = new ObserverList<>();
@@ -665,10 +665,10 @@ public class LayoutManagerImpl
 
         selector.getCurrentTabModelSupplier().addObserver(mCurrentTabModelObserver);
 
-        mTabModelFilterObserver = createTabModelObserver();
+        mTabGroupModelFilterObserver = createTabModelObserver();
         getTabModelSelector()
-                .getTabModelFilterProvider()
-                .addTabModelFilterObserver(mTabModelFilterObserver);
+                .getTabGroupModelFilterProvider()
+                .addTabGroupModelFilterObserver(mTabGroupModelFilterObserver);
     }
 
     @Override
@@ -683,10 +683,10 @@ public class LayoutManagerImpl
                     .getCurrentTabModelSupplier()
                     .removeObserver(mCurrentTabModelObserver);
         }
-        if (mTabModelFilterObserver != null) {
+        if (mTabGroupModelFilterObserver != null) {
             getTabModelSelector()
-                    .getTabModelFilterProvider()
-                    .removeTabModelFilterObserver(mTabModelFilterObserver);
+                    .getTabGroupModelFilterProvider()
+                    .removeTabGroupModelFilterObserver(mTabGroupModelFilterObserver);
         }
     }
 

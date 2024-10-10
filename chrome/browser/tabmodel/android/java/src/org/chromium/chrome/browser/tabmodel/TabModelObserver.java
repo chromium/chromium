@@ -14,8 +14,8 @@ import java.util.List;
 /**
  * An interface to be notified about changes to a TabModel.
  *
- * NOTE: Any changes to this interface including the addition of new methods should be applied to
- *       {@link TabModelFilter} and {@link TabModelObserverJniBridge}.
+ * <p>NOTE: Any changes to this interface including the addition of new methods should be applied to
+ * {@link TabGroupModelFilter} and {@link TabModelObserverJniBridge}.
  */
 public interface TabModelObserver {
     /**

@@ -80,10 +80,10 @@ public class ClosableTabListEditorTest {
         mSnackbarManager = sActivityTestRule.getActivity().getSnackbarManager();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    var currentTabModelFilterSupplier =
+                    var currentTabGroupModelFilterSupplier =
                             mTabModelSelector
-                                    .getTabModelFilterProvider()
-                                    .getCurrentTabModelFilterSupplier();
+                                    .getTabGroupModelFilterProvider()
+                                    .getCurrentTabGroupModelFilterSupplier();
                     mEdgeToEdgeSupplier = new ObservableSupplierImpl<>();
                     mTabListEditorCoordinator =
                             new TabListEditorCoordinator(
@@ -93,7 +93,7 @@ public class ClosableTabListEditorTest {
                                             .getCompositorViewHolderForTesting(),
                                     mParentView,
                                     sActivityTestRule.getActivity().getBrowserControlsManager(),
-                                    currentTabModelFilterSupplier,
+                                    currentTabGroupModelFilterSupplier,
                                     sActivityTestRule.getActivity().getTabContentManager(),
                                     mSetRecyclerViewPosition,
                                     getMode(),

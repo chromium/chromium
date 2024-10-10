@@ -13,7 +13,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroup.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupCollapsedUtils.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupColorUtils.java",
-    "java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupModelFilter.java",
+    "java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupModelFilterImpl.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupSyncIdUtils.java",
     "java/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupTitleUtils.java",
   ]
@@ -44,7 +44,7 @@ robolectric_library("junit") {
   sources = [
     "junit/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupCollapsedUtilsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupColorUtilsUnitTest.java",
-    "junit/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupModelFilterUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupModelFilterImplUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupSyncIdUtilsUnitTest.java",
     "junit/src/org/chromium/chrome/browser/tasks/tab_groups/TabGroupTitleUtilsUnitTest.java",
   ]

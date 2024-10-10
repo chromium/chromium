@@ -11,12 +11,12 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
-import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 
 import java.util.HashSet;
 import java.util.List;
@@ -36,8 +36,8 @@ public class TabGroupVisualDataManager {
         assert tabModelSelector.isTabStateInitialized();
         mTabModelSelector = tabModelSelector;
 
-        TabModelFilterProvider tabModelFilterProvider =
-                mTabModelSelector.getTabModelFilterProvider();
+        TabGroupModelFilterProvider tabGroupModelFilterProvider =
+                mTabModelSelector.getTabGroupModelFilterProvider();
 
         mTabModelObserver =
                 new TabModelObserver() {
@@ -144,17 +144,20 @@ public class TabGroupVisualDataManager {
                     }
                 };
 
-        tabModelFilterProvider.addTabModelFilterObserver(mTabModelObserver);
+        tabGroupModelFilterProvider.addTabGroupModelFilterObserver(mTabModelObserver);
 
-        ((TabGroupModelFilter) tabModelFilterProvider.getTabModelFilter(false))
+        tabGroupModelFilterProvider
+                .getTabGroupModelFilter(false)
                 .addTabGroupObserver(mFilterObserver);
-        ((TabGroupModelFilter) tabModelFilterProvider.getTabModelFilter(true))
+        tabGroupModelFilterProvider
+                .getTabGroupModelFilter(true)
                 .addTabGroupObserver(mFilterObserver);
     }
 
     private TabGroupModelFilter filterFromTab(Tab tab) {
-        return (TabGroupModelFilter)
-                mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(tab.isIncognito());
+        return mTabModelSelector
+                .getTabGroupModelFilterProvider()
+                .getTabGroupModelFilter(tab.isIncognito());
     }
 
     /** Overwrites the tab group metadata at the new id with the data from the old id. */
@@ -182,18 +185,20 @@ public class TabGroupVisualDataManager {
 
     /** Destroy any members that need clean up. */
     public void destroy() {
-        TabModelFilterProvider tabModelFilterProvider =
-                mTabModelSelector.getTabModelFilterProvider();
+        TabGroupModelFilterProvider tabGroupModelFilterProvider =
+                mTabModelSelector.getTabGroupModelFilterProvider();
 
         if (mTabModelObserver != null) {
-            tabModelFilterProvider.removeTabModelFilterObserver(mTabModelObserver);
+            tabGroupModelFilterProvider.removeTabGroupModelFilterObserver(mTabModelObserver);
             mTabModelObserver = null;
         }
 
         if (mFilterObserver != null) {
-            ((TabGroupModelFilter) tabModelFilterProvider.getTabModelFilter(false))
+            tabGroupModelFilterProvider
+                    .getTabGroupModelFilter(false)
                     .removeTabGroupObserver(mFilterObserver);
-            ((TabGroupModelFilter) tabModelFilterProvider.getTabModelFilter(true))
+            tabGroupModelFilterProvider
+                    .getTabGroupModelFilter(true)
                     .removeTabGroupObserver(mFilterObserver);
             mFilterObserver = null;
         }

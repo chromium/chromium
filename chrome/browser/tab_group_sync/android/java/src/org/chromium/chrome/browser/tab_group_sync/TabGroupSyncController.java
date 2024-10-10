@@ -10,9 +10,9 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.OpeningSource;
@@ -122,8 +122,7 @@ public final class TabGroupSyncController implements TabGroupUiActionHandler {
                         mTabCreatorManager.getTabCreator(/* incognito= */ false),
                         mNavigationTracker);
         mTabGroupModelFilter =
-                ((TabGroupModelFilter)
-                        tabModelSelector.getTabModelFilterProvider().getTabModelFilter(false));
+                tabModelSelector.getTabGroupModelFilterProvider().getTabGroupModelFilter(false);
 
         mLocalMutationHelper =
                 new LocalTabGroupMutationHelper(

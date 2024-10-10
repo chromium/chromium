@@ -56,7 +56,7 @@ public class MockTabModelSelector extends TabModelSelectorBase {
     public void initializeTabModels(
             TabModelInternal normalModel, IncognitoTabModelInternal incognitoModel) {
         destroy();
-        getTabModelFilterProvider().resetTabModelFilterListForTesting();
+        getTabGroupModelFilterProvider().resetTabGroupModelFilterListForTesting();
         initialize(normalModel, incognitoModel);
     }
 

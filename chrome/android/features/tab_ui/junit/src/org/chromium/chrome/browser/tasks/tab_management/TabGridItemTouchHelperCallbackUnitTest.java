@@ -54,9 +54,8 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -110,7 +109,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
     private TabGridItemTouchHelperCallback.OnLongPressTabItemEventListener
             mOnLongPressTabItemEventListener;
 
-    private final ObservableSupplierImpl<TabModelFilter> mTabModelFilterSupplier =
+    private final ObservableSupplierImpl<TabGroupModelFilter> mTabGroupModelFilterSupplier =
             new ObservableSupplierImpl<>();
 
     private SimpleRecyclerViewAdapter mSimpleAdapter;
@@ -150,7 +149,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         mItemView3 = prepareItemView(0, 5, 4, 9);
         mItemView4 = prepareItemView(5, 5, 9, 9);
 
-        mTabModelFilterSupplier.set(mTabGroupModelFilter);
+        mTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
         doReturn(mProfile).when(mTabModel).getProfile();
         doReturn(mTabModel).when(mTabGroupModelFilter).getTabModel();
         doReturn(tab1).when(mTabModel).getTabAt(POSITION1);
@@ -204,7 +203,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
                         ContextUtils.getApplicationContext(),
                         mTabGroupCreationDialogManager,
                         mModel,
-                        mTabModelFilterSupplier,
+                        mTabGroupModelFilterSupplier,
                         mTabClosedListener,
                         isDialog ? mTabGridDialogHandler : null,
                         "",

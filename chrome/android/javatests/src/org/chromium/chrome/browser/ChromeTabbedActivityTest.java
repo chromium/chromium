@@ -58,8 +58,8 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -576,11 +576,10 @@ public class ChromeTabbedActivityTest {
                                             TabLaunchType.FROM_LINK,
                                             null);
                             TabGroupModelFilter filter =
-                                    (TabGroupModelFilter)
-                                            mActivity
-                                                    .getTabModelSelector()
-                                                    .getTabModelFilterProvider()
-                                                    .getTabModelFilter(false);
+                                    mActivity
+                                            .getTabModelSelector()
+                                            .getTabGroupModelFilterProvider()
+                                            .getTabGroupModelFilter(false);
                             filter.createSingleTabGroup(newTab, false);
                             return newTab;
                         });

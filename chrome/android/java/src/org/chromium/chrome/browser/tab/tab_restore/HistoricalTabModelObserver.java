@@ -12,11 +12,10 @@ import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.ArrayList;
@@ -30,19 +29,19 @@ public class HistoricalTabModelObserver implements TabModelObserver {
     private final HistoricalTabSaver mHistoricalTabSaver;
 
     /**
-     * @param tabModelFilter The tab model filter to observe tab closures in.
+     * @param tabGroupModelFilter The tab model filter to observe tab closures in.
      */
-    public HistoricalTabModelObserver(TabModelFilter tabModelFilter) {
-        this(tabModelFilter, new HistoricalTabSaverImpl(tabModelFilter.getTabModel()));
+    public HistoricalTabModelObserver(TabGroupModelFilter tabGroupModelFilter) {
+        this(tabGroupModelFilter, new HistoricalTabSaverImpl(tabGroupModelFilter.getTabModel()));
     }
 
     @VisibleForTesting
     public HistoricalTabModelObserver(
-            TabModelFilter tabModelFilter, HistoricalTabSaver historicalTabSaver) {
-        mTabGroupModelFilter = (TabGroupModelFilter) tabModelFilter;
+            TabGroupModelFilter tabGroupModelFilter, HistoricalTabSaver historicalTabSaver) {
+        mTabGroupModelFilter = tabGroupModelFilter;
         mHistoricalTabSaver = historicalTabSaver;
 
-        tabModelFilter.addObserver(this);
+        tabGroupModelFilter.addObserver(this);
     }
 
     /** Removes observers. */

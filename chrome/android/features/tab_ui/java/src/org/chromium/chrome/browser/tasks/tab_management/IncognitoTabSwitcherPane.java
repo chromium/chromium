@@ -27,8 +27,8 @@ import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager.Incog
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -65,16 +65,17 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
 
                 @Override
                 public void onIncognitoReauthSuccess() {
-                    TabModelFilter incognitoTabModelFilter = mIncognitoTabModelFilterSupplier.get();
+                    TabGroupModelFilter incognitoTabGroupModelFilter =
+                            mIncognitoTabGroupModelFilterSupplier.get();
                     @Nullable
                     TabSwitcherPaneCoordinator coordinator = getTabSwitcherPaneCoordinator();
                     if (!getIsVisibleSupplier().get()
                             || coordinator == null
-                            || !incognitoTabModelFilter.isCurrentlySelectedFilter()) {
+                            || !incognitoTabGroupModelFilter.isCurrentlySelectedFilter()) {
                         return;
                     }
 
-                    coordinator.resetWithTabList(incognitoTabModelFilter);
+                    coordinator.resetWithTabList(incognitoTabGroupModelFilter);
                     coordinator.setInitialScrollIndexOffset();
                     coordinator.requestAccessibilityFocusOnCurrentTab();
 
@@ -86,7 +87,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
             };
 
     /** Not safe to use until initWithNative. */
-    private final @NonNull Supplier<TabModelFilter> mIncognitoTabModelFilterSupplier;
+    private final @NonNull Supplier<TabGroupModelFilter> mIncognitoTabGroupModelFilterSupplier;
 
     private final @NonNull ResourceButtonData mReferenceButtonData;
     private final @NonNull FullButtonData mEnabledNewTabButtonData;
@@ -100,7 +101,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
      * @param context The activity context.
      * @param profileProviderSupplier The profile provider supplier.
      * @param factory The factory used to construct {@link TabSwitcherPaneCoordinator}s.
-     * @param incognitoTabModelFilterSupplier The incognito tab model filter.
+     * @param incognitoTabGroupModelFilterSupplier The incognito tab model filter.
      * @param newTabButtonClickListener The {@link OnClickListener} for the new tab button.
      * @param incognitoReauthControllerSupplier Supplier for the incognito reauth controller.
      * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
@@ -111,7 +112,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
             @NonNull Context context,
             @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
             @NonNull TabSwitcherPaneCoordinatorFactory factory,
-            @NonNull Supplier<TabModelFilter> incognitoTabModelFilterSupplier,
+            @NonNull Supplier<TabGroupModelFilter> incognitoTabGroupModelFilterSupplier,
             @NonNull OnClickListener newTabButtonClickListener,
             @Nullable OneshotSupplier<IncognitoReauthController> incognitoReauthControllerSupplier,
             @NonNull DoubleConsumer onToolbarAlphaChange,
@@ -126,7 +127,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
                 userEducationHelper,
                 edgeToEdgeSupplier);
 
-        mIncognitoTabModelFilterSupplier = incognitoTabModelFilterSupplier;
+        mIncognitoTabGroupModelFilterSupplier = incognitoTabGroupModelFilterSupplier;
 
         // TODO(crbug.com/40946413): Update this string to not be an a11y string and it should
         // probably
@@ -204,12 +205,13 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
 
     @Override
     public void showAllTabs() {
-        resetWithTabList(mIncognitoTabModelFilterSupplier.get(), false);
+        resetWithTabList(mIncognitoTabGroupModelFilterSupplier.get(), false);
     }
 
     @Override
     public int getCurrentTabId() {
-        return TabModelUtils.getCurrentTabId(mIncognitoTabModelFilterSupplier.get().getTabModel());
+        return TabModelUtils.getCurrentTabId(
+                mIncognitoTabGroupModelFilterSupplier.get().getTabModel());
     }
 
     @Override
@@ -222,7 +224,7 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
         @Nullable TabSwitcherPaneCoordinator coordinator = getTabSwitcherPaneCoordinator();
         if (coordinator == null) return false;
 
-        @Nullable TabModelFilter filter = mIncognitoTabModelFilterSupplier.get();
+        @Nullable TabGroupModelFilter filter = mIncognitoTabGroupModelFilterSupplier.get();
         if (filter == null || !filter.isTabModelRestored()) {
             // The tab list is trying to show without the filter being ready. This happens when
             // first trying to show a the pane. If this happens an attempt to show will be made
@@ -286,9 +288,10 @@ public class IncognitoTabSwitcherPane extends TabSwitcherPaneBase {
     private IncognitoTabModel getIncognitoTabModel() {
         if (!mIsNativeInitialized) return null;
 
-        TabModelFilter incognitoTabModelFilter = mIncognitoTabModelFilterSupplier.get();
-        assert incognitoTabModelFilter != null;
-        return (IncognitoTabModel) incognitoTabModelFilter.getTabModel();
+        TabGroupModelFilter incognitoTabGroupModelFilter =
+                mIncognitoTabGroupModelFilterSupplier.get();
+        assert incognitoTabGroupModelFilter != null;
+        return (IncognitoTabModel) incognitoTabGroupModelFilter.getTabModel();
     }
 
     private void setNewTabButtonEnabledState(boolean enabled) {

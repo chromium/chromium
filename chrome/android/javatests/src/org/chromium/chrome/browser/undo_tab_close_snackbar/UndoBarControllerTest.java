@@ -28,8 +28,8 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -70,12 +70,11 @@ public class UndoBarControllerTest {
                 });
 
         mTabGroupModelFilter =
-                (TabGroupModelFilter)
-                        sActivityTestRule
-                                .getActivity()
-                                .getTabModelSelector()
-                                .getTabModelFilterProvider()
-                                .getTabModelFilter(false);
+                sActivityTestRule
+                        .getActivity()
+                        .getTabModelSelector()
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(false);
         mTabModel = mTabGroupModelFilter.getTabModel();
     }
 

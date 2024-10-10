@@ -348,8 +348,8 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         mHistoricalTabModelObserver =
                 new HistoricalTabModelObserver(
                         getTabModelSelector()
-                                .getTabModelFilterProvider()
-                                .getTabModelFilter(/* isIncognito= */ false));
+                                .getTabGroupModelFilterProvider()
+                                .getTabGroupModelFilter(/* isIncognito= */ false));
     }
 
     /** Begins the process of decluttering tabs if it hasn't been started already. */

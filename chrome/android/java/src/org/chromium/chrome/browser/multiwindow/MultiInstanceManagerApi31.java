@@ -53,12 +53,12 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
@@ -847,11 +847,11 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
             //
             // TODO(crbug.com/40826734): This only works for windows with live activities. It is
             // non-trivial to add recent tab entries without an active {@link Tab} instance.
-            var filterProvider = selector.getTabModelFilterProvider();
+            var filterProvider = selector.getTabGroupModelFilterProvider();
             TabClosureParams params =
                     TabClosureParams.closeAllTabs().uponExit(true).hideTabGroups(true).build();
-            ((TabGroupModelFilter) filterProvider.getTabModelFilter(true)).closeTabs(params);
-            ((TabGroupModelFilter) filterProvider.getTabModelFilter(false)).closeTabs(params);
+            filterProvider.getTabGroupModelFilter(true).closeTabs(params);
+            filterProvider.getTabGroupModelFilter(false).closeTabs(params);
         }
         mTabModelOrchestratorSupplier.get().cleanupInstance(instanceId);
         Activity activity = getActivityById(instanceId);
@@ -1093,7 +1093,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         assert selector != null;
 
         TabGroupModelFilter filter =
-                (TabGroupModelFilter) selector.getTabModelFilterProvider().getTabModelFilter(false);
+                selector.getTabGroupModelFilterProvider().getTabGroupModelFilter(false);
 
         Profile profile = filter.getTabModel().getProfile();
         if (!TabGroupSyncFeatures.isTabGroupSyncEnabled(profile)) return;

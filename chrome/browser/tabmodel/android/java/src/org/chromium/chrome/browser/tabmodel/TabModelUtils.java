@@ -277,10 +277,10 @@ public class TabModelUtils {
     }
 
     /**
-     * @param tab The {@link Tab} to find the {@link TabModelFilter} for.
-     * @return the associated {@link TabModelFilter} if found.
+     * @param tab The {@link Tab} to find the {@link TabGroupModelFilter} for.
+     * @return the associated {@link TabGroupModelFilter} if found.
      */
-    public static TabModelFilter getTabModelFilterByTab(@NonNull Tab tab) {
+    public static TabGroupModelFilter getTabGroupModelFilterByTab(@NonNull Tab tab) {
         final WindowAndroid windowAndroid = tab.getWindowAndroid();
         if (windowAndroid == null) return null;
 
@@ -290,8 +290,8 @@ public class TabModelUtils {
         if (archivedTabModelSelector != null
                 && archivedTabModelSelector.getTabById(tab.getId()) != null) {
             return archivedTabModelSelector
-                    .getTabModelFilterProvider()
-                    .getTabModelFilter(/* isIncognito= */ false);
+                    .getTabGroupModelFilterProvider()
+                    .getTabGroupModelFilter(/* isIncognito= */ false);
         }
 
         final ObservableSupplier<TabModelSelector> supplier =
@@ -301,7 +301,7 @@ public class TabModelUtils {
         final TabModelSelector selector = supplier.get();
         if (selector == null) return null;
 
-        return selector.getTabModelFilterProvider().getTabModelFilter(tab.isIncognito());
+        return selector.getTabGroupModelFilterProvider().getTabGroupModelFilter(tab.isIncognito());
     }
 
     /** Converts a {@link TabList} to a {@link List<Tab>}. A null input returns an empty list. */

@@ -92,7 +92,8 @@ public class ArchivedTabModelSelectorImplTest {
                         realAsyncTabParamsManager);
         assertTrue(currentTabModelSupplierHasObservers());
         assertNull(mTabModelSelector.getCurrentTabModelSupplier().get());
-        assertNull(mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter());
+        assertNull(
+                mTabModelSelector.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter());
 
         mTabCreatorManager.initialize(mTabModelSelector);
         mTabModelSelector.onNativeLibraryReadyInternal(
@@ -109,8 +110,8 @@ public class ArchivedTabModelSelectorImplTest {
         assertEquals(
                 mTabModelSelector.getCurrentModel(),
                 mTabModelSelector
-                        .getTabModelFilterProvider()
-                        .getCurrentTabModelFilter()
+                        .getTabGroupModelFilterProvider()
+                        .getCurrentTabGroupModelFilter()
                         .getTabModel());
     }
 
@@ -139,8 +140,8 @@ public class ArchivedTabModelSelectorImplTest {
         assertEquals(
                 mTabModelSelector.getModel(false),
                 mTabModelSelector
-                        .getTabModelFilterProvider()
-                        .getCurrentTabModelFilter()
+                        .getTabGroupModelFilterProvider()
+                        .getCurrentTabGroupModelFilter()
                         .getTabModel());
         ShadowLooper.runUiThreadTasks();
         verify(mTabSupplierObserverMock).onResult(eq(normalTab));

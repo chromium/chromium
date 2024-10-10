@@ -88,7 +88,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-/** Tests for {@link TabGroupModelFilter}. */
+/** Tests for {@link TabGroupModelFilterImpl}. */
 @SuppressWarnings("ResultOfMethodCallIgnored")
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -96,7 +96,7 @@ import java.util.Set;
     ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
     ChromeFeatureList.TAB_STRIP_GROUP_COLLAPSE
 })
-public class TabGroupModelFilterUnitTest {
+public class TabGroupModelFilterImplUnitTest {
     private static final int TAB1_ID = 11;
     private static final int TAB2_ID = 12;
     private static final int TAB3_ID = 13;
@@ -167,7 +167,7 @@ public class TabGroupModelFilterUnitTest {
     private Tab mTab6;
     private List<Tab> mTabs = new ArrayList<>();
 
-    private TabGroupModelFilter mTabGroupModelFilter;
+    private TabGroupModelFilterImpl mTabGroupModelFilter;
     private InOrder mTabModelInOrder;
     private InOrder mModelAndObserverInOrder;
 
@@ -304,7 +304,7 @@ public class TabGroupModelFilterUnitTest {
     private void setupTabGroupModelFilter(boolean isTabRestoreCompleted, boolean isIncognito) {
         mTabs.clear();
         doReturn(isIncognito).when(mTabModel).isIncognito();
-        mTabGroupModelFilter = new TabGroupModelFilter(mTabModel);
+        mTabGroupModelFilter = new TabGroupModelFilterImpl(mTabModel);
         mTabGroupModelFilter.addTabGroupObserver(mTabGroupModelFilterObserver);
 
         doReturn(isIncognito).when(mTab1).isIncognito();
@@ -409,7 +409,7 @@ public class TabGroupModelFilterUnitTest {
 
     @Before
     public void setUp() {
-        TabGroupModelFilter.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(false);
+        TabGroupModelFilterImpl.SKIP_TAB_GROUP_CREATION_DIALOG.setForTesting(false);
         // After setUp, TabModel has 6 tabs in the following order: mTab1, mTab2, mTab3, mTab4,
         // mTab5, mTab6. While mTab2 and mTab3 are in a group, and mTab5 and mTab6 are in a separate
         // group.
@@ -637,7 +637,7 @@ public class TabGroupModelFilterUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void addTab_TabLaunchedFromLongPressBackgroundInGroupToExistingGroup() {
-        TabGroupModelFilter.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
+        TabGroupModelFilterImpl.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
 
         Tab newTab = prepareTab(NEW_TAB_ID_0, NEW_TAB_ID_0, null, TAB1_ID);
         doReturn(TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP).when(newTab).getLaunchType();
@@ -957,7 +957,7 @@ public class TabGroupModelFilterUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void moveTabOutOfGroup_LastTab_WithTabGroupId() {
-        TabGroupModelFilter.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
+        TabGroupModelFilterImpl.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
 
         List<Tab> expectedTabModelBeforeUngroup =
                 new ArrayList<>(Arrays.asList(mTab1, mTab2, mTab3, mTab4, mTab5, mTab6));
@@ -1131,7 +1131,7 @@ public class TabGroupModelFilterUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void mergeOneTabToTab_Forward() {
-        TabGroupModelFilter.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
+        TabGroupModelFilterImpl.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
 
         List<Tab> expectedGroup = new ArrayList<>(Arrays.asList(mTab1, mTab4));
         List<Tab> expectedTabModel =
@@ -1218,7 +1218,7 @@ public class TabGroupModelFilterUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void mergeOneTabToTab_Backward() {
-        TabGroupModelFilter.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
+        TabGroupModelFilterImpl.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
 
         List<Tab> expectedGroup = new ArrayList<>(Arrays.asList(mTab4, mTab1));
         List<Tab> expectedTabModel =
@@ -1336,7 +1336,7 @@ public class TabGroupModelFilterUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void mergeListOfTabsToGroup_AllForward() {
-        TabGroupModelFilter.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
+        TabGroupModelFilterImpl.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
 
         Tab newTab = addTabToTabModel();
         List<Tab> tabsToMerge = new ArrayList<>(Arrays.asList(mTab4, newTab));
@@ -1367,7 +1367,7 @@ public class TabGroupModelFilterUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void mergeListOfTabsToGroup_AnyDirection() {
-        TabGroupModelFilter.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
+        TabGroupModelFilterImpl.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
 
         Tab newTab = addTabToTabModel();
         List<Tab> tabsToMerge = new ArrayList<>(Arrays.asList(mTab1, newTab));
@@ -1398,7 +1398,7 @@ public class TabGroupModelFilterUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void mergeListOfTabsToGroup_InOrder() {
-        TabGroupModelFilter.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
+        TabGroupModelFilterImpl.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
 
         Tab newTab0 = prepareTab(NEW_TAB_ID_0, NEW_TAB_ID_0, null, Tab.INVALID_TAB_ID);
         addTabToTabModel(-1, newTab0);
@@ -1521,7 +1521,7 @@ public class TabGroupModelFilterUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void merge_OtherGroupsLastShownIdUnchanged() {
-        TabGroupModelFilter.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
+        TabGroupModelFilterImpl.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
 
         List<Tab> expectedGroup = new ArrayList<>(Arrays.asList(mTab1, mTab4));
         List<Tab> expectedTabModel =
@@ -1674,7 +1674,7 @@ public class TabGroupModelFilterUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void undoGroupedTab_Forward_UpdateTabModel() {
-        TabGroupModelFilter.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
+        TabGroupModelFilterImpl.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
 
         List<Tab> expectedTabModel =
                 new ArrayList<>(Arrays.asList(mTab1, mTab2, mTab3, mTab4, mTab5, mTab6));
@@ -1717,7 +1717,7 @@ public class TabGroupModelFilterUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void undoGroupedTab_Backward_UpdateTabModel() {
-        TabGroupModelFilter.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
+        TabGroupModelFilterImpl.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
 
         List<Tab> expectedTabModel =
                 new ArrayList<>(Arrays.asList(mTab1, mTab2, mTab3, mTab4, mTab5, mTab6));
@@ -2148,7 +2148,7 @@ public class TabGroupModelFilterUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void mergeTabToTab_notifyFilterObserver() {
-        TabGroupModelFilter.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
+        TabGroupModelFilterImpl.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
 
         // Override the setup behaviour for color SharedPreferences since after #didCreateNewGroup
         // is emitted, a color will have been set.
@@ -2180,7 +2180,7 @@ public class TabGroupModelFilterUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_CREATION_DIALOG_ANDROID)
     public void mergeTabToTab_doNotNotifyFilterObserver() {
-        TabGroupModelFilter.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
+        TabGroupModelFilterImpl.SHOW_TAB_GROUP_CREATION_DIALOG_SETTING.setForTesting(false);
 
         Token tabGroupId = new Token(33L, 28L);
         when(mTokenJniMock.createRandom()).thenReturn(tabGroupId);

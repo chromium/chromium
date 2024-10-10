@@ -41,8 +41,8 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -416,18 +416,11 @@ public class TabStripGroupContextMenuTest {
     }
 
     private TabGroupModelFilter getTabGroupModelFilter(boolean isIncognito) {
-        assert mActivityTestRule
-                        .getActivity()
-                        .getTabModelSelector()
-                        .getTabModelFilterProvider()
-                        .getTabModelFilter(isIncognito)
-                instanceof TabGroupModelFilter;
-        return (TabGroupModelFilter)
-                mActivityTestRule
-                        .getActivity()
-                        .getTabModelSelector()
-                        .getTabModelFilterProvider()
-                        .getTabModelFilter(isIncognito);
+        return mActivityTestRule
+                .getActivity()
+                .getTabModelSelector()
+                .getTabGroupModelFilterProvider()
+                .getTabGroupModelFilter(isIncognito);
     }
 
     private void verifyModalDialog(boolean shouldShow) {

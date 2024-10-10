@@ -76,9 +76,9 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
@@ -401,14 +401,10 @@ public class TabUiTestHelper {
             tabGroup.add(tabModel.getTabAt(i));
         }
         createTabGroup(cta, isIncognito, tabGroup);
-        assertTrue(
-                cta.getTabModelSelector().getTabModelFilterProvider().getCurrentTabModelFilter()
-                        instanceof TabGroupModelFilter);
         TabGroupModelFilter filter =
-                (TabGroupModelFilter)
-                        cta.getTabModelSelector()
-                                .getTabModelFilterProvider()
-                                .getTabModelFilter(isIncognito);
+                cta.getTabModelSelector()
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(isIncognito);
         assertEquals(1, filter.getCount());
     }
 
@@ -472,20 +468,18 @@ public class TabUiTestHelper {
 
     /**
      * Create a tab group using {@code tabs}.
-     * @param cta             The current running activity.
-     * @param isIncognito     Whether the group is in normal model or incognito model.
-     * @param tabs            A list of {@link Tab} to create group.
+     *
+     * @param cta The current running activity.
+     * @param isIncognito Whether the group is in normal model or incognito model.
+     * @param tabs A list of {@link Tab} to create group.
      */
     public static void createTabGroup(
             ChromeTabbedActivity cta, boolean isIncognito, List<Tab> tabs) {
         if (tabs.size() == 0) return;
-        assert cta.getTabModelSelector().getTabModelFilterProvider().getCurrentTabModelFilter()
-                instanceof TabGroupModelFilter;
         TabGroupModelFilter filter =
-                (TabGroupModelFilter)
-                        cta.getTabModelSelector()
-                                .getTabModelFilterProvider()
-                                .getTabModelFilter(isIncognito);
+                cta.getTabModelSelector()
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(isIncognito);
         Tab rootTab = tabs.get(0);
         for (int i = 1; i < tabs.size(); i++) {
             Tab tab = tabs.get(i);

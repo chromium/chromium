@@ -114,10 +114,10 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
     }
 
     private int getValidPositionConsideringRelatedTabs(Tab newTab, int position) {
-        TabModelFilter filter =
+        TabGroupModelFilter filter =
                 mTabModelSelector
-                        .getTabModelFilterProvider()
-                        .getTabModelFilter(newTab.isIncognito());
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(newTab.isIncognito());
         return filter.getValidPosition(newTab, position);
     }
 

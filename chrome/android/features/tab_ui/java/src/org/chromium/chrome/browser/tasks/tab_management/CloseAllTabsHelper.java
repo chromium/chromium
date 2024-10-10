@@ -13,7 +13,6 @@ import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,8 +22,9 @@ public class CloseAllTabsHelper {
     /** Closes all tabs hiding tab groups. */
     public static void closeAllTabsHidingTabGroups(
             TabModelSelector tabModelSelector, TabCreator regularTabCreator) {
-        var filterProvider = tabModelSelector.getTabModelFilterProvider();
-        ((TabGroupModelFilter) filterProvider.getTabModelFilter(true))
+        var filterProvider = tabModelSelector.getTabGroupModelFilterProvider();
+        filterProvider
+                .getTabGroupModelFilter(true)
                 .closeTabs(TabClosureParams.closeAllTabs().hideTabGroups(true).build());
 
         Runnable undoRunnable = () -> {};
@@ -40,7 +40,8 @@ public class CloseAllTabsHelper {
                                     tabModelSelector.getModel(/* incognito= */ false),
                                     previouslyArchivedTabIds);
         }
-        ((TabGroupModelFilter) filterProvider.getTabModelFilter(false))
+        filterProvider
+                .getTabGroupModelFilter(false)
                 .closeTabs(
                         TabClosureParams.closeAllTabs()
                                 .hideTabGroups(true)

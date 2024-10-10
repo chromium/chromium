@@ -552,8 +552,8 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
                         mBrowserControlsStateProvider,
                         mArchivedTabModelOrchestrator
                                 .getTabModelSelector()
-                                .getTabModelFilterProvider()
-                                .getCurrentTabModelFilterSupplier(),
+                                .getTabGroupModelFilterProvider()
+                                .getCurrentTabGroupModelFilterSupplier(),
                         mTabContentManager,
                         /* clientTabListRecyclerViewPositionSetter= */ null,
                         mMode,

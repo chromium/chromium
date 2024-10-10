@@ -45,12 +45,11 @@ import org.chromium.chrome.browser.tab_group_sync.messaging.MessagingBackendServ
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
@@ -175,14 +174,14 @@ public class TabGridDialogMediator
         View getAnimationSourceViewForTab(int tabId);
     }
 
-    private final ValueChangedCallback<TabModelFilter> mOnTabModelFilterChanged =
-            new ValueChangedCallback<>(this::onTabModelFilterChanged);
+    private final ValueChangedCallback<TabGroupModelFilter> mOnTabGroupModelFilterChanged =
+            new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
     private final Callback<Integer> mOnGroupSharedStateChanged = this::onGroupSharedStateChanged;
     private final Callback<String> mOnCollaborationIdChanged = this::onCollaborationIdChanged;
     private final Activity mActivity;
     private final DialogController mDialogController;
     private final PropertyModel mModel;
-    private final ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
+    private final ObservableSupplier<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier;
     private final TabCreatorManager mTabCreatorManager;
     private final @Nullable TabSwitcherResetHandler mTabSwitcherResetHandler;
     private final Supplier<RecyclerViewPosition> mRecyclerViewPositionSupplier;
@@ -221,7 +220,7 @@ public class TabGridDialogMediator
             Activity activity,
             DialogController dialogController,
             PropertyModel model,
-            ObservableSupplier<TabModelFilter> currentTabModelFilterSupplier,
+            ObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
             TabCreatorManager tabCreatorManager,
             @Nullable TabSwitcherResetHandler tabSwitcherResetHandler,
             Supplier<RecyclerViewPosition> recyclerViewPositionSupplier,
@@ -237,7 +236,7 @@ public class TabGridDialogMediator
         mActivity = activity;
         mDialogController = dialogController;
         mModel = model;
-        mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
+        mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
         mTabCreatorManager = tabCreatorManager;
         mTabSwitcherResetHandler = tabSwitcherResetHandler;
         mRecyclerViewPositionSupplier = recyclerViewPositionSupplier;
@@ -251,7 +250,7 @@ public class TabGridDialogMediator
         mActionConfirmationManager = actionConfirmationManager;
         mModalDialogManager = modalDialogManager;
         mOriginalProfile =
-                mCurrentTabModelFilterSupplier
+                mCurrentTabGroupModelFilterSupplier
                         .get()
                         .getTabModel()
                         .getProfile()
@@ -309,7 +308,7 @@ public class TabGridDialogMediator
                             boolean markedForSelection) {
                         if (!isVisible()) return;
 
-                        TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
+                        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
                         if (filter == null || !filter.isTabModelRestored()) {
                             return;
                         }
@@ -500,8 +499,8 @@ public class TabGridDialogMediator
                     }
                 };
 
-        mOnTabModelFilterChanged.onResult(
-                mCurrentTabModelFilterSupplier.addObserver(mOnTabModelFilterChanged));
+        mOnTabGroupModelFilterChanged.onResult(
+                mCurrentTabGroupModelFilterSupplier.addObserver(mOnTabGroupModelFilterChanged));
 
         // Setup ScrimView click Runnable.
         mScrimClickRunnable =
@@ -527,8 +526,6 @@ public class TabGridDialogMediator
             TabGroupTitleEditor tabGroupTitleEditor) {
         mTabListEditorControllerSupplier = tabListEditorControllerSupplier;
         mTabGroupTitleEditor = tabGroupTitleEditor;
-
-        assert mCurrentTabModelFilterSupplier.get() instanceof TabGroupModelFilter;
 
         setupToolbarClickHandlers();
         setupToolbarEditText();
@@ -609,7 +606,7 @@ public class TabGridDialogMediator
     }
 
     void onReset(@Nullable List<Tab> tabs) {
-        TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
+        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
         if (tabs == null) {
             mCurrentTabId = Tab.INVALID_TAB_ID;
         } else {
@@ -642,8 +639,8 @@ public class TabGridDialogMediator
 
     /** Destroy any members that needs clean up. */
     public void destroy() {
-        removeTabModelFilterObserver(mCurrentTabModelFilterSupplier.get());
-        mCurrentTabModelFilterSupplier.removeObserver(mOnTabModelFilterChanged);
+        removeTabGroupModelFilterObserver(mCurrentTabGroupModelFilterSupplier.get());
+        mCurrentTabGroupModelFilterSupplier.removeObserver(mOnTabGroupModelFilterChanged);
         KeyboardVisibilityDelegate.getInstance()
                 .removeKeyboardVisibilityListener(mKeyboardVisibilityListener);
         if (mTransitiveSharedGroupObserver != null) {
@@ -670,7 +667,7 @@ public class TabGridDialogMediator
     void setSelectedTabGroupColor(int selectedColor) {
         mModel.set(TabGridDialogProperties.TAB_GROUP_COLOR_ID, selectedColor);
 
-        TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
         Tab currentTab = filter.getTabModel().getTabById(mCurrentTabId);
 
         if (currentTab != null) {
@@ -680,7 +677,7 @@ public class TabGridDialogMediator
 
     private void updateGridTabSwitcher() {
         if (!isVisible() || mTabSwitcherResetHandler == null) return;
-        mTabSwitcherResetHandler.resetWithTabList(mCurrentTabModelFilterSupplier.get(), false);
+        mTabSwitcherResetHandler.resetWithTabList(mCurrentTabGroupModelFilterSupplier.get(), false);
     }
 
     private void updateDialog() {
@@ -700,7 +697,7 @@ public class TabGridDialogMediator
                 TabGridDialogProperties.DIALOG_UNGROUP_BAR_TEXT, res.getString(ungroupBarTextId));
 
         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-            TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+            TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
             Tab currentTab = filter.getTabModel().getTabById(mCurrentTabId);
             final @TabGroupColorId int color =
                     filter.getTabGroupColorWithFallback(currentTab.getRootId());
@@ -712,7 +709,7 @@ public class TabGridDialogMediator
     private void updateTitle(int tabsCount) {
         Resources res = mActivity.getResources();
 
-        TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
         Tab currentTab = filter.getTabModel().getTabById(mCurrentTabId);
         if (mTabGroupTitleEditor != null) {
             String storedTitle = mTabGroupTitleEditor.getTabGroupTitle(currentTab.getRootId());
@@ -796,7 +793,7 @@ public class TabGridDialogMediator
 
     private void updateDialogScrollPosition() {
         // If current selected tab is not within this dialog, always scroll to the top.
-        Tab currentTab = TabModelUtils.getCurrentTab(mCurrentTabModelFilterSupplier.get());
+        Tab currentTab = TabModelUtils.getCurrentTab(mCurrentTabGroupModelFilterSupplier.get());
         if (mCurrentTabId != getIdForTab(currentTab)) {
             mModel.set(TabGridDialogProperties.INITIAL_SCROLL_INDEX, 0);
             return;
@@ -903,7 +900,7 @@ public class TabGridDialogMediator
         return view -> {
             // Get the current Tab first since hideDialog causes mCurrentTabId to be
             // Tab.INVALID_TAB_ID.
-            TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
+            TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
             Tab currentTab = filter.getTabModel().getTabById(mCurrentTabId);
             hideDialog(false);
 
@@ -919,7 +916,7 @@ public class TabGridDialogMediator
             }
 
             TabUiUtils.openNtpInGroup(
-                    (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
+                    mCurrentTabGroupModelFilterSupplier.get(),
                     mTabCreatorManager.getTabCreator(filter.isIncognito()),
                     currentTab.getId(),
                     TabLaunchType.FROM_TAB_GROUP_UI);
@@ -963,7 +960,7 @@ public class TabGridDialogMediator
                 RecordUserAction.record("TabGridDialogMenu.Delete");
             }
             TabUiUtils.closeTabGroup(
-                    (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
+                    mCurrentTabGroupModelFilterSupplier.get(),
                     mActionConfirmationManager,
                     tabId,
                     hideTabGroups,
@@ -973,7 +970,7 @@ public class TabGridDialogMediator
             RecordUserAction.record("TabGridDialogMenu.DeleteShared");
             TabUiUtils.deleteSharedTabGroup(
                     mActivity,
-                    (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
+                    mCurrentTabGroupModelFilterSupplier.get(),
                     mActionConfirmationManager,
                     mModalDialogManager,
                     tabId);
@@ -981,7 +978,7 @@ public class TabGridDialogMediator
             RecordUserAction.record("TabGridDialogMenu.LeaveShared");
             TabUiUtils.leaveTabGroup(
                     mActivity,
-                    (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
+                    mCurrentTabGroupModelFilterSupplier.get(),
                     mActionConfirmationManager,
                     mModalDialogManager,
                     tabId);
@@ -1000,7 +997,7 @@ public class TabGridDialogMediator
             mTabGridDialogMenuCoordinator =
                     new TabGridDialogMenuCoordinator(
                             this::onToolbarMenuItemClick,
-                            () -> mCurrentTabModelFilterSupplier.get().getTabModel(),
+                            () -> mCurrentTabGroupModelFilterSupplier.get().getTabModel(),
                             () -> mCurrentTabId,
                             isTabGroupSyncEnabled,
                             identityManager,
@@ -1023,7 +1020,7 @@ public class TabGridDialogMediator
         mModel.set(TabGridDialogProperties.IS_SHARE_SHEET_VISIBLE, true);
 
         String tabGroupDisplayName = mModel.get(TabGridDialogProperties.HEADER_TITLE);
-        TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
 
         TabUiUtils.startShareTabGroupFlow(
                 mActivity,
@@ -1039,7 +1036,7 @@ public class TabGridDialogMediator
     private void updateTabGroupId() {
         if (mTransitiveSharedGroupObserver == null) return;
 
-        boolean isIncognitoBranded = mCurrentTabModelFilterSupplier.get().isIncognitoBranded();
+        boolean isIncognitoBranded = mCurrentTabGroupModelFilterSupplier.get().isIncognitoBranded();
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
                 || isIncognitoBranded
                 || mCurrentTabId == Tab.INVALID_TAB_ID) {
@@ -1047,7 +1044,7 @@ public class TabGridDialogMediator
             return;
         }
 
-        TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
         Tab tab = filter.getTabModel().getTabById(mCurrentTabId);
         mTransitiveSharedGroupObserver.setTabGroupId(tab.getTabGroupId());
     }
@@ -1071,7 +1068,7 @@ public class TabGridDialogMediator
     private boolean shouldShowShareButton() {
         // TODO(crbug.com/360184707): Check DataSharingService configuration to see whether to show
         // the share button.
-        return !mCurrentTabModelFilterSupplier.get().isIncognitoBranded();
+        return !mCurrentTabGroupModelFilterSupplier.get().isIncognitoBranded();
     }
 
     private void onGroupSharedStateChanged(@Nullable @GroupSharedState Integer groupSharedState) {
@@ -1087,11 +1084,11 @@ public class TabGridDialogMediator
     }
 
     private List<Tab> getRelatedTabs(int tabId) {
-        return mCurrentTabModelFilterSupplier.get().getRelatedTabList(tabId);
+        return mCurrentTabGroupModelFilterSupplier.get().getRelatedTabList(tabId);
     }
 
     private void saveCurrentGroupModifiedTitle() {
-        TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
+        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
         Tab currentTab = filter.getTabModel().getTabById(mCurrentTabId);
         // When current group no longer exists, skip saving the title.
         if (currentTab == null || !filter.isTabInTabGroup(currentTab)) {
@@ -1151,13 +1148,13 @@ public class TabGridDialogMediator
     public void onAction(Object actionData) {
         if (actionData instanceof Integer) {
             int tabId = (Integer) actionData;
-            TabModel model = mCurrentTabModelFilterSupplier.get().getTabModel();
+            TabModel model = mCurrentTabGroupModelFilterSupplier.get().getTabModel();
 
             model.cancelTabClosure(tabId);
         } else {
             List<Tab> tabs = (List<Tab>) actionData;
             if (tabs.isEmpty()) return;
-            TabModel model = mCurrentTabModelFilterSupplier.get().getTabModel();
+            TabModel model = mCurrentTabGroupModelFilterSupplier.get().getTabModel();
 
             for (Tab tab : tabs) {
                 model.cancelTabClosure(tab.getId());
@@ -1169,14 +1166,14 @@ public class TabGridDialogMediator
     public void onDismissNoAction(Object actionData) {
         if (actionData instanceof Integer) {
             int tabId = (Integer) actionData;
-            TabModel model = mCurrentTabModelFilterSupplier.get().getTabModel();
+            TabModel model = mCurrentTabGroupModelFilterSupplier.get().getTabModel();
 
             model.commitTabClosure(tabId);
         } else {
             List<Tab> tabs = (List<Tab>) actionData;
             if (tabs.isEmpty()) return;
 
-            TabModel model = mCurrentTabModelFilterSupplier.get().getTabModel();
+            TabModel model = mCurrentTabGroupModelFilterSupplier.get().getTabModel();
 
             for (Tab tab : tabs) {
                 model.commitTabClosure(tab.getId());
@@ -1202,27 +1199,27 @@ public class TabGridDialogMediator
         return true;
     }
 
-    private void onTabModelFilterChanged(
-            @Nullable TabModelFilter newFilter, @Nullable TabModelFilter oldFilter) {
-        removeTabModelFilterObserver(oldFilter);
+    private void onTabGroupModelFilterChanged(
+            @Nullable TabGroupModelFilter newFilter, @Nullable TabGroupModelFilter oldFilter) {
+        removeTabGroupModelFilterObserver(oldFilter);
 
         if (newFilter != null) {
             boolean isIncognito = newFilter.isIncognito();
             updateColorProperties(mActivity, isIncognito);
             newFilter.addObserver(mTabModelObserver);
-            ((TabGroupModelFilter) newFilter).addTabGroupObserver(mTabGroupModelFilterObserver);
+            newFilter.addTabGroupObserver(mTabGroupModelFilterObserver);
         }
     }
 
-    private void removeTabModelFilterObserver(@Nullable TabModelFilter filter) {
+    private void removeTabGroupModelFilterObserver(@Nullable TabGroupModelFilter filter) {
         if (filter != null) {
             filter.removeObserver(mTabModelObserver);
-            ((TabGroupModelFilter) filter).removeTabGroupObserver(mTabGroupModelFilterObserver);
+            filter.removeTabGroupObserver(mTabGroupModelFilterObserver);
         }
     }
 
     private boolean currentTabRootIdMatchesRootId(int rootId) {
-        Tab tab = mCurrentTabModelFilterSupplier.get().getTabModel().getTabById(mCurrentTabId);
+        Tab tab = mCurrentTabGroupModelFilterSupplier.get().getTabModel().getTabById(mCurrentTabId);
         return tab != null && tab.getRootId() == rootId;
     }
 
@@ -1276,7 +1273,7 @@ public class TabGridDialogMediator
     }
 
     private @Nullable Token getCurrentTabGroupId() {
-        TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
         Tab tab = filter.getTabModel().getTabById(mCurrentTabId);
         return tab == null ? null : tab.getTabGroupId();
     }

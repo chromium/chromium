@@ -71,8 +71,8 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -331,10 +331,9 @@ public class TabGroupUiTest {
                                             null,
                                             TabModel.INVALID_TAB_INDEX);
                     TabGroupModelFilter filter =
-                            (TabGroupModelFilter)
-                                    cta.getTabModelSelector()
-                                            .getTabModelFilterProvider()
-                                            .getTabModelFilter(false);
+                            cta.getTabModelSelector()
+                                    .getTabGroupModelFilterProvider()
+                                    .getTabGroupModelFilter(false);
                     filter.mergeListOfTabsToGroup(
                             List.of(tab), filter.getTabAt(0), /* notify= */ false);
                 });

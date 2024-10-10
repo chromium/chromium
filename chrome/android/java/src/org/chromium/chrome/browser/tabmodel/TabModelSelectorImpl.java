@@ -22,7 +22,6 @@ import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
@@ -189,9 +188,8 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
 
                     // Do not currently support moving grouped tabs.
                     TabGroupModelFilter filter =
-                            (TabGroupModelFilter)
-                                    getTabModelFilterProvider()
-                                            .getTabModelFilter(tab.isIncognito());
+                            getTabGroupModelFilterProvider()
+                                    .getTabGroupModelFilter(tab.isIncognito());
                     if (filter.isTabInTabGroup(tab)) {
                         filter.moveTabOutOfGroupInDirection(tab.getId(), /* trailing= */ true);
                     }

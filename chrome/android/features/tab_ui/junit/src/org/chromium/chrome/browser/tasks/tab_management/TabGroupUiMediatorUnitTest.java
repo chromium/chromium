@@ -81,12 +81,12 @@ import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStateObserver;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.data_sharing.DataSharingService;
@@ -142,7 +142,7 @@ public class TabGroupUiMediatorUnitTest {
     @Mock private IncognitoStateProvider mIncognitoStateProvider;
     @Mock private TabModel mTabModel;
     @Mock private View mView;
-    @Mock private TabModelFilterProvider mTabModelFilterProvider;
+    @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabGridDialogMediator.DialogController mTabGridDialogController;
     @Mock private ObservableSupplier<Boolean> mOmniboxFocusStateSupplier;
@@ -338,14 +338,20 @@ public class TabGroupUiMediatorUnitTest {
         doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(mTab2);
         doReturn(true).when(mTabGroupModelFilter).isTabInTabGroup(mTab3);
 
-        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getCurrentTabModelFilter();
-        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getTabModelFilter(true);
-        doReturn(mTabGroupModelFilter).when(mTabModelFilterProvider).getTabModelFilter(false);
+        doReturn(mTabGroupModelFilter)
+                .when(mTabGroupModelFilterProvider)
+                .getCurrentTabGroupModelFilter();
+        doReturn(mTabGroupModelFilter)
+                .when(mTabGroupModelFilterProvider)
+                .getTabGroupModelFilter(true);
+        doReturn(mTabGroupModelFilter)
+                .when(mTabGroupModelFilterProvider)
+                .getTabGroupModelFilter(false);
         doNothing()
                 .when(mTabGroupModelFilter)
                 .addTabGroupObserver(mTabGroupModelFilterObserverArgumentCaptor.capture());
 
-        // Set up TabModelSelector and TabModelFilterProvider.
+        // Set up TabModelSelector and TabGroupModelFilterProvider.
         List<TabModel> tabModelList = new ArrayList<>();
         tabModelList.add(mTabModel);
         doReturn(mTabModel).when(mTabModelSelector).getCurrentModel();
@@ -354,10 +360,12 @@ public class TabGroupUiMediatorUnitTest {
         doReturn(tabModelList).when(mTabModelSelector).getModels();
         when(mTabModelSelector.getCurrentTabModelSupplier()).thenReturn(mTabModelSupplier);
 
-        doReturn(mTabModelFilterProvider).when(mTabModelSelector).getTabModelFilterProvider();
+        doReturn(mTabGroupModelFilterProvider)
+                .when(mTabModelSelector)
+                .getTabGroupModelFilterProvider();
         doNothing()
-                .when(mTabModelFilterProvider)
-                .addTabModelFilterObserver(mTabModelObserverArgumentCaptor.capture());
+                .when(mTabGroupModelFilterProvider)
+                .addTabGroupModelFilterObserver(mTabModelObserverArgumentCaptor.capture());
 
         // Set up OverviewModeBehavior
         doNothing().when(mLayoutManager).addObserver(mLayoutStateObserverCaptor.capture());
@@ -957,8 +965,8 @@ public class TabGroupUiMediatorUnitTest {
 
         mTabGroupUiMediator.destroy();
 
-        verify(mTabModelFilterProvider)
-                .removeTabModelFilterObserver(mTabModelObserverArgumentCaptor.capture());
+        verify(mTabGroupModelFilterProvider)
+                .removeTabGroupModelFilterObserver(mTabModelObserverArgumentCaptor.capture());
         verify(mLayoutManager).removeObserver(mLayoutStateObserverCaptor.capture());
         verify(mIncognitoStateProvider)
                 .removeObserver(mIncognitoStateObserverArgumentCaptor.capture());

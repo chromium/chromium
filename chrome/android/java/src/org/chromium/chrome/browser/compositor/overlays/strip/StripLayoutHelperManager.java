@@ -71,14 +71,13 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
@@ -677,8 +676,8 @@ public class StripLayoutHelperManager
         mLifecycleDispatcher.unregister(this);
         if (mTabModelSelector != null) {
             mTabModelSelector
-                    .getTabModelFilterProvider()
-                    .removeTabModelFilterObserver(mTabModelObserver);
+                    .getTabGroupModelFilterProvider()
+                    .removeTabGroupModelFilterObserver(mTabModelObserver);
 
             mTabModelSelector.getCurrentTabModelSupplier().removeObserver(mCurrentTabModelObserver);
             mTabModelSelectorTabModelObserver.destroy();
@@ -1187,7 +1186,9 @@ public class StripLayoutHelperManager
                         updateTitleForTab(tab);
                     }
                 };
-        modelSelector.getTabModelFilterProvider().addTabModelFilterObserver(mTabModelObserver);
+        modelSelector
+                .getTabGroupModelFilterProvider()
+                .addTabGroupModelFilterObserver(mTabModelObserver);
 
         mTabModelSelector = modelSelector;
 
@@ -1218,11 +1219,9 @@ public class StripLayoutHelperManager
                 mTabModelSelector.getModel(true),
                 tabCreatorManager.getTabCreator(true),
                 tabStateInitialized);
-        TabModelFilterProvider provider = mTabModelSelector.getTabModelFilterProvider();
-        mNormalHelper.setTabGroupModelFilter(
-                (TabGroupModelFilter) provider.getTabModelFilter(false));
-        mIncognitoHelper.setTabGroupModelFilter(
-                (TabGroupModelFilter) provider.getTabModelFilter(true));
+        TabGroupModelFilterProvider provider = mTabModelSelector.getTabGroupModelFilterProvider();
+        mNormalHelper.setTabGroupModelFilter(provider.getTabGroupModelFilter(false));
+        mIncognitoHelper.setTabGroupModelFilter(provider.getTabGroupModelFilter(true));
         tabModelSwitched(mTabModelSelector.isIncognitoSelected());
 
         mTabModelSelectorTabModelObserver =

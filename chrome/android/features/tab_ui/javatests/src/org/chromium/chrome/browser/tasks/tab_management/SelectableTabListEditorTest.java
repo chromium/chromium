@@ -87,9 +87,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.IconPosition;
@@ -205,10 +205,10 @@ public class SelectableTabListEditorTest {
                                     ? (ViewGroup) cta.findViewById(R.id.tab_switcher_view_holder)
                                     : compositorViewHolder;
                     mSnackbarManager = new SnackbarManager(cta, rootView, null);
-                    var currentTabModelFilterSupplier =
+                    var currentTabGroupModelFilterSupplier =
                             mTabModelSelector
-                                    .getTabModelFilterProvider()
-                                    .getCurrentTabModelFilterSupplier();
+                                    .getTabGroupModelFilterProvider()
+                                    .getCurrentTabGroupModelFilterSupplier();
                     mAppHeaderStateProvider =
                             (AppHeaderCoordinator)
                                     sActivityTestRule
@@ -222,7 +222,7 @@ public class SelectableTabListEditorTest {
                                     mParentView,
                                     mParentView,
                                     cta.getBrowserControlsManager(),
-                                    currentTabModelFilterSupplier,
+                                    currentTabGroupModelFilterSupplier,
                                     cta.getTabContentManager(),
                                     mSetRecyclerViewPosition,
                                     getMode(),
@@ -339,10 +339,9 @@ public class SelectableTabListEditorTest {
                     ArrayList<Tab> tabs = new ArrayList<>();
                     TabModel model = mTabModelSelector.getCurrentModel();
                     TabGroupModelFilter filter =
-                            (TabGroupModelFilter)
-                                    mTabModelSelector
-                                            .getTabModelFilterProvider()
-                                            .getCurrentTabModelFilter();
+                            mTabModelSelector
+                                    .getTabGroupModelFilterProvider()
+                                    .getCurrentTabGroupModelFilter();
                     for (int i = model.getCount() - urls.size(); i < model.getCount(); i++) {
                         tabs.add(model.getTabAt(i));
                     }
@@ -684,7 +683,7 @@ public class SelectableTabListEditorTest {
         prepareBlankTabGroup(3, false);
         prepareBlankTabGroup(1, false);
         prepareBlankTabGroup(2, false);
-        List<Tab> tabs = getTabsInCurrentTabModelFilter();
+        List<Tab> tabs = getTabsInCurrentTabGroupModelFilter();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -728,7 +727,7 @@ public class SelectableTabListEditorTest {
         prepareBlankTabGroup(3, false); // Index: 2
         prepareBlankTabGroup(1, false); // Index: 3
         prepareBlankTabGroup(2, false); // Index: 4
-        List<Tab> tabs = getTabsInCurrentTabModelFilter();
+        List<Tab> tabs = getTabsInCurrentTabGroupModelFilter();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -762,7 +761,7 @@ public class SelectableTabListEditorTest {
 
         mRobot.actionRobot.clickToolbarActionView(groupId);
 
-        assertEquals(2, getTabsInCurrentTabModelFilter().size());
+        assertEquals(2, getTabsInCurrentTabGroupModelFilter().size());
     }
 
     @Test
@@ -775,7 +774,7 @@ public class SelectableTabListEditorTest {
         prepareBlankTabGroup(1, false);
         prepareBlankTabGroup(2, false);
         TabUiTestHelper.createTabsWithThumbnail(sActivityTestRule, 1, "about:blank", false);
-        List<Tab> tabs = getTabsInCurrentTabModelFilter();
+        List<Tab> tabs = getTabsInCurrentTabGroupModelFilter();
         List<Tab> beforeTabOrder = getTabsInCurrentTabModel();
 
         Tab selectedTab = beforeTabOrder.get(4);
@@ -847,7 +846,7 @@ public class SelectableTabListEditorTest {
         List<Tab> finalTabs = getTabsInCurrentTabModel();
         assertEquals(beforeTabOrder.size(), finalTabs.size());
         assertEquals(beforeTabOrder, finalTabs);
-        List<Tab> finalRootTabs = getTabsInCurrentTabModelFilter();
+        List<Tab> finalRootTabs = getTabsInCurrentTabGroupModelFilter();
         assertEquals(tabs.size(), finalRootTabs.size());
         assertEquals(tabs, finalRootTabs);
     }
@@ -998,7 +997,7 @@ public class SelectableTabListEditorTest {
         prepareTabGroupWithUrls(urls, false);
         prepareBlankTabGroup(2, false);
 
-        List<Tab> tabs = getTabsInCurrentTabModelFilter();
+        List<Tab> tabs = getTabsInCurrentTabGroupModelFilter();
 
         // Url string formatting
         for (int i = 0; i < urls.size(); i++) {
@@ -1050,7 +1049,7 @@ public class SelectableTabListEditorTest {
         urls.add(sActivityTestRule.getTestServer().getURL(PAGE_WITH_NO_CANONICAL_URL));
         prepareTabGroupWithUrls(urls, false);
 
-        List<Tab> tabs = getTabsInCurrentTabModelFilter();
+        List<Tab> tabs = getTabsInCurrentTabGroupModelFilter();
 
         // Url string formatting
         urls.add(0, httpsCanonicalUrl);
@@ -1169,7 +1168,7 @@ public class SelectableTabListEditorTest {
     @MediumTest
     public void testToolbarMenuItem_BookmarkActionGroupsOnly() {
         prepareBlankTabGroup(2, false);
-        List<Tab> tabs = getTabsInCurrentTabModelFilter();
+        List<Tab> tabs = getTabsInCurrentTabGroupModelFilter();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1225,7 +1224,7 @@ public class SelectableTabListEditorTest {
         urls.add(sActivityTestRule.getTestServer().getURL(PAGE_WITH_NO_CANONICAL_URL));
 
         prepareTabGroupWithUrls(urls, false);
-        List<Tab> tabs = getTabsInCurrentTabModelFilter();
+        List<Tab> tabs = getTabsInCurrentTabGroupModelFilter();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1890,12 +1889,11 @@ public class SelectableTabListEditorTest {
      * Retrieves all non-grouped tabs and the last focused tab in each tab group from the current
      * tab model
      */
-    private List<Tab> getTabsInCurrentTabModelFilter() {
+    private List<Tab> getTabsInCurrentTabGroupModelFilter() {
         List<Tab> tabs = new ArrayList<>();
 
         TabGroupModelFilter filter =
-                (TabGroupModelFilter)
-                        mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
+                mTabModelSelector.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter();
         for (int i = 0; i < filter.getCount(); i++) {
             tabs.add(filter.getTabAt(i));
         }

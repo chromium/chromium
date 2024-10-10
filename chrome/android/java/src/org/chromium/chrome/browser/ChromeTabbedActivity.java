@@ -223,7 +223,6 @@ import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.TasksUma;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.browser.tasks.tab_management.CloseAllTabsDialog;
 import org.chromium.chrome.browser.tasks.tab_management.CloseAllTabsHelper;
@@ -695,11 +694,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             // For saving non-incognito tab closures for Recent Tabs.
             mHistoricalTabModelObserver =
                     new HistoricalTabModelObserver(
-                            mTabModelSelector.getTabModelFilterProvider().getTabModelFilter(false));
+                            mTabModelSelector
+                                    .getTabGroupModelFilterProvider()
+                                    .getTabGroupModelFilter(false));
             mHistoricalTabModelObserver.addSecodaryTabModelSupplier(
                     ArchivedTabModelOrchestrator.getForProfile(profile)::getTabModel);
 
-            // Defer creation of this helper so it triggers after TabModelFilter observers.
+            // Defer creation of this helper so it triggers after TabGroupModelFilter observers.
             mUndoRefocusHelper =
                     new UndoRefocusHelper(
                             mTabModelSelector, getLayoutManagerSupplier(), isTablet());
@@ -2221,10 +2222,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                     mCallbackController.makeCancelable(
                             (tabModelSelectorReturn) -> {
                                 TabGroupColorUtils.assignTabGroupColorsIfApplicable(
-                                        (TabGroupModelFilter)
-                                                tabModelSelectorReturn
-                                                        .getTabModelFilterProvider()
-                                                        .getCurrentTabModelFilter());
+                                        tabModelSelectorReturn
+                                                .getTabGroupModelFilterProvider()
+                                                .getCurrentTabGroupModelFilter());
                             }));
         } else {
             new BackgroundOnlyAsyncTask<Void>() {

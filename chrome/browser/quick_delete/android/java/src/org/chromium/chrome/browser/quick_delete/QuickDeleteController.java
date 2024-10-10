@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.feature_engagement.Tracker;
@@ -86,17 +85,15 @@ public class QuickDeleteController {
         mTabModel = tabModelSelector.getModel(/* incognito= */ false);
         mDeleteRegularTabsFilter =
                 new QuickDeleteTabsFilter(
-                        (TabGroupModelFilter)
-                                tabModelSelector
-                                        .getTabModelFilterProvider()
-                                        .getTabModelFilter(/* incognito= */ false));
+                        tabModelSelector
+                                .getTabGroupModelFilterProvider()
+                                .getTabGroupModelFilter(/* incognito= */ false));
         if (archivedTabModelSelector != null) {
             mDeleteArchivedTabsFilter =
                     new QuickDeleteTabsFilter(
-                            (TabGroupModelFilter)
-                                    archivedTabModelSelector
-                                            .getTabModelFilterProvider()
-                                            .getTabModelFilter(/* incognito= */ false));
+                            archivedTabModelSelector
+                                    .getTabGroupModelFilterProvider()
+                                    .getTabGroupModelFilter(/* incognito= */ false));
         } else {
             mDeleteArchivedTabsFilter = null;
         }

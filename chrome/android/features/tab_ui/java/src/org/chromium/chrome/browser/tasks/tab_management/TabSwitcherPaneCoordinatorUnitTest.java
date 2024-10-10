@@ -68,8 +68,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.DialogController;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
@@ -109,7 +108,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @Mock private ProfileProvider mProfileProvider;
     @Mock private Profile mProfile;
     @Mock private TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
-    @Mock private TabGroupModelFilter mTabModelFilter;
+    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabContentManager mTabContentManager;
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
@@ -133,7 +132,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
 
     private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
-    private final ObservableSupplierImpl<TabModelFilter> mTabModelFilterSupplier =
+    private final ObservableSupplierImpl<TabGroupModelFilter> mTabGroupModelFilterSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplierImpl<Boolean> mIsVisibleSupplier =
             new ObservableSupplierImpl<>();
@@ -174,11 +173,11 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
 
         mTabModel = new MockTabModel(mProfile, null);
-        when(mTabModelFilter.getTabModel()).thenReturn(mTabModel);
-        when(mTabModelFilter.isTabModelRestored()).thenReturn(true);
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabGroupModelFilter.isTabModelRestored()).thenReturn(true);
 
         mProfileProviderSupplier.set(mProfileProvider);
-        mTabModelFilterSupplier.set(mTabModelFilter);
+        mTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
         mIsVisibleSupplier.set(false);
         mIsAnimatingSupplier.set(false);
 
@@ -203,7 +202,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
                 new TabSwitcherPaneCoordinator(
                         activity,
                         mProfileProviderSupplier,
-                        mTabModelFilterSupplier,
+                        mTabGroupModelFilterSupplier,
                         mTabContentManager,
                         mTabCreatorManager,
                         mBrowserControlsStateProvider,
@@ -247,8 +246,8 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         int index = 0;
         mTabModel.addTab(
                 tab, index, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        when(mTabModelFilter.indexOf(tab)).thenReturn(index);
-        when(mTabModelFilter.getTabAt(index)).thenReturn(tab);
+        when(mTabGroupModelFilter.indexOf(tab)).thenReturn(index);
+        when(mTabGroupModelFilter.getTabAt(index)).thenReturn(tab);
         controller.resetWithListOfTabs(Collections.singletonList(tab));
 
         return controller;
@@ -282,7 +281,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @SmallTest
     public void testSetInitialScrollIndexOffset() {
         int index = 8;
-        when(mTabModelFilter.index()).thenReturn(index);
+        when(mTabGroupModelFilter.index()).thenReturn(index);
         mCoordinator.setInitialScrollIndexOffset();
 
         assertEquals(
@@ -297,7 +296,7 @@ public class TabSwitcherPaneCoordinatorUnitTest {
     @SmallTest
     public void testRequestAccessibilityFocusOnCurrentTab() {
         int index = 2;
-        when(mTabModelFilter.index()).thenReturn(index);
+        when(mTabGroupModelFilter.index()).thenReturn(index);
         mCoordinator.requestAccessibilityFocusOnCurrentTab();
 
         assertEquals(
@@ -362,16 +361,17 @@ public class TabSwitcherPaneCoordinatorUnitTest {
         int index = 0;
         mTabModel.addTab(
                 tab, index, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        when(mTabModelFilter.indexOf(tab)).thenReturn(index);
-        when(mTabModelFilter.getTabAt(index)).thenReturn(tab);
-        when(mTabModelFilter.getCount()).thenReturn(1);
-        when(mTabModelFilter.getRelatedTabList(tabId)).thenReturn(Collections.singletonList(tab));
+        when(mTabGroupModelFilter.indexOf(tab)).thenReturn(index);
+        when(mTabGroupModelFilter.getTabAt(index)).thenReturn(tab);
+        when(mTabGroupModelFilter.getCount()).thenReturn(1);
+        when(mTabGroupModelFilter.getRelatedTabList(tabId))
+                .thenReturn(Collections.singletonList(tab));
 
         Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
         doCallback(2, (Callback<Bitmap> callback) -> callback.onResult(bitmap))
                 .when(mTabContentManager)
                 .getTabThumbnailWithCallback(eq(tabId), any(), any());
-        mCoordinator.resetWithTabList(mTabModelFilter);
+        mCoordinator.resetWithTabList(mTabGroupModelFilter);
 
         TabListRecyclerView recyclerView = mActivity.findViewById(R.id.tab_list_recycler_view);
         // Manually size the view so that the children get added this is to work around robolectric

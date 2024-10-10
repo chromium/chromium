@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.PendingTabClosureManager.PendingTabClosureDelegate;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
@@ -951,17 +950,16 @@ public class TabModelImpl extends TabModelJniBridge {
         List<Tab> tabsToClose = getTabsNavigatedInTimeWindow(beginTimeMs, endTimeMs);
         if (tabsToClose.isEmpty()) return;
 
-        final TabModelFilter filter = TabModelUtils.getTabModelFilterByTab(tabsToClose.get(0));
-
-        assert filter instanceof TabGroupModelFilter;
-        final TabGroupModelFilter groupingFilter = (TabGroupModelFilter) filter;
+        final TabGroupModelFilter filter =
+                TabModelUtils.getTabGroupModelFilterByTab(tabsToClose.get(0));
+        assert filter != null;
 
         var params =
                 TabClosureParams.closeTabs(tabsToClose)
                         .allowUndo(false)
                         .saveToTabRestoreService(false)
                         .build();
-        groupingFilter.closeTabs(params);
+        filter.closeTabs(params);
     }
 
     @VisibleForTesting

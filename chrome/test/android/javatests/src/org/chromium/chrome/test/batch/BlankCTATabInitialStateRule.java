@@ -16,10 +16,9 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabHostUtils;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 
@@ -116,16 +115,15 @@ public class BlankCTATabInitialStateRule implements TestRule {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sActivity.getCurrentWebContents().getNavigationController().clearHistory();
-                    TabModelFilter filter =
+                    TabGroupModelFilter filter =
                             sActivity
                                     .getTabModelSelector()
-                                    .getTabModelFilterProvider()
-                                    .getTabModelFilter(/* incognito= */ false);
+                                    .getTabGroupModelFilterProvider()
+                                    .getTabGroupModelFilter(/* incognito= */ false);
                     Tab activityTab = sActivity.getActivityTab();
                     if (filter.isTabInTabGroup(activityTab)) {
-                        ((TabGroupModelFilter) filter)
-                                .moveTabOutOfGroupInDirection(
-                                        activityTab.getId(), /* trailing= */ false);
+                        filter.moveTabOutOfGroupInDirection(
+                                activityTab.getId(), /* trailing= */ false);
                     }
                 });
     }

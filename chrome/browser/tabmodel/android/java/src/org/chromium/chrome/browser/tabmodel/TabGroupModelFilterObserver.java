@@ -127,7 +127,7 @@ public interface TabGroupModelFilterObserver {
      * @param destinationTab The destination tab of the group after merge.
      * @param filter The {@link TabGroupModelFilter} that the new group event triggers on.
      */
-    default void didCreateNewGroup(Tab destinationTab, TabModelFilter filter) {}
+    default void didCreateNewGroup(Tab destinationTab, TabGroupModelFilter filter) {}
 
     /**
      * This method is called after a new title is set on a tab group.

@@ -12,6 +12,7 @@ import androidx.collection.ArrayMap;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.Map;

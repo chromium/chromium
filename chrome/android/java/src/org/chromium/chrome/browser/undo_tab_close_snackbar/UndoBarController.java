@@ -18,10 +18,10 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
@@ -218,10 +218,9 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
         assert !closedTabs.get(0).isIncognito();
 
         TabGroupModelFilter filter =
-                (TabGroupModelFilter)
-                        mTabModelSelector
-                                .getTabModelFilterProvider()
-                                .getTabModelFilter(/* isIncognito= */ false);
+                mTabModelSelector
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(/* isIncognito= */ false);
         Profile profile = filter.getTabModel().getProfile();
         boolean tabGroupSyncEnabled =
                 profile != null
@@ -280,10 +279,9 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
             if (closureMetadata.ungroupedOrPartialGroupTabs == 0) {
                 int rootId = closureMetadata.fullyClosingRootIds.iterator().next();
                 TabGroupModelFilter filter =
-                        (TabGroupModelFilter)
-                                mTabModelSelector
-                                        .getTabModelFilterProvider()
-                                        .getTabModelFilter(false);
+                        mTabModelSelector
+                                .getTabGroupModelFilterProvider()
+                                .getTabGroupModelFilter(false);
                 @Nullable String tabGroupTitle = filter.getTabGroupTitle(rootId);
                 if (tabGroupTitle == null) {
                     tabGroupTitle =

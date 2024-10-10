@@ -22,7 +22,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabActionState;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
@@ -34,7 +34,7 @@ public final class TabListEditorMediatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Context mContext;
-    @Mock private ObservableSupplier<TabModelFilter> mTabModelFilterSupplier;
+    @Mock private ObservableSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
     @Mock private DesktopWindowStateProvider mDesktopWindowStateProvider;
 
     private PropertyModel mModel;
@@ -46,7 +46,7 @@ public final class TabListEditorMediatorUnitTest {
         mMediator =
                 new TabListEditorMediator(
                         mContext,
-                        mTabModelFilterSupplier,
+                        mTabGroupModelFilterSupplier,
                         mModel,
                         /* selectionDelegate= */ null,
                         /* actionOnRelatedTabs= */ false,

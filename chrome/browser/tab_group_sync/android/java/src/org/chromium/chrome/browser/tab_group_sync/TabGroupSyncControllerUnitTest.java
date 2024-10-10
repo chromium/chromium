@@ -29,10 +29,10 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -63,9 +63,12 @@ public class TabGroupSyncControllerUnitTest {
     public void setUp() {
         mTabModel = spy(new MockTabModel(mProfile, null));
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
-        TabModelFilterProvider tabModelFilterProvider = mock(TabModelFilterProvider.class);
-        when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(tabModelFilterProvider);
-        when(tabModelFilterProvider.getTabModelFilter(false)).thenReturn(mTabGroupModelFilter);
+        TabGroupModelFilterProvider tabGroupModelFilterProvider =
+                mock(TabGroupModelFilterProvider.class);
+        when(mTabModelSelector.getTabGroupModelFilterProvider())
+                .thenReturn(tabGroupModelFilterProvider);
+        when(tabGroupModelFilterProvider.getTabGroupModelFilter(false))
+                .thenReturn(mTabGroupModelFilter);
         doNothing().when(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
         doNothing()
                 .when(mTabGroupSyncService)

@@ -15,7 +15,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
@@ -44,7 +44,8 @@ public class TabListEditorManager {
     private final @Nullable SnackbarManager mSnackbarManager;
     private final @Nullable BottomSheetController mBottomSheetController;
     private final @NonNull BrowserControlsStateProvider mBrowserControlsStateProvider;
-    private final @NonNull ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
+    private final @NonNull ObservableSupplier<TabGroupModelFilter>
+            mCurrentTabGroupModelFilterSupplier;
     private final @NonNull TabContentManager mTabContentManager;
     private final @NonNull TabListCoordinator mTabListCoordinator;
     private final @TabListMode int mMode;
@@ -63,7 +64,8 @@ public class TabListEditorManager {
      * @param coordinatorView The overlay view to attach the editor to.
      * @param rootView The root view to attach the snackbar to.
      * @param browserControlsStateProvider The browser controls state provider.
-     * @param currentTabModelFilterSupplier The supplier of the current {@link TabModelFilter}.
+     * @param currentTabGroupModelFilterSupplier The supplier of the current {@link
+     *     TabGroupModelFilter}.
      * @param tabContentManager The {@link TabContentManager} for thumbnails.
      * @param tabListCoordinator The parent {@link TabListCoordinator}.
      * @param mode The {@link TabListMode} of the tab list (grid, list, etc.).
@@ -76,7 +78,7 @@ public class TabListEditorManager {
             @NonNull ViewGroup coordinatorView,
             @NonNull ViewGroup rootView,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            @NonNull ObservableSupplier<TabModelFilter> currentTabModelFilterSupplier,
+            @NonNull ObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
             @NonNull TabContentManager tabContentManager,
             @NonNull TabListCoordinator tabListCoordinator,
             BottomSheetController bottomSheetController,
@@ -88,7 +90,7 @@ public class TabListEditorManager {
         mModalDialogManager = modalDialogManager;
         mCoordinatorView = coordinatorView;
         mRootView = rootView;
-        mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
+        mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mTabContentManager = tabContentManager;
         mTabListCoordinator = tabListCoordinator;
@@ -130,7 +132,7 @@ public class TabListEditorManager {
                             mCoordinatorView,
                             mCoordinatorView,
                             mBrowserControlsStateProvider,
-                            mCurrentTabModelFilterSupplier,
+                            mCurrentTabGroupModelFilterSupplier,
                             mTabContentManager,
                             mTabListCoordinator::setRecyclerViewPosition,
                             mMode,
@@ -195,7 +197,7 @@ public class TabListEditorManager {
 
         var controller = mControllerSupplier.get();
         controller.show(
-                TabModelUtils.convertTabListToListOfTabs(mCurrentTabModelFilterSupplier.get()),
+                TabModelUtils.convertTabListToListOfTabs(mCurrentTabGroupModelFilterSupplier.get()),
                 mTabListCoordinator.getRecyclerViewPosition());
         controller.configureToolbarWithMenuItems(mTabListEditorActions);
 

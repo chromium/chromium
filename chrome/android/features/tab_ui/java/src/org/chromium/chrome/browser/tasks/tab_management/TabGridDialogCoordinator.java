@@ -36,8 +36,7 @@ import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabContentManagerThumbnailProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.AnimationSourceViewProvider;
@@ -73,7 +72,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
     private final ObservableSupplierImpl<Boolean> mBackPressChangedSupplier =
             new ObservableSupplierImpl<>();
     private final Activity mActivity;
-    private final ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
+    private final ObservableSupplier<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final ModalDialogManager mModalDialogManager;
     private final TabListOnScrollListener mTabListOnScrollListener = new TabListOnScrollListener();
@@ -94,7 +93,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull BottomSheetController bottomSheetController,
             @NonNull DataSharingTabManager dataSharingTabManager,
-            @NonNull ObservableSupplier<TabModelFilter> currentTabModelFilterSupplier,
+            @NonNull ObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
             TabContentManager tabContentManager,
             TabCreatorManager tabCreatorManager,
             ViewGroup containerView,
@@ -117,7 +116,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             : "TabGridDialogInSwitcher";
             mBrowserControlsStateProvider = browserControlsStateProvider;
             mModalDialogManager = modalDialogManager;
-            mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
+            mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
             mTabContentManager = tabContentManager;
             mTabSwitcherResetHandler = resetHandler;
 
@@ -154,7 +153,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             if (isDataSharingAndroidEnabled) {
                 DataSharingService dataSharingService =
                         DataSharingServiceFactory.getForProfile(
-                                mCurrentTabModelFilterSupplier
+                                mCurrentTabGroupModelFilterSupplier
                                         .get()
                                         .getTabModel()
                                         .getProfile()
@@ -177,7 +176,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             activity,
                             this,
                             mModel,
-                            currentTabModelFilterSupplier,
+                            currentTabGroupModelFilterSupplier,
                             tabCreatorManager,
                             resetHandler,
                             this::getRecyclerViewPosition,
@@ -201,7 +200,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             activity,
                             mBrowserControlsStateProvider,
                             mModalDialogManager,
-                            currentTabModelFilterSupplier,
+                            currentTabGroupModelFilterSupplier,
                             new TabContentManagerThumbnailProvider(tabContentManager),
                             /* actionOnRelatedTabs= */ false,
                             actionConfirmationManager,
@@ -266,7 +265,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
             // constructors if possible.
             mMediator.initWithNative(this::getTabListEditorController, tabGroupTitleEditor);
             mTabListCoordinator.initWithNative(
-                    mCurrentTabModelFilterSupplier
+                    mCurrentTabGroupModelFilterSupplier
                             .get()
                             .getTabModel()
                             .getProfile()
@@ -297,7 +296,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             container,
                             container,
                             mBrowserControlsStateProvider,
-                            mCurrentTabModelFilterSupplier,
+                            mCurrentTabGroupModelFilterSupplier,
                             mTabContentManager,
                             mTabListCoordinator::setRecyclerViewPosition,
                             mode,
@@ -342,8 +341,7 @@ public class TabGridDialogCoordinator implements TabGridDialogMediator.DialogCon
                             // selected color in the color picker when it is dismissed. This
                             // call will be invoked for both Grid and List modes on the GTS.
                             mTabSwitcherResetHandler.resetWithTabList(
-                                    (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
-                                    false);
+                                    mCurrentTabGroupModelFilterSupplier.get(), false);
                         }
                     }
                 };
