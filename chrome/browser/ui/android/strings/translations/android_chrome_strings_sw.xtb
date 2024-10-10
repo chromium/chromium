@@ -460,6 +460,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="3098745985164956033">Baadhi ya picha hutumwa kwa Google ili kuboresha maelezo unayopata</translation>
 <translation id="3114507951000454849">Soma habari za leo <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Matangazo</translation>
+<translation id="3131961580615093332"><ph name="GIVEN_NAME" /> amebadilisha kichupo cha “<ph name="TAB_NAME" />”</translation>
 <translation id="3148237711805373460">Nipeleke hapo</translation>
 <translation id="314939179385989105">Ukurasa wa kwanza wa Chrome</translation>
 <translation id="3158667104057012316">Inapanga yenyewe</translation>
@@ -637,6 +638,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="4042941173059740150">Endelea <ph name="SITE_ETLD_PLUS_ONE" /> ukitumia <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="404352903042073578">Kikundi kisicho na jina</translation>
 <translation id="4044708993631234325">Safu ya chini</translation>
+<translation id="4045441967987592849">Fungua upya</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{Kichupo <ph name="TABS_COUNT_ONE" /> cha kawaida kilicho na shughuli mpya katika vikundi vya vichupo vya pamoja}other{Vichupo <ph name="TABS_COUNT_MANY" /> vya kawaida vilivyo na shughuli mpya katika vikundi vya vichupo vya pamoja}}</translation>
 <translation id="405365679581583349">Sasisha huduma za Google Play</translation>
 <translation id="405399507749852140">Pata arifa bei ikipunguzwa kwenye tovuti yoyote</translation>
@@ -844,6 +846,7 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="4943703118917034429">Uhalisia Pepe</translation>
 <translation id="4943872375798546930">Hakuna matokeo yoyote yaliyopatikana</translation>
 <translation id="4950924971025849764">Unapoingia katika Akaunti moja ya Google, vifaa vingine vinaweza kutumia simu hii kama ufunguo wa usalama.</translation>
+<translation id="4953833914914492602">Kikundi cha vichupo cha “<ph name="TAB_GROUP_NAME" />” hakipatikani tena</translation>
 <translation id="4957722034734105353">Pata maelezo zaidi...</translation>
 <translation id="4961107849584082341">Tafsiri ukurasa huu katika lugha yoyote</translation>
 <translation id="4964614743143953889">Chrome inakutahadharisha kuhusu tovuti na vipakuliwa ambavyo si salama</translation>
@@ -957,6 +960,7 @@ Huenda akaunti yako ya Google ina aina nyingine za historia ya kuvinjari kama vi
 <translation id="5526281268548144413">Haviwezi kufungwa kwenye madirisha mengi</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{Dak # iliyopita}other{Dak # zilizopita}}</translation>
 <translation id="5548606607480005320">Angalizo la usalama</translation>
+<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> amejiunga na kikundi cha vichupo cha “<ph name="TAB_GROUP_NAME" />”</translation>
 <translation id="5554520618550346933">Unapotumia nenosiri, Chrome hukutahadharisha iwapo limechapishwa mtandaoni. Wakati inafanya hivyo, manenosiri na majina yako ya mtumiaji huwa yamesimbwa kwa njia fiche, kwa hivyo hayawezi kusomwa na mtu mwingine, ikiwemo Google.</translation>
 <translation id="5555525474779371165">Chagua ulinzi wa Kuvinjari Salama Unaopendelea</translation>
 <translation id="5556459405103347317">Pakia upya</translation>
@@ -1618,6 +1622,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />futa data ya Chrome kweny
 <translation id="8282297628636750033">Tumia mandhari meusi kwenye tovuti, panapowezekana</translation>
 <translation id="8282950411412455249">Nenda kwenye mipangilio ya usalama</translation>
 <translation id="829672787777123339">Inaunganisha kifaa chako…</translation>
+<translation id="8307517230426267469"><ph name="GIVEN_NAME" /> ameondoa kichupo cha “<ph name="TAB_NAME" />”</translation>
 <translation id="831192587911042850">Huongeza tovuti unayoitumia sasa kwenye orodha ya tovuti unazofuatilia.</translation>
 <translation id="8342727528718219152">Chrome itakujulisha kuhusu tovuti ambazo huenda zinatuma arifa nyingi mno</translation>
 <translation id="834313815369870491">Kamwe usitafsiri tovuti</translation>

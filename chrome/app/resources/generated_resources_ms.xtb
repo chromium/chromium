@@ -5683,6 +5683,7 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5068919226082848014">Piza</translation>
 <translation id="5071295820492622726">Kembali ke muat turun terbaharu</translation>
 <translation id="5071892329440114717">Paparkan butiran perlindungan standard</translation>
+<translation id="5072303130033714629">Alat Pemindahan Kandungan</translation>
 <translation id="5072500507106264618">Hanya perkhidmatan sistem boleh menggunakan lokasi anda</translation>
 <translation id="5072836811783999860">Tunjukkan penanda halaman terurus</translation>
 <translation id="5072900412896857127">Syarat Perkhidmatan Google Play tidak dapat dimuatkan. Sila periksa sambungan rangkaian dan cuba semula.</translation>
@@ -6635,6 +6636,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5780940414249100901">Hantar data penggunaan dan diagnostik. Pada masa ini, peranti ini menghantar data diagnostik dan penggunaan peranti serta apl kepada Google secara automatik. Data ini tidak akan digunakan untuk mengenal pasti anak anda dan akan membantu peningkatan kestabilan sistem dan apl serta pelbagai lagi. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android. <ph name="BEGIN_LINK1" />Tetapan<ph name="END_LINK1" /> ini dikuatkuasakan oleh pemilik. Jika tetapan Aktiviti Web &amp; Apl tambahan dihidupkan untuk anak anda, data ini mungkin disimpan pada Google Account miliknya. <ph name="BEGIN_LINK2" />Ketahui lebih lanjut tentang metrik<ph name="BEGIN_LINK2_END" />Ketahui Lebih Lanjut<ph name="END_LINK2" /></translation>
 <translation id="5780973441651030252">Keutamaan proses</translation>
 <translation id="5781092003150880845">Segerakkan sebagai <ph name="ACCOUNT_FULL_NAME" /></translation>
+<translation id="5781120434102258025">Alihkan data akaun sekolah anda kepada akaun peribadi</translation>
 <translation id="5781865261247219930">Hantar perintah kepada <ph name="EXTENSION_NAME" /></translation>
 <translation id="5782227691023083829">Menterjemahkan…</translation>
 <translation id="57838592816432529">Redam</translation>
@@ -11288,6 +11290,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Untuk mendapatkan pengalaman yang terbaik, pasang <ph name="DEVICE_OS" /> pada cakera dalaman anda. Anda juga boleh memasangnya kemudian daripada skrin log masuk.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Jika anda belum bersedia untuk memasang OS ini, anda boleh menjalankannya daripada USB untuk mencubanya. Tindakan ini akan mengekalkan OS dan data anda yang sedia ada, tetapi anda mungkin melihat storan dan prestasi yang terhad.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9120761757252614786">Sesuaikan Bar Alat</translation>
+<translation id="9120800848981545750">Muat turun Chrome untuk iOS untuk mengakses tab, penanda halaman dan kata laluan anda pada telefon anda.</translation>
 <translation id="9121814364785106365">Buka sebagai tab dipin</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Tutup Tab dan Padamkan Kumpulan?}=1{Tutup Tab dan Padamkan Kumpulan?}other{Tutup Tab dan Padamkan Kumpulan?}}</translation>
 <translation id="9122788874051694311">Simpan kunci laluan ini di luar Inkognito?</translation>

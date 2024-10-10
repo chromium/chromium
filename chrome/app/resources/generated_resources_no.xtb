@@ -1696,6 +1696,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2184515124301515068">La Chrome velge når nettsteder kan spille av lyd (anbefalt)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">En side er delt fra en annen enhet</translation>
+<translation id="2187569197737151508">Trykk på Esc-tasten fem ganger for å slå den på igjen</translation>
 <translation id="2187675480456493911">Synkronisert med andre enheter på kontoen. Innstillinger som endres av andre brukere, blir ikke synkronisert. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Feil ved import av tjenersertifikat</translation>
 <translation id="2187906491731510095">Utvidelser er oppdatert</translation>
@@ -2104,6 +2105,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2460356425461033301">Sikkerhetskopier nettlesertingene dine, og bruk dem på alle enheter.</translation>
 <translation id="2460482211073772897">I andre mapper</translation>
 <translation id="2460826998961521840">for å bruke passnøkler som er lagret i Google-kontoen din</translation>
+<translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> er bare lagret på denne enheten. Hvis du flytter dette bokmerket til <ph name="LOCAL_FOLDER" />, mister du tilgang til det på de andre enhetene dine.</translation>
 <translation id="2461550163693930491">Ikke la nettsteder rulle og zoome på delte faner</translation>
 <translation id="2461593638794842577">Du kan slå av denne innstillingen for å lagre passordene dine kun på denne enheten</translation>
 <translation id="2462332841984057083">Steam holder allerede på å konfigureres. Vent til konfigureringen er fullført.</translation>
@@ -2357,6 +2359,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2645047101481282803">Enheten administreres av <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">Caste denne fanen til <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">Vil du lagre dette i en mappe i Google-kontoen din?</translation>
 <translation id="264897126871533291">Protanomali</translation>
 <translation id="2649045351178520408">Base64-kodet ASCII, sertifikatkjede</translation>
 <translation id="265156376773362237">Standard forhåndslasting</translation>
@@ -2545,6 +2548,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2773288106548584039">Støtte for eldre nettlesere</translation>
 <translation id="2773621783913034737">Gjør faner inaktive</translation>
 <translation id="2774876860084746535">Intellektuell</translation>
+<translation id="2775047284666165174"><ph name="LOCAL_FOLDER" /> er bare lagret på denne enheten. Hvis du flytter denne mappen til <ph name="LOCAL_FOLDER" />, mister du tilgang til den på de andre enhetene dine.</translation>
 <translation id="2775104091073479743">Endre fingeravtrykk</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{Utvidelsen «<ph name="EXTENSION" />» brukte enheter}=1{Utvidelsen «<ph name="EXTENSION" />» bruker {0} enhet}other{Utvidelsen «<ph name="EXTENSION" />» bruker {0} enheter}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Fjern 1 app som ikke støttes}other{Fjern # apper som ikke støttes}}</translation>
@@ -2733,6 +2737,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2908122561561557160">Åpne Word-, Excel- og PowerPoint-filer</translation>
 <translation id="2908162660801918428">Legg til mediegalleri etter katalog</translation>
 <translation id="2908358077082926882">Trykk på «<ph name="CURRENTKEY" />» på nytt for å fjerne tilordningen og <ph name="RESPONSE" /></translation>
+<translation id="2909487040556589351">Få Chrome på mobilen</translation>
 <translation id="2909506265808101667">Kunne ikke koble til Google-tjenester. Kontroller nettverkstilkoblingen og prøv på nytt. Feilkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="2910318910161511225">Koble til et nettverk og prøv igjen</translation>
 <translation id="2910678330803525229">Nå kan du begynne å surfe</translation>
@@ -4832,6 +4837,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4434611816075088065">Det er ikke noe mer du trenger å ta stilling til akkurat nå</translation>
 <translation id="443475966875174318">Oppdater eller fjern inkompatible programmer</translation>
 <translation id="443503224864902151">Logger deg av de fleste nettsteder. Du forblir pålogget Google-kontoen din, slik at de synkroniserte dataene dine kan slettes.</translation>
+<translation id="4436573279088520291">Vil du lukke fanene som ikke er i bruk?</translation>
 <translation id="4437879751057074691">Bli tilbudt å lagre passord og passnøkler</translation>
 <translation id="4437947179446780764">Legg til en egendefinert DNS-tjenesteleverandør</translation>
 <translation id="4438043733494739848">Gjennomsiktig</translation>
@@ -4944,6 +4950,7 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4527929807707405172">Slå på omvendt rulling. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Oversettelsesforslag</translation>
 <translation id="4528638190900283934">Logg på for å få tilgang til flere funksjoner</translation>
+<translation id="4529052777398765334">Denne mappen er bare lagret på denne enheten. Hvis du lagrer den i <ph name="ACCOUNT_FOLDER" />, blir denne mappen også lagret i kontoen din.</translation>
 <translation id="4529455689802245339">Det kan hende at Chrome Direkteteksting ikke kommer til å fungere</translation>
 <translation id="4531451811601110068">Du kan prøve på nytt eller kontakte administratoren din for å få hjelp</translation>
 <translation id="4531924570968473143">Hvem vil du legge til på denne <ph name="DEVICE_TYPE" />-enheten?</translation>
@@ -5529,6 +5536,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4955707703665801001">Tilgang for <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Velg PIN-koden din</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">Vil du lagre dette i en mappe bare på denne enheten?</translation>
 <translation id="4959262764292427323">Passordene er lagret i Google-kontoen din, slik at du kan bruke dem på alle enheter</translation>
 <translation id="4960020053211143927">Støttes ikke av enkelte apper</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -8452,6 +8460,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="711840821796638741">Vis administrerte bokmerker</translation>
 <translation id="711985611146095797">På denne siden kan du administrere de påloggede Google-kontoene dine. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Chrome-nettleseren og Android-trafikk blokkeres med mindre en VPN-tjeneste kobles til</translation>
+<translation id="7120904433567247946">Dette bokmerket er bare lagret på denne enheten. Hvis du lagrer det i <ph name="ACCOUNT_FOLDER" />, blir dette bokmerket også lagret i kontoen din.</translation>
 <translation id="7121438501124788993">Utviklermodus</translation>
 <translation id="7121728544325372695">Smarte tankestreker</translation>
 <translation id="7122605570852873914">Logg av likevel</translation>
@@ -9918,6 +9927,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="816704878106051517">{COUNT,plural, =1{et telefonnummer}other{# telefonnumre}}</translation>
 <translation id="8168435359814927499">Innhold</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Legg fanen til på leselisten}other{Legg fanene til på leselisten}}</translation>
+<translation id="8169177848833352618">Denne maskinen oppfyller dessverre ikke kravene for å installere Bruschetta. Feilkoden er <ph name="ERROR" />.</translation>
 <translation id="8174047975335711832">Enhetsinformasjon</translation>
 <translation id="8176332201990304395">Rosa og hvit</translation>
 <translation id="8176529144855282213">For å slå på tilgang til mikrofonen, slå på den fysiske mikrofonbryteren på enheten</translation>

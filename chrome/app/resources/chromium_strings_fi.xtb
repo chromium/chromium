@@ -67,6 +67,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="1906696617298807388">Kun kirjoitat osoitepalkkiin tai hakukenttään, Chromium lähettää kirjoittamasi tekstin Google Driveen, niin saat ehdotuksia. Tämä on poissa päältä incognito-tilassa.</translation>
 <translation id="1911763535808217981">Poistamalla tämän käytöstä voit kirjautua Google-sivustoille, esim. Gmailiin, kirjautumatta Chromiumiin.</translation>
 <translation id="1929939181775079593">Chromium ei vastaa. Käynnistetäänkö uudelleen?</translation>
+<translation id="1933341829955786215">Organisaatiosi (<ph name="MANAGER" />) edellyttää, että kirjaudut Chromiumiin</translation>
 <translation id="193439633299369377">Chromium-käyttöjärjestelmä täytyy käynnistää uudelleen, jotta päivitys voidaan ottaa käyttöön.</translation>
 <translation id="1951406923938785464">Chromium on estänyt tämän latauksen, koska tiedostotyyppiä ei ladata usein, ja se saattaa olla haitallinen</translation>
 <translation id="1953553007165777902">Ladataan… <ph name="MINUTE" /> minuuttia jäljellä</translation>
@@ -576,6 +577,7 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="8852026904190808918">Chromiumin valikot, asetukset, ilmoitukset ja muu teksti näytetään tällä kielellä</translation>
 <translation id="8862326446509486874">Sinulla ei ole käyttöoikeuksia järjestelmätason asennukseen. Kokeile asennusohjelman suorittamista uudelleen järjestelmänvalvojana.</translation>
 <translation id="8880203542552872219">Jos vaihdoit, päivitä muutos Chromiumin tallennettuihin salasanoihin.</translation>
+<translation id="8891709362986793894">Organisaatiosi edellyttää, että kirjaudut Chromiumiin</translation>
 <translation id="8907580949721785412">Chromium yrittää näyttää salasanat. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="8931379085695076764">Chromium voi arvioida kiinnostuksen kohteitasi muutaman viime viikon selaushistoriasi perusteella. Tiedot pysyvät laitteellasi.</translation>
 <translation id="8941642502866065432">Chromiumin päivitys epäonnistui</translation>

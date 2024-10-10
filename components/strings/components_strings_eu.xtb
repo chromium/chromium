@@ -1104,6 +1104,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="301521992641321250">Automatikoki blokeatuta</translation>
 <translation id="3016780570757425217">Ezagutu zure kokapena</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />: sakatu tabuladorea eta "Sartu" tekla iradokizuna kentzeko.</translation>
+<translation id="3022959067768579802">Jarraitu idazten</translation>
 <translation id="3023165109041533893">Webguneek iradokitako iragarkiei esker, zure arakatze-historia eta identitatea babesten dira, eta webguneek iragarki egokiak erakusten dizkizute. Zure jardueretan oinarrituta, baliteke bisitatu dituzun webguneek erlazionatutako iragarkiak erakustea arakatu ahala. Ezarpenetan, webgune horien zerrenda bat ikus dezakezu, eta nahi ez dituzunak blokeatu.</translation>
 <translation id="3024663005179499861">Gidalerro mota okerra</translation>
 <translation id="3030331669969285614">Eginbide esperimental hauek hutsegiteak sor ditzaketen aldaketak ekiditen edo desegiten dituzte, eta epe mugatu batean soilik egongo dira erabilgarri.</translation>
@@ -1373,6 +1374,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="350763432931695541">Hurrengo orrialdeetako testua ateratzen</translation>
 <translation id="3507869775212388416">Lege arloko lanpostuak</translation>
 <translation id="3507936815618196901">Inguruaren 3D-ko mapa bat sortu eta kameraren posizioaren jarraipena egin.</translation>
+<translation id="3510341387555916271">Ireki berrekiteko</translation>
 <translation id="3512163584740124171">Ez ikusi egin zaio gidalerro honi, gidalerro-talde bereko beste gidalerro batek lehentasun handiagoa duelako.</translation>
 <translation id="351522771072578657">Menu batean zaude</translation>
 <translation id="3517264445792388751">Administratzaileak fitxategi-sistema desgaitu du</translation>
@@ -1740,6 +1742,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4152318981910038897">{COUNT,plural, =1{1. orria}other{{COUNT}. orria}}</translation>
 <translation id="4154277373259957087">Orain, Chrome-k zu zarela egiaztatuko du ordainketa-metodoak bete baino lehen. Hori eguneratzeko, joan <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> atalera.</translation>
 <translation id="4159784952369912983">Morea</translation>
+<translation id="4165422751765527461">Laguntza-zentroko artikulu bat beste fitxa batean irekitzen du</translation>
 <translation id="4165986682804962316">Webgunearen ezarpenak</translation>
 <translation id="4169535189173047238">Ez eman baimenik</translation>
 <translation id="4171400957073367226">Egiaztapen-sinadurak ez du balio</translation>
@@ -2899,6 +2902,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6306713302480826305">Helbidea gailu honetatik eta saioa hasita daukaten beste gailuetatik ezabatuko da</translation>
 <translation id="6307968763353904914">Bankuak ez du txartel birtualik eskaintzen ordainketa-metodo horretarako oraingoz, baina <ph name="CARD_LABEL" /> txartela erabil dezakezu sarean ordaintzeko.</translation>
 <translation id="6311410654831092784">Txartelak</translation>
+<translation id="6311642842034740437">Izendatutako kokapena</translation>
 <translation id="6312113039770857350">Ez dago erabilgarri web-orria</translation>
 <translation id="6316110367871394043">Pausatu da <ph name="CLOUD_PROVIDER" /> zerbitzura fitxategiak kargatzeko prozesua</translation>
 <translation id="6316723751983724988">Berria: Chrome-rako Family Link-eko aukerak hemen aplikatzen dira</translation>

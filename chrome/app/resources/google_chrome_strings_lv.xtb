@@ -403,6 +403,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="6060842547856900641">Atvērt Lens</translation>
 <translation id="6069027071882229820">Kopēt kā attēlu</translation>
 <translation id="6070348360322141662">Papildu drošības nolūkos Google Chrome šifrēs jūsu datus.</translation>
+<translation id="6075300983329039771">Saskaņā ar jūsu organizācijas (<ph name="MANAGER" />) politiku jums ir jāpierakstās pārlūkā Chrome.</translation>
 <translation id="608006075545470555">Darba profila pievienošana šai pārlūkprogrammai</translation>
 <translation id="6097822892606850415">Rakstiet ar lielāku pārliecību, izmantojot MI.</translation>
 <translation id="6113794647360055231">Pārlūkā Chrome ir veikti uzlabojumi</translation>
@@ -541,6 +542,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="7670287553302121848">Chrome kontam ir nepieciešama atkārtota autentifikācija</translation>
 <translation id="769538538642757151">Ja kaut kas būs jāpārskata, saņemsiet Chrome paziņojumu</translation>
 <translation id="77283119132245232">Nodrošina sistēmas izsekošanas pakalpojumus pārlūkā <ph name="BROWSER_NAME" />. Ja šis pakalpojums ir atspējots, pārlūka izveidotajos veiktspējas izsekošanas datos netiek ietverti sistēmas līmeņa notikumi, piemēram, konteksta maiņas un pavedienu gatavības notikumi.</translation>
+<translation id="7736869414036750079">Saskaņā ar jūsu organizācijas politiku jums ir jāpierakstās pārlūkā Chrome.</translation>
 <translation id="7747138024166251722">Instalētājam neizdevās izveidot pagaidu katalogu. Lūdzu, pārbaudiet, vai diskā pietiek vietas un vai ir atļauja instalēt programmatūru.</translation>
 <translation id="7761834446675418963">Noklikšķiniet uz sava vārda, lai atvērtu pārlūku Chrome un sāktu pārlūkošanu.</translation>
 <translation id="7763983146198734674">Saglabājiet paroles un piekļūstiet tām, atrodoties ceļā.</translation>

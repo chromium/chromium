@@ -460,6 +460,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="3098745985164956033">Les images sont envoyées à Google afin de vous proposer de meilleures descriptions</translation>
 <translation id="3114507951000454849">Lisez les actualités du jour <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Annonces</translation>
+<translation id="3131961580615093332"><ph name="GIVEN_NAME" /> a modifié l'onglet "<ph name="TAB_NAME" />"</translation>
 <translation id="3148237711805373460">Accéder</translation>
 <translation id="314939179385989105">Page d'accueil de Chrome</translation>
 <translation id="3158667104057012316">Tri par ordre manuel</translation>
@@ -637,6 +638,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="4042941173059740150">Continuez vers <ph name="SITE_ETLD_PLUS_ONE" /> avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="404352903042073578">Groupe sans nom</translation>
 <translation id="4044708993631234325">Feuille en bas de l'écran</translation>
+<translation id="4045441967987592849">Rouvrir</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> onglet standard avec une nouvelle activité dans les groupes d'onglets partagés}one{<ph name="TABS_COUNT_MANY" /> onglet standard avec une nouvelle activité dans les groupes d'onglets partagés}other{<ph name="TABS_COUNT_MANY" /> onglets standards avec une nouvelle activité dans les groupes d'onglets partagés}}</translation>
 <translation id="405365679581583349">Mettre à jour les services Google Play</translation>
 <translation id="405399507749852140">Recevez des alertes si le prix baisse sur un site</translation>
@@ -844,6 +846,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="4943703118917034429">Réalité virtuelle</translation>
 <translation id="4943872375798546930">Aucun résultat</translation>
 <translation id="4950924971025849764">Lorsque vous êtes connecté au même compte Google, d'autres appareils peuvent utiliser ce téléphone comme clé de sécurité.</translation>
+<translation id="4953833914914492602">Le groupe d'onglets "<ph name="TAB_GROUP_NAME" />" n'est plus disponible</translation>
 <translation id="4957722034734105353">En savoir plus…</translation>
 <translation id="4961107849584082341">Traduire cette page dans n'importe quelle langue</translation>
 <translation id="4964614743143953889">Chrome vous avertit en cas de sites et de téléchargements dangereux</translation>
@@ -957,6 +960,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="5526281268548144413">Impossible de fermer les onglets ouverts dans plusieurs fenêtres</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{Il y a # min}one{Il y a # min}other{Il y a # min}}</translation>
 <translation id="5548606607480005320">Contrôle de sécurité</translation>
+<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> a rejoint le groupe d'onglets "<ph name="TAB_GROUP_NAME" />"</translation>
 <translation id="5554520618550346933">Lorsque vous utilisez un mot de passe, Chrome vous avertit s'il a été publié en ligne. Lors de cette opération, vos mots de passe et vos noms d'utilisateur sont chiffrés afin que personne ne puisse les consulter, y compris Google.</translation>
 <translation id="5555525474779371165">Choisissez votre mode de navigation sécurisée</translation>
 <translation id="5556459405103347317">Actualiser</translation>
@@ -1079,6 +1083,7 @@ Votre compte Google conserve peut-être d'autres contenus d'historique de naviga
 <translation id="6085886413119427067">Détermine comment se connecter aux sites Web via une connexion sécurisée</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> heures restantes</translation>
 <translation id="6095578583683628124">Si Google est aussi votre moteur de recherche par défaut, vous obtiendrez des suggestions plus pertinentes en fonction du contexte</translation>
+<translation id="610630277578876674">Ouvrez rapidement des liens dans des messages, etc.</translation>
 <translation id="6108923351542677676">Configuration en cours…</translation>
 <translation id="6112702117600201073">Actualisation de la page</translation>
 <translation id="6122831415929794347">Désactiver la navigation sécurisée ?</translation>
@@ -1245,6 +1250,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6775840696761158817">Lorsque vous appuyez ou saisissez du texte dans la barre d'adresse ou le champ de recherche, des suggestions du moteur de recherche par défaut s'affichent. Ce paramètre est désactivé en navigation privée.</translation>
 <translation id="6785476624617658922">Conditions d'utilisation supplémentaires de Chrome et Chrome OS</translation>
 <translation id="6795633245022906657">Ouvrir rapidement un nouvel onglet. Pour modifier ce raccourci, accédez aux paramètres.</translation>
+<translation id="679588508577699489">Définir Chrome comme votre navigateur par défaut</translation>
 <translation id="679956319013005046">Pour définir votre service préféré pour la saisie automatique, commencez par l'ajouter dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">La fenêtre sera fermée</translation>
 <translation id="6803791793483522764">Consulter les notifications</translation>
@@ -1616,6 +1622,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8282297628636750033">Appliquer thème sombre aux sites</translation>
 <translation id="8282950411412455249">Accéder aux paramètres de sécurité</translation>
 <translation id="829672787777123339">Connexion à votre appareil…</translation>
+<translation id="8307517230426267469"><ph name="GIVEN_NAME" /> a supprimé l'onglet "<ph name="TAB_NAME" />"</translation>
 <translation id="831192587911042850">Ajouter le site Web actuel à la liste des sites Web que vous suivez.</translation>
 <translation id="8342727528718219152">Chrome vous indiquera les sites qui envoient peut-être trop de notifications</translation>
 <translation id="834313815369870491">Ne jamais traduire les sites</translation>
@@ -1736,6 +1743,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8863714995118816041">Autorisations de nouveau accordées pour <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Données Chrome de votre compte</translation>
 <translation id="8888527824584402177">Les onglets que vous n'avez pas utilisés depuis <ph name="DAYS_INACTIVE" /> jours sont déplacés ici<ph name="AUTODELETE_SECTION" />. Vous pouvez modifier cette option à tout moment dans <ph name="SETTINGS_TITLE" />.</translation>
+<translation id="8890668505403261809">Rechercher dans vos onglets de navigation privée</translation>
 <translation id="8898822736010347272">Les URL de certaines pages que vous consultez, ainsi que des informations système limitées et une partie du contenu de certaines pages sont envoyées à Google, à la fois pour identifier les nouvelles menaces et pour protéger tous les utilisateurs sur le Web.</translation>
 <translation id="8909135823018751308">Partager…</translation>
 <translation id="8921980840204105660">Activez la synchronisation pour récupérer vos favoris depuis d'autres appareils</translation>

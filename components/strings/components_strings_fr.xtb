@@ -1104,6 +1104,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="301521992641321250">Bloquée automatiquement</translation>
 <translation id="3016780570757425217">Connaître votre position</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, appuyez sur Tabulation, puis sur Entrée pour supprimer la suggestion.</translation>
+<translation id="3022959067768579802">Continuer d'écrire</translation>
 <translation id="3023165109041533893">Les annonces suggérées par les sites contribuent à protéger votre historique de navigation et votre identité tout en permettant aux sites de vous montrer des annonces pertinentes. En fonction de votre activité, un site que vous avez visité peut suggérer des annonces s'y rapportant lorsque vous poursuivez votre navigation. Vous pouvez consulter la liste de ces sites et bloquer ceux qui vous ne vous intéressent pas dans les paramètres.</translation>
 <translation id="3024663005179499861">Type de règle incorrect.</translation>
 <translation id="3030331669969285614">Ces flags empêchent ou annulent une modification destructive et ne sont disponibles que pendant une durée limitée.</translation>
@@ -1321,7 +1322,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3414275587143250384">Calcul distribué et cloud computing</translation>
 <translation id="3414952576877147120">Taille :</translation>
 <translation id="341513675006332771">Bouton "Jouer au jeu Chrome Dino" à activer pour y jouer dans Chrome</translation>
-<translation id="3415471717466570460">Vos recherches, les meilleurs résultats et le contenu de leurs pages sont envoyés à Google. Ils peuvent être consultés par des réviseurs humains afin d'améliorer cette fonctionnalité. Il s'agit d'une fonctionnalité expérimentale qui n'est pas infaillible.</translation>
+<translation id="3415471717466570460">Vos recherches, les meilleurs résultats et le contenu des pages correspondantes sont envoyés à Google. Ils peuvent être consultés par des réviseurs humains afin d'améliorer cette fonctionnalité. Il s'agit d'une fonctionnalité expérimentale qui n'est pas infaillible.</translation>
 <translation id="3422248202833853650">Essayez de fermer les autres programmes pour libérer de la mémoire.</translation>
 <translation id="3422472998109090673"><ph name="HOST_NAME" /> est actuellement inaccessible.</translation>
 <translation id="3423742043356668186">Spécifiée par le système</translation>
@@ -1377,6 +1378,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="350763432931695541">Extraction du texte dans les quelques prochaines pages…</translation>
 <translation id="3507869775212388416">Emplois dans le domaine juridique</translation>
 <translation id="3507936815618196901">Créer un plan 3D de votre environnement et suivre la position de la caméra</translation>
+<translation id="3510341387555916271">Ouvrir pour reprendre</translation>
 <translation id="3512163584740124171">Cette règle est ignorée, car une autre issue du même groupe de règles présente une priorité plus élevée.</translation>
 <translation id="351522771072578657">Vous êtes actuellement dans un menu</translation>
 <translation id="3517264445792388751">Le système de fichiers a été désactivé par votre administrateur</translation>
@@ -1744,6 +1746,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4152318981910038897">{COUNT,plural, =1{Page 1}one{Page {COUNT}}other{Page {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome va maintenant valider votre identité avant de renseigner les modes de paiement. Vous pouvez modifier cela à tout moment dans <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4159784952369912983">Violet</translation>
+<translation id="4165422751765527461">Ouvre un article du centre d'aide dans un nouvel onglet</translation>
 <translation id="4165986682804962316">Paramètres des sites</translation>
 <translation id="4169535189173047238">Ne pas autoriser</translation>
 <translation id="4171400957073367226">Signature de validation non valide.</translation>
@@ -2904,6 +2907,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6306713302480826305">Cette adresse sera supprimée de cet appareil et des autres appareils connectés à votre compte</translation>
 <translation id="6307968763353904914">Actuellement, votre banque ne propose pas de carte virtuelle pour ce mode de paiement, mais vous pouvez payer en ligne avec votre <ph name="CARD_LABEL" />.</translation>
 <translation id="6311410654831092784">Papier cartonné</translation>
+<translation id="6311642842034740437">Lieu-dit</translation>
 <translation id="6312113039770857350">Page Web non disponible</translation>
 <translation id="6316110367871394043">Importation de fichiers vers <ph name="CLOUD_PROVIDER" /> suspendue</translation>
 <translation id="6316723751983724988">Nouveau : Les choix Family Link pour Chrome s'appliquent ici</translation>

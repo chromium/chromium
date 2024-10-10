@@ -1083,6 +1083,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="6085886413119427067">Détermine la manière de communiquer avec des sites Web par connexion sécurisée</translation>
 <translation id="60923314841986378">Il reste <ph name="HOURS" /> heures</translation>
 <translation id="6095578583683628124">Si Google est également votre moteur de recherche par défaut, vous verrez de meilleures suggestions pertinentes selon le contexte</translation>
+<translation id="610630277578876674">Ouvrez rapidement les liens dans les messages et plus</translation>
 <translation id="6108923351542677676">Configuration en cours...</translation>
 <translation id="6112702117600201073">Actualisation de la page en cours</translation>
 <translation id="6122831415929794347">Désactiver la navigation sécurisée?</translation>
@@ -1249,6 +1250,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6775840696761158817">Lorsque vous touchez la barre d'adresse ou le champ de recherche ou que vous tapez du texte à l'intérieur, vous verrez des suggestions de votre moteur de recherche par défaut. Ce paramètre est désactivé en mode de navigation privée.</translation>
 <translation id="6785476624617658922">Conditions d'utilisation supplémentaires de Google Chrome et de Chrome OS</translation>
 <translation id="6795633245022906657">Ouvrez rapidement un nouvel onglet. Pour modifier ce raccourci, accédez à Paramètres.</translation>
+<translation id="679588508577699489">Faites de Chrome votre navigateur par défaut</translation>
 <translation id="679956319013005046">Pour définir votre service préféré pour le remplissage automatique, ajoutez d'abord le service dans les <ph name="BEGIN_LINK" />paramètres Android<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">La fenêtre sera fermée</translation>
 <translation id="6803791793483522764">Examiner les notifications</translation>
@@ -1741,6 +1743,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8863714995118816041">Autorisations à nouveau accordées pour <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Données relatives à Chrome dans votre compte</translation>
 <translation id="8888527824584402177">Les onglets que vous n'avez pas utilisés depuis <ph name="DAYS_INACTIVE" /> jours sont déplacés ici<ph name="AUTODELETE_SECTION" />. Vous pouvez modifier cette option en tout temps dans <ph name="SETTINGS_TITLE" />.</translation>
+<translation id="8890668505403261809">Recherchez dans vos onglets de navigation privée</translation>
 <translation id="8898822736010347272">Envoie à Google des URL de certaines pages que vous visitez, certaines données système et des échantillons de contenu des pages afin d'aider à découvrir de nouvelles menaces et de protéger tous les internautes.</translation>
 <translation id="8909135823018751308">Partager...</translation>
 <translation id="8921980840204105660">Synchronisez vos données pour ajouter vos favoris de vos autres appareils</translation>

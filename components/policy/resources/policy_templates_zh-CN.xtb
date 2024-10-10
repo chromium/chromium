@@ -772,6 +772,13 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
       如果您没有为某个网站设置此政策，系统便会将 <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> 中的政策（若已设置）应用于该网站，或者让该网站遵循浏览器的默认权限设置并允许用户按网站选择这项权限。</translation>
 <translation id="1574258262373444557">不使用“<ph name="AES_KL_NAME" />”作为加密算法进行用户存储加密</translation>
 <translation id="1575015449587326319">OnFileDownloaded Chrome Enterprise Connector 的配置政策</translation>
+<translation id="1578495851351913403">设置此政策后，在显示屏设置中，每个显示屏下方都会显示一个新的界面切换开关。正常的镜像模式会将所有显示屏合并为一个显示屏，但新的切换开关让用户可以将一个显示屏排除在镜像之外，并将其显示为扩展显示屏。
+
+如果此政策已启用，每个显示屏都会显示切换开关，以便用户选择是否将其排除在镜像模式之外，并且用户可以选择要启用的显示屏。
+
+如果此政策未设置或已停用，切换开关将隐藏。
+
+注意：此政策只会影响界面，ChromeOS 会在隐藏界面时保留现有设置。</translation>
 <translation id="1583248206450240930">默认情况下使用“<ph name="PRODUCT_FRAME_NAME" />”</translation>
 <translation id="1584963377073400553">借助“利用 AI 创建主题”功能，用户可从一系列选项中预先选择来创建自定义主题/壁纸。
 
@@ -3233,6 +3240,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       当此政策不含任何时间范围或未设置时：
       此政策不会阻止任何自动进行的更新检查，但其他政策可能会阻止这类检查。
       截至 M88，只有那些已配置为自动启动型自助服务终端的 <ph name="PRODUCT_OS_NAME" />设备才会启用此功能。其他设备均不受此政策的限制。不过，从 M89 开始，此政策在所有 <ph name="PRODUCT_OS_NAME" />设备上都会处于启用状态。</translation>
+<translation id="3456705177754697344">不为用户提供“在镜像模式下排除显示屏”选项</translation>
 <translation id="3459509316159669723">打印</translation>
 <translation id="3460485593332210712">允许运行 Chrome for Testing</translation>
 <translation id="3461279434465463233">报告电源状态</translation>
@@ -5120,6 +5128,34 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       如果此政策设为 true，系统信息将会被强制显示。
       如果此政策设为 false，系统信息将会被强制隐藏。
       如果未设置此政策，则采取默认行为（在 Canary 版/开发渠道中显示）。用户可以通过执行特定操作（例如 Alt-V）来显示/隐藏系统信息。</translation>
+<translation id="4946124666877421935">通过设置此政策，您能以列表形式指定哪些 Web 应用无需用户互动即可静默安装，且无法由用户卸载或停用。
+
+      此政策的每个列表项都是一个对象，其中包含 1 个必要成员：
+      <ph name="URL_LABEL" />（要安装的 Web 应用的网址）
+
+      以及 6 个可选成员：
+      - <ph name="DEFAULT_LAUNCH_CONTAINER_LABEL" />
+      （用于指明 Web 应用的打开方式，默认在新标签页中打开）
+
+      - <ph name="CREATE_DESKTOP_SHORTCUT_LABEL" />
+      （如果您想创建 <ph name="LINUX_OS_NAME" /> 和 <ph name="MS_WIN_NAME" /> 桌面快捷方式，请设为 True。）
+
+      - <ph name="FALLBACK_APP_NAME_LABEL" />
+      （自 <ph name="PRODUCT_NAME" /> 90 版起，让您能够替换非渐进式 Web 应用 [PWA] 的应用名称，或替换临时安装但在安装完毕之前需进行身份验证的 PWA 的应用名称。如果同时提供了 <ph name="CUSTOM_NAME_LABEL" /> 和 <ph name="FALLBACK_APP_NAME_LABEL" />，系统会忽略后者。）
+
+      - <ph name="OVERRIDE_APP_NAME_LABEL" />
+      （自 <ph name="PRODUCT_OS_NAME" /> 99 版以及所有其他桌面操作系统上的 112 版起，让您能永久替换所有 Web 应用和 PWA 的应用名称。）
+
+      - <ph name="CUSTOM_ICON_LABEL" />
+      （自 <ph name="PRODUCT_OS_NAME" /> 99 版以及所有其他桌面操作系统上的 112 版起，让您能替换安装式应用的应用图标。图标必须为方形，大小不超过 1 MB，并采用以下格式之一：jpeg、png、gif、webp、ico。
+      哈希值必须是图标文件的 SHA256 哈希。<ph name="URL_LABEL" /> 应可直接访问，无需身份验证，以确保可以在应用安装后使用该图标。）
+
+      - <ph name="INSTALL_AS_SHORTCUT_LABEL" />
+      （自 <ph name="PRODUCT_NAME" /> 107 版起。）如果此政策已启用，给定的 <ph name="URL_LABEL" /> 将作为快捷方式安装，就像通过桌面浏览器 GUI 中的“创建快捷方式…”选项完成安装一样。
+      请注意，如果作为快捷方式安装，它不会在 <ph name="URL_LABEL" /> 中的清单发生变化时更新。
+      如果此政策已停用或未设置，给定 <ph name="URL_LABEL" /> 中的 Web 应用将正常安装。
+
+      如需了解如何将应用固定到 <ph name="PRODUCT_OS_NAME" /> 任务栏中，请参阅 <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" />。</translation>
 <translation id="494613465159630803">Cast 接收器</translation>
 <translation id="494924690085329212">在用户退出后重新启动（如果 Android 已启动）。</translation>
 <translation id="4950447493143157880">一律不使用内置 DNS 客户端</translation>
@@ -5533,6 +5569,8 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="5257395339965216304">托管的应用数据</translation>
 <translation id="5258445772095084618">允许独立用户使用所需的虚拟机来支持 Linux 应用</translation>
 <translation id="5262320080678421295">不信任 Symantec Corporation 旧版 PKI 颁发的证书</translation>
+<translation id="5265613843467285323">显示一个在镜像模式下排除显示屏的界面切换开关。</translation>
+<translation id="5272332743749468542">为用户提供“在镜像模式下排除显示屏”选项</translation>
 <translation id="5273744932022326215">在登录屏幕上启用“光标突出显示”无障碍功能。
 
           如果此政策设为 true，“光标突出显示”在登录屏幕上将始终处于启用状态。

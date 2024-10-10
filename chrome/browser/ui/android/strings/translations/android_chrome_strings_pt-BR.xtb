@@ -460,6 +460,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="3098745985164956033">Algumas imagens são enviadas ao Google para que possamos melhorar as descrições</translation>
 <translation id="3114507951000454849">Leia as notícias de hoje <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Anúncios</translation>
+<translation id="3131961580615093332"><ph name="GIVEN_NAME" /> mudou a guia "<ph name="TAB_NAME" />"</translation>
 <translation id="3148237711805373460">Acessar</translation>
 <translation id="314939179385989105">Página inicial do Chrome</translation>
 <translation id="3158667104057012316">Ordenar manualmente</translation>
@@ -637,6 +638,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4042941173059740150">Acesse <ph name="SITE_ETLD_PLUS_ONE" /> com <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="404352903042073578">Grupo sem nome</translation>
 <translation id="4044708993631234325">Página inferior</translation>
+<translation id="4045441967987592849">Reabrir</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> guia padrão com nova atividade em grupos de guias compartilhados}one{<ph name="TABS_COUNT_MANY" /> guia padrão com nova atividade em grupos de guias compartilhados}other{<ph name="TABS_COUNT_MANY" /> guias padrão com nova atividade em grupos de guias compartilhados}}</translation>
 <translation id="405365679581583349">Atualizar o Google Play Services</translation>
 <translation id="405399507749852140">Receba alertas se houver uma redução no preço em algum site</translation>
@@ -845,6 +847,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4943703118917034429">Realidade virtual</translation>
 <translation id="4943872375798546930">Nenhum resultado</translation>
 <translation id="4950924971025849764">Quando você se conecta à mesma Conta do Google, outros dispositivos podem usar este smartphone como uma chave de segurança.</translation>
+<translation id="4953833914914492602">O grupo de guias "<ph name="TAB_GROUP_NAME" />" não está mais disponível</translation>
 <translation id="4957722034734105353">Saiba mais...</translation>
 <translation id="4961107849584082341">Traduza esta página para qualquer idioma</translation>
 <translation id="4964614743143953889">O Chrome avisa sobre sites e downloads não seguros</translation>
@@ -958,6 +961,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="5526281268548144413">Não é possível fechar em várias janelas</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# min atrás}one{# min atrás}other{# min atrás}}</translation>
 <translation id="5548606607480005320">Confirmação de segurança</translation>
+<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> entrou no grupo de guias "<ph name="TAB_GROUP_NAME" />"</translation>
 <translation id="5554520618550346933">Quando você usa uma senha, o Chrome avisa se ela foi publicada on-line. Quando isso é feito, as senhas e os nomes de usuário são criptografados para que não possam ser lidos por ninguém, nem mesmo o Google.</translation>
 <translation id="5555525474779371165">Escolha sua proteção no Navegação segura</translation>
 <translation id="5556459405103347317">Recarregar</translation>
@@ -1619,6 +1623,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8282297628636750033">Aplicar o tema escuro para sites</translation>
 <translation id="8282950411412455249">Acesse as configurações de segurança</translation>
 <translation id="829672787777123339">Conectando ao seu dispositivo…</translation>
+<translation id="8307517230426267469"><ph name="GIVEN_NAME" /> removeu a guia "<ph name="TAB_NAME" />"</translation>
 <translation id="831192587911042850">Adiciona o site atual à lista de sites que você está seguindo.</translation>
 <translation id="8342727528718219152">O Chrome vai avisar se houver sites que podem estar enviando muitas notificações</translation>
 <translation id="834313815369870491">Nunca traduzir estes sites</translation>

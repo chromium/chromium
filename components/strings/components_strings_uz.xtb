@@ -1103,6 +1103,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="301521992641321250">Avtomatik bloklangan</translation>
 <translation id="3016780570757425217">Joylashuvingiz haqidagi ma’lumotlar</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, taklifni olib tashlash uchun avval Tab, keyin esa Enter tugmasini bosing.</translation>
+<translation id="3022959067768579802">Yozishda davom etish</translation>
 <translation id="3023165109041533893">Saytlar taklif qilgan reklamalarda shaxsingiz va brauzer tarixiga oid maʼlumotlar himoya qilinadi, shuningdek, saytlar sizga aloqador reklamalarni chiqaradi. Siz tashrif buyurgan sayt, brauzer tarixi asosida, boshqa saytlarda sizga aloqador reklamalarni taklif qilishi mumkin. Sozlamalarda bunday saytlar roʻyxatini koʻrish va ularni bloklashingiz mumkin.</translation>
 <translation id="3024663005179499861">Qoida turi noto‘g‘ri</translation>
 <translation id="3030331669969285614">Bu parametrlar muhim oʻzgartirishlarni bloklaydi yoki bekor qiladi. Ularning amal qilish muddati cheklangan.</translation>
@@ -1373,6 +1374,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="350763432931695541">Matn chiqarilishiga bir nechta sahifa qoldi</translation>
 <translation id="3507869775212388416">Huquq sohasidagi vakansiyalar</translation>
 <translation id="3507936815618196901">Atrofingiz 3D xaritasini yaratish va kamera holatini kuzatish</translation>
+<translation id="3510341387555916271">Qaytish uchun oching</translation>
 <translation id="3512163584740124171">Bu parametr shu guruhdagi boshqa parametr ustunligi tufayli inkor etilgan.</translation>
 <translation id="351522771072578657">Siz hozirda menyudasiz</translation>
 <translation id="3517264445792388751">Fayllar tizimi administrator tomonidan faolsizlantirilgan</translation>
@@ -1739,6 +1741,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="4152318981910038897">{COUNT,plural, =1{1-sahifa}other{{COUNT}-sahifa}}</translation>
 <translation id="4154277373259957087">Chrome toʻlov usulini kiritishdan oldin shaxsingizni tasdiqlaydi Buni istalgan vaqtda <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> orqali yangilash mumkin.</translation>
 <translation id="4159784952369912983">Siyohrang</translation>
+<translation id="4165422751765527461">Yangi varaqda Yordam markazi maqolasi ochiladi</translation>
 <translation id="4165986682804962316">Sayt sozlamalari</translation>
 <translation id="4169535189173047238">Rad etish</translation>
 <translation id="4171400957073367226">Tasdiqlash imzosi noto‘g‘ri</translation>
@@ -2898,6 +2901,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6306713302480826305">Bu manzil shu va tizimga kirgan qurilmalaringizdan oʻchirib tashlanadi</translation>
 <translation id="6307968763353904914">Bankingiz hozirda bu toʻlov usuli uchun virtual karta taklif qilmaydi, lekin internetdagi toʻlovlar uchun <ph name="CARD_LABEL" /> ishlatishingiz mumkin.</translation>
 <translation id="6311410654831092784">Kartochkalar</translation>
+<translation id="6311642842034740437">Joy nomi</translation>
 <translation id="6312113039770857350">Veb-sahifa mavjud emas</translation>
 <translation id="6316110367871394043"><ph name="CLOUD_PROVIDER" /> omboriga fayl yuklash pauza qilindi</translation>
 <translation id="6316723751983724988">Yangi: Chrome uchun Family Link sozlamalari shu yerda amal qiladi</translation>

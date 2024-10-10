@@ -460,6 +460,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="3098745985164956033">Tavsiflarini yaxshilash uchun ayrim rasmlar Googlega yuborildi</translation>
 <translation id="3114507951000454849">Bugungi yangiliklar bilan tanishing <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Xabarnomalar</translation>
+<translation id="3131961580615093332"><ph name="GIVEN_NAME" /> “<ph name="TAB_NAME" />” nomli varaqni oʻzgartirdi</translation>
 <translation id="3148237711805373460">Ochish</translation>
 <translation id="314939179385989105">Chrome bosh sahifasi</translation>
 <translation id="3158667104057012316">Qoʻlda saralanmoqda</translation>
@@ -637,6 +638,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> bilan <ph name="SITE_ETLD_PLUS_ONE" />ni davom ettirish</translation>
 <translation id="404352903042073578">Nomsiz guruh</translation>
 <translation id="4044708993631234325">Quyi ekran</translation>
+<translation id="4045441967987592849">Qayta ochish</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{Yangi harakatli <ph name="TABS_COUNT_ONE" /> ta standart varaq umumiy varaqlar guruhiga olindi}other{Yangi harakatli <ph name="TABS_COUNT_MANY" /> ta standart varaq umumiy varaqlar guruhiga olindi}}</translation>
 <translation id="405365679581583349">Google Play xizmatlarini yangilash</translation>
 <translation id="405399507749852140">Har qaysi saytda narxi tushganda xabar olish</translation>
@@ -844,6 +846,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="4943703118917034429">Virtual reallik</translation>
 <translation id="4943872375798546930">Hech narsa topilmadi</translation>
 <translation id="4950924971025849764">Bir xil Google hisobidan kirilganda boshqa qurilmalar bu telefonni elektron kalit sifatida ishlatishi mumkin.</translation>
+<translation id="4953833914914492602">“<ph name="TAB_GROUP_NAME" />” nomli varaqlar guruhi endi mavjud emas</translation>
 <translation id="4957722034734105353">Batafsil...</translation>
 <translation id="4961107849584082341">Bu sahifani boshqa tilga tarjima qiling</translation>
 <translation id="4964614743143953889">Chrome xavfli saytlar va yuklanmalar haqida ogohlantiradi</translation>
@@ -957,6 +960,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="5526281268548144413">Bir nechta oynada bajarish imkonsiz</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# daqiqa oldin}other{# daqiqa oldin}}</translation>
 <translation id="5548606607480005320">Xavfsizlik tekshiruvi</translation>
+<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> “<ph name="TAB_GROUP_NAME" />” nomli varaqlar guruhiga qoʻshildi</translation>
 <translation id="5554520618550346933">Paroldan foydalansangiz, u internetga chiqib ketgan boʻlsa, Chrome sizni ogohlantiradi. Bunda parolingiz va foydalanuvchi nomingiz shifrlanadi, hatto Google xodimlariga ham koʻrinmaydi.</translation>
 <translation id="5555525474779371165">Saytlarni xavfsiz kezish himoyasini tanlang</translation>
 <translation id="5556459405103347317">Qayta yuklash</translation>
@@ -1079,6 +1083,7 @@ Google hisobingiz orqali amalga oshirgan qidiruvlaringiz, brauzer tarixi va bosh
 <translation id="6085886413119427067">Xavfsiz aloqadan foydalanadigan saytlarga qanday ulanishini aniqlaydi</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> soat qoldi</translation>
 <translation id="6095578583683628124">Agar Google birlamcnhi qidiruv tizmingiz boʻlsa, qidiruvda yanada yaxshi va yanada mos takliflar olasiz</translation>
+<translation id="610630277578876674">Xabarlardagi havolalarni tezkor ochish va boshqalar</translation>
 <translation id="6108923351542677676">Sozlanmoqda...</translation>
 <translation id="6112702117600201073">Sahifa yangilanmoqda</translation>
 <translation id="6122831415929794347">Saytlarni xavfsiz kezish faolsizlantirilsinmi?</translation>
@@ -1245,6 +1250,7 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6775840696761158817">Manzillar qatori yoki qidiruv oynasi bosilganda yoki matn kiritilganda asosiy qidiruv tizimi takliflari chiqadi. Inkognito rejimda bu funksiya ishlamaydi.</translation>
 <translation id="6785476624617658922">Google Chrome va ChromeOS qoʻshimcha shartlari</translation>
 <translation id="6795633245022906657">Tezda yangi varaqda ochish. Bu yorliqni tahrirlash uchun Sozlamalarga kiring.</translation>
+<translation id="679588508577699489">Chromeni asosiy brauzer etib belgilang</translation>
 <translation id="679956319013005046">Afzal xizmatni belgilash uchun <ph name="BEGIN_LINK" />Android sozlamalari<ph name="END_LINK" /> orqali xizmat qoʻshing.</translation>
 <translation id="6802555630140434547">Oyna yopiladi</translation>
 <translation id="6803791793483522764">Bildirishnomalarni tekshirish</translation>
@@ -1616,6 +1622,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="8282297628636750033">Saytlarga tungi mavzuni tatbiq etish</translation>
 <translation id="8282950411412455249">Xavfsizlik sozlamalarini ochish</translation>
 <translation id="829672787777123339">Qurilmangizga ulanmoqda…</translation>
+<translation id="8307517230426267469"><ph name="GIVEN_NAME" /> “<ph name="TAB_NAME" />” nomli varaqni olib tashladi</translation>
 <translation id="831192587911042850">Joriy saytni kuzatuvdagi saytlar roʻyxatiga kiritadi.</translation>
 <translation id="8342727528718219152">Chrome saytlarning juda koʻp bildirishnoma yuborishi haqida xabar qiladi</translation>
 <translation id="834313815369870491">Saytlar hech qachon tarjima qilinmasin</translation>
@@ -1736,6 +1743,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="8863714995118816041"><ph name="SITE_NAME" /> uchun yana ruxsat berildi</translation>
 <translation id="8865415417596392024">Hisobingizdagi Chrome maʼlumotlari</translation>
 <translation id="8888527824584402177"><ph name="DAYS_INACTIVE" /> kun ishlatilmagan varaqlar shu yerga olinadi<ph name="AUTODELETE_SECTION" />. Buni istalgan vaqtda <ph name="SETTINGS_TITLE" /> orqali oʻzgartirish mumkin.</translation>
+<translation id="8890668505403261809">Inkognito varaqlardan qidirish</translation>
 <translation id="8898822736010347272">Ochilgan sahifalarning URL manzillari, cheklangan tizim va sahifalar axborotini anonim ravishda Google serverlariga yuboradi va internetdagi yangi tahdidlarni aniqlashga yordam berib, barcha foydalanuvchilarni bu tahdidlardan himoya qiladi.</translation>
 <translation id="8909135823018751308">Ulashish…</translation>
 <translation id="8921980840204105660">Boshqa qurilmalardan bukmarklarni olish uchun sinxronlang</translation>

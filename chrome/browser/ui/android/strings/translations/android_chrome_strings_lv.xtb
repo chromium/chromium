@@ -460,6 +460,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="3098745985164956033">Daži attēli tiek sūtīti uz Google serveriem, lai uzlabotu aprakstus</translation>
 <translation id="3114507951000454849">Lasiet šodienas ziņas <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Paziņojumi</translation>
+<translation id="3131961580615093332">Lietotājs <ph name="GIVEN_NAME" /> mainīja cilni “<ph name="TAB_NAME" />”.</translation>
 <translation id="3148237711805373460">Pāriet</translation>
 <translation id="314939179385989105">Chrome sākumlapa</translation>
 <translation id="3158667104057012316">Kārtošana manuāli</translation>
@@ -637,6 +638,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="4042941173059740150">Pārejiet uz vietni <ph name="SITE_ETLD_PLUS_ONE" />, izmantojot <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kontu</translation>
 <translation id="404352903042073578">Nenosaukta grupa</translation>
 <translation id="4044708993631234325">Ekrāna apakšdaļas lapa</translation>
+<translation id="4045441967987592849">Atkārtoti atvērt</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standarta cilne ar jaunām darbībām kopīgoto ciļņu grupās}zero{<ph name="TABS_COUNT_MANY" /> standarta cilnes ar jaunām darbībām kopīgoto ciļņu grupās}one{<ph name="TABS_COUNT_MANY" /> standarta cilne ar jaunām darbībām kopīgoto ciļņu grupās}other{<ph name="TABS_COUNT_MANY" /> standarta cilnes ar jaunām darbībām kopīgoto ciļņu grupās}}</translation>
 <translation id="405365679581583349">Atjauniniet Google Play pakalpojumus</translation>
 <translation id="405399507749852140">Saņemiet paziņojumus, ja kādā vietnē tiek konstatēts cenas kritums.</translation>
@@ -844,6 +846,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="4943703118917034429">Virtuālā realitāte</translation>
 <translation id="4943872375798546930">Nav rezultātu</translation>
 <translation id="4950924971025849764">Citās ierīcēs varat izmantot šo tālruni kā drošības atslēgu, ja esat pierakstījies tajā pašā Google kontā.</translation>
+<translation id="4953833914914492602">Ciļņu grupa “<ph name="TAB_GROUP_NAME" />” vairs nav pieejama.</translation>
 <translation id="4957722034734105353">Uzzināt vairāk...</translation>
 <translation id="4961107849584082341">Tulkojiet šīs lapas saturu jebkurā valodā.</translation>
 <translation id="4964614743143953889">Pārlūkā Chrome tiek rādīti brīdinājumi par nedrošām vietnēm un lejupielādēm.</translation>
@@ -957,6 +960,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="5526281268548144413">Cilnes nevar aizvērt vairākos logos.</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{Pirms # min}zero{Pirms # min}one{Pirms # min}other{Pirms # min}}</translation>
 <translation id="5548606607480005320">Drošības pārbaude</translation>
+<translation id="5551564597369878730">Lietotājs <ph name="GIVEN_NAME" /> pievienojās ciļņu grupai “<ph name="TAB_GROUP_NAME" />”.</translation>
 <translation id="5554520618550346933">Pārlūkā Chrome tiek parādīts brīdinājums, ja izmantojat paroli, kas ir publicēta tiešsaistē. To darot, jūsu paroles un lietotājvārdi tiek šifrēti, lai neviens tos nevarētu lasīt, tostarp Google.</translation>
 <translation id="5555525474779371165">Drošas pārlūkošanas aizsardzības opciju izvēle</translation>
 <translation id="5556459405103347317">Pārlādēt</translation>
@@ -1079,6 +1083,7 @@ Jūsu Google kontam vietnē <ph name="BEGIN_LINK" />myactivity.google.com<ph nam
 <translation id="6085886413119427067">Nosaka, kā izveidot drošu savienojumu ar vietnēm.</translation>
 <translation id="60923314841986378">Atlikušas <ph name="HOURS" /> h</translation>
 <translation id="6095578583683628124">Ja Google ir izvēlēts arī kā jūsu noklusējuma meklētājprogramma, jums tiks rādīti labāki, kontekstuāli atbilstošāki ieteikumi</translation>
+<translation id="610630277578876674">Ātri atveriet saites ziņojumos un paveiciet citas darbības.</translation>
 <translation id="6108923351542677676">Notiek iestatīšana...</translation>
 <translation id="6112702117600201073">Lapas atsvaidzināšana</translation>
 <translation id="6122831415929794347">Vai vēlaties izslēgt drošu pārlūkošanu?</translation>
@@ -1245,6 +1250,7 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6775840696761158817">Kad pieskarsieties vai rakstīsiet adreses joslā vai meklēšanas lodziņā, jums tiks rādīti ieteikumi no jūsu noklusējuma meklētājprogrammas. Inkognito režīmā šis iestatījums ir izslēgts.</translation>
 <translation id="6785476624617658922">Chrome un Chrome OS pakalpojumu sniegšanas papildu noteikumi</translation>
 <translation id="6795633245022906657">Šeit varat ātri atvērt jaunu cilni. Lai rediģētu šo saīsni, pārejiet uz iestatījumiem.</translation>
+<translation id="679588508577699489">Iestatiet Chrome kā noklusējumu</translation>
 <translation id="679956319013005046">Lai iestatītu vēlamo automātiskās aizpildes pakalpojumu, vispirms pievienojiet pakalpojumu <ph name="BEGIN_LINK" />Android iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">Logs tiks aizvērts.</translation>
 <translation id="6803791793483522764">Paziņojumu pārskatīšana</translation>
@@ -1616,6 +1622,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="8282297628636750033">Tumšā motīva lietošana vietnēs, kad iespējams</translation>
 <translation id="8282950411412455249">Pāriet uz drošības iestatījumiem</translation>
 <translation id="829672787777123339">Notiek savienojuma izveide ar jūsu ierīci…</translation>
+<translation id="8307517230426267469">Lietotājs <ph name="GIVEN_NAME" /> noņēma cilni “<ph name="TAB_NAME" />”.</translation>
 <translation id="831192587911042850">Pašlaik atvērtā tīmekļa vietne tiek pievienota to tīmekļa vietņu sarakstam, kurām sekojat.</translation>
 <translation id="8342727528718219152">Chrome jums paziņos par vietnēm, no kurām varētu tikt sūtīts daudz paziņojumu.</translation>
 <translation id="834313815369870491">Nekad netulkot vietnes</translation>
@@ -1736,6 +1743,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />izdzēsiet Chrome datus s
 <translation id="8863714995118816041">Vietnei <ph name="SITE_NAME" /> atkal ir piešķirtas atļaujas.</translation>
 <translation id="8865415417596392024">Chrome dati jūsu kontā</translation>
 <translation id="8888527824584402177">Šeit tiek pārvietotas cilnes, ko neesat izmantojis <ph name="DAYS_INACTIVE" /> dienas.<ph name="AUTODELETE_SECTION" /> Jebkurā brīdī varat to mainīt sadaļā <ph name="SETTINGS_TITLE" />.</translation>
+<translation id="8890668505403261809">Meklējiet inkognito cilnēs</translation>
 <translation id="8898822736010347272">Tiek nosūtīti dažu apmeklēto lapu vietrāži URL, ierobežota sistēmas informācija un noteiktu lapu saturs Google serveriem, lai palīdzētu atklāt jaunus apdraudējumus un aizsargāt visus tīmekļa lietotājus.</translation>
 <translation id="8909135823018751308">Kopīgot...</translation>
 <translation id="8921980840204105660">Veiciet sinhronizāciju, lai iegūtu grāmatzīmes no savām pārējām ierīcēm</translation>

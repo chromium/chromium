@@ -460,6 +460,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3098745985164956033">Ipinapadala sa Google ang ilang larawan para mapahusay ang mga paglalarawan para sa iyo</translation>
 <translation id="3114507951000454849">Basahin ang balita ngayong araw <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Mga Anunsyo</translation>
+<translation id="3131961580615093332">Binago ni <ph name="GIVEN_NAME" /> ang tab na “<ph name="TAB_NAME" />”</translation>
 <translation id="3148237711805373460">Dalhin ako roon</translation>
 <translation id="314939179385989105">Homepage ng Chrome</translation>
 <translation id="3158667104057012316">Ibinubukod-bukod ayon sa manual na pagkakasunod-sunod</translation>
@@ -637,6 +638,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="4042941173059740150">Magpatuloy sa <ph name="SITE_ETLD_PLUS_ONE" /> gamit ang <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="404352903042073578">Grupo na walang pangalan</translation>
 <translation id="4044708993631234325">Bottom sheet</translation>
+<translation id="4045441967987592849">Buksan ulit</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> karaniwang tab na may bagong aktibidad sa mga naka-share na grupo ng tab}one{<ph name="TABS_COUNT_MANY" /> karaniwang tab na may bagong aktibidad sa mga naka-share na grupo ng tab}other{<ph name="TABS_COUNT_MANY" /> na karaniwang tab na may bagong aktibidad sa mga naka-share na grupo ng tab}}</translation>
 <translation id="405365679581583349">I-update ang mga serbisyo ng Google Play</translation>
 <translation id="405399507749852140">Makatanggap ng mga alerto kapag bumaba ang presyo sa alinmang site</translation>
@@ -844,6 +846,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="4943703118917034429">Virtual Reality</translation>
 <translation id="4943872375798546930">Walang mga resulta</translation>
 <translation id="4950924971025849764">Kapag naka-sign in ka sa iisang Google Account, puwedeng gamitin ng iba pang device ang teleponong ito bilang security key.</translation>
+<translation id="4953833914914492602">Hindi na available ang grupo ng tab na “<ph name="TAB_GROUP_NAME" />”</translation>
 <translation id="4957722034734105353">Matuto pa...</translation>
 <translation id="4961107849584082341">Isalin ang page na ito sa anumang wika</translation>
 <translation id="4964614743143953889">Babalaan ka ng Chrome tungkol sa mga hindi ligtas na site at download</translation>
@@ -957,6 +960,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="5526281268548144413">Hindi maisasara sa maraming window</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# minuto ang nakalipas}one{# minuto ang nakalipas}other{# na minuto ang nakalipas}}</translation>
 <translation id="5548606607480005320">Pag-check sa kaligtasan</translation>
+<translation id="5551564597369878730">Sumali si <ph name="GIVEN_NAME" /> sa grupo ng tab na “<ph name="TAB_GROUP_NAME" />”</translation>
 <translation id="5554520618550346933">Kapag gumamit ka ng password, babalaan ka ng Chrome kung na-publish na ito online. Kapag ginagawa ito, naka-encrypt ang iyong mga password at username para hindi mabasa ng sinuman ang mga ito, kabilang ang Google.</translation>
 <translation id="5555525474779371165">Piliin ang iyong proteksyon sa Ligtas na Pag-browse</translation>
 <translation id="5556459405103347317">I-reload</translation>
@@ -1079,6 +1083,7 @@ Maaaring may ibang uri ng history ng pag-browse ang iyong Google account tulad n
 <translation id="6085886413119427067">Tinutukoy kung paano kumonekta sa mga website sa secure na koneksyon</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> (na) oras na lang ang natitira</translation>
 <translation id="6095578583683628124">Kung Google din ang iyong default na search engine, makakakita ka ng mga suhestyong mas maganda at nauugnay sa konteksto</translation>
+<translation id="610630277578876674">Mabilis na magbukas ng mga link sa mga mensahe at higit pa</translation>
 <translation id="6108923351542677676">Kasalukuyang sine-setup…</translation>
 <translation id="6112702117600201073">Nire-refresh ang page</translation>
 <translation id="6122831415929794347">I-off ang Ligtas na Pag-browse?</translation>
@@ -1245,6 +1250,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6775840696761158817">Kapag nag-tap o nag-type ka sa address bar o box para sa paghahanap, makakakita ka ng mga suhestyon mula sa iyong default na search engine. Naka-off ito sa Incognito.</translation>
 <translation id="6785476624617658922">Mga Karagdagang Tuntunin ng Serbisyo ng Chrome at ChromeOS</translation>
 <translation id="6795633245022906657">Mabilis na magbukas ng bagong tab. Para i-edit ang shortcut na ito, pumunta sa Mga Setting.</translation>
+<translation id="679588508577699489">Gawing default mo ang Chrome</translation>
 <translation id="679956319013005046">Para itakda ang gusto mong serbisyo para sa autofill, idagdag muna ang serbisyo sa <ph name="BEGIN_LINK" />Mga Setting ng Android<ph name="END_LINK" /> .</translation>
 <translation id="6802555630140434547">Isasara ang window</translation>
 <translation id="6803791793483522764">Suriin ang mga notification</translation>
@@ -1616,6 +1622,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8282297628636750033">Ilapat ang dark theme sa sites</translation>
 <translation id="8282950411412455249">Pumunta sa mga setting ng seguridad</translation>
 <translation id="829672787777123339">Kumokonekta sa iyong device…</translation>
+<translation id="8307517230426267469">Inalis ni <ph name="GIVEN_NAME" /> ang tab na “<ph name="TAB_NAME" />”</translation>
 <translation id="831192587911042850">Idinaragdag ang kasalukuyang web site sa listahan ng mga web site na sinusubaybayan mo.</translation>
 <translation id="8342727528718219152">Ipapaalam sa iyo ng Chrome ang tungkol sa mga site na posibleng nagpapadala ng masyadong maraming notification</translation>
 <translation id="834313815369870491">Huwag isalin kailanman ang mga site</translation>
@@ -1736,6 +1743,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="8863714995118816041">Pinayagan ulit ang mga pahintulot para sa <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Data ng Chrome sa iyong account</translation>
 <translation id="8888527824584402177">Ang mga tab na hindi mo nagamit sa loob ng <ph name="DAYS_INACTIVE" /> (na) araw ay inililipat dito<ph name="AUTODELETE_SECTION" />. Puwede mo itong baguhin anumang oras sa <ph name="SETTINGS_TITLE" />.</translation>
+<translation id="8890668505403261809">Maghanap sa iyong mga tab na Incognito</translation>
 <translation id="8898822736010347272">Nagpapadala ng mga URL ng ilang page na binibisita mo, limitadong impormasyon ng system, at ilang content ng page sa Google, para makatulong na tumuklas ng mga bagong banta at protektahan ang lahat ng nasa web.</translation>
 <translation id="8909135823018751308">Ibahagi…</translation>
 <translation id="8921980840204105660">Mag-sync para makuha ang iyong mga bookmark mula sa iba pang device mo</translation>

@@ -1104,6 +1104,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="301521992641321250">Automātiski bloķēta</translation>
 <translation id="3016780570757425217">uzzināt jūsu atrašanās vietu</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, lai noņemtu ieteikumu, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter.</translation>
+<translation id="3022959067768579802">Turpiniet rakstīt</translation>
 <translation id="3023165109041533893">Izmantojot vietņu ieteiktas reklāmas, vietnēs var rādīt jums atbilstošas reklāmas un vienlaikus aizsargāt jūsu pārlūkošanas vēsturi un identitāti un informāciju par lietotņu izmantojumu. Vietne, ko apmeklējāt, var ieteikt ar jūsu darbībām saistītas reklāmas, kamēr jūs turpināt pārlūkošanu. Iestatījumos varat skatīt vietņu sarakstu un bloķēt nevajadzīgās vietnes.</translation>
 <translation id="3024663005179499861">Politikas tips nav pareizs.</translation>
 <translation id="3030331669969285614">Šie karodziņi novērš vai atsauc traucējumus radošas izmaiņas, un tie būs pieejami tikai ierobežotu laiku.</translation>
@@ -1377,6 +1378,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="350763432931695541">Notiek teksta iegūšana no dažām nākamajām lapām</translation>
 <translation id="3507869775212388416">Darba piedāvājumi juridiskajā nozarē</translation>
 <translation id="3507936815618196901">Izveidot jūsu apkārtnes 3D karti un izsekot kameras pozīciju</translation>
+<translation id="3510341387555916271">Atvērt, lai atsāktu</translation>
 <translation id="3512163584740124171">Šī politika tiek ignorēta, jo citai tās pašas politiku grupas politikai ir augstāka prioritāte.</translation>
 <translation id="351522771072578657">Šobrīd fokuss atrodas uz izvēlnes</translation>
 <translation id="3517264445792388751">Jūsu administrators atspējoja failu sistēmu.</translation>
@@ -1742,6 +1744,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="4152318981910038897">{COUNT,plural, =1{1. lapa}zero{{COUNT}. lapa}one{{COUNT}. lapa}other{{COUNT}. lapa}}</translation>
 <translation id="4154277373259957087">Turpmāk pārlūkā Chrome pirms maksājuma veida informācijas aizpildīšanas tiks pārbaudīta jūsu identitāte. To varat jebkurā laikā atspējot sadaļā <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4159784952369912983">Violets</translation>
+<translation id="4165422751765527461">Atvērt palīdzības centra rakstu jaunā cilnē</translation>
 <translation id="4165986682804962316">Vietnes iestatījumi</translation>
 <translation id="4169535189173047238">Neatļaut</translation>
 <translation id="4171400957073367226">Verifikācijas paraksts nav derīgs.</translation>
@@ -2902,6 +2905,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6306713302480826305">Šī adrese tiks dzēsta no šīs ierīces un pārējām jūsu ierīcēm, kurās esat pierakstījies.</translation>
 <translation id="6307968763353904914">Banka nevar piedāvāt šī maksājuma veida virtuālās kartes, taču joprojām varat izmantot karti <ph name="CARD_LABEL" /> norēķiniem tiešsaistē.</translation>
 <translation id="6311410654831092784">Līmēts kartons</translation>
+<translation id="6311642842034740437">Atrašanās vieta ar nosaukumu</translation>
 <translation id="6312113039770857350">Tīmekļa lapa nav pieejama</translation>
 <translation id="6316110367871394043">Failu augšupielāde pakalpojumā <ph name="CLOUD_PROVIDER" /> ir pārtraukta</translation>
 <translation id="6316723751983724988">Jaunums: šeit tiek lietoti Family Link iestatījumi, kas attiecas uz pārlūku Chrome</translation>

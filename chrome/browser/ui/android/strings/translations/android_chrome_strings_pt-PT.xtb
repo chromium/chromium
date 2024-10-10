@@ -1484,6 +1484,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="7707922173985738739">Usar dados móveis</translation>
 <translation id="7709918231054955894">Obtenha todos os seus separadores</translation>
 <translation id="7733878270780732638">Espaço insuficiente no dispositivo.</translation>
+<translation id="7746817319925672889">O Gestor de Palavras-passe da Google vai deixar de funcionar neste dispositivo em breve</translation>
 <translation id="774876555279732384">Os serviços de preenchimento automático também são geridos nas <ph name="BEGIN_LINK" />Definições do Android<ph name="END_LINK" />.</translation>
 <translation id="7759809451544302770">Opcional</translation>
 <translation id="7762668264895820836">Cartão SD <ph name="SD_CARD_NUMBER" /></translation>
@@ -1511,6 +1512,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />elimine os dados do Chrom
 <translation id="7846161022626028328">Ocorreu um erro. Tente novamente.</translation>
 <translation id="7846296061357476882">Serviços Google</translation>
 <translation id="784934925303690534">Intervalo de tempo</translation>
+<translation id="7850687713580657633">As palavras-passe vão deixar de funcionar em breve porque os Serviços do Google Play não estão disponíveis. Para usar as palavras-passe guardadas no Gestor de Palavras-passe da Google, inicie sessão com outro dispositivo ou aceda a passwords.google.com.</translation>
 <translation id="7851858861565204677">Outros aparelhos</translation>
 <translation id="7853202427316060426">Atividade</translation>
 <translation id="7859988229622350291">Nunca traduzir</translation>

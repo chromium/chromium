@@ -1702,6 +1702,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2184515124301515068">Laat Chrome kies wanneer webwerwe klank kan speel (aanbeveel)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">Bladsy van 'n ander toestel af gedeel</translation>
+<translation id="2187569197737151508">Druk 5 keer Esc om dit weer te aktiveer</translation>
 <translation id="2187675480456493911">Is met ander toestelle in jou rekening gesinkroniseer. Instellings wat deur ander gebruikers gewysig is, sal nie gesinkroniseer word nie. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Bedienersertifikaat-invoerfout</translation>
 <translation id="2187906491731510095">Uitbreidings is opgedateer</translation>
@@ -2742,6 +2743,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2908122561561557160">Maak Word-, Excel- en PowerPoint-lêers oop</translation>
 <translation id="2908162660801918428">Voeg mediagalery by gids</translation>
 <translation id="2908358077082926882">Druk "<ph name="CURRENTKEY" />" weer om toewysing te verwyder en <ph name="RESPONSE" /></translation>
+<translation id="2909487040556589351">Kry Chrome op jou mobiele toestel</translation>
 <translation id="2909506265808101667">Kon nie aan Google-dienste koppel nie. Gaan jou netwerkverbinding na en probeer weer. Foutkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="2910318910161511225">Koppel aan 'n netwerk en probeer weer</translation>
 <translation id="2910678330803525229">Jy kan nou begin blaai</translation>
@@ -4843,6 +4845,7 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4434611816075088065">Niks anders het nou jou aandag nodig nie</translation>
 <translation id="443475966875174318">Dateer onversoenbare programme op of verwyder hulle</translation>
 <translation id="443503224864902151">Meld jou by die meeste werwe af. Jy sal by jou Google-rekening aangemeld bly sodat jou gesinkroniseerde data uitgevee kan word.</translation>
+<translation id="4436573279088520291">Maak ongebruikte oortjies toe</translation>
 <translation id="4437879751057074691">Aanbod om wagwoorde en toegangsleutels te stoor</translation>
 <translation id="4437947179446780764">Voeg gepasmaakte DNS-diensverskaffer by</translation>
 <translation id="4438043733494739848">Deursigtig</translation>
@@ -9934,6 +9937,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="816704878106051517">{COUNT,plural, =1{'n foonnommer}other{# foonnommers}}</translation>
 <translation id="8168435359814927499">Inhoud</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Voeg oortjie by leeslys}other{Voeg oortjies by leeslys}}</translation>
+<translation id="8169177848833352618">Hierdie toestel voldoen ongelukkig nie aan die vereistes om Bruschetta te installeer nie. Foutkode is <ph name="ERROR" />.</translation>
 <translation id="8174047975335711832">Toestelinligting</translation>
 <translation id="8176332201990304395">Pienk en wit</translation>
 <translation id="8176529144855282213">Skakel die fisieke mikrofoonskakelaar op jou toestel aan as jy mikrofoontoegang wil aanskakel</translation>

@@ -460,6 +460,7 @@
 <translation id="3098745985164956033">Некои слики се испраќаат во Google за да им се подобрат описите</translation>
 <translation id="3114507951000454849">Прочитајте ги денешните вести <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Соопштенија</translation>
+<translation id="3131961580615093332"><ph name="GIVEN_NAME" /> ја промени картичката „<ph name="TAB_NAME" />“</translation>
 <translation id="3148237711805373460">Одведи ме таму</translation>
 <translation id="314939179385989105">Почетна страница на Chrome</translation>
 <translation id="3158667104057012316">Се подредува рачно</translation>
@@ -637,6 +638,7 @@
 <translation id="4042941173059740150">Продолжете на <ph name="SITE_ETLD_PLUS_ONE" /> со <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="404352903042073578">Неименувана група</translation>
 <translation id="4044708993631234325">Долен лист</translation>
+<translation id="4045441967987592849">Отвори повторно</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> стандардна картичка со нова активност во споделените групи картички}one{<ph name="TABS_COUNT_MANY" /> стандардна картичка со нова активност во споделените групи картички}other{<ph name="TABS_COUNT_MANY" /> стандардни картички со нова активност во споделените групи картички}}</translation>
 <translation id="405365679581583349">Ажурирајте ги „Услугите на Google Play“</translation>
 <translation id="405399507749852140">Добивајте предупредувања ако цената се намали на кој било сајт</translation>
@@ -844,6 +846,7 @@
 <translation id="4943703118917034429">Виртуелна реалност</translation>
 <translation id="4943872375798546930">Нема резултати</translation>
 <translation id="4950924971025849764">Кога сте најавени на истата сметка на Google, другите уреди можат да го користат телефонов како безбедносен клуч.</translation>
+<translation id="4953833914914492602">Групата картички „<ph name="TAB_GROUP_NAME" />“ веќе не е достапна</translation>
 <translation id="4957722034734105353">Дознај повеќе...</translation>
 <translation id="4961107849584082341">Преведете ја страницава на кој било јазик</translation>
 <translation id="4964614743143953889">Chrome ве предупредува за небезбедни сајтови и преземања</translation>
@@ -957,6 +960,7 @@
 <translation id="5526281268548144413">Не може да се затворат во повеќе прозорци</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{Пред # мин.}one{Пред # мин.}other{Пред # мин.}}</translation>
 <translation id="5548606607480005320">Безбедносна проверка</translation>
+<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> се придружи на групата картички „<ph name="TAB_GROUP_NAME" />“</translation>
 <translation id="5554520618550346933">Кога користите лозинка, Chrome ве предупредува ако е објавена онлајн. Кога го прави ова, вашите лозинки и кориснички имиња се шифрирани така што не може да ги прочита никој, па дури ни Google.</translation>
 <translation id="5555525474779371165">Изберете ја вашата заштита со „Безбедно прелистување“</translation>
 <translation id="5556459405103347317">Повторно вчитај</translation>
@@ -1079,6 +1083,7 @@
 <translation id="6085886413119427067">Определува како да се поврзуваат веб-сајтовите преку безбедна врска</translation>
 <translation id="60923314841986378">Останаа <ph name="HOURS" /> часа</translation>
 <translation id="6095578583683628124">Ако го користите Google како стандарден пребарувач исто така, ќе добивате подобри и контекстуално значајни предлози</translation>
+<translation id="610630277578876674">Брзо отворајте линкови во пораки и друго</translation>
 <translation id="6108923351542677676">Поставувањето е во тек…</translation>
 <translation id="6112702117600201073">Страницата се освежува</translation>
 <translation id="6122831415929794347">Да се исклучи „Безбедно прелистување“?</translation>
@@ -1196,7 +1201,7 @@
 <translation id="6588043302623806746">Користете безбеден DNS</translation>
 <translation id="6590471736817333463">Заштедете до 60 % мобилен интернет</translation>
 <translation id="6590680911007613645">Проверете дали лозинката што ја зачувувате се совпаѓа со лозинката за <ph name="SITE" /></translation>
-<translation id="6593061639179217415">Сајт за десктоп</translation>
+<translation id="6593061639179217415">Сајт за компјутер</translation>
 <translation id="6594347733515723558">Подредување и преглед</translation>
 <translation id="6595046016124923392">Сликите се испраќаат во Google за да им се подобрат описите.</translation>
 <translation id="6595634543029443878">{TAB_COUNT,plural, =1{Вратете ја групата картички што опфаќа <ph name="TAB_COUNT_ONE" /> картичка како нова група картички во заднина.}one{Вратете ја групата картички што опфаќа <ph name="TAB_COUNT_MANY" /> картичка како нова група картички во заднина.}other{Вратете ја групата картички што опфаќа <ph name="TAB_COUNT_MANY" /> картички како нова група картички во заднина.}}</translation>
@@ -1245,6 +1250,7 @@
 <translation id="6775840696761158817">Кога ќе допрете или ќе напишете нешто во лентата за адреси или полето за пребарување, ќе гледате предлози од вашиот стандарден пребарувач. Ова е исклучено во „Инкогнито“.</translation>
 <translation id="6785476624617658922">Дополнителни услови за користење на Chrome и Chrome OS</translation>
 <translation id="6795633245022906657">Брзо отворете нова картичка. За да ја измените кратенкава, одете во „Поставки“.</translation>
+<translation id="679588508577699489">Поставете го Chrome како стандарден прелистувач</translation>
 <translation id="679956319013005046">За да ја поставите претпочитаната услуга за автоматско пополнување, прво додајте ја услугата во <ph name="BEGIN_LINK" />Поставките за Android<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">Прозорецот ќе се затвори</translation>
 <translation id="6803791793483522764">Прегледајте ги известувањата</translation>
@@ -1616,6 +1622,7 @@
 <translation id="8282297628636750033">Ако е можно, примени темна тема на сајтовите</translation>
 <translation id="8282950411412455249">Одете во „Поставки за безбедност“</translation>
 <translation id="829672787777123339">Се поврзуваме со уредот…</translation>
+<translation id="8307517230426267469"><ph name="GIVEN_NAME" /> ја отстрани картичката „<ph name="TAB_NAME" />“</translation>
 <translation id="831192587911042850">Го додава тековниот веб-сајт на списокот со веб-сајтови што ги следите.</translation>
 <translation id="8342727528718219152">Chrome ќе ве извести за сајтови што можеби испраќаат премногу известувања</translation>
 <translation id="834313815369870491">Никогаш не преведувај сајтови</translation>
@@ -1736,6 +1743,7 @@
 <translation id="8863714995118816041">Дозволите за <ph name="SITE_NAME" /> се дозволени повторно</translation>
 <translation id="8865415417596392024">Податоци од Chrome во вашата сметка</translation>
 <translation id="8888527824584402177">Картичките што не сте ги користеле <ph name="DAYS_INACTIVE" /> дена се преместени овде,<ph name="AUTODELETE_SECTION" />. Ова може да го промените кога сакате во <ph name="SETTINGS_TITLE" />.</translation>
+<translation id="8890668505403261809">Пребарајте ги картичките „Инкогнито“</translation>
 <translation id="8898822736010347272">Испраќа URL-адреси до Google од некои страници што ги посетувате, како и ограничени податоци за системот и некои содржини од страниците за да помогне да се откријат нови закани и да се заштитат сите на интернет.</translation>
 <translation id="8909135823018751308">Сподели…</translation>
 <translation id="8921980840204105660">Синхронизирајте за да ги преземете обележувачите од вашите други уреди</translation>

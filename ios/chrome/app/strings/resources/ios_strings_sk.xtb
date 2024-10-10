@@ -462,7 +462,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="315778507796115851">História</translation>
 <translation id="31652791196570636">Zavrieť</translation>
 <translation id="3167868116600277716">Kanál Objaviť</translation>
-<translation id="3169472444629675720">Discover</translation>
+<translation id="3169472444629675720">Objaviť</translation>
 <translation id="3174662312949010067">Uložené heslá môžete používať aj v iných zariadeniach.</translation>
 <translation id="3181954750937456830">Bezpečné prehliadanie (chráni vás aj zariadenie pred nebezpečnými webmi)</translation>
 <translation id="3190736958609431397">Prestať sledovať</translation>
@@ -1081,6 +1081,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6140948187512243695">Zobraziť podrobnosti</translation>
 <translation id="6144589619057374135">Otvoriť adresu ${url} v režime inkognito</translation>
 <translation id="6151006591088192882">Odomknúť karty inkognito pomocou funkcie <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="6152340033632117531">Neaktívne</translation>
 <translation id="6152406514676263192">Synchronizujte a získavajte tak najrelevantnejší obsah na základe svojich záujmov.</translation>
 <translation id="6159839020698489198">nepovinné</translation>
 <translation id="6160780110287872296">Chcete súbor stiahnuť?</translation>

@@ -1746,6 +1746,7 @@
 <translation id="4152318981910038897">{COUNT,plural, =1{Страница 1}other{Страница {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome вече ще потвърждава самоличността ви, преди да попълва начините на плащане. Можете да актуализирате това по всяко време в „<ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />“.</translation>
 <translation id="4159784952369912983">лилаво</translation>
+<translation id="4165422751765527461">Отваря статия в Помощния център в нов раздел</translation>
 <translation id="4165986682804962316">Настройки за сайта</translation>
 <translation id="4169535189173047238">Забраняване</translation>
 <translation id="4171400957073367226">Невалиден подпис за потвърждаване</translation>
@@ -2906,6 +2907,7 @@
 <translation id="6306713302480826305">Този адрес ще бъде изтрит от това устройство и от другите, на които сте влезли в профила си</translation>
 <translation id="6307968763353904914">За момента банката ви не предлага виртуални карти за този начин на плащане, но можете да използвате <ph name="CARD_LABEL" /> за плащане онлайн.</translation>
 <translation id="6311410654831092784">Кадастрон</translation>
+<translation id="6311642842034740437">Име на местоположението</translation>
 <translation id="6312113039770857350">Уеб страницата не е налице</translation>
 <translation id="6316110367871394043">Качването на файлове в(ъв) <ph name="CLOUD_PROVIDER" /> е поставено на пауза</translation>
 <translation id="6316723751983724988">Ново: Опциите за Chrome, посочени във Family Link, се прилагат и тук</translation>

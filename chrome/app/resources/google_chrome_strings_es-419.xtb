@@ -400,6 +400,7 @@
 <translation id="6060842547856900641">Abrir Lens</translation>
 <translation id="6069027071882229820">Copiar como imagen</translation>
 <translation id="6070348360322141662">Para mejorar la seguridad, Google Chrome encriptará los datos</translation>
+<translation id="6075300983329039771">Tu organización, <ph name="MANAGER" />, requiere que accedas a Chrome</translation>
 <translation id="608006075545470555">Agrega un perfil de trabajo a este navegador</translation>
 <translation id="6097822892606850415">Escribe con más confianza gracias a la ayuda de la IA</translation>
 <translation id="6113794647360055231">Chrome mejorado</translation>
@@ -538,6 +539,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="7670287553302121848">La cuenta de Chrome requiere que vuelvas a realizar la autenticación</translation>
 <translation id="769538538642757151">Chrome te avisará si hay algo que debas revisar</translation>
 <translation id="77283119132245232">Proporciona servicios de registro del sistema para <ph name="BROWSER_NAME" />. Si se inhabilita este servicio, los registros de rendimiento creados por el navegador no incluirán eventos de todo el sistema, como los eventos de cambio de contexto y de subproceso listo.</translation>
+<translation id="7736869414036750079">Tu organización requiere que accedas a Chrome</translation>
 <translation id="7747138024166251722">El instalador no pudo crear un directorio temporal. Verifique si hay espacio disponible en el disco y cuenta con permiso para instalar software.</translation>
 <translation id="7761834446675418963">Haz clic en tu nombre para abrir Chrome y empezar a navegar.</translation>
 <translation id="7763983146198734674">Guarda tus contraseñas y accede a ellas estés donde estés</translation>

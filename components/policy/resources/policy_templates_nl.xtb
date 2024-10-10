@@ -175,6 +175,13 @@ Als je het beleid niet instelt, zijn er geen uitzonderingen toegestaan op <ph na
 <translation id="1095209545735032039">De Serial API op deze sites blokkeren</translation>
 <translation id="1096105751829466145">Standaardzoekprovider</translation>
 <translation id="1099282607296956954">Elke site isoleren</translation>
+<translation id="1099858055878287525">Voor werk- en schoolprofielen toont de werkbalk standaard een label Werk of School naast de werkbalkavatar. Het label wordt alleen getoond als het ingelogde account wordt beheerd.
+
+Als je dit beleid instelt op <ph name="HIDE_EXPANDED_ENTERPRISE_TOOLBAR_BADGE" /> (waarde 1), wordt de zakelijke badge voor een beheerd profiel in de werkbalk verborgen.
+
+Als je dit beleid niet instelt of instelt op <ph name="SHOW_EXPANDED_ENTERPRISE_TOOLBAR_BADGE" /> (waarde 0), wordt de zakelijke badge getoond.
+
+Het label is aanpasbaar via het beleid <ph name="ENTERPRISE_CUSTOM_LABEL_POLICY_NAME" />.</translation>
 <translation id="1100840127293327071">De optie om bestaande browsegegevens standaard te bewaren niet aanvinken</translation>
 <translation id="1105572260329131950">Standaardiconen gebruiken voor beveiligde verbindingen</translation>
 <translation id="1105711894873068933">Nadat <ph name="LACROS_NAME" /> is uitgezet, worden alle gebruikersgegevens verwijderd als er weer wordt ingelogd.</translation>
@@ -1253,6 +1260,7 @@ Als je het beleid niet toepast, sluit <ph name="PRODUCT_NAME" /> het tabblad nad
         Dit beleid wordt alleen gebruikt voor minderjarige gebruikers.
         Dit beleid vormt een aanvulling op 'UsageTimeLimit'. Beperkingen die zijn opgegeven in 'UsageTimeLimit' (zoals schermtijd en bedtijd), worden afgedwongen, ongeacht 'PerAppTimeLimits'.</translation>
 <translation id="1913629775420987861">Een waarschuwingsdialoogvenster tonen als de gebruiker probeert de browser te sluiten</translation>
+<translation id="1915242485679279502">Uitgevouwen zakelijke werkbalkbadge tonen</translation>
 <translation id="1916266055944569995">Als je dit beleid instelt, wordt de waarde gedefinieerd die de Managed Configuration API voor een bepaalde herkomst retourneert.
 
       De Managed Configuration API is een sleutel/waarde-configuratie waartoe je toegang hebt via de JavaScript-aanroep navigator.managed.getManagedConfiguration(). Deze API is alleen beschikbaar voor herkomsten die overeenkomen met afgedwongen geïnstalleerde web-apps via <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" />.
@@ -2218,6 +2226,17 @@ Voor een URL-patroon wordt deze indeling gehanteerd (https://support.google.com/
 
 Als je dit beleid niet toepast, gebruikt het apparaat geen attest op afstand voor contentbescherming en kan het apparaat geen beschermde content afspelen.</translation>
 <translation id="262740370354162807">Sturen van documenten naar <ph name="CLOUD_PRINT_NAME" /> aanzetten</translation>
+<translation id="2628738243936676400">AI-gestuurd zoeken in geschiedenis is een functie waarmee gebruikers in hun browsegeschiedenis kunnen zoeken en gegenereerde antwoorden kunnen krijgen op basis van paginacontent, niet alleen op basis van de paginatitel en -URL.
+
+0 = De functie aanzetten voor gebruikers en relevante gegevens naar Google sturen om AI-modellen te trainen of te verbeteren. Relevante gegevens kunnen prompts, invoer, uitvoer en bronmateriaal zijn, afhankelijk van de functie. De gegevens mogen alleen door mensen worden beoordeeld met als doel AI-modellen te verbeteren. 0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+
+1 = De functie aanzetten voor gebruikers, maar geen gegevens naar Google sturen om AI-modellen te trainen of te verbeteren. 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd door <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> en voor onderwijsaccounts die worden beheerd door <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = De functie uitzetten.
+
+Als je het beleid niet instelt, is 0 het standaardgedrag voor gewone consumenten en 2 voor beheerde gebruikers op <ph name="PRODUCT_OS_NAME" />.
+
+Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer informatie over gegevensverwerking voor generatieve AI-functies.</translation>
 <translation id="2633084400146331575">Gesproken feedback aanzetten</translation>
 <translation id="2633907568797306353">Toestaan dat Phone Hub-meldingen worden aangezet</translation>
 <translation id="2634265675787412567"><ph name="PRODUCT_NAME" /> kan verzoeken voor het maken van toegangssleutels/WebAuthn rechtstreeks naar iCloud Sleutelhanger op macOS 13.5 of hoger sturen. Als iCloud Sleutelhanger-synchronisatie nog niet is aangezet, wordt de gebruiker gevraagd om in te loggen bij iCloud of iCloud Sleutelhanger-synchronisatie aan te zetten.
@@ -2417,6 +2436,19 @@ Als je het beleid niet instelt, is <ph name="BLOCK_POPUPS_POLICY_NAME" /> van to
 <translation id="2801065672151277034">Instellingen voor certificaatbeheer</translation>
 <translation id="2801155097555584385">Een custom startpunt voor batterijoplading opgeven in procenten</translation>
 <translation id="2801378553855965587"><ph name="GOOGLE_CALENDAR_NAME" />-integratie uitzetten.</translation>
+<translation id="2804159858652849094">Dit beleid beheert een aangepast label waarmee wordt aangegeven wie een profiel of browser heeft beheerd.
+
+Dit label wordt getoond in de werkbalk.
+
+Als je dit beleid instelt op browserniveau, hebben alle profielen dit label in de werkbalk.
+
+Als je dit beleid instelt op profielniveau, heeft alleen dat profiel dit label.
+
+Als dit beleid is ingesteld op profielniveau, heeft het (in tegenstelling tot andere beleidsregels) voorrang op beleid dat is ingesteld op browserniveau.
+
+Het aangepaste label wordt niet vertaald.
+
+Dit beleid heeft geen effect als het beleid <ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR_SETTINGS" /> is ingesteld op <ph name="HIDE_EXPANDED_ENTERPRISE_TOOLBAR_BADGE" /> (waarde 1).</translation>
 <translation id="2805707493867224476">Alle sites toestaan pop-ups te tonen</translation>
 <translation id="2806804577787377637">Dit beleid is beëindigd en wordt niet ondersteund. Gebruik in plaats daarvan <ph name="PER_APP_TIME_LIMITS_ALLOWLIST" />.</translation>
 <translation id="2815701930753942156">Met dit beleid stel je een lijst met wekelijkse intervallen in waarin het <ph name="PRODUCT_OS_NAME" />-apparaat niet kan worden gebruikt. Eventuele actieve sessies worden gesloten en inloggen wordt geblokkeerd.
@@ -4639,6 +4671,21 @@ Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns vo
 <translation id="4557134566541205630">URL van standaard zoekprovider voor nieuwe tabbladpagina</translation>
 <translation id="4558166110367609724">De servicevoorwaarden worden automatisch overgeslagen en de browser wordt geladen.</translation>
 <translation id="4559846397119102037">Gebruik van <ph name="LACROS_NAME" /> toestaan</translation>
+<translation id="456018799964679771">Met dit beleid op apparaatniveau stel je in of <ph name="PRODUCT_OS_NAME" /> een algoritme voor de post-quantum sleutelovereenkomst in TLS aanbiedt met de ML-KEM NIST-standaard. Vóór <ph name="PRODUCT_OS_NAME" /> 131 was het algoritme Kyber, een eerder concept van de standaard. Hierdoor kunnen ondersteunende servers voorkomen dat gebruikersverkeer later wordt ontsleuteld door quantumcomputers.
+
+Als je dit beleid toepast, biedt <ph name="PRODUCT_OS_NAME" /> een post-quantum sleutelovereenkomst aan in TLS-verbindingen. Gebruikersverkeer wordt dan beschermd tegen quantumcomputers als er wordt gecommuniceerd met compatibele servers.
+
+Als je dit beleid niet toepast, biedt <ph name="PRODUCT_OS_NAME" /> geen post-quantum sleutelovereenkomst aan in TLS-verbindingen. Gebruikersverkeer wordt dan niet meer beschermd tegen quantumcomputers.
+
+Als je dit beleid niet instelt, volgt <ph name="PRODUCT_OS_NAME" /> het standaard uitrolproces voor het aanbieden van een post-quantum sleutelovereenkomst.
+
+Je kunt Kyber gebruiken met eerdere versies. Van bestaande TLS-servers en netwerkmiddleware wordt verwacht dat ze de nieuwe optie negeren en eerdere opties blijven selecteren.
+
+Apparaten waarop TLS niet correct wordt geïmplementeerd, werken misschien niet goed als de nieuwe optie wordt aangeboden. Ze kunnen bijvoorbeeld de verbinding verbreken als reactie op niet-herkende opties of de resulterende langere berichten. Zulke apparaten zijn niet klaar voor post-quantum verwerking en kunnen de post-quantum overgang van een onderneming verstoren. Als dit gebeurt, moeten beheerders contact opnemen met de leverancier voor een oplossing.
+
+Dit beleid is een tijdelijke maatregel en wordt verwijderd na <ph name="PRODUCT_OS_NAME" /> versie 141. Je kunt het aanzetten om te testen of er problemen zijn en uitzetten als er problemen optreden.
+
+Als zowel dit beleid als het beleid PostQuantumKeyAgreementEnabled zijn ingesteld, heeft dit beleid voorrang.</translation>
 <translation id="4561560385824323005">Gebruikers toestaan een vooraf ingestelde bureaubladindeling te laden</translation>
 <translation id="4561940244682063697">Niet toestaan dat sites gebruikers vragen om een videostream van hun scherm te delen</translation>
 <translation id="4562165737444703281">Toestaan dat gebruikers Crostini-poortdoorschakeling [aanzetten/configureren]</translation>
@@ -6100,6 +6147,7 @@ Als dit beleid is ingesteld voor de <ph name="PRODUCT_OS_NAME" />-kiosk, wordt d
 <translation id="5622590774455244290">Android-apps kunnen deze lijst op vrijwillige basis respecteren, maar dit kan niet worden afgedwongen.</translation>
 <translation id="5622924058222112599">Standaard CECPQ2-uitrolproces aanzetten</translation>
 <translation id="5623304306796942802">Prompt als meerdere certificaten overeenkomen</translation>
+<translation id="5624310713789233422">Bepaalt de zichtbaarheid van de badge voor zakelijke profielen in de werkbalk</translation>
 <translation id="5624334866248253262">Hiermee stel je een lijst in met regels voor gegevensbeheer om datalekken te voorkomen.
 
       Elke regel bestaat uit het volgende:
@@ -9321,6 +9369,19 @@ Dit beleid heeft geen effect als het beleid <ph name="SCREENSAVER_LOCK_SCREEN_EN
       Dit beleid is verwijderd in Chrome 88 en wordt genegeerd als het is ingesteld.
 
       Zie https://www.chromestatus.com/feature/5989473649164288.</translation>
+<translation id="8137301668000005268">Met dit beleid stel je in of <ph name="PRODUCT_NAME" /> een algoritme voor de post-quantum sleutelovereenkomst in TLS aanbiedt met de ML-KEM NIST-standaard. Vóór <ph name="PRODUCT_NAME" /> 131 was het algoritme Kyber, een eerder concept van de standaard. Hierdoor kunnen ondersteunende servers voorkomen dat gebruikersverkeer later wordt ontsleuteld door quantumcomputers.
+
+Als je dit beleid toepast, biedt <ph name="PRODUCT_NAME" /> een post-quantum sleutelovereenkomst aan in TLS-verbindingen. Gebruikersverkeer wordt dan beschermd tegen quantumcomputers als er wordt gecommuniceerd met compatibele servers.
+
+Als je dit beleid niet toepast, biedt <ph name="PRODUCT_NAME" /> geen post-quantum sleutelovereenkomst aan in TLS-verbindingen. Gebruikersverkeer wordt dan niet meer beschermd tegen quantumcomputers.
+
+Als je dit beleid niet instelt, volgt <ph name="PRODUCT_NAME" /> het standaard uitrolproces voor het aanbieden van een post-quantum sleutelovereenkomst.
+
+Een post-quantum sleutelovereenkomst aanbieden is compatibel met eerdere versies. Van bestaande TLS-servers en netwerkmiddleware wordt verwacht dat ze de nieuwe optie negeren en eerdere opties blijven selecteren.
+
+Apparaten waarop TLS niet correct wordt geïmplementeerd, werken misschien niet goed als de nieuwe optie wordt aangeboden. Ze kunnen bijvoorbeeld de verbinding verbreken als reactie op niet-herkende opties of de resulterende langere berichten. Zulke apparaten zijn niet klaar voor post-quantum verwerking en kunnen de post-quantum overgang van een onderneming verstoren. Als dit gebeurt, moeten beheerders contact opnemen met de leverancier voor een oplossing.
+
+Dit beleid is een tijdelijke maatregel en wordt verwijderd na <ph name="PRODUCT_NAME" /> versie 141. Je kunt het aanzetten om te testen of er problemen zijn en uitzetten als er problemen optreden.</translation>
 <translation id="8137443729340035928">De gebruiker bij het inloggen vragen of de laatste sessie moet worden hersteld.</translation>
 <translation id="8141795997560411818">Met dit beleid wordt niet voorkomen dat gebruiker de Google Drive-app voor Android gebruikt. Als je de toegang tot Google Drive wilt blokkeren, moet je ook de installatie van de Google Drive-app voor Android blokkeren.</translation>
 <translation id="8142894094385450823">Instellen van de aanbevolen landinstellingen voor een beheerde sessie</translation>

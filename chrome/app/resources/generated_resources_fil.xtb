@@ -1703,6 +1703,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2184515124301515068">Hayaan ang Chrome na pumili kung kailan makakapag-play ng tunog ang mga site (inirerekomenda)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">Ibinahaging page mula sa ibang device</translation>
+<translation id="2187569197737151508">Pindutin ang esc nang 5 beses para i-enable ulit ito</translation>
 <translation id="2187675480456493911">Naka-sync sa iba pang device sa iyong account. Hindi masi-sync ang mga setting na binago ng iba pang user. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Error sa Pag-import ng Certificate ng Server</translation>
 <translation id="2187906491731510095">Na-update ang mga extension</translation>
@@ -2111,6 +2112,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2460356425461033301">I-back up ang iyong data ng browser at gamitin ito sa anumang device</translation>
 <translation id="2460482211073772897">Sa iba pang folder</translation>
 <translation id="2460826998961521840">Para magamit ang mga naka-save na passkey sa Google Account mo</translation>
+<translation id="2461045498706592033">Naka-save lang ang <ph name="LOCAL_FOLDER" /> sa device na ito. Kung ililipat mo ang bookmark na ito sa <ph name="LOCAL_FOLDER" />, hindi mo na ito makukuha sa iyong iba pang device.</translation>
 <translation id="2461550163693930491">Huwag payagan ang mga site na mag-scroll at mag-zoom sa mga naka-share na tab</translation>
 <translation id="2461593638794842577">Puwede mong i-off ang setting na ito para sa device lang na ito ma-save ang iyong mga password</translation>
 <translation id="2462332841984057083">Sine-set up na ang Steam. Hintaying matapos ang pag-set up.</translation>
@@ -2364,6 +2366,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2645047101481282803">Pinapamahalaan ng <ph name="PROFILE_NAME" /> ang iyong device</translation>
 <translation id="2645388244376970260">Kina-cast ang tab na ito sa <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">I-save sa folder sa iyong Google Account?</translation>
 <translation id="264897126871533291">Protanomaly</translation>
 <translation id="2649045351178520408">Base64-encoded ASCII, certificate chain</translation>
 <translation id="265156376773362237">Karaniwang pag-preload</translation>
@@ -2552,6 +2555,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2773288106548584039">Suporta sa Legacy Browser</translation>
 <translation id="2773621783913034737">Gawing Hindi Aktibo ang Mga Tab</translation>
 <translation id="2774876860084746535">Intelektwal</translation>
+<translation id="2775047284666165174">Naka-save lang ang <ph name="LOCAL_FOLDER" /> sa device na ito. Kung ililipat mo ang folder na ito sa <ph name="LOCAL_FOLDER" />, hindi mo na ito makukuha sa iyong iba pang device.</translation>
 <translation id="2775104091073479743">I-edit ang Mga Fingerprint</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{Nag-access ang extension na "<ph name="EXTENSION" />" ng mga device}=1{Nag-a-access ang extension na "<ph name="EXTENSION" />" ng {0} device}one{Nag-a-access ang extension na "<ph name="EXTENSION" />" ng {0} device}other{Nag-a-access ang extension na "<ph name="EXTENSION" />" ng {0} na device}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Mag-alis ng 1 hindi sinusuportahang app}one{Mag-alis ng # hindi sinusuportahang app}other{Mag-alis ng # na hindi sinusuportahang app}}</translation>
@@ -2740,6 +2744,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2908122561561557160">Buksan ang mga Word, Excel, at PowerPoint file</translation>
 <translation id="2908162660801918428">Magdagdag ng Media Gallery ayon sa Direktoryo</translation>
 <translation id="2908358077082926882">Pindutin ulit ang "<ph name="CURRENTKEY" />" para alisin ang pagtatalaga at <ph name="RESPONSE" /></translation>
+<translation id="2909487040556589351">Kunin ang Chrome sa iyong mobile device</translation>
 <translation id="2909506265808101667">Hindi makakonekta sa mga serbisyo ng Google. Tingnan ang iyong koneksyon ng network at subukan ulit. Code ng error: <ph name="ERROR_CODE" />.</translation>
 <translation id="2910318910161511225">Kumonekta sa isang network at subukan ulit</translation>
 <translation id="2910678330803525229">Masisimulan mo na ngayon ang pag-browse</translation>
@@ -4841,6 +4846,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4434611816075088065">Wala nang ibang nangangailangan ng atensyon mo sa ngayon</translation>
 <translation id="443475966875174318">I-update o alisin ang mga hindi compatible na application</translation>
 <translation id="443503224864902151">Sina-sign out ka sa karamihan ng mga site. Mananatili kang naka-sign in sa iyong Google Account kaya made-delete ang naka-sync na data mo.</translation>
+<translation id="4436573279088520291">Isara ang Mga Hindi Ginagamit na Tab</translation>
 <translation id="4437879751057074691">Mag-alok na i-save ang mga password at passkey</translation>
 <translation id="4437947179446780764">Magdagdag ng custom na service provider ng DNS</translation>
 <translation id="4438043733494739848">Transparent</translation>
@@ -4953,6 +4959,7 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4527929807707405172">I-enable ang reverse na pag-scroll. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Suhestyon sa pagsasalin</translation>
 <translation id="4528638190900283934">Mag-sign in para sa mga karagdagang feature</translation>
+<translation id="4529052777398765334">Naka-save lang ang folder na ito sa device na ito. Kung ise-save mo ito sa <ph name="ACCOUNT_FOLDER" />, mase-save din ang folder na ito sa iyong account.</translation>
 <translation id="4529455689802245339">Posibleng hindi gumana ang Live Caption ng Chrome</translation>
 <translation id="4531451811601110068">Puwede mong subukan ulit o makipag-ugnayan sa iyong administrator para sa tulong</translation>
 <translation id="4531924570968473143">Sino ang gusto mong idagdag sa <ph name="DEVICE_TYPE" /> na ito?</translation>
@@ -5539,6 +5546,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4955707703665801001">Visibility ng <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Piliin ang iyong PIN</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">I-save lang sa folder sa device na ito?</translation>
 <translation id="4959262764292427323">Sine-save ang mga password sa iyong Google Account para magamit mo ang mga ito sa anumang device</translation>
 <translation id="4960020053211143927">Hindi sinusuportahan ng ilang app</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8466,6 +8474,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="711840821796638741">Ipakita ang Mga Pinamamahalaang Bookmark</translation>
 <translation id="711985611146095797">Binibigyang-daan ka ng page na ito na pamahalaan ang iyong mga naka-sign in na Google Account. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Iba-block ang trapiko sa Chrome browser at Android maliban kung may nakakonektang VPN.</translation>
+<translation id="7120904433567247946">Naka-save lang ang bookmark na ito sa device na ito. Kung ise-save mo ito sa <ph name="ACCOUNT_FOLDER" />, mase-save din ang bookmark na ito sa iyong account.</translation>
 <translation id="7121438501124788993">Developer Mode</translation>
 <translation id="7121728544325372695">Mga Smart na Gitling</translation>
 <translation id="7122605570852873914">Mag-sign out pa rin</translation>
@@ -9932,6 +9941,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="816704878106051517">{COUNT,plural, =1{isang numero ng telepono}one{# numero ng telepono}other{# na numero ng telepono}}</translation>
 <translation id="8168435359814927499">Content</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Idagdag ang Tab sa Listahan ng Babasahin}one{Idagdag ang Mga Tab sa Listahan ng Babasahin}other{Idagdag ang Mga Tab sa Listahan ng Babasahin}}</translation>
+<translation id="8169177848833352618">Sa kasamaang-palad, hindi nakakatugon ang machine na ito sa mga requirement para sa pag-install ng Bruschetta. Ang code ng error ay <ph name="ERROR" />.</translation>
 <translation id="8174047975335711832">Impormasyon ng device</translation>
 <translation id="8176332201990304395">Pink at puti</translation>
 <translation id="8176529144855282213">Para i-on ang access sa mikropono, i-on ang pisikal na switch ng mikropono sa iyong device</translation>

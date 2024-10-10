@@ -67,6 +67,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="1906696617298807388">Lorsque vous saisissez du texte dans la barre d'adresse ou dans le champ de recherche, Chromium envoie ce que vous saisissez à Google Drive pour obtenir des suggestions d'éléments. Ce paramètre est désactivé en navigation privée.</translation>
 <translation id="1911763535808217981">Désactiver cette option vous permet de vous connecter à des sites Google tels que Gmail sans vous connecter à Chromium</translation>
 <translation id="1929939181775079593">Chromium ne répond pas. Voulez-vous le relancer maintenant ?</translation>
+<translation id="1933341829955786215">Votre organisation (<ph name="MANAGER" />) exige que vous vous connectiez à Chromium</translation>
 <translation id="193439633299369377">Redémarrez Chromium OS pour appliquer la mise à jour.</translation>
 <translation id="1951406923938785464">Chromium a bloqué ce téléchargement, car ce type de fichier n'est pas souvent téléchargé et peut être dangereux</translation>
 <translation id="1953553007165777902">Téléchargement… <ph name="MINUTE" /> minute(s) restante(s)</translation>
@@ -576,6 +577,7 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="8852026904190808918">Cette langue est utilisée pour afficher les menus, les paramètres, les alertes et d'autres textes dans Chromium</translation>
 <translation id="8862326446509486874">Vous ne disposez pas des droits requis pour installer la version système. Relancez l'installation en vous connectant comme administrateur.</translation>
 <translation id="8880203542552872219">Si oui, veuillez modifier votre mot de passe enregistré dans Chromium pour qu'il corresponde à votre nouveau mot de passe.</translation>
+<translation id="8891709362986793894">Votre organisation exige que vous vous connectiez à Chromium</translation>
 <translation id="8907580949721785412">Chromium tente d'afficher les mots de passe. Pour autoriser cette action, saisissez votre mot de passe Windows.</translation>
 <translation id="8931379085695076764">Chromium peut estimer quels sont vos centres d'intérêt en fonction de votre historique de navigation des dernières semaines. Ces informations restent sur votre appareil.</translation>
 <translation id="8941642502866065432">Impossible de mettre Chromium à jour</translation>

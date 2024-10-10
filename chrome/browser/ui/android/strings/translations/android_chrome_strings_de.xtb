@@ -460,6 +460,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="3098745985164956033">Einige Bilder werden an Google gesendet, um die Beschreibungen zu verbessern</translation>
 <translation id="3114507951000454849">Nachrichten von heute lesen <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Ankündigungen</translation>
+<translation id="3131961580615093332"><ph name="GIVEN_NAME" /> hat den Tab „<ph name="TAB_NAME" />“ geändert</translation>
 <translation id="3148237711805373460">Weiter</translation>
 <translation id="314939179385989105">Chrome-Startseite</translation>
 <translation id="3158667104057012316">Nach manueller Reihenfolge sortieren</translation>
@@ -637,6 +638,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="4042941173059740150">Weiter zu <ph name="SITE_ETLD_PLUS_ONE" /> mit <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="404352903042073578">Unbenannte Gruppe</translation>
 <translation id="4044708993631234325">Tabellenblatt am unteren Rand</translation>
+<translation id="4045441967987592849">Noch einmal öffnen</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> Standard-Tab mit neuer Aktivität in freigegebenen Tabgruppen}other{<ph name="TABS_COUNT_MANY" /> Standard-Tabs mit neuer Aktivität in freigegebenen Tabgruppen}}</translation>
 <translation id="405365679581583349">Google Play-Dienste aktualisieren</translation>
 <translation id="405399507749852140">Du wirst bei einem Preisnachlass benachrichtigt</translation>
@@ -844,6 +846,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="4943703118917034429">Virtual Reality</translation>
 <translation id="4943872375798546930">Keine Ergebnisse</translation>
 <translation id="4950924971025849764">Wenn du im selben Google-Konto angemeldet bist, können andere Geräte dieses Smartphone als Sicherheitsschlüssel verwenden.</translation>
+<translation id="4953833914914492602">Die Tabgruppe „<ph name="TAB_GROUP_NAME" />“ ist nicht mehr verfügbar</translation>
 <translation id="4957722034734105353">Weitere Informationen...</translation>
 <translation id="4961107849584082341">Lass dir diese Seite in eine beliebige Sprache übersetzen</translation>
 <translation id="4964614743143953889">Chrome warnt dich vor unsicheren Websites und Downloads</translation>
@@ -957,6 +960,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="5526281268548144413">Kann nicht in mehreren Fenstern geschlossen werden</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{Vor # Min.}other{Vor # Min.}}</translation>
 <translation id="5548606607480005320">Sicherheitscheck</translation>
+<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> ist der Tabgruppe „<ph name="TAB_GROUP_NAME" />“ beigetreten</translation>
 <translation id="5554520618550346933">Wenn du ein Passwort verwendest, wirst du von Chrome gewarnt, falls es online veröffentlicht wurde. Dabei werden deine Passwörter und Nutzernamen verschlüsselt, damit sie von niemandem gelesen werden können, auch nicht von Google.</translation>
 <translation id="5555525474779371165">Safe Browsing-Schutz auswählen</translation>
 <translation id="5556459405103347317">Neu laden</translation>
@@ -1079,6 +1083,7 @@ Eventuell findest du unter <ph name="BEGIN_LINK" />history.google.com<ph name="E
 <translation id="6085886413119427067">Legt fest, wie Websites über eine sichere Verbindung aufgerufen werden</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> Stunden übrig</translation>
 <translation id="6095578583683628124">Wenn Google als Standardsuchmaschine festgelegt ist, siehst du bessere und relevantere Vorschläge</translation>
+<translation id="610630277578876674">Links in Nachrichten und anderen Inhalten schnell öffnen</translation>
 <translation id="6108923351542677676">Einrichtung läuft...</translation>
 <translation id="6112702117600201073">Aktualisierung der Seite</translation>
 <translation id="6122831415929794347">Safe Browsing deaktivieren?</translation>
@@ -1245,6 +1250,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6775840696761158817">Wenn du auf die Adressleiste oder das Suchfeld tippst oder dort ewas eingibst, werden Vorschläge deiner Standardsuchmaschine angezeigt. Im Inkognitomodus ist diese Funktion deaktiviert.</translation>
 <translation id="6785476624617658922">Zusatzbedingungen für Google Chrome und Chrome OS</translation>
 <translation id="6795633245022906657">Öffnet schnell einen neuen Tab. Wenn du diese Verknüpfung bearbeiten möchtest, rufe die Einstellungen auf.</translation>
+<translation id="679588508577699489">Chrome als Standardbrowser festlegen</translation>
 <translation id="679956319013005046">Wenn du einen bevorzugten Dienst für das automatische Ausfüllen festlegen möchtest, füge den Dienst zuerst in den <ph name="BEGIN_LINK" />Android-Einstellungen<ph name="END_LINK" /> hinzu.</translation>
 <translation id="6802555630140434547">Das Fenster wird geschlossen</translation>
 <translation id="6803791793483522764">Benachrichtigungen ansehen</translation>
@@ -1616,6 +1622,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8282297628636750033">Dunkles Design auf Websites anwenden</translation>
 <translation id="8282950411412455249">Zu den Sicherheitseinstellungen</translation>
 <translation id="829672787777123339">Verbindung zu deinem Gerät wird hergestellt…</translation>
+<translation id="8307517230426267469"><ph name="GIVEN_NAME" /> hat den Tab „<ph name="TAB_NAME" />“ entfernt</translation>
 <translation id="831192587911042850">Fügt die aktuell geöffnete Website der Liste mit Websites hinzu, denen du folgst.</translation>
 <translation id="8342727528718219152">Chrome informiert dich über Websites, die möglicherweise zu viele Benachrichtigungen senden</translation>
 <translation id="834313815369870491">Websites nie übersetzen</translation>
@@ -1736,6 +1743,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="8863714995118816041">Berechtigungen wieder zugelassen für <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Chrome-Daten in meinem Konto</translation>
 <translation id="8888527824584402177">Tabs, die du <ph name="DAYS_INACTIVE" /> Tage lang nicht verwendet hast, werden hierher verschoben<ph name="AUTODELETE_SECTION" />. Du kannst diese Einstellung jederzeit in den <ph name="SETTINGS_TITLE" /> ändern.</translation>
+<translation id="8890668505403261809">In meinen Inkognitotabs suchen</translation>
 <translation id="8898822736010347272">URLs einiger von dir besuchter Seiten, eingeschränkte Systemdaten und manche Seiteninhalte werden an Google gesendet, um die Erkennung neuer Bedrohungen zu verbessern und Nutzer im Internet zu schützen.</translation>
 <translation id="8909135823018751308">Teilen...</translation>
 <translation id="8921980840204105660">Synchronisieren, um die Lesezeichen von deinen anderen Geräten abzurufen</translation>

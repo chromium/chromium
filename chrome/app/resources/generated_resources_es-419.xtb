@@ -2095,6 +2095,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2460356425461033301">Crea una copia de seguridad de tus datos del navegador y úsalos en cualquier dispositivo</translation>
 <translation id="2460482211073772897">En otras carpetas</translation>
 <translation id="2460826998961521840">Para usar las llaves de acceso guardadas en tu Cuenta de Google</translation>
+<translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> solo se guarda en este dispositivo. Si mueves este favorito a <ph name="LOCAL_FOLDER" />, ya no lo tendrás en tus otros dispositivos.</translation>
 <translation id="2461550163693930491">No permitir que los sitios se desplacen ni hagan zoom en las pestañas compartidas</translation>
 <translation id="2461593638794842577">Puedes desactivar este parámetro de configuración para guardar tus contraseñas solo en este dispositivo</translation>
 <translation id="2462332841984057083">Ya se está configurando Steam. Espera a que se complete la configuración.</translation>
@@ -2348,6 +2349,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2645047101481282803"><ph name="PROFILE_NAME" /> administra tu dispositivo.</translation>
 <translation id="2645388244376970260">Transmitiendo esta pestaña a <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">¿Quieres guardarlo en una carpeta de tu Cuenta de Google?</translation>
 <translation id="264897126871533291">Protanomalía</translation>
 <translation id="2649045351178520408">Cadena de certificados ASCII con codificación Base64</translation>
 <translation id="265156376773362237">Precarga estándar</translation>
@@ -2536,6 +2538,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2773288106548584039">Compatibilidad con navegadores heredados</translation>
 <translation id="2773621783913034737">Desactivar pestañas</translation>
 <translation id="2774876860084746535">Intelectual</translation>
+<translation id="2775047284666165174"><ph name="LOCAL_FOLDER" /> solo se guarda en este dispositivo. Si mueves esta carpeta a <ph name="LOCAL_FOLDER" />, ya no la tendrás en tus otros dispositivos.</translation>
 <translation id="2775104091073479743">Editar huellas digitales</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{La extensión "<ph name="EXTENSION" />" no tenía acceso a ningún dispositivo}=1{La extensión "<ph name="EXTENSION" />" tiene acceso a {0} dispositivo}other{La extensión "<ph name="EXTENSION" />" tiene acceso a {0} dispositivos}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Quitar 1 app no compatible}other{Quitar # apps no compatibles}}</translation>
@@ -4939,6 +4942,7 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4527929807707405172">Habilita el desplazamiento inverso. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Sugerencia de traducción</translation>
 <translation id="4528638190900283934">Accede para obtener funciones adicionales.</translation>
+<translation id="4529052777398765334">Esta carpeta solo se guarda en este dispositivo. Si la guardas en <ph name="ACCOUNT_FOLDER" />, también se guardará en tu cuenta.</translation>
 <translation id="4529455689802245339">Es posible que el Subtitulado instantáneo de Chrome no funcione.</translation>
 <translation id="4531451811601110068">Puedes volver a intentarlo o comunicarte con el administrador para obtener ayuda</translation>
 <translation id="4531924570968473143">¿A quién quieres agregar a este <ph name="DEVICE_TYPE" />?</translation>
@@ -5525,6 +5529,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4955707703665801001">Visibilidad de <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Elige un PIN</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">¿Quieres guardarlo en una carpeta solo en este dispositivo?</translation>
 <translation id="4959262764292427323">Las contraseñas se guardan en tu cuenta de Google para que puedas usarlas en cualquier dispositivo</translation>
 <translation id="4960020053211143927">No es compatible con algunas apps</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8450,6 +8455,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="711840821796638741">Mostrar favoritos administrados</translation>
 <translation id="711985611146095797">Esta página te permite administrar tus Cuentas de Google a las que accediste. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Se bloqueará el tráfico de Android y del navegador Chrome a menos que se conecte una red VPN</translation>
+<translation id="7120904433567247946">Este favorito se guarda solo en este dispositivo. Si lo guardas en <ph name="ACCOUNT_FOLDER" />, también se guardará en tu cuenta.</translation>
 <translation id="7121438501124788993">Modo de desarrollador</translation>
 <translation id="7121728544325372695">Guiones inteligentes</translation>
 <translation id="7122605570852873914">Salir de todos modos</translation>
@@ -10290,7 +10296,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8440630305826533614">Apps de Linux</translation>
 <translation id="844063558976952706">Siempre en este sitio</translation>
 <translation id="8441313165929432954">Habilitar/Inhabilitar la conexión mediante dispositivo móvil</translation>
-<translation id="8443542808381875261">Cierra las pestañas que no utilices</translation>
+<translation id="8443542808381875261">Cerrar las pestañas sin usar</translation>
 <translation id="8443986842926457191">La URL tiene más de 2048 caracteres.</translation>
 <translation id="8445281870900174108">Esta pestaña está usando la cámara</translation>
 <translation id="8446884382197647889">Más información</translation>

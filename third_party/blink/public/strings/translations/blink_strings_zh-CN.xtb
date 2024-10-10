@@ -28,6 +28,7 @@
 <translation id="2746543609216772311">指定的值不得早于<ph name="MINIMUM_DATE_OR_TIME" />。</translation>
 <translation id="2761667185364618470">如果要继续，请选中此框。</translation>
 <translation id="2908441821576996758">请输入用逗号分隔的电子邮件地址的列表。</translation>
+<translation id="2940013921954129954">已允许获取确切位置信息</translation>
 <translation id="3049748772180311791"><ph name="QUANTITY" /> MB</translation>
 <translation id="3075154866155599887">请输入一个有效值。该字段不完整或存在无效日期。</translation>
 <translation id="310520048233152454">请输入网址。</translation>
@@ -77,6 +78,7 @@
 <translation id="6709570249143506788">播放质量不佳</translation>
 <translation id="6790428901817661496">播放</translation>
 <translation id="6820355525329141109">无法加载插件。</translation>
+<translation id="688706781007114099">使用位置信息</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">请将该内容增加到 <ph name="MIN_CHARACTERS" /> 个或更多字符（目前您使用了 1 个字符）。</translation>
 <translation id="709897737746224366">请与所请求的格式保持一致。</translation>

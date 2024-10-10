@@ -1104,6 +1104,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="301521992641321250">Otomatik olarak engellendi</translation>
 <translation id="3016780570757425217">Konumunuzu bilme</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />, Öneriyi Kaldırmak için Sekme'ye, sonra Enter tuşuna basın.</translation>
+<translation id="3022959067768579802">Yazmaya devam edin</translation>
 <translation id="3023165109041533893">Site tarafından önerilen reklamlar, sitelerin size alakalı reklamlar göstermesini sağlarken tarama geçmişinizi ve kimliğinizi korumanıza yardımcı olur. Ziyaret ettiğiniz bir site, siz internette gezinmeye devam ederken etkinliğinize göre alakalı reklamlar önerebilir. Ayarlardan bu sitelerin listesini görebilir ve istemediğiniz siteleri engelleyebilirsiniz.</translation>
 <translation id="3024663005179499861">Yanlış politika türü</translation>
 <translation id="3030331669969285614">Zarar veren bir değişikliği önleyen ya da geri alan bu flag'ler yalnızca sınırlı bir süre boyunca kullanılabilir.</translation>
@@ -1377,6 +1378,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="350763432931695541">Sonraki birkaç sayfadaki metin çıkarılıyor</translation>
 <translation id="3507869775212388416">Hukuk İşleri</translation>
 <translation id="3507936815618196901">Çevrenizin 3D haritasını oluşturma ve kamera konumunu takip etme</translation>
+<translation id="3510341387555916271">Devam etmek için açın</translation>
 <translation id="3512163584740124171">Aynı politika grubundan farklı bir politika daha yüksek önceliği sahip olduğundan bu politika yok sayılır.</translation>
 <translation id="351522771072578657">Şu anda bir menüdesiniz</translation>
 <translation id="3517264445792388751">Dosya sistemi, yöneticiniz tarafından devre dışı bırakıldı</translation>
@@ -1744,6 +1746,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="4152318981910038897">{COUNT,plural, =1{1. sayfa}other{{COUNT}. sayfa}}</translation>
 <translation id="4154277373259957087">Chrome artık ödeme yöntemlerini doldurmadan önce kimliğinizi doğrulayacak. Bu ayarı istediğiniz zaman <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> bölümünden güncelleyebilirsiniz.</translation>
 <translation id="4159784952369912983">Mor</translation>
+<translation id="4165422751765527461">Yardım Merkezi makalesini yeni bir sekmede açar</translation>
 <translation id="4165986682804962316">Site ayarları</translation>
 <translation id="4169535189173047238">İzin verme</translation>
 <translation id="4171400957073367226">Geçersiz doğrulama imzası</translation>
@@ -2904,6 +2907,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6306713302480826305">Bu adres, bu cihazdan ve oturum açtığınız diğer cihazlardan silinecek</translation>
 <translation id="6307968763353904914">Bankanız, bu ödeme yöntemi için şu anda sanal kart seçeneği sunmuyor. Online ödemelerde <ph name="CARD_LABEL" /> kartınızı kullanmaya devam edebilirsiniz.</translation>
 <translation id="6311410654831092784">Kalın Kağıt</translation>
+<translation id="6311642842034740437">Adlandırılmış konum</translation>
 <translation id="6312113039770857350">Web sayfası mevcut değil</translation>
 <translation id="6316110367871394043"><ph name="CLOUD_PROVIDER" /> konumuna dosya yükleme işlemi duraklatıldı</translation>
 <translation id="6316723751983724988">Yeni: Chrome ile ilgili Family Link seçimleri burada geçerlidir</translation>

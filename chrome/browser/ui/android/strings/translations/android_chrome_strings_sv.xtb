@@ -460,6 +460,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3098745985164956033">Vissa bilder skickas till Google så att du får bättre beskrivningar</translation>
 <translation id="3114507951000454849">Läs dagens nyheter <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Meddelanden</translation>
+<translation id="3131961580615093332"><ph name="GIVEN_NAME" /> har ändrat fliken <ph name="TAB_NAME" /></translation>
 <translation id="3148237711805373460">Öppna</translation>
 <translation id="314939179385989105">Chromes startsida</translation>
 <translation id="3158667104057012316">Sorterar efter manuell ordning</translation>
@@ -638,6 +639,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4042941173059740150">Fortsätt till <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="404352903042073578">Namnlös grupp</translation>
 <translation id="4044708993631234325">Ark på nedre delen av skärmen</translation>
+<translation id="4045441967987592849">Öppna igen</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standardflik med ny aktivitet i delade flikgrupper}other{<ph name="TABS_COUNT_MANY" /> standardflikar med ny aktivitet i delade flikgrupper}}</translation>
 <translation id="405365679581583349">Uppdatera Google Play-tjänsterna</translation>
 <translation id="405399507749852140">Få aviseringar när priset sjunker på en webbplats</translation>
@@ -845,6 +847,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="4943703118917034429">Virtuell verklighet</translation>
 <translation id="4943872375798546930">Inga resultat</translation>
 <translation id="4950924971025849764">Andra enheter som du är inloggad på med samma Google-konto kan använda den här telefonen som säkerhetsnyckel.</translation>
+<translation id="4953833914914492602">Flikgruppen <ph name="TAB_GROUP_NAME" /> är inte längre tillgänglig</translation>
 <translation id="4957722034734105353">Läs mer ...</translation>
 <translation id="4961107849584082341">Översätt den här sidan till vilket språk som helst</translation>
 <translation id="4964614743143953889">Chrome visar en varning om osäkra webbplatser och nedladdningar</translation>
@@ -958,6 +961,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5526281268548144413">Kan inte stängas i flera fönster</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# min sedan}other{# min sedan}}</translation>
 <translation id="5548606607480005320">Säkerhetskontroll</translation>
+<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> har gått med i flikgruppen <ph name="TAB_GROUP_NAME" /></translation>
 <translation id="5554520618550346933">När du använder ett lösenord visas en varning i Chrome om det har publicerats online. När detta görs krypteras dina lösenord och användarnamn så att varken Google eller någon annan kan läsa dem.</translation>
 <translation id="5555525474779371165">Välj ditt skydd med Säker webbsökning</translation>
 <translation id="5556459405103347317">Hämta igen</translation>
@@ -1080,6 +1084,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="6085886413119427067">Styr hur du ansluter till webbplatser via en säker anslutning</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> timmar kvar</translation>
 <translation id="6095578583683628124">Om du även använder Google som standardsökmotor får du bättre förslag som är relevanta i sammanhanget</translation>
+<translation id="610630277578876674">Öppna snabbt länkar i meddelanden och annat</translation>
 <translation id="6108923351542677676">Konfigurationen pågår ...</translation>
 <translation id="6112702117600201073">Uppdaterar sidan</translation>
 <translation id="6122831415929794347">Vill du inaktivera Säker webbsökning?</translation>
@@ -1246,6 +1251,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6775840696761158817">När du trycker eller skriver i adressfältet eller sökrutan visas förslag från standardsökmotorn. Detta är inaktiverat i inkognitoläge.</translation>
 <translation id="6785476624617658922">Ytterligare villkor för Chrome och ChromeOS</translation>
 <translation id="6795633245022906657">Öppna en ny flik snabbt. Öppna inställningarna om du vill ändra genvägen.</translation>
+<translation id="679588508577699489">Ange Chrome som standard</translation>
 <translation id="679956319013005046">Om du vill ställa in din önskade tjänst för autofyll lägger du först till tjänsten i <ph name="BEGIN_LINK" />Android-inställningarna<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">Fönstret stängs</translation>
 <translation id="6803791793483522764">Granska aviseringar</translation>
@@ -1617,6 +1623,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8282297628636750033">Använd mörkt tema på webbplatser när det är möjligt</translation>
 <translation id="8282950411412455249">Öppna säkerhetsinställningarna</translation>
 <translation id="829672787777123339">Ansluter till enheten …</translation>
+<translation id="8307517230426267469"><ph name="GIVEN_NAME" /> har tagit bort fliken <ph name="TAB_NAME" /></translation>
 <translation id="831192587911042850">Lägger till den aktuella webbplatsen i listan med webbplatser du följer.</translation>
 <translation id="8342727528718219152">Chrome meddelar dig om webbplatser som kanske skickar för många aviseringar</translation>
 <translation id="834313815369870491">Översätt aldrig webbplatser</translation>
@@ -1737,6 +1744,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="8863714995118816041">Behörigheter har tillåtits igen för <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Chrome-data i ditt konto</translation>
 <translation id="8888527824584402177">Flikar som du inte har använt på <ph name="DAYS_INACTIVE" /> dagar flyttas hit<ph name="AUTODELETE_SECTION" />. Du kan när som helst ändra detta i <ph name="SETTINGS_TITLE" />.</translation>
+<translation id="8890668505403261809">Sök bland inkognitoflikar</translation>
 <translation id="8898822736010347272">Skickar webbadresser till vissa sidor som du besöker, vissa systemuppgifter och visst sidinnehåll till Google för att upptäcka och blockera nya hot och skydda alla användare på internet.</translation>
 <translation id="8909135823018751308">Dela …</translation>
 <translation id="8921980840204105660">Synkronisera om du vill få tillgång till bokmärken från dina andra enheter</translation>

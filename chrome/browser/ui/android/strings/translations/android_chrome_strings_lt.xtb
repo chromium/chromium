@@ -1484,6 +1484,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="7707922173985738739">Naudoti mobiliojo ryšio duomenis</translation>
 <translation id="7709918231054955894">Gaukite visus savo skirtukus</translation>
 <translation id="7733878270780732638">Nepakanka vietos įrenginyje.</translation>
+<translation id="7746817319925672889">„Google“ slaptažodžių tvarkyklė netrukus nebeveiks šiame įrenginyje</translation>
 <translation id="774876555279732384">Automatinio pildymo paslaugas taip pat galima tvarkyti <ph name="BEGIN_LINK" />„Android“ nustatymuose<ph name="END_LINK" />.</translation>
 <translation id="7759809451544302770">Pasirenkama</translation>
 <translation id="7762668264895820836">SD kortelė Nr. <ph name="SD_CARD_NUMBER" /></translation>
@@ -1511,6 +1512,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="7846161022626028328">Įvyko klaida. Bandykite dar kartą.</translation>
 <translation id="7846296061357476882">„Google“ paslaugos</translation>
 <translation id="784934925303690534">Laikotarpis</translation>
+<translation id="7850687713580657633">Slaptažodžiai netrukus nebeveiks, nes „Google Play“ paslaugos nepasiekiamos. Jei norite naudoti „Google“ slaptažodžių tvarkyklėje išsaugotus slaptažodžius, prisijunkite naudodami kitą įrenginį arba apsilankykite adresu passwords.google.com.</translation>
 <translation id="7851858861565204677">Kiti įrenginiai</translation>
 <translation id="7853202427316060426">Veikla</translation>
 <translation id="7859988229622350291">Niekada neversti</translation>

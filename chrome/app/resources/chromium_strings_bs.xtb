@@ -69,7 +69,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="1906696617298807388">Kada pišete u traci za adresu ili okviru za pretraživanje, Chromium šalje ono što pišete na Google Disk radi dobijanja prijedloga za stavke. Ovo je isključeno u anonimnom načinu rada.</translation>
 <translation id="1911763535808217981">Isključivanjem ove postavke, možete se prijaviti na Googleove web lokacije poput Gmaila bez prijave na Chromium</translation>
 <translation id="1929939181775079593">Chromium ne reagira. Ponovo pokrenuti sada?</translation>
-<translation id="1933341829955786215">Vaša organizacija <ph name="MANAGER" /> zahtijeva da se prijavite u Chromium</translation>
+<translation id="1933341829955786215">Organizacija, <ph name="MANAGER" />, zahtijeva da se prijavite u Chromium</translation>
 <translation id="193439633299369377">ChromiumOS treba ponovo pokrenuti da se primijeni ažuriranje.</translation>
 <translation id="1951406923938785464">Chromium je blokirao ovo preuzimanje jer se ta vrsta fajla ne preuzima često i fajl je možda opasan</translation>
 <translation id="1953553007165777902">Preuzimanje… Preostalo je <ph name="MINUTE" /> min</translation>
@@ -579,7 +579,7 @@ Chromium ne može vratiti vaše postavke.</translation>
 <translation id="8852026904190808918">Ovaj jezik se koristi za prikaz menija, postavki, obavještenja i drugog teksta u Chromiumu</translation>
 <translation id="8862326446509486874">Nemate odgovarajuća prava za instalaciju na nivou sistema. Pokušajte ponovo pokrenuti instalaciju kao administrator.</translation>
 <translation id="8880203542552872219">Ako jeste, uredite sačuvanu lozinku u Chromiumu da se podudara s novom lozinkom.</translation>
-<translation id="8891709362986793894">Vaša organizacija zahtijeva da se prijavite u Chromium</translation>
+<translation id="8891709362986793894">Organizacija zahtijeva da se prijavite u Chromium</translation>
 <translation id="8907580949721785412">Chromium pokušava prikazati lozinke. Upišite Windows lozinku da ovo omogućite.</translation>
 <translation id="8931379085695076764">Chromium može procijeniti vaša interesovanja na osnovu historije pregledanja tokom proteklih nekoliko sedmica. Ta informacija ostaje na vašem uređaju.</translation>
 <translation id="8941642502866065432">Nije moguće ažurirati Chromium</translation>

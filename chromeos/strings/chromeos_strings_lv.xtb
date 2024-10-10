@@ -20,6 +20,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Konstatēts ugunsmūris</translation>
 <translation id="1075811647922107217">Lapas lielums</translation>
+<translation id="108084407137234521">Nevar apkopot transkripciju, kuras vārdu skaits ir mazāks nekā <ph name="MIN_WORD_LENGTH" />.</translation>
 <translation id="1082009148392559545">Notiek ekrānsaudzētāja lejupielāde</translation>
 <translation id="1094693127011229778">IP adrese nav pieejama</translation>
 <translation id="1100902271996134409">Notiek attēlu izveide…</translation>
@@ -413,6 +414,7 @@
 <translation id="3031560714565892478">Ierīce ir videokamera.</translation>
 <translation id="3042927241478734594">Vai iziet no ierakstīšanas režīma?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
+<translation id="3055176406666937744">Nevar apkopot transkripciju, kuras vārdu skaits pārsniedz <ph name="MAX_WORD_LENGTH" />.</translation>
 <translation id="3056720590588772262">Beigu punkts</translation>
 <translation id="3060579846059757016">Struktūras</translation>
 <translation id="3061850252076394168">iespējot funkciju “Atlasīt, lai izrunātu”</translation>
@@ -449,6 +451,7 @@
 <translation id="3226657629376379887">Izkārtojuma darbību izvēlne</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> jādala ar <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">Pārrakstīšana</translation>
+<translation id="3245518008592055173">Nevar izveidot nosaukumus transkripcijai, kuras vārdu skaits ir mazāks nekā <ph name="MIN_WORD_LENGTH" />.</translation>
 <translation id="3246869037381808805">Drukas uzdevumi, kas ir vecāki par vienu dienu, tiks noņemti</translation>
 <translation id="324961752321393509">Jūsu administrators neļauj aizvērt šo lietotni.</translation>
 <translation id="3263941347294171263">Lai turpinātu atjaunināšanas procesu, atvienojiet un atkārtoti pievienojiet ierīci (<ph name="DEVICE_NAME" />).</translation>
@@ -609,6 +612,7 @@
 <translation id="409427325554347132">Saglabāt testa informāciju</translation>
 <translation id="409469431304488632">Eksperiments</translation>
 <translation id="4095829376260267438">WPA2/WPA3</translation>
+<translation id="4105182082354119881">Nevar izveidot nosaukumus transkripcijai, kuras vārdu skaits pārsniedz <ph name="MAX_WORD_LENGTH" />.</translation>
 <translation id="4110686435123617899">Atlasīt albumu <ph name="TITLE" />: <ph name="DESC" /></translation>
 <translation id="4111761024568264522">USB skārienpaliktnis</translation>
 <translation id="4113067922640381334">Tagad varat piekļūt jaunām <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />fona tapetēm<ph name="END_LINK_WALLPAPER_SUBPAGE" />.</translation>

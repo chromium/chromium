@@ -2110,7 +2110,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2460356425461033301">Napravite sigurnosnu kopiju svojih stvari iz preglednika i koristite ih na bilo kojem uređaju</translation>
 <translation id="2460482211073772897">U drugim folderima</translation>
 <translation id="2460826998961521840">Da koristite pristupne ključeve sačuvane na Google računu</translation>
-<translation id="2461045498706592033">Mapa <ph name="LOCAL_FOLDER" /> sprema se samo na ovaj uređaj. Ako tu oznaku premjestite u mapu <ph name="LOCAL_FOLDER" />, više joj nećete moći pristupiti na drugim uređajima.</translation>
+<translation id="2461045498706592033">Folder <ph name="LOCAL_FOLDER" /> je sačuvan samo na ovom uređaju. Ako premjestite ovu oznaku u folder <ph name="LOCAL_FOLDER" />, više ga nećete imati na drugim uređajima.</translation>
 <translation id="2461550163693930491">Nemoj dozvoliti web lokacijama klizanje na dijeljenim karticama niti njihovo zumiranje</translation>
 <translation id="2461593638794842577">Možete isključiti ovu postavku da sačuvate lozinke samo na ovaj uređaj</translation>
 <translation id="2462332841984057083">Steam se već postavlja. Pričekajte da se postavljanje završi.</translation>
@@ -2364,7 +2364,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2645047101481282803">Vašim uređajem upravlja <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">Emitiranje ove kartice na uređaju <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
-<translation id="2646132387794831258">Spremiti u mapu na Google računu?</translation>
+<translation id="2646132387794831258">Sačuvati folder na Google račun?</translation>
 <translation id="264897126871533291">Protanomalija</translation>
 <translation id="2649045351178520408">Base64-šifriran ASCII, lanac potvrda</translation>
 <translation id="265156376773362237">Standardno predučitavanje</translation>
@@ -2553,7 +2553,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2773288106548584039">Podrška preglednika za starije web lokacije</translation>
 <translation id="2773621783913034737">Učini kartice neaktivnima</translation>
 <translation id="2774876860084746535">Intelektualno</translation>
-<translation id="2775047284666165174">Mapa <ph name="LOCAL_FOLDER" /> sprema se samo na ovaj uređaj. Ako tu mapu premjestite u mapu <ph name="LOCAL_FOLDER" />, više joj nećete moći pristupiti na drugim uređajima.</translation>
+<translation id="2775047284666165174">Folder <ph name="LOCAL_FOLDER" /> je sačuvan samo na ovom uređaju. Ako premjestite ovaj folder u folder <ph name="LOCAL_FOLDER" />, više ga nećete imati na drugim uređajima.</translation>
 <translation id="2775104091073479743">Uređivanje otisaka prsta</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{Ekstenzija "<ph name="EXTENSION" />" je pristupala uređajima}=1{Ekstenzija "<ph name="EXTENSION" />" je pristupala {0} uređaju}one{Ekstenzija "<ph name="EXTENSION" />" je pristupala {0} uređaju}few{Ekstenzija "<ph name="EXTENSION" />" je pristupala {0} uređaja}other{Ekstenzija "<ph name="EXTENSION" />" je pristupala {0} uređaja}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Uklonite 1 nepodržanu aplikaciju}one{Uklonite # nepodržanu aplikaciju}few{Uklonite # nepodržane aplikacije}other{Uklonite # nepodržanih aplikacija}}</translation>
@@ -4957,7 +4957,7 @@ One mogu uključivati informacije o instaliranom softveru, fajlovima, preglednik
 <translation id="4527929807707405172">Omogući klizanje unazad. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Prijedlog prijevoda</translation>
 <translation id="4528638190900283934">Prijavite se za dodatne funkcije</translation>
-<translation id="4529052777398765334">Mapa se sprema samo na ovaj uređaj. Ako je spremite u mapu <ph name="ACCOUNT_FOLDER" />, ta će se mapa spremiti i na vaš račun.</translation>
+<translation id="4529052777398765334">Folder je sačuvan samo na ovom uređaju. Ako ga sačuvate u folder <ph name="ACCOUNT_FOLDER" />, ovaj folder će se također sačuvati na račun.</translation>
 <translation id="4529455689802245339">Chromeovi automatski titlovi možda neće funkcionirati</translation>
 <translation id="4531451811601110068">Možete pokušati ponovo ili kontaktirati administratora za pomoć</translation>
 <translation id="4531924570968473143">Koga želite dodati na ovaj uređaj <ph name="DEVICE_TYPE" />?</translation>
@@ -5544,7 +5544,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="4955707703665801001">Vidljivost za funkciju <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Odaberite PIN</translation>
 <translation id="4956847150856741762">1</translation>
-<translation id="4958009531430054995">Spremiti u mapu samo na ovom uređaju?</translation>
+<translation id="4958009531430054995">Sačuvati u folder samo na ovom uređaju?</translation>
 <translation id="4959262764292427323">Lozinke se pohranjuju na vaš Google račun da ih možete koristiti na bilo kojem uređaju</translation>
 <translation id="4960020053211143927">Određene aplikacije ne podržavaju ovo</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -8474,7 +8474,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="711840821796638741">Prikaži upravljane oznake</translation>
 <translation id="711985611146095797">Ova stranica vam omogućava da upravljate Google računima na koje ste prijavljeni. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Preglednik Chrome i saobraćaj putem Androida će se blokirati ako ne povežete VPN</translation>
-<translation id="7120904433567247946">Jedna oznaka sprema se samo na ovaj uređaj. Ako je spremite u mapu <ph name="ACCOUNT_FOLDER" />, ova će se oznaka spremiti i na vaš račun.</translation>
+<translation id="7120904433567247946">Oznaka je sačuvana samo na ovaj uređaj. Ako je sačuvate u folder <ph name="ACCOUNT_FOLDER" />, ova oznaka će se također sačuvati na račun.</translation>
 <translation id="7121438501124788993">Način rada za programere</translation>
 <translation id="7121728544325372695">Pametne crtice</translation>
 <translation id="7122605570852873914">Ipak se odjavi</translation>

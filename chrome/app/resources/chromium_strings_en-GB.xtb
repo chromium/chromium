@@ -69,6 +69,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="1906696617298807388">When you type in the address bar or search box, Chromium sends what you type to Google Drive to get item suggestions. This is off in Incognito.</translation>
 <translation id="1911763535808217981">By turning this off, you can sign in to Google sites such as Gmail, without signing in to Chromium</translation>
 <translation id="1929939181775079593">Chromium is unresponsive. Relaunch now?</translation>
+<translation id="1933341829955786215">Your organisation, <ph name="MANAGER" />, requires you to sign in to Chromium</translation>
 <translation id="193439633299369377">Chromium OS needs to be restarted to apply the update.</translation>
 <translation id="1951406923938785464">Chromium blocked this download because the file type isn't commonly downloaded and it may be dangerous</translation>
 <translation id="1953553007165777902">Downloading… <ph name="MINUTE" /> minute(s) remaining</translation>
@@ -578,6 +579,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8852026904190808918">This language is used to display menus, settings, alerts and other text in Chromium</translation>
 <translation id="8862326446509486874">You do not have appropriate rights for system-level installation. Try running the installer again as Administrator.</translation>
 <translation id="8880203542552872219">If so, please edit your saved password in Chromium so that it matches your new password.</translation>
+<translation id="8891709362986793894">Your organisation requires you to sign in to Chromium</translation>
 <translation id="8907580949721785412">Chromium is trying to show passwords. Type your Windows password to allow this.</translation>
 <translation id="8931379085695076764">Chromium can estimate your interests based on your browsing history from the last few weeks. This info stays on your device.</translation>
 <translation id="8941642502866065432">Can't update Chromium</translation>

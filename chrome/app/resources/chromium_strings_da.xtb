@@ -67,6 +67,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="1906696617298807388">Når du indtaster noget i adresselinjen eller søgefeltet, sender Chromium det, du skriver, til Google Drev for at få forslag til elementer. Dette er deaktiveret i inkognito.</translation>
 <translation id="1911763535808217981">Når du deaktiverer denne indstilling, kan du logge ind på Google-websites som f.eks. Gmail uden at logge ind i Chromium</translation>
 <translation id="1929939181775079593">Chromium svarer ikke. Vil du genstarte nu?</translation>
+<translation id="1933341829955786215">Din organisation, <ph name="MANAGER" />, kræver, at du logger ind i Chromium</translation>
 <translation id="193439633299369377">Chromium OS skal genstartes, før opdateringen kan anvendes.</translation>
 <translation id="1951406923938785464">Chromium har blokeret denne download, fordi filtypen normalt ikke downloades og kan være skadelig</translation>
 <translation id="1953553007165777902">Downloader… Der er <ph name="MINUTE" /> minutter tilbage</translation>
@@ -576,6 +577,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="8852026904190808918">Dette sprog bruges i menuer, indstillinger, underretninger og anden tekst i Chromium</translation>
 <translation id="8862326446509486874">Du har ikke de nødvendige rettigheder til en installation på systemniveau. Prøv at køre installationsprogrammet igen som administrator.</translation>
 <translation id="8880203542552872219">Hvis ja, skal du redigere den gemte adgangskode i Chromium, så den matcher den nye adgangskode.</translation>
+<translation id="8891709362986793894">Din organisation kræver, at du logger ind i Chromium</translation>
 <translation id="8907580949721785412">Chromium forsøger at vise adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
 <translation id="8931379085695076764">Chromium kan estimere dine interesser baseret på din browserhistorik de seneste få uger. Disse oplysninger forbliver på din enhed.</translation>
 <translation id="8941642502866065432">Chromium kunne ikke opdateres</translation>

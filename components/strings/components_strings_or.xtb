@@ -1743,6 +1743,7 @@
 <translation id="4152318981910038897">{COUNT,plural, =1{ପୃଷ୍ଠା 1}other{ପୃଷ୍ଠା {COUNT}}}</translation>
 <translation id="4154277373259957087">ପେମେଣ୍ଟ ପଦ୍ଧତିଗୁଡ଼ିକୁ ପୂରଣ କରିବା ପୂର୍ବରୁ Chrome ବର୍ତ୍ତମାନ ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି ଯାଞ୍ଚ କରିବ। ଆପଣ <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />ରେ ଯେ କୌଣସି ସମୟରେ ଏହାକୁ ଅପଡେଟ କରିପାରିବେ।</translation>
 <translation id="4159784952369912983">ବାଇଗଣୀ</translation>
+<translation id="4165422751765527461">ଏକ ନୂଆ ଟାବରେ ଏକ ସହାୟତା କେନ୍ଦ୍ର ଆର୍ଟିକିଲ ଖୋଲେ</translation>
 <translation id="4165986682804962316">ସାଇଟ୍‍ ସେଟିଂସ୍‌</translation>
 <translation id="4169535189173047238">ଅନୁମତି ଦିଅନ୍ତୁ ନାହିଁ</translation>
 <translation id="4171400957073367226">ଖରାପ ଯାଞ୍ଚକରଣ ଦସ୍ତଖତ</translation>
@@ -2902,6 +2903,7 @@
 <translation id="6306713302480826305">ଏହି ଡିଭାଇସ ଏବଂ ଆପଣଙ୍କ ଅନ୍ୟ ସାଇନ-ଇନ କରାଯାଇଥିବା ଡିଭାଇସଗୁଡ଼ିକରୁ ଏହି ଠିକଣା ଡିଲିଟ ହୋଇଯିବ</translation>
 <translation id="6307968763353904914">ଆପଣଙ୍କ ବେଙ୍କ ବର୍ତ୍ତମାନ ଏହି ପେମେଣ୍ଟ ପଦ୍ଧତି ପାଇଁ ଭର୍ଚୁଆଲ କାର୍ଡ ଅଫର କରିପାରିବ ନାହିଁ, କିନ୍ତୁ ଆପଣ ଏବେ ବି ଅନଲାଇନ ପେମେଣ୍ଟ କରିବା ପାଇଁ ଆପଣଙ୍କ <ph name="CARD_LABEL" />କୁ ବ୍ୟବହାର କରିପାରିବେ।</translation>
 <translation id="6311410654831092784">କାର୍ଡ ଷ୍ଟକ</translation>
+<translation id="6311642842034740437">ନାମ ଥିବା ଲୋକେସନ</translation>
 <translation id="6312113039770857350">ୱେବ୍ ପୃଷ୍ଠା ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="6316110367871394043"><ph name="CLOUD_PROVIDER" />ରେ ଫାଇଲ ଅପଲୋଡକୁ ବିରତ କରାଯାଇଛି</translation>
 <translation id="6316723751983724988">ନୂଆ: Chrome ପାଇଁ Family Link ପସନ୍ଦଗୁଡ଼ିକ ଏଠାରେ ଲାଗୁ ହୁଏ</translation>

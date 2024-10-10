@@ -2112,6 +2112,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2460356425461033301">Sikkerhedskopiér dit indhold fra browseren, og få adgang til det på enhver enhed</translation>
 <translation id="2460482211073772897">I andre mapper</translation>
 <translation id="2460826998961521840">Sådan bruger du adgangsnøgler, der er gemt på din Google-konto</translation>
+<translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> gemmes kun på denne enhed. Hvis du flytter dette bogmærke til <ph name="LOCAL_FOLDER" />, kan du ikke længere tilgå det på dine andre enheder.</translation>
 <translation id="2461550163693930491">Tillad ikke, at websites kan rulle i og zoome ind på delte faner</translation>
 <translation id="2461593638794842577">Du kan deaktivere denne indstilling, hvis du kun vil gemme dine adgangskoder på denne enhed</translation>
 <translation id="2462332841984057083">Steam er allerede ved at blive konfigureret. Vent, indtil konfigurationen er afsluttet.</translation>
@@ -2365,6 +2366,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2645047101481282803">Din enhed administreres af <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">Caster denne fane til <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">Vil du gemme det i en mappe på din Google-konto?</translation>
 <translation id="264897126871533291">Protanomali</translation>
 <translation id="2649045351178520408">Base64-kodet ASCII, certifikatkæde</translation>
 <translation id="265156376773362237">Standardforudindlæsning</translation>
@@ -2553,6 +2555,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2773288106548584039">Understøttelse af ældre browsere</translation>
 <translation id="2773621783913034737">Gør faner inaktive</translation>
 <translation id="2774876860084746535">Intellektuel</translation>
+<translation id="2775047284666165174"><ph name="LOCAL_FOLDER" /> gemmes kun på denne enhed. Hvis du flytter denne mappe til <ph name="LOCAL_FOLDER" />, kan du ikke længere tilgå den på dine andre enheder.</translation>
 <translation id="2775104091073479743">Rediger fingeraftryk</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{Udvidelsen "<ph name="EXTENSION" />" havde adgang til enhederne}=1{Udvidelsen "<ph name="EXTENSION" />" har adgang til {0} enhed}one{Udvidelsen "<ph name="EXTENSION" />" har adgang til {0} enhed}other{Udvidelsen "<ph name="EXTENSION" />" har adgang til {0} enheder}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Fjern 1 ikke-understøttet app}one{Fjern # ikke-understøttet app}other{Fjern # ikke-understøttede apps}}</translation>
@@ -4956,6 +4959,7 @@ Dette kan omfatte oplysninger om installeret software, filer, din browser og enh
 <translation id="4527929807707405172">Aktivér omvendt rulning. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Oversættelsesforslag</translation>
 <translation id="4528638190900283934">Log ind for at få adgang til yderligere funktioner</translation>
+<translation id="4529052777398765334">Denne mappe gemmes kun på denne enhed. Hvis du gemmer den i <ph name="ACCOUNT_FOLDER" />, gemmes denne mappe også på din konto.</translation>
 <translation id="4529455689802245339">Chrome Livetekstning fungerer muligvis ikke</translation>
 <translation id="4531451811601110068">Du kan prøve igen eller kontakte din administrator for at få hjælp</translation>
 <translation id="4531924570968473143">Hvem vil du føje til denne <ph name="DEVICE_TYPE" />?</translation>
@@ -5542,6 +5546,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4955707703665801001">Synlighed for <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Vælg din pinkode</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">Vil du gemme det i en mappe, der kun er på denne enhed?</translation>
 <translation id="4959262764292427323">Adgangskoder gemmes på din Google-konto, så du kan bruge dem på enhver enhed</translation>
 <translation id="4960020053211143927">Understøttes ikke af visse apps</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -8469,6 +8474,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="711840821796638741">Vis administrerede bogmærker</translation>
 <translation id="711985611146095797">Denne side giver dig mulighed for at administrere de Google-konti, du er logget ind på. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Chrome-browseren og Android-trafik blokeres, medmindre der oprettes forbindelse til et VPN-netværk</translation>
+<translation id="7120904433567247946">Bogmærket gemmes kun på denne enhed. Hvis du gemmer den i <ph name="ACCOUNT_FOLDER" />, gemmes dette bogmærke også på din konto.</translation>
 <translation id="7121438501124788993">Udviklertilstand</translation>
 <translation id="7121728544325372695">Smarte bindestreger</translation>
 <translation id="7122605570852873914">Log ud alligevel</translation>

@@ -66,6 +66,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="1906696617298807388">Manzillar qatori yoki qidiruv oynasiga matn kiritilganda Chromium mos taklif olish uchun yozilgan matnni Google Drive xizmatiga yuboradi. Inkognito rejimda bu funksiya yoqilmasin</translation>
 <translation id="1911763535808217981">Agar bu faolsizlantirilsa, Gmail kabi Google saytlarida hisobingizga kirganingizda Chromium hisobingizga kirilmaydi</translation>
 <translation id="1929939181775079593">Chromium javob bermayapti. Qaytadan ishga tushirilsinmi?</translation>
+<translation id="1933341829955786215">Tashkilotingiz (<ph name="MANAGER" />) Chromium hisobiga kirishni talab qiladi</translation>
 <translation id="193439633299369377">Yangilanishni oʻrnatish uchun ChromeOS qayta ishga tushirilishi kerak.</translation>
 <translation id="1951406923938785464">Chromium bu yuklamani blokladi, chunki bunday turdagi fayl odatda yuklab olinmaydi va xavfli boʻlishi mumkin</translation>
 <translation id="1953553007165777902">Yuklab olinmoqda... <ph name="MINUTE" /> daqiqa qoldi</translation>
@@ -573,6 +574,7 @@ Chromium sozlamalaringizni qaytadan tiklay olmadi.</translation>
 <translation id="8852026904190808918">Bu tildan Chromiumda menyular, sozlamalar, ogohlantirishlar va boshqa matnlarni koʻrsatish uchun foydalaniladi</translation>
 <translation id="8862326446509486874">Sizda tizim darajasida o‘rnatish uchun yetarli ruxsatlar yo‘q. O‘rnatish dasturini administrator nomidan qayta ishga tushiring.</translation>
 <translation id="8880203542552872219">Agar shunday boʻlsa, Chromium brauzeriga saqlangan parolingizni yangi parolingiz bilan bir xil boʻlishi uchun tahrirlang</translation>
+<translation id="8891709362986793894">Tashkilotingiz Chromium hisobiga kirishni talab qiladi</translation>
 <translation id="8907580949721785412">Chromium parollarni ko‘rsatishga urinmoqda. Ruxsat berish uchun Windows platformasidagi parolingizni kiriting.</translation>
 <translation id="8931379085695076764">Chromium oxirgi bir nechta haftada siz ochgan sahifalar tarixi asosida qiziqishlaringiz taxmin qilishi mumkin. Bu maʼlumotlar qurilmangizda qoladi.</translation>
 <translation id="8941642502866065432">Chromiumni yangilab bo‘lmadi</translation>

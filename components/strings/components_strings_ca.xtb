@@ -1746,6 +1746,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4152318981910038897">{COUNT,plural, =1{Pàgina 1}other{Pàgina {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome verificarà la teva identitat abans d'emplenar les formes de pagament. Pots actualitzar aquesta informació en qualsevol moment a <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4159784952369912983">Porpra</translation>
+<translation id="4165422751765527461">Obre un article del Centre d'ajuda en una pestanya nova</translation>
 <translation id="4165986682804962316">Configuració del lloc web</translation>
 <translation id="4169535189173047238">No permetis</translation>
 <translation id="4171400957073367226">La signatura de verificació és incorrecta</translation>
@@ -2906,6 +2907,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6306713302480826305">Aquesta adreça se suprimirà d'aquest dispositiu i dels altres en què tinguis la sessió iniciada</translation>
 <translation id="6307968763353904914">El banc no pot oferir targetes virtuals per a aquesta forma de pagament; pots utilitzar la <ph name="CARD_LABEL" /> per pagar en línia.</translation>
 <translation id="6311410654831092784">Inventari de targetes</translation>
+<translation id="6311642842034740437">Ubicació amb nom</translation>
 <translation id="6312113039770857350">La pàgina web no està disponible</translation>
 <translation id="6316110367871394043">La pujada dels fitxers a <ph name="CLOUD_PROVIDER" /> s'ha posat en pausa</translation>
 <translation id="6316723751983724988">Novetat: aquí pots triar les opcions de Family Link per a Chrome</translation>

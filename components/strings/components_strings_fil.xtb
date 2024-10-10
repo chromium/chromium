@@ -1746,6 +1746,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4152318981910038897">{COUNT,plural, =1{Page 1}one{Page {COUNT}}other{Page {COUNT}}}</translation>
 <translation id="4154277373259957087">Ive-verify na ngayon ng Chrome na ikaw ito bago punan ang mga paraan ng pagbabayad. Puwede mo itong i-update anumang oras sa <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4159784952369912983">Lila</translation>
+<translation id="4165422751765527461">Nagbubukas ng artikulo sa Help Center sa bagong tab</translation>
 <translation id="4165986682804962316">Mga setting ng site</translation>
 <translation id="4169535189173047238">Huwag payagan</translation>
 <translation id="4171400957073367226">Hindi wasto ang signature sa pag-verify</translation>
@@ -2906,6 +2907,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6306713302480826305">Made-delete ang address na ito mula rito at sa iyong iba pang naka-sign in na device</translation>
 <translation id="6307968763353904914">Wala pang virtual card ang iyong bangko para sa paraan ng pagbabayad na ito, pero puwede mo pa ring gamitin ang iyong <ph name="CARD_LABEL" /> para magbayad online.</translation>
 <translation id="6311410654831092784">Card Stock</translation>
+<translation id="6311642842034740437">Ibinigay na lokasyon</translation>
 <translation id="6312113039770857350">Hindi available ang webpage</translation>
 <translation id="6316110367871394043">Na-pause ang pag-upload ng file sa <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="6316723751983724988">Bago: Nalalapat dito ang mga pinili sa Family Link para sa Chrome</translation>

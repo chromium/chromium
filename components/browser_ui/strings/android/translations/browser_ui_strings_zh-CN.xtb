@@ -49,6 +49,7 @@
 <translation id="1979673356880165407">在您访问的所有网站上放大或缩小文字和图片</translation>
 <translation id="1984937141057606926">允许（第三方除外）</translation>
 <translation id="1985247341569771101">开启此设置后，网站可以使用设备的移动传感器。关闭此设置后，网站无法使用移动传感器。</translation>
+<translation id="1985716030964443178">这会将列表中所有网站的缩放级别重置为默认值</translation>
 <translation id="1989112275319619282">浏览</translation>
 <translation id="1994173015038366702">网站网址</translation>
 <translation id="2004697686368036666">某些网站上的功能可能无法正常运行</translation>
@@ -103,6 +104,7 @@
 <translation id="2653659639078652383">提交</translation>
 <translation id="2677748264148917807">离开</translation>
 <translation id="2678468611080193228">尝试暂时允许使用第三方 Cookie，这意味着您将采用较低级别的保护措施，但网站功能更有可能正常运行</translation>
+<translation id="2682367912565197520">删除已保存的缩放级别</translation>
 <translation id="2683434792633810741">删除并重置？</translation>
 <translation id="2713106313042589954">关闭摄像头</translation>
 <translation id="2717722538473713889">电子邮件地址</translation>
@@ -212,6 +214,7 @@
 <translation id="4338831206024587507"><ph name="DOMAIN" /> 下的所有网站</translation>
 <translation id="4402755511846832236">禁止网站了解您何时在主动使用此设备</translation>
 <translation id="4412992751769744546">允许第三方 Cookie</translation>
+<translation id="4419929467120297501">Chrome 会阻止网站使用第三方 Cookie 跟踪您在浏览时的活动。访问“设置”可<ph name="BEGIN_LINK" />管理对第三方 Cookie 的使用权限<ph name="END_LINK" />。</translation>
 <translation id="4434045419905280838">弹出式窗口和重定向</translation>
 <translation id="443552056913301231">此操作会删除所有本地数据（包括 Cookie）并重置 <ph name="ORIGIN" /> 的所有权限</translation>
 <translation id="4468959413250150279">将某个特定网站静音。</translation>
@@ -233,6 +236,7 @@
 <translation id="4779083564647765204">缩放</translation>
 <translation id="4807122856660838973">开启安全浏览</translation>
 <translation id="4811450222531576619">了解其来源和主题</translation>
+<translation id="4816495437032298535">已保存的网站缩放级别</translation>
 <translation id="4836046166855586901">在网站想了解您何时在主动使用此设备时询问您</translation>
 <translation id="483914009762354899">包含该网域下的所有网站</translation>
 <translation id="4883854917563148705">无法重置受管理的设置</translation>
@@ -268,6 +272,7 @@
 <translation id="5246825184569358663">此操作会删除所有本地数据（包括 Cookie）并重置 <ph name="DOMAIN" /> 及其下属所有网站的所有权限</translation>
 <translation id="5264323282659631142">移除“<ph name="CHIP_LABEL" />”</translation>
 <translation id="528192093759286357">从顶部向下拖动并触摸“返回”按钮，即可退出全屏模式。</translation>
+<translation id="5292915569214461965">您已禁止网站使用第三方 Cookie 跟踪您在浏览时的活动。访问“设置”可<ph name="BEGIN_LINK" />管理对第三方 Cookie 的使用权限<ph name="END_LINK" />。</translation>
 <translation id="5295729974480418933">开启此设置后，网站可以请求使用其保存的与您相关的信息。关闭此设置后，网站无法请求使用其保存的与您相关的信息。</translation>
 <translation id="5300589172476337783">显示</translation>
 <translation id="5301954838959518834">知道了</translation>
@@ -444,6 +449,7 @@
 <translation id="7835852323729233924">正在播放媒体</translation>
 <translation id="783819812427904514">将视频取消静音</translation>
 <translation id="7846076177841592234">取消选择</translation>
+<translation id="7881140103901777395">Chrome 会限制大多数网站使用第三方 Cookie。不过，该网站已获准使用第三方 Cookie，因为它需要依赖这类 Cookie 来提供基本服务。\n\n访问“设置”可<ph name="BEGIN_LINK" />管理对第三方 Cookie 的使用权限<ph name="END_LINK" />。</translation>
 <translation id="7882806643839505685">允许特定网站播放声音。</translation>
 <translation id="789180354981963912">在无痕模式下阻止第三方 Cookie：</translation>
 <translation id="7940722705963108451">提醒我</translation>
@@ -506,6 +512,7 @@
 <translation id="8721719390026067591">开启此设置后，网站可以请求搜寻蓝牙设备。关闭此设置后，网站无法搜寻蓝牙设备。</translation>
 <translation id="8725066075913043281">重试</translation>
 <translation id="8730621377337864115">完成</translation>
+<translation id="8737426583868847403">您为其保存了自定义缩放级别的网站将显示在此处</translation>
 <translation id="8751914237388039244">选择图片</translation>
 <translation id="8800034312320686233">网站无法正常运行？</translation>
 <translation id="8801436777607969138">禁止特定网站运行 JavaScript。</translation>

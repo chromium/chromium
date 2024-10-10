@@ -460,6 +460,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3098745985164956033">Se envían algunas imágenes a Google para proporcionarte mejores descripciones.</translation>
 <translation id="3114507951000454849">Lee las noticias de hoy <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Anuncios</translation>
+<translation id="3131961580615093332"><ph name="GIVEN_NAME" /> modificó la pestaña “<ph name="TAB_NAME" />”</translation>
 <translation id="3148237711805373460">Ir ahora</translation>
 <translation id="314939179385989105">Página principal de Chrome</translation>
 <translation id="3158667104057012316">Ordenados manualmente</translation>
@@ -637,6 +638,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="4042941173059740150">Continúa usando <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="404352903042073578">Grupo sin nombre</translation>
 <translation id="4044708993631234325">Hoja inferior</translation>
+<translation id="4045441967987592849">Volver a abrir</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> pestaña estándar con actividad nueva en grupos de pestañas compartidos}other{<ph name="TABS_COUNT_MANY" /> pestañas estándar con actividad nueva en grupos de pestañas compartidos}}</translation>
 <translation id="405365679581583349">Actualiza los Servicios de Google Play</translation>
 <translation id="405399507749852140">Recibe alertas si baja el precio en algún sitio</translation>
@@ -844,6 +846,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="4943703118917034429">Realidad virtual</translation>
 <translation id="4943872375798546930">Sin resultados</translation>
 <translation id="4950924971025849764">Cuando accedes con la misma Cuenta de Google, otros dispositivos pueden usar este teléfono como llave de seguridad.</translation>
+<translation id="4953833914914492602">El grupo de pestañas “<ph name="TAB_GROUP_NAME" />” ya no está disponible</translation>
 <translation id="4957722034734105353">Más información...</translation>
 <translation id="4961107849584082341">Traducir esta página a cualquier idioma</translation>
 <translation id="4964614743143953889">Chrome te advierte sobre descargas y sitios no seguros</translation>
@@ -957,6 +960,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5526281268548144413">No se pueden cerrar en varias ventanas</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{Hace # min}other{Hace # min}}</translation>
 <translation id="5548606607480005320">Verificación de seguridad</translation>
+<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> se unió al grupo de pestañas “<ph name="TAB_GROUP_NAME" />”</translation>
 <translation id="5554520618550346933">Cuando usas una contraseña, Chrome te advierte si se publicó en línea. Cuando lo haces, se encriptan tus contraseñas y nombres de usuario para que nadie, ni siquiera Google, pueda leer esta información.</translation>
 <translation id="5555525474779371165">Elige tu protección de Navegación segura</translation>
 <translation id="5556459405103347317">Volver a cargar</translation>
@@ -1618,6 +1622,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8282297628636750033">Aplica el Tema oscuro para sitios (de ser posible)</translation>
 <translation id="8282950411412455249">Ir a la configuración de seguridad</translation>
 <translation id="829672787777123339">Estableciendo conexión con el dispositivo…</translation>
+<translation id="8307517230426267469"><ph name="GIVEN_NAME" /> quitó la pestaña “<ph name="TAB_NAME" />”</translation>
 <translation id="831192587911042850">Agrega el sitio web actual a la lista de sitios web que sigues.</translation>
 <translation id="8342727528718219152">Chrome te informará sobre los sitios que podrían estar enviando demasiadas notificaciones</translation>
 <translation id="834313815369870491">Nunca traducir sitios</translation>

@@ -382,6 +382,19 @@ que se instale.</translation>
       Si no estableces la política, se aplicará <ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" /> para todos los sitios, en caso de haberse establecido. De lo contrario se aplicará la configuración personal del usuario.
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).</translation>
+<translation id="1279062904578504503">Esta política habilita la app de Content Transfer para los usuarios administrados. La app de Content Transfer ayuda a los usuarios a transferir sus datos de una cuenta administrada a una cuenta personal.
+
+Si estableces <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> como <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE_TRUE" />, la app de Content Transfer se mostrará en las fechas de inicio y finalización, y entre ellas, según la hora local.
+
+Si estableces <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE" /> como <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE_FALSE" /> o no la estableces, no se mostrará la app.
+
+Si no estableces <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" />, la app se mostrará hasta la fecha de finalización.
+
+Si no estableces <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_END_DATE_VALUE" />, la app se mostrará de forma indefinida a partir de la fecha de inicio.
+
+Si no estableces <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" /> ni <ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_END_DATE_VALUE" />, se mostrará la app de forma indefinida. Si las fechas de inicio y finalización no son válidas, no se mostrará la app de Content Transfer. Por ejemplo, si las fechas proporcionadas no existen o si la fecha de finalización es anterior a la fecha de inicio.
+
+También se debe habilitar la transferencia de datos con Takeout para que la app de Content Transfer funcione correctamente. Consulta https://support.google.com/a/answer/6364687 para obtener más información.</translation>
 <translation id="1285819498003746288">La API de Event.path no estará disponible.</translation>
 <translation id="1290722184971934486">Si estableces la política como <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" /> (valor 2), se rechazará automáticamente el permiso de administración de ventanas para todos los sitios de forma predeterminada. Esto limitará la capacidad de los sitios para ver la información sobre las pantallas del dispositivo y utilizarla para abrir y ubicar ventanas o solicitar el modo pantalla completa en pantallas específicas.
 
@@ -1782,6 +1795,9 @@ Si no estableces esta política o la inhabilitas, no se permitirá la transferen
 <translation id="2258126710006312594">Permite que los usuarios con acceso remoto transfieran archivos hacia y desde el host</translation>
 <translation id="225830954785359083">Impedir que las páginas muestren ventanas emergentes durante las descargas</translation>
 <translation id="2261648512244797294">Inhabilita la impresión Privet obsoleta</translation>
+<translation id="2262153510491523927">Si estableces la política como falsa, las apps para Android podrán capturar vínculos compatibles de forma predeterminada.
+Si estableces la política como verdadera, todos los vínculos se abrirán en el navegador Chrome de forma predeterminada.
+Si no estableces la política, las apps de Android capturarán los vínculos compatibles de forma predeterminada.</translation>
 <translation id="2263881357524831360">Permitir el uso de administradores de contraseñas de terceros en <ph name="PRODUCT_NAME" /> el <ph name="ANDROID_NAME" /></translation>
 <translation id="2264286153777425328">Lista de acciones para ejecutar cuando se alcanza el tiempo de espera de la política <ph name="IDLE_TIMEOUT_POLICY_NAME" />.
 
@@ -2626,6 +2642,7 @@ Esta política solo se puede establecer como política del usuario basada en la 
           Si se envían varias anulaciones, se aplicará la entrada válida más reciente.</translation>
 <translation id="2901725272378498025">Habilita las advertencias de seguridad para las marcas de la línea de comandos</translation>
 <translation id="2905984450136807296">Duración de los datos de autenticación almacenados en caché</translation>
+<translation id="2906532308470098188">Permitir Autofill Prediction y mejorar los modelos de IA.</translation>
 <translation id="2906874737073861391">Lista de extensiones AppPack</translation>
 <translation id="2908277604670530363">Cantidad máxima de conexiones simultáneas con el servidor proxy</translation>
 <translation id="2912366658685903301">Configurar el color del tema del navegador</translation>
@@ -2882,6 +2899,18 @@ Este es el mismo comportamiento que <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_
 <translation id="3092059499596000593">Utiliza la impresora predeterminada del sistema como la opción predeterminada en la vista previa de impresión</translation>
 <translation id="309416443108680956">Especifica lo que sucede cuando un usuario que se autentica mediante un token de seguridad (p. ej., con una tarjeta inteligente) quita ese token durante una sesión activa. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: No pasa nada. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: Se bloquea la pantalla hasta que el usuario se vuelva a autenticar. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: Se cierra la sesión y el usuario sale. Si no estableces esta política, se aplicará la configuración predeterminada <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />.</translation>
 <translation id="3096595567015595053">Lista de complementos habilitados</translation>
+<translation id="30986061650205557">Estas funciones de las Herramientas para desarrolladores de <ph name="PRODUCT_NAME" /> emplean modelos de IA generativa para proporcionar información de depuración adicional. Para usar estas funciones, <ph name="PRODUCT_NAME" /> tiene que recopilar datos como mensajes de error, seguimientos de pila, fragmentos de código y solicitudes de red, y enviarlos a un servidor de Google que ejecuta un modelo de IA generativa. Los datos que se envían al servidor no incluyen el cuerpo de la respuesta ni los encabezados de autenticación y de cookies.
+
+0 = Habilita la función para los usuarios y envía datos pertinentes a Google para ayudar a entrenar o mejorar los modelos de IA. Los datos pertinentes pueden incluir instrucciones, entradas, resultados y materiales de origen, según la función. Es posible que los revisen personas con el único propósito de mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los siguientes casos.
+
+1 = Habilita la función para los usuarios, pero no envía datos a Google para entrenar o mejorar los modelos de IA. 1 es el valor predeterminado para los usuarios empresariales que administra <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y las cuentas de institución educativa que administra <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+2 = Inhabilita la función.
+
+Las funciones potenciadas por IA generativa de Herramientas para desarrolladores incluyen:
+
+- Console Insights: Explica los mensajes de la consola y ofrece sugerencias para corregir errores.
+- AI assistance: Ayuda a los usuarios a comprender los estilos de CSS con estadísticas potenciadas por IA.</translation>
 <translation id="309885424548342662">Habilitar la autenticación en la nube de Microsoft®</translation>
 <translation id="3101035417394748390">El tamaño máximo (en bytes) que puede transferirse entre el cliente y el host a través de la sincronización del portapapeles</translation>
 <translation id="3101501961102569744">Elegir cómo especificar la configuración del servidor proxy</translation>
@@ -3259,6 +3288,7 @@ Si la inhabilitas, no se permitirá la escritura predictiva en el teclado físic
 <translation id="3380801667330555918">Cambiar la configuración ya completada para los tickets de Kerberos</translation>
 <translation id="338149029069528354">No borrar los datos locales del usuario</translation>
 <translation id="3381968327636295719">Utilizar el navegador del host de manera predeterminada</translation>
+<translation id="3383857097929929678">Abrir vínculos en apps para Android de forma predeterminada</translation>
 <translation id="3387117557265712991">Inhabilitar la encriptación vinculada a la aplicación</translation>
 <translation id="3387211681524224831">Si habilitas la política, no se guardará el historial de navegación, estará desactivada la sincronización de pestañas, y los usuarios no podrán cambiar esta configuración.
 
@@ -4963,6 +4993,13 @@ a estas APIs.</translation>
 <translation id="4661889655253181651">La configuración del contenido permite especificar de qué manera se manipulará el contenido de un tipo específico (por ejemplo, cookies, imágenes o JavaScript).</translation>
 <translation id="4663509616441994711">Inhabilitar la combinación de políticas de nube destinadas a los usuarios</translation>
 <translation id="4663588423815449593">Forzar a <ph name="PEPPER_NAME" /> a usar el decodificador de video heredado</translation>
+<translation id="4664668637713610113">Habilita la configuración de Autofill Prediction.
+
+ 0 = Habilita la función para los usuarios y envía datos pertinentes a Google para ayudar a entrenar o mejorar los modelos de IA. Los datos pertinentes pueden incluir instrucciones, entradas, resultados y materiales de origen, según la función. Es posible que los revisen personas con el único propósito de mejorar los modelos de IA. 0 es el valor predeterminado, excepto en los siguientes casos.
+
+ 1 = Habilita la función para los usuarios, pero no envía datos a Google para entrenar o mejorar los modelos de IA. 1 es el valor predeterminado para los usuarios empresariales que administra <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> y las cuentas de institución educativa que administra <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+ 2 = Inhabilita la función.</translation>
 <translation id="4665897631924472251">Configuración de la administración de extensiones</translation>
 <translation id="4666930704271463612">Especifica el subconjunto de servidores de impresión que se consultará para las impresoras de servidor.
 
@@ -5904,6 +5941,7 @@ Para obtener más información sobre contextos seguros, consulta Secure Contexts
 <translation id="5321624917465764266">Si habilitas la política o no la estableces, podrán borrarse los historiales de navegación y de descargas en Chrome, y los usuarios no podrán cambiar esta configuración.
 
 Si inhabilitas la política, no podrán borrarse los historiales de navegación ni de descargas. Incluso con la política desactivada, no se garantiza la conservación de los historiales de navegación y de descarga. Es posible que los usuarios puedan editar o borrar los archivos de la base de datos del historial directamente, y que el propio navegador pueda caducar o archivar algunos o todos los elementos del historial en cualquier momento.</translation>
+<translation id="5321859912083346284">No permitir Autofill Prediction.</translation>
 <translation id="5323200200131319468">Habilita los comentarios por voz en la pantalla de acceso</translation>
 <translation id="5323271643727095577">No mostrar el diálogo de cancelación cuando se llame a event.preventDefault() para el evento beforeunload Mostrar el diálogo de cancelación cuando beforeunload event.returnValue sea la cadena vacía del evento beforeunload</translation>
 <translation id="5324430722441910403">Configuración de las búsquedas en sitios</translation>
@@ -8380,6 +8418,7 @@ Si estableces esta política como <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE
 <translation id="7047495632846973438">Especificar si se marca o se omite la política de permisos para la captura de pantalla</translation>
 <translation id="7055022222176591388">No permitir el complemento de <ph name="FLASH_PLUGIN_NAME" /> desactualizado</translation>
 <translation id="7056040036973126753">Enviar datos de confiabilidad de dominios a Google en función de la política de Métricas del usuario (UMA) de Chrome</translation>
+<translation id="7056873645513072903">Configuración de Autofill Prediction</translation>
 <translation id="7062803946218028349">Permitir que se habilite Phone Hub</translation>
 <translation id="7066292150801784098">Impedir que los usuarios remotos interactúen con las ventanas con permisos elevados en sesiones de asistencia remota</translation>
 <translation id="706669471845501145">Permitir que los sitios muestren notificaciones de escritorio.</translation>
@@ -8830,6 +8869,7 @@ Si la estableces como falsa, se habilitará el comportamiento anterior.</transla
       Si la inhabilitas o no la estableces, los dispositivos inscritos no registrarán ni informarán el estado de seguridad del TPM.
       Excepción: la información del TPM es controlada por <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> para M95 y versiones anteriores.</translation>
 <translation id="739556497251174388">Permite reutilizar las credenciales de acceso de <ph name="PRODUCT_OS_NAME" /> para la autenticación de la red</translation>
+<translation id="7400208209734208176">Abrir vínculos en el navegador Chrome de forma predeterminada</translation>
 <translation id="7402257017733669351">Impedir que el proceso del navegador cree código dinámico</translation>
 <translation id="7402772023599097052">Si inhabilitas la política o no la estableces, aparecerán las advertencias de seguridad cuando se usen funciones experimentales de línea de comandos potencialmente peligrosas para iniciar Chrome.
 
@@ -9319,6 +9359,7 @@ Para obtener más información sobre la política <ph name="IEEM_SITELIST_POLICY
       Si la estableces como verdadera, se informarán los eventos de red desde el dispositivo.</translation>
 <translation id="780629758750905699">Permitir agregar cuentas de Family Link al dispositivo</translation>
 <translation id="7807139251387225825">Lista de tipos que deben excluirse de la sincronización</translation>
+<translation id="7808219497358175018">Configurar en qué momento estará disponible la herramienta Content Transfer de <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="781268256210530471">Configuración de los complementos</translation>
 <translation id="7816326058023670173">El secreto compartido entre el dispositivo del niño y el del padre o la madre.</translation>
 <translation id="7818131573217430250">Establece el estado predeterminado del modo de contraste alto en la pantalla de acceso.</translation>
@@ -10890,6 +10931,7 @@ Si la inhabilitas, se inhabilitarán todas las integraciones.</translation>
       Si el mismo patrón de URL aparece en esta política y en la política <ph name="SENSORS_BLOCKED_FOR_URLS_POLICY_NAME" />, prevalecerá esta última y no se podrá acceder a los sensores de movimiento o luz.
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Se permite el uso de caracteres comodín (<ph name="WILDCARD_VALUE" />).</translation>
+<translation id="900032518062285306">Permitir Autofill Prediction sin mejorar los modelos de IA.</translation>
 <translation id="9003823644527627017">Configurar las VMs de Bruschetta en <ph name="PRODUCT_OS_NAME" /></translation>
 <translation id="9004469022085379212">Si habilitas la política, el dispositivo podrá ejecutar máquinas virtuales en <ph name="PRODUCT_OS_NAME" />. Las políticas <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> y <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> deben estar habilitadas para poder usar <ph name="PRODUCT_CROSTINI_NAME" />. Si inhabilitas la política, el dispositivo no podrá ejecutar máquinas virtuales. En ese caso, se comenzará a aplicar la política en las máquinas virtuales que se inicien a partir de ese momento, pero no en aquellas que ya estén en ejecución.
 

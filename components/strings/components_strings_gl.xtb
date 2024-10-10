@@ -1104,6 +1104,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="301521992641321250">Bloqueado automaticamente</translation>
 <translation id="3016780570757425217">Coñecer a túa localización</translation>
 <translation id="3017086357773116182"><ph name="REMOVE_SUGGESTION_SUFFIX" />. Para quitar a suxestión, preme Tabulador e, a continuación, Introducir.</translation>
+<translation id="3022959067768579802">Seguir escribindo</translation>
 <translation id="3023165109041533893">Os anuncios suxeridos polos sitios axudan a protexer o teu historial de navegación e a túa identidade, ao mesmo tempo que permiten que os sitios che mostren anuncios relevantes. En función da túa actividade, os sitios que visites poden suxerir anuncios relacionados a medida que navegues pola Web. Podes ver a lista destes sitios na configuración e bloquear os que non queiras.</translation>
 <translation id="3024663005179499861">Tipo de política incorrecta</translation>
 <translation id="3030331669969285614">Estas funcións experimentais evitan ou desfán un cambio que pode provocar fallos e só están dispoñibles durante tempo limitado.</translation>
@@ -1377,6 +1378,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="350763432931695541">Extraendo texto das páxinas seguintes</translation>
 <translation id="3507869775212388416">Postos no sector xurídico</translation>
 <translation id="3507936815618196901">Crear un mapa 3D do que te rodea e facer un seguimento da posición da cámara</translation>
+<translation id="3510341387555916271">Abrir para resumir</translation>
 <translation id="3512163584740124171">Esta política ignórase porque hai outra política do mesmo grupo con máis prioridade.</translation>
 <translation id="351522771072578657">Estás nun menú</translation>
 <translation id="3517264445792388751">A persoa administradora desactivou o sistema de ficheiros</translation>
@@ -1744,6 +1746,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4152318981910038897">{COUNT,plural, =1{Páxina 1}other{Páxina {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome agora verificará a túa identidade antes de completar os métodos de pago. Podes actualizar esta opción en calquera momento en <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4159784952369912983">Púrpura</translation>
+<translation id="4165422751765527461">Abrir un artigo do Centro de Axuda nunha nova pestana</translation>
 <translation id="4165986682804962316">Configuración do sitio</translation>
 <translation id="4169535189173047238">Non permitir</translation>
 <translation id="4171400957073367226">Sinatura de verificación incorrecta</translation>
@@ -2904,6 +2907,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6306713302480826305">Este enderezo eliminarase deste dispositivo e do resto de dispositivos nos que teñas a sesión iniciada</translation>
 <translation id="6307968763353904914">O teu banco non ofrece tarxetas virtuais para este método de pago, pero podes seguir usando a tarxeta <ph name="CARD_LABEL" /> para pagar en liña.</translation>
 <translation id="6311410654831092784">Papel para tarxetas</translation>
+<translation id="6311642842034740437">Localización con nome</translation>
 <translation id="6312113039770857350">A páxina web non está dispoñible</translation>
 <translation id="6316110367871394043">Púxose en pausa a carga de ficheiros en <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="6316723751983724988">Novidade: As opcións de Family Link para Chrome aplícanse aquí</translation>

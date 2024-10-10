@@ -69,6 +69,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="1906696617298807388">Cando escribes algo na barra de enderezos ou na caixa de busca, Chromium envíao a Google Drive para mostrarche suxestións de elementos. Esta opción está desactivada no modo de incógnito.</translation>
 <translation id="1911763535808217981">Ao desactivar esta opción, podes iniciar sesión nos sitios de Google, como Gmail, sen iniciar sesión en Chromium</translation>
 <translation id="1929939181775079593">Chromium non responde. Queres volver inicialo agora?</translation>
+<translation id="1933341829955786215">A túa organización, <ph name="MANAGER" />, esixe que inicies sesión en Chromium</translation>
 <translation id="193439633299369377">É necesario reiniciar Chromium OS para aplicar a actualización.</translation>
 <translation id="1951406923938785464">Chromium bloqueou esta descarga porque este tipo de ficheiro non se descarga con frecuencia e pode ser perigoso</translation>
 <translation id="1953553007165777902">Descargando… Tempo restante: <ph name="MINUTE" /> min</translation>
@@ -578,6 +579,7 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="8852026904190808918">Este é o idioma no que se mostran os menús, as opcións de configuración, as alertas e outros textos en Chromium</translation>
 <translation id="8862326446509486874">Non tes os dereitos apropiados para efectuar a instalación a nivel do sistema. Tenta volver executar o instalador como administrador.</translation>
 <translation id="8880203542552872219">Se o fixeches, substitúe o contrasinal gardado en Chromium polo novo.</translation>
+<translation id="8891709362986793894">A túa organización esixe que inicies sesión en Chromium</translation>
 <translation id="8907580949721785412">Chromium está tentando mostrar contrasinais. Escribe os teus contrasinais de Windows para permitir esta acción.</translation>
 <translation id="8931379085695076764">Chromium pode facer unha estimación dos teus intereses a partir do teu historial de navegación das últimas semanas. Esa información non sae do teu dispositivo.</translation>
 <translation id="8941642502866065432">Non se puido actualizar Chromium</translation>

@@ -1700,6 +1700,7 @@
 <translation id="2184515124301515068">ໃຫ້ Chrome ເລືອກວ່າເວັບໄຊສາມາດຫຼິ້ນສຽງໄດ້ເວລາໃດ (ແນະນຳ)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">ໜ້າທີ່ແບ່ງປັນມາຈາກອຸປະກອນອື່ນ</translation>
+<translation id="2187569197737151508">ກົດ Esc 5 ເທື່ອເພື່ອເປີດການນຳໃຊ້ຄືນໃໝ່</translation>
 <translation id="2187675480456493911">ຊິ້ງຂໍ້ມູນກັບອຸປະກອນອື່ນໃນບັນຊີຂອງທ່ານແລ້ວ. ລະບົບຈະບໍ່ຊິ້ງຂໍ້ມູນການຕັ້ງຄ່າທີ່ຜູ້ໃຊ້ອື່ນແກ້ໄຂ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">ການນໍາໃບຢັ້ງຢືນເຊີບເວີເຂົ້າຜິດພາດ</translation>
 <translation id="2187906491731510095">ອັບເດດສ່ວນຂະຫຍາຍແລ້ວ</translation>
@@ -2741,6 +2742,7 @@
 <translation id="2908122561561557160">ເປີດໄຟລ໌ Word, Excel ແລະ PowerPoint</translation>
 <translation id="2908162660801918428">ເພີ່ມແກເລີຣີມີເດຍຕາມໄດເຣັກຕໍຣີ</translation>
 <translation id="2908358077082926882">ກົດ “<ph name="CURRENTKEY" />” ອີກເທື່ອໜຶ່ງເພື່ອລຶບການມອບໝາຍອອກ ແລະ <ph name="RESPONSE" /></translation>
+<translation id="2909487040556589351">ດາວໂຫຼດ Chrome ຢູ່ອຸປະກອນມືຖືຂອງທ່ານ</translation>
 <translation id="2909506265808101667">ບໍ່ສາມາດເຊື່ອມຕໍ່ກັບບໍລິການຂອງ Google ໄດ້. ກະລຸນາກວດສອບການເຊື່ອມຕໍ່ອິນເຕີເນັດຂອງທ່ານແລ້ວລອງໃໝ່. ລະຫັດຂໍ້ຜິດພາດ: <ph name="ERROR_CODE" />.</translation>
 <translation id="2910318910161511225">ເຊື່ອມຕໍ່ກັບເຄືອຂ່າຍ ແລະ ລອງໃໝ່</translation>
 <translation id="2910678330803525229">ຕອນນີ້ທ່ານສາມາດເລີ່ມຕົ້ນເລືອກເບິ່ງໄດ້ແລ້ວ</translation>
@@ -4842,6 +4844,7 @@
 <translation id="4434611816075088065">ບໍ່ມີຫຍັງທີ່ທ່ານຕ້ອງກວດສອບໃນຕອນນີ້</translation>
 <translation id="443475966875174318">ອັບເດດ ຫຼື ລຶບແອັບພລິເຄຊັນທີ່ບໍ່ເຂົ້າກັນອອກ</translation>
 <translation id="443503224864902151">ນຳທ່ານອອກຈາກລະບົບຂອງເວັບໄຊສ່ວນໃຫຍ່. ແຕ່ທ່ານຈະຍັງເຂົ້າສູ່ລະບົບບັນຊີ Google ຂອງທ່ານຢູ່ເພື່ອໃຫ້ລຶບຂໍ້ມູນທີ່ຊິ້ງຂອງທ່ານໄດ້.</translation>
+<translation id="4436573279088520291">ປິດແຖບທີ່ບໍ່ໄດ້ໃຊ້</translation>
 <translation id="4437879751057074691">ສະເໜີໃຫ້ບັນທຶກລະຫັດຜ່ານ ແລະ ກະແຈຜ່ານໄວ້</translation>
 <translation id="4437947179446780764">ເພີ່ມຜູ້ໃຫ້ບໍລິການ DNS ທີ່ກຳນົດເອງ</translation>
 <translation id="4438043733494739848">ໂປ່ງແສງ</translation>
@@ -9929,6 +9932,7 @@
 <translation id="816704878106051517">{COUNT,plural, =1{ເບີໂທລະສັບ}other{# ເບີໂທລະສັບ}}</translation>
 <translation id="8168435359814927499">ເນື້ອ​ໃນ</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{ເພີ່ມແຖບໃສ່ລາຍການທີ່ຈະອ່ານ}other{ເພີ່ມແຖບໃສ່ລາຍການທີ່ຈະອ່ານ}}</translation>
+<translation id="8169177848833352618">ຂໍອະໄພ, ເຄື່ອງນີ້ບໍ່ເປັນໄປຕາມຂໍ້ກຳນົດສຳລັບການຕິດຕັ້ງ Bruschetta. ລະຫັດຂໍ້ຜິດພາດແມ່ນ <ph name="ERROR" />.</translation>
 <translation id="8174047975335711832">ຂໍ້​ມູນ​ອຸ​ປະ​ກອນ</translation>
 <translation id="8176332201990304395">ສີບົວ ແລະ ສີຂາວ</translation>
 <translation id="8176529144855282213">ເພື່ອເປີດສິດເຂົ້າເຖິງໄມໂຄຣໂຟນ, ໃຫ້ເປີດສະວິດໄມໂຄຣໂຟນແທ້ຢູ່ອຸປະກອນຂອງທ່ານ</translation>

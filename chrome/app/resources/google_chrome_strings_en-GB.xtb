@@ -408,6 +408,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6060842547856900641">Open Lens</translation>
 <translation id="6069027071882229820">Copy as image</translation>
 <translation id="6070348360322141662">For added security, Google Chrome will encrypt your data</translation>
+<translation id="6075300983329039771">Your organisation, <ph name="MANAGER" />, requires you to sign in to Chrome</translation>
 <translation id="608006075545470555">Add work profile to this browser</translation>
 <translation id="6097822892606850415">Write with more confidence with help from AI</translation>
 <translation id="6113794647360055231">Chrome just got better</translation>
@@ -546,6 +547,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="7670287553302121848">Chrome account requires re-authentication</translation>
 <translation id="769538538642757151">Chrome will let you know if anything needs your review</translation>
 <translation id="77283119132245232">Provides system tracing services for <ph name="BROWSER_NAME" />. If this service is disabled, performance traces created by the browser will not include system-wide events, such as context switch and ready thread events.</translation>
+<translation id="7736869414036750079">Your organisation requires you to sign in to Chrome</translation>
 <translation id="7747138024166251722">The installer couldn't create a temporary directory. Please check for free disk space and permission to install software.</translation>
 <translation id="7761834446675418963">Click your name to open Chrome and start browsing.</translation>
 <translation id="7763983146198734674">Save your passwords and access them on the go</translation>

@@ -460,6 +460,7 @@
 <translation id="3098745985164956033">Передавать некоторые изображения в Google, чтобы улучшить их описание</translation>
 <translation id="3114507951000454849">Будьте в курсе новостей <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Оповещения</translation>
+<translation id="3131961580615093332">Пользователь <ph name="GIVEN_NAME" /> изменил вкладку "<ph name="TAB_NAME" />".</translation>
 <translation id="3148237711805373460">Открыть</translation>
 <translation id="314939179385989105">Главная страница Chrome</translation>
 <translation id="3158667104057012316">Сортировка вручную</translation>
@@ -637,6 +638,7 @@
 <translation id="4042941173059740150">Продолжите на <ph name="SITE_ETLD_PLUS_ONE" /> с аккаунтом <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="404352903042073578">Группа без названия</translation>
 <translation id="4044708993631234325">Нижний экран</translation>
+<translation id="4045441967987592849">Открыть</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> стандартная вкладка с новым действием. Она помещена в группу вкладок с общим доступом.}one{<ph name="TABS_COUNT_MANY" /> стандартная вкладка с новым действием. Они помещены в группу вкладок с общим доступом.}few{<ph name="TABS_COUNT_MANY" /> стандартные вкладки с новым действием. Они помещены в группу вкладок с общим доступом.}many{<ph name="TABS_COUNT_MANY" /> стандартных вкладок с новым действием. Они помещены в группу вкладок с общим доступом.}other{<ph name="TABS_COUNT_MANY" /> стандартной вкладки с новым действием. Они помещены в группу вкладок с общим доступом.}}</translation>
 <translation id="405365679581583349">Обновите сервисы Google Play</translation>
 <translation id="405399507749852140">Если на одном из сайтов цена снизится, вы получите уведомление.</translation>
@@ -844,6 +846,7 @@
 <translation id="4943703118917034429">Виртуальная реальность</translation>
 <translation id="4943872375798546930">Нет результатов</translation>
 <translation id="4950924971025849764">Вы можете использовать этот телефон как электронный ключ, когда входите в тот же аккаунт Google на других устройствах.</translation>
+<translation id="4953833914914492602">Группа вкладок "<ph name="TAB_GROUP_NAME" />" больше не доступна.</translation>
 <translation id="4957722034734105353">Подробнее…</translation>
 <translation id="4961107849584082341">Эту страницу можно перевести на любой язык</translation>
 <translation id="4964614743143953889">Chrome предупреждает о небезопасных сайтах и файлах в интернете</translation>
@@ -957,6 +960,7 @@
 <translation id="5526281268548144413">Невозможно закрыть вкладки, открытые в нескольких окнах</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# мин. назад}one{# мин. назад}few{# мин. назад}many{# мин. назад}other{# мин. назад}}</translation>
 <translation id="5548606607480005320">Проверка безопасности</translation>
+<translation id="5551564597369878730">Пользователь <ph name="GIVEN_NAME" /> присоединился к группе вкладок "<ph name="TAB_GROUP_NAME" />".</translation>
 <translation id="5554520618550346933">Chrome предупреждает, если используемый вами пароль был опубликован в интернете. При этом ваши имена пользователей и сами пароли зашифрованы и никому не видны, даже сотрудникам Google.</translation>
 <translation id="5555525474779371165">Выберите режим работы Безопасного просмотра</translation>
 <translation id="5556459405103347317">Перезагрузить</translation>
@@ -1618,6 +1622,7 @@
 <translation id="8282297628636750033">Использовать тёмную тему для сайтов, если возможно</translation>
 <translation id="8282950411412455249">Открыть настройки безопасности</translation>
 <translation id="829672787777123339">Подключение…</translation>
+<translation id="8307517230426267469">Пользователь <ph name="GIVEN_NAME" /> удалил вкладку "<ph name="TAB_NAME" />".</translation>
 <translation id="831192587911042850">Добавляет текущий сайт в список сайтов, на которые вы подписаны.</translation>
 <translation id="8342727528718219152">Chrome будет предупреждать о сайтах, которые могут отправлять слишком много уведомлений</translation>
 <translation id="834313815369870491">Никогда не переводить сайты</translation>

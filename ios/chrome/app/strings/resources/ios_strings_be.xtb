@@ -1081,6 +1081,7 @@
 <translation id="6140948187512243695">Паказаць падрабязныя звесткі</translation>
 <translation id="6144589619057374135">Адкрыць ${url} у рэжыме інкогніта</translation>
 <translation id="6151006591088192882">Разблакіраваць укладкі ў рэжыме інкогніта, выкарыстаўшы <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
+<translation id="6152340033632117531">Неактыўныя</translation>
 <translation id="6152406514676263192">Каб атрымліваць найбольш адпаведнае змесціва на падставе сваіх інтарэсаў, уключыце сінхранізацыю.</translation>
 <translation id="6159839020698489198">неабавязкова</translation>
 <translation id="6160780110287872296">Спампаваць файл?</translation>
@@ -1771,6 +1772,7 @@
 <translation id="9183733013282108610">Пошук у рэжыме інкогніта</translation>
 <translation id="9186762474139509529">Пачаць вядзенне журнала</translation>
 <translation id="9191031968346938109">Дадаць у…</translation>
+<translation id="9196007736149429065">Не ўдалося адкрыць гэты файл</translation>
 <translation id="9200875785104711666"><ph name="TIME" /> сут таму</translation>
 <translation id="9203116392574189331">Перадача вэб-сайта</translation>
 <translation id="9203951165704618409">Вы можаце перамясціць адрасны радок зверху ўніз для больш зручнага прагляду.</translation>

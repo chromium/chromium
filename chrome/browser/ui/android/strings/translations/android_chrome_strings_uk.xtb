@@ -460,6 +460,7 @@
 <translation id="3098745985164956033">Деякі зображення надсилаються на сервери Google, що дає змогу покращувати їх описи</translation>
 <translation id="3114507951000454849">Читайте сьогоднішні новини <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Оголошення</translation>
+<translation id="3131961580615093332"><ph name="GIVEN_NAME" /> змінює вкладку "<ph name="TAB_NAME" />"</translation>
 <translation id="3148237711805373460">Перейти</translation>
 <translation id="314939179385989105">Головна сторінка Chrome</translation>
 <translation id="3158667104057012316">Сортування вручну</translation>
@@ -637,6 +638,7 @@
 <translation id="4042941173059740150">Продовжте використовувати обліковий запис <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> на сайті <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="404352903042073578">Група без назви</translation>
 <translation id="4044708993631234325">Нижня панель</translation>
+<translation id="4045441967987592849">Повторно відкрити</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> стандартна вкладка з новими діями в спільних групах}one{<ph name="TABS_COUNT_MANY" /> стандартна вкладка з новими діями в спільних групах}few{<ph name="TABS_COUNT_MANY" /> стандартні вкладки з новими діями в спільних групах}many{<ph name="TABS_COUNT_MANY" /> стандартних вкладок із новими діями в спільних групах}other{<ph name="TABS_COUNT_MANY" /> стандартної вкладки з новими діями в спільних групах}}</translation>
 <translation id="405365679581583349">Оновіть сервіси Google Play</translation>
 <translation id="405399507749852140">Отримувати сповіщення, коли на якомусь сайті знизиться ціна</translation>
@@ -844,6 +846,7 @@
 <translation id="4943703118917034429">Віртуальна реальність</translation>
 <translation id="4943872375798546930">Не знайдено жодного результату</translation>
 <translation id="4950924971025849764">Якщо ви ввійшли в один обліковий запис Google, інші пристрої можуть використовувати цей телефон як ключ безпеки.</translation>
+<translation id="4953833914914492602">Група вкладок "<ph name="TAB_GROUP_NAME" />" більше не доступна</translation>
 <translation id="4957722034734105353">Докладніше...</translation>
 <translation id="4961107849584082341">Перекладіть цю сторінку будь-якою мовою</translation>
 <translation id="4964614743143953889">Chrome попереджає про небезпечні сайти й завантаження</translation>
@@ -957,6 +960,7 @@
 <translation id="5526281268548144413">Не можна закрити в кількох вікнах</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# хв тому}one{# хв тому}few{# хв тому}many{# хв тому}other{# хв тому}}</translation>
 <translation id="5548606607480005320">Перевірка безпеки</translation>
+<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> приєднується до групи вкладок "<ph name="TAB_GROUP_NAME" />"</translation>
 <translation id="5554520618550346933">Коли ви використовуєте пароль, Chrome попереджає вас, якщо його опубліковано в Інтернеті. Під час цього ваші паролі й імена користувачів шифруються, тож їх ніхто не може прочитати, навіть Google.</translation>
 <translation id="5555525474779371165">Виберіть вид захисту в Безпечному перегляді</translation>
 <translation id="5556459405103347317">Перезавантажити</translation>
@@ -1079,6 +1083,7 @@
 <translation id="6085886413119427067">Визначає, як безпечно підключатися до веб-сайтів</translation>
 <translation id="60923314841986378">Залишилося <ph name="HOURS" /> год</translation>
 <translation id="6095578583683628124">Якщо Google є вашою пошуковою системою за умовчанням, ви бачитимете кращі та доречніші за контекстом пропозиції</translation>
+<translation id="610630277578876674">Швидко відкривайте посилання в повідомленнях тощо</translation>
 <translation id="6108923351542677676">Виконується налаштування…</translation>
 <translation id="6112702117600201073">Оновлення сторінки</translation>
 <translation id="6122831415929794347">Вимкнути Безпечний перегляд?</translation>
@@ -1245,6 +1250,7 @@
 <translation id="6775840696761158817">Якщо натиснути або почати вводити текст в адресному рядку чи полі пошуку, ви побачите підказки пошукової системи за умовчанням. В анонімному режимі цю функцію вимкнено.</translation>
 <translation id="6785476624617658922">Додаткові умови використання Google Chrome і ОС Chrome</translation>
 <translation id="6795633245022906657">Швидко відкривайте нову вкладку. Щоб змінити функцію цієї кнопки, перейдіть у налаштування.</translation>
+<translation id="679588508577699489">Зробіть Chrome вебпереглядачем за умовчанням</translation>
 <translation id="679956319013005046">Щоб вибрати потрібний сервіс автозаповнення, спершу додайте його в <ph name="BEGIN_LINK" />налаштуваннях Android<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">Вікно буде закрито</translation>
 <translation id="6803791793483522764">Перегляньте сповіщення</translation>
@@ -1616,6 +1622,7 @@
 <translation id="8282297628636750033">Застосовувати темну тему для сайтів</translation>
 <translation id="8282950411412455249">Перейти до налаштувань безпеки</translation>
 <translation id="829672787777123339">Підключення до пристрою…</translation>
+<translation id="8307517230426267469"><ph name="GIVEN_NAME" /> вилучає вкладку "<ph name="TAB_NAME" />"</translation>
 <translation id="831192587911042850">Поточний веб-сайт буде додано до списку тих, на які ви підписалися.</translation>
 <translation id="8342727528718219152">Chrome повідомлятиме вас про сайти, які надсилають забагато сповіщень</translation>
 <translation id="834313815369870491">Сайти, які не потрібно перекладати</translation>
@@ -1736,6 +1743,7 @@
 <translation id="8863714995118816041">Дозволи для вебсайту <ph name="SITE_NAME" /> відновлено</translation>
 <translation id="8865415417596392024">Дані Chrome у вашому обліковому записі</translation>
 <translation id="8888527824584402177">Вкладки, якими ви не користувалися протягом <ph name="DAYS_INACTIVE" /> дн., буде переміщено сюди<ph name="AUTODELETE_SECTION" />. Це можна будь-коли змінити в розділі "<ph name="SETTINGS_TITLE" />".</translation>
+<translation id="8890668505403261809">Пошук на анонімних вкладках</translation>
 <translation id="8898822736010347272">Надсилає в Google URL-адреси відвіданих сторінок, обмежену системну інформацію та вміст деяких сторінок, щоб виявляти нові загрози та захищати всіх користувачів в Інтернеті.</translation>
 <translation id="8909135823018751308">Надіслати…</translation>
 <translation id="8921980840204105660">Увімкніть синхронізацію, щоб переглядати закладки на інших пристроях</translation>

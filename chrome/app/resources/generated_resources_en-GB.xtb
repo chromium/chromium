@@ -1702,6 +1702,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2184515124301515068">Let Chrome choose when sites can play sound (recommended)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">Page shared from another device</translation>
+<translation id="2187569197737151508">Press Esc five times to re-enable it</translation>
 <translation id="2187675480456493911">Synced with other devices on your account. Settings modified by other users will not be synced. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Server Certificate Import Error</translation>
 <translation id="2187906491731510095">Extensions updated</translation>
@@ -2110,6 +2111,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2460356425461033301">Back up your browser stuff and use it on any device</translation>
 <translation id="2460482211073772897">In other folders</translation>
 <translation id="2460826998961521840">To use passkeys saved in your Google Account</translation>
+<translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> is saved only to this device. If you move this bookmark to <ph name="LOCAL_FOLDER" />, you'll no longer get it on your other devices.</translation>
 <translation id="2461550163693930491">Don't allow sites to scroll and zoom shared tabs</translation>
 <translation id="2461593638794842577">You can turn off this setting to save your passwords only on this device</translation>
 <translation id="2462332841984057083">Steam is already being set up. Wait for setup to complete.</translation>
@@ -2363,6 +2365,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2645047101481282803">Your device is managed by <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">Casting this tab to <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">Save to a folder in your Google Account?</translation>
 <translation id="264897126871533291">Protanomaly</translation>
 <translation id="2649045351178520408">Base64-encoded ASCII, certificate chain</translation>
 <translation id="265156376773362237">Standard preloading</translation>
@@ -2551,6 +2554,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2773288106548584039">Legacy Browser Support</translation>
 <translation id="2773621783913034737">Make tabs inactive</translation>
 <translation id="2774876860084746535">Intellectual</translation>
+<translation id="2775047284666165174"><ph name="LOCAL_FOLDER" /> is saved only to this device. If you move this folder to <ph name="LOCAL_FOLDER" />, you'll no longer get it on your other devices.</translation>
 <translation id="2775104091073479743">Edit Fingerprints</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{Extension ‘<ph name="EXTENSION" />’ was accessing devices}=1{Extension ‘<ph name="EXTENSION" />’ is accessing {0} device}other{Extension ‘<ph name="EXTENSION" />’ is accessing {0} devices}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Remove 1 unsupported app}other{Remove # unsupported apps}}</translation>
@@ -2739,6 +2743,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2908122561561557160">Open Word, Excel, and PowerPoint files</translation>
 <translation id="2908162660801918428">Add Media Gallery by Directory</translation>
 <translation id="2908358077082926882">Press '<ph name="CURRENTKEY" />' again to remove assignment and <ph name="RESPONSE" /></translation>
+<translation id="2909487040556589351">Get Chrome on your mobile device</translation>
 <translation id="2909506265808101667">Couldn't connect with Google services. Check your network connection and try again. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="2910318910161511225">Connect to a network and try again</translation>
 <translation id="2910678330803525229">Now, you can start browsing</translation>
@@ -4840,6 +4845,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4434611816075088065">Nothing else needs your attention at the moment</translation>
 <translation id="443475966875174318">Update or remove incompatible applications</translation>
 <translation id="443503224864902151">Signs you out of most sites. You'll stay signed in to your Google Account so that your synced data can be deleted.</translation>
+<translation id="4436573279088520291">Close unused tabs</translation>
 <translation id="4437879751057074691">Offer to save passwords and passkeys</translation>
 <translation id="4437947179446780764">Add custom DNS service provider</translation>
 <translation id="4438043733494739848">Transparent</translation>
@@ -4952,6 +4958,7 @@ This can include information about installed software, files, your browser and t
 <translation id="4527929807707405172">Enable reverse scrolling. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Translation suggestion</translation>
 <translation id="4528638190900283934">Sign in for additional features</translation>
+<translation id="4529052777398765334">This folder is saved only to this device. If you save it to <ph name="ACCOUNT_FOLDER" />, this folder will also be saved in your account.</translation>
 <translation id="4529455689802245339">Chrome Live Caption might not work</translation>
 <translation id="4531451811601110068">You can try again or contact your administrator for help</translation>
 <translation id="4531924570968473143">Who would you like to add to this <ph name="DEVICE_TYPE" />?</translation>
@@ -5538,6 +5545,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> visibility</translation>
 <translation id="4955710816792587366">Choose your PIN</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">Save to a folder only on this device?</translation>
 <translation id="4959262764292427323">Passwords are saved in your Google Account so that you can use them on any device</translation>
 <translation id="4960020053211143927">Not supported by some apps</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -8463,6 +8471,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="711840821796638741">Show Managed Bookmarks</translation>
 <translation id="711985611146095797">This page allows you to manage your signed-in Google Accounts. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Chrome Browser and Android traffic will be blocked unless a VPN is connected</translation>
+<translation id="7120904433567247946">This bookmark is saved only to this device. If you save it to <ph name="ACCOUNT_FOLDER" />, this bookmark will also be saved in your account.</translation>
 <translation id="7121438501124788993">Developer mode</translation>
 <translation id="7121728544325372695">Smart Dashes</translation>
 <translation id="7122605570852873914">Sign out anyway</translation>
@@ -9929,6 +9938,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="816704878106051517">{COUNT,plural, =1{a phone number}other{# phone numbers}}</translation>
 <translation id="8168435359814927499">Content</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Add Tab to Reading List}other{Add Tabs to Reading List}}</translation>
+<translation id="8169177848833352618">Unfortunately, this machine does not meet requirements for installing Bruschetta. The error code is <ph name="ERROR" />.</translation>
 <translation id="8174047975335711832">Device information</translation>
 <translation id="8176332201990304395">Pink and white</translation>
 <translation id="8176529144855282213">To turn on microphone access, turn on the physical microphone switch on your device</translation>

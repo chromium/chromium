@@ -5686,6 +5686,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5068919226082848014">Pica</translation>
 <translation id="5071295820492622726">Atgal į naujausius atsisiuntimus</translation>
 <translation id="5071892329440114717">Rodyti išsamią informaciją apie įprastą apsaugą</translation>
+<translation id="5072303130033714629">Turinio perkėlimo įrankis</translation>
 <translation id="5072500507106264618">Tik sistemos paslaugos gali naudoti jūsų vietovės informaciją</translation>
 <translation id="5072836811783999860">Rodyti tvarkomas žymes</translation>
 <translation id="5072900412896857127">Nepavyksta įkelti „Google Play“ paslaugų teikimo sąlygų. Patikrinkite tinklo ryšį ir bandykite dar kartą.</translation>
@@ -6639,6 +6640,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5780940414249100901">Siųskite naudojimo ir diagnostikos duomenis. Šiuo metu šis įrenginys automatiškai „Google“ siunčia diagnostikos, įrenginio ir programų naudojimo duomenis. Tai nebus naudojama siekiant nustatyti jūsų vaiko tapatybę ir padės pagerinti sistemos bei programos stabilumą ir teikti kitus patobulinimus. Kai kurie suminiai duomenys taip pat bus naudingi „Google“ programoms ir partneriams, pvz., „Android“ kūrėjams. Šį <ph name="BEGIN_LINK1" />nustatymą<ph name="END_LINK1" /> taiko savininkas. Jei papildomos žiniatinklio ir programų veiklos nustatymas įjungtas vaiko įrenginyje, šie duomenys gali būti išsaugoti vaiko „Google“ paskyroje. <ph name="BEGIN_LINK2" />Sužinokite daugiau apie metriką<ph name="BEGIN_LINK2_END" />Sužinokite daugiau<ph name="END_LINK2" /></translation>
 <translation id="5780973441651030252">Apdorojimo pirmumas</translation>
 <translation id="5781092003150880845">Sinchronizuoti kaip <ph name="ACCOUNT_FULL_NAME" /></translation>
+<translation id="5781120434102258025">Perkelkite mokyklos paskyros duomenis į asmeninę paskyrą</translation>
 <translation id="5781865261247219930">Siųsti komandas į „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="5782227691023083829">Verčiama...</translation>
 <translation id="57838592816432529">Nutildyti</translation>
@@ -11300,6 +11302,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />Kad galėtumėte naudotis geriausiomis funkcijomis, įdiekite „<ph name="DEVICE_OS" />“ į vidinį diską. Taip pat galėsite ją įdiegti vėliau iš prisijungimo ekrano.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Jei nesate pasiruošę įdiegti, galite ją išbandyti ir paleisti iš USB. Išlaikysite esamą OS ir duomenis, bet galite susidurti su saugyklos ir našumo apribojimais.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9120761757252614786">Tinkinti įrankių juostą</translation>
+<translation id="9120800848981545750">Atsisiųskite „iOS“ skirtą „Chrome“, kad telefone pasiektumėte skirtukus, žymes ir slaptažodžius.</translation>
 <translation id="9121814364785106365">Atidaryti kaip susegtą skirtuką</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{Uždaryti skirtuką ir ištrinti grupę?}=1{Uždaryti skirtukus ir ištrinti grupę?}one{Uždaryti skirtukus ir ištrinti grupes?}few{Uždaryti skirtukus ir ištrinti grupes?}many{Uždaryti skirtukus ir ištrinti grupes?}other{Uždaryti skirtukus ir ištrinti grupes?}}</translation>
 <translation id="9122788874051694311">Išsaugoti šį prieigos raktą ne inkognito režimu?</translation>

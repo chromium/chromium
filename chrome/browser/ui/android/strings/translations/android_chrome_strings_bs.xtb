@@ -460,7 +460,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="3098745985164956033">Neke slike se šalju Googleu radi poboljšanja opisa</translation>
 <translation id="3114507951000454849">Pročitajte današnje vijesti <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Najave</translation>
-<translation id="3131961580615093332">Korisnik <ph name="GIVEN_NAME" /> promijenio je karticu <ph name="TAB_NAME" /></translation>
+<translation id="3131961580615093332"><ph name="GIVEN_NAME" /> je promijenio/la karticu "<ph name="TAB_NAME" />"</translation>
 <translation id="3148237711805373460">Odvedi me tamo</translation>
 <translation id="314939179385989105">Početna stranica Chromea</translation>
 <translation id="3158667104057012316">Sortiranje ručnim redoslijedom</translation>
@@ -638,7 +638,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="4042941173059740150">Nastavite na web lokaciju <ph name="SITE_ETLD_PLUS_ONE" /> s pružaocem identiteta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="404352903042073578">Grupa bez naziva</translation>
 <translation id="4044708993631234325">Donja tabela</translation>
-<translation id="4045441967987592849">Ponovno otvori</translation>
+<translation id="4045441967987592849">Ponovo otvori</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standardna kartica s novom aktivnošću u dijeljenim grupama kartica}one{<ph name="TABS_COUNT_MANY" /> standardna kartica s novom aktivnošću u dijeljenim grupama kartica}few{<ph name="TABS_COUNT_MANY" /> standardne kartice s novom aktivnošću u dijeljenim grupama kartica}other{<ph name="TABS_COUNT_MANY" /> standardnih kartica s novom aktivnošću u dijeljenim grupama kartica}}</translation>
 <translation id="405365679581583349">Ažurirajte Google Play usluge</translation>
 <translation id="405399507749852140">Primajte obavještenja ako cijena padne na bilo kojoj web lokaciji</translation>
@@ -846,7 +846,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4943703118917034429">Virtuelna realnost</translation>
 <translation id="4943872375798546930">Nema rezultata</translation>
 <translation id="4950924971025849764">Kada ste prijavljeni na isti Google račun, drugi uređaji mogu koristiti ovaj telefon kao sigurnosni ključ.</translation>
-<translation id="4953833914914492602">Grupa kartica <ph name="TAB_GROUP_NAME" /> više nije dostupna</translation>
+<translation id="4953833914914492602">Grupa kartica "<ph name="TAB_GROUP_NAME" />" više nije dostupna</translation>
 <translation id="4957722034734105353">Saznajte više...</translation>
 <translation id="4961107849584082341">Prevedite ovu stranicu na bilo koji jezik</translation>
 <translation id="4964614743143953889">Chrome vas upozorava o nesigurnim web lokacijama i preuzimanjima</translation>
@@ -960,7 +960,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="5526281268548144413">Nije moguće zatvoriti u više prozora</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{Prije # min}one{Prije # min}few{Prije # min}other{Prije # min}}</translation>
 <translation id="5548606607480005320">Sigurnosna provjera</translation>
-<translation id="5551564597369878730">Korisnik <ph name="GIVEN_NAME" /> pridružio se grupi kartica <ph name="TAB_GROUP_NAME" /></translation>
+<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> se pridružio/la grupi kartica "<ph name="TAB_GROUP_NAME" />"</translation>
 <translation id="5554520618550346933">Kada koristite lozinku, Chrome vas upozorava ako je objavljena online. Prilikom toga, vaše lozinke i korisnička imena su šifrirani i niko, uključujući Google, ih ne može pročitati.</translation>
 <translation id="5555525474779371165">Odaberite zaštitu Sigurno pregledanje</translation>
 <translation id="5556459405103347317">Učitaj ponovo</translation>
@@ -1622,7 +1622,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="8282297628636750033">Primijeni tamnu temu na web lokacije</translation>
 <translation id="8282950411412455249">Idite u postavke sigurnosti</translation>
 <translation id="829672787777123339">Povezivanje s vašim uređajem…</translation>
-<translation id="8307517230426267469">Korisnik <ph name="GIVEN_NAME" /> uklonio je karticu <ph name="TAB_NAME" /></translation>
+<translation id="8307517230426267469"><ph name="GIVEN_NAME" /> je uklonio/la karticu "<ph name="TAB_NAME" />"</translation>
 <translation id="831192587911042850">Dodaje trenutnu web lokaciju na listu web lokacija koje pratite.</translation>
 <translation id="8342727528718219152">Chrome će vas obavještavati o web lokacijama koje možda šalju previše obavještenja</translation>
 <translation id="834313815369870491">Nikad ne prevodi web lokacije</translation>

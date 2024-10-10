@@ -20,6 +20,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Εντοπίστηκε τείχος προστασίας</translation>
 <translation id="1075811647922107217">Μέγεθος σελίδας</translation>
+<translation id="108084407137234521">Δεν είναι δυνατή η σύνοψη μιας μεταγραφής με λιγότερες από <ph name="MIN_WORD_LENGTH" /> λέξεις</translation>
 <translation id="1082009148392559545">Λήψη προφύλαξης οθόνης</translation>
 <translation id="1094693127011229778">Η διεύθυνση IP δεν είναι διαθέσιμη.</translation>
 <translation id="1100902271996134409">Δημιουργία εικόνων…</translation>
@@ -413,6 +414,7 @@
 <translation id="3031560714565892478">Η συσκευή είναι κάμερα βίντεο.</translation>
 <translation id="3042927241478734594">Έξοδος από την εγγραφή;</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
+<translation id="3055176406666937744">Δεν είναι δυνατή η σύνοψη μιας μεταγραφής με περισσότερες από <ph name="MAX_WORD_LENGTH" /> λέξεις</translation>
 <translation id="3056720590588772262">Σημείο λήξης</translation>
 <translation id="3060579846059757016">Βασικά σημεία</translation>
 <translation id="3061850252076394168">ενεργοποίηση λειτουργίας Επιλέξτε για αυτόματη ανάγνωση</translation>
@@ -449,6 +451,7 @@
 <translation id="3226657629376379887">Μενού ενεργειών διάταξης</translation>
 <translation id="3227186760713762082">Διαιρέστε την τιμή <ph name="CATEGORY_TEXT" /> με το <ph name="CONVERSION_RATE" /></translation>
 <translation id="3237710083340813756">Αναδιατύπωση</translation>
+<translation id="3245518008592055173">Δεν είναι δυνατή η δημιουργία ονομάτων για μια μεταγραφή με λιγότερες από <ph name="MIN_WORD_LENGTH" /> λέξεις</translation>
 <translation id="3246869037381808805">Οι εργασίες εκτύπωσης που είναι παλαιότερες της 1 ημέρας θα καταργηθούν.</translation>
 <translation id="324961752321393509">Ο διαχειριστής σας δεν επιτρέπει το κλείσιμο αυτής της εφαρμογής</translation>
 <translation id="3263941347294171263">Αποσυνδέστε και επανασυνδέστε τη συσκευή <ph name="DEVICE_NAME" /> για να συνεχίσετε τη διαδικασία ενημέρωσης</translation>
@@ -609,6 +612,7 @@
 <translation id="409427325554347132">Αποθήκευση λεπτομερειών δοκιμής</translation>
 <translation id="409469431304488632">Πείραμα</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
+<translation id="4105182082354119881">Δεν είναι δυνατή η δημιουργία ονομάτων για μια μεταγραφή με περισσότερες από <ph name="MAX_WORD_LENGTH" /> λέξεις</translation>
 <translation id="4110686435123617899">Επιλογή λευκώματος <ph name="TITLE" /> <ph name="DESC" /></translation>
 <translation id="4111761024568264522">Οθόνη αφής USB</translation>
 <translation id="4113067922640381334">Έχετε πλέον πρόσβαση σε νέες <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />ταπετσαρίες<ph name="END_LINK_WALLPAPER_SUBPAGE" /></translation>

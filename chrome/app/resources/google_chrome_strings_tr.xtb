@@ -16,7 +16,7 @@
 <translation id="1149651794389918149">Chrome'da oturum açın. Bir hesapta yalnızca bir kez oturum açmak istiyorsanız <ph name="GUEST_LINK_BEGIN" />cihazı misafir olarak kullanabilirsiniz<ph name="GUEST_LINK_END" />.</translation>
 <translation id="1152920704813762236">ChromeOS hakkında</translation>
 <translation id="1154147086299354128">&amp;Chrome'da aç</translation>
-<translation id="1157985233335035034">Son diller</translation>
+<translation id="1157985233335035034">Son kullanılan diller</translation>
 <translation id="1184145431117212167">Windows sürümünüz desteklenmediğinden yükleme işlemi başarısız oldu.</translation>
 <translation id="1194807384646768652">Dosya türü çok indirilmediği ve tehlikeli olabileceği için Chrome bu indirme işlemini engelledi</translation>
 <translation id="1203500561924088507">Yüklediğiniz için teşekkürler. <ph name="BUNDLE_NAME" /> uygulamasını kullanmadan önce tarayıcınızı yeniden başlatmanız gerekir.</translation>
@@ -401,6 +401,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6060842547856900641">Lens'i aç</translation>
 <translation id="6069027071882229820">Resim olarak kopyala</translation>
 <translation id="6070348360322141662">Google Chrome ek güvenlik sağlamak için verilerinizi şifreler</translation>
+<translation id="6075300983329039771">Kuruluşunuz (<ph name="MANAGER" />), Chrome'da oturum açmanızı zorunlu kılıyor</translation>
 <translation id="608006075545470555">Bu tarayıcıya İş Profili ekle</translation>
 <translation id="6097822892606850415">Yapay zekanın yardımı sayesinde kendinize daha fazla güvenerek yazın.</translation>
 <translation id="6113794647360055231">Chrome daha da iyi bir hale geldi</translation>
@@ -539,6 +540,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="7670287553302121848">Chrome hesabı için yeniden kimlik doğrulama gerekiyor</translation>
 <translation id="769538538642757151">Chrome, incelemeniz gereken bir konu olursa sizi bilgilendirir</translation>
 <translation id="77283119132245232"><ph name="BROWSER_NAME" /> için sistem izleme hizmetleri sağlar. Bu hizmet devre dışı bırakılırsa tarayıcı tarafından oluşturulan performans izleri, bağlam geçişi ve hazır iş parçacığı etkinlikleri gibi sistem genelindeki etkinlikleri içermez.</translation>
+<translation id="7736869414036750079">Kuruluşunuz, Chrome'da oturum açmanızı zorunlu kılıyor</translation>
 <translation id="7747138024166251722">Yükleyici geçici bir dizin oluşturamadı. Lütfen, kullanılabilir disk alanını ve yazılım yükleme iznini kontrol edin.</translation>
 <translation id="7761834446675418963">Chrome'u açmak ve göz atmaya başlamak için adınızı tıklayın.</translation>
 <translation id="7763983146198734674">Şifrelerinizi kaydedin ve mobil cihazlardan erişin.</translation>

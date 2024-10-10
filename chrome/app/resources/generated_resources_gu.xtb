@@ -1689,6 +1689,7 @@
 <translation id="2184515124301515068">સાઇટ સાઉન્ડ ક્યારે ચલાવી શકે તે Chromeને પસંદ કરવા દો (સુઝાવ આપીએ છીએ)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">કોઈ અન્ય ડિવાઇસ પરથી પેજ શેર કરવામાં આવ્યું છે</translation>
+<translation id="2187569197737151508">તેને ફરી ચાલુ કરવા માટે, 5 વાર Esc દબાવો</translation>
 <translation id="2187675480456493911">તમારા એકાઉન્ટ પરના અન્ય ડિવાઇસ સાથે સિંક કરેલું. અન્ય વપરાશકર્તાઓ દ્વારા બદલવામાં આવેલા સેટિંગ સિંક કરવામાં આવશે નહીં. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">સર્વર પ્રમાણપત્ર આયાત કરવામાં ભૂલ</translation>
 <translation id="2187906491731510095">એક્સ્ટેંશન અપડેટ કર્યા</translation>
@@ -2727,6 +2728,7 @@
 <translation id="2908122561561557160">Word, Excel અને PowerPointની ફાઇલો ખોલો</translation>
 <translation id="2908162660801918428">ડિરેક્ટરી દ્વારા મીડિયા ગૅલરી ઉમેરો</translation>
 <translation id="2908358077082926882">સોંપણી કાઢી નાખવા માટે, ફરી “<ph name="CURRENTKEY" />” દબાવો અને <ph name="RESPONSE" /></translation>
+<translation id="2909487040556589351">તમારા મોબાઇલ ડિવાઇસ પર Chrome મેળવો</translation>
 <translation id="2909506265808101667">Googleની સેવાઓ સાથે કનેક્ટ કરી શકાયું નથી. તમારું નેટવર્ક કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો. ભૂલનો કોડ: <ph name="ERROR_CODE" />.</translation>
 <translation id="2910318910161511225">નેટવર્કથી કનેક્ટ કરો અને ફરીથી પ્રયાસ કરો</translation>
 <translation id="2910678330803525229">હવે તમે બ્રાઉઝ કરવાનું શરૂ કરી શકો છો</translation>
@@ -4828,6 +4830,7 @@
 <translation id="4434611816075088065">અત્યારે અન્ય કોઈપણ બાબત પર તમારે ધ્યાન આપવાની જરૂર નથી</translation>
 <translation id="443475966875174318">અસંગત ઍપ્લિકેશનોને અપડેટ કરો અથવા કાઢી નાખો</translation>
 <translation id="443503224864902151">આમ કરવાથી તમે મોટાભાગની સાઇટમાંથી સાઇન આઉટ થઈ જશો. તમે તમારા Google એકાઉન્ટમાં સાઇન ઇન થયેલા રહેશો, જેથી તમારો સિંક કરેલો ડેટા ડિલીટ કરી શકાય.</translation>
+<translation id="4436573279088520291">ન વપરાયેલા ટૅબ બંધ કરો</translation>
 <translation id="4437879751057074691">પાસવર્ડ અને પાસકી સાચવવાની ઑફર આપો</translation>
 <translation id="4437947179446780764">DNSના કસ્ટમ સેવા પ્રદાતા ઉમેરો</translation>
 <translation id="4438043733494739848">પારદર્શક</translation>
@@ -9918,6 +9921,7 @@ USB ડિવાઇસ</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{એક ફોન નંબર}one{# ફોન નંબર}other{# ફોન નંબર}}</translation>
 <translation id="8168435359814927499">કન્ટેન્ટ</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{વાંચન સૂચિમાં ટૅબ ઉમેરો}one{વાંચન સૂચિમાં ટૅબ ઉમેરો}other{વાંચન સૂચિમાં ટૅબ ઉમેરો}}</translation>
+<translation id="8169177848833352618">કમનસીબે, આ મશીન Bruschetta ઇન્સ્ટૉલ કરવા માટેની જરૂરિયાતો પૂરી કરતું નથી. ભૂલનો કોડ <ph name="ERROR" /> છે.</translation>
 <translation id="8174047975335711832">ઉપકરણ માહિતી</translation>
 <translation id="8176332201990304395">ગુલાબી અને સફેદ</translation>
 <translation id="8176529144855282213">માઇક્રોફોનનો ઍક્સેસ ચાલુ કરવા માટે, તમારા ડિવાઇસ પર માઇક્રોફોનની ભૌતિક સ્વિચ ચાલુ કરો</translation>

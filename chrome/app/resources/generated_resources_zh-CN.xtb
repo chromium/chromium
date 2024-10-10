@@ -274,6 +274,7 @@
 <translation id="1187722533808055681">闲置状态唤醒</translation>
 <translation id="1188807932851744811">未上传日志。</translation>
 <translation id="1190086046506744802">非常宽松</translation>
+<translation id="1190155014618058972">创建自定义组合键</translation>
 <translation id="11901918071949011">{NUM_FILES,plural, =1{可访问您计算机上存储的 1 个文件}other{可访问您计算机上存储的 # 个文件}}</translation>
 <translation id="1190706173655543975">Microsoft 应用政策</translation>
 <translation id="1191353342579061195">选择与您的需求相符的主题。若要更改主题、壁纸、屏保等等，只需右键点击桌面即可执行所需操作。</translation>
@@ -331,7 +332,9 @@
 <translation id="1227660082540388410">修改通行密钥</translation>
 <translation id="1227993798763400520">未能投放，请重试。</translation>
 <translation id="1230417814058465809">已开启标准保护。若要进一步提升安全性，请使用增强型保护。</translation>
+<translation id="1230961867057865279">网页原文不是<ph name="LANGUAGE" /></translation>
 <translation id="1231426483209637778">我们会在您下次使用 <ph name="DEVICE_TYPE" /> 时记住您的网络</translation>
+<translation id="1231489110997683307">网页原文不是<ph name="LANGUAGE" /></translation>
 <translation id="1231572247662419826">网站可以请求捕获和使用您的鼠标输入</translation>
 <translation id="1232569758102978740">无标题</translation>
 <translation id="1233497634904001272">请再次轻触您的安全密钥以完成请求。</translation>
@@ -1123,6 +1126,7 @@
 <translation id="1794212650797661990">隐藏 <ph name="DOMAIN" /> 的密码</translation>
 <translation id="1794791083288629568">发送反馈，以协助我们解决此问题。</translation>
 <translation id="1795214765651529549">使用经典主题背景</translation>
+<translation id="1795438342141780114">将光标重置为居中</translation>
 <translation id="1795668164971917185">当 Google 安全浏览功能下次发现可疑的下载内容时，会自动根据您选择的<ph name="LINK" />扫描该内容</translation>
 <translation id="1796588414813960292">所有需要使用声音的功能都将无法正常运行</translation>
 <translation id="1797117170091578105">使用 Chromebook 键盘玩游戏。您可以为特定操作自定义按键。</translation>
@@ -1681,6 +1685,7 @@
 <translation id="2184515124301515068">让 Chrome 选择何时允许网站播放声音（推荐）</translation>
 <translation id="2186206192313702726">Google 智能镜头</translation>
 <translation id="2186711480981247270">收到了另一设备分享的页面</translation>
+<translation id="2187569197737151508">按 Esc 键 5 次即可重新启用</translation>
 <translation id="2187675480456493911">已与您账号中的其他设备同步。其他用户修改的设置不会进行同步。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">服务器证书导入错误</translation>
 <translation id="2187906491731510095">扩展程序已更新</translation>
@@ -1807,6 +1812,7 @@
 <translation id="2278562042389100163">打开浏览器窗口</translation>
 <translation id="2278668501808246459">正在启动容器管理器</translation>
 <translation id="2280486287150724112">右侧页边距</translation>
+<translation id="228059581448666199">左键点击鼠标</translation>
 <translation id="2281863813036651454">用鼠标左键点击</translation>
 <translation id="2282146716419988068">GPU 进程</translation>
 <translation id="228293613124499805">您访问的大多数网站很可能会将数据保存到设备上，例如保存您的偏好设置或您与网站分享的信息，这通常是为了提升您的浏览体验。我们建议您保持此设置的开启状态。</translation>
@@ -2716,6 +2722,7 @@
 <translation id="2908122561561557160">打开 Word、Excel 和 PowerPoint 文件</translation>
 <translation id="2908162660801918428">按目录添加媒体库</translation>
 <translation id="2908358077082926882">再按一次“<ph name="CURRENTKEY" />”键即可撤消分配并<ph name="RESPONSE" /></translation>
+<translation id="2909487040556589351">在移动设备上下载 Chrome</translation>
 <translation id="2909506265808101667">无法连接到 Google 服务。请检查您的网络连接状况，然后重试。错误代码：<ph name="ERROR_CODE" />。</translation>
 <translation id="2910318910161511225">请连接到网络，然后重试</translation>
 <translation id="2910678330803525229">现在您可以开始浏览了</translation>
@@ -4700,6 +4707,7 @@
 <translation id="4359408040881008151">安装此扩展程序是因为某个/些扩展程序需要安装它才能正常使用。</translation>
 <translation id="4359717112757026264">城市景观</translation>
 <translation id="4359809482106103048">安全概览</translation>
+<translation id="4360738659108163902">右键点击鼠标</translation>
 <translation id="4361142739114356624">缺少此客户端证书的私钥，或私钥无效</translation>
 <translation id="4361745360460842907">作为标签页打开</translation>
 <translation id="4362675504017386626"><ph name="ACCOUNT_EMAIL" /> 是您 <ph name="DEVICE_TYPE" /> 上的默认账号</translation>
@@ -4813,6 +4821,7 @@
 <translation id="4434611816075088065">目前没有任何其他需要您注意的事项</translation>
 <translation id="443475966875174318">更新或卸载不兼容的应用</translation>
 <translation id="443503224864902151">将您从大多数网站中退出账号。您的 Google 账号仍会保持登录状态，以便删除您的已同步数据。</translation>
+<translation id="4436573279088520291">关闭未使用的标签页</translation>
 <translation id="4437879751057074691">提示保存密码和通行密钥</translation>
 <translation id="4437947179446780764">添加自定义 DNS 服务提供商</translation>
 <translation id="4438043733494739848">透明</translation>
@@ -5330,6 +5339,7 @@
 <translation id="482952334869563894">由供应商 <ph name="VENDOR_ID" /> 提供的 USB 设备</translation>
 <translation id="4830502475412647084">正在安装操作系统更新</translation>
 <translation id="4831226137013573603">麦克风静音</translation>
+<translation id="483262387981411190">暂停或恢复面部控制</translation>
 <translation id="4833683849865011483">通过打印服务器找到了 1 台打印机</translation>
 <translation id="4835598628985424375">撅起嘴唇</translation>
 <translation id="4835677468087803981">隐藏 PIN 码</translation>
@@ -5890,6 +5900,7 @@
 <translation id="5240931875940563122">使用 Android 手机登录</translation>
 <translation id="5242724311594467048">要启用“<ph name="EXTENSION_NAME" />”吗？</translation>
 <translation id="5243522832766285132">请稍后重试</translation>
+<translation id="5243752692914402705">开始滚动模式后，请朝您要滚动的方向移动头部</translation>
 <translation id="5244234799035360187">OneDrive 现在会显示在“文件”应用内</translation>
 <translation id="5244466461749935369">暂时保留</translation>
 <translation id="5244474230056479698">同步到 <ph name="EMAIL" /></translation>
@@ -6639,6 +6650,7 @@
 <translation id="5805697420284793859">窗口管理器</translation>
 <translation id="5806447147478173900">显示的网站占用的总存储空间：<ph name="TOTAL_USAGE" /></translation>
 <translation id="5806773519584576205">0°（默认）</translation>
+<translation id="5807774529265708172">显示或隐藏屏幕键盘</translation>
 <translation id="5809835394668218762">可对 <ph name="WEBSITE" /> 执行的更多操作</translation>
 <translation id="5809840528400421362">PIN 码必须包含 6 位数</translation>
 <translation id="5810809306422959727">此账号无法使用家长控制功能</translation>
@@ -6832,6 +6844,7 @@
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> 可能含有危险内容。发送给 Google 安全浏览服务进行扫描？</translation>
 <translation id="5945363896952315544">您的安全密钥存储的指纹的数量已达到上限。若要添加一个新指纹，请先删除一个现有指纹。</translation>
 <translation id="5946591249682680882">报告ID：<ph name="WEBRTC_LOG_REPORT_ID" /></translation>
+<translation id="5947651424015173580">双击鼠标</translation>
 <translation id="5948476936444935795">取消导入</translation>
 <translation id="5948536763493709626">您可以连接一个键盘或鼠标，也可以继续使用触摸屏进行设置。如果您使用的是蓝牙设备，请确保您的设备已准备好进行配对。</translation>
 <translation id="5949544233750246342">无法解析文件</translation>
@@ -8456,6 +8469,7 @@
 <translation id="7139627972753429585"><ph name="APP_NAME" /> 正在使用您的麦克风</translation>
 <translation id="7140785920919278717">应用安装程序</translation>
 <translation id="7141105143012495934">由于无法获取您的账号详情，因此登录失败了。请与管理员联系或重试。</translation>
+<translation id="7141470099673912333">Content Transfer</translation>
 <translation id="7141844554192012199">检查</translation>
 <translation id="714301620504747562">与标准预加载相比，浏览和搜索速度更快</translation>
 <translation id="7143207342074048698">正在连接</translation>
@@ -8544,6 +8558,7 @@
 <translation id="7212097698621322584">请输入您的当前 PIN 码以更改它。如果您不知道 PIN 码，则需要重置安全密钥，然后创建新 PIN 码。</translation>
 <translation id="7214047272988222011">已允许 - <ph name="PERMISSION_DETAILS" />。请开启<ph name="LINK_BEGIN" />系统相机使用权<ph name="LINK_END" />。</translation>
 <translation id="721490496276866468">导入密码</translation>
+<translation id="7217208603285112910">所选内容不是<ph name="LANGUAGE" /></translation>
 <translation id="7219254577985949841">删除网站数据？</translation>
 <translation id="7219473482981809164">我们找到了多份可供下载的个人资料。请先选择您想下载的个人资料，然后继续操作。</translation>
 <translation id="7219762788664143869">{NUM_WEAK,plural, =0{没有任何安全系数低的密码}=1{有 1 个安全系数低的密码}other{有 {NUM_WEAK} 个安全系数低的密码}}</translation>
@@ -9591,6 +9606,7 @@
 <translation id="7958828865373988933">如果您想在 USB 安全密钥上为“<ph name="APP_NAME" />”创建通行密钥，请立即插入并轻触该安全密钥</translation>
 <translation id="7959074893852789871">该文件包含多个证书，其中部分证书未导入：</translation>
 <translation id="7959665254555683862">打开新的无痕式标签页(&amp;T)</translation>
+<translation id="7960540720012720106">打开窗口概览</translation>
 <translation id="7961015016161918242">一律不</translation>
 <translation id="7963001036288347286">触控板加速</translation>
 <translation id="7963513503134856713">窗口已向右移动</translation>
@@ -9670,6 +9686,7 @@
 <translation id="8014154204619229810">更新程序正在运行，请稍后刷新并再次查看。</translation>
 <translation id="8014206674403687691"><ph name="IDS_SHORT_PRODUCT_NAME" />无法还原到之前安装的版本。请重新尝试对您的设备执行 Powerwash 操作。</translation>
 <translation id="8015565302826764056">{NUM_OF_FILES,plural, =1{已复制 1 个文件}other{已复制 {NUM_OF_FILES} 个文件}}</translation>
+<translation id="8017004049696748317">开始或停止语音输入</translation>
 <translation id="8017176852978888182">Linux 共享目录</translation>
 <translation id="8017335670460187064"><ph name="LABEL" /></translation>
 <translation id="8017679124341497925">已修改快捷方式</translation>
@@ -9684,6 +9701,7 @@
 <translation id="8025291188699172126">更新简介</translation>
 <translation id="8026471514777758216">使您的所有设备保持同步</translation>
 <translation id="8026784703228858744">借助同步功能保存书签和其他数据</translation>
+<translation id="8027325966409484573">{NUM_DAYS,plural, =0{0 天前访问过}=1{1 天前访问过}other{# 天前访问过}}</translation>
 <translation id="8028060951694135607">Microsoft 密钥恢复</translation>
 <translation id="8028803902702117856">正在下载“<ph name="FILE_NAME" />”，大小为 <ph name="SIZE" /></translation>
 <translation id="8028993641010258682">大小</translation>
@@ -9891,6 +9909,7 @@
 <translation id="816704878106051517">{COUNT,plural, =1{1 个电话号码}other{# 个电话号码}}</translation>
 <translation id="8168435359814927499">内容</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{向阅读清单中添加 1 个标签页}other{向阅读清单中添加多个标签页}}</translation>
+<translation id="8169177848833352618">很抱歉，此机器不符合安装 Bruschetta 的要求。错误代码为 <ph name="ERROR" />。</translation>
 <translation id="8174047975335711832">设备信息</translation>
 <translation id="8176332201990304395">粉色和白色</translation>
 <translation id="8176529144855282213">如需开启麦克风使用权限，请开启设备上的实体麦克风开关</translation>
@@ -10105,6 +10124,7 @@
 <translation id="8325413836429495820">不允许查看您的剪贴板</translation>
 <translation id="8326478304147373412">PKCS #7，证书链</translation>
 <translation id="8327386430364625757">数学字体</translation>
+<translation id="8327490658947427005">所选内容不是<ph name="LANGUAGE" /></translation>
 <translation id="8327676037044516220">权限和内容设置</translation>
 <translation id="8328228852664998535">如果您继续操作，您的密码、通行密钥和其他数据将从 <ph name="BRAND" />中永久删除。您为网站或应用创建的所有账号都不会被删除。</translation>
 <translation id="8328777765163860529">全部关闭</translation>

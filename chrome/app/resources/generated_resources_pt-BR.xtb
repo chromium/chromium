@@ -2112,6 +2112,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2460356425461033301">Faça backup e use seus dados do navegador em qualquer dispositivo</translation>
 <translation id="2460482211073772897">Em outras pastas</translation>
 <translation id="2460826998961521840">Para usar as chaves de acesso salvas na sua Conta do Google</translation>
+<translation id="2461045498706592033">O favorito <ph name="LOCAL_FOLDER" /> foi salvo apenas neste dispositivo. Se ele for movido para <ph name="LOCAL_FOLDER" />, não vai mais aparecer nos seus outros dispositivos.</translation>
 <translation id="2461550163693930491">Não permitir que os sites rolem a tela e apliquem zoom em guias compartilhadas</translation>
 <translation id="2461593638794842577">É possível desativar essa configuração para salvar suas senhas apenas neste dispositivo</translation>
 <translation id="2462332841984057083">O Steam já está sendo configurado. Aguarde a conclusão do processo.</translation>
@@ -2365,6 +2366,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2645047101481282803">Seu dispositivo é gerenciado por <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">Transmitindo esta guia para o dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">Salvar em uma pasta na sua Conta do Google?</translation>
 <translation id="264897126871533291">Protanomalia</translation>
 <translation id="2649045351178520408">ASCII codificado na Base64, cadeia de certificados</translation>
 <translation id="265156376773362237">Pré-carregamento padrão</translation>
@@ -2553,6 +2555,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2773288106548584039">Suporte a navegadores legados</translation>
 <translation id="2773621783913034737">Deixar as guias inativas</translation>
 <translation id="2774876860084746535">Intelectual</translation>
+<translation id="2775047284666165174">A pasta <ph name="LOCAL_FOLDER" /> foi salva apenas neste dispositivo. Se ela for movida para <ph name="LOCAL_FOLDER" />, não vai mais aparecer nos seus outros dispositivos.</translation>
 <translation id="2775104091073479743">Editar impressões digitais</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Remover 1 app sem suporte}one{Remover # app sem suporte}other{Remover # apps sem suporte}}</translation>
 <translation id="2776515114087183002">Mostrar sites</translation>
@@ -4956,6 +4959,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4527929807707405172">Ativar a rolagem reversa. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Sugestão de tradução</translation>
 <translation id="4528638190900283934">Faça login para ter acesso a mais recursos</translation>
+<translation id="4529052777398765334">A pasta está salva apenas neste dispositivo. Se você salvar em <ph name="ACCOUNT_FOLDER" />, ela também será salva na sua conta.</translation>
 <translation id="4529455689802245339">A Legenda instantânea do Chrome pode não funcionar</translation>
 <translation id="4531451811601110068">Tente de novo ou peça ajuda ao administrador</translation>
 <translation id="4531924570968473143">Quem você quer adicionar a este <ph name="DEVICE_TYPE" />?</translation>
@@ -5542,6 +5546,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4955707703665801001">Visibilidade do <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Escolher o PIN</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">Salvar em uma pasta apenas neste dispositivo?</translation>
 <translation id="4959262764292427323">As senhas são salvas na sua Conta do Google para que você possa usá-las em qualquer dispositivo</translation>
 <translation id="4960020053211143927">Indisponível em alguns apps</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" />: <ph name="PROFILE_NAME" /></translation>
@@ -8470,6 +8475,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="711840821796638741">Mostrar favoritos gerenciados</translation>
 <translation id="711985611146095797">Esta página permite gerenciar as Contas do Google conectadas. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">O tráfego do navegador Chrome e do Android serão bloqueados, a menos que uma VPN seja conectada</translation>
+<translation id="7120904433567247946">Este favorito foi salvo apenas neste dispositivo. Se você salvar em <ph name="ACCOUNT_FOLDER" />, ele também será salvo na sua conta.</translation>
 <translation id="7121438501124788993">Modo de desenvolvedor</translation>
 <translation id="7121728544325372695">Traços inteligentes</translation>
 <translation id="7122605570852873914">Sair mesmo assim</translation>

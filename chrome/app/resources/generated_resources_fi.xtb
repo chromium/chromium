@@ -1701,6 +1701,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2184515124301515068">Anna Chromen valita, milloin sivustot voivat toistaa ääniä (suositus)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">Sivu jaettu toisesta laitteesta</translation>
+<translation id="2187569197737151508">Ota se uudelleen käyttöön painamalla Esc viisi kertaa</translation>
 <translation id="2187675480456493911">Synkronoitu muiden tililläsi olevien laitteiden kanssa. Muiden käyttäjien muuttamia asetuksia ei synkronoida. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Palvelimen varmenteen tuontivirhe</translation>
 <translation id="2187906491731510095">Laajennukset päivitetty</translation>
@@ -2109,6 +2110,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2460356425461033301">Varmuuskopioi selaimen sisältö ja käytä sitä millä tahansa laitteella</translation>
 <translation id="2460482211073772897">Muissa kansioissa</translation>
 <translation id="2460826998961521840">Näin voit käyttää Google-tilillesi tallennettuja avainkoodeja</translation>
+<translation id="2461045498706592033"><ph name="LOCAL_FOLDER" /> tallennetaan vain tälle laitteelle. Jos siirrät kirjanmerkin kohtaan <ph name="LOCAL_FOLDER" />, et enää saa pääsyä siihen muilla laitteillasi.</translation>
 <translation id="2461550163693930491">Älä salli sivustojen vierittää ja zoomata jaettuja välilehtiä</translation>
 <translation id="2461593638794842577">Voit laittaa tämän asetuksen pois päältä, jos haluat tallentaa salasanat vain tälle laitteelle</translation>
 <translation id="2462332841984057083">Steamin käyttöönotto on jo aloitettu. Odota, että käyttöönotto on valmis.</translation>
@@ -2362,6 +2364,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2645047101481282803"><ph name="PROFILE_NAME" /> ylläpitää laitettasi</translation>
 <translation id="2645388244376970260">Välilehteä striimataan tänne: <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">Tallennetaanko kirjanmerkki Google-tilisi kansioon?</translation>
 <translation id="264897126871533291">Protanomalia</translation>
 <translation id="2649045351178520408">Base64-koodattu ASCII, varmenneketju</translation>
 <translation id="265156376773362237">Vakioesilataus</translation>
@@ -2550,6 +2553,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2773288106548584039">Vanhojen selaimien tuki</translation>
 <translation id="2773621783913034737">Tee välilehdet ei-aktiivisiksi</translation>
 <translation id="2774876860084746535">Älykäs</translation>
+<translation id="2775047284666165174"><ph name="LOCAL_FOLDER" /> tallennetaan vain tälle laitteelle. Jos siirrät kansion kohtaan <ph name="LOCAL_FOLDER" />, et enää saa pääsyä siihen muilla laitteillasi.</translation>
 <translation id="2775104091073479743">Muokkaa sormenjälkiä</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{Laajennuksella <ph name="EXTENSION" /> oli pääsy laitteilla}=1{Laajennuksella <ph name="EXTENSION" /> on pääsy {0} laitteelle}other{Laajennuksella <ph name="EXTENSION" /> on pääsy {0} laitteelle}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Poista 1 ei-tuettu sovellus}other{Poista # ei-tuettua sovellusta}}</translation>
@@ -2738,6 +2742,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2908122561561557160">Avaa Word-, Excel- ja PowerPoint-tiedostoja</translation>
 <translation id="2908162660801918428">Lisää mediagalleria hakemiston mukaan</translation>
 <translation id="2908358077082926882">Paina <ph name="CURRENTKEY" /> uudelleen, niin voit poistaa näppäimen määrityksen ja <ph name="RESPONSE" /></translation>
+<translation id="2909487040556589351">Lataa Chrome mobiililaitteelle</translation>
 <translation id="2909506265808101667">Googlen palveluihin ei saatu yhteyttä. Tarkista verkkoyhteys ja yritä uudelleen. Virhekoodi: <ph name="ERROR_CODE" />.</translation>
 <translation id="2910318910161511225">Muodosta yhteys verkkoon ja yritä uudelleen.</translation>
 <translation id="2910678330803525229">Voit nyt aloittaa selaamisen</translation>
@@ -4837,6 +4842,7 @@ sema</translation>
 <translation id="4434611816075088065">Mikään muu ei vaadi toimenpiteitä tällä hetkellä</translation>
 <translation id="443475966875174318">Päivitä yhteensopimattomat sovellukset tai poista ne</translation>
 <translation id="443503224864902151">Tämä kirjaa sinut ulos useimmilta sivustoilta. Sinua ei kirjata ulos Google-tililtäsi, jotta synkronoitu datasi voidaan poistaa.</translation>
+<translation id="4436573279088520291">Sulje käyttämättömät välilehdet</translation>
 <translation id="4437879751057074691">Tarjoa salasanojen ja avainkoodien tallentamista</translation>
 <translation id="4437947179446780764">Lisää oma DNS-palveluntarjoaja</translation>
 <translation id="4438043733494739848">Läpinäkyvä</translation>
@@ -4949,6 +4955,7 @@ sema</translation>
 <translation id="4527929807707405172">Ota käänteinen vieritys käyttöön. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Käännösehdotus</translation>
 <translation id="4528638190900283934">Kirjaudu sisään, niin voit käyttää lisäominaisuuksia</translation>
+<translation id="4529052777398765334">Kansio tallennetaan vain tälle laitteelle. Jos tallennat sen kohtaan <ph name="ACCOUNT_FOLDER" />, kansio tallennetaan myös tilillesi.</translation>
 <translation id="4529455689802245339">Chromen Livetekstitys ei ehkä toimi</translation>
 <translation id="4531451811601110068">Voit yrittää uudelleen tai pyytää apua järjestelmänvalvojalta</translation>
 <translation id="4531924570968473143">Kenet haluat lisätä tälle laitteelle (<ph name="DEVICE_TYPE" />)?</translation>
@@ -5535,6 +5542,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4955707703665801001"><ph name="FEATURE_NAME" /> / näkyvyys</translation>
 <translation id="4955710816792587366">Valitse PIN-koodi</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">Tallennetaanko kirjanmerkki kansioon vain tällä laitteella?</translation>
 <translation id="4959262764292427323">Salasanat tallennetaan Google-tilillesi, jotta voit käyttää niitä kaikilla laitteilla</translation>
 <translation id="4960020053211143927">Kaikki sovellukset eivät tue tätä</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> – <ph name="PROFILE_NAME" /></translation>
@@ -8460,6 +8468,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="711840821796638741">Näytä hallinnoidut kirjanmerkit</translation>
 <translation id="711985611146095797">Tällä sivulla voit ylläpitää sisäänkirjautuneita Google-tilejäsi. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Chrome-selaimen ja Androidin liikenne estetään, jos VPN ei ole yhdistettynä</translation>
+<translation id="7120904433567247946">Kirjanmerkki tallennetaan vain tälle laitteelle. Jos tallennat sen kohtaan <ph name="ACCOUNT_FOLDER" />, kirjanmerkki tallennetaan myös tilillesi.</translation>
 <translation id="7121438501124788993">Kehittäjätila</translation>
 <translation id="7121728544325372695">Älykkäät väliviivat</translation>
 <translation id="7122605570852873914">Kirjaudu silti ulos</translation>
@@ -9925,6 +9934,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="816704878106051517">{COUNT,plural, =1{puhelinnumero}other{# puhelinnumeroa}}</translation>
 <translation id="8168435359814927499">Sisältö</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Lisää välilehti lukulistalle}other{Lisää välilehdet lukulistalle}}</translation>
+<translation id="8169177848833352618">Valitettavasti tämä laite ei täytä Bruschettan asennusvaatimuksia. Virhekoodi on <ph name="ERROR" />.</translation>
 <translation id="8174047975335711832">Laitteen tiedot</translation>
 <translation id="8176332201990304395">Pinkki ja valkoinen</translation>
 <translation id="8176529144855282213">Salli mikrofonin käyttö laittamalla laitteen fyysinen mikrofonin kytkin päälle</translation>

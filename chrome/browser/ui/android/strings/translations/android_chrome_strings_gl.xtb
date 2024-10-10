@@ -460,6 +460,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3098745985164956033">Algunhas imaxes envíanse a Google coa finalidade de mellorar as descricións para ti</translation>
 <translation id="3114507951000454849">Le as noticias do día <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Avisos</translation>
+<translation id="3131961580615093332"><ph name="GIVEN_NAME" /> cambiou a pestana "<ph name="TAB_NAME" />"</translation>
 <translation id="3148237711805373460">Acceder</translation>
 <translation id="314939179385989105">Páxina de inicio de Chrome</translation>
 <translation id="3158667104057012316">Ordenando de maneira manual</translation>
@@ -637,6 +638,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4042941173059740150">Continúa ata <ph name="SITE_ETLD_PLUS_ONE" /> con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="404352903042073578">Grupo sen nome</translation>
 <translation id="4044708993631234325">Panel inferior</translation>
+<translation id="4045441967987592849">Volver abrir</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> pestana estándar con actividade nova en grupos de pestanas compartidos}other{<ph name="TABS_COUNT_MANY" /> pestanas estándar con actividade nova en grupos de pestanas compartidos}}</translation>
 <translation id="405365679581583349">Actualiza os servizos de Google Play</translation>
 <translation id="405399507749852140">Recibe alertas se baixa o prezo en calquera sitio</translation>
@@ -844,6 +846,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4943703118917034429">Realidade virtual</translation>
 <translation id="4943872375798546930">Non hai resultados</translation>
 <translation id="4950924971025849764">Se tes a sesión iniciada na mesma Conta de Google, outros dispositivos poden utilizar este teléfono como chave de seguranza.</translation>
+<translation id="4953833914914492602">O grupo de pestanas "<ph name="TAB_GROUP_NAME" />" xa non está dispoñible</translation>
 <translation id="4957722034734105353">Máis información...</translation>
 <translation id="4961107849584082341">Traduce esta páxina a calquera idioma</translation>
 <translation id="4964614743143953889">Chrome avísate sobre descargas e sitios pouco seguros</translation>
@@ -957,6 +960,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5526281268548144413">Non se poden pechar en varias ventás</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{Hai # min}other{Hai # min}}</translation>
 <translation id="5548606607480005320">Revisión de seguranza</translation>
+<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> uniuse ao grupo de pestanas "<ph name="TAB_GROUP_NAME" />"</translation>
 <translation id="5554520618550346933">Cando usas un contrasinal, Chrome avísate se se publicou en liña. Ao facelo, os teus contrasinais e os teus nomes de usuario encríptanse, polo que ninguén pode lelos, nin sequera Google.</translation>
 <translation id="5555525474779371165">Escolle a protección da función Navegación segura</translation>
 <translation id="5556459405103347317">Volver cargar</translation>
@@ -1079,6 +1083,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="6085886413119427067">Determina como conectarse a sitios web mediante una conexión segura</translation>
 <translation id="60923314841986378">Quedan <ph name="HOURS" /> horas</translation>
 <translation id="6095578583683628124">Se o teu motor de busca predeterminado tamén é Google, recibirás mellores suxestións que serán relevantes segundo o contexto</translation>
+<translation id="610630277578876674">Abre rapidamente ligazóns en mensaxes e moito máis</translation>
 <translation id="6108923351542677676">Configuración en curso…</translation>
 <translation id="6112702117600201073">Actualizando a páxina</translation>
 <translation id="6122831415929794347">Queres desactivar a función Navegación segura?</translation>
@@ -1245,6 +1250,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6775840696761158817">Cando toques ou escribas na barra de enderezos ou na caixa de busca, verás suxestións do teu buscador predeterminado. Esta opción está desactivada no modo de incógnito.</translation>
 <translation id="6785476624617658922">Condicións de servizo adicionais de Chrome e Chrome OS</translation>
 <translation id="6795633245022906657">Abre rapidamente unha pestana nova. Para editar este atallo, vai a Configuración.</translation>
+<translation id="679588508577699489">Fai que Chrome sexa o teu navegador predeterminado</translation>
 <translation id="679956319013005046">Para configurar o teu servizo preferido de autocompletar, primeiro engádeo na <ph name="BEGIN_LINK" />configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">Pecharase a ventá</translation>
 <translation id="6803791793483522764">Revisar as notificacións</translation>
@@ -1616,6 +1622,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8282297628636750033">Aplicar tema escuro aos sitios cando sexa posible</translation>
 <translation id="8282950411412455249">Ir á configuración de seguranza</translation>
 <translation id="829672787777123339">Conectando co teu dispositivo…</translation>
+<translation id="8307517230426267469"><ph name="GIVEN_NAME" /> quitou a pestana "<ph name="TAB_NAME" />"</translation>
 <translation id="831192587911042850">Engade o sitio web actual á lista de sitios web que estás seguindo.</translation>
 <translation id="8342727528718219152">Chrome informarate se hai algún sitio que podería estar enviando demasiadas notificacións</translation>
 <translation id="834313815369870491">Sitios que non quero que se traduzan nunca</translation>
@@ -1736,6 +1743,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8863714995118816041">Volvéronse conceder permisos a <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Datos de Chrome na túa conta</translation>
 <translation id="8888527824584402177">As pestanas que non se usen durante <ph name="DAYS_INACTIVE" /> días moveranse aquí<ph name="AUTODELETE_SECTION" />. Podes cambiar esta opción cando queiras en <ph name="SETTINGS_TITLE" />.</translation>
+<translation id="8890668505403261809">Busca as pestanas do modo de incógnito</translation>
 <translation id="8898822736010347272">Envía os URL dalgunhas páxinas que visites, información limitada do sistema e certo contido das páxinas a Google para axudar a descubrir novas ameazas e protexer todos os usuarios da Web.</translation>
 <translation id="8909135823018751308">Compartir...</translation>
 <translation id="8921980840204105660">Sincroniza os datos para obter os marcadores dos teus outros dispositivos</translation>

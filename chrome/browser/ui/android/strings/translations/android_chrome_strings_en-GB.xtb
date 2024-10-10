@@ -460,6 +460,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="3098745985164956033">Some images are sent to Google to improve descriptions for you</translation>
 <translation id="3114507951000454849">Read today's news <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Announcements</translation>
+<translation id="3131961580615093332"><ph name="GIVEN_NAME" /> changed tab '<ph name="TAB_NAME" />'</translation>
 <translation id="3148237711805373460">Take me there</translation>
 <translation id="314939179385989105">Chrome’s homepage</translation>
 <translation id="3158667104057012316">Sorting by manual order</translation>
@@ -637,6 +638,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4042941173059740150">Continue to <ph name="SITE_ETLD_PLUS_ONE" /> with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="404352903042073578">Unnamed group</translation>
 <translation id="4044708993631234325">Bottom sheet</translation>
+<translation id="4045441967987592849">Re-open</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standard tab with new activity in shared tab groups}other{<ph name="TABS_COUNT_MANY" /> standard tabs with new activity in shared tab groups}}</translation>
 <translation id="405365679581583349">Update Google Play services</translation>
 <translation id="405399507749852140">Get alerts if the price drops on any site</translation>
@@ -844,6 +846,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="4943703118917034429">Virtual Reality</translation>
 <translation id="4943872375798546930">No results</translation>
 <translation id="4950924971025849764">When you’re signed into the same Google Account, other devices can use this phone as a security key.</translation>
+<translation id="4953833914914492602">The '<ph name="TAB_GROUP_NAME" />' tab group is no longer available</translation>
 <translation id="4957722034734105353">Learn more...</translation>
 <translation id="4961107849584082341">Translate this page to any language</translation>
 <translation id="4964614743143953889">Chrome warns you about unsafe sites and downloads</translation>
@@ -957,6 +960,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="5526281268548144413">Can't be closed across multiple windows</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{# min ago}other{# mins ago}}</translation>
 <translation id="5548606607480005320">Safety check</translation>
+<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> joined '<ph name="TAB_GROUP_NAME" />' tab group</translation>
 <translation id="5554520618550346933">When you use a password, Chrome warns you if it has been published online. When doing this, your passwords and usernames are encrypted, so they can’t be read by anyone, including Google.</translation>
 <translation id="5555525474779371165">Choose your Safe Browsing protection</translation>
 <translation id="5556459405103347317">Reload</translation>
@@ -1079,6 +1083,7 @@ Your Google Account may have other forms of browsing history such as searches an
 <translation id="6085886413119427067">Determines how to connect to websites over a secure connection</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> hours left</translation>
 <translation id="6095578583683628124">If Google is also your default search engine, you’ll see better, contextually relevant suggestions</translation>
+<translation id="610630277578876674">Quickly open links in messages and more</translation>
 <translation id="6108923351542677676">Setup in progress…</translation>
 <translation id="6112702117600201073">Refreshing page</translation>
 <translation id="6122831415929794347">Turn off Safe Browsing?</translation>
@@ -1245,6 +1250,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6775840696761158817">When you tap or type in the address bar or search box, you'll see suggestions from your default search engine. This is off in Incognito.</translation>
 <translation id="6785476624617658922">Chrome and Chrome OS additional Terms of Service</translation>
 <translation id="6795633245022906657">Quickly open a new tab. To edit this shortcut, go to Settings.</translation>
+<translation id="679588508577699489">Make Chrome your default</translation>
 <translation id="679956319013005046">To set your preferred service for autofill, first add the service in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" /> .</translation>
 <translation id="6802555630140434547">The window will be closed</translation>
 <translation id="6803791793483522764">Review notifications</translation>
@@ -1616,6 +1622,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8282297628636750033">Apply Dark theme to sites, when possible</translation>
 <translation id="8282950411412455249">Go to security settings</translation>
 <translation id="829672787777123339">Connecting to your device…</translation>
+<translation id="8307517230426267469"><ph name="GIVEN_NAME" /> removed tab '<ph name="TAB_NAME" />'</translation>
 <translation id="831192587911042850">Adds the current web site to the list of web sites that you are following.</translation>
 <translation id="8342727528718219152">Chrome will let you know about sites that may be sending too many notifications</translation>
 <translation id="834313815369870491">Never translate sites</translation>
@@ -1736,6 +1743,7 @@ To change this setting, <ph name="BEGIN_LINK" />delete the Chrome data in your a
 <translation id="8863714995118816041">Permissions allowed again for <ph name="SITE_NAME" /></translation>
 <translation id="8865415417596392024">Chrome data in your account</translation>
 <translation id="8888527824584402177">Tabs that you haven't used for <ph name="DAYS_INACTIVE" /> days are moved here<ph name="AUTODELETE_SECTION" />. You can change this at any time in <ph name="SETTINGS_TITLE" />.</translation>
+<translation id="8890668505403261809">Search your Incognito tabs</translation>
 <translation id="8898822736010347272">Sends URLs of some pages that you visit, limited system information and some page content to Google, to help discover new threats and protect everyone on the web.</translation>
 <translation id="8909135823018751308">Share…</translation>
 <translation id="8921980840204105660">Sync to get your bookmarks from your other devices</translation>

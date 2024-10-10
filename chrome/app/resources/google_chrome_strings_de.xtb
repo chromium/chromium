@@ -399,6 +399,7 @@
 <translation id="6060842547856900641">Lens öffnen</translation>
 <translation id="6069027071882229820">Als Bild kopieren</translation>
 <translation id="6070348360322141662">Zur Erhöhung der Sicherheit verschlüsselt Google Chrome deine Daten</translation>
+<translation id="6075300983329039771">Deine Organisation (<ph name="MANAGER" />) verlangt, dass du dich in Chrome anmeldest</translation>
 <translation id="608006075545470555">Arbeitsprofil zu diesem Browser hinzufügen</translation>
 <translation id="6097822892606850415">KI hilft dir dabei, mit mehr Selbstvertrauen zu schreiben</translation>
 <translation id="6113794647360055231">Chrome ist jetzt noch besser</translation>
@@ -537,6 +538,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="7670287553302121848">Chrome-Konto muss noch einmal authentifiziert werden</translation>
 <translation id="769538538642757151">Solltest du etwas überprüfen müssen, wirst du von Chrome informiert</translation>
 <translation id="77283119132245232">Bietet Ablaufverfolgungsdienste für <ph name="BROWSER_NAME" />. Wenn dieser Dienst deaktiviert ist, enthalten die vom Browser erstellten Leistungstraces keine systemweiten Ereignisse wie Kontextwechsel und Thread-Ereignisse.</translation>
+<translation id="7736869414036750079">Deine Organisation verlangt, dass du dich in Chrome anmeldest</translation>
 <translation id="7747138024166251722">Das Installationsprogramm konnte kein temporäres Verzeichnis erstellen. Überprüfe, ob freier Speicherplatz und die Rechte zum Installieren von Software vorhanden sind.</translation>
 <translation id="7761834446675418963">Klicke auf deinen Namen, um Chrome zu öffnen und im Web zu surfen.</translation>
 <translation id="7763983146198734674">Du kannst deine Passwörter speichern und unterwegs darauf zugreifen</translation>

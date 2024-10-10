@@ -2100,6 +2100,7 @@
 <translation id="2460356425461033301">Создайте резервную копию данных браузера и используйте их на любом устройстве.</translation>
 <translation id="2460482211073772897">В других папках</translation>
 <translation id="2460826998961521840">Для доступа к ключам из аккаунта Google</translation>
+<translation id="2461045498706592033">Закладка "<ph name="LOCAL_FOLDER" />" сохранена только на этом устройстве. Она станет недоступна на других устройствах, если вы переместите ее в папку "<ph name="LOCAL_FOLDER" />".</translation>
 <translation id="2461550163693930491">Сайтам запрещено изменять масштаб и прокручивать содержимое демонстрируемых вкладок</translation>
 <translation id="2461593638794842577">Эту функцию можно отключить и хранить пароли только на устройстве.</translation>
 <translation id="2462332841984057083">Приложение Steam уже устанавливается. Дождитесь завершения процесса.</translation>
@@ -2353,6 +2354,7 @@
 <translation id="2645047101481282803">Вашим устройством управляет администратор домена <ph name="PROFILE_NAME" />.</translation>
 <translation id="2645388244376970260">Эта вкладка транслируется на устройство "<ph name="DEVICE_NAME" />"</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">Сохранить в папке аккаунта Google?</translation>
 <translation id="264897126871533291">Протаномалия</translation>
 <translation id="2649045351178520408">ASCII с кодировкой Base64, цепочка сертификатов</translation>
 <translation id="265156376773362237">Стандартная предзагрузка</translation>
@@ -2541,6 +2543,7 @@
 <translation id="2773288106548584039">Поддержка альтернативного браузера</translation>
 <translation id="2773621783913034737">Сделать вкладки неактивными</translation>
 <translation id="2774876860084746535">Философское</translation>
+<translation id="2775047284666165174">Папка "<ph name="LOCAL_FOLDER" />" сохранена только на этом устройстве. Она станет недоступна на других устройствах, если вы переместите ее в папку "<ph name="LOCAL_FOLDER" />".</translation>
 <translation id="2775104091073479743">Настроить отпечатки</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{Расширение "<ph name="EXTENSION" />" обращалось к устройствам}=1{Расширение "<ph name="EXTENSION" />" обращается к {0} устройству}one{Расширение "<ph name="EXTENSION" />" обращается к {0} устройству}few{Расширение "<ph name="EXTENSION" />" обращается к {0} устройствам}many{Расширение "<ph name="EXTENSION" />" обращается к {0} устройствам}other{Расширение "<ph name="EXTENSION" />" обращается к {0} устройства}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Удалить 1 неподдерживаемое приложение}one{Удалить # неподдерживаемое приложение}few{Удалить # неподдерживаемых приложения}many{Удалить # неподдерживаемых приложений}other{Удалить # неподдерживаемого приложения}}</translation>
@@ -4944,6 +4947,7 @@
 <translation id="4527929807707405172">Включить прокрутку в обратную сторону. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Предлагать перевод</translation>
 <translation id="4528638190900283934">Войдите в аккаунт и начните пользоваться дополнительными функциями</translation>
+<translation id="4529052777398765334">Папка сохранена только на этом устройстве. Она также будет сохранена в вашем аккаунте, если вы переместите ее в папку "<ph name="ACCOUNT_FOLDER" />".</translation>
 <translation id="4529455689802245339">Автоматические субтитры Chrome могут не поддерживаться</translation>
 <translation id="4531451811601110068">Вы можете попробовать снова или обратиться за помощью к администратору.</translation>
 <translation id="4531924570968473143">Добавьте пользователя на это устройство (<ph name="DEVICE_TYPE" />)</translation>
@@ -5529,6 +5533,7 @@
 <translation id="4955707703665801001">Доступ (<ph name="FEATURE_NAME" />)</translation>
 <translation id="4955710816792587366">Установите PIN-код</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">Сохранить в папке только на этом устройстве?</translation>
 <translation id="4959262764292427323">Пароли сохраняются в аккаунте Google и будут доступны на любом устройстве.</translation>
 <translation id="4960020053211143927">Не поддерживается некоторыми приложениями</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> (<ph name="PROFILE_NAME" />)</translation>
@@ -8460,6 +8465,7 @@
 <translation id="711840821796638741">Показать управляемые закладки</translation>
 <translation id="711985611146095797">На этой странице можно управлять аккаунтами Google, в которые вы вошли. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">При отсутствии VPN-подключения блокируется трафик в браузере Chrome и на устройстве Android</translation>
+<translation id="7120904433567247946">Закладка сохранена только на этом устройстве. Она также будет сохранена в вашем аккаунте, если вы переместите ее в папку "<ph name="ACCOUNT_FOLDER" />".</translation>
 <translation id="7121438501124788993">Режим разработчика</translation>
 <translation id="7121728544325372695">Умные переносы</translation>
 <translation id="7122605570852873914">Все равно выйти</translation>

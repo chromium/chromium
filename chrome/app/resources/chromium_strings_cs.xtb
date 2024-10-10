@@ -68,6 +68,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="1906696617298807388">Při psaní do adresního řádku nebo vyhledávacího pole odesílá Chromium zadaný text na Disk Google, aby vám mohl nabízet návrhy. V anonymním režimu je tato funkce vypnutá.</translation>
 <translation id="1911763535808217981">Pokud tuto možnost vypnete, budete se moci přihlásit k většině webů Google, jako je Gmail, aniž byste se přihlásili do prohlížeče Chromium</translation>
 <translation id="1929939181775079593">Prohlížeč Chromium neodpovídá. Chcete jej znovu načíst?</translation>
+<translation id="1933341829955786215">Vaše organizace, <ph name="MANAGER" />, vyžaduje, abyste se do prohlížeče Chromium přihlásili</translation>
 <translation id="193439633299369377">Aktualizace se použije po restartování systému ChromiumOS.</translation>
 <translation id="1951406923938785464">Prohlížeč Chromium toto stahování zablokoval, protože tento typ souboru se běžně nestahuje a může být nebezpečný</translation>
 <translation id="1953553007165777902">Stahování… Počet zbývajících minut: <ph name="MINUTE" /></translation>
@@ -577,6 +578,7 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="8852026904190808918">Tento jazyk se používá k zobrazení nabídek, nastavení, upozornění a dalšího textu v prohlížeči Chromium</translation>
 <translation id="8862326446509486874">Nemáte práva nutná k provádění instalací na úrovni systému. Zkuste spustit instalační program jako správce.</translation>
 <translation id="8880203542552872219">Pokud ano, upravte uložené heslo v prohlížeči Chromium tak, aby odpovídalo novému heslu.</translation>
+<translation id="8891709362986793894">Vaše organizace vyžaduje, abyste se do prohlížeče Chromium přihlásili</translation>
 <translation id="8907580949721785412">Aplikace Chromium se pokouší zobrazit hesla. Tato akce vyžaduje zadání hesla systému Windows.</translation>
 <translation id="8931379085695076764">Chromium dokáže odhadovat vaše zájmy podle historie prohlížení za posledních několik týdnů. Tyto údaje zůstávají v zařízení.</translation>
 <translation id="8941642502866065432">Chromium nelze aktualizovat</translation>

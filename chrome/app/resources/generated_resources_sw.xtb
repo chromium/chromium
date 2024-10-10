@@ -2108,6 +2108,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2460356425461033301">Hifadhi nakala ya data yako kwenye kivinjari ili uitumie kwenye kifaa chochote</translation>
 <translation id="2460482211073772897">Katika folda nyingine</translation>
 <translation id="2460826998961521840">Ili utumie funguo za siri zilizohifadhiwa katika akaunti yako ya Google</translation>
+<translation id="2461045498706592033">Folda ya <ph name="LOCAL_FOLDER" /> imehifadhiwa kwenye kifaa hiki pekee. Ukihamishia alamisho hii kwenye <ph name="LOCAL_FOLDER" />, hutaipata tena kwenye vifaa vyako vingine.</translation>
 <translation id="2461550163693930491">Usiruhusu tovuti kusogeza na kukuza vichupo unavyotumia na wengine</translation>
 <translation id="2461593638794842577">Unaweza kuzima mipangilio hii ili uhifadhi manenosiri yako kwenye kifaa hiki pekee</translation>
 <translation id="2462332841984057083">Programu ya Steam inawekewa mipangilio. Subiri ikamilishe kusanikinisha.</translation>
@@ -2361,6 +2362,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2645047101481282803">Kifaa chako kinadhibitiwa na <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">Kutuma kichupo hiki kwenye <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">Ungependa kuhifadhi kwenye folda katika akaunti yako ya Google?</translation>
 <translation id="264897126871533291">Upofu wa kutoona rangi nyekundu</translation>
 <translation id="2649045351178520408">ASCII iliyosimbwa kwa Base64, msururu wa vyeti</translation>
 <translation id="265156376773362237">Upakiaji mapema wa kawaida</translation>
@@ -2549,6 +2551,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2773288106548584039">Uwezo wa Kutumia Kivinjari Kilichopitwa na Wakati</translation>
 <translation id="2773621783913034737">Fanya Vichupo Visitumike</translation>
 <translation id="2774876860084746535">Mandhari ya uvumbuzi</translation>
+<translation id="2775047284666165174">Folda ya <ph name="LOCAL_FOLDER" /> imehifadhiwa kwenye kifaa hiki pekee. Ukihamishia folda hii kwenye <ph name="LOCAL_FOLDER" />, hutaipata tena kwenye vifaa vyako vingine.</translation>
 <translation id="2775104091073479743">Badilisha Alama za Vidole</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{Kiendelezi cha "<ph name="EXTENSION" />" kilikuwa kikifikia vifaa}=1{Kiendelezi cha "<ph name="EXTENSION" />" kinafikia kifaa {0}}other{Kiendelezi cha "<ph name="EXTENSION" />" kinafikia vifaa {0}}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Ondoa programu 1 isiyotumika}other{Ondoa programu # zisizotumika}}</translation>
@@ -4950,6 +4953,7 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4527929807707405172">Washa kipengele cha kusogeza kinyume. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Pendekezo la kutafsiri</translation>
 <translation id="4528638190900283934">Ingia katika akaunti ili upate vipengele vya ziada</translation>
+<translation id="4529052777398765334">Folda hii imehifadhiwa kwenye kifaa hiki pekee. Ukiihifadhi kwenye <ph name="ACCOUNT_FOLDER" />, pia itahifadhiwa katika akaunti yako.</translation>
 <translation id="4529455689802245339">Manukuu ya Papo Hapo ya Chrome huenda yasitumike</translation>
 <translation id="4531451811601110068">Unaweza kujaribu tena au uwasiliane na msimamizi wako ili akusaidie</translation>
 <translation id="4531924570968473143">Ungependa kumwongeza nani kwenye kifaa hiki cha <ph name="DEVICE_TYPE" />?</translation>
@@ -5536,6 +5540,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="4955707703665801001">Mipangilio ya uonekanaji ya kipengele cha <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Chagua PIN yako</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">Ungependa kuhifadhi kwenye folda iliyo katika kifaa hiki pekee?</translation>
 <translation id="4959262764292427323">Manenosiri yanahifadhiwa kwenye Akaunti yako ya Google ili uweze kuyatumia kwenye kifaa chochote</translation>
 <translation id="4960020053211143927">Haitumiki kwenye baadhi ya programu</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8461,6 +8466,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="711840821796638741">Onyesha Alamisho Zinazosimamiwa</translation>
 <translation id="711985611146095797">Ukurasa huu hukuwezesha kudhibiti Akaunti zako za Google ulizotumia kuingia katika tovuti na programu. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Kivinjari cha Chrome na trafiki ya Android zitazuiwa usipounganisha VPN</translation>
+<translation id="7120904433567247946">Alamisho hii imehifadhiwa tu kwenye kifaa hiki. Ukiihifadhi kwenye <ph name="ACCOUNT_FOLDER" />, pia itahifadhiwa katika akaunti yako.</translation>
 <translation id="7121438501124788993">Hali ya Wasanidi Programu</translation>
 <translation id="7121728544325372695">Dashi Mahiri</translation>
 <translation id="7122605570852873914">Ondoka kwenye akaunti licha ya hayo</translation>

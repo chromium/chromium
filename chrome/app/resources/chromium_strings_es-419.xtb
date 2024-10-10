@@ -67,6 +67,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="1906696617298807388">Cuando escribes en la barra de direcciones o en el cuadro de búsqueda, Chromium envía lo que escribes a Google Drive a fin de obtener sugerencias de artículos. Esta función está desactivada en el modo Incógnito.</translation>
 <translation id="1911763535808217981">Si desactivas esta preferencia, podrás acceder a sitios de Google (como Gmail) sin tener que acceder a Chromium</translation>
 <translation id="1929939181775079593">Chromium no responde. ¿Quieres reiniciarlo ahora?</translation>
+<translation id="1933341829955786215">Tu organización, <ph name="MANAGER" />, requiere que accedas a Chromium</translation>
 <translation id="193439633299369377">Chromium OS debe reiniciarse para que se aplique la actualización.</translation>
 <translation id="1951406923938785464">Chromium bloqueó esta descarga porque el tipo de archivo no se descarga con frecuencia y puede ser peligroso</translation>
 <translation id="1953553007165777902">Descargando… Minutos restantes: <ph name="MINUTE" /></translation>
@@ -570,6 +571,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="8852026904190808918">Este idioma se usa para mostrar menús, parámetros de configuración, alertas y otros textos en Chromium</translation>
 <translation id="8862326446509486874">No tienes los derechos que se requieren para realizar la instalación al nivel del sistema. Intenta ejecutar el instalador nuevamente como Administrador.</translation>
 <translation id="8880203542552872219">En ese caso, edita la contraseña guardada en Chromium para que coincida con la nueva.</translation>
+<translation id="8891709362986793894">Tu organización requiere que accedas a Chromium</translation>
 <translation id="8907580949721785412">Chromium está intentando mostrar contraseñas. Para permitirlo, ingresa tu contraseña de Windows.</translation>
 <translation id="8931379085695076764">Chromium puede estimar tus intereses en función de tu historial de navegación de las últimas semanas. Esta información permanece en tu dispositivo.</translation>
 <translation id="8941642502866065432">No se puede actualizar Chromium</translation>

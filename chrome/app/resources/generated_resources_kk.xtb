@@ -1689,6 +1689,7 @@
 <translation id="2184515124301515068">Chrome браузерінде сайттардың дыбысты автоматты ойнатуына тыйым салу (ұсынылады)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">Басқа құрылғыдан бөлісілген бет</translation>
+<translation id="2187569197737151508">Оны қайта қосу үшін Esc пернесін 5 рет басыңыз.</translation>
 <translation id="2187675480456493911">Аккаунтыңыздағы басқа құрылғылармен синхрондалған. Басқа пайдаланушылар өзгерткен параметрлер синхрондалмайды. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Сервер сертификатын импорттау қатесі</translation>
 <translation id="2187906491731510095">Кеңейтімдер жаңартылды</translation>
@@ -2726,6 +2727,7 @@
 <translation id="2908122561561557160">Word, Excel және PowerPoint файлдарын ашу</translation>
 <translation id="2908162660801918428">Каталог бойынша медиа галереяны қосу</translation>
 <translation id="2908358077082926882">Тағайындауды өшіріп, <ph name="RESPONSE" /> үшін "<ph name="CURRENTKEY" />" пернесін тағы басыңыз.</translation>
+<translation id="2909487040556589351">Chrome-ды мобильдік құрылғыға жүктеп алыңыз</translation>
 <translation id="2909506265808101667">Google қызметтеріне қосылмады. Желі байланысын тексеріп, қайталап көріңіз. Қате коды: <ph name="ERROR_CODE" />.</translation>
 <translation id="2910318910161511225">Желімен байланыс орнатып, әрекетті қайталап көріңіз</translation>
 <translation id="2910678330803525229">Енді пайдалана берсеңіз болады.</translation>
@@ -4825,6 +4827,7 @@
 <translation id="4434611816075088065">Қазір қауіпсіздікке қатысты ұсыныстар жоқ</translation>
 <translation id="443475966875174318">Үйлеспейтін қолданбаларды жаңарту немесе өшіру</translation>
 <translation id="443503224864902151">Көп сайттардан шығарады. Google аккаунтыңызда қаласыз және синхрондалған деректер жойылады.</translation>
+<translation id="4436573279088520291">Қолданылмайтын қойындыларды жабу</translation>
 <translation id="4437879751057074691">Құпия сөздер мен кіру кілттерін сақтауды ұсыну</translation>
 <translation id="4437947179446780764">Арнаулы DNS қызмет көрсетушісін қосу</translation>
 <translation id="4438043733494739848">Тұнық</translation>
@@ -9909,6 +9912,7 @@
 <translation id="816704878106051517">{COUNT,plural, =1{телефон нөмірі}other{# телефон нөмірі}}</translation>
 <translation id="8168435359814927499">Контент</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Қойындыны оқу тізіміне қосу}other{Қойындыларды оқу тізіміне қосу}}</translation>
+<translation id="8169177848833352618">Өкінішке қарай, бұл құрылғы Bruschetta орнату талаптарына жауап бермейді. Қате коды – <ph name="ERROR" />.</translation>
 <translation id="8174047975335711832">Құрылғы туралы ақпарат</translation>
 <translation id="8176332201990304395">Ашық қызғылт және ақ</translation>
 <translation id="8176529144855282213">Микрофонды пайдалану мүмкіндігін қосу үшін құрылғыдағы физикалық микрофон ауыстырғышын қосыңыз.</translation>

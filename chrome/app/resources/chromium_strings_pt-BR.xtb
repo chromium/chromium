@@ -67,6 +67,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="1906696617298807388">Quando você digita na barra de endereço ou na caixa de pesquisa, o Chromium envia o que foi digitado para o Google Drive e recebe sugestões de itens. Essa opção fica desativada na navegação anônima.</translation>
 <translation id="1911763535808217981">Desative essa opção para fazer login em sites do Google, como o Gmail, sem fazer login no Chromium</translation>
 <translation id="1929939181775079593">O Chromium não está respondendo. Reiniciar agora?</translation>
+<translation id="1933341829955786215">Sua organização, <ph name="MANAGER" />, exige que você faça login no Chromium</translation>
 <translation id="193439633299369377">É necessário reiniciar o ChromiumOS para que a atualização seja aplicada.</translation>
 <translation id="1951406923938785464">O Chromium bloqueou o download porque o tipo de arquivo não é transferido com frequência e pode ser perigoso</translation>
 <translation id="1953553007165777902">Fazendo o download… <ph name="MINUTE" /> minuto(s) restante(s)</translation>
@@ -570,6 +571,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="8852026904190808918">Este idioma é usado para mostrar menus, configurações, alertas e outros textos no Chromium</translation>
 <translation id="8862326446509486874">Você não tem os direitos adequados para instalação no nível do sistema. Tente executar o instalador novamente como administrador.</translation>
 <translation id="8880203542552872219">Se tiver mudado, edite a senha salva no Chromium para que ela seja igual à nova senha.</translation>
+<translation id="8891709362986793894">Sua organização exige que você faça login no Chromium</translation>
 <translation id="8907580949721785412">O Chromium está tentando mostrar senhas. Digite sua senha do Windows para permitir isso.</translation>
 <translation id="8931379085695076764">O Chromium pode fazer uma estimativa dos seus interesses com base no seu histórico de navegação das últimas semanas. Essas informações ficam no dispositivo.</translation>
 <translation id="8941642502866065432">Não é possível atualizar o Chromium</translation>

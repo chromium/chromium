@@ -13,7 +13,7 @@
 <translation id="113122355610423240">Chromium varsayılan tarayıcınız</translation>
 <translation id="1131805035311359397">Şifrelerinizin veri ihlali ve diğer güvenlik sorunlarına karşı güvende olup olmadığını kontrol etmek için <ph name="BEGIN_LINK" />Chromium'da oturum açın<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Chromium menüsünü tıklayın</translation>
-<translation id="1157985233335035034">Son diller</translation>
+<translation id="1157985233335035034">Son kullanılan diller</translation>
 <translation id="1184145431117212167">Windows sürümünüz desteklenmediğinden yükleme işlemi başarısız oldu.</translation>
 <translation id="1185134272377778587">Chromium hakkında</translation>
 <translation id="1188705220418984327">Pencerenizi paylaşmak için Sistem Tercihleri'nde Chromium'un ekranı kaydetmesine izin verin.</translation>
@@ -66,6 +66,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="1906696617298807388">Adres çubuğuna veya arama kutusuna yazdığınızda Chromium, yazdıklarınızı Google Drive'a göndererek öğe önerileri görmenizi sağlar. Bu ayar Gizli modda kapalıdır.</translation>
 <translation id="1911763535808217981">Bu özelliği kapatarak Chromium'da oturum açmadan Gmail gibi Google sitelerinde oturum açabilirsiniz</translation>
 <translation id="1929939181775079593">Chromium yanıt vermiyor. Şimdi yeniden başlatılsın mı?</translation>
+<translation id="1933341829955786215">Kuruluşunuz (<ph name="MANAGER" />), Chromium'da oturum açmanızı zorunlu kılıyor</translation>
 <translation id="193439633299369377">Güncellemenin uygulanması için ChromiumOS yeniden başlatılmalıdır.</translation>
 <translation id="1951406923938785464">Dosya türü çok indirilmediği ve tehlikeli olabileceği için Chromium bu indirme işlemini engelledi</translation>
 <translation id="1953553007165777902">İndiriliyor... <ph name="MINUTE" /> dakika kaldı</translation>
@@ -573,6 +574,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="8852026904190808918">Bu dil, Chromium'da menüleri, ayarları, uyarıları ve diğer metinleri görüntülemek için kullanılır</translation>
 <translation id="8862326446509486874">Sistem düzeyinde yükleme için gerekli haklara sahip değilsiniz. Yükleyiciyi Yönetici olarak tekrar çalıştırmayı deneyin.</translation>
 <translation id="8880203542552872219">Değiştirdiyseniz Chromium'da kayıtlı şifrenizi, lütfen yeni şifrenizle aynı olacak şekilde düzenleyin.</translation>
+<translation id="8891709362986793894">Kuruluşunuz, Chromium'da oturum açmanızı zorunlu kılıyor</translation>
 <translation id="8907580949721785412">Chromium şifreleri göstermeye çalışıyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
 <translation id="8931379085695076764">Chromium son birkaç haftalık tarama geçmişinize göre ilgi alanlarınızı tahmin edebilir. Bu bilgi, cihazınızda kalır.</translation>
 <translation id="8941642502866065432">Chromium güncellenemiyor</translation>

@@ -67,6 +67,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="1906696617298807388">Når du skriver i adressefeltet eller søkefeltet, sender Chromium det du skriver til Google Disk for å få forslag til elementer. Dette er av i Inkognito.</translation>
 <translation id="1911763535808217981">Ved å slå dette av kan du logge på Google-sider, som Gmail, uten å logge på Chromium</translation>
 <translation id="1929939181775079593">Chromium svarer ikke. Vil du starte den på nytt nå?</translation>
+<translation id="1933341829955786215">Organisasjonen din, <ph name="MANAGER" />, krever at du logger på Chromium</translation>
 <translation id="193439633299369377">ChromiumOS må startes på nytt for at oppdateringen skal tas i bruk.</translation>
 <translation id="1951406923938785464">Chromium har blokkert denne nedlastingen fordi filtypen ikke lastes ned ofte, så den kan være farlig</translation>
 <translation id="1953553007165777902">Laster ned … <ph name="MINUTE" /> minutt(er) igjen</translation>
@@ -576,6 +577,7 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8852026904190808918">Dette språket brukes når menyer, innstillinger, varsler og annen tekst vises i Chromium</translation>
 <translation id="8862326446509486874">Du har ikke de nødvendige rettighetene for å installere på systemnivå. Prøv å kjøre installasjonsprogrammet som administrator.</translation>
 <translation id="8880203542552872219">I så fall bør du endre det lagrede passordet i Chromium så det samsvarer med det nye passordet.</translation>
+<translation id="8891709362986793894">Organisasjonen din krever at du logger på Chromium</translation>
 <translation id="8907580949721785412">Chromium forsøker å vise passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="8931379085695076764">Chromium kan anslå interessene dine basert på nettleserloggen din fra de siste ukene. Denne informasjonen blir værende på enheten din.</translation>
 <translation id="8941642502866065432">Kan ikke oppdatere Chromium</translation>

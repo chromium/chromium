@@ -68,6 +68,7 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="1906696617298807388">Keď zadávate text do panela s adresou alebo vyhľadávacieho poľa, Chromium odosiela tieto informácie na Disk Google, aby ste mali k dispozícii návrhy položiek. Táto možnosť je v režime inkognito vypnutá.</translation>
 <translation id="1911763535808217981">Po vypnutí tejto možnosti sa budete môcť prihlásiť do webov Googlu (napríklad do Gmailu) bez prihlásenia do prehliadača Chromium</translation>
 <translation id="1929939181775079593">Chromium nereaguje. Chcete ho spustiť znova?</translation>
+<translation id="1933341829955786215">Vaša organizácia (<ph name="MANAGER" />) vyžaduje, aby ste sa prihlásili do prehliadača Chromium</translation>
 <translation id="193439633299369377">Aktualizácia sa použije po reštartovaní systému Chromium OS.</translation>
 <translation id="1951406923938785464">Prehliadač Chromium toto sťahovanie zablokoval, pretože používatelia tento typ súboru bežne nesťahujú a môže byť nebezpečný</translation>
 <translation id="1953553007165777902">Sťahuje sa… Zostávajúci čas: <ph name="MINUTE" /> min</translation>
@@ -577,6 +578,7 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8852026904190808918">V tomto jazyku sa zobrazujú ponuky, nastavenia, upozornenia a ďalší text v prehliadači Chromium</translation>
 <translation id="8862326446509486874">Nemáte potrebné práva na inštaláciu na úrovni systému. Skúste inštalátor spustiť znova ako správca.</translation>
 <translation id="8880203542552872219">Ak áno, upravte svoje uložené heslo v prehliadači Chromium tak, aby sa zhodovalo s týmto novým heslom.</translation>
+<translation id="8891709362986793894">Vaša organizácia vyžaduje, aby ste sa prihlásili do prehliadača Chromium</translation>
 <translation id="8907580949721785412">Prehliadač Chromium sa pokúša zobraziť heslá. Ak to chcete povoliť, zadajte svoje heslo systému Windows.</translation>
 <translation id="8931379085695076764">Chromium môže odhadnúť vaše záujmy na základe vašej histórie prehliadania z posledných niekoľkých týždňov. Tieto údaje zostávajú vo vašom zariadení.</translation>
 <translation id="8941642502866065432">Chromium sa nedá aktualizovať</translation>

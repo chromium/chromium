@@ -460,6 +460,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3098745985164956033">Nogle billeder sendes til Google for at give dig bedre beskrivelser</translation>
 <translation id="3114507951000454849">Læs dagens nyheder <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Meddelelser</translation>
+<translation id="3131961580615093332"><ph name="GIVEN_NAME" /> skiftede fane til "<ph name="TAB_NAME" />"</translation>
 <translation id="3148237711805373460">Gå derhen</translation>
 <translation id="314939179385989105">Chromes startside</translation>
 <translation id="3158667104057012316">Sorteres i manuel rækkefølge</translation>
@@ -637,6 +638,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4042941173059740150">Fortsæt til <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="404352903042073578">Unavngiven gruppe</translation>
 <translation id="4044708993631234325">Felt i bunden</translation>
+<translation id="4045441967987592849">Genåbn</translation>
 <translation id="4052419222954753986">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> standardfane med ny aktivitet i delte fanegrupper}one{<ph name="TABS_COUNT_MANY" /> standardfane med ny aktivitet i delte fanegrupper}other{<ph name="TABS_COUNT_MANY" /> standardfaner med ny aktivitet i delte fanegrupper}}</translation>
 <translation id="405365679581583349">Opdater Google Play-tjenester</translation>
 <translation id="405399507749852140">Få besked, hvis prisen falder på et website</translation>
@@ -844,6 +846,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="4943703118917034429">Virtual reality</translation>
 <translation id="4943872375798546930">Ingen resultater</translation>
 <translation id="4950924971025849764">Når du er logget ind på den samme Google-konto, kan andre enheder bruge denne telefon som en sikkerhedsnøgle.</translation>
+<translation id="4953833914914492602">Fanegruppen "<ph name="TAB_GROUP_NAME" />" er ikke længere tilgængelig</translation>
 <translation id="4957722034734105353">Flere oplysninger...</translation>
 <translation id="4961107849584082341">Oversæt denne side til et hvilket som helst sprog</translation>
 <translation id="4964614743143953889">Chrome advarer dig om usikre websites og downloads</translation>
@@ -957,6 +960,7 @@ Din Google-konto kan have andre former for browserhistorik, f.eks. søgninger og
 <translation id="5526281268548144413">Kan ikke lukkes i flere vinduer</translation>
 <translation id="5528925345478618296">{MINUTES,plural, =1{For # min. siden}one{# min ago}other{For # min. siden}}</translation>
 <translation id="5548606607480005320">Sikkerhedstjek</translation>
+<translation id="5551564597369878730"><ph name="GIVEN_NAME" /> blev tilmeldt fanegruppen "<ph name="TAB_GROUP_NAME" />"</translation>
 <translation id="5554520618550346933">Når du bruger en adgangskode, underretter Chrome dig, hvis den er blevet afsløret online. I forbindelse med dette krypteres dine adgangskoder og brugernavne, så de kan ikke læses af nogen, heller ikke Google.</translation>
 <translation id="5555525474779371165">Vælg din beskyttelse i Beskyttet browsing</translation>
 <translation id="5556459405103347317">Genindlæs</translation>
@@ -1618,6 +1622,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="8282297628636750033">Anvend Mørkt tema på websites</translation>
 <translation id="8282950411412455249">Gå til sikkerhedsindstillingerne</translation>
 <translation id="829672787777123339">Opretter forbindelse til din enhed…</translation>
+<translation id="8307517230426267469"><ph name="GIVEN_NAME" /> har fjernet fanen "<ph name="TAB_NAME" />"</translation>
 <translation id="831192587911042850">Føjer det aktuelle website til den liste over websites, du følger.</translation>
 <translation id="8342727528718219152">Chrome giver dig besked om websites, der muligvis sender for mange notifikationer</translation>
 <translation id="834313815369870491">Oversæt aldrig websites</translation>

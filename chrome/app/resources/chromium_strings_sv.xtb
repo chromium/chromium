@@ -69,6 +69,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="1906696617298807388">När du skriver i adressfältet eller sökrutan skickar Chromium det du skriver till Google Drive för att få förslag på objekt. Detta är inaktiverat i inkognitoläge.</translation>
 <translation id="1911763535808217981">Om du inaktiverar detta kan du logga in på Googles webbplatser, till exempel Gmail, utan att logga in i Chromium</translation>
 <translation id="1929939181775079593">Chromium svarar inte. Vill du starta om?</translation>
+<translation id="1933341829955786215">Din organisation, <ph name="MANAGER" />, kräver att du loggar in i Chromium</translation>
 <translation id="193439633299369377">Chromium OS måste startas om för att uppdateringen ska börja gälla.</translation>
 <translation id="1951406923938785464">Den här nedladdningen blockerades av Chromium eftersom filtypen inte brukar laddas ned och den kan vara farlig</translation>
 <translation id="1953553007165777902">Laddar ned … <ph name="MINUTE" /> minut/minuter återstår</translation>
@@ -578,6 +579,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="8852026904190808918">Menyer, inställningar, varningar och annan text i Chromium visas på det här språket</translation>
 <translation id="8862326446509486874">Du har inte behörighet att göra en installation på systemnivå. Försök köra installationsprogrammet igen som administratör.</translation>
 <translation id="8880203542552872219">Om så är fallet ska du redigera det sparade lösenordet i Chromium så att det matchar det nya lösenordet.</translation>
+<translation id="8891709362986793894">Organisationen kräver att du loggar in i Chromium</translation>
 <translation id="8907580949721785412">Skriv ditt lösenord i Windows om du vill tillåta att lösenord visas i Chromium.</translation>
 <translation id="8931379085695076764">Chromium kan göra en uppskattning av dina intressen utifrån din webbhistorik från de senaste veckorna. Denna information finns kvar på enheten.</translation>
 <translation id="8941642502866065432">Det gick inte att uppdatera Chromium</translation>

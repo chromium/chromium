@@ -1747,6 +1747,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4152318981910038897">{COUNT,plural, =1{Sivu 1}other{Sivu {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome vahvistaa nyt henkilöllisyytesi ennen maksutapojen täyttämistä. Voit muuttaa asetusta milloin tahansa täällä: <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="4159784952369912983">Violetti</translation>
+<translation id="4165422751765527461">Avaa ohjekeskusartikkelin uudella välilehdellä</translation>
 <translation id="4165986682804962316">Sivustoasetukset</translation>
 <translation id="4169535189173047238">Älä salli</translation>
 <translation id="4171400957073367226">Virheellinen vahvistusallekirjoitus.</translation>
@@ -2907,6 +2908,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6306713302480826305">Osoite poistetaan tältä ja muilta sisäänkirjautuneilta laitteilta</translation>
 <translation id="6307968763353904914">Pankkisi ei tarjoa tällä hetkellä virtuaalikortteja tälle maksutavalle. Voit kuitenkin maksaa kortilla (<ph name="CARD_LABEL" />) verkossa.</translation>
 <translation id="6311410654831092784">Kartonki</translation>
+<translation id="6311642842034740437">Nimetty sijainti</translation>
 <translation id="6312113039770857350">Verkkosivu ei ole saatavilla</translation>
 <translation id="6316110367871394043">Tiedostojen lataus tänne: <ph name="CLOUD_PROVIDER" /> on keskeytetty</translation>
 <translation id="6316723751983724988">Uutta: Täällä sovelletaan Chromen Family Link ‐valintoja</translation>

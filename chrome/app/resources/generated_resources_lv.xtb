@@ -1694,6 +1694,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2184515124301515068">Atļaut pārlūkam Chrome izvēlēties, kad vietnēs var atskaņot skaņu (ieteicams)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">No citas ierīces kopīgota lapa</translation>
+<translation id="2187569197737151508">Lai to atkārtoti iespējotu, piecreiz nospiediet atsoļa taustiņu.</translation>
 <translation id="2187675480456493911">Tīkls ir sinhronizēts ar citām ierīcēm jūsu kontā. Iestatījumi, kurus ir mainījuši citi lietotāji, netiks sinhronizēti. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="2187895286714876935">Servera sertifikāta importēšanas kļūda</translation>
 <translation id="2187906491731510095">Paplašinājumi ir atjaunināti</translation>
@@ -2099,6 +2100,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2460356425461033301">Varat dublēt savus pārlūka datus un izmantot tos jebkurā ierīcē.</translation>
 <translation id="2460482211073772897">Citās mapēs</translation>
 <translation id="2460826998961521840">Lai izmantotu piekļuves atslēgas, kas saglabātas jūsu Google kontā</translation>
+<translation id="2461045498706592033">Mape “<ph name="LOCAL_FOLDER" />” ir saglabāta tikai šajā ierīcē. Ja šo grāmatzīmi pārvietosiet uz mapi “<ph name="LOCAL_FOLDER" />”, tā vairs nebūs pieejama citās jūsu ierīcēs.</translation>
 <translation id="2461550163693930491">Neatļaut vietnēm ritināšanu un tālummaiņu kopīgotajās cilnēs</translation>
 <translation id="2461593638794842577">Varat izslēgt šo iestatījumu, lai saglabātu savas paroles tikai šajā ierīcē.</translation>
 <translation id="2462332841984057083">Lietotne Steam jau tiek iestatīta. Uzgaidiet, līdz iestatīšana ir pabeigta.</translation>
@@ -2352,6 +2354,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2645047101481282803">Jūsu ierīci pārvalda <ph name="PROFILE_NAME" />.</translation>
 <translation id="2645388244376970260">Notiek šīs cilnes apraide ierīcē <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">Vai saglabāt jūsu Google konta mapē?</translation>
 <translation id="264897126871533291">Protanomālija</translation>
 <translation id="2649045351178520408">Base64 kodēts ASCII, sertifikātu virkne</translation>
 <translation id="265156376773362237">Standarta iepriekšēja ielāde</translation>
@@ -2540,6 +2543,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2773288106548584039">Mantoto pārlūku atbalsts</translation>
 <translation id="2773621783913034737">Padarīt cilnes neaktīvas</translation>
 <translation id="2774876860084746535">Intelektuāls</translation>
+<translation id="2775047284666165174">Mape “<ph name="LOCAL_FOLDER" />” ir saglabāta tikai šajā ierīcē. Ja šo mapi pārvietosiet uz mapi “<ph name="LOCAL_FOLDER" />”, tā vairs nebūs pieejama citās jūsu ierīcēs.</translation>
 <translation id="2775104091073479743">Pirkstu nospiedumu rediģēšana</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{Paplašinājums “<ph name="EXTENSION" />” piekļuva ierīcēm}=1{Paplašinājums “<ph name="EXTENSION" />” piekļūst {0} ierīcei}zero{Paplašinājums “<ph name="EXTENSION" />” piekļūst {0} ierīcēm}one{Paplašinājums “<ph name="EXTENSION" />” piekļūst {0} ierīcei}other{Paplašinājums “<ph name="EXTENSION" />” piekļūst {0} ierīcēm}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Noņemt vienu neatbalstītu lietotni}zero{Noņemt # neatbalstītas lietotnes}one{Noņemt # neatbalstītu lietotni}other{Noņemt # neatbalstītas lietotnes}}</translation>
@@ -2728,6 +2732,7 @@ Servera ziņojums: <ph name="SERVER_MSG" /></translation>
 <translation id="2908122561561557160">Atvērt Word, Excel un PowerPoint failus</translation>
 <translation id="2908162660801918428">Multivides galerijas pievienošana pēc direktorija</translation>
 <translation id="2908358077082926882">Nospiediet “<ph name="CURRENTKEY" />” vēlreiz, lai noņemtu piešķiršanu un <ph name="RESPONSE" />.</translation>
+<translation id="2909487040556589351">Iegūstiet Chrome savā mobilajā ierīcē</translation>
 <translation id="2909506265808101667">Nevarēja izveidot savienojumu ar Google pakalpojumiem. Pārbaudiet tīkla savienojumu un mēģiniet vēlreiz. Kļūdas kods: <ph name="ERROR_CODE" />.</translation>
 <translation id="2910318910161511225">Izveidojiet savienojumu ar tīklu un mēģiniet vēlreiz.</translation>
 <translation id="2910678330803525229">Tagad varat sākt pārlūkošanu.</translation>
@@ -4827,6 +4832,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4434611816075088065">Šobrīd nekam citam nav jāpievērš uzmanība</translation>
 <translation id="443475966875174318">Nesaderīgu lietojumprogrammu atjaunināšana vai noņemšana</translation>
 <translation id="443503224864902151">Jūs tiksiet izrakstīts no lielākās daļas vietņu. Jūs paliksiet pierakstījies Google kontā, lai varētu dzēst sinhronizētos datus.</translation>
+<translation id="4436573279088520291">Aizvērt neizmantotās cilnes</translation>
 <translation id="4437879751057074691">Piedāvāt saglabāt paroles un piekļuves atslēgas</translation>
 <translation id="4437947179446780764">Pievienot pielāgota DNS pakalpojumu sniedzēju</translation>
 <translation id="4438043733494739848">Caurspīdīgs</translation>
@@ -4939,6 +4945,7 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4527929807707405172">Iespējot apgriezto ritināšanu. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="4528494169189661126">Tulkojuma ieteikums</translation>
 <translation id="4528638190900283934">Pierakstieties, lai piekļūtu papildu funkcijām</translation>
+<translation id="4529052777398765334">Šī mape ir saglabāta tikai šajā ierīcē. Ja šo mapi saglabāsiet mapē “<ph name="ACCOUNT_FOLDER" />”, tā tiks saglabāta arī jūsu kontā.</translation>
 <translation id="4529455689802245339">Iespējams, nedarbosies Chrome subtitri reāllaikā</translation>
 <translation id="4531451811601110068">Varat mēģināt vēlreiz vai sazināties ar administratoru, lai saņemtu palīdzību.</translation>
 <translation id="4531924570968473143">Kuru lietotāju vēlaties pievienot šai <ph name="DEVICE_TYPE" /> ierīcei?</translation>
@@ -5525,6 +5532,7 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="4955707703665801001">Funkcijas <ph name="FEATURE_NAME" /> redzamība</translation>
 <translation id="4955710816792587366">Izvēlieties PIN</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">Vai saglabāt mapē tikai šajā ierīcē?</translation>
 <translation id="4959262764292427323">Paroles tiek saglabātas jūsu Google kontā, lai jūs tās varētu izmantot jebkurā ierīcē.</translation>
 <translation id="4960020053211143927">Šis iestatījums netiek atbalstīts dažās lietotnēs.</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> — <ph name="PROFILE_NAME" /></translation>
@@ -8450,6 +8458,7 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="711840821796638741">Pārvaldīto grāmatzīmju rādīšana</translation>
 <translation id="711985611146095797">Šajā lapā varat pārvaldīt Google kontus, kuros esat pierakstījies. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="7120762240626567834">Bez VPN savienojuma pārlūka Chrome un Android datplūsma tiks bloķēta.</translation>
+<translation id="7120904433567247946">Šī grāmatzīme ir saglabāta tikai šajā ierīcē. Ja šo grāmatzīmi saglabāsiet mapē “<ph name="ACCOUNT_FOLDER" />”, tā tiks saglabāta arī jūsu kontā.</translation>
 <translation id="7121438501124788993">Izstrādātāja režīms</translation>
 <translation id="7121728544325372695">Viedās defises</translation>
 <translation id="7122605570852873914">Tomēr izrakstīties</translation>
@@ -9915,6 +9924,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="816704878106051517">{COUNT,plural, =1{tālruņa numurs}zero{# tālruņa numuru}one{# tālruņa numurs}other{# tālruņa numuri}}</translation>
 <translation id="8168435359814927499">Saturs</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Pievienot cilni lasīšanas sarakstam}zero{Pievienot cilnes lasīšanas sarakstam}one{Pievienot cilnes lasīšanas sarakstam}other{Pievienot cilnes lasīšanas sarakstam}}</translation>
+<translation id="8169177848833352618">Diemžēl šis dators neatbilst prasībām, kas jāizpilda, lai varētu instalēt Bruschetta. Kļūdas kods ir <ph name="ERROR" />.</translation>
 <translation id="8174047975335711832">Informācija par ierīci</translation>
 <translation id="8176332201990304395">Rozā un balta</translation>
 <translation id="8176529144855282213">Lai ieslēgtu piekļuvi mikrofonam, ieslēdziet fizisko mikrofona slēdzi ierīcē.</translation>

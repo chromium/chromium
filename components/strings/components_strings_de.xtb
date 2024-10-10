@@ -1744,6 +1744,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4152318981910038897">{COUNT,plural, =1{Seite 1}other{Seite {COUNT}}}</translation>
 <translation id="4154277373259957087">Chrome prüft jetzt deine Identität, bevor Zahlungsmethoden ausgefüllt werden. Du kannst dies jederzeit in den <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" /> aktualisieren.</translation>
 <translation id="4159784952369912983">Violett</translation>
+<translation id="4165422751765527461">Hilfeartikel wird in einem neuen Tab geöffnet</translation>
 <translation id="4165986682804962316">Website-Einstellungen</translation>
 <translation id="4169535189173047238">Nicht zulassen</translation>
 <translation id="4171400957073367226">Ungültige Bestätigungssignatur</translation>
@@ -2904,6 +2905,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6306713302480826305">Diese Adresse wird von diesem Gerät und von deinen anderen angemeldeten Geräten gelöscht</translation>
 <translation id="6307968763353904914">Deine Bank kann derzeit keine virtuellen Karten für diese Zahlungsmethode anbieten, du kannst aber deine <ph name="CARD_LABEL" /> für Onlinezahlungen verwenden.</translation>
 <translation id="6311410654831092784">Cardstock</translation>
+<translation id="6311642842034740437">Benannter Standort</translation>
 <translation id="6312113039770857350">Webseite nicht verfügbar</translation>
 <translation id="6316110367871394043">Dateiupload in <ph name="CLOUD_PROVIDER" /> wurde pausiert</translation>
 <translation id="6316723751983724988">Neu: Family Link-Optionen für Chrome werden hier angewendet</translation>

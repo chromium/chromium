@@ -69,6 +69,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="1906696617298807388">Pan fyddwch yn teipio yn y bar cyfeiriad neu'r blwch chwilio, bydd Chromium yn anfon yr hyn rydych yn ei deipio i Google Drive i gael awgrymiadau eitem. Mae hwn wedi'i ddiffodd yn y modd Anhysbys.</translation>
 <translation id="1911763535808217981">Drwy ddiffodd hyn, gallwch fewngofnodi i wefannau Google megis Gmail heb fewngofnodi i Chromium</translation>
 <translation id="1929939181775079593">Mae Chromium yn anymatebol. Ail-lansio nawr?</translation>
+<translation id="1933341829955786215">Mae eich sefydliad, <ph name="MANAGER" />, yn gofyn i chi fewngofnodi i Chromium</translation>
 <translation id="193439633299369377">Mae angen ailgychwyn ChromiumOS i gymhwyso'r diweddariad.</translation>
 <translation id="1951406923938785464">Gwnaeth Chromium rwystro'r lawrlwythiad hwn oherwydd nid yw'r math o ffeil yn cael ei lawrlwytho'n aml a gall fod yn beryglus</translation>
 <translation id="1953553007165777902">Wrthi'n lawrlwytho... Mae <ph name="MINUTE" /> o funudau ar ôl</translation>
@@ -578,6 +579,7 @@ Ni all Chromium adfer eich gosodiadau.</translation>
 <translation id="8852026904190808918">Defnyddir yr iaith hon i arddangos dewislenni, gosodiadau, rhybuddion, a thestun arall yn Chromium</translation>
 <translation id="8862326446509486874">Nid oes gennych yr hawliau priodol ar gyfer gosod ar lefel system. Rhowch gynnig arall ar redeg y gosodwr fel Gweinyddwr.</translation>
 <translation id="8880203542552872219">Os felly, golygwch eich cyfrinair sydd wedi'i gadw yn Chromium fel ei fod yn cyd-fynd â'ch cyfrinair newydd.</translation>
+<translation id="8891709362986793894">Mae eich sefydliad yn gofyn i chi fewngofnodi i Chromium</translation>
 <translation id="8907580949721785412">Mae Chromium yn ceisio dangos cyfrineiriau. Rhowch eich cyfrinair Windows i ganiatáu hyn.</translation>
 <translation id="8931379085695076764">Gall Chromium amcangyfrif eich diddordebau yn seiliedig ar eich hanes pori o'r ychydig wythnosau diwethaf. Mae'r wybodaeth hon yn aros ar eich dyfais.</translation>
 <translation id="8941642502866065432">Methu â diweddaru Chromium</translation>

@@ -1703,6 +1703,7 @@
 <translation id="2184515124301515068">Дозволете му на Chrome да избира кога сајтовите може да пуштаат звук (се препорачува)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">Страница споделена од друг уред</translation>
+<translation id="2187569197737151508">Притиснете Esc 5 пати за да ја овозможите повторно</translation>
 <translation id="2187675480456493911">Синхронизирано со други уреди на вашата сметка. Поставките што другите корисници ги измениле нема да се синхронизираат. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Грешка при увезување сертификат на сервер</translation>
 <translation id="2187906491731510095">Ажурирани екстензии</translation>
@@ -2111,6 +2112,7 @@
 <translation id="2460356425461033301">Направете бекап на податоците од прелистувачот и користете ги на сите уреди</translation>
 <translation id="2460482211073772897">Во други папки</translation>
 <translation id="2460826998961521840">За да ги користите криптографските клучеви зачувани во вашата сметка на Google</translation>
+<translation id="2461045498706592033">Папката <ph name="LOCAL_FOLDER" /> е зачувана само на овој уред. Ако го преместите обележувачов во <ph name="LOCAL_FOLDER" />, веќе нема да го добивате на другите уреди.</translation>
 <translation id="2461550163693930491">Не им дозволувај на сајтовите да лизгаат и зумираат споделени картички</translation>
 <translation id="2461593638794842577">Може да ја исклучите поставкава за зачувување на лозинките само на овој уред</translation>
 <translation id="2462332841984057083">Steam веќе се поставува. Почекајте да заврши поставувањето.</translation>
@@ -2364,6 +2366,7 @@
 <translation id="2645047101481282803">Со уредот управува <ph name="PROFILE_NAME" /></translation>
 <translation id="2645388244376970260">Се емитува картичкава на <ph name="DEVICE_NAME" /></translation>
 <translation id="2645435784669275700">ChromeOS</translation>
+<translation id="2646132387794831258">Да се зачува во папка во вашата сметка на Google?</translation>
 <translation id="264897126871533291">Протаномалија</translation>
 <translation id="2649045351178520408">Base64-шифриран ASCII, ланец на сертификати</translation>
 <translation id="265156376773362237">Стандардно вчитување однапред</translation>
@@ -2552,6 +2555,7 @@
 <translation id="2773288106548584039">Поддршка за застарени прелистувачи</translation>
 <translation id="2773621783913034737">Деактивирај ги картичките</translation>
 <translation id="2774876860084746535">Интелектуално</translation>
+<translation id="2775047284666165174">Папката <ph name="LOCAL_FOLDER" /> е зачувана само на овој уред. Ако ја преместите папкава во <ph name="LOCAL_FOLDER" />, веќе нема да ја добивате на другите уреди.</translation>
 <translation id="2775104091073479743">Уредување отпечатоци</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{Екстензијата „<ph name="EXTENSION" />“ пристапуваше до уреди}=1{Екстензијата „<ph name="EXTENSION" />“ пристапуваше до {0} уред}one{Екстензијата „<ph name="EXTENSION" />“ пристапуваше до {0} уред}other{Екстензијата „<ph name="EXTENSION" />“ пристапуваше до {0} уреди}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Отстрани 1 неподдржана апликација}one{Отстрани # неподдржана апликација}other{Отстрани # неподдржани апликации}}</translation>
@@ -2740,6 +2744,7 @@
 <translation id="2908122561561557160">Отворајте датотеки Word, Excel и PowerPoint</translation>
 <translation id="2908162660801918428">Додајте Галерија на медиуми според Директориум</translation>
 <translation id="2908358077082926882">Притиснете „<ph name="CURRENTKEY" />“ повторно за да го отстраните назначувањето и <ph name="RESPONSE" /></translation>
+<translation id="2909487040556589351">Преземете го Chrome на вашиот мобилен уред</translation>
 <translation id="2909506265808101667">Не може да се поврземе со услугите на Google. Проверете ја мрежната врска и обидете се повторно. Код за грешка: <ph name="ERROR_CODE" />.</translation>
 <translation id="2910318910161511225">Поврзете се на мрежа и обидете се повторно</translation>
 <translation id="2910678330803525229">Сега може да започнете со прелистување</translation>
@@ -4841,6 +4846,7 @@
 <translation id="4434611816075088065">Не е потребно никакво дејство во моментов</translation>
 <translation id="443475966875174318">Ажурирање или отстранување некомпатибилни апликации</translation>
 <translation id="443503224864902151">Ќе ве одјави од повеќето сајтови. Ќе останете најавени на вашата сметка на Google за да може да ги избришете синхронизираните податоци.</translation>
+<translation id="4436573279088520291">Затворете ги некористените картички</translation>
 <translation id="4437879751057074691">Нуди да се зачувуваат лозинки и криптографски клучеви</translation>
 <translation id="4437947179446780764">Додајте приспособен давател на услуги на DNS</translation>
 <translation id="4438043733494739848">Проѕирно</translation>
@@ -4953,6 +4959,7 @@
 <translation id="4527929807707405172">Овозможи обратно лизгање. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="4528494169189661126">Предлог за превод</translation>
 <translation id="4528638190900283934">Најавете се за дополнителни функции</translation>
+<translation id="4529052777398765334">Папкава е зачувана само на овој уред. Ако ја зачувате во <ph name="ACCOUNT_FOLDER" />, папкава ќе се зачува и во вашата сметка.</translation>
 <translation id="4529455689802245339">„Автоматски титлови“ на Chrome може да не функционира</translation>
 <translation id="4531451811601110068">Може да се обидете повторно или да контактирате со администраторот за помош</translation>
 <translation id="4531924570968473143">Кого сакате да го додадете на овој <ph name="DEVICE_TYPE" />?</translation>
@@ -5539,6 +5546,7 @@
 <translation id="4955707703665801001">Видливост за <ph name="FEATURE_NAME" /></translation>
 <translation id="4955710816792587366">Изберете PIN</translation>
 <translation id="4956847150856741762">1</translation>
+<translation id="4958009531430054995">Да се зачува во папка само на овој уред?</translation>
 <translation id="4959262764292427323">Лозинките се зачувуваат во вашата сметка на Google за да може да ги користите на кој било уред</translation>
 <translation id="4960020053211143927">Не е поддржани од некои апликации</translation>
 <translation id="4960294539892203357"><ph name="WINDOW_TITLE" /> - <ph name="PROFILE_NAME" /></translation>
@@ -8465,6 +8473,7 @@
 <translation id="711840821796638741">Покажи управувани обележувачи</translation>
 <translation id="711985611146095797">Страницава ви овозможува да управувате со вашите најавени сметки на Google. <ph name="LINK_BEGIN" />Дознај повеќе<ph name="LINK_END" /></translation>
 <translation id="7120762240626567834">Прелистувачот Chrome и сообраќајот на Android ќе бидат блокирани освен ако не се поврзе VPN</translation>
+<translation id="7120904433567247946">Обележувачов е зачуван само на овој уред. Ако го зачувате во <ph name="ACCOUNT_FOLDER" />, обележувачов ќе се зачува и во вашата сметка.</translation>
 <translation id="7121438501124788993">Режим на програмер</translation>
 <translation id="7121728544325372695">Паметни цртички</translation>
 <translation id="7122605570852873914">Сепак одјавете се</translation>
@@ -9930,6 +9939,7 @@
 <translation id="816704878106051517">{COUNT,plural, =1{телефонски број}one{# телефонски број}other{# телефонски броја}}</translation>
 <translation id="8168435359814927499">Содржина</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Додај ја картичката во списокот за читање}one{Додај ги картичките во списокот за читање}other{Додај ги картичките во списокот за читање}}</translation>
+<translation id="8169177848833352618">За жал, машинава не ги исполнува условите за инсталирање Bruschetta. Кодот за грешка е <ph name="ERROR" />.</translation>
 <translation id="8174047975335711832">Информации за уредот</translation>
 <translation id="8176332201990304395">Розова и бела</translation>
 <translation id="8176529144855282213">За да вклучите пристап до микрофонот, вклучете го физичкиот прекинувач за микрофон на уредот</translation>

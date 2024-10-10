@@ -370,6 +370,19 @@ Die Muster für diese Richtlinie dürfen allerdings keine „/path“- oder „@
       Wenn die Richtlinie nicht konfiguriert ist, gilt „<ph name="DEFAULT_POPUPS_SETTING_POLICY_NAME" />“ für alle Websites, sofern konfiguriert. Falls nicht, wird die persönliche Einstellung des Nutzers verwendet.
 
       Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.</translation>
+<translation id="1279062904578504503">Mit dieser Richtlinie wird die App „Inhaltsübertragung“ für verwaltete Nutzer aktiviert. Mit „Inhaltsübertragung“ können Nutzer ihre Daten von ihrem verwalteten Konto in ein Privatnutzerkonto übertragen.
+
+Wenn „<ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE" />“ auf „<ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE_TRUE" />“ festgelegt ist, wird die App „Inhaltsübertragung“ am Start- und Enddatum sowie zwischen diesen beiden Tagen gemäß Ortszeit angezeigt.
+
+Wenn „<ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE" />“ auf „<ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_IS_ENABLED_VALUE_FALSE" />“ festgelegt oder nicht konfiguriert ist, wird die App nicht angezeigt.
+
+Wenn „<ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" />“ nicht konfiguriert ist, wird die App bis zum Enddatum angezeigt.
+
+Wenn „<ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_END_DATE_VALUE" />“ nicht konfiguriert ist, wird die App ab dem Startdatum dauerhaft angezeigt.
+
+Wenn weder „<ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_START_DATE_VALUE" />“ noch „<ph name="CONTENT_TRANSFER_ENABLEMENT_STATUS_END_DATE_VALUE" />“ konfiguriert sind, wird die App dauerhaft angezeigt. Bei Ungültigkeit des Start- und Enddatums wird die App nicht angezeigt. Dies gilt auch, wenn die Datumsangaben nicht existieren oder das Enddatum vor dem Startdatum liegt.
+
+Die Datenübertragung mit Datenexport muss ebenfalls aktiviert sein, damit die App richtig funktioniert. Weitere Informationen findest du unter https://support.google.com/a/answer/6364687.</translation>
 <translation id="1285819498003746288">Die Event.path API ist nicht verfügbar.</translation>
 <translation id="1290722184971934486">Wenn die Richtlinie auf <ph name="BLOCK_WINDOW_MANAGEMENT_POLICY_NAME" /> (Wert 2) gesetzt ist, wird die Berechtigung für die Fensterverwaltung automatisch auf allen Websites verweigert. Dadurch wird die Fähigkeit von Websites eingeschränkt, Informationen zum Bildschirm des Geräts abzurufen und zu nutzen, um Fenster zu öffnen und zu platzieren oder auf bestimmten Bildschirmen den Vollbildmodus anzufordern.
 
@@ -763,6 +776,13 @@ Ist diese Richtlinie nicht konfiguriert, dürfen Nutzer Ausnahmen hinzufügen, u
       Wenn die Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAME" /> für die Website, falls konfiguriert. Andernfalls werden die Standardeinstellungen des Browsers verwendet und Nutzer können auswählen, für welche Websites sie die Berechtigung gewähren möchten.</translation>
 <translation id="1574258262373444557"><ph name="AES_KL_NAME" /> nicht als Algorithmus für die Verschlüsselung des Nutzerdatenspeichers verwenden</translation>
 <translation id="1575015449587326319">Konfigurationsrichtlinie für den Chrome Enterprise-Connector "OnFileDownloaded"</translation>
+<translation id="1578495851351913403">Wenn du diese Richtlinie konfigurierst, wird in den Displayeinstellungen unter jedem Display eine neue Ein/Aus-Schaltfläche angezeigt. Im normalen Spiegelmodus werden alle Displays auf ein Display gespiegelt, aber mit der neuen Ein/Aus-Schaltfläche können Nutzer ein Display von der Spiegelung ausschließen und als erweitertes Display anzeigen lassen.
+
+Wenn die Richtlinie aktiviert ist, wird für jedes Display die Option angezeigt, es vom Spiegelmodus auszuschließen. Der Nutzer kann dann auswählen, welches Display aktiviert werden soll.
+
+Wenn die Richtlinie nicht konfiguriert oder deaktiviert ist, wird die Ein/Aus-Schaltfläche ausgeblendet.
+
+Hinweis: Diese Richtlinie wirkt sich nur auf die Benutzeroberfläche aus. Die vorhandenen Einstellungen werden unter ChromeOS beibehalten, wenn die Ein/Aus-Schaltfläche ausgeblendet ist.</translation>
 <translation id="1583248206450240930">Standardmäßig <ph name="PRODUCT_FRAME_NAME" /> verwenden</translation>
 <translation id="1584963377073400553">Mit der Funktion „Designs mit KI erstellen“ können Nutzer individuelle Designs und Hintergründe erstellen, indem sie aus einer Liste von Optionen eine Vorauswahl treffen.
 
@@ -1700,6 +1720,9 @@ Wenn die Richtlinie nicht konfiguriert oder deaktiviert ist, ist eine Dateiüber
 <translation id="2258126710006312594">Nutzern mit Remote-Zugriff die Übertragung von Dateien vom/zum Host gestatten</translation>
 <translation id="225830954785359083">Verhindern, dass Seiten beim Entfernen Pop-ups anzeigen</translation>
 <translation id="2261648512244797294">Veraltetes Drucken über Privet deaktivieren</translation>
+<translation id="2262153510491523927">Wenn die Richtlinie auf „False“ gesetzt ist, werden Links standardmäßig in Android-Apps geöffnet.
+Ist sie auf „True“ gesetzt, werden alle Links standardmäßig im Chrome-Browser geöffnet.
+Wenn die Richtlinie nicht konfiguriert ist, werden Links standardmäßig in Android-Apps geöffnet.</translation>
 <translation id="2263881357524831360">Verwendung von Drittanbieter-Passwortmanagern in <ph name="PRODUCT_NAME" /> unter <ph name="ANDROID_NAME" /> erlauben</translation>
 <translation id="2264286153777425328">Liste der Aktionen, die ausgeführt werden sollen, wenn das Zeitlimit in der Richtlinie <ph name="IDLE_TIMEOUT_POLICY_NAME" /> erreicht ist.
 
@@ -2506,6 +2529,7 @@ Diese Richtlinie kann nur als Cloud-Nutzerrichtlinie konfiguriert werden.</trans
           Falls mehrere Außerkraftsetzungen gesendet werden, wird der neueste gültige Eintrag angewendet.</translation>
 <translation id="2901725272378498025">Sicherheitswarnungen für Befehlszeilen-Flags aktivieren</translation>
 <translation id="2905984450136807296">Cachelebensdauer für Authentifizierungsdaten</translation>
+<translation id="2906532308470098188">Autofill-Vorschläge zulassen und KI‑Modelle verbessern.</translation>
 <translation id="2906874737073861391">Liste der AppPack-Erweiterungen</translation>
 <translation id="2908277604670530363">Maximale Anzahl gleichzeitiger Verbindungen zum Proxyserver</translation>
 <translation id="2912366658685903301">Farbe des Browserdesigns ändern</translation>
@@ -2755,6 +2779,18 @@ Dieses Verhalten entspricht <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING
 <translation id="3092059499596000593">Systemstandarddrucker als Standardeinstellung in der Druckvorschau verwenden</translation>
 <translation id="309416443108680956">Legt fest, was passiert, wenn ein Nutzer der sich über ein Sicherheitstoken (z. B. mit einer Smartcard) authentifiziert hat, dieses Token während einer Sitzung entfernt. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" />: Es geschieht gar nichts. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOCK" />: Der Bildschirm ist gesperrt, bis der Nutzer noch einmal eine Authentifizierung durchführt. <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_LOGOUT" />: Die Sitzung wird beendet und der Nutzer abgemeldet. Ist die Richtlinie nicht festgelegt, ist standardmäßig <ph name="SECURITY_TOKEN_SESSION_BEHAVIOR_IGNORE" /> ausgewählt.</translation>
 <translation id="3096595567015595053">Liste der aktivierten Plug-ins</translation>
+<translation id="30986061650205557">Bei diesen Funktionen in den Entwicklertools von <ph name="PRODUCT_NAME" /> werden Modelle basierend auf generativer KI eingesetzt, um zusätzliche Debugging-Informationen bereitzustellen. Zur Verwendung dieser Funktionen muss <ph name="PRODUCT_NAME" /> Daten wie Fehlermeldungen, Stacktraces, Code-Snippets und Netzwerkanfragen erheben und an einen Google-Server senden, auf dem ein Modell basierend auf generativer KI ausgeführt wird. Antworttext oder Authentifizierungs- und Cookie-Header in Netzwerkanfragen sind nicht in den Daten enthalten, die an den Server gesendet werden.
+
+„0“ = Die Funktion wird für Nutzer aktiviert und es werden relevante Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben und Quellmaterialien sein. Die Funktion wird möglicherweise manuell überprüft. Dies dient dann ausschließlich dazu, KI‑Modelle zu verbessern. „0“ ist der Standardwert, sofern unten nicht anders angegeben.
+
+„1“ = Die Funktion wird für Nutzer aktiviert, aber es werden keine Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, und für Konten einer Bildungseinrichtung, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+„2“ = Die Funktion wird deaktiviert.
+
+Zu den auf generativer KI basierenden Funktionen der Entwicklertools gehören folgende:
+
+– Console Insights: erklärt Konsolenmeldungen und bietet Vorschläge zum Beheben von Konsolenfehlern.
+– KI‑Unterstützung: bietet Nutzern KI‑gestützte Informationen zu CSS‑Styles.</translation>
 <translation id="309885424548342662">Microsoft®-Cloudauthentifizierung aktivieren</translation>
 <translation id="3101035417394748390">Die maximale Größe in Byte, die zwischen dem Client und dem Host über die Synchronisierung der Zwischenablage übertragen werden kann</translation>
 <translation id="3101501961102569744">Auswählen, wie Proxyserver-Einstellungen angegeben werden</translation>
@@ -3130,6 +3166,7 @@ Ist die Richtlinie deaktiviert, sind keine Wortvorschläge bei Nutzung der physi
 <translation id="3380801667330555918">Voreingestellte Konfiguration für Kerberos-Tickets ändern</translation>
 <translation id="338149029069528354">Lokale Nutzerdaten nicht löschen</translation>
 <translation id="3381968327636295719">Standardmäßig Host-Browser verwenden</translation>
+<translation id="3383857097929929678">Links standardmäßig in Android-Apps öffnen</translation>
 <translation id="3387117557265712991">Anwendungsgebundene Verschlüsselung deaktivieren</translation>
 <translation id="3387211681524224831">Wenn die Richtlinie aktiviert ist, wird der Browserverlauf nicht gespeichert, die Tab-Synchronisierung ist deaktiviert und Nutzer können diese Einstellung nicht ändern.
 
@@ -3218,6 +3255,7 @@ Wenn die Richtlinie nicht konfiguriert ist, wird die Browsernavigation verhinder
       Folgendes passiert, wenn die Richtlinie nicht konfiguriert ist oder keine Zeiträume enthält:
       Automatische Prüfungen auf Updates werden zwar nicht durch diese Richtlinie blockiert, können jedoch durch andere Richtlinien blockiert werden.
       Bis M88 ist diese Funktion nur auf <ph name="PRODUCT_OS_NAME" />-Geräten aktiviert, die als automatisch startende Kioske konfiguriert sind. Andere Geräte werden durch diese Richtlinie nicht eingeschränkt. Ab M89 ist diese Richtlinie jedoch auf allen <ph name="PRODUCT_OS_NAME" />-Geräten aktiviert.</translation>
+<translation id="3456705177754697344">Nutzern keinen Zugriff auf „Display im Spiegelmodus ausschließen“ gewähren</translation>
 <translation id="3459509316159669723">Drucken</translation>
 <translation id="3460485593332210712">Chrome for Testing zulassen</translation>
 <translation id="3461279434465463233">Status der Stromversorgung melden</translation>
@@ -4741,6 +4779,13 @@ Die Einstellung <ph name="CHROME_OS_RELEASE_CHANNEL_POLICY_NAME" /> ist nur wirk
 <translation id="4661889655253181651">Unter "Inhaltseinstellungen" kannst du angeben, wie Inhalte bestimmter Typen (z. B. Cookies, Bilder oder JavaScript) verarbeitet werden.</translation>
 <translation id="4663509616441994711">Zusammenführung von Cloud-Richtlinien auf Nutzerebene deaktivieren.</translation>
 <translation id="4663588423815449593">Erzwingen, dass <ph name="PEPPER_NAME" /> den alten Videodecoder verwendet.</translation>
+<translation id="4664668637713610113">Mit dieser Richtlinie werden die Einstellungen für Autofill-Vorschläge aktiviert.
+
+ „0“ = Die Funktion wird für Nutzer aktiviert und es werden relevante Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern. Relevante Daten können je nach Funktion Prompts, Eingaben, Ausgaben und Quellmaterialien sein. Die Funktion wird möglicherweise manuell überprüft. Dies dient dann ausschließlich dazu, KI‑Modelle zu verbessern. „0“ ist der Standardwert, sofern unten nicht anders angegeben.
+
+ „1“ = Die Funktion wird für Nutzer aktiviert, aber es werden keine Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern. „1“ ist der Standardwert für Unternehmensnutzer, die über die <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" /> verwaltet werden, und für Konten einer Bildungseinrichtung, die über <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /> verwaltet werden.
+
+ „2“ = Die Funktion wird deaktiviert.</translation>
 <translation id="4665897631924472251">Verwaltungseinstellungen für Erweiterungen</translation>
 <translation id="4666930704271463612">Gibt die Untergruppe der Druckserver an, von denen Serverdrucker abgefragt werden.
 
@@ -5565,6 +5610,8 @@ Ist die Richtlinie nicht konfiguriert, wird der Standardwert von 0 Grad verwend
 <translation id="5257395339965216304">Daten für gehostete Apps</translation>
 <translation id="5258445772095084618">Zulassen, dass nicht verknüpfte Nutzer virtuelle Maschinen verwenden, die für Linux-Apps benötigt werden</translation>
 <translation id="5262320080678421295">Zertifikaten nicht vertrauen, die von der Legacy-PKI der Symantec Corporation ausgestellt wurden</translation>
+<translation id="5265613843467285323">Ein/Aus-Schaltfläche für „Display im Spiegelmodus ausschließen“ anzeigen.</translation>
+<translation id="5272332743749468542">Nutzern Zugriff auf „Display im Spiegelmodus ausschließen“ gewähren</translation>
 <translation id="5273744932022326215">Hiermit wird die Bedienungshilfe "Mauszeiger hervorheben" auf dem Anmeldebildschirm aktiviert.
 
           Wird diese Richtlinie auf "true" gesetzt, ist die Bedienungshilfe "Mauszeiger hervorheben" auf dem Anmeldebildschirm immer aktiviert.
@@ -5651,6 +5698,7 @@ Weitere Informationen zu sicheren Kontexten findest du unter https://www.w3.org/
 <translation id="5321624917465764266">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können der Browser‑ und der Downloadverlauf in Chrome gelöscht werden und Nutzer können diese Einstellung nicht ändern.
 
 Ist die Richtlinie deaktiviert, können der Browser‑ und der Downloadverlauf nicht gelöscht werden. Dies bedeutet jedoch nicht unbedingt, dass die Verläufe erhalten bleiben. Möglicherweise sind Nutzer berechtigt, die Dateien der Verlaufsdatenbanken direkt zu bearbeiten oder zu löschen. Außerdem kann der Browser jederzeit selbst einige oder alle Verlaufselemente archivieren oder nach deren Ablaufdatum löschen.</translation>
+<translation id="5321859912083346284">Autofill-Vorschläge nicht zulassen.</translation>
 <translation id="5323200200131319468">Gesprochenes Feedback auf dem Anmeldebildschirm aktivieren</translation>
 <translation id="5323271643727095577">Dialogfeld zum Abbrechen nicht anzeigen, wenn „event.preventDefault()“ für ein „beforeunload“-Ereignis aufgerufen wird. Dialogfeld zum Abbrechen anzeigen, wenn „beforeunload event.returnValue“ der leere String für ein „beforeunload“-Ereignis ist.</translation>
 <translation id="5324430722441910403">Einstellungen für die Websitesuche</translation>
@@ -8000,6 +8048,7 @@ Wenn diese Richtlinie auf „<ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_
 <translation id="7047495632846973438">Gibt an, ob die Richtlinie für Berechtigungen zur Display-Erfassung ausgewählt ist oder übersprungen wird.</translation>
 <translation id="7055022222176591388">Veraltete <ph name="FLASH_PLUGIN_NAME" />-Plug-ins nicht zulassen</translation>
 <translation id="7056040036973126753">Abhängig von der Richtlinie für Chrome-Nutzermesswerte werden möglicherweise Daten zur Domainzuverlässigkeit an Google gesendet</translation>
+<translation id="7056873645513072903">Einstellungen für Autofill-Vorschläge</translation>
 <translation id="7062803946218028349">Aktivieren des Phone Hub zulassen</translation>
 <translation id="7066292150801784098">Nicht zulassen, dass Remote-Nutzer bei der Remote-Unterstützung mit Administratorfenstern interagieren können</translation>
 <translation id="706669471845501145">Anzeige von Desktop-Benachrichtigungen durch Websites zulassen</translation>
@@ -8440,6 +8489,7 @@ Wenn diese Richtlinie auf „false“ gesetzt ist, ist das alte Verhalten aktivi
       Ist die Richtlinie deaktiviert oder nicht konfiguriert, zeichnen angemeldete Geräte den TPM-Sicherheitsstatus nicht auf und melden ihn auch nicht.
       Ausnahme: TPM-Informationen werden für M95 und niedriger von <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> gesteuert.</translation>
 <translation id="739556497251174388">Verwenden der <ph name="PRODUCT_OS_NAME" />-Anmeldedaten für die Netzwerkauthentifizierung zulassen</translation>
+<translation id="7400208209734208176">Links standardmäßig im Chrome-Browser öffnen</translation>
 <translation id="7402257017733669351">Erstellen von dynamischem Code im Browserprozess verhindern</translation>
 <translation id="7402772023599097052">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden Sicherheitswarnungen angezeigt, wenn Chrome mit potenziell schädlichen Befehlszeilen-Flags gestartet wird.
 
@@ -8919,6 +8969,7 @@ Weitere Informationen zur Richtlinie <ph name="IEEM_SITELIST_POLICY" /> von Inte
       Ist sie auf „true“ gesetzt, werden die Netzwerkereignisse des Geräts gemeldet.</translation>
 <translation id="780629758750905699">Hinzufügen von Family Link-Konten auf diesem Gerät erlauben</translation>
 <translation id="7807139251387225825">Liste von Typen, die von der Synchronisierung ausgeschlossen werden sollen</translation>
+<translation id="7808219497358175018">Konfigurieren, wann das <ph name="PRODUCT_OS_NAME" />-Tool „Inhaltsübertragung“ verfügbar ist</translation>
 <translation id="781268256210530471">Plug-in-Einstellungen</translation>
 <translation id="7816326058023670173">Secret, das zwischen Geräten von Kindern und Eltern geteilt wird.</translation>
 <translation id="7818131573217430250">Standardstatus für den Modus mit hohem Kontrast auf der Anmeldeseite festlegen</translation>
@@ -10408,6 +10459,7 @@ Ist die Richtlinie deaktiviert, sind alle Integrationen deaktiviert.</translatio
       Sollte das URL-Muster sowohl in dieser Richtlinie als auch in der Richtlinie „<ph name="SENSORS_BLOCKED_FOR_URLS_POLICY_NAME" />“ enthalten sein, hat letztere Vorrang und der Zugriff auf Bewegungs- und Lichtsensoren wird blockiert.
 
       Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />-Mustern findest du unter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.</translation>
+<translation id="900032518062285306">Autofill-Vorschläge zulassen, ohne KI‑Modelle zu verbessern.</translation>
 <translation id="9003823644527627017">Bruschetta-VMs unter <ph name="PRODUCT_OS_NAME" /> konfigurieren</translation>
 <translation id="9004469022085379212">Wenn die Richtlinie aktiviert ist, kann das Gerät unter <ph name="PRODUCT_OS_NAME" /> virtuelle Maschinen ausführen. <ph name="VIRTUAL_MACHINES_ALLOWED_POLICY_NAME" /> und <ph name="CROSTINI_ALLOWED_POLICY_NAME" /> müssen aktiviert sein, um <ph name="PRODUCT_CROSTINI_NAME" /> zu verwenden. Ist die Richtlinie deaktiviert, kann das Gerät keine virtuellen Maschinen ausführen. Wenn sie deaktiviert wird, wird die Richtlinie beim Starten neuer virtueller Maschinen angewandt. Die bereits ausgeführten sind nicht betroffen.
 

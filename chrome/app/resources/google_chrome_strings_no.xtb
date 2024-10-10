@@ -400,6 +400,7 @@
 <translation id="6060842547856900641">Åpne Lens</translation>
 <translation id="6069027071882229820">Kopier som bilde</translation>
 <translation id="6070348360322141662">Google Chrome krypterer dataene dine for å øke sikkerheten</translation>
+<translation id="6075300983329039771">Organisasjonen din, <ph name="MANAGER" />, krever at du logger på Chrome</translation>
 <translation id="608006075545470555">Legg til en jobbprofil i denne nettleseren</translation>
 <translation id="6097822892606850415">Skriv med selvsikkerhet ved hjelp av AI</translation>
 <translation id="6113794647360055231">Nå er Chrome blitt enda bedre</translation>
@@ -538,6 +539,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="7670287553302121848">Chrome-kontoen krever ny autentisering</translation>
 <translation id="769538538642757151">Chrome gir deg beskjed hvis noe må gjennomgås</translation>
 <translation id="77283119132245232">Leverer tjenester for systemsporing for <ph name="BROWSER_NAME" />. Hvis denne tjenesten er deaktivert, inkluderer ikke ytelsessporingene som nettleseren oppretter, systemomfattende hendelser som kontekstbytte og hendelser for trådklarhet.</translation>
+<translation id="7736869414036750079">Organisasjonen din krever at du logger på Chrome</translation>
 <translation id="7747138024166251722">Installasjonsprogrammet kunne ikke opprette en midlertidig katalog. Kontroller at du har nok ledig diskplass og tillatelse til å installere programvare.</translation>
 <translation id="7761834446675418963">Klikk på navnet ditt for å åpne Chrome og starte surfingen.</translation>
 <translation id="7763983146198734674">Lagre passordene dine, og få tilgang til dem uansett hvor du er</translation>

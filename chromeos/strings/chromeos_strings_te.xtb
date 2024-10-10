@@ -20,6 +20,7 @@
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ఫైర్‌వాల్ గుర్తించబడింది</translation>
 <translation id="1075811647922107217">పేజీ సైజ్‌</translation>
+<translation id="108084407137234521"><ph name="MIN_WORD_LENGTH" /> కంటే తక్కువ పదాలు ఉన్న టైప్ చేసిన మాటల ఫైల్‌ను సారాంశీకరించడం సాధ్యం కాలేదు</translation>
 <translation id="1082009148392559545">స్క్రీన్ సేవర్‌ను డౌన్‌లోడ్ చేస్తోంది</translation>
 <translation id="1094693127011229778">IP అడ్రస్ అందుబాటులో లేదు</translation>
 <translation id="1100902271996134409">ఇమేజ్‌లు క్రియేట్ అవుతున్నాయి...</translation>
@@ -413,6 +414,7 @@
 <translation id="3031560714565892478">పరికర రకం వీడియో కెమెరా.</translation>
 <translation id="3042927241478734594">రికార్డింగ్ నుండి ఎగ్జిట్ కావాలా?</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
+<translation id="3055176406666937744"><ph name="MAX_WORD_LENGTH" /> కంటే ఎక్కువ పదాలు ఉన్న టైప్ చేసిన మాటల ఫైల్‌ను సారాంశీకరించడం సాధ్యం కాలేదు</translation>
 <translation id="3056720590588772262">ముగింపుపాయింట్</translation>
 <translation id="3060579846059757016">అవుట్‌లైన్‌లు</translation>
 <translation id="3061850252076394168">'వినడానికి-ఎంచుకోండి'ని ఎనేబుల్ చేయండి</translation>
@@ -449,6 +451,7 @@
 <translation id="3226657629376379887">లేఅవుట్ చర్యల మెనూ</translation>
 <translation id="3227186760713762082"><ph name="CATEGORY_TEXT" /> విలువను <ph name="CONVERSION_RATE" />తో భాగించండి</translation>
 <translation id="3237710083340813756">మళ్లీ రాయండి</translation>
+<translation id="3245518008592055173"><ph name="MIN_WORD_LENGTH" /> కంటే తక్కువ పదాలు ఉన్న టైప్ చేసిన మాటల ఫైల్ కోసం పేర్లను క్రియేట్ చేయడం సాధ్యం కాదు</translation>
 <translation id="3246869037381808805">1 రోజుకు పైగా ఉన్న ప్రింట్ టాస్క్‌లు తీసివేయబడతాయి</translation>
 <translation id="324961752321393509">మీ అడ్మినిస్ట్రేటర్ ఈ యాప్‌ను మూసివేయడానికి అనుమతించడం లేదు</translation>
 <translation id="3263941347294171263">అప్‌డేట్ ప్రాసెస్‌ను కొనసాగించడానికి, <ph name="DEVICE_NAME" />‌ను అన్‌ప్లగ్ చేసి, మళ్లీ ప్లగ్ చేయండి</translation>
@@ -609,6 +612,7 @@
 <translation id="409427325554347132">టెస్ట్ వివరాలను సేవ్ చేయండి</translation>
 <translation id="409469431304488632">ప్రయోగం</translation>
 <translation id="4095829376260267438">WPA2WPA3</translation>
+<translation id="4105182082354119881"><ph name="MAX_WORD_LENGTH" /> కంటే ఎక్కువ పదాలు ఉన్న టైప్ చేసిన మాటల ఫైల్ కోసం పేర్లను క్రియేట్ చేయడం సాధ్యం కాదు</translation>
 <translation id="4110686435123617899"><ph name="TITLE" /> <ph name="DESC" /> ఆల్బమ్‌ను ఎంచుకోండి</translation>
 <translation id="4111761024568264522">USB టచ్‌ప్యాడ్</translation>
 <translation id="4113067922640381334">మీకు ఇప్పుడు కొత్త <ph name="BEGIN_LINK_WALLPAPER_SUBPAGE" />వాల్‌పేపర్‌ల<ph name="END_LINK_WALLPAPER_SUBPAGE" />కు యాక్సెస్ ఉంది</translation>

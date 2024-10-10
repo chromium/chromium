@@ -1692,6 +1692,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2184515124301515068">Utzi Chrome-k erabaki dezan zer webguneri baimenduko dion soinua erreproduzitzea (gomendatua)</translation>
 <translation id="2186206192313702726">Google Lens</translation>
 <translation id="2186711480981247270">Beste gailu batetik partekatutako orria</translation>
+<translation id="2187569197737151508">Berriro gaitzeko, sakatu Ihes 5 aldiz</translation>
 <translation id="2187675480456493911">Kontuko beste gailu batzuekin sinkronizatuta dago. Ez dira sinkronizatuko beste erabiltzaileek aldatutako ezarpenak. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Errore bat gertatu da zerbitzariaren ziurtagiria inportatzean</translation>
 <translation id="2187906491731510095">Eguneratu dira luzapenak</translation>
@@ -2729,6 +2730,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2908122561561557160">Ireki Word-eko, Excel-eko eta PowerPoint-eko fitxategiak</translation>
 <translation id="2908162660801918428">Gehitu multimedia galeria direktorioaren arabera</translation>
 <translation id="2908358077082926882">Esleipena kentzeko eta <ph name="RESPONSE" />, sakatu "<ph name="CURRENTKEY" />" berriro</translation>
+<translation id="2909487040556589351">Lortu Chrome gailu mugikorrean</translation>
 <translation id="2909506265808101667">Ezin izan da konektatu Google-ren zerbitzuetara. Egiaztatu sarera konektatuta zaudela eta saiatu berriro. Errore-kodea: <ph name="ERROR_CODE" />.</translation>
 <translation id="2910318910161511225">Konektatu sare batera eta saiatu berriro</translation>
 <translation id="2910678330803525229">Has zaitezke arakatzen</translation>
@@ -4828,6 +4830,7 @@ Besteak beste, instalatutako softwareari, fitxategiei, arakatzaileari eta sistem
 <translation id="4434611816075088065">Ez duzu beste ezer egin behar oraingoz</translation>
 <translation id="443475966875174318">Eguneratu edo kendu aplikazio bateraezinak</translation>
 <translation id="443503224864902151">Webgune gehienetako saioa amaitzen du. Google-ko kontuan saioa hasita edukitzen jarraituko duzu, sinkronizatutako datuak ezabatu ahal izateko.</translation>
+<translation id="4436573279088520291">Itxi erabili gabeko fitxak</translation>
 <translation id="4437879751057074691">Eskaini pasahitzak eta sarbide-gakoak gordetzeko aukera</translation>
 <translation id="4437947179446780764">Gehitu DNSen zerbitzu-hornitzaile pertsonalizatu bat</translation>
 <translation id="4438043733494739848">Gardena</translation>
@@ -9912,6 +9915,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="816704878106051517">{COUNT,plural, =1{telefono-zenbaki bat}other{# telefono-zenbaki}}</translation>
 <translation id="8168435359814927499">Edukia</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Gehitu fitxa irakurketa-zerrendan}other{Gehitu fitxak irakurketa-zerrendan}}</translation>
+<translation id="8169177848833352618">Tamalez, makina honek ez ditu betetzen Bruschetta instalatzeko eskakizunak. Errore-kodea <ph name="ERROR" /> da.</translation>
 <translation id="8174047975335711832">Gailuaren informazioa</translation>
 <translation id="8176332201990304395">Arrosa eta zuria</translation>
 <translation id="8176529144855282213">Mikrofonoa erabiltzeko baimena emateko, aktibatu gailuko mikrofonoaren etengailu fisikoa</translation>
