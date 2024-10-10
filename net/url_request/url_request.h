@@ -904,9 +904,9 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // Storage Access (if possible).
   void RetryWithStorageAccess();
 
-  // Called by URLRequestJob to allow interception when a redirect occurs.
-  void NotifyReceivedRedirect(const RedirectInfo& redirect_info,
-                              bool* defer_redirect);
+  // Called by URLRequestJob when a redirect occurs. Notifies delegates, and
+  // follows the redirect (possibly asynchronously), unless they block it.
+  void ReceivedRedirect(RedirectInfo redirect_info);
 
  private:
   friend class URLRequestJob;
@@ -1070,6 +1070,10 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   // location.  It is true from the time the headers complete until a
   // new request begins.
   bool is_redirecting_ = false;
+
+  // Set when a redirect is deferred. Redirects are deferred after validity
+  // checks are performed, so this field must not be modified.
+  std::optional<RedirectInfo> deferred_redirect_info_;
 
   // Number of times we're willing to redirect.  Used to guard against
   // infinite redirects.
