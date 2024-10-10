@@ -22196,6 +22196,23 @@
             ]
         }
     ],
+    "SigninInterceptSimpleButtons": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SigninInterceptSimpleButtons"
+                    ]
+                }
+            ]
+        }
+    ],
     "SimplifyLoadingTransparentPlaceholderImage": [
         {
             "platforms": [

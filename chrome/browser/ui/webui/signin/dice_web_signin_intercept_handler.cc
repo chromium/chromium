@@ -41,6 +41,10 @@
 
 namespace {
 
+BASE_FEATURE(kSigninInterceptSimpleButtons,
+             "SigninInterceptSimpleButtons",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 constexpr char kEnterprizeBadgeSource[] = "cr:domain";
 constexpr char kSupervisedBadgeSource[] = "cr20:kite";
 
@@ -422,10 +426,15 @@ std::string DiceWebSigninInterceptHandler::GetConfirmButtonLabel() {
             : IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CONFIRM_SWITCH_BUTTON_LABEL);
   }
 
-  return l10n_util::GetStringUTF8(
-      switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
-          ? IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CREATE_PROFILE_BUTTON_LABEL
-          : IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_NEW_PROFILE_BUTTON_LABEL);
+  int button_label =
+      IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_NEW_PROFILE_BUTTON_LABEL;
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
+      !base::FeatureList::IsEnabled(kSigninInterceptSimpleButtons)) {
+    button_label =
+        IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CREATE_PROFILE_BUTTON_LABEL;
+  }
+
+  return l10n_util::GetStringUTF8(button_label);
 }
 
 std::string DiceWebSigninInterceptHandler::GetCancelButtonLabel() {
@@ -435,10 +444,13 @@ std::string DiceWebSigninInterceptHandler::GetCancelButtonLabel() {
         IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_SWITCH_BUTTON_LABEL);
   }
 
-  return l10n_util::GetStringUTF8(
-      switches::IsExplicitBrowserSigninUIOnDesktopEnabled()
-          ? IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_STAY_HERE_BUTTON_LABEL
-          : IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_BUTTON_LABEL);
+  int button_label = IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_BUTTON_LABEL;
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
+      !base::FeatureList::IsEnabled(kSigninInterceptSimpleButtons)) {
+    button_label = IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_STAY_HERE_BUTTON_LABEL;
+  }
+
+  return l10n_util::GetStringUTF8(button_label);
 }
 
 std::string DiceWebSigninInterceptHandler::GetManagedDisclaimerText() {
