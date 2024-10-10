@@ -4289,6 +4289,7 @@ chromium-metrics-reviews@google.com.
       name="Net.TrustTokens.NetErrorForTrustTokenOperation.Failure"/>
   <affected-histogram
       name="Net.TrustTokens.NetErrorForTrustTokenOperation.Success"/>
+  <affected-histogram name="Net.TrustTokens.OperationOutcome"/>
   <affected-histogram name="Net.TrustTokens.RequestHelperFactoryOutcome"/>
 </histogram_suffixes>
 
