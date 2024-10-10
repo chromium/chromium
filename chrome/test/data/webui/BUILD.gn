@@ -140,14 +140,11 @@ source_set("browser_tests") {
     }
   } else {
     sources += [
+      "inline_login/inline_login_browsertest.cc",
       "intro/intro_browsertest.cc",
       "signin/profile_picker_browsertest.cc",
       "signin/signin_browsertest.cc",
     ]
-  }
-
-  if (is_win || is_mac) {
-    sources += [ "inline_login/inline_login_browsertest.cc" ]
   }
 
   if (enable_dice_support || is_chromeos_ash) {
@@ -160,13 +157,10 @@ source_set("browser_tests") {
 
   if (is_win || is_mac || is_linux) {
     sources += [
+      "app_home/app_home_browsertest.cc",
       "app_settings/app_settings_browsertest.cc",
       "whats_new/whats_new_browsertest.cc",
     ]
-  }
-
-  if (is_win || is_mac || is_linux) {
-    sources += [ "app_home/app_home_browsertest.cc" ]
   }
 
   if (!is_chromeos_lacros) {
@@ -663,20 +657,17 @@ generate_grd("build_grd") {
     ]
   } else {
     deps += [
+      "inline_login:build_grdp",
       "intro:build_grdp",
       "signin:build_grdp",
       "welcome:build_grdp",
     ]
     grdp_files += [
+      "$target_gen_dir/inline_login/resources.grdp",
       "$target_gen_dir/intro/resources.grdp",
-      "$target_gen_dir/welcome/resources.grdp",
       "$target_gen_dir/signin/resources.grdp",
+      "$target_gen_dir/welcome/resources.grdp",
     ]
-  }
-
-  if (is_win || is_mac) {
-    deps += [ "inline_login:build_grdp" ]
-    grdp_files += [ "$target_gen_dir/inline_login/resources.grdp" ]
   }
 
   if (!is_chromeos_lacros) {
