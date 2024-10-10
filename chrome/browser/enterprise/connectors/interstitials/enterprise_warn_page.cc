@@ -17,8 +17,6 @@
 #include "components/security_interstitials/core/common_string_util.h"
 #include "components/security_interstitials/core/urls.h"
 #include "components/strings/grit/components_strings.h"
-#include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/web_contents.h"
 #include "net/base/net_errors.h"
 #include "ui/base/l10n/l10n_util.h"
 
