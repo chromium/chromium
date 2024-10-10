@@ -3077,8 +3077,11 @@ void ResourceFetcher::MaybeSaveResourceToStrongReference(Resource* resource) {
 
 void ResourceFetcher::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel level) {
-  document_resource_strong_refs_.clear();
-  document_resource_strong_refs_total_size_ = 0;
+  if (base::FeatureList::IsEnabled(
+          features::kReleaseResourceStrongReferencesOnMemoryPressure)) {
+    document_resource_strong_refs_.clear();
+    document_resource_strong_refs_total_size_ = 0;
+  }
 }
 
 void ResourceFetcher::MaybeRecordLCPPSubresourceMetrics(

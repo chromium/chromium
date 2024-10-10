@@ -471,6 +471,13 @@ BASE_FEATURE(kFencedFramesEnforceFocus,
              "FencedFramesEnforceFocus",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Whether a memory pressure signal in a renderer should be forwarded to Blink
+// isolates. Forwarding the signal triggers a GC (critical) or starts
+// incremental marking (moderate), see `v8::Heap::CheckMemoryPressure`.
+BASE_FEATURE(kForwardMemoryPressureToBlinkIsolates,
+             "ForwardMemoryPressureToBlinkIsolates",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables the Digital Credential API.
 BASE_FEATURE(kWebIdentityDigitalCredentials,
              "WebIdentityDigitalCredentials",

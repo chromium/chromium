@@ -459,8 +459,6 @@ class CONTENT_EXPORT RenderThreadImpl
   void OnRendererBackgrounded();
   void OnRendererForegrounded();
 
-  void ReleaseFreeMemory();
-
   void OnSyncMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
 

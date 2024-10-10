@@ -386,7 +386,10 @@ bool MemoryCache::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,
 
 void MemoryCache::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel level) {
-  ClearStrongReferences();
+  if (base::FeatureList::IsEnabled(
+          features::kReleaseResourceStrongReferencesOnMemoryPressure)) {
+    ClearStrongReferences();
+  }
 }
 
 void MemoryCache::SavePageResourceStrongReferences(

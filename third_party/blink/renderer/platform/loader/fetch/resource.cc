@@ -36,10 +36,12 @@
 #include <memory>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-shared.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
@@ -867,7 +869,10 @@ void Resource::Prune() {
 }
 
 void Resource::OnPurgeMemory() {
-  Prune();
+  if (base::FeatureList::IsEnabled(
+          features::kReleaseResourceDecodedDataOnMemoryPressure)) {
+    Prune();
+  }
 }
 
 void Resource::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,

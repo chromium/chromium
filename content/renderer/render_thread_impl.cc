@@ -1635,7 +1635,14 @@ void RenderThreadImpl::OnMemoryPressure(
     blink::WebMemoryPressureListener::OnMemoryPressure(memory_pressure_level);
   if (memory_pressure_level ==
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
-    ReleaseFreeMemory();
+    discardable_memory_allocator_->ReleaseFreeMemory();
+
+    // Do not call into blink if it is not initialized.
+    if (blink_platform_impl_) {
+      // Purge Skia font cache, resource cache, and image filter.
+      SkGraphics::PurgeAllCaches();
+      blink::WebMemoryPressureListener::OnPurgeMemory();
+    }
   }
 }
 
@@ -1773,18 +1780,6 @@ void RenderThreadImpl::OnRendererForegrounded() {
   process_foregrounded_count_++;
 }
 
-void RenderThreadImpl::ReleaseFreeMemory() {
-  TRACE_EVENT0("blink", "RenderThreadImpl::ReleaseFreeMemory()");
-  discardable_memory_allocator_->ReleaseFreeMemory();
-
-  // Do not call into blink if it is not initialized.
-  if (blink_platform_impl_) {
-    // Purge Skia font cache, resource cache, and image filter.
-    SkGraphics::PurgeAllCaches();
-    blink::WebMemoryPressureListener::OnPurgeMemory();
-  }
-}
-
 void RenderThreadImpl::OnSyncMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
   v8::MemoryPressureLevel v8_memory_pressure_level =
@@ -1798,7 +1793,10 @@ void RenderThreadImpl::OnSyncMemoryPressure(
     v8_memory_pressure_level = v8::MemoryPressureLevel::kModerate;
 #endif  // !BUILDFLAG(ALLOW_CRITICAL_MEMORY_PRESSURE_HANDLING_IN_FOREGROUND)
 
-  blink::MemoryPressureNotificationToAllIsolates(v8_memory_pressure_level);
+  if (base::FeatureList::IsEnabled(
+          features::kForwardMemoryPressureToBlinkIsolates)) {
+    blink::MemoryPressureNotificationToAllIsolates(v8_memory_pressure_level);
+  }
 }
 
 void RenderThreadImpl::OnRendererInterfaceReceiver(

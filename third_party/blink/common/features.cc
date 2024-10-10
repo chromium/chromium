@@ -2651,6 +2651,17 @@ BASE_FEATURE(kWebviewAccelerateSmallCanvases,
              "WebviewAccelerateSmallCanvases",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Whether `blink::MemoryCache` and `blink::ResourceFetcher` release their
+// strong references to resources on memory pressure.
+BASE_FEATURE(kReleaseResourceStrongReferencesOnMemoryPressure,
+             "ReleaseResourceStrongReferencesOnMemoryPressure",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Whether `blink::Resource` deletes its decoded data on memory pressure.
+BASE_FEATURE(kReleaseResourceDecodedDataOnMemoryPressure,
+             "ReleaseResourceDecodedDataOnMemoryPressure",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When adding new features or constants for features, please keep the features
 // sorted by identifier name (e.g. `kAwesomeFeature`), and the constants for
 // that feature grouped with the associated feature.
