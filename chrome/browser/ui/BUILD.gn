@@ -3541,8 +3541,6 @@ static_library("ui") {
       "views/frame/windows_caption_button.h",
       "views/frame/windows_icon_painter.cc",
       "views/frame/windows_icon_painter.h",
-      "views/frame/windows_tab_search_caption_button.cc",
-      "views/frame/windows_tab_search_caption_button.h",
       "views/network_profile_bubble_view.cc",
       "views/status_icons/status_icon_win.cc",
       "views/status_icons/status_icon_win.h",
