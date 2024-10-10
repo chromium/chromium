@@ -31,6 +31,7 @@
 #include "chromeos/ash/components/dbus/fwupd/fwupd_request.h"
 #include "chromeos/ash/components/fwupd/fake_fwupd_download_client.h"
 #include "chromeos/ash/components/fwupd/histogram_util.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
@@ -774,6 +775,7 @@ class FirmwareUpdateManagerTest : public testing::Test {
   std::deque<std::unique_ptr<dbus::Response>> dbus_responses_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
+  ash::ScopedStubInstallAttributes test_install_attributes_;
 };
 
 TEST_F(FirmwareUpdateManagerTest, CorrectMockInstance) {

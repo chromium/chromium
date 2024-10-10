@@ -41,6 +41,7 @@ source_set("unit_tests") {
     "//ash/webui/firmware_update_ui/mojom",
     "//base/test:test_support",
     "//chromeos/ash/components/dbus/fwupd",
+    "//chromeos/ash/components/install_attributes:test_support",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/network:test_support",
     "//dbus",

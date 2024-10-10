@@ -20,6 +20,7 @@
 #include "chromeos/ash/components/dbus/fwupd/fake_fwupd_client.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_properties_dbus.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_request.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/device_event_log/device_event_log.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -497,6 +498,10 @@ class FwupdClientImpl : public FwupdClient {
       return;
     }
 
+    const bool allow_internal =
+        features::IsFlexFirmwareUpdateEnabled() &&
+        !InstallAttributes::Get()->IsEnterpriseManaged();
+
     FwupdDeviceList devices;
     while (array_reader.HasMoreData()) {
       // Parse device description.
@@ -509,8 +514,7 @@ class FwupdClientImpl : public FwupdClient {
       std::optional<bool> is_internal = dict.FindBool(kIsInternalKey);
       const std::string* name = dict.FindString("Name");
       // Ignore internal devices unless firmware updates for Flex are enabled.
-      if (is_internal.has_value() && is_internal.value() &&
-          !features::IsFlexFirmwareUpdateEnabled()) {
+      if (!allow_internal && is_internal.has_value() && is_internal.value()) {
         if (name) {
           FIRMWARE_LOG(DEBUG) << "Ignoring internal device: " << *name;
         } else {
