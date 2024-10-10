@@ -411,6 +411,17 @@ void UnmapNow(uintptr_t reservation_start,
     *offset_ptr++ = kOffsetTagNotAllocated;
   }
 
+#if PA_CONFIG(ENABLE_SHADOW_METADATA)
+  // UnmapShadowMetadata must be done before unreserving memory, because
+  // Unreserved memory may be allocated by PartitionDirectMap() in another
+  // thread. In the case, MapShadowMetadata() and UnmapShadowMetadata()
+  // will be executed for the same system pages in wrong order. It causes
+  // memory access error.
+  if (internal::PartitionAddressSpace::IsShadowMetadataEnabled(pool)) {
+    PartitionAddressSpace::UnmapShadowMetadata(reservation_start, pool);
+  }
+#endif
+
 #if !PA_BUILDFLAG(HAS_64_BIT_POINTERS)
   AddressPoolManager::GetInstance().MarkUnused(pool, reservation_start,
                                                reservation_size);
@@ -419,12 +430,6 @@ void UnmapNow(uintptr_t reservation_start,
   // After resetting the table entries, unreserve and decommit the memory.
   AddressPoolManager::GetInstance().UnreserveAndDecommit(
       pool, reservation_start, reservation_size);
-
-#if PA_CONFIG(ENABLE_SHADOW_METADATA)
-  if (internal::PartitionAddressSpace::IsShadowMetadataEnabled(pool)) {
-    PartitionAddressSpace::UnmapShadowMetadata(reservation_start, pool);
-  }
-#endif
 }
 
 }  // namespace
