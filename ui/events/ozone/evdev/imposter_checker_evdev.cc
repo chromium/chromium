@@ -67,7 +67,8 @@ bool ImposterCheckerEvdev::IsSuspectedMouseImposter(
     return false;
   }
 
-  if (!converter->HasMouse() || (!converter->HasKeyboard() && !shared_phys)) {
+  if (!converter->HasMouse() || (!converter->HasKeyboard() && !shared_phys) ||
+      converter->type() == InputDeviceType::INPUT_DEVICE_INTERNAL) {
     return false;
   }
   return true;
