@@ -186,7 +186,7 @@ BASE_FEATURE(kNoPreReadMainDll,
 // notifications from a given origin with a single tap (with an option to undo).
 BASE_FEATURE(kNotificationOneTapUnsubscribe,
              "NotificationOneTapUnsubscribe",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 base::FeatureParam<bool> kNotificationOneTapUnsubscribeUseServiceIntentParam{
     &kNotificationOneTapUnsubscribe, "use_service_intent", false};
 #endif
