@@ -68,7 +68,8 @@ class ONCUtilsTest : public testing::Test {
   std::unique_ptr<ash::NetworkHandlerTestHelper> network_handler_test_helper_;
 };
 
-TEST_F(ONCUtilsTest, ImportNetworksForUser) {
+TEST_F(ONCUtilsTest,
+       ImportNetworksForUser_ImportONCShouldNotOverrideExistingPolicy) {
   const char kPolicyGuid[] = "policy_guid";
   const char kWifiSSID[] = "wifi_ssid";
   const char kWifiPassphrase[] = "test_phassphrase";
@@ -123,6 +124,48 @@ TEST_F(ONCUtilsTest, ImportNetworksForUser) {
       properties->FindString(shill::kSecurityClassProperty);
   ASSERT_TRUE(security);
   EXPECT_EQ(*security, shill::kSecurityClassWep);
+}
+
+TEST_F(ONCUtilsTest, ImportNetworksForUser_ImportONCWithRemoveField) {
+  const char kPolicyGuid[] = "policy_guid";
+  const char kWifiSSID[] = "wifi_ssid";
+  const char kWifiPassphrase[] = "test_phassphrase";
+  const char kWifiOncName[] = "wifi_onc_name";
+
+  base::Value::Dict wifi_config =
+      base::Value::Dict()
+          .Set(::onc::network_config::kGUID, kPolicyGuid)
+          .Set(::onc::network_config::kName, kWifiOncName)
+          .Set(::onc::network_config::kType, ::onc::network_config::kWiFi)
+          .Set(::onc::kRemove, true)
+          .Set(::onc::network_config::kWiFi,
+               base::Value::Dict()
+                   .Set(::onc::wifi::kSSID, kWifiSSID)
+                   .Set(::onc::wifi::kPassphrase, kWifiPassphrase)
+                   .Set(::onc::wifi::kSecurity, ::onc::wifi::kWEP_PSK));
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->GetActiveUser();
+
+  // Set user policy
+  NetworkHandler::Get()->managed_network_configuration_handler()->SetPolicy(
+      ::onc::ONC_SOURCE_USER_POLICY, user->username_hash(), base::Value::List(),
+      base::Value::Dict());
+
+  // Set shared policy
+  NetworkHandler::Get()->managed_network_configuration_handler()->SetPolicy(
+      ::onc::ONC_SOURCE_DEVICE_POLICY, std::string(), base::Value::List(),
+      base::Value::Dict());
+
+  std::string error;
+  ImportNetworksForUser(user, base::Value::List().Append(wifi_config.Clone()),
+                        &error);
+  ASSERT_TRUE(error.empty());
+
+  // Verify the no network should be imported.
+  std::string service_path =
+      network_handler_test_helper_->service_test()->FindServiceMatchingGUID(
+          kPolicyGuid);
+  ASSERT_TRUE(service_path.empty());
 }
 
 TEST_F(ONCUtilsTest, ProxySettingsToProxyConfig) {
