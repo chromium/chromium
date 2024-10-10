@@ -12,8 +12,6 @@
 #include "ash/webui/boca_ui/mojom/boca.mojom.h"
 #include "ash/webui/boca_ui/provider/classroom_page_handler_impl.h"
 #include "ash/webui/boca_ui/provider/tab_info_collector.h"
-#include "base/functional/callback_forward.h"
-#include "chromeos/ash/components/boca/boca_session_manager.h"
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/session_api/session_client_impl.h"
@@ -26,12 +24,8 @@ namespace ash::boca {
 
 class BocaUI;
 
-class BocaAppHandler : public mojom::PageHandler,
-                       public mojom::Page,
-                       public BocaSessionManager::Observer {
+class BocaAppHandler : public mojom::PageHandler, public mojom::Page {
  public:
-  using ActivityInterceptorCallback =
-      base::OnceCallback<void(std::vector<mojom::IdentifiedActivityPtr>)>;
   BocaAppHandler(
       BocaUI* boca_ui,
       mojo::PendingReceiver<mojom::PageHandler> receiver,
@@ -60,24 +54,11 @@ class BocaAppHandler : public mojom::PageHandler,
                            UpdateCaptionConfigCallback callback) override;
 
   void OnStudentActivityUpdated(
-      std::vector<mojom::IdentifiedActivityPtr> activities) override;
+      std::vector<mojom::IdentifiedActivityPtr> activities) override {}
 
   void OnSessionConfigUpdated(mojom::ConfigPtr config) override {}
 
-  // BocaSessionManager::Observer
-  void OnConsumerActivityUpdated(
-      const std::map<std::string, ::boca::StudentStatus>& activities) override;
-
   void NotifyLocalCaptionConfigUpdate(mojom::CaptionConfigPtr config);
-  void OnSessionStarted(const std::string& session_id,
-                        const ::boca::UserIdentity& producer) override {}
-  void OnSessionEnded(const std::string& session_id) override {}
-
-  // For testing.
-  // Mojo service binding is not invoked in unit test. So we manually override a
-  // interceptor for testing.
-  void setActivityInterceptorCallbackForTesting(
-      ActivityInterceptorCallback callback);
 
  private:
   void OnUpdatedOnTaskConfig(UpdateOnTaskConfigCallback callback,
@@ -101,7 +82,6 @@ class BocaAppHandler : public mojom::PageHandler,
   ::boca::UserIdentity user_identity_;
   mojo::Receiver<boca::mojom::PageHandler> receiver_;
   mojo::Remote<boca::mojom::Page> remote_;
-  ActivityInterceptorCallback test_activity_callback_;
   raw_ptr<BocaUI> boca_ui_;  // Owns |this|.
   base::WeakPtrFactory<BocaAppHandler> weak_ptr_factory_{this};
 };

@@ -39,7 +39,6 @@ using ::testing::_;
 using ::testing::DoAll;
 using ::testing::Invoke;
 using ::testing::IsNull;
-using ::testing::NiceMock;
 using ::testing::NotNull;
 using ::testing::Return;
 using ::testing::StrictMock;
@@ -201,21 +200,17 @@ class BocaAppPageHandlerTest : public testing::Test {
         std::make_unique<StrictMock<MockSessionClientImpl>>(nullptr);
     session_client_impl_ = session_client_impl.get();
 
-    boca_app_client_ = std::make_unique<NiceMock<MockBocaAppClient>>();
+    boca_app_client_ = std::make_unique<StrictMock<MockBocaAppClient>>();
     EXPECT_CALL(*boca_app_client_, AddSessionManager(_)).Times(1);
 
     session_manager_ =
         std::make_unique<StrictMock<MockSessionManager>>(session_client_impl_);
 
-    // Register self as listener.
-    ON_CALL(*boca_app_client(), GetSessionManager())
-        .WillByDefault(Return(session_manager()));
-
     boca_app_handler_ = std::make_unique<BocaAppHandler>(
         nullptr, remote_.BindNewPipeAndPassReceiver(),
         // TODO(b/359929870):Setting nullptr for other dependencies for now.
         // Adding test case for classroom and tab info.
-        pending_receiver_.InitWithNewPipeAndPassRemote(), nullptr, nullptr,
+        receiver_.InitWithNewPipeAndPassRemote(), nullptr, nullptr,
         std::move(session_client_impl));
   }
 
@@ -223,20 +218,18 @@ class BocaAppPageHandlerTest : public testing::Test {
   MockSessionClientImpl* session_client_impl() { return session_client_impl_; }
   MockBocaAppClient* boca_app_client() { return boca_app_client_.get(); }
   MockSessionManager* session_manager() { return session_manager_.get(); }
-  BocaAppHandler* boca_app_handler() { return boca_app_handler_.get(); }
+
+  std::unique_ptr<BocaAppHandler> boca_app_handler_;
 
  private:
   base::test::TaskEnvironment task_environment_;
-  // Among all BocaAppHandler dependencies,BocaAppClient should construct early
-  // and destruct last.
-  std::unique_ptr<NiceMock<MockBocaAppClient>> boca_app_client_;
-  std::unique_ptr<BocaAppHandler> boca_app_handler_;
-  std::unique_ptr<StrictMock<MockSessionManager>> session_manager_;
   mojo::Remote<mojom::PageHandler> remote_;
-  mojo::PendingReceiver<mojom::Page> pending_receiver_;
+  mojo::PendingReceiver<mojom::Page> receiver_;
+  raw_ptr<StrictMock<MockSessionClientImpl>> session_client_impl_;
+  std::unique_ptr<StrictMock<MockBocaAppClient>> boca_app_client_;
+  std::unique_ptr<StrictMock<MockSessionManager>> session_manager_;
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
       fake_user_manager_;
-  raw_ptr<StrictMock<MockSessionClientImpl>> session_client_impl_;
   signin::IdentityTestEnvironment identity_test_env_;
 };
 
@@ -364,10 +357,13 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithFullInput) {
           })));
 
   // Verify local events dispatched
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .Times(2)
+      .WillRepeatedly(Return(session_manager()));
   EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
   EXPECT_CALL(*session_manager(), UpdateCurrentSession(_, true)).Times(1);
 
-  boca_app_handler()->CreateSession(config->Clone(), future_1.GetCallback());
+  boca_app_handler_->CreateSession(config->Clone(), future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
   EXPECT_TRUE(future_1.Get());
 }
@@ -410,12 +406,14 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithCritialInputOnly) {
             request->callback().Run(std::make_unique<::boca::Session>());
           })));
 
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .WillOnce(Return(session_manager()));
   EXPECT_CALL(*session_manager(), UpdateCurrentSession(_, true)).Times(1);
 
   // Verify local events not dispatched
   EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(0);
 
-  boca_app_handler()->CreateSession(config.Clone(), future_1.GetCallback());
+  boca_app_handler_->CreateSession(config.Clone(), future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
   EXPECT_TRUE(future_1.Get());
 }
@@ -476,8 +474,10 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
 
   EXPECT_CALL(*session_manager(), UpdateCurrentSession(NotNull(), false))
       .Times(1);
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .WillOnce(Return(session_manager()));
 
-  boca_app_handler()->GetSession(future_1.GetCallback());
+  boca_app_handler_->GetSession(future_1.GetCallback());
 
   auto result = std::move(future_1.Take()->get_config());
 
@@ -527,8 +527,10 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithPartialInputTest) {
 
   EXPECT_CALL(*session_manager(), UpdateCurrentSession(NotNull(), false))
       .Times(1);
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .WillOnce(Return(session_manager()));
 
-  boca_app_handler()->GetSession(future_1.GetCallback());
+  boca_app_handler_->GetSession(future_1.GetCallback());
 
   auto result = std::move(future_1.Take()->get_config());
   EXPECT_EQ(120, result->session_duration.InSeconds());
@@ -550,7 +552,8 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithHTTPError) {
       })));
 
   EXPECT_CALL(*session_manager(), UpdateCurrentSession(_, false)).Times(0);
-  boca_app_handler()->GetSession(future_1.GetCallback());
+  EXPECT_CALL(*boca_app_client(), GetSessionManager()).Times(0);
+  boca_app_handler_->GetSession(future_1.GetCallback());
   auto result = future_1.Take();
   ASSERT_TRUE(result->is_error());
   EXPECT_EQ(mojom::GetSessionError::kHTTPError, result->get_error());
@@ -571,8 +574,9 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithNullPtrInputTest) {
 
   EXPECT_CALL(*session_manager(), UpdateCurrentSession(IsNull(), false))
       .Times(1);
-
-  boca_app_handler()->GetSession(future_1.GetCallback());
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .WillOnce(Return(session_manager()));
+  boca_app_handler_->GetSession(future_1.GetCallback());
 
   auto result = future_1.Take();
   ASSERT_TRUE(result->is_error());
@@ -594,8 +598,9 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithNonActiveSessionTest) {
 
   EXPECT_CALL(*session_manager(), UpdateCurrentSession(IsNull(), false))
       .Times(1);
-
-  boca_app_handler()->GetSession(future_1.GetCallback());
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .WillOnce(Return(session_manager()));
+  boca_app_handler_->GetSession(future_1.GetCallback());
   auto result = future_1.Take();
   ASSERT_TRUE(result->is_error());
   EXPECT_EQ(mojom::GetSessionError::kEmpty, result->get_error());
@@ -619,8 +624,10 @@ TEST_F(BocaAppPageHandlerTest,
       })));
   EXPECT_CALL(*session_manager(), UpdateCurrentSession(NotNull(), false))
       .Times(1);
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .WillOnce(Return(session_manager()));
 
-  boca_app_handler()->GetSession(future_1.GetCallback());
+  boca_app_handler_->GetSession(future_1.GetCallback());
   auto result = future_1.Take();
   ASSERT_FALSE(result->is_error());
 }
@@ -633,6 +640,9 @@ TEST_F(BocaAppPageHandlerTest, EndSessionSucceed) {
 
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .WillOnce(Return(session.get()));
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .Times(2)
+      .WillRepeatedly(Return(session_manager()));
   EXPECT_CALL(*session_manager(), UpdateCurrentSession(_, true)).Times(1);
 
   // Page handler callback.
@@ -657,7 +667,7 @@ TEST_F(BocaAppPageHandlerTest, EndSessionSucceed) {
             request->callback().Run(std::make_unique<::boca::Session>());
           })));
 
-  boca_app_handler()->EndSession(future_1.GetCallback());
+  boca_app_handler_->EndSession(future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
   EXPECT_FALSE(future_1.Get().has_value());
 }
@@ -670,6 +680,8 @@ TEST_F(BocaAppPageHandlerTest, EndSessionWithHTTPFailure) {
 
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .WillOnce(Return(session.get()));
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .WillOnce(Return(session_manager()));
 
   // Page handler callback.
   base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
@@ -694,39 +706,46 @@ TEST_F(BocaAppPageHandlerTest, EndSessionWithHTTPFailure) {
                 base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
           })));
 
-  boca_app_handler()->EndSession(future_1.GetCallback());
+  boca_app_handler_->EndSession(future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
   EXPECT_TRUE(future_1.Get().has_value());
 }
 
 TEST_F(BocaAppPageHandlerTest, EndSessionWithEmptyResponse) {
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .WillOnce(Return(session_manager()));
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .WillOnce(Return(nullptr));
 
   // API callback.
   base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
 
-  boca_app_handler()->EndSession(future_1.GetCallback());
+  boca_app_handler_->EndSession(future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
   EXPECT_EQ(mojom::UpdateSessionError::kInvalid, future_1.Get().value());
 }
 
 TEST_F(BocaAppPageHandlerTest, EndSessionWithNonActiveResponse) {
   ::boca::Session session;
-
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .WillOnce(Return(session_manager()));
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .WillOnce(Return(&session));
 
   // API callback.
   base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
 
-  boca_app_handler()->EndSession(future_1.GetCallback());
+  boca_app_handler_->EndSession(future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
   EXPECT_EQ(mojom::UpdateSessionError::kInvalid, future_1.Get().value());
 }
 
 TEST_F(BocaAppPageHandlerTest, UpdateOnTaskConfigSucceed) {
   auto session = GetCommonActiveSessionProto();
+
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .Times(2)
+      .WillRepeatedly(Return(session_manager()));
   EXPECT_CALL(*session_manager(), UpdateCurrentSession(_, true)).Times(1);
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .WillOnce(Return(&session));
@@ -760,36 +779,39 @@ TEST_F(BocaAppPageHandlerTest, UpdateOnTaskConfigSucceed) {
             request->callback().Run(std::make_unique<::boca::Session>(
                 GetCommonActiveSessionProto()));
           })));
-  boca_app_handler()->UpdateOnTaskConfig(GetCommonTestLockOnTaskConfig(),
-                                         future_1.GetCallback());
+  boca_app_handler_->UpdateOnTaskConfig(GetCommonTestLockOnTaskConfig(),
+                                        future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
   EXPECT_FALSE(future_1.Get().has_value());
 }
 
 TEST_F(BocaAppPageHandlerTest, UpdateOnTaskConfigWithEmptySession) {
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .WillOnce(Return(session_manager()));
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .WillOnce(Return(nullptr));
 
   // API callback.
   base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
 
-  boca_app_handler()->UpdateOnTaskConfig(GetCommonTestLockOnTaskConfig(),
-                                         future_1.GetCallback());
+  boca_app_handler_->UpdateOnTaskConfig(GetCommonTestLockOnTaskConfig(),
+                                        future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
   EXPECT_EQ(mojom::UpdateSessionError::kInvalid, future_1.Get().value());
 }
 
 TEST_F(BocaAppPageHandlerTest, UpdateOnTaskConfigWithNonActiveSession) {
   ::boca::Session non_active_session;
-
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .WillOnce(Return(session_manager()));
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .WillOnce(Return(&non_active_session));
 
   // API callback.
   base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
 
-  boca_app_handler()->UpdateOnTaskConfig(GetCommonTestLockOnTaskConfig(),
-                                         future_1.GetCallback());
+  boca_app_handler_->UpdateOnTaskConfig(GetCommonTestLockOnTaskConfig(),
+                                        future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
   EXPECT_EQ(mojom::UpdateSessionError::kInvalid, future_1.Get().value());
 }
@@ -799,6 +821,9 @@ TEST_F(BocaAppPageHandlerTest, UpdateOnTaskConfigWithHTTPFailure) {
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .Times(2)
       .WillRepeatedly(Return(&session));
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .Times(2)
+      .WillRepeatedly(Return(session_manager()));
 
   // Page handler callback.
   base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
@@ -821,41 +846,50 @@ TEST_F(BocaAppPageHandlerTest, UpdateOnTaskConfigWithHTTPFailure) {
                 base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
           })));
 
-  boca_app_handler()->UpdateOnTaskConfig(GetCommonTestLockOnTaskConfig(),
-                                         future_1.GetCallback());
+  boca_app_handler_->UpdateOnTaskConfig(GetCommonTestLockOnTaskConfig(),
+                                        future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
   EXPECT_EQ(mojom::UpdateSessionError::kHTTPError, future_1.Get().value());
 }
 
 TEST_F(BocaAppPageHandlerTest, UpdateCaptionWithEmptySession) {
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .Times(2)
+      .WillRepeatedly(Return(session_manager()));
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .WillOnce(Return(nullptr));
   EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
   // API callback.
   base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
 
-  boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
-                                          future_1.GetCallback());
+  boca_app_handler_->UpdateCaptionConfig(GetCommonCaptionConfig(),
+                                         future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
   EXPECT_EQ(mojom::UpdateSessionError::kInvalid, future_1.Get().value());
 }
 
 TEST_F(BocaAppPageHandlerTest, UpdateCaptionWithNonActiveSession) {
   ::boca::Session session;
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .Times(2)
+      .WillRepeatedly(Return(session_manager()));
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .WillOnce(Return(&session));
   EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
   // API callback.
   base::test::TestFuture<std::optional<mojom::UpdateSessionError>> future_1;
 
-  boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
-                                          future_1.GetCallback());
+  boca_app_handler_->UpdateCaptionConfig(GetCommonCaptionConfig(),
+                                         future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
   EXPECT_EQ(mojom::UpdateSessionError::kInvalid, future_1.Get().value());
 }
 
 TEST_F(BocaAppPageHandlerTest, UpdateCaptionConfigSucceed) {
   auto session = GetCommonActiveSessionProto();
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .Times(3)
+      .WillRepeatedly(Return(session_manager()));
   EXPECT_CALL(*session_manager(), UpdateCurrentSession(_, true)).Times(1);
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .WillOnce(Return(&session));
@@ -891,8 +925,8 @@ TEST_F(BocaAppPageHandlerTest, UpdateCaptionConfigSucceed) {
                 GetCommonActiveSessionProto()));
           })));
 
-  boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
-                                          future_1.GetCallback());
+  boca_app_handler_->UpdateCaptionConfig(GetCommonCaptionConfig(),
+                                         future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
   EXPECT_FALSE(future_1.Get().has_value());
 }
@@ -902,6 +936,9 @@ TEST_F(BocaAppPageHandlerTest, UpdateCaptionWithHTTPFailure) {
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .Times(2)
       .WillRepeatedly(Return(&session));
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .Times(3)
+      .WillRepeatedly(Return(session_manager()));
   EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
   // Page handler callback.
   base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
@@ -924,8 +961,8 @@ TEST_F(BocaAppPageHandlerTest, UpdateCaptionWithHTTPFailure) {
                 base::unexpected(google_apis::ApiErrorCode::HTTP_FORBIDDEN));
           })));
 
-  boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
-                                          future_1.GetCallback());
+  boca_app_handler_->UpdateCaptionConfig(GetCommonCaptionConfig(),
+                                         future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
   EXPECT_EQ(mojom::UpdateSessionError::kHTTPError, future_1.Get().value());
 }
@@ -933,6 +970,9 @@ TEST_F(BocaAppPageHandlerTest, UpdateCaptionWithHTTPFailure) {
 TEST_F(BocaAppPageHandlerTest,
        UpdateOnTaskConfigWithPendingCaptionConfigShouldNotOverride) {
   auto session = GetCommonActiveSessionProto();
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .Times(5)
+      .WillRepeatedly(Return(session_manager()));
   EXPECT_CALL(*session_manager(), UpdateCurrentSession(_, true)).Times(2);
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .Times(2)
@@ -974,10 +1014,10 @@ TEST_F(BocaAppPageHandlerTest,
                   request->on_task_config()->SerializeAsString());
         request->callback().Run(std::unique_ptr<::boca::Session>());
       })));
-  boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
-                                          future_1.GetCallback());
-  boca_app_handler()->UpdateOnTaskConfig(GetCommonTestUnLockedOnTaskConfig(),
-                                         future_2.GetCallback());
+  boca_app_handler_->UpdateCaptionConfig(GetCommonCaptionConfig(),
+                                         future_1.GetCallback());
+  boca_app_handler_->UpdateOnTaskConfig(GetCommonTestUnLockedOnTaskConfig(),
+                                        future_2.GetCallback());
 
   ASSERT_TRUE(future_1.Wait());
   EXPECT_FALSE(future_1.Get().has_value());
@@ -989,6 +1029,9 @@ TEST_F(BocaAppPageHandlerTest,
 TEST_F(BocaAppPageHandlerTest,
        UpdateCaptionConfigWithPendingOnTaskConfigShouldNotOverride) {
   auto session = GetCommonActiveSessionProto();
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .Times(5)
+      .WillRepeatedly(Return(session_manager()));
   EXPECT_CALL(*session_manager(), UpdateCurrentSession(_, true)).Times(2);
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .Times(2)
@@ -1029,10 +1072,10 @@ TEST_F(BocaAppPageHandlerTest,
                   request->captions_config()->SerializeAsString());
         request->callback().Run(std::unique_ptr<::boca::Session>());
       })));
-  boca_app_handler()->UpdateOnTaskConfig(GetCommonTestUnLockedOnTaskConfig(),
-                                         future_1.GetCallback());
-  boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
-                                          future_2.GetCallback());
+  boca_app_handler_->UpdateOnTaskConfig(GetCommonTestUnLockedOnTaskConfig(),
+                                        future_1.GetCallback());
+  boca_app_handler_->UpdateCaptionConfig(GetCommonCaptionConfig(),
+                                         future_2.GetCallback());
 
   ASSERT_TRUE(future_1.Wait());
   EXPECT_FALSE(future_1.Get().has_value());
@@ -1043,6 +1086,9 @@ TEST_F(BocaAppPageHandlerTest,
 TEST_F(BocaAppPageHandlerTest,
        UpdateOnTaskConfigWithFailedCaptionConfigShouldUseSessionData) {
   auto session = GetCommonActiveSessionProto();
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .Times(5)
+      .WillRepeatedly(Return(session_manager()));
   EXPECT_CALL(*session_manager(), UpdateCurrentSession(_, true)).Times(1);
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .Times(3)
@@ -1090,10 +1136,10 @@ TEST_F(BocaAppPageHandlerTest,
         request->callback().Run(
             std::make_unique<::boca::Session>(GetCommonActiveSessionProto()));
       })));
-  boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
-                                          future_1.GetCallback());
-  boca_app_handler()->UpdateOnTaskConfig(GetCommonTestUnLockedOnTaskConfig(),
-                                         future_2.GetCallback());
+  boca_app_handler_->UpdateCaptionConfig(GetCommonCaptionConfig(),
+                                         future_1.GetCallback());
+  boca_app_handler_->UpdateOnTaskConfig(GetCommonTestUnLockedOnTaskConfig(),
+                                        future_2.GetCallback());
 
   ASSERT_TRUE(future_1.Wait());
   EXPECT_TRUE(future_1.Get().has_value());
@@ -1104,6 +1150,9 @@ TEST_F(BocaAppPageHandlerTest,
 TEST_F(BocaAppPageHandlerTest,
        UpdateCaptionConfigWithFailedOnTaskConfigShouldUseSessionData) {
   auto session = GetCommonActiveSessionProto();
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .Times(5)
+      .WillRepeatedly(Return(session_manager()));
   EXPECT_CALL(*session_manager(), UpdateCurrentSession(_, true)).Times(1);
   EXPECT_CALL(*session_manager(), GetCurrentSession())
       .Times(3)
@@ -1150,72 +1199,14 @@ TEST_F(BocaAppPageHandlerTest,
         request->callback().Run(
             std::make_unique<::boca::Session>(GetCommonActiveSessionProto()));
       })));
-  boca_app_handler()->UpdateOnTaskConfig(GetCommonTestUnLockedOnTaskConfig(),
-                                         future_1.GetCallback());
-  boca_app_handler()->UpdateCaptionConfig(GetCommonCaptionConfig(),
-                                          future_2.GetCallback());
+  boca_app_handler_->UpdateOnTaskConfig(GetCommonTestUnLockedOnTaskConfig(),
+                                        future_1.GetCallback());
+  boca_app_handler_->UpdateCaptionConfig(GetCommonCaptionConfig(),
+                                         future_2.GetCallback());
   ASSERT_TRUE(future_1.Wait());
   EXPECT_TRUE(future_1.Get().has_value());
   ASSERT_TRUE(future_2.Wait());
   EXPECT_FALSE(future_2.Get().has_value());
-}
-
-TEST_F(BocaAppPageHandlerTest, UpdateEmptyStudentActivitySucceed) {
-  std::map<std::string, ::boca::StudentStatus> activities;
-  // EXPECT_CALL(mock_page(), OnStudentActivityUpdated(_)).Times(1);
-  base::test::TestFuture<std::vector<mojom::IdentifiedActivityPtr>> future;
-  boca_app_handler()->setActivityInterceptorCallbackForTesting(
-      future.GetCallback());
-  boca_app_handler()->OnConsumerActivityUpdated(activities);
-  auto result = future.Take();
-  ASSERT_TRUE(result.empty());
-}
-
-TEST_F(BocaAppPageHandlerTest, UpdateNonEmptyStudentActivitySucceed) {
-  std::map<std::string, ::boca::StudentStatus> activities;
-  ::boca::StudentStatus status_1;
-  status_1.set_state(::boca::StudentStatus::ACTIVE);
-  ::boca::StudentDevice device_1;
-  auto* activity_1 = device_1.mutable_activity();
-  activity_1->mutable_active_tab()->set_title("google");
-  ::boca::StudentDevice device_11;
-  auto* activity_11 = device_11.mutable_activity();
-  activity_11->mutable_active_tab()->set_title("google1");
-  (*status_1.mutable_devices())["device1"] = std::move(device_1);
-  (*status_1.mutable_devices())["device11"] = std::move(device_11);
-
-  ::boca::StudentStatus status_2;
-  status_2.set_state(::boca::StudentStatus::ADDED);
-  ::boca::StudentDevice device_2;
-  auto* activity_2 = device_2.mutable_activity();
-  activity_2->mutable_active_tab()->set_title("youtube");
-  (*status_2.mutable_devices())["device2"] = std::move(device_2);
-  activities.emplace("1", std::move(status_1));
-  activities.emplace("2", std::move(status_2));
-
-  // EXPECT_CALL(mock_page(), OnStudentActivityUpdated(_)).Times(1);
-  base::test::TestFuture<std::vector<mojom::IdentifiedActivityPtr>> future;
-  boca_app_handler()->setActivityInterceptorCallbackForTesting(
-      future.GetCallback());
-  boca_app_handler()->OnConsumerActivityUpdated(activities);
-  auto result = future.Take();
-  EXPECT_EQ(3u, result.size());
-  // Verify multiple devices are both added.
-  EXPECT_EQ("1", result[0]->id);
-  EXPECT_TRUE(result[0]->activity->is_active);
-  EXPECT_EQ("1", result[1]->id);
-  EXPECT_TRUE(result[1]->activity->is_active);
-
-  std::vector<std::string> tabs = {"google", "google1"};
-  // The order shouldn't matter.
-  EXPECT_TRUE(std::find(tabs.begin(), tabs.end(),
-                        result[0]->activity->active_tab) != tabs.end());
-  EXPECT_TRUE(std::find(tabs.begin(), tabs.end(),
-                        result[1]->activity->active_tab) != tabs.end());
-
-  EXPECT_EQ("2", result[2]->id);
-  EXPECT_EQ("youtube", result[2]->activity->active_tab);
-  EXPECT_FALSE(result[2]->activity->is_active);
 }
 }  // namespace
 }  // namespace ash::boca

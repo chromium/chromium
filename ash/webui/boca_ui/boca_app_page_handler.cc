@@ -15,7 +15,6 @@
 #include "ash/webui/boca_ui/mojom/boca.mojom.h"
 #include "ash/webui/boca_ui/provider/classroom_page_handler_impl.h"
 #include "ash/webui/boca_ui/provider/tab_info_collector.h"
-#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -80,13 +79,9 @@ BocaAppHandler::BocaAppHandler(
   user_identity_.set_email(user->GetAccountId().GetUserEmail());
   user_identity_.set_gaia_id(user->GetAccountId().GetGaiaId());
   user_identity_.set_full_name(base::UTF16ToUTF8(user->GetDisplayName()));
-  // BocaAppClient is guaranteed to be live here.
-  BocaAppClient::Get()->GetSessionManager()->AddObserver(this);
 }
 
-BocaAppHandler::~BocaAppHandler() {
-  BocaAppClient::Get()->GetSessionManager()->RemoveObserver(this);
-}
+BocaAppHandler::~BocaAppHandler() = default;
 
 void BocaAppHandler::GetWindowsTabsList(GetWindowsTabsListCallback callback) {
   tab_info_collector_.GetWindowTabInfo(std::move(callback));
@@ -337,33 +332,6 @@ void BocaAppHandler::UpdateCaptionConfig(mojom::CaptionConfigPtr config,
   session_client_impl_->UpdateSession(std::move(request));
 }
 
-void BocaAppHandler::OnStudentActivityUpdated(
-    std::vector<mojom::IdentifiedActivityPtr> activities) {
-  if (!test_activity_callback_.is_null()) {
-    CHECK_IS_TEST();
-    std::move(test_activity_callback_).Run(std::move(activities));
-    return;
-  }
-  remote_->OnStudentActivityUpdated(std::move(activities));
-}
-
-void BocaAppHandler::OnConsumerActivityUpdated(
-    const std::map<std::string, ::boca::StudentStatus>& activities) {
-  std::vector<mojom::IdentifiedActivityPtr> result;
-  for (auto item : activities) {
-    for (auto device : item.second.devices()) {
-      // Only update state and active tab now.
-      auto identity_ptr = mojom::IdentifiedActivity::New(
-          item.first, mojom::StudentActivity::New(
-                          item.second.state() == ::boca::StudentStatus::ACTIVE,
-                          device.second.activity().active_tab().title(), false,
-                          false, mojom::JoinMethod::kRoster));
-      result.push_back(std::move(identity_ptr));
-    }
-  }
-  OnStudentActivityUpdated(std::move(result));
-}
-
 void BocaAppHandler::NotifyLocalCaptionConfigUpdate(
     mojom::CaptionConfigPtr config) {
   ::boca::CaptionsConfig local_caption_config;
@@ -371,11 +339,6 @@ void BocaAppHandler::NotifyLocalCaptionConfigUpdate(
   local_caption_config.set_translations_enabled(config->local_caption_enabled);
   BocaAppClient::Get()->GetSessionManager()->NotifyLocalCaptionEvents(
       std::move(local_caption_config));
-}
-
-void BocaAppHandler::setActivityInterceptorCallbackForTesting(
-    ActivityInterceptorCallback callback) {
-  test_activity_callback_ = std::move(callback);
 }
 
 void BocaAppHandler::OnUpdatedOnTaskConfig(

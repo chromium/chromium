@@ -125,8 +125,6 @@ void BocaUI::Create(
   page_handler_impl_ = std::make_unique<BocaAppHandler>(
       this, std::move(page_handler), std::move(page), web_ui_,
       std::make_unique<ClassroomPageHandlerImpl>(),
-      // TODO(b:369894145): Should update to use the same session client impl
-      // and backend so that it will be in the same task runner.
       std::make_unique<SessionClientImpl>());
 }
 
