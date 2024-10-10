@@ -239,7 +239,7 @@ webui_ts_library("build_ts") {
     "network/network_proxy_exclusions_test.js",
     "network/network_proxy_input_test.js",
     "network/network_proxy_test.ts",
-    "network/network_select_test.js",
+    "network/network_select_test.ts",
     "network/network_siminfo_test.ts",
     "network/sim_lock_dialogs_test.js",
     "set_time_dialog/set_time_dialog_test.js",

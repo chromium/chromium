@@ -118,7 +118,7 @@ export class NetworkSelectElement extends NetworkSelectElementBase {
   private globalPolicy_: GlobalPolicy|undefined;
 
   private defaultNetworkState_: OncMojo.NetworkStateProperties|undefined;
-  private scanIntervalId_: number|null;
+  private scanIntervalId_: number|undefined;
   private networkConfig_: CrosNetworkConfigInterface;
 
   constructor() {
@@ -126,7 +126,7 @@ export class NetworkSelectElement extends NetworkSelectElementBase {
 
     this.defaultNetworkState_ = undefined;
 
-    this.scanIntervalId_ = null;
+    this.scanIntervalId_ = undefined;
 
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
@@ -143,6 +143,10 @@ export class NetworkSelectElement extends NetworkSelectElementBase {
     super.disconnectedCallback();
 
     this.clearScheduledScans_();
+  }
+
+  isScanning(): boolean {
+    return this.scanIntervalId_ !== null;
   }
 
   /**  Returns network list object for testing. */
@@ -258,9 +262,9 @@ export class NetworkSelectElement extends NetworkSelectElementBase {
    * Clears any scheduled Wi-FI scans; no-op if there were no scans scheduled.
    */
   private clearScheduledScans_() {
-    if (this.scanIntervalId_ !== null) {
+    if (this.isScanning()) {
       window.clearInterval(this.scanIntervalId_);
-      this.scanIntervalId_ = null;
+      this.scanIntervalId_ = undefined;
     }
   }
 
