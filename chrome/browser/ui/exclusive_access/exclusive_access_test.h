@@ -28,7 +28,12 @@ namespace base {
 class TickClock;
 }  // namespace base
 
+namespace content {
+class MockPermissionController;
+}
+
 class FullscreenController;
+class ExclusiveAccessBubbleViews;
 
 class MockExclusiveAccessController : public ExclusiveAccessControllerBase {
  public:
@@ -76,8 +81,6 @@ class ExclusiveAccessTest : public InProcessBrowserTest {
   bool SendEscapeToExclusiveAccessManager(bool is_key_down = true);
   bool IsFullscreenForBrowser();
   bool IsWindowFullscreenForTabOrPending();
-  ExclusiveAccessBubbleType GetExclusiveAccessBubbleType();
-  bool IsExclusiveAccessBubbleDisplayed();
   void GoBack();
   void Reload();
   void EnterActiveTabFullscreen();
@@ -86,6 +89,11 @@ class ExclusiveAccessTest : public InProcessBrowserTest {
                                     bool tab_fullscreen);
   void EnterExtensionInitiatedFullscreen();
   bool IsEscKeyHoldTimerRunning();
+
+  ExclusiveAccessBubbleType GetExclusiveAccessBubbleType();
+  ExclusiveAccessBubbleViews* GetExclusiveAccessBubbleView();
+  bool IsExclusiveAccessBubbleDisplayed();
+  void FinishExclusiveAccessBubbleAnimation();
 
   static const char kFullscreenKeyboardLockHTML[];
   static const char kFullscreenPointerLockHTML[];
@@ -106,6 +114,10 @@ class ExclusiveAccessTest : public InProcessBrowserTest {
 
   void ExpectMockControllerReceivedEscape(int count);
 
+  // Wait for the given `duration` by running a base::RunLoop until a delayed
+  // task is executed.
+  static void Wait(base::TimeDelta duration);
+
   MockExclusiveAccessController* mock_controller() {
     return mock_controller_.get();
   }
@@ -124,6 +136,8 @@ class ExclusiveAccessTest : public InProcessBrowserTest {
   ui::test::ScopedFakeNSWindowFullscreen fake_fullscreen_window_;
 #endif
   std::unique_ptr<MockExclusiveAccessController> mock_controller_;
+
+  std::unique_ptr<content::MockPermissionController> permission_controller_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
 

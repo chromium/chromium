@@ -274,13 +274,14 @@ class ClientSideDetectionHostPrerenderExclusiveAccessBrowserTest
 
   void SetUp() override {
     prerender_helper_.RegisterServerRequestMonitor(embedded_test_server());
-    InProcessBrowserTest::SetUp();
+    ExclusiveAccessTest::SetUp();
   }
 
   void SetUpOnMainThread() override {
     set_up_client_side_model();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
+    ExclusiveAccessTest::SetUpOnMainThread();
   }
 
   content::test::PrerenderTestHelper& prerender_helper() {

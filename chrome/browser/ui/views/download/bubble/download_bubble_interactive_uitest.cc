@@ -63,7 +63,7 @@ auto WaitForDownloadBubbleShow(views::NamedWidgetShownWaiter& waiter) {
 
 bool IsExclusiveAccessBubbleVisible(ExclusiveAccessBubbleViews* bubble) {
   bool is_hiding = bubble->animation_for_test()->IsClosing();
-  return bubble->IsShowing() || (bubble->IsVisibleForTesting() && !is_hiding);
+  return bubble->IsShowing() || (bubble->IsVisible() && !is_hiding);
 }
 #endif
 

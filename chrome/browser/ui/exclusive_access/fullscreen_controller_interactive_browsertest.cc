@@ -118,6 +118,10 @@ class FullscreenControllerInteractiveTest : public ExclusiveAccessTest {
   }
 
   void WaitForPointerLockBubbleToHide() {
+    if (!IsExclusiveAccessBubbleDisplayed()) {
+      return;
+    }
+
     PointerLockController* pointer_lock_controller =
         browser()->exclusive_access_manager()->pointer_lock_controller();
     base::RunLoop run_loop;
@@ -132,6 +136,7 @@ class FullscreenControllerInteractiveTest : public ExclusiveAccessTest {
     run_loop.Run();
     pointer_lock_controller->set_bubble_hide_callback_for_test(
         base::NullCallback());
+    FinishExclusiveAccessBubbleAnimation();
   }
 
  private:
@@ -468,8 +473,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 #if !defined(MEMORY_SANITIZER)
   // Lock the pointer without a user gesture, expect no response.
   PressKeyAndWaitForPointerLockRequest(ui::VKEY_D);
-  ASSERT_FALSE(IsExclusiveAccessBubbleDisplayed());
   ASSERT_FALSE(IsPointerLocked());
+  ASSERT_FALSE(IsExclusiveAccessBubbleDisplayed());
 #else
   // MSan builds change the timing of user gestures, which this part of the test
   // depends upon.  See `fullscreen_pointerlock.html` for more details, but the
@@ -528,12 +533,13 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 
   // Lock the pointer with a user gesture.
   PressKeyAndWaitForPointerLockRequest(ui::VKEY_1);
-  ASSERT_TRUE(IsExclusiveAccessBubbleDisplayed());
   ASSERT_TRUE(IsPointerLocked());
   ASSERT_TRUE(IsExclusiveAccessBubbleDisplayed());
+
   // Wait for the bubble to be shown for its full duration. This allows
   // the page to lock the pointer without showing the bubble later.
   WaitForPointerLockBubbleToHide();
+  ASSERT_FALSE(IsExclusiveAccessBubbleDisplayed());
 
   // Unlock the pointer from target, make sure it's unlocked.
   PressKeyAndWaitForPointerLockRequest(ui::VKEY_U);
@@ -548,6 +554,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   // Unlock the pointer again by target.
   PressKeyAndWaitForPointerLockRequest(ui::VKEY_U);
   ASSERT_FALSE(IsPointerLocked());
+  FinishExclusiveAccessBubbleAnimation();
   ASSERT_FALSE(IsExclusiveAccessBubbleDisplayed());
 }
 
@@ -569,13 +576,13 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
 
   // Lock the pointer with a user gesture.
   PressKeyAndWaitForPointerLockRequest(ui::VKEY_1);
-  ASSERT_TRUE(IsExclusiveAccessBubbleDisplayed());
   ASSERT_TRUE(IsPointerLocked());
   ASSERT_TRUE(IsExclusiveAccessBubbleDisplayed());
 
   // Unlock the pointer from target, make sure it's unlocked.
   PressKeyAndWaitForPointerLockRequest(ui::VKEY_U);
   ASSERT_FALSE(IsPointerLocked());
+  FinishExclusiveAccessBubbleAnimation();
   ASSERT_FALSE(IsExclusiveAccessBubbleDisplayed());
 
   // Lock the pointer again. The bubble wasn't shown for its full duration last
@@ -1587,12 +1594,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_MultiScreenFullscreenControllerInteractiveTest,
 
   // Explicitly check for, and destroy, the exclusive access bubble.
   EXPECT_TRUE(IsExclusiveAccessBubbleDisplayed());
-  base::RunLoop run_loop;
-  ExclusiveAccessBubbleHideCallback callback = base::BindLambdaForTesting(
-      [&run_loop](ExclusiveAccessBubbleHideReason) { run_loop.Quit(); });
-  browser()->exclusive_access_manager()->context()->UpdateExclusiveAccessBubble(
-      {}, std::move(callback));
-  run_loop.Run();
+  Wait(ExclusiveAccessBubble::kShowTime);
+  FinishExclusiveAccessBubbleAnimation();
   EXPECT_FALSE(IsExclusiveAccessBubbleDisplayed());
 
   // Execute JS to request fullscreen on a different screen.
