@@ -20,6 +20,7 @@ include_rules = [
   "+chrome/browser/ui/ash/graduation",
   "+chrome/browser/ash/input_device_settings",
   "+chrome/browser/ash/lobster",
+  "+chrome/browser/ash/login/demo_mode",
   "+chrome/browser/ash/login/signin",
   "+chrome/browser/ash/magic_boost",
   "+chrome/browser/ash/mahi",

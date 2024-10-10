@@ -39,6 +39,7 @@
 #include "chrome/browser/ash/growth/campaigns_manager_client_impl.h"
 #include "chrome/browser/ash/growth/campaigns_manager_session.h"
 #include "chrome/browser/ash/input_device_settings/peripherals_app_delegate_impl.h"
+#include "chrome/browser/ash/login/demo_mode/demo_login_controller.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier_factory.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
 #include "chrome/browser/ash/mahi/mahi_manager_impl.h"
@@ -371,6 +372,11 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
   }
 
   login_screen_client_ = std::make_unique<LoginScreenClientImpl>();
+  if (ash::features::IsDemoModeSignInEnabled()) {
+    demo_login_controller_ =
+        std::make_unique<ash::DemoLoginController>(login_screen_client_.get());
+  }
+
   management_disclosure_client_ =
       std::make_unique<ManagementDisclosureClientImpl>(
           g_browser_process->platform_part()->browser_policy_connector_ash(),
@@ -493,6 +499,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   // uninstall correctly.
   exo_parts_.reset();
 
+  demo_login_controller_.reset();
   mahi_manager_.reset();
   mobile_data_notifications_.reset();
   chrome_shelf_controller_initializer_.reset();

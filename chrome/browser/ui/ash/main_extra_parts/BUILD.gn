@@ -38,6 +38,7 @@ static_library("main_extra_parts") {
     "//chrome/browser/ash/growth",
     "//chrome/browser/ash/input_device_settings",
     "//chrome/browser/ash/lobster",
+    "//chrome/browser/ash/login/demo_mode:demo_mode_login",
     "//chrome/browser/ash/login/signin",
     "//chrome/browser/ash/magic_boost",
     "//chrome/browser/ash/mahi",

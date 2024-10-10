@@ -171,6 +171,19 @@ struct ScopedObservationTraits<LoginScreenClientImpl, ash::SystemTrayObserver> {
   }
 };
 
+template <>
+struct ScopedObservationTraits<LoginScreenClientImpl,
+                               LoginScreenShownObserver> {
+  static void AddObserver(LoginScreenClientImpl* source,
+                          LoginScreenShownObserver* observer) {
+    source->AddLoginScreenShownObserver(observer);
+  }
+  static void RemoveObserver(LoginScreenClientImpl* source,
+                             LoginScreenShownObserver* observer) {
+    source->RemoveLoginScreenShownObserver(observer);
+  }
+};
+
 }  // namespace base
 
 #endif  // CHROME_BROWSER_UI_ASH_LOGIN_LOGIN_SCREEN_CLIENT_IMPL_H_
