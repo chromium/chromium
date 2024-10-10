@@ -3212,7 +3212,12 @@ void AXObjectCacheImpl::CommitAXUpdates(Document& document, bool force) {
         CHECK(nodes_with_pending_children_changed_.empty());
 
         // Updating the tree did not add dirty objects.
-        DUMP_WILL_BE_CHECK(!IsDirty());
+        DUMP_WILL_BE_CHECK(!IsDirty())
+            << "Cache dirtied at bad time:" << "\nAll: " << mark_all_dirty_
+            << "\nRoot children: " << Root()->NeedsToUpdateChildren()
+            << "\nRoot descendants: " << Root()->HasDirtyDescendants()
+            << "\nRelation cache: " << relation_cache_->IsDirty()
+            << "\nUpdates paused: " << tree_updates_paused_;
       }
     }
   }
