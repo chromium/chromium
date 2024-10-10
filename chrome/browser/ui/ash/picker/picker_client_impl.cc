@@ -42,7 +42,6 @@
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/lobster/lobster_service_provider.h"
-#include "chrome/browser/chromeos/launcher_search/search_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/picker/picker_file_suggester.h"
 #include "chrome/browser/ui/ash/picker/picker_link_suggester.h"

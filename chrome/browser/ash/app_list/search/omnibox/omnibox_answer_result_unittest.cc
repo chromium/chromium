@@ -10,7 +10,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/json/json_reader.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/launcher_search/search_util.h"
+#include "chrome/browser/ash/app_list/search/omnibox/omnibox_util.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
@@ -48,8 +48,8 @@ TEST_F(OmniboxAnswerResultTest, CalculatorResult) {
 
   OmniboxAnswerResult result(
       /*profile=*/nullptr, /*list_controller=*/nullptr,
-      crosapi::CreateAnswerResult(match, /*controller=*/nullptr, u"query",
-                                  AutocompleteInput()),
+      CreateAnswerResult(match, /*controller=*/nullptr, u"query",
+                         AutocompleteInput()),
       u"query");
   EXPECT_EQ(result.display_type(), ash::SearchResultDisplayType::kAnswerCard);
   EXPECT_EQ(result.result_type(), ash::AppListSearchResultType::kOmnibox);
@@ -82,8 +82,8 @@ TEST_F(OmniboxAnswerResultTest, CalculatorResultNoDescription) {
 
   OmniboxAnswerResult result(
       /*profile=*/nullptr, /*list_controller=*/nullptr,
-      crosapi::CreateAnswerResult(match, /*controller=*/nullptr, u"2+2",
-                                  AutocompleteInput()),
+      CreateAnswerResult(match, /*controller=*/nullptr, u"2+2",
+                         AutocompleteInput()),
       u"2+2");
   EXPECT_EQ(result.display_type(), ash::SearchResultDisplayType::kAnswerCard);
   EXPECT_EQ(result.result_type(), ash::AppListSearchResultType::kOmnibox);
@@ -129,8 +129,8 @@ TEST_F(OmniboxAnswerResultTest, WeatherResult) {
 
     OmniboxAnswerResult result(
         /*profile=*/nullptr, /*list_controller=*/nullptr,
-        crosapi::CreateAnswerResult(match, /*controller=*/nullptr, u"query",
-                                    AutocompleteInput()),
+        CreateAnswerResult(match, /*controller=*/nullptr, u"query",
+                           AutocompleteInput()),
         u"query");
     EXPECT_EQ(result.display_type(), ash::SearchResultDisplayType::kAnswerCard);
     EXPECT_EQ(result.result_type(), ash::AppListSearchResultType::kOmnibox);
@@ -176,8 +176,8 @@ TEST_F(OmniboxAnswerResultTest, WeatherResult) {
     match.answer_template = answer_template;
     OmniboxAnswerResult result(
         /*profile=*/nullptr, /*list_controller=*/nullptr,
-        crosapi::CreateAnswerResult(match, /*controller=*/nullptr, u"query",
-                                    AutocompleteInput()),
+        CreateAnswerResult(match, /*controller=*/nullptr, u"query",
+                           AutocompleteInput()),
         u"query");
     EXPECT_EQ(result.display_type(), ash::SearchResultDisplayType::kAnswerCard);
     EXPECT_EQ(result.result_type(), ash::AppListSearchResultType::kOmnibox);
@@ -238,8 +238,8 @@ TEST_F(OmniboxAnswerResultTest, AnswerResult) {
 
     OmniboxAnswerResult result(
         /*profile=*/nullptr, /*list_controller=*/nullptr,
-        crosapi::CreateAnswerResult(match, /*controller=*/nullptr, u"query",
-                                    AutocompleteInput()),
+        CreateAnswerResult(match, /*controller=*/nullptr, u"query",
+                           AutocompleteInput()),
         u"query");
     EXPECT_EQ(result.display_type(), ash::SearchResultDisplayType::kAnswerCard);
     EXPECT_EQ(result.result_type(), ash::AppListSearchResultType::kOmnibox);
@@ -298,8 +298,8 @@ TEST_F(OmniboxAnswerResultTest, AnswerResult) {
 
     OmniboxAnswerResult result(
         /*profile=*/nullptr, /*list_controller=*/nullptr,
-        crosapi::CreateAnswerResult(match, /*controller=*/nullptr, u"query",
-                                    AutocompleteInput()),
+        CreateAnswerResult(match, /*controller=*/nullptr, u"query",
+                           AutocompleteInput()),
         u"query");
     EXPECT_EQ(result.display_type(), ash::SearchResultDisplayType::kAnswerCard);
     EXPECT_EQ(result.result_type(), ash::AppListSearchResultType::kOmnibox);
@@ -369,8 +369,8 @@ TEST_F(OmniboxAnswerResultTest, DictionaryResultMultiline) {
 
     OmniboxAnswerResult result(
         /*profile=*/nullptr, /*list_controller=*/nullptr,
-        crosapi::CreateAnswerResult(match, /*controller=*/nullptr, u"query",
-                                    AutocompleteInput()),
+        CreateAnswerResult(match, /*controller=*/nullptr, u"query",
+                           AutocompleteInput()),
         u"query");
     EXPECT_TRUE(result.multiline_details());
     EXPECT_EQ(result.answer_type(),
@@ -389,8 +389,8 @@ TEST_F(OmniboxAnswerResultTest, DictionaryResultMultiline) {
 
     OmniboxAnswerResult result(
         /*profile=*/nullptr, /*list_controller=*/nullptr,
-        crosapi::CreateAnswerResult(match, /*controller=*/nullptr, u"query",
-                                    AutocompleteInput()),
+        CreateAnswerResult(match, /*controller=*/nullptr, u"query",
+                           AutocompleteInput()),
         u"query");
     EXPECT_TRUE(result.multiline_details());
     EXPECT_EQ(result.answer_type(),
@@ -407,8 +407,8 @@ TEST_F(OmniboxAnswerResultTest, TranslationResult) {
     match.answer = answer;
     OmniboxAnswerResult result(
         /*profile=*/nullptr, /*list_controller=*/nullptr,
-        crosapi::CreateAnswerResult(match, /*controller=*/nullptr,
-                                    u"hello in Spanish", AutocompleteInput()),
+        CreateAnswerResult(match, /*controller=*/nullptr, u"hello in Spanish",
+                           AutocompleteInput()),
         u"hello in Spanish");
     EXPECT_EQ(result.answer_type(),
               crosapi::mojom::SearchResult::AnswerType::kTranslation);
@@ -425,8 +425,8 @@ TEST_F(OmniboxAnswerResultTest, TranslationResult) {
 
     OmniboxAnswerResult result(
         /*profile=*/nullptr, /*list_controller=*/nullptr,
-        crosapi::CreateAnswerResult(match, /*controller=*/nullptr,
-                                    u"hello in Spanish", AutocompleteInput()),
+        CreateAnswerResult(match, /*controller=*/nullptr, u"hello in Spanish",
+                           AutocompleteInput()),
         u"hello in Spanish");
     EXPECT_EQ(result.answer_type(),
               crosapi::mojom::SearchResult::AnswerType::kTranslation);
@@ -443,8 +443,8 @@ TEST_F(OmniboxAnswerResultTest, CurrencyResult) {
 
     OmniboxAnswerResult result(
         /*profile=*/nullptr, /*list_controller=*/nullptr,
-        crosapi::CreateAnswerResult(match, /*controller=*/nullptr,
-                                    u"100 usd in aud", AutocompleteInput()),
+        CreateAnswerResult(match, /*controller=*/nullptr, u"100 usd in aud",
+                           AutocompleteInput()),
         u"100 usd in aud");
     EXPECT_EQ(result.answer_type(),
               crosapi::mojom::SearchResult::AnswerType::kCurrency);
@@ -461,8 +461,8 @@ TEST_F(OmniboxAnswerResultTest, CurrencyResult) {
 
     OmniboxAnswerResult result(
         /*profile=*/nullptr, /*list_controller=*/nullptr,
-        crosapi::CreateAnswerResult(match, /*controller=*/nullptr,
-                                    u"100 usd in aud", AutocompleteInput()),
+        CreateAnswerResult(match, /*controller=*/nullptr, u"100 usd in aud",
+                           AutocompleteInput()),
         u"100 usd in aud");
     EXPECT_EQ(result.answer_type(),
               crosapi::mojom::SearchResult::AnswerType::kCurrency);
@@ -478,9 +478,8 @@ TEST_F(OmniboxAnswerResultTest, SunriseResult) {
     match.answer = answer;
     OmniboxAnswerResult result(
         /*profile=*/nullptr, /*list_controller=*/nullptr,
-        crosapi::CreateAnswerResult(match, /*controller=*/nullptr,
-                                    u"sunrise time in Sydney",
-                                    AutocompleteInput()),
+        CreateAnswerResult(match, /*controller=*/nullptr,
+                           u"sunrise time in Sydney", AutocompleteInput()),
         u"sunrise time in Sydney");
     EXPECT_EQ(result.answer_type(),
               crosapi::mojom::SearchResult::AnswerType::kSunrise);
@@ -497,9 +496,8 @@ TEST_F(OmniboxAnswerResultTest, SunriseResult) {
 
     OmniboxAnswerResult result(
         /*profile=*/nullptr, /*list_controller=*/nullptr,
-        crosapi::CreateAnswerResult(match, /*controller=*/nullptr,
-                                    u"sunrise time in Sydney",
-                                    AutocompleteInput()),
+        CreateAnswerResult(match, /*controller=*/nullptr,
+                           u"sunrise time in Sydney", AutocompleteInput()),
         u"sunrise time in Sydney");
     EXPECT_EQ(result.answer_type(),
               crosapi::mojom::SearchResult::AnswerType::kSunrise);
@@ -515,8 +513,8 @@ TEST_F(OmniboxAnswerResultTest, WhenIsResult) {
     match.answer = answer;
     OmniboxAnswerResult result(
         /*profile=*/nullptr, /*list_controller=*/nullptr,
-        crosapi::CreateAnswerResult(match, /*controller=*/nullptr,
-                                    u"when is christmas", AutocompleteInput()),
+        CreateAnswerResult(match, /*controller=*/nullptr, u"when is christmas",
+                           AutocompleteInput()),
         u"when is christmas");
     EXPECT_EQ(result.answer_type(),
               crosapi::mojom::SearchResult::AnswerType::kWhenIs);
@@ -533,8 +531,8 @@ TEST_F(OmniboxAnswerResultTest, WhenIsResult) {
 
     OmniboxAnswerResult result(
         /*profile=*/nullptr, /*list_controller=*/nullptr,
-        crosapi::CreateAnswerResult(match, /*controller=*/nullptr,
-                                    u"when is christmas", AutocompleteInput()),
+        CreateAnswerResult(match, /*controller=*/nullptr, u"when is christmas",
+                           AutocompleteInput()),
         u"when is christmas");
     EXPECT_EQ(result.answer_type(),
               crosapi::mojom::SearchResult::AnswerType::kWhenIs);

@@ -31,7 +31,6 @@ group("unit_tests") {
     "//chrome/browser/chromeos/extensions/login_screen/login_state:unit_tests",
     "//chrome/browser/chromeos/extensions/odfs_config_private:unit_tests",
     "//chrome/browser/chromeos/extensions/telemetry:unit_tests",
-    "//chrome/browser/chromeos/launcher_search:unit_tests",
     "//chrome/browser/chromeos/mahi:unit_tests",
     "//chrome/browser/chromeos/office_web_app:unit_tests",
     "//chrome/browser/chromeos/policy/dlp:unit_tests",

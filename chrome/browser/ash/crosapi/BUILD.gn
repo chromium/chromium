@@ -775,7 +775,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/ash/wallpaper_handlers:test_support",
-    "//chrome/browser/chromeos/launcher_search:search_util",
     "//chrome/browser/chromeos/platform_keys",
     "//chrome/browser/chromeos/policy/dlp",
     "//chrome/browser/chromeos/policy/dlp/test:test_support",

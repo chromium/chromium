@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/app_list/search/common/search_result_util.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_util.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
-#include "chrome/browser/chromeos/launcher_search/search_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
 #include "components/omnibox/browser/vector_icons.h"

@@ -8173,7 +8173,6 @@ test("unit_tests") {
       "//chrome/browser/ash/system_web_apps/apps/media_app",
       "//chrome/browser/ash/system_web_apps/test_support",
       "//chrome/browser/ash/wallpaper_handlers:test_support",
-      "//chrome/browser/chromeos/launcher_search:search_util",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/ash",
       "//chrome/browser/metrics/structured:features",
       "//chrome/browser/nearby_sharing:share_target",

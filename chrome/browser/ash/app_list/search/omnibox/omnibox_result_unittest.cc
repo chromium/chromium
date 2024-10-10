@@ -25,10 +25,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/common/icon_constants.h"
+#include "chrome/browser/ash/app_list/search/omnibox/omnibox_util.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/ash/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "chrome/browser/chromeos/launcher_search/search_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -210,8 +210,8 @@ class OmniboxResultTest : public testing::Test {
 
     return std::make_unique<OmniboxResult>(
         profile_.get(), app_list_controller_delegate_.get(),
-        crosapi::CreateResult(match, /*controller=*/nullptr,
-                              favicon_cache_.get(), bookmark_model_, input_),
+        CreateResult(match, /*controller=*/nullptr, favicon_cache_.get(),
+                     bookmark_model_, input_),
         /*query=*/query);
   }
 
