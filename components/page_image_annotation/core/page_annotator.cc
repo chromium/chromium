@@ -16,7 +16,7 @@ PageAnnotator::Observer::~Observer() {}
 PageAnnotator::PageAnnotator(mojo::PendingRemote<ia_mojom::Annotator> annotator)
     : annotator_(std::move(annotator)) {}
 
-PageAnnotator::~PageAnnotator() {}
+PageAnnotator::~PageAnnotator() = default;
 
 void PageAnnotator::ImageAddedOrPossiblyModified(
     const ImageMetadata& metadata,
