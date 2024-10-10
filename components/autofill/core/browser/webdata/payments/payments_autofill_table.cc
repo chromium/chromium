@@ -98,6 +98,8 @@ constexpr std::string_view kVirtualCardEnrollmentType =
 constexpr std::string_view kCardArtUrl = "card_art_url";
 constexpr std::string_view kProductDescription = "product_description";
 constexpr std::string_view kProductTermsUrl = "product_terms_url";
+constexpr std::string_view kCardInfoRetrievalEnrollmentState =
+    "card_info_retrieval_enrollment_state";
 
 constexpr std::string_view kServerCardCloudTokenDataTable =
     "server_card_cloud_token_data";
@@ -572,6 +574,9 @@ bool PaymentsAutofillTable::MigrateToVersion(int version,
     case 133:
       *update_compatible_version = true;
       return MigrateToVersion133RemoveLengthColumnFromMaskedIbansTable();
+    case 135:
+      *update_compatible_version = false;
+      return MigrateToVersion135AddCardInfoRetrievalEnrollmentState();
   }
   return true;
 }
@@ -898,16 +903,28 @@ bool PaymentsAutofillTable::GetServerCreditCards(
       });
 
   sql::Statement s;
-  SelectBuilder(
-      db(), s, base::StrCat({kMaskedCreditCardsTable, " AS masked"}),
-      {kLastFour, base::StrCat({"masked.", kId}),
-       base::StrCat({"metadata.", kUseCount}),
-       base::StrCat({"metadata.", kUseDate}), kNetwork, kNameOnCard, kExpMonth,
-       kExpYear, base::StrCat({"metadata.", kBillingAddressId}), kBankName,
-       kNickname, kCardIssuer, kCardIssuerId, kInstrumentId,
-       kVirtualCardEnrollmentState, kVirtualCardEnrollmentType, kCardArtUrl,
-       kProductDescription, kProductTermsUrl},
-      "LEFT OUTER JOIN server_card_metadata AS metadata USING (id)");
+  SelectBuilder(db(), s, base::StrCat({kMaskedCreditCardsTable, " AS masked"}),
+                {kLastFour,
+                 base::StrCat({"masked.", kId}),
+                 base::StrCat({"metadata.", kUseCount}),
+                 base::StrCat({"metadata.", kUseDate}),
+                 kNetwork,
+                 kNameOnCard,
+                 kExpMonth,
+                 kExpYear,
+                 base::StrCat({"metadata.", kBillingAddressId}),
+                 kBankName,
+                 kNickname,
+                 kCardIssuer,
+                 kCardIssuerId,
+                 kInstrumentId,
+                 kVirtualCardEnrollmentState,
+                 kVirtualCardEnrollmentType,
+                 kCardArtUrl,
+                 kProductDescription,
+                 kProductTermsUrl,
+                 kCardInfoRetrievalEnrollmentState},
+                "LEFT OUTER JOIN server_card_metadata AS metadata USING (id)");
   while (s.Step()) {
     int index = 0;
 
@@ -947,6 +964,9 @@ bool PaymentsAutofillTable::GetServerCreditCards(
     card->set_card_art_url(GURL(s.ColumnString(index++)));
     card->set_product_description(s.ColumnString16(index++));
     card->set_product_terms_url(GURL(s.ColumnString(index++)));
+    card->set_card_info_retrieval_enrollment_state(
+        static_cast<CreditCard::CardInfoRetrievalEnrollmentState>(
+            s.ColumnInt(index++)));
     // Add CVC to the the `card` if the CVC storage flag is enabled.
     if (base::FeatureList::IsEnabled(
             features::kAutofillEnableCvcStorageAndFilling)) {
@@ -1170,12 +1190,12 @@ void PaymentsAutofillTable::SetServerCardsData(
 
   // Add all the masked cards.
   sql::Statement masked_insert;
-  InsertBuilder(
-      db(), masked_insert, kMaskedCreditCardsTable,
-      {kId, kNetwork, kNameOnCard, kLastFour, kExpMonth, kExpYear, kBankName,
-       kNickname, kCardIssuer, kCardIssuerId, kInstrumentId,
-       kVirtualCardEnrollmentState, kVirtualCardEnrollmentType, kCardArtUrl,
-       kProductDescription, kProductTermsUrl});
+  InsertBuilder(db(), masked_insert, kMaskedCreditCardsTable,
+                {kId, kNetwork, kNameOnCard, kLastFour, kExpMonth, kExpYear,
+                 kBankName, kNickname, kCardIssuer, kCardIssuerId,
+                 kInstrumentId, kVirtualCardEnrollmentState,
+                 kVirtualCardEnrollmentType, kCardArtUrl, kProductDescription,
+                 kProductTermsUrl, kCardInfoRetrievalEnrollmentState});
 
   int index;
   for (const CreditCard& card : credit_cards) {
@@ -1200,6 +1220,8 @@ void PaymentsAutofillTable::SetServerCardsData(
     masked_insert.BindString(index++, card.card_art_url().spec());
     masked_insert.BindString16(index++, card.product_description());
     masked_insert.BindString(index++, card.product_terms_url().spec());
+    masked_insert.BindInt(
+        index++, static_cast<int>(card.card_info_retrieval_enrollment_state()));
     masked_insert.Run();
     masked_insert.Reset(/*clear_bound_vars=*/true);
   }
@@ -2054,16 +2076,24 @@ bool PaymentsAutofillTable::
   return DropColumnIfExists(db(), kMaskedIbansTable, "length");
 }
 
+bool PaymentsAutofillTable::
+    MigrateToVersion135AddCardInfoRetrievalEnrollmentState() {
+  return db()->DoesTableExist(kMaskedCreditCardsTable) &&
+         AddColumnIfNotExists(db(), kMaskedCreditCardsTable,
+                              kCardInfoRetrievalEnrollmentState,
+                              "INTEGER DEFAULT 0");
+}
+
 void PaymentsAutofillTable::AddMaskedCreditCards(
     const std::vector<CreditCard>& credit_cards) {
   DCHECK_GT(db()->transaction_nesting(), 0);
   sql::Statement masked_insert;
-  InsertBuilder(
-      db(), masked_insert, kMaskedCreditCardsTable,
-      {kId, kNetwork, kNameOnCard, kLastFour, kExpMonth, kExpYear, kBankName,
-       kNickname, kCardIssuer, kCardIssuerId, kInstrumentId,
-       kVirtualCardEnrollmentState, kVirtualCardEnrollmentType, kCardArtUrl,
-       kProductDescription, kProductTermsUrl});
+  InsertBuilder(db(), masked_insert, kMaskedCreditCardsTable,
+                {kId, kNetwork, kNameOnCard, kLastFour, kExpMonth, kExpYear,
+                 kBankName, kNickname, kCardIssuer, kCardIssuerId,
+                 kInstrumentId, kVirtualCardEnrollmentState,
+                 kVirtualCardEnrollmentType, kCardArtUrl, kProductDescription,
+                 kProductTermsUrl, kCardInfoRetrievalEnrollmentState});
 
   int index;
   for (const CreditCard& card : credit_cards) {
@@ -2088,6 +2118,8 @@ void PaymentsAutofillTable::AddMaskedCreditCards(
     masked_insert.BindString(index++, card.card_art_url().spec());
     masked_insert.BindString16(index++, card.product_description());
     masked_insert.BindString(index++, card.product_terms_url().spec());
+    masked_insert.BindInt(
+        index++, static_cast<int>(card.card_info_retrieval_enrollment_state()));
     masked_insert.Run();
     masked_insert.Reset(/*clear_bound_vars=*/true);
 
@@ -2157,7 +2189,8 @@ bool PaymentsAutofillTable::InitMaskedCreditCardsTable() {
        {kProductDescription, "VARCHAR"},
        {kCardIssuerId, "VARCHAR"},
        {kVirtualCardEnrollmentType, "INTEGER DEFAULT 0"},
-       {kProductTermsUrl, "VARCHAR"}});
+       {kProductTermsUrl, "VARCHAR"},
+       {kCardInfoRetrievalEnrollmentState, "INTEGER DEFAULT 0"}});
 }
 
 bool PaymentsAutofillTable::InitMaskedIbansTable() {

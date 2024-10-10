@@ -108,6 +108,21 @@ class CreditCard : public AutofillDataModel {
     kNetwork = 2,
   };
 
+  // Whether the card has been enrolled in the card info retrieval feature.
+  // This must stay in sync with the proto enum in autofill_specifics.proto.
+  // A java IntDef@ is generated from this.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
+  enum class CardInfoRetrievalEnrollmentState {
+    // State unspecified. This is the default value of this enum.
+    kRetrievalUnspecified = 0,
+    // Card is enrolled for card info retrieval.
+    kRetrievalEnrolled = 1,
+    // Card is not enrolled and is not eligible for enrollment.
+    kRetrievalUnenrolledAndNotEligible = 2,
+    // Card is not enrolled but is eligible for enrollment.
+    kRetrievalUnenrolledAndEligible = 3,
+  };
+
   // Creates a copy of the passed in credit card, and sets its `record_type` to
   // `CreditCard::RecordType::kVirtualCard`. This is used to differentiate
   // virtual cards from their real counterpart on the UI layer.
@@ -480,6 +495,16 @@ class CreditCard : public AutofillDataModel {
     cvc_modification_date_ = date;
   }
 
+  CardInfoRetrievalEnrollmentState card_info_retrieval_enrollment_state()
+      const {
+    return card_info_retrieval_enrollment_state_;
+  }
+  void set_card_info_retrieval_enrollment_state(
+      CardInfoRetrievalEnrollmentState card_info_retrieval_enrollment_state) {
+    card_info_retrieval_enrollment_state_ =
+        card_info_retrieval_enrollment_state;
+  }
+
  private:
   friend class CreditCardTestApi;
 
@@ -611,6 +636,10 @@ class CreditCard : public AutofillDataModel {
   // CVCs can be updated independently of the card and track their modification
   // date independently. The timestamp `is_null()` for cards without CVC.
   base::Time cvc_modification_date_;
+
+  // The card info retrieval enrollment state of this card.
+  CardInfoRetrievalEnrollmentState card_info_retrieval_enrollment_state_ =
+      CardInfoRetrievalEnrollmentState::kRetrievalUnspecified;
 };
 
 // So we can compare CreditCards with EXPECT_EQ().

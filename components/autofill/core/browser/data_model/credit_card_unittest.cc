@@ -1038,6 +1038,43 @@ TEST(CreditCardTest, Compare) {
   EXPECT_LT(0, b.Compare(a));
 }
 
+TEST(CreditCardTest, CompareCardInfoRetrievalEnrollmentState) {
+  CreditCard a(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+               std::string());
+  CreditCard b(base::Uuid::GenerateRandomV4().AsLowercaseString(),
+               std::string());
+
+  // Empty cards are the same.
+  EXPECT_EQ(0, a.Compare(b));
+
+  // Difference in card_info_retrieval_enrollment_state.
+  a.set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::
+          kRetrievalUnenrolledAndNotEligible);
+  b.set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
+  EXPECT_NE(0, a.Compare(b));
+  // Card with UNSPECIFIED enrollment state is different from ENROLLED state.
+  a.set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalUnspecified);
+  b.set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
+  EXPECT_NE(0, a.Compare(b));
+  // Reset the enrollment state to UNSPECIFIED and UNSPECIFIED states are
+  // considered the same.
+  a.set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalUnspecified);
+  b.set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalUnspecified);
+  EXPECT_EQ(0, a.Compare(b));
+  // Two same non UNSPECIFIED enrollment states are considered the same.
+  a.set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
+  b.set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
+  EXPECT_EQ(0, a.Compare(b));
+}
+
 // Test we get the correct icon for each card type.
 TEST(CreditCardTest, IconResourceId) {
   base::test::ScopedFeatureList scoped_feature_list{
