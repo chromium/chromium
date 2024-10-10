@@ -2227,7 +2227,7 @@ targets.legacy_basic_suite(
                 "--extra-browser-args=--enable-features=WebGPUExperimentalFeatures --use-webgpu-adapter=opengles",
             ],
             android_args = [
-                "--extra-browser-args=--use-angle=gles-egl",
+                "--extra-browser-args=--use-angle=gles --disable-features=Vulkan",
             ],
             linux_args = [
                 "--extra-browser-args=--use-angle=gl",
