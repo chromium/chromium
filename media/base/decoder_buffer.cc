@@ -218,8 +218,21 @@ bool DecoderBuffer::MatchesForTesting(const DecoderBuffer& buffer) const {
 }
 
 std::string DecoderBuffer::AsHumanReadableString(bool verbose) const {
-  if (end_of_stream())
-    return "EOS";
+  if (end_of_stream()) {
+    if (!next_config()) {
+      return "EOS";
+    }
+
+    std::string config;
+    const auto nc = next_config().value();
+    if (const auto* ac = absl::get_if<media::AudioDecoderConfig>(&nc)) {
+      config = ac->AsHumanReadableString();
+    } else {
+      config = absl::get<media::VideoDecoderConfig>(nc).AsHumanReadableString();
+    }
+
+    return base::StringPrintf("EOS config=(%s)", config.c_str());
+  }
 
   std::ostringstream s;
 
