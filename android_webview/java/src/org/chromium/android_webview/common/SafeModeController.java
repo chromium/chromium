@@ -279,7 +279,7 @@ public class SafeModeController {
             RecordHistogram.recordEnumeratedHistogram(
                     "Android.WebView.SafeMode.ActionName",
                     sSafeModeActionLoggingMap.get(actionName),
-                    SafeModeExecutionResult.COUNT);
+                    SafeModeActionName.COUNT);
         }
     }
 
