@@ -53,8 +53,8 @@ XRHand::XRHand(const device::mojom::blink::XRHandTrackingData* state,
   for (unsigned i = 0; i < kNumJoints; ++i) {
     device::mojom::blink::XRHandJoint joint =
         static_cast<device::mojom::blink::XRHandJoint>(i);
-    DCHECK_EQ(MojomHandJointToString(joint),
-              V8XRHandJoint(static_cast<V8XRHandJoint::Enum>(i)).AsString());
+    DCHECK_EQ(MojomHandJointToV8Enum(joint),
+              static_cast<V8XRHandJoint::Enum>(i));
     joints_[i] = MakeGarbageCollected<XRJointSpace>(
         this, input_source->session(), nullptr, joint, 0.0f,
         input_source->xr_handedness());

@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_image_tracking_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_render_state_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_transient_input_hit_test_options_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_visibility_state.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
@@ -208,24 +209,27 @@ HashSet<uint64_t> GetIdsOfUnusedHitTestSources(
   return unused_hit_test_source_ids;
 }
 
-String DepthUsageToString(device::mojom::XRDepthUsage usage) {
+V8XRDepthUsage::Enum DepthUsageToEnum(device::mojom::XRDepthUsage usage) {
   switch (usage) {
     case device::mojom::XRDepthUsage::kCPUOptimized:
-      return "cpu-optimized";
+      return V8XRDepthUsage::Enum::kCpuOptimized;
     case device::mojom::XRDepthUsage::kGPUOptimized:
-      return "gpu-optimized";
+      return V8XRDepthUsage::Enum::kGpuOptimized;
   }
+  NOTREACHED();
 }
 
-String DepthDataFormatToString(device::mojom::XRDepthDataFormat data_format) {
+V8XRDepthDataFormat::Enum DepthDataFormatToEnum(
+    device::mojom::XRDepthDataFormat data_format) {
   switch (data_format) {
     case device::mojom::XRDepthDataFormat::kLuminanceAlpha:
-      return "luminance-alpha";
+      return V8XRDepthDataFormat::Enum::kLuminanceAlpha;
     case device::mojom::XRDepthDataFormat::kFloat32:
-      return "float32";
+      return V8XRDepthDataFormat::Enum::kFloat32;
     case device::mojom::XRDepthDataFormat::kUnsignedShort:
-      return "unsigned-short";
+      return V8XRDepthDataFormat::Enum::kUnsignedShort;
   }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -383,13 +387,13 @@ XRSession::XRSession(
 
   switch (environment_blend_mode) {
     case device::mojom::blink::XREnvironmentBlendMode::kOpaque:
-      blend_mode_string_ = "opaque";
+      blend_mode_ = V8XREnvironmentBlendMode::Enum::kOpaque;
       break;
     case device::mojom::blink::XREnvironmentBlendMode::kAdditive:
-      blend_mode_string_ = "additive";
+      blend_mode_ = V8XREnvironmentBlendMode::Enum::kAdditive;
       break;
     case device::mojom::blink::XREnvironmentBlendMode::kAlphaBlend:
-      blend_mode_string_ = "alpha-blend";
+      blend_mode_ = V8XREnvironmentBlendMode::Enum::kAlphaBlend;
       break;
     default:
       NOTREACHED_IN_MIGRATION()
@@ -398,18 +402,17 @@ XRSession::XRSession(
 
   switch (interaction_mode) {
     case device::mojom::blink::XRInteractionMode::kScreenSpace:
-      interaction_mode_string_ = "screen-space";
+      interaction_mode_ = V8XRInteractionMode::Enum::kScreenSpace;
       break;
     case device::mojom::blink::XRInteractionMode::kWorldSpace:
-      interaction_mode_string_ = "world-space";
+      interaction_mode_ = V8XRInteractionMode::Enum::kWorldSpace;
       break;
   }
 
   if (device_config_->depth_configuration) {
     auto* depth_config = device_config_->depth_configuration.get();
-    depth_usage_string_ = DepthUsageToString(depth_config->depth_usage);
-    depth_data_format_string_ =
-        DepthDataFormatToString(depth_config->depth_data_format);
+    depth_usage_ = DepthUsageToEnum(depth_config->depth_usage);
+    depth_data_format_ = DepthDataFormatToEnum(depth_config->depth_data_format);
   }
 }
 
@@ -431,14 +434,14 @@ void XRSession::SetDOMOverlayElement(Element* element) {
       V8XRDOMOverlayType::Enum::kScreen);
 }
 
-const String XRSession::visibilityState() const {
+V8XRVisibilityState XRSession::visibilityState() const {
   switch (visibility_state_) {
     case XRVisibilityState::VISIBLE:
-      return "visible";
+      return V8XRVisibilityState(V8XRVisibilityState::Enum::kVisible);
     case XRVisibilityState::VISIBLE_BLURRED:
-      return "visible-blurred";
+      return V8XRVisibilityState(V8XRVisibilityState::Enum::kVisibleBlurred);
     case XRVisibilityState::HIDDEN:
-      return "hidden";
+      return V8XRVisibilityState(V8XRVisibilityState::Enum::kHidden);
   }
 }
 
@@ -540,24 +543,26 @@ void XRSession::updateRenderState(XRRenderStateInit* init,
   MaybeRequestFrame();
 }
 
-const String& XRSession::depthUsage(ExceptionState& exception_state) {
+std::optional<V8XRDepthUsage> XRSession::depthUsage(
+    ExceptionState& exception_state) {
   if (!device_config_->depth_configuration) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kDepthSensingFeatureNotSupported);
-    return g_empty_string;
+    return std::nullopt;
   }
 
-  return depth_usage_string_;
+  return V8XRDepthUsage(depth_usage_);
 }
 
-const String& XRSession::depthDataFormat(ExceptionState& exception_state) {
+std::optional<V8XRDepthDataFormat> XRSession::depthDataFormat(
+    ExceptionState& exception_state) {
   if (!device_config_->depth_configuration) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kDepthSensingFeatureNotSupported);
-    return g_empty_string;
+    return std::nullopt;
   }
 
-  return depth_data_format_string_;
+  return V8XRDepthDataFormat(depth_data_format_);
 }
 
 void XRSession::UpdateViews(Vector<device::mojom::blink::XRViewPtr> views) {

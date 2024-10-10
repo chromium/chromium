@@ -67,8 +67,8 @@ bool XRJointSpace::IsStationary() const {
   return false;
 }
 
-const String XRJointSpace::jointName() const {
-  return MojomHandJointToString(joint_);
+V8XRHandJoint XRJointSpace::jointName() const {
+  return V8XRHandJoint(MojomHandJointToV8Enum(joint_));
 }
 
 std::string XRJointSpace::ToString() const {

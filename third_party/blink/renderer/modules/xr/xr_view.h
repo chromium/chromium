@@ -20,6 +20,7 @@
 
 namespace blink {
 
+class V8XREye;
 class XRCamera;
 class XRCPUDepthInformation;
 class XRDepthManager;
@@ -36,7 +37,7 @@ class MODULES_EXPORT XRView final : public ScriptWrappable {
          XRViewData* view_data,
          const gfx::Transform& ref_space_from_mojo);
 
-  const String& eye() const { return eye_string_; }
+  V8XREye eye() const;
   device::mojom::blink::XREye EyeValue() const { return eye_; }
   XRViewData* ViewData() const { return view_data_.Get(); }
   XRViewport* Viewport(double scale);
@@ -65,7 +66,6 @@ class MODULES_EXPORT XRView final : public ScriptWrappable {
 
  private:
   device::mojom::blink::XREye eye_;
-  String eye_string_;
   Member<XRFrame> frame_;
   Member<XRViewData> view_data_;
   // The transform from the view to the reference space requested by

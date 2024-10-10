@@ -121,62 +121,61 @@ device::mojom::blink::XRHandJoint StringToMojomHandJoint(
   return device::mojom::blink::XRHandJoint::kMaxValue;
 }
 
-String MojomHandJointToString(device::mojom::blink::XRHandJoint hand_joint) {
+V8XRHandJoint::Enum MojomHandJointToV8Enum(
+    device::mojom::blink::XRHandJoint hand_joint) {
   switch (hand_joint) {
     case device::mojom::blink::XRHandJoint::kWrist:
-      return "wrist";
+      return V8XRHandJoint::Enum::kWrist;
     case device::mojom::blink::XRHandJoint::kThumbMetacarpal:
-      return "thumb-metacarpal";
+      return V8XRHandJoint::Enum::kThumbMetacarpal;
     case device::mojom::blink::XRHandJoint::kThumbPhalanxProximal:
-      return "thumb-phalanx-proximal";
+      return V8XRHandJoint::Enum::kThumbPhalanxProximal;
     case device::mojom::blink::XRHandJoint::kThumbPhalanxDistal:
-      return "thumb-phalanx-distal";
+      return V8XRHandJoint::Enum::kThumbPhalanxDistal;
     case device::mojom::blink::XRHandJoint::kThumbTip:
-      return "thumb-tip";
+      return V8XRHandJoint::Enum::kThumbTip;
     case device::mojom::blink::XRHandJoint::kIndexFingerMetacarpal:
-      return "index-finger-metacarpal";
+      return V8XRHandJoint::Enum::kIndexFingerMetacarpal;
     case device::mojom::blink::XRHandJoint::kIndexFingerPhalanxProximal:
-      return "index-finger-phalanx-proximal";
+      return V8XRHandJoint::Enum::kIndexFingerPhalanxProximal;
     case device::mojom::blink::XRHandJoint::kIndexFingerPhalanxIntermediate:
-      return "index-finger-phalanx-intermediate";
+      return V8XRHandJoint::Enum::kIndexFingerPhalanxIntermediate;
     case device::mojom::blink::XRHandJoint::kIndexFingerPhalanxDistal:
-      return "index-finger-phalanx-distal";
+      return V8XRHandJoint::Enum::kIndexFingerPhalanxDistal;
     case device::mojom::blink::XRHandJoint::kIndexFingerTip:
-      return "index-finger-tip";
+      return V8XRHandJoint::Enum::kIndexFingerTip;
     case device::mojom::blink::XRHandJoint::kMiddleFingerMetacarpal:
-      return "middle-finger-metacarpal";
+      return V8XRHandJoint::Enum::kMiddleFingerMetacarpal;
     case device::mojom::blink::XRHandJoint::kMiddleFingerPhalanxProximal:
-      return "middle-finger-phalanx-proximal";
+      return V8XRHandJoint::Enum::kMiddleFingerPhalanxProximal;
     case device::mojom::blink::XRHandJoint::kMiddleFingerPhalanxIntermediate:
-      return "middle-finger-phalanx-intermediate";
+      return V8XRHandJoint::Enum::kMiddleFingerPhalanxIntermediate;
     case device::mojom::blink::XRHandJoint::kMiddleFingerPhalanxDistal:
-      return "middle-finger-phalanx-distal";
+      return V8XRHandJoint::Enum::kMiddleFingerPhalanxDistal;
     case device::mojom::blink::XRHandJoint::kMiddleFingerTip:
-      return "middle-finger-tip";
+      return V8XRHandJoint::Enum::kMiddleFingerTip;
     case device::mojom::blink::XRHandJoint::kRingFingerMetacarpal:
-      return "ring-finger-metacarpal";
+      return V8XRHandJoint::Enum::kRingFingerMetacarpal;
     case device::mojom::blink::XRHandJoint::kRingFingerPhalanxProximal:
-      return "ring-finger-phalanx-proximal";
+      return V8XRHandJoint::Enum::kRingFingerPhalanxProximal;
     case device::mojom::blink::XRHandJoint::kRingFingerPhalanxIntermediate:
-      return "ring-finger-phalanx-intermediate";
+      return V8XRHandJoint::Enum::kRingFingerPhalanxIntermediate;
     case device::mojom::blink::XRHandJoint::kRingFingerPhalanxDistal:
-      return "ring-finger-phalanx-distal";
+      return V8XRHandJoint::Enum::kRingFingerPhalanxDistal;
     case device::mojom::blink::XRHandJoint::kRingFingerTip:
-      return "ring-finger-tip";
+      return V8XRHandJoint::Enum::kRingFingerTip;
     case device::mojom::blink::XRHandJoint::kPinkyFingerMetacarpal:
-      return "pinky-finger-metacarpal";
+      return V8XRHandJoint::Enum::kPinkyFingerMetacarpal;
     case device::mojom::blink::XRHandJoint::kPinkyFingerPhalanxProximal:
-      return "pinky-finger-phalanx-proximal";
+      return V8XRHandJoint::Enum::kPinkyFingerPhalanxProximal;
     case device::mojom::blink::XRHandJoint::kPinkyFingerPhalanxIntermediate:
-      return "pinky-finger-phalanx-intermediate";
+      return V8XRHandJoint::Enum::kPinkyFingerPhalanxIntermediate;
     case device::mojom::blink::XRHandJoint::kPinkyFingerPhalanxDistal:
-      return "pinky-finger-phalanx-distal";
+      return V8XRHandJoint::Enum::kPinkyFingerPhalanxDistal;
     case device::mojom::blink::XRHandJoint::kPinkyFingerTip:
-      return "pinky-finger-tip";
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      return V8XRHandJoint::Enum::kPinkyFingerTip;
   }
+  NOTREACHED();
 }
 
 std::optional<device::mojom::XRSessionFeature> StringToXRSessionFeature(

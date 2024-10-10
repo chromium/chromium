@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_eye.h"
 #include "third_party/blink/renderer/modules/xr/xr_camera.h"
 #include "third_party/blink/renderer/modules/xr/xr_depth_manager.h"
 #include "third_party/blink/renderer/modules/xr/xr_frame.h"
@@ -35,16 +36,6 @@ XRView::XRView(XRFrame* frame,
                XRViewData* view_data,
                const gfx::Transform& ref_space_from_mojo)
     : eye_(view_data->Eye()), frame_(frame), view_data_(view_data) {
-  switch (eye_) {
-    case device::mojom::blink::XREye::kLeft:
-      eye_string_ = "left";
-      break;
-    case device::mojom::blink::XREye::kRight:
-      eye_string_ = "right";
-      break;
-    default:
-      eye_string_ = "none";
-  }
   ref_space_from_view_ = MakeGarbageCollected<XRRigidTransform>(
       ref_space_from_mojo * view_data->MojoFromView());
   projection_matrix_ =
@@ -62,6 +53,18 @@ XRViewport* XRView::Viewport(double framebuffer_scale) {
   }
 
   return viewport_.Get();
+}
+
+V8XREye XRView::eye() const {
+  switch (eye_) {
+    case device::mojom::blink::XREye::kLeft:
+      return V8XREye(V8XREye::Enum::kLeft);
+    case device::mojom::blink::XREye::kRight:
+      return V8XREye(V8XREye::Enum::kRight);
+    case device::mojom::blink::XREye::kNone:
+      return V8XREye(V8XREye::Enum::kNone);
+  }
+  NOTREACHED();
 }
 
 XRFrame* XRView::frame() const {

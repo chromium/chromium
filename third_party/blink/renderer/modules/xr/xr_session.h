@@ -17,8 +17,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_depth_data_format.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_depth_usage.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_environment_blend_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_image_tracking_score.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_interaction_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_light_probe_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_reflection_format.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/xr/average_timer.h"
@@ -45,6 +50,7 @@ class HTMLCanvasElement;
 class ResizeObserver;
 class V8XRFrameRequestCallback;
 class V8XRReferenceSpaceType;
+class V8XRVisibilityState;
 class XRAnchor;
 class XRAnchorSet;
 class XRCanvasInputProvider;
@@ -135,12 +141,16 @@ class XRSession final : public EventTarget,
   ~XRSession() override = default;
 
   XRSystem* xr() const { return xr_.Get(); }
-  const String& environmentBlendMode() const { return blend_mode_string_; }
-  const String& interactionMode() const { return interaction_mode_string_; }
+  V8XREnvironmentBlendMode environmentBlendMode() const {
+    return V8XREnvironmentBlendMode(blend_mode_);
+  }
+  V8XRInteractionMode interactionMode() const {
+    return V8XRInteractionMode(interaction_mode_);
+  }
   XRDOMOverlayState* domOverlayState() const {
     return dom_overlay_state_.Get();
   }
-  const String visibilityState() const;
+  V8XRVisibilityState visibilityState() const;
   std::optional<float> frameRate() const { return std::nullopt; }
   DOMFloat32Array* supportedFrameRates() const { return nullptr; }
   XRRenderState* renderState() const { return render_state_.Get(); }
@@ -148,7 +158,9 @@ class XRSession final : public EventTarget,
   // ARCore by default returns textures in RGBA half-float HDR format and no
   // other runtimes support reflection mapping, so just return this until we
   // have a need to differentiate based on the underlying runtime.
-  const String preferredReflectionFormat() const { return "rgba16f"; }
+  V8XRReflectionFormat preferredReflectionFormat() const {
+    return V8XRReflectionFormat(V8XRReflectionFormat::Enum::kRgba16F);
+  }
 
   const FrozenArray<IDLString>& enabledFeatures() const;
 
@@ -175,8 +187,9 @@ class XRSession final : public EventTarget,
   void updateRenderState(XRRenderStateInit* render_state_init,
                          ExceptionState& exception_state);
 
-  const String& depthUsage(ExceptionState& exception_state);
-  const String& depthDataFormat(ExceptionState& exception_state);
+  std::optional<V8XRDepthUsage> depthUsage(ExceptionState& exception_state);
+  std::optional<V8XRDepthDataFormat> depthDataFormat(
+      ExceptionState& exception_state);
 
   ScriptPromise<IDLUndefined> updateTargetFrameRate(float rate,
                                                     ExceptionState&);
@@ -483,8 +496,8 @@ class XRSession final : public EventTarget,
   const Member<XRSystem> xr_;
   const device::mojom::blink::XRSessionMode mode_;
   const bool environment_integration_;
-  String blend_mode_string_;
-  String interaction_mode_string_;
+  V8XREnvironmentBlendMode::Enum blend_mode_;
+  V8XRInteractionMode::Enum interaction_mode_;
   XRVisibilityState device_visibility_state_ = XRVisibilityState::VISIBLE;
   XRVisibilityState visibility_state_ = XRVisibilityState::VISIBLE;
   String visibility_state_string_;
@@ -493,8 +506,8 @@ class XRSession final : public EventTarget,
   // Put the device config fairly early in the list of members so that it can be
   // used to initialize other members.
   device::mojom::blink::XRSessionDeviceConfigPtr device_config_;
-  String depth_usage_string_;
-  String depth_data_format_string_;
+  V8XRDepthUsage::Enum depth_usage_;
+  V8XRDepthDataFormat::Enum depth_data_format_;
 
   Member<XRLightProbe> world_light_probe_;
   HeapVector<Member<XRRenderStateInit>> pending_render_state_;

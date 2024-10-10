@@ -27,6 +27,8 @@ using Gamepad = GamepadImpl<void>;
 namespace blink {
 
 class Element;
+class V8XRHandedness;
+class V8XRTargetRayMode;
 class XRGripSpace;
 class XRHand;
 class XRInputSourceEvent;
@@ -62,8 +64,8 @@ class XRInputSource : public ScriptWrappable, public Gamepad::Client {
     return state_.handedness;
   }
 
-  const String handedness() const;
-  const String targetRayMode() const;
+  V8XRHandedness handedness() const;
+  V8XRTargetRayMode targetRayMode() const;
   bool emulatedPosition() const { return state_.emulated_position; }
   XRSpace* targetRaySpace() const;
   XRSpace* gripSpace() const;
