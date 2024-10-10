@@ -132,8 +132,7 @@ GeneratePasskeyAndEncryptSecrets(std::string_view rp_id,
   specifics.set_user_id(user_entity.id.data(), user_entity.id.size());
   specifics.set_user_name(user_entity.name);
   specifics.set_user_display_name(user_entity.display_name);
-  specifics.set_creation_time(
-      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  specifics.set_creation_time(base::Time::Now().InMillisecondsSinceUnixEpoch());
 
   sync_pb::WebauthnCredentialSpecifics_Encrypted encrypted;
   auto ec_key = crypto::ECPrivateKey::Create();
