@@ -53,8 +53,6 @@ using OIT = metrics::OmniboxInputType;
 namespace {
 
 using ResultType = ZeroSuggestProvider::ResultType;
-constexpr bool is_ios = !!BUILDFLAG(IS_IOS);
-constexpr bool is_android = !!BUILDFLAG(IS_ANDROID);
 
 // Represents whether ZeroSuggestProvider is allowed to display zero-prefix
 // suggestions, and if not, why not.
@@ -273,31 +271,19 @@ ResultType ResultTypeForInput(const AutocompleteInput& input) {
     return ResultType::kNone;
   }
 
-  // Open Web - does NOT include Search Results Page.
-  if (omnibox::IsOtherWebPage(page_class)) {
+  // Open Web and Search Results Page.
+  if (omnibox::IsOtherWebPage(page_class) ||
+      omnibox::IsSearchResultsPage(page_class)) {
     if (focus_type_input_type ==
             std::make_pair(OFT::INTERACTION_FOCUS, OIT::URL) &&
-        (is_ios || is_android)) {
+        !base::FeatureList::IsEnabled(
+            omnibox::kOmniboxOnClobberFocusTypeOnContent)) {
       return ResultType::kRemoteSendURL;
     }
     if (focus_type_input_type ==
             std::make_pair(OFT::INTERACTION_CLOBBER, OIT::EMPTY) &&
-        base::FeatureList::IsEnabled(
-            omnibox::kClobberTriggersContextualWebZeroSuggest)) {
-      return ResultType::kRemoteSendURL;
-    }
-  }
-
-  // Search Results Page.
-  if (omnibox::IsSearchResultsPage(page_class)) {
-    if (focus_type_input_type ==
-            std::make_pair(OFT::INTERACTION_FOCUS, OIT::URL) &&
-        (is_ios || is_android)) {
-      return ResultType::kRemoteSendURL;
-    }
-    if (focus_type_input_type ==
-            std::make_pair(OFT::INTERACTION_CLOBBER, OIT::EMPTY) &&
-        base::FeatureList::IsEnabled(omnibox::kClobberTriggersSRPZeroSuggest)) {
+        (base::FeatureList::IsEnabled(
+            omnibox::kOmniboxOnClobberFocusTypeOnContent))) {
       return ResultType::kRemoteSendURL;
     }
   }

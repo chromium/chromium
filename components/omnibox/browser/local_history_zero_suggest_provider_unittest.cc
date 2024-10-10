@@ -304,9 +304,7 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, EntryPoint) {
   {
     // Disable local history zero-prefix suggestions beyond NTP.
     base::test::ScopedFeatureList features;
-    features.InitWithFeatures(
-        /*enabled_features=*/{},
-        /*disabled_features=*/{omnibox::kLocalHistoryZeroSuggestBeyondNTP});
+    features.InitAndDisableFeature(omnibox::kLocalHistoryZeroSuggestBeyondNTP);
     StartProviderAndWaitUntilDone(
         /*text=*/"https://example.com/",
         metrics::OmniboxFocusType::INTERACTION_FOCUS,
@@ -320,43 +318,19 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, EntryPoint) {
     // Enable local history zero-prefix suggestions beyond NTP.
     base::test::ScopedFeatureList features;
     features.InitWithFeatures(
-        /*enabled_features=*/
-        {
-            omnibox::kLocalHistoryZeroSuggestBeyondNTP,
-        },
-        /*disabled_features=*/{});
+        /*enabled_features=*/{omnibox::kLocalHistoryZeroSuggestBeyondNTP,
+                              },
+        /*disabled_features=*/{omnibox::kOmniboxOnClobberFocusTypeOnContent});
     StartProviderAndWaitUntilDone(
         /*text=*/"https://example.com/",
         metrics::OmniboxFocusType::INTERACTION_FOCUS,
         OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
         /*current_url=*/"https://example.com/");
 
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
     // Local history zero-prefix suggestions are enabled for on-focus SRP.
     ExpectMatches(
         {{"hello world", kLocalHistoryZeroSuggestRelevanceScore.Get()}});
-#else
-    // Desktop does not support that.
-    ExpectMatches({});
-#endif
   }
-#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
-  {
-    // Enable local history zero-prefix suggestions beyond NTP.
-    base::test::ScopedFeatureList features;
-    features.InitWithFeatures(
-        /*enabled_features=*/{omnibox::kLocalHistoryZeroSuggestBeyondNTP},
-        /*disabled_features=*/{});
-    StartProviderAndWaitUntilDone(
-        /*text=*/"https://example.com/",
-        metrics::OmniboxFocusType::INTERACTION_FOCUS,
-        OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT,
-        /*current_url=*/"https://example.com/");
-
-    // Local history zero-prefix suggestions are disabled for on-focus SRP.
-    ExpectMatches({});
-  }
-#endif
 }
 
 // Tests that search terms are extracted from the default search provider's

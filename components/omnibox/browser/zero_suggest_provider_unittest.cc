@@ -377,16 +377,11 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsContextualWebAndSRP) {
   AutocompleteInput on_clobber_srp_input = OnClobberInputForSRP();
   AutocompleteInput on_focus_lens_input = OnFocusInputForLens();
 
-  // Disable on-clobber for OTHER and SRP.
+  // Disable interaction clobber on content.
   {
     base::test::ScopedFeatureList features;
-    features.InitWithFeatures(
-        /*enabled_features=*/
-        {},
-        /*disabled_features=*/{
-            omnibox::kClobberTriggersContextualWebZeroSuggest,
-            omnibox::kClobberTriggersSRPZeroSuggest,
-        });
+    features.InitAndDisableFeature(
+        omnibox::kOmniboxOnClobberFocusTypeOnContent);
 
     EXPECT_EQ(std::make_pair(ZeroSuggestProvider::ResultType::kNone, false),
               ZeroSuggestProvider::GetResultTypeAndEligibility(
@@ -396,24 +391,14 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsContextualWebAndSRP) {
               ZeroSuggestProvider::GetResultTypeAndEligibility(
                   client_.get(), prefix_srp_input));
 
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
     EXPECT_EQ(
         std::make_pair(ZeroSuggestProvider::ResultType::kRemoteSendURL, true),
         ZeroSuggestProvider::GetResultTypeAndEligibility(client_.get(),
                                                          on_focus_web_input));
-
     EXPECT_EQ(
         std::make_pair(ZeroSuggestProvider::ResultType::kRemoteSendURL, true),
         ZeroSuggestProvider::GetResultTypeAndEligibility(client_.get(),
                                                          on_focus_srp_input));
-#else
-    EXPECT_EQ(std::make_pair(ZeroSuggestProvider::ResultType::kNone, false),
-              ZeroSuggestProvider::GetResultTypeAndEligibility(
-                  client_.get(), on_focus_web_input));
-    EXPECT_EQ(std::make_pair(ZeroSuggestProvider::ResultType::kNone, false),
-              ZeroSuggestProvider::GetResultTypeAndEligibility(
-                  client_.get(), on_focus_srp_input));
-#endif
 
     EXPECT_EQ(std::make_pair(ZeroSuggestProvider::ResultType::kNone, false),
               ZeroSuggestProvider::GetResultTypeAndEligibility(
@@ -432,9 +417,8 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsContextualWebAndSRP) {
   {
     base::test::ScopedFeatureList features;
     features.InitWithFeatures(
-        /*enabled_features=*/{omnibox::kClobberTriggersSRPZeroSuggest},
-        /*disabled_features=*/{
-            omnibox::kClobberTriggersContextualWebZeroSuggest});
+        /*enabled_features=*/{omnibox::kOmniboxOnClobberFocusTypeOnContent},
+        /*disabled_features=*/{});
 
     EXPECT_EQ(std::make_pair(ZeroSuggestProvider::ResultType::kNone, false),
               ZeroSuggestProvider::GetResultTypeAndEligibility(
@@ -444,31 +428,18 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsContextualWebAndSRP) {
               ZeroSuggestProvider::GetResultTypeAndEligibility(
                   client_.get(), prefix_srp_input));
 
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-    EXPECT_EQ(
-        std::make_pair(ZeroSuggestProvider::ResultType::kRemoteSendURL, true),
-        ZeroSuggestProvider::GetResultTypeAndEligibility(client_.get(),
-                                                         on_focus_web_input));
-#else
     EXPECT_EQ(std::make_pair(ZeroSuggestProvider::ResultType::kNone, false),
               ZeroSuggestProvider::GetResultTypeAndEligibility(
                   client_.get(), on_focus_web_input));
-#endif
 
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-    EXPECT_EQ(
-        std::make_pair(ZeroSuggestProvider::ResultType::kRemoteSendURL, true),
-        ZeroSuggestProvider::GetResultTypeAndEligibility(client_.get(),
-                                                         on_focus_srp_input));
-#else
     EXPECT_EQ(std::make_pair(ZeroSuggestProvider::ResultType::kNone, false),
               ZeroSuggestProvider::GetResultTypeAndEligibility(
                   client_.get(), on_focus_srp_input));
-#endif
 
-    EXPECT_EQ(std::make_pair(ZeroSuggestProvider::ResultType::kNone, false),
-              ZeroSuggestProvider::GetResultTypeAndEligibility(
-                  client_.get(), on_clobber_web_input));
+    EXPECT_EQ(
+        std::make_pair(ZeroSuggestProvider::ResultType::kRemoteSendURL, true),
+        ZeroSuggestProvider::GetResultTypeAndEligibility(client_.get(),
+                                                         on_clobber_web_input));
 
     EXPECT_EQ(
         std::make_pair(ZeroSuggestProvider::ResultType::kRemoteSendURL, true),
@@ -487,6 +458,7 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsContextualWebAndSRP) {
 TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsRequestEligibility) {
   // Enable on-focus for OTHER and SRP.
   base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(omnibox::kOmniboxOnClobberFocusTypeOnContent);
 
   // Keep a reference to the Google default search provider.
   TemplateURLService* template_url_service = client_->GetTemplateURLService();
@@ -507,11 +479,7 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsRequestEligibility) {
     const auto& input = OnFocusInputForWeb();
     const auto [result_type, eligible] =
         ZeroSuggestProvider::GetResultTypeAndEligibility(client_.get(), input);
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL, result_type);
-#else
-    EXPECT_EQ(ZeroSuggestProvider::ResultType::kNone, result_type);
-#endif
     // Requires personalized URL data collection to be active.
     return eligible && client_->IsPersonalizedUrlDataCollectionActive();
   };
@@ -523,11 +491,7 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsRequestEligibility) {
         template_url->GenerateSuggestionURL(SearchTermsData()).spec());
     const auto [result_type, eligible] =
         ZeroSuggestProvider::GetResultTypeAndEligibility(client_.get(), input);
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL, result_type);
-#else
-    EXPECT_EQ(ZeroSuggestProvider::ResultType::kNone, result_type);
-#endif
     // Requires personalized URL data collection to be active.
     return eligible && client_->IsPersonalizedUrlDataCollectionActive();
   };
@@ -538,11 +502,7 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsRequestEligibility) {
         template_url->GenerateSearchURL(SearchTermsData()).spec());
     const auto [result_type, eligible] =
         ZeroSuggestProvider::GetResultTypeAndEligibility(client_.get(), input);
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     EXPECT_EQ(ZeroSuggestProvider::ResultType::kRemoteSendURL, result_type);
-#else
-    EXPECT_EQ(ZeroSuggestProvider::ResultType::kNone, result_type);
-#endif
     return eligible;
   };
 
@@ -575,29 +535,17 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsRequestEligibility) {
   }
   {
     // Valid SRP URLs can be sent in the zero-suggest request.
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
     EXPECT_TRUE(test_srp(google_provider));
-#else
-    EXPECT_FALSE(test_srp(google_provider));
-#endif
   }
   {
     // Valid same-origin page URLs can be sent in the zero-suggest request.
     base::HistogramTester histogram_tester;
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
     EXPECT_TRUE(test_same_origin(google_provider));
-#else
-    EXPECT_FALSE(test_same_origin(google_provider));
-#endif
   }
   {
     // Valid different-origin page URLs can be sent in the zero-suggest request.
     base::HistogramTester histogram_tester;
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
     EXPECT_TRUE(test_different_origin());
-#else
-    EXPECT_FALSE(test_different_origin());
-#endif
   }
 
   // Deactivate personalized URL data collection. This ensures that the page URL
@@ -610,11 +558,7 @@ TEST_F(ZeroSuggestProviderTest, AllowZeroPrefixSuggestionsRequestEligibility) {
   }
   {
     // Valid SRP URLs can be sent in the zero-suggest request.
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
     EXPECT_TRUE(test_srp(google_provider));
-#else
-    EXPECT_FALSE(test_srp(google_provider));
-#endif
   }
   {
     // Valid same-origin page URLs cannot be sent in the zero-suggest request.
@@ -818,7 +762,7 @@ TEST_F(ZeroSuggestProviderTest, StartStopSRP) {
   // Enable on-clobber ZPS and disable in-memory caching.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kClobberTriggersSRPZeroSuggest},
+      /*enabled_features=*/{omnibox::kOmniboxOnClobberFocusTypeOnContent},
       /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
 
   // Set up the pref to cache the response from the previous run.
@@ -886,7 +830,7 @@ TEST_F(ZeroSuggestProviderTest, StartStopWeb) {
   // Enable on-clobber ZPS and disable in-memory caching.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kClobberTriggersContextualWebZeroSuggest},
+      /*enabled_features=*/{omnibox::kOmniboxOnClobberFocusTypeOnContent},
       /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
 
   // Set up the pref to cache the response from the previous run.
@@ -1017,7 +961,7 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestCachingFirstRunSRP) {
   // Enable on-clobber ZPS and prefetching on SRP and disable in-memory caching.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kClobberTriggersSRPZeroSuggest,
+      /*enabled_features=*/{omnibox::kOmniboxOnClobberFocusTypeOnContent,
                             omnibox::kZeroSuggestPrefetchingOnSRP},
       /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
 
@@ -1084,7 +1028,7 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestCachingFirstRunWeb) {
   // Enable on-clobber ZPS and prefetching on Web and disable in-memory caching.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kClobberTriggersContextualWebZeroSuggest,
+      /*enabled_features=*/{omnibox::kOmniboxOnClobberFocusTypeOnContent,
                             omnibox::kZeroSuggestPrefetchingOnWeb},
       /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
 
@@ -1187,7 +1131,7 @@ TEST_F(ZeroSuggestProviderTest,
   // Enable on-clobber ZPS and disable in-memory caching.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kClobberTriggersSRPZeroSuggest},
+      /*enabled_features=*/{omnibox::kOmniboxOnClobberFocusTypeOnContent},
       /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
 
   AutocompleteInput input = OnClobberInputForSRP();
@@ -1227,7 +1171,7 @@ TEST_F(ZeroSuggestProviderTest,
   // Enable on-clobber ZPS and disable in-memory caching.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kClobberTriggersContextualWebZeroSuggest},
+      /*enabled_features=*/{omnibox::kOmniboxOnClobberFocusTypeOnContent},
       /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
 
   AutocompleteInput input = OnClobberInputForWeb();
@@ -1424,7 +1368,7 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResultsSRP) {
   // Enable on-clobber ZPS and prefetching on SRP and disable in-memory caching.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kClobberTriggersSRPZeroSuggest,
+      /*enabled_features=*/{omnibox::kOmniboxOnClobberFocusTypeOnContent,
                             omnibox::kZeroSuggestPrefetchingOnSRP},
       /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
 
@@ -1510,7 +1454,7 @@ TEST_F(ZeroSuggestProviderTest, TestZeroSuggestHasInMemoryCachedResultsSRP) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       /*enabled_features=*/{omnibox::kZeroSuggestInMemoryCaching,
-                            omnibox::kClobberTriggersSRPZeroSuggest,
+                            omnibox::kOmniboxOnClobberFocusTypeOnContent,
                             omnibox::kZeroSuggestPrefetchingOnSRP},
       /*disabled_features=*/{});
 
@@ -1595,7 +1539,7 @@ TEST_F(ZeroSuggestProviderTest, TestPsuggestZeroSuggestHasCachedResultsWeb) {
   // Enable on-clobber ZPS and prefetching on Web and disable in-memory caching.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kClobberTriggersContextualWebZeroSuggest,
+      /*enabled_features=*/{omnibox::kOmniboxOnClobberFocusTypeOnContent,
                             omnibox::kZeroSuggestPrefetchingOnWeb},
       /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
 
@@ -1681,7 +1625,7 @@ TEST_F(ZeroSuggestProviderTest, TestZeroSuggestHasInMemoryCachedResultsWeb) {
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
       /*enabled_features=*/{omnibox::kZeroSuggestInMemoryCaching,
-                            omnibox::kClobberTriggersContextualWebZeroSuggest,
+                            omnibox::kOmniboxOnClobberFocusTypeOnContent,
                             omnibox::kZeroSuggestPrefetchingOnWeb},
       /*disabled_features=*/{});
 
@@ -1844,7 +1788,7 @@ TEST_F(ZeroSuggestProviderTest,
   // Enable on-clobber ZPS and prefetching on SRP and disable in-memory caching.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kClobberTriggersSRPZeroSuggest,
+      /*enabled_features=*/{omnibox::kOmniboxOnClobberFocusTypeOnContent,
                             omnibox::kZeroSuggestPrefetchingOnSRP},
       /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
 
@@ -1926,7 +1870,7 @@ TEST_F(ZeroSuggestProviderTest,
   // Enable on-clobber ZPS and prefetching on Web and disable in-memory caching.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kClobberTriggersContextualWebZeroSuggest,
+      /*enabled_features=*/{omnibox::kOmniboxOnClobberFocusTypeOnContent,
                             omnibox::kZeroSuggestPrefetchingOnWeb},
       /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching});
 
@@ -2304,7 +2248,7 @@ TEST_F(ZeroSuggestProviderTest,
   // Enable on-clobber ZPS and disable in-memory caching and prefetching on SRP.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kClobberTriggersSRPZeroSuggest},
+      /*enabled_features=*/{omnibox::kOmniboxOnClobberFocusTypeOnContent},
       /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching,
                              omnibox::kZeroSuggestPrefetchingOnSRP});
 
@@ -2440,7 +2384,7 @@ TEST_F(ZeroSuggestProviderTest,
   // Enable on-clobber ZPS and disable in-memory caching and prefetching on Web.
   base::test::ScopedFeatureList features;
   features.InitWithFeatures(
-      /*enabled_features=*/{omnibox::kClobberTriggersContextualWebZeroSuggest},
+      /*enabled_features=*/{omnibox::kOmniboxOnClobberFocusTypeOnContent},
       /*disabled_features=*/{omnibox::kZeroSuggestInMemoryCaching,
                              omnibox::kZeroSuggestPrefetchingOnWeb});
 
