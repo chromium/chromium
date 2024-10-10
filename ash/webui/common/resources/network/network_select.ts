@@ -11,29 +11,25 @@ import '//resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import '//resources/polymer/v3_0/paper-progress/paper-progress.js';
 import './network_list.js';
 
-import {assert} from '//resources/ash/common/assert.js';
+import {assert} from '//resources/js/assert.js';
 import {CrosNetworkConfigInterface, FilterType, GlobalPolicy, NO_LIMIT} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import {IronListElement} from '//resources/polymer/v3_0/iron-list/iron-list.js';
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {MojoInterfaceProvider, MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
+import {MojoInterfaceProviderImpl} from './mojo_interface_provider.js';
+import {NetworkListElement} from './network_list.js';
 import {NetworkList} from './network_list_types.js';
-import {NetworkListenerBehavior, NetworkListenerBehaviorInterface} from './network_listener_behavior.js';
+import {NetworkListenerBehavior} from './network_listener_behavior.js';
 import {getTemplate} from './network_select.html.js';
 import {OncMojo} from './onc_mojo.js';
 
-/**
- * @constructor
- * @extends {PolymerElement}
- * @implements {NetworkListenerBehaviorInterface}
- */
 const NetworkSelectElementBase =
     mixinBehaviors([NetworkListenerBehavior], PolymerElement);
 
-/** @polymer */
-class NetworkSelectElement extends NetworkSelectElementBase {
+export class NetworkSelectElement extends NetworkSelectElementBase {
   static get is() {
-    return 'network-select';
+    return 'network-select' as const;
   }
 
   static get template() {
@@ -42,9 +38,7 @@ class NetworkSelectElement extends NetworkSelectElementBase {
 
   static get properties() {
     return {
-      /**
-       * Show all buttons in list items.
-       */
+      /**  Show all buttons in list items. */
       showButtons: {
         type: Boolean,
         value: false,
@@ -54,7 +48,6 @@ class NetworkSelectElement extends NetworkSelectElementBase {
       /**
        * The list of custom items to display after the list of networks.
        * See NetworkList for details.
-       * @type {!Array<NetworkList.CustomItemState>}
        */
       customItems: {
         type: Array,
@@ -94,7 +87,6 @@ class NetworkSelectElement extends NetworkSelectElementBase {
 
       /**
        * List of all network state data for all visible networks.
-       * @private {!Array<!OncMojo.NetworkStateProperties>}
        */
       networkStateList_: {
         type: Array,
@@ -105,74 +97,86 @@ class NetworkSelectElement extends NetworkSelectElementBase {
 
       /**
        * Whether a network scan is currently in progress.
-       * @private
        */
       isScanOngoing_: {
         type: Boolean,
         value: false,
       },
 
-      /** @private {!GlobalPolicy|undefined} */
       globalPolicy_: Object,
     };
   }
 
-  /** @override */
+  showButtons: boolean;
+  customItems: NetworkList.CustomItemState[];
+  showTechnologyBadge: boolean;
+  enableWifiScans: boolean;
+  showScanProgress: boolean;
+  activationUnavailable: boolean;
+  private networkStateList_: OncMojo.NetworkStateProperties[];
+  private isScanOngoing_: boolean;
+  private globalPolicy_: GlobalPolicy|undefined;
+
+  private defaultNetworkState_: OncMojo.NetworkStateProperties|undefined;
+  private scanIntervalId_: number|null;
+  private networkConfig_: CrosNetworkConfigInterface;
+
   constructor() {
     super();
 
-    /** @type {!OncMojo.NetworkStateProperties|undefined} */
     this.defaultNetworkState_ = undefined;
 
-    /** @private {number|null} */
     this.scanIntervalId_ = null;
 
-    /** @private {?CrosNetworkConfigInterface} */
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
   }
 
-  /** @override */
-  connectedCallback() {
+  override connectedCallback() {
     super.connectedCallback();
 
     this.refreshNetworks();
     this.onEnableWifiScansChanged_();
   }
 
-  /** @override */
-  disconnectedCallback() {
+  override disconnectedCallback() {
     super.disconnectedCallback();
 
     this.clearScheduledScans_();
   }
 
-  /**
-   * Returns network list object for testing.
-   */
+  /**  Returns network list object for testing. */
   getNetworkListForTest() {
-    return this.$.networkList.shadowRoot.querySelector('#networkList');
+    const networkListElement =
+        this.shadowRoot!.querySelector<NetworkListElement>('#networkList');
+    assert(networkListElement);
+    return networkListElement.shadowRoot!.querySelector<IronListElement>(
+        '#networkList');
   }
 
-  /**
-   * Returns network list item object for testing.
-   */
-  getNetworkListItemByNameForTest(name) {
-    const networkList =
-        this.$.networkList.shadowRoot.querySelector('#networkList');
-    assert(networkList);
+  /**  Returns network list item object for testing. */
+  getNetworkListItemByNameForTest(name: string): HTMLDivElement|null {
+    const networkList = this.getNetworkListForTest();
+    assert(!!networkList);
+
     for (const network of networkList.children) {
-      if (network.is === 'network-list-item' &&
-          network.shadowRoot.querySelector('#divText').children[0].innerText ===
-              name) {
-        return network.shadowRoot.getElementById('divOuter');
+      if (network.tagName.toLowerCase() === 'network-list-item') {
+        const div =
+            network.shadowRoot!.querySelector('#divText')?.children[0] as
+            HTMLElement;
+        if (div.innerText === name) {
+          return network.shadowRoot!.querySelector<HTMLDivElement>('#divOuter');
+        }
       }
     }
     return null;
   }
 
-  focus() {
-    this.$.networkList.focus();
+  override focus() {
+    const networkList =
+        this.shadowRoot!.querySelector<NetworkListElement>('#networkList');
+    assert(!!networkList);
+    networkList.focus();
   }
 
   /** CrosNetworkConfigObserver impl */
@@ -198,11 +202,8 @@ class NetworkSelectElement extends NetworkSelectElementBase {
     });
   }
 
-  /**
-   * Returns default network if it is present.
-   * @return {!OncMojo.NetworkStateProperties|undefined}
-   */
-  getDefaultNetwork() {
+  /**  Returns default network if it is present. */
+  getDefaultNetwork(): OncMojo.NetworkStateProperties|undefined {
     let defaultNetwork;
     for (let i = 0; i < this.networkStateList_.length; ++i) {
       const state = this.networkStateList_[i];
@@ -222,13 +223,9 @@ class NetworkSelectElement extends NetworkSelectElementBase {
     return defaultNetwork;
   }
 
-  /**
-   * Returns network with specified GUID if it is available.
-   * @param {string} guid of network.
-   * @return {!OncMojo.NetworkStateProperties|undefined}
-   */
-  getNetwork(guid) {
-    return this.networkStateList_.find(function(network) {
+  /**  Returns network with specified GUID if it is available. */
+  getNetwork(guid: string): OncMojo.NetworkStateProperties|undefined {
+    return this.networkStateList_.find(network => {
       return network.guid === guid;
     });
   }
@@ -236,9 +233,8 @@ class NetworkSelectElement extends NetworkSelectElementBase {
   /**
    * Handler for changes to |enableWifiScans| which either schedules upcoming
    * scans or clears already-scheduled scans.
-   * @private
    */
-  onEnableWifiScansChanged_() {
+  private onEnableWifiScansChanged_() {
     // Clear any scans which are already scheduled.
     this.clearScheduledScans_();
 
@@ -253,27 +249,22 @@ class NetworkSelectElement extends NetworkSelectElementBase {
     // explicit user action.
     const kWiFi = NetworkType.kWiFi;
     this.networkConfig_.requestNetworkScan(kWiFi);
-    this.scanIntervalId_ = window.setInterval(function() {
+    this.scanIntervalId_ = window.setInterval(() => {
       this.networkConfig_.requestNetworkScan(kWiFi);
-    }.bind(this), INTERVAL_MS);
+    }, INTERVAL_MS);
   }
 
   /**
    * Clears any scheduled Wi-FI scans; no-op if there were no scans scheduled.
-   * @private
    */
-  clearScheduledScans_() {
+  private clearScheduledScans_() {
     if (this.scanIntervalId_ !== null) {
       window.clearInterval(this.scanIntervalId_);
       this.scanIntervalId_ = null;
     }
   }
 
-  /**
-   * @param {!Array<!OncMojo.DeviceStateProperties>} deviceStates
-   * @private
-   */
-  onGetDeviceStates_(deviceStates) {
+  private onGetDeviceStates_(deviceStates: OncMojo.DeviceStateProperties[]) {
     this.isScanOngoing_ =
         deviceStates.some((deviceState) => !!deviceState.scanning);
 
@@ -287,12 +278,9 @@ class NetworkSelectElement extends NetworkSelectElementBase {
     });
   }
 
-  /**
-   * @param {!Array<!OncMojo.DeviceStateProperties>} deviceStates
-   * @param {!Array<!OncMojo.NetworkStateProperties>} networkStates
-   * @private
-   */
-  onGetNetworkStateList_(deviceStates, networkStates) {
+  private onGetNetworkStateList_(
+      _deviceStates: OncMojo.DeviceStateProperties[],
+      networkStates: OncMojo.NetworkStateProperties[]) {
     this.networkStateList_ = networkStates;
     this.dispatchEvent(
         new CustomEvent('network-list-changed', {detail: networkStates}));
@@ -306,26 +294,27 @@ class NetworkSelectElement extends NetworkSelectElementBase {
              this.defaultNetworkState_.connectionState)) {
       return;  // No change to network or ConnectionState
     }
-    this.defaultNetworkState_ = defaultNetwork ?
-        /** @type {!OncMojo.NetworkStateProperties|undefined} */ (
-            Object.assign({}, defaultNetwork)) :
-        undefined;
+    this.defaultNetworkState_ =
+        defaultNetwork ? {...defaultNetwork} : undefined;
     // Note: event.detail will be {} if defaultNetwork is undefined.
     this.dispatchEvent(
         new CustomEvent('default-network-changed', {detail: defaultNetwork}));
   }
 
-  /**
-   * Event triggered when a network-list-item is selected.
-   * @param {!{target: HTMLElement, detail: !OncMojo.NetworkStateProperties}} e
-   * @private
-   */
-  onNetworkListItemSelected_(e) {
+  /**  Event triggered when a network-list-item is selected. */
+  private onNetworkListItemSelected_(
+      e: {target: HTMLElement, detail: OncMojo.NetworkStateProperties}) {
     const state = e.detail;
     e.target.blur();
 
     this.dispatchEvent(
         new CustomEvent('network-item-selected', {detail: state}));
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [NetworkSelectElement.is]: NetworkSelectElement;
   }
 }
 

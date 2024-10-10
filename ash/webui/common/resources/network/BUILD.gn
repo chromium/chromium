@@ -36,7 +36,6 @@ js_type_check("closure_compile_module") {
     ":network_property_list_mojo",
     ":network_proxy_exclusions",
     ":network_proxy_input",
-    ":network_select",
     ":onc_mojo",
     ":sim_lock_dialogs",
   ]
@@ -310,17 +309,6 @@ js_library("network_proxy_input") {
   ]
   externs_list = [
     "//ash/webui/common/resources/cr_elements/cr_input/cr_input_externs.js",
-  ]
-}
-
-js_library("network_select") {
-  deps = [
-    ":network_list",
-    ":network_list_types",
-    ":network_listener_behavior",
-    ":onc_mojo",
-    "//third_party/polymer/v3_0/components-chromium/paper-progress:paper-progress",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
