@@ -28,6 +28,9 @@
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
+#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -973,18 +976,22 @@ class NavigatingExtensionPopupInteractiveTest
     // Were there any failures so far (e.g. in SetUpOnMainThread)?
     ASSERT_FALSE(HasFailure());
 
-    // Verify that the right action bar buttons are present.
-    {
-      std::unique_ptr<ExtensionActionTestHelper> action_bar_helper =
-          ExtensionActionTestHelper::Create(browser());
-      ASSERT_EQ(2, action_bar_helper->NumberOfBrowserActions());
-      EXPECT_TRUE(action_bar_helper->HasAction(popup_extension().id()));
-      EXPECT_TRUE(action_bar_helper->HasAction(other_extension().id()));
-    }
+    // Verify extension's action exists.
+    ExtensionsToolbarContainer* extensions_container =
+        browser()->GetBrowserView().toolbar()->extensions_container();
+    ToolbarActionViewController* action_controller =
+        extensions_container->GetActionForId(popup_extension().id());
+    ASSERT_TRUE(action_controller);
 
-    // Simulate a click on the browser action to open the popup.
-    content::WebContents* popup = OpenPopupViaToolbar(popup_extension().id());
-    ASSERT_TRUE(popup);
+    // Trigger the extension's popup by executing its action.
+    content::CreateAndLoadWebContentsObserver popup_observer;
+    action_controller->ExecuteUserAction(
+        ToolbarActionViewController::InvocationSource::kToolbarButton);
+    content::WebContents* popup = popup_observer.Wait();
+
+    // Verify popup is visible.
+    ASSERT_TRUE(action_controller->GetPopupNativeView());
+
     GURL popup_url = popup_extension().GetResourceURL("popup.html");
     EXPECT_EQ(popup_url, popup->GetLastCommittedURL());
 
@@ -1031,7 +1038,9 @@ class NavigatingExtensionPopupInteractiveTest
                              ::testing::Eq(GURL("about:blank"))));
       }
 
-      EXPECT_TRUE(ClosePopup());
+      extensions_container->HideActivePopup();
+      ASSERT_FALSE(extensions_container->popup_owner_for_testing());
+      ASSERT_FALSE(action_controller->GetPopupNativeView());
     }
 
     // Make sure that the web navigation did not succeed somewhere outside of
