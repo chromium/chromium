@@ -19843,25 +19843,6 @@
             ]
         }
     ],
-    "RustyJSONParserInCurrentSequence": [
-        {
-            "platforms": [
-                "android",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20241007",
-                    "params": {
-                        "UseRustJsonParserInCurrentSequence": "true"
-                    },
-                    "enable_features": [
-                        "UseRustJsonParser"
-                    ]
-                }
-            ]
-        }
-    ],
     "SafeBrowsingAsyncRealTimeCheck": [
         {
             "platforms": [
@@ -24292,6 +24273,48 @@
                     "name": "Enabled",
                     "enable_features": [
                         "UsePollForMessagePumpEpoll"
+                    ]
+                }
+            ]
+        }
+    ],
+    "UseRustJsonParserInCurrentSequence": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "UseRustJsonParserInCurrentSequence": "true"
+                    },
+                    "enable_features": [
+                        "UseRustJsonParser"
+                    ]
+                }
+            ]
+        }
+    ],
+    "UseRustJsonParserInCurrentSequenceAndroid": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "UseRustJsonParserInCurrentSequence": "true"
+                    },
+                    "enable_features": [
+                        "UseRustJsonParser"
                     ]
                 }
             ]
