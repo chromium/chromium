@@ -22,6 +22,7 @@ import org.chromium.base.InputHintChecker;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -136,6 +137,7 @@ public final class InputHintCheckerTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/372637659")
     public void testReadHintDoesNotCrashWithThrottling() {
         // Start InputHintChecker asynchronous initialization by calling setView().
         TestTextView view =
