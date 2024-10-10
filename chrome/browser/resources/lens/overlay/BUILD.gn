@@ -54,6 +54,7 @@ build_webui("build_overlay") {
     "overlay_shimmer_canvas.ts",
     "post_selection_renderer.ts",
     "region_selection.ts",
+    "searchbox_ghost_loader.ts",
     "selection_overlay.ts",
     "shimmer_circle.ts",
     "side_panel/side_panel_app.ts",

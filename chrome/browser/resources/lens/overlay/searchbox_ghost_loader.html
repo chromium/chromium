@@ -1,0 +1,82 @@
+<style include="searchbox-shared-style">
+#content {
+  background-color: var(--color-searchbox-background);
+  border-radius: calc(0.5 * var(--cr-searchbox-height));
+  box-shadow: var(--cr-searchbox-shadow);
+  margin-bottom: 8px;
+  overflow: hidden;
+  padding-bottom: 8px;
+  padding-top: var(--cr-searchbox-height);
+  align-items: center;
+}
+
+#content::before {
+  content: '';
+  position: relative;
+  height: 1px;
+  background-color: #DADCE0;
+  top: 0;
+  width: calc(var(--cr-searchbox-min-width) - 24px);
+  display: block;
+  inset-inline-start: 12px;
+}
+
+#loading-match {
+  display: flex;
+  align-items: center;
+  color: var(--color-searchbox-results-foreground);
+  height: 48px;
+  padding-inline-start: 18px;
+  padding-inline-end: 14px;
+  padding-top: 6px;
+}
+
+#hint-text1,
+#hint-text2 {
+  position: absolute;
+  padding-inline-start: 40px;
+  padding-inline-end: 14px;
+  font-weight: var(--cr-searchbox-match-font-weight);
+  font-size: 14px;
+  width: 234px;
+}
+
+#hint-text1 {
+  animation: flipText 6s ease-in-out infinite;
+}
+
+#hint-text2 {
+  opacity: 0;
+  animation: flipText 6s ease-in-out infinite reverse;
+}
+
+@keyframes flipText {
+  0% {
+    opacity: 1;
+  }
+  49% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+paper-spinner-lite {
+  height: 16px;
+  width: 16px;
+  --paper-spinner-color: #DBDBDB;
+}
+
+</style>
+<div id="content">
+  <div id="loading-match">
+    <paper-spinner-lite active></paper-spinner-lite>
+    <div class="spinner"></div>
+    <span id="hint-text1">Generating questions inspired by content...</span>
+    <span id="hint-text2">You can still ask your own question about the page</span>
+  </div>
+</div>

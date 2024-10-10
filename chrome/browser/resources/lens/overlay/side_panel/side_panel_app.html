@@ -164,6 +164,14 @@
   :host([dark-mode]) cr-icon-button.icon-arrow-back {
     color: #70757A;
   }
+
+  cr-searchbox-ghost-loader {
+    display: none;
+    position: absolute;
+    inset-inline-start: 14px;
+    inset-inline-end: 14px;
+    top: 16px;
+  }
 </style>
 <div id="searchboxContainer">
   <template is="dom-if" if="[[isBackArrowVisible]]">
@@ -172,6 +180,7 @@
     </cr-icon-button>
   </template>
   <cr-searchbox id="searchbox"></cr-searchbox>
+  <cr-searchbox-ghost-loader></cr-searchbox-ghost-loader>
 </div>
 
 <!-- Network error UI that is initially hidden -->

@@ -5,6 +5,7 @@
 import './cursor_tooltip.js';
 import './initial_gradient.js';
 import './selection_overlay.js';
+import './searchbox_ghost_loader.js';
 import './translate_button.js';
 import '/lens/shared/searchbox_shared_style.css.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';

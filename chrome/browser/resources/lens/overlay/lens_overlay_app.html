@@ -227,6 +227,14 @@
   :host([search-box-hidden]) #searchboxContainer {
     display: none;
   }
+
+  cr-searchbox-ghost-loader {
+    display: none;
+    position: absolute;
+    inset-inline-start: 0;
+    inset-inline-end: 0;
+    top: 0;
+  }
 </style>
 <div class="app-container"
     on-initial-flash-animation-end="onInitialFlashAnimationEnd"
@@ -271,6 +279,7 @@
       <cr-searchbox id="searchbox" on-focus="handleSearchboxFocused"
           on-blur="handleSearchboxBlurred">
       </cr-searchbox>
+      <cr-searchbox-ghost-loader></cr-searchbox-ghost-loader>
     </div>
   </template>
   <div id="translateButtonContainer" class="button-container">
