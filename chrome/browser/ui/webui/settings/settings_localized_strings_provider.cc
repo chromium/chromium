@@ -369,6 +369,65 @@ void AddAboutStrings(content::WebUIDataSource* html_source, Profile* profile) {
 #endif
 }
 
+void AddAiStrings(content::WebUIDataSource* html_source) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"aiPageTitle", IDS_SETTINGS_AI_PAGE_TITLE},
+      {"aiPageMainLabel", IDS_SETTINGS_AI_PAGE_MAIN_LABEL},
+      {"aiPageMainSublabel", IDS_SETTINGS_AI_PAGE_MAIN_SUBLABEL},
+
+      // History search strings.
+      {"historySearchSettingLabel", IDS_SETTINGS_HISTORY_SEARCH_SETTING_LABEL},
+      {"historySearchSettingSublabel",
+       IDS_SETTINGS_HISTORY_SEARCH_SETTING_SUBLABEL},
+      {"historySearchWhenOnBulletOne",
+       IDS_SETTINGS_HISTORY_SEARCH_WHEN_ON_BULLET_ONE},
+      {"historySearchConsiderBulletOne",
+       IDS_SETTINGS_HISTORY_SEARCH_CONSIDER_BULLET_ONE},
+      {"historySearchConsiderBulletTwo",
+       IDS_SETTINGS_HISTORY_SEARCH_CONSIDER_BULLET_TWO},
+      {"historySearchLearnMoreA11yLabel",
+       IDS_SETTINGS_HISTORY_SEARCH_LEARN_MORE_A11Y_LABEL},
+
+      // Compose strings.
+      {"aiComposeLabel", IDS_SETTINGS_AI_COMPOSE_LABEL},
+      {"aiComposeSublabel", IDS_SETTINGS_AI_COMPOSE_SUBLABEL},
+      {"offerWritingHelpToggleLabel",
+       IDS_SETTINGS_OFFER_WRITING_HELP_TOGGLE_LABEL},
+      {"offerWritingHelpToggleSublabel",
+       IDS_SETTINGS_OFFER_WRITING_HELP_TOGGLE_SUB_LABEL},
+      {"offerWritingHelpDisabledSitesLabel",
+       IDS_SETTINGS_OFFER_WRITING_HELP_DISABLED_SITES_LABEL},
+      {"offerWritingHelpNoDisabledSites",
+       IDS_SETTINGS_OFFER_WRITING_HELP_NO_DISABLED_SITES},
+      {"offerWritingHelpRemoveDisabledSiteAriaLabel",
+       IDS_SETTINGS_OFFER_WRITING_HELP_REMOVE_SITE_ARIA_LABEL},
+
+      // Tab Organization strings.
+      {"tabOrganizationSettingLabel",
+       IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE2_LABEL},
+      {"tabOrganizationSettingSublabel",
+       IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE2_SUBLABEL},
+
+      // Themes strings.
+      {"wallpaperSearchSettingLabel",
+       IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_LABEL},
+      {"wallpaperSearchSettingSublabel",
+       IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_SUBLABEL},
+  };
+  html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  html_source->AddString("historySearchLearnMoreUrl",
+                         chrome::kHistorySearchLearnMorePageURL);
+  html_source->AddString("historySearchDataHomeUrl",
+                         chrome::kChromeUIHistoryURL);
+  html_source->AddString("composeLearnMorePageURL",
+                         chrome::kComposeLearnMorePageURL);
+  html_source->AddString("tabOrganizationLearnMoreUrl",
+                         chrome::kTabOrganizationLearnMorePageURL);
+  html_source->AddString("wallpaperSearchLearnMoreUrl",
+                         chrome::kWallpaperSearchLearnMorePageURL);
+}
+
 void AddAppearanceStrings(content::WebUIDataSource* html_source,
                           Profile* profile) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
@@ -1144,19 +1203,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"benefitsTermsTagForCreditCardListEntry",
        IDS_AUTOFILL_SETTINGS_PAGE_BENEFITS_TERMS_TAG_FOR_CREDIT_CARD_LIST_ENTRY},
       {"cardBenefitsLabel", IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_LABEL},
-      {"aiPageTitle", IDS_SETTINGS_AI_PAGE_TITLE},
-      {"aiPageMainLabel", IDS_SETTINGS_AI_PAGE_MAIN_LABEL},
-      {"aiPageMainSublabel", IDS_SETTINGS_AI_PAGE_MAIN_SUBLABEL},
-      {"aiComposeLabel", IDS_SETTINGS_AI_COMPOSE_LABEL},
-      {"aiComposeSublabel", IDS_SETTINGS_AI_COMPOSE_SUBLABEL},
-      {"experimentalAdvancedFeature2Label",
-       IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE2_LABEL},
-      {"experimentalAdvancedFeature2Sublabel",
-       IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE2_SUBLABEL},
-      {"experimentalAdvancedFeature3Label",
-       IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_LABEL},
-      {"experimentalAdvancedFeature3Sublabel",
-       IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_SUBLABEL},
       {"autofillPredictionImprovementsPageTitle",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_PAGE_TITLE},
       {"autofillPredictionImprovementsWhenOnSavedInfo",
@@ -1207,10 +1253,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                          chrome::kSyncTrustedVaultOptInURL);
   html_source->AddString("trustedVaultLearnMoreUrl",
                          chrome::kSyncTrustedVaultLearnMoreURL);
-  html_source->AddString("wallpaperSearchLearnMoreUrl",
-                         chrome::kWallpaperSearchLearnMorePageURL);
-  html_source->AddString("tabOrganizationLearnMoreUrl",
-                         chrome::kTabOrganizationLearnMorePageURL);
 
   bool is_guest_mode = false;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1601,19 +1643,6 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
        IDS_SETTINGS_SYNC_DISCONNECT_DELETE_PROFILE_WARNING_WITH_COUNTS_PLURAL},
       {"deleteProfileWarningWithoutCounts",
        IDS_SETTINGS_SYNC_DISCONNECT_DELETE_PROFILE_WARNING_WITHOUT_COUNTS},
-
-      // History search strings:
-      {"historySearchSettingLabel", IDS_SETTINGS_HISTORY_SEARCH_SETTING_LABEL},
-      {"historySearchSettingSublabel",
-       IDS_SETTINGS_HISTORY_SEARCH_SETTING_SUBLABEL},
-      {"historySearchWhenOnBulletOne",
-       IDS_SETTINGS_HISTORY_SEARCH_WHEN_ON_BULLET_ONE},
-      {"historySearchConsiderBulletOne",
-       IDS_SETTINGS_HISTORY_SEARCH_CONSIDER_BULLET_ONE},
-      {"historySearchConsiderBulletTwo",
-       IDS_SETTINGS_HISTORY_SEARCH_CONSIDER_BULLET_TWO},
-      {"historySearchLearnMoreA11yLabel",
-       IDS_SETTINGS_HISTORY_SEARCH_LEARN_MORE_A11Y_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
@@ -1626,10 +1655,6 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
           .spec());
   html_source->AddBoolean("profileShortcutsEnabled",
                           ProfileShortcutManager::IsFeatureEnabled());
-  html_source->AddString("historySearchLearnMoreUrl",
-                         chrome::kHistorySearchLearnMorePageURL);
-  html_source->AddString("historySearchDataHomeUrl",
-                         chrome::kChromeUIHistoryURL);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   auto* profile_entry =
@@ -1891,8 +1916,6 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
 
   html_source->AddString("syncAndGoogleServicesLearnMoreURL",
                          chrome::kSyncAndGoogleServicesLearnMoreURL);
-  html_source->AddString("composeLearnMorePageURL",
-                         chrome::kComposeLearnMorePageURL);
   html_source->AddString("doNotTrackLearnMoreURL",
                          chrome::kDoNotTrackLearnMoreURL);
   html_source->AddString("exceptionsLearnMoreURL",
@@ -3277,20 +3300,10 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
        IDS_SITE_SETTINGS_TYPE_PERFORMANCE_SUBLABEL},
       {"siteSettingsOfferWritingHelp",
        IDS_SITE_SETTINGS_TYPE_OFFER_WRITING_HELP},
-      {"offerWritingHelpToggleLabel",
-       IDS_SETTINGS_OFFER_WRITING_HELP_TOGGLE_LABEL},
-      {"offerWritingHelpToggleSublabel",
-       IDS_SETTINGS_OFFER_WRITING_HELP_TOGGLE_SUB_LABEL},
       {"siteSettingsOfferWritingHelpEnabledSublabel",
        IDS_SETTINGS_OFFER_WRITING_HELP_ENABLED_SUB_LABEL},
       {"siteSettingsOfferWritingHelpDisabledSublabel",
        IDS_SETTINGS_OFFER_WRITING_HELP_DISABLED_SUB_LABEL},
-      {"offerWritingHelpDisabledSitesLabel",
-       IDS_SETTINGS_OFFER_WRITING_HELP_DISABLED_SITES_LABEL},
-      {"offerWritingHelpNoDisabledSites",
-       IDS_SETTINGS_OFFER_WRITING_HELP_NO_DISABLED_SITES},
-      {"offerWritingHelpRemoveDisabledSiteAriaLabel",
-       IDS_SETTINGS_OFFER_WRITING_HELP_REMOVE_SITE_ARIA_LABEL},
       {"siteSettingsSmartCardReaders", IDS_SITE_SETTINGS_SMART_CARD_READERS},
       {"siteSettingsSmartCardReadersDescription",
        IDS_SITE_SETTINGS_SMART_CARD_READERS_DESCRIPTION},
@@ -3646,6 +3659,7 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
                          content::WebContents* web_contents) {
   AddA11yStrings(html_source);
   AddAboutStrings(html_source, profile);
+  AddAiStrings(html_source);
   AddAutofillStrings(html_source, profile, web_contents);
   AddAppearanceStrings(html_source, profile);
 

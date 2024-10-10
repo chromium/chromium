@@ -38,8 +38,8 @@
           pref="{{prefs.optimization_guide.tab_organization_setting_state}}"
           numeric-unchecked-values="[[numericUncheckedValues_]]"
           numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
-          label="$i18n{experimentalAdvancedFeature2Label}"
-          sub-label="$i18n{experimentalAdvancedFeature2Sublabel}">
+          label="$i18n{tabOrganizationSettingLabel}"
+          sub-label="$i18n{tabOrganizationSettingSublabel}">
       </settings-toggle-button>
       <settings-toggle-button
           class$="[[getWallpaperSearchHrCssClass_(
@@ -48,8 +48,8 @@
           pref="{{prefs.optimization_guide.wallpaper_search_setting_state}}"
           numeric-unchecked-values="[[numericUncheckedValues_]]"
           numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
-          label="$i18n{experimentalAdvancedFeature3Label}"
-          sub-label="$i18n{experimentalAdvancedFeature3Sublabel}">
+          label="$i18n{wallpaperSearchSettingLabel}"
+          sub-label="$i18n{wallpaperSearchSettingSublabel}">
       </settings-toggle-button>
     </div>
   </cr-collapse>
@@ -87,16 +87,16 @@
       <cr-link-row id="tabOrganizationRowV2" class="hr"
           hidden="[[!showTabOrganizationControl_]]"
           start-icon="settings20:auto-tab-group"
-          label="$i18n{experimentalAdvancedFeature2Label}"
-          sub-label="$i18n{experimentalAdvancedFeature2Sublabel}"
+          label="$i18n{tabOrganizationSettingLabel}"
+          sub-label="$i18n{tabOrganizationSettingSublabel}"
           role-description="$i18n{subpageArrowRoleDescription}"
           on-click="onTabOrganizationRowClick_">
       </cr-link-row>
       <cr-link-row id="wallpaperSearchRowV2" class="hr"
           hidden="[[!showWallpaperSearchControl_]]"
           start-icon="settings20:photo-filter-auto"
-          label="$i18n{experimentalAdvancedFeature3Label}"
-          sub-label="$i18n{experimentalAdvancedFeature3Sublabel}"
+          label="$i18n{wallpaperSearchSettingLabel}"
+          sub-label="$i18n{wallpaperSearchSettingSublabel}"
           role-description="$i18n{subpageArrowRoleDescription}"
           on-click="onWallpaperSearchRowClick_" external>
       </cr-link-row>
@@ -128,7 +128,7 @@
       <template is="dom-if" route-path="/ai/tabOrganizer">
         <settings-subpage id="tabOrganization"
             associated-control="[[$$('#tabOrganizationRowV2')]]"
-            page-title="$i18n{experimentalAdvancedFeature2Label}">
+            page-title="$i18n{tabOrganizationSettingLabel}">
           <settings-ai-tab-organization-subpage prefs="{{prefs}}">
           </settings-ai-tab-organization-subpage>
         </settings-subpage>
