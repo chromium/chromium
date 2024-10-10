@@ -14,8 +14,8 @@ namespace lens {
 //
 // LINT.IfChange(LensOverlayFirstInteractionType)
 enum class LensOverlayFirstInteractionType {
-  // Closing the lens overlay. Only used by iOS.
-  kClose = 0,
+  // Interact with permission dialog.  Only used by iOS.
+  kPermissionDialog = 0,
   // Lens overlay (3-dots) menu.  Only used by iOS.
   kLensMenu = 1,
   // Region selection.
@@ -24,10 +24,8 @@ enum class LensOverlayFirstInteractionType {
   kTextSelect = 3,
   // Searchbox.  Only used by Desktop.
   kSearchbox = 4,
-  // Interact with permission dialog.  Only used by iOS.
-  kPermissionDialog = 5,
 
-  kMaxValue = kPermissionDialog
+  kMaxValue = kSearchbox
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayFirstInteractionType)
 // When adding a value here, also update:

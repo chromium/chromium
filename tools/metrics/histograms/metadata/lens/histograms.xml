@@ -23,7 +23,6 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="FirstInteractionType">
-  <variant name="Close"/>
   <variant name="LensMenu"/>
   <variant name="Permission"/>
   <variant name="RegionSelect"/>

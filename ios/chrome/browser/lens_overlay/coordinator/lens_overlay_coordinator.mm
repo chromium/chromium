@@ -1121,9 +1121,6 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
   lens::LensOverlayInvocationSource invocationSource =
       self.currentInvocationSource;
 
-  // First interaction metrics.
-  [self recordFirstInteraction:lens::LensOverlayFirstInteractionType::kClose];
-
   // Invocation metrics.
   lens::RecordInvocation(invocationSource);
   lens::RecordInvocationResultedInSearch(invocationSource,

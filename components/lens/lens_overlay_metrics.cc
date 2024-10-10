@@ -32,8 +32,8 @@ std::string InvocationSourceToString(
 std::string FirstInteractionTypeToString(
     LensOverlayFirstInteractionType interaction_type) {
   switch (interaction_type) {
-    case LensOverlayFirstInteractionType::kClose:
-      return "Close";
+    case LensOverlayFirstInteractionType::kPermissionDialog:
+      return "Permission";
     case LensOverlayFirstInteractionType::kLensMenu:
       return "LensMenu";
     case LensOverlayFirstInteractionType::kRegionSelect:
@@ -42,8 +42,6 @@ std::string FirstInteractionTypeToString(
       return "TextSelect";
     case LensOverlayFirstInteractionType::kSearchbox:
       return "Searchbox";
-    case LensOverlayFirstInteractionType::kPermissionDialog:
-      return "Permission";
   }
 }
 

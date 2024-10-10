@@ -68,12 +68,11 @@ chromium-metrics-reviews@google.com.
 
 <enum name="LensOverlayFirstInteractionType">
   <summary>The first interaction type of the Lens Overlay.</summary>
-  <int value="0" label="Close"/>
+  <int value="0" label="Permission dialog"/>
   <int value="1" label="Lens (3-dot) menu"/>
   <int value="2" label="Region select"/>
   <int value="3" label="Text select"/>
   <int value="4" label="Searchbox"/>
-  <int value="5" label="Permission dialog"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/lens/lens_overlay_first_interaction_type.h:LensOverlayFirstInteractionType) -->
