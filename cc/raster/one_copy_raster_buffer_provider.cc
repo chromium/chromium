@@ -357,11 +357,10 @@ bool OneCopyRasterBufferProvider::PlaybackToStagingBuffer(
   }
   staging_buffer->is_shared_memory = mapping->IsSharedMemory();
 
-  auto memory = mapping->GetMemoryForPlane(0);
-  size_t stride = mapping->Stride(0);
   RasterBufferProvider::PlaybackToMemory(
-      memory.data(), format, staging_buffer->size, stride, raster_source,
-      raster_full_rect, playback_rect, transform, dst_color_space,
+      mapping->GetMemoryForPlane(0).data(), format, staging_buffer->size,
+      mapping->Stride(0), raster_source, raster_full_rect, playback_rect,
+      transform, dst_color_space,
       /*gpu_compositing=*/true, playback_settings);
 
   staging_buffer->content_id = new_content_id;
