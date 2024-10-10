@@ -895,8 +895,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         profile,
                         mActivityTabProvider,
                         mIsInOverviewModeSupplier,
-                        mToolbarManager.getMenuButtonView(),
-                        mToolbarManager.getSecurityIconView());
+                        mToolbarManager.getMenuButtonView());
         mReadAloudIphController =
                 new ReadAloudIPHController(
                         mActivity,

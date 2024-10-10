@@ -37,7 +37,6 @@ public class DisclosureSnackbar extends DisclosureInfobar {
     private static final int DURATION_MS = 7000;
 
     private final Resources mResources;
-    private final TrustedWebActivityModel mModel;
 
     private boolean mShown;
 
@@ -49,7 +48,6 @@ public class DisclosureSnackbar extends DisclosureInfobar {
             ActivityLifecycleDispatcher lifecycleDispatcher) {
         super(resources, snackbarManager, model, lifecycleDispatcher);
         mResources = resources;
-        mModel = model;
     }
 
     @Override

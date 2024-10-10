@@ -50,7 +50,6 @@ import java.util.Map;
  */
 public class TileRenderer {
     private final Context mContext;
-    private final Resources.Theme mTheme;
     private RoundedIconGenerator mIconGenerator;
     private ImageFetcher mImageFetcher;
 
@@ -63,8 +62,6 @@ public class TileRenderer {
     private Profile mProfile;
 
     @LayoutRes private final int mLayout;
-
-    @LayoutRes private final int mTopSitesLayout;
 
     private class LargeIconCallbackImpl implements LargeIconBridge.LargeIconCallback {
         private final WeakReference<Tile> mTile;
@@ -104,7 +101,6 @@ public class TileRenderer {
 
         mContext = context;
         Resources res = context.getResources();
-        mTheme = context.getTheme();
         mDesiredIconSize = res.getDimensionPixelSize(R.dimen.tile_view_icon_size);
         mIconCornerRadius = res.getDimension(R.dimen.tile_view_icon_corner_radius);
         int minIconSize = res.getDimensionPixelSize(R.dimen.tile_view_icon_min_size);
@@ -113,7 +109,6 @@ public class TileRenderer {
         mMinIconSize = Math.min(mDesiredIconSize, minIconSize);
 
         mLayout = getLayout();
-        mTopSitesLayout = getTopSitesLayout();
 
         int iconColor = context.getColor(R.color.default_favicon_background_color);
         int iconTextSize = res.getDimensionPixelSize(R.dimen.tile_view_icon_text_size);
@@ -355,17 +350,6 @@ public class TileRenderer {
                 return R.layout.suggestions_tile_view;
             case TileStyle.MODERN_CONDENSED:
                 return R.layout.suggestions_tile_view_condensed;
-        }
-        assert false;
-        return 0;
-    }
-
-    private @LayoutRes int getTopSitesLayout() {
-        switch (mStyle) {
-            case TileStyle.MODERN:
-                return R.layout.top_sites_tile_view;
-            case TileStyle.MODERN_CONDENSED:
-                return R.layout.top_sites_tile_view_condensed;
         }
         assert false;
         return 0;

@@ -30,7 +30,6 @@ import javax.inject.Inject;
 @ActivityScope
 public class SharedActivityCoordinator implements InflationObserver {
     private final CurrentPageVerifier mCurrentPageVerifier;
-    private final BrowserServicesIntentDataProvider mIntentDataProvider;
     private TrustedWebActivityBrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     private final CustomTabToolbarColorController mToolbarColorController;
     private final CustomTabStatusBarColorProvider mStatusBarColorProvider;
@@ -54,7 +53,6 @@ public class SharedActivityCoordinator implements InflationObserver {
             Lazy<ImmersiveModeController> immersiveModeController,
             CustomTabOrientationController customTabOrientationController) {
         mCurrentPageVerifier = currentPageVerifier;
-        mIntentDataProvider = intentDataProvider;
         mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
         mToolbarColorController = toolbarColorController;
         mStatusBarColorProvider = statusBarColorProvider;

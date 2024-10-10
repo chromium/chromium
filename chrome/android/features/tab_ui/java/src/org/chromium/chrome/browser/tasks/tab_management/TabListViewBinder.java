@@ -105,7 +105,7 @@ class TabListViewBinder {
         } else if (TabProperties.IS_SELECTED == propertyKey) {
             boolean isSelected = model.get(TabProperties.IS_SELECTED);
             boolean isIncognito = model.get(TabProperties.IS_INCOGNITO);
-            updateColors(view, isIncognito, isSelected);
+            updateColors(view, isIncognito);
 
             @DrawableRes
             int selectedTabBackground =
@@ -195,7 +195,7 @@ class TabListViewBinder {
      * @param isIncognito Whether the model is in incognito mode.
      * @param isSelected Whether the item is selected.
      */
-    private static void updateColors(ViewGroup view, boolean isIncognito, boolean isSelected) {
+    private static void updateColors(ViewGroup view, boolean isIncognito) {
         // TODO(crbug.com/40272756): isSelected is ignored as the selected row is only outlined not
         // colored so it should use the unselected color. This will be addressed in a fixit.
 

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.customtabs.features.toolbar;
 import dagger.Lazy;
 
 import org.chromium.cc.input.BrowserControlsState;
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
@@ -19,16 +18,13 @@ import javax.inject.Inject;
 @ActivityScope
 public class CustomTabBrowserControlsVisibilityDelegate extends BrowserControlsVisibilityDelegate {
     private final Lazy<BrowserControlsVisibilityManager> mBrowserControlsVisibilityManager;
-    private final ActivityTabProvider mTabProvider;
     private @BrowserControlsState int mBrowserControlsState = BrowserControlsState.BOTH;
 
     @Inject
     public CustomTabBrowserControlsVisibilityDelegate(
-            Lazy<BrowserControlsVisibilityManager> controlsVisibilityManager,
-            ActivityTabProvider tabProvider) {
+            Lazy<BrowserControlsVisibilityManager> controlsVisibilityManager) {
         super(BrowserControlsState.BOTH);
         mBrowserControlsVisibilityManager = controlsVisibilityManager;
-        mTabProvider = tabProvider;
         getDefaultVisibilityDelegate().addObserver((constraints) -> updateVisibilityConstraints());
         updateVisibilityConstraints();
     }

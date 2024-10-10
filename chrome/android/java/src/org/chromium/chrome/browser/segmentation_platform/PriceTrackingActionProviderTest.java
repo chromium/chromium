@@ -124,8 +124,7 @@ public class PriceTrackingActionProviderTest {
         doReturn(JUnitTestGURLs.EXAMPLE_URL).when(mMockTab).getUrl();
         List<ActionProvider> providers = new ArrayList<>();
         PriceTrackingActionProvider provider =
-                new PriceTrackingActionProvider(
-                        () -> mShoppingService, () -> mBookmarkModel, () -> mProfile);
+                new PriceTrackingActionProvider(() -> mShoppingService, () -> mBookmarkModel);
         providers.add(provider);
         SignalAccumulator accumulator = new SignalAccumulator(new Handler(), mMockTab, providers);
         setIsUrlPriceTrackableResult(true);
@@ -138,8 +137,7 @@ public class PriceTrackingActionProviderTest {
         doReturn(JUnitTestGURLs.GOOGLE_URL).when(mMockTab).getUrl();
         List<ActionProvider> providers = new ArrayList<>();
         PriceTrackingActionProvider provider =
-                new PriceTrackingActionProvider(
-                        () -> mShoppingService, () -> mBookmarkModel, () -> mProfile);
+                new PriceTrackingActionProvider(() -> mShoppingService, () -> mBookmarkModel);
         providers.add(provider);
         SignalAccumulator accumulator = new SignalAccumulator(new Handler(), mMockTab, providers);
         // URL does not support price tracking.
@@ -158,8 +156,7 @@ public class PriceTrackingActionProviderTest {
         doReturn(JUnitTestGURLs.ABOUT_BLANK).when(mMockTab).getUrl();
         List<ActionProvider> providers = new ArrayList<>();
         PriceTrackingActionProvider provider =
-                new PriceTrackingActionProvider(
-                        () -> mShoppingService, () -> mBookmarkModel, () -> mProfile);
+                new PriceTrackingActionProvider(() -> mShoppingService, () -> mBookmarkModel);
         providers.add(provider);
         SignalAccumulator accumulator = new SignalAccumulator(new Handler(), mMockTab, providers);
         provider.getAction(mMockTab, accumulator);

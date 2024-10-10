@@ -50,12 +50,11 @@ public class TabUma extends EmptyTabObserver implements UserData {
     // Timestamp of the beginning of the current tab restore.
     private long mRestoreStartedAtMillis = -1;
 
-    private long mLastTabStateChangeMillis = -1;
     private int mLastTabState = TAB_STATE_INITIAL;
 
     /**
-     * Creates {@link TabUma} instance optionally. Creates one only when tab creation type
-     * is non-null.
+     * Creates {@link TabUma} instance optionally. Creates one only when tab creation type is
+     * non-null.
      */
     static void createForTab(Tab tab) {
         assert tab.getUserDataHost().getUserData(USER_DATA_KEY) == null;
@@ -67,11 +66,11 @@ public class TabUma extends EmptyTabObserver implements UserData {
 
     /**
      * Constructs a new UMA tracker for a specific tab.
+     *
      * @param tab Tab this UMA tracker is created for.
      * @param creationState In what state the tab was created.
      */
     private TabUma(Tab tab, @TabCreationState int creationState) {
-        mLastTabStateChangeMillis = System.currentTimeMillis();
         mTabCreationState = creationState;
         switch (mTabCreationState) {
             case TabCreationState.LIVE_IN_FOREGROUND:
@@ -105,7 +104,6 @@ public class TabUma extends EmptyTabObserver implements UserData {
             return;
         }
         long now = System.currentTimeMillis();
-        mLastTabStateChangeMillis = now;
         mLastTabState = newState;
     }
 

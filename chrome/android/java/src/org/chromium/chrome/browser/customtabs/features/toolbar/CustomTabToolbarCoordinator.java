@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.customtabs.CloseButtonVisibilityManager;
 import org.chromium.chrome.browser.customtabs.CustomTabCompositorContentInitializer;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
-import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -74,7 +73,6 @@ public class CustomTabToolbarCoordinator {
     private final Activity mActivity;
     private final ActivityWindowAndroid mWindowAndroid;
     private final Context mAppContext;
-    private final CustomTabActivityTabController mTabController;
     private final Lazy<BrowserControlsVisibilityManager> mBrowserControlsVisibilityManager;
     private final CustomTabActivityNavigationController mNavigationController;
     private final CloseButtonVisibilityManager mCloseButtonVisibilityManager;
@@ -97,7 +95,6 @@ public class CustomTabToolbarCoordinator {
             Activity activity,
             ActivityWindowAndroid windowAndroid,
             @Named(APP_CONTEXT) Context appContext,
-            CustomTabActivityTabController tabController,
             Lazy<BrowserControlsVisibilityManager> controlsVisiblityManager,
             CustomTabActivityNavigationController navigationController,
             CloseButtonVisibilityManager closeButtonVisibilityManager,
@@ -110,7 +107,6 @@ public class CustomTabToolbarCoordinator {
         mActivity = activity;
         mWindowAndroid = windowAndroid;
         mAppContext = appContext;
-        mTabController = tabController;
         mBrowserControlsVisibilityManager = controlsVisiblityManager;
         mNavigationController = navigationController;
         mCloseButtonVisibilityManager = closeButtonVisibilityManager;

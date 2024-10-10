@@ -50,11 +50,7 @@ public class AddressAccessorySheetCoordinator extends AccessorySheetTabCoordinat
         mProfile = profile;
         mMediator =
                 new AccessorySheetTabMediator(
-                        mModel,
-                        AccessoryTabType.ADDRESSES,
-                        Type.ADDRESS_INFO,
-                        AccessoryAction.MANAGE_ADDRESSES,
-                        null);
+                        mModel, Type.ADDRESS_INFO, AccessoryAction.MANAGE_ADDRESSES, null);
     }
 
     @Override

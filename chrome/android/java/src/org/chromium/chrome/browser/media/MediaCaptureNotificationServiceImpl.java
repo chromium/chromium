@@ -361,8 +361,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
         }
     }
 
-    private static boolean shouldStartService(
-            Context context, @MediaType int mediaType, int tabId) {
+    private static boolean shouldStartService(@MediaType int mediaType, int tabId) {
         if (mediaType != MediaType.NO_MEDIA) return true;
         SharedPreferencesManager sharedPreferences = ChromeSharedPreferences.getInstance();
         Set<String> notificationIds =
@@ -379,6 +378,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
     /**
      * Send an intent to MediaCaptureNotificationService to either create, update or destroy the
      * notification identified by tabId.
+     *
      * @param tabId Unique notification id.
      * @param webContents The webContents of the tab; used to get the current media type.
      * @param url Url of the current webrtc call.
@@ -386,7 +386,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
     public static void updateMediaNotificationForTab(
             Context context, int tabId, @Nullable WebContents webContents, GURL url) {
         @MediaType int mediaType = getMediaType(webContents);
-        if (!shouldStartService(context, mediaType, tabId)) return;
+        if (!shouldStartService(mediaType, tabId)) return;
         Intent intent = new Intent(context, MediaCaptureNotificationService.class);
         intent.setAction(ACTION_MEDIA_CAPTURE_UPDATE);
         intent.putExtra(NOTIFICATION_ID_EXTRA, tabId);

@@ -15,7 +15,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithTitleAndSummary;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.LocalDataDescription;
@@ -42,7 +41,6 @@ final class BatchUploadDialogCoordinator {
         void onSaveInAccountDialogButtonClicked(Set<Integer> types, int itemsCount);
     }
 
-    private final Profile mProfile;
     private final ModalDialogManager mDialogManager;
     private final PropertyModel mModel;
     private final Context mContext;
@@ -53,28 +51,25 @@ final class BatchUploadDialogCoordinator {
     @MainThread
     static void show(
             Context context,
-            Profile profile,
             HashMap<Integer, LocalDataDescription> localDataDescriptionsMap,
             ModalDialogManager dialogManager,
             Listener listener) {
         ThreadUtils.assertOnUiThread();
         new BatchUploadDialogCoordinator(
-                context, profile, localDataDescriptionsMap, dialogManager, listener);
+                context, localDataDescriptionsMap, dialogManager, listener);
     }
 
     @VisibleForTesting
     @MainThread
     BatchUploadDialogCoordinator(
             Context context,
-            Profile profile,
             HashMap<Integer, LocalDataDescription> localDataDescriptionsMap,
             ModalDialogManager dialogManager,
             Listener listener) {
         mContext = context;
-        mProfile = profile;
         mDialogManager = dialogManager;
 
-        final View view = inflateView(context, localDataDescriptionsMap);
+        final View view = inflateView(context);
 
         mModel =
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
@@ -97,7 +92,7 @@ final class BatchUploadDialogCoordinator {
                         .with(ModalDialogProperties.CUSTOM_VIEW, view)
                         .with(
                                 ModalDialogProperties.CONTROLLER,
-                                createController(context, view, localDataDescriptionsMap, listener))
+                                createController(context, localDataDescriptionsMap, listener))
                         .build();
         mDialogManager.showDialog(mModel, ModalDialogType.APP);
 
@@ -175,8 +170,7 @@ final class BatchUploadDialogCoordinator {
         return null;
     }
 
-    private static View inflateView(
-            Context context, HashMap<Integer, LocalDataDescription> localDataDescriptionsMap) {
+    private static View inflateView(Context context) {
         final View view =
                 LayoutInflater.from(context).inflate(R.layout.batch_upload_dialog_view, null);
 
@@ -212,7 +206,6 @@ final class BatchUploadDialogCoordinator {
 
     private Controller createController(
             Context context,
-            View view,
             HashMap<Integer, LocalDataDescription> localDataDescriptionsMap,
             Listener listener) {
         return new Controller() {

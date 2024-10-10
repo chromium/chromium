@@ -234,7 +234,7 @@ public class DisplayAgent {
         }
     }
 
-    private static AndroidNotificationData toAndroidNotificationData(SystemData systemData) {
+    private static AndroidNotificationData toAndroidNotificationData() {
         @ChannelId String channel = ChannelId.BROWSER;
         @SystemNotificationType int systemNotificationType = SystemNotificationType.UNKNOWN;
         return new AndroidNotificationData(channel, systemNotificationType);
@@ -253,7 +253,7 @@ public class DisplayAgent {
 
     @CalledByNative
     private static void showNotification(NotificationData notificationData, SystemData systemData) {
-        AndroidNotificationData platformData = toAndroidNotificationData(systemData);
+        AndroidNotificationData platformData = toAndroidNotificationData();
         // TODO(xingliu): Plumb platform specific data from native.
         // mode and provide correct notification id. Support buttons.
         Context context = ContextUtils.getApplicationContext();

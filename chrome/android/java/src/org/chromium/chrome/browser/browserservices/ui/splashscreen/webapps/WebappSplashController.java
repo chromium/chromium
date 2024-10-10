@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.browserservices.ui.splashscreen.webapps;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.view.View;
@@ -54,8 +53,7 @@ public class WebappSplashController implements SplashDelegate {
         mSplashController.setConfig(this, HIDE_ANIMATION_DURATION_MS);
 
         if (mWebappInfo.isForWebApk()) {
-            mWebApkNetworkErrorObserver =
-                    new WebApkSplashNetworkErrorObserver(activity, mWebappInfo.name());
+            mWebApkNetworkErrorObserver = new WebApkSplashNetworkErrorObserver(activity);
             mTabObserverRegistrar.registerTabObserver(mWebApkNetworkErrorObserver);
         }
     }
@@ -124,7 +122,6 @@ public class WebappSplashController implements SplashDelegate {
             Bitmap splashImage,
             boolean isSplashIconMaskable) {
         Context context = ContextUtils.getApplicationContext();
-        Resources resources = context.getResources();
 
         Bitmap selectedIcon = splashImage;
         boolean selectedIconGenerated = false;

@@ -27,7 +27,6 @@ import org.chromium.components.browser_ui.widget.displaystyle.ViewResizerUtil;
 /** Applies the padding to the fragment for wide displays. */
 public class WideDisplayPadding {
     @NonNull private final Context mContext;
-    @NonNull private final Fragment mFragment;
     @NonNull private final View mContent;
     private final int mMinWidePaddingPixels;
     @NonNull private final UiConfig mUiConfig;
@@ -35,7 +34,6 @@ public class WideDisplayPadding {
     private WideDisplayPadding(
             Fragment fragment, OnConfigurationChangedProvider onConfigurationChangedProvider) {
         mContext = fragment.requireContext();
-        mFragment = fragment;
         mContent = fragment.getView();
 
         mMinWidePaddingPixels =

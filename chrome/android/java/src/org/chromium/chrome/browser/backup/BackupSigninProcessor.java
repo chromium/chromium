@@ -80,13 +80,12 @@ public final class BackupSigninProcessor {
                                             return;
                                         }
 
-                                        signinAndEnableSync(coreAccountInfo, activity);
+                                        signinAndEnableSync(coreAccountInfo);
                                     });
                         });
     }
 
-    private static void signinAndEnableSync(
-            @NonNull CoreAccountInfo coreAccountInfo, Activity activity) {
+    private static void signinAndEnableSync(@NonNull CoreAccountInfo coreAccountInfo) {
         Profile profile = ProfileManager.getLastUsedRegularProfile();
         SigninManager signinManager = IdentityServicesProvider.get().getSigninManager(profile);
         signinManager.runAfterOperationInProgress(

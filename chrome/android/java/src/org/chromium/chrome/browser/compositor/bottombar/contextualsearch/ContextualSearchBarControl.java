@@ -79,12 +79,6 @@ public class ContextualSearchBarControl {
     private final float mTextLayerMinHeight;
     private final float mTermCaptionSpacing;
 
-    /** The width of the end button in px. */
-    private final float mEndButtonWidth;
-
-    /** The percentage the panel is expanded. 1.f is fully expanded and 0.f is peeked. */
-    private float mExpandedPercent;
-
     /** Converts dp dimensions to pixels. */
     private final float mDpToPx;
 
@@ -155,9 +149,7 @@ public class ContextualSearchBarControl {
         mSearchTermControl = new ContextualSearchTermControl(panel, context, container, loader);
 
         mDpToPx = context.getResources().getDisplayMetrics().density;
-        mCaptionControl =
-                new ContextualSearchCaptionControl(
-                        panel, context, container, loader, mCanPromoteToNewTab);
+        mCaptionControl = new ContextualSearchCaptionControl(panel, context, container, loader);
 
         mQuickActionControl = new ContextualSearchQuickActionControl(context, loader);
         mCardIconControl = new ContextualSearchCardIconControl(context, loader);
@@ -171,9 +163,6 @@ public class ContextualSearchBarControl {
         // Icon attributes.
         mPaddedIconWidthPx =
                 context.getResources().getDimension(R.dimen.contextual_search_padded_button_width);
-        mEndButtonWidth =
-                mPaddedIconWidthPx
-                        + context.getResources().getDimension(R.dimen.overlay_panel_button_padding);
     }
 
     /**
@@ -230,10 +219,10 @@ public class ContextualSearchBarControl {
 
     /**
      * Updates this bar when in transition between peeked to expanded states.
+     *
      * @param percentage The percentage to the more opened state.
      */
     public void onUpdateFromPeekToExpand(float percentage) {
-        mExpandedPercent = percentage;
 
         getImageControl().onUpdateFromPeekToExpand(percentage);
         mCaptionControl.onUpdateFromPeekToExpand(percentage);

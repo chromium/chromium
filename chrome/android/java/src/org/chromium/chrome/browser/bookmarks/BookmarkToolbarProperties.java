@@ -19,9 +19,6 @@ import java.util.function.Function;
  */
 class BookmarkToolbarProperties {
     /** Dependencies */
-    static final WritableObjectPropertyKey<BookmarkOpener> BOOKMARK_OPENER =
-            new WritableObjectPropertyKey<>();
-
     static final WritableObjectPropertyKey<SelectionDelegate> SELECTION_DELEGATE =
             new WritableObjectPropertyKey<>();
 
@@ -76,7 +73,6 @@ class BookmarkToolbarProperties {
             new WritableObjectPropertyKey<>();
 
     static final PropertyKey[] ALL_KEYS = {
-        BOOKMARK_OPENER,
         SELECTION_DELEGATE,
         TITLE,
         BOOKMARK_UI_MODE,

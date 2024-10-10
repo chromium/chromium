@@ -152,13 +152,12 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
         }
 
         BookmarkItem item = mBookmarkModel.getBookmarkById(bookmarkId);
-        bindBookmarkProperties(item, mPowerBookmarkMeta, mWasBookmarkMoved);
-        bindPowerBookmarkProperties(mPowerBookmarkMeta, fromExplicitTrackUi);
+        bindBookmarkProperties(item, mWasBookmarkMoved);
+        bindPowerBookmarkProperties(mPowerBookmarkMeta);
         bindImage(item, meta);
     }
 
-    private void bindBookmarkProperties(
-            BookmarkItem item, PowerBookmarkMeta meta, boolean wasBookmarkMoved) {
+    private void bindBookmarkProperties(BookmarkItem item, boolean wasBookmarkMoved) {
         mFolderName = mBookmarkModel.getBookmarkTitle(item.getParentId());
 
         mPropertyModel.set(ImprovedBookmarkSaveFlowProperties.TITLE, createTitleCharSequence());
@@ -213,8 +212,7 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
         return ss;
     }
 
-    private void bindPowerBookmarkProperties(
-            @Nullable PowerBookmarkMeta meta, boolean fromExplicitTrackUi) {
+    private void bindPowerBookmarkProperties(@Nullable PowerBookmarkMeta meta) {
         if (meta == null) return;
 
         if (meta.hasShoppingSpecifics()) {
@@ -316,7 +314,7 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
         }
 
         BookmarkItem item = mBookmarkModel.getBookmarkById(mBookmarkId);
-        bindBookmarkProperties(item, mPowerBookmarkMeta, mWasBookmarkMoved);
+        bindBookmarkProperties(item, mWasBookmarkMoved);
     }
 
     // SubscriptionsObserver implementation
@@ -368,7 +366,7 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
         mCloseRunnable.run();
     }
 
-    private void onFolderSelectClicked(View v) {
+    private void onFolderSelectClicked() {
         RecordUserAction.record("MobileBookmark.SaveFlow.EditFolder");
         BookmarkUtils.startFolderPickerActivity(mContext, mBookmarkId);
         TrackerFactory.getTrackerForProfile(mProfile)

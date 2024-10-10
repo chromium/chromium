@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.download;
 
-import android.content.Context;
 import android.net.Uri;
 import android.text.style.ClickableSpan;
 import android.view.View;
@@ -25,25 +24,22 @@ import java.io.File;
 public class DuplicateDownloadClickableSpan extends ClickableSpan {
     private final @Nullable Runnable mRunnable;
     private final OTRProfileID mOTRProfileID;
-    private final Context mContext;
     private final String mFilePath;
     private @DownloadOpenSource int mSource;
 
     /**
      * Constructor.
-     * @param context Context to be used.
+     *
      * @param filePath file path of the download files.
      * @param runnable Runnable that will be executed when clicking the file name.
      * @param otrProfileID Off the record profile ID.
      * @param source Enum for UMA reporting.
      */
     public DuplicateDownloadClickableSpan(
-            Context context,
             String filePath,
             Runnable runnable,
             OTRProfileID otrProfileID,
             @DownloadOpenSource int source) {
-        mContext = context;
         mRunnable = runnable;
         mOTRProfileID = otrProfileID;
         mFilePath = filePath;

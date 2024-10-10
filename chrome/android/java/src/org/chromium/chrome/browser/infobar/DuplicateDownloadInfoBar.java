@@ -98,7 +98,6 @@ public class DuplicateDownloadInfoBar extends ConfirmInfoBar {
         } else {
             DuplicateDownloadClickableSpan span =
                     new DuplicateDownloadClickableSpan(
-                            context,
                             mFilePath,
                             CallbackUtils.emptyRunnable(),
                             mOTRProfileID,

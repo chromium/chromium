@@ -33,7 +33,6 @@ import java.util.concurrent.locks.ReentrantLock;
  * WebApk, the logic won't be executed.
  */
 public class TrackingProtectionSnackbarController implements CookieControlsObserver {
-    private static final long MINIMUM_DELAY_BETWEEN_CONSECUTIVE_SNACKBARS_MS = 5 * 60 * 1000;
 
     private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
     private final Runnable mSnakcbarOnAction;

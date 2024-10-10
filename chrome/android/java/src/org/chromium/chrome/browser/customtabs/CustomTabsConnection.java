@@ -533,14 +533,11 @@ public class CustomTabsConnection {
     }
 
     /**
-     * High confidence mayLaunchUrl() call, that is:
-     * - Tries to speculate if possible.
-     * - An empty URL cancels the current prerender if any.
-     * - Start a spare renderer if necessary.
+     * High confidence mayLaunchUrl() call, that is: - Tries to speculate if possible. - An empty
+     * URL cancels the current prerender if any. - Start a spare renderer if necessary.
      */
     private void highConfidenceMayLaunchUrl(
             CustomTabsSessionToken session,
-            int uid,
             String url,
             Bundle extras,
             List<Bundle> otherLikelyBundles) {
@@ -572,7 +569,6 @@ public class CustomTabsConnection {
                     url,
                     canUseHiddenTab,
                     extras,
-                    uid,
                     useSeparateStoragePartitionForExperiment);
         }
         preconnectUrls(otherLikelyBundles);
@@ -796,7 +792,7 @@ public class CustomTabsConnection {
             if (lowConfidence) {
                 lowConfidenceMayLaunchUrl(otherLikelyBundles);
             } else {
-                highConfidenceMayLaunchUrl(session, uid, urlString, extras, otherLikelyBundles);
+                highConfidenceMayLaunchUrl(session, urlString, extras, otherLikelyBundles);
             }
         }
     }
@@ -1978,7 +1974,6 @@ public class CustomTabsConnection {
             String url,
             boolean useHiddenTab,
             Bundle extras,
-            int uid,
             boolean useSeparateStoragePartitionForExperiment) {
         WarmupManager warmupManager = WarmupManager.getInstance();
         Profile profile = ProfileManager.getLastUsedRegularProfile();

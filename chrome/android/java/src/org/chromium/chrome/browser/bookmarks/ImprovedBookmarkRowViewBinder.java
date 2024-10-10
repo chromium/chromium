@@ -55,8 +55,6 @@ public class ImprovedBookmarkRowViewBinder {
             row.setIsSelected(model.get(ImprovedBookmarkRowProperties.SELECTED));
         } else if (key == ImprovedBookmarkRowProperties.SELECTION_ACTIVE) {
             row.setSelectionEnabled(model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
-        } else if (key == ImprovedBookmarkRowProperties.DRAG_ENABLED) {
-            row.setDragEnabled(model.get(ImprovedBookmarkRowProperties.DRAG_ENABLED));
         } else if (key == ImprovedBookmarkRowProperties.EDITABLE) {
             row.setBookmarkIdEditable(model.get(ImprovedBookmarkRowProperties.EDITABLE));
         } else if (key == ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER) {

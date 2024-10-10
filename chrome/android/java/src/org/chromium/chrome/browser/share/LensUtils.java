@@ -16,12 +16,7 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 /** This class provides utilities for intenting into Google Lens. */
 // TODO(crbug.com/40160855): Consolidate param-checks into a single function.
 public class LensUtils {
-    private static final String MIN_AGSA_VERSION_FEATURE_PARAM_NAME = "minAgsaVersionName";
     private static final String LOG_UKM_PARAM_NAME = "logUkm";
-    private static final String ENABLE_ON_TABLET_PARAM_NAME = "enableContextMenuSearchOnTablet";
-    private static final String DISABLE_ON_INCOGNITO_PARAM_NAME = "disableOnIncognito";
-    private static final String ORDER_SHARE_IMAGE_BEFORE_LENS_PARAM_NAME =
-            "orderShareImageBeforeLens";
 
     private static final String MIN_AGSA_VERSION_NAME_FOR_LENS_POSTCAPTURE = "10.65";
 

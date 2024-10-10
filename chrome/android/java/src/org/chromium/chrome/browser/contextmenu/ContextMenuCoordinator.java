@@ -492,7 +492,6 @@ public class ContextMenuCoordinator implements ContextMenuUi {
     void simulateShoppyImageClassificationForTesting() {
         // Don't need to initialize controller because that should be triggered by
         // forcing feature flags.
-        mChipController.setFakeLensQueryResultForTesting(); // IN-TEST
         ChipRenderParams chipRenderParamsForTesting = new ChipRenderParams();
         chipRenderParamsForTesting.titleResourceId =
                 R.string.contextmenu_shop_image_with_google_lens;
@@ -503,7 +502,6 @@ public class ContextMenuCoordinator implements ContextMenuUi {
     void simulateTranslateImageClassificationForTesting() {
         // Don't need to initialize controller because that should be triggered by
         // forcing feature flags.
-        mChipController.setFakeLensQueryResultForTesting(); // IN-TEST
         ChipRenderParams chipRenderParamsForTesting = new ChipRenderParams();
         chipRenderParamsForTesting.titleResourceId =
                 R.string.contextmenu_translate_image_with_google_lens;
@@ -514,7 +512,6 @@ public class ContextMenuCoordinator implements ContextMenuUi {
     ChipRenderParams simulateImageClassificationForTesting() {
         // Don't need to initialize controller because that should be triggered by
         // forcing feature flags.
-        mChipController.setFakeLensQueryResultForTesting(); // IN-TEST
         ChipRenderParams chipRenderParamsForTesting = new ChipRenderParams();
         return chipRenderParamsForTesting;
     }

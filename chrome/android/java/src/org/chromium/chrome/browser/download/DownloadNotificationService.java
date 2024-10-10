@@ -96,8 +96,6 @@ public class DownloadNotificationService {
     /** Notification Id starting value, to avoid conflicts from IDs used in prior versions. */
     private static final int STARTING_NOTIFICATION_ID = 1000000;
 
-    private static final int MAX_RESUMPTION_ATTEMPT_LEFT = 5;
-
     private static DownloadNotificationService sInstanceForTesting;
 
     private BaseNotificationManagerProxy mNotificationManager;
@@ -192,7 +190,6 @@ public class DownloadNotificationService {
                 icon,
                 originalUrl,
                 shouldPromoteOrigin,
-                false,
                 PendingState.NOT_PENDING);
     }
 
@@ -233,28 +230,25 @@ public class DownloadNotificationService {
                 icon,
                 originalUrl,
                 shouldPromoteOrigin,
-                hasUserGesture,
                 pendingState);
     }
 
     /**
      * Helper method to update the notification for an active download, the download is either in
      * progress or pending.
-     * @param id                      The {@link ContentId} of the download.
-     * @param fileName                File name of the download.
-     * @param progress                The current download progress.
-     * @param timeRemainingInMillis   Remaining download time in milliseconds or -1 if it is
-     *                                unknown.
-     * @param startTime               Time when download started.
-     * @param otrProfileID            The {@link OTRProfileID} of the download. Null if in regular
-     *                                mode.
+     *
+     * @param id The {@link ContentId} of the download.
+     * @param fileName File name of the download.
+     * @param progress The current download progress.
+     * @param timeRemainingInMillis Remaining download time in milliseconds or -1 if it is unknown.
+     * @param startTime Time when download started.
+     * @param otrProfileID The {@link OTRProfileID} of the download. Null if in regular mode.
      * @param canDownloadWhileMetered Whether the download can happen in metered network.
-     * @param isTransient             Whether or not clicking on the download should launch
-     *                                downloads home.
-     * @param icon                    A {@link Bitmap} to be used as the large icon for display.
-     * @param originalUrl             The original url of the downloaded file.
-     * @param shouldPromoteOrigin     Whether the origin should be displayed in the notification.
-     * @param pendingState            Reason download is pending.
+     * @param isTransient Whether or not clicking on the download should launch downloads home.
+     * @param icon A {@link Bitmap} to be used as the large icon for display.
+     * @param originalUrl The original url of the downloaded file.
+     * @param shouldPromoteOrigin Whether the origin should be displayed in the notification.
+     * @param pendingState Reason download is pending.
      */
     private void updateActiveDownloadNotification(
             ContentId id,
@@ -268,7 +262,6 @@ public class DownloadNotificationService {
             Bitmap icon,
             GURL originalUrl,
             boolean shouldPromoteOrigin,
-            boolean hasUserGesture,
             @PendingState int pendingState) {
         int notificationId = getNotificationId(id);
         Context context = ContextUtils.getApplicationContext();

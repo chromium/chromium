@@ -86,7 +86,6 @@ public class CustomTabToolbarCoordinatorUnitTest {
                         mActivity,
                         mActivityWindowAndroid,
                         mActivity,
-                        mTabController,
                         mBrowserControlsVisibilityManager,
                         env.createNavigationController(mTabController),
                         mCloseButtonVisibilityManager,

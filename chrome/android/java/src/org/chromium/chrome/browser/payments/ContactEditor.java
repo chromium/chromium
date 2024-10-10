@@ -79,7 +79,6 @@ public class ContactEditor extends EditorBase<AutofillContact> {
     private final Set<String> mPhoneNumbers;
     private final Set<String> mEmailAddresses;
     @Nullable private PayerErrors mPayerErrors;
-    @Nullable private EditorFieldValidator mEmailValidator;
     private boolean mContactNew;
     private AutofillContact mContact;
     private Optional<PropertyModel> mNameField;

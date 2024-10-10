@@ -27,9 +27,6 @@ public class PartnerBookmarksReader {
     private static Set<FaviconUpdateObserver> sFaviconUpdateObservers = new HashSet<>();
     private static final float DESIRED_FAVICON_SIZE_DP = 16.0f;
 
-    private static boolean sInitialized;
-    private static boolean sForceDisableEditing;
-
     /** Root bookmark id reserved for the implied root of the bookmarks */
     static final long ROOT_FOLDER_ID = 0;
 

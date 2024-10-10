@@ -24,6 +24,7 @@ import org.chromium.base.CallbackUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.blink.mojom.DisplayMode;
+import org.chromium.blink.mojom.DisplayMode.EnumType;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.app.tab_activity_glue.ActivityTabWebContentsDelegateAndroid;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -84,9 +85,6 @@ import javax.inject.Named;
  */
 @ActivityScope
 public class CustomTabDelegateFactory implements TabDelegateFactory {
-    /** Action for do-nothing activity for activating WebAPK. */
-    private static final String ACTION_ACTIVATE_WEBAPK =
-            "org.chromium.chrome.browser.webapps.ActivateWebApkActivity.ACTIVATE";
 
     /** A custom external navigation delegate that forbids the intent picker from showing up. */
     static class CustomTabNavigationDelegate extends ExternalNavigationDelegateImpl {
@@ -96,7 +94,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         private final Verifier mVerifier;
         private final @ActivityType int mActivityType;
         private final BrowserServicesIntentDataProvider mIntentDataProvider;
-        private final Activity mActivity;
         private final Lazy<AuthTabVerifier> mAuthTabVerifier;
 
         /** Constructs a new instance of {@link CustomTabNavigationDelegate}. */
@@ -106,8 +103,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 Verifier verifier,
                 @ActivityType int activityType,
                 BrowserServicesIntentDataProvider intentDataProvider,
-                Lazy<AuthTabVerifier> authTabVerifier,
-                Activity activity) {
+                Lazy<AuthTabVerifier> authTabVerifier) {
             super(tab);
             mClientPackageName = TabAssociatedApp.from(tab).getAppId();
             mExternalAuthUtils = authUtils;
@@ -115,7 +111,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             mActivityType = activityType;
             mIntentDataProvider = intentDataProvider;
             mAuthTabVerifier = authTabVerifier;
-            mActivity = activity;
         }
 
         @Override
@@ -203,9 +198,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         private final @Nullable String mWebApkScopeUrl;
         private final @Nullable BrowserServicesIntentDataProvider mIntentDataProvider;
         private final @DisplayMode.EnumType int mDisplayMode;
-        private final MultiWindowUtils mMultiWindowUtils;
         private final boolean mShouldEnableEmbeddedMediaExperience;
-        private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
 
         /** See {@link TabWebContentsDelegateAndroid}. */
         public CustomTabWebContentsDelegate(
@@ -214,8 +207,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 @ActivityType int activityType,
                 @Nullable String webApkScopeUrl,
                 @Nullable BrowserServicesIntentDataProvider intentDataProvider,
-                @DisplayMode.EnumType int displayMode,
-                MultiWindowUtils multiWindowUtils,
+                @EnumType int displayMode,
                 boolean shouldEnableEmbeddedMediaExperience,
                 ChromeActivityNativeDelegate chromeActivityNativeDelegate,
                 boolean isCustomTab,
@@ -241,9 +233,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             mWebApkScopeUrl = webApkScopeUrl;
             mIntentDataProvider = intentDataProvider;
             mDisplayMode = displayMode;
-            mMultiWindowUtils = multiWindowUtils;
             mShouldEnableEmbeddedMediaExperience = shouldEnableEmbeddedMediaExperience;
-            mModalDialogManagerSupplier = modalDialogManagerSupplier;
         }
 
         @Override
@@ -533,7 +523,6 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                         mWebApkScopeUrl,
                         mIntentDataProvider,
                         mDisplayMode,
-                        mMultiWindowUtils,
                         mShouldEnableEmbeddedMediaExperience,
                         mChromeActivityNativeDelegate,
                         /* isCustomTab= */ true,
@@ -558,8 +547,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                             mVerifier,
                             mActivityType,
                             mIntentDataProvider,
-                            mAuthTabVerifier,
-                            mActivity);
+                            mAuthTabVerifier);
         }
         return new ExternalNavigationHandler(mNavigationDelegate);
     }

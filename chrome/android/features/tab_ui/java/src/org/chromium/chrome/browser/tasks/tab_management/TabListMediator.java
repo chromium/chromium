@@ -330,7 +330,6 @@ class TabListMediator implements TabListNotificationHandler {
         // int TAB_GRID_SHEET = 1;  // Obsolete
         int GRID_TAB_SWITCHER = 2;
         int GRID_TAB_SWITCHER_GROUP = 3;
-        int NUM_ENTRIES = 4;
     }
 
     private static final String TAG = "TabListMediator";
@@ -750,7 +749,6 @@ class TabListMediator implements TabListNotificationHandler {
                             return;
                         }
 
-                        Tab newSelectedTabInMergedGroup = null;
                         removeAt(srcIndex);
                         if (getRelatedTabsForId(movedTab.getId()).size() == 2) {
                             // When users use drop-to-merge to create a group.
@@ -760,7 +758,7 @@ class TabListMediator implements TabListNotificationHandler {
                         }
                         desIndex =
                                 srcIndex > desIndex ? desIndex : mModel.getTabIndexBefore(desIndex);
-                        newSelectedTabInMergedGroup =
+                        Tab newSelectedTabInMergedGroup =
                                 filter.getTabAt(mModel.getTabCardCountsBefore(desIndex));
                         updateTab(desIndex, newSelectedTabInMergedGroup, true, false);
                     } else {

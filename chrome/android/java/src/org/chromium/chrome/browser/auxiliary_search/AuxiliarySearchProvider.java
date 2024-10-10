@@ -39,8 +39,6 @@ public class AuxiliarySearchProvider {
         void onFaviconAvailable(Bitmap image, AuxiliarySearchEntry entry);
     }
 
-    private static final int kNumTabsToSend = 100;
-
     /* Only donate the recent 7 days accessed tabs.*/
     @VisibleForTesting static final String TAB_AGE_HOURS_PARAM = "tabs_max_hours";
     @VisibleForTesting static final int DEFAULT_TAB_AGE_HOURS = 168;

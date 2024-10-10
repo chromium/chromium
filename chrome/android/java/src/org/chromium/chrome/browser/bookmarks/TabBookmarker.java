@@ -29,7 +29,6 @@ public class TabBookmarker {
     private final Supplier<BookmarkModel> mBookmarkModelSupplier;
     private final Supplier<BottomSheetController> mBottomSheetControllerSupplier;
     private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
-    private final boolean mIsCustomTab;
 
     /**
      * Constructor.
@@ -51,7 +50,6 @@ public class TabBookmarker {
         mBookmarkModelSupplier = bookmarkModelSupplier;
         mBottomSheetControllerSupplier = bottomSheetControllerSupplier;
         mSnackbarManagerSupplier = snackbarManagerSupplier;
-        mIsCustomTab = isCustomTab;
     }
 
     /**

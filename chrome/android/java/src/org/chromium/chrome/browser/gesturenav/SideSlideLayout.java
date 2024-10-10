@@ -71,7 +71,6 @@ public class SideSlideLayout extends ViewGroup {
 
     private final DecelerateInterpolator mDecelerateInterpolator;
     private final float mTotalDragDistance;
-    private final int mMediumAnimationDuration;
     private final int mCircleWidth;
 
     // Metrics
@@ -137,9 +136,6 @@ public class SideSlideLayout extends ViewGroup {
 
     public SideSlideLayout(Context context) {
         super(context);
-
-        mMediumAnimationDuration =
-                getResources().getInteger(android.R.integer.config_mediumAnimTime);
 
         setWillNotDraw(false);
         mDecelerateInterpolator = new DecelerateInterpolator(DECELERATE_INTERPOLATION_FACTOR);

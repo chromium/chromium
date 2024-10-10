@@ -162,7 +162,7 @@ public class AppLaunchDrawBlockerUnitTest {
                 "Draw is not blocked.", mOnPreDrawListenerArgumentCaptor.getValue().onPreDraw());
 
         SystemClock.setCurrentTimeMillis(INITIAL_TIME + 10);
-        mAppLaunchDrawBlocker.onActiveTabAvailable(true);
+        mAppLaunchDrawBlocker.onActiveTabAvailable();
 
         assertTrue(
                 "Draw is still blocked.", mOnPreDrawListenerArgumentCaptor.getValue().onPreDraw());
@@ -185,7 +185,7 @@ public class AppLaunchDrawBlockerUnitTest {
                 "Draw is not blocked.", mOnPreDrawListenerArgumentCaptor.getValue().onPreDraw());
 
         SystemClock.setCurrentTimeMillis(INITIAL_TIME + 20);
-        mAppLaunchDrawBlocker.onActiveTabAvailable(true);
+        mAppLaunchDrawBlocker.onActiveTabAvailable();
 
         assertTrue(
                 "Draw is still blocked.", mOnPreDrawListenerArgumentCaptor.getValue().onPreDraw());
@@ -204,7 +204,7 @@ public class AppLaunchDrawBlockerUnitTest {
         mInflationObserver.onPostInflationStartup();
         verify(mViewTreeObserver, never())
                 .addOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.capture());
-        mAppLaunchDrawBlocker.onActiveTabAvailable(false);
+        mAppLaunchDrawBlocker.onActiveTabAvailable();
     }
 
     @Test
@@ -221,7 +221,7 @@ public class AppLaunchDrawBlockerUnitTest {
         mInflationObserver.onPostInflationStartup();
         verify(mViewTreeObserver, never())
                 .addOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.capture());
-        mAppLaunchDrawBlocker.onActiveTabAvailable(false);
+        mAppLaunchDrawBlocker.onActiveTabAvailable();
     }
 
     @Test
@@ -242,7 +242,7 @@ public class AppLaunchDrawBlockerUnitTest {
                 "Draw is not blocked.", mOnPreDrawListenerArgumentCaptor.getValue().onPreDraw());
 
         SystemClock.setCurrentTimeMillis(INITIAL_TIME + 16);
-        mAppLaunchDrawBlocker.onActiveTabAvailable(true);
+        mAppLaunchDrawBlocker.onActiveTabAvailable();
 
         assertTrue(
                 "Draw is still blocked.", mOnPreDrawListenerArgumentCaptor.getValue().onPreDraw());
@@ -261,7 +261,7 @@ public class AppLaunchDrawBlockerUnitTest {
         mInflationObserver.onPostInflationStartup();
         verify(mViewTreeObserver, never())
                 .addOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.capture());
-        mAppLaunchDrawBlocker.onActiveTabAvailable(true);
+        mAppLaunchDrawBlocker.onActiveTabAvailable();
     }
 
     @Test
@@ -276,7 +276,7 @@ public class AppLaunchDrawBlockerUnitTest {
         mInflationObserver.onPostInflationStartup();
         verify(mViewTreeObserver, never())
                 .addOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.capture());
-        mAppLaunchDrawBlocker.onActiveTabAvailable(true);
+        mAppLaunchDrawBlocker.onActiveTabAvailable();
     }
 
     @Test
@@ -296,7 +296,7 @@ public class AppLaunchDrawBlockerUnitTest {
         mInflationObserver.onPostInflationStartup();
         verify(mViewTreeObserver, never())
                 .addOnPreDrawListener(mOnPreDrawListenerArgumentCaptor.capture());
-        mAppLaunchDrawBlocker.onActiveTabAvailable(false);
+        mAppLaunchDrawBlocker.onActiveTabAvailable();
     }
 
     @Test
@@ -310,7 +310,7 @@ public class AppLaunchDrawBlockerUnitTest {
         setSearchEngineHasLogo(true);
 
         mInflationObserver.onPostInflationStartup();
-        mAppLaunchDrawBlocker.onActiveTabAvailable(false);
+        mAppLaunchDrawBlocker.onActiveTabAvailable();
     }
 
     @Test
@@ -324,7 +324,7 @@ public class AppLaunchDrawBlockerUnitTest {
         setSearchEngineHasLogo(true);
 
         mInflationObserver.onPostInflationStartup();
-        mAppLaunchDrawBlocker.onActiveTabAvailable(true);
+        mAppLaunchDrawBlocker.onActiveTabAvailable();
     }
 
     @Test
@@ -358,7 +358,7 @@ public class AppLaunchDrawBlockerUnitTest {
         // No longer need to block draw.
         SystemClock.setCurrentTimeMillis(INITIAL_TIME + 10);
         mAppLaunchDrawBlocker.onIncognitoRestoreUnblockConditionsFired();
-        mAppLaunchDrawBlocker.onActiveTabAvailable(true);
+        mAppLaunchDrawBlocker.onActiveTabAvailable();
 
         for (OnPreDrawListener listener : mOnPreDrawListenerArgumentCaptor.getAllValues()) {
             assertTrue("Listener shouldn't be blocking the draw any longer.", listener.onPreDraw());

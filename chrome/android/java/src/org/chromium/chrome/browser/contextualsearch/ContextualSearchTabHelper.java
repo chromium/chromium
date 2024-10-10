@@ -79,9 +79,6 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
     /** To listen for when the current tab has an active ReadAloud playback. */
     private ObservableSupplier<Tab> mReadAloudActivePlaybackTab;
 
-    /** Callback for when the ReadAloudController is ready. */
-    private OneShotCallback<ReadAloudController> mReadAloudControllerSupplierCallback;
-
     /**
      * Creates a contextual search tab helper for the given tab.
      *
@@ -110,10 +107,8 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
         if (isReadAloudTapToSeekEnabled()) {
             mReadAloudControllerSupplier = getReadAloudControllerSupplier(tab);
             if (mReadAloudControllerSupplier != null) {
-                mReadAloudControllerSupplierCallback =
-                        new OneShotCallback<ReadAloudController>(
-                                mReadAloudControllerSupplier,
-                                this::onReadAloudControllerSupplierReady);
+                new OneShotCallback<ReadAloudController>(
+                        mReadAloudControllerSupplier, this::onReadAloudControllerSupplierReady);
             }
         }
     }

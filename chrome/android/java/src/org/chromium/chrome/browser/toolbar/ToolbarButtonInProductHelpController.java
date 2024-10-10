@@ -37,7 +37,6 @@ import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.chrome.browser.translate.TranslateUtils;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
-import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
@@ -58,10 +57,8 @@ public class ToolbarButtonInProductHelpController
     private final Activity mActivity;
     private final WindowAndroid mWindowAndroid;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
-    private final AppMenuPropertiesDelegate mAppMenuPropertiesDelegate;
     @Nullable private ScreenshotMonitor mScreenshotMonitor;
     private final View mMenuButtonAnchorView;
-    private final View mSecurityIconAnchorView;
     private final AppMenuHandler mAppMenuHandler;
     private final UserEducationHelper mUserEducationHelper;
     private final Profile mProfile;
@@ -78,7 +75,6 @@ public class ToolbarButtonInProductHelpController
      * @param tabSupplier An observable supplier of the current {@link Tab}.
      * @param isInOverviewModeSupplier Supplies whether the app is in overview mode.
      * @param menuButtonAnchorView The menu button view to serve as an anchor.
-     * @param securityIconAnchorView The security icon to serve as an anchor.
      */
     public ToolbarButtonInProductHelpController(
             @NonNull Activity activity,
@@ -88,14 +84,11 @@ public class ToolbarButtonInProductHelpController
             @NonNull Profile profile,
             @NonNull ObservableSupplier<Tab> tabSupplier,
             @NonNull Supplier<Boolean> isInOverviewModeSupplier,
-            @NonNull View menuButtonAnchorView,
-            @NonNull View securityIconAnchorView) {
+            @NonNull View menuButtonAnchorView) {
         mActivity = activity;
         mWindowAndroid = windowAndroid;
         mAppMenuHandler = appMenuCoordinator.getAppMenuHandler();
-        mAppMenuPropertiesDelegate = appMenuCoordinator.getAppMenuPropertiesDelegate();
         mMenuButtonAnchorView = menuButtonAnchorView;
-        mSecurityIconAnchorView = securityIconAnchorView;
         mIsInOverviewModeSupplier = isInOverviewModeSupplier;
         mUserEducationHelper = new UserEducationHelper(mActivity, profile, new Handler());
         if (!BuildInfo.getInstance().isAutomotive) {

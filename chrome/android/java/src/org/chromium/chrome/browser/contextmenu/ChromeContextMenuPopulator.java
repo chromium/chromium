@@ -384,8 +384,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 if (checkSupportsGoogleSearchByImage(isSrcDownloadableScheme)) {
                     // Determine which image search menu item would be shown.
                     boolean shouldShowSearchImageWithLens =
-                            shouldShowSearchWithLensAndRecordMetrics(
-                                    mParams.getPageUrl(), mItemDelegate.isIncognito());
+                            shouldShowSearchWithLensAndRecordMetrics(mItemDelegate.isIncognito());
                     if (shouldShowSearchImageWithLens) {
                         imageGroup.add(createListItem(Item.SEARCH_WITH_GOOGLE_LENS, true));
                         maybeRecordUkmLensShown();
@@ -868,16 +867,14 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
     }
 
     /**
-     * Whether the lens menu items should be shown based on a set of application
-     * compatibility checks.
+     * Whether the lens menu items should be shown based on a set of application compatibility
+     * checks.
      *
-     * @param pageUrl The Url associated with the main frame of the page that triggered the context
-     *         menu.
      * @param isIncognito Whether the user is incognito.
      * @return A boolean. True if "Search image with Google Lens" should be enabled, otherwise
-     *         False.
+     *     False.
      */
-    private boolean shouldShowSearchWithLensAndRecordMetrics(GURL pageUrl, boolean isIncognito) {
+    private boolean shouldShowSearchWithLensAndRecordMetrics(boolean isIncognito) {
         // If Google Lens feature is not supported, show search by image menu item.
         if (!LensUtils.isGoogleLensFeatureEnabled(isIncognito)) {
             return false;

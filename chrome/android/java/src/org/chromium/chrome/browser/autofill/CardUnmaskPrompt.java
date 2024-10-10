@@ -73,7 +73,6 @@ public class CardUnmaskPrompt
     private final ProgressBar mVerificationProgressBar;
     private final TextView mVerificationView;
     private final long mSuccessMessageDurationMilliseconds;
-    private final int mGooglePayDrawableId;
     private final boolean mIsVirtualCard;
 
     private int mThisYear;
@@ -172,7 +171,6 @@ public class CardUnmaskPrompt
             String confirmButtonLabel,
             int cvcDrawableId,
             String cvcImageAnnouncement,
-            int googlePayDrawableId,
             boolean isVirtualCard,
             boolean shouldRequestExpirationDate,
             boolean shouldOfferWebauthn,
@@ -180,7 +178,6 @@ public class CardUnmaskPrompt
             long successMessageDurationMilliseconds) {
         mDelegate = delegate;
         mPersonalDataManager = personalDataManager;
-        mGooglePayDrawableId = googlePayDrawableId;
         mIsVirtualCard = isVirtualCard;
 
         LayoutInflater inflater = LayoutInflater.from(context);
@@ -201,7 +198,7 @@ public class CardUnmaskPrompt
                 /* showCustomIcon= */ AutofillUiUtils.shouldShowCustomIcon(
                         cardArtUrl, /* isVirtualCard= */ isVirtualCard));
 
-        updateTitleForCustomView(title, context);
+        updateTitleForCustomView(title);
         mInstructions = mMainView.findViewById(R.id.instructions);
         mInstructions.setText(instructions);
         mNoRetryErrorMessage = mMainView.findViewById(R.id.no_retry_error_message);
@@ -327,7 +324,7 @@ public class CardUnmaskPrompt
     }
 
     public void update(String title, String instructions, boolean shouldRequestExpirationDate) {
-        updateTitleForCustomView(title, mContext);
+        updateTitleForCustomView(title);
         mInstructions.setText(instructions);
         mShouldRequestExpirationDate = shouldRequestExpirationDate;
         if (mShouldRequestExpirationDate && (mThisYear == -1 || mThisMonth == -1)) {
@@ -336,7 +333,7 @@ public class CardUnmaskPrompt
         showExpirationDateInputsInputs();
     }
 
-    private void updateTitleForCustomView(String title, Context context) {
+    private void updateTitleForCustomView(String title) {
         TextView titleView = mMainView.findViewById(R.id.title);
         titleView.setText(title);
     }

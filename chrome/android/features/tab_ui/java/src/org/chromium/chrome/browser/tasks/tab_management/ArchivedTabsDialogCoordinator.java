@@ -513,19 +513,12 @@ public class ArchivedTabsDialogCoordinator implements SnackbarManager.SnackbarMa
 
         List<TabListEditorAction> actions = new ArrayList<>();
         if (mTabActionState == TabActionState.CLOSABLE) {
-            actions.add(
-                    TabListEditorRestoreAllArchivedTabsAction.createAction(
-                            mContext, mArchiveDelegate));
-            actions.add(
-                    TabListEditorSelectArchivedTabsAction.createAction(mContext, mArchiveDelegate));
-            actions.add(
-                    TabListEditorArchiveSettingsAction.createAction(mContext, mArchiveDelegate));
+            actions.add(TabListEditorRestoreAllArchivedTabsAction.createAction(mArchiveDelegate));
+            actions.add(TabListEditorSelectArchivedTabsAction.createAction(mArchiveDelegate));
+            actions.add(TabListEditorArchiveSettingsAction.createAction(mArchiveDelegate));
         } else if (mTabActionState == TabActionState.SELECTABLE) {
-            actions.add(
-                    TabListEditorRestoreArchivedTabsAction.createAction(
-                            mContext, mArchiveDelegate));
-            actions.add(
-                    TabListEditorCloseArchivedTabsAction.createAction(mContext, mArchiveDelegate));
+            actions.add(TabListEditorRestoreArchivedTabsAction.createAction(mArchiveDelegate));
+            actions.add(TabListEditorCloseArchivedTabsAction.createAction(mArchiveDelegate));
         }
 
         mTabListEditorCoordinator.getController().configureToolbarWithMenuItems(actions);

@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.bookmarks;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
-import android.util.Pair;
 
 import androidx.annotation.NonNull;
 
@@ -23,7 +22,6 @@ import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.url.GURL;
 
 import java.util.Arrays;
 import java.util.List;
@@ -96,7 +94,6 @@ public class BookmarkMoveSnackbarManager implements ActivityStateListener {
     private final IdentityManager mIdentityManager;
 
     private List<BookmarkId> mBookmarkIds;
-    private List<Pair<String, GURL>> mBookmarkTitlesAndUrls;
     private boolean mIsObserving;
     private Snackbar mPendingSnackbar;
 

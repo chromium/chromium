@@ -257,7 +257,6 @@ public class ImprovedBookmarkRowCoordinatorTest {
         assertFalse(model.get(ImprovedBookmarkRowProperties.DESCRIPTION_VISIBLE));
         assertFalse(model.get(ImprovedBookmarkRowProperties.SELECTED));
         assertFalse(model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
-        assertFalse(model.get(ImprovedBookmarkRowProperties.DRAG_ENABLED));
         assertTrue(model.get(ImprovedBookmarkRowProperties.EDITABLE));
         assertNull(model.get(ImprovedBookmarkRowProperties.SHOPPING_ACCESSORY_COORDINATOR));
         assertNull(model.get(ImprovedBookmarkRowProperties.ACCESSORY_VIEW));

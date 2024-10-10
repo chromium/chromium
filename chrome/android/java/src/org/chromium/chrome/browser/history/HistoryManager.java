@@ -22,8 +22,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
-import com.google.android.material.tabs.TabLayout;
-
 import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -65,19 +63,8 @@ public class HistoryManager
                 SnackbarController,
                 HistoryContentManager.Observer,
                 BackPressHandler {
-    private static final String METRICS_PREFIX = "Android.HistoryPage.";
+
     static final String HISTORY_CLUSTERS_VISIBLE_PREF = "history_clusters.visible";
-
-    // Keep consistent with the UMA constants on the WebUI history page (history/constants.js).
-    private static final int UMA_MAX_BUCKET_VALUE = 1000;
-    private static final int UMA_MAX_SUBSET_BUCKET_VALUE = 100;
-
-    // TODO(msramek): The WebUI counterpart computes the bucket count by
-    // dividing by 10 until it gets under 100, reaching 10 for both
-    // UMA_MAX_BUCKET_VALUE and UMA_MAX_SUBSET_BUCKET_VALUE, and adds +1
-    // for overflow. How do we keep that in sync with this code?
-    private static final int HISTORY_TAB_INDEX = 0;
-    private static final int JOURNEYS_TAB_INDEX = 1;
 
     private final Activity mActivity;
     private final boolean mIsIncognito;
@@ -105,8 +92,6 @@ public class HistoryManager
 
     private final PrefService mPrefService;
     private final Profile mProfile;
-    private @Nullable TabLayout mHistoryTabToggle;
-    private @Nullable TabLayout mJourneysTabToggle;
 
     private boolean mIsSearching;
 

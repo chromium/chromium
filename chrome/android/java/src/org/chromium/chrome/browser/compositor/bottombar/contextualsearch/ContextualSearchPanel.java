@@ -584,11 +584,6 @@ public class ContextualSearchPanel extends OverlayPanel {
         if (getPanelState() == PanelState.CLOSED || getPanelState() == PanelState.PEEKED) {
             mHasContentBeenTouched = false;
         }
-
-        if ((getPanelState() == PanelState.UNDEFINED || getPanelState() == PanelState.CLOSED)
-                && reason == StateChangeReason.TEXT_SELECT_TAP) {
-            mPanelMetrics.onPanelTriggeredFromTap();
-        }
     }
 
     @Override
@@ -641,7 +636,6 @@ public class ContextualSearchPanel extends OverlayPanel {
     public void setSearchTerm(String searchTerm, @Nullable String pronunciation) {
         getImageControl().hideCustomImage(true);
         getSearchBarControl().setSearchTerm(searchTerm, pronunciation);
-        mPanelMetrics.onSearchRequestStarted();
         // Make sure the new Search Term draws.
         requestUpdate();
     }
@@ -655,7 +649,6 @@ public class ContextualSearchPanel extends OverlayPanel {
     public void setContextDetails(String selection, String end) {
         getImageControl().hideCustomImage(true);
         getSearchBarControl().setContextDetails(selection, end);
-        mPanelMetrics.onSearchRequestStarted();
         // Make sure the new Context draws.
         requestUpdate();
     }
@@ -774,11 +767,6 @@ public class ContextualSearchPanel extends OverlayPanel {
      */
     public ContextualSearchPanelMetrics getPanelMetrics() {
         return mPanelMetrics;
-    }
-
-    /** Sets that the contextual search involved the promo. */
-    public void setDidSearchInvolvePromo() {
-        mPanelMetrics.setDidSearchInvolvePromo();
     }
 
     // ============================================================================================

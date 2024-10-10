@@ -55,7 +55,7 @@ public class DuplicateDownloadDialog {
                 new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
                         .with(
                                 ModalDialogProperties.CONTROLLER,
-                                getController(context, modalDialogManager, pageUrl, callback))
+                                getController(context, modalDialogManager, callback))
                         .with(
                                 ModalDialogProperties.TITLE,
                                 resources,
@@ -92,10 +92,7 @@ public class DuplicateDownloadDialog {
 
     @NonNull
     private ModalDialogProperties.Controller getController(
-            Context context,
-            ModalDialogManager modalDialogManager,
-            String pageUrl,
-            Callback<Boolean> callback) {
+            Context context, ModalDialogManager modalDialogManager, Callback<Boolean> callback) {
         return new ModalDialogProperties.Controller() {
             @Override
             public void onClick(PropertyModel model, int buttonType) {
@@ -129,9 +126,10 @@ public class DuplicateDownloadDialog {
 
     /**
      * Called to close the dialog.
+     *
      * @param isOfflinePage Whether this is an offline page download.
      */
-    private void closeDialog(boolean isOfflinePage) {
+    private void closeDialog() {
         mModalDialogManager.dismissDialog(mPropertyModel, DialogDismissalCause.ACTION_ON_CONTENT);
     }
 
@@ -154,9 +152,8 @@ public class DuplicateDownloadDialog {
         if (pageUrl.isEmpty()) {
             DuplicateDownloadClickableSpan span =
                     new DuplicateDownloadClickableSpan(
-                            context,
                             filePath,
-                            () -> this.closeDialog(false),
+                            () -> this.closeDialog(),
                             otrProfileID,
                             DownloadOpenSource.DUPLICATE_DOWNLOAD_DIALOG);
             String template = context.getString(R.string.duplicate_download_dialog_text);
@@ -170,7 +167,7 @@ public class DuplicateDownloadDialog {
                 new ClickableSpan() {
                     @Override
                     public void onClick(View view) {
-                        closeDialog(true);
+                        closeDialog();
                         DownloadUtils.openPageUrl(context, filePath);
                     }
                 });

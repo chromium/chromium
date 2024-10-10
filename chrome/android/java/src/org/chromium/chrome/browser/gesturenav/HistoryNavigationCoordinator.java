@@ -71,10 +71,8 @@ public class HistoryNavigationCoordinator
             Supplier<TouchEventProvider> touchEventProvider) {
         HistoryNavigationCoordinator coordinator = new HistoryNavigationCoordinator();
         coordinator.init(
-                window,
                 lifecycleDispatcher,
                 parentView,
-                requestRunnable,
                 tabSupplier,
                 insetObserver,
                 backActionDelegate,
@@ -84,10 +82,8 @@ public class HistoryNavigationCoordinator
 
     /** Initializes the navigation layout and internal objects. */
     private void init(
-            WindowAndroid window,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             ViewGroup parentView,
-            Runnable requestRunnable,
             ObservableSupplier<Tab> tabSupplier,
             InsetObserver insetObserver,
             BackActionDelegate backActionDelegate,

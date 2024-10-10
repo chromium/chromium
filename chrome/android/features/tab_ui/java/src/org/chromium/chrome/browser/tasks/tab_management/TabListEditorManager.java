@@ -40,7 +40,6 @@ public class TabListEditorManager {
     private final @NonNull Activity mActivity;
     private final @NonNull ModalDialogManager mModalDialogManager;
     private final @NonNull ViewGroup mCoordinatorView;
-    private final @NonNull ViewGroup mRootView;
     private final @Nullable SnackbarManager mSnackbarManager;
     private final @Nullable BottomSheetController mBottomSheetController;
     private final @NonNull BrowserControlsStateProvider mBrowserControlsStateProvider;
@@ -89,7 +88,6 @@ public class TabListEditorManager {
         mActivity = activity;
         mModalDialogManager = modalDialogManager;
         mCoordinatorView = coordinatorView;
-        mRootView = rootView;
         mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mTabContentManager = tabContentManager;

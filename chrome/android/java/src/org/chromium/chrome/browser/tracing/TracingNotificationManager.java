@@ -127,7 +127,6 @@ public class TracingNotificationManager {
      */
     public static void updateTracingActiveNotification(float bufferUsagePercentage) {
         assert (sTracingActiveNotificationBuilder != null);
-        Context context = ContextUtils.getApplicationContext();
 
         // Don't update the notification if touch exploration is enabled as this may interfere with
         // selecting the stop button.

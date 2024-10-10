@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -66,10 +65,7 @@ public class ClearBrowsingDataTabsFragment extends Fragment implements ProfileDe
         ViewPager2 viewPager = view.findViewById(R.id.clear_browsing_data_viewpager);
         viewPager.setAdapter(
                 new ClearBrowsingDataPagerAdapter(
-                        mFetcher,
-                        getFragmentManager(),
-                        (FragmentActivity) getActivity(),
-                        referrer));
+                        mFetcher, (FragmentActivity) getActivity(), referrer));
 
         // Give the TabLayout the ViewPager.
         TabLayout tabLayout = view.findViewById(R.id.clear_browsing_data_tabs);
@@ -137,10 +133,7 @@ public class ClearBrowsingDataTabsFragment extends Fragment implements ProfileDe
         private final String mReferrer;
 
         ClearBrowsingDataPagerAdapter(
-                ClearBrowsingDataFetcher fetcher,
-                FragmentManager fm,
-                FragmentActivity activity,
-                String referrer) {
+                ClearBrowsingDataFetcher fetcher, FragmentActivity activity, String referrer) {
             super(activity);
             mFetcher = fetcher;
             mReferrer = referrer;

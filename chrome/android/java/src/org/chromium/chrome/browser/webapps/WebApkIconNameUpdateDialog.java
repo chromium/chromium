@@ -23,7 +23,6 @@ import org.chromium.ui.modelutil.PropertyModel;
  * name, long name and/or icon change.
  */
 public class WebApkIconNameUpdateDialog implements ModalDialogProperties.Controller {
-    private static Boolean sActionToTakeInTests;
 
     private static final String TAG = "IconNameUpdateDlg";
 

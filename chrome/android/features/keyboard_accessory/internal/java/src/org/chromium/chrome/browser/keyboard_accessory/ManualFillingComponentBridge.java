@@ -274,8 +274,7 @@ class ManualFillingComponentBridge {
         PromoCodeInfo promoCodeInfo = new PromoCodeInfo();
         accessorySheetData.getPromoCodeInfoList().add(promoCodeInfo);
 
-        Callback<UserInfoField> callback = null;
-        callback =
+        Callback<UserInfoField> callback =
                 (field) -> {
                     assert mNativeView != 0 : "Controller was destroyed but the bridge wasn't!";
                     ManualFillingMetricsRecorder.recordSuggestionSelected(

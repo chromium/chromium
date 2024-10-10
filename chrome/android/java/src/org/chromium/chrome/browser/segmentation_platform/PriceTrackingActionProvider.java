@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.segmentation_platform;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
-import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.commerce.core.CommerceFeatureUtils;
 import org.chromium.components.commerce.core.ShoppingService;
@@ -16,16 +15,13 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 public class PriceTrackingActionProvider implements ContextualPageActionController.ActionProvider {
     private final Supplier<ShoppingService> mShoppingServiceSupplier;
     private final Supplier<BookmarkModel> mBookmarkModelSupplier;
-    private final Supplier<Profile> mProfileSupplier;
 
     /** Constructor. */
     public PriceTrackingActionProvider(
             Supplier<ShoppingService> shoppingServiceSupplier,
-            Supplier<BookmarkModel> bookmarkModelSupplier,
-            Supplier<Profile> profileSupplier) {
+            Supplier<BookmarkModel> bookmarkModelSupplier) {
         mShoppingServiceSupplier = shoppingServiceSupplier;
         mBookmarkModelSupplier = bookmarkModelSupplier;
-        mProfileSupplier = profileSupplier;
     }
 
     @Override

@@ -409,16 +409,12 @@ public class SyncSettingsUtils {
      * required for managing a trusted vault.
      *
      * @param fragment Fragment to use when starting the dialog.
-     * @param accountInfo Account representing the user.
      * @param requestCode Arbitrary request code that upon completion will be passed back via
-     *         Fragment.onActivityResult().
+     *     Fragment.onActivityResult().
      * @param pendingIntentPromise promise that provides the intent to be started.
      */
     private static void openTrustedVaultDialogForPendingIntent(
-            Fragment fragment,
-            CoreAccountInfo accountInfo,
-            int requestCode,
-            Promise<PendingIntent> pendingIntentPromise) {
+            Fragment fragment, int requestCode, Promise<PendingIntent> pendingIntentPromise) {
         pendingIntentPromise.then(
                 (pendingIntent) -> {
                     try {
@@ -470,7 +466,6 @@ public class SyncSettingsUtils {
                 .recordKeyRetrievalTrigger(TrustedVaultUserActionTriggerForUMA.SETTINGS);
         openTrustedVaultDialogForPendingIntent(
                 fragment,
-                accountInfo,
                 requestCode,
                 TrustedVaultClient.get().createKeyRetrievalIntent(accountInfo));
     }
@@ -491,7 +486,6 @@ public class SyncSettingsUtils {
                         TrustedVaultUserActionTriggerForUMA.SETTINGS);
         openTrustedVaultDialogForPendingIntent(
                 fragment,
-                accountInfo,
                 requestCode,
                 TrustedVaultClient.get().createRecoverabilityDegradedIntent(accountInfo));
     }
@@ -502,15 +496,12 @@ public class SyncSettingsUtils {
      * @param fragment Fragment to use when starting the dialog.
      * @param accountInfo Account representing the user.
      * @param requestCode Arbitrary request code that upon completion will be passed back via
-     *         Fragment.onActivityResult().
+     *     Fragment.onActivityResult().
      */
     public static void openTrustedVaultOptInDialog(
             Fragment fragment, CoreAccountInfo accountInfo, int requestCode) {
         openTrustedVaultDialogForPendingIntent(
-                fragment,
-                accountInfo,
-                requestCode,
-                TrustedVaultClient.get().createOptInIntent(accountInfo));
+                fragment, requestCode, TrustedVaultClient.get().createOptInIntent(accountInfo));
     }
 
     /**

@@ -107,10 +107,6 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
     // Metrics. True if sheet was opened from long-press on back button.
     private boolean mOpenedAsPopup;
 
-    // Set to {@code true} for each trigger when the sheet should fully expand with
-    // no peek/half state.
-    private boolean mFullyExpand;
-
     private Profile mProfile;
 
     /** Construct a new NavigationSheet. */
@@ -145,7 +141,7 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
                 NavigationItemViewBinder::bind);
         mOpenSheetRunnable =
                 () -> {
-                    if (isHidden()) openSheet(true, true);
+                    if (isHidden()) openSheet(true);
                 };
         mLongSwipePeekThreshold =
                 Math.min(
@@ -163,7 +159,7 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
     }
 
     // Transition to either peeked or expanded state.
-    private boolean openSheet(boolean expandIfSmall, boolean animate) {
+    private boolean openSheet(boolean expandIfSmall) {
         mContentView =
                 (NavigationSheetView) mLayoutInflater.inflate(R.layout.navigation_sheet, null);
         ListView listview = mContentView.findViewById(R.id.navigation_entries);
@@ -180,7 +176,6 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
         }
         mBottomSheetController.get().addObserver(mSheetObserver);
         if (expandIfSmall && history.getEntryCount() <= SKIP_PEEK_COUNT) {
-            mFullyExpand = true;
             expandSheet();
         }
         return true;
@@ -202,7 +197,6 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
         if (mBottomSheetController.get() == null) return;
         mForward = forward;
         mShowCloseIndicator = showCloseIndicator;
-        mFullyExpand = false;
         mOpenedAsPopup = false;
     }
 
@@ -216,7 +210,7 @@ class NavigationSheetCoordinator implements BottomSheetContent, NavigationSheet 
         // Enter the expanded state by disabling peek/half state rather than
         // calling |expandSheet| explicilty. Otherwise it cause an extra
         // state transition (full -> full), which cancels the animation effect.
-        boolean opened = openSheet(/* expandIfSmall= */ false, animate);
+        boolean opened = openSheet(/* expandIfSmall= */ false);
         if (opened) GestureNavMetrics.recordUserAction("Popup");
         return opened;
     }

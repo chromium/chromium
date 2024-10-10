@@ -102,7 +102,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
                         /* startMaximized= */ false,
                         mPCCTTestRule.mHandleStrategyFactory);
         pcct.setMockViewForTesting(
-                mPCCTTestRule.mNavbar,
                 mPCCTTestRule.mSpinnerView,
                 mPCCTTestRule.mSpinner,
                 mPCCTTestRule.mToolbarView,
@@ -135,7 +134,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
                         /* startMaxmized= */ false,
                         mPCCTTestRule.mHandleStrategyFactory);
         pcct.setMockViewForTesting(
-                mPCCTTestRule.mNavbar,
                 mPCCTTestRule.mSpinnerView,
                 mPCCTTestRule.mSpinner,
                 mPCCTTestRule.mToolbarView,

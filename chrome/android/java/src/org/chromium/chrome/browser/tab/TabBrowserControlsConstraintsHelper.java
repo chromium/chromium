@@ -240,8 +240,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
         mTopControlsOffsetTag = newTopControlsOffsetTag;
     }
 
-    private void generateOffsetTags(
-            @BrowserControlsState int current, @BrowserControlsState int constraints) {
+    private void generateOffsetTags(@BrowserControlsState int constraints) {
         if (mTab.isHidden()) {
             return;
         }
@@ -277,7 +276,7 @@ public class TabBrowserControlsConstraintsHelper implements UserData {
 
         if (ToolbarFeatures.isBrowserControlsInVizEnabled(
                 DeviceFormFactor.isNonMultiDisplayContextOnTablet(mTab.getContext()))) {
-            generateOffsetTags(current, constraints);
+            generateOffsetTags(constraints);
         }
 
         if (current == BrowserControlsState.SHOWN || constraints == BrowserControlsState.SHOWN) {

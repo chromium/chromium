@@ -86,7 +86,6 @@ public class TabUmaTest {
                 CallbackUtils.emptyRunnable(),
                 rootUiCoordinator.getBottomSheetController(),
                 /* chromeActivityNativeDelegate= */ cta,
-                /* isCustomTab= */ false,
                 rootUiCoordinator.getBrowserControlsManager(),
                 cta.getFullscreenManager(),
                 /* tabCreatorManager= */ cta,

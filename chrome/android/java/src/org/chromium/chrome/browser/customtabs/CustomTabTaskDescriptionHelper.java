@@ -54,7 +54,6 @@ public class CustomTabTaskDescriptionHelper implements NativeInitObserver, Destr
 
     @Nullable private CustomTabTabObserver mTabObserver;
     @Nullable private CustomTabTabObserver mIconTabObserver;
-    @Nullable private CustomTabActivityTabProvider.Observer mActivityTabObserver;
 
     private int mDefaultThemeColor;
     @Nullable private String mForceTitle;

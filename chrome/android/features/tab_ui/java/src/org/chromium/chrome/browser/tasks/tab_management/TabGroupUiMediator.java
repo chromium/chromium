@@ -81,7 +81,6 @@ public class TabGroupUiMediator implements BackPressHandler {
 
     private final Callback<Integer> mOnGroupSharedStateChanged = this::onGroupSharedStateChanged;
     private final Callback<String> mOnCollaborationIdChanged = this::onCollaborationIdChanged;
-    private final Context mContext;
     private final PropertyModel mModel;
     private final TabModelObserver mTabModelObserver;
     private final ResetHandler mResetHandler;
@@ -129,7 +128,6 @@ public class TabGroupUiMediator implements BackPressHandler {
                             dialogControllerSupplier,
             ObservableSupplier<Boolean> omniboxFocusStateSupplier,
             SharedImageTilesCoordinator sharedImageTilesCoordinator) {
-        mContext = context;
         mResetHandler = resetHandler;
         mModel = model;
         mTabModelSelector = tabModelSelector;
@@ -404,13 +402,12 @@ public class TabGroupUiMediator implements BackPressHandler {
 
         View.OnClickListener newTabButtonOnClickListener =
                 view -> {
-                    Tab parentTabToAttach = null;
                     Tab currentTab = mTabModelSelector.getCurrentTab();
                     List<Tab> relatedTabs = getTabsToShowForId(currentTab.getId());
 
                     assert relatedTabs.size() > 0;
 
-                    parentTabToAttach = relatedTabs.get(relatedTabs.size() - 1);
+                    Tab parentTabToAttach = relatedTabs.get(relatedTabs.size() - 1);
                     mTabCreatorManager
                             .getTabCreator(currentTab.isIncognito())
                             .createNewTab(

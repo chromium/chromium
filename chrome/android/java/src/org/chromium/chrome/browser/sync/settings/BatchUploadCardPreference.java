@@ -203,7 +203,7 @@ public class BatchUploadCardPreference extends Preference
         button.setOnClickListener(
                 v -> {
                     BatchUploadDialogCoordinator.show(
-                            context, mProfile, mLocalDataDescriptionsMap, mDialogManager, this);
+                            context, mLocalDataDescriptionsMap, mDialogManager, this);
                 });
 
         ImageView image = (ImageView) card.findViewById(R.id.signin_settings_card_icon);

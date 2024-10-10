@@ -39,7 +39,6 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
     private final Context mContext;
     private final BookmarkModel mBookmarkModel;
     private final View mView;
-    private final View mMoveButton;
     private final RecyclerView mRecyclerView;
     private final BookmarkFolderPickerMediator mMediator;
     private final BookmarkUiPrefs mBookmarkUiPrefs;
@@ -58,7 +57,6 @@ public class BookmarkFolderPickerCoordinator implements BackPressHandler {
         mContext = context;
         mBookmarkModel = bookmarkModel;
         mView = LayoutInflater.from(mContext).inflate(R.layout.bookmark_folder_picker, null);
-        mMoveButton = mView.findViewById(R.id.move_button);
 
         mRecyclerView = mView.findViewById(R.id.folder_recycler_view);
         mRecyclerView.setLayoutManager(

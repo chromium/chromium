@@ -28,7 +28,6 @@ import java.util.List;
 /** Handles toolbar functionality for TabListEditor. */
 class TabListEditorToolbar extends SelectableListToolbar<Integer> {
     private static final List<Integer> sEmptyIntegerList = Collections.emptyList();
-    private Context mContext;
     private ChromeImageButton mMenuButton;
     private TabListEditorActionViewLayout mActionViewLayout;
     @ColorInt private int mBackgroundColor;
@@ -45,7 +44,6 @@ class TabListEditorToolbar extends SelectableListToolbar<Integer> {
 
     public TabListEditorToolbar(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mContext = context;
         mBackButtonAccessibilityString = R.string.accessibility_tab_selection_editor_back_button;
     }
 

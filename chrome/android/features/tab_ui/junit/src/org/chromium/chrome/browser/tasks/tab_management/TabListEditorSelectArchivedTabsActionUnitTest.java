@@ -8,8 +8,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.app.Activity;
-
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -18,7 +16,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -42,16 +39,13 @@ public class TabListEditorSelectArchivedTabsActionUnitTest {
 
     private MockTabModel mTabModel;
     private TabListEditorSelectArchivedTabsAction mAction;
-    private Activity mActivity;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mActivity = Robolectric.buildActivity(Activity.class).get();
         mAction =
                 (TabListEditorSelectArchivedTabsAction)
-                        TabListEditorSelectArchivedTabsAction.createAction(
-                                mActivity, mArchiveDelegate);
+                        TabListEditorSelectArchivedTabsAction.createAction(mArchiveDelegate);
         mTabModel = spy(new MockTabModel(mProfile, null));
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         mAction.configure(() -> mTabGroupModelFilter, mSelectionDelegate, mDelegate, false);

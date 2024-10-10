@@ -22,7 +22,6 @@ import org.chromium.components.stylus_handwriting.StylusWritingSettingsState;
 public class StylusWritingCoordinator implements WindowFocusChangedObserver {
     private final Activity mActivity;
     private final CurrentTabObserver mCurrentTabObserver;
-    private final ObservableSupplier<Tab> mTabProvider;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final StylusWritingController mStylusWritingController;
 
@@ -31,7 +30,6 @@ public class StylusWritingCoordinator implements WindowFocusChangedObserver {
             ActivityLifecycleDispatcher lifecycleDispatcher,
             ObservableSupplier<Tab> activityTabProvider) {
         mActivity = activity;
-        mTabProvider = activityTabProvider;
         mStylusWritingController = new StylusWritingController(mActivity.getApplicationContext());
         if (StylusHandwritingFeatureMap.isEnabledOrDefault(
                 StylusHandwritingFeatureMap.CACHE_STYLUS_SETTINGS, false)) {

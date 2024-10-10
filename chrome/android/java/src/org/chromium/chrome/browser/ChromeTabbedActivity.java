@@ -221,7 +221,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.tasks.HomeSurfaceTracker;
 import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
-import org.chromium.chrome.browser.tasks.TasksUma;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager;
 import org.chromium.chrome.browser.tasks.tab_management.CloseAllTabsDialog;
@@ -345,9 +344,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         int ON_NEW_INTENT = 2;
     }
 
-    // Time histogram used to track time to inflate tab switcher views.
-    private static final String TAB_SWITCHER_CREATION_TIME = "Android.TabSwitcher.CreationTime";
-
     private final MainIntentBehaviorMetrics mMainIntentMetrics;
     private @Nullable MultiInstanceManager mMultiInstanceManager;
 
@@ -382,10 +378,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     // Whether or not the initial tab is being created.
     private boolean mPendingInitialTabCreation;
-
-    // Whether {@link setInitialOverviewState()} has been called within the current onStart/onStop
-    // session.
-    private boolean mHasDeterminedOverviewStateForCurrentSession;
 
     /** Keeps track of the pref for the last time since this activity was stopped. */
     private ChromeInactivityTracker mInactivityTracker;
@@ -1265,7 +1257,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         super.onStopWithNative();
 
         saveState();
-        mHasDeterminedOverviewStateForCurrentSession = false;
     }
 
     @Override
@@ -1697,12 +1688,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                 @Override
                                 public void onContentChanged(Tab tab) {
                                     tab.removeObserver(this);
-                                    mAppLaunchDrawBlocker.onActiveTabAvailable(
-                                            /* isTabNtp= */ true);
+                                    mAppLaunchDrawBlocker.onActiveTabAvailable();
                                 }
                             });
                 } else {
-                    mAppLaunchDrawBlocker.onActiveTabAvailable(isTabNtp);
+                    mAppLaunchDrawBlocker.onActiveTabAvailable();
                 }
                 // Launch history as a resumption of a previous Chrome journey.
                 maybeLaunchHistory();
@@ -1760,7 +1750,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             setInitialOverviewState();
         }
 
-        mAppLaunchDrawBlocker.onActiveTabAvailable(isTabRegularNtp(getActivityTab()));
+        mAppLaunchDrawBlocker.onActiveTabAvailable();
         // Launch history as a fresh instance of Chrome.
         maybeLaunchHistory();
     }
@@ -2181,8 +2171,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         FirstDrawDetector.waitForFirstDrawStrict(
                 mContentContainer, () -> FontPreloader.getInstance().onFirstDrawTabbedActivity());
 
-        Supplier<Boolean> dialogVisibilitySupplier = null;
-        dialogVisibilitySupplier =
+        Supplier<Boolean> dialogVisibilitySupplier =
                 () -> {
                     // Return true if dialog from either tab switcher or tab strip is visible.
                     ToolbarManager toolbarManager = getToolbarManager();
@@ -2444,11 +2433,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                         if (mMultiInstanceManager != null) {
                             mMultiInstanceManager.onTabStateInitialized();
                         }
-
-                        if (!mCreatedTabOnStartup) return;
-
-                        TabModel model = mTabModelSelector.getModel(false);
-                        TasksUma.recordTasksUma(model);
                     }
                 };
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
@@ -2528,7 +2512,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             ((TabbedRootUiCoordinator) mRootUiCoordinator)::onContextMenuCopyLink,
                             mRootUiCoordinator.getBottomSheetController(),
                             /* chromeActivityNativeDelegate= */ this,
-                            /* isCustomTab= */ false,
                             getBrowserControlsManager(),
                             getFullscreenManager(),
                             /* tabCreatorManager= */ this,

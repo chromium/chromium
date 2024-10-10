@@ -97,11 +97,11 @@ public class OfflinePageDownloadBridge {
                             ApplicationStatus.getLastTrackedFocusedActivity()
                                     instanceof DownloadActivity;
                     if (location == LaunchLocation.NET_ERROR_SUGGESTION) {
-                        openItemInCurrentTab(offlineId, params);
+                        openItemInCurrentTab(params);
                     } else if (openInCct && openingFromDownloadsHome) {
-                        openItemInCct(offlineId, params, isIncognito);
+                        openItemInCct(params);
                     } else {
-                        openItemInNewTab(offlineId, params, isIncognito);
+                        openItemInNewTab(params, isIncognito);
                     }
                 },
                 ProfileManager.getLastUsedRegularProfile());
@@ -111,7 +111,7 @@ public class OfflinePageDownloadBridge {
      * Opens the offline page identified by the given offlineId and the LoadUrlParams in the current
      * tab. If no tab is current, the page is not opened.
      */
-    private static void openItemInCurrentTab(long offlineId, LoadUrlParams params) {
+    private static void openItemInCurrentTab(LoadUrlParams params) {
         Activity activity = ApplicationStatus.getLastTrackedFocusedActivity();
         if (activity == null) return;
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(params.getUrl()));
@@ -127,8 +127,7 @@ public class OfflinePageDownloadBridge {
     /**
      * Opens the offline page identified by the given offlineId and the LoadUrlParams in a new tab.
      */
-    private static void openItemInNewTab(
-            long offlineId, LoadUrlParams params, boolean isIncognito) {
+    private static void openItemInNewTab(LoadUrlParams params, boolean isIncognito) {
         ComponentName componentName = getComponentName();
         AsyncTabCreationParams asyncParams =
                 componentName == null
@@ -141,7 +140,7 @@ public class OfflinePageDownloadBridge {
     }
 
     /** Opens the offline page identified by the given offlineId and the LoadUrlParams in a CCT. */
-    private static void openItemInCct(long offlineId, LoadUrlParams params, boolean isIncognito) {
+    private static void openItemInCct(LoadUrlParams params) {
         final Context context;
         if (ApplicationStatus.hasVisibleActivities()) {
             context = ApplicationStatus.getLastTrackedFocusedActivity();

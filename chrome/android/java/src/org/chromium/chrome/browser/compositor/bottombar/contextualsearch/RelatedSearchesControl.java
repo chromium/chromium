@@ -512,20 +512,18 @@ public class RelatedSearchesControl {
      */
     private class RelatedSearchesControlView extends OverlayPanelInflater {
         private final ChipsCoordinator mChipsCoordinator;
-        // TODO(donnd): track the offset of the carousel here, so we can use it for snapshotting
-        // and log that the user has scrolled it.
-        private float mLastOffset;
         private final int mControlId;
 
         /**
          * Constructs a view that can be shown in the panel.
-         * @param panel             The panel.
-         * @param context           The Android Context used to inflate the View.
-         * @param container         The container View used to inflate the View.
-         * @param resourceLoader    The resource loader that will handle the snapshot capturing.
-         * @param layoutId          The XML Layout that declares the View.
-         * @param viewId            The id of the root View of the Layout.
-         * @param controlId         The id of the control View.
+         *
+         * @param panel The panel.
+         * @param context The Android Context used to inflate the View.
+         * @param container The container View used to inflate the View.
+         * @param resourceLoader The resource loader that will handle the snapshot capturing.
+         * @param layoutId The XML Layout that declares the View.
+         * @param viewId The id of the root View of the Layout.
+         * @param controlId The id of the control View.
          */
         RelatedSearchesControlView(
                 OverlayPanel panel,

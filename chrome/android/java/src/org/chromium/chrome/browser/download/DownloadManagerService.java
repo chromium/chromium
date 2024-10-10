@@ -263,12 +263,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
     // Deprecated after new download backend.
     public void onDownloadUpdated(final DownloadInfo downloadInfo) {
         DownloadItem item = new DownloadItem(false, downloadInfo);
-        // If user manually paused a download, this download is no longer auto resumable.
-        if (downloadInfo.isPaused()) {
-            removeAutoResumableDownload(item.getId());
-        }
         updateDownloadProgress(item, DownloadStatus.IN_PROGRESS);
-        updateDownloadInfoBar(item);
         scheduleUpdateIfNeeded();
     }
 
@@ -278,24 +273,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
                 DownloadInfo.Builder.fromDownloadInfo(downloadInfo)
                         .setState(DownloadState.CANCELLED)
                         .build();
-        DownloadItem item = new DownloadItem(false, newInfo);
-        removeAutoResumableDownload(item.getId());
         updateDownloadProgress(new DownloadItem(false, downloadInfo), DownloadStatus.CANCELLED);
-        updateDownloadInfoBar(item);
-    }
-
-    // Deprecated after new download backend.
-    public void onDownloadInterrupted(final DownloadInfo downloadInfo, boolean isAutoResumable) {
-        @DownloadStatus int status = DownloadStatus.INTERRUPTED;
-        DownloadItem item = new DownloadItem(false, downloadInfo);
-        if (!downloadInfo.isResumable()) {
-            status = DownloadStatus.FAILED;
-        } else if (isAutoResumable) {
-            addAutoResumableDownload(item.getId());
-        }
-
-        updateDownloadProgress(item, status);
-        updateDownloadInfoBar(item);
     }
 
     /**
@@ -314,10 +292,9 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         }
     }
 
-    private void updateDownloadInfoBar(DownloadItem item) {}
-
     /**
      * Broadcast that a download was successful.
+     *
      * @param downloadInfo info about the download.
      */
     // For testing only.
@@ -1176,27 +1153,13 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
     }
 
     /**
-     * Helper method to add an auto resumable download.
-     * @param guid Id of the download item.
-     */
-    // Deprecated after native auto-resumption handler.
-    private void addAutoResumableDownload(String guid) {}
-
-    /**
-     * Helper method to remove an auto resumable download.
-     * @param guid Id of the download item.
-     */
-    // Deprecated after native auto-resumption.
-    private void removeAutoResumableDownload(String guid) {}
-
-    /**
      * Helper method to remove a download from |mDownloadProgressMap|.
+     *
      * @param guid Id of the download item.
      */
     // Deprecated after new download backend.
     private void removeDownloadProgress(String guid) {
         mDownloadProgressMap.remove(guid);
-        removeAutoResumableDownload(guid);
         sFirstSeenDownloadIds.remove(guid);
     }
 

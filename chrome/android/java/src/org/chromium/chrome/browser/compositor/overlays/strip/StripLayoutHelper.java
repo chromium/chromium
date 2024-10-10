@@ -2218,7 +2218,7 @@ public class StripLayoutHelper
                 hovered ? FOLIO_DETACHED_BOTTOM_MARGIN_DP : FOLIO_ATTACHED_BOTTOM_MARGIN_DP);
     }
 
-    private void handleCloseTab(final StripLayoutTab tab, long time) {
+    private void handleCloseTab(final StripLayoutTab tab) {
         mMultiStepTabCloseAnimRunning = false;
         finishAnimationsAndPushTabUpdates();
 
@@ -2437,10 +2437,10 @@ public class StripLayoutHelper
                         // right after we kick off the closure, clobbering the close animation.
                         mGroupIdToHideSupplier.set(Tab.INVALID_TAB_ID);
 
-                        handleCloseTab(tab, time);
+                        handleCloseTab(tab);
                     });
         } else {
-            handleCloseTab(tab, time);
+            handleCloseTab(tab);
         }
     }
 

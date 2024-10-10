@@ -360,18 +360,18 @@ public class ToolbarSwipeLayout extends Layout {
         float start = mOffsetTarget;
         float end = offsetTo;
         long duration = (long) (ANIMATION_SPEED_SCREEN_MS * Math.abs(start - end) / getWidth());
-        doTabSwitchAnimation(mToTab.getId(), start, end, duration);
+        doTabSwitchAnimation(start, end, duration);
     }
 
     /**
      * Perform the tabs sliding animations. {@link #prepareSwipeTabAnimation(int, int, int)} need to
      * be called before calling this method.
-     * @param tabId The id of the tab which will be switched to.
+     *
      * @param start The start point of X coordinate for the animation.
      * @param end The end point of X coordinate for the animation.
      * @param duration The animation duration in millisecond.
      */
-    private void doTabSwitchAnimation(int tabId, float start, float end, long duration) {
+    private void doTabSwitchAnimation(float start, float end, long duration) {
         // Animate gracefully the end of the swiping effect.
         forceAnimationToFinish();
 
@@ -559,13 +559,14 @@ public class ToolbarSwipeLayout extends Layout {
         float end = fromTabIndex < toTabIndex ? -getWidth() : getWidth();
         mNextTabId = toTabId;
         startHiding();
-        doTabSwitchAnimation(toTabId, 0f, end, SWITCH_TO_TAB_DURATION_MS);
+        doTabSwitchAnimation(0f, end, SWITCH_TO_TAB_DURATION_MS);
     }
 
     /**
      * Set it's switching to a tab. With |mIsSwitchToStaticTab| as true, we need to call
      * switchToTab() after this layout is shown. What is set here only applies to the next showing
      * of the layout, after that it is reset.
+     *
      * @param toTabId The id of the next tab which will be switched to.
      * @param fromTabId The id of the previous tab which will be switched out.
      */

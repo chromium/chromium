@@ -227,7 +227,6 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
         if (mAccountFooterEmail != null && mAccountFooterAvatar != null) {
             Resources res = layout.getResources();
             int smallIconSize = res.getDimensionPixelSize(R.dimen.infobar_small_icon_size);
-            int padding = res.getDimensionPixelOffset(R.dimen.infobar_padding);
 
             LinearLayout footer =
                     (LinearLayout)

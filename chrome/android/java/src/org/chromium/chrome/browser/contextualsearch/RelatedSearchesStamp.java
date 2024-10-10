@@ -36,10 +36,6 @@ class RelatedSearchesStamp {
     private static final String RELATED_SEARCHES_LANGUAGE_RESTRICTION = "l";
     private static final String RELATED_SEARCHES_USER_INTERACTION = "U";
     private static final String RELATED_SEARCHES_SELECTED_POSITION = "p";
-    private static final String NO_EXPERIMENT_STAMP =
-            RELATED_SEARCHES_STAMP_VERSION
-                    + RELATED_SEARCHES_EXPERIMENT_RECIPE_STAGE
-                    + RELATED_SEARCHES_NO_EXPERIMENT;
 
     private final ContextualSearchPolicy mPolicy;
 

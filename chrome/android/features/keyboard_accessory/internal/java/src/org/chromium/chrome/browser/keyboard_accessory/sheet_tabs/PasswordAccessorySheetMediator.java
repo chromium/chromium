@@ -19,7 +19,7 @@ class PasswordAccessorySheetMediator extends AccessorySheetTabMediator {
             int userInfoType,
             int manageActionToRecord,
             @Nullable ToggleChangeDelegate toggleChangeDelegate) {
-        super(model, tabType, userInfoType, manageActionToRecord, toggleChangeDelegate);
+        super(model, userInfoType, manageActionToRecord, toggleChangeDelegate);
         mToggleChangeDelegate = toggleChangeDelegate;
     }
 

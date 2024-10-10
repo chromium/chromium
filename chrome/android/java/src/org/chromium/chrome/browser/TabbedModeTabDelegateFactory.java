@@ -62,7 +62,6 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     private final Runnable mContextMenuCopyLinkObserver;
     private final BottomSheetController mBottomSheetController;
     private final ChromeActivityNativeDelegate mChromeActivityNativeDelegate;
-    private final boolean mIsCustomTab;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final FullscreenManager mFullscreenManager;
     private final TabCreatorManager mTabCreatorManager;
@@ -92,7 +91,6 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
             Runnable contextMenuCopyLinkObserver,
             BottomSheetController sheetController,
             ChromeActivityNativeDelegate chromeActivityNativeDelegate,
-            boolean isCustomTab,
             BrowserControlsStateProvider browserControlsStateProvider,
             FullscreenManager fullscreenManager,
             TabCreatorManager tabCreatorManager,
@@ -118,7 +116,6 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
         mContextMenuCopyLinkObserver = contextMenuCopyLinkObserver;
         mBottomSheetController = sheetController;
         mChromeActivityNativeDelegate = chromeActivityNativeDelegate;
-        mIsCustomTab = isCustomTab;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mFullscreenManager = fullscreenManager;
         mTabCreatorManager = tabCreatorManager;

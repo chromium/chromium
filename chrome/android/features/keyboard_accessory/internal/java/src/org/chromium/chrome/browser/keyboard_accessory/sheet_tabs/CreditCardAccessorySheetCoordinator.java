@@ -53,11 +53,7 @@ public class CreditCardAccessorySheetCoordinator extends AccessorySheetTabCoordi
                 createUiConfiguration(context, PersonalDataManagerFactory.getForProfile(profile));
         mMediator =
                 new AccessorySheetTabMediator(
-                        mModel,
-                        AccessoryTabType.CREDIT_CARDS,
-                        Type.CREDIT_CARD_INFO,
-                        AccessoryAction.MANAGE_CREDIT_CARDS,
-                        null);
+                        mModel, Type.CREDIT_CARD_INFO, AccessoryAction.MANAGE_CREDIT_CARDS, null);
     }
 
     @Override

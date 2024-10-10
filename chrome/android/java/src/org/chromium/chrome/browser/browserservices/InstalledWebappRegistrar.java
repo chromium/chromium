@@ -24,7 +24,6 @@ import javax.inject.Named;
  * been verified.
  */
 public class InstalledWebappRegistrar {
-    private final Context mAppContext;
     private final PermissionUpdater mPermissionUpdater;
     private final Lazy<InstalledWebappDataRecorder> mDataRecorder;
 
@@ -36,7 +35,6 @@ public class InstalledWebappRegistrar {
             @Named(APP_CONTEXT) Context appContext,
             PermissionUpdater permissionUpdater,
             Lazy<InstalledWebappDataRecorder> dataRecorder) {
-        mAppContext = appContext;
         mPermissionUpdater = permissionUpdater;
         mDataRecorder = dataRecorder;
     }

@@ -30,7 +30,6 @@ public class LocationPermissionUpdater {
 
     private final InstalledWebappPermissionManager mPermissionManager;
     private final TrustedWebActivityClient mTrustedWebActivityClient;
-    private final TrustedWebActivityUmaRecorder mUmaRecorder;
 
     @Inject
     public LocationPermissionUpdater(
@@ -39,13 +38,12 @@ public class LocationPermissionUpdater {
             TrustedWebActivityUmaRecorder umaRecorder) {
         mPermissionManager = permissionManager;
         mTrustedWebActivityClient = trustedWebActivityClient;
-        mUmaRecorder = umaRecorder;
     }
 
     /**
-     * If the uninstalled client app results in there being no more TrustedWebActivityService
-     * for the origin, or the client app does not support location delegation, return the
-     * origin's location permission to what it was before any client app was installed.
+     * If the uninstalled client app results in there being no more TrustedWebActivityService for
+     * the origin, or the client app does not support location delegation, return the origin's
+     * location permission to what it was before any client app was installed.
      */
     void onClientAppUninstalled(Origin origin) {
         mPermissionManager.resetStoredPermission(origin, TYPE);

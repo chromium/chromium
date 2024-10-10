@@ -449,7 +449,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     protected ActivityWindowAndroid createWindowAndroid() {
         return new ChromeWindow(
                 /* activity= */ this,
-                mActivityTabProvider,
                 mCompositorViewHolderSupplier,
                 getModalDialogManagerSupplier(),
                 mManualFillingComponentSupplier,
@@ -2639,8 +2638,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
 
         if (id == R.id.universal_install) {
             RecordUserAction.record("UniversalInstallFromMenu");
-            return doUniversalInstall(
-                    currentTab, AppMenuVerbiage.APP_MENU_OPTION_UNIVERSAL_INSTALL);
+            return doUniversalInstall(currentTab);
         }
 
         if (id == R.id.open_webapk_id) {
@@ -2970,7 +2968,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         return mCompositorViewHolderSupplier.get();
     }
 
-    private boolean doUniversalInstall(Tab currentTab, int menuItemType) {
+    private boolean doUniversalInstall(Tab currentTab) {
         BottomSheetController controller = BottomSheetControllerProvider.from(getWindowAndroid());
         if (controller == null) {
             // We have three options when this function fails. One is to abort the operation and do

@@ -324,7 +324,7 @@ public abstract class TabGroupOverflowMenuCoordinator {
                         this::onDismiss,
                         activity);
         buildCustomView(mMenuHolder.getContentView(), isIncognito);
-        configureMenuItems(mMenuHolder.getModelList(), isIncognito, tabId, collaborationId);
+        configureMenuItems(mMenuHolder.getModelList(), isIncognito, collaborationId);
         mMenuHolder.show();
     }
 
@@ -337,7 +337,7 @@ public abstract class TabGroupOverflowMenuCoordinator {
     }
 
     private void configureMenuItems(
-            ModelList modelList, boolean isIncognito, int tabId, @Nullable String collaborationId) {
+            ModelList modelList, boolean isIncognito, @Nullable String collaborationId) {
         boolean hasCollaborationData =
                 !TextUtils.isEmpty(collaborationId)
                         && mIdentityManager != null

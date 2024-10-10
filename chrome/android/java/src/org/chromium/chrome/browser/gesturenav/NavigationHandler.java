@@ -107,8 +107,6 @@ class NavigationHandler implements TouchEventObserver {
 
     // Total horizontal pull offset for a swipe gesture.
     private float mPullOffsetX;
-    // Total vertical pull offset for a swipe gesture.
-    private float mPullOffsetY;
 
     private @BackGestureEventSwipeEdge int mInitiatingEdge;
 
@@ -391,7 +389,6 @@ class NavigationHandler implements TouchEventObserver {
             mModel.set(ACTION, GestureAction.RELEASE_BUBBLE);
         }
         mPullOffsetX = 0.f;
-        mPullOffsetY = 0.f;
         if (mTabOnBackGestureHandler != null) {
             if (allowNav && mWillNavigateSupplier.get()) {
                 mTabOnBackGestureHandler.onBackInvoked();
@@ -413,7 +410,6 @@ class NavigationHandler implements TouchEventObserver {
         mState = GestureState.NONE;
         mTriggerUiCallSource = TriggerUiCallSource.NO_TRIGGER;
         mPullOffsetX = 0.f;
-        mPullOffsetY = 0.f;
     }
 
     /**
@@ -421,7 +417,6 @@ class NavigationHandler implements TouchEventObserver {
      */
     void pull(float xDelta, float yDelta) {
         mPullOffsetX += xDelta;
-        mPullOffsetY += yDelta;
         if (mState == GestureState.DRAGGED) {
             mModel.set(BUBBLE_OFFSET, mPullOffsetX);
         }

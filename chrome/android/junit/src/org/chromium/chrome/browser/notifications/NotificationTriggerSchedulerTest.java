@@ -34,8 +34,6 @@ public class NotificationTriggerSchedulerTest {
     @Mock private BackgroundTaskScheduler mTaskScheduler;
     @Captor private ArgumentCaptor<TaskInfo> mTaskInfoCaptor;
 
-    private NotificationTriggerScheduler.Clock mClock;
-
     private NotificationTriggerScheduler mTriggerScheduler;
 
     @Before
@@ -45,8 +43,7 @@ public class NotificationTriggerSchedulerTest {
         mocker.mock(NotificationTriggerSchedulerJni.TEST_HOOKS, mNativeMock);
         doReturn(true).when(mTaskScheduler).schedule(any(), mTaskInfoCaptor.capture());
 
-        mClock = () -> 1415926535;
-        mTriggerScheduler = new NotificationTriggerScheduler(mClock);
+        mTriggerScheduler = new NotificationTriggerScheduler();
     }
 
     @Test

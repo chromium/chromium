@@ -70,7 +70,6 @@ class TabbedNavigationBarColorController
     private final Context mContext;
     private final FullscreenManager mFullScreenManager;
     private final @ColorInt int mDefaultScrimColor;
-    private final boolean mLightNavigationBar;
 
     // May be null if we return from the constructor early. Otherwise will be set.
     private final @Nullable TabModelSelector mTabModelSelector;
@@ -192,8 +191,6 @@ class TabbedNavigationBarColorController
         mContext = mRootView.getContext();
         mDefaultScrimColor = mContext.getColor(R.color.default_scrim_color);
         mFullScreenManager = fullscreenManager;
-        mLightNavigationBar =
-                mContext.getResources().getBoolean(R.bool.window_light_navigation_bar);
 
         mBottomAttachedUiObserver = bottomAttachedUiObserver;
         if (mBottomAttachedUiObserver != null) {

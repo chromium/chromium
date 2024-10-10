@@ -232,7 +232,6 @@ public class ResponseParser {
     }
 
     private boolean parseUpdatecheck(Node node) throws RequestFailureException {
-        boolean success = true;
 
         mUpdateStatus = node.attributes.get("status");
         if (TextUtils.equals("ok", mUpdateStatus)) {

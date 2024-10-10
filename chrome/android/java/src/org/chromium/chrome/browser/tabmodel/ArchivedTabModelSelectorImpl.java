@@ -162,10 +162,6 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
         // Intentional noop.
     }
 
-    private void cacheTabBitmap(Tab tabToCache) {
-        // Intentional noop.
-    }
-
     @Override
     public boolean isSessionRestoreInProgress() {
         return mSessionRestoreCompleted.get();

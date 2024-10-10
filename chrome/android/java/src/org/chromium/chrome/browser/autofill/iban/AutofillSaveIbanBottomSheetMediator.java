@@ -40,7 +40,6 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 
     private final AutofillSaveIbanBottomSheetCoordinator.NativeDelegate mDelegate;
     private final AutofillSaveIbanBottomSheetContent mBottomSheetContent;
-    private boolean mFinished;
     private final BottomSheetController mBottomSheetController;
     private final LayoutStateProvider mLayoutStateProvider;
     private final TabModel mTabModel;

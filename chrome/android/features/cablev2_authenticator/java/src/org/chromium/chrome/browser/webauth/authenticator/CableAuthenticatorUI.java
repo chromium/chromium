@@ -39,11 +39,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.components.webauthn.FidoIntentSender;
-import org.chromium.ui.permissions.ActivityAndroidPermissionDelegate;
-import org.chromium.ui.permissions.AndroidPermissionDelegate;
 import org.chromium.ui.widget.Toast;
-
-import java.lang.ref.WeakReference;
 
 /** A fragment that provides a UI for various caBLE v2 actions. */
 public class CableAuthenticatorUI extends Fragment implements OnClickListener, FidoIntentSender {
@@ -135,7 +131,6 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener, F
         TIMEOUT_COMPLETE;
     }
 
-    private AndroidPermissionDelegate mPermissionDelegate;
     private CableAuthenticator mAuthenticator;
     // mViewsCreated is set to true after `onCreateView` has been called, which sets values for all
     // the `View`-typed members of this object. Prior to this UI updates are suppressed.
@@ -166,7 +161,6 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener, F
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final Context context = getContext();
 
         Bundle arguments = getArguments();
         final byte[] serverLink = arguments.getByteArray(SERVER_LINK_EXTRA);
@@ -202,9 +196,6 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener, F
         final long registration = arguments.getLong(REGISTRATION_EXTRA);
         final byte[] secret = arguments.getByteArray(SECRET_EXTRA);
 
-        mPermissionDelegate =
-                new ActivityAndroidPermissionDelegate(
-                        new WeakReference<Activity>((Activity) context));
         mAuthenticator =
                 new CableAuthenticator(
                         getContext(),

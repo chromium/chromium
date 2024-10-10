@@ -38,7 +38,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
-import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
@@ -58,8 +57,6 @@ public class BookmarkEditActivity extends SnackbarActivity {
     static final int MOVE_REQUEST_CODE = 15;
 
     private static final String TAG = "BookmarkEdit";
-
-    private final SelectionDelegate mEmptySelectionDelegate = new SelectionDelegate();
 
     private ImprovedBookmarkRowCoordinator mFolderSelectRowCoordinator;
     private BookmarkModel mModel;

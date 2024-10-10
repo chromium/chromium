@@ -152,7 +152,6 @@ public class SearchWidgetProvider extends AppWidgetProvider {
             RemoteViews views =
                     createWidgetViews(
                             delegate.getContext(),
-                            id,
                             prefs.searchEngineName,
                             prefs.voiceSearchAvailable);
             delegate.updateAppWidget(id, views);
@@ -160,7 +159,7 @@ public class SearchWidgetProvider extends AppWidgetProvider {
     }
 
     private static RemoteViews createWidgetViews(
-            Context context, int id, String engineName, boolean isVoiceSearchAvailable) {
+            Context context, String engineName, boolean isVoiceSearchAvailable) {
         RemoteViews views =
                 new RemoteViews(context.getPackageName(), R.layout.search_widget_template);
 
