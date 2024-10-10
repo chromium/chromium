@@ -140,7 +140,7 @@ bool WaylandBufferManagerHost::SupportsDmabuf() const {
 }
 
 bool WaylandBufferManagerHost::SupportsAcquireFence() const {
-  return !!connection_->linux_explicit_synchronization_v1() ||
+  return connection_->SupportsExplicitSync() ||
          connection_->UseImplicitSyncInterop();
 }
 

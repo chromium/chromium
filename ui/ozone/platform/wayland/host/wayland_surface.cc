@@ -279,7 +279,7 @@ void WaylandSurface::set_acquire_fence(gfx::GpuFenceHandle acquire_fence) {
   // WaylandBufferManagerGPU knows if the synchronization is not available and
   // must disallow clients to use explicit synchronization.
   DCHECK(!apply_state_immediately_);
-  DCHECK(connection_->linux_explicit_synchronization_v1() ||
+  DCHECK(connection_->SupportsExplicitSync() ||
          connection_->UseImplicitSyncInterop());
   if (!acquire_fence.is_null()) {
     base::TimeTicks ticks;

@@ -499,7 +499,7 @@ bool WaylandFrameManager::ApplySurfaceConfigure(
     }
 
     if (!is_solid_color_buffer) {
-      if (connection_->linux_explicit_synchronization_v1()) {
+      if (connection_->SupportsExplicitSync()) {
         surface->RequestExplicitRelease(
             base::BindOnce(&WaylandFrameManager::OnExplicitBufferRelease,
                            weak_factory_.GetWeakPtr(), surface));

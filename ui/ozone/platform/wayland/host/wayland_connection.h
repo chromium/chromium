@@ -157,6 +157,9 @@ class WaylandConnection {
   wp_linux_drm_syncobj_manager_v1* linux_drm_syncobj_manager_v1() const {
     return linux_drm_syncobj_manager_.get();
   }
+  bool SupportsExplicitSync() const {
+    return !!linux_explicit_synchronization_v1();
+  }
   zxdg_decoration_manager_v1* xdg_decoration_manager_v1() const {
     return xdg_decoration_manager_.get();
   }
@@ -371,7 +374,7 @@ class WaylandConnection {
   void DumpState(std::ostream& out) const;
 
   bool UseImplicitSyncInterop() const {
-    return !linux_explicit_synchronization_v1() &&
+    return !SupportsExplicitSync() &&
            WaylandBufferManagerHost::SupportsImplicitSyncInterop();
   }
 
