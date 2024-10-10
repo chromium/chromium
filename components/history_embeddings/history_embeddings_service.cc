@@ -522,6 +522,7 @@ void HistoryEmbeddingsService::SendQualityLog(
                   UI_SURFACE_OMNIBOX_HISTORY_SCOPE
             : optimization_guide::proto::UiSurface::UI_SURFACE_HISTORY_PAGE);
 
+    bool any_document_clicked = false;
     for (size_t row_index = 0; row_index < result.scored_url_rows.size();
          ++row_index) {
       const ScoredUrlRow& scored_url_row = result.scored_url_rows[row_index];
@@ -529,6 +530,7 @@ void HistoryEmbeddingsService::SendQualityLog(
           query_quality->add_top_documents_shown();
       document_shown->set_url(scored_url_row.row.url().spec());
       document_shown->set_was_clicked(selections.contains(row_index));
+      any_document_clicked |= document_shown->was_clicked();
       if (!scored_url_row.scores.empty()) {
         document_shown->set_best_embedding_score(
             std::ranges::max(scored_url_row.scores));
@@ -553,6 +555,13 @@ void HistoryEmbeddingsService::SendQualityLog(
             ->mutable_values()
             ->Add(embedding.begin(), embedding.end());
       }
+    }
+    if (result.scored_url_rows.size() > 0) {
+      query_quality->set_final_model_status(
+          any_document_clicked ? optimization_guide::proto::FinalModelStatus::
+                                     FINAL_MODEL_STATUS_SUCCESS
+                               : optimization_guide::proto::FinalModelStatus::
+                                     FINAL_MODEL_STATUS_FAILURE);
     }
 
     // The data is sent when `log_entry` destructs.
