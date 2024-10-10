@@ -1015,6 +1015,9 @@
     <message name="IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_LEARN_ABOUT_LINK_TEXT" desc="A label with a link to a help page in the card benefits settings page, which allows users to view help page for card benefits in a new tab." formatter_data="android_java">
       <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph> about card benefits
     </message>
+    <message name="IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_ISSUER_TERM_TEXT" desc="Summary for the issuer terms on the card benefits preference on the card benefits setting page." formatter_data="android_java">
+      See terms here
+    </message>
   </if>
 
   <!-- Credit card and promo code offers and rewards-related strings -->
