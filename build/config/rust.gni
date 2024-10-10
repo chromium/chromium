@@ -189,14 +189,23 @@ if (enable_rust) {
 # targets to Rust targets comprehensively despite not having official support
 # (see '*_toolchain_supports_platform above') to enable experimentation with
 # other toolchains.
+#
+# The `cargo_target_abi` is the `target_abi` given by Cargo to build scripts
+# as the `CARGO_CFG_TARGET_ABI` environment variable. It is determined for
+# each `rust_abi_target` by doing `cargo build --target $rust_abi_target` with
+# a cargo project that dumps the `CARGO_CFG_TARGET_ABI` from its build.rs. See
+# https://issues.chromium.org/u/1/issues/372512092#comment5 for an example.
 rust_abi_target = ""
 if (is_linux || is_chromeos) {
   if (current_cpu == "arm64") {
     rust_abi_target = "aarch64-unknown-linux-gnu"
+    cargo_target_abi = ""
   } else if (current_cpu == "x86") {
     rust_abi_target = "i686-unknown-linux-gnu"
+    cargo_target_abi = ""
   } else if (current_cpu == "x64") {
     rust_abi_target = "x86_64-unknown-linux-gnu"
+    cargo_target_abi = ""
   } else if (current_cpu == "arm") {
     if (arm_float_abi == "hard") {
       float_suffix = "hf"
@@ -206,28 +215,56 @@ if (is_linux || is_chromeos) {
     if (arm_arch == "armv7-a" || arm_arch == "armv7") {
       # No way to inform Rust about the -a suffix.
       rust_abi_target = "armv7-unknown-linux-gnueabi" + float_suffix
+      cargo_target_abi = "eabi" + float_suffix
     } else {
       rust_abi_target = "arm-unknown-linux-gnueabi" + float_suffix
+      cargo_target_abi = "eabi" + float_suffix
     }
   } else if (current_cpu == "riscv64") {
     rust_abi_target = "riscv64gc-unknown-linux-gnu"
+    cargo_target_abi = ""
   } else {
     # Best guess for other future platforms.
     rust_abi_target = current_cpu + "-unknown-linux-gnu"
+    cargo_target_abi = ""
   }
 } else if (is_android) {
   import("//build/config/android/abi.gni")
-  rust_abi_target = android_abi_target
-  if (rust_abi_target == "arm-linux-androideabi") {
+  if (android_abi_target == "i686-linux-android") {
+    rust_abi_target = android_abi_target
+    cargo_target_abi = ""
+  } else if (android_abi_target == "arm-linux-androideabi") {
     # Android clang target specifications mostly match Rust, but this
     # is an exception
     rust_abi_target = "armv7-linux-androideabi"
+    cargo_target_abi = "eabi"
+  } else if (android_abi_target == "mipsel-linux-android") {
+    # There is no MIPS android target.
+    rust_abi_target = ""
+    cargo_target_abi = ""
+  } else if (android_abi_target == "x86_64-linux-android") {
+    rust_abi_target = android_abi_target
+    cargo_target_abi = ""
+  } else if (android_abi_target == "aarch64-linux-android") {
+    rust_abi_target = android_abi_target
+    cargo_target_abi = ""
+  } else if (android_abi_target == "mips64el-linux-android") {
+    # There is no MIPS android target.
+    rust_abi_target = ""
+    cargo_target_abi = ""
+  } else if (android_abi_target == "riscv64-linux-android") {
+    rust_abi_target = android_abi_target
+    cargo_target_abi = ""
+  } else {
+    assert(false, "Unknown Android ABI: " + android_abi_target)
   }
 } else if (is_fuchsia) {
   if (current_cpu == "arm64") {
     rust_abi_target = "aarch64-unknown-fuchsia"
+    cargo_target_abi = ""
   } else if (current_cpu == "x64") {
     rust_abi_target = "x86_64-unknown-fuchsia"
+    cargo_target_abi = ""
   } else {
     assert(false, "Architecture not supported")
   }
@@ -235,22 +272,24 @@ if (is_linux || is_chromeos) {
   if (current_cpu == "arm64") {
     if (target_environment == "simulator") {
       rust_abi_target = "aarch64-apple-ios-sim"
+      cargo_target_abi = "sim"
     } else if (target_environment == "catalyst") {
       rust_abi_target = "aarch64-apple-ios-macabi"
+      cargo_target_abi = "macabi"
     } else {
       rust_abi_target = "aarch64-apple-ios"
+      cargo_target_abi = ""
     }
   } else if (current_cpu == "arm") {
-    # There's also an armv7s-apple-ios, which targets a more recent ARMv7
-    # generation CPU found in later iPhones. We'll go with the older one for
-    # maximal compatibility. As we come to support all the different platforms
-    # with Rust, we might want to be more precise here.
-    rust_abi_target = "armv7-apple-ios"
+    rust_abi_target = "armv7s-apple-ios"
+    cargo_target_abi = ""
   } else if (current_cpu == "x64") {
     if (target_environment == "catalyst") {
       rust_abi_target = "x86_64-apple-ios-macabi"
+      cargo_target_abi = "macabi"
     } else {
       rust_abi_target = "x86_64-apple-ios"
+      cargo_target_abi = "sim"
     }
   } else if (current_cpu == "x86") {
     rust_abi_target = "i386-apple-ios"
@@ -260,18 +299,23 @@ if (is_linux || is_chromeos) {
 } else if (is_mac) {
   if (current_cpu == "arm64") {
     rust_abi_target = "aarch64-apple-darwin"
+    cargo_target_abi = ""
   } else if (current_cpu == "x64") {
     rust_abi_target = "x86_64-apple-darwin"
+    cargo_target_abi = ""
   } else {
     assert(false, "Architecture not supported")
   }
 } else if (is_win) {
   if (current_cpu == "arm64") {
     rust_abi_target = "aarch64-pc-windows-msvc"
+    cargo_target_abi = ""
   } else if (current_cpu == "x64") {
     rust_abi_target = "x86_64-pc-windows-msvc"
+    cargo_target_abi = ""
   } else if (current_cpu == "x86") {
     rust_abi_target = "i686-pc-windows-msvc"
+    cargo_target_abi = ""
   } else {
     assert(false, "Architecture not supported")
   }

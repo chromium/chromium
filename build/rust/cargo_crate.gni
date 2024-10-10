@@ -422,11 +422,13 @@ template("cargo_crate") {
         rebase_path(_build_script_env_out_dir, root_build_dir),
         "--src-dir",
         rebase_path(get_path_info(invoker.build_root, "dir"), root_build_dir),
+        "--target",
+        rust_abi_target,
       ]
-      if (defined(rust_abi_target) && rust_abi_target != "") {
+      if (cargo_target_abi != "") {
         args += [
-          "--target",
-          rust_abi_target,
+          "--target-abi",
+          cargo_target_abi,
         ]
       }
       if (current_cpu == "arm64" || current_cpu == "x64" ||
