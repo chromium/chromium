@@ -2233,10 +2233,6 @@
       status: "test",
     },
     {
-      name: "HandleDeletionWithNonEditableContentAtBlockBoundary",
-      status: "stable",
-    },
-    {
       name: "HandleSelectionChangeOnDeletingEmptyElement",
       status: "stable",
     },
