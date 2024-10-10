@@ -19,6 +19,7 @@ export {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/pag
 export {LensErrorType, LensFormElement, LensSubmitType} from './lens_form.js';
 export {LensUploadDialogAction, LensUploadDialogElement, LensUploadDialogError} from './lens_upload_dialog.js';
 export {MiddleSlotPromoElement, PromoDismissAction} from './middle_slot_promo.js';
+export {MobilePromoElement} from './mobile_promo.js';
 export {FileProxy} from './modules/drive/file_module_proxy.js';
 export {driveDescriptor, DriveModuleElement} from './modules/drive/module.js';
 export {InfoDialogElement} from './modules/info_dialog.js';
@@ -40,6 +41,7 @@ export {FooProxy} from './modules/v2/dummy/foo_proxy.js';
 export {dummyV2Descriptor, ModuleElement as DummyModuleElement} from './modules/v2/dummy/module.js';
 // </if>
 export {DriveModuleElement as DriveModuleV2Element, driveModuleV2Descriptor} from './modules/v2/file_suggestion/drive_module.js';
+export {FileSuggestionElement} from './modules/v2/file_suggestion/file_suggestion.js';
 export {ModuleHeaderElement as ModuleHeaderElementV2} from './modules/v2/module_header.js';
 export {DismissModuleElementEvent, DismissModuleInstanceEvent, MODULE_CUSTOMIZE_ELEMENT_ID, ModulesV2Element, NamedWidth, SUPPORTED_MODULE_WIDTHS} from './modules/v2/modules.js';
 export {ModuleElement as MostRelevantTabResumptionModuleElement, mostRelevantTabResumptionDescriptor} from './modules/v2/most_relevant_tab_resumption/module.js';

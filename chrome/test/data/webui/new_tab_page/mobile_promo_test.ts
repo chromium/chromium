@@ -4,7 +4,8 @@
 
 import 'chrome://new-tab-page/lazy_load.js';
 
-import type {CrAutoImgElement, MobilePromoElement} from 'chrome://new-tab-page/new_tab_page.js';
+import type {MobilePromoElement} from 'chrome://new-tab-page/lazy_load.js';
+import type {CrAutoImgElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {$$, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {PageCallbackRouter, PageHandlerRemote} from 'chrome://new-tab-page/new_tab_page.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
