@@ -95,12 +95,12 @@ bool ConsiderAnimationAsIncompatible(const Animation& animation,
     return true;
 
   switch (animation.CalculateAnimationPlayState()) {
-    case Animation::kIdle:
+    case V8AnimationPlayState::Enum::kIdle:
       return false;
-    case Animation::kRunning:
+    case V8AnimationPlayState::Enum::kRunning:
       return true;
-    case Animation::kPaused:
-    case Animation::kFinished:
+    case V8AnimationPlayState::Enum::kPaused:
+    case V8AnimationPlayState::Enum::kFinished:
       if (Animation::HasLowerCompositeOrdering(
               &animation, &animation_to_add,
               Animation::CompareAnimationsOrdering::kPointerOrder)) {

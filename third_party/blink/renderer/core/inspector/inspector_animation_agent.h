@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_ANIMATION_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_ANIMATION_AGENT_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_animation_play_state.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
@@ -91,7 +92,7 @@ class CORE_EXPORT InspectorAnimationAgent final
     HeapVector<Member<AnimationKeyframeSnapshot>> keyframes;
     std::optional<double> start_offset;
     std::optional<double> end_offset;
-    blink::Animation::AnimationPlayState play_state;
+    V8AnimationPlayState::Enum play_state;
 
     void Trace(Visitor* visitor) const { visitor->Trace(keyframes); }
   };

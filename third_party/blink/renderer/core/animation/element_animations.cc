@@ -166,7 +166,7 @@ bool ElementAnimations::HasAnimationForProperty(const CSSProperty& property) {
     KeyframeEffect* effect = DynamicTo<KeyframeEffect>(entry.key->effect());
     if (effect && effect->Affects(PropertyHandle(property)) &&
         (entry.key->CalculateAnimationPlayState() !=
-         Animation::AnimationPlayState::kIdle)) {
+         V8AnimationPlayState::Enum::kIdle)) {
       return true;
     }
   }

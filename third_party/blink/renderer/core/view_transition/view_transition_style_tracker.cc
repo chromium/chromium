@@ -1548,8 +1548,8 @@ bool ViewTransitionStyleTracker::HasActiveAnimations() const {
     for (auto& animation_pair : animations->Animations()) {
       auto animation_play_state =
           animation_pair.key->CalculateAnimationPlayState();
-      if (animation_play_state == Animation::kRunning ||
-          animation_play_state == Animation::kPaused) {
+      if (animation_play_state == V8AnimationPlayState::Enum::kRunning ||
+          animation_play_state == V8AnimationPlayState::Enum::kPaused) {
         return true;
       }
     }

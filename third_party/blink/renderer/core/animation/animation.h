@@ -38,6 +38,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_property.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_animation_play_state.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_replace_state.h"
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
 #include "third_party/blink/renderer/core/animation/animation_effect_owner.h"
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
@@ -71,18 +73,6 @@ class CORE_EXPORT Animation : public EventTarget,
   USING_PRE_FINALIZER(Animation, Dispose);
 
  public:
-  enum AnimationPlayState {
-    kUnset,
-    kIdle,
-    kPending,  // TODO(crbug.com/958433) remove non-spec compliant state.
-    kRunning,
-    kPaused,
-    kFinished
-  };
-
-  // https://w3.org/TR/web-animations-1/#animation-replace-state
-  enum ReplaceState { kActive, kRemoved, kPersisted };
-
   // Priority for sorting getAnimation by Animation class, arranged from lowest
   // priority to highest priority as per spec:
   // https://w3.org/TR/web-animations-1/#dom-document-getanimations
@@ -156,14 +146,12 @@ class CORE_EXPORT Animation : public EventTarget,
   std::optional<double> progress() const;
 
   // https://w3.org/TR/web-animations-1/#play-states
-  String PlayStateString() const;
-  static const char* PlayStateString(AnimationPlayState);
-  AnimationPlayState CalculateAnimationPlayState() const;
+  V8AnimationPlayState::Enum CalculateAnimationPlayState() const;
 
   // As a web exposed API, playState must update style and layout if the play
   // state may be affected by it (see CSSAnimation::playState), whereas
   // PlayStateString can be used to query the current play state.
-  virtual String playState() const;
+  virtual V8AnimationPlayState playState() const;
 
   bool PendingInternal() const;
 
@@ -183,12 +171,15 @@ class CORE_EXPORT Animation : public EventTarget,
   ScriptPromise<Animation> ready(ScriptState*);
 
   bool Paused() const {
-    return CalculateAnimationPlayState() == kPaused && !is_paused_for_testing_;
+    return CalculateAnimationPlayState() ==
+               V8AnimationPlayState::Enum::kPaused &&
+           !is_paused_for_testing_;
   }
 
   bool Playing() const override {
-    return CalculateAnimationPlayState() == kRunning && !Limited() &&
-           !is_paused_for_testing_;
+    return CalculateAnimationPlayState() ==
+               V8AnimationPlayState::Enum::kRunning &&
+           !Limited() && !is_paused_for_testing_;
   }
 
   bool Limited() const { return Limited(CurrentTimeInternal()); }
@@ -363,12 +354,14 @@ class CORE_EXPORT Animation : public EventTarget,
   bool IsReplaceable();
   void RemoveReplacedAnimation();
   void persist();
-  String replaceState();
+  V8ReplaceState replaceState();
   void commitStyles(ExceptionState& = ASSERT_NO_EXCEPTION);
   bool ReplaceStateRemoved() const override {
-    return replace_state_ == kRemoved;
+    return replace_state_ == V8ReplaceState::Enum::kRemoved;
   }
-  bool ReplaceStateActive() const { return replace_state_ == kActive; }
+  bool ReplaceStateActive() const {
+    return replace_state_ == V8ReplaceState::Enum::kActive;
+  }
 
   // Overridden for CSS animations to force pending animation properties to be
   // applied. This step is required before any web animation API calls that
@@ -518,7 +511,8 @@ class CORE_EXPORT Animation : public EventTarget,
   // Extended play state reported to dev tools. This play state has an
   // additional pending state that is not part of the spec by expected by dev
   // tools.
-  AnimationPlayState reported_play_state_;
+  V8AnimationPlayState::Enum reported_play_state_ =
+      V8AnimationPlayState::Enum::kIdle;
   double playback_rate_;
   // The pending playback rate is not currently in effect. It typically takes
   // effect when running a scheduled task in response to the animation being
@@ -556,7 +550,7 @@ class CORE_EXPORT Animation : public EventTarget,
   Member<CSSValue> style_dependent_range_start_;
   Member<CSSValue> style_dependent_range_end_;
 
-  ReplaceState replace_state_;
+  V8ReplaceState::Enum replace_state_ = V8ReplaceState::Enum::kActive;
 
   // Testing flags.
   bool is_paused_for_testing_;

@@ -327,14 +327,12 @@ Animation::Animation(ExecutionContext* execution_context,
                      AnimationEffect* content)
     : ActiveScriptWrappable<Animation>({}),
       ExecutionContextLifecycleObserver(nullptr),
-      reported_play_state_(kIdle),
       playback_rate_(1),
       start_time_(),
       hold_time_(),
       sequence_number_(NextSequenceNumber()),
       content_(content),
       timeline_(timeline),
-      replace_state_(kActive),
       is_paused_for_testing_(false),
       is_composited_animation_disabled_for_testing_(false),
       pending_pause_(false),
@@ -623,7 +621,8 @@ std::optional<AnimationTimeDelta> Animation::CurrentTimeInternal() const {
 }
 
 std::optional<AnimationTimeDelta> Animation::UnlimitedCurrentTime() const {
-  return CalculateAnimationPlayState() == kPaused || !start_time_
+  return CalculateAnimationPlayState() == V8AnimationPlayState::Enum::kPaused ||
+                 !start_time_
              ? CurrentTimeInternal()
              : CalculateCurrentTime();
 }
@@ -649,8 +648,8 @@ std::optional<double> Animation::progress() const {
   return std::clamp<double>(*current_time / effect_end, 0, 1);
 }
 
-String Animation::playState() const {
-  return PlayStateString();
+V8AnimationPlayState Animation::playState() const {
+  return V8AnimationPlayState(CalculateAnimationPlayState());
 }
 
 bool Animation::PreCommit(
@@ -749,7 +748,8 @@ bool Animation::PreCommit(
       animation_has_no_effect_ =
           failure_reasons == CompositorAnimations::kAnimationHasNoVisibleChange;
 
-      DCHECK_EQ(kRunning, CalculateAnimationPlayState());
+      DCHECK_EQ(V8AnimationPlayState::Enum::kRunning,
+                CalculateAnimationPlayState());
       TRACE_EVENT_NESTABLE_ASYNC_INSTANT1(
           "blink.animations,devtools.timeline,benchmark,rail", "Animation",
           this, "data", [&](perfetto::TracedValue context) {
@@ -1024,7 +1024,7 @@ void Animation::setTimeline(AnimationTimeline* timeline) {
     return;
 
   UpdateIfNecessary();
-  AnimationPlayState old_play_state = CalculateAnimationPlayState();
+  V8AnimationPlayState::Enum old_play_state = CalculateAnimationPlayState();
   std::optional<AnimationTimeDelta> old_current_time = CurrentTimeInternal();
 
   // In some cases, we need to preserve the progress of the animation between
@@ -1062,11 +1062,11 @@ void Animation::setTimeline(AnimationTimeline* timeline) {
 
   if (timeline && !timeline->IsMonotonicallyIncreasing()) {
     switch (old_play_state) {
-      case kIdle:
+      case V8AnimationPlayState::Enum::kIdle:
         break;
 
-      case kRunning:
-      case kFinished:
+      case V8AnimationPlayState::Enum::kRunning:
+      case V8AnimationPlayState::Enum::kFinished:
         if (old_current_time) {
           start_time_ = std::nullopt;
           hold_time_ = progress * EffectEnd();
@@ -1074,7 +1074,7 @@ void Animation::setTimeline(AnimationTimeline* timeline) {
         PlayInternal(AutoRewind::kEnabled, ASSERT_NO_EXCEPTION);
         return;
 
-      case kPaused:
+      case V8AnimationPlayState::Enum::kPaused:
         if (old_current_time) {
           start_time_ = std::nullopt;
           hold_time_ = progress * EffectEnd();
@@ -1344,30 +1344,8 @@ void Animation::setEffect(AnimationEffect* new_effect) {
   Update(kTimingUpdateOnDemand);
 }
 
-String Animation::PlayStateString() const {
-  return PlayStateString(CalculateAnimationPlayState());
-}
-
-const char* Animation::PlayStateString(AnimationPlayState play_state) {
-  switch (play_state) {
-    case kIdle:
-      return "idle";
-    case kPending:
-      return "pending";
-    case kRunning:
-      return "running";
-    case kPaused:
-      return "paused";
-    case kFinished:
-      return "finished";
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
-  }
-}
-
 // https://www.w3.org/TR/web-animations-1/#play-states
-Animation::AnimationPlayState Animation::CalculateAnimationPlayState() const {
+V8AnimationPlayState::Enum Animation::CalculateAnimationPlayState() const {
   // 1. All of the following conditions are true:
   //    * The current time of animation is unresolved, and
   //    * the start time of animation is unresolved, and
@@ -1375,7 +1353,7 @@ Animation::AnimationPlayState Animation::CalculateAnimationPlayState() const {
   //      task,
   //    then idle.
   if (!CurrentTimeInternal() && !start_time_ && !PendingInternal())
-    return kIdle;
+    return V8AnimationPlayState::Enum::kIdle;
 
   // 2. Either of the following conditions are true:
   //    * animation has a pending pause task, or
@@ -1383,7 +1361,7 @@ Animation::AnimationPlayState Animation::CalculateAnimationPlayState() const {
   //      pending play task,
   //    then paused.
   if (pending_pause_ || (!start_time_ && !pending_play_))
-    return kPaused;
+    return V8AnimationPlayState::Enum::kPaused;
 
   // 3.  For animation, current time is resolved and either of the following
   //     conditions are true:
@@ -1392,10 +1370,10 @@ Animation::AnimationPlayState Animation::CalculateAnimationPlayState() const {
   //     * animation’s effective playback rate < 0 and current time ≤ 0,
   //    then finished.
   if (Limited())
-    return kFinished;
+    return V8AnimationPlayState::Enum::kFinished;
 
   // 4.  Otherwise
-  return kRunning;
+  return V8AnimationPlayState::Enum::kRunning;
 }
 
 bool Animation::PendingInternal() const {
@@ -1438,8 +1416,10 @@ void Animation::ResetPendingTasks() {
 void Animation::pause(ExceptionState& exception_state) {
   // 1. If animation has a pending pause task, abort these steps.
   // 2. If the play state of animation is paused, abort these steps.
-  if (pending_pause_ || CalculateAnimationPlayState() == kPaused)
+  if (pending_pause_ ||
+      CalculateAnimationPlayState() == V8AnimationPlayState::Enum::kPaused) {
     return;
+  }
 
   // 3. Let seek time be a time value that is initially unresolved.
   std::optional<AnimationTimeDelta> seek_time;
@@ -1524,8 +1504,9 @@ void Animation::pause(ExceptionState& exception_state) {
 // Refer to the unpause operation in the following spec:
 // https://www.w3.org/TR/css-animations-1/#animation-play-state
 void Animation::Unpause() {
-  if (CalculateAnimationPlayState() != kPaused)
+  if (CalculateAnimationPlayState() != V8AnimationPlayState::Enum::kPaused) {
     return;
+  }
 
   // TODO(kevers): Add step in the spec for making auto-rewind dependent on the
   // type of timeline.
@@ -1879,8 +1860,8 @@ void Animation::UpdateFinishedState(UpdateType update_type,
   previous_current_time_ = CurrentTimeInternal();
 
   // 4. Set the current finished state.
-  AnimationPlayState play_state = CalculateAnimationPlayState();
-  if (play_state == kFinished) {
+  V8AnimationPlayState::Enum play_state = CalculateAnimationPlayState();
+  if (play_state == V8AnimationPlayState::Enum::kFinished) {
     if (!committed_finish_notification_) {
       // 5. Setup finished notification.
       if (notification_type == NotificationType::kSync)
@@ -1946,8 +1927,9 @@ void Animation::CommitFinishNotification() {
   pending_finish_notification_ = false;
 
   // 1. If animation’s play state is not equal to finished, abort these steps.
-  if (CalculateAnimationPlayState() != kFinished)
+  if (CalculateAnimationPlayState() != V8AnimationPlayState::Enum::kFinished) {
     return;
+  }
 
   // 2. Resolve animation’s current finished promise object with animation.
   if (finished_promise_ &&
@@ -1966,7 +1948,7 @@ void Animation::updatePlaybackRate(double playback_rate,
                                    ExceptionState& exception_state) {
   // 1. Let previous play state be animation’s play state.
   // 2. Let animation’s pending playback rate be new playback rate.
-  AnimationPlayState play_state = CalculateAnimationPlayState();
+  V8AnimationPlayState::Enum play_state = CalculateAnimationPlayState();
   pending_playback_rate_ = playback_rate;
 
   // 3. Perform the steps corresponding to the first matching condition from
@@ -1980,8 +1962,8 @@ void Animation::updatePlaybackRate(double playback_rate,
   switch (play_state) {
     // 3b If previous play state is idle or paused,
     //    Apply any pending playback rate on animation.
-    case kIdle:
-    case kPaused:
+    case V8AnimationPlayState::Enum::kIdle:
+    case V8AnimationPlayState::Enum::kPaused:
       ApplyPendingPlaybackRate();
       break;
 
@@ -2000,7 +1982,7 @@ void Animation::updatePlaybackRate(double playback_rate,
     //    3c.5 Run the procedure to update an animation’s finished state for
     //         animation with the did seek flag set to false, and the
     //         synchronously notify flag set to false.
-    case kFinished: {
+    case V8AnimationPlayState::Enum::kFinished: {
       std::optional<AnimationTimeDelta> unconstrained_current_time =
           CalculateCurrentTime();
       std::optional<AnimationTimeDelta> timeline_time =
@@ -2028,12 +2010,11 @@ void Animation::updatePlaybackRate(double playback_rate,
     // 3d Otherwise,
     // Run the procedure to play an animation for animation with the
     // auto-rewind flag set to false.
-    case kRunning:
+    case V8AnimationPlayState::Enum::kRunning:
       PlayInternal(AutoRewind::kDisabled, exception_state);
       break;
 
-    case kUnset:
-    case kPending:
+    case V8AnimationPlayState::Enum::kPending:
       NOTREACHED_IN_MIGRATION();
   }
 }
@@ -2048,9 +2029,11 @@ ScriptPromise<Animation> Animation::finished(ScriptState* script_state) {
     // Defer resolving the finished promise if the finish notification task is
     // pending. The finished state could change before the next microtask
     // checkpoint.
-    if (CalculateAnimationPlayState() == kFinished &&
-        !pending_finish_notification_)
+    if (CalculateAnimationPlayState() ==
+            V8AnimationPlayState::Enum::kFinished &&
+        !pending_finish_notification_) {
       finished_promise_->Resolve(this);
+    }
   }
   return finished_promise_->Promise(script_state->World());
 }
@@ -2165,7 +2148,7 @@ void Animation::setPlaybackRate(double playback_rate,
   if (preserve_current_time && start_time_before && start_time_ &&
       fabs(start_time_.value().InMillisecondsF() -
            start_time_before.value().InMillisecondsF()) > epsilon &&
-      CalculateAnimationPlayState() != kFinished) {
+      CalculateAnimationPlayState() != V8AnimationPlayState::Enum::kFinished) {
     UseCounter::Count(GetExecutionContext(),
                       WebFeature::kAnimationSetPlaybackRateCompensatorySeek);
   }
@@ -2579,16 +2562,16 @@ bool Animation::OnValidateSnapshot(bool snapshot_changed) {
 
   bool needs_new_start_time = false;
   switch (CalculateAnimationPlayState()) {
-    case kIdle:
+    case V8AnimationPlayState::Enum::kIdle:
       break;
 
-    case kPaused:
+    case V8AnimationPlayState::Enum::kPaused:
       needs_new_start_time = !start_time_ && !hold_time_;
       DCHECK(!needs_new_start_time || pending_pause_);
       break;
 
-    case kRunning:
-    case kFinished:
+    case V8AnimationPlayState::Enum::kRunning:
+    case V8AnimationPlayState::Enum::kFinished:
       if (!auto_align_start_time_ && hold_time_ && pending_play_ &&
           timeline_->CurrentTime()) {
         // The auto-alignment flag was reset via an API call. Set the start time
@@ -2692,8 +2675,9 @@ void Animation::OnRangeUpdate() {
     return;
   }
 
-  AnimationPlayState play_state = CalculateAnimationPlayState();
-  if (play_state == kRunning || play_state == kFinished) {
+  V8AnimationPlayState::Enum play_state = CalculateAnimationPlayState();
+  if (play_state == V8AnimationPlayState::Enum::kRunning ||
+      play_state == V8AnimationPlayState::Enum::kFinished) {
     PlayInternal(AutoRewind::kEnabled, ASSERT_NO_EXCEPTION);
   }
 }
@@ -2830,7 +2814,8 @@ bool Animation::Update(TimingUpdateReason reason) {
     return true;
 
   ClearOutdated();
-  bool idle = CalculateAnimationPlayState() == kIdle;
+  bool idle =
+      CalculateAnimationPlayState() == V8AnimationPlayState::Enum::kIdle;
   if (!idle && reason == kTimingUpdateForAnimationFrame)
     UpdateFinishedState(UpdateType::kContinuous, NotificationType::kAsync);
 
@@ -2852,7 +2837,8 @@ bool Animation::Update(TimingUpdateReason reason) {
   }
 
   if (reason == kTimingUpdateForAnimationFrame) {
-    if (idle || CalculateAnimationPlayState() == kFinished) {
+    if (idle || CalculateAnimationPlayState() ==
+                    V8AnimationPlayState::Enum::kFinished) {
       finished_ = true;
     }
     NotifyProbe();
@@ -2925,8 +2911,8 @@ std::optional<AnimationTimeDelta> Animation::TimeToEffectChange() {
 void Animation::cancel() {
   AnimationTimeDelta current_time_before_cancel =
       CurrentTimeInternal().value_or(AnimationTimeDelta());
-  AnimationPlayState initial_play_state = CalculateAnimationPlayState();
-  if (initial_play_state != kIdle) {
+  V8AnimationPlayState::Enum initial_play_state = CalculateAnimationPlayState();
+  if (initial_play_state != V8AnimationPlayState::Enum::kIdle) {
     ResetPendingTasks();
 
     if (finished_promise_) {
@@ -3063,7 +3049,7 @@ void Animation::PauseForTesting(AnimationTimeDelta pause_time) {
   }
 
   // Do not restart a canceled animation.
-  if (CalculateAnimationPlayState() == kIdle) {
+  if (CalculateAnimationPlayState() == V8AnimationPlayState::Enum::kIdle) {
     return;
   }
 
@@ -3170,16 +3156,19 @@ void Animation::RejectAndResetPromiseMaybeAsync(AnimationPromise* promise) {
 }
 
 void Animation::NotifyProbe() {
-  AnimationPlayState old_play_state = reported_play_state_;
-  AnimationPlayState new_play_state =
-      PendingInternal() ? kPending : CalculateAnimationPlayState();
+  V8AnimationPlayState::Enum old_play_state = reported_play_state_;
+  V8AnimationPlayState::Enum new_play_state =
+      PendingInternal() ? V8AnimationPlayState::Enum::kPending
+                        : CalculateAnimationPlayState();
   probe::AnimationUpdated(document_, this);
 
   if (old_play_state != new_play_state) {
     reported_play_state_ = new_play_state;
 
-    bool was_active = old_play_state == kPending || old_play_state == kRunning;
-    bool is_active = new_play_state == kPending || new_play_state == kRunning;
+    bool was_active = old_play_state == V8AnimationPlayState::Enum::kPending ||
+                      old_play_state == V8AnimationPlayState::Enum::kRunning;
+    bool is_active = new_play_state == V8AnimationPlayState::Enum::kPending ||
+                     new_play_state == V8AnimationPlayState::Enum::kRunning;
 
     if (!was_active && is_active) {
       TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
@@ -3220,12 +3209,14 @@ bool Animation::IsReplaceable() {
   }
 
   // 2. The animation's play state is finished.
-  if (CalculateAnimationPlayState() != kFinished)
+  if (CalculateAnimationPlayState() != V8AnimationPlayState::Enum::kFinished) {
     return false;
+  }
 
   // 3. The animation's replace state is not removed.
-  if (replace_state_ == kRemoved)
+  if (replace_state_ == V8ReplaceState::Enum::kRemoved) {
     return false;
+  }
 
   // 4. The animation is associated with a monotonically increasing timeline.
   if (!timeline_ || !timeline_->IsMonotonicallyIncreasing())
@@ -3265,7 +3256,7 @@ void Animation::RemoveReplacedAnimation() {
   // animation. For the scheduled event time, use the result of applying the
   // procedure to convert timeline time to origin-relative time to the current
   // time of the timeline with which animation is associated.
-  replace_state_ = kRemoved;
+  replace_state_ = V8ReplaceState::Enum::kRemoved;
   const AtomicString& event_type = event_type_names::kRemove;
   if (GetExecutionContext() && HasEventListeners(event_type)) {
     pending_remove_event_ = MakeGarbageCollected<AnimationPlaybackEvent>(
@@ -3282,10 +3273,11 @@ void Animation::RemoveReplacedAnimation() {
 }
 
 void Animation::persist() {
-  if (replace_state_ == kPersisted)
+  if (replace_state_ == V8ReplaceState::Enum::kPersisted) {
     return;
+  }
 
-  replace_state_ = kPersisted;
+  replace_state_ = V8ReplaceState::Enum::kPersisted;
 
   // Force timing update to reapply the effect.
   if (content_)
@@ -3293,21 +3285,8 @@ void Animation::persist() {
   Update(kTimingUpdateOnDemand);
 }
 
-String Animation::replaceState() {
-  switch (replace_state_) {
-    case kActive:
-      return "active";
-
-    case kRemoved:
-      return "removed";
-
-    case kPersisted:
-      return "persisted";
-
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
-  }
+V8ReplaceState Animation::replaceState() {
+  return V8ReplaceState(replace_state_);
 }
 
 // https://www.w3.org/TR/web-animations-1/#dom-animation-commitstyles

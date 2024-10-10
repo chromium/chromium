@@ -49,7 +49,8 @@ Animation* NativeCssPaintDefinition::GetAnimationForProperty(
   // this element.
   unsigned count = 0;
   for (const auto& animation : element->GetElementAnimations()->Animations()) {
-    if (animation.key->CalculateAnimationPlayState() == Animation::kIdle ||
+    if (animation.key->CalculateAnimationPlayState() ==
+            V8AnimationPlayState::Enum::kIdle ||
         !animation.key->Affects(*element, property)) {
       continue;
     }

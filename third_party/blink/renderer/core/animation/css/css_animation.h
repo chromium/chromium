@@ -45,7 +45,7 @@ class CORE_EXPORT CSSAnimation : public Animation {
   // processed any such pending changes to computed values.  Notably, changes
   // to animation-play-state and display:none must update the play state.
   // https://drafts.csswg.org/css-animations-2/#requirements-on-pending-style-changes
-  String playState() const override;
+  V8AnimationPlayState playState() const override;
   bool pending() const override;
 
   // Explicit calls to the web-animation API that update the play state are

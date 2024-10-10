@@ -1670,7 +1670,7 @@ void inspector_animation_event::Data(perfetto::TracedValue context,
                                      const Animation& animation) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("id", String::Number(animation.SequenceNumber()));
-  dict.Add("state", animation.PlayStateString());
+  dict.Add("state", animation.playState().AsCStr());
   if (const AnimationEffect* effect = animation.effect()) {
     dict.Add("displayName",
              InspectorAnimationAgent::AnimationDisplayName(animation));
@@ -1685,7 +1685,7 @@ void inspector_animation_event::Data(perfetto::TracedValue context,
 void inspector_animation_state_event::Data(perfetto::TracedValue context,
                                            const Animation& animation) {
   auto dict = std::move(context).WriteDictionary();
-  dict.Add("state", animation.PlayStateString());
+  dict.Add("state", animation.playState().AsCStr());
 }
 
 void inspector_animation_compositor_event::Data(

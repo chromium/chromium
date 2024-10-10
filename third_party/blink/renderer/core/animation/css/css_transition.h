@@ -42,7 +42,7 @@ class CORE_EXPORT CSSTransition : public Animation {
   // processed any such pending changes to computed values.  Notably, setting
   // display:none must update the play state.
   // https://drafts.csswg.org/css-transitions-2/#requirements-on-pending-style-changes
-  String playState() const override;
+  V8AnimationPlayState playState() const override;
   void Trace(blink::Visitor* visitor) const override {
     Animation::Trace(visitor);
     visitor->Trace(owning_element_);

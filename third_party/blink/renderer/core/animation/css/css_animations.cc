@@ -197,7 +197,8 @@ std::optional<AnimationTimeDelta> CSSAnimationProxy::CalculateInheritedTime(
   if (animation) {
     // A cancelled CSS animation does not become active again due to an
     // animation update.
-    if (animation->CalculateAnimationPlayState() == Animation::kIdle) {
+    if (animation->CalculateAnimationPlayState() ==
+        V8AnimationPlayState::Enum::kIdle) {
       return std::nullopt;
     }
 
@@ -278,7 +279,8 @@ std::optional<AnimationTimeDelta> CSSAnimationProxy::CalculateInheritedTime(
     // issue is resolved.
     if (previous_timeline && previous_timeline->IsMonotonicallyIncreasing() &&
         !is_paused_ && animation->StartTimeInternal() &&
-        animation->CalculateAnimationPlayState() == Animation::kRunning) {
+        animation->CalculateAnimationPlayState() ==
+            V8AnimationPlayState::Enum::kRunning) {
       return std::nullopt;
     }
     // A new animation with a null timeline will be stuck in the play or pause
@@ -1707,20 +1709,20 @@ void CSSAnimations::CalculateAnimationUpdate(
         // play state and that the change is not blocked by a sticky state.
         bool toggle_pause_state = false;
         bool will_be_playing = false;
-        const Animation::AnimationPlayState play_state =
+        const V8AnimationPlayState::Enum play_state =
             animation->CalculateAnimationPlayState();
         if (is_paused != was_paused && !animation->GetIgnoreCSSPlayState()) {
           switch (play_state) {
-            case Animation::kIdle:
+            case V8AnimationPlayState::Enum::kIdle:
               break;
 
-            case Animation::kPaused:
+            case V8AnimationPlayState::Enum::kPaused:
               toggle_pause_state = !is_paused;
               will_be_playing = !is_paused;
               break;
 
-            case Animation::kRunning:
-            case Animation::kFinished:
+            case V8AnimationPlayState::Enum::kRunning:
+            case V8AnimationPlayState::Enum::kFinished:
               toggle_pause_state = is_paused;
               will_be_playing = !is_paused;
               break;
@@ -1730,10 +1732,12 @@ void CSSAnimations::CalculateAnimationUpdate(
               NOTREACHED_IN_MIGRATION();
           }
         } else if (!animation->GetIgnoreCSSPlayState()) {
-          will_be_playing = !is_paused && play_state != Animation::kIdle;
+          will_be_playing =
+              !is_paused && play_state != V8AnimationPlayState::Enum::kIdle;
         } else {
-          will_be_playing = (play_state == Animation::kRunning) ||
-                            (play_state == Animation::kFinished);
+          will_be_playing =
+              (play_state == V8AnimationPlayState::Enum::kRunning) ||
+              (play_state == V8AnimationPlayState::Enum::kFinished);
         }
 
         AnimationTimeline* timeline = existing_animation->Timeline();

@@ -26,6 +26,7 @@ namespace blink {
 
 class ScriptValue;
 class SerializedScriptValue;
+class V8AnimationPlayState;
 class V8UnionAnimationEffectOrAnimationEffectSequence;
 class V8UnionDocumentTimelineOrScrollTimeline;
 
@@ -78,7 +79,7 @@ class MODULES_EXPORT WorkletAnimation : public WorkletAnimationBase,
   String animatorName() { return animator_name_; }
   AnimationEffect* effect() { return GetEffect(); }
   AnimationTimeline* timeline() { return timeline_.Get(); }
-  String playState();
+  V8AnimationPlayState playState();
   std::optional<double> currentTime();
   std::optional<double> startTime();
 
@@ -200,18 +201,17 @@ class MODULES_EXPORT WorkletAnimation : public WorkletAnimationBase,
     return effect_timings_ ? effect_timings_->Clone() : nullptr;
   }
 
-  Animation::AnimationPlayState PlayState() const { return play_state_; }
-  void SetPlayState(const Animation::AnimationPlayState& state) {
-    play_state_ = state;
-  }
+  V8AnimationPlayState::Enum PlayState() const { return play_state_; }
+  void SetPlayState(V8AnimationPlayState::Enum state) { play_state_ = state; }
 
   unsigned sequence_number_;
 
   WorkletAnimationId id_;
 
   const String animator_name_;
-  Animation::AnimationPlayState play_state_;
-  Animation::AnimationPlayState last_play_state_;
+  V8AnimationPlayState::Enum play_state_ = V8AnimationPlayState::Enum::kIdle;
+  V8AnimationPlayState::Enum last_play_state_ =
+      V8AnimationPlayState::Enum::kIdle;
   // Controls speed of the animation.
   // https://drafts.csswg.org/web-animations-2/#animation-effect-playback-rate
   double playback_rate_;

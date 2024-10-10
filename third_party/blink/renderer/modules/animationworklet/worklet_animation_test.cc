@@ -149,7 +149,7 @@ TEST_F(WorkletAnimationTest, ElementHasWorkletAnimation) {
 
 // Regression test for crbug.com/1136120, pass if there is no crash.
 TEST_F(WorkletAnimationTest, SetCurrentTimeInfNotCrash) {
-  worklet_animation_->SetPlayState(Animation::kRunning);
+  worklet_animation_->SetPlayState(V8AnimationPlayState::Enum::kRunning);
   GetDocument().GetAnimationClock().UpdateTime(base::TimeTicks::Max());
   worklet_animation_->SetCurrentTime(/*current_time=*/base::TimeDelta::Max());
 }
@@ -276,27 +276,34 @@ TEST_F(WorkletAnimationTest, DocumentTimelineSetPlaybackRateWhilePlaying) {
 TEST_F(WorkletAnimationTest, PausePlay) {
   SimulateFrame(0);
   worklet_animation_->play(ASSERT_NO_EXCEPTION);
-  EXPECT_EQ(Animation::kPending, worklet_animation_->PlayState());
+  EXPECT_EQ(V8AnimationPlayState::Enum::kPending,
+            worklet_animation_->PlayState());
   SimulateFrame(0);
-  EXPECT_EQ(Animation::kRunning, worklet_animation_->PlayState());
+  EXPECT_EQ(V8AnimationPlayState::Enum::kRunning,
+            worklet_animation_->PlayState());
   EXPECT_TRUE(worklet_animation_->Playing());
   EXPECT_TIME_NEAR(0, worklet_animation_->currentTime().value());
   SimulateFrame(10);
   worklet_animation_->pause(ASSERT_NO_EXCEPTION);
-  EXPECT_EQ(Animation::kPaused, worklet_animation_->PlayState());
+  EXPECT_EQ(V8AnimationPlayState::Enum::kPaused,
+            worklet_animation_->PlayState());
   EXPECT_FALSE(worklet_animation_->Playing());
   EXPECT_TIME_NEAR(10, worklet_animation_->currentTime().value());
   SimulateFrame(20);
-  EXPECT_EQ(Animation::kPaused, worklet_animation_->PlayState());
+  EXPECT_EQ(V8AnimationPlayState::Enum::kPaused,
+            worklet_animation_->PlayState());
   EXPECT_TIME_NEAR(10, worklet_animation_->currentTime().value());
   worklet_animation_->play(ASSERT_NO_EXCEPTION);
-  EXPECT_EQ(Animation::kPending, worklet_animation_->PlayState());
+  EXPECT_EQ(V8AnimationPlayState::Enum::kPending,
+            worklet_animation_->PlayState());
   SimulateFrame(20);
-  EXPECT_EQ(Animation::kRunning, worklet_animation_->PlayState());
+  EXPECT_EQ(V8AnimationPlayState::Enum::kRunning,
+            worklet_animation_->PlayState());
   EXPECT_TRUE(worklet_animation_->Playing());
   EXPECT_TIME_NEAR(10, worklet_animation_->currentTime().value());
   SimulateFrame(30);
-  EXPECT_EQ(Animation::kRunning, worklet_animation_->PlayState());
+  EXPECT_EQ(V8AnimationPlayState::Enum::kRunning,
+            worklet_animation_->PlayState());
   EXPECT_TIME_NEAR(20, worklet_animation_->currentTime().value());
 }
 
