@@ -147,16 +147,28 @@ ScopedCFTypeRef<CTFontRef> GetSubstituteFont(CTFontRef ct_font,
   ScopedCFTypeRef<CFStringRef> substitute_font_name(
       CTFontCopyName(substitute_font.get(), kCTFontFamilyNameKey));
   // System API might return colored "Apple Color Emoji" font for some emoji
-  // codepoints. But if emoji codepoint was requested and
-  // fallback_priority is not emoji presentation, it means that we need a
-  // monochromatic (text) presentation of emoji. For that we use hardcoded
-  // monochromatic emoji font.
+  // code points. But if emoji code point was requested and fallback_priority is
+  // not emoji presentation, it means that we need a monochromatic (text)
+  // presentation of emoji. To do that we will replace colored emoji font with
+  // the "Apple Symbols" monochromatic emoji font with "Apple Color Emoji"
+  // cascade list since it has better glyph coverage.
   if (RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled() &&
       CFStringCompare(substitute_font_name.get(), CFSTR("Apple Color Emoji"),
                       kCFCompareCaseInsensitive) == kCFCompareEqualTo &&
       Character::IsEmoji(character)) {
-    ScopedCFTypeRef<CTFontRef> mono_emoji_font(
-        CTFontCreateWithName(CFSTR("Apple Symbols"), size, nullptr));
+    NSArray* lang_list = @[ @"en" ];
+    NSArray* cascade_list(
+        CFToNSOwnershipCast(CTFontCopyDefaultCascadeListForLanguages(
+            substitute_font.get(), NSToCFOwnershipCast(lang_list))));
+    NSDictionary* mono_emoji_attributes = @{
+      CFToNSPtrCast(kCTFontNameAttribute) : @"Apple Symbols",
+      CFToNSPtrCast(kCTFontCascadeListAttribute) : cascade_list,
+    };
+    ScopedCFTypeRef<CTFontDescriptorRef> mono_emoji_descriptor(
+        CTFontDescriptorCreateWithAttributes(
+            NSToCFPtrCast(mono_emoji_attributes)));
+    ScopedCFTypeRef<CTFontRef> mono_emoji_font(CTFontCreateWithFontDescriptor(
+        mono_emoji_descriptor.get(), size, nullptr));
     if (mono_emoji_font) {
       substitute_font.reset(
           CTFontCreateForString(mono_emoji_font.get(), string.get(), range));
