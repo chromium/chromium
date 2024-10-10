@@ -301,13 +301,13 @@ TypeConverter<Vector<uint8_t>, blink::V8UnionArrayBufferOrArrayBufferView*>::
 }
 
 // static
-PublicKeyCredentialType TypeConverter<PublicKeyCredentialType, String>::Convert(
+std::optional<PublicKeyCredentialType>
+TypeConverter<std::optional<PublicKeyCredentialType>, String>::Convert(
     const String& type) {
   if (type == "public-key") {
     return PublicKeyCredentialType::PUBLIC_KEY;
   }
-  NOTREACHED_IN_MIGRATION();
-  return PublicKeyCredentialType::PUBLIC_KEY;
+  return std::nullopt;
 }
 
 // static
@@ -525,10 +525,13 @@ PublicKeyCredentialDescriptorPtr
 TypeConverter<PublicKeyCredentialDescriptorPtr,
               blink::PublicKeyCredentialDescriptor>::
     Convert(const blink::PublicKeyCredentialDescriptor& descriptor) {
+  std::optional<PublicKeyCredentialType> type =
+      ConvertTo<std::optional<PublicKeyCredentialType>>(descriptor.type());
+  if (!type) {
+    return nullptr;
+  }
   auto mojo_descriptor = PublicKeyCredentialDescriptor::New();
-
-  mojo_descriptor->type = ConvertTo<PublicKeyCredentialType>(
-      blink::IDLEnumAsString(descriptor.type()));
+  mojo_descriptor->type = *type;
   mojo_descriptor->id = ConvertTo<Vector<uint8_t>>(descriptor.id());
   if (descriptor.hasTransports() && !descriptor.transports().empty()) {
     for (const auto& transport : descriptor.transports()) {
@@ -552,9 +555,13 @@ PublicKeyCredentialParametersPtr
 TypeConverter<PublicKeyCredentialParametersPtr,
               blink::PublicKeyCredentialParameters>::
     Convert(const blink::PublicKeyCredentialParameters& parameter) {
+  std::optional<PublicKeyCredentialType> type =
+      ConvertTo<std::optional<PublicKeyCredentialType>>(parameter.type());
+  if (!type) {
+    return nullptr;
+  }
   auto mojo_parameter = PublicKeyCredentialParameters::New();
-  mojo_parameter->type = ConvertTo<PublicKeyCredentialType>(
-      blink::IDLEnumAsString(parameter.type()));
+  mojo_parameter->type = *type;
 
   // A COSEAlgorithmIdentifier's value is a number identifying a cryptographic
   // algorithm. Values are registered in the IANA COSE Algorithms registry.

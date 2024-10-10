@@ -92,8 +92,11 @@ struct TypeConverter<Vector<uint8_t>,
 };
 
 template <>
-struct TypeConverter<blink::mojom::blink::PublicKeyCredentialType, String> {
-  static blink::mojom::blink::PublicKeyCredentialType Convert(const String&);
+struct TypeConverter<
+    std::optional<blink::mojom::blink::PublicKeyCredentialType>,
+    String> {
+  static std::optional<blink::mojom::blink::PublicKeyCredentialType> Convert(
+      const String&);
 };
 
 template <>
