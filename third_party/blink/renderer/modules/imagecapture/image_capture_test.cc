@@ -1616,7 +1616,7 @@ TEST_F(ImageCaptureConstraintTest, ApplySecurityErrorConstraints) {
 TEST_F(ImageCaptureTest, GrabFrameOfLiveTrackIsFulfilled) {
   V8TestingScope scope;
   SetupTrackMocks(scope);
-  track_->SetReadyState("live");
+  track_->SetReadyState(V8MediaStreamTrackState::Enum::kLive);
   track_->setEnabled(true);
   track_->SetMuted(false);
 
@@ -1631,7 +1631,7 @@ TEST_F(ImageCaptureTest, GrabFrameOfLiveTrackIsFulfilled) {
 TEST_F(ImageCaptureTest, GrabFrameOfMutedTrackIsFulfilled) {
   V8TestingScope scope;
   SetupTrackMocks(scope);
-  track_->SetReadyState("live");
+  track_->SetReadyState(V8MediaStreamTrackState::Enum::kLive);
   track_->setEnabled(true);
   track_->SetMuted(true);
 
@@ -1646,7 +1646,7 @@ TEST_F(ImageCaptureTest, GrabFrameOfMutedTrackIsFulfilled) {
 TEST_F(ImageCaptureTest, GrabFrameOfMutedTrackWithoutFramesIsRejected) {
   V8TestingScope scope;
   SetupTrackMocks(scope, /*produce_frame_on_add_sink=*/false);
-  track_->SetReadyState("live");
+  track_->SetReadyState(V8MediaStreamTrackState::Enum::kLive);
   track_->setEnabled(true);
   track_->SetMuted(true);
 
@@ -1660,7 +1660,7 @@ TEST_F(ImageCaptureTest, GrabFrameOfMutedTrackWithoutFramesIsRejected) {
 
 TEST_F(ImageCaptureTest, GrabFrameOfEndedTrackRejects) {
   V8TestingScope scope;
-  track_->SetReadyState("ended");
+  track_->SetReadyState(V8MediaStreamTrackState::Enum::kEnded);
   track_->setEnabled(true);
   track_->SetMuted(false);
 
@@ -1674,7 +1674,7 @@ TEST_F(ImageCaptureTest, GrabFrameOfEndedTrackRejects) {
 
 TEST_F(ImageCaptureTest, GrabFrameOfDisabledTrackRejects) {
   V8TestingScope scope;
-  track_->SetReadyState("live");
+  track_->SetReadyState(V8MediaStreamTrackState::Enum::kLive);
   track_->setEnabled(false);
   track_->SetMuted(false);
 

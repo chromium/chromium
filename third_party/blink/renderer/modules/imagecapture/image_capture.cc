@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_point_2d_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_fill_light_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_settings_range.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_capabilities.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_settings.h"
@@ -515,7 +516,8 @@ bool TrackIsInactive(const MediaStreamTrack& track) {
   // Spec instructs to return an exception if the Track's readyState() is not
   // "live". Also reject if the track is disabled or muted.
   // TODO(https://crbug.com/1462012): Do not consider muted tracks inactive.
-  return track.readyState() != "live" || !track.enabled();
+  return track.readyState() != V8MediaStreamTrackState::Enum::kLive ||
+         !track.enabled();
 }
 
 BackgroundBlurMode ParseBackgroundBlur(bool blink_mode) {

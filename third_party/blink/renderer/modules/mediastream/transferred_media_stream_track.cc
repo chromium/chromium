@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_double_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_long_range.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_capabilities.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_settings.h"
@@ -118,11 +119,11 @@ void TransferredMediaStreamTrack::SetContentHint(const String& content_hint) {
   content_hint_list_.push_back(content_hint);
 }
 
-String TransferredMediaStreamTrack::readyState() const {
+V8MediaStreamTrackState TransferredMediaStreamTrack::readyState() const {
   if (track_) {
     return track_->readyState();
   }
-  return ReadyStateToString(data_.ready_state);
+  return ReadyStateToV8TrackState(data_.ready_state);
 }
 
 MediaStreamTrack* TransferredMediaStreamTrack::clone(

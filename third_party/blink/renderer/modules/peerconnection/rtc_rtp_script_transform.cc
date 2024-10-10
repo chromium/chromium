@@ -11,6 +11,7 @@
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_state.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -221,7 +222,8 @@ RTCRtpScriptTransform::HandleSendKeyFrameRequestResults() {
       !IsValidReceiverDirection(receiver_->TransceiverCurrentDirection())) {
     return SendKeyFrameRequestResult::kInvalidState;
   }
-  if (receiver_->track()->readyState() == "ended") {
+  if (receiver_->track()->readyState() ==
+      V8MediaStreamTrackState::Enum::kEnded) {
     return SendKeyFrameRequestResult::kTrackEnded;
   }
   MediaStreamVideoSource* video_source = MediaStreamVideoSource::GetVideoSource(

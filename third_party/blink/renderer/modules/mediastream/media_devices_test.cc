@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_double_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_long_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_device_info.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_device_kind.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_capabilities.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_restriction_target.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_user_media_stream_constraints.h"
@@ -349,17 +350,18 @@ class MockDeviceChangeEventListener : public NativeEventListener {
   MOCK_METHOD(void, Invoke, (ExecutionContext*, Event*));
 };
 
-String ToString(MediaDeviceType type) {
+V8MediaDeviceKind::Enum ToEnum(MediaDeviceType type) {
   switch (type) {
     case MediaDeviceType::kMediaAudioInput:
-      return "audioinput";
+      return V8MediaDeviceKind::Enum::kAudioinput;
     case blink::MediaDeviceType::kMediaVideoInput:
-      return "videoinput";
+      return V8MediaDeviceKind::Enum::kVideoinput;
     case blink::MediaDeviceType::kMediaAudioOutput:
-      return "audiooutput";
-    default:
-      return String();
+      return V8MediaDeviceKind::Enum::kAudiooutput;
+    case blink::MediaDeviceType::kNumMediaDeviceTypes:
+      break;
   }
+  NOTREACHED();
 }
 
 void VerifyFacingMode(const Vector<String>& js_facing_mode,
@@ -389,7 +391,7 @@ void VerifyDeviceInfo(const MediaDeviceInfo* device,
   EXPECT_EQ(device->deviceId(), String(expected.device_id));
   EXPECT_EQ(device->groupId(), String(expected.group_id));
   EXPECT_EQ(device->label(), String(expected.label));
-  EXPECT_EQ(device->kind(), ToString(type));
+  EXPECT_EQ(device->kind(), ToEnum(type));
 }
 
 void VerifyVideoInputCapabilities(
@@ -397,7 +399,7 @@ void VerifyVideoInputCapabilities(
     const WebMediaDeviceInfo& expected_device_info,
     const mojom::blink::VideoInputDeviceCapabilitiesPtr&
         expected_capabilities) {
-  CHECK_EQ(device->kind(), "videoinput");
+  CHECK_EQ(device->kind(), V8MediaDeviceKind::Enum::kVideoinput);
   const InputDeviceInfo* info = static_cast<const InputDeviceInfo*>(device);
   MediaTrackCapabilities* capabilities = info->getCapabilities();
   EXPECT_EQ(capabilities->hasFacingMode(), expected_device_info.IsAvailable());

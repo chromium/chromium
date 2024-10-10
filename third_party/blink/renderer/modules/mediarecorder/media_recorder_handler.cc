@@ -41,6 +41,7 @@
 #include "media/muxers/muxer.h"
 #include "media/muxers/muxer_timestamp_adapter.h"
 #include "media/muxers/webm_muxer.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_state.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/mediarecorder/media_recorder.h"
@@ -978,7 +979,7 @@ void MediaRecorderHandler::UpdateTrackLiveAndEnabled(
 void MediaRecorderHandler::OnSourceReadyStateChanged() {
   MediaStream* stream = ToMediaStream(media_stream_);
   for (const auto& track : stream->getTracks()) {
-    if (track->readyState() != "ended") {
+    if (track->readyState() != V8MediaStreamTrackState::Enum::kEnded) {
       return;
     }
   }

@@ -7,6 +7,7 @@
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_state.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/mediastream/browser_capture_media_stream_track.h"
@@ -197,7 +198,7 @@ TEST(MediaStreamTrackTransferTest, TabCaptureVideoFromTransferredStateBasic) {
   // EXPECT_EQ(new_track->muted(), true);
   // TODO(crbug.com/1288839): the content hint needs to be set correctly
   // EXPECT_EQ(new_track->ContentHint(), "motion");
-  EXPECT_EQ(new_track->readyState(), "live");
+  EXPECT_EQ(new_track->readyState(), V8MediaStreamTrackState::Enum::kLive);
 
   platform->RunUntilIdle();
   ThreadState::Current()->CollectAllGarbageForTesting();
@@ -255,7 +256,7 @@ TEST(MediaStreamTrackTransferTest, TabCaptureAudioFromTransferredState) {
   // EXPECT_EQ(new_track->muted(), true);
   // TODO(crbug.com/1288839): the content hint needs to be set correctly
   // EXPECT_EQ(new_track->ContentHint(), "speech");
-  EXPECT_EQ(new_track->readyState(), "live");
+  EXPECT_EQ(new_track->readyState(), V8MediaStreamTrackState::Enum::kLive);
 
   base::RunLoop().RunUntilIdle();
   ThreadState::Current()->CollectAllGarbageForTesting();

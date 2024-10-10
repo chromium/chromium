@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_captured_wheel_action.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_state.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
@@ -293,7 +294,7 @@ void CaptureController::setFocusBehavior(
     return;
   }
 
-  if (video_track_->readyState() != "live") {
+  if (video_track_->readyState() != V8MediaStreamTrackState::Enum::kLive) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The video track must be live.");
     return;
@@ -657,7 +658,7 @@ CaptureController::ValidateCapturedSurfaceControlCall() const {
                             "Capture-session not started.");
   }
 
-  if (video_track_->readyState() == "ended") {
+  if (video_track_->readyState() == V8MediaStreamTrackState::Enum::kEnded) {
     return ValidationResult(DOMExceptionCode::kInvalidStateError,
                             "Video track ended.");
   }

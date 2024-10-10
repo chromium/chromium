@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver_with_tracker.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_display_media_stream_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_device_kind.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_constraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_supported_constraints.h"
@@ -1087,7 +1088,8 @@ void RecordEnumeratedDevices(ScriptState* script_state,
   IdentifiableTokenBuilder builder;
   for (const auto& device_info : media_devices) {
     // Ignore device_id since that varies per-site.
-    builder.AddToken(IdentifiabilityBenignStringToken(device_info->kind()));
+    builder.AddToken(
+        IdentifiabilityBenignStringToken(device_info->kind().AsString()));
     builder.AddToken(IdentifiabilityBenignStringToken(device_info->label()));
     // Ignore group_id since that is varies per-site.
   }

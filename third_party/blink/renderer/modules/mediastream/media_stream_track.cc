@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_constraints.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_state.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track_video_stats.h"
@@ -53,18 +54,18 @@ String ContentHintToString(
   return kContentHintStringNone;
 }
 
-String ReadyStateToString(const MediaStreamSource::ReadyState& ready_state) {
+V8MediaStreamTrackState ReadyStateToV8TrackState(
+    const MediaStreamSource::ReadyState& ready_state) {
   // Although muted is tracked as a ReadyState, only "live" and "ended" are
   // visible externally.
   switch (ready_state) {
     case MediaStreamSource::kReadyStateLive:
     case MediaStreamSource::kReadyStateMuted:
-      return "live";
+      return V8MediaStreamTrackState(V8MediaStreamTrackState::Enum::kLive);
     case MediaStreamSource::kReadyStateEnded:
-      return "ended";
+      return V8MediaStreamTrackState(V8MediaStreamTrackState::Enum::kEnded);
   }
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 // static
