@@ -18,8 +18,6 @@ source_set("messaging") {
     "message_service.cc",
     "message_service.h",
     "message_service_bindings.cc",
-    "message_tracker.cc",
-    "message_tracker.h",
     "messaging_delegate.cc",
     "messaging_delegate.h",
   ]
@@ -40,18 +38,6 @@ source_set("messaging") {
   ]
 
   public_deps = [ "//extensions/browser:browser_sources" ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "message_tracker_unittest.cc" ]
-
-  deps = [
-    ":messaging",
-    "//base/test:test_support",
-    "//content/test:test_support",
-    "//extensions:test_support",
-  ]
 }
 
 # Split up from messaging to avoid circular dependency.
