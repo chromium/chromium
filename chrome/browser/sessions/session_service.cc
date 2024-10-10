@@ -75,10 +75,6 @@
 #include "chrome/browser/app_controller_mac.h"
 #endif
 
-#if defined(TOOLKIT_VIEWS)
-#include "chrome/browser/ui/side_search/side_search_utils.h"
-#endif  // defined(TOOLKIT_VIEWS)
-
 using content::NavigationEntry;
 using content::WebContents;
 using sessions::ContentSerializedNavigationBuilder;
@@ -621,16 +617,6 @@ void SessionService::BuildCommandsForTab(
     command_storage_manager()->AppendRebuildCommand(
         sessions::CreateTabGroupCommand(session_id, std::move(group)));
   }
-
-#if defined(TOOLKIT_VIEWS)
-  std::optional<std::pair<std::string, std::string>> tab_restore_data =
-      side_search::MaybeGetSideSearchTabRestoreData(tab);
-  if (tab_restore_data.has_value()) {
-    command_storage_manager()->AppendRebuildCommand(
-        sessions::CreateAddTabExtraDataCommand(
-            session_id, tab_restore_data->first, tab_restore_data->second));
-  }
-#endif  // defined(TOOLKIT_VIEWS)
 }
 
 void SessionService::ScheduleResetCommands() {

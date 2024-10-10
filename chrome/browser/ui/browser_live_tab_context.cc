@@ -55,10 +55,6 @@
 #include "chrome/browser/sessions/tab_loader.h"
 #endif
 
-#if defined(TOOLKIT_VIEWS)
-#include "chrome/browser/ui/side_search/side_search_utils.h"
-#endif  // defined(TOOLKIT_VIEWS)
-
 using content::NavigationController;
 using content::SessionStorageNamespace;
 using content::WebContents;
@@ -128,20 +124,7 @@ sessions::LiveTab* BrowserLiveTabContext::GetActiveLiveTab() const {
 
 std::map<std::string, std::string> BrowserLiveTabContext::GetExtraDataForTab(
     int index) const {
-  std::map<std::string, std::string> extra_data;
-
-#if defined(TOOLKIT_VIEWS)
-  if (IsSideSearchEnabled(browser_->profile())) {
-    std::optional<std::pair<std::string, std::string>> side_search_data =
-        side_search::MaybeGetSideSearchTabRestoreData(
-            browser_->tab_strip_model()->GetWebContentsAt(index));
-    if (side_search_data.has_value()) {
-      extra_data.insert(side_search_data.value());
-    }
-  }
-#endif  // defined(TOOLKIT_VIEWS)
-
-  return extra_data;
+  return std::map<std::string, std::string>();
 }
 
 std::map<std::string, std::string>
