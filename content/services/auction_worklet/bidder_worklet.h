@@ -165,6 +165,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
   // mojom::BidderWorklet implementation:
   void BeginGenerateBid(
       mojom::BidderWorkletNonSharedParamsPtr bidder_worklet_non_shared_params,
+      mojom::TrustedSignalsCacheKeyPtr trusted_signals_cache_key,
       mojom::KAnonymityBidMode kanon_mode,
       const url::Origin& interest_group_join_origin,
       const std::optional<GURL>& direct_from_seller_per_buyer_signals,

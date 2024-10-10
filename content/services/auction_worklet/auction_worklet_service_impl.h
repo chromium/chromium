@@ -58,6 +58,8 @@ class CONTENT_EXPORT AuctionWorkletServiceImpl
   int NumSellerWorkletsForTesting() const { return seller_worklets_.size(); }
 
   // mojom::AuctionWorkletService implementation:
+  void SetTrustedSignalsCache(mojo::PendingRemote<mojom::TrustedSignalsCache>
+                                  trusted_signals_cache) override;
   void LoadBidderWorklet(
       mojo::PendingReceiver<mojom::BidderWorklet> bidder_worklet_receiver,
       std::vector<mojo::PendingRemote<mojom::AuctionSharedStorageHost>>

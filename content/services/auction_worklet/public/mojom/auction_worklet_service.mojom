@@ -8,6 +8,7 @@ import "content/services/auction_worklet/public/mojom/bidder_worklet.mojom";
 import "content/services/auction_worklet/public/mojom/seller_worklet.mojom";
 import "content/services/auction_worklet/public/mojom/auction_network_events_handler.mojom";
 import "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom";
+import "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "third_party/blink/public/mojom/interest_group/interest_group_types.mojom";
@@ -42,6 +43,15 @@ struct TrustedSignalsPublicKey {
 // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
 [ServiceSandbox=sandbox.mojom.Sandbox.kServiceWithJit]
 interface AuctionWorkletService {
+  // Sets a TrustedSignalsCache to be used for all trusted key-value V2 fetches
+  // for any worklets created by using the service. When not set, key-value V2
+  // fetches will be managed directly from the worklet process instead of being
+  // fetched through the cache API.
+  //
+  // Must be called before creating any worklets. May only be called once.
+  SetTrustedSignalsCache(
+      pending_remote<TrustedSignalsCache> trusted_signals_cache);
+
   // Attempts to load Javascript at the specified URL and create a BidderWorklet
   // from the response body. A single BidderWorklet object can be used for
   // multiple different InterestGroups, as long as they share the `bidding_url`
@@ -100,8 +110,13 @@ interface AuctionWorkletService {
   // server.
   //
   // `public_key`: An optional parameter for trusted bidding signals encryption
-  // and decryption. Bidder worklet will execute trusted signals KVv2 call flow
-  // when this field is valid.
+  //  and decryption. When passed in, the BidderWorklet will used version 2 of
+  //  the trusted key-value API to fetch bidder signals. When the
+  //  TrustedSignalsCache is used, decryption is handled in the browser process,
+  //  and this value is ignored.
+  //
+  //  TODO(crbug.com/333445540): Once the non-cached path has been removed,
+  //  switch to a bool instead.
   LoadBidderWorklet(
       pending_receiver<BidderWorklet> bidder_worklet,
       array<pending_remote<AuctionSharedStorageHost>?> shared_storage_hosts,

@@ -39,6 +39,7 @@
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
+#include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
 #include "content/test/test_content_browser_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -68,6 +69,10 @@ class TestAuctionProcessManager
       delete;
 
   ~TestAuctionProcessManager() override = default;
+
+  void SetTrustedSignalsCache(
+      mojo::PendingRemote<auction_worklet::mojom::TrustedSignalsCache>
+          trusted_signals_cache) override {}
 
   void LoadBidderWorklet(
       mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>

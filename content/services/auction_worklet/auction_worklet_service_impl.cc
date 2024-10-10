@@ -244,6 +244,9 @@ AuctionWorkletServiceImpl::AuctionV8HelpersForTesting() {
   return result;
 }
 
+void AuctionWorkletServiceImpl::SetTrustedSignalsCache(
+    mojo::PendingRemote<mojom::TrustedSignalsCache> trusted_signals_cache) {}
+
 void AuctionWorkletServiceImpl::LoadBidderWorklet(
     mojo::PendingReceiver<mojom::BidderWorklet> bidder_worklet_receiver,
     std::vector<mojo::PendingRemote<mojom::AuctionSharedStorageHost>>

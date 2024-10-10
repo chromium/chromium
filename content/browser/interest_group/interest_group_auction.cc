@@ -80,6 +80,7 @@
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
+#include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
 #include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -2053,7 +2054,10 @@ class InterestGroupAuction::BuyerHelper
             interest_group.user_bidding_signals, interest_group.ads,
             interest_group.ad_components,
             KAnonKeysToMojom(bid_state->kanon_keys)),
-        kanon_mode, bid_state->bidder->joining_origin,
+        // TODO(crbug.com/333445540): Start cache request and calculate cache
+        // key.
+        auction_worklet::mojom::TrustedSignalsCacheKeyPtr(), kanon_mode,
+        bid_state->bidder->joining_origin,
         GetDirectFromSellerPerBuyerSignals(url_builder, owner_),
         GetDirectFromSellerAuctionSignals(url_builder),
         auction_->config_->seller,

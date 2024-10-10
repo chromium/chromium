@@ -48,6 +48,7 @@
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
+#include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
 #include "content/services/auction_worklet/real_time_reporting_bindings.h"
 #include "content/services/auction_worklet/register_ad_beacon_bindings.h"
 #include "content/services/auction_worklet/register_ad_macro_bindings.h"
@@ -480,6 +481,7 @@ bool BidderWorklet::SupportMultiBid() {
 
 void BidderWorklet::BeginGenerateBid(
     mojom::BidderWorkletNonSharedParamsPtr bidder_worklet_non_shared_params,
+    mojom::TrustedSignalsCacheKeyPtr trusted_signals_cache_key,
     mojom::KAnonymityBidMode kanon_mode,
     const url::Origin& interest_group_join_origin,
     const std::optional<GURL>& direct_from_seller_per_buyer_signals,

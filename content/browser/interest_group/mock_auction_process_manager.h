@@ -25,6 +25,7 @@
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
+#include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom-forward.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -65,6 +66,8 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet,
   void BeginGenerateBid(
       auction_worklet::mojom::BidderWorkletNonSharedParamsPtr
           bidder_worklet_non_shared_params,
+      auction_worklet::mojom::TrustedSignalsCacheKeyPtr
+          trusted_signals_cache_key,
       auction_worklet::mojom::KAnonymityBidMode kanon_mode,
       const url::Origin& interest_group_join_origin,
       const std::optional<GURL>& direct_from_seller_per_buyer_signals,
@@ -435,6 +438,9 @@ class MockAuctionProcessManager
   bool TryUseSharedProcess(ProcessHandle* process_handle) override;
 
   // auction_worklet::mojom::AuctionWorkletService implementation:
+  void SetTrustedSignalsCache(
+      mojo::PendingRemote<auction_worklet::mojom::TrustedSignalsCache>
+          trusted_signals_cache) override;
   void LoadBidderWorklet(
       mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>
           bidder_worklet_receiver,

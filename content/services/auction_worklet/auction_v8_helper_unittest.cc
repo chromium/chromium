@@ -20,6 +20,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
+#include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
 #include "content/services/auction_worklet/worklet_devtools_debug_test_util.h"
 #include "content/services/auction_worklet/worklet_v8_debug_test_util.h"
 #include "gin/converter.h"
@@ -70,6 +71,7 @@ class DebugConnector : public auction_worklet::mojom::BidderWorklet {
   void BeginGenerateBid(
       auction_worklet::mojom::BidderWorkletNonSharedParamsPtr
           bidder_worklet_non_shared_params,
+      mojom::TrustedSignalsCacheKeyPtr trusted_signals_cache_key,
       auction_worklet::mojom::KAnonymityBidMode kanon_mode,
       const url::Origin& interest_group_join_origin,
       const std::optional<GURL>& direct_from_seller_per_buyer_signals,

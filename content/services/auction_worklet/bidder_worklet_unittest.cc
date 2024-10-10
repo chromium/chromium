@@ -38,6 +38,7 @@
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom-forward.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
+#include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
 #include "content/services/auction_worklet/worklet_devtools_debug_test_util.h"
 #include "content/services/auction_worklet/worklet_test_util.h"
 #include "content/services/auction_worklet/worklet_v8_debug_test_util.h"
@@ -358,6 +359,7 @@ class BidderWorkletTest : public testing::Test {
     interest_group_ad_components_->emplace_back(
         GURL("https://ad_component.test/"), /*metadata=*/std::nullopt);
 
+    trusted_signals_cache_key_.reset();
     kanon_keys_.clear();
     kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kNone;
     bid_is_kanon_ = false;
@@ -792,7 +794,8 @@ class BidderWorkletTest : public testing::Test {
               &BidderWorkletTest::GenerateBidCallback, base::Unretained(this)));
     }
     bidder_worklet->BeginGenerateBid(
-        CreateBidderWorkletNonSharedParams(), kanon_mode_, join_origin_,
+        CreateBidderWorkletNonSharedParams(),
+        trusted_signals_cache_key_.Clone(), kanon_mode_, join_origin_,
         provide_direct_from_seller_signals_late_
             ? std::nullopt
             : direct_from_seller_per_buyer_signals_,
@@ -836,7 +839,8 @@ class BidderWorkletTest : public testing::Test {
     mojo::AssociatedRemote<auction_worklet::mojom::GenerateBidFinalizer>
         bid_finalizer;
     bidder_worklet->BeginGenerateBid(
-        CreateBidderWorkletNonSharedParams(), kanon_mode_, join_origin_,
+        CreateBidderWorkletNonSharedParams(),
+        trusted_signals_cache_key_.Clone(), kanon_mode_, join_origin_,
         direct_from_seller_per_buyer_signals_,
         direct_from_seller_auction_signals_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_,
@@ -1011,6 +1015,7 @@ class BidderWorkletTest : public testing::Test {
   std::optional<std::vector<blink::InterestGroup::Ad>>
       interest_group_ad_components_;
   base::flat_set<auction_worklet::mojom::KAnonKeyPtr> kanon_keys_;
+  mojom::TrustedSignalsCacheKeyPtr trusted_signals_cache_key_;
   auction_worklet::mojom::KAnonymityBidMode kanon_mode_ =
       auction_worklet::mojom::KAnonymityBidMode::kNone;
   bool bid_is_kanon_;
@@ -4567,7 +4572,8 @@ TEST_P(BidderWorkletMultiThreadingTest, GenerateBidParallel) {
       mojo::AssociatedRemote<auction_worklet::mojom::GenerateBidFinalizer>
           bid_finalizer;
       bidder_worklet->BeginGenerateBid(
-          CreateBidderWorkletNonSharedParams(), kanon_mode_, join_origin_,
+          CreateBidderWorkletNonSharedParams(),
+          trusted_signals_cache_key_.Clone(), kanon_mode_, join_origin_,
           direct_from_seller_per_buyer_signals_,
           direct_from_seller_auction_signals_, browser_signal_seller_origin_,
           browser_signal_top_level_seller_origin_,
@@ -4689,8 +4695,8 @@ TEST_P(BidderWorkletMultiThreadingTest,
     mojo::AssociatedRemote<auction_worklet::mojom::GenerateBidFinalizer>
         bid_finalizer;
     bidder_worklet->BeginGenerateBid(
-        std::move(interest_group_fields), kanon_mode_, join_origin_,
-        direct_from_seller_per_buyer_signals_,
+        std::move(interest_group_fields), trusted_signals_cache_key_.Clone(),
+        kanon_mode_, join_origin_, direct_from_seller_per_buyer_signals_,
         direct_from_seller_auction_signals_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_,
         browser_signal_recency_generate_bid_, CreateBiddingBrowserSignals(),
@@ -4819,8 +4825,8 @@ TEST_P(BidderWorkletMultiThreadingTest,
     mojo::AssociatedRemote<auction_worklet::mojom::GenerateBidFinalizer>
         bid_finalizer;
     bidder_worklet->BeginGenerateBid(
-        std::move(interest_group_fields), kanon_mode_, join_origin_,
-        direct_from_seller_per_buyer_signals_,
+        std::move(interest_group_fields), trusted_signals_cache_key_.Clone(),
+        kanon_mode_, join_origin_, direct_from_seller_per_buyer_signals_,
         direct_from_seller_auction_signals_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_,
         browser_signal_recency_generate_bid_, CreateBiddingBrowserSignals(),
@@ -4955,8 +4961,8 @@ TEST_P(BidderWorkletMultiThreadingTest,
     mojo::AssociatedRemote<auction_worklet::mojom::GenerateBidFinalizer>
         bid_finalizer;
     bidder_worklet->BeginGenerateBid(
-        std::move(interest_group_fields), kanon_mode_, join_origin_,
-        direct_from_seller_per_buyer_signals_,
+        std::move(interest_group_fields), trusted_signals_cache_key_.Clone(),
+        kanon_mode_, join_origin_, direct_from_seller_per_buyer_signals_,
         direct_from_seller_auction_signals_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_,
         browser_signal_recency_generate_bid_, CreateBiddingBrowserSignals(),
@@ -5070,8 +5076,8 @@ TEST_P(BidderWorkletMultiThreadingTest,
     mojo::AssociatedRemote<auction_worklet::mojom::GenerateBidFinalizer>
         bid_finalizer;
     bidder_worklet->BeginGenerateBid(
-        std::move(interest_group_fields), kanon_mode_, join_origin_,
-        direct_from_seller_per_buyer_signals_,
+        std::move(interest_group_fields), trusted_signals_cache_key_.Clone(),
+        kanon_mode_, join_origin_, direct_from_seller_per_buyer_signals_,
         direct_from_seller_auction_signals_, browser_signal_seller_origin_,
         browser_signal_top_level_seller_origin_,
         browser_signal_recency_generate_bid_, CreateBiddingBrowserSignals(),
