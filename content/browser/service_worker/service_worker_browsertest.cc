@@ -1098,8 +1098,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
             fetch_result = result;
             fetch_response = std::move(response);
             fetch_loop.Quit();
-          }),
-      /*is_offline_capability_check=*/false);
+          }));
 
   // DispatchFetchEvent is called synchronously with dispatcher->Run() even if
   // the worker is stopped.
@@ -1173,8 +1172,7 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBrowserTest,
             fetch_status = status;
             fetch_result = result;
             fetch_loop.Quit();
-          }),
-      /*is_offline_capability_check=*/false);
+          }));
 
   // DispatchFetchEvent is called synchronously with dispatcher->Run() even if
   // the worker is stopped.

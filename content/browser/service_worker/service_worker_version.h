@@ -837,6 +837,8 @@ class CONTENT_EXPORT ServiceWorkerVersion
                            WarmUpAndStartServiceWorker);
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerBrowserTest, WarmUpWorkerAndTimeout);
   FRIEND_TEST_ALL_PREFIXES(ServiceWorkerBrowserTest, WarmUpWorkerTwice);
+  FRIEND_TEST_ALL_PREFIXES(ServiceWorkerFetchDispatcherBrowserTest,
+                           FetchEventTimeout);
 
   // Contains timeout info for InflightRequest.
   struct InflightRequestTimeoutInfo {

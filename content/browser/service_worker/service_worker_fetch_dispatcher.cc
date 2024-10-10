@@ -506,16 +506,14 @@ ServiceWorkerFetchDispatcher::ServiceWorkerFetchDispatcher(
     const std::string& resulting_client_id,
     scoped_refptr<ServiceWorkerVersion> version,
     base::OnceClosure prepare_callback,
-    FetchCallback fetch_callback,
-    bool is_offline_capability_check)
+    FetchCallback fetch_callback)
     : request_(std::move(request)),
       client_id_(client_id),
       resulting_client_id_(resulting_client_id),
       version_(std::move(version)),
       destination_(destination),
       prepare_callback_(std::move(prepare_callback)),
-      fetch_callback_(std::move(fetch_callback)),
-      is_offline_capability_check_(is_offline_capability_check) {
+      fetch_callback_(std::move(fetch_callback)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!request_->blob);
@@ -663,7 +661,6 @@ void ServiceWorkerFetchDispatcher::DispatchFetchEvent() {
   params->resulting_client_id = resulting_client_id_;
   params->preload_url_loader_client_receiver =
       std::move(preload_url_loader_client_receiver_);
-  params->is_offline_capability_check = is_offline_capability_check_;
   if (race_network_request_token_) {
     params->request->service_worker_race_network_request_token =
         race_network_request_token_;
@@ -768,19 +765,6 @@ bool ServiceWorkerFetchDispatcher::MaybeStartNavigationPreload(
   // TODO(horo): Currently NavigationPreload doesn't support request body.
   if (request_->body)
     return false;
-
-  // When the fetch event is for an offline capability check, respond to the
-  // navigation preload with a network disconnected error, to simulate offline.
-  if (is_offline_capability_check_) {
-    mojo::Remote<network::mojom::URLLoaderClient> url_loader_client;
-
-    preload_url_loader_client_receiver_ =
-        url_loader_client.BindNewPipeAndPassReceiver();
-
-    url_loader_client->OnComplete(
-        network::URLLoaderCompletionStatus(net::ERR_INTERNET_DISCONNECTED));
-    return true;
-  }
 
   network::ResourceRequest resource_request(original_request);
   if (destination_ == network::mojom::RequestDestination::kDocument) {

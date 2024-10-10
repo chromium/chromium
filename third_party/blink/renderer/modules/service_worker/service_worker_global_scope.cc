@@ -156,10 +156,6 @@ namespace {
 constexpr char kServiceWorkerGlobalScopeTraceScope[] =
     "ServiceWorkerGlobalScope";
 
-// The default timeout for offline events in a service worker. The  value is
-// the same as the update interval value in the event queue.
-constexpr int kDefaultTimeoutSecondsForOfflineEvent = 10;
-
 void DidSkipWaiting(ScriptPromiseResolver<IDLUndefined>* resolver,
                     bool success) {
   // Per spec the promise returned by skipWaiting() can never reject.
@@ -2060,25 +2056,14 @@ void ServiceWorkerGlobalScope::DispatchFetchEventForMainResource(
 
   // We can use nullptr as a |corp_checker| for the main resource because it
   // must be the same origin.
-  if (params->is_offline_capability_check) {
-    event_queue_->EnqueueOffline(
-        event_id,
-        WTF::BindOnce(&ServiceWorkerGlobalScope::StartFetchEvent,
-                      WrapWeakPersistent(this), std::move(params),
-                      /*corp_checker=*/nullptr, std::nullopt),
-        WTF::BindOnce(&ServiceWorkerGlobalScope::AbortCallbackForFetchEvent,
-                      WrapWeakPersistent(this)),
-        base::Seconds(kDefaultTimeoutSecondsForOfflineEvent));
-  } else {
-    event_queue_->EnqueueNormal(
-        event_id,
-        WTF::BindOnce(&ServiceWorkerGlobalScope::StartFetchEvent,
-                      WrapWeakPersistent(this), std::move(params),
-                      /*corp_checker=*/nullptr, base::TimeTicks::Now()),
-        WTF::BindOnce(&ServiceWorkerGlobalScope::AbortCallbackForFetchEvent,
-                      WrapWeakPersistent(this)),
-        std::nullopt);
-  }
+  event_queue_->EnqueueNormal(
+      event_id,
+      WTF::BindOnce(&ServiceWorkerGlobalScope::StartFetchEvent,
+                    WrapWeakPersistent(this), std::move(params),
+                    /*corp_checker=*/nullptr, base::TimeTicks::Now()),
+      WTF::BindOnce(&ServiceWorkerGlobalScope::AbortCallbackForFetchEvent,
+                    WrapWeakPersistent(this)),
+      std::nullopt);
 }
 
 void ServiceWorkerGlobalScope::DispatchNotificationClickEvent(

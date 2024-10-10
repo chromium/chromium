@@ -406,8 +406,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
                      weak_factory_.GetWeakPtr(), active_worker,
                      active_worker->running_status()),
       base::BindOnce(&ServiceWorkerMainResourceLoader::DidDispatchFetchEvent,
-                     weak_factory_.GetWeakPtr()),
-      /*is_offline_capability_check=*/false);
+                     weak_factory_.GetWeakPtr()));
 
   if (service_worker_client_->IsContainerForWindowClient()) {
     MaybeDispatchPreload(race_network_request_mode, context, active_worker);

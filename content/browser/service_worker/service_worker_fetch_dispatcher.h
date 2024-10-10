@@ -59,8 +59,7 @@ class CONTENT_EXPORT ServiceWorkerFetchDispatcher {
                                const std::string& resulting_client_id,
                                scoped_refptr<ServiceWorkerVersion> version,
                                base::OnceClosure prepare_callback,
-                               FetchCallback fetch_callback,
-                               bool is_offline_capability_check);
+                               FetchCallback fetch_callback);
 
   ServiceWorkerFetchDispatcher(const ServiceWorkerFetchDispatcher&) = delete;
   ServiceWorkerFetchDispatcher& operator=(const ServiceWorkerFetchDispatcher&) =
@@ -157,9 +156,6 @@ class CONTENT_EXPORT ServiceWorkerFetchDispatcher {
   base::UnguessableToken race_network_request_token_;
   mojo::PendingRemote<network::mojom::URLLoaderFactory>
       race_network_request_loader_factory_;
-
-  // Whether to dispatch an offline-capability-check fetch event.
-  const bool is_offline_capability_check_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
