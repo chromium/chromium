@@ -154,7 +154,7 @@ void ChromeAutofillPredictionImprovementsClient::TryToOpenFeedbackPage(
       /*description_placeholder_text=*/
       l10n_util::GetStringUTF8(
           IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_PLACEHOLDER),
-      /*category_tag=*/"autofill_prediction_improvements",
+      /*category_tag=*/"autofill_with_ai",
       /*extra_diagnostics=*/std::string(),
       /*autofill_metadata=*/base::Value::Dict(), std::move(feedback_metadata));
 }

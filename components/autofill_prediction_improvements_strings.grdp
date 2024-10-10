@@ -75,7 +75,7 @@
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_PLACEHOLDER"
     desc="Placeholder text for the Autofill prediction improvements feedback form."
     translateable="false">
-    Send feedback for Autofill prediction improvements.
+    Send feedback for Autofill with AI.
   </message>
 
   <!-- Iph -->
