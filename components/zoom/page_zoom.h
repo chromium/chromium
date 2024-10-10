@@ -39,7 +39,7 @@ class PageZoom {
 
  private:
   // We don't expect (currently) to create instances of this class.
-  PageZoom() {}
+  PageZoom() = default;
 };
 
 }  // namespace zoom

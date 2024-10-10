@@ -15,7 +15,7 @@ class ZoomEventManagerObserver {
   virtual void OnDefaultZoomLevelChanged() {}
 
  protected:
-  virtual ~ZoomEventManagerObserver() {}
+  virtual ~ZoomEventManagerObserver() = default;
 };
 
 }  // namespace zoom
