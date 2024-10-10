@@ -346,6 +346,12 @@ std::string DataTypeConstraintToString(
       case OperandDataType::kUint8:
         data_type_as_string = "uint8";
         break;
+      case OperandDataType::kInt4:
+        data_type_as_string = "int4";
+        break;
+      case OperandDataType::kUint4:
+        data_type_as_string = "uint4";
+        break;
     }
     data_types.push_back(std::move(data_type_as_string));
   }
