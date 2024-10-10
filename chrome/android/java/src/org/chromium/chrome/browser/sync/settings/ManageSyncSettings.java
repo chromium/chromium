@@ -250,8 +250,10 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         Profile profile = getProfile();
         mSyncService = SyncServiceFactory.getForProfile(profile);
 
+        // This should only be true if the user has sync consent.
         mIsFromSigninScreen =
-                IntentUtils.safeGetBoolean(getArguments(), IS_FROM_SIGNIN_SCREEN, false);
+                IntentUtils.safeGetBoolean(getArguments(), IS_FROM_SIGNIN_SCREEN, false)
+                        && mSyncService.hasSyncConsent();
 
         setHasOptionsMenu(true);
 
