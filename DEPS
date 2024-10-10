@@ -1091,7 +1091,7 @@ deps = {
   },
 
   'src/chrome/browser/resources/preinstalled_web_apps/internal': {
-    'url': Var('chrome_git') + '/chrome/components/default_apps.git' + '@' + '62adcf4936491ee7281185da1b2598149320c4e3',
+    'url': Var('chrome_git') + '/chrome/components/default_apps.git' + '@' + '50762f173e27bc75555cc6aab7fd324cb30613a9',
     'condition': 'checkout_src_internal',
   },
 
