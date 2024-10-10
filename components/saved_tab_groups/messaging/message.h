@@ -21,11 +21,15 @@ namespace tab_groups::messaging {
 // GENERATED_JAVA_ENUM_PACKAGE: (
 //   org.chromium.components.tab_group_sync.messaging)
 enum class UserAction {
+  // Used for messages such as an implicitly dirty tab group.
+  UNDEFINED,
+
   // Source: TabGroupSyncService data.
   TAB_ADDED,
   // TODO(345856704): How do we get attribution data here?
   TAB_REMOVED,
   TAB_NAVIGATED,
+  TAB_GROUP_VISUALS_UPDATED,
 
   // Source: DataSharingService data.
   COLLABORATION_USER_JOINED,
@@ -65,8 +69,8 @@ enum class InstantNotificationType {
 //   org.chromium.components.tab_group_sync.messaging)
 enum class PersistentNotificationType {
   UNDEFINED,
-  // Message displayed when the given item is visible (e.g. tab chip).
-  FOCUSED,
+  // A chip displayed for a specific tab.
+  CHIP,
   // A marker that a tab has been changed and the user has not seen it yet.
   DIRTY_TAB,
   // A marker that something in the tab group has changed and the user has not
