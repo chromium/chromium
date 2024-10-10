@@ -52,6 +52,10 @@ source_set("autofill") {
       "autofill_keyboard_accessory_controller.h",
       "autofill_keyboard_accessory_controller_impl.h",
       "autofill_keyboard_accessory_view.h",
+      "autofill_snackbar_controller.h",
+      "autofill_snackbar_controller_impl.h",
+      "autofill_snackbar_type.h",
+      "autofill_snackbar_view.h",
     ]
     public_deps += [
       "//components/autofill/android:autofill_core_browser_java_enums",
@@ -152,12 +156,16 @@ source_set("impl") {
     "//components/plus_addresses/resources/strings",
     "//components/profile_metrics",
     "//components/security_state/content",
+    "//components/strings:components_strings_grit",
     "//components/unified_consent",
     "//components/variations/service",
   ]
 
   if (is_android) {
-    sources += [ "autofill_keyboard_accessory_controller_impl.cc" ]
+    sources += [
+      "autofill_keyboard_accessory_controller_impl.cc",
+      "autofill_snackbar_controller_impl.cc",
+    ]
     deps += [
       "//chrome/browser/autofill/android:jni_headers",
       "//chrome/browser/keyboard_accessory/android:public",
@@ -279,7 +287,10 @@ source_set("unit_tests") {
   ]
 
   if (is_android) {
-    sources += [ "autofill_keyboard_accessory_controller_impl_unittest.cc" ]
+    sources += [
+      "autofill_keyboard_accessory_controller_impl_unittest.cc",
+      "autofill_snackbar_controller_impl_unittest.cc",
+    ]
   } else {
     sources += [
       "add_new_address_bubble_controller_unittest.cc",

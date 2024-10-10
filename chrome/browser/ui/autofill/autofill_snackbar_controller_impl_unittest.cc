@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
+#include "chrome/browser/ui/autofill/autofill_snackbar_controller_impl.h"
 
 #include <optional>
 
@@ -13,7 +13,7 @@
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_address_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_password_accessory_controller.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_payment_method_accessory_controller.h"
-#include "chrome/browser/ui/autofill/payments/autofill_snackbar_view.h"
+#include "chrome/browser/ui/autofill/autofill_snackbar_view.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -39,8 +39,9 @@ class AutofillSnackbarControllerImplTest
   }
 
   AutofillSnackbarControllerImpl* controller() {
-    if (!controller_)
+    if (!controller_) {
       controller_ = new AutofillSnackbarControllerImpl(web_contents());
+    }
     return controller_;
   }
 

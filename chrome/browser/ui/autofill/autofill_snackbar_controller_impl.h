@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_AUTOFILL_SNACKBAR_CONTROLLER_IMPL_H_
-#define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_AUTOFILL_SNACKBAR_CONTROLLER_IMPL_H_
+#ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_SNACKBAR_CONTROLLER_IMPL_H_
+#define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_SNACKBAR_CONTROLLER_IMPL_H_
 #include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller.h"
-#include "chrome/browser/ui/autofill/payments/autofill_snackbar_type.h"
-#include "chrome/browser/ui/autofill/payments/autofill_snackbar_view.h"
+#include "chrome/browser/ui/autofill/autofill_snackbar_controller.h"
+#include "chrome/browser/ui/autofill/autofill_snackbar_type.h"
+#include "chrome/browser/ui/autofill/autofill_snackbar_view.h"
 #include "content/public/browser/web_contents.h"
 
 namespace autofill {
@@ -74,4 +74,4 @@ class AutofillSnackbarControllerImpl : public AutofillSnackbarController {
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_AUTOFILL_SNACKBAR_CONTROLLER_IMPL_H_
+#endif  // CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_SNACKBAR_CONTROLLER_IMPL_H_

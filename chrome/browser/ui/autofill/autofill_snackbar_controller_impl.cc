@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
+#include "chrome/browser/ui/autofill/autofill_snackbar_controller_impl.h"
 
 #include <optional>
 #include <string>
@@ -14,8 +14,7 @@
 #include "chrome/browser/android/preferences/autofill/settings_navigation_helper.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller_impl.h"
-#include "chrome/browser/ui/android/autofill/snackbar/autofill_snackbar_view_android.h"
-#include "chrome/browser/ui/autofill/payments/autofill_snackbar_type.h"
+#include "chrome/browser/ui/autofill/autofill_snackbar_type.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
