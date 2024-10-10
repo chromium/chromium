@@ -177,6 +177,17 @@ public class BatchUploadCardPreference extends Preference
             return;
         }
 
+        // TODO(b/354686035): Handle accounts with non-displayable email address.
+        CoreAccountInfo accountInfo =
+                IdentityServicesProvider.get()
+                        .getIdentityManager(mProfile)
+                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
+        // setupBatchUploadCardView() is called asynchronously through onBindViewHolder(), so it
+        // could be called while there is no primary account.
+        if (accountInfo == null) {
+            return;
+        }
+
         Context context = getContext();
 
         Button button = (Button) card.findViewById(R.id.signin_settings_card_button);
@@ -215,11 +226,6 @@ public class BatchUploadCardPreference extends Preference
         }
 
         TextView text = (TextView) card.findViewById(R.id.signin_settings_card_description);
-        // TODO(b/354686035): Handle accounts with non-displayable email address.
-        CoreAccountInfo accountInfo =
-                IdentityServicesProvider.get()
-                        .getIdentityManager(mProfile)
-                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         if (localItemsCountExcludingPasswords == 0) {
             text.setText(
                     context.getResources()
