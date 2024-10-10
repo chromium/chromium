@@ -90,8 +90,6 @@ _NEGATIVE_FILTER = [
     'ChromeDriverTest.testEmulateNetworkConditionsSpeed',
     # https://bugs.chromium.org/p/chromedriver/issues/detail?id=833
     'ChromeDriverTest.testAlertOnNewWindow',
-    # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2532
-    'ChromeDriverPageLoadTimeoutTest.testRefreshWithPageLoadTimeout',
     # Flaky https://bugs.chromium.org/p/chromium/issues/detail?id=1143940
     'ChromeDriverTest.testTakeLargeElementFullPageScreenshot',
     # crbug.com/chromedriver/4379
