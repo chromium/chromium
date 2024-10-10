@@ -118,11 +118,12 @@ InputHandler::ScrollStatus InputHandler::ScrollBegin(ScrollState* scroll_state,
   // ScrollBy is a better place to do it).
   if (scroll_state->delta_granularity() ==
       ui::ScrollGranularity::kScrollByPrecisePixel) {
-    ScrollNode* scroll_node = CurrentlyScrollingNode();
-    compositor_delegate_->GetImplDeprecated()
-        .mutator_host()
-        ->ScrollAnimationAbort(scroll_node ? scroll_node->element_id
-                                           : ElementId());
+    if (ScrollNode* animating_node =
+            GetAnimatingNodeForCurrentScrollingNode()) {
+      compositor_delegate_->GetImplDeprecated()
+          .mutator_host()
+          ->ScrollAnimationAbort(animating_node->element_id);
+    }
     scroll_animating_snap_target_ids_ = TargetSnapAreaElementIds();
   }
 
@@ -483,6 +484,23 @@ void InputHandler::ScrollEnd(bool should_snap) {
   // so that we don't fire a "scrollend" event.
   if (did_scroll_x_for_scroll_gesture_ || did_scroll_y_for_scroll_gesture_) {
     scroll_gesture_did_end_ = true;
+    if (features::MultiImplOnlyScrollAnimationsSupported()) {
+      if ((!OuterViewportScrollNode() ||
+           OuterViewportScrollNode()->element_id !=
+               CurrentlyScrollingNode()->element_id) ||
+          outer_viewport_consumed_delta_) {
+        pending_scrollend_containers_.insert(
+            CurrentlyScrollingNode()->element_id);
+      }
+      if (outer_viewport_consumed_delta_) {
+        outer_viewport_consumed_delta_ = false;
+      }
+      if (inner_viewport_consumed_delta_) {
+        pending_scrollend_containers_.insert(
+            InnerViewportScrollNode()->element_id);
+        inner_viewport_consumed_delta_ = false;
+      }
+    }
   }
   ClearCurrentlyScrollingNode();
   deferred_scroll_end_ = false;
@@ -1048,7 +1066,14 @@ void InputHandler::ProcessCommitDeltas(
   // TODO(bokan): This is wrong - if we also started a scroll this frame then
   // this will clear this value for that scroll. https://crbug.com/1116780.
   commit_data->scroll_latched_element_id = last_latched_scroller_;
-  if (commit_data->scroll_end_data.scroll_gesture_did_end) {
+  if (features::MultiImplOnlyScrollAnimationsSupported()) {
+    commit_data->scroll_end_data.done_containers =
+        std::move(pending_scrollend_containers_);
+    if (commit_data->scroll_end_data.done_containers.contains(
+            last_latched_scroller_)) {
+      last_latched_scroller_ = ElementId();
+    }
+  } else if (commit_data->scroll_end_data.scroll_gesture_did_end) {
     last_latched_scroller_ = ElementId();
     commit_data->scroll_end_data.gesture_affects_outer_viewport_scroll =
         outer_viewport_consumed_delta_;
@@ -1639,6 +1664,10 @@ gfx::Vector2dF InputHandler::ScrollSingleNode(const ScrollNode& scroll_node,
 
 ScrollNode* InputHandler::GetAnimatingNodeForCurrentScrollingNode() {
   ScrollNode* scroll_node = CurrentlyScrollingNode();
+  if (!scroll_node) {
+    return nullptr;
+  }
+
   if (compositor_delegate_->GetImplDeprecated()
           .mutator_host()
           ->ElementHasImplOnlyScrollAnimation(scroll_node->element_id)) {
@@ -1893,9 +1922,11 @@ void InputHandler::DidLatchToScroller(const ScrollState& scroll_state,
   compositor_delegate_->GetImplDeprecated()
       .browser_controls_manager()
       ->ScrollBegin();
-  compositor_delegate_->GetImplDeprecated()
-      .mutator_host()
-      ->ScrollAnimationAbort(CurrentlyScrollingNode()->element_id);
+  if (ScrollNode* animating_node = GetAnimatingNodeForCurrentScrollingNode()) {
+    compositor_delegate_->GetImplDeprecated()
+        .mutator_host()
+        ->ScrollAnimationAbort(animating_node->element_id);
+  }
 
   scroll_animating_snap_target_ids_ = TargetSnapAreaElementIds();
 

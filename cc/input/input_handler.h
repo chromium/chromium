@@ -843,6 +843,10 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   // is being animated to.
   std::unique_ptr<SnapSelectionStrategy> snap_strategy_;
 
+  // The set of scroll containers for which an impl scroll ended between the
+  // last commit and the next one.
+  base::flat_set<ElementId> pending_scrollend_containers_;
+
   // Must be the last member to ensure this is destroyed first in the
   // destruction order and invalidates all weak pointers.
   base::WeakPtrFactory<InputHandler> weak_factory_{this};

@@ -929,9 +929,14 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   void SendOverscrollEventFromImplSide(const gfx::Vector2dF& overscroll_delta,
                                        cc::ElementId scroll_latched_element_id);
-  void SendEndOfScrollEvents(bool affects_outer_viewport,
-                             bool affects_inner_viewport,
-                             cc::ElementId scroll_latched_element_id);
+  // TODO(crbug.com/372627916): This function is not used when
+  // MultipleImplOnlyScrollAnimations is enabled. It should be considered
+  // deprecated and should be deleted when the MultipleImplOnlyScrollAnimations
+  // code path is the only existing code path.
+  void SendEndOfScrollEventsDeprecated(bool affects_outer_viewport,
+                                       bool affects_inner_viewport,
+                                       cc::ElementId scroll_latched_element_id);
+  void SendEndOfScrollEvents(const cc::CompositorCommitData& commit_data);
   void SendScrollSnapChangingEventIfNeeded(
       const cc::CompositorCommitData& commit_data);
   void RecordManipulationTypeCounts(cc::ManipulationInfo info);
