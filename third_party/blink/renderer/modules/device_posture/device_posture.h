@@ -17,6 +17,7 @@
 namespace blink {
 
 class LocalDOMWindow;
+class V8DevicePostureType;
 
 class MODULES_EXPORT DevicePosture : public EventTarget,
                                      public ExecutionContextClient,
@@ -29,7 +30,7 @@ class MODULES_EXPORT DevicePosture : public EventTarget,
 
   // Web-exposed interfaces
   DEFINE_ATTRIBUTE_EVENT_LISTENER(change, kChange)
-  String type();
+  V8DevicePostureType type();
 
   // EventTarget overrides.
   ExecutionContext* GetExecutionContext() const override;
