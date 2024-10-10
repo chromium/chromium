@@ -3388,10 +3388,7 @@ InterestGroupAuction::CreateReporter(
         std::move(component_auction->saved_response_);
   }
 
-  std::vector<GURL> debug_win_report_urls;
-  std::vector<GURL> debug_loss_report_urls;
-  TakeDebugReportUrlsAndFillInPrivateAggregationRequests(
-      debug_win_report_urls, debug_loss_report_urls);
+  CollectBiddingAndScoringPhaseReports();
 
   bool bid_is_kanon;
   switch (kanon_mode_) {
@@ -3420,8 +3417,8 @@ InterestGroupAuction::CreateReporter(
       kanon_mode_, bid_is_kanon, std::move(winning_bid_info),
       std::move(top_level_seller_winning_bid_info),
       std::move(component_seller_winning_bid_info),
-      std::move(interest_groups_that_bid), std::move(debug_win_report_urls),
-      std::move(debug_loss_report_urls), GetKAnonKeysToJoin(),
+      std::move(interest_groups_that_bid), TakeDebugWinReportUrls(),
+      TakeDebugLossReportUrls(), GetKAnonKeysToJoin(),
       TakeReservedPrivateAggregationRequests(),
       TakeNonReservedPrivateAggregationRequests(),
       ComputePrivateAggregationParticipantData(),
@@ -3890,11 +3887,14 @@ SubresourceUrlBuilder* InterestGroupAuction::SubresourceUrlBuilderIfReady() {
   return subresource_url_builder_.get();
 }
 
-void InterestGroupAuction::
-    TakeDebugReportUrlsAndFillInPrivateAggregationRequests(
-        std::vector<GURL>& debug_win_report_urls,
-        std::vector<GURL>& debug_loss_report_urls) {
+void InterestGroupAuction::CollectBiddingAndScoringPhaseReports() {
+  CHECK(!bidding_and_scoring_phase_reports_collected_);
+  bidding_and_scoring_phase_reports_collected_ = true;
   if (!all_bids_scored_) {
+    for (auto& component_auction_info : component_auctions_) {
+      component_auction_info.second
+          ->bidding_and_scoring_phase_reports_collected_ = true;
+    }
     return;
   }
 
@@ -3977,7 +3977,7 @@ void InterestGroupAuction::
                               top_level_signals);
     buyer_helper->TakeDebugReportUrls(
         winner, signals, top_level_signals, config_->seller, top_level_seller,
-        debug_win_report_urls, debug_loss_report_urls);
+        debug_win_report_urls_, debug_loss_report_urls_);
 
     buyer_helper->TakePrivateAggregationRequests(
         winner, non_kanon_winner, signals, top_level_signals,
@@ -4016,8 +4016,8 @@ void InterestGroupAuction::
     TakeDebugReportUrlsForBidState(
         bid_state, winner, signals, top_level_signals, owner, config_->seller,
         top_level_seller, debug_report_lockout_and_cooldowns_,
-        new_debug_report_lockout_and_cooldowns_, debug_win_report_urls,
-        debug_loss_report_urls);
+        new_debug_report_lockout_and_cooldowns_, debug_win_report_urls_,
+        debug_loss_report_urls_);
     TakeRealTimeContributionsForBidState(*bid_state, real_time_contributions);
   }
 
@@ -4047,9 +4047,7 @@ void InterestGroupAuction::
 
   // Retrieve data from component auctions as well.
   for (auto& component_auction_info : component_auctions_) {
-    component_auction_info.second
-        ->TakeDebugReportUrlsAndFillInPrivateAggregationRequests(
-            debug_win_report_urls, debug_loss_report_urls);
+    component_auction_info.second->CollectBiddingAndScoringPhaseReports();
   }
 
   if (new_debug_report_lockout_and_cooldowns_.last_report_sent_time
@@ -4065,9 +4063,34 @@ void InterestGroupAuction::
   }
 }
 
+std::vector<GURL> InterestGroupAuction::TakeDebugWinReportUrls() {
+  CHECK(bidding_and_scoring_phase_reports_collected_);
+  for (auto& component_auction_info : component_auctions_) {
+    std::vector<GURL> report_urls =
+        component_auction_info.second->TakeDebugWinReportUrls();
+    debug_win_report_urls_.insert(debug_win_report_urls_.end(),
+                                  std::move_iterator(report_urls.begin()),
+                                  std::move_iterator(report_urls.end()));
+  }
+  return std::move(debug_win_report_urls_);
+}
+
+std::vector<GURL> InterestGroupAuction::TakeDebugLossReportUrls() {
+  CHECK(bidding_and_scoring_phase_reports_collected_);
+  for (auto& component_auction_info : component_auctions_) {
+    std::vector<GURL> report_urls =
+        component_auction_info.second->TakeDebugLossReportUrls();
+    debug_loss_report_urls_.insert(debug_loss_report_urls_.end(),
+                                   std::move_iterator(report_urls.begin()),
+                                   std::move_iterator(report_urls.end()));
+  }
+  return std::move(debug_loss_report_urls_);
+}
+
 std::map<PrivateAggregationKey,
          InterestGroupAuction::PrivateAggregationRequests>
 InterestGroupAuction::TakeReservedPrivateAggregationRequests() {
+  CHECK(bidding_and_scoring_phase_reports_collected_);
   for (auto& component_auction_info : component_auctions_) {
     std::map<PrivateAggregationKey, PrivateAggregationRequests> requests_map =
         component_auction_info.second->TakeReservedPrivateAggregationRequests();
@@ -4085,6 +4108,7 @@ InterestGroupAuction::TakeReservedPrivateAggregationRequests() {
 
 std::map<std::string, InterestGroupAuction::PrivateAggregationRequests>
 InterestGroupAuction::TakeNonReservedPrivateAggregationRequests() {
+  CHECK(bidding_and_scoring_phase_reports_collected_);
   for (auto& component_auction_info : component_auctions_) {
     std::map<std::string, PrivateAggregationRequests> requests_map =
         component_auction_info.second
@@ -4137,6 +4161,7 @@ InterestGroupAuction::ComputePrivateAggregationParticipantData() {
 
 std::map<url::Origin, InterestGroupAuction::RealTimeReportingContributions>
 InterestGroupAuction::TakeRealTimeReportingContributions() {
+  CHECK(bidding_and_scoring_phase_reports_collected_);
   for (auto& component_auction_info : component_auctions_) {
     std::map<url::Origin, RealTimeReportingContributions> contributions_map =
         component_auction_info.second->TakeRealTimeReportingContributions();

@@ -470,12 +470,9 @@ void AuctionRunner::FailAuction(
 
   // Can have loss report URLs if the auction failed because the seller
   // rejected all bids.
-  std::vector<GURL> debug_win_report_urls;
-  std::vector<GURL> debug_loss_report_urls;
-  auction_.TakeDebugReportUrlsAndFillInPrivateAggregationRequests(
-      debug_win_report_urls, debug_loss_report_urls);
+  auction_.CollectBiddingAndScoringPhaseReports();
   // Shouldn't have any win report URLs if nothing won the auction.
-  DCHECK(debug_win_report_urls.empty());
+  CHECK(auction_.TakeDebugWinReportUrls().empty());
 
   if (!aborted_by_script) {
     // A different metric is recorded for script-triggered abort in
@@ -490,7 +487,7 @@ void AuctionRunner::FailAuction(
         auction_.GetKAnonKeysToJoin());
     interest_group_manager_->EnqueueReports(
         InterestGroupManagerImpl::ReportType::kDebugLoss,
-        std::move(debug_loss_report_urls), FrameTreeNodeId(), frame_origin_,
+        auction_.TakeDebugLossReportUrls(), FrameTreeNodeId(), frame_origin_,
         *client_security_state_, url_loader_factory_);
 
     interest_group_manager_->EnqueueRealTimeReports(

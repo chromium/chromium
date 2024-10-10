@@ -644,22 +644,18 @@ class CONTENT_EXPORT InterestGroupAuction
   // in the fenced frame config resulting from the auction.
   std::optional<blink::AdSize> RequestedAdSize() const;
 
-  // Retrieves any debug reporting URLs. May only be called once, since it takes
-  // ownership of stored reporting URLs. This is called internally by
-  // CreateReporter() so may only be called in the case an auction has no
-  // winner, and thus CreateReporter() need not be called.
+  // Collects forDebuggingOnly report URLs, private aggregation requests, and
+  // real time reporting contributions. Also calculates and fills in post
+  // auction signals.
   //
-  // Note: Temporarily, this function also fills post auction signals to private
-  // aggregation requests from generateBid() and scoreAd(), so this function
-  // must be called before TakePrivateAggregationRequests() to make sure that
-  // function gets private aggregation requests with post auction signals filled
-  // in.
-  // TODO(qingxinwu): Refactor this to fill post auction signals to private
-  // aggregation report in TakePrivateAggregationRequests(), ideally reuse the
-  // post auction signals calculated from this method.
-  void TakeDebugReportUrlsAndFillInPrivateAggregationRequests(
-      std::vector<GURL>& debug_win_report_urls,
-      std::vector<GURL>& debug_loss_report_urls);
+  // Must be called before calling the various Take***() methods below to
+  // retrieve these reports.
+  void CollectBiddingAndScoringPhaseReports();
+
+  // Retrieves any debug reporting URLs. May only be called once, since it takes
+  // ownership of stored reporting URLs.
+  std::vector<GURL> TakeDebugWinReportUrls();
+  std::vector<GURL> TakeDebugLossReportUrls();
 
   // Retrieves all requests with reserved event type to the Private Aggregation
   // API returned by GenerateBid() and ScoreAd(). The return value is keyed by
@@ -1460,6 +1456,10 @@ class CONTENT_EXPORT InterestGroupAuction
   int seller_scripts_ran_ = 0;
   int seller_scripts_timed_out_ = 0;
 
+  // Stores all pending forDebuggingOnly reports.
+  std::vector<GURL> debug_win_report_urls_;
+  std::vector<GURL> debug_loss_report_urls_;
+
   // Stores all pending Private Aggregation API report requests of reserved
   // event type from the bidding and scoring phase. These are passed to the
   // InterestGroupAuctionReporter when it's created. Keyed by the origin of the
@@ -1524,6 +1524,13 @@ class CONTENT_EXPORT InterestGroupAuction
   // seller failed to load, since neither the bids nor the bidders were the
   // problem).
   bool all_bids_scored_ = false;
+
+  // Set to true inside CollectBiddingAndScoringPhaseReports(). Used to make
+  // sure the various Take***() methods that retrieve reports registered in
+  // generateBid() and scoreAd() (e.g., forDebuggingOnly, private aggregation,
+  // real time reporting) are called after
+  // CollectBiddingAndScoringPhaseReports() is called (i.e., when it's true).
+  bool bidding_and_scoring_phase_reports_collected_ = false;
 
   // Receivers for OnScoreAd() callbacks. Owns Bids, which have raw pointers to
   // other objects, so must be last, to avoid triggering tooling to check for
