@@ -877,7 +877,7 @@ BASE_FEATURE(kFencedFramesReportEventHeaderChanges,
 // expected. See: https://crbug.com/349080952
 BASE_FEATURE(kFencedFramesSrcPermissionsPolicy,
              "FencedFramesSrcPermissionsPolicy",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls access to an API to exempt certain URLs from fenced frame
 // network revocation to facilitate testing.
