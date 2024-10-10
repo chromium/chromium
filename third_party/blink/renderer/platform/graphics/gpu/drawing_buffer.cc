@@ -1287,9 +1287,8 @@ bool DrawingBuffer::CopyToVideoFrame(
     raster_interface->WaitSyncTokenCHROMIUM(produce_sync_token.GetConstData());
     bool succeeded = frame_pool->CopyRGBATextureToVideoFrame(
         src_format, src_size, src_color_space, src_surface_origin,
-        {src_shared_image->mailbox(), gpu::SyncToken(),
-         src_shared_image->GetTextureTarget()},
-        dst_color_space, std::move(callback));
+        src_shared_image, gpu::SyncToken(), dst_color_space,
+        std::move(callback));
     if (!succeeded) {
       return std::nullopt;
     }

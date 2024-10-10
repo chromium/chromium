@@ -134,6 +134,7 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
   // sync token before accessing this mailbox.
   gpu::MailboxHolder GetMailboxHolder() const final;
   scoped_refptr<gpu::ClientSharedImage> GetSharedImage() const final;
+  gpu::SyncToken GetSyncToken() const final;
   bool IsOriginTopLeft() const final { return is_origin_top_left_; }
   bool SupportsDisplayCompositing() const final {
     return supports_display_compositing_;

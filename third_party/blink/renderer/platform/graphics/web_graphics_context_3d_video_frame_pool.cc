@@ -287,7 +287,8 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
     const gfx::Size& src_size,
     const gfx::ColorSpace& src_color_space,
     GrSurfaceOrigin src_surface_origin,
-    const gpu::MailboxHolder& src_mailbox_holder,
+    scoped_refptr<gpu::ClientSharedImage> src_shared_image,
+    const gpu::SyncToken& acquire_sync_token,
     const gfx::ColorSpace& dst_color_space,
     FrameReadyCallback callback) {
   TRACE_EVENT("media", "CopyRGBATextureToVideoFrame");
@@ -321,7 +322,8 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
 
   if (!media::CopyRGBATextureToVideoFrame(
           raster_context_provider, src_format, src_size, src_color_space,
-          src_surface_origin, src_mailbox_holder, dst_frame.get())) {
+          src_surface_origin, src_shared_image, acquire_sync_token,
+          dst_frame.get())) {
     return false;
   }
 
@@ -443,7 +445,8 @@ bool WebGraphicsContext3DVideoFramePool::ConvertVideoFrame(
       src_video_frame->metadata().texture_origin_is_top_left
           ? kTopLeft_GrSurfaceOrigin
           : kBottomLeft_GrSurfaceOrigin,
-      src_video_frame->mailbox_holder(0), dst_color_space,
+      src_video_frame->shared_image(), src_video_frame->acquire_sync_token(),
+      dst_color_space,
       WTF::BindOnce(ApplyMetadataAndRunCallback, src_video_frame,
                     std::move(callback)));
 }

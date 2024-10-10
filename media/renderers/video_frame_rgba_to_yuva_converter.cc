@@ -13,24 +13,21 @@
 #include "base/logging.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/shared_image_format.h"
-#include "components/viz/common/resources/shared_image_format_utils.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/raster_interface.h"
-#include "gpu/command_buffer/client/shared_image_interface.h"
-#include "gpu/command_buffer/common/mailbox_holder.h"
-#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "media/base/simple_sync_token_client.h"
-#include "media/renderers/video_frame_yuv_mailboxes_holder.h"
-#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace media {
 
-bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
-                                 viz::SharedImageFormat src_format,
-                                 const gfx::Size& src_size,
-                                 const gfx::ColorSpace& src_color_space,
-                                 GrSurfaceOrigin src_surface_origin,
-                                 const gpu::MailboxHolder& src_mailbox_holder,
-                                 VideoFrame* dst_video_frame) {
+bool CopyRGBATextureToVideoFrame(
+    viz::RasterContextProvider* provider,
+    viz::SharedImageFormat src_format,
+    const gfx::Size& src_size,
+    const gfx::ColorSpace& src_color_space,
+    GrSurfaceOrigin src_surface_origin,
+    scoped_refptr<gpu::ClientSharedImage> src_shared_image,
+    const gpu::SyncToken& acquire_sync_token,
+    VideoFrame* dst_video_frame) {
   DCHECK_EQ(dst_video_frame->format(), PIXEL_FORMAT_NV12);
   CHECK_EQ(dst_video_frame->shared_image_format_type(),
            SharedImageFormatType::kSharedImageFormat);
@@ -53,7 +50,7 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
     return false;
   }
 
-  ri->WaitSyncTokenCHROMIUM(src_mailbox_holder.sync_token.GetConstData());
+  ri->WaitSyncTokenCHROMIUM(acquire_sync_token.GetConstData());
 
   auto dst_sync_token = dst_video_frame->acquire_sync_token();
   auto dst_mailbox = dst_video_frame->shared_image()->mailbox();
@@ -77,8 +74,8 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
   // details).
   // TODO(crbug.com/40270413): Update this comment when we resolve that bug
   // and change CopySharedImage() to crop rather than stretch.
-  ri->CopySharedImage(src_mailbox_holder.mailbox, dst_mailbox, GL_TEXTURE_2D, 0,
-                      0, 0, 0, src_size.width(), src_size.height(),
+  ri->CopySharedImage(src_shared_image->mailbox(), dst_mailbox, GL_TEXTURE_2D,
+                      0, 0, 0, 0, src_size.width(), src_size.height(),
                       unpack_flip_y,
                       /*unpack_premultiply_alpha=*/false);
   ri->Flush();

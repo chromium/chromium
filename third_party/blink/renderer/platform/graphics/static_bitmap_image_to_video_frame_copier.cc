@@ -126,7 +126,8 @@ void StaticBitmapImageToVideoFrameCopier::Convert(
               gfx::ColorSpace::CreateSRGB(),
               image->IsOriginTopLeft() ? kTopLeft_GrSurfaceOrigin
                                        : kBottomLeft_GrSurfaceOrigin,
-              image->GetMailboxHolder(), gfx::ColorSpace::CreateREC709(),
+              image->GetSharedImage(), image->GetSyncToken(),
+              gfx::ColorSpace::CreateREC709(),
               std::move(split_callback.first))) {
         TRACE_EVENT1("blink", "StaticBitmapImageToVideoFrameCopier::Convert",
                      "accelerated_frame_pool_copy", true);

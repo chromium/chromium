@@ -281,8 +281,8 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
       CHECK(dst_frame->HasSharedImage());
       const bool copy_succeeded = media::CopyRGBATextureToVideoFrame(
           raster_context_provider.get(), format, source_frame->coded_size(),
-          source_frame->ColorSpace(), origin, source_frame->mailbox_holder(0),
-          dst_frame.get());
+          source_frame->ColorSpace(), origin, source_frame->shared_image(),
+          source_frame->acquire_sync_token(), dst_frame.get());
       if (copy_succeeded) {
         // CopyRGBATextureToVideoFrame() operates on mailboxes and not frames,
         // so we must manually copy over properties relevant to the encoder.

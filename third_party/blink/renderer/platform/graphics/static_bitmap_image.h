@@ -92,6 +92,10 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
     NOTREACHED();
     return nullptr;
   }
+  virtual gpu::SyncToken GetSyncToken() const {
+    NOTREACHED();
+    return gpu::SyncToken();
+  }
   virtual void UpdateSyncToken(const gpu::SyncToken&) {
     NOTREACHED_IN_MIGRATION();
   }

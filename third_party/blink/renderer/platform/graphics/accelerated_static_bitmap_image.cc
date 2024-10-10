@@ -416,9 +416,9 @@ void AcceleratedStaticBitmapImage::EnsureSyncTokenVerified() {
 }
 
 gpu::MailboxHolder AcceleratedStaticBitmapImage::GetMailboxHolder() const {
-  if (!IsValid())
+  if (!IsValid()) {
     return gpu::MailboxHolder();
-
+  }
   return gpu::MailboxHolder(shared_image_->mailbox(),
                             mailbox_ref_->sync_token(), texture_target_);
 }
@@ -428,8 +428,14 @@ AcceleratedStaticBitmapImage::GetSharedImage() const {
   if (!IsValid()) {
     return nullptr;
   }
-
   return shared_image_;
+}
+
+gpu::SyncToken AcceleratedStaticBitmapImage::GetSyncToken() const {
+  if (!IsValid()) {
+    return gpu::SyncToken();
+  }
+  return mailbox_ref_->sync_token();
 }
 
 void AcceleratedStaticBitmapImage::Transfer() {

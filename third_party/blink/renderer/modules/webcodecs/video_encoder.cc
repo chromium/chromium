@@ -1031,7 +1031,7 @@ bool VideoEncoder::StartReadback(scoped_refptr<media::VideoFrame> frame,
                                       this, "timestamp", frame->timestamp());
     if (accelerated_frame_pool_->CopyRGBATextureToVideoFrame(
             format, frame->coded_size(), frame->ColorSpace(), origin,
-            frame->mailbox_holder(0), kDstColorSpace,
+            frame->shared_image(), frame->acquire_sync_token(), kDstColorSpace,
             std::move(callback_chain))) {
       return true;
     }

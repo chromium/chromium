@@ -5,6 +5,7 @@
 #ifndef MEDIA_RENDERERS_VIDEO_FRAME_RGBA_TO_YUVA_CONVERTER_H_
 #define MEDIA_RENDERERS_VIDEO_FRAME_RGBA_TO_YUVA_CONVERTER_H_
 
+#include "base/memory/scoped_refptr.h"
 #include "media/base/media_export.h"
 #include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 
@@ -14,7 +15,8 @@ class Size;
 }  // namespace gfx
 
 namespace gpu {
-struct MailboxHolder;
+class ClientSharedImage;
+struct SyncToken;
 }  // namespace gpu
 
 namespace viz {
@@ -28,7 +30,7 @@ class VideoFrame;
 
 // Copy the specified source texture to the destination video frame, doing
 // color space conversion and RGB to YUV conversion. Waits for all sync
-// tokens in `src_mailbox_holder` and `dst_video_frame` before doing the
+// tokens in `acquire_sync_token` and `dst_video_frame` before doing the
 // copy. Updates `dst_video_frame`'s sync token to wait on copy completion.
 MEDIA_EXPORT bool CopyRGBATextureToVideoFrame(
     viz::RasterContextProvider* raster_context_provider,
@@ -36,7 +38,8 @@ MEDIA_EXPORT bool CopyRGBATextureToVideoFrame(
     const gfx::Size& src_size,
     const gfx::ColorSpace& src_color_space,
     GrSurfaceOrigin src_surface_origin,
-    const gpu::MailboxHolder& src_mailbox_holder,
+    scoped_refptr<gpu::ClientSharedImage> src_shared_image,
+    const gpu::SyncToken& acquire_sync_token,
     VideoFrame* dst_video_frame);
 
 }  // namespace media
