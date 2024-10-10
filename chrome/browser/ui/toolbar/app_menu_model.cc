@@ -883,7 +883,8 @@ void ToolsMenuModel::Build(Browser* browser) {
     }
   }
 
-  if (base::FeatureList::IsEnabled(features::kTabstripDeclutter)) {
+  if (base::FeatureList::IsEnabled(features::kTabstripDeclutter) &&
+      !browser->profile()->IsIncognitoProfile()) {
     AddItemWithStringIdAndVectorIcon(this, IDC_DECLUTTER_TABS,
                                      IDS_DECLUTTER_MENU, kTabCloseInactiveIcon);
     SetIsNewFeatureAt(
