@@ -1467,7 +1467,7 @@ void Shell::Init(
   frame_throttling_controller_ = std::make_unique<FrameThrottlingController>(
       context_factory->GetHostFrameSinkManager());
 
-  if (features::IsBirchCoralEnabled()) {
+  if (features::IsCoralFeatureEnabled()) {
     tab_cluster_ui_controller_ = std::make_unique<TabClusterUIController>();
   }
 
@@ -1825,7 +1825,7 @@ void Shell::Init(
   if (features::IsCoralFeatureEnabled()) {
     coral_controller_ = std::make_unique<CoralController>();
   }
-  if (features::IsBirchCoralEnabled()) {
+  if (features::IsCoralFeatureEnabled()) {
     coral_delegate_ = shell_delegate_->CreateCoralDelegate();
   }
 

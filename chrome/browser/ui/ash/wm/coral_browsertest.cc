@@ -86,7 +86,7 @@ class CoralBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{features::kBirchCoral};
+  base::test::ScopedFeatureList scoped_feature_list_{features::kCoralFeature};
 };
 
 IN_PROC_BROWSER_TEST_F(CoralBrowserTest, PRE_PostLoginBrowser) {

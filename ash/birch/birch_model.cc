@@ -72,7 +72,7 @@ BirchModel::BirchModel()
   if (features::IsBirchWeatherEnabled()) {
     weather_provider_ = std::make_unique<BirchWeatherProvider>(this);
   }
-  if (features::IsBirchCoralEnabled()) {
+  if (features::IsCoralFeatureEnabled()) {
     coral_provider_ = std::make_unique<BirchCoralProvider>(this);
   }
   Shell::Get()->session_controller()->AddObserver(this);

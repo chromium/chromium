@@ -89,7 +89,7 @@ class TabAppSelectionViewTest : public AshTestBase {
   std::unique_ptr<TestBirchClient> birch_client_;
   raw_ptr<TestBirchDataProvider<BirchCoralItem>> coral_provider_;
 
-  base::test::ScopedFeatureList feature_list_{features::kBirchCoral};
+  base::test::ScopedFeatureList feature_list_{features::kCoralFeature};
 };
 
 // Tests that the menu can be toggled to show and hide.
