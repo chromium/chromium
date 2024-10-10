@@ -169,13 +169,16 @@ impl<'a> Outlines<'a> {
             Some(ppem) if self.units_per_em > 0 => {
                 // Note: we do an intermediate scale to 26.6 to ensure we
                 // match FreeType
-                Fixed::from_bits((ppem * 64.) as i32) / Fixed::from_bits(self.units_per_em as i32)
+                Some(
+                    Fixed::from_bits((ppem * 64.) as i32)
+                        / Fixed::from_bits(self.units_per_em as i32),
+                )
             }
-            _ => Fixed::ONE,
+            _ => None,
         };
         // When hinting, use a modified scale factor
         // <https://gitlab.freedesktop.org/freetype/freetype/-/blob/80a507a6b8e3d2906ad2c8ba69329bd2fb2a85ef/src/psaux/psft.c#L279>
-        let hint_scale = Fixed::from_bits((scale.to_bits() + 32) / 64);
+        let hint_scale = Fixed::from_bits((scale.unwrap_or(Fixed::ONE).to_bits() + 32) / 64);
         let hint_state = HintState::new(&hint_params, hint_scale);
         Ok(Subfont {
             is_cff2: self.is_cff2(),
@@ -210,7 +213,8 @@ impl<'a> Outlines<'a> {
         let blend_state = subfont.blend_state(self, coords)?;
         let mut pen_sink = PenSink::new(pen);
         let mut simplifying_adapter = NopFilteringSink::new(&mut pen_sink);
-        if hint {
+        // Only apply hinting if we have a scale
+        if hint && subfont.scale.is_some() {
             let mut hinting_adapter =
                 HintingSink::new(&subfont.hint_state, &mut simplifying_adapter);
             charstring::evaluate(
@@ -250,14 +254,12 @@ impl<'a> Outlines<'a> {
             }
             range
         } else {
-            // Last chance, use the private dict range from the top dict if
-            // available.
+            // Use the private dict range from the top dict.
+            // Note: "A Private DICT is required but may be specified as having
+            // a length of 0 if there are no non-default values to be stored."
+            // <https://adobe-type-tools.github.io/font-tech-notes/pdfs/5176.CFF.pdf#page=25>
             let range = self.top_dict.private_dict_range.clone();
-            if !range.is_empty() {
-                Some(range.start as usize..range.end as usize)
-            } else {
-                None
-            }
+            Some(range.start as usize..range.end as usize)
         }
         .ok_or(Error::MissingPrivateDict)
     }
@@ -273,7 +275,7 @@ impl<'a> Outlines<'a> {
 #[derive(Clone)]
 pub(crate) struct Subfont {
     is_cff2: bool,
-    scale: Fixed,
+    scale: Option<Fixed>,
     subrs_offset: Option<usize>,
     pub(crate) hint_state: HintState,
     store_index: u16,
@@ -396,11 +398,11 @@ where
 /// scaling process.
 struct ScalingSink26Dot6<'a, S> {
     inner: &'a mut S,
-    scale: Fixed,
+    scale: Option<Fixed>,
 }
 
 impl<'a, S> ScalingSink26Dot6<'a, S> {
-    fn new(sink: &'a mut S, scale: Fixed) -> Self {
+    fn new(sink: &'a mut S, scale: Option<Fixed>) -> Self {
         Self { scale, inner: sink }
     }
 
@@ -419,11 +421,11 @@ impl<'a, S> ScalingSink26Dot6<'a, S> {
         // converts to font units.
         // <https://gitlab.freedesktop.org/freetype/freetype/-/blob/80a507a6b8e3d2906ad2c8ba69329bd2fb2a85ef/src/psaux/psobjs.c#L2219>
         let b = Fixed::from_bits(a.to_bits() >> 10);
-        if self.scale != Fixed::ONE {
+        if let Some(scale) = self.scale {
             // Scaled case:
             // 3. Multiply by the original scale factor (to 26.6)
             // <https://gitlab.freedesktop.org/freetype/freetype/-/blob/80a507a6b8e3d2906ad2c8ba69329bd2fb2a85ef/src/cff/cffgload.c#L721>
-            let c = b * self.scale;
+            let c = b * scale;
             // 4. Convert from 26.6 to 16.16
             Fixed::from_bits(c.to_bits() << 10)
         } else {
@@ -591,7 +593,7 @@ mod tests {
     #[test]
     fn unscaled_scaling_sink_produces_integers() {
         let nothing = &mut ();
-        let sink = ScalingSink26Dot6::new(nothing, Fixed::ONE);
+        let sink = ScalingSink26Dot6::new(nothing, None);
         for coord in [50.0, 50.1, 50.125, 50.5, 50.9] {
             assert_eq!(sink.scale(Fixed::from_f64(coord)).to_f32(), 50.0);
         }
@@ -604,7 +606,7 @@ mod tests {
         // match FreeType scaling with intermediate conversion to 26.6
         let scale = Fixed::from_bits((ppem * 64.) as i32) / Fixed::from_bits(upem as i32);
         let nothing = &mut ();
-        let sink = ScalingSink26Dot6::new(nothing, scale);
+        let sink = ScalingSink26Dot6::new(nothing, Some(scale));
         let inputs = [
             // input coord, expected scaled output
             (0.0, 0.0),
@@ -705,6 +707,36 @@ mod tests {
         let mut svg = SvgPen::default();
         glyph.draw(&hinter, &mut svg).unwrap();
         assert!(svg.to_string().ends_with('Z'));
+    }
+
+    /// Ensure we don't reject an empty Private DICT
+    #[test]
+    fn empty_private_dict() {
+        let font = FontRef::new(font_test_data::MATERIAL_ICONS_SUBSET).unwrap();
+        let common = OutlinesCommon::new(&font).unwrap();
+        let outlines = super::Outlines::new(&common).unwrap();
+        assert!(outlines.top_dict.private_dict_range.is_empty());
+        assert!(outlines.private_dict_range(0).unwrap().is_empty());
+    }
+
+    /// Actually apply a scale when the computed scale factor is
+    /// equal to Fixed::ONE.
+    ///
+    /// Specifically, when upem = 512 and ppem = 8, this results in
+    /// a scale factor of 65536 which was being interpreted as an
+    /// unscaled draw request.
+    #[test]
+    fn proper_scaling_when_factor_equals_fixed_one() {
+        let font = FontRef::new(font_test_data::MATERIAL_ICONS_SUBSET).unwrap();
+        assert_eq!(font.head().unwrap().units_per_em(), 512);
+        let glyphs = font.outline_glyphs();
+        let glyph = glyphs.get(GlyphId::new(1)).unwrap();
+        let mut svg = SvgPen::with_precision(6);
+        glyph
+            .draw((Size::new(8.0), LocationRef::default()), &mut svg)
+            .unwrap();
+        // This was initially producing unscaled values like M405.000...
+        assert!(svg.starts_with("M6.328125,7.000000 L1.671875,7.000000"));
     }
 
     /// For the given font data and extracted outlines, parse the extracted
