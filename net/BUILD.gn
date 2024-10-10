@@ -428,6 +428,8 @@ component("net") {
     "cookies/static_cookie_policy.h",
     "disk_cache/backend_cleanup_tracker.cc",
     "disk_cache/backend_cleanup_tracker.h",
+    "disk_cache/backend_experiment.cc",
+    "disk_cache/backend_experiment.h",
     "disk_cache/blockfile/addr.cc",
     "disk_cache/blockfile/addr.h",
     "disk_cache/blockfile/backend_impl.cc",

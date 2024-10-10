@@ -17,8 +17,10 @@
 #include "components/network_session_configurator/common/network_features.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/variations/variations_associated_data.h"
+#include "net/base/features.h"
 #include "net/base/host_mapping_rules.h"
 #include "net/base/host_port_pair.h"
+#include "net/disk_cache/backend_experiment.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_stream_factory.h"
 #include "net/third_party/quiche/src/quiche/http2/core/spdy_protocol.h"
@@ -843,32 +845,34 @@ TEST_F(NetworkSessionConfiguratorTest, HostRules) {
 }
 
 TEST_F(NetworkSessionConfiguratorTest, DefaultCacheBackend) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_MAC)
-  EXPECT_EQ(net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE,
-            ChooseCacheType());
-#else
-  EXPECT_EQ(net::URLRequestContextBuilder::HttpCacheParams::DISK_BLOCKFILE,
-            ChooseCacheType());
-#endif
+  if constexpr (disk_cache::IsSimpleBackendEnabledByDefaultPlatform()) {
+    EXPECT_EQ(net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE,
+              ChooseCacheType());
+  } else {
+    EXPECT_EQ(net::URLRequestContextBuilder::HttpCacheParams::DISK_BLOCKFILE,
+              ChooseCacheType());
+  }
 }
 
-TEST_F(NetworkSessionConfiguratorTest, SimpleCacheTrialExperimentYes) {
-  base::FieldTrialList::CreateFieldTrial("SimpleCacheTrial", "ExperimentYes");
+TEST_F(NetworkSessionConfiguratorTest, DiskCacheExperimentSimpleBackend) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      net::features::kDiskCacheBackendExperiment, {{"backend", "simple"}});
   EXPECT_EQ(net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE,
             ChooseCacheType());
 }
 
-TEST_F(NetworkSessionConfiguratorTest, SimpleCacheTrialDisable) {
-  base::FieldTrialList::CreateFieldTrial("SimpleCacheTrial", "Disable");
-#if !BUILDFLAG(IS_ANDROID)
-  EXPECT_EQ(net::URLRequestContextBuilder::HttpCacheParams::DISK_BLOCKFILE,
-            ChooseCacheType());
-#else  // BUILDFLAG(IS_ANDROID)
-  // Android always uses the simple cache.
-  EXPECT_EQ(net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE,
-            ChooseCacheType());
-#endif
+TEST_F(NetworkSessionConfiguratorTest, DiskCacheExperimentBlockfileBackend) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      net::features::kDiskCacheBackendExperiment, {{"backend", "blockfile"}});
+  if constexpr (disk_cache::IsSimpleBackendEnabledByDefaultPlatform()) {
+    EXPECT_EQ(net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE,
+              ChooseCacheType());
+  } else {
+    EXPECT_EQ(net::URLRequestContextBuilder::HttpCacheParams::DISK_BLOCKFILE,
+              ChooseCacheType());
+  }
 }
 
 TEST_F(NetworkSessionConfiguratorTest, Http2GreaseSettingsFromCommandLine) {

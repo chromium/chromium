@@ -619,6 +619,15 @@ NET_EXPORT BASE_DECLARE_FEATURE(kEncryptedAndPlaintextValuesAreInvalid);
 // from Static CT Logs will simply be ignored.
 NET_EXPORT BASE_DECLARE_FEATURE(kEnableStaticCTAPIEnforcement);
 
+// Finch experiment to select a disk cache backend.
+enum class DiskCacheBackend {
+  kSimple,
+  kBlockfile,
+};
+NET_EXPORT BASE_DECLARE_FEATURE(kDiskCacheBackendExperiment);
+NET_EXPORT extern const base::FeatureParam<DiskCacheBackend>
+    kDiskCacheBackendParam;
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_

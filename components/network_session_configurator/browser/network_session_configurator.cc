@@ -27,6 +27,7 @@
 #include "components/variations/variations_switches.h"
 #include "net/base/features.h"
 #include "net/base/host_mapping_rules.h"
+#include "net/disk_cache/backend_experiment.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_stream_factory.h"
 #include "net/quic/quic_context.h"
@@ -835,32 +836,13 @@ void ParseCommandLineAndFieldTrials(const base::CommandLine& command_line,
 }
 
 net::URLRequestContextBuilder::HttpCacheParams::Type ChooseCacheType() {
-#if !BUILDFLAG(IS_ANDROID)
-  const std::string experiment_name =
-      base::FieldTrialList::FindFullName("SimpleCacheTrial");
-  if (base::StartsWith(experiment_name, "Disable",
-                       base::CompareCase::INSENSITIVE_ASCII)) {
-    return net::URLRequestContextBuilder::HttpCacheParams::DISK_BLOCKFILE;
-  }
-
-  if (base::StartsWith(experiment_name, "ExperimentYes",
-                       base::CompareCase::INSENSITIVE_ASCII)) {
+  if constexpr (disk_cache::IsSimpleBackendEnabledByDefaultPlatform()) {
     return net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE;
   }
-#endif  // #if !BUILDFLAG(IS_ANDROID)
-
-  // Blockfile breaks on macOS 10.14 (see https://crbug.com/899874); so use
-  // SimpleCache even when we don't enable it via experiment, as long as we
-  // don't force it off (not used at this time). This unfortunately
-  // muddles the experiment data, but as this was written to be considered for
-  // backport, having it behave differently than in stable would be a bigger
-  // problem. TODO: Does this work in later macOS releases?
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_MAC)
-  return net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE;
-#else
+  if (disk_cache::InSimpleBackendExperimentGroup()) {
+    return net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE;
+  }
   return net::URLRequestContextBuilder::HttpCacheParams::DISK_BLOCKFILE;
-#endif
 }
 
 }  // namespace network_session_configurator

@@ -604,4 +604,16 @@ BASE_FEATURE(kEnableStaticCTAPIEnforcement,
              "EnableStaticCTAPIEnforcement",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDiskCacheBackendExperiment,
+             "DiskCacheBackendExperiment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+constexpr base::FeatureParam<DiskCacheBackend>::Option
+    kDiskCacheBackendOptions[] = {
+        {DiskCacheBackend::kSimple, "simple"},
+        {DiskCacheBackend::kBlockfile, "blockfile"},
+};
+const base::FeatureParam<DiskCacheBackend> kDiskCacheBackendParam{
+    &kDiskCacheBackendExperiment, "backend", DiskCacheBackend::kBlockfile,
+    &kDiskCacheBackendOptions};
+
 }  // namespace net::features

@@ -100,32 +100,6 @@ using base::Time;
 
 namespace {
 
-const char kExistingEntryKey[] = "existing entry key";
-
-std::unique_ptr<disk_cache::BackendImpl> CreateExistingEntryCache(
-    const base::FilePath& cache_path) {
-  net::TestCompletionCallback cb;
-
-  std::unique_ptr<disk_cache::BackendImpl> cache(
-      std::make_unique<disk_cache::BackendImpl>(cache_path,
-                                                /* cleanup_tracker = */ nullptr,
-                                                /* cache_thread = */ nullptr,
-                                                net::DISK_CACHE,
-                                                /* net_log = */ nullptr));
-  cache->Init(cb.callback());
-  if (cb.WaitForResult() != net::OK)
-    return nullptr;
-
-  TestEntryResultCompletionCallback cb2;
-  EntryResult result =
-      cache->CreateEntry(kExistingEntryKey, net::HIGHEST, cb2.callback());
-  result = cb2.GetResult(std::move(result));
-  if (result.net_error() != net::OK)
-    return nullptr;
-
-  return cache;
-}
-
 #if BUILDFLAG(IS_FUCHSIA)
 // Load tests with large numbers of file descriptors perform poorly on
 // virtualized test execution environments.
@@ -2516,100 +2490,6 @@ TEST_F(DiskCacheTest, WrongVersion) {
                                                 net::DISK_CACHE, nullptr));
   cache->Init(cb.callback());
   ASSERT_THAT(cb.WaitForResult(), IsError(net::ERR_FAILED));
-}
-
-// Tests that the disk cache successfully joins the control group, dropping the
-// existing cache in favour of a new empty cache.
-// Disabled on android since this test requires cache creator to create
-// blockfile caches.
-#if !BUILDFLAG(IS_ANDROID)
-TEST_F(DiskCacheTest, SimpleCacheControlJoin) {
-  std::unique_ptr<disk_cache::BackendImpl> cache =
-      CreateExistingEntryCache(cache_path_);
-  ASSERT_TRUE(cache.get());
-  cache.reset();
-
-  // Instantiate the SimpleCacheTrial, forcing this run into the
-  // ExperimentControl group.
-  base::FieldTrialList::CreateFieldTrial("SimpleCacheTrial",
-                                         "ExperimentControl");
-  TestBackendResultCompletionCallback cb;
-  disk_cache::BackendResult rv = disk_cache::CreateCacheBackend(
-      net::DISK_CACHE, net::CACHE_BACKEND_BLOCKFILE,
-      /*file_operations=*/nullptr, cache_path_, 0,
-      disk_cache::ResetHandling::kResetOnError, /*net_log=*/nullptr,
-      cb.callback());
-  rv = cb.GetResult(std::move(rv));
-  ASSERT_THAT(rv.net_error, IsOk());
-  EXPECT_EQ(0, rv.backend->GetEntryCount());
-}
-#endif
-
-// Tests that the disk cache can restart in the control group preserving
-// existing entries.
-TEST_F(DiskCacheTest, SimpleCacheControlRestart) {
-  // Instantiate the SimpleCacheTrial, forcing this run into the
-  // ExperimentControl group.
-  base::FieldTrialList::CreateFieldTrial("SimpleCacheTrial",
-                                         "ExperimentControl");
-
-  std::unique_ptr<disk_cache::BackendImpl> cache =
-      CreateExistingEntryCache(cache_path_);
-  ASSERT_TRUE(cache.get());
-
-  net::TestCompletionCallback cb;
-
-  const int kRestartCount = 5;
-  for (int i = 0; i < kRestartCount; ++i) {
-    cache = std::make_unique<disk_cache::BackendImpl>(
-        cache_path_, nullptr, nullptr, net::DISK_CACHE, nullptr);
-    cache->Init(cb.callback());
-    ASSERT_THAT(cb.WaitForResult(), IsOk());
-    EXPECT_EQ(1, cache->GetEntryCount());
-
-    TestEntryResultCompletionCallback cb2;
-    EntryResult result =
-        cache->OpenEntry(kExistingEntryKey, net::HIGHEST, cb2.callback());
-    result = cb2.GetResult(std::move(result));
-    result.ReleaseEntry()->Close();
-  }
-}
-
-// Tests that the disk cache can leave the control group preserving existing
-// entries.
-TEST_F(DiskCacheTest, SimpleCacheControlLeave) {
-  {
-    // Instantiate the SimpleCacheTrial, forcing this run into the
-    // ExperimentControl group.
-    base::FieldTrialList::CreateFieldTrial("SimpleCacheTrial",
-                                           "ExperimentControl");
-
-    std::unique_ptr<disk_cache::BackendImpl> cache =
-        CreateExistingEntryCache(cache_path_);
-    ASSERT_TRUE(cache.get());
-  }
-
-  // Instantiate the SimpleCacheTrial, forcing this run into the
-  // ExperimentNo group.
-  base::FieldTrialList::CreateFieldTrial("SimpleCacheTrial", "ExperimentNo");
-  net::TestCompletionCallback cb;
-
-  const int kRestartCount = 5;
-  for (int i = 0; i < kRestartCount; ++i) {
-    std::unique_ptr<disk_cache::BackendImpl> cache(
-        std::make_unique<disk_cache::BackendImpl>(cache_path_, nullptr, nullptr,
-                                                  net::DISK_CACHE, nullptr));
-    cache->Init(cb.callback());
-    ASSERT_THAT(cb.WaitForResult(), IsOk());
-    EXPECT_EQ(1, cache->GetEntryCount());
-
-    TestEntryResultCompletionCallback cb2;
-    EntryResult result =
-        cache->OpenEntry(kExistingEntryKey, net::HIGHEST, cb2.callback());
-    result = cb2.GetResult(std::move(result));
-    ASSERT_THAT(result.net_error(), IsOk());
-    result.ReleaseEntry()->Close();
-  }
 }
 
 // Tests that the cache is properly restarted on recovery error.

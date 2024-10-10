@@ -81,6 +81,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/features.h"
 #include "net/cert/asn1_util.h"
+#include "net/disk_cache/backend_experiment.h"
 #include "net/http/http_auth_preferences.h"
 #include "net/http/http_util.h"
 #include "net/net_buildflags.h"
@@ -1185,6 +1186,14 @@ bool GetHttpCacheBackendResetParam(PrefService* local_state) {
   } else if (base::FeatureList::IsEnabled(
                  net::features::kHttpCacheKeyingExperimentControlGroup2024)) {
     current_field_trial_status += " 20240814-ExperimentControlGroup";
+  }
+
+  if (disk_cache::InBackendExperiment()) {
+    if (disk_cache::InSimpleBackendExperimentGroup()) {
+      current_field_trial_status += " 20241007-DiskCache-Simple";
+    } else {
+      current_field_trial_status += " 20241007-DiskCache-Blockfile";
+    }
   }
 
   std::string previous_field_trial_status =
