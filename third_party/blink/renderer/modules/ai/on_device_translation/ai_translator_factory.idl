@@ -1,0 +1,19 @@
+[
+    RuntimeEnabled=TranslationAPI,
+    Exposed=(Window,Worker)
+]
+interface AITranslatorFactory {
+  [
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<AITranslator> create(optional AITranslatorCreateOptions options = {});
+// TODO(crbug.com/322229993): Add capabilities().
+};
+
+dictionary AITranslatorCreateOptions {
+  AbortSignal signal;
+  // TODO(crbug.com/322229993): Add AICreateMonitorCallback.
+  required DOMString sourceLanguage;
+  required DOMString targetLanguage;
+};

@@ -1,0 +1,21 @@
+[
+    RuntimeEnabled=TranslationAPI,
+    Exposed=(Window,Worker)
+]
+interface AITranslator {
+[
+  CallWith=ScriptState,
+  RaisesException
+]
+  Promise<DOMString> translate(DOMString input, optional AITranslatorTranslateOptions options = {});
+
+// TODO(crbug.com/322229993): Add `translateStreaming()`.
+[
+  CallWith=ScriptState
+]
+  undefined destroy();
+};
+
+dictionary AITranslatorTranslateOptions {
+  AbortSignal signal;
+};

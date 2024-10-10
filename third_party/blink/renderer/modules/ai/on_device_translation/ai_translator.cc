@@ -2,11 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/on_device_translation/language_translator.h"
+#include "third_party/blink/renderer/modules/ai/on_device_translation/ai_translator.h"
 
-#include "base/memory/scoped_refptr.h"
-#include "base/task/sequenced_task_runner.h"
-#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/on_device_translation/translator.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -17,30 +14,25 @@
 
 namespace blink {
 
-LanguageTranslator::LanguageTranslator(
-    const WTF::String source_lang,
-    const WTF::String target_lang,
-    scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : source_lang_(source_lang),
-      target_lang_(target_lang),
-      task_runner_(task_runner) {}
+AITranslator::AITranslator(scoped_refptr<base::SequencedTaskRunner> task_runner)
+    : task_runner_(task_runner) {}
 
-void LanguageTranslator::Trace(Visitor* visitor) const {
+void AITranslator::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   visitor->Trace(translator_remote_);
 }
 
 mojo::PendingReceiver<blink::mojom::blink::Translator>
-LanguageTranslator::GetTranslatorReceiver() {
+AITranslator::GetTranslatorReceiver() {
   return translator_remote_.BindNewPipeAndPassReceiver(task_runner_);
 }
 
-// TODO(crbug.com/322229993): The new version is AITranslator::translate().
-// Delete this old version.
-ScriptPromise<IDLString> LanguageTranslator::translate(
+ScriptPromise<IDLString> AITranslator::translate(
     ScriptState* script_state,
     const WTF::String& input,
+    AITranslatorTranslateOptions* options,
     ExceptionState& exception_state) {
+  // TODO(crbug.com/322229993): Take `options` into account.
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The execution context is not valid.");
@@ -69,6 +61,10 @@ ScriptPromise<IDLString> LanguageTranslator::translate(
                  WrapPersistent(resolver)));
 
   return promise;
+}
+
+void AITranslator::destroy(ScriptState*) {
+  // TODO(crbug.com/322229993): Implement the function.
 }
 
 }  // namespace blink

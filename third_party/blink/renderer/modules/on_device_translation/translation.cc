@@ -39,6 +39,8 @@ Translation::GetTranslationManagerRemote() {
   return translation_manager_remote_;
 }
 
+// TODO(crbug.com/322229993): The new version is
+// AITranslatorCapabilities::languagePairAvailable(). Delete this old version.
 ScriptPromise<V8TranslationAvailability> Translation::canTranslate(
     ScriptState* script_state,
     TranslationLanguageOptions* options,
@@ -78,6 +80,8 @@ ScriptPromise<V8TranslationAvailability> Translation::canTranslate(
   return promise;
 }
 
+// TODO(crbug.com/349927087): The new version is
+// AITranslatorFactory::create(). Delete this old version.
 ScriptPromise<LanguageTranslator> Translation::createTranslator(
     ScriptState* script_state,
     TranslationLanguageOptions* options,

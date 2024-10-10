@@ -83,6 +83,15 @@ interface AISummarizerFactory
     method capabilities
     method constructor
     method create
+interface AITranslator
+    attribute @@toStringTag
+    method constructor
+    method destroy
+    method translate
+interface AITranslatorFactory
+    attribute @@toStringTag
+    method constructor
+    method create
 interface AIWriter
     attribute @@toStringTag
     getter sharedContext
