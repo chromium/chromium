@@ -481,4 +481,26 @@ TEST_F(CSSPropertyTest, InsetAreaDisabled) {
   ASSERT_EQ(declarations->PropertyCount(), 0u);
 }
 
+TEST_F(CSSPropertyTest, AnchorSizeInsetsMarginsDisabled) {
+  ScopedCSSAnchorSizeInsetsMarginsForTest enabled(false);
+
+  String anchor_size_value("anchor-size(width)");
+  EXPECT_EQ(Parse("top", anchor_size_value), nullptr);
+  EXPECT_EQ(Parse("left", anchor_size_value), nullptr);
+  EXPECT_EQ(Parse("bottom", anchor_size_value), nullptr);
+  EXPECT_EQ(Parse("right", anchor_size_value), nullptr);
+  EXPECT_EQ(Parse("inset-block-start", anchor_size_value), nullptr);
+  EXPECT_EQ(Parse("inset-block-end", anchor_size_value), nullptr);
+  EXPECT_EQ(Parse("inset-inline-start", anchor_size_value), nullptr);
+  EXPECT_EQ(Parse("inset-inline-end", anchor_size_value), nullptr);
+  EXPECT_EQ(Parse("margin-top", anchor_size_value), nullptr);
+  EXPECT_EQ(Parse("margin-left", anchor_size_value), nullptr);
+  EXPECT_EQ(Parse("margin-bottom", anchor_size_value), nullptr);
+  EXPECT_EQ(Parse("margin-right", anchor_size_value), nullptr);
+  EXPECT_EQ(Parse("margin-block-start", anchor_size_value), nullptr);
+  EXPECT_EQ(Parse("margin-block-end", anchor_size_value), nullptr);
+  EXPECT_EQ(Parse("margin-inline-start", anchor_size_value), nullptr);
+  EXPECT_EQ(Parse("margin-inline-end", anchor_size_value), nullptr);
+}
+
 }  // namespace blink

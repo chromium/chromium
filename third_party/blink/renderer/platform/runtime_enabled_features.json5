@@ -920,6 +920,11 @@
       status: "stable",
     },
     {
+      // Support anchor-size() values in inset and margin properties.
+      name: "CSSAnchorSizeInsetsMargins",
+      status: "experimental",
+    },
+    {
       // Support for <string> syntax in @property
       // https://drafts.css-houdini.org/css-properties-values-api-1/#syntax-strings
       name: "CSSAtPropertyStringSyntax",
