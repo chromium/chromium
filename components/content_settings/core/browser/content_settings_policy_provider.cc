@@ -130,6 +130,12 @@ constexpr PrefsForManagedContentSettingsMapEntry
          ContentSettingsType::DIRECT_SOCKETS, CONTENT_SETTING_ALLOW},
         {prefs::kManagedDirectSocketsBlockedForUrls,
          ContentSettingsType::DIRECT_SOCKETS, CONTENT_SETTING_BLOCK},
+        {prefs::kManagedDirectSocketsPrivateNetworkAccessAllowedForUrls,
+         ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS,
+         CONTENT_SETTING_ALLOW},
+        {prefs::kManagedDirectSocketsPrivateNetworkAccessBlockedForUrls,
+         ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS,
+         CONTENT_SETTING_BLOCK},
 };
 
 constexpr const char* kManagedPrefs[] = {
@@ -180,6 +186,8 @@ constexpr const char* kManagedPrefs[] = {
     prefs::kManagedWebPrintingBlockedForUrls,
     prefs::kManagedDirectSocketsAllowedForUrls,
     prefs::kManagedDirectSocketsBlockedForUrls,
+    prefs::kManagedDirectSocketsPrivateNetworkAccessAllowedForUrls,
+    prefs::kManagedDirectSocketsPrivateNetworkAccessBlockedForUrls,
 };
 
 // The following preferences are only used to indicate if a default content
@@ -214,6 +222,7 @@ constexpr const char* kManagedDefaultPrefs[] = {
     prefs::kManagedDefaultThirdPartyStoragePartitioningSetting,
     prefs::kManagedDefaultWebPrintingSetting,
     prefs::kManagedDefaultDirectSocketsSetting,
+    prefs::kManagedDefaultDirectSocketsPrivateNetworkAccessSetting,
 };
 
 void ReportCookiesAllowedForUrlsUsage(
@@ -325,6 +334,8 @@ const PolicyProvider::PrefsForManagedDefaultMapEntry
          prefs::kManagedDefaultWebPrintingSetting},
         {ContentSettingsType::DIRECT_SOCKETS,
          prefs::kManagedDefaultDirectSocketsSetting},
+        {ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS,
+         prefs::kManagedDefaultDirectSocketsPrivateNetworkAccessSetting},
 };
 
 // static

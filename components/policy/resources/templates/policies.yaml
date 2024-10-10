@@ -1301,6 +1301,9 @@ policies:
   1300: AutofillPredictionSettings
   1301: ArcOpenLinksInBrowserByDefault
   1302: EnterpriseProfileBadgeToolbarSettings
+  1303: DefaultDirectSocketsPrivateNetworkAccessSetting
+  1304: DirectSocketsPrivateNetworkAccessAllowedForUrls
+  1305: DirectSocketsPrivateNetworkAccessBlockedForUrls
 
 atomic_groups:
   1: Homepage
@@ -1357,3 +1360,4 @@ atomic_groups:
   52: DirectSocketsSettings
   53: SkyVaultSettings
   54: BrowserEventReporting
+  55: DirectSocketsPrivateNetworkAccessSettings

@@ -2167,6 +2167,9 @@ chromium-metrics-reviews@google.com.
   <int value="1300" label="AutofillPredictionSettings"/>
   <int value="1301" label="ArcOpenLinksInBrowserByDefault"/>
   <int value="1302" label="EnterpriseProfileBadgeToolbarSettings"/>
+  <int value="1303" label="DefaultDirectSocketsPrivateNetworkAccessSetting"/>
+  <int value="1304" label="DirectSocketsPrivateNetworkAccessAllowedForUrls"/>
+  <int value="1305" label="DirectSocketsPrivateNetworkAccessBlockedForUrls"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

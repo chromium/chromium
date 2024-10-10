@@ -7,7 +7,7 @@
       "chromeos_ash"
     ],
     "simple_policy_pref_mapping_test": {
-      "pref_name": "profile.managed_direct_sockets_blocked_for_urls",
+      "pref_name": "profile.managed_direct_sockets_pna_blocked_for_urls",
       "default_value": [],
       "values_to_test": [
         [
