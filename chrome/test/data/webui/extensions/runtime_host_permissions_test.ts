@@ -5,9 +5,8 @@
 import 'chrome://extensions/extensions.js';
 
 import type {ExtensionsRuntimeHostPermissionsElement} from 'chrome://extensions/extensions.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise, isChildVisible} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isChildVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
 import {MetricsPrivateMock} from './test_util.js';
@@ -40,7 +39,7 @@ suite('RuntimeHostPermissions', function() {
     element.remove();
   });
 
-  test('permissions display', function() {
+  test('permissions display', async () => {
     const permissions: chrome.developerPrivate.RuntimeHostPermissions = {
       hostAccess: HostAccess.ON_CLICK,
       hasAllHosts: true,
@@ -48,7 +47,7 @@ suite('RuntimeHostPermissions', function() {
     };
 
     element.permissions = permissions;
-    flush();
+    await microtasksFinished();
 
     const testIsVisible = isChildVisible.bind(null, element);
     assertTrue(testIsVisible('#hostAccess'));
@@ -59,19 +58,26 @@ suite('RuntimeHostPermissions', function() {
     assertFalse(testIsVisible('#hosts'));
 
     // Changing the data's access should change the UI appropriately.
-    element.set('permissions.hostAccess', HostAccess.ON_ALL_SITES);
-    flush();
+    element.permissions = {
+      hostAccess: HostAccess.ON_ALL_SITES,
+      hasAllHosts: true,
+      hosts: [{granted: false, host: 'https://*/*'}],
+    };
+    await microtasksFinished();
     assertEquals(HostAccess.ON_ALL_SITES, selectHostAccess.value);
     assertFalse(testIsVisible('#hosts'));
 
     // Setting the mode to on specific sites should display the runtime hosts
     // list.
-    element.set('permissions.hostAccess', HostAccess.ON_SPECIFIC_SITES);
-    element.set('permissions.hosts', [
-      {host: 'https://example.com', granted: true},
-      {host: 'https://chromium.org', granted: true},
-    ]);
-    flush();
+    element.permissions = {
+      hostAccess: HostAccess.ON_SPECIFIC_SITES,
+      hasAllHosts: true,
+      hosts: [
+        {host: 'https://example.com', granted: true},
+        {host: 'https://chromium.org', granted: true},
+      ],
+    };
+    await microtasksFinished();
     assertEquals(HostAccess.ON_SPECIFIC_SITES, selectHostAccess.value);
     assertTrue(testIsVisible('#hosts'));
     // Expect three entries in the list: the two hosts + the add-host button.
@@ -82,7 +88,7 @@ suite('RuntimeHostPermissions', function() {
     assertTrue(testIsVisible('#add-host'));
   });
 
-  test('permissions display with enableEnhancedSiteControls flag', function() {
+  test('permissions display with enableEnhancedSiteControls flag', async () => {
     element.enableEnhancedSiteControls = true;
     const permissions: chrome.developerPrivate.RuntimeHostPermissions = {
       hostAccess: HostAccess.ON_CLICK,
@@ -94,7 +100,7 @@ suite('RuntimeHostPermissions', function() {
     };
 
     element.permissions = permissions;
-    flush();
+    await microtasksFinished();
 
     const testIsVisible = isChildVisible.bind(null, element);
     assertTrue(testIsVisible('#newHostAccess'));
@@ -107,14 +113,20 @@ suite('RuntimeHostPermissions', function() {
     assertFalse(testIsVisible('#add-site-button'));
 
     // Changing the data's access should change the UI appropriately.
-    element.set('permissions.hostAccess', HostAccess.ON_ALL_SITES);
-    flush();
+    const allSitesPermissions = structuredClone(permissions) as
+        chrome.developerPrivate.RuntimeHostPermissions;
+    allSitesPermissions.hostAccess = HostAccess.ON_ALL_SITES;
+    element.permissions = allSitesPermissions;
+    await microtasksFinished();
     assertEquals(HostAccess.ON_ALL_SITES, selectHostAccess.value);
     assertFalse(testIsVisible('#hosts'));
     assertFalse(testIsVisible('#add-site-button'));
 
-    element.set('permissions.hostAccess', HostAccess.ON_SPECIFIC_SITES);
-    flush();
+    const specificSitesPermissions = structuredClone(permissions) as
+        chrome.developerPrivate.RuntimeHostPermissions;
+    specificSitesPermissions.hostAccess = HostAccess.ON_SPECIFIC_SITES;
+    element.permissions = specificSitesPermissions;
+    await microtasksFinished();
     assertEquals(HostAccess.ON_SPECIFIC_SITES, selectHostAccess.value);
     assertTrue(testIsVisible('#hosts'));
     assertTrue(testIsVisible('#add-site-button'));
@@ -129,7 +141,7 @@ suite('RuntimeHostPermissions', function() {
     };
 
     element.permissions = permissions;
-    flush();
+    await microtasksFinished();
 
     const selectHostAccess = element.getSelectMenu();
     assertTrue(!!selectHostAccess);
@@ -175,7 +187,7 @@ suite('RuntimeHostPermissions', function() {
     };
 
     element.permissions = permissions;
-    flush();
+    await microtasksFinished();
 
     const selectHostAccess = element.getSelectMenu();
     assertTrue(!!selectHostAccess);
@@ -183,7 +195,7 @@ suite('RuntimeHostPermissions', function() {
     selectHostAccess.value = HostAccess.ON_SPECIFIC_SITES;
     selectHostAccess.dispatchEvent(new CustomEvent('change'));
 
-    flush();
+    await microtasksFinished();
     const dialog =
         element.shadowRoot!.querySelector('extensions-runtime-hosts-dialog');
     assertTrue(!!dialog);
@@ -205,7 +217,7 @@ suite('RuntimeHostPermissions', function() {
     dialog.shadowRoot!.querySelector<HTMLElement>('.cancel-button')!.click();
     await whenClosed;
 
-    flush();
+    await microtasksFinished();
     assertEquals(HostAccess.ON_CLICK, selectHostAccess.value);
     assertEquals(
         metricsPrivateMock.getUserActionCount(
@@ -221,7 +233,7 @@ suite('RuntimeHostPermissions', function() {
     // as asserted.
     selectHostAccess.value = HostAccess.ON_ALL_SITES;
     selectHostAccess.dispatchEvent(new CustomEvent('change'));
-    flush();
+    await microtasksFinished();
     assertEquals(
         metricsPrivateMock.getUserActionCount(
             'Extensions.Settings.Hosts.OnAllSitesSelected'),
@@ -236,7 +248,7 @@ suite('RuntimeHostPermissions', function() {
     };
 
     element.permissions = permissions;
-    flush();
+    await microtasksFinished();
 
     const selectHostAccess = element.getSelectMenu();
     assertTrue(!!selectHostAccess);
@@ -248,7 +260,7 @@ suite('RuntimeHostPermissions', function() {
             'Extensions.Settings.Hosts.OnSpecificSitesSelected'),
         1);
 
-    flush();
+    await microtasksFinished();
     const dialog =
         element.shadowRoot!.querySelector('extensions-runtime-hosts-dialog');
     assertTrue(!!dialog);
@@ -269,7 +281,7 @@ suite('RuntimeHostPermissions', function() {
     const whenClosed = eventToPromise('close', dialog);
     dialog.$.submit.click();
     await whenClosed;
-    flush();
+    await microtasksFinished();
     assertEquals(HostAccess.ON_SPECIFIC_SITES, selectHostAccess.value);
     assertEquals(
         metricsPrivateMock.getUserActionCount(
@@ -286,7 +298,7 @@ suite('RuntimeHostPermissions', function() {
       ],
     };
     element.permissions = updatedPermissions;
-    flush();
+    await microtasksFinished();
 
     // Open the dialog by clicking to edit the host permission.
     const editHost =
@@ -303,7 +315,7 @@ suite('RuntimeHostPermissions', function() {
         actionMenu.querySelector<HTMLElement>('#action-menu-edit');
     assertTrue(!!actionMenuEdit);
     actionMenuEdit.click();
-    flush();
+    await microtasksFinished();
     assertEquals(
         metricsPrivateMock.getUserActionCount(
             'Extensions.Settings.Hosts.ActionMenuEditActivated'),
@@ -319,7 +331,7 @@ suite('RuntimeHostPermissions', function() {
     assertEquals('https://example.com/*', newDialog.currentSite);
   });
 
-  test('clicking add host triggers dialog', function() {
+  test('clicking add host triggers dialog', async () => {
     const permissions: chrome.developerPrivate.RuntimeHostPermissions = {
       hostAccess: HostAccess.ON_SPECIFIC_SITES,
       hasAllHosts: true,
@@ -331,7 +343,7 @@ suite('RuntimeHostPermissions', function() {
     };
 
     element.permissions = permissions;
-    flush();
+    await microtasksFinished();
 
     const addHostButton =
         element.shadowRoot!.querySelector<HTMLElement>('#add-host');
@@ -339,7 +351,7 @@ suite('RuntimeHostPermissions', function() {
     assertTrue(isChildVisible(element, '#add-host'));
 
     addHostButton.click();
-    flush();
+    await microtasksFinished();
     assertEquals(
         metricsPrivateMock.getUserActionCount(
             'Extensions.Settings.Hosts.AddHostActivated'),
@@ -363,7 +375,7 @@ suite('RuntimeHostPermissions', function() {
       ],
     };
     element.permissions = permissions;
-    flush();
+    await microtasksFinished();
 
     const editHost =
         element.shadowRoot!.querySelector<HTMLElement>('.open-edit-host');
@@ -391,7 +403,7 @@ suite('RuntimeHostPermissions', function() {
     assertFalse(actionMenu.open);
   });
 
-  test('clicking edit host triggers dialog', function() {
+  test('clicking edit host triggers dialog', async () => {
     const permissions: chrome.developerPrivate.RuntimeHostPermissions = {
       hostAccess: HostAccess.ON_SPECIFIC_SITES,
       hasAllHosts: true,
@@ -402,7 +414,7 @@ suite('RuntimeHostPermissions', function() {
       ],
     };
     element.permissions = permissions;
-    flush();
+    await microtasksFinished();
 
     const editHost =
         element.shadowRoot!.querySelector<HTMLElement>('.open-edit-host');
@@ -416,7 +428,7 @@ suite('RuntimeHostPermissions', function() {
     assertTrue(!!actionMenuEdit);
 
     actionMenuEdit.click();
-    flush();
+    await microtasksFinished();
     const dialog =
         element.shadowRoot!.querySelector('extensions-runtime-hosts-dialog');
     assertTrue(!!dialog);
@@ -425,7 +437,7 @@ suite('RuntimeHostPermissions', function() {
     assertEquals('https://chromium.org', dialog.currentSite);
   });
 
-  test('clicking edit host with enableEnhancedSiteControls flag', function() {
+  test('clicking edit host with enableEnhancedSiteControls flag', async () => {
     element.enableEnhancedSiteControls = true;
     const permissions: chrome.developerPrivate.RuntimeHostPermissions = {
       hostAccess: HostAccess.ON_SPECIFIC_SITES,
@@ -436,13 +448,13 @@ suite('RuntimeHostPermissions', function() {
     };
 
     element.permissions = permissions;
-    flush();
+    await microtasksFinished();
 
     const editHost =
         element.shadowRoot!.querySelector<HTMLElement>('.edit-host');
     assertTrue(!!editHost);
     editHost.click();
-    flush();
+    await microtasksFinished();
 
     // clicking the `editHost` for the site should open the dialog.
     const dialog =
@@ -466,13 +478,13 @@ suite('RuntimeHostPermissions', function() {
         };
 
         element.permissions = permissions;
-        flush();
+        await microtasksFinished();
 
         const removeHost =
             element.shadowRoot!.querySelector<HTMLElement>('.remove-host');
         assertTrue(!!removeHost);
         removeHost.click();
-        flush();
+        await microtasksFinished();
 
         const [id, site] =
             await delegate.whenCalled('removeRuntimeHostPermission');
@@ -496,7 +508,7 @@ suite('RuntimeHostPermissions', function() {
         };
 
         element.permissions = permissions;
-        flush();
+        await microtasksFinished();
 
         const selectHostAccess = element.getSelectMenu();
         assertTrue(!!selectHostAccess);
@@ -504,7 +516,7 @@ suite('RuntimeHostPermissions', function() {
         // Change the `selectHostAccess` value and the dialog should be open.
         selectHostAccess.value = HostAccess.ON_CLICK;
         selectHostAccess.dispatchEvent(new CustomEvent('change'));
-        flush();
+        await microtasksFinished();
 
         let dialog = element.getRemoveSiteDialog();
         assertTrue(!!dialog);
@@ -516,14 +528,14 @@ suite('RuntimeHostPermissions', function() {
         assertTrue(!!cancel);
         cancel.click();
 
-        flush();
+        await microtasksFinished();
         assertFalse(!!element.getRemoveSiteDialog());
         assertEquals(HostAccess.ON_SPECIFIC_SITES, selectHostAccess.value);
 
         // Change the `selectHostAccess` value and the dialog should be open.
         selectHostAccess.value = HostAccess.ON_CLICK;
         selectHostAccess.dispatchEvent(new CustomEvent('change'));
-        flush();
+        await microtasksFinished();
 
         dialog = element.getRemoveSiteDialog();
         assertTrue(!!dialog);
@@ -539,7 +551,7 @@ suite('RuntimeHostPermissions', function() {
         assertEquals(ITEM_ID, id);
         assertEquals(HostAccess.ON_CLICK, access);
 
-        flush();
+        await microtasksFinished();
         assertFalse(!!element.getRemoveSiteDialog());
         assertEquals(HostAccess.ON_CLICK, selectHostAccess.value);
       });

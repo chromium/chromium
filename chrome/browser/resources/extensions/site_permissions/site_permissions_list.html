@@ -9,7 +9,7 @@
   ${this.sites.map(item => html`
     <div class="site-row">
       <div class="site-favicon"
-          style="background-image:${this.getFaviconUrl_(item)}"></div>
+          .style="background-image:${this.getFaviconUrl_(item)}"></div>
       <span class="site">${item}</span>
       <cr-icon-button class="icon-more-vert no-overlap" data-site="${item}"
           @click="${this.onDotsClick_}">

@@ -13,6 +13,7 @@ import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polym
 import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {ItemDelegate} from '../item.js';
+import {DummyItemDelegate, FakeChromeEvent} from '../item.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 
@@ -32,12 +33,6 @@ export interface SiteSettingsDelegate {
       Promise<void>;
   getUserSiteSettingsChangedTarget():
       ChromeEvent<(settings: chrome.developerPrivate.UserSiteSettings) => void>;
-}
-
-class FakeChromeEvent {
-  addListener(_listener: Function) {}
-  removeListener(_listener: Function) {}
-  callListeners(..._args: any[]) {}
 }
 
 export class DummySiteSettingsDelegate {
@@ -68,43 +63,32 @@ export class DummySiteSettingsDelegate {
   }
 }
 
-export class DummySiteSettingsMixinDelegate extends DummySiteSettingsDelegate {
-  deleteItem(_id: string) {}
-  deleteItems(_ids: string[]) {
+// Have to reproduce DummySiteSettingsDelegate since TS does not allow
+// extending multiple classes.
+export class DummySiteSettingsMixinDelegate extends DummyItemDelegate {
+  getUserSiteSettings() {
+    return Promise.resolve({permittedSites: [], restrictedSites: []});
+  }
+  addUserSpecifiedSites(
+      _siteSet: chrome.developerPrivate.SiteSet, _hosts: string[]) {
     return Promise.resolve();
   }
-  uninstallItem(_id: string) {
+  removeUserSpecifiedSites(
+      _siteSet: chrome.developerPrivate.SiteSet, _hosts: string[]) {
     return Promise.resolve();
   }
-  setItemEnabled(_id: string, _isEnabled: boolean) {}
-  setItemAllowedIncognito(_id: string, _isAllowedIncognito: boolean) {}
-  setItemAllowedOnFileUrls(_id: string, _isAllowedOnFileUrls: boolean) {}
-  setItemHostAccess(
-      _id: string, _hostAccess: chrome.developerPrivate.HostAccess) {}
-  setItemCollectsErrors(_id: string, _collectsErrors: boolean) {}
-  inspectItemView(_id: string, _view: chrome.developerPrivate.ExtensionView) {}
-  openUrl(_url: string) {}
-  reloadItem(_id: string) {
+  getUserAndExtensionSitesByEtld() {
+    return Promise.resolve([]);
+  }
+  getMatchingExtensionsForSite(_site: string) {
+    return Promise.resolve([]);
+  }
+  updateSiteAccess(
+      _site: string,
+      _updates: chrome.developerPrivate.ExtensionSiteAccessUpdate[]) {
     return Promise.resolve();
   }
-  repairItem(_id: string) {}
-  showItemOptionsPage(_extension: chrome.developerPrivate.ExtensionInfo) {}
-  showInFolder(_id: string) {}
-  getExtensionSize(_id: string) {
-    return Promise.resolve('');
-  }
-  addRuntimeHostPermission(_id: string, _host: string) {
-    return Promise.resolve();
-  }
-  removeRuntimeHostPermission(_id: string, _host: string) {
-    return Promise.resolve();
-  }
-  setItemSafetyCheckWarningAcknowledged(
-      _id: string, _reason: chrome.developerPrivate.SafetyCheckWarningReason) {}
-  setShowAccessRequestsInToolbar(_id: string, _showRequests: boolean) {}
-  setItemPinnedToToolbar(_id: string, _pinnedToToolbar: boolean) {}
-  recordUserAction(_metricName: string) {}
-  getItemStateChangedTarget() {
+  getUserSiteSettingsChangedTarget() {
     return new FakeChromeEvent();
   }
 }
