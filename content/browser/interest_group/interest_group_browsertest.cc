@@ -25053,6 +25053,183 @@ IN_PROC_BROWSER_TEST_F(InterestGroupCrossOriginTrustedSignalsBrowserTest,
                            /*attest_signals_origin=*/false);
 }
 
+class FledgeEnableUserAgentAndClientHintsBrowserTest
+    : public InterestGroupBrowserTest {
+ public:
+  FledgeEnableUserAgentAndClientHintsBrowserTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kFledgeEnableUserAgentAndClientHints},
+        /*disabled_features=*/{});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(FledgeEnableUserAgentAndClientHintsBrowserTest,
+                       RunAdAuctionWithWinnerWithUserAgentOverridden) {
+  URLLoaderMonitor url_loader_monitor;
+
+  web_contents()->SetUserAgentOverride(
+      blink::UserAgentOverride::UserAgentOnly("overridden-user-agent"),
+      /*override_in_new_tabs=*/false);
+  web_contents()
+      ->GetController()
+      .GetLastCommittedEntry()
+      ->SetIsOverridingUserAgent(true);
+
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url =
+      embedded_https_test_server().GetURL("c.test", "/echo?render_cars");
+
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          blink::TestInterestGroupBuilder(
+              /*owner=*/test_origin,
+              /*name=*/"cars")
+              .SetBiddingUrl(embedded_https_test_server().GetURL(
+                  "a.test", "/interest_group/bidding_logic.js"))
+              .SetTrustedBiddingSignalsUrl(embedded_https_test_server().GetURL(
+                  "a.test", "/interest_group/trusted_bidding_signals.json"))
+              .SetTrustedBiddingSignalsKeys({{"key1"}})
+              .SetAds(/*ads=*/{{{ad_url, R"({"ad":"metadata","here":[1,2]})"}}})
+              .Build()));
+
+  std::string auction_config = JsReplace(
+      R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    interestGroupBuyers: [$1],
+                })",
+      test_origin,
+      embedded_https_test_server().GetURL("a.test",
+                                          "/interest_group/decision_logic.js"));
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
+
+  // Check ResourceRequest structs of requests issued by the worklet process.
+  const struct ExpectedRequest {
+    GURL url;
+    const char* accept_header;
+  } kExpectedRequests[] = {
+      {embedded_https_test_server().GetURL("a.test",
+                                           "/interest_group/bidding_logic.js"),
+       "application/javascript"},
+      {embedded_https_test_server().GetURL(
+           "a.test",
+           "/interest_group/trusted_bidding_signals.json?"
+           "hostname=a.test&keys=key1&interestGroupNames=cars"),
+       "application/json"},
+      {embedded_https_test_server().GetURL("a.test",
+                                           "/interest_group/decision_logic.js"),
+       "application/javascript"},
+  };
+  for (const auto& expected_request : kExpectedRequests) {
+    SCOPED_TRACE(expected_request.url);
+
+    std::optional<network::ResourceRequest> request =
+        url_loader_monitor.GetRequestInfo(expected_request.url);
+    ASSERT_TRUE(request);
+
+    EXPECT_EQ(2u, request->headers.GetHeaderVector().size());
+    EXPECT_THAT(request->headers.GetHeader(net::HttpRequestHeaders::kAccept),
+                testing::Optional(expected_request.accept_header));
+    EXPECT_THAT(request->headers.GetHeader(net::HttpRequestHeaders::kUserAgent),
+                "overridden-user-agent");
+  }
+}
+
+class FledgeEnableUserAgentAndClientHintsDisabledBrowserTest
+    : public InterestGroupBrowserTest {
+ public:
+  FledgeEnableUserAgentAndClientHintsDisabledBrowserTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{features::kFledgeEnableUserAgentAndClientHints});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(FledgeEnableUserAgentAndClientHintsDisabledBrowserTest,
+                       RunAdAuctionWithWinnerWithUserAgentOverridden) {
+  URLLoaderMonitor url_loader_monitor;
+
+  web_contents()->SetUserAgentOverride(
+      blink::UserAgentOverride::UserAgentOnly("overridden-user-agent"), false);
+  web_contents()
+      ->GetController()
+      .GetLastCommittedEntry()
+      ->SetIsOverridingUserAgent(true);
+
+  GURL test_url =
+      embedded_https_test_server().GetURL("a.test", "/page_with_iframe.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+  GURL ad_url =
+      embedded_https_test_server().GetURL("c.test", "/echo?render_cars");
+
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          blink::TestInterestGroupBuilder(
+              /*owner=*/test_origin,
+              /*name=*/"cars")
+              .SetBiddingUrl(embedded_https_test_server().GetURL(
+                  "a.test", "/interest_group/bidding_logic.js"))
+              .SetTrustedBiddingSignalsUrl(embedded_https_test_server().GetURL(
+                  "a.test", "/interest_group/trusted_bidding_signals.json"))
+              .SetTrustedBiddingSignalsKeys({{"key1"}})
+              .SetAds(/*ads=*/{{{ad_url, R"({"ad":"metadata","here":[1,2]})"}}})
+              .Build()));
+
+  std::string auction_config = JsReplace(
+      R"({
+    seller: $1,
+    decisionLogicURL: $2,
+    interestGroupBuyers: [$1],
+                })",
+      test_origin,
+      embedded_https_test_server().GetURL("a.test",
+                                          "/interest_group/decision_logic.js"));
+  RunAuctionAndWaitForURLAndNavigateIframe(auction_config, ad_url);
+
+  // Check ResourceRequest structs of requests issued by the worklet process.
+  const struct ExpectedRequest {
+    GURL url;
+    const char* accept_header;
+  } kExpectedRequests[] = {
+      {embedded_https_test_server().GetURL("a.test",
+                                           "/interest_group/bidding_logic.js"),
+       "application/javascript"},
+      {embedded_https_test_server().GetURL(
+           "a.test",
+           "/interest_group/trusted_bidding_signals.json?"
+           "hostname=a.test&keys=key1&interestGroupNames=cars"),
+       "application/json"},
+      {embedded_https_test_server().GetURL("a.test",
+                                           "/interest_group/decision_logic.js"),
+       "application/javascript"},
+  };
+  for (const auto& expected_request : kExpectedRequests) {
+    SCOPED_TRACE(expected_request.url);
+
+    std::optional<network::ResourceRequest> request =
+        url_loader_monitor.GetRequestInfo(expected_request.url);
+    ASSERT_TRUE(request);
+
+    EXPECT_EQ(1u, request->headers.GetHeaderVector().size());
+    EXPECT_THAT(request->headers.GetHeader(net::HttpRequestHeaders::kAccept),
+                testing::Optional(expected_request.accept_header));
+    EXPECT_THAT(request->headers.GetHeader(net::HttpRequestHeaders::kUserAgent),
+                std::nullopt);
+  }
+}
+
 class RealTimeReportingEnabledTest : public InterestGroupBrowserTest {
  public:
   RealTimeReportingEnabledTest() {

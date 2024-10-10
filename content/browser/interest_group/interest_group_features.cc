@@ -32,6 +32,11 @@ BASE_FEATURE(kEnableIFrameAdAuctionHeaders,
              "EnableIFrameAdAuctionHeaders",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enable the user agent header in auction requests to be overridden.
+BASE_FEATURE(kFledgeEnableUserAgentAndClientHints,
+             "FledgeEnableUserAgentAndClientHints",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable write ahead logging for interest group storage.
 BASE_FEATURE(kFledgeEnableWALForInterestGroupStorage,
              "FledgeEnableWALForInterestGroupStorage",
