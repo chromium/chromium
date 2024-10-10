@@ -311,19 +311,20 @@ TEST_F(HistoryEmbeddingsServiceTest, SearchCallsCallbackWithAnswer) {
 
   // No answer on initial search result.
   SearchResult first_result = future.Take();
-  EXPECT_EQ(ComputeAnswerStatus::UNSPECIFIED,
+  EXPECT_EQ(ComputeAnswerStatus::kUnspecified,
             first_result.answerer_result.status);
   EXPECT_TRUE(first_result.AnswerText().empty());
 
   // Second result is published to indicate an answer is being attempted. The
   // answer should still be empty.
   SearchResult second_result = future.Take();
-  EXPECT_EQ(second_result.answerer_result.status, ComputeAnswerStatus::LOADING);
+  EXPECT_EQ(second_result.answerer_result.status,
+            ComputeAnswerStatus::kLoading);
   EXPECT_TRUE(second_result.AnswerText().empty());
 
   // Then the answerer responds and another result is published with answer.
   SearchResult final_result = future.Take();
-  EXPECT_EQ(final_result.answerer_result.status, ComputeAnswerStatus::SUCCESS);
+  EXPECT_EQ(final_result.answerer_result.status, ComputeAnswerStatus::kSuccess);
   EXPECT_FALSE(final_result.AnswerText().empty());
 }
 
@@ -644,7 +645,7 @@ TEST_F(HistoryEmbeddingsServiceTest, AnswerMocked) {
                           future.GetCallback());
   AnswererResult result = future.Take();
 
-  EXPECT_EQ(result.status, ComputeAnswerStatus::SUCCESS);
+  EXPECT_EQ(result.status, ComputeAnswerStatus::kSuccess);
   EXPECT_EQ(result.query, "test query");
   EXPECT_EQ(result.answer.text(), "This is the answer to query 'test query'.");
 }

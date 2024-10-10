@@ -189,7 +189,7 @@ TEST_F(HistoryEmbeddingsHandlerTest, FormatsMojoResults) {
   };
   embeddings_result.query = "search query";
   embeddings_result.answerer_result.status =
-      history_embeddings::ComputeAnswerStatus::SUCCESS;
+      history_embeddings::ComputeAnswerStatus::kSuccess;
   embeddings_result.answerer_result.answer.set_text("the answer");
   embeddings_result.answerer_result.url = "http://other.com";
   embeddings_result.answerer_result.text_directives = {"text fragment"};

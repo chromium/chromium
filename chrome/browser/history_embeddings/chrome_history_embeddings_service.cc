@@ -10,6 +10,7 @@
 #include "chrome/browser/optimization_guide/chrome_model_quality_logs_uploader_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "components/history_embeddings/history_embeddings_features.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
@@ -38,6 +39,9 @@ ChromeHistoryEmbeddingsService::ChromeHistoryEmbeddingsService(
 ChromeHistoryEmbeddingsService::~ChromeHistoryEmbeddingsService() = default;
 
 bool ChromeHistoryEmbeddingsService::IsAnswererUseAllowed() const {
+  if (kForceAnswererUseAllowed.Get()) {
+    return true;
+  }
   if (!optimization_guide_service_) {
     return false;
   }

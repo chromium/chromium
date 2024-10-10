@@ -539,20 +539,20 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest,
     SearchResult first_result = search_future.Take();
     EXPECT_EQ(first_result.scored_url_rows.size(), 1u);
     EXPECT_EQ(first_result.answerer_result.status,
-              ComputeAnswerStatus::UNSPECIFIED);
+              ComputeAnswerStatus::kUnspecified);
     EXPECT_TRUE(first_result.AnswerText().empty());
 
     // Second published search result includes loading state.
     SearchResult second_result = search_future.Take();
     EXPECT_EQ(second_result.scored_url_rows.size(), 1u);
     EXPECT_EQ(second_result.answerer_result.status,
-              ComputeAnswerStatus::LOADING);
+              ComputeAnswerStatus::kLoading);
     EXPECT_TRUE(second_result.AnswerText().empty());
 
     SearchResult final_result = search_future.Take();
     EXPECT_EQ(final_result.scored_url_rows.size(), 1u);
     EXPECT_EQ(final_result.answerer_result.status,
-              ComputeAnswerStatus::SUCCESS);
+              ComputeAnswerStatus::kSuccess);
     EXPECT_FALSE(final_result.AnswerText().empty());
 
     histogram_tester.ExpectUniqueSample("History.Embeddings.QueryAnswerable",

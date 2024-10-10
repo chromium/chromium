@@ -83,6 +83,10 @@ extern const base::FeatureParam<double> kMlAnswererMinScore;
 // development.
 extern const base::FeatureParam<int> kMockAnswererDelayMS;
 
+// This can be used to bypass IsAnswererUseAllowed checks. It's necessary for
+// testing and development but should remain false in real configurations.
+extern const base::FeatureParam<bool> kForceAnswererUseAllowed;
+
 // Specifies whether to show images in results for search results on the
 // chrome://history page.
 extern const base::FeatureParam<bool> kEnableImagesForResults;

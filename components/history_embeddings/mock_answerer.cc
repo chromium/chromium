@@ -28,7 +28,7 @@ void MockAnswerer::ComputeAnswer(std::string query,
       FROM_HERE,
       base::BindOnce(
           std::move(callback),
-          AnswererResult{ComputeAnswerStatus::SUCCESS, query, answer}),
+          AnswererResult{ComputeAnswerStatus::kSuccess, query, answer}),
       base::Milliseconds(kMockAnswererDelayMS.Get()));
 }
 

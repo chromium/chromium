@@ -83,7 +83,7 @@ TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerNoSession) {
   ml_answerer_->ComputeAnswer("query", context, result_future.GetCallback());
 
   AnswererResult result = result_future.Take();
-  EXPECT_EQ(ComputeAnswerStatus::MODEL_UNAVAILABLE, result.status);
+  EXPECT_EQ(ComputeAnswerStatus::kModelUnavailable, result.status);
 }
 
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -127,7 +127,7 @@ TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerExecutionFailure) {
   ml_answerer_->ComputeAnswer("query", context, result_future.GetCallback());
 
   AnswererResult result = result_future.Take();
-  EXPECT_EQ(ComputeAnswerStatus::EXECUTION_FAILURE, result.status);
+  EXPECT_EQ(ComputeAnswerStatus::kExecutionFailure, result.status);
 }
 #endif
 
@@ -255,7 +255,7 @@ TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerUnanswerable) {
   TestFuture<AnswererResult> future;
   ml_answerer_->ComputeAnswer("query", context, future.GetCallback());
   const auto answer_result = future.Take();
-  EXPECT_EQ(ComputeAnswerStatus::UNANSWERABLE, answer_result.status);
+  EXPECT_EQ(ComputeAnswerStatus::kUnanswerable, answer_result.status);
 }
 
 }  // namespace history_embeddings

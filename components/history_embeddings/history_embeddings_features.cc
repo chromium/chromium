@@ -101,6 +101,11 @@ const base::FeatureParam<int> kMockAnswererDelayMS(&kHistoryEmbeddings,
                                                    "MockAnswererDelayMS",
                                                    0);
 
+const base::FeatureParam<bool> kForceAnswererUseAllowed(
+    &kHistoryEmbeddings,
+    "ForceAnswererUseAllowed",
+    false);
+
 const base::FeatureParam<bool> kEnableImagesForResults(&kHistoryEmbeddings,
                                                        "EnableImagesForResults",
                                                        false);

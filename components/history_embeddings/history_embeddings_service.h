@@ -344,7 +344,8 @@ class HistoryEmbeddingsService : public KeyedService,
   // Called after the answerer finishes computing an answer. Combines
   // the `answer_result` into `search_result` and invokes `callback`
   // with new search result complete with answer.
-  void OnAnswerComputed(SearchResultCallback callback,
+  void OnAnswerComputed(base::Time start_time,
+                        SearchResultCallback callback,
                         SearchResult search_result,
                         AnswererResult answerer_result);
 

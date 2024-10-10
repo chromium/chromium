@@ -1740,6 +1740,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.Embeddings.ComputeAnswerStatus"
+    enum="ComputeAnswerStatus" expires_after="2024-12-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
+  <summary>
+    The status returned by the answerer after calling ComputeAnswer.
+
+    ComputeAnswer is called once for each query as it is entered in a
+    history_embeddings UI (history page, side panel). This is not once per
+    keystroke due to debouncing logic and other constraints on query acceptance
+    (minimum length, number of terms, etc.) but is still frequent enough that
+    cancellation is common and expected.
+  </summary>
+</histogram>
+
+<histogram name="History.Embeddings.ComputeAnswerTime{ComputeAnswerStatus}"
+    units="ms" expires_after="2024-12-31">
+  <owner>orinj@chromium.org</owner>
+  <owner>src/components/history_embeddings/OWNERS</owner>
+  <summary>
+    The time the HistoryEmbeddingsService waited to receive a response from the
+    answerer after calling ComputeAnswer.
+
+    ComputeAnswer is called once for each query as it is entered in a
+    history_embeddings UI (history page, side panel). This is not once per
+    keystroke due to debouncing logic and other constraints on query acceptance
+    (minimum length, number of terms, etc.) but is still frequent enough that
+    cancellation is common and expected.
+  </summary>
+  <token key="ComputeAnswerStatus">
+    <variant name="" summary="Any status, unsliced"/>
+    <variant name=".ExecutionCancelled" summary="ExecutionCancelled"/>
+    <variant name=".ExecutionFailure" summary="ExecutionFailure"/>
+    <variant name=".Loading" summary="Loading"/>
+    <variant name=".ModelUnavailable" summary="ModelUnavailable"/>
+    <variant name=".Success" summary="Success"/>
+    <variant name=".Unanswerable" summary="Unanswerable"/>
+  </token>
+</histogram>
+
 <histogram name="History.Embeddings.DatabaseAsCacheAccessTime.StorageRead"
     units="ms" expires_after="2024-12-31">
   <owner>orinj@chromium.org</owner>

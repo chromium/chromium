@@ -73,7 +73,7 @@ class MlAnswerer::SessionManager {
     // Run the existing callback if not called yet with canceled status.
     if (!callback_.is_null()) {
       FinishAndResetSessions(AnswererResult(
-          ComputeAnswerStatus::EXECUTION_CANCELLED, query_, Answer()));
+          ComputeAnswerStatus::kExecutionCancelled, query_, Answer()));
     }
   }
 
@@ -178,14 +178,14 @@ class MlAnswerer::SessionManager {
       optimization_guide::OptimizationGuideModelStreamingExecutionResult
           result) {
     if (!result.response.has_value()) {
-      FinishCallback(AnswererResult(ComputeAnswerStatus::EXECUTION_FAILURE,
+      FinishCallback(AnswererResult(ComputeAnswerStatus::kExecutionFailure,
                                     query_, Answer()));
     } else if (result.response->is_complete) {
       auto response = optimization_guide::ParsedAnyMetadata<
           optimization_guide::proto::HistoryAnswerResponse>(
           std::move(result.response).value().response);
       FinishCallback(AnswererResult(
-          ComputeAnswerStatus::SUCCESS, query_, response->answer(),
+          ComputeAnswerStatus::kSuccess, query_, response->answer(),
           std::move(result.log_entry), urls_[session_index], {}));
     }
   }
@@ -205,7 +205,7 @@ class MlAnswerer::SessionManager {
     // Return unanswerable status due to highest score is below the threshold.
     if (max_score < GetMlAnswerScoreThreshold()) {
       FinishAndResetSessions(
-          AnswererResult{ComputeAnswerStatus::UNANSWERABLE, query_, Answer()});
+          AnswererResult{ComputeAnswerStatus::kUnanswerable, query_, Answer()});
       return;
     }
 
@@ -222,7 +222,7 @@ class MlAnswerer::SessionManager {
     } else {
       // If sessions are already cleaned up, run callback with canceled status.
       FinishAndResetSessions(AnswererResult{
-          ComputeAnswerStatus::EXECUTION_CANCELLED, query_, Answer()});
+          ComputeAnswerStatus::kExecutionCancelled, query_, Answer()});
     }
   }
 
@@ -268,7 +268,7 @@ void MlAnswerer::ComputeAnswer(std::string query,
         /*config_params=*/std::nullopt);
     if (session == nullptr) {
       session_manager_->FinishAndResetSessions(AnswererResult(
-          ComputeAnswerStatus::MODEL_UNAVAILABLE, query, Answer()));
+          ComputeAnswerStatus::kModelUnavailable, query, Answer()));
       return;
     }
 

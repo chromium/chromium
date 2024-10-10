@@ -1018,10 +1018,11 @@ void HistoryEmbeddingsService::OnQueryIntentComputed(
     SearchResult result,
     ComputeIntentStatus status,
     bool query_is_answerable) {
-  VLOG(3) << "OnQueryIntentComputed for '" << result.query << "'";
   const bool answerable = status == ComputeIntentStatus::SUCCESS &&
                           query_is_answerable && answerer_ &&
                           IsAnswererUseAllowed();
+  VLOG(3) << "OnQueryIntentComputed for '" << result.query << "' ("
+          << query_is_answerable << "," << answerable << ")";
   base::UmaHistogramBoolean("History.Embeddings.QueryAnswerable", answerable);
   if (!answerable) {
     return;
@@ -1031,7 +1032,7 @@ void HistoryEmbeddingsService::OnQueryIntentComputed(
   // that the UI can show a loading state.
   SearchResult loadingResult = result.Clone();
   loadingResult.answerer_result =
-      AnswererResult(ComputeAnswerStatus::LOADING, result.query,
+      AnswererResult(ComputeAnswerStatus::kLoading, result.query,
                      optimization_guide::proto::Answer());
   callback.Run(std::move(loadingResult));
 
@@ -1058,19 +1059,57 @@ void HistoryEmbeddingsService::OnQueryIntentComputed(
   answerer_->ComputeAnswer(
       std::move(query), std::move(context),
       base::BindOnce(&HistoryEmbeddingsService::OnAnswerComputed,
-                     weak_ptr_factory_.GetWeakPtr(), callback,
-                     std::move(result)));
+                     weak_ptr_factory_.GetWeakPtr(), base::Time::Now(),
+                     callback, std::move(result)));
 }
 
 void HistoryEmbeddingsService::OnAnswerComputed(
+    base::Time start_time,
     SearchResultCallback callback,
     SearchResult search_result,
     AnswererResult answerer_result) {
+  base::TimeDelta waited = base::Time::Now() - start_time;
   search_result.answerer_result = std::move(answerer_result);
   VLOG(3) << "Query '" << search_result.answerer_result.query
           << "' computed answer '" << search_result.AnswerText() << "'";
   VLOG(3) << "ComputeAnswerStatus: "
-          << static_cast<int>(search_result.answerer_result.status);
+          << static_cast<int>(search_result.answerer_result.status) << " ("
+          << waited.InMilliseconds() << " ms)";
+
+  base::UmaHistogramEnumeration("History.Embeddings.ComputeAnswerStatus",
+                                answerer_result.status);
+  const std::string compute_answer_time_histogram_name =
+      "History.Embeddings.ComputeAnswerTime";
+  base::UmaHistogramTimes(compute_answer_time_histogram_name, waited);
+  switch (answerer_result.status) {
+    case ComputeAnswerStatus::kLoading:
+      base::UmaHistogramTimes(compute_answer_time_histogram_name + ".Loading",
+                              waited);
+      break;
+    case ComputeAnswerStatus::kSuccess:
+      base::UmaHistogramTimes(compute_answer_time_histogram_name + ".Success",
+                              waited);
+      break;
+    case ComputeAnswerStatus::kUnanswerable:
+      base::UmaHistogramTimes(
+          compute_answer_time_histogram_name + ".Unanswerable", waited);
+      break;
+    case ComputeAnswerStatus::kModelUnavailable:
+      base::UmaHistogramTimes(
+          compute_answer_time_histogram_name + ".ModelUnavailable", waited);
+      break;
+    case ComputeAnswerStatus::kExecutionFailure:
+      base::UmaHistogramTimes(
+          compute_answer_time_histogram_name + ".ExecutionFailure", waited);
+      break;
+    case ComputeAnswerStatus::kExecutionCancelled:
+      base::UmaHistogramTimes(
+          compute_answer_time_histogram_name + ".ExecutionCancelled", waited);
+      break;
+    case ComputeAnswerStatus::kUnspecified:
+      break;
+  }
+
   callback.Run(std::move(search_result));
 }
 

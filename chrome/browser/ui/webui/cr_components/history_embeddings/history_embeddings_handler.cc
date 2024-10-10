@@ -41,19 +41,19 @@ OptimizationFeedbackFromMojoUserFeedback(
 history_embeddings::mojom::AnswerStatus AnswererAnswerStatusToMojoAnswerStatus(
     history_embeddings::ComputeAnswerStatus status) {
   switch (status) {
-    case history_embeddings::ComputeAnswerStatus::UNSPECIFIED:
+    case history_embeddings::ComputeAnswerStatus::kUnspecified:
       return history_embeddings::mojom::AnswerStatus::kUnspecified;
-    case history_embeddings::ComputeAnswerStatus::SUCCESS:
+    case history_embeddings::ComputeAnswerStatus::kSuccess:
       return history_embeddings::mojom::AnswerStatus::kSuccess;
-    case history_embeddings::ComputeAnswerStatus::UNANSWERABLE:
+    case history_embeddings::ComputeAnswerStatus::kUnanswerable:
       return history_embeddings::mojom::AnswerStatus::kUnanswerable;
-    case history_embeddings::ComputeAnswerStatus::MODEL_UNAVAILABLE:
+    case history_embeddings::ComputeAnswerStatus::kModelUnavailable:
       return history_embeddings::mojom::AnswerStatus::kModelUnavailable;
-    case history_embeddings::ComputeAnswerStatus::EXECUTION_FAILURE:
+    case history_embeddings::ComputeAnswerStatus::kExecutionFailure:
       return history_embeddings::mojom::AnswerStatus::kExecutionFailure;
-    case history_embeddings::ComputeAnswerStatus::EXECUTION_CANCELLED:
+    case history_embeddings::ComputeAnswerStatus::kExecutionCancelled:
       return history_embeddings::mojom::AnswerStatus::kExecutionCanceled;
-    case history_embeddings::ComputeAnswerStatus::LOADING:
+    case history_embeddings::ComputeAnswerStatus::kLoading:
       return history_embeddings::mojom::AnswerStatus::kLoading;
   }
 }
