@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/util/omnibox_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
@@ -971,7 +972,8 @@ typedef NS_ENUM(NSUInteger, SheetDetentState) {
   _associatedTabHelper->SetSnapshotController(
       std::make_unique<LensOverlaySnapshotController>(
           SnapshotTabHelper::FromWebState(activeWebState),
-          FullscreenController::FromBrowser(browser)));
+          FullscreenController::FromBrowser(browser),
+          IsCurrentLayoutBottomOmnibox(browser)));
 
   _associatedTabHelper->CaptureFullscreenSnapshot(base::BindOnce(completion));
 }

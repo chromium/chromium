@@ -22,7 +22,8 @@ class LensOverlaySnapshotController final
     : public FullscreenControllerObserver {
  public:
   LensOverlaySnapshotController(SnapshotTabHelper* snapshot_tab_helper,
-                                FullscreenController* fullscreen_controller);
+                                FullscreenController* fullscreen_controller,
+                                bool is_bottom_omnibox);
 
   LensOverlaySnapshotController(const SnapshotTabHelper&) = delete;
   LensOverlaySnapshotController& operator=(const SnapshotTabHelper&) = delete;
@@ -64,6 +65,7 @@ class LensOverlaySnapshotController final
 
   std::vector<SnapshotCallback> pending_snapshot_callbacks_;
   bool is_capturing_ = false;
+  bool is_bottom_omnibox_ = false;
   bool is_pdf_document_ = false;
   base::WeakPtrFactory<LensOverlaySnapshotController> weak_ptr_factory_{this};
 
@@ -72,7 +74,9 @@ class LensOverlaySnapshotController final
 
   void OnFullscreenStateSettled();
 
-  void OnSnapshotCaptured(UIImage*);
+  void OnRawSnapshotCaptured(UIImage*);
+
+  void OnSnapshotPreprocessComplete(UIImage*);
 
   void BeginCapturing();
 
