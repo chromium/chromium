@@ -5,5 +5,5 @@
 import {foo} from './bar.js';
 
 export function testFoo(): boolean {
-  return foo() == 'foo';
+  return foo() === 'foo';
 }

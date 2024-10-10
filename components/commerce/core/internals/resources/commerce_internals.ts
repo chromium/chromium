@@ -111,7 +111,7 @@ function initialize() {
 
 function renderSubscriptions() {
   getProxy().getSubscriptionDetails().then(({subscriptions}) => {
-    if (!subscriptions || subscriptions.length == 0) {
+    if (!subscriptions || subscriptions.length === 0) {
       return;
     }
 
@@ -137,7 +137,7 @@ function renderSubscriptions() {
 
       // Highlight red if there are no bookmarks for the subscription.
       const row = createRow();
-      if (productInfos.length == 0) {
+      if (productInfos.length === 0) {
         row.classList.add('error-row');
         row.setAttribute('bgcolor', 'FF7F7F');
         const columns = row.getElementsByTagName('td');
@@ -159,7 +159,7 @@ function renderSubscriptions() {
 
         const url = productInfos[j]!.info.productUrl.url;
         const productCell = columns[PRODUCT_COLUMN_IDX]!;
-        if (url == undefined) {
+        if (url == null) {
           productCell.textContent = productInfos[j]!.info.title!;
         } else {
           const a = document.createElement('a');
@@ -168,7 +168,7 @@ function renderSubscriptions() {
           productCell.appendChild(a);
         }
         const imageUrl = productInfos[j]?.info.imageUrl;
-        if (imageUrl != undefined) {
+        if (imageUrl != null) {
           const space = document.createElement('span');
           space.textContent = ' ';
           productCell.appendChild(space);
@@ -189,7 +189,8 @@ function renderSubscriptions() {
 function renderProductSpecifications() {
   getProxy().getProductSpecificationsDetails().then(
       ({productSpecificationsSet}) => {
-        if (!productSpecificationsSet || productSpecificationsSet.length == 0) {
+        if (!productSpecificationsSet ||
+            productSpecificationsSet.length === 0) {
           return;
         }
 

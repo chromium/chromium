@@ -130,7 +130,7 @@ export class PolicyRowElement extends CustomElement {
 
       const convertValue = (value: string, format?: boolean) => {
         // Skip 'string' policy to avoid unnecessary conversions.
-        if (typeof value == 'string') {
+        if (typeof value === 'string') {
           return value;
         }
         if (format) {

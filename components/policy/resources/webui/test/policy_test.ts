@@ -48,7 +48,7 @@ function uploadPoliciesFile() {
   const fileInput =
       getRequiredElement<HTMLInputElement>('import-policies-file-input');
   // Get selected file
-  const jsonFile = fileInput.files?.length == 1 ? fileInput.files![0] : null;
+  const jsonFile = fileInput.files?.length === 1 ? fileInput.files![0] : null;
   if (jsonFile) {
     applyPoliciesFromFile(jsonFile!);
   }

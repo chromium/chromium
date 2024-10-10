@@ -73,8 +73,8 @@ function setupEvents() {
   const billing =
       interstitialType === 'SAFEBROWSING' && loadTimeData.getBoolean('billing');
   const blockedInterception = interstitialType === 'BLOCKED_INTERCEPTION';
-  const insecureForm = interstitialType == 'INSECURE_FORM';
-  const httpsOnly = interstitialType == 'HTTPS_ONLY';
+  const insecureForm = interstitialType === 'INSECURE_FORM';
+  const httpsOnly = interstitialType === 'HTTPS_ONLY';
   const enterpriseBlock = interstitialType === 'ENTERPRISE_BLOCK';
   const enterpriseWarn = interstitialType === 'ENTERPRISE_WARN';
   const managedProfileRequired =

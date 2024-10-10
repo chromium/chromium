@@ -52,7 +52,7 @@ async function testPaymentMethods(methods, requestShippingContact = false) {
 async function abort() {
   await request.abort();
   return await showPromise.catch((e) => {
-    return e.name == 'AbortError';
+    return e.name === 'AbortError';
   });
 }
 

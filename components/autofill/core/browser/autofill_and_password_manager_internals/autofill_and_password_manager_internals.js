@@ -201,7 +201,7 @@ function setUpStopRecording() {
     document.getElementById('stop-recording-time').innerText =
         secondsToString(remainingSeconds);
 
-    if (remainingSeconds == 0) {
+    if (remainingSeconds === 0) {
       recordLogs = false;
       currentlyRecordingChkBox.checked = false;
       resetTimeout();
@@ -386,7 +386,7 @@ function getSubmittedFormTopLevelData(form) {
     formTopLevelData[childTableElement.innerText] =
         childTableElement.nextSibling.innerText;
     // If all interested top level entries were found, we can early return.
-    if (Object.keys(formTopLevelData).length == formLevelDataOfInterest.size) {
+    if (Object.keys(formTopLevelData).length === formLevelDataOfInterest.size) {
       break;
     }
   }
@@ -437,7 +437,7 @@ function getSubmittedFormFieldsData(form) {
       // It is expected two children, in the example above that would be:
       // <td>Label: </td>
       // <td>First name</td>
-      if (row.children.length != 2) {
+      if (row.children.length !== 2) {
         continue;
       }
 

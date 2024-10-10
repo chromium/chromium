@@ -241,7 +241,7 @@ function createChromiumSourceLink(
     return;
   }
   const fileName = sourceFile.slice(sourceFile.lastIndexOf('/') + 1);
-  if (fileName.length == 0) {
+  if (fileName.length === 0) {
     targetElement.textContent = `${sourceFile}(${sourceLine})`;
     return;
   }
@@ -260,28 +260,28 @@ function createChromiumSourceLink(
  * @returns string
  */
 function getLogSource(logSource: number) {
-  if (logSource == 0) {
+  if (logSource === 0) {
     return 'SERVICE_AND_SETTINGS';
   }
-  if (logSource == 1) {
+  if (logSource === 1) {
     return 'HINTS';
   }
-  if (logSource == 2) {
+  if (logSource === 2) {
     return 'MODEL_MANAGEMENT';
   }
-  if (logSource == 3) {
+  if (logSource === 3) {
     return 'PAGE_CONTENT_ANNOTATIONS';
   }
-  if (logSource == 4) {
+  if (logSource === 4) {
     return 'HINTS_NOTIFICATIONS';
   }
-  if (logSource == 5) {
+  if (logSource === 5) {
     return 'TEXT_CLASSIFIER';
   }
-  if (logSource == 6) {
+  if (logSource === 6) {
     return 'MODEL_EXECUTION';
   }
-  if (logSource == 7) {
+  if (logSource === 7) {
     return 'NTP_MODULE';
   }
   return logSource.toString();

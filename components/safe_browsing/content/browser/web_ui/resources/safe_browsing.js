@@ -415,7 +415,7 @@ function addDeepScan(result) {
   }
 
   if (result['response_time'] != null) {
-    if (result['response_status'] == 'SUCCESS') {
+    if (result['response_status'] === 'SUCCESS') {
       // Display the response instead
       const resultFormatted = '[' +
           (new Date(result['response_time'])).toLocaleString() + ']\n' +

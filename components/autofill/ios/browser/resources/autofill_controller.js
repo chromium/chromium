@@ -284,7 +284,7 @@ __gCrWeb.autofill['fillForm'] = function(data, forceFillFieldID) {
         !((element.hasAttribute('value') &&
            element.getAttribute('value') === element.value) ||
           (element.hasAttribute('placeholder') &&
-           element.getAttribute('placeholder').toLowerCase() ==
+           element.getAttribute('placeholder').toLowerCase() ===
                element.value.toLowerCase()))) {
       continue;
     }
@@ -349,7 +349,7 @@ __gCrWeb.autofill['fillForm'] = function(data, forceFillFieldID) {
     // this case explicitly.
     reportFormFill(form, delay);
 
-    if (form && form.tagName == 'FORM') {
+    if (form && form.tagName === 'FORM') {
       form.addEventListener('reset', formResetListener);
     }
   }
@@ -384,7 +384,7 @@ __gCrWeb.autofill['clearAutofilledFields'] = function(
 
   let formField = null;
   for (let i = 0; i < controlElements.length; ++i) {
-    if (__gCrWeb.fill.getUniqueID(controlElements[i]) ==
+    if (__gCrWeb.fill.getUniqueID(controlElements[i]) ===
         fieldUniqueID.toString()) {
       formField = controlElements[i];
       break;

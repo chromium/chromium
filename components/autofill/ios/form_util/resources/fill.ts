@@ -291,7 +291,7 @@ function formOrFieldsetsToFormData(
   }
 
   // Extract the frame tokens of `iframeElements`.
-  if (childFrames.length != iframeElements.length) {
+  if (childFrames.length !== iframeElements.length) {
     // `extractFieldsFromControlElements` should create one entry in
     // `childFrames` for each entry in `iframeElements`. If this hasn't
     // happened, attempting to process the frames will cause errors, so early

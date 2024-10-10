@@ -12,8 +12,8 @@ function getOngoingServiceEntryClass(entry: ServiceEntry) {
     case ServiceEntryState.AVAILABLE:
       return 'service-entry-available';
     case ServiceEntryState.ACTIVE:
-      if (entry.driver == undefined || !entry.driver.paused ||
-          entry.driver.state == DriverEntryState.INTERRUPTED) {
+      if (entry.driver == null || !entry.driver.paused ||
+          entry.driver.state === DriverEntryState.INTERRUPTED) {
         return 'service-entry-active';
       } else {
         return 'service-entry-blocked';

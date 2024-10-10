@@ -774,7 +774,7 @@ AutomationNodeImpl.prototype = {
   },
 
   get firstChild() {
-    if (GetChildCount(this.treeID, this.id) == 0) {
+    if (GetChildCount(this.treeID, this.id) === 0) {
       return undefined;
     }
     const info = GetChildIDAtIndex(this.treeID, this.id, 0);
@@ -793,7 +793,7 @@ AutomationNodeImpl.prototype = {
 
   get lastChild() {
     const count = GetChildCount(this.treeID, this.id);
-    if (count == 0) {
+    if (count === 0) {
       return;
     }
 
@@ -1068,8 +1068,7 @@ AutomationNodeImpl.prototype = {
 
   performStandardAction: function(action) {
     const standardActions = GetStandardActions(this.treeID, this.id);
-    if (!standardActions ||
-        !standardActions.find(item => action == item)) {
+    if (!standardActions || !standardActions.find(item => action === item)) {
       throw Error('Inapplicable action for node: ' + action);
     }
     this.performAction_(action);
@@ -1217,7 +1216,7 @@ AutomationNodeImpl.prototype = {
         }
       }
 
-      if (listeners.length == 0) {
+      if (listeners.length === 0) {
         EventListenerRemoved(this.treeID, this.id, eventType);
       }
     }
@@ -1333,10 +1332,10 @@ AutomationNodeImpl.prototype = {
 
     const eventPhase = event.eventPhase;
     for (let i = 0; i < listeners.length; i++) {
-      if (eventPhase == Event.CAPTURING_PHASE && !listeners[i].capture) {
+      if (eventPhase === Event.CAPTURING_PHASE && !listeners[i].capture) {
         continue;
       }
-      if (eventPhase == Event.BUBBLING_PHASE && listeners[i].capture) {
+      if (eventPhase === Event.BUBBLING_PHASE && listeners[i].capture) {
         continue;
       }
 
@@ -1426,13 +1425,13 @@ AutomationNodeImpl.prototype = {
       return false;
     }
 
-    if ('role' in params && this.role != params.role) {
+    if ('role' in params && this.role !== params.role) {
       return false;
     }
 
     if ('state' in params) {
       for (const state in params.state) {
-        if (params.state[state] != (state in this.state)) {
+        if (params.state[state] !== (state in this.state)) {
           return false;
         }
       }
@@ -1440,12 +1439,12 @@ AutomationNodeImpl.prototype = {
     if ('attributes' in params) {
       for (const attribute in params.attributes) {
         const attrValue = params.attributes[attribute];
-        if (typeof attrValue != 'object') {
+        if (typeof attrValue !== 'object') {
           if (this[attribute] !== attrValue) {
             return false;
           }
         } else if (attrValue instanceof $RegExp.self) {
-          if (typeof this[attribute] != 'string') {
+          if (typeof this[attribute] !== 'string') {
             return false;
           }
           if (!attrValue.test(this[attribute])) {
@@ -1813,7 +1812,7 @@ AutomationRootNodeImpl.prototype = {
 
   get anchorObject() {
     const id = GetAnchorObjectID(this.treeID);
-    if (id && id != -1) {
+    if (id && id !== -1) {
       return this.get(id);
     }
     return undefined;
@@ -1821,7 +1820,7 @@ AutomationRootNodeImpl.prototype = {
 
   get anchorOffset() {
     const id = GetAnchorObjectID(this.treeID);
-    if (id && id != -1) {
+    if (id && id !== -1) {
       return GetAnchorOffset(this.treeID);
     }
     return undefined;
@@ -1829,7 +1828,7 @@ AutomationRootNodeImpl.prototype = {
 
   get anchorAffinity() {
     const id = GetAnchorObjectID(this.treeID);
-    if (id && id != -1) {
+    if (id && id !== -1) {
       return GetAnchorAffinity(this.treeID);
     }
     return undefined;
@@ -1837,7 +1836,7 @@ AutomationRootNodeImpl.prototype = {
 
   get focusObject() {
     const id = GetFocusObjectID(this.treeID);
-    if (id && id != -1) {
+    if (id && id !== -1) {
       return this.get(id);
     }
     return undefined;
@@ -1845,7 +1844,7 @@ AutomationRootNodeImpl.prototype = {
 
   get focusOffset() {
     const id = GetFocusObjectID(this.treeID);
-    if (id && id != -1) {
+    if (id && id !== -1) {
       return GetFocusOffset(this.treeID);
     }
     return undefined;
@@ -1853,7 +1852,7 @@ AutomationRootNodeImpl.prototype = {
 
   get focusAffinity() {
     const id = GetFocusObjectID(this.treeID);
-    if (id && id != -1) {
+    if (id && id !== -1) {
       return GetFocusAffinity(this.treeID);
     }
     return undefined;
@@ -1861,7 +1860,7 @@ AutomationRootNodeImpl.prototype = {
 
   get selectionStartObject() {
     const id = GetSelectionStartObjectID(this.treeID);
-    if (id && id != -1) {
+    if (id && id !== -1) {
       return this.get(id);
     }
     return undefined;
@@ -1869,7 +1868,7 @@ AutomationRootNodeImpl.prototype = {
 
   get selectionStartOffset() {
     const id = GetSelectionStartObjectID(this.treeID);
-    if (id && id != -1) {
+    if (id && id !== -1) {
       return GetSelectionStartOffset(this.treeID);
     }
     return undefined;
@@ -1877,7 +1876,7 @@ AutomationRootNodeImpl.prototype = {
 
   get selectionStartAffinity() {
     const id = GetSelectionStartObjectID(this.treeID);
-    if (id && id != -1) {
+    if (id && id !== -1) {
       return GetSelectionStartAffinity(this.treeID);
     }
     return undefined;
@@ -1885,7 +1884,7 @@ AutomationRootNodeImpl.prototype = {
 
   get selectionEndObject() {
     const id = GetSelectionEndObjectID(this.treeID);
-    if (id && id != -1) {
+    if (id && id !== -1) {
       return this.get(id);
     }
     return undefined;
@@ -1893,7 +1892,7 @@ AutomationRootNodeImpl.prototype = {
 
   get selectionEndOffset() {
     const id = GetSelectionEndObjectID(this.treeID);
-    if (id && id != -1) {
+    if (id && id !== -1) {
       return GetSelectionEndOffset(this.treeID);
     }
     return undefined;
@@ -1901,18 +1900,18 @@ AutomationRootNodeImpl.prototype = {
 
   get selectionEndAffinity() {
     const id = GetSelectionEndObjectID(this.treeID);
-    if (id && id != -1) {
+    if (id && id !== -1) {
       return GetSelectionEndAffinity(this.treeID);
     }
     return undefined;
   },
 
   get: function(id) {
-    if (id == undefined) {
+    if (id == null) {
       return undefined;
     }
 
-    if (id == this.id) {
+    if (id === this.id) {
       return this.wrapper;
     }
 
@@ -1951,7 +1950,7 @@ AutomationRootNodeImpl.prototype = {
   onAccessibilityEvent: function(eventParams) {
     const targetNode = this.get(eventParams.targetID);
     if (targetNode) {
-      if (eventParams.actionRequestID != -1 &&
+      if (eventParams.actionRequestID !== -1 &&
           this.onActionResult(eventParams.actionRequestID, targetNode)) {
         return;
       }

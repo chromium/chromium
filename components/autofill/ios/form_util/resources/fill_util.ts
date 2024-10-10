@@ -88,7 +88,7 @@ function autoComplete(element: fillConstants.FormControlElement|null): boolean {
   if (getLowerCaseAttribute(element, 'autocomplete') === 'off') {
     return false;
   }
-  if (getLowerCaseAttribute(element.form, 'autocomplete') == 'off') {
+  if (getLowerCaseAttribute(element.form, 'autocomplete') === 'off') {
     return false;
   }
   return true;

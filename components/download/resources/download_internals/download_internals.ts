@@ -33,8 +33,8 @@ const serviceRequests: ServiceRequest[] = [];
  * @param guid The guid to remove from the list.
  */
 function removeGuidFromList(list: ServiceEntry[], guid: string) {
-  const index = list.findIndex(entry => entry.guid == guid);
-  if (index != -1) {
+  const index = list.findIndex(entry => entry.guid === guid);
+  if (index !== -1) {
     list.splice(index, 1);
   }
 }
@@ -45,8 +45,8 @@ function removeGuidFromList(list: ServiceEntry[], guid: string) {
  * @param list A list to update.
  */
 function addOrUpdateEntryByGuid(list: ServiceEntry[], newEntry: ServiceEntry) {
-  const index = list.findIndex(entry => entry.guid == newEntry.guid);
-  if (index != -1) {
+  const index = list.findIndex(entry => entry.guid === newEntry.guid);
+  if (index !== -1) {
     list[index] = newEntry;
   } else {
     list.unshift(newEntry);
@@ -82,7 +82,7 @@ function onServiceStatusChanged(state: ServiceStatus) {
 function onServiceDownloadsAvailable(entries: ServiceEntry[]) {
   for (let i = 0; i < entries.length; i++) {
     const entry = entries[i]!;
-    if (entry.state == ServiceEntryState.COMPLETE) {
+    if (entry.state === ServiceEntryState.COMPLETE) {
       finishedServiceEntries.unshift(entry);
     } else {
       ongoingServiceEntries.unshift(entry);
@@ -96,7 +96,7 @@ function onServiceDownloadsAvailable(entries: ServiceEntry[]) {
  * @param entry The new state for a particular download service entry.
  */
 function onServiceDownloadChanged(entry: ServiceEntry) {
-  if (entry.state == ServiceEntryState.COMPLETE) {
+  if (entry.state === ServiceEntryState.COMPLETE) {
     removeGuidFromList(ongoingServiceEntries, entry.guid);
     addOrUpdateEntryByGuid(finishedServiceEntries, entry);
   } else {
