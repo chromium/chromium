@@ -28,6 +28,7 @@
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/editing/caret_display_item_client.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
@@ -42,6 +43,7 @@
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scoped_paint_chunk_properties.h"
@@ -112,23 +114,36 @@ bool FrameCaret::IsActive() const {
   return CaretPosition().IsNotNull();
 }
 
-void FrameCaret::UpdateAppearance() {
+PositionWithAffinity FrameCaret::UpdateAppearance() {
   DCHECK_GE(frame_->GetDocument()->Lifecycle().GetState(),
             DocumentLifecycle::kLayoutClean);
 
   bool new_should_show_caret = ShouldShowCaret();
-  if (new_should_show_caret != should_show_caret_) {
-    should_show_caret_ = new_should_show_caret;
+  if (new_should_show_caret != IsCaretShown()) {
+    SetCaretShown(new_should_show_caret);
     ScheduleVisualUpdateForPaintInvalidationIfNeeded();
   }
 
-  if (!should_show_caret_) {
+  if (!IsCaretShown()) {
     StopCaretBlinkTimer();
-    return;
+    return PositionWithAffinity();
   }
+
+  PositionWithAffinity caret_position = CaretPosition();
+
+  SetBlinkingDisabled(false);
+  if (RuntimeEnabledFeatures::CSSCaretAnimationEnabled() &&
+      caret_position.AnchorNode() &&
+      caret_position.AnchorNode()->GetComputedStyle()->CaretAnimation() ==
+          ECaretAnimation::kManual) {
+    SetBlinkingDisabled(true);
+  }
+
   // Start blinking with a black caret. Be sure not to restart if we're
   // already blinking in the right location.
   StartBlinkCaret();
+
+  return caret_position;
 }
 
 void FrameCaret::StopCaretBlinkTimer() {
@@ -142,7 +157,9 @@ void FrameCaret::StopCaretBlinkTimer() {
 void FrameCaret::StartBlinkCaret() {
   // Start blinking with a black caret. Be sure not to restart if we're
   // already blinking in the right location at the right rate.
-  base::TimeDelta blink_interval = LayoutTheme::GetTheme().CaretBlinkInterval();
+  base::TimeDelta blink_interval =
+      IsBlinkingDisabled() ? base::TimeDelta()
+                           : LayoutTheme::GetTheme().CaretBlinkInterval();
   if (caret_blink_timer_.IsActive()) {
     if (blink_interval == caret_blink_timer_.RepeatInterval()) {
       // Already blinking at the right rate.
@@ -163,13 +180,15 @@ void FrameCaret::StartBlinkCaret() {
 }
 
 void FrameCaret::SetCaretEnabled(bool enabled) {
-  if (is_caret_enabled_ == enabled)
+  if (IsCaretEnabled() == enabled) {
     return;
+  }
 
-  is_caret_enabled_ = enabled;
+  caret_status_bits_.set<CaretEnabledFlag>(enabled);
 
-  if (!is_caret_enabled_)
+  if (!IsCaretEnabled()) {
     StopCaretBlinkTimer();
+  }
   ScheduleVisualUpdateForPaintInvalidationIfNeeded();
 }
 
@@ -180,9 +199,8 @@ void FrameCaret::LayoutBlockWillBeDestroyed(const LayoutBlock& block) {
 void FrameCaret::UpdateStyleAndLayoutIfNeeded() {
   DCHECK_GE(frame_->GetDocument()->Lifecycle().GetState(),
             DocumentLifecycle::kLayoutClean);
-  UpdateAppearance();
-  display_item_client_->UpdateStyleAndLayoutIfNeeded(
-      should_show_caret_ ? CaretPosition() : PositionWithAffinity());
+  PositionWithAffinity caret_position = UpdateAppearance();
+  display_item_client_->UpdateStyleAndLayoutIfNeeded(caret_position);
 }
 
 void FrameCaret::InvalidatePaint(const LayoutBlock& block,
@@ -269,8 +287,9 @@ void FrameCaret::PaintCaret(GraphicsContext& context,
 
 bool FrameCaret::ShouldShowCaret() const {
   // Don't show the caret if it isn't visible or positioned.
-  if (!is_caret_enabled_ || !IsActive())
+  if (!IsCaretEnabled() || !IsActive()) {
     return false;
+  }
 
   Element* root = RootEditableElementOf(CaretPosition().GetPosition());
   if (root) {
@@ -296,7 +315,7 @@ bool FrameCaret::ShouldShowCaret() const {
 }
 
 void FrameCaret::CaretBlinkTimerFired(TimerBase*) {
-  DCHECK(is_caret_enabled_);
+  DCHECK(IsCaretEnabled());
   if (IsCaretBlinkingSuspended() && IsVisibleIfActive())
     return;
   SetVisibleIfActive(!IsVisibleIfActive());

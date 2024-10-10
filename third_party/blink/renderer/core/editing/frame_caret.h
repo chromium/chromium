@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/timer.h"
+#include "third_party/blink/renderer/platform/wtf/bit_field.h"
 
 namespace blink {
 
@@ -62,9 +63,11 @@ class CORE_EXPORT FrameCaret final : public GarbageCollected<FrameCaret> {
 
   // Used to suspend caret blinking while the mouse is down.
   void SetCaretBlinkingSuspended(bool suspended) {
-    is_caret_blinking_suspended_ = suspended;
+    caret_status_bits_.set<CaretBlinkingSuspendedFlag>(suspended);
   }
-  bool IsCaretBlinkingSuspended() const { return is_caret_blinking_suspended_; }
+  bool IsCaretBlinkingSuspended() const {
+    return caret_status_bits_.get<CaretBlinkingSuspendedFlag>();
+  }
   void StopCaretBlinkTimer();
   void StartBlinkCaret();
   void SetCaretEnabled(bool);
@@ -94,17 +97,40 @@ class CORE_EXPORT FrameCaret final : public GarbageCollected<FrameCaret> {
   friend class FrameSelectionTest;
   friend class CaretDisplayItemClientTest;
 
+  using BitField = WTF::SingleThreadedBitField<uint8_t>;
+  using CaretEnabledFlag = BitField::DefineFirstValue<bool, 1>;
+  using ShouldShowCaretFlag = CaretEnabledFlag::DefineNextValue<bool, 1>;
+  using CaretBlinkingSuspendedFlag =
+      ShouldShowCaretFlag::DefineNextValue<bool, 1>;
+  using CaretBlinkingDisabledFlag =
+      CaretBlinkingSuspendedFlag::DefineNextValue<bool, 1>;
+
   EffectPaintPropertyNode::State CaretEffectNodeState(
       bool visible,
       const TransformPaintPropertyNodeOrAlias& local_transform_space) const;
 
   const PositionWithAffinity CaretPosition() const;
 
+  bool IsCaretEnabled() const {
+    return caret_status_bits_.get<CaretEnabledFlag>();
+  }
   bool ShouldShowCaret() const;
+  bool IsCaretShown() const {
+    return caret_status_bits_.get<ShouldShowCaretFlag>();
+  }
+  void SetCaretShown(bool show_caret) {
+    caret_status_bits_.set<ShouldShowCaretFlag>(show_caret);
+  }
   void CaretBlinkTimerFired(TimerBase*);
-  void UpdateAppearance();
+  PositionWithAffinity UpdateAppearance();
   void SetVisibleIfActive(bool visible);
   bool IsVisibleIfActive() const { return effect_->Opacity() == 1.f; }
+  void SetBlinkingDisabled(bool disabled) {
+    caret_status_bits_.set<CaretBlinkingDisabledFlag>(disabled);
+  }
+  bool IsBlinkingDisabled() const {
+    return caret_status_bits_.get<CaretBlinkingDisabledFlag>();
+  }
 
   const Member<const SelectionEditor> selection_editor_;
   const Member<LocalFrame> frame_;
@@ -112,9 +138,7 @@ class CORE_EXPORT FrameCaret final : public GarbageCollected<FrameCaret> {
   // TODO(https://crbug.com/1123630): Consider moving the timer into the
   // compositor thread.
   HeapTaskRunnerTimer<FrameCaret> caret_blink_timer_;
-  bool is_caret_enabled_ = false;
-  bool should_show_caret_ = false;
-  bool is_caret_blinking_suspended_ = false;
+  BitField caret_status_bits_;
   // Controls visibility of caret with opacity when the caret is blinking.
   const Member<EffectPaintPropertyNode> effect_;
 };
