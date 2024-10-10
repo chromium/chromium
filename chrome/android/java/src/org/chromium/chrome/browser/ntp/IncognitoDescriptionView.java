@@ -149,7 +149,7 @@ public class IncognitoDescriptionView extends LinearLayout {
                     public void updateDrawState(TextPaint textPaint) {
                         super.updateDrawState(textPaint);
                         textPaint.setColor(
-                                context.getColor(R.color.default_text_color_secondary_light_list));
+                                context.getColor(R.color.default_text_color_link_baseline));
                     }
                 };
         view.setText(
