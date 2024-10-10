@@ -88,9 +88,7 @@ class SystemIdentityManager {
   // Callback invoked when the `GetHostedDomain()` operation completes.
   using HostedDomainCallback = base::OnceCallback<void(NSString*, NSError*)>;
 
-  // Callback invoked when the
-  // `CanShowHistorySyncOptInsWithoutMinorModeRestrictions()` or
-  // `IsSubjectToParentalControls()` operations complete.
+  // Callback invoked when `IsSubjectToParentalControls()` operations complete.
   using FetchCapabilityCallback = base::OnceCallback<void(CapabilityResult)>;
 
   // Callback invoked when the `FetchCapabilitie()` operation completes.
@@ -107,18 +105,6 @@ class SystemIdentityManager {
   SystemIdentityManager& operator=(const SystemIdentityManager&) = delete;
 
   virtual ~SystemIdentityManager();
-
-  // Asynchronously returns the value of the account capability that determines
-  // whether Chrome can display history sync opt in screens without minor mode
-  // restrictions. This value will have a refresh period of 24 hours, meaning
-  // that at retrieval it may be stale. If the value is not populated, as in a
-  // fresh install, the capability will be considered as not allowed for
-  // identity.
-  //
-  // This is a wrapper around `FetchCapabilities()`.
-  void CanShowHistorySyncOptInsWithoutMinorModeRestrictions(
-      id<SystemIdentity> identity,
-      FetchCapabilityCallback callback);
 
   // Asynchronously returns the value of the account capability that determines
   // whether parental controls should be applied to `identity`.

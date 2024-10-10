@@ -13,8 +13,7 @@ namespace {
 using CapabilityResult = SystemIdentityManager::CapabilityResult;
 using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
-// Helper function used to extract the capability from `capabilities` in
-// `CanShowHistorySyncOptInsWithoutMinorModeRestrictions()` and
+// Helper function used to extract the capability from `capabilities` map in
 // `IsSubjectToParentalControls`.
 CapabilityResult FetchCapabilityCompleted(
     std::map<std::string, CapabilityResult> capabilities) {
@@ -42,17 +41,6 @@ SystemIdentityManager::SystemIdentityManager() = default;
 
 SystemIdentityManager::~SystemIdentityManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
-void SystemIdentityManager::
-    CanShowHistorySyncOptInsWithoutMinorModeRestrictions(
-        id<SystemIdentity> identity,
-        FetchCapabilityCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  FetchCapabilities(
-      identity,
-      {kCanShowHistorySyncOptInsWithoutMinorModeRestrictionsCapabilityName},
-      base::BindOnce(&FetchCapabilityCompleted).Then(std::move(callback)));
 }
 
 void SystemIdentityManager::IsSubjectToParentalControls(
