@@ -57,6 +57,9 @@ SeedReaderWriter::SeedReaderWriter(
 
 SeedReaderWriter::~SeedReaderWriter() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (seed_writer_ && seed_writer_->HasPendingWrite()) {
+    seed_writer_->DoScheduledWrite();
+  }
 }
 
 void SeedReaderWriter::StoreValidatedSeed(const std::string& seed_data) {
