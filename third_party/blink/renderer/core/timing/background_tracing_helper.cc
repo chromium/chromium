@@ -90,7 +90,7 @@ BackgroundTracingHelper::BackgroundTracingHelper(ExecutionContext* context) {
   auto* origin = context->GetSecurityOrigin();
   if (origin->IsLocal() || origin->IsOpaque() || origin->IsLocalhost())
     return;
-  if (CommonSchemeRegistry::IsExtensionScheme(origin->Protocol().Ascii()) &&
+  if (!CommonSchemeRegistry::IsExtensionScheme(origin->Protocol().Ascii()) &&
       origin->Protocol() != url::kHttpScheme &&
       origin->Protocol() != url::kHttpsScheme) {
     return;
