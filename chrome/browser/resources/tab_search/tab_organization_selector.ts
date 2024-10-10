@@ -52,6 +52,18 @@ export class TabOrganizationSelectorElement extends CrLitElement {
   protected disableDeclutter_: boolean = false;
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
+  private visibilityChangedListener_: () => void;
+
+  constructor() {
+    super();
+
+    this.visibilityChangedListener_ = () => {
+      if (document.visibilityState === 'visible') {
+        this.apiProxy_.getStaleTabs().then(
+            ({tabs}) => this.updateDeclutterTabs_(tabs));
+      }
+    };
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -65,12 +77,16 @@ export class TabOrganizationSelectorElement extends CrLitElement {
     this.listenerIds_.push(
         callbackRouter.tabOrganizationFeatureChanged.addListener(
             this.updateSelectedFeature_.bind(this)));
+    document.addEventListener(
+        'visibilitychange', this.visibilityChangedListener_);
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.listenerIds_.forEach(
         id => this.apiProxy_.getCallbackRouter().removeListener(id));
+    document.removeEventListener(
+        'visibilitychange', this.visibilityChangedListener_);
   }
 
   maybeLogFeatureShow(): void {

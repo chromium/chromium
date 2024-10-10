@@ -48,9 +48,21 @@ export class DeclutterPageElement extends CrLitElement {
   protected staleTabDatas_: TabData[] = [];
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
+  private visibilityChangedListener_: () => void;
 
   static override get styles() {
     return getCss();
+  }
+
+  constructor() {
+    super();
+
+    this.visibilityChangedListener_ = () => {
+      if (document.visibilityState === 'visible') {
+        this.apiProxy_.getStaleTabs().then(
+            ({tabs}) => this.setStaleTabs_(tabs));
+      }
+    };
   }
 
   override render() {
@@ -63,12 +75,16 @@ export class DeclutterPageElement extends CrLitElement {
     const callbackRouter = this.apiProxy_.getCallbackRouter();
     this.listenerIds_.push(callbackRouter.staleTabsChanged.addListener(
         this.setStaleTabs_.bind(this)));
+    document.addEventListener(
+        'visibilitychange', this.visibilityChangedListener_);
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.listenerIds_.forEach(
         id => this.apiProxy_.getCallbackRouter().removeListener(id));
+    document.removeEventListener(
+        'visibilitychange', this.visibilityChangedListener_);
   }
 
   override updated(changedProperties: PropertyValues<this>) {
