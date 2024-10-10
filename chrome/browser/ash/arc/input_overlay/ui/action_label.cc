@@ -299,11 +299,9 @@ ActionLabel::ActionLabel(MouseAction mouse_action)
     : mouse_action_(mouse_action) {}
 
 ActionLabel::ActionLabel(const std::u16string& text, size_t index)
-    : views::LabelButton(
-          IsBeta() ? base::BindRepeating(&ActionLabel::OnButtonPressed,
-                                         base::Unretained(this))
-                   : views::Button::PressedCallback(),
-          text),
+    : views::LabelButton(base::BindRepeating(&ActionLabel::OnButtonPressed,
+                                             base::Unretained(this)),
+                         text),
       index_(index) {
   DCHECK(index_ >= 0 && index_ < kActionMoveKeysSize);
 }
@@ -313,10 +311,6 @@ ActionLabel::~ActionLabel() = default;
 void ActionLabel::SetTextActionLabel(const std::u16string& text) {
   label()->SetText(text);
   GetViewAccessibility().SetName(CalculateAccessibleName());
-
-  if (!IsBeta()) {
-    return;
-  }
 
   if (text == kUnknownBind && !GetParent()->action()->is_new()) {
     SetToEditUnbindInput();
@@ -343,15 +337,7 @@ void ActionLabel::SetDisplayMode(DisplayMode mode) {
       break;
     case DisplayMode::kEdit:
       SetToEditMode();
-      if (IsBeta()) {
-        SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-      } else {
-        SetFocusBehavior(FocusBehavior::ALWAYS);
-        GetParent()->ShowInfoMsg(
-            l10n_util::GetStringUTF8(
-                IDS_INPUT_OVERLAY_EDIT_INSTRUCTIONS_ALPHAV2),
-            this);
-      }
+      SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
       break;
     case DisplayMode::kEditedSuccess:
       SetToEditFocus();
@@ -422,13 +408,10 @@ void ActionLabel::ChildPreferredSizeChanged(View* child) {
 bool ActionLabel::OnKeyPressed(const ui::KeyEvent& event) {
   DCHECK(parent());
   auto code = event.code();
-  auto* parent_view = GetParent();
-  if (GetDisplayText(code) == GetText() ||
-      parent_view->ShouldShowErrorMsg(code)) {
-    return true;
+  if (auto* parent_view = GetParent();
+      !!parent_view && GetDisplayText(code) != GetText()) {
+    parent_view->OnKeyBindingChange(this, code);
   }
-
-  parent_view->OnKeyBindingChange(this, code);
   return true;
 }
 
@@ -448,26 +431,15 @@ void ActionLabel::OnFocus() {
   SetToEditFocus();
   LabelButton::OnFocus();
   GetParent()->OnChildLabelUpdateFocus(this, /*focus=*/true);
-
-  if (IsInputUnbound()) {
-    GetParent()->ShowErrorMsg(
-        l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_MISSING_BINDING), this,
-        /*ax_annouce=*/false);
-  } else {
-    GetParent()->ShowFocusInfoMsg(
-        l10n_util::GetStringUTF8(IDS_INPUT_OVERLAY_EDIT_FOCUSED_KEY), this);
-  }
 }
 
 void ActionLabel::OnBlur() {
   SetToEditDefault();
   LabelButton::OnBlur();
   GetParent()->OnChildLabelUpdateFocus(this, /*focus=*/false);
-  GetParent()->RemoveMessage();
 }
 
 void ActionLabel::OnButtonPressed() {
-  DCHECK(IsBeta());
   GetParent()->ShowButtonOptionsMenu();
 }
 

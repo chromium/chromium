@@ -250,14 +250,6 @@ class TouchInjectorTest : public views::ViewsTestBase {
     return injector_->ConvertToProto();
   }
 
-  void AddMenuEntryToProtoIfCustomized(AppDataProto& temp_proto) {
-    injector_->AddMenuEntryToProtoIfCustomized(temp_proto);
-  }
-
-  void LoadMenuEntryFromProto(AppDataProto& temp_proto) {
-    injector_->LoadMenuEntryFromProto(temp_proto);
-  }
-
   void PrepareToBindPosition(Action* action,
                              std::unique_ptr<Position> position) {
     action->PrepareToBindPositionForTesting(std::move(position));
@@ -280,17 +272,12 @@ class TouchInjectorTest : public views::ViewsTestBase {
   int caption_height_;
   std::unique_ptr<TouchInjector> injector_;
 
- protected:
-  void InitWithFeature(const base::test::FeatureRef& feature, bool enable) {
-    if (enable) {
-      scoped_feature_list_.InitAndEnableFeature(*feature);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(*feature);
-    }
+  // views::ViewsTestBase:
+  void SetUp() override {
+    views::ViewsTestBase::SetUp();
     Init();
   }
 
-  // views::ViewsTestBase:
   void TearDown() override {
     injector_.reset();
     widget_->CloseNow();
@@ -322,12 +309,9 @@ class TouchInjectorTest : public views::ViewsTestBase {
         base::BindLambdaForTesting(
             [&](std::unique_ptr<AppDataProto>, std::string) {}));
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(TouchInjectorTest, TestAddRemoveActionWithProtoConversion) {
-  InitWithFeature(ash::features::kGameDashboard, /*enable=*/true);
   auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
   injector_->ParseActions(json_value->GetDict());
@@ -451,7 +435,6 @@ TEST_F(TouchInjectorTest, TestAddRemoveActionWithProtoConversion) {
 }
 
 TEST_F(TouchInjectorTest, TestActionTypeChangeWithProtoConversion) {
-  InitWithFeature(ash::features::kGameDashboard, /*enable=*/true);
   auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
   injector_->ParseActions(json_value->GetDict());
@@ -512,27 +495,7 @@ TEST_F(TouchInjectorTest, TestActionTypeChangeWithProtoConversion) {
   EXPECT_EQ(kMaxDefaultActionID + 1, action->id());
 }
 
-// -----------------------------------------------------------------------------
-// VersionTouchInjectorTest:
-// Test fixture to test both pre-beta and beta version depending on the test
-// param (true for beta version, false for pre-beta version).
-class VersionTouchInjectorTest : public TouchInjectorTest,
-                                 public testing::WithParamInterface<bool> {
- public:
-  VersionTouchInjectorTest() = default;
-  ~VersionTouchInjectorTest() override = default;
-
-  // TouchInjectorTest:
-  void SetUp() override {
-    TouchInjectorTest::SetUp();
-    InitWithFeature(ash::features::kGameDashboard, IsBetaVersion());
-  }
-
- private:
-  bool IsBetaVersion() const { return GetParam(); }
-};
-
-TEST_P(VersionTouchInjectorTest, TestEventRewriterActionTapKey) {
+TEST_F(TouchInjectorTest, TestEventRewriterActionTapKey) {
   auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
   injector_->ParseActions(json_value->GetDict());
@@ -686,7 +649,7 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterActionTapKey) {
   event_capturer_.Clear();
 }
 
-TEST_P(VersionTouchInjectorTest, TestEventRewriterActionTapMouse) {
+TEST_F(TouchInjectorTest, TestEventRewriterActionTapMouse) {
   injector_->set_enable_mouse_lock(true);
   auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapMouse);
@@ -757,7 +720,7 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterActionTapMouse) {
   EXPECT_POINTF_NEAR(expect_primary, event->root_location_f(), kTolerance);
 }
 
-TEST_P(VersionTouchInjectorTest, TestEventRewriterActionMoveKey) {
+TEST_F(TouchInjectorTest, TestEventRewriterActionMoveKey) {
   auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionMoveKey);
   injector_->ParseActions(json_value->GetDict());
@@ -854,7 +817,7 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterActionMoveKey) {
   event_capturer_.Clear();
 }
 
-TEST_P(VersionTouchInjectorTest, TestEventRewriterActionMoveMouse) {
+TEST_F(TouchInjectorTest, TestEventRewriterActionMoveMouse) {
   injector_->set_enable_mouse_lock(true);
   auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionMoveMouse);
@@ -944,7 +907,7 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterActionMoveMouse) {
   event_capturer_.Clear();
 }
 
-TEST_P(VersionTouchInjectorTest, TestEventRewriterWithModifierKeyOnActionTap) {
+TEST_F(TouchInjectorTest, TestEventRewriterWithModifierKeyOnActionTap) {
   const auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
   injector_->ParseActions(json_value->GetDict());
@@ -1009,7 +972,7 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterWithModifierKeyOnActionTap) {
   EXPECT_EQ(0u, event_capturer_.touch_events().size());
 }
 
-TEST_P(VersionTouchInjectorTest, TestEventRewriterWithModifierKeyOnActionMove) {
+TEST_F(TouchInjectorTest, TestEventRewriterWithModifierKeyOnActionMove) {
   const auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionMoveKey);
   injector_->ParseActions(json_value->GetDict());
@@ -1076,7 +1039,7 @@ TEST_P(VersionTouchInjectorTest, TestEventRewriterWithModifierKeyOnActionMove) {
   EXPECT_EQ(0u, event_capturer_.touch_events().size());
 }
 
-TEST_P(VersionTouchInjectorTest, TestCleanupTouchEvents) {
+TEST_F(TouchInjectorTest, TestCleanupTouchEvents) {
   // Setup.
   auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
@@ -1110,7 +1073,7 @@ TEST_P(VersionTouchInjectorTest, TestCleanupTouchEvents) {
   event_capturer_.Clear();
 }
 
-TEST_P(VersionTouchInjectorTest, TestActivePlayMode) {
+TEST_F(TouchInjectorTest, TestActivePlayMode) {
   // Setup.
   auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
@@ -1191,15 +1154,11 @@ TEST_P(VersionTouchInjectorTest, TestActivePlayMode) {
                    /*expected_touch_event_size=*/4u);
 }
 
-TEST_P(VersionTouchInjectorTest, TestProtoConversion) {
+TEST_F(TouchInjectorTest, TestProtoConversion) {
   // Check whether AppDataProto is serialized correctly.
   auto json_value =
       base::JSONReader::ReadAndReturnValueWithError(kValidJsonActionTapKey);
   injector_->ParseActions(json_value->GetDict());
-  // Simulate a menu entry position change.
-  auto menu_entry_location_point = gfx::Point(5, 5);
-  injector_->SaveMenuEntryLocation(menu_entry_location_point);
-  auto expected_menu_entry_location = injector_->menu_entry_location();
   // Change input binding on actions[1].
   auto new_input = InputElement::CreateActionTapKeyElement(ui::DomCode::US_C);
   auto* expected_input = new_input.get();
@@ -1216,11 +1175,6 @@ TEST_P(VersionTouchInjectorTest, TestProtoConversion) {
   // Check if the system version is serialized correctly.
   EXPECT_TRUE(proto->has_system_version());
   EXPECT_EQ(kSystemVersionAlphaV2, proto->system_version());
-  // Check that the menu entry position is serialized correctly.
-  EXPECT_TRUE(proto->has_menu_entry_position());
-  auto serialized_position = proto->menu_entry_position().anchor_to_target();
-  EXPECT_EQ(expected_menu_entry_location->x(), serialized_position[0]);
-  EXPECT_EQ(expected_menu_entry_location->y(), serialized_position[1]);
   // Check whether the actions[1] with new input binding is converted to proto
   // correctly.
   auto action_proto = proto->actions()[1];
@@ -1250,11 +1204,6 @@ TEST_P(VersionTouchInjectorTest, TestProtoConversion) {
     EXPECT_EQ(*action_a->current_input(), *action_b->current_input());
     EXPECT_EQ(action_a->current_positions(), action_b->current_positions());
   }
-  auto deserialized_menu_entry_location = injector->menu_entry_location();
-  EXPECT_TRUE(deserialized_menu_entry_location);
-  EXPECT_EQ(*deserialized_menu_entry_location, *expected_menu_entry_location);
 }
-
-INSTANTIATE_TEST_SUITE_P(All, VersionTouchInjectorTest, ::testing::Bool());
 
 }  // namespace arc::input_overlay

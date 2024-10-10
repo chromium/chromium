@@ -136,18 +136,6 @@ Action* FindActionWithOverlapInputElement(
   return nullptr;
 }
 
-bool ProcessKeyEventOnFocusedMenuEntry(const ui::KeyEvent& event) {
-  const auto key_code = event.key_code();
-  // If it is allowed to move, the arrow key event moves the position
-  // instead of getting back to view mode.
-  if (ash::IsArrowKey(key_code) || key_code == ui::KeyboardCode::VKEY_SPACE ||
-      key_code == ui::KeyboardCode::VKEY_RETURN ||
-      event.type() != ui::EventType::kKeyPressed) {
-    return true;
-  }
-  return false;
-}
-
 // Find the smallest integer larger than `kMaxDefaultActionID` and not in
 // `id_list` by binary search.
 //
@@ -275,10 +263,6 @@ void TouchInjector::ParseActions(const base::Value::Dict& root) {
 }
 
 void TouchInjector::UpdateFlags(bool is_o4c) {
-  if (!IsBeta()) {
-    return;
-  }
-
   ash::ArcGameControlsFlag flags = static_cast<ash::ArcGameControlsFlag>(
       ash::ArcGameControlsFlag::kKnown | ash::ArcGameControlsFlag::kAvailable |
       (GetActiveActionsSize() == 0u ? ash::ArcGameControlsFlag::kEmpty : 0) |
@@ -321,9 +305,6 @@ void TouchInjector::UnRegisterEventRewriter() {
 void TouchInjector::OnInputBindingChange(
     Action* target_action,
     std::unique_ptr<InputElement> input_element) {
-  if (display_overlay_controller_) {
-    display_overlay_controller_->RemoveEditMessage();
-  }
   auto* overlapped_action = FindActionWithOverlapInputElement(
       actions_, target_action, *input_element);
 
@@ -335,16 +316,12 @@ void TouchInjector::OnInputBindingChange(
 
   target_action->PrepareToBindInput(std::move(input_element));
 
-  // For Beta version, there is no "Cancel" & "Reset to default" feature, so
-  // apply the pending change right away if there is change.
-  if (IsBeta()) {
-    if (overlapped_action) {
-      overlapped_action->BindPending();
-      NotifyActionInputBindingUpdated(*overlapped_action);
-    }
-    target_action->BindPending();
-    NotifyActionInputBindingUpdated(*target_action);
+  if (overlapped_action) {
+    overlapped_action->BindPending();
+    NotifyActionInputBindingUpdated(*overlapped_action);
   }
+  target_action->BindPending();
+  NotifyActionInputBindingUpdated(*target_action);
 }
 
 void TouchInjector::OnApplyPendingBinding() {
@@ -355,33 +332,10 @@ void TouchInjector::OnApplyPendingBinding() {
 
 void TouchInjector::OnBindingSave() {
   DCHECK(display_overlay_controller_);
-  // Pending is already applied for beta version.
-  if (!IsBeta()) {
-    OnApplyPendingBinding();
-    display_overlay_controller_->SetDisplayModeAlpha(DisplayMode::kView);
-  }
   OnSaveProtoFile();
 }
 
-void TouchInjector::OnBindingCancel() {
-  for (auto& action : actions_) {
-    action->CancelPendingBind();
-  }
-
-  if (display_overlay_controller_) {
-    display_overlay_controller_->SetDisplayModeAlpha(DisplayMode::kView);
-  }
-}
-
-void TouchInjector::OnBindingRestore() {
-  for (auto& action : actions_) {
-    action->RestoreToDefault();
-  }
-}
-
 void TouchInjector::OnProtoDataAvailable(AppDataProto& proto) {
-  LoadSystemVersionFromProto(proto);
-  LoadMenuEntryFromProto(proto);
   LoadMenuStateFromProto(proto);
   for (const ActionProto& action_proto : proto.actions()) {
     if (action_proto.id() <= kMaxDefaultActionID) {
@@ -391,10 +345,8 @@ void TouchInjector::OnProtoDataAvailable(AppDataProto& proto) {
         continue;
       }
       OverwriteDefaultAction(action_proto, action);
-    } else if (IsBeta()) {
-      AddUserAddedActionFromProto(action_proto);
     } else {
-      // Disregard the user-added actions if they system is pre-beta version.
+      AddUserAddedActionFromProto(action_proto);
     }
   }
 }
@@ -413,22 +365,6 @@ void TouchInjector::OnInputMenuViewRemoved() {
     RecordInputOverlayMappingHintState(package_name_,
                                        input_mapping_visible_uma_);
   }
-}
-
-void TouchInjector::NotifyFirstTimeLaunch() {
-  first_launch_ = true;
-  show_nudge_ = true;
-}
-
-void TouchInjector::SaveMenuEntryLocation(
-    gfx::Point menu_entry_location_point) {
-  const float width = content_bounds_f_.width();
-  const float height = content_bounds_f_.height();
-  DCHECK_GT(width, 1);
-  DCHECK_GT(height, 1);
-  menu_entry_location_ = std::make_optional<gfx::Vector2dF>(
-      menu_entry_location_point.x() / width,
-      menu_entry_location_point.y() / height);
 }
 
 void TouchInjector::MaybeBindDefaultInputElement(Action* action) {
@@ -584,114 +520,24 @@ void TouchInjector::FlipMouseLockFlag() {
   }
 }
 
-bool TouchInjector::LocatedEventOnMenuEntry(const ui::Event& event,
-                                            const gfx::RectF& content_bounds,
-                                            bool press_required) {
-  if (!event.IsLocatedEvent()) {
-    return false;
-  }
-
-  const auto menu_anchor_bounds =
-      display_overlay_controller_->GetOverlayMenuEntryBounds();
-  if (!menu_anchor_bounds) {
-    if (!IsBeta()) {
-      DCHECK(display_mode_ != DisplayMode::kView &&
-             display_mode_ != DisplayMode::kPreMenu);
-    }
-    return false;
-  }
-
-  auto event_location = gfx::Point(event.AsLocatedEvent()->root_location());
-  window_->GetHost()->ConvertPixelsToDIP(&event_location);
-  // Convert `event_location` from root window location to screen location.
-  auto origin = window_->GetRootWindow()->GetBoundsInScreen().origin();
-  event_location.Offset(origin.x(), origin.y());
-
-  if (!press_required) {
-    return menu_anchor_bounds->Contains(event_location);
-  }
-
-  if (event.IsMouseEvent() &&
-      event.AsMouseEvent()->type() == ui::EventType::kMousePressed &&
-      menu_anchor_bounds->Contains(event_location)) {
-    return true;
-  } else if (event.IsTouchEvent() &&
-             event.AsTouchEvent()->type() == ui::EventType::kTouchPressed &&
-             menu_anchor_bounds->Contains(event_location)) {
-    return true;
-  }
-  return false;
-}
-
 ui::EventDispatchDetails TouchInjector::RewriteEvent(
     const ui::Event& event,
     const ui::EventRewriter::Continuation continuation) {
   continuation_ = continuation;
 
-  if (IsBeta()) {
-    if (!can_rewrite_event_) {
-      return SendEvent(continuation, &event);
-    }
+  if (!can_rewrite_event_) {
+    return SendEvent(continuation, &event);
+  }
 
-    // Don't rewrite unrelated events.
-    if (event.IsTouchEvent() || event.IsGestureEvent() ||
-        event.IsCancelModeEvent()) {
-      // TODO(b/334233813): When real touch or gesture event happens, clean up
-      // simulated touch events and send the real touch or gesture event as it
-      // is. Supporting both simulated touch events and real touch events should
-      // be re-considered.
-      CleanupTouchEvents();
-      return SendEvent(continuation, &event);
-    }
-  } else {
-    // This is for Tab key as Accessibility requirement.
-    // - For key event, Tab key is used to enter into the `kPreMenu` mode. And
-    // any keys, except Space and Enter keys, are used to exit the `kPreMenu`
-    // and enter into the `kView` mode, and continue events in `kView` mode.
-    // - For any located events in `kPreMenu` mode, if it doesn't happen on the
-    // menu entry button, then it enters into the `kView` mode and continues
-    // events in `kView` mode.
-    if (display_mode_ == DisplayMode::kView && event.IsKeyEvent() &&
-        views::FocusManager::IsTabTraversalKeyEvent(*(event.AsKeyEvent()))) {
-      if (event.AsKeyEvent()->type() == ui::EventType::kKeyPressed) {
-        CleanupTouchEvents();
-        display_overlay_controller_->SetDisplayModeAlpha(DisplayMode::kPreMenu);
-      }
-      return SendEvent(continuation, &event);
-    } else if (display_mode_ == DisplayMode::kPreMenu) {
-      if (event.IsKeyEvent()) {
-        if (ProcessKeyEventOnFocusedMenuEntry(*event.AsKeyEvent())) {
-          return SendEvent(continuation, &event);
-        }
-        display_overlay_controller_->SetDisplayModeAlpha(DisplayMode::kView);
-      } else if (LocatedEventOnMenuEntry(event, content_bounds_f_,
-                                         /*press_required=*/false)) {
-        return SendEvent(continuation, &event);
-      } else {
-        display_overlay_controller_->SetDisplayModeAlpha(DisplayMode::kView);
-      }
-    }
-
-    if (display_mode_ != DisplayMode::kView) {
-      return SendEvent(continuation, &event);
-    }
-
-    if (display_overlay_controller_ && display_mode_ == DisplayMode::kView) {
-      display_overlay_controller_->SetMenuEntryHoverState(
-          LocatedEventOnMenuEntry(event, content_bounds_f_,
-                                  /*press_required=*/false));
-    }
-
-    // `display_overlay_controller_` is null for unittest.
-    if (display_overlay_controller_ &&
-        LocatedEventOnMenuEntry(event, content_bounds_f_,
-                                /*press_required=*/true)) {
-      // Release all active touches when the display mode is changed from
-      // `kView` to `kMenu`.
-      CleanupTouchEvents();
-      display_overlay_controller_->SetDisplayModeAlpha(DisplayMode::kMenu);
-      return SendEvent(continuation, &event);
-    }
+  // Don't rewrite unrelated events.
+  if (event.IsTouchEvent() || event.IsGestureEvent() ||
+      event.IsCancelModeEvent()) {
+    // TODO(b/334233813): When real touch or gesture event happens, clean up
+    // simulated touch events and send the real touch or gesture event as it
+    // is. Supporting both simulated touch events and real touch events should
+    // be re-considered.
+    CleanupTouchEvents();
+    return SendEvent(continuation, &event);
   }
 
   if (!touch_injector_enable_ || text_input_active_) {
@@ -749,13 +595,6 @@ ui::EventDispatchDetails TouchInjector::RewriteEvent(
   // mode.
   if (event.IsMouseEvent() && (is_mouse_locked_ || is_play_mode_active)) {
     return DiscardEvent(continuation);
-  }
-
-  // For Alpha version, when the touch screen related event gets here, it means
-  // the event is not located on the menu entry.
-  if (!IsBeta() && is_play_mode_active &&
-      (event.IsTouchEvent() || event.IsGestureEvent())) {
-    CleanupTouchEvents();
   }
 
   return SendEvent(continuation, &event);
@@ -841,7 +680,6 @@ std::unique_ptr<AppDataProto> TouchInjector::ConvertToProto() {
     }
   }
   AddMenuStateToProto(*app_data_proto);
-  AddMenuEntryToProtoIfCustomized(*app_data_proto);
   AddSystemVersionToProto(*app_data_proto);
   return app_data_proto;
 }
@@ -856,17 +694,6 @@ void TouchInjector::AddMenuStateToProto(AppDataProto& proto) {
   proto.set_input_mapping_hint(input_mapping_visible_);
 }
 
-void TouchInjector::AddMenuEntryToProtoIfCustomized(AppDataProto& proto) const {
-  if (!menu_entry_location_) {
-    return;
-  }
-  auto menu_entry_position_proto = std::make_unique<PositionProto>();
-  menu_entry_position_proto->add_anchor_to_target(menu_entry_location_->x());
-  menu_entry_position_proto->add_anchor_to_target(menu_entry_location_->y());
-
-  proto.set_allocated_menu_entry_position(menu_entry_position_proto.release());
-}
-
 void TouchInjector::LoadMenuStateFromProto(AppDataProto& proto) {
   touch_injector_enable_ =
       proto.has_input_control() ? proto.input_control() : true;
@@ -878,25 +705,8 @@ void TouchInjector::LoadMenuStateFromProto(AppDataProto& proto) {
   }
 }
 
-void TouchInjector::LoadMenuEntryFromProto(AppDataProto& proto) {
-  if (!proto.has_menu_entry_position()) {
-    return;
-  }
-  auto menu_entry_position = proto.menu_entry_position().anchor_to_target();
-  DCHECK_EQ(menu_entry_position.size(), 2);
-  menu_entry_location_ = std::make_optional<gfx::Vector2dF>(
-      menu_entry_position[0], menu_entry_position[1]);
-}
-
 void TouchInjector::AddSystemVersionToProto(AppDataProto& proto) {
   proto.set_system_version(GetCurrentSystemVersion());
-}
-
-void TouchInjector::LoadSystemVersionFromProto(AppDataProto& proto) {
-  if (!proto.has_system_version() ||
-      GetCurrentSystemVersion().compare(proto.system_version()) > 0) {
-    show_nudge_ = true;
-  }
 }
 
 void TouchInjector::AddObserver(TouchInjectorObserver* observer) {
@@ -949,7 +759,6 @@ bool TouchInjector::HasSingleUserAddedAction() const {
 
 void TouchInjector::AddNewAction(ActionType action_type,
                                  const gfx::Point& target_pos) {
-  DCHECK(IsBeta());
   auto action = CreateRawAction(action_type, this);
 
   // Check whether the action size extends the maximum.
@@ -958,7 +767,6 @@ void TouchInjector::AddNewAction(ActionType action_type,
   }
 
   auto* new_action_ptr = action.get();
-  // Apply the change right away for beta.
   NotifyActionAdded(*actions_.emplace_back(std::move(action)));
   MaybeBindDefaultInputElement(new_action_ptr);
 
@@ -1004,7 +812,6 @@ void TouchInjector::ChangeActionType(Action* action, ActionType action_type) {
 }
 
 void TouchInjector::RemoveActionNewState(Action* action) {
-  DCHECK(IsBeta());
   DCHECK(action->is_new());
   action->set_is_new(false);
   NotifyActionNewStateRemoved(*action);
@@ -1015,7 +822,7 @@ void TouchInjector::OverwriteDefaultAction(const ActionProto& proto,
   DCHECK(action);
   DCHECK_LE(proto.id(), kMaxDefaultActionID);
   DCHECK_EQ(proto.id(), action->id());
-  if (IsBeta() && action->GetType() != proto.action_type()) {
+  if (action->GetType() != proto.action_type()) {
     auto new_action = CreateRawAction(proto.action_type(), this);
     new_action->InitByChangingActionType(action);
     new_action->OverwriteDefaultActionFromProto(proto);

@@ -54,23 +54,6 @@ constexpr float kHaloInset = -6;
 // Thickness of focus ring.
 constexpr float kHaloThickness = 3;
 
-constexpr SkColor kOutsideStrokeColor =
-    SkColorSetA(SK_ColorWHITE, 0xCC /*80%*/);
-constexpr SkColor kOutsideStrokeColorHover =
-    SkColorSetA(SK_ColorWHITE, 0xCC /*80%*/);
-constexpr SkColor kOutsideStrokeColorDrag = gfx::kGoogleBlue200;
-
-constexpr SkColor kInsideStrokeColor = SkColorSetA(SK_ColorBLACK, 0x33 /*20%*/);
-constexpr SkColor kInsideStrokeColorHover =
-    SkColorSetA(SK_ColorBLACK, 0x33 /*20%*/);
-constexpr SkColor kInsideStrokeColorDrag =
-    SkColorSetA(SK_ColorBLACK, 0x66 /*40%*/);
-constexpr SkColor kCenterColor = SkColorSetRGB(0x12, 0x6D, 0xFF);
-constexpr SkColor kCenterColorHover20White =
-    SkColorSetA(SK_ColorWHITE, 0x33 /*20%*/);
-constexpr SkColor kCenterColorDrag30White =
-    SkColorSetA(SK_ColorWHITE, 0x4D /*30%*/);
-
 // Draw the cross shape path with round corner. It starts from bottom to up on
 // line #0 and draws clock-wisely.
 // `overall_length` is the total length of one side excluding the stroke
@@ -157,15 +140,11 @@ SkColor GetOutsideStrokeColor(const ui::ColorProvider* color_provider,
                               UIState ui_state) {
   switch (ui_state) {
     case UIState::kDefault:
-      return IsBeta() ? SkColorSetA(SK_ColorWHITE, GetAlpha(/*percent=*/0.8f))
-                      : kOutsideStrokeColor;
     case UIState::kHover:
-      return IsBeta() ? SkColorSetA(SK_ColorWHITE, GetAlpha(/*percent=*/0.8f))
-                      : kOutsideStrokeColorHover;
+      return SkColorSetA(SK_ColorWHITE, GetAlpha(/*percent=*/0.8f));
     case UIState::kDrag:
-      return IsBeta() ? color_provider->GetColor(
-                            cros_tokens::kCrosSysGamingControlButtonBorderHover)
-                      : kOutsideStrokeColorDrag;
+      return color_provider->GetColor(
+          cros_tokens::kCrosSysGamingControlButtonBorderHover);
     default:
       NOTREACHED_IN_MIGRATION();
   }
@@ -175,14 +154,11 @@ SkColor GetInsideStrokeColor(const ui::ColorProvider* color_provider,
                              UIState ui_state) {
   switch (ui_state) {
     case UIState::kDefault:
-      return IsBeta() ? SkColorSetA(SK_ColorBLACK, GetAlpha(/*percent=*/0.2f))
-                      : kInsideStrokeColor;
+      return SkColorSetA(SK_ColorBLACK, GetAlpha(/*percent=*/0.2f));
     case UIState::kHover:
-      return IsBeta() ? SkColorSetA(SK_ColorBLACK, GetAlpha(/*percent=*/0.2f))
-                      : kInsideStrokeColorHover;
+      return SkColorSetA(SK_ColorBLACK, GetAlpha(/*percent=*/0.2f));
     case UIState::kDrag:
-      return IsBeta() ? SkColorSetA(SK_ColorBLACK, GetAlpha(/*percent=*/0.4f))
-                      : kInsideStrokeColorDrag;
+      return SkColorSetA(SK_ColorBLACK, GetAlpha(/*percent=*/0.4f));
     default:
       NOTREACHED_IN_MIGRATION();
   }
@@ -192,19 +168,12 @@ SkColor GetCenterColor(const ui::ColorProvider* color_provider,
                        UIState ui_state) {
   switch (ui_state) {
     case UIState::kDefault:
-      return IsBeta() ? color_provider->GetColor(
-                            cros_tokens::kCrosSysGamingControlButtonDefault)
-                      : kCenterColor;
+      return color_provider->GetColor(
+          cros_tokens::kCrosSysGamingControlButtonDefault);
     case UIState::kHover:
-      return IsBeta() ? color_provider->GetColor(
-                            cros_tokens::kCrosSysGamingControlButtonHover)
-                      : color_utils::GetResultingPaintColor(
-                            kCenterColorHover20White, kCenterColor);
     case UIState::kDrag:
-      return IsBeta() ? color_provider->GetColor(
-                            cros_tokens::kCrosSysGamingControlButtonHover)
-                      : color_utils::GetResultingPaintColor(
-                            kCenterColorDrag30White, kCenterColor);
+      return color_provider->GetColor(
+          cros_tokens::kCrosSysGamingControlButtonHover);
     default:
       NOTREACHED_IN_MIGRATION();
   }
@@ -482,12 +451,6 @@ void TouchPoint::OnFocus() {
         l10n_util::GetStringUTF8(
             IDS_INPUT_OVERLAY_EDIT_INSTRUCTIONS_TOUCH_POINT_FOCUS),
         this);
-  }
-}
-
-void TouchPoint::OnBlur() {
-  if (auto* parent_view = views::AsViewClass<ActionView>(parent())) {
-    parent_view->RemoveMessage();
   }
 }
 

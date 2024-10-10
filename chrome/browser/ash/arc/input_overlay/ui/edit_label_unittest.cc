@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
 #include "chrome/browser/ash/arc/input_overlay/test/overlay_view_test_base.h"
 #include "chrome/browser/ash/arc/input_overlay/test/test_utils.h"
-#include "chrome/browser/ash/arc/input_overlay/test/view_test_base.h"
 #include "chrome/browser/ash/arc/input_overlay/touch_injector.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view_list_item.h"

@@ -130,9 +130,4 @@ void UpdateFlagAndProperty(aura::Window* window,
   }
 }
 
-bool IsBeta() {
-  return ash::features::IsGameDashboardEnabled() &&
-         arc::GetArcAndroidSdkVersionAsInt() > arc::kArcVersionP;
-}
-
 }  // namespace arc::input_overlay

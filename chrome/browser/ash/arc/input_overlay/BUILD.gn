@@ -69,7 +69,6 @@ source_set("unit_tests") {
 
   sources = [
     "arc_input_overlay_manager_unittest.cc",
-    "display_overlay_controller_alpha_unittest.cc",
     "display_overlay_controller_unittest.cc",
     "touch_id_manager_unittest.cc",
     "touch_injector_unittest.cc",
