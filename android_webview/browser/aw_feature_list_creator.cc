@@ -241,6 +241,7 @@ void AwFeatureListCreator::SetUpFieldTrials() {
       /*signature_verification_enabled=*/g_signature_verification_enabled,
       std::make_unique<variations::VariationsSafeSeedStoreLocalState>(
           local_state_.get()),
+      client_->GetChannelForVariations(), client_->GetVariationsSeedFileDir(),
       /*use_first_run_prefs=*/false);
 
   if (!seed_date.is_null())

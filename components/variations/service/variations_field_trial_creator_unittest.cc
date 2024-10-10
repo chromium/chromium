@@ -503,8 +503,9 @@ class FieldTrialCreatorTest : public ::testing::Test {
   }
 
  private:
-  base::test::ScopedCommandLine scoped_command_line_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::TaskEnvironment task_environment_;
+  base::test::ScopedCommandLine scoped_command_line_;
   TestingPrefServiceSimple local_state_;
   base::ScopedTempDir temp_dir_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
@@ -977,7 +978,8 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_LoadsCountryOnFirstRun) {
   auto seed_store = std::make_unique<VariationsSeedStore>(
       local_state(), std::move(initial_seed),
       /*signature_verification_enabled=*/false,
-      std::make_unique<VariationsSafeSeedStoreLocalState>(local_state()));
+      std::make_unique<VariationsSafeSeedStoreLocalState>(local_state()),
+      version_info::Channel::UNKNOWN, /*seed_file_dir=*/base::FilePath());
   VariationsFieldTrialCreator field_trial_creator(
       &variations_service_client, std::move(seed_store), UIStringOverrider(),
       /*limited_entropy_synthetic_trial=*/nullptr);

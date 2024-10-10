@@ -39,20 +39,30 @@ std::optional<std::string> DoSerialize(std::string seed_data) {
   return seed_data;
 }
 
+// Returns the file path used to store a seed. If `seed_file_dir` is empty, an
+// empty file path is returned.
+base::FilePath GetFilePath(const base::FilePath& seed_file_dir,
+                           const base::FilePath::CharType* filename) {
+  return seed_file_dir.empty() ? base::FilePath()
+                               : seed_file_dir.Append(filename);
+}
+
 }  // namespace
 
 SeedReaderWriter::SeedReaderWriter(
     PrefService* local_state,
-    const base::FilePath& seed_file_path,
+    const base::FilePath& seed_file_dir,
+    const base::FilePath::CharType* seed_filename,
     const version_info::Channel channel,
     scoped_refptr<base::SequencedTaskRunner> file_task_runner)
     : local_state_(local_state),
       channel_(channel),
       file_task_runner_(std::move(file_task_runner)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!seed_file_path.empty()) {
+  if (!seed_file_dir.empty()) {
     seed_writer_ = std::make_unique<base::ImportantFileWriter>(
-        seed_file_path, file_task_runner_, std::string());
+        GetFilePath(seed_file_dir, seed_filename), file_task_runner_,
+        std::string());
   }
 }
 
@@ -97,14 +107,6 @@ void SeedReaderWriter::SetTimerForTesting(base::OneShotTimer* timer_override) {
 bool SeedReaderWriter::HasPendingWriteForTesting() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return seed_writer_ ? seed_writer_->HasPendingWrite() : false;
-}
-
-// static
-base::FilePath SeedReaderWriter::GetFilePath(
-    const base::FilePath& user_data_dir,
-    const base::FilePath::CharType* filename) {
-  return user_data_dir.empty() ? base::FilePath()
-                               : user_data_dir.Append(filename);
 }
 
 base::ImportantFileWriter::BackgroundDataProducerCallback

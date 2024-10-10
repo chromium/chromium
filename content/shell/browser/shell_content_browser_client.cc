@@ -861,12 +861,12 @@ void ShellContentBrowserClient::CreateFeatureListAndFieldTrials() {
 void ShellContentBrowserClient::SetUpFieldTrials() {
   metrics::TestEnabledStateProvider enabled_state_provider(/*consent=*/false,
                                                            /*enabled=*/false);
-  base::FilePath path;
-  base::PathService::Get(SHELL_DIR_USER_DATA, &path);
+  base::FilePath user_data_dir;
+  base::PathService::Get(SHELL_DIR_USER_DATA, &user_data_dir);
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager =
       metrics::MetricsStateManager::Create(
           GetSharedState().local_state.get(), &enabled_state_provider,
-          std::wstring(), path, metrics::StartupVisibility::kUnknown,
+          std::wstring(), user_data_dir, metrics::StartupVisibility::kUnknown,
           {
               .force_benchmarking_mode =
                   base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -893,7 +893,9 @@ void ShellContentBrowserClient::SetUpFieldTrials() {
           GetSharedState().local_state.get(), std::move(initial_seed),
           /*signature_verification_enabled=*/true,
           std::make_unique<variations::VariationsSafeSeedStoreLocalState>(
-              GetSharedState().local_state.get())),
+              GetSharedState().local_state.get()),
+          variations_service_client.GetChannelForVariations(),
+          variations_service_client.GetVariationsSeedFileDir()),
       variations::UIStringOverrider(),
       // The limited entropy synthetic trial will not be registered for this
       // purpose.

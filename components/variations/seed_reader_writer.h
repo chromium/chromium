@@ -28,13 +28,17 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
     : public base::ImportantFileWriter::BackgroundDataSerializer {
  public:
   // `local_state` provides access to the local state prefs. Must not be null.
-  // `seed_file_path` denotes a file containing a seed. Note that Android
-  // Webview intentionally uses an empty path as it will continue using local
-  // state to store seeds.
+  // `seed_file_dir` denotes the directory for storing a seed file. Note that
+  // Android Webview intentionally uses an empty path as it will continue using
+  // local state to store seeds.
+  // `seed_filename` is the name of the seed file to be appended to
+  // `seed_file_dir` (see GetFilePath()). Must not be null.
   // `channel` describes the browser's release channel.
-  // `file_task_runner` handles IO-related tasks. Must not be null.
+  // `file_task_runner` handles IO-related tasks. Must not be
+  // null.
   SeedReaderWriter(PrefService* local_state,
-                   const base::FilePath& seed_file_path,
+                   const base::FilePath& seed_file_dir,
+                   const base::FilePath::CharType* seed_filename,
                    const version_info::Channel channel,
                    scoped_refptr<base::SequencedTaskRunner> file_task_runner =
                        base::ThreadPool::CreateSequencedTaskRunner(
@@ -59,11 +63,6 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Returns whether or not `seed_writer_` currently has a write
   // scheduled/pending.
   bool HasPendingWriteForTesting() const;
-
-  // Returns the file path used to store a seed. If `user_data_dir` is empty, an
-  // empty file path is returned.
-  static base::FilePath GetFilePath(const base::FilePath& user_data_dir,
-                                    const base::FilePath::CharType* filename);
 
  private:
   // Returns the serialized data to be written to disk. This is done

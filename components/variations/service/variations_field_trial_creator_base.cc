@@ -782,6 +782,7 @@ void VariationsFieldTrialCreatorBase::LoadSeedFromJsonFile(
   local_state()->SetInteger(prefs::kVariationsFailedToFetchSeedStreak, 0);
 
   // Override Local State seed prefs.
+  // TODO(crbug.com/369080917): Use SeedReaderWriter to store a seed.
   local_state()->SetString(prefs::kVariationsCompressedSeed,
                            seed_data->GetString());
   local_state()->SetString(prefs::kVariationsSeedSignature,

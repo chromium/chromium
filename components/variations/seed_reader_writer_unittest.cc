@@ -45,11 +45,13 @@ class SeedReaderWriterTest : public TestWithParam<version_info::Channel> {
     if (!temp_dir_.CreateUniqueTempDir()) {
       ADD_FAILURE() << "Failed to create temp directory.";
     }
+    temp_seed_file_path_ = temp_dir_.GetPath().Append(kSeedFilename);
     VariationsSeedStore::RegisterPrefs(local_state_.registry());
   }
   ~SeedReaderWriterTest() override = default;
 
  protected:
+  base::FilePath temp_seed_file_path_;
   base::Thread file_writer_thread_;
   base::ScopedTempDir temp_dir_;
   TestingPrefServiceSimple local_state_;
@@ -63,13 +65,10 @@ class SeedReaderWriterStableAndUnknownTest : public SeedReaderWriterTest {};
 // Verifies that pre-stable clients write latest seeds to Local State and the
 // new seed file.
 TEST_P(SeedReaderWriterPreStableTest, WriteSeed) {
-  base::FilePath temp_seed_file_path =
-      SeedReaderWriter::GetFilePath(temp_dir_.GetPath(), kSeedFilename);
-
   // Initialize seed_reader_writer with test thread and timer.
-  SeedReaderWriter seed_reader_writer(&local_state_, temp_seed_file_path,
-                                      GetParam(),
-                                      file_writer_thread_.task_runner());
+  SeedReaderWriter seed_reader_writer(
+      &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
+      GetParam(), file_writer_thread_.task_runner());
   seed_reader_writer.SetTimerForTesting(&timer_);
 
   // Create and store seed. Note that the data format written here is contrived.
@@ -83,7 +82,7 @@ TEST_P(SeedReaderWriterPreStableTest, WriteSeed) {
   // Verify seed stored correctly, should be found in both Local State prefs and
   // the seed file.
   std::string seed_file_data;
-  EXPECT_TRUE(base::ReadFileToString(temp_seed_file_path, &seed_file_data));
+  EXPECT_TRUE(base::ReadFileToString(temp_seed_file_path_, &seed_file_data));
   EXPECT_EQ(seed_file_data, serialized_seed);
   EXPECT_EQ(local_state_.GetString(prefs::kVariationsCompressedSeed),
             serialized_seed);
@@ -98,13 +97,10 @@ INSTANTIATE_TEST_SUITE_P(All,
 // Verifies that stable and unknown channel clients write latest seeds only to
 // Local State.
 TEST_P(SeedReaderWriterStableAndUnknownTest, WriteSeed) {
-  base::FilePath temp_seed_file_path =
-      SeedReaderWriter::GetFilePath(temp_dir_.GetPath(), kSeedFilename);
-
   // Initialize seed_reader_writer with test thread and timer.
-  SeedReaderWriter seed_reader_writer(&local_state_, temp_seed_file_path,
-                                      GetParam(),
-                                      file_writer_thread_.task_runner());
+  SeedReaderWriter seed_reader_writer(
+      &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
+      GetParam(), file_writer_thread_.task_runner());
   seed_reader_writer.SetTimerForTesting(&timer_);
 
   // Create and store seed. Note that the data format written here is contrived.
@@ -117,7 +113,7 @@ TEST_P(SeedReaderWriterStableAndUnknownTest, WriteSeed) {
 
   // Verify seed stored correctly, should only be found in Local State prefs.
   std::string seed_file_data;
-  EXPECT_FALSE(base::ReadFileToString(temp_seed_file_path, &seed_file_data));
+  EXPECT_FALSE(base::ReadFileToString(temp_seed_file_path_, &seed_file_data));
   EXPECT_EQ(local_state_.GetString(prefs::kVariationsCompressedSeed),
             serialized_seed);
 }
@@ -127,17 +123,14 @@ INSTANTIATE_TEST_SUITE_P(All,
                          Values(version_info::Channel::STABLE,
                                 version_info::Channel::UNKNOWN));
 
-// Verifies that writing latest seeds with an empty path for `seed_file_path`
+// Verifies that writing latest seeds with an empty path for `seed_file_dir`
 // does not cause a crash.
 TEST_P(SeedReaderWriterTest, EmptySeedFilePathIsValid) {
-  base::FilePath temp_seed_file_path =
-      SeedReaderWriter::GetFilePath(temp_dir_.GetPath(), kSeedFilename);
-
   // Initialize seed_reader_writer with test thread and timer and an empty file
   // path.
   SeedReaderWriter seed_reader_writer(&local_state_,
-                                      /*seed_file_path=*/base::FilePath(),
-                                      GetParam(),
+                                      /*seed_file_dir=*/base::FilePath(),
+                                      kSeedFilename, GetParam(),
                                       file_writer_thread_.task_runner());
   seed_reader_writer.SetTimerForTesting(&timer_);
 
@@ -157,18 +150,15 @@ TEST_P(SeedReaderWriterTest, EmptySeedFilePathIsValid) {
 // Verifies that the latest seed is cleared from both Local State and its seed
 // file.
 TEST_P(SeedReaderWriterTest, ClearSeed) {
-  base::FilePath temp_seed_file_path =
-      SeedReaderWriter::GetFilePath(temp_dir_.GetPath(), kSeedFilename);
-
   // Initialize seed_reader_writer with test thread and timer.
-  SeedReaderWriter seed_reader_writer(&local_state_, temp_seed_file_path,
-                                      GetParam(),
-                                      file_writer_thread_.task_runner());
+  SeedReaderWriter seed_reader_writer(
+      &local_state_, /*seed_file_dir=*/temp_dir_.GetPath(), kSeedFilename,
+      GetParam(), file_writer_thread_.task_runner());
   seed_reader_writer.SetTimerForTesting(&timer_);
 
   // Create and store seed. Note that the data format written here is contrived.
   const std::string serialized_seed = SerializeSeed(CreateTestSeed());
-  ASSERT_TRUE(base::WriteFile(temp_seed_file_path, serialized_seed));
+  ASSERT_TRUE(base::WriteFile(temp_seed_file_path_, serialized_seed));
   local_state_.SetString(prefs::kVariationsCompressedSeed, serialized_seed);
 
   // Clear seed and force write.
@@ -178,7 +168,7 @@ TEST_P(SeedReaderWriterTest, ClearSeed) {
 
   // Verify seed cleared correctly in both Local State prefs and the seed file.
   std::string seed_file_data;
-  ASSERT_TRUE(base::ReadFileToString(temp_seed_file_path, &seed_file_data));
+  ASSERT_TRUE(base::ReadFileToString(temp_seed_file_path_, &seed_file_data));
   EXPECT_THAT(seed_file_data, IsEmpty());
   EXPECT_THAT(local_state_.GetString(prefs::kVariationsCompressedSeed),
               IsEmpty());

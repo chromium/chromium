@@ -10,6 +10,7 @@
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/metrics/clean_exit_beacon.h"
 #include "components/prefs/testing_pref_service.h"
@@ -137,6 +138,7 @@ class SafeSeedManagerTest : public ::testing::Test {
   ~SafeSeedManagerTest() override = default;
 
  protected:
+  base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple prefs_;
 };
 

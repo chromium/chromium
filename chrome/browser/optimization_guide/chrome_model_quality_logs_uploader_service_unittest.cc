@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/task_environment.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
 #include "components/prefs/testing_pref_service.h"
@@ -37,6 +38,7 @@ class ChromeModelQualityLogsUploaderServiceTest : public testing::Test {
   }
 
  protected:
+  base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<TestVariationsService> variations_service_;
 };
