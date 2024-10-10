@@ -79,20 +79,12 @@ void WaylandPointer::OnEnter(void* data,
 
   self->connection_->serial_tracker().UpdateSerial(wl::SerialType::kMouseEnter,
                                                    serial);
-
-  if (self->SuppressFocusChangeEvents()) {
-    LOG(WARNING) << "Suppressing enter event received during window drag.";
-    return;
-  }
-
   WaylandWindow* window = wl::RootWindowFromWlSurface(surface);
   if (!window) {
     return;
   }
-
   gfx::PointF location{static_cast<float>(wl_fixed_to_double(surface_x)),
                        static_cast<float>(wl_fixed_to_double(surface_y))};
-
   self->delegate_->OnPointerFocusChanged(
       window, self->connection_->MaybeConvertLocation(location, window),
       timestamp, EventDispatchPolicyForPlatform());
@@ -108,17 +100,9 @@ void WaylandPointer::OnLeave(void* data,
   auto* self = static_cast<WaylandPointer*>(data);
 
   self->connection_->serial_tracker().ResetSerial(wl::SerialType::kMouseEnter);
-
-  if (self->SuppressFocusChangeEvents()) {
-    LOG(WARNING) << "Suppressing leave event received during window drag.";
-    return;
-  }
-
-  auto event_dispatch_policy = EventDispatchPolicyForPlatform();
-
-  self->delegate_->OnPointerFocusChanged(nullptr,
-                                         self->delegate_->GetPointerLocation(),
-                                         timestamp, event_dispatch_policy);
+  self->delegate_->OnPointerFocusChanged(
+      nullptr, self->delegate_->GetPointerLocation(), timestamp,
+      EventDispatchPolicyForPlatform());
 }
 
 // static
@@ -328,25 +312,6 @@ void WaylandPointer::OnTilt(void* data,
 
   self->delegate_->OnPointerStylusTiltChanged(
       gfx::Vector2dF(wl_fixed_to_double(tilt_x), wl_fixed_to_double(tilt_y)));
-}
-
-// Enter/Leave events cause undesirable tab detaches in window dragging
-// sessions. At least KWin and Mutter are known to send leave/enter events
-// before the events currently used by the window drag controller to detect
-// drop, see the crbug linked below for more details.
-//
-// TODO(crbug.com/329479345): Move this suppression logic to drag controller
-// code once they're refactored to intercept events for the whole session. Also,
-// limit it to apply only in between the first data_device.enter and
-// dnd_drop_performed.
-bool WaylandPointer::SuppressFocusChangeEvents() const {
-  // Compositor version is available only on Exo, via aura-shell protocol.
-  if (connection_->GetServerVersion().IsValid() &&
-      connection_->GetServerVersion() > base::Version("112.0.5615")) {
-    return false;
-  }
-  return connection_->window_drag_controller() &&
-         connection_->window_drag_controller()->IsDragInProgress();
 }
 
 }  // namespace ui

@@ -107,8 +107,6 @@ class WaylandPointer {
                      wl_fixed_t z,
                      wl_fixed_t a);
 
-  bool SuppressFocusChangeEvents() const;
-
   wl::Object<wl_pointer> obj_;
   wl::Object<zcr_pointer_stylus_v2> zcr_pointer_stylus_v2_;
   const raw_ptr<WaylandConnection> connection_;

@@ -503,24 +503,6 @@ void WaylandWindowDragController::HandleDragEnd(bool completed,
   origin_window_ = nullptr;
   has_received_enter_ = false;
 
-  // When extended-drag or xdg-toplevel-drag is available and the drop happens
-  // while a non-null surface was being dragged (i.e: detached mode) which had
-  // pointer focus before the drag session, we must reset focus to it, otherwise
-  // it would be wrongly kept to the latest surface received through
-  // wl_data_device::enter (see OnDragEnter function). In case of touch, though,
-  // we simply reset the focus altogether.
-  if (IsWindowDragProtocolAvailable() && dragged_window_) {
-    if (*drag_source_ == DragEventSource::kMouse) {
-      // TODO: check if this usage is correct.
-      pointer_delegate_->OnPointerFocusChanged(
-          dragged_window_, pointer_location_, timestamp,
-          wl::EventDispatchPolicy::kImmediate);
-    } else {
-      touch_delegate_->OnTouchFocusChanged(dragged_window_);
-    }
-  }
-  dragged_window_ = nullptr;
-
   // Transition to |kDropped| state and determine the next action to take. If
   // drop happened while the move loop was running (i.e: kDetached), ask to quit
   // the loop, otherwise notify session end and reset state right away.
