@@ -72,6 +72,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.action.OmniboxActionJni;
 import org.chromium.components.omnibox.action.OmniboxPedalId;
@@ -107,6 +108,7 @@ public class OmniboxPedalsTest {
 
     @Before
     public void setUp() throws InterruptedException {
+        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(false);
         sActivityTestRule.loadUrl("about:blank");
         mOmniboxUtils = new OmniboxTestUtils(sActivityTestRule.getActivity());
         mJniMocker.mock(OmniboxActionJni.TEST_HOOKS, mOmniboxActionJni);
