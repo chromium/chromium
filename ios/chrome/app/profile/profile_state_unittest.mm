@@ -235,3 +235,43 @@ TEST_F(ProfileStateTest, startupInformation) {
   state = [[ProfileState alloc] initWithAppState:appState];
   EXPECT_EQ(state.startupInformation, startupInformation);
 }
+
+// Tests that -firstSceneHasInitializedUI is set as soon as one scene is
+// done initializing its UI, and never changes back to NO.
+TEST_F(ProfileStateTest, firstSceneHasInitializedUI) {
+  ProfileState* state = [[ProfileState alloc] initWithAppState:nil];
+  ASSERT_FALSE(state.firstSceneHasInitializedUI);
+
+  // Connect two scenes, in the foreground and active.
+  SceneState* scene1 = [[SceneState alloc] initWithAppState:nil];
+  scene1.activationLevel = SceneActivationLevelForegroundActive;
+  [state sceneStateConnected:scene1];
+
+  SceneState* scene2 = [[SceneState alloc] initWithAppState:nil];
+  scene2.activationLevel = SceneActivationLevelForegroundActive;
+  [state sceneStateConnected:scene2];
+
+  // The -firstSceneHasInitializedUI property should still be false since
+  // none of the Scene have completed their UI.
+  EXPECT_FALSE(state.firstSceneHasInitializedUI);
+
+  // Transition to ProfileInitStage::kPrepareUI and then pretend that scene1
+  // has completed its UI initialisation, then -firstSceneHasInitializedUI
+  // should be true.
+  SetProfileStateInitStage(state, ProfileInitStage::kPrepareUI);
+  EXPECT_FALSE(state.firstSceneHasInitializedUI);
+
+  scene1.UIEnabled = YES;
+  EXPECT_TRUE(state.firstSceneHasInitializedUI);
+
+  // Check that the property stay true even if scene1 UI is disabled, or
+  // if scene1 is disconnected, or even when there are no scenes connected.
+  scene1.UIEnabled = NO;
+  EXPECT_TRUE(state.firstSceneHasInitializedUI);
+
+  scene1.activationLevel = SceneActivationLevelDisconnected;
+  EXPECT_TRUE(state.firstSceneHasInitializedUI);
+
+  scene2.activationLevel = SceneActivationLevelDisconnected;
+  EXPECT_TRUE(state.firstSceneHasInitializedUI);
+}

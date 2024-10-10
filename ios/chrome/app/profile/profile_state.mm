@@ -50,9 +50,6 @@
 
   // Observers registered with this profile state.
   ProfileStateObserverList* _observers;
-
-  // YES if `-sceneStateDidEnableUI` been called.
-  BOOL _firstSceneHasInitializedUI;
 }
 
 #pragma mark - NSObject

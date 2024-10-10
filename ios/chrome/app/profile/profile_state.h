@@ -26,6 +26,9 @@
 // Profile initialisation stage.
 @property(nonatomic, assign) ProfileInitStage initStage;
 
+// Whether any scene has completed initialisation of its UI.
+@property(nonatomic, readonly) BOOL firstSceneHasInitializedUI;
+
 // The non-incognito ProfileIOS instance.
 // This will be null until `initStage` >= `ProfileInitStage::kProfileLoaded`.
 @property(nonatomic, assign) ProfileIOS* profile;
