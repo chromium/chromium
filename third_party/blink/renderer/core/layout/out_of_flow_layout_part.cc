@@ -2151,6 +2151,9 @@ OutOfFlowLayoutPart::TryCalculateOffset(
                                    /* is_new_fc */ true);
     builder.SetAvailableSize(container_rect.size);
     builder.SetPercentageResolutionSize(container_rect.size);
+    if (node_info.is_hidden_for_paint) {
+      builder.SetIsHiddenForPaint(true);
+    }
 
     if (container_builder_->IsInitialColumnBalancingPass()) {
       // The |fragmentainer_offset_delta| will not make a difference in the

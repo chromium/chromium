@@ -820,6 +820,9 @@ const LayoutResult* ComputeOofBlockDimensions(
     builder.SetAvailableSize({dimensions->size.inline_size, imcb.BlockSize()});
     builder.SetIsFixedInlineSize(true);
     builder.SetPercentageResolutionSize(space.PercentageResolutionSize());
+    if (space.IsHiddenForPaint()) {
+      builder.SetIsHiddenForPaint(true);
+    }
 
     // Tables need to know about the explicit stretch constraint to produce
     // the correct result.
