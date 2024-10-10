@@ -15,7 +15,10 @@ class MockMahiWebContentsManager : public MahiWebContentsManagerImpl {
   MockMahiWebContentsManager();
   ~MockMahiWebContentsManager() override;
 
-  MOCK_METHOD1(OnFocusedPageLoadComplete, void(content::WebContents*));
+  MOCK_METHOD(void,
+              OnFocusedPageLoadComplete,
+              (content::WebContents*),
+              (override));
 };
 
 }  // namespace mahi
