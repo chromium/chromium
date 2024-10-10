@@ -141,7 +141,7 @@ Canvas log:
             }
             sampling : {
                 filter : "kLinear"
-                mipmap : "kNearest"
+                mipmap : "kLinear"
             }
             src : {
                 bottom : 21

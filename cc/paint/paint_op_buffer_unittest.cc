@@ -3025,7 +3025,7 @@ TEST(PaintOpBufferTest, RasterPaintWorkletImageRectTranslated) {
   std::vector<SkSize> src_rect_offset = {SkSize::MakeEmpty()};
   std::vector<SkSize> scale_adjustment = {SkSize::Make(0.2f, 0.2f)};
   std::vector<PaintFlags::FilterQuality> quality = {
-      PaintFlags::FilterQuality::kHigh};
+      PaintFlags::FilterQuality::kLow};
   MockImageProvider provider(src_rect_offset, scale_adjustment, quality);
   provider.SetRecord(paint_worklet_buffer.ReleaseAsRecord());
 
@@ -3041,7 +3041,7 @@ TEST(PaintOpBufferTest, RasterPaintWorkletImageRectTranslated) {
   testing::StrictMock<MockCanvas> canvas;
   InSequence sequence;
 
-  SkSamplingOptions sampling({0, 1.0f / 2});
+  SkSamplingOptions sampling(SkFilterMode::kLinear, SkMipmapMode::kNone);
 
   EXPECT_CALL(canvas, willSave());
   EXPECT_CALL(canvas, didConcat44(SkM44::Translate(5.0f, 7.0f)));
@@ -3089,7 +3089,7 @@ TEST(PaintOpBufferTest, RasterPaintWorkletImageRectScaled) {
   testing::StrictMock<MockCanvas> canvas;
   InSequence sequence;
 
-  SkSamplingOptions sampling({0, 1.0f / 2});
+  SkSamplingOptions sampling({1.0f / 3, 1.0f / 3});
 
   EXPECT_CALL(canvas, willSave());
   EXPECT_CALL(canvas, didConcat44(SkM44::Scale(2.f, 1.5f)));
@@ -3109,7 +3109,7 @@ TEST(PaintOpBufferTest, RasterPaintWorkletImageRectScaled) {
   blink_buffer.Playback(&canvas, PlaybackParams(&provider));
 }
 
-TEST(PaintOpBufferTest, RasterPaintWorkletImageRectClipped) {
+TEST(PaintOpBufferTest, RasterPaintWorkletImageRectClipped_upscale) {
   PaintOpBuffer paint_worklet_buffer;
   paint_worklet_buffer.push<SaveLayerOp>(SkRect::MakeXYWH(0, 0, 60, 60),
                                          PaintFlags());
@@ -3140,7 +3140,57 @@ TEST(PaintOpBufferTest, RasterPaintWorkletImageRectClipped) {
   testing::StrictMock<MockCanvas> canvas;
   InSequence sequence;
 
-  SkSamplingOptions sampling({0, 1.0f / 2});
+  SkSamplingOptions sampling({1.0f / 3, 1.0f / 3});
+
+  EXPECT_CALL(canvas, willSave());
+  EXPECT_CALL(canvas, OnSaveLayer());
+  EXPECT_CALL(canvas, OnSaveLayer());
+  EXPECT_CALL(canvas, willSave());
+  EXPECT_CALL(canvas, didScale(1.0f / scale_adjustment[0].width(),
+                               1.0f / scale_adjustment[0].height()));
+  EXPECT_CALL(canvas, onDrawImageRect2(NonLazyImage(), SkRect::MakeWH(10, 10),
+                                       SkRect::MakeWH(10, 10), sampling, _,
+                                       SkCanvas::kFast_SrcRectConstraint));
+  EXPECT_CALL(canvas, willRestore());
+  EXPECT_CALL(canvas, willRestore());
+  EXPECT_CALL(canvas, willRestore());
+  EXPECT_CALL(canvas, willRestore());
+
+  blink_buffer.Playback(&canvas, PlaybackParams(&provider));
+}
+
+TEST(PaintOpBufferTest, RasterPaintWorkletImageRectClipped_downscale) {
+  PaintOpBuffer paint_worklet_buffer;
+  paint_worklet_buffer.push<SaveLayerOp>(SkRect::MakeXYWH(0, 0, 60, 60),
+                                         PaintFlags());
+  SkSamplingOptions linear(SkFilterMode::kLinear);
+  PaintImage paint_image = CreateDiscardablePaintImage(gfx::Size(10, 10));
+  // One rect inside the src-rect, one outside.
+  paint_worklet_buffer.push<DrawImageOp>(paint_image, 0.0f, 0.0f, linear,
+                                         nullptr);
+  paint_worklet_buffer.push<DrawImageOp>(paint_image, 50.0f, 50.0f, linear,
+                                         nullptr);
+
+  std::vector<SkSize> src_rect_offset = {SkSize::MakeEmpty()};
+  std::vector<SkSize> scale_adjustment = {SkSize::Make(2.f, 2.f)};
+  std::vector<PaintFlags::FilterQuality> quality = {
+      PaintFlags::FilterQuality::kHigh};
+  MockImageProvider provider(src_rect_offset, scale_adjustment, quality);
+  provider.SetRecord(paint_worklet_buffer.ReleaseAsRecord());
+
+  PaintOpBuffer blink_buffer;
+  scoped_refptr<TestPaintWorkletInput> input =
+      base::MakeRefCounted<TestPaintWorkletInput>(gfx::SizeF(100, 100));
+  PaintImage image = CreatePaintWorkletPaintImage(input);
+  SkRect src = SkRect::MakeXYWH(0, 0, 20, 20);
+  SkRect dst = SkRect::MakeXYWH(0, 0, 20, 20);
+  blink_buffer.push<DrawImageRectOp>(image, src, dst,
+                                     SkCanvas::kStrict_SrcRectConstraint);
+
+  testing::StrictMock<MockCanvas> canvas;
+  InSequence sequence;
+
+  SkSamplingOptions sampling(SkFilterMode::kLinear, SkMipmapMode::kLinear);
 
   EXPECT_CALL(canvas, willSave());
   EXPECT_CALL(canvas, OnSaveLayer());
@@ -3162,18 +3212,18 @@ TEST(PaintOpBufferTest, RasterPaintWorkletImageRectClipped) {
 TEST(PaintOpBufferTest, ReplacesImagesFromProvider) {
   std::vector<SkSize> src_rect_offset = {
       SkSize::MakeEmpty(), SkSize::Make(2.0f, 2.0f), SkSize::Make(3.0f, 3.0f)};
-  std::vector<SkSize> scale_adjustment = {SkSize::Make(0.2f, 0.2f),
+  std::vector<SkSize> scale_adjustment = {SkSize::Make(3.0f, 3.0f),
                                           SkSize::Make(0.3f, 0.3f),
                                           SkSize::Make(0.4f, 0.4f)};
   std::vector<PaintFlags::FilterQuality> quality = {
       PaintFlags::FilterQuality::kHigh, PaintFlags::FilterQuality::kMedium,
-      PaintFlags::FilterQuality::kHigh};
+      PaintFlags::FilterQuality::kLow};
 
   MockImageProvider image_provider(src_rect_offset, scale_adjustment, quality);
   PaintOpBuffer buffer;
 
   SkRect rect = SkRect::MakeWH(10, 10);
-  SkSamplingOptions sampling(SkFilterMode::kLinear);
+  SkSamplingOptions sampling(SkFilterMode::kLinear, SkMipmapMode::kNone);
   PaintImage paint_image = CreateDiscardablePaintImage(gfx::Size(10, 10));
   buffer.push<DrawImageOp>(paint_image, 0.0f, 0.0f, sampling, nullptr);
   buffer.push<DrawImageRectOp>(paint_image, rect, rect, sampling, nullptr,
@@ -3189,9 +3239,6 @@ TEST(PaintOpBufferTest, ReplacesImagesFromProvider) {
   testing::Sequence save_restore_seq;
   testing::Sequence on_draw_image_rect_seq;
 
-  SkSamplingOptions sampling0({0, 1.0f / 2});
-  SkSamplingOptions sampling1(SkFilterMode::kLinear, SkMipmapMode::kNearest);
-
   // Save/scale/image/restore from DrawImageop.
   EXPECT_CALL(canvas, willSave()).InSequence(save_restore_seq);
   EXPECT_CALL(canvas, didScale(1.0f / scale_adjustment[0].width(),
@@ -3201,8 +3248,9 @@ TEST(PaintOpBufferTest, ReplacesImagesFromProvider) {
   // onDrawImageRect2() to avoid spurious EXPECT_*() calls firing when gtest
   // tries to match the expectation corresponding to the
   // DrawImageRectOp (below) against the call for the DrawImageOp.
+  SkSamplingOptions sampling1(SkFilterMode::kLinear, SkMipmapMode::kLinear);
   EXPECT_CALL(canvas, onDrawImageRect2(NonLazyImage(), SkRect::MakeWH(10, 10),
-                                       SkRect::MakeWH(10, 10), sampling0, _,
+                                       SkRect::MakeWH(10, 10), sampling1, _,
                                        SkCanvas::kFast_SrcRectConstraint))
       .InSequence(on_draw_image_rect_seq);
   EXPECT_CALL(canvas, willRestore()).InSequence(save_restore_seq);

@@ -439,8 +439,8 @@ sk_sp<PaintShader> PaintShader::CreateDecodedImage(
 
 sk_sp<SkShader> PaintShader::GetSkShader(
     PaintFlags::FilterQuality quality) const {
-  SkSamplingOptions sampling(
-      PaintFlags::FilterQualityToSkSamplingOptions(quality));
+  SkSamplingOptions sampling(PaintFlags::FilterQualityToSkSamplingOptions(
+      quality, PaintFlags::ScalingOperation::kUnknown));
 
   switch (shader_type_) {
     case Type::kEmpty:

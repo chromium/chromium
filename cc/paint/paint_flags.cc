@@ -164,17 +164,39 @@ SkPaint PaintFlags::ToSkPaint() const {
 
 SkSamplingOptions PaintFlags::FilterQualityToSkSamplingOptions(
     PaintFlags::FilterQuality filter_quality) {
+  return FilterQualityToSkSamplingOptions(filter_quality,
+                                          ScalingOperation::kDefault);
+}
+
+SkSamplingOptions PaintFlags::FilterQualityToSkSamplingOptions(
+    PaintFlags::FilterQuality filter_quality,
+    PaintFlags::ScalingOperation scaling_op) {
   switch (filter_quality) {
     case PaintFlags::FilterQuality::kHigh:
-      return SkSamplingOptions(SkCubicResampler::CatmullRom());
+      switch (scaling_op) {
+        case PaintFlags::ScalingOperation::kDefault:
+          return SkSamplingOptions(SkCubicResampler::CatmullRom());
+        case PaintFlags::ScalingOperation::kUnknown:
+          return SkSamplingOptions(SkFilterMode::kLinear,
+                                   SkMipmapMode::kLinear);
+        case PaintFlags::ScalingOperation::kUpscale:
+          return SkSamplingOptions(SkCubicResampler::Mitchell());
+      }
     case PaintFlags::FilterQuality::kMedium:
-      return SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kNearest);
+      switch (scaling_op) {
+        case PaintFlags::ScalingOperation::kDefault:
+          return SkSamplingOptions(SkFilterMode::kLinear,
+                                   SkMipmapMode::kNearest);
+        case PaintFlags::ScalingOperation::kUnknown:
+          return SkSamplingOptions(SkFilterMode::kLinear,
+                                   SkMipmapMode::kLinear);
+        case PaintFlags::ScalingOperation::kUpscale:
+          return SkSamplingOptions(SkCubicResampler::Mitchell());
+      }
     case PaintFlags::FilterQuality::kLow:
       return SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kNone);
     case PaintFlags::FilterQuality::kNone:
       return SkSamplingOptions(SkFilterMode::kNearest, SkMipmapMode::kNone);
-    default:
-      NOTREACHED();
   }
 }
 

@@ -77,6 +77,13 @@ class CC_PAINT_EXPORT CorePaintFlags {
     kHigh,
     kLast = kHigh,
   };
+
+  enum class ScalingOperation {
+    kDefault,  // legacy behavior
+    kUnknown,
+    kUpscale  // strict upscale (scaling up both horizontally and vertically)
+  };
+
   ALWAYS_INLINE void setFilterQuality(FilterQuality quality) {
     bitfields_.filter_quality_ = static_cast<uint32_t>(quality);
   }
@@ -276,6 +283,9 @@ class CC_PAINT_EXPORT PaintFlags final : public CorePaintFlags {
 
   static SkSamplingOptions FilterQualityToSkSamplingOptions(
       FilterQuality filter_quality);
+  static SkSamplingOptions FilterQualityToSkSamplingOptions(
+      FilterQuality filter_quality,
+      ScalingOperation scaling_op);
 
   bool EqualsForTesting(const PaintFlags& other) const;
 

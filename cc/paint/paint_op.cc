@@ -43,6 +43,7 @@
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
@@ -131,6 +132,16 @@ void DrawImageRect(SkCanvas* canvas,
   }
   SkTiledImageUtils::DrawImageRect(canvas, image, src, dst, options, paint,
                                    constraint);
+}
+
+PaintFlags::ScalingOperation MatrixToScalingOperation(SkMatrix m) {
+  SkSize scale;
+  if (m.decomposeScale(&scale)) {
+    return (scale.width() > 1 && scale.height() > 1)
+               ? PaintFlags::ScalingOperation::kUpscale
+               : PaintFlags::ScalingOperation::kUnknown;
+  }
+  return PaintFlags::ScalingOperation::kUnknown;
 }
 
 #define TYPES(M)             \
@@ -1305,10 +1316,12 @@ void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
     canvas->scale(1.f / scale_adjustment.width(),
                   1.f / scale_adjustment.height());
   }
+  PaintFlags::ScalingOperation scale =
+      MatrixToScalingOperation(canvas->getLocalToDeviceAs3x3());
   SkTiledImageUtils::DrawImage(canvas, decoded_image.image().get(), op->left,
                                op->top,
                                PaintFlags::FilterQualityToSkSamplingOptions(
-                                   decoded_image.filter_quality()),
+                                   decoded_image.filter_quality(), scale),
                                &paint);
 }
 
@@ -1420,10 +1433,11 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
       op->src.makeOffset(decoded_image.src_rect_offset().width(),
                          decoded_image.src_rect_offset().height());
   adjusted_src = AdjustSrcRectForScale(adjusted_src, scale_adjustment);
-  flags->DrawToSk(canvas, [op, &decoded_image, adjusted_src](SkCanvas* c,
-                                                             const SkPaint& p) {
+  PaintFlags::ScalingOperation scale = MatrixToScalingOperation(matrix.asM33());
+  flags->DrawToSk(canvas, [op, &decoded_image, adjusted_src, scale](
+                              SkCanvas* c, const SkPaint& p) {
     SkSamplingOptions options = PaintFlags::FilterQualityToSkSamplingOptions(
-        decoded_image.filter_quality());
+        decoded_image.filter_quality(), scale);
     DrawImageRect(c, decoded_image.image().get(), adjusted_src, op->dst,
                   options, &p, op->constraint);
   });
@@ -1619,6 +1633,7 @@ SkottieWrapper::FrameDataFetchResult DrawSkottieOp::GetImageAssetForRaster(
     return SkottieWrapper::FrameDataFetchResult::kNoUpdate;
 
   const SkottieFrameData& frame_data = images_iter->second;
+  SkM44 matrix = canvas->getLocalToDevice();
   if (!frame_data.image) {
     sk_image = nullptr;
   } else if (params.image_provider) {
@@ -1627,7 +1642,7 @@ SkottieWrapper::FrameDataFetchResult DrawSkottieOp::GetImageAssetForRaster(
     DrawImage draw_image(
         frame_data.image, /*use_dark_mode=*/false,
         SkIRect::MakeWH(frame_data.image.width(), frame_data.image.height()),
-        frame_data.quality, canvas->getLocalToDevice());
+        frame_data.quality, matrix);
     auto scoped_result = params.image_provider->GetRasterContent(draw_image);
     if (scoped_result) {
       sk_image = scoped_result.decoded_image().image();
@@ -1641,8 +1656,9 @@ SkottieWrapper::FrameDataFetchResult DrawSkottieOp::GetImageAssetForRaster(
     if (!sk_image)
       sk_image = frame_data.image.GetSwSkImage();
   }
+  PaintFlags::ScalingOperation scale = MatrixToScalingOperation(matrix.asM33());
   sampling_out =
-      PaintFlags::FilterQualityToSkSamplingOptions(frame_data.quality);
+      PaintFlags::FilterQualityToSkSamplingOptions(frame_data.quality, scale);
   return SkottieWrapper::FrameDataFetchResult::kNewDataAvailable;
 }
 
