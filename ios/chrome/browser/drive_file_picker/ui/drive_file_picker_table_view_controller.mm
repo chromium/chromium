@@ -8,6 +8,7 @@
 #import "base/notreached.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_alert_utils.h"
+#import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_cell_content_configuration.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_empty_view.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_item.h"
@@ -515,9 +516,10 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
     return cell;
   }
 
+  DriveFilePickerCellContentConfiguration* driveFilePickerContentConfiguration =
+      [DriveFilePickerCellContentConfiguration cellConfiguration];
   UIListContentConfiguration* contentConfiguration =
-      item.subtitle ? [UIListContentConfiguration subtitleCellConfiguration]
-                    : [UIListContentConfiguration cellConfiguration];
+      driveFilePickerContentConfiguration.listContentConfiguration;
 
   // Set up cell image.
   UIListContentImageProperties* imageProperties =
@@ -554,8 +556,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   // Set up text.
   UIListContentTextProperties* textProperties =
       contentConfiguration.textProperties;
-  textProperties.color = item.enabled ? [UIColor colorNamed:kTextPrimaryColor]
-                                      : [UIColor colorNamed:kDisabledTintColor];
+  textProperties.color = [UIColor colorNamed:kTextPrimaryColor];
   textProperties.numberOfLines = 1;
   textProperties.allowsDefaultTighteningForTruncation = YES;
   UIFont* textFont = textProperties.font;
@@ -580,7 +581,7 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
     contentConfiguration.secondaryText = item.subtitle;
     contentConfiguration.secondaryTextProperties.color =
         item.enabled ? [UIColor colorNamed:kTextSecondaryColor]
-                     : [UIColor colorNamed:kDisabledTintColor];
+                     : [UIColor colorNamed:kTextPrimaryColor];
     contentConfiguration.secondaryTextProperties.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   }
@@ -598,7 +599,8 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   contentConfiguration.textToSecondaryTextVerticalPadding =
       kCellTextToSecondaryTextVerticalPadding;
 
-  cell.contentConfiguration = contentConfiguration;
+  driveFilePickerContentConfiguration.enabled = item.enabled;
+  cell.contentConfiguration = driveFilePickerContentConfiguration;
 
   // Set up background.
   UIBackgroundConfiguration* backgroundConfiguration =
