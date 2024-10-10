@@ -249,8 +249,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerFetchDispatcherBrowserTest, FetchEvent) {
 // This is the timeout case that the lifetime of a fetch event is shorter than
 // the response finishes. ServiceWorkerFetchDispatcher::OnFetchEventFinished is
 // called first.
+// TODO(crbug.com/372638068): Disabled due to flakiness.
 IN_PROC_BROWSER_TEST_F(ServiceWorkerFetchDispatcherBrowserTest,
-                       FetchEventTimeout) {
+                       DISABLED_FetchEventTimeout) {
   StartServerAndNavigateToSetup();
   ServiceWorkerVersion* version = CreateVersion();
   version->SetTickClockForTesting(&tick_clock_);
