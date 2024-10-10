@@ -9,11 +9,13 @@
 external/wpt/longtask-timing/*
 external/wpt/picture-in-picture/*
 external/wpt/selection/*
+external/wpt/signed-exchange/*
 external/wpt/webauthn/*
 external/wpt/WebCryptoAPI/*
 
 virtual/gpu/external/wpt/*
 virtual/longtask-from-loaf/external/wpt/*
 virtual/single-renderer-process/external/wpt/*
+virtual/split-http-cache/external/wpt/signed-exchange/*
 virtual/webauthn-remote-desktop-client-override/*
 
