@@ -76,6 +76,15 @@
 - (void)browseToParentWithMediator:(DriveFilePickerMediator*)mediator {
 }
 
+- (void)browseDriveCollectionWithMediator:
+            (DriveFilePickerMediator*)driveFilePickerMediator
+                          didUpdateFilter:(DriveFilePickerFilter)filter
+                          sortingCriteria:(DriveItemsSortingType)sortingCriteria
+                         sortingDirection:
+                             (DriveItemsSortingOrder)sortingDirection
+                      ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes {
+}
+
 @end
 
 // Fake consumer for `DriveFilePickerMediator`.

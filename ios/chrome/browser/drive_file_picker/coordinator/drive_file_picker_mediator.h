@@ -41,6 +41,9 @@ class ChromeAccountManagerService;
 // Drive file picker handler.
 @property(nonatomic, weak) id<DriveFilePickerCommands> driveFilePickerHandler;
 
+// Whether the mediator is active (a.k.a at the top of the navigation stack).
+@property(nonatomic, assign, getter=isActive) BOOL active;
+
 // Initializes the mediator with a given `webState`.
 - (instancetype)
          initWithWebState:(web::WebState*)webState
@@ -66,6 +69,13 @@ class ChromeAccountManagerService;
 
 // Sets the identity to `selectedIdentity`.
 - (void)setSelectedIdentity:(id<SystemIdentity>)selectedIdentity;
+
+// Sets a pending filter or sorting criteria. This will take effect when the
+// mediator is set to active.
+- (void)setPendingFilter:(DriveFilePickerFilter)filter
+         sortingCriteria:(DriveItemsSortingType)sortingCriteria
+        sortingDirection:(DriveItemsSortingOrder)sortingDirection
+     ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes;
 
 @end
 

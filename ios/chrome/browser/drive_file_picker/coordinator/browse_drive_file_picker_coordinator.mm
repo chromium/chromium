@@ -159,6 +159,7 @@
                   ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
                       sortingCriteria:(DriveItemsSortingType)sortingCriteria
                      sortingDirection:(DriveItemsSortingOrder)sortingDirection {
+  [_mediator setActive:NO];
   _childBrowseCoordinator = [[BrowseDriveFilePickerCoordinator alloc]
       initWithBaseNavigationViewController:_baseNavigationController
                                    browser:self.browser
@@ -192,6 +193,20 @@
   [self.delegate coordinatorShouldStop:self];
 }
 
+- (void)browseDriveCollectionWithMediator:
+            (DriveFilePickerMediator*)driveFilePickerMediator
+                          didUpdateFilter:(DriveFilePickerFilter)filter
+                          sortingCriteria:(DriveItemsSortingType)sortingCriteria
+                         sortingDirection:
+                             (DriveItemsSortingOrder)sortingDirection
+                      ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes {
+  [self.delegate browseDriveFilePickerCoordinator:self
+                                  didUpdateFilter:filter
+                                  sortingCriteria:sortingCriteria
+                                 sortingDirection:sortingDirection
+                              ignoreAcceptedTypes:ignoreAcceptedTypes];
+}
+
 #pragma mark - DriveFilePickerTableViewControllerDelegate
 
 - (void)viewControllerDidDisappear:(UIViewController*)viewController {
@@ -204,6 +219,26 @@
   CHECK(coordinator == _childBrowseCoordinator);
   [_childBrowseCoordinator stop];
   _childBrowseCoordinator = nil;
+  // Inform the mediator that it is back on the top.
+  [_mediator setActive:YES];
+}
+
+- (void)browseDriveFilePickerCoordinator:
+            (BrowseDriveFilePickerCoordinator*)coordinator
+                         didUpdateFilter:(DriveFilePickerFilter)filter
+                         sortingCriteria:(DriveItemsSortingType)sortingCriteria
+                        sortingDirection:
+                            (DriveItemsSortingOrder)sortingDirection
+                     ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes {
+  [_mediator setPendingFilter:filter
+              sortingCriteria:sortingCriteria
+             sortingDirection:sortingDirection
+          ignoreAcceptedTypes:ignoreAcceptedTypes];
+  [self.delegate browseDriveFilePickerCoordinator:self
+                                  didUpdateFilter:filter
+                                  sortingCriteria:sortingCriteria
+                                 sortingDirection:sortingDirection
+                              ignoreAcceptedTypes:ignoreAcceptedTypes];
 }
 
 @end

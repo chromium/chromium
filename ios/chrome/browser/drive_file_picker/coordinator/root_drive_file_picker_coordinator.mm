@@ -203,12 +203,34 @@
 - (void)browseToParentWithMediator:(DriveFilePickerMediator*)mediator {
 }
 
+- (void)browseDriveCollectionWithMediator:
+            (DriveFilePickerMediator*)driveFilePickerMediator
+                          didUpdateFilter:(DriveFilePickerFilter)filter
+                          sortingCriteria:(DriveItemsSortingType)sortingCriteria
+                         sortingDirection:
+                             (DriveItemsSortingOrder)sortingDirection
+                      ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes {
+}
+
 #pragma mark - BrowseDriveFilePickerCoordinatorDelegate
 
 - (void)coordinatorShouldStop:(ChromeCoordinator*)coordinator {
   CHECK(coordinator == _childBrowseCoordinator);
   [_childBrowseCoordinator stop];
   _childBrowseCoordinator = nil;
+}
+
+- (void)browseDriveFilePickerCoordinator:
+            (BrowseDriveFilePickerCoordinator*)coordinator
+                         didUpdateFilter:(DriveFilePickerFilter)filter
+                         sortingCriteria:(DriveItemsSortingType)sortingCriteria
+                        sortingDirection:
+                            (DriveItemsSortingOrder)sortingDirection
+                     ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes {
+  [_mediator setPendingFilter:filter
+              sortingCriteria:sortingCriteria
+             sortingDirection:sortingDirection
+          ignoreAcceptedTypes:ignoreAcceptedTypes];
 }
 
 @end

@@ -104,6 +104,18 @@ constexpr int kFetchedImageResizeDimension = 64;
   base::OneShotTimer _fetchTimer;
   // The page token to use to continue the current list/search.
   NSString* _pageToken;
+  // A filter that has been set externally. The value will be applied the next
+  // time the mediator is active.
+  std::optional<DriveFilePickerFilter> _pendingFilter;
+  // A sorting criteria that has been set externally. The value will be applied
+  // the next time the mediator is active.
+  std::optional<DriveItemsSortingType> _pendingSortingCriteria;
+  // A sorting direction that has been set externally. The value will be applied
+  // the next time the mediator is active.
+  std::optional<DriveItemsSortingOrder> _pendingSortingDirection;
+  // A flag to ignore accepted types that has been set externally. The value
+  // will be applied the next time the mediator is active.
+  std::optional<BOOL> _pendingIgnoreAcceptedTypes;
 }
 
 - (instancetype)
@@ -198,6 +210,27 @@ constexpr int kFetchedImageResizeDimension = 64;
   [self configureConsumerIdentitiesMenu];
   _driveList = _driveService->CreateList(_identity);
   _driveDownloader = _driveService->CreateFileDownloader(_identity);
+}
+
+- (void)setPendingFilter:(DriveFilePickerFilter)filter
+         sortingCriteria:(DriveItemsSortingType)sortingCriteria
+        sortingDirection:(DriveItemsSortingOrder)sortingDirection
+     ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes {
+  _pendingFilter = filter;
+  _pendingSortingCriteria = sortingCriteria;
+  _pendingSortingDirection = sortingDirection;
+  _pendingIgnoreAcceptedTypes = ignoreAcceptedTypes;
+  if (_active) {
+    [self applyPendingFilterAndSorting];
+  }
+}
+
+- (void)setActive:(BOOL)active {
+  if (_active == active) {
+    return;
+  }
+  _active = active;
+  [self applyPendingFilterAndSorting];
 }
 
 #pragma mark - DriveFilePickerMutator
@@ -302,6 +335,11 @@ constexpr int kFetchedImageResizeDimension = 64;
   }
   _sortingCriteria = criteria;
   _sortingDirection = direction;
+  [self.delegate browseDriveCollectionWithMediator:self
+                                   didUpdateFilter:_filter
+                                   sortingCriteria:criteria
+                                  sortingDirection:direction
+                               ignoreAcceptedTypes:_ignoreAcceptedTypes];
   [self.consumer setSortingCriteria:criteria direction:direction];
   [self loadItemsAppending:NO delayed:NO animated:YES];
 }
@@ -375,20 +413,12 @@ constexpr int kFetchedImageResizeDimension = 64;
     return;
   }
   _ignoreAcceptedTypes = ignoreAcceptedTypes;
-  NSMutableSet<NSString*>* enabledItemsIdentifiers = [NSMutableSet set];
-  for (const DriveItem& item : _fetchedDriveItems) {
-    if (DriveFilePickerItemShouldBeEnabled(item, _acceptedTypes,
-                                           _ignoreAcceptedTypes)) {
-      [enabledItemsIdentifiers addObject:item.identifier];
-    }
-  }
-  [self.consumer setEnabledItems:enabledItemsIdentifiers];
-  [self.consumer setAllFilesEnabled:_ignoreAcceptedTypes];
-  // If the currently selected item is not part of enabled items, unselect it.
-  if (_selectedFile &&
-      ![enabledItemsIdentifiers containsObject:_selectedFile->identifier]) {
-    [self setSelectedFile:std::nullopt];
-  }
+  [self updateAcceptableItems];
+  [self.delegate browseDriveCollectionWithMediator:self
+                                   didUpdateFilter:_filter
+                                   sortingCriteria:_sortingCriteria
+                                  sortingDirection:_sortingDirection
+                               ignoreAcceptedTypes:_ignoreAcceptedTypes];
 }
 
 - (void)setFilter:(DriveFilePickerFilter)filter {
@@ -396,6 +426,11 @@ constexpr int kFetchedImageResizeDimension = 64;
     return;
   }
   _filter = filter;
+  [self.delegate browseDriveCollectionWithMediator:self
+                                   didUpdateFilter:_filter
+                                   sortingCriteria:_sortingCriteria
+                                  sortingDirection:_sortingDirection
+                               ignoreAcceptedTypes:_ignoreAcceptedTypes];
   [self.consumer setFilter:filter];
   [self loadItemsAppending:NO delayed:NO animated:YES];
 }
@@ -464,6 +499,24 @@ constexpr int kFetchedImageResizeDimension = 64;
   } else {
     // Otherwise, out of search mode, show the provided collection title.
     [self.consumer setTitle:_title];
+  }
+}
+
+// Update what items can be selected by the user.
+- (void)updateAcceptableItems {
+  NSMutableSet<NSString*>* enabledItemsIdentifiers = [NSMutableSet set];
+  for (const DriveItem& item : _fetchedDriveItems) {
+    if (DriveFilePickerItemShouldBeEnabled(item, _acceptedTypes,
+                                           _ignoreAcceptedTypes)) {
+      [enabledItemsIdentifiers addObject:item.identifier];
+    }
+  }
+  [self.consumer setEnabledItems:enabledItemsIdentifiers];
+  [self.consumer setAllFilesEnabled:_ignoreAcceptedTypes];
+  // If the currently selected item is not part of enabled items, unselect it.
+  if (_selectedFile &&
+      ![enabledItemsIdentifiers containsObject:_selectedFile->identifier]) {
+    [self setSelectedFile:std::nullopt];
   }
 }
 
@@ -868,6 +921,55 @@ constexpr int kFetchedImageResizeDimension = 64;
     }
   }
   [self.consumer setFetchedIcon:image forItems:itemsToUpdate];
+}
+
+// Check if the pending sorting criteria and filter are different from the
+// current one, and if it is the case, update them.
+- (void)applyPendingFilterAndSorting {
+  BOOL refresh = NO;
+  BOOL refreshAcceptedItems = NO;
+  if (_pendingFilter) {
+    if (_filter != *_pendingFilter) {
+      _filter = *_pendingFilter;
+      refresh = YES;
+    }
+    _pendingFilter.reset();
+  }
+  if (_pendingSortingCriteria) {
+    if (_sortingCriteria != *_pendingSortingCriteria) {
+      _sortingCriteria = *_pendingSortingCriteria;
+      refresh = YES;
+    }
+    _pendingSortingCriteria.reset();
+  }
+  if (_pendingSortingDirection) {
+    if (_sortingDirection != *_pendingSortingDirection) {
+      _sortingDirection = *_pendingSortingDirection;
+      refresh = YES;
+    }
+    _pendingSortingDirection.reset();
+  }
+  if (_pendingIgnoreAcceptedTypes) {
+    if (_ignoreAcceptedTypes != *_pendingIgnoreAcceptedTypes) {
+      _ignoreAcceptedTypes = *_pendingIgnoreAcceptedTypes;
+      refreshAcceptedItems = YES;
+    }
+    _pendingIgnoreAcceptedTypes.reset();
+  }
+
+  if (refresh) {
+    [self.consumer setFilter:_filter];
+    [self.consumer setSortingCriteria:_sortingCriteria
+                            direction:_sortingDirection];
+
+    [self loadItemsAppending:NO delayed:NO animated:YES];
+    // If items were refreshed, the acceptedItems were also automatically
+    // refreshed.
+    refreshAcceptedItems = NO;
+  }
+  if (refreshAcceptedItems) {
+    [self updateAcceptableItems];
+  }
 }
 
 @end
