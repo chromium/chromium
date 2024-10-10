@@ -5194,6 +5194,48 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, Activation_PageWithPopUpWindow) {
       PrerenderFinalStatus::kActivatedWithAuxiliaryBrowsingContexts);
 }
 
+// This is the same as Activation_PageWithPopUpWindow test but `window.opener`
+// will be nullified after it is open. The window loses the communication with
+// the opener but it is still treated as an auxiliary context in the browser
+// internal, so the activation should fail.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       Activation_PageWithPopUpWindow_OpenerIsNullified) {
+  // Navigate to an initial page.
+  const GURL initial_url = GetUrl("/empty.html");
+  ASSERT_TRUE(NavigateToURL(shell(), initial_url));
+  EXPECT_TRUE(AddTestUtilJS(current_frame_host()));
+
+  // Start a prerender.
+  const GURL prerendering_url = GetUrl("/empty.html?prerender_next");
+  AddPrerender(prerendering_url);
+  ASSERT_TRUE(HasHostForUrl(prerendering_url));
+
+  // Open a pop-up window that initially has an opener but it is nullified
+  // right away.
+  const GURL window_url = GetUrl("/empty.html?prerender_window");
+  const std::string kOpenWindowAndNullifyScript = R"(
+      const win = window.open($1, '_blank');
+      win.opener = null;
+  )";
+  TestNavigationObserver nav_observer(window_url);
+  nav_observer.StartWatchingNewWebContents();
+  EXPECT_TRUE(ExecJs(web_contents(),
+                     JsReplace(kOpenWindowAndNullifyScript, window_url)));
+  nav_observer.WaitForNavigationFinished();
+
+  // Attempt to activate the prerendered page for the top-level frame. This
+  // should fail and fallback to network request because the pop-up window
+  // exists.
+  ASSERT_EQ(GetRequestCount(prerendering_url), 1);
+  NavigatePrimaryPage(prerendering_url);
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), prerendering_url);
+  EXPECT_EQ(GetRequestCount(prerendering_url), 2);
+
+  // The prerender host should be canceled.
+  ExpectFinalStatusForSpeculationRule(
+      PrerenderFinalStatus::kActivatedWithAuxiliaryBrowsingContexts);
+}
+
 // Tests that all RenderFrameHostImpls in the prerendering page know the
 // prerendering state.
 IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderIframe) {
