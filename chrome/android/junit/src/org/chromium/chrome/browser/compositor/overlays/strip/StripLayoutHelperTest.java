@@ -348,10 +348,10 @@ public class StripLayoutHelperTest {
         final ArgumentCaptor<List<Animator>> animationListCaptor =
                 ArgumentCaptor.forClass(List.class);
         final InOrder stripLayoutOrder = inOrder(stripLayoutHelperSpy);
-        stripLayoutOrder.verify(stripLayoutHelperSpy).startAnimationList(any(), any());
+        stripLayoutOrder.verify(stripLayoutHelperSpy).startAnimations(any(), any());
         stripLayoutOrder
                 .verify(stripLayoutHelperSpy)
-                .startAnimationList(animationListCaptor.capture(), any());
+                .startAnimations(animationListCaptor.capture(), any());
         final List<Animator> animationList = animationListCaptor.getValue();
         // Only the tabs that come after the closed tab should have to move and get animations
         // created, plus the new tab button offset animation.
@@ -390,10 +390,10 @@ public class StripLayoutHelperTest {
         final ArgumentCaptor<List<Animator>> animationListCaptor =
                 ArgumentCaptor.forClass(List.class);
         final InOrder stripLayoutOrder = inOrder(stripLayoutHelperSpy);
-        stripLayoutOrder.verify(stripLayoutHelperSpy).startAnimationList(any(), any());
+        stripLayoutOrder.verify(stripLayoutHelperSpy).startAnimations(any(), any());
         stripLayoutOrder
                 .verify(stripLayoutHelperSpy)
-                .startAnimationList(animationListCaptor.capture(), any());
+                .startAnimations(animationListCaptor.capture(), any());
         final List<Animator> animationList = animationListCaptor.getValue();
         assertEquals(
                 "The only animation should be for the new tab button offset",
@@ -435,10 +435,10 @@ public class StripLayoutHelperTest {
         final ArgumentCaptor<List<Animator>> animationListCaptor =
                 ArgumentCaptor.forClass(List.class);
         final InOrder stripLayoutOrder = inOrder(stripLayoutHelperSpy);
-        stripLayoutOrder.verify(stripLayoutHelperSpy).startAnimationList(any(), any());
+        stripLayoutOrder.verify(stripLayoutHelperSpy).startAnimations(any(), any());
         stripLayoutOrder
                 .verify(stripLayoutHelperSpy)
-                .startAnimationList(animationListCaptor.capture(), any());
+                .startAnimations(animationListCaptor.capture(), any());
         final List<Animator> animationList = animationListCaptor.getValue();
         assertEquals(
                 "There should be 11 animations for the visible tabs, "
@@ -483,10 +483,10 @@ public class StripLayoutHelperTest {
         final ArgumentCaptor<List<Animator>> animationListCaptor =
                 ArgumentCaptor.forClass(List.class);
         final InOrder stripLayoutOrder = inOrder(stripLayoutHelperSpy);
-        stripLayoutOrder.verify(stripLayoutHelperSpy).startAnimationList(any(), any());
+        stripLayoutOrder.verify(stripLayoutHelperSpy).startAnimations(any(), any());
         stripLayoutOrder
                 .verify(stripLayoutHelperSpy)
-                .startAnimationList(animationListCaptor.capture(), any());
+                .startAnimations(animationListCaptor.capture(), any());
         final List<Animator> animationList = animationListCaptor.getValue();
         assertEquals(
                 "There should be one animation for the tab moving into the visible bounds, "
@@ -519,7 +519,7 @@ public class StripLayoutHelperTest {
 
         final ArgumentCaptor<List<Animator>> animationListCaptor =
                 ArgumentCaptor.forClass(List.class);
-        verify(stripLayoutHelperSpy).startAnimationList(animationListCaptor.capture(), any());
+        verify(stripLayoutHelperSpy).startAnimations(animationListCaptor.capture(), any());
         final List<Animator> animationList = animationListCaptor.getValue();
         assertEquals(
                 "There should be one animation for the newly created tab width, "
@@ -2650,7 +2650,7 @@ public class StripLayoutHelperTest {
         //      bottomIndicatorWidthOffset(27.f).
         return (tabWidth - TAB_OVERLAP_WIDTH) * tabCount
                 + groupTitle.getWidth()
-                - StripLayoutHelper.TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET;
+                - StripLayoutUtils.TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET;
     }
 
     @Test
@@ -4090,11 +4090,11 @@ public class StripLayoutHelperTest {
         float expectedWidth1 =
                 views[1].getWidth()
                         + tabWidth * 2
-                        - StripLayoutHelper.TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET;
+                        - StripLayoutUtils.TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET;
         float expectedWidth2 =
                 views[5].getWidth()
                         + tabWidth * 4
-                        - StripLayoutHelper.TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET;
+                        - StripLayoutUtils.TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET;
         assertEquals(
                 expectedWidth1, ((StripLayoutGroupTitle) views[1]).getBottomIndicatorWidth(), 0.f);
         assertEquals(
