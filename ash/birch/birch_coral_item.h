@@ -19,18 +19,14 @@ class ASH_EXPORT BirchCoralItem : public BirchItem {
  public:
   BirchCoralItem(const std::u16string& coral_title,
                  const std::u16string& coral_text,
-                 const std::vector<GURL>& page_urls,
-                 const std::vector<std::string>& app_ids,
-                 int cluster_id);
+                 int group_id);
   BirchCoralItem(BirchCoralItem&&);
   BirchCoralItem(const BirchCoralItem&);
   BirchCoralItem& operator=(const BirchCoralItem&);
   bool operator==(const BirchCoralItem& rhs) const;
   ~BirchCoralItem() override;
 
-  const std::vector<GURL> page_urls() const { return page_urls_; }
-  const std::vector<std::string> app_ids() const { return app_ids_; }
-  int cluster_id() const { return cluster_id_; }
+  int group_id() const { return group_id_; }
 
   // BirchItem:
   BirchItemType GetType() const override;
@@ -53,13 +49,7 @@ class ASH_EXPORT BirchCoralItem : public BirchItem {
       const std::string& app_id,
       base::OnceCallback<void(const ui::ImageModel&)> barrier_callback) const;
 
-  // A vector of urls representing the tabs received from coral provider.
-  std::vector<GURL> page_urls_;
-
-  // A vector of app ids representing the apps received from coral provider.
-  std::vector<std::string> app_ids_;
-
-  int cluster_id_;
+  int group_id_;
 };
 
 }  // namespace ash

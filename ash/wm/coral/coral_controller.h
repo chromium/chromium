@@ -50,6 +50,7 @@ class ASH_EXPORT CoralResponse {
   void set_groups(std::vector<Group>&& groups) { groups_ = std::move(groups); }
 
   const std::vector<Group>& groups() const { return groups_; }
+  std::vector<Group>& groups() { return groups_; }
 
  private:
   std::vector<Group> groups_;

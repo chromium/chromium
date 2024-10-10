@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/birch/birch_coral_item.h"
 #include "ash/birch/birch_coral_provider.h"
 #include "ash/birch/birch_data_provider.h"
 #include "ash/birch/birch_icon_cache.h"
@@ -538,9 +539,8 @@ void BirchModel::RemoveItem(BirchItem* item) {
     }
   }
   if (item->GetType() == BirchItemType::kCoral) {
-    auto* coral_item = static_cast<BirchCoralItem*>(item);
-    static_cast<BirchCoralProvider*>(coral_provider_.get())
-        ->RemoveGroup(coral_item->cluster_id());
+    BirchCoralProvider::Get()->RemoveGroup(
+        static_cast<BirchCoralItem*>(item)->group_id());
   }
 }
 

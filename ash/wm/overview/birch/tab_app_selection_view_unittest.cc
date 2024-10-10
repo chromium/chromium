@@ -4,6 +4,7 @@
 
 #include "ash/wm/overview/birch/tab_app_selection_view.h"
 
+#include "ash/birch/birch_coral_provider.h"
 #include "ash/birch/birch_item_remover.h"
 #include "ash/birch/birch_model.h"
 #include "ash/birch/test_birch_client.h"
@@ -33,37 +34,37 @@ class TabAppSelectionViewTest : public AshTestBase {
     birch_client_ = std::make_unique<TestBirchClient>(birch_model);
     birch_model->SetClientAndInit(birch_client_.get());
 
-    auto coral_provider =
-        std::make_unique<TestBirchDataProvider<BirchCoralItem>>(
-            base::BindRepeating(&BirchModel::SetCoralItems,
-                                base::Unretained(birch_model)),
-            prefs::kBirchUseCoral);
-    coral_provider_ = coral_provider.get();
-    birch_model->OverrideCoralProviderForTest(std::move(coral_provider));
-
     base::RunLoop run_loop;
     birch_model->GetItemRemoverForTest()->SetProtoInitCallbackForTest(
         run_loop.QuitClosure());
     run_loop.Run();
 
-    // Prepare a coral item so we have a coral glanceable to click.
-    std::vector<GURL> page_urls;
-    page_urls.emplace_back(("https://www.reddit.com/"));
-    page_urls.emplace_back(("https://www.figma.com/"));
-    page_urls.emplace_back(("https://www.notion.so/"));
+    // Prepare a coral group so we have a coral glanceable to click.
+    auto fake_response = std::make_unique<CoralResponse>();
+    auto fake_group = coral::mojom::Group::New();
+    fake_group->title = "Coral Group";
+    fake_group->entities.push_back(
+        coral::mojom::EntityKey::NewTabUrl(GURL("https://www.reddit.com/")));
+    fake_group->entities.push_back(
+        coral::mojom::EntityKey::NewTabUrl(GURL("https://www.figma.com/")));
+    fake_group->entities.push_back(
+        coral::mojom::EntityKey::NewTabUrl(GURL("https://www.notion.so/")));
+    // OS settings.
+    fake_group->entities.push_back(
+        coral::mojom::EntityKey::NewAppId("odknhmnlageboeamepcngndbggdpaobj"));
+    // Files.
+    fake_group->entities.push_back(
+        coral::mojom::EntityKey::NewAppId("lgnggepjiihbfdbedefdhcffnmhcahbm"));
 
-    std::vector<std::string> app_ids;
-    app_ids.emplace_back("lgnggepjiihbfdbedefdhcffnmhcahbm");
-    app_ids.emplace_back("odknhmnlageboeamepcngndbggdpaobj");
-
-    coral_provider_->set_items(
-        {BirchCoralItem(u"Title", u"Text", /*page_urls=*/page_urls,
-                        /*app_ids=*/app_ids, /*cluster_id=*/0)});
+    std::vector<coral::mojom::GroupPtr> fake_groups;
+    fake_groups.push_back(std::move(fake_group));
+    fake_response->set_groups(std::move(fake_groups));
+    BirchCoralProvider::Get()->OverrideCoralResponseForTest(
+        std::move(fake_response));
   }
 
   void TearDown() override {
     Shell::Get()->birch_model()->SetClientAndInit(nullptr);
-    coral_provider_ = nullptr;
     birch_client_.reset();
     AshTestBase::TearDown();
   }

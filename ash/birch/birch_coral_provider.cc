@@ -178,6 +178,32 @@ BirchCoralProvider::BirchCoralProvider(BirchModel* birch_model)
   g_instance = this;
   Shell::Get()->tab_cluster_ui_controller()->AddObserver(this);
   coral_item_remover_ = std::make_unique<CoralItemRemover>();
+
+  // Using a default fake response when --force-birch-fake-coral is enabled.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kForceBirchFakeCoral)) {
+    auto fake_response = std::make_unique<CoralResponse>();
+    // TODO(owenzhang): Remove placeholder page_urls.
+    auto fake_group = coral::mojom::Group::New();
+    fake_group->title = "Coral Group";
+    fake_group->entities.push_back(
+        coral::mojom::EntityKey::NewTabUrl(GURL("https://www.reddit.com/")));
+    fake_group->entities.push_back(
+        coral::mojom::EntityKey::NewTabUrl(GURL("https://www.figma.com/")));
+    fake_group->entities.push_back(
+        coral::mojom::EntityKey::NewTabUrl(GURL("https://www.notion.so/")));
+    // OS settings.
+    fake_group->entities.push_back(
+        coral::mojom::EntityKey::NewAppId("odknhmnlageboeamepcngndbggdpaobj"));
+    // Files.
+    fake_group->entities.push_back(
+        coral::mojom::EntityKey::NewAppId("fkiggjmkendpmbegkagpmagjepfkpmeb"));
+
+    std::vector<coral::mojom::GroupPtr> fake_groups;
+    fake_groups.push_back(std::move(fake_group));
+    fake_response->set_groups(std::move(fake_groups));
+    OverrideCoralResponseForTest(std::move(fake_response));
+  }
 }
 
 BirchCoralProvider::~BirchCoralProvider() {
@@ -185,8 +211,59 @@ BirchCoralProvider::~BirchCoralProvider() {
   g_instance = nullptr;
 }
 
+// static.
 BirchCoralProvider* BirchCoralProvider::Get() {
   return g_instance;
+}
+
+const coral::mojom::GroupPtr& BirchCoralProvider::GetGroupById(
+    int group_id) const {
+  std::vector<coral::mojom::GroupPtr>& groups = response_->groups();
+  CHECK_LT(group_id, static_cast<int>(groups.size()));
+  return groups[group_id];
+}
+
+coral::mojom::GroupPtr BirchCoralProvider::ExtractGroupById(int group_id) {
+  std::vector<coral::mojom::GroupPtr>& groups = response_->groups();
+  CHECK_LT(group_id, static_cast<int>(groups.size()));
+  auto group = std::move(groups[group_id]);
+  groups.erase(groups.begin() + group_id);
+  return group;
+}
+
+void BirchCoralProvider::RemoveGroup(int group_id) {
+  CHECK(coral_item_remover_);
+  coral::mojom::GroupPtr group = ExtractGroupById(group_id);
+  for (const auto& entity : group->entities) {
+    coral_item_remover_->RemoveItem(entity);
+  }
+}
+
+void BirchCoralProvider::RemoveItem(const coral::mojom::EntityKeyPtr& key) {
+  CHECK(coral_item_remover_);
+  coral_item_remover_->RemoveItem(key);
+}
+
+void BirchCoralProvider::RequestBirchDataFetch() {
+  // Use the customized fake response if set.
+  if (fake_response_) {
+    auto fake_response_copy = std::make_unique<CoralResponse>();
+    std::vector<coral::mojom::GroupPtr> groups;
+    // Copy groups.
+    for (const auto& group : fake_response_->groups()) {
+      groups.push_back(group->Clone());
+    }
+    fake_response_copy->set_groups(std::move(groups));
+    HandleCoralResponse(std::move(fake_response_copy));
+    return;
+  }
+
+  // TODO(yulunwu) make appropriate data request, send data to backend.
+  if (HasValidPostLoginData()) {
+    HandlePostLoginDataRequest();
+  } else {
+    HandleInSessionDataRequest();
+  }
 }
 
 void BirchCoralProvider::OnTabItemAdded(TabClusterUIItem* tab_item) {
@@ -199,45 +276,9 @@ void BirchCoralProvider::OnTabItemUpdated(TabClusterUIItem* tab_item) {
 
 void BirchCoralProvider::OnTabItemRemoved(TabClusterUIItem* tab_item) {}
 
-void BirchCoralProvider::RequestBirchDataFetch() {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kForceBirchFakeCoral)) {
-    std::vector<GURL> page_urls{
-        GURL("https://www.ikea.com/"), GURL("https://www.figma.com/"),
-        GURL("https://www.notion.so/"), GURL("https://www.nhl.com/")};
-
-    std::vector<std::string> app_ids = {"odknhmnlageboeamepcngndbggdpaobj",
-                                        "fkiggjmkendpmbegkagpmagjepfkpmeb"};
-
-    Shell::Get()->birch_model()->SetCoralItems({BirchCoralItem(
-        u"CoralTitle", u"CoralText", page_urls, app_ids, /*cluster_id=*/0)});
-    return;
-  }
-
-  // TODO(yulunwu) make appropriate data request, send data to backend.
-  if (HasValidPostLoginData()) {
-    HandlePostLoginDataRequest();
-  } else {
-    HandleInSessionDataRequest();
-  }
-}
-
-void BirchCoralProvider::RemoveGroup(const int cluster_id) {
-  CHECK(coral_item_remover_);
-  for (const auto& entity : groups_[cluster_id]->entities) {
-    coral_item_remover_->RemoveItem(entity);
-  }
-  groups_.erase(groups_.find(cluster_id));
-}
-
-void BirchCoralProvider::RemoveItem(const coral::mojom::EntityKeyPtr& key) {
-  CHECK(coral_item_remover_);
-  coral_item_remover_->RemoveItem(key);
-}
-
 void BirchCoralProvider::OverrideCoralResponseForTest(
     std::unique_ptr<CoralResponse> response) {
-  HandleCoralResponse(std::move(response));
+  fake_response_ = std::move(response);
 }
 
 bool BirchCoralProvider::HasValidPostLoginData() const {
@@ -300,9 +341,7 @@ void BirchCoralProvider::HandleInSessionDataRequest() {
 void BirchCoralProvider::HandleCoralResponse(
     std::unique_ptr<CoralResponse> response) {
   std::vector<BirchCoralItem> items;
-  groups_.clear();
   if (!response) {
-    LOG(ERROR) << "Failed to receive coral response.";
     response_.reset();
     Shell::Get()->birch_model()->SetCoralItems(items);
     return;
@@ -310,22 +349,10 @@ void BirchCoralProvider::HandleCoralResponse(
   // TODO(yulunwu) update `birch_model_`
   response_ = std::move(response);
   CHECK(HasValidClusterCount(response_->groups().size()));
-
   for (size_t i = 0; i < response_->groups().size(); ++i) {
-    groups_[i] = response_->groups()[i].Clone();
-    std::vector<GURL> page_urls;
-    std::vector<std::string> app_ids;
-    for (const auto& entity : groups_[i]->entities) {
-      if (entity->is_tab_url()) {
-        page_urls.push_back(entity->get_tab_url());
-      }
-      if (entity->is_app_id()) {
-        app_ids.push_back(entity->get_app_id());
-      }
-    }
-    items.emplace_back(base::UTF8ToUTF16(groups_[i]->title),
-                       /*subtitle=*/std::u16string(), page_urls, app_ids,
-                       /*cluster_id=*/int(i));
+    items.emplace_back(base::UTF8ToUTF16(response_->groups()[i]->title),
+                       /*subtitle=*/std::u16string(),
+                       /*group_id=*/int(i));
   }
   Shell::Get()->birch_model()->SetCoralItems(items);
 }

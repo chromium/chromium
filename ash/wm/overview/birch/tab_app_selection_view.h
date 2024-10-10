@@ -13,7 +13,6 @@ class ScrollView;
 }  // namespace views
 
 namespace ash {
-class BirchCoralItem;
 
 // A selection view that allows users to pick which tabs and apps they want to
 // move to a new desk. Its main child is a scroll view that contains many
@@ -25,7 +24,7 @@ class ASH_EXPORT TabAppSelectionView : public views::BoxLayoutView {
   METADATA_HEADER(TabAppSelectionView, views::BoxLayoutView)
 
  public:
-  explicit TabAppSelectionView(BirchCoralItem* coral_item);
+  explicit TabAppSelectionView(int group_id);
   TabAppSelectionView(const TabAppSelectionView&) = delete;
   TabAppSelectionView& operator=(const TabAppSelectionView&) = delete;
   ~TabAppSelectionView() override;

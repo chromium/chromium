@@ -87,13 +87,8 @@ void OnAllFaviconsRetrievedCoral(
 
 BirchCoralItem::BirchCoralItem(const std::u16string& coral_title,
                                const std::u16string& coral_text,
-                               const std::vector<GURL>& page_urls,
-                               const std::vector<std::string>& app_ids,
-                               int cluster_id)
-    : BirchItem(coral_title, coral_text),
-      page_urls_(page_urls),
-      app_ids_(app_ids),
-      cluster_id_(cluster_id) {
+                               int group_id)
+    : BirchItem(coral_title, coral_text), group_id_(group_id) {
   set_addon_label(u"Show");
 }
 
@@ -119,44 +114,35 @@ std::string BirchCoralItem::ToString() const {
 }
 
 void BirchCoralItem::PerformAction(bool is_post_login) {
-  coral::mojom::GroupPtr temp_group = coral::mojom::Group::New();
-  temp_group->title = "Coral desk";
-  for (const GURL& gurl : page_urls_) {
-    temp_group->entities.push_back(coral::mojom::EntityKey::NewTabUrl(gurl));
-  }
-  for (const std::string& app_id : app_ids_) {
-    temp_group->entities.push_back(coral::mojom::EntityKey::NewAppId(app_id));
-  }
-
-  // Pick first half of the tabs from request for testing.
-  const auto& request_items =
-      BirchCoralProvider::Get()->GetCoralRequestForTest().content();
-  std::vector<coral::mojom::TabPtr> tabs;
-  for (const auto& item : request_items) {
-    if (item->is_tab()) {
-      tabs.push_back(std::move(item->get_tab()));
-    }
-  }
-
-  for (size_t i = 0; i < tabs.size() / 2; i++) {
-    temp_group->entities.push_back(
-        coral::mojom::EntityKey::NewTabUrl(tabs[i]->url));
-  }
+  coral::mojom::GroupPtr group =
+      BirchCoralProvider::Get()->ExtractGroupById(group_id_);
 
   // TODO(http://b/365839465): Handle post-login case.
   if (is_post_login) {
-    Shell::Get()->coral_delegate()->LaunchPostLoginGroup(std::move(temp_group));
+    Shell::Get()->coral_delegate()->LaunchPostLoginGroup(std::move(group));
     return;
   }
 
-  Shell::Get()->coral_controller()->OpenNewDeskWithGroup(std::move(temp_group));
+  Shell::Get()->coral_controller()->OpenNewDeskWithGroup(std::move(group));
 }
 
 // TODO(b/362530155): Consider refactoring icon loading logic into
 // `CoralGroupedIconImage`.
 void BirchCoralItem::LoadIcon(LoadIconCallback original_callback) const {
-  const int page_num = page_urls_.size();
-  const int app_num = app_ids_.size();
+  const coral::mojom::GroupPtr& group =
+      BirchCoralProvider::Get()->GetGroupById(group_id_);
+  std::vector<GURL> page_urls;
+  std::vector<std::string> app_ids;
+  for (const auto& entity : group->entities) {
+    if (entity->is_tab_url()) {
+      page_urls.push_back(entity->get_tab_url());
+    } else {
+      app_ids.push_back(entity->get_app_id());
+    }
+  }
+
+  const int page_num = page_urls.size();
+  const int app_num = app_ids.size();
   const int total_count = page_num + app_num;
 
   // If the total number of pages and apps exceeds the limit of number of sub
@@ -178,13 +164,13 @@ void BirchCoralItem::LoadIcon(LoadIconCallback original_callback) const {
   for (int i = 0; i < std::min(icon_requests, page_num); i++) {
     // For each `url`, retrieve the icon using favicon service, and run the
     // `barrier_callback` with the image result.
-    GetFaviconImageCoral(page_urls_[i], barrier_callback);
+    GetFaviconImageCoral(page_urls[i], barrier_callback);
   }
 
   for (int i = 0; i < icon_requests - page_num; i++) {
     // For each `id`, retrieve the icon using `saved_desk_delegate`, and run the
     // `barrier_callback` with the image result.
-    GetAppIconCoral(app_ids_[i], barrier_callback);
+    GetAppIconCoral(app_ids[i], barrier_callback);
   }
 }
 

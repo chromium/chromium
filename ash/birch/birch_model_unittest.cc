@@ -531,9 +531,7 @@ TEST_F(BirchModelTest, DisablingPrefsClearsModel) {
       SecondaryIconType::kLostMediaVideo, base::DoNothing());
   model->SetLostMediaItems(lost_media_item_list);
   std::vector<BirchCoralItem> coral_item_list;
-  coral_item_list.emplace_back(u"title", u"subtext", std::vector<GURL>(),
-                               std::vector<std::string>(),
-                               /*cluster_id=*/0);
+  coral_item_list.emplace_back(u"title", u"subtext", /*group_id=*/0);
   model->SetCoralItems(coral_item_list);
 
   ASSERT_TRUE(model->IsDataFresh());
@@ -1082,9 +1080,7 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
       SecondaryIconType::kLostMediaVideo, base::DoNothing());
   model->SetLostMediaItems(lost_media_item_list);
   std::vector<BirchCoralItem> coral_item_list;
-  coral_item_list.emplace_back(u"title", u"subtext", std::vector<GURL>(),
-                               std::vector<std::string>(),
-                               /*cluster_id=*/0);
+  coral_item_list.emplace_back(u"title", u"subtext", /*group_id=*/0);
   model->SetCoralItems(coral_item_list);
 
   EXPECT_TRUE(model->IsDataFresh());
@@ -1468,8 +1464,8 @@ TEST_F(BirchModelTest, RemoveAndFilterCoralItem) {
   std::unique_ptr<CoralResponse> response = std::make_unique<CoralResponse>();
   response->set_groups(std::move(groups));
   BirchModel* model = Shell::Get()->birch_model();
-  static_cast<BirchCoralProvider*>(model->GetCoralProviderForTest())
-      ->OverrideCoralResponseForTest(std::move(response));
+  BirchCoralProvider::Get()->OverrideCoralResponseForTest(std::move(response));
+  BirchCoralProvider::Get()->RequestBirchDataFetch();
 
   auto* item_remover = model->GetCoralItemRemoverForTest();
 
@@ -1477,10 +1473,8 @@ TEST_F(BirchModelTest, RemoveAndFilterCoralItem) {
   item_remover->FilterRemovedItems(&content_items);
   ASSERT_EQ(4u, content_items.size());
 
-  BirchCoralItem coral_item0(u"Coral Title", u"Coral Text", std::vector<GURL>(),
-                             std::vector<std::string>(), /*cluster_id=*/0);
-  BirchCoralItem coral_item1(u"Coral Title", u"Coral Text", std::vector<GURL>(),
-                             std::vector<std::string>(), /*cluster_id=*/1);
+  BirchCoralItem coral_item0(u"Coral Title", u"Coral Text", /*group_id=*/0);
+  BirchCoralItem coral_item1(u"Coral Title", u"Coral Text", /*group_id=*/1);
   model->SetCoralItems({coral_item0, coral_item1});
 
   model->RemoveItem(&coral_item1);

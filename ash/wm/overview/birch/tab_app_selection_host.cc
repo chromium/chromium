@@ -76,7 +76,7 @@ TabAppSelectionHost::TabAppSelectionHost(BirchChipButton* coral_chip)
 
   Init(std::move(params));
   SetContentsView(std::make_unique<TabAppSelectionView>(
-      static_cast<BirchCoralItem*>(coral_chip->GetItem())));
+      static_cast<BirchCoralItem*>(coral_chip->GetItem())->group_id()));
   widget_delegate()->set_desired_bounds_delegate(base::BindRepeating(
       &TabAppSelectionHost::GetDesiredBoundsInScreen, base::Unretained(this)));
   SetBounds(GetDesiredBoundsInScreen());

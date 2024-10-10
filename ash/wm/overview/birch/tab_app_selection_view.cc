@@ -4,7 +4,7 @@
 
 #include "ash/wm/overview/birch/tab_app_selection_view.h"
 
-#include "ash/birch/birch_coral_item.h"
+#include "ash/birch/birch_coral_provider.h"
 #include "ash/public/cpp/saved_desk_delegate.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
@@ -253,7 +253,7 @@ END_METADATA
 
 // -----------------------------------------------------------------------------
 // TabAppSelectionView:
-TabAppSelectionView::TabAppSelectionView(BirchCoralItem* coral_item) {
+TabAppSelectionView::TabAppSelectionView(int group_id) {
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStretch);
   SetOrientation(views::BoxLayout::Orientation::kVertical);
   SetBackground(views::CreateThemedRoundedRectBackground(
@@ -286,10 +286,21 @@ TabAppSelectionView::TabAppSelectionView(BirchCoralItem* coral_item) {
           .SetInsideBorderInsets(kContentsInsets)
           .Build();
 
-  // TODO(http://b/361326120): Grab the lists of tabs and apps from the model or
-  // provider.
-  const size_t num_tabs = coral_item->page_urls().size();
-  const size_t num_apps = coral_item->app_ids().size();
+  // Grab the lists of tabs and apps from data provider.
+  const coral::mojom::GroupPtr& group =
+      BirchCoralProvider::Get()->GetGroupById(group_id);
+  std::vector<GURL> page_urls;
+  std::vector<std::string> app_ids;
+  for (const auto& entity : group->entities) {
+    if (entity->is_tab_url()) {
+      page_urls.push_back(entity->get_tab_url());
+    } else {
+      app_ids.push_back(entity->get_app_id());
+    }
+  }
+
+  const size_t num_tabs = page_urls.size();
+  const size_t num_apps = app_ids.size();
   item_views_.reserve(num_tabs + num_apps);
   const bool show_close_button = (num_tabs + num_apps) > kMinItems;
   auto create_item_view =
@@ -307,7 +318,7 @@ TabAppSelectionView::TabAppSelectionView(BirchCoralItem* coral_item) {
 
   if (num_tabs > 0) {
     contents->AddChildView(CreateSubtitle(u"Tabs", kTabSubtitleID));
-    for (const GURL& gurl : coral_item->page_urls()) {
+    for (const GURL& gurl : page_urls) {
       create_item_view(TabAppSelectionItemView::InitParams::Type::kTab,
                        gurl.spec());
     }
@@ -315,7 +326,7 @@ TabAppSelectionView::TabAppSelectionView(BirchCoralItem* coral_item) {
 
   if (num_apps > 0) {
     contents->AddChildView(CreateSubtitle(u"Apps", kAppSubtitleID));
-    for (const std::string& app_id : coral_item->app_ids()) {
+    for (const std::string& app_id : app_ids) {
       create_item_view(TabAppSelectionItemView::InitParams::Type::kApp, app_id);
     }
   }
