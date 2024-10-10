@@ -32,9 +32,9 @@ def _ParseArgs(args):
       action='store_true',
       help='Whether to strip resource names from the resource table of the apk '
       'or module.')
-  parser.add_argument('--proto-path',
+  parser.add_argument('--input-path',
                       required=True,
-                      help='Input proto format resources APK.')
+                      help='Input resources APK.')
   parser.add_argument('--resources-config-paths',
                       default='[]',
                       help='GN list of paths to aapt2 resources config files.')
@@ -45,7 +45,7 @@ def _ParseArgs(args):
       '--resources-path-map-out-path',
       help='Path to file produced by aapt2 that maps original resource paths '
       'to shortened resource paths inside the apk or module.')
-  parser.add_argument('--optimized-proto-path',
+  parser.add_argument('--optimized-output-path',
                       required=True,
                       help='Output for `aapt2 optimize`.')
   options = parser.parse_args(args)
@@ -144,8 +144,8 @@ def _OptimizeApk(output, options, temp_dir, unoptimized_path, r_txt_path):
 def main(args):
   options = _ParseArgs(args)
   with build_utils.TempDir() as temp_dir:
-    _OptimizeApk(options.optimized_proto_path, options, temp_dir,
-                 options.proto_path, options.r_text_in)
+    _OptimizeApk(options.optimized_output_path, options, temp_dir,
+                 options.input_path, options.r_text_in)
 
 
 if __name__ == '__main__':

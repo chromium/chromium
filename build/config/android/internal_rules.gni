@@ -2567,22 +2567,36 @@ if (enable_java_templates) {
     action_with_pydeps(target_name) {
       forward_variables_from(invoker, [ "deps" ])
       script = "//build/android/gyp/optimize_resources.py"
-      outputs = [ invoker.optimized_proto_output ]
       inputs = [
         android_sdk_tools_bundle_aapt2,
         invoker.r_text_path,
-        invoker.proto_input_path,
       ]
+      outputs = []
       args = [
         "--aapt2-path",
         rebase_path(android_sdk_tools_bundle_aapt2, root_build_dir),
         "--r-text-in",
         rebase_path(invoker.r_text_path, root_build_dir),
-        "--proto-path",
-        rebase_path(invoker.proto_input_path, root_build_dir),
-        "--optimized-proto-path",
-        rebase_path(invoker.optimized_proto_output, root_build_dir),
       ]
+      if (defined(invoker.optimized_proto_output)) {
+        inputs += [ invoker.proto_input_path ]
+        outputs += [ invoker.optimized_proto_output ]
+        args += [
+          "--input-path",
+          rebase_path(invoker.proto_input_path, root_build_dir),
+          "--optimized-output-path",
+          rebase_path(invoker.optimized_proto_output, root_build_dir),
+        ]
+      } else {
+        inputs += [ invoker.arsc_input_path ]
+        outputs += [ invoker.optimized_arsc_output ]
+        args += [
+          "--input-path",
+          rebase_path(invoker.arsc_input_path, root_build_dir),
+          "--optimized-output-path",
+          rebase_path(invoker.optimized_arsc_output, root_build_dir),
+        ]
+      }
 
       if (defined(invoker.resources_config_paths)) {
         inputs += invoker.resources_config_paths
@@ -2618,25 +2632,19 @@ if (enable_java_templates) {
       depfile = "$target_gen_dir/${target_name}.d"
       _unused_resources_script = "$root_build_dir/bin/helper/unused_resources"
       inputs = [ _unused_resources_script ] + java_paths_for_inputs
-      outputs = [
-        invoker.output_config,
-        invoker.output_r_txt,
-      ]
+      outputs = [ invoker.output_config ]
       if (!defined(deps)) {
         deps = []
       }
       deps += [ "//build/android/unused_resources:unused_resources" ]
-      _rebased_module_build_config =
-          rebase_path(invoker.build_config, root_build_dir)
+      _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
       args = [
         "--script",
         rebase_path(_unused_resources_script, root_build_dir),
         "--output-config",
         rebase_path(invoker.output_config, root_build_dir),
-        "--r-text-in=@FileArg($_rebased_module_build_config:deps_info:r_text_path)",
-        "--r-text-out",
-        rebase_path(invoker.output_r_txt, root_build_dir),
-        "--dependencies-res-zips=@FileArg($_rebased_module_build_config:deps_info:dependency_zips)",
+        "--r-text-in=@FileArg($_rebased_build_config:deps_info:r_text_path)",
+        "--dependencies-res-zips=@FileArg($_rebased_build_config:deps_info:dependency_zips)",
         "--depfile",
         rebase_path(depfile, root_build_dir),
       ]
@@ -2649,9 +2657,25 @@ if (enable_java_templates) {
         ]
       }
 
-      foreach(_build_config, invoker.all_module_build_configs) {
-        inputs += [ _build_config ]
-        _rebased_build_config = rebase_path(_build_config, root_build_dir)
+      if (defined(invoker.output_r_txt)) {
+        outputs += [ invoker.output_r_txt ]
+        args += [
+          "--r-text-out",
+          rebase_path(invoker.output_r_txt, root_build_dir),
+        ]
+      }
+
+      if (defined(invoker.all_module_build_configs)) {
+        foreach(_build_config, invoker.all_module_build_configs) {
+          inputs += [ _build_config ]
+          _rebased_module_build_config =
+              rebase_path(_build_config, root_build_dir)
+          args += [
+            "--dexes=@FileArg($_rebased_module_build_config:final_dex:path)",
+            "--android-manifests=@FileArg($_rebased_module_build_config:deps_info:merged_android_manifest)",
+          ]
+        }
+      } else {
         args += [
           "--dexes=@FileArg($_rebased_build_config:final_dex:path)",
           "--android-manifests=@FileArg($_rebased_build_config:deps_info:merged_android_manifest)",
