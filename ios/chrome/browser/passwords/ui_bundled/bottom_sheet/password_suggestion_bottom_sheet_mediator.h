@@ -88,6 +88,10 @@ class GURL;
 // Notify that the bottom sheet is getting dismissed.
 - (void)dismiss;
 
+// Refocuses the login field that was blurred to show this bottom sheet, if
+// deemded needed.
+- (void)refocus;
+
 // Set vector of credentials that is used for testing.
 - (void)setCredentialsForTesting:
     (std::vector<password_manager::CredentialUIEntry>)credentials;

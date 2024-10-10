@@ -32,6 +32,12 @@ class AutofillBottomSheetJavaScriptFeature : public web::JavaScriptFeature {
                        web::WebFrame* frame,
                        bool refocus);
 
+  // Refocuses the last element that was blurred by the bottom sheet listeners
+  // if needed. Does the same job as calling DetachListeners() with `refocus`
+  // set to true. The last element is reset after focusing, meaning that
+  // refocusing multiple times will be no op until a new sheet is presented.
+  void RefocusElementIfNeeded(web::WebFrame* frame);
+
  private:
   friend class base::NoDestructor<AutofillBottomSheetJavaScriptFeature>;
 

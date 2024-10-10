@@ -7,6 +7,7 @@
 #import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -379,8 +380,6 @@ FormSuggestionProviderQuery* MakeQueryFromParameters(
       // is called, so we need to store variables used in the completion block
       // locally.
       autofill::FormRendererId formId = params.form_renderer_id;
-      std::string frameId = params.frame_id;
-
       __weak __typeof(self) weakSelf = self;
       [_suggestionsProviderWrapper
           retrieveSuggestionsForForm:params
@@ -388,8 +387,7 @@ FormSuggestionProviderQuery* MakeQueryFromParameters(
                           completion:^(NSArray<FormSuggestion*>* suggestions) {
                             weakSelf.suggestions = suggestions;
                             [weakSelf fetchCredentialsForForm:formId
-                                                     webState:activeWebState
-                                                   webFrameId:frameId];
+                                                     webState:activeWebState];
                           }];
     }
 
@@ -535,7 +533,7 @@ FormSuggestionProviderQuery* MakeQueryFromParameters(
       return;
     }
 
-    tabHelper->DetachPasswordListenersForAllFrames();
+    tabHelper->DetachPasswordListenersForAllFrames(/*refocus=*/true);
   }
 }
 
@@ -667,8 +665,7 @@ FormSuggestionProviderQuery* MakeQueryFromParameters(
 
 // Fetches all credentials for the current form.
 - (void)fetchCredentialsForForm:(autofill::FormRendererId)formId
-                       webState:(web::WebState*)webState
-                     webFrameId:(const std::string&)frameId {
+                       webState:(web::WebState*)webState {
   _credentials.clear();
 
   if (![self hasSuggestions]) {
@@ -687,7 +684,11 @@ FormSuggestionProviderQuery* MakeQueryFromParameters(
   web::WebFramesManager* webFramesManager =
       AutofillBottomSheetJavaScriptFeature::GetInstance()->GetWebFramesManager(
           webState);
-  web::WebFrame* frame = webFramesManager->GetFrameWithId(frameId);
+  web::WebFrame* frame = webFramesManager->GetFrameWithId(_params.frame_id);
+
+  if (!frame) {
+    return;
+  }
 
   password_manager::PasswordManagerDriver* driver =
       IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(webState, frame);
@@ -770,6 +771,29 @@ FormSuggestionProviderQuery* MakeQueryFromParameters(
   [_senderImages addObject:image];
   [_consumer
       setAvatarImage:CreateMultiAvatarImage(_senderImages, kProfileImageSize)];
+}
+
+// Returns the AutofillBottomSheetTabHelper for the active webstate or nil if
+// it can't be retrieved.
+- (AutofillBottomSheetTabHelper*)tabHelper {
+  if (!_webStateList) {
+    return nil;
+  }
+
+  web::WebState* activeWebState = _webStateList->GetActiveWebState();
+  if (!activeWebState) {
+    return nil;
+  }
+
+  return AutofillBottomSheetTabHelper::FromWebState(activeWebState);
+}
+
+// Refocuses the login fields that was blurred to show this bottom sheet, if
+// deemded needed.
+- (void)refocus {
+  if (AutofillBottomSheetTabHelper* tabHelper = [self tabHelper]) {
+    tabHelper->RefocusElementIfNeeded(_params.frame_id);
+  }
 }
 
 @end

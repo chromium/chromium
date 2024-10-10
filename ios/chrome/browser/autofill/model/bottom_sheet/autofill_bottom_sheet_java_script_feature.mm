@@ -89,3 +89,9 @@ void AutofillBottomSheetJavaScriptFeature::DetachListeners(
   parameters.Append(refocus);
   CallJavaScriptFunction(frame, "bottomSheet.detachListeners", parameters);
 }
+
+void AutofillBottomSheetJavaScriptFeature::RefocusElementIfNeeded(
+    web::WebFrame* frame) {
+  CHECK(frame);
+  CallJavaScriptFunction(frame, "bottomSheet.refocusLastBlurredElement", {});
+}

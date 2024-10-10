@@ -5,9 +5,11 @@
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/feature_list.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
+#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "components/url_formatter/elide_url.h"
@@ -132,7 +134,9 @@ CGFloat const kSpacingAfterTitle = 4;
 
 - (void)viewDidDisappear:(BOOL)animated {
   [super viewDidDisappear:animated];
-  if (self.disableBottomSheetOnExit) {
+  if (self.disableBottomSheetOnExit &&
+      !base::FeatureList::IsEnabled(
+          password_manager::features::kIOSPasswordBottomSheetV2)) {
     [self.delegate disableBottomSheet];
   }
   [self.handler viewDidDisappear];
@@ -284,6 +288,16 @@ CGFloat const kSpacingAfterTitle = 4;
         forTableViewWidth:tableWidth
               atIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
   return [cell systemLayoutSizeFittingSize:CGSizeMake(tableWidth, 1)].height;
+}
+
+#pragma mark - UIResponder
+
+- (BOOL)canBecomeFirstResponder {
+  // In V2, allow the sheet to become a first responder to not allow the
+  // keyboard popping over the sheet when there is a focus event on the WebView
+  // underneath the sheet.
+  return base::FeatureList::IsEnabled(
+      password_manager::features::kIOSPasswordBottomSheetV2);
 }
 
 #pragma mark - Private
