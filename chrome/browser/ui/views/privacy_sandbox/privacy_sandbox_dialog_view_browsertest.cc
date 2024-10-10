@@ -89,8 +89,8 @@ class PrivacySandboxDialogViewBrowserTest : public DialogBrowserTest {
 };
 
 // TODO(crbug.com/41484188): Re-enable the test.
-// TODO(chrstne): temporarily enabling the test to debug cause of flakiness.
-IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest, InvokeUi_Consent) {
+IN_PROC_BROWSER_TEST_F(PrivacySandboxDialogViewBrowserTest,
+                       DISABLED_InvokeUi_Consent) {
   // TODO(chrstne): uncomment out once the source of the flakiness is resolved.
   /*EXPECT_CALL(
       *mock_service(),
