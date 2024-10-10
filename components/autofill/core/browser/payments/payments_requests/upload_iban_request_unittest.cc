@@ -15,6 +15,7 @@ constexpr char kAppLocale[] = "pt-BR";
 constexpr int64_t kBillingCustomerNumber = 111222333;
 constexpr char16_t kContextToken[] = u"somecontexttoken";
 constexpr char16_t kValue[] = u"CH5604835012345678009";
+constexpr char kEncodedRiskData[] = "wjhJLga67gowLp3vIbJ4W";
 constexpr char16_t kNickname[] = u"My IBAN";
 
 class UploadIbanRequestTest : public testing::Test {
@@ -26,6 +27,7 @@ class UploadIbanRequestTest : public testing::Test {
     request_details.context_token = kContextToken;
     request_details.value = kValue;
     request_details.nickname = kNickname;
+    request_details.risk_data = kEncodedRiskData;
     request_ = std::make_unique<UploadIbanRequest>(
         request_details, /*full_sync_enabled=*/true, base::DoNothing());
   }
@@ -69,6 +71,8 @@ TEST_F(UploadIbanRequestTest, GetRequestContent) {
   EXPECT_NE(GetRequest().GetRequestContent().find(base::UTF16ToUTF8(kValue)),
             std::string::npos);
   EXPECT_NE(GetRequest().GetRequestContent().find("nickname"),
+            std::string::npos);
+  EXPECT_NE(GetRequest().GetRequestContent().find("risk_data_encoded"),
             std::string::npos);
 }
 

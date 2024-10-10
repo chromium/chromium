@@ -541,6 +541,7 @@ TEST_F(IbanSaveManagerTest, OfferUploadSave_NewIban_Success) {
   SetUpGetIbanUploadDetailsResponse(/*is_successful=*/true);
 
   EXPECT_TRUE(GetIbanSaveManager().AttemptToOfferUploadSaveForTesting(iban));
+  EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()->risk_data_loaded());
   EXPECT_TRUE(GetIbanSaveManager().HasContextTokenForTesting());
   EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
                   ->ConfirmUploadIbanToCloudWasCalled());

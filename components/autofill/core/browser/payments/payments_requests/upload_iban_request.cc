@@ -46,10 +46,13 @@ std::string UploadIbanRequest::GetRequestContent() {
   iban_info.Set("value", "__param:s7e_443_value");
   request_dict.Set("iban_info", std::move(iban_info));
 
-  base::Value::Dict context;
   if (!request_details_.nickname.empty()) {
-    context.Set("nickname", request_details_.nickname);
+    request_dict.Set("nickname", request_details_.nickname);
   }
+  request_dict.Set("risk_data_encoded",
+                   BuildRiskDictionary(request_details_.risk_data));
+
+  base::Value::Dict context;
   context.Set("language_code", request_details_.app_locale);
   context.Set("billable_service",
               payments::kUploadPaymentMethodBillableServiceNumber);

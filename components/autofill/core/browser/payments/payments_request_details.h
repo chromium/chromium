@@ -328,6 +328,7 @@ struct UploadIbanRequestDetails {
   std::u16string context_token;
   std::u16string value;
   std::u16string nickname;
+  std::string risk_data;
 };
 
 // An enum set in the GetCardUploadDetailsRequest indicating the source of the
