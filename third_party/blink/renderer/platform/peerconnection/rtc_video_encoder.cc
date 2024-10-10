@@ -335,8 +335,8 @@ namespace blink {
 
 namespace features {
 
-// Enabled-by-default, except for Android where SW encoder for H264 is not
-// available. The existence of this flag remains only for testing purposes.
+// Enabled-by-default, except for Android where SW encoder for H264 and AV1 are
+// not available. The existence of this flag remains only for testing purposes.
 BASE_FEATURE(kForceSoftwareForLowResolutions,
              "ForceSoftwareForLowResolutions",
 #if !BUILDFLAG(IS_ANDROID)
@@ -344,12 +344,6 @@ BASE_FEATURE(kForceSoftwareForLowResolutions,
 #else
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
-
-// When disabled, SW is forced at <360p. When enabled, SW is forced at <=360p.
-// Only applicable when `kForceSoftwareForLowResolutions` is enabled.
-BASE_FEATURE(kForcingSoftwareIncludes360,
-             "ForcingSoftwareIncludes360",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Avoids large latencies to build up by dropping frames when the number of
 // frames that are sent to a hardware video encoder reaches a certain limit.
@@ -641,6 +635,42 @@ bool IsZeroCopyEnabled(webrtc::VideoContentType content_type) {
              switches::kVideoCaptureUseGpuMemoryBuffer);
 }
 
+bool UseSoftwareForLowResolution(const webrtc::VideoCodecType codec,
+                                 uint16_t width,
+                                 uint16_t height) {
+  // Several HW encoders are known to yield worse quality compared to SW
+  // encoders for smaller resolutions such as 180p. At 360p, manual testing
+  // suggests HW and SW are roughly on par in terms of quality.
+  // go/vp9-hardware-encoder-visual-evaluation
+
+  // By default, Android is excluded from this logic because there are
+  // situations where a codec like H264 is available in HW but not SW in which
+  // case SW fallback would result in a change of codec, see
+  // https://crbug.com/1469318.
+  if (!base::FeatureList::IsEnabled(
+          features::kForceSoftwareForLowResolutions)) {
+    return false;
+  }
+
+  // H.265 does not support SW fallback, so it is excluded from low resoloution
+  // fallback.
+  if (codec == webrtc::kVideoCodecH265) {
+    return false;
+  }
+
+  // AV1 hardware has better performance vs quality at 270p compared to other
+  // codecs. So sets the threshold to 270p in AV1. See b/351090228#comment13 and
+  // b/351090228#comment24 for detail.
+  const uint16_t force_sw_height = codec == webrtc::kVideoCodecAV1 ? 270 : 360;
+
+  if (height < force_sw_height) {
+    LOG(WARNING) << "Fallback to SW due to low resolution being less than "
+                 << force_sw_height << "p (" << width << "x" << height << ")";
+    return true;
+  }
+
+  return false;
+}
 }  // namespace
 
 namespace features {
@@ -2316,31 +2346,10 @@ int32_t RTCVideoEncoder::InitEncode(
 
   codec_settings_ = converted_settings;
 
-  // Several HW encoders are known to yield worse quality compared to SW
-  // encoders for smaller resolutions such as 180p. (270p should also be a
-  // problem but some HW encoders already fallback for resolutions not divisible
-  // by 4.) At 360p, manual testing suggests HW and SW are roughly on par in
-  // terms of quality.
-  //
-  // By default, Android is excluded from this logic because there are
-  // situations where a codec like H264 is available in HW but not SW in which
-  // case SW fallback would result in a change of codec, see
-  // https://crbug.com/1469318.
-  //
-  // H.265 does not support SW fallback, so it is excluded from low resoloution
-  // fallback.
-  if (codec_settings_.codecType != webrtc::kVideoCodecH265 &&
-      base::FeatureList::IsEnabled(features::kForceSoftwareForLowResolutions)) {
-    uint16_t force_sw_height = 359;
-    if (base::FeatureList::IsEnabled(features::kForcingSoftwareIncludes360)) {
-      force_sw_height = 360;
-    }
-    if (codec_settings_.height <= force_sw_height) {
-      LOG(WARNING)
-          << "Fallback to SW due to low resolution being less than 360p ("
-          << codec_settings_.width << "x" << codec_settings_.height << ")";
-      return initialization_error_message;
-    }
+  if (UseSoftwareForLowResolution(codec_settings_.codecType,
+                                  codec_settings_.width,
+                                  codec_settings_.height)) {
+    return initialization_error_message;
   }
 
   if (codec_settings_.codecType == webrtc::kVideoCodecH264 &&

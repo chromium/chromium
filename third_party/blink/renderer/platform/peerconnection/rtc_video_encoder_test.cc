@@ -91,6 +91,7 @@ const uint16_t kStartBitrate = 100;
 // Less than 360p should result in SW fallback.
 const uint16_t kSoftwareFallbackInputFrameWidth = 479;
 const uint16_t kSoftwareFallbackInputFrameHeight = 359;
+const uint16_t kSoftwareFallbackInputFrameHeightForAV1 = 269;
 #endif
 
 constexpr size_t kDefaultEncodedPayloadSize = 100;
@@ -787,22 +788,27 @@ TEST_P(RTCVideoEncoderInitTest, SoftwareFallbackForLowResolution) {
   CreateEncoder(codec_type);
   webrtc::VideoCodec codec = GetDefaultCodec();
   codec.width = kSoftwareFallbackInputFrameWidth;
-  codec.height = kSoftwareFallbackInputFrameHeight;
+  if (codec_type == webrtc::kVideoCodecAV1) {
+    codec.height = kSoftwareFallbackInputFrameHeightForAV1;
+  } else {
+    codec.height = kSoftwareFallbackInputFrameHeight;
+  }
   codec.codecType = codec_type;
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE,
             rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
 }
 
-TEST_P(RTCVideoEncoderInitTest, SoftwareFallbackForLowResolutionIncludes360p) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kForcingSoftwareIncludes360);
+TEST_P(RTCVideoEncoderInitTest, AV1Supports270p) {
   const webrtc::VideoCodecType codec_type = GetParam();
+  if (codec_type != webrtc::kVideoCodecAV1) {
+    GTEST_SKIP();
+  }
   CreateEncoder(codec_type);
   webrtc::VideoCodec codec = GetDefaultCodec();
-  codec.width = kInputFrameWidth;
-  codec.height = kInputFrameHeight;
+  codec.width = 480;
+  codec.height = 270;
   codec.codecType = codec_type;
-  EXPECT_EQ(WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE,
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
 }
 
