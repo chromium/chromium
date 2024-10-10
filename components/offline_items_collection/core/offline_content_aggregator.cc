@@ -28,7 +28,7 @@ bool MapContainsValue(const std::map<T, raw_ptr<U, CtnExperimental>>& map,
 
 }  // namespace
 
-OfflineContentAggregator::OfflineContentAggregator() {}
+OfflineContentAggregator::OfflineContentAggregator() = default;
 
 OfflineContentAggregator::~OfflineContentAggregator() = default;
 

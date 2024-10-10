@@ -63,7 +63,7 @@ FileExistenceCheckerTest::FileExistenceCheckerTest()
   EXPECT_TRUE(temp_directory_.CreateUniqueTempDir());
 }
 
-FileExistenceCheckerTest::~FileExistenceCheckerTest() {}
+FileExistenceCheckerTest::~FileExistenceCheckerTest() = default;
 
 FileIdPairVector FileExistenceCheckerTest::CreateTestFiles(int64_t count) {
   base::FilePath file_path;

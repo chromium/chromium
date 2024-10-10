@@ -12,7 +12,7 @@ namespace offline_items_collection {
 MockOfflineContentProvider::MockObserver::MockObserver() = default;
 MockOfflineContentProvider::MockObserver::~MockObserver() = default;
 
-MockOfflineContentProvider::MockOfflineContentProvider() {}
+MockOfflineContentProvider::MockOfflineContentProvider() = default;
 MockOfflineContentProvider::~MockOfflineContentProvider() = default;
 
 void MockOfflineContentProvider::SetItems(const OfflineItemList& items) {
