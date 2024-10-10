@@ -58,22 +58,17 @@ class TriangleIterator {
   uint32_t triangle_index_ = 0;
 };
 
-}  // namespace
-
-bool WriteStrokeToPage(FPDF_DOCUMENT document,
-                       FPDF_PAGE page,
-                       const ink::Stroke& stroke) {
-  if (!document || !page) {
-    return false;
-  }
+ScopedFPDFPageObject WriteShapeToNewPathOnPage(const ink::ModeledShape& shape,
+                                               FPDF_PAGE page) {
+  CHECK(page);
 
   // A shape is made up of meshes, which in turn are made up of triangles.
   // All of these get combined into a single PDF path.  The first triangle is
   // special because its first point is used to create the path.
-  TriangleIterator triangle_iter(stroke.GetShape());
+  TriangleIterator triangle_iter(shape);
   std::optional<ink::Triangle> triangle = triangle_iter.GetAndAdvance();
   if (!triangle.has_value()) {
-    return false;  // No meshes with actual shape data.
+    return nullptr;  // No meshes with actual shape data.
   }
 
   ScopedFPDFPageObject path(
@@ -117,20 +112,42 @@ bool WriteStrokeToPage(FPDF_DOCUMENT document,
                                 /*stroke=*/false);
   CHECK(result);
 
-  const auto& brush = stroke.GetBrush();
-  SkColor color = GetSkColorFromInkBrush(brush);
-  result = FPDFPageObj_SetFillColor(path.get(), SkColorGetR(color),
-                                    SkColorGetG(color), SkColorGetB(color),
-                                    SkColorGetA(color));
-  CHECK(result);
-
   // Path completed, close and mark it with an ID.
   result = FPDFPath_Close(path.get());
   CHECK(result);
 
-  FPDF_PAGEOBJECTMARK add_mark_result =
+  return path;
+}
+
+void SetBrushPropertiesForPath(const ink::Brush& brush, FPDF_PAGEOBJECT path) {
+  // TODO(crbug.com/353942910) Write out the brush type and size.
+  SkColor color = GetSkColorFromInkBrush(brush);
+  bool result =
+      FPDFPageObj_SetFillColor(path, SkColorGetR(color), SkColorGetG(color),
+                               SkColorGetB(color), SkColorGetA(color));
+  CHECK(result);
+}
+
+}  // namespace
+
+bool WriteStrokeToPage(FPDF_DOCUMENT document,
+                       FPDF_PAGE page,
+                       const ink::Stroke& stroke) {
+  if (!document || !page) {
+    return false;
+  }
+
+  ScopedFPDFPageObject path =
+      WriteShapeToNewPathOnPage(stroke.GetShape(), page);
+  if (!path) {
+    return false;
+  }
+
+  FPDF_PAGEOBJECTMARK mark =
       FPDFPageObj_AddMark(path.get(), kInkAnnotationIdentifierKey);
-  CHECK(add_mark_result);
+  CHECK(mark);
+
+  SetBrushPropertiesForPath(stroke.GetBrush(), path.get());
 
   // Path is ready for the page.
   FPDFPage_InsertObject(page, path.release());
