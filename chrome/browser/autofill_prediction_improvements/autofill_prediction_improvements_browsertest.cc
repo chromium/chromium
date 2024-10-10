@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/autofill_prediction_improvements/chrome_autofill_prediction_improvements_client.h"
@@ -28,6 +29,8 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/state_observer.h"
 #include "ui/views/interaction/interactive_views_test.h"
@@ -39,10 +42,75 @@ namespace autofill_prediction_improvements {
 
 namespace {
 
+using ::testing::AllOf;
+using ::testing::Eq;
+using ::testing::Property;
+using ::testing::UnorderedElementsAre;
+using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
+
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTabId);
 
-const WebContentsInteractionTestUtil::DeepQuery kNameFieldQuery =
-    WebContentsInteractionTestUtil::DeepQuery({"input#name"});
+// Comparator for `DeepQuery` that uses the first sequence entry as comparison.
+struct DeepQueryComparator {
+  bool operator()(const DeepQuery& left, const DeepQuery& right) const {
+    return left[0] < right[0];
+  }
+};
+
+// Struct declaring test data.
+struct TestField {
+  std::string label;
+  std::string manually_entered_value;
+  int64_t expected_entry_id;
+  std::string expected_value_after_form_submission;
+  std::string expected_value_for_import_and_automatic_filling;
+};
+
+// Matches optimization_guide::proto::UserAnnotationsEntry `arg` against
+// `TestField` `expected_test_field`.
+MATCHER_P(MatchesTestField, expected_test_field, "") {
+  return arg.key() == expected_test_field.label &&
+         arg.value() == expected_test_field
+                            .expected_value_for_import_and_automatic_filling;
+}
+
+// Function template to access a member of `TestField`.
+template <typename T>
+T get_field(const TestField& test_field, T TestField::*member_ptr) {
+  return test_field.*member_ptr;
+}
+
+// CSS selectors of fields to filled and/or checked for their value.
+const DeepQuery kNameFieldQuery = DeepQuery({"input#name"});
+const DeepQuery kStreetAddressFieldQuery = DeepQuery({"input#street-address"});
+const DeepQuery kPostalCodeFieldQuery = DeepQuery({"input#postal-code"});
+const DeepQuery kCreditCardNumberFieldQuery = DeepQuery({"input#cc-number"});
+
+const auto kTestFieldsByQuery =
+    base::flat_map<DeepQuery, TestField, DeepQueryComparator>(
+        {{DeepQuery({kNameFieldQuery}),
+          {.label = "Name",
+           .manually_entered_value = "Jane",
+           .expected_entry_id = 1,
+           .expected_value_for_import_and_automatic_filling = "Jane"}},
+         {DeepQuery({kStreetAddressFieldQuery}),
+          {.label = "Address",
+           .manually_entered_value = "100 Boland Way",
+           .expected_entry_id = 2,
+           .expected_value_for_import_and_automatic_filling =
+               "100 Boland Way"}},
+         {DeepQuery({kPostalCodeFieldQuery}),
+          {.label = "Postal code",
+           // The value is left empty intentionally.
+           .manually_entered_value = "",
+           .expected_entry_id = 3,
+           .expected_value_for_import_and_automatic_filling = ""}},
+         {DeepQuery({kCreditCardNumberFieldQuery}),
+          {.label = "Credit card number",
+           .manually_entered_value = "1234 5678 9012 3456",
+           .expected_entry_id = 4,
+           .expected_value_for_import_and_automatic_filling = ""}}});
+
 const ui::Accelerator kKeyDown =
     ui::Accelerator(ui::VKEY_DOWN,
                     /*modifiers=*/0,
@@ -100,19 +168,50 @@ class OptimizationGuideTestServer {
   std::unique_ptr<net::test_server::HttpResponse>
   HandleOptimizationGuideRequest(const net::test_server::HttpRequest& request) {
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+    optimization_guide::proto::ExecuteRequest execute_request;
+    if (!execute_request.ParseFromString(request.content)) {
+      response->set_content(
+          "Couldn't parse net::test_server::HttpRequest::content as "
+          "optimization_guide::proto::ExecuteRequest.");
+      response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
+      return response;
+    }
     switch (expected_response_type_) {
       case ResponseType::kFormsAnnotations: {
+        optimization_guide::proto::FormsAnnotationsRequest
+            forms_annotations_request;
+        if (!forms_annotations_request.ParseFromString(
+                execute_request.request_metadata().value())) {
+          response->set_content(
+              "Couldn't parse optimization_guide::proto::ExecuteRequest's "
+              "request_metadata().value() field as "
+              "optimization_guide::proto::FormsAnnotationsRequest.");
+          response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
+          return response;
+        }
         std::string serialized_response;
         optimization_guide::proto::ExecuteResponse execute_response =
-            BuildFormsAnnotationsResponse();
+            BuildFormsAnnotationsResponse(forms_annotations_request);
         execute_response.SerializeToString(&serialized_response);
         response->set_code(net::HTTP_OK);
         response->set_content(serialized_response);
-      } break;
+        break;
+      }
       case ResponseType::kFormsPredictions: {
+        optimization_guide::proto::FormsPredictionsRequest
+            forms_predictions_request;
+        if (!forms_predictions_request.ParseFromString(
+                execute_request.request_metadata().value())) {
+          response->set_content(
+              "Couldn't parse optimization_guide::proto::ExecuteRequest's "
+              "request_metadata().value() field as "
+              "optimization_guide::proto::FormsPredictionsRequest.");
+          response->set_code(net::HTTP_INTERNAL_SERVER_ERROR);
+          return response;
+        }
         std::string serialized_response;
         optimization_guide::proto::ExecuteResponse execute_response =
-            BuildFormsPredictionsResponse();
+            BuildFormsPredictionsResponse(forms_predictions_request);
         execute_response.SerializeToString(&serialized_response);
         response->set_code(net::HTTP_OK);
         response->set_content(serialized_response);
@@ -125,13 +224,21 @@ class OptimizationGuideTestServer {
   }
 
   static optimization_guide::proto::ExecuteResponse
-  BuildFormsAnnotationsResponse() {
+  BuildFormsAnnotationsResponse(
+      const optimization_guide::proto::FormsAnnotationsRequest& request) {
     optimization_guide::proto::FormsAnnotationsResponse response;
-    optimization_guide::proto::UserAnnotationsEntry* entry =
-        response.add_upserted_entries();
-    entry->set_entry_id(1);
-    entry->set_key("Name");
-    entry->set_value("Jane");
+    int64_t entry_id = 0;
+    for (const optimization_guide::proto::FormFieldData& field :
+         request.form_data().fields()) {
+      if (field.field_value().empty()) {
+        continue;
+      }
+      optimization_guide::proto::UserAnnotationsEntry* entry =
+          response.add_upserted_entries();
+      entry->set_entry_id(++entry_id);
+      entry->set_key(field.field_label());
+      entry->set_value(field.field_value());
+    }
     optimization_guide::proto::ExecuteResponse execute_response;
     optimization_guide::proto::Any* any_metadata =
         execute_response.mutable_response_metadata();
@@ -144,18 +251,23 @@ class OptimizationGuideTestServer {
   }
 
   static optimization_guide::proto::ExecuteResponse
-  BuildFormsPredictionsResponse() {
+  BuildFormsPredictionsResponse(
+      const optimization_guide::proto::FormsPredictionsRequest& request) {
     optimization_guide::proto::FormsPredictionsResponse response;
-    optimization_guide::proto::FilledFormFieldData* filled_field =
-        response.mutable_form_data()->add_filled_form_field_data();
-    optimization_guide::proto::PredictedValue* predicted_value =
-        filled_field->add_predicted_values();
-    predicted_value->set_value("Jane");
-    filled_field->set_normalized_label("Name");
-    optimization_guide::proto::FormFieldData* filled_field_data =
-        filled_field->mutable_field_data();
-    filled_field_data->set_field_label("Name");
-    filled_field_data->set_field_value("Jane");
+    for (const auto& entry : request.entries()) {
+      const std::string& field_label = entry.key();
+      const std::string& field_value = entry.value();
+      optimization_guide::proto::FilledFormFieldData* filled_field =
+          response.mutable_form_data()->add_filled_form_field_data();
+      optimization_guide::proto::PredictedValue* predicted_value =
+          filled_field->add_predicted_values();
+      predicted_value->set_value(field_value);
+      filled_field->set_normalized_label(field_label);
+      optimization_guide::proto::FormFieldData* filled_field_data =
+          filled_field->mutable_field_data();
+      filled_field_data->set_field_label(field_label);
+      filled_field_data->set_field_value(field_value);
+    }
     optimization_guide::proto::ExecuteResponse execute_response;
     optimization_guide::proto::Any* any_metadata =
         execute_response.mutable_response_metadata();
@@ -334,12 +446,11 @@ class MAYBE_AutofillPredictionImprovementsBrowserTest
   MultiStep ManuallyFillAndSubmitForm() {
     return NamedSteps(
         "ManuallyFillAndSubmitForm", ManuallyFillForm(),
-        Log("Start waiting for NameFieldIsFilledStateChange()."),
-        WaitForStateChange(kPrimaryTabId, NameFieldIsFilledStateChange()),
-        Log("Stopped waiting for NameFieldIsFilledStateChange()."),
+        WaitForFieldsToBeFilledManually(),
         SetExpectedResponseType(ResponseType::kFormsAnnotations), SubmitForm(),
         WaitForWebContentsNavigation(kPrimaryTabId, form_page_url()),
-        EnsurePresent(kPrimaryTabId, kNameFieldQuery), CheckNameFieldIsEmpty());
+        EnsurePresent(kPrimaryTabId, kNameFieldQuery),
+        CheckFieldValuesAfterFormSubmission());
   }
 
   MultiStep WaitForSaveBubbleAndAccept() {
@@ -358,7 +469,8 @@ class MAYBE_AutofillPredictionImprovementsBrowserTest
                   [&]() { return !GetAllEntries().empty(); }),
         WaitForState(kFormWasImportedToUserAnnotationsState, true),
         StopObservingState(kFormWasImportedToUserAnnotationsState),
-        Log("Stopped polling kFormWasImportedToUserAnnotationsState."));
+        Log("Stopped polling kFormWasImportedToUserAnnotationsState."),
+        VerifyDataImportedIntoUserAnnotations());
   }
 
   MultiStep NavigateToAboutBlank() {
@@ -385,10 +497,11 @@ class MAYBE_AutofillPredictionImprovementsBrowserTest
                       SendAccelerator(kPrimaryTabId, kKeyReturn));
   }
 
-  MultiStep WaitForNameFieldToBeFilled() {
+  MultiStep WaitForFieldsToBeFilledAutomatically() {
     return NamedSteps(
-        "WaitForNameFieldToBeFilled",
-        WaitForStateChange(kPrimaryTabId, NameFieldIsFilledStateChange()));
+        "WaitForFieldsToBeFilledAutomatically",
+        WaitForFieldsToBeFilled(
+            &TestField::expected_value_for_import_and_automatic_filling));
   }
 
  private:
@@ -437,28 +550,54 @@ class MAYBE_AutofillPredictionImprovementsBrowserTest
                  "UserAnnotationsService has no entries.");
   }
 
-  InteractiveTestApi::StepBuilder ManuallyFillForm() {
-    return ExecuteJs(kPrimaryTabId,
-                     R"js(
-                () => {
-                  const name_field = document.getElementById("name");
-                  name_field.value = "Jane";
-                }
-              )js");
+  MultiStep ManuallyFillForm() {
+    MultiStep steps;
+    for (const auto& [deep_query, test_field] : kTestFieldsByQuery) {
+      steps.emplace_back(
+          ExecuteJsAt(kPrimaryTabId, deep_query,
+                      base::StrCat({"(el) => el.value = \"",
+                                    test_field.manually_entered_value, "\""})));
+    }
+    return steps;
   }
 
-  InteractiveBrowserTestApi::StateChange NameFieldIsFilledStateChange() {
-    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kNameFieldHasValue);
+  InteractiveBrowserTestApi::StateChange FieldIsManuallyFilledStateChange(
+      const DeepQuery& deep_query,
+      const std::string& expected_field_value) {
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kFieldsAreManuallyFilled);
     InteractiveBrowserTestApi::StateChange state_change;
     state_change.type = StateChange::Type::kConditionTrue;
-    state_change.event = kNameFieldHasValue;
-    state_change.test_function = R"js(
-                () => {
-                  const name_field = document.getElementById("name");
-                  return name_field.value === "Jane";
-                }
-              )js";
+    state_change.event = kFieldsAreManuallyFilled;
+    state_change.test_function =
+        base::StrCat({"() => document.querySelector(\"", deep_query[0],
+                      "\").value === \"", expected_field_value, "\""});
     return state_change;
+  }
+
+  template <typename T>
+  MultiStep WaitForFieldsToBeFilled(T TestField::*member_ptr) {
+    MultiStep steps;
+    for (const auto& [deep_query, test_field] : kTestFieldsByQuery) {
+      const std::string expected_field_value =
+          get_field(test_field, member_ptr);
+      steps.emplace_back(Log(
+          base::StrCat({"Start waiting for field \"", deep_query[0],
+                        "\" to have value \"", expected_field_value, "\"."})));
+      for (auto& step : WaitForStateChange(
+               kPrimaryTabId, FieldIsManuallyFilledStateChange(
+                                  deep_query, expected_field_value))) {
+        steps.emplace_back(std::move(step));
+      }
+      steps.emplace_back(
+          Log("Stopped waiting for field \"", deep_query[0], "\"."));
+    }
+    return steps;
+  }
+
+  MultiStep WaitForFieldsToBeFilledManually() {
+    return NamedSteps(
+        "WaitForFieldsToBeFilledManually()",
+        WaitForFieldsToBeFilled(&TestField::manually_entered_value));
   }
 
   InteractiveTestApi::StepBuilder SetExpectedResponseType(
@@ -479,9 +618,28 @@ class MAYBE_AutofillPredictionImprovementsBrowserTest
                      ExecuteJsMode::kFireAndForget);
   }
 
-  InteractiveTestApi::StepBuilder CheckNameFieldIsEmpty() {
-    return CheckJsResultAt(kPrimaryTabId, kNameFieldQuery,
-                           R"js((el) => el.value === "")js");
+  MultiStep CheckFieldValuesAfterFormSubmission() {
+    MultiStep steps;
+    for (const auto& [deep_query, test_field] : kTestFieldsByQuery) {
+      steps.emplace_back(CheckJsResultAt(
+          kPrimaryTabId, deep_query,
+          base::StrCat({"(el) => el.value ===\"",
+                        test_field.expected_value_after_form_submission,
+                        "\""})));
+    }
+    return steps;
+  }
+
+  MultiStep VerifyDataImportedIntoUserAnnotations() {
+    return NamedSteps(
+        "VerifyDataImportedIntoUserAnnotations", Do([&]() {
+          EXPECT_THAT(
+              GetAllEntries(),
+              UnorderedElementsAre(
+                  MatchesTestField(kTestFieldsByQuery.at(kNameFieldQuery)),
+                  MatchesTestField(
+                      kTestFieldsByQuery.at(kStreetAddressFieldQuery))));
+        }));
   }
 
   MultiStep DisableAutofillPopupThreshold() {
@@ -524,7 +682,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillPredictionImprovementsBrowserTest,
       WaitForAndAcceptSuggestion(
           kAutofillPredictionImprovementsTriggerElementId),
       WaitForAndAcceptSuggestion(kAutofillPredictionImprovementsFillElementId),
-      WaitForNameFieldToBeFilled());
+      WaitForFieldsToBeFilledAutomatically());
 }
 
 // Tests that the error suggestion is shown if filling suggestions cannot be
