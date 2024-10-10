@@ -158,6 +158,7 @@ class DiskMountManagerImpl : public DiskMountManager,
     if (arc_delegate_ &&
         cros_disks_client_->GetRemovableDiskMountPoint().IsParent(
             mount_file_path)) {
+      VLOG(1) << "Dropping ARC caches for " << Redact(mount_path);
       arc_delegate_->PrepareForRemovableMediaUnmount(
           mount_file_path, base::Seconds(3) /* timeout */,
           BindOnce(&DiskMountManagerImpl::UnmountPathContinue,
@@ -173,8 +174,7 @@ class DiskMountManagerImpl : public DiskMountManager,
                            UnmountPathCallback callback,
                            bool success) {
     if (!success) {
-      LOG(WARNING) << "Failed to drop ARC caches before unmounting "
-                   << Redact(mount_path);
+      LOG(ERROR) << "Cannot drop ARC caches for " << Redact(mount_path);
     }
     cros_disks_client_->Unmount(mount_path,
                                 BindOnce(&DiskMountManagerImpl::OnUnmountPath,
@@ -583,11 +583,11 @@ class DiskMountManagerImpl : public DiskMountManager,
         it != mount_callbacks_.end()) {
       DCHECK_EQ(it->first, entry.source_path);
       VLOG(1) << "Calling mount callback for '" << entry.source_path
-              << "' with error = " << entry.mount_error;
+              << "' with result = " << entry.mount_error;
       std::move(it->second).Run(entry.mount_error, mount_info);
       mount_callbacks_.erase(std::move(it));
     } else {
-      LOG(ERROR) << "No mount callback for " << Redact(entry.source_path);
+      VLOG(1) << "No mount callback for " << Redact(entry.source_path);
     }
 
     NotifyMountStatusUpdate(MOUNTING, entry.mount_error, mount_info);
