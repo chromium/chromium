@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/metrics/histogram_functions.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -226,6 +227,9 @@ void TCPWritableStreamWrapper::ErrorStream(int32_t error_code) {
     return;
   }
   SetState(State::kAborted);
+
+  // Error codes are negative.
+  base::UmaHistogramSparse("DirectSockets.TCPWritableStreamError", -error_code);
 
   auto message =
       String{"Stream aborted by the remote: " + net::ErrorToString(error_code)};

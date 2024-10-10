@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/ip_endpoint.h"
@@ -155,6 +156,9 @@ void TCPReadableStreamWrapper::ErrorStream(int32_t error_code) {
     return;
   }
   graceful_peer_shutdown_ = (error_code == net::OK);
+
+  // Error codes are negative.
+  base::UmaHistogramSparse("DirectSockets.TCPReadableStreamError", -error_code);
 
   auto* script_state = GetScriptState();
   ScriptState::Scope scope(script_state);

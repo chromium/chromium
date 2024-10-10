@@ -3566,6 +3566,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DirectSockets.TCPReadableStreamError" enum="NetErrorCodes"
+    expires_after="2025-09-13">
+  <owner>greengrape@google.com</owner>
+  <owner>iwa-team@google.com</owner>
+  <summary>How often tcp socket readable stream is errored.</summary>
+</histogram>
+
 <histogram name="DirectSockets.TCPServerNetworkFailures" enum="NetErrorCodes"
     expires_after="2025-09-13">
   <owner>greengrape@google.com</owner>
@@ -3575,6 +3582,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DirectSockets.TCPServerReadableStreamError"
+    enum="NetErrorCodes" expires_after="2025-09-13">
+  <owner>greengrape@google.com</owner>
+  <owner>iwa-team@google.com</owner>
+  <summary>How often tcp server socket readable stream is errored.</summary>
+</histogram>
+
+<histogram name="DirectSockets.TCPWritableStreamError" enum="NetErrorCodes"
+    expires_after="2025-09-13">
+  <owner>greengrape@google.com</owner>
+  <owner>iwa-team@google.com</owner>
+  <summary>How often tcp socket writable stream is errored.</summary>
+</histogram>
+
 <histogram name="DirectSockets.UDPNetworkFailures" enum="NetErrorCodes"
     expires_after="2025-09-13">
   <owner>greengrape@google.com</owner>
@@ -3582,6 +3603,20 @@ chromium-metrics-reviews@google.com.
   <summary>
     How often udp socket opening finishes with a network failure.
   </summary>
+</histogram>
+
+<histogram name="DirectSockets.UDPReadableStreamError" enum="NetErrorCodes"
+    expires_after="2025-09-13">
+  <owner>greengrape@google.com</owner>
+  <owner>iwa-team@google.com</owner>
+  <summary>How often udp socket readable stream is errored.</summary>
+</histogram>
+
+<histogram name="DirectSockets.UDPWritableStreamError" enum="NetErrorCodes"
+    expires_after="2025-09-13">
+  <owner>greengrape@google.com</owner>
+  <owner>iwa-team@google.com</owner>
+  <summary>How often udp socket writable stream is errored.</summary>
 </histogram>
 
 <histogram name="DisplayManager.InternalDisplayZoomPercentage" units="%"
