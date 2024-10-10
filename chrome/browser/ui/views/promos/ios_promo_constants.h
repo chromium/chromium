@@ -11,19 +11,6 @@ namespace IOSPromoConstants {
 // QR code generator.
 const int kQrCodeImageSize = 90;
 
-// URL used for the QR code within the password bubble promo.
-const char kPasswordBubbleQRCodeURL[] =
-    "https://apps.apple.com/app/apple-store/"
-    "id535886823?pt=9008&ct=desktop-chr-passwords&mt=8";
-
-const char kAddressBubbleQRCodeURL[] =
-    "https://apps.apple.com/app/apple-store/"
-    "id535886823?pt=9008&ct=desktop-chr-address&mt=8";
-
-const char kPaymentBubbleQRCodeURL[] =
-    "https://apps.apple.com/app/apple-store/"
-    "id535886823?pt=9008&ct=desktop-chr-payment&mt=8";
-
 struct IOSPromoTypeConfigs {
   int bubble_title_id = -1;
   int bubble_subtitle_id = -1;

@@ -86,6 +86,11 @@ BASE_DECLARE_FEATURE(kIOSPromoRefreshedPasswordBubble);
 BASE_DECLARE_FEATURE(kIOSPromoAddressBubble);
 
 BASE_DECLARE_FEATURE(kIOSPromoPaymentBubble);
+
+// String params for the Desktop to iOS promos' QR code URLs.
+extern const base::FeatureParam<std::string> kIOSPromoPasswordBubbleQRCodeURL;
+extern const base::FeatureParam<std::string> kIOSPromoAddressBubbleQRCodeURL;
+extern const base::FeatureParam<std::string> kIOSPromoPaymentBubbleQRCodeURL;
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

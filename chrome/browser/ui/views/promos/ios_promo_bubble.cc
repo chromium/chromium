@@ -16,6 +16,7 @@
 #include "chrome/browser/promos/promos_pref_names.h"
 #include "chrome/browser/promos/promos_types.h"
 #include "chrome/browser/promos/promos_utils.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/promos/ios_promo_constants.h"
@@ -39,6 +40,20 @@
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
+
+namespace {
+// Get the correct Finch-paramed (or default) URL for the promo's QR code.
+std::string GetIOSDesktopPromoQRCodeURL(IOSPromoType promo_type) {
+  switch (promo_type) {
+    case IOSPromoType::kPassword:
+      return features::kIOSPromoPasswordBubbleQRCodeURL.Get();
+    case IOSPromoType::kAddress:
+      return features::kIOSPromoAddressBubbleQRCodeURL.Get();
+    case IOSPromoType::kPayment:
+      return features::kIOSPromoPaymentBubbleQRCodeURL.Get();
+  }
+}
+}  // namespace
 
 // Pointer to BubbleDialogDelegate instance.
 views::BubbleDialogDelegate* ios_promo_delegate_ = nullptr;
@@ -225,11 +240,12 @@ std::unique_ptr<views::View> CreateFooter(
 IOSPromoConstants::IOSPromoTypeConfigs IOSPromoBubble::SetUpBubble(
     IOSPromoType promo_type) {
   IOSPromoConstants::IOSPromoTypeConfigs ios_promo_config;
+
+  ios_promo_config.promo_qr_code_url = GetIOSDesktopPromoQRCodeURL(promo_type);
+
   switch (promo_type) {
     case IOSPromoType::kPassword:
       // Set up iOS Password Promo Bubble.
-      ios_promo_config.promo_qr_code_url =
-          IOSPromoConstants::kPasswordBubbleQRCodeURL;
       ios_promo_config.bubble_title_id =
           IDS_IOS_DESKTOP_PASSWORD_PROMO_BUBBLE_TITLE;
       ios_promo_config.bubble_subtitle_id =
@@ -243,8 +259,6 @@ IOSPromoConstants::IOSPromoTypeConfigs IOSPromoBubble::SetUpBubble(
       break;
     case IOSPromoType::kAddress:
       // Set up iOS Address Promo Bubble.
-      ios_promo_config.promo_qr_code_url =
-          IOSPromoConstants::kAddressBubbleQRCodeURL;
       ios_promo_config.bubble_title_id =
           IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_TITLE;
       ios_promo_config.bubble_subtitle_id =
@@ -258,8 +272,6 @@ IOSPromoConstants::IOSPromoTypeConfigs IOSPromoBubble::SetUpBubble(
       break;
     case IOSPromoType::kPayment:
       // Set up iOS Payment Promo Bubble.
-      ios_promo_config.promo_qr_code_url =
-          IOSPromoConstants::kPaymentBubbleQRCodeURL;
       ios_promo_config.bubble_title_id =
           IDS_IOS_DESKTOP_PAYMENT_PROMO_BUBBLE_TITLE;
       ios_promo_config.bubble_subtitle_id =
