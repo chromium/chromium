@@ -7,7 +7,8 @@ import("//build/util/branding.gni")
 import("//tools/grit/grit_rule.gni")
 
 grit("strings") {
-  if (is_chrome_branded) {
+  # TODO(crbug.com/371923550): Enable using internal strings on Android again.
+  if (is_chrome_branded && !is_android) {
     source = "../internal/strings/plus_addresses_internal_strings.grd"
   } else {
     source = "plus_addresses_strings.grd"
