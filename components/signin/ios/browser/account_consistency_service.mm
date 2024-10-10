@@ -224,6 +224,9 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
 
   account_reconcilor_->OnReceivedManageAccountsResponse(params.service_type);
 
+  base::UmaHistogramEnumeration("Signin.ManageAccountsResponse.ServiceType",
+                                params.service_type);
+
   switch (params.service_type) {
     case signin::GAIA_SERVICE_TYPE_INCOGNITO: {
       GURL continue_url = GURL(params.continue_url);

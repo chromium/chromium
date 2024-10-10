@@ -1744,6 +1744,18 @@ the browser and content area. -->
   </summary>
 </histogram>
 
+<histogram name="Signin.ManageAccountsResponse.ServiceType"
+    enum="GaiaServiceType" expires_after="2025-10-10">
+  <owner>treib@chromium.org</owner>
+  <owner>chrome-signin-team@chromium.org</owner>
+  <summary>
+    Records the Gaia &quot;service type&quot; received in an
+    &quot;X-Chrome-Manage-Accounts&quot; header, indicating an action the user
+    has selected on a Gaia page which is to be handled by Chrome, such as adding
+    another account or managing accounts on the device. iOS only.
+  </summary>
+</histogram>
+
 <histogram name="Signin.Multilogin.NumberOfAccounts" units="accounts"
     expires_after="never">
 <!-- expires-never: used to monitor the health of the signin feature and for troubleshooting.  -->
