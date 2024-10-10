@@ -559,22 +559,32 @@ suite('<facegaze-actions-card>', () => {
     assertEquals(1, dialog.leftClickGestures.length);
   });
 
-  test('actions adds pause/resume to the top of the card', async () => {
-    await initPage();
+  test(
+      'actions adds pause/resume and reset cursor to the top of the card',
+      async () => {
+        await initPage();
 
-    await openAddDialogAndFireCommandPairAddedEvent(new FaceGazeCommandPair(
-        MacroName.MOUSE_CLICK_LEFT, FacialGesture.EYES_BLINK));
-    flush();
+        await openAddDialogAndFireCommandPairAddedEvent(new FaceGazeCommandPair(
+            MacroName.MOUSE_CLICK_LEFT, FacialGesture.EYES_BLINK));
+        flush();
 
-    const commandPairs = faceGazeActionsCard.get('commandPairs_');
-    assertEquals(1, commandPairs.length);
+        const commandPairs = faceGazeActionsCard.get('commandPairs_');
+        assertEquals(1, commandPairs.length);
 
-    const toggleCommandPair = new FaceGazeCommandPair(
-        MacroName.TOGGLE_FACEGAZE, FacialGesture.JAW_OPEN);
-    await openAddDialogAndFireCommandPairAddedEvent(toggleCommandPair);
-    flush();
+        const toggleCommandPair = new FaceGazeCommandPair(
+            MacroName.TOGGLE_FACEGAZE, FacialGesture.JAW_OPEN);
+        await openAddDialogAndFireCommandPairAddedEvent(toggleCommandPair);
+        flush();
 
-    assertEquals(2, commandPairs.length);
-    assertEquals(toggleCommandPair, commandPairs[0]);
-  });
+        assertEquals(2, commandPairs.length);
+        assertEquals(toggleCommandPair, commandPairs[0]);
+
+        const resetCommandPair = new FaceGazeCommandPair(
+            MacroName.RESET_CURSOR, FacialGesture.MOUTH_SMILE);
+        await openAddDialogAndFireCommandPairAddedEvent(resetCommandPair);
+        flush();
+
+        assertEquals(3, commandPairs.length);
+        assertEquals(resetCommandPair, commandPairs[0]);
+      });
 });

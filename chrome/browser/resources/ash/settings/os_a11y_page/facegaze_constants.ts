@@ -23,11 +23,11 @@ export const FACE_GAZE_GESTURE_TO_KEY_COMBO_PREF =
 // Currently supported macros in FaceGaze.
 export const FaceGazeActions: MacroName[] = [
   MacroName.TOGGLE_FACEGAZE,
+  MacroName.RESET_CURSOR,
   MacroName.MOUSE_CLICK_LEFT,
   MacroName.MOUSE_CLICK_LEFT_DOUBLE,
   MacroName.MOUSE_CLICK_RIGHT,
   MacroName.MOUSE_LONG_CLICK_LEFT,
-  MacroName.RESET_CURSOR,
   MacroName.TOGGLE_DICTATION,
   MacroName.KEY_PRESS_SCREENSHOT,
   MacroName.KEY_PRESS_TOGGLE_OVERVIEW,

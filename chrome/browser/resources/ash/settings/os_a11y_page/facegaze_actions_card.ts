@@ -412,8 +412,10 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
   }
 
   private addNewCommandPair_(newCommandPair: FaceGazeCommandPair): void {
-    // Ensure pause/resume face control is at the top of the displayed list.
-    if (newCommandPair.action === MacroName.TOGGLE_FACEGAZE) {
+    // Ensure TOGGLE_FACEGAZE and RESET_CURSOR are at the top of the displayed
+    // list.
+    if (newCommandPair.action === MacroName.TOGGLE_FACEGAZE ||
+        newCommandPair.action === MacroName.RESET_CURSOR) {
       this.unshift(
           FaceGazeActionsCardElement.FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME,
           newCommandPair);
