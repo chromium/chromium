@@ -113,7 +113,14 @@ class CONTENT_EXPORT PrefetchService {
   // |prefetch_container| to the default network context.
   virtual void CopyIsolatedCookies(const PrefetchContainer::Reader& reader);
 
+  // Add `PrefetchContainer` under control of `PrefetchService`.
+  //
+  // `AddPrefetchContainer()` synchronously destruct `prefetch_container` if the
+  // key conflicted to the one already added with migration of some attributes.
+  // See also `MigrateNewlyaAdded()`.
   void AddPrefetchContainer(
+      std::unique_ptr<PrefetchContainer> prefetch_container);
+  void AddPrefetchContainerWithoutStartingPrefetchForTesting(
       std::unique_ptr<PrefetchContainer> prefetch_container);
 
   void ResetPrefetch(base::WeakPtr<PrefetchContainer> prefetch_container);
@@ -141,6 +148,11 @@ class CONTENT_EXPORT PrefetchService {
   static void SetNetworkContextForProxyLookupForTesting(
       network::mojom::NetworkContext* network_context);
 
+  // Set a callback for injecting delay for eligibility check in tests.
+  using DelayEligibilityCheckForTesting =
+      base::RepeatingCallback<void(base::OnceClosure)>;
+  static void SetDelayEligibilityCheckForTesting(
+      DelayEligibilityCheckForTesting callback);
   // Set a callback for waiting for prefetch completion in tests.
   using PrefetchResponseCompletedCallbackForTesting =
       base::RepeatingCallback<void(base::WeakPtr<PrefetchContainer>)>;

@@ -397,6 +397,30 @@ void RecordAfterClickRedirectChainSize(size_t redirect_chain_size) {
                            redirect_chain_size);
 }
 
+bool CalculateIsLikelyAheadOfPrerender(PreloadingAttempt* attempt) {
+  if (!base::FeatureList::IsEnabled(
+          features::kPrerender2FallbackPrefetchSpecRules)) {
+    return false;
+  }
+
+  auto* attempt_impl = static_cast<PreloadingAttemptImpl*>(attempt);
+  if (attempt_impl) {
+    switch (attempt_impl->planned_max_preloading_type()) {
+      case PreloadingType::kPrefetch:
+        return false;
+      case PreloadingType::kPrerender:
+        return true;
+      case PreloadingType::kUnspecified:
+      case PreloadingType::kPreconnect:
+      case PreloadingType::kNoStatePrefetch:
+      case PreloadingType::kLinkPreview:
+        NOTREACHED_NORETURN();
+    }
+  }
+
+  return false;
+}
+
 }  // namespace
 
 // Holds the state for the request for a single URL in the context of the
@@ -584,6 +608,8 @@ PrefetchContainer::PrefetchContainer(
       is_javascript_enabled_(is_javascript_enabled) {
   redirect_chain_.push_back(
       std::make_unique<SinglePrefetch>(GetURL(), referring_origin_));
+  is_likely_ahead_of_prerender_ =
+      CalculateIsLikelyAheadOfPrerender(attempt_.get());
 }
 
 PrefetchContainer::~PrefetchContainer() {
@@ -840,6 +866,10 @@ void PrefetchContainer::OnEligibilityCheckComplete(
       if (prefetch_document_manager_) {
         prefetch_document_manager_->OnEligibilityCheckComplete(is_eligible);
       }
+    }
+
+    for (auto& observer : observers_) {
+      observer.OnGotInitialEligibility(*this, eligibility);
     }
   } else {
     // This case is for any URLs from redirects.
@@ -1349,6 +1379,20 @@ PrefetchContainer::ServableState PrefetchContainer::GetServableState(
     return ServableState::kShouldBlockUntilHeadReceived;
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kPrerender2FallbackPrefetchSpecRules)) {
+    switch (load_state_) {
+      case LoadState::kNotStarted:
+      case LoadState::kEligible:
+        return ServableState::kShouldBlockUntilEligibilityGot;
+      case LoadState::kFailedIneligible:
+      case LoadState::kStarted:
+      case LoadState::kFailedHeldback:
+        // nop
+        break;
+    }
+  }
+
   return ServableState::kNotServable;
 }
 
@@ -1417,7 +1461,9 @@ void PrefetchContainer::SimulateAttemptAtRequestStartForTest() {
     attempt_->SetEligibility(PreloadingEligibility::kEligible);
     attempt_->SetHoldbackStatus(PreloadingHoldbackStatus::kAllowed);
   }
+  SetLoadState(LoadState::kEligible);
   SetPrefetchStatus(PrefetchStatus::kPrefetchAllowed);
+  SetLoadState(LoadState::kStarted);
   SetPrefetchStatus(PrefetchStatus::kPrefetchNotFinishedInTime);
 }
 
@@ -1426,8 +1472,20 @@ void PrefetchContainer::SimulateAttemptAtInterceptorForTest() {
     attempt_->SetEligibility(PreloadingEligibility::kEligible);
     attempt_->SetHoldbackStatus(PreloadingHoldbackStatus::kAllowed);
   }
+  SetLoadState(LoadState::kEligible);
   SetPrefetchStatus(PrefetchStatus::kPrefetchAllowed);
+  SetLoadState(LoadState::kStarted);
   SetPrefetchStatus(PrefetchStatus::kPrefetchSuccessful);
+}
+
+void PrefetchContainer::SimulateEligibilityCheckFailedForTest(
+    PreloadingEligibility eligibility) {
+  CHECK_NE(PreloadingEligibility::kEligible, eligibility);
+
+  if (attempt_) {
+    attempt_->SetEligibility(eligibility);
+  }
+  SetLoadState(LoadState::kFailedIneligible);
 }
 
 void PrefetchContainer::OnDetectedCookiesChange() {
@@ -1790,6 +1848,8 @@ CONTENT_EXPORT std::ostream& operator<<(
       return ostream << "Servable";
     case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
       return ostream << "ShouldBlockUntilHeadReceived";
+    case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
+      return ostream << "ShouldBlockUntilEligibilityGot";
   }
 }
 
@@ -1927,6 +1987,11 @@ void PrefetchContainer::OnUnregisterCandidate(
     static_cast<PreloadingAttemptImpl*>(attempt.get())
         ->SetIsAccurateTriggering(navigated_url);
   }
+}
+
+void PrefetchContainer::MigrateNewlyAdded(
+    std::unique_ptr<PrefetchContainer> added) {
+  is_likely_ahead_of_prerender_ |= added->is_likely_ahead_of_prerender_;
 }
 
 }  // namespace content

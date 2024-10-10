@@ -23,6 +23,7 @@ class MockContainer {
     PrefetchContainer::ServableState servable_state;
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint;
     std::optional<net::HttpNoVarySearchData> no_vary_search_data;
+    bool is_likely_ahead_of_prerender;
   };
 
   explicit MockContainer(MockContainer::Args args)
@@ -30,6 +31,7 @@ class MockContainer {
         servable_state_(args.servable_state),
         no_vary_search_hint_(args.no_vary_search_hint),
         no_vary_search_data_(args.no_vary_search_data),
+        is_likely_ahead_of_prerender_(args.is_likely_ahead_of_prerender),
         prefetch_status_(PrefetchStatus::kPrefetchSuccessful) {}
   ~MockContainer() = default;
 
@@ -81,12 +83,16 @@ class MockContainer {
   const std::optional<net::HttpNoVarySearchData>& GetNoVarySearchData() const {
     return no_vary_search_data_;
   }
+  bool IsLikelyAheadOfPrerender() const {
+    return is_likely_ahead_of_prerender_;
+  }
 
  private:
   PrefetchContainer::Key key_;
   PrefetchContainer::ServableState servable_state_;
   std::optional<net::HttpNoVarySearchData> no_vary_search_hint_;
   std::optional<net::HttpNoVarySearchData> no_vary_search_data_;
+  bool is_likely_ahead_of_prerender_;
   std::optional<PrefetchStatus> prefetch_status_;
 };
 
@@ -220,6 +226,39 @@ TEST(CollectMatchCandidates, RejectsNotServable) {
           GURL("https://should-block-until-head-received.example.com/")),
       {Key(document_token,
            GURL("https://should-block-until-head-received.example.com/"))});
+}
+
+TEST(CollectMatchCandidates,
+     IncludesShouldBlockUntilEligibilityGotIfIsLikelyAheadOfPrerender) {
+  using Key = PrefetchContainer::Key;
+
+  CollectMatchCandidatesTestHelper helper;
+  blink::DocumentToken document_token;
+
+  helper.Add({
+      .document_token = document_token,
+      .url = GURL("https://ahead-of-prerender.example.com/"),
+      .servable_state =
+          PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot,
+      .is_likely_ahead_of_prerender = true,
+  });
+  helper.Add({
+      .document_token = document_token,
+      .url = GURL("https://not-ahead-of-prerender.example.com/"),
+      .servable_state =
+          PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot,
+      .is_likely_ahead_of_prerender = false,
+  });
+
+  helper.Assert(
+      FROM_HERE,
+      Key(document_token, GURL("https://ahead-of-prerender.example.com/")),
+      {Key(document_token, GURL("https://ahead-of-prerender.example.com/"))});
+
+  helper.Assert(
+      FROM_HERE,
+      Key(document_token, GURL("https://not-ahead-of-prerender.example.com/")),
+      {});
 }
 
 TEST(CollectMatchCandidates, ChecksNoVarySearchHintAndHeader) {

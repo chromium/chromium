@@ -12,6 +12,10 @@
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
+#include "content/browser/preloading/prerender/prerender_features.h"
+#include "content/browser/preloading/prerender/prerender_host.h"
+#include "content/browser/preloading/prerender/prerender_host_registry.h"
+#include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 
 namespace content {
@@ -236,8 +240,9 @@ void PrefetchMatchResolver2::FindPrefetchInternal(
         }
         break;
       case PrefetchContainer::ServableState::kNotServable:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
+      case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
         // nop
         break;
     }
@@ -250,8 +255,9 @@ void PrefetchMatchResolver2::FindPrefetchInternal(
         UnblockForMatch(candidate.first);
         return;
       case PrefetchContainer::ServableState::kNotServable:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
+      case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
         // nop
         break;
     }
@@ -295,13 +301,19 @@ void PrefetchMatchResolver2::StartWaitFor(
   CHECK(candidate_data->prefetch_container);
   PrefetchContainer& prefetch_container = *candidate_data->prefetch_container;
 
-  CHECK_EQ(servable_state,
-           PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived);
   // `kServable` -> `kNotServable` is the only possible change during
-  // `FindPrefetchInternal()` call. If `servable_state` is
-  // `kShouldBlockUntilHeadReceived`, `GetServableState()` is the same.
+  // `FindPrefetchInternal()` call.
   CHECK_EQ(prefetch_container.GetServableState(PrefetchCacheableDuration()),
-           PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived);
+           servable_state);
+  switch (servable_state) {
+    case PrefetchContainer::ServableState::kServable:
+    case PrefetchContainer::ServableState::kNotServable:
+      NOTREACHED();
+    case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
+    case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
+      // nop
+      break;
+  }
   CHECK(!candidate_data->timeout_timer);
 
   // TODO(crbug.com/356552413): Merge
@@ -341,6 +353,17 @@ void PrefetchMatchResolver2::OnWillBeDestroyed(
   MaybeUnblockForUnmatch(prefetch_container.key());
 }
 
+void PrefetchMatchResolver2::OnGotInitialEligibility(
+    PrefetchContainer& prefetch_container,
+    PreloadingEligibility eligibility) {
+  CHECK(base::FeatureList::IsEnabled(
+      features::kPrerender2FallbackPrefetchSpecRules));
+
+  if (eligibility != PreloadingEligibility::kEligible) {
+    MaybeUnblockForUnmatch(prefetch_container.key());
+  }
+}
+
 void PrefetchMatchResolver2::OnDeterminedHead(
     PrefetchContainer& prefetch_container) {
   CHECK(candidates_.contains(prefetch_container.key()));
@@ -352,6 +375,11 @@ void PrefetchMatchResolver2::OnDeterminedHead(
   }
 
   switch (prefetch_container.GetServableState(PrefetchCacheableDuration())) {
+    case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
+      // All callsites of `PrefetchContainer::OnDeterminedHead2()` are
+      // `PrefetchStreamingURLLoader`, which implies the prefetch passed
+      // eligibility check.
+      NOTREACHED();
     // `kShouldBlockUntilHeadReceived` case occurs if a prefetch is redirected
     // and the redirect is not eligible.
     //

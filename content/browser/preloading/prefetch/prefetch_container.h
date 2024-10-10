@@ -229,6 +229,9 @@ class CONTENT_EXPORT PrefetchContainer {
     // TODO(crbug.com/356314759): Update the description to "Called just
     // before dtor is called."
     virtual void OnWillBeDestroyed(PrefetchContainer& prefetch_container) = 0;
+    // Called when initial eligibility is got.
+    virtual void OnGotInitialEligibility(PrefetchContainer& prefetch_container,
+                                         PreloadingEligibility eligibility) = 0;
     // Called if non-redirect header of prefetch response is determined, i.e.
     // successfully received or fetch requests including redirects failed.
     // Callers can check success/failure by `GetNonRedirectHead()`.
@@ -446,16 +449,37 @@ class CONTENT_EXPORT PrefetchContainer {
   void OnPrefetchComplete(
       const network::URLLoaderCompletionStatus& completion_status);
 
+  // TODO(crbug.com/372186548): Revisit the shape of ServableState.
+  //
+  // See also https://crrev.com/c/5831122
   enum class ServableState {
-    // Not servable nor should block until head received.
-    kNotServable,
+    // `PrefetchService` is checking eligibility of the prefetch or waiting load
+    // start after eligibility check.
+    //
+    // Prefetch matching process should block until eligibility is got (and load
+    // start)
+    // not to fall back normal navigation without waiting prefetch ahead of
+    // prerender and send a duplicated fetch request.
+    //
+    // This state occurs only if `kPrerender2FallbackPrefetchSpecRules` is
+    // enabled. Otherwise, `kNotServable` is returned for this period.
+    kShouldBlockUntilEligibilityGot,
 
-    // Servable.
+    // The load is started but non redirect header is not received yet.
+    //
+    // Prefetch matching process should block until the head of this is received
+    // on a navigation to a matching URL, as a server can send a response header
+    // including NoVarySearch header that contradicts NoVarySearch hint.
+    kShouldBlockUntilHeadReceived,
+
+    // This received non redirect header and is not expired.
+    //
+    // Note that it needs more checks to serve, e.g. cookie check. See also e.g.
+    // `PrefetchMatchResolver2::OnDeterminedHead()`.
     kServable,
 
-    // |PrefetchService| should block until the head of |this| is
-    // received on a navigation to a matching URL.
-    kShouldBlockUntilHeadReceived,
+    // Not other states.
+    kNotServable,
   };
 
   // Note: Even if this returns `kServable`, `CreateRequestHandler()` can still
@@ -532,6 +556,8 @@ class CONTENT_EXPORT PrefetchContainer {
   // |SimulateAttemptAtRequestStartForTest| but also marks the prefetch as
   // completed.
   void SimulateAttemptAtInterceptorForTest();
+  // Simulates a prefetch container that failed at the eligibility check.
+  void SimulateEligibilityCheckFailedForTest(PreloadingEligibility eligibility);
   void DisablePrecogLoggingForTest() { attempt_ = nullptr; }
 
   const std::optional<net::HttpNoVarySearchData>& GetNoVarySearchData() const {
@@ -692,6 +718,40 @@ class CONTENT_EXPORT PrefetchContainer {
   void OnUnregisterCandidate(const GURL& navigated_url,
                              bool is_served,
                              std::optional<base::TimeDelta> blocked_duration);
+
+  // TODO(crbug.com/372186548): Revisit the semantics of
+  // `IsLikelyAheadOfPrerender()`.
+  //
+  // Returns true iff this prefetch was triggered for ahead of prerender or was
+  // migrated with such ones.
+  //
+  // Currently, we (`PrerendererImpl`) start a prefetch ahead of prerender just
+  // before starting a prerender and make them race 1. to reduce fetch request
+  // even if prerender failed and fell back to normal navigation, 2. to buy time
+  // for renderer process initialization of prerender.
+  //
+  // This flag is to indicate it's likely there is a such concurrent-ish
+  // prerender request that wants to claim this prefetch even if it is not
+  // started to avoid duplicated network requests, and thus if this is true, we
+  // go through `kBlockUntilHeadUntilEligibilityGot` code path.
+  //
+  // - This flag is set if `max_preloading_type` is `PreloadingType::kPrerender`
+  //   on `PrefetchContainer::ctor`.
+  // - This flag is updated with prefetch migration `MigrateNewlyAdded()`: If we
+  //   replace existing `PrefetchContainer` with such prerender-initiated
+  //   `PrefetchContainer` with the same `PrefetchContainer::Key`, then we also
+  //   transitively set the flag for the existing `PrefetchContainer` as well,
+  //   because we'll still anticipate the prerendering request to hit the
+  //   existing `PrefetchContainer` as it has the same key.
+  bool IsLikelyAheadOfPrerender() const {
+    return is_likely_ahead_of_prerender_;
+  }
+  // TODO(crbug.com/372186548): Revisit for right naming.
+  //
+  // Migrate newly added `PrefetchContainer` into this as keys are conflicted.
+  //
+  // See also `PrefetchService::AddPrefetchContainerWithoutStartingPrefetch()`.
+  void MigrateNewlyAdded(std::unique_ptr<PrefetchContainer> added);
 
   bool is_in_dtor() const { return is_in_dtor_; }
 
@@ -924,6 +984,8 @@ class CONTENT_EXPORT PrefetchContainer {
   bool is_in_dtor_ = false;
 
   base::ObserverList<Observer> observers_;
+
+  bool is_likely_ahead_of_prerender_ = false;
 
   base::WeakPtrFactory<PrefetchContainer> weak_method_factory_{this};
 };

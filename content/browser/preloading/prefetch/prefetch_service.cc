@@ -34,6 +34,7 @@
 #include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
 #include "content/browser/preloading/prefetch/proxy_lookup_client_impl.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
+#include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -86,6 +87,13 @@ static network::mojom::URLLoaderFactory* g_url_loader_factory_for_testing =
 
 static network::mojom::NetworkContext*
     g_network_context_for_proxy_lookup_for_testing = nullptr;
+
+PrefetchService::DelayEligibilityCheckForTesting&
+GetDelayEligibilityCheckForTesting() {
+  static base::NoDestructor<PrefetchService::DelayEligibilityCheckForTesting>
+      prefetch_delay_eligibility_check_for_testing;
+  return *prefetch_delay_eligibility_check_for_testing;
+}
 
 PrefetchService::PrefetchResponseCompletedCallbackForTesting&
 GetPrefetchResponseCompletedCallbackForTesting() {
@@ -357,6 +365,18 @@ void PrefetchService::AddPrefetchContainerWithoutStartingPrefetch(
 
   RecordExistingPrefetchWithMatchingURL(prefetch_container);
 
+  enum class Action {
+    kTakeOldWithMigration,
+    kReplaceOldWithNew,
+    kTakeNew,
+  };
+
+  // The comment below might be old. Currently,
+  // `PrefetchDocumentManager::PrefetchUrl()` reject colficting prefetches
+  // execpt for ahead of prerender case.
+  //
+  // TODO(crbug.com/371179869): Integrate these two processes.
+  //
   // A newly submitted prefetch could already be in |owned_prefetches_| if and
   // only if:
   //   1) There was a same origin navigaition that used the same renderer.
@@ -366,13 +386,79 @@ void PrefetchService::AddPrefetchContainerWithoutStartingPrefetch(
   //      by the prefetch service).
   // If this happens, then we just delete the old prefetch and add the new
   // prefetch to |owned_prefetches_|.
+  //
+  // Note that we might replace this by preserving existing prefetch and
+  // additional works, e.g. adding some properties to the old one and prolonging
+  // cacheable duration, to prevent additional fetch. See also
+  // https://chromium-review.googlesource.com/c/chromium/src/+/3880874/comment/5ecccbf7_8fbcba96/
+  //
+  // TODO(crbug.com/372186548): Revisit the merging process and comments here
+  // and below.
   auto prefetch_iter = owned_prefetches_.find(prefetch_container_key);
-  if (prefetch_iter != owned_prefetches_.end()) {
-    ResetPrefetch(prefetch_iter->second->GetWeakPtr());
-  }
+  Action action = [&]() {
+    if (prefetch_iter == owned_prefetches_.end()) {
+      return Action::kTakeNew;
+    }
+    PrefetchContainer& prefetch_container_old = *prefetch_iter->second;
 
-  owned_prefetches_[prefetch_container_key] =
-      std::move(owned_prefetch_container);
+    if (!base::FeatureList::IsEnabled(
+            features::kPrerender2FallbackPrefetchSpecRules)) {
+      return Action::kReplaceOldWithNew;
+    }
+
+    switch (
+        prefetch_container_old.GetServableState(PrefetchCacheableDuration())) {
+      case PrefetchContainer::ServableState::kNotServable:
+        return Action::kReplaceOldWithNew;
+      case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
+      case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
+      case PrefetchContainer::ServableState::kServable:
+        // nop
+        break;
+    }
+
+    // Take preload pipeline info of prefetch ahead of prerender.
+    //
+    // Consider the following screnario (especially, in the same SpecRules and
+    // upgrading ):
+    //
+    // - A document adds SpecRules of prefetch A for URL X.
+    // - A document adds SpecRules of prerender B' for URL X.
+    //
+    // With `kPrerender2FallbackPrefetchSpecRules`, B' triggers prefetch ahead
+    // of prerender B for URL X. Sites use SpecRules A+B' with expectation
+    // "prefetch X then prerender X", but the order of
+    // `PrefetchService::AddPrefetchContainer()` for A and B is unstable in
+    // general.
+    //
+    // `PrerenderHost` of B' needs to know eligibility and status of B. We use
+    // `PreloadPipelineInfo` for this purpose.
+    //
+    // - If A is followed by B, take A and migrate B into A. A inherits
+    //   `PreloadPipelineInfo` of B.
+    // - If B is followed by A, just reject A (by
+    //   `PrefetchDocumentManager::PrefetchUrl()`).
+    //
+    // See also tests `PrerendererImplBrowserTestPrefetchAhead.*`.
+
+    return Action::kTakeOldWithMigration;
+  }();
+
+  switch (action) {
+    case Action::kTakeOldWithMigration:
+      prefetch_iter->second->MigrateNewlyAdded(
+          std::move(owned_prefetch_container));
+      break;
+    case Action::kReplaceOldWithNew:
+      ResetPrefetch(prefetch_iter->second->GetWeakPtr());
+      owned_prefetches_[prefetch_container_key] =
+          std::move(owned_prefetch_container);
+      break;
+    case Action::kTakeNew:
+      owned_prefetches_[prefetch_container_key] =
+          std::move(owned_prefetch_container);
+      break;
+  }
 }
 
 void PrefetchService::AddPrefetchContainer(
@@ -381,7 +467,17 @@ void PrefetchService::AddPrefetchContainer(
       owned_prefetch_container->GetWeakPtr();
   AddPrefetchContainerWithoutStartingPrefetch(
       std::move(owned_prefetch_container));
+
+  if (!prefetch_container) {
+    return;
+  }
+
   PrefetchUrl(std::move(prefetch_container));
+}
+
+void PrefetchService::AddPrefetchContainerWithoutStartingPrefetchForTesting(
+    std::unique_ptr<PrefetchContainer> prefetch_container) {
+  AddPrefetchContainerWithoutStartingPrefetch(std::move(prefetch_container));
 }
 
 void PrefetchService::PrefetchUrl(
@@ -445,6 +541,16 @@ void PrefetchService::PrefetchUrl(
   // `PrefetchContainer`'s lifetime. And it is alive until the call of
   // `CheckHasServiceWorker()`.
   const GURL& url = prefetch_container->GetURL();
+
+  if (GetDelayEligibilityCheckForTesting()) {
+    GetDelayEligibilityCheckForTesting().Run(  // IN-TEST
+        base::BindOnce(&PrefetchService::CheckEligibilityOfPrefetch,
+                       weak_method_factory_.GetWeakPtr(),
+                       std::move(prefetch_container), url,
+                       /*redirect_data=*/std::nullopt));
+    return;
+  }
+
   CheckEligibilityOfPrefetch(std::move(prefetch_container), url,
                              /*redirect_data=*/std::nullopt);
 }
@@ -1239,12 +1345,21 @@ void PrefetchService::OnPrefetchRedirect(
           ->IsIsolatedNetworkContextRequiredForPreviousRedirectHop(),
       prefetch_container->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
 
-  CheckEligibilityOfPrefetch(
-      std::move(prefetch_container), redirect_info.new_url,
-      /*redirect_data=*/
-      std::make_optional<
-          std::pair<net::RedirectInfo, network::mojom::URLResponseHeadPtr>>(
-          {redirect_info, std::move(redirect_head)}));
+  auto redirect_data = std::make_optional<
+      std::pair<net::RedirectInfo, network::mojom::URLResponseHeadPtr>>(
+      {redirect_info, std::move(redirect_head)});
+
+  if (GetDelayEligibilityCheckForTesting()) {
+    GetDelayEligibilityCheckForTesting().Run(  // IN-TEST
+        base::BindOnce(&PrefetchService::CheckEligibilityOfPrefetch,
+                       weak_method_factory_.GetWeakPtr(),
+                       std::move(prefetch_container), redirect_info.new_url,
+                       std::move(redirect_data)));
+    return;
+  }
+
+  CheckEligibilityOfPrefetch(std::move(prefetch_container),
+                             redirect_info.new_url, std::move(redirect_data));
 }
 
 std::optional<PrefetchErrorOnResponseReceived>
@@ -1486,6 +1601,8 @@ PrefetchService::HandlePrefetchContainerToServe(
       prefetch_container.OnReturnPrefetchToServe(/*served=*/false, url);
       return HandlePrefetchContainerResult::kNotUsable;
     }
+    case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
+      NOTREACHED();
   }
 }
 
@@ -1568,6 +1685,8 @@ void PrefetchService::OnMaybeDeterminedHead(
   const GURL& nav_url = key.url();
 
   switch (prefetch_container.GetServableState(PrefetchCacheableDuration())) {
+    case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
+      NOTREACHED();
     case PrefetchContainer::ServableState::kNotServable:
     case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived: {
       DVLOG(1) << "PrefetchService::OnMaybeDeterminedHead(" << key
@@ -1674,6 +1793,13 @@ void PrefetchService::SetNetworkContextForProxyLookupForTesting(
 }
 
 // static
+void PrefetchService::SetDelayEligibilityCheckForTesting(
+    DelayEligibilityCheckForTesting callback) {
+  GetDelayEligibilityCheckForTesting() =  // IN-TEST
+      std::move(callback);
+}
+
+// static
 void PrefetchService::SetPrefetchResponseCompletedCallbackForTesting(
     PrefetchResponseCompletedCallbackForTesting callback) {
   GetPrefetchResponseCompletedCallbackForTesting() =  // IN-TEST
@@ -1708,6 +1834,7 @@ void PrefetchService::RecordExistingPrefetchWithMatchingURL(
           prefetch_iter.second->GetServableState(PrefetchCacheableDuration())) {
         case PrefetchContainer::ServableState::kNotServable:
         case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
+        case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
           break;
         case PrefetchContainer::ServableState::kServable:
           if (!prefetch_iter.second->HasPrefetchBeenConsideredToServe()) {

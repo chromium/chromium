@@ -128,6 +128,8 @@ class CONTENT_EXPORT PrefetchMatchResolver2 final
 
   // PrefetchContainer::Observer implementation
   void OnWillBeDestroyed(PrefetchContainer& prefetch_container) override;
+  void OnGotInitialEligibility(PrefetchContainer& prefetch_container,
+                               PreloadingEligibility eligibility) override;
   void OnDeterminedHead(PrefetchContainer& prefetch_container) override;
 
   // Finds prefetch that matches to a navigation and is servable.
@@ -241,6 +243,7 @@ concept MatchCandidate =
       t.GetNoVarySearchHint();
       t.IsNoVarySearchHeaderMatch(url);
       t.ShouldWaitForNoVarySearchHeader(url);
+      t.IsLikelyAheadOfPrerender();
       t.HasPrefetchStatus();
       t.GetPrefetchStatus();
       t.HasPrefetchBeenConsideredToServe();
@@ -315,7 +318,24 @@ bool IsCandidateAvailable(const T& candidate,
                   "servable: candidate = "
                << candidate;
       return false;
+    case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
+    case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
     case PrefetchContainer::ServableState::kServable:
+      break;
+  }
+
+  switch (servable_state) {
+    case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
+      if (!candidate.IsLikelyAheadOfPrerender()) {
+        DVLOG(1)
+            << "CollectMatchCandidatesGeneric: skipped because it's checking "
+               "eligibility and not likely ahead of prerender: candidate = "
+            << candidate;
+        return false;
+      }
+      break;
+    case PrefetchContainer::ServableState::kServable:
+    case PrefetchContainer::ServableState::kNotServable:
     case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
       break;
   }
@@ -327,13 +347,13 @@ bool IsCandidateAvailable(const T& candidate,
     return false;
   }
 
-  // Note: This codepath is only be reached in practice if we create a
-  // second NavigationRequest to this prefetch's URL. The first
-  // NavigationRequest would call GetPrefetch, which might set this
-  // PrefetchContainer's status to kPrefetchNotUsedCookiesChanged.
-  CHECK(candidate.HasPrefetchStatus());
-  if (candidate.GetPrefetchStatus() ==
-      PrefetchStatus::kPrefetchNotUsedCookiesChanged) {
+  if (candidate.HasPrefetchStatus() &&
+      candidate.GetPrefetchStatus() ==
+          PrefetchStatus::kPrefetchNotUsedCookiesChanged) {
+    // Note: This codepath is only be reached in practice if we create a
+    // second NavigationRequest to this prefetch's URL. The first
+    // NavigationRequest would call GetPrefetch, which might set this
+    // PrefetchContainer's status to kPrefetchNotUsedCookiesChanged.
     DVLOG(1) << "CollectMatchCandidatesGeneric: skipped because cookies for "
                 "url have changed since prefetch completed: candidate = "
              << candidate;
