@@ -28,7 +28,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
-#include "ui/base/page_transition_types.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -45,10 +44,6 @@ SideSearchTabContentsHelper::~SideSearchTabContentsHelper() {
 
 void SideSearchTabContentsHelper::NavigateInTabContents(
     const content::OpenURLParams& params) {
-  side_panel_initiated_redirect_info_ = SidePanelRedirectInfo{
-      params.url, ui::PageTransitionCoreTypeIs(ui::PAGE_TRANSITION_LINK,
-                                               params.transition)};
-
   web_contents()->GetPrimaryMainFrame()->NotifyUserActivation(
       blink::mojom::UserActivationNotificationType::kInteraction);
   web_contents()->GetController().LoadURLWithParams(
@@ -108,23 +103,6 @@ void SideSearchTabContentsHelper::DidOpenRequestedURL(
     bool renderer_initiated) {
   const GURL& current_url = GetTabWebContents()->GetLastCommittedURL();
   CarryOverSideSearchStateToNewTab(current_url, new_contents);
-}
-
-void SideSearchTabContentsHelper::DidStartNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      navigation_handle->IsSameDocument()) {
-    return;
-  }
-
-  // Reset the side panel redirect info if the current navigation does not
-  // belong to the side panel initiated navigation shain.
-  DCHECK(!navigation_handle->GetRedirectChain().empty());
-  if (side_panel_initiated_redirect_info_ &&
-      navigation_handle->GetRedirectChain()[0] !=
-          side_panel_initiated_redirect_info_->initiated_redirect_url) {
-    side_panel_initiated_redirect_info_.reset();
-  }
 }
 
 void SideSearchTabContentsHelper::DidFinishNavigation(
