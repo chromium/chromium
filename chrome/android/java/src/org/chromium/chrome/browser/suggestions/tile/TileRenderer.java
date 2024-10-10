@@ -26,7 +26,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.omnibox.suggestions.mostvisited.SuggestTileType;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.ImageFetcher;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig.TileStyle;
@@ -36,7 +35,6 @@ import org.chromium.components.favicon.IconType;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.ViewUtils;
 
 import java.lang.ref.WeakReference;
@@ -248,14 +246,9 @@ public class TileRenderer {
         return tileView;
     }
 
-    /**
-     * @return True, if the tile represents a Search query.
-     */
+    /** Returns whether the tile represents a Search query. */
     public boolean isSearchTile(Tile tile) {
-        assert mProfile != null;
-        TemplateUrlService searchService = TemplateUrlServiceFactory.getForProfile(mProfile);
-        return searchService != null
-                && searchService.isSearchResultsPageFromDefaultSearchProvider(tile.getUrl());
+        return TileUtils.isSearchTile(mProfile, tile);
     }
 
     /**

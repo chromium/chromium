@@ -1056,6 +1056,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/suggestions/tile/TileGroup.java",
   "java/src/org/chromium/chrome/browser/suggestions/tile/TileGroupDelegateImpl.java",
   "java/src/org/chromium/chrome/browser/suggestions/tile/TileRenderer.java",
+  "java/src/org/chromium/chrome/browser/suggestions/tile/TileUtils.java",
   "java/src/org/chromium/chrome/browser/supervised_user/ChildAccountService.java",
   "java/src/org/chromium/chrome/browser/survey/ChromeSurveyController.java",
   "java/src/org/chromium/chrome/browser/sync/SyncErrorNotifier.java",
