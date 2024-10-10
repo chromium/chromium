@@ -382,16 +382,8 @@ TEST_F(Canvas2DLayerBridgeTest, PushPropertiesAfterVisibilityChange) {
   feature_list.InitWithFeatures({::features::kClearCanvasResourcesInBackground},
                                 {features::kCanvas2DHibernation});
 
-  ScopedCanvas2dImageChromiumForTest canvas_2d_image_chromium(true);
-  const_cast<gpu::Capabilities&>(SharedGpuContext::ContextProviderWrapper()
-                                     ->ContextProvider()
-                                     ->GetCapabilities())
-      .gpu_memory_buffer_formats.Put(gfx::BufferFormat::BGRA_8888);
-
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
-  cc::PaintFlags flags;
-  Canvas().drawLine(0, 0, 2, 2, flags);
   DrawSomething(bridge.get());
 
   Host()->SetPageVisible(false);
