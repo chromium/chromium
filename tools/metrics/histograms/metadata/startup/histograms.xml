@@ -555,18 +555,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Startup.Android.LastVisitedTabIsSRPWhenOverviewShownAtLaunch"
-    enum="Boolean" expires_after="2024-09-15">
-  <owner>hanxi@chromium.org</owner>
-  <owner>fredmello@chromium.org</owner>
-  <summary>
-    Records whether or not the last visited tab is a search result page when
-    StartSurface is shown at launch. This histogram is only recorded when
-    StartSurface is shown at launch due to &quot;return to tab switcher&quot;
-    feature.
-  </summary>
-</histogram>
-
 <histogram name="Startup.Android.MainIconLaunchTotalWaitTime" units="ms"
     expires_after="2025-03-03">
   <owner>nafisabedin@google.com</owner>
