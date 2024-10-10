@@ -32,6 +32,48 @@ export class BluetoothProcessor {
     this.#browsingContextStorage = browsingContextStorage;
   }
 
+  async simulateAdapter(
+    params: Bluetooth.SimulateAdapterParameters
+  ): Promise<EmptyResult> {
+    const context = this.#browsingContextStorage.getContext(params.context);
+    await context.cdpTarget.browserCdpClient.sendCommand(
+      'BluetoothEmulation.enable',
+      {
+        state: params.state,
+      }
+    );
+    return {};
+  }
+
+  async simulatePreconnectedPeripheral(
+    params: Bluetooth.SimulatePreconnectedPeripheralParameters
+  ): Promise<EmptyResult> {
+    const context = this.#browsingContextStorage.getContext(params.context);
+    await context.cdpTarget.browserCdpClient.sendCommand(
+      'BluetoothEmulation.simulatePreconnectedPeripheral',
+      {
+        address: params.address,
+        name: params.name,
+        knownServiceUuids: params.knownServiceUuids,
+        manufacturerData: params.manufacturerData,
+      }
+    );
+    return {};
+  }
+
+  async simulateAdvertisement(
+    params: Bluetooth.SimulateAdvertisementParameters
+  ): Promise<EmptyResult> {
+    const context = this.#browsingContextStorage.getContext(params.context);
+    await context.cdpTarget.browserCdpClient.sendCommand(
+      'BluetoothEmulation.simulateAdvertisement',
+      {
+        entry: params.scanEntry,
+      }
+    );
+    return {};
+  }
+
   onCdpTargetCreated(cdpTarget: CdpTarget) {
     cdpTarget.cdpClient.on('DeviceAccess.deviceRequestPrompted', (event) => {
       this.#eventManager.registerEvent(
