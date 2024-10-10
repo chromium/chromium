@@ -12,7 +12,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './tab_organization_selector.css.js';
 import {getHtml} from './tab_organization_selector.html.js';
 import type {Tab} from './tab_search.mojom-webui.js';
-import {TabOrganizationFeature} from './tab_search.mojom-webui.js';
+import {SelectorCTREvent, TabOrganizationFeature} from './tab_search.mojom-webui.js';
 import type {TabSearchApiProxy} from './tab_search_api_proxy.js';
 import {TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 
@@ -64,7 +64,14 @@ export class TabOrganizationSelectorElement extends CrLitElement {
         id => this.apiProxy_.getCallbackRouter().removeListener(id));
   }
 
+  maybeLogSelectorShown(): void {
+    if (this.selectedState_ === TabOrganizationFeature.kSelector) {
+      this.logSelectorCtrValue_(SelectorCTREvent.kSelectorShown);
+    }
+  }
+
   protected onAutoTabGroupsClick_(): void {
+    this.logSelectorCtrValue_(SelectorCTREvent.kAutoTabGroupsClicked);
     this.apiProxy_.requestTabOrganization();
     this.selectedState_ = TabOrganizationFeature.kAutoTabGroups;
     this.apiProxy_.setOrganizationFeature(this.selectedState_);
@@ -74,11 +81,13 @@ export class TabOrganizationSelectorElement extends CrLitElement {
   }
 
   protected onDeclutterClick_(): void {
+    this.logSelectorCtrValue_(SelectorCTREvent.kDeclutterClicked);
     this.selectedState_ = TabOrganizationFeature.kDeclutter;
     this.apiProxy_.setOrganizationFeature(this.selectedState_);
   }
 
   protected onBackClick_(): void {
+    this.logSelectorCtrValue_(SelectorCTREvent.kSelectorShown);
     this.selectedState_ = TabOrganizationFeature.kSelector;
     this.apiProxy_.setOrganizationFeature(this.selectedState_);
   }
@@ -101,6 +110,11 @@ export class TabOrganizationSelectorElement extends CrLitElement {
     } else {
       this.selectedState_ = feature;
     }
+  }
+
+  private logSelectorCtrValue_(event: SelectorCTREvent) {
+    chrome.metricsPrivate.recordEnumerationValue(
+        'Tab.Organization.SelectorCTR', event, SelectorCTREvent.MAX_VALUE + 1);
   }
 }
 

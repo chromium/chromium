@@ -122,6 +122,23 @@ void TabSearchBubbleHost::OnWidgetVisibilityChanged(views::Widget* widget,
             *bubble_created_time_,
             webui_bubble_manager_->bubble_using_cached_web_contents(),
             webui_bubble_manager_->contents_warmup_level()));
+    const PrefService* prefs = profile_->GetPrefs();
+    const int tab_index =
+        prefs->GetInteger(tab_search_prefs::kTabSearchTabIndex);
+    const tab_search::mojom::TabOrganizationFeature organization_feature =
+        tab_search_prefs::GetTabOrganizationFeatureFromInt(
+            prefs->GetInteger(tab_search_prefs::kTabOrganizationFeature));
+    // Log a selector shown event if the tab search bubble is set to the
+    // organize tab and showing the selector.
+    if (tab_index == 1 &&
+        (organization_feature ==
+             tab_search::mojom::TabOrganizationFeature::kSelector ||
+         organization_feature ==
+             tab_search::mojom::TabOrganizationFeature::kNone)) {
+      base::UmaHistogramEnumeration(
+          "Tab.Organization.SelectorCTR",
+          tab_search::mojom::SelectorCTREvent::kSelectorShown);
+    }
     bubble_created_time_.reset();
   }
 }

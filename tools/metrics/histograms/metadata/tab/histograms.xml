@@ -400,6 +400,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tab.Organization.SelectorCTR"
+    enum="TabOrganizationSelectorCTREvent" expires_after="2025-02-10">
+  <owner>emshack@chromium.org</owner>
+  <owner>shibalik@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    On Desktop, logs once each time the tab organization feature selector is
+    shown, and once each time the feature buttons are pressed. CTR for each
+    feature can be determined by dividing the feature click count by the
+    selector show count.
+  </summary>
+</histogram>
+
 <histogram name="Tab.Organization.Trigger.Outcome"
     enum="TabOrganizationTriggerOutcome" expires_after="2025-03-30">
   <owner>tbergquist@chromium.org</owner>

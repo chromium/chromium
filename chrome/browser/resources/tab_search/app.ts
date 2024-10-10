@@ -73,6 +73,13 @@ export class TabSearchAppElement extends CrLitElement {
 
   private onTabIndexChanged_(index: number) {
     this.selectedTabIndex_ = index;
+    if (index === 1) {
+      const organizationSelector =
+          this.shadowRoot!.querySelector('tab-organization-selector');
+      if (organizationSelector) {
+        organizationSelector.maybeLogSelectorShown();
+      }
+    }
   }
 
   private onTabOrganizationEnabledChanged_(enabled: boolean) {
