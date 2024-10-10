@@ -17,6 +17,7 @@
 #include "media/mojo/mojom/media_drm_storage.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#include "wolvic/browser/wolvic_browser_interface_binders.h"
 #include "wolvic/browser/dialogs/http_auth_manager.h"
 #include "wolvic/browser/session_settings.h"
 #include "wolvic/wolvic_browser_context.h"
@@ -189,6 +190,12 @@ void WolvicContentBrowserClient::
             BindPasswordManagerDriver(std::move(receiver), render_frame_host);
       },
       &render_frame_host));
+}
+
+void WolvicContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
+    content::RenderFrameHost* render_frame_host,
+    mojo::BinderMapWithContext<content::RenderFrameHost*>* map) {
+  wolvic::internal::PopulateWolvicFrameBinders(map, render_frame_host);
 }
 
 }  // namespace wolvic

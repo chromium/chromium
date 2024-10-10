@@ -65,6 +65,9 @@ class WolvicContentBrowserClient : public content::ContentBrowserClient {
   void RegisterAssociatedInterfaceBindersForRenderFrameHost(
       content::RenderFrameHost& render_frame_host,
       blink::AssociatedInterfaceRegistry& associated_registry) override;
+  void RegisterBrowserInterfaceBindersForFrame(
+      content::RenderFrameHost* render_frame_host,
+      mojo::BinderMapWithContext<content::RenderFrameHost*>* map) override;
 
  private:
   raw_ptr<WolvicMainParts> browser_main_parts_;

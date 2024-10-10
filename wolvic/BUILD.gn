@@ -60,6 +60,8 @@ shared_library("libcontent_native") {
     "browser/media/wolvic_media_drm_bridge_client.h",
     "browser/metrics/wolvic_enabled_state_provider.cc",
     "browser/metrics/wolvic_enabled_state_provider.h",
+    "browser/mojo/wolvic_interface_registrar.cc",
+    "browser/mojo/wolvic_interface_registrar.h",
     "browser/session_settings.cc",
     "browser/session_settings.h",
     "browser/session_settings_jni.cc",
@@ -79,6 +81,8 @@ shared_library("libcontent_native") {
     "browser/vr/wvr_manager.h",
     "browser/vr/wvr_thread.cc",
     "browser/vr/wvr_thread.h",
+    "browser/wolvic_browser_interface_binders.cc",
+    "browser/wolvic_browser_interface_binders.h",
     "browser/wolvic_contents.cc",
     "browser/wolvic_contents.h",
     "browser/wolvic_web_contents_delegate.cc",
@@ -304,6 +308,7 @@ generate_jni("jni_headers") {
     "java/org/chromium/wolvic/WVRSurfaceTexture.java",
     "java/org/chromium/wolvic/WolvicBrowserContext.java",
     "java/org/chromium/wolvic/WolvicWebContentsDelegate.java",
+    "java/org/chromium/wolvic/mojo/WolvicInterfaceRegistrar.java",
   ]
 }
 
@@ -326,6 +331,7 @@ android_library("wolvic_java") {
     "java/org/chromium/wolvic/WVRSurfaceTexture.java",
     "java/org/chromium/wolvic/WolvicBrowserContext.java",
     "java/org/chromium/wolvic/WolvicWebContentsDelegate.java",
+    "java/org/chromium/wolvic/mojo/WolvicInterfaceRegistrar.java",
   ]
   srcjar_deps = [ ":jni_headers" ]
   deps = [
@@ -337,6 +343,7 @@ android_library("wolvic_java") {
     "//components/url_formatter/android:url_formatter_java",
     "//content/public/android:content_full_java",
     "//content/public/android:content_main_dex_java",
+    "//services/service_manager/public/java:service_manager_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_full_java",

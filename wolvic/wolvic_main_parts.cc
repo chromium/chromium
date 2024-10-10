@@ -8,6 +8,7 @@
 #include "content/shell/browser/shell_devtools_manager_delegate.h"
 #include "net/android/network_change_notifier_factory_android.h"
 #include "net/base/network_change_notifier.h"
+#include "wolvic/browser/mojo/wolvic_interface_registrar.h"
 #include "wolvic/wolvic_browser_context.h"
 
 namespace wolvic {
@@ -28,11 +29,20 @@ int WolvicMainParts::PreMainMessageLoopRun() {
   set_off_the_record_browser_context(new WolvicBrowserContext(true));
   content::ShellDevToolsManagerDelegate::StartHttpHandler(
       browser_context_.get());
+
+  PostBrowserStart();
+
   return 0;
 }
 
 void WolvicMainParts::PostMainMessageLoopRun() {
   content::ShellDevToolsManagerDelegate::StopHttpHandler();
+}
+
+void WolvicMainParts::PostBrowserStart() {
+  LOG(WARNING) << "WolvicMainParts::PostBrowserStart --";
+
+  RegisterWolvicJavaMojoInterfaces();
 }
 
 void WolvicMainParts::set_browser_context(WolvicBrowserContext* context) {

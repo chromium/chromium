@@ -25,6 +25,10 @@ class WolvicMainParts : public content::BrowserMainParts {
   int PreMainMessageLoopRun() override;
   void PostMainMessageLoopRun() override;
 
+  // Inspired from the //chrome ChromeBrowserMainParts, but we don't need such complex Parts achitectuture in Wolvic.
+  // TODO(jfernandez): Do we need to implement an actual Profile feature ?
+  void PostBrowserStart();
+
   WolvicBrowserContext* browser_context() { return browser_context_.get(); }
   WolvicBrowserContext* off_the_record_browser_context() {
     return off_the_record_browser_context_.get();
