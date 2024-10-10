@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 
 #import "ios/chrome/browser/web/model/choose_file/choose_file_controller.h"
+#import "ios/chrome/browser/web/model/choose_file/choose_file_file_utils.h"
 #import "ios/web/public/navigation/navigation_context.h"
 
 ChooseFileTabHelper::ChooseFileTabHelper(web::WebState* web_state) {
@@ -57,6 +58,7 @@ void ChooseFileTabHelper::DidFinishNavigation(
 }
 
 void ChooseFileTabHelper::WebStateDestroyed(web::WebState* web_state) {
+  DeleteTempChooseFileDirectoryForTab(web_state->GetUniqueIdentifier());
   observation_.Reset();
 }
 

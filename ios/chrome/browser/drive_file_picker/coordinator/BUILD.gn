@@ -37,6 +37,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/web/model/choose_file",
+    "//ios/chrome/browser/web/model/choose_file:choose_file_file_utils",
     "//ios/chrome/common/ui/util:image_util",
     "//ios/web/public",
     "//ios/web/public/js_image_transcoder",

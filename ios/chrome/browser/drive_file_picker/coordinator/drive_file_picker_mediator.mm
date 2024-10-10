@@ -621,7 +621,8 @@ constexpr int kFetchedImageResizeDimension = 64;
   if (!item) {
     return;
   }
-  NSURL* fileURL = DriveFilePickerGenerateDownloadFileURL(item->name);
+  NSURL* fileURL = DriveFilePickerGenerateDownloadFileURL(
+      _webState->GetUniqueIdentifier(), item->name);
   CHECK(fileURL);
   __weak __typeof(self) weakSelf = self;
   _selectedFileDownloadID = _driveDownloader->DownloadFile(

@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/drive/model/drive_list.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_item.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/web/model/choose_file/choose_file_file_utils.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -428,13 +429,16 @@ std::optional<DriveItem> FindDriveItemFromIdentifier(
   return std::nullopt;
 }
 
-NSURL* DriveFilePickerGenerateDownloadFileURL(NSString* download_file_name) {
-  base::FilePath download_dir;
-  if (!GetTempDir(&download_dir)) {
+NSURL* DriveFilePickerGenerateDownloadFileURL(web::WebStateID web_state_id,
+                                              NSString* download_file_name) {
+  std::optional<base::FilePath> web_state_dir =
+      GetTabChooseFileDirectory(web_state_id);
+  if (!web_state_dir) {
     return nil;
   }
-  download_dir =
-      download_dir.Append(base::SysNSStringToUTF8([[NSUUID UUID] UUIDString]));
+  base::FilePath download_dir =
+      (*web_state_dir)
+          .Append(base::SysNSStringToUTF8([[NSUUID UUID] UUIDString]));
   base::FilePath download_file_path =
       download_dir.Append(base::SysNSStringToUTF8(download_file_name));
   return base::apple::FilePathToNSURL(download_file_path);

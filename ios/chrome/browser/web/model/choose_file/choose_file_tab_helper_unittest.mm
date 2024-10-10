@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/test/task_environment.h"
 #import "ios/chrome/browser/web/model/choose_file/fake_choose_file_controller.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -23,6 +24,7 @@ class ChooseFileTabHelperTest : public PlatformTest {
   }
 
  protected:
+  base::test::TaskEnvironment task_environment_;
   raw_ptr<ChooseFileTabHelper> tab_helper_;
   std::unique_ptr<web::FakeWebState> web_state_;
 };

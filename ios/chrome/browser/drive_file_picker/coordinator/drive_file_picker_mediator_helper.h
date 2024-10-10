@@ -11,6 +11,7 @@
 #import <vector>
 
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_constants.h"
+#import "ios/web/public/web_state_id.h"
 
 struct ChooseFileEvent;
 @class DriveFilePickerItem;
@@ -86,7 +87,8 @@ std::optional<DriveItem> FindDriveItemFromIdentifier(
     NSString* identifier);
 
 // Generates the `URL` to which the local copy of a file will be saved.
-NSURL* DriveFilePickerGenerateDownloadFileURL(NSString* download_file_name);
+NSURL* DriveFilePickerGenerateDownloadFileURL(web::WebStateID web_state_id,
+                                              NSString* download_file_name);
 
 // Returns the placeholder icon for `item`.
 UIImage* GetPlaceholderIconForDriveItem(const DriveItem& item);
