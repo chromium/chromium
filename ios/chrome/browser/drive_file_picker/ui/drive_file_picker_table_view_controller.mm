@@ -44,13 +44,20 @@ constexpr CGFloat kTitleLogoSpacing = 3.0;
 constexpr CGFloat kLogoTitleFontMultiplier = 1.75;
 
 // Creates the google drive branded title view for the navigation.
-BrandedNavigationItemTitleView* CreateGoogleDriveImageView() {
+BrandedNavigationItemTitleView* CreateGoogleDriveImageView(BOOL dark_mode) {
   BrandedNavigationItemTitleView* title_view =
       [[BrandedNavigationItemTitleView alloc] init];
   title_view.title =
       l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_DOWNLOAD_TO_DRIVE);
-  title_view.imageLogo = MakeSymbolMulticolor(CustomSymbolWithPointSize(
-      kGoogleFullSymbol, UIFont.labelFontSize * kLogoTitleFontMultiplier));
+
+  UIImage* google_symbol = CustomSymbolWithPointSize(
+      kGoogleFullSymbol, UIFont.labelFontSize * kLogoTitleFontMultiplier);
+  if (dark_mode) {
+    title_view.imageLogo =
+        SymbolWithPalette(google_symbol, @[ [UIColor whiteColor] ]);
+  } else {
+    title_view.imageLogo = MakeSymbolMulticolor(google_symbol);
+  }
   title_view.titleLogoSpacing = kTitleLogoSpacing;
   return title_view;
 }
@@ -158,6 +165,10 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 
   // The selected item identifier.
   NSString* _selectedIdentifier;
+
+  // Whether the view is showing the logo title (and thus must be updated for
+  // dark/light mode).
+  BOOL _isShowingLogoTitle;
 }
 
 - (instancetype)init {
@@ -244,6 +255,12 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
                                NSDirectionalEdgeInsetsMake(6, 0, 6, 0));
 
   [self.mutator loadFirstPage];
+
+  if (@available(iOS 17, *)) {
+    [self registerForTraitChanges:TraitCollectionSetForTraits(
+                                      @[ UITraitUserInterfaceStyle.self ])
+                       withAction:@selector(userInterfaceStyleDidChange)];
+  }
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -252,6 +269,21 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
     [self.delegate viewControllerDidDisappear:self];
   }
 }
+
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
+- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
+  [super traitCollectionDidChange:previousTraitCollection];
+
+  if (@available(iOS 17, *)) {
+    return;
+  }
+  // Dark/Light mode change ocurred.
+  if (self.traitCollection.userInterfaceStyle !=
+      previousTraitCollection.userInterfaceStyle) {
+    [self userInterfaceStyleDidChange];
+  }
+}
+#endif
 
 #pragma mark - UI actions
 
@@ -623,6 +655,12 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   return cell;
 }
 
+- (void)userInterfaceStyleDidChange {
+  if (_isShowingLogoTitle) {
+    [self setRootTitle];
+  }
+}
+
 #pragma mark - DriveFilePickerConsumer
 
 - (void)setSelectedUserIdentityEmail:(NSString*)selectedUserIdentityEmail {
@@ -642,13 +680,18 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
   titleLabel.adjustsFontSizeToFitWidth = YES;
   titleLabel.minimumScaleFactor = 0.1;
   self.navigationItem.titleView = titleLabel;
+  _isShowingLogoTitle = NO;
 }
 
 - (void)setRootTitle {
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-  self.navigationItem.titleView = CreateGoogleDriveImageView();
+  BOOL darkModeEnabled =
+      (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark);
+  self.navigationItem.titleView = CreateGoogleDriveImageView(darkModeEnabled);
+  _isShowingLogoTitle = YES;
 #else
   self.navigationItem.titleView = CreateGoogleDriveTitleLabel();
+  _isShowingLogoTitle = NO;
 #endif
   self.navigationItem.titleView.accessibilityIdentifier =
       kDriveFilePickerRootTitleAccessibilityIdentifier;

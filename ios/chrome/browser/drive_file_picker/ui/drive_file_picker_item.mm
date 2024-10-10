@@ -14,6 +14,9 @@ namespace {
 // The point size of the icons.
 const CGFloat kIconPointSize = 18;
 
+// For some reason, some icon appear smaller. Use a bigger size.
+const CGFloat kBiggerIconPointSize = 22;
+
 }  // namespace
 
 @implementation DriveFilePickerItem
@@ -106,13 +109,20 @@ const CGFloat kIconPointSize = 18;
   static DriveFilePickerItem* item;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
+    UIImageConfiguration* drive_symbol_configuration =
+        [UIImageSymbolConfiguration
+            configurationWithPointSize:kBiggerIconPointSize
+                                weight:UIImageSymbolWeightSemibold
+                                 scale:UIImageSymbolScaleMedium];
+    UIImage* drive_symbol = DefaultSymbolWithConfiguration(
+        kPersonTwoSymbol, drive_symbol_configuration);
+
     item = [[DriveFilePickerItem alloc]
         initWithIdentifier:kDriveFilePickerSharedWithMeItemIdentifier
                      title:l10n_util::GetNSString(
                                IDS_IOS_DRIVE_FILE_PICKER_SHARED_WITH_ME)
                   subtitle:nil
-                      icon:DefaultSymbolWithPointSize(kPersonTwoSymbol,
-                                                      kIconPointSize)
+                      icon:drive_symbol
                       type:DriveItemType::kSharedWithMe];
   });
   return item;
