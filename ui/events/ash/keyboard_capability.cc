@@ -85,6 +85,8 @@ const int kHotrodRemoteProductId = 0x21cc;
 constexpr auto kRightAltBlocklist =
     base::MakeFixedFlatSet<std::string_view>({"eve", "nocturne", "atlas"});
 
+constexpr std::string_view kRevenBoardName = "reven";
+
 constexpr char kLayoutProperty[] = "CROS_KEYBOARD_TOP_ROW_LAYOUT";
 constexpr char kCustomTopRowLayoutAttribute[] = "function_row_physmap";
 constexpr char kCustomTopRowLayoutProperty[] = "FUNCTION_ROW_PHYSMAP";
@@ -1013,6 +1015,12 @@ bool KeyboardCapability::HasFunctionKey(const KeyboardDevice& keyboard) const {
     return true;
   }
 
+  // ChromeOS flex devices may have an fn key in their HID report, but are not
+  // supported in the same way.
+  if (board_name_ == kRevenBoardName) {
+    return false;
+  }
+
   return ash::features::IsModifierSplitEnabled() &&
          keyboard.type == InputDeviceType::INPUT_DEVICE_INTERNAL &&
          keyboard.has_function_key;
@@ -1047,6 +1055,10 @@ bool KeyboardCapability::HasRightAltKey(const KeyboardDevice& keyboard) const {
   }
 
   if (kRightAltBlocklist.contains(board_name_)) {
+    return false;
+  }
+
+  if (board_name_ == kRevenBoardName) {
     return false;
   }
 
