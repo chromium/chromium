@@ -373,6 +373,10 @@ BASE_FEATURE(kToolbarPinning,
 bool IsToolbarPinningEnabled() {
   return base::FeatureList::IsEnabled(kToolbarPinning);
 }
+
+BASE_FEATURE(kPinnedCastButton,
+             "PinnedCastButton",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 // Enables enterprise profile badging for managed profiles on the toolbar

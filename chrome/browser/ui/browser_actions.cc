@@ -480,6 +480,7 @@ void BrowserActions::InitializeBrowserActions() {
                 !sharing_hub::SharingIsDisabledByPolicy(browser->profile()))
             .Build());
 
+    if (base::FeatureList::IsEnabled(features::kPinnedCastButton)) {
     root_action_item_->AddChild(
         ChromeMenuAction(
             base::BindRepeating(
@@ -505,6 +506,7 @@ void BrowserActions::InitializeBrowserActions() {
             IDS_MEDIA_ROUTER_ICON_TOOLTIP_TEXT, kCastChromeRefreshIcon)
             .SetEnabled(chrome::CanRouteMedia(browser))
             .Build());
+    }
 
     AddListeners();
   }

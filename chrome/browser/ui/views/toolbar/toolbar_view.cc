@@ -368,7 +368,8 @@ void ToolbarView::Init() {
     toolbar_divider = std::make_unique<views::View>();
   }
   std::unique_ptr<media_router::CastToolbarButton> cast;
-  if (!features::IsToolbarPinningEnabled()) {
+  if (!(features::IsToolbarPinningEnabled() &&
+      base::FeatureList::IsEnabled(features::kPinnedCastButton))) {
     if (media_router::MediaRouterEnabled(browser_->profile())) {
       cast = media_router::CastToolbarButton::Create(browser_);
     }
@@ -707,7 +708,8 @@ ExtensionsToolbarButton* ToolbarView::GetExtensionsButton() const {
 }
 
 ToolbarButton* ToolbarView::GetCastButton() const {
-  if (features::IsToolbarPinningEnabled()) {
+  if (features::IsToolbarPinningEnabled() &&
+      base::FeatureList::IsEnabled(features::kPinnedCastButton)) {
     return pinned_toolbar_actions_container()
                ? pinned_toolbar_actions_container()->GetButtonFor(
                      kActionRouteMedia)

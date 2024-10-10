@@ -178,7 +178,8 @@ CastToolbarButtonController::CastToolbarButtonController(
 }
 
 void CastToolbarButtonController::MaybeToggleIconVisibility() {
-  if (features::IsToolbarPinningEnabled()) {
+  if (features::IsToolbarPinningEnabled() &&
+      base::FeatureList::IsEnabled(features::kPinnedCastButton)) {
     for (Browser* browser : chrome::FindAllBrowsersWithProfile(profile_)) {
       if (auto* container = BrowserView::GetBrowserViewForBrowser(browser)
                                 ->toolbar()
