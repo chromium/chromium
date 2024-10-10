@@ -1054,9 +1054,12 @@ void LoginDisplayHostMojo::OnAuthSessionStarted(
                << error->get_cryptohome_error();
     return;
   }
-  login::SetAuthFactorsForUser(user_context->GetAccountId(),
-                               user_context->GetAuthFactorsData(),
-                               LoginScreen::Get()->GetModel());
+  // We always pass false to `is_pin_disabled_by_policy` here because the
+  // policy only controls whether the pin can be used to unlock the lock
+  // screen and not the login screen.
+  login::SetAuthFactorsForUser(
+      user_context->GetAccountId(), user_context->GetAuthFactorsData(),
+      /*is_pin_disabled_by_policy=*/false, LoginScreen::Get()->GetModel());
   auth_performer_.InvalidateAuthSession(std::move(user_context),
                                         base::DoNothing());
 }

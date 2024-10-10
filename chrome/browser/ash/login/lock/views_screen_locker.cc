@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/ash/login/screens/chrome_user_selection_screen.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/system_clock.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -234,7 +235,18 @@ void ViewsScreenLocker::OnAuthSessionStarted(
   }
   const AccountId& account_id = user_context->GetAccountId();
   const auto& auth_factors = user_context->GetAuthFactorsData();
+
+  PrefService* pref_service = nullptr;
+  Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
+  if (profile) {
+    pref_service = profile->GetPrefs();
+  }
+  const bool is_pin_disabled_by_policy =
+      pref_service && quick_unlock::IsPinDisabledByPolicy(
+                          pref_service, quick_unlock::Purpose::kUnlock);
+
   login::SetAuthFactorsForUser(account_id, auth_factors,
+                               is_pin_disabled_by_policy,
                                LoginScreen::Get()->GetModel());
   if (!auth_factors.FindPinFactor()) {
     // Check for pref-based PIN.

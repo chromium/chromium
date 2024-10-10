@@ -138,6 +138,7 @@ bool IsFullManagementDisclosureNeeded(
 // Sets the available auth factors for the user on the login & lock screen.
 void SetAuthFactorsForUser(const AccountId& user,
                            const SessionAuthFactors& auth_factors,
+                           bool is_pin_disabled_by_policy,
                            LoginScreenModel* login_screen);
 
 }  // namespace login
