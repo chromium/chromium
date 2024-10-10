@@ -27,9 +27,16 @@
 
 namespace {
 
-int Score(const query_parser::QueryNodeVector& input_query_nodes,
+constexpr bool is_android = !!BUILDFLAG(IS_ANDROID);
+constexpr int kOpenTabDefaultScore = 1500;
+
+int Score(const AutocompleteInput& input,
+          const query_parser::QueryNodeVector& input_query_nodes,
           const std::u16string& title,
           const GURL& url) {
+  if ((input.IsZeroSuggest() || input.text().empty()) && is_android) {
+    return kOpenTabDefaultScore;
+  }
   // TODO(crbug.com/40211187): The bookmark provider also uses on `query_parser`
   // and
   //  `ScoringFunctor` to compute its scores. However, it uses normalized match
@@ -82,6 +89,11 @@ int Score(const query_parser::QueryNodeVector& input_query_nodes,
   return normalized_factors * kMaxScore;
 }
 
+bool ShouldRunProvider(const AutocompleteInput& input,
+                       const AutocompleteInput& adjusted_input) {
+  return is_android || !(input.IsZeroSuggest() || input.text().empty());
+}
+
 }  // namespace
 
 OpenTabProvider::OpenTabProvider(AutocompleteProviderClient* client)
@@ -92,25 +104,14 @@ OpenTabProvider::~OpenTabProvider() = default;
 
 void OpenTabProvider::Start(const AutocompleteInput& input,
                             bool minimal_changes) {
-#if BUILDFLAG(IS_ANDROID)
-  using OEP = ::metrics::OmniboxEventProto;
-  // On Android, the OpenTabProvider should only run for the Hub.
-  if (input.current_page_classification() != OEP::ANDROID_HUB) {
-    return;
-  }
-#endif
-
   matches_.clear();
-  if (input.IsZeroSuggest() || input.text().empty()) {
-    return;
-  }
 
   // Remove the keyword from input if we're in keyword mode for a starter pack
   // engine.
   const auto [adjusted_input, template_url] =
       KeywordProvider::AdjustInputForStarterPackEngines(
           input, client_->GetTemplateURLService());
-  if (adjusted_input.text().empty()) {
+  if (!ShouldRunProvider(input, adjusted_input)) {
     return;
   }
 
@@ -130,7 +131,7 @@ void OpenTabProvider::Start(const AutocompleteInput& input,
     if (!url.is_valid()) {
       continue;
     }
-    int score = Score(input_query_nodes, open_tab.title, url);
+    int score = Score(input, input_query_nodes, open_tab.title, url);
     if (score > 0) {
       matches_.push_back(CreateOpenTabMatch(adjusted_input, open_tab.title, url,
                                             score, template_url));
@@ -198,8 +199,8 @@ AutocompleteMatch OpenTabProvider::CreateOpenTabMatch(
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  using OEP = ::metrics::OmniboxEventProto;
-  if (input.current_page_classification() == OEP::ANDROID_HUB) {
+  if (input.current_page_classification() ==
+      ::metrics::OmniboxEventProto::ANDROID_HUB) {
     match.suggestion_group_id = omnibox::GROUP_MOBILE_OPEN_TABS;
   }
 #endif

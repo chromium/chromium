@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/task_environment.h"
+#include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
@@ -61,4 +62,41 @@ TEST_F(OpenTabProviderTest, TestURLMatch) {
                           TestSchemeClassifier());
   open_tab_provider().Start(input, /* minimal_changes= */ false);
   ASSERT_EQ(1UL, open_tab_provider().matches().size());
+}
+
+TEST_F(OpenTabProviderTest, TestNoMatches) {
+  FakeTabMatcher& tab_matcher = static_cast<FakeTabMatcher&>(
+      const_cast<TabMatcher&>(client().GetTabMatcher()));
+  tab_matcher.AddOpenTab(
+      TabMatcher::TabWrapper(u"foo", GURL("http://foo.com")));
+  tab_matcher.AddOpenTab(
+      TabMatcher::TabWrapper(u"bar", GURL("http://bar.com")));
+
+  AutocompleteInput input(u"test",
+                          metrics::OmniboxEventProto::PageClassification::
+                              OmniboxEventProto_PageClassification_ANDROID_HUB,
+                          TestSchemeClassifier());
+  open_tab_provider().Start(input, /* minimal_changes= */ false);
+  ASSERT_EQ(0UL, open_tab_provider().matches().size());
+}
+
+TEST_F(OpenTabProviderTest, TestZPS) {
+  FakeTabMatcher& tab_matcher = static_cast<FakeTabMatcher&>(
+      const_cast<TabMatcher&>(client().GetTabMatcher()));
+  tab_matcher.AddOpenTab(
+      TabMatcher::TabWrapper(u"foo", GURL("http://foo.com")));
+  tab_matcher.AddOpenTab(
+      TabMatcher::TabWrapper(u"bar", GURL("http://bar.com")));
+
+  AutocompleteInput input(u"",
+                          metrics::OmniboxEventProto::PageClassification::
+                              OmniboxEventProto_PageClassification_ANDROID_HUB,
+                          TestSchemeClassifier());
+  open_tab_provider().Start(input, /* minimal_changes= */ false);
+
+#if BUILDFLAG(IS_ANDROID)
+  ASSERT_EQ(2UL, open_tab_provider().matches().size());
+#else
+  ASSERT_EQ(0UL, open_tab_provider().matches().size());
+#endif
 }
