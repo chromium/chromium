@@ -50,8 +50,6 @@ class CSSFontFace;
 class CSSFontFamilyValue;
 class CSSPropertyValueSet;
 class CSSValue;
-class DOMArrayBuffer;
-class DOMArrayBufferView;
 class Document;
 class CSSLengthResolver;
 class ExceptionState;
@@ -170,11 +168,7 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
  private:
   static FontFace* Create(ExecutionContext*,
                           const AtomicString& family,
-                          DOMArrayBuffer* source,
-                          const FontFaceDescriptors*);
-  static FontFace* Create(ExecutionContext*,
-                          const AtomicString& family,
-                          DOMArrayBufferView*,
+                          base::span<const uint8_t> data,
                           const FontFaceDescriptors*);
   static FontFace* Create(ExecutionContext*,
                           const AtomicString& family,
@@ -182,7 +176,7 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
                           const FontFaceDescriptors*);
 
   void InitCSSFontFace(ExecutionContext*, const CSSValue& src);
-  void InitCSSFontFace(ExecutionContext*, const unsigned char* data, size_t);
+  void InitCSSFontFace(ExecutionContext*, base::span<const uint8_t> data);
   void SetPropertyFromString(const ExecutionContext*,
                              const String&,
                              AtRuleDescriptorID,

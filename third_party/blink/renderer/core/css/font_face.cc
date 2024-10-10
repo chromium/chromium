@@ -136,12 +136,12 @@ FontFace* FontFace::Create(
 
   switch (source->GetContentType()) {
     case V8UnionArrayBufferOrArrayBufferViewOrString::ContentType::kArrayBuffer:
-      return Create(execution_context, family, source->GetAsArrayBuffer(),
-                    descriptors);
+      return Create(execution_context, family,
+                    source->GetAsArrayBuffer()->ByteSpan(), descriptors);
     case V8UnionArrayBufferOrArrayBufferViewOrString::ContentType::
         kArrayBufferView:
       return Create(execution_context, family,
-                    source->GetAsArrayBufferView().Get(), descriptors);
+                    source->GetAsArrayBufferView()->ByteSpan(), descriptors);
     case V8UnionArrayBufferOrArrayBufferViewOrString::ContentType::kString:
       return Create(execution_context, family, source->GetAsString(),
                     descriptors);
@@ -172,25 +172,11 @@ FontFace* FontFace::Create(ExecutionContext* context,
 
 FontFace* FontFace::Create(ExecutionContext* context,
                            const AtomicString& family,
-                           DOMArrayBuffer* source,
+                           base::span<const uint8_t> data,
                            const FontFaceDescriptors* descriptors) {
   FontFace* font_face =
       MakeGarbageCollected<FontFace>(context, family, descriptors);
-  font_face->InitCSSFontFace(context,
-                             static_cast<const unsigned char*>(source->Data()),
-                             source->ByteLength());
-  return font_face;
-}
-
-FontFace* FontFace::Create(ExecutionContext* context,
-                           const AtomicString& family,
-                           DOMArrayBufferView* source,
-                           const FontFaceDescriptors* descriptors) {
-  FontFace* font_face =
-      MakeGarbageCollected<FontFace>(context, family, descriptors);
-  font_face->InitCSSFontFace(
-      context, static_cast<const unsigned char*>(source->BaseAddress()),
-      source->byteLength());
+  font_face->InitCSSFontFace(context, data);
   return font_face;
 }
 
@@ -925,17 +911,15 @@ void FontFace::InitCSSFontFace(ExecutionContext* context, const CSSValue& src) {
 }
 
 void FontFace::InitCSSFontFace(ExecutionContext* context,
-                               const unsigned char* data,
-                               size_t size) {
+                               base::span<const uint8_t> data) {
   css_font_face_ = CreateCSSFontFace(this, unicode_range_.Get());
   if (error_) {
     return;
   }
 
-  scoped_refptr<SharedBuffer> buffer = SharedBuffer::Create(data, size);
-  BinaryDataFontFaceSource* source =
-      MakeGarbageCollected<BinaryDataFontFaceSource>(
-          css_font_face_, buffer.get(), ots_parse_message_);
+  scoped_refptr<SharedBuffer> buffer = SharedBuffer::Create(data);
+  auto* source = MakeGarbageCollected<BinaryDataFontFaceSource>(
+      css_font_face_, buffer.get(), ots_parse_message_);
   if (source->IsValid()) {
     SetLoadStatus(kLoaded);
   } else {
