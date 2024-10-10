@@ -77,6 +77,9 @@ class AutofillCrowdsourcingManager;
 class AutofillDriverFactory;
 class AutofillMlPredictionModelHandler;
 class AutofillOptimizationGuide;
+#if BUILDFLAG(IS_ANDROID)
+class AutofillSnackbarControllerImpl;
+#endif  // BUILDFLAG(IS_ANDROID)
 class AutofillSuggestionDelegate;
 class AutofillPlusAddressDelegate;
 class AutofillPredictionImprovementsDelegate;
@@ -479,6 +482,12 @@ class AutofillClient {
   virtual LogManager* GetLogManager() const;
 
   virtual const AutofillAblationStudy& GetAblationStudy() const;
+
+#if BUILDFLAG(IS_ANDROID)
+  // The AutofillSnackbarController is used to show a snackbar notification
+  // on Android.
+  virtual AutofillSnackbarControllerImpl* GetAutofillSnackbarController();
+#endif
 
 #if BUILDFLAG(IS_IOS)
   // Checks whether `field_id` is the last field that for which

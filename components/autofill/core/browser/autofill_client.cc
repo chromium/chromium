@@ -137,6 +137,13 @@ const AutofillAblationStudy& AutofillClient::GetAblationStudy() const {
   return AutofillAblationStudy::disabled_study();
 }
 
+#if BUILDFLAG(IS_ANDROID)
+AutofillSnackbarControllerImpl*
+AutofillClient::GetAutofillSnackbarController() {
+  return nullptr;
+}
+#endif
+
 void AutofillClient::TriggerUserPerceptionOfAutofillSurvey(
     FillingProduct filling_product,
     const std::map<std::string, std::string>& field_filling_stats_data) {

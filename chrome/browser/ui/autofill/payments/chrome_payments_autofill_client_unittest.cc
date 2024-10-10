@@ -177,8 +177,7 @@ class ChromePaymentsAutofillClientTest
     std::unique_ptr<MockAutofillSnackbarControllerImpl> mock =
         std::make_unique<MockAutofillSnackbarControllerImpl>(web_contents());
     MockAutofillSnackbarControllerImpl* pointer = mock.get();
-    chrome_payments_client()->SetAutofillSnackbarControllerImplForTesting(
-        std::move(mock));
+    client()->SetAutofillSnackbarControllerImplForTesting(std::move(mock));
     return pointer;
   }
 

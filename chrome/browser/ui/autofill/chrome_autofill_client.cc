@@ -740,6 +740,18 @@ const AutofillAblationStudy& ChromeAutofillClient::GetAblationStudy() const {
   return ablation_study_;
 }
 
+#if BUILDFLAG(IS_ANDROID)
+AutofillSnackbarControllerImpl*
+ChromeAutofillClient::GetAutofillSnackbarController() {
+  if (!autofill_snackbar_controller_impl_) {
+    autofill_snackbar_controller_impl_ =
+        std::make_unique<AutofillSnackbarControllerImpl>(web_contents());
+  }
+
+  return autofill_snackbar_controller_impl_.get();
+}
+#endif
+
 FormInteractionsFlowId
 ChromeAutofillClient::GetCurrentFormInteractionsFlowId() {
   constexpr base::TimeDelta max_flow_time = base::Minutes(20);

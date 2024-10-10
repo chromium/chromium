@@ -363,12 +363,12 @@ void ChromePaymentsAutofillClient::CreditCardUploadCompleted(
           features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
     if (card_saved) {
       if (on_confirmation_closed_callback) {
-        GetAutofillSnackbarController().ShowWithDurationAndCallback(
+        client_->GetAutofillSnackbarController()->ShowWithDurationAndCallback(
             AutofillSnackbarType::kSaveCardSuccess,
             kSaveCardConfirmationSnackbarDuration,
             std::move(on_confirmation_closed_callback));
       } else {
-        GetAutofillSnackbarController().Show(
+        client_->GetAutofillSnackbarController()->Show(
             AutofillSnackbarType::kSaveCardSuccess);
       }
     } else if (result != PaymentsRpcResult::kClientSideTimeout) {
@@ -432,7 +432,7 @@ void ChromePaymentsAutofillClient::VirtualCardEnrollCompleted(
 
 #if BUILDFLAG(IS_ANDROID)
   if (result == PaymentsRpcResult::kSuccess) {
-    GetAutofillSnackbarController().Show(
+    client_->GetAutofillSnackbarController()->Show(
         AutofillSnackbarType::kVirtualCardEnrollSuccess);
   } else if (controller && result != PaymentsRpcResult::kClientSideTimeout) {
     GetAutofillMessageController().Show(
@@ -447,7 +447,8 @@ void ChromePaymentsAutofillClient::VirtualCardEnrollCompleted(
 void ChromePaymentsAutofillClient::OnVirtualCardDataAvailable(
     const VirtualCardManualFallbackBubbleOptions& options) {
 #if BUILDFLAG(IS_ANDROID)
-  GetAutofillSnackbarController().Show(AutofillSnackbarType::kVirtualCard);
+  client_->GetAutofillSnackbarController()->Show(
+      AutofillSnackbarType::kVirtualCard);
 #else
   VirtualCardManualFallbackBubbleControllerImpl::CreateForWebContents(
       web_contents());
@@ -737,7 +738,8 @@ IbanAccessManager* ChromePaymentsAutofillClient::GetIbanAccessManager() {
 
 void ChromePaymentsAutofillClient::ShowMandatoryReauthOptInConfirmation() {
 #if BUILDFLAG(IS_ANDROID)
-  GetAutofillSnackbarController().Show(AutofillSnackbarType::kMandatoryReauth);
+  client_->GetAutofillSnackbarController()->Show(
+      AutofillSnackbarType::kMandatoryReauth);
 #else
   MandatoryReauthBubbleControllerImpl::CreateForWebContents(web_contents());
   // TODO(crbug.com/4555994): Pass in the bubble type as a parameter so we
@@ -881,16 +883,6 @@ ChromePaymentsAutofillClient::GetOrCreatePaymentsMandatoryReauthManager() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-AutofillSnackbarControllerImpl&
-ChromePaymentsAutofillClient::GetAutofillSnackbarController() {
-  if (!autofill_snackbar_controller_impl_) {
-    autofill_snackbar_controller_impl_ =
-        std::make_unique<AutofillSnackbarControllerImpl>(web_contents());
-  }
-
-  return *autofill_snackbar_controller_impl_;
-}
-
 AutofillMessageController&
 ChromePaymentsAutofillClient::GetAutofillMessageController() {
   if (!autofill_message_controller_) {
@@ -912,13 +904,6 @@ void ChromePaymentsAutofillClient::
             autofill_save_card_bottom_sheet_bridge) {
   autofill_save_card_bottom_sheet_bridge_ =
       std::move(autofill_save_card_bottom_sheet_bridge);
-}
-
-void ChromePaymentsAutofillClient::SetAutofillSnackbarControllerImplForTesting(
-    std::unique_ptr<AutofillSnackbarControllerImpl>
-        autofill_snackbar_controller_impl) {
-  autofill_snackbar_controller_impl_ =
-      std::move(autofill_snackbar_controller_impl);
 }
 
 void ChromePaymentsAutofillClient::SetAutofillMessageControllerForTesting(

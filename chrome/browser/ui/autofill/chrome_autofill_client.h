@@ -37,6 +37,7 @@
 #include "content/public/browser/web_contents_observer.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/autofill/autofill_snackbar_controller_impl.h"
 #include "components/autofill/core/browser/ui/fast_checkout_client.h"
 #else
 #include "chrome/browser/ui/autofill/payments/manage_migration_ui_controller.h"
@@ -171,6 +172,11 @@ class ChromeAutofillClient : public ContentAutofillClient,
   bool IsContextSecure() const override;
   LogManager* GetLogManager() const override;
   const AutofillAblationStudy& GetAblationStudy() const override;
+#if BUILDFLAG(IS_ANDROID)
+  // The AutofillSnackbarController is used to show a snackbar notification
+  // on Android.
+  AutofillSnackbarControllerImpl* GetAutofillSnackbarController() override;
+#endif
   FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
   std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator()
       override;
@@ -208,6 +214,14 @@ class ChromeAutofillClient : public ContentAutofillClient,
       std::unique_ptr<AutofillFieldPromoController> test_controller) {
     autofill_field_promo_controller_ = std::move(test_controller);
   }
+#if BUILDFLAG(IS_ANDROID)
+  void SetAutofillSnackbarControllerImplForTesting(
+      std::unique_ptr<AutofillSnackbarControllerImpl>
+          autofill_snackbar_controller_impl) {
+    autofill_snackbar_controller_impl_ =
+        std::move(autofill_snackbar_controller_impl);
+  }
+#endif
 #endif  // defined(UNIT_TEST)
 
   // ContentAutofillClient:
@@ -246,6 +260,8 @@ class ChromeAutofillClient : public ContentAutofillClient,
   std::unique_ptr<SaveUpdateAddressProfileFlowManager>
       save_update_address_profile_flow_manager_;
   std::unique_ptr<FastCheckoutClient> fast_checkout_client_;
+  std::unique_ptr<AutofillSnackbarControllerImpl>
+      autofill_snackbar_controller_impl_;
 #endif
   std::unique_ptr<AutofillFieldPromoController>
       autofill_field_promo_controller_;
