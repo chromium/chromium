@@ -40,6 +40,7 @@ source_set("form_input_accessory") {
     "//ios/chrome/browser/autofill/model:model_shared",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
     "//ios/chrome/browser/autofill/ui_bundled:autofill_shared_ui",
+    "//ios/chrome/browser/autofill/ui_bundled:features",
     "//ios/chrome/browser/autofill/ui_bundled/branding",
     "//ios/chrome/browser/autofill/ui_bundled/branding:branding_ui",
     "//ios/chrome/browser/autofill/ui_bundled/manual_fill",
