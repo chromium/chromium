@@ -236,9 +236,9 @@ base::Value RemapProxyPolicies(const PolicyMap& policies) {
 // policies, but the providers then expose them through a unified
 // DictionaryValue.
 
-ProxyPolicyHandler::ProxyPolicyHandler() {}
+ProxyPolicyHandler::ProxyPolicyHandler() = default;
 
-ProxyPolicyHandler::~ProxyPolicyHandler() {}
+ProxyPolicyHandler::~ProxyPolicyHandler() = default;
 
 bool ProxyPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
                                              PolicyErrorMap* errors) {
