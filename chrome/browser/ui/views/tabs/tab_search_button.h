@@ -9,6 +9,10 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_control_button.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
+namespace tabs {
+class TabDeclutterController;
+}  // namespace tabs
+
 class TabStripController;
 
 // TabSearchButton should leverage the look and feel of the existing
@@ -19,7 +23,9 @@ class TabSearchButton : public TabStripControlButton {
   METADATA_HEADER(TabSearchButton, TabStripControlButton)
 
  public:
-  TabSearchButton(TabStripController* tab_strip_controller, Edge flat_edge);
+  TabSearchButton(TabStripController* tab_strip_controller,
+                  tabs::TabDeclutterController* tab_declutter_controller,
+                  Edge flat_edge);
   TabSearchButton(const TabSearchButton&) = delete;
   TabSearchButton& operator=(const TabSearchButton&) = delete;
   ~TabSearchButton() override;

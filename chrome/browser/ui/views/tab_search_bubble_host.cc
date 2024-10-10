@@ -39,6 +39,7 @@
 #include "ui/compositor/compositor.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/widget/widget.h"
+
 namespace {
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -61,9 +62,12 @@ TabSearchOpenAction GetActionForEvent(const ui::Event& event) {
 
 }  // namespace
 
-TabSearchBubbleHost::TabSearchBubbleHost(views::Button* button,
-                                         Profile* profile)
+TabSearchBubbleHost::TabSearchBubbleHost(
+    views::Button* button,
+    tabs::TabDeclutterController* tab_declutter_controller,
+    Profile* profile)
     : button_(button),
+      tab_declutter_controller_(tab_declutter_controller),
       profile_(profile),
       webui_bubble_manager_(WebUIBubbleManager::Create<TabSearchUI>(
           button,
@@ -171,7 +175,7 @@ void TabSearchBubbleHost::BeforeBubbleWidgetShowed(views::Widget* widget) {
 
   CHECK(web_ui);
   web_ui->GetController()->GetAs<TabSearchUI>()->InstallTabDeclutterController(
-      GetBrowser()->GetFeatures().tab_declutter_controller());
+      tab_declutter_controller_.get());
 
   widget->GetCompositor()->RequestSuccessfulPresentationTimeForNextFrame(
       base::BindOnce(

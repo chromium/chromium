@@ -218,6 +218,7 @@ TabSearchContainer::TabSearchContainer(
 
   std::unique_ptr<TabSearchButton> tab_search_button =
       std::make_unique<TabSearchButton>(tab_strip_controller,
+                                        tab_declutter_controller_.get(),
                                         GetFlatEdge(true, before_tab_strip));
   tab_search_button->SetProperty(views::kCrossAxisAlignmentKey,
                                  views::LayoutAlignment::kCenter);

@@ -17,9 +17,13 @@
 #include "ui/views/widget/widget_observer.h"
 #include "ui/views/widget/widget_utils.h"
 
+namespace tabs {
+class TabDeclutterController;
+}  // namespace tabs
+
 namespace views {
 class Widget;
-}
+}  // namespace views
 
 class Profile;
 class TabOrganizationService;
@@ -30,7 +34,9 @@ class TabSearchBubbleHost : public views::WidgetObserver,
                             public TabOrganizationObserver,
                             public WebUIBubbleManagerObserver {
  public:
-  TabSearchBubbleHost(views::Button* button, Profile* profile);
+  TabSearchBubbleHost(views::Button* button,
+                      tabs::TabDeclutterController* tab_declutter_controller,
+                      Profile* profile);
   TabSearchBubbleHost(const TabSearchBubbleHost&) = delete;
   TabSearchBubbleHost& operator=(const TabSearchBubbleHost&) = delete;
   ~TabSearchBubbleHost() override;
@@ -76,6 +82,9 @@ class TabSearchBubbleHost : public views::WidgetObserver,
 
   // The anchor button for the tab search bubble.
   const raw_ptr<views::Button> button_;
+
+  // BrowserWindowFeature of the host Browser.
+  const raw_ptr<tabs::TabDeclutterController> tab_declutter_controller_;
 
   const raw_ptr<Profile> profile_;
 
