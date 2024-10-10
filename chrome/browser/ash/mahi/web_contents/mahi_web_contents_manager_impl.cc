@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/mahi/mahi_web_contents_manager_impl.h"
+#include "chrome/browser/ash/mahi/web_contents/mahi_web_contents_manager_impl.h"
 
 #include <memory>
 #include <optional>
@@ -23,7 +23,7 @@
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chromeos/mahi/mahi_content_extraction_delegate.h"
+#include "chrome/browser/ash/mahi/web_contents/mahi_content_extraction_delegate.h"
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/printing/print_view_manager_common.h"

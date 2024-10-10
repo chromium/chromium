@@ -4,7 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos)
+assert(is_chromeos_ash)
 
 static_library("test_support") {
   testonly = true
@@ -12,15 +12,13 @@ static_library("test_support") {
   sources = [
     "fake_mahi_web_contents_manager.cc",
     "fake_mahi_web_contents_manager.h",
-    "mock_mahi_crosapi.cc",
-    "mock_mahi_crosapi.h",
     "mock_mahi_web_contents_manager.cc",
     "mock_mahi_web_contents_manager.h",
   ]
 
   deps = [
     "//base",
-    "//chrome/browser/chromeos/mahi",
+    "//chrome/browser/ash/mahi/web_contents",
     "//chromeos/components/mahi/public/cpp",
     "//chromeos/crosapi/mojom",
     "//mojo/public/cpp/bindings",

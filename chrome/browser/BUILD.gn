@@ -5088,6 +5088,7 @@ static_library("browser") {
       "//chrome/browser/ash/magic_boost",
       "//chrome/browser/ash/mahi",
       "//chrome/browser/ash/mahi:mahi_availability",
+      "//chrome/browser/ash/mahi/web_contents",
       "//chrome/browser/ash/main_parts",
       "//chrome/browser/ash/multidevice_setup",
       "//chrome/browser/ash/nearby",
@@ -5551,6 +5552,7 @@ static_library("browser") {
       "//chrome/browser/ash/magic_boost",
       "//chrome/browser/ash/mahi",
       "//chrome/browser/ash/mahi:mahi_availability",
+      "//chrome/browser/ash/mahi/web_contents",
       "//chrome/browser/ash/main_parts",
       "//chrome/browser/ash/nearby",
       "//chrome/browser/ash/nearby/presence",
@@ -6162,7 +6164,6 @@ static_library("browser") {
       "//chrome/browser/chromeos/extensions/login_screen/login/cleanup",
       "//chrome/browser/chromeos/extensions/telemetry",
       "//chrome/browser/chromeos/extensions/wallpaper",
-      "//chrome/browser/chromeos/mahi",
       "//chrome/browser/chromeos/network",
       "//chrome/browser/chromeos/platform_keys",
       "//chrome/browser/chromeos/policy/dlp",
@@ -6238,7 +6239,6 @@ static_library("browser") {
       "//chrome/browser/chromeos/policy/dlp",
       "//chrome/browser/chromeos/reporting",
       "//chrome/browser/chromeos/upload_office_to_cloud",
-      "//chrome/browser/chromeos/mahi",
       "//chrome/browser/policy:onc",
 
       # TODO(b/215757706): Find a way to avoid the circular include.

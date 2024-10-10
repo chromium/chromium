@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/mahi/test/fake_mahi_web_contents_manager.h"
+#include "chrome/browser/ash/mahi/web_contents/test_support/fake_mahi_web_contents_manager.h"
 
 #include "base/notimplemented.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
@@ -33,17 +33,5 @@ void FakeMahiWebContentsManager::RequestContent(
 int FakeMahiWebContentsManager::GetNumberOfRequestContentCalls() {
   return number_of_request_content_calls_;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void FakeMahiWebContentsManager::SetMahiBrowserDelegateForTesting(
-    crosapi::mojom::MahiBrowserDelegate* delegate) {
-  NOTIMPLEMENTED();
-}
-#else   // BUILDFLAG(IS_CHROMEOS_LACROS)
-void FakeMahiWebContentsManager::BindMahiBrowserDelegateForTesting(
-    mojo::PendingRemote<crosapi::mojom::MahiBrowserDelegate> pending_remote) {
-  NOTIMPLEMENTED();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace mahi

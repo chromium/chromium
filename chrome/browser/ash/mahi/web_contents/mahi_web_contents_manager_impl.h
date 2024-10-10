@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_MAHI_MAHI_WEB_CONTENTS_MANAGER_IMPL_H_
-#define CHROME_BROWSER_CHROMEOS_MAHI_MAHI_WEB_CONTENTS_MANAGER_IMPL_H_
+#ifndef CHROME_BROWSER_ASH_MAHI_WEB_CONTENTS_MAHI_WEB_CONTENTS_MANAGER_IMPL_H_
+#define CHROME_BROWSER_ASH_MAHI_WEB_CONTENTS_MAHI_WEB_CONTENTS_MANAGER_IMPL_H_
 
 #include <memory>
 #include <string>
@@ -12,7 +12,7 @@
 #include "base/no_destructor.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/chromeos/mahi/mahi_content_extraction_delegate.h"
+#include "chrome/browser/ash/mahi/web_contents/mahi_content_extraction_delegate.h"
 #include "chrome/browser/content_extraction/inner_text.h"
 #include "chromeos/components/mahi/public/cpp/mahi_browser_util.h"
 #include "chromeos/components/mahi/public/cpp/mahi_util.h"
@@ -146,4 +146,4 @@ class MahiWebContentsManagerImpl : public chromeos::MahiWebContentsManager {
 
 }  // namespace mahi
 
-#endif  // CHROME_BROWSER_CHROMEOS_MAHI_MAHI_WEB_CONTENTS_MANAGER_IMPL_H_
+#endif  // CHROME_BROWSER_ASH_MAHI_WEB_CONTENTS_MAHI_WEB_CONTENTS_MANAGER_IMPL_H_

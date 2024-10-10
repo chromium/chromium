@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_MAHI_TEST_FAKE_MAHI_WEB_CONTENTS_MANAGER_H_
-#define CHROME_BROWSER_CHROMEOS_MAHI_TEST_FAKE_MAHI_WEB_CONTENTS_MANAGER_H_
+#ifndef CHROME_BROWSER_ASH_MAHI_WEB_CONTENTS_TEST_SUPPORT_FAKE_MAHI_WEB_CONTENTS_MANAGER_H_
+#define CHROME_BROWSER_ASH_MAHI_WEB_CONTENTS_TEST_SUPPORT_FAKE_MAHI_WEB_CONTENTS_MANAGER_H_
 
-#include "chrome/browser/chromeos/mahi/mahi_web_contents_manager_impl.h"
+#include "chrome/browser/ash/mahi/web_contents/mahi_web_contents_manager_impl.h"
 #include "chromeos/components/mahi/public/cpp/mahi_browser_util.h"
 #include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
 #include "chromeos/crosapi/mojom/mahi.mojom-forward.h"
@@ -45,18 +45,10 @@ class FakeMahiWebContentsManager : public MahiWebContentsManagerImpl {
 
   bool is_pdf_focused_web_contents() { return is_pdf_focused_web_contents_; }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void SetMahiBrowserDelegateForTesting(
-      crosapi::mojom::MahiBrowserDelegate* delegate);
-#else   // BUILDFLAG(IS_CHROMEOS_LACROS)
-  void BindMahiBrowserDelegateForTesting(
-      mojo::PendingRemote<crosapi::mojom::MahiBrowserDelegate> pending_remote);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
  private:
   int number_of_request_content_calls_ = 0;
 };
 
 }  // namespace mahi
 
-#endif  // CHROME_BROWSER_CHROMEOS_MAHI_TEST_FAKE_MAHI_WEB_CONTENTS_MANAGER_H_
+#endif  // CHROME_BROWSER_ASH_MAHI_WEB_CONTENTS_TEST_SUPPORT_FAKE_MAHI_WEB_CONTENTS_MANAGER_H_

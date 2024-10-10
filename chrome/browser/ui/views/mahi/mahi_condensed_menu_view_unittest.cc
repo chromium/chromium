@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/chromeos/mahi/test/fake_mahi_web_contents_manager.h"
+#include "chrome/browser/ash/mahi/web_contents/test_support/fake_mahi_web_contents_manager.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_constants.h"
 #include "chromeos/components/mahi/public/cpp/mahi_browser_util.h"
 #include "chromeos/components/mahi/public/cpp/mahi_util.h"

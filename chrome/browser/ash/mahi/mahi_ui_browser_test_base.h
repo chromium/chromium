@@ -12,8 +12,8 @@
 #include "base/auto_reset.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/mahi/mahi_manager_impl.h"
+#include "chrome/browser/ash/mahi/web_contents/test_support/fake_mahi_web_contents_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_browsertest_base.h"
-#include "chrome/browser/chromeos/mahi/test/fake_mahi_web_contents_manager.h"
 #include "content/public/test/browser_test_utils.h"
 #include "ui/events/test/event_generator.h"
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/mahi/mahi_web_contents_manager_impl.h"
+#include "chrome/browser/ash/mahi/web_contents/mahi_web_contents_manager_impl.h"
 
 #include <memory>
 #include <string>
@@ -19,8 +19,7 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chromeos/mahi/test/fake_mahi_web_contents_manager.h"
-#include "chrome/browser/chromeos/mahi/test/mock_mahi_crosapi.h"
+#include "chrome/browser/ash/mahi/web_contents/test_support/fake_mahi_web_contents_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -30,7 +29,6 @@
 #include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -42,14 +40,6 @@
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/test/scoped_feature_list.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_init_params.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace mahi {
 
@@ -75,11 +65,9 @@ constexpr char kPDFFilename[] = "paragraphs-and-heading-untagged.pdf";
 class MahiWebContentsManagerBrowserTest : public InProcessBrowserTest {
  public:
   MahiWebContentsManagerBrowserTest() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     scoped_feature_list_.InitWithFeatures(
         {chromeos::features::kMahi, chromeos::features::kFeatureManagementMahi},
         {});
-#endif
   }
   ~MahiWebContentsManagerBrowserTest() override = default;
 
@@ -95,25 +83,11 @@ class MahiWebContentsManagerBrowserTest : public InProcessBrowserTest {
 
     InProcessBrowserTest::SetUpOnMainThread();
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // If `MahiBrowserDelegate` interface is not available on ash-chrome, this
-    // test suite will no-op.
-    if (!IsServiceAvailable()) {
-      return;
-    }
-#endif
-
     fake_mahi_web_contents_manager_ =
         std::make_unique<FakeMahiWebContentsManager>();
     scoped_mahi_web_contents_manager_ =
         std::make_unique<chromeos::ScopedMahiWebContentsManagerOverride>(
             fake_mahi_web_contents_manager_.get());
-
-// Replace the production Mahi browser delegate with a mock for testing
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    fake_mahi_web_contents_manager_->BindMahiBrowserDelegateForTesting(
-        receiver_.BindNewPipeAndPassRemote());
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
   // InProcessBrowserTest:
@@ -122,23 +96,6 @@ class MahiWebContentsManagerBrowserTest : public InProcessBrowserTest {
     fake_mahi_web_contents_manager_.reset();
     InProcessBrowserTest::TearDownOnMainThread();
   }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void CreatedBrowserMainParts(
-      content::BrowserMainParts* browser_main_parts) override {
-    crosapi::mojom::BrowserInitParamsPtr init_params =
-        chromeos::BrowserInitParams::GetForTests()->Clone();
-    init_params->is_mahi_enabled = true;
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-    InProcessBrowserTest::CreatedBrowserMainParts(browser_main_parts);
-  }
-
-  bool IsServiceAvailable() const {
-    chromeos::LacrosService* lacros_service = chromeos::LacrosService::Get();
-    return lacros_service &&
-           lacros_service->IsAvailable<crosapi::mojom::MahiBrowserDelegate>();
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Simulates opening a new tab with url.
   void CreateWebContent() {
@@ -166,22 +123,13 @@ class MahiWebContentsManagerBrowserTest : public InProcessBrowserTest {
             [&run_loop](crosapi::mojom::MahiContextMenuRequestPtr request) {
               run_loop.Quit();
             });
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    base::RunLoop run_loop_for_remote;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
     fake_mahi_web_contents_manager_->OnContextMenuClicked(
         kDisplayID, button_type,
         /*question=*/kQuestion, /*mahi_menu_bounds=*/gfx::Rect());
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    run_loop_for_remote.RunUntilIdle();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
     run_loop.Run();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::test::ScopedFeatureList scoped_feature_list_;
-#endif
   testing::StrictMock<ash::MockMahiManager> mock_mahi_manager_;
   chromeos::ScopedMahiManagerSetter scoped_manager_setter_{&mock_mahi_manager_};
 
@@ -192,14 +140,6 @@ class MahiWebContentsManagerBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
                        OnContextMenuClicked) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // If `MahiBrowserDelegate` interface is not available on ash-chrome, this
-  // test suite will no-op.
-  if (!IsServiceAvailable()) {
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   base::RunLoop run_loop;
   // Expects that `MahiManager` should receive the context menu click action.
   EXPECT_CALL(mock_mahi_manager_, OnContextMenuClicked)
@@ -223,13 +163,6 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
                        PDFContentIsDetectedCorrectly) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // If `MahiBrowserDelegate` interface is not available on ash-chrome, this
-  // test suite will no-op.
-  if (!IsServiceAvailable()) {
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   base::HistogramTester histogram;
 
   base::RunLoop run_loop;
@@ -260,13 +193,6 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
                        OpenNewPageToChangePageFocus) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // If `MahiBrowserDelegate` interface is not available on ash-chrome, this
-  // test suite will no-op.
-  if (!IsServiceAvailable()) {
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   base::HistogramTester histogram;
 
   // Initially, the focused state's favicon is empty.
@@ -312,14 +238,6 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest, GetPageContents) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // If `MahiBrowserDelegate` interface is not available on ash-chrome, this
-  // test suite will no-op.
-  if (!IsServiceAvailable()) {
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   // Initially, the focused state and the requested state should be different.
   base::UnguessableToken focused_page_id =
       fake_mahi_web_contents_manager_->focused_web_content_state().page_id;
@@ -359,14 +277,6 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest, GetPageContents) {
 
 IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
                        DISABLED_GetPDFContents) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // If `MahiBrowserDelegate` interface is not available on ash-chrome, this
-  // test suite will no-op.
-  if (!IsServiceAvailable()) {
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   // Initially, the focused state and the requested state should be different.
   base::UnguessableToken focused_page_id =
       fake_mahi_web_contents_manager_->focused_web_content_state().page_id;
@@ -401,13 +311,6 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest, ContextMenuMetrics) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // If `MahiBrowserDelegate` interface is not available on ash-chrome, this
-  // test suite will no-op.
-  if (!IsServiceAvailable()) {
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   base::HistogramTester histogram;
 
   histogram.ExpectBucketCount(kMahiContextMenuActivated, ButtonType::kSettings,

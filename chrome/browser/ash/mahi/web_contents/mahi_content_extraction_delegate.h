@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_CHROMEOS_MAHI_MAHI_CONTENT_EXTRACTION_DELEGATE_H_
-#define CHROME_BROWSER_CHROMEOS_MAHI_MAHI_CONTENT_EXTRACTION_DELEGATE_H_
+#ifndef CHROME_BROWSER_ASH_MAHI_WEB_CONTENTS_MAHI_CONTENT_EXTRACTION_DELEGATE_H_
+#define CHROME_BROWSER_ASH_MAHI_WEB_CONTENTS_MAHI_CONTENT_EXTRACTION_DELEGATE_H_
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
@@ -92,4 +92,4 @@ class MahiContentExtractionDelegate {
 
 }  // namespace mahi
 
-#endif  // CHROME_BROWSER_CHROMEOS_MAHI_MAHI_CONTENT_EXTRACTION_DELEGATE_H_
+#endif  // CHROME_BROWSER_ASH_MAHI_WEB_CONTENTS_MAHI_CONTENT_EXTRACTION_DELEGATE_H_

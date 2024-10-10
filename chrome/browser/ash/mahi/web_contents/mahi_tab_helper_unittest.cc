@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/mahi/mahi_tab_helper.h"
+#include "chrome/browser/ash/mahi/web_contents/mahi_tab_helper.h"
 
 #include <memory>
 #include <utility>
 
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chromeos/mahi/test/mock_mahi_web_contents_manager.h"
+#include "chrome/browser/ash/mahi/web_contents/test_support/mock_mahi_web_contents_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_activity_simulator.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -18,15 +19,6 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "base/test/scoped_feature_list.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_init_params.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace mahi {
 
 using testing::_;
@@ -36,17 +28,10 @@ class MahiTabHelperTest : public ChromeRenderViewHostTestHarness {
  protected:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{chromeos::features::kMahi,
                               chromeos::features::kFeatureManagementMahi},
         /*disabled_features=*/{});
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-    crosapi::mojom::BrowserInitParamsPtr init_params =
-        chromeos::BrowserInitParams::GetForTests()->Clone();
-    init_params->is_mahi_enabled = true;
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-#endif
     scoped_mahi_web_contents_manager_ =
         std::make_unique<chromeos::ScopedMahiWebContentsManagerOverride>(
             &mock_mahi_web_contents_manager_);
@@ -66,9 +51,7 @@ class MahiTabHelperTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::test::ScopedFeatureList scoped_feature_list_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   MockMahiWebContentsManager mock_mahi_web_contents_manager_;
   std::unique_ptr<chromeos::ScopedMahiWebContentsManagerOverride>

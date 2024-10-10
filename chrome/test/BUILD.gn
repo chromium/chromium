@@ -6610,8 +6610,6 @@ test("unit_tests") {
     sources += [ "../browser/device_reauth/chromeos/device_authenticator_chromeos_unittest.cc" ]
 
     deps += [
-      "//chrome/browser/chromeos/mahi",
-      "//chrome/browser/chromeos/mahi/test:test_support",
       "//chrome/browser/chromeos/office_web_app:office_web_app",
       "//chrome/browser/chromeos/policy/dlp",
       "//chrome/browser/chromeos/policy/dlp/test:test_support",
@@ -8150,6 +8148,7 @@ test("unit_tests") {
       "//chrome/browser/ash/login/users/avatar",
       "//chrome/browser/ash/magic_boost",
       "//chrome/browser/ash/magic_boost:test_support",
+      "//chrome/browser/ash/mahi/web_contents/test_support",
       "//chrome/browser/ash/multidevice_setup",
       "//chrome/browser/ash/ownership",
       "//chrome/browser/ash/policy/core",
