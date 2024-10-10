@@ -161,6 +161,7 @@ source_set("unit_tests") {
     "keyboard_shortcut_result_unittest.cc",
     "os_settings_provider_unittest.cc",
     "personalization_provider_unittest.cc",
+    "search_controller_factory_unittest.cc",
     "search_controller_unittest.cc",
     "search_engine_unittest.cc",
     "search_file_scanner_unittest.cc",

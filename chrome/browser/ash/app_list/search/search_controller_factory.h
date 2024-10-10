@@ -33,6 +33,10 @@ std::unique_ptr<SearchController> CreateSearchController(
     ash::AppListNotifier* notifier,
     ash::federated::FederatedServiceController* federated_service_controller);
 
+// Returns a bitmask of `AutocompleteProvider::Type` for Launcher's
+// `SearchController`.
+int LauncherSearchProviderTypes();
+
 }  // namespace app_list
 
 #endif  // CHROME_BROWSER_ASH_APP_LIST_SEARCH_SEARCH_CONTROLLER_FACTORY_H_

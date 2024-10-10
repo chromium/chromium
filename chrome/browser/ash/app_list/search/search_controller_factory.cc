@@ -69,7 +69,7 @@ std::unique_ptr<SearchController> CreateSearchController(
   controller->AddProvider(std::make_unique<AppZeroStateProvider>(
       controller->GetAppSearchDataSource()));
   controller->AddProvider(std::make_unique<OmniboxProvider>(
-      profile, list_controller, crosapi::ProviderTypes()));
+      profile, list_controller, LauncherSearchProviderTypes()));
   controller->AddProvider(std::make_unique<AssistantTextSearchProvider>());
 
   // File search providers are added only when not in guest session and running
@@ -134,6 +134,20 @@ std::unique_ptr<SearchController> CreateSearchController(
   }
 
   return controller;
+}
+
+int LauncherSearchProviderTypes() {
+  // We use all the default providers except for the document provider,
+  // which suggests Drive files on enterprise devices. This is disabled to
+  // avoid duplication with search results from DriveFS.
+  int providers = AutocompleteClassifier::DefaultOmniboxProviders() &
+                  ~AutocompleteProvider::TYPE_DOCUMENT;
+
+  // The open tab provider is not included in the default providers, so add
+  // it in manually.
+  providers |= AutocompleteProvider::TYPE_OPEN_TAB;
+
+  return providers;
 }
 
 }  // namespace app_list

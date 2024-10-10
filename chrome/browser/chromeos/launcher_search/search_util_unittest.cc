@@ -21,12 +21,6 @@
 namespace crosapi {
 namespace {
 
-TEST(SearchUtilTest, ProviderTypes) {
-  const int types = ProviderTypes();
-  EXPECT_FALSE(types & AutocompleteProvider::TYPE_DOCUMENT);
-  EXPECT_TRUE(types & AutocompleteProvider::TYPE_OPEN_TAB);
-}
-
 TEST(SearchUtilTest, ProviderTypesPickerAll) {
   const int types = ProviderTypesPicker(/*bookmarks=*/true, /*history=*/true,
                                         /*open_tabs=*/true);
