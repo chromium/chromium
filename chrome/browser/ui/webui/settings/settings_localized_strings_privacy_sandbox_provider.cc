@@ -321,7 +321,7 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
           chrome::kChromeUICookieSettingsURL,
           chrome::kChromeUIPrivacySandboxManageTopicsLearnMoreURL));
   html_source->AddString(
-      "fledgePageFooterV2",
+      "fledgePageFooter",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_FLEDGE_PAGE_FOOTER_V2,
           chrome::kChromeUIPrivacySandboxTopicsURL,

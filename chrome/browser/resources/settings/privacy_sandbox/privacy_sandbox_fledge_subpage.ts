@@ -28,11 +28,10 @@ import type {FledgeState, PrivacySandboxBrowserProxy, PrivacySandboxInterest} fr
 import {PrivacySandboxBrowserProxyImpl} from './privacy_sandbox_browser_proxy.js';
 import {getTemplate} from './privacy_sandbox_fledge_subpage.html.js';
 
-// TODO(b/369853368): Remove V2 suffix from variables/code/strings.
 export interface SettingsPrivacySandboxFledgeSubpageElement {
   $: {
     fledgeToggle: SettingsToggleButtonElement,
-    footerV2: HTMLElement,
+    footer: HTMLElement,
   };
 }
 
@@ -152,7 +151,7 @@ export class SettingsPrivacySandboxFledgeSubpageElement extends
     this.privacySandboxBrowserProxy_.getFledgeState().then(
         state => this.onFledgeStateChanged_(state));
 
-    this.$.footerV2.querySelectorAll('a').forEach(
+    this.$.footer.querySelectorAll('a').forEach(
         link =>
             link.setAttribute('aria-description', this.i18n('opensInNewTab')));
   }

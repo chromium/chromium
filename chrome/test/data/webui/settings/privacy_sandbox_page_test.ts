@@ -236,9 +236,9 @@ suite('FledgeSubpage', function() {
   });
 
   test('footerLinks', async function() {
-    assertTrue(isChildVisible(page, '#footerV2'));
-    const links = page.shadowRoot!.querySelectorAll<HTMLAnchorElement>(
-        '#footerV2 a[href]');
+    assertTrue(isChildVisible(page, '#footer'));
+    const links =
+        page.shadowRoot!.querySelectorAll<HTMLAnchorElement>('#footer a[href]');
     assertEquals(links.length, 3, 'footer should contains three links');
     links.forEach(
         link => assertEquals(
