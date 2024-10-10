@@ -10,12 +10,13 @@ import type {SmartCardReaderOriginEntryElement} from 'chrome://settings/lazy_loa
 import {SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import type {CrIconButtonElement} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs} from 'chrome://settings/settings.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import type {SiteFaviconElement} from 'chrome://settings/settings.js';
+import {assertEquals, assertStringContains, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 
 // clang-format on
-suite('FileSystemSettings_EnablePersistentPermissions', function() {
+suite('SmartCardReadersPageSettings_OriginEntry', function() {
   let testElement: SmartCardReaderOriginEntryElement;
   let browserProxy: TestSiteSettingsPrefsBrowserProxy;
 
@@ -34,15 +35,41 @@ suite('FileSystemSettings_EnablePersistentPermissions', function() {
     document.body.appendChild(testElement);
   });
 
-  test('SmartCardReadersPage_IsPopulated', async function() {
-    const buttons = testElement.shadowRoot!.querySelectorAll('#removeOrigin');
-    assertEquals(buttons.length, 1);
-    (buttons[0] as CrIconButtonElement).click();
+  test('HasAllElements', async function() {
+    const icons = testElement.shadowRoot!.querySelectorAll<SiteFaviconElement>(
+        'site-favicon');
+    assertEquals(1, icons.length);
+    assertTrue(!!icons[0]);
+    assertEquals('foo.com', icons[0].url);
+
+    const origins = testElement.shadowRoot!.querySelectorAll('.origin');
+    assertEquals(1, origins.length);
+    assertTrue(!!origins[0] && !!origins[0].textContent);
+    assertStringContains('foo.com', origins[0].textContent);
+
+    const removeButtons =
+        testElement.shadowRoot!.querySelectorAll<CrIconButtonElement>(
+            '#removeOrigin');
+    assertEquals(1, removeButtons.length);
+    assertTrue(!!removeButtons[0]!.ariaLabel);
+    assertStringContains('foo.com', removeButtons[0]!.ariaLabel);
+  });
+
+  test('RevokeButtonWorks', async function() {
+    assertTrue(!!testElement.shadowRoot);
+    const buttons =
+        testElement.shadowRoot!.querySelectorAll<CrIconButtonElement>(
+            '#removeOrigin');
+    assertEquals(1, buttons.length);
+    assertTrue(!!buttons[0]);
+    buttons[0].click();
+
     await browserProxy.whenCalled('revokeSmartCardReaderGrant');
     flush();
-    assertEquals(browserProxy.getCallCount('revokeSmartCardReaderGrant'), 1);
+
+    assertEquals(1, browserProxy.getCallCount('revokeSmartCardReaderGrant'));
     const lastArgs = browserProxy.getArgs('revokeSmartCardReaderGrant')[0];
-    assertEquals(lastArgs[0], 'reader');
-    assertEquals(lastArgs[1], 'foo.com');
+    assertEquals('reader', lastArgs[0]);
+    assertEquals('foo.com', lastArgs[1]);
   });
 });

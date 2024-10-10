@@ -7953,6 +7953,7 @@ test("unit_tests") {
 
     deps += [
       "//chrome/browser/chromeos/reporting",
+      "//chrome/browser/smart_card:smart_card",
       "//chrome/browser/ui/chromeos:test_support",
       "//chrome/browser/ui/chromeos/read_write_cards",
       "//chromeos/components/disks:prefs",

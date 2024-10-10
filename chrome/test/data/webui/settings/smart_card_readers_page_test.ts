@@ -9,12 +9,12 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import type {SettingsSmartCardReadersPageElement} from 'chrome://settings/lazy_load.js';
 import {SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs, loadTimeData, routes, resetRouterForTesting} from 'chrome://settings/settings.js';
-import {assertEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertDeepEquals, assertTrue, assertFalse} from 'chrome://webui-test/chai_assert.js';
 
 import {TestSiteSettingsPrefsBrowserProxy} from './test_site_settings_prefs_browser_proxy.js';
 
 // clang-format on
-suite('FileSystemSettings_EnablePersistentPermissions', function() {
+suite('SmartCardReadersPageSettings', function() {
   let testElement: SettingsSmartCardReadersPageElement;
   let browserProxy: TestSiteSettingsPrefsBrowserProxy;
 
@@ -37,17 +37,12 @@ suite('FileSystemSettings_EnablePersistentPermissions', function() {
     document.body.appendChild(testElement);
   });
 
-  test('SmartCardReadersPage_IsPopulated', async function() {
+  test('IsPopulated', async function() {
     browserProxy.setSmartCardReaderGrants([
       {
         readerName: 'reader',
         origins: [
           'foo.com',
-        ],
-      },
-      {
-        readerName: 'reader',
-        origins: [
           'bar.com',
         ],
       },
@@ -62,23 +57,34 @@ suite('FileSystemSettings_EnablePersistentPermissions', function() {
     testElement.currentRouteChanged(routes.SITE_SETTINGS_SMART_CARD_READERS);
     await browserProxy.whenCalled('getSmartCardReaderGrants');
     flush();
-    const originEntries = testElement.shadowRoot!.querySelectorAll(
-        'smart-card-reader-origin-entry');
-    assertEquals(originEntries.length, 3);
-    assertEquals(browserProxy.getCallCount('getSmartCardReaderGrants'), 1);
+
+    assertDeepEquals(
+        [
+          ['reader', 'foo.com'],
+          ['reader', 'bar.com'],
+          ['reader 2', 'bar.com'],
+        ],
+        Array.from(
+            testElement.shadowRoot!.querySelectorAll(
+                'smart-card-reader-origin-entry'),
+            x => [x.smartCardReaderName, x.origin]));
 
     const emptyHeaders =
         testElement.shadowRoot!.querySelectorAll('#readersNotFound');
-    assertEquals(emptyHeaders.length, 1);
+    assertEquals(1, emptyHeaders.length);
     assertFalse(emptyHeaders[0]!.checkVisibility());
 
     const resetButtons =
         testElement.shadowRoot!.querySelectorAll('#resetButton');
-    assertEquals(resetButtons.length, 1);
+    assertEquals(1, resetButtons.length);
     assertTrue(resetButtons[0]!.checkVisibility());
+
+    const readerEntries = testElement.shadowRoot!.querySelectorAll(
+        '.smart-card-reader-entry:not(#readersNotFound)');
+    assertEquals(2, readerEntries.length);
   });
 
-  test('SmartCardReadersPage_IsPopulatedEmpty', async function() {
+  test('IsPopulatedEmpty', async function() {
     browserProxy.setSmartCardReaderGrants([]);
 
     testElement.currentRouteChanged(routes.SITE_SETTINGS_SMART_CARD_READERS);
@@ -86,17 +92,21 @@ suite('FileSystemSettings_EnablePersistentPermissions', function() {
     flush();
     const originEntries = testElement.shadowRoot!.querySelectorAll(
         'smart-card-reader-origin-entry');
-    assertEquals(originEntries.length, 0);
-    assertEquals(browserProxy.getCallCount('getSmartCardReaderGrants'), 1);
+    assertEquals(0, originEntries.length);
+    assertEquals(1, browserProxy.getCallCount('getSmartCardReaderGrants'));
 
     const emptyHeaders =
         testElement.shadowRoot!.querySelectorAll('#readersNotFound');
-    assertEquals(emptyHeaders.length, 1);
+    assertEquals(1, emptyHeaders.length);
     assertTrue(emptyHeaders[0]!.checkVisibility());
 
     const resetButtons =
         testElement.shadowRoot!.querySelectorAll('#resetButton');
-    assertEquals(resetButtons.length, 1);
+    assertEquals(1, resetButtons.length);
     assertFalse(resetButtons[0]!.checkVisibility());
+
+    const readerEntries = testElement.shadowRoot!.querySelectorAll(
+        '.smart-card-reader-entry:not(#readersNotFound)');
+    assertEquals(0, readerEntries.length);
   });
 });

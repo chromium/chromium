@@ -21,7 +21,10 @@ class Profile;
 
 namespace content {
 class RenderFrameHost;
-}
+}  // namespace content
+namespace settings {
+class SmartCardReaderPermissionsSiteSettingsHandlerTest;
+}  // namespace settings
 
 class SmartCardPermissionContext
     : public permissions::ObjectPermissionContextBase {
@@ -69,6 +72,7 @@ class SmartCardPermissionContext
 
  private:
   friend class SmartCardPermissionContextTest;
+  friend class settings::SmartCardReaderPermissionsSiteSettingsHandlerTest;
 
   class OneTimeObserver;
   class PowerSuspendObserver;
