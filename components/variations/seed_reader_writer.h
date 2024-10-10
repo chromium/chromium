@@ -50,7 +50,7 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // ShouldWriteToNewSeedStorage()), two writes are scheduled.
   void StoreValidatedSeed(const std::string& serialized_data);
 
-  // Clears seed data by overriding it with an empty string.
+  // Clears seed data by overwriting it with an empty string.
   void ClearSeed();
 
   // Overrides the timer used for scheduling writes with `timer_override`.
@@ -72,7 +72,7 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   GetSerializedDataProducerForBackgroundSequence() override;
 
   // Schedules `seed_data` to be written using `seed_writer_`.
-  void MaybeScheduleSeedFileWrite(const std::string& seed_data);
+  void ScheduleSeedFileWrite(const std::string& seed_data);
 
   // Pref service used to persist seeds.
   raw_ptr<PrefService> local_state_;

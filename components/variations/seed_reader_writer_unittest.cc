@@ -13,12 +13,14 @@
 #include "components/variations/pref_names.h"
 #include "components/variations/variations_seed_store.h"
 #include "components/variations/variations_test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/compression_utils.h"
 
 namespace variations {
 namespace {
 
+using ::testing::IsEmpty;
 using ::testing::TestWithParam;
 using ::testing::Values;
 
@@ -78,52 +80,13 @@ TEST_P(SeedReaderWriterPreStableTest, WriteSeed) {
   timer_.Fire();
   file_writer_thread_.FlushForTesting();
 
-  // Verify seed stored correctly, should be found in both prefs and the seed
-  // file.
+  // Verify seed stored correctly, should be found in both Local State prefs and
+  // the seed file.
   std::string seed_file_data;
   EXPECT_TRUE(base::ReadFileToString(temp_seed_file_path, &seed_file_data));
   EXPECT_EQ(seed_file_data, serialized_seed);
   EXPECT_EQ(local_state_.GetString(prefs::kVariationsCompressedSeed),
             serialized_seed);
-}
-
-// Verifies that pre-stable clients clear latest seeds in Local State and the
-// new seed file.
-TEST_P(SeedReaderWriterPreStableTest, ClearSeed) {
-  base::FilePath temp_seed_file_path =
-      SeedReaderWriter::GetFilePath(temp_dir_.GetPath(), kSeedFilename);
-
-  // Initialize seed_reader_writer with test thread and timer.
-  SeedReaderWriter seed_reader_writer(&local_state_, temp_seed_file_path,
-                                      GetParam(),
-                                      file_writer_thread_.task_runner());
-  seed_reader_writer.SetTimerForTesting(&timer_);
-
-  // Create and store seed. Note that the data format written here is contrived.
-  const std::string serialized_seed = SerializeSeed(CreateTestSeed());
-  seed_reader_writer.StoreValidatedSeed(serialized_seed);
-
-  // Force write.
-  timer_.Fire();
-  file_writer_thread_.FlushForTesting();
-
-  // Verify seed stored correctly.
-  std::string seed_file_data;
-  EXPECT_TRUE(base::ReadFileToString(temp_seed_file_path, &seed_file_data));
-  EXPECT_EQ(seed_file_data, serialized_seed);
-  EXPECT_EQ(local_state_.GetString(prefs::kVariationsCompressedSeed),
-            serialized_seed);
-
-  // Clear seed and force write.
-  seed_reader_writer.ClearSeed();
-  timer_.Fire();
-  file_writer_thread_.FlushForTesting();
-
-  // Verify seed cleared correctly in both prefs and the seed file.
-  EXPECT_TRUE(base::ReadFileToString(temp_seed_file_path, &seed_file_data));
-  EXPECT_EQ(seed_file_data, std::string());
-  EXPECT_EQ(local_state_.GetString(prefs::kVariationsCompressedSeed),
-            std::string());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -152,43 +115,11 @@ TEST_P(SeedReaderWriterStableAndUnknownTest, WriteSeed) {
   EXPECT_FALSE(seed_reader_writer.HasPendingWriteForTesting());
   ASSERT_FALSE(timer_.IsRunning());
 
-  // Verify seed stored correctly, should only be found in prefs.
+  // Verify seed stored correctly, should only be found in Local State prefs.
   std::string seed_file_data;
   EXPECT_FALSE(base::ReadFileToString(temp_seed_file_path, &seed_file_data));
   EXPECT_EQ(local_state_.GetString(prefs::kVariationsCompressedSeed),
             serialized_seed);
-}
-
-// Verifies that stable and unknown channel clients clear latest seeds only in
-// Local State.
-TEST_P(SeedReaderWriterStableAndUnknownTest, ClearSeed) {
-  base::FilePath temp_seed_file_path =
-      SeedReaderWriter::GetFilePath(temp_dir_.GetPath(), kSeedFilename);
-
-  // Initialize seed_reader_writer with test thread and timer.
-  SeedReaderWriter seed_reader_writer(&local_state_, temp_seed_file_path,
-                                      GetParam(),
-                                      file_writer_thread_.task_runner());
-  seed_reader_writer.SetTimerForTesting(&timer_);
-
-  // Create and store seed. Note that the data format written here is contrived.
-  const std::string serialized_seed = SerializeSeed(CreateTestSeed());
-  seed_reader_writer.StoreValidatedSeed(serialized_seed);
-
-  // Verify seed stored correctly.
-  EXPECT_EQ(local_state_.GetString(prefs::kVariationsCompressedSeed),
-            serialized_seed);
-
-  // Clear seed and ensure there's no pending write.
-  seed_reader_writer.ClearSeed();
-  EXPECT_FALSE(seed_reader_writer.HasPendingWriteForTesting());
-  ASSERT_FALSE(timer_.IsRunning());
-
-  // Verify seed cleared correctly in prefs.
-  std::string seed_file_data;
-  EXPECT_FALSE(base::ReadFileToString(temp_seed_file_path, &seed_file_data));
-  EXPECT_EQ(local_state_.GetString(prefs::kVariationsCompressedSeed),
-            std::string());
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -218,10 +149,41 @@ TEST_P(SeedReaderWriterTest, EmptySeedFilePathIsValid) {
   EXPECT_FALSE(seed_reader_writer.HasPendingWriteForTesting());
   ASSERT_FALSE(timer_.IsRunning());
 
-  // Verify seed stored correctly, should only be found in prefs.
+  // Verify seed stored correctly, should only be found in Local State prefs.
   EXPECT_EQ(local_state_.GetString(prefs::kVariationsCompressedSeed),
             serialized_seed);
 }
+
+// Verifies that the latest seed is cleared from both Local State and its seed
+// file.
+TEST_P(SeedReaderWriterTest, ClearSeed) {
+  base::FilePath temp_seed_file_path =
+      SeedReaderWriter::GetFilePath(temp_dir_.GetPath(), kSeedFilename);
+
+  // Initialize seed_reader_writer with test thread and timer.
+  SeedReaderWriter seed_reader_writer(&local_state_, temp_seed_file_path,
+                                      GetParam(),
+                                      file_writer_thread_.task_runner());
+  seed_reader_writer.SetTimerForTesting(&timer_);
+
+  // Create and store seed. Note that the data format written here is contrived.
+  const std::string serialized_seed = SerializeSeed(CreateTestSeed());
+  ASSERT_TRUE(base::WriteFile(temp_seed_file_path, serialized_seed));
+  local_state_.SetString(prefs::kVariationsCompressedSeed, serialized_seed);
+
+  // Clear seed and force write.
+  seed_reader_writer.ClearSeed();
+  timer_.Fire();
+  file_writer_thread_.FlushForTesting();
+
+  // Verify seed cleared correctly in both Local State prefs and the seed file.
+  std::string seed_file_data;
+  ASSERT_TRUE(base::ReadFileToString(temp_seed_file_path, &seed_file_data));
+  EXPECT_THAT(seed_file_data, IsEmpty());
+  EXPECT_THAT(local_state_.GetString(prefs::kVariationsCompressedSeed),
+              IsEmpty());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          SeedReaderWriterTest,
                          Values(version_info::Channel::CANARY,
