@@ -59,7 +59,8 @@ enum class RegexFeature : uint8_t {
   kUnusedDummyFeature = 0,
   kAutofillGreekRegexes = 1,
   kAutofillUseITAddressModel = 2,
-  kMaxValue = kAutofillUseITAddressModel
+  kAutofillUsePLAddressModel = 3,
+  kMaxValue = kAutofillUsePLAddressModel
 };
 
 // Returns a `DenseSet` containing all `RegexFeature`s whose corresponding
