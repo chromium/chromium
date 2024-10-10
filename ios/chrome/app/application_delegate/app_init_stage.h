@@ -49,13 +49,9 @@ enum class AppInitStage {
   // profile).
   kBrowserObjectsForUI,
 
-  // If there are connected scenes, the app is creating browsers and starting
-  // the root coordinators. The BVCs and Tab switchers are created here. This
-  // is what is considered the normal UI.
-  //
-  // The stage is no-op for regular startups (no FRE, no Safe Mode) in which
-  // case the app will continue its transition to kFinal and the UI is
-  // initialized when the scene transitions to the foreground.
+  // TODO(crbug.com/333863468): code should no longer check this enum value,
+  // instead it should use ProfileInitStage::kUIReady. The enum will be
+  // removed once the AppInitStage and ProfileInitStage are fully decoupled.
   kNormalUI,
 
   // TODO(crbug.com/333863468): code should no longer check this enum value,
