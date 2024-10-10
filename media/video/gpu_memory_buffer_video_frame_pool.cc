@@ -908,7 +908,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CopyRowsToBuffer(
   auto* scoped_mapping = frame_resource->scoped_mapping.get();
 
   // To handle plane 0 of the underlying buffer.
-  uint8_t* memory_ptr0 = static_cast<uint8_t*>(scoped_mapping->Memory(0));
+  uint8_t* memory_ptr0 = scoped_mapping->GetMemoryForPlane(0).data();
   size_t stride0 = scoped_mapping->Stride(0);
 
   switch (output_format) {
@@ -935,7 +935,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CopyRowsToBuffer(
             plane_row_start, plane_rows_to_copy, plane_bytes_per_row,
             video_frame->BitDepth(), video_frame->visible_data(src_plane),
             video_frame->stride(src_plane),
-            static_cast<uint8_t*>(scoped_mapping->Memory(dst_plane)),
+            scoped_mapping->GetMemoryForPlane(dst_plane).data(),
             scoped_mapping->Stride(dst_plane));
       }
       break;
@@ -944,15 +944,14 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CopyRowsToBuffer(
     case GpuVideoAcceleratorFactories::OutputFormat::P010:
       CopyRowsToP010Buffer(row, rows_to_copy, coded_size.width(), video_frame,
                            memory_ptr0, stride0,
-                           static_cast<uint8_t*>(scoped_mapping->Memory(1)),
+                           scoped_mapping->GetMemoryForPlane(1).data(),
                            scoped_mapping->Stride(1));
       break;
 
     case GpuVideoAcceleratorFactories::OutputFormat::NV12:
       CopyRowsToNV12Buffer(row, rows_to_copy, coded_size.width(),
                            video_frame->BitDepth(), video_frame, memory_ptr0,
-                           stride0,
-                           static_cast<uint8_t*>(scoped_mapping->Memory(1)),
+                           stride0, scoped_mapping->GetMemoryForPlane(1).data(),
                            scoped_mapping->Stride(1));
       break;
     case GpuVideoAcceleratorFactories::OutputFormat::XB30:
