@@ -60,9 +60,12 @@
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_TEXT" desc="Text displayed on prediction improvements feedback suggestion." translateable="false">
     Autofill with AI is an experimental feature and won’t always get it right. <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS">$1<ex>Manage autofill with AI</ex></ph>.
   </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_SUGGESTION_A11Y_HINT" desc="Accessibility text announced by the screenreader when the user focuses on a prediction improvements feedback view." translateable="false">
-    <ph name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_TEXT">$1<ex>Prediction improvements feedback, </ex></ph> press enter to manage prediction improvements
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_SUGGESTION_MANAGE_LINK_A11Y_HINT" desc="Accessibility text that replaces the 'Manage prediction improvements' link on a prediction improvements feedback view." translateable="false">
+    press enter to manage prediction improvements
   </message>
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_SUGGESTION_FEEDBACK_BUTTONS_A11Y_HINT" desc="Accessibility text that is added to a prediction improvements feedback view announcement to help the user find the feedback buttons." translateable="false">
+    Use left and right keys to navigate to feedback buttons.
+   </message>
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_THUMBS_UP_BUTTON_TOOLTIP" desc="Tooltip displayed on the thumbs up button tooltip." translateable="false">
     Thumbs up
   </message>

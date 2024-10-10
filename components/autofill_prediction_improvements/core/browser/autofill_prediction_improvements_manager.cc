@@ -100,8 +100,18 @@ autofill::Suggestion CreateFeedbackSuggestion() {
   autofill::Suggestion feedback_suggestion(
       autofill::SuggestionType::kPredictionImprovementsFeedback);
   feedback_suggestion.is_acceptable = false;
-  feedback_suggestion.voice_over = l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_SUGGESTION_A11Y_HINT);
+  feedback_suggestion.voice_over = base::JoinString(
+      {
+          l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_DETAILS),
+          l10n_util::GetStringFUTF16(
+              IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_TEXT,
+              l10n_util::GetStringUTF16(
+                  IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_SUGGESTION_MANAGE_LINK_A11Y_HINT)),
+          l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_SUGGESTION_FEEDBACK_BUTTONS_A11Y_HINT),
+      },
+      u" ");
   feedback_suggestion.highlight_on_select = false;
   return feedback_suggestion;
 }
