@@ -21,6 +21,7 @@ namespace fingerprinting_protection_filter {
 
 using ::subresource_filter::ActivationDecision;
 using ::subresource_filter::mojom::ActivationLevel;
+using ::subresource_filter::mojom::ActivationState;
 
 // TODO(https://crbug.com/40280666): This doesn't actually throttle any
 // navigations - use a different object to kick off the
@@ -70,6 +71,20 @@ FingerprintingProtectionPageActivationThrottle::GetActivationDecision() const {
   return ActivationDecision::ACTIVATED;
 }
 
+void FingerprintingProtectionPageActivationThrottle::
+    NotifyPageActivationComputed(ActivationState activation_state,
+                                 ActivationDecision activation_decision) {
+  auto* web_contents_helper =
+      FingerprintingProtectionWebContentsHelper::FromWebContents(
+          navigation_handle()->GetWebContents());
+  // Making sure the WebContentsHelper exists is outside the scope of this
+  // class.
+  if (web_contents_helper) {
+    web_contents_helper->NotifyPageActivationComputed(
+        navigation_handle(), activation_state, activation_decision);
+  }
+}
+
 void FingerprintingProtectionPageActivationThrottle::NotifyResult(
     ActivationDecision decision) {
   // The ActivationDecision should only be UNKNOWN when the flag is disabled.
@@ -81,20 +96,16 @@ void FingerprintingProtectionPageActivationThrottle::NotifyResult(
     activation_level = profile_interaction_manager_->OnPageActivationComputed(
         navigation_handle(), activation_level, &decision);
   }
-  subresource_filter::mojom::ActivationState activation_state;
+
+  // Populate ActivationState.
+  ActivationState activation_state;
   activation_state.activation_level = activation_level;
   activation_state.measure_performance =
       GetEnablePerformanceMeasurements(is_incognito_);
-  auto* web_contents_helper =
-      FingerprintingProtectionWebContentsHelper::FromWebContents(
-          navigation_handle()->GetWebContents());
-  // Making sure the WebContentsHelper exists is outside the scope of this
-  // class.
-  if (web_contents_helper) {
-    web_contents_helper->NotifyPageActivationComputed(
-        navigation_handle(), activation_state, decision);
-  }
+  activation_state.enable_logging =
+      features::IsFingerprintingProtectionConsoleLoggingEnabled();
 
+  NotifyPageActivationComputed(activation_state, decision);
   LogMetricsOnChecksComplete(decision, activation_level);
 }
 

@@ -29,6 +29,7 @@
 namespace fingerprinting_protection_filter {
 
 namespace {
+using ::testing::_;
 
 class MockFingerprintingProtectionPageActivationThrottle
     : public FingerprintingProtectionPageActivationThrottle {
@@ -36,6 +37,19 @@ class MockFingerprintingProtectionPageActivationThrottle
   MOCK_METHOD(void,
               NotifyResult,
               (subresource_filter::ActivationDecision),
+              (override));
+  using FingerprintingProtectionPageActivationThrottle::
+      FingerprintingProtectionPageActivationThrottle;
+  using FingerprintingProtectionPageActivationThrottle::WillProcessResponse;
+};
+
+class MockActivationThrottleMockingNotifyPageActivationComputed
+    : public FingerprintingProtectionPageActivationThrottle {
+ public:
+  MOCK_METHOD(void,
+              NotifyPageActivationComputed,
+              (subresource_filter::mojom::ActivationState,
+               subresource_filter::ActivationDecision),
               (override));
   using FingerprintingProtectionPageActivationThrottle::
       FingerprintingProtectionPageActivationThrottle;
@@ -282,6 +296,85 @@ TEST_F(FingerprintingProtectionPageActivationThrottleTest,
   histograms.ExpectBucketCount(
       ActivationLevelHistogramName,
       subresource_filter::mojom::ActivationLevel::kDisabled, 1);
+}
+
+MATCHER_P(HasEnableLogging,
+          enable_logging,
+          "Matches an object `obj` such that `obj.enable_logging == "
+          "enable_logging`") {
+  return arg.enable_logging == enable_logging;
+}
+
+TEST_F(FingerprintingProtectionPageActivationThrottleTest,
+       LoggingParamEnabledNonIncognito_PassesEnableLoggingInActivationState) {
+  // Enable non-incognito feature with `enable_console_logging` param.
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      {features::kEnableFingerprintingProtectionFilter},
+      {{"enable_console_logging", "true"}});
+
+  // Use a mock throttle to mock NotifyPageActivationComputed
+  auto mock_throttle =
+      MockActivationThrottleMockingNotifyPageActivationComputed(
+          mock_nav_handle_.get(), test_support_.tracking_protection_settings(),
+          test_support_.prefs());
+
+  // Expect that NotifyPageActivationComputed is called with an ActivationState
+  // with enable_logging == true.
+  EXPECT_CALL(mock_throttle,
+              NotifyPageActivationComputed(HasEnableLogging(true), _))
+      .Times(1);
+
+  // Make call to `WillProcessResponse`, which leads to
+  // `NotifyPageActivationComputed`.
+  mock_throttle.WillProcessResponse();
+}
+
+TEST_F(FingerprintingProtectionPageActivationThrottleTest,
+       LoggingParamEnabledIncognito_PassesEnableLoggingInActivationState) {
+  // Enable incognito feature with `enable_console_logging` param.
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      {features::kEnableFingerprintingProtectionFilterInIncognito},
+      {{"enable_console_logging", "true"}});
+
+  // Use a mock throttle to mock NotifyPageActivationComputed
+  auto mock_throttle =
+      MockActivationThrottleMockingNotifyPageActivationComputed(
+          mock_nav_handle_.get(), test_support_.tracking_protection_settings(),
+          test_support_.prefs());
+
+  // Expect that NotifyPageActivationComputed is called with an ActivationState
+  // with enable_logging == true.
+  EXPECT_CALL(mock_throttle,
+              NotifyPageActivationComputed(HasEnableLogging(true), _))
+      .Times(1);
+
+  // Make call to `WillProcessResponse`, which leads to
+  // `NotifyPageActivationComputed`.
+  mock_throttle.WillProcessResponse();
+}
+
+TEST_F(
+    FingerprintingProtectionPageActivationThrottleTest,
+    LoggingParamDisabledNonIncognito_DoesntPassEnableLoggingInActivationState) {
+  // Enable non-incognito feature without `enable_console_logging` param.
+  scoped_feature_list_.InitAndEnableFeature(
+      {features::kEnableFingerprintingProtectionFilter});
+
+  // Use a mock throttle to mock NotifyPageActivationComputed
+  auto mock_throttle =
+      MockActivationThrottleMockingNotifyPageActivationComputed(
+          mock_nav_handle_.get(), test_support_.tracking_protection_settings(),
+          test_support_.prefs());
+
+  // Expect that NotifyPageActivationComputed is called with an ActivationState
+  // with enable_logging == false.
+  EXPECT_CALL(mock_throttle,
+              NotifyPageActivationComputed(HasEnableLogging(false), _))
+      .Times(1);
+
+  // Make call to `WillProcessResponse`, which leads to
+  // `NotifyPageActivationComputed`.
+  mock_throttle.WillProcessResponse();
 }
 
 TEST_F(FingerprintingProtectionPageActivationThrottleTest,

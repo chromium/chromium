@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_profile_interaction_manager.h"
+#include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
 #include "content/public/browser/navigation_throttle.h"
 
 class PrefService;
@@ -66,6 +67,12 @@ class FingerprintingProtectionPageActivationThrottle
 
   void CheckCurrentUrl();
   virtual void NotifyResult(subresource_filter::ActivationDecision decision);
+
+  // Helper function to abstract getting the WebContentsHelper dependency.
+  // This structure is useful for testing.
+  virtual void NotifyPageActivationComputed(
+      subresource_filter::mojom::ActivationState activation_state,
+      subresource_filter::ActivationDecision activation_decision);
 
   void LogMetricsOnChecksComplete(
       subresource_filter::ActivationDecision decision,

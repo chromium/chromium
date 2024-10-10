@@ -38,7 +38,7 @@ constexpr char kActivationConsoleMessage[] =
 
 // Console message to be displayed on disallowing subframe.
 constexpr char kDisallowChildFrameConsoleMessageFormat[] =
-    "Blocking resource: %s";
+    "Blocking navigation: %s";
 
 }  // namespace fingerprinting_protection_filter
 

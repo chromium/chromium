@@ -16,6 +16,7 @@ enum class ActivationLevel;
 namespace fingerprinting_protection_filter::features {
 
 const char kPerformanceMeasurementRateParam[] = "performance_measurement_rate";
+const char kEnableConsoleLoggingParam[] = "enable_console_logging";
 
 // The primary toggle to enable/disable the Fingerprinting Protection Filter.
 COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
@@ -43,6 +44,11 @@ bool IsFingerprintingProtectionEnabledInNonIncognito(bool is_incognito);
 COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
 bool IsFingerprintingProtectionEnabledForIncognitoState(bool is_incognito);
 
+// Returns true if the enable logging param is enabled for either the
+// non-incognito or incognito feature.
+COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
+bool IsFingerprintingProtectionConsoleLoggingEnabled();
+
 COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
 extern const base::FeatureParam<subresource_filter::mojom::ActivationLevel>
     kActivationLevel;
@@ -51,6 +57,13 @@ extern const base::FeatureParam<subresource_filter::mojom::ActivationLevel>
 // (i.e. not the tracking protection version) is enabled.
 COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
 extern const base::FeatureParam<bool> kEnableOn3pcBlocked;
+
+// Toggle whether to enable console logging of blocked resources in the
+// ActivationState.
+COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
+extern const base::FeatureParam<bool> kEnableConsoleLoggingNonIncognito;
+COMPONENT_EXPORT(FINGERPRINTING_PROTECTION_FILTER_FEATURES)
+extern const base::FeatureParam<bool> kEnableConsoleLoggingIncognito;
 
 // A number in the range [0, 1], indicating the fraction of page loads that
 // should have extended performance measurements enabled for timing-based
