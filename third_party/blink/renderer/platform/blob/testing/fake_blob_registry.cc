@@ -70,14 +70,4 @@ void FakeBlobRegistry::RegisterFromStream(
                                                      std::move(data));
 }
 
-void FakeBlobRegistry::GetBlobFromUUID(
-    mojo::PendingReceiver<mojom::blink::Blob> blob,
-    const String& uuid,
-    GetBlobFromUUIDCallback callback) {
-  owned_receivers.push_back(OwnedReceiver{uuid});
-  mojo::MakeSelfOwnedReceiver(std::make_unique<FakeBlob>(uuid),
-                              std::move(blob));
-  std::move(callback).Run();
-}
-
 }  // namespace blink

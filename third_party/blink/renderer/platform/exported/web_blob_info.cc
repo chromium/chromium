@@ -38,15 +38,16 @@ WebBlobInfo::WebBlobInfo(const WebString& uuid,
 WebBlobInfo WebBlobInfo::BlobForTesting(const WebString& uuid,
                                         const WebString& type,
                                         uint64_t size) {
-  return WebBlobInfo(uuid, type, size, mojo::NullRemote());
+  return WebBlobInfo(BlobDataHandle::CreateForTesting(uuid, type, size));
 }
 
 // static
 WebBlobInfo WebBlobInfo::FileForTesting(const WebString& uuid,
                                         const WebString& file_name,
                                         const WebString& type) {
-  return WebBlobInfo(uuid, file_name, type, std::nullopt,
-                     std::numeric_limits<uint64_t>::max(), mojo::NullRemote());
+  return WebBlobInfo(BlobDataHandle::CreateForTesting(
+                         uuid, type, std::numeric_limits<uint64_t>::max()),
+                     file_name, std::nullopt);
 }
 
 WebBlobInfo::~WebBlobInfo() {

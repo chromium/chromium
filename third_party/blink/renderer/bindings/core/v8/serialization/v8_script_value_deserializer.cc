@@ -306,7 +306,7 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
       if (!ReadUTF8String(&uuid) || !ReadUTF8String(&type) ||
           !ReadUint64(&size))
         return nullptr;
-      auto blob_handle = GetOrCreateBlobDataHandle(uuid, type, size);
+      auto blob_handle = GetBlobDataHandle(uuid);
       if (!blob_handle)
         return nullptr;
       return MakeGarbageCollected<Blob>(std::move(blob_handle));
@@ -327,21 +327,7 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
       return ReadFile();
     case kFileIndexTag:
       return ReadFileIndex();
-    case kFileListTag: {
-      // This does not presently deduplicate a File object and its entry in a
-      // FileList, which is non-standard behavior.
-      uint32_t length;
-      if (!ReadUint32(&length))
-        return nullptr;
-      auto* file_list = MakeGarbageCollected<FileList>();
-      for (uint32_t i = 0; i < length; i++) {
-        if (File* file = ReadFile())
-          file_list->Append(file);
-        else
-          return nullptr;
-      }
-      return file_list;
-    }
+    case kFileListTag:
     case kFileListIndexTag: {
       // This does not presently deduplicate a File object and its entry in a
       // FileList, which is non-standard behavior.
@@ -350,10 +336,11 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
         return nullptr;
       auto* file_list = MakeGarbageCollected<FileList>();
       for (uint32_t i = 0; i < length; i++) {
-        if (File* file = ReadFileIndex())
+        if (File* file = (tag == kFileListTag ? ReadFile() : ReadFileIndex())) {
           file_list->Append(file);
-        else
+        } else {
           return nullptr;
+        }
       }
       return file_list;
     }
@@ -783,8 +770,7 @@ File* V8ScriptValueDeserializer::ReadFile() {
     return nullptr;
   const File::UserVisibility user_visibility =
       is_user_visible ? File::kIsUserVisible : File::kIsNotUserVisible;
-  const uint64_t kSizeForDataHandle = static_cast<uint64_t>(-1);
-  auto blob_handle = GetOrCreateBlobDataHandle(uuid, type, kSizeForDataHandle);
+  auto blob_handle = GetBlobDataHandle(uuid);
   if (!blob_handle)
     return nullptr;
   std::optional<base::Time> last_modified;
@@ -805,10 +791,6 @@ File* V8ScriptValueDeserializer::ReadFileIndex() {
     return nullptr;
   const WebBlobInfo& info = (*blob_info_array_)[index];
   auto blob_handle = info.GetBlobHandle();
-  if (!blob_handle) {
-    blob_handle =
-        GetOrCreateBlobDataHandle(info.Uuid(), info.GetType(), info.size());
-  }
   if (!blob_handle)
     return nullptr;
   return File::CreateFromIndexedSerialization(info.FileName(), info.size(),
@@ -823,32 +805,14 @@ DOMRectReadOnly* V8ScriptValueDeserializer::ReadDOMRectReadOnly() {
   return DOMRectReadOnly::Create(x, y, width, height);
 }
 
-scoped_refptr<BlobDataHandle>
-V8ScriptValueDeserializer::GetOrCreateBlobDataHandle(const String& uuid,
-                                                     const String& type,
-                                                     uint64_t size) {
-  // The containing ssv may have a BDH for this uuid if this ssv is just being
-  // passed from main to worker thread (for example). We use those values when
-  // creating the new blob instead of cons'ing up a new BDH.
-  //
-  // FIXME: Maybe we should require that it work that way where the ssv must
-  // have a BDH for any blobs it comes across during deserialization. Would
-  // require callers to explicitly populate the collection of BDH's for blobs to
-  // work, which would encourage lifetimes to be considered when passing ssv's
-  // around cross process. At present, we get 'lucky' in some cases because the
-  // blob in the src process happens to still exist at the time the dest process
-  // is deserializing.
-  // For example in sharedWorker.postMessage(...).
+scoped_refptr<BlobDataHandle> V8ScriptValueDeserializer::GetBlobDataHandle(
+    const String& uuid) {
   BlobDataHandleMap& handles = serialized_script_value_->BlobDataHandles();
   BlobDataHandleMap::const_iterator it = handles.find(uuid);
   if (it != handles.end())
     return it->value;
-  // Creating a BlobDataHandle from an empty string will get this renderer
-  // killed, so since we're parsing untrusted data (from possibly another
-  // process/renderer) return null instead.
-  if (uuid.empty())
-    return nullptr;
-  return BlobDataHandle::Create(uuid, type, size);
+
+  return nullptr;
 }
 
 v8::MaybeLocal<v8::Object> V8ScriptValueDeserializer::ReadHostObject(

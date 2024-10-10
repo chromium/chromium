@@ -1629,7 +1629,8 @@ TEST(V8ScriptValueSerializerTest, RoundTripBlob) {
   EXPECT_EQ(uuid, new_blob->Uuid());
 }
 
-TEST(V8ScriptValueSerializerTest, DecodeBlob) {
+// Blob deserialization requires blob data handles.
+TEST(V8ScriptValueSerializerTest, DecodeBlobWithoutHandles) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   scoped_refptr<SerializedScriptValue> input = SerializedValue(
@@ -1640,11 +1641,7 @@ TEST(V8ScriptValueSerializerTest, DecodeBlob) {
        0x65, 0x78, 0x74, 0x2f, 0x70, 0x6c, 0x61, 0x69, 0x6e, 0x0c});
   v8::Local<v8::Value> result =
       V8ScriptValueDeserializer(scope.GetScriptState(), input).Deserialize();
-  Blob* new_blob = V8Blob::ToWrappable(scope.GetIsolate(), result);
-  ASSERT_NE(new_blob, nullptr);
-  EXPECT_EQ("d875dfc2-4505-461b-98fe-0cf6cc5eaf44", new_blob->Uuid());
-  EXPECT_EQ("text/plain", new_blob->type());
-  EXPECT_EQ(12u, new_blob->size());
+  EXPECT_TRUE(result->IsNull());
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripBlobIndex) {
@@ -1816,111 +1813,8 @@ class TimeIntervalChecker {
   const int64_t start_time_;
 };
 
-TEST(V8ScriptValueSerializerTest, DecodeFileV3) {
-  test::TaskEnvironment task_environment;
-  V8TestingScope scope;
-  TimeIntervalChecker time_interval_checker;
-  scoped_refptr<SerializedScriptValue> input = SerializedValue(
-      {0xff, 0x03, 0x3f, 0x00, 0x66, 0x04, 'p', 'a', 't', 'h', 0x24, 'f',
-       '4',  'a',  '6',  'e',  'd',  'd',  '5', '-', '6', '5', 'a',  'd',
-       '-',  '4',  'd',  'c',  '3',  '-',  'b', '6', '7', 'c', '-',  'a',
-       '7',  '7',  '9',  'c',  '0',  '2',  'f', '0', 'f', 'a', '3',  0x0a,
-       't',  'e',  'x',  't',  '/',  'p',  'l', 'a', 'i', 'n'});
-  v8::Local<v8::Value> result =
-      V8ScriptValueDeserializer(scope.GetScriptState(), input).Deserialize();
-  File* new_file = V8File::ToWrappable(scope.GetIsolate(), result);
-  ASSERT_NE(new_file, nullptr);
-  EXPECT_EQ("path", new_file->GetPath());
-  EXPECT_EQ("f4a6edd5-65ad-4dc3-b67c-a779c02f0fa3", new_file->Uuid());
-  EXPECT_EQ("text/plain", new_file->type());
-  EXPECT_FALSE(new_file->HasValidSnapshotMetadata());
-  EXPECT_EQ(0u, new_file->size());
-  EXPECT_TRUE(time_interval_checker.WasAliveAt(new_file->lastModified()));
-  EXPECT_EQ(File::kIsUserVisible, new_file->GetUserVisibility());
-}
-
-TEST(V8ScriptValueSerializerTest, DecodeFileV4) {
-  test::TaskEnvironment task_environment;
-  V8TestingScope scope;
-  TimeIntervalChecker time_interval_checker;
-  scoped_refptr<SerializedScriptValue> input = SerializedValue(
-      {0xff, 0x04, 0x3f, 0x00, 0x66, 0x04, 'p', 'a',  't',  'h', 0x04, 'n',
-       'a',  'm',  'e',  0x03, 'r',  'e',  'l', 0x24, 'f',  '4', 'a',  '6',
-       'e',  'd',  'd',  '5',  '-',  '6',  '5', 'a',  'd',  '-', '4',  'd',
-       'c',  '3',  '-',  'b',  '6',  '7',  'c', '-',  'a',  '7', '7',  '9',
-       'c',  '0',  '2',  'f',  '0',  'f',  'a', '3',  0x0a, 't', 'e',  'x',
-       't',  '/',  'p',  'l',  'a',  'i',  'n', 0x00});
-  v8::Local<v8::Value> result =
-      V8ScriptValueDeserializer(scope.GetScriptState(), input).Deserialize();
-  File* new_file = V8File::ToWrappable(scope.GetIsolate(), result);
-  ASSERT_NE(new_file, nullptr);
-  EXPECT_EQ("path", new_file->GetPath());
-  EXPECT_EQ("name", new_file->name());
-  EXPECT_EQ("rel", new_file->webkitRelativePath());
-  EXPECT_EQ("f4a6edd5-65ad-4dc3-b67c-a779c02f0fa3", new_file->Uuid());
-  EXPECT_EQ("text/plain", new_file->type());
-  EXPECT_FALSE(new_file->HasValidSnapshotMetadata());
-  EXPECT_EQ(0u, new_file->size());
-  EXPECT_TRUE(time_interval_checker.WasAliveAt(new_file->lastModified()));
-  EXPECT_EQ(File::kIsUserVisible, new_file->GetUserVisibility());
-}
-
-TEST(V8ScriptValueSerializerTest, DecodeFileV4WithSnapshot) {
-  test::TaskEnvironment task_environment;
-  V8TestingScope scope;
-  scoped_refptr<SerializedScriptValue> input = SerializedValue(
-      {0xff, 0x04, 0x3f, 0x00, 0x66, 0x04, 'p', 'a',  't',  'h',  0x04, 'n',
-       'a',  'm',  'e',  0x03, 'r',  'e',  'l', 0x24, 'f',  '4',  'a',  '6',
-       'e',  'd',  'd',  '5',  '-',  '6',  '5', 'a',  'd',  '-',  '4',  'd',
-       'c',  '3',  '-',  'b',  '6',  '7',  'c', '-',  'a',  '7',  '7',  '9',
-       'c',  '0',  '2',  'f',  '0',  'f',  'a', '3',  0x0a, 't',  'e',  'x',
-       't',  '/',  'p',  'l',  'a',  'i',  'n', 0x01, 0x80, 0x04, 0x00, 0x00,
-       0x00, 0x00, 0x00, 0x00, 0xd0, 0xbf});
-  v8::Local<v8::Value> result =
-      V8ScriptValueDeserializer(scope.GetScriptState(), input).Deserialize();
-  File* new_file = V8File::ToWrappable(scope.GetIsolate(), result);
-  ASSERT_NE(new_file, nullptr);
-  EXPECT_EQ("path", new_file->GetPath());
-  EXPECT_EQ("name", new_file->name());
-  EXPECT_EQ("rel", new_file->webkitRelativePath());
-  EXPECT_EQ("f4a6edd5-65ad-4dc3-b67c-a779c02f0fa3", new_file->Uuid());
-  EXPECT_EQ("text/plain", new_file->type());
-  EXPECT_TRUE(new_file->HasValidSnapshotMetadata());
-  EXPECT_EQ(512u, new_file->size());
-  // From v4 to v7, the last modified time is written in seconds.
-  // So -0.25 represents 250 ms before the Unix epoch.
-  EXPECT_EQ(-250, new_file->lastModified());
-  EXPECT_EQ(base::Milliseconds(-250.0),
-            new_file->LastModifiedTime() - base::Time::UnixEpoch());
-}
-
-TEST(V8ScriptValueSerializerTest, DecodeFileV7) {
-  test::TaskEnvironment task_environment;
-  V8TestingScope scope;
-  TimeIntervalChecker time_interval_checker;
-  scoped_refptr<SerializedScriptValue> input = SerializedValue(
-      {0xff, 0x07, 0x3f, 0x00, 0x66, 0x04, 'p', 'a',  't',  'h', 0x04, 'n',
-       'a',  'm',  'e',  0x03, 'r',  'e',  'l', 0x24, 'f',  '4', 'a',  '6',
-       'e',  'd',  'd',  '5',  '-',  '6',  '5', 'a',  'd',  '-', '4',  'd',
-       'c',  '3',  '-',  'b',  '6',  '7',  'c', '-',  'a',  '7', '7',  '9',
-       'c',  '0',  '2',  'f',  '0',  'f',  'a', '3',  0x0a, 't', 'e',  'x',
-       't',  '/',  'p',  'l',  'a',  'i',  'n', 0x00, 0x00, 0x00});
-  v8::Local<v8::Value> result =
-      V8ScriptValueDeserializer(scope.GetScriptState(), input).Deserialize();
-  File* new_file = V8File::ToWrappable(scope.GetIsolate(), result);
-  ASSERT_NE(new_file, nullptr);
-  EXPECT_EQ("path", new_file->GetPath());
-  EXPECT_EQ("name", new_file->name());
-  EXPECT_EQ("rel", new_file->webkitRelativePath());
-  EXPECT_EQ("f4a6edd5-65ad-4dc3-b67c-a779c02f0fa3", new_file->Uuid());
-  EXPECT_EQ("text/plain", new_file->type());
-  EXPECT_FALSE(new_file->HasValidSnapshotMetadata());
-  EXPECT_EQ(0u, new_file->size());
-  EXPECT_TRUE(time_interval_checker.WasAliveAt(new_file->lastModified()));
-  EXPECT_EQ(File::kIsNotUserVisible, new_file->GetUserVisibility());
-}
-
-TEST(V8ScriptValueSerializerTest, DecodeFileV8WithSnapshot) {
+// Blob deserialization requires blob data handles.
+TEST(V8ScriptValueSerializerTest, DecodeFileWithoutHandles) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   scoped_refptr<SerializedScriptValue> input = SerializedValue(
@@ -1933,22 +1827,7 @@ TEST(V8ScriptValueSerializerTest, DecodeFileV8WithSnapshot) {
        0x00, 0x00, 0x00, 0x00, 0xd0, 0xbf, 0x01, 0x00});
   v8::Local<v8::Value> result =
       V8ScriptValueDeserializer(scope.GetScriptState(), input).Deserialize();
-  File* new_file = V8File::ToWrappable(scope.GetIsolate(), result);
-  ASSERT_NE(new_file, nullptr);
-  EXPECT_EQ("path", new_file->GetPath());
-  EXPECT_EQ("name", new_file->name());
-  EXPECT_EQ("rel", new_file->webkitRelativePath());
-  EXPECT_EQ("f4a6edd5-65ad-4dc3-b67c-a779c02f0fa3", new_file->Uuid());
-  EXPECT_EQ("text/plain", new_file->type());
-  EXPECT_TRUE(new_file->HasValidSnapshotMetadata());
-  EXPECT_EQ(512u, new_file->size());
-  // From v8, the last modified time is written in milliseconds.
-  // So -0.25 represents 0.25 ms before the Unix epoch.
-  EXPECT_EQ(base::Milliseconds(-0.25),
-            new_file->LastModifiedTime() - base::Time::UnixEpoch());
-  // lastModified IDL attribute can't represent -0.25 ms.
-  EXPECT_EQ(INT64_C(0), new_file->lastModified());
-  EXPECT_EQ(File::kIsUserVisible, new_file->GetUserVisibility());
+  EXPECT_TRUE(result->IsNull());
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripFileIndex) {
@@ -2073,7 +1952,8 @@ TEST(V8ScriptValueSerializerTest, DecodeFileListWithInvalidLength) {
   EXPECT_TRUE(result->IsNull());
 }
 
-TEST(V8ScriptValueSerializerTest, DecodeFileListV8WithoutSnapshot) {
+// Blob deserialization requires blob data handles.
+TEST(V8ScriptValueSerializerTest, DecodeFileListWithoutHandles) {
   test::TaskEnvironment task_environment;
   V8TestingScope scope;
   TimeIntervalChecker time_interval_checker;
@@ -2086,19 +1966,7 @@ TEST(V8ScriptValueSerializerTest, DecodeFileListV8WithoutSnapshot) {
        'x',  't',  '/',  'p',  'l',  'a',  'i',  'n', 0x00, 0x00});
   v8::Local<v8::Value> result =
       V8ScriptValueDeserializer(scope.GetScriptState(), input).Deserialize();
-  FileList* new_file_list = V8FileList::ToWrappable(scope.GetIsolate(), result);
-  ASSERT_NE(new_file_list, nullptr);
-  EXPECT_EQ(1u, new_file_list->length());
-  File* new_file = new_file_list->item(0);
-  EXPECT_EQ("path", new_file->GetPath());
-  EXPECT_EQ("name", new_file->name());
-  EXPECT_EQ("rel", new_file->webkitRelativePath());
-  EXPECT_EQ("f4a6edd5-65ad-4dc3-b67c-a779c02f0fa3", new_file->Uuid());
-  EXPECT_EQ("text/plain", new_file->type());
-  EXPECT_FALSE(new_file->HasValidSnapshotMetadata());
-  EXPECT_EQ(0u, new_file->size());
-  EXPECT_TRUE(time_interval_checker.WasAliveAt(new_file->lastModified()));
-  EXPECT_EQ(File::kIsNotUserVisible, new_file->GetUserVisibility());
+  EXPECT_TRUE(result->IsNull());
 }
 
 TEST(V8ScriptValueSerializerTest, RoundTripFileListIndex) {

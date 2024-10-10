@@ -33,9 +33,6 @@ class FakeBlobRegistry : public mojom::blink::BlobRegistry {
       mojo::PendingAssociatedRemote<mojom::blink::ProgressClient>,
       RegisterFromStreamCallback) override;
 
-  void GetBlobFromUUID(mojo::PendingReceiver<mojom::blink::Blob>,
-                       const String& uuid,
-                       GetBlobFromUUIDCallback) override;
   struct Registration {
     String uuid;
     String content_type;

@@ -189,10 +189,9 @@ class PLATFORM_EXPORT BlobDataHandle
     return base::AdoptRef(new BlobDataHandle(std::move(data), size));
   }
 
-  // For deserialization of script values and ipc messages.
-  static scoped_refptr<BlobDataHandle> Create(const String& uuid,
-                                              const String& type,
-                                              uint64_t size) {
+  static scoped_refptr<BlobDataHandle> CreateForTesting(const String& uuid,
+                                                        const String& type,
+                                                        uint64_t size) {
     return base::AdoptRef(new BlobDataHandle(uuid, type, size));
   }
 
@@ -244,6 +243,8 @@ class PLATFORM_EXPORT BlobDataHandle
                  uint64_t size,
                  mojo::PendingRemote<mojom::blink::Blob>);
 
+  // This UUID is deprecated and should not be used to reference the blob in the
+  // backend (BlobRegistry). TODO(crbug.com/40529364): remove.
   const String uuid_;
   const String type_;
   const uint64_t size_;
