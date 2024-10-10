@@ -546,7 +546,7 @@ void AddIntAttribute(const AXObject* obj,
 
 void AddIntListAttributeFromOffsetVector(
     ax::mojom::blink::IntListAttribute attr,
-    const Vector<int> offsets,
+    const Vector<int>& offsets,
     ui::AXNodeData* node_data) {
   std::vector<int32_t> offset_values;
   for (int offset : offsets)
