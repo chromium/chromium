@@ -359,7 +359,7 @@
 <translation id="6554732001434021288">Последно посетено пред <ph name="NUM_DAYS" /> дена</translation>
 <translation id="656065428026159829">Прикажи повеќе</translation>
 <translation id="6561560012278703671">Користете потивки пораки (не дозволува известувањата да ве попречуваат)</translation>
-<translation id="6593061639179217415">Сајт за десктоп</translation>
+<translation id="6593061639179217415">Сајт за компјутер</translation>
 <translation id="659938948789980540">{COUNT,plural, =1{Колачињата се дозволени за <ph name="RWS_MEMBERS_COUNT" /> сајт на <ph name="RWS_OWNER" />}one{Колачињата се дозволени за <ph name="RWS_MEMBERS_COUNT" /> сајт на <ph name="RWS_OWNER" />}other{Колачињата се дозволени за <ph name="RWS_MEMBERS_COUNT" /> сајта на <ph name="RWS_OWNER" />}}</translation>
 <translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
 <translation id="6612358246767739896">Заштитена содржина</translation>

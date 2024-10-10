@@ -3193,7 +3193,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3269093882174072735">Carrega la imatge</translation>
 <translation id="326911502853238749">No mostris <ph name="MODULE_NAME" /></translation>
 <translation id="3269175001434213183">Activa la sincronització per crear una còpia de seguretat de les teves dades i utilitza-les en qualsevol dispositiu</translation>
-<translation id="3269209112443570745">Novetat! Una manera fàcil de cercar què es mostra en pantalla</translation>
+<translation id="3269209112443570745">Novetat! Una manera fàcil de cercar el que es mostra en pantalla</translation>
 <translation id="3269612321104318480">Verd blavós clar i blanc</translation>
 <translation id="3269689705184377744">{COUNT,plural, =1{Fitxer}other{# fitxers}}</translation>
 <translation id="326999365752735949">S'està baixant la diferència.</translation>
@@ -7873,7 +7873,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="6716798148881908873">S'ha perdut la connexió de xarxa. Comprova la connexió o prova una altra xarxa Wi-Fi.</translation>
 <translation id="6718849325281682232">Els colors del tema de Chrome s'han actualitzat per funcionar millor per a tothom, tant en mode fosc com en mode clar</translation>
 <translation id="671928215901716392">Pantalla de bloqueig</translation>
-<translation id="6721744718589119342">També pot ser que et demanem més informació o t'enviem novetats per correu electrònic</translation>
+<translation id="6721744718589119342">Pot ser que et demanem més informació o t'enviem novetats per correu electrònic</translation>
 <translation id="6721972322305477112">&amp;Fitxer</translation>
 <translation id="672208878794563299">Aquest lloc web t'ho tornarà a preguntar el pròxim cop.</translation>
 <translation id="6722744767592605627">Pots recuperar <ph name="EMAIL" />, però les dades locals se suprimiran.</translation>

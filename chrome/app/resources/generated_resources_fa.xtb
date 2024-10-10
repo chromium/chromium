@@ -6250,7 +6250,7 @@
 <translation id="5488093641312826914">«<ph name="COPIED_ITEM_NAME" />» کپی شد</translation>
 <translation id="5488508217173274228">گزینه‌های رمزگذاری همگام‌سازی</translation>
 <translation id="5489077378642700219">اعلان‌های <ph name="WEBSITE" /> مجاز نباشد اما بعداً سؤال شود</translation>
-<translation id="5490432419156082418">نشانی‌ها و سایر موارد</translation>
+<translation id="5490432419156082418">نشانی‌ها و موارد دیگر</translation>
 <translation id="5490721031479690399">قطع اتصال دستگاه بلوتوث</translation>
 <translation id="5490798133083738649">‏اجازه دادن به Linux برای دسترسی به میکروفون</translation>
 <translation id="549211519852037402">بژ و سفید</translation>
@@ -6265,7 +6265,7 @@
 <translation id="549602578321198708">کلمه</translation>
 <translation id="5496587651328244253">سازماندهی</translation>
 <translation id="5496730470963166430">اجازه ندارد بالاپر ارسال کند یا از هدایت‌ها استفاده کند</translation>
-<translation id="5497250476399536588">می‌توانید آن را در بخش «نشانی‌ها و سایر موارد» پیدا کنید</translation>
+<translation id="5497250476399536588">می‌توانید آن را در بخش «نشانی‌ها و موارد دیگر» پیدا کنید</translation>
 <translation id="5497251278400702716">این فایل</translation>
 <translation id="5497739595514726398">‏Chrome نمی‌تواند این بسته نصب را تأیید کند</translation>
 <translation id="5498967291577176373">نوشتن سریع‌تر با پیشنهادهای به‌خط برای نام، نشانی، یا شماره تلفن</translation>
@@ -10342,7 +10342,7 @@
 <translation id="8472563193954285009">{COUNT,plural, =0{گذرواژه‌هایتان متمایز است}=1{{COUNT} گذرواژه دوباره‌استفاده‌شده}one{{COUNT} گذرواژه دوباره‌استفاده‌شده}other{{COUNT} گذرواژه دوباره‌استفاده‌شده}}</translation>
 <translation id="8472623782143987204">سخت‌افزار پشتیبانی</translation>
 <translation id="8473540203671727883">خواندن نوشتار زیر نشانگر موشواره</translation>
-<translation id="8473863474539038330">نشانی‌ها و سایر موارد</translation>
+<translation id="8473863474539038330">نشانی‌ها و موارد دیگر</translation>
 <translation id="8474378002946546633">مجاز بودن اعلان‌ها</translation>
 <translation id="8475313423285172237">‏برنامه‌ای دیگر بر روی رایانه شما یک برنامه افزودنی را اضافه کرده است که ممکن است نحوه کارکرد Chrome را تغییر دهد.</translation>
 <translation id="8476408756881832830">‏توقف بازپخش هنگامی که ChromeVox درحال صحبت کردن است</translation>
