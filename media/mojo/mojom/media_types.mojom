@@ -289,20 +289,12 @@ struct DecoderBufferSideData {
   // These fields indicate the amount of data to discard after decoding.
   mojo_base.mojom.TimeDelta front_discard;
   mojo_base.mojom.TimeDelta back_discard;
-
-  // If the buffer is an end of stream buffer, presence of `next_config`
-  // indicates that the EOS is for a config change. Decoders may make more
-  // optimal flushing decisions using this information.
-  DecoderBufferSideDataNextConfig? next_config;
 };
 
-// This defines a mojo transport format for media::DecoderBuffer.
-struct DecoderBuffer {
+// This defines a mojo transport format for media::DecoderBuffer w/ data.
+struct DataDecoderBuffer {
   mojo_base.mojom.TimeDelta timestamp;
   mojo_base.mojom.TimeDelta duration;
-
-  // Whether the buffer is an end-of-stream (EOS) buffer.
-  bool is_end_of_stream;
 
   // The number of bytes present in this buffer. The data is not serialized
   // along with this structure and must be read from a separate DataPipe.
@@ -317,6 +309,19 @@ struct DecoderBuffer {
   DecryptConfig? decrypt_config;
 
   DecoderBufferSideData? side_data;
+};
+
+// This defines a mojo transport format for an EOS media::DecoderBuffer.
+struct EosDecoderBuffer {
+  // Indicates that the EOS is for a config change. Decoders may make more
+  // optimal flushing decisions using this information.
+  DecoderBufferSideDataNextConfig? next_config;
+};
+
+// Possible choices for DecoderBuffer types.
+union DecoderBuffer {
+  EosDecoderBuffer eos;
+  DataDecoderBuffer data;
 };
 
 // This defines a mojo transport format for media::AudioBuffer.

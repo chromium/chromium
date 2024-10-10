@@ -291,16 +291,28 @@ void MojoVideoDecoderService::Initialize(
 
 void MojoVideoDecoderService::Decode(mojom::DecoderBufferPtr buffer,
                                      DecodeCallback callback) {
-  DVLOG(3) << __func__ << " pts=" << buffer->timestamp.InMilliseconds();
   DCHECK(callback);
+
+  if (buffer->is_eos()) {
+    DVLOG(3) << __func__ << " EOS";
+  } else {
+    DVLOG(3) << __func__
+             << " pts=" << buffer->get_data()->timestamp.InMilliseconds();
+  }
 
   std::unique_ptr<ScopedDecodeTrace> trace_event;
   if (MediaTraceIsEnabled()) {
     // Because multiple Decode() calls may be in flight, each call needs a
     // unique trace event class to identify it. This scoped event is bound
     // into the OnDecodeDone callback to ensure the trace is always closed.
-    trace_event = std::make_unique<ScopedDecodeTrace>(
-        kDecodeTraceName, buffer->is_key_frame, buffer->timestamp);
+    //
+    // Note: We only add partial details on the DecoderBuffer to the trace. The
+    // full details will be added during OnReaderRead().
+    trace_event = buffer->is_eos()
+                      ? std::make_unique<ScopedDecodeTrace>(kDecodeTraceName)
+                      : std::make_unique<ScopedDecodeTrace>(
+                            kDecodeTraceName, buffer->get_data()->is_key_frame,
+                            buffer->get_data()->timestamp);
   }
 
   if (!decoder_) {

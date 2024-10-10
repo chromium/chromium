@@ -68,8 +68,6 @@ TypeConverter<media::mojom::DecoderBufferSideDataPtr,
 
   // Note: `next_audio_config` and `next_video_config` are intentionally not
   // serialized here since they are only set for EOS buffers.
-  // TODO(crbug.com/366491584): Remove this note once we've switched EOS
-  // handling to use API calls instead of special buffer types.
 
   return mojo_side_data;
 }
@@ -92,8 +90,6 @@ TypeConverter<std::optional<media::DecoderBufferSideData>,
 
   // Note: `next_audio_config` and `next_video_config` are intentionally not
   // deserialized here since they are only set for EOS buffers.
-  // TODO(crbug.com/366491584): Remove this note once we've switched EOS
-  // handling to use API calls instead of special buffer types.
 
   return side_data;
 }
@@ -102,38 +98,34 @@ TypeConverter<std::optional<media::DecoderBufferSideData>,
 media::mojom::DecoderBufferPtr
 TypeConverter<media::mojom::DecoderBufferPtr, media::DecoderBuffer>::Convert(
     const media::DecoderBuffer& input) {
-  media::mojom::DecoderBufferPtr mojo_buffer(
-      media::mojom::DecoderBuffer::New());
   if (input.end_of_stream()) {
-    mojo_buffer->is_end_of_stream = true;
-    // TODO(crbug.com/366491584): This should be handled via a new API.
+    auto eos = media::mojom::EosDecoderBuffer::New();
     if (input.next_config()) {
-      mojo_buffer->side_data = media::mojom::DecoderBufferSideData::New();
       const auto next_config = *input.next_config();
       if (const auto* ac =
               absl::get_if<media::AudioDecoderConfig>(&next_config)) {
-        mojo_buffer->side_data->next_config =
+        eos->next_config =
             media::mojom::DecoderBufferSideDataNextConfig::NewNextAudioConfig(
                 *ac);
       } else {
-        mojo_buffer->side_data->next_config =
+        eos->next_config =
             media::mojom::DecoderBufferSideDataNextConfig::NewNextVideoConfig(
                 absl::get<media::VideoDecoderConfig>(next_config));
       }
     }
-    return mojo_buffer;
+    return media::mojom::DecoderBuffer::NewEos(std::move(eos));
   }
 
-  mojo_buffer->is_end_of_stream = false;
-  mojo_buffer->timestamp = input.timestamp();
-  mojo_buffer->duration = input.duration();
-  mojo_buffer->is_key_frame = input.is_key_frame();
-  mojo_buffer->data_size = base::checked_cast<uint32_t>(input.size());
-  mojo_buffer->side_data =
+  auto data_buffer = media::mojom::DataDecoderBuffer::New();
+  data_buffer->timestamp = input.timestamp();
+  data_buffer->duration = input.duration();
+  data_buffer->is_key_frame = input.is_key_frame();
+  data_buffer->data_size = base::checked_cast<uint32_t>(input.size());
+  data_buffer->side_data =
       media::mojom::DecoderBufferSideData::From(input.side_data());
 
   if (input.decrypt_config()) {
-    mojo_buffer->decrypt_config =
+    data_buffer->decrypt_config =
         media::mojom::DecryptConfig::From(*input.decrypt_config());
   }
 
@@ -141,7 +133,7 @@ TypeConverter<media::mojom::DecoderBufferPtr, media::DecoderBuffer>::Convert(
   // the DecoderBuffer here; this must instead be done by clients via their
   // own DataPipe.  See http://crbug.com/432960
 
-  return mojo_buffer;
+  return media::mojom::DecoderBuffer::NewData(std::move(data_buffer));
 }
 
 // static
@@ -149,45 +141,38 @@ scoped_refptr<media::DecoderBuffer>
 TypeConverter<scoped_refptr<media::DecoderBuffer>,
               media::mojom::DecoderBufferPtr>::
     Convert(const media::mojom::DecoderBufferPtr& input) {
-  if (input->is_end_of_stream) {
-    // TODO(crbug.com/366491584): This should be handled via a new API.
-    if (input->side_data) {
-      if (input->side_data->next_config &&
-          input->side_data->next_config->is_next_audio_config()) {
+  if (input->is_eos()) {
+    const auto& eos_buffer = input->get_eos();
+    if (eos_buffer->next_config) {
+      if (eos_buffer->next_config->is_next_audio_config()) {
         return media::DecoderBuffer::CreateEOSBuffer(
-            input->side_data->next_config->get_next_audio_config());
-      } else if (input->side_data->next_config &&
-                 input->side_data->next_config->is_next_video_config()) {
+            eos_buffer->next_config->get_next_audio_config());
+      } else if (eos_buffer->next_config->is_next_video_config()) {
         return media::DecoderBuffer::CreateEOSBuffer(
-            input->side_data->next_config->get_next_video_config());
-      } else {
-        DLOG(ERROR) << "An AudioDecoderConfig or VideoDecoderConfig must be "
-                       "present for an EOS buffer if side data exists.";
-        return nullptr;
+            eos_buffer->next_config->get_next_video_config());
       }
     }
     return media::DecoderBuffer::CreateEOSBuffer();
-  } else if (input->side_data && input->side_data->next_config) {
-    DLOG(ERROR) << "AudioDecoderConfig or VideoDecoderConfig must not be "
-                   "present for non-EOS buffers.";
-    return nullptr;
   }
 
-  scoped_refptr<media::DecoderBuffer> buffer(
-      new media::DecoderBuffer(base::strict_cast<size_t>(input->data_size)));
+  const auto& mojo_buffer = input->get_data();
+  auto buffer = base::MakeRefCounted<media::DecoderBuffer>(
+      base::strict_cast<size_t>(mojo_buffer->data_size));
 
-  if (input->side_data) {
+  if (mojo_buffer->side_data) {
     buffer->set_side_data(
-        input->side_data.To<std::optional<media::DecoderBufferSideData>>());
+        mojo_buffer->side_data
+            .To<std::optional<media::DecoderBufferSideData>>());
   }
 
-  buffer->set_timestamp(input->timestamp);
-  buffer->set_duration(input->duration);
-  buffer->set_is_key_frame(input->is_key_frame);
+  buffer->set_timestamp(mojo_buffer->timestamp);
+  buffer->set_duration(mojo_buffer->duration);
+  buffer->set_is_key_frame(mojo_buffer->is_key_frame);
 
-  if (input->decrypt_config) {
+  if (mojo_buffer->decrypt_config) {
     buffer->set_decrypt_config(
-        input->decrypt_config.To<std::unique_ptr<media::DecryptConfig>>());
+        mojo_buffer->decrypt_config
+            .To<std::unique_ptr<media::DecryptConfig>>());
   }
 
   // TODO(dalecurtis): We intentionally do not deserialize the data section of

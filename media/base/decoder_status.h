@@ -67,6 +67,9 @@ class MEDIA_EXPORT ScopedDecodeTrace {
                     bool is_key_frame,
                     base::TimeDelta timestamp);
 
+  // For EOS decodes.
+  explicit ScopedDecodeTrace(const char* trace_name);
+
   ScopedDecodeTrace(const ScopedDecodeTrace&) = delete;
   ScopedDecodeTrace& operator=(const ScopedDecodeTrace&) = delete;
 
