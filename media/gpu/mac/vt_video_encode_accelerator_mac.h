@@ -79,13 +79,6 @@ class MEDIA_GPU_EXPORT VTVideoEncodeAccelerator
       std::unique_ptr<EncodeOutput> encode_output,
       std::unique_ptr<VTVideoEncodeAccelerator::BitstreamBufferRef> buffer_ref);
 
-  // Get the supported H.264 profiles.
-  SupportedProfiles GetSupportedH264Profiles();
-#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-  // Get the supported HEVC profiles.
-  SupportedProfiles GetSupportedHEVCProfiles();
-#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-
   // Reset the encoder's compression session by destroying the existing one and
   // creating a new one. The new session is configured using
   // ConfigureCompressionSession().

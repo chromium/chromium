@@ -601,13 +601,23 @@ bool MayHaveOSSoftwareEncoder(media::VideoCodecProfile profile) {
   //
   // TODO(crbug.com/1383643): Add IS_WIN here once we can force
   // selection of a software encoder there.
-#if (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)) && !BUILDFLAG(ENABLE_OPENH264)
-  return media::VideoCodecProfileToVideoCodec(profile) ==
-         media::VideoCodec::kH264;
-#else
-  return false;
-#endif  // (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)) &&
-        // !BUILDFLAG(ENABLE_OPENH264)
+  constexpr bool kHasBundledH264Encoder = BUILDFLAG(ENABLE_OPENH264);
+  constexpr bool kHasOSSoftwareH264Encoder =
+      BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID);
+  constexpr bool kHasOSSoftwareHEVCEncoder =
+      BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER);
+
+  switch (media::VideoCodecProfileToVideoCodec(profile)) {
+    case media::VideoCodec::kH264:
+      // Prefer the bundled encoder, if present.
+      return kHasOSSoftwareH264Encoder && !kHasBundledH264Encoder;
+
+    case media::VideoCodec::kHEVC:
+      return kHasOSSoftwareHEVCEncoder;
+
+    default:
+      return false;
+  }
 }
 
 EncoderType GetRequiredEncoderType(media::VideoCodecProfile profile,
