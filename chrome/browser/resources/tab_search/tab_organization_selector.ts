@@ -9,12 +9,21 @@ import './tab_organization_selector_button.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
+import type {DeclutterPageElement} from './declutter/declutter_page.js';
 import {getCss} from './tab_organization_selector.css.js';
 import {getHtml} from './tab_organization_selector.html.js';
 import type {Tab} from './tab_search.mojom-webui.js';
-import {SelectorCTREvent, TabOrganizationFeature} from './tab_search.mojom-webui.js';
+import {DeclutterCTREvent, SelectorCTREvent, TabOrganizationFeature} from './tab_search.mojom-webui.js';
 import type {TabSearchApiProxy} from './tab_search_api_proxy.js';
 import {TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
+
+export interface TabOrganizationSelectorElement {
+  $: {
+    autoTabGroupsPage: HTMLElement,
+    declutterPage: DeclutterPageElement,
+  };
+}
+
 
 export class TabOrganizationSelectorElement extends CrLitElement {
   static get is() {
@@ -64,9 +73,11 @@ export class TabOrganizationSelectorElement extends CrLitElement {
         id => this.apiProxy_.getCallbackRouter().removeListener(id));
   }
 
-  maybeLogSelectorShown(): void {
+  maybeLogFeatureShow(): void {
     if (this.selectedState_ === TabOrganizationFeature.kSelector) {
       this.logSelectorCtrValue_(SelectorCTREvent.kSelectorShown);
+    } else if (this.selectedState_ === TabOrganizationFeature.kDeclutter) {
+      this.$.declutterPage.logCtrValue(DeclutterCTREvent.kDeclutterShown);
     }
   }
 
@@ -75,13 +86,12 @@ export class TabOrganizationSelectorElement extends CrLitElement {
     this.apiProxy_.requestTabOrganization();
     this.selectedState_ = TabOrganizationFeature.kAutoTabGroups;
     this.apiProxy_.setOrganizationFeature(this.selectedState_);
-    const autoTabGroupsPage =
-        this.shadowRoot!.querySelector('auto-tab-groups-page')!;
-    autoTabGroupsPage.classList.toggle('changed-state', false);
+    this.$.autoTabGroupsPage.classList.toggle('changed-state', false);
   }
 
   protected onDeclutterClick_(): void {
     this.logSelectorCtrValue_(SelectorCTREvent.kDeclutterClicked);
+    this.$.declutterPage.logCtrValue(DeclutterCTREvent.kDeclutterShown);
     this.selectedState_ = TabOrganizationFeature.kDeclutter;
     this.apiProxy_.setOrganizationFeature(this.selectedState_);
   }

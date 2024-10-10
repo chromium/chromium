@@ -12,6 +12,7 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {normalizeURL, TabData, TabItemType} from '../tab_data.js';
 import type {Tab} from '../tab_search.mojom-webui.js';
+import {DeclutterCTREvent} from '../tab_search.mojom-webui.js';
 import type {TabSearchApiProxy} from '../tab_search_api_proxy.js';
 import {TabSearchApiProxyImpl} from '../tab_search_api_proxy.js';
 
@@ -85,6 +86,12 @@ export class DeclutterPageElement extends CrLitElement {
     this.$.scrollable.addEventListener('scroll', this.updateScroll_.bind(this));
   }
 
+  logCtrValue(event: DeclutterCTREvent) {
+    chrome.metricsPrivate.recordEnumerationValue(
+        'Tab.Organization.DeclutterCTR', event,
+        DeclutterCTREvent.MAX_VALUE + 1);
+  }
+
   private async updateScroll_() {
     await this.updateComplete;
     const scrollable = this.$.scrollable;
@@ -104,6 +111,7 @@ export class DeclutterPageElement extends CrLitElement {
   protected onCloseTabsClick_() {
     const tabIds = this.staleTabDatas_.map((tabData) => tabData.tab.tabId);
     this.apiProxy_.declutterTabs(tabIds);
+    this.logCtrValue(DeclutterCTREvent.kCloseTabsClicked);
   }
 
   protected onTabRemove_(e: Event) {

@@ -128,18 +128,23 @@ void TabSearchBubbleHost::OnWidgetVisibilityChanged(views::Widget* widget,
     const tab_search::mojom::TabOrganizationFeature organization_feature =
         tab_search_prefs::GetTabOrganizationFeatureFromInt(
             prefs->GetInteger(tab_search_prefs::kTabOrganizationFeature));
-    // Log a selector shown event if the tab search bubble is set to the
-    // organize tab and showing the selector.
-    if (tab_index == 1 &&
-        (organization_feature ==
-             tab_search::mojom::TabOrganizationFeature::kSelector ||
-         organization_feature ==
-             tab_search::mojom::TabOrganizationFeature::kNone)) {
+    bubble_created_time_.reset();
+    if (tab_index == 0) {
+      return;
+    }
+    if (organization_feature ==
+            tab_search::mojom::TabOrganizationFeature::kSelector ||
+        organization_feature ==
+            tab_search::mojom::TabOrganizationFeature::kNone) {
       base::UmaHistogramEnumeration(
           "Tab.Organization.SelectorCTR",
           tab_search::mojom::SelectorCTREvent::kSelectorShown);
+    } else if (organization_feature ==
+               tab_search::mojom::TabOrganizationFeature::kDeclutter) {
+      base::UmaHistogramEnumeration(
+          "Tab.Organization.DeclutterCTR",
+          tab_search::mojom::DeclutterCTREvent::kDeclutterShown);
     }
-    bubble_created_time_.reset();
   }
 }
 

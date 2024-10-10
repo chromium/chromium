@@ -77,7 +77,7 @@ export class TabSearchAppElement extends CrLitElement {
       const organizationSelector =
           this.shadowRoot!.querySelector('tab-organization-selector');
       if (organizationSelector) {
-        organizationSelector.maybeLogSelectorShown();
+        organizationSelector.maybeLogFeatureShow();
       }
     }
   }

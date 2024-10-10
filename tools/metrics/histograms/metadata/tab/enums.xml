@@ -215,6 +215,11 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/saved_tab_groups/public/types.h:TabGroupEvent) -->
 
+<enum name="TabOrganizationDeclutterCTREvent">
+  <int value="0" label="Declutter Shown"/>
+  <int value="1" label="Close Tabs Clicked"/>
+</enum>
+
 <enum name="TabOrganizationSelectorCTREvent">
   <int value="0" label="Selector Shown"/>
   <int value="1" label="Auto Tab Groups Clicked"/>

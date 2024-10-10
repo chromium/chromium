@@ -333,6 +333,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tab.Organization.DeclutterCTR"
+    enum="TabOrganizationDeclutterCTREvent" expires_after="2025-02-10">
+  <owner>emshack@chromium.org</owner>
+  <owner>shibalik@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    On Desktop, logs once each time the declutter UI in the tab search bubble is
+    shown, and once each time the close tabs button is clicked. CTR can be
+    determined by dividing the click count by the show count.
+  </summary>
+</histogram>
+
 <histogram name="Tab.Organization.Organization.LabelEdited" enum="Boolean"
     expires_after="2025-02-10">
   <owner>dpenning@chromium.org</owner>

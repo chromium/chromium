@@ -12,6 +12,14 @@ import "url/mojom/url.mojom";
 import "chrome/browser/ui/webui/tabs/tabs.mojom";
 
 // These values are persisted and must not be renumbered or reordered.
+// See TabOrganizationDeclutterCTREvent at
+// tools/metrics/histograms/metadata/tab/enums.xml.
+enum DeclutterCTREvent {
+  kDeclutterShown = 0,
+  kCloseTabsClicked = 1,
+};
+
+// These values are persisted and must not be renumbered or reordered.
 // See TabOrganizationSelectorCTREvent at
 // tools/metrics/histograms/metadata/tab/enums.xml.
 enum SelectorCTREvent {
