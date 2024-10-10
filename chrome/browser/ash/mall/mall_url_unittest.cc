@@ -16,6 +16,7 @@
 #include "chromeos/constants/url_constants.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/base/url_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -57,6 +58,37 @@ TEST_F(MallUrlTest, GetMallLaunchUrl) {
   ASSERT_TRUE(decoded_context.ParseFromString(proto_string));
   ASSERT_EQ(decoded_context.device_context().hardware_id(),
             "SHIBA D0G-F4N-C1UB");
+}
+
+TEST_F(MallUrlTest, GetMallLaunchUrl_BasePath) {
+  EXPECT_THAT(GetMallLaunchUrl(apps::DeviceInfo(), "/").spec(),
+              testing::StartsWith("https://discover.apps.chrome/?context="));
+}
+
+TEST_F(MallUrlTest, GetMallLaunchUrl_SimplePath) {
+  EXPECT_THAT(
+      GetMallLaunchUrl(apps::DeviceInfo(), "/apps/").spec(),
+      testing::StartsWith("https://discover.apps.chrome/apps/?context="));
+}
+
+TEST_F(MallUrlTest, GetMallLaunchUrl_PathWithQuery) {
+  // Query-looking parts of the path parameter should not be interpreted as
+  // query parameters.
+  EXPECT_THAT(GetMallLaunchUrl(apps::DeviceInfo(), "/search?q=netflix").spec(),
+              testing::StartsWith(
+                  "https://discover.apps.chrome/search%3Fq=netflix?context="));
+}
+
+TEST_F(MallUrlTest, GetMallLaunchUrl_RelativePath) {
+  EXPECT_THAT(
+      GetMallLaunchUrl(apps::DeviceInfo(), "../apps/").spec(),
+      testing::StartsWith("https://discover.apps.chrome/apps/?context="));
+}
+
+TEST_F(MallUrlTest, GetMallLaunchUrl_RelativePathHost) {
+  EXPECT_THAT(GetMallLaunchUrl(apps::DeviceInfo(), "//example.com/").spec(),
+              testing::StartsWith(
+                  "https://discover.apps.chrome//example.com/?context="));
 }
 
 }  // namespace ash

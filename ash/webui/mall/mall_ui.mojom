@@ -8,6 +8,10 @@ import "url/mojom/url.mojom";
 
 // Interface implemented by ash-chrome and called from the chrome://mall page.
 interface PageHandler {
-    // Returns a URL used to embed the Mall website in the WebUI.
-    GetMallEmbedUrl() => (url.mojom.Url url);
+    // Returns a URL used to embed the Mall website into the WebUI. The URL can
+    // differ based on user settings (e.g. flags), or on device/user settings.
+    // `path` will be set as the absolute URL path (as in, GURL::path) of the
+    // resulting URL, with canonicalization and percent-encoding if necessary.
+    // If `path` would result in an invalid URL, the given `path` is ignored.
+    GetMallEmbedUrl(string path) => (url.mojom.Url url);
 };

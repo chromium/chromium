@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/mall/chrome_mall_ui_delegate.h"
 
+#include <string_view>
+
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -21,14 +23,19 @@ ChromeMallUIDelegate::ChromeMallUIDelegate(content::WebUI* web_ui)
 ChromeMallUIDelegate::~ChromeMallUIDelegate() = default;
 
 void ChromeMallUIDelegate::GetMallEmbedUrl(
+    std::string_view path,
     base::OnceCallback<void(const GURL&)> callback) {
   apps::DeviceInfoManager* manager =
       apps::DeviceInfoManagerFactory::GetForProfile(
           Profile::FromWebUI(web_ui_));
   CHECK(manager);
-  manager->GetDeviceInfo(base::BindOnce([](apps::DeviceInfo info) {
-                           return GetMallLaunchUrl(info);
-                         }).Then(std::move(callback)));
+  manager->GetDeviceInfo(
+      base::BindOnce(
+          [](const std::string& path, apps::DeviceInfo info) {
+            return GetMallLaunchUrl(info, path);
+          },
+          std::string(path))
+          .Then(std::move(callback)));
 }
 
 }  // namespace ash

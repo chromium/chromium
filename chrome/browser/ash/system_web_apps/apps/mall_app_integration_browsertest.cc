@@ -25,6 +25,23 @@ class MallAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
         /*disabled_features=*/{});
   }
 
+  std::string GetMallEmbedUrl(content::WebContents* contents) {
+    // Poll to wait for an iframe to be embedded on the page, and resolve with
+    // the 'src' attribute.
+    constexpr char kScript[] = R"js(
+      new Promise((resolve, reject) => {
+        let intervalId = setInterval(() => {
+          if (document.querySelector("iframe")) {
+            clearInterval(intervalId);
+            resolve(document.querySelector("iframe").src);
+          }
+        }, 50);
+      });
+    )js";
+
+    return content::EvalJs(contents, kScript).ExtractString();
+  }
+
  private:
   base::test::ScopedFeatureList features_;
 };
@@ -42,25 +59,22 @@ IN_PROC_BROWSER_TEST_P(MallAppIntegrationTest, EmbedMallWithContext) {
 
   content::WebContents* contents = LaunchApp(ash::SystemWebAppType::MALL);
 
-  // Poll to wait for an iframe to be embedded on the page, and resolve with the
-  // 'src' attribute.
-  constexpr char kScript[] = R"js(
-    (async () => {
-      await new Promise((resolve, reject) => {
-        let intervalId = setInterval(() => {
-          if (document.querySelector("iframe")) {
-            clearInterval(intervalId);
-            resolve();
-          }
-        }, 50);
-      });
-
-      return document.querySelector("iframe").src;
-    })();
-  )js";
-
-  EXPECT_THAT(content::EvalJs(contents, kScript).ExtractString(),
+  EXPECT_THAT(GetMallEmbedUrl(contents),
               testing::StartsWith("https://discover.apps.chrome/?context="));
+}
+
+IN_PROC_BROWSER_TEST_P(MallAppIntegrationTest, EmbedMallWithDeepLink) {
+  WaitForTestSystemAppInstall();
+
+  apps::AppLaunchParams params =
+      LaunchParamsForApp(ash::SystemWebAppType::MALL);
+  params.override_url = GURL("chrome://mall/apps/list");
+
+  content::WebContents* contents = LaunchApp(std::move(params));
+
+  EXPECT_THAT(
+      GetMallEmbedUrl(contents),
+      testing::StartsWith("https://discover.apps.chrome/apps/list?context="));
 }
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(

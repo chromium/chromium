@@ -16,7 +16,7 @@
 
 namespace ash {
 
-GURL GetMallLaunchUrl(const apps::DeviceInfo& info) {
+GURL GetMallLaunchUrl(const apps::DeviceInfo& info, std::string_view path) {
   apps::proto::ClientContext context;
   *context.mutable_device_context() = info.ToDeviceContext();
   *context.mutable_user_context() = info.ToUserContext();
@@ -25,7 +25,15 @@ GURL GetMallLaunchUrl(const apps::DeviceInfo& info) {
 
   constexpr std::string_view kContextParameter = "context";
 
-  return net::AppendOrReplaceQueryParameter(GetMallBaseUrl(), kContextParameter,
+  GURL::Replacements replacements;
+  replacements.SetPathStr(path);
+
+  GURL url_with_path = GetMallBaseUrl().ReplaceComponents(replacements);
+  if (!url_with_path.is_valid()) {
+    url_with_path = GetMallBaseUrl();
+  }
+
+  return net::AppendOrReplaceQueryParameter(url_with_path, kContextParameter,
                                             encoded_context);
 }
 
