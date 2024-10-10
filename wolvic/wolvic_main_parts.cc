@@ -11,6 +11,7 @@
 #include "net/android/network_change_notifier_factory_android.h"
 #include "net/base/network_change_notifier.h"
 #include "wolvic/browser/mojo/wolvic_interface_registrar.h"
+#include "wolvic/browser/webdata_services/web_data_service_factory.h"
 #include "wolvic/wolvic_browser_context.h"
 
 namespace wolvic {
@@ -59,6 +60,7 @@ void WolvicMainParts::PreProfileInit() {
 }
 
 void WolvicMainParts::EnsureBrowserContextKeyedServiceFactoriesBuilt() {
+  WebDataServiceFactory::GetInstance();
 }
 
 void WolvicMainParts::PostMainMessageLoopRun() {

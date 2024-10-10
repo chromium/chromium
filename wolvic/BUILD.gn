@@ -83,6 +83,8 @@ shared_library("libcontent_native") {
     "browser/vr/wvr_thread.h",
     "browser/webapps/manifest_builder.cc",
     "browser/webapps/manifest_builder.h",
+    "browser/webdata_services/web_data_service_factory.cc",
+    "browser/webdata_services/web_data_service_factory.h",
     "browser/wolvic_browser_interface_binders.cc",
     "browser/wolvic_browser_interface_binders.h",
     "browser/wolvic_contents.cc",
@@ -112,6 +114,7 @@ shared_library("libcontent_native") {
   deps = [
     ":content_native_lib",
     ":jni_headers",
+    "//components/webdata_services",
     "//components/crash/content/browser",
     "//components/zoom",
     "//device/vr:vr_util",
