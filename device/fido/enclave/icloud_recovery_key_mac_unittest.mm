@@ -11,9 +11,11 @@
 #include <memory>
 #include <vector>
 
+#include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/trusted_vault/securebox.h"
@@ -112,6 +114,71 @@ TEST_F(ICloudRecoveryKeyTest, CreateAndRetrieve) {
         return key->id() == key2->id();
       });
   EXPECT_NE(key2it, keys->end());
+}
+
+// Verify that keys are stored using the new .hw_protected kSecAttrService, but
+// old keys without it can still be retrieved.
+TEST_F(ICloudRecoveryKeyTest, RetrieveWithLegacyAttributes) {
+  std::unique_ptr<ICloudRecoveryKey> key1 = CreateKey();
+  ASSERT_TRUE(key1);
+  ASSERT_TRUE(key1->key());
+
+  std::unique_ptr<ICloudRecoveryKey> key2 = CreateKey();
+  ASSERT_TRUE(key2);
+  ASSERT_TRUE(key2->key());
+
+  CFMutableDictionaryRef key1_dict = const_cast<CFMutableDictionaryRef>(
+      fake_keychain_.keychain()->items().at(0).get());
+  auto service = base::apple::GetValueFromDictionary<CFStringRef>(
+      key1_dict, kSecAttrService);
+  EXPECT_EQ(base::SysCFStringRefToUTF8(service),
+            "com.google.common.folsom.cloud.private.hw_protected");
+  CFDictionarySetValue(
+      key1_dict, kSecAttrService,
+      base::SysUTF8ToCFStringRef("com.google.common.folsom.cloud.private")
+          .release());
+
+  std::optional<std::vector<std::unique_ptr<ICloudRecoveryKey>>> keys;
+  base::RunLoop run_loop;
+  ICloudRecoveryKey::Retrieve(
+      base::BindLambdaForTesting(
+          [&](std::vector<std::unique_ptr<ICloudRecoveryKey>> ret) {
+            keys = std::move(ret);
+            run_loop.Quit();
+          }),
+      kKeychainAccessGroup);
+  run_loop.Run();
+
+  ASSERT_TRUE(keys);
+  EXPECT_EQ(keys->size(), 2u);
+}
+
+// Tests that keys belonging to other security domains are not retrieved.
+TEST_F(ICloudRecoveryKeyTest, IgnoreOtherSecurityDomains) {
+  std::unique_ptr<ICloudRecoveryKey> key1 = CreateKey();
+  ASSERT_TRUE(key1);
+  ASSERT_TRUE(key1->key());
+
+  CFMutableDictionaryRef key1_dict = const_cast<CFMutableDictionaryRef>(
+      fake_keychain_.keychain()->items().at(0).get());
+  CFDictionarySetValue(key1_dict, kSecAttrService,
+                       base::SysUTF8ToCFStringRef(
+                           "com.google.common.folsom.cloud.private.folsom")
+                           .release());
+
+  std::optional<std::vector<std::unique_ptr<ICloudRecoveryKey>>> keys;
+  base::RunLoop run_loop;
+  ICloudRecoveryKey::Retrieve(
+      base::BindLambdaForTesting(
+          [&](std::vector<std::unique_ptr<ICloudRecoveryKey>> ret) {
+            keys = std::move(ret);
+            run_loop.Quit();
+          }),
+      kKeychainAccessGroup);
+  run_loop.Run();
+
+  ASSERT_TRUE(keys);
+  EXPECT_TRUE(keys->empty());
 }
 
 TEST_F(ICloudRecoveryKeyTest, CreateKeychainError) {
