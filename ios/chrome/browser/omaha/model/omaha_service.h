@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_OMAHA_MODEL_OMAHA_SERVICE_H_
 #define IOS_CHROME_BROWSER_OMAHA_MODEL_OMAHA_SERVICE_H_
 
+#include <Foundation/Foundation.h>
+
 #include <memory>
 #include <string>
 
@@ -113,6 +115,7 @@ class OmahaService {
   FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, PingOutOfDateUpdatesUserDefaults);
   FRIEND_TEST_ALL_PREFIXES(OmahaServiceInternalTest,
                            PingMessageTestWithProfileData);
+  FRIEND_TEST_ALL_PREFIXES(OmahaServiceTest, ResyncTimerAfterSystemSuspend);
 
   // For the singleton:
   friend class base::NoDestructor<OmahaService>;
@@ -129,8 +132,9 @@ class OmahaService {
   void StartInternal(
       const scoped_refptr<base::SequencedTaskRunner> task_runner);
 
-  // Stops the service in preparation for browser shutdown.
-  void StopInternal();
+  // Resyncs the timer if device sleep has caused it to get out of
+  // sync with `next_tries_time_`.
+  void ResyncTimerIfNeeded();
 
   // URL loader completion callback.
   void OnURLLoadComplete(std::unique_ptr<std::string> response_body);
@@ -263,6 +267,11 @@ class OmahaService {
 
   // If a scheduled ping was canceled.
   bool scheduled_ping_canceled_ = false;
+
+  // An opaque handle to the applicationWillEnterForeground
+  // notification registration. Used to cancel the registration and to
+  // prevent registering multiple times.
+  id foreground_notification_registration_handle_;
 
   // Called to notify that upgrade is recommended.
   UpgradeRecommendedCallback upgrade_recommended_callback_;

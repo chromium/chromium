@@ -44,6 +44,7 @@ source_set("unit_tests") {
     "//components/prefs",
     "//components/version_info",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/upgrade/model:public",
     "//ios/chrome/common",
     "//ios/chrome/test:test_support",

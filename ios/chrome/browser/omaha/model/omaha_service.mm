@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/omaha/model/omaha_service.h"
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #import <memory>
 #import <utility>
@@ -495,6 +495,11 @@ OmahaService::OmahaService(bool schedule)
 OmahaService::~OmahaService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (foreground_notification_registration_handle_) {
+    [[NSNotificationCenter defaultCenter]
+        removeObserver:foreground_notification_registration_handle_];
+  }
+
   for (auto& observer : observers_) {
     observer.ServiceWillShutdown(this);
   }
@@ -795,7 +800,53 @@ void OmahaService::SendOrScheduleNextPing() {
     timer_.Start(
         FROM_HERE, next_tries_time_ - now,
         base::BindOnce(&OmahaService::SendPing, base::Unretained(this)));
+    // Once the timer is started, register for
+    // applicationWillEnterForeground notifications.
+    if (!foreground_notification_registration_handle_ &&
+        base::FeatureList::IsEnabled(kOmahaResyncTimerOnForeground)) {
+      foreground_notification_registration_handle_ =
+          [[NSNotificationCenter defaultCenter]
+              addObserverForName:@"UIApplicationWillEnterForegroundNotification"
+                          object:nil
+                           queue:nil
+                      usingBlock:^(NSNotification* notification) {
+                        web::GetIOThreadTaskRunner({})->PostTask(
+                            FROM_HERE,
+                            base::BindOnce(&OmahaService::ResyncTimerIfNeeded,
+                                           base::Unretained(this)));
+                      }];
+    }
   }
+}
+
+// base::TimeTicks pauses when the device is asleep, which artifically
+// extends long-running timers. Mitigate this by resyncing timers to
+// the expected deadline.
+void OmahaService::ResyncTimerIfNeeded() {
+  DCHECK_CURRENTLY_ON(web::WebThread::IO);
+  CHECK(base::FeatureList::IsEnabled(kOmahaResyncTimerOnForeground),
+        base::NotFatalUntil::M134);
+
+  // If the timer isn't already running, nothing needs to be done.
+  if (!timer_.IsRunning()) {
+    return;
+  }
+
+  // If the deadline has already passed, fire the timer
+  // immediately. Note that this check uses wall clock time, so may
+  // fire early if the device's clock was changed, but sending extra
+  // pings is not harmful.
+  base::Time now = base::Time::Now();
+  if (next_tries_time_ <= now) {
+    timer_.FireNow();
+    return;
+  }
+
+  // The deadline is still in the future, but may not match what the
+  // timer is currently set to. Reset the timer with a new deadline.
+  CHECK(schedule_, base::NotFatalUntil::M134);
+  timer_.Start(FROM_HERE, next_tries_time_ - now,
+               base::BindOnce(&OmahaService::SendPing, base::Unretained(this)));
 }
 
 void OmahaService::PersistStates() {

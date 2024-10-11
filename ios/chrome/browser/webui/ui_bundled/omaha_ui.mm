@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/webui/ui_bundled/omaha_ui.h"
+#import "ios/chrome/browser/webui/ui_bundled/omaha_ui.h"
 
-#include <memory>
+#import <memory>
 
-#include "base/functional/bind.h"
-#include "base/memory/weak_ptr.h"
-#include "base/values.h"
-#include "ios/chrome/browser/omaha/model/omaha_service.h"
-#include "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#include "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#include "ios/chrome/grit/ios_resources.h"
-#include "ios/web/public/webui/web_ui_ios.h"
-#include "ios/web/public/webui/web_ui_ios_data_source.h"
-#include "ios/web/public/webui/web_ui_ios_message_handler.h"
+#import "base/functional/bind.h"
+#import "base/memory/weak_ptr.h"
+#import "base/values.h"
+#import "ios/chrome/browser/omaha/model/omaha_service.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
+#import "ios/chrome/grit/ios_resources.h"
+#import "ios/web/public/webui/web_ui_ios.h"
+#import "ios/web/public/webui/web_ui_ios_data_source.h"
+#import "ios/web/public/webui/web_ui_ios_message_handler.h"
 
 using web::WebUIIOSMessageHandler;
 
