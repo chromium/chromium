@@ -164,8 +164,14 @@ void BluetoothAdapterFloss::Shutdown() {
   FlossDBusManager::Get()->GetManagerClient()->RemoveObserver(this);
   dbus_is_shutdown_ = true;
 
-  for (const auto& [key, scanner] : scanners_) {
-    scanner->OnRelease();
+  // Copy scanners_ to avoid iterating over it while it's being modified.
+  std::map<device::BluetoothUUID,
+           base::WeakPtr<BluetoothLowEnergyScanSessionFloss>>
+      scanners_copy(scanners_);
+  for (const auto& [_, scanner] : scanners_copy) {
+    if (scanner) {
+      scanner->OnRelease();
+    }
   }
   scanners_.clear();
 }
