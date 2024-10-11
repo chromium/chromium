@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/tips/tips_module_view.h"
 
+#import <optional>
 #import <string>
 
 #import "base/check.h"
@@ -84,16 +85,22 @@ SymbolConfig GetSymbolConfigForTip(TipIdentifier tip) {
   }
 }
 
-// Returns the `SymbolConfig` for the badge symbol of the given `tip`, or a
-// default-constructed `SymbolConfig` if the tip doesn't have a badge.
-SymbolConfig GetBadgeSymbolConfigForTip(TipIdentifier tip) {
+// Returns the `SymbolConfig` for the badge symbol of the given `tip`, or
+// `std::nullopt` if the tip doesn't have a badge.
+std::optional<SymbolConfig> GetBadgeSymbolConfigForTip(TipIdentifier tip) {
   switch (tip) {
-    case TipIdentifier::kLensShop:
-      return {base::SysNSStringToUTF8(kCartSymbol), true};
-    case TipIdentifier::kLensTranslate:
-      return {base::SysNSStringToUTF8(kLanguageSymbol), false};
+    case TipIdentifier::kLensShop: {
+      SymbolConfig result = {base::SysNSStringToUTF8(kCartSymbol), true};
+
+      return result;
+    }
+    case TipIdentifier::kLensTranslate: {
+      SymbolConfig result = {base::SysNSStringToUTF8(kLanguageSymbol), false};
+
+      return result;
+    }
     default:
-      NOTREACHED();
+      return std::nullopt;
   }
 }
 
@@ -164,7 +171,31 @@ SymbolConfig GetBadgeSymbolConfigForTip(TipIdentifier tip) {
 - (IconDetailView*)iconDetailView:(TipIdentifier)tip {
   SymbolConfig symbol = GetSymbolConfigForTip(tip);
 
-  SymbolConfig badgeSymbol = GetBadgeSymbolConfigForTip(tip);
+  std::optional<SymbolConfig> badgeSymbol = GetBadgeSymbolConfigForTip(tip);
+
+  if (badgeSymbol.has_value()) {
+    SymbolConfig badgeConfig = badgeSymbol.value();
+
+    IconDetailView* view = [[IconDetailView alloc]
+                  initWithTitle:[self titleText:tip]
+                    description:[self descriptionText:tip]
+                     layoutType:IconDetailViewLayoutType::kHero
+                     symbolName:base::SysUTF8ToNSString(symbol.name)
+             symbolColorPalette:[self symbolColorPalette:tip]
+          symbolBackgroundColor:[self symbolBackgroundColor:tip]
+              usesDefaultSymbol:symbol.is_default_symbol
+                  showCheckmark:NO
+                badgeSymbolName:base::SysUTF8ToNSString(badgeConfig.name)
+           badgeBackgroundColor:[self badgeBackgroundColor:tip]
+         badgeUsesDefaultSymbol:badgeConfig.is_default_symbol
+        accessibilityIdentifier:[self accessibilityIdentifier:tip]];
+
+    view.identifier = base::SysUTF8ToNSString(NameForTipIdentifier(tip));
+
+    view.tapDelegate = self;
+
+    return view;
+  }
 
   IconDetailView* view = [[IconDetailView alloc]
                 initWithTitle:[self titleText:tip]
@@ -175,9 +206,6 @@ SymbolConfig GetBadgeSymbolConfigForTip(TipIdentifier tip) {
         symbolBackgroundColor:[self symbolBackgroundColor:tip]
             usesDefaultSymbol:symbol.is_default_symbol
                 showCheckmark:NO
-              badgeSymbolName:base::SysUTF8ToNSString(badgeSymbol.name)
-         badgeBackgroundColor:[self badgeBackgroundColor:tip]
-       badgeUsesDefaultSymbol:badgeSymbol.is_default_symbol
       accessibilityIdentifier:[self accessibilityIdentifier:tip]];
 
   view.identifier = base::SysUTF8ToNSString(NameForTipIdentifier(tip));
