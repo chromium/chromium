@@ -16,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/viz/common/resources/shared_image_format.h"
+#include "components/viz/service/display/render_pass_alpha_type.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/ipc/common/surface_handle.h"
@@ -87,6 +88,7 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   // a no-op. Returns true if there was a change of state, false otherwise.
   bool Reshape(const gfx::Size& size,
                const gfx::ColorSpace& color_space,
+               RenderPassAlphaType alpha_type,
                SharedImageFormat format);
 
   // Sets the number of frame buffers to use when
@@ -170,6 +172,8 @@ class VIZ_SERVICE_EXPORT BufferQueue {
   gfx::Size size_;
   // The color space of all allocated buffers.
   gfx::ColorSpace color_space_;
+  // The alpha type of all allocated buffers.
+  RenderPassAlphaType alpha_type_ = RenderPassAlphaType::kPremul;
   // The format of all allocated buffers. The |format_| is optional to prevent
   // use of uninitialized values.
   std::optional<SharedImageFormat> format_;

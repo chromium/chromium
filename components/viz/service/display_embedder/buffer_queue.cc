@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
-#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/service/display/skia_output_surface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 
@@ -101,13 +100,16 @@ void BufferQueue::SwapBuffersSkipped(const gfx::Rect& damage) {
 
 bool BufferQueue::Reshape(const gfx::Size& size,
                           const gfx::ColorSpace& color_space,
+                          RenderPassAlphaType alpha_type,
                           SharedImageFormat format) {
-  if (size == size_ && color_space == color_space_ && format == format_) {
+  if (size == size_ && color_space == color_space_ &&
+      alpha_type == alpha_type_ && format == format_) {
     return false;
   }
 
   size_ = size;
   color_space_ = color_space;
+  alpha_type_ = alpha_type;
   format_ = format;
 
   if (buffers_destroyed_) {
@@ -187,8 +189,8 @@ void BufferQueue::AllocateBuffers(size_t n) {
   available_buffers_.reserve(available_buffers_.size() + n);
   for (size_t i = 0; i < n; ++i) {
     const gpu::Mailbox mailbox = skia_output_surface_->CreateSharedImage(
-        format_.value(), size_, color_space_, RenderPassAlphaType::kPremul,
-        usage, "VizBufferQueue", surface_handle_);
+        format_.value(), size_, color_space_, alpha_type_, usage,
+        "VizBufferQueue", surface_handle_);
     DCHECK(!mailbox.IsZero());
 
     available_buffers_.push_back(

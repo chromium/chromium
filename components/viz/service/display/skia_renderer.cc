@@ -1146,7 +1146,7 @@ gpu::Mailbox SkiaRenderer::GetProtectedSharedImage(bool is_10bit) {
 
   protected_buffer_queue_->Reshape(
       gfx::Size(kMaxProtectedContentWidth, kMaxProtectedContentHeight),
-      gfx::ColorSpace::CreateSRGB(),
+      gfx::ColorSpace::CreateSRGB(), RenderPassAlphaType::kPremul,
       (is_10bit &&
        base::FeatureList::IsEnabled(media::kEnableArmHwdrm10bitOverlays))
           ? SinglePlaneFormat::kBGRA_1010102
@@ -4257,8 +4257,15 @@ gfx::Rect SkiaRenderer::GetCurrentFramebufferDamage() const {
 
 void SkiaRenderer::Reshape(const OutputSurface::ReshapeParams& reshape_params) {
   if (buffer_queue_) {
+#if BUILDFLAG(IS_CHROMEOS)
+    // CrOS assumes that we (almost) never reallocate buffers, so we force
+    // |kPremul| to never trigger a reallocation due to root opacity changes.
+    const RenderPassAlphaType alpha_type = RenderPassAlphaType::kPremul;
+#else
+    const RenderPassAlphaType alpha_type = reshape_params.alpha_type;
+#endif
     buffer_queue_->Reshape(reshape_params.size, reshape_params.color_space,
-                           reshape_params.format);
+                           alpha_type, reshape_params.format);
   }
   // Even if we have our own BufferQueue, we still need to forward the Reshape()
   // call down to the OutputPresenter.
