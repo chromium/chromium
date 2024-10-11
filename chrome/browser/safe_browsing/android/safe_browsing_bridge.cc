@@ -15,6 +15,7 @@
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "content/public/browser/web_contents.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/safe_browsing/android/jni_headers/SafeBrowsingBridge_jni.h"
@@ -33,7 +34,7 @@ namespace safe_browsing {
 
 static jint JNI_SafeBrowsingBridge_UmaValueForFile(
     JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& path) {
+    const JavaParamRef<jstring>& path) {
   base::FilePath file_path(base::android::ConvertJavaStringToUTF8(env, path));
   return safe_browsing::FileTypePolicies::GetInstance()->UmaValueForFile(
       file_path);
@@ -99,5 +100,11 @@ static jboolean JNI_SafeBrowsingBridge_IsHashRealTimeLookupEligibleInSession(
   return safe_browsing::hash_realtime_utils::
       IsHashRealTimeLookupEligibleInSession();
 }
+
+static void JNI_SafeBrowsingBridge_ReportIntent(
+    JNIEnv* env,
+    content::WebContents* web_contents,
+    std::string& package_name,
+    std::string& uri) {}
 
 }  // namespace safe_browsing

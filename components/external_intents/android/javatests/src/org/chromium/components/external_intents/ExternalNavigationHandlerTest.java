@@ -2995,6 +2995,24 @@ public class ExternalNavigationHandlerTest {
         Assert.assertEquals("https://www.example.com/", mUrlHandler.mNewUrlAfterClobbering);
     }
 
+    @Test
+    @SmallTest
+    public void testReportToSafeBrowsing() {
+        // Because this test uses a TestContext, we don't actually send
+        // the intent for real. This does, however, ensure we call
+        // ExternalNavigationHandler.doStartActivity, which triggers the
+        // report to Safe Browsing.
+        mUrlHandler.sendIntentsForReal();
+
+        checkUrl("tel:012345678", redirectHandlerForLinkClick())
+                .expecting(
+                        OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
+                        START_OTHER_ACTIVITY);
+
+        Assert.assertEquals(
+                "tel:012345678", mDelegate.intentReportedToSafeBrowsing().getDataString());
+    }
+
     private static List<ResolveInfo> makeResolveInfos(ResolveInfo... infos) {
         return Arrays.asList(infos);
     }
@@ -3386,6 +3404,11 @@ public class ExternalNavigationHandlerTest {
         @Override
         public void maybeRecordExternalNavigationSchemeHistogram(GURL url) {}
 
+        @Override
+        public void reportIntentToSafeBrowsing(Intent intent) {
+            mSafeBrowsingIntent = intent;
+        }
+
         public void reset() {
             startIncognitoIntentCalled = false;
         }
@@ -3470,6 +3493,10 @@ public class ExternalNavigationHandlerTest {
             mShouldReturnAsActivityResult = returnResult;
         }
 
+        public Intent intentReportedToSafeBrowsing() {
+            return mSafeBrowsingIntent;
+        }
+
         public boolean startIncognitoIntentCalled;
         public boolean maybeSetRequestMetadataCalled;
         public Callback<Boolean> incognitoDialogUserDecisionCallback;
@@ -3493,6 +3520,7 @@ public class ExternalNavigationHandlerTest {
         private boolean mResolvesToOtherBrowser;
         private boolean mShouldDisableAllExternalIntents;
         private boolean mShouldReturnAsActivityResult;
+        private Intent mSafeBrowsingIntent;
     }
 
     private void checkIntentSanity(Intent intent, String name) {

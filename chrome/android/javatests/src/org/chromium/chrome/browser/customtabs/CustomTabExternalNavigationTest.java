@@ -167,17 +167,21 @@ public class CustomTabExternalNavigationTest {
     }
 
     private OverrideUrlLoadingResult getOverrideUrlLoadingResult(String url) {
-        ExternalNavigationHandler.sAllowIntentsToSelfForTesting = true;
-        final GURL testUrl = new GURL(url);
-        RedirectHandler redirectHandler = RedirectHandler.create();
-        redirectHandler.updateNewUrlLoading(PageTransition.LINK, false, true, 0, 0, false, true);
-        ExternalNavigationParams params =
-                new ExternalNavigationParams.Builder(testUrl, false)
-                        .setIsMainFrame(true)
-                        .setIsRendererInitiated(true)
-                        .setRedirectHandler(redirectHandler)
-                        .build();
-        return mUrlHandler.shouldOverrideUrlLoading(params);
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    ExternalNavigationHandler.sAllowIntentsToSelfForTesting = true;
+                    final GURL testUrl = new GURL(url);
+                    RedirectHandler redirectHandler = RedirectHandler.create();
+                    redirectHandler.updateNewUrlLoading(
+                            PageTransition.LINK, false, true, 0, 0, false, true);
+                    ExternalNavigationParams params =
+                            new ExternalNavigationParams.Builder(testUrl, false)
+                                    .setIsMainFrame(true)
+                                    .setIsRendererInitiated(true)
+                                    .setRedirectHandler(redirectHandler)
+                                    .build();
+                    return mUrlHandler.shouldOverrideUrlLoading(params);
+                });
     }
 
     /**

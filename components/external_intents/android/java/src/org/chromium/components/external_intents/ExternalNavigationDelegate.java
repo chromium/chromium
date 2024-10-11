@@ -158,4 +158,6 @@ public interface ExternalNavigationDelegate {
      * @param url The {@link GURL} of the external navigation.
      */
     void maybeRecordExternalNavigationSchemeHistogram(GURL url);
+
+    void reportIntentToSafeBrowsing(Intent intent);
 }
