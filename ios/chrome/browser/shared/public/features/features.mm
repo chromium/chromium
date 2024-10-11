@@ -167,6 +167,8 @@ extern const char kModernTabStripInactiveTabsHighContrast[] =
     "modern-tab-strip-inactive-tabs-high-contrast";
 extern const char kModernTabStripHighContrastNTB[] =
     "modern-tab-strip-high-contrast-ntb";
+extern const char kModernTabStripDetachedTabs[] =
+    "modern-tab-strip-detached-tabs";
 
 BASE_FEATURE(kDefaultBrowserIntentsShowSettings,
              "DefaultBrowserIntentsShowSettings",

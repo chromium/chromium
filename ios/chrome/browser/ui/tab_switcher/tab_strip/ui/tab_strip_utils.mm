@@ -10,6 +10,13 @@
 @implementation TabStripHelper
 
 + (UIColor*)backgroundColor {
+  if (TabStripFeaturesUtils.hasDetachedTabs) {
+    return UIColor.blackColor;
+  }
+  return [self cellBackgroundColor];
+}
+
++ (UIColor*)cellBackgroundColor {
   if (TabStripFeaturesUtils.hasBlackBackground) {
     return UIColor.blackColor;
   } else if (TabStripFeaturesUtils.hasDarkerBackground) {
@@ -21,7 +28,9 @@
 }
 
 + (UIColor*)newTabButtonSymbolColor {
-  if (TabStripFeaturesUtils.hasHighContrastNTB) {
+  if (TabStripFeaturesUtils.hasDetachedTabs) {
+    return UIColor.whiteColor;
+  } else if (TabStripFeaturesUtils.hasHighContrastNTB) {
     return [UIColor colorNamed:kTextPrimaryColor];
   } else if (TabStripFeaturesUtils.hasBlackBackground) {
     return [UIColor colorNamed:kStaticGrey600Color];

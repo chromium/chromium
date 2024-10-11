@@ -162,6 +162,7 @@ extern const char kModernTabStripDarkerBackgroundV3[];
 extern const char kModernTabStripCloseButtonsVisible[];
 extern const char kModernTabStripInactiveTabsHighContrast[];
 extern const char kModernTabStripHighContrastNTB[];
+extern const char kModernTabStripDetachedTabs[];
 
 // Feature flag that allows external apps to show default browser settings.
 BASE_DECLARE_FEATURE(kDefaultBrowserIntentsShowSettings);

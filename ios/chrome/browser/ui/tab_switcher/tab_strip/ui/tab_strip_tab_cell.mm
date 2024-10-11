@@ -42,7 +42,9 @@ const CGFloat kCollapsedWidthThreshold = 150;
 
 // Separator constraints.
 const CGFloat kSeparatorHorizontalInset = 2;
+const CGFloat kSeparatorHorizontalInsetDetached = 6;
 const CGFloat kSeparatorGradientWidth = 4;
+const CGFloat kDetachedOutlineWidth = 1;
 
 // Visibility constants.
 constexpr CGFloat kCloseButtonVisibilityThreshold = 0.3;
@@ -79,6 +81,9 @@ UIImage* DefaultFavicon() {
   UIView* _leftTailView;
   UIView* _rightTailView;
   UIView* _selectedBackground;
+
+  // Outline of the cell.
+  UIView* _selectedBackgroundOutline;
 
   // Cell separator.
   UIView* _leadingSeparatorView;
@@ -191,6 +196,12 @@ UIImage* DefaultFavicon() {
 
     _selectedBackground = [self createSelectedBackgroundView];
     [self insertSubview:_selectedBackground belowSubview:contentView];
+
+    if (TabStripFeaturesUtils.hasDetachedTabs) {
+      _selectedBackgroundOutline = [self createOutlineView];
+      [self insertSubview:_selectedBackgroundOutline
+             belowSubview:_selectedBackground];
+    }
 
     _leadingSeparatorView = [self createSeparatorView];
     [self addSubview:_leadingSeparatorView];
@@ -357,6 +368,7 @@ UIImage* DefaultFavicon() {
   _rightTailView.hidden = !selected;
   [self setLeadingSelectedBorderBackgroundViewHidden:YES];
   [self setTrailingSelectedBorderBackgroundViewHidden:YES];
+  _selectedBackgroundOutline.hidden = selected;
 
   [self updateCollapsedState];
   if (oldSelected != self.selected) {
@@ -421,6 +433,12 @@ UIImage* DefaultFavicon() {
   _closeButton.hidden = closeButtonAlpha < 0.01;
   _titleTrailingConstraint.constant =
       -kTitleInset + (1 - visibility) * (kCloseButtonSize + kCloseButtonMargin);
+}
+
+- (void)setCellVisibility:(CGFloat)visibility {
+  _accessibilityContainerView.alpha = visibility;
+  _selectedBackground.alpha = visibility;
+  _selectedBackgroundOutline.alpha = visibility;
 }
 
 #pragma mark - UICollectionViewCell
@@ -553,7 +571,7 @@ UIImage* DefaultFavicon() {
   } else {
     backgroundColor =
         isSelected ? [UIColor colorNamed:kGroupedSecondaryBackgroundColor]
-                   : [TabStripHelper backgroundColor];
+                   : TabStripHelper.cellBackgroundColor;
   }
 
   if (TabStripFeaturesUtils.hasBlackBackground) {
@@ -810,76 +828,138 @@ UIImage* DefaultFavicon() {
 
   /// `_leftTailView`, `_rightTailView` and `_selectedBackground` constraints.
   [NSLayoutConstraint activateConstraints:@[
-    [_leftTailView.rightAnchor constraintEqualToAnchor:contentView.leftAnchor],
+    [_leftTailView.rightAnchor
+        constraintEqualToAnchor:_selectedBackground.leftAnchor
+                       constant:TabStripFeaturesUtils.hasDetachedTabs ? 0.3
+                                                                      : 0],
     [_leftTailView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
     [_leftTailView.widthAnchor constraintEqualToConstant:kCornerSize],
     [_leftTailView.heightAnchor constraintEqualToConstant:kCornerSize],
 
-    [_rightTailView.leftAnchor constraintEqualToAnchor:contentView.rightAnchor],
+    [_rightTailView.leftAnchor
+        constraintEqualToAnchor:_selectedBackground.rightAnchor
+                       constant:TabStripFeaturesUtils.hasDetachedTabs ? -0.3
+                                                                      : 0],
     [_rightTailView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor],
     [_rightTailView.widthAnchor constraintEqualToConstant:kCornerSize],
     [_rightTailView.heightAnchor constraintEqualToConstant:kCornerSize],
-
-    [_selectedBackground.topAnchor
-        constraintEqualToAnchor:_accessibilityContainerView.topAnchor],
-    [_selectedBackground.rightAnchor
-        constraintEqualToAnchor:_accessibilityContainerView.rightAnchor],
-    [_selectedBackground.leftAnchor
-        constraintEqualToAnchor:_accessibilityContainerView.leftAnchor],
-    [_selectedBackground.bottomAnchor
-        constraintEqualToAnchor:self.bottomAnchor],
   ]];
 
-  /// `_leadingSeparatorView` constraints.
-  [NSLayoutConstraint activateConstraints:@[
-    [_leadingSeparatorView.trailingAnchor
-        constraintEqualToAnchor:contentView.leadingAnchor
-                       constant:-kSeparatorHorizontalInset],
-    [_leadingSeparatorView.widthAnchor
-        constraintEqualToConstant:TabStripStaticSeparatorConstants
-                                      .separatorWidth],
-    [_leadingSeparatorView.centerYAnchor
-        constraintEqualToAnchor:_closeButton.centerYAnchor],
-  ]];
+  if (TabStripFeaturesUtils.hasDetachedTabs) {
+    [NSLayoutConstraint activateConstraints:@[
+      [_selectedBackground.topAnchor
+          constraintEqualToAnchor:_accessibilityContainerView.topAnchor],
+      [_selectedBackground.trailingAnchor
+          constraintEqualToAnchor:_accessibilityContainerView.trailingAnchor
+                         constant:-kDetachedOutlineWidth / 2],
+      [_selectedBackground.leadingAnchor
+          constraintEqualToAnchor:_accessibilityContainerView.leadingAnchor
+                         constant:kDetachedOutlineWidth / 2],
+      [_selectedBackground.bottomAnchor
+          constraintEqualToAnchor:self.bottomAnchor],
 
-  /// `_trailingSeparatorView` constraints.
-  [NSLayoutConstraint activateConstraints:@[
-    [_trailingSeparatorView.leadingAnchor
-        constraintEqualToAnchor:contentView.trailingAnchor
-                       constant:kSeparatorHorizontalInset],
-    [_trailingSeparatorView.widthAnchor
-        constraintEqualToConstant:TabStripStaticSeparatorConstants
-                                      .separatorWidth],
-    [_trailingSeparatorView.centerYAnchor
-        constraintEqualToAnchor:_closeButton.centerYAnchor],
-  ]];
+      [_selectedBackgroundOutline.topAnchor
+          constraintEqualToAnchor:_selectedBackground.topAnchor],
+      [_selectedBackgroundOutline.trailingAnchor
+          constraintEqualToAnchor:_selectedBackground.trailingAnchor
+                         constant:1],
+      [_selectedBackgroundOutline.leadingAnchor
+          constraintEqualToAnchor:_selectedBackground.leadingAnchor
+                         constant:-1],
+      [_selectedBackgroundOutline.bottomAnchor
+          constraintEqualToAnchor:_selectedBackground.bottomAnchor],
+    ]];
 
-  [self setSeparatorsHeight:TabStripStaticSeparatorConstants
-                                .regularSeparatorHeight];
+    /// `_leadingSeparatorView` constraints.
+    [NSLayoutConstraint activateConstraints:@[
+      [_leadingSeparatorView.trailingAnchor
+          constraintEqualToAnchor:contentView.leadingAnchor
+                         constant:TabStripFeaturesUtils.hasDetachedTabs
+                                      ? -kSeparatorHorizontalInsetDetached
+                                      : -kSeparatorHorizontalInset],
+      [_leadingSeparatorView.widthAnchor
+          constraintEqualToConstant:TabStripStaticSeparatorConstants
+                                        .separatorWidth],
+      [_leadingSeparatorView.centerYAnchor
+          constraintEqualToAnchor:_closeButton.centerYAnchor],
+    ]];
 
-  /// `_leadingSeparatorGradientView` constraints.
-  [NSLayoutConstraint activateConstraints:@[
-    [_leadingSeparatorGradientView.leadingAnchor
-        constraintEqualToAnchor:_leadingSeparatorView.trailingAnchor],
-    [_leadingSeparatorGradientView.widthAnchor
-        constraintEqualToConstant:kSeparatorGradientWidth],
-    [_leadingSeparatorGradientView.heightAnchor
-        constraintEqualToAnchor:_accessibilityContainerView.heightAnchor],
-    [_leadingSeparatorGradientView.centerYAnchor
-        constraintEqualToAnchor:_accessibilityContainerView.centerYAnchor],
-  ]];
+    /// `_trailingSeparatorView` constraints.
+    [NSLayoutConstraint activateConstraints:@[
+      [_trailingSeparatorView.leadingAnchor
+          constraintEqualToAnchor:contentView.trailingAnchor
+                         constant:TabStripFeaturesUtils.hasDetachedTabs
+                                      ? kSeparatorHorizontalInsetDetached
+                                      : kSeparatorHorizontalInset],
+      [_trailingSeparatorView.widthAnchor
+          constraintEqualToConstant:TabStripStaticSeparatorConstants
+                                        .separatorWidth],
+      [_trailingSeparatorView.centerYAnchor
+          constraintEqualToAnchor:_closeButton.centerYAnchor],
+    ]];
+  } else {
+    [NSLayoutConstraint activateConstraints:@[
+      [_selectedBackground.topAnchor
+          constraintEqualToAnchor:_accessibilityContainerView.topAnchor],
+      [_selectedBackground.trailingAnchor
+          constraintEqualToAnchor:_accessibilityContainerView.trailingAnchor],
+      [_selectedBackground.leadingAnchor
+          constraintEqualToAnchor:_accessibilityContainerView.leadingAnchor],
+      [_selectedBackground.bottomAnchor
+          constraintEqualToAnchor:self.bottomAnchor],
+    ]];
 
-  /// `_trailingSeparatorGradientView` constraints.
-  [NSLayoutConstraint activateConstraints:@[
-    [_trailingSeparatorGradientView.trailingAnchor
-        constraintEqualToAnchor:_trailingSeparatorView.leadingAnchor],
-    [_trailingSeparatorGradientView.widthAnchor
-        constraintEqualToConstant:kSeparatorGradientWidth],
-    [_trailingSeparatorGradientView.heightAnchor
-        constraintEqualToAnchor:_accessibilityContainerView.heightAnchor],
-    [_trailingSeparatorGradientView.centerYAnchor
-        constraintEqualToAnchor:_accessibilityContainerView.centerYAnchor],
-  ]];
+    /// `_leadingSeparatorView` constraints.
+    [NSLayoutConstraint activateConstraints:@[
+      [_leadingSeparatorView.trailingAnchor
+          constraintEqualToAnchor:contentView.leadingAnchor
+                         constant:-kSeparatorHorizontalInset],
+      [_leadingSeparatorView.widthAnchor
+          constraintEqualToConstant:TabStripStaticSeparatorConstants
+                                        .separatorWidth],
+      [_leadingSeparatorView.centerYAnchor
+          constraintEqualToAnchor:_closeButton.centerYAnchor],
+    ]];
+
+    /// `_trailingSeparatorView` constraints.
+    [NSLayoutConstraint activateConstraints:@[
+      [_trailingSeparatorView.leadingAnchor
+          constraintEqualToAnchor:contentView.trailingAnchor
+                         constant:kSeparatorHorizontalInset],
+      [_trailingSeparatorView.widthAnchor
+          constraintEqualToConstant:TabStripStaticSeparatorConstants
+                                        .separatorWidth],
+      [_trailingSeparatorView.centerYAnchor
+          constraintEqualToAnchor:_closeButton.centerYAnchor],
+    ]];
+
+    [self setSeparatorsHeight:TabStripStaticSeparatorConstants
+                                  .regularSeparatorHeight];
+
+    /// `_leadingSeparatorGradientView` constraints.
+    [NSLayoutConstraint activateConstraints:@[
+      [_leadingSeparatorGradientView.leadingAnchor
+          constraintEqualToAnchor:_leadingSeparatorView.trailingAnchor],
+      [_leadingSeparatorGradientView.widthAnchor
+          constraintEqualToConstant:kSeparatorGradientWidth],
+      [_leadingSeparatorGradientView.heightAnchor
+          constraintEqualToAnchor:_accessibilityContainerView.heightAnchor],
+      [_leadingSeparatorGradientView.centerYAnchor
+          constraintEqualToAnchor:_accessibilityContainerView.centerYAnchor],
+    ]];
+
+    /// `_trailingSeparatorGradientView` constraints.
+    [NSLayoutConstraint activateConstraints:@[
+      [_trailingSeparatorGradientView.trailingAnchor
+          constraintEqualToAnchor:_trailingSeparatorView.leadingAnchor],
+      [_trailingSeparatorGradientView.widthAnchor
+          constraintEqualToConstant:kSeparatorGradientWidth],
+      [_trailingSeparatorGradientView.heightAnchor
+          constraintEqualToAnchor:_accessibilityContainerView.heightAnchor],
+      [_trailingSeparatorGradientView.centerYAnchor
+          constraintEqualToAnchor:_accessibilityContainerView.centerYAnchor],
+    ]];
+  }
 
   /// `_groupStrokeView` constraints.
   _groupStrokeViewBottomConstraint =
@@ -941,12 +1021,12 @@ UIImage* DefaultFavicon() {
 
 // Returns a new gradient view.
 - (GradientView*)createGradientView {
-  GradientView* gradientView =
-      [[GradientView alloc] initWithStartColor:[[TabStripHelper backgroundColor]
-                                                   colorWithAlphaComponent:0]
-                                      endColor:[TabStripHelper backgroundColor]
-                                    startPoint:CGPointMake(0.0f, 0.5f)
-                                      endPoint:CGPointMake(1.0f, 0.5f)];
+  GradientView* gradientView = [[GradientView alloc]
+      initWithStartColor:[TabStripHelper.cellBackgroundColor
+                             colorWithAlphaComponent:0]
+                endColor:TabStripHelper.cellBackgroundColor
+              startPoint:CGPointMake(0.0f, 0.5f)
+                endPoint:CGPointMake(1.0f, 0.5f)];
   gradientView.translatesAutoresizingMaskIntoConstraints = NO;
   return gradientView;
 }
@@ -1008,7 +1088,7 @@ UIImage* DefaultFavicon() {
 // Returns a new separator view.
 - (UIView*)createSeparatorView {
   UIView* separatorView = [[UIView alloc] init];
-  separatorView.backgroundColor = [TabStripHelper backgroundColor];
+  separatorView.backgroundColor = TabStripHelper.backgroundColor;
   separatorView.translatesAutoresizingMaskIntoConstraints = NO;
   separatorView.layer.cornerRadius =
       TabStripStaticSeparatorConstants.separatorCornerRadius;
@@ -1019,13 +1099,36 @@ UIImage* DefaultFavicon() {
       UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
   backgroundView.backgroundColor = [UIColor colorNamed:kTextQuaternaryColor];
   [separatorView addSubview:backgroundView];
+
+  if (TabStripFeaturesUtils.hasDetachedTabs) {
+    separatorView.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+  }
+
   return separatorView;
+}
+
+// Returns the outline view displayed below the tab view.
+- (UIView*)createOutlineView {
+  UIView* outline = [[UIView alloc] init];
+  outline.backgroundColor = [UIColor
+      colorWithDynamicProvider:^UIColor*(UITraitCollection* traitCollection) {
+        if (traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
+          return UIColor.blackColor;
+        } else {
+          return [UIColor colorNamed:kGrey400Color];
+        }
+      }];
+  outline.translatesAutoresizingMaskIntoConstraints = NO;
+  outline.layer.cornerRadius = kCornerSize;
+  outline.layer.maskedCorners = kCALayerMaxXMinYCorner | kCALayerMinXMinYCorner;
+
+  return outline;
 }
 
 // Returns a new selected border background view.
 - (UIView*)createSelectedBorderBackgroundView {
   UIView* backgroundView = [[UIView alloc] init];
-  backgroundView.backgroundColor = [TabStripHelper backgroundColor];
+  backgroundView.backgroundColor = TabStripHelper.backgroundColor;
   backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
   backgroundView.hidden = YES;
   return backgroundView;

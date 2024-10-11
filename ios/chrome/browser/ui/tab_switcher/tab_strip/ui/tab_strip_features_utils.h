@@ -44,6 +44,9 @@
 // Whether the New Tab Button should have high contrast.
 @property(class, nonatomic, readonly) BOOL hasHighContrastNTB;
 
+// Whether the tabs should be visually detached.
+@property(class, nonatomic, readonly) BOOL hasDetachedTabs;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_UI_TAB_STRIP_FEATURES_UTILS_H_

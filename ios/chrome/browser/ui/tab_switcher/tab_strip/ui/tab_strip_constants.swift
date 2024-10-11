@@ -24,7 +24,8 @@ public struct TabStripConstants {
     public static let height: CGFloat = 40
     public static let minWidth: CGFloat = 132
     public static let minWidthV3: CGFloat = 164
-    public static let closeButtonVisibilityWidth: CGFloat = 30
+    public static let scrollLengthForVisibilityUpdate: CGFloat = 30
+    public static let cellVisibilityMinWidth: CGFloat = 60
     public static let maxWidth: CGFloat = 233
     public static let horizontalSpacing: CGFloat = 6
     public static let leadingSeparatorMinInset: CGFloat = 8

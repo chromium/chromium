@@ -66,4 +66,9 @@
       kModernTabStrip, kModernTabStripHighContrastNTB, false);
 }
 
++ (BOOL)hasDetachedTabs {
+  return GetFieldTrialParamByFeatureAsBool(kModernTabStrip,
+                                           kModernTabStripDetachedTabs, false);
+}
+
 @end

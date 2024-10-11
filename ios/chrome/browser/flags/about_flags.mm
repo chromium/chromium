@@ -610,13 +610,21 @@ const FeatureEntry::FeatureParam kModernTabStripHighContrastNTBOption[] = {
     {kModernTabStripNTBNoBackground, "true"},
     {kModernTabStripCloserNTB, "true"},
     {kModernTabStripBiggerNTB, "true"}};
-const FeatureEntry::FeatureParam kModernTabStripCloseV3AllOptions[] = {
+const FeatureEntry::FeatureParam kModernTabStripV3AllOptions[] = {
     {kModernTabStripCloseButtonsVisible, "true"},
     {kModernTabStripNTBNoBackground, "true"},
     {kModernTabStripInactiveTabsHighContrast, "true"},
     {kModernTabStripCloserNTB, "true"},
     {kModernTabStripHighContrastNTB, "true"},
     {kModernTabStripDarkerBackgroundV3, "true"},
+    {kModernTabStripBiggerNTB, "true"}};
+const FeatureEntry::FeatureParam kModernTabStripDetachedTabsOptions[] = {
+    {kModernTabStripCloseButtonsVisible, "true"},
+    {kModernTabStripHighContrastNTB, "true"},
+    {kModernTabStripInactiveTabsHighContrast, "true"},
+    {kModernTabStripDetachedTabs, "true"},
+    {kModernTabStripCloserNTB, "true"},
+    {kModernTabStripNTBNoBackground, "true"},
     {kModernTabStripBiggerNTB, "true"}};
 
 const FeatureEntry::FeatureVariation kModernTabStripVariations[] = {
@@ -641,8 +649,10 @@ const FeatureEntry::FeatureVariation kModernTabStripVariations[] = {
      std::size(kModernTabStripInactiveTabsHighContrastOption), nullptr},
     {"V3 Visible NTB", kModernTabStripHighContrastNTBOption,
      std::size(kModernTabStripHighContrastNTBOption), nullptr},
-    {"V3 all options", kModernTabStripCloseV3AllOptions,
-     std::size(kModernTabStripCloseV3AllOptions), nullptr},
+    {"V3 all options", kModernTabStripV3AllOptions,
+     std::size(kModernTabStripV3AllOptions), nullptr},
+    {"V3 detached tabs", kModernTabStripDetachedTabsOptions,
+     std::size(kModernTabStripDetachedTabsOptions), nullptr},
 };
 
 const FeatureEntry::FeatureVariation

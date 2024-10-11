@@ -1302,7 +1302,7 @@ enum HeaderBehaviour {
   [_fakeStatusBarView setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     if (IsModernTabStripOrRaccoonEnabled()) {
-      _fakeStatusBarView.backgroundColor = [TabStripHelper backgroundColor];
+      _fakeStatusBarView.backgroundColor = TabStripHelper.backgroundColor;
       // Force the UserInterfaceStyle update in incognito.
       _fakeStatusBarView.overrideUserInterfaceStyle =
           _isOffTheRecord ? UIUserInterfaceStyleDark
