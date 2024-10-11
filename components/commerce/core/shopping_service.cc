@@ -1678,7 +1678,9 @@ void ShoppingService::GetAllSubscriptions(
   if (subscriptions_manager_) {
     subscriptions_manager_->GetAllSubscriptions(type, std::move(callback));
   } else {
-    CHECK_IS_TEST();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  std::vector<CommerceSubscription>()));
   }
 }
 
@@ -1688,18 +1690,15 @@ void ShoppingService::IsSubscribed(CommerceSubscription subscription,
     subscriptions_manager_->IsSubscribed(std::move(subscription),
                                          std::move(callback));
   } else {
-    CHECK_IS_TEST();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
   }
 }
 
 bool ShoppingService::IsSubscribedFromCache(
     const CommerceSubscription& subscription) {
-  if (subscriptions_manager_) {
-    return subscriptions_manager_->IsSubscribedFromCache(subscription);
-  } else {
-    CHECK_IS_TEST();
-  }
-  return false;
+  return subscriptions_manager_ &&
+         subscriptions_manager_->IsSubscribedFromCache(subscription);
 }
 
 void ShoppingService::FetchPriceEmailPref() {
