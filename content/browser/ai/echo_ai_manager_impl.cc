@@ -18,17 +18,15 @@
 
 namespace content {
 
-EchoAIManagerImpl::EchoAIManagerImpl(content::BrowserContext* browser_context,
-                                     ReceiverContext context) {}
+EchoAIManagerImpl::EchoAIManagerImpl() = default;
 
 EchoAIManagerImpl::~EchoAIManagerImpl() = default;
 
 // static
 void EchoAIManagerImpl::Create(
-    content::BrowserContext* browser_context,
     ReceiverContext context,
     mojo::PendingReceiver<blink::mojom::AIManager> receiver) {
-  static base::NoDestructor<EchoAIManagerImpl> ai(browser_context, context);
+  static base::NoDestructor<EchoAIManagerImpl> ai;
   ai->receivers_.Add(ai.get(), std::move(receiver), context);
 }
 

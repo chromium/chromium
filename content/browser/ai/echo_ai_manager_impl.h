@@ -30,15 +30,13 @@ class EchoAIManagerImpl : public blink::mojom::AIManager {
 
   ~EchoAIManagerImpl() override;
 
-  static void Create(content::BrowserContext* browser_context,
-                     ReceiverContext context,
+  static void Create(ReceiverContext context,
                      mojo::PendingReceiver<blink::mojom::AIManager> receiver);
 
  private:
   friend base::NoDestructor<EchoAIManagerImpl>;
 
-  EchoAIManagerImpl(content::BrowserContext* browser_context,
-                    ReceiverContext context);
+  EchoAIManagerImpl();
 
   // `blink::mojom::AIManager` implementation.
   void CanCreateAssistant(CanCreateAssistantCallback callback) override;
