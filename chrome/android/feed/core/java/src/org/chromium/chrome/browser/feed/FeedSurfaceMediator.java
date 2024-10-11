@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.ui.signin.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.xsurface.ListLayoutHelper;
+import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityLogger.ClosedReason;
 import org.chromium.chrome.browser.xsurface.feed.StreamType;
 import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserver;
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
@@ -255,6 +256,7 @@ public class FeedSurfaceMediator
     private boolean mSettingUpStreams;
     private boolean mIsNewTabSearchEngineUrlAndroidEnabled;
     private boolean mIsPropertiesInitializedForStream;
+    private @ClosedReason int mClosedReason = ClosedReason.SUSPEND_APP;
 
     /**
      * @param coordinator The {@link FeedSurfaceCoordinator} that interacts with this class.
@@ -745,6 +747,7 @@ public class FeedSurfaceMediator
     /** Unbinds the stream with option for stream to put a placeholder for its contents. */
     private void unbindStream(boolean shouldPlaceSpacer, boolean switchingStream) {
         if (mCurrentStream == null) return;
+        mClosedReason = mCurrentStream.getClosedReason();
         mCoordinator.getHybridListRenderer().onSurfaceClosed();
         mCurrentStream.unbind(shouldPlaceSpacer, switchingStream);
         mCurrentStream.removeOnContentChangedListener(mStreamContentChangedListener);
@@ -1403,5 +1406,9 @@ public class FeedSurfaceMediator
         mSectionHeaderModel.set(
                 SectionHeaderListProperties.IS_NARROW_WINDOW_ON_TABLET_KEY,
                 newDisplayStyle.horizontal < HorizontalDisplayStyle.WIDE);
+    }
+
+    public @ClosedReason int getClosedReason() {
+        return mClosedReason;
     }
 }

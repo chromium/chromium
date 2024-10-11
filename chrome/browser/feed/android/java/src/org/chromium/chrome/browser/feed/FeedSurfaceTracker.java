@@ -4,11 +4,16 @@
 
 package org.chromium.chrome.browser.feed;
 
+import android.os.Handler;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.xsurface.ImageCacheHelper;
 import org.chromium.chrome.browser.xsurface.ProcessScope;
+import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityLogger.ClosedReason;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -22,6 +27,10 @@ public class FeedSurfaceTracker implements SurfaceCoordinator.Observer {
         void surfaceOpened();
     }
 
+    private static final int CLEAR_FEED_CACHE_DEFAULT_DELAY_SECONDS_FOR_OPEN_CARD = 30;
+    private static final int CLEAR_FEED_CACHE_DEFAULT_DELAY_SECONDS_FOR_LEAVE_FEED = 0;
+    private static final int DO_NOT_CLEAR_FEED_CACHE = -1;
+
     private static FeedSurfaceTracker sSurfaceTracker;
 
     // We avoid attaching surfaces until after |startup()| is called. This ensures that
@@ -33,6 +42,11 @@ public class FeedSurfaceTracker implements SurfaceCoordinator.Observer {
     // Tracks all the instances of FeedSurfaceCoordinator.
     @VisibleForTesting HashSet<SurfaceCoordinator> mCoordinators;
 
+    private final Handler mHandler;
+    private final int mClearFeedCacheForOpenCardDelayMs;
+    private final int mClearFeedCacheForLeaveFeedDelayMs;
+    private Runnable mClearFeedCacheRunnable;
+
     public static FeedSurfaceTracker getInstance() {
         if (sSurfaceTracker == null) {
             sSurfaceTracker = new FeedSurfaceTracker();
@@ -40,7 +54,29 @@ public class FeedSurfaceTracker implements SurfaceCoordinator.Observer {
         return sSurfaceTracker;
     }
 
-    private FeedSurfaceTracker() {}
+    private FeedSurfaceTracker() {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_LOW_MEMORY_IMPROVEMENT)) {
+            mHandler = new Handler();
+            int value =
+                    ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                            ChromeFeatureList.FEED_LOW_MEMORY_IMPROVEMENT,
+                            "open_card_delay",
+                            CLEAR_FEED_CACHE_DEFAULT_DELAY_SECONDS_FOR_OPEN_CARD);
+            mClearFeedCacheForOpenCardDelayMs =
+                    (value == DO_NOT_CLEAR_FEED_CACHE) ? DO_NOT_CLEAR_FEED_CACHE : value * 1000;
+            value =
+                    ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                            ChromeFeatureList.FEED_LOW_MEMORY_IMPROVEMENT,
+                            "leave_feed_delay",
+                            CLEAR_FEED_CACHE_DEFAULT_DELAY_SECONDS_FOR_LEAVE_FEED);
+            mClearFeedCacheForLeaveFeedDelayMs =
+                    (value == DO_NOT_CLEAR_FEED_CACHE) ? DO_NOT_CLEAR_FEED_CACHE : value * 1000;
+        } else {
+            mHandler = null;
+            mClearFeedCacheForOpenCardDelayMs = DO_NOT_CLEAR_FEED_CACHE;
+            mClearFeedCacheForLeaveFeedDelayMs = DO_NOT_CLEAR_FEED_CACHE;
+        }
+    }
 
     /**
      * @return the process scope for the feed.
@@ -79,6 +115,19 @@ public class FeedSurfaceTracker implements SurfaceCoordinator.Observer {
         }
         mCoordinators.remove(coordinator);
         coordinator.removeObserver(this);
+
+        // Clear the feed cache when all feed surfaces are destroyed.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_LOW_MEMORY_IMPROVEMENT)
+                && mCoordinators.isEmpty()) {
+            @ClosedReason int closedReason = coordinator.getClosedReason();
+            int delayMs = getClearFeedCacheDelayTimeMs(closedReason);
+            if (delayMs == 0) {
+                clearFeedCache();
+            } else if (delayMs != DO_NOT_CLEAR_FEED_CACHE) {
+                mClearFeedCacheRunnable = () -> clearFeedCache();
+                mHandler.postDelayed(mClearFeedCacheRunnable, delayMs);
+            }
+        }
     }
 
     void trackSurface(SurfaceCoordinator coordinator) {
@@ -87,6 +136,15 @@ public class FeedSurfaceTracker implements SurfaceCoordinator.Observer {
         }
         mCoordinators.add(coordinator);
         coordinator.addObserver(this);
+
+        // No need to clear the feed cache if a new feed surface is being created, i.e. the user
+        // goes back to the NTP or opens a new NTP.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.FEED_LOW_MEMORY_IMPROVEMENT)) {
+            if (mClearFeedCacheRunnable != null) {
+                mHandler.removeCallbacks(mClearFeedCacheRunnable);
+                mClearFeedCacheRunnable = null;
+            }
+        }
     }
 
     /** Clears all inactive coordinators and resets account. */
@@ -121,5 +179,28 @@ public class FeedSurfaceTracker implements SurfaceCoordinator.Observer {
 
     public void resetForTest() {
         mStartupCalled = false;
+    }
+
+    private int getClearFeedCacheDelayTimeMs(@ClosedReason int closedReason) {
+        if (closedReason == ClosedReason.OPEN_CARD) {
+            return mClearFeedCacheForOpenCardDelayMs;
+        } else if (closedReason == ClosedReason.LEAVE_FEED) {
+            return mClearFeedCacheForLeaveFeedDelayMs;
+        } else {
+            // The user still stays in the feed for all other closed reasons. Returns -1 to mean
+            // no clearing to feed cache.
+            return DO_NOT_CLEAR_FEED_CACHE;
+        }
+    }
+
+    private void clearFeedCache() {
+        // Clear the feed image memory cache.
+        ProcessScope processScope = getXSurfaceProcessScope();
+        if (processScope != null) {
+            ImageCacheHelper imageCacheHelper = processScope.provideImageCacheHelper();
+            if (imageCacheHelper != null) {
+                imageCacheHelper.clearMemoryCache();
+            }
+        }
     }
 }

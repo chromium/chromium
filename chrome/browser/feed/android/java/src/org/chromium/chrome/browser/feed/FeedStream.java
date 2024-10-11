@@ -820,6 +820,11 @@ public class FeedStream implements Stream {
     }
 
     @Override
+    public @ClosedReason int getClosedReason() {
+        return mClosedReason;
+    }
+
+    @Override
     public void bind(
             RecyclerView rootView,
             FeedListContentManager manager,
