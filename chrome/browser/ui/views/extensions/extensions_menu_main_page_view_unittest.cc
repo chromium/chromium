@@ -1684,7 +1684,10 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   ASSERT_TRUE(extension_entry);
   views::Button* extension_allow_button =
       static_cast<views::Button*>(extension_entry->children()[3]);
+  extensions::PermissionsManagerWaiter waiter(
+      PermissionsManager::Get(profile()));
   ClickButton(extension_allow_button);
+  waiter.WaitForExtensionPermissionsUpdate();
 
   WaitForAnimation();
   LayoutContainerIfNecessary();
@@ -1694,14 +1697,14 @@ TEST_F(ExtensionsMenuMainPageViewUnitTest,
   //   - message section (menu) does not include extension and is hidden
   //   - request access button (toolbar) does not include extension
   //   - action has been run
-  //   - site access is still "on click" since clicking the button grants one
-  //   time access
+  //   - site access is "on site" since clicking the button grants always access
+  //     to the site.
   EXPECT_FALSE(requests_access_container->GetVisible());
   EXPECT_TRUE(GetExtensionsInRequestAccessSection().empty());
   EXPECT_TRUE(GetExtensionsInRequestAccessButton().empty());
   EXPECT_EQ(user_action_tester.GetActionCount(kActivatedUserAction), 1);
   EXPECT_EQ(permissions->GetUserSiteAccess(*extension, url),
-            PermissionsManager::UserSiteAccess::kOnClick);
+            PermissionsManager::UserSiteAccess::kOnSite);
 }
 
 TEST_F(ExtensionsMenuMainPageViewUnitTest,
