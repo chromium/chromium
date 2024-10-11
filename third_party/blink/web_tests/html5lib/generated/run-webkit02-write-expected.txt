@@ -5,11 +5,9 @@
 17
 18
 19
-27
 28
 29
 30
-32
 33
 34
 35
@@ -174,23 +172,6 @@ Got:
 Expected:
 | <option>
 
-Test 27 of 35 in ../resources/webkit02.dat failed. Input:
-<select><option><hr>
-Got:
-| <html>
-|   <head>
-|   <body>
-|     <select>
-|       <option>
-|         <hr>
-Expected:
-| <html>
-|   <head>
-|   <body>
-|     <select>
-|       <option>
-|       <hr>
-
 Test 28 of 35 in ../resources/webkit02.dat failed. Input:
 <select><optgroup><option><hr>
 Got:
@@ -200,7 +181,7 @@ Got:
 |     <select>
 |       <optgroup>
 |         <option>
-|           <hr>
+|         <hr>
 Expected:
 | <html>
 |   <head>
@@ -246,31 +227,6 @@ Expected:
 |       <optgroup>
 |       <hr>
 
-Test 32 of 35 in ../resources/webkit02.dat failed. Input:
-<table><tr><td><select><option><hr>
-Got:
-| <html>
-|   <head>
-|   <body>
-|     <table>
-|       <tbody>
-|         <tr>
-|           <td>
-|             <select>
-|               <option>
-|                 <hr>
-Expected:
-| <html>
-|   <head>
-|   <body>
-|     <table>
-|       <tbody>
-|         <tr>
-|           <td>
-|             <select>
-|               <option>
-|               <hr>
-
 Test 33 of 35 in ../resources/webkit02.dat failed. Input:
 <table><tr><td><select><optgroup><option><hr>
 Got:
@@ -284,7 +240,7 @@ Got:
 |             <select>
 |               <optgroup>
 |                 <option>
-|                   <hr>
+|                 <hr>
 Expected:
 | <html>
 |   <head>

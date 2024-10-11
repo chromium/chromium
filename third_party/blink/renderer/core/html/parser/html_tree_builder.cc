@@ -893,6 +893,12 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
       break;
     case HTMLTag::kHr:
       ProcessFakePEndTagIfPInButtonScope();
+      if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled()) {
+        if (tree_.OpenElements()->InScope(HTMLTag::kSelect)) {
+          tree_.GenerateImpliedEndTagsWithExclusion(
+              HTMLTokenName(HTMLTag::kOptgroup));
+        }
+      }
       tree_.InsertSelfClosingHTMLElementDestroyingToken(token);
       frameset_ok_ = false;
       break;
@@ -959,11 +965,30 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
       break;
     case HTMLTag::kOptgroup:
     case HTMLTag::kOption:
-      if (tree_.CurrentStackItem()->MatchesHTMLTag(HTMLTag::kOption)) {
-        AtomicHTMLToken end_option(HTMLToken::kEndTag, HTMLTag::kOption);
-        ProcessEndTag(&end_option);
+      if (RuntimeEnabledFeatures::SelectParserRelaxationEnabled() &&
+          tree_.OpenElements()->InScope(HTMLTag::kSelect)) {
+        // TODO(crbug.com/1511354): Remove this if by separating the optgroup
+        // and option cases when the SelectParserRelaxation flag is removed.
+        if (token->GetHTMLTag() == HTMLTag::kOption) {
+          tree_.GenerateImpliedEndTagsWithExclusion(
+              HTMLTokenName(HTMLTag::kOptgroup));
+          if (tree_.OpenElements()->InScope(HTMLTag::kOption)) {
+            ParseError(token);
+          }
+        } else {
+          tree_.GenerateImpliedEndTags();
+          if (tree_.OpenElements()->InScope(HTMLTag::kOption) ||
+              tree_.OpenElements()->InScope(HTMLTag::kOptgroup)) {
+            ParseError(token);
+          }
+        }
+      } else {
+        if (tree_.CurrentStackItem()->MatchesHTMLTag(HTMLTag::kOption)) {
+          AtomicHTMLToken end_option(HTMLToken::kEndTag, HTMLTag::kOption);
+          ProcessEndTag(&end_option);
+        }
+        tree_.ReconstructTheActiveFormattingElements();
       }
-      tree_.ReconstructTheActiveFormattingElements();
       tree_.InsertHTMLElement(token);
       break;
     case HTMLTag::kRb:
