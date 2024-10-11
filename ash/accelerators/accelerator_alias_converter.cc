@@ -215,7 +215,7 @@ ui::mojom::SixPackShortcutModifier GetSixPackShortcutModifier(
   const auto* settings =
       Shell::Get()->input_device_settings_controller()->GetKeyboardSettings(
           device_id.value());
-  if (!settings) {
+  if (!settings || !settings->six_pack_key_remappings) {
     return ui::mojom::SixPackShortcutModifier::kSearch;
   }
 
