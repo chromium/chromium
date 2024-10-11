@@ -140,6 +140,7 @@ class CONTENT_EXPORT PrefetchMatchResolver2 final
   // This method is async. `callback` will be called when it is done.
   // `bool(reader)` is true iff a matching servable prefetch is found.
   static void FindPrefetch(PrefetchContainer::Key navigated_key,
+                           bool is_nav_prerender,
                            PrefetchService& prefetch_service,
                            base::WeakPtr<PrefetchServingPageMetricsContainer>
                                serving_page_metrics_container,
@@ -173,7 +174,8 @@ class CONTENT_EXPORT PrefetchMatchResolver2 final
   // - This implementation has timeout: `CandidateData::timeout_timer`.
   // - This implementation collects candidate prefetches first. So, it doesn't
   //   handle prefetches started after this method started.
-  void FindPrefetchInternal(PrefetchService& prefetch_service,
+  void FindPrefetchInternal(bool is_nav_prerender,
+                            PrefetchService& prefetch_service,
                             base::WeakPtr<PrefetchServingPageMetricsContainer>
                                 serving_page_metrics_container);
   // Each candidate `PrefetchContainer` proceeds to
@@ -243,7 +245,6 @@ concept MatchCandidate =
       t.GetNoVarySearchHint();
       t.IsNoVarySearchHeaderMatch(url);
       t.ShouldWaitForNoVarySearchHeader(url);
-      t.IsLikelyAheadOfPrerender();
       t.HasPrefetchStatus();
       t.GetPrefetchStatus();
       t.HasPrefetchBeenConsideredToServe();
@@ -304,7 +305,8 @@ std::vector<T*> CollectPotentialMatchPrefetchContainers(
 template <class T>
   requires MatchCandidate<T>
 bool IsCandidateAvailable(const T& candidate,
-                          PrefetchContainer::ServableState servable_state) {
+                          PrefetchContainer::ServableState servable_state,
+                          bool is_nav_prerender) {
   if (candidate.HasPrefetchBeenConsideredToServe()) {
     DVLOG(1) << "CollectMatchCandidatesGeneric: skipped because already "
                 "considered to serve: candidate = "
@@ -326,10 +328,10 @@ bool IsCandidateAvailable(const T& candidate,
 
   switch (servable_state) {
     case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
-      if (!candidate.IsLikelyAheadOfPrerender()) {
+      if (!is_nav_prerender) {
         DVLOG(1)
             << "CollectMatchCandidatesGeneric: skipped because it's checking "
-               "eligibility and not likely ahead of prerender: candidate = "
+               "eligibility and the navigation is not a prerender: candidate = "
             << candidate;
         return false;
       }
@@ -377,6 +379,7 @@ std::pair<
 CollectMatchCandidatesGeneric(
     const std::map<PrefetchContainer::Key, std::unique_ptr<T>>& prefetches,
     const PrefetchContainer::Key& navigated_key,
+    bool is_nav_prerender,
     base::WeakPtr<PrefetchServingPageMetricsContainer>
         serving_page_metrics_container) {
   std::vector<T*> candidates =
@@ -394,7 +397,7 @@ CollectMatchCandidatesGeneric(
   for (T* candidate : candidates) {
     PrefetchContainer::ServableState servable_state =
         candidate->GetServableState(PrefetchCacheableDuration());
-    if (IsCandidateAvailable(*candidate, servable_state)) {
+    if (IsCandidateAvailable(*candidate, servable_state, is_nav_prerender)) {
       candidates_available.push_back(candidate);
       servable_states.emplace(candidate->key(), servable_state);
     }

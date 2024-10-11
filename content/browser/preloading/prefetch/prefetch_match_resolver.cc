@@ -195,6 +195,7 @@ std::optional<base::TimeDelta> PrefetchMatchResolver2::GetBlockedDuration()
 // static
 void PrefetchMatchResolver2::FindPrefetch(
     PrefetchContainer::Key navigated_key,
+    bool is_nav_prerender,
     PrefetchService& prefetch_service,
     base::WeakPtr<PrefetchServingPageMetricsContainer>
         serving_page_metrics_container,
@@ -206,16 +207,18 @@ void PrefetchMatchResolver2::FindPrefetch(
   PrefetchMatchResolver2& ref = *prefetch_match_resolver.get();
   ref.self_ = std::move(prefetch_match_resolver);
 
-  ref.FindPrefetchInternal(prefetch_service,
+  ref.FindPrefetchInternal(is_nav_prerender, prefetch_service,
                            std::move(serving_page_metrics_container));
 }
 
 void PrefetchMatchResolver2::FindPrefetchInternal(
+    bool is_nav_prerender,
     PrefetchService& prefetch_service,
     base::WeakPtr<PrefetchServingPageMetricsContainer>
         serving_page_metrics_container) {
   auto [candidates, servable_states] = prefetch_service.CollectMatchCandidates(
-      navigated_key_, std::move(serving_page_metrics_container));
+      navigated_key_, is_nav_prerender,
+      std::move(serving_page_metrics_container));
   // Consume `candidates`.
   for (auto& prefetch_container : candidates) {
     RegisterCandidate(*prefetch_container);

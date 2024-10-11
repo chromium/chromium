@@ -717,7 +717,7 @@ class PrefetchServiceTestBase : public RenderViewHostTestHarness {
     if (UseNewWaitLoop()) {
       auto key = PrefetchContainer::Key(initiator_document_token, url);
       PrefetchMatchResolver2::FindPrefetch(
-          std::move(key), *prefetch_service_.get(),
+          std::move(key), /*is_nav_prerender=*/false, *prefetch_service_.get(),
           GetServingPageMetricsContainerForMostRecentNavigation(),
           std::move(callback));
     } else {
@@ -754,18 +754,20 @@ class PrefetchServiceTestBase : public RenderViewHostTestHarness {
   // handled.
   std::unique_ptr<NavigationResult> SimulatePartOfNavigation(
       const GURL& url,
-      bool is_renderer_initiated) {
+      bool is_renderer_initiated,
+      bool is_nav_prerender) {
     return is_renderer_initiated
                ? SimulatePartOfNavigation(
-                     url, main_rfh()->GetProcess()->GetID(),
+                     url, is_nav_prerender, main_rfh()->GetProcess()->GetID(),
                      main_rfh()->GetFrameToken(), MainDocumentToken())
-               : SimulatePartOfNavigation(url,
+               : SimulatePartOfNavigation(url, is_nav_prerender,
                                           ChildProcessHost::kInvalidUniqueID,
                                           std::nullopt, std::nullopt);
   }
 
   std::unique_ptr<NavigationResult> SimulatePartOfNavigation(
       const GURL& url,
+      bool is_nav_prerender,
       int initiator_process_id,
       const std::optional<blink::LocalFrameToken>& initiator_local_frame_token,
       const std::optional<blink::DocumentToken>& initiator_document_token) {
@@ -810,7 +812,7 @@ class PrefetchServiceTestBase : public RenderViewHostTestHarness {
     }();
     auto key = PrefetchContainer::Key(initiator_document_token, url);
     PrefetchMatchResolver2::FindPrefetch(
-        std::move(key), *prefetch_service_.get(),
+        std::move(key), is_nav_prerender, *prefetch_service_.get(),
         std::move(serving_page_metrics_container), std::move(callback));
 
     return res;
@@ -6108,9 +6110,11 @@ TEST_P(
   ExpectPrefetchSuccess(histogram_tester, std::size(kHTMLBody));
 
   std::unique_ptr<NavigationResult> nav_res1 = SimulatePartOfNavigation(
-      GURL("https://example.com"), /*is_renderer_initiated=*/true);
+      GURL("https://example.com"), /*is_renderer_initiated=*/true,
+      /*is_nav_prerender=*/false);
   std::unique_ptr<NavigationResult> nav_res2 = SimulatePartOfNavigation(
-      GURL("https://example.com"), /*is_renderer_initiated=*/true);
+      GURL("https://example.com"), /*is_renderer_initiated=*/true,
+      /*is_nav_prerender=*/false);
   task_environment()->RunUntilIdle();
 
   ExpectServingReaderSuccess(FROM_HERE, nav_res1->reader_future.Take());
@@ -6164,9 +6168,11 @@ TEST_P(
                            {.use_prefetch_proxy = true});
 
   std::unique_ptr<NavigationResult> nav_res1 = SimulatePartOfNavigation(
-      GURL("https://example.com"), /*is_renderer_initiated=*/true);
+      GURL("https://example.com"), /*is_renderer_initiated=*/true,
+      /*is_nav_prerender=*/false);
   std::unique_ptr<NavigationResult> nav_res2 = SimulatePartOfNavigation(
-      GURL("https://example.com"), /*is_renderer_initiated=*/true);
+      GURL("https://example.com"), /*is_renderer_initiated=*/true,
+      /*is_nav_prerender=*/false);
   task_environment()->RunUntilIdle();
 
   SendHeadOfResponseAndWait(net::HTTP_OK, kHTMLMimeType,
@@ -6243,10 +6249,11 @@ TEST_P(PrefetchServiceTest,
                            {.use_prefetch_proxy = true});
 
   std::unique_ptr<NavigationResult> nav_res1 = SimulatePartOfNavigation(
-      GURL("https://example.com/?match=1"), /*is_renderer_initiated=*/true);
+      GURL("https://example.com/?match=1"), /*is_renderer_initiated=*/true,
+      /*is_nav_prerender=*/false);
   std::unique_ptr<NavigationResult> nav_res2 = SimulatePartOfNavigation(
       GURL("https://example.com/?notEventuallyMatch=1"),
-      /*is_renderer_initiated=*/true);
+      /*is_renderer_initiated=*/true, /*is_nav_prerender=*/false);
   task_environment()->RunUntilIdle();
 
   SendHeadOfResponseAndWait(
@@ -6313,9 +6320,11 @@ TEST_P(PrefetchServiceTest,
                            {.use_prefetch_proxy = true});
 
   std::unique_ptr<NavigationResult> nav_res1 = SimulatePartOfNavigation(
-      GURL("https://example.com"), /*is_renderer_initiated=*/true);
+      GURL("https://example.com"), /*is_renderer_initiated=*/true,
+      /*is_nav_prerender=*/false);
   std::unique_ptr<NavigationResult> nav_res2 = SimulatePartOfNavigation(
-      GURL("https://example.com"), /*is_renderer_initiated=*/true);
+      GURL("https://example.com"), /*is_renderer_initiated=*/true,
+      /*is_nav_prerender=*/false);
   task_environment()->RunUntilIdle();
 
   ASSERT_TRUE(SetCookie(GURL("https://example.com"), "testing"));
@@ -6380,7 +6389,8 @@ TEST_P(PrefetchServiceTest,
   task_environment()->RunUntilIdle();
 
   std::unique_ptr<NavigationResult> nav_res = SimulatePartOfNavigation(
-      GURL("https://example.com"), /*is_renderer_initiated=*/true);
+      GURL("https://example.com"), /*is_renderer_initiated=*/true,
+      /*is_nav_prerender=*/true);
   task_environment()->RunUntilIdle();
 
   // The prefetch is a match candidate, but eligibility check is not done yet.
@@ -6462,7 +6472,8 @@ TEST_P(PrefetchServiceTest,
   task_environment()->RunUntilIdle();
 
   std::unique_ptr<NavigationResult> nav_res = SimulatePartOfNavigation(
-      GURL("http://example.com"), /*is_renderer_initiated=*/true);
+      GURL("http://example.com"), /*is_renderer_initiated=*/true,
+      /*is_nav_prerender=*/true);
   task_environment()->RunUntilIdle();
 
   // The prefetch is a match candidate, but eligibility check is not done yet.

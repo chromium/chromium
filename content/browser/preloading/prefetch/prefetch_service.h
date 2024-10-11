@@ -181,6 +181,7 @@ class CONTENT_EXPORT PrefetchService {
       std::vector<PrefetchContainer*>,
       base::flat_map<PrefetchContainer::Key, PrefetchContainer::ServableState>>
   CollectMatchCandidates(const PrefetchContainer::Key& key,
+                         bool is_nav_prerender,
                          base::WeakPtr<PrefetchServingPageMetricsContainer>
                              serving_page_metrics_container);
 

@@ -23,7 +23,6 @@ class MockContainer {
     PrefetchContainer::ServableState servable_state;
     std::optional<net::HttpNoVarySearchData> no_vary_search_hint;
     std::optional<net::HttpNoVarySearchData> no_vary_search_data;
-    bool is_likely_ahead_of_prerender;
   };
 
   explicit MockContainer(MockContainer::Args args)
@@ -31,7 +30,6 @@ class MockContainer {
         servable_state_(args.servable_state),
         no_vary_search_hint_(args.no_vary_search_hint),
         no_vary_search_data_(args.no_vary_search_data),
-        is_likely_ahead_of_prerender_(args.is_likely_ahead_of_prerender),
         prefetch_status_(PrefetchStatus::kPrefetchSuccessful) {}
   ~MockContainer() = default;
 
@@ -83,16 +81,12 @@ class MockContainer {
   const std::optional<net::HttpNoVarySearchData>& GetNoVarySearchData() const {
     return no_vary_search_data_;
   }
-  bool IsLikelyAheadOfPrerender() const {
-    return is_likely_ahead_of_prerender_;
-  }
 
  private:
   PrefetchContainer::Key key_;
   PrefetchContainer::ServableState servable_state_;
   std::optional<net::HttpNoVarySearchData> no_vary_search_hint_;
   std::optional<net::HttpNoVarySearchData> no_vary_search_data_;
-  bool is_likely_ahead_of_prerender_;
   std::optional<PrefetchStatus> prefetch_status_;
 };
 
@@ -111,13 +105,14 @@ class CollectMatchCandidatesTestHelper {
   }
 
   std::vector<PrefetchContainer::Key> KeysOfCollectMatchCandidatesGeneric(
-      const PrefetchContainer::Key& navigated_key) {
+      const PrefetchContainer::Key& navigated_key,
+      bool is_nav_prerender) {
     std::vector<PrefetchContainer::Key> candidate_keys;
     // We must bind the following value instead of using `std::get()` in `for`
     // due to a lifetime issue before C++23:
     // https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2022/p2718r0.html
     auto [candidates, _] = CollectMatchCandidatesGeneric(
-        owned_prefetches_, navigated_key,
+        owned_prefetches_, navigated_key, is_nav_prerender,
         /*serving_page_metrics_container=*/nullptr);
     for (const auto* container : candidates) {
       candidate_keys.push_back(container->key());
@@ -127,12 +122,14 @@ class CollectMatchCandidatesTestHelper {
 
   void Assert(const base::Location& location,
               const PrefetchContainer::Key& navigated_key,
+              bool is_nav_prerender,
               const std::vector<PrefetchContainer::Key>& candidate_keys) {
     SCOPED_TRACE(::testing::Message()
                  << "from \033[31m" << location.ToString() << "\033[39m");
 
-    EXPECT_THAT(KeysOfCollectMatchCandidatesGeneric(navigated_key),
-                testing::UnorderedElementsAreArray(candidate_keys));
+    EXPECT_THAT(
+        KeysOfCollectMatchCandidatesGeneric(navigated_key, is_nav_prerender),
+        testing::UnorderedElementsAreArray(candidate_keys));
   }
 
  private:
@@ -159,10 +156,11 @@ TEST(CollectMatchCandidates, DistinguishesDocumentToken) {
   });
 
   helper.Assert(FROM_HERE, Key(document_token1, GURL("https://a.example.com/")),
+                /*is_nav_prerender=*/false,
                 {Key(document_token1, GURL("https://a.example.com/"))});
 
   helper.Assert(FROM_HERE, Key(std::nullopt, GURL("https://a.example.com/")),
-                {});
+                /*is_nav_prerender=*/false, {});
 }
 
 TEST(CollectMatchCandidates, DistingushesUrl) {
@@ -183,10 +181,11 @@ TEST(CollectMatchCandidates, DistingushesUrl) {
   });
 
   helper.Assert(FROM_HERE, Key(document_token, GURL("https://a.example.com/")),
+                /*is_nav_prerender=*/false,
                 {Key(document_token, GURL("https://a.example.com/"))});
 
   helper.Assert(FROM_HERE, Key(document_token, GURL("https://c.example.com/")),
-                {});
+                /*is_nav_prerender=*/false, {});
 }
 
 TEST(CollectMatchCandidates, RejectsNotServable) {
@@ -214,16 +213,18 @@ TEST(CollectMatchCandidates, RejectsNotServable) {
 
   helper.Assert(FROM_HERE,
                 Key(document_token, GURL("https://servable.example.com/")),
+                /*is_nav_prerender=*/false,
                 {Key(document_token, GURL("https://servable.example.com/"))});
 
   helper.Assert(FROM_HERE,
                 Key(document_token, GURL("https://not-servable.example.com/")),
-                {});
+                /*is_nav_prerender=*/false, {});
 
   helper.Assert(
       FROM_HERE,
       Key(document_token,
           GURL("https://should-block-until-head-received.example.com/")),
+      /*is_nav_prerender=*/false,
       {Key(document_token,
            GURL("https://should-block-until-head-received.example.com/"))});
 }
@@ -237,28 +238,25 @@ TEST(CollectMatchCandidates,
 
   helper.Add({
       .document_token = document_token,
-      .url = GURL("https://ahead-of-prerender.example.com/"),
+      .url = GURL("https://prerender.example.com/"),
       .servable_state =
           PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot,
-      .is_likely_ahead_of_prerender = true,
   });
   helper.Add({
       .document_token = document_token,
-      .url = GURL("https://not-ahead-of-prerender.example.com/"),
+      .url = GURL("https://not-prerender.example.com/"),
       .servable_state =
           PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot,
-      .is_likely_ahead_of_prerender = false,
   });
 
-  helper.Assert(
-      FROM_HERE,
-      Key(document_token, GURL("https://ahead-of-prerender.example.com/")),
-      {Key(document_token, GURL("https://ahead-of-prerender.example.com/"))});
+  helper.Assert(FROM_HERE,
+                Key(document_token, GURL("https://prerender.example.com/")),
+                /*is_nav_prerender=*/true,
+                {Key(document_token, GURL("https://prerender.example.com/"))});
 
-  helper.Assert(
-      FROM_HERE,
-      Key(document_token, GURL("https://not-ahead-of-prerender.example.com/")),
-      {});
+  helper.Assert(FROM_HERE,
+                Key(document_token, GURL("https://not-prerender.example.com/")),
+                /*is_nav_prerender=*/false, {});
 }
 
 TEST(CollectMatchCandidates, ChecksNoVarySearchHintAndHeader) {
@@ -319,6 +317,7 @@ TEST(CollectMatchCandidates, ChecksNoVarySearchHintAndHeader) {
 
   helper.Assert(
       FROM_HERE, Key(document_token, GURL("https://a.example.com/")),
+      /*is_nav_prerender=*/false,
       {
           Key(document_token, GURL("https://a.example.com/")),
           Key(document_token, GURL("https://a.example.com/?ignore=onlyHeader")),

@@ -1536,13 +1536,15 @@ std::pair<
     base::flat_map<PrefetchContainer::Key, PrefetchContainer::ServableState>>
 PrefetchService::CollectMatchCandidates(
     const PrefetchContainer::Key& key,
+    bool is_nav_prerender,
     base::WeakPtr<PrefetchServingPageMetricsContainer>
         serving_page_metrics_container) {
   // TODO(crbug.com/353490734): Remove include of
   // prefetch_match_resolver.h when remove this call as it was included only for
   // this.
   return CollectMatchCandidatesGeneric(
-      owned_prefetches_, key, std::move(serving_page_metrics_container));
+      owned_prefetches_, key, is_nav_prerender,
+      std::move(serving_page_metrics_container));
 }
 
 base::WeakPtr<PrefetchContainer> PrefetchService::MatchUrl(
@@ -1628,8 +1630,13 @@ void PrefetchService::GetPrefetchToServe(
   CHECK(!UseNewWaitLoop());
 
   DumpPrefetchesForDebug();
-  auto [potential_matching_prefetches, _] =
-      CollectMatchCandidates(key, std::move(serving_page_metrics_container));
+  // `!UseNewWaitLoop()` implies that `kPrerender2FallbackPrefetchSpecRules` is
+  // disabled. So, this path doesn't collect `PrefetchContainer` with
+  // `kShouldBlockUntilEligibilityGot` regardless the value of
+  // `is_nav_prerender`. Thus, we use false without seeing the navigation.
+  const bool is_nav_prerender = false;
+  auto [potential_matching_prefetches, _] = CollectMatchCandidates(
+      key, is_nav_prerender, std::move(serving_page_metrics_container));
   DVLOG(1) << "PrefetchService::GetPrefetchToServe(" << key
            << "): Potential matched with "
            << potential_matching_prefetches.size() << " prefetch containers.";
