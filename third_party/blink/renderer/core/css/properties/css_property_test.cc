@@ -163,7 +163,6 @@ TEST_F(CSSPropertyTest, VisitedPropertiesCanParseValues) {
         initial_style, nullptr /* layout_object */,
         false /* allow_visited_style */, CSSValuePhase::kComputedValue);
     ASSERT_TRUE(initial_value);
-    String css_text = initial_value->CssText();
 
     // Parse the initial value using both the regular property, and the
     // accompanying 'visited' property.
