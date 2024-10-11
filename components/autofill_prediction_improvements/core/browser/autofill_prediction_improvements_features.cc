@@ -13,4 +13,9 @@ BASE_FEATURE(kAutofillPredictionImprovements,
              "AutofillPredictionImprovements",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Bootstrap autofill prediction while opt-ing in for improvements.
+BASE_FEATURE(kAutofillPredictionBootstrapping,
+             "AutofillPredictionBootstrapping",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace autofill_prediction_improvements

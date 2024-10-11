@@ -13,6 +13,8 @@ namespace autofill_prediction_improvements {
 
 BASE_DECLARE_FEATURE(kAutofillPredictionImprovements);
 
+BASE_DECLARE_FEATURE(kAutofillPredictionBootstrapping);
+
 inline constexpr base::FeatureParam<bool> kSkipAllowlist{
     &kAutofillPredictionImprovements, /*name=*/"skip_allowlist",
     /*default_value=*/false};
