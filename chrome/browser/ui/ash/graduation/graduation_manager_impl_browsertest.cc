@@ -194,16 +194,15 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest, PRE_AppPinnedWhenPolicyEnabled) {
 }
 
 IN_PROC_BROWSER_TEST_F(GraduationManagerTest, AppPinnedWhenPolicyEnabled) {
-  EXPECT_EQ(apps::Readiness::kReady,
-            GetAppReadiness(web_app::kGraduationAppId));
-  EXPECT_TRUE(IsItemPinned(web_app::kGraduationAppId));
+  EXPECT_EQ(apps::Readiness::kReady, GetAppReadiness(ash::kGraduationAppId));
+  EXPECT_TRUE(IsItemPinned(ash::kGraduationAppId));
 
   SetGraduationEnablement(false);
   WaitForAppRegistryCommands(browser()->profile());
 
-  EXPECT_FALSE(IsItemPinned(web_app::kGraduationAppId));
+  EXPECT_FALSE(IsItemPinned(ash::kGraduationAppId));
   EXPECT_EQ(apps::Readiness::kDisabledByPolicy,
-            GetAppReadiness(web_app::kGraduationAppId));
+            GetAppReadiness(ash::kGraduationAppId));
 }
 
 IN_PROC_BROWSER_TEST_F(GraduationManagerTest,
@@ -215,16 +214,16 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest,
 
 IN_PROC_BROWSER_TEST_F(GraduationManagerTest, AppPinnedWhenStartDateIsReached) {
   EXPECT_EQ(apps::Readiness::kDisabledByPolicy,
-            GetAppReadiness(web_app::kGraduationAppId));
-  EXPECT_FALSE(IsItemPinned(web_app::kGraduationAppId));
+            GetAppReadiness(ash::kGraduationAppId));
+  EXPECT_FALSE(IsItemPinned(ash::kGraduationAppId));
 
   // Fast forward to the policy enablement start date set in the pre-test.
   AdvanceTimeBy(base::Days(1));
   WaitForAppRegistryCommands(browser()->profile());
 
-  EXPECT_TRUE(IsItemPinned(web_app::kGraduationAppId));
+  EXPECT_TRUE(IsItemPinned(ash::kGraduationAppId));
   EXPECT_EQ(apps::Readiness::kReady,
-            GetAppReadiness(web_app::kGraduationAppId));
+            GetAppReadiness(ash::kGraduationAppId));
 }
 
 IN_PROC_BROWSER_TEST_F(GraduationManagerTest,
@@ -237,16 +236,16 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest,
 IN_PROC_BROWSER_TEST_F(GraduationManagerTest,
                        AppPinnedWhenStartDateIsReachedInMoreThanOneDay) {
   EXPECT_EQ(apps::Readiness::kDisabledByPolicy,
-            GetAppReadiness(web_app::kGraduationAppId));
-  EXPECT_FALSE(IsItemPinned(web_app::kGraduationAppId));
+            GetAppReadiness(ash::kGraduationAppId));
+  EXPECT_FALSE(IsItemPinned(ash::kGraduationAppId));
 
   // Fast forward to the policy enablement start date set in the pre-test.
   AdvanceTimeBy(base::Days(2));
   WaitForAppRegistryCommands(browser()->profile());
 
-  EXPECT_TRUE(IsItemPinned(web_app::kGraduationAppId));
+  EXPECT_TRUE(IsItemPinned(ash::kGraduationAppId));
   EXPECT_EQ(apps::Readiness::kReady,
-            GetAppReadiness(web_app::kGraduationAppId));
+            GetAppReadiness(ash::kGraduationAppId));
 }
 
 IN_PROC_BROWSER_TEST_F(GraduationManagerTest, PRE_AppPinnedOnEndDate) {
@@ -256,31 +255,30 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest, PRE_AppPinnedOnEndDate) {
 }
 
 IN_PROC_BROWSER_TEST_F(GraduationManagerTest, AppPinnedOnEndDate) {
-  EXPECT_TRUE(IsItemPinned(web_app::kGraduationAppId));
+  EXPECT_TRUE(IsItemPinned(ash::kGraduationAppId));
   EXPECT_EQ(apps::Readiness::kReady,
-            GetAppReadiness(web_app::kGraduationAppId));
+            GetAppReadiness(ash::kGraduationAppId));
 
   // Fast forward to the policy enablement end date set in the pre-test.
   AdvanceTimeBy(base::Days(1));
   WaitForAppRegistryCommands(browser()->profile());
 
   // Since this is the last day the app is available, the app should be pinned.
-  EXPECT_TRUE(IsItemPinned(web_app::kGraduationAppId));
+  EXPECT_TRUE(IsItemPinned(ash::kGraduationAppId));
   EXPECT_EQ(apps::Readiness::kReady,
-            GetAppReadiness(web_app::kGraduationAppId));
+            GetAppReadiness(ash::kGraduationAppId));
 }
 
 IN_PROC_BROWSER_TEST_F(GraduationManagerTest, AppUnpinnedWhenPolicyUnset) {
-  EXPECT_FALSE(IsItemPinned(web_app::kGraduationAppId));
+  EXPECT_FALSE(IsItemPinned(ash::kGraduationAppId));
   EXPECT_EQ(apps::Readiness::kDisabledByPolicy,
-            GetAppReadiness(web_app::kGraduationAppId));
+            GetAppReadiness(ash::kGraduationAppId));
 
   SetGraduationEnablement(true);
   WaitForAppRegistryCommands(browser()->profile());
 
-  EXPECT_EQ(apps::Readiness::kReady,
-            GetAppReadiness(web_app::kGraduationAppId));
-  EXPECT_TRUE(IsItemPinned(web_app::kGraduationAppId));
+  EXPECT_EQ(apps::Readiness::kReady, GetAppReadiness(ash::kGraduationAppId));
+  EXPECT_TRUE(IsItemPinned(ash::kGraduationAppId));
 }
 
 IN_PROC_BROWSER_TEST_F(GraduationManagerTest,
@@ -291,16 +289,15 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GraduationManagerTest, AppUnpinnedWhenPolicyDisabled) {
-  EXPECT_FALSE(IsItemPinned(web_app::kGraduationAppId));
+  EXPECT_FALSE(IsItemPinned(ash::kGraduationAppId));
   EXPECT_EQ(apps::Readiness::kDisabledByPolicy,
-            GetAppReadiness(web_app::kGraduationAppId));
+            GetAppReadiness(ash::kGraduationAppId));
 
   SetGraduationEnablement(true);
   WaitForAppRegistryCommands(browser()->profile());
 
-  EXPECT_EQ(apps::Readiness::kReady,
-            GetAppReadiness(web_app::kGraduationAppId));
-  EXPECT_TRUE(IsItemPinned(web_app::kGraduationAppId));
+  EXPECT_EQ(apps::Readiness::kReady, GetAppReadiness(ash::kGraduationAppId));
+  EXPECT_TRUE(IsItemPinned(ash::kGraduationAppId));
 }
 
 IN_PROC_BROWSER_TEST_F(GraduationManagerTest,
@@ -311,9 +308,9 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GraduationManagerTest, AppUnpinnedWhenEndDateHasPassed) {
-  EXPECT_TRUE(IsItemPinned(web_app::kGraduationAppId));
+  EXPECT_TRUE(IsItemPinned(ash::kGraduationAppId));
   EXPECT_EQ(apps::Readiness::kReady,
-            GetAppReadiness(web_app::kGraduationAppId));
+            GetAppReadiness(ash::kGraduationAppId));
 
   // Fast forward to one day past the policy enablement end date set in the
   // pre-test.
@@ -321,8 +318,8 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest, AppUnpinnedWhenEndDateHasPassed) {
   WaitForAppRegistryCommands(browser()->profile());
 
   EXPECT_EQ(apps::Readiness::kDisabledByPolicy,
-            GetAppReadiness(web_app::kGraduationAppId));
-  EXPECT_FALSE(IsItemPinned(web_app::kGraduationAppId));
+            GetAppReadiness(ash::kGraduationAppId));
+  EXPECT_FALSE(IsItemPinned(ash::kGraduationAppId));
 }
 
 IN_PROC_BROWSER_TEST_F(GraduationManagerTest, GetLanguageCode) {
@@ -371,7 +368,7 @@ class GraduationManagerWithConsumerUserTest
 };
 
 IN_PROC_BROWSER_TEST_P(GraduationManagerWithConsumerUserTest, AppNotInstalled) {
-  EXPECT_FALSE(GetManager().IsSystemWebApp(web_app::kGraduationAppId));
+  EXPECT_FALSE(GetManager().IsSystemWebApp(ash::kGraduationAppId));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

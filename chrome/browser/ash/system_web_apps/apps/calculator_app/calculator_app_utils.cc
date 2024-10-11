@@ -17,7 +17,7 @@ std::string GetInstalledCalculatorAppId(Profile* profile) {
                                        extension_misc::kCalculatorAppId)) {
     return extension_misc::kCalculatorAppId;
   }
-  return web_app::kCalculatorAppId;
+  return ash::kCalculatorAppId;
 }
 
 }  // namespace calculator_app

@@ -23,7 +23,7 @@ ExternalInstallOptions GetConfigForAppMall() {
   options.gate_on_feature = chromeos::features::kCrosMall.name;
 
   options.load_and_await_service_worker_registration = false;
-  options.expected_app_id = kMallAppId;
+  options.expected_app_id = ash::kMallAppId;
 
   return options;
 }

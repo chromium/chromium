@@ -325,7 +325,7 @@ ash::AppListSearchResultType OsSettingsProvider::ResultType() const {
 }
 
 void OsSettingsProvider::OnAppUpdate(const apps::AppUpdate& update) {
-  if (update.AppId() != web_app::kOsSettingsAppId) {
+  if (update.AppId() != ash::kOsSettingsAppId) {
     return;
   }
 
@@ -340,7 +340,7 @@ void OsSettingsProvider::OnAppUpdate(const apps::AppUpdate& update) {
   // changed.
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
   if (update.ReadinessChanged() || update.IconKeyChanged()) {
-    proxy->LoadIcon(web_app::kOsSettingsAppId, apps::IconType::kStandard,
+    proxy->LoadIcon(ash::kOsSettingsAppId, apps::IconType::kStandard,
                     kAppIconDimension,
                     /*allow_placeholder_icon=*/false,
                     base::BindOnce(&OsSettingsProvider::OnLoadIcon,

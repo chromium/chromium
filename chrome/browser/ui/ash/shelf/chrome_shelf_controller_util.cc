@@ -59,7 +59,7 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
       ash::eche_app::kEcheAppId,
       // The Mall web app is force pinned to the shelf and cannot be removed.
       // This app is only installed as part of a Finch experiment.
-      web_app::kMallAppId,
+      ash::kMallAppId,
   };
   if (base::Contains(kNoPinAppIds, app_id))
     return AppListControllerDelegate::NO_PIN;

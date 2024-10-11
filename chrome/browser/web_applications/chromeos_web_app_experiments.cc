@@ -39,7 +39,7 @@ constexpr const char* kMicrosoftOfficeWebAppExperimentDomainScopeExtensions[] =
 bool g_always_enabled_for_testing = false;
 
 bool IsExperimentEnabled(const webapps::AppId& app_id) {
-  return g_always_enabled_for_testing || app_id == kMicrosoft365AppId;
+  return g_always_enabled_for_testing || app_id == ash::kMicrosoft365AppId;
 }
 
 std::optional<std::vector<const char*>>&

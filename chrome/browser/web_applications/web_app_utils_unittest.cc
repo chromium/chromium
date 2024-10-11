@@ -382,16 +382,17 @@ TEST_F(WebAppUtilsTest, GetBrowserContextForWebAppMetrics) {
 // TODO(http://b/331208955): Remove after migration.
 TEST_F(WebAppUtilsTest, CanUserUninstallContainerApp) {
   EXPECT_FALSE(CanUserUninstallWebApp(
-      kContainerAppId, WebAppManagementTypes({WebAppManagement::kDefault})));
+      ash::kContainerAppId,
+      WebAppManagementTypes({WebAppManagement::kDefault})));
   EXPECT_TRUE(CanUserUninstallWebApp(
-      kContainerAppId, WebAppManagementTypes({WebAppManagement::kSync})));
+      ash::kContainerAppId, WebAppManagementTypes({WebAppManagement::kSync})));
 }
 
 // TODO(http://b/331208955): Remove after migration.
 TEST_F(WebAppUtilsTest, ContainerAppWillBeSystemWebApp) {
   for (auto src : WebAppManagementTypes::All()) {
     EXPECT_THAT(
-        WillBeSystemWebApp(kContainerAppId, WebAppManagementTypes({src})),
+        WillBeSystemWebApp(ash::kContainerAppId, WebAppManagementTypes({src})),
         src == WebAppManagement::kDefault);
   }
 }

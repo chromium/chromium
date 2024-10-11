@@ -1640,11 +1640,10 @@ IN_PROC_BROWSER_TEST_P(AppListModifiedDefaultAppOrderTest,
   // Install some default apps by syncing.
   // In the default app order, youtube appears before the camera app. For the
   // apps collections experimental arm, camera appears first.
-  AddSyncedItem(web_app::kCameraAppId, model_updater);
+  AddSyncedItem(ash::kCameraAppId, model_updater);
   AddSyncedItem(extension_misc::kYoutubeAppId, model_updater);
 
-  ChromeAppListItem* camera_item =
-      model_updater->FindItem(web_app::kCameraAppId);
+  ChromeAppListItem* camera_item = model_updater->FindItem(ash::kCameraAppId);
   const syncer::StringOrdinal camera_ordinal = camera_item->position();
 
   ChromeAppListItem* youtube_item =
@@ -1684,12 +1683,11 @@ IN_PROC_BROWSER_TEST_P(AppListModifiedDefaultAppOrderTest,
   ChromeAppListModelUpdater* model_updater = GetChromeAppListModelUpdater();
   ASSERT_TRUE(model_updater);
   // Install some default apps by syncing.
-  AddSyncedItem(web_app::kCameraAppId, model_updater);
+  AddSyncedItem(ash::kCameraAppId, model_updater);
   AddSyncedItem(extension_misc::kYoutubeAppId, model_updater);
-  AddSyncedItem(web_app::kCalculatorAppId, model_updater);
+  AddSyncedItem(ash::kCalculatorAppId, model_updater);
 
-  ChromeAppListItem* camera_item =
-      model_updater->FindItem(web_app::kCameraAppId);
+  ChromeAppListItem* camera_item = model_updater->FindItem(ash::kCameraAppId);
   const syncer::StringOrdinal camera_ordinal = camera_item->position();
 
   ChromeAppListItem* youtube_item =
@@ -1697,7 +1695,7 @@ IN_PROC_BROWSER_TEST_P(AppListModifiedDefaultAppOrderTest,
   const syncer::StringOrdinal youtube_ordinal = youtube_item->position();
 
   ChromeAppListItem* calculator_item =
-      model_updater->FindItem(web_app::kCalculatorAppId);
+      model_updater->FindItem(ash::kCalculatorAppId);
   syncer::StringOrdinal calculator_ordinal = calculator_item->position();
 
   // Before calculating the experimental arm, the default apps should be ordered
@@ -1708,7 +1706,7 @@ IN_PROC_BROWSER_TEST_P(AppListModifiedDefaultAppOrderTest,
 
   // Move the calculator before the camera
   model_updater->RequestPositionUpdate(
-      web_app::kCalculatorAppId, camera_ordinal.CreateBefore(),
+      ash::kCalculatorAppId, camera_ordinal.CreateBefore(),
       ash::RequestPositionUpdateReason::kMoveItem);
   calculator_ordinal = calculator_item->position();
   EXPECT_TRUE(calculator_ordinal.LessThan(camera_ordinal));

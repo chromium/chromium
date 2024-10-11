@@ -692,7 +692,7 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddString("geolocationAccuracyLearnMoreUrl",
                          chrome::kPrivacyHubGeolocationAccuracyLearnMoreURL);
 
-  html_source->AddString("osSettingsAppId", web_app::kOsSettingsAppId);
+  html_source->AddString("osSettingsAppId", ash::kOsSettingsAppId);
 
   html_source->AddString(
       "authPrompt",

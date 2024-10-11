@@ -59,7 +59,7 @@ bool CalendarClientImpl::IsDisabledByAdmin() const {
   auto calendar_app_readiness = apps::Readiness::kUnknown;
   apps::AppServiceProxyFactory::GetForProfile(profile_)
       ->AppRegistryCache()
-      .ForOneApp(web_app::kGoogleCalendarAppId,
+      .ForOneApp(ash::kGoogleCalendarAppId,
                  [&calendar_app_readiness](const apps::AppUpdate& update) {
                    calendar_app_readiness = update.Readiness();
                  });

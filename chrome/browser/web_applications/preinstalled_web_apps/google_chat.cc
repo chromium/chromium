@@ -19,7 +19,7 @@ ExternalInstallOptions GetConfigForGoogleChat() {
   // Exclude managed users until we have a way for admins to block the app.
   options.user_type_allowlist = {"unmanaged"};
   options.only_for_new_users = true;
-  options.expected_app_id = kGoogleChatAppId;
+  options.expected_app_id = ash::kGoogleChatAppId;
 
   return options;
 }

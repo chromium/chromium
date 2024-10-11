@@ -129,7 +129,7 @@ ash::AppListSearchResultType HelpAppZeroStateProvider::ResultType() const {
 }
 
 void HelpAppZeroStateProvider::OnAppUpdate(const apps::AppUpdate& update) {
-  if (update.AppId() == web_app::kHelpAppId && update.ReadinessChanged() &&
+  if (update.AppId() == ash::kHelpAppId && update.ReadinessChanged() &&
       update.Readiness() == apps::Readiness::kReady) {
     LoadIcon();
   }
@@ -165,7 +165,7 @@ void HelpAppZeroStateProvider::OnLoadIcon(apps::IconValuePtr icon_value) {
 void HelpAppZeroStateProvider::LoadIcon() {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
   proxy->LoadIcon(
-      web_app::kHelpAppId, apps::IconType::kStandard,
+      ash::kHelpAppId, apps::IconType::kStandard,
       ash::SharedAppListConfig::instance().suggestion_chip_icon_dimension(),
       /*allow_placeholder_icon=*/false,
       base::BindOnce(&HelpAppZeroStateProvider::OnLoadIcon,

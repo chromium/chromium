@@ -15,7 +15,7 @@ ExternalInstallOptions GetConfigForMessagesDogfood() {
       /*user_display_mode=*/mojom::UserDisplayMode::kStandalone,
       /*install_source=*/ExternalInstallSource::kExternalDefault);
 
-  options.uninstall_and_replace = {kMessagesDogfoodDeprecatedAppId};
+  options.uninstall_and_replace = {ash::kMessagesDogfoodDeprecatedAppId};
   options.override_previous_user_uninstall = true;
   options.user_type_allowlist = {"managed"};
 

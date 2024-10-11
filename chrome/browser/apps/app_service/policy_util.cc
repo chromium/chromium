@@ -99,8 +99,7 @@ constexpr auto kVirtualFileTasksMapping =
 // google/chrome/cros/policyconverter/ChromePolicySettingsProcessor.java
 constexpr auto kPreinstalledWebAppsMapping =
     base::MakeFixedFlatMap<std::string_view, std::string_view>(
-        {{"cursive", web_app::kCursiveAppId},
-         {"canvas", web_app::kCanvasAppId}});
+        {{"cursive", ash::kCursiveAppId}, {"canvas", ash::kCanvasAppId}});
 
 std::optional<base::flat_map<std::string_view, std::string_view>>&
 GetPreinstalledWebAppsMappingForTesting() {

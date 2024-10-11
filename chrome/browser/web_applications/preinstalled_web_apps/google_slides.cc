@@ -136,7 +136,7 @@ ExternalInstallOptions GetConfigForGoogleSlides(bool is_standalone_tabbed) {
         return info;
       },
       is_standalone_tabbed);
-  options.expected_app_id = kGoogleSlidesAppId;
+  options.expected_app_id = ash::kGoogleSlidesAppId;
 
   return options;
 }

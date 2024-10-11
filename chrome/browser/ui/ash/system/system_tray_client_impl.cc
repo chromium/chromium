@@ -759,7 +759,7 @@ void SystemTrayClientImpl::ShowCalendarEvent(
   final_event_url = official_url;
 
   // Check calendar web app installation.
-  if (!IsAppInstalled(web_app::kGoogleCalendarAppId)) {
+  if (!IsAppInstalled(ash::kGoogleCalendarAppId)) {
     OpenInBrowser(official_url);
     return;
   }
@@ -774,8 +774,8 @@ void SystemTrayClientImpl::ShowCalendarEvent(
   }
 
   // Launch web app.
-  proxy->LaunchAppWithUrl(web_app::kGoogleCalendarAppId, ui::EF_NONE,
-                          official_url, apps::LaunchSource::kFromShelf);
+  proxy->LaunchAppWithUrl(ash::kGoogleCalendarAppId, ui::EF_NONE, official_url,
+                          apps::LaunchSource::kFromShelf);
   opened_pwa = true;
 }
 
@@ -866,7 +866,7 @@ void SystemTrayClientImpl::ShowYouTubeMusicPremiumPage() {
   const GURL official_url(chrome::kYoutubeMusicPremiumURL);
 
   // Check YouTube Music web app installation.
-  if (!IsAppInstalled(web_app::kYoutubeMusicAppId)) {
+  if (!IsAppInstalled(ash::kYoutubeMusicAppId)) {
     OpenInBrowser(official_url);
     return;
   }
@@ -881,7 +881,7 @@ void SystemTrayClientImpl::ShowYouTubeMusicPremiumPage() {
 
   // Launch web app.
   proxy->LaunchAppWithUrl(
-      web_app::kYoutubeMusicAppId, ui::EF_NONE, official_url,
+      ash::kYoutubeMusicAppId, ui::EF_NONE, official_url,
       apps::LaunchSource::kFromFocusMode, /*window_info=*/nullptr,
       base::BindOnce(
           [](const GURL& url, apps::LaunchResult&& result) {

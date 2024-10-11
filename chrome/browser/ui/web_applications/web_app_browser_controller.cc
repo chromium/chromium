@@ -256,13 +256,13 @@ bool WebAppBrowserController::HasProfileMenuButton() const {
 #if BUILDFLAG(IS_MAC)
   return true;
 #else
-  return app_id() == web_app::kPasswordManagerAppId;
+  return app_id() == ash::kPasswordManagerAppId;
 #endif
 }
 
 bool WebAppBrowserController::IsProfileMenuButtonVisible() const {
   CHECK(HasProfileMenuButton());
-  if (app_id() == web_app::kPasswordManagerAppId) {
+  if (app_id() == ash::kPasswordManagerAppId) {
     return true;
   }
 #if BUILDFLAG(IS_MAC)
