@@ -22,6 +22,8 @@ const base::Feature* GetFeatureOfRegexFeature(RegexFeature feature) {
       return &features::kAutofillGreekRegexes;
     case RegexFeature::kAutofillUseITAddressModel:
       return &features::kAutofillUseITAddressModel;
+    case RegexFeature::kAutofillUsePLAddressModel:
+      return &features::kAutofillUsePLAddressModel;
   }
   NOTREACHED();
 }
