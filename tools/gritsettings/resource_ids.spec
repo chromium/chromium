@@ -1002,17 +1002,15 @@
   # END chromeos/ section.
 
   # START components/ section.
-  # TODO(b/207518736): Input overlay resources will be changed to proto soon,
-  # thus not rushing to update it for now.
-  "ash/components/arc/input_overlay/resources/input_overlay_resources.grd": {
-    # Big alignment at start of section.
+  "components/autofill/core/browser/autofill_address_rewriter_resources.grd":{
     "META": {"align": 1000},
-    "includes": [7000],
+    "includes": [7000]
   },
   # Chromium strings and Google Chrome strings must start at the same id.
   # We only use one file depending on whether we're building Chromium or
   # Google Chrome.
   "components/components_chromium_strings.grd": {
+    # Big alignment at start of section.
     "messages": [7020],
   },
   "components/components_google_chrome_strings.grd": {
@@ -1026,51 +1024,47 @@
   "components/components_strings.grd": {
     "messages": [7080],
   },
+  "components/embedder_support/android/java/strings/web_contents_delegate_android_strings.grd": {
+    "messages": [7100],
+  },
   "components/headless/command_handler/headless_command.grd": {
-    "includes": [7100],
+    "includes": [7120],
   },
   "components/omnibox/resources/omnibox_pedal_synonyms.grd": {
-    "messages": [7120],
+    "messages": [7140],
+  },
+  # plus_addresses_internal_strings.grd and plus_addresses_strings.grd must
+  # share the same id because they define the same strings, but only one of them
+  # is built depending on whether src_internal is available.
+  "components/plus_addresses/resources/internal/strings/plus_addresses_internal_strings.grd": {
+    "messages": [7160],
+  },
+  "components/plus_addresses/resources/strings/plus_addresses_strings.grd": {
+    "messages": [7160],
   },
   # components/policy/resources/policy_templates.grd and
   # components/policy/resources/policy_templates.build.grd must share the same
   # id because they are based on the same structure, however they are used in
   # different pipelines.
   "components/policy/resources/policy_templates.grd": {
-    "structures": [7140],
-  },
-  "components/policy/resources/policy_templates.build.grd": {
-    "structures": [7140],
-  },
-  "components/resources/components_resources.grd": {
-    "includes": [7160],
-  },
-  "components/resources/components_scaled_resources.grd": {
     "structures": [7180],
   },
-  "components/embedder_support/android/java/strings/web_contents_delegate_android_strings.grd": {
+  "components/policy/resources/policy_templates.build.grd": {
+    "structures": [7180],
+  },
+  "components/privacy_sandbox_strings.grd": {
     "messages": [7200],
   },
-  "components/autofill/core/browser/autofill_address_rewriter_resources.grd":{
-    "includes": [7220]
+  "components/resources/components_resources.grd": {
+    "includes": [7220],
   },
-
-  "components/privacy_sandbox_strings.grd": {
-    "messages": [7240],
+  "components/resources/components_scaled_resources.grd": {
+    "structures": [7240],
   },
   "components/search_engine_descriptions_strings.grd": {
     "messages": [7260],
   },
 
-  # plus_addresses_strings.grd and plus_addresses_internal_strings.grd must
-  # share the same id because the define the same strings, but only one of them
-  # is built depending on whether src_internal is available.
-  "components/plus_addresses/resources/strings/plus_addresses_strings.grd": {
-    "messages": [7280],
-  },
-  "components/plus_addresses/resources/internal/strings/plus_addresses_internal_strings.grd": {
-    "messages": [7280],
-  },
   # END components/ section.
 
   # START ios/ section.
@@ -1184,6 +1178,12 @@
     # Big alignment at start of section.
     "META": {"align": 100},
     "messages": [7400],
+  },
+  # TODO(b/207518736): Input overlay resources will be changed to proto soon,
+  # thus not rushing to update it for now.
+  "ash/components/arc/input_overlay/resources/input_overlay_resources.grd": {
+    # Big alignment at start of section.
+    "includes": [7410],
   },
   "<(SHARED_INTERMEDIATE_DIR)/ash/webui/os_feedback_ui/resources/resources.grd": {
     "META": {"sizes": {"includes": [50],}},
