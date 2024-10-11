@@ -43,7 +43,6 @@ source_set("hooks") {
     "//ios/chrome/browser/policy/model:test_support",
     "//ios/chrome/browser/saved_tab_groups/model",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
