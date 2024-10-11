@@ -925,8 +925,7 @@ TEST_F(ScrollAnchorTest, RestoreAnchorSucceedsForNonBoxNonTextElement) {
   SetHeight(GetDocument().getElementById(AtomicString("block1")), 200);
   EXPECT_EQ(LayoutViewport()->ScrollOffsetInt().y(), 200);
 
-  SerializedAnchor serialized =
-      GetScrollAnchor(LayoutViewport()).GetSerializedAnchor();
+  GetScrollAnchor(LayoutViewport()).GetSerializedAnchor();
   ValidateSerializedAnchor("html>body>code", LayoutPoint(0, 0));
 }
 

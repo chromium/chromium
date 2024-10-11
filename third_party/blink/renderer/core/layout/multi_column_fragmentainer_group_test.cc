@@ -110,7 +110,6 @@ TEST_F(MultiColumnFragmentainerGroupTest, LotsOfContent) {
   for (int i = 0; i < 100; i++)
     builder.Append("line<br>");
   builder.Append("</div>");
-  String html;
   SetBodyInnerHTML(builder.ToString());
   const auto* multicol = GetLayoutObjectByElementId("multicol");
   ASSERT_TRUE(multicol);
@@ -141,7 +140,6 @@ TEST_F(MultiColumnFragmentainerGroupTest, LotsOfNestedBlocksWithText) {
   for (int i = 0; i < 1000; i++)
     builder.Append("<div><div><div>line</div></div></div>");
   builder.Append("</div>");
-  String html;
   SetBodyInnerHTML(builder.ToString());
   const auto* multicol = GetLayoutObjectByElementId("multicol");
   ASSERT_TRUE(multicol);
@@ -172,7 +170,6 @@ TEST_F(MultiColumnFragmentainerGroupTest, NestedBlocksWithLotsOfContent) {
   for (int i = 0; i < 100; i++)
     builder.Append("line<br>");
   builder.Append("</div></div></div></div>");
-  String html;
   SetBodyInnerHTML(builder.ToString());
   const auto* multicol = GetLayoutObjectByElementId("multicol");
   ASSERT_TRUE(multicol);
