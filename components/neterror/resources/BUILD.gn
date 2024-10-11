@@ -11,6 +11,7 @@ preprocess_if_expr("preprocess") {
     "constants.js",
     "neterror.js",
     "offline.js",
+    "dino_game/background_el.js",
     "dino_game/cloud.js",
     "dino_game/constants.js",
     "dino_game/generated_sound_fx.js",
