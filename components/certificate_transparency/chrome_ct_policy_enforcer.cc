@@ -29,12 +29,16 @@
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
+#include "third_party/boringssl/src/include/openssl/bytestring.h"
 
 using net::ct::CTPolicyCompliance;
 
 namespace certificate_transparency {
 
 namespace {
+
+// Type of a leaf index extension in an SCT from a Static CT API log.
+const uint8_t kExtensionTypeLeafIndex = 0;
 
 base::Value::Dict NetLogCertComplianceCheckResultParams(
     net::X509Certificate* cert,
@@ -44,6 +48,58 @@ base::Value::Dict NetLogCertComplianceCheckResultParams(
   dict.Set("build_timely", build_timely);
   dict.Set("ct_compliance_status", CTPolicyComplianceToString(compliance));
   return dict;
+}
+
+// Returns true if the extension is a leaf index extension from a Static CT API
+// log. See
+// https://github.com/C2SP/C2SP/blob/main/static-ct-api.md#sct-extension
+bool IsValidLeafIndexExtension(CBS* in) {
+  uint8_t bytes[5];
+  if (!CBS_copy_bytes(in, bytes, 5)) {
+    return false;
+  }
+  // Any value is a valid leaf index.
+  return true;
+}
+
+// Returns true if the SCT has only one valid leaf index extension.
+bool HasValidLeafIndex(
+    const scoped_refptr<net::ct::SignedCertificateTimestamp> sct) {
+  CBS extension_cbs;
+  CBS_init(&extension_cbs, reinterpret_cast<uint8_t*>(sct->extensions.data()),
+           sct->extensions.size());
+  enum class LeafIndexStatus {
+    kFoundValid,
+    kFoundInvalid,
+    kNotFound,
+  };
+  LeafIndexStatus status = LeafIndexStatus::kNotFound;
+
+  // Look for a valid leaf index extension. The extension can be anywhere, so
+  // keep looking until we can find one. There must not be more than one leaf
+  // index extension.
+  while (CBS_len(&extension_cbs) != 0) {
+    uint8_t extension_type;
+    if (!CBS_get_u8(&extension_cbs, &extension_type)) {
+      return false;
+    }
+
+    CBS extension_data;
+    if (!CBS_get_u16_length_prefixed(&extension_cbs, &extension_data)) {
+      return false;
+    }
+
+    if (extension_type == kExtensionTypeLeafIndex) {
+      if (status != LeafIndexStatus::kNotFound) {
+        // Must not have multiple leaf index extensions.
+        return false;
+      }
+      status = IsValidLeafIndexExtension(&extension_data)
+                   ? LeafIndexStatus::kFoundValid
+                   : LeafIndexStatus::kFoundInvalid;
+    }
+  }
+  return status == LeafIndexStatus::kFoundValid;
 }
 
 }  // namespace
@@ -176,6 +232,13 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
       continue;
     }
 
+    auto log_type = GetLogType(sct->log_id);
+    if (enable_static_ct_api_enforcement_ &&
+        log_type == network::mojom::CTLogInfo::LogType::kStaticCTAPI &&
+        !HasValidLeafIndex(sct)) {
+      continue;
+    }
+
     if (sct->origin != net::ct::SignedCertificateTimestamp::SCT_EMBEDDED) {
       has_valid_nonembedded_sct = true;
     } else {
@@ -201,10 +264,9 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
     if (enable_static_ct_api_enforcement_) {
       // TODO(crbug.com/370724580): Disallow kUnspecified once all logs in the
       // hardcoded and component updater protos have proper log types.
-      has_rfc6962_log |= (GetLogType(sct->log_id) ==
-                              network::mojom::CTLogInfo::LogType::kRFC6962 ||
-                          GetLogType(sct->log_id) ==
-                              network::mojom::CTLogInfo::LogType::kUnspecified);
+      has_rfc6962_log |=
+          (log_type == network::mojom::CTLogInfo::LogType::kRFC6962 ||
+           log_type == network::mojom::CTLogInfo::LogType::kUnspecified);
     }
   }
 
