@@ -92,6 +92,15 @@ declare_args() {
       use_partition_alloc_as_malloc
 }
 
+declare_args() {
+  # This is a flag for binary experiment on iOS. When BRP for iOS is enabled,
+  # we see some un-actionable `DoubleFreeOrCorruptionDetected` crashes.
+  # This flag enables some extra `CHECK`s to get actionable crash reports.
+  # TODO(crbug.com/371135823): Remove upon completion of investigation.
+  enable_ios_corruption_hardening = use_partition_alloc_as_malloc && is_ios &&
+                                    enable_ios_corruption_hardening_default
+}
+
 assert(
     !enable_allocator_shim_partition_alloc_dispatch_with_advanced_checks_support || use_partition_alloc_as_malloc,
     "PartitionAlloc with advanced checks requires PartitionAlloc itself.")
@@ -150,18 +159,19 @@ declare_args() {
 
   # Enable reentrancy checks at `partition_alloc::internal::Lock`.
   # TODO(crbug.com/371135823): Remove upon completion of investigation.
-  enable_partition_lock_reentrancy_check = false
+  enable_partition_lock_reentrancy_check = enable_ios_corruption_hardening
 
   # This will write a fixed cookie pattern at the end of each allocation, and
   # later verify the pattern remain unchanged to ensure there is no OOB write.
   # It comes with performance and memory cost, hence enabled only in debug.
-  use_partition_cookie = is_debug || dcheck_always_on
+  use_partition_cookie =
+      is_debug || dcheck_always_on || enable_ios_corruption_hardening
 
   # This will change partition cookie size to 4B or 8B, whichever equivalent to
   # size of InSlotMetadata. This option is useful for InSlotMetadata corruption
   # investigation.
   # TODO(crbug.com/371135823): Remove upon completion of investigation.
-  smaller_partition_cookie = false
+  smaller_partition_cookie = enable_ios_corruption_hardening
 }
 
 declare_args() {
@@ -244,7 +254,8 @@ declare_args() {
   # While keeping BRP support, override a feature flag to make it disabled
   # state. This will overwrite `enable_backup_ref_ptr_feature_flag`.
   # TODO(https://crbug.com/372183586): Fix the bug and remove this arg.
-  force_disable_backup_ref_ptr_feature = enable_backup_ref_ptr_support && false
+  force_disable_backup_ref_ptr_feature =
+      enable_backup_ref_ptr_support && enable_ios_corruption_hardening
 
   # Build support for Dangling Ptr Detection (DPD) via BackupRefPtr (BRP),
   # making the raw_ptr<T> implementation to RawPtrBackupRefImpl if active.
