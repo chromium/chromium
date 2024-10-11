@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.toolbar;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.view.Gravity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -25,8 +27,8 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     private final SharedPreferences mSharedPreferences;
     private final ObservableSupplier<Boolean> mIsNtpShowingSupplier;
     private final ObservableSupplier<Boolean> mIsOmniboxFocusedSupplier;
+    private final ControlContainer mControlContainer;
 
-    private final int mControlContainerHeight;
     @ControlsPosition private int mCurrentPosition;
 
     /**
@@ -37,19 +39,19 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
      *     value immediately available.
      * @param isOmniboxFocusedSupplier Supplier of the current omnibox focus state. Must have a
      *     non-null value immediately available.
-     * @param controlContainerHeight The total height of the control container.
+     * @param controlContainer The control container for the current context.
      */
     public ToolbarPositionController(
             @NonNull BrowserControlsSizer browserControlsSizer,
             @NonNull SharedPreferences sharedPreferences,
             @NonNull ObservableSupplier<Boolean> isNtpShowingSupplier,
             @NonNull ObservableSupplier<Boolean> isOmniboxFocusedSupplier,
-            int controlContainerHeight) {
+            @NonNull ControlContainer controlContainer) {
         mBrowserControlsSizer = browserControlsSizer;
         mSharedPreferences = sharedPreferences;
         mIsNtpShowingSupplier = isNtpShowingSupplier;
         mIsOmniboxFocusedSupplier = isOmniboxFocusedSupplier;
-        mControlContainerHeight = controlContainerHeight;
+        mControlContainer = controlContainer;
         mCurrentPosition = mBrowserControlsSizer.getControlsPosition();
 
         mIsNtpShowingSupplier.addObserver((showing) -> updateCurrentPosition());
@@ -76,7 +78,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     @Override
     public void onSharedPreferenceChanged(
             SharedPreferences sharedPreferences, @Nullable String key) {
-        if (key.equals(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED)) {
+        if (ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED.equals(key)) {
             updateCurrentPosition();
         }
     }
@@ -97,15 +99,16 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
 
         int newTopHeight;
         int newBottomHeight;
+        int controlContainerHeight = mControlContainer.getToolbarHeight();
 
         if (newControlsPosition == ControlsPosition.TOP) {
-            newTopHeight = mBrowserControlsSizer.getTopControlsHeight() + mControlContainerHeight;
+            newTopHeight = mBrowserControlsSizer.getTopControlsHeight() + controlContainerHeight;
             newBottomHeight =
-                    mBrowserControlsSizer.getBottomControlsHeight() - mControlContainerHeight;
+                    mBrowserControlsSizer.getBottomControlsHeight() - controlContainerHeight;
         } else {
-            newTopHeight = mBrowserControlsSizer.getTopControlsHeight() - mControlContainerHeight;
+            newTopHeight = mBrowserControlsSizer.getTopControlsHeight() - controlContainerHeight;
             newBottomHeight =
-                    mBrowserControlsSizer.getBottomControlsHeight() + mControlContainerHeight;
+                    mBrowserControlsSizer.getBottomControlsHeight() + controlContainerHeight;
         }
 
         mCurrentPosition = newControlsPosition;
@@ -115,5 +118,10 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                 mBrowserControlsSizer.getTopControlsMinHeight(),
                 newBottomHeight,
                 mBrowserControlsSizer.getBottomControlsMinHeight());
+
+        CoordinatorLayout.LayoutParams layoutParams = mControlContainer.mutateLayoutParams();
+        int verticalGravity =
+                mCurrentPosition == ControlsPosition.TOP ? Gravity.TOP : Gravity.BOTTOM;
+        layoutParams.gravity = Gravity.START | verticalGravity;
     }
 }

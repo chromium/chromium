@@ -7,13 +7,21 @@ package org.chromium.chrome.browser.toolbar;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.view.Gravity;
+
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowPackageManager;
@@ -34,7 +42,7 @@ import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class ToolbarPositionControllerTest {
-
+    @Rule public MockitoRule mMockitoJUnit = MockitoJUnit.rule();
     private static final int TOOLBAR_HEIGHT = 56;
 
     private BrowserControlsSizer mBrowserControlsSizer =
@@ -179,6 +187,10 @@ public class ToolbarPositionControllerTest {
                 }
             };
 
+    private CoordinatorLayout.LayoutParams mControlContainerLayoutParams =
+            new CoordinatorLayout.LayoutParams(400, TOOLBAR_HEIGHT);
+    @Mock private ControlContainer mControlContainer;
+
     private Context mContext;
     private ObservableSupplierImpl<Boolean> mIsNtpShowing = new ObservableSupplierImpl<>();
     private ObservableSupplierImpl<Boolean> mIsOmniboxFocused = new ObservableSupplierImpl<>();
@@ -187,8 +199,11 @@ public class ToolbarPositionControllerTest {
 
     @Before
     public void setUp() {
+        doReturn(TOOLBAR_HEIGHT).when(mControlContainer).getToolbarHeight();
+        doReturn(mControlContainerLayoutParams).when(mControlContainer).mutateLayoutParams();
         mContext = ContextUtils.getApplicationContext();
         mBrowserControlsSizer.setControlsPosition(ControlsPosition.TOP, TOOLBAR_HEIGHT, 0, 0, 0);
+        mControlContainerLayoutParams.gravity = Gravity.START | Gravity.TOP;
         mIsNtpShowing.set(false);
         mIsOmniboxFocused.set(false);
         mController =
@@ -197,7 +212,7 @@ public class ToolbarPositionControllerTest {
                         ContextUtils.getAppSharedPreferences(),
                         mIsNtpShowing,
                         mIsOmniboxFocused,
-                        TOOLBAR_HEIGHT);
+                        mControlContainer);
     }
 
     @Test
@@ -299,11 +314,13 @@ public class ToolbarPositionControllerTest {
         assertEquals(mBrowserControlsSizer.getControlsPosition(), ControlsPosition.BOTTOM);
         assertEquals(mBrowserControlsSizer.getTopControlsHeight(), 0);
         assertEquals(mBrowserControlsSizer.getBottomControlsHeight(), TOOLBAR_HEIGHT);
+        assertEquals(mControlContainerLayoutParams.gravity, Gravity.START | Gravity.BOTTOM);
     }
 
     private void assertControlsAtTop() {
         assertEquals(mBrowserControlsSizer.getControlsPosition(), ControlsPosition.TOP);
         assertEquals(mBrowserControlsSizer.getTopControlsHeight(), TOOLBAR_HEIGHT);
         assertEquals(mBrowserControlsSizer.getBottomControlsHeight(), 0);
+        assertEquals(mControlContainerLayoutParams.gravity, Gravity.START | Gravity.TOP);
     }
 }

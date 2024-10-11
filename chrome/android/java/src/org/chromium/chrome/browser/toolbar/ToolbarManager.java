@@ -1322,19 +1322,19 @@ public class ToolbarManager
     }
 
     private void initializeToolbarPositionController() {
-        if (ToolbarPositionController.isToolbarPositionCustomizationEnabled(
+        if (!ToolbarPositionController.isToolbarPositionCustomizationEnabled(
                 mActivity, mIsCustomTab)) {
-            mIsNtpShowingSupplier.set(getNewTabPageForCurrentTab() != null);
-            mToolbarPositionController =
-                    new ToolbarPositionController(
-                            mBrowserControlsSizer,
-                            ContextUtils.getAppSharedPreferences(),
-                            mIsNtpShowingSupplier,
-                            mOmniboxFocusStateSupplier,
-                            mActivity
-                                    .getResources()
-                                    .getDimensionPixelSize(R.dimen.toolbar_height_no_shadow));
+            return;
         }
+
+        mIsNtpShowingSupplier.set(getNewTabPageForCurrentTab() != null);
+        mToolbarPositionController =
+                new ToolbarPositionController(
+                        mBrowserControlsSizer,
+                        ContextUtils.getAppSharedPreferences(),
+                        mIsNtpShowingSupplier,
+                        mOmniboxFocusStateSupplier,
+                        mControlContainer);
     }
 
     // TODO(b/315204103): add tests
