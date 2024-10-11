@@ -99,18 +99,6 @@ public final class AutofillSaveIbanBottomSheetBridgeTest {
     }
 
     @Test
-    public void testHide() {
-        mAutofillSaveIbanBottomSheetBridge.requestShowContent(TEST_IBAN_UI_INFO);
-        mAutofillSaveIbanBottomSheetBridge.hide();
-
-        verify(mBottomSheetController)
-                .hideContent(
-                        any(AutofillSaveIbanBottomSheetContent.class),
-                        /* animate= */ eq(true),
-                        eq(StateChangeReason.INTERACTION_COMPLETE));
-    }
-
-    @Test
     public void testDestroy() {
         mAutofillSaveIbanBottomSheetBridge.requestShowContent(TEST_IBAN_UI_INFO);
         mAutofillSaveIbanBottomSheetBridge.destroy();

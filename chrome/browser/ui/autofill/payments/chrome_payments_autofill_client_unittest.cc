@@ -22,7 +22,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_delegate_android.h"
-#include "chrome/browser/ui/android/autofill/autofill_save_iban_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
 #include "chrome/browser/ui/autofill/autofill_snackbar_controller_impl.h"
@@ -53,16 +52,6 @@ class MockAutofillSaveCardBottomSheetBridge
               (const AutofillSaveCardUiInfo&,
                std::unique_ptr<AutofillSaveCardDelegateAndroid>),
               (override));
-  MOCK_METHOD(void, Hide, (), (override));
-};
-
-class MockAutofillSaveIbanBottomSheetBridge
-    : public AutofillSaveIbanBottomSheetBridge {
- public:
-  MockAutofillSaveIbanBottomSheetBridge()
-      : AutofillSaveIbanBottomSheetBridge(
-            base::android::ScopedJavaGlobalRef<jobject>(nullptr)) {}
-
   MOCK_METHOD(void, Hide, (), (override));
 };
 
@@ -179,16 +168,6 @@ class ChromePaymentsAutofillClientTest
         std::make_unique<MockAutofillSaveCardBottomSheetBridge>();
     MockAutofillSaveCardBottomSheetBridge* pointer = mock.get();
     chrome_payments_client()->SetAutofillSaveCardBottomSheetBridgeForTesting(
-        std::move(mock));
-    return pointer;
-  }
-
-  MockAutofillSaveIbanBottomSheetBridge*
-  InjectMockAutofillSaveIbanBottomSheetBridge() {
-    std::unique_ptr<MockAutofillSaveIbanBottomSheetBridge> mock =
-        std::make_unique<MockAutofillSaveIbanBottomSheetBridge>();
-    MockAutofillSaveIbanBottomSheetBridge* pointer = mock.get();
-    chrome_payments_client()->SetAutofillSaveIbanBottomSheetBridgeForTesting(
         std::move(mock));
     return pointer;
   }
@@ -499,22 +478,6 @@ TEST_F(ChromePaymentsAutofillClientTest,
 
   TabModelList::RemoveTabModel(&tab_model);
 }
-
-TEST_F(
-    ChromePaymentsAutofillClientTest,
-    IbanUploadCompletedSuccessful_CallsSaveIbanBottomSheetBridgeAndSnackbarController) {
-  MockAutofillSaveIbanBottomSheetBridge* save_iban_bridge =
-      InjectMockAutofillSaveIbanBottomSheetBridge();
-  MockAutofillSnackbarControllerImpl* snackbar_controller =
-      InjectMockAutofillSnackbarControllerImpl();
-
-  EXPECT_CALL(*save_iban_bridge, Hide);
-  EXPECT_CALL(*snackbar_controller,
-              Show(AutofillSnackbarType::kSaveServerIbanSuccess));
-  chrome_payments_client()->IbanUploadCompleted(/*iban_saved=*/true,
-                                                /*max_strikes=*/false);
-}
-
 #else   // !BUILDFLAG(IS_ANDROID)
 TEST_F(ChromePaymentsAutofillClientTest,
        ConfirmSaveCreditCardLocally_CallsOfferLocalSave) {
