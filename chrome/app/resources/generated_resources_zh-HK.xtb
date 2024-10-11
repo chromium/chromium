@@ -5672,6 +5672,7 @@
 <translation id="5068919226082848014">薄餅</translation>
 <translation id="5071295820492622726">返去最近嘅下載項目</translation>
 <translation id="5071892329440114717">顯示標準保護功能詳情</translation>
+<translation id="5072303130033714629">「內容轉移」工具</translation>
 <translation id="5072500507106264618">只有系統服務可使用你的位置</translation>
 <translation id="5072836811783999860">顯示受管理書籤</translation>
 <translation id="5072900412896857127">無法載入《Google Play 服務條款》。請檢查您的網絡連線，然後再試一次。</translation>
@@ -6621,6 +6622,7 @@
 <translation id="5780940414249100901">傳送使用情況和診斷資料。此裝置目前會將診斷、裝置及應用程式使用情況資料自動傳送至 Google。這些資料不會用來識別你子女的身分，而是用於改善系統和應用程式的穩定性和其他效能。部分彙整資料亦會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。擁有者可強制執行此<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />。如果你為子女開啟「其他網絡和應用程式活動記錄」設定，此資料可能會儲存在他們的 Google 帳戶中。<ph name="BEGIN_LINK2" />進一步瞭解數據<ph name="BEGIN_LINK2_END" />瞭解詳情<ph name="END_LINK2" /></translation>
 <translation id="5780973441651030252">處理優先次序</translation>
 <translation id="5781092003150880845">以<ph name="ACCOUNT_FULL_NAME" />的身分同步</translation>
+<translation id="5781120434102258025">將學校帳戶資料移至個人帳戶</translation>
 <translation id="5781865261247219930">將指令傳送至 <ph name="EXTENSION_NAME" /></translation>
 <translation id="5782227691023083829">正在翻譯…</translation>
 <translation id="57838592816432529">静音</translation>
@@ -11269,6 +11271,7 @@
 <translation id="9120693811286642342"><ph name="BEGIN_PARAGRAPH1" />為獲得最佳體驗，請將 <ph name="DEVICE_OS" /> 安裝至內置磁碟。您亦可稍後從登入畫面進行安裝。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />如果現在還不想安裝，可透過 USB 執行並試用 CloudReady 2.0。此操作會保留您現有的作業系統和資料，但系統的儲存空間和效能可能受限。<ph name="END_PARAGRAPH2" /></translation>
 <translation id="9120761757252614786">自訂工具列</translation>
+<translation id="9120800848981545750">下載 iOS 版 Chrome，即可在手機上存取你的分頁、書籤和密碼。</translation>
 <translation id="9121814364785106365">在固定分頁中開啟</translation>
 <translation id="9122099953033442610">{MULTI_GROUP_TAB_COUNT,plural, =0{要關閉分頁並刪除群組嗎？}=1{要關閉分頁並刪除群組嗎？}other{要關閉分頁並刪除群組嗎？}}</translation>
 <translation id="9122788874051694311">要脫離無痕模式儲存此密鑰嗎？</translation>

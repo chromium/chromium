@@ -1589,6 +1589,7 @@
 <translation id="6352082849089527770">不明なネットワーク</translation>
 <translation id="6359587239691116345">最新の機能を入手しセキュリティを強化しましょう。このアップデートを承認しない場合、デバイスが正しく動作せず、セキュリティやパフォーマンス上の問題が発生する可能性があります。</translation>
 <translation id="6362833380917912748">組み込みのアプリについて</translation>
+<translation id="6364386432014869981">内蔵タッチパッドがオンになりました</translation>
 <translation id="6376931439017688372">Bluetooth はオンです</translation>
 <translation id="6378515133128829137">ウィンドウを右に固定する</translation>
 <translation id="6381109794406942707">デバイスのロックを解除するには PIN を入力してください。</translation>
@@ -1689,6 +1690,8 @@
 <translation id="6682029141988159141">クリップボードの内容を貼り付ける</translation>
 <translation id="6683022854667115063">ヘッドフォン</translation>
 <translation id="6686023075541098243">スマートフォンの通知の表示を設定</translation>
+<translation id="6688019813898140556">Esc キーを 5 回</translation>
+<translation id="6694462491298752106">内蔵タッチパッドがオフになりました</translation>
 <translation id="6694973220096431421">Google ドライブを検索</translation>
 <translation id="6696025732084565524">お使いのキーボード（取り外し可能）に重要なアップデートを適用する必要があります</translation>
 <translation id="6697913454192220372">新しいデスクを追加</translation>
