@@ -4101,7 +4101,7 @@
       // Enables loading of external SVG resource documents for the 'clip-path',
       // 'fill', 'stroke' and 'marker-*' properties.
       name: "SvgExternalResources",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "SvgFilterUserSpaceViewportForNonSvg",
