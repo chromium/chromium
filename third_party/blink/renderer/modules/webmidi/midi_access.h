@@ -106,15 +106,13 @@ class MIDIAccess final : public EventTarget,
     NOTREACHED_IN_MIGRATION();
   }
   void DidReceiveMIDIData(unsigned port_index,
-                          const unsigned char* data,
-                          wtf_size_t length,
+                          base::span<const uint8_t> data,
                           base::TimeTicks time_stamp) override;
 
   // |timeStampInMilliseconds| is in the same time coordinate system as
   // performance.now().
   void SendMIDIData(unsigned port_index,
-                    const unsigned char* data,
-                    wtf_size_t length,
+                    base::span<const uint8_t> data,
                     base::TimeTicks time_stamp);
 
   // Eager finalization needed to promptly release m_accessor. Otherwise

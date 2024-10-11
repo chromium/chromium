@@ -317,10 +317,8 @@ void MIDIOutput::DidOpen(bool opened) {
 
   HeapVector<std::pair<Member<DOMUint8Array>, base::TimeTicks>> queued_data;
   queued_data.swap(pending_data_);
-  for (auto& data : queued_data) {
-    midiAccess()->SendMIDIData(
-        port_index_, data.first->Data(),
-        base::checked_cast<wtf_size_t>(data.first->length()), data.second);
+  for (auto& [array, timestamp] : queued_data) {
+    midiAccess()->SendMIDIData(port_index_, array->ByteSpan(), timestamp);
   }
   queued_data.clear();
   DCHECK(pending_data_.empty());
@@ -350,9 +348,7 @@ void MIDIOutput::SendInternal(DOMUint8Array* array,
   if (IsOpening()) {
     pending_data_.emplace_back(array, timestamp);
   } else {
-    midiAccess()->SendMIDIData(port_index_, array->Data(),
-                               base::checked_cast<wtf_size_t>(array->length()),
-                               timestamp);
+    midiAccess()->SendMIDIData(port_index_, array->ByteSpan(), timestamp);
   }
 }
 
