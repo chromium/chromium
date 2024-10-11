@@ -2746,6 +2746,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.VmRemovableMediaUnmount.Duration" units="ms"
+    expires_after="2025-07-01">
+  <owner>momohatt@google.com</owner>
+  <owner>arc-storage@google.com</owner>
+  <summary>
+    The time taken for ARCVM to drop any references to a removable media before
+    unmounting it on the host side. Not recorded for ARC++ container.
+  </summary>
+</histogram>
+
+<histogram name="Arc.VmRemovableMediaUnmount.Result"
+    enum="ArcVmRemovableMediaUnmountResult" expires_after="2025-07-01">
+  <owner>momohatt@google.com</owner>
+  <owner>arc-storage@google.com</owner>
+  <summary>
+    The result of the attempt to drop ARCVM-side references to a removable media
+    before unmounting it on the host side. Not recorded for ARC++ container.
+  </summary>
+</histogram>
+
 <histogram name="Arc.VpnServiceBuilderCompatApisCounter"
     enum="VpnServiceBuilderCompatApisList" expires_after="2024-09-11">
   <owner>mhasank@google.com</owner>

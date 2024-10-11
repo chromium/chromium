@@ -18,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -59,6 +60,28 @@ constexpr char kDummyUuid[] = "00000000000000000000000000000000DEADBEEF";
 // system/core/libcutils/include/private/android_filesystem_config.h.
 constexpr uint32_t kAndroidAppUidStart = 10000;
 constexpr uint32_t kAndroidAppUidEnd = 19999;
+
+// Enum representing the result of PrepareForRemovableMediaUnmount(). Used for
+// Arc.VmRemovableMediaUnmount.Result UMA. Should not be renumbered and should
+// be kept in sync with tools/metrics/histograms/metadata/arc/enums.xml.
+enum class ArcVmRemovableMediaUnmountResult {
+  kSuccess = 0,
+  kFailedMojoTimeout = 1,
+  kFailedArcSideError = 2,
+  kFailedInstanceNotFound = 3,
+  kMaxValue = kFailedInstanceNotFound,
+};
+
+void ReportRemovableMediaUnmountResult(
+    ArcVmRemovableMediaUnmountResult result) {
+  base::UmaHistogramEnumeration("Arc.VmRemovableMediaUnmount.Result", result);
+}
+
+void ReportRemovableMediaUnmountDuration(base::TimeDelta duration) {
+  base::UmaHistogramCustomTimes("Arc.VmRemovableMediaUnmount.Duration",
+                                duration, base::Milliseconds(1) /* min */,
+                                base::Seconds(20) /* max */, 50 /* buckets */);
+}
 
 // Singleton factory for ArcVolumeMounterBridge.
 class ArcVolumeMounterBridgeFactory
@@ -340,6 +363,10 @@ void ArcVolumeMounterBridge::ProcessPendingRemovableMediaUnmountRequest() {
                                   PrepareForRemovableMediaUnmount);
   if (!volume_mounter_instance) {
     std::move(unmount_callback_).Run(false);
+    if (IsArcVmEnabled()) {
+      ReportRemovableMediaUnmountResult(
+          ArcVmRemovableMediaUnmountResult::kFailedInstanceNotFound);
+    }
     ProcessPendingRemovableMediaUnmountRequest();
     return;
   }
@@ -353,7 +380,9 @@ void ArcVolumeMounterBridge::ProcessPendingRemovableMediaUnmountRequest() {
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       base::BindOnce(
           &ArcVolumeMounterBridge::OnArcPreparedForRemovableMediaUnmount,
-          weak_ptr_factory_.GetWeakPtr(), mount_path)));
+          weak_ptr_factory_.GetWeakPtr(), mount_path, false /* is_timeout */)));
+
+  unmount_mojo_start_time_ = base::TimeTicks::Now();
 
   volume_mounter_instance->PrepareForRemovableMediaUnmount(
       mount_path, unmount_mojo_callback_.callback());
@@ -362,18 +391,29 @@ void ArcVolumeMounterBridge::ProcessPendingRemovableMediaUnmountRequest() {
       FROM_HERE, unmount_timeout_,
       base::BindOnce(
           &ArcVolumeMounterBridge::OnArcPreparedForRemovableMediaUnmount,
-          weak_ptr_factory_.GetWeakPtr(), mount_path, false /* success */));
+          weak_ptr_factory_.GetWeakPtr(), mount_path, true /* is_timeout */,
+          false /* success */));
 }
 
 void ArcVolumeMounterBridge::OnArcPreparedForRemovableMediaUnmount(
     const base::FilePath& mount_path,
+    bool is_timeout,
     bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(unmount_callback_);
   VLOG(1) << __func__ << " called for " << mount_path;
 
-  if (unmount_callback_.is_null()) {
-    LOG(ERROR) << __func__ << " was unexpectedly called with null callback";
-    return;
+  if (IsArcVmEnabled()) {
+    ReportRemovableMediaUnmountDuration(base::TimeTicks::Now() -
+                                        unmount_mojo_start_time_);
+    if (success) {
+      ReportRemovableMediaUnmountResult(
+          ArcVmRemovableMediaUnmountResult::kSuccess);
+    } else {
+      ReportRemovableMediaUnmountResult(
+          is_timeout ? ArcVmRemovableMediaUnmountResult::kFailedMojoTimeout
+                     : ArcVmRemovableMediaUnmountResult::kFailedArcSideError);
+    }
   }
   std::move(unmount_callback_).Run(success);
 

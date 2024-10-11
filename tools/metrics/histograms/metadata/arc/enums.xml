@@ -721,6 +721,14 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="The migration has finished"/>
 </enum>
 
+<enum name="ArcVmRemovableMediaUnmountResult">
+  <summary>Defines the result of unmounting removable media on ARC.</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed - mojo timeout"/>
+  <int value="2" label="Failed - ARC-side error"/>
+  <int value="3" label="Failed - mojo instance not found"/>
+</enum>
+
 <enum name="ArcWallpaperApi">
   <summary>Defines the Wallpaper APIs called from Android.</summary>
   <int value="0" label="Set"/>

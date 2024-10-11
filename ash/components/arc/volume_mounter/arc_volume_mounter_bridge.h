@@ -145,6 +145,7 @@ class ArcVolumeMounterBridge
   // `unmount_timer_`. This method should be called only by one of them for
   // every unmount request.
   void OnArcPreparedForRemovableMediaUnmount(const base::FilePath& mount_path,
+                                             bool is_timeout,
                                              bool success);
 
   using UnmountRequest = std::tuple<
@@ -167,6 +168,8 @@ class ArcVolumeMounterBridge
   // When the callback for PrepareForRemovableMediaUnmount mojo does not run
   // within this timeout, the callback will be called with false.
   base::TimeDelta unmount_timeout_ = base::Seconds(10);
+  // Holds the last time when PrepareForRemovableMediaUnmount mojo was called.
+  base::TimeTicks unmount_mojo_start_time_;
 
   raw_ptr<Delegate, DanglingUntriaged> delegate_ = nullptr;
 
