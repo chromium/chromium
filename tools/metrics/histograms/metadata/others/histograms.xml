@@ -5389,7 +5389,7 @@ chromium-metrics-reviews@google.com.
   <owner>battre@chromium.org</owner>
   <owner>gab@chromium.org</owner>
   <summary>
-    CPU time used in the foreground thread (usually UI thread) to serialize the
+    Time spent in the foreground thread (usually UI thread) to serialize the
     data to be written into an important file (e.g. serialize JSON string for
     preferences). For users of ImportantFileWriter that leverage background
     serialization (e.g. bookmarks), it excludes the time spent on the background
@@ -5403,7 +5403,7 @@ chromium-metrics-reviews@google.com.
   <owner>wylieb@chromium.org</owner>
   <owner>chrome-collections@google.com</owner>
   <summary>
-    CPU time used in the background thread to write serialized data into an
+    Time spent in the background thread to write serialized data into an
     important file. Recorded when the file is written.
 
     Note: As client suffixes are added the volume of the unsufixed variant will
