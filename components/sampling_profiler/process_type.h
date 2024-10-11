@@ -37,10 +37,7 @@ enum class ProfilerThreadType {
   // Service worker thread.
   kServiceWorker,
 
-  // Thread pool worker thread.
-  kThreadPoolWorker,
-
-  kMax = kThreadPoolWorker,
+  kMax = kServiceWorker,
 };
 
 }  // namespace sampling_profiler
