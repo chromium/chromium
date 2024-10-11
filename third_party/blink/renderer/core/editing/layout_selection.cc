@@ -667,6 +667,11 @@ LayoutSelectionStatus LayoutSelection::ComputeSelectionStatus(
   // hyphen is generated from it, or the character before the hyphen if
   // automatic hyphenation.
   const unsigned offset = current->StartOffsetInContainer(cursor);
+  if (offset == 0) {
+    // StartOffsetInContainer() didn't find the offset.
+    // See crbug.com/372586875.
+    return {0, 0, SelectSoftLineBreak::kNotSelected};
+  }
   DCHECK_GT(offset, 0u);
   LayoutSelectionStatus status =
       ComputeSelectionStatus(cursor, {offset - 1, offset});

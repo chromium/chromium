@@ -578,7 +578,8 @@ unsigned FragmentItem::StartOffsetInContainer(
     if (current->Type() == kBox && !current->IsInlineBox())
       break;
   }
-  NOTREACHED_IN_MIGRATION();
+  // No such text fragment.  We don't know how to reproduce this.
+  // See crbug.com/372586875.
   return 0;
 }
 
