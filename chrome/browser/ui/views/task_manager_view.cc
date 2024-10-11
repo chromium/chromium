@@ -24,6 +24,7 @@
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/task_manager/task_manager_columns.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -46,6 +47,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/dialog_client_view.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/shelf_item.h"
@@ -92,6 +94,8 @@ task_manager::TaskManagerTableModel* TaskManagerView::Show(Browser* browser) {
   gfx::NativeWindow context =
       browser ? browser->window()->GetNativeWindow() : nullptr;
   CreateDialogWidget(g_task_manager_view, context, nullptr);
+  g_task_manager_view->GetDialogClientView()->SetBackgroundColor(
+      kColorTaskManagerBackground);
   g_task_manager_view->InitAlwaysOnTopState();
 
 #if BUILDFLAG(IS_WIN)

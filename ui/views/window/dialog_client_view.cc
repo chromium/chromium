@@ -224,6 +224,15 @@ ProposedLayout DialogClientView::CalculateProposedLayout(
   return layouts;
 }
 
+void DialogClientView::SetBackgroundColor(ui::ColorId background_color_id) {
+  if (background_color_id_ == background_color_id) {
+    return;
+  }
+
+  background_color_id_ = background_color_id;
+  UpdateBackground();
+}
+
 bool DialogClientView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   DCHECK_EQ(accelerator.key_code(), ui::VKEY_ESCAPE);
 
@@ -311,8 +320,7 @@ void DialogClientView::UpdateBackground() {
 
   if (dialog && !dialog->use_custom_frame()) {
     SetBackground(views::CreateRoundedRectBackground(
-        GetColorProvider()->GetColor(ui::kColorDialogBackground),
-        background_radii_));
+        GetColorProvider()->GetColor(background_color_id_), background_radii_));
   }
 }
 

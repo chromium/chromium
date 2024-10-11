@@ -13,6 +13,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/input_event_activation_protector.h"
 #include "ui/views/layout/delegating_layout_manager.h"
@@ -117,6 +118,8 @@ class VIEWS_EXPORT DialogClientView : public ClientView,
   ProposedLayout CalculateProposedLayout(
       const SizeBounds& size_bounds) const override;
 
+  void SetBackgroundColor(ui::ColorId background_color_id);
+
  private:
   enum {
     // The number of buttons that DialogClientView can support.
@@ -197,6 +200,7 @@ class VIEWS_EXPORT DialogClientView : public ClientView,
 
   std::unique_ptr<InputEventActivationProtector> input_protector_;
 
+  ui::ColorId background_color_id_ = ui::kColorDialogBackground;
   gfx::RoundedCornersF background_radii_;
 };
 
