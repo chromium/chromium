@@ -88,7 +88,7 @@ public final class AutofillSaveIbanBottomSheetCoordinatorTest {
     @Test
     public void testDestroy() {
         mCoordinator.requestShowContent();
-        mCoordinator.destroy();
+        mCoordinator.destroy(BottomSheetController.StateChangeReason.NONE);
 
         verify(mBottomSheetController)
                 .hideContent(

@@ -235,6 +235,10 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       std::unique_ptr<AutofillSaveCardBottomSheetBridge>
           autofill_save_card_bottom_sheet_bridge);
 
+  void SetAutofillSaveIbanBottomSheetBridgeForTesting(
+      std::unique_ptr<AutofillSaveIbanBottomSheetBridge>
+          autofill_save_iban_bottom_sheet_bridge);
+
   void SetAutofillMessageControllerForTesting(
       std::unique_ptr<AutofillMessageController> autofill_message_controller);
 #endif

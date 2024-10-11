@@ -527,7 +527,15 @@ void ChromePaymentsAutofillClient::ConfirmUploadIbanToCloud(
 
 void ChromePaymentsAutofillClient::IbanUploadCompleted(bool iban_saved,
                                                        bool hit_max_strikes) {
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  if (auto* bridge = GetOrCreateAutofillSaveIbanBottomSheetBridge()) {
+    bridge->Hide();
+  }
+  if (iban_saved) {
+    client_->GetAutofillSnackbarController()->Show(
+        AutofillSnackbarType::kSaveServerIbanSuccess);
+  }
+#else  // BUILDFLAG(IS_ANDROID)
   if (IbanBubbleControllerImpl* controller =
           IbanBubbleControllerImpl::FromWebContents(web_contents())) {
     controller->ShowConfirmationBubbleView(iban_saved, hit_max_strikes);
@@ -926,6 +934,14 @@ void ChromePaymentsAutofillClient::
             autofill_save_card_bottom_sheet_bridge) {
   autofill_save_card_bottom_sheet_bridge_ =
       std::move(autofill_save_card_bottom_sheet_bridge);
+}
+
+void ChromePaymentsAutofillClient::
+    SetAutofillSaveIbanBottomSheetBridgeForTesting(
+        std::unique_ptr<AutofillSaveIbanBottomSheetBridge>
+            autofill_save_iban_bottom_sheet_bridge) {
+  autofill_save_iban_bottom_sheet_bridge_ =
+      std::move(autofill_save_iban_bottom_sheet_bridge);
 }
 
 void ChromePaymentsAutofillClient::SetAutofillMessageControllerForTesting(

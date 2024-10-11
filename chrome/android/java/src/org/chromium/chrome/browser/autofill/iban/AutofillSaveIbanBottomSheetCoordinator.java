@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.autofill.payments.AutofillSaveIbanUiInfo;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -123,8 +124,8 @@ public class AutofillSaveIbanBottomSheetCoordinator {
     }
 
     /** Destroys this component, hiding the bottom sheet if needed. */
-    public void destroy() {
-        mMediator.hide(BottomSheetController.StateChangeReason.NONE);
+    public void destroy(@StateChangeReason int hideReason) {
+        mMediator.hide(hideReason);
     }
 
     void openLegalMessageLink(String url) {
