@@ -232,10 +232,12 @@ UIImageView* BrandingImageView() {
   // If reserving an address fails, we should inform the user and not attempt to
   // fill any fields on the page.
   self.primaryActionButton.enabled = NO;
-  [_delegate reservePlusAddress];
-  plus_addresses::metrics::RecordModalEvent(
-      plus_addresses::metrics::PlusAddressModalEvent::kModalShown,
-      [_delegate shouldShowNotice]);
+  if (!_errorAndLoadingStatesEnabled) {
+    [_delegate reservePlusAddress];
+    plus_addresses::metrics::RecordModalEvent(
+        plus_addresses::metrics::PlusAddressModalEvent::kModalShown,
+        [_delegate shouldShowNotice]);
+  }
   _bottomSheetShownTime = base::Time::Now();
 }
 
@@ -258,6 +260,11 @@ UIImageView* BrandingImageView() {
   self.primaryActionButton.enabled = YES;
   if (_errorAndLoadingStatesEnabled) {
     _isGenerating = NO;
+    if (!_refreshCount) {
+      plus_addresses::metrics::RecordModalEvent(
+          plus_addresses::metrics::PlusAddressModalEvent::kModalShown,
+          [_delegate shouldShowNotice]);
+    }
   }
   _reservedPlusAddress = plusAddress;
   [_reservedPlusAddressTableView reloadData];

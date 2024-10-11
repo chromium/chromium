@@ -214,9 +214,9 @@ enum class PlusAddressAction {
                                            kReservePlusAddressError];
         if (errorStatesEnabled) {
           if (maybePlusProfile.error().IsQuotaError()) {
-            [_delegate showQuotaErrorAlert];
+            [_delegate displayPlusAddressQuotaErrorAlert:YES];
           } else if (maybePlusProfile.error().IsTimeoutError()) {
-            [_delegate showTimeoutErrorAlert];
+            [_delegate displayPlusAddressTimeoutErrorAlert];
           } else {
             showGenericError = YES;
           }
@@ -238,7 +238,8 @@ enum class PlusAddressAction {
           _reservedPlusAddress = confirmedPlusAddress;
           // Show affiliation error.
           if (errorStatesEnabled) {
-            [_delegate showAffiliationError:*maybePlusProfile];
+            [_delegate
+                displayPlusAddressAffiliationErrorAlert:*maybePlusProfile];
           }
         }
       } else {
@@ -248,9 +249,9 @@ enum class PlusAddressAction {
                                            kConfirmPlusAddressError];
         if (errorStatesEnabled) {
           if (maybePlusProfile.error().IsQuotaError()) {
-            [_delegate showQuotaErrorAlert];
+            [_delegate displayPlusAddressQuotaErrorAlert:NO];
           } else if (maybePlusProfile.error().IsTimeoutError()) {
-            [_delegate showTimeoutErrorAlert];
+            [_delegate displayPlusAddressTimeoutErrorAlert];
           } else {
             showGenericError = YES;
           }
@@ -260,7 +261,7 @@ enum class PlusAddressAction {
   }
 
   if (showGenericError && errorStatesEnabled) {
-    [_delegate showGenericErrorAlert];
+    [_delegate displayPlusAddressGenericErrorAlert];
   }
 }
 

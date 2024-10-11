@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/plus_addresses/coordinator/plus_address_bottom_sheet_coordinator.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/plus_addresses/features.h"
 #import "components/plus_addresses/grit/plus_addresses_strings.h"
 #import "components/plus_addresses/plus_address_service.h"
 #import "components/plus_addresses/plus_address_types.h"
@@ -32,6 +33,9 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 @interface PlusAddressBottomSheetCoordinator () <
     PlusAddressBottomSheetMediatorDelegate>
 
+// Alert coordinator used to show error alerts.
+@property(nonatomic, strong) AlertCoordinator* alertCoordinator;
+
 @end
 
 @implementation PlusAddressBottomSheetCoordinator {
@@ -41,8 +45,8 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
   // A mediator that hides data operations from the view controller.
   PlusAddressBottomSheetMediator* _mediator;
 
-  // Alert coordinator used to show error alerts.
-  AlertCoordinator* _alertCoordinator;
+  // YES if the `_viewController` is the presenting view controller.
+  BOOL _viewIsPresented;
 }
 
 #pragma mark - ChromeCoordinator
@@ -87,117 +91,178 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 
   _mediator.consumer = _viewController;
 
+  _viewIsPresented = YES;
   [self.baseViewController presentViewController:_viewController
                                         animated:YES
                                       completion:nil];
+
+  if (base::FeatureList::IsEnabled(
+          plus_addresses::features::
+              kPlusAddressIOSErrorAndLoadingStatesEnabled)) {
+    // Ensure that the bottom sheet is presented so that it can be dismissed
+    // before presenting the alert for error during reserve.
+    [_mediator reservePlusAddress];
+  }
 }
 
 - (void)stop {
   [super stop];
-  [_viewController.presentingViewController dismissViewControllerAnimated:YES
-                                                               completion:nil];
+  if (_viewIsPresented) {
+    [_viewController.presentingViewController
+        dismissViewControllerAnimated:YES
+                           completion:nil];
+  }
+
   _viewController = nil;
   _mediator = nil;
 }
 
 #pragma mark - PlusAddressBottomSheetMediatorDelegate
 
-- (void)showAffiliationError:(const plus_addresses::PlusProfile&)plusProfile {
+- (void)displayPlusAddressAffiliationErrorAlert:
+    (const plus_addresses::PlusProfile&)plusProfile {
+  NSString* title = l10n_util::GetNSString(
+      IDS_PLUS_ADDRESS_AFFILIATION_ERROR_ALERT_TITLE_IOS);
   NSString* message = l10n_util::GetNSStringF(
       IDS_PLUS_ADDRESS_AFFILIATION_ERROR_ALERT_MESSAGE_IOS,
       GetOriginForDisplay(plusProfile),
       base::UTF8ToUTF16(*plusProfile.plus_address));
-
-  _alertCoordinator = [[AlertCoordinator alloc]
-      initWithBaseViewController:_viewController
-                         browser:self.browser
-                           title:
-                               l10n_util::GetNSString(
-                                   IDS_PLUS_ADDRESS_AFFILIATION_ERROR_ALERT_TITLE_IOS)
-                         message:message];
-  __weak PlusAddressBottomSheetMediator* weakMediator = _mediator;
-  [_alertCoordinator
-      addItemWithTitle:
-          l10n_util::GetNSString(
-              IDS_PLUS_ADDRESS_AFFILIATION_ERROR_PRIMARY_BUTTON_IOS)
-                action:^{
-                  [weakMediator didAcceptAffiliatedPlusAddressSuggestion];
-                }
-                 style:UIAlertActionStyleDefault];
-
-  [_alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
-                               action:^{
-                                 [weakMediator didCancelAlert];
-                               }
-                                style:UIAlertActionStyleCancel];
-
-  [_alertCoordinator start];
+  NSString* primaryButtonTitle = l10n_util::GetNSString(
+      IDS_PLUS_ADDRESS_AFFILIATION_ERROR_PRIMARY_BUTTON_IOS);
+  [self showAlertWithTitle:title
+                       message:message
+            primaryButtonTitle:primaryButtonTitle
+          secondaryButtonTitle:l10n_util::GetNSString(IDS_CANCEL)
+      shouldDismissBottomSheet:NO
+            isAffiliationError:YES];
 }
 
-- (void)showQuotaErrorAlert {
-  _alertCoordinator = [[AlertCoordinator alloc]
-      initWithBaseViewController:_viewController
-                         browser:self.browser
-                           title:
-                               l10n_util::GetNSString(
-                                   IDS_PLUS_ADDRESS_QUOTA_ERROR_ALERT_TITLE_IOS)
-                         message:
-                             l10n_util::GetNSString(
-                                 IDS_PLUS_ADDRESS_QUOTA_ERROR_ALERT_MESSAGE_IOS)];
-
-  __weak PlusAddressBottomSheetMediator* weakMediator = _mediator;
-  [_alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_OK)
-                               action:^{
-                                 [weakMediator didCancelAlert];
-                               }
-                                style:UIAlertActionStyleCancel];
-  [_alertCoordinator start];
+- (void)displayPlusAddressQuotaErrorAlert:(BOOL)shouldDismissBottomSheet {
+  NSString* title =
+      l10n_util::GetNSString(IDS_PLUS_ADDRESS_QUOTA_ERROR_ALERT_TITLE_IOS);
+  NSString* message =
+      l10n_util::GetNSString(IDS_PLUS_ADDRESS_QUOTA_ERROR_ALERT_MESSAGE_IOS);
+  [self showAlertWithTitle:title
+                       message:message
+            primaryButtonTitle:l10n_util::GetNSString(IDS_OK)
+          secondaryButtonTitle:nil
+      shouldDismissBottomSheet:shouldDismissBottomSheet
+            isAffiliationError:NO];
 }
 
-- (void)showTimeoutErrorAlert {
-  [self
-      showAlertWithTryAgainButton:
-          l10n_util::GetNSString(IDS_PLUS_ADDRESS_TIMEOUT_ERROR_ALERT_TITLE_IOS)
-                          message:
-                              l10n_util::GetNSString(
-                                  IDS_PLUS_ADDRESS_TIMEOUT_ERROR_ALERT_MESSAGE_IOS)];
+- (void)displayPlusAddressTimeoutErrorAlert {
+  NSString* title =
+      l10n_util::GetNSString(IDS_PLUS_ADDRESS_TIMEOUT_ERROR_ALERT_TITLE_IOS);
+  NSString* message =
+      l10n_util::GetNSString(IDS_PLUS_ADDRESS_TIMEOUT_ERROR_ALERT_MESSAGE_IOS);
+  NSString* primaryButtonTitle = l10n_util::GetNSString(
+      IDS_PLUS_ADDRESS_ERROR_TRY_AGAIN_PRIMARY_BUTTON_IOS);
+  [self showAlertWithTitle:title
+                       message:message
+            primaryButtonTitle:primaryButtonTitle
+          secondaryButtonTitle:l10n_util::GetNSString(IDS_CANCEL)
+      shouldDismissBottomSheet:NO
+            isAffiliationError:NO];
 }
 
-- (void)showGenericErrorAlert {
-  [self
-      showAlertWithTryAgainButton:
-          l10n_util::GetNSString(IDS_PLUS_ADDRESS_GENERIC_ERROR_ALERT_TITLE_IOS)
-                          message:
-                              l10n_util::GetNSString(
-                                  IDS_PLUS_ADDRESS_GENERIC_ERROR_ALERT_MESSAGE_IOS)];
+- (void)displayPlusAddressGenericErrorAlert {
+  NSString* title =
+      l10n_util::GetNSString(IDS_PLUS_ADDRESS_GENERIC_ERROR_ALERT_TITLE_IOS);
+  NSString* message =
+      l10n_util::GetNSString(IDS_PLUS_ADDRESS_GENERIC_ERROR_ALERT_MESSAGE_IOS);
+  NSString* primaryButtonTitle = l10n_util::GetNSString(
+      IDS_PLUS_ADDRESS_ERROR_TRY_AGAIN_PRIMARY_BUTTON_IOS);
+  [self showAlertWithTitle:title
+                       message:message
+            primaryButtonTitle:primaryButtonTitle
+          secondaryButtonTitle:l10n_util::GetNSString(IDS_CANCEL)
+      shouldDismissBottomSheet:NO
+            isAffiliationError:NO];
 }
 
 #pragma mark - Private
 
-// Shows an alert view with the "Try again" and "Cancel" buttons.
-- (void)showAlertWithTryAgainButton:(NSString*)title
-                            message:(NSString*)message {
-  _alertCoordinator =
-      [[AlertCoordinator alloc] initWithBaseViewController:_viewController
-                                                   browser:self.browser
-                                                     title:title
-                                                   message:message];
-  __weak PlusAddressBottomSheetMediator* weakMediator = _mediator;
-  [_alertCoordinator
-      addItemWithTitle:l10n_util::GetNSString(
-                           IDS_PLUS_ADDRESS_ERROR_TRY_AGAIN_PRIMARY_BUTTON_IOS)
-                action:^{
-                  [weakMediator didSelectTryAgainToConfirm];
-                }
-                 style:UIAlertActionStyleDefault];
+// Shows an alert view with a `title`, `message` and a `primaryButtonTitle`.
+// `secondaryButtonTitle` is optional and can be nil.
+// `shouldDismissBottomSheet` if YES, would dismiss the bottom sheet before
+// showing an alert. `isAffiliationError` indicates that the error alert is
+// shown for an affiliated plus address.
+- (void)showAlertWithTitle:(NSString*)title
+                     message:(NSString*)message
+          primaryButtonTitle:(NSString*)primaryButtonTitle
+        secondaryButtonTitle:(NSString*)secondaryButtonTitle
+    shouldDismissBottomSheet:(BOOL)shouldDismissBottomSheet
+          isAffiliationError:(BOOL)isAffiliationError {
+  self.alertCoordinator = [[AlertCoordinator alloc]
+      initWithBaseViewController:shouldDismissBottomSheet
+                                     ? self.baseViewController
+                                     : _viewController
+                         browser:self.browser
+                           title:title
+                         message:message];
 
-  [_alertCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
-                               action:^{
-                                 [weakMediator didCancelAlert];
-                               }
-                                style:UIAlertActionStyleCancel];
+  __weak __typeof__(self) weakSelf = self;
+  if (primaryButtonTitle) {
+    [self.alertCoordinator
+        addItemWithTitle:primaryButtonTitle
+                  action:^{
+                    if (isAffiliationError) {
+                      [weakSelf handlePlusAddressAffiliationErrorAcceptance];
+                    } else if (secondaryButtonTitle) {
+                      [weakSelf handleTryAgainAction];
+                    } else {
+                      [weakSelf handleErrorAlertCancellation];
+                    }
+                  }
+                   style:UIAlertActionStyleDefault];
+  }
 
-  [_alertCoordinator start];
+  if (secondaryButtonTitle) {
+    [self.alertCoordinator addItemWithTitle:secondaryButtonTitle
+                                     action:^{
+                                       [weakSelf handleErrorAlertCancellation];
+                                     }
+                                      style:UIAlertActionStyleCancel];
+  }
+
+  if (shouldDismissBottomSheet) {
+    if (_viewIsPresented) {
+      _viewIsPresented = NO;
+      [self.baseViewController.presentedViewController
+          dismissViewControllerAnimated:YES
+                             completion:^{
+                               [weakSelf.alertCoordinator start];
+                             }];
+      return;
+    }
+  }
+
+  [self.alertCoordinator start];
+}
+
+// Called if the user accepted the affiliated plus address suggestion.
+- (void)handlePlusAddressAffiliationErrorAcceptance {
+  [self stopAlertCoordinator];
+  [_mediator didAcceptAffiliatedPlusAddressSuggestion];
+}
+
+// Called to retry the previous action.
+- (void)handleTryAgainAction {
+  [self stopAlertCoordinator];
+  [_mediator didSelectTryAgainToConfirm];
+}
+
+// Called when the cancel button ("OK" or "Cancel") is tapped.
+- (void)handleErrorAlertCancellation {
+  [self stopAlertCoordinator];
+  [_mediator didCancelAlert];
+}
+
+// Dimisses the alert Coordinator.
+- (void)stopAlertCoordinator {
+  CHECK(self.alertCoordinator);
+  [self.alertCoordinator stop];
+  self.alertCoordinator = nil;
 }
 
 @end

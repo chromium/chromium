@@ -24,16 +24,17 @@ class UrlLoadingBrowserAgent;
 @protocol PlusAddressBottomSheetMediatorDelegate
 
 // Shows an alert asking the user to use an affiliated plus address.
-- (void)showAffiliationError:(const plus_addresses::PlusProfile&)plusProfile;
+- (void)displayPlusAddressAffiliationErrorAlert:
+    (const plus_addresses::PlusProfile&)plusProfile;
 
 // Shows alert for the quota error.
-- (void)showQuotaErrorAlert;
+- (void)displayPlusAddressQuotaErrorAlert:(BOOL)shouldDismissBottomSheet;
 
 // Shows alert for the timeout error.
-- (void)showTimeoutErrorAlert;
+- (void)displayPlusAddressTimeoutErrorAlert;
 
 // Shows generic alert with the message.
-- (void)showGenericErrorAlert;
+- (void)displayPlusAddressGenericErrorAlert;
 
 @end
 

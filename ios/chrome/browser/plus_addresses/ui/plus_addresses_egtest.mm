@@ -123,7 +123,8 @@ void ExpectModalTimeSample(
   if ([self isRunningTest:@selector(testQuotaErrorAlertOnConfirm)] ||
       [self isRunningTest:@selector(testAffiliationError)] ||
       [self isRunningTest:@selector(testTimeOutAlertOnConfirm)] ||
-      [self isRunningTest:@selector(testGenericAlertOnConfirm)]) {
+      [self isRunningTest:@selector(testGenericAlertOnConfirm)] ||
+      [self isRunningTest:@selector(testQuotaErrorAlertOnReserve)]) {
     config.features_enabled_and_params.push_back(
         {plus_addresses::features::kPlusAddressIOSErrorAndLoadingStatesEnabled,
          {}});
@@ -527,6 +528,24 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
 
   // Ensure the error alert is shown.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:error_alert];
+}
+
+// Tests that an error alert is shown if the plus address quota has been reached
+// on reserving plus address.
+- (void)testQuotaErrorAlertOnReserve {
+  [PlusAddressAppInterface setShouldReturnQuotaError:YES];
+
+  [self openCreatePlusAddressBottomSheet];
+
+  id<GREYMatcher> error_alert = grey_text(
+      l10n_util::GetNSString(IDS_PLUS_ADDRESS_QUOTA_ERROR_ALERT_MESSAGE_IOS));
+
+  // Ensure the error alert is shown.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:error_alert];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_OK)] performAction:grey_tap()];
 }
 
 @end
