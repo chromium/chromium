@@ -50,7 +50,6 @@ enum class VideoFrameResourceType {
   NONE,
   RGB,
   RGBA_PREMULTIPLIED,
-  RGBA,
   STREAM_TEXTURE,
   // The VideoFrame is merely a hint to compositor that a hole must be made
   // transparent so the video underlay will be visible.

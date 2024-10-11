@@ -86,58 +86,20 @@ gfx::ProtectedVideoType ProtectedVideoTypeFromMetadata(
 VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
     const VideoFrame& frame,
     GLuint target,
-    viz::SharedImageFormat& si_format,
     bool use_stream_video_draw_quad) {
-  const VideoPixelFormat format = frame.format();
-
   bool si_prefers_external_sampler =
       frame.shared_image()->format().PrefersExternalSampler();
   if (si_prefers_external_sampler) {
-    // TODO(crbug.com/343011436): Always set `si_format` to be that from shared
-    // image.
-    si_format = frame.shared_image()->format();
-    // The texture |target| can be 0 for Fuchsia.
-    DCHECK(target == 0 || target == GL_TEXTURE_EXTERNAL_OES)
-        << "Unsupported target " << gl::GLEnums::GetStringEnum(target);
-#if BUILDFLAG(IS_OZONE)
-    // The format must be one of NV12/YV12/P010LE/NV12A, as these are the only
-    // formats for which si_prefers_external_sampler will return
-    // true.
-    switch (format) {
-      case PIXEL_FORMAT_NV12:
-      case PIXEL_FORMAT_YV12:
-      case PIXEL_FORMAT_P010LE:
-      case PIXEL_FORMAT_NV12A:
-        break;
-      default:
-        NOTREACHED();
-    }
-    return format == PIXEL_FORMAT_NV12A ? VideoFrameResourceType::RGBA
-                                        : VideoFrameResourceType::RGB;
-#else
-    // MultiplanarSharedImage with external sampling is supported only on
-    // Ozone, and VideoFrames with external sampler should not be created on
-    // other platforms.
-    NOTREACHED_NORETURN();
-#endif
+    return VideoFrameResourceType::RGB;
   }
 
-  CHECK(!si_prefers_external_sampler);
-
+  const VideoPixelFormat format = frame.format();
   switch (format) {
     case PIXEL_FORMAT_ARGB:
     case PIXEL_FORMAT_XRGB:
     case PIXEL_FORMAT_ABGR:
     case PIXEL_FORMAT_XBGR:
     case PIXEL_FORMAT_BGRA:
-      // This maps VideoPixelFormat back to SharedImageFormat
-      // NOTE: ABGR == RGBA and ARGB == BGRA, they differ only byte order
-      // See: VideoFormat function in gpu_memory_buffer_video_frame_pool
-      // https://cs.chromium.org/chromium/src/media/video/gpu_memory_buffer_video_frame_pool.cc?type=cs&g=0&l=281
-      si_format = (format == PIXEL_FORMAT_ABGR || format == PIXEL_FORMAT_XBGR)
-                      ? viz::SinglePlaneFormat::kRGBA_8888
-                      : viz::SinglePlaneFormat::kBGRA_8888;
-
       switch (target) {
         case GL_TEXTURE_EXTERNAL_OES:
           // `use_stream_video_draw_quad` is set on Android and `dcomp_surface`
@@ -160,63 +122,17 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
       break;
     case PIXEL_FORMAT_XR30:
     case PIXEL_FORMAT_XB30:
-      si_format = (format == PIXEL_FORMAT_XR30)
-                      ? viz::SinglePlaneFormat::kBGRA_1010102
-                      : viz::SinglePlaneFormat::kRGBA_1010102;
-      return VideoFrameResourceType::RGB;
     case PIXEL_FORMAT_I420:
-      si_format = viz::MultiPlaneFormat::kI420;
-      return VideoFrameResourceType::RGB;
-
     case PIXEL_FORMAT_YV12:
-      CHECK_EQ(frame.shared_image_format_type(),
-               SharedImageFormatType::kSharedImageFormat);
-      si_format = viz::MultiPlaneFormat::kYV12;
-      return VideoFrameResourceType::RGBA;
-
     case PIXEL_FORMAT_NV12:
-      // |target| is set to 0 for Vulkan textures.
-      //
-      // TODO(crbug.com/40144615): Note that GL_TEXTURE_EXTERNAL_OES is
-      // allowed even for two-texture NV12 frames. This is intended to handle a
-      // couple of cases: a) when these textures are connected to the
-      // corresponding plane of the contents of an EGLStream using
-      // EGL_NV_stream_consumer_gltexture_yuv; b) when D3DImageBacking is used
-      // with GL_TEXTURE_EXTERNAL_OES (note that this case should be able to be
-      // migrated to GL_TEXTURE_2D after https://crrev.com/c/3856660).
-      DCHECK(target == 0 || target == GL_TEXTURE_EXTERNAL_OES ||
-             target == GL_TEXTURE_2D || target == GL_TEXTURE_RECTANGLE_ARB)
-          << "Unsupported target " << gl::GLEnums::GetStringEnum(target);
-      si_format = viz::MultiPlaneFormat::kNV12;
-      return VideoFrameResourceType::RGB;
-
     case PIXEL_FORMAT_NV16:
-      si_format = viz::MultiPlaneFormat::kNV16;
-      return VideoFrameResourceType::RGB;
-
     case PIXEL_FORMAT_NV24:
-      si_format = viz::MultiPlaneFormat::kNV24;
-      return VideoFrameResourceType::RGB;
-
     case PIXEL_FORMAT_NV12A:
-      si_format = viz::MultiPlaneFormat::kNV12A;
-      return VideoFrameResourceType::RGBA;
-
     case PIXEL_FORMAT_P010LE:
-      si_format = viz::MultiPlaneFormat::kP010;
-      return VideoFrameResourceType::RGB;
-
     case PIXEL_FORMAT_P210LE:
-      si_format = viz::MultiPlaneFormat::kP210;
-      return VideoFrameResourceType::RGB;
-
     case PIXEL_FORMAT_P410LE:
-      si_format = viz::MultiPlaneFormat::kP410;
-      return VideoFrameResourceType::RGB;
-
     case PIXEL_FORMAT_RGBAF16:
-      si_format = viz::SinglePlaneFormat::kRGBA_F16;
-      return VideoFrameResourceType::RGBA;
+      return VideoFrameResourceType::RGB;
 
     case PIXEL_FORMAT_UYVY:
       NOTREACHED_IN_MIGRATION();
@@ -843,7 +759,6 @@ void VideoResourceUpdater::AppendQuad(
                               overlay_plane_id_);
       break;
     }
-    case VideoFrameResourceType::RGBA:
     case VideoFrameResourceType::RGBA_PREMULTIPLIED:
     case VideoFrameResourceType::RGB:
     case VideoFrameResourceType::STREAM_TEXTURE: {
@@ -1050,9 +965,8 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForHardwarePlanes(
     target = GL_TEXTURE_2D;
   }
 
-  viz::SharedImageFormat si_format;
   external_resource.type = ExternalResourceTypeForHardwarePlanes(
-      *video_frame, target, si_format, use_stream_video_draw_quad_);
+      *video_frame, target, use_stream_video_draw_quad_);
   external_resource.bits_per_channel = video_frame->BitDepth();
 
   if (external_resource.type == VideoFrameResourceType::NONE) {
@@ -1075,7 +989,7 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForHardwarePlanes(
   const gfx::Size size(width, height);
   auto transfer_resource = viz::TransferableResource::MakeGpu(
       shared_image->mailbox(), shared_image->GetTextureTarget(),
-      video_frame->acquire_sync_token(), size, si_format,
+      video_frame->acquire_sync_token(), size, shared_image->format(),
       video_frame->metadata().allow_overlay,
       viz::TransferableResource::ResourceSource::kVideo);
   transfer_resource.color_space = video_frame->ColorSpace();
@@ -1550,7 +1464,7 @@ VideoFrameExternalResource VideoResourceUpdater::CreateForSoftwarePlanes(
                     viz::TransferableResource::ResourceSource::kVideo);
     } else {
       HardwarePlaneResource* hardware_resource = plane_resource->AsHardware();
-      external_resource.type = VideoFrameResourceType::RGBA;
+      external_resource.type = VideoFrameResourceType::RGB;
       gpu::SyncToken sync_token;
       RasterInterface()->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
       transferable_resource = viz::TransferableResource::MakeGpu(

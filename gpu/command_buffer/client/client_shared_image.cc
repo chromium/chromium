@@ -405,14 +405,15 @@ std::unique_ptr<SharedImageTexture> ClientSharedImage::CreateGLTexture(
 
 // static
 scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting() {
-  return CreateForTesting(GL_TEXTURE_2D);
+  return CreateForTesting(viz::SinglePlaneFormat::kRGBA_8888, GL_TEXTURE_2D);
 }
 
 // static
 scoped_refptr<ClientSharedImage> ClientSharedImage::CreateForTesting(
+    viz::SharedImageFormat format,
     uint32_t texture_target) {
   SharedImageMetadata metadata;
-  metadata.format = viz::SinglePlaneFormat::kRGBA_8888;
+  metadata.format = format;
   metadata.color_space = gfx::ColorSpace::CreateSRGB();
   metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
   metadata.alpha_type = kOpaque_SkAlphaType;
