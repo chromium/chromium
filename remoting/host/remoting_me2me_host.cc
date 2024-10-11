@@ -115,6 +115,8 @@
 #include "remoting/protocol/channel_authenticator.h"
 #include "remoting/protocol/chromium_port_allocator_factory.h"
 #include "remoting/protocol/host_authentication_config.h"
+#include "remoting/protocol/ice_config_fetcher_cloud.h"
+#include "remoting/protocol/ice_config_fetcher_corp.h"
 #include "remoting/protocol/ice_config_fetcher_default.h"
 #include "remoting/protocol/jingle_session_manager.h"
 #include "remoting/protocol/me2me_host_authenticator_factory.h"
@@ -1819,9 +1821,21 @@ void HostProcess::StartHost() {
 
   InitializeSignaling();
 
-  // TODO: joedow - Create Cloud/Corp/Me2Me fetchers based on host config hint.
-  auto ice_config_fetcher = std::make_unique<protocol::IceConfigFetcherDefault>(
-      context_->url_loader_factory(), oauth_token_getter_.get());
+  // Create the appropriate API service client (corp, cloud, or me2me) for the
+  // IceConfigFetcher.
+  std::unique_ptr<protocol::IceConfigFetcher> ice_config_fetcher;
+  if (is_cloud_host_) {
+    ice_config_fetcher = std::make_unique<protocol::IceConfigFetcherCloud>(
+        context_->url_loader_factory(), oauth_token_getter_.get());
+    // TODO: joedow - Implement IceConfigFetcherCorp.
+    // } else if (is_corp_host_) {
+    // ice_config_fetcher = std::make_unique<protocol::IceConfigFetcherCorp>(
+    //     context_->url_loader_factory(), oauth_token_getter_.get());
+  } else {
+    ice_config_fetcher = std::make_unique<protocol::IceConfigFetcherDefault>(
+        context_->url_loader_factory(), oauth_token_getter_.get());
+  }
+
   scoped_refptr<protocol::TransportContext> transport_context =
       new protocol::TransportContext(
           std::make_unique<protocol::ChromiumPortAllocatorFactory>(),

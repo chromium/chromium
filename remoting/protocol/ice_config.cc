@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "net/base/url_util.h"
@@ -31,69 +32,6 @@ bool ParseLifetime(const std::string& string, base::TimeDelta* result) {
     return false;
   }
   *result = base::Seconds(seconds);
-  return true;
-}
-
-// Parses url in form of <stun|turn|turns>:<host>[:<port>][?transport=<udp|tcp>]
-// and adds an entry to the |config|.
-bool AddServerToConfig(std::string url,
-                       const std::string& username,
-                       const std::string& password,
-                       IceConfig* config) {
-  cricket::ProtocolType turn_transport_type = cricket::PROTO_LAST;
-
-  const char kTcpTransportSuffix[] = "?transport=tcp";
-  const char kUdpTransportSuffix[] = "?transport=udp";
-  if (base::EndsWith(url, kTcpTransportSuffix,
-                     base::CompareCase::INSENSITIVE_ASCII)) {
-    turn_transport_type = cricket::PROTO_TCP;
-    url.resize(url.size() - strlen(kTcpTransportSuffix));
-  } else if (base::EndsWith(url, kUdpTransportSuffix,
-                            base::CompareCase::INSENSITIVE_ASCII)) {
-    turn_transport_type = cricket::PROTO_UDP;
-    url.resize(url.size() - strlen(kUdpTransportSuffix));
-  }
-
-  size_t colon_pos = url.find(':');
-  if (colon_pos == std::string::npos) {
-    return false;
-  }
-
-  std::string protocol = url.substr(0, colon_pos);
-
-  std::string host;
-  int port;
-  if (!net::ParseHostAndPort(url.substr(colon_pos + 1), &host, &port)) {
-    return false;
-  }
-
-  if (protocol == "stun") {
-    if (port == -1) {
-      port = kDefaultStunTurnPort;
-    }
-    config->stun_servers.emplace_back(host, port);
-  } else if (protocol == "turn") {
-    if (port == -1) {
-      port = kDefaultStunTurnPort;
-    }
-    if (turn_transport_type == cricket::PROTO_LAST) {
-      turn_transport_type = cricket::PROTO_UDP;
-    }
-    config->turn_servers.emplace_back(host, port, username, password,
-                                      turn_transport_type, false);
-  } else if (protocol == "turns") {
-    if (port == -1) {
-      port = kDefaultTurnsPort;
-    }
-    if (turn_transport_type == cricket::PROTO_LAST) {
-      turn_transport_type = cricket::PROTO_TCP;
-    }
-    config->turn_servers.emplace_back(host, port, username, password,
-                                      turn_transport_type, true);
-  } else {
-    return false;
-  }
-
   return true;
 }
 
@@ -120,6 +58,11 @@ IceConfig::~IceConfig() = default;
 
 // static
 IceConfig IceConfig::Parse(const base::Value::Dict& dictionary) {
+  const base::Value::Dict* data = dictionary.FindDict("data");
+  if (data) {
+    return Parse(*data);
+  }
+
   const base::Value::List* ice_servers_list = dictionary.FindList("iceServers");
   if (!ice_servers_list) {
     return IceConfig();
@@ -185,7 +128,7 @@ IceConfig IceConfig::Parse(const base::Value::Dict& dictionary) {
         errors_found = true;
         continue;
       }
-      if (!AddServerToConfig(*url_str, username, password, &ice_config)) {
+      if (!ice_config.AddServer(*url_str, username, password)) {
         LOG(ERROR) << "Invalid ICE server URL: " << *url_str;
       }
     }
@@ -211,30 +154,6 @@ IceConfig IceConfig::Parse(const base::Value::Dict& dictionary) {
 }
 
 // static
-IceConfig IceConfig::Parse(const std::string& config_json) {
-  std::optional<base::Value> json = base::JSONReader::Read(config_json);
-  if (!json) {
-    return IceConfig();
-  }
-
-  base::Value::Dict* dictionary = json->GetIfDict();
-  if (!dictionary) {
-    return IceConfig();
-  }
-
-  // Handle the case when the config is wrapped in 'data', i.e. as {'data': {
-  // 'iceServers': {...} }}.
-  if (!dictionary->Find("iceServers")) {
-    base::Value::Dict* data_dictionary = dictionary->FindDict("data");
-    if (data_dictionary) {
-      return Parse(*data_dictionary);
-    }
-  }
-
-  return Parse(*dictionary);
-}
-
-// static
 IceConfig IceConfig::Parse(const apis::v1::GetIceConfigResponse& config) {
   IceConfig ice_config;
 
@@ -255,8 +174,7 @@ IceConfig IceConfig::Parse(const apis::v1::GetIceConfigResponse& config) {
         MinimumSpecified(ice_config.max_bitrate_kbps, server.max_rate_kbps());
 
     for (const auto& url : server.urls()) {
-      if (!AddServerToConfig(url, server.username(), server.credential(),
-                             &ice_config)) {
+      if (!ice_config.AddServer(url, server.username(), server.credential())) {
         LOG(ERROR) << "Invalid ICE server URL: " << url;
       }
     }
@@ -269,6 +187,70 @@ IceConfig IceConfig::Parse(const apis::v1::GetIceConfigResponse& config) {
   }
 
   return ice_config;
+}
+
+bool IceConfig::AddStunServer(std::string_view url) {
+  CHECK(url.starts_with("stun:"));
+  return AddServer(url, /*username=*/"", /*password=*/"");
+}
+
+bool IceConfig::AddServer(std::string_view url,
+                          const std::string& username,
+                          const std::string& password) {
+  cricket::ProtocolType turn_transport_type = cricket::PROTO_LAST;
+
+  const char kTcpTransportSuffix[] = "?transport=tcp";
+  const char kUdpTransportSuffix[] = "?transport=udp";
+  if (base::EndsWith(url, kTcpTransportSuffix,
+                     base::CompareCase::INSENSITIVE_ASCII)) {
+    turn_transport_type = cricket::PROTO_TCP;
+    url.remove_suffix(strlen(kTcpTransportSuffix));
+  } else if (base::EndsWith(url, kUdpTransportSuffix,
+                            base::CompareCase::INSENSITIVE_ASCII)) {
+    turn_transport_type = cricket::PROTO_UDP;
+    url.remove_suffix(strlen(kUdpTransportSuffix));
+  }
+
+  auto parts = base::SplitStringOnce(url, ':');
+  if (!parts) {
+    return false;
+  }
+
+  auto [protocol, host_and_port] = *parts;
+  std::string host;
+  int port;
+  if (!net::ParseHostAndPort(host_and_port, &host, &port)) {
+    return false;
+  }
+
+  if (protocol == "stun") {
+    if (port == -1) {
+      port = kDefaultStunTurnPort;
+    }
+    stun_servers.emplace_back(host, port);
+  } else if (protocol == "turn") {
+    if (port == -1) {
+      port = kDefaultStunTurnPort;
+    }
+    if (turn_transport_type == cricket::PROTO_LAST) {
+      turn_transport_type = cricket::PROTO_UDP;
+    }
+    turn_servers.emplace_back(host, port, username, password,
+                              turn_transport_type, false);
+  } else if (protocol == "turns") {
+    if (port == -1) {
+      port = kDefaultTurnsPort;
+    }
+    if (turn_transport_type == cricket::PROTO_LAST) {
+      turn_transport_type = cricket::PROTO_TCP;
+    }
+    turn_servers.emplace_back(host, port, username, password,
+                              turn_transport_type, true);
+  } else {
+    return false;
+  }
+
+  return true;
 }
 
 }  // namespace remoting::protocol

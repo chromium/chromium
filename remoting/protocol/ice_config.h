@@ -5,7 +5,9 @@
 #ifndef REMOTING_PROTOCOL_ICE_CONFIG_H_
 #define REMOTING_PROTOCOL_ICE_CONFIG_H_
 
+#include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/time/time.h"
@@ -15,11 +17,9 @@
 
 namespace remoting {
 
-namespace apis {
-namespace v1 {
+namespace apis::v1 {
 class GetIceConfigResponse;
-}  // namespace v1
-}  // namespace apis
+}  // namespace apis::v1
 
 namespace protocol {
 
@@ -33,8 +33,18 @@ struct IceConfig {
   // Parses JSON representation of the config. Returns null config if parsing
   // fails.
   static IceConfig Parse(const base::Value::Dict& dictionary);
-  static IceConfig Parse(const std::string& config_json);
   static IceConfig Parse(const apis::v1::GetIceConfigResponse& config);
+
+  // Parses a |url| in the form of stun:<host>[:<port>][?transport=<udp|tcp>]
+  // and adds an entry to this instance.
+  bool AddStunServer(std::string_view url);
+
+  // Parses a |url| in the form of
+  // <stun|turn|turns>:<host>[:<port>][?transport=<udp|tcp>]
+  // and adds an entry to this instance.
+  bool AddServer(std::string_view url,
+                 const std::string& username,
+                 const std::string& password);
 
   // Time when the config will stop being valid and need to be refreshed.
   base::Time expiration_time;
@@ -44,8 +54,8 @@ struct IceConfig {
   // Standard TURN servers
   std::vector<cricket::RelayServerConfig> turn_servers;
 
-  // If greater than 0, the max bandwidth used for relayed connections should
-  // be set to this value.
+  // If greater than 0, the max bandwidth used for relayed connections should be
+  // set to this value.
   int max_bitrate_kbps = 0;
 };
 
