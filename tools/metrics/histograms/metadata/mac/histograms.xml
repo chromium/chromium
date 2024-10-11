@@ -216,6 +216,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Mac.ProcessRequirement.ValidationRequired"
+    enum="BooleanSuccess" expires_after="2025-06-01">
+  <owner>markrowe@chromium.org</owner>
+  <owner>src/base/mac/OWNERS</owner>
+  <summary>
+    Whether ProcessRequirement validation was short-circuited due to the
+    requirement not needing code signature validation. This histogram is emitted
+    whenever a ProcessRequirement is used to validate a process.
+  </summary>
+</histogram>
+
+<histogram name="Mac.ProcessRequirement.ValidationResult"
+    enum="CodeSigningOSStatus" expires_after="2025-06-01">
+  <owner>markrowe@chromium.org</owner>
+  <owner>src/base/mac/OWNERS</owner>
+  <summary>
+    The result of validating a ProcessRequirement. This histogram is emitted
+    whenever a ProcessRequirement is used to validate a process.
+  </summary>
+</histogram>
+
 <histogram name="Mac.ProcessRequirement.{Field}.HasExpectedValue"
     enum="BooleanSuccess" expires_after="2025-06-01">
   <owner>markrowe@chromium.org</owner>

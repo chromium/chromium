@@ -523,8 +523,11 @@ bool ProcessRequirement::ValidateProcess(
     base::span<const uint8_t> info_plist_data) const {
   if (!RequiresSignatureValidation()) {
     // No signature validation required. Return success.
+    base::UmaHistogramBoolean("Mac.ProcessRequirement.ValidationRequired",
+                              false);
     return true;
   }
+  base::UmaHistogramBoolean("Mac.ProcessRequirement.ValidationRequired", true);
 
   // If the requirement specifies we are checking only the validity of the
   // dynamic code then we must have Info.plist data.
@@ -539,9 +542,12 @@ bool ProcessRequirement::ValidateProcess(
                                  : SignatureValidationType::DynamicAndStatic,
           base::as_string_view(info_plist_data))) {
     OSSTATUS_LOG(ERROR, status) << "ProcessIsSignedAndFulfillsRequirement";
+    base::UmaHistogramSparse("Mac.ProcessRequirement.ValidationResult", status);
     return false;
   }
 
+  base::UmaHistogramSparse("Mac.ProcessRequirement.ValidationResult",
+                           errSecSuccess);
   return true;
 }
 
