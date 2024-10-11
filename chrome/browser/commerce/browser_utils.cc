@@ -13,21 +13,20 @@
 namespace commerce {
 const int kProductSpecificationsMinTabsCount = 2;
 const std::vector<GURL> GetListOfProductSpecsEligibleUrls(
-    const std::vector<content::WebContents*> web_contents_list) {
+    const std::vector<content::WebContents*>& web_contents_list) {
   std::vector<GURL> urls;
   for (auto* wc : web_contents_list) {
-    auto url = wc->GetURL();
+    const auto& url = wc->GetURL();
     if (!url.SchemeIs(url::kHttpsScheme) && !url.SchemeIs(url::kHttpScheme)) {
       continue;
     }
-
     urls.push_back(url);
   }
   return urls;
 }
 
 bool IsWebContentsListEligibleForProductSpecs(
-    const std::vector<content::WebContents*> web_contents_list) {
+    const std::vector<content::WebContents*>& web_contents_list) {
   auto eligible_urls = GetListOfProductSpecsEligibleUrls(web_contents_list);
   return static_cast<int>(eligible_urls.size()) >=
          kProductSpecificationsMinTabsCount;
