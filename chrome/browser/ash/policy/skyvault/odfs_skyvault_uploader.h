@@ -87,7 +87,7 @@ class OdfsSkyvaultUploader
   base::WeakPtr<OdfsSkyvaultUploader> GetWeakPtr();
 
   // Should cancel the whole upload, if possible.
-  void Cancel();
+  virtual void Cancel();
 
  protected:
   OdfsSkyvaultUploader(Profile* profile,
@@ -106,13 +106,13 @@ class OdfsSkyvaultUploader
   virtual void RequestSignIn(
       base::OnceCallback<void(base::File::Error)> on_sign_in_cb);
 
+  // Starts the upload flow.
+  virtual void Run(UploadDoneCallback upload_callback);
+
   raw_ptr<Profile> profile_;
 
  private:
   friend base::RefCounted<OdfsSkyvaultUploader>;
-
-  // Starts the upload flow.
-  void Run(UploadDoneCallback upload_callback);
 
   void OnEndUpload(storage::FileSystemURL url,
                    std::optional<MigrationUploadError> error = std::nullopt);
@@ -173,19 +173,30 @@ class OdfsSkyvaultUploader
 // TODO(aidazolic): Fix the instantiation.
 class OdfsMigrationUploader : public OdfsSkyvaultUploader {
  public:
+  using FactoryCallback =
+      base::RepeatingCallback<scoped_refptr<OdfsMigrationUploader>(
+          Profile* profile,
+          int64_t id,
+          const storage::FileSystemURL& file_system_url,
+          const base::FilePath& target_path)>;
   static scoped_refptr<OdfsMigrationUploader> Create(
       Profile* profile,
       int64_t id,
       const storage::FileSystemURL& file_system_url,
       const base::FilePath& target_path);
 
- private:
+  // Sets a testing factory function, allowing the injection of mock
+  // OdfsMigrationUploader objects into the migration upload process.
+  static void SetFactoryForTesting(FactoryCallback factory);
+
+ protected:
   OdfsMigrationUploader(Profile* profile,
                         int64_t id,
                         const storage::FileSystemURL& file_system_url,
                         const base::FilePath& target_path);
   ~OdfsMigrationUploader() override;
 
+ private:
   // OdfsSkyvaultUploader:
   base::FilePath GetDestinationFolderPath(
       file_system_provider::ProvidedFileSystemInterface* file_system) override;

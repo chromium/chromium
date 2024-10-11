@@ -76,7 +76,7 @@ class MockMigrationCoordinator : public MigrationCoordinator {
                const std::string& destination_dir,
                MigrationDoneCallback callback),
               (override));
-  MOCK_METHOD(void, Stop, (), (override));
+  MOCK_METHOD(void, Cancel, (), (override));
 
   // Sets a callback to be invoked when Run() is called.
   void SetRunCallback(base::OnceClosure run_cb);

@@ -490,7 +490,7 @@ void LocalFilesMigrationManager::MaybeStopMigration(
   scheduling_timer_->Stop();
 
   if (coordinator_->IsRunning()) {
-    coordinator_->Stop();
+    coordinator_->Cancel();
   }
 
   notification_manager_->CloseAll();

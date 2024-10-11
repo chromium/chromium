@@ -333,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
     EXPECT_CALL(*coordinator.get(), Run(CloudProvider::kGoogleDrive, _,
                                         ExpectedDestinationDirName(), _))
         .Times(1);
-    EXPECT_CALL(*coordinator.get(), Stop).Times(1);
+    EXPECT_CALL(*coordinator.get(), Cancel).Times(1);
   }
 
   manager()->SetCoordinatorForTesting(std::move(coordinator));
@@ -370,7 +370,7 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
     EXPECT_CALL(*coordinator.get(), Run(CloudProvider::kOneDrive, _,
                                         ExpectedDestinationDirName(), _))
         .Times(1);
-    EXPECT_CALL(*coordinator.get(), Stop).Times(1);
+    EXPECT_CALL(*coordinator.get(), Cancel).Times(1);
     EXPECT_CALL(*coordinator.get(), Run(CloudProvider::kGoogleDrive, _,
                                         ExpectedDestinationDirName(), _))
         .WillOnce([](CloudProvider cloud_provider,
@@ -417,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
     EXPECT_CALL(*coordinator.get(), Run(CloudProvider::kOneDrive, _,
                                         ExpectedDestinationDirName(), _))
         .Times(1);
-    EXPECT_CALL(*coordinator.get(), Stop).Times(1);
+    EXPECT_CALL(*coordinator.get(), Cancel).Times(1);
   }
 
   manager()->SetCoordinatorForTesting(std::move(coordinator));

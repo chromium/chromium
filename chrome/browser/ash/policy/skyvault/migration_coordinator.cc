@@ -7,7 +7,7 @@
 #include <memory>
 #include <optional>
 
-#include "base/check_is_test.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -17,8 +17,10 @@
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/policy/skyvault/drive_skyvault_uploader.h"
+#include "chrome/browser/ash/policy/skyvault/odfs_skyvault_uploader.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/download/download_dir_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 namespace policy::local_user_files {
@@ -76,10 +78,10 @@ void MigrationCoordinator::Run(CloudProvider cloud_provider,
   uploader_->Run();
 }
 
-void MigrationCoordinator::Stop() {
+void MigrationCoordinator::Cancel() {
   if (uploader_) {
     MigrationCloudUploader* uploader_ptr = uploader_.get();
-    uploader_ptr->Stop(
+    uploader_ptr->Cancel(
         base::BindOnce(&OnMigrationStopped, std::move(uploader_)));
   }
 }
@@ -103,7 +105,7 @@ MigrationCloudUploader::MigrationCloudUploader(
     : profile_(profile),
       files_(std::move(files)),
       destination_dir_(destination_dir),
-      callback_(std::move(callback)) {}
+      done_callback_(std::move(callback)) {}
 
 MigrationCloudUploader::~MigrationCloudUploader() = default;
 
@@ -121,8 +123,8 @@ OneDriveMigrationUploader::~OneDriveMigrationUploader() = default;
 
 void OneDriveMigrationUploader::Run() {
   if (files_.empty()) {
-    if (callback_) {
-      std::move(callback_).Run({});
+    if (done_callback_) {
+      std::move(done_callback_).Run({});
     }
     return;
   }
@@ -140,18 +142,25 @@ void OneDriveMigrationUploader::Run() {
         base::BindOnce(&OneDriveMigrationUploader::OnUploadDone,
                        weak_ptr_factory_.GetWeakPtr(), file_path),
         target_path);
-    uploaders_.insert({file_path, uploader});
+    uploaders_.insert({file_path, std::move(uploader)});
   }
 }
 
-void OneDriveMigrationUploader::Stop(base::OnceClosure callback) {
-  // TODO(b/349097807): Stop the uploads.
-  std::move(callback).Run();
-}
+void OneDriveMigrationUploader::Cancel(base::OnceClosure callback) {
+  cancelled_callback_ = std::move(callback);
+  cancelled_ = true;
 
-void OneDriveMigrationUploader::SetEmulateSlowForTesting(bool value) {
-  CHECK_IS_TEST();
-  emulate_slow_for_testing_ = value;
+  // Create a copy of the keys to iterate over. This is necessary because
+  // calling Cancel() on the uploader may trigger OnUploadDone(), which
+  // modifies the |uploaders_| map, potentially invalidating iterators.
+  std::vector<base::FilePath> file_paths;
+  for (const auto& uploader : uploaders_) {
+    file_paths.push_back(uploader.first);
+  }
+
+  for (const auto& path : file_paths) {
+    uploaders_[path]->Cancel();
+  }
 }
 
 void OneDriveMigrationUploader::OnUploadDone(
@@ -170,20 +179,25 @@ void OneDriveMigrationUploader::OnUploadDone(
   }
 
   uploaders_.erase(file_path);
-  // If all files are done, invoke the callback.
-  if (ShouldFinish() && callback_) {
-    std::move(callback_).Run(std::move(errors_));
-  }
-}
 
-bool OneDriveMigrationUploader::ShouldFinish() {
-  if (emulate_slow_for_testing_) {
-    CHECK_IS_TEST();
-    // Do not run the callback.
-    return false;
+  if (!uploaders_.empty()) {
+    // Some files are still being uploaded.
+    return;
   }
-
-  return uploaders_.empty();
+  // If cancelled, invoke the cancelled callback.
+  if (cancelled_) {
+    if (cancelled_callback_) {
+      std::move(cancelled_callback_).Run();
+    } else {
+      LOG(WARNING) << "Cancelled callback not set.";
+    }
+    return;
+  }
+  if (done_callback_) {
+    std::move(done_callback_).Run(std::move(errors_));
+  } else {
+    LOG(WARNING) << "Done callback not set.";
+  }
 }
 
 GoogleDriveMigrationUploader::GoogleDriveMigrationUploader(
@@ -200,8 +214,8 @@ GoogleDriveMigrationUploader::~GoogleDriveMigrationUploader() = default;
 
 void GoogleDriveMigrationUploader::Run() {
   if (files_.empty()) {
-    if (callback_) {
-      std::move(callback_).Run({});
+    if (done_callback_) {
+      std::move(done_callback_).Run({});
       return;
     }
   }
@@ -223,7 +237,7 @@ void GoogleDriveMigrationUploader::Run() {
   }
 }
 
-void GoogleDriveMigrationUploader::Stop(base::OnceClosure callback) {
+void GoogleDriveMigrationUploader::Cancel(base::OnceClosure callback) {
   // TODO(b/349097807): Stop IO tasks.
   std::move(callback).Run();
 }
@@ -244,8 +258,8 @@ void GoogleDriveMigrationUploader::OnUploadDone(
 
   uploaders_.erase(file_path);
   // If all files are done, invoke the callback.
-  if (uploaders_.empty() && callback_) {
-    std::move(callback_).Run(errors_);
+  if (uploaders_.empty() && done_callback_) {
+    std::move(done_callback_).Run(errors_);
   }
 }
 

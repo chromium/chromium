@@ -243,7 +243,7 @@ TEST_F(LocalFilesMigrationManagerTest, StopsWhenLocalStorageAllowed) {
   coordinator->SetRunCallback(run_future.GetCallback());
   MockMigrationCoordinator* coordinator_ptr = coordinator.get();
   EXPECT_CALL(*coordinator_ptr, Run).Times(1);
-  EXPECT_CALL(*coordinator_ptr, Stop).Times(1);
+  EXPECT_CALL(*coordinator_ptr, Cancel).Times(1);
 
   SetPrefs(State::kInProgress);
 

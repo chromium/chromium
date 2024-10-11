@@ -45,8 +45,8 @@ class MigrationCoordinator {
                    const std::string& destination_dir,
                    MigrationDoneCallback callback);
 
-  // Stops any ongoing file uploads.
-  virtual void Stop();
+  // Cancels any ongoing file uploads.
+  virtual void Cancel();
 
   // Returns whether any file uploads are currently in progress.
   virtual bool IsRunning() const;
@@ -85,8 +85,8 @@ class MigrationCloudUploader {
   // `callback_` upon completion.
   virtual void Run() = 0;
 
-  // Stops any ongoing file uploads.
-  virtual void Stop(base::OnceClosure stopped_callback) = 0;
+  // Cancels any ongoing file uploads.
+  virtual void Cancel(base::OnceClosure cancelled_callback) = 0;
 
  protected:
   // Maps file to their upload errors, if any.
@@ -99,7 +99,11 @@ class MigrationCloudUploader {
   // The name of the destination directory.
   const std::string destination_dir_;
   // Callback to run after all uploads finish.
-  MigrationDoneCallback callback_;
+  MigrationDoneCallback done_callback_;
+  // Callback to run after all uploads are cancelled.
+  base::OnceClosure cancelled_callback_;
+  // Indicates that the upload was cancelled, e.g. by a policy change.
+  bool cancelled_ = false;
 };
 
 // Migration file uploader for uploads to Microsoft OneDrive.
@@ -116,19 +120,13 @@ class OneDriveMigrationUploader : public MigrationCloudUploader {
 
   // MigrationCloudUploader overrides:
   void Run() override;
-  void Stop(base::OnceClosure stopped_callback) override;
-
-  // Used in tests to block the MigrationDoneCallback.
-  void SetEmulateSlowForTesting(bool value);
+  void Cancel(base::OnceClosure cancelled_callback) override;
 
  private:
   // Called when one upload operation completes.
   void OnUploadDone(const base::FilePath& file_path,
                     storage::FileSystemURL url,
                     std::optional<MigrationUploadError> error);
-
-  // Whether MigrationDoneCallback should be run. Can only be false in tests.
-  bool ShouldFinish();
 
   // Maps source urls of files being uploaded to corresponding
   // OdfsSkyvaultUploader instances. Keeps a weak reference as lifetime of
@@ -158,7 +156,7 @@ class GoogleDriveMigrationUploader : public MigrationCloudUploader {
 
   // MigrationCloudUploader overrides:
   void Run() override;
-  void Stop(base::OnceClosure stopped_callback) override;
+  void Cancel(base::OnceClosure cancelled_callback) override;
 
  private:
   void OnUploadDone(const base::FilePath& file_path,

@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/check_is_test.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
@@ -23,6 +24,9 @@
 namespace ash::cloud_upload {
 
 namespace {
+
+OdfsMigrationUploader::FactoryCallback g_testing_factory_ =
+    OdfsMigrationUploader::FactoryCallback();
 
 // Runs the upload callback provided to `OdfsSkyvaultUploader::Upload`.
 void OnUploadDone(
@@ -336,7 +340,17 @@ scoped_refptr<OdfsMigrationUploader> OdfsMigrationUploader::Create(
     int64_t id,
     const storage::FileSystemURL& file_system_url,
     const base::FilePath& target_path) {
+  if (g_testing_factory_) {
+    CHECK_IS_TEST();
+    return g_testing_factory_.Run(profile, id, file_system_url, target_path);
+  }
   return new OdfsMigrationUploader(profile, id, file_system_url, target_path);
+}
+
+// static
+void OdfsMigrationUploader::SetFactoryForTesting(FactoryCallback factory) {
+  CHECK_IS_TEST();
+  g_testing_factory_ = factory;
 }
 
 OdfsMigrationUploader::OdfsMigrationUploader(
