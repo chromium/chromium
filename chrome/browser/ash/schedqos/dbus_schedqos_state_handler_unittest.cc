@@ -100,7 +100,9 @@ TEST_F(DBusSchedQOSStateHandlerTest, SetProcessPriority) {
   ASSERT_EQ(resourced_client_->GetProcessStateHistory().size(), 2ul);
 
   process_.SetPriority(base::Process::Priority::kUserBlocking);
+  task_environment_.RunUntilIdle();
   dummy_process.SetPriority(base::Process::Priority::kBestEffort);
+  task_environment_.RunUntilIdle();
   dummy_process.SetPriority(base::Process::Priority::kUserVisible);
   task_environment_.RunUntilIdle();
 

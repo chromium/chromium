@@ -111,8 +111,7 @@ void DBusSchedQOSStateHandler::InitializeProcessPriority(
   main_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&DBusSchedQOSStateHandler::SetProcessPriorityOnThread,
-                     weak_ptr_factory_.GetWeakPtr(), process_id,
-                     default_priority));
+                     weak_ptr_factory_.GetWeakPtr(), process_id));
   main_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&DBusSchedQOSStateHandler::SetThreadTypeOnThread,
@@ -152,7 +151,7 @@ bool DBusSchedQOSStateHandler::SetProcessPriority(
   return main_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&DBusSchedQOSStateHandler::SetProcessPriorityOnThread,
-                     weak_ptr_factory_.GetWeakPtr(), process_id, priority));
+                     weak_ptr_factory_.GetWeakPtr(), process_id));
 }
 
 base::Process::Priority DBusSchedQOSStateHandler::GetProcessPriority(
@@ -262,7 +261,7 @@ void DBusSchedQOSStateHandler::OnServiceConnected(bool success) {
   for (const auto& request : preconnect_requests) {
     base::ProcessId process_id = request.first;
     if (request.second.need_retry) {
-      SetProcessPriorityOnThread(process_id, request.second.priority);
+      SetProcessPriorityOnThread(process_id);
     }
     for (const auto& thread_entry : request.second.preconnected_thread_types) {
       SetThreadTypeOnThread(process_id, thread_entry.first,
@@ -272,14 +271,15 @@ void DBusSchedQOSStateHandler::OnServiceConnected(bool success) {
 }
 
 void DBusSchedQOSStateHandler::SetProcessPriorityOnThread(
-    base::ProcessId process_id,
-    base::Process::Priority priority) {
+    base::ProcessId process_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!is_connected_) {
     MarkProcessToRetry(process_id);
     return;
   }
+
+  base::Process::Priority priority = GetProcessPriority(process_id);
 
   resource_manager::ProcessState state =
       resource_manager::ProcessState::kNormal;
