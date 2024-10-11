@@ -3080,19 +3080,6 @@ bool LayerTreeImpl::HasViewTransitionSaveRequest() const {
   return false;
 }
 
-bool LayerTreeImpl::MatchViewTransitionResource(
-    uint32_t sequence_id,
-    const blink::ViewTransitionToken& token) const {
-  for (const auto& request : view_transition_requests_) {
-    if (request->type() == ViewTransitionRequest::Type::kSave &&
-        request->sequence_id() == sequence_id && request->token() == token) {
-      return true;
-    }
-  }
-
-  return false;
-}
-
 void LayerTreeImpl::SetViewTransitionContentRect(
     const viz::ViewTransitionElementResourceId& id,
     const gfx::RectF& rect) {
