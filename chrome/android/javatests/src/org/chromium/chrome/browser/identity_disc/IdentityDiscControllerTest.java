@@ -74,6 +74,7 @@ import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
+import org.chromium.chrome.test.util.browser.signin.TestAccounts;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -244,7 +245,7 @@ public class IdentityDiscControllerTest {
     @MediumTest
     public void testIdentityDiscWithSignin() {
         // Identity Disc should be shown on sign-in state change with a NTP refresh.
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.TEST_ACCOUNT_1);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         // TODO(crbug.com/40721874): Remove the reload once the sign-in without sync observer
         //  is implemented.
         ThreadUtils.runOnUiThreadBlocking(mTab::reload);
@@ -254,8 +255,8 @@ public class IdentityDiscControllerTest {
                         .getString(
                                 R.string
                                         .accessibility_toolbar_btn_identity_disc_with_name_and_email,
-                                AccountManagerTestRule.TEST_ACCOUNT_1.getFullName(),
-                                AccountManagerTestRule.TEST_ACCOUNT_1.getEmail());
+                                TestAccounts.ACCOUNT1.getFullName(),
+                                TestAccounts.ACCOUNT1.getEmail());
         ViewUtils.waitForVisibleView(
                 allOf(
                         withId(R.id.optional_toolbar_button),
@@ -303,15 +304,15 @@ public class IdentityDiscControllerTest {
     @SuppressWarnings("CheckReturnValue")
     public void testIdentityDiscWithSigninAndEnableSync() {
         // Identity Disc should be shown on sign-in state change without NTP refresh.
-        mSigninTestRule.addAccountThenSigninAndEnableSync(AccountManagerTestRule.TEST_ACCOUNT_1);
+        mSigninTestRule.addAccountThenSigninAndEnableSync(TestAccounts.ACCOUNT1);
         String expectedContentDescription =
                 mActivityTestRule
                         .getActivity()
                         .getString(
                                 R.string
                                         .accessibility_toolbar_btn_identity_disc_with_name_and_email,
-                                AccountManagerTestRule.TEST_ACCOUNT_1.getFullName(),
-                                AccountManagerTestRule.TEST_ACCOUNT_1.getEmail());
+                                TestAccounts.ACCOUNT1.getFullName(),
+                                TestAccounts.ACCOUNT1.getEmail());
         // TODO(crbug.com/40277716): This is a no-op, replace with ViewUtils.waitForVisibleView().
         ViewUtils.isEventuallyVisible(
                 allOf(
@@ -440,15 +441,15 @@ public class IdentityDiscControllerTest {
     @UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testIdentityDisc_signedIn(boolean nightModeEnabled) throws IOException {
         // Sign-in and wait for the user profile image to appear.
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.TEST_ACCOUNT_1);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         String expectedContentDescription =
                 mActivityTestRule
                         .getActivity()
                         .getString(
                                 R.string
                                         .accessibility_toolbar_btn_identity_disc_with_name_and_email,
-                                AccountManagerTestRule.TEST_ACCOUNT_1.getFullName(),
-                                AccountManagerTestRule.TEST_ACCOUNT_1.getEmail());
+                                TestAccounts.ACCOUNT1.getFullName(),
+                                TestAccounts.ACCOUNT1.getEmail());
         ViewUtils.waitForVisibleView(
                 allOf(
                         withId(R.id.optional_toolbar_button),

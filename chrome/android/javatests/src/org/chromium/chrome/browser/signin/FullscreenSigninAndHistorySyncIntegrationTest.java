@@ -64,6 +64,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.chrome.test.util.browser.signin.TestAccounts;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.policy.test.annotations.Policies;
@@ -305,13 +306,12 @@ public class FullscreenSigninAndHistorySyncIntegrationTest {
         // Add the second account.
         onView(withText(AccountManagerTestRule.AADC_ADULT_ACCOUNT.getEmail())).perform(click());
         onView(withText(R.string.signin_add_account_to_device)).perform(click());
-        mSigninTestRule.setAddAccountFlowResult(AccountManagerTestRule.TEST_ACCOUNT_2.getEmail());
+        mSigninTestRule.setAddAccountFlowResult(TestAccounts.ACCOUNT2.getEmail());
         onViewWaiting(AccountManagerTestRule.ADD_ACCOUNT_BUTTON_MATCHER).perform(click());
 
         // Verify that the fullscreen sign-in promo is shown with the newly added account.
         onViewWaiting(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
-        onViewWaiting(withText(AccountManagerTestRule.TEST_ACCOUNT_2.getEmail()))
-                .check(matches(isDisplayed()));
+        onViewWaiting(withText(TestAccounts.ACCOUNT2.getEmail())).check(matches(isDisplayed()));
     }
 
     @Test

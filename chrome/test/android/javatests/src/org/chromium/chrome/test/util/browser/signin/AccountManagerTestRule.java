@@ -44,38 +44,9 @@ import java.util.HashMap;
  * <p>The rule will not invoke any native code, therefore it is safe to use it in Robolectric tests.
  */
 public class AccountManagerTestRule implements TestRule {
-    // TODO(crbug.com/40234741): Migrate tests that don't need to create their own accounts to these
-    // constants.
-    public static final AccountInfo TEST_ACCOUNT_1 =
-            new AccountInfo.Builder(
-                            "test@gmail.com", FakeAccountManagerFacade.toGaiaId("test@gmail.com"))
-                    .fullName("Test1 Full")
-                    .givenName("Test1 Given")
-                    .accountImage(createAvatar())
-                    .build();
 
-    public static final AccountInfo TEST_ACCOUNT_2 =
-            new AccountInfo.Builder(
-                            "test2@gmail.com", FakeAccountManagerFacade.toGaiaId("test2@gmail.com"))
-                    .fullName("Test2 Full")
-                    .givenName("Test2 Given")
-                    .accountImage(createAvatar())
-                    .build();
-
-    public static final AccountInfo TEST_CHILD_ACCOUNT =
-            new AccountInfo.Builder(
-                            generateChildEmail(TEST_ACCOUNT_1.getEmail()),
-                            FakeAccountManagerFacade.toGaiaId(
-                                    generateChildEmail(TEST_ACCOUNT_1.getEmail())))
-                    .fullName("Test1 Full")
-                    .givenName("Test1 Given")
-                    .accountImage(createAvatar())
-                    .accountCapabilities(
-                            new AccountCapabilitiesBuilder()
-                                    .setIsSubjectToParentalControls(true)
-                                    .setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(false)
-                                    .build())
-                    .build();
+    // TODO(crbug.com/372670018) Move remaining test accounts to {@link
+    // org.chromium.chrome.test.util.browser.signin.TestAccounts}.
 
     public static final AccountInfo TEST_NON_GMAIL_ACCOUNT =
             new AccountInfo.Builder(
@@ -148,7 +119,7 @@ public class AccountManagerTestRule implements TestRule {
                     .accountCapabilities(MINOR_MODE_NOT_REQUIRED)
                     .build();
 
-    public static final AccountInfo AADC_UNRESOLVED_ACCOUNT = TEST_ACCOUNT_1;
+    public static final AccountInfo AADC_UNRESOLVED_ACCOUNT = TestAccounts.ACCOUNT1;
 
     // The matcher for the add account button in the fake add account activity.
     public static final Matcher<View> ADD_ACCOUNT_BUTTON_MATCHER =

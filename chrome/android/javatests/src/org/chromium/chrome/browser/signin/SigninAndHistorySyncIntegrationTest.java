@@ -66,6 +66,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.chrome.test.util.browser.signin.TestAccounts;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -170,14 +171,14 @@ public class SigninAndHistorySyncIntegrationTest {
     @MediumTest
     public void testWithExistingAccount_signIn_historySyncSupressed() {
         when(mHistorySyncHelperMock.shouldSuppressHistorySync()).thenReturn(true);
-        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
 
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                 HistoryOptInMode.REQUIRED);
 
-        verifyCollapsedBottomSheetAndSignin(AccountManagerTestRule.TEST_ACCOUNT_1);
+        verifyCollapsedBottomSheetAndSignin(TestAccounts.ACCOUNT1);
         verify(mHistorySyncHelperMock).recordHistorySyncNotShown(mSigninAccessPoint);
         // Verify that the flow completion callback, which finishes the activity, is called.
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
@@ -186,7 +187,7 @@ public class SigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     public void testWithExistingAccount_signIn_historySyncDeclinedOften_optionalHistoryOptIn() {
-        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         when(mHistorySyncHelperMock.isDeclinedOften()).thenReturn(true);
 
         launchActivity(
@@ -194,7 +195,7 @@ public class SigninAndHistorySyncIntegrationTest {
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                 HistoryOptInMode.OPTIONAL);
 
-        verifyCollapsedBottomSheetAndSignin(AccountManagerTestRule.TEST_ACCOUNT_1);
+        verifyCollapsedBottomSheetAndSignin(TestAccounts.ACCOUNT1);
         verify(mHistorySyncHelperMock).recordHistorySyncNotShown(mSigninAccessPoint);
         // Verify that the flow completion callback, which finishes the activity, is called.
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
@@ -279,14 +280,14 @@ public class SigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     public void testWithExistingAccount_signIn_noHistoryOptIn() {
-        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
 
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                 HistoryOptInMode.NONE);
 
-        verifyCollapsedBottomSheetAndSignin(AccountManagerTestRule.TEST_ACCOUNT_1);
+        verifyCollapsedBottomSheetAndSignin(TestAccounts.ACCOUNT1);
 
         // Verify that the flow completion callback, which finishes the activity, is called.
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
@@ -300,7 +301,7 @@ public class SigninAndHistorySyncIntegrationTest {
     @EnableFeatures(ChromeFeatureList.READING_LIST_ENABLE_SYNC_TRANSPORT_MODE_UPON_SIGNIN)
     public void testWithExistingAccount_signinIn_turnsOnBookmarksAndReadingList() {
         // Sign-in, toggle bookmarks and reading list off, then sign out.
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.TEST_ACCOUNT_1);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         disableBookmarksAndReadingList();
         mSigninTestRule.signOut();
 
@@ -312,7 +313,7 @@ public class SigninAndHistorySyncIntegrationTest {
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                 HistoryOptInMode.NONE);
 
-        verifyCollapsedBottomSheetAndSignin(AccountManagerTestRule.TEST_ACCOUNT_1);
+        verifyCollapsedBottomSheetAndSignin(TestAccounts.ACCOUNT1);
 
         // Verify that bookmarks and reading list were enabled.
         SyncTestUtil.waitForBookmarksAndReadingListEnabled();
@@ -328,7 +329,7 @@ public class SigninAndHistorySyncIntegrationTest {
         // bookmark & reading list sync after successful sign-in) therefore the access point is
         // overridden here to ensure correct dismissal behavior in this case.
         mSigninAccessPoint = SigninAccessPoint.BOOKMARK_MANAGER;
-        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         mBlankActivityTestRule.launchActivity(null);
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
@@ -337,7 +338,7 @@ public class SigninAndHistorySyncIntegrationTest {
         // Verify that the default account bottom sheet is shown.
         onView(
                         allOf(
-                                withText(AccountManagerTestRule.TEST_ACCOUNT_1.getEmail()),
+                                withText(TestAccounts.ACCOUNT1.getEmail()),
                                 isDescendantOfA(withId(R.id.account_picker_state_collapsed))))
                 .check(matches(isDisplayed()));
 
@@ -353,7 +354,7 @@ public class SigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     public void testWithExistingAccount_signInWithExpandedBottomSheet_noHistoryOptIn() {
-        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
 
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
@@ -363,13 +364,13 @@ public class SigninAndHistorySyncIntegrationTest {
         // Select an account on the shown expanded sign-in bottom-sheet.
         onView(
                         allOf(
-                                withText(AccountManagerTestRule.TEST_ACCOUNT_1.getEmail()),
+                                withText(TestAccounts.ACCOUNT1.getEmail()),
                                 isDescendantOfA(withId(R.id.account_picker_state_expanded)),
                                 isCompletelyDisplayed()))
                 .perform(click());
 
         // Verify signed-in state.
-        mSigninTestRule.waitForSignin(AccountManagerTestRule.TEST_ACCOUNT_1);
+        mSigninTestRule.waitForSignin(TestAccounts.ACCOUNT1);
         if (BuildInfo.getInstance().isAutomotive) {
             verify(mDeviceLockActivityLauncher)
                     .launchDeviceLockActivity(any(), any(), anyBoolean(), any(), any(), any());
@@ -413,7 +414,7 @@ public class SigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     public void testWithExistingAccount_dismissBottomSheet_backPress() {
-        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         mBlankActivityTestRule.launchActivity(null);
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
@@ -423,7 +424,7 @@ public class SigninAndHistorySyncIntegrationTest {
         // Verifies that the default account sign-in bottom-sheet is shown and select the account.
         onView(
                         allOf(
-                                withText(AccountManagerTestRule.TEST_ACCOUNT_1.getEmail()),
+                                withText(TestAccounts.ACCOUNT1.getEmail()),
                                 isDescendantOfA(withId(R.id.account_picker_state_collapsed)),
                                 isCompletelyDisplayed()))
                 .perform(click());
@@ -436,7 +437,7 @@ public class SigninAndHistorySyncIntegrationTest {
         // Verify that the default account bottom sheet is shown.
         onView(
                         allOf(
-                                withText(AccountManagerTestRule.TEST_ACCOUNT_1.getEmail()),
+                                withText(TestAccounts.ACCOUNT1.getEmail()),
                                 isDescendantOfA(withId(R.id.account_picker_state_collapsed))))
                 .check(matches(isDisplayed()));
 
@@ -451,7 +452,7 @@ public class SigninAndHistorySyncIntegrationTest {
     @Test
     @MediumTest
     public void testWithExistingAccount_dismissExpandedBottomSheet_backPress() {
-        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
         mBlankActivityTestRule.launchActivity(null);
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,

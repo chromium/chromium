@@ -25,6 +25,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.chrome.test.util.browser.signin.TestAccounts;
 import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.widget.ChromeImageView;
 
@@ -53,7 +54,7 @@ public class ProfileDataCacheWithBadgeRenderTest extends BlankUiTestActivityTest
 
     @Before
     public void setUp() {
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_ACCOUNT_1);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -136,16 +137,14 @@ public class ProfileDataCacheWithBadgeRenderTest extends BlankUiTestActivityTest
                 () -> {
                     return !TextUtils.isEmpty(
                             mProfileDataCache
-                                    .getProfileDataOrDefault(
-                                            AccountManagerTestRule.TEST_ACCOUNT_1.getEmail())
+                                    .getProfileDataOrDefault(TestAccounts.ACCOUNT1.getEmail())
                                     .getFullName());
                 });
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mImageView.setImageDrawable(
                             mProfileDataCache
-                                    .getProfileDataOrDefault(
-                                            AccountManagerTestRule.TEST_ACCOUNT_1.getEmail())
+                                    .getProfileDataOrDefault(TestAccounts.ACCOUNT1.getEmail())
                                     .getImage());
                 });
     }
@@ -159,16 +158,14 @@ public class ProfileDataCacheWithBadgeRenderTest extends BlankUiTestActivityTest
                 () -> {
                     return !TextUtils.isEmpty(
                             mProfileDataCache
-                                    .getProfileDataOrDefault(
-                                            AccountManagerTestRule.TEST_ACCOUNT_1.getEmail())
+                                    .getProfileDataOrDefault(TestAccounts.ACCOUNT1.getEmail())
                                     .getFullName());
                 });
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mImageView.setImageDrawable(
                             mProfileDataCache
-                                    .getProfileDataOrDefault(
-                                            AccountManagerTestRule.TEST_ACCOUNT_1.getEmail())
+                                    .getProfileDataOrDefault(TestAccounts.ACCOUNT1.getEmail())
                                     .getImage());
                 });
     }

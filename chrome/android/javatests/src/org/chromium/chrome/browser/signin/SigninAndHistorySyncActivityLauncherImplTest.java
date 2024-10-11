@@ -48,7 +48,7 @@ import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomS
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.chrome.test.util.browser.signin.TestAccounts;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -128,7 +128,7 @@ public class SigninAndHistorySyncActivityLauncherImplTest {
                                             .DEFAULT_ACCOUNT_BOTTOM_SHEET,
                                     SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
                                     SigninAccessPoint.NTP_SIGNED_OUT_ICON,
-                                    AccountManagerTestRule.TEST_ACCOUNT_1.getId());
+                                    TestAccounts.ACCOUNT1.getId());
                 });
 
         verify(mContextMock).startActivity(notNull());

@@ -39,7 +39,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
 import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.chrome.test.util.browser.signin.TestAccounts;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.AccountInfo;
@@ -60,7 +60,7 @@ import java.lang.ref.WeakReference;
 @Config(manifest = Config.NONE)
 @Batch(Batch.PER_CLASS)
 public class PasswordCheckupLauncherTest {
-    private static final AccountInfo TEST_ACCOUNT = AccountManagerTestRule.TEST_ACCOUNT_1;
+    private static final AccountInfo TEST_ACCOUNT = TestAccounts.ACCOUNT1;
     private static final String TEST_NO_EMAIL_ADDRESS = null;
 
     @Rule public JniMocker mJniMocker = new JniMocker();
@@ -147,7 +147,7 @@ public class PasswordCheckupLauncherTest {
                 .thenReturn(true);
 
         PasswordCheckupLauncher.launchCheckupOnDevice(
-                mProfile, mMockWindowAndroid, LEAK_DIALOG, TEST_ACCOUNT.getEmail());
+                mProfile, mMockWindowAndroid, LEAK_DIALOG, TestAccounts.ACCOUNT1.getEmail());
 
         verify(mMockPendingIntentForAccountCheckup).send();
     }

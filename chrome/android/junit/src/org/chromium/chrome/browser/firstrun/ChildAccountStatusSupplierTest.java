@@ -30,6 +30,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.chrome.test.util.browser.signin.TestAccounts;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 
 /** Tests for {@link ChildAccountStatusSupplier}. */
@@ -77,7 +78,7 @@ public class ChildAccountStatusSupplierTest {
 
     @Test
     public void testOneChildAccount() {
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_CHILD_ACCOUNT);
+        mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
 
         ChildAccountStatusSupplier supplier =
                 new ChildAccountStatusSupplier(
@@ -109,7 +110,7 @@ public class ChildAccountStatusSupplierTest {
 
     @Test
     public void testOneChildAccountWithNonChildAccounts() {
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_CHILD_ACCOUNT);
+        mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
         mAccountManagerTestRule.addAccount(ADULT_ACCOUNT_EMAIL);
 
         ChildAccountStatusSupplier supplier =
@@ -153,7 +154,7 @@ public class ChildAccountStatusSupplierTest {
 
     @Test
     public void testWaitsForAccountManagerFacadeWhenAppRestrictionsFound() {
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_CHILD_ACCOUNT);
+        mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
 
         ChildAccountStatusSupplier supplier;
         // Block getAccounts call to make sure ChildAccountStatusSupplier checks app restrictions.
