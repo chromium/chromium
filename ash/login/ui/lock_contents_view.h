@@ -413,7 +413,7 @@ class ASH_EXPORT LockContentsView
 
   // Shows the pin auth and hides the pin delay message on the user pod when pin
   // becomes available after being soft-locked.
-  void OnPinUnlock(bool is_primary);
+  void OnPinUnlock(const AccountId& account_id);
 
   const LockScreen::ScreenType screen_type_;
 

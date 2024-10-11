@@ -3663,4 +3663,66 @@ TEST_F(LockContentsViewPinTimeoutUnitTest, PinDelayMessageCorrectness) {
   EXPECT_FALSE(pin_status_message_view->GetVisible());
 }
 
+TEST_F(LockContentsViewPinTimeoutUnitTest, MultipleUsers) {
+  ASSERT_NO_FATAL_FAILURE(ShowLoginScreen());
+  AddUsers(3);
+
+  LockContentsView* contents =
+      LockScreen::TestApi(LockScreen::Get()).contents_view();
+  LockContentsViewTestApi contents_test_api(contents);
+  LoginBigUserView* big_view = contents_test_api.primary_big_view();
+  LoginAuthUserView::TestApi auth_test_api(big_view->auth_user());
+  LoginPinView* pin_view = auth_test_api.pin_view();
+  PinStatusMessageView* pin_status_message_view =
+      auth_test_api.pin_status_message_view();
+
+  // Enable pin for the primary user.
+  AccountId account_id = big_view->GetCurrentUser().basic_user_info.account_id;
+  contents->OnPinEnabledForUserChanged(account_id, true,
+                                       /*available_at*/ std::nullopt);
+  EXPECT_TRUE(pin_view->GetVisible());
+  EXPECT_FALSE(pin_status_message_view->GetVisible());
+
+  // Lock pin for 1 minute.
+  contents->OnPinEnabledForUserChanged(
+      account_id, false,
+      /*available_at*/ base::Time::Now() + base::Minutes(1));
+  EXPECT_FALSE(pin_view->GetVisible());
+  EXPECT_TRUE(pin_status_message_view->GetVisible());
+  EXPECT_EQ(GetExpectedPinStatusMessage(u"1 minute, 0 seconds"),
+            auth_test_api.GetPinStatusMessageContent());
+
+  // Send event to swap the primary big user with the first user on the user
+  // list.
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  generator->MoveMouseTo(contents_test_api.users_list()
+                             ->user_view_at(0)
+                             ->GetBoundsInScreen()
+                             .CenterPoint());
+  generator->ClickLeftButton();
+
+  // Check the user is swapped and the swapped user does not have pin enabled.
+  EXPECT_NE(account_id, big_view->GetCurrentUser().basic_user_info.account_id);
+  EXPECT_FALSE(pin_view->GetVisible());
+  EXPECT_FALSE(pin_status_message_view->GetVisible());
+
+  // Check the swapped user still does not have pin enabled after the primary
+  // user pin timeout period.
+  AdvanceClock(base::Minutes(2));
+  EXPECT_FALSE(pin_view->GetVisible());
+  EXPECT_FALSE(pin_status_message_view->GetVisible());
+
+  // Swap the user back.
+  generator->MoveMouseTo(contents_test_api.users_list()
+                             ->user_view_at(0)
+                             ->GetBoundsInScreen()
+                             .CenterPoint());
+  generator->ClickLeftButton();
+
+  // Check the user is swapped and the primary user has pin enabled again.
+  EXPECT_EQ(account_id, big_view->GetCurrentUser().basic_user_info.account_id);
+  EXPECT_TRUE(pin_view->GetVisible());
+  EXPECT_FALSE(pin_status_message_view->GetVisible());
+}
+
 }  // namespace ash

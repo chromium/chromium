@@ -798,7 +798,8 @@ void LoginAuthUserView::SetAuthMethods(
   recover_button_->SetVisible(current_state.show_recover_button);
   pin_status_message_view_->SetVisible(current_state.pin_is_locked);
   if (current_state.pin_is_locked) {
-    pin_status_message_view_->SetPinInfo(auth_metadata.pin_available_at.value(),
+    pin_status_message_view_->SetPinInfo(user.basic_user_info.account_id,
+                                         auth_metadata.pin_available_at.value(),
                                          current_state.show_recover_button);
   }
 

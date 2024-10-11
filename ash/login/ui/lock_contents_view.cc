@@ -2208,7 +2208,7 @@ std::unique_ptr<LoginBigUserView> LockContentsView::AllocateLoginBigUserView(
           &LockContentsView::OnAuthFactorIsHidingPasswordChanged,
           base::Unretained(this), user.basic_user_info.account_id);
   auth_user_callbacks.on_pin_unlock = base::BindRepeating(
-      &LockContentsView::OnPinUnlock, base::Unretained(this), is_primary);
+      &LockContentsView::OnPinUnlock, base::Unretained(this));
   auth_user_callbacks.on_recover_button_pressed = base::BindRepeating(
       &LockContentsView::RecoverUserButtonPressed, base::Unretained(this));
 
@@ -2452,11 +2452,8 @@ void LockContentsView::RecordAndResetPasswordAttempts(
   unlock_attempt_by_user_[account_id] = 0;
 }
 
-void LockContentsView::OnPinUnlock(bool is_primary) {
-  LoginBigUserView* to_update =
-      is_primary ? primary_big_view_.get() : opt_secondary_big_view_.get();
-  AccountId user = to_update->GetCurrentUser().basic_user_info.account_id;
-  data_dispatcher_->SetPinEnabledForUser(user, true,
+void LockContentsView::OnPinUnlock(const AccountId& account_id) {
+  data_dispatcher_->SetPinEnabledForUser(account_id, true,
                                          /*available_at=*/std::nullopt);
   HideAuthErrorMessage();
 }

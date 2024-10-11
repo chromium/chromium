@@ -55,7 +55,7 @@ PinStatusMessageView::TestApi::GetPinStatusMessageContent() const {
   return view_->message_->GetText();
 }
 
-PinStatusMessageView::PinStatusMessageView(base::RepeatingClosure on_pin_unlock)
+PinStatusMessageView::PinStatusMessageView(OnPinUnlock on_pin_unlock)
     : on_pin_unlock_(on_pin_unlock) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
@@ -82,8 +82,10 @@ PinStatusMessageView::~PinStatusMessageView() {
   message_ = nullptr;
 }
 
-void PinStatusMessageView::SetPinInfo(base::Time available_at,
+void PinStatusMessageView::SetPinInfo(const AccountId& user,
+                                      base::Time available_at,
                                       bool is_pin_only) {
+  user_ = user;
   available_at_ = available_at;
   is_pin_only_ = is_pin_only;
   UpdateUI();
@@ -94,7 +96,7 @@ void PinStatusMessageView::SetPinInfo(base::Time available_at,
 void PinStatusMessageView::UpdateUI() {
   base::TimeDelta time_left = available_at_ - base::Time::Now();
   if (!time_left.is_positive()) {
-    on_pin_unlock_.Run();
+    on_pin_unlock_.Run(user_);
     message_->SetText(std::u16string());
     timer_.Stop();
     return;
