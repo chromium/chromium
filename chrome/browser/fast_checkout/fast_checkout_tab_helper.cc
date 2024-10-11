@@ -4,6 +4,7 @@
 
 #include "chrome/browser/fast_checkout/fast_checkout_tab_helper.h"
 
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher.h"
 #include "chrome/browser/fast_checkout/fast_checkout_capabilities_fetcher_factory.h"
 #include "chrome/browser/fast_checkout/fast_checkout_client_impl.h"
@@ -30,6 +31,8 @@ FastCheckoutTabHelper::~FastCheckoutTabHelper() = default;
 
 void FastCheckoutTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
+  TRACE_EVENT("navigation", "FastCheckoutTabHelper::DidStartNavigation");
+
   // We only care about top-level navigations.
   if (!navigation_handle || !navigation_handle->IsInPrimaryMainFrame()) {
     return;
