@@ -2335,6 +2335,15 @@
       name: "HTMLMenuElementIsListOwner",
       status: "stable",
     },
+    // The `<object>` should follow the specification:
+    // > Fallback: The object element represents the element's children.
+    // > This is the element's fallback content.
+    // https://html.spec.whatwg.org/C/#the-object-element
+    // This feature was shipped in M131, so this flag can be removed in M133.
+    {
+      name: "HTMLObjectElementFallbackDetachContentFrame",
+      status: "stable",
+    },
     {
       // A flag, just for local testing to make the
       // HTML parser yield more often and take longer to resume.
