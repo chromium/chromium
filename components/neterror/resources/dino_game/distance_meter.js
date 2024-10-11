@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Runner} from '../offline.js';
-
 import {IS_HIDPI, IS_RTL} from './constants.js';
+import {Runner} from './offline.js';
 import {getTimeStamp} from './utils.js';
 
 export class DistanceMeter {

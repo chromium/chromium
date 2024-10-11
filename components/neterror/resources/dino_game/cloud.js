@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Runner} from '../offline.js';
-
 import {IS_HIDPI} from './constants.js';
+import {Runner} from './offline.js';
 import {getRandomNum} from './utils.js';
 
 export class Cloud {

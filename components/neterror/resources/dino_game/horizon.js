@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {spriteDefinitionByType} from '../offline-sprite-definitions.js';
-import {Runner} from '../offline.js';
-
 import {BackgroundEl} from './background_el.js';
 import {Cloud} from './cloud.js';
 import {HorizonLine} from './horizon_line.js';
 import {NightMode} from './night_mode.js';
 import {Obstacle} from './obstacle.js';
+import {spriteDefinitionByType} from './offline-sprite-definitions.js';
+import {Runner} from './offline.js';
 import {getRandomNum} from './utils.js';
 
 /**

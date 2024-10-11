@@ -10,7 +10,6 @@ preprocess_if_expr("preprocess") {
   in_files = [
     "constants.js",
     "neterror.js",
-    "offline.js",
     "dino_game/background_el.js",
     "dino_game/cloud.js",
     "dino_game/constants.js",
@@ -21,9 +20,10 @@ preprocess_if_expr("preprocess") {
     "dino_game/horizon.js",
     "dino_game/night_mode.js",
     "dino_game/obstacle.js",
+    "dino_game/offline.js",
+    "dino_game/offline-sprite-definitions.js",
     "dino_game/trex.js",
     "dino_game/utils.js",
-    "offline-sprite-definitions.js",
   ]
 
   if (is_ios) {

@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CollisionBox} from '../offline-sprite-definitions.js';
-import {Runner} from '../offline.js';
-
 import {FPS, IS_HIDPI} from './constants.js';
+import {CollisionBox} from './offline-sprite-definitions.js';
+import {Runner} from './offline.js';
 import {getTimeStamp} from './utils.js';
 
 

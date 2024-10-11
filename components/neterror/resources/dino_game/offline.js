@@ -4,16 +4,17 @@
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
-import {HIDDEN_CLASS} from './constants.js';
-import {FPS, IS_HIDPI, IS_IOS, IS_MOBILE, IS_RTL} from './dino_game/constants.js';
-import {DistanceMeter} from './dino_game/distance_meter.js';
-import {GameOverPanel} from './dino_game/game_over_panel.js';
-import {GeneratedSoundFx} from './dino_game/generated_sound_fx.js';
-import {Horizon} from './dino_game/horizon.js';
-import {Obstacle} from './dino_game/obstacle.js';
-import {Trex} from './dino_game/trex.js';
-import {getTimeStamp} from './dino_game/utils.js';
+import {HIDDEN_CLASS} from '../constants.js';
+
+import {FPS, IS_HIDPI, IS_IOS, IS_MOBILE, IS_RTL} from './constants.js';
+import {DistanceMeter} from './distance_meter.js';
+import {GameOverPanel} from './game_over_panel.js';
+import {GeneratedSoundFx} from './generated_sound_fx.js';
+import {Horizon} from './horizon.js';
+import {Obstacle} from './obstacle.js';
 import {CollisionBox, GAME_TYPE, spriteDefinitionByType} from './offline-sprite-definitions.js';
+import {Trex} from './trex.js';
+import {getTimeStamp} from './utils.js';
 
 /**
  * T-Rex runner.
@@ -67,8 +68,8 @@ export function Runner(outerContainerId, opt_config) {
 
   this.obstacles = [];
 
-  this.activated = false; // Whether the easter egg has been activated.
-  this.playing = false; // Whether the game is currently in play state.
+  this.activated = false;  // Whether the easter egg has been activated.
+  this.playing = false;    // Whether the game is currently in play state.
   this.crashed = false;
   this.paused = false;
   this.inverted = false;
@@ -373,8 +374,8 @@ Runner.prototype = {
       this.init();
     } else {
       // If the images are not yet loaded, add a listener.
-      Runner.imageSprite.addEventListener(Runner.events.LOAD,
-          this.init.bind(this));
+      Runner.imageSprite.addEventListener(
+          Runner.events.LOAD, this.init.bind(this));
     }
   },
 
@@ -396,8 +397,8 @@ Runner.prototype = {
 
         // Async, so no guarantee of order in array.
         this.audioContext.decodeAudioData(buffer, function(index, audioData) {
-            this.soundFx[index] = audioData;
-          }.bind(this, sound));
+          this.soundFx[index] = audioData;
+        }.bind(this, sound));
       }
     }
   },
@@ -447,8 +448,8 @@ Runner.prototype = {
     this.containerEl.className = Runner.classes.CONTAINER;
 
     // Player canvas container.
-    this.canvas = createCanvas(this.containerEl, this.dimensions.WIDTH,
-        this.dimensions.HEIGHT);
+    this.canvas = createCanvas(
+        this.containerEl, this.dimensions.WIDTH, this.dimensions.HEIGHT);
 
     // Live region for game status updates.
     this.a11yStatusEl = document.createElement('span');
@@ -491,12 +492,13 @@ Runner.prototype = {
     Runner.updateCanvasScaling(this.canvas);
 
     // Horizon contains clouds, obstacles and the ground.
-    this.horizon = new Horizon(this.canvas, this.spriteDef, this.dimensions,
+    this.horizon = new Horizon(
+        this.canvas, this.spriteDef, this.dimensions,
         this.config.GAP_COEFFICIENT);
 
     // Distance meter
-    this.distanceMeter = new DistanceMeter(this.canvas,
-          this.spriteDef.TEXT_SPRITE, this.dimensions.WIDTH);
+    this.distanceMeter = new DistanceMeter(
+        this.canvas, this.spriteDef.TEXT_SPRITE, this.dimensions.WIDTH);
 
     // Draw t-rex
     this.tRex = new Trex(this.canvas, this.spriteDef.TREX);
@@ -507,8 +509,8 @@ Runner.prototype = {
     this.startListening();
     this.update();
 
-    window.addEventListener(Runner.events.RESIZE,
-        this.debounceResize.bind(this));
+    window.addEventListener(
+        Runner.events.RESIZE, this.debounceResize.bind(this));
 
     // Handle dark mode
     const darkModeMediaQuery =
@@ -535,8 +537,7 @@ Runner.prototype = {
    */
   debounceResize() {
     if (!this.resizeTimerId_) {
-      this.resizeTimerId_ =
-          setInterval(this.adjustDimensions.bind(this), 250);
+      this.resizeTimerId_ = setInterval(this.adjustDimensions.bind(this), 250);
     }
   },
 
@@ -548,8 +549,8 @@ Runner.prototype = {
     this.resizeTimerId_ = null;
 
     const boxStyles = window.getComputedStyle(this.outerContainerEl);
-    const padding = Number(boxStyles.paddingLeft.substr(0,
-        boxStyles.paddingLeft.length - 2));
+    const padding = Number(
+        boxStyles.paddingLeft.substr(0, boxStyles.paddingLeft.length - 2));
 
     this.dimensions.WIDTH = this.outerContainerEl.offsetWidth - padding * 2;
     if (this.isArcadeMode()) {
@@ -600,13 +601,13 @@ Runner.prototype = {
 
       // CSS animation definition.
       const keyframes = '@-webkit-keyframes intro { ' +
-            'from { width:' + Trex.config.WIDTH + 'px }' +
-            'to { width: ' + this.dimensions.WIDTH + 'px }' +
+          'from { width:' + Trex.config.WIDTH + 'px }' +
+          'to { width: ' + this.dimensions.WIDTH + 'px }' +
           '}';
       document.styleSheets[0].insertRule(keyframes, 0);
 
-      this.containerEl.addEventListener(Runner.events.ANIM_END,
-          this.startGame.bind(this));
+      this.containerEl.addEventListener(
+          Runner.events.ANIM_END, this.startGame.bind(this));
 
       this.containerEl.style.webkitAnimation = 'intro .4s ease-out 1 both';
       this.containerEl.style.width = this.dimensions.WIDTH + 'px';
@@ -639,19 +640,19 @@ Runner.prototype = {
     }
 
     // Handle tabbing off the page. Pause the current game.
-    document.addEventListener(Runner.events.VISIBILITY,
-          this.onVisibilityChange.bind(this));
+    document.addEventListener(
+        Runner.events.VISIBILITY, this.onVisibilityChange.bind(this));
 
-    window.addEventListener(Runner.events.BLUR,
-          this.onVisibilityChange.bind(this));
+    window.addEventListener(
+        Runner.events.BLUR, this.onVisibilityChange.bind(this));
 
-    window.addEventListener(Runner.events.FOCUS,
-          this.onVisibilityChange.bind(this));
+    window.addEventListener(
+        Runner.events.FOCUS, this.onVisibilityChange.bind(this));
   },
 
   clearCanvas() {
-    this.canvasCtx.clearRect(0, 0, this.dimensions.WIDTH,
-        this.dimensions.HEIGHT);
+    this.canvasCtx.clearRect(
+        0, 0, this.dimensions.WIDTH, this.dimensions.HEIGHT);
   },
 
   /**
@@ -785,8 +786,8 @@ Runner.prototype = {
         this.gameOver();
       }
 
-      const playAchievementSound = this.distanceMeter.update(deltaTime,
-          Math.ceil(this.distanceRan));
+      const playAchievementSound =
+          this.distanceMeter.update(deltaTime, Math.ceil(this.distanceRan));
 
       if (!Runner.audioCues && playAchievementSound) {
         this.playSound(this.soundFx.SCORE);
@@ -817,8 +818,9 @@ Runner.prototype = {
       }
     }
 
-    if (this.playing || (!this.activated &&
-        this.tRex.blinkCount < Runner.config.MAX_BLINK_COUNT)) {
+    if (this.playing ||
+        (!this.activated &&
+         this.tRex.blinkCount < Runner.config.MAX_BLINK_COUNT)) {
       this.tRex.update(deltaTime);
       this.scheduleNextUpdate();
     }
@@ -1062,8 +1064,8 @@ Runner.prototype = {
 
       if (this.isCanvasInView() &&
           (Runner.keycodes.RESTART[keyCode] || this.isLeftClickOnCanvas(e) ||
-          (deltaTime >= this.config.GAMEOVER_CLEAR_TIME &&
-          Runner.keycodes.JUMP[keyCode]))) {
+           (deltaTime >= this.config.GAMEOVER_CLEAR_TIME &&
+            Runner.keycodes.JUMP[keyCode]))) {
         this.handleGameOverClicks(e);
       }
     } else if (this.paused && isjumpKey) {
@@ -1155,9 +1157,9 @@ Runner.prototype = {
     }
     // Generate key events on the rising and falling edge of a button press.
     if (state !== previousState) {
-      const e = new KeyboardEvent(state ? Runner.events.KEYDOWN
-                                      : Runner.events.KEYUP,
-                                { keyCode: keyCode });
+      const e = new KeyboardEvent(
+          state ? Runner.events.KEYDOWN : Runner.events.KEYUP,
+          {keyCode: keyCode});
       document.dispatchEvent(e);
     }
   },
@@ -1400,9 +1402,12 @@ Runner.prototype = {
     const scaledCanvasHeight = this.dimensions.HEIGHT * scale;
     // Positions the game container at 10% of the available vertical window
     // height minus the game container height.
-    const translateY = Math.ceil(Math.max(0, (windowHeight - scaledCanvasHeight -
-        Runner.config.ARCADE_MODE_INITIAL_TOP_POSITION) *
-        Runner.config.ARCADE_MODE_TOP_POSITION_PERCENT)) *
+    const translateY =
+        Math.ceil(Math.max(
+            0,
+            (windowHeight - scaledCanvasHeight -
+             Runner.config.ARCADE_MODE_INITIAL_TOP_POSITION) *
+                Runner.config.ARCADE_MODE_TOP_POSITION_PERCENT)) *
         window.devicePixelRatio;
 
     const cssScale = IS_RTL ? -scale + ',' + scale : scale;
@@ -1444,13 +1449,12 @@ Runner.prototype = {
     const htmlEl = document.firstElementChild;
 
     if (reset) {
-      htmlEl.classList.toggle(Runner.classes.INVERTED,
-          false);
+      htmlEl.classList.toggle(Runner.classes.INVERTED, false);
       this.invertTimer = 0;
       this.inverted = false;
     } else {
-      this.inverted = htmlEl.classList.toggle(
-          Runner.classes.INVERTED, this.invertTrigger);
+      this.inverted =
+          htmlEl.classList.toggle(Runner.classes.INVERTED, this.invertTrigger);
     }
   },
 };
@@ -1574,8 +1578,9 @@ function vibrate(duration) {
 function createCanvas(container, width, height, opt_classname) {
   const canvas =
       /** @type {!HTMLCanvasElement} */ (document.createElement('canvas'));
-  canvas.className = opt_classname ? Runner.classes.CANVAS + ' ' +
-      opt_classname : Runner.classes.CANVAS;
+  canvas.className = opt_classname ?
+      Runner.classes.CANVAS + ' ' + opt_classname :
+      Runner.classes.CANVAS;
   canvas.width = width;
   canvas.height = height;
   container.appendChild(canvas);
@@ -1618,14 +1623,11 @@ function checkForCollision(obstacle, tRex, opt_canvasCtx) {
   // Adjustments are made to the bounding box as there is a 1 pixel white
   // border around the t-rex and obstacles.
   const tRexBox = new CollisionBox(
-      tRex.xPos + 1,
-      tRex.yPos + 1,
-      tRex.config.WIDTH - 2,
+      tRex.xPos + 1, tRex.yPos + 1, tRex.config.WIDTH - 2,
       tRex.config.HEIGHT - 2);
 
   const obstacleBox = new CollisionBox(
-      obstacle.xPos + 1,
-      obstacle.yPos + 1,
+      obstacle.xPos + 1, obstacle.yPos + 1,
       obstacle.typeConfig.width * obstacle.size - 2,
       obstacle.typeConfig.height - 2);
 
@@ -1678,10 +1680,7 @@ function checkForCollision(obstacle, tRex, opt_canvasCtx) {
  */
 function createAdjustedCollisionBox(box, adjustment) {
   return new CollisionBox(
-      box.x + adjustment.x,
-      box.y + adjustment.y,
-      box.width,
-      box.height);
+      box.x + adjustment.x, box.y + adjustment.y, box.width, box.height);
 }
 
 
@@ -1694,8 +1693,8 @@ function drawCollisionBoxes(canvasCtx, tRexBox, obstacleBox) {
   canvasCtx.strokeRect(tRexBox.x, tRexBox.y, tRexBox.width, tRexBox.height);
 
   canvasCtx.strokeStyle = '#0f0';
-  canvasCtx.strokeRect(obstacleBox.x, obstacleBox.y,
-      obstacleBox.width, obstacleBox.height);
+  canvasCtx.strokeRect(
+      obstacleBox.x, obstacleBox.y, obstacleBox.width, obstacleBox.height);
   canvasCtx.restore();
 }
 
