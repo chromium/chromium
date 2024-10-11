@@ -134,7 +134,10 @@ public class PasswordAccessLossWarningHelper {
                         SHEET_TEXT,
                         getBottomSheetTextWithLink(
                                 mActivity.getString(
-                                        R.string.pwd_access_loss_warning_update_gms_core_text),
+                                        warningType == PasswordAccessLossWarningType.NO_UPM
+                                                ? R.string.pwd_access_loss_warning_no_upm_text
+                                                : R.string
+                                                        .pwd_access_loss_warning_update_gms_core_text),
                                 (unusedView) -> {
                                     mHelpUrlLauncher.showHelpArticle(
                                             mActivity,

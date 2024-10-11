@@ -124,6 +124,7 @@ public class PasswordAccessLossDialogSettingsCoordinator {
             case PasswordAccessLossWarningType.NO_GMS_CORE:
                 return R.string.access_loss_no_gms_desc;
             case PasswordAccessLossWarningType.NO_UPM:
+                return R.string.access_loss_no_upm_desc;
             case PasswordAccessLossWarningType.ONLY_ACCOUNT_UPM:
                 return R.string.access_loss_update_gms_desc;
             case PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED:

@@ -877,6 +877,9 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_PWD_ACCESS_LOSS_WARNING_UPDATE_GMS_CORE_TEXT" desc="The text of the password access loss warning sheet when the GMS Core version doesn't support local passwords." formatter_data="android_java">
         Passwords may stop working soon on this device. To keep using your passwords, update Google Play services. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
+      <message name="IDS_PWD_ACCESS_LOSS_WARNING_NO_UPM_TEXT" desc="The text of the password access loss warning sheet when the device doesn't have Google Play Services.">
+        Passwords will stop working soon on this device. To keep using your passwords, update Google Play services. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Learn more<ph name="END_LINK">&lt;/link&gt;</ph>
+      </message>
       <message name="IDS_PWD_ACCESS_LOSS_WARNING_UPDATE_GMS_CORE_BUTTON_TEXT" desc="The button text of the password access loss warning sheet when the GMS Core version doesn't support local passwords." formatter_data="android_java">
         Update
       </message>
@@ -968,6 +971,9 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
         Update Google Play services
       </message>
       <message name="IDS_ACCESS_LOSS_UPDATE_GMS_DESC" desc="The message in the password access loss warning shown in Settings when the user tries to navigate to the Password Manager settings having an outdated Goggle Play Services.">
+        Passwords may stop working soon on this device. To keep using your passwords, update Google Play services.
+      </message>
+      <message name="IDS_ACCESS_LOSS_NO_UPM_DESC" desc="The message in the password access loss warning shown in Settings when the user tries to navigate to the Password Manager settings having an outdated Goggle Play Services.">
         Passwords will stop working soon on this device. To keep using your passwords, update Google Play services.
       </message>
       <message name="IDS_ACCESS_LOSS_FIX_PROBLEM_TITLE" desc="The title of the password access loss warning shown in Settings when the user tries to navigate to the Password Manager settings after failed local passwords migration to Google Play Services">

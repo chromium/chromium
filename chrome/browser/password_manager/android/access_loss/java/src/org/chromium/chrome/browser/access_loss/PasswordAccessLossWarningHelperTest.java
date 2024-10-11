@@ -151,7 +151,7 @@ public class PasswordAccessLossWarningHelperTest {
                 mActivity.getString(R.string.pwd_access_loss_warning_update_gms_core_title));
         assertEquals(
                 model.get(SHEET_TEXT).toString(),
-                getStringWithoutLink(R.string.pwd_access_loss_warning_update_gms_core_text));
+                getStringWithoutLink(R.string.pwd_access_loss_warning_no_upm_text));
         assertEquals(
                 model.get(BUTTON_TITLE),
                 mActivity.getString(R.string.pwd_access_loss_warning_update_gms_core_button_text));

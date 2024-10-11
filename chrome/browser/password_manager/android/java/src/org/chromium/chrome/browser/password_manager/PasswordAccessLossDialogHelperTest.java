@@ -127,6 +127,38 @@ public class PasswordAccessLossDialogHelperTest {
                 context.getString(R.string.access_loss_update_gms_title),
                 ((TextView) customView.findViewById(R.id.title)).getText());
         assertEquals(
+                context.getString(R.string.access_loss_no_upm_desc),
+                ((TextView) customView.findViewById(R.id.details)).getText());
+        assertTrue(customView.findViewById(R.id.help_button).getVisibility() == View.VISIBLE);
+        assertEquals(
+                context.getString(R.string.password_manager_outdated_gms_positive_button),
+                dialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
+        assertEquals(
+                context.getString(R.string.password_manager_outdated_gms_negative_button),
+                dialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
+    }
+
+    @Test
+    public void testPasswordAccessLossDialogOnlyAccountUpm() {
+        when(mPasswordManagerUtilBridgeJniMock.getPasswordAccessLossWarningType(mPrefService))
+                .thenReturn(PasswordAccessLossWarningType.ONLY_ACCOUNT_UPM);
+
+        assertTrue(
+                PasswordAccessLossDialogHelper.tryShowAccessLossWarning(
+                        mProfile,
+                        mContext,
+                        ManagePasswordsReferrer.CHROME_SETTINGS,
+                        mModalDialogManagerSupplier,
+                        mCustomTabIntentHelper,
+                        mBuildInfo));
+
+        PropertyModel dialogModel = mModalDialogManager.getShownDialogModel();
+        View customView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
+        Context context = RuntimeEnvironment.getApplication().getApplicationContext();
+        assertEquals(
+                context.getString(R.string.access_loss_update_gms_title),
+                ((TextView) customView.findViewById(R.id.title)).getText());
+        assertEquals(
                 context.getString(R.string.access_loss_update_gms_desc),
                 ((TextView) customView.findViewById(R.id.details)).getText());
         assertTrue(customView.findViewById(R.id.help_button).getVisibility() == View.VISIBLE);
