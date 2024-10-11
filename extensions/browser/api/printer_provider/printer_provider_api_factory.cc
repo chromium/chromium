@@ -43,7 +43,8 @@ PrinterProviderAPIFactory::PrinterProviderAPIFactory()
 PrinterProviderAPIFactory::~PrinterProviderAPIFactory() {
 }
 
-KeyedService* PrinterProviderAPIFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+PrinterProviderAPIFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   return PrinterProviderAPI::Create(context);
 }
