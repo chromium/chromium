@@ -28,6 +28,7 @@ include_rules = [
   "+third_party/webrtc",
   "+third_party/libjingle_xmpp/xmpp",
   "+ui/aura",
+  "+ui/accessibility/platform",
   "+ui/base",
   "+ui/compositor",
   "+ui/events",
