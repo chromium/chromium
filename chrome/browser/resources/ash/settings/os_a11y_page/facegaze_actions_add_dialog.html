@@ -160,7 +160,8 @@
         <template>
           <!-- |selected| is a property of iron-list -->
           <div class$="list-item padded [[getItemClass_(selected)]]"
-              tabindex$="[[tabIndex]]">
+              tabindex$="[[tabIndex]]"
+              aria-label="[[getActionAriaLabel_(item, selected)]]">
             <paper-ripple></paper-ripple>
             <div class="flex padded" aria-hidden="true">
               [[getActionDisplayText_(item)]]
@@ -236,7 +237,8 @@
         <template>
           <!-- |selected| is a property of iron-list -->
           <div class$="list-item gesture-list-item padded [[getItemClass_(selected)]]"
-              tabindex$="[[tabIndex]]">
+              tabindex$="[[tabIndex]]"
+              aria-label="[[getGestureAriaLabel_(item, selected)]]">
             <paper-ripple></paper-ripple>
             <div class="flex" aria-hidden="true">
               <iron-icon class="gesture-icon"
