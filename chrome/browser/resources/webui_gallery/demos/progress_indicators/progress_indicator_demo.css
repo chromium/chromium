@@ -6,9 +6,9 @@
  * #type=style-lit
  * #import=../demo.css.js
  * #import=//resources/cr_elements/cr_shared_vars.css.js
- * #import=//resources/cr_elements/cr_spinner_style.css.js
+ * #import=//resources/cr_elements/cr_spinner_style_lit.css.js
  * #scheme=relative
- * #include=demo cr-spinner-style
+ * #include=demo cr-spinner-style-lit
  * #css_wrapper_metadata_end */
 
 cr-progress {

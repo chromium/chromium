@@ -3,12 +3,10 @@
  * found in the LICENSE file. */
 
 /* #css_wrapper_metadata_start
- * #type=style
+ * #type=style-lit
  * #import=//resources/cr_elements/cr_shared_vars.css.js
  * #scheme=relative
  * #css_wrapper_metadata_end */
-
-/* Copied from the Lit version at cr_spinner_style.css */
 
 .spinner {
   --cr-spinner-size: 28px;

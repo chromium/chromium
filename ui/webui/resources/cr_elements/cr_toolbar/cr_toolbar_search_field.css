@@ -7,9 +7,9 @@
  * #import=../cr_shared_vars.css.js
  * #import=../cr_icons_lit.css.js
  * #import=../cr_shared_style_lit.css.js
- * #import=../cr_spinner_style.css.js
+ * #import=../cr_spinner_style_lit.css.js
  * #scheme=relative
- * #include=cr-shared-style-lit cr-icons-lit cr-spinner-style
+ * #include=cr-shared-style-lit cr-icons-lit cr-spinner-style-lit
  * #css_wrapper_metadata_end */
 
 :host {

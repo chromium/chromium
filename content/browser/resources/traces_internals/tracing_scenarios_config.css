@@ -5,9 +5,9 @@
  /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=//resources/cr_elements/cr_shared_vars.css.js
- * #import=//resources/cr_elements/cr_spinner_style.css.js
+ * #import=//resources/cr_elements/cr_spinner_style_lit.css.js
  * #scheme=relative
- * #include=cr-spinner-style
+ * #include=cr-spinner-style-lit
  * #css_wrapper_metadata_end */
 
 :host {

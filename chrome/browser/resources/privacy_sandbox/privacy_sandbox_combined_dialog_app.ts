@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/cr_spinner_style_polymer.css.js';
+import 'chrome://resources/cr_elements/cr_spinner_style.css.js';
 import './strings.m.js';
 import './shared_style.css.js';
 import './privacy_sandbox_dialog_consent_step.js';

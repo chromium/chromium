@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_spinner_style_polymer.css.js';
+import 'chrome://resources/cr_elements/cr_spinner_style.css.js';
 
 import type {AuthCompletedCredentials, AuthParams} from 'chrome://chrome-signin/gaia_auth_host/authenticator.js';
 import {Authenticator} from 'chrome://chrome-signin/gaia_auth_host/authenticator.js';
