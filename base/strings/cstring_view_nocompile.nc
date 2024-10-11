@@ -41,11 +41,8 @@ void WontCompileNoNulInArray() {
 #endif
 }
 
-void WontCompilePointerInsteadOfArray() {
-  const char good[] = "abc";
-  const char* bad = good;
-  auto v = cstring_view(bad);  // expected-error {{no matching conversion}}
-  auto v2 = cstring_view(nullptr);  // expected-error {{no matching conversion}}
+void WontCompileNullptr() {
+  auto v = cstring_view(nullptr);  // expected-error {{no matching conversion}}
 }
 
 void WontCompileCompareTypeMismatch() {

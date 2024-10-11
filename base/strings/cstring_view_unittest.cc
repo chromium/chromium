@@ -69,6 +69,27 @@ TEST(CStringViewTest, LiteralConstructed) {
   }
 }
 
+TEST(CStringViewTest, PointerConstructed) {
+  constexpr const char* c_empty = "";
+  constexpr auto empty = UNSAFE_BUFFERS(cstring_view(c_empty));
+  static_assert(std::same_as<const cstring_view, decltype(empty)>);
+  EXPECT_EQ(empty.data(), c_empty);
+  EXPECT_EQ(empty.size(), 0u);
+
+  constexpr const char* c_stuff = "stuff";
+  constexpr auto stuff = UNSAFE_BUFFERS(cstring_view(c_stuff));
+  static_assert(std::same_as<const cstring_view, decltype(stuff)>);
+  EXPECT_EQ(stuff.data(), c_stuff);
+  EXPECT_EQ(stuff.size(), 5u);
+
+  char c_things_buf[] = {'t', 'h', 'i', 'n', 'g', 's', '\0'};
+  char* c_things = c_things_buf;
+  auto things = UNSAFE_BUFFERS(cstring_view(c_things));
+  static_assert(std::same_as<cstring_view, decltype(things)>);
+  EXPECT_EQ(things.data(), c_things);
+  EXPECT_EQ(things.size(), 6u);
+}
+
 TEST(CStringViewTest, PointerSizeConstructed) {
   constexpr const char* c_empty = "";
   constexpr auto empty = UNSAFE_BUFFERS(cstring_view(c_empty, 0u));
@@ -81,6 +102,12 @@ TEST(CStringViewTest, PointerSizeConstructed) {
   static_assert(std::same_as<const cstring_view, decltype(stuff)>);
   EXPECT_EQ(stuff.data(), c_stuff);
   EXPECT_EQ(stuff.size(), 5u);
+
+  constexpr const char* c_stuffstuff = "stuff\0stuff";
+  constexpr auto stuffstuff = UNSAFE_BUFFERS(cstring_view(c_stuffstuff, 11u));
+  static_assert(std::same_as<const cstring_view, decltype(stuffstuff)>);
+  EXPECT_EQ(stuffstuff.data(), c_stuffstuff);
+  EXPECT_EQ(stuffstuff.size(), 11u);
 }
 
 TEST(CStringViewTest, StringConstructed) {

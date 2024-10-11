@@ -31,12 +31,8 @@
 #include "base/containers/span.h"
 #include "base/containers/span_writer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/cstring_view.h"
 #include "build/build_config.h"
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
 
 // Controls whether `dladdr(...)` is used to print the callstack. This is
 // only used on iOS Official build where `backtrace_symbols(...)` prints
@@ -270,9 +266,13 @@ void ProcessBacktrace(span<const void* const> traces,
 
       const bool dl_info_found = dladdr(traces[i], &dl_info) != 0;
       if (dl_info_found) {
-        const char* last_sep = strrchr(dl_info.dli_fname, '/');
-        const char* basename = last_sep ? last_sep + 1 : dl_info.dli_fname;
-        handler->HandleOutput(basename);
+        // SAFETY: dl_info::dli_fname is a NUL-terminated cstring.
+        auto dli_fname = UNSAFE_BUFFERS(base::cstring_view(dl_info.dli_fname));
+        if (size_t last_sep = dli_fname.rfind('/');
+            last_sep != base::cstring_view::npos) {
+          dli_fname.remove_prefix(last_sep + 1u);
+        }
+        handler->HandleOutput(dli_fname.c_str());
       } else {
         handler->HandleOutput("???");
       }

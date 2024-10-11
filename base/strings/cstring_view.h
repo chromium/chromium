@@ -119,8 +119,28 @@ class basic_cstring_view final {
   constexpr basic_cstring_view(const String& s LIFETIME_BOUND) noexcept
       : ptr_(s.c_str()), len_(s.size()) {}
 
-  // Unsafe construction from a pointer and length. Prefer to construct cstring
-  // view from a string literal, std::string, or another cstring view.
+  // Unsafe construction from a NUL-terminated cstring, primarily for use with C
+  // APIs. Prefer to construct cstring view from a string literal, std::string,
+  // or another cstring view.
+  //
+  // # Safety
+  // The `ptr` must point to a NUL-terminated string or Undefined Behaviour will
+  // result.
+  //
+  // # Implementation note
+  // We use a `String&&` template to ensure the input is a pointer and not an
+  // array that decayed to a pointer. This ensures the ctor will not act as a
+  // fallback for the string literal ctor when the enable_if condition fails.
+  template <class String>
+    requires(std::same_as<std::remove_cvref_t<String>, Char*> ||
+             std::same_as<std::remove_cvref_t<String>, const Char*>)
+  UNSAFE_BUFFER_USAGE explicit constexpr basic_cstring_view(
+      String&& ptr LIFETIME_BOUND) noexcept
+      : ptr_(ptr), len_(std::char_traits<Char>::length(ptr)) {}
+
+  // Unsafe construction from a NUL-terminated pointer and length. This allows
+  // the string to contain embedded NULs. Prefer to construct cstring view from
+  // a string literal, std::string, or another cstring view.
   //
   // # Safety
   // The `ptr` and `len` pair indicate a valid NUL-terminated string:
