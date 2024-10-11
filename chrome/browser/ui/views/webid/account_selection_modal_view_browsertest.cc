@@ -484,6 +484,52 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     CheckDisabledButtonRow(dialog()->children()[2]);
   }
 
+  void TestErrorDialog(const std::u16string expected_summary,
+                       const std::u16string expected_description,
+                       const std::string& error_code,
+                       const GURL& error_url) {
+    CreateAccountSelectionModal();
+    dialog_->ShowErrorDialog(
+        kIdpETLDPlusOne, idp_data_->idp_metadata,
+        content::IdentityCredentialTokenError(error_code, error_url));
+    auto header_view = dialog()->children()[0];
+    // header icon view, title_label and body_label
+    ASSERT_EQ(header_view->children().size(), 3u);
+
+    auto* title_label = static_cast<views::Label*>(header_view->children()[1]);
+    EXPECT_EQ(title_label->GetText(), expected_summary);
+
+    auto* body_label = static_cast<views::Label*>(header_view->children()[2]);
+    EXPECT_EQ(body_label->GetText(), expected_description);
+
+    auto button_container = dialog()->children()[1];
+    const std::vector<raw_ptr<views::View, VectorExperimental>> button_row =
+        button_container->children();
+
+    if (error_url.is_empty()) {
+      ASSERT_EQ(button_row.size(), 1u);
+
+      views::MdTextButton* got_it_button =
+          static_cast<views::MdTextButton*>(button_row[0]);
+      ASSERT_TRUE(got_it_button);
+      EXPECT_EQ(
+          got_it_button->GetText(),
+          l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_DIALOG_GOT_IT_BUTTON));
+      return;
+    }
+
+    ASSERT_EQ(button_row.size(), 2u);
+    for (size_t i = 0; i < button_row.size(); ++i) {
+      views::MdTextButton* button =
+          static_cast<views::MdTextButton*>(button_row[i]);
+      ASSERT_TRUE(button);
+      EXPECT_EQ(button->GetText(),
+                l10n_util::GetStringUTF16(
+                    i == 0 ? IDS_SIGNIN_ERROR_DIALOG_MORE_DETAILS_BUTTON
+                           : IDS_SIGNIN_ERROR_DIALOG_GOT_IT_BUTTON));
+    }
+  }
+
   AccountSelectionModalView* dialog() { return dialog_; }
 
   IdentityProviderDataPtr idp_data() { return idp_data_; }
@@ -702,4 +748,104 @@ IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest, MultipleAccountFlowBack) {
   TestVerifyingSheet(/*has_multiple_accounts=*/false,
                      /*expect_visible_idp_icon=*/false,
                      /*expect_visible_combined_icons=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest, ErrorDialogTest) {
+  // Generic error without error URL
+  TestErrorDialog(u"Can't continue with idp-example.com",
+                  u"Something went wrong",
+                  /*error_code=*/"",
+                  /*error_url=*/GURL());
+
+  // Generic error with error URL
+  TestErrorDialog(
+      u"Can't continue with idp-example.com", u"Something went wrong",
+      /*error_code=*/"", GURL(u"https://idp-example.com/more-details"));
+
+  // Invalid request without error URL
+  TestErrorDialog(u"rp-example.com can't continue using idp-example.com",
+                  u"This option is unavailable right now. You can try other "
+                  u"ways to continue on rp-example.com.",
+                  /*error_code=*/"invalid_request",
+                  /*error_url=*/GURL());
+
+  // Invalid request with error URL
+  TestErrorDialog(
+      u"rp-example.com can't continue using idp-example.com",
+      u"This option is unavailable right now. Choose \"More "
+      u"details\" below to get more information from idp-example.com.",
+      /*error_code=*/"invalid_request",
+      GURL(u"https://idp-example.com/more-details"));
+
+  // Unauthorized client without error URL
+  TestErrorDialog(u"rp-example.com can't continue using idp-example.com",
+                  u"This option is unavailable right now. You can try other "
+                  u"ways to continue on rp-example.com.",
+                  /*error_code=*/"unauthorized_client",
+                  /*error_url=*/GURL());
+
+  // Unauthorized client with error URL
+  TestErrorDialog(
+      u"rp-example.com can't continue using idp-example.com",
+      u"This option is unavailable right now. Choose \"More "
+      u"details\" below to get more information from idp-example.com.",
+      /*error_code=*/"unauthorized_client",
+      GURL(u"https://idp-example.com/more-details"));
+
+  // Access denied without error URL
+  TestErrorDialog(u"Check that you chose the right account",
+                  u"Check if the selected account is supported. You can try "
+                  u"other ways to continue on rp-example.com.",
+                  /*error_code=*/"access_denied",
+                  /*error_url=*/GURL());
+
+  // Access denied with error URL
+  TestErrorDialog(
+      u"Check that you chose the right account",
+      u"Check if the selected account is supported. Choose \"More "
+      u"details\" below to get more information from idp-example.com.",
+      /*error_code=*/"access_denied",
+      GURL(u"https://idp-example.com/more-details"));
+
+  // Temporarily unavailable without error URL
+  TestErrorDialog(u"Try again later",
+                  u"idp-example.com isn't available right now. If this issue "
+                  u"keeps happening, you can try other ways to continue on "
+                  u"rp-example.com.",
+                  /*error_code=*/"temporarily_unavailable",
+                  /*error_url=*/GURL());
+
+  // Temporarily unavailable with error URL
+  TestErrorDialog(u"Try again later",
+                  u"idp-example.com isn't available right now. If this issue "
+                  u"keeps happening, choose \"More details\" below to get more "
+                  u"information from idp-example.com.",
+                  /*error_code=*/"temporarily_unavailable",
+                  GURL(u"https://idp-example.com/more-details"));
+
+  // Server error without error URL
+  TestErrorDialog(u"Check your internet connection",
+                  u"If you're online but this issue keeps happening, you can "
+                  u"try other ways to continue on rp-example.com.",
+                  /*error_code=*/"server_error",
+                  /*error_url=*/GURL());
+
+  // Server error with error URL
+  TestErrorDialog(u"Check your internet connection",
+                  u"If you're online but this issue keeps happening, you can "
+                  u"try other ways to continue on rp-example.com.",
+                  /*error_code=*/"server_error",
+                  GURL(u"https://idp-example.com/more-details"));
+
+  // Error not in our predefined list without error URL
+  TestErrorDialog(u"Can't continue with idp-example.com",
+                  u"Something went wrong",
+                  /*error_code=*/"error_we_dont_support",
+                  /*error_url=*/GURL());
+
+  // Error not in our predefined list with error URL
+  TestErrorDialog(u"Can't continue with idp-example.com",
+                  u"Something went wrong",
+                  /*error_code=*/"error_we_dont_support",
+                  GURL(u"https://idp-example.com/more-details"));
 }

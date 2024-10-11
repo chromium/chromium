@@ -2298,14 +2298,13 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, AccountChooserResultMetric) {
 }
 
 // Tests that for active modes, going from an accounts dialog to an error dialog
-// resets the account selection view. This is needed to switch from modal to
-// bubble, since the error UI does not have a modal equivalent.
+// does not reset the account selection view since the error UI has a modal.
 TEST_F(FedCmAccountSelectionViewDesktopTest,
-       AccountsToErrorActiveModeResetsView) {
+       AccountsToErrorActiveModeDoesNotResetView) {
   std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
       accounts_, SignInMode::kExplicit, blink::mojom::RpMode::kActive);
 
-  EXPECT_CALL(*controller, MaybeResetAccountSelectionView).Times(1);
+  EXPECT_CALL(*controller, MaybeResetAccountSelectionView).Times(0);
   controller->ShowErrorDialog(
       kTopFrameEtldPlusOne, kIdpEtldPlusOne, blink::mojom::RpContext::kSignIn,
       blink::mojom::RpMode::kActive, content::IdentityProviderMetadata(),

@@ -302,6 +302,12 @@ class AccountSelectionViewBase : public PictureInPictureOcclusionObserver {
   void ConfigureBrandImageView(BrandIconImageView* image_view,
                                const GURL& brand_icon_url);
 
+  // Gets the summary and description string of the error.
+  std::pair<std::u16string, std::u16string> GetErrorDialogText(
+      const std::optional<TokenError>& error,
+      const std::u16string& rp_for_display,
+      const std::u16string& idp_for_display);
+
   // The ImageFetcher used to fetch the account pictures for FedCM.
   std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
 

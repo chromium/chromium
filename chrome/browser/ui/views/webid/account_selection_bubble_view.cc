@@ -58,13 +58,6 @@
 
 namespace {
 
-// Error codes.
-constexpr char kInvalidRequest[] = "invalid_request";
-constexpr char kUnauthorizedClient[] = "unauthorized_client";
-constexpr char kAccessDenied[] = "access_denied";
-constexpr char kTemporarilyUnavailable[] = "temporarily_unavailable";
-constexpr char kServerError[] = "server_error";
-
 // views::MdTextButton which:
 // - Uses the passed-in `brand_background_color` based on whether the button
 //   background contrasts sufficiently with dialog background.
@@ -135,73 +128,6 @@ class ContinueButton : public views::MdTextButton {
 
 BEGIN_METADATA(ContinueButton)
 END_METADATA
-
-std::pair<std::u16string, std::u16string> GetErrorDialogText(
-    const std::optional<TokenError>& error,
-    const std::u16string& rp_for_display,
-    const std::u16string& idp_for_display) {
-  std::string code = error ? error->code : "";
-  GURL url = error ? error->url : GURL();
-
-  std::u16string summary;
-  std::u16string description;
-
-  if (code == kInvalidRequest) {
-    summary = l10n_util::GetStringFUTF16(
-        IDS_SIGNIN_INVALID_REQUEST_ERROR_DIALOG_SUMMARY, rp_for_display,
-        idp_for_display);
-    description = l10n_util::GetStringUTF16(
-        IDS_SIGNIN_INVALID_REQUEST_ERROR_DIALOG_DESCRIPTION);
-  } else if (code == kUnauthorizedClient) {
-    summary = l10n_util::GetStringFUTF16(
-        IDS_SIGNIN_UNAUTHORIZED_CLIENT_ERROR_DIALOG_SUMMARY, rp_for_display,
-        idp_for_display);
-    description = l10n_util::GetStringUTF16(
-        IDS_SIGNIN_UNAUTHORIZED_CLIENT_ERROR_DIALOG_DESCRIPTION);
-  } else if (code == kAccessDenied) {
-    summary = l10n_util::GetStringUTF16(
-        IDS_SIGNIN_ACCESS_DENIED_ERROR_DIALOG_SUMMARY);
-    description = l10n_util::GetStringUTF16(
-        IDS_SIGNIN_ACCESS_DENIED_ERROR_DIALOG_DESCRIPTION);
-  } else if (code == kTemporarilyUnavailable) {
-    summary = l10n_util::GetStringUTF16(
-        IDS_SIGNIN_TEMPORARILY_UNAVAILABLE_ERROR_DIALOG_SUMMARY);
-    description = l10n_util::GetStringFUTF16(
-        IDS_SIGNIN_TEMPORARILY_UNAVAILABLE_ERROR_DIALOG_DESCRIPTION,
-        idp_for_display);
-  } else if (code == kServerError) {
-    summary = l10n_util::GetStringUTF16(IDS_SIGNIN_SERVER_ERROR_DIALOG_SUMMARY);
-    description = l10n_util::GetStringFUTF16(
-        IDS_SIGNIN_SERVER_ERROR_DIALOG_DESCRIPTION, rp_for_display);
-    // Extra description is not needed for kServerError.
-    return {summary, description};
-  } else {
-    summary = l10n_util::GetStringFUTF16(
-        IDS_SIGNIN_GENERIC_ERROR_DIALOG_SUMMARY, idp_for_display);
-    description =
-        l10n_util::GetStringUTF16(IDS_SIGNIN_GENERIC_ERROR_DIALOG_DESCRIPTION);
-    // Extra description is not needed for the generic error dialog.
-    return {summary, description};
-  }
-
-  if (url.is_empty()) {
-    description +=
-        u" " + l10n_util::GetStringFUTF16(
-                   code == kTemporarilyUnavailable
-                       ? IDS_SIGNIN_ERROR_DIALOG_TRY_OTHER_WAYS_RETRY_PROMPT
-                       : IDS_SIGNIN_ERROR_DIALOG_TRY_OTHER_WAYS_PROMPT,
-                   rp_for_display);
-    return {summary, description};
-  }
-
-  description +=
-      u" " + l10n_util::GetStringFUTF16(
-                 code == kTemporarilyUnavailable
-                     ? IDS_SIGNIN_ERROR_DIALOG_MORE_DETAILS_RETRY_PROMPT
-                     : IDS_SIGNIN_ERROR_DIALOG_MORE_DETAILS_PROMPT,
-                 idp_for_display);
-  return {summary, description};
-}
 
 std::u16string BuildStringFromIDPs(
     const std::vector<std::u16string>& mismatch_idps,

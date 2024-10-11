@@ -110,6 +110,30 @@ class BackgroundImageView : public views::ImageView {
 BEGIN_METADATA(BackgroundImageView)
 END_METADATA
 
+namespace {
+std::unique_ptr<views::View> CreateButtonContainer() {
+  const views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
+  std::unique_ptr<views::View> button_container =
+      std::make_unique<views::View>();
+  constexpr int kButtonRowTopPadding = 24;
+  button_container->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
+      .SetIgnoreDefaultMainAxisMargins(true)
+      .SetDefault(views::kMarginsKey,
+                  gfx::Insets::TLBR(
+                      /*top=*/0, /*left=*/
+                      layout_provider->GetDistanceMetric(
+                          views::DISTANCE_RELATED_BUTTON_HORIZONTAL),
+                      /*bottom=*/0, /*right=*/0))
+      .SetInteriorMargin(gfx::Insets::TLBR(/*top=*/kButtonRowTopPadding,
+                                           /*left=*/kDialogMargin,
+                                           /*bottom=*/kDialogMargin,
+                                           /*right=*/kDialogMargin));
+  return button_container;
+}
+}  // namespace
+
 AccountSelectionModalView::AccountSelectionModalView(
     const std::u16string& rp_for_display,
     const std::optional<std::u16string>& idp_title,
@@ -274,24 +298,7 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateButtonRow(
         std::nullopt,
     std::optional<views::Button::PressedCallback> back_callback =
         std::nullopt) {
-  const views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
-  std::unique_ptr<views::View> button_container =
-      std::make_unique<views::View>();
-  constexpr int kButtonRowTopPadding = 24;
-  button_container->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
-      .SetIgnoreDefaultMainAxisMargins(true)
-      .SetDefault(views::kMarginsKey,
-                  gfx::Insets::TLBR(
-                      /*top=*/0, /*left=*/
-                                 layout_provider->GetDistanceMetric(
-                                     views::DISTANCE_RELATED_BUTTON_HORIZONTAL),
-                      /*bottom=*/0, /*right=*/0))
-      .SetInteriorMargin(gfx::Insets::TLBR(/*top=*/kButtonRowTopPadding,
-                                           /*left=*/kDialogMargin,
-                                           /*bottom=*/kDialogMargin,
-                                           /*right=*/kDialogMargin));
+  std::unique_ptr<views::View> button_container = CreateButtonContainer();
 
   std::unique_ptr<views::MdTextButton> cancel_button =
       std::make_unique<views::MdTextButton>(
@@ -605,8 +612,43 @@ void AccountSelectionModalView::ShowErrorDialog(
     const std::u16string& idp_for_display,
     const content::IdentityProviderMetadata& idp_metadata,
     const std::optional<TokenError>& error) {
-  NOTREACHED_IN_MIGRATION()
-      << "ShowErrorDialog is only implemented for AccountSelectionBubbleView";
+  RemoveNonHeaderChildViewsAndUpdateHeaderIfNeeded();
+
+  std::u16string summary_text;
+  std::u16string description_text;
+  std::tie(summary_text, description_text) =
+      GetErrorDialogText(error, rp_for_display_, idp_for_display);
+
+  title_ = summary_text;
+  title_label_->SetText(title_);
+  // body_label_ may be invisible if the preceding UI is the disclosure UI. When
+  // error is triggered directly from the loading UI in case of auto re-authn,
+  // body_label_ is still present at this moment.
+  body_label_->SetVisible(/*visible=*/true);
+  body_label_->SetText(description_text);
+
+  std::unique_ptr<views::View> button_container = CreateButtonContainer();
+  // Add more details button.
+  if (error && !error->url.is_empty()) {
+    auto more_details_button = std::make_unique<views::MdTextButton>(
+        base::BindRepeating(&AccountSelectionViewBase::Observer::OnMoreDetails,
+                            base::Unretained(observer_)),
+        l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_DIALOG_MORE_DETAILS_BUTTON));
+    button_container->AddChildView(std::move(more_details_button));
+  }
+
+  // Add got it button.
+  auto got_it_button = std::make_unique<views::MdTextButton>(
+      base::BindRepeating(&AccountSelectionViewBase::Observer::OnGotIt,
+                          base::Unretained(observer_)),
+      l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_DIALOG_GOT_IT_BUTTON));
+  got_it_button->SetStyle(ui::ButtonStyle::kProminent);
+
+  button_container->AddChildView(std::move(got_it_button));
+
+  AddChildView(std::move(button_container));
+
+  InitDialogWidget();
 }
 
 void AccountSelectionModalView::ShowLoadingDialog() {

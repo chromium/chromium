@@ -415,10 +415,7 @@ bool FedCmAccountSelectionView::ShowErrorDialog(
   state_ = State::SIGN_IN_ERROR;
   notify_delegate_of_dismiss_ = true;
 
-  // TODO(crbug.com/41491333): Support modal dialogs for all types of FedCM
-  // dialogs. This boolean is used to fall back to the bubble dialog where
-  // modal is not yet implemented.
-  bool has_modal_support = false;
+  bool has_modal_support = true;
 
   // If a modal dialog was created previously but there is no modal support for
   // this type of dialog, reset account_selection_view_ to create a bubble
