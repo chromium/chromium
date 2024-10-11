@@ -26,7 +26,9 @@
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/reading_list/core/fake_reading_list_model_storage.h"
 #import "components/reading_list/core/reading_list_model.h"
+#import "components/reading_list/core/reading_list_model_impl.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -189,10 +191,6 @@ class OverflowMenuMediatorTest : public PlatformTest {
                             web::BrowserState,
                             password_manager::MockPasswordStoreInterface>));
     builder.AddTestingFactory(
-        ReadingListModelFactory::GetInstance(),
-        base::BindRepeating(&BuildReadingListModelWithFakeStorage,
-                            std::vector<scoped_refptr<ReadingListEntry>>()));
-    builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
         AuthenticationServiceFactory::GetDefaultFactory());
 
@@ -309,14 +307,19 @@ class OverflowMenuMediatorTest : public PlatformTest {
   }
 
   void SetUpReadingList() {
-    reading_list_model_ =
-        ReadingListModelFactory::GetForProfile(profile_.get());
-    DCHECK(reading_list_model_);
+    auto storage = std::make_unique<FakeReadingListModelStorage>();
+    base::WeakPtr<FakeReadingListModelStorage> storage_ptr =
+        storage->AsWeakPtr();
+    reading_list_model_ = std::make_unique<ReadingListModelImpl>(
+        std::move(storage), syncer::StorageType::kUnspecified,
+        syncer::WipeModelUponSyncDisabledBehavior::kNever,
+        base::DefaultClock::GetInstance());
+    storage_ptr->TriggerLoadCompletion();
     ASSERT_TRUE(
         base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(5), ^{
           return reading_list_model_->loaded();
         }));
-    mediator_.readingListModel = reading_list_model_;
+    mediator_.readingListModel = reading_list_model_.get();
   }
 
   void InsertNewWebState(int index) {
@@ -452,7 +455,7 @@ class OverflowMenuMediatorTest : public PlatformTest {
   OverflowMenuMediator* mediator_;
   OverflowMenuOrderer* orderer_;
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
-  raw_ptr<ReadingListModel> reading_list_model_;
+  std::unique_ptr<ReadingListModel> reading_list_model_;
   std::unique_ptr<TestingPrefServiceSimple> profilePrefs_;
   std::unique_ptr<TestingPrefServiceSimple> localStatePrefs_;
   raw_ptr<web::FakeWebState> web_state_;
@@ -465,8 +468,7 @@ class OverflowMenuMediatorTest : public PlatformTest {
 
 // Tests that the feature engagement tracker get notified when the mediator is
 // disconnected and the tracker wants the notification badge displayed.
-// TODO(crbug.com/368359469): re-enable after fixing the test failure.
-TEST_F(OverflowMenuMediatorTest, DISABLED_TestFeatureEngagementDisconnect) {
+TEST_F(OverflowMenuMediatorTest, TestFeatureEngagementDisconnect) {
   CreateMediator(/*is_incognito=*/NO);
   EXPECT_CALL(tracker_, ShouldTriggerHelpUI(testing::_))
       .WillRepeatedly(Return(true));
@@ -481,8 +483,7 @@ TEST_F(OverflowMenuMediatorTest, DISABLED_TestFeatureEngagementDisconnect) {
 
 // Tests that the mediator is returning the right number of items and sections
 // for the Tools Menu type.
-// TODO(crbug.com/368359469): re-enable after fixing the test failure.
-TEST_F(OverflowMenuMediatorTest, DISABLED_TestMenuItemsCount) {
+TEST_F(OverflowMenuMediatorTest, TestMenuItemsCount) {
   CreateLocalStatePrefs();
   CreateMediator(/*is_incognito=*/NO);
   mediator_.localStatePrefs = localStatePrefs_.get();
@@ -525,8 +526,7 @@ TEST_F(OverflowMenuMediatorTest, DISABLED_TestMenuItemsCount) {
 
 // Tests that the items returned by the mediator are correctly enabled on a
 // WebPage.
-// TODO(crbug.com/368359469): re-enable after fixing the test failure.
-TEST_F(OverflowMenuMediatorTest, DISABLED_TestItemsStatusOnWebPage) {
+TEST_F(OverflowMenuMediatorTest, TestItemsStatusOnWebPage) {
   CreateLocalStatePrefs();
   CreateMediator(/*is_incognito=*/NO);
   SetUpActiveWebState();
@@ -545,8 +545,7 @@ TEST_F(OverflowMenuMediatorTest, DISABLED_TestItemsStatusOnWebPage) {
 
 // Tests that the items returned by the mediator are correctly enabled on the
 // NTP.
-// TODO(crbug.com/368359469): re-enable after fixing the test failure.
-TEST_F(OverflowMenuMediatorTest, DISABLED_TestItemsStatusOnNTP) {
+TEST_F(OverflowMenuMediatorTest, TestItemsStatusOnNTP) {
   CreateLocalStatePrefs();
   CreateMediator(/*is_incognito=*/NO);
   SetUpActiveWebState();
@@ -566,8 +565,7 @@ TEST_F(OverflowMenuMediatorTest, DISABLED_TestItemsStatusOnNTP) {
 
 // Tests that the "Add to Reading List" button is disabled while overlay UI is
 // displayed in OverlayModality::kWebContentArea.
-// TODO(crbug.com/363938175): Crashing on offical bots. Enable when fixed.
-TEST_F(OverflowMenuMediatorTest, DISABLED_TestReadLaterDisabled) {
+TEST_F(OverflowMenuMediatorTest, TestReadLaterDisabled) {
   const GURL kUrl("https://chromium.test");
   web_state_->SetCurrentURL(kUrl);
   CreateProfilePrefs();
@@ -600,8 +598,7 @@ TEST_F(OverflowMenuMediatorTest, DISABLED_TestReadLaterDisabled) {
 }
 
 // Tests that the "Text Zoom..." button is disabled on non-HTML pages.
-// TODO(crbug.com/363938175): Crashing on offical bots. Enable when fixed.
-TEST_F(OverflowMenuMediatorTest, DISABLED_TestTextZoomDisabled) {
+TEST_F(OverflowMenuMediatorTest, TestTextZoomDisabled) {
   CreateMediator(/*is_incognito=*/NO);
   SetUpActiveWebState();
   mediator_.webStateList = browser_->GetWebStateList();
@@ -627,8 +624,7 @@ TEST_F(OverflowMenuMediatorTest, DISABLED_TestTextZoomDisabled) {
 
 // Tests that the "Managed by..." item is hidden when none of the policies is
 // set.
-// TODO(crbug.com/363938175): Crashing on offical bots. Enable when fixed.
-TEST_F(OverflowMenuMediatorTest, DISABLED_TestEnterpriseInfoHidden) {
+TEST_F(OverflowMenuMediatorTest, TestEnterpriseInfoHidden) {
   CreateMediator(/*is_incognito=*/NO);
   SetUpActiveWebState();
 
@@ -642,9 +638,7 @@ TEST_F(OverflowMenuMediatorTest, DISABLED_TestEnterpriseInfoHidden) {
 // Tests that the "Managed by..." item is shown for user level policies when
 // the UserPolicy features is enabled and the browser is signed in with a
 // managed account.
-// TODO(crbug.com/363938175): Crashing on offical bots. Enable when fixed.
-TEST_F(OverflowMenuMediatorTest,
-       DISABLED_TestEnterpriseInfoShownForUserLevelPolicies) {
+TEST_F(OverflowMenuMediatorTest, TestEnterpriseInfoShownForUserLevelPolicies) {
   // Enable the UserPolicy feature.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
@@ -682,7 +676,7 @@ TEST_F(OverflowMenuMediatorTest,
 // Tests that the "Managed by..." item is shown for machine level policies
 // (e.g. from MDM or CBCM).
 TEST_F(OverflowMenuMediatorTest,
-       DISABLED_TestEnterpriseInfoShownForMachineLevelPolicies) {
+       TestEnterpriseInfoShownForMachineLevelPolicies) {
   // Set a policy.
   base::ScopedTempDir state_directory;
   ASSERT_TRUE(state_directory.CreateUniqueTempDir());
@@ -712,7 +706,7 @@ TEST_F(OverflowMenuMediatorTest,
 }
 
 // Tests that the Family Link item is hidden for non-supervised users.
-TEST_F(OverflowMenuMediatorTest, DISABLED_TestFamilyLinkInfoHidden) {
+TEST_F(OverflowMenuMediatorTest, TestFamilyLinkInfoHidden) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       supervised_user::kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS);
@@ -733,8 +727,7 @@ TEST_F(OverflowMenuMediatorTest, DISABLED_TestFamilyLinkInfoHidden) {
 
 // Tests that the Family Link item is hidden for non-supervised users with
 // pref-based supervision status.
-TEST_F(OverflowMenuMediatorTest,
-       DISABLED_TestFamilyLinkInfoHiddenWithSupervisionPrefs) {
+TEST_F(OverflowMenuMediatorTest, TestFamilyLinkInfoHiddenWithSupervisionPrefs) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(
       supervised_user::kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS);
@@ -753,7 +746,7 @@ TEST_F(OverflowMenuMediatorTest,
 }
 
 // Tests that the Family Link item is shown for supervised users.
-TEST_F(OverflowMenuMediatorTest, DISABLED_TestFamilyLinkInfoShown) {
+TEST_F(OverflowMenuMediatorTest, TestFamilyLinkInfoShown) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       supervised_user::kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS);
