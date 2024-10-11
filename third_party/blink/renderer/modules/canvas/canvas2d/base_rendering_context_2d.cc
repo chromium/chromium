@@ -3912,6 +3912,7 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Transferring canvas to GPU was not zero-copy.");
+    return nullptr;
   }
 
   // If the backing SharedImage is not available (e.g., because the GPU context
@@ -3919,6 +3920,7 @@ GPUTexture* BaseRenderingContext2D::transferToGPUTexture(
   if (!client_si) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Unable to transfer canvas to GPU.");
+    return nullptr;
   }
 
   wgpu::TextureFormat dawn_format =
