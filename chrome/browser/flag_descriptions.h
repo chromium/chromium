@@ -4651,16 +4651,6 @@ extern const char kWaylandUiScalingName[];
 extern const char kWaylandUiScalingDescription[];
 #endif  // BUILDFLAG(IS_LINUX)
 
-// All views-based platforms --------------------------------------------------
-
-#if defined(TOOLKIT_VIEWS)
-extern const char kSideSearchName[];
-extern const char kSideSearchDescription[];
-
-extern const char kSearchWebInSidePanelName[];
-extern const char kSearchWebInSidePanelDescription[];
-#endif  // defined(TOOLKIT_VIEWS)
-
 // Random platform combinations -----------------------------------------------
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

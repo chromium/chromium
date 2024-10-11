@@ -8048,20 +8048,6 @@ const char kWaylandUiScalingDescription[] =
     "enabled too.";
 #endif  // BUILDFLAG(IS_LINUX)
 
-// All views-based platforms --------------------------------------------------
-
-#if defined(TOOLKIT_VIEWS)
-const char kSideSearchName[] = "Side search";
-const char kSideSearchDescription[] =
-    "Enables an easily accessible way to access your most recent Google search "
-    "results page embedded in a browser side panel";
-
-const char kSearchWebInSidePanelName[] = "Search web in side panel";
-const char kSearchWebInSidePanelDescription[] =
-    "Displays right-click search results of a highlighted text in side panel";
-
-#endif  // defined(TOOLKIT_VIEWS)
-
 // Random platform combinations -----------------------------------------------
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)

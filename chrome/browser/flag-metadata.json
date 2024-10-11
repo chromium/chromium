@@ -8234,16 +8234,6 @@
     "expiry_milestone" : 135
   },
   {
-    "name" : "side-search",
-    "owners": [ "chrome-cros@google.com", "lens-chrome@google.com", "tluk@chromium.org"  ],
-    "expiry_milestone" : 120
-  },
-  {
-    "name" : "side-search-dse-support",
-    "owners": [ "chrome-cros@google.com", "tluk@chromium.org" ],
-    "expiry_milestone" : 110
-  },
-  {
     "name": "simplified-tab-drag-ui",
     "owners": [ "max@igalia.com", "nickdiego@igalia.com", "thomasanderson@chromium.org"],
     "expiry_milestone": 138

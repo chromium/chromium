@@ -9421,16 +9421,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kTabAudioMutingDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(media::kEnableTabMuting)},
 
-#if defined(TOOLKIT_VIEWS)
-    {"side-search", flag_descriptions::kSideSearchName,
-     flag_descriptions::kSideSearchDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kSideSearch)},
-
-    {"search-web-in-side-panel", flag_descriptions::kSearchWebInSidePanelName,
-     flag_descriptions::kSearchWebInSidePanelDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kSearchWebInSidePanel)},
-#endif  // defined(TOOLKIT_VIEWS)
-
 #if !BUILDFLAG(IS_ANDROID)
     {"customize-chrome-side-panel-extensions-card",
      flag_descriptions::kCustomizeChromeSidePanelExtensionsCardName,
