@@ -113,7 +113,7 @@ const CGFloat kSeparatorHeight = 0.5;
   if (retrievedProductImage) {
     _productImageView = [[UIImageView alloc] init];
     _productImageView.image = retrievedProductImage;
-    _productImageView.contentMode = UIViewContentModeScaleAspectFit;
+    _productImageView.contentMode = UIViewContentModeScaleAspectFill;
     _productImageView.translatesAutoresizingMaskIntoConstraints = NO;
     _productImageView.layer.borderWidth = 0;
     _productImageView.layer.cornerRadius = kProductImageCornerRadius;
