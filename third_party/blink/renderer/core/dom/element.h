@@ -224,7 +224,7 @@ enum class CommandEventType {
   kRequestFullscreen,
   kExitFullscreen,
   // Audio/Video
-  kPlaypause,
+  kPlayPause,
   kPause,
   kPlay,
   kToggleMuted,
@@ -1029,7 +1029,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   // This allows customization of how Invoker Commands are handled, per element.
   // See: crbug.com/1490919, https://open-ui.org/components/invokers.explainer/
-  virtual bool IsValidCommand(HTMLElement& invoker, CommandEventType command) {
+  virtual bool IsValidBuiltinCommand(HTMLElement& invoker,
+                                     CommandEventType command) {
     return false;
   }
   virtual bool HandleCommandInternal(HTMLElement& invoker,

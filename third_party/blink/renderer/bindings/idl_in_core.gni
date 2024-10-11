@@ -165,7 +165,6 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/dom/get_root_node_options.idl",
   "//third_party/blink/renderer/core/dom/global_event_handlers.idl",
   "//third_party/blink/renderer/core/dom/interest_invoker_element.idl",
-  "//third_party/blink/renderer/core/dom/invoker_element.idl",
   "//third_party/blink/renderer/core/dom/mutation_observer.idl",
   "//third_party/blink/renderer/core/dom/mutation_observer_init.idl",
   "//third_party/blink/renderer/core/dom/mutation_record.idl",

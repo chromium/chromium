@@ -2029,7 +2029,9 @@ const HTMLElement* NearestTargetPopoverForInvoker(
         if (!form_element) {
           return nullptr;
         }
-        auto* target_element = form_element->commandForElement();
+        auto* button_element = DynamicTo<HTMLButtonElement>(form_element);
+        auto* target_element =
+            button_element ? button_element->commandForElement() : nullptr;
 
         return target_element
                    ? DynamicTo<HTMLElement>(target_element)
@@ -2367,9 +2369,9 @@ bool HTMLElement::DispatchFocusEvent(
                                      source_capabilities);
 }
 
-bool HTMLElement::IsValidCommand(HTMLElement& invoker,
-                                 CommandEventType command) {
-  return Element::IsValidCommand(invoker, command) ||
+bool HTMLElement::IsValidBuiltinCommand(HTMLElement& invoker,
+                                        CommandEventType command) {
+  return Element::IsValidBuiltinCommand(invoker, command) ||
          command == CommandEventType::kTogglePopover ||
          command == CommandEventType::kHidePopover ||
          command == CommandEventType::kShowPopover ||
@@ -2381,7 +2383,7 @@ bool HTMLElement::IsValidCommand(HTMLElement& invoker,
 
 bool HTMLElement::HandleCommandInternal(HTMLElement& invoker,
                                         CommandEventType command) {
-  CHECK(IsValidCommand(invoker, command));
+  CHECK(IsValidBuiltinCommand(invoker, command));
 
   if (Element::HandleCommandInternal(invoker, command)) {
     return true;

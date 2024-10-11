@@ -48,7 +48,8 @@ class HTMLDetailsElement final : public HTMLElement {
   // setting the open attribute.
   static bool ExpandDetailsAncestors(const Node&);
 
-  bool IsValidCommand(HTMLElement& invoker, CommandEventType command) override;
+  bool IsValidBuiltinCommand(HTMLElement& invoker,
+                             CommandEventType command) override;
   bool HandleCommandInternal(HTMLElement& invoker,
                              CommandEventType command) override;
 

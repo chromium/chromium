@@ -14,7 +14,7 @@
   <input type="week">
   <input type="month">
 </div>
-<button id="invokerbutton" commandfor="invokee"></button>
+<button id="invokerbutton" commandfor="invokee" command="auto"></button>
 </body>
 <script>
 document.querySelectorAll('#tests>*').forEach(el => {
@@ -23,6 +23,6 @@ document.querySelectorAll('#tests>*').forEach(el => {
     t.add_cleanup(() => el.remove());
     await test_driver.click(invokerbutton);
     assert_equals(internals.pagePopupWindow, null, "Picker is closed.");
-  }, `invoking ${el.type} input with auto action shouldn\'t show picker`)
+  }, `invoking ${el.type} input with auto command shouldn\'t show picker`)
 })
 </script>

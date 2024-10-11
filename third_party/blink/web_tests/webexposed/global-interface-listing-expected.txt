@@ -1467,7 +1467,7 @@ interface CloseWatcher : EventTarget
 interface CommandEvent : Event
     attribute @@toStringTag
     getter command
-    getter invoker
+    getter source
     method constructor
 interface Comment : CharacterData
     attribute @@toStringTag
@@ -4371,8 +4371,6 @@ interface HTMLInputElement : HTMLElement
     getter alt
     getter autocomplete
     getter checked
-    getter command
-    getter commandForElement
     getter defaultChecked
     getter defaultValue
     getter dirName
@@ -4435,8 +4433,6 @@ interface HTMLInputElement : HTMLElement
     setter alt
     setter autocomplete
     setter checked
-    setter command
-    setter commandForElement
     setter defaultChecked
     setter defaultValue
     setter dirName

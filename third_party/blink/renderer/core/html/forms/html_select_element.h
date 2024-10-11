@@ -224,7 +224,8 @@ class CORE_EXPORT HTMLSelectElement final
 
   bool IsRichlyEditableForAccessibility() const override { return false; }
 
-  bool IsValidCommand(HTMLElement& invoker, CommandEventType command) override;
+  bool IsValidBuiltinCommand(HTMLElement& invoker,
+                             CommandEventType command) override;
   bool HandleCommandInternal(HTMLElement& invoker,
                              CommandEventType command) override;
 

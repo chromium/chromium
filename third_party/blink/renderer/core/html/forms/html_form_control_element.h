@@ -115,11 +115,6 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   AtomicString popoverTargetAction() const;
   void setPopoverTargetAction(const AtomicString& value);
 
-  Element* commandForElement();
-
-  AtomicString command() const;
-  CommandEventType GetCommandEventType() const;
-
   Element* interestTargetElement() override;
 
   AtomicString interestAction() const override;

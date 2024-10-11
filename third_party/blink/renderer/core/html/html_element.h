@@ -319,7 +319,8 @@ class CORE_EXPORT HTMLElement : public Element {
   // for example a `<dialog popover>` should run `popover` invocation steps
   // before `<dialog>` invocation steps.
   // See: crbug.com/1490919, https://open-ui.org/components/invokers.explainer/
-  bool IsValidCommand(HTMLElement& invoker, CommandEventType command) override;
+  bool IsValidBuiltinCommand(HTMLElement& invoker,
+                             CommandEventType command) override;
   bool HandleCommandInternal(HTMLElement& invoker,
                              CommandEventType command) override;
 

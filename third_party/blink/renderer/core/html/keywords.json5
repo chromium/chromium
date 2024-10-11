@@ -67,34 +67,34 @@
     "static",
     "invisible",
 
-    // invokeaction attribute
+    // command attribute
     // https://open-ui.org/components/invokers.explainer/
     "auto",
     // invokeaction for popovers
-    "togglePopover",
-    "hidePopover",
-    "showPopover",
+    "toggle-popover",
+    "hide-popover",
+    "show-popover",
     // invokeaction for dialog
-    "showModal",
+    "show-modal",
     "close",
     // invokeaction for details
     "toggle",
     "close",
     "open",
     // invokeaction for input and select
-    "showPicker",
+    "show-picker",
     // invokeaction for number input
-    "stepUp",
-    "stepDown",
+    "step-up",
+    "step-down",
     // invokeaction for fullscreen
-    "toggleFullscreen",
-    "requestFullscreen",
-    "exitFullscreen",
+    "toggle-fullscreen",
+    "request-fullscreen",
+    "exit-fullscreen",
     // invokeaction for audio and video
-    "playpause",
+    "play-pause",
     "pause",
     "play",
-    "toggleMuted",
+    "toggle-muted",
 
     // loading attribute
     // https://github.com/scott-little/lazyload#ways-the-loading-attribute-can-be-used

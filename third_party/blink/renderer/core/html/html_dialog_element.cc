@@ -196,16 +196,16 @@ void HTMLDialogElement::close(const String& return_value,
   }
 }
 
-bool HTMLDialogElement::IsValidCommand(HTMLElement& invoker,
-                                       CommandEventType command) {
-  return HTMLElement::IsValidCommand(invoker, command) ||
+bool HTMLDialogElement::IsValidBuiltinCommand(HTMLElement& invoker,
+                                              CommandEventType command) {
+  return HTMLElement::IsValidBuiltinCommand(invoker, command) ||
          command == CommandEventType::kShowModal ||
          command == CommandEventType::kClose;
 }
 
 bool HTMLDialogElement::HandleCommandInternal(HTMLElement& invoker,
                                               CommandEventType command) {
-  CHECK(IsValidCommand(invoker, command));
+  CHECK(IsValidBuiltinCommand(invoker, command));
 
   if (HTMLElement::HandleCommandInternal(invoker, command)) {
     return true;

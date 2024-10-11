@@ -9,12 +9,12 @@
 <select id="invokee">
   <option>1</option>
 </select>
-<button id="invokerbutton" commandfor="invokee"></button>
+<button id="invokerbutton" commandfor="invokee" command="auto"></button>
 </body>
 <script>
 promise_test(async (t) => {
   await test_driver.click(invokerbutton);
   assert_false(internals.isSelectPopupVisible(invokee), "Picker is closed.");
   invokee.remove();
-}, `invoking select with auto action shouldn\'t show picker`)
+}, `invoking select with auto command shouldn\'t show picker`)
 </script>

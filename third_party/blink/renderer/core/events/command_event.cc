@@ -16,8 +16,8 @@ CommandEvent::CommandEvent(const AtomicString& type,
                          const CommandEventInit* initializer)
     : Event(type, initializer) {
   DCHECK(RuntimeEnabledFeatures::HTMLInvokeTargetAttributeEnabled());
-  if (initializer->hasInvoker()) {
-    invoker_ = initializer->invoker();
+  if (initializer->hasSource()) {
+    source_ = initializer->source();
   }
 
   if (initializer->hasCommand()) {
@@ -26,30 +26,30 @@ CommandEvent::CommandEvent(const AtomicString& type,
 }
 
 CommandEvent::CommandEvent(const AtomicString& type,
-                         const String& command,
-                         Element* invoker)
+                           const String& command,
+                           Element* source)
     : Event(type, Bubbles::kNo, Cancelable::kYes, ComposedMode::kComposed),
-      invoker_(invoker) {
+      source_(source) {
   DCHECK(RuntimeEnabledFeatures::HTMLInvokeTargetAttributeEnabled());
   command_ = command;
 }
 
-Element* CommandEvent::invoker() const {
+Element* CommandEvent::source() const {
   auto* current = currentTarget();
-  Element* invoker = invoker_.Get();
-  if (!invoker) {
+  Element* source = source_.Get();
+  if (!source) {
     return nullptr;
   }
 
   if (current) {
-    return &current->ToNode()->GetTreeScope().Retarget(*invoker);
+    return &current->ToNode()->GetTreeScope().Retarget(*source);
   }
   DCHECK_EQ(eventPhase(), Event::PhaseType::kNone);
-  return invoker;
+  return source;
 }
 
 void CommandEvent::Trace(Visitor* visitor) const {
-  visitor->Trace(invoker_);
+  visitor->Trace(source_);
   Event::Trace(visitor);
 }
 

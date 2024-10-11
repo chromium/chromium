@@ -413,7 +413,8 @@ class CORE_EXPORT HTMLMediaElement
   // reason while in picture in picture mode.
   LocalFrame* LocalFrameForPlayer();
 
-  bool IsValidCommand(HTMLElement& invoker, CommandEventType command) override;
+  bool IsValidBuiltinCommand(HTMLElement& invoker,
+                             CommandEventType command) override;
   bool HandleCommandInternal(HTMLElement& invoker,
                              CommandEventType command) override;
 

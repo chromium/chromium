@@ -756,8 +756,6 @@ html element input
     property autocomplete
     property checkValidity
     property checked
-    property command
-    property commandForElement
     property defaultChecked
     property defaultValue
     property dirName
