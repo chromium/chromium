@@ -470,8 +470,8 @@ IN_PROC_BROWSER_TEST_F(DipsNavigationFlowDetectorTest,
   ExpectNoNavigationFlowNodeUkmEvents();
 }
 
-// TODO - crbug.com/353556432: flaky on Linux release builds
-#if BUILDFLAG(IS_LINUX) && defined(NDEBUG)
+// TODO - crbug.com/353556432: flaky on Linux release builds and on Android
+#if (BUILDFLAG(IS_LINUX) && defined(NDEBUG)) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_UkmNotEmittedForCookieAccessInPrerenders \
   DISABLED_UkmNotEmittedForCookieAccessInPrerenders
 #else
