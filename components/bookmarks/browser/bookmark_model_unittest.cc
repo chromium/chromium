@@ -2642,6 +2642,67 @@ TEST_F(BookmarkModelTest, IsLocalOnlyNodeWithSyncFeatureOnAndDettachedNode) {
   EXPECT_TRUE(model_->IsLocalOnlyNode(*dettached_node));
 }
 
+TEST_F(BookmarkModelTest, UserFolderDepthHistograms) {
+  constexpr char kUrlAddedMetricName[] = "Bookmarks.UserFolderDepth.UrlAdded";
+  constexpr char kUrlOpenedMetricName[] = "Bookmarks.UserFolderDepth.UrlOpened";
+
+  TestNode bbn;
+  PopulateNodeFromString("[ ] [ [ ] [ ] ]", &bbn);
+  const BookmarkNode* bookmark_bar = model_->bookmark_bar_node();
+  PopulateBookmarkNode(&bbn, model_.get(), bookmark_bar);
+
+  auto* folder_0 = bookmark_bar->children()[0].get();
+  auto* folder_1 = bookmark_bar->children()[1].get();
+  auto* folder_1_0 = folder_1->children()[0].get();
+  auto* folder_1_1 = folder_1->children()[1].get();
+
+  auto* url_0 =
+      model_->AddNewURL(bookmark_bar, 0, u"url_0", GURL("http://url_0"));
+
+  histogram_tester()->ExpectTotalCount(kUrlAddedMetricName, 1);
+  histogram_tester()->ExpectBucketCount(kUrlAddedMetricName,
+                                        /*sample=*/0, /*expected_count=*/1);
+
+  auto* url_1 = model_->AddNewURL(folder_0, 0, u"url_1", GURL("http://url_1"));
+  histogram_tester()->ExpectTotalCount(kUrlAddedMetricName, 2);
+  histogram_tester()->ExpectBucketCount(kUrlAddedMetricName,
+                                        /*sample=*/1, /*expected_count=*/1);
+
+  auto* url_2 =
+      model_->AddNewURL(folder_1_0, 0, u"url_2", GURL("http://url_2"));
+  auto* url_3 =
+      model_->AddNewURL(folder_1_1, 0, u"url_3", GURL("http://url_3"));
+  model_->AddNewURL(folder_1_1, 0, u"url_4", GURL("http://url_4"));
+  histogram_tester()->ExpectTotalCount(kUrlAddedMetricName, 5);
+  histogram_tester()->ExpectBucketCount(kUrlAddedMetricName,
+                                        /*sample=*/2, /*expected_count=*/3);
+
+  model_->UpdateLastUsedTime(url_0, base::Time::Now(), /*just_opened=*/true);
+  histogram_tester()->ExpectTotalCount(kUrlOpenedMetricName, 1);
+  histogram_tester()->ExpectBucketCount(kUrlOpenedMetricName,
+                                        /*sample=*/0, /*expected_count=*/1);
+
+  model_->UpdateLastUsedTime(url_1, base::Time::Now(), /*just_opened=*/true);
+  model_->UpdateLastUsedTime(url_1, base::Time::Now(), /*just_opened=*/true);
+  histogram_tester()->ExpectTotalCount(kUrlOpenedMetricName, 3);
+  histogram_tester()->ExpectBucketCount(kUrlOpenedMetricName,
+                                        /*sample=*/1, /*expected_count=*/2);
+
+  model_->UpdateLastUsedTime(url_2, base::Time::Now(), /*just_opened=*/true);
+  model_->UpdateLastUsedTime(url_3, base::Time::Now(), /*just_opened=*/true);
+  model_->UpdateLastUsedTime(url_3, base::Time::Now(), /*just_opened=*/true);
+  histogram_tester()->ExpectTotalCount(kUrlOpenedMetricName, 6);
+  histogram_tester()->ExpectBucketCount(kUrlOpenedMetricName,
+                                        /*sample=*/2, /*expected_count=*/3);
+
+  // This update isn't a result of an open, but rather a sync event.
+  // The histogram count should remain the same.
+  model_->UpdateLastUsedTime(url_3, base::Time::Now(), /*just_opened=*/false);
+  histogram_tester()->ExpectTotalCount(kUrlOpenedMetricName, 6);
+  histogram_tester()->ExpectBucketCount(kUrlOpenedMetricName,
+                                        /*sample=*/2, /*expected_count=*/3);
+}
+
 }  // namespace
 
 class BookmarkModelFaviconTest : public testing::Test,

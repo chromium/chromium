@@ -1,0 +1,154 @@
+{
+   "checksum": "3682318268eb9e789a50620bc0e14f37",
+   "roots": {
+      "bookmark_bar": {
+         "children": [ {
+            "children": [ {
+               "date_added": "13372979609091092",
+               "date_last_used": "13372982166858160",
+               "guid": "cc72d731-8226-42bf-bca6-e869d367c352",
+               "id": "8",
+               "meta_info": {
+                  "power_bookmark_meta": ""
+               },
+               "name": "google.com",
+               "type": "url",
+               "url": "http://www.google.com/"
+            } ],
+            "date_added": "13372979573317908",
+            "date_last_used": "0",
+            "date_modified": "13372982200716525",
+            "guid": "6ddf488d-4ea9-4359-840f-53e4dc6f25af",
+            "id": "5",
+            "name": "Folder A",
+            "type": "folder"
+         }, {
+            "children": [ {
+               "children": [ {
+                  "children": [ {
+                     "date_added": "13372980492187283",
+                     "date_last_used": "13372982170528884",
+                     "guid": "9082c72a-feb6-47d4-9d9f-6d28030c3f63",
+                     "id": "11",
+                     "meta_info": {
+                        "power_bookmark_meta": ""
+                     },
+                     "name": "wikipedia",
+                     "type": "url",
+                     "url": "http://wikipedia.org/"
+                  }, {
+                     "date_added": "13372982223947260",
+                     "date_last_used": "0",
+                     "guid": "b94b3006-a8c6-43c6-a28f-b7e029254e19",
+                     "id": "13",
+                     "meta_info": {
+                        "power_bookmark_meta": ""
+                     },
+                     "name": "google.com",
+                     "type": "url",
+                     "url": "http://www.google.com/"
+                  } ],
+                  "date_added": "13372980472890506",
+                  "date_last_used": "0",
+                  "date_modified": "13372982223947260",
+                  "guid": "84783216-0aca-4686-b5ad-2da0609b9709",
+                  "id": "10",
+                  "name": "Folder B-2",
+                  "type": "folder"
+               }, {
+                  "children": [  ],
+                  "date_added": "13373065976750216",
+                  "date_last_used": "0",
+                  "date_modified": "13373065976750216",
+                  "guid": "e01e4973-0c38-487e-a128-259413ce20d8",
+                  "id": "20",
+                  "name": "Folder B-3",
+                  "type": "folder"
+               } ],
+               "date_added": "13372979592605985",
+               "date_last_used": "0",
+               "date_modified": "13373065976750483",
+               "guid": "91825267-00f2-4459-b43e-b475bb86b093",
+               "id": "7",
+               "name": "Folder B-1",
+               "type": "folder"
+            } ],
+            "date_added": "13372979581821901",
+            "date_last_used": "0",
+            "date_modified": "13372979592606601",
+            "guid": "35a32cc7-4f98-402f-8bf7-9eb56fc677a5",
+            "id": "6",
+            "name": "Folder B",
+            "type": "folder"
+         } ],
+         "date_added": "13372979490373630",
+         "date_last_used": "0",
+         "date_modified": "13372981204552155",
+         "guid": "0bc5d13f-2cba-5d74-951f-3f233fe6c908",
+         "id": "1",
+         "name": "Bookmarks bar",
+         "type": "folder"
+      },
+      "other": {
+         "children": [ {
+            "children": [ {
+               "children": [ {
+                  "date_added": "13372982292072092",
+                  "date_last_used": "13372982397309238",
+                  "guid": "419d8a13-944c-497d-967a-39626697abc9",
+                  "id": "15",
+                  "meta_info": {
+                     "power_bookmark_meta": ""
+                  },
+                  "name": "google.com",
+                  "type": "url",
+                  "url": "http://www.google.com/"
+               } ],
+               "date_added": "13372982298771498",
+               "date_last_used": "0",
+               "date_modified": "13372982377874553",
+               "guid": "dbf70c40-2044-4dea-9619-e00094649ea7",
+               "id": "16",
+               "name": "Folder C-1",
+               "type": "folder"
+            }, {
+               "date_added": "13372982431833070",
+               "date_last_used": "0",
+               "guid": "45710703-61ae-400d-8579-b3af44423260",
+               "id": "18",
+               "meta_info": {
+                  "power_bookmark_meta": ""
+               },
+               "name": "wikipedia",
+               "type": "url",
+               "url": "http://wikipedia.org/"
+            } ],
+            "date_added": "13372982274758764",
+            "date_last_used": "0",
+            "date_modified": "13372982431833070",
+            "guid": "92c0b667-1feb-4695-9a50-a6302c3b5e57",
+            "id": "14",
+            "name": "Folder C",
+            "type": "folder"
+         } ],
+         "date_added": "13372979490373662",
+         "date_last_used": "0",
+         "date_modified": "13372982274759631",
+         "guid": "82b081ec-3dd3-529c-8475-ab6c344590dd",
+         "id": "2",
+         "name": "Other bookmarks",
+         "type": "folder"
+      },
+      "synced": {
+         "children": [  ],
+         "date_added": "13372979490373684",
+         "date_last_used": "0",
+         "date_modified": "0",
+         "guid": "4cf2e351-0e85-532b-bb37-df045d8f8d0f",
+         "id": "3",
+         "name": "Mobile bookmarks",
+         "type": "folder"
+      }
+   },
+   "version": 1
+}

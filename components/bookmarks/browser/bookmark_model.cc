@@ -76,6 +76,28 @@ const BookmarkNode* GetSelfOrAncestorPermanentNode(const BookmarkNode* node) {
   return node;
 }
 
+// Gets the number of user-generated folders from `node` (inclusive) along the
+// ancestor path till it hits a permanent node (which is not a user-generated
+// folder).
+int GetUserFolderDepth(const BookmarkNode* node) {
+  int result = 0;
+  if (!node) {
+    return result;
+  }
+
+  // Exit the loop if we have reached the root node, or a peremanent node.
+  // The root node is a non-permanent folder, but shouldn't be considered as
+  // user-generated.
+  while (node->parent() && !node->is_permanent_node()) {
+    if (node->is_folder()) {
+      result++;
+    }
+    node = node->parent();
+  }
+
+  return result;
+}
+
 // Comparator used when sorting permanent nodes. Nodes that are initially
 // visible are sorted before nodes that are initially hidden.
 class VisibilityComparator {
@@ -479,7 +501,8 @@ void BookmarkModel::UpdateLastUsedTime(const BookmarkNode* node,
   UpdateLastUsedTimeImpl(node, time);
   if (just_opened) {
     metrics::RecordBookmarkOpened(time, last_used_time, node->date_added(),
-                                  GetStorageStateForUma(node));
+                                  GetStorageStateForUma(node), node->is_url(),
+                                  GetUserFolderDepth(node->parent()));
   }
 }
 
@@ -876,7 +899,8 @@ const BookmarkNode* BookmarkModel::AddNewURL(
     const GURL& url,
     const BookmarkNode::MetaInfoMap* meta_info) {
   metrics::RecordUrlBookmarkAdded(GetFolderType(parent),
-                                  GetStorageStateForUma(parent));
+                                  GetStorageStateForUma(parent),
+                                  GetUserFolderDepth(parent));
   return AddURL(parent, index, title, url, meta_info, std::nullopt,
                 std::nullopt, true);
 }

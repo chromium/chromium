@@ -635,6 +635,58 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bookmarks.UserFolder.OnProfileLoad.Count" units="folders"
+    expires_after="2025-10-01">
+  <owner>yzshen@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    Records the total number of user-generated folders. Recorded on profile
+    load.
+
+    These are descendants of any permanent bookmark folders (Bookmarks Bar,
+    Mobile Bookmarks, Other Bookmarks).
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.UserFolder.OnProfileLoad.TopLevelCount"
+    units="folders" expires_after="2025-10-01">
+  <owner>yzshen@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    Records the number of top-level user-generated folders. Recorded on profile
+    load.
+
+    These are children of any permanent bookmark folders (Bookmarks Bar, Mobile
+    Bookmarks, Other Bookmarks).
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.UserFolderDepth.UrlAdded" units="folders"
+    expires_after="2025-10-01">
+  <owner>yzshen@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    Records the depth within the bookmark folder hierarchy where a URL bookmark
+    is added.
+
+    This number is the count of user-generated folders which are ancestors of
+    the added bookmark.
+  </summary>
+</histogram>
+
+<histogram name="Bookmarks.UserFolderDepth.UrlOpened" units="folders"
+    expires_after="2025-10-01">
+  <owner>yzshen@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    Records the depth within the bookmark folder hierarchy where a URL bookmark
+    is opened.
+
+    This number is the count of user-generated folders which are ancestors of
+    the opened bookmark.
+  </summary>
+</histogram>
+
 <histogram name="Bookmarks.Utilization.OnProfileLoad.PercentageUsed"
     units="Percentage (0-100)" expires_after="2025-03-02">
   <owner>wylieb@chromium.org</owner>

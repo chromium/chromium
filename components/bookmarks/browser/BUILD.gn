@@ -121,6 +121,7 @@ bundle_data("unit_tests_bundle_data") {
   testonly = true
   sources = [
     "//components/test/data/bookmarks/meta_info_as_string.json",
+    "//components/test/data/bookmarks/model_nested_user_folders.json",
     "//components/test/data/bookmarks/model_with_duplicate_ids.json",
     "//components/test/data/bookmarks/model_with_sync_metadata_1.json",
     "//components/test/data/bookmarks/model_with_sync_metadata_2.json",
