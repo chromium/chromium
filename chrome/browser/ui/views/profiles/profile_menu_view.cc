@@ -915,7 +915,6 @@ void ProfileMenuView::BuildFeatureButtons() {
 }
 
 void ProfileMenuView::BuildAvailableProfiles() {
-  bool profiles_selectable = true;
 #if BUILDFLAG(IS_MAC)
   const bool is_regular_web_app =
       web_app::AppBrowserController::IsWebApp(browser()) &&
@@ -954,7 +953,6 @@ void ProfileMenuView::BuildAvailableProfiles() {
                     ui::kColorMenuBackground)))),
         profile_entry->GetName(),
         /*is_guest=*/false,
-        /*is_enabled=*/profiles_selectable,
         base::BindRepeating(&ProfileMenuView::OnOtherProfileSelected,
                             base::Unretained(this), profile_entry->GetPath()));
   }
@@ -971,18 +969,14 @@ void ProfileMenuView::BuildAvailableProfiles() {
                 ? IDS_PROFILE_MENU_OPEN_GUEST_PROFILE
                 : IDS_GUEST_PROFILE_NAME),
         /*is_guest=*/true,
-        /*is_enabled=*/true,
         base::BindRepeating(&ProfileMenuView::OnGuestProfileButtonClicked,
                             base::Unretained(this)));
   }
 }
 
 void ProfileMenuView::BuildProfileManagementFeatureButtons() {
-  bool profiles_selectable = true;
   if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-    if (profiles_selectable || profiles::IsProfileCreationAllowed()) {
-      AddProfileManagementFeaturesSeparator();
-    }
+    AddProfileManagementFeaturesSeparator();
 
     if (profiles::IsProfileCreationAllowed()) {
       AddProfileManagementFeatureButton(
@@ -992,37 +986,23 @@ void ProfileMenuView::BuildProfileManagementFeatureButtons() {
                               base::Unretained(this)));
     }
 
-    if (profiles_selectable) {
-      AddProfileManagementFeatureButton(
-          kAccountManageChromeRefreshIcon,
-          l10n_util::GetStringUTF16(IDS_PROFILE_MENU_MANAGE_PROFILES),
-          base::BindRepeating(&ProfileMenuView::OnManageProfilesButtonClicked,
-                              base::Unretained(this)));
-    } else {
-      AddProfileManagementManagedHint(
-          vector_icons::kBusinessIcon,
-          l10n_util::GetStringUTF16(
-              IDS_PROFILES_MANAGE_PROFILES_MANAGED_TOOLTIP));
-    }
-  } else {
-    if (profiles_selectable) {
-      AddProfileManagementShortcutFeatureButton(
-          vector_icons::kSettingsChromeRefreshIcon,
-          l10n_util::GetStringUTF16(
-              IDS_PROFILES_MANAGE_PROFILES_BUTTON_TOOLTIP),
-          base::BindRepeating(&ProfileMenuView::OnManageProfilesButtonClicked,
-                              base::Unretained(this)));
-    } else {
-      AddProfileManagementManagedHint(
-          vector_icons::kBusinessIcon,
-          l10n_util::GetStringUTF16(
-              IDS_PROFILES_MANAGE_PROFILES_MANAGED_TOOLTIP));
-    }
-    if (profiles::IsProfileCreationAllowed()) {
-      AddProfileManagementFeatureButton(
-          vector_icons::kAddIcon, l10n_util::GetStringUTF16(IDS_ADD),
-          base::BindRepeating(&ProfileMenuView::OnAddNewProfileButtonClicked,
-                              base::Unretained(this)));
-    }
+    AddProfileManagementFeatureButton(
+        kAccountManageChromeRefreshIcon,
+        l10n_util::GetStringUTF16(IDS_PROFILE_MENU_MANAGE_PROFILES),
+        base::BindRepeating(&ProfileMenuView::OnManageProfilesButtonClicked,
+                            base::Unretained(this)));
+    return;
+  }
+
+  AddProfileManagementShortcutFeatureButton(
+      vector_icons::kSettingsChromeRefreshIcon,
+      l10n_util::GetStringUTF16(IDS_PROFILES_MANAGE_PROFILES_BUTTON_TOOLTIP),
+      base::BindRepeating(&ProfileMenuView::OnManageProfilesButtonClicked,
+                          base::Unretained(this)));
+  if (profiles::IsProfileCreationAllowed()) {
+    AddProfileManagementFeatureButton(
+        vector_icons::kAddIcon, l10n_util::GetStringUTF16(IDS_ADD),
+        base::BindRepeating(&ProfileMenuView::OnAddNewProfileButtonClicked,
+                            base::Unretained(this)));
   }
 }

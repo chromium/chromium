@@ -161,7 +161,6 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   void AddAvailableProfile(const ui::ImageModel& image_model,
                            const std::u16string& name,
                            bool is_guest,
-                           bool is_enabled,
                            base::RepeatingClosure action);
   void AddProfileManagementShortcutFeatureButton(const gfx::VectorIcon& icon,
                                                  const std::u16string& text,

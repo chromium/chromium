@@ -1106,7 +1106,6 @@ void ProfileMenuViewBase::SetProfileManagementHeading(
 void ProfileMenuViewBase::AddAvailableProfile(const ui::ImageModel& image_model,
                                               const std::u16string& name,
                                               bool is_guest,
-                                              bool is_enabled,
                                               base::RepeatingClosure action) {
   // Initialize layout if this is the first time a button is added.
   if (!selectable_profiles_container_->GetLayoutManager()) {
@@ -1130,8 +1129,6 @@ void ProfileMenuViewBase::AddAvailableProfile(const ui::ImageModel& image_model,
           base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
                               base::Unretained(this), std::move(action)),
           sized_image, name));
-
-  button->SetEnabled(is_enabled);
 
   if (!is_guest && !first_profile_button_)
     first_profile_button_ = button;

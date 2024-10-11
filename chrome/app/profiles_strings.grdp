@@ -208,9 +208,6 @@
   <message name="IDS_PROFILES_MANAGE_PROFILES_BUTTON_TOOLTIP" desc="Button in the avatar menu bubble view for launching the profile picker.">
     Manage profiles
   </message>
-  <message name="IDS_PROFILES_MANAGE_PROFILES_MANAGED_TOOLTIP" desc="Icon in the avatar menu bubble view explaining why selecting other profiles is disabled.">
-    Your administrator has disabled other profiles
-  </message>
   <message name="IDS_PROFILES_CUSTOMIZE_PROFILE_BUTTON_TOOLTIP" desc="Tooltip of the customize profile button in the avatar menu bubble view for editing the current profile. The button itself has no text, it is only the edit icon.">
     Customize profile
   </message>
