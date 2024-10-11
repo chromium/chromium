@@ -10,7 +10,6 @@
 
 UIAlertController* FailAlertController(ProceduralBlock retry_block,
                                        ProceduralBlock cancel_block) {
-  // TODO(crbug.com/344812548): Add a11y title.
   UIAlertController* alert = [UIAlertController
       alertControllerWithTitle:
           l10n_util::GetNSString(
@@ -45,6 +44,46 @@ UIAlertController* FailAlertController(ProceduralBlock retry_block,
   [alert addAction:cancelAction];
 
   alert.preferredAction = retryAction;
+
+  return alert;
+}
+
+UIAlertController* DiscardSelectionAlertController(
+    ProceduralBlock discard_block,
+    ProceduralBlock cancel_block) {
+  UIAlertController* alert = [UIAlertController
+      alertControllerWithTitle:
+          l10n_util::GetNSString(
+              IDS_IOS_DRIVE_FILE_PICKER_ALERT_DISCARD_SELECTION_TITLE)
+                       message:nil
+                preferredStyle:UIAlertControllerStyleActionSheet];
+
+  void (^discardHandler)(UIAlertAction*) = ^(UIAlertAction* action) {
+    if (discard_block) {
+      discard_block();
+    }
+  };
+
+  void (^cancelHandler)(UIAlertAction*) = ^(UIAlertAction* action) {
+    if (cancel_block) {
+      cancel_block();
+    }
+  };
+
+  UIAlertAction* discardAction = [UIAlertAction
+      actionWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_DRIVE_FILE_PICKER_ALERT_DISCARD_SELECTION)
+                style:UIAlertActionStyleDestructive
+              handler:discardHandler];
+
+  UIAlertAction* cancelAction = [UIAlertAction
+      actionWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_DRIVE_FILE_PICKER_ALERT_KEEP_SELECTION)
+                style:UIAlertActionStyleCancel
+              handler:cancelHandler];
+
+  [alert addAction:discardAction];
+  [alert addAction:cancelAction];
 
   return alert;
 }

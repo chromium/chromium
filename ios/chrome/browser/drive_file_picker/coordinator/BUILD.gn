@@ -24,6 +24,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/drive/model:drive_service",
     "//ios/chrome/browser/drive/model:drive_service_factory",
     "//ios/chrome/browser/drive_file_picker/ui",
+    "//ios/chrome/browser/drive_file_picker/ui:alert_utils",
     "//ios/chrome/browser/drive_file_picker/ui:constants",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",

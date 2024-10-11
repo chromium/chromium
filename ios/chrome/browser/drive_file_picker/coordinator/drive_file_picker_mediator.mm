@@ -180,6 +180,8 @@ constexpr int kThumbnailResizeDimension = 64;
       tab_helper->StopChoosingFiles();
     }
   }
+  // Clear selection on shutdown (stops download, allows dismissal, etc...)
+  [self setSelectedFile:std::nullopt];
   _webState = nullptr;
   _driveService = nullptr;
   _driveList = nullptr;
@@ -632,6 +634,8 @@ constexpr int kThumbnailResizeDimension = 64;
   [self.consumer setSelectedItemIdentifier:itemIdentifier];
   [self.consumer setDownloadStatus:item ? DriveFileDownloadStatus::kInProgress
                                         : DriveFileDownloadStatus::kNotStarted];
+  // Allow/forbid file picker dismissal.
+  [self.delegate mediator:self didAllowDismiss:(_selectedFile == std::nullopt)];
 
   // If there is a new selected item, start to download it.
   if (!item) {

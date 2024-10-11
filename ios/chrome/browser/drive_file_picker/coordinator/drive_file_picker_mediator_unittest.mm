@@ -88,6 +88,10 @@
 - (void)mediatorDidTapAddAccount:(DriveFilePickerMediator*)mediator {
 }
 
+- (void)mediator:(DriveFilePickerMediator*)mediator
+    didAllowDismiss:(BOOL)allowDismiss {
+}
+
 @end
 
 // Fake consumer for `DriveFilePickerMediator`.

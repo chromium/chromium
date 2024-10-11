@@ -1650,6 +1650,15 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DRIVE_FILE_PICKER_ALERT_TRY_AGAIN" desc="Title for an alert button to try again the selection of a file in the Drive file picker. The alert is presented when a file selected by the user couldn't be opened. [iOS only]">
           Try Again
       </message>
+      <message name="IDS_IOS_DRIVE_FILE_PICKER_ALERT_DISCARD_SELECTION_TITLE" desc="Title for an alert asking the user to confirm whether they really want to discard and cancel their file selection. [iOS only]">
+          Are you sure you want to discard your selection?
+      </message>
+      <message name="IDS_IOS_DRIVE_FILE_PICKER_ALERT_DISCARD_SELECTION" desc="Title of a button inside an alert asking the user to confirm whether they really want to discard and cancel their file selection. This button discards and cancel the file selection. [iOS only]">
+          Dicard selection
+      </message>
+      <message name="IDS_IOS_DRIVE_FILE_PICKER_ALERT_KEEP_SELECTION" desc="Title of a button inside an alert asking the user to confirm whether they really want to discard and cancel their file selection. This button keeps the selection. [iOS only]">
+          Keep selection
+      </message>
       <message name="IDS_IOS_DRIVE_FILE_PICKER_CONFIRM" desc="Title for a button that confirms the file selection in a file picker. [iOS only]">
           Confirm
       </message>

@@ -211,6 +211,11 @@
   [self.delegate coordinatorDidTapAddAccount:self];
 }
 
+- (void)mediator:(DriveFilePickerMediator*)mediator
+    didAllowDismiss:(BOOL)allowDismiss {
+  [self.delegate coordinator:self didAllowDismiss:allowDismiss];
+}
+
 #pragma mark - DriveFilePickerTableViewControllerDelegate
 
 - (void)viewControllerDidDisappear:(UIViewController*)viewController {
@@ -247,6 +252,11 @@
 
 - (void)coordinatorDidTapAddAccount:(ChromeCoordinator*)coordinator {
   [self.delegate coordinatorDidTapAddAccount:self];
+}
+
+- (void)coordinator:(ChromeCoordinator*)coordinator
+    didAllowDismiss:(BOOL)allowDismiss {
+  [self.delegate coordinator:self didAllowDismiss:allowDismiss];
 }
 
 @end

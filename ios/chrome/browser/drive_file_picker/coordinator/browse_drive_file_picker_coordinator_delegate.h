@@ -24,6 +24,10 @@
 // Called when "Add account" button is triggered.
 - (void)coordinatorDidTapAddAccount:(ChromeCoordinator*)coordinator;
 
+// Called when file picker dismissal becomes allowed/forbidden.
+- (void)coordinator:(ChromeCoordinator*)coordinator
+    didAllowDismiss:(BOOL)allowDismiss;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_DRIVE_FILE_PICKER_COORDINATOR_BROWSE_DRIVE_FILE_PICKER_COORDINATOR_DELEGATE_H_

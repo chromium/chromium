@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/drive_file_picker/coordinator/browse_drive_file_picker_coordinator_delegate.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator_delegate.h"
+#import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_alert_utils.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_navigation_controller.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_table_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -54,6 +55,8 @@
   NSMutableSet<NSString*>* _imagesPending;
   // Cache of fetched images for the Drive file picker.
   NSCache<NSString*, UIImage*>* _imageCache;
+  // Whether the file picker should dismiss when swiping down.
+  BOOL _presentationControllerShouldDismiss;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -65,6 +68,7 @@
     _webState = webState->GetWeakPtr();
     _imagesPending = [NSMutableSet set];
     _imageCache = [[NSCache alloc] init];
+    _presentationControllerShouldDismiss = YES;
   }
   return self;
 }
@@ -100,7 +104,6 @@
       accountManagerService:accountManagerService
                imageFetcher:std::move(imageFetcher)];
 
-  _navigationController.modalInPresentation = YES;
   _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
   _navigationController.presentationController.delegate = self;
   _navigationController.sheetPresentationController.prefersGrabberVisible = YES;
@@ -150,6 +153,11 @@
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
+- (BOOL)presentationControllerShouldDismiss:
+    (UIPresentationController*)presentationController {
+  return _presentationControllerShouldDismiss;
+}
+
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
   // If the navigation controller is not dismissed programmatically i.e. not
@@ -158,6 +166,19 @@
   id<DriveFilePickerCommands> driveFilePickerHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), DriveFilePickerCommands);
   [driveFilePickerHandler hideDriveFilePicker];
+}
+
+- (void)presentationControllerDidAttemptToDismiss:
+    (UIPresentationController*)presentationController {
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlock discardSelectionBlock = ^{
+    [weakSelf stopAnimated];
+  };
+  UIAlertController* discardSelectionAlertController =
+      DiscardSelectionAlertController(discardSelectionBlock, nil);
+  [_navigationController presentViewController:discardSelectionAlertController
+                                      animated:YES
+                                    completion:nil];
 }
 
 #pragma mark - DriveFilePickerMediatorDelegate
@@ -194,14 +215,7 @@
 }
 
 - (void)mediatorDidStopFileSelection:(DriveFilePickerMediator*)mediator {
-  __weak id<DriveFilePickerCommands> driveFilePickerHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                         DriveFilePickerCommands);
-  [_navigationController.presentingViewController
-      dismissViewControllerAnimated:YES
-                         completion:^{
-                           [driveFilePickerHandler hideDriveFilePicker];
-                         }];
+  [self stopAnimated];
 }
 
 - (void)browseToParentWithMediator:(DriveFilePickerMediator*)mediator {
@@ -218,6 +232,11 @@
 
 - (void)mediatorDidTapAddAccount:(DriveFilePickerMediator*)mediator {
   [self showAddAccount];
+}
+
+- (void)mediator:(DriveFilePickerMediator*)mediator
+    didAllowDismiss:(BOOL)allowDismiss {
+  _presentationControllerShouldDismiss = allowDismiss;
 }
 
 #pragma mark - BrowseDriveFilePickerCoordinatorDelegate
@@ -245,6 +264,11 @@
   [self showAddAccount];
 }
 
+- (void)coordinator:(ChromeCoordinator*)coordinator
+    didAllowDismiss:(BOOL)allowDismiss {
+  _presentationControllerShouldDismiss = allowDismiss;
+}
+
 #pragma mark - Private
 
 // Initiate the add account flow.
@@ -267,6 +291,18 @@
                }];
   [applicationCommandsHandler showSignin:addAccountCommand
                       baseViewController:_navigationController];
+}
+
+// Stops the Drive file picker after animating its dismissal.
+- (void)stopAnimated {
+  __weak id<DriveFilePickerCommands> driveFilePickerHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                         DriveFilePickerCommands);
+  [_navigationController.presentingViewController
+      dismissViewControllerAnimated:YES
+                         completion:^{
+                           [driveFilePickerHandler hideDriveFilePicker];
+                         }];
 }
 
 @end

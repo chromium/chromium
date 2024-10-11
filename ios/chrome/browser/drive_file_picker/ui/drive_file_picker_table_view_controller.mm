@@ -287,16 +287,6 @@ void SetSearchBarText(UISearchBar* searchBar, NSString* text) {
 
 #pragma mark - UI actions
 
-- (void)cancelSelection {
-  __weak __typeof(self) weakSelf = self;
-  [self.navigationController.presentingViewController
-      dismissViewControllerAnimated:YES
-                         completion:^{
-                           [weakSelf
-                                   .driveFilePickerHandler hideDriveFilePicker];
-                         }];
-}
-
 - (void)didSelectSortingCriteria:(DriveItemsSortingType)sortingCriteria {
   UIAction* selectedSortingAction =
       [self actionForSortingCriteria:sortingCriteria];
