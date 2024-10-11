@@ -76,17 +76,17 @@ TEST_F(ChromeAutofillPredictionImprovementsClientTest,
 }
 
 TEST_F(ChromeAutofillPredictionImprovementsClientTest,
-       IsAutofillPredictionImprovementsEnabledPrefReturnsTrueIfPrefEnabled) {
+       IsAutofillPredictionImprovementsSupportedReturnsTrueIfPrefEnabled) {
   profile()->GetPrefs()->SetBoolean(
       autofill::prefs::kAutofillPredictionImprovementsEnabled, true);
-  EXPECT_TRUE(client()->IsAutofillPredictionImprovementsEnabledPref());
+  EXPECT_TRUE(client()->IsAutofillPredictionImprovementsSupported());
 }
 
 TEST_F(ChromeAutofillPredictionImprovementsClientTest,
-       IsAutofillPredictionImprovementsEnabledPrefReturnsFalseIfPrefDisabled) {
+       IsAutofillPredictionImprovementsSupportedReturnsFalseIfPrefDisabled) {
   profile()->GetPrefs()->SetBoolean(
       autofill::prefs::kAutofillPredictionImprovementsEnabled, false);
-  EXPECT_FALSE(client()->IsAutofillPredictionImprovementsEnabledPref());
+  EXPECT_FALSE(client()->IsAutofillPredictionImprovementsSupported());
 }
 
 TEST_F(ChromeAutofillPredictionImprovementsClientTest,
