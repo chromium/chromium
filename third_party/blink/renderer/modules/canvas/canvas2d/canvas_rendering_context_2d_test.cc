@@ -32,6 +32,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "cc/base/features.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_op.h"
@@ -2535,6 +2536,27 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ContextLossAbortsHibernation) {
     EXPECT_FALSE(handler.IsHibernating());
     EXPECT_FALSE(CanvasElement().IsResourceValid());
   }
+}
+
+TEST_P(CanvasRenderingContext2DTestAccelerated,
+       PushPropertiesAfterVisibilityChange) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({::features::kClearCanvasResourcesInBackground},
+                                {features::kCanvas2DHibernation});
+
+  CreateContext(kNonOpaque);
+
+  ASSERT_TRUE(SetUpFullAccelerationAndCcLayer(CanvasElement()));
+
+  GetDocument().GetPage()->SetVisibilityState(
+      mojom::blink::PageVisibilityState::kHidden,
+      /*is_initial_state=*/false);
+  EXPECT_FALSE(CanvasElement().CcLayer()->needs_set_resource_for_testing());
+
+  GetDocument().GetPage()->SetVisibilityState(
+      mojom::blink::PageVisibilityState::kVisible,
+      /*is_initial_state=*/false);
+  EXPECT_TRUE(CanvasElement().CcLayer()->needs_set_resource_for_testing());
 }
 
 TEST_P(CanvasRenderingContext2DTestAccelerated,

@@ -367,23 +367,4 @@ TEST_F(Canvas2DLayerBridgeTest, SoftwareCanvasNotCompositedIfNotImageChromium) {
   EXPECT_EQ(GetRasterMode(bridge.get()), RasterMode::kCPU);
 }
 
-TEST_F(Canvas2DLayerBridgeTest, PushPropertiesAfterVisibilityChange) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({::features::kClearCanvasResourcesInBackground},
-                                {features::kCanvas2DHibernation});
-
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(gfx::Size(300, 150), RasterModeHint::kPreferGPU, kNonOpaque);
-  DrawSomething(bridge.get());
-
-  Host()->SetPageVisible(false);
-  // TODO(crbug.com/1476964): Remove this when done refactoring.
-  bridge->PageVisibilityChanged();
-  EXPECT_FALSE(Host()->CcLayer()->needs_set_resource_for_testing());
-
-  Host()->SetPageVisible(true);
-  bridge->PageVisibilityChanged();
-  EXPECT_TRUE(Host()->CcLayer()->needs_set_resource_for_testing());
-}
-
 }  // namespace blink

@@ -1,3 +1,7 @@
+include_rules = [
+  "+cc/base/features.h",
+]
+
 specific_include_rules = {
     "html_canvas_element_module_test.cc": [
         "+components/viz/test/test_context_provider.h",
