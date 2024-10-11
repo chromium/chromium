@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.ui.edge_to_edge;
 
 import android.app.Activity;
-import android.content.ComponentCallbacks;
-import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Build.VERSION_CODES;
 import android.view.View;
@@ -68,7 +66,6 @@ public class EdgeToEdgeControllerImpl
     private final Callback<LayoutManager> mOnLayoutManagerCallback =
             new ValueChangedCallback<>(this::updateLayoutStateProvider);
     private final FullscreenManager mFullscreenManager;
-    private final ComponentCallbacks mComponentCallback;
     private final @NonNull EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
     private final int mEdgeToEdgeToken;
 
@@ -184,20 +181,6 @@ public class EdgeToEdgeControllerImpl
 
         mWindowInsetsConsumer = this::handleWindowInsets;
         mInsetObserver.addInsetsConsumer(mWindowInsetsConsumer);
-
-        mComponentCallback =
-                new ComponentCallbacks() {
-                    @Override
-                    public void onConfigurationChanged(@NonNull Configuration newConfig) {
-                        // When configuration changed, force an padding update.
-                        // See https://crbug.com/369887909
-                        drawToEdge(mIsPageOptedIntoEdgeToEdge, /* changedWindowState= */ true);
-                    }
-
-                    @Override
-                    public void onLowMemory() {}
-                };
-        mActivity.registerComponentCallbacks(mComponentCallback);
 
         assert mInsetObserver.getLastRawWindowInsets() != null
                 : "The inset observer should have non-null insets by the time the"
@@ -501,11 +484,6 @@ public class EdgeToEdgeControllerImpl
             topPadding = Math.max(0, mCachedWindowVisibleRect.top - mCachedContentVisibleRect.top);
             bottomPadding =
                     Math.max(0, mCachedContentVisibleRect.bottom - mCachedWindowVisibleRect.bottom);
-        } else if (topPadding == 0) {
-            // In odd cases, we see Chrome has set a 0 as top padding observed in
-            // crbug.com/369887909. In those cases, fix the padding based on the visible area.
-            Log.w(TAG, "topPadding = 0 when not in fullscreen mode.");
-            topPadding = Math.abs(mCachedWindowVisibleRect.top - mCachedContentVisibleRect.top);
         }
 
         // Use Insets to store the paddings as it is immutable.
@@ -534,7 +512,6 @@ public class EdgeToEdgeControllerImpl
     @CallSuper
     @Override
     public void destroy() {
-        mActivity.unregisterComponentCallbacks(mComponentCallback);
         if (mWebContentsObserver != null) {
             mWebContentsObserver.destroy();
             mWebContentsObserver = null;
