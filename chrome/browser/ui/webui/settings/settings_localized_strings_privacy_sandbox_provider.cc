@@ -88,31 +88,16 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_AD_PRIVACY_PAGE_AD_MEASUREMENT_LINK_ROW_SUB_LABEL_DISABLED},
       {"topicsPageTitle", IDS_SETTINGS_TOPICS_PAGE_TITLE},
       {"topicsPageToggleLabel", IDS_SETTINGS_TOPICS_PAGE_TOGGLE_LABEL},
-      {"topicsPageToggleSubLabel", IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL},
       {"topicsPageToggleSubLabelV2",
        IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL_V2},
-      {"topicsPageCurrentTopicsHeading",
-       IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_HEADING},
       {"topicsPageActiveTopicsHeading",
        IDS_SETTINGS_TOPICS_PAGE_ACTIVE_TOPICS_HEADING},
-      {"topicsPageCurrentTopicsDescription",
-       IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION},
       {"topicsPageActiveTopicsDescription",
        IDS_SETTINGS_TOPICS_PAGE_ACTIVE_TOPICS_DESCRIPTION},
-      {"topicsPageCurrentTopicsDescriptionLearnMoreLink",
-       IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_LEARN_MORE_LINK},
       {"topicsPageCurrentTopicsRegionA11yDescription",
        IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_REGION_A11Y_DESCRIPTION},
-      {"topicsPageLearnMoreHeading",
-       IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_HEADING},
-      {"topicsPageLearnMoreBullet1",
-       IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_1},
-      {"topicsPageLearnMoreBullet2",
-       IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_2},
       {"topicsPageCurrentTopicsDescriptionDisabled",
        IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_DISABLED},
-      {"topicsPageCurrentTopicsDescriptionEmpty",
-       IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY},
       {"topicsPageCurrentTopicsDescriptionEmptyTextHeading",
        IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY_TEXT_HEADING},
       {"topicsPageCurrentTopicsDescriptionEmptyTextV2",
@@ -124,14 +109,8 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
       {"topicsPageBlockTopic", IDS_SETTINGS_TOPICS_PAGE_BLOCK_TOPIC},
       {"topicsPageBlockTopicA11yLabel",
        IDS_SETTINGS_TOPICS_PAGE_BLOCK_TOPIC_A11Y_LABEL},
-      {"topicsPageBlockedTopicsHeading",
-       IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING},
       {"topicsPageBlockedTopicsHeadingNew",
        IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING_NEW},
-      {"topicsPageBlockedTopicsDescription",
-       IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION},
-      {"topicsPageBlockedTopicsDescriptionEmpty",
-       IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY},
       {"topicsPageBlockedTopicsDescriptionNew",
        IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_NEW},
       {"topicsPageBlockedTopicsRegionA11yDescription",
@@ -141,8 +120,6 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_TOPICS_PAGE_ALLOW_TOPIC_A11Y_LABEL},
       {"topicsPageUnblockTopicA11yLabel",
        IDS_SETTINGS_TOPICS_PAGE_UNBLOCK_TOPIC_A11Y_LABEL},
-      {"topicsPageCurrentTopicsDescriptionLearnMoreA11yLabel",
-       IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_LEARN_MORE_A11Y_LABEL},
       {"fledgePageTitle", IDS_SETTINGS_FLEDGE_PAGE_TITLE},
       {"fledgePageToggleLabel", IDS_SETTINGS_FLEDGE_PAGE_TOGGLE_LABEL},
       {"fledgePageToggleSubLabel", IDS_SETTINGS_FLEDGE_PAGE_TOGGLE_SUB_LABEL},
@@ -275,15 +252,7 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
               IDS_SETTINGS_TRACKING_PROTECTION_ADDITIONAL_PROTECTIONS_LEARN_MORE_ARIA_LABEL),
           l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
 
-  // Topics and fledge link to help center articles in their learn more dialog.
-  html_source->AddString(
-      "topicsPageLearnMoreBullet3",
-      l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3,
-          base::ASCIIToUTF16(google_util::AppendGoogleLocaleParam(
-                                 GURL(chrome::kAdPrivacyLearnMoreURL),
-                                 g_browser_process->GetApplicationLocale())
-                                 .spec())));
+  // Fledge link to help center articles in their learn more dialog.
   html_source->AddString(
       "fledgePageLearnMoreBullet3",
       l10n_util::GetStringFUTF16(
@@ -308,11 +277,6 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
           l10n_util::GetStringUTF16(IDS_SETTINGS_OPENS_IN_NEW_TAB)));
   // Topics and fledge both link to the cookies setting page and cross-link
   // each other in the footers.
-  html_source->AddString(
-      "topicsPageFooter",
-      l10n_util::GetStringFUTF16(IDS_SETTINGS_TOPICS_PAGE_FOOTER,
-                                 chrome::kChromeUIPrivacySandboxFledgeURL,
-                                 chrome::kChromeUICookieSettingsURL));
   html_source->AddString(
       "topicsPageFooterV2",
       l10n_util::GetStringFUTF16(
