@@ -119,6 +119,7 @@ const int kDistanceFromPinKeyboardToBigUserViewBottomDp = 50;
 constexpr int kDistanceFromTopOfBigUserViewToUserIconDp = 24;
 
 constexpr int kDistanceBetweenPasswordFieldAndAuthFactorsViewDp = 90;
+constexpr int kDistanceBetweenPasswordFieldAndPinStatusMessageViewDp = 20;
 
 constexpr base::TimeDelta kChallengeResponseResetAfterFailureDelay =
     base::Seconds(5);
@@ -1555,6 +1556,10 @@ gfx::Size LoginAuthUserView::GetPaddingBelowPasswordView() const {
 
   if (state.has_pinpad) {
     return SizeFromHeight(kDistanceBetweenPasswordFieldAndPinKeyboardDp);
+  }
+  if (state.pin_is_locked) {
+    return SizeFromHeight(
+        kDistanceBetweenPasswordFieldAndPinStatusMessageViewDp);
   }
   if (state.has_fingerprint ||
       (auth_factors_view_ && auth_factors_view_->GetVisible())) {
