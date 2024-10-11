@@ -704,8 +704,10 @@ class TabImpl implements Tab {
 
             LoadUrlResult result = loadUrlInternal(params, fixedUrl);
 
-            for (TabObserver observer : mObservers) {
-                observer.onLoadUrl(this, params, result);
+            try (TraceEvent event = TraceEvent.scoped("Tab.loadUrl.TabObservers.onLoadUrl")) {
+                for (TabObserver observer : mObservers) {
+                    observer.onLoadUrl(this, params, result);
+                }
             }
             return result;
         } finally {
