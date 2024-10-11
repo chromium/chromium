@@ -98,6 +98,16 @@ if (enable_me2me_host) {
   }
 }
 
+source_set("utils") {
+  sources = [
+    "gvariant_ref.cc",
+    "gvariant_ref.h",
+    "gvariant_type.cc",
+    "gvariant_type.h",
+  ]
+  deps = [ "//base" ]
+}
+
 if (is_linux) {
   source_set("wayland") {
     sources = [
@@ -153,6 +163,8 @@ source_set("unit_tests") {
     "audio_pipe_reader_unittest.cc",
     "certificate_watcher_unittest.cc",
     "gnome_display_config_dbus_client_unittest.cc",
+    "gvariant_ref_unittest.cc",
+    "gvariant_type_unittest.cc",
     "unicode_to_keysym_unittest.cc",
     "x11_character_injector_unittest.cc",
     "x_server_clipboard_unittest.cc",
@@ -169,6 +181,7 @@ source_set("unit_tests") {
   configs += [ "//remoting/build/config:version" ]
 
   deps = [
+    ":utils",
     "//remoting/host:common",
     "//remoting/host:test_support",
     "//remoting/host:x11_display_utils",
