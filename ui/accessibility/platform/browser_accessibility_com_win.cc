@@ -1059,6 +1059,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_nodeInfo(
 
 // ISimpleDOMNode::get_attributes()
 // Returns HTML attributes -- not text attributes!
+// TODO(accessibility) Remove a few years after JAWS screen readers stops using.
 IFACEMETHODIMP BrowserAccessibilityComWin::get_attributes(USHORT max_attribs,
                                                           BSTR* attrib_names,
                                                           SHORT* name_space_id,
@@ -1074,25 +1075,28 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_attributes(USHORT max_attribs,
   if (!attrib_names || !name_space_id || !attrib_values || !num_attribs)
     return E_INVALIDARG;
 
-  *num_attribs = max_attribs;
-  if (*num_attribs > GetOwner()->GetHtmlAttributes().size()) {
-    *num_attribs = GetOwner()->GetHtmlAttributes().size();
+#define ADD_ATTRIBUTE(name, value)                                          \
+  if (index < max_attribs) {                                                \
+    attrib_names[index] = SysAllocString(base::UTF8ToWide(name).c_str());   \
+    attrib_values[index] = SysAllocString(base::UTF8ToWide(value).c_str()); \
+    ++index;                                                                \
   }
 
-  for (USHORT i = 0; i < *num_attribs; ++i) {
-    const std::string& attribute = GetOwner()->GetHtmlAttributes()[i].first;
-    // Work around JAWS crash in JAWS <= 17, and unpatched versions of JAWS
-    // 2018/2019.
-    // TODO(accessibility) Remove once JAWS <= 17 is no longer a concern.
-    // Wait until 2021 for this, as JAWS users are slow to update.
-    if (attribute == "srcdoc" || attribute == "data-srcdoc")
-      continue;
-
-    attrib_names[i] = SysAllocString(base::UTF8ToWide(attribute).c_str());
-    name_space_id[i] = 0;
-    attrib_values[i] = SysAllocString(
-        base::UTF8ToWide(GetOwner()->GetHtmlAttributes()[i].second).c_str());
+  // Add computed attributes first.
+  USHORT index = 0;
+  if (int max_length =
+          GetOwner()->GetIntAttribute(ax::mojom::IntAttribute::kMaxLength)) {
+    ADD_ATTRIBUTE("maxlength", base::NumberToString(max_length));
   }
+
+  // Next add serialized attributes.
+  const auto& serialized_attrs = GetOwner()->GetHtmlAttributes();
+  for (const auto& serialized_attr : serialized_attrs) {
+    ADD_ATTRIBUTE(serialized_attr.first, serialized_attr.second);
+  }
+
+  *num_attribs = index;
+
   return S_OK;
 }
 
@@ -1103,34 +1107,7 @@ IFACEMETHODIMP BrowserAccessibilityComWin::get_attributesForNames(
     BSTR* attrib_names,
     SHORT* name_space_id,
     BSTR* attrib_values) {
-  WIN_ACCESSIBILITY_API_TRACE_EVENT("get_attributesForNames");
-  WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_GET_ATTRIBUTES_FOR_NAMES);
-  AddAccessibilityModeFlags(kScreenReaderAccessibilityMode | AXMode::kHTML);
-  if (!GetOwner()) {
-    return E_FAIL;
-  }
-
-  if (!attrib_names || !name_space_id || !attrib_values)
-    return E_INVALIDARG;
-
-  for (USHORT i = 0; i < num_attribs; ++i) {
-    name_space_id[i] = 0;
-    bool found = false;
-    std::string name = base::WideToUTF8((LPCWSTR)attrib_names[i]);
-    for (unsigned int j = 0; j < GetOwner()->GetHtmlAttributes().size(); ++j) {
-      if (GetOwner()->GetHtmlAttributes()[j].first == name) {
-        attrib_values[i] = SysAllocString(
-            base::UTF8ToWide(GetOwner()->GetHtmlAttributes()[j].second)
-                .c_str());
-        found = true;
-        break;
-      }
-    }
-    if (!found) {
-      attrib_values[i] = NULL;
-    }
-  }
-  return S_OK;
+  return E_NOTIMPL;
 }
 
 IFACEMETHODIMP BrowserAccessibilityComWin::get_computedStyle(

@@ -1466,6 +1466,13 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
   if (LiveRegionRoot())
     SerializeLiveRegionAttributes(node_data);
 
+  if (GetElement() && accessibility_mode.has_mode(ui::AXMode::kHTML)) {
+    if (is_snapshot) {
+      SerializeHTMLAttributesForSnapshot(node_data);
+    } else {
+      SerializeHTMLNonStandardAttributesForJAWS(node_data);
+    }
+  }
   SerializeOtherScreenReaderAttributes(node_data);
   SerializeMathContent(node_data);
   SerializeAriaNotificationAttributes(
@@ -1662,18 +1669,75 @@ void AXObject::SerializeHTMLId(ui::AXNodeData* node_data) const {
                                 element->GetIdAttribute());
 }
 
-void AXObject::SerializeHTMLAttributes(ui::AXNodeData* node_data) const {
-  Element* element = GetElement();
-  DCHECK(element);
-  for (const Attribute& attr : element->AttributesWithoutUpdate()) {
-    std::string name = attr.LocalName().LowerASCII().Utf8();
-    if (name == "id" || name == "class") {
+void AXObject::SerializeHTMLAttributesForSnapshot(
+    ui::AXNodeData* node_data) const {
+  for (const Attribute& attr : GetElement()->AttributesWithoutUpdate()) {
+    const QualifiedName& attr_name = attr.GetName();
+    if (attr_name == html_names::kIdAttr ||
+        attr_name == html_names::kClassAttr) {
       // Attribute already in kHtmlId or kClassName.
       continue;
     }
+    std::string name = attr_name.LocalName().LowerASCII().Utf8();
     std::string value = attr.Value().Utf8();
     node_data->html_attributes.push_back(std::make_pair(name, value));
   }
+}
+
+// For now, serialize for legacy support of nonstandard attributes equired by
+// the JAWS screen reader.
+// TODO(accessibility) Remove support once JAWS has released 2+ versions that
+// do not require support.
+void AXObject::SerializeHTMLNonStandardAttributesForJAWS(
+    ui::AXNodeData* node_data) const {
+#if BUILDFLAG(IS_WIN)
+  // brailleonlyregion: a nonstandard attribute used by national testing orgs
+  // to allow testing of reading ability by rendering only to Braille display,
+  // and not to TTS.
+  // TODO(https://github.com/w3c/aria/issues/2352): replace with ARIA feature.
+  DEFINE_STATIC_LOCAL(QualifiedName, brailleonlyregion_attr,
+                      (AtomicString("brailleonlyregion")));
+
+  // data-at-shortcutkeys: a nonstandard attribute used by Twitter and Facebook
+  // to provide keyboard shortcuts for an entire web page, in the form of a
+  // parseable JSON map, which AT can use to help avoid keyboard conflicts.
+  // TODO(https://github.com/w3c/aria/issues/2351): Replace with ARIA feature.
+  DEFINE_STATIC_LOCAL(QualifiedName, data_at_shortcutkeys_attr,
+                      (AtomicString("data-at-shortcutkeys")));
+
+  // data-sr* attributes: non-standard attributes used by McDonald's restaurant
+  // chain in their kiosks.
+  // TODO(accessibility) Stop supporting these once we find a new solution.
+  DEFINE_STATIC_LOCAL(QualifiedName, data_srTouchTutor_attr,
+                      (AtomicString("data-srTouchTutor")));
+  DEFINE_STATIC_LOCAL(QualifiedName, data_srKeyTutor_attr,
+                      (AtomicString("data-srKeyTutor")));
+  DEFINE_STATIC_LOCAL(QualifiedName, data_srControlState_attr,
+                      (AtomicString("data-srControlState")));
+  DEFINE_STATIC_LOCAL(QualifiedName, data_srItemCount_attr,
+                      (AtomicString("data-srItemCount")));
+  DEFINE_STATIC_LOCAL(QualifiedName, data_srItemGroup_attr,
+                      (AtomicString("data-srItemGroup")));
+  DEFINE_STATIC_LOCAL(QualifiedName, data_srAdditionalHelp_attr,
+                      (AtomicString("data-srAdditionalHelp")));
+
+  for (const Attribute& attr : GetElement()->AttributesWithoutUpdate()) {
+    // Add attribute if in the allow list.
+    const QualifiedName& attr_name = attr.GetName();
+    if (attr_name == brailleonlyregion_attr ||
+        attr_name == data_at_shortcutkeys_attr ||
+        attr_name == data_srTouchTutor_attr ||
+        attr_name == data_srKeyTutor_attr ||
+        attr_name == data_srControlState_attr ||
+        attr_name == data_srItemCount_attr ||
+        attr_name == data_srItemGroup_attr ||
+        attr_name == data_srAdditionalHelp_attr) {
+      std::string value = attr.Value().Utf8();
+      node_data->html_attributes.push_back(
+          std::make_pair(attr_name.LocalName().Utf8(), value));
+    }
+  }
+#endif
 }
 
 void AXObject::SerializeInlineTextBox(ui::AXNodeData* node_data) const {
@@ -2082,6 +2146,8 @@ void AXObject::SerializeMathContent(ui::AXNodeData* node_data) const {
   if (!element) {
     return;
   }
+  // Currently uses non-standard ARIA attribute data-mathml.
+  // TODO(https://github.com/w3c/aria/issues/2353): Replace with ARIA feature.
   if (const AtomicString& math_ml = AriaAttribute(MathMLAttrName())) {
     TruncateAndAddStringAttribute(
         node_data, ax::mojom::blink::StringAttribute::kMathContent, math_ml,
@@ -2496,6 +2562,19 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
       node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kTextSelEnd,
                                  end);
     }
+
+    // Serialize maxlength property.
+    // TODO(https://github.com/w3c/aria/issues/1119): consider aria-maxlength.
+    int max_length = 0;
+    if (auto* input = DynamicTo<HTMLInputElement>(GetElement())) {
+      max_length = input->maxLength();
+    } else if (auto* textarea = DynamicTo<HTMLTextAreaElement>(GetElement())) {
+      max_length = textarea->maxLength();
+    }
+    if (max_length > 0) {
+      node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kMaxLength,
+                                 max_length);
+    }
   }
 
   SerializeComputedDetailsRelation(node_data);
@@ -2516,13 +2595,21 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
 
   if (GetElement()) {
     SerializeElementAttributes(node_data);
-    if (accessibility_mode.has_mode(ui::AXMode::kHTML)) {
-      SerializeHTMLAttributes(node_data);
-    }
   }
 
   SerializeImageDataAttributes(node_data);
   SerializeTextInsertionDeletionOffsetAttributes(node_data);
+
+  // Serialize datetime attribute on <time>, <ins> and <del>.
+  if (NativeRoleIgnoringAria() == ax::mojom::blink::Role::kTime ||
+      NativeRoleIgnoringAria() == ax::mojom::blink::Role::kContentInsertion ||
+      NativeRoleIgnoringAria() == ax::mojom::blink::Role::kContentDeletion) {
+    if (const AtomicString& datetime =
+            GetElement()->FastGetAttribute(html_names::kDatetimeAttr)) {
+      TruncateAndAddStringAttribute(
+          node_data, ax::mojom::blink::StringAttribute::kDateTime, datetime);
+    }
+  }
 }
 
 void AXObject::SerializeComputedDetailsRelation(
@@ -5269,6 +5356,11 @@ bool AXObject::SupportsARIAExpanded() const {
     case ax::mojom::blink::Role::kTextFieldWithComboBox:
     case ax::mojom::blink::Role::kToggleButton:
     case ax::mojom::blink::Role::kTreeItem:
+      return true;
+    // Nonstandard. For Read Anything's Gmail thread support, likely temporary:
+    // TODO(accessibility): remove once Gmail uses standards-compliant markup.
+    // Alternatively, consider adding aria-expanded support to listitem.
+    case ax::mojom::blink::Role::kListItem:
       return true;
     default:
       return false;

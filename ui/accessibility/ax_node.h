@@ -413,15 +413,6 @@ class AX_EXPORT AXNode final {
   const base::StringPairs& GetHtmlAttributes() const {
     return data().html_attributes;
   }
-  bool HasHtmlAttribute(const char* attribute) const {
-    return data().HasHtmlAttribute(attribute);
-  }
-  const std::string& GetHtmlAttribute(const char* attribute) const {
-    return data().GetHtmlAttribute(attribute);
-  }
-  std::u16string GetHtmlAttributeUTF16(const char* attribute) const {
-    return data().GetHtmlAttributeUTF16(attribute);
-  }
 
   AXTextAttributes GetTextAttributes() const {
     return data().GetTextAttributes();

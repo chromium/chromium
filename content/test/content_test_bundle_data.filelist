@@ -5000,6 +5000,8 @@ data/accessibility/html/svg-g-expected-blink.txt
 data/accessibility/html/svg-g.html
 data/accessibility/html/svg-image-name-from-title-expected-blink.txt
 data/accessibility/html/svg-image-name-from-title.html
+data/accessibility/html/svg-rect-with-style-expected-blink.txt
+data/accessibility/html/svg-rect-with-style.html
 data/accessibility/html/svg-style-element-expected-blink.txt
 data/accessibility/html/svg-style-element-expected-fuchsia.txt
 data/accessibility/html/svg-style-element-expected-mac.txt

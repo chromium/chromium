@@ -425,10 +425,6 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   std::string GetStoredVoice() { return controller_->GetStoredVoice(); }
 
-  std::string GetDataFontCss(ui::AXNodeID ax_node_id) {
-    return controller_->GetDataFontCss(ax_node_id);
-  }
-
   std::string GetHtmlTag(ui::AXNodeID ax_node_id) {
     return controller_->GetHtmlTag(ax_node_id);
   }
@@ -1426,16 +1422,6 @@ TEST_F(ReadAnythingAppControllerTest, ShouldBold) {
   EXPECT_EQ(false, ShouldBold(2));
   EXPECT_EQ(true, ShouldBold(3));
   EXPECT_EQ(true, ShouldBold(4));
-}
-
-TEST_F(ReadAnythingAppControllerTest, GetDataFontCss) {
-  std::string dataFontCss = "italic 400 14.6667px 'Courier New'";
-  ui::AXNodeData node;
-  node.id = 2;
-  node.html_attributes.emplace_back("data-font-css", dataFontCss);
-  SendUpdateWithNodes({node});
-  OnAXTreeDistilled({});
-  EXPECT_EQ(dataFontCss, GetDataFontCss(2));
 }
 
 TEST_F(ReadAnythingAppControllerTest, IsOverline) {

@@ -604,22 +604,7 @@ export class AppElement extends AppElementBase {
     const textNode = document.createTextNode(textContent);
     this.domNodeToAxNodeIdMap_.set(textNode, nodeId);
     const isOverline = chrome.readingMode.isOverline(nodeId);
-    let shouldBold = chrome.readingMode.shouldBold(nodeId);
-
-    if (chrome.readingMode.isGoogleDocs) {
-      const dataFontCss = chrome.readingMode.getDataFontCss(nodeId);
-      if (dataFontCss) {
-        const styleNode = document.createElement('style');
-        styleNode.style.cssText = `font:${dataFontCss}`;
-        if (styleNode.style.fontStyle === 'italic') {
-          shouldBold = true;
-        }
-        const fontWeight = +styleNode.style.fontWeight;
-        if (!isNaN(fontWeight) && fontWeight > 500) {
-          shouldBold = true;
-        }
-      }
-    }
+    const shouldBold = chrome.readingMode.shouldBold(nodeId);
 
     if (!shouldBold && !isOverline) {
       return textNode;

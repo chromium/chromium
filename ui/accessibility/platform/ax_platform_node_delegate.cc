@@ -823,36 +823,10 @@ bool AXPlatformNodeDelegate::GetStringListAttribute(
   return found;
 }
 
-bool AXPlatformNodeDelegate::HasHtmlAttribute(const char* attribute) const {
-  if (node_)
-    return node_->HasHtmlAttribute(attribute);
-  return GetData().HasHtmlAttribute(attribute);
-}
-
 const base::StringPairs& AXPlatformNodeDelegate::GetHtmlAttributes() const {
   if (node_)
     return node_->GetHtmlAttributes();
   return GetData().html_attributes;
-}
-
-bool AXPlatformNodeDelegate::GetHtmlAttribute(const char* attribute,
-                                              std::string* value) const {
-  bool found = HasHtmlAttribute(attribute);
-  if (found) {
-    *value = node_ ? node_->GetHtmlAttribute(attribute)
-                   : GetData().GetHtmlAttribute(attribute);
-  }
-  return found;
-}
-
-bool AXPlatformNodeDelegate::GetHtmlAttribute(const char* attribute,
-                                              std::u16string* value) const {
-  bool found = HasHtmlAttribute(attribute);
-  if (found) {
-    *value = node_ ? node_->GetHtmlAttributeUTF16(attribute)
-                   : GetData().GetHtmlAttributeUTF16(attribute);
-  }
-  return found;
 }
 
 AXTextAttributes AXPlatformNodeDelegate::GetTextAttributes() const {

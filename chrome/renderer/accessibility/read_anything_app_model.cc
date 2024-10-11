@@ -306,9 +306,6 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
     return;
   }
 
-  // Clear the map to store new expanded states.
-  aria_expanded_node_states_.clear();
-
   // Display nodes are the nodes which will be displayed by the rendering
   // algorithm of Read Anything app.ts. We wish to create a subtree which
   // stretches down from tree root to every content node and includes the
@@ -327,16 +324,13 @@ void ReadAnythingAppModel::ComputeDisplayNodeIdsForDistilledTree() {
     }
 
     // Ignore aria-expanded for editables.
-    if (content_node->HasHtmlAttribute("aria-expanded") &&
+    if (content_node->data().SupportsExpandCollapse() &&
         !content_node->HasState(ax::mojom::State::kRichlyEditable)) {
       // Capture the expanded state. ARIA expanded is not supported by all
       // element types, but gmail for example uses it anyways. Check the
       // attribute directly for that reason.
-      const std::string& aria_expanded_state =
-          content_node->GetHtmlAttribute("aria-expanded");
-      aria_expanded_node_states_[content_node_id] = aria_expanded_state;
-      // Don't include collapsed aria-expanded items.
-      if (aria_expanded_state != "true") {
+      if (!content_node->HasState(ax::mojom::State::kExpanded)) {
+        // Don't include collapsed aria-expanded items.
         continue;
       }
     }

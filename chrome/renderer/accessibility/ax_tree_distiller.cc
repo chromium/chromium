@@ -81,7 +81,7 @@ void GetContentRootNodes(const ui::AXTree& tree,
 
     // Add all nodes that can be expanded. Collapsed nodes will be removed
     // later.
-    if (node->HasHtmlAttribute("aria-expanded")) {
+    if (node->data().SupportsExpandCollapse()) {
       content_root_nodes->push_back(node);
       continue;
     }
@@ -127,9 +127,7 @@ void AddContentNodesToVector(const ui::AXNode* node,
     return;
   }
 
-  const std::string& aria_expanded_state =
-      node->GetHtmlAttribute("aria-expanded");
-  if (aria_expanded_state == "true") {
+  if (node->HasState(ax::mojom::State::kExpanded)) {
     content_node_ids->push_back(node->id());
     return;
   }

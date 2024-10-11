@@ -333,7 +333,6 @@ class ReadAnythingAppModel {
 
   // The current base language code used for fonts or reading aloud.
   std::string base_language_code_ = "en";
-  std::map<ui::AXNodeID, std::string> aria_expanded_node_states_;
 
   bool redraw_required_ = false;
   ui::AXNodeID last_expanded_node_id_ = ui::kInvalidAXNodeID;

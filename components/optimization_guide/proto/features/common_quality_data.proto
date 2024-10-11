@@ -714,7 +714,7 @@ enum AXRole {
 }
 
 // AX String attribute enum.
-// Next ID: 41
+// Next ID: 42
 enum AXStringAttribute {
   AX_SA_NONE = 0;
 
@@ -797,10 +797,12 @@ enum AXStringAttribute {
   AX_SA_ARIACELLCOLUMNINDEXTEXT = 39;
 
   AX_SA_ARIACELLROWINDEXTEXT = 40;
+
+  AX_SA_DATETIME = 41;
 }
 
 // AX Int attribute enum.
-// Next ID: 67
+// Next ID: 68
 enum AXIntAttribute {
   AX_IA_NONE = 0;
 
@@ -935,6 +937,8 @@ enum AXIntAttribute {
   AX_IA_ARIANOTIFICATIONPRIORITYDEPRECATED = 65;
 
   AX_IA_DETAILSFROM = 66;
+
+  AX_IA_MAXLENGTH = 67;
 }
 
 // AX Float attribute enum.

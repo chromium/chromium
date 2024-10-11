@@ -446,10 +446,13 @@ void ReadAnythingAppController::OnNodeDataChanged(
     ui::AXTree* tree,
     const ui::AXNodeData& old_node_data,
     const ui::AXNodeData& new_node_data) {
-  if (tree->GetAXTreeID() == model_.active_tree_id() &&
-      old_node_data.GetHtmlAttribute("aria-expanded") !=
-          new_node_data.GetHtmlAttribute("aria-expanded")) {
-    model_.set_last_expanded_node_id(new_node_data.id);
+  if (tree->GetAXTreeID() == model_.active_tree_id()) {
+    if (old_node_data.HasState(ax::mojom::State::kExpanded) !=
+            new_node_data.HasState(ax::mojom::State::kExpanded) ||
+        old_node_data.HasState(ax::mojom::State::kCollapsed) !=
+            new_node_data.HasState(ax::mojom::State::kCollapsed)) {
+      model_.set_last_expanded_node_id(new_node_data.id);
+    }
   }
 }
 
@@ -869,7 +872,6 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                    &ReadAnythingAppController::IsPhraseHighlightingEnabled)
       .SetMethod("isHighlightOn", &ReadAnythingAppController::IsHighlightOn)
       .SetMethod("getChildren", &ReadAnythingAppController::GetChildren)
-      .SetMethod("getDataFontCss", &ReadAnythingAppController::GetDataFontCss)
       .SetMethod("getTextDirection",
                  &ReadAnythingAppController::GetTextDirection)
       .SetMethod("getHtmlTag", &ReadAnythingAppController::GetHtmlTag)
@@ -1138,14 +1140,6 @@ std::vector<ui::AXNodeID> ReadAnythingAppController::GetChildren(
     }
   }
   return child_ids;
-}
-
-std::string ReadAnythingAppController::GetDataFontCss(
-    ui::AXNodeID ax_node_id) const {
-  ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
-  DCHECK(ax_node);
-
-  return ax_node->GetHtmlAttribute("data-font-css");
 }
 
 std::string ReadAnythingAppController::GetHtmlTag(

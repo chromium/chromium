@@ -231,13 +231,14 @@ const TestCase kDistillWebPageTestCases[] = {
       <body>)HTML",
      {"Main"}},
     /* ----------------------- */
+    // Ensure Gmail thread support.
     {"simple_page_aria_expanded",
      R"HTML(<!doctype html>
       <body>
         <main>
           <p>Main</p>
-          <div aria-expanded='true'>Expanded</div>
-          <div aria-expanded='false'>Collapsed</div>
+          <div role='listitem' aria-expanded='true'>Expanded</div>
+          <div role='listitem' aria-expanded='false'>Collapsed</div>
         </main>
       <body>)HTML",
      {"Main", "Expanded"}},

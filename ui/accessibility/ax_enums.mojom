@@ -573,8 +573,8 @@ enum Mutation {
   kSubtreeUpdateEnd,
 };
 
-// Next version: 7
-// Next value: 41
+// Next version: 8
+// Next value: 42
 [Extensible, Stable, Uuid="e5a4cd0c-3152-4427-93d5-35ff7d0f1ae8"]
 enum StringAttribute {
   [Default]kNone = 0,
@@ -600,6 +600,7 @@ enum StringAttribute {
   kClassName = 8,
   kContainerLiveRelevant = 9,
   kContainerLiveStatus = 10,
+  [MinVersion=7] kDateTime = 41,
   kDescription = 11,  // Any description = 11, from any description source.
   kDisplay = 12,
   [MinVersion=1] kDoDefaultLabel = 31, // Only for ARC
@@ -634,8 +635,8 @@ enum StringAttribute {
   kVirtualContent = 30,
 };
 
-// Next version: 5
-// Next value: 67
+// Next version: 6
+// Next value: 68
 [Extensible, Stable, Uuid="c350e50f-5177-405d-b155-79868449ba7b"]
 enum IntAttribute {
   [Default]kNone = 0,
@@ -789,6 +790,9 @@ enum IntAttribute {
   // What information was used to compute the object's details
   // (of type AXDetailsFrom).
   [MinVersion=4] kDetailsFrom = 66,
+
+  // The maximum length of a textfield.
+  [MinVersion=5] kMaxLength = 67,
 };
 
 // Next version: 2

@@ -514,6 +514,8 @@ optimization_guide::proto::AXStringAttribute StringAttributeToProto(
     case ax::mojom::StringAttribute::kContainerLiveStatus:
       return optimization_guide::proto::AXStringAttribute::
           AX_SA_CONTAINERLIVESTATUS;
+    case ax::mojom::StringAttribute::kDateTime:
+      return optimization_guide::proto::AXStringAttribute::AX_SA_DATETIME;
     case ax::mojom::StringAttribute::kDescription:
       return optimization_guide::proto::AXStringAttribute::AX_SA_DESCRIPTION;
     case ax::mojom::StringAttribute::kDisplay:
@@ -720,6 +722,8 @@ optimization_guide::proto::AXIntAttribute IntAttributeToProto(
     case ax::mojom::IntAttribute::kAriaNotificationPriorityDeprecated:
       return optimization_guide::proto::AXIntAttribute::
           AX_IA_ARIANOTIFICATIONPRIORITYDEPRECATED;
+    case ax::mojom::IntAttribute::kMaxLength:
+      return optimization_guide::proto::AXIntAttribute::AX_IA_MAXLENGTH;
   }
 }
 

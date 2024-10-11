@@ -1299,6 +1299,8 @@ const char* ToString(ax::mojom::StringAttribute string_attribute) {
       return "containerLiveRelevant";
     case ax::mojom::StringAttribute::kContainerLiveStatus:
       return "containerLiveStatus";
+    case ax::mojom::StringAttribute::kDateTime:
+      return "datetime";
     case ax::mojom::StringAttribute::kDescription:
       return "description";
     case ax::mojom::StringAttribute::kDisplay:
@@ -1388,6 +1390,8 @@ ax::mojom::StringAttribute StringToStringAttribute(
     return ax::mojom::StringAttribute::kContainerLiveRelevant;
   } else if (string_attribute == "kContainerLiveStatus") {
     return ax::mojom::StringAttribute::kContainerLiveStatus;
+  } else if (string_attribute == "kDateTime") {
+    return ax::mojom::StringAttribute::kDateTime;
   } else if (string_attribute == "kDescription") {
     return ax::mojom::StringAttribute::kDescription;
   } else if (string_attribute == "kDisplay") {
@@ -1577,6 +1581,8 @@ const char* ToString(ax::mojom::IntAttribute int_attribute) {
       return "ariaNotificationInterrupt";
     case ax::mojom::IntAttribute::kAriaNotificationPriorityDeprecated:
       return "ariaNotificationPriority";
+    case ax::mojom::IntAttribute::kMaxLength:
+      return "maxLength";
   }
 
   return "";
@@ -1717,6 +1723,8 @@ ax::mojom::IntAttribute StringToIntAttribute(const std::string& int_attribute) {
     return ax::mojom::IntAttribute::kAriaNotificationInterruptDeprecated;
   } else if (int_attribute == "kAriaNotificationPriorityDeprecated") {
     return ax::mojom::IntAttribute::kAriaNotificationPriorityDeprecated;
+  } else if (int_attribute == "kMaxLength") {
+    return ax::mojom::IntAttribute::kMaxLength;
   }
 
   NOTREACHED_IN_MIGRATION()

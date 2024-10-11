@@ -812,31 +812,11 @@ bool AXPlatformNodeBase::GetStringListAttribute(
   return delegate_->GetStringListAttribute(attribute, value);
 }
 
-bool AXPlatformNodeBase::HasHtmlAttribute(const char* attribute) const {
-  if (!delegate_)
-    return false;
-  return delegate_->HasHtmlAttribute(attribute);
-}
-
 const base::StringPairs& AXPlatformNodeBase::GetHtmlAttributes() const {
   static const base::NoDestructor<base::StringPairs> empty_data;
   if (!delegate_)
     return *empty_data;
   return delegate_->GetHtmlAttributes();
-}
-
-bool AXPlatformNodeBase::GetHtmlAttribute(const char* attribute,
-                                          std::string* value) const {
-  if (!delegate_)
-    return false;
-  return delegate_->GetHtmlAttribute(attribute, value);
-}
-
-bool AXPlatformNodeBase::GetHtmlAttribute(const char* attribute,
-                                          std::u16string* value) const {
-  if (!delegate_)
-    return false;
-  return delegate_->GetHtmlAttribute(attribute, value);
 }
 
 AXTextAttributes AXPlatformNodeBase::GetTextAttributes() const {
@@ -1543,12 +1523,9 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
     AddAttributeToList("class", class_attr, attributes);
   }
 
-  // Expose datetime attribute.
-  std::string datetime;
-  if (GetRole() == ax::mojom::Role::kTime &&
-      GetHtmlAttribute("datetime", &datetime)) {
-    AddAttributeToList("datetime", datetime, attributes);
-  }
+  // Expose machine-readable datetime attribute on <time>, <ins> and <del>.
+  AddAttributeToList(ax::mojom::StringAttribute::kDateTime, "datetime",
+                     attributes);
 
   std::string id;
   if (delegate_->GetStringAttribute(ax::mojom::StringAttribute::kHtmlId, &id)) {
@@ -1627,6 +1604,18 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
 
   if (IsLink(GetRole())) {
     AddAttributeToList(ax::mojom::StringAttribute::kLinkTarget, "link-target",
+                       attributes);
+  }
+
+  // MathML content.
+  // TODO(https://github.com/w3c/aria/issues/2353): consider aria-math.
+  AddAttributeToList(ax::mojom::StringAttribute::kMathContent, "math",
+                     attributes);
+
+  // The maxlength of an input.
+  // TODO(https://github.com/w3c/aria/issues/1119): consider aria-maxlength.
+  if (int max_length = GetIntAttribute(ax::mojom::IntAttribute::kMaxLength)) {
+    AddAttributeToList("maxlength", base::NumberToString(max_length),
                        attributes);
   }
 }

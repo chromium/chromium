@@ -643,6 +643,15 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("slot-display-contents.html"));
 }
 
+#if BUILDFLAG(IS_LINUX)
+// Only run on one platform because font family depends on OS (Chromium chooses
+// the closest available font).
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilitySvgRectWithStyle) {
+  RunHtmlTest(FILE_PATH_LITERAL("svg-rect-with-style.html"));
+}
+#endif
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilitySvgStyleElement) {
   RunHtmlTest(FILE_PATH_LITERAL("svg-style-element.html"));

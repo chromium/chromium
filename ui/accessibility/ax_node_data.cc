@@ -174,6 +174,7 @@ bool IsNodeIdIntAttribute(ax::mojom::IntAttribute attr) {
     case ax::mojom::IntAttribute::kAriaCellRowIndex:
     case ax::mojom::IntAttribute::kAriaCellRowSpan:
     case ax::mojom::IntAttribute::kImageAnnotationStatus:
+    case ax::mojom::IntAttribute::kMaxLength:
     case ax::mojom::IntAttribute::kDropeffectDeprecated:
     case ax::mojom::IntAttribute::kDOMNodeIdDeprecated:
     case ax::mojom::IntAttribute::kAriaNotificationInterruptDeprecated:
@@ -375,35 +376,6 @@ const std::vector<std::string>& AXNodeData::GetStringListAttribute(
     return iter->second;
   return *empty_vector;
 }
-
-bool AXNodeData::HasHtmlAttribute(const char* attribute) const {
-  const std::string* value = FindHtmlAttribute(attribute);
-  return value != nullptr;
-}
-
-const std::string& AXNodeData::GetHtmlAttribute(const char* attribute) const {
-  const std::string* value = FindHtmlAttribute(attribute);
-  if (value) {
-    return *value;
-  }
-  return base::EmptyString();
-}
-
-const std::string* AXNodeData::FindHtmlAttribute(const char* attribute) const {
-  for (const std::pair<std::string, std::string>& html_attribute :
-       html_attributes) {
-    const std::string& attr = html_attribute.first;
-    if (base::EqualsCaseInsensitiveASCII(attr, attribute)) {
-      return &html_attribute.second;
-    }
-  }
-  return nullptr;
-}
-
-std::u16string AXNodeData::GetHtmlAttributeUTF16(const char* attribute) const {
-  return base::UTF8ToUTF16(GetHtmlAttribute(attribute));
-}
-
 void AXNodeData::AddChildTreeId(const AXTreeID& tree_id) {
   if (HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId)) {
     RemoveStringAttribute(ax::mojom::StringAttribute::kChildTreeId);
@@ -1597,6 +1569,9 @@ std::string AXNodeData::ToString(bool verbose) const {
                   ui::ToString(static_cast<ax::mojom::AriaNotificationPriority>(
                       int_attribute.second));
         break;
+      case ax::mojom::IntAttribute::kMaxLength:
+        result += " maxlength=" + value;
+        break;
       case ax::mojom::IntAttribute::kNone:
         break;
     }
@@ -1646,6 +1621,9 @@ std::string AXNodeData::ToString(bool verbose) const {
         break;
       case ax::mojom::StringAttribute::kChildTreeNodeAppId:
         result += " child_tree_node_app_id=" + value.substr(0, 8);
+        break;
+      case ax::mojom::StringAttribute::kDateTime:
+        result += " datetime=" + value;
         break;
       case ax::mojom::StringAttribute::kDescription:
         result += " description=" + value;

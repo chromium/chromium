@@ -356,16 +356,12 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   EXPECT_EQ("push", GetAttr(button, ax::mojom::StringAttribute::kName));
   EXPECT_EQ("inline-block",
             GetAttr(button, ax::mojom::StringAttribute::kDisplay));
-  EXPECT_THAT(button->data().html_attributes,
-              ElementsAre(Pair("type", "button"), Pair("value", "push")));
 
   const ui::AXNode* checkbox = body->GetUnignoredChildAtIndex(1);
   EXPECT_EQ(ax::mojom::Role::kCheckBox, checkbox->data().role);
   EXPECT_EQ("input", GetAttr(checkbox, ax::mojom::StringAttribute::kHtmlTag));
   EXPECT_EQ("inline-block",
             GetAttr(checkbox, ax::mojom::StringAttribute::kDisplay));
-  EXPECT_THAT(checkbox->data().html_attributes,
-              ElementsAre(Pair("type", "checkbox")));
 }
 
 // Android's text representation is different, so disable the test there.

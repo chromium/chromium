@@ -36,16 +36,7 @@ bool IsRichTextEditable(const AXNode* node) {
 }
 
 bool IsAtomicTextField(const AXNode* node) {
-  const std::string& html_tag =
-      node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
-  if (html_tag == "input") {
-    const std::string& input_type = node->GetHtmlAttribute("type");
-    return input_type.empty() || input_type == "email" ||
-           input_type == "password" || input_type == "search" ||
-           input_type == "tel" || input_type == "text" || input_type == "url" ||
-           input_type == "number";
-  }
-  return html_tag == "textarea";
+  return node->data().IsAtomicTextField();
 }
 
 bool IsLeaf(const AXNode* node) {

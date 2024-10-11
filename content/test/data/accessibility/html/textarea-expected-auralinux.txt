@@ -1,3 +1,3 @@
 [document web] focusable focused
 ++[section]
-++++[entry] editable focusable multi-line selectable-text
+++++[entry] editable focusable multi-line selectable-text maxlength:99
