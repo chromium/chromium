@@ -5,6 +5,8 @@
 #include "extensions/browser/api/declarative_webrequest/webrequest_action.h"
 
 #include <limits>
+#include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
@@ -917,11 +919,13 @@ WebRequestRemoveResponseHeaderAction::CreateDelta(
 
   EventResponseDelta result(extension_id, extension_install_time);
   size_t iter = 0;
-  std::string current_value;
-  while (headers->EnumerateHeader(&iter, name_, &current_value)) {
-    if (has_value_ && !base::EqualsCaseInsensitiveASCII(current_value, value_))
+  std::optional<std::string_view> current_value;
+  while ((current_value = headers->EnumerateHeader(&iter, name_))) {
+    if (has_value_ &&
+        !base::EqualsCaseInsensitiveASCII(*current_value, value_)) {
       continue;
-    result.deleted_response_headers.push_back(make_pair(name_, current_value));
+    }
+    result.deleted_response_headers.emplace_back(name_, *current_value);
   }
   return result;
 }

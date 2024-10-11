@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <cmath>
+#include <optional>
 #include <string_view>
 #include <tuple>
 #include <utility>
@@ -1346,10 +1347,10 @@ static ParsedResponseCookies GetResponseCookies(
   ParsedResponseCookies result;
 
   size_t iter = 0;
-  std::string value;
-  while (
-      override_response_headers->EnumerateHeader(&iter, "Set-Cookie", &value)) {
-    result.push_back(std::make_unique<net::ParsedCookie>(value));
+  std::optional<std::string_view> value;
+  while ((value = override_response_headers->EnumerateHeader(&iter,
+                                                             "Set-Cookie"))) {
+    result.push_back(std::make_unique<net::ParsedCookie>(*value));
   }
   return result;
 }
