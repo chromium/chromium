@@ -24412,7 +24412,8 @@
                 "fuchsia",
                 "linux",
                 "mac",
-                "windows"
+                "windows",
+                "ios"
             ],
             "experiments": [
                 {
