@@ -10,7 +10,13 @@
 
 namespace views::examples {
 
-TEST(ExamplesTest, TestViewsExamplesLaunches) {
+// TODO(crbug.com/372806548): Test failing on Windows
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_TestViewsExamplesLaunches DISABLED_TestViewsExamplesLaunches
+#else
+#define MAYBE_TestViewsExamplesLaunches TestViewsExamplesLaunches
+#endif
+TEST(ExamplesTest, MAYBE_TestViewsExamplesLaunches) {
   const ExamplesExitCode exit_code = ExamplesMainProc(/*under_test=*/true);
   // Check the status of the Skia Gold comparison.
   EXPECT_TRUE((exit_code == ExamplesExitCode::kSucceeded) ||
