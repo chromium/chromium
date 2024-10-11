@@ -11,7 +11,7 @@ export function getHtml(this: BatchUploadAppElement) {
   return html`
 <div id="batchUploadDialog">
   <div id="header">
-    <div id="title">${this.i18n('batchUploadTitle')}</div>
+    <h1 id="title">${this.i18n('batchUploadTitle')}</h1>
     <div id="subtitle">${this.dialogSubtitle_}</div>
 
     <div id="account-info-row">
