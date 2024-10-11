@@ -153,7 +153,6 @@
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
 #include "chromeos/crosapi/mojom/sharesheet.mojom.h"
 #include "chromeos/crosapi/mojom/smart_reader.mojom.h"
-#include "chromeos/crosapi/mojom/speech_recognition.mojom.h"
 #include "chromeos/crosapi/mojom/structured_metrics_service.mojom.h"
 #include "chromeos/crosapi/mojom/suggestion_service.mojom.h"
 #include "chromeos/crosapi/mojom/sync.mojom.h"
@@ -548,7 +547,6 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::SearchControllerFactory>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Sharesheet>(),
     MakeInterfaceVersionEntry<crosapi::mojom::SmartReaderClient>(),
-    MakeInterfaceVersionEntry<crosapi::mojom::SpeechRecognition>(),
     MakeInterfaceVersionEntry<crosapi::mojom::StructuredMetricsService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::SuggestionService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::SnapshotCapturer>(),
@@ -868,9 +866,6 @@ void InjectBrowserInitParams(
       ash::InstallAttributes::Get()->IsEnterpriseManaged();
 
   params->device_type = ConvertDeviceType(chromeos::GetDeviceType());
-
-  params->is_ondevice_speech_supported =
-      base::FeatureList::IsEnabled(ash::features::kOnDeviceSpeechRecognition);
 
   params->ash_chrome_version = version_info::GetVersionNumber();
   params->use_cups_for_printing = GetUseCupsForPrinting();

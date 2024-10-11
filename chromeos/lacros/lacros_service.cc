@@ -113,7 +113,6 @@
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
 #include "chromeos/crosapi/mojom/sharesheet.mojom.h"
 #include "chromeos/crosapi/mojom/smart_reader.mojom.h"
-#include "chromeos/crosapi/mojom/speech_recognition.mojom.h"
 #include "chromeos/crosapi/mojom/suggestion_service.mojom.h"
 #include "chromeos/crosapi/mojom/sync.mojom.h"
 #include "chromeos/crosapi/mojom/task_manager.mojom.h"
@@ -590,10 +589,6 @@ LacrosService::LacrosService()
   ConstructRemote<crosapi::mojom::Sharesheet,
                   &crosapi::mojom::Crosapi::BindSharesheet,
                   Crosapi::MethodMinVersions::kBindSharesheetMinVersion>();
-  ConstructRemote<
-      crosapi::mojom::SpeechRecognition,
-      &crosapi::mojom::Crosapi::BindSpeechRecognition,
-      Crosapi::MethodMinVersions::kBindSpeechRecognitionMinVersion>();
   ConstructRemote<
       crosapi::mojom::StructuredMetricsService,
       &crosapi::mojom::Crosapi::BindStructuredMetricsService,

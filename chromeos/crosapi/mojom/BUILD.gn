@@ -110,7 +110,6 @@ mojom("mojom") {
     "screen_manager.mojom",
     "sharesheet.mojom",
     "smart_reader.mojom",
-    "speech_recognition.mojom",
     "suggestion_service.mojom",
     "sync.mojom",
     "synced_session_client.mojom",

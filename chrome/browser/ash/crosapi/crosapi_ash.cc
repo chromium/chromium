@@ -102,7 +102,6 @@
 #include "chrome/browser/ash/crosapi/screen_manager_ash.h"
 #include "chrome/browser/ash/crosapi/search_provider_ash.h"
 #include "chrome/browser/ash/crosapi/sharesheet_ash.h"
-#include "chrome/browser/ash/crosapi/speech_recognition_ash.h"
 #include "chrome/browser/ash/crosapi/structured_metrics_service_ash.h"
 #include "chrome/browser/ash/crosapi/suggestion_service_ash.h"
 #include "chrome/browser/ash/crosapi/task_manager_ash.h"
@@ -325,7 +324,6 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       search_provider_ash_(std::make_unique<SearchProviderAsh>()),
       sharesheet_ash_(std::make_unique<SharesheetAsh>()),
       smart_reader_manager_ash_(std::make_unique<ash::SmartReaderManagerAsh>()),
-      speech_recognition_ash_(std::make_unique<SpeechRecognitionAsh>()),
       structured_metrics_service_ash_(
           std::make_unique<StructuredMetricsServiceAsh>()),
       suggestion_service_ash_(std::make_unique<SuggestionServiceAsh>()),
@@ -982,11 +980,6 @@ void CrosapiAsh::BindSharesheet(
 void CrosapiAsh::BindSmartReaderClient(
     mojo::PendingRemote<mojom::SmartReaderClient> remote) {
   smart_reader_manager_ash_->BindRemote(std::move(remote));
-}
-
-void CrosapiAsh::BindSpeechRecognition(
-    mojo::PendingReceiver<mojom::SpeechRecognition> receiver) {
-  speech_recognition_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindStableVideoDecoderFactory(

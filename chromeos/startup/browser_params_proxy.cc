@@ -171,10 +171,6 @@ crosapi::mojom::BrowserInitParams::DeviceType BrowserParamsProxy::DeviceType()
   return BrowserInitParams::Get()->device_type;
 }
 
-bool BrowserParamsProxy::IsOndeviceSpeechSupported() const {
-  return BrowserInitParams::Get()->is_ondevice_speech_supported;
-}
-
 const std::optional<base::flat_map<policy::PolicyNamespace, base::Value>>&
 BrowserParamsProxy::DeviceAccountComponentPolicy() const {
   return BrowserInitParams::Get()->device_account_component_policy;

@@ -240,8 +240,6 @@ static_library("crosapi") {
     "search_provider_ash.h",
     "sharesheet_ash.cc",
     "sharesheet_ash.h",
-    "speech_recognition_ash.cc",
-    "speech_recognition_ash.h",
     "stateful_lacros_loader.cc",
     "stateful_lacros_loader.h",
     "structured_metrics_service_ash.cc",

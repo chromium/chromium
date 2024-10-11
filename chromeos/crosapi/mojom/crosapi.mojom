@@ -102,7 +102,6 @@ import "chromeos/crosapi/mojom/screen_ai_downloader.mojom";
 import "chromeos/crosapi/mojom/screen_manager.mojom";
 import "chromeos/crosapi/mojom/sharesheet.mojom";
 import "chromeos/crosapi/mojom/smart_reader.mojom";
-import "chromeos/crosapi/mojom/speech_recognition.mojom";
 import "chromeos/crosapi/mojom/structured_metrics_service.mojom";
 import "chromeos/crosapi/mojom/suggestion_service.mojom";
 import "chromeos/crosapi/mojom/sync.mojom";
@@ -670,11 +669,7 @@ interface Crosapi {
   BindSmartReaderClient@107(
       pending_remote<crosapi.mojom.SmartReaderClient> remote);
 
-  // Binds the SpeechRecognition interface to access on-device speech
-  // recognition.
-  // Added in M104.
-  [MinVersion=81]
-  BindSpeechRecognition@84(pending_receiver<SpeechRecognition> receiver);
+  // BindSpeechRecognition@84 was removed.
 
   // Binds the StableVideoDecoderFactory, which allows lacros-chrome to request
   // hardware accelerated video decoding. We need to use a
@@ -1411,10 +1406,8 @@ struct BrowserInitParams {
   [MinVersion=37]
   DeviceType device_type@37;
 
-  // Whether on-device speech recognition is supported on the platform.
-  // Forwarded from ash flag OnDeviceSpeechRecognition.
   [MinVersion=40]
-  bool is_ondevice_speech_supported@40;
+  bool REMOVED_40@40;
 
   // Policy blob of the extension policy for the device account. The values of
   // the map are serialized PolicyFetchResponse proto messages from
