@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <list>
 #include <memory>
 #include <optional>
 #include <string>
@@ -291,6 +292,17 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   // Returns ids of all FrameSinks that were registered.
   std::vector<FrameSinkId> GetRegisteredFrameSinkIds() const;
 
+  // Returns oldest(first) parent's FrameSinkId attached to
+  // `child_frame_sink_id`, since all frame production/input processing uses the
+  // oldest embedding. To be called by non-root CompositorFrameSinks only.
+  FrameSinkId GetOldestParentByChildFrameId(
+      const FrameSinkId& child_frame_sink_id) const;
+  // Returns the oldest RootCompositorFrameSink's FrameSinkId associated with
+  // `child_frame_sink_id`, since all frame production/input processing uses
+  // the oldest embedding.
+  FrameSinkId GetOldestRootCompositorFrameSinkId(
+      const FrameSinkId& child_frame_sink_id) const;
+
   // Returns children of a FrameSink that has |parent_frame_sink_id|.
   // Returns an empty set if a parent doesn't have any children.
   base::flat_set<FrameSinkId> GetChildrenByParent(
@@ -406,6 +418,12 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
     raw_ptr<BeginFrameSource> source = nullptr;
     // This represents a dag of parent -> children mapping.
     base::flat_set<FrameSinkId> children;
+    // The parent FrameSinkId for |this| FrameSink. Empty for
+    // RootCompositorFrameSinks. This keeps track of multiple parents in order
+    // of their registration, similar to BeginFrameSource ordering, allowing
+    // updates to parent in single step and removing the requirement for
+    // walks in the hierarchy tree.
+    std::list<FrameSinkId> parent;
   };
 
   void RecursivelyAttachBeginFrameSource(const FrameSinkId& frame_sink_id,
