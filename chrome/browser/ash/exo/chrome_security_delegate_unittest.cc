@@ -139,19 +139,12 @@ TEST_F(ChromeSecurityDelegateTest, CanLockPointer) {
   container_window.Init(ui::LAYER_NOT_DRAWN);
   aura::test::TestWindowDelegate delegate;
 
-  // CanLockPointer should be allowed for arc and lacros, but not others.
+  // CanLockPointer should be allowed for arc, but not others.
   std::unique_ptr<aura::Window> arc_toplevel(
       aura::test::CreateTestWindowWithDelegate(&delegate, 0, gfx::Rect(),
                                                &container_window));
   arc_toplevel->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::ARC_APP);
   EXPECT_TRUE(security_delegate->CanLockPointer(arc_toplevel.get()));
-
-  std::unique_ptr<aura::Window> lacros_toplevel(
-      aura::test::CreateTestWindowWithDelegate(&delegate, 0, gfx::Rect(),
-                                               &container_window));
-  lacros_toplevel->SetProperty(chromeos::kAppTypeKey,
-                               chromeos::AppType::LACROS);
-  EXPECT_TRUE(security_delegate->CanLockPointer(lacros_toplevel.get()));
 
   std::unique_ptr<aura::Window> crostini_toplevel(
       aura::test::CreateTestWindowWithDelegate(&delegate, 0, gfx::Rect(),

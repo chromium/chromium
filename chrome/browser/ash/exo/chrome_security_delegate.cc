@@ -295,16 +295,12 @@ bool ChromeSecurityDelegate::CanSelfActivate(aura::Window* window) const {
 bool ChromeSecurityDelegate::CanLockPointer(aura::Window* window) const {
   // TODO(b/200896773): Move this out from exo's default security delegate
   // define in client's security delegates.
-  return ash::IsArcWindow(window) || ash::IsLacrosWindow(window);
+  return ash::IsArcWindow(window);
 }
 
 ChromeSecurityDelegate::SetBoundsPolicy ChromeSecurityDelegate::CanSetBounds(
     aura::Window* window) const {
-  // TODO(b/200896773): Move into LacrosSecurityDelegate when it exists.
-  if (ash::IsLacrosWindow(window)) {
-    return SetBoundsPolicy::DCHECK_IF_DECORATED;
-  } else if (ash::IsArcWindow(window)) {
-    // TODO(b/285252684): Move into ArcSecurityDelegate when it exists.
+  if (ash::IsArcWindow(window)) {
     return SetBoundsPolicy::ADJUST_IF_DECORATED;
   } else {
     return SetBoundsPolicy::IGNORE;
