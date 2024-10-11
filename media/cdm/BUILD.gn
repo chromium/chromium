@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//media/media_options.gni")
+import("//testing/test.gni")
 
 source_set("cdm_api") {
   sources = [ "api/content_decryption_module.h" ]
@@ -256,4 +257,20 @@ source_set("unit_tests") {
       "win/media_foundation_cdm_unittest.cc",
     ]
   }
+}
+
+test("aes_decryptor_fuzztests") {
+  sources = [ "aes_decryptor_fuzztests.cc" ]
+
+  fuzztests = [
+    "AesDecryptorFuzzTests.CreateSessionDoesNotCrash",
+    "AesDecryptorFuzzTests.UpdateSessionDoesNotCrash",
+    "AesDecryptorFuzzTests.DecryptDoesNotCrash",
+  ]
+
+  deps = [
+    "//base/test:test_support",
+    "//media:test_support",
+    "//third_party/fuzztest:fuzztest_gtest_main",
+  ]
 }
