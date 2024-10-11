@@ -1613,7 +1613,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Screenshare.ZeroHz.DelayMs" units="ms"
-    expires_after="2024-11-21">
+    expires_after="2025-11-21">
   <owner>henrika@chromium.org</owner>
   <owner>handellm@google.com</owner>
   <summary>
