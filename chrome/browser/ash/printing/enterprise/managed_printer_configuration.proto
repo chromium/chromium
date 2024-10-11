@@ -5,6 +5,8 @@
 syntax = "proto3";
 option optimize_for = LITE_RUNTIME;
 
+import "print_job_options.proto";
+
 // Describes one managed printer configuration.
 // A list of `ManagedPrinterConfiguration` messages converted to a JSON array 
 // corresponds to the contents `PrintersBulkConfiguration` and `DevicePrinters`
@@ -46,4 +48,8 @@ message ManagedPrinterConfiguration {
 
   // Required. Source of the PPD file to use during printer setup.
   optional PpdResource ppd_resource = 5 [json_name = "ppd_resource"];
+
+  // Optional. Contains print job options specific to this particular printer.
+  optional PrintJobOptions print_job_options = 6
+      [json_name = "print_job_options"];
 }

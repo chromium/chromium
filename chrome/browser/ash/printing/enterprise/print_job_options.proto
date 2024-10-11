@@ -1,0 +1,75 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+
+// Configuration of default and allowed print settings for a managed printer.
+message PrintJobOptions {
+  // All fields in this proto are optional. Both default and allowed values for
+  // each options are also optional (technically both of them could be missing).
+  optional SizeOption media_size = 1 [json_name = "media_size"];
+  optional StringOption media_type = 2 [json_name = "media_type"];
+  optional DuplexOption duplex = 3;
+  optional BoolOption color = 4;
+  optional DPIOption dpi = 5;
+  optional QualityOption quality = 6;
+  optional BoolOption print_as_image = 7 [json_name = "print_as_image"];
+}
+
+message SizeOption {
+  optional Size default_value = 1 [json_name = "default_value"];
+  repeated Size allowed_values = 2 [json_name = "allowed_values"];
+}
+
+message Size {
+  // Both fields are required.
+  optional int32 width = 1;
+  optional int32 height = 2;
+}
+
+message DuplexOption {
+  optional DuplexType default_value = 1 [json_name = "default_value"];
+  repeated DuplexType allowed_values = 2 [json_name = "allowed_values"];
+}
+
+enum DuplexType {
+  DUPLEX_UNKNOWN = 0;
+  DUPLEX_ONE_SIDED = 1;
+  DUPLEX_SHORT_EDGE = 2;
+  DUPLEX_LONG_EDGE = 3;
+}
+
+message DPIOption {
+  optional DPI default_value = 1 [json_name = "default_value"];
+  repeated DPI allowed_values = 2 [json_name = "allowed_values"];
+}
+
+message DPI {
+  // Both fields are required.
+  optional int32 horizontal = 1;
+  optional int32 vertical = 2;
+}
+
+message QualityOption {
+  optional QualityType default_value = 1 [json_name = "default_value"];
+  repeated QualityType allowed_values = 2 [json_name = "allowed_values"];
+}
+
+enum QualityType {
+  QUALITY_UNKNOWN = 0;
+  QUALITY_DRAFT = 1;
+  QUALITY_NORMAL = 2;
+  QUALITY_HIGH = 3;
+}
+
+message StringOption {
+  optional string default_value = 1 [json_name = "default_value"];
+  repeated string allowed_values = 2 [json_name = "allowed_values"];
+}
+
+message BoolOption {
+  optional bool default_value = 1 [json_name = "default_value"];
+  repeated bool allowed_values = 2 [json_name = "allowed_values"];
+}
