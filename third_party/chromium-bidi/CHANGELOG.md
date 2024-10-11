@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.8.1](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.8.0...chromium-bidi-v0.8.1) (2024-10-11)
+
+
+### Features
+
+* implement Bluetooth Emulation BiDi mapping ([#2624](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2624)) ([48a233f](https://github.com/GoogleChromeLabs/chromium-bidi/commit/48a233fa2504b891a6555894382d9091c1bed4cc))
+* support MPArch sessions ([#2662](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2662)) ([662485f](https://github.com/GoogleChromeLabs/chromium-bidi/commit/662485f5101c2e8937979f938cb97f9c58f6bfa0))
+
 ## [0.8.0](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.7.1...chromium-bidi-v0.8.0) (2024-09-30)
 
 
