@@ -108,12 +108,6 @@ _OS_SPECIFIC_FILTER['win'] = [
     'ChromeDownloadDirTest.testFileDownloadAfterTab',
     'InvalidCertificateTest.testLoadsPage',
     'InvalidCertificateTest.testNavigateNewWindow',
-    'ChromeDriverTest.testHeadlessWithUserDataDirStarts',
-    'ChromeDriverTest.testHeadlessWithExistingUserDataDirStarts',
-    'JavaScriptTests.testAllJS',
-    'LaunchDesktopTest.testExistingDevToolsPortFile',
-    'SessionHandlingTest.testQuitASessionMoreThanOnce',
-    'SupportIPv4AndIPv6.testSupportIPv4AndIPv6',
     # Flaky on Win7 bots: crbug.com/1132559
     'ChromeDriverTest.testTakeElementScreenshotInIframe',
     # TODO(https://crbug.com/360058651): Flaky on win11.
