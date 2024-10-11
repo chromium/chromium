@@ -22,7 +22,7 @@ export class GeneratedSoundFx {
                                                  new AudioContext();
       if (IS_IOS) {
         this.context.onstatechange = () => {
-          if (this.context.state != 'running') {
+          if (this.context.state !== 'running') {
             this.context.resume();
           }
         };

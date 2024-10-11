@@ -122,7 +122,7 @@ const FPS = 60;
 const IS_MOBILE = /Android/.test(window.navigator.userAgent) || IS_IOS;
 
 /** @const */
-const IS_RTL = document.querySelector('html').dir == 'rtl';
+const IS_RTL = document.querySelector('html').dir === 'rtl';
 
 /** @const */
 const ARCADE_MODE_URL = 'chrome://dino/';
@@ -754,7 +754,7 @@ Runner.prototype = {
       // For a11y, audio cues.
       if (Runner.audioCues && hasObstacles) {
         const jumpObstacle =
-            this.horizon.obstacles[0].typeConfig.type != 'COLLECTABLE';
+            this.horizon.obstacles[0].typeConfig.type !== 'COLLECTABLE';
 
         if (!this.horizon.obstacles[0].jumpAlerted) {
           const threshold = Runner.isMobileMouseInput ?
@@ -774,7 +774,7 @@ Runner.prototype = {
 
       // Activated alt game mode.
       if (Runner.isAltGameModeEnabled() && collision &&
-          this.horizon.obstacles[0].typeConfig.type == 'COLLECTABLE') {
+          this.horizon.obstacles[0].typeConfig.type === 'COLLECTABLE') {
         this.horizon.removeFirstObstacle();
         this.tRex.setFlashing(true);
         collision = false;
@@ -887,7 +887,7 @@ Runner.prototype = {
    */
   toggleSpeed() {
     if (Runner.audioCues) {
-      const speedChange = Runner.slowDown != this.slowSpeedCheckbox.checked;
+      const speedChange = Runner.slowDown !== this.slowSpeedCheckbox.checked;
 
       if (speedChange) {
         Runner.slowDown = this.slowSpeedCheckbox.checked;
@@ -911,7 +911,7 @@ Runner.prototype = {
    * @param {Event=} e
    */
   showSpeedToggle(e) {
-    const isFocusEvent = e && e.type == 'focus';
+    const isFocusEvent = e && e.type === 'focus';
     if (Runner.audioCues || isFocusEvent) {
       this.slowSpeedCheckboxLabel.classList.toggle(
           HIDDEN_CLASS, isFocusEvent ? false : !this.crashed);
@@ -995,17 +995,17 @@ Runner.prototype = {
     if (this.isCanvasInView()) {
       // Allow toggling of speed toggle.
       if (Runner.keycodes.JUMP[e.keyCode] &&
-          e.target == this.slowSpeedCheckbox) {
+          e.target === this.slowSpeedCheckbox) {
         return;
       }
 
       if (!this.crashed && !this.paused) {
         // For a11y, screen reader activation.
         const isMobileMouseInput = IS_MOBILE &&
-            e.type === Runner.events.POINTERDOWN && e.pointerType == 'mouse' &&
-            (e.target == this.containerEl ||
+            e.type === Runner.events.POINTERDOWN && e.pointerType === 'mouse' &&
+            (e.target === this.containerEl ||
              (IS_IOS &&
-              (e.target == this.touchController || e.target == this.canvas)));
+              (e.target === this.touchController || e.target === this.canvas)));
 
         if (Runner.keycodes.JUMP[e.keyCode] ||
             e.type === Runner.events.TOUCHSTART || isMobileMouseInput) {
@@ -1176,7 +1176,7 @@ Runner.prototype = {
    * @param {Event} e
    */
   handleGameOverClicks(e) {
-    if (e.target != this.slowSpeedCheckbox) {
+    if (e.target !== this.slowSpeedCheckbox) {
       e.preventDefault();
       if (this.distanceMeter.hasClickedOnHighScore(e) && this.highestScore) {
         if (this.distanceMeter.isHighScoreFlashing()) {
@@ -1385,7 +1385,7 @@ Runner.prototype = {
   isArcadeMode() {
     // In RTL languages the title is wrapped with the left to right mark
     // control characters &#x202A; and &#x202C but are invisible.
-    return IS_RTL ? document.title.indexOf(ARCADE_MODE_URL) == 1 :
+    return IS_RTL ? document.title.indexOf(ARCADE_MODE_URL) === 1 :
                     document.title === ARCADE_MODE_URL;
   },
 
@@ -1826,7 +1826,7 @@ GameOverPanel.prototype = {
     this.flashTimer += deltaTime;
 
     // Restart Button
-    if (this.currentFrame == 0 &&
+    if (this.currentFrame === 0 &&
         this.animTimer > GameOverPanel.LOGO_PAUSE_DURATION) {
       this.animTimer = 0;
       this.currentFrame++;
@@ -1840,7 +1840,7 @@ GameOverPanel.prototype = {
       }
     } else if (
         !this.altGameModeActive &&
-        this.currentFrame == GameOverPanel.animConfig.frames.length) {
+        this.currentFrame === GameOverPanel.animConfig.frames.length) {
       this.reset();
       return;
     }
@@ -2062,9 +2062,10 @@ function Obstacle(
   this.gap = 0;
   this.speedOffset = 0;
   this.altGameModeActive = opt_isAltGameMode;
-  this.imageSprite = this.typeConfig.type == 'COLLECTABLE' ?
+  this.imageSprite = this.typeConfig.type === 'COLLECTABLE' ?
       Runner.altCommonImageSprite :
-      this.altGameModeActive ? Runner.altGameImageSprite : Runner.imageSprite;
+      this.altGameModeActive ? Runner.altGameImageSprite :
+                               Runner.imageSprite;
 
   // For animated obstacles.
   this.currentFrame = 0;
@@ -2410,7 +2411,7 @@ Trex.prototype = {
         [spriteDefinition.RUNNING_1.x, spriteDefinition.RUNNING_2.x];
     Trex.animFrames.CRASHED.frames = [spriteDefinition.CRASHED.x];
 
-    if (typeof spriteDefinition.JUMPING.x == 'object') {
+    if (typeof spriteDefinition.JUMPING.x === 'object') {
       Trex.animFrames.JUMPING.frames = spriteDefinition.JUMPING.x;
     } else {
       Trex.animFrames.JUMPING.frames = [spriteDefinition.JUMPING.x];
@@ -2509,8 +2510,10 @@ Trex.prototype = {
 
     // Update the frame position.
     if (!this.flashing && this.timer >= this.msPerFrame) {
-      this.currentFrame = this.currentFrame ==
-          this.currentAnimFrames.length - 1 ? 0 : this.currentFrame + 1;
+      this.currentFrame =
+          (this.currentFrame === this.currentAnimFrames.length - 1) ?
+          0 :
+          this.currentFrame + 1;
       this.timer = 0;
     }
 
@@ -2535,7 +2538,7 @@ Trex.prototype = {
     let sourceHeight = this.config.HEIGHT;
     const outputHeight = sourceHeight;
     const outputWidth =
-        this.altGameModeEnabled && this.status == Trex.status.CRASHED ?
+        this.altGameModeEnabled && this.status === Trex.status.CRASHED ?
         this.config.WIDTH_CRASHED :
         this.config.WIDTH;
 
@@ -2545,7 +2548,7 @@ Trex.prototype = {
     if (this.altGameModeEnabled) {
       if (this.jumping && this.status !== Trex.status.CRASHED) {
         sourceWidth = this.config.WIDTH_JUMP;
-      } else if (this.status == Trex.status.CRASHED) {
+      } else if (this.status === Trex.status.CRASHED) {
         sourceWidth = this.config.WIDTH_CRASHED;
       }
     }
@@ -2935,8 +2938,8 @@ DistanceMeter.prototype = {
     if (!this.achievement) {
       distance = this.getActualDistance(distance);
       // Score has gone beyond the initial digit count.
-      if (distance > this.maxScore && this.maxScoreUnits ==
-        this.config.MAX_DISTANCE_UNITS) {
+      if (distance > this.maxScore &&
+          this.maxScoreUnits === this.config.MAX_DISTANCE_UNITS) {
         this.maxScoreUnits++;
         this.maxScore = parseInt(this.maxScore + '9', 10);
       } else {
@@ -3662,7 +3665,7 @@ Horizon.prototype = {
         Obstacle.types[i].minSpeed = Obstacle.types[i].minSpeed / 2;
 
         // Convert variable y position obstacles to fixed.
-        if (typeof (Obstacle.types[i].yPos) == 'object') {
+        if (typeof (Obstacle.types[i].yPos) === 'object') {
           Obstacle.types[i].yPos = Obstacle.types[i].yPos[0];
           Obstacle.types[i].yPosMobile = Obstacle.types[i].yPos[0];
         }
@@ -3830,7 +3833,7 @@ Horizon.prototype = {
    */
   addNewObstacle(currentSpeed) {
     const obstacleCount =
-        Obstacle.types[Obstacle.types.length - 1].type != 'COLLECTABLE' ||
+        Obstacle.types[Obstacle.types.length - 1].type !== 'COLLECTABLE' ||
             (Runner.isAltGameModeEnabled() && !this.altGameModeActive ||
              this.altGameModeActive) ?
         Obstacle.types.length - 1 :
@@ -3918,7 +3921,7 @@ Horizon.prototype = {
       let type = backgroundElTypes[index];
 
       // Add variation if available.
-      while (type == this.lastEl && backgroundElTypes.length > 1) {
+      while (type === this.lastEl && backgroundElTypes.length > 1) {
         index = getRandomNum(0, backgroundElTypes.length - 1);
         type = backgroundElTypes[index];
       }
