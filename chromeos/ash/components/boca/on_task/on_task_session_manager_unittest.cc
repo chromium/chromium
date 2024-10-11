@@ -300,6 +300,33 @@ TEST_F(OnTaskSessionManagerTest, ShouldPinBocaSWAWhenLockedOnBundleUpdated) {
   session_manager_->OnBundleUpdated(bundle);
 }
 
+TEST_F(OnTaskSessionManagerTest,
+       ShouldPinBocaSWAWhenLockedOnSessionStartAndBundleUpdated) {
+  const SessionID kWindowId = SessionID::NewUnique();
+  Sequence s;
+  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
+      .WillOnce(Return(
+          SessionID::InvalidValue()))  // Initial check before spawning SWA
+      .WillRepeatedly(Return(kWindowId));
+  EXPECT_CALL(*system_web_app_manager_ptr_, LaunchSystemWebAppAsync(_))
+      .InSequence(s)
+      .WillOnce([](base::OnceCallback<void(bool)> callback) {
+        std::move(callback).Run(true);
+      });
+  EXPECT_CALL(*extensions_manager_ptr_, DisableExtensions)
+      .Times(1)
+      .InSequence(s);
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              SetPinStateForSystemWebAppWindow(true, kWindowId))
+      .Times(1)
+      .InSequence(s);
+
+  ::boca::Bundle bundle;
+  bundle.set_locked(true);
+  session_manager_->OnSessionStarted("test_session_id", ::boca::UserIdentity());
+  session_manager_->OnBundleUpdated(bundle);
+}
+
 TEST_F(OnTaskSessionManagerTest, ShouldAddTabsWhenAdditionalTabsFoundInBundle) {
   const SessionID kWindowId = SessionID::NewUnique();
   const SessionID kTabId_1 = SessionID::NewUnique();

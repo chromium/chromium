@@ -30,6 +30,9 @@ constexpr base::TimeDelta kAddTabRetryDelay = base::Seconds(3);
 // Delay in seconds before we attempt to remove a tab.
 constexpr base::TimeDelta kRemoveTabRetryDelay = base::Seconds(3);
 
+// Delay in seconds before we attempt to pin or unpin the active SWA window.
+constexpr base::TimeDelta kSetPinnedStateDelay = base::Seconds(3);
+
 OnTaskBlocklist::RestrictionLevel NavigationTypeToRestrictionLevel(
     ::boca::LockedNavigationOptions::NavigationType navigation_type) {
   switch (navigation_type) {
@@ -118,7 +121,6 @@ void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
         base::BindOnce(&OnTaskSessionManager::OnTabAdded,
                        weak_ptr_factory_.GetWeakPtr(), url));
   }
-
   for (auto const& [provider_sent_url, tab_ids] : provider_url_tab_ids_map_) {
     if (!current_urls_set.contains(provider_sent_url)) {
       system_web_app_launch_helper_->RemoveTab(
@@ -128,27 +130,18 @@ void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
     }
   }
 
-  if (const SessionID window_id =
-          system_web_app_manager_->GetActiveSystemWebAppWindowID();
-      window_id.is_valid()) {
-    // TODO (b/370871395): Move `SetWindowTrackerForSystemWebAppWindow` to
-    // `OnTaskSystemWebAppManager`.
-    system_web_app_manager_->SetWindowTrackerForSystemWebAppWindow(
-        window_id, &active_tab_tracker_);
-
-    // Disable extensions in the context of OnTask before the window is locked.
-    // Re-enable them otherwise.
-    bool should_lock_window = bundle.locked();
-    if (should_lock_window) {
-      extensions_manager_->DisableExtensions();
-    } else {
-      extensions_manager_->ReEnableExtensions();
-    }
-
-    // Set appropriate pin state on the active window.
-    system_web_app_manager_->SetPinStateForSystemWebAppWindow(
-        /*pinned=*/should_lock_window, window_id);
+  // Disable extensions in the context of OnTask before the window is locked.
+  // Re-enable them otherwise.
+  bool should_lock_window = bundle.locked();
+  if (should_lock_window) {
+    extensions_manager_->DisableExtensions();
+  } else {
+    extensions_manager_->ReEnableExtensions();
   }
+  system_web_app_launch_helper_->SetPinStateForActiveSWAWindow(
+      /*pinned=*/should_lock_window,
+      base::BindOnce(&OnTaskSessionManager::OnSetPinStateOnBocaSWAWindow,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 OnTaskSessionManager::SystemWebAppLaunchHelper::SystemWebAppLaunchHelper(
@@ -213,6 +206,27 @@ void OnTaskSessionManager::SystemWebAppLaunchHelper::RemoveTab(
   }
 }
 
+void OnTaskSessionManager::SystemWebAppLaunchHelper::
+    SetPinStateForActiveSWAWindow(bool pinned, base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (launch_in_progress_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&SystemWebAppLaunchHelper::SetPinStateForActiveSWAWindow,
+                       weak_ptr_factory_.GetWeakPtr(), pinned,
+                       std::move(callback)),
+        kSetPinnedStateDelay);
+    return;
+  }
+  if (const SessionID window_id =
+          system_web_app_manager_->GetActiveSystemWebAppWindowID();
+      window_id.is_valid()) {
+    system_web_app_manager_->SetPinStateForSystemWebAppWindow(pinned,
+                                                              window_id);
+    std::move(callback).Run();
+  }
+}
+
 void OnTaskSessionManager::SystemWebAppLaunchHelper::OnBocaSWALaunched(
     bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -246,6 +260,17 @@ void OnTaskSessionManager::OnTabRemoved(GURL url) {
   if (provider_url_tab_ids_map_.contains(url)) {
     // TODO(b/368105857): Remove child tabs.
     provider_url_tab_ids_map_.erase(url);
+  }
+}
+
+void OnTaskSessionManager::OnSetPinStateOnBocaSWAWindow() {
+  // TODO (b/370871395): Move `SetWindowTrackerForSystemWebAppWindow` to
+  // `OnTaskSystemWebAppManager` eliminating the need for this callback.
+  if (const SessionID window_id =
+          system_web_app_manager_->GetActiveSystemWebAppWindowID();
+      window_id.is_valid()) {
+    system_web_app_manager_->SetWindowTrackerForSystemWebAppWindow(
+        window_id, &active_tab_tracker_);
   }
 }
 

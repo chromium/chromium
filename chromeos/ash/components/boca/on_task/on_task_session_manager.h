@@ -60,6 +60,7 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer {
                 base::OnceCallback<void(SessionID)> callback);
     void RemoveTab(const base::flat_set<SessionID>& tab_ids_to_remove,
                    base::OnceClosure callback);
+    void SetPinStateForActiveSWAWindow(bool pinned, base::OnceClosure callback);
 
    private:
     // Callback triggered when the Boca SWA is launched. Normally at the onset
@@ -83,6 +84,10 @@ class OnTaskSessionManager : public boca::BocaSessionManager::Observer {
 
   // Callback triggered when a tab is removed.
   void OnTabRemoved(GURL url);
+
+  // Callback triggered when the Boca SWA window pin state is set.
+  void OnSetPinStateOnBocaSWAWindow();
+
   ActiveTabTracker active_tab_tracker_;
 
   const std::unique_ptr<OnTaskSystemWebAppManager> system_web_app_manager_;
