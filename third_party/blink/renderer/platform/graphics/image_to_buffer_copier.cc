@@ -75,24 +75,21 @@ ImageToBufferCopier::CopyImage(Image* image) {
 
   // Bind the read framebuffer to our image.
   StaticBitmapImage* static_image = static_cast<StaticBitmapImage*>(image);
-  auto source_mailbox_holder = static_image->GetMailboxHolder();
+  auto source_shared_image = static_image->GetSharedImage();
 
-  // Not strictly necessary since we are on the same context, but keeping
-  // for cleanliness and in case we ever move off the same context.
-  gl_->WaitSyncTokenCHROMIUM(source_mailbox_holder.sync_token.GetData());
-
-  GLuint source_texture_id = gl_->CreateAndTexStorage2DSharedImageCHROMIUM(
-      source_mailbox_holder.mailbox.name);
-  gl_->BeginSharedImageAccessDirectCHROMIUM(
-      source_texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
+  auto source_si_texture = source_shared_image->CreateGLTexture(gl_);
+  auto source_scoped_si_access =
+      source_si_texture->BeginAccess(gpu::SyncToken(), /*readonly=*/true);
 
   gl_->CopySubTextureCHROMIUM(
-      source_texture_id, 0, GL_TEXTURE_2D, dest_scoped_si_access->texture_id(),
-      0, 0, 0, 0, 0, size.width(), size.height(), false, false, false);
+      source_scoped_si_access->texture_id(), 0, GL_TEXTURE_2D,
+      dest_scoped_si_access->texture_id(), 0, 0, 0, 0, 0, size.width(),
+      size.height(), false, false, false);
 
   // Cleanup the read framebuffer and texture.
-  gl_->EndSharedImageAccessDirectCHROMIUM(source_texture_id);
-  gl_->DeleteTextures(1, &source_texture_id);
+  gpu::SharedImageTexture::ScopedAccess::EndAccess(
+      std::move(source_scoped_si_access));
+  source_si_texture.reset();
 
   // Cleanup the draw framebuffer and texture.
   gpu::SyncToken sync_token = gpu::SharedImageTexture::ScopedAccess::EndAccess(
