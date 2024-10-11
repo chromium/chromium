@@ -23,6 +23,8 @@
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_coordinator.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/features.h"
 #import "ios/chrome/browser/ui/settings/privacy/handoff_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/privacy/incognito/incognito_lock_coordinator.h"
+#import "ios/chrome/browser/ui/settings/privacy/incognito/incognito_lock_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/privacy/lockdown_mode/lockdown_mode_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_main_coordinator.h"
 #import "ios/chrome/browser/ui/settings/privacy/privacy_guide/privacy_guide_main_coordinator_delegate.h"
@@ -35,6 +37,7 @@
 
 @interface PrivacyCoordinator () <
     ClearBrowsingDataCoordinatorDelegate,
+    IncognitoLockCoordinatorDelegate,
     PrivacyGuideMainCoordinatorDelegate,
     PrivacyNavigationCommands,
     PrivacySafeBrowsingCoordinatorDelegate,
@@ -46,6 +49,9 @@
 // Coordinator for Privacy Safe Browsing settings.
 @property(nonatomic, strong)
     PrivacySafeBrowsingCoordinator* safeBrowsingCoordinator;
+
+// Coordinator for Incognito lock settings.
+@property(nonatomic, strong) IncognitoLockCoordinator* incognitoLockCoordinator;
 
 // TODO(crbug.com/335387869): Delete this coordinator when Quick Delete is fully
 // launched. The coordinator for the clear browsing data screen.
@@ -108,6 +114,7 @@
   self.clearBrowsingDataCoordinator = nil;
   [self stopLockdownModeCoordinator];
   [self stopSafeBrowsingCoordinator];
+  [self stopIncognitoLockCoordinator];
 
   self.viewController = nil;
 }
@@ -162,6 +169,15 @@
   [self.safeBrowsingCoordinator start];
 }
 
+- (void)showIncognitoLock {
+  DCHECK(!self.incognitoLockCoordinator);
+  self.incognitoLockCoordinator = [[IncognitoLockCoordinator alloc]
+      initWithBaseNavigationController:self.baseNavigationController
+                               browser:self.browser];
+  self.incognitoLockCoordinator.delegate = self;
+  [self.incognitoLockCoordinator start];
+}
+
 - (void)showLockdownMode {
   DCHECK(!self.lockdownModeCoordinator);
   self.lockdownModeCoordinator = [[LockdownModeCoordinator alloc]
@@ -197,6 +213,14 @@
   [self stopSafeBrowsingCoordinator];
 }
 
+#pragma mark - IncognitoLockCoordinatorDelegate
+
+- (void)incognitoLockCoordinatorDidRemove:
+    (IncognitoLockCoordinator*)coordinator {
+  DCHECK_EQ(self.incognitoLockCoordinator, coordinator);
+  [self stopIncognitoLockCoordinator];
+}
+
 #pragma mark - LockdownModeCoordinatorDelegate
 
 - (void)lockdownModeCoordinatorDidRemove:(LockdownModeCoordinator*)coordinator {
@@ -218,6 +242,12 @@
   [self.lockdownModeCoordinator stop];
   self.lockdownModeCoordinator.delegate = nil;
   self.lockdownModeCoordinator = nil;
+}
+
+- (void)stopIncognitoLockCoordinator {
+  [self.incognitoLockCoordinator stop];
+  self.incognitoLockCoordinator.delegate = nil;
+  self.incognitoLockCoordinator = nil;
 }
 
 - (void)stopSafeBrowsingCoordinator {

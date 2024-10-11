@@ -5464,6 +5464,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TABS_MANAGEMENT_SETTINGS" desc="Title for the tabs management panel in settings [Length: 30em] [iOS only]">
         Tabs
       </message>
+      <message name="IDS_IOS_INCOGNITO_LOCK_SETTING_NAME" translateable="false" desc="Name of the Setting to protect Incognito tabs with either soft lock or biometric authentication, e.g. Face ID or Touch ID. [iOS only]">
+       **Hide Incognito tabs**
+      </message>
       <message name="IDS_IOS_TABS_SEARCH_OPEN_TABS_COUNT" desc="The number of the open tabs found as search results in the tab grid.">
         <ph name="COUNT">$1<ex>2</ex></ph> found
       </message>

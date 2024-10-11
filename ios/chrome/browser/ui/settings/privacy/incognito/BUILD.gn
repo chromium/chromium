@@ -1,0 +1,28 @@
+# Copyright 2024 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("incognito") {
+  sources = [
+    "incognito_lock_coordinator.h",
+    "incognito_lock_coordinator.mm",
+    "incognito_lock_coordinator_delegate.h",
+  ]
+
+  deps = [
+    ":incognito_ui",
+    "//base",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+  ]
+}
+
+source_set("incognito_ui") {
+  sources = [
+    "incognito_lock_view_controller.h",
+    "incognito_lock_view_controller.mm",
+    "incognito_lock_view_controller_presentation_delegate.h",
+  ]
+
+  deps = [ "//ios/chrome/browser/ui/settings:settings_root" ]
+}

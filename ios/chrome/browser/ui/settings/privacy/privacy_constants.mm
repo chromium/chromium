@@ -22,3 +22,5 @@ NSString* const kSettingsSafeBrowsingStandardProtectionCellId =
 
 NSString* const kSettingsSafeBrowsingNoProtectionCellId =
     @"kSettingsSafeBrowsingNoProtectionCellId";
+
+NSString* const kSettingsIncognitoLockCellId = @"kSettingsIncognitoLockCellId";

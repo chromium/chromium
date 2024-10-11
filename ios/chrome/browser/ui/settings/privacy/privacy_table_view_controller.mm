@@ -28,6 +28,7 @@
 #import "ios/chrome/browser/browsing_data/model/browsing_data_features.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/incognito_interstitial/ui_bundled/incognito_interstitial_constants.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/features.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -90,6 +91,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeIncognitoReauth,
   ItemTypeIncognitoReauthDisabled,
   ItemTypePrivacySafeBrowsing,
+  ItemTypeIncognitoLock,
   ItemTypeHTTPSOnlyMode,
   ItemTypeIncognitoInterstitial,
   ItemTypeIncognitoInterstitialDisabled,
@@ -121,6 +123,8 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   TableViewDetailIconItem* _handoffDetailItem;
   // Safe Browsing item.
   TableViewDetailIconItem* _safeBrowsingDetailItem;
+  // Incognito Lock item.
+  TableViewDetailIconItem* _incognitoLockItem;
   // Locdown Mode item.
   TableViewDetailIconItem* _lockdownModeDetailItem;
 
@@ -264,6 +268,13 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   // Web Services item.
   [model addItem:[self handoffDetailItem]
       toSectionWithIdentifier:SectionIdentifierWebServices];
+
+  if (IsIOSSoftLockEnabled()) {
+    // Incognito Lock item.
+    [model addItem:[self incognitoLockItem]
+        toSectionWithIdentifier:SectionIdentifierIncognitoAuth];
+  }
+  // TODO(crbug.com/370804664): Hide the toggle behind the feature flag.
 
   // Incognito reauth item is added. If Incognito mode is disabled, or device
   // authentication is not supported, a disabled version is shown instead with
@@ -423,6 +434,18 @@ const char kSyncSettingsURL[] = "settings://open_sync";
   return _safeBrowsingDetailItem;
 }
 
+- (TableViewItem*)incognitoLockItem {
+  // TODO(crbug.com/370804664): Replace placeholder detail text with actual
+  // string ID for various states of the setting based on the pref value.
+  NSString* detailText = @"placeholder";
+  _incognitoLockItem =
+      [self detailItemWithType:ItemTypeIncognitoLock
+                          titleId:IDS_IOS_INCOGNITO_LOCK_SETTING_NAME
+                       detailText:detailText
+          accessibilityIdentifier:kSettingsIncognitoLockCellId];
+  return _incognitoLockItem;
+}
+
 - (TableViewItem*)lockdownModeDetailItem {
   NSString* detailText = GetApplicationContext()->GetLocalState()->GetBoolean(
                              prefs::kBrowserLockdownModeEnabled)
@@ -555,6 +578,9 @@ const char kSyncSettingsURL[] = "settings://open_sync";
       break;
     case ItemTypeLockdownMode:
       [self.handler showLockdownMode];
+      break;
+    case ItemTypeIncognitoLock:
+      [self.handler showIncognitoLock];
       break;
     case ItemTypePrivacyGuide:
       [self.handler showPrivacyGuide];
