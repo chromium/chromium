@@ -39,7 +39,7 @@ MediaFoundationCdmModule* MediaFoundationCdmModule::GetInstance() {
 MediaFoundationCdmModule::MediaFoundationCdmModule() = default;
 MediaFoundationCdmModule::~MediaFoundationCdmModule() = default;
 
-void MediaFoundationCdmModule::Initialize(const base::FilePath& cdm_path) {
+bool MediaFoundationCdmModule::Initialize(const base::FilePath& cdm_path) {
   DVLOG(1) << __func__ << ": cdm_path=" << cdm_path.value();
   CHECK(!initialized_)
       << "MediaFoundationCdmModule can only be initialized once!";
@@ -59,7 +59,7 @@ void MediaFoundationCdmModule::Initialize(const base::FilePath& cdm_path) {
                                        ? CdmLoadResult::kLoadFailed
                                        : CdmLoadResult::kFileMissing);
       ReportLoadErrorCode(kUmaPrefix, library_.GetError());
-      return;
+      return false;
     }
 
     // Only report load time for success loads.
@@ -67,6 +67,8 @@ void MediaFoundationCdmModule::Initialize(const base::FilePath& cdm_path) {
 
     ReportLoadResult(kUmaPrefix, CdmLoadResult::kLoadSuccess);
   }
+
+  return true;
 }
 
 HRESULT MediaFoundationCdmModule::GetCdmFactory(
