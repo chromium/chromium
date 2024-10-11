@@ -579,13 +579,8 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest, AddNewTouchpad) {
                                  "Built-in Touchpad"));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_KeyboardModifierRemapping DISABLED_KeyboardModifierRemapping
-#else
-#define MAYBE_KeyboardModifierRemapping KeyboardModifierRemapping
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest,
-                       MAYBE_KeyboardModifierRemapping) {
+                       KeyboardModifierRemapping) {
   const DeepQuery kCtrlDropdownQuery{
       "os-settings-ui",       "os-settings-main", "main-page-container",
       "settings-device-page", "#remap-keys",      "#ctrlKey",
@@ -594,17 +589,20 @@ IN_PROC_BROWSER_TEST_F(DeviceSettingsInteractiveUiTest,
 
   RunTestSequence(
       Log("Adding a fake internal keyboard"), SetupInternalKeyboard(),
-      LaunchSettingsApp(webcontents_id_,
-                        chromeos::settings::mojom::kDeviceSectionPath),
-      WaitForElementExists(webcontents_id_, kKeyboardRowQuery),
-      ClickElement(webcontents_id_, kKeyboardRowQuery),
+      LaunchSettingsApp(
+          webcontents_id_,
+          chromeos::settings::mojom::kPerDeviceKeyboardSubpagePath),
+      Log("Waiting for internal keyboard to exist"),
       WaitForElementTextContains(webcontents_id_, kKeyboardNameQuery,
                                  "Built-in Keyboard"),
+      Log("Navigating to 'Customize keyboard keys' subpage"),
       ClickElement(webcontents_id_, kCustomizeKeyboardKeysInternalQuery),
       Log("Remapping the 'Ctrl' key to 'Backspace'"),
+      ScrollIntoView(webcontents_id_, kCtrlDropdownQuery),
       ExecuteJsAt(webcontents_id_, kCtrlDropdownQuery,
                   "(el) => {el.selectedIndex = 5; el.dispatchEvent(new "
                   "Event('change'));}"),
+      WaitForDropdownContainsValue(kCtrlDropdownQuery, /*value=*/5),
       ExecuteJsAt(webcontents_id_, kSearchboxQuery,
                   "(el) => { el.focus(); el.select(); }"),
       Log("Entering 'redo' into the Settings search box"),
