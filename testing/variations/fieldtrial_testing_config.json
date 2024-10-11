@@ -5299,6 +5299,7 @@
                 {
                     "name": "TranslateButtonEnabled",
                     "enable_features": [
+                        "IPH_LensOverlayTranslateButton",
                         "LensOverlayTranslateButton"
                     ]
                 }
