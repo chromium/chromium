@@ -1291,8 +1291,7 @@ Status WebViewImpl::DispatchTouchEventWithMultiPoints(
   size_t touch_count = 1;
   for (const TouchEvent& event : events) {
     base::Value::List point_list;
-    int32_t current_time =
-        (base::Time::Now() - base::Time::UnixEpoch()).InMilliseconds();
+    double current_time = base::Time::Now().InSecondsFSinceUnixEpoch();
     params.Set("timestamp", current_time);
     std::string type = GetAsString(event.type);
     params.Set("type", type);
