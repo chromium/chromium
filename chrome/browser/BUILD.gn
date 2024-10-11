@@ -6371,6 +6371,8 @@ static_library("browser") {
       "obsolete_system/obsolete_system_win.cc",
       "password_manager/password_manager_util_win.cc",
       "password_manager/password_manager_util_win.h",
+      "performance_manager/policies/dll_pre_read_policy_win.cc",
+      "performance_manager/public/dll_pre_read_policy_win.h",
       "performance_monitor/metric_evaluator_helper_win.cc",
       "performance_monitor/metric_evaluator_helper_win.h",
       "platform_util_win.cc",

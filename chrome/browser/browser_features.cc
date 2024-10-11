@@ -169,18 +169,6 @@ BASE_FEATURE(kNewTabPageTriggerForPrerender2,
              "NewTabPageTriggerForPrerender2",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_WIN)
-// Don't call the Win32 API PrefetchVirtualMemory when loading chrome.dll inside
-// non-browser processes. This is done by passing flags to these processes. This
-// prevents pulling the entirety of chrome.dll into physical memory (albeit only
-// pri-2 physical memory) under the assumption that during chrome execution,
-// portions of the DLL which are used will already be present, hopefully leading
-// to less needless memory consumption.
-BASE_FEATURE(kNoPreReadMainDll,
-             "NoPreReadMainDll",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_WIN)
-
 #if BUILDFLAG(IS_ANDROID)
 // Adds an "Unsubscribe" action to web push notifications that allows stopping
 // notifications from a given origin with a single tap (with an option to undo).
@@ -341,6 +329,46 @@ BASE_FEATURE(kWebUsbDeviceDetection,
 BASE_FEATURE(kBrowserDynamicCodeDisabled,
              "BrowserDynamicCodeDisabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// The Chrome DLL can be pre-read with ::PrefetchVirtualMemory() from the
+// browser or a child process. Pre-reading is supposed to bring the whole DLL in
+// physical memory more efficiently than a series of hard faults. However,
+// pre-reading consumes a non-trivial amount of CPU even when the DLL is already
+// in physical memory and it may not be necessary to have the full DLL in
+// physical memory (space taken by unused parts of the DLL could potentially be
+// used for more important stuff). This file has multiple features to experiment
+// with policies for pre-reading the Chrome DLL in child processes. The
+// `kPrefetchVirtualMemoryPolicy` feature defined elsewhere controls pre-reading
+// the Chrome DLL from the browser process.
+
+// When enabled, child processes never pre-read the Chrome DLL.
+BASE_FEATURE(kNoPreReadMainDll,
+             "NoPreReadMainDll",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, child processes don't pre-read the Chrome DLL if we believe the
+// Chrome DLL is on an SSD (i.e. pre-read only on spinning disk).
+BASE_FEATURE(kNoPreReadMainDllIfSsd,
+             "NoPreReadMainDllIfSsd",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, the browser process suppresses pre-read in child processes
+// shortly after browser startup, where "shortly after" is dictated by the
+// feature param below. This is thought to be a productive strategy since the
+// browser process will have recently pre-read the DLL during browser
+// startup. In that case, the browser process has recently pre-read the DLL so
+// pre-reading again is thought to be counter-productive (CPU consumption for no
+// gains).
+BASE_FEATURE(kNoPreReadMainDllStartup,
+             "NoPreReadMainDllStartup",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Time after browser startup during which child processes don't pre-read the
+// Chrome DLL when `kNoPreReadMainDllStartup` is enabled.
+const base::FeatureParam<base::TimeDelta>
+    kNoPreReadMainDllStartup_StartupDuration{&kNoPreReadMainDllStartup,
+                                             "no-preread-dll-startup-time",
+                                             base::Minutes(2)};
 #endif  // BUILDFLAG(IS_WIN)
 
 #if !BUILDFLAG(IS_ANDROID)

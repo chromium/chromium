@@ -56,6 +56,7 @@
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_policy_observer.h"
 #include "chrome/browser/first_run/first_run.h"
+#include "chrome/browser/performance_manager/public/dll_pre_read_policy_win.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
 #include "chrome/browser/shell_integration_win.h"
@@ -542,6 +543,12 @@ int ChromeBrowserMainPartsWin::PreCreateThreads() {
   }
 
   return ChromeBrowserMainParts::PreCreateThreads();
+}
+
+void ChromeBrowserMainPartsWin::PostCreateThreads() {
+  performance_manager::InitializeDllPrereadPolicy();
+
+  ChromeBrowserMainParts::PostCreateThreads();
 }
 
 void ChromeBrowserMainPartsWin::PostMainMessageLoopRun() {

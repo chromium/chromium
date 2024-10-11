@@ -431,6 +431,7 @@
 #include "base/win/windows_version.h"
 #include "chrome/browser/chrome_browser_main_win.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
+#include "chrome/browser/performance_manager/public/dll_pre_read_policy_win.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
 #include "sandbox/win/src/sandbox_policy.h"
@@ -3050,7 +3051,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
 #endif
 
 #if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(features::kNoPreReadMainDll)) {
+  if (!performance_manager::ShouldPreReadDllInChild()) {
     command_line->AppendSwitch(switches::kNoPreReadMainDll);
   }
 #endif

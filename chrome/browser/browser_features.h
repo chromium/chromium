@@ -87,10 +87,6 @@ const base::FeatureParam<bool> kPrerenderNewTabPageOnMouseHoverTrigger{
     &features::kNewTabPageTriggerForPrerender2,
     "prerender_new_tab_page_on_mouse_hover_trigger", false};
 
-#if BUILDFLAG(IS_WIN)
-BASE_DECLARE_FEATURE(kNoPreReadMainDll);
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kNotificationOneTapUnsubscribe);
 extern base::FeatureParam<bool>
@@ -137,6 +133,12 @@ BASE_DECLARE_FEATURE(kWebUsbDeviceDetection);
 
 #if BUILDFLAG(IS_WIN)
 BASE_DECLARE_FEATURE(kBrowserDynamicCodeDisabled);
+
+BASE_DECLARE_FEATURE(kNoPreReadMainDll);
+BASE_DECLARE_FEATURE(kNoPreReadMainDllIfSsd);
+BASE_DECLARE_FEATURE(kNoPreReadMainDllStartup);
+extern const base::FeatureParam<base::TimeDelta>
+    kNoPreReadMainDllStartup_StartupDuration;
 #endif
 
 BASE_DECLARE_FEATURE(kReportPakFileIntegrity);
@@ -144,8 +146,9 @@ BASE_DECLARE_FEATURE(kReportPakFileIntegrity);
 BASE_DECLARE_FEATURE(kRemovalOfIWAsFromTabCapture);
 
 // WARNING: do not add new entries here. If a feature is only used in one
-// translation unit it should be inlined in that translation unit. If a feature
-// is referenced in multiple places, it should be scoped to that module, e.g.
+// translation unit it should be inlined in that translation unit. If a
+// feature is referenced in multiple places, it should be scoped to that
+// module, e.g.
 // //chrome/browser/<foo_module>/features.h
 //
 }  // namespace features
