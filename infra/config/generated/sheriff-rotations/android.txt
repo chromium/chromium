@@ -20,6 +20,7 @@ ci/android-15-x64-rel
 ci/android-androidx-packager
 ci/android-bfcache-rel
 ci/android-binary-size-generator
+ci/android-desktop-x64-compile-rel
 ci/android-oreo-x86-rel
 ci/android-pie-arm64-dbg
 ci/android-pie-arm64-rel

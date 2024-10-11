@@ -5,7 +5,7 @@
 
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
-load("//lib/builders.star", "os", "siso")
+load("//lib/builders.star", "gardener_rotations", "os", "siso")
 load("//lib/branches.star", "branches")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
@@ -213,6 +213,8 @@ ci.builder(
     targets = targets.bundle(
         additional_compile_targets = "all",
     ),
+    gardener_rotations = gardener_rotations.ANDROID,
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "builder|x64",
         short_name = "rel",
