@@ -10,6 +10,7 @@ import re
 import shutil
 import subprocess
 import sys
+import traceback
 
 import iossim_util
 import mac_util
@@ -551,6 +552,7 @@ def install_xcode(mac_toolchain_cmd, xcode_build_version, xcode_path,
   except subprocess.CalledProcessError as e:
     # Flush buffers to ensure correct output ordering.
     sys.stdout.flush()
+    sys.stderr.write(traceback.format_exc())
     sys.stderr.write('Xcode build version %s failed to install: %s\n' %
                      (xcode_build_version, e))
     sys.stderr.flush()
