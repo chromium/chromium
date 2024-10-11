@@ -328,8 +328,8 @@ class CrosDisksClientImpl : public CrosDisksClient {
   void OnMount(chromeos::VoidDBusMethodCallback callback,
                base::Time start_time,
                dbus::Response* response) {
-    UMA_HISTOGRAM_MEDIUM_TIMES("CrosDisksClient.MountTime",
-                               base::Time::Now() - start_time);
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("CrosDisksClient.MountTime",
+                                          base::Time::Now() - start_time);
     std::move(callback).Run(response);
   }
 
@@ -337,8 +337,8 @@ class CrosDisksClientImpl : public CrosDisksClient {
   void OnUnmount(UnmountCallback callback,
                  base::Time start_time,
                  dbus::Response* response) {
-    UMA_HISTOGRAM_MEDIUM_TIMES("CrosDisksClient.UnmountTime",
-                               base::Time::Now() - start_time);
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("CrosDisksClient.UnmountTime",
+                                          base::Time::Now() - start_time);
 
     const char kUnmountHistogramName[] = "CrosDisksClient.UnmountError";
     if (!response) {

@@ -344,18 +344,21 @@ ProcessSingleton::NotifyOtherProcessOrCreate() {
   const base::TimeTicks begin_ticks = base::TimeTicks::Now();
   for (int i = 0; i < 2; ++i) {
     if (Create()) {
-      UMA_HISTOGRAM_MEDIUM_TIMES("Chrome.ProcessSingleton.TimeToCreate",
-                                 base::TimeTicks::Now() - begin_ticks);
+      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+          "Chrome.ProcessSingleton.TimeToCreate",
+          base::TimeTicks::Now() - begin_ticks);
       return PROCESS_NONE;  // This is the single browser process.
     }
     ProcessSingleton::NotifyResult result = NotifyOtherProcess();
     if (result == PROCESS_NOTIFIED || result == LOCK_ERROR) {
       if (result == PROCESS_NOTIFIED) {
-        UMA_HISTOGRAM_MEDIUM_TIMES("Chrome.ProcessSingleton.TimeToNotify",
-                                   base::TimeTicks::Now() - begin_ticks);
+        DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+            "Chrome.ProcessSingleton.TimeToNotify",
+            base::TimeTicks::Now() - begin_ticks);
       } else {
-        UMA_HISTOGRAM_MEDIUM_TIMES("Chrome.ProcessSingleton.TimeToFailure",
-                                   base::TimeTicks::Now() - begin_ticks);
+        DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+            "Chrome.ProcessSingleton.TimeToFailure",
+            base::TimeTicks::Now() - begin_ticks);
       }
       // The single browser process was notified, the user chose not to
       // terminate a hung browser, or the lock file could not be created.
@@ -367,8 +370,8 @@ ProcessSingleton::NotifyOtherProcessOrCreate() {
     // terminated. Retry once if this is the first time; otherwise, fall through
     // to report that the process must exit because the profile is in use.
   }
-  UMA_HISTOGRAM_MEDIUM_TIMES("Chrome.ProcessSingleton.TimeToFailure",
-                             base::TimeTicks::Now() - begin_ticks);
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("Chrome.ProcessSingleton.TimeToFailure",
+                                        base::TimeTicks::Now() - begin_ticks);
   return PROFILE_IN_USE;
 }
 

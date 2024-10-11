@@ -95,7 +95,7 @@ final class FreManagementNoticeDialogHelper {
                     new WrappedSigninCallback(callback) {
                         @Override
                         public void onSignInComplete() {
-                            RecordHistogram.recordMediumTimesHistogram(
+                            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                                     UNMANAGED_SIGNIN_DURATION_NAME,
                                     SystemClock.uptimeMillis() - startTimeMillis);
                             recordFREEvent(FRESigninEvents.SIGNIN_COMPLETE_UNMANAGED);
@@ -142,7 +142,7 @@ final class FreManagementNoticeDialogHelper {
                     new WrappedSigninCallback(callback) {
                         @Override
                         public void onSignInComplete() {
-                            RecordHistogram.recordMediumTimesHistogram(
+                            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                                     UNMANAGED_SIGNIN_DURATION_NAME,
                                     SystemClock.uptimeMillis() - startTimeMillis);
                             recordFREEvent(FRESigninEvents.SIGNIN_COMPLETE_UNMANAGED);

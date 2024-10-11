@@ -484,8 +484,8 @@ void SignedExchangeHandler::OnCertReceived(
     reporter_->set_cert_server_ip_address(cert_server_ip_address_);
 
   if (result != SignedExchangeLoadResult::kSuccess) {
-    UMA_HISTOGRAM_MEDIUM_TIMES("SignedExchange.Time.CertificateFetch.Failure",
-                               cert_fetch_duration);
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+        "SignedExchange.Time.CertificateFetch.Failure", cert_fetch_duration);
 
     signed_exchange_utils::ReportErrorAndTraceEvent(
         devtools_proxy_.get(), "Failed to fetch the certificate.",
@@ -495,8 +495,8 @@ void SignedExchangeHandler::OnCertReceived(
     return;
   }
 
-  UMA_HISTOGRAM_MEDIUM_TIMES("SignedExchange.Time.CertificateFetch.Success",
-                             cert_fetch_duration);
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+      "SignedExchange.Time.CertificateFetch.Success", cert_fetch_duration);
   unverified_cert_chain_ = std::move(cert_chain);
 
   DCHECK(version_.has_value());

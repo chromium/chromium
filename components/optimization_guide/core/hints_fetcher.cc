@@ -384,7 +384,7 @@ void HintsFetcher::HandleResponse(const std::string& get_hints_response_data,
         get_hints_response->hints_size());
     base::TimeDelta fetch_latency =
         base::TimeTicks::Now() - hints_fetch_start_time_;
-    UMA_HISTOGRAM_MEDIUM_TIMES(
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
         "OptimizationGuide.HintsFetcher.GetHintsRequest.FetchLatency",
         fetch_latency);
     base::UmaHistogramMediumTimes(

@@ -400,7 +400,7 @@ void LogWarningAction(WarningUIType ui_type,
 
 void LogModalWarningDialogLifetime(
     base::TimeTicks modal_construction_start_time) {
-  UMA_HISTOGRAM_MEDIUM_TIMES(
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
       "PasswordProtection.ModalWarningDialogLifetime",
       base::TimeTicks::Now() - modal_construction_start_time);
 }

@@ -1204,8 +1204,8 @@ void AppMenu::ExecuteCommand(int command_id, int mouse_event_flags) {
   }
 
   if (IsBookmarkCommand(command_id)) {
-    UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.OpenBookmark",
-                               menu_opened_timer_.Elapsed());
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+        "WrenchMenu.TimeToAction.OpenBookmark", menu_opened_timer_.Elapsed());
     UMA_HISTOGRAM_ENUMERATION("WrenchMenu.MenuAction",
                               MENU_ACTION_BOOKMARK_OPEN, LIMIT_MENU_ACTION);
     bookmark_menu_delegate_->ExecuteCommand(command_id, mouse_event_flags);
@@ -1258,8 +1258,9 @@ bool AppMenu::GetAccelerator(int command_id,
 
 void AppMenu::WillShowMenu(MenuItemView* menu) {
   if (menu == saved_tab_groups_menu_) {
-    UMA_HISTOGRAM_MEDIUM_TIMES("WrenchMenu.TimeToAction.ShowSavedTabGroups",
-                               menu_opened_timer_.Elapsed());
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+        "WrenchMenu.TimeToAction.ShowSavedTabGroups",
+        menu_opened_timer_.Elapsed());
     UMA_HISTOGRAM_ENUMERATION("WrenchMenu.MenuAction",
                               MENU_ACTION_SHOW_SAVED_TAB_GROUPS,
                               LIMIT_MENU_ACTION);

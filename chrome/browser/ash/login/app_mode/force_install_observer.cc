@@ -77,7 +77,8 @@ void RecordKioskExtensionInstallError(
 }
 
 void RecordKioskExtensionInstallDuration(base::TimeDelta time_delta) {
-  UMA_HISTOGRAM_MEDIUM_TIMES("Kiosk.Extensions.InstallDuration", time_delta);
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("Kiosk.Extensions.InstallDuration",
+                                        time_delta);
 }
 
 void RecordKioskExtensionInstallTimedOut(bool timeout) {

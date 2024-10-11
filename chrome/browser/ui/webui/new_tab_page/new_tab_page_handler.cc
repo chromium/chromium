@@ -1147,15 +1147,15 @@ void NewTabPageHandler::OnCollectionInfoAvailable() {
 
   base::TimeDelta duration =
       base::TimeTicks::Now() - background_collections_request_start_time_;
-  UMA_HISTOGRAM_MEDIUM_TIMES(
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
       "NewTabPage.BackgroundService.Collections.RequestLatency", duration);
   // Any response where no collections are returned is considered a failure.
   if (ntp_background_service_->collection_info().empty()) {
-    UMA_HISTOGRAM_MEDIUM_TIMES(
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
         "NewTabPage.BackgroundService.Collections.RequestLatency.Failure",
         duration);
   } else {
-    UMA_HISTOGRAM_MEDIUM_TIMES(
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
         "NewTabPage.BackgroundService.Collections.RequestLatency.Success",
         duration);
   }
@@ -1178,14 +1178,14 @@ void NewTabPageHandler::OnCollectionImagesAvailable() {
 
   base::TimeDelta duration =
       base::TimeTicks::Now() - background_images_request_start_time_;
-  UMA_HISTOGRAM_MEDIUM_TIMES(
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
       "NewTabPage.BackgroundService.Images.RequestLatency", duration);
   // Any response where no images are returned is considered a failure.
   if (ntp_background_service_->collection_images().empty()) {
-    UMA_HISTOGRAM_MEDIUM_TIMES(
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
         "NewTabPage.BackgroundService.Images.RequestLatency.Failure", duration);
   } else {
-    UMA_HISTOGRAM_MEDIUM_TIMES(
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
         "NewTabPage.BackgroundService.Images.RequestLatency.Success", duration);
   }
 
@@ -1221,23 +1221,24 @@ void NewTabPageHandler::OnNtpBackgroundServiceShuttingDown() {
 void NewTabPageHandler::OnPromoDataUpdated() {
   if (promo_load_start_time_.has_value()) {
     base::TimeDelta duration = base::TimeTicks::Now() - *promo_load_start_time_;
-    UMA_HISTOGRAM_MEDIUM_TIMES("NewTabPage.Promos.RequestLatency2", duration);
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("NewTabPage.Promos.RequestLatency2",
+                                          duration);
     if (promo_service_->promo_status() == PromoService::Status::OK_WITH_PROMO) {
-      UMA_HISTOGRAM_MEDIUM_TIMES(
+      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
           "NewTabPage.Promos.RequestLatency2.SuccessWithPromo", duration);
     } else if (promo_service_->promo_status() ==
                PromoService::Status::OK_BUT_BLOCKED) {
-      UMA_HISTOGRAM_MEDIUM_TIMES(
+      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
           "NewTabPage.Promos.RequestLatency2.SuccessButBlocked", duration);
     } else if (promo_service_->promo_status() ==
                PromoService::Status::OK_WITHOUT_PROMO) {
-      UMA_HISTOGRAM_MEDIUM_TIMES(
+      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
           "NewTabPage.Promos.RequestLatency2.SuccessWithoutPromo", duration);
     } else {
       DCHECK(promo_service_->promo_status() !=
              PromoService::Status::NOT_UPDATED);
-      UMA_HISTOGRAM_MEDIUM_TIMES("NewTabPage.Promos.RequestLatency2.Failure",
-                                 duration);
+      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+          "NewTabPage.Promos.RequestLatency2.Failure", duration);
     }
     promo_load_start_time_ = std::nullopt;
   }

@@ -1548,8 +1548,8 @@ BackingStore::OpenAndVerify(BucketContext& bucket_context,
       }
       return {nullptr, status, IndexedDBDataLossInfo(), is_disk_full};
     }
-    UMA_HISTOGRAM_MEDIUM_TIMES("WebCore.IndexedDB.LevelDB.OpenTime",
-                               base::TimeTicks::Now() - begin_time);
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("WebCore.IndexedDB.LevelDB.OpenTime",
+                                          base::TimeTicks::Now() - begin_time);
   }
 
   // Create the LevelDBScopes wrapper.

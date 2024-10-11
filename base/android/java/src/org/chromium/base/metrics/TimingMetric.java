@@ -84,7 +84,7 @@ public class TimingMetric implements AutoCloseable {
                         metricName, TimeUtils.uptimeMillis() - startTime);
                 break;
             case TimerType.MEDIUM_UPTIME:
-                RecordHistogram.recordMediumTimesHistogram(
+                RecordHistogram.deprecatedRecordMediumTimesHistogram(
                         metricName, TimeUtils.uptimeMillis() - startTime);
                 break;
             case TimerType.SHORT_THREAD_TIME:

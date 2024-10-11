@@ -118,19 +118,20 @@ public class WebApkUmaRecorder {
 
     /**
      * Records duration between starting the WebAPK shell until the splashscreen is shown.
+     *
      * @param durationMs duration in milliseconds
      */
     public static void recordShellApkLaunchToSplashVisible(long durationMs) {
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 HISTOGRAM_LAUNCH_TO_SPLASHSCREEN_VISIBLE, durationMs);
     }
 
     /**
-     * Records duration between starting the WebAPK shell until the shell displays the
-     * splashscreen for new-style WebAPKs.
+     * Records duration between starting the WebAPK shell until the shell displays the splashscreen
+     * for new-style WebAPKs.
      */
     public static void recordNewStyleShellApkLaunchToSplashVisible(long durationMs) {
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 HISTOGRAM_NEW_STYLE_LAUNCH_TO_SPLASHSCREEN_VISIBLE, durationMs);
     }
 

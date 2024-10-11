@@ -569,10 +569,11 @@ void TCPClientSocket::EmitConnectAttemptHistograms(int result) {
   // failure. Note that failures also include cases when the connect attempt
   // was cancelled by the client before the handshake completed.
   if (result == OK) {
-    UMA_HISTOGRAM_MEDIUM_TIMES("Net.TcpConnectAttempt.Latency.Success",
-                               duration);
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+        "Net.TcpConnectAttempt.Latency.Success", duration);
   } else {
-    UMA_HISTOGRAM_MEDIUM_TIMES("Net.TcpConnectAttempt.Latency.Error", duration);
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("Net.TcpConnectAttempt.Latency.Error",
+                                          duration);
   }
 }
 

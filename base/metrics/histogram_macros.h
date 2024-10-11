@@ -76,6 +76,7 @@
 // example). For scoped enums, this is awkward since it requires casting the
 // enum to an arithmetic type and adding one. Instead, prefer the two argument
 // version of the macro which automatically deduces the boundary from kMaxValue.
+// LINT.IfChange
 #define UMA_HISTOGRAM_ENUMERATION(name, ...)                            \
   INTERNAL_UMA_HISTOGRAM_ENUMERATION_GET_MACRO(                         \
       __VA_ARGS__, INTERNAL_UMA_HISTOGRAM_ENUMERATION_SPECIFY_BOUNDARY, \
@@ -228,20 +229,6 @@
 #define UMA_HISTOGRAM_TIMES(name, sample)                         \
   UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(1), \
                              base::Seconds(10), 50)
-
-// TODO(crbug.com/353712922): rename and reintroduce this function/macro
-// Warning: There is another UMA logging function with a very similar name
-// which buckets data differently than this one.
-// https://source.chromium.org/chromium/chromium/src/+/main:base/metrics/histogram_functions.h?q=UmaHistogramMediumTimes
-// If you modify your logging to use that other function, you will be making a
-// meaningful semantic change to your data, and should change your histogram's
-// name, as per the guidelines at
-// https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/README.md#revising-histograms.
-// Medium timings - up to 3 minutes. Note this starts at 10ms (no good reason,
-// but not worth changing).
-#define UMA_HISTOGRAM_MEDIUM_TIMES(name, sample)                   \
-  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(10), \
-                             base::Minutes(3), 50)
 
 // Long timings - up to an hour.
 #define UMA_HISTOGRAM_LONG_TIMES(name, sample)                    \
@@ -499,4 +486,17 @@ enum class ScopedHistogramTiming {
     histogram_macro(histogram_name, __VA_ARGS__);                              \
   }
 
+// Warning: This macro has been deprecated in order to be consistent with
+// this function:
+// https://source.chromium.org/chromium/chromium/src/+/main:base/metrics/histogram_functions.h?q=UmaHistogramMediumTimes
+// If you modify your logging to use the new macro or function, you will be
+// making a meaningful semantic change to your data, and should change your
+// histogram's name, as per the guidelines at
+// https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/README.md#revising-histograms.
+// Medium timings - up to 3 minutes. Note this starts at 10ms.
+#define DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(name, sample)        \
+  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(10), \
+                             base::Minutes(3), 50)
+
+// LINT.ThenChange(//base/metrics/histogram_functions.h)
 #endif  // BASE_METRICS_HISTOGRAM_MACROS_H_

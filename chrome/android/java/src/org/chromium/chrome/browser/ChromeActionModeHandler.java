@@ -254,7 +254,7 @@ public class ChromeActionModeHandler {
             } else if (mShareDelegateSupplier.get() != null
                     && id == R.id.select_action_menu_share) {
                 RecordUserAction.record(SelectionPopupController.UMA_MOBILE_ACTION_MODE_SHARE);
-                RecordHistogram.recordMediumTimesHistogram(
+                RecordHistogram.deprecatedRecordMediumTimesHistogram(
                         "ContextMenu.TimeToSelectShare",
                         System.currentTimeMillis() - mContextMenuStartTime);
                 mShareDelegateSupplier

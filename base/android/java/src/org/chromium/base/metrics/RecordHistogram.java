@@ -153,14 +153,15 @@ public class RecordHistogram {
 
     /**
      * Records a sample in a histogram of times. Useful for recording medium durations. This is the
-     * Java equivalent of the UMA_HISTOGRAM_MEDIUM_TIMES C++ macro.
-     * <p>
-     * Note that histogram samples will always be converted to milliseconds when logged.
+     * Java equivalent of the DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES C++ macro.
+     *
+     * <p>Note that histogram samples will always be converted to milliseconds when logged.
      *
      * @param name name of the histogram
      * @param durationMs duration to be recorded in milliseconds
      */
-    public static void recordMediumTimesHistogram(String name, long durationMs) {
+    @Deprecated
+    public static void deprecatedRecordMediumTimesHistogram(String name, long durationMs) {
         recordCustomTimesHistogramMilliseconds(
                 name, durationMs, 10, DateUtils.MINUTE_IN_MILLIS * 3, 50);
     }

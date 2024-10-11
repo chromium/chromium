@@ -2131,7 +2131,7 @@ HSPLorg/chromium/base/metrics/RecordHistogram;->recordCustomCountHistogram(IIIIL
 HSPLorg/chromium/base/metrics/RecordHistogram;->recordCustomTimesHistogramMilliseconds(Ljava/lang/String;JJJI)V
 HSPLorg/chromium/base/metrics/RecordHistogram;->recordExactLinearHistogram(IILjava/lang/String;)V
 PLorg/chromium/base/metrics/RecordHistogram;->recordLinearCountHistogram(IIIILjava/lang/String;)V
-HSPLorg/chromium/base/metrics/RecordHistogram;->recordMediumTimesHistogram(JLjava/lang/String;)V
+HSPLorg/chromium/base/metrics/RecordHistogram;->deprecatedRecordMediumTimesHistogram(JLjava/lang/String;)V
 HSPLorg/chromium/base/metrics/RecordHistogram;->recordPercentageHistogram(ILjava/lang/String;)V
 HSPLorg/chromium/base/metrics/RecordHistogram;->recordSparseHistogram(ILjava/lang/String;)V
 HSPLorg/chromium/base/metrics/RecordHistogram;->recordTimesHistogram(JLjava/lang/String;)V

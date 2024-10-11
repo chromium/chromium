@@ -29,7 +29,7 @@ public final class WebOTPServiceUma {
     }
 
     static void recordCancelTimeAfterKeyboardDismissal(long durationMs) {
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "Blink.Sms.Receive.TimeCancelOnKeyboardDismissal", durationMs);
     }
 }

@@ -844,8 +844,8 @@ GraphBuilderCoreml::BuildCoreMLModel() {
 
   base::ElapsedTimer ml_weights_write_timer;
   RETURN_IF_ERROR(WriteWeightsToFile(block));
-  UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs.MLWeightsWrite",
-                             ml_weights_write_timer.Elapsed());
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs.MLWeightsWrite",
+                                        ml_weights_write_timer.Elapsed());
 
   // Add operations.
   for (const mojom::OperationPtr& operation : graph_info_->operations) {
@@ -1070,8 +1070,8 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::SerializeModel() {
   }
   bool result =
       ml_model_.SerializeToFileDescriptor(model_file.GetPlatformFile());
-  UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs.MLModelWrite",
-                             ml_model_write_timer.Elapsed());
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs.MLModelWrite",
+                                        ml_model_write_timer.Elapsed());
   if (!result) {
     return NewUnknownError(kWriteModelErrorMessage);
   }

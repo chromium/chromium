@@ -1783,7 +1783,7 @@ public class TabPersistentStore {
         if (mTabRestoreStartTime == INVALID_TIME) return;
 
         long duration = SystemClock.elapsedRealtime() - mTabRestoreStartTime;
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "Tabs.Startup.RestoreDuration." + mClientTag, duration);
         int tabCount = mTabModelSelector.getTotalTabCount();
         if (tabCount != 0) {

@@ -35,12 +35,12 @@ const char kInfobarTypeBlockPopupsAcceptTimeHistogram[] =
   base::TimeDelta timeDelta = base::Seconds(duration);
   switch (infobarConfirmType) {
     case InfobarConfirmType::kInfobarConfirmTypeRestore:
-      UMA_HISTOGRAM_MEDIUM_TIMES(kInfobarTypeRestoreAcceptTimeHistogram,
-                                 timeDelta);
+      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+          kInfobarTypeRestoreAcceptTimeHistogram, timeDelta);
       break;
     case InfobarConfirmType::kInfobarConfirmTypeBlockPopups:
-      UMA_HISTOGRAM_MEDIUM_TIMES(kInfobarTypeBlockPopupsAcceptTimeHistogram,
-                                 timeDelta);
+      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+          kInfobarTypeBlockPopupsAcceptTimeHistogram, timeDelta);
       break;
   }
 }

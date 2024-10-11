@@ -1823,7 +1823,7 @@ void TabStrip::OnMouseEventInTab(views::View* source,
       !has_reported_time_mouse_entered_to_switch_ &&
       event.type() == ui::EventType::kMousePressed &&
       views::IsViewClass<Tab>(source)) {
-    UMA_HISTOGRAM_MEDIUM_TIMES(
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
         "TabStrip.TimeToSwitch",
         base::TimeTicks::Now() - mouse_entered_tabstrip_time_.value());
     has_reported_time_mouse_entered_to_switch_ = true;

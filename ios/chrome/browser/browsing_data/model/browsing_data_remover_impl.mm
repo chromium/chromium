@@ -849,10 +849,10 @@ void BrowsingDataRemoverImpl::NotifyRemovalComplete() {
       bool is_deletion_start_earliest = task.delete_begin.is_null();
       bool is_deletion_end_now = task.delete_end.is_max();
       if (is_deletion_start_earliest && is_deletion_end_now) {
-        UMA_HISTOGRAM_MEDIUM_TIMES(
+        DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
             "History.ClearBrowsingData.Duration.FullDeletion", delta);
       } else {
-        UMA_HISTOGRAM_MEDIUM_TIMES(
+        DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
             "History.ClearBrowsingData.Duration.TimeRangeDeletion", delta);
       }
     }

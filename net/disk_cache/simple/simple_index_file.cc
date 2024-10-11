@@ -442,8 +442,8 @@ void SimpleIndexFile::SyncLoadIndexEntries(
   const base::TimeTicks start = base::TimeTicks::Now();
   SyncRestoreFromDisk(file_operations.get(), cache_type, cache_directory,
                       index_file_path, out_result);
-  SIMPLE_CACHE_UMA(MEDIUM_TIMES, "IndexRestoreTime", cache_type,
-                   base::TimeTicks::Now() - start);
+  DEPRECATED_SIMPLE_CACHE_UMA_MEDIUM_TIMES("IndexRestoreTime", cache_type,
+                                           base::TimeTicks::Now() - start);
   if (index_file_existed) {
     out_result->init_method = SimpleIndex::INITIALIZE_METHOD_RECOVERED;
 

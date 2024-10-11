@@ -266,14 +266,14 @@ NTPUserDataLogger::~NTPUserDataLogger() = default;
 void NTPUserDataLogger::LogOneGoogleBarFetchDuration(
     bool success,
     const base::TimeDelta& duration) {
-  UMA_HISTOGRAM_MEDIUM_TIMES("NewTabPage.OneGoogleBar.RequestLatency",
-                             duration);
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+      "NewTabPage.OneGoogleBar.RequestLatency", duration);
   if (success) {
-    UMA_HISTOGRAM_MEDIUM_TIMES("NewTabPage.OneGoogleBar.RequestLatency.Success",
-                               duration);
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+        "NewTabPage.OneGoogleBar.RequestLatency.Success", duration);
   } else {
-    UMA_HISTOGRAM_MEDIUM_TIMES("NewTabPage.OneGoogleBar.RequestLatency.Failure",
-                               duration);
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+        "NewTabPage.OneGoogleBar.RequestLatency.Failure", duration);
   }
 }
 
@@ -502,7 +502,7 @@ void NTPUserDataLogger::RecordDoodleImpression(base::TimeDelta time,
   }
 
   if (should_record_doodle_load_time_) {
-    UMA_HISTOGRAM_MEDIUM_TIMES("NewTabPage.LogoShownTime2", time);
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("NewTabPage.LogoShownTime2", time);
     should_record_doodle_load_time_ = false;
   }
 }

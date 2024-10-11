@@ -353,10 +353,10 @@ public class NotificationPlatformBridge {
                             - intent.getLongExtra(
                                     NotificationConstants.EXTRA_JOB_SCHEDULED_TIME_MS, -1);
             if (duration < 0) return; // Possible if device rebooted before job started.
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "Notifications.Android.JobStartDelay", duration);
             if (NotificationConstants.ACTION_PRE_UNSUBSCRIBE.equals(intent.getAction())) {
-                RecordHistogram.recordMediumTimesHistogram(
+                RecordHistogram.deprecatedRecordMediumTimesHistogram(
                         "Notifications.Android.JobStartDelay.PreUnsubscribe", duration);
             }
         }
@@ -368,10 +368,10 @@ public class NotificationPlatformBridge {
                     SystemClock.elapsedRealtime()
                             - intent.getLongExtra(
                                     NotificationConstants.EXTRA_JOB_STARTED_TIME_MS, -1);
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "Notifications.Android.JobNativeStartupDuration", duration);
             if (NotificationConstants.ACTION_PRE_UNSUBSCRIBE.equals(intent.getAction())) {
-                RecordHistogram.recordMediumTimesHistogram(
+                RecordHistogram.deprecatedRecordMediumTimesHistogram(
                         "Notifications.Android.JobNativeStartupDuration.PreUnsubscribe", duration);
             }
         }

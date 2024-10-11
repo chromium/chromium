@@ -281,8 +281,8 @@ class FeedNetworkImpl::NetworkFetch {
         GoogleServiceAuthError::NUM_STATES);
 
     base::TimeDelta token_duration = base::TimeTicks::Now() - token_start_ticks;
-    UMA_HISTOGRAM_MEDIUM_TIMES("ContentSuggestions.Feed.Network.TokenDuration",
-                               token_duration);
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+        "ContentSuggestions.Feed.Network.TokenDuration", token_duration);
 
     access_token_ = access_token_info.token;
 
@@ -481,8 +481,9 @@ class FeedNetworkImpl::NetworkFetch {
       }
     }
 
-    UMA_HISTOGRAM_MEDIUM_TIMES("ContentSuggestions.Feed.Network.Duration",
-                               response_info.fetch_duration);
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+        "ContentSuggestions.Feed.Network.Duration",
+        response_info.fetch_duration);
 
     base::TimeDelta loader_only_duration =
         base::TimeTicks::Now() - loader_only_start_ticks_;

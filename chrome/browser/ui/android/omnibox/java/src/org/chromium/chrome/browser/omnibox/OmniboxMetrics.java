@@ -216,7 +216,7 @@ public class OmniboxMetrics {
      * Record the length of time between when omnibox gets focused and when a omnibox match is open.
      */
     public static void recordFocusToOpenTime(long focusToOpenTimeInMillis) {
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "Omnibox.FocusToOpenTimeAnyPopupState3", focusToOpenTimeInMillis);
     }
 

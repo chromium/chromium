@@ -638,11 +638,11 @@ void ExtensionHost::RecordStopLoadingUMA() {
   CHECK(load_start_.get());
   if (extension_host_type_ == mojom::ViewType::kExtensionBackgroundPage) {
     if (extension_ && BackgroundInfo::HasLazyBackgroundPage(extension_)) {
-      UMA_HISTOGRAM_MEDIUM_TIMES("Extensions.EventPageLoadTime2",
-                                 load_start_->Elapsed());
+      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("Extensions.EventPageLoadTime2",
+                                            load_start_->Elapsed());
     } else {
-      UMA_HISTOGRAM_MEDIUM_TIMES("Extensions.BackgroundPageLoadTime2",
-                                 load_start_->Elapsed());
+      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+          "Extensions.BackgroundPageLoadTime2", load_start_->Elapsed());
     }
   }
 }

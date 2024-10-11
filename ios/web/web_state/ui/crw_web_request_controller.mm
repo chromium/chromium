@@ -357,11 +357,13 @@ enum class BackForwardNavigationType {
 
   if (context) {
     if (context->IsRendererInitiated()) {
-      UMA_HISTOGRAM_MEDIUM_TIMES("PLT.iOS.RendererInitiatedPageLoadTime2",
-                                 context->GetElapsedTimeSinceCreation());
+      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+          "PLT.iOS.RendererInitiatedPageLoadTime2",
+          context->GetElapsedTimeSinceCreation());
     } else {
-      UMA_HISTOGRAM_MEDIUM_TIMES("PLT.iOS.BrowserInitiatedPageLoadTime2",
-                                 context->GetElapsedTimeSinceCreation());
+      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+          "PLT.iOS.BrowserInitiatedPageLoadTime2",
+          context->GetElapsedTimeSinceCreation());
     }
 
     // Use the Session Restoration User Agent as it is the only way to know if

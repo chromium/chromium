@@ -336,11 +336,13 @@ void UmaEmitMountStatus(DriveMountStatus status) {
 void UmaEmitMountTime(DriveMountStatus status,
                       const base::TimeTicks& time_started) {
   if (status == DriveMountStatus::kSuccess) {
-    UMA_HISTOGRAM_MEDIUM_TIMES("DriveCommon.Lifecycle.MountTime.SuccessTime",
-                               base::TimeTicks::Now() - time_started);
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+        "DriveCommon.Lifecycle.MountTime.SuccessTime",
+        base::TimeTicks::Now() - time_started);
   } else {
-    UMA_HISTOGRAM_MEDIUM_TIMES("DriveCommon.Lifecycle.MountTime.FailTime",
-                               base::TimeTicks::Now() - time_started);
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+        "DriveCommon.Lifecycle.MountTime.FailTime",
+        base::TimeTicks::Now() - time_started);
   }
 }
 
@@ -357,8 +359,8 @@ void UmaEmitUnmountOutcome(DriveMountStatus status) {
 }
 
 void UmaEmitFirstLaunch(const base::TimeTicks& time_started) {
-  UMA_HISTOGRAM_MEDIUM_TIMES("DriveCommon.Lifecycle.FirstLaunchTime",
-                             base::TimeTicks::Now() - time_started);
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("DriveCommon.Lifecycle.FirstLaunchTime",
+                                        base::TimeTicks::Now() - time_started);
 }
 
 // Clears the cache folder at |cache_path|, but preserve |logs_path|.

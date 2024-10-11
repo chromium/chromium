@@ -243,10 +243,13 @@ DispatchEventResult IDBOpenDBRequest::DispatchEventInternal(Event& event) {
     open_time_recorded_ = true;
     IDBDatabase* idb_database = ResultAsAny()->IdbDatabase();
     base::TimeDelta time_diff = base::Time::Now() - start_time_;
-    if (idb_database->Metadata().was_cold_open)
-      UMA_HISTOGRAM_MEDIUM_TIMES("WebCore.IndexedDB.OpenTime.Cold", time_diff);
-    else
-      UMA_HISTOGRAM_MEDIUM_TIMES("WebCore.IndexedDB.OpenTime.Warm", time_diff);
+    if (idb_database->Metadata().was_cold_open) {
+      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("WebCore.IndexedDB.OpenTime.Cold",
+                                            time_diff);
+    } else {
+      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("WebCore.IndexedDB.OpenTime.Warm",
+                                            time_diff);
+    }
   }
 
   return IDBRequest::DispatchEventInternal(event);

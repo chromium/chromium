@@ -892,7 +892,7 @@ public class NewTabPage
     /** Records UMA for the NTP being hidden and the time spent on it. */
     private void recordNtpHidden() {
         mJankTracker.finishTrackingScenario(JankScenario.NEW_TAB_PAGE);
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "NewTabPage.TimeSpent",
                 (System.nanoTime() - mLastShownTimeNs) / TimeUtils.NANOSECONDS_PER_MILLISECOND);
         SuggestionsMetrics.recordSurfaceHidden();

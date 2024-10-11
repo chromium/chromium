@@ -202,14 +202,14 @@ public class StartupMetricsTracker {
     }
 
     private void recordExperimentalHistogram(String name, long ms) {
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "Startup.Android.Experimental." + name + ".Tabbed.ColdStartTracker", ms);
     }
 
     private void recordNavigationCommitMetrics(long firstCommitMs) {
         if (!SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()) return;
         if (ColdStartTracker.wasColdOnFirstActivityCreationOrNow()) {
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "Startup.Android.Cold.TimeToFirstNavigationCommit3"
                             + activityTypeToSuffix(mHistogramSuffix),
                     firstCommitMs);
@@ -225,7 +225,7 @@ public class StartupMetricsTracker {
         if (!SimpleStartupForegroundSessionDetector.runningCleanForegroundSession()) return;
         if (ColdStartTracker.wasColdOnFirstActivityCreationOrNow()) {
             recordExperimentalHistogram("FirstContentfulPaint", firstFcpMs);
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "Startup.Android.Cold.TimeToFirstContentfulPaint3.Tabbed", firstFcpMs);
         }
     }
@@ -234,7 +234,7 @@ public class StartupMetricsTracker {
         if (mFirstVisibleContentRecorded) return;
 
         mFirstVisibleContentRecorded = true;
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "Startup.Android.Cold.TimeToFirstVisibleContent4", durationMs);
     }
 
@@ -243,7 +243,7 @@ public class StartupMetricsTracker {
         mFirstSafeBrowsingResponseTimeRecorded = true;
 
         if (mFirstSafeBrowsingResponseTimeMicros != 0) {
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "Startup.Android.Cold.FirstSafeBrowsingApiResponseTime2.Tabbed",
                     mFirstSafeBrowsingResponseTimeMicros / 1000);
         }

@@ -722,7 +722,7 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
                 "Mobile.AppMenu.TimeToTakeAction."
                         + (mSelectedItemBeforeDismiss ? "SelectedItem" : "Abandoned");
         final long timeToTakeActionMs = SystemClock.elapsedRealtime() - mMenuShownTimeMs;
-        RecordHistogram.recordMediumTimesHistogram(histogramName, timeToTakeActionMs);
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(histogramName, timeToTakeActionMs);
     }
 
     private int getMenuItemHeight(

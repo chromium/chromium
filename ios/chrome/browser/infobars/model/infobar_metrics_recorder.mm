@@ -260,7 +260,8 @@ const char kInfobarEnhancedSafeBrowsingBadgeTappedHistogram[] =
 }
 
 - (void)recordBannerOnScreenDuration:(base::TimeDelta)duration {
-  UMA_HISTOGRAM_MEDIUM_TIMES("Mobile.Messages.Banner.OnScreenTime", duration);
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("Mobile.Messages.Banner.OnScreenTime",
+                                        duration);
 }
 
 - (void)recordModalEvent:(MobileMessagesModalEvent)event {

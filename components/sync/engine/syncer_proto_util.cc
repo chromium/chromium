@@ -445,8 +445,9 @@ bool SyncerProtoUtil::PostAndProcessHeaders(ServerConnectionManager* scm,
     return false;
   }
 
-  UMA_HISTOGRAM_MEDIUM_TIMES("Sync.PostedClientToServerMessageLatency",
-                             base::Time::Now() - start_time);
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+      "Sync.PostedClientToServerMessageLatency",
+      base::Time::Now() - start_time);
 
   // The error can be specified in 2 different fields, so consider both of them.
   sync_pb::SyncEnums::ErrorType error_type =

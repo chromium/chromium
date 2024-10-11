@@ -4191,7 +4191,7 @@ bool Document::DispatchBeforeUnloadEvent(ChromeClient* chrome_client,
   if (did_allow_navigation) {
     // Only record when a navigation occurs, since we want to understand
     // the impact of the before unload dialog on overall input to navigation.
-    UMA_HISTOGRAM_MEDIUM_TIMES(
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
         "DocumentEventTiming.BeforeUnloadDialogDuration.ByNavigation",
         beforeunload_confirmpanel_end - beforeunload_confirmpanel_start);
     return true;

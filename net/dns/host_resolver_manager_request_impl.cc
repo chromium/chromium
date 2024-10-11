@@ -420,9 +420,11 @@ void HostResolverManager::RequestImpl::LogFinishRequest(int net_error,
     DCHECK(!request_time_.is_null());
     base::TimeDelta duration = tick_clock_->NowTicks() - request_time_;
 
-    UMA_HISTOGRAM_MEDIUM_TIMES("Net.DNS.Request.TotalTime", duration);
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("Net.DNS.Request.TotalTime",
+                                          duration);
     if (async_completion) {
-      UMA_HISTOGRAM_MEDIUM_TIMES("Net.DNS.Request.TotalTimeAsync", duration);
+      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("Net.DNS.Request.TotalTimeAsync",
+                                            duration);
     }
   }
 }

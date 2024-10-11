@@ -46,7 +46,8 @@ public final class StartupLatencyInjector {
         long startTime = TimeUtils.uptimeMillis();
         busyWait();
         long totalWaitTime = TimeUtils.uptimeMillis() - startTime;
-        RecordHistogram.recordMediumTimesHistogram(HISTOGRAM_TOTAL_WAIT_TIME, totalWaitTime);
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
+                HISTOGRAM_TOTAL_WAIT_TIME, totalWaitTime);
     }
 
     private void busyWait() {

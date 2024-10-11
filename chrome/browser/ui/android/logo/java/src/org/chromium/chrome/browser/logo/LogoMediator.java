@@ -344,7 +344,7 @@ public class LogoMediator implements TemplateUrlServiceObserver {
                             }
                             if (mShouldRecordLoadTime) {
                                 long loadTime = System.currentTimeMillis() - loadTimeStart;
-                                RecordHistogram.recordMediumTimesHistogram(
+                                RecordHistogram.deprecatedRecordMediumTimesHistogram(
                                         LOGO_SHOWN_TIME_UMA_NAME, loadTime);
                                 // Only record the load time once per NTP, for the first logo we
                                 // got, whether that came from cache or not.

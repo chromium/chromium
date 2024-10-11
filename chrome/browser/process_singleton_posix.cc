@@ -961,18 +961,21 @@ ProcessSingleton::NotifyOtherProcessWithTimeoutOrCreate(
       command_line, retry_attempts, timeout, true);
   if (result != PROCESS_NONE) {
     if (result == PROCESS_NOTIFIED) {
-      UMA_HISTOGRAM_MEDIUM_TIMES("Chrome.ProcessSingleton.TimeToNotify",
-                                 base::TimeTicks::Now() - begin_ticks);
+      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+          "Chrome.ProcessSingleton.TimeToNotify",
+          base::TimeTicks::Now() - begin_ticks);
     } else {
-      UMA_HISTOGRAM_MEDIUM_TIMES("Chrome.ProcessSingleton.TimeToFailure",
-                                 base::TimeTicks::Now() - begin_ticks);
+      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+          "Chrome.ProcessSingleton.TimeToFailure",
+          base::TimeTicks::Now() - begin_ticks);
     }
     return result;
   }
 
   if (Create()) {
-    UMA_HISTOGRAM_MEDIUM_TIMES("Chrome.ProcessSingleton.TimeToCreate",
-                               base::TimeTicks::Now() - begin_ticks);
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+        "Chrome.ProcessSingleton.TimeToCreate",
+        base::TimeTicks::Now() - begin_ticks);
     return PROCESS_NONE;
   }
 
@@ -985,11 +988,13 @@ ProcessSingleton::NotifyOtherProcessWithTimeoutOrCreate(
       command_line, retry_attempts, timeout, false);
 
   if (result == PROCESS_NOTIFIED) {
-    UMA_HISTOGRAM_MEDIUM_TIMES("Chrome.ProcessSingleton.TimeToNotify",
-                               base::TimeTicks::Now() - begin_ticks);
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+        "Chrome.ProcessSingleton.TimeToNotify",
+        base::TimeTicks::Now() - begin_ticks);
   } else {
-    UMA_HISTOGRAM_MEDIUM_TIMES("Chrome.ProcessSingleton.TimeToFailure",
-                               base::TimeTicks::Now() - begin_ticks);
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+        "Chrome.ProcessSingleton.TimeToFailure",
+        base::TimeTicks::Now() - begin_ticks);
   }
 
   if (result != PROCESS_NONE)

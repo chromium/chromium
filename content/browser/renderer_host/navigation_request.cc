@@ -471,8 +471,8 @@ bool ShouldPropagateUserActivation(const url::Origin& previous_origin,
 // for BackForward/Reload/NewNavigation variants.
 //
 // kMaxTime and kBuckets constants are consistent with
-// UMA_HISTOGRAM_MEDIUM_TIMES, but a custom kMinTime is used for high fidelity
-// near the low end of measured values.
+// UmaHistogramMediumTimes, but a custom kMinTime is used for high
+// fidelity near the low end of measured values.
 //
 // TODO(csharrison,nasko): This macro is incorrect for subframe navigations,
 // which will only have subframe-specific transition types. This means that all

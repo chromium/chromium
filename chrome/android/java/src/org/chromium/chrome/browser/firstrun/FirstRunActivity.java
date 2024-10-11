@@ -590,7 +590,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
     @Override
     public void completeFirstRunExperience() {
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "MobileFre.FromLaunch.FreCompleted",
                 SystemClock.elapsedRealtime() - mIntentCreationElapsedRealtimeMs);
 
@@ -656,7 +656,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
         // If default is true then it corresponds to opt-out and false corresponds to opt-in.
         UmaUtils.recordMetricsReportingDefaultOptIn(!DEFAULT_METRICS_AND_CRASH_REPORTING);
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "MobileFre.FromLaunch.TosAccepted",
                 SystemClock.elapsedRealtime() - mIntentCreationElapsedRealtimeMs);
         FirstRunUtils.acceptTermsOfService(allowMetricsAndCrashUploading);

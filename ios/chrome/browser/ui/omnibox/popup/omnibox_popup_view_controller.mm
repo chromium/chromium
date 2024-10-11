@@ -308,8 +308,9 @@ const CGFloat kHeaderTopPadding = 16.0f;
 
 - (void)viewWillDisappear:(BOOL)animated {
   [super viewWillDisappear:animated];
-  UMA_HISTOGRAM_MEDIUM_TIMES("MobileOmnibox.PopupOpenDuration",
-                             base::TimeTicks::Now() - self.viewAppearanceTime);
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+      "MobileOmnibox.PopupOpenDuration",
+      base::TimeTicks::Now() - self.viewAppearanceTime);
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size

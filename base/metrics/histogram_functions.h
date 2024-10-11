@@ -160,14 +160,7 @@ BASE_EXPORT void UmaHistogramCustomTimes(std::string_view name,
 // Reference ScopedUmaHistogramTimer::ScopedHistogramTiming for timing.
 // For short timings from 1 ms up to 10 seconds (50 buckets).
 BASE_EXPORT void UmaHistogramTimes(std::string_view name, TimeDelta sample);
-// TODO(crbug.com/353712922): rename and reintroduce this function/macro
-// Warning: There is another UMA logging function with a very similar name
-// which buckets data differently than this one.
-// https://source.chromium.org/chromium/chromium/src/+/main:base/metrics/histogram_macros.h?q=UMA_HISTOGRAM_MEDIUM_TIMES
-// If you modify your logging to use that other function, you will be making a
-// meaningful semantic change to your data, and should change your histogram's
-// name, as per the guidelines at
-// https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/README.md#revising-histograms.
+
 // For medium timings up to 3 minutes (50 buckets).
 BASE_EXPORT void UmaHistogramMediumTimes(std::string_view name,
                                          TimeDelta sample);

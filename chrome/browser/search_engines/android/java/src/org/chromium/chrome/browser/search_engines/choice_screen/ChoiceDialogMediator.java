@@ -290,10 +290,10 @@ class ChoiceDialogMediator {
                                 ? mFirstServiceEventTimeMillis - mObservationStartedTimeMillis
                                 : "<N/A>");
             }
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "Search.OsDefaultsChoice.DelayFromDialogShownToFirstStatus",
                     wasDialogShown ? mFirstServiceEventTimeMillis - mDialogAddedTimeMillis : 0);
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "Search.OsDefaultsChoice.DelayFromObservationToFirstStatus",
                     mObservationStartedTimeMillis == null
                             ? 0
@@ -380,10 +380,10 @@ class ChoiceDialogMediator {
 
                         mDelegate.dismissDialog();
                         destroy();
-                        RecordHistogram.recordMediumTimesHistogram(
+                        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                                 "Search.OsDefaultsChoice.DelayFromDialogShownToFirstStatus",
                                 dialogTimeoutMillis);
-                        RecordHistogram.recordMediumTimesHistogram(
+                        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                                 "Search.OsDefaultsChoice.DelayFromObservationToFirstStatus",
                                 dialogTimeoutMillis);
                     },

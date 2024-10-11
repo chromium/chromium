@@ -330,7 +330,7 @@ bool FedCmAccountSelectionView::Show(
   if (!idp_close_popup_time_.is_null()) {
     popup_window_state_ =
         PopupWindowResult::kAccountsReceivedAndPopupClosedByIdp;
-    UMA_HISTOGRAM_MEDIUM_TIMES(
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
         "Blink.FedCm.IdpSigninStatus."
         "IdpClosePopupToBrowserShowAccountsDuration",
         base::TimeTicks::Now() - idp_close_popup_time_);

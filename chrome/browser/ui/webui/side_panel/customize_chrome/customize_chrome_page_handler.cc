@@ -576,15 +576,15 @@ void CustomizeChromePageHandler::OnCollectionInfoAvailable() {
 
   base::TimeDelta duration =
       base::TimeTicks::Now() - background_collections_request_start_time_;
-  UMA_HISTOGRAM_MEDIUM_TIMES(
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
       "NewTabPage.BackgroundService.Collections.RequestLatency", duration);
   // Any response where no collections are returned is considered a failure.
   if (ntp_background_service_->collection_info().empty()) {
-    UMA_HISTOGRAM_MEDIUM_TIMES(
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
         "NewTabPage.BackgroundService.Collections.RequestLatency.Failure",
         duration);
   } else {
-    UMA_HISTOGRAM_MEDIUM_TIMES(
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
         "NewTabPage.BackgroundService.Collections.RequestLatency.Success",
         duration);
   }
@@ -607,14 +607,14 @@ void CustomizeChromePageHandler::OnCollectionImagesAvailable() {
 
   base::TimeDelta duration =
       base::TimeTicks::Now() - background_images_request_start_time_;
-  UMA_HISTOGRAM_MEDIUM_TIMES(
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
       "NewTabPage.BackgroundService.Images.RequestLatency", duration);
   // Any response where no images are returned is considered a failure.
   if (ntp_background_service_->collection_images().empty()) {
-    UMA_HISTOGRAM_MEDIUM_TIMES(
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
         "NewTabPage.BackgroundService.Images.RequestLatency.Failure", duration);
   } else {
-    UMA_HISTOGRAM_MEDIUM_TIMES(
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
         "NewTabPage.BackgroundService.Images.RequestLatency.Success", duration);
   }
 

@@ -120,7 +120,7 @@ public class DragDropMetricUtils {
      * @param duration scrolling on a destination strip.
      */
     public static void recordTabDurationWithinDestStrip(long duration) {
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "Android.DragDrop.Tab.Duration.WithinDestStrip", duration);
     }
 

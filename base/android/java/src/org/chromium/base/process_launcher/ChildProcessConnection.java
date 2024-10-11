@@ -728,7 +728,7 @@ public class ChildProcessConnection {
         // much we can do about that, and it shouldn't be a major issue.
         if (sLastRecordedZygotePid != mZygotePid && hasUsableZygoteInfo()) {
             sLastRecordedZygotePid = mZygotePid;
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "Android.ChildProcessStartTimeV2.Zygote", zygoteStartupTimeMillis);
         }
 

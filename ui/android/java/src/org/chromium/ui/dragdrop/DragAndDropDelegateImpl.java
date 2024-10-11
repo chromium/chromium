@@ -433,7 +433,7 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
                 "Android.DragDrop.FromWebContent.DropInWebContent.DistanceDip", dropDistance, 51);
 
         long dropDuration = SystemClock.elapsedRealtime() - mDragStartSystemElapsedTime;
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "Android.DragDrop.FromWebContent.DropInWebContent.Duration", dropDuration);
     }
 
@@ -512,7 +512,7 @@ public class DragAndDropDelegateImpl implements DragAndDropDelegate, DragStateTr
     private void recordDragDurationAndResult(long duration, boolean result) {
         String histogramPrefix = "Android.DragDrop.FromWebContent.Duration.";
         String suffix = result ? "Success" : "Canceled";
-        RecordHistogram.recordMediumTimesHistogram(histogramPrefix + suffix, duration);
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(histogramPrefix + suffix, duration);
     }
 
     @VisibleForTesting

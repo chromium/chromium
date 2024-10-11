@@ -596,7 +596,7 @@ public class NotificationUmaTracker {
      * real time, which includes time spent in power-saving modes and/or display being dark.
      */
     public void recordPreUnsubscribeRealDuration(long durationMillis) {
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "Mobile.SystemNotification.Permission.OneTapUnsubscribe."
                         + "PreUnsubscribePreNativeRealDuration",
                 durationMillis);
@@ -607,7 +607,7 @@ public class NotificationUmaTracker {
      * `uptimeMillis`, which stops the clock when in power-saving modes and/or display being dark.
      */
     public void recordPreUnsubscribeDuration(long durationMillis) {
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "Mobile.SystemNotification.Permission.OneTapUnsubscribe."
                         + "PreUnsubscribePreNativeDuration",
                 durationMillis);
@@ -619,7 +619,7 @@ public class NotificationUmaTracker {
      * including time spent in power-saving modes and/or display being dark.
      */
     public void recordDuplicatePreUnsubscribeRealDelay(long delayMillis) {
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "Mobile.SystemNotification.Permission.OneTapUnsubscribe."
                         + "DuplicatePreUnsubscribeRealDelay",
                 delayMillis);

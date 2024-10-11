@@ -373,10 +373,10 @@ void GoogleURLLoaderThrottle::ResumeOrCancelRequest(
   CHECK(bound_session_request_throttled_start_time_.has_value());
   base::TimeDelta duration =
       base::TimeTicks::Now() - *bound_session_request_throttled_start_time_;
-  UMA_HISTOGRAM_MEDIUM_TIMES(
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
       "Signin.BoundSessionCredentials.DeferredRequestDelay", duration);
   if (is_main_frame_navigation_) {
-    UMA_HISTOGRAM_MEDIUM_TIMES(
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
         "Signin.BoundSessionCredentials.DeferredNavigationRequestDelay",
         duration);
   }

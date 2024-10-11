@@ -952,7 +952,7 @@ public class StripLayoutHelper
             mSelectedOnStartup = mModel.isActiveModel();
             if (mPlaceholderStripReady) replacePlaceholdersForRestoredTabs();
         } else {
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     PLACEHOLDER_VISIBLE_DURATION_HISTOGRAM_NAME, 0L);
 
             computeAndUpdateTabOrders(false, false);
@@ -978,7 +978,7 @@ public class StripLayoutHelper
             RecordHistogram.recordCount1000Histogram(
                     PLACEHOLDER_TABS_NEEDED_DURING_RESTORE_HISTOGRAM_NAME,
                     mPlaceholdersNeededDuringRestore);
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     PLACEHOLDER_VISIBLE_DURATION_HISTOGRAM_NAME,
                     SystemClock.uptimeMillis() - mPlaceholderCreationTime);
         }
@@ -2470,7 +2470,7 @@ public class StripLayoutHelper
 
         // Discard sample if last scroll was over the max allowed interval.
         if (timeFromLastInteraction <= TAB_SWITCH_METRICS_MAX_ALLOWED_SCROLL_INTERVAL) {
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "Android.TabStrip.TimeToSwitchTab", duration);
         }
 

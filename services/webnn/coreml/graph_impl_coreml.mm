@@ -223,8 +223,8 @@ void GraphImplCoreml::CreateAndBuildOnBackgroundThread(
         std::move(callback).Run(base::unexpected(std::move(error)));
         return;
       });
-  UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs.MLModelTranslate",
-                             ml_model_write_timer.Elapsed());
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+      "WebNN.CoreML.TimingMs.MLModelTranslate", ml_model_write_timer.Elapsed());
 
   // Create a map of the names used internally by CoreML to the names used
   // externally by WebNN for all inputs and outputs.
@@ -266,8 +266,8 @@ void GraphImplCoreml::LoadCompiledModelOnBackgroundThread(
         base::expected<std::unique_ptr<Params>, mojom::ErrorPtr>)> callback,
     NSURL* compiled_model_url,
     NSError* error) {
-  UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs.MLModelCompile",
-                             compilation_timer.Elapsed());
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs.MLModelCompile",
+                                        compilation_timer.Elapsed());
 
   // `compiled_model_url` refers to a directory placed directly inside
   // NSTemporaryDirectory(), it is not inside `model_file_dir`.
@@ -309,8 +309,8 @@ void GraphImplCoreml::LoadCompiledModelOnBackgroundThread(
   params->ml_model = [MLModel modelWithContentsOfURL:compiled_model_url
                                        configuration:configuration
                                                error:&model_load_error];
-  UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs.CompiledModelLoad",
-                             model_load_timer.Elapsed());
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+      "WebNN.CoreML.TimingMs.CompiledModelLoad", model_load_timer.Elapsed());
   if (model_load_error) {
     LOG(ERROR) << "[WebNN] " << model_load_error;
     std::move(callback).Run(base::unexpected(mojom::Error::New(
@@ -462,8 +462,8 @@ void GraphImplCoreml::DidPredictFromCompute(
     NSError* error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs.ModelPredict",
-                             model_predict_timer.Elapsed());
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs.ModelPredict",
+                                        model_predict_timer.Elapsed());
 
   if (error) {
     LOG(ERROR) << "[WebNN] PredictionError : " << error;
@@ -483,7 +483,7 @@ void GraphImplCoreml::DidPredictFromCompute(
                  base::ElapsedTimer model_output_read_timer,
                  std::vector<std::pair<std::string, mojo_base::BigBuffer>>
                      named_outputs) {
-                UMA_HISTOGRAM_MEDIUM_TIMES(
+                DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
                     "WebNN.CoreML.TimingMs.ModelOutputRead",
                     model_output_read_timer.Elapsed());
 
@@ -670,9 +670,10 @@ void GraphImplCoreml::DoDispatch(
                       NSMutableDictionary* output_backing_buffers,
                       base::OnceClosure completion_closure,
                       id<MLFeatureProvider> output_features, NSError* error) {
-                     UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs."
-                                                "ModelPredictWithDispatch",
-                                                model_predict_timer.Elapsed());
+                     DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+                         "WebNN.CoreML.TimingMs."
+                         "ModelPredictWithDispatch",
+                         model_predict_timer.Elapsed());
 
                      // Unlock the resources bound to this `ResourceTask`.
                      std::move(completion_closure).Run();

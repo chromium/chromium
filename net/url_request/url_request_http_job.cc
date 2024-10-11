@@ -1821,7 +1821,7 @@ void URLRequestHttpJob::RecordTimer() {
   base::TimeDelta to_start = base::Time::Now() - request_creation_time_;
   request_creation_time_ = base::Time();
 
-  UMA_HISTOGRAM_MEDIUM_TIMES("Net.HttpTimeToFirstByte", to_start);
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("Net.HttpTimeToFirstByte", to_start);
 
   // Record additional metrics for TLS 1.3 servers for Google hosts. Most
   // Google hosts are known to implement 0-RTT, so this gives more targeted

@@ -155,7 +155,7 @@ public class DropDataProviderImpl {
 
         if (lastUriCreatedTimestamp > 0) {
             long duration = elapsedRealtime - lastUriCreatedTimestamp;
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "Android.DragDrop.Image.UriCreatedInterval", duration);
         }
         int sizeInKB = imageBytes.length / BYTES_PER_KILOBYTE;
@@ -192,7 +192,7 @@ public class DropDataProviderImpl {
                 // If ContentProvider#openFile is received before Android Drag End event, set the
                 // duration to 0 to avoid negative value.
                 long duration = Math.max(0, mOpenFileLastAccessTime - mDragEndTime);
-                RecordHistogram.recordMediumTimesHistogram(
+                RecordHistogram.deprecatedRecordMediumTimesHistogram(
                         "Android.DragDrop.Image.OpenFileTime.LastAttempt", duration);
             }
         }
@@ -294,10 +294,10 @@ public class DropDataProviderImpl {
             if (!uri.equals(mContentProviderUri)) {
                 if (uri.equals(mLastUri)) {
                     long duration = elapsedRealtime - mLastUriClearedTimestamp;
-                    RecordHistogram.recordMediumTimesHistogram(
+                    RecordHistogram.deprecatedRecordMediumTimesHistogram(
                             "Android.DragDrop.Image.OpenFileTime.AllExpired", duration);
                     if (!mLastUriRecorded) {
-                        RecordHistogram.recordMediumTimesHistogram(
+                        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                                 "Android.DragDrop.Image.OpenFileTime.FirstExpired", duration);
                         mLastUriRecorded = true;
                     }
@@ -307,7 +307,7 @@ public class DropDataProviderImpl {
             if (mOpenFileLastAccessTime == 0) {
                 // If Android Drag End event has not been received yet, treat the duration as 0 ms.
                 long duration = mDragEndTime == 0 ? 0 : elapsedRealtime - mDragEndTime;
-                RecordHistogram.recordMediumTimesHistogram(
+                RecordHistogram.deprecatedRecordMediumTimesHistogram(
                         "Android.DragDrop.Image.OpenFileTime.FirstAttempt", duration);
             }
             mOpenFileLastAccessTime = elapsedRealtime;

@@ -321,8 +321,9 @@ void SigninManagerAndroid::OnPolicyRegisterDoneForIsAccountManaged(
     base::android::ScopedJavaGlobalRef<jobject> callback,
     base::Time start_time,
     const std::optional<ManagementCredentials>& credentials) {
-  UMA_HISTOGRAM_MEDIUM_TIMES("Signin.Android.IsAccountManagedDuration",
-                             (base::Time::Now() - start_time));
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+      "Signin.Android.IsAccountManagedDuration",
+      (base::Time::Now() - start_time));
 
   bool is_managed = credentials.has_value();
   // Cache result in case IsAccountManaged() is invoked again for the same user.

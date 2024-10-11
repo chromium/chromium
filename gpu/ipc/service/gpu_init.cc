@@ -804,8 +804,8 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     gpu_preferences_.disable_accelerated_video_encode = true;
   }
 
-  UMA_HISTOGRAM_MEDIUM_TIMES("GPU.InitializeOneOffMediumTime",
-                             elapsed_timer.Elapsed());
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("GPU.InitializeOneOffMediumTime",
+                                        elapsed_timer.Elapsed());
 
   bool recreate_watchdog = false;
   if (!gl_use_swiftshader_ && command_line->HasSwitch(switches::kUseGL)) {

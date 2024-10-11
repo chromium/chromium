@@ -1202,7 +1202,7 @@ void ServiceWorkerSubresourceLoader::
 
 void ServiceWorkerSubresourceLoader::RecordResponseReceivedToCompletedTiming(
     const net::LoadTimingInfo& load_timing) {
-  UMA_HISTOGRAM_MEDIUM_TIMES(
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
       "ServiceWorker.LoadTiming.Subresource."
       "ResponseReceivedToCompleted2",
       completion_time_ - load_timing.receive_headers_end);

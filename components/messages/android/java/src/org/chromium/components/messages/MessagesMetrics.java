@@ -163,10 +163,10 @@ public class MessagesMetrics {
             boolean messageDismissedByGesture,
             long durationMs) {
         String histogramSuffix = messageIdentifierToHistogramSuffix(messageIdentifier);
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 TIME_TO_ACTION_HISTOGRAM_PREFIX + histogramSuffix, durationMs);
         if (messageDismissedByGesture) {
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     TIME_TO_ACTION_DISMISS_HISTOGRAM_PREFIX + histogramSuffix, durationMs);
         }
     }
@@ -222,7 +222,7 @@ public class MessagesMetrics {
 
     static void recordTimeToFullyShow(@MessageIdentifier int messageIdentifier, long durationMs) {
         String histogramSuffix = messageIdentifierToHistogramSuffix(messageIdentifier);
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 STACKING_TIME_TO_FULLY_SHOW_PREFIX + histogramSuffix, durationMs);
     }
 

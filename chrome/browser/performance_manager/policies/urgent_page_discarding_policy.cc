@@ -86,12 +86,13 @@ void UrgentPageDiscardingPolicy::OnReclaimTarget(
                 if (origin_time && first_discarded_at) {
                   base::TimeDelta reclaim_arrival_duration =
                       on_memory_pressure_at - *origin_time;
-                  UMA_HISTOGRAM_MEDIUM_TIMES("Discarding.ReclaimArrivalLatency",
-                                             reclaim_arrival_duration);
+                  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+                      "Discarding.ReclaimArrivalLatency",
+                      reclaim_arrival_duration);
                   base::TimeDelta discard_duration =
                       *first_discarded_at - on_memory_pressure_at;
-                  UMA_HISTOGRAM_MEDIUM_TIMES("Discarding.DiscardLatency",
-                                             discard_duration);
+                  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+                      "Discarding.DiscardLatency", discard_duration);
                 }
               },
               base::Unretained(this), origin_time, on_memory_pressure_at),

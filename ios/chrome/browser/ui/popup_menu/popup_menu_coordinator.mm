@@ -480,14 +480,14 @@ using base::UserMetricsAction;
     OverflowMenuVisitedEvent event;
     base::TimeDelta elapsed = base::Seconds(
         [NSDate timeIntervalSinceReferenceDate] - self.toolsMenuOpenTime);
-    UMA_HISTOGRAM_MEDIUM_TIMES("IOS.OverflowMenu.TimeOpen", elapsed);
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("IOS.OverflowMenu.TimeOpen", elapsed);
     if (self.toolsMenuUserTookAction && self.overflowMenuUserSelectedAction) {
-      UMA_HISTOGRAM_MEDIUM_TIMES("IOS.OverflowMenu.TimeOpen.ActionChosen",
-                                 elapsed);
+      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+          "IOS.OverflowMenu.TimeOpen.ActionChosen", elapsed);
     } else if (self.toolsMenuUserTookAction &&
                self.overflowMenuUserSelectedDestination) {
-      UMA_HISTOGRAM_MEDIUM_TIMES("IOS.OverflowMenu.TimeOpen.DestinationChosen",
-                                 elapsed);
+      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+          "IOS.OverflowMenu.TimeOpen.DestinationChosen", elapsed);
     }
 
     event.PutOrRemove(OverflowMenuVisitedEventFields::kUserSelectedDestination,

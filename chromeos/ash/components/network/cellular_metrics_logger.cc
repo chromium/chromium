@@ -831,11 +831,11 @@ void CellularMetricsLogger::CheckForTimeToConnectedMetric(
         base::TimeTicks::Now() - *connection_info->last_connect_start_time;
 
     if (GetSimType(network) == SimType::kPSim) {
-      UMA_HISTOGRAM_MEDIUM_TIMES("Network.Cellular.PSim.TimeToConnected",
-                                 time_to_connected);
+      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+          "Network.Cellular.PSim.TimeToConnected", time_to_connected);
     } else {
-      UMA_HISTOGRAM_MEDIUM_TIMES("Network.Cellular.ESim.TimeToConnected",
-                                 time_to_connected);
+      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+          "Network.Cellular.ESim.TimeToConnected", time_to_connected);
     }
   }
 
