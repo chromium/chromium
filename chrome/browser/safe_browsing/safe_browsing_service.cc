@@ -381,6 +381,11 @@ V4ProtocolConfig SafeBrowsingServiceImpl::GetV4ProtocolConfig() const {
   return safe_browsing::GetV4ProtocolConfig();
 }
 
+void SafeBrowsingServiceImpl::ReportExternalAppRedirect(
+    content::WebContents* web_contents,
+    std::string_view app_name,
+    std::string_view uri) {}
+
 void SafeBrowsingServiceImpl::SetDatabaseManagerForTest(
     SafeBrowsingDatabaseManager* database_manager) {
   services_delegate_->SetDatabaseManagerForTest(database_manager);

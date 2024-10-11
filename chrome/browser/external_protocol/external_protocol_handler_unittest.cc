@@ -70,7 +70,6 @@ class FakeExternalProtocolHandlerDelegate
         complete_on_launch_(false),
         has_launched_(false),
         has_prompted_(false),
-        has_blocked_(false),
         on_complete_(std::move(on_complete)),
         program_name_(u"") {}
 
@@ -123,6 +122,12 @@ class FakeExternalProtocolHandlerDelegate
       std::move(on_complete_).Run();
   }
 
+  void ReportExternalAppRedirectToSafeBrowsing(
+      const GURL& url,
+      content::WebContents* web_contents) override {
+    reported_to_safe_browsing_ = true;
+  }
+
   void set_os_state(shell_integration::DefaultWebClientState value) {
     os_state_ = value;
   }
@@ -141,6 +146,7 @@ class FakeExternalProtocolHandlerDelegate
   bool has_launched() { return has_launched_; }
   bool has_prompted() { return has_prompted_; }
   bool has_blocked() { return has_blocked_; }
+  bool has_reported_to_safe_browsing() { return reported_to_safe_browsing_; }
   const std::optional<url::Origin>& initiating_origin() {
     return initiating_origin_;
   }
@@ -152,10 +158,11 @@ class FakeExternalProtocolHandlerDelegate
  private:
   ExternalProtocolHandler::BlockState block_state_;
   shell_integration::DefaultWebClientState os_state_;
-  bool complete_on_launch_;
-  bool has_launched_;
-  bool has_prompted_;
-  bool has_blocked_;
+  bool complete_on_launch_ = false;
+  bool has_launched_ = false;
+  bool has_prompted_ = false;
+  bool has_blocked_ = false;
+  bool reported_to_safe_browsing_ = false;
   GURL launch_or_prompt_url_;
   std::optional<url::Origin> initiating_origin_;
   base::OnceClosure on_complete_;
@@ -236,6 +243,8 @@ class ExternalProtocolHandlerTest : public testing::Test {
 
     EXPECT_EQ(expected_action == Action::PROMPT, delegate_.has_prompted());
     EXPECT_EQ(expected_action == Action::LAUNCH, delegate_.has_launched());
+    EXPECT_EQ(expected_action == Action::LAUNCH,
+              delegate_.has_reported_to_safe_browsing());
     EXPECT_EQ(expected_action == Action::BLOCK, delegate_.has_blocked());
     if (expected_action == Action::PROMPT) {
       ASSERT_TRUE(delegate_.initiating_origin().has_value());

@@ -242,6 +242,15 @@ class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
   // override it.
   virtual V4ProtocolConfig GetV4ProtocolConfig() const;
 
+  // Report the external app redirect to Safe Browsing if the following
+  // conditions are met:
+  // - User is opted in to ESB and not Incognito
+  // - The user has not redirected to this app recently
+  // - Neither the current page nor the destination app are allowlisted.
+  void ReportExternalAppRedirect(content::WebContents* web_contents,
+                                 std::string_view app_name,
+                                 std::string_view uri) override;
+
  protected:
   // Creates the safe browsing service.  Need to initialize before using.
   SafeBrowsingServiceImpl();
