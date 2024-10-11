@@ -66,7 +66,7 @@ void WebAppProfileSwitcher::SwitchToProfile(
       weak_factory_.GetWeakPtr());
   profiles::LoadProfileAsync(profile_to_open, std::move(open_web_app_callback));
 
-  if (app_id_ == web_app::kPasswordManagerAppId) {
+  if (app_id_ == ash::kPasswordManagerAppId) {
     base::UmaHistogramEnumeration(
         "PasswordManager.ShortcutMetric",
         password_manager::metrics_util::PasswordManagerShortcutMetric::

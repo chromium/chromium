@@ -64,7 +64,7 @@ gfx::Size OSSettingsSystemAppDelegate::GetMinimumWindowSize() const {
 
 std::vector<std::string>
 OSSettingsSystemAppDelegate::GetAppIdsToUninstallAndReplace() const {
-  return {web_app::kSettingsAppId, ash::kInternalAppIdSettings};
+  return {ash::kSettingsAppId, ash::kInternalAppIdSettings};
 }
 
 bool OSSettingsSystemAppDelegate::ShouldAnimateThemeChanges() const {

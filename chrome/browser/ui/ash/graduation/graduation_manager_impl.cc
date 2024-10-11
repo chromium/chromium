@@ -115,18 +115,18 @@ void GraduationManagerImpl::UpdateAppPinnedState() {
   SystemWebAppManager* swa_manager = SystemWebAppManager::Get(profile_);
 
   CHECK(swa_manager);
-  if (!swa_manager->IsSystemWebApp(web_app::kGraduationAppId)) {
+  if (!swa_manager->IsSystemWebApp(ash::kGraduationAppId)) {
     return;
   }
 
   bool is_policy_enabled = IsEligibleForGraduation(profile_->GetPrefs());
   if (is_policy_enabled) {
-    PinAppWithIDToShelf(web_app::kGraduationAppId);
-    nudge_controller_->MaybeShowNudge(ash::ShelfID(web_app::kGraduationAppId));
+    PinAppWithIDToShelf(ash::kGraduationAppId);
+    nudge_controller_->MaybeShowNudge(ash::ShelfID(ash::kGraduationAppId));
     return;
   }
 
-  UnpinAppWithIDFromShelf(web_app::kGraduationAppId);
+  UnpinAppWithIDFromShelf(ash::kGraduationAppId);
   nudge_controller_->ResetNudgePref();
   auto* browser =
       FindSystemWebAppBrowser(profile_, SystemWebAppType::GRADUATION);

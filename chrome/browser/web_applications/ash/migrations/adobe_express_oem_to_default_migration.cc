@@ -13,19 +13,19 @@
 namespace web_app::migrations {
 
 void MigrateAdobeExpressFromOemInstallToDefault(WebAppSyncBridge* sync_bridge) {
-  if (!sync_bridge->registrar().IsInstalled(kAdobeExpressAppId)) {
+  if (!sync_bridge->registrar().IsInstalled(ash::kAdobeExpressAppId)) {
     return;
   }
 
   if (!sync_bridge->registrar()
-           .GetAppById(kAdobeExpressAppId)
+           .GetAppById(ash::kAdobeExpressAppId)
            ->GetSources()
            .Has(WebAppManagement::Type::kOem)) {
     return;
   }
 
   web_app::ScopedRegistryUpdate update = sync_bridge->BeginUpdate();
-  web_app::WebApp* app = update->UpdateApp(kAdobeExpressAppId);
+  web_app::WebApp* app = update->UpdateApp(ash::kAdobeExpressAppId);
   CHECK(app);
 
   app->AddSource(WebAppManagement::Type::kApsDefault);

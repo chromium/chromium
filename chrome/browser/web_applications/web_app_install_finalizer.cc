@@ -193,9 +193,10 @@ void ApplyUserDisplayModeSyncMitigations(
       // - Check that it is synced as a browser shortcut.
       // TODO(b/321617972): Remove when Windows/Mac/Linux support for tabbed web
       // apps is in sufficient circulation.
-      bool is_standalone_averse_app = web_app.app_id() == kGoogleDocsAppId ||
-                                      web_app.app_id() == kGoogleSheetsAppId ||
-                                      web_app.app_id() == kGoogleSlidesAppId;
+      bool is_standalone_averse_app =
+          web_app.app_id() == ash::kGoogleDocsAppId ||
+          web_app.app_id() == ash::kGoogleSheetsAppId ||
+          web_app.app_id() == ash::kGoogleSlidesAppId;
       if (!is_standalone_averse_app) {
         break;
       }

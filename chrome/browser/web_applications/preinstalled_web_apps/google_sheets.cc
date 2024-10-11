@@ -136,7 +136,7 @@ ExternalInstallOptions GetConfigForGoogleSheets(bool is_standalone_tabbed) {
         return info;
       },
       is_standalone_tabbed);
-  options.expected_app_id = kGoogleSheetsAppId;
+  options.expected_app_id = ash::kGoogleSheetsAppId;
 
   return options;
 }

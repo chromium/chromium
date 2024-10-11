@@ -287,9 +287,9 @@ TEST_F(AppPermissionHandlerTest, GetAppList) {
 }
 
 TEST_F(AppPermissionHandlerTest, GetSystemAppsThatUseCamera) {
-  InstallApp(web_app::kCameraAppId,
+  InstallApp(ash::kCameraAppId,
              {std::make_pair(apps::PermissionType::kCamera, true)});
-  InstallApp(web_app::kPersonalizationAppId,
+  InstallApp(ash::kPersonalizationAppId,
              {std::make_pair(apps::PermissionType::kCamera, true)});
   InstallApp("systemAppThatDoesNotUseCamera",
              {std::make_pair(apps::PermissionType::kCamera, true)});
@@ -300,7 +300,7 @@ TEST_F(AppPermissionHandlerTest, GetSystemAppsThatUseCamera) {
 }
 
 TEST_F(AppPermissionHandlerTest, GetSystemAppsThatUseMicrophone) {
-  InstallApp(web_app::kCameraAppId,
+  InstallApp(ash::kCameraAppId,
              {std::make_pair(apps::PermissionType::kMicrophone, true)});
   InstallApp("systemAppThatDoesNotUseMicrophone",
              {std::make_pair(apps::PermissionType::kMicrophone, true)});

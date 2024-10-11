@@ -105,7 +105,7 @@ ExternalInstallOptions GetConfigForContainer(
         return info;
       },
       device_info);
-  options.expected_app_id = kContainerAppId;
+  options.expected_app_id = ash::kContainerAppId;
   options.gate_on_feature = chromeos::features::kContainerAppPreinstall.name;
   options.is_preferred_app_for_supported_links = true;
   options.only_use_app_info_factory = true;

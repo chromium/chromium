@@ -476,7 +476,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientShowCalendarTest, NoEventUrl) {
   EXPECT_EQ(final_url.spec(), GURL(kExpectedUrlStr).spec());
 
   // Now install the calendar PWA.
-  InstallApp(web_app::kGoogleCalendarAppId, "Google Calendar");
+  InstallApp(ash::kGoogleCalendarAppId, "Google Calendar");
   opened_pwa = false;
   final_url = GURL();
   ash::Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(
@@ -505,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientShowCalendarTest, OfficialEventUrl) {
   EXPECT_EQ(final_url.spec(), event_url.spec());
 
   // Install the calendar PWA.
-  InstallApp(web_app::kGoogleCalendarAppId, "Google Calendar");
+  InstallApp(ash::kGoogleCalendarAppId, "Google Calendar");
   opened_pwa = false;
   final_url = GURL();
   ash::Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(
@@ -536,7 +536,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientShowCalendarTest, UnofficialEventUrl) {
   EXPECT_EQ(final_url.spec(), GURL(kOfficialCalendarEventUrl).spec());
 
   // Install the calendar PWA.
-  InstallApp(web_app::kGoogleCalendarAppId, "Google Calendar");
+  InstallApp(ash::kGoogleCalendarAppId, "Google Calendar");
   opened_pwa = false;
   final_url = GURL();
   ash::Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(
@@ -581,7 +581,7 @@ IN_PROC_BROWSER_TEST_F(
     SystemTrayClientShowVideoConferenceTest,
     LaunchGoogleMeetUrlInBrowser_WhenAppIsInstalledButNotPreferred) {
   const auto kVideoConferenceUrl = GURL("https://meet.google.com/abc-123");
-  InstallApp(web_app::kGoogleMeetAppId, "Google Meet");
+  InstallApp(ash::kGoogleMeetAppId, "Google Meet");
 
   ash::Shell::Get()->system_tray_model()->client()->ShowVideoConference(
       kVideoConferenceUrl);
@@ -595,11 +595,11 @@ IN_PROC_BROWSER_TEST_F(
     SystemTrayClientShowVideoConferenceTest,
     LaunchGoogleMeetUrlInApp_WhenAppIsInstalledAndPreferred) {
   const auto kVideoConferenceUrl = GURL("https://meet.google.com/abc-123");
-  InstallApp(web_app::kGoogleMeetAppId, "Google Meet");
-  SetPreferredApp(web_app::kGoogleMeetAppId);
+  InstallApp(ash::kGoogleMeetAppId, "Google Meet");
+  SetPreferredApp(ash::kGoogleMeetAppId);
 
   ASSERT_EQ(
-      web_app::kGoogleMeetAppId,
+      ash::kGoogleMeetAppId,
       proxy()->PreferredAppsList().FindPreferredAppForUrl(kVideoConferenceUrl));
 
   ash::Shell::Get()->system_tray_model()->client()->ShowVideoConference(

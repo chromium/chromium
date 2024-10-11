@@ -137,7 +137,7 @@ ExternalInstallOptions GetConfigForGoogleDocs(bool is_standalone_tabbed) {
 
   options.user_type_allowlist = {"unmanaged", "managed", "child"};
   options.uninstall_and_replace.push_back("aohghmighlieiainnegkcijnfilokake");
-  options.expected_app_id = kGoogleDocsAppId;
+  options.expected_app_id = ash::kGoogleDocsAppId;
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (IsDriveFsBulkPinningAvailable()) {

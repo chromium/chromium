@@ -433,12 +433,12 @@ void ProfileMenuView::OnOtherProfileSelected(
     // is already installed.
     const webapps::AppId& app_id = browser()->app_controller()->app_id();
 #if BUILDFLAG(IS_MAC)
-    if (app_id != web_app::kPasswordManagerAppId) {
+    if (app_id != ash::kPasswordManagerAppId) {
       apps::AppShimManager::Get()->LaunchAppInProfile(app_id, profile_path);
       return;
     }
 #endif
-    CHECK_EQ(app_id, web_app::kPasswordManagerAppId);
+    CHECK_EQ(app_id, ash::kPasswordManagerAppId);
 
     app_profile_switcher_.emplace(
         app_id, *browser()->profile(),
@@ -919,7 +919,7 @@ void ProfileMenuView::BuildAvailableProfiles() {
 #if BUILDFLAG(IS_MAC)
   const bool is_regular_web_app =
       web_app::AppBrowserController::IsWebApp(browser()) &&
-      (browser()->app_controller()->app_id() != web_app::kPasswordManagerAppId);
+      (browser()->app_controller()->app_id() != ash::kPasswordManagerAppId);
   std::set<base::FilePath> available_profiles;
   if (is_regular_web_app) {
     available_profiles = AppShimRegistry::Get()->GetInstalledProfilesForApp(

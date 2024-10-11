@@ -249,7 +249,7 @@ class WebAppsPreventCloseChromeOsBrowserTest
                ? web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
                      web_app::test::GetDefaultEd25519WebBundleId())
                      .app_id()
-               : web_app::kCalculatorAppId;
+               : ash::kCalculatorAppId;
   }
 
   void ResetPolicies() {

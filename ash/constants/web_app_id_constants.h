@@ -5,7 +5,7 @@
 #ifndef ASH_CONSTANTS_WEB_APP_ID_CONSTANTS_H_
 #define ASH_CONSTANTS_WEB_APP_ID_CONSTANTS_H_
 
-namespace web_app {
+namespace ash {
 
 // The URLs used to generate the app IDs MUST match the start_url field of the
 // manifest served by the PWA.
@@ -228,6 +228,6 @@ inline constexpr char kSampleSystemWebAppId[] =
 inline constexpr char kPasswordManagerAppId[] =
     "kajebgjangihfbkjfejcanhanjmmbcfd";
 
-}  // namespace web_app
+}  // namespace ash
 
 #endif  // ASH_CONSTANTS_WEB_APP_ID_CONSTANTS_H_

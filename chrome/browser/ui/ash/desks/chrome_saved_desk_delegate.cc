@@ -474,7 +474,7 @@ bool ChromeSavedDeskDelegate::IsWindowSupportedForSavedDesk(
 
   const auto* app_id = window->GetProperty(ash::kAppIDKey);
   // Feedback app is not saved, see http://b/301479278.
-  if (app_id && *app_id == web_app::kOsFeedbackAppId) {
+  if (app_id && *app_id == ash::kOsFeedbackAppId) {
     return false;
   }
 

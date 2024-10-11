@@ -280,13 +280,13 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     OpenHostedFileWithAppBrowserTest,
     ::testing::Values(HostedAppTestCase{.name = "Docs",
-                                        .app_id = web_app::kGoogleDocsAppId,
+                                        .app_id = ash::kGoogleDocsAppId,
                                         .file_name = "doc.gdoc"},
                       HostedAppTestCase{.name = "Sheets",
-                                        .app_id = web_app::kGoogleSheetsAppId,
+                                        .app_id = ash::kGoogleSheetsAppId,
                                         .file_name = "sheet.gsheet"},
                       HostedAppTestCase{.name = "Slides",
-                                        .app_id = web_app::kGoogleSlidesAppId,
+                                        .app_id = ash::kGoogleSlidesAppId,
                                         .file_name = "slide.gslides"}),
     &AppendTestCaseName);
 

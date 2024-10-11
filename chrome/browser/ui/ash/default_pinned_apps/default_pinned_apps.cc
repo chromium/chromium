@@ -23,35 +23,35 @@ bool ShouldAddHelpApp(content::BrowserContext* browser_context) {
 std::vector<StaticAppId> GetDefaultPinnedApps(
     content::BrowserContext* browser_context) {
   std::vector<StaticAppId> app_ids{
-      web_app::kGmailAppId,
+      ash::kGmailAppId,
 
-      web_app::kGoogleCalendarAppId,
+      ash::kGoogleCalendarAppId,
 
       file_manager::kFileManagerSwaAppId,
 
-      web_app::kMessagesAppId,
+      ash::kMessagesAppId,
 
-      web_app::kGoogleMeetAppId,
+      ash::kGoogleMeetAppId,
 
       arc::kPlayStoreAppId,
 
-      web_app::kYoutubeAppId,
+      ash::kYoutubeAppId,
 
       arc::kGooglePhotosAppId,
   };
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (chromeos::features::IsContainerAppPreinstallEnabled()) {
-    app_ids.insert(app_ids.begin(), web_app::kContainerAppId);
+    app_ids.insert(app_ids.begin(), ash::kContainerAppId);
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   if (chromeos::features::IsCloudGamingDeviceEnabled()) {
-    app_ids.push_back(web_app::kNvidiaGeForceNowAppId);
+    app_ids.push_back(ash::kNvidiaGeForceNowAppId);
   }
 
   if (ShouldAddHelpApp(browser_context)) {
-    app_ids.push_back(web_app::kHelpAppId);
+    app_ids.push_back(ash::kHelpAppId);
   }
 
   return app_ids;
@@ -72,7 +72,7 @@ std::vector<StaticAppId> GetTabletFormFactorDefaultPinnedApps(
   };
 
   if (ShouldAddHelpApp(browser_context)) {
-    app_ids.push_back(web_app::kHelpAppId);
+    app_ids.push_back(ash::kHelpAppId);
   }
 
   return app_ids;

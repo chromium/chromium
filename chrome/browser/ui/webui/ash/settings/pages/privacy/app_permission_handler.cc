@@ -48,15 +48,13 @@ app_permission::mojom::AppPtr CreateAppPtr(const apps::AppUpdate& update) {
 
 // Returns true if the system app with ID `app_id` uses camera.
 bool SystemAppUsesCamera(const std::string& app_id) {
-  return app_id == web_app::kCameraAppId ||
-         app_id == web_app::kPersonalizationAppId ||
+  return app_id == ash::kCameraAppId || app_id == ash::kPersonalizationAppId ||
          app_id == ash::kChromeUIUntrustedProjectorSwaAppId;
 }
 
 // Returns true if the system app with ID `app_id` uses microphone.
 bool SystemAppUsesMicrophone(const std::string& app_id) {
-  return app_id == web_app::kCameraAppId ||
-         app_id == ash::eche_app::kEcheAppId ||
+  return app_id == ash::kCameraAppId || app_id == ash::eche_app::kEcheAppId ||
          app_id == ash::kChromeUIUntrustedProjectorSwaAppId;
 }
 

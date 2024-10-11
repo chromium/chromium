@@ -832,7 +832,7 @@ void WebAppPolicyManager::PopulateDisabledWebAppsIdsLists() {
   for (const auto& entry : disabled_system_features_pref) {
     switch (static_cast<policy::SystemFeature>(entry.GetInt())) {
       case policy::SystemFeature::kCanvas:
-        disabled_web_apps_.insert(kCanvasAppId);
+        disabled_web_apps_.insert(ash::kCanvasAppId);
         break;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       case policy::SystemFeature::kCamera:

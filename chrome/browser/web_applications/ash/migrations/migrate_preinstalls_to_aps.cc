@@ -28,8 +28,8 @@ void MigratePreinstallsToAps(WebAppSyncBridge* sync_bridge) {
     ++count;
     // Ignore core 6 apps: gmail, docs, drive, sheets, slides, yt.
     static constexpr auto kCoreApps = base::MakeFixedFlatSet<std::string_view>(
-        {kGmailAppId, kGoogleDocsAppId, kGoogleDriveAppId, kGoogleSheetsAppId,
-         kGoogleSlidesAppId, kYoutubeAppId});
+        {ash::kGmailAppId, ash::kGoogleDocsAppId, ash::kGoogleDriveAppId,
+         ash::kGoogleSheetsAppId, ash::kGoogleSlidesAppId, ash::kYoutubeAppId});
     if (kCoreApps.contains(web_app.app_id())) {
       continue;
     }

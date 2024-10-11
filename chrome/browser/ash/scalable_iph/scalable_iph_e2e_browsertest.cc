@@ -225,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphE2EBrowserTestCounterfactualControl, E2E) {
     GTEST_SKIP() << "E2E tests are designed to be run under Google Chrome";
   }
 
-  EXPECT_FALSE(ash::ShelfModel::Get()->IsAppPinned(web_app::kHelpAppId));
+  EXPECT_FALSE(ash::ShelfModel::Get()->IsAppPinned(ash::kHelpAppId));
 
   // TODO(b/285225729): add more expectations to test the config.
 }
@@ -235,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphE2EBrowserTestUnlockedBased, E2E) {
     GTEST_SKIP() << "E2E tests are designed to be run under Google Chrome";
   }
 
-  EXPECT_FALSE(ash::ShelfModel::Get()->IsAppPinned(web_app::kHelpAppId));
+  EXPECT_FALSE(ash::ShelfModel::Get()->IsAppPinned(ash::kHelpAppId));
 
   // TODO(b/285225729): add more expectations to test the config.
 }
@@ -245,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphE2EBrowserTestTimerBased, E2E) {
     GTEST_SKIP() << "E2E tests are designed to be run under Google Chrome";
   }
 
-  EXPECT_FALSE(ash::ShelfModel::Get()->IsAppPinned(web_app::kHelpAppId));
+  EXPECT_FALSE(ash::ShelfModel::Get()->IsAppPinned(ash::kHelpAppId));
 
   // TODO(b/285225729): add more expectations to test the config.
 }
@@ -255,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphE2EBrowserTestHelpAppBased, E2E) {
     GTEST_SKIP() << "E2E tests are designed to be run under Google Chrome";
   }
 
-  EXPECT_TRUE(ash::ShelfModel::Get()->IsAppPinned(web_app::kHelpAppId));
+  EXPECT_TRUE(ash::ShelfModel::Get()->IsAppPinned(ash::kHelpAppId));
 
   // TODO(b/285225729): add more expectations to test the config.
 }

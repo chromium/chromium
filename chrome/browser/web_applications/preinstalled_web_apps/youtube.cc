@@ -46,7 +46,7 @@ ExternalInstallOptions GetConfigForYouTube() {
         LoadBundledIcons({IDR_PREINSTALLED_WEB_APPS_YOUTUBE_ICON_192_PNG});
     return info;
   });
-  options.expected_app_id = kYoutubeAppId;
+  options.expected_app_id = ash::kYoutubeAppId;
 
   return options;
 }

@@ -54,8 +54,8 @@ constexpr double kRelevanceThreshold = 0.64;
 
 // Default recommended apps in descending order of priority.
 constexpr const char* const ranked_default_app_ids[] = {
-    web_app::kOsSettingsAppId, web_app::kHelpAppId, arc::kPlayStoreAppId,
-    web_app::kCanvasAppId, web_app::kCameraAppId};
+    ash::kOsSettingsAppId, ash::kHelpAppId, arc::kPlayStoreAppId,
+    ash::kCanvasAppId, ash::kCameraAppId};
 
 // Flag to enable/disable diacritics stripping
 constexpr bool kStripDiacritics = true;

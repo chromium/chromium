@@ -266,7 +266,7 @@ bool IsOfficeWebAppInstalled(Profile* profile) {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
   bool installed = false;
   proxy->AppRegistryCache().ForOneApp(
-      web_app::kMicrosoft365AppId, [&installed](const apps::AppUpdate& update) {
+      ash::kMicrosoft365AppId, [&installed](const apps::AppUpdate& update) {
         installed = apps_util::IsInstalled(update.Readiness());
       });
   return installed;

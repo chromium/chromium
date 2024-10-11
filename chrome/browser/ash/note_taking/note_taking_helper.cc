@@ -88,7 +88,7 @@ NoteTakingHelper* g_helper = nullptr;
 // regardless of the app metadata, and will be shown in this order at the top of
 // the list of note-taking apps.
 const char* const kDefaultAllowedAppIds[] = {
-    web_app::kCursiveAppId,
+    ash::kCursiveAppId,
     NoteTakingHelper::kDevKeepExtensionId,
     NoteTakingHelper::kProdKeepExtensionId,
     NoteTakingHelper::kNoteTakingWebAppIdTest,

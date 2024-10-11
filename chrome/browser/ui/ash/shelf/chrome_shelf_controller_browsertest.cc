@@ -2122,7 +2122,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, CloseSystemAppByShelfContextMenu) {
       browser()->window()->GetNativeWindow());
   ash::ShelfView* shelf_view = controller->shelf()->GetShelfViewForTesting();
   ash::ShelfModel* model = shelf_view->model();
-  EXPECT_EQ(-1, model->ItemIndexByAppID(web_app::kOsSettingsAppId));
+  EXPECT_EQ(-1, model->ItemIndexByAppID(ash::kOsSettingsAppId));
 
   // Open the system tray then click at the quick setting button.
   std::unique_ptr<ash::SystemTrayTestApi> tray_test_api =
@@ -2135,7 +2135,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, CloseSystemAppByShelfContextMenu) {
   browser_opened.Wait();
 
   Browser* app_browser = BrowserList::GetInstance()->GetLastActive();
-  EXPECT_EQ(web_app::kOsSettingsAppId,
+  EXPECT_EQ(ash::kOsSettingsAppId,
             ash::ShelfID::Deserialize(
                 app_browser->window()->GetNativeWindow()->GetProperty(
                     ash::kShelfIDKey))
@@ -2155,7 +2155,7 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, CloseSystemAppByShelfContextMenu) {
   // Verify that the shelf item of the setting app is placed at the end of the
   // shelf model.
   const int setting_app_item_index =
-      model->ItemIndexByAppID(web_app::kOsSettingsAppId);
+      model->ItemIndexByAppID(ash::kOsSettingsAppId);
   EXPECT_EQ(model->item_count() - 1, setting_app_item_index);
 
   // Get the setting app's shelf app button.
