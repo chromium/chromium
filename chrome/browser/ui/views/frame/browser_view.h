@@ -604,6 +604,7 @@ class BrowserView : public BrowserWindow,
       override;
   void ShowAvatarBubbleFromAvatarButton(bool is_source_accelerator) override;
   void MaybeShowProfileSwitchIPH() override;
+  void MaybeShowSupervisedUserProfileSignInIPH() override;
   void ShowHatsDialog(
       const std::string& site_id,
       const std::optional<std::string>& hats_histogram_name,
@@ -900,6 +901,10 @@ class BrowserView : public BrowserWindow,
   // Creates the JumpList.
   void CreateJumpList();
 #endif
+
+  // Helper method, returns if we should show the IPHs anchored on the avatar
+  // toolbar.
+  bool ShouldShowAvatarToolbarIPH();
 
   // Returns the BrowserViewLayout.
   BrowserViewLayout* GetBrowserViewLayout() const;

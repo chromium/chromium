@@ -4800,6 +4800,17 @@ void BrowserView::CreateJumpList() {
 }
 #endif
 
+bool BrowserView::ShouldShowAvatarToolbarIPH() {
+  if (GetGuestSession() || GetIncognito()) {
+    return false;
+  }
+  AvatarToolbarButton* avatar_button =
+      toolbar_button_provider_
+          ? toolbar_button_provider_->GetAvatarToolbarButton()
+          : nullptr;
+  return avatar_button != nullptr;
+}
+
 BrowserViewLayout* BrowserView::GetBrowserViewLayout() const {
   return static_cast<BrowserViewLayout*>(GetLayoutManager());
 }
@@ -5273,14 +5284,19 @@ void BrowserView::ShowAvatarBubbleFromAvatarButton(bool is_source_accelerator) {
 }
 
 void BrowserView::MaybeShowProfileSwitchIPH() {
-  if (GetGuestSession() || GetIncognito())
+  if (!ShouldShowAvatarToolbarIPH()) {
     return;
-  AvatarToolbarButton* avatar_button =
-      toolbar_button_provider_
-          ? toolbar_button_provider_->GetAvatarToolbarButton()
-          : nullptr;
-  if (avatar_button)
-    avatar_button->MaybeShowProfileSwitchIPH();
+  }
+  toolbar_button_provider_->GetAvatarToolbarButton()
+      ->MaybeShowProfileSwitchIPH();
+}
+
+void BrowserView::MaybeShowSupervisedUserProfileSignInIPH() {
+  if (!ShouldShowAvatarToolbarIPH()) {
+    return;
+  }
+  toolbar_button_provider_->GetAvatarToolbarButton()
+      ->MaybeShowSupervisedUserSignInIPH();
 }
 
 void BrowserView::ShowHatsDialog(

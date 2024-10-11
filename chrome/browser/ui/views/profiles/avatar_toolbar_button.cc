@@ -347,9 +347,10 @@ void AvatarToolbarButton::MaybeShowProfileSwitchIPH() {
 }
 
 void AvatarToolbarButton::MaybeShowSupervisedUserSignInIPH() {
-  // TODO(b/351333491): Likely to need a delaying mechanism similar to
-  // `MaybeShowProfileSwitchIPH`. To be decided when implementing the
-  // invocation.
+  if (!base::FeatureList::IsEnabled(
+          feature_engagement::kIPHSupervisedUserProfileSigninFeature)) {
+    return;
+  }
   signin::IdentityManager* const identity_manager =
       IdentityManagerFactory::GetForProfile(browser_->profile());
   CHECK(identity_manager);
@@ -364,6 +365,21 @@ void AvatarToolbarButton::MaybeShowSupervisedUserSignInIPH() {
     return;
   }
   if (account_info.IsEmpty()) {
+    return;
+  }
+
+  // Prevent showing the promo right when the browser was created.
+  // This is not just used for smoother animation, but it gives the anchor
+  // element enough time to become visible and display the IPH.
+  // TODO(crbug.com/372689164): investigate alternative rescheduling,
+  // using `CanShowFeaturePromo`.
+  base::TimeDelta time_since_creation = base::TimeTicks::Now() - creation_time_;
+  if (time_since_creation < g_iph_min_delay_after_creation) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&AvatarToolbarButton::MaybeShowSupervisedUserSignInIPH,
+                       weak_ptr_factory_.GetWeakPtr()),
+        g_iph_min_delay_after_creation - time_since_creation);
     return;
   }
 

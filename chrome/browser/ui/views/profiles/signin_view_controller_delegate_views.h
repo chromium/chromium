@@ -71,7 +71,8 @@ class SigninViewControllerDelegateViews
   static std::unique_ptr<views::WebView> CreateProfileCustomizationWebView(
       Browser* browser,
       bool is_local_profile_creation,
-      bool show_profile_switch_iph = false);
+      bool show_profile_switch_iph = false,
+      bool show_supervised_user_iph = false);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \

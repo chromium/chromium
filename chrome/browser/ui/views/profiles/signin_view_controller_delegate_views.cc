@@ -84,12 +84,15 @@ int GetSyncConfirmationDialogPreferredHeight(Profile* profile) {
 void CloseModalSigninInBrowser(
     base::WeakPtr<Browser> browser,
     bool show_profile_switch_iph,
+    bool show_supervised_user_iph,
     ProfileCustomizationHandler::CustomizationResult result) {
   if (!browser)
     return;
 
   browser->signin_view_controller()->CloseModalSignin();
-
+  if (show_supervised_user_iph) {
+    browser->window()->MaybeShowSupervisedUserProfileSignInIPH();
+  }
   if (show_profile_switch_iph) {
     browser->window()->MaybeShowProfileSwitchIPH();
   }
@@ -151,7 +154,8 @@ std::unique_ptr<views::WebView>
 SigninViewControllerDelegateViews::CreateProfileCustomizationWebView(
     Browser* browser,
     bool is_local_profile_creation,
-    bool show_profile_switch_iph) {
+    bool show_profile_switch_iph,
+    bool show_supervised_user_iph) {
   GURL url = GURL(chrome::kChromeUIProfileCustomizationURL);
   if (is_local_profile_creation) {
     url = AppendProfileCustomizationQueryParams(
@@ -167,9 +171,9 @@ SigninViewControllerDelegateViews::CreateProfileCustomizationWebView(
                                        ->GetController()
                                        ->GetAs<ProfileCustomizationUI>();
   DCHECK(web_ui);
-  web_ui->Initialize(base::BindOnce(&CloseModalSigninInBrowser,
-                                    browser->AsWeakPtr(),
-                                    show_profile_switch_iph));
+  web_ui->Initialize(
+      base::BindOnce(&CloseModalSigninInBrowser, browser->AsWeakPtr(),
+                     show_profile_switch_iph, show_supervised_user_iph));
   return web_view;
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -488,10 +492,12 @@ SigninViewControllerDelegate*
 SigninViewControllerDelegate::CreateProfileCustomizationDelegate(
     Browser* browser,
     bool is_local_profile_creation,
-    bool show_profile_switch_iph) {
+    bool show_profile_switch_iph,
+    bool show_supervised_user_iph) {
   return new SigninViewControllerDelegateViews(
       SigninViewControllerDelegateViews::CreateProfileCustomizationWebView(
-          browser, is_local_profile_creation, show_profile_switch_iph),
+          browser, is_local_profile_creation, show_profile_switch_iph,
+          show_supervised_user_iph),
       browser, ui::mojom::ModalType::kWindow, false, false,
       is_local_profile_creation);
 }

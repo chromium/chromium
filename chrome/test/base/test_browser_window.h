@@ -218,6 +218,7 @@ class TestBrowserWindow : public BrowserWindow {
       override;
   void ShowAvatarBubbleFromAvatarButton(bool is_source_keyboard) override {}
   void MaybeShowProfileSwitchIPH() override {}
+  void MaybeShowSupervisedUserProfileSignInIPH() override {}
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_LINUX)

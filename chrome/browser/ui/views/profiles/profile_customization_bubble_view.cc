@@ -92,6 +92,7 @@ void ProfileCustomizationBubbleView::OnCompletionButtonClicked(
       break;
   }
   GetWidget()->CloseWithReason(closed_reason);
+  browser_view->MaybeShowSupervisedUserProfileSignInIPH();
   browser_view->MaybeShowProfileSwitchIPH();
 }
 

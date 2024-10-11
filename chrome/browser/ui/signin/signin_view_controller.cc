@@ -409,7 +409,7 @@ void SigninViewController::ShowModalProfileCustomizationDialog(
   dialog_ = std::make_unique<SigninModalDialogImpl>(
       SigninViewControllerDelegate::CreateProfileCustomizationDelegate(
           browser_, is_local_profile_creation,
-          /*show_profile_switch_iph=*/true),
+          /*show_profile_switch_iph=*/true, /*show_supervised_user_iph=*/true),
       GetOnModalDialogClosedCallback());
 }
 

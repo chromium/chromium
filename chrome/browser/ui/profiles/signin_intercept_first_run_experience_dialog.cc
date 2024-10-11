@@ -363,7 +363,10 @@ void SigninInterceptFirstRunExperienceDialog::DoProfileCustomization() {
     SetDialogDelegate(
         SigninViewControllerDelegate::CreateProfileCustomizationDelegate(
             browser_, /*is_local_profile_creation=*/false,
-            /*show_profile_switch_iph=*/true));
+            /*show_profile_switch_iph=*/true,
+            // TODO(crbug.com/351333491) Clarify if we want the IPH when a new
+            // profile is created following a context-signin.
+            /*show_supervised_user_iph=*/false));
     return;
   }
 

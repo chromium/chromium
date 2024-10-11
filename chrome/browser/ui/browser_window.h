@@ -548,6 +548,15 @@ class BrowserWindow : public ui::BaseWindow,
   // customization bubble is shown, the IPH should be shown after.
   virtual void MaybeShowProfileSwitchIPH() = 0;
 
+  // Attempts showing the In-Product-Help for supervised user profiles.
+  // This should be invoked for new signed-in supervised profiles created
+  // by FRE, the profile picker, profile menu or chrome menu.
+  // If the profile customization bubble is shown, the IPH should be shown
+  // after.
+  // TODO(351333491): To specify if this will be invoked on signing-in/turning
+  // on sync for an existing profile.
+  virtual void MaybeShowSupervisedUserProfileSignInIPH() = 0;
+
   // Shows User Happiness Tracking Survey's dialog after the survey associated
   // with |site_id| has been successfully loaded. Failure to load the survey
   // will result in the dialog not being shown. |product_specific_bits_data| and
