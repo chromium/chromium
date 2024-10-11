@@ -10550,7 +10550,7 @@ Element* Element::ImplicitAnchorElement() const {
     return anchor;
   }
   if (const HTMLElement* html_element = DynamicTo<HTMLElement>(this)) {
-    if (Element* internal_anchor = html_element->internalImplicitAnchor()) {
+    if (Element* internal_anchor = html_element->implicitAnchor()) {
       return internal_anchor;
     }
   }

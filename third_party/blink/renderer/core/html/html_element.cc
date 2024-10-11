@@ -1582,6 +1582,9 @@ void HTMLElement::ShowPopoverInternal(Element* invoker,
   // Make the popover match `:popover-open` and remove `display:none` styling:
   GetPopoverData()->setVisibilityState(PopoverVisibilityState::kShowing);
   GetPopoverData()->setInvoker(invoker);
+  if (RuntimeEnabledFeatures::PopoverAnchorRelationshipsEnabled()) {
+    SetImplicitAnchor(invoker);
+  }
   PseudoStateChanged(CSSSelector::kPseudoPopoverOpen);
   CHECK(!original_document.AllOpenPopovers().Contains(this));
   original_document.AllOpenPopovers().insert(this);
@@ -1799,6 +1802,9 @@ void HTMLElement::HidePopoverInternal(
 
   MarkPopoverInvokersDirty(*this);
   GetPopoverData()->setInvoker(nullptr);
+  if (RuntimeEnabledFeatures::PopoverAnchorRelationshipsEnabled()) {
+    SetImplicitAnchor(nullptr);
+  }
   // Events are only fired in the case that the popover is not being removed
   // from the document.
   if (transition_behavior ==
@@ -2335,15 +2341,22 @@ void HTMLElement::HoveredElementChanged(Element* old_element,
   }
 }
 
-void HTMLElement::SetInternalImplicitAnchor(HTMLElement* element) {
-  CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled());
+void HTMLElement::SetImplicitAnchor(Element* element) {
+  CHECK(RuntimeEnabledFeatures::CustomizableSelectEnabled() ||
+        RuntimeEnabledFeatures::PopoverAnchorRelationshipsEnabled());
   CHECK(HasPopoverAttribute());
-  GetPopoverData()->setInternalImplicitAnchor(element);
+  if (auto* old_implicit_anchor =
+          GetPopoverData() ? GetPopoverData()->implicitAnchor() : nullptr) {
+    old_implicit_anchor->DecrementImplicitlyAnchoredElementCount();
+  }
+  GetPopoverData()->setImplicitAnchor(element);
+  if (element) {
+    element->IncrementImplicitlyAnchoredElementCount();
+  }
 }
 
-HTMLElement* HTMLElement::internalImplicitAnchor() const {
-  return GetPopoverData() ? GetPopoverData()->internalImplicitAnchor()
-                          : nullptr;
+Element* HTMLElement::implicitAnchor() const {
+  return GetPopoverData() ? GetPopoverData()->implicitAnchor() : nullptr;
 }
 
 bool HTMLElement::DispatchFocusEvent(

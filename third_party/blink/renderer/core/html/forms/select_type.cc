@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "ui/base/ui_base_features.h"
 
@@ -164,23 +165,6 @@ class PopoverElementForAppearanceBase : public HTMLDivElement {
         cache->DidHideMenuListPopup(select);
       }
     }
-  }
-
-  void ShowPopoverForSelectElement() {
-    if (popoverOpen()) {
-      // We can hit this case if focus is moved back to the select's invoker
-      // button and the user presses arrow keys which are supposed to show the
-      // picker.
-      return;
-    }
-    ShowPopoverInternal(/*invoker=*/nullptr, /*exception_state=*/nullptr);
-  }
-
-  void HidePopoverForSelectElement() {
-    HidePopoverInternal(
-        HidePopoverFocusBehavior::kFocusPreviousElement,
-        HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
-        /*exception_state=*/nullptr);
   }
 
   InsertionNotificationRequest InsertedInto(ContainerNode& container) override {
@@ -532,7 +516,9 @@ void MenuListSelectType::CreateShadowSubtree(ShadowRoot& root) {
     popover_ = MakeGarbageCollected<PopoverElementForAppearanceBase>(doc);
     popover_->SetShadowPseudoId(shadow_element_names::kPickerSelect);
     popover_->setAttribute(html_names::kPopoverAttr, AtomicString("auto"));
-    popover_->SetInternalImplicitAnchor(select_);
+    if (!RuntimeEnabledFeatures::PopoverAnchorRelationshipsEnabled()) {
+      popover_->SetImplicitAnchor(select_);
+    }
     root.appendChild(popover_);
 
     popover_options_slot_ = MakeGarbageCollected<HTMLSlotElement>(doc);
@@ -545,7 +531,9 @@ void MenuListSelectType::CreateShadowSubtree(ShadowRoot& root) {
             doc, select_);
     autofill_popover_->setAttribute(html_names::kPopoverAttr,
                                     keywords::kManual);
-    autofill_popover_->SetInternalImplicitAnchor(select_);
+    if (!RuntimeEnabledFeatures::PopoverAnchorRelationshipsEnabled()) {
+      autofill_popover_->SetImplicitAnchor(select_);
+    }
     autofill_popover_->SetShadowPseudoId(
         shadow_element_names::kSelectAutofillPreview);
     root.appendChild(autofill_popover_);
@@ -665,7 +653,7 @@ void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
   }
 
   if (IsAppearanceBasePicker()) {
-    popover_->ShowPopoverForSelectElement();
+    popover_->ShowPopoverInternal(select_, /*exception_state=*/nullptr);
     return;
   }
 
@@ -736,7 +724,10 @@ void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
 
 void MenuListSelectType::HidePopup() {
   if (IsAppearanceBasePicker()) {
-    popover_->HidePopoverForSelectElement();
+    popover_->HidePopoverInternal(
+        HidePopoverFocusBehavior::kFocusPreviousElement,
+        HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions,
+        /*exception_state=*/nullptr);
     return;
   }
   if (popup_)
@@ -853,7 +844,7 @@ void MenuListSelectType::DidSetSuggestedOption(HTMLOptionElement* option) {
   }
   if (IsAppearanceBaseButton()) {
     if (option) {
-      autofill_popover_->showPopover(ASSERT_NO_EXCEPTION);
+      autofill_popover_->ShowPopoverInternal(select_, &ASSERT_NO_EXCEPTION);
       autofill_popover_text_->setInnerText(option->label());
     } else {
       autofill_popover_text_->setInnerText(g_empty_string);
