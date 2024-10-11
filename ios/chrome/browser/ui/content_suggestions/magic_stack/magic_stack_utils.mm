@@ -10,6 +10,7 @@
 #import "components/commerce/core/shopping_service.h"
 #import "components/prefs/pref_service.h"
 #import "components/segmentation_platform/public/features.h"
+#import "components/variations/service/variations_service_utils.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -47,11 +48,13 @@ bool IsPriceTrackingPromoCardEnabled(commerce::ShoppingService* service,
                  base::SysNSStringToUTF8(identity.gaiaID)) &&
          !pref_service->GetBoolean(kPriceTrackingPromoDisabled) &&
          (service->IsShoppingListEligible() ||
-          base::GetFieldTrialParamByFeatureAsString(
-              segmentation_platform::features::
-                  kSegmentationPlatformEphemeralCardRanker,
-              segmentation_platform::features::
-                  kEphemeralCardRankerForceShowCardParam,
-              "") == segmentation_platform::features::
-                         kPriceTrackingPromoForceOverride);
+          (base::GetFieldTrialParamByFeatureAsString(
+               segmentation_platform::features::
+                   kSegmentationPlatformEphemeralCardRanker,
+               segmentation_platform::features::
+                   kEphemeralCardRankerForceShowCardParam,
+               "") == segmentation_platform::features::
+                          kPriceTrackingPromoForceOverride &&
+           GetCurrentCountryCode(
+               GetApplicationContext()->GetVariationsService()) == "us"));
 }

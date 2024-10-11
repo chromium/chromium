@@ -77,6 +77,7 @@ source_set("utils") {
     "//components/commerce/core:shopping_service",
     "//components/prefs:prefs",
     "//components/segmentation_platform/public",
+    "//components/variations/service:service",
     "//ios/chrome/browser/push_notification/model:push_notification_client_id",
     "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",
     "//ios/chrome/browser/shared/model/application_context:application_context",
