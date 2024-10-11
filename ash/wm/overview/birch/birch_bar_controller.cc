@@ -335,6 +335,18 @@ void BirchBarController::OnItemsFetchedFromModel() {
   base::UmaHistogramCustomCounts("Ash.Birch.ChipCount", items.size(),
                                  /*min=*/0, /*exclusive_max=*/10,
                                  /*buckets=*/10);
+
+  // Record the number of coral items shown.
+  auto num_coral_items =
+      std::count_if(items.begin(), items.end(),
+                    [](const std::unique_ptr<ash::BirchItem>& item) {
+                      return item->GetType() == BirchItemType::kCoral;
+                    });
+  base::UmaHistogramCustomCounts("Ash.Birch.Coral.ClusterCount",
+                                 num_coral_items,
+                                 /*min=*/0, /*exclusive_max=*/3,
+                                 /*buckets=*/3);
+
   RecordTimeOfDayRankingHistogram(items);
 
   for (auto& bar_view : bar_views_) {

@@ -374,6 +374,7 @@ TEST_F(BirchBarTest, RecordsHistogramWhenChipsShown) {
                      base::Time::Now() + base::Minutes(30), GURL(), GURL(),
                      std::string(), /*all_day_event=*/false);
   birch_client_->SetCalendarItems(items);
+  SetCoralItems(/*num=*/2);
 
   // Entering overview shows the birch bar.
   EnterOverview();
@@ -382,14 +383,17 @@ TEST_F(BirchBarTest, RecordsHistogramWhenChipsShown) {
   // One impression was recorded for the birch bar.
   histograms.ExpectBucketCount("Ash.Birch.Bar.Impression", true, 1);
 
-  // Two chips were shown.
-  histograms.ExpectBucketCount("Ash.Birch.ChipCount", 2, 1);
+  // Four chips were shown.
+  histograms.ExpectBucketCount("Ash.Birch.ChipCount", 4, 1);
 
   // One impression was recorded for each chip type.
   histograms.ExpectBucketCount("Ash.Birch.Chip.Impression",
                                BirchItemType::kFile, 1);
   histograms.ExpectBucketCount("Ash.Birch.Chip.Impression",
                                BirchItemType::kCalendar, 1);
+  histograms.ExpectBucketCount("Ash.Birch.Chip.Impression",
+                               BirchItemType::kCoral, 2);
+  histograms.ExpectBucketCount("Ash.Birch.Coral.ClusterCount", 2, 1);
 
   // Two rankings were recorded for the current time slot histogram.
   histograms.ExpectBucketCount("Ash.Birch.Ranking.1200to1700", 1, 1);

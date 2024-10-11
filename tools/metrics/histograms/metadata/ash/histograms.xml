@@ -1056,6 +1056,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Birch.Coral.ClusterCount" units="count"
+    expires_after="2025-10-10">
+  <owner>yulunwu@chromium.org</owner>
+  <owner>cros-coral@google.com</owner>
+  <summary>
+    The number of coral items shown in the birch bar when the user enters
+    overview.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Birch.Latency{Type}" units="ms" expires_after="2025-02-10">
   <owner>jamescook@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
