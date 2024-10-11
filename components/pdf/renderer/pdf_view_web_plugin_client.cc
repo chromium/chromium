@@ -91,9 +91,14 @@ blink::WebURL PdfViewWebPluginClient::CompleteURL(
 }
 
 void PdfViewWebPluginClient::PostMessage(base::Value::Dict message) {
+  blink::WebLocalFrame* frame = GetFrame();
+  if (!frame) {
+    return;
+  }
+
   v8::Isolate::Scope isolate_scope(isolate_);
   v8::HandleScope handle_scope(isolate_);
-  v8::Local<v8::Context> context = GetFrame()->MainWorldScriptContext();
+  v8::Local<v8::Context> context = frame->MainWorldScriptContext();
   DCHECK_EQ(isolate_, context->GetIsolate());
   v8::Context::Scope context_scope(context);
 
