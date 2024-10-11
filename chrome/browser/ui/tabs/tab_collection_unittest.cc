@@ -102,8 +102,8 @@ class TabCollectionBaseTest : public ::testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   content::RenderViewHostTestEnabler test_enabler_;
   std::unique_ptr<Profile> testing_profile_;
-  std::unique_ptr<TabStripModel> tab_strip_model_;
   std::unique_ptr<TestTabStripModelDelegate> tab_strip_model_delegate_;
+  std::unique_ptr<TabStripModel> tab_strip_model_;
   tabs::PreventTabFeatureInitialization prevent_;
 };
 

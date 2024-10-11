@@ -124,8 +124,8 @@ class TabCollectionStorageTest : public ::testing::Test {
   content::RenderViewHostTestEnabler test_enabler_;
   std::unique_ptr<Profile> testing_profile_;
   std::unique_ptr<tabs::PinnedTabCollection> pinned_collection_;
-  std::unique_ptr<TabStripModel> tab_strip_model_;
   std::unique_ptr<TestTabStripModelDelegate> tab_strip_model_delegate_;
+  std::unique_ptr<TabStripModel> tab_strip_model_;
   std::map<std::string, std::string> storage_children_to_id_map_;
   tabs::PreventTabFeatureInitialization prevent_;
 };
