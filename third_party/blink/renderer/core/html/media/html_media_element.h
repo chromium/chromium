@@ -99,6 +99,7 @@ class TextTrackList;
 class TimeRanges;
 class VideoTrack;
 class VideoTrackList;
+class V8CanPlayTypeResult;
 class V8TextTrackKind;
 class WebRemotePlaybackClient;
 
@@ -213,7 +214,7 @@ class CORE_EXPORT HTMLMediaElement
   WebTimeRanges BufferedInternal() const;
   TimeRanges* buffered() const;
   void load();
-  String canPlayType(const String& mime_type) const;
+  V8CanPlayTypeResult canPlayType(const String& mime_type) const;
 
   // ready state
   enum ReadyState {

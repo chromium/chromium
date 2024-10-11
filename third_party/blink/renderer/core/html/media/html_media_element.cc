@@ -54,6 +54,7 @@
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_media_player_source.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_can_play_type_result.h"
 #include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/core_probes_inl.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
@@ -919,7 +920,8 @@ HTMLMediaElement::NetworkState HTMLMediaElement::getNetworkState() const {
   return network_state_;
 }
 
-String HTMLMediaElement::canPlayType(const String& mime_type) const {
+V8CanPlayTypeResult HTMLMediaElement::canPlayType(
+    const String& mime_type) const {
   MIMETypeRegistry::SupportsType support =
       GetSupportsType(ContentType(mime_type));
 
@@ -933,23 +935,23 @@ String HTMLMediaElement::canPlayType(const String& mime_type) const {
             static_cast<uint64_t>(support))
         .Record(GetDocument().UkmRecorder());
   }
-  String can_play;
+  V8CanPlayTypeResult can_play =
+      V8CanPlayTypeResult(V8CanPlayTypeResult::Enum::k);
 
   // 4.8.12.3
   switch (support) {
     case MIMETypeRegistry::kNotSupported:
-      can_play = g_empty_string;
       break;
     case MIMETypeRegistry::kMaybeSupported:
-      can_play = "maybe";
+      can_play = V8CanPlayTypeResult(V8CanPlayTypeResult::Enum::kMaybe);
       break;
     case MIMETypeRegistry::kSupported:
-      can_play = "probably";
+      can_play = V8CanPlayTypeResult(V8CanPlayTypeResult::Enum::kProbably);
       break;
   }
 
   DVLOG(2) << "canPlayType(" << *this << ", " << mime_type << ") -> "
-           << can_play;
+           << can_play.AsCStr();
 
   return can_play;
 }
