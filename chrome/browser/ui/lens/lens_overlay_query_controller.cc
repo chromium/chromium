@@ -344,7 +344,7 @@ void LensOverlayQueryController::SendRegionSearch(
 
 void LensOverlayQueryController::SendTextOnlyQuery(
     const std::string& query_text,
-    TextOnlyQueryType text_only_query_type,
+    lens::LensOverlaySelectionType lens_selection_type,
     std::map<std::string, std::string> additional_search_query_params) {
   // Although the text only flow might not send an interaction request, we
   // should replace any in-flight interaction requests to cancel previously
@@ -362,9 +362,8 @@ void LensOverlayQueryController::SendTextOnlyQuery(
     additional_search_query_params = AddVisualInputTypeQueryParam(
         additional_search_query_params, underlying_content_type_);
 
-    // TODO(b/362816047): Send the correct selection type once it is ready.
     SendInteraction(/*region=*/nullptr, query_text,
-                    /*object_id=*/std::nullopt, lens::UNKNOWN_SELECTION_TYPE,
+                    /*object_id=*/std::nullopt, lens_selection_type,
                     additional_search_query_params, std::nullopt);
     return;
   }
@@ -378,7 +377,7 @@ void LensOverlayQueryController::SendTextOnlyQuery(
   // so that is_parent_query can be accurately set if the user issues multiple
   // interactions in quick succession.
   if (lens::features::SendVisualSearchInteractionParamForLensTextQueries() &&
-      text_only_query_type == TextOnlyQueryType::kLensTextSelection) {
+      lens_selection_type == lens::SELECT_TEXT_HIGHLIGHT) {
     additional_search_query_params = AddVisualSearchInteractionLogData(
         additional_search_query_params, lens::SELECT_TEXT_HIGHLIGHT);
   }
@@ -387,7 +386,7 @@ void LensOverlayQueryController::SendTextOnlyQuery(
   lens_overlay_url_response.set_url(
       lens::BuildTextOnlySearchURL(
           query_text, page_url_, page_title_, additional_search_query_params,
-          invocation_source_, text_only_query_type, use_dark_mode_)
+          invocation_source_, lens_selection_type, use_dark_mode_)
           .spec());
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(url_callback_, lens_overlay_url_response));

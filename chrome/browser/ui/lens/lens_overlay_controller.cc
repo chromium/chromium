@@ -717,7 +717,11 @@ void LensOverlayController::AddQueryToHistory(std::string query,
     initialization_data_->selected_text_.reset();
     initialization_data_->additional_search_query_params_.clear();
     selected_region_thumbnail_uri_.clear();
-    lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
+    // The selection type is the searchbox input type for contextual queries.
+    if (GetPageClassification() !=
+        metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX) {
+      lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
+    }
     page_->ClearAllSelections();
     SetSearchboxThumbnail(std::string());
   }
@@ -2290,7 +2294,7 @@ void LensOverlayController::IssueTextSelectionRequestInner(
   SetSearchboxThumbnail(std::string());
 
   lens_overlay_query_controller_->SendTextOnlyQuery(
-      query, lens::TextOnlyQueryType::kLensTextSelection,
+      query, lens_selection_type_,
       initialization_data_->additional_search_query_params_);
   results_side_panel_coordinator_->RegisterEntryAndShow();
   RecordTimeToFirstInteraction(
@@ -2345,21 +2349,24 @@ void LensOverlayController::IssueSearchBoxRequest(
   initialization_data_->additional_search_query_params_ =
       additional_query_params;
 
-  if (initialization_data_->selected_region_.is_null()) {
+  if (initialization_data_->selected_region_.is_null() &&
+      GetPageClassification() ==
+          metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX) {
+    // Non-Lens and non-contextual searches should not have a selection type.
     lens_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
+  } else if (is_zero_prefix_suggestion) {
+    lens_selection_type_ = lens::MULTIMODAL_SUGGEST_ZERO_PREFIX;
+  } else if (match_type == AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED) {
+    lens_selection_type_ = lens::MULTIMODAL_SEARCH;
+  } else {
+    lens_selection_type_ = lens::MULTIMODAL_SUGGEST_TYPEAHEAD;
+  }
+
+  if (initialization_data_->selected_region_.is_null()) {
     lens_overlay_query_controller_->SendTextOnlyQuery(
-        search_box_text, lens::TextOnlyQueryType::kSearchBoxQuery,
+        search_box_text, lens_selection_type_,
         initialization_data_->additional_search_query_params_);
   } else {
-    if (is_zero_prefix_suggestion) {
-      lens_selection_type_ = lens::MULTIMODAL_SUGGEST_ZERO_PREFIX;
-    } else if (match_type ==
-               AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED) {
-      lens_selection_type_ = lens::MULTIMODAL_SEARCH;
-    } else {
-      lens_selection_type_ = lens::MULTIMODAL_SUGGEST_TYPEAHEAD;
-    }
-
     std::optional<SkBitmap> selected_region_bitmap =
         initialization_data_->selected_region_bitmap_.drawsNothing()
             ? std::nullopt

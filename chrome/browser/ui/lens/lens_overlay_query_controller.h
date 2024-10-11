@@ -123,7 +123,7 @@ class LensOverlayQueryController {
   // Sends a text-only interaction. Expected to be called multiple times.
   void SendTextOnlyQuery(
       const std::string& query_text,
-      TextOnlyQueryType text_only_query_type,
+      lens::LensOverlaySelectionType lens_selection_type,
       std::map<std::string, std::string> additional_search_query_params);
 
   // Sends a multimodal interaction. Expected to be called multiple times.

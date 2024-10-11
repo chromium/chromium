@@ -30,6 +30,7 @@
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_selection_type.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_server.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_visual_search_interaction_data.pb.h"
 #include "ui/gfx/codec/jpeg_codec.h"
@@ -797,8 +798,9 @@ TEST_F(LensOverlayQueryControllerTest,
       /*underlying_content_bytes=*/{}, lens::PageContentMimeType::kNone, 0);
   task_environment_.RunUntilIdle();
 
-  query_controller.SendTextOnlyQuery("", TextOnlyQueryType::kLensTextSelection,
-                                     additional_search_query_params);
+  query_controller.SendTextOnlyQuery(
+      "", lens::LensOverlaySelectionType::SELECT_TEXT_HIGHLIGHT,
+      additional_search_query_params);
   task_environment_.RunUntilIdle();
   query_controller.EndQuery();
 
@@ -854,9 +856,9 @@ TEST_F(LensOverlayQueryControllerTest,
       std::vector<lens::mojom::CenterRotatedBoxPtr>(), fake_content_bytes,
       lens::PageContentMimeType::kPdf, 0);
   task_environment_.RunUntilIdle();
-  query_controller.SendTextOnlyQuery(kTestQueryText,
-                                     TextOnlyQueryType::kLensTextSelection,
-                                     additional_search_query_params);
+  query_controller.SendTextOnlyQuery(
+      kTestQueryText, lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
+      additional_search_query_params);
   task_environment_.RunUntilIdle();
   query_controller.EndQuery();
 
@@ -909,7 +911,7 @@ TEST_F(LensOverlayQueryControllerTest,
       GURL(url_response_future.Get().url()), kInvocationSourceParameterKey,
       &invocation_source);
   ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
-            lens::UNKNOWN_SELECTION_TYPE);
+            lens::MULTIMODAL_SEARCH);
   ASSERT_TRUE(has_start_time);
   ASSERT_TRUE(has_visual_input_type);
   ASSERT_EQ(visual_input_type, "pdf");
@@ -951,9 +953,9 @@ TEST_F(LensOverlayQueryControllerTest,
       std::vector<lens::mojom::CenterRotatedBoxPtr>(), fake_content_bytes,
       lens::PageContentMimeType::kHtml, 0);
   task_environment_.RunUntilIdle();
-  query_controller.SendTextOnlyQuery(kTestQueryText,
-                                     TextOnlyQueryType::kLensTextSelection,
-                                     additional_search_query_params);
+  query_controller.SendTextOnlyQuery(
+      kTestQueryText, lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
+      additional_search_query_params);
   task_environment_.RunUntilIdle();
   query_controller.EndQuery();
 
@@ -1006,7 +1008,7 @@ TEST_F(LensOverlayQueryControllerTest,
       GURL(url_response_future.Get().url()), kInvocationSourceParameterKey,
       &invocation_source);
   ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
-            lens::UNKNOWN_SELECTION_TYPE);
+            lens::MULTIMODAL_SEARCH);
   ASSERT_TRUE(has_start_time);
   ASSERT_TRUE(has_visual_input_type);
   ASSERT_EQ(visual_input_type, "wp");
@@ -1048,9 +1050,9 @@ TEST_F(LensOverlayQueryControllerTest,
       std::vector<lens::mojom::CenterRotatedBoxPtr>(), fake_content_bytes,
       lens::PageContentMimeType::kPlainText, 0);
   task_environment_.RunUntilIdle();
-  query_controller.SendTextOnlyQuery(kTestQueryText,
-                                     TextOnlyQueryType::kLensTextSelection,
-                                     additional_search_query_params);
+  query_controller.SendTextOnlyQuery(
+      kTestQueryText, lens::LensOverlaySelectionType::MULTIMODAL_SEARCH,
+      additional_search_query_params);
   task_environment_.RunUntilIdle();
   query_controller.EndQuery();
 
@@ -1103,7 +1105,7 @@ TEST_F(LensOverlayQueryControllerTest,
       GURL(url_response_future.Get().url()), kInvocationSourceParameterKey,
       &invocation_source);
   ASSERT_EQ(GetSelectionTypeFromUrl(url_response_future.Get().url()),
-            lens::UNKNOWN_SELECTION_TYPE);
+            lens::MULTIMODAL_SEARCH);
   ASSERT_TRUE(has_start_time);
   ASSERT_TRUE(has_visual_input_type);
   ASSERT_EQ(visual_input_type, "wp");

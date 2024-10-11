@@ -213,7 +213,7 @@ GURL BuildTextOnlySearchURL(
     std::optional<std::string> page_title,
     std::map<std::string, std::string> additional_search_query_params,
     lens::LensOverlayInvocationSource invocation_source,
-    TextOnlyQueryType text_only_query_type,
+    lens::LensOverlaySelectionType lens_selection_type,
     bool use_dark_mode) {
   GURL url_with_query_params =
       GURL(lens::features::GetLensOverlayResultsSearchURL());
@@ -223,7 +223,8 @@ GURL BuildTextOnlySearchURL(
       url_with_query_params, additional_search_query_params);
   url_with_query_params = net::AppendOrReplaceQueryParameter(
       url_with_query_params, kTextQueryParameterKey, text_query);
-  if (text_only_query_type == TextOnlyQueryType::kLensTextSelection) {
+  if (lens_selection_type ==
+      lens::LensOverlaySelectionType::SELECT_TEXT_HIGHLIGHT) {
     url_with_query_params = net::AppendOrReplaceQueryParameter(
         url_with_query_params, kLensFootprintParameterKey,
         kLensFootprintParameterValue);

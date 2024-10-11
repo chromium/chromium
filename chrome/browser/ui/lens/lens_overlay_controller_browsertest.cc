@@ -2086,6 +2086,78 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       SearchBubbleInputTypeSetsLensSelectionType) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = GetLensOverlayController();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should eventually result in overlay state.
+  controller->ShowUI(LensOverlayInvocationSource::kAppMenu);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlay; }));
+  ASSERT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+
+  EXPECT_EQ(controller->GetPageClassificationForTesting(),
+            metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX);
+
+  // Issue a regular searchbox request.
+  controller->IssueSearchBoxRequestForTesting(
+      "green", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
+      /*is_zero_prefix_suggestion=*/false,
+      std::map<std::string, std::string>());
+
+  // Wait for URL to load in side panel.
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+
+  // Verify the query and params are set.
+  auto first_search_query = controller->get_loaded_search_query_for_testing();
+  EXPECT_TRUE(first_search_query);
+  EXPECT_EQ(first_search_query->search_query_text_, "green");
+
+  EXPECT_EQ(first_search_query->lens_selection_type_, lens::MULTIMODAL_SEARCH);
+
+  // Issue a zero prefix suggest searchbox request.
+  content::TestNavigationObserver second_searchbox_query_observer(
+      controller->GetSidePanelWebContentsForTesting());
+  controller->IssueSearchBoxRequestForTesting(
+      "red", AutocompleteMatchType::Type::SEARCH_SUGGEST,
+      /*is_zero_prefix_suggestion=*/true, std::map<std::string, std::string>());
+
+  // We can't use content::WaitForLoadStop here since the last navigation is
+  // successful.
+  second_searchbox_query_observer.WaitForNavigationFinished();
+
+  // Verify the query and params are set.
+  auto second_search_query = controller->get_loaded_search_query_for_testing();
+  EXPECT_TRUE(second_search_query);
+  EXPECT_EQ(second_search_query->search_query_text_, "red");
+
+  EXPECT_EQ(second_search_query->lens_selection_type_,
+            lens::MULTIMODAL_SUGGEST_ZERO_PREFIX);
+
+  // Issue a typeahead suggest searchbox request.
+  content::TestNavigationObserver third_searchbox_query_observer(
+      controller->GetSidePanelWebContentsForTesting());
+  controller->IssueSearchBoxRequestForTesting(
+      "blue", AutocompleteMatchType::Type::SEARCH_SUGGEST,
+      /*is_zero_prefix_suggestion=*/false,
+      std::map<std::string, std::string>());
+
+  third_searchbox_query_observer.WaitForNavigationFinished();
+
+  // Verify the query and params are set.
+  auto third_search_query = controller->get_loaded_search_query_for_testing();
+  EXPECT_TRUE(third_search_query);
+  EXPECT_EQ(third_search_query->search_query_text_, "blue");
+
+  EXPECT_EQ(third_search_query->lens_selection_type_,
+            lens::MULTIMODAL_SUGGEST_TYPEAHEAD);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                        SearchBubbleCloseButtonClosesOverlay) {
   WaitForPaint();
 
@@ -4418,7 +4490,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,
   ASSERT_TRUE(
       fake_query_controller->last_sent_underlying_content_bytes_.empty());
   ASSERT_EQ(lens::PageContentMimeType::kNone,
-      fake_query_controller->last_sent_underlying_content_type_);
+            fake_query_controller->last_sent_underlying_content_type_);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerContextualFeaturesDisabledTest,

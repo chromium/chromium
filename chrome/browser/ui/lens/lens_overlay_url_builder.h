@@ -11,17 +11,10 @@
 #include "components/lens/lens_overlay_invocation_source.h"
 #include "third_party/lens_server_proto/lens_overlay_cluster_info.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_selection_type.pb.h"
 #include "url/gurl.h"
 
 namespace lens {
-
-// The possible text only query types.
-enum class TextOnlyQueryType {
-  // Text was selected from the Lens overlay.
-  kLensTextSelection = 0,
-  // Text was from the search box.
-  kSearchBoxQuery = 1,
-};
 
 void AppendTranslateParamsToMap(std::map<std::string, std::string>& params,
                                 const std::string& query,
@@ -45,7 +38,7 @@ GURL BuildTextOnlySearchURL(
     std::optional<std::string> page_title,
     std::map<std::string, std::string> additional_search_query_params,
     lens::LensOverlayInvocationSource invocation_source,
-    TextOnlyQueryType text_only_query_type,
+    lens::LensOverlaySelectionType lens_selection_type,
     bool use_dark_mode);
 
 GURL BuildLensSearchURL(
