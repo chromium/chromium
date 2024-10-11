@@ -119,15 +119,6 @@ class TestControllerAsh : public mojom::TestController,
       mojo::PendingReceiver<crosapi::mojom::InputMethodTestInterface> receiver,
       BindInputMethodTestInterfaceCallback callback) override;
 
-  void GetTtsUtteranceQueueSize(
-      GetTtsUtteranceQueueSizeCallback callback) override;
-
-  void GetTtsVoices(GetTtsVoicesCallback callback) override;
-
-  void TtsSpeak(crosapi::mojom::TtsUtterancePtr mojo_utterance,
-                mojo::PendingRemote<crosapi::mojom::TtsUtteranceClient>
-                    utterance_client) override;
-
   void IsSavedDeskStorageReady(
       IsSavedDeskStorageReadyCallback callback) override;
 
@@ -198,12 +189,8 @@ class TestControllerAsh : public mojom::TestController,
 
  private:
   class OverviewWaiter;
-  class AshUtteranceEventDelegate;
   class SelfOwnedAshBrowserWindowCloser;
   class SelfOwnedAshBrowserWindowOpenWaiter;
-
-  // Called when a Tts utterance is finished.
-  void OnAshUtteranceFinished(int utterance_id);
 
   // Called when a waiter has finished waiting for its event.
   void WaiterFinished(OverviewWaiter* waiter);
@@ -238,10 +225,6 @@ class TestControllerAsh : public mojom::TestController,
       standalone_browser_test_controller_;
 
   base::OneShotEvent on_standalone_browser_test_controller_bound_;
-
-  // Ash utterance event delegates by utterance id.
-  std::map<int, std::unique_ptr<AshUtteranceEventDelegate>>
-      ash_utterance_event_delegates_;
 
   ash::system::FakeStatisticsProvider fake_statistics_provider_;
 };

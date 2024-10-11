@@ -7942,7 +7942,6 @@ test("unit_tests") {
       "../browser/policy/annotations/blocklist_handler_unittest.cc",
       "../browser/policy/system_features_disable_list_policy_handler_unittest.cc",
       "../browser/renderer_context_menu/read_write_card_observer_unittest.cc",
-      "../browser/speech/tts_crosapi_util_unittest.cc",
       "../browser/supervised_user/chromeos/mock_large_icon_service.cc",
       "../browser/supervised_user/chromeos/mock_large_icon_service.h",
       "../browser/supervised_user/chromeos/supervised_user_favicon_request_handler_unittest.cc",

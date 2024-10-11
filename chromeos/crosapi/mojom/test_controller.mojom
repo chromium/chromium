@@ -6,7 +6,6 @@ module crosapi.mojom;
 
 import "chromeos/crosapi/mojom/app_service_types.mojom";
 import "chromeos/crosapi/mojom/extension_keeplist.mojom";
-import "chromeos/crosapi/mojom/tts.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -96,18 +95,13 @@ interface StandaloneBrowserTestController {
   [MinVersion=1]
   LoadVpnExtension@1(string extension_name) => (string extension_id);
 
-  // Returns all available voices in lacros-chrome.
-  [MinVersion=2]
-  GetTtsVoices@2() => (array<TtsVoice> voices);
+  // GetTtsVoices@2 was removed.
 
   // Returns Ash extension keeplist data from Lacros.
   [MinVersion=3]
   GetExtensionKeeplist@3() => (ExtensionKeepList keep_list);
 
-  // Requests Tts(text to speech) to speak an utterance from Lacros browser.
-  [MinVersion=4]
-  TtsSpeak@4(TtsUtterance utterance,
-             pending_remote<TtsUtteranceClient> utterance_client);
+  //TtsSpeak@4 was removed.
 
   // Installs an app with the start URL "parent_app_origin/'sub_app_path'" as a
   // sub app of the given parent app in Lacros.
@@ -523,10 +517,7 @@ interface TestController {
   [MinVersion=21]
   GetShelfItemState@32(string app_id) => (uint32 state);
 
-  // Returns the size of the Tts utterance queue of the TtsController running in
-  // Ash.
-  [MinVersion=22]
-  GetTtsUtteranceQueueSize@33() => (int32 size);
+  // GetTtsUtteranceQueueSize@33 was removed.
 
   // Returns true is desk is being created or removed or desk animation is in
   // progress. The result is only accurate on `false` result. Even if it returns
@@ -535,14 +526,9 @@ interface TestController {
   [MinVersion=23]
   AreDesksBeingModified@34()=>(bool are_desks_being_modified);
 
-  // Returns all available voices in ash-chrome.
-  [MinVersion=24]
-  GetTtsVoices@35() => (array<TtsVoice> voices);
+  // GetTtsVoices@35 was removed.
 
-  // Requests Tts(text to speech) to speak an utterance from Ash.
-  [MinVersion=24]
-  TtsSpeak@36(TtsUtterance utterance,
-              pending_remote<TtsUtteranceClient> utterance_client);
+  // TtsSpeak@36 was removed.
 
   // Checks whether local cache for saved desks is still loading.
   [MinVersion=25]

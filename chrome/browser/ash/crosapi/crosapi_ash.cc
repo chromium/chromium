@@ -128,7 +128,6 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/speech/tts_ash.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -332,7 +331,6 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       suggestion_service_ash_(std::make_unique<SuggestionServiceAsh>()),
       task_manager_ash_(std::make_unique<TaskManagerAsh>()),
       time_zone_service_ash_(std::make_unique<TimeZoneServiceAsh>()),
-      tts_ash_(std::make_unique<TtsAsh>(g_browser_process->profile_manager())),
       video_conference_manager_ash_(
           std::make_unique<ash::VideoConferenceManagerAsh>()),
       virtual_keyboard_ash_(std::make_unique<VirtualKeyboardAsh>()),
@@ -1069,10 +1067,6 @@ void CrosapiAsh::BindTrustedVaultBackend(
 void CrosapiAsh::BindTrustedVaultBackendService(
     mojo::PendingReceiver<mojom::TrustedVaultBackendService> receiver) {
   // Can be safely removed from Crosapi.
-}
-
-void CrosapiAsh::BindTts(mojo::PendingReceiver<mojom::Tts> receiver) {
-  tts_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindUrlHandler(

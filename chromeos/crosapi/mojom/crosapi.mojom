@@ -113,7 +113,6 @@ import "chromeos/crosapi/mojom/telemetry_event_service.mojom";
 import "chromeos/crosapi/mojom/telemetry_management_service.mojom";
 import "chromeos/crosapi/mojom/test_controller.mojom";
 import "chromeos/crosapi/mojom/timezone.mojom";
-import "chromeos/crosapi/mojom/tts.mojom";
 import "chromeos/crosapi/mojom/trusted_vault.mojom";
 import "chromeos/crosapi/mojom/url_handler.mojom";
 import "chromeos/crosapi/mojom/vpn_service.mojom";
@@ -724,7 +723,7 @@ interface Crosapi {
   // Added in M120.
   [MinVersion=120] BindEyeDropper@122(pending_receiver<EyeDropper> receiver);
 
-  // Id 5 (BindFeedback@5) was removed.
+  // BindFeedback@5 was removed.
 
   // Binds the FieldTrial interface for reading active trial field group.
   // Added in M95.
@@ -832,8 +831,7 @@ interface Crosapi {
   [MinVersion=61] BindTimeZoneService@65(
       pending_receiver<TimeZoneService> receiver);
 
-  // Binds the Tts service which process speech synthesis requests.
-  [MinVersion=54] BindTts@58(pending_receiver<Tts> receiver);
+  // BindTts@58 was removed.
 
   // Binds the url handler service which allows handling of urls by Ash.
   // Added in M90.
@@ -1457,9 +1455,8 @@ struct BrowserInitParams {
   [MinVersion=48]
   bool REMOVED_48@48;
 
-  // When this flag is set to true, Lacros tts support feature will be enabled.
   [MinVersion=49]
-  bool enable_lacros_tts_support@49;
+  bool REMOVED_49@49;
 
   [Extensible]
   enum LacrosSelection {

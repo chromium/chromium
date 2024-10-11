@@ -43,7 +43,6 @@
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/speech/tts_crosapi_util.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_utils.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -166,7 +165,6 @@
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
 #include "chromeos/crosapi/mojom/timezone.mojom.h"
 #include "chromeos/crosapi/mojom/trusted_vault.mojom.h"
-#include "chromeos/crosapi/mojom/tts.mojom.h"
 #include "chromeos/crosapi/mojom/url_handler.mojom.h"
 #include "chromeos/crosapi/mojom/video_capture.mojom.h"
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
@@ -561,7 +559,6 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::TimeZoneService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::TrustedVaultBackend>(),
     MakeInterfaceVersionEntry<crosapi::mojom::TrustedVaultBackendService>(),
-    MakeInterfaceVersionEntry<crosapi::mojom::Tts>(),
     MakeInterfaceVersionEntry<crosapi::mojom::UrlHandler>(),
     MakeInterfaceVersionEntry<crosapi::mojom::VideoCaptureDeviceFactory>(),
     MakeInterfaceVersionEntry<crosapi::mojom::VideoConferenceManager>(),
@@ -994,8 +991,6 @@ void InjectBrowserPostLoginParams(mojom::BrowserInitParams* params,
 
   params->is_current_user_device_owner = GetIsCurrentUserOwner();
   params->is_current_user_ephemeral = IsCurrentUserEphemeral();
-  params->enable_lacros_tts_support =
-      tts_crosapi_util::ShouldEnableLacrosTtsSupport();
 }
 
 mojom::BrowserInitParamsPtr GetBrowserInitParams(

@@ -212,10 +212,6 @@ bool BrowserParamsProxy::IsCurrentUserEphemeral() const {
   return BrowserInitParams::Get()->is_current_user_ephemeral;
 }
 
-bool BrowserParamsProxy::EnableLacrosTtsSupport() const {
-  return BrowserInitParams::Get()->enable_lacros_tts_support;
-}
-
 crosapi::mojom::BrowserInitParams::LacrosSelection
 BrowserParamsProxy::LacrosSelection() const {
   return BrowserInitParams::Get()->lacros_selection;

@@ -4818,9 +4818,6 @@ extern const char kChromeKioskEnableLacrosDescription[];
 extern const char kWebKioskEnableLacrosName[];
 extern const char kWebKioskEnableLacrosDescription[];
 
-extern const char kDisableLacrosTtsSupportName[];
-extern const char kDisableLacrosTtsSupportDescription[];
-
 extern const char kPromiseIconsName[];
 extern const char kPromiseIconsDescription[];
 

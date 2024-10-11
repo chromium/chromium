@@ -53,7 +53,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
-#include "chrome/browser/speech/tts_crosapi_util.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -70,7 +69,6 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/version_info.h"
-#include "content/public/browser/tts_utterance.h"
 #include "crypto/sha2.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
@@ -751,48 +749,6 @@ class SelfOwnedPrintJobHistoryServiceObserver
 
 #endif  // BUILDFLAG(USE_CUPS)
 
-// This class is set as UtteranceEventDelegate for the Ash TtsUtterance
-// created in TestControllerAsh::TtsSpeak(), which is called from lacros browser
-// test to simulate speaking an Ash utterance with a Lacros voice. It helps to
-// verify that Tts events sent from Tts Speech Engine (in Lacros) are forwarded
-// to its utterance event delegate in Ash.
-class TestControllerAsh::AshUtteranceEventDelegate
-    : public content::UtteranceEventDelegate {
- public:
-  AshUtteranceEventDelegate(
-      TestControllerAsh* controller,
-      mojo::PendingRemote<crosapi::mojom::TtsUtteranceClient> client)
-      : controller_(controller), client_(std::move(client)) {}
-
-  AshUtteranceEventDelegate(const AshUtteranceEventDelegate&) = delete;
-  AshUtteranceEventDelegate& operator=(const AshUtteranceEventDelegate&) =
-      delete;
-  ~AshUtteranceEventDelegate() override = default;
-
-  // content::UtteranceEventDelegate:
-  void OnTtsEvent(content::TtsUtterance* utterance,
-                  content::TtsEventType event_type,
-                  int char_index,
-                  int char_length,
-                  const std::string& error_message) override {
-    // Forward the TtsEvent back to Lacros, so that Lacros browser test can
-    // be notified that TtsEvent has been received by its UtteranceEventDelegate
-    // in Ash.
-    client_->OnTtsEvent(tts_crosapi_util::ToMojo(event_type), char_index,
-                        char_length, error_message);
-
-    if (utterance->IsFinished()) {
-      controller_->OnAshUtteranceFinished(utterance->GetId());
-      // Note: |this| is deleted at this point.
-    }
-  }
-
- private:
-  // |controller_| is guaranteed to be valid during the lifetime of this class.
-  const raw_ptr<TestControllerAsh> controller_;
-  mojo::Remote<crosapi::mojom::TtsUtteranceClient> client_;
-};
-
 void TestControllerAsh::CreateAndCancelPrintJob(
     const std::string& job_title,
     CreateAndCancelPrintJobCallback callback) {
@@ -857,38 +813,6 @@ void TestControllerAsh::BindInputMethodTestInterface(
       std::make_unique<crosapi::InputMethodTestInterfaceAsh>(),
       std::move(receiver));
   std::move(callback).Run();
-}
-
-void TestControllerAsh::GetTtsUtteranceQueueSize(
-    GetTtsUtteranceQueueSizeCallback callback) {
-  std::move(callback).Run(
-      tts_crosapi_util::GetTtsUtteranceQueueSizeForTesting());
-}
-
-void TestControllerAsh::GetTtsVoices(GetTtsVoicesCallback callback) {
-  std::vector<content::VoiceData> voices;
-  tts_crosapi_util::GetAllVoicesForTesting(  // IN-TEST
-      ProfileManager::GetActiveUserProfile(), GURL(), &voices);
-
-  std::vector<crosapi::mojom::TtsVoicePtr> mojo_voices;
-  for (const auto& voice : voices)
-    mojo_voices.push_back(tts_crosapi_util::ToMojo(voice));
-
-  std::move(callback).Run(std::move(mojo_voices));
-}
-
-void TestControllerAsh::TtsSpeak(
-    crosapi::mojom::TtsUtterancePtr mojo_utterance,
-    mojo::PendingRemote<crosapi::mojom::TtsUtteranceClient> utterance_client) {
-  std::unique_ptr<content::TtsUtterance> ash_utterance =
-      tts_crosapi_util::CreateUtteranceFromMojo(
-          mojo_utterance, /*should_always_be_spoken=*/false);
-  auto event_delegate = std::make_unique<AshUtteranceEventDelegate>(
-      this, std::move(utterance_client));
-  ash_utterance->SetEventDelegate(event_delegate.get());
-  ash_utterance_event_delegates_.emplace(ash_utterance->GetId(),
-                                         std ::move(event_delegate));
-  tts_crosapi_util::SpeakForTesting(std::move(ash_utterance));
 }
 
 void TestControllerAsh::IsSavedDeskStorageReady(
@@ -1012,11 +936,6 @@ void TestControllerAsh::SetAlmanacEndpointUrlForTesting(
 void TestControllerAsh::IsToastShown(const std::string& toast_id,
                                      IsToastShownCallback callback) {
   std::move(callback).Run(ash::ToastManager::Get()->IsToastShown(toast_id));
-}
-
-void TestControllerAsh::OnAshUtteranceFinished(int utterance_id) {
-  // Delete the utterance event delegate object when the utterance is finished.
-  ash_utterance_event_delegates_.erase(utterance_id);
 }
 
 void TestControllerAsh::SnapWindow(const std::string& window_id,

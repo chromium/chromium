@@ -144,7 +144,6 @@ class StructuredMetricsServiceAsh;
 class SuggestionServiceAsh;
 class TaskManagerAsh;
 class TimeZoneServiceAsh;
-class TtsAsh;
 class VpnServiceAsh;
 class WallpaperAsh;
 class WebAppServiceAsh;
@@ -434,7 +433,6 @@ class CrosapiAsh : public mojom::Crosapi {
   void BindTrustedVaultBackendService(
       mojo::PendingReceiver<mojom::TrustedVaultBackendService> receiver)
       override;
-  void BindTts(mojo::PendingReceiver<mojom::Tts> receiver) override;
   void BindUrlHandler(
       mojo::PendingReceiver<mojom::UrlHandler> receiver) override;
   void BindVideoCaptureDeviceFactory(
@@ -646,8 +644,6 @@ class CrosapiAsh : public mojom::Crosapi {
 
   TaskManagerAsh* task_manager_ash() { return task_manager_ash_.get(); }
 
-  TtsAsh* tts_ash() { return tts_ash_.get(); }
-
   WallpaperAsh* wallpaper_ash() { return wallpaper_ash_.get(); }
 
   WebAppServiceAsh* web_app_service_ash() { return web_app_service_ash_.get(); }
@@ -791,7 +787,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<SuggestionServiceAsh> suggestion_service_ash_;
   std::unique_ptr<TaskManagerAsh> task_manager_ash_;
   std::unique_ptr<TimeZoneServiceAsh> time_zone_service_ash_;
-  std::unique_ptr<TtsAsh> tts_ash_;
   std::unique_ptr<ash::VideoConferenceManagerAsh> video_conference_manager_ash_;
   std::unique_ptr<VirtualKeyboardAsh> virtual_keyboard_ash_;
   std::unique_ptr<VolumeManagerAsh> volume_manager_ash_;

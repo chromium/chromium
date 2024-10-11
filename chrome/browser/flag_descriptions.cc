@@ -8287,10 +8287,6 @@ const char kWebKioskEnableLacrosDescription[] =
     "Uses Lacros-chrome as the web browser in the web (PWA) Kiosk session on "
     "ChromeOS. When disabled, the Ash-chrome will be used";
 
-const char kDisableLacrosTtsSupportName[] = "Disable lacros tts support";
-const char kDisableLacrosTtsSupportDescription[] =
-    "Disable lacros support for text to speech.";
-
 const char kPromiseIconsName[] = "Promise Icons";
 const char kPromiseIconsDescription[] =
     "Enables promise icons in the Launcher and Shelf (if the app is pinned) "

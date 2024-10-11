@@ -110,8 +110,6 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool IsCurrentUserEphemeral() const;
 
-  bool EnableLacrosTtsSupport() const;
-
   crosapi::mojom::BrowserInitParams::LacrosSelection LacrosSelection() const;
 
   bool IsCloudGamingDevice() const;

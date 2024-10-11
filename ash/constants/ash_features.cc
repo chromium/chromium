@@ -616,13 +616,6 @@ BASE_FEATURE(kDisableCryptAuthV1DeviceSync,
              "DisableCryptAuthV1DeviceSync",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Feature flag for disable/enable Lacros TTS support.
-// The flag is enabled by default so that the feature is disabled before it is
-// completedly implemented.
-BASE_FEATURE(kDisableLacrosTtsSupport,
-             "DisableLacrosTtsSupport",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Disables the DNS proxy service for ChromeOS.
 BASE_FEATURE(kDisableDnsProxy,
              "DisableDnsProxy",

@@ -15856,7 +15856,6 @@ from previous Chrome versions.
   <int value="-1818947212" label="OutOfBlinkCors:disabled"/>
   <int value="-1818565030"
       label="AutofillUseConsistentPopupSettingsIcons:disabled"/>
-  <int value="-1818135677" label="DisableLacrosTtsSupport:enabled"/>
   <int value="-1817721380" label="RemoveCanceledTasksInTaskQueue2:disabled"/>
   <int value="-1817209284" label="PayWithGoogleV1:enabled"/>
   <int value="-1816838390"
@@ -17201,6 +17200,7 @@ from previous Chrome versions.
   <int value="-1268836676" label="disable-out-of-process-pdf"/>
   <int value="-1268452697" label="CastStreamingAv1:disabled"/>
   <int value="-1268228824" label="PasswordStrongLabel:disabled"/>
+  <int value="-1268057710" label="(Obsolete) DisableLacrosTtsSupport:disabled"/>
   <int value="-1267958145" label="disable-pdf-material-ui"/>
   <int value="-1266934701" label="AccessibilityAXModes:enabled"/>
   <int value="-1265863577"
@@ -18237,7 +18237,6 @@ from previous Chrome versions.
   <int value="-842597982" label="ShelfPalmRejectionTouchArea:disabled"/>
   <int value="-842438090" label="enable-md-feedback"/>
   <int value="-842236618" label="CrOSSystemVoiceIsolationOption:disabled"/>
-  <int value="-841549378" label="DisableLacrosTtsSupport:disabled"/>
   <int value="-839822160" label="WebAppManifestImmediateUpdating:enabled"/>
   <int value="-839664591" label="enable-web-authentication-testing-api"/>
   <int value="-839544057" label="WebRtcCombinedNetworkAndWorkerThread:enabled"/>
@@ -19962,6 +19961,7 @@ from previous Chrome versions.
   <int value="-128687277"
       label="OmniboxUIExperimentHideSteadyStateUrlPathQueryAndRef:disabled"/>
   <int value="-128652428" label="PrivacyGuidePreloadAndroid:enabled"/>
+  <int value="-128397031" label="(Obsolete) DisableLacrosTtsSupport:enabled"/>
   <int value="-128289378" label="EnableFamilyInfoFeedback:disabled"/>
   <int value="-127666141" label="TabGroups:disabled"/>
   <int value="-127231994" label="VrBrowsingNativeAndroidUi:disabled"/>
