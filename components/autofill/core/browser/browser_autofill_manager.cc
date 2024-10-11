@@ -1509,9 +1509,9 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
 
   auto generate_suggestions_and_maybe_show_ui_phase2 = base::BindOnce(
       &BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2,
-      weak_ptr_factory_.GetWeakPtr(), form, form_structure, field,
-      autofill_field, trigger_source, has_prediction_improvements_data,
-      base::OwnedRef(context), std::move(callback));
+      weak_ptr_factory_.GetWeakPtr(), form, field, trigger_source,
+      has_prediction_improvements_data, base::OwnedRef(context),
+      std::move(callback));
 
   if (context.field_is_relevant_for_plus_addresses) {
     client().GetPlusAddressDelegate()->GetAffiliatedPlusAddresses(
@@ -1527,15 +1527,20 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase1(
 
 void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
     const FormData& form,
-    const FormStructure* form_structure,
     const FormFieldData& field,
-    AutofillField* autofill_field,
     AutofillSuggestionTriggerSource trigger_source,
     AutofillPredictionImprovementsDelegate::HasData
         has_prediction_improvements_data,
     SuggestionsContext& context,
     OnGenerateSuggestionsCallback callback,
     std::vector<std::string> plus_addresses) {
+  FormStructure* form_structure = nullptr;
+  AutofillField* autofill_field = nullptr;
+  // This function cannot exit early in case GetCachedFormAndField() yields
+  // `nullptrs` for `form_structure` and `autofill_field`. See the comment in
+  // `GenerateSuggestionsAndMaybeShowUIPhase1` for context.
+  std::ignore =
+      GetCachedFormAndField(form, field, &form_structure, &autofill_field);
   autofill_metrics::SuggestionRankingContext ranking_context;
   std::vector<Suggestion> suggestions =
       GetAvailableAddressAndCreditCardSuggestions(
@@ -1610,7 +1615,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
   // TODO(crbug.com/324557053): Do not generate plus address suggestions if the
   // plus address email override was applied on at least one address suggestion.
   const bool should_offer_plus_addresses_with_profiles =
-      context.field_is_relevant_for_plus_addresses &&
+      context.field_is_relevant_for_plus_addresses && autofill_field &&
       autofill_field->Type().group() == FieldTypeGroup::kEmail &&
       !suggestions.empty();
   // Try to show plus address suggestions. If the user specifically requested
@@ -1687,7 +1692,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase2(
 
   // Whether or not to show plus address suggestions.
   const bool should_offer_plus_addresses =
-      context.field_is_relevant_for_plus_addresses &&
+      context.field_is_relevant_for_plus_addresses && autofill_field &&
       autofill_field->Type().group() == FieldTypeGroup::kEmail;
 
   const size_t barrier_calls =

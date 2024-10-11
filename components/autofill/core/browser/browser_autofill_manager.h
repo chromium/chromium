@@ -645,9 +645,7 @@ class BrowserAutofillManager : public AutofillManager {
           has_prediction_improvements_data);
   void GenerateSuggestionsAndMaybeShowUIPhase2(
       const FormData& form,
-      const FormStructure* form_structure,
       const FormFieldData& field,
-      AutofillField* autofill_field,
       AutofillSuggestionTriggerSource trigger_source,
       AutofillPredictionImprovementsDelegate::HasData
           has_prediction_improvements_data,
