@@ -483,7 +483,7 @@ class BackgroundDownloaderSharedSessionImpl {
         // the task can be cleaned even if it fails to send a progress update.
         filtered_progresses.emplace(url, now);
       } else {
-        const base::Time& last_progress_time = last_progress_times_.at(url);
+        base::Time last_progress_time = last_progress_times_.at(url);
         if (now - last_progress_time > kNoProgressTimeout) {
           [task cancel];
         } else {

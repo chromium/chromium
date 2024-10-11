@@ -138,7 +138,7 @@ class PolicyService : public base::RefCountedThreadSafe<PolicyService> {
   // Helper methods.
   base::Value GetAllPolicies() const;
   std::string GetAllPoliciesAsString() const;
-  bool AreUpdatesSuppressedNow(const base::Time& now = base::Time::Now()) const;
+  bool AreUpdatesSuppressedNow(base::Time now = base::Time::Now()) const;
 
  protected:
   virtual ~PolicyService();

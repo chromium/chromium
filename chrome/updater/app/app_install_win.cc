@@ -93,7 +93,7 @@ class InstallProgressSilentObserver : public AppInstallProgress {
                      int pos) override;
   void OnWaitingRetryDownload(const std::string& app_id,
                               const std::u16string& app_name,
-                              const base::Time& next_retry_time) override;
+                              base::Time next_retry_time) override;
   void OnWaitingToInstall(const std::string& app_id,
                           const std::u16string& app_name) override;
   void OnInstalling(const std::string& app_id,
@@ -144,7 +144,7 @@ void InstallProgressSilentObserver::OnDownloading(
 void InstallProgressSilentObserver::OnWaitingRetryDownload(
     const std::string& app_id,
     const std::u16string& app_name,
-    const base::Time& next_retry_time) {
+    base::Time next_retry_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
@@ -251,7 +251,7 @@ class AppInstallProgressIPC : public AppInstallProgress {
 
   void OnWaitingRetryDownload(const std::string& app_id,
                               const std::u16string& app_name,
-                              const base::Time& next_retry_time) override {
+                              base::Time next_retry_time) override {
     NOTREACHED_IN_MIGRATION();
   }
 

@@ -32,7 +32,7 @@ class ProgressSampler {
 
  private:
   // Helpers.
-  void AddSample(const base::Time& timestamp, int64_t sample_value);
+  void AddSample(base::Time timestamp, int64_t sample_value);
   bool HasEnoughSamples() const;
   std::optional<double> GetAverageSpeedPerMs() const;
   void Reset();
@@ -41,7 +41,7 @@ class ProgressSampler {
   const base::TimeDelta minimum_range_required_;
 
   struct Sample {
-    Sample(const base::Time& local_timestamp, int64_t local_value)
+    Sample(base::Time local_timestamp, int64_t local_value)
         : timestamp(local_timestamp), value(local_value) {}
 
     const base::Time timestamp;

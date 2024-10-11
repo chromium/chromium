@@ -670,9 +670,7 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->RunRecoveryComponent(app_id, version);
   }
 
-  void SetLastChecked(const base::Time& time) {
-    test_commands_->SetLastChecked(time);
-  }
+  void SetLastChecked(base::Time time) { test_commands_->SetLastChecked(time); }
 
   void ExpectLastChecked() { test_commands_->ExpectLastChecked(); }
 

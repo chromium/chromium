@@ -92,7 +92,7 @@ class AppInstallProgress {
       int pos) = 0;
   virtual void OnWaitingRetryDownload(const std::string& app_id,
                                       const std::u16string& app_name,
-                                      const base::Time& next_retry_time) = 0;
+                                      base::Time next_retry_time) = 0;
   virtual void OnWaitingToInstall(const std::string& app_id,
                                   const std::u16string& app_name) = 0;
   virtual void OnInstalling(const std::string& app_id,

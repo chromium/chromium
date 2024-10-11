@@ -121,13 +121,13 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData>,
   // for updating all applications works end to end, including communicating
   // with the backend.
   base::Time GetLastChecked() const;
-  void SetLastChecked(const base::Time& time);
+  void SetLastChecked(base::Time time);
 
   // LastStarted is set when `UpdateService::RunPeriodicTasks` is called. This
   // indicates that the mechanism to initiate automated update checks is
   // working.
   base::Time GetLastStarted() const;
-  void SetLastStarted(const base::Time& time);
+  void SetLastStarted(base::Time time);
 
 #if BUILDFLAG(IS_WIN)
   // Retrieves the previously stored OS version.
@@ -171,7 +171,7 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData>,
                      base::OnceCallback<void(const std::set<std::string>&)>
                          callback) const override;
   base::Time GetThrottleUpdatesUntil() const override;
-  void SetThrottleUpdatesUntil(const base::Time& time) override;
+  void SetThrottleUpdatesUntil(base::Time time) override;
   void SetLastUpdateCheckError(
       const update_client::CategorizedError& error) override;
 

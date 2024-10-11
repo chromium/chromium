@@ -646,7 +646,7 @@ std::string PolicyService::GetAllPoliciesAsString() const {
                             base::JoinString(policies, "\n  ").c_str());
 }
 
-bool PolicyService::AreUpdatesSuppressedNow(const base::Time& now) const {
+bool PolicyService::AreUpdatesSuppressedNow(base::Time now) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const PolicyStatus<UpdatesSuppressedTimes> suppression =

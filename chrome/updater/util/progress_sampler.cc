@@ -49,8 +49,7 @@ std::optional<base::TimeDelta> ProgressSampler::GetRemainingTime(
   return base::Milliseconds((total - current + *per_ms - 1) / *per_ms);
 }
 
-void ProgressSampler::AddSample(const base::Time& timestamp,
-                                int64_t sample_value) {
+void ProgressSampler::AddSample(base::Time timestamp, int64_t sample_value) {
   // `Reset` if there is a value or clock regression.
   if (!samples_.empty() && (sample_value < samples_.back().value ||
                             timestamp < samples_.back().timestamp)) {

@@ -400,7 +400,7 @@ void PersistedData::SetLastUpdateCheckError(
   delegate_->SetLastUpdateCheckError(error);
 }
 
-void PersistedData::SetThrottleUpdatesUntil(const base::Time& time) {
+void PersistedData::SetThrottleUpdatesUntil(base::Time time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   delegate_->SetThrottleUpdatesUntil(time);
 }
@@ -620,7 +620,7 @@ base::Time PersistedData::GetLastChecked() const {
   return pref_service_->GetTime(kLastChecked);
 }
 
-void PersistedData::SetLastChecked(const base::Time& time) {
+void PersistedData::SetLastChecked(base::Time time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pref_service_) {
     pref_service_->SetTime(kLastChecked, time);
@@ -632,7 +632,7 @@ base::Time PersistedData::GetLastStarted() const {
   return pref_service_->GetTime(kLastStarted);
 }
 
-void PersistedData::SetLastStarted(const base::Time& time) {
+void PersistedData::SetLastStarted(base::Time time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pref_service_) {
     pref_service_->SetTime(kLastStarted, time);

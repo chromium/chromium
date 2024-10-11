@@ -145,7 +145,7 @@ class PersistedData {
   // These functions get and set the time after which update checks are allowed.
   // To clear the throttle, pass base::Time().
   virtual base::Time GetThrottleUpdatesUntil() const = 0;
-  virtual void SetThrottleUpdatesUntil(const base::Time& time) = 0;
+  virtual void SetThrottleUpdatesUntil(base::Time time) = 0;
 };
 
 // Creates a PersistedData instance. Passing null for either or both parameters

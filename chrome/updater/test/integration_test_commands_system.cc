@@ -529,7 +529,7 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
                 Param("browser_version", version.GetString())});
   }
 
-  void SetLastChecked(const base::Time& time) const override {
+  void SetLastChecked(base::Time time) const override {
     RunCommand(
         "set_last_checked",
         {Param("time", base::NumberToString(

@@ -93,7 +93,7 @@ class PersistedDataImpl : public PersistedData {
   void SetFingerprint(const std::string& id,
                       const std::string& fingerprint) override;
   base::Time GetThrottleUpdatesUntil() const override;
-  void SetThrottleUpdatesUntil(const base::Time& time) override;
+  void SetThrottleUpdatesUntil(base::Time time) override;
   void SetLastUpdateCheckError(const CategorizedError& error) override;
 
  private:
@@ -374,7 +374,7 @@ base::Time PersistedDataImpl::GetThrottleUpdatesUntil() const {
   return pref_service_->GetTime(kThrottleUpdatesUntilPreference);
 }
 
-void PersistedDataImpl::SetThrottleUpdatesUntil(const base::Time& time) {
+void PersistedDataImpl::SetThrottleUpdatesUntil(base::Time time) {
   pref_service_->SetTime(kThrottleUpdatesUntilPreference, time);
 }
 

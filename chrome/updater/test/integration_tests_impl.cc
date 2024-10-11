@@ -1453,7 +1453,7 @@ void RunRecoveryComponent(UpdaterScope scope,
   ASSERT_EQ(exit_code, kErrorOk);
 }
 
-void SetLastChecked(UpdaterScope updater_scope, const base::Time& time) {
+void SetLastChecked(UpdaterScope updater_scope, base::Time time) {
   base::MakeRefCounted<PersistedData>(
       updater_scope, CreateGlobalPrefs(updater_scope)->GetPrefService(),
       nullptr)
