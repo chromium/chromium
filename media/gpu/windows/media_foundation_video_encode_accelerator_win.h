@@ -197,9 +197,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // process all inputs, produce all outputs and tell us when it's done.
   void DrainEncoder();
 
-  // Check if |size| is supported. As max resolution is hard coded at this time,
-  // frame size larger than 1920x1088 will be rejected even it could be
-  // supported by hardware and driver.
+  // Check if |size| is supported.
   bool IsFrameSizeAllowed(gfx::Size size);
   // Update frame size without re-initializing the encoder.
   void UpdateFrameSize(const gfx::Size& size);
