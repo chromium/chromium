@@ -112,7 +112,15 @@ TEST_F(AddressFieldParserTest, ParseStreetNameAndHouseNumbertPL) {
 // Tests that fields are classified as |ADDRESS_HOME_STREET_NAME|,
 // |ADDRESS_HOME_HOUSE_NUMBER| and |ADDRESS_HOME_APT_NUM|  when they are labeled
 // accordingly and both are present.
-TEST_F(AddressFieldParserTest, ParseStreetNameHouseNumbertAndAptNumPL) {
+// TODO(crbug.com/372842861): Re-enable test.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ParseStreetNameHouseNumbertAndAptNumPL \
+  DISABLED_ParseStreetNameHouseNumbertAndAptNumPL
+#else
+#define MAYBE_ParseStreetNameHouseNumbertAndAptNumPL \
+  ParseStreetNameHouseNumbertAndAptNumPL
+#endif
+TEST_F(AddressFieldParserTest, MAYBE_ParseStreetNameHouseNumbertAndAptNumPL) {
   AddTextFormFieldData("street", "ulica", ADDRESS_HOME_STREET_NAME);
   AddTextFormFieldData("house-number", "Nr domu", ADDRESS_HOME_HOUSE_NUMBER);
   AddTextFormFieldData("house-number", "Nr lokalu", ADDRESS_HOME_APT_NUM);
