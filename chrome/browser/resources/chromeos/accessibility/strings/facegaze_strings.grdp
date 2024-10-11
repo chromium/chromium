@@ -6,4 +6,55 @@
   <message name="IDS_FACEGAZE_CONFIRMATION_DIALOG_DESC" desc="The visible description of a confirmation dialog that is shown when FaceGaze is enabled.">
     Face control gives you cursor control with face pointing and ability to perform actions, such as left clicking with facial gestures like smile
   </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_CUSTOM_KEY_COMBO" desc="This text describes an action to perform a custom key combination.">
+    Perform a custom key combination
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_KEY_PRESS_DOWN" desc="This text describes an action to press the down arrow key.">
+    Press the down arrow key
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_KEY_PRESS_LEFT" desc="This text describes an action to press the left arrow key.">
+    Press the left arrow key
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_MEDIA_PLAY_PAUSE" desc="This text describes an action to play or pause media.">
+    Play or pause media
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_KEY_PRESS_RIGHT" desc="This text describes an action to press the right arrow key.">
+    Press the right arrow key
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_KEY_PRESS_SPACE" desc="This text describes an action to press the space key.">
+    Press the space key
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_TOGGLE_OVERVIEW" desc="This text describes an action to show or hide the overview of current windows.">
+    Show or hide overview of windows
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_KEY_PRESS_UP" desc="This text describes an action to press the up arrow key.">
+    Press the up arrow key
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_MOUSE_CLICK_LEFT" desc="This text describes an action to left-click the mouse.">
+    Left-click the mouse
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_MOUSE_CLICK_LEFT_DOUBLE" desc="This text describes an action to double click the mouse.">
+    Double-click the mouse
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_MOUSE_CLICK_RIGHT" desc="This text describes an action to right-click the mouse.">
+    Right-click the mouse
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_MOUSE_LONG_CLICK_LEFT" desc="This text describes an action to drag and drop.">
+    Drag and drop
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_RESET_CURSOR" desc="This text describes an action to reset the cursor to the center of the screen.">
+    Reset cursor to center
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_TOGGLE_DICTATION" desc="This text describes an action to start or stop the Dictation feature.">
+    Start or stop dictation
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_TOGGLE_FACEGAZE" desc="This text describes an action to pause or resume FaceGaze.">
+    Pause or resume face control
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_TOGGLE_SCROLL_MODE" desc="This text describes an action to pause or resume FaceGaze scroll mode.">
+    Enter or exit scroll mode
+  </message>
+  <message name="IDS_FACEGAZE_MACRO_TEXT_TOGGLE_VIRTUAL_KEYBOARD" desc="This text describes an action to show or hide the on-screen keyboard.">
+    Show or hide on-screen keyboard
+  </message>
 </grit-part>

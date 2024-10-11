@@ -201,7 +201,8 @@ export class GestureHandler {
       const macro = this.macroFromName_(macroName, gesture);
       if (macro) {
         result.push(macro);
-        displayStrings.push(BubbleController.getDisplayText(gesture, macro));
+        displayStrings.push(
+            BubbleController.getDisplayText(gesture, macro.getName()));
         if (macro.triggersAtActionStartAndEnd()) {
           // Cache this macro to be run a second time later,
           // e.g. for key release.

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Macro} from '/common/action_fulfillment/macros/macro.js';
 import {MacroName} from '/common/action_fulfillment/macros/macro_names.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 
@@ -50,52 +49,54 @@ export class BubbleController {
     chrome.accessibilityPrivate.updateFaceGazeBubble(this.baseText_.join(', '));
   }
 
-  static getDisplayText(gesture: FacialGesture, macro: Macro): string {
+  static getDisplayText(gesture: FacialGesture, macroName: MacroName): string {
     // TODO(b:341770655): Localize this string.
-    return `${BubbleController.getDisplayTextForMacro_(macro)} (${
+    return `${BubbleController.getDisplayTextForMacro_(macroName)} (${
         BubbleController.getDisplayTextForGesture_(gesture)})`;
   }
 
-  private static getDisplayTextForMacro_(macro: Macro): string {
-    // TODO(b:341770655): Localize these strings.
-    switch (macro.getName()) {
+  private static getDisplayTextForMacro_(macroName: MacroName): string {
+    switch (macroName) {
       case MacroName.CUSTOM_KEY_COMBINATION:
-        return 'Perform a custom key combination';
+        return chrome.i18n.getMessage('facegaze_macro_text_custom_key_combo');
       case MacroName.KEY_PRESS_DOWN:
-        return 'Press the down arrow key';
+        return chrome.i18n.getMessage('facegaze_macro_text_key_press_down');
       case MacroName.KEY_PRESS_LEFT:
-        return 'Press the left arrow key';
+        return chrome.i18n.getMessage('facegaze_macro_text_key_press_left');
       case MacroName.KEY_PRESS_MEDIA_PLAY_PAUSE:
-        return 'Play or pause media';
+        return chrome.i18n.getMessage('facegaze_macro_text_media_play_pause');
       case MacroName.KEY_PRESS_RIGHT:
-        return 'Press the right arrow key';
+        return chrome.i18n.getMessage('facegaze_macro_text_key_press_right');
       case MacroName.KEY_PRESS_SPACE:
-        return 'Press the space key';
+        return chrome.i18n.getMessage('facegaze_macro_text_key_press_space');
       case MacroName.KEY_PRESS_TOGGLE_OVERVIEW:
-        return 'Open overview of windows';
+        return chrome.i18n.getMessage('facegaze_macro_text_toggle_overview');
       case MacroName.KEY_PRESS_UP:
-        return 'Press the up arrow key';
+        return chrome.i18n.getMessage('facegaze_macro_text_key_press_up');
       case MacroName.MOUSE_CLICK_LEFT:
-        return 'Left-click the mouse';
+        return chrome.i18n.getMessage('facegaze_macro_text_mouse_click_left');
       case MacroName.MOUSE_CLICK_LEFT_DOUBLE:
-        return 'Double click the mouse';
+        return chrome.i18n.getMessage(
+            'facegaze_macro_text_mouse_click_left_double');
       case MacroName.MOUSE_CLICK_RIGHT:
-        return 'Right-click the mouse';
+        return chrome.i18n.getMessage('facegaze_macro_text_mouse_click_right');
       case MacroName.MOUSE_LONG_CLICK_LEFT:
-        return 'Drag and drop';
+        return chrome.i18n.getMessage(
+            'facegaze_macro_text_mouse_long_click_left');
       case MacroName.RESET_CURSOR:
-        return 'Reset cursor to center';
+        return chrome.i18n.getMessage('facegaze_macro_text_reset_cursor');
       case MacroName.TOGGLE_DICTATION:
-        return 'Start or stop dictation';
+        return chrome.i18n.getMessage('facegaze_macro_text_toggle_dictation');
       case MacroName.TOGGLE_FACEGAZE:
-        return 'Pause or resume face control';
+        return chrome.i18n.getMessage('facegaze_macro_text_toggle_facegaze');
       case MacroName.TOGGLE_SCROLL_MODE:
-        return 'Toggle scroll mode';
+        return chrome.i18n.getMessage('facegaze_macro_text_toggle_scroll_mode');
       case MacroName.TOGGLE_VIRTUAL_KEYBOARD:
-        return 'Show or hide the virtual keyboard';
+        return chrome.i18n.getMessage(
+            'facegaze_macro_text_toggle_virtual_keyboard');
       default:
         console.error(
-            'Display text requested for unsupported macro ' + macro.getName());
+            'Display text requested for unsupported macro ' + macroName);
         return '';
     }
   }

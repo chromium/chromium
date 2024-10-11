@@ -1719,7 +1719,7 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextStateMessages', async function() {
   this.processFaceLandmarkerResult(result);
 
   assertEquals(
-      'Toggle scroll mode (Raise eyebrows), ' +
+      'Enter or exit scroll mode (Raise eyebrows), ' +
           'Pause or resume face control (Open your mouth wide)',
       this.mockAccessibilityPrivate.getFaceGazeBubbleText());
 
@@ -1896,4 +1896,36 @@ AX_TEST_F('FaceGazeTest', 'GesturesDisabledInScrollMode', async function() {
   const releaseEvent = this.getMouseEvents()[1];
   this.assertMouseClickAt(
       {pressEvent, releaseEvent, isLeft: true, x: 350, y: 250});
+});
+
+// Ensures that localization works for all gestures and macros that get
+// displayed in the bubble UI.
+AX_TEST_F('FaceGazeTest', 'BubbleTextLocalization', async function() {
+  const macros = [
+    MacroName.CUSTOM_KEY_COMBINATION,
+    MacroName.KEY_PRESS_DOWN,
+    MacroName.KEY_PRESS_LEFT,
+    MacroName.KEY_PRESS_MEDIA_PLAY_PAUSE,
+    MacroName.KEY_PRESS_RIGHT,
+    MacroName.KEY_PRESS_SPACE,
+    MacroName.KEY_PRESS_TOGGLE_OVERVIEW,
+    MacroName.KEY_PRESS_UP,
+    MacroName.MOUSE_CLICK_LEFT,
+    MacroName.MOUSE_CLICK_LEFT_DOUBLE,
+    MacroName.MOUSE_CLICK_RIGHT,
+    MacroName.MOUSE_LONG_CLICK_LEFT,
+    MacroName.RESET_CURSOR,
+    MacroName.TOGGLE_DICTATION,
+    MacroName.TOGGLE_FACEGAZE,
+    MacroName.TOGGLE_SCROLL_MODE,
+    MacroName.TOGGLE_VIRTUAL_KEYBOARD,
+  ];
+
+  let lastText = '';
+  for (const macro of macros) {
+    const currentText = BubbleController.getDisplayTextForMacro_(macro);
+    assertNotEquals(currentText, '');
+    assertNotEquals(currentText, lastText);
+    lastText = currentText;
+  }
 });
