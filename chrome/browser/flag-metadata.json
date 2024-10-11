@@ -7818,6 +7818,15 @@
     "expiry_milestone": 140
   },
   {
+    "name": "rusty-png",
+    "owners": [
+      "lukasza@chromium.org",
+      "danieldilan@google.com",
+      "//third_party/rust/OWNERS"
+    ],
+    "expiry_milestone": 140
+  },
+  {
     "name": "safe-browsing-async-real-time-check",
     "owners": [
       "xinghuilu@chromium.org",

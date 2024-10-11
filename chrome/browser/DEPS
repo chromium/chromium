@@ -491,6 +491,7 @@ include_rules = [
   "+services/video_effects/test",
   "+services/viz/public",
   "+services/viz/privileged",
+  "+skia/buildflags.h",
   "+skia/ext",
   "+third_party/boringssl/src/include",
   "+third_party/content_analysis_sdk",
@@ -625,6 +626,7 @@ specific_include_rules = {
   "about_flags\.cc" : [
     "+mojo/core/embedder/features.h",
     "+sandbox/policy/features.h",
+    "+skia/rusty_png_feature.h",
   ],
   "dbus_memory_pressure_evaluator_linux(_unittest)?\.(cc|h)" : [
     "+dbus",

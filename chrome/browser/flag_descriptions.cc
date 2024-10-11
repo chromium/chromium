@@ -9,6 +9,7 @@
 #include "flag_descriptions.h"
 #include "media/gpu/buildflags.h"
 #include "pdf/buildflags.h"
+#include "skia/buildflags.h"
 
 // Keep in identical order as the header file, see the comment at the top
 // for formatting rules.
@@ -3199,6 +3200,12 @@ const char kRelatedWebsiteSetsDevUIName[] = "Related Website Sets Dev UI";
 const char kRelatedWebsiteSetsDevUIDescription[] =
     "Enables the chrome://privacy-sandbox-internals/related-website-sets page. "
     "Relies on privacy-sandbox-internals also being enabled.";
+
+#if BUILDFLAG(SKIA_BUILD_RUST_PNG)
+const char kRustyPngName[] = "Rust-based PNG image handling";
+const char kRustyPngDescription[] =
+    "When enabled, uses Rust `png` crate to decode and encode PNG images.";
+#endif
 
 const char kQuicName[] = "Experimental QUIC protocol";
 const char kQuicDescription[] = "Enable experimental QUIC protocol support.";

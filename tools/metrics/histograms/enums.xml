@@ -18242,6 +18242,7 @@ from previous Chrome versions.
   <int value="-839544057" label="WebRtcCombinedNetworkAndWorkerThread:enabled"/>
   <int value="-838719204"
       label="ForceMajorVersionInMinorPositionInUserAgent:disabled"/>
+  <int value="-838233458" label="RustyPng:enabled"/>
   <int value="-837650216" label="DisableCryptAuthV1DeviceSync:disabled"/>
   <int value="-837473047" label="AutofillEnableStickyPaymentsBubble:disabled"/>
   <int value="-836123854" label="wallet-service-use-sandbox"/>
@@ -20771,6 +20772,7 @@ from previous Chrome versions.
   <int value="204560750" label="HomeButtonWithText:enabled"/>
   <int value="205375645" label="AudioHFPNbsWarning:enabled"/>
   <int value="205426997" label="BackGestureActivityTabProvider:enabled"/>
+  <int value="205874143" label="RustyPng:disabled"/>
   <int value="207326879" label="NearbySharingReceiveWifiCredentials:enabled"/>
   <int value="207907053"
       label="OmniboxUIExperimentBlueSearchLoopAndSearchQuery:enabled"/>

@@ -1097,6 +1097,9 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.FONTATIONS_FONT_BACKEND,
                 "Enables the Fontations font backend for web fonts."),
         Flag.baseFeature("OverrideAPIKey"),
+        Flag.baseFeature(
+                "RustyPng", "When enabled, uses Rust `png` crate to decode and encode PNG images."),
+
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
