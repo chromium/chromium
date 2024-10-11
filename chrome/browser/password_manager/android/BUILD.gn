@@ -365,6 +365,7 @@ android_resources("java_resources") {
     "java/res/layout/password_access_loss_export_dialog_view.xml",
     "java/res/layout/passwords_error_dialog.xml",
     "java/res/layout/passwords_preference_error_widget.xml",
+    "java/res/layout/passwords_preference_info_widget.xml",
     "java/res/layout/passwords_progress_dialog.xml",
   ]
   deps = [

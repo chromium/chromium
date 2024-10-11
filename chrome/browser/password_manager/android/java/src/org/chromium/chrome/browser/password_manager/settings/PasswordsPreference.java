@@ -90,6 +90,11 @@ public class PasswordsPreference extends ChromeBasePreference implements Profile
         // ChromeBasePreference sets summary text view to be not visible by default if it's empty.
         // So explicitly setting it to visible here.
         summaryView.setVisibility(View.VISIBLE);
+        // TODO: crbug.com/372868129 - Make the icon reliably show up, it's flaky at the moment.
+        if (shouldShowNoticeDialogWithoutPwds) {
+            setWidgetLayoutResource(R.layout.passwords_preference_info_widget);
+            return;
+        }
         setWidgetLayoutResource(R.layout.passwords_preference_error_widget);
     }
 
