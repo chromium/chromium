@@ -42,6 +42,10 @@ namespace password_manager {
 namespace {
 
 constexpr ukm::SourceId kTestSourceId = 0x1234;
+constexpr char16_t kSavedUsername[] = u"saved_user";
+constexpr char16_t kSavedPassword[] = u"saved_password";
+constexpr FieldRendererId kUsernameFieldId(1);
+constexpr FieldRendererId kPasswordFieldId(2);
 
 using features_util::PasswordAccountStorageUsageLevel;
 using UkmEntry = ukm::builders::PasswordForm;
@@ -2106,6 +2110,196 @@ TEST_F(PasswordFormMetricsRecorderTest, AutomationRate) {
        form_fields[3].value.size());
   histogram_tester_.ExpectUniqueSample("PasswordManager.FillingAutomationRate",
                                        expected_rate, 1);
+}
+
+struct ClassificationCorrectnessFieldInfo {
+  std::u16string value;
+  FieldRendererId renderer_id;
+};
+
+struct ClassificationCorrectnessTestCase {
+  const std::string_view description_for_logging;
+
+  bool submission_detected = true;
+  bool submission_is_successful = true;
+
+  // Renderer IDs of key form elements received during form parsing.
+  FieldRendererId username_field_id = FieldRendererId();
+  FieldRendererId password_field_id = FieldRendererId();
+
+  std::vector<ClassificationCorrectnessFieldInfo> fields;
+
+  std::vector<std::u16string> saved_usernames;
+  std::vector<std::u16string> saved_passwords;
+
+  std::map<std::string, PasswordFormMetricsRecorder::ClassificationCorrectness>
+      expectation;
+};
+
+void CheckClassificationCorrectnessTestCase(
+    const ClassificationCorrectnessTestCase& test_case) {
+  base::HistogramTester histogram_tester;
+  sync_preferences::TestingPrefServiceSyncable pref_service;
+  PasswordManager::RegisterProfilePrefs(pref_service.registry());
+
+  auto recorder = CreatePasswordFormMetricsRecorder(
+      /*is_main_frame_secure=*/true, &pref_service);
+
+  PasswordForm parsed_form;
+  parsed_form.username_element_renderer_id = test_case.username_field_id;
+  parsed_form.password_element_renderer_id = test_case.password_field_id;
+  recorder->CacheParsingResultInFillingMode(parsed_form);
+
+  if (test_case.submission_detected) {
+    FormData submitted_form;
+    for (const auto& field : test_case.fields) {
+      FormFieldData form_field;
+      form_field.set_value(field.value);
+      form_field.set_renderer_id(field.renderer_id);
+      test_api(submitted_form).Append(form_field);
+    }
+
+    recorder->CalculateClassificationCorrectnessMetric(
+        submitted_form, test_case.saved_usernames, test_case.saved_passwords);
+  }
+
+  if (test_case.submission_is_successful) {
+    recorder->LogSubmitPassed();
+  }
+  recorder.reset();
+
+  for (const auto& field_type : {"Username", "CurrentPassword"}) {
+    const std::string metric_name = base::StrCat(
+        {"PasswordManager.ClassificationCorrectness.", field_type});
+    if (test_case.expectation.find(field_type) != test_case.expectation.end()) {
+      histogram_tester.ExpectUniqueSample(
+          metric_name, static_cast<int>(test_case.expectation.at(field_type)),
+          1);
+    } else {
+      histogram_tester.ExpectTotalCount(metric_name, 0);
+    }
+  }
+}
+
+TEST_F(PasswordFormMetricsRecorderTest,
+       ClassificationCorrectness_NoSubmission) {
+  CheckClassificationCorrectnessTestCase({
+      .description_for_logging = "No submission, no histogram recorded",
+      .submission_detected = false,
+      .username_field_id = kUsernameFieldId,
+      .password_field_id = kPasswordFieldId,
+      .fields = {{.value = kSavedUsername, .renderer_id = kUsernameFieldId},
+                 {.value = kSavedPassword, .renderer_id = kPasswordFieldId}},
+      .saved_usernames = {kSavedUsername},
+      .saved_passwords = {kSavedPassword},
+  });
+}
+
+TEST_F(PasswordFormMetricsRecorderTest,
+       ClassificationCorrectness_NoSuccessfulSubmission) {
+  CheckClassificationCorrectnessTestCase({
+      .description_for_logging =
+          "No sucessful submission, no histogram recorded",
+      .submission_detected = true,
+      .submission_is_successful = false,
+      .username_field_id = kUsernameFieldId,
+      .password_field_id = kPasswordFieldId,
+      .fields = {{.value = kSavedUsername, .renderer_id = kUsernameFieldId},
+                 {.value = kSavedPassword, .renderer_id = kPasswordFieldId}},
+      .saved_usernames = {kSavedUsername},
+      .saved_passwords = {kSavedPassword},
+  });
+}
+
+TEST_F(PasswordFormMetricsRecorderTest,
+       ClassificationCorrectness_NoSavedCredentials) {
+  CheckClassificationCorrectnessTestCase({
+      .description_for_logging =
+          "No saved credentials, cannot estimate correctness",
+      .username_field_id = kUsernameFieldId,
+      .password_field_id = kPasswordFieldId,
+      .fields = {{.value = kSavedUsername, .renderer_id = kUsernameFieldId},
+                 {.value = kSavedPassword, .renderer_id = kPasswordFieldId}},
+      .saved_usernames = {},
+      .saved_passwords = {},
+  });
+}
+
+TEST_F(PasswordFormMetricsRecorderTest,
+       ClassificationCorrectness_CorrectlyClassifiedUsernameAndPassword) {
+  CheckClassificationCorrectnessTestCase(
+      {.description_for_logging =
+           "Correct classification: username and password fields contain saved "
+           "values",
+       .username_field_id = kUsernameFieldId,
+       .password_field_id = kPasswordFieldId,
+       .fields = {{.value = kSavedUsername, .renderer_id = kUsernameFieldId},
+                  {.value = kSavedPassword, .renderer_id = kPasswordFieldId}},
+       .saved_usernames = {kSavedUsername},
+       .saved_passwords = {kSavedPassword},
+       .expectation = {
+           {"Username",
+            PasswordFormMetricsRecorder::ClassificationCorrectness::kCorrect},
+           {"CurrentPassword", PasswordFormMetricsRecorder::
+                                   ClassificationCorrectness::kCorrect}}});
+}
+
+TEST_F(PasswordFormMetricsRecorderTest,
+       ClassificationCorrectness_WronglyClassifiedUsernameAndPassword) {
+  CheckClassificationCorrectnessTestCase(
+      {.description_for_logging =
+           "Incorrect classification: fields that were not classififed as "
+           "username and password contain previously saved values.",
+       .username_field_id = kUsernameFieldId,
+       .password_field_id = kPasswordFieldId,
+       .fields = {{.value = u"not_really_username",
+                   .renderer_id = kUsernameFieldId},
+                  {.value = u"not_really_password",
+                   .renderer_id = kPasswordFieldId},
+                  {.value = kSavedUsername, .renderer_id = FieldRendererId(3)},
+                  {.value = kSavedPassword, .renderer_id = FieldRendererId(4)}},
+       .saved_usernames = {kSavedUsername},
+       .saved_passwords = {kSavedPassword},
+       .expectation = {
+           {"Username",
+            PasswordFormMetricsRecorder::ClassificationCorrectness::kWrong},
+           {"CurrentPassword",
+            PasswordFormMetricsRecorder::ClassificationCorrectness::kWrong}}});
+}
+
+TEST_F(PasswordFormMetricsRecorderTest,
+       ClassificationCorrectness_UnknownUsernameAndPassword) {
+  CheckClassificationCorrectnessTestCase(
+      {.description_for_logging =
+           "Unknown correctness: there were saved values, but some other "
+           "values were submitted",
+       .username_field_id = kUsernameFieldId,
+       .password_field_id = kPasswordFieldId,
+       .fields = {{.value = u"new_username", .renderer_id = kUsernameFieldId},
+                  {.value = u"new_password", .renderer_id = kPasswordFieldId}},
+       .saved_usernames = {kSavedUsername},
+       .saved_passwords = {kSavedPassword},
+       .expectation = {
+           {"Username",
+            PasswordFormMetricsRecorder::ClassificationCorrectness::kUnknown},
+           {"CurrentPassword", PasswordFormMetricsRecorder::
+                                   ClassificationCorrectness::kUnknown}}});
+}
+
+TEST_F(PasswordFormMetricsRecorderTest,
+       ClassificationCorrectness_FieldMissingAtSubmisisonTime) {
+  CheckClassificationCorrectnessTestCase(
+      {.description_for_logging =
+           "Username field was present during inital parsing, but missing at "
+           "submisison time. Record histogram only for the password field.",
+       .username_field_id = kUsernameFieldId,
+       .password_field_id = kPasswordFieldId,
+       .fields = {{.value = kSavedPassword, .renderer_id = kPasswordFieldId}},
+       .saved_usernames = {kSavedUsername},
+       .saved_passwords = {kSavedPassword},
+       .expectation = {{"CurrentPassword",
+                        PasswordFormMetricsRecorder::ClassificationCorrectness::
+                            kCorrect}}});
 }
 
 }  // namespace password_manager

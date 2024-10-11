@@ -956,6 +956,12 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Opened Add Password Page"/>
 </enum>
 
+<enum name="PasswordManagerClassificationCorrectness">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Correct"/>
+  <int value="2" label="Wrong"/>
+</enum>
+
 <enum name="PasswordManagerEditsInSaveBubbleEnum">
   <int value="0" label="Username unchanged, password unchanged"/>
   <int value="1" label="Username changed, password unchanged"/>

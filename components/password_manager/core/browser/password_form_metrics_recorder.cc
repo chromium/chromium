@@ -16,6 +16,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
 #include "base/time/default_clock.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/common/form_data.h"
@@ -226,6 +227,51 @@ PasswordFormMetricsRecorder::FillingSource ComputeFillingSource(
   return FillingSource::kNotFilled;
 }
 
+const FormFieldData* FindFieldByRendererId(const FormData& form,
+                                           autofill::FieldRendererId field_id) {
+  auto field =
+      base::ranges::find(form.fields(), field_id, &FormFieldData::renderer_id);
+  return field == form.fields().end() ? nullptr : &*field;
+}
+
+PasswordFormMetricsRecorder::ClassificationCorrectness
+CalculateCorrectnessForLoginFields(
+    const FormData& submitted_form,
+    const std::vector<std::u16string>& saved_values,
+    const std::u16string& field_value) {
+  // If the submitted field contains one of the previously saved
+  // values, the classification was most likely correct.
+  if (base::ranges::find(saved_values, field_value) != saved_values.end()) {
+    return PasswordFormMetricsRecorder::ClassificationCorrectness::kCorrect;
+  }
+
+  // If any other field in the form contains one of the previously saved
+  // values, the classification was wrong.
+  for (const auto& field : submitted_form.fields()) {
+    if (!field.value().empty() &&
+        (base::ranges::find(saved_values, field.value()) !=
+         saved_values.end())) {
+      return PasswordFormMetricsRecorder::ClassificationCorrectness::kWrong;
+    }
+  }
+
+  return PasswordFormMetricsRecorder::ClassificationCorrectness::kUnknown;
+}
+
+std::string PasswordFieldTypeToString(
+    PasswordFormMetricsRecorder::PasswordFieldType type) {
+  switch (type) {
+    case PasswordFormMetricsRecorder::PasswordFieldType::kUsername:
+      return "Username";
+    case PasswordFormMetricsRecorder::PasswordFieldType::kCurrentPassword:
+      return "CurrentPassword";
+    case PasswordFormMetricsRecorder::PasswordFieldType::kNewPassword:
+      return "NewPassword";
+    case PasswordFormMetricsRecorder::PasswordFieldType::kConfirmationPassword:
+      return "ConfirmationPassword";
+  }
+}
+
 }  // namespace
 
 PasswordFormMetricsRecorder::PasswordFormMetricsRecorder(
@@ -412,6 +458,15 @@ PasswordFormMetricsRecorder::~PasswordFormMetricsRecorder() {
           "PasswordManager.StoresUsedForFillingInLast28Days",
           ComputeFillingSource(was_profile_store_used_in_last_28_days,
                                was_account_store_used_in_last_28_days));
+    }
+  }
+
+  if (submit_result_ == SubmitResult::kPassed) {
+    for (const auto& [field_type, correctness] : classification_correctness_) {
+      base::UmaHistogramEnumeration(
+          base::StrCat({"PasswordManager.ClassificationCorrectness.",
+                        PasswordFieldTypeToString(field_type)}),
+          correctness);
     }
   }
 
@@ -788,6 +843,35 @@ void PasswordFormMetricsRecorder::
   NOTREACHED();
 }
 
+void PasswordFormMetricsRecorder::SetClassificationCorrectnessForLoginField(
+    const FormData& submitted_form,
+    PasswordFieldType field_type,
+    const std::vector<std::u16string>& saved_values,
+    autofill::FieldRendererId field_id) {
+  const FormFieldData* field = FindFieldByRendererId(submitted_form, field_id);
+  if (field && !field->value().empty() && !saved_values.empty()) {
+    classification_correctness_[field_type] =
+        CalculateCorrectnessForLoginFields(submitted_form, saved_values,
+                                           field->value());
+  } else {
+    // Make sure to clean the saved value, if the form changed dynamically, and
+    // the field is no longer present.
+    classification_correctness_.erase(field_type);
+  }
+}
+
+void PasswordFormMetricsRecorder::CalculateClassificationCorrectnessMetric(
+    const FormData& submitted_form,
+    const std::vector<std::u16string>& saved_usernames,
+    const std::vector<std::u16string>& saved_passwords) {
+  SetClassificationCorrectnessForLoginField(
+      submitted_form, PasswordFieldType::kUsername, saved_usernames,
+      username_renderer_id_);
+  SetClassificationCorrectnessForLoginField(
+      submitted_form, PasswordFieldType::kCurrentPassword, saved_passwords,
+      password_renderer_id_);
+}
+
 void PasswordFormMetricsRecorder::CalculateJsOnlyInput(
     const FormData& submitted_form) {
   bool had_focus = false;
@@ -834,21 +918,21 @@ void PasswordFormMetricsRecorder::CalculateAutomationRate(
 
 void PasswordFormMetricsRecorder::CacheParsingResultInFillingMode(
     const PasswordForm& form) {
-  username_rendered_id_ = form.username_element_renderer_id;
-  password_rendered_id_ = form.password_element_renderer_id;
-  new_password_rendered_id_ = form.new_password_element_renderer_id;
-  confirmation_password_rendered_id_ =
+  username_renderer_id_ = form.username_element_renderer_id;
+  password_renderer_id_ = form.password_element_renderer_id;
+  new_password_renderer_id_ = form.new_password_element_renderer_id;
+  confirmation_password_renderer_id_ =
       form.confirmation_password_element_renderer_id;
 }
 
 void PasswordFormMetricsRecorder::CalculateParsingDifferenceOnSavingAndFilling(
     const PasswordForm& form) {
   bool same_username =
-      username_rendered_id_ == form.username_element_renderer_id;
+      username_renderer_id_ == form.username_element_renderer_id;
   bool same_passwords =
-      (password_rendered_id_ == form.password_element_renderer_id) &&
-      (new_password_rendered_id_ == form.new_password_element_renderer_id) &&
-      (confirmation_password_rendered_id_ ==
+      (password_renderer_id_ == form.password_element_renderer_id) &&
+      (new_password_renderer_id_ == form.new_password_element_renderer_id) &&
+      (confirmation_password_renderer_id_ ==
        form.confirmation_password_element_renderer_id);
 
   if (same_username) {

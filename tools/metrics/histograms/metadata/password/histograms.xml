@@ -1139,6 +1139,42 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.ClassificationCorrectness.CurrentPassword"
+    enum="PasswordManagerClassificationCorrectness" expires_after="2025-04-30">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@google.com</owner>
+  <summary>
+    This metric records the correctness of a current password field
+    classification produced on the page load.
+
+    Is recorded for successfully submitted password forms containing a current
+    password field, for which the user had saved passwords. The classification
+    is considered correct, if the field contained a previously saved password at
+    the moment of submisison, and incorrect, if any other fields in the form
+    contained a previosuly saved password.
+
+    Recorded on the corresponding form manager destruction.
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.ClassificationCorrectness.Username"
+    enum="PasswordManagerClassificationCorrectness" expires_after="2025-04-30">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@google.com</owner>
+  <summary>
+    This metric records the correctness of a username field classification
+    produced on the page load.
+
+    Is recorded for successfully submitted password forms containing a username
+    field, for which the user had saved usernames. The classification is
+    considered correct, if the field contained a previously saved username at
+    the moment of submisison, and incorrect, if any other fields in the form
+    contained a previosuly saved username.
+
+    Recorded on the corresponding form manager destruction.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.CompromisedCredentials3.{Issue}"
     units="credentials" expires_after="2025-03-09">
   <owner>vasilii@chromium.org</owner>

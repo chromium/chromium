@@ -1018,7 +1018,8 @@ bool PasswordFormManager::ProvisionallySave(
   if (form_parsing_result.password_form) {
     metrics_recorder_->CalculateParsingDifferenceOnSavingAndFilling(
         *form_parsing_result.password_form.get());
-    CalculateFillingAssistanceMetric(*form_parsing_result.password_form);
+    CalculateFillingAssistanceAndCorrectnessMetrics(
+        *form_parsing_result.password_form);
   }
 
   if (!client_->IsSavingAndFillingEnabled(submitted_form.url())) {
@@ -1348,7 +1349,7 @@ void PasswordFormManager::PresaveGeneratedPasswordInternal(
   password_save_manager_->PresaveGeneratedPassword(std::move(*parsed_form));
 }
 
-void PasswordFormManager::CalculateFillingAssistanceMetric(
+void PasswordFormManager::CalculateFillingAssistanceAndCorrectnessMetrics(
     const PasswordForm& parsed_submitted_form) {
   std::set<std::pair<std::u16string, PasswordForm::Store>> saved_usernames;
   std::set<std::pair<std::u16string, PasswordForm::Store>> saved_passwords;
@@ -1368,6 +1369,21 @@ void PasswordFormManager::CalculateFillingAssistanceMetric(
       form_fetcher_->GetInteractionsStats(),
       client_->GetPasswordFeatureManager()
           ->ComputePasswordAccountStorageUsageLevel());
+
+  std::vector<std::u16string> saved_username_values;
+  while (!saved_usernames.empty()) {
+    saved_username_values.emplace_back(std::move(
+        saved_usernames.extract(saved_usernames.begin()).value().first));
+  }
+  std::vector<std::u16string> saved_password_values;
+  while (!saved_passwords.empty()) {
+    saved_password_values.emplace_back(std::move(
+        saved_passwords.extract(saved_passwords.begin()).value().first));
+  }
+
+  metrics_recorder_->CalculateClassificationCorrectnessMetric(
+      parsed_submitted_form.form_data, saved_username_values,
+      saved_password_values);
 }
 
 void PasswordFormManager::CalculateSubmittedFormFrameMetric() {
