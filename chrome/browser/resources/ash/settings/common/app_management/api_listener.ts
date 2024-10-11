@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {createInitialState} from 'chrome://resources/cr_components/app_management/util.js';
 
-import {addApp, AppManagementActions, changeApp, removeApp} from './actions.js';
+import {addApp, type AppManagementActions, changeApp, removeApp} from './actions.js';
 import {AppManagementBrowserProxy} from './browser_proxy.js';
 import {AppManagementStore} from './store.js';
 
