@@ -9,6 +9,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/parsing_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -112,7 +113,15 @@ TEST_F(AddressFieldParserTest, ParseStreetNameAndHouseNumbertPL) {
 // Tests that fields are classified as |ADDRESS_HOME_STREET_NAME|,
 // |ADDRESS_HOME_HOUSE_NUMBER| and |ADDRESS_HOME_APT_NUM|  when they are labeled
 // accordingly and both are present.
-TEST_F(AddressFieldParserTest, ParseStreetNameHouseNumbertAndAptNumPL) {
+// TODO(crbug.com/372729913): Re-enable this test
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_ParseStreetNameHouseNumbertAndAptNumPL \
+  DISABLED_ParseStreetNameHouseNumbertAndAptNumPL
+#else
+#define MAYBE_ParseStreetNameHouseNumbertAndAptNumPL \
+  ParseStreetNameHouseNumbertAndAptNumPL
+#endif
+TEST_F(AddressFieldParserTest, MAYBE_ParseStreetNameHouseNumbertAndAptNumPL) {
   AddTextFormFieldData("street", "ulica", ADDRESS_HOME_STREET_NAME);
   AddTextFormFieldData("house-number", "Nr domu", ADDRESS_HOME_HOUSE_NUMBER);
   AddTextFormFieldData("house-number", "Nr lokalu", ADDRESS_HOME_APT_NUM);
