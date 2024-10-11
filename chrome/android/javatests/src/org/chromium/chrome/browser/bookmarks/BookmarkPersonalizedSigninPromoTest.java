@@ -201,6 +201,7 @@ public class BookmarkPersonalizedSigninPromoTest {
     })
     // TODO(crbug.com/353949455): Re-enable these tests once UNO is enabled for cars.
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/372858049
     public void shouldHideBookmarksSigninPromoIfBookmarksIsManagedByPolicy() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(true);
@@ -233,6 +234,7 @@ public class BookmarkPersonalizedSigninPromoTest {
     })
     // TODO(crbug.com/353949455): Re-enable these tests once UNO is enabled for cars.
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+    @DisableIf.Device(DeviceFormFactor.TABLET) // crbug.com/372858049
     public void shouldHideBookmarksSigninPromoIfDataTypesSyncing() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);
