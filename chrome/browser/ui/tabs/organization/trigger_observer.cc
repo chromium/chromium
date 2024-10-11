@@ -4,11 +4,14 @@
 
 #include "chrome/browser/ui/tabs/organization/trigger_observer.h"
 
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/organization/trigger.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
 
 TabOrganizationTriggerObserver::TabOrganizationTriggerObserver(
     base::RepeatingCallback<void(const Browser*)> on_trigger,
@@ -50,12 +53,31 @@ void TabOrganizationTriggerObserver::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  if (trigger_logic_->ShouldTrigger(tab_strip_model)) {
-    on_trigger_.Run(BrowserForTabStripModel(tab_strip_model));
+  // Debounce TabStripModelObserver notifications - some batch tabstrip changes
+  // can send out many separate notifications.
+  if (!pending_eval_) {
+    pending_eval_ = true;
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(&TabOrganizationTriggerObserver::EvaluateTrigger,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       BrowserForTabStripModel(tab_strip_model)->AsWeakPtr()));
   }
 }
 
 Browser* TabOrganizationTriggerObserver::BrowserForTabStripModel(
     TabStripModel* tab_strip_model) const {
   return tab_strip_model_to_browser_map_.at(tab_strip_model).get();
+}
+
+void TabOrganizationTriggerObserver::EvaluateTrigger(
+    base::WeakPtr<Browser> browser) {
+  if (!browser) {
+    return;
+  }
+  if (trigger_logic_->ShouldTrigger(browser->tab_strip_model())) {
+    on_trigger_.Run(BrowserForTabStripModel(browser->tab_strip_model()));
+  }
+
+  pending_eval_ = false;
 }
