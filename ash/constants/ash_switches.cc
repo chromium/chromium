@@ -419,6 +419,12 @@ const char kDemoModeForceArcOfflineProvision[] =
 // App ID to use for highlights app in demo mode.
 const char kDemoModeHighlightsApp[] = "demo-mode-highlights-extension";
 
+// API key for demo mode server.
+const char kDemoModeServerAPIKey[] = "demo-mode-server-api-key";
+
+// Override the prodution demo mode api url fo demo account sign in.
+const char kDemoModeServerUrl[] = "demo-mode-server-url";
+
 // App ID to use for screensaver app in demo mode.
 const char kDemoModeScreensaverApp[] = "demo-mode-screensaver-extension";
 

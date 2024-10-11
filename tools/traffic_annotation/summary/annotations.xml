@@ -495,4 +495,5 @@ Refer to README.md for content description and update process.
  <item id="chromeos_emoji_picker_posts_fetcher" added_in_milestone="131" content_hash_code="069ed9b2" os_list="chromeos" file_path="chromeos/ash/components/emoji/gif_tenor_api_fetcher.cc" />
  <item id="chromeos_picker_gif_media_fetcher" added_in_milestone="131" content_hash_code="0674a2dd" os_list="chromeos" file_path="ash/picker/picker_asset_fetcher_impl.cc" />
  <item id="remoting_cloud_generate_ice_config" added_in_milestone="131" content_hash_code="067b6408" os_list="linux,windows,android,chromeos" file_path="remoting/base/cloud_service_client.cc" />
+ <item id="demo_login_controller" added_in_milestone="131" content_hash_code="04b91873" os_list="chromeos" file_path="chrome/browser/ash/login/demo_mode/demo_login_controller.cc" />
 </annotations>

@@ -93,6 +93,7 @@ static_library("demo_mode_login") {
 
   deps = [
     "//ash/constants",
+    "//chrome/browser:browser_process",
     "//chrome/browser/ash/login",
     "//chrome/browser/ui/ash/login",
     "//chrome/browser/ui/webui/ash/login",

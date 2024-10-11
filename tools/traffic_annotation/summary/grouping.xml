@@ -353,6 +353,7 @@ after discussions on the right group.
       <annotation id="chromeos_emoji_picker_featured_fetcher"/>
       <annotation id="chromeos_emoji_picker_posts_fetcher"/>
       <annotation id="remoting_cloud_generate_ice_config"/>
+      <annotation id="demo_login_controller"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">
