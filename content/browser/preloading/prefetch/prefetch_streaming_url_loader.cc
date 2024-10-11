@@ -125,7 +125,7 @@ void PrefetchStreamingURLLoader::CancelIfNotServing() {
 void PrefetchStreamingURLLoader::DisconnectPrefetchURLLoaderMojo() {
   prefetch_url_loader_.reset();
   prefetch_url_loader_client_receiver_.reset();
-  timeout_timer_.AbandonAndStop();
+  timeout_timer_.Stop();
 
   if (!self_pointer_) {
     return;
@@ -266,7 +266,7 @@ void PrefetchStreamingURLLoader::OnComplete(
 
 void PrefetchStreamingURLLoader::OnStartServing() {
   // Once the prefetch is served, stop the timeout timer.
-  timeout_timer_.AbandonAndStop();
+  timeout_timer_.Stop();
 
   used_for_serving_ = true;
 }

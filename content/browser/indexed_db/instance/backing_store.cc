@@ -2643,7 +2643,7 @@ void BackingStore::StartJournalCleaningTimer() {
   }
 
   if (num_aggregated_journal_cleaning_requests_ >= kMaxJournalCleanRequests) {
-    journal_cleaning_timer_.AbandonAndStop();
+    journal_cleaning_timer_.Stop();
     CleanRecoveryJournalIgnoreReturn();
     return;
   }
@@ -2661,7 +2661,7 @@ void BackingStore::StartJournalCleaningTimer() {
       std::min(kInitialJournalCleaningWindowTime, time_until_max);
 
   if (delay <= base::Seconds(0)) {
-    journal_cleaning_timer_.AbandonAndStop();
+    journal_cleaning_timer_.Stop();
     CleanRecoveryJournalIgnoreReturn();
     return;
   }

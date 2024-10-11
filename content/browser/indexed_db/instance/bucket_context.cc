@@ -441,7 +441,7 @@ void BucketContext::ForceClose(bool doom) {
     // Don't run the preclosing tasks after a ForceClose, whether or not we've
     // started them.  Compaction in particular can run long and cannot be
     // interrupted, so it can cause shutdown hangs.
-    close_timer_.AbandonAndStop();
+    close_timer_.Stop();
     if (pre_close_task_queue_) {
       pre_close_task_queue_->Stop();
       pre_close_task_queue_.reset();
@@ -973,7 +973,7 @@ void BucketContext::OnHandleCreated() {
   ++open_handles_;
   if (closing_stage_ != ClosingState::kNotClosing) {
     closing_stage_ = ClosingState::kNotClosing;
-    close_timer_.AbandonAndStop();
+    close_timer_.Stop();
     if (pre_close_task_queue_) {
       pre_close_task_queue_->Stop();
       pre_close_task_queue_.reset();
@@ -1071,7 +1071,7 @@ void BucketContext::StartPreCloseTasks() {
 
 void BucketContext::CloseNow() {
   closing_stage_ = ClosingState::kClosed;
-  close_timer_.AbandonAndStop();
+  close_timer_.Stop();
   pre_close_task_queue_.reset();
   QueueRunTasks();
 }
