@@ -517,8 +517,6 @@ ScriptTimingInfo* AnimationFrameTimingMonitor::PopScriptEntryPoint(
     ScriptState* script_state,
     const probe::ProbeBase* probe,
     base::TimeTicks end_time) {
-  CHECK(script_state);
-  ExecutionContext* context = ToExecutionContext(script_state);
   if (!entry_point_depth_) {
     return nullptr;
   }
@@ -529,6 +527,11 @@ ScriptTimingInfo* AnimationFrameTimingMonitor::PopScriptEntryPoint(
 
   std::optional<PendingScriptInfo> script_info;
   std::swap(script_info, pending_script_info_);
+
+  // script_state can be null in situations such as the frame being in a
+  // provisional state.
+  ExecutionContext* context =
+      script_state ? ToExecutionContext(script_state) : nullptr;
 
   if (!enabled_ || !context || !context->IsWindow() ||
       !client_.ShouldReportLongAnimationFrameTiming()) {
