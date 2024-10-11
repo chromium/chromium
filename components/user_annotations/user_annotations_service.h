@@ -23,6 +23,7 @@
 #include "url/gurl.h"
 
 namespace autofill {
+class AutofillProfile;
 class FormStructure;
 }  // namespace autofill
 
@@ -117,6 +118,11 @@ class UserAnnotationsService : public KeyedService {
 
   // KeyedService:
   void Shutdown() override;
+
+  // Saves `autofill_profile` to the database, then runs `callback`.
+  void SaveAutofillProfile(
+      const autofill::AutofillProfile& autofill_profile,
+      base::OnceCallback<void(UserAnnotationsExecutionResult)> callback);
 
  private:
   friend class TestUserAnnotationsService;

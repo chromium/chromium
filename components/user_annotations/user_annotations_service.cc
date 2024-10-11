@@ -6,6 +6,7 @@
 
 #include "base/callback_list.h"
 #include "base/containers/contains.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -13,8 +14,11 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
+#include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_processing/optimization_guide_proto_util.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/geo/phone_number_i18n.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
@@ -31,6 +35,22 @@
 namespace user_annotations {
 
 namespace {
+
+base::flat_map<autofill::FieldType, std::string>
+GetEntryKeyByAutofillFieldType() {
+  return {
+      {autofill::FieldType::NAME_FIRST, "First Name"},
+      {autofill::FieldType::NAME_MIDDLE, "Middle Name"},
+      {autofill::FieldType::NAME_LAST, "Last Name"},
+      {autofill::FieldType::EMAIL_ADDRESS, "Email Address"},
+      {autofill::FieldType::PHONE_HOME_WHOLE_NUMBER, "Phone Number [mobile]"},
+      {autofill::FieldType::ADDRESS_HOME_CITY, "Address - City"},
+      {autofill::FieldType::ADDRESS_HOME_STATE, "Address - State"},
+      {autofill::FieldType::ADDRESS_HOME_ZIP, "Address - Zip Code"},
+      {autofill::FieldType::ADDRESS_HOME_COUNTRY, "Address - Country"},
+      {autofill::FieldType::ADDRESS_HOME_STREET_ADDRESS, "Address - Street"},
+  };
+}
 
 void RecordUserAnnotationsFormImportResult(
     UserAnnotationsExecutionResult result) {
@@ -59,6 +79,43 @@ void RecordRemoveAllEntriesResult(UserAnnotationsExecutionResult result) {
 
 void RecordCountEntriesResult(UserAnnotationsExecutionResult result) {
   base::UmaHistogramEnumeration("UserAnnotations.CountEntries.Result", result);
+}
+
+std::string GetEntryValueFromAutofillProfile(
+    const autofill::AutofillProfile& autofill_profile,
+    autofill::FieldType field_type) {
+  if (field_type == autofill::FieldType::PHONE_HOME_WHOLE_NUMBER) {
+    return autofill::i18n::FormatPhoneForDisplay(
+        base::UTF16ToUTF8(autofill_profile.GetRawInfo(field_type)),
+        base::UTF16ToUTF8(
+            autofill_profile.GetRawInfo(autofill::PHONE_HOME_COUNTRY_CODE)));
+  }
+  return base::UTF16ToUTF8(autofill_profile.GetRawInfo(field_type));
+}
+
+UserAnnotationsEntries ConvertAutofillProfileToEntries(
+    const autofill::AutofillProfile& autofill_profile) {
+  static const base::flat_map<autofill::FieldType, std::string>
+      entry_key_by_autofill_field_type = GetEntryKeyByAutofillFieldType();
+  UserAnnotationsEntries entries;
+  for (const auto& [field_type, entry_key] : entry_key_by_autofill_field_type) {
+    const std::string entry_value =
+        GetEntryValueFromAutofillProfile(autofill_profile, field_type);
+    if (entry_value.empty()) {
+      continue;
+    }
+    optimization_guide::proto::UserAnnotationsEntry entry_proto;
+    entry_proto.set_key(entry_key);
+    entry_proto.set_value(std::move(entry_value));
+    entries.emplace_back(std::move(entry_proto));
+  }
+  return entries;
+}
+
+void NotifyAutofillProfileSaved(
+    base::OnceCallback<void(UserAnnotationsExecutionResult)> callback,
+    UserAnnotationsExecutionResult result) {
+  std::move(callback).Run(result);
 }
 
 }  // namespace
@@ -191,6 +248,33 @@ void UserAnnotationsService::SaveEntries(
   }
   RecordUserAnnotationsFormImportResult(
       UserAnnotationsExecutionResult::kSuccess);
+}
+
+void UserAnnotationsService::SaveAutofillProfile(
+    const autofill::AutofillProfile& autofill_profile,
+    base::OnceCallback<void(UserAnnotationsExecutionResult)> callback) {
+  const UserAnnotationsEntries entries =
+      ConvertAutofillProfileToEntries(autofill_profile);
+  if (ShouldPersistUserAnnotations()) {
+    DCHECK(user_annotations_database_);
+
+    user_annotations_database_
+        .AsyncCall(&UserAnnotationsDatabase::UpdateEntries)
+        .WithArgs(entries, std::set<EntryID>{})
+        .Then(base::BindOnce(NotifyAutofillProfileSaved, std::move(callback)));
+    return;
+  }
+
+  for (const auto& entry : entries) {
+    EntryID entry_id = ++entry_id_counter_;
+    optimization_guide::proto::UserAnnotationsEntry entry_proto;
+    entry_proto.set_entry_id(entry_id);
+    entry_proto.set_key(entry.key());
+    entry_proto.set_value(entry.value());
+    entries_.push_back(
+        {.entry_id = entry_id, .entry_proto = std::move(entry_proto)});
+  }
+  std::move(callback).Run(UserAnnotationsExecutionResult::kSuccess);
 }
 
 void UserAnnotationsService::OnFormSubmissionComplete() {

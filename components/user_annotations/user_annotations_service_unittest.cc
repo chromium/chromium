@@ -16,6 +16,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
@@ -570,6 +572,38 @@ TEST_P(UserAnnotationsServiceTest, ParallelFormSubmissions) {
     EXPECT_EQ(entries[3].key(), "nolabel");
     EXPECT_EQ(entries[3].value(), "new_nolabel_value");
   }
+}
+
+TEST_P(UserAnnotationsServiceTest, SaveAutofillProfile) {
+  autofill::AutofillProfile autofill_profile(AddressCountryCode("US"));
+  autofill::test::SetProfileInfo(&autofill_profile, "Jane", "J", "Doe",
+                                 "jd@example.com", "", "123 Main St", "",
+                                 "Raleigh", "NC", "12345", "US", "9195555555");
+  base::test::TestFuture<UserAnnotationsExecutionResult> test_future;
+  service()->SaveAutofillProfile(autofill_profile, test_future.GetCallback());
+  ASSERT_TRUE(test_future.Wait());
+  const UserAnnotationsEntries entries = GetAllUserAnnotationsEntries();
+  EXPECT_EQ(entries.size(), 10u);
+  EXPECT_EQ(entries[0].key(), "First Name");
+  EXPECT_EQ(entries[0].value(), "Jane");
+  EXPECT_EQ(entries[1].key(), "Middle Name");
+  EXPECT_EQ(entries[1].value(), "J");
+  EXPECT_EQ(entries[2].key(), "Last Name");
+  EXPECT_EQ(entries[2].value(), "Doe");
+  EXPECT_EQ(entries[3].key(), "Email Address");
+  EXPECT_EQ(entries[3].value(), "jd@example.com");
+  EXPECT_EQ(entries[4].key(), "Phone Number [mobile]");
+  EXPECT_EQ(entries[4].value(), "9195555555");
+  EXPECT_EQ(entries[5].key(), "Address - City");
+  EXPECT_EQ(entries[5].value(), "Raleigh");
+  EXPECT_EQ(entries[6].key(), "Address - State");
+  EXPECT_EQ(entries[6].value(), "NC");
+  EXPECT_EQ(entries[7].key(), "Address - Zip Code");
+  EXPECT_EQ(entries[7].value(), "12345");
+  EXPECT_EQ(entries[8].key(), "Address - Country");
+  EXPECT_EQ(entries[8].value(), "US");
+  EXPECT_EQ(entries[9].key(), "Address - Street");
+  EXPECT_EQ(entries[9].value(), "123 Main St");
 }
 
 INSTANTIATE_TEST_SUITE_P(All, UserAnnotationsServiceTest, ::testing::Bool());
