@@ -22,37 +22,27 @@ void RecordSideSearchNavigation(SideSearchNavigationType type) {
 }
 
 void RecordNavigationCommittedWithinSideSearchCountPerJourney(
-    bool is_side_contents_helper_created_from_menu_option,
     int count,
     bool was_auto_triggered) {
-  if (is_side_contents_helper_created_from_menu_option) {
-    base::UmaHistogramCounts100(
-        "SideSearch."
-        "NavigationCommittedWithinSideSearchCountPerJourneyFromMenuOption",
-        count);
-  } else if (was_auto_triggered) {
+  base::UmaHistogramCounts100(
+      "SideSearch.NavigationCommittedWithinSideSearchCountPerJourney2", count);
+
+  if (was_auto_triggered) {
     base::UmaHistogramCounts100(
         "SideSearch.AutoTrigger."
         "NavigationCommittedWithinSideSearchCountPerJourney",
         count);
   }
-  base::UmaHistogramCounts100(
-      "SideSearch.NavigationCommittedWithinSideSearchCountPerJourney2", count);
 }
 
-void RecordRedirectionToTabCountPerJourney(
-    bool is_side_contents_helper_created_from_menu_option,
-    int count,
-    bool was_auto_triggered) {
-  if (is_side_contents_helper_created_from_menu_option) {
-    base::UmaHistogramCounts100(
-        "SideSearch.RedirectionToTabCountPerJourneyFromMenuOption", count);
-  } else if (was_auto_triggered) {
+void RecordRedirectionToTabCountPerJourney(int count, bool was_auto_triggered) {
+  base::UmaHistogramCounts100("SideSearch.RedirectionToTabCountPerJourney2",
+                              count);
+
+  if (was_auto_triggered) {
     base::UmaHistogramCounts100(
         "SideSearch.AutoTrigger.RedirectionToTabCountPerJourney", count);
   }
-  base::UmaHistogramCounts100("SideSearch.RedirectionToTabCountPerJourney2",
-                              count);
 }
 
 void RecordSideSearchNumTimesReturnedBackToSRP(int count) {

@@ -32,13 +32,9 @@ void RecordSideSearchPageActionLabelVisibilityOnToggle(
     SideSearchPageActionLabelVisibility label_visibility);
 void RecordSideSearchNavigation(SideSearchNavigationType type);
 void RecordNavigationCommittedWithinSideSearchCountPerJourney(
-    bool is_side_contents_helper_created_from_menu_option,
     int count,
     bool was_auto_triggered);
-void RecordRedirectionToTabCountPerJourney(
-    bool is_side_contents_helper_created_from_menu_option,
-    int count,
-    bool was_auto_triggered);
+void RecordRedirectionToTabCountPerJourney(int count, bool was_auto_triggered);
 void RecordSideSearchNumTimesReturnedBackToSRP(int count);
 
 #endif  // CHROME_BROWSER_UI_SIDE_SEARCH_SIDE_SEARCH_METRICS_H_

@@ -199,10 +199,9 @@ SideSearchSideContentsHelper::SideSearchSideContentsHelper(
 
 void SideSearchSideContentsHelper::MaybeRecordMetricsPerJourney() {
   RecordNavigationCommittedWithinSideSearchCountPerJourney(
-      is_created_from_menu_option_, navigation_within_side_search_count_,
-      auto_triggered_);
-  RecordRedirectionToTabCountPerJourney(
-      is_created_from_menu_option_, redirection_to_tab_count_, auto_triggered_);
+      navigation_within_side_search_count_, auto_triggered_);
+  RecordRedirectionToTabCountPerJourney(redirection_to_tab_count_,
+                                        auto_triggered_);
 }
 
 SideSearchConfig* SideSearchSideContentsHelper::GetConfig() {

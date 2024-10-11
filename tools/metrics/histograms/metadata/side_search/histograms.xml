@@ -108,20 +108,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="SideSearch.NavigationCommittedWithinSideSearchCountPerJourneyFromMenuOption"
-    units="navigations" expires_after="2024-02-11">
-  <owner>pengchaocai@chromium.org</owner>
-  <owner>yuhengh@chromium.org</owner>
-  <owner>tluk@chromium.org</owner>
-  <summary>
-    The number of navigations committed within the side search panel for a given
-    search journey, if the side panel web contents is created from menu entry
-    point. The search journey corresponds to the life of the side panel web
-    contents. Emitted when the side panel WebContents is destroyed.
-  </summary>
-</histogram>
-
 <histogram name="SideSearch.PageActionIcon.LabelVisibleWhenToggled"
     enum="SideSearchPageActionLabelVisibility" expires_after="2023-12-13">
   <owner>yuhengh@chromium.org</owner>
@@ -142,19 +128,6 @@ chromium-metrics-reviews@google.com.
     Number of navigations redirected to the tab from the side panel for a given
     side search journeys. Emitted when the current search journey ends (i.e. the
     side panel was explicitly closed by the user).
-  </summary>
-</histogram>
-
-<histogram name="SideSearch.RedirectionToTabCountPerJourneyFromMenuOption"
-    units="navigations" expires_after="2023-12-13">
-  <owner>pengchaocai@chromium.org</owner>
-  <owner>yuhengh@chromium.org</owner>
-  <owner>tluk@chromium.org</owner>
-  <summary>
-    Number of navigations redirected to the tab from the side panel for a given
-    side search journeys, if the side panel web contents is created from menu
-    entry point. Emitted when the current search journey ends (i.e. the side
-    panel was explicitly closed by the user).
   </summary>
 </histogram>
 
