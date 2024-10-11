@@ -32,6 +32,7 @@ group("api_implementations") {
     "//extensions/browser/api/alarms",
     "//extensions/browser/api/declarative_net_request",
     "//extensions/browser/api/runtime",
+    "//extensions/browser/api/storage",
     "//extensions/browser/api/test",
   ]
 
@@ -67,7 +68,6 @@ group("api_implementations") {
       "//extensions/browser/api/sockets_tcp",
       "//extensions/browser/api/sockets_tcp_server",
       "//extensions/browser/api/sockets_udp",
-      "//extensions/browser/api/storage",
       "//extensions/browser/api/system_cpu",
       "//extensions/browser/api/system_info",
       "//extensions/browser/api/system_memory",

@@ -7,6 +7,8 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/api/declarative_net_request/rules_monitor_service.h"
+#include "extensions/browser/api/storage/session_storage_manager.h"  // nogncheck
+#include "extensions/browser/api/storage/storage_frontend.h"  // nogncheck
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/api/web_request/web_request_proxying_url_loader_factory.h"
 #include "extensions/buildflags/buildflags.h"
@@ -46,8 +48,6 @@
 #include "extensions/browser/api/sockets_tcp/tcp_socket_event_dispatcher.h"
 #include "extensions/browser/api/sockets_tcp_server/tcp_server_socket_event_dispatcher.h"
 #include "extensions/browser/api/sockets_udp/udp_socket_event_dispatcher.h"
-#include "extensions/browser/api/storage/session_storage_manager.h"  // nogncheck
-#include "extensions/browser/api/storage/storage_frontend.h"  // nogncheck
 #include "extensions/browser/api/system_info/system_info_api.h"
 #include "extensions/browser/api/usb/usb_device_manager.h"
 #include "extensions/browser/api/usb/usb_device_resource.h"
@@ -70,6 +70,8 @@ namespace extensions {
 
 void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   declarative_net_request::RulesMonitorService::GetFactoryInstance();
+  SessionStorageManager::GetFactory();
+  StorageFrontend::GetFactoryInstance();
   WebRequestAPI::GetFactoryInstance();
   WebRequestProxyingURLLoaderFactory::EnsureAssociatedFactoryBuilt();
 
@@ -123,8 +125,6 @@ void EnsureApiBrowserContextKeyedServiceFactoriesBuilt() {
   PrinterProviderAPIFactory::GetInstance();
   RulesRegistryService::GetFactoryInstance();
   RuntimeAPI::GetFactoryInstance();
-  SessionStorageManager::GetFactory();
-  StorageFrontend::GetFactoryInstance();
   SystemInfoAPI::GetFactoryInstance();
   UsbDeviceManager::GetFactoryInstance();
 #if BUILDFLAG(IS_CHROMEOS)

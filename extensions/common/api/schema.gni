@@ -11,6 +11,7 @@ import("//extensions/buildflags/buildflags.gni")
 extensions_api_schema_files_ = [
   "alarms.idl",
   "runtime.json",
+  "storage.json",
   "test.json",
 ]
 
@@ -73,7 +74,6 @@ if (enable_extensions) {
     "sockets_tcp.idl",
     "sockets_tcp_server.idl",
     "sockets_udp.idl",
-    "storage.json",
     "system_cpu.idl",
     "system_display.idl",
     "system_memory.idl",
@@ -119,7 +119,6 @@ if (enable_desktop_android_extensions) {
     "events.json",
     "icon_variants.idl",
     "file_handlers.idl",
-    "storage.json",
     "virtual_keyboard.idl",
     "virtual_keyboard_private.json",
   ]

@@ -78,6 +78,8 @@ static_library("test_support") {
   sources = [
     "browser/api/declarative/test_rules_registry.cc",
     "browser/api/declarative/test_rules_registry.h",
+    "browser/api/storage/settings_test_util.cc",
+    "browser/api/storage/settings_test_util.h",
     "browser/api_test_utils.cc",
     "browser/api_test_utils.h",
     "browser/api_unittest.cc",
@@ -198,8 +200,6 @@ static_library("test_support") {
   # not be included and place them under a more appropriate if-block.
   if (enable_extensions) {
     sources += [
-      "browser/api/storage/settings_test_util.cc",
-      "browser/api/storage/settings_test_util.h",
       "browser/test_runtime_api_delegate.cc",
       "browser/test_runtime_api_delegate.h",
     ]
