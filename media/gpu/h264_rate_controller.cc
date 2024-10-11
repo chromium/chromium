@@ -396,7 +396,7 @@ void H264RateController::EstimateInterFrameQP(size_t temporal_id,
     base_layer.update_long_term_qp(GetInterFrameLongTermQP(temporal_id));
   }
 
-  curr_layer.update_long_term_qp(std::clamp(curr_layer.long_term_qp(),
+  curr_layer.update_long_term_qp(std::clamp(base_layer.long_term_qp(),
                                             curr_layer.min_qp(),
                                             h264_rate_control_util::kQPMax));
 
