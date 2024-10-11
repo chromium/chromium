@@ -276,7 +276,7 @@ void AsyncLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack,
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* data = event->set_chrome_graphics_pipeline();
         data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
-                           StepName::STEP_DID_NOT_PRODUCE_FRAME);
+                           StepName::STEP_DID_NOT_PRODUCE_COMPOSITOR_FRAME);
         data->set_frame_skipped_reason(to_proto_enum(reason));
         data->set_display_trace_id(ack.trace_id);
       });
