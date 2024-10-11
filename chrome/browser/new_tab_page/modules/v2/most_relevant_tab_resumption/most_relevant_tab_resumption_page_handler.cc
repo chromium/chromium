@@ -483,10 +483,7 @@ bool MostRelevantTabResumptionPageHandler::IsNewURL(
   if (val) {
     base::Time ts = base::Time::FromDeltaSinceWindowsEpoch(
         base::Microseconds(val->GetDouble() + 10000));
-    if (ts.is_null()) {
-      return true;
-    }
-
+    DCHECK(!ts.is_null());
     return timestamp > ts;
   }
 
