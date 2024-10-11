@@ -5272,29 +5272,6 @@
             ]
         }
     ],
-    "ChromnientPostLaunch": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "FipEntryPointDisabledAndVideoFrameEnabled",
-                    "params": {
-                        "find-in-page-entry-point": "false"
-                    },
-                    "enable_features": [
-                        "ContextMenuSearchForVideoFrame",
-                        "LensOverlay"
-                    ]
-                }
-            ]
-        }
-    ],
     "ChromnientPostLaunchTranslate": [
         {
             "platforms": [
