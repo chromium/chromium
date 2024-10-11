@@ -12,6 +12,7 @@
   --scrollbar-width: 7px;
   --scrollbar-background: var(--google-grey-200);
   --privacy-sandbox-dialog-buttons-row-height: 64px;
+  --privacy-sandbox-privacy-policy-back-button-section-height: 32px;
 }
 
 @media (prefers-color-scheme: dark) {

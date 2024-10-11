@@ -15,6 +15,8 @@
 #include "base/values.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
@@ -30,6 +32,7 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/native_theme/native_theme.h"
 
 // The name of the on-click function when the privacy policy link is pressed.
 inline constexpr char16_t kPrivacyPolicyFunc[] = u"onPrivacyPolicyLinkClicked_";
@@ -228,6 +231,17 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
           kPrivacyPolicyFunc));
   source->AddLocalizedString("m1ConsentLearnMoreLink",
                              IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_LINK);
+
+  // Dark mode support.
+  ThemeService::BrowserColorScheme color_scheme =
+      ThemeServiceFactory::GetForProfile(Profile::FromWebUI(web_ui))
+          ->GetBrowserColorScheme();
+  bool is_dark_mode =
+      (color_scheme == ThemeService::BrowserColorScheme::kSystem)
+          ? ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
+          : color_scheme == ThemeService::BrowserColorScheme::kDark;
+
+  source->AddBoolean("isDarkMode", is_dark_mode);
 
   const GURL& url = web_ui->GetWebContents()->GetVisibleURL();
   if (url.query().find("debug") != std::string::npos) {

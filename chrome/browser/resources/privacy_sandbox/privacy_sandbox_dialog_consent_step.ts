@@ -10,6 +10,7 @@ import './strings.m.js';
 import './shared_style.css.js';
 import './privacy_sandbox_dialog_learn_more.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PrivacySandboxDialogBrowserProxy, PrivacySandboxPromptAction} from './privacy_sandbox_dialog_browser_proxy.js';
@@ -37,6 +38,16 @@ export class PrivacySandboxDialogConsentStepElement extends
       },
 
       /**
+       * If true, the notice is in dark mode.
+       */
+      isDarkMode_: {
+        type: Boolean,
+        value: () => {
+          return loadTimeData.getBoolean('isDarkMode');
+        },
+      },
+
+      /**
        * If true, the privacy policy text is hyperlinked.
        */
       isPrivacyPolicyLinkEnabled_: {
@@ -59,6 +70,7 @@ export class PrivacySandboxDialogConsentStepElement extends
   private privacyPolicyPageLoadEndTime_: number;
   private isPrivacyPolicyLinkEnabled_: boolean;
   private hideConsentNoticePage_: boolean;
+  private isDarkMode_: boolean;
 
   override ready() {
     super.ready();
@@ -145,6 +157,10 @@ export class PrivacySandboxDialogConsentStepElement extends
     }
   }
 
+  private getBackButtonBorderStyle_(): string {
+    return this.isDarkMode_ ? 'border-bottom: 1px solid #505254;' :
+                              'border-bottom: 1px solid #E1E3E1;';
+  }
 }
 
 declare global {
