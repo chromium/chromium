@@ -336,6 +336,16 @@ ScriptPromise<GPUDevice> GPUAdapter::requestDevice(
   }
 
   Vector<wgpu::FeatureName> required_features;
+  // The ShaderModuleCompilationOptions feature is required only if the adapter
+  // has the ShaderModuleCompilationOptions feature and the user has enabled the
+  // WebGPUDeveloperFeatures flag. It is needed to control
+  // strict math during shader module compilation.
+  if (RuntimeEnabledFeatures::WebGPUDeveloperFeaturesEnabled() &&
+      GetHandle().HasFeature(
+          wgpu::FeatureName::ShaderModuleCompilationOptions)) {
+    required_features.push_back(
+        wgpu::FeatureName::ShaderModuleCompilationOptions);
+  }
   if (descriptor->hasRequiredFeatures()) {
     // Insert features into a set to dedup them.
     HashSet<wgpu::FeatureName> required_features_set;

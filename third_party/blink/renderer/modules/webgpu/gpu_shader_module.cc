@@ -36,6 +36,14 @@ GPUShaderModule* GPUShaderModule::Create(
   std::string wgsl_code = wtf_wgsl_code.Utf8();
   wgsl_desc.code = wgsl_code.c_str();
 
+  wgpu::ShaderModuleCompilationOptions compilation_options = {};
+  if (webgpu_desc->hasStrictMath() &&
+      device->GetHandle().HasFeature(
+          wgpu::FeatureName::ShaderModuleCompilationOptions)) {
+    compilation_options.strictMath = webgpu_desc->strictMath();
+    wgsl_desc.nextInChain = &compilation_options;
+  }
+
   wgpu::ShaderModuleDescriptor dawn_desc = {};
   dawn_desc.nextInChain = &wgsl_desc;
 
