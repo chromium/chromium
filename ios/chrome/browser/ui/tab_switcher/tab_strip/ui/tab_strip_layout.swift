@@ -79,7 +79,7 @@ class TabStripLayout: UICollectionViewFlowLayout {
     else { return contentSize }
 
     var offset: CGFloat =
-      TabStripFeaturesUtils.hasCloserNTB ? 16 : 0
+      TabStripFeaturesUtils.hasCloserNTB ? 12 : 0
 
     // Compare with "width - 1" to avoid floating comparison issues.
     if contentSize.width >= collectionView.bounds.width - 1 {
