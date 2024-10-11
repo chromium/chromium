@@ -85,7 +85,7 @@
       { start: "2023-12-03", domain: "huawei.com" },
       { start: "2015-10-19", domain: "google.com" },
     ]
-  }
+  },
   "zenye@chromium.org": {
     affiliations: [
       { start: "2019-09-26", domain: "microsoft.com" },
