@@ -831,13 +831,6 @@ BASE_FEATURE(kVSyncMjpegDecoding,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-// Enables the new V4L2StatefulVideoDecoder instead of V4L2VideoDecoder.
-// Owners: frkoenig@chromium.org, mcasas@chromium.org
-// Expiry: When the |V4L2FlatVideoDecoder| flag handles stateful decoding on
-// all platforms.
-BASE_FEATURE(kV4L2FlatStatefulVideoDecoder,
-             "V4L2FlatStatefulVideoDecoder",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 // Enable H264 temporal layer encoding with V4L2 HW encoder on ChromeOS.
 BASE_FEATURE(kV4L2H264TemporalLayerHWEncoding,
              "V4L2H264TemporalLayerHWEncoding",
