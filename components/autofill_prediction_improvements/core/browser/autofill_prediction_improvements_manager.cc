@@ -469,7 +469,8 @@ bool AutofillPredictionImprovementsManager::ShouldProvidePredictionImprovements(
   if (!client_->IsAutofillPredictionImprovementsEnabledPref()) {
     return false;
   }
-  if (!decider_ || !IsAutofillPredictionImprovementsEnabled()) {
+  if (!decider_ ||
+      !base::FeatureList::IsEnabled(kAutofillPredictionImprovements)) {
     return false;
   }
   if (kSkipAllowlist.Get()) {

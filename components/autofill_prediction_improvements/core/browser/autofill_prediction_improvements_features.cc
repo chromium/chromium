@@ -13,8 +13,4 @@ BASE_FEATURE(kAutofillPredictionImprovements,
              "AutofillPredictionImprovements",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsAutofillPredictionImprovementsEnabled() {
-  return base::FeatureList::IsEnabled(kAutofillPredictionImprovements);
-}
-
 }  // namespace autofill_prediction_improvements

@@ -37,8 +37,6 @@ inline constexpr base::FeatureParam<base::TimeDelta> kExecutionTimeout{
     &kAutofillPredictionImprovements, /*name=*/"execution_timeout",
     /*default_value=*/base::Seconds(10)};
 
-bool IsAutofillPredictionImprovementsEnabled();
-
 }  // namespace autofill_prediction_improvements
 
 #endif  // COMPONENTS_AUTOFILL_PREDICTION_IMPROVEMENTS_CORE_BROWSER_AUTOFILL_PREDICTION_IMPROVEMENTS_FEATURES_H_

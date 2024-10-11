@@ -57,8 +57,8 @@ ChromeAutofillPredictionImprovementsClient::
 std::unique_ptr<ChromeAutofillPredictionImprovementsClient>
 ChromeAutofillPredictionImprovementsClient::MaybeCreateForWebContents(
     content::WebContents* web_contents) {
-  if (!autofill_prediction_improvements::
-          IsAutofillPredictionImprovementsEnabled()) {
+  if (!base::FeatureList::IsEnabled(
+          autofill_prediction_improvements::kAutofillPredictionImprovements)) {
     return nullptr;
   }
   return base::WrapUnique<ChromeAutofillPredictionImprovementsClient>(
