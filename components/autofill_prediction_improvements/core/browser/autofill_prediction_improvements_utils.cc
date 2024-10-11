@@ -7,7 +7,6 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
-#include "components/optimization_guide/core/model_execution/model_execution_features.h"
 
 namespace autofill_prediction_improvements {
 
@@ -39,12 +38,6 @@ bool FieldHasExclusiveAutofillType(const AutofillField& field) {
   }
 }
 }  // namespace
-
-bool MlExecutionDisabled() {
-  // This property does not change during the runtime.
-  return base::FeatureList::IsEnabled(
-      optimization_guide::features::internal::kModelExecutionCapabilityDisable);
-}
 
 bool IsFieldEligibleByTypeCriteria(const autofill::AutofillField& field) {
   // If a field type's group corresponds to a payment method or credentials, it

@@ -12,9 +12,6 @@ class AutofillField;
 
 namespace autofill_prediction_improvements {
 
-// Returns if the execution of ML was disabled via feature flag.
-bool MlExecutionDisabled();
-
 // Returns true if the `field` is eligible based on the type criteria.
 bool IsFieldEligibleByTypeCriteria(const autofill::AutofillField& field);
 

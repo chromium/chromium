@@ -1105,24 +1105,5 @@ TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
       manager.IsFormAndFieldEligible(*form, *prediction_improvement_field));
 }
 
-TEST_F(IsFormAndFieldEligibleAutofillPredictionImprovementsTest,
-       MlExecutionDisabled) {
-  feature_.InitWithFeaturesAndParameters(
-      {{kAutofillPredictionImprovements, {{"skip_allowlist", "true"}}},
-       {optimization_guide::features::internal::
-            kModelExecutionCapabilityDisable,
-        {}}},
-      {});
-
-  std::unique_ptr<autofill::FormStructure> form = CreateEligibleForm();
-  autofill::AutofillField* prediction_improvement_field = form->field(0);
-
-  AutofillPredictionImprovementsManager manager{&client_, &decider_,
-                                                &strike_database_};
-
-  ON_CALL(client_, IsUserEligible).WillByDefault(Return(false));
-  EXPECT_FALSE(
-      manager.IsFormAndFieldEligible(*form, *prediction_improvement_field));
-}
 }  // namespace
 }  // namespace autofill_prediction_improvements

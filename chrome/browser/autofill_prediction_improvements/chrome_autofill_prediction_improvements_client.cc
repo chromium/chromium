@@ -22,6 +22,7 @@
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_filling_engine_impl.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager.h"
+#include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 #include "components/signin/public/base/consent_level.h"
@@ -187,13 +188,13 @@ bool ChromeAutofillPredictionImprovementsClient::IsUserEligible() {
     return false;
   }
 
-  // Exclude users that are not eligible for ML including supervised users.
-  if (identity_manager
-          ->FindExtendedAccountInfo(identity_manager->GetPrimaryAccountInfo(
-              signin::ConsentLevel::kSignin))
-          .capabilities.can_use_model_execution_features() !=
-      signin::Tribool::kTrue) {
-    std::cout << "capabilities not enabled" << std::endl;
+  if (!base::FeatureList::IsEnabled(optimization_guide::features::internal::
+                                        kModelExecutionCapabilityDisable) &&
+      identity_manager
+              ->FindExtendedAccountInfo(identity_manager->GetPrimaryAccountInfo(
+                  signin::ConsentLevel::kSignin))
+              .capabilities.can_use_model_execution_features() !=
+          signin::Tribool::kTrue) {
     return false;
   }
 

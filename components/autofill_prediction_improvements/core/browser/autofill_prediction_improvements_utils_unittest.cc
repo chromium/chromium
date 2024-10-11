@@ -87,23 +87,6 @@ INSTANTIATE_TEST_SUITE_P(
             .autofill_type = autofill::ADDRESS_HOME_LINE1}));
 
 // Test that an empty form is not eligible.
-TEST(AutofillPredictionImprovementsUtilsTest, MlExecutionDisabled) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(
-      optimization_guide::features::internal::kModelExecutionCapabilityDisable);
-
-  EXPECT_TRUE(MlExecutionDisabled());
-}
-
-// Test that an empty form is not eligible.
-TEST(AutofillPredictionImprovementsUtilsTest, MlExecutionEnabled) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndDisableFeature(
-      optimization_guide::features::internal::kModelExecutionCapabilityDisable);
-
-  EXPECT_FALSE(MlExecutionDisabled());
-}
-// Test that an empty form is not eligible.
 TEST(AutofillPredictionImprovementsUtilsTest,
      IsFormEligibleForFillingByFieldTypeCriteria_EmptyForm) {
   FormData form_data;

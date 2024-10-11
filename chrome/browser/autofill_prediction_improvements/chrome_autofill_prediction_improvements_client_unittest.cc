@@ -91,12 +91,15 @@ TEST_F(ChromeAutofillPredictionImprovementsClientTest,
 
 TEST_F(ChromeAutofillPredictionImprovementsClientTest,
        EligibilityOfNotSignedInUser) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile());
   AccountInfo account_info = signin::MakeAccountAvailable(
-      IdentityManagerFactory::GetForProfile(profile()),
+      identity_manager,
       signin::AccountAvailabilityOptionsBuilder().Build("example@gmail.com"));
 
   AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
   mutator.set_can_use_model_execution_features(true);
+  signin::UpdateAccountInfoForAccount(identity_manager, account_info);
 
   EXPECT_FALSE(client()->IsUserEligible());
 }
