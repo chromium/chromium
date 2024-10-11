@@ -232,6 +232,7 @@ chromium-metrics-reviews@google.com.
   <int value="44" label="REQUEST"/>
   <int value="45" label="FEATURE_BLOCKED_BY_UNSUPPORTED_CAPABILITY"/>
   <int value="46" label="FEATURE_BLOCKED_BY_UNKNOWN_CAPABILITY"/>
+  <int value="47" label="FEATURE_BLOCKED_BY_POLICY"/>
 </enum>
 
 <enum name="IMEGrammarActions">
