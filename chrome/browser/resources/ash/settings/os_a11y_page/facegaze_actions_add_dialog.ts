@@ -272,15 +272,6 @@ export class FaceGazeAddActionDialogElement extends
         this, 'shortcut-input-event', this.onShortcutInputEvent_);
   }
 
-  protected onShortcutInputDomChange(): void {
-    // Start observing for input events the moment `shortcutInput` is available.
-    this.shortcutInput =
-        this.shadowRoot!.querySelector<ShortcutInputElement>('#shortcutInput');
-    if (this.shortcutInput) {
-      this.shortcutInput.startObserving();
-    }
-  }
-
   private getItemClass_(selected: boolean): 'selected'|'' {
     return selected ? 'selected' : '';
   }
@@ -536,11 +527,45 @@ export class FaceGazeAddActionDialogElement extends
     return displayedGestures;
   }
 
+  private focusTitle_(): void {
+    const title = this.shadowRoot!.querySelector<HTMLElement>('#title');
+    if (title) {
+      title.focus();
+    }
+  }
+
+  private onActionPageDomChanged_(): void {
+    if (this.currentPage_ !== AddDialogPage.SELECT_ACTION) {
+      return;
+    }
+    this.focusTitle_();
+  }
+
+  private onShortcutInputPageDomChanged_(): void {
+    if (this.currentPage_ !== AddDialogPage.CUSTOM_KEYBOARD) {
+      return;
+    }
+    this.focusTitle_();
+    // Start observing for input events the moment `shortcutInput` is available.
+    this.shortcutInput =
+        this.shadowRoot!.querySelector<ShortcutInputElement>('#shortcutInput');
+    if (this.shortcutInput) {
+      this.shortcutInput.startObserving();
+    }
+  }
+
+  private onGesturePageDomChanged_(): void {
+    if (this.currentPage_ !== AddDialogPage.SELECT_GESTURE) {
+      return;
+    }
+    this.focusTitle_();
+  }
+
   private async onThresholdPageDomChanged_(): Promise<void> {
     if (this.currentPage_ !== AddDialogPage.GESTURE_THRESHOLD) {
       return;
     }
-
+    this.focusTitle_();
     const videoElement =
         this.shadowRoot!.querySelector<HTMLMediaElement>('#cameraStream');
 

@@ -147,8 +147,11 @@
 </style>
 
 <cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach>
-  <template is="dom-if" if="[[showSelectAction_]]" restamp>
-    <div slot="title">$i18n{faceGazeActionsDialogTitle}</div>
+  <template is="dom-if" if="[[showSelectAction_]]"
+      on-dom-change="onActionPageDomChanged_" restamp>
+    <div id="title" tabindex="-1" slot="title">
+      $i18n{faceGazeActionsDialogTitle}
+    </div>
     <div id="dialogBody" slot="body" scrollable>
       <iron-list id="faceGazeAvailableActionsList"
           scroll-target="dialogBody"
@@ -180,8 +183,11 @@
     </div>
   </template>
 
-  <template is="dom-if" if="[[showCustomKeyboard_]]" on-dom-change="onShortcutInputDomChange" restamp>
-    <div slot="title">$i18n{faceGazeActionsDialogKeyCombinationTitle}</div>
+  <template is="dom-if" if="[[showCustomKeyboard_]]"
+      on-dom-change="onShortcutInputPageDomChanged_" restamp>
+    <div id="title" tabindex="-1" slot="title">
+      $i18n{faceGazeActionsDialogKeyCombinationTitle}
+    </div>
     <div slot="body">
       <div id="customKeyboardContainer">
         <div id="customKeyboardLabel">$i18n{faceGazeActionsDialogKeyCombinationLabel}</div>
@@ -214,8 +220,11 @@
     </div>
   </template>
 
-  <template is="dom-if" if="[[showSelectGesture_]]" restamp>
-    <div slot="title">[[localizedSelectGestureTitle_]]</div>
+  <template is="dom-if" if="[[showSelectGesture_]]"
+      on-dom-change="onGesturePageDomChanged_" restamp>
+    <div id="title" tabindex="-1" slot="title">
+      [[localizedSelectGestureTitle_]]
+    </div>
     <div slot="header">
       $i18n{faceGazeActionsDialogSelectGestureSubtitle}
     </div>
@@ -264,8 +273,9 @@
     </div>
   </template>
 
-  <template is="dom-if" if="[[showGestureThreshold_]]" restamp on-dom-change="onThresholdPageDomChanged_">
-    <div slot="title">
+  <template is="dom-if" if="[[showGestureThreshold_]]"
+      on-dom-change="onThresholdPageDomChanged_" restamp>
+    <div id="title" tabindex="-1" slot="title">
       <iron-icon class="gesture-icon"
           icon="[[getGestureIconName_(selectedGesture_)]]">
       </iron-icon>
