@@ -27,6 +27,8 @@ component("crypto") {
     "ec_signature_creator_impl.h",
     "encryptor.cc",
     "encryptor.h",
+    "features.cc",
+    "features.h",
     "hkdf.cc",
     "hkdf.h",
     "hmac.cc",
@@ -35,6 +37,8 @@ component("crypto") {
     "kdf.h",
     "openssl_util.cc",
     "openssl_util.h",
+    "process_bound_string.cc",
+    "process_bound_string.h",
     "random.cc",
     "random.h",
     "rsa_private_key.cc",
@@ -112,7 +116,10 @@ component("crypto") {
       "unexportable_key_win.h",
       "user_verifying_key_win.cc",
     ]
-    libs = [ "ncrypt.lib" ]
+    libs = [
+      "crypt32.lib",
+      "ncrypt.lib",
+    ]
   }
 
   # Some files are built when NSS is used for the platform certificate library.
@@ -174,6 +181,7 @@ test("crypto_unittests") {
     "encryptor_unittest.cc",
     "hmac_unittest.cc",
     "kdf_unittest.cc",
+    "process_bound_string_unittest.cc",
     "random_unittest.cc",
     "rsa_private_key_unittest.cc",
     "secure_hash_unittest.cc",
