@@ -42,9 +42,7 @@ void OnGetInnerTextForModelPrototyping(
     std::unique_ptr<content_extraction::InnerTextResult> result) {
   AiDataKeyedService::AiData data;
   if (result) {
-    data = std::make_optional<
-        optimization_guide::proto::
-            ModelPrototypingRequest_BrowserCollectedInformation>();
+    data = std::make_optional<AiDataKeyedService::BrowserData>();
     data->set_inner_text(result->inner_text);
     data->mutable_page_context()->set_inner_text(result->inner_text);
     if (result->node_offset) {
@@ -80,9 +78,7 @@ void OnRequestAxTreeSnapshotForModelPrototyping(
     ui::AXTreeUpdate& ax_tree_update) {
   AiDataKeyedService::AiData data;
   if (ax_tree_update.has_tree_data) {
-    data = std::make_optional<
-        optimization_guide::proto::
-            ModelPrototypingRequest_BrowserCollectedInformation>();
+    data = std::make_optional<AiDataKeyedService::BrowserData>();
     optimization_guide::PopulateAXTreeUpdateProto(
         ax_tree_update, data->mutable_page_context()->mutable_ax_tree_data());
   }
@@ -130,9 +126,7 @@ void OnGetTabInnerText(
     std::string url,
     AiDataKeyedService::AiDataCallback continue_callback,
     std::unique_ptr<content_extraction::InnerTextResult> result) {
-  auto data = std::make_optional<
-      optimization_guide::proto::
-          ModelPrototypingRequest_BrowserCollectedInformation>();
+  auto data = std::make_optional<AiDataKeyedService::BrowserData>();
   auto* tab = data->add_tabs();
   tab->set_tab_id(tab_id);
   tab->set_title(std::move(title));
@@ -170,9 +164,8 @@ void GetTabDataForModelPrototyping(
   }
 
   // Fill the Tabs part of the proto.
-  AiDataKeyedService::AiData data = std::make_optional<
-      optimization_guide::proto::
-          ModelPrototypingRequest_BrowserCollectedInformation>();
+  AiDataKeyedService::AiData data =
+      std::make_optional<AiDataKeyedService::BrowserData>();
   static constexpr int inner_text_limit = 5;
   auto* tab_strip_model = browser->GetTabStripModel();
   for (int index = 0; index < tab_strip_model->count(); index++) {
@@ -219,8 +212,7 @@ void GetModelPrototypingAiData(int dom_node_id,
   DCHECK(web_contents);
 
   // Fill data with synchronous information.
-  optimization_guide::proto::ModelPrototypingRequest_BrowserCollectedInformation
-      data;
+  AiDataKeyedService::BrowserData data;
   data.mutable_page_context()->set_url(
       web_contents->GetLastCommittedURL().spec());
   data.mutable_page_context()->set_title(
