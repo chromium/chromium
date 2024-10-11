@@ -10461,6 +10461,32 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Click “Install”
       </message>
 
+      <!-- Lens Overlay Tutorial Strings -->
+      <message name="IDS_TUTORIAL_LENS_OVERLAY_INTRO_HEADER" desc="Header for the intro of the Lens overlay tutorial">
+        Search what’s on your screen with Google Lens
+      </message>
+      <message name="IDS_TUTORIAL_LENS_OVERLAY_INTRO_BODY" desc="Description for the intro of the Lens overlay tutorial">
+        Learn more about products, places, or text you see on your screen
+      </message>
+      <message name="IDS_TUTORIAL_LENS_OVERLAY_CLICK_ADDRESS_BAR" desc="The description of the 'click the address bar' step in Lens overlay tutorial">
+        Click the address bar
+      </message>
+      <message name="IDS_TUTORIAL_LENS_OVERLAY_CLICK_LENS" desc="The description of the 'select the Google Lens button' step in Lens overlay tutorial">
+        Select the Google Lens button
+      </message>
+      <message name="IDS_TUTORIAL_LENS_OVERLAY_SELECT" desc="The description of the 'click and drag to search' step in Lens overlay tutorial">
+        Click and drag over images or highlight text to search
+      </message>
+      <message name="IDS_TUTORIAL_LENS_OVERLAY_CLICK_SEARCH_BOX" desc="The description of the 'search box' step in Lens overlay tutorial">
+        Add more details or ask a question about your selection to refine your search
+      </message>
+      <message name="IDS_TUTORIAL_LENS_OVERLAY_CLICK_PIN_ICON" desc="The description of the 'pin to toolbar' step in Lens overlay tutorial">
+        Pin Google Lens to your toolbar for easy access next time
+      </message>
+      <message name="IDS_TUTORIAL_LENS_OVERLAY_SUCCESS_BODY" desc="Success text at the end of Lens overlay tutorial">
+        You can now use Google Lens to search anything you see on your screen
+      </message>
+
       <!-- Browser Hung Plugin Detector -->
       <if expr="is_win">
         <message name="IDS_BROWSER_HANGMONITOR" desc="A plugin on a page has hung">

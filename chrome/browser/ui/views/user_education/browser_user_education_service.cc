@@ -562,6 +562,18 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleIcon(kLightbulbOutlineIcon)
           .SetBubbleTitleText(IDS_PASSWORD_MANAGER_IPH_CREATE_SHORTCUT_TITLE)));
 
+  // kIPHLensOverlayFeature:
+  registry.RegisterFeature(std::move(
+      FeaturePromoSpecification::CreateForTutorialPromo(
+          feature_engagement::kIPHLensOverlayFeature,
+          kToolbarAppMenuButtonElementId, IDS_TUTORIAL_LENS_OVERLAY_INTRO_BODY,
+          kLensOverlayTutorialId)
+          .SetBubbleIcon(kLightbulbOutlineIcon)
+          .SetBubbleTitleText(IDS_TUTORIAL_LENS_OVERLAY_INTRO_HEADER)
+          .SetMetadata(131, "nguyenbryan@google.com",
+                       "Triggered by certain URLs to start the Lens Overlay "
+                       "tutorial.")));
+
   // kIPHPasswordSharingFeature:
   registry.RegisterFeature(
       std::move(FeaturePromoSpecification::CreateForToastPromo(
@@ -1431,6 +1443,56 @@ void MaybeRegisterChromeTutorials(
 
     tutorial_registry.AddTutorial(kPasswordManagerTutorialId,
                                   std::move(password_manager_tutorial));
+  }
+
+  {  // Lens Overlay tutorial
+    auto lens_overlay_tutorial =
+        TutorialDescription::Create<kLensOverlayTutorialMetricPrefix>(
+
+            // Bubble step - Address bar
+            TutorialDescription::BubbleStep(kOmniboxElementId)
+                .SetBubbleBodyText(IDS_TUTORIAL_LENS_OVERLAY_CLICK_ADDRESS_BAR)
+                .SetBubbleArrow(HelpBubbleArrow::kTopRight),
+
+            // Bubble step - Lens button
+            TutorialDescription::BubbleStep(kLensOverlayPageActionIconElementId)
+                .SetBubbleBodyText(IDS_TUTORIAL_LENS_OVERLAY_CLICK_LENS)
+                .SetBubbleArrow(HelpBubbleArrow::kTopRight),
+
+            // Lens button hides when clicked
+            HiddenStep::WaitForHidden(kLensOverlayPageActionIconElementId),
+
+            // Bubble step - coachmark
+            TutorialDescription::BubbleStep(kLensPreselectionBubbleElementId)
+                .SetBubbleBodyText(IDS_TUTORIAL_LENS_OVERLAY_SELECT)
+                .SetBubbleArrow(HelpBubbleArrow::kNone),
+
+            // Coachmark hides when user starts selecting
+            HiddenStep::WaitForHidden(kLensPreselectionBubbleElementId),
+
+            // TODO(crbug.com/372531753): Add search box.
+
+            // Bubble step - Pin icon
+            TutorialDescription::BubbleStep(kSidePanelPinButtonElementId)
+                .SetBubbleBodyText(IDS_TUTORIAL_LENS_OVERLAY_CLICK_PIN_ICON)
+                .SetBubbleArrow(HelpBubbleArrow::kRightCenter),
+
+            // Wait for pin icon click
+            HiddenStep::WaitForActivated(kSidePanelPinButtonElementId),
+
+            // Completion of the tutorial.
+            TutorialDescription::BubbleStep(kTopContainerElementId)
+                .SetBubbleTitleText(IDS_TUTORIAL_GENERIC_SUCCESS_TITLE)
+                .SetBubbleBodyText(IDS_TUTORIAL_LENS_OVERLAY_SUCCESS_BODY)
+                .SetBubbleArrow(HelpBubbleArrow::kTopRight));
+
+    lens_overlay_tutorial.metadata.additional_description =
+        "Tutorial for the Lens Overlay.";
+    lens_overlay_tutorial.metadata.launch_milestone = 131;
+    lens_overlay_tutorial.metadata.owners = "nguyenbryan@google.com";
+
+    tutorial_registry.AddTutorial(kLensOverlayTutorialId,
+                                  std::move(lens_overlay_tutorial));
   }
 }
 
