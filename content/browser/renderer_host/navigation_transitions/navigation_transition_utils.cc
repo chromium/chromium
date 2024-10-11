@@ -332,15 +332,6 @@ bool NavigationTransitionUtils::
     return false;
   }
 
-  if (navigation_request.frame_tree_node()
-          ->current_frame_host()
-          ->LoadedWithCacheControlNoStoreHeader()) {
-    last_committed_entry->navigation_transition_data()
-        .set_cache_hit_or_miss_reason(CacheHitOrMissReason::kCacheMissCCNS);
-    InvokeTestCallbackForNoScreenshot(navigation_request);
-    return false;
-  }
-
   if (!CanTraverseToPreviousEntryAfterNavigation(navigation_request)) {
     InvokeTestCallbackForNoScreenshot(navigation_request);
     return false;

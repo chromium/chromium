@@ -53,9 +53,9 @@ class NavigationTransitionData {
     // Screenshot is not captured for embedded pages.
     kCacheMissEmbeddedPages = 8,
 
-    // Screenshot is not captured since the page has opted-out of BFCache.
+    // [DEPRECATED] Screenshot is not captured since the page has
     // Cache-Control: no-store
-    kCacheMissCCNS = 9,
+    // kCacheMissCCNS = 9,
 
     // Screenshot was evicted because the tab was invisible for a long duration.
     kCacheMissInvisible = 10,
