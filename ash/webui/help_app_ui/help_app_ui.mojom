@@ -47,7 +47,19 @@ enum ActionTypeId {
  * section.
  */
 enum SettingsComponent {
+  // The home page of settings. No particular section or subpage.
+  HOME,
+  ACCESSIBILITY,
   BLUETOOTH,
+  DISPLAY,
+  INPUT,
+  MULTI_DEVICE,
+  PEOPLE,
+  PER_DEVICE_KEYBOARD,
+  PER_DEVICE_TOUCHPAD,
+  PERSONALIZATION,
+  PRINTING,
+  SECURITY_AND_SIGN_IN,
   // TODO(b/365595552): add remaining required components.
 };
 

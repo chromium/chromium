@@ -16,6 +16,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 
@@ -82,17 +83,60 @@ TEST_F(HelpAppUiDelegateTest, DeviceInfoWhenBorealisIsAllowed) {
   ASSERT_EQ(device_info_ptr->is_steam_allowed, true);
 }
 
-TEST_F(HelpAppUiDelegateTest, OpenSettingsBluetooth) {
+struct OpenSettingsScenario {
+  // Component to use when calling OpenSettings.
+  help_app::mojom::SettingsComponent component;
+
+  // Expected url string shown.
+  std::string expected_url;
+};
+
+class HelpAppUiDelegateOpenSettingsTest
+    : public HelpAppUiDelegateTest,
+      public testing::WithParamInterface<OpenSettingsScenario> {};
+
+const std::vector<OpenSettingsScenario> kOpenSettingsScenario{
+    {.component = ash::help_app::mojom::SettingsComponent::HOME,
+     .expected_url = "chrome://os-settings"},
+    {.component = ash::help_app::mojom::SettingsComponent::ACCESSIBILITY,
+     .expected_url = "chrome://os-settings/osAccessibility"},
+    {.component = ash::help_app::mojom::SettingsComponent::BLUETOOTH,
+     .expected_url = "chrome://os-settings/bluetoothDevices"},
+    {.component = ash::help_app::mojom::SettingsComponent::DISPLAY,
+     .expected_url = "chrome://os-settings/display"},
+    {.component = ash::help_app::mojom::SettingsComponent::INPUT,
+     .expected_url = "chrome://os-settings/osLanguages/input"},
+    {.component = ash::help_app::mojom::SettingsComponent::MULTI_DEVICE,
+     .expected_url = "chrome://os-settings/multidevice"},
+    {.component = ash::help_app::mojom::SettingsComponent::PEOPLE,
+     .expected_url = "chrome://os-settings/osPeople"},
+    {.component = ash::help_app::mojom::SettingsComponent::PER_DEVICE_KEYBOARD,
+     .expected_url = "chrome://os-settings/per-device-keyboard"},
+    {.component = ash::help_app::mojom::SettingsComponent::PER_DEVICE_TOUCHPAD,
+     .expected_url = "chrome://os-settings/per-device-touchpad"},
+    {.component = ash::help_app::mojom::SettingsComponent::PERSONALIZATION,
+     .expected_url = "chrome://os-settings/personalization"},
+    {.component = ash::help_app::mojom::SettingsComponent::PRINTING,
+     .expected_url = "chrome://os-settings/cupsPrinters"},
+    {.component = ash::help_app::mojom::SettingsComponent::SECURITY_AND_SIGN_IN,
+     .expected_url = "chrome://os-settings/osPrivacy/lockScreen"},
+};
+
+TEST_P(HelpAppUiDelegateOpenSettingsTest, ShouldShowPageForSettingsComponent) {
   MockSetingsWindowManager mock_settings_window_manager;
   chrome::SettingsWindowManager::SetInstanceForTesting(
       &mock_settings_window_manager);
 
-  EXPECT_CALL(mock_settings_window_manager,
-              ShowChromePageForProfile(
-                  testing::_, GURL("chrome://os-settings/bluetoothDevices"),
-                  testing::_, testing::_));
+  EXPECT_CALL(
+      mock_settings_window_manager,
+      ShowChromePageForProfile(testing::_, GURL(GetParam().expected_url),
+                               testing::_, testing::_));
 
-  delegate_->OpenSettings(help_app::mojom::SettingsComponent::BLUETOOTH);
+  delegate_->OpenSettings(GetParam().component);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HelpAppUiDelegateOpenSettingsTest,
+                         testing::ValuesIn(kOpenSettingsScenario));
 
 }  // namespace ash

@@ -168,5 +168,6 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/version_info",
     "//content/test:test_support",
+    "//testing/gtest",
   ]
 }

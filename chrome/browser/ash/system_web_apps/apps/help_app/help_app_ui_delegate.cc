@@ -233,9 +233,52 @@ void ChromeHelpAppUIDelegate::OpenSettings(
   Profile* profile = Profile::FromWebUI(web_ui_);
 
   switch (component) {
+    case ash::help_app::mojom::SettingsComponent::HOME:
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(profile);
+      return;
+    case ash::help_app::mojom::SettingsComponent::ACCESSIBILITY:
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kAccessibilitySectionPath);
+      return;
     case ash::help_app::mojom::SettingsComponent::BLUETOOTH:
       chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
           profile, chromeos::settings::mojom::kBluetoothDevicesSubpagePath);
+      return;
+    case ash::help_app::mojom::SettingsComponent::DISPLAY:
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kDisplaySubpagePath);
+      return;
+    case ash::help_app::mojom::SettingsComponent::INPUT:
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kInputSubpagePath);
+      return;
+    case ash::help_app::mojom::SettingsComponent::MULTI_DEVICE:
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kMultiDeviceSectionPath);
+      return;
+    case ash::help_app::mojom::SettingsComponent::PEOPLE:
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kPeopleSectionPath);
+      return;
+    case ash::help_app::mojom::SettingsComponent::PER_DEVICE_KEYBOARD:
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kPerDeviceKeyboardSubpagePath);
+      return;
+    case ash::help_app::mojom::SettingsComponent::PER_DEVICE_TOUCHPAD:
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kPerDeviceTouchpadSubpagePath);
+      return;
+    case ash::help_app::mojom::SettingsComponent::PERSONALIZATION:
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kPersonalizationSectionPath);
+      return;
+    case ash::help_app::mojom::SettingsComponent::PRINTING:
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kPrintingDetailsSubpagePath);
+      return;
+    case ash::help_app::mojom::SettingsComponent::SECURITY_AND_SIGN_IN:
+      chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+          profile, chromeos::settings::mojom::kSecurityAndSignInSubpagePathV2);
       return;
   }
 
