@@ -9,6 +9,9 @@ export const IS_HIDPI = window.devicePixelRatio > 1;
 
 export const IS_MOBILE = /Android/.test(window.navigator.userAgent) || IS_IOS;
 
+export const IS_RTL = document.querySelector('html').dir == 'rtl';
+
+
 /**
  * Frames per second.
  * @const
