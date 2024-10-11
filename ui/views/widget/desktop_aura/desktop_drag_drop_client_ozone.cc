@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/scoped_observation.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/client/drag_drop_client_observer.h"
@@ -318,10 +319,9 @@ void DesktopDragDropClientOzone::OnDragLeave() {
 }
 
 void DesktopDragDropClientOzone::OnWindowDestroyed(aura::Window* window) {
-  DCHECK_EQ(window, entered_window_);
+  DCHECK(entered_window_observation_.IsObservingSource(window));
 
-  entered_window_->RemoveObserver(this);
-  entered_window_ = nullptr;
+  entered_window_observation_.Reset();
   delegate_ = nullptr;
   current_drag_update_info_ = aura::client::DragUpdateInfo();
 }
@@ -358,8 +358,7 @@ DesktopDragDropClientOzone::UpdateTargetAndCreateDropEvent() {
   if (delegate_has_changed) {
     ResetDragDropTarget();
     delegate_ = new_delegate;
-    entered_window_ = window;
-    entered_window_->AddObserver(this);
+    entered_window_observation_.Observe(window);
   }
 
   if (!delegate_) {
@@ -386,10 +385,7 @@ void DesktopDragDropClientOzone::ResetDragDropTarget(bool send_exit) {
     }
     delegate_ = nullptr;
   }
-  if (entered_window_) {
-    entered_window_->RemoveObserver(this);
-    entered_window_ = nullptr;
-  }
+  entered_window_observation_.Reset();
 }
 
 }  // namespace views

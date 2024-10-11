@@ -14,6 +14,7 @@
 #include "base/containers/adapters.h"
 #include "base/debug/crash_logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_occlusion_tracker.h"
 #include "ui/compositor/layer.h"
@@ -91,27 +92,25 @@ class WindowReorderer::AssociationObserver : public aura::WindowObserver {
   // Not owned.
   raw_ptr<WindowReorderer> reorderer_;
 
-  std::set<raw_ptr<aura::Window, SetExperimental>> windows_;
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      window_observations_{this};
 };
 
 WindowReorderer::AssociationObserver::AssociationObserver(
     WindowReorderer* reorderer)
     : reorderer_(reorderer) {}
 
-WindowReorderer::AssociationObserver::~AssociationObserver() {
-  while (!windows_.empty())
-    StopObserving(*windows_.begin());
-}
+WindowReorderer::AssociationObserver::~AssociationObserver() = default;
 
 void WindowReorderer::AssociationObserver::StartObserving(
     aura::Window* window) {
-  windows_.insert(window);
-  window->AddObserver(this);
+  window_observations_.AddObservation(window);
 }
 
 void WindowReorderer::AssociationObserver::StopObserving(aura::Window* window) {
-  windows_.erase(window);
-  window->RemoveObserver(this);
+  if (window_observations_.IsObservingSource(window)) {
+    window_observations_.RemoveObservation(window);
+  }
 }
 
 void WindowReorderer::AssociationObserver::OnWindowPropertyChanged(
@@ -124,8 +123,7 @@ void WindowReorderer::AssociationObserver::OnWindowPropertyChanged(
 
 void WindowReorderer::AssociationObserver::OnWindowDestroying(
     aura::Window* window) {
-  windows_.erase(window);
-  window->RemoveObserver(this);
+  StopObserving(window);
 }
 
 WindowReorderer::WindowReorderer(aura::Window* parent_window, View* root_view)

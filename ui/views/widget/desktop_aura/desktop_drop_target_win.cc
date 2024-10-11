@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/scoped_observation.h"
 #include "base/win/win_util.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/drag_drop_delegate.h"
@@ -48,12 +49,9 @@ int ConvertKeyStateToAuraEventFlags(DWORD key_state) {
 namespace views {
 
 DesktopDropTargetWin::DesktopDropTargetWin(aura::Window* root_window)
-    : root_window_(root_window), target_window_(nullptr) {}
+    : root_window_(root_window) {}
 
-DesktopDropTargetWin::~DesktopDropTargetWin() {
-  if (target_window_)
-    target_window_->RemoveObserver(this);
-}
+DesktopDropTargetWin::~DesktopDropTargetWin() = default;
 
 DWORD DesktopDropTargetWin::OnDragEnter(IDataObject* data_object,
                                         DWORD key_state,
@@ -102,17 +100,14 @@ DWORD DesktopDropTargetWin::OnDrop(IDataObject* data_object,
       std::move(drop_cb).Run(std::move(data), drag_operation,
                              /*drag_image_layer_owner=*/nullptr);
   }
-  if (target_window_) {
-    target_window_->RemoveObserver(this);
-    target_window_ = nullptr;
-  }
+  target_window_observation_.Reset();
   return ui::DragDropTypes::DragOperationToDropEffect(
       static_cast<int>(drag_operation));
 }
 
 void DesktopDropTargetWin::OnWindowDestroyed(aura::Window* window) {
-  DCHECK(window == target_window_);
-  target_window_ = nullptr;
+  DCHECK(target_window_observation_.IsObservingSource(window));
+  target_window_observation_.Reset();
 }
 
 void DesktopDropTargetWin::Translate(
@@ -129,25 +124,26 @@ void DesktopDropTargetWin::Translate(
   aura::Window* target_window =
       root_window_->GetEventHandlerForPoint(root_location);
   bool target_window_changed = false;
-  if (target_window != target_window_) {
-    if (target_window_)
-      NotifyDragLeave();
-    target_window_ = target_window;
-    if (target_window_)
-      target_window_->AddObserver(this);
+  if (!target_window_observation_.IsObservingSource(target_window)) {
+    NotifyDragLeave();
+    if (target_window) {
+      target_window_observation_.Observe(target_window);
+    }
     target_window_changed = true;
   }
   *delegate = nullptr;
-  if (!target_window_)
+  if (!target_window_observation_.IsObserving()) {
     return;
-  *delegate = aura::client::GetDragDropDelegate(target_window_);
+  }
+  CHECK(target_window_observation_.IsObservingSource(target_window));
+  *delegate = aura::client::GetDragDropDelegate(target_window);
   if (!*delegate)
     return;
 
   *data = std::make_unique<OSExchangeData>(
       std::make_unique<OSExchangeDataProviderWin>(data_object));
   location = root_location;
-  aura::Window::ConvertPointToTarget(root_window_, target_window_, &location);
+  aura::Window::ConvertPointToTarget(root_window_, target_window, &location);
   *event = std::make_unique<ui::DropTargetEvent>(
       *(data->get()), gfx::PointF(location), gfx::PointF(root_location),
       ui::DragDropTypes::DropEffectToDragOperation(effect));
@@ -157,14 +153,14 @@ void DesktopDropTargetWin::Translate(
 }
 
 void DesktopDropTargetWin::NotifyDragLeave() {
-  if (!target_window_)
+  if (!target_window_observation_.IsObserving()) {
     return;
+  }
   DragDropDelegate* delegate =
-      aura::client::GetDragDropDelegate(target_window_);
+      aura::client::GetDragDropDelegate(target_window_observation_.GetSource());
   if (delegate)
     delegate->OnDragExited();
-  target_window_->RemoveObserver(this);
-  target_window_ = nullptr;
+  target_window_observation_.Reset();
 }
 
 }  // namespace views

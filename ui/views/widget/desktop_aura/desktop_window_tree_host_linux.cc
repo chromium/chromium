@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "ui/aura/null_window_targeter.h"
 #include "ui/aura/scoped_window_targeter.h"
 #include "ui/aura/window.h"
@@ -47,36 +48,33 @@ class SwapWithNewSizeObserverHelper : public ui::CompositorObserver {
   using HelperCallback = base::RepeatingCallback<void(const gfx::Size&)>;
   SwapWithNewSizeObserverHelper(ui::Compositor* compositor,
                                 const HelperCallback& callback)
-      : compositor_(compositor), callback_(callback) {
-    compositor_->AddObserver(this);
+      : callback_(callback) {
+    compositor_observation_.Observe(compositor);
   }
 
   SwapWithNewSizeObserverHelper(const SwapWithNewSizeObserverHelper&) = delete;
   SwapWithNewSizeObserverHelper& operator=(
       const SwapWithNewSizeObserverHelper&) = delete;
 
-  ~SwapWithNewSizeObserverHelper() override {
-    if (compositor_)
-      compositor_->RemoveObserver(this);
-  }
+  ~SwapWithNewSizeObserverHelper() override = default;
 
  private:
   // ui::CompositorObserver:
 #if BUILDFLAG(IS_OZONE_X11)
   void OnCompositingCompleteSwapWithNewSize(ui::Compositor* compositor,
                                             const gfx::Size& size) override {
-    DCHECK_EQ(compositor, compositor_);
+    DCHECK(compositor_observation_.IsObservingSource(compositor));
     callback_.Run(size);
   }
 #endif  // BUILDFLAG(IS_OZONE_X11)
 
   void OnCompositingShuttingDown(ui::Compositor* compositor) override {
-    DCHECK_EQ(compositor, compositor_);
-    compositor_->RemoveObserver(this);
-    compositor_ = nullptr;
+    DCHECK(compositor_observation_.IsObservingSource(compositor));
+    compositor_observation_.Reset();
   }
 
-  raw_ptr<ui::Compositor> compositor_;
+  base::ScopedObservation<ui::Compositor, ui::CompositorObserver>
+      compositor_observation_{this};
   const HelperCallback callback_;
 };
 
