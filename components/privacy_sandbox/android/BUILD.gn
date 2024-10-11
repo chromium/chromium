@@ -21,6 +21,7 @@ android_library("java") {
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/site_settings/android:java",
     "//components/browser_ui/styles/android:java",
+    "//components/browser_ui/util/android:java",
     "//components/content_settings/android:content_settings_enums_java",
     "//components/embedder_support/android:util_java",
     "//components/prefs/android:java",
@@ -32,6 +33,7 @@ android_library("java") {
     "//third_party/androidx:androidx_browser_browser_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
   ]
@@ -67,6 +69,8 @@ android_library("javatests") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/menu/tracking_protection_menu.xml",
+    "java/res/values/ids.xml",
     "java/res/xml/fp_protection_preferences.xml",
     "java/res/xml/ip_protection_preferences.xml",
     "java/res/xml/tracking_protection_preferences.xml",

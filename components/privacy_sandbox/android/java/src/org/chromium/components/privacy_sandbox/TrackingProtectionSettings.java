@@ -4,6 +4,7 @@
 
 package org.chromium.components.privacy_sandbox;
 
+import static org.chromium.components.browser_ui.settings.SearchUtils.handleSearchNavigation;
 import static org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.SITE_WILDCARD;
 
 import android.content.Intent;
@@ -14,6 +15,9 @@ import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
@@ -30,15 +34,18 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup;
+import org.chromium.components.browser_ui.settings.SearchUtils;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.browser_ui.site_settings.AddExceptionPreference;
 import org.chromium.components.browser_ui.site_settings.AddExceptionPreference.SiteAddedCallback;
+import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment.CustomTabIntentHelper;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.site_settings.WebsitePermissionsFetcher;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.ui.text.SpanApplier;
@@ -76,6 +83,12 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
     // Whether the Allowed list should be shown expanded.
     private boolean mAllowListExpanded = true;
 
+    // The item for searching the list of items.
+    private MenuItem mSearchItem;
+
+    // If not blank, represents a substring to use to search for site names.
+    private String mSearch;
+
     private TrackingProtectionDelegate mDelegate;
 
     private CustomTabIntentHelper mCustomTabIntentHelper;
@@ -90,6 +103,8 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
         } else {
             mPageTitle.set(getString(R.string.third_party_cookies_page_title));
         }
+
+        setHasOptionsMenu(true);
 
         // Format the Learn More link in the second bullet point.
         TextMessagePreference bulletTwo = (TextMessagePreference) findPreference(PREF_BULLET_TWO);
@@ -227,6 +242,59 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
     }
 
     @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        menu.clear();
+        inflater.inflate(R.menu.tracking_protection_menu, menu);
+
+        mSearchItem = menu.findItem(R.id.search);
+        SearchUtils.initializeSearchView(
+                mSearchItem,
+                mSearch,
+                getActivity(),
+                (query) -> {
+                    boolean queryHasChanged =
+                            mSearch == null
+                                    ? query != null && !query.isEmpty()
+                                    : !mSearch.equals(query);
+                    mSearch = query;
+                    if (queryHasChanged) refreshBlockingExceptions();
+                });
+
+        MenuItem help =
+                menu.add(Menu.NONE, R.id.menu_id_site_settings_help, Menu.NONE, R.string.menu_help);
+        help.setIcon(
+                TraceEventVectorDrawableCompat.create(
+                        getResources(), R.drawable.ic_help_and_feedback, getContext().getTheme()));
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_id_site_settings_help) {
+            mDelegate
+                    .getSiteSettingsDelegate(getContext())
+                    .launchSettingsHelpAndFeedbackActivity(getActivity());
+            return true;
+        }
+        if (handleSearchNavigation(item, mSearchItem, mSearch, getActivity())) {
+            boolean queryHasChanged = mSearch != null && !mSearch.isEmpty();
+            mSearch = null;
+            if (queryHasChanged) refreshBlockingExceptions();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (mSearch == null && mSearchItem != null) {
+            SearchUtils.clearSearch(mSearchItem, getActivity());
+            mSearch = null;
+        }
+        refreshBlockingExceptions();
+    }
+
+    @Override
     public boolean hasDivider() {
         // Remove dividers between preferences.
         return false;
@@ -278,10 +346,12 @@ public class TrackingProtectionSettings extends PreferenceFragmentCompat
     private void onExceptionsFetched(Collection<Website> sites) {
         List<WebsiteExceptionRowPreference> websites = new ArrayList<>();
         for (Website site : sites) {
-            WebsiteExceptionRowPreference preference =
-                    new WebsiteExceptionRowPreference(
-                            getContext(), site, mDelegate, this::refreshBlockingExceptions);
-            websites.add(preference);
+            if (mSearch == null || mSearch.isEmpty() || site.getTitle().contains(mSearch)) {
+                WebsiteExceptionRowPreference preference =
+                        new WebsiteExceptionRowPreference(
+                                getContext(), site, mDelegate, this::refreshBlockingExceptions);
+                websites.add(preference);
+            }
         }
 
         ExpandablePreferenceGroup allowedGroup =
