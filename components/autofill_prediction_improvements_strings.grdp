@@ -79,19 +79,13 @@
   </message>
 
   <!-- Iph -->
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_TITLE"
-    desc="Text displayed in the prediction improvements iph title."
-    translateable="false">
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_TITLE" desc="Text displayed in the prediction improvements iph title.">
     Prediction improvements
   </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_BODY"
-    desc="Text displayed in the prediction improvements iph body."
-    translateable="false">
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_BODY" desc="Text displayed in the prediction improvements iph body.">
     Turn on prediction improvements
   </message>
-  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_GO_TO_SETTINGS"
-    desc="Text displayed in the prediction improvements IPH bubble."
-    translateable="false">
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_IPH_GO_TO_SETTINGS" desc="Text displayed in the prediction improvements IPH bubble.">
     Go to settings
   </message>
 </grit-part>
