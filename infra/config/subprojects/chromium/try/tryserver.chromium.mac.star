@@ -700,6 +700,7 @@ ios_builder(
     name = "ios-vm",
     mirrors = ["ci/ios-vm"],
     gn_args = "ci/ios-vm",
+    builderless = True,
     cpu = cpu.ARM64,
     contact_team_email = "bling-engprod@google.com",
 )
