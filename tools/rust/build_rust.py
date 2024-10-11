@@ -617,11 +617,9 @@ def GitApplyCherryPicks():
         '8c7a7e346be4cdf13e77ab4acbfb5ade819a4e60',
     ])
 
-    # TODO(b/363219692): Remove once
-    # https://github.com/rust-lang/rust/pull/129894 or a similar fix has been
-    # merged.
+    # TODO: Remove once we roll past this revision.
     GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
-                  'f20103f9f3e35dad241dd81cd3ae9eb2dafb3f44')
+                  'edb669350a59ce48586152cf87b1d1f2841cea62')
 
     print('Finished applying cherry-picks.')
 
