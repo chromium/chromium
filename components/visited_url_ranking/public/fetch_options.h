@@ -93,6 +93,9 @@ struct FetchOptions {
   // The set of sources that correspond to an origin.
   static constexpr FetchSources kOriginSources = {Source::kLocal,
                                                   Source::kForeign};
+  // Return the desired fetch result types as specified via feature params or
+  // the defaults if not specified.
+  static URLTypeSet GetFetchResultURLTypes();
 
   // Returns the default fetch options for tab resumption use cases.
   static FetchOptions CreateDefaultFetchOptionsForTabResumption();

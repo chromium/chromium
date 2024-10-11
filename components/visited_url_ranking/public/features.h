@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_VISITED_URL_RANKING_PUBLIC_FEATURES_H_
 #define COMPONENTS_VISITED_URL_RANKING_PUBLIC_FEATURES_H_
 
+#include <string>
+
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
@@ -88,6 +90,10 @@ extern const base::FeatureParam<int>
 // to display the decoration string "You just visited".
 extern const base::FeatureParam<int>
     kVisitedURLRankingDecorationRecentlyVisitedMinutesThreshold;
+
+// Parameter determining what result types to request when fetching URL
+// visit aggregate data.
+extern const base::FeatureParam<std::string> kVisitedURLRankingResultTypesParam;
 
 }  // namespace visited_url_ranking::features
 

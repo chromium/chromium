@@ -13,6 +13,8 @@
 #include "base/containers/enum_set.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/string_split.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/visited_url_ranking/public/features.h"
 #include "components/visited_url_ranking/public/url_visit.h"
@@ -41,6 +43,19 @@ base::TimeDelta GetDefaultAgeLimit(FetchOptions::URLType url_type) {
   }
 }
 
+FetchOptions::URLTypeSet AsURLTypeSet(
+    const std::vector<std::string>& url_type_entries) {
+  FetchOptions::URLTypeSet result_url_types = {};
+  for (const auto& url_type_entry : url_type_entries) {
+    int url_type;
+    if (base::StringToInt(url_type_entry, &url_type)) {
+      result_url_types.Put(static_cast<FetchOptions::URLType>(url_type));
+    }
+  }
+
+  return result_url_types;
+}
+
 }  // namespace
 
 FetchOptions::FetchOptions(
@@ -65,19 +80,32 @@ FetchOptions::FetchOptions(FetchOptions&& other) = default;
 FetchOptions& FetchOptions::operator=(FetchOptions&& other) = default;
 
 // static
-FetchOptions FetchOptions::CreateDefaultFetchOptionsForTabResumption() {
-  return CreateFetchOptionsForTabResumption({
+FetchOptions::URLTypeSet FetchOptions::GetFetchResultURLTypes() {
+  auto url_type_entries =
+      base::SplitString(features::kVisitedURLRankingResultTypesParam.Get(),
+                        ",:;", base::WhitespaceHandling::TRIM_WHITESPACE,
+                        base::SplitResult::SPLIT_WANT_NONEMPTY);
+  if (url_type_entries.empty()) {
+    return {
 #if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-      FetchOptions::URLType::kActiveLocalTab,
+        FetchOptions::URLType::kActiveLocalTab,
 #endif
-      FetchOptions::URLType::kActiveRemoteTab,
-      FetchOptions::URLType::kLocalVisit,
-      FetchOptions::URLType::kRemoteVisit,
+        FetchOptions::URLType::kActiveRemoteTab,
+        FetchOptions::URLType::kLocalVisit,
+        FetchOptions::URLType::kRemoteVisit,
 #if BUILDFLAG(IS_ANDROID)
-      // Available in Android only.
-      FetchOptions::URLType::kCCTVisit,
+        // Available in Android only.
+        FetchOptions::URLType::kCCTVisit,
 #endif
-  });
+    };
+  }
+
+  return AsURLTypeSet(url_type_entries);
+}
+
+// static
+FetchOptions FetchOptions::CreateDefaultFetchOptionsForTabResumption() {
+  return CreateFetchOptionsForTabResumption(GetFetchResultURLTypes());
 }
 
 // static
