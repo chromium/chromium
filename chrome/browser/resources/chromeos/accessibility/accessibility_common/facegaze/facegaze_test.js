@@ -1901,6 +1901,27 @@ AX_TEST_F('FaceGazeTest', 'GesturesDisabledInScrollMode', async function() {
 // Ensures that localization works for all gestures and macros that get
 // displayed in the bubble UI.
 AX_TEST_F('FaceGazeTest', 'BubbleTextLocalization', async function() {
+  const gestures = [
+    FacialGesture.BROW_INNER_UP,
+    FacialGesture.BROWS_DOWN,
+    FacialGesture.EYE_SQUINT_LEFT,
+    FacialGesture.EYE_SQUINT_RIGHT,
+    FacialGesture.EYES_BLINK,
+    FacialGesture.EYES_LOOK_DOWN,
+    FacialGesture.EYES_LOOK_LEFT,
+    FacialGesture.EYES_LOOK_RIGHT,
+    FacialGesture.EYES_LOOK_UP,
+    FacialGesture.JAW_LEFT,
+    FacialGesture.JAW_OPEN,
+    FacialGesture.JAW_RIGHT,
+    FacialGesture.MOUTH_FUNNEL,
+    FacialGesture.MOUTH_LEFT,
+    FacialGesture.MOUTH_PUCKER,
+    FacialGesture.MOUTH_RIGHT,
+    FacialGesture.MOUTH_SMILE,
+    FacialGesture.MOUTH_UPPER_UP,
+  ];
+
   const macros = [
     MacroName.CUSTOM_KEY_COMBINATION,
     MacroName.KEY_PRESS_DOWN,
@@ -1924,6 +1945,14 @@ AX_TEST_F('FaceGazeTest', 'BubbleTextLocalization', async function() {
   let lastText = '';
   for (const macro of macros) {
     const currentText = BubbleController.getDisplayTextForMacro_(macro);
+    assertNotEquals(currentText, '');
+    assertNotEquals(currentText, lastText);
+    lastText = currentText;
+  }
+
+  lastText = '';
+  for (const gesture of gestures) {
+    const currentText = BubbleController.getDisplayTextForGesture_(gesture);
     assertNotEquals(currentText, '');
     assertNotEquals(currentText, lastText);
     lastText = currentText;

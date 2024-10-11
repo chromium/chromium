@@ -102,44 +102,43 @@ export class BubbleController {
   }
 
   private static getDisplayTextForGesture_(gesture: FacialGesture): string {
-    // TODO(b:341770655): Localize these strings.
     switch (gesture) {
       case FacialGesture.BROW_INNER_UP:
-        return 'Raise eyebrows';
+        return chrome.i18n.getMessage('facegaze_gesture_text_brow_inner_up');
       case FacialGesture.BROWS_DOWN:
-        return 'Lower eyebrows';
+        return chrome.i18n.getMessage('facegaze_gesture_text_brows_down');
       case FacialGesture.EYE_SQUINT_LEFT:
-        return 'Squint left eye';
+        return chrome.i18n.getMessage('facegaze_gesture_text_eye_squint_left');
       case FacialGesture.EYE_SQUINT_RIGHT:
-        return 'Squint right eye';
+        return chrome.i18n.getMessage('facegaze_gesture_text_eye_squint_right');
       case FacialGesture.EYES_BLINK:
-        return 'Blink both eyes';
+        return chrome.i18n.getMessage('facegaze_gesture_text_eyes_blink');
       case FacialGesture.EYES_LOOK_DOWN:
-        return 'Look down';
+        return chrome.i18n.getMessage('facegaze_gesture_text_eyes_look_down');
       case FacialGesture.EYES_LOOK_LEFT:
-        return 'Look left';
+        return chrome.i18n.getMessage('facegaze_gesture_text_eyes_look_left');
       case FacialGesture.EYES_LOOK_RIGHT:
-        return 'Look right';
+        return chrome.i18n.getMessage('facegaze_gesture_text_eyes_look_right');
       case FacialGesture.EYES_LOOK_UP:
-        return 'Look up';
+        return chrome.i18n.getMessage('facegaze_gesture_text_eyes_look_up');
       case FacialGesture.JAW_LEFT:
-        return 'Shift jaw left';
+        return chrome.i18n.getMessage('facegaze_gesture_text_jaw_left');
       case FacialGesture.JAW_OPEN:
-        return 'Open your mouth wide';
+        return chrome.i18n.getMessage('facegaze_gesture_text_jaw_open');
       case FacialGesture.JAW_RIGHT:
-        return 'Shift jaw right';
+        return chrome.i18n.getMessage('facegaze_gesture_text_jaw_right');
       case FacialGesture.MOUTH_FUNNEL:
-        return 'Make a circle with your lips';
+        return chrome.i18n.getMessage('facegaze_gesture_text_mouth_funnel');
       case FacialGesture.MOUTH_LEFT:
-        return 'Stretch left corner of your mouth';
+        return chrome.i18n.getMessage('facegaze_gesture_text_mouth_left');
       case FacialGesture.MOUTH_PUCKER:
-        return 'Pucker by squeezing lips together';
+        return chrome.i18n.getMessage('facegaze_gesture_text_mouth_pucker');
       case FacialGesture.MOUTH_RIGHT:
-        return 'Stretch right corner of your mouth';
+        return chrome.i18n.getMessage('facegaze_gesture_text_mouth_right');
       case FacialGesture.MOUTH_SMILE:
-        return 'Smile';
+        return chrome.i18n.getMessage('facegaze_gesture_text_mouth_smile');
       case FacialGesture.MOUTH_UPPER_UP:
-        return 'Wrinkle your nose';
+        return chrome.i18n.getMessage('facegaze_gesture_text_mouth_upper_up');
       default:
         console.error(
             'Display text requested for unsupported FacialGesture ' + gesture);
