@@ -88,13 +88,13 @@
   </message>
 
   <!-- Autofill with AI Page-->
-    <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_WHEN_ON_SAVED_INFO" desc="One of the items describing what happens when improved autofill predictions are enabled." translateable="false">
-Chromium will ask if you want to save form information, such as your birthday, age, and passport number
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_WHEN_ON_SAVED_INFO" desc="One of the items describing what happens when improved autofill predictions are enabled.">
+    Chromium will ask if you want to save form information, such as your birthday, age, and passport number
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_WHEN_ON_USE_TO_FILL"  desc="One of the items describing what happens when improved autofill predictions are enabled." translateable="false">
-Later, Chromium will ask if you want to use saved info to automatically fill forms
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_WHEN_ON_USE_TO_FILL"  desc="One of the items describing what happens when improved autofill predictions are enabled.">
+    Later, Chromium will ask if you want to use saved info to automatically fill forms
   </message>
-  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TOGGLE_SUB_LABEL" desc="The description of the main toggle that enables/disables improved autofill predictions." translateable="false">
+  <message name="IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TOGGLE_SUB_LABEL" desc="The description of the main toggle that enables/disables improved autofill predictions.">
     Chromium can understand more types of information and autofill your forms faster. Learn more about <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Chrome Autofill<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
   </message>
 
