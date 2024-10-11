@@ -80,7 +80,7 @@ ComponentExtensionIMEManager::ComponentExtensionIMEManager(
 ComponentExtensionIMEManager::~ComponentExtensionIMEManager() = default;
 
 bool ComponentExtensionIMEManager::LoadComponentExtensionIME(
-    Profile* profile,
+    content::BrowserContext* context,
     const std::string& input_method_id,
     std::set<std::string>* extension_loaded) {
   TRACE_EVENT0("ime",
@@ -94,7 +94,7 @@ bool ComponentExtensionIMEManager::LoadComponentExtensionIME(
       will_load = true;
     }
     if (will_load) {
-      delegate_->Load(profile, ime.id, ime.manifest, ime.path);
+      delegate_->Load(context, ime.id, ime.manifest, ime.path);
     }
     return will_load;
   }
