@@ -285,6 +285,10 @@ guestMessagePipe.registerHandler(Message.GET_DEVICE_INFO, async () => {
 });
 
 guestMessagePipe.registerHandler(
+    Message.OPEN_SETTINGS,
+    (path: number) => void helpApp.handler.openSettings(path));
+
+guestMessagePipe.registerHandler(
   Message.OPEN_URL_IN_BROWSER_AND_TRIGGER_INSTALL_DIALOG,
   (url: string | object) => {
     helpApp.handler.openUrlInBrowserAndTriggerInstallDialog(toUrl(url));

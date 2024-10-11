@@ -643,6 +643,36 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
                 SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript));
 }
 
+// Test that the Help App can call openSettings to open a page in OS Settings.
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2OpenSettings) {
+  WaitForTestSystemAppInstall();
+  content::WebContents* web_contents = LaunchApp(SystemWebAppType::HELP);
+
+  // There should be two browser windows, one regular and one for the newly
+  // opened help app.
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+
+  const GURL expected_url("chrome://os-settings/osAccessibility");
+  content::TestNavigationObserver navigation_observer(expected_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  constexpr char kScript[] = R"(
+    (async () => {
+      await window.customLaunchData.delegate.openSettings(1);
+    })();
+  )";
+  // Trigger the script, then wait for settings to open. Use ExecJs
+  // instead of EvalJsInAppFrame because the script needs to run in the same
+  // world as the page's code.
+  EXPECT_TRUE(content::ExecJs(
+      SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript));
+  navigation_observer.Wait();
+
+  // Settings should be active in a new window.
+  EXPECT_EQ(3u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(expected_url, GetActiveWebContents()->GetVisibleURL());
+}
+
 // Test that the Help App can open the on device app controls part section in OS
 // Settings.
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,

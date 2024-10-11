@@ -42,24 +42,26 @@ enum ActionTypeId {
 };
 
 /**
- * Specifies an os settings component opened by OpenSettings call. A component
- * can be an item in a section, e.g., scroll direction item in touchpad
- * section.
+ * Components (or paths) in OS Settings that OpenSettings is allowed to open.
+ * These are a subset of the paths in
+ * ash/webui/settings/public/constants/routes.mojom
+ * go/help-app-open-settings-paths links here.
+ * Do not change or reuse values.
  */
 enum SettingsComponent {
   // The home page of settings. No particular section or subpage.
-  HOME,
-  ACCESSIBILITY,
-  BLUETOOTH,
-  DISPLAY,
-  INPUT,
-  MULTI_DEVICE,
-  PEOPLE,
-  PER_DEVICE_KEYBOARD,
-  PER_DEVICE_TOUCHPAD,
-  PERSONALIZATION,
-  PRINTING,
-  SECURITY_AND_SIGN_IN,
+  HOME = 0,
+  ACCESSIBILITY = 1,
+  BLUETOOTH = 2,
+  DISPLAY = 3,
+  INPUT = 4,
+  MULTI_DEVICE = 5,
+  PEOPLE = 6,
+  PER_DEVICE_KEYBOARD = 7,
+  PER_DEVICE_TOUCHPAD = 8,
+  PERSONALIZATION = 9,
+  PRINTING = 10,
+  SECURITY_AND_SIGN_IN = 11,
   // TODO(b/365595552): add remaining required components.
 };
 
