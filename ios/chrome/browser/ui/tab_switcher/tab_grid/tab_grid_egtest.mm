@@ -3438,6 +3438,50 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       performAction:grey_tap()];
 }
 
+// Tests that the Done button in the Incognito panel is correctly
+// enabled/disabled based on the presence of Incognito tabs, and correctly opens
+// the Tab Grid after the Incognito browser has been recreated.
+- (void)testDoneInIncognitoAfterClosingLastIncognitoTab {
+  // Open an Incognito tab.
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey waitForIncognitoTabCount:1];
+
+  // Go to Incognito grid.
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:TabGridIncognitoTabsPanelButton()]
+      performAction:grey_tap()];
+  [self verifyVisibleTabsCount:1];
+
+  // Tab the Done button.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      performAction:grey_tap()];
+
+  // Go back to Incognito grid.
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Close the Incognito tab. This recreates the Incognito browser and opens the
+  // tab grid, as it was the last tab.
+  [ChromeEarlGrey closeCurrentTab];
+  [self verifyVisibleTabsCount:0];
+
+  // Verify the Done button is disabled.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      assertWithMatcher:grey_accessibilityTrait(
+                            UIAccessibilityTraitNotEnabled)];
+
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey waitForIncognitoTabCount:1];
+
+  // Verify the Tab Grid's Done button is enabled and opens the tab.
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      performAction:grey_tap()];
+
+  // Verify that the Tab Grid is closed.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 #pragma mark - Helper Methods
 
 - (void)loadTestURLs {

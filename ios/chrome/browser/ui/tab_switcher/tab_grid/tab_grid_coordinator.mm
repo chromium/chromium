@@ -333,6 +333,11 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 - (void)setIncognitoBrowser:(Browser*)incognitoBrowser {
   DCHECK(_incognitoGridCoordinator);
+  if (incognitoBrowser) {
+    [incognitoBrowser->GetCommandDispatcher()
+        startDispatchingToTarget:self
+                     forProtocol:@protocol(TabGridCommands)];
+  }
   [_incognitoGridCoordinator setIncognitoBrowser:incognitoBrowser];
 
   if (self.incognitoSnackbarCoordinator) {
@@ -350,9 +355,6 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     [incognitoBrowser->GetCommandDispatcher()
         startDispatchingToTarget:[self bookmarksCoordinator]
                      forProtocol:@protocol(BookmarksCommands)];
-    [incognitoBrowser->GetCommandDispatcher()
-        startDispatchingToTarget:self
-                     forProtocol:@protocol(TabGridCommands)];
   }
 }
 
