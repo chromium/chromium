@@ -127,6 +127,7 @@ void OnTaskSystemWebAppManagerImpl::SetPinStateForSystemWebAppWindow(
   if (pinned) {
     PinWindow(native_window, /*trusted=*/true);
     browser->command_controller()->LockedFullscreenStateChanged();
+    browser->window()->FocusToolbar();
   } else {
     UnpinWindow(native_window);
     browser->command_controller()->LockedFullscreenStateChanged();

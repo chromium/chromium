@@ -15,6 +15,7 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -127,6 +128,7 @@ IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
       /*pinned=*/true, boca_app_browser->session_id());
   content::RunAllTasksUntilIdle();
   EXPECT_TRUE(platform_util::IsBrowserLockedFullscreen(boca_app_browser));
+  EXPECT_TRUE(boca_app_browser->window()->IsToolbarVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskSystemWebAppManagerImplBrowserTest,
