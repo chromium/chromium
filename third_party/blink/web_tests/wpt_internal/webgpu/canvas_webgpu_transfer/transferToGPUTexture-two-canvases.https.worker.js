@@ -11,7 +11,8 @@ promise_test(() => {
       test_transferToGPUTexture_two_canvases(
           device,
           new OffscreenCanvas(50, 50),
-          new OffscreenCanvas(50, 50));
+          new OffscreenCanvas(50, 50),
+          /*is_canvas_element=*/false);
     });
   },
   'A transfer in one offscreen canvas in a worker does not result in an ' +

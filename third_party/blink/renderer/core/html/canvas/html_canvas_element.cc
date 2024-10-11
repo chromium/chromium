@@ -215,6 +215,41 @@ class DisabledAccelerationCounterSupplement final
 const char DisabledAccelerationCounterSupplement::kSupplementName[] =
     "DisabledAccelerationCounterSupplement";
 
+// Tracks whether `transferToGPUTexture()` has been invoked on any canvas
+// element created within the associated Document.
+class TransferToGPUTextureInvokedSupplement final
+    : public GarbageCollected<TransferToGPUTextureInvokedSupplement>,
+      public Supplement<Document> {
+ public:
+  static constexpr char kSupplementName[] =
+      "TransferToGPUTextureInvokedSupplement";
+
+  static TransferToGPUTextureInvokedSupplement& From(Document& d) {
+    TransferToGPUTextureInvokedSupplement* supplement =
+        Supplement<Document>::From<TransferToGPUTextureInvokedSupplement>(d);
+    if (!supplement) {
+      supplement =
+          MakeGarbageCollected<TransferToGPUTextureInvokedSupplement>(d);
+      ProvideTo(d, supplement);
+    }
+    return *supplement;
+  }
+
+  explicit TransferToGPUTextureInvokedSupplement(Document& d)
+      : Supplement<Document>(d) {}
+
+  void SetTransferToGPUTextureWasInvoked() {
+    transfer_to_gpu_texture_was_invoked_ = true;
+  }
+
+  bool TransferToGPUTextureWasInvoked() {
+    return transfer_to_gpu_texture_was_invoked_;
+  }
+
+ private:
+  bool transfer_to_gpu_texture_was_invoked_ = false;
+};
+
 }  // namespace
 
 HTMLCanvasElement::HTMLCanvasElement(Document& document)
@@ -230,9 +265,10 @@ HTMLCanvasElement::HTMLCanvasElement(Document& document)
       surface_layer_bridge_(nullptr),
       externally_allocated_memory_(0) {
   UseCounter::Count(document, WebFeature::kHTMLCanvasElement);
-  // Create DisabledAccelerationCounterSupplement now, as it may be needed at a
+  // Create supplements now, as they may be needed at a
   // time when garbage collected objects can not be created.
   DisabledAccelerationCounterSupplement::From(GetDocument());
+  TransferToGPUTextureInvokedSupplement::From(GetDocument());
   GetDocument().IncrementNumberOfCanvases();
   auto* execution_context = GetExecutionContext();
   if (execution_context) {
@@ -1926,6 +1962,16 @@ RespectImageOrientationEnum HTMLCanvasElement::RespectImageOrientation() const {
 bool HTMLCanvasElement::IsHibernating() const {
   return canvas2d_bridge_ &&
          canvas2d_bridge_->GetHibernationHandler().IsHibernating();
+}
+
+void HTMLCanvasElement::SetTransferToGPUTextureWasInvoked() {
+  TransferToGPUTextureInvokedSupplement::From(GetDocument())
+      .SetTransferToGPUTextureWasInvoked();
+}
+
+bool HTMLCanvasElement::TransferToGPUTextureWasInvoked() {
+  return TransferToGPUTextureInvokedSupplement::From(GetDocument())
+      .TransferToGPUTextureWasInvoked();
 }
 
 bool HTMLCanvasElement::IsAccelerated() const {

@@ -302,10 +302,12 @@ function test_transferToGPUTexture_balanced_access(device, canvas) {
 }
 
 /**
- * Tests that a transfer in one canvas does not result in an initial transfer in
- * a second canvas being zero-copy.
+ * Tests that a transfer in one canvas either does or does not result in an
+ * initial transfer in a second canvas being zero-copy depending on whether the
+ * canvases are in-DOM canvas elements or offscreen canvases.
  */
-function test_transferToGPUTexture_two_canvases(device, canvas1, canvas2) {
+function test_transferToGPUTexture_two_canvases(device, canvas1, canvas2,
+                                                is_canvas_element) {
   const ctx1 = canvas1.getContext('2d');
 
   // Draw to the first canvas via the canvas2D API to ensure that the SharedImage
@@ -338,22 +340,28 @@ function test_transferToGPUTexture_two_canvases(device, canvas1, canvas2) {
 
   // Draw to the second canvas via the canvas2D API to ensure that the
   // SharedImage backing this canvas is created before doing any transfers to
-  // WebGPU. This ensures that this SharedImage will be created without WebGPU
-  // usage, which the test below assumes as a precondition.
+  // WebGPU. This ensures that the test below is meaningful.
   const ctx2 = canvas2.getContext('2d');
   const w2 = ctx2.canvas.width;
   const h2 = ctx2.canvas.height;
   ctx2.fillStyle = "#00FF00";
   ctx2.fillRect(0, 0, w2, h2 / 2);
 
-  // An initial transfer on the second canvas must incur a copy.
-  try {
-    const tex = ctx2.transferToGPUTexture({device: device, requireZeroCopy: true});
-    assert_unreached('transferToGPUTexture should have thrown.');
-  } catch (ex) {
-    assert_true(ex instanceof DOMException);
-    assert_equals(ex.name, 'InvalidStateError');
-    assert_true(ex.message.includes('Transferring canvas to GPU was not zero-copy'));
+  if (is_canvas_element) {
+    // An initial transfer on the second canvas element should not incur a copy.
+    ctx1.transferToGPUTexture({device: device, requireZeroCopy: true});
+    ctx1.transferBackFromGPUTexture();
+  } else {
+    // An initial transfer on the second offscreen canvas must incur a copy.
+    try {
+      ctx2.transferToGPUTexture({device: device, requireZeroCopy: true});
+      assert_unreached('transferToGPUTexture should have thrown.');
+    } catch (ex) {
+      assert_true(ex instanceof DOMException);
+      assert_equals(ex.name, 'InvalidStateError');
+      assert_true(
+          ex.message.includes('Transferring canvas to GPU was not zero-copy'));
+    }
   }
 }
 

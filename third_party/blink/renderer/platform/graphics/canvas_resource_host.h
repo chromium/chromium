@@ -117,12 +117,8 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
     shared_bitmap_gpu_channel_lost_ = value;
   }
 
-  void SetTransferToGPUTextureWasInvoked() {
-    transfer_to_gpu_texture_was_invoked_ = true;
-  }
-  bool TransferToGPUTextureWasInvoked() {
-    return transfer_to_gpu_texture_was_invoked_;
-  }
+  virtual void SetTransferToGPUTextureWasInvoked() {}
+  virtual bool TransferToGPUTextureWasInvoked() { return false; }
 
  private:
   bool is_displayed_ = false;
@@ -139,7 +135,6 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
   bool always_enable_raster_timers_for_testing_ = false;
   scoped_refptr<cc::TextureLayer> cc_layer_;
   OpacityMode opacity_mode_ = kNonOpaque;
-  bool transfer_to_gpu_texture_was_invoked_ = false;
 };
 
 }  // namespace blink

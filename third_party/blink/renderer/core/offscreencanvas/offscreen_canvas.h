@@ -142,6 +142,12 @@ class CORE_EXPORT OffscreenCanvas final
   // determined synchronously.
   // TODO(junov): Propagate changes in visibility from the placeholder canvas.
   bool IsPageVisible() override { return true; }
+  void SetTransferToGPUTextureWasInvoked() override {
+    transfer_to_gpu_texture_was_invoked_ = true;
+  }
+  bool TransferToGPUTextureWasInvoked() override {
+    return transfer_to_gpu_texture_was_invoked_;
+  }
 
   // EventTarget implementation
   const AtomicString& InterfaceName() const final {
@@ -290,6 +296,7 @@ class CORE_EXPORT OffscreenCanvas final
   uint32_t sink_id_ = 0;
 
   bool restoring_gpu_context_ = false;
+  bool transfer_to_gpu_texture_was_invoked_ = false;
 
   NO_UNIQUE_ADDRESS V8ExternalMemoryAccounterBase external_memory_accounter_;
 };
