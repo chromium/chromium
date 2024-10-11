@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/fetch/body_stream_buffer.h"
 
 #include <memory>
@@ -547,10 +542,9 @@ void BodyStreamBuffer::ProcessData(ExceptionState& exception_state) {
         if (ReadableStreamBYOBRequest* request =
                 byte_controller->byobRequest()) {
           DOMArrayBufferView* view = request->view().Get();
-          buffer = buffer.first(std::min(view->byteLength(), buffer.size()));
-          memcpy(
-              static_cast<char*>(view->buffer()->Data()) + view->byteOffset(),
-              buffer.data(), buffer.size());
+          auto view_span = view->ByteSpan();
+          buffer = buffer.first(std::min(view_span.size(), buffer.size()));
+          view_span.copy_prefix_from(base::as_bytes(buffer));
           byob_view = view;
         }
       }

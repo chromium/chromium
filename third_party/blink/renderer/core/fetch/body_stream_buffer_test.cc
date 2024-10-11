@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/fetch/body_stream_buffer.h"
 
 #include <memory>
@@ -181,12 +176,8 @@ TEST_F(BodyStreamBufferTest, TeeFromHandleMadeFromStream) {
 
   auto* underlying_source =
       MakeGarbageCollected<TestUnderlyingSource>(scope.GetScriptState());
-  auto* chunk1 = DOMUint8Array::Create(2);
-  chunk1->Data()[0] = 0x41;
-  chunk1->Data()[1] = 0x42;
-  auto* chunk2 = DOMUint8Array::Create(2);
-  chunk2->Data()[0] = 0x55;
-  chunk2->Data()[1] = 0x58;
+  auto* chunk1 = DOMUint8Array::Create(std::array<uint8_t, 2>{0x41, 0x42});
+  auto* chunk2 = DOMUint8Array::Create(std::array<uint8_t, 2>{0x55, 0x58});
 
   auto* stream = ReadableStream::CreateWithCountQueueingStrategy(
       scope.GetScriptState(), underlying_source, 0);

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/fetch/readable_stream_bytes_consumer.h"
 
 #include <memory>
@@ -149,16 +144,10 @@ TEST(ReadableStreamBytesConsumerTest, TwoPhaseRead) {
       script_state, underlying_source, 0);
   {
     auto* chunk1 = DOMUint8Array::Create(0);
-    auto* chunk2 = DOMUint8Array::Create(4);
-    chunk2->Data()[0] = 0x43;
-    chunk2->Data()[1] = 0x44;
-    chunk2->Data()[2] = 0x45;
-    chunk2->Data()[3] = 0x46;
-    auto* chunk3 = DOMUint8Array::Create(4);
-    chunk3->Data()[0] = 0x47;
-    chunk3->Data()[1] = 0x48;
-    chunk3->Data()[2] = 0x49;
-    chunk3->Data()[3] = 0x4a;
+    auto* chunk2 =
+        DOMUint8Array::Create(std::to_array<uint8_t>({0x43, 0x44, 0x45, 0x46}));
+    auto* chunk3 =
+        DOMUint8Array::Create(std::to_array<uint8_t>({0x47, 0x48, 0x49, 0x4a}));
     underlying_source->Enqueue(
         ScriptValue(script_state->GetIsolate(),
                     ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk1)));
@@ -259,11 +248,8 @@ TEST(ReadableStreamBytesConsumerTest, TwoPhaseReadDetachedDuringRead) {
   auto* stream = ReadableStream::CreateWithCountQueueingStrategy(
       script_state, underlying_source, 0);
 
-  auto* chunk = DOMUint8Array::Create(4);
-  chunk->Data()[0] = 0x43;
-  chunk->Data()[1] = 0x44;
-  chunk->Data()[2] = 0x45;
-  chunk->Data()[3] = 0x46;
+  auto* chunk =
+      DOMUint8Array::Create(std::to_array<uint8_t>({0x43, 0x44, 0x45, 0x46}));
   underlying_source->Enqueue(
       ScriptValue(script_state->GetIsolate(),
                   ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk)));
@@ -311,11 +297,8 @@ TEST(ReadableStreamBytesConsumerTest, TwoPhaseReadDetachedBetweenReads) {
   auto* stream = ReadableStream::CreateWithCountQueueingStrategy(
       script_state, underlying_source, 0);
 
-  auto* chunk = DOMUint8Array::Create(4);
-  chunk->Data()[0] = 0x43;
-  chunk->Data()[1] = 0x44;
-  chunk->Data()[2] = 0x45;
-  chunk->Data()[3] = 0x46;
+  auto* chunk =
+      DOMUint8Array::Create(std::to_array<uint8_t>({0x43, 0x44, 0x45, 0x46}));
   underlying_source->Enqueue(
       ScriptValue(script_state->GetIsolate(),
                   ToV8Traits<DOMUint8Array>::ToV8(script_state, chunk)));

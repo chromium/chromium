@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/fetch/form_data_bytes_consumer.h"
 
 #include "third_party/blink/public/platform/platform.h"
@@ -118,7 +113,7 @@ class DataAndDataPipeBytesConsumer final : public BytesConsumer {
     // data is just a Vector<char> and data pipe getter can be shared.
     form_data_ = form_data->Copy();
     form_data_->SetBoundary(FormDataEncoder::GenerateUniqueBoundaryString());
-    iter_ = form_data_->MutableElements().begin();
+    iter_ = form_data_->MutableElements().CheckedBegin();
   }
 
   Result BeginRead(base::span<const char>& buffer) override {
@@ -128,7 +123,7 @@ class DataAndDataPipeBytesConsumer final : public BytesConsumer {
     if (state_ == PublicState::kErrored)
       return Result::kError;
 
-    if (iter_ == form_data_->MutableElements().end()) {
+    if (iter_ == form_data_->MutableElements().CheckedEnd()) {
       Close();
       return Result::kDone;
     }
@@ -358,7 +353,7 @@ class DataAndDataPipeBytesConsumer final : public BytesConsumer {
   Member<ExecutionContext> execution_context_;
   PublicState state_ = PublicState::kReadableOrWaiting;
   scoped_refptr<EncodedFormData> form_data_;
-  Vector<FormDataElement>::iterator iter_;
+  base::CheckedContiguousIterator<Vector<FormDataElement>::ValueType> iter_;
   Error error_;
   Member<BytesConsumer::Client> client_;
   Member<DataOnlyBytesConsumer> simple_consumer_;

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/fetch/fetch_header_list.h"
 
 #include <utility>
@@ -29,19 +24,13 @@ TEST(FetchHeaderListTest, Append) {
   headerList->Append("content-type", "application/xml");
   headerList->Append("CONTENT-type", "foo");
   headerList->Append("X-Foo", "bar");
-  const std::pair<String, String> expectedHeaders[] = {
-      std::make_pair("ConTenT-TyPe", "text/plain"),
-      std::make_pair("ConTenT-TyPe", "application/xml"),
-      std::make_pair("ConTenT-TyPe", "foo"),
-      std::make_pair("X-Foo", "bar"),
-  };
-  EXPECT_EQ(std::size(expectedHeaders), headerList->size());
-  size_t i = 0;
-  for (const auto& header : headerList->List()) {
-    EXPECT_EQ(expectedHeaders[i].first, header.first);
-    EXPECT_EQ(expectedHeaders[i].second, header.second);
-    ++i;
-  }
+  const auto kExpectedHeaders = std::to_array<std::pair<String, String>>({
+      {"ConTenT-TyPe", "text/plain"},
+      {"ConTenT-TyPe", "application/xml"},
+      {"ConTenT-TyPe", "foo"},
+      {"X-Foo", "bar"},
+  });
+  EXPECT_THAT(headerList->List(), ElementsAreArray(kExpectedHeaders));
 }
 
 TEST(FetchHeaderListTest, Set) {
@@ -54,18 +43,12 @@ TEST(FetchHeaderListTest, Set) {
   headerList->Set("contENT-type", "quux");
   headerList->Set("some-header", "some value");
   EXPECT_EQ(3U, headerList->size());
-  const std::pair<String, String> expectedHeaders[] = {
-      std::make_pair("ConTenT-TyPe", "quux"),
-      std::make_pair("some-header", "some value"),
-      std::make_pair("X-Foo", "bar"),
-  };
-  EXPECT_EQ(std::size(expectedHeaders), headerList->size());
-  size_t i = 0;
-  for (const auto& header : headerList->List()) {
-    EXPECT_EQ(expectedHeaders[i].first, header.first);
-    EXPECT_EQ(expectedHeaders[i].second, header.second);
-    ++i;
-  }
+  const auto kExpectedHeaders = std::to_array<std::pair<String, String>>({
+      {"ConTenT-TyPe", "quux"},
+      {"some-header", "some value"},
+      {"X-Foo", "bar"},
+  });
+  EXPECT_THAT(headerList->List(), ElementsAreArray(kExpectedHeaders));
 }
 
 TEST(FetchHeaderListTest, Erase) {
@@ -79,16 +62,10 @@ TEST(FetchHeaderListTest, Erase) {
   headerList->Append("X-Foo", "bar");
   headerList->Remove("content-TYPE");
   EXPECT_EQ(1U, headerList->size());
-  const std::pair<String, String> expectedHeaders[] = {
-      std::make_pair("X-Foo", "bar"),
-  };
-  EXPECT_EQ(std::size(expectedHeaders), headerList->size());
-  size_t i = 0;
-  for (const auto& header : headerList->List()) {
-    EXPECT_EQ(expectedHeaders[i].first, header.first);
-    EXPECT_EQ(expectedHeaders[i].second, header.second);
-    ++i;
-  }
+  const auto kExpectedHeaders = std::to_array<std::pair<String, String>>({
+      {"X-Foo", "bar"},
+  });
+  EXPECT_THAT(headerList->List(), ElementsAreArray(kExpectedHeaders));
 }
 
 TEST(FetchHeaderListTest, Combine) {
@@ -145,20 +122,14 @@ TEST(FetchHeaderListTest, SortAndCombine) {
   headerList->Append("Accept", "XYZ");
   headerList->Append("X-Foo", "bar");
   headerList->Append("sEt-CoOkIe", "bar=foo");
-  const std::pair<String, String> expectedHeaders[] = {
-      std::make_pair("accept", "XYZ"),
-      std::make_pair("content-type", "multipart/form-data, application/xml"),
-      std::make_pair("set-cookie", "foo=bar"),
-      std::make_pair("set-cookie", "bar=foo"), std::make_pair("x-foo", "bar")};
-  const Vector<FetchHeaderList::Header> sortedAndCombined =
-      headerList->SortAndCombine();
-  EXPECT_EQ(std::size(expectedHeaders), sortedAndCombined.size());
-  size_t i = 0;
-  for (const auto& headerPair : headerList->SortAndCombine()) {
-    EXPECT_EQ(expectedHeaders[i].first, headerPair.first);
-    EXPECT_EQ(expectedHeaders[i].second, headerPair.second);
-    ++i;
-  }
+  const auto kExpectedHeaders = std::to_array<std::pair<String, String>>({
+      {"accept", "XYZ"},
+      {"content-type", "multipart/form-data, application/xml"},
+      {"set-cookie", "foo=bar"},
+      {"set-cookie", "bar=foo"},
+      {"x-foo", "bar"},
+  });
+  EXPECT_THAT(headerList->SortAndCombine(), ElementsAreArray(kExpectedHeaders));
 }
 
 }  // namespace
