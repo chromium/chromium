@@ -34,6 +34,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/stack_allocated.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -52,6 +53,18 @@ class ScriptFunction;
 
 template <typename IDLResolvedType>
 class ScriptPromise;
+
+// Defined here rather than in native_value_traits_impl.h to avoid a circular
+// dependency.
+template <typename T>
+struct NativeValueTraits<IDLPromise<T>>
+    : public NativeValueTraitsBase<IDLPromise<T>> {
+  static ScriptPromise<T> NativeValue(v8::Isolate* isolate,
+                                      v8::Local<v8::Value> value,
+                                      ExceptionState&) {
+    return ScriptPromise<T>::FromV8Value(isolate, std::move(value));
+  }
+};
 
 // ScriptPromise is the class for representing Promise values in C++
 // world. ScriptPromise holds a Promise. Holding a `ScriptPromise`

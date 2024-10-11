@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_ITERATOR_H_
 
 #include "third_party/abseil-cpp/absl/types/variant.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/world_safe_v8_reference.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -15,8 +15,12 @@
 
 namespace blink {
 
+class ExceptionContext;
 class ExceptionState;
 class ExecutionContext;
+class ScriptPromiseUntyped;
+template <typename IDLResolvedType>
+class ScriptPromise;
 
 // This class provides a wrapper for iterating over any ES object that
 // implements either the async iterable and async iterator protocols, or the

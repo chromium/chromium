@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/pass_as_span.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_iterator.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_trusted_html.h"
@@ -913,17 +912,6 @@ struct CORE_EXPORT NativeValueTraits<IDLNullable<IDLObject>>
     exception_state.ThrowTypeError(
         ExceptionMessages::ArgumentNotOfType(argument_index, "object"));
     return ScriptValue();
-  }
-};
-
-// Promise types
-template <typename T>
-struct NativeValueTraits<IDLPromise<T>>
-    : public NativeValueTraitsBase<IDLPromise<T>> {
-  static ScriptPromise<T> NativeValue(v8::Isolate* isolate,
-                                      v8::Local<v8::Value> value,
-                                      ExceptionState&) {
-    return ScriptPromise<T>::FromV8Value(isolate, value);
   }
 };
 
