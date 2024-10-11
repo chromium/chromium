@@ -98,6 +98,7 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
 import org.chromium.ui.interpolators.Interpolators;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.resources.ResourceManager;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
@@ -437,6 +438,7 @@ public class StripLayoutHelperManager
             @NonNull ToolbarManager toolbarManager,
             @Nullable DesktopWindowStateProvider desktopWindowStateProvider,
             ActionConfirmationManager actionConfirmationManager,
+            ModalDialogManager modalDialogManager,
             DataSharingTabManager dataSharingTabManager) {
         Resources res = context.getResources();
         mUpdateHost = updateHost;
@@ -512,6 +514,7 @@ public class StripLayoutHelperManager
                         toolbarContainerView,
                         windowAndroid,
                         actionConfirmationManager,
+                        modalDialogManager,
                         dataSharingTabManager,
                         toolbarManager.getTabStripHeightSupplier().get(),
                         () ->
@@ -530,6 +533,7 @@ public class StripLayoutHelperManager
                         toolbarContainerView,
                         windowAndroid,
                         actionConfirmationManager,
+                        modalDialogManager,
                         dataSharingTabManager,
                         toolbarManager.getTabStripHeightSupplier().get(),
                         () ->

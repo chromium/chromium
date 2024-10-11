@@ -153,7 +153,7 @@ public abstract class TabGroupOverflowMenuCoordinator {
                     new DataSetObserver() {
                         @Override
                         public void onChanged() {
-                            mMenuWindow.onRectChanged();
+                            resize();
                         }
                     });
 
@@ -177,6 +177,10 @@ public abstract class TabGroupOverflowMenuCoordinator {
 
         void show() {
             mMenuWindow.show();
+        }
+
+        void resize() {
+            mMenuWindow.onRectChanged();
         }
 
         void dismiss() {
@@ -326,6 +330,16 @@ public abstract class TabGroupOverflowMenuCoordinator {
         buildCustomView(mMenuHolder.getContentView(), isIncognito);
         configureMenuItems(mMenuHolder.getModelList(), isIncognito, collaborationId);
         mMenuHolder.show();
+    }
+
+    /**
+     * Resizes the menu if the menu holder is available. This is used to adjust the menu size when
+     * adding collaboration items for {@link TabGroupContextMenuCoordinator}.
+     */
+    protected void resizeMenu() {
+        if (mMenuHolder != null) {
+            mMenuHolder.resize();
+        }
     }
 
     protected void onMenuDismissed() {}

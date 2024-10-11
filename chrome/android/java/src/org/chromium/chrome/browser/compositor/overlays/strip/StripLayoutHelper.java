@@ -96,6 +96,7 @@ import org.chromium.ui.MotionEventUtils;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.interpolators.Interpolators;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.RectProvider;
 
@@ -474,6 +475,7 @@ public class StripLayoutHelper
 
     // Tab group share.
     private DataSharingTabManager mDataSharingTabManager;
+    private ModalDialogManager mModalDialogManager;
 
     /**
      * Creates an instance of the {@link StripLayoutHelper}.
@@ -505,6 +507,7 @@ public class StripLayoutHelper
             @NonNull View toolbarContainerView,
             @NonNull WindowAndroid windowAndroid,
             ActionConfirmationManager actionConfirmationManager,
+            ModalDialogManager modalDialogManager,
             DataSharingTabManager dataSharingTabManager,
             int tabStripHeight,
             Supplier<Boolean> tabStripVisibleSupplier) {
@@ -520,6 +523,7 @@ public class StripLayoutHelper
         mTabStripHeight = tabStripHeight;
         mTabStripVisibleSupplier = tabStripVisibleSupplier;
         mDataSharingTabManager = dataSharingTabManager;
+        mModalDialogManager = modalDialogManager;
 
         // Use toolbar menu button padding to align NTB with menu button.
         mFixedEndPadding =
@@ -1919,6 +1923,7 @@ public class StripLayoutHelper
                             mModel,
                             mTabGroupModelFilter,
                             mActionConfirmationDelegate.getActionConfirmationManager(),
+                            mModalDialogManager,
                             mTabCreator,
                             mWindowAndroid,
                             mDataSharingTabManager,

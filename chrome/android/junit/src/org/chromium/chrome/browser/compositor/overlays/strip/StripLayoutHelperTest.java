@@ -103,6 +103,7 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.shadows.ShadowAppCompatResources;
 import org.chromium.ui.widget.RectProvider;
 
@@ -135,6 +136,7 @@ public class StripLayoutHelperTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private LayerTitleCache mLayerTitleCache;
     @Mock private ActionConfirmationManager mActionConfirmationManager;
+    @Mock private ModalDialogManager mModalDialogManager;
     @Mock private PrefService mPrefService;
     @Mock private TabGroupContextMenuCoordinator mTabGroupContextMenuCoordinator;
     @Mock private DataSharingTabManager mDataSharingTabManager;
@@ -3568,6 +3570,7 @@ public class StripLayoutHelperTest {
                         mToolbarContainerView,
                         mWindowAndroid,
                         mActionConfirmationManager,
+                        mModalDialogManager,
                         mDataSharingTabManager,
                         0,
                         () -> true);

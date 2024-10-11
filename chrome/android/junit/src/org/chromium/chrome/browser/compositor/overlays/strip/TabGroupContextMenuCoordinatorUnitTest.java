@@ -51,6 +51,13 @@ import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupOverflowMenuCoordinator.OnItemClickedCallback;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.data_sharing.DataSharingService;
+import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
+import org.chromium.components.data_sharing.GroupData;
+import org.chromium.components.data_sharing.GroupMember;
+import org.chromium.components.data_sharing.PeopleGroupActionFailure;
+import org.chromium.components.data_sharing.member_role.MemberRole;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -58,6 +65,7 @@ import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.BasicListMenu.ListMenuItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.lang.ref.WeakReference;
@@ -71,6 +79,9 @@ import java.util.List;
     ChromeFeatureList.TAB_GROUP_PARITY_ANDROID
 })
 public class TabGroupContextMenuCoordinatorUnitTest {
+    private static final String GAIA_ID = "Z";
+    private static final String EMAIL = "fake@gmail.com";
+    private static final String COLLABORATION_ID = "A";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -87,6 +98,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private Profile mProfile;
     @Mock private ActionConfirmationManager mActionConfirmationManager;
+    @Mock private ModalDialogManager mModalDialogManager;
     @Mock private TabCreator mTabCreator;
     @Captor private ArgumentCaptor<Callback<Integer>> mConfirmationResultCaptor;
     @Mock private WindowAndroid mWindowAndroid;
@@ -96,6 +108,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     @Mock private WeakReference<Activity> mWeakReferenceActivity;
     @Mock private DataSharingService mDataSharingService;
     @Mock private IdentityManager mIdentityManager;
+    @Mock private GroupDataOrFailureOutcome mGroupDataOrFailureOutcome;
     @Mock private Callback<Boolean> mCallback;
 
     @Before
@@ -115,6 +128,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                         mActivity,
                         mTabGroupModelFilter,
                         mActionConfirmationManager,
+                        mModalDialogManager,
                         mTabCreator,
                         mDataSharingTabManager,
                         mCallback,
@@ -124,6 +138,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                         mTabModel,
                         mTabGroupModelFilter,
                         mActionConfirmationManager,
+                        mModalDialogManager,
                         mTabCreator,
                         mWindowAndroid,
                         mDataSharingTabManager,
@@ -151,7 +166,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         assertEquals("Number of items in the list menu is incorrect", 7, modelList.size());
 
         // Assert: verify divider and normal menu items.
-        verifyNormalListItems(modelList, true);
+        verifyNormalListItems(modelList, 4);
 
         // Assert: verify share group menu item.
         assertEquals(
@@ -180,7 +195,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         assertEquals("Number of items in the list menu is incorrect", 4, modelList.size());
 
         // Assert: verify normal menu items.
-        verifyNormalListItems(modelList, false);
+        verifyNormalListItems(modelList, 3);
     }
 
     @Test
@@ -225,6 +240,64 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         ColorPickerCoordinator colorPickerCoordinator =
                 mTabGroupContextMenuCoordinator.getColorPickerCoordinatorForTesting();
         assertNotNull(colorPickerCoordinator);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    @Feature("Tab Strip Group Context Menu")
+    public void testCollaborationMenuItems_Owner() {
+        ModelList modelList = new ModelList();
+
+        // Build regular menu views.
+        mTabGroupContextMenuCoordinator.buildCustomView(mMenuView, /* isIncognito= */ false);
+        mTabGroupContextMenuCoordinator.buildMenuActionItems(
+                modelList,
+                /* isIncognito= */ false,
+                /* shouldShowDeleteGroup= */ true,
+                /* hasCollaborationData= */ true);
+
+        // Build collaboration view.
+        GroupDataOrFailureOutcome outcome = setUpSharedGroup(MemberRole.OWNER);
+        mTabGroupContextMenuCoordinator.buildCollaborationMenuItems(
+                modelList, mIdentityManager, outcome);
+
+        // Assert: verify number of items in the model list.
+        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
+
+        // Assert: verify normal menu items.
+        verifyNormalListItems(modelList, 5);
+
+        // Assert: verify collaboration menu items.
+        verifyCollaborationListItems(modelList, MemberRole.OWNER);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
+    @Feature("Tab Strip Group Context Menu")
+    public void testCollaborationMenuItems_Member() {
+        ModelList modelList = new ModelList();
+
+        // Build regular menu views.
+        mTabGroupContextMenuCoordinator.buildCustomView(mMenuView, /* isIncognito= */ false);
+        mTabGroupContextMenuCoordinator.buildMenuActionItems(
+                modelList,
+                /* isIncognito= */ false,
+                /* shouldShowDeleteGroup= */ true,
+                /* hasCollaborationData= */ true);
+
+        // Build collaboration view.
+        GroupDataOrFailureOutcome outcome = setUpSharedGroup(MemberRole.MEMBER);
+        mTabGroupContextMenuCoordinator.buildCollaborationMenuItems(
+                modelList, mIdentityManager, outcome);
+
+        // Assert: verify number of items in the model list.
+        assertEquals("Number of items in the list menu is incorrect", 8, modelList.size());
+
+        // Assert: verify normal menu items.
+        verifyNormalListItems(modelList, 5);
+
+        // Assert: verify collaboration menu items.
+        verifyCollaborationListItems(modelList, MemberRole.MEMBER);
     }
 
     @Test
@@ -335,7 +408,7 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         return tabsInGroup;
     }
 
-    private void verifyNormalListItems(ModelList modelList, boolean shareEnabled) {
+    private void verifyNormalListItems(ModelList modelList, int closeGroupPosition) {
         assertEquals(ListMenuItemType.DIVIDER, modelList.get(0).type);
         assertEquals(
                 R.id.open_new_tab_in_group,
@@ -343,15 +416,53 @@ public class TabGroupContextMenuCoordinatorUnitTest {
         assertEquals(
                 R.id.ungroup_tab, modelList.get(2).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
-        // Verify "Share group" appears above the "Close group" option when data share is enabled.
-        if (shareEnabled) {
+        assertEquals(
+                R.id.close_tab,
+                modelList.get(closeGroupPosition).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+    }
+
+    private void verifyCollaborationListItems(ModelList modelList, @MemberRole int memberRole) {
+        assertEquals(
+                R.id.manage_sharing,
+                modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(
+                R.id.recent_activity,
+                modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        assertEquals(ListMenuItemType.DIVIDER, modelList.get(6).type);
+
+        // Verify delete group or leave group depending on the member role.
+        if (memberRole == MemberRole.OWNER) {
             assertEquals(
-                    R.id.close_tab,
-                    modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
-        } else {
+                    R.id.delete_shared_group,
+                    modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        } else if (memberRole == MemberRole.MEMBER) {
             assertEquals(
-                    R.id.close_tab,
-                    modelList.get(3).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+                    R.id.leave_group,
+                    modelList.get(7).model.get(ListMenuItemProperties.MENU_ITEM_ID));
         }
+    }
+
+    private GroupDataOrFailureOutcome setUpSharedGroup(@MemberRole int memberRole) {
+        GroupMember groupMember =
+                new GroupMember(
+                        GAIA_ID,
+                        /* displayName= */ null,
+                        EMAIL,
+                        memberRole,
+                        /* avatarUrl= */ null,
+                        /* givenName= */ null);
+        GroupMember[] groupMemberArray = new GroupMember[] {groupMember};
+        GroupData groupData =
+                new GroupData(
+                        COLLABORATION_ID,
+                        /* displayName= */ null,
+                        groupMemberArray,
+                        /* groupToken= */ null);
+        GroupDataOrFailureOutcome outcome =
+                new GroupDataOrFailureOutcome(groupData, PeopleGroupActionFailure.UNKNOWN);
+        CoreAccountInfo coreAccountInfo = CoreAccountInfo.createFromEmailAndGaiaId(EMAIL, GAIA_ID);
+        when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN))
+                .thenReturn(coreAccountInfo);
+        return outcome;
     }
 }

@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
 /** LayoutManagerChromeTablet is the specialization of LayoutManagerChrome for the tablet. */
@@ -93,6 +94,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             @NonNull ToolbarManager toolbarManager,
             @Nullable DesktopWindowStateProvider desktopWindowStateProvider,
             ActionConfirmationManager actionConfirmationManager,
+            ModalDialogManager modalDialogManager,
             DataSharingTabManager dataSharingTabManager) {
         super(
                 host,
@@ -121,6 +123,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
                         toolbarManager,
                         desktopWindowStateProvider,
                         actionConfirmationManager,
+                        modalDialogManager,
                         dataSharingTabManager);
         addSceneOverlay(mTabStripLayoutHelperManager);
         addObserver(mTabStripLayoutHelperManager.getTabSwitcherObserver());
