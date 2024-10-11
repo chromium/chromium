@@ -28,7 +28,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_mediator.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_mediator.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -71,11 +71,11 @@ class LegacyAccountsTableViewControllerTest
     [dispatcher startDispatchingToTarget:mock_application_handler
                              forProtocol:@protocol(ApplicationCommands)];
 
-    AccountsMediator* mediator =
-        [[AccountsMediator alloc] initWithSyncService:test_sync_service()
-                                accountManagerService:account_manager_service()
-                                          authService:authentication_service()
-                                      identityManager:identity_manager()];
+    ManageAccountsMediator* mediator = [[ManageAccountsMediator alloc]
+          initWithSyncService:test_sync_service()
+        accountManagerService:account_manager_service()
+                  authService:authentication_service()
+              identityManager:identity_manager()];
 
     LegacyAccountsTableViewController* controller =
         [[LegacyAccountsTableViewController alloc]
@@ -129,7 +129,7 @@ class LegacyAccountsTableViewControllerTest
   std::unique_ptr<Browser> browser_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
-  AccountsMediator* mediator_;
+  ManageAccountsMediator* mediator_;
 };
 
 // Tests that a valid identity is added to the model.

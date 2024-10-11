@@ -53,9 +53,9 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_model_identity_data_source.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/identity_view_item.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_model_identity_data_source.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_root_view_controlling.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -127,9 +127,9 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   // ApplicationCommands handler.
   id<ApplicationCommands> _applicationHandler;
 
-  // If YES, AccountsTableViewController should not dismiss itself only for a
-  // sign-out reason. The parent coordinator is responsible to dismiss this
-  // coordinator when a sign-out happens.
+  // If YES, ManageAccountsTableViewController should not dismiss itself only
+  // for a sign-out reason. The parent coordinator is responsible to dismiss
+  // this coordinator when a sign-out happens.
   BOOL _signoutDismissalByParentCoordinator;
 }
 
@@ -891,7 +891,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   _accountDetailsControllerDismissCallback.Reset();
 }
 
-#pragma mark - AccountsConsumer
+#pragma mark - ManageAccountsConsumer
 
 - (void)reloadAllItems {
   if (!self.tableViewModel) {

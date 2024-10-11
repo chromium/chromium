@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_mediator.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_mediator.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
@@ -29,21 +29,20 @@
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_consumer.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/identity_view_item.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_consumer.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_table_view_controller_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-@interface AccountsMediator () <AccountsModelIdentityDataSource,
-                                ChromeAccountManagerServiceObserver,
-                                IdentityManagerObserverBridgeDelegate,
-                                SyncObserverModelBridge>
+@interface ManageAccountsMediator () <ChromeAccountManagerServiceObserver,
+                                      IdentityManagerObserverBridgeDelegate,
+                                      SyncObserverModelBridge>
 @end
 
-@implementation AccountsMediator {
+@implementation ManageAccountsMediator {
   // Account manager service to retrieve Chrome identities.
   raw_ptr<ChromeAccountManagerService> _accountManagerService;
   // Chrome account manager service observer bridge.
@@ -130,7 +129,7 @@
   return identityViewItemsForAccounts;
 }
 
-#pragma mark - AccountsMutator
+#pragma mark - ManageAccountsMutator
 
 - (void)requestRemoveIdentityWithGaiaID:(NSString*)gaiaID
                                itemView:(UIView*)itemView {

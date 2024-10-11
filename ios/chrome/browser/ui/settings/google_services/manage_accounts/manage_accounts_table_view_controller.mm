@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
@@ -11,10 +11,10 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_model_identity_data_source.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_mutator.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/identity_view_item.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_model_identity_data_source.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_mutator.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_table_view_controller_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -39,7 +39,7 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
 
 }  // namespace
 
-@interface AccountsTableViewController () {
+@interface ManageAccountsTableViewController () {
   // Enable lookup of item corresponding to a given IdentityViewItem GAIA ID
   // string.
   NSDictionary<NSString*, TableViewItem*>* _identityMap;
@@ -50,7 +50,7 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
 
 @end
 
-@implementation AccountsTableViewController
+@implementation ManageAccountsTableViewController
 
 @synthesize modelIdentityDataSource;
 
@@ -219,7 +219,7 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
   [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
-#pragma mark - AccountsConsumer
+#pragma mark - ManageAccountsConsumer
 
 - (void)reloadAllItems {
   if (!self.tableViewModel) {
@@ -249,10 +249,10 @@ typedef NS_ENUM(NSInteger, EditAccountListItemType) {
 - (void)popView {
   // No need to implement this here as the coordinator is handling this. Once
   // LegacyAccountsTableViewController is deleted, this method can be remove
-  // from AccountsConsumer
+  // from ManageAccountsConsumer
 }
 
-#pragma mark - AccountsConsumer
+#pragma mark - ManageAccountsConsumer
 
 - (NSString*)gaiaIDWithAccountItem:(TableViewItem*)accountItem {
   for (NSString* gaiaID in _identityMap) {

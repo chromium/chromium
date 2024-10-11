@@ -5,12 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_ACCOUNTS_WITH_OVERRIDABLE_MODEL_IDENTITY_DATA_SOURCE_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_ACCOUNTS_WITH_OVERRIDABLE_MODEL_IDENTITY_DATA_SOURCE_H_
 
-@protocol AccountsModelIdentityDataSource;
+@protocol ManageAccountsModelIdentityDataSource;
 
 // Protocol exposing a settable property -modelIdentityDataSource.
 @protocol WithOverridableModelIdentityDataSource
 
-@property(nonatomic, weak) id<AccountsModelIdentityDataSource>
+@property(nonatomic, weak) id<ManageAccountsModelIdentityDataSource>
     modelIdentityDataSource;
 
 @end

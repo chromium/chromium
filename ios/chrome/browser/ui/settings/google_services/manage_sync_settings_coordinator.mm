@@ -44,7 +44,7 @@
 #import "ios/chrome/browser/ui/settings/google_services/bulk_upload/bulk_upload_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/bulk_upload/bulk_upload_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/google_services/features.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_coordinator.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_command_handler.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_mediator.h"
@@ -78,8 +78,8 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   BOOL _settingsAreDismissed;
   // The coordinator for the view Save in Account.
   BulkUploadCoordinator* _bulkUploadCoordinator;
-  // The coordinator for the Accounts view.
-  AccountsCoordinator* _accountsCoordinator;
+  // The coordinator for the Manage Accounts view.
+  ManageAccountsCoordinator* _manageAccountsCoordinator;
   SyncEncryptionTableViewController* _syncEncryptionTableViewController;
   SyncEncryptionPassphraseTableViewController*
       _syncEncryptionPassphraseTableViewController;
@@ -213,8 +213,8 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   [super stop];
   [self.mediator disconnect];
   [self stopBulkUpload];
-  [_accountsCoordinator stop];
-  _accountsCoordinator = nil;
+  [_manageAccountsCoordinator stop];
+  _manageAccountsCoordinator = nil;
   self.mediator = nil;
   self.viewController = nil;
   // Unblock any sync data type changes.
@@ -455,13 +455,12 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 }
 
 - (void)showAccountsPage {
-  AccountsCoordinator* accountsCoordinator = [[AccountsCoordinator alloc]
+  _manageAccountsCoordinator = [[ManageAccountsCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
        closeSettingsOnAddAccount:NO];
-  accountsCoordinator.signoutDismissalByParentCoordinator = YES;
-  _accountsCoordinator = accountsCoordinator;
-  [accountsCoordinator start];
+  _manageAccountsCoordinator.signoutDismissalByParentCoordinator = YES;
+  [_manageAccountsCoordinator start];
 }
 
 - (void)showManageYourGoogleAccount {

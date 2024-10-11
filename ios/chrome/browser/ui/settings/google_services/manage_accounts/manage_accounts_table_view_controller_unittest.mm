@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_table_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/functional/callback_helpers.h"
@@ -27,7 +27,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_mediator.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_mediator.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -45,10 +45,10 @@ std::unique_ptr<KeyedService> CreateTestSyncService(
 
 }  // namespace
 
-class AccountsTableViewControllerTest
+class ManageAccountsTableViewControllerTest
     : public LegacyChromeTableViewControllerTest {
  public:
-  AccountsTableViewControllerTest() {
+  ManageAccountsTableViewControllerTest() {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
@@ -63,15 +63,14 @@ class AccountsTableViewControllerTest
   }
 
   LegacyChromeTableViewController* InstantiateController() override {
+    ManageAccountsMediator* mediator = [[ManageAccountsMediator alloc]
+          initWithSyncService:test_sync_service()
+        accountManagerService:account_manager_service()
+                  authService:authentication_service()
+              identityManager:identity_manager()];
 
-    AccountsMediator* mediator =
-        [[AccountsMediator alloc] initWithSyncService:test_sync_service()
-                                accountManagerService:account_manager_service()
-                                          authService:authentication_service()
-                                      identityManager:identity_manager()];
-
-    AccountsTableViewController* controller =
-        [[AccountsTableViewController alloc]
+    ManageAccountsTableViewController* controller =
+        [[ManageAccountsTableViewController alloc]
             initWithOfferSignout:show_signout_button_];
 
     mediator.consumer = controller;
@@ -120,12 +119,12 @@ class AccountsTableViewControllerTest
   std::unique_ptr<Browser> browser_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
-  AccountsMediator* mediator_;
+  ManageAccountsMediator* mediator_;
   BOOL show_signout_button_ = NO;
 };
 
 // Tests that a sign out button is added.
-TEST_F(AccountsTableViewControllerTest, OfferSignOut) {
+TEST_F(ManageAccountsTableViewControllerTest, OfferSignOut) {
   showSignoutButton();
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
   fake_system_identity_manager()->AddIdentity(fake_identity);
@@ -142,7 +141,7 @@ TEST_F(AccountsTableViewControllerTest, OfferSignOut) {
 }
 
 // Tests that a sign out button is not added.
-TEST_F(AccountsTableViewControllerTest, ShouldNotOfferSignOut) {
+TEST_F(ManageAccountsTableViewControllerTest, ShouldNotOfferSignOut) {
   FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
   fake_system_identity_manager()->AddIdentity(fake_identity);
 

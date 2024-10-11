@@ -57,7 +57,7 @@ extern NSString* const kSettingsDoneButtonId;
                                          delegate
             hasDefaultBrowserBlueDot:(BOOL)hasDefaultBrowserBlueDot;
 
-// Creates a new AccountsTableViewController and the chrome around it.
+// Creates a new ManageAccountsTableViewController and the chrome around it.
 // `browser` is the browser where settings are being displayed and should not be
 // nil. `delegate` may be nil.
 + (instancetype)

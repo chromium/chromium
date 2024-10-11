@@ -125,7 +125,7 @@
 #import "ios/chrome/browser/ui/settings/downloads/downloads_settings_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_coordinator.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_coordinator.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/language/language_settings_mediator.h"
@@ -260,7 +260,7 @@ struct EnhancedSafeBrowsingActivePromoData
   PasswordsCoordinator* _passwordsCoordinator;
 
   // Accounts coordinator.
-  AccountsCoordinator* _accountsCoordinator;
+  ManageAccountsCoordinator* _manageAccountsCoordinator;
 
   // Feature engagement tracker for the signin IPH.
   raw_ptr<feature_engagement::Tracker> _featureEngagementTracker;
@@ -1371,12 +1371,11 @@ struct EnhancedSafeBrowsingActivePromoData
       }
       base::RecordAction(base::UserMetricsAction("Settings.MyAccount"));
 
-      AccountsCoordinator* accountsCoordinator = [[AccountsCoordinator alloc]
+      _manageAccountsCoordinator = [[ManageAccountsCoordinator alloc]
           initWithBaseNavigationController:self.navigationController
                                    browser:_browser
                  closeSettingsOnAddAccount:NO];
-      _accountsCoordinator = accountsCoordinator;
-      [accountsCoordinator start];
+      [_manageAccountsCoordinator start];
       break;
     }
     case SettingsItemTypeGoogleServices:
@@ -2323,8 +2322,8 @@ struct EnhancedSafeBrowsingActivePromoData
   _passwordsCoordinator.delegate = nil;
   _passwordsCoordinator = nil;
 
-  [_accountsCoordinator stop];
-  _accountsCoordinator = nil;
+  [_manageAccountsCoordinator stop];
+  _manageAccountsCoordinator = nil;
 
   [_notificationsCoordinator stop];
   _notificationsCoordinator = nil;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_ACCOUNTS_ACCOUNTS_MODEL_IDENTITY_DATA_SOURCE_H_
-#define IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_ACCOUNTS_ACCOUNTS_MODEL_IDENTITY_DATA_SOURCE_H_
+#ifndef IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_ACCOUNTS_MANAGE_ACCOUNTS_MODEL_IDENTITY_DATA_SOURCE_H_
+#define IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_ACCOUNTS_MANAGE_ACCOUNTS_MODEL_IDENTITY_DATA_SOURCE_H_
 
 #include <vector>
 
@@ -14,9 +14,9 @@ enum class IdentityAvatarSize;
 @class LegacyAccountsTableViewController;
 @protocol SystemIdentity;
 
-// Identity data source for AccountsTableViewController instance, to manage the
-// model.
-@protocol AccountsModelIdentityDataSource <NSObject>
+// Identity data source for ManageAccountsTableViewController instance, to
+// manage the model.
+@protocol ManageAccountsModelIdentityDataSource <NSObject>
 
 // Provides identity info with gaiaID.
 - (id<SystemIdentity>)identityWithGaiaID:(NSString*)gaiaID;
@@ -39,4 +39,4 @@ enum class IdentityAvatarSize;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_ACCOUNTS_ACCOUNTS_MODEL_IDENTITY_DATA_SOURCE_H_
+#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_ACCOUNTS_MANAGE_ACCOUNTS_MODEL_IDENTITY_DATA_SOURCE_H_

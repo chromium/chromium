@@ -45,7 +45,7 @@
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_coordinator.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_coordinator.h"
 #import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
 #import "ios/chrome/browser/ui/settings/settings_root_view_controlling.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
@@ -72,7 +72,7 @@
   SystemIdentityManager::DismissViewCallback
       _accountDetailsControllerDismissCallback;
   // The coordinators for the "Edit account list"
-  AccountsCoordinator* _accountsCoordinator;
+  ManageAccountsCoordinator* _manageAccountsCoordinator;
   // The coordinator for the action sheet to sign out.
   SignoutActionSheetCoordinator* _signoutActionSheetCoordinator;
   raw_ptr<syncer::SyncService> _syncService;
@@ -155,7 +155,7 @@
   }
   // Stopping all potentially open children views.
   [self stopSignoutActionSheetCoordinator];
-  [self stopAccountsCoordinator];
+  [self stopManageAccountsCoordinator];
   _activityOverlayCallback.RunAndReset();
   [_syncEncryptionPassphraseTableViewController settingsWillBeDismissed];
   _syncEncryptionPassphraseTableViewController = nil;
@@ -209,12 +209,12 @@
 }
 
 - (void)didTapEditAccountList {
-  _accountsCoordinator = [[AccountsCoordinator alloc]
+  _manageAccountsCoordinator = [[ManageAccountsCoordinator alloc]
       initWithBaseViewController:_navigationController
                          browser:self.browser
        closeSettingsOnAddAccount:NO];
-  _accountsCoordinator.signoutDismissalByParentCoordinator = YES;
-  [_accountsCoordinator start];
+  _manageAccountsCoordinator.signoutDismissalByParentCoordinator = YES;
+  [_manageAccountsCoordinator start];
 }
 
 - (void)signOutFromTargetRect:(CGRect)targetRect
@@ -375,9 +375,9 @@
 
 #pragma mark - Private
 
-- (void)stopAccountsCoordinator {
-  [_accountsCoordinator stop];
-  _accountsCoordinator = nil;
+- (void)stopManageAccountsCoordinator {
+  [_manageAccountsCoordinator stop];
+  _manageAccountsCoordinator = nil;
 }
 
 - (void)resetAccountDetailsControllerDismissCallback {

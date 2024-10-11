@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_coordinator.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_coordinator.h"
 
 #import "base/apple/foundation_util.h"
 #import "base/metrics/user_metrics.h"
@@ -30,11 +30,11 @@
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_mediator.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_mediator_delegate.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/legacy_accounts_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_mediator.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_mediator_delegate.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_table_view_controller_constants.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -42,14 +42,14 @@
 using signin_metrics::AccessPoint;
 using signin_metrics::PromoAction;
 
-@interface AccountsCoordinator () <AccountsMediatorDelegate,
-                                   SettingsNavigationControllerDelegate,
-                                   SignoutActionSheetCoordinatorDelegate>
+@interface ManageAccountsCoordinator () <ManageAccountsMediatorDelegate,
+                                         SettingsNavigationControllerDelegate,
+                                         SignoutActionSheetCoordinatorDelegate>
 @end
 
-@implementation AccountsCoordinator {
+@implementation ManageAccountsCoordinator {
   // Mediator.
-  AccountsMediator* _mediator;
+  ManageAccountsMediator* _mediator;
 
   // The view controller.
   SettingsRootTableViewController<WithOverridableModelIdentityDataSource>*
@@ -105,7 +105,7 @@ using signin_metrics::PromoAction;
   base::RecordAction(base::UserMetricsAction("Signin_AccountsTableView_Open"));
   ProfileIOS* profile = self.browser->GetProfile();
   syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
-  _mediator = [[AccountsMediator alloc]
+  _mediator = [[ManageAccountsMediator alloc]
         initWithSyncService:syncService
       accountManagerService:ChromeAccountManagerServiceFactory::GetForProfile(
                                 profile)
@@ -114,15 +114,16 @@ using signin_metrics::PromoAction;
 
   if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu) &&
       !syncService->HasSyncConsent()) {
-    AccountsTableViewController* viewController =
-        [[AccountsTableViewController alloc]
+    ManageAccountsTableViewController* viewController =
+        [[ManageAccountsTableViewController alloc]
             initWithOfferSignout:self.showSignoutButton];
     _viewController = viewController;
     _mediator.consumer = viewController;
     _mediator.delegate = self;
     _viewController.modelIdentityDataSource = _mediator;
-    AccountsTableViewController* accountsTableViewController =
-        base::apple::ObjCCast<AccountsTableViewController>(_viewController);
+    ManageAccountsTableViewController* accountsTableViewController =
+        base::apple::ObjCCast<ManageAccountsTableViewController>(
+            _viewController);
     accountsTableViewController.mutator = _mediator;
   } else {
     LegacyAccountsTableViewController* viewController =
@@ -163,8 +164,8 @@ using signin_metrics::PromoAction;
 
 - (void)stop {
   [super stop];
-  AccountsTableViewController* accountsTableViewController =
-      base::apple::ObjCCast<AccountsTableViewController>(_viewController);
+  ManageAccountsTableViewController* accountsTableViewController =
+      base::apple::ObjCCast<ManageAccountsTableViewController>(_viewController);
   if (accountsTableViewController) {
     accountsTableViewController.mutator = nil;
   }
@@ -211,7 +212,7 @@ using signin_metrics::PromoAction;
   [_viewController allowUserInteraction];
 }
 
-#pragma mark - AccountsMediatorDelegate
+#pragma mark - ManageAccountsMediatorDelegate
 
 - (void)handleRemoveIdentity:(id<SystemIdentity>)identity
                     itemView:(UIView*)itemView {
