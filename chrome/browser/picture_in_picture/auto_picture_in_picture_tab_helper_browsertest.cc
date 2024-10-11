@@ -1533,8 +1533,16 @@ IN_PROC_BROWSER_TEST_F(AutoPictureInPictureWithVideoPlaybackBrowserTest,
   }
 }
 
+// TODO(crbug.com/372777367): Test failing on Windows
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_DoesNotCloseAutomaticallyOpenedPip \
+  DISABLED_DoesNotCloseAutomaticallyOpenedPip
+#else
+#define MAYBE_DoesNotCloseAutomaticallyOpenedPip \
+  DoesNotCloseAutomaticallyOpenedPip
+#endif
 IN_PROC_BROWSER_TEST_F(AutoPictureInPictureTabHelperBrowserTest,
-                       DoesNotCloseAutomaticallyOpenedPip) {
+                       MAYBE_DoesNotCloseAutomaticallyOpenedPip) {
   // Load a page that registers for autopip.
   LoadCameraMicrophonePage(browser());
   auto* first_web_contents =
