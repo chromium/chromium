@@ -5,13 +5,18 @@
 #include "components/history_embeddings/vector_database.h"
 
 #include <atomic>
+#include <cstdint>
 #include <memory>
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/path_service.h"
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "components/history_embeddings/proto/history_embeddings.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -352,6 +357,90 @@ TEST(HistoryEmbeddingsVectorDatabaseTest, DISABLED_ManyVectorsAreFastEnough) {
   // This could be an assertion with an extraordinarily high threshold, but for
   // now we avoid any possibility of blowing up trybots and just need the info.
   LOG(INFO) << "Searched " << count << " embeddings in " << timer.Elapsed();
+}
+
+base::FilePath GetWordMatchBoostTestDataPath() {
+  base::FilePath test_data_dir;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir);
+  return test_data_dir.AppendASCII(
+      "components/test/data/history_embeddings/word_match_boost_test_data");
+}
+
+// This is a utility test to produce a simple test data protobuf text file.  It
+// shows structure and can be enabled if we need to produce a stub or extra test
+// files, but the main test file should be filled manually with real test cases.
+TEST(HistoryEmbeddingsVectorDatabaseTest,
+     DISABLED_GenerateWordMatchBoostProtoDataTest) {
+  proto::WordMatchBoostTest test;
+  proto::WordMatchBoostTestCase* test_case = test.add_cases();
+  test_case->mutable_params()->set_minimum_embedding_score(0.0f);
+  test_case->mutable_params()->set_score_boost_factor(0.2f);
+  test_case->mutable_params()->set_word_match_limit(5);
+  test_case->mutable_params()->set_smoothing_factor(1);
+  test_case->set_query("example test query");
+  test_case->mutable_passages()->add_passages("this is an example passage");
+  test_case->mutable_passages()->add_passages(
+      "this example passage matches the test query term 'query'");
+  test_case->mutable_passages()->add_passages(
+      "all of this test data is for test, test, testing!");
+  test_case->set_expected_score_boost(0.070000052f);
+  EXPECT_TRUE(base::WriteFile(GetWordMatchBoostTestDataPath(),
+                              test.SerializeAsString()));
+}
+
+TEST(HistoryEmbeddingsVectorDatabaseTest, WordMatchBoostProtoDataTest) {
+  extern uint32_t HashString(std::string_view str);
+  auto no = base::BindRepeating([]() { return false; });
+  std::string test_proto_content;
+  EXPECT_TRUE(base::ReadFileToString(GetWordMatchBoostTestDataPath(),
+                                     &test_proto_content));
+
+  history_embeddings::proto::WordMatchBoostTest test;
+  EXPECT_TRUE(test.ParseFromString(test_proto_content));
+
+  std::unordered_set<uint32_t> stop_words_hashes;
+  for (const std::string& stop_word : test.stop_words()) {
+    stop_words_hashes.insert(HashString(stop_word));
+  }
+
+  for (const proto::WordMatchBoostTestCase& test_case : test.cases()) {
+    VectorDatabaseInMemory database;
+    SearchParams search_params;
+    search_params.word_match_minimum_embedding_score =
+        test_case.params().minimum_embedding_score();
+    search_params.word_match_limit = test_case.params().word_match_limit();
+    search_params.word_match_score_boost_factor =
+        test_case.params().score_boost_factor();
+    search_params.word_match_smoothing_factor =
+        test_case.params().smoothing_factor();
+    UrlPassagesEmbeddings url_data(1, 1, base::Time::Now());
+    for (const std::string& passage : test_case.passages().passages()) {
+      url_data.url_passages.passages.add_passages(passage);
+      url_data.url_embeddings.embeddings.push_back(DeterministicEmbedding(0));
+    }
+    database.AddUrlData(url_data);
+
+    // Basic embedding search with no query terms produces flat embedding score.
+    Embedding query_embedding = DeterministicEmbedding(0);
+    std::vector<ScoredUrl> scored_urls =
+        database.FindNearest({}, 1, /*search_params=*/{}, query_embedding, no)
+            .scored_urls;
+    EXPECT_EQ(scored_urls.size(), 1u);
+    EXPECT_FLOAT_EQ(scored_urls[0].score, 1.0f);
+
+    // Set up some query terms to boost score with word matches against
+    // passages.
+    search_params.query_terms =
+        SplitQueryToTerms(stop_words_hashes, test_case.query(),
+                          test_case.params().minimum_term_length());
+    scored_urls =
+        database.FindNearest({}, 1, search_params, query_embedding, no)
+            .scored_urls;
+    EXPECT_EQ(scored_urls.size(), 1u);
+    // Embedding score without boost is 1.0f; subtract it to determine boost.
+    float word_match_boost = scored_urls[0].score - 1.0f;
+    EXPECT_FLOAT_EQ(word_match_boost, test_case.expected_score_boost());
+  }
 }
 
 }  // namespace history_embeddings

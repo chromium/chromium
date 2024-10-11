@@ -1182,18 +1182,11 @@ bool HistoryEmbeddingsService::QueryIsFiltered(
     RecordQueryFiltered(QueryFiltered::FILTERED_NOT_ASCII);
     return true;
   }
-  std::string query = base::ToLowerASCII(raw_query);
-  std::vector<std::string_view> query_terms = base::SplitStringPiece(
-      query, " ", base::WhitespaceHandling::TRIM_WHITESPACE,
-      base::SplitResult::SPLIT_WANT_NONEMPTY);
-  for (std::string_view& query_term : query_terms) {
-    query_term = base::TrimString(
-        query_term,
-        ".?!,:;-()[]{}<>\"'/\\*&#~@^|%$`+=", base::TrimPositions::TRIM_ALL);
-  }
-  // Erase any query terms that were trimmed to empty so they don't disrupt
-  // the two term pairing logic below.
-  std::erase(query_terms, "");
+  const std::unordered_set<uint32_t>& stop_words_hashes =
+      SearchStringsUpdateListener::GetInstance()->stop_words_hashes();
+  size_t min_term_length = kWordMatchMinTermLength.Get();
+  std::vector<std::string> query_terms =
+      SplitQueryToTerms(stop_words_hashes, raw_query, min_term_length);
   const std::unordered_set<uint32_t>& filter_words_hashes =
       SearchStringsUpdateListener::GetInstance()->filter_words_hashes();
   if (std::ranges::any_of(query_terms, [&](std::string_view query_term) {
@@ -1213,15 +1206,7 @@ bool HistoryEmbeddingsService::QueryIsFiltered(
     }
   }
   RecordQueryFiltered(QueryFiltered::NOT_FILTERED);
-  size_t min_term_length = kWordMatchMinTermLength.Get();
-  const std::unordered_set<uint32_t>& stop_words_hashes =
-      SearchStringsUpdateListener::GetInstance()->stop_words_hashes();
-  for (std::string_view term : query_terms) {
-    if (query_terms.size() >= min_term_length &&
-        !stop_words_hashes.contains(HashString(term))) {
-      search_params.query_terms.emplace_back(term);
-    }
-  }
+  search_params.query_terms = std::move(query_terms);
   return false;
 }
 

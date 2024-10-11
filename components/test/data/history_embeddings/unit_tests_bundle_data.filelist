@@ -8,3 +8,4 @@
 //components/test/data/history_embeddings/empty_search_strings_file
 //components/test/data/history_embeddings/fake_model_file
 //components/test/data/history_embeddings/fake_search_strings_file
+//components/test/data/history_embeddings/word_match_boost_test_data

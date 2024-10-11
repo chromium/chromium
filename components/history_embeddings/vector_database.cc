@@ -7,6 +7,7 @@
 #include <queue>
 
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/timer/elapsed_timer.h"
@@ -412,6 +413,27 @@ VectorDatabaseInMemory::MakeUrlDataIterator(
   }
 
   return std::make_unique<SimpleIterator>(data_, time_range_start);
+}
+
+std::vector<std::string> SplitQueryToTerms(
+    const std::unordered_set<uint32_t>& stop_words_hashes,
+    std::string_view raw_query,
+    size_t min_term_length) {
+  extern uint32_t HashString(std::string_view str);
+  std::string query = base::ToLowerASCII(raw_query);
+  std::vector<std::string_view> term_views = base::SplitStringPiece(
+      query, " ", base::WhitespaceHandling::TRIM_WHITESPACE,
+      base::SplitResult::SPLIT_WANT_NONEMPTY);
+  std::vector<std::string> query_terms;
+  for (std::string_view& term_view : term_views) {
+    term_view = base::TrimString(term_view, ".?!,:;-()[]{}<>\"'/\\*&#~@^|%$`+=",
+                                 base::TrimPositions::TRIM_ALL);
+    if (term_view.size() >= min_term_length &&
+        !stop_words_hashes.contains(HashString(term_view))) {
+      query_terms.emplace_back(term_view);
+    }
+  }
+  return query_terms;
 }
 
 }  // namespace history_embeddings

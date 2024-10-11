@@ -6,6 +6,7 @@
 #define COMPONENTS_HISTORY_EMBEDDINGS_VECTOR_DATABASE_H_
 
 #include <optional>
+#include <unordered_set>
 #include <vector>
 
 #include "base/time/time.h"
@@ -248,6 +249,12 @@ class VectorDatabaseInMemory : public VectorDatabase {
  private:
   std::vector<UrlPassagesEmbeddings> data_;
 };
+
+// Utility method to split a query into separate query terms for search.
+std::vector<std::string> SplitQueryToTerms(
+    const std::unordered_set<uint32_t>& stop_words_hashes,
+    std::string_view raw_query,
+    size_t min_term_length);
 
 }  // namespace history_embeddings
 
