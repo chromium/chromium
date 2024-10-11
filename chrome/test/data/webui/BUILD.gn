@@ -77,8 +77,11 @@ source_set("browser_tests") {
   }
 
   if (enable_dice_support) {
-    sources += [ "welcome/welcome_browsertest.cc" ]
-    sources += [ "signin/batch_upload_view_browsertest.cc" ]
+    sources += [
+      "intro/intro_browsertest.cc",
+      "signin/batch_upload_view_browsertest.cc",
+      "welcome/welcome_browsertest.cc",
+    ]
   }
 
   if (enable_extensions) {
@@ -141,7 +144,6 @@ source_set("browser_tests") {
   } else {
     sources += [
       "inline_login/inline_login_browsertest.cc",
-      "intro/intro_browsertest.cc",
       "signin/profile_picker_browsertest.cc",
       "signin/signin_browsertest.cc",
     ]

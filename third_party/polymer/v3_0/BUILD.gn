@@ -169,10 +169,8 @@ ts_library("library") {
   }
 
   if (is_chromeos_lacros) {
-    visibility += [
-      "//chrome/browser/resources/intro:build_ts",
-      "//chrome/browser/resources/signin/profile_picker:build_ts",
-    ]
+    visibility +=
+        [ "//chrome/browser/resources/signin/profile_picker:build_ts" ]
   }
 
   if (is_chromeos_ash) {

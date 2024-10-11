@@ -132,14 +132,16 @@ group("resources") {
   if (!is_android && !is_chromeos_ash) {
     public_deps += [
       "inline_login:resources",
-      "intro:resources",
       "signin/profile_picker:resources",
       "welcome:resources",
     ]
   }
 
   if (enable_dice_support) {
-    public_deps += [ "signin/batch_upload:resources" ]
+    public_deps += [
+      "intro:resources",
+      "signin/batch_upload:resources",
+    ]
   }
 
   if (enable_webui_tab_strip) {
