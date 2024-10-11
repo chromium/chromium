@@ -63,6 +63,12 @@ void PopulateSourceForWebUI(content::WebUIDataSource* source,
       {"thumbsUp", IDS_THUMBS_UP_RESULTS_A11Y_LABEL},
       {"thumbsDown", IDS_THUMBS_DOWN_OPENS_FEEDBACK_FORM_A11Y_LABEL},
       {"historyEmbeddingsAnswerHeading", IDS_HISTORY_EMBEDDINGS_ANSWER_HEADING},
+      {"historyEmbeddingsAnswerSourceDate",
+       IDS_HISTORY_EMBEDDINGS_ANSWER_SOURCE_VISIT_DATE_LABEL},
+      {"historyEmbeddingsAnswererErrorUnanswerable",
+       IDS_HISTORY_EMBEDDINGS_ANSWERER_ERROR_UNANSWERABLE},
+      {"historyEmbeddingsAnswererErrorTryAgain",
+       IDS_HISTORY_EMBEDDINGS_ANSWERER_ERROR_TRY_AGAIN},
   };
   source->AddLocalizedStrings(kHistoryEmbeddingsStrings);
   source->AddInteger("historyEmbeddingsSearchMinimumWordCount",

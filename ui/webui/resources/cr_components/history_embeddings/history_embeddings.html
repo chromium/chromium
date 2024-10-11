@@ -289,12 +289,11 @@ cr-url-list-item:hover + hr {
       </div>
       <a class="answer-source" hidden="[[!answerSource_]]"
           href="[[getAnswerSourceUrl_(answerSource_)]]" target="_blank">
-        <div>Source:</div>
         <div class="favicon"
             style$="background-image: [[getFavicon_(answerSource_)]]"></div>
         <div class="result-url">
           [[answerSource_.urlForDisplay]] &bull;
-          [[getDateTime_(answerSource_, showRelativeTimes)]]
+          [[getAnswerDateTime_(answerSource_, showRelativeTimes)]]
         </div>
       </a>
     </div>

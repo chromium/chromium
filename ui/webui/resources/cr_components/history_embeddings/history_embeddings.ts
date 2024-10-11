@@ -208,11 +208,11 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
       case AnswerStatus.kSuccess:
         return this.searchResult_.answer;
       case AnswerStatus.kUnanswerable:
-        return 'Sorry, can\'t help you with that.';
+        return this.i18n('historyEmbeddingsAnswererErrorUnanswerable');
       case AnswerStatus.kModelUnavailable:
       case AnswerStatus.kExecutionFailure:
       case AnswerStatus.kExecutionCanceled:
-        return 'Something went wrong. Please try again later.';
+        return this.i18n('historyEmbeddingsAnswererErrorTryAgain');
       default:
         assertNotReached();
     }
@@ -242,6 +242,14 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
       return this.i18n('historyEmbeddingsHeadingLoading', this.searchQuery);
     }
     return this.i18n('historyEmbeddingsHeading', this.searchQuery);
+  }
+
+  private getAnswerDateTime_(): string {
+    if (!this.answerSource_) {
+      return '';
+    }
+    const dateTime = this.getDateTime_(this.answerSource_);
+    return this.i18n('historyEmbeddingsAnswerSourceDate', dateTime);
   }
 
   private getDateTime_(item: SearchResultItem|undefined): string {
