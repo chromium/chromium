@@ -1853,6 +1853,11 @@ void NavigationURLLoaderImpl::RecordServiceWorkerRouterEvaluationResults(
   if (router_info->matched_source_type) {
     builder.SetMatchedFirstRouterSourceType(
         static_cast<int64_t>(*router_info->matched_source_type));
+    if (router_info->matched_source_type ==
+        network::mojom::ServiceWorkerRouterSourceType::kCache) {
+      builder.SetCacheLookupTime(
+          router_info->cache_lookup_time.InMilliseconds());
+    }
   }
 
   if (router_info->actual_source_type) {

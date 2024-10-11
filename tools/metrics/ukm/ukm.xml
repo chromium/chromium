@@ -19865,6 +19865,15 @@ be describing additional metrics about the same event.
       only when the router has matched the incoming resource.
     </summary>
   </metric>
+  <metric name="CacheLookupTime">
+    <summary>
+      Time spent to conduct cache lookup (right before creating the cache lookup
+      request to right after the browser process receives the cache result).
+      Recorded when the service worker has associated routing info with the
+      `cache` as the rule, and the browser or renderer is processing requests.
+      Duration in units of milliseconds.
+    </summary>
+  </metric>
   <metric name="MatchedFirstRouterSourceType"
       enum="ServiceWorkerRouterSourceType">
     <summary>

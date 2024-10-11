@@ -7259,6 +7259,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
       entry, MainResourceLoadCompletedUkmEntry::kActualRouterSourceTypeName,
       static_cast<std::int64_t>(
           network::mojom::ServiceWorkerRouterSourceType::kCache));
+
+  ukm::TestAutoSetUkmRecorder::EntryHasMetric(
+      entry, MainResourceLoadCompletedUkmEntry::kCacheLookupTimeName);
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
@@ -7290,6 +7293,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
       entry, MainResourceLoadCompletedUkmEntry::kActualRouterSourceTypeName,
       static_cast<std::int64_t>(
           network::mojom::ServiceWorkerRouterSourceType::kNetwork));
+
+  ukm::TestAutoSetUkmRecorder::EntryHasMetric(
+      entry, MainResourceLoadCompletedUkmEntry::kCacheLookupTimeName);
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
@@ -7322,6 +7328,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
       entry, MainResourceLoadCompletedUkmEntry::kActualRouterSourceTypeName,
       static_cast<std::int64_t>(
           network::mojom::ServiceWorkerRouterSourceType::kCache));
+
+  ukm::TestAutoSetUkmRecorder::EntryHasMetric(
+      entry, MainResourceLoadCompletedUkmEntry::kCacheLookupTimeName);
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
@@ -7359,6 +7368,9 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
       entry, MainResourceLoadCompletedUkmEntry::kActualRouterSourceTypeName,
       static_cast<std::int64_t>(
           network::mojom::ServiceWorkerRouterSourceType::kNetwork));
+
+  ukm::TestAutoSetUkmRecorder::EntryHasMetric(
+      entry, MainResourceLoadCompletedUkmEntry::kCacheLookupTimeName);
 }
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
