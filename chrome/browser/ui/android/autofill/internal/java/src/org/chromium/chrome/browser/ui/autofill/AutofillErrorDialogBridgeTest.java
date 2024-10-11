@@ -33,10 +33,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -45,7 +42,6 @@ import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 
 /** Unit tests for {@link AutofillErrorDialogBridge} */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_MOVING_GPAY_LOGO_TO_THE_RIGHT_ON_CLANK})
 public class AutofillErrorDialogBridgeTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mMocker = new JniMocker();
@@ -77,7 +73,7 @@ public class AutofillErrorDialogBridgeTest {
     @Test
     @SmallTest
     public void testBasic() throws Exception {
-        showErrorDialog(/* titleIconId= */ 0);
+        showErrorDialog();
         Assert.assertNotNull(mModalDialogManager.getShownDialogModel());
 
         mAutofillErrorDialogBridge.dismiss();
@@ -89,7 +85,7 @@ public class AutofillErrorDialogBridgeTest {
     @Test
     @SmallTest
     public void testDismissedCalledOnButtonClick() throws Exception {
-        showErrorDialog(/* titleIconId= */ 0);
+        showErrorDialog();
 
         mModalDialogManager.clickPositiveButton();
 
@@ -98,38 +94,8 @@ public class AutofillErrorDialogBridgeTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_MOVING_GPAY_LOGO_TO_THE_RIGHT_ON_CLANK})
-    public void testDefaultTitleView() throws Exception {
-        int titleIconId = R.drawable.google_pay_with_divider;
-        showErrorDialog(/* titleIconId= */ titleIconId);
-
-        PropertyModel model = mModalDialogManager.getShownDialogModel();
-        Assert.assertNotNull(model);
-
-        // Verify that the title set by modal dialog is correct.
-        assertThat(model.get(ModalDialogProperties.TITLE)).isEqualTo(ERROR_DIALOG_TITLE);
-
-        // Verify that the title icon set by modal dialog is correct.
-        Drawable expectedDrawable =
-                ResourcesCompat.getDrawable(
-                        mResources,
-                        titleIconId,
-                        ApplicationProvider.getApplicationContext().getTheme());
-        assertTrue(
-                getBitmap(expectedDrawable)
-                        .sameAs(getBitmap(model.get(ModalDialogProperties.TITLE_ICON))));
-
-        // Verify that title and title icon is not set by custom view.
-        View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
-        assertThat((TextView) customView.findViewById(R.id.title)).isNull();
-        assertThat((ImageView) customView.findViewById(R.id.title_icon)).isNull();
-    }
-
-    @Test
-    @SmallTest
-    public void testCustomTitleView() throws Exception {
-        int titleIconId = R.drawable.google_pay;
-        showErrorDialog(/* titleIconId= */ titleIconId);
+    public void testTitleView() throws Exception {
+        showErrorDialog();
 
         PropertyModel model = mModalDialogManager.getShownDialogModel();
         Assert.assertNotNull(model);
@@ -146,22 +112,15 @@ public class AutofillErrorDialogBridgeTest {
         Drawable expectedDrawable =
                 ResourcesCompat.getDrawable(
                         mResources,
-                        titleIconId,
+                        R.drawable.google_pay,
                         ApplicationProvider.getApplicationContext().getTheme());
         assertThat(title_icon.getVisibility()).isEqualTo(View.VISIBLE);
         assertTrue(getBitmap(expectedDrawable).sameAs(getBitmap(title_icon.getDrawable())));
-
-        // Verify that title and title icon is not set by modal dialog.
-        assertThat(model.get(ModalDialogProperties.TITLE)).isNull();
-        assertThat(model.get(ModalDialogProperties.TITLE_ICON)).isNull();
     }
 
-    private void showErrorDialog(int titleIconId) {
+    private void showErrorDialog() {
         mAutofillErrorDialogBridge.show(
-                ERROR_DIALOG_TITLE,
-                ERROR_DIALOG_DESCRIPTION,
-                ERROR_DIALOG_BUTTON_LABEL,
-                /* iconId= */ titleIconId);
+                ERROR_DIALOG_TITLE, ERROR_DIALOG_DESCRIPTION, ERROR_DIALOG_BUTTON_LABEL);
     }
 
     // Convert a drawable to a Bitmap for comparison.

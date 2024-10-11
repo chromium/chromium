@@ -12,14 +12,11 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/ui/autofill/payments/view_factory.h"
 #include "components/autofill/core/browser/ui/payments/autofill_progress_dialog_controller.h"
-#include "components/grit/components_scaled_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
-#include "ui/base/resource/resource_bundle.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/ui/android/autofill/internal/jni_headers/AutofillProgressDialogBridge_jni.h"
@@ -98,9 +95,7 @@ bool AutofillProgressDialogViewAndroid::ShowDialog(
         env, java_object_,
         ConvertUTF16ToJavaString(env, controller_->GetLoadingTitle()),
         ConvertUTF16ToJavaString(env, controller_->GetLoadingMessage()),
-        ConvertUTF16ToJavaString(env, controller_->GetCancelButtonLabel()),
-        ResourceMapper::MapToJavaDrawableId(
-            IDR_AUTOFILL_GOOGLE_PAY_WITH_DIVIDER));
+        ConvertUTF16ToJavaString(env, controller_->GetCancelButtonLabel()));
     return true;
   }
   return false;

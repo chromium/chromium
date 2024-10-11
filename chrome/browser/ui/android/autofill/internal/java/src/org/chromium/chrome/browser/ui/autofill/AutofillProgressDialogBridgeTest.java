@@ -33,10 +33,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -45,7 +42,6 @@ import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 
 /** Unit tests for {@link AutofillProgressDialogBridge} */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_MOVING_GPAY_LOGO_TO_THE_RIGHT_ON_CLANK})
 public class AutofillProgressDialogBridgeTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mMocker = new JniMocker();
@@ -62,12 +58,9 @@ public class AutofillProgressDialogBridgeTest {
     private FakeModalDialogManager mModalDialogManager;
     private Resources mResources;
 
-    private void showProgressDialog(int titleIconId) {
+    private void showProgressDialog() {
         mAutofillProgressDialogBridge.showDialog(
-                PROGRESS_DIALOG_TITLE,
-                PROGRESS_DIALOG_MESSAGE,
-                PROGRESS_DIALOG_BUTTON_LABEL,
-                /* iconId= */ titleIconId);
+                PROGRESS_DIALOG_TITLE, PROGRESS_DIALOG_MESSAGE, PROGRESS_DIALOG_BUTTON_LABEL);
     }
 
     @Before
@@ -86,7 +79,7 @@ public class AutofillProgressDialogBridgeTest {
     @Test
     @SmallTest
     public void testBasic() throws Exception {
-        showProgressDialog(/* titleIconId= */ 0);
+        showProgressDialog();
         Assert.assertNotNull(mModalDialogManager.getShownDialogModel());
 
         mAutofillProgressDialogBridge.dismiss();
@@ -97,7 +90,7 @@ public class AutofillProgressDialogBridgeTest {
 
     @Test
     public void testSuccessful() throws Exception {
-        showProgressDialog(/* titleIconId= */ 0);
+        showProgressDialog();
         Assert.assertNotNull(mModalDialogManager.getShownDialogModel());
         View dialogView =
                 mModalDialogManager.getShownDialogModel().get(ModalDialogProperties.CUSTOM_VIEW);
@@ -126,7 +119,7 @@ public class AutofillProgressDialogBridgeTest {
     @Test
     @SmallTest
     public void testDismissedCalledOnButtonClick() throws Exception {
-        showProgressDialog(/* titleIconId= */ 0);
+        showProgressDialog();
 
         mModalDialogManager.clickNegativeButton();
 
@@ -135,38 +128,8 @@ public class AutofillProgressDialogBridgeTest {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_MOVING_GPAY_LOGO_TO_THE_RIGHT_ON_CLANK})
-    public void testDefaultTitleView() throws Exception {
-        int titleIconId = R.drawable.google_pay_with_divider;
-        showProgressDialog(/* titleIconId= */ titleIconId);
-
-        PropertyModel model = mModalDialogManager.getShownDialogModel();
-        Assert.assertNotNull(model);
-
-        // Verify that the title set by modal dialog is correct.
-        assertThat(model.get(ModalDialogProperties.TITLE)).isEqualTo(PROGRESS_DIALOG_TITLE);
-
-        // Verify that the title icon set by modal dialog is correct.
-        Drawable expectedDrawable =
-                ResourcesCompat.getDrawable(
-                        mResources,
-                        titleIconId,
-                        ApplicationProvider.getApplicationContext().getTheme());
-        assertTrue(
-                getBitmap(expectedDrawable)
-                        .sameAs(getBitmap(model.get(ModalDialogProperties.TITLE_ICON))));
-
-        // Verify that title and title icon is not set by custom view.
-        View customView = model.get(ModalDialogProperties.CUSTOM_VIEW);
-        assertThat((TextView) customView.findViewById(R.id.title)).isNull();
-        assertThat((ImageView) customView.findViewById(R.id.title_icon)).isNull();
-    }
-
-    @Test
-    @SmallTest
-    public void testCustomTitleView() throws Exception {
-        int titleIconId = R.drawable.google_pay;
-        showProgressDialog(/* titleIconId= */ titleIconId);
+    public void testTitleView() throws Exception {
+        showProgressDialog();
 
         PropertyModel model = mModalDialogManager.getShownDialogModel();
         Assert.assertNotNull(model);
@@ -183,14 +146,10 @@ public class AutofillProgressDialogBridgeTest {
         Drawable expectedDrawable =
                 ResourcesCompat.getDrawable(
                         mResources,
-                        titleIconId,
+                        R.drawable.google_pay,
                         ApplicationProvider.getApplicationContext().getTheme());
         assertThat(title_icon.getVisibility()).isEqualTo(View.VISIBLE);
         assertTrue(getBitmap(expectedDrawable).sameAs(getBitmap(title_icon.getDrawable())));
-
-        // Verify that title and title icon is not set by modal dialog.
-        assertThat(model.get(ModalDialogProperties.TITLE)).isNull();
-        assertThat(model.get(ModalDialogProperties.TITLE_ICON)).isNull();
     }
 
     // Convert a drawable to a Bitmap for comparison.
