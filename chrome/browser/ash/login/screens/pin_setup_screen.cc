@@ -83,7 +83,7 @@ bool IsInSetupMode(PinSetupMode mode, WizardContext& context) {
   if (mode == PinSetupMode::kSetupAsPrimaryFactor ||
       mode == PinSetupMode::kAlreadyPerformed) {
     // These modes are only available when PasswordlessSetup is enabled.
-    return mode_matches && ash::switches::IsOobePinOnlyPrototypeEnabled();
+    return mode_matches && ash::features::IsAllowPasswordlessSetupEnabled();
   } else {
     return mode_matches;
   }

@@ -2422,7 +2422,7 @@ void WizardController::OnCryptohomeRecoverySetupScreenExit(
     CryptohomeRecoverySetupScreen::Result result) {
   OnScreenExit(CryptohomeRecoverySetupScreenView::kScreenId,
                CryptohomeRecoverySetupScreen::GetResultString(result));
-  if (ash::switches::IsOobePinOnlyPrototypeEnabled()) {
+  if (features::IsAllowPasswordlessSetupEnabled()) {
     // First step of the AuthFactor setup flow. Offer PIN as a main factor. If
     // there isn't hardware support, the screen exits gracefully.
     CHECK(!wizard_context_->knowledge_factor_setup.pin_setup_mode.has_value());
@@ -2577,7 +2577,7 @@ void WizardController::OnFingerprintSetupScreenExit(
     FingerprintSetupScreen::Result result) {
   OnScreenExit(FingerprintSetupScreenView::kScreenId,
                FingerprintSetupScreen::GetResultString(result));
-  if (!ash::switches::IsOobePinOnlyPrototypeEnabled()) {
+  if (!features::IsAllowPasswordlessSetupEnabled()) {
     // First time surfacing the screen for the non PIN-only OOBE.
     CHECK(!wizard_context_->knowledge_factor_setup.pin_setup_mode.has_value());
     wizard_context_->knowledge_factor_setup.pin_setup_mode =
@@ -2589,7 +2589,7 @@ void WizardController::OnFingerprintSetupScreenExit(
 void WizardController::OnPinSetupScreenExit(PinSetupScreen::Result result) {
   OnScreenExit(PinSetupScreenView::kScreenId,
                PinSetupScreen::GetResultString(result));
-  if (ash::switches::IsOobePinOnlyPrototypeEnabled()) {
+  if (features::IsAllowPasswordlessSetupEnabled()) {
     switch (result) {
       // Possible exit results when the PIN screen is shown for PIN-only setup.
       case PinSetupScreen::Result::kNotApplicableAsPrimaryFactor:

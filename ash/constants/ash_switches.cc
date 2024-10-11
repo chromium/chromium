@@ -993,10 +993,6 @@ const char kNaturalScrollDefault[] = "enable-natural-scroll-default";
 // notes. If unset, a hardcoded list is used instead.
 const char kNoteTakingAppIds[] = "note-taking-app-ids";
 
-// Enables a prototype version of the PIN-only OOBE flow. Only for tests.
-// TODO(b/365059362) - Remove once more stable.
-const char kOobeEnablePinOnlyPrototype[] = "oobe-enable-pin-only-prototype";
-
 // Allows the eula url to be overridden for tests.
 const char kOobeEulaUrlForTests[] = "oobe-eula-url-for-tests";
 
@@ -1365,15 +1361,6 @@ bool IsOOBENetworkScreenSkippingDisabledForTesting() {
 bool IsOOBEChromeVoxHintEnabledForDevMode() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kEnableOOBEChromeVoxHintForDevMode);
-}
-
-bool IsOobePinOnlyPrototypeEnabled() {
-  // Directly dependent on the 'PasswordlessSetup' flag. This command line
-  // switch provides an 'early preview' into the PasswordlessSetup (PIN-only)
-  // flow and will be removed once it is more stable.
-  return features::IsAllowPasswordlessSetupEnabled() &&
-         base::CommandLine::ForCurrentProcess()->HasSwitch(
-             kOobeEnablePinOnlyPrototype);
 }
 
 bool IsOverviewButtonEnabledForTests() {

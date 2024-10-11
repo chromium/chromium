@@ -547,8 +547,6 @@ class PinSetupScreenTestAsMainFactor : public PinSetupScreenTest {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{ash::features::kAllowPasswordlessSetup},
         /*disabled_features=*/{});
-    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
-        ash::switches::kOobeEnablePinOnlyPrototype);
   }
 
   void SetUpOnMainThread() override {
@@ -563,7 +561,6 @@ class PinSetupScreenTestAsMainFactor : public PinSetupScreenTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::ScopedCommandLine scoped_command_line_;
 };
 
 // Tests that the strings are correct when setting up PIN as the main factor.
