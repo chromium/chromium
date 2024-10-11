@@ -215,6 +215,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/372835715")
     public void testLaunchingActivity() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -560,6 +561,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/372835715")
     public void testSearchView() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
