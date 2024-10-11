@@ -137,7 +137,7 @@ TEST_F(AccountExtensionTrackerUnitTest, AccountExtensionTypeTransportMode) {
             GetAccountExtensionType(external_extension->id()));
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(AccountExtensionTrackerUnitTest,
        AccountExtensionTypeResetWhenSignedOut) {
   // Enable extension syncing in transport mode.
@@ -174,6 +174,6 @@ TEST_F(AccountExtensionTrackerUnitTest,
   EXPECT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
             GetAccountExtensionType(kGoodCrx));
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions

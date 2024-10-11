@@ -87,7 +87,7 @@
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/switches.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #endif
 
@@ -363,7 +363,7 @@ bool ModifyExtensionForServiceWorker(const base::FilePath& extension_root,
 
 ExtensionBrowserTest::ExtensionBrowserTest(ContextType context_type)
     :
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       set_chromeos_user_(true),
 #endif
       context_type_(context_type),
@@ -476,7 +476,7 @@ void ExtensionBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
     mv2_enabler_.emplace();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (set_chromeos_user_) {
     // This makes sure that we create the Default profile first, with no
     // ExtensionService and then the real profile with one, as we do when

@@ -378,7 +378,7 @@ void ReportWebStoreInstallNotAllowlistedInstalled(bool installed,
 
 // Returns whether the app launcher has been enabled.
 bool IsAppLauncherEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return true;
 #else
   return false;

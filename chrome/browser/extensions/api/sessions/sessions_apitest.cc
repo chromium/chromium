@@ -51,7 +51,7 @@
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/common/extension_builder.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #endif
 
@@ -180,7 +180,7 @@ class ExtensionSessionsTest : public InProcessBrowserTest {
 };
 
 void ExtensionSessionsTest::SetUpCommandLine(base::CommandLine* command_line) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   command_line->AppendSwitch(ash::switches::kIgnoreUserProfileMappingForTests);
 #endif
 }

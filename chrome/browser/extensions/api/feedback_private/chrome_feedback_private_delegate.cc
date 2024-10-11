@@ -27,7 +27,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/strings/string_split.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -40,14 +40,14 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/constants.h"
 #include "google_apis/gaia/gaia_auth_util.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace extensions {
 
 namespace {
 
 int GetSysInfoCheckboxStringId(content::BrowserContext* browser_context) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (arc::IsArcPlayStoreEnabledForProfile(
           Profile::FromBrowserContext(browser_context))) {
     return IDS_FEEDBACK_INCLUDE_SYSTEM_INFORMATION_AND_METRICS_CHKBOX_ARC;
@@ -122,7 +122,7 @@ void ChromeFeedbackPrivateDelegate::FetchSystemInformation(
   fetcher->Fetch(std::move(callback));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 std::unique_ptr<system_logs::SystemLogsSource>
 ChromeFeedbackPrivateDelegate::CreateSingleLogSource(
     api::feedback_private::LogSource source_type) const {
@@ -228,7 +228,7 @@ ChromeFeedbackPrivateDelegate::GetLandingPageType(
   return board[0] == "eve" ? api::feedback_private::LandingPageType::kTechstop
                            : api::feedback_private::LandingPageType::kNormal;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 std::string ChromeFeedbackPrivateDelegate::GetSignedInUserEmail(
     content::BrowserContext* context) const {

@@ -40,7 +40,7 @@
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #endif
 
@@ -542,7 +542,7 @@ class PolicyUpdateServiceTest : public ExtensionUpdateClientBaseTest,
   std::string id_ = "aohghmighlieiainnegkcijnfilokake";
 
  private:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Set up managed environment.
   std::unique_ptr<ash::ScopedStubInstallAttributes> install_attributes_ =
       std::make_unique<ash::ScopedStubInstallAttributes>(

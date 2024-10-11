@@ -59,7 +59,7 @@ class TestExtensionEnvironment {
     kCreate,
   };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   enum class OSSetupType {
     kNoSetUp,
     kSetUp,
@@ -69,7 +69,7 @@ class TestExtensionEnvironment {
   explicit TestExtensionEnvironment(
       Type type = Type::kWithTaskEnvironment,
       ProfileCreationType profile_creation_type = ProfileCreationType::kCreate
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       ,
       OSSetupType os_setup_type = OSSetupType::kSetUp
 #endif
@@ -126,7 +126,7 @@ class TestExtensionEnvironment {
   // |profile_| and destroyed after |profile_|.
   const std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const std::unique_ptr<ChromeOSEnv> chromeos_env_;
 #endif
 

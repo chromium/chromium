@@ -17,7 +17,7 @@
 #include "extensions/browser/api_unittest.h"
 
 namespace extensions {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 using api::image_writer_private::RemovableStorageDevice;
 class ImageWriterPrivateApiUnittest : public ExtensionApiUnittest {
  public:
@@ -65,6 +65,6 @@ TEST_F(ImageWriterPrivateApiUnittest,
                          image_writer::error::kDeviceWriteError));
 }
 
-#endif  // if BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // if BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions

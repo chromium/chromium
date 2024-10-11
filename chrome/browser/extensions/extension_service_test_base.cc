@@ -54,7 +54,7 @@
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/extensions_client.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/extensions/install_limiter.h"
 #include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
 #include "chrome/browser/browser_process.h"
@@ -409,7 +409,7 @@ void ExtensionServiceTestBase::SetUp() {
   ExtensionsClient::Get()->InitializeWebStoreUrls(
       base::CommandLine::ForCurrentProcess());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // TODO(b/308107135) own KioskController instead of KioskAppManager.
   // A test might have initialized a `KioskAppManager` already.
   if (!ash::KioskChromeAppManager::IsInitialized()) {
@@ -433,7 +433,7 @@ void ExtensionServiceTestBase::TearDown() {
     }
   }
   policy_provider_.Shutdown();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   kiosk_chrome_app_manager_.reset();
 #endif
 }
@@ -452,11 +452,11 @@ content::BrowserContext* ExtensionServiceTestBase::browser_context() {
 Profile* ExtensionServiceTestBase::profile() {
 // TODO(crbug.com/40891982): Refactor this convenience upstream to test callers.
 // Possibly just BuiltInAppTest.BuildGuestMode.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (profile_->IsGuestSession()) {
     return profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return profile_.get();
 }
@@ -493,7 +493,7 @@ void ExtensionServiceTestBase::CreateExtensionService(
   service_->RegisterInstallGate(ExtensionPrefs::DelayReason::kWaitForImports,
                                 service_->shared_module_service());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!enable_install_limiter) {
     InstallLimiter::Get(profile())->DisableForTest();
   }

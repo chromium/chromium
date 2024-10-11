@@ -36,7 +36,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_handlers/app_display_info.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/extensions/default_app_order.h"
 #endif
 
@@ -690,7 +690,7 @@ void ChromeAppSorting::CreateDefaultOrdinals() {
   default_ordinals_created_ = true;
 
   // The following defines the default order of apps.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::vector<std::string> app_ids;
   chromeos::default_app_order::Get(&app_ids);
 #else

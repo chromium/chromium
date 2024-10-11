@@ -12,13 +12,13 @@ class Profile;
 
 namespace extensions {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Returns whether |profile| has been authorized for password access, and
 // whether the auth token is no older than |auth_token_lifetime|. Authorization
 // is automatic if no password is needed.
 bool IsOsReauthAllowedAsh(Profile* profile,
                           base::TimeDelta auth_token_lifetime);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions
 

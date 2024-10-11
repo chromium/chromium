@@ -134,17 +134,17 @@ class EnterpriseReportingPrivateApiTest : public extensions::ExtensionApiTest {
             kApiEnterpriseReportingPrivateReportDataMaskingEvent);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     browser_dm_token_storage_.SetClientId("client_id");
     browser_dm_token_storage_.SetEnrollmentToken("enrollment_token");
     browser_dm_token_storage_.SetDMToken("dm_token");
     policy::BrowserDMTokenStorage::SetForTesting(&browser_dm_token_storage_);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
   }
 
   ~EnterpriseReportingPrivateApiTest() override = default;
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Signs in and returns the account ID of the primary account.
   AccountInfo SignIn(const std::string& email, bool as_managed = true) {
     auto account_info = identity_test_env()->MakePrimaryAccountAvailable(
@@ -170,7 +170,7 @@ class EnterpriseReportingPrivateApiTest : public extensions::ExtensionApiTest {
 
     return account_info;
   }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   void RunTest(const std::string& background_js,
                bool authorized_manifest_key = true) {
@@ -261,7 +261,7 @@ class EnterpriseReportingPrivateApiTest : public extensions::ExtensionApiTest {
 
   base::test::ScopedFeatureList scoped_features_;
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   policy::FakeBrowserDMTokenStorage browser_dm_token_storage_;
 #endif
 };

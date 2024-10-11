@@ -49,7 +49,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/display/display_switches.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
@@ -578,7 +578,7 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType, DesktopNotSupported) {
 }
 #endif  // !defined(USE_AURA)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class AutomationApiFencedFrameTest : public AutomationApiTest {
  protected:
   AutomationApiFencedFrameTest() {
@@ -914,7 +914,7 @@ IN_PROC_BROWSER_TEST_P(AutomationApiTestWithMockedSourceRenderer,
                                         kPermissionsWindows))
       << message_;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(AutomationApiTestWithContextType,

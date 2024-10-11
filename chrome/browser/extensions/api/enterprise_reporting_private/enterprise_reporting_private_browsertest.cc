@@ -45,7 +45,7 @@
 #include "chrome/browser/policy/dm_token_utils.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_ash.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -132,7 +132,7 @@ class MockClientCertStore : public net::ClientCertStore {
 class EnterpriseReportingPrivateGetContextInfoBaseBrowserTest
     : public InProcessBrowserTest {
  public:
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
   void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
     InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
     command_line->AppendSwitch(::switches::kEnableChromeBrowserCloudManagement);
@@ -181,7 +181,7 @@ class EnterpriseReportingPrivateGetContextInfoBrowserTest
         SetUpOnMainThread();
 
     if (browser_managed()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       auto* browser_policy_manager = g_browser_process->platform_part()
                                          ->browser_policy_connector_ash()
                                          ->GetDeviceCloudPolicyManager();
@@ -199,7 +199,7 @@ class EnterpriseReportingPrivateGetContextInfoBrowserTest
     }
 
     if (profile_managed()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       auto* profile_policy_manager =
           browser()->profile()->GetUserCloudPolicyManagerAsh();
       profile_policy_manager->core()->client()->SetupRegistration(
@@ -275,7 +275,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(site_isolation_enabled(), info->site_isolation_enabled);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class EnterpriseReportingPrivateGetContextInfoChromeOSFirewallTest
     : public EnterpriseReportingPrivateGetContextInfoBaseBrowserTest,
       public testing::WithParamInterface<bool> {

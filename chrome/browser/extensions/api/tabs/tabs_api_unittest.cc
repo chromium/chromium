@@ -48,7 +48,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_builder.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/test_window_builder.h"
 #include "ash/wm/window_pin_util.h"
@@ -132,7 +132,7 @@ class TabsApiUnitTest : public ExtensionServiceTestBase {
 
   void MaybeSaveLocalTabGroup(const tab_groups::LocalTabGroupID& local_id);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   aura::Window* root_window() { return test_helper_.GetContext(); }
 #endif
 
@@ -149,13 +149,13 @@ class TabsApiUnitTest : public ExtensionServiceTestBase {
   std::unique_ptr<TestBrowserWindow> browser_window_;
   std::unique_ptr<Browser> browser_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::AshTestHelper test_helper_;
 #endif
 };
 
 void TabsApiUnitTest::SetUp() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::AshTestHelper::InitParams ash_params;
   ash_params.start_session = true;
   test_helper_.SetUp(std::move(ash_params));
@@ -184,7 +184,7 @@ void TabsApiUnitTest::TearDown() {
   browser_.reset();
   browser_window_.reset();
   ExtensionServiceTestBase::TearDown();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   test_helper_.TearDown();
 #endif
 }
@@ -1650,7 +1650,7 @@ TEST_F(TabsApiUnitTest, ScreenshotsRestricted) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(TabsApiUnitTest, DontCreateTabsInLockedFullscreenMode) {
   scoped_refptr<const Extension> extension_with_tabs_permission =
       CreateTabsExtension();
@@ -1703,7 +1703,7 @@ TEST_F(TabsApiUnitTest, ScreenshotDisabledInProfilePreferences) {
       function.get(), "[{}]", profile(), api_test_utils::FunctionMode::kNone);
   EXPECT_EQ(tabs_constants::kScreenshotsDisabled, error);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(TabsApiUnitTest, CannotDuplicatePictureInPictureWindows) {
   // Create picture-in-picture browser.

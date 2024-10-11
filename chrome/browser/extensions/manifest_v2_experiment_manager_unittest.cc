@@ -23,10 +23,10 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/mojom/manifest.mojom.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace extensions {
 
@@ -46,7 +46,7 @@ class ManifestV2ExperimentManagerUnitTestBase
     // testing PrefService.
     InitializeExtensionService(ExtensionServiceInitParams{});
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // Log in the user on CrOS. This is necessary for the profile to be
     // considered one that can install extensions, which itself is
     // necessary for metrics testing.

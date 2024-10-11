@@ -70,7 +70,7 @@ class ExtensionInstallForceListPolicyHandler
   void ApplyPolicySettings(const policy::PolicyMap& policies,
                            PrefValueMap* prefs) override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Returns a `base::Value::Dict` with the extensions that must be force
   // installed in Ash. If Lacros is disabled this is the full extensions list,
   // and if Lacros is enabled this only contains the extensions that must run on
@@ -79,7 +79,7 @@ class ExtensionInstallForceListPolicyHandler
   // Returns nullopt if the policy is unset.
   std::optional<base::Value::Dict> GetAshPolicyDict(
       const policy::PolicyMap& policy_map);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Returns a `base::Value::Dict` with the extensions that must be force

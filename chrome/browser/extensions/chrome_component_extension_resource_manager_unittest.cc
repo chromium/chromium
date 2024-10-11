@@ -25,7 +25,7 @@
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/file_manager/grit/file_manager_resources.h"
 #endif
 
@@ -71,7 +71,7 @@ TEST_F(ChromeComponentExtensionResourceManagerTest,
       extension.get(), extension_misc::EXTENSION_ICON_BITTY,
       ExtensionIconSet::Match::kExactly);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // The resource is a component resource.
   int resource_id = 0;
   ASSERT_TRUE(resource_manager->IsComponentExtensionResource(

@@ -90,10 +90,10 @@ class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
   MessagingDelegate* GetMessagingDelegate() override;
   FeedbackPrivateDelegate* GetFeedbackPrivateDelegate() override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   MediaPerceptionAPIDelegate* GetMediaPerceptionAPIDelegate() override;
   NonNativeFileSystemDelegate* GetNonNativeFileSystemDelegate() override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS)
   void SaveImageDataToClipboard(
@@ -113,7 +113,7 @@ class ChromeExtensionsAPIClient : public ExtensionsAPIClient {
   std::unique_ptr<MessagingDelegate> messaging_delegate_;
   std::unique_ptr<FeedbackPrivateDelegate> feedback_private_delegate_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<MediaPerceptionAPIDelegate> media_perception_api_delegate_;
   std::unique_ptr<NonNativeFileSystemDelegate> non_native_file_system_delegate_;
 #endif

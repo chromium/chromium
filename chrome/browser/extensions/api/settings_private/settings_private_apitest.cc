@@ -33,7 +33,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #endif
 
@@ -88,7 +88,7 @@ class SettingsPrivateApiTest : public ExtensionApiTest,
  private:
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 #endif
 };
@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_P(SettingsPrivateApiTest, GetManagedByParentPref) {
   EXPECT_TRUE(RunSettingsSubtest("getManagedByParentPref")) << message_;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_P(SettingsPrivateApiTest, GetPref_CrOSSetting) {
   EXPECT_TRUE(RunSettingsSubtest("getPref_CrOSSetting")) << message_;
 }

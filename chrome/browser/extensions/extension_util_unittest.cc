@@ -36,7 +36,7 @@ namespace extensions {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr char kExtensionUpdateUrl[] =
     "https://clients2.google.com/service/update2/crx";  // URL of Chrome Web
                                                         // Store backend.
@@ -200,7 +200,7 @@ TEST_F(ExtensionUtilUnittest, FixupLongExtensionName) {
   EXPECT_EQ(fixup_extension_name, expected_fixup_extension_name);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class ExtensionUtilWithSigninProfileUnittest : public ExtensionUtilUnittest {
  public:
   void SetUp() override {

@@ -9,10 +9,10 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using extensions::profile_util::ProfileCanUseNonComponentExtensions;
 
@@ -26,7 +26,7 @@ class ProfileUtilUnitTest : public ExtensionServiceUserTestBase {
   }
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ProfileUtilUnitTest, ProfileCanUseNonComponentExtensions_RegularUser) {
   ASSERT_NO_FATAL_FAILURE(LoginChromeOSAshUser(
       GetFakeUserManager()->AddUser(account_id_), account_id_));
@@ -110,6 +110,6 @@ TEST_F(ProfileUtilUnitTest,
   ASSERT_TRUE(otr_test_profile);
   EXPECT_FALSE(ProfileCanUseNonComponentExtensions(otr_test_profile));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions

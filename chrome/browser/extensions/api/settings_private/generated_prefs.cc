@@ -20,7 +20,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/features.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/extensions/api/settings_private/chromeos_resolve_time_zone_by_geolocation_method_short.h"
 #include "chrome/browser/extensions/api/settings_private/chromeos_resolve_time_zone_by_geolocation_on_off.h"
 #endif
@@ -89,7 +89,7 @@ GeneratedPref* GeneratedPrefs::FindPrefImpl(const std::string& pref_name) {
 }
 
 void GeneratedPrefs::CreatePrefs() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   prefs_[kResolveTimezoneByGeolocationOnOff] =
       CreateGeneratedResolveTimezoneByGeolocationOnOff(profile_);
   prefs_[kResolveTimezoneByGeolocationMethodShort] =

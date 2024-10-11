@@ -56,7 +56,7 @@ constexpr char kScannerImageMimeTypePng[] = "image/png";
 constexpr char kPngImageDataUrlPrefix[] = "data:image/png;base64,";
 
 crosapi::mojom::DocumentScan* GetDocumentScanInterface() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // CrosapiManager is not always initialized in tests.
   if (!crosapi::CrosapiManager::IsInitialized()) {
     CHECK_IS_TEST();

@@ -46,7 +46,7 @@
 #include "extensions/common/switches.h"
 #include "net/base/backoff_entry.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/extensions/extension_assets_manager_chromeos.h"
 #endif
 
@@ -336,7 +336,7 @@ ChromeContentVerifierDelegate::GetVerifyInfo(const Extension& extension) const {
                        management_policy->ShouldRepairIfCorrupted(&extension);
   bool is_from_webstore = IsFromWebstore(extension);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (ExtensionAssetsManagerChromeOS::IsSharedInstall(&extension)) {
     return VerifyInfo(VerifyInfo::Mode::ENFORCE_STRICT, is_from_webstore,
                       should_repair);

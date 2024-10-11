@@ -932,7 +932,7 @@ IN_PROC_BROWSER_TEST_F(CommandsApiTest,
 }
 
 //
-#if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(NDEBUG)
+#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
 // TODO(dtseng): Test times out on Chrome OS debug. See http://crbug.com/412456.
 #define MAYBE_ContinuePropagation DISABLED_ContinuePropagation
 #else

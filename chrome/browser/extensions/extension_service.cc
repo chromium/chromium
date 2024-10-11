@@ -121,7 +121,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/extensions/install_limiter.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
@@ -423,7 +423,7 @@ ExtensionService::ExtensionService(
       force_installed_tracker_(registry_, profile_),
       force_installed_metrics_(registry_, profile_, &force_installed_tracker_),
       corrupted_extension_reinstaller_(profile_)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       ,
       ash_keeplist_manager_(profile, extension_prefs, this)
 #endif
@@ -538,7 +538,7 @@ void ExtensionService::Init() {
   component_loader_->LoadAll();
   bool load_saved_extensions = true;
   bool load_command_line_extensions = extensions_enabled_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (!ash::ProfileHelper::IsUserProfile(profile_)) {
     load_saved_extensions = false;
     load_command_line_extensions = false;
@@ -587,7 +587,7 @@ void ExtensionService::Init() {
   // Must be called after extensions are loaded.
   allowlist_.Init();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash_keeplist_manager_.Init();
 #endif
 
@@ -747,7 +747,7 @@ void ExtensionService::LoadExtensionsFromCommandLineFlag(
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void ExtensionService::LoadSigninProfileTestExtension(const std::string& path) {
   base::SysInfo::CrashIfChromeOSNonTestImage();
   std::string extension_id;
@@ -1246,7 +1246,7 @@ void ExtensionService::PostDeactivateExtension(
   profile_->GetExtensionSpecialStoragePolicy()->RevokeRightsForExtension(
       extension.get(), profile_);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Revoke external file access for the extension from its file system context.
   // It is safe to access the extension's storage partition at this point. The
   // storage partition may get destroyed only after the extension gets unloaded.
@@ -1481,9 +1481,9 @@ bool ExtensionService::AreAllExternalProvidersReady() const {
 void ExtensionService::OnAllExternalProvidersReady() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   InstallLimiter::Get(profile_)->OnAllExternalProvidersReady();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Install any pending extensions.
   if (update_once_all_providers_are_ready_ && updater()) {
@@ -2099,7 +2099,7 @@ bool ExtensionService::OnExternalExtensionFileFound(
       info.path, info.crx_location == mojom::ManifestLocation::kExternalPolicy
                      ? GetPolicyVerifierFormat()
                      : GetExternalVerifierFormat());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   InstallLimiter::Get(profile_)->Add(installer, file_info);
 #else
   installer->InstallCrxFile(file_info);

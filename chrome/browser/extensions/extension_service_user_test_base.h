@@ -8,7 +8,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif
@@ -22,7 +22,7 @@ class ExtensionServiceUserTestBase : public ExtensionServiceTestBase {
   ExtensionServiceUserTestBase();
   ~ExtensionServiceUserTestBase() override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void SetUp() override;
 
   void TearDown() override;
@@ -34,7 +34,7 @@ class ExtensionServiceUserTestBase : public ExtensionServiceTestBase {
     return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // If browser/lacros: set the testing profile for the test as a guest if
   // `is_guest` is `true`. If ChromeOS Ash: do the above, but also login a
@@ -47,12 +47,12 @@ class ExtensionServiceUserTestBase : public ExtensionServiceTestBase {
   explicit ExtensionServiceUserTestBase(
       std::unique_ptr<content::BrowserTaskEnvironment> task_environment);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   AccountId account_id_;
 
  private:
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 }  // namespace extensions

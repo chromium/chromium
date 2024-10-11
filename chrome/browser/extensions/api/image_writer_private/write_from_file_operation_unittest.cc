@@ -21,7 +21,7 @@ using testing::AtLeast;
 
 namespace {
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 void SetUpImageWriteClientProgressSimulation(FakeImageWriterClient* client) {
   std::vector<int> progress_list{0, 50, 100};
   bool will_succeed = true;
@@ -61,7 +61,7 @@ TEST_F(ImageWriterFromFileTest, InvalidFile) {
 
 // Runs the entire WriteFromFile operation.
 TEST_F(ImageWriterFromFileTest, WriteFromFileEndToEnd) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Sets up simulating Operation::Progress() and Operation::Success().
   test_utils_.RunOnUtilityClientCreation(
       base::BindOnce(&SetUpImageWriteClientProgressSimulation));
@@ -81,7 +81,7 @@ TEST_F(ImageWriterFromFileTest, WriteFromFileEndToEnd) {
                                    image_writer_api::Stage::kWrite, 100))
       .Times(AtLeast(1));
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Chrome OS doesn't verify.
   EXPECT_CALL(manager_, OnProgress(kDummyExtensionId,
                                    image_writer_api::Stage::kVerifyWrite, _))

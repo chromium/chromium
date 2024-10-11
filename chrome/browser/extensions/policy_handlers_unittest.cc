@@ -41,7 +41,7 @@
 #include "base/win/win_util.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "base/test/scoped_command_line.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -622,7 +622,7 @@ TEST(ExtensionSettingsPolicyHandlerTest, NonManagedOffWebstoreExtension) {
   EXPECT_EQ(*sanitized_policy_result, *value);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class PolicyHandlerAshTest : public ::testing::Test {
  public:
   PolicyHandlerAshTest() = default;
@@ -825,6 +825,6 @@ TEST_F(ExtensionInstallForceListPolicyHandlerAshTest,
 
   ASSERT_EQ(value->GetDict(), expected);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions

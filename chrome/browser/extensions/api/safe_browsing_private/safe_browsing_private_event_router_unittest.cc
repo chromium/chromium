@@ -48,7 +48,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -342,14 +342,14 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
   raw_ptr<extensions::TestEventRouter> event_router_ = nullptr;
 
  private:
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   policy::FakeBrowserDMTokenStorage dm_token_storage_;
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 };
 
 class SafeBrowsingPrivateEventRouterTest
     : public SafeBrowsingPrivateEventRouterTestBase {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
  public:
   SafeBrowsingPrivateEventRouterTest() = default;
 
@@ -360,7 +360,7 @@ class SafeBrowsingPrivateEventRouterTest
           std::make_unique<ash::UserManagerDelegateImpl>(),
           g_browser_process->local_state(),
           ash::CrosSettings::Get())};
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 TEST_F(SafeBrowsingPrivateEventRouterTest, TestOnReuseDetected_Warned) {
@@ -1643,7 +1643,7 @@ class SafeBrowsingIsRealtimeReportingEnabledTest
         is_policy_enabled_(testing::get<1>(GetParam())),
         is_authorized_(testing::get<2>(GetParam())) {
     // In chrome branded desktop builds, the browser is always manageable.
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
     if (is_manageable_) {
       base::CommandLine::ForCurrentProcess()->AppendSwitch(
           switches::kEnableChromeBrowserCloudManagement);
@@ -1658,7 +1658,7 @@ class SafeBrowsingIsRealtimeReportingEnabledTest
                                 *base::JSONReader::Read(kConnectorsPrefValue));
     }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
     const AccountId account_id(
         AccountId::FromUserEmail(profile_->GetProfileUserName()));
@@ -1681,7 +1681,7 @@ class SafeBrowsingIsRealtimeReportingEnabledTest
   const bool is_policy_enabled_;
   const bool is_authorized_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
  private:
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       user_manager_;

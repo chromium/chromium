@@ -21,9 +21,9 @@
 #include "extensions/browser/install/sandboxed_unpacker_failure_reason.h"
 #include "extensions/browser/updater/extension_downloader.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace extensions {
 
@@ -34,7 +34,7 @@ namespace {
 // Timeout to report UMA if not all force-installed extension were loaded.
 constexpr base::TimeDelta kInstallationTimeout = base::Minutes(5);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Converts user_manager::UserType to InstallStageTracker::UserType for
 // histogram purposes.
 ForceInstalledMetrics::UserType ConvertUserType(
@@ -83,7 +83,7 @@ void ReportUserType(Profile* profile, bool is_stuck_in_initial_creation_stage) {
         user_type);
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Reports time taken for force installed extension during different
 // installation stages.
@@ -504,7 +504,7 @@ void ForceInstalledMetrics::ReportMetrics() {
           "Extensions.OffStore_ForceInstalledFailureReason3", failure_reason);
     }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     bool is_stuck_in_initial_creation_stage =
         failure_reason == FailureReason::IN_PROGRESS &&
         installation.install_stage == InstallStageTracker::Stage::CREATED &&
@@ -512,7 +512,7 @@ void ForceInstalledMetrics::ReportMetrics() {
             InstallStageTracker::InstallCreationStage::
                 NOTIFIED_FROM_MANAGEMENT_INITIAL_CREATION_FORCED;
     ReportUserType(profile_, is_stuck_in_initial_creation_stage);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     LOG(WARNING) << "Forced extension " << extension_id
                  << " failed to install with data="
                  << InstallStageTracker::GetFormattedInstallationData(

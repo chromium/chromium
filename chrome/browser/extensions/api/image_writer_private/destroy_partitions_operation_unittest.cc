@@ -26,7 +26,7 @@ TEST_F(ImageWriterDestroyPartitionsOperationTest, EndToEnd) {
   TestingProfile profile;
   MockOperationManager manager(&profile);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   auto set_up_utility_client_progress_simulation =
       [](FakeImageWriterClient* client) {
         std::vector<int> progress_list{0, 50, 100};

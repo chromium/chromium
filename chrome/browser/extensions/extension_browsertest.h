@@ -376,7 +376,7 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest,
   static content::ServiceWorkerContext* GetServiceWorkerContext(
       content::BrowserContext* browser_context);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // True if the command line should be tweaked as if ChromeOS user is
   // already logged in.
   bool set_chromeos_user_;

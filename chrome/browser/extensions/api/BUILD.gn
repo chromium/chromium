@@ -70,21 +70,16 @@ group("api_implementations") {
   if (is_chromeos) {
     public_deps += [
       "//chrome/browser/chromeos/extensions/smart_card_provider_private",
+      "//chrome/browser/extensions/api/crash_report_private",
       "//chrome/browser/extensions/api/document_scan",
       "//chrome/browser/extensions/api/enterprise_device_attributes",
       "//chrome/browser/extensions/api/enterprise_kiosk_input",
       "//chrome/browser/extensions/api/enterprise_networking_attributes",
       "//chrome/browser/extensions/api/enterprise_platform_keys",
-      "//chrome/browser/extensions/api/platform_keys",
-      "//chrome/browser/extensions/api/shared_storage",
-    ]
-  }
-
-  if (is_chromeos_ash) {
-    public_deps += [
-      "//chrome/browser/extensions/api/crash_report_private",
       "//chrome/browser/extensions/api/enterprise_platform_keys_private",
       "//chrome/browser/extensions/api/input_ime",
+      "//chrome/browser/extensions/api/platform_keys",
+      "//chrome/browser/extensions/api/shared_storage",
     ]
   }
 }
@@ -129,24 +124,20 @@ function_registration("api_registration") {
     "//ui/accessibility:ax_enums_mojo",
   ]
 
-  # TODO: We should pull these out into a separate build and function generation
-  # step so that //chrome/browser/extensions has fewer dependencies on
-  # //chrome/browser/chromeos.
   if (is_chromeos) {
     deps += [
+      "//chrome/browser/ash/extensions/autotest_private",
+      "//chrome/browser/ash/extensions/file_manager",
+
+      # TODO: We should pull these out into a separate build and function
+      # generation step so that //chrome/browser/extensions has fewer
+      # dependencies on //chrome/browser/chromeos.
       "//chrome/browser/chromeos/extensions:constants",
       "//chrome/browser/chromeos/extensions/accessibility_service_private",
       "//chrome/browser/chromeos/extensions/info_private",
       "//chrome/browser/chromeos/extensions/login_screen/login_screen_storage",
       "//chrome/browser/chromeos/extensions/system_log",
       "//chrome/browser/chromeos/extensions/wallpaper",
-    ]
-  }
-
-  if (is_chromeos_ash) {
-    deps += [
-      "//chrome/browser/ash/extensions/autotest_private",
-      "//chrome/browser/ash/extensions/file_manager",
     ]
   }
 }

@@ -27,7 +27,7 @@
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/crosapi/automation_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
@@ -59,7 +59,7 @@ bool ChromeAutomationInternalApiDelegate::CanRequestAutomation(
 
 bool ChromeAutomationInternalApiDelegate::EnableTree(
     const ui::AXTreeID& tree_id) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // CrosapiManager may not be initialized on unit testing.
   // Propagate the EnableTree signal to crosapi clients.
   if (crosapi::CrosapiManager::IsInitialized()) {
@@ -77,7 +77,7 @@ bool ChromeAutomationInternalApiDelegate::EnableTree(
 }
 
 void ChromeAutomationInternalApiDelegate::EnableDesktop() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // CrosapiManager may not be initialized on unit testing.
   // Propagate the EnableDesktop signal to crosapi clients.
   if (crosapi::CrosapiManager::IsInitialized()) {

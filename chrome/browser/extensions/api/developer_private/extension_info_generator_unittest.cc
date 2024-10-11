@@ -529,7 +529,7 @@ TEST_F(ExtensionInfoGeneratorUnitTest, GenerateExtensionsJSONData) {
             "behllobkkfkfnphdnhnkndlbkcpglgmj.json"));
   }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Test Extension2
   extension_path = data_dir()
                        .AppendASCII("good")

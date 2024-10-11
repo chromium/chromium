@@ -1133,7 +1133,7 @@ source_set("extensions") {
     }
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "api/file_handlers/non_native_file_system_delegate_chromeos.cc",
       "api/file_handlers/non_native_file_system_delegate_chromeos.h",
@@ -1578,9 +1578,7 @@ static_library("test_support") {
       "api/document_scan/document_scan_test_utils.cc",
       "api/document_scan/document_scan_test_utils.h",
     ]
-  }
 
-  if (is_chromeos_ash) {
     deps += [ "//components/user_manager:test_support" ]
   }
 }

@@ -54,11 +54,11 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_url_handlers.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/user_manager/user_manager.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using base::RandDouble;
 using base::UnguessableToken;
@@ -318,7 +318,7 @@ void ExtensionUpdater::AddToDownloader(
   // In Kiosk mode extensions are downloaded and updated by the ExternalCache.
   // Therefore we skip updates here to avoid conflicts.
   bool kiosk_crx_manifest_update_url_ignored = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   if (user_manager && user_manager->IsLoggedInAsKioskApp()) {
     ash::CrosSettings::Get()->GetBoolean(

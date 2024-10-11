@@ -22,9 +22,9 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/printing/cups_print_job_manager_factory.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class PrefRegistrySimple;
 
@@ -189,9 +189,9 @@ struct BrowserContextFactoryDependencies<PrintingAPIHandler> {
   static void DeclareFactoryDependencies(
       BrowserContextKeyedAPIFactory<PrintingAPIHandler>* factory) {
     factory->DependsOn(EventRouterFactory::GetInstance());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     factory->DependsOn(ash::CupsPrintJobManagerFactory::GetInstance());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 };
 

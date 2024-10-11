@@ -57,7 +57,7 @@
 #error "Extensions must be enabled"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/extensions/ash_extension_keeplist_manager.h"
 #endif
 
@@ -515,7 +515,7 @@ class ExtensionService : public ExtensionServiceInterface,
  private:
   // Loads extensions specified via a command line flag/switch.
   void LoadExtensionsFromCommandLineFlag(const char* switch_name);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void LoadSigninProfileTestExtension(const std::string& path);
 #endif
 
@@ -800,7 +800,7 @@ class ExtensionService : public ExtensionServiceInterface,
                                        raw_ptr<InstallGate, CtnExperimental>>;
   InstallGateRegistry install_delayer_registry_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   AshExtensionKeeplistManager ash_keeplist_manager_;
 #endif
 

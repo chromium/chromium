@@ -43,7 +43,7 @@
 #include "ui/gfx/text_elider.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
 #endif
@@ -78,7 +78,7 @@ std::string ReloadExtensionIfEnabled(const std::string& extension_id,
   return ReloadExtension(extension_id, context);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // Returns true if the extension ID is found in the InstallForceList policy. Is
 // checked by HasIsolatedStorage() when the extension is not found in the
 // registry.
@@ -99,7 +99,7 @@ bool IsForceInstalledExtension(const ExtensionId& extension_id,
   }
   return false;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Returns true if the profile is a sign-in profile and the extension is policy
 // installed. `is_policy_installed` can be passed to the method if its value is
@@ -110,7 +110,7 @@ bool IsLoginScreenExtension(
     ExtensionId extension_id,
     content::BrowserContext* context,
     std::optional<bool> is_policy_installed = std::nullopt) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Verify the force-installed extension list if no value for
   // `is_policy_installed` was passed.
   if (is_policy_installed == std::nullopt) {
@@ -138,7 +138,7 @@ bool HasIsolatedStorage(const ExtensionId& extension_id,
 
 bool HasIsolatedStorage(const Extension& extension,
                         content::BrowserContext* context) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const bool is_policy_extension =
       Manifest::IsPolicyLocation(extension.location());
   if (IsLoginScreenExtension(extension.id(), context, is_policy_extension)) {
@@ -167,7 +167,7 @@ void SetIsIncognitoEnabled(const std::string& extension_id,
       // by sync, for syncable component extensions.
       // See http://crbug.com/112290 and associated CLs for the sordid history.
       bool syncable = sync_helper::IsSyncableComponentExtension(extension);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       // For some users, the file manager app somehow ended up being synced even
       // though it's supposed to be unsyncable; see crbug.com/576964. If the bad
       // data ever gets cleaned up, this hack should be removed.

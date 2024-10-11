@@ -14,7 +14,7 @@
 #include "chrome/browser/extensions/install_tracker_factory.h"
 #include "extensions/browser/extensions_browser_client.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/extensions/extension_garbage_collector_chromeos.h"
 #endif
 
@@ -57,7 +57,7 @@ ExtensionGarbageCollectorFactory::~ExtensionGarbageCollectorFactory() = default;
 std::unique_ptr<KeyedService>
 ExtensionGarbageCollectorFactory::BuildInstanceFor(
     content::BrowserContext* context) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return std::make_unique<ExtensionGarbageCollectorChromeOS>(context);
 #else
   return std::make_unique<ExtensionGarbageCollector>(context);
