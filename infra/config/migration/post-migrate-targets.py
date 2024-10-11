@@ -62,13 +62,13 @@ def _convert_basic_suite(
         case 'ci_only' | 'use_isolated_scripts_api':
           anonymous_mixin_builder[key] = values.convert_direct(value)
 
-        case 'args':
+        case 'android_args' | 'args' | 'linux_args':
           anonymous_mixin_builder[key] = values.convert_args(value)
 
         case 'resultdb':
           anonymous_mixin_builder['resultdb'] = values.convert_resultdb(value)
 
-        case 'swarming':
+        case 'android_swarming' | 'swarming':
           anonymous_mixin_builder['swarming'] = values.convert_swarming(value)
 
         case 'mixins':
