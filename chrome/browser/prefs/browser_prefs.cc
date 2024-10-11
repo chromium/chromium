@@ -1104,10 +1104,6 @@ const char kTabResumeDismissedTabsPrefName[] =
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Deprecated 10/2024.
-constexpr char kLiveCaptionBubblePinned[] =
-    "accessibility.captions.live_caption_bubble_pinned";
-
-// Deprecated 10/2024.
 #if BUILDFLAG(IS_CHROMEOS)
 const char kMigrationStep[] = "ash.browser_data_migrator.migration_step";
 const char kMoveMigrationResumeStepPref[] =
@@ -1584,9 +1580,6 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterListPref(kTabResumeDismissedTabsPrefName,
                              base::Value::List());
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-  // Deprecated 10/2024
-  registry->RegisterBooleanPref(kLiveCaptionBubblePinned, false);
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2938,9 +2931,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 #if !BUILDFLAG(IS_ANDROID)
   profile_prefs->ClearPref(kTabResumeDismissedTabsPrefName);
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-  // Added 10/2024
-  profile_prefs->ClearPref(kLiveCaptionBubblePinned);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

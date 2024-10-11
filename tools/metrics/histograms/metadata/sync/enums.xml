@@ -330,7 +330,7 @@ chromium-metrics-reviews@google.com.
   <int value="100015" label="HomePageIsNewTabPage"/>
   <int value="100016" label="NtpCustomBackgroundDict"/>
   <int value="100017" label="LiveCaptionBubbleExpanded"/>
-  <int value="100018" label="(Obsolete) LiveCaptionBubblePinned"/>
+  <int value="100018" label="LiveCaptionBubblePinned"/>
   <int value="100019" label="LiveCaptionEnabled"/>
   <int value="100020" label="LiveCaptionLanguageCode"/>
   <int value="100021" label="LiveCaptionMediaFoundationRendererErrorSilenced"/>
