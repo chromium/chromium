@@ -59,6 +59,8 @@ BrandedNavigationItemTitleView* CreateGoogleDriveImageView(BOOL dark_mode) {
     title_view.imageLogo = MakeSymbolMulticolor(google_symbol);
   }
   title_view.titleLogoSpacing = kTitleLogoSpacing;
+  title_view.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_GOOGLE_DRIVE);
   return title_view;
 }
 #else
