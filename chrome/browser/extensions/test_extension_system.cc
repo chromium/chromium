@@ -35,6 +35,7 @@
 #include "extensions/browser/state_store.h"
 #include "extensions/browser/user_script_manager.h"
 #include "services/data_decoder/data_decoder_service.h"
+
 #if BUILDFLAG(IS_CHROMEOS)
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"

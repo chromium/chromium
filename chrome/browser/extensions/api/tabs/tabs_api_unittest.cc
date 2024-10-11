@@ -52,11 +52,8 @@
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/test_window_builder.h"
 #include "ash/wm/window_pin_util.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_content_manager.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace extensions {
 

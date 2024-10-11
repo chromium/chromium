@@ -592,12 +592,10 @@ void ComponentLoader::AddDefaultComponentExtensionsWithBackgroundPages(
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#if !BUILDFLAG(IS_CHROMEOS)  // http://crbug.com/314799
+// http://crbug.com/314799
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
   AddNetworkSpeechSynthesisExtension();
-#endif
-
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 }
 
 void ComponentLoader::
@@ -634,12 +632,10 @@ void ComponentLoader::AddComponentFromDirWithManifestFilename(
     const base::FilePath::CharType* guest_manifest_file_name,
     base::OnceClosure done_cb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-#if BUILDFLAG(IS_CHROMEOS)
+
   const base::FilePath::CharType* manifest_filename =
       IsNormalSession() ? manifest_file_name : guest_manifest_file_name;
-#else
-  const base::FilePath::CharType* manifest_filename = manifest_file_name;
-#endif
+
   GetExtensionFileTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&LoadManifestOnFileThread, root_directory,
@@ -676,9 +672,7 @@ void ComponentLoader::FinishAddComponentFromDir(
     std::move(done_cb).Run();
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS)
 void ComponentLoader::AddComponentFromDir(const base::FilePath& root_directory,
                                           const ExtensionId& extension_id,
                                           base::OnceClosure done_cb) {

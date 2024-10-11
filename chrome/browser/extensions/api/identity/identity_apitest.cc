@@ -3103,7 +3103,6 @@ IN_PROC_BROWSER_TEST_F(GetAuthTokenFunctionTest, GranularPermissionsResponse) {
 #if BUILDFLAG(IS_CHROMEOS)
 enum class DeviceLocalAccountSessionType { kPublic, kAppKiosk, kWebKiosk };
 
-#if BUILDFLAG(IS_CHROMEOS)
 class GetAuthTokenFunctionDeviceLocalAccountTestPlatformHelper {
  public:
   const AccountId kFakeAccountId = AccountId::FromUserEmail("test@test");
@@ -3159,7 +3158,6 @@ class GetAuthTokenFunctionDeviceLocalAccountTestPlatformHelper {
 
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class GetAuthTokenFunctionDeviceLocalAccountTest
     : public GetAuthTokenFunctionTest {

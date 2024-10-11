@@ -79,9 +79,7 @@ class ExtensionInstallForceListPolicyHandler
   // Returns nullopt if the policy is unset.
   std::optional<base::Value::Dict> GetAshPolicyDict(
       const policy::PolicyMap& policy_map);
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS)
   // Returns a `base::Value::Dict` with the extensions that must be force
   // installed in Lacros.
   //
