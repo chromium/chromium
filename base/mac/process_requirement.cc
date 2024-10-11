@@ -628,8 +628,12 @@ void ProcessRequirement::GatherMetrics() {
   }
 
   bool all_fields_have_expected_values =
-      team_id_has_expected_value && validation_category_has_expected_value &&
+      team_id_has_expected_value &&
       fallback_validation_category_has_expected_value;
+  if (CSOpsProvider()->SupportsValidationCategory()) {
+    all_fields_have_expected_values = all_fields_have_expected_values &&
+                                      validation_category_has_expected_value;
+  }
 
   if (!all_fields_have_expected_values) {
     // Use `DumpWithoutCrashing` to understand unexpected values, except in
