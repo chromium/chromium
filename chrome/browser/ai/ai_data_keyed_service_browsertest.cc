@@ -88,12 +88,14 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, InnerText) {
   LoadSimplePageAndData();
   ASSERT_TRUE(ai_data());
   EXPECT_EQ(ai_data()->inner_text(), "Non empty simple page");
+  EXPECT_EQ(ai_data()->page_context().inner_text(), "Non empty simple page");
 }
 
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, InnerTextOffset) {
   LoadSimplePageAndData();
   ASSERT_TRUE(ai_data());
   EXPECT_EQ(ai_data()->inner_text_offset(), 0u);
+  EXPECT_EQ(ai_data()->page_context().inner_text_offset(), 0u);
 }
 
 IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, Title) {
