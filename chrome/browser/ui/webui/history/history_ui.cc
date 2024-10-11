@@ -197,7 +197,42 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       "maybeShowEmbeddingsIph",
       history_embeddings::IsHistoryEmbeddingsSettingVisible(profile) &&
           !enable_history_embeddings);
-  history_embeddings::PopulateSourceForWebUI(source);
+  history_embeddings::PopulateSourceForWebUI(source, profile);
+
+  static constexpr webui::LocalizedString kHistoryEmbeddingsStrings[] = {
+      {"historyEmbeddingsAnswersSearchAlternativePrompt1",
+       IDS_HISTORY_EMBEDDINGS_SEARCH_ANSWERS_ALTERNATIVE_PROMPT_1},
+      {"historyEmbeddingsAnswersSearchAlternativePrompt2",
+       IDS_HISTORY_EMBEDDINGS_SEARCH_ANSWERS_ALTERNATIVE_PROMPT_2},
+      {"historyEmbeddingsAnswersSearchAlternativePrompt3",
+       IDS_HISTORY_EMBEDDINGS_SEARCH_ANSWERS_ALTERNATIVE_PROMPT_3},
+      {"historyEmbeddingsAnswersSearchAlternativePrompt4",
+       IDS_HISTORY_EMBEDDINGS_SEARCH_ANSWERS_ALTERNATIVE_PROMPT_4},
+      {"historyEmbeddingsPromoLabel", IDS_HISTORY_EMBEDDINGS_PROMO_LABEL},
+      {"historyEmbeddingsPromoClose", IDS_HISTORY_EMBEDDINGS_PROMO_CLOSE},
+      {"historyEmbeddingsPromoHeading", IDS_HISTORY_EMBEDDINGS_PROMO_HEADING},
+      {"historyEmbeddingsPromoBody", IDS_HISTORY_EMBEDDINGS_PROMO_BODY},
+      {"historyEmbeddingsAnswersPromoHeading",
+       IDS_HISTORY_EMBEDDINGS_ANSWERS_PROMO_HEADING},
+      {"historyEmbeddingsAnswersPromoBody",
+       IDS_HISTORY_EMBEDDINGS_ANSWERS_PROMO_BODY},
+      {"historyEmbeddingsPromoSettingsLinkText",
+       IDS_HISTORY_EMBEDDIGNS_PROMO_SETTINGS_LINK_TEXT},
+      {"historyEmbeddingsShowByLabel",
+       IDS_HISTORY_EMBEDDINGS_SHOW_BY_ARIA_LABEL},
+      {"historyEmbeddingsShowByDate", IDS_HISTORY_EMBEDDINGS_SHOW_BY_DATE},
+      {"historyEmbeddingsShowByGroup", IDS_HISTORY_EMBEDDINGS_SHOW_BY_GROUP},
+      {"historyEmbeddingsSuggestion1", IDS_HISTORY_EMBEDDINGS_SUGGESTION_1},
+      {"historyEmbeddingsSuggestion2", IDS_HISTORY_EMBEDDINGS_SUGGESTION_2},
+      {"historyEmbeddingsSuggestion3", IDS_HISTORY_EMBEDDINGS_SUGGESTION_3},
+      {"historyEmbeddingsSuggestion1AriaLabel",
+       IDS_HISTORY_EMBEDDINGS_SUGGESTION_1_ARIA_LABEL},
+      {"historyEmbeddingsSuggestion2AriaLabel",
+       IDS_HISTORY_EMBEDDINGS_SUGGESTION_2_ARIA_LABEL},
+      {"historyEmbeddingsSuggestion3AriaLabel",
+       IDS_HISTORY_EMBEDDINGS_SUGGESTION_3_ARIA_LABEL},
+  };
+  source->AddLocalizedStrings(kHistoryEmbeddingsStrings);
 
   // History clusters
   HistoryClustersUtil::PopulateSource(source, profile, /*in_side_panel=*/false);

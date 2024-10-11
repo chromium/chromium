@@ -136,6 +136,12 @@
   <message name="IDS_HISTORY_EMBEDDINGS_PROMO_BODY" desc="On the history page, the body text of the promo for history search powered by AI." translateable="false">
     In a few words, describe what you’re looking for, like "comfortable walking shoes" or "vegetarian pasta recipes." As you visit more sites on this device, you’ll see more results powered by AI.
   </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_ANSWERS_PROMO_HEADING" desc="On the history page, the heading of the promo for history search powered by AI with answerer." translateable="false">
+    Get answers from your history, powered by AI
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_ANSWERS_PROMO_BODY" desc="On the history page, the body text of the promo for history search powered by AI with answerer." translateable="false">
+    You can now also ask questions like "what was that square pizza place in Chicago?" or "what ingredients were in that eggplant pasta recipe?".  Using question words like "what", "when", or "where" will help Chrome give you better answers. You can also describe what you're looking for such as "comfortable walking shoes".  As you visit more sites on this device, you'll see more results powered by AI.
+  </message>
   <message name="IDS_HISTORY_EMBEDDIGNS_PROMO_SETTINGS_LINK_TEXT" desc="On the history page, the text of the link to edit the user's history search setting." translateable="false">
     Manage your history search setting
   </message>
@@ -186,6 +192,18 @@
   </message>
   <message name="IDS_HISTORY_EMBEDDINGS_SEARCH_PROMPT" desc="Placeholder text/label for the search input field in the history page when history embeddings is enabled." translateable="false">
     In a few words, describe what you're searching for
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_SEARCH_ANSWERS_ALTERNATIVE_PROMPT_1" desc="Alternative placeholder text/label for the search input field in the history page when ahistory embeddings answerer is enabled." translateable="false">
+    Try something like "what was that square pizza place in Chicago?"
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_SEARCH_ANSWERS_ALTERNATIVE_PROMPT_2" desc="Alternative placeholder text/label for the search input field in the history page when ahistory embeddings answerer is enabled." translateable="false">
+    Try something like "what ingredients were in that pasta recipe?"
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_SEARCH_ANSWERS_ALTERNATIVE_PROMPT_3" desc="Alternative placeholder text/label for the search input field in the history page when ahistory embeddings answerer is enabled." translateable="false">
+    Try something like "what was the time of the comedy show?"
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_SEARCH_ANSWERS_ALTERNATIVE_PROMPT_4" desc="Alternative placeholder text/label for the search input field in the history page when ahistory embeddings answerer is enabled." translateable="false">
+    Try something like "how much was the cargo bike?"
   </message>
   <message name="IDS_HISTORY_EMBEDDINGS_ANSWER_HEADING" desc="Heading for answer section in history search results." translateable="false">
     Summary

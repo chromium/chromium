@@ -31,9 +31,10 @@ class ChromeHistoryEmbeddingsService : public HistoryEmbeddingsService {
       delete;
   ~ChromeHistoryEmbeddingsService() override;
 
- private:
   // HistoryEmbeddingsService:
   bool IsAnswererUseAllowed() const override;
+
+ private:
   QualityLogEntry PrepareQualityLogEntry() override;
 
   // Outlives this because of service factory dependency.

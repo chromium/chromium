@@ -214,6 +214,9 @@ class HistoryEmbeddingsService : public KeyedService,
   void OnHistoryDeletions(history::HistoryService* history_service,
                           const history::DeletionInfo& deletion_info) override;
 
+  // This can be overridden to gate answer generation for some accounts.
+  virtual bool IsAnswererUseAllowed() const;
+
  private:
   friend class HistoryEmbeddingsBrowserTest;
   friend class HistoryEmbeddingsServicePublic;
@@ -273,9 +276,6 @@ class HistoryEmbeddingsService : public KeyedService,
   void OnOsCryptAsyncReady(EmbedderMetadata metadata,
                            os_crypt_async::Encryptor encryptor,
                            bool success);
-
-  // This can be overridden to gate answer generation for some accounts.
-  virtual bool IsAnswererUseAllowed() const;
 
   // This can be overridden to prepare a log entry that will then be filled
   // with data and sent on destruction. Default implementation returns null.

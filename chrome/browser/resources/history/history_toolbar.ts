@@ -179,6 +179,18 @@ export class HistoryToolbarElement extends PolymerElement {
   private computeSearchPrompt_(): string {
     if (loadTimeData.getBoolean('enableHistoryEmbeddings') &&
         TABBED_PAGES.includes(this.selectedPage)) {
+      if (loadTimeData.getBoolean('enableHistoryEmbeddingsAnswers')) {
+        const possiblePrompts = [
+          'historyEmbeddingsSearchPrompt',
+          'historyEmbeddingsAnswersSearchAlternativePrompt1',
+          'historyEmbeddingsAnswersSearchAlternativePrompt2',
+          'historyEmbeddingsAnswersSearchAlternativePrompt3',
+          'historyEmbeddingsAnswersSearchAlternativePrompt4',
+        ];
+        const randomIndex = Math.floor(Math.random() * possiblePrompts.length);
+        return loadTimeData.getString(possiblePrompts[randomIndex]);
+      }
+
       return loadTimeData.getString('historyEmbeddingsSearchPrompt');
     }
 

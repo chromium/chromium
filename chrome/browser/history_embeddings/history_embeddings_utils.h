@@ -19,7 +19,7 @@ bool IsHistoryEmbeddingsEnabledForProfile(Profile* profile);
 // have the option to opt-in/out of the history embeddings behavior.
 bool IsHistoryEmbeddingsSettingVisible(Profile* profile);
 
-void PopulateSourceForWebUI(content::WebUIDataSource* source);
+void PopulateSourceForWebUI(content::WebUIDataSource* source, Profile* profile);
 
 }  // namespace history_embeddings
 

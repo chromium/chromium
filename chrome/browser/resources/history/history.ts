@@ -22,7 +22,7 @@ export {ensureLazyLoaded, HistoryAppElement, listenForPrivilegedLinkClicks} from
 export {BrowserService, BrowserServiceImpl, QueryResult, RemoveVisitsRequest} from './browser_service.js';
 export {HistoryPageViewHistogram, SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram} from './constants.js';
 export {ForeignSession, ForeignSessionTab, ForeignSessionWindow, HistoryEntry, HistoryQuery} from './externs.js';
-export {HISTORY_EMBEDDINGS_PROMO_SHOWN_KEY, HistoryEmbeddingsPromoElement} from './history_embeddings_promo.js';
+export {HISTORY_EMBEDDINGS_ANSWERS_PROMO_SHOWN_KEY, HISTORY_EMBEDDINGS_PROMO_SHOWN_KEY, HistoryEmbeddingsPromoElement} from './history_embeddings_promo.js';
 export {HistoryItemElement} from './history_item.js';
 export {ActionMenuModel, HistoryListElement} from './history_list.js';
 export {HistoryToolbarElement} from './history_toolbar.js';

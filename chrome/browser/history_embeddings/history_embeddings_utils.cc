@@ -4,11 +4,13 @@
 
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 
+#include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/history_embeddings/history_embeddings_features.h"
+#include "components/history_embeddings/history_embeddings_service.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -40,33 +42,19 @@ bool IsHistoryEmbeddingsSettingVisible(Profile* profile) {
              optimization_guide::UserVisibleFeatureKey::kHistorySearch);
 }
 
-void PopulateSourceForWebUI(content::WebUIDataSource* source) {
+void PopulateSourceForWebUI(content::WebUIDataSource* source,
+                            Profile* profile) {
+  auto* history_embeddings_service =
+      HistoryEmbeddingsServiceFactory::GetForProfile(profile);
   source->AddBoolean("enableHistoryEmbeddingsAnswers",
-                     history_embeddings::IsHistoryEmbeddingsAnswersEnabled());
+                     history_embeddings::IsHistoryEmbeddingsAnswersEnabled() &&
+                         history_embeddings_service &&
+                         history_embeddings_service->IsAnswererUseAllowed());
   source->AddBoolean("enableHistoryEmbeddingsImages",
                      history_embeddings::kEnableImagesForResults.Get());
   static constexpr webui::LocalizedString kHistoryEmbeddingsStrings[] = {
       {"historyEmbeddingsSearchPrompt", IDS_HISTORY_EMBEDDINGS_SEARCH_PROMPT},
       {"historyEmbeddingsDisclaimer", IDS_HISTORY_EMBEDDINGS_DISCLAIMER},
-      {"historyEmbeddingsPromoLabel", IDS_HISTORY_EMBEDDINGS_PROMO_LABEL},
-      {"historyEmbeddingsPromoClose", IDS_HISTORY_EMBEDDINGS_PROMO_CLOSE},
-      {"historyEmbeddingsPromoHeading", IDS_HISTORY_EMBEDDINGS_PROMO_HEADING},
-      {"historyEmbeddingsPromoBody", IDS_HISTORY_EMBEDDINGS_PROMO_BODY},
-      {"historyEmbeddingsPromoSettingsLinkText",
-       IDS_HISTORY_EMBEDDIGNS_PROMO_SETTINGS_LINK_TEXT},
-      {"historyEmbeddingsShowByLabel",
-       IDS_HISTORY_EMBEDDINGS_SHOW_BY_ARIA_LABEL},
-      {"historyEmbeddingsShowByDate", IDS_HISTORY_EMBEDDINGS_SHOW_BY_DATE},
-      {"historyEmbeddingsShowByGroup", IDS_HISTORY_EMBEDDINGS_SHOW_BY_GROUP},
-      {"historyEmbeddingsSuggestion1", IDS_HISTORY_EMBEDDINGS_SUGGESTION_1},
-      {"historyEmbeddingsSuggestion2", IDS_HISTORY_EMBEDDINGS_SUGGESTION_2},
-      {"historyEmbeddingsSuggestion3", IDS_HISTORY_EMBEDDINGS_SUGGESTION_3},
-      {"historyEmbeddingsSuggestion1AriaLabel",
-       IDS_HISTORY_EMBEDDINGS_SUGGESTION_1_ARIA_LABEL},
-      {"historyEmbeddingsSuggestion2AriaLabel",
-       IDS_HISTORY_EMBEDDINGS_SUGGESTION_2_ARIA_LABEL},
-      {"historyEmbeddingsSuggestion3AriaLabel",
-       IDS_HISTORY_EMBEDDINGS_SUGGESTION_3_ARIA_LABEL},
       {"historyEmbeddingsHeading", IDS_HISTORY_EMBEDDINGS_HEADING},
       {"historyEmbeddingsHeadingLoading",
        IDS_HISTORY_EMBEDDINGS_HEADING_LOADING},

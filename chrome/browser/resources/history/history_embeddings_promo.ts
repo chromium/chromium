@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/icons_lit.html.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './history_embeddings_promo.html.js';
@@ -15,6 +16,11 @@ import {getTemplate} from './history_embeddings_promo.html.js';
 // is considered truthy.
 export const HISTORY_EMBEDDINGS_PROMO_SHOWN_KEY: string =
     'history-embeddings-promo';
+
+// Key used in localStorage to determine if this promo has been shown for
+// history embeddings with answerer enabled. Any value is considered truthy.
+export const HISTORY_EMBEDDINGS_ANSWERS_PROMO_SHOWN_KEY: string =
+    'history-embeddings-answers-promo';
 
 export interface HistoryEmbeddingsPromoElement {
   $: {
@@ -34,10 +40,20 @@ export class HistoryEmbeddingsPromoElement extends PolymerElement {
 
   static get properties() {
     return {
+      isAnswersEnabled_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableHistoryEmbeddingsAnswers'),
+      },
+
       shown_: {
         type: Boolean,
-        value: () =>
-            !(window.localStorage.getItem(HISTORY_EMBEDDINGS_PROMO_SHOWN_KEY)),
+        value: () => {
+          const key =
+              loadTimeData.getBoolean('enableHistoryEmbeddingsAnswers') ?
+              HISTORY_EMBEDDINGS_ANSWERS_PROMO_SHOWN_KEY :
+              HISTORY_EMBEDDINGS_PROMO_SHOWN_KEY;
+          return !(window.localStorage.getItem(key));
+        },
       },
     };
   }
@@ -45,8 +61,10 @@ export class HistoryEmbeddingsPromoElement extends PolymerElement {
   private shown_: boolean;
 
   private onCloseClick_() {
-    window.localStorage.setItem(
-        HISTORY_EMBEDDINGS_PROMO_SHOWN_KEY, true.toString());
+    const key = loadTimeData.getBoolean('enableHistoryEmbeddingsAnswers') ?
+        HISTORY_EMBEDDINGS_ANSWERS_PROMO_SHOWN_KEY :
+        HISTORY_EMBEDDINGS_PROMO_SHOWN_KEY;
+    window.localStorage.setItem(key, true.toString());
     this.shown_ = false;
   }
 }

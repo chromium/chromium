@@ -185,5 +185,24 @@ suite('history-toolbar', function() {
     // Synced tabs page should have the default prompt.
     toolbar.selectedPage = 'syncedTabs';
     assertEquals('Search history', toolbar.$.mainToolbar.searchPrompt);
+
+    // With history embeddings' answerer enabled, prompt should change.
+    loadTimeData.overrideValues({
+      enableHistoryEmbeddings: true,
+      enableHistoryEmbeddingsAnswers: true,
+    });
+    const possiblePrompts = {
+      historyEmbeddingsSearchPrompt: 'prompt 0',
+      historyEmbeddingsAnswersSearchAlternativePrompt1: 'prompt 1',
+      historyEmbeddingsAnswersSearchAlternativePrompt2: 'prompt 2',
+      historyEmbeddingsAnswersSearchAlternativePrompt3: 'prompt 3',
+      historyEmbeddingsAnswersSearchAlternativePrompt4: 'prompt 4',
+    };
+    loadTimeData.overrideValues(possiblePrompts);
+    toolbar = createToolbar();
+    await flushTasks();
+    toolbar.selectedPage = 'history';
+    assertTrue(Object.values(possiblePrompts)
+                   .includes(toolbar.$.mainToolbar.searchPrompt));
   });
 });
