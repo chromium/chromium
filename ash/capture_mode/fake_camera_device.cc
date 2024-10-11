@@ -117,11 +117,10 @@ class GpuMemoryBufferStrategy : public BufferStrategy {
   void DrawFrameOnBuffer(const gfx::Size& frame_size) override {
     auto scoped_mapping = client_si_->Map();
     CHECK(scoped_mapping);
-    const gfx::Size buffer_size = scoped_mapping->Size();
-    uint8_t* data = static_cast<uint8_t*>(scoped_mapping->Memory(0));
+    base::span<uint8_t> data_span = scoped_mapping->GetMemoryForPlane(0);
 
     // Clear all the buffer to 0.
-    memset(data, 0, scoped_mapping->Stride(0) * buffer_size.height());
+    std::ranges::fill(data_span, 0x0);
 
     SkBitmap bitmap;
     // Create an `SkImageInfo` with color type `kBGRA_8888_SkColorType` which
@@ -131,7 +130,7 @@ class GpuMemoryBufferStrategy : public BufferStrategy {
         SkImageInfo::Make(frame_size.width(), frame_size.height(),
                           kBGRA_8888_SkColorType, kPremul_SkAlphaType);
     bitmap.setInfo(info);
-    bitmap.setPixels(data);
+    bitmap.setPixels(data_span.data());
     DrawFrameOnCanvas(cc::SkiaPaintCanvas(bitmap), frame_size);
   }
 
