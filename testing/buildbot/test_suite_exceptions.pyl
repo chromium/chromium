@@ -2552,24 +2552,6 @@
     'remove_from': [
       'Mac V8 FYI Release (Intel)',
     ],
-    'modifications': {
-      'mac-angle-chromium-intel': {
-        'args': [
-          # TODO(crbug.com/326277739): Remove this once we determine if this
-          # has an impact on ANGLE test stability.
-          '--jobs=2',
-        ],
-      },
-    },
-    'replacements': {
-      'mac-angle-chromium-intel': {
-        'args': {
-          # Magic substitution happens after regular replacement, so remove it
-          # now since we are manually applying the number of jobs above.
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs': None,
-        },
-      },
-    },
   },
   'webgl2_conformance_gl_passthrough_tests': {
     'remove_from': [
@@ -2619,26 +2601,12 @@
           '--extra-browser-args=--disable-metal-shader-cache',
         ],
       },
-      'mac-angle-chromium-intel': {
-        'args': [
-          # TODO(crbug.com/326277739): Remove this once we determine if this
-          # has an impact on ANGLE test stability.
-          '--jobs=2',
-        ],
-      },
     },
     'replacements': {
       'Mac Pro FYI Release (AMD)': {
         'args': {
           # Causes problems on older hardware. crbug.com/1499911.
           '--enable-metal-debug-layers': None,
-        },
-      },
-      'mac-angle-chromium-intel': {
-        'args': {
-          # Magic substitution happens after regular replacement, so remove it
-          # now since we are manually applying the number of jobs above.
-          '$$MAGIC_SUBSTITUTION_GPUParallelJobs': None,
         },
       },
     },

@@ -514,24 +514,6 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "gpu_angle_ios_gtests",
-    basic_suites = {
-        "gpu_angle_ios_end2end_gtests": targets.legacy_matrix_config(
-            variants = [
-                "SIM_IPHONE_14_17_5",
-                "SIM_IPHONE_14_18_0",
-            ],
-        ),
-        "gpu_angle_ios_white_box_gtests": targets.legacy_matrix_config(
-            variants = [
-                "SIM_IPHONE_14_17_5",
-                "SIM_IPHONE_14_18_0",
-            ],
-        ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
     name = "gpu_fyi_chromeos_brya_telemetry_tests",
     basic_suites = {
         "gpu_noop_sleep_telemetry_test": targets.legacy_matrix_config(

@@ -361,39 +361,6 @@ targets.legacy_compound_suite(
 # BEGIN composition test suites used by the GPU bots
 
 targets.legacy_compound_suite(
-    name = "gpu_angle_linux_telemetry_tests",
-    basic_suites = [
-        "gpu_common_and_optional_telemetry_tests",
-        "gpu_webgl2_conformance_gl_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_gl_passthrough_telemetry_tests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "gpu_angle_mac_telemetry_tests",
-    basic_suites = [
-        "gpu_info_collection_telemetry_tests",
-        "gpu_webgl2_conformance_gl_passthrough_ganesh_telemetry_tests",
-        "gpu_webgl2_conformance_metal_passthrough_graphite_telemetry_tests",
-        "gpu_webgl_conformance_gl_passthrough_ganesh_telemetry_tests",
-        "gpu_webgl_conformance_metal_passthrough_ganesh_telemetry_tests",
-        "gpu_webgl_conformance_metal_passthrough_graphite_telemetry_tests",
-        "gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "gpu_angle_win_intel_nvidia_telemetry_tests",
-    basic_suites = [
-        "gpu_info_collection_telemetry_tests",
-        "gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_d3d9_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_d3d11_passthrough_telemetry_tests",
-        "gpu_webgl_conformance_vulkan_passthrough_telemetry_tests",
-    ],
-)
-
-targets.legacy_compound_suite(
     name = "gpu_chromeos_telemetry_tests",
     basic_suites = [
         "gpu_webgl_conformance_telemetry_tests",

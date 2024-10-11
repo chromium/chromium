@@ -2165,24 +2165,6 @@
       'angle_unittests': {},
     },
 
-    'gpu_angle_ios_end2end_gtests': {
-      'angle_end2end_tests': {
-        'args': [
-          '--release',
-        ],
-        'use_isolated_scripts_api': True,
-      },
-    },
-
-    'gpu_angle_ios_white_box_gtests': {
-      'angle_white_box_tests': {
-        'args': [
-          '--release',
-        ],
-        'use_isolated_scripts_api': True,
-      },
-    },
-
     'gpu_angle_unit_gtests': {
       'angle_unittests': {
         'android_args': [
@@ -3051,25 +3033,6 @@
         'args': [
           '--dont-restore-color-profile-after-test',
           '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=gl --disable-features=SkiaGraphite',
-        ],
-      },
-    },
-
-    'gpu_info_collection_telemetry_tests': {
-      'info_collection_tests': {
-        'test_common': {
-          'mixins': [
-            'has_native_resultdb_integration',
-          ],
-        },
-        'telemetry_test_name': 'info_collection',
-        'mixins': [
-          'gpu_integration_test_common_args',
-        ],
-        'args': [
-          '$$MAGIC_SUBSTITUTION_GPUExpectedVendorId',
-          '$$MAGIC_SUBSTITUTION_GPUExpectedDeviceId',
-          '--extra-browser-args=--force_high_performance_gpu',
         ],
       },
     },
@@ -6030,30 +5993,6 @@
       'fuchsia_web_engine_gtests',
     ],
 
-    'gpu_angle_linux_telemetry_tests': [
-      'gpu_common_and_optional_telemetry_tests',
-      'gpu_webgl2_conformance_gl_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_gl_passthrough_telemetry_tests',
-    ],
-
-    'gpu_angle_mac_telemetry_tests': [
-      'gpu_info_collection_telemetry_tests',
-      'gpu_webgl2_conformance_gl_passthrough_ganesh_telemetry_tests',
-      'gpu_webgl2_conformance_metal_passthrough_graphite_telemetry_tests',
-      'gpu_webgl_conformance_gl_passthrough_ganesh_telemetry_tests',
-      'gpu_webgl_conformance_metal_passthrough_ganesh_telemetry_tests',
-      'gpu_webgl_conformance_metal_passthrough_graphite_telemetry_tests',
-      'gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests',
-    ],
-
-    'gpu_angle_win_intel_nvidia_telemetry_tests': [
-      'gpu_info_collection_telemetry_tests',
-      'gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_d3d11_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_d3d9_passthrough_telemetry_tests',
-      'gpu_webgl_conformance_vulkan_passthrough_telemetry_tests',
-    ],
-
     'gpu_chromeos_telemetry_tests': [
       'gpu_webgl_conformance_telemetry_tests',
     ],
@@ -6886,21 +6825,6 @@
         'variants': [
           'SIM_IPAD_AIR_5TH_GEN_17_5',
           'SIM_IPHONE_14_17_5',
-        ],
-      },
-    },
-
-    'gpu_angle_ios_gtests': {
-      'gpu_angle_ios_end2end_gtests': {
-        'variants': [
-          'SIM_IPHONE_14_17_5',
-          'SIM_IPHONE_14_18_0',
-        ],
-      },
-      'gpu_angle_ios_white_box_gtests': {
-        'variants': [
-          'SIM_IPHONE_14_17_5',
-          'SIM_IPHONE_14_18_0',
         ],
       },
     },

@@ -244,18 +244,6 @@
       'ios_runtime_cache_17_5',
     ],
   },
-  'SIM_IPHONE_14_18_0': {
-    'identifier': 'iPhone 14 18.0',
-    'args': [
-      '--platform',
-      'iPhone 14',
-      '--version',
-      '18.0',
-    ],
-    'mixins': [
-      'ios_runtime_cache_18_0',
-    ],
-  },
   'SIM_IPHONE_14_18_1': {
     'identifier': 'iPhone 14 18.1',
     'args': [

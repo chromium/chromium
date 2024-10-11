@@ -1871,30 +1871,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "gpu_angle_ios_end2end_gtests",
-    tests = {
-        "angle_end2end_tests": targets.legacy_test_config(
-            args = [
-                "--release",
-            ],
-            use_isolated_scripts_api = True,
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "gpu_angle_ios_white_box_gtests",
-    tests = {
-        "angle_white_box_tests": targets.legacy_test_config(
-            args = [
-                "--release",
-            ],
-            use_isolated_scripts_api = True,
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "gpu_angle_unit_gtests",
     tests = {
         "angle_unittests": targets.legacy_test_config(
@@ -2570,23 +2546,6 @@ targets.legacy_basic_suite(
             args = [
                 "--dont-restore-color-profile-after-test",
                 "--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=gl --disable-features=SkiaGraphite",
-            ],
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "gpu_info_collection_telemetry_tests",
-    tests = {
-        "info_collection_tests": targets.legacy_test_config(
-            mixins = [
-                "gpu_integration_test_common_args",
-            ],
-            args = [
-                targets.magic_args.GPU_EXPECTED_VENDOR_ID,
-                targets.magic_args.GPU_EXPECTED_DEVICE_ID,
-                # On dual-GPU devices we want the high-performance GPU to be active
-                "--extra-browser-args=--force_high_performance_gpu",
             ],
         ),
     },

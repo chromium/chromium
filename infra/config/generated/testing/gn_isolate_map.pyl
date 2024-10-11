@@ -100,6 +100,7 @@
   "angle_white_box_tests": {
     "label": "//third_party/angle/src/tests:angle_white_box_tests",
     "type": "windowed_test_launcher",
+    "skip_usage_check": True,
   },
   "app_shell_unittests": {
     "label": "//extensions/shell:app_shell_unittests",

@@ -112,6 +112,8 @@ targets.binaries.windowed_test_launcher(
 targets.binaries.windowed_test_launcher(
     name = "angle_white_box_tests",
     label = "//third_party/angle/src/tests:angle_white_box_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.binaries.windowed_test_launcher(

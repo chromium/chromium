@@ -1125,6 +1125,89 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "gpu_angle_ios_end2end_gtests",
+    targets = [
+        "angle_end2end_tests",
+    ],
+    per_test_modifications = {
+        "angle_end2end_tests": targets.mixin(
+            args = [
+                "--release",
+            ],
+            use_isolated_scripts_api = True,
+        ),
+    },
+)
+
+targets.bundle(
+    name = "gpu_angle_ios_gtests",
+    targets = [
+        targets.bundle(
+            targets = "gpu_angle_ios_end2end_gtests",
+            variants = [
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_14_18_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "gpu_angle_ios_white_box_gtests",
+            variants = [
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_14_18_0",
+            ],
+        ),
+    ],
+)
+
+targets.bundle(
+    name = "gpu_angle_ios_white_box_gtests",
+    targets = [
+        "angle_white_box_tests",
+    ],
+    per_test_modifications = {
+        "angle_white_box_tests": targets.mixin(
+            args = [
+                "--release",
+            ],
+            use_isolated_scripts_api = True,
+        ),
+    },
+)
+
+targets.bundle(
+    name = "gpu_angle_linux_telemetry_tests",
+    targets = [
+        "gpu_common_and_optional_telemetry_tests",
+        "gpu_webgl2_conformance_gl_passthrough_telemetry_tests",
+        "gpu_webgl_conformance_gl_passthrough_telemetry_tests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_angle_mac_telemetry_tests",
+    targets = [
+        "gpu_info_collection_telemetry_tests",
+        "gpu_webgl2_conformance_gl_passthrough_ganesh_telemetry_tests",
+        "gpu_webgl2_conformance_metal_passthrough_graphite_telemetry_tests",
+        "gpu_webgl_conformance_gl_passthrough_ganesh_telemetry_tests",
+        "gpu_webgl_conformance_metal_passthrough_ganesh_telemetry_tests",
+        "gpu_webgl_conformance_metal_passthrough_graphite_telemetry_tests",
+        "gpu_webgl_conformance_swangle_passthrough_representative_telemetry_tests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_angle_win_intel_nvidia_telemetry_tests",
+    targets = [
+        "gpu_info_collection_telemetry_tests",
+        "gpu_webgl2_conformance_d3d11_passthrough_telemetry_tests",
+        "gpu_webgl_conformance_d3d11_passthrough_telemetry_tests",
+        "gpu_webgl_conformance_d3d9_passthrough_telemetry_tests",
+        "gpu_webgl_conformance_vulkan_passthrough_telemetry_tests",
+    ],
+)
+
+targets.bundle(
     name = "gpu_common_linux_telemetry_tests",
     targets = [
         "gpu_common_and_optional_telemetry_tests",
@@ -1158,6 +1241,25 @@ targets.bundle(
         "gpu_common_gtests_passthrough",
         "gpu_desktop_specific_gtests",
     ],
+)
+
+targets.bundle(
+    name = "gpu_info_collection_telemetry_tests",
+    targets = [
+        "info_collection_tests",
+    ],
+    per_test_modifications = {
+        "info_collection_tests": [
+            targets.mixin(
+                args = [
+                    targets.magic_args.GPU_EXPECTED_VENDOR_ID,
+                    targets.magic_args.GPU_EXPECTED_DEVICE_ID,
+                    "--extra-browser-args=--force_high_performance_gpu",
+                ],
+            ),
+            "gpu_integration_test_common_args",
+        ],
+    },
 )
 
 targets.bundle(
