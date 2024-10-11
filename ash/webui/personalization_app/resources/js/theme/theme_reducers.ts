@@ -75,6 +75,17 @@ export function geolocationPermissionEnabledReducer(
   }
 }
 
+export function geolocationIsUserModifiableReducer(
+    state: ThemeState['geolocationIsUserModifiable'], action: Actions,
+    _: PersonalizationState): ThemeState['geolocationIsUserModifiable'] {
+  switch (action.name) {
+    case ThemeActionName.SET_GEOLOCATION_IS_USER_MODIFIABLE:
+      return action.isUserModifiable;
+    default:
+      return state;
+  }
+}
+
 export function sunriseTimeReducer(
     state: ThemeState['sunriseTime'], action: Actions,
     _: PersonalizationState): ThemeState['sunriseTime'] {
@@ -105,6 +116,7 @@ export const themeReducers:
       sampleColorSchemes: sampleColorSchemesReducer,
       staticColorSelected: staticColorSelectedReducer,
       geolocationPermissionEnabled: geolocationPermissionEnabledReducer,
+      geolocationIsUserModifiable: geolocationIsUserModifiableReducer,
       sunriseTime: sunriseTimeReducer,
       sunsetTime: sunsetTimeReducer,
     };

@@ -159,6 +159,11 @@ void PersonalizationAppThemeProviderImpl::IsGeolocationEnabledForSystemServices(
   std::move(callback).Run(IsGeolocationEnabledForSystemServices());
 }
 
+void PersonalizationAppThemeProviderImpl::IsGeolocationUserModifiable(
+    IsGeolocationUserModifiableCallback callback) {
+  std::move(callback).Run(IsGeolocationUserModifiable());
+}
+
 void PersonalizationAppThemeProviderImpl::EnableGeolocationForSystemServices() {
   PrefService* pref_service = profile_->GetPrefs();
   pref_service->SetInteger(
@@ -220,10 +225,17 @@ bool PersonalizationAppThemeProviderImpl::
   }
 }
 
+bool PersonalizationAppThemeProviderImpl::IsGeolocationUserModifiable() {
+  PrefService* pref_service = profile_->GetPrefs();
+  CHECK(pref_service);
+  return pref_service->IsUserModifiablePreference(
+      prefs::kUserGeolocationAccessLevel);
+}
+
 void PersonalizationAppThemeProviderImpl::NotifyGeolocationPermissionChanged() {
   CHECK(theme_observer_remote_.is_bound());
   theme_observer_remote_->OnGeolocationPermissionForSystemServicesChanged(
-      IsGeolocationEnabledForSystemServices());
+      IsGeolocationEnabledForSystemServices(), IsGeolocationUserModifiable());
 }
 
 void PersonalizationAppThemeProviderImpl::GetColorScheme(

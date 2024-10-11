@@ -165,6 +165,8 @@ void AddStrings(content::WebUIDataSource* source) {
       {"tooltipAutoColorMode", IDS_PERSONALIZATION_APP_TOOLTIP_AUTO_COLOR_MODE},
       {"errorTooltipAutoColorMode",
        IDS_PERSONALIZATION_APP_ERROR_TOOLTIP_AUTO_COLOR_MODE},
+      {"managedErrorTooltipAutoColorMode",
+       IDS_PERSONALIZATION_APP_MANAGED_ERROR_TOOLTIP_AUTO_COLOR_MODE},
       {"geolocationWarningTextForWeather",
        IDS_PERSONALIZATION_APP_THEME_GEOLOCATION_WARNING_TEXT_FOR_WEATHER},
       {"geolocationWarningManagedTextForWeather",

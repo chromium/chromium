@@ -92,7 +92,7 @@ export {PersonalizationStore} from './personalization_store.js';
 export {SeaPenStoreAdapter} from './sea_pen_store_adapter.js';
 export {PersonalizationToastElement} from './personalization_toast_element.js';
 export {PersonalizationThemeElement} from './theme/personalization_theme_element.js';
-export {SetColorModeAutoScheduleAction, setDarkModeEnabledAction, SetDarkModeEnabledAction, setGeolocationPermissionEnabledAction, SetGeolocationPermissionEnabledAction as SetGeolocationPermissionEnabledActionForTheme, setColorSchemeAction, setStaticColorAction, SetStaticColorAction, SetSampleColorSchemesAction, SetColorSchemeAction, ThemeActionName, ThemeActions} from './theme/theme_actions.js';
+export {SetColorModeAutoScheduleAction, setDarkModeEnabledAction, SetDarkModeEnabledAction, setGeolocationPermissionEnabledAction, SetGeolocationPermissionEnabledAction as SetGeolocationPermissionEnabledActionForTheme, setGeolocationIsUserModifiableAction, SetGeolocationIsUserModifiableAction as SetGeolocationIsUserModifiableActionForTheme, setColorSchemeAction, setStaticColorAction, SetStaticColorAction, SetSampleColorSchemesAction, SetColorSchemeAction, ThemeActionName, ThemeActions} from './theme/theme_actions.js';
 export {setThemeProviderForTesting} from './theme/theme_interface_provider.js';
 export {ColorSchemeIconSvgElement} from './theme/color_scheme_icon_svg_element.js';
 export {DynamicColorElement} from './theme/dynamic_color_element.js';
@@ -139,6 +139,7 @@ export {setSeaPenProviderForTesting} from 'chrome://resources/ash/common/sea_pen
 export {SeaPenIntroductionDialogElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_introduction_dialog_element.js';
 export {SeaPenToastElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_toast_element.js';
 export {SeaPenZeroStateSvgElement} from 'chrome://resources/ash/common/sea_pen/sea_pen_zero_state_svg_element.js';
+export {CrTooltipIconElement} from 'chrome://resources/ash/common/cr_elements/policy/cr_tooltip_icon.js';
 export {isDefaultImage, isGooglePhotosPhoto, isWallpaperImage} from './wallpaper/utils.js';
 export * from './wallpaper/wallpaper_actions.js';
 export {WallpaperCollectionsElement} from './wallpaper/wallpaper_collections_element.js';

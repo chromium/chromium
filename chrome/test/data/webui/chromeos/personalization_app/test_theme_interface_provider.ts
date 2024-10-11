@@ -23,6 +23,7 @@ export class TestThemeProvider extends TestBrowserProxy implements
       'isDarkModeEnabled',
       'isColorModeAutoScheduleEnabled',
       'isGeolocationEnabledForSystemServices',
+      'isGeolocationUserModifiable',
       'getSunriseTime',
       'getSunsetTime',
     ]);
@@ -32,6 +33,7 @@ export class TestThemeProvider extends TestBrowserProxy implements
   isDarkModeEnabledResponse = true;
   isColorModeAutoScheduleEnabledResponse = true;
   isGeolocationPermissionEnabledResponse = true;
+  isGeolocationUserModifiableResponse = true;
 
   staticColor: SkColor|null;
   colorScheme = ColorScheme.kTonalSpot;
@@ -113,5 +115,12 @@ export class TestThemeProvider extends TestBrowserProxy implements
     this.methodCalled('isGeolocationEnabledForSystemServices');
     return Promise.resolve(
         {geolocationEnabled: this.isGeolocationPermissionEnabledResponse});
+  }
+
+  isGeolocationUserModifiable() {
+    this.methodCalled('isGeolocationUserModifiable');
+    return Promise.resolve({
+      geolocationIsUserModifiable: this.isGeolocationUserModifiableResponse,
+    });
   }
 }
