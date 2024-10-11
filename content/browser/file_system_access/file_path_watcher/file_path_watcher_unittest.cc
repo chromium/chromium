@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
@@ -284,6 +285,19 @@ inline constexpr auto ModifiedMatcher = [](base::FilePath reported_path,
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
 
+// `EventExpecter`s can be implemented to provide a more convenient abstraction
+// to tests than building their own `EventListMatcher`s. An `EventExpecter` can
+// be passed directly to `TestDelegate`.
+class EventExpecter {
+ public:
+  virtual EventListMatcher GetMatcher() = 0;
+
+  virtual EventListMatcher GetFailureMatcher() = 0;
+
+  virtual ExpectedEventsSinceLastWait
+  GetAndResetExpectedEventsSinceLastWait() = 0;
+};
+
 // Enables an accumulative, add-as-you-go pattern for expecting events:
 //   - Do something that should fire `event1` on `delegate`
 //   - Add `event1` to an `accumulated_event_expecter`
@@ -308,17 +322,18 @@ inline constexpr auto ModifiedMatcher = [](base::FilePath reported_path,
 // The potential for false-positives is much less if event types are known. We
 // should consider moving towards the latter pattern
 // (see `FilePathWatcherWithChangeInfoTest`) once that is supported.
-class AccumulatingEventExpecter {
+class AccumulatingEventExpecter : public EventExpecter {
  public:
-  EventListMatcher GetMatcher() {
+  EventListMatcher GetMatcher() override {
     return testing::ContainerEq(expected_events_);
   }
 
-  EventListMatcher GetFailureMatcher() {
+  EventListMatcher GetFailureMatcher() override {
     return testing::Not(testing::IsSubsetOf(expected_events_));
   }
 
-  ExpectedEventsSinceLastWait GetAndResetExpectedEventsSinceLastWait() {
+  ExpectedEventsSinceLastWait GetAndResetExpectedEventsSinceLastWait()
+      override {
     auto temp = expected_events_since_last_wait_;
     expected_events_since_last_wait_ = ExpectedEventsSinceLastWait::kNone;
     return temp;
@@ -334,6 +349,64 @@ class AccumulatingEventExpecter {
   std::list<Event> expected_events_;
   ExpectedEventsSinceLastWait expected_events_since_last_wait_ =
       ExpectedEventsSinceLastWait::kNone;
+};
+
+// An `EventExpecter` that supports the common test pattern in
+// FilePathWatcherWithChangeInfoTests where a `sequence_matcher_` and
+// `each_event_matcher_` are used. Both are optional but at least one must be
+// specified.
+class EventExpecterWithChangeInfo : public EventExpecter {
+ public:
+  EventListMatcher GetMatcher() override {
+    if (event_sequence_matcher_ && each_event_matcher_) {
+      return testing::AllOf(*event_sequence_matcher_, *each_event_matcher_);
+    }
+    if (event_sequence_matcher_) {
+      return *event_sequence_matcher_;
+    }
+    if (each_event_matcher_) {
+      return *each_event_matcher_;
+    }
+    NOTREACHED_NORETURN();
+  }
+
+  EventListMatcher GetFailureMatcher() override {
+    if (event_sequence_matcher_ && each_event_matcher_) {
+      return testing::AnyOf(testing::Not(*event_subset_matcher_),
+                            testing::Not(*each_event_matcher_));
+    }
+    if (event_sequence_matcher_) {
+      return testing::Not(*event_subset_matcher_);
+    }
+    if (each_event_matcher_) {
+      return testing::Not(*each_event_matcher_);
+    }
+    NOTREACHED_NORETURN();
+  }
+
+  ExpectedEventsSinceLastWait GetAndResetExpectedEventsSinceLastWait()
+      override {
+    return ExpectedEventsSinceLastWait::kNone;
+  }
+
+  // Set the set of `matchers` to match the received events against. The
+  // received events must match `matchers` in the order they were supplied.
+  template <typename... Args>
+  void SetEventSequenceMatcher(const Args&... matchers) {
+    event_sequence_matcher_ = testing::ElementsAre(matchers...);
+    event_subset_matcher_ = testing::IsSubsetOf({matchers...});
+  }
+
+  // Set the `matcher` that all events must match.
+  template <typename M>
+  void SetEachEventMatcher(M matcher) {
+    each_event_matcher_ = testing::Each(std::move(matcher));
+  }
+
+ private:
+  std::optional<EventListMatcher> event_sequence_matcher_;
+  std::optional<EventListMatcher> event_subset_matcher_;
+  std::optional<EventListMatcher> each_event_matcher_;
 };
 
 class TestDelegateBase {
@@ -437,7 +510,7 @@ class TestDelegate final : public TestDelegateBase {
   }
 
   // Convenience method for above.
-  void RunUntilEventsMatch(AccumulatingEventExpecter& event_expecter,
+  void RunUntilEventsMatch(EventExpecter& event_expecter,
                            const base::Location& location = FROM_HERE) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -2222,24 +2295,23 @@ class FilePathWatcherWithChangeInfoTest
 };
 
 TEST_P(FilePathWatcherWithChangeInfoTest, NewFile) {
+  EventExpecterWithChangeInfo event_expecter;
+
   // Each change should have these attributes.
-  const auto each_event_matcher = testing::Each(
+  event_expecter.SetEachEventMatcher(
       testing::AllOf(HasPath(test_file()), testing::Not(HasErrored()), IsFile(),
                      HasModifiedPath(test_file()), HasNoMovedFromPath()));
 #if BUILDFLAG(IS_MAC)
   static_assert(kExpectedEventsForNewFileWrite == 1);
   // Match the expected change types, in this order.
-  const auto sequence_matcher =
-      testing::ElementsAre(IsType(FilePathWatcher::ChangeType::kCreated));
+  event_expecter.SetEventSequenceMatcher(
+      IsType(FilePathWatcher::ChangeType::kCreated));
 #else
   static_assert(kExpectedEventsForNewFileWrite == 2);
-  const auto sequence_matcher =
-      testing::ElementsAre(IsType(FilePathWatcher::ChangeType::kCreated),
-                           IsType(FilePathWatcher::ChangeType::kModified));
+  event_expecter.SetEventSequenceMatcher(
+      IsType(FilePathWatcher::ChangeType::kCreated),
+      IsType(FilePathWatcher::ChangeType::kModified));
 #endif
-
-  // Put it all together.
-  const auto matcher = testing::AllOf(each_event_matcher, sequence_matcher);
 
   FilePathWatcher watcher;
   TestDelegate delegate;
@@ -2247,11 +2319,12 @@ TEST_P(FilePathWatcherWithChangeInfoTest, NewFile) {
                                        GetWatchOptions()));
 
   ASSERT_TRUE(WriteFile(test_file(), "content"));
-  delegate.RunUntilEventsMatch(matcher);
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 TEST_P(FilePathWatcherWithChangeInfoTest, NewDirectory) {
-  const auto matcher = testing::ElementsAre(testing::AllOf(
+  EventExpecterWithChangeInfo event_expecter;
+  event_expecter.SetEventSequenceMatcher(testing::AllOf(
       HasPath(test_file()), testing::Not(HasErrored()), IsDirectory(),
       IsType(FilePathWatcher::ChangeType::kCreated),
       HasModifiedPath(test_file()), HasNoMovedFromPath()));
@@ -2262,7 +2335,7 @@ TEST_P(FilePathWatcherWithChangeInfoTest, NewDirectory) {
                                        GetWatchOptions()));
 
   ASSERT_TRUE(CreateDirectory(test_file()));
-  delegate.RunUntilEventsMatch(matcher);
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 TEST_P(FilePathWatcherWithChangeInfoTest, ModifiedFile) {
@@ -2291,12 +2364,13 @@ TEST_P(FilePathWatcherWithChangeInfoTest, ModifiedFile) {
 }
 
 TEST_P(FilePathWatcherWithChangeInfoTest, MovedFile) {
+  EventExpecterWithChangeInfo event_expecter;
   // TODO(crbug.com/40260973): Some platforms will not provide separate
   // events for "moved from" and "moved to". Update this matcher once support
   // for those platforms is added.
   // A moved file to the watched scope is considered "created", with respect
   // to the watched path.
-  const auto matcher = testing::ElementsAre(
+  event_expecter.SetEventSequenceMatcher(
       testing::AllOf(HasPath(test_file()), testing::Not(HasErrored()), IsFile(),
                      IsType(FilePathWatcher::ChangeType::kCreated),
                      HasModifiedPath(test_file()), HasNoMovedFromPath()));
@@ -2310,10 +2384,12 @@ TEST_P(FilePathWatcherWithChangeInfoTest, MovedFile) {
                                        GetWatchOptions()));
 
   ASSERT_TRUE(Move(source_file, test_file()));
-  delegate.RunUntilEventsMatch(matcher);
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 TEST_P(FilePathWatcherWithChangeInfoTest, DeletedFile) {
+  EventExpecterWithChangeInfo event_expecter;
+
   ASSERT_TRUE(WriteFile(test_file(), "content"));
 #if BUILDFLAG(IS_ANDROID)
   // TODO(crbug.com/40286767): There appears to be a race condition
@@ -2331,11 +2407,11 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DeletedFile) {
 
   ASSERT_TRUE(DeleteFile(test_file()));
 
-  const auto matcher = testing::ElementsAre(testing::AllOf(
+  event_expecter.SetEventSequenceMatcher(testing::AllOf(
       HasPath(test_file()), testing::Not(HasErrored()), IsDeletedFile(),
       IsType(FilePathWatcher::ChangeType::kDeleted),
       HasModifiedPath(test_file()), HasNoMovedFromPath()));
-  delegate.RunUntilEventsMatch(matcher);
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 TEST_P(FilePathWatcherWithChangeInfoTest, DeletedDirectory) {
@@ -2362,30 +2438,31 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DeletedDirectory) {
 #else
   ASSERT_TRUE(DeletePathRecursively(test_file()));
 
-  const auto matcher = testing::ElementsAre(testing::AllOf(
+  EventExpecterWithChangeInfo event_expecter;
+  event_expecter.SetEventSequenceMatcher(testing::AllOf(
       HasPath(test_file()), testing::Not(HasErrored()), IsDeletedDirectory(),
       IsType(FilePathWatcher::ChangeType::kDeleted),
       HasModifiedPath(test_file()), HasNoMovedFromPath()));
-  delegate.RunUntilEventsMatch(matcher);
+  delegate.RunUntilEventsMatch(event_expecter);
 #endif
 }
 
 TEST_P(FilePathWatcherWithChangeInfoTest, MultipleWatchersSingleFile) {
-  const auto each_event_matcher = testing::Each(
+  EventExpecterWithChangeInfo event_expecter;
+  event_expecter.SetEachEventMatcher(
       testing::AllOf(HasPath(test_file()), testing::Not(HasErrored()), IsFile(),
                      HasModifiedPath(test_file()), HasNoMovedFromPath()));
 
 #if BUILDFLAG(IS_MAC)
   static_assert(kExpectedEventsForNewFileWrite == 1);
-  const auto sequence_matcher =
-      testing::ElementsAre(IsType(FilePathWatcher::ChangeType::kCreated));
+  event_expecter.SetEventSequenceMatcher(
+      IsType(FilePathWatcher::ChangeType::kCreated));
 #else
   static_assert(kExpectedEventsForNewFileWrite == 2);
-  const auto sequence_matcher =
-      testing::ElementsAre(IsType(FilePathWatcher::ChangeType::kCreated),
-                           IsType(FilePathWatcher::ChangeType::kModified));
+  event_expecter.SetEventSequenceMatcher(
+      IsType(FilePathWatcher::ChangeType::kCreated),
+      IsType(FilePathWatcher::ChangeType::kModified));
 #endif
-  const auto matcher = testing::AllOf(each_event_matcher, sequence_matcher);
 
   FilePathWatcher watcher1, watcher2;
   TestDelegate delegate1, delegate2;
@@ -2397,8 +2474,8 @@ TEST_P(FilePathWatcherWithChangeInfoTest, MultipleWatchersSingleFile) {
   // Expect each delegate to get notified of all changes.
   ASSERT_TRUE(WriteFile(test_file(), "content"));
 
-  delegate1.RunUntilEventsMatch(matcher);
-  delegate2.RunUntilEventsMatch(matcher);
+  delegate1.RunUntilEventsMatch(event_expecter);
+  delegate2.RunUntilEventsMatch(event_expecter);
 }
 
 // TODO(b/358401685): FSEvents can sometimes coalesce the event flags from the
@@ -2482,6 +2559,8 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DirectoryChain) {
 // FilePathWatcher watching it.
 #if !BUILDFLAG(IS_WIN)
 TEST_P(FilePathWatcherWithChangeInfoTest, DisappearingDirectory) {
+  EventExpecterWithChangeInfo event_expecter;
+
   base::FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
   base::FilePath file(dir.AppendASCII("file"));
 
@@ -2518,25 +2597,25 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DisappearingDirectory) {
 #endif
 
 TEST_P(FilePathWatcherWithChangeInfoTest, DeleteAndRecreate) {
+  EventExpecterWithChangeInfo event_expecter;
+
 #if BUILDFLAG(IS_MAC)
   static_assert(kExpectedEventsForNewFileWrite == 1);
-  const auto each_event_matcher = testing::Each(testing::AllOf(
+  event_expecter.SetEachEventMatcher(testing::AllOf(
       HasPath(test_file()), testing::Not(HasErrored()), IsDeletedFile(),
       HasModifiedPath(test_file()), HasNoMovedFromPath()));
-  const auto sequence_matcher =
-      testing::ElementsAre(IsType(FilePathWatcher::ChangeType::kDeleted),
-                           IsType(FilePathWatcher::ChangeType::kCreated));
-  const auto matcher = testing::AllOf(each_event_matcher, sequence_matcher);
+  event_expecter.SetEventSequenceMatcher(
+      IsType(FilePathWatcher::ChangeType::kDeleted),
+      IsType(FilePathWatcher::ChangeType::kCreated));
 #else
   static_assert(kExpectedEventsForNewFileWrite == 2);
-  const auto each_event_matcher = testing::Each(testing::AllOf(
+  event_expecter.SetEachEventMatcher(testing::AllOf(
       HasPath(test_file()), testing::Not(HasErrored()), IsDeletedFile(),
       HasModifiedPath(test_file()), HasNoMovedFromPath()));
-  const auto sequence_matcher =
-      testing::ElementsAre(IsType(FilePathWatcher::ChangeType::kDeleted),
-                           IsType(FilePathWatcher::ChangeType::kCreated),
-                           IsType(FilePathWatcher::ChangeType::kModified));
-  const auto matcher = testing::AllOf(each_event_matcher, sequence_matcher);
+  event_expecter.SetEventSequenceMatcher(
+      IsType(FilePathWatcher::ChangeType::kDeleted),
+      IsType(FilePathWatcher::ChangeType::kCreated),
+      IsType(FilePathWatcher::ChangeType::kModified));
 #endif
 
   ASSERT_TRUE(WriteFile(test_file(), "content"));
@@ -2556,7 +2635,7 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DeleteAndRecreate) {
 
   ASSERT_TRUE(DeleteFile(test_file()));
   ASSERT_TRUE(WriteFile(test_file(), "content"));
-  delegate.RunUntilEventsMatch(matcher);
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 // TODO(371594111): Tests are flaky on Macos
@@ -2689,6 +2768,9 @@ TEST_P(FilePathWatcherWithChangeInfoTest, MoveParent) {
 #endif  // !BUILDFLAG(IS_MAC)
 
 TEST_P(FilePathWatcherWithChangeInfoTest, MoveChild) {
+  EventExpecterWithChangeInfo file_event_expecter;
+  EventExpecterWithChangeInfo subdir_event_expecter;
+
   base::FilePath source_dir(temp_dir_.GetPath().AppendASCII("source"));
   base::FilePath source_subdir(source_dir.AppendASCII("subdir"));
   base::FilePath source_file(source_subdir.AppendASCII("file"));
@@ -2698,30 +2780,24 @@ TEST_P(FilePathWatcherWithChangeInfoTest, MoveChild) {
 
   // A moved file to the watched scope is considered "created", with respect
   // to the watched path.
-  const auto each_event_matcher = testing::Each(testing::AllOf(
+  const auto each_event_matcher = testing::AllOf(
       testing::Not(HasErrored()), IsType(FilePathWatcher::ChangeType::kCreated),
-      HasNoMovedFromPath()));
+      HasNoMovedFromPath());
+  file_event_expecter.SetEachEventMatcher(each_event_matcher);
+  subdir_event_expecter.SetEachEventMatcher(each_event_matcher);
 #if BUILDFLAG(IS_MAC)
   // Events for changes on the root path are always reported as 'unknown' by
   // FSEvents.
-  const auto file_delegate_sequence_matcher =
-      testing::ElementsAre(testing::AllOf(
-          HasPath(dest_file), IsUnknownPathType(), HasModifiedPath(dest_file)));
-  const auto subdir_delegate_sequence_matcher = testing::ElementsAre(
-      testing::AllOf(HasPath(dest_subdir), IsUnknownPathType(),
-                     HasModifiedPath(dest_subdir)));
+  file_event_expecter.SetEventSequenceMatcher(testing::AllOf(
+      HasPath(dest_file), IsUnknownPathType(), HasModifiedPath(dest_file)));
+  subdir_event_expecter.SetEventSequenceMatcher(testing::AllOf(
+      HasPath(dest_subdir), IsUnknownPathType(), HasModifiedPath(dest_subdir)));
 #else
-  const auto file_delegate_sequence_matcher =
-      testing::ElementsAre(testing::AllOf(HasPath(dest_file), IsMovedFile(),
-                                          HasModifiedPath(dest_file)));
-  const auto subdir_delegate_sequence_matcher =
-      testing::ElementsAre(testing::AllOf(HasPath(dest_subdir), IsDirectory(),
-                                          HasModifiedPath(dest_subdir)));
+  file_event_expecter.SetEventSequenceMatcher(testing::AllOf(
+      HasPath(dest_file), IsMovedFile(), HasModifiedPath(dest_file)));
+  subdir_event_expecter.SetEventSequenceMatcher(testing::AllOf(
+      HasPath(dest_subdir), IsDirectory(), HasModifiedPath(dest_subdir)));
 #endif
-  const auto file_delegate_matcher =
-      testing::AllOf(each_event_matcher, file_delegate_sequence_matcher);
-  const auto subdir_delegate_matcher =
-      testing::AllOf(each_event_matcher, subdir_delegate_sequence_matcher);
 
   // Setup a directory hierarchy.
   ASSERT_TRUE(CreateDirectory(source_subdir));
@@ -2737,8 +2813,8 @@ TEST_P(FilePathWatcherWithChangeInfoTest, MoveChild) {
   // Move the directory into place, s.t. the watched file appears.
   ASSERT_TRUE(Move(source_dir, dest_dir));
 
-  file_delegate.RunUntilEventsMatch(file_delegate_matcher);
-  subdir_delegate.RunUntilEventsMatch(subdir_delegate_matcher);
+  file_delegate.RunUntilEventsMatch(file_event_expecter);
+  subdir_delegate.RunUntilEventsMatch(subdir_event_expecter);
 }
 
 TEST_P(FilePathWatcherWithChangeInfoTest, MoveChildWithinWatchedScope) {
@@ -2795,28 +2871,29 @@ TEST_P(FilePathWatcherWithChangeInfoTest, MoveChildWithinWatchedScope) {
 }
 
 TEST_P(FilePathWatcherWithChangeInfoTest, MoveChildOutOrIntoWatchedScope) {
+  EventExpecterWithChangeInfo foo_event_expecter;
+  EventExpecterWithChangeInfo bar_event_expecter;
+
   base::FilePath foo_dir(temp_dir_.GetPath().AppendASCII("foo"));
   base::FilePath foo_subdir(foo_dir.AppendASCII("foo_subdir"));
   base::FilePath bar_dir(temp_dir_.GetPath().AppendASCII("bar"));
   base::FilePath bar_subdir(bar_dir.AppendASCII("bar_subdir"));
 
-  const auto each_event_matcher = testing::Each(testing::Not(HasErrored()));
+  const auto each_event_matcher = testing::Not(HasErrored());
+
+  foo_event_expecter.SetEachEventMatcher(each_event_matcher);
+  bar_event_expecter.SetEachEventMatcher(each_event_matcher);
+
   // A moved file from/to the wathced scope is considered "deleted" / "created",
   // with respect to the watched path.
-  const auto foo_delegate_sequence_matcher =
-      testing::ElementsAre(testing::AllOf(
-          HasPath(report_modified_path() ? foo_subdir : foo_dir),
-          IsDeletedDirectory(), IsType(FilePathWatcher::ChangeType::kDeleted),
-          HasModifiedPath(foo_subdir), HasNoMovedFromPath()));
-  const auto bar_delegate_sequence_matcher =
-      testing::ElementsAre(testing::AllOf(
-          HasPath(report_modified_path() ? bar_subdir : bar_dir), IsDirectory(),
-          IsType(FilePathWatcher::ChangeType::kCreated),
-          HasModifiedPath(bar_subdir), HasNoMovedFromPath()));
-  const auto foo_delegate_matcher =
-      testing::AllOf(each_event_matcher, foo_delegate_sequence_matcher);
-  const auto bar_delegate_matcher =
-      testing::AllOf(each_event_matcher, bar_delegate_sequence_matcher);
+  foo_event_expecter.SetEventSequenceMatcher(testing::AllOf(
+      HasPath(report_modified_path() ? foo_subdir : foo_dir),
+      IsDeletedDirectory(), IsType(FilePathWatcher::ChangeType::kDeleted),
+      HasModifiedPath(foo_subdir), HasNoMovedFromPath()));
+  bar_event_expecter.SetEventSequenceMatcher(testing::AllOf(
+      HasPath(report_modified_path() ? bar_subdir : bar_dir), IsDirectory(),
+      IsType(FilePathWatcher::ChangeType::kCreated),
+      HasModifiedPath(bar_subdir), HasNoMovedFromPath()));
 
   // Set up a directory hierarchy.
   ASSERT_TRUE(CreateDirectory(foo_subdir));
@@ -2834,8 +2911,8 @@ TEST_P(FilePathWatcherWithChangeInfoTest, MoveChildOutOrIntoWatchedScope) {
   // out of its watched scope), and a `kCreated` event for bar_dir watcher with
   // the new file path present (since it is moving into its watched scope).
   ASSERT_TRUE(Move(foo_subdir, bar_subdir));
-  foo_delegate.RunUntilEventsMatch(foo_delegate_matcher);
-  bar_delegate.RunUntilEventsMatch(bar_delegate_matcher);
+  foo_delegate.RunUntilEventsMatch(foo_event_expecter);
+  bar_delegate.RunUntilEventsMatch(bar_event_expecter);
 }
 
 // TODO(pauljensen): Re-enable when crbug.com/475568 is fixed and SetUp() places
@@ -2846,11 +2923,6 @@ TEST_P(FilePathWatcherWithChangeInfoTest, MoveChildOutOrIntoWatchedScope) {
 // changes on FSEvents.
 #if !BUILDFLAG(IS_MAC)
 TEST_P(FilePathWatcherWithChangeInfoTest, NoEventWhenFileAttributesChanged) {
-  const auto matcher = testing::ElementsAre(
-      testing::AllOf(HasPath(test_file()), testing::Not(HasErrored()), IsFile(),
-                     IsType(FilePathWatcher::ChangeType::kModified),
-                     HasModifiedPath(test_file()), HasNoMovedFromPath()));
-
   ASSERT_TRUE(WriteFile(test_file(), "content"));
 
   FilePathWatcher watcher;
@@ -2866,9 +2938,11 @@ TEST_P(FilePathWatcherWithChangeInfoTest, NoEventWhenFileAttributesChanged) {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 TEST_P(FilePathWatcherWithChangeInfoTest, CreateLink) {
+  EventExpecterWithChangeInfo event_expecter;
+
   // TODO(crbug.com/40260973): Check for symlink-ness on platforms which
   // support it.
-  const auto matcher = testing::ElementsAre(
+  event_expecter.SetEventSequenceMatcher(
       testing::AllOf(HasPath(test_link()), testing::Not(HasErrored()), IsFile(),
                      IsType(FilePathWatcher::ChangeType::kCreated),
                      HasModifiedPath(test_link()), HasNoMovedFromPath()));
@@ -2881,15 +2955,17 @@ TEST_P(FilePathWatcherWithChangeInfoTest, CreateLink) {
   // Now make sure we get notified if the link is created.
   // Note that test_file() doesn't have to exist.
   ASSERT_TRUE(CreateSymbolicLink(test_file(), test_link()));
-  delegate.RunUntilEventsMatch(matcher);
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 // Unfortunately this test case only works if the link target exists.
 // TODO(craig) fix this as part of crbug.com/91561.
 TEST_P(FilePathWatcherWithChangeInfoTest, DeleteLink) {
+  EventExpecterWithChangeInfo event_expecter;
+
   // TODO(crbug.com/40260973): Check for symlink-ness on platforms which
   // support it.
-  const auto matcher = testing::ElementsAre(
+  event_expecter.SetEventSequenceMatcher(
       testing::AllOf(HasPath(test_link()), testing::Not(HasErrored()), IsFile(),
                      IsType(FilePathWatcher::ChangeType::kDeleted),
                      HasModifiedPath(test_link()), HasNoMovedFromPath()));
@@ -2904,13 +2980,15 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DeleteLink) {
 
   // Now make sure we get notified if the link is deleted.
   ASSERT_TRUE(DeleteFile(test_link()));
-  delegate.RunUntilEventsMatch(matcher);
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 TEST_P(FilePathWatcherWithChangeInfoTest, ModifiedLinkedFile) {
+  EventExpecterWithChangeInfo event_expecter;
+
   // TODO(crbug.com/40260973): Check for symlink-ness on platforms which
   // support it.
-  const auto matcher = testing::ElementsAre(
+  event_expecter.SetEventSequenceMatcher(
       testing::AllOf(HasPath(test_link()), testing::Not(HasErrored()), IsFile(),
                      IsType(FilePathWatcher::ChangeType::kModified),
                      HasModifiedPath(test_link()), HasNoMovedFromPath()));
@@ -2925,22 +3003,23 @@ TEST_P(FilePathWatcherWithChangeInfoTest, ModifiedLinkedFile) {
 
   // Now make sure we get notified if the file is modified.
   ASSERT_TRUE(WriteFile(test_file(), "new content"));
-  delegate.RunUntilEventsMatch(matcher);
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 TEST_P(FilePathWatcherWithChangeInfoTest, CreateTargetLinkedFile) {
+  EventExpecterWithChangeInfo event_expecter;
+
   // TODO(crbug.com/40260973): Check for symlink-ness on platforms which
   // support it.
-  const auto each_event_matcher = testing::Each(
+  event_expecter.SetEachEventMatcher(
       testing::AllOf(HasPath(test_link()), testing::Not(HasErrored()), IsFile(),
                      HasModifiedPath(test_link()), HasNoMovedFromPath()));
   // TODO(crbug.com/40260973): Update this when change types are
   // supported on on more platforms.
   static_assert(kExpectedEventsForNewFileWrite == 2);
-  const auto sequence_matcher =
-      testing::ElementsAre(IsType(FilePathWatcher::ChangeType::kCreated),
-                           IsType(FilePathWatcher::ChangeType::kModified));
-  const auto matcher = testing::AllOf(each_event_matcher, sequence_matcher);
+  event_expecter.SetEventSequenceMatcher(
+      IsType(FilePathWatcher::ChangeType::kCreated),
+      IsType(FilePathWatcher::ChangeType::kModified));
 
   ASSERT_TRUE(CreateSymbolicLink(test_file(), test_link()));
 
@@ -2951,13 +3030,15 @@ TEST_P(FilePathWatcherWithChangeInfoTest, CreateTargetLinkedFile) {
 
   // Now make sure we get notified if the target file is created.
   ASSERT_TRUE(WriteFile(test_file(), "content"));
-  delegate.RunUntilEventsMatch(matcher);
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 TEST_P(FilePathWatcherWithChangeInfoTest, DeleteTargetLinkedFile) {
+  EventExpecterWithChangeInfo event_expecter;
+
   // TODO(crbug.com/40260973): Check for symlink-ness on platforms which
   // support it.
-  const auto matcher = testing::ElementsAre(
+  event_expecter.SetEventSequenceMatcher(
       testing::AllOf(HasPath(test_link()), testing::Not(HasErrored()), IsFile(),
                      IsType(FilePathWatcher::ChangeType::kDeleted),
                      HasModifiedPath(test_link()), HasNoMovedFromPath()));
@@ -2972,7 +3053,7 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DeleteTargetLinkedFile) {
 
   // Now make sure we get notified if the target file is deleted.
   ASSERT_TRUE(DeleteFile(test_file()));
-  delegate.RunUntilEventsMatch(matcher);
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 TEST_P(FilePathWatcherWithChangeInfoTest, LinkedDirectoryPart1) {
@@ -3134,11 +3215,13 @@ TEST_P(FilePathWatcherWithChangeInfoTest, ModifiedFileInDirectory) {
 }
 
 TEST_P(FilePathWatcherWithChangeInfoTest, DeletedFileInDirectory) {
+  EventExpecterWithChangeInfo event_expecter;
+
   // Expect the change to be reported as a file deletion, not as a
   // directory modification.
   base::FilePath parent(temp_dir_.GetPath().AppendASCII("parent"));
   base::FilePath child(parent.AppendASCII("child"));
-  const auto matcher = testing::ElementsAre(testing::AllOf(
+  event_expecter.SetEventSequenceMatcher(testing::AllOf(
       HasPath(report_modified_path() ? child : parent), IsDeletedFile(),
       IsType(FilePathWatcher::ChangeType::kDeleted), testing::Not(HasErrored()),
       HasModifiedPath(child), HasNoMovedFromPath()));
@@ -3152,7 +3235,7 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DeletedFileInDirectory) {
       SetupWatchWithChangeInfo(parent, &watcher, &delegate, GetWatchOptions()));
 
   ASSERT_TRUE(DeleteFile(child));
-  delegate.RunUntilEventsMatch(matcher);
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 // TODO(371594111): Tests are flaky on Macos
@@ -3201,19 +3284,20 @@ TEST_P(FilePathWatcherWithChangeInfoTest, MAYBE_FileInDirectory) {
 }
 
 TEST_P(FilePathWatcherWithChangeInfoTest, DirectoryInDirectory) {
+  EventExpecterWithChangeInfo event_expecter;
+
   // Expect the changes to be reported as events on the child directory, not as
   // modifications to the parent directory.
   base::FilePath parent(temp_dir_.GetPath().AppendASCII("parent"));
   base::FilePath child(parent.AppendASCII("child"));
 
-  const auto each_event_matcher = testing::Each(
+  event_expecter.SetEachEventMatcher(
       testing::AllOf(HasPath(report_modified_path() ? child : parent),
                      testing::Not(HasErrored()), IsDeletedDirectory(),
                      HasModifiedPath(child), HasNoMovedFromPath()));
-  const auto sequence_matcher =
-      testing::ElementsAre(IsType(FilePathWatcher::ChangeType::kCreated),
-                           IsType(FilePathWatcher::ChangeType::kDeleted));
-  const auto matcher = testing::AllOf(each_event_matcher, sequence_matcher);
+  event_expecter.SetEventSequenceMatcher(
+      IsType(FilePathWatcher::ChangeType::kCreated),
+      IsType(FilePathWatcher::ChangeType::kDeleted));
 
   ASSERT_TRUE(CreateDirectory(parent));
 
@@ -3224,7 +3308,7 @@ TEST_P(FilePathWatcherWithChangeInfoTest, DirectoryInDirectory) {
 
   ASSERT_TRUE(CreateDirectory(child));
   ASSERT_TRUE(DeletePathRecursively(child));
-  delegate.RunUntilEventsMatch(matcher);
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 // TODO(crbug.com/368982619): Disable due to flakiness.
@@ -3384,7 +3468,9 @@ INSTANTIATE_TEST_SUITE_P(
 #else
 
 TEST_F(FilePathWatcherTest, UseDummyChangeInfoIfNotSupported) {
-  const auto matcher = testing::ElementsAre(testing::AllOf(
+  EventExpecterWithChangeInfo event_expecter;
+
+  event_expecter.SetEventSequenceMatcher(testing::AllOf(
       HasPath(test_file()), testing::Not(HasErrored()), IsUnknownPathType(),
       IsType(FilePathWatcher::ChangeType::kUnknown),
       HasModifiedPath(base::FilePath()), HasNoMovedFromPath()));
@@ -3396,7 +3482,7 @@ TEST_F(FilePathWatcherTest, UseDummyChangeInfoIfNotSupported) {
                                {.type = FilePathWatcher::Type::kNonRecursive}));
 
   ASSERT_TRUE(CreateDirectory(test_file()));
-  delegate.RunUntilEventsMatch(matcher);
+  delegate.RunUntilEventsMatch(event_expecter);
 }
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
