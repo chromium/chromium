@@ -719,7 +719,7 @@ TEST_F(CredentialProviderServiceTest, AddPasskeys) {
 
   ASSERT_EQ(credential_store_.credentials.count, 1u);
 
-  // Don't add passkey with invalid URL to store.
+  // Add passkey with invalid URL to store.
   // No favicon should be fetched for invalid URLs.
   EXPECT_CALL(large_icon_service_,
               GetLargeIconRawBitmapOrFallbackStyleForPageUrl(_, _, _, _, _))
@@ -729,7 +729,20 @@ TEST_F(CredentialProviderServiceTest, AddPasskeys) {
   test_passkey_model_->AddNewPasskeyForTesting(invalid_passkey);
   task_environment_.RunUntilIdle();
 
-  ASSERT_EQ(credential_store_.credentials.count, 1u);
+  ASSERT_EQ(credential_store_.credentials.count, 2u);
+
+  // Don't add hidden passkeys to the store.
+  // No favicon should be fetched for hidden passkeys.
+  EXPECT_CALL(large_icon_service_,
+              GetLargeIconRawBitmapOrFallbackStyleForPageUrl(_, _, _, _, _))
+      .Times(0);
+  sync_pb::WebauthnCredentialSpecifics hidden_passkey = CreatePasskey(
+      "g.com", {1, 2, 3, 4}, "passkey_username", "passkey_display_name");
+  hidden_passkey.set_hidden(true);
+  test_passkey_model_->AddNewPasskeyForTesting(hidden_passkey);
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(credential_store_.credentials.count, 2u);
 
   // Add 2nd passkey with valid URL to store.
   EXPECT_CALL(large_icon_service_,
@@ -740,7 +753,7 @@ TEST_F(CredentialProviderServiceTest, AddPasskeys) {
   test_passkey_model_->AddNewPasskeyForTesting(valid_passkey2);
   task_environment_.RunUntilIdle();
 
-  ASSERT_EQ(credential_store_.credentials.count, 2u);
+  ASSERT_EQ(credential_store_.credentials.count, 3u);
 }
 
 TEST_F(CredentialProviderServiceTest, DeletePasskey) {

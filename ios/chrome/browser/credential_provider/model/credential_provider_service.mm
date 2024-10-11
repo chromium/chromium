@@ -444,24 +444,29 @@ void CredentialProviderService::AddCredentials(
   NSString* gaia = base::SysUTF8ToNSString(account.gaia);
 
   for (const auto& passkey : passkeys) {
-    // Only fetch favicon for valid URL.
+    if (passkey.hidden()) {
+      continue;
+    }
+
     GURL url(base::StrCat(
         {url::kHttpsScheme, url::kStandardSchemeSeparator, passkey.rp_id()}));
+    // Only fetch favicon for valid URL.
+    NSString* favicon_key;
     if (url.is_valid()) {
-      NSString* favicon_key = GetFaviconFileKey(url);
+      favicon_key = GetFaviconFileKey(url);
 
       // Fetch the favicon and save it to the storage.
       FetchFaviconForURLToPath(favicon_loader_, url, favicon_key,
                                should_skip_max_verification,
                                fallback_to_google_server);
-
-      ArchivableCredential* credential =
-          [[ArchivableCredential alloc] initWithFavicon:favicon_key
-                                                   gaia:gaia
-                                                passkey:passkey];
-      DCHECK(credential);
-      [store addCredential:credential];
     }
+
+    ArchivableCredential* credential =
+        [[ArchivableCredential alloc] initWithFavicon:favicon_key
+                                                 gaia:gaia
+                                              passkey:passkey];
+    DCHECK(credential);
+    [store addCredential:credential];
   }
 }
 
