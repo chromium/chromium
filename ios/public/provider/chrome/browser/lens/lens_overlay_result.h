@@ -27,6 +27,9 @@ class GURL;
 // selection.
 @property(nonatomic, readonly, copy) NSString* queryText;
 
+// The selection rect of the lens region.
+@property(nonatomic, readonly) CGRect selectionRect;
+
 @end
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_LENS_LENS_OVERLAY_RESULT_H_

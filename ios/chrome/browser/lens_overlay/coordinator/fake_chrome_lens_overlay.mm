@@ -21,6 +21,8 @@
 @property(nonatomic, copy, readwrite) NSString* queryText;
 /// Whether the result represents a text selection.
 @property(nonatomic, readonly) BOOL isTextSelection;
+/// The selection rect of the lens region.
+@property(nonatomic, assign) CGRect selectionRect;
 
 @end
 
