@@ -33,5 +33,7 @@ This is a testharness.js-based test.
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported rank for batchNormalization. It must be between 3 and 5."
 [FAIL] batchNormalization options.axis=0  + softmax
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported axis for batchNormalization. It must be the channel dimension."
+[FAIL] add + sub + mul + gather default
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'compute' on 'MLContext': Error computing results"
 Harness: the test ran to completion.
 

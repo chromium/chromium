@@ -57,10 +57,10 @@ TEST_F(WebNNGraphBuilderDmlTest, BuildSingleOperatorRelu) {
       .OutputTensor = &input_tensor_desc.GetDMLTensorDesc()};
 
   std::array<const NodeOutput*, 1> inputs = {input};
-  const OperatorNode* relu_node = graph_builder.CreateOperatorNode(
+  const GraphNode* relu_node = graph_builder.CreateOperatorNode(
       DML_OPERATOR_ACTIVATION_RELU, &relu_operator_desc, inputs, "");
   ASSERT_NE(relu_node, nullptr);
-  EXPECT_EQ(relu_node->GetType(), Node::Type::kOperator);
+  EXPECT_EQ(relu_node->GetType(), Node::Type::kGraph);
   const NodeOutput* output =
       graph_builder.CreateNodeOutput(relu_node, std::move(input_tensor_desc));
 
@@ -114,10 +114,10 @@ TEST_F(WebNNGraphBuilderDmlTest, DISABLED_BuildSingleOperatorConv2d) {
       .FusedActivation = nullptr};
 
   std::array<const NodeOutput*, 2> inputs = {input, filter};
-  const OperatorNode* conv_node = graph_builder.CreateOperatorNode(
+  const GraphNode* conv_node = graph_builder.CreateOperatorNode(
       DML_OPERATOR_CONVOLUTION, &conv_operator_desc, inputs, "");
   ASSERT_NE(conv_node, nullptr);
-  EXPECT_EQ(conv_node->GetType(), Node::Type::kOperator);
+  EXPECT_EQ(conv_node->GetType(), Node::Type::kGraph);
 
   const NodeOutput* output =
       graph_builder.CreateNodeOutput(conv_node, std::move(output_tensor_desc));
@@ -158,10 +158,10 @@ TEST_F(WebNNGraphBuilderDmlTest, BuildSingleOperatorSplit) {
       .Axis = 2};
 
   std::array<const NodeOutput*, 1> inputs = {input};
-  const OperatorNode* split_node = graph_builder.CreateOperatorNode(
+  const GraphNode* split_node = graph_builder.CreateOperatorNode(
       DML_OPERATOR_SPLIT, &split_operator_desc, inputs, "");
   ASSERT_NE(split_node, nullptr);
-  EXPECT_EQ(split_node->GetType(), Node::Type::kOperator);
+  EXPECT_EQ(split_node->GetType(), Node::Type::kGraph);
   const NodeOutput* output0 = graph_builder.CreateNodeOutput(
       split_node, std::move(output_tensor_desc0), 0);
   const NodeOutput* output1 = graph_builder.CreateNodeOutput(
@@ -207,10 +207,10 @@ TEST_F(WebNNGraphBuilderDmlTest, DISABLED_BuildGraphWithReluAndConv2d) {
       .OutputTensor = &input_tensor_desc.GetDMLTensorDesc()};
 
   std::array<const NodeOutput*, 1> relu_node_inputs = {input};
-  const OperatorNode* relu_node = graph_builder.CreateOperatorNode(
+  const GraphNode* relu_node = graph_builder.CreateOperatorNode(
       DML_OPERATOR_ACTIVATION_RELU, &relu_operator_desc, relu_node_inputs, "");
   ASSERT_NE(relu_node, nullptr);
-  EXPECT_EQ(relu_node->GetType(), Node::Type::kOperator);
+  EXPECT_EQ(relu_node->GetType(), Node::Type::kGraph);
   const NodeOutput* relu_output =
       graph_builder.CreateNodeOutput(relu_node, input_tensor_desc);
 
@@ -237,10 +237,10 @@ TEST_F(WebNNGraphBuilderDmlTest, DISABLED_BuildGraphWithReluAndConv2d) {
       .FusedActivation = nullptr};
 
   std::array<const NodeOutput*, 2> conv_node_inputs = {relu_output, filter};
-  const OperatorNode* conv_node = graph_builder.CreateOperatorNode(
+  const GraphNode* conv_node = graph_builder.CreateOperatorNode(
       DML_OPERATOR_CONVOLUTION, &conv_operator_desc, conv_node_inputs, "");
   ASSERT_NE(conv_node, nullptr);
-  EXPECT_EQ(conv_node->GetType(), Node::Type::kOperator);
+  EXPECT_EQ(conv_node->GetType(), Node::Type::kGraph);
 
   const NodeOutput* output =
       graph_builder.CreateNodeOutput(conv_node, std::move(output_tensor_desc));

@@ -27,9 +27,9 @@ const InputNode* Node::AsInputNode() const {
   return static_cast<const InputNode*>(this);
 }
 
-const OperatorNode* Node::AsOperatorNode() const {
-  CHECK_EQ(GetType(), Node::Type::kOperator);
-  return static_cast<const OperatorNode*>(this);
+const GraphNode* Node::AsGraphNode() const {
+  CHECK_EQ(GetType(), Node::Type::kGraph);
+  return static_cast<const GraphNode*>(this);
 }
 
 InputNode::InputNode(uint32_t graph_input_index)
@@ -42,27 +42,68 @@ uint32_t InputNode::GetGraphInputIndex() const {
   return graph_input_index_;
 }
 
-OperatorNode::OperatorNode(uint32_t node_index,
-                           Microsoft::WRL::ComPtr<IDMLOperator> dml_operator)
-    : Node(Node::Type::kOperator),
-      node_index_(node_index),
-      dml_operator_(std::move(dml_operator)) {
-  dml_operator_node_desc_ =
-      DML_OPERATOR_GRAPH_NODE_DESC{.Operator = dml_operator_.Get()};
-}
+GraphNode::GraphNode(uint32_t node_index)
+    : Node(Node::Type::kGraph), node_index_(node_index) {}
 
-OperatorNode::~OperatorNode() = default;
+GraphNode::~GraphNode() = default;
 
-uint32_t OperatorNode::GetNodeIndex() const {
-  CHECK_EQ(type_, Node::Type::kOperator);
+uint32_t GraphNode::GetNodeIndex() const {
+  CHECK_EQ(type_, Node::Type::kGraph);
   return node_index_;
 }
 
-const DML_OPERATOR_GRAPH_NODE_DESC& OperatorNode::GetDMLOperatorNodeDesc()
-    const {
-  CHECK_EQ(type_, Node::Type::kOperator);
-  return dml_operator_node_desc_;
-}
+// Represents an operator graph node. Holds the operator node descriptor and
+// DirectML operator.
+class OperatorNode final : public GraphNode {
+ public:
+  OperatorNode(uint32_t node_index,
+               Microsoft::WRL::ComPtr<IDMLOperator> dml_operator,
+               std::string label)
+      : GraphNode(node_index),
+        dml_operator_(std::move(dml_operator)),
+        label_(std::move(label)) {
+    dml_operator_node_desc_ = DML_OPERATOR_GRAPH_NODE_DESC{
+        .Operator = dml_operator_.Get(), .Name = label_.c_str()};
+  }
+
+  ~OperatorNode() override = default;
+
+  DML_GRAPH_NODE_DESC GetDMLGraphNodeDesc() const override {
+    CHECK_EQ(type_, Node::Type::kGraph);
+    return DML_GRAPH_NODE_DESC{.Type = DML_GRAPH_NODE_TYPE_OPERATOR,
+                               .Desc = &dml_operator_node_desc_};
+  }
+
+ private:
+  Microsoft::WRL::ComPtr<IDMLOperator> dml_operator_;
+  const std::string label_;
+  DML_OPERATOR_GRAPH_NODE_DESC dml_operator_node_desc_;
+};
+
+// Represents a constant graph node. Holds the constant node descriptor and
+// constant operand.
+class ConstantNode final : public GraphNode {
+ public:
+  ConstantNode(uint32_t node_index,
+               std::unique_ptr<WebNNConstantOperand> constant_operand)
+      : GraphNode(node_index), constant_operand_(std::move(constant_operand)) {
+    dml_constant_node_desc_ = DML_CONSTANT_DATA_GRAPH_NODE_DESC{
+        .Data = constant_operand_->ByteSpan().data(),
+        .DataSize = constant_operand_->ByteSpan().size()};
+  }
+
+  ~ConstantNode() override = default;
+
+  DML_GRAPH_NODE_DESC GetDMLGraphNodeDesc() const override {
+    CHECK_EQ(type_, Node::Type::kGraph);
+    return DML_GRAPH_NODE_DESC{.Type = DML_GRAPH_NODE_TYPE_CONSTANT,
+                               .Desc = &dml_constant_node_desc_};
+  }
+
+ private:
+  std::unique_ptr<WebNNConstantOperand> constant_operand_;
+  DML_CONSTANT_DATA_GRAPH_NODE_DESC dml_constant_node_desc_;
+};
 
 NodeOutput::NodeOutput(const Node& node,
                        uint32_t output_index,
@@ -100,7 +141,7 @@ const InputNode* GraphBuilderDml::CreateInputNode() {
   return &input_nodes_.back();
 }
 
-const OperatorNode* GraphBuilderDml::CreateOperatorNode(
+const GraphNode* GraphBuilderDml::CreateOperatorNode(
     DML_OPERATOR_TYPE type,
     const void* operator_desc,
     base::span<const NodeOutput*> inputs,
@@ -115,10 +156,10 @@ const OperatorNode* GraphBuilderDml::CreateOperatorNode(
     dml_operator->SetName(base::SysUTF8ToWide(label).c_str());
   }
 
-  uint32_t operator_node_index =
-      base::checked_cast<uint32_t>(operator_nodes_.size());
-  operator_nodes_.emplace_back(operator_node_index, std::move(dml_operator));
-  const OperatorNode* operator_node = &operator_nodes_.back();
+  uint32_t node_index = base::checked_cast<uint32_t>(graph_nodes_.size());
+  graph_nodes_.push_back(std::make_unique<OperatorNode>(
+      node_index, std::move(dml_operator), std::string(label)));
+  const GraphNode* operator_node = graph_nodes_.back().get();
 
   // Connect input node outputs to this operator node that creates the input
   // edges and intermediate edges.
@@ -141,10 +182,10 @@ const OperatorNode* GraphBuilderDml::CreateOperatorNode(
         dml_input_edges_.push_back(std::move(input_edge));
         break;
       }
-      case Node::Type::kOperator: {
-        const OperatorNode* from_operator_node = from_node.AsOperatorNode();
+      case Node::Type::kGraph: {
+        const GraphNode* from_graph_node = from_node.AsGraphNode();
         DML_INTERMEDIATE_GRAPH_EDGE_DESC intermediate_edge{
-            .FromNodeIndex = from_operator_node->GetNodeIndex(),
+            .FromNodeIndex = from_graph_node->GetNodeIndex(),
             .FromNodeOutputIndex = operator_input->GetOutputIndex(),
             .ToNodeIndex = operator_node->GetNodeIndex(),
             .ToNodeInputIndex = node_input_index};
@@ -157,6 +198,14 @@ const OperatorNode* GraphBuilderDml::CreateOperatorNode(
   return operator_node;
 }
 
+const GraphNode* GraphBuilderDml::CreateConstantNode(
+    std::unique_ptr<WebNNConstantOperand> constant_operand) {
+  uint32_t node_index = base::checked_cast<uint32_t>(graph_nodes_.size());
+  graph_nodes_.push_back(
+      std::make_unique<ConstantNode>(node_index, std::move(constant_operand)));
+  return graph_nodes_.back().get();
+}
+
 const NodeOutput* GraphBuilderDml::CreateNodeOutput(const Node* node,
                                                  TensorDesc tensor_desc,
                                                  uint32_t output_index) {
@@ -167,12 +216,11 @@ const NodeOutput* GraphBuilderDml::CreateNodeOutput(const Node* node,
 
 uint32_t GraphBuilderDml::CreateOutputEdge(const NodeOutput* node_output) {
   CHECK(node_output);
-  const OperatorNode* from_operator_node =
-      node_output->GetNode().AsOperatorNode();
+  const GraphNode* from_graph_node = node_output->GetNode().AsGraphNode();
   uint32_t graph_output_index =
       base::checked_cast<uint32_t>(dml_output_edges_.size());
   DML_OUTPUT_GRAPH_EDGE_DESC output_edge = {
-      .FromNodeIndex = from_operator_node->GetNodeIndex(),
+      .FromNodeIndex = from_graph_node->GetNodeIndex(),
       .FromNodeOutputIndex = node_output->GetOutputIndex(),
       .GraphOutputIndex = graph_output_index};
   dml_output_edges_.push_back(std::move(output_edge));
@@ -185,14 +233,12 @@ GraphBuilderDml::Compile(DML_EXECUTION_FLAGS flags) const {
 
   SCOPED_UMA_HISTOGRAM_TIMER("WebNN.DML.TimingMs.Compilation");
 
-  // Ensure `dml_nodes` vector is ordered by node index of operator node.
-  std::vector<DML_GRAPH_NODE_DESC> dml_nodes(operator_nodes_.size());
-  for (const auto& operator_node : operator_nodes_) {
-    uint32_t node_index = operator_node.GetNodeIndex();
+  // Ensure `dml_nodes` vector is ordered by node index of graph node.
+  std::vector<DML_GRAPH_NODE_DESC> dml_nodes(graph_nodes_.size());
+  for (const auto& graph_node : graph_nodes_) {
+    uint32_t node_index = graph_node->GetNodeIndex();
     CHECK_LT(node_index, dml_nodes.size());
-    dml_nodes[node_index] =
-        DML_GRAPH_NODE_DESC{.Type = DML_GRAPH_NODE_TYPE_OPERATOR,
-                            .Desc = &operator_node.GetDMLOperatorNodeDesc()};
+    dml_nodes[node_index] = graph_node->GetDMLGraphNodeDesc();
   }
 
   std::vector<DML_GRAPH_EDGE_DESC> dml_input_edges(dml_input_edges_.size());

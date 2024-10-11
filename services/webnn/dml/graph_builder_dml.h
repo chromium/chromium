@@ -14,6 +14,7 @@
 #include "base/memory/raw_ref.h"
 #include "base/types/expected.h"
 #include "services/webnn/dml/tensor_desc.h"
+#include "services/webnn/webnn_constant_operand.h"
 #include "third_party/microsoft_dxheaders/include/directml.h"
 
 // Windows SDK headers should be included after DirectX headers.
@@ -22,15 +23,15 @@
 namespace webnn::dml {
 
 class InputNode;
-class OperatorNode;
+class GraphNode;
 
-// Represents a node, which is either an input node or operator node, within a
-// graph.
+// Represents a node, which is either an input node or graph node, within
+// a graph.
 class COMPONENT_EXPORT(WEBNN_SERVICE) Node {
  public:
   enum class Type {
     kInput,
-    kOperator,
+    kGraph,
   };
 
   explicit Node(Type type);
@@ -45,15 +46,15 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) Node {
   Type GetType() const;
 
   const InputNode* AsInputNode() const;
-  const OperatorNode* AsOperatorNode() const;
+  const GraphNode* AsGraphNode() const;
 
  protected:
   Type type_;
 };
 
-// Represents a graph input node. Created by
-// `GraphBuilderDml::CreateInputNode()`. Holds the graph input index which is
-// used to set `DML_INPUT_GRAPH_EDGE_DESC::GraphInputIndex`.
+// Represents an input node. Created by `GraphBuilderDml::CreateInputNode()`.
+// Holds the graph input index which is used to set
+// `DML_INPUT_GRAPH_EDGE_DESC::GraphInputIndex`.
 class InputNode final : public Node {
  public:
   explicit InputNode(uint32_t graph_input_index);
@@ -62,31 +63,26 @@ class InputNode final : public Node {
   uint32_t GetGraphInputIndex() const;
 
  private:
-  uint32_t graph_input_index_ = 0;
+  const uint32_t graph_input_index_;
 };
 
-// Represents a graph operator node. Created by
-// `GraphBuilderDml::CreateOperatorNode()`. Holds the node index and DirectML
-// operator.
-//
-// The node index is increased from 0 when a new operator node is created. The
-// node index is used to identify an operator node when creating DirectML graph
-// edge structures, e.g. `FromNodeIndex` or `ToNodeIndex` of
-// `DML_INTERMEDIATE_GRAPH_EDGE_DESC`. The operator nodes should be kept in the
-// same order when creating `DML_GRAPH_DESC::Nodes`.
-class OperatorNode final : public Node {
+// Represents a graph node. Created by `CreateOperatorNode()` or
+// `CreateConstantNode()`.
+// The node index is increased from 0 when a new graph node is created. It's
+// used to identify a graph node when creating DirectML graph edge structures,
+// e.g. `FromNodeIndex` or `ToNodeIndex` of `DML_INTERMEDIATE_GRAPH_EDGE_DESC`.
+// The graph nodes should be kept in the same order when creating
+// `DML_GRAPH_DESC::Nodes`.
+class GraphNode : public Node {
  public:
-  OperatorNode(uint32_t operator_index,
-               Microsoft::WRL::ComPtr<IDMLOperator> dml_operator);
-  ~OperatorNode() override;
+  explicit GraphNode(uint32_t node_index);
+  ~GraphNode() override;
 
   uint32_t GetNodeIndex() const;
-  const DML_OPERATOR_GRAPH_NODE_DESC& GetDMLOperatorNodeDesc() const;
+  virtual DML_GRAPH_NODE_DESC GetDMLGraphNodeDesc() const = 0;
 
  private:
-  uint32_t node_index_ = 0;
-  Microsoft::WRL::ComPtr<IDMLOperator> dml_operator_;
-  DML_OPERATOR_GRAPH_NODE_DESC dml_operator_node_desc_;
+  const uint32_t node_index_;
 };
 
 // Represents an output (edge) of a node. Created by
@@ -159,12 +155,16 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) GraphBuilderDml final {
   // input index.
   //
   // When creation of IDMLOperator succeeds, it creates an operator node
-  // stored in `GraphBuilderDml::operator_nodes_` and returns its pointer. When
-  // it fails to create IDMLOperator, a nullptr is returned.
-  const OperatorNode* CreateOperatorNode(DML_OPERATOR_TYPE type,
-                                         const void* operator_desc,
-                                         base::span<const NodeOutput*> inputs,
-                                         std::string_view label);
+  // stored in `GraphBuilderDml::graph_nodes_` and returns its pointer.
+  const GraphNode* CreateOperatorNode(DML_OPERATOR_TYPE type,
+                                      const void* operator_desc,
+                                      base::span<const NodeOutput*> inputs,
+                                      std::string_view label);
+
+  // Create a constant node stored in `GraphBuilderDml::graph_nodes_` and
+  // return its pointer.
+  const GraphNode* CreateConstantNode(
+      std::unique_ptr<WebNNConstantOperand> constant_operand);
 
   // Create a node output stored in `GraphBuilderDml::node_outputs_` and return
   // its pointer.
@@ -190,7 +190,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) GraphBuilderDml final {
 
   // `std::list` never invalidates the pointers to its elements.
   std::list<InputNode> input_nodes_;
-  std::list<OperatorNode> operator_nodes_;
+  std::vector<std::unique_ptr<GraphNode>> graph_nodes_;
   std::list<NodeOutput> node_outputs_;
 };
 

@@ -81,5 +81,7 @@ This is a testharness.js-based test.
   assert_true: assert_array_approx_equals_ulp: test convTranspose2d softmax float32 actual 0.4983367919921875 should be close enough to expected 0.49833576343872565 by the acceptable 27 ULP distance, but they have 35 ULP distance expected true got false
 [FAIL] batchNormalization options.axis=0  + softmax
   promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported axis for batchNormalization. It must be the channel dimension."
+[FAIL] add + sub + mul + gather default
+  promise_test: Unhandled rejection with value: object "UnknownError: Failed to execute 'build' on 'MLGraphBuilder': Model load error."
 Harness: the test ran to completion.
 
