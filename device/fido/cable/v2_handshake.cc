@@ -17,6 +17,7 @@
 #include <type_traits>
 
 #include "base/base64url.h"
+#include "base/feature_list.h"
 #include "base/functional/overloaded.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
@@ -30,6 +31,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "crypto/aead.h"
 #include "device/fido/cable/v2_constants.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
@@ -434,7 +436,8 @@ std::string Encode(base::span<const uint8_t, kQRKeySize> qr_key,
 
   qr_contents.emplace(3, static_cast<int64_t>(base::Time::Now().ToTimeT()));
 
-  qr_contents.emplace(4, true);  // client supports storing linking information.
+  qr_contents.emplace(
+      4, base::FeatureList::IsEnabled(device::kWebAuthnHybridLinking));
 
   qr_contents.emplace(5, RequestTypeToString(request_type));
 

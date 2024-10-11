@@ -1188,8 +1188,9 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
   std::vector<std::unique_ptr<device::cablev2::Pairing>> paired_phones;
   base::RepeatingCallback<void(std::unique_ptr<device::cablev2::Pairing>)>
       contact_phone_callback;
-  if (!cable_extension_provided ||
-      base::FeatureList::IsEnabled(device::kWebAuthCableExtensionAnywhere)) {
+  if (base::FeatureList::IsEnabled(device::kWebAuthnHybridLinking) &&
+      (!cable_extension_provided ||
+       base::FeatureList::IsEnabled(device::kWebAuthCableExtensionAnywhere))) {
     std::unique_ptr<cablev2::KnownDevices> known_devices =
         cablev2::KnownDevices::FromProfile(profile);
     if (g_observer) {
