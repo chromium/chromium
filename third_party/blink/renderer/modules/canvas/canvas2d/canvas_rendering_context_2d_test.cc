@@ -518,6 +518,29 @@ class FakeCanvasResourceProvider : public CanvasResourceProvider {
   bool supports_direct_compositing_;
 };
 
+// Sets up an accelerated CanvasResourceProvider, accelerated compositing,
+// and a CcLayer on the passed-in HTMLCanvasElement. Returns false if the
+// CcLayer couldn't be created.
+bool SetUpFullAccelerationAndCcLayer(HTMLCanvasElement& canvas_element) {
+  // Install a CanvasResourceProvider that is accelerated and supports direct
+  // compositing (the latter is necessary for GetOrCreateCcLayerIfNeeded() to
+  // succeed).
+  gfx::Size size = canvas_element.Size();
+  auto provider = std::make_unique<FakeCanvasResourceProvider>(
+      SkImageInfo::MakeN32Premul(size.width(), size.height()),
+      RasterModeHint::kPreferGPU, &canvas_element,
+      CompositingMode::kSupportsDirectCompositing);
+  canvas_element.SetResourceProviderForTesting(
+      std::move(provider),
+      std::make_unique<Canvas2DLayerBridge>(&canvas_element), size);
+
+  // Put the host in GPU compositing mode.
+  canvas_element.SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
+
+  // Create the CcLayer.
+  return canvas_element.GetOrCreateCcLayerIfNeeded() != nullptr;
+}
+
 //============================================================================
 
 MATCHER_P(OverdrawOpAreMatcher, expected_overdraw_ops, "") {
@@ -2030,29 +2053,10 @@ INSTANTIATE_PAINT_TEST_SUITE_P(CanvasRenderingContext2DTestAccelerated);
 TEST_P(CanvasRenderingContext2DTestAccelerated, GetImageAfterContextLoss) {
   CreateContext(kNonOpaque);
 
-  // Do initial setup to ensure that CanvasResourceHost will check for the GPU
-  // context being lost as part of checking resource validity:
-
-  // * Install a CanvasResourceProvider that is accelerated and supports direct
-  //   compositing. The former is necessary as part of ensuring that
-  //   CanvasResourceHost::IsResourceValid() checks for context loss, while the
-  //   latter is necessary for GetOrCreateCcLayerIfNeeded() to succeed.
-  gfx::Size size = CanvasElement().Size();
-  auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      SkImageInfo::MakeN32Premul(size.width(), size.height()),
-      RasterModeHint::kPreferGPU, &CanvasElement(),
-      CompositingMode::kSupportsDirectCompositing);
-  CanvasElement().SetResourceProviderForTesting(
-      std::move(provider),
-      std::make_unique<Canvas2DLayerBridge>(&CanvasElement()), size);
-
-  // * Put the host in GPU compositing mode, also necessary to ensure that
-  //   IsResourceValid() checks for context loss.
-  CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-
-  // * Finally, create a CC layer as otherwise IsReturnValid() will always
-  //   unconditionally return true.
-  EXPECT_TRUE(CanvasElement().GetOrCreateCcLayerIfNeeded());
+  // For CanvasResourceHost to check for the GPU context being lost as part of
+  // checking resource validity, it is necessary to have both accelerated
+  // raster/compositing and a CC layer.
+  ASSERT_TRUE(SetUpFullAccelerationAndCcLayer(CanvasElement()));
 
   EXPECT_TRUE(CanvasElement().IsResourceValid());
   EXPECT_TRUE(Context2D()->GetImage(FlushReason::kTesting));
@@ -2066,29 +2070,10 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
        PrepareMailboxWhenContextIsLostWithFailedRestore) {
   CreateContext(kNonOpaque);
 
-  // Do initial setup to ensure that CanvasResourceHost will check for the GPU
-  // context being lost as part of checking resource validity:
-
-  // * Install a CanvasResourceProvider that is accelerated and supports direct
-  //   compositing. The former is necessary to ensure that
-  //   CanvasResourceHost::IsResourceValid() checks for context loss, while the
-  //   latter is necessary for GetOrCreateCcLayerIfNeeded() to succeed.
-  gfx::Size size = CanvasElement().Size();
-  auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      SkImageInfo::MakeN32Premul(size.width(), size.height()),
-      RasterModeHint::kPreferGPU, &CanvasElement(),
-      CompositingMode::kSupportsDirectCompositing);
-  CanvasElement().SetResourceProviderForTesting(
-      std::move(provider),
-      std::make_unique<Canvas2DLayerBridge>(&CanvasElement()), size);
-
-  // * The host must also be in GPU compositing mode for IsResourceValid()
-  //   to check for context loss.
-  CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-
-  // * Finally, IsResourceValid() always returns true in the absence of a CC
-  //   layer.
-  EXPECT_TRUE(CanvasElement().GetOrCreateCcLayerIfNeeded());
+  // For CanvasResourceHost to check for the GPU context being lost as part of
+  // checking resource validity, it is necessary to have both accelerated
+  // raster/compositing and a CC layer.
+  ASSERT_TRUE(SetUpFullAccelerationAndCcLayer(CanvasElement()));
 
   // The resource should start off valid.
   EXPECT_TRUE(CanvasElement().IsResourceValid());
@@ -2497,29 +2482,10 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, ContextLossAbortsHibernation) {
 
   CreateContext(kNonOpaque);
 
-  // Do initial setup to ensure that CanvasResourceHost will check for the GPU
-  // context being lost as part of checking resource validity:
-
-  // * Install a CanvasResourceProvider that is accelerated and supports direct
-  //   compositing. The former is necessary as part of ensuring that
-  //   CanvasResourceHost::IsResourceValid() checks for context loss, while the
-  //   latter is necessary for GetOrCreateCcLayerIfNeeded() to succeed.
-  gfx::Size size = CanvasElement().Size();
-  auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      SkImageInfo::MakeN32Premul(size.width(), size.height()),
-      RasterModeHint::kPreferGPU, &CanvasElement(),
-      CompositingMode::kSupportsDirectCompositing);
-  CanvasElement().SetResourceProviderForTesting(
-      std::move(provider),
-      std::make_unique<Canvas2DLayerBridge>(&CanvasElement()), size);
-
-  // * Put the host in GPU compositing mode, also necessary to ensure that
-  //   IsResourceValid() checks for context loss.
-  CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-
-  // * Finally, create a CC layer as otherwise IsResourceValid() will always
-  //   unconditionally return true.
-  EXPECT_TRUE(CanvasElement().GetOrCreateCcLayerIfNeeded());
+  // For CanvasResourceHost to check for the GPU context being lost as part of
+  // checking resource validity, it is necessary to have both accelerated
+  // raster/compositing and a CC layer.
+  ASSERT_TRUE(SetUpFullAccelerationAndCcLayer(CanvasElement()));
 
   EXPECT_TRUE(CanvasElement().IsResourceValid());
 
@@ -2578,25 +2544,9 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
 
   CreateContext(kNonOpaque);
 
-  // Create a CC layer, as a CC layer being present is a necessary precondition
-  // of calling PrepareTransferableResource().
-
-  // First install a CanvasResourceProvider that supports direct compositing,
-  // as this is necessary for GetOrCreateCcLayerIfNeeded() to succeed.
-  gfx::Size size = CanvasElement().Size();
-  auto provider = std::make_unique<FakeCanvasResourceProvider>(
-      SkImageInfo::MakeN32Premul(size.width(), size.height()),
-      RasterModeHint::kPreferGPU, &CanvasElement(),
-      CompositingMode::kSupportsDirectCompositing);
-  CanvasElement().SetResourceProviderForTesting(
-      std::move(provider),
-      std::make_unique<Canvas2DLayerBridge>(&CanvasElement()), size);
-
-  EXPECT_TRUE(CanvasElement().GetOrCreateCcLayerIfNeeded());
-  EXPECT_TRUE(CanvasElement().IsResourceValid());
-
-  // Put the host in GPU compositing mode to ensure that hibernation succeeds.
-  CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
+  // Invoking PrepareTransferableResource() has a precondition that a CC layer
+  // is present, while GPU compositing is necessary for hibernation to succeed.
+  ASSERT_TRUE(SetUpFullAccelerationAndCcLayer(CanvasElement()));
 
   auto* bridge = CanvasElement().GetCanvas2DLayerBridge();
   auto& handler = bridge->GetHibernationHandler();
