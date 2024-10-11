@@ -28,6 +28,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -47,6 +48,7 @@ public class AppModalPresenterUnitTest {
     private DisplayMetrics mDisplayMetrics;
     private AppModalPresenter mAppModalPresenter;
     private PropertyModel mModel;
+    private ObservableSupplierImpl<Boolean> mEdgeToEdgeStateSupplier;
 
     @Before
     public void setup() {
@@ -55,6 +57,8 @@ public class AppModalPresenterUnitTest {
         mDisplayMetrics.density = 1;
         mAppModalPresenter = new AppModalPresenter(activity);
         mAppModalPresenter.setInsetObserver(mInsetObserver);
+        mEdgeToEdgeStateSupplier = new ObservableSupplierImpl<>();
+        mAppModalPresenter.setEdgeToEdgeStateSupplier(mEdgeToEdgeStateSupplier);
         mModel = new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS).build();
     }
 
@@ -64,7 +68,7 @@ public class AppModalPresenterUnitTest {
     }
 
     @Test
-    public void addDialogView_NonZeroSystemBarsInsets() {
+    public void addDialogView_NonZeroSystemBarsInsets_EdgeToEdgeActive() {
         // max(left, right, fixedMargin) = max(25, 20, 16) = 25.
         int expectedHorizontalMargin = 25;
         // max(top, bottom, fixedMargin) = max(40, 32, 16) = 40.
@@ -75,11 +79,27 @@ public class AppModalPresenterUnitTest {
                 /* right= */ 20,
                 /* bottom= */ 32,
                 expectedHorizontalMargin,
-                expectedVerticalMargin);
+                expectedVerticalMargin,
+                /* isEdgeToEdgeActive= */ true);
     }
 
     @Test
-    public void addDialogView_NoSystemBarsInsets() {
+    public void addDialogView_NonZeroSystemBarsInsets_EdgeToEdgeInactive() {
+        // expectedHorizontalMargin = expectedVerticalMargin = fixedMargin = 16.
+        int expectedHorizontalMargin = 16;
+        int expectedVerticalMargin = 16;
+        doTestAddViewWithSystemBarsInsets(
+                /* left= */ 25,
+                /* top= */ 40,
+                /* right= */ 20,
+                /* bottom= */ 32,
+                expectedHorizontalMargin,
+                expectedVerticalMargin,
+                /* isEdgeToEdgeActive= */ false);
+    }
+
+    @Test
+    public void addDialogView_NoSystemBarsInsets_EdgeToEdgeActive() {
         // max(left, right, fixedMargin) = max(0, 0, 16) = 16.
         int expectedHorizontalMargin = 16;
         // max(top, bottom, fixedMargin) = max(0, 0, 16) = 16.
@@ -90,7 +110,24 @@ public class AppModalPresenterUnitTest {
                 /* right= */ 0,
                 /* bottom= */ 0,
                 expectedHorizontalMargin,
-                expectedVerticalMargin);
+                expectedVerticalMargin,
+                /* isEdgeToEdgeActive= */ true);
+    }
+
+    @Test
+    public void addDialogView_NoSystemBarsInsets_EdgeToEdgeInactive() {
+        // max(left, right, fixedMargin) = max(0, 0, 16) = 16.
+        int expectedHorizontalMargin = 16;
+        // max(top, bottom, fixedMargin) = max(0, 0, 16) = 16.
+        int expectedVerticalMargin = 16;
+        doTestAddViewWithSystemBarsInsets(
+                /* left= */ 0,
+                /* top= */ 0,
+                /* right= */ 0,
+                /* bottom= */ 0,
+                expectedHorizontalMargin,
+                expectedVerticalMargin,
+                /* isEdgeToEdgeActive= */ false);
     }
 
     private void doTestAddViewWithSystemBarsInsets(
@@ -99,9 +136,10 @@ public class AppModalPresenterUnitTest {
             int right,
             int bottom,
             int expectedHorizontalMargin,
-            int expectedVerticalMargin) {
+            int expectedVerticalMargin,
+            boolean isEdgeToEdgeActive) {
         // Setup window.
-        setupWindow(WINDOW_WIDTH, WINDOW_HEIGHT, left, top, right, bottom);
+        setupWindow(WINDOW_WIDTH, WINDOW_HEIGHT, left, top, right, bottom, isEdgeToEdgeActive);
         // Add dialog view.
         addDialogView();
         // Verify dialog margins.
@@ -117,7 +155,8 @@ public class AppModalPresenterUnitTest {
                 /* leftInset= */ 25,
                 /* topInset= */ 40,
                 /* rightInset= */ 20,
-                /* bottomInset= */ 32);
+                /* bottomInset= */ 32,
+                /* isEdgeToEdgeActive= */ true);
 
         // Add dialog view.
         addDialogView();
@@ -136,7 +175,7 @@ public class AppModalPresenterUnitTest {
     }
 
     @Test
-    public void onWindowResizedWithDialogShowing() {
+    public void onWindowResizedWithDialogShowing_EdgeToEdgeActive() {
         // Setup initial window.
         setupWindow(
                 WINDOW_WIDTH,
@@ -144,7 +183,8 @@ public class AppModalPresenterUnitTest {
                 /* leftInset= */ 25,
                 /* topInset= */ 40,
                 /* rightInset= */ 20,
-                /* bottomInset= */ 32);
+                /* bottomInset= */ 32,
+                /* isEdgeToEdgeActive= */ true);
 
         // Add dialog view.
         addDialogView();
@@ -159,12 +199,120 @@ public class AppModalPresenterUnitTest {
                 /* leftInset= */ 0,
                 /* topInset= */ 0,
                 /* rightInset= */ 0,
-                /* bottomInset= */ 32);
+                /* bottomInset= */ 32,
+                /* isEdgeToEdgeActive= */ true);
         // This method will be invoked when the dialog window is resized.
         mAppModalPresenter
                 .getWindowInsetsListenerForTesting()
                 .onApplyWindowInsets(mock(View.class), mock(WindowInsetsCompat.class));
         verifyDialogMargins(/* expectedHorizontalMargin= */ 16, /* expectedVerticalMargin= */ 32);
+    }
+
+    @Test
+    public void onWindowResizedWithDialogShowing_EdgeToEdgeInactive() {
+        // Setup initial window.
+        setupWindow(
+                WINDOW_WIDTH,
+                WINDOW_HEIGHT,
+                /* leftInset= */ 25,
+                /* topInset= */ 40,
+                /* rightInset= */ 20,
+                /* bottomInset= */ 32,
+                /* isEdgeToEdgeActive= */ false);
+
+        // Add dialog view.
+        addDialogView();
+
+        // Verify dialog margins.
+        verifyDialogMargins(16, 16);
+
+        // Simulate window resizing / inset change while the dialog is showing.
+        setupWindow(
+                /* windowWidth= */ 1600,
+                /* windowHeight= */ 1600,
+                /* leftInset= */ 0,
+                /* topInset= */ 0,
+                /* rightInset= */ 0,
+                /* bottomInset= */ 32,
+                /* isEdgeToEdgeActive= */ false);
+        // This method will be invoked when the dialog window is resized.
+        mAppModalPresenter
+                .getWindowInsetsListenerForTesting()
+                .onApplyWindowInsets(mock(View.class), mock(WindowInsetsCompat.class));
+        verifyDialogMargins(/* expectedHorizontalMargin= */ 16, /* expectedVerticalMargin= */ 16);
+    }
+
+    @Test
+    public void edgeToEdgeStateChangeBeforeInsetChange() {
+        // Setup initial window.
+        setupWindow(
+                WINDOW_WIDTH,
+                WINDOW_HEIGHT,
+                /* leftInset= */ 25,
+                /* topInset= */ 40,
+                /* rightInset= */ 20,
+                /* bottomInset= */ 32,
+                /* isEdgeToEdgeActive= */ true);
+
+        // Add dialog view.
+        addDialogView();
+
+        // Verify dialog margins.
+        verifyDialogMargins(/* expectedHorizontalMargin= */ 25, /* expectedVerticalMargin= */ 40);
+
+        // Simulate window resizing where edge-to-edge state change is received before inset change
+        // while the dialog is showing.
+        setupWindow(
+                /* windowWidth= */ 1600,
+                /* windowHeight= */ 1600,
+                /* leftInset= */ 0,
+                /* topInset= */ 36,
+                /* rightInset= */ 0,
+                /* bottomInset= */ 32,
+                /* isEdgeToEdgeActive= */ false);
+        // This method will be invoked when the dialog window is resized.
+        mAppModalPresenter
+                .getWindowInsetsListenerForTesting()
+                .onApplyWindowInsets(mock(View.class), mock(WindowInsetsCompat.class));
+
+        verifyDialogMargins(/* expectedHorizontalMargin= */ 16, /* expectedVerticalMargin= */ 16);
+    }
+
+    @Test
+    public void edgeToEdgeStateChangeAfterInsetChange() {
+        // Setup initial window.
+        setupWindow(
+                WINDOW_WIDTH,
+                WINDOW_HEIGHT,
+                /* leftInset= */ 0,
+                /* topInset= */ 36,
+                /* rightInset= */ 0,
+                /* bottomInset= */ 32,
+                /* isEdgeToEdgeActive= */ false);
+
+        // Add dialog view.
+        addDialogView();
+
+        // Verify dialog margins.
+        verifyDialogMargins(/* expectedHorizontalMargin= */ 16, /* expectedVerticalMargin= */ 16);
+
+        // Simulate window resizing where edge-to-edge state change is received after inset change
+        // while the dialog is showing.
+        setupWindow(
+                /* windowWidth= */ 1600,
+                /* windowHeight= */ 1600,
+                /* leftInset= */ 25,
+                /* topInset= */ 40,
+                /* rightInset= */ 20,
+                /* bottomInset= */ 32,
+                /* isEdgeToEdgeActive= */ false);
+        // This method will be invoked when the dialog window is resized.
+        mAppModalPresenter
+                .getWindowInsetsListenerForTesting()
+                .onApplyWindowInsets(mock(View.class), mock(WindowInsetsCompat.class));
+        mEdgeToEdgeStateSupplier.set(true);
+
+        verifyDialogMargins(/* expectedHorizontalMargin= */ 25, /* expectedVerticalMargin= */ 40);
     }
 
     @Test
@@ -176,7 +324,8 @@ public class AppModalPresenterUnitTest {
                 /* leftInset= */ 25,
                 /* topInset= */ 40,
                 /* rightInset= */ 20,
-                /* bottomInset= */ 32);
+                /* bottomInset= */ 32,
+                /* isEdgeToEdgeActive= */ true);
 
         // Add dialog view.
         mModel =
@@ -199,7 +348,8 @@ public class AppModalPresenterUnitTest {
                 /* leftInset= */ 25,
                 /* topInset= */ 40,
                 /* rightInset= */ 20,
-                /* bottomInset= */ 32);
+                /* bottomInset= */ 32,
+                /* isEdgeToEdgeActive= */ true);
 
         // Add dialog view.
         mModel =
@@ -222,7 +372,8 @@ public class AppModalPresenterUnitTest {
                 /* leftInset= */ 25,
                 /* topInset= */ 40,
                 /* rightInset= */ 20,
-                /* bottomInset= */ 32);
+                /* bottomInset= */ 32,
+                /* isEdgeToEdgeActive= */ true);
 
         // Add dialog view.
         mModel =
@@ -257,7 +408,8 @@ public class AppModalPresenterUnitTest {
             int leftInset,
             int topInset,
             int rightInset,
-            int bottomInset) {
+            int bottomInset,
+            boolean isEdgeToEdgeActive) {
         // Setup test values.
         mDisplayMetrics.heightPixels = windowHeight;
         mDisplayMetrics.widthPixels = windowWidth;
@@ -270,6 +422,9 @@ public class AppModalPresenterUnitTest {
                                 Insets.of(leftInset, topInset, rightInset, bottomInset))
                         .build();
         when(mInsetObserver.getLastRawWindowInsets()).thenReturn(windowInsets);
+
+        // Set edge-to-edge state.
+        mEdgeToEdgeStateSupplier.set(isEdgeToEdgeActive);
     }
 
     private void addDialogView() {

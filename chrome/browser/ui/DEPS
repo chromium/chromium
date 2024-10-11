@@ -4,6 +4,7 @@ include_rules = [
   "+chrome/updater",
   "+components/browser_ui/client_certificate",
   "+components/browser_ui/device_lock/android",
+  "+components/browser_ui/edge_to_edge/android",
   "+components/browser_ui/util/android/url_constants.h",
   "+components/country_codes",
   "+components/data_sharing/public",

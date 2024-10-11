@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.ui.desktop_windowing;
 import static android.view.WindowInsetsController.APPEARANCE_LIGHT_CAPTION_BARS;
 import static android.view.WindowInsetsController.APPEARANCE_TRANSPARENT_CAPTION_BAR_BACKGROUND;
 
+import static java.lang.Boolean.FALSE;
+
 import android.app.Activity;
 import android.graphics.Rect;
 import android.os.Build.VERSION_CODES;
@@ -19,7 +21,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.graphics.Insets;
-import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Log;
@@ -32,6 +33,7 @@ import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils.DesktopWindowHeuristicResult;
 import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.InsetObserver.WindowInsetObserver;
 import org.chromium.ui.InsetsRectProvider;
@@ -67,7 +69,8 @@ public class AppHeaderCoordinator
 
     // Internal states
     private boolean mIsInDesktopWindow;
-    private boolean mIsEdgeToEdgeActive;
+    private final EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
+    private int mEdgeToEdgeToken = TokenHolder.INVALID_TOKEN;
     private int mBrowserControlsToken = TokenHolder.INVALID_TOKEN;
     private @Nullable AppHeaderState mAppHeaderState;
     private boolean mIsInUnfocusedDesktopWindow;
@@ -90,6 +93,8 @@ public class AppHeaderCoordinator
      *     SaveInstanceStateObserver#onSaveInstanceState(Bundle)} events observed by this class.
      * @param savedInstanceState The saved instance state {@link Bundle} holding UI state
      *     information for restoration on startup.
+     * @param edgeToEdgeStateProvider The {@link EdgeToEdgeStateProvider} to determine the
+     *     edge-to-edge state.
      */
     public AppHeaderCoordinator(
             Activity activity,
@@ -97,8 +102,10 @@ public class AppHeaderCoordinator
             BrowserStateBrowserControlsVisibilityDelegate browserControlsVisibilityDelegate,
             @NonNull InsetObserver insetObserver,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            Bundle savedInstanceState) {
+            Bundle savedInstanceState,
+            @NonNull EdgeToEdgeStateProvider edgeToEdgeStateProvider) {
         mActivity = activity;
+        mEdgeToEdgeStateProvider = edgeToEdgeStateProvider;
         mRootView = rootView;
         mBrowserControlsVisibilityDelegate = browserControlsVisibilityDelegate;
         mInsetObserver = insetObserver;
@@ -216,14 +223,7 @@ public class AppHeaderCoordinator
 
         boolean desktopWindowingModeChanged = mIsInDesktopWindow != isInDesktopWindow;
         mIsInDesktopWindow = isInDesktopWindow;
-        // Note that this E2E state may be inconsistent in reality, especially because there may be
-        // other callers of #setDecorFitsSystemWindows(). It is assumed here that E2E is always
-        // consistent with desktop windowing mode.
-        mIsEdgeToEdgeActive = mIsInDesktopWindow;
         mAppHeaderState = appHeaderState;
-
-        // Update the root-level content view's padding to account for bottom inset changes.
-        maybeUpdateRootViewBottomPadding();
 
         for (var observer : mObservers) {
             observer.onAppHeaderStateChanged(mAppHeaderState);
@@ -231,12 +231,16 @@ public class AppHeaderCoordinator
 
         // If whether we are in DW mode does not change, we can end this method now.
         if (!desktopWindowingModeChanged) return;
+
         for (var observer : mObservers) {
             observer.onDesktopWindowingModeChanged(mIsInDesktopWindow);
         }
 
         // 1. Enter E2E if we are in desktop windowing mode.
-        WindowCompat.setDecorFitsSystemWindows(mActivity.getWindow(), !mIsEdgeToEdgeActive);
+        setEdgeToEdgeState(mIsInDesktopWindow);
+        // Update the root-level content view's padding to account for bottom insets depending on
+        // the edge to edge state.
+        maybeUpdateRootViewBottomPadding();
 
         // 2. Set the captionBar background appropriately to draw into the region.
         updateCaptionBarBackground(mIsInDesktopWindow);
@@ -335,7 +339,9 @@ public class AppHeaderCoordinator
         int rootViewBottomPadding = mRootView.getPaddingBottom();
         // Pad the root view with bottom window insets only if E2E is active.
         int bottomInset =
-                !mIsEdgeToEdgeActive ? 0 : Math.max(mKeyboardInset, mSystemBarBottomInset);
+                FALSE.equals(mEdgeToEdgeStateProvider.get())
+                        ? 0
+                        : Math.max(mKeyboardInset, mSystemBarBottomInset);
 
         // If the root view is padded as needed already, return early.
         if (rootViewBottomPadding == bottomInset) return;
@@ -350,7 +356,7 @@ public class AppHeaderCoordinator
     /** Set states for testing. */
     public void setStateForTesting(boolean isInDesktopWindow, AppHeaderState appHeaderState) {
         mIsInDesktopWindow = isInDesktopWindow;
-        mIsEdgeToEdgeActive = isInDesktopWindow;
+        setEdgeToEdgeState(mIsInDesktopWindow);
         mAppHeaderState = appHeaderState;
 
         for (var observer : mObservers) {
@@ -366,5 +372,14 @@ public class AppHeaderCoordinator
 
     WindowInsetObserver getWindowInsetObserverForTesting() {
         return mWindowInsetObserver;
+    }
+
+    private void setEdgeToEdgeState(boolean active) {
+        if (active) {
+            mEdgeToEdgeToken = mEdgeToEdgeStateProvider.acquireSetDecorFitsSystemWindowToken();
+        } else {
+            mEdgeToEdgeStateProvider.releaseSetDecorFitsSystemWindowToken(mEdgeToEdgeToken);
+            mEdgeToEdgeToken = TokenHolder.INVALID_TOKEN;
+        }
     }
 }

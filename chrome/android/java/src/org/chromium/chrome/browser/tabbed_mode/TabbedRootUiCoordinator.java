@@ -429,7 +429,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mActivity.getResources(),
                         mTabGroupUiActionHandlerSupplier);
 
-        initAppHeaderCoordinator(savedInstanceState);
+        initAppHeaderCoordinator(savedInstanceState, edgeToEdgeStateProvider);
     }
 
     @Override
@@ -1170,7 +1170,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     }
 
     @SuppressWarnings("NewApi") // OS version check is done via helper method.
-    private void initAppHeaderCoordinator(Bundle savedInstanceState) {
+    private void initAppHeaderCoordinator(
+            Bundle savedInstanceState, EdgeToEdgeStateProvider edgeToEdgeStateProvider) {
         boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity);
         if (!ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled(isTablet)) {
             return;
@@ -1183,7 +1184,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         mBrowserControlsManager.getBrowserVisibilityDelegate(),
                         mInsetObserver,
                         mActivityLifecycleDispatcher,
-                        savedInstanceState);
+                        savedInstanceState,
+                        edgeToEdgeStateProvider);
     }
 
     private void maybeInitMessageDelegateOnProfile(Profile profile) {

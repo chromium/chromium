@@ -14,6 +14,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ObserverList;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.UiSwitches;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -141,6 +142,14 @@ public class ModalDialogManager {
          * @param insetObserver The observer to set.
          */
         protected void setInsetObserver(InsetObserver insetObserver) {}
+
+        /**
+         * A supplier to determine whether edge-to-edge is active in the enclosing window.
+         *
+         * @param edgeToEdgeStateSupplier The supplier for edge-to-edge state.
+         */
+        protected void setEdgeToEdgeStateSupplier(
+                ObservableSupplier<Boolean> edgeToEdgeStateSupplier) {}
     }
 
     // This affects only the dialog style. To define a priority, call showDialog with {@link
@@ -234,15 +243,37 @@ public class ModalDialogManager {
     /** An {@link InsetObserver} to provide system window insets. */
     private InsetObserver mInsetObserver;
 
+    /** A supplier to determine whether edge-to-edge is active in the enclosing window. */
+    private final ObservableSupplier<Boolean> mEdgeToEdgeStateSupplier;
+
     /**
-     * Constructor for initializing default {@link Presenter}.
+     * Constructor for initializing default {@link Presenter}. TODO (crbug.com/41492646): Remove
+     * this constructor in favor of the one depending on E2E when this bug is addressed.
      *
      * @param defaultPresenter The default presenter to be used when no presenter specified.
      * @param defaultType The dialog type of the default presenter.
      */
     public ModalDialogManager(
             @NonNull Presenter defaultPresenter, @ModalDialogType int defaultType) {
+        this(defaultPresenter, defaultType, /* edgeToEdgeStateSupplier= */ null);
+    }
+
+    /**
+     * Constructor for initializing default {@link Presenter}, when knowledge of edge-to-edge state
+     * is required.
+     *
+     * @param defaultPresenter The default presenter to be used when no presenter specified.
+     * @param defaultType The dialog type of the default presenter.
+     * @param edgeToEdgeStateSupplier Supplier to determine whether edge-to-edge is active. This
+     *     will be used to account for system bars insets in dialog margin calculations when
+     *     applicable.
+     */
+    public ModalDialogManager(
+            @NonNull Presenter defaultPresenter,
+            @ModalDialogType int defaultType,
+            ObservableSupplier<Boolean> edgeToEdgeStateSupplier) {
         mDefaultPresenter = defaultPresenter;
+        mEdgeToEdgeStateSupplier = edgeToEdgeStateSupplier;
         registerPresenter(defaultPresenter, defaultType);
 
         mTokenHolders.put(
@@ -307,6 +338,9 @@ public class ModalDialogManager {
         mPresenters.put(dialogType, presenter);
         if (mInsetObserver != null) {
             presenter.setInsetObserver(mInsetObserver);
+        }
+        if (mEdgeToEdgeStateSupplier != null) {
+            presenter.setEdgeToEdgeStateSupplier(mEdgeToEdgeStateSupplier);
         }
     }
 

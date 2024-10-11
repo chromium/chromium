@@ -47,6 +47,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
@@ -86,6 +87,7 @@ public class AppModalPresenterTest {
     private static Activity sActivity;
     private static ModalDialogManager sManager;
     private static InsetObserver sInsetObserver;
+    private static ObservableSupplierImpl<Boolean> sEdgeToEdgeStateSupplier;
     private TestObserver mTestObserver;
     private Integer mExpectedDismissalCause;
 
@@ -95,10 +97,12 @@ public class AppModalPresenterTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sActivity = activityTestRule.getActivity();
+                    sEdgeToEdgeStateSupplier = new ObservableSupplierImpl<>();
                     sManager =
                             new ModalDialogManager(
                                     new AppModalPresenter(sActivity),
-                                    ModalDialogManager.ModalDialogType.APP);
+                                    ModalDialogManager.ModalDialogType.APP,
+                                    sEdgeToEdgeStateSupplier);
                     sInsetObserver =
                             new InsetObserver(
                                     new ImmutableWeakReference<>(
@@ -296,7 +300,7 @@ public class AppModalPresenterTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> dialog.set(ModalDialogProperties.CUSTOM_VIEW, customView));
 
-        // Apply window insets before dialog is shown.
+        // Apply window insets before dialog is shown in a simulated edge-to-edge environment.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var windowInsets =
@@ -305,6 +309,7 @@ public class AppModalPresenterTest {
                                             systemBars(),
                                             Insets.of(leftInset, topInset, rightInset, bottomInset))
                                     .build();
+                    sEdgeToEdgeStateSupplier.set(true);
                     sInsetObserver.onApplyWindowInsets(
                             sActivity.getWindow().getDecorView().getRootView(), windowInsets);
                 });
@@ -321,6 +326,8 @@ public class AppModalPresenterTest {
                 "View is taller than expected.",
                 view.getHeight() <= (windowHeight - 2 * Math.max(topInset, bottomInset)));
 
+        // Exit edge-to-edge state.
+        ThreadUtils.runOnUiThreadBlocking(() -> sEdgeToEdgeStateSupplier.set(false));
         ModalDialogFeatureMap.setModalDialogLayoutWithSystemInsetsEnabledForTesting(false);
     }
 

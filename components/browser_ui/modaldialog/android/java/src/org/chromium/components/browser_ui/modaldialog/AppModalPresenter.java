@@ -4,6 +4,8 @@
 
 package org.chromium.components.browser_ui.modaldialog;
 
+import static java.lang.Boolean.TRUE;
+
 import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Build;
@@ -19,6 +21,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.StrictModeContext;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.LayoutInflaterUtils;
 import org.chromium.ui.base.ViewUtils;
@@ -44,9 +47,9 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
 
     private InsetObserver mInsetObserver;
     private OnApplyWindowInsetsListener mWindowInsetsListener;
+    private ObservableSupplier<Boolean> mEdgeToEdgeStateSupplier;
+    private Callback<Boolean> mEdgeToEdgeStateObserver;
 
-    private int mHorizontalMargin;
-    private int mVerticalMargin;
     private int mFixedMargin;
 
     private class ViewBinder extends ModalDialogViewBinder {
@@ -180,6 +183,10 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
             mModel = null;
             mWindowInsetsListener = null;
         }
+
+        if (mEdgeToEdgeStateSupplier != null) {
+            mEdgeToEdgeStateSupplier.removeObserver(mEdgeToEdgeStateObserver);
+        }
     }
 
     @Override
@@ -187,9 +194,16 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
         mInsetObserver = insetObserver;
     }
 
+    @Override
+    protected void setEdgeToEdgeStateSupplier(ObservableSupplier<Boolean> edgeToEdgeStateSupplier) {
+        mEdgeToEdgeStateSupplier = edgeToEdgeStateSupplier;
+        mEdgeToEdgeStateObserver = isEdgeToEdgeActive -> updateMargins();
+        mEdgeToEdgeStateSupplier.addObserver(mEdgeToEdgeStateObserver);
+    }
+
     /**
      * Updates dialog margins to maintain a fixed distance from the app window's edges and to avoid
-     * drawing into system insets' regions.
+     * drawing into system insets' regions when edge-to-edge is active.
      */
     private void updateMargins() {
         if (mDialog == null || isFullScreenDialog(mContext, mModel)) return;
@@ -200,19 +214,18 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
             mFixedMargin =
                     mContext.getResources()
                             .getDimensionPixelSize(R.dimen.modal_dialog_view_external_margin);
-            mHorizontalMargin = mFixedMargin;
-            mVerticalMargin = mFixedMargin;
         }
+        int horizontalMargin = mFixedMargin;
+        int verticalMargin = mFixedMargin;
 
         // Recalculate the margins to account for system insets if applicable.
-        // TODO (crbug/370575347): System insets should be considered only when E2E is active.
-        if (mInsetObserver != null) {
+        if (mInsetObserver != null && isEdgeToEdgeActive()) {
             var windowInsets = mInsetObserver.getLastRawWindowInsets();
             if (windowInsets != null) {
                 var systemInsets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
-                mHorizontalMargin =
+                horizontalMargin =
                         Math.max(Math.max(systemInsets.left, systemInsets.right), mFixedMargin);
-                mVerticalMargin =
+                verticalMargin =
                         Math.max(Math.max(systemInsets.top, systemInsets.bottom), mFixedMargin);
             }
         }
@@ -221,18 +234,22 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
         int currVerticalMargin = mModel.get(ModalDialogProperties.VERTICAL_MARGIN);
 
         // Margins for the current modal are already updated as needed.
-        if (currHorizontalMargin == mHorizontalMargin && currVerticalMargin == mVerticalMargin) {
+        if (currHorizontalMargin == horizontalMargin && currVerticalMargin == verticalMargin) {
             return;
         }
 
-        mModel.set(ModalDialogProperties.HORIZONTAL_MARGIN, mHorizontalMargin);
-        mModel.set(ModalDialogProperties.VERTICAL_MARGIN, mVerticalMargin);
+        mModel.set(ModalDialogProperties.HORIZONTAL_MARGIN, horizontalMargin);
+        mModel.set(ModalDialogProperties.VERTICAL_MARGIN, verticalMargin);
 
         // If the dialog is already showing when the insets are applied, request a layout for the
         // margins to take effect immediately.
         if (mDialog.isShowing()) {
             ViewUtils.requestLayout(mDialogView, "AppModalPresenter.updateMargins");
         }
+    }
+
+    private boolean isEdgeToEdgeActive() {
+        return mEdgeToEdgeStateSupplier != null && TRUE.equals(mEdgeToEdgeStateSupplier.get());
     }
 
     private static boolean isFullScreenDialog(Context context, PropertyModel model) {

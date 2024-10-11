@@ -156,6 +156,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         BundleUtils.restoreLoadedSplits(savedInstanceState);
+        mEdgeToEdgeStateProvider = new EdgeToEdgeStateProvider(getWindow());
         mModalDialogManagerSupplier.set(createModalDialogManager());
 
         initializeNightModeStateProvider();
@@ -169,7 +170,6 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         GlobalAppLocaleController.getInstance().maybeOverrideContextConfig(this);
 
         setDefaultTaskDescription();
-        mEdgeToEdgeStateProvider = new EdgeToEdgeStateProvider(getWindow());
     }
 
     @Override

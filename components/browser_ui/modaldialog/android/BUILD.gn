@@ -137,6 +137,7 @@ robolectric_library("junit") {
     ":java_resources",
     "//base:base_junit_test_support",
     "//base:callback_java",
+    "//base:supplier_java",
     "//third_party/android_deps:org_mockito_mockito_core_java",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/junit:junit",
