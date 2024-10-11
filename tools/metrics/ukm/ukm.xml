@@ -20081,6 +20081,24 @@ be describing additional metrics about the same event.
       tracks in the page. (boolean value. true: 1 or false: 0)
     </summary>
   </metric>
+  <metric name="TotalCacheLookupTime">
+    <summary>
+      Total time spent to conduct cache lookup. Recorded when the service worker
+      has associated routing info with the `cache` as the rule, and the browser
+      or renderer is processing requests. The field is the sum of all cache
+      lookup time of subresources. i.e. if there are X resources whose router
+      source is `cache` for example, this value will be the sum of X cache
+      lookup durations regardless of cache hit or miss. Duration in units of
+      milli seconds.
+    </summary>
+  </metric>
+  <metric name="TotalRouterEvaluationTime">
+    <summary>
+      Total time spent for the router evaluation to handle a request. Recorded
+      when the service worker has associated routing info, and the browser or
+      renderer is processing requests. Duration in units of micro seconds.
+    </summary>
+  </metric>
   <metric name="TotalSubResourceFallback">
     <summary>
       The number of network fallbacks during sub resource load. This is rounded

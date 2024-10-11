@@ -559,9 +559,17 @@ void ServiceWorkerPageLoadMetricsObserver::RecordSubresourceLoad() {
                 sw_metrics.matched_race_network_and_fetch_router_source_count));
 
     if (!sw_metrics.total_router_evaluation_time_for_subresources.is_zero()) {
+      builder.SetTotalRouterEvaluationTime(
+          sw_metrics.total_router_evaluation_time_for_subresources
+              .InMicroseconds());
       PAGE_LOAD_SHORT_HISTOGRAM(
           internal::kHistogramServiceWorkerSubresourceTotalRouterEvaluationTime,
           sw_metrics.total_router_evaluation_time_for_subresources);
+    }
+
+    if (!sw_metrics.total_cache_lookup_time_for_subresources.is_zero()) {
+      builder.SetTotalCacheLookupTime(
+          sw_metrics.total_cache_lookup_time_for_subresources.InMilliseconds());
     }
   }
   builder.Record(ukm::UkmRecorder::Get());
