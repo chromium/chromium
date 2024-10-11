@@ -941,6 +941,25 @@ TEST_F(HarfBuzzShaperTest, VSOverrideFontVariantEmoji) {
             kSystemColorEmojiFont);
 }
 
+TEST_F(HarfBuzzShaperTest, FontVariantEmojiTextSystemFallback) {
+  ScopedFontVariationSequencesForTest scoped_feature_vs(true);
+  ScopedSystemFallbackEmojiVSSupportForTest scoped_feature_system_emoji_vs(
+      true);
+  ScopedFontVariantEmojiForTest scoped_feature_variant_emoji(true);
+#if BUILDFLAG(IS_MAC)
+  if (base::mac::MacOSVersion() < 13'00'00) {
+    GTEST_SKIP();
+  }
+  const char* mono_font_name = "STIX Two Math";
+#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
+  const char* mono_font_name = kSystemMonoEmojiFont;
+#endif
+  String text(u"\u26CE");
+  Font color_font = CreateNotoColorEmoji(FontVariantEmoji::kTextVariantEmoji);
+  EXPECT_EQ(GetShapedFontFamilyNameForEmojiVS(color_font, text),
+            mono_font_name);
+}
+
 #endif
 
 TEST_F(HarfBuzzShaperTest, NegativeLetterSpacing) {
