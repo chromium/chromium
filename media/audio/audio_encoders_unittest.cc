@@ -19,6 +19,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "media/audio/audio_opus_encoder.h"
 #include "media/audio/simple_sources.h"
@@ -33,15 +34,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #include "media/gpu/windows/mf_audio_encoder.h"
-
-// The AAC tests are failing on Arm64. Disable the AAC part of these tests until
-// those failures can be fixed. TODO(https://crbug.com/1424215): Fix tests,
-// and/or investigate if AAC support should be turned off in Chrome for Arm64
-// Windows, or if these are an issue with the tests.
-#if !defined(ARCH_CPU_ARM64)
 #define HAS_AAC_ENCODER 1
-#endif
-
 #endif  // IS_WIN
 
 #if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -176,6 +169,15 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
           buffer_duration_, options_.sample_rate);
     } else if (options_.codec == AudioCodec::kAAC) {
 #if BUILDFLAG(IS_WIN) && HAS_AAC_ENCODER
+      if ((base::win::OSInfo::GetInstance()->version() ==
+               base::win::Version::WIN11_22H2 ||
+           base::win::OSInfo::GetInstance()->version() ==
+               base::win::Version::WIN11_23H2) &&
+          base::win::OSInfo::GetInstance()->version_number().patch < 4112) {
+        GTEST_SKIP() << "https://crbug.com/325249353: AAC encoder requires "
+                        "a fix in Win11 patch 4112.";
+        // GTEST_SKIP() returns.
+      }
       EXPECT_TRUE(com_initializer_.Succeeded());
       ASSERT_TRUE(base::SequencedTaskRunner::HasCurrentDefault());
       encoder_ = std::make_unique<MFAudioEncoder>(
