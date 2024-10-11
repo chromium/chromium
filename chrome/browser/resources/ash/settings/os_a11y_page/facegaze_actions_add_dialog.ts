@@ -252,6 +252,7 @@ export class FaceGazeAddActionDialogElement extends
   private pageNavigation_: Record<AddDialogPage, PageNavigation> =
       FACEGAZE_DEFINED_MACRO_FLOW;
   private detectedGestureCount_ = 0;
+  private holdingGesture_ = false;
   private eventTracker_: EventTracker = new EventTracker();
   private stream_: MediaStream|null;
   private streamTrack_: MediaStreamTrack|null;
@@ -622,26 +623,36 @@ export class FaceGazeAddActionDialogElement extends
       return;
     }
 
-    info.forEach((entry) => {
-      if (entry.gesture === this.selectedGesture_) {
-        const previewContainer = this.shadowRoot!.querySelector<HTMLElement>(
-            '#cameraPreviewContainer');
-        assert(previewContainer);
+    const previewContainer =
+        this.shadowRoot!.querySelector<HTMLElement>('#cameraPreviewContainer');
+    assert(previewContainer);
 
-        if (entry.confidence >= this.gestureThresholdValue_) {
-          this.detectedGestureCount_++;
-          previewContainer.className = 'gesture-detected';
-        } else {
-          previewContainer.className = 'gesture-not-detected';
-        }
+    const slider = this.getThresholdSlider();
+    const sliderBar = slider.shadowRoot!.querySelector<HTMLElement>('#bar');
+    assert(sliderBar);
 
-        // Show confidence values for all gestures in dynamic bar.
-        const slider = this.getThresholdSlider();
-        const sliderBar = slider.shadowRoot!.querySelector<HTMLElement>('#bar');
-        assert(sliderBar);
-        sliderBar.style.width = `${entry.confidence}%`;
+    const gestureInfo =
+        info.find((entry) => entry.gesture === this.selectedGesture_);
+    if (!gestureInfo) {
+      this.holdingGesture_ = false;
+      previewContainer.className = 'gesture-not-detected';
+      sliderBar.style.width = `0%`;
+      return;
+    }
+
+    if (gestureInfo.confidence >= this.gestureThresholdValue_) {
+      if (!this.holdingGesture_) {
+        this.detectedGestureCount_++;
+        this.holdingGesture_ = true;
       }
-    });
+      previewContainer.className = 'gesture-detected';
+    } else {
+      this.holdingGesture_ = false;
+      previewContainer.className = 'gesture-not-detected';
+    }
+
+    // Show confidence values at all levels in dynamic bar.
+    sliderBar.style.width = `${gestureInfo.confidence}%`;
   }
 
   private onSelectedActionChanged_(): void {

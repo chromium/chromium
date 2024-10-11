@@ -784,6 +784,25 @@ suite('<facegaze-actions-add-dialog>', () => {
       });
 
   test(
+      'gesture detection count debounces when gesture info received with multiple selected gesture over threshold',
+      async () => {
+        await initPage();
+        navigateToThresholdPage();
+
+        webUIListenerCallback('settings.sendGestureInfoToSettings', [
+          {gesture: FacialGesture.BROW_INNER_UP, confidence: 70},
+          {gesture: FacialGesture.BROW_INNER_UP, confidence: 80},
+          {gesture: FacialGesture.BROW_INNER_UP, confidence: 90},
+        ]);
+
+        const gestureCountDiv = getGestureCountDiv();
+
+        // Default confidence threshold is 60, so only one gesture should
+        // register as detected.
+        assertEquals(`Detected 1 time`, gestureCountDiv.innerText);
+      });
+
+  test(
       'gesture detection count updates when gesture info received with multiple selected gestures over threshold',
       async () => {
         await initPage();
@@ -794,11 +813,30 @@ suite('<facegaze-actions-add-dialog>', () => {
           {gesture: FacialGesture.BROW_INNER_UP, confidence: 80},
         ]);
 
+        webUIListenerCallback('settings.sendGestureInfoToSettings', [
+          {gesture: FacialGesture.BROW_INNER_UP, confidence: 5},
+          {gesture: FacialGesture.JAW_OPEN, confidence: 70},
+        ]);
+
+        webUIListenerCallback('settings.sendGestureInfoToSettings', [
+          {gesture: FacialGesture.BROW_INNER_UP, confidence: 70},
+          {gesture: FacialGesture.BROW_INNER_UP, confidence: 80},
+        ]);
+
+        webUIListenerCallback('settings.sendGestureInfoToSettings', [
+          {gesture: FacialGesture.JAW_OPEN, confidence: 70},
+        ]);
+
+        webUIListenerCallback('settings.sendGestureInfoToSettings', [
+          {gesture: FacialGesture.BROW_INNER_UP, confidence: 70},
+          {gesture: FacialGesture.BROW_INNER_UP, confidence: 80},
+        ]);
+
         const gestureCountDiv = getGestureCountDiv();
 
-        // Default confidence threshold is 60, so two gestures should register
+        // Default confidence threshold is 60, so three gestures should register
         // as detected.
-        assertEquals(`Detected 2 times`, gestureCountDiv.innerText);
+        assertEquals(`Detected 3 times`, gestureCountDiv.innerText);
       });
 
   test(
