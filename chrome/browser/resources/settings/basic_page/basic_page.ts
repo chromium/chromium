@@ -166,6 +166,16 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showAdvancedFeaturesMainControl'),
       },
+
+      enableAiSettingsPageRefresh_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableAiSettingsPageRefresh'),
+      },
+
+      aiPageTitle_: {
+        type: String,
+        computed: 'computeAiPageTitle_(enableAiSettingsPageRefresh_)',
+      },
     };
   }
 
@@ -187,7 +197,8 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   private advancedTogglingInProgress_: boolean;
   private showBatterySettings_: boolean;
   private showAdvancedFeaturesMainControl_: boolean;
-
+  private enableAiSettingsPageRefresh_: boolean;
+  private aiPageTitle_: string;
   private showPrivacyGuidePromo_: boolean;
   private privacyGuidePromoWasShown_: boolean;
   private privacyGuideBrowserProxy_: PrivacyGuideBrowserProxy =
@@ -356,6 +367,12 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   private showExperimentalAdvancedPage_(visibility?: boolean): boolean {
     return loadTimeData.getBoolean('showAdvancedFeaturesMainControl') &&
         this.showPage_(visibility);
+  }
+
+  private computeAiPageTitle_(): string {
+    return loadTimeData.getString(
+        this.enableAiSettingsPageRefresh_ ? 'aiInnovationsPageTitle' :
+                                            'aiPageTitle');
   }
 
   // <if expr="_google_chrome">

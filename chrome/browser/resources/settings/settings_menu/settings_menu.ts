@@ -63,6 +63,16 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showAdvancedFeaturesMainControl'),
       },
+
+      aiPageIcon_: {
+        type: String,
+        computed: 'computeAiPageIcon_(enableAiSettingsPageRefresh_)',
+      },
+
+      aiPageTitle_: {
+        type: String,
+        computed: 'computeAiPageTitle_(enableAiSettingsPageRefresh_)',
+      },
     };
   }
 
@@ -70,6 +80,8 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
   private enableAiSettingsPageRefresh_: boolean;
   private showAdvancedFeaturesMainControl_: boolean;
   private routes_: SettingsRoutes;
+  private aiPageIcon_: string;
+  private aiPageTitle_: string;
 
   override ready() {
     super.ready();
@@ -81,9 +93,15 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
         (!this.pageVisibility || this.pageVisibility.ai !== false);
   }
 
-  private getAiPageIcon_(): string {
+  private computeAiPageIcon_(): string {
     return this.enableAiSettingsPageRefresh_ ? 'settings20:magic' :
                                                'settings20:ai';
+  }
+
+  private computeAiPageTitle_(): string {
+    return loadTimeData.getString(
+        this.enableAiSettingsPageRefresh_ ? 'aiInnovationsPageTitle' :
+                                            'aiPageTitle');
   }
 
   override currentRouteChanged(newRoute: Route) {
