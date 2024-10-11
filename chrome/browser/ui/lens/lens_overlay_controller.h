@@ -39,6 +39,8 @@
 #include "components/lens/proto/server/lens_overlay_response.pb.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/sessions/core/session_id.h"
+#include "components/url_matcher/url_matcher.h"
+#include "components/url_matcher/url_util.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -398,6 +400,9 @@ class LensOverlayController : public LensSearchboxClient,
 
   // Shows My Activity.
   void ActivityRequestedByEvent(int event_flags);
+
+  // Returns true if IPH is eligible to be shown for the given URL.
+  bool IsUrlEligibleForIPH(const GURL& url);
 
   // Testing function to issue a Lens region selection request.
   void IssueLensRegionRequestForTesting(lens::mojom::CenterRotatedBoxPtr region,
@@ -885,6 +890,9 @@ class LensOverlayController : public LensSearchboxClient,
   // Launches the Lens overlay HaTS survey if eligible.
   void MaybeLaunchSurvey();
 
+  // Initialize the IPH URL matcher from finch config.
+  void InitializeIPHUrlMatcher();
+
   // Owns this class.
   raw_ptr<tabs::TabInterface> tab_;
 
@@ -1012,6 +1020,14 @@ class LensOverlayController : public LensSearchboxClient,
   // The callback subscription for the element shown callback used to show the
   // translate feature promo.
   base::CallbackListSubscription translate_button_shown_subscription_;
+
+  // Matcher for URLs that are eligible to have the IPH shown.
+  std::unique_ptr<url_matcher::URLMatcher> iph_url_matcher_;
+
+  // Filters used by the URL matcher. Used to look up if a matching filter is an
+  // allow filter or a block filter.
+  std::map<base::MatcherStringPattern::ID, url_matcher::util::FilterComponents>
+      iph_url_filters_;
 
   // ---------------Browser window scoped state: START---------------------
   // State that is scoped to the browser window must be reset when the tab is

@@ -53,6 +53,7 @@ chromium-metrics-reviews@google.com.
   <variant name="" summary="any tutorial"/>
   <variant name="CustomizeChromeSidePanel"
       summary="the tutorial for the customize chrome side panel"/>
+  <variant name="LensOverlay" summary="the tutorial for the Lens Overlay"/>
   <variant name="PasswordManager"
       summary="the tutorial for the password manager"/>
   <variant name="SavedTabGroup" summary="the tutorial for the saved tab group"/>

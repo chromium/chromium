@@ -64,6 +64,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_dismissal_source.h"
 #include "components/lens/lens_overlay_invocation_source.h"
@@ -4795,5 +4796,38 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerOverlaySearchbox,
   EXPECT_TRUE(loaded_search_query);
   EXPECT_EQ(loaded_search_query->search_query_text_, "hello");
   VerifyContextualSearchQueryParameters(loaded_search_query->search_query_url_);
+}
+
+class LensOverlayControllerIPHBrowserTest
+    : public LensOverlayControllerBrowserTest {
+ protected:
+  void SetupFeatureList() override {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{lens::features::kLensOverlay, {}},
+         {feature_engagement::kIPHLensOverlayFeature,
+          {
+              {"x_url_allow_filters",
+               "[\"a.com\",\"b.com\",\"c.com/path\",\"d.com/path\"]"},
+              {"x_url_block_filters", "[\"a.com/login\",\"d.com\"]"},
+          }}},
+        /*disabled_features=*/{});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerIPHBrowserTest,
+                       IsUrlEligibleForIPH) {
+  WaitForPaint();
+
+  auto* controller = GetLensOverlayController();
+  EXPECT_TRUE(controller->IsUrlEligibleForIPH(GURL("https://www.a.com/")));
+  EXPECT_FALSE(controller->IsUrlEligibleForIPH(
+      GURL("https://www.a.com/login/path?key=param")));
+  EXPECT_TRUE(controller->IsUrlEligibleForIPH(
+      GURL("https://www.b.com/page?key=param")));
+  EXPECT_FALSE(controller->IsUrlEligibleForIPH(GURL("https://www.c.com/")));
+  EXPECT_TRUE(
+      controller->IsUrlEligibleForIPH(GURL("https://www.c.com/path/path")));
+  // Blocks override allows.
+  EXPECT_FALSE(controller->IsUrlEligibleForIPH(GURL("https://www.d.com/path")));
 }
 }  // namespace

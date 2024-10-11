@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
+#include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/process/kill.h"
@@ -49,6 +50,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_metrics.h"
@@ -221,6 +223,30 @@ pdf::PDFDocumentHelper* MaybeGetPdfHelper(content::WebContents* contents) {
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
+// Converts a JSON string array to a vector.
+std::vector<std::string> JSONArrayToVector(const std::string& json_array) {
+  std::optional<base::Value> json_value = base::JSONReader::Read(json_array);
+
+  if (!json_value) {
+    return {};
+  }
+
+  base::Value::List* entries = json_value->GetIfList();
+  if (!entries) {
+    return {};
+  }
+
+  std::vector<std::string> result;
+  result.reserve(entries->size());
+  for (const base::Value& entry : *entries) {
+    const std::string* filter = entry.GetIfString();
+    if (filter) {
+      result.emplace_back(*filter);
+    }
+  }
+  return result;
+}
+
 }  // namespace
 
 LensOverlayController::LensOverlayController(
@@ -256,6 +282,11 @@ LensOverlayController::LensOverlayController(
       std::make_unique<lens::LensSearchBubbleController>(this);
   lens_overlay_event_handler_ =
       std::make_unique<lens::LensOverlayEventHandler>(this);
+  InitializeIPHUrlMatcher();
+
+  // Listen to WebContents events
+  tab_contents_observer_ = std::make_unique<UnderlyingWebContentsObserver>(
+      tab_->GetContents(), this);
 }
 
 LensOverlayController::~LensOverlayController() {
@@ -270,6 +301,7 @@ LensOverlayController::~LensOverlayController() {
     RemoveGlueForWebView(glued_webviews_.front());
   }
   glued_webviews_.clear();
+  tab_contents_observer_.reset();
   tab_->GetContents()->RemoveUserData(
       LensOverlayControllerTabLookup::UserDataKey());
 
@@ -1213,6 +1245,20 @@ class LensOverlayController::UnderlyingWebContentsObserver
   // content::WebContentsObserver
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
+    // If the overlay is off, check if we should display IPH.
+    if (lens_overlay_controller_->state() == State::kOff) {
+      // Only check IPH eligibility if the navigation changed the primary page.
+      if (base::FeatureList::IsEnabled(
+              feature_engagement::kIPHLensOverlayFeature) &&
+          navigation_handle->IsInPrimaryMainFrame() &&
+          !navigation_handle->IsSameDocument() &&
+          navigation_handle->HasCommitted()) {
+        // TODO(crbug.com/372531753): Trigger IPH tutorial here.
+      }
+      return;
+    }
+
+    // If the overlay is open, check if we should close it.
     bool is_reload =
         navigation_handle->GetReloadType() != content::ReloadType::NONE;
     // We don't need to close if:
@@ -1234,8 +1280,9 @@ class LensOverlayController::UnderlyingWebContentsObserver
 
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override {
-    // Exit early if the overlay is already closing.
-    if (lens_overlay_controller_->IsOverlayClosing()) {
+    // Exit early if the overlay is off or already closing.
+    if (lens_overlay_controller_->state() == State::kOff ||
+        lens_overlay_controller_->IsOverlayClosing()) {
       return;
     }
 
@@ -1522,10 +1569,6 @@ void LensOverlayController::SetLiveBlur(bool enabled) {
 }
 
 void LensOverlayController::ShowOverlay() {
-  // Listen to WebContents events
-  tab_contents_observer_ = std::make_unique<UnderlyingWebContentsObserver>(
-      tab_->GetContents(), this);
-
   // Grab the tab contents web view and disable mouse and keyboard inputs to it.
   auto* contents_web_view = tab_->GetBrowserWindowInterface()->GetWebView();
   CHECK(contents_web_view);
@@ -1650,7 +1693,6 @@ void LensOverlayController::CloseUIPart2(
   tab_contents_view_observer_.Reset();
   omnibox_tab_helper_observer_.Reset();
   find_tab_observer_.Reset();
-  tab_contents_observer_.reset();
   side_panel_receiver_.reset();
   side_panel_page_.reset();
   receiver_.reset();
@@ -2511,4 +2553,41 @@ void LensOverlayController::MaybeLaunchSurvey() {
       /*product_specific_string_data=*/
       {{"Lens request flow ID",
         base::NumberToString(lens_overlay_query_controller_->gen204_id())}});
+}
+
+void LensOverlayController::InitializeIPHUrlMatcher() {
+  if (!base::FeatureList::IsEnabled(
+          feature_engagement::kIPHLensOverlayFeature)) {
+    return;
+  }
+
+  iph_url_matcher_ = std::make_unique<url_matcher::URLMatcher>();
+  base::MatcherStringPattern::ID id(0);
+  url_matcher::util::AddFilters(
+      iph_url_matcher_.get(), true, &id,
+      JSONArrayToVector(
+          feature_engagement::kIPHLensOverlayUrlAllowFilters.Get()),
+      &iph_url_filters_);
+  url_matcher::util::AddFilters(
+      iph_url_matcher_.get(), false, &id,
+      JSONArrayToVector(
+          feature_engagement::kIPHLensOverlayUrlBlockFilters.Get()),
+      &iph_url_filters_);
+}
+
+bool LensOverlayController::IsUrlEligibleForIPH(const GURL& url) {
+  if (!iph_url_matcher_) {
+    return false;
+  }
+  auto matches = iph_url_matcher_.get()->MatchURL(url);
+  if (!matches.size()) {
+    return false;
+  }
+  for (auto match : matches) {
+    // Blocks take precedence over allows.
+    if (!iph_url_filters_[match].allow) {
+      return false;
+    }
+  }
+  return true;
 }

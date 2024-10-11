@@ -92,6 +92,13 @@ BASE_FEATURE(kIPHMemorySaverModeFeature,
 BASE_FEATURE(kIPHLiveCaptionFeature,
              "IPH_LiveCaption",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kIPHLensOverlayFeature,
+             "IPH_LensOverlay",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<std::string> kIPHLensOverlayUrlAllowFilters{
+    &feature_engagement::kIPHLensOverlayFeature, "x_url_allow_filters", "[]"};
+const base::FeatureParam<std::string> kIPHLensOverlayUrlBlockFilters{
+    &feature_engagement::kIPHLensOverlayFeature, "x_url_block_filters", "[]"};
 BASE_FEATURE(kIPHLensOverlayTranslateButtonFeature,
              "IPH_LensOverlayTranslateButton",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -328,6 +328,7 @@ chromium-metrics-reviews@google.com.
       summary="payments autofill suggestions that have an offer"/>
   <variant name="IPH_LauncherSearchHelpUi"
       summary="show launcher search chips in the launcher"/>
+  <variant name="IPH_LensOverlay" summary="Lens Overlay"/>
   <variant name="IPH_LensOverlayTranslateButton"
       summary="Lens Overlay translate button"/>
   <variant name="IPH_LiveCaption" summary="Live Caption"/>
