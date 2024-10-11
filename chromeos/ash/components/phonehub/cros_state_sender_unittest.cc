@@ -18,8 +18,7 @@
 #include "chromeos/ash/services/secure_channel/public/cpp/client/fake_connection_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 using multidevice_setup::mojom::Feature;
 using multidevice_setup::mojom::FeatureState;
@@ -239,5 +238,4 @@ TEST_F(CrosStateSenderTest, NotificationFeatureStateChanged) {
   EXPECT_EQ(5u, fake_message_sender_->GetCrosStateCallCount());
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

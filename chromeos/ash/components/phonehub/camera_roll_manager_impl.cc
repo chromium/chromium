@@ -23,8 +23,7 @@
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "chromeos/ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 namespace {
 
@@ -323,5 +322,4 @@ void CameraRollManagerImpl::ComputeAndUpdateUiState() {
   NotifyCameraRollViewUiStateUpdated();
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

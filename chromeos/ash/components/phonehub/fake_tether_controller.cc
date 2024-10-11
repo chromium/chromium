@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/components/phonehub/fake_tether_controller.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 FakeTetherController::FakeTetherController()
     : status_(Status::kConnectionAvailable) {}
@@ -42,5 +41,4 @@ void FakeTetherController::Disconnect() {
     SetStatus(Status::kConnecting);
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

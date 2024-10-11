@@ -21,8 +21,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 class MessageSenderImplTest : public testing::Test {
  protected:
@@ -233,5 +232,4 @@ TEST_F(MessageSenderImplTest, SendPingRequest) {
                 fake_connection_manager_->sent_messages().back());
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

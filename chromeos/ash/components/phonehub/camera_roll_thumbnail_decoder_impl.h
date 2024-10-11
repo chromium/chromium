@@ -14,8 +14,7 @@
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "ui/gfx/image/image.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 class CameraRollThumbnailDecoderImpl : public CameraRollThumbnailDecoder {
  public:
@@ -95,7 +94,6 @@ class CameraRollThumbnailDecoderImpl : public CameraRollThumbnailDecoder {
   base::WeakPtrFactory<CameraRollThumbnailDecoderImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_CAMERA_ROLL_THUMBNAIL_DECODER_IMPL_H_

@@ -5,8 +5,7 @@
 #include "chromeos/ash/components/phonehub/mutable_phone_model.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 MutablePhoneModel::MutablePhoneModel() = default;
 
@@ -43,5 +42,4 @@ void MutablePhoneModel::SetBrowserTabsModel(
   NotifyModelChanged();
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

@@ -6,8 +6,7 @@
 
 #include "chromeos/ash/components/phonehub/camera_roll_item.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 CameraRollManager::CameraRollManager() = default;
 
@@ -56,5 +55,4 @@ void CameraRollManager::Observer::OnCameraRollDownloadError(
     DownloadErrorType error_type,
     const proto::CameraRollItemMetadata& metadata) {}
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

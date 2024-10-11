@@ -9,8 +9,7 @@
 #include "base/observer_list_types.h"
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 // Provides updates on the app stream.
 class AppStreamManager {
@@ -41,7 +40,6 @@ class AppStreamManager {
   base::ObserverList<Observer> observer_list_;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_APP_STREAM_MANAGER_H_

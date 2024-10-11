@@ -8,9 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/browser_tabs_metadata_fetcher.h"
 
-namespace ash {
-
-namespace phonehub {
+namespace ash::phonehub {
 
 class FakeBrowserTabsMetadataFetcher : public BrowserTabsMetadataFetcher {
  public:
@@ -33,7 +31,6 @@ class FakeBrowserTabsMetadataFetcher : public BrowserTabsMetadataFetcher {
   base::OnceCallback<void(BrowserTabsMetadataResponse)> callback_;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_FAKE_BROWSER_TABS_METADATA_FETCHER_H_

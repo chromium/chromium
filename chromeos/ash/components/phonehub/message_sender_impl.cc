@@ -13,8 +13,7 @@
 #include "chromeos/ash/components/phonehub/util/histogram_util.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 namespace {
 
@@ -176,5 +175,4 @@ void MessageSenderImpl::SendMessage(
       message_type, PhoneHubMessageDirection::kChromebookToPhone);
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

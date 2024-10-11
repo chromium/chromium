@@ -9,8 +9,8 @@
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/phonehub/phone_model.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
+
 namespace {
 
 // The grace period time for the phone status model to remain non-empty when
@@ -71,5 +71,4 @@ bool InvalidConnectionDisconnector::DoesPhoneStatusModelExist() const {
   return phone_model_->phone_status_model().has_value();
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

@@ -8,8 +8,7 @@
 #include "chromeos/ash/components/phonehub/message_receiver.h"
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 class FakeMessageReceiver : public MessageReceiver {
  public:
@@ -27,7 +26,6 @@ class FakeMessageReceiver : public MessageReceiver {
   using MessageReceiver::NotifyPingResponseReceived;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_FAKE_MESSAGE_RECEIVER_H_

@@ -9,8 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/user_action_recorder.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 class FeatureStatusProvider;
 
@@ -57,7 +56,6 @@ class UserActionRecorderImpl : public UserActionRecorder {
   raw_ptr<FeatureStatusProvider> feature_status_provider_;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_USER_ACTION_RECORDER_IMPL_H_

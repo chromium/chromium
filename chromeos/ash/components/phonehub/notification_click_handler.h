@@ -8,8 +8,7 @@
 #include "base/observer_list_types.h"
 #include "chromeos/ash/components/phonehub/notification.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 // Handles actions performed on a notification.
 class NotificationClickHandler : public base::CheckedObserver {
@@ -22,7 +21,6 @@ class NotificationClickHandler : public base::CheckedObserver {
       const Notification::AppMetadata& app_metadata) = 0;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_NOTIFICATION_CLICK_HANDLER_H_

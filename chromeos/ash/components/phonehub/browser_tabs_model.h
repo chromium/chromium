@@ -12,8 +12,7 @@
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 // Contains metadata about browser tabs that are open on the user's phone.
 class BrowserTabsModel {
@@ -67,7 +66,6 @@ std::ostream& operator<<(
     std::ostream& stream,
     BrowserTabsModel::BrowserTabMetadata browser_tab_metadata);
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_BROWSER_TABS_MODEL_H_

@@ -18,8 +18,7 @@
 #include "components/prefs/pref_service.h"
 #include "pref_names.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 namespace {
 
@@ -478,5 +477,4 @@ bool MultideviceFeatureAccessManagerImpl::HasAccessStatusChanged(
   return false;
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

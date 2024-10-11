@@ -30,8 +30,7 @@
 #include "chromeos/ash/components/phonehub/phone_hub_structured_metrics_logger.h"
 #include "chromeos/ash/components/phonehub/phone_hub_ui_readiness_recorder.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 // This class initializes fake versions of the core business logic of Phone Hub.
 class FakePhoneHubManager : public PhoneHubManager {
@@ -181,7 +180,6 @@ class FakePhoneHubManager : public PhoneHubManager {
   std::optional<base::Time> host_last_seen_timestamp_ = std::nullopt;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_FAKE_PHONE_HUB_MANAGER_H_

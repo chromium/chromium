@@ -7,8 +7,7 @@
 
 #include "chromeos/ash/components/phonehub/phone_model.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 // Phone model which provides public API functions allowing the model to be
 // updated.
@@ -24,7 +23,6 @@ class MutablePhoneModel : public PhoneModel {
       const std::optional<BrowserTabsModel>& browser_tabs_model);
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_MUTABLE_PHONE_MODEL_H_

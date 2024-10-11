@@ -10,8 +10,7 @@
 #include "chromeos/ash/components/phonehub/util/histogram_util.h"
 #include "chromeos/ash/services/network_config/in_process_instance.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 namespace {
 
@@ -464,5 +463,4 @@ TetherController::Status TetherControllerImpl::ComputeStatus() const {
   return Status::kConnectionUnavailable;
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

@@ -49,8 +49,7 @@
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 namespace {
 
@@ -361,5 +360,4 @@ void PhoneHubManagerImpl::Shutdown() {
   phone_hub_structured_metrics_logger_.reset();
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

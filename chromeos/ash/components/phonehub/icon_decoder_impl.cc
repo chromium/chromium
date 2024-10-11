@@ -22,8 +22,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 IconDecoderImpl::DecoderDelegate::DecoderDelegate() = default;
 
@@ -93,5 +92,4 @@ void IconDecoderImpl::CancelPendingRequests() {
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

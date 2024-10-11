@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/components/phonehub/do_not_disturb_controller.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 DoNotDisturbController::DoNotDisturbController() = default;
 
@@ -24,5 +23,4 @@ void DoNotDisturbController::NotifyDndStateChanged() {
     observer.OnDndStateChanged();
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

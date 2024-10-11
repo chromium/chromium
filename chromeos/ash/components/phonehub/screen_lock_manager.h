@@ -7,8 +7,7 @@
 
 #include "base/observer_list.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 // Tracks the status of whether the user has enabled screen lock on their phone.
 class ScreenLockManager {
@@ -56,7 +55,6 @@ class ScreenLockManager {
   base::ObserverList<Observer> observer_list_;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_SCREEN_LOCK_MANAGER_H_

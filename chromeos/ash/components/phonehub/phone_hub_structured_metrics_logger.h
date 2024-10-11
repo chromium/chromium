@@ -24,7 +24,8 @@
 
 namespace {
 base::TimeDelta kMaxStructuredMetricsPseudonymousIdDays = base::Days(90);
-}
+}  // namespace
+
 namespace ash::phonehub {
 
 enum class DiscoveryEntryPoint {

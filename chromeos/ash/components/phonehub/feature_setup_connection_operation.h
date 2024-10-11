@@ -11,8 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 // Implements the connection establish flow. This flow involves:
 // (1) Creating a connection to the phone if one does not already exist.
@@ -78,7 +77,6 @@ class FeatureSetupConnectionOperation {
 std::ostream& operator<<(std::ostream& stream,
                          FeatureSetupConnectionOperation::Status status);
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_FEATURE_SETUP_CONNECTION_OPERATION_H_

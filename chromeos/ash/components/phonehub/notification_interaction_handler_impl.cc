@@ -7,8 +7,7 @@
 #include "base/logging.h"
 #include "chromeos/ash/components/phonehub/notification.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 NotificationInteractionHandlerImpl::NotificationInteractionHandlerImpl() {}
 
@@ -21,5 +20,4 @@ void NotificationInteractionHandlerImpl::HandleNotificationClicked(
   NotifyNotificationClicked(notification_id, app_metadata);
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

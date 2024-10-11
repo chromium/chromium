@@ -19,8 +19,7 @@
 #include "chromeos/ash/components/phonehub/notification_access_setup_operation.h"
 #include "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 // Tracks the status of whether the user has granted permissions for the
 // following features to be enabled on the host device:
@@ -227,7 +226,6 @@ std::ostream& operator<<(
               MultideviceFeatureAccessManager::AccessProhibitedReason>
         status_reason);
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_MULTIDEVICE_FEATURE_ACCESS_MANAGER_H_

@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/components/phonehub/fake_message_sender.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 FakeMessageSender::FakeMessageSender() = default;
 FakeMessageSender::~FakeMessageSender() = default;
@@ -166,5 +165,4 @@ std::pair<bool, bool> FakeMessageSender::GetRecentFeatureSetupRequest() const {
   return feature_setup_requests_.back();
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

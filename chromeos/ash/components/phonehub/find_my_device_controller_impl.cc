@@ -8,8 +8,7 @@
 #include "chromeos/ash/components/phonehub/message_sender.h"
 #include "chromeos/ash/components/phonehub/user_action_recorder.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 FindMyDeviceControllerImpl::FindMyDeviceControllerImpl(
     MessageSender* message_sender,
@@ -50,5 +49,4 @@ void FindMyDeviceControllerImpl::RequestNewPhoneRingingState(bool ringing) {
   message_sender_->SendRingDeviceRequest(ringing);
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

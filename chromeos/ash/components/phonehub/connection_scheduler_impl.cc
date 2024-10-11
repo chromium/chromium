@@ -12,8 +12,7 @@
 #include "chromeos/ash/components/phonehub/phone_hub_structured_metrics_logger.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/connection_manager.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 constexpr net::BackoffEntry::Policy kRetryBackoffPolicy = {
     0,               // Number of initial errors to ignore.
@@ -173,5 +172,4 @@ int ConnectionSchedulerImpl::GetBackoffFailureCountForTesting() {
   return retry_backoff_.failure_count();
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

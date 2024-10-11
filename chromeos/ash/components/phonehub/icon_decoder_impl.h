@@ -14,8 +14,7 @@
 #include "services/data_decoder/public/cpp/decode_image.h"
 #include "ui/gfx/image/image.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 class IconDecoderImpl : public IconDecoder {
  public:
@@ -62,7 +61,6 @@ class IconDecoderImpl : public IconDecoder {
   base::WeakPtrFactory<IconDecoderImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_ICON_DECODER_IMPL_H_

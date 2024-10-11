@@ -8,8 +8,7 @@
 
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 namespace {
 
@@ -123,5 +122,4 @@ const Notification* NotificationManager::GetNotification(
   return &it->second;
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

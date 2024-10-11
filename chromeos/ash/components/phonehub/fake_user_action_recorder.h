@@ -9,8 +9,7 @@
 
 #include "chromeos/ash/components/phonehub/user_action_recorder.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 class FakeUserActionRecorder : public UserActionRecorder {
  public:
@@ -59,7 +58,6 @@ class FakeUserActionRecorder : public UserActionRecorder {
   size_t app_stream_launcher_opened_ = 0u;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_FAKE_USER_ACTION_RECORDER_H_

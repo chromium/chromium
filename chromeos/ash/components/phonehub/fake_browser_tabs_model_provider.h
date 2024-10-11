@@ -9,8 +9,7 @@
 
 #include "chromeos/ash/components/phonehub/browser_tabs_model.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 class FakeBrowserTabsModelProvider : public BrowserTabsModelProvider {
  public:
@@ -30,7 +29,6 @@ class FakeBrowserTabsModelProvider : public BrowserTabsModelProvider {
   bool is_browser_tab_sync_enabled_ = false;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_FAKE_BROWSER_TABS_MODEL_PROVIDER_H_

@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/components/phonehub/app_stream_manager.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 AppStreamManager::AppStreamManager() = default;
 
@@ -25,5 +24,4 @@ void AppStreamManager::NotifyAppStreamUpdate(
     observer.OnAppStreamUpdate(app_stream_update);
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

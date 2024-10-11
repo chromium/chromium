@@ -13,8 +13,7 @@
 #include "base/observer_list_types.h"
 #include "chromeos/ash/components/phonehub/notification.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 // Tracks notifications which have been synced from a connected phone during a
 // Phone Hub session. Clients can access notifications via GetNotification() and
@@ -93,7 +92,6 @@ class NotificationManager {
   base::ObserverList<Observer> observer_list_;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_NOTIFICATION_MANAGER_H_

@@ -21,8 +21,7 @@
 #include "chromeos/ash/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 namespace {
 
@@ -578,5 +577,4 @@ TEST_F(TetherControllerImplTest, AttemptConnectFeatureOffNoNetwork) {
   EXPECT_EQ(GetStatus(), TetherController::Status::kConnectionUnavailable);
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

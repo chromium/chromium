@@ -16,8 +16,7 @@
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 namespace {
 
@@ -290,5 +289,4 @@ TEST_F(FeatureSetupResponseProcessorTest,
                    ->IsCombinedSetupOperationInProgress());
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

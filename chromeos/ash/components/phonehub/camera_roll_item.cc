@@ -8,8 +8,7 @@
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 #include "ui/gfx/image/image.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 CameraRollItem::CameraRollItem(const proto::CameraRollItemMetadata& metadata,
                                const gfx::Image& thumbnail)
@@ -34,5 +33,4 @@ bool CameraRollItem::operator!=(const CameraRollItem& other) const {
   return !operator==(other);
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

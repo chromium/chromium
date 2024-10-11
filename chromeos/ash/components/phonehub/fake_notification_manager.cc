@@ -7,8 +7,7 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 FakeNotificationManager::InlineReplyMetadata::InlineReplyMetadata(
     int64_t notification_id,
@@ -43,5 +42,4 @@ void FakeNotificationManager::SendInlineReply(
   inline_replies_.emplace_back(notification_id, inline_reply_text);
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

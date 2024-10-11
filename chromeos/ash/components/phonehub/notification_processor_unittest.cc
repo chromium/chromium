@@ -15,8 +15,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 namespace {
 
@@ -671,5 +670,4 @@ TEST_F(NotificationProcessorTest, ActionIdMapPopulatedCorrectly) {
                                  Notification::ActionType::kHangup));
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

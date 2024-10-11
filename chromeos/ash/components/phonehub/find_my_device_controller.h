@@ -8,8 +8,7 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 // Provides functionality for ringing the connected phone via the Find My Device
 // feature.
@@ -67,7 +66,6 @@ class FindMyDeviceController {
 std::ostream& operator<<(std::ostream& stream,
                          FindMyDeviceController::Status status);
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_FIND_MY_DEVICE_CONTROLLER_H_

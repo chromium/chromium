@@ -5,8 +5,7 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_PHONEHUB_USER_ACTION_RECORDER_H_
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_USER_ACTION_RECORDER_H_
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 // Records actions that a user may take via Phone Hub.
 class UserActionRecorder {
@@ -51,7 +50,6 @@ class UserActionRecorder {
   UserActionRecorder() = default;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_USER_ACTION_RECORDER_H_
