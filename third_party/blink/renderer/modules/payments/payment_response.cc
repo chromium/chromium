@@ -149,7 +149,7 @@ ScriptPromise<IDLUndefined> PaymentResponse::complete(
     const V8PaymentComplete& result,
     ExceptionState& exception_state) {
   VLOG(2) << "Renderer: PaymentRequest (" << requestId().Utf8()
-          << "): complete(" << String(result) << ")";
+          << "): complete(" << result.AsString() << ")";
   PaymentStateResolver::PaymentComplete converted_result =
       PaymentStateResolver::PaymentComplete::kUnknown;
   switch (result.AsEnum()) {
