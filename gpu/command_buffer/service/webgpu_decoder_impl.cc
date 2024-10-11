@@ -458,6 +458,14 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
       wgpu::TextureUsage internal_usage,
       std::vector<wgpu::TextureFormat> view_formats);
 
+  class SharedBufferRepresentationAndAccess;
+
+  std::unique_ptr<SharedBufferRepresentationAndAccess>
+  AssociateMailboxDawnBuffer(const Mailbox& mailbox,
+                             const wgpu::Device& device,
+                             wgpu::BackendType backendType,
+                             wgpu::BufferUsage usage);
+
   // Device creation requires that an isolation key has been set for the
   // decoder. As a result, this callback also runs all queued device creation
   // calls that were requested and queued before the isolation key was ready.
@@ -971,6 +979,66 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
                  std::unique_ptr<SharedImageRepresentationAndAccess>>
       associated_shared_image_map_;
 
+  // Helper class whose derived implementations holds a representation
+  // and its ScopedAccess, ensuring safe destruction order.
+  class SharedBufferRepresentationAndAccess {
+   public:
+    virtual ~SharedBufferRepresentationAndAccess() = default;
+    // Get an unowned reference to the wgpu::Buffer for the shared image.
+    virtual wgpu::Buffer buffer() const = 0;
+    virtual Mailbox mailbox() const = 0;
+  };
+
+  // Wraps a |DawnBufferRepresentation| as a wgpu::Buffer.
+  class SharedBufferRepresentationAndAccessDawn
+      : public SharedBufferRepresentationAndAccess {
+   public:
+    SharedBufferRepresentationAndAccessDawn(
+        std::unique_ptr<DawnBufferRepresentation> representation,
+        std::unique_ptr<DawnBufferRepresentation::ScopedAccess> access)
+        : representation_(std::move(representation)),
+          access_(std::move(access)) {}
+
+    wgpu::Buffer buffer() const override { return access_->buffer(); }
+    Mailbox mailbox() const override { return representation_->mailbox(); }
+
+   private:
+    std::unique_ptr<DawnBufferRepresentation> representation_;
+    std::unique_ptr<DawnBufferRepresentation::ScopedAccess> access_;
+  };
+
+  // Implementation of SharedBufferRepresentationAndAccess that yields an error
+  // buffer.
+  class ErrorSharedBufferRepresentationAndAccess
+      : public SharedBufferRepresentationAndAccess {
+   public:
+    ErrorSharedBufferRepresentationAndAccess(const wgpu::Device& device,
+                                             wgpu::BufferUsage usage,
+                                             const Mailbox& mailbox) {
+      // Note: the buffer descriptor doesn't matter since this buffer won't be
+      // used for reflection and all validation checks the error state of the
+      // buffer before the buffer attributes.
+      wgpu::BufferDescriptor buffer_desc = {};
+      buffer_desc.usage = usage;
+      buffer_ = device.CreateErrorBuffer(&buffer_desc);
+      mailbox_ = mailbox;
+    }
+    ~ErrorSharedBufferRepresentationAndAccess() override = default;
+
+    wgpu::Buffer buffer() const override { return buffer_.Get(); }
+    Mailbox mailbox() const override { return mailbox_; }
+
+   private:
+    wgpu::Buffer buffer_;
+    Mailbox mailbox_;
+  };
+
+  // Map from the <ID, generation> pair for a wire buffer to the shared buffer
+  // representation and access for it.
+  base::flat_map<std::tuple<uint32_t, uint32_t>,
+                 std::unique_ptr<SharedBufferRepresentationAndAccess>>
+      associated_shared_buffer_map_;
+
   // A container of devices that we've seen on the wire, and their associated
   // metadata. Not all of them may be valid, so it gets pruned when
   // iterating through it in PerformPollingWork.
@@ -1211,6 +1279,7 @@ void WebGPUDecoderImpl::Destroy(bool have_context) {
   queued_request_device_calls_.clear();
 
   associated_shared_image_map_.clear();
+  associated_shared_buffer_map_.clear();
 
   // Destroy all known devices to ensure that any service-side objects holding
   // refs to these objects observe that the devices are lost and can drop their
@@ -1298,6 +1367,8 @@ bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
 
       return !runtime_unsafe_features_.contains(info->name);
     }
+    case wgpu::FeatureName::SharedBufferMemoryD3D12Resource:
+      return safety_level_ == webgpu::SafetyLevel::kUnsafe;
     default:
       return false;
   }
@@ -2319,6 +2390,124 @@ error::Error WebGPUDecoderImpl::HandleDissociateMailboxForPresent(
   if (!is_initialized && !ClearSharedImageWithSkia(mailbox)) {
     return error::kInvalidArguments;
   }
+  return error::kNoError;
+}
+
+std::unique_ptr<WebGPUDecoderImpl::SharedBufferRepresentationAndAccess>
+WebGPUDecoderImpl::AssociateMailboxDawnBuffer(const Mailbox& mailbox,
+                                              const wgpu::Device& device,
+                                              wgpu::BackendType backendType,
+                                              wgpu::BufferUsage usage) {
+  std::unique_ptr<DawnBufferRepresentation> shared_buffer =
+      shared_image_representation_factory_->ProduceDawnBuffer(mailbox, device,
+                                                              backendType);
+
+  if (!shared_buffer) {
+    DLOG(ERROR) << "AssociateMailboxDawnBuffer: Couldn't produce shared image";
+    return nullptr;
+  }
+
+  std::unique_ptr<DawnBufferRepresentation::ScopedAccess> scoped_access =
+      shared_buffer->BeginScopedAccess(usage);
+  if (!scoped_access) {
+    DLOG(ERROR)
+        << "AssociateMailboxDawnBuffer: Couldn't begin shared image access";
+    return nullptr;
+  }
+
+  return std::make_unique<SharedBufferRepresentationAndAccessDawn>(
+      std::move(shared_buffer), std::move(scoped_access));
+}
+
+error::Error WebGPUDecoderImpl::HandleAssociateMailboxForBufferImmediate(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile webgpu::cmds::AssociateMailboxForBufferImmediate& c =
+      *static_cast<
+          const volatile webgpu::cmds::AssociateMailboxForBufferImmediate*>(
+          cmd_data);
+  uint32_t device_id = static_cast<uint32_t>(c.device_id);
+  uint32_t device_generation = static_cast<uint32_t>(c.device_generation);
+  uint32_t id = static_cast<uint32_t>(c.id);
+  uint32_t generation = static_cast<uint32_t>(c.generation);
+  wgpu::BufferUsage usage = static_cast<wgpu::BufferUsage>(c.usage);
+
+  if (sizeof(Mailbox) != immediate_data_size) {
+    return error::kOutOfBounds;
+  }
+
+  volatile const GLbyte* immediate_data =
+      gles2::GetImmediateDataAs<volatile const GLbyte*>(c, sizeof(Mailbox),
+                                                        immediate_data_size);
+  Mailbox mailbox = Mailbox::FromVolatile(
+      *reinterpret_cast<const volatile Mailbox*>(immediate_data));
+  DLOG_IF(ERROR, !mailbox.Verify())
+      << "AssociateMailboxForBuffer was passed an invalid mailbox";
+
+  wgpu::Device device = wire_server_->GetDevice(device_id, device_generation);
+  if (device == nullptr) {
+    return error::kInvalidArguments;
+  }
+
+  {
+    auto it = associated_shared_buffer_map_.find({id, generation});
+    if (it != associated_shared_buffer_map_.end()) {
+      DLOG(ERROR)
+          << "AssociateMailboxForBuffer to an already associated buffer.";
+      return error::kInvalidArguments;
+    }
+  }
+
+  std::unique_ptr<SharedBufferRepresentationAndAccess>
+      representation_and_access;
+  auto it = known_device_metadata_.find(device);
+  DCHECK(it != known_device_metadata_.end());
+  representation_and_access = AssociateMailboxDawnBuffer(
+      mailbox, device, it->second.backendType, usage);
+
+  if (!representation_and_access) {
+    // The WebGPU specification error model is that failure to create a buffer
+    // returns an error buffer instead. Follow this pattern here.
+    representation_and_access =
+        std::make_unique<ErrorSharedBufferRepresentationAndAccess>(
+            device, usage, mailbox);
+  }
+
+  // Inject the buffer in the dawn::wire::Server and remember which shared
+  // image it is associated with.
+  if (!wire_server_->InjectBuffer(representation_and_access->buffer().Get(),
+                                  {id, generation},
+                                  {device_id, device_generation})) {
+    DLOG(ERROR) << "AssociateMailboxForBuffer: Invalid buffer ID";
+    return error::kInvalidArguments;
+  }
+
+  auto insertion = associated_shared_buffer_map_.emplace(
+      std::tuple<uint32_t, uint32_t>(id, generation),
+      std::move(representation_and_access));
+
+  // InjectBuffer already validated that the (ID, generation) can't have been
+  // registered before.
+  DCHECK(insertion.second);
+  return error::kNoError;
+}
+
+error::Error WebGPUDecoderImpl::HandleDissociateMailboxForBuffer(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  const volatile webgpu::cmds::DissociateMailboxForBuffer& c =
+      *static_cast<const volatile webgpu::cmds::DissociateMailboxForBuffer*>(
+          cmd_data);
+  uint32_t buffer_id = static_cast<uint32_t>(c.buffer_id);
+  uint32_t buffer_generation = static_cast<uint32_t>(c.buffer_generation);
+
+  auto it = associated_shared_buffer_map_.find({buffer_id, buffer_generation});
+  if (it == associated_shared_buffer_map_.end()) {
+    DLOG(ERROR) << "DissociateMailboxForBuffer: Invalid buffer ID";
+    return error::kInvalidArguments;
+  }
+
+  associated_shared_buffer_map_.erase(it);
   return error::kNoError;
 }
 

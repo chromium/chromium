@@ -73,7 +73,20 @@ _FUNCTION_INFO = {
     'type': 'PUTn',
     'count': 1,
   },
+  'AssociateMailboxForBuffer': {
+    'impl_func': False,
+    'client_test': False,
+    'internal': True,
+    'cmd_args': 'GLuint device_id, GLuint device_generation, GLuint id, '
+                'GLuint generation, uint64_t usage, const GLuint* mailbox',
+    'type': 'PUT',
+    'count': 4,
+  },
   'DissociateMailbox': {
+    'impl_func': False,
+    'client_test': False,
+  },
+   'DissociateMailboxForBuffer': {
     'impl_func': False,
     'client_test': False,
   },

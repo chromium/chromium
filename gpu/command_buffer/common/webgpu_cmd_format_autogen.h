@@ -170,6 +170,79 @@ static_assert(
 static_assert(offsetof(AssociateMailboxImmediate, count) == 36,
               "offset of AssociateMailboxImmediate count should be 36");
 
+struct AssociateMailboxForBufferImmediate {
+  typedef AssociateMailboxForBufferImmediate ValueType;
+  static const CommandId kCmdId = kAssociateMailboxForBufferImmediate;
+  static const cmd::ArgFlags kArgFlags = cmd::kAtLeastN;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeDataSize() {
+    return static_cast<uint32_t>(sizeof(GLuint) * 4);
+  }
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType) + ComputeDataSize());
+  }
+
+  void SetHeader() { header.SetCmdByTotalSize<ValueType>(ComputeSize()); }
+
+  void Init(GLuint _device_id,
+            GLuint _device_generation,
+            GLuint _id,
+            GLuint _generation,
+            uint64_t _usage,
+            const GLuint* _mailbox) {
+    SetHeader();
+    device_id = _device_id;
+    device_generation = _device_generation;
+    id = _id;
+    generation = _generation;
+    usage = _usage;
+    memcpy(ImmediateDataAddress(this), _mailbox, ComputeDataSize());
+  }
+
+  void* Set(void* cmd,
+            GLuint _device_id,
+            GLuint _device_generation,
+            GLuint _id,
+            GLuint _generation,
+            uint64_t _usage,
+            const GLuint* _mailbox) {
+    static_cast<ValueType*>(cmd)->Init(_device_id, _device_generation, _id,
+                                       _generation, _usage, _mailbox);
+    const uint32_t size = ComputeSize();
+    return NextImmediateCmdAddressTotalSize<ValueType>(cmd, size);
+  }
+
+  gpu::CommandHeader header;
+  uint32_t device_id;
+  uint32_t device_generation;
+  uint32_t id;
+  uint32_t generation;
+  uint32_t usage;
+};
+
+static_assert(sizeof(AssociateMailboxForBufferImmediate) == 24,
+              "size of AssociateMailboxForBufferImmediate should be 24");
+static_assert(
+    offsetof(AssociateMailboxForBufferImmediate, header) == 0,
+    "offset of AssociateMailboxForBufferImmediate header should be 0");
+static_assert(
+    offsetof(AssociateMailboxForBufferImmediate, device_id) == 4,
+    "offset of AssociateMailboxForBufferImmediate device_id should be 4");
+static_assert(offsetof(AssociateMailboxForBufferImmediate, device_generation) ==
+                  8,
+              "offset of AssociateMailboxForBufferImmediate device_generation "
+              "should be 8");
+static_assert(offsetof(AssociateMailboxForBufferImmediate, id) == 12,
+              "offset of AssociateMailboxForBufferImmediate id should be 12");
+static_assert(
+    offsetof(AssociateMailboxForBufferImmediate, generation) == 16,
+    "offset of AssociateMailboxForBufferImmediate generation should be 16");
+static_assert(
+    offsetof(AssociateMailboxForBufferImmediate, usage) == 20,
+    "offset of AssociateMailboxForBufferImmediate usage should be 20");
+
 struct DissociateMailbox {
   typedef DissociateMailbox ValueType;
   static const CommandId kCmdId = kDissociateMailbox;
@@ -206,6 +279,44 @@ static_assert(offsetof(DissociateMailbox, texture_id) == 4,
               "offset of DissociateMailbox texture_id should be 4");
 static_assert(offsetof(DissociateMailbox, texture_generation) == 8,
               "offset of DissociateMailbox texture_generation should be 8");
+
+struct DissociateMailboxForBuffer {
+  typedef DissociateMailboxForBuffer ValueType;
+  static const CommandId kCmdId = kDissociateMailboxForBuffer;
+  static const cmd::ArgFlags kArgFlags = cmd::kFixed;
+  static const uint8_t cmd_flags = CMD_FLAG_SET_TRACE_LEVEL(3);
+
+  static uint32_t ComputeSize() {
+    return static_cast<uint32_t>(sizeof(ValueType));  // NOLINT
+  }
+
+  void SetHeader() { header.SetCmd<ValueType>(); }
+
+  void Init(GLuint _buffer_id, GLuint _buffer_generation) {
+    SetHeader();
+    buffer_id = _buffer_id;
+    buffer_generation = _buffer_generation;
+  }
+
+  void* Set(void* cmd, GLuint _buffer_id, GLuint _buffer_generation) {
+    static_cast<ValueType*>(cmd)->Init(_buffer_id, _buffer_generation);
+    return NextCmdAddress<ValueType>(cmd);
+  }
+
+  gpu::CommandHeader header;
+  uint32_t buffer_id;
+  uint32_t buffer_generation;
+};
+
+static_assert(sizeof(DissociateMailboxForBuffer) == 12,
+              "size of DissociateMailboxForBuffer should be 12");
+static_assert(offsetof(DissociateMailboxForBuffer, header) == 0,
+              "offset of DissociateMailboxForBuffer header should be 0");
+static_assert(offsetof(DissociateMailboxForBuffer, buffer_id) == 4,
+              "offset of DissociateMailboxForBuffer buffer_id should be 4");
+static_assert(
+    offsetof(DissociateMailboxForBuffer, buffer_generation) == 8,
+    "offset of DissociateMailboxForBuffer buffer_generation should be 8");
 
 struct DissociateMailboxForPresent {
   typedef DissociateMailboxForPresent ValueType;

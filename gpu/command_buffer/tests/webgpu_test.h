@@ -76,7 +76,8 @@ class WebGPUTest : public testing::Test {
   void WaitForCompletion(wgpu::Device device);
   void PollUntilIdle();
 
-  wgpu::Device GetNewDevice();
+  wgpu::Device GetNewDevice(
+      std::vector<wgpu::FeatureName> requiredFeatures = {});
 
   viz::TestGpuServiceHolder* GetGpuServiceHolder() {
     return gpu_service_holder_.get();
