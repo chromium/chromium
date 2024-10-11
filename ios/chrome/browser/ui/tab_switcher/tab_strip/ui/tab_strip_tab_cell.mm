@@ -782,6 +782,10 @@ UIImage* DefaultFavicon() {
   _titleCollapsedTrailingConstraint = [_titlePositioner.trailingAnchor
       constraintEqualToAnchor:_accessibilityContainerView.trailingAnchor
                      constant:-kTitleInset];
+  // The trailing constraints have a lower priority to allow the cell to have a
+  // size of 0.
+  _titleTrailingConstraint.priority = UILayoutPriorityRequired - 1;
+  _titleCollapsedTrailingConstraint.priority = UILayoutPriorityRequired - 1;
   _titleLeftConstraint = [_titleLabel.leftAnchor
       constraintEqualToAnchor:_titlePositioner.leftAnchor];
   _titleRightConstraint = [_titleLabel.rightAnchor
