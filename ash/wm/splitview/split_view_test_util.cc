@@ -4,7 +4,9 @@
 
 #include "ash/wm/splitview/split_view_test_util.h"
 
+#include "ash/public/cpp/shelf_config.h"
 #include "ash/root_window_controller.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_constants.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -83,6 +85,16 @@ void VerifySplitViewOverviewSession(aura::Window* window) {
 
   gfx::Rect expected_grid_bounds = GetWorkAreaBoundsForWindow(window);
   expected_grid_bounds.Subtract(window->GetBoundsInScreen());
+
+  // In SplitViewOverviewSession, even when set to auto-hide, the shelf remains
+  // visible, the work area calculation doesn't subtract the shelf area, causing
+  // a discrepancy. This is corrected by subtracting the shelf area from the
+  // work area in this case.
+  Shelf* shelf = RootWindowController::ForWindow(window)->shelf();
+  if (shelf->auto_hide_behavior() == ShelfAutoHideBehavior::kAlways) {
+    const gfx::Rect shelf_bounds = shelf->GetShelfBoundsInScreen();
+    expected_grid_bounds.Subtract(shelf_bounds);
+  }
 
   if (auto* divider = GetSplitViewDivider();
       divider && divider->divider_widget()) {
