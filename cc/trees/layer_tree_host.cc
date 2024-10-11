@@ -527,17 +527,17 @@ void LayerTreeHost::NotifyImageDecodeFinished(int request_id,
 }
 
 void LayerTreeHost::NotifyTransitionRequestsFinished(
-    const std::vector<uint32_t>& sequence_ids) {
+    const uint32_t sequence_id,
+    const viz::ViewTransitionElementResourceRects& rects) {
   DCHECK(IsMainThread());
   // TODO(vmpstr): This might also be a good spot to expire long standing
   // requests if they were not finished.
-  for (auto& sequence_id : sequence_ids) {
-    auto it = view_transition_callbacks_.find(sequence_id);
-    if (it == view_transition_callbacks_.end())
-      continue;
-    std::move(it->second).Run();
-    view_transition_callbacks_.erase(it);
+  auto it = view_transition_callbacks_.find(sequence_id);
+  if (it == view_transition_callbacks_.end()) {
+    return;
   }
+  std::move(it->second).Run(rects);
+  view_transition_callbacks_.erase(it);
 }
 
 void LayerTreeHost::SetLayerTreeFrameSink(
@@ -2100,10 +2100,10 @@ void LayerTreeHost::SetDelegatedInkMetadata(
   SetNeedsCommit();
 }
 
-std::vector<base::OnceClosure>
+std::vector<ViewTransitionRequest::ViewTransitionCaptureCallback>
 LayerTreeHost::TakeViewTransitionCallbacksForTesting() {
   DCHECK(IsMainThread());
-  std::vector<base::OnceClosure> result;
+  std::vector<ViewTransitionRequest::ViewTransitionCaptureCallback> result;
   for (auto& item : view_transition_callbacks_)
     result.push_back(std::move(item.second));
   view_transition_callbacks_.clear();

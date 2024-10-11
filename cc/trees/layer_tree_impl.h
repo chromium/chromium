@@ -823,9 +823,16 @@ class CC_EXPORT LayerTreeImpl {
   // output of the current frame.
   bool HasViewTransitionSaveRequest() const;
 
+  bool MatchViewTransitionResource(
+      uint32_t sequence_id,
+      const blink::ViewTransitionToken& token) const;
+
   void UpdateAllScrollbarGeometriesForTesting() {
     UpdateAllScrollbarGeometries();
   }
+
+  void SetViewTransitionContentRect(const viz::ViewTransitionElementResourceId&,
+                                    const gfx::RectF&);
 
  protected:
   float ClampPageScaleFactorToLimits(float page_scale_factor) const;

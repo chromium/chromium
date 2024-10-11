@@ -238,7 +238,7 @@ class AXViewTransitionTest : public testing::Test {
     UpdateAllLifecyclePhasesForTest();
     for (auto& callback :
          LayerTreeHost()->TakeViewTransitionCallbacksForTesting()) {
-      std::move(callback).Run();
+      std::move(callback).Run({});
     }
   }
 

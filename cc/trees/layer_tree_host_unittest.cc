@@ -9817,7 +9817,10 @@ class LayerTreeHostTestViewTransitionsPropagatedToMetadata
     layer_tree_host()->AddViewTransitionRequest(
         ViewTransitionRequest::CreateCapture(
             blink::ViewTransitionToken(), /*maybe_cross_frame_sink=*/false, {},
-            base::BindLambdaForTesting([this]() { CommitLambdaCalled(); })));
+            base::BindLambdaForTesting(
+                [this](const viz::ViewTransitionElementResourceRects&) {
+                  CommitLambdaCalled();
+                })));
   }
 
   void CommitLambdaCalled() { ++num_lambda_calls_; }
@@ -9826,7 +9829,7 @@ class LayerTreeHostTestViewTransitionsPropagatedToMetadata
       const viz::CompositorFrame& frame) override {
     ASSERT_EQ(1u, frame.metadata.transition_directives.size());
     const auto& save = frame.metadata.transition_directives[0];
-    submitted_sequence_ids_.push_back(save.sequence_id());
+    submitted_sequence_id_ = save.sequence_id();
 
     EXPECT_EQ(save.type(),
               viz::CompositorFrameTransitionDirective::Type::kSave);
@@ -9835,14 +9838,14 @@ class LayerTreeHostTestViewTransitionsPropagatedToMetadata
   void DidPresentCompositorFrame(
       uint32_t frame_token,
       const viz::FrameTimingDetails& frame_timing_details) override {
-    layer_tree_host()->NotifyTransitionRequestsFinished(
-        submitted_sequence_ids_);
+    layer_tree_host()->NotifyTransitionRequestsFinished(submitted_sequence_id_,
+                                                        {});
     EndTest();
   }
 
   void AfterTest() override { EXPECT_EQ(1, num_lambda_calls_); }
 
-  std::vector<uint32_t> submitted_sequence_ids_;
+  uint32_t submitted_sequence_id_;
   int num_lambda_calls_ = 0;
 };
 

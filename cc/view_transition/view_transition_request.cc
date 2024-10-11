@@ -41,7 +41,7 @@ std::unique_ptr<ViewTransitionRequest> ViewTransitionRequest::CreateCapture(
     const blink::ViewTransitionToken& transition_token,
     bool maybe_cross_frame_sink,
     std::vector<viz::ViewTransitionElementResourceId> capture_ids,
-    base::OnceClosure commit_callback) {
+    ViewTransitionCaptureCallback commit_callback) {
   return base::WrapUnique(new ViewTransitionRequest(
       Type::kSave, transition_token, maybe_cross_frame_sink,
       std::move(capture_ids), std::move(commit_callback)));
@@ -54,7 +54,7 @@ ViewTransitionRequest::CreateAnimateRenderer(
     bool maybe_cross_frame_sink) {
   return base::WrapUnique(new ViewTransitionRequest(
       Type::kAnimateRenderer, transition_token, maybe_cross_frame_sink, {},
-      base::OnceClosure()));
+      ViewTransitionCaptureCallback()));
 }
 
 // static
@@ -63,7 +63,7 @@ std::unique_ptr<ViewTransitionRequest> ViewTransitionRequest::CreateRelease(
     bool maybe_cross_frame_sink) {
   return base::WrapUnique(new ViewTransitionRequest(
       Type::kRelease, transition_token, maybe_cross_frame_sink, {},
-      base::OnceClosure()));
+      ViewTransitionCaptureCallback()));
 }
 
 ViewTransitionRequest::ViewTransitionRequest(
@@ -71,7 +71,7 @@ ViewTransitionRequest::ViewTransitionRequest(
     const blink::ViewTransitionToken& transition_token,
     bool maybe_cross_frame_sink,
     std::vector<viz::ViewTransitionElementResourceId> capture_ids,
-    base::OnceClosure commit_callback)
+    ViewTransitionCaptureCallback commit_callback)
     : type_(type),
       transition_token_(transition_token),
       maybe_cross_frame_sink_(maybe_cross_frame_sink),

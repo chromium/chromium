@@ -169,8 +169,9 @@ gfx::Transform GetViewTransitionTransform(
       shared_element_quad.height() /
           static_cast<SkScalar>(view_transition_content_output.height()));
 
-  view_transition_transform.Translate(-view_transition_content_output.x(),
-                                      -view_transition_content_output.y());
+  view_transition_transform.Translate(
+      shared_element_quad.x() - view_transition_content_output.x(),
+      shared_element_quad.y() - view_transition_content_output.y());
 
   return view_transition_transform;
 }

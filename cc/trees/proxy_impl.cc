@@ -630,11 +630,13 @@ void ProxyImpl::NotifyImageDecodeRequestFinished(int request_id,
   }
 }
 
-void ProxyImpl::NotifyTransitionRequestFinished(uint32_t sequence_id) {
+void ProxyImpl::NotifyTransitionRequestFinished(
+    uint32_t sequence_id,
+    const viz::ViewTransitionElementResourceRects& rects) {
   DCHECK(IsImplThread());
   MainThreadTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&ProxyMain::NotifyTransitionRequestFinished,
-                                proxy_main_weak_ptr_, sequence_id));
+                                proxy_main_weak_ptr_, sequence_id, rects));
 }
 
 void ProxyImpl::DidPresentCompositorFrameOnImplThread(

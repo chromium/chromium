@@ -35,6 +35,7 @@
 #include "cc/trees/scoped_abort_remaining_swap_promises.h"
 #include "cc/trees/swap_promise.h"
 #include "cc/trees/trace_utils.h"
+#include "components/viz/common/view_transition_element_resource_id.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace cc {
@@ -530,8 +531,10 @@ void ProxyMain::NotifyImageDecodeRequestFinished(int request_id,
   layer_tree_host_->NotifyImageDecodeFinished(request_id, decode_succeeded);
 }
 
-void ProxyMain::NotifyTransitionRequestFinished(uint32_t sequence_id) {
-  layer_tree_host_->NotifyTransitionRequestsFinished({sequence_id});
+void ProxyMain::NotifyTransitionRequestFinished(
+    uint32_t sequence_id,
+    const viz::ViewTransitionElementResourceRects& rects) {
+  layer_tree_host_->NotifyTransitionRequestsFinished(sequence_id, rects);
 }
 
 bool ProxyMain::IsStarted() const {

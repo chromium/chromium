@@ -8,12 +8,15 @@
 #include <stdint.h>
 
 #include <cstdint>
+#include <functional>
 #include <string>
 #include <tuple>
-#include <vector>
+#include <unordered_map>
+#include <utility>
 
 #include "components/viz/common/viz_common_export.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace viz {
 
@@ -54,6 +57,21 @@ class VIZ_COMMON_EXPORT ViewTransitionElementResourceId {
   uint32_t local_id_ = kInvalidLocalId;
 };
 
+using ViewTransitionElementResourceRects =
+    std::unordered_map<ViewTransitionElementResourceId, gfx::RectF>;
+
 }  // namespace viz
+
+namespace std {
+template <>
+struct hash<viz::ViewTransitionElementResourceId> {
+  size_t operator()(
+      const viz::ViewTransitionElementResourceId& resource_id) const {
+    // Usually view transition resources in the same map would have the same
+    // transition token, so only using the local ID for hashing.
+    return resource_id.local_id();
+  }
+};
+}  // namespace std
 
 #endif  // COMPONENTS_VIZ_COMMON_VIEW_TRANSITION_ELEMENT_RESOURCE_ID_H_

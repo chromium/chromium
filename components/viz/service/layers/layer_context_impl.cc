@@ -934,7 +934,9 @@ void LayerContextImpl::NotifyImageDecodeRequestFinished(int request_id,
                                                         bool decode_succeeded) {
 }
 
-void LayerContextImpl::NotifyTransitionRequestFinished(uint32_t sequence_id) {}
+void LayerContextImpl::NotifyTransitionRequestFinished(
+    uint32_t sequence_id,
+    const ViewTransitionElementResourceRects&) {}
 
 void LayerContextImpl::DidPresentCompositorFrameOnImplThread(
     uint32_t frame_token,

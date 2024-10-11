@@ -125,6 +125,7 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "components/viz/common/traced_value.h"
 #include "components/viz/common/transition_utils.h"
+#include "components/viz/common/view_transition_element_resource_id.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/context_support.h"
@@ -2374,7 +2375,29 @@ void LayerTreeHostImpl::OnDraw(const gfx::Transform& transform,
 
 void LayerTreeHostImpl::OnCompositorFrameTransitionDirectiveProcessed(
     uint32_t sequence_id) {
-  client_->NotifyTransitionRequestFinished(sequence_id);
+  // See ViewTransitionOverflowRectFromSurface
+  // We cache the computed content rect for each view-transition capture
+  // surface. This rect is then used to map the generated render pass or texture
+  // to the target coordinate space.
+  viz::ViewTransitionElementResourceRects rects_for_this_sequence;
+  auto it = view_transition_content_rects_.find(sequence_id);
+
+  // The map entry would exist only if there are actual rects (non-root
+  // elements).
+  if (it != view_transition_content_rects_.end()) {
+    it->second.swap(rects_for_this_sequence);
+    view_transition_content_rects_.erase(it);
+  }
+
+  client_->NotifyTransitionRequestFinished(sequence_id,
+                                           std::move(rects_for_this_sequence));
+}
+
+void LayerTreeHostImpl::SetViewTransitionContentRect(
+    uint32_t sequence_id,
+    const viz::ViewTransitionElementResourceId& id,
+    const gfx::RectF& rect) {
+  view_transition_content_rects_[sequence_id].insert(std::make_pair(id, rect));
 }
 
 void LayerTreeHostImpl::OnSurfaceEvicted(

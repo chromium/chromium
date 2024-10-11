@@ -19,7 +19,8 @@ class CC_EXPORT ViewTransitionContentLayerImpl : public LayerImpl {
       LayerTreeImpl* tree_impl,
       int id,
       const viz::ViewTransitionElementResourceId& resource_id,
-      bool is_live_content_layer);
+      bool is_live_content_layer,
+      const gfx::RectF& max_extents_rect);
 
   ViewTransitionContentLayerImpl(const ViewTransitionContentLayerImpl&) =
       delete;
@@ -42,17 +43,31 @@ class CC_EXPORT ViewTransitionContentLayerImpl : public LayerImpl {
   viz::ViewTransitionElementResourceId ViewTransitionResourceId()
       const override;
 
+  void SetMaxExtentsRect(const gfx::RectF& max_extents_rect);
+  void PushPropertiesTo(LayerImpl* layer) override;
+  void SetOriginatingSurfaceContentRect(
+      const gfx::Rect&
+          originating_surface_content_rect_in_layer_coordinate_space);
+
  protected:
   ViewTransitionContentLayerImpl(
       LayerTreeImpl* tree_impl,
       int id,
       const viz::ViewTransitionElementResourceId& resource_id,
-      bool is_live_content_layer);
+      bool is_live_content_layer,
+      const gfx::RectF& max_extents_rect);
 
  private:
   const viz::ViewTransitionElementResourceId resource_id_;
   const bool is_live_content_layer_;
   bool skip_unseen_resource_quads_ = false;
+
+  // max_extents_rect_ is the maximum possible size of the originating layer, as
+  // known to blink, in the originating layer's coordinate space.
+  gfx::RectF max_extents_rect_in_originating_layer_coordinate_space_;
+  // actual_extents_rect_ is the actual size of the surface, computed by CC, in
+  // this layer's coordinate space.
+  gfx::Rect actual_extents_rect_;
 };
 
 }  // namespace cc

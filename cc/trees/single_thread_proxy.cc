@@ -672,12 +672,14 @@ void SingleThreadProxy::NotifyImageDecodeRequestFinished(
   }
 }
 
-void SingleThreadProxy::NotifyTransitionRequestFinished(uint32_t sequence_id) {
+void SingleThreadProxy::NotifyTransitionRequestFinished(
+    uint32_t sequence_id,
+    const viz::ViewTransitionElementResourceRects& rects) {
   DCHECK(!task_runner_provider_->HasImplThread() ||
          task_runner_provider_->IsImplThread());
 
   DebugScopedSetMainThread main_thread(task_runner_provider_);
-  layer_tree_host_->NotifyTransitionRequestsFinished({sequence_id});
+  layer_tree_host_->NotifyTransitionRequestsFinished(sequence_id, rects);
 }
 
 void SingleThreadProxy::DidPresentCompositorFrameOnImplThread(

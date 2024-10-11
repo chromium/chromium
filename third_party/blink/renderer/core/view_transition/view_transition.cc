@@ -11,6 +11,7 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/paint_holding_reason.h"
+#include "components/viz/common/view_transition_element_resource_id.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_sync_iterator_view_transition_type_set.h"
 #include "third_party/blink/renderer/core/css/css_rule.h"
@@ -686,7 +687,9 @@ void ViewTransition::ContextDestroyed() {
   SkipTransition(PromiseResponse::kRejectAbort);
 }
 
-void ViewTransition::NotifyCaptureFinished() {
+void ViewTransition::NotifyCaptureFinished(
+    const std::unordered_map<viz::ViewTransitionElementResourceId,
+                             gfx::RectF>&) {
   if (state_ != State::kCapturing) {
     DCHECK(IsTerminalState(state_));
     return;

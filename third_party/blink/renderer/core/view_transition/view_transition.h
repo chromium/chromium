@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_VIEW_TRANSITION_VIEW_TRANSITION_H_
 
 #include <memory>
+#include <unordered_map>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -324,7 +325,9 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
 
   void ProcessCurrentState();
 
-  void NotifyCaptureFinished();
+  void NotifyCaptureFinished(
+      const std::unordered_map<viz::ViewTransitionElementResourceId,
+                               gfx::RectF>&);
 
   // Used to defer visual updates between transition prepare dispatching and
   // transition start to allow the page to set up the final scene

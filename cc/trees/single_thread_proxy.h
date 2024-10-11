@@ -22,6 +22,7 @@
 #include "cc/trees/task_runner_provider.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
+#include "components/viz/common/view_transition_element_resource_id.h"
 
 namespace viz {
 class BeginFrameSource;
@@ -148,7 +149,9 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
       bool needs_first_draw_on_activation) override;
   void NotifyImageDecodeRequestFinished(int request_id,
                                         bool decode_succeeded) override;
-  void NotifyTransitionRequestFinished(uint32_t sequence_id) override;
+  void NotifyTransitionRequestFinished(
+      uint32_t sequence_id,
+      const viz::ViewTransitionElementResourceRects&) override;
   void DidPresentCompositorFrameOnImplThread(
       uint32_t frame_token,
       PresentationTimeCallbackBuffer::PendingCallbacks callbacks,

@@ -133,7 +133,9 @@ class CC_EXPORT ProxyImpl : public LayerTreeHostImplClient,
       bool needs_first_draw_on_activation) override;
   void NotifyImageDecodeRequestFinished(int request_id,
                                         bool decode_succeeded) override;
-  void NotifyTransitionRequestFinished(uint32_t sequence_id) override;
+  void NotifyTransitionRequestFinished(
+      uint32_t sequence_id,
+      const viz::ViewTransitionElementResourceRects&) override;
   void DidPresentCompositorFrameOnImplThread(
       uint32_t frame_token,
       PresentationTimeCallbackBuffer::PendingCallbacks activated,
