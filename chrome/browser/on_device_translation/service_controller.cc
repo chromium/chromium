@@ -4,6 +4,7 @@
 
 #include "chrome/browser/on_device_translation/service_controller.h"
 
+#include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -301,9 +302,24 @@ void OnDeviceTranslationServiceController::CreateTranslator(
     CalculateLanguagePackRequirements(source_lang, target_lang, required_packs,
                                       required_not_installed_packs,
                                       to_be_registered_packs);
-    for (const auto& language_pack : to_be_registered_packs) {
-      // Register the language pack component.
-      RegisterLanguagePackComponent(language_pack);
+    if (!to_be_registered_packs.empty()) {
+      if (base::FeatureList::IsEnabled(
+              on_device_translation::kTranslationAPILimitLanguagePackCount)) {
+        if (to_be_registered_packs.size() +
+                GetRegisteredLanguagePacks().size() >=
+            on_device_translation::kTranslationAPILimitLanguagePackCountMax
+                .Get()) {
+          // TODO(crbug.com/358030919): Add UMA, and consider printing errors
+          // to DevTool's console.
+          std::move(callback).Run(false);
+          return;
+        }
+      }
+
+      for (const auto& language_pack : to_be_registered_packs) {
+        // Register the language pack component.
+        RegisterLanguagePackComponent(language_pack);
+      }
     }
   }
   // If there is no TranslteKit or there are required language packs that are

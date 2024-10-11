@@ -24,6 +24,14 @@ BASE_FEATURE(kTranslationAPIAcceptLanguagesCheck,
              "TranslationAPIAcceptLanguagesCheck",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kTranslationAPILimitLanguagePackCount,
+             "TranslationAPILimitLanguagePackCount",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<size_t> kTranslationAPILimitLanguagePackCountMax{
+    &kTranslationAPILimitLanguagePackCount,
+    "TranslationAPILimitLanguagePackCountMax", 3};
+
 // static
 base::FilePath GetTranslateKitBinaryPathFromCommandLine() {
   return GetPathFromCommandLine(kTranslateKitBinaryPath);

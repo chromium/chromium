@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace on_device_translation {
 
@@ -14,6 +15,12 @@ namespace on_device_translation {
 // source nor destination language is in the AcceptLanguages. This is introduced
 // to mitigate privacy concerns.
 BASE_DECLARE_FEATURE(kTranslationAPIAcceptLanguagesCheck);
+
+// This feature limits the number of language components downloaded by
+// createTranslator() to `kTranslationAPILimitLanguagePackCountMax`.
+BASE_DECLARE_FEATURE(kTranslationAPILimitLanguagePackCount);
+extern const base::FeatureParam<size_t>
+    kTranslationAPILimitLanguagePackCountMax;
 
 const char kTranslateKitBinaryPath[] = "translate-kit-binary-path";
 

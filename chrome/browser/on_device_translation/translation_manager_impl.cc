@@ -9,6 +9,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "base/feature_list.h"
 #include "base/strings/string_split.h"
+#include "chrome/browser/on_device_translation/language_pack_util.h"
 #include "chrome/browser/on_device_translation/service_controller.h"
 #include "chrome/browser/on_device_translation/translator.h"
 #include "chrome/browser/profiles/profile.h"
@@ -20,6 +21,32 @@
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom.h"
+
+namespace {
+
+#if !BUILDFLAG(IS_ANDROID)
+using on_device_translation::SupportedLanguage;
+
+bool IsInAcceptLanguage(const std::vector<std::string_view>& accept_languages,
+                        const std::string& lang) {
+  const std::string normalized_lang = l10n_util::GetLanguage(lang);
+  return std::find_if(accept_languages.begin(), accept_languages.end(),
+                      [&](const std::string_view& lang) {
+                        return l10n_util::GetLanguage(lang) == normalized_lang;
+                      }) != accept_languages.end();
+}
+
+bool IsSupportedPopularLanguage(const std::string& lang) {
+  const std::optional<SupportedLanguage> supported_lang =
+      on_device_translation::ToSupportedLanguage(lang);
+  if (!supported_lang) {
+    return false;
+  }
+  return on_device_translation::IsPopularLanguage(*supported_lang);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+}  // namespace
 
 DOCUMENT_USER_DATA_KEY_IMPL(TranslationManagerImpl);
 
@@ -45,7 +72,12 @@ void TranslationManagerImpl::CanCreateTranslator(
     CanCreateTranslatorCallback callback) {
   // The API is not supported on Android yet.
 #if !BUILDFLAG(IS_ANDROID)
-  if (!PassAcceptLanguagesCheck(source_lang, target_lang)) {
+  CHECK(browser_context_);
+  if (!PassAcceptLanguagesCheck(
+          Profile::FromBrowserContext(browser_context_.get())
+              ->GetPrefs()
+              ->GetString(language::prefs::kAcceptLanguages),
+          source_lang, target_lang)) {
     std::move(callback).Run(false);
     return;
   }
@@ -63,7 +95,12 @@ void TranslationManagerImpl::CreateTranslator(
     CreateTranslatorCallback callback) {
   // The API is not supported on Android yet.
 #if !BUILDFLAG(IS_ANDROID)
-  if (!PassAcceptLanguagesCheck(source_lang, target_lang)) {
+  CHECK(browser_context_);
+  if (!PassAcceptLanguagesCheck(
+          Profile::FromBrowserContext(browser_context_.get())
+              ->GetPrefs()
+              ->GetString(language::prefs::kAcceptLanguages),
+          source_lang, target_lang)) {
     std::move(callback).Run(false);
     return;
   }
@@ -77,7 +114,9 @@ void TranslationManagerImpl::CreateTranslator(
 }
 
 #if !BUILDFLAG(IS_ANDROID)
+// static
 bool TranslationManagerImpl::PassAcceptLanguagesCheck(
+    const std::string& accept_languages_str,
     const std::string& source_lang,
     const std::string& target_lang) {
   if (!base::FeatureList::IsEnabled(
@@ -87,31 +126,30 @@ bool TranslationManagerImpl::PassAcceptLanguagesCheck(
   // When the TranslationAPIAcceptLanguagesCheck feature is enabled, the
   // Translation API will fail if neither the source nor destination language is
   // in the AcceptLanguages. This is intended to mitigate privacy concerns.
-  CHECK(browser_context_);
-  const std::vector<std::string_view> accept_languages = base::SplitStringPiece(
-      static_cast<Profile*>(browser_context_.get())
-          ->GetPrefs()
-          ->GetString(language::prefs::kAcceptLanguages),
-      ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  const std::string normalized_source_lang =
-      l10n_util::GetLanguage(source_lang);
-  const std::string normalized_target_lang =
-      l10n_util::GetLanguage(target_lang);
+  const std::vector<std::string_view> accept_languages =
+      base::SplitStringPiece(accept_languages_str, ",", base::TRIM_WHITESPACE,
+                             base::SPLIT_WANT_NONEMPTY);
   // TODO(crbug.com/371899260): Implement better language code handling.
-  if (std::find_if(accept_languages.begin(), accept_languages.end(),
-                   [&](const std::string_view& lang) {
-                     return l10n_util::GetLanguage(lang) ==
-                            normalized_source_lang;
-                   }) != accept_languages.end()) {
-    return true;
+
+  // One of the source or the destination language must be in the user's accept
+  // language.
+  const bool source_lang_is_in_accept_langs =
+      IsInAcceptLanguage(accept_languages, source_lang);
+  const bool target_lang_is_in_accept_langs =
+      IsInAcceptLanguage(accept_languages, target_lang);
+  if (!(source_lang_is_in_accept_langs || target_lang_is_in_accept_langs)) {
+    return false;
   }
-  if (std::find_if(accept_languages.begin(), accept_languages.end(),
-                   [&](const std::string_view& lang) {
-                     return l10n_util::GetLanguage(lang) ==
-                            normalized_target_lang;
-                   }) != accept_languages.end()) {
-    return true;
+
+  // The other language must be a popular language.
+  if (!source_lang_is_in_accept_langs &&
+      !IsSupportedPopularLanguage(source_lang)) {
+    return false;
   }
-  return false;
+  if (!target_lang_is_in_accept_langs &&
+      !IsSupportedPopularLanguage(target_lang)) {
+    return false;
+  }
+  return true;
 }
 #endif  // !BUILDFLAG(IS_ANDROID)

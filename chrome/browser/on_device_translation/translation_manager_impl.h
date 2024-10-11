@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ON_DEVICE_TRANSLATION_TRANSLATION_MANAGER_IMPL_H_
 #define CHROME_BROWSER_ON_DEVICE_TRANSLATION_TRANSLATION_MANAGER_IMPL_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/document_user_data.h"
@@ -31,6 +32,7 @@ class TranslationManagerImpl
       mojo::PendingReceiver<blink::mojom::TranslationManager> receiver);
 
  private:
+  friend class TranslationManagerImplTest;
   friend class DocumentUserData<TranslationManagerImpl>;
   DOCUMENT_USER_DATA_KEY_DECL();
 
@@ -48,8 +50,9 @@ class TranslationManagerImpl
       CreateTranslatorCallback callback) override;
 
 #if !BUILDFLAG(IS_ANDROID)
-  bool PassAcceptLanguagesCheck(const std::string& source_lang,
-                                const std::string& target_lang);
+  static bool PassAcceptLanguagesCheck(const std::string& accept_languages_str,
+                                       const std::string& source_lang,
+                                       const std::string& target_lang);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   base::WeakPtr<content::BrowserContext> browser_context_;

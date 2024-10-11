@@ -7277,6 +7277,7 @@ test("unit_tests") {
       "../browser/notifications/muted_notification_handler_unittest.cc",
       "../browser/notifications/screen_capture_notification_blocker_unittest.cc",
       "../browser/on_device_translation/language_pack_util_unittest.cc",
+      "../browser/on_device_translation/translation_manager_impl_unittest.cc",
       "../browser/password_manager/generated_password_leak_detection_pref_unittest.cc",
       "../browser/platform_util_unittest.cc",
       "../browser/policy/policy_path_parser_unittest.cc",
