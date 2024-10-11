@@ -79,11 +79,12 @@ class GIN_EXPORT Arguments {
     return is_for_property_ ? 0 : info_for_function_->Length();
   }
 
-  template<typename T>
-  void Return(T val) {
+  template <typename T>
+  void Return(const T& val) {
     v8::Local<v8::Value> v8_value;
-    if (!TryConvertToV8(isolate_, val, &v8_value))
+    if (!TryConvertToV8(isolate_, val, &v8_value)) {
       return;
+    }
     (is_for_property_ ? info_for_property_->GetReturnValue()
                       : info_for_function_->GetReturnValue())
         .Set(v8_value);
