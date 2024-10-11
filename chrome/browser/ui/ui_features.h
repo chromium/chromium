@@ -231,10 +231,6 @@ extern const base::FeatureParam<double>
 // predictably and frequently.
 extern const base::FeatureParam<bool> KTabOrganizationTriggerDemoMode;
 
-BASE_DECLARE_FEATURE(kTabSearchChevronIcon);
-
-BASE_DECLARE_FEATURE(kTabSearchFeedback);
-
 BASE_DECLARE_FEATURE(kTabSearchRecentlyClosed);
 
 // Default number of recently closed entries to display by default when no
