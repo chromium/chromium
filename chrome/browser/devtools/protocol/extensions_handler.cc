@@ -56,6 +56,10 @@ bool CanAccessStorage(scoped_refptr<content::DevToolsAgentHost> host,
   // Allow a service worker to access extension storage if it corresponds to
   // the extension whose storage is being accessed.
   if (host->GetType() == content::DevToolsAgentHost::kTypeServiceWorker) {
+    if (!host->GetProcessHost()) {
+      return false;
+    }
+
     return extensions::storage_utils::CanRendererAccessExtensionStorage(
         *context, extension, storage_area, /*render_frame_host=*/nullptr,
         *host->GetProcessHost());
@@ -66,6 +70,11 @@ bool CanAccessStorage(scoped_refptr<content::DevToolsAgentHost> host,
   // extension injected into it.
   if (host->GetType() == content::DevToolsAgentHost::kTypePage ||
       host->GetType() == content::DevToolsAgentHost::kTypeFrame) {
+    if (!host->GetWebContents() ||
+        !host->GetWebContents()->GetPrimaryMainFrame()) {
+      return false;
+    }
+
     bool can_access_storage = false;
 
     // The content/ layer doesn't expose a way for us to get the frame
