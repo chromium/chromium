@@ -1179,7 +1179,7 @@ void VerdictCacheManager::
 
 void VerdictCacheManager::StopCleanUpTimerForTesting() {
   if (cleanup_timer_.IsRunning()) {
-    cleanup_timer_.AbandonAndStop();
+    cleanup_timer_.Stop();
   }
 }
 

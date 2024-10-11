@@ -60,7 +60,7 @@ void FCMHandler::StopListening() {
   if (IsListening()) {
     gcm_driver_->RemoveAppHandler(app_id_);
     fcm_registration_token_ = std::nullopt;
-    token_validation_timer_.AbandonAndStop();
+    token_validation_timer_.Stop();
     last_received_messages_.clear();
   }
 }

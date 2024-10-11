@@ -778,7 +778,7 @@ void HelpBubbleView::OnWidgetActivationChanged(views::Widget* widget,
   if (widget == GetWidget()) {
     if (active) {
       ++activate_count_;
-      auto_close_timer_.AbandonAndStop();
+      auto_close_timer_.Stop();
     } else {
       MaybeStartAutoCloseTimer();
     }

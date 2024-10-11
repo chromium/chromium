@@ -423,7 +423,7 @@ void PermissionRequestManager::PreemptAndRequeueCurrentRequest() {
   }
 
   // Because the order of the requests is changed, we should not preignore it.
-  preignore_timer_.AbandonAndStop();
+  preignore_timer_.Stop();
 
   requests_.clear();
 }
@@ -745,7 +745,7 @@ void PermissionRequestManager::FinalizeCurrentRequests() {
 
   // No need to execute the preignore logic as we canceling currently active
   // requests anyway.
-  preignore_timer_.AbandonAndStop();
+  preignore_timer_.Stop();
 
   requests_.clear();
   // We have no need to block preemption anymore.
@@ -1173,7 +1173,7 @@ void PermissionRequestManager::CurrentRequestsDecided(
 void PermissionRequestManager::CleanUpRequests() {
   // No need to execute the preignore logic as we canceling currently active
   // requests anyway.
-  preignore_timer_.AbandonAndStop();
+  preignore_timer_.Stop();
 
   for (; !pending_permission_requests_.IsEmpty();
        pending_permission_requests_.Pop()) {

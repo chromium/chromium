@@ -876,7 +876,7 @@ void AutofillAgent::DataListOptionsChanged(const WebInputElement& element) {
   }
 
   if (datalist_option_change_batch_timer_.IsRunning()) {
-    datalist_option_change_batch_timer_.AbandonAndStop();
+    datalist_option_change_batch_timer_.Stop();
   }
 
   datalist_option_change_batch_timer_.Start(
@@ -1599,7 +1599,7 @@ void AutofillAgent::SelectFieldOptionsChanged(
   }
 
   if (select_option_change_batch_timer_.IsRunning()) {
-    select_option_change_batch_timer_.AbandonAndStop();
+    select_option_change_batch_timer_.Stop();
   }
 
   select_option_change_batch_timer_.Start(

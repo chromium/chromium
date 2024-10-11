@@ -1001,7 +1001,7 @@ void FormFiller::ScheduleRefill(const FormData& form,
   // If a timer for the refill was already running, it means the form
   // changed again. Stop the timer and start it again.
   if (filling_context->on_refill_timer.IsRunning()) {
-    filling_context->on_refill_timer.AbandonAndStop();
+    filling_context->on_refill_timer.Stop();
   }
   // Start a new timer to trigger refill.
   filling_context->on_refill_timer.Start(
