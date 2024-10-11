@@ -2487,6 +2487,11 @@ const char kLensOverlayContextualSearchboxName[] =
 const char kLensOverlayContextualSearchboxDescription[] =
     "Enables contextual search box in the Lens overlay.";
 
+const char kLensOverlayImageContextMenuActionsName[] =
+    "Lens overlay image context menu actions";
+const char kLensOverlayImageContextMenuActionsDescription[] =
+    "Enables image context menu actions in the Lens overlay.";
+
 const char kLensOverlayTranslateButtonName[] = "Lens overlay translate button";
 const char kLensOverlayTranslateButtonDescription[] =
     "Enables translate button via the Lens overlay.";
