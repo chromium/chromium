@@ -12,6 +12,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
@@ -174,6 +175,7 @@ enum class LcppHintStatus {
 // would be sent to the renderer process upon navigation commit.
 void MaybeSetLCPPNavigationHint(content::NavigationHandle& navigation_handle,
                                 LoadingPredictor& predictor) {
+  TRACE_EVENT("navigation", "MaybeSetLCPPNavigationHint");
   base::ElapsedTimer timer;
   if (!blink::LcppEnabled() || !navigation_handle.IsInOutermostMainFrame() ||
       navigation_handle.IsSameDocument()) {
@@ -217,6 +219,8 @@ void MaybeSetLCPPNavigationHint(content::NavigationHandle& navigation_handle,
 void MaybePrewarmMainResourceAndSubresourcesOnNavigation(
     content::NavigationHandle& navigation_handle,
     LoadingPredictor& predictor) {
+  TRACE_EVENT("navigation",
+              "MaybePrewarmMainResourceAndSubresourcesOnNavigation");
   static const bool enabled =
       base::FeatureList::IsEnabled(blink::features::kHttpDiskCachePrewarming) &&
       blink::features::kHttpDiskCachePrewarmingTriggerOnNavigation.Get();
@@ -334,6 +338,7 @@ LoadingPredictorTabHelper::~LoadingPredictorTabHelper() = default;
 void LoadingPredictorTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  TRACE_EVENT("navigation", "LoadingPredictorTabHelper::DidStartNavigation");
 
   if (!predictor_)
     return;
@@ -369,6 +374,10 @@ void LoadingPredictorTabHelper::DidStartNavigation(
                                       web_contents())) {
     return;
   }
+
+  TRACE_EVENT("navigation",
+              "LoadingPredictorTabHelper::DidStartNavigation."
+              "OptimizationGuidePrediction");
 
   page_data.last_optimization_guide_prediction_ = OptimizationGuidePrediction();
   page_data.last_optimization_guide_prediction_->decision =

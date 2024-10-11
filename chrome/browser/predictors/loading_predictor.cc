@@ -9,6 +9,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/browser_process.h"
@@ -180,6 +181,8 @@ bool LoadingPredictor::PrepareForPageLoad(
     std::optional<PreconnectPrediction> preconnect_prediction) {
   if (shutdown_)
     return true;
+
+  TRACE_EVENT("loading", "LoadingPredictor::PrepareForPageLoad");
 
   // Suppresses network activities.
   static const bool kSuppressesLoadingPredictorOnSlowNetworkIsEnabled =
@@ -384,6 +387,8 @@ bool LoadingPredictor::OnNavigationStarted(
     base::TimeTicks creation_time) {
   if (shutdown_)
     return true;
+
+  TRACE_EVENT("loading", "LoadingPredictor::OnNavigationStarted");
 
   loading_data_collector()->RecordStartNavigation(
       navigation_id, ukm_source_id, main_frame_url, creation_time);
@@ -607,6 +612,8 @@ void LoadingPredictor::MaybePrewarmResources(
   if (shutdown_) {
     return;
   }
+
+  TRACE_EVENT("loading", "LoadingPredictor::MaybePrewarmResources");
 
   if (!top_frame_main_resource_url.is_valid() ||
       !top_frame_main_resource_url.SchemeIsHTTPOrHTTPS()) {
