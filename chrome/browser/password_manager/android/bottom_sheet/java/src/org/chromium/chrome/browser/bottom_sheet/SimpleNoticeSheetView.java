@@ -94,7 +94,7 @@ class SimpleNoticeSheetView implements BottomSheetContent {
     @Override
     public int getSheetContentDescriptionStringId() {
         // TODO(crbug.com/366158726): Make the string configurable.
-        return R.string.password_migration_warning_content_description;
+        return R.string.pwd_access_loss_warning_content_description;
     }
 
     @Override
@@ -107,13 +107,13 @@ class SimpleNoticeSheetView implements BottomSheetContent {
     @Override
     public int getSheetFullHeightAccessibilityStringId() {
         // TODO(crbug.com/366158726): Make the string configurable.
-        return R.string.password_migration_warning_content_description;
+        return R.string.pwd_access_loss_warning_content_description;
     }
 
     @Override
     public int getSheetClosedAccessibilityStringId() {
         // TODO(crbug.com/366158726): Make the string configurable.
-        return R.string.password_migration_warning_closed;
+        return R.string.pwd_access_loss_warning_closed;
     }
 
     @Override

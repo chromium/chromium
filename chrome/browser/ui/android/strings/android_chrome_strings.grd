@@ -904,6 +904,12 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_PASSWORD_MIGRATION_WARNING_CLOSED" desc="Accessibility string read when the password migration warning sheet closes." formatter_data="android_java">
         Update about password merge is closed
       </message>
+      <message name="IDS_PWD_ACCESS_LOSS_WARNING_CONTENT_DESCRIPTION" desc="Accessibility string read when the password access loss warning sheet opens.">
+        Google Password Manager update opened
+      </message>
+      <message name="IDS_PWD_ACCESS_LOSS_WARNING_CLOSED" desc="Accessibility string read when the password access loss warning sheet closes.">
+        Google Password Manager update closed
+      </message>
       <message name="IDS_PASSWORD_MIGRATION_WARNING_TURN_ON_SYNC" desc="The text that describes the option to start syncing that is offered in the password migration warning sheet.">
         Save the passwords on this device in your Google Account by turning on sync
       </message>
