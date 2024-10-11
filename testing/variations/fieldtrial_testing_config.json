@@ -19782,21 +19782,6 @@
             ]
         }
     ],
-    "RestartToGainAccessToKeychain": [
-        {
-            "platforms": [
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "RestartToGainAccessToKeychain"
-                    ]
-                }
-            ]
-        }
-    ],
     "RetainOmniboxOnFocus": [
         {
             "platforms": [
