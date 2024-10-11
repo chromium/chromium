@@ -1608,7 +1608,6 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
   }
 
   // MathML content.
-  // TODO(https://github.com/w3c/aria/issues/2353): consider aria-math.
   AddAttributeToList(ax::mojom::StringAttribute::kMathContent, "math",
                      attributes);
 

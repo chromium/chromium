@@ -567,14 +567,6 @@ const QualifiedName& DeprecatedAriaRowtextAttrName() {
   return aria_rowtext_attr;
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-const QualifiedName& MathMLAttrName() {
-  DEFINE_STATIC_LOCAL(QualifiedName, mathml_attr,
-                      (AtomicString("data-mathml")));
-  return mathml_attr;
-}
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
-
 }  // namespace
 
 int32_t ToAXMarkerType(DocumentMarker::MarkerType marker_type) {
@@ -2143,14 +2135,6 @@ void AXObject::SerializeMathContent(ui::AXNodeData* node_data) const {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   const Element* element = GetElement();
   if (!element) {
-    return;
-  }
-  // Currently uses non-standard ARIA attribute data-mathml.
-  // TODO(https://github.com/w3c/aria/issues/2353): Replace with ARIA feature.
-  if (const AtomicString& math_ml = AriaAttribute(MathMLAttrName())) {
-    TruncateAndAddStringAttribute(
-        node_data, ax::mojom::blink::StringAttribute::kMathContent, math_ml,
-        kMaxStaticTextLength);
     return;
   }
   if (node_data->role == ax::mojom::blink::Role::kMath ||
