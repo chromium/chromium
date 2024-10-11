@@ -66,18 +66,6 @@ template("absl_source_set") {
 
           if (!is_component_build) {
             visibility += [
-              # WebRTC binary to run PSNR and SSIM video quality analysis. It
-              # statically links absl and it is used by "browser_tests" when
-              # is_component_build=false but it cannot depend on the absl
-              # component because it uses absl/flags.
-              "//third_party/webrtc/rtc_tools:frame_analyzer",
-
-              # WebRTC binaries used by //:chromium_builder_asan. They both
-              # statically link absl (because they depend on absl/flags) and are
-              # used by Chromium only when is_component_build=false.
-              "//third_party/webrtc/rtc_tools:rtp_generator",
-              "//third_party/webrtc/rtc_tools:video_replay",
-
               # Not used by Chromium directly.
               "//chromecast/internal/*",
               "//libassistant/*",
