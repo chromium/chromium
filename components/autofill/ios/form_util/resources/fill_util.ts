@@ -50,6 +50,12 @@ declare interface FrameTokenWithPredecessor {
   predecessor: number;
 }
 
+/*
+ Name of the html attribute used for storing the remote frame token assigned to
+ the current html document.
+ */
+const REMOTE_FRAME_TOKEN_ATTRIBUTE = '__gChrome_remoteFrameToken';
+
 /**
  * Acquires the specified DOM `attribute` from the DOM `element` and returns
  * its lower-case value, or null if not present.
@@ -691,4 +697,18 @@ gCrWeb.fill.getUniqueID = function(element: any): string {
   }
 };
 
-export {AutofillFormFieldData, AutofillFormData, FrameTokenWithPredecessor};
+function setRemoteFrameToken(token: string) {
+  document.documentElement.setAttribute(REMOTE_FRAME_TOKEN_ATTRIBUTE, token);
+}
+
+function getRemoteFrameToken(): string|null {
+  return document.documentElement.getAttribute(REMOTE_FRAME_TOKEN_ATTRIBUTE);
+}
+
+export {
+  AutofillFormFieldData,
+  AutofillFormData,
+  FrameTokenWithPredecessor,
+  setRemoteFrameToken,
+  getRemoteFrameToken,
+};

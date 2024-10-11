@@ -316,6 +316,7 @@ ios_web_view_deps = [
   "//components/autofill/ios/browser:util",
   "//components/autofill/ios/form_util",
   "//components/autofill/ios/form_util:form_handler_feature",
+  "//components/autofill/ios/form_util:programmatic_form_submission_handler_feature",
   "//components/browser_sync",
   "//components/component_updater",
   "//components/component_updater/installer_policies",
@@ -432,7 +433,10 @@ source_set("web_view_sources") {
   sources += ios_web_view_sources
 
   public_deps = ios_web_view_deps
-  deps = [ "//components/version_info:channel" ]
+  deps = [
+    "//components/autofill/ios/common",
+    "//components/version_info:channel",
+  ]
   configs += [ ":config" ]
 }
 

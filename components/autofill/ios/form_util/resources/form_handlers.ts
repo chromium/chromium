@@ -15,6 +15,13 @@ import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
+ * The name of the message handler in the browser layer which will process
+ * messages sent by this script. This corresponds to
+ * FormHandlersJavaScriptFeature.
+ */
+const NATIVE_MESSAGE_HANDLER = 'FormHandlersMessage';
+
+/**
  * Metadata surrounding the scheduled batch of form messages.
  */
 interface FormMsgBatchMetadata {
@@ -63,23 +70,11 @@ let formMsgBatchMetadata: FormMsgBatchMetadata = {dropCount: 0};
 function sendMessageOnNextLoop(mesg: object): void {
   if (!messageToSend) {
     setTimeout(function() {
-      sendWebKitMessage('FormHandlersMessage', messageToSend!);
+      sendWebKitMessage(NATIVE_MESSAGE_HANDLER, messageToSend!);
       messageToSend = null;
     }, 0);
   }
   messageToSend = mesg;
-}
-
-/**
- * @param originalURL A string containing a URL (absolute, relative...)
- * @return A string containing a full URL (absolute with scheme)
- */
-function getFullyQualifiedUrl(originalURL: string): string {
-  // A dummy anchor (never added to the document) is used to obtain the
-  // fully-qualified URL of `originalURL`.
-  const anchor = document.createElement('a');
-  anchor.href = originalURL;
-  return anchor.href;
 }
 
 /**
@@ -171,20 +166,9 @@ function submitHandler(evt: Event): void {
     return;
   }
 
-  formSubmitted(evt.target as HTMLFormElement);
-}
-
-// Send the form data to the browser.
-function formSubmitted(form: HTMLFormElement): void {
-  // Default action is to re-submit to same page.
-  const action = form.getAttribute('action') || document.location.href;
-  sendWebKitMessage('FormHandlersMessage', {
-    'command': 'form.submit',
-    'frameID': gCrWeb.message.getFrameId(),
-    'formName': gCrWeb.form.getFormIdentifier(form),
-    'href': getFullyQualifiedUrl(action),
-    'formData': gCrWeb.fill.autofillSubmissionData(form),
-  });
+  gCrWeb.form.formSubmitted(
+      evt.target as HTMLFormElement,
+      /* messageHandler= */ NATIVE_MESSAGE_HANDLER);
 }
 
 /**
@@ -225,7 +209,7 @@ function sendFormMutationMessagesAfterDelay(
         // Reset the metadata for the next batch.
         formMsgBatchMetadata = {dropCount: 0};
       }
-      sendWebKitMessage('FormHandlersMessage', msg);
+      sendWebKitMessage(NATIVE_MESSAGE_HANDLER, msg);
     }, delay * (1 + i));
   });
   return true;
@@ -267,18 +251,24 @@ function attachListeners(): void {
    */
   window.addEventListener('message', processInboundMessage);
 
-  // Per specification, SubmitEvent is not triggered when calling form.submit().
-  // Hook the method to call the handler in that case.
+  // Per specification, SubmitEvent is not triggered when calling
+  // form.submit(). Hook the method to call the handler in that case.
   if (formSubmitOriginalFunction === null) {
     formSubmitOriginalFunction = HTMLFormElement.prototype.submit;
     HTMLFormElement.prototype.submit = function() {
-      // If an error happens in formSubmitted, this will cancel the form
-      // submission which can lead to usability issue for the user.
-      // Put the formSubmitted in a try catch to ensure the original function
-      // is always called.
-      try {
-        formSubmitted(this);
-      } catch (e) {
+      if (!gCrWeb.autofill_form_features
+               .isAutofillIsolatedContentWorldEnabled()) {
+        // If an error happens in formSubmitted, this will cancel the form
+        // submission which can lead to usability issue for the user.
+        // Put the formSubmitted in a try catch to ensure the original function
+        // is always called.
+
+        try {
+          gCrWeb.form.formSubmitted(
+              this,
+              /* messageHandler= */ NATIVE_MESSAGE_HANDLER);
+        } catch (e) {
+        }
       }
       formSubmitOriginalFunction!.call(this);
     };

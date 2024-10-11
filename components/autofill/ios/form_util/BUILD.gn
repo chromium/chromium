@@ -144,7 +144,8 @@ optimize_ts("form_js") {
   sources = [ "resources/form.ts" ]
 
   deps = [
-    "//components/autofill/ios/form_util:fill_js_namespace",
+    ":fill_js_dependencies",
+    ":fill_js_namespace",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
   ]
@@ -164,6 +165,7 @@ optimize_ts("register_remote_frame_token_js") {
 
   deps = [
     ":child_frame_registration_ts_lib",
+    ":fill_js_dependencies",
     "//ios/web/public/js_messaging:frame_id",
   ]
 }
@@ -191,6 +193,30 @@ optimize_ts("autofill_renderer_id_js") {
     ":fill_js_namespace",
     "//ios/web/public/js_messaging:gcrweb",
   ]
+}
+
+source_set("programmatic_form_submission_handler_feature") {
+  sources = [
+    "programmatic_form_submission_handler_java_script_feature.h",
+    "programmatic_form_submission_handler_java_script_feature.mm",
+  ]
+
+  deps = [
+    ":form_util",
+    ":form_util_feature",
+    ":programatic_form_submission_js",
+    "//base",
+    "//components/autofill/ios/common",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/js_messaging:content_world_header",
+  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+optimize_ts("programatic_form_submission_js") {
+  sources = [ "resources/programmatic_form_submission_handler.ts" ]
+
+  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
 }
 
 source_set("test_support") {

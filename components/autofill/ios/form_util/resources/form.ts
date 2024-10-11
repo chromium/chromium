@@ -7,8 +7,9 @@
  */
 
 import {RENDERER_ID_NOT_SET} from '//components/autofill/ios/form_util/resources/fill_constants.js';
+import {getRemoteFrameToken} from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
-import {trim} from '//ios/web/public/js_messaging/resources/utils.js';
+import {sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
  * Prefix used in references to form elements that have no 'id' or 'name'
@@ -307,6 +308,38 @@ function fieldWasEditedByUser(element: Element) {
   return wasEditedByUser.get(element);
 }
 
+/**
+ * @param originalURL A string containing a URL (absolute, relative...)
+ * @return A string containing a full URL (absolute with scheme)
+ */
+function getFullyQualifiedUrl(originalURL: string): string {
+  // A dummy anchor (never added to the document) is used to obtain the
+  // fully-qualified URL of `originalURL`.
+  const anchor = document.createElement('a');
+  anchor.href = originalURL;
+  return anchor.href;
+}
+
+// Send the form data to the browser.
+function formSubmitted(
+    form: HTMLFormElement, messageHandler: string,
+    includeRemoteFrameToken: boolean = false): void {
+  // Default URL for action is the document's URL.
+  const action = form.getAttribute('action') || document.URL;
+
+  const message = {
+    command: 'form.submit',
+    frameID: gCrWeb.message.getFrameId(),
+    formName: gCrWeb.form.getFormIdentifier(form),
+    href: getFullyQualifiedUrl(action),
+    formData: gCrWeb.fill.autofillSubmissionData(form),
+    remoteFrameToken: includeRemoteFrameToken ? getRemoteFrameToken() :
+                                                undefined,
+  };
+
+  sendWebKitMessage(messageHandler, message);
+}
+
 gCrWeb.form = {
   wasEditedByUser,
   isFormControlElement,
@@ -318,4 +351,5 @@ gCrWeb.form = {
   getFormElementFromIdentifier,
   getFormElementFromRendererId,
   fieldWasEditedByUser,
+  formSubmitted,
 };

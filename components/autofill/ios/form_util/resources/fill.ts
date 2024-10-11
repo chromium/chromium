@@ -422,10 +422,12 @@ gCrWeb.fill.webFormElementToFormData = function(
 
   const controlElements = gCrWeb.form.getFormControlElements(formElement);
 
+  // TODO(crbug.com/372688163): Handle page world submissions of forms
+  // containing iframes.
   const iframeElements =
-    gCrWeb.autofill_form_features.isAutofillAcrossIframesEnabled() ?
-    gCrWeb.form.getIframeElements(formElement) :
-    [];
+      gCrWeb.autofill_form_features?.isAutofillAcrossIframesEnabled() ?
+      gCrWeb.form.getIframeElements(formElement) :
+      [];
 
   return formOrFieldsetsToFormData(
       formElement, formControlElement, /*fieldsets=*/[], controlElements,
