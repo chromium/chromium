@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_relation_cache.h"
 
 #include "base/memory/ptr_util.h"
-#include "third_party/blink/renderer/core/aom/accessible_node.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/shadow_including_tree_order_traversal.h"
 #include "third_party/blink/renderer/core/html/forms/html_label_element.h"
@@ -112,6 +111,9 @@ void AXRelationCache::CheckRelationsCached(Element& element) {
   }
   CheckElementWasProcessed(element);
 
+  // TODO(crbug.com/41469336): Track reverse relations set via explicitly
+  // set attr-elements on element or element internals.
+
   // Check aria-owns.
   Vector<AtomicString> owns_ids;
   IdsFromAttribute(element, owns_ids, html_names::kAriaOwnsAttr);
@@ -143,9 +145,8 @@ void AXRelationCache::CheckRelationsCached(Element& element) {
   }
 
   // Check aria-activedescendant.
-  if (auto activedescendant_id =
-          AccessibleNode::GetPropertyOrARIAAttributeValue(
-              &element, AOMRelationProperty::kActiveDescendant)) {
+  if (auto& activedescendant_id = AXObject::AriaAttribute(
+          element, html_names::kAriaActivedescendantAttr)) {
     DCHECK(id_attr_to_active_descendant_mapping_.Contains(activedescendant_id))
         << element << " with aria-activedescendant=" << activedescendant_id
         << " and DOMNodeId=" << DOMNodeIds::ExistingIdForNode(&element)
@@ -290,7 +291,8 @@ Vector<AtomicString> AXRelationCache::GetTextRelationIds(
 }
 
 // Update reverse relation map, where relation_source is related to target_ids.
-// TODO Support when HasExplicitlySetAttrAssociatedElement() == true.
+// TODO(crbug.com/41469336): Track reverse relations set via explicitly set
+// attr-elements on element or element internals.
 void AXRelationCache::UpdateReverseRelations(
     HashMap<AtomicString, HashSet<DOMNodeId>>& id_attr_to_node_map,
     Node* relation_source,
@@ -308,6 +310,8 @@ void AXRelationCache::UpdateReverseTextRelations(Element& relation_source) {
                              GetTextRelationIds(relation_source));
 }
 
+// TODO(crbug.com/41469336): Track reverse relations set via explicitly set
+// attr-elements on element or element internals.
 void AXRelationCache::UpdateReverseTextRelations(
     Element& relation_source,
     const QualifiedName& attr_name) {
@@ -334,6 +338,8 @@ void AXRelationCache::UpdateReverseTextRelations(
   }
 }
 
+// TODO(crbug.com/41469336): Track reverse relations set via explicitly set
+// attr-elements on element or element internals.
 void AXRelationCache::UpdateReverseTextRelations(
     Element& relation_source,
     const Vector<AtomicString>& target_ids) {
@@ -374,8 +380,8 @@ void AXRelationCache::UpdateReverseTextRelations(
 
 void AXRelationCache::UpdateReverseActiveDescendantRelations(
     Element& relation_source) {
-  const AtomicString& id = AccessibleNode::GetPropertyOrARIAAttributeValue(
-      &relation_source, AOMRelationProperty::kActiveDescendant);
+  const AtomicString& id = AXObject::AriaAttribute(
+      relation_source, html_names::kAriaActivedescendantAttr);
   if (!id) {
     return;
   }

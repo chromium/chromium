@@ -20,7 +20,6 @@
 
 #include "third_party/blink/renderer/modules/accessibility/ax_progress_indicator.h"
 
-#include "third_party/blink/renderer/core/aom/accessible_node.h"
 #include "third_party/blink/renderer/core/html/html_progress_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
