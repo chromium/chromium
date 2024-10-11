@@ -29,3 +29,13 @@ void ChooseFileController::SubmitSelection(NSArray<NSURL*>* file_urls,
 bool ChooseFileController::HasSubmittedSelection() const {
   return selection_submitted_;
 }
+
+void ChooseFileController::Abort() {
+  if (!HasSubmittedSelection() && abort_handler_) {
+    std::move(abort_handler_).Run();
+  }
+}
+
+void ChooseFileController::SetAbortHandler(base::OnceClosure abort_handler) {
+  abort_handler_ = std::move(abort_handler);
+}

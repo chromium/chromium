@@ -47,17 +47,29 @@ void ChooseFileTabHelper::StopChoosingFiles(NSArray<NSURL*>* file_urls,
   controller_.reset();
 }
 
+void ChooseFileTabHelper::AbortSelection() {
+  if (IsChoosingFiles()) {
+    controller_->Abort();
+    controller_.reset();
+  }
+}
+
 #pragma mark - web::WebStateObserver
 
 void ChooseFileTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  if (IsChoosingFiles() && !navigation_context->IsSameDocument()) {
-    StopChoosingFiles();
+  if (!navigation_context->IsSameDocument()) {
+    AbortSelection();
   }
 }
 
+void ChooseFileTabHelper::WasHidden(web::WebState* web_state) {
+  AbortSelection();
+}
+
 void ChooseFileTabHelper::WebStateDestroyed(web::WebState* web_state) {
+  AbortSelection();
   DeleteTempChooseFileDirectoryForTab(web_state->GetUniqueIdentifier());
   observation_.Reset();
 }

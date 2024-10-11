@@ -39,12 +39,16 @@ class ChooseFileTabHelper
   // web::WebStateObserver implementation.
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) override;
+  void WasHidden(web::WebState* web_state) override;
   void WebStateDestroyed(web::WebState* web_state) override;
 
  private:
   explicit ChooseFileTabHelper(web::WebState* web_state);
   friend class web::LazyWebStateUserData<ChooseFileTabHelper>;
   WEB_STATE_USER_DATA_KEY_DECL();
+
+  // Abort the current selection flow.
+  void AbortSelection();
 
   // When there is a file selection ongoing in the WebState, this controller can
   // be used to keep track of the file selection, submit files, or cancel.
