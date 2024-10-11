@@ -131,19 +131,9 @@ _OS_SPECIFIC_FILTER['mac'] = [
     # Flaky: https://crbug.com/333826980 (fails in 80% of cases on mac-arm64)
     # Error message: Timed out receiving message from renderer: 10.000
     'ChromeDriverTest.testTakeLargeElementViewportScreenshot',
-    'ChromeDriverSiteIsolation.testCanClickOOPIF',
     # Flaky: https://crbug.com/1496826.
     'PureBidiTest.testParallelConnectionIsClosedOnSessionEnd',
     'PureBidiTest.testSessionCommandInEndedSession',
-    # Flaky: https://crbug.com/1481915
-    'ChromeDriverTest.testExecuteScriptStaleElement1',
-    'ChromeDriverTest.testExecuteScriptStaleElement2',
-    # Flaky: https://crbug.com/1486474
-    'ChromeDriverTest.testFindChildElementStaleElement2',
-    # Flaky: https://crbug.com/1486604
-    'ChromeDriverTest.testFindChildElementsStaleElement2',
-    # Flaky: https://crbug.com/1486520
-    'ChromeDriverTest.testClickStaleElement',
     # https://issues.chromium.org/issues/42323658
     # The following tests fail on Mac due to focus issues
     'ChromeDriverSecureContextTest.testCreateVirtualSensorWithMaximumFrequency',
