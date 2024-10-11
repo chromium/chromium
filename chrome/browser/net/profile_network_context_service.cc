@@ -488,6 +488,12 @@ void ProfileNetworkContextService::RegisterProfilePrefs(
   // Include user added platform certs by default.
   registry->RegisterBooleanPref(prefs::kCAPlatformIntegrationEnabled, true);
 #endif
+#if BUILDFLAG(IS_CHROMEOS)
+  registry->RegisterIntegerPref(
+      prefs::kNSSCertsMigratedToServerCertDb,
+      static_cast<int>(net::ServerCertificateDatabaseService::
+                           NSSMigrationResultPref::kNotMigrated));
+#endif
 }
 
 // static
@@ -774,10 +780,17 @@ void ProfileNetworkContextService::UpdateAdditionalCertificates() {
         net::ServerCertificateDatabaseServiceFactory::GetForBrowserContext(
             profile_);
 
+#if BUILDFLAG(IS_CHROMEOS)
+    cert_db_service->GetAllCertificatesMigrateFromNSSFirstIfNeeded(
+        base::BindOnce(&ProfileNetworkContextService::
+                           UpdateAdditionalCertificatesWithUserAddedCerts,
+                       base::Unretained(this)));
+#else
     cert_db_service->GetAllCertificates(
         base::BindOnce(&ProfileNetworkContextService::
                            UpdateAdditionalCertificatesWithUserAddedCerts,
                        base::Unretained(this)));
+#endif
   } else {
     profile_->ForEachLoadedStoragePartition(
         [&](content::StoragePartition* storage_partition) {
@@ -1415,7 +1428,12 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
       // public slot. Leaving them empty will make cert verifier ignore the
       // public slot. This is done mainly because Chrome sometimes fails to
       // load the public slot and has to crash because of that.
-      if (!chromeos::IsKioskSession()) {
+      // If the kEnableCertManagementUIV2Write flag is enabled, then NSS certs
+      // will be migrated to the chrome user certificate database, and the NSS
+      // user cert database should no longer be used by the verifier.
+      if (!base::FeatureList::IsEnabled(
+              features::kEnableCertManagementUIV2Write) &&
+          !chromeos::IsKioskSession()) {
         cert_verifier_creation_params->username_hash = user->username_hash();
         cert_verifier_creation_params->nss_path = profile_->GetPath();
       }

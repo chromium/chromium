@@ -751,6 +751,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.CertVerifier.NSSCertMigrationQueuedRequestsWhenFinished"
+    units="requests" expires_after="2025-10-01">
+  <owner>mattm@chromium.org</owner>
+  <owner>hchao@chromium.org</owner>
+  <summary>
+    Number of queued requests to load certificates from the Server Certificate
+    Database when the NSS certificate migration completes.
+
+    This only applies on ChromeOS when then kEnableCertManagementUIV2Write flag
+    is enabled, and is only recorded when migration is required (once per
+    profile, on the first time the profile is loaded after the feature flag is
+    flipped to true).
+  </summary>
+</histogram>
+
+<histogram name="Net.CertVerifier.NSSCertMigrationResult"
+    units="NetCertVerifierNSSCertMigrationResult" expires_after="2025-10-01">
+  <owner>mattm@chromium.org</owner>
+  <owner>hchao@chromium.org</owner>
+  <summary>
+    Records the result of migrating certificates from the user's NSS database
+    into the ServerCertificateDatabase.
+
+    This only applies on ChromeOS when then kEnableCertManagementUIV2Write flag
+    is enabled, and is only recorded when migration is required (once per
+    profile, on the first time the profile is loaded after the feature flag is
+    flipped to true).
+  </summary>
+</histogram>
+
 <histogram name="Net.CertVerifier.QueuedRequestsWhenReady" units="requests"
     expires_after="2025-10-01">
   <owner>hchao@chromium.org</owner>

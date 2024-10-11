@@ -11,10 +11,12 @@
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/ssl/ssl_browsertest_util.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_constants.h"
+#include "components/security_state/core/security_state.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -47,6 +49,17 @@
 #include "crypto/sha2.h"
 #include "third_party/boringssl/src/pki/trust_store.h"
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/net/nss_service.h"
+#include "chrome/browser/net/nss_service_factory.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "net/cert/cert_type.h"
+#include "net/cert/nss_cert_database.h"
+#include "net/cert/x509_util_nss.h"
+#endif
 
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
 class CertVerifierServiceChromeRootStoreOptionalTest
@@ -516,5 +529,168 @@ IN_PROC_BROWSER_TEST_F(CertVerifierUserSettingsTest,
 // TODO(crbug.com/40928765): add browser test for TRUSTED_ANCHOR_AND_LEAF cert
 // getting returned from ServerCertificateDatabase; doing this with
 // EmbeddedTestServer will require modifications to EmbeddedTestServer.
+
+#if BUILDFLAG(IS_CHROMEOS)
+class CertVerifierNSSMigrationTest : public PlatformBrowserTest {
+ public:
+  CertVerifierNSSMigrationTest() {
+    const std::vector<base::test::FeatureRef> feature_flags = {
+        features::kEnableCertManagementUIV2,
+        features::kEnableCertManagementUIV2Write};
+    if (GetTestPreCount() == 2) {
+      feature_list_.InitWithFeatures(/*enabled_features=*/{},
+                                     /*disabled_features=*/feature_flags);
+    } else {
+      feature_list_.InitWithFeatures(/*enabled_features=*/feature_flags,
+                                     /*disabled_features=*/{});
+    }
+  }
+
+ protected:
+  base::HistogramTester histogram_tester_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Setup the NSS database before doing migration. The PRE_PRE_ test is run with
+// the feature flag disabled so migration will not be attempted yet.
+IN_PROC_BROWSER_TEST_F(CertVerifierNSSMigrationTest,
+                       PRE_PRE_TestNSSCertMigration) {
+  // PRE_ test and main test don't share state, so there isn't an easy way use a
+  // generated EmbeddedTestServer cert in the PRE_ test and then run an
+  // EmbeddedTestServer with the same generated cert in the main test. Therefore
+  // we test the migration by importing the static test root and disabling
+  // TestRootCerts.
+  // Import test root as trusted in the NSS database.
+  scoped_refptr<net::X509Certificate> test_root =
+      net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
+  ASSERT_TRUE(test_root);
+  base::test::TestFuture<net::NSSCertDatabase*> nss_waiter;
+  NssServiceFactory::GetForContext(browser()->profile())
+      ->UnsafelyGetNSSCertDatabaseForTesting(nss_waiter.GetCallback());
+  net::NSSCertDatabase* nss_db = nss_waiter.Get();
+  net::NSSCertDatabase::ImportCertFailureList not_imported;
+  EXPECT_TRUE(nss_db->ImportCACerts(
+      net::x509_util::CreateCERTCertificateListFromX509Certificate(
+          test_root.get()),
+      net::NSSCertDatabase::TRUSTED_SSL, &not_imported));
+  EXPECT_TRUE(not_imported.empty());
+
+  // Migration pref should be false.
+  EXPECT_EQ(browser()->profile()->GetPrefs()->GetInteger(
+                prefs::kNSSCertsMigratedToServerCertDb),
+            static_cast<int>(net::ServerCertificateDatabaseService::
+                                 NSSMigrationResultPref::kNotMigrated));
+  histogram_tester_.ExpectTotalCount("Net.CertVerifier.NSSCertMigrationResult",
+                                     0);
+  histogram_tester_.ExpectTotalCount(
+      "Net.CertVerifier.NSSCertMigrationQueuedRequestsWhenFinished", 0);
+}
+
+// Tests that when the feature flag is set, NSS cert migration is done on
+// initialization and that the verification is blocked on the migration
+// completing.
+IN_PROC_BROWSER_TEST_F(CertVerifierNSSMigrationTest, PRE_TestNSSCertMigration) {
+  net::EmbeddedTestServer https_test_server{
+      net::EmbeddedTestServer::TYPE_HTTPS};
+
+  https_test_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_test_server.Start());
+
+  // Clear test roots so that cert validation only happens with
+  // what's in the relevant root store.
+  net::TestRootCerts::GetInstance()->Clear();
+  // Loading the page should succeed since the root was trusted through the
+  // server cert db.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server.GetURL("/simple.html")));
+  // TODO(https://crbug.com/40928765): This should not be
+  // SECURE_WITH_POLICY_INSTALLED_CERT, it should just be SECURE. The
+  // additional certs provided to the verifier need some additional flag to
+  // indicate which ones are policy provided and which are user added.
+  ssl_test_util::CheckSecurityState(
+      chrome_test_utils::GetActiveWebContents(this),
+      ssl_test_util::CertError::NONE,
+      security_state::SECURE_WITH_POLICY_INSTALLED_CERT,
+      ssl_test_util::AuthState::NONE);
+
+  // Migration pref should be true now.
+  EXPECT_EQ(
+      browser()->profile()->GetPrefs()->GetInteger(
+          prefs::kNSSCertsMigratedToServerCertDb),
+      static_cast<int>(net::ServerCertificateDatabaseService::
+                           NSSMigrationResultPref::kMigratedSuccessfully));
+
+  // Migration histograms should have been recorded. ExpectUniqueSample is not
+  // used here as the ChromeOS browsertests seem to create multiple users so
+  // this histogram may be recorded multiple times (the other samples would be
+  // kEmpty).
+  histogram_tester_.ExpectBucketCount("Net.CertVerifier.NSSCertMigrationResult",
+                                      net::ServerCertificateDatabaseService::
+                                          NSSMigrationResultHistogram::kSuccess,
+                                      1);
+  // The Net.CertVerifier.NSSCertMigrationQueuedRequestsWhenFinished histogram
+  // should have been recorded too, but it may not be possible to predict what
+  // the buckets will be, so only verify that it was recorded at all.
+  EXPECT_GT(histogram_tester_.GetTotalSum(
+                "Net.CertVerifier.NSSCertMigrationQueuedRequestsWhenFinished"),
+            0);
+
+  // Set root cert in NSS to distrusted. This ensures that when the next phase
+  // of the test runs it's actually the trust from the server cert db causing
+  // the connection to succeed and not still using the NSS trust, and also
+  // tests that the migration is not run again.
+  scoped_refptr<net::X509Certificate> test_root =
+      net::ImportCertFromFile(net::EmbeddedTestServer::GetRootCertPemPath());
+  ASSERT_TRUE(test_root);
+  base::test::TestFuture<net::NSSCertDatabase*> nss_waiter;
+  NssServiceFactory::GetForContext(browser()->profile())
+      ->UnsafelyGetNSSCertDatabaseForTesting(nss_waiter.GetCallback());
+  net::NSSCertDatabase* nss_db = nss_waiter.Get();
+  nss_db->SetCertTrust(
+      net::x509_util::CreateCERTCertificateFromX509Certificate(test_root.get())
+          .get(),
+      net::CertType::CA_CERT, net::NSSCertDatabase::DISTRUSTED_SSL);
+}
+
+// Tests that after migration is done the NSS user db is no longer depended on.
+IN_PROC_BROWSER_TEST_F(CertVerifierNSSMigrationTest, TestNSSCertMigration) {
+  // Migration pref should already be true.
+  EXPECT_EQ(
+      browser()->profile()->GetPrefs()->GetInteger(
+          prefs::kNSSCertsMigratedToServerCertDb),
+      static_cast<int>(net::ServerCertificateDatabaseService::
+                           NSSMigrationResultPref::kMigratedSuccessfully));
+
+  net::EmbeddedTestServer https_test_server{
+      net::EmbeddedTestServer::TYPE_HTTPS};
+  https_test_server.ServeFilesFromSourceDirectory("chrome/test/data");
+  ASSERT_TRUE(https_test_server.Start());
+
+  // Clear test roots so that cert validation only happens with
+  // what's in the relevant root store.
+  net::TestRootCerts::GetInstance()->Clear();
+  // Loading the page should succeed since the root was trusted through the
+  // server cert db. The distrust set in NSS should be ignored as NSS user db
+  // is no longer used.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_test_server.GetURL("/simple.html")));
+  // TODO(https://crbug.com/40928765): This should not be
+  // SECURE_WITH_POLICY_INSTALLED_CERT, it should just be SECURE. The
+  // additional certs provided to the verifier need some additional flag to
+  // indicate which ones are policy provided and which are user added.
+  ssl_test_util::CheckSecurityState(
+      chrome_test_utils::GetActiveWebContents(this),
+      ssl_test_util::CertError::NONE,
+      security_state::SECURE_WITH_POLICY_INSTALLED_CERT,
+      ssl_test_util::AuthState::NONE);
+
+  histogram_tester_.ExpectTotalCount("Net.CertVerifier.NSSCertMigrationResult",
+                                     0);
+  histogram_tester_.ExpectTotalCount(
+      "Net.CertVerifier.NSSCertMigrationQueuedRequestsWhenFinished", 0);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)

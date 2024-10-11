@@ -4300,6 +4300,14 @@ inline constexpr char kCAPlatformIntegrationEnabled[] =
     "certificates.ca_platform_integration_enabled";
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Integer that indicates whether the user's NSS certificates have been
+// migrated to ServerCertificateDatabase. The value is a
+// ServerCertificateDatabaseService::NSSMigrationResultPref enum.
+inline constexpr char kNSSCertsMigratedToServerCertDb[] =
+    "certificates.nss_certs_migrated_to_server_cert_db";
+#endif
+
 // Integer value controlling whether to show any enterprise badging on a managed
 // profile.
 // - 0: Hide all badging
