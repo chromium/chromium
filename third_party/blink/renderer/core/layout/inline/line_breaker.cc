@@ -1813,7 +1813,9 @@ bool LineBreaker::HandleTextForFastMinContent(InlineItemResult* item_result,
       }
     }
     DCHECK_EQ(should_break_at_first_opportunity,
-              is_at_mid_word || has_cloned_box_decorations_);
+              is_at_mid_word ||
+                  (has_cloned_box_decorations_ &&
+                   cloned_box_decorations_initial_size_ > LayoutUnit()));
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
   }
 
