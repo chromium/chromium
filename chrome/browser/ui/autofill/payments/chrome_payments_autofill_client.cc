@@ -8,10 +8,12 @@
 #include <vector>
 
 #include "base/check_deref.h"
+#include "chrome/browser/android/preferences/autofill/settings_navigation_helper.h"
 #include "chrome/browser/autofill/autofill_offer_manager_factory.h"
 #include "chrome/browser/autofill/iban_manager_factory.h"
 #include "chrome/browser/autofill/merchant_promo_code_manager_factory.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
+#include "chrome/browser/keyboard_accessory/android/manual_filling_controller_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
@@ -365,11 +367,11 @@ void ChromePaymentsAutofillClient::CreditCardUploadCompleted(
       if (on_confirmation_closed_callback) {
         client_->GetAutofillSnackbarController()->ShowWithDurationAndCallback(
             AutofillSnackbarType::kSaveCardSuccess,
-            kSaveCardConfirmationSnackbarDuration,
+            kSaveCardConfirmationSnackbarDuration, base::DoNothing(),
             std::move(on_confirmation_closed_callback));
       } else {
         client_->GetAutofillSnackbarController()->Show(
-            AutofillSnackbarType::kSaveCardSuccess);
+            AutofillSnackbarType::kSaveCardSuccess, base::DoNothing());
       }
     } else if (result != PaymentsRpcResult::kClientSideTimeout) {
       GetAutofillMessageController().Show(
@@ -433,7 +435,7 @@ void ChromePaymentsAutofillClient::VirtualCardEnrollCompleted(
 #if BUILDFLAG(IS_ANDROID)
   if (result == PaymentsRpcResult::kSuccess) {
     client_->GetAutofillSnackbarController()->Show(
-        AutofillSnackbarType::kVirtualCardEnrollSuccess);
+        AutofillSnackbarType::kVirtualCardEnrollSuccess, base::DoNothing());
   } else if (controller && result != PaymentsRpcResult::kClientSideTimeout) {
     GetAutofillMessageController().Show(
         AutofillMessageModel::CreateForVirtualCardEnrollFailure(
@@ -448,7 +450,17 @@ void ChromePaymentsAutofillClient::OnVirtualCardDataAvailable(
     const VirtualCardManualFallbackBubbleOptions& options) {
 #if BUILDFLAG(IS_ANDROID)
   client_->GetAutofillSnackbarController()->Show(
-      AutofillSnackbarType::kVirtualCard);
+      AutofillSnackbarType::kVirtualCard,
+      base::BindOnce(
+          [](base::WeakPtr<content::WebContents> contents) {
+            if (!contents) {
+              return;
+            }
+            ManualFillingControllerImpl::GetOrCreate(contents.get())
+                ->ShowAccessorySheetTab(
+                    autofill::AccessoryTabType::CREDIT_CARDS);
+          },
+          web_contents()->GetWeakPtr()));
 #else
   VirtualCardManualFallbackBubbleControllerImpl::CreateForWebContents(
       web_contents());
@@ -739,7 +751,17 @@ IbanAccessManager* ChromePaymentsAutofillClient::GetIbanAccessManager() {
 void ChromePaymentsAutofillClient::ShowMandatoryReauthOptInConfirmation() {
 #if BUILDFLAG(IS_ANDROID)
   client_->GetAutofillSnackbarController()->Show(
-      AutofillSnackbarType::kMandatoryReauth);
+      AutofillSnackbarType::kMandatoryReauth,
+      base::BindOnce(
+          [](base::WeakPtr<content::WebContents> contents) {
+            if (contents) {
+              return;
+            }
+            // For mandatory reauth snackbar, we will show Android credit card
+            // settings page.
+            ShowAutofillCreditCardSettings(contents.get());
+          },
+          web_contents()->GetWeakPtr()));
 #else
   MandatoryReauthBubbleControllerImpl::CreateForWebContents(web_contents());
   // TODO(crbug.com/4555994): Pass in the bubble type as a parameter so we

@@ -8,6 +8,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "chrome/browser/autofill/mock_manual_filling_view.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller_impl.h"
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_address_accessory_controller.h"
@@ -45,20 +46,7 @@ class AutofillSnackbarControllerImplTest
     return controller_;
   }
 
-  void ShowWithOnDismissCallback(AutofillSnackbarType autofill_snackbar_type) {
-    controller()->ShowWithDurationAndCallback(
-        autofill_snackbar_type,
-        AutofillSnackbarControllerImpl::kDefaultSnackbarDuration,
-        base::BindOnce(&AutofillSnackbarControllerImplTest::OnDismissCallback,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
- protected:
-  int on_dismiss_callback_call_count_ = 0;
-
  private:
-  void OnDismissCallback() { ++on_dismiss_callback_call_count_; }
-
   raw_ptr<AutofillSnackbarControllerImpl> controller_ = nullptr;
   NiceMock<MockPasswordAccessoryController> mock_pwd_controller_;
   NiceMock<MockAddressAccessoryController> mock_address_controller_;
@@ -71,7 +59,7 @@ class AutofillSnackbarControllerImplTest
 
 TEST_F(AutofillSnackbarControllerImplTest, Metrics_VirtualCard) {
   base::HistogramTester histogram_tester;
-  controller()->Show(AutofillSnackbarType::kVirtualCard);
+  controller()->Show(AutofillSnackbarType::kVirtualCard, base::DoNothing());
   // Verify that the count for Shown is incremented and ActionClicked hasn't
   // changed.
   histogram_tester.ExpectUniqueSample("Autofill.Snackbar.VirtualCard.Shown", 1,
@@ -80,7 +68,10 @@ TEST_F(AutofillSnackbarControllerImplTest, Metrics_VirtualCard) {
       "Autofill.Snackbar.VirtualCard.ActionClicked", 1, 0);
   controller()->OnDismissed();
 
-  controller()->Show(AutofillSnackbarType::kVirtualCard);
+  base::MockCallback<base::OnceClosure> on_action_clicked_callback;
+  controller()->Show(AutofillSnackbarType::kVirtualCard,
+                     on_action_clicked_callback.Get());
+  EXPECT_CALL(on_action_clicked_callback, Run);
   controller()->OnActionClicked();
   // Verify that the count for both Shown and ActionClicked is incremented.
   histogram_tester.ExpectUniqueSample("Autofill.Snackbar.VirtualCard.Shown", 1,
@@ -92,7 +83,7 @@ TEST_F(AutofillSnackbarControllerImplTest, Metrics_VirtualCard) {
 TEST_F(AutofillSnackbarControllerImplTest,
        Metrics_ShowVirtualCardWhenAlreadyShowing) {
   base::HistogramTester histogram_tester;
-  controller()->Show(AutofillSnackbarType::kVirtualCard);
+  controller()->Show(AutofillSnackbarType::kVirtualCard, base::DoNothing());
   // Verify that the count for Shown is incremented and ActionClicked hasn't
   // changed.
   histogram_tester.ExpectUniqueSample("Autofill.Snackbar.VirtualCard.Shown", 1,
@@ -101,7 +92,7 @@ TEST_F(AutofillSnackbarControllerImplTest,
       "Autofill.Snackbar.VirtualCard.ActionClicked", 1, 0);
 
   // Attempt to show another dialog without dismissing the previous one.
-  controller()->Show(AutofillSnackbarType::kVirtualCard);
+  controller()->Show(AutofillSnackbarType::kVirtualCard, base::DoNothing());
 
   // Verify that the count for both Shown is not incremented.
   histogram_tester.ExpectUniqueSample("Autofill.Snackbar.VirtualCard.Shown", 1,
@@ -110,7 +101,7 @@ TEST_F(AutofillSnackbarControllerImplTest,
 
 TEST_F(AutofillSnackbarControllerImplTest, Metrics_ShowMandatoryReauth) {
   base::HistogramTester histogram_tester;
-  controller()->Show(AutofillSnackbarType::kMandatoryReauth);
+  controller()->Show(AutofillSnackbarType::kMandatoryReauth, base::DoNothing());
   // Verify that the count for Shown is incremented and ActionClicked hasn't
   // changed.
   histogram_tester.ExpectUniqueSample("Autofill.Snackbar.MandatoryReauth.Shown",
@@ -126,7 +117,7 @@ TEST_F(AutofillSnackbarControllerImplTest, Metrics_ShowMandatoryReauth) {
 TEST_F(AutofillSnackbarControllerImplTest, Metrics_SaveCardSuccess) {
   base::HistogramTester histogram_tester;
 
-  controller()->Show(AutofillSnackbarType::kSaveCardSuccess);
+  controller()->Show(AutofillSnackbarType::kSaveCardSuccess, base::DoNothing());
 
   histogram_tester.ExpectUniqueSample("Autofill.Snackbar.SaveCardSuccess.Shown",
                                       true, 1);
@@ -142,7 +133,8 @@ TEST_F(AutofillSnackbarControllerImplTest, Metrics_SaveCardSuccess) {
 TEST_F(AutofillSnackbarControllerImplTest, Metrics_VirtualCardEnrollSuccess) {
   base::HistogramTester histogram_tester;
 
-  controller()->Show(AutofillSnackbarType::kVirtualCardEnrollSuccess);
+  controller()->Show(AutofillSnackbarType::kVirtualCardEnrollSuccess,
+                     base::DoNothing());
 
   histogram_tester.ExpectUniqueSample(
       "Autofill.Snackbar.VirtualCardEnrollSuccess.Shown", true, 1);
@@ -157,7 +149,7 @@ TEST_F(AutofillSnackbarControllerImplTest, Metrics_VirtualCardEnrollSuccess) {
 
 TEST_F(AutofillSnackbarControllerImplTest,
        SaveCardSuccessMessageAndActionButtonText) {
-  controller()->Show(AutofillSnackbarType::kSaveCardSuccess);
+  controller()->Show(AutofillSnackbarType::kSaveCardSuccess, base::DoNothing());
 
   EXPECT_EQ(controller()->GetMessageText(),
             l10n_util::GetStringUTF16(
@@ -170,7 +162,8 @@ TEST_F(AutofillSnackbarControllerImplTest,
 
 TEST_F(AutofillSnackbarControllerImplTest,
        VirtualCardEnrollSuccessMessageAndActionButtonText) {
-  controller()->Show(AutofillSnackbarType::kVirtualCardEnrollSuccess);
+  controller()->Show(AutofillSnackbarType::kVirtualCardEnrollSuccess,
+                     base::DoNothing());
 
   EXPECT_EQ(
       controller()->GetMessageText(),
@@ -184,7 +177,8 @@ TEST_F(AutofillSnackbarControllerImplTest,
 
 TEST_F(AutofillSnackbarControllerImplTest, Metrics_SaveServerIbanSuccess) {
   base::HistogramTester histogram_tester;
-  controller()->Show(AutofillSnackbarType::kSaveServerIbanSuccess);
+  controller()->Show(AutofillSnackbarType::kSaveServerIbanSuccess,
+                     base::DoNothing());
   // Verify that the count for Shown is incremented and ActionClicked hasn't
   // changed.
   histogram_tester.ExpectUniqueSample(
@@ -193,7 +187,8 @@ TEST_F(AutofillSnackbarControllerImplTest, Metrics_SaveServerIbanSuccess) {
       "Autofill.Snackbar.SaveServerIbanSuccess.ActionClicked", 0);
   controller()->OnDismissed();
 
-  controller()->Show(AutofillSnackbarType::kSaveServerIbanSuccess);
+  controller()->Show(AutofillSnackbarType::kSaveServerIbanSuccess,
+                     base::DoNothing());
   controller()->OnActionClicked();
 
   // Verify that the count for both Shown and ActionClicked is incremented.
@@ -205,7 +200,8 @@ TEST_F(AutofillSnackbarControllerImplTest, Metrics_SaveServerIbanSuccess) {
 
 TEST_F(AutofillSnackbarControllerImplTest,
        SaveServerIbanSuccessMessageAndActionButtonText) {
-  controller()->Show(AutofillSnackbarType::kSaveServerIbanSuccess);
+  controller()->Show(AutofillSnackbarType::kSaveServerIbanSuccess,
+                     base::DoNothing());
 
   EXPECT_EQ(controller()->GetMessageText(),
             l10n_util::GetStringUTF16(
@@ -216,7 +212,7 @@ TEST_F(AutofillSnackbarControllerImplTest,
 }
 
 TEST_F(AutofillSnackbarControllerImplTest, OnShowDefaultDurationSet) {
-  controller()->Show(AutofillSnackbarType::kSaveCardSuccess);
+  controller()->Show(AutofillSnackbarType::kSaveCardSuccess, base::DoNothing());
   EXPECT_EQ(controller()->GetDuration(),
             AutofillSnackbarControllerImpl::kDefaultSnackbarDuration);
 }
@@ -225,25 +221,36 @@ TEST_F(AutofillSnackbarControllerImplTest,
        OnShowWithDurationCustomDurationSet) {
   base::TimeDelta duration = base::Seconds(3);
   controller()->ShowWithDurationAndCallback(
-      AutofillSnackbarType::kSaveCardSuccess, duration, std::nullopt);
+      AutofillSnackbarType::kSaveCardSuccess, duration, base::DoNothing(),
+      std::nullopt);
   EXPECT_EQ(controller()->GetDuration(), duration);
 }
 
 TEST_F(AutofillSnackbarControllerImplTest, OnDismissCallbackCalled) {
-  ShowWithOnDismissCallback(AutofillSnackbarType::kSaveCardSuccess);
-  EXPECT_EQ(on_dismiss_callback_call_count_, 0);
+  base::MockCallback<base::OnceClosure> on_dismiss_callback;
 
+  controller()->ShowWithDurationAndCallback(
+      AutofillSnackbarType::kSaveCardSuccess,
+      AutofillSnackbarControllerImpl::kDefaultSnackbarDuration,
+      base::DoNothing(), on_dismiss_callback.Get());
+
+  EXPECT_CALL(on_dismiss_callback, Run);
   controller()->OnDismissed();
-  EXPECT_EQ(on_dismiss_callback_call_count_, 1);
 }
 
 TEST_F(AutofillSnackbarControllerImplTest, OnDismissTwiceCallbackCalledOnce) {
-  ShowWithOnDismissCallback(AutofillSnackbarType::kSaveCardSuccess);
-  controller()->OnDismissed();
-  controller()->Show(AutofillSnackbarType::kSaveCardSuccess);
-  controller()->OnDismissed();
+  base::MockCallback<base::OnceClosure> on_dismiss_callback;
 
-  EXPECT_EQ(on_dismiss_callback_call_count_, 1);
+  controller()->ShowWithDurationAndCallback(
+      AutofillSnackbarType::kSaveCardSuccess,
+      AutofillSnackbarControllerImpl::kDefaultSnackbarDuration,
+      base::DoNothing(), on_dismiss_callback.Get());
+
+  EXPECT_CALL(on_dismiss_callback, Run);
+
+  controller()->OnDismissed();
+  controller()->Show(AutofillSnackbarType::kSaveCardSuccess, base::DoNothing());
+  controller()->OnDismissed();
 }
 
 }  // namespace autofill

@@ -30,7 +30,8 @@ class AutofillSnackbarControllerImpl : public AutofillSnackbarController {
   static constexpr base::TimeDelta kDefaultSnackbarDuration = base::Seconds(10);
 
   // Shows the snackbar.
-  virtual void Show(AutofillSnackbarType autofill_snackbar_type);
+  virtual void Show(AutofillSnackbarType autofill_snackbar_type,
+                    base::OnceClosure on_action_clicked_callback);
 
   // Similar to Show() but includes a duration and callback parameter. The
   // duration parameter controls how long the snackbar will be shown before it
@@ -39,6 +40,7 @@ class AutofillSnackbarControllerImpl : public AutofillSnackbarController {
   virtual void ShowWithDurationAndCallback(
       AutofillSnackbarType autofill_snackbar_type,
       base::TimeDelta snackbar_duration,
+      base::OnceClosure on_action_clicked_callback,
       std::optional<base::OnceClosure> on_dismiss_callback);
 
   // AutofillSnackbarController:
@@ -67,6 +69,9 @@ class AutofillSnackbarControllerImpl : public AutofillSnackbarController {
 
   // The duration for which the snackbar should be shown before being dismissed.
   base::TimeDelta autofill_snackbar_duration_ = kDefaultSnackbarDuration;
+
+  // Callback to run after the snackbar action button is clicked.
+  base::OnceClosure on_action_clicked_callback_;
 
   // Callback to run after the snackbar is dismissed.
   std::optional<base::OnceClosure> on_dismiss_callback_;

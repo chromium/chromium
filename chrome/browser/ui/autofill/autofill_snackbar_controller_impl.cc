@@ -30,14 +30,17 @@ AutofillSnackbarControllerImpl::~AutofillSnackbarControllerImpl() {
 }
 
 void AutofillSnackbarControllerImpl::Show(
-    AutofillSnackbarType autofill_snackbar_type) {
+    AutofillSnackbarType autofill_snackbar_type,
+    base::OnceClosure on_action_clicked_callback) {
   ShowWithDurationAndCallback(autofill_snackbar_type, kDefaultSnackbarDuration,
+                              std::move(on_action_clicked_callback),
                               std::nullopt);
 }
 
 void AutofillSnackbarControllerImpl::ShowWithDurationAndCallback(
     AutofillSnackbarType autofill_snackbar_type,
     base::TimeDelta snackbar_duration,
+    base::OnceClosure on_action_clicked_callback,
     std::optional<base::OnceClosure> on_dismiss_callback) {
   CHECK_NE(autofill_snackbar_type, AutofillSnackbarType::kUnspecified);
   if (autofill_snackbar_view_) {
@@ -45,6 +48,7 @@ void AutofillSnackbarControllerImpl::ShowWithDurationAndCallback(
     return;
   }
 
+  on_action_clicked_callback_ = std::move(on_action_clicked_callback);
   on_dismiss_callback_ = std::move(on_dismiss_callback);
 
   autofill_snackbar_type_ = autofill_snackbar_type;
@@ -63,24 +67,7 @@ void AutofillSnackbarControllerImpl::OnActionClicked() {
                     ".ActionClicked"}),
       true);
 
-  switch (autofill_snackbar_type_) {
-    case AutofillSnackbarType::kVirtualCard:
-      ManualFillingControllerImpl::GetOrCreate(GetWebContents())
-          ->ShowAccessorySheetTab(autofill::AccessoryTabType::CREDIT_CARDS);
-      break;
-    case AutofillSnackbarType::kMandatoryReauth:
-      // For mandatory reauth snackbar, we will show Android credit card
-      // settings page.
-      ShowAutofillCreditCardSettings(GetWebContents());
-      break;
-    case AutofillSnackbarType::kSaveCardSuccess:
-    case AutofillSnackbarType::kVirtualCardEnrollSuccess:
-    case AutofillSnackbarType::kSaveServerIbanSuccess:
-      // SnackbarManager.java will dismiss the snackbar after the click.
-      break;
-    case AutofillSnackbarType::kUnspecified:
-      NOTREACHED();
-  }
+  std::move(on_action_clicked_callback_).Run();
 }
 
 void AutofillSnackbarControllerImpl::OnDismissed() {

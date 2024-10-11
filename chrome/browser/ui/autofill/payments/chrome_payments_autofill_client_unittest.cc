@@ -62,11 +62,15 @@ class MockAutofillSnackbarControllerImpl
       content::WebContents* web_contents)
       : AutofillSnackbarControllerImpl(web_contents) {}
 
-  MOCK_METHOD(void, Show, (AutofillSnackbarType), (override));
+  MOCK_METHOD(void,
+              Show,
+              (AutofillSnackbarType, base::OnceClosure),
+              (override));
   MOCK_METHOD(void,
               ShowWithDurationAndCallback,
               (AutofillSnackbarType,
                base::TimeDelta,
+               base::OnceClosure,
                std::optional<base::OnceClosure>),
               (override));
 };
@@ -361,7 +365,7 @@ TEST_F(
       ShowWithDurationAndCallback(AutofillSnackbarType::kSaveCardSuccess,
                                   payments::ChromePaymentsAutofillClient::
                                       kSaveCardConfirmationSnackbarDuration,
-                                  testing::Ne(std::nullopt)));
+                                  _, testing::Ne(std::nullopt)));
 
   std::optional<base::OnceClosure> callback = base::OnceClosure();
   chrome_payments_client()->CreditCardUploadCompleted(
@@ -379,7 +383,7 @@ TEST_F(
 
   EXPECT_CALL(*save_card_bridge, Hide);
   EXPECT_CALL(*snackbar_controller,
-              Show(AutofillSnackbarType::kSaveCardSuccess));
+              Show(AutofillSnackbarType::kSaveCardSuccess, _));
 
   chrome_payments_client()->CreditCardUploadCompleted(
       payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
@@ -428,7 +432,7 @@ TEST_F(ChromePaymentsAutofillClientTest,
       InjectMockAutofillSnackbarControllerImpl();
 
   EXPECT_CALL(*snackbar_controller,
-              Show(AutofillSnackbarType::kVirtualCardEnrollSuccess));
+              Show(AutofillSnackbarType::kVirtualCardEnrollSuccess, _));
 
   chrome_payments_client()->VirtualCardEnrollCompleted(
       payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess);
