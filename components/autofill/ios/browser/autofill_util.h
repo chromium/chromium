@@ -42,9 +42,12 @@ std::optional<base::UnguessableToken> DeserializeJavaScriptFrameId(
 
 // Processes the JSON form data extracted from the page into the format expected
 // by BrowserAutofillManager.
-// |filtered| and |form_name| limit the field that will be returned.
-// Returns an std::optional that contains the extracted vector of FormData or
-// nullopt if the data was invalid.
+// `filtered` and `form_name` limit the field that will be returned.
+// `host_frame` is the isolated world frame corresponding to the page content
+// world frame where the forms were extracted. For forms extracted in the
+// isolated world pass a null `host_frame` as the frame token is derived from
+// `frame_id`. Returns an std::optional that contains the extracted vector of
+// FormData or nullopt if the data was invalid.
 std::optional<std::vector<FormData>> ExtractFormsData(
     NSString* form_json,
     bool filtered,
@@ -52,14 +55,17 @@ std::optional<std::vector<FormData>> ExtractFormsData(
     const GURL& main_frame_url,
     const GURL& frame_origin,
     const FieldDataManager& field_data_manager,
-    const std::string& frame_id);
+    const std::string& frame_id,
+    LocalFrameToken host_frame = LocalFrameToken());
 
 // Converts |form| into FormData.
-// Returns nullopt if a form can not be extracted.
-// Returns nullopt if |filtered| == true and |form["name"]| !=
-// |formName|. Returns false if |form["origin"]| !=
-// |form_frame_origin|. Returns an std::optional that contains a FormData if the
-// conversion succeeds.
+// `host_frame` is the isolated world frame corresponding to the page content
+// world frame where the forms were extracted. For forms extracted in the
+// isolated world pass a null `host_frame` as the frame token is derived from
+// `frame_id`. Returns nullopt if a form can not be extracted. Returns nullopt
+// if |filtered| == true and |form["name"]| != |formName|. Returns false if
+// |form["origin"]| != |form_frame_origin|. Returns an std::optional that
+// contains a FormData if the conversion succeeds.
 std::optional<FormData> ExtractFormData(
     const base::Value::Dict& form,
     bool filtered,
@@ -67,7 +73,8 @@ std::optional<FormData> ExtractFormData(
     const GURL& main_frame_url,
     const GURL& form_frame_origin,
     const FieldDataManager& field_data_manager,
-    const std::string& frame_id);
+    const std::string& frame_id,
+    LocalFrameToken host_frame = LocalFrameToken());
 
 // Extracts a single form field from the JSON dictionary into a FormFieldData
 // object.

@@ -202,7 +202,8 @@ void FormActivityTabHelper::FormSubmissionHandler(
 
   FieldDataManager* fieldDataManager =
       FieldDataManagerFactoryIOS::FromWebFrame(sender_frame);
-
+  // TODO(crbug.com/357892651): Pass isolated local frame token for forms
+  // extracted in the page world.
   std::optional<std::vector<FormData>> forms = autofill::ExtractFormsData(
       base::SysUTF8ToNSString(form_data), true, base::UTF8ToUTF16(form_name),
       web_state->GetLastCommittedURL(), sender_frame->GetSecurityOrigin(),

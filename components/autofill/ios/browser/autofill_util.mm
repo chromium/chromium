@@ -122,7 +122,8 @@ std::optional<std::vector<FormData>> ExtractFormsData(
     const GURL& main_frame_url,
     const GURL& frame_origin,
     const FieldDataManager& field_data_manager,
-    const std::string& frame_id) {
+    const std::string& frame_id,
+    LocalFrameToken host_frame) {
   std::unique_ptr<base::Value> forms_value = ParseJson(forms_json);
   if (!forms_value) {
     return std::nullopt;
@@ -144,9 +145,9 @@ std::optional<std::vector<FormData>> ExtractFormsData(
       continue;
     }
 
-    if (std::optional<FormData> form =
-            ExtractFormData(*form_dict, filtered, form_name, main_frame_url,
-                            frame_origin, field_data_manager, frame_id)) {
+    if (std::optional<FormData> form = ExtractFormData(
+            *form_dict, filtered, form_name, main_frame_url, frame_origin,
+            field_data_manager, frame_id, host_frame)) {
       forms_data.push_back(*std::move(form));
     }
   }
@@ -160,7 +161,8 @@ std::optional<FormData> ExtractFormData(
     const GURL& main_frame_url,
     const GURL& form_frame_origin,
     const FieldDataManager& field_data_manager,
-    const std::string& frame_id) {
+    const std::string& frame_id,
+    LocalFrameToken host_frame) {
   FormData form_data;
   // Form data is copied into a FormData object field-by-field.
   const std::string* name = form.FindString("name");
@@ -198,13 +200,17 @@ std::optional<FormData> ExtractFormData(
     return std::nullopt;
   }
 
-  std::optional<base::UnguessableToken> host_frame =
-      DeserializeJavaScriptFrameId(*host_frame_param);
-  if (!host_frame) {
+  // Use provided isolated world host frame or derive it from frame id.
+  // Autofill works with isolated world frames, so frame id can only be used as
+  // host frame if the forms were extracted in the isolated world.
+  if (host_frame) {
+    form_data.set_host_frame(host_frame);
+  } else if (std::optional<base::UnguessableToken> host_frame_token =
+                 DeserializeJavaScriptFrameId(*host_frame_param)) {
+    form_data.set_host_frame(LocalFrameToken(*host_frame_token));
+  } else {
     return std::nullopt;
   }
-
-  form_data.set_host_frame(LocalFrameToken(*host_frame));
 
   if (base::FeatureList::IsEnabled(
           autofill::features::kAutofillAcrossIframesIos) &&
