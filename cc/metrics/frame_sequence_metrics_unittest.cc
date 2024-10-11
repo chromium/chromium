@@ -52,7 +52,13 @@ TEST_F(FrameSequenceMetricsTest, MergeMetrics) {
 }
 
 #if DCHECK_IS_ON()
-TEST_F(FrameSequenceMetricsTest, ScrollingThreadMergeMetrics) {
+// TODO(crbug.com/372887911): Re-enable test.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ScrollingThreadMergeMetrics DISABLED_ScrollingThreadMergeMetrics
+#else
+#define MAYBE_ScrollingThreadMergeMetrics ScrollingThreadMergeMetrics
+#endif
+TEST_F(FrameSequenceMetricsTest, MAYBE_ScrollingThreadMergeMetrics) {
   FrameSequenceMetrics first(FrameSequenceTrackerType::kTouchScroll);
   first.SetScrollingThread(FrameInfo::SmoothEffectDrivingThread::kCompositor);
   SetFramesExpectedAndProduced(first, 20u, 10u);
