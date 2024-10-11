@@ -180,6 +180,8 @@ void ModelValidatorKeyedService::PerformOnDeviceModelExecutionValidation(
   // TODO: b/345495541 - Add support for conducting inference within a loop.
   // For now, we are just using the first request in the ModelValidationInput.
   auto request = input->requests(0);
+  auto request_copy =
+      std::make_unique<optimization_guide::proto::ExecuteRequest>(request);
   auto capability_key = ToModelBasedCapabilityKey(request.feature());
 
   on_device_validation_session_ =
@@ -190,27 +192,29 @@ void ModelValidatorKeyedService::PerformOnDeviceModelExecutionValidation(
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ModelValidatorKeyedService::ExecuteModel,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(metadata)),
+                     weak_ptr_factory_.GetWeakPtr(), std::move(request_copy)),
       base::Seconds(30));
 }
 
 void ModelValidatorKeyedService::ExecuteModel(
-    std::unique_ptr<google::protobuf::MessageLite> request_metadata) {
+    std::unique_ptr<optimization_guide::proto::ExecuteRequest> request) {
   DCHECK(on_device_validation_session_);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(request_metadata);
+  DCHECK(request);
+
+  auto metadata = GetProtoFromAny(request->request_metadata());
   on_device_validation_session_->ExecuteModel(
-      *request_metadata,
-      base::RepeatingCallback(base::BindRepeating(
-          &ModelValidatorKeyedService::OnDeviceModelExecuteResponse,
-          weak_ptr_factory_.GetWeakPtr())));
+      *metadata, base::BindRepeating(
+                     &ModelValidatorKeyedService::OnDeviceModelExecuteResponse,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(request)));
 }
 
 void ModelValidatorKeyedService::OnDeviceModelExecuteResponse(
+    const std::unique_ptr<optimization_guide::proto::ExecuteRequest>& request,
     OptimizationGuideModelStreamingExecutionResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!result.response.has_value() || !result.response->is_complete) {
+  if (!result.response->is_complete) {
     return;
   }
   // Complete responses with empty log entry indicate errors.
@@ -218,8 +222,17 @@ void ModelValidatorKeyedService::OnDeviceModelExecuteResponse(
     LOCAL_HISTOGRAM_BOOLEAN(kModelValidationErrorHistogramString, true);
   }
   proto::ModelValidationOutput output;
-  output.add_log_ai_data_requests()->CopyFrom(
-      *result.log_entry->log_ai_data_request());
+  optimization_guide::proto::ModelCall* model_call = output.add_model_calls();
+  model_call->mutable_request()->CopyFrom(*request);
+  optimization_guide::proto::ModelExecutionInfo* model_execution_info =
+      model_call->mutable_model_execution_info();
+  if (result.response.has_value()) {
+    model_call->mutable_response()->CopyFrom(result.response.value().response);
+  } else {
+    model_execution_info->set_model_execution_error_enum(
+        static_cast<uint32_t>(result.response.error().error()));
+  }
+  // TODO(crbug.com/372535824): store on-device execution log.
 
   auto out_file = switches::GetOnDeviceValidationWriteToFile();
   if (!out_file) {

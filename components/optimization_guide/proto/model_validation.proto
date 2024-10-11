@@ -9,15 +9,31 @@ option java_outer_classname = "ModelValidationProto";
 
 package optimization_guide.proto;
 
+import "components/optimization_guide/proto/common_types.proto";
 import "components/optimization_guide/proto/model_execution.proto";
-import "components/optimization_guide/proto/model_quality_service.proto";
+import "components/optimization_guide/proto/model_quality_metadata.proto";
 
 message ModelValidationInput {
   // The requests for the feature to be used for validation.
   repeated ExecuteRequest requests = 2;
 }
 
+message ModelCall {
+  // The model execution request.
+  ExecuteRequest request = 1;
+
+  // The model execution response proto. Each type of model call uses a
+  // different type of response proto.
+  Any response = 2;
+
+  // The log entry containing details about how execution proceeded (errors,
+  // internal requests, model version, etc.).
+  ModelExecutionInfo model_execution_info = 3;
+}
+
 message ModelValidationOutput {
+  reserved 1;
+
   // The requests to send AI data logs to the model quality server.
-  repeated LogAiDataRequest log_ai_data_requests = 1;
+  repeated ModelCall model_calls = 2;
 }
