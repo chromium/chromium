@@ -57,8 +57,8 @@ build_webui("build") {
     "//ui/webui/resources/js:build_ts",
   ]
 
-  ts_path_mappings = [ "chrome://intro/tangible_sync_style_shared_lit.css.js|" + rebase_path(
-                           "$root_gen_dir/chrome/browser/resources/signin/tsc/tangible_sync_style_shared_lit.css.d.ts",
+  ts_path_mappings = [ "chrome://intro/tangible_sync_style_shared.css.js|" + rebase_path(
+                           "$root_gen_dir/chrome/browser/resources/signin/tsc/tangible_sync_style_shared.css.d.ts",
                            target_gen_dir) ]
 
   webui_context_type = "trusted"

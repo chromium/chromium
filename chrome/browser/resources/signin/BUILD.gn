@@ -108,7 +108,6 @@ build_webui("build") {
     "sync_confirmation/sync_confirmation_app.css",
     "sync_confirmation/sync_disabled_confirmation_app.css",
     "tangible_sync_style_shared.css",
-    "tangible_sync_style_shared_lit.css",
   ]
 
   if (!is_chromeos_ash) {
@@ -148,8 +147,9 @@ build_webui("build") {
     "/signin_shared.css.js|" +
         rebase_path("$target_gen_dir/preprocessed/signin_shared.css.ts",
                     target_gen_dir),
-    "/tangible_sync_style_shared_lit.css.js|" + rebase_path(
-            "$target_gen_dir/preprocessed/tangible_sync_style_shared_lit.css.ts",
+    "/tangible_sync_style_shared.css.js|" +
+        rebase_path(
+            "$target_gen_dir/preprocessed/tangible_sync_style_shared.css.ts",
             target_gen_dir),
   ]
 

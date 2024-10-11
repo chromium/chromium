@@ -33,8 +33,8 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
 
-  ts_path_mappings = [ "/tangible_sync_style_shared_lit.css.js|" + rebase_path(
-                           "$root_gen_dir/chrome/browser/resources/signin/tsc/tangible_sync_style_shared_lit.css.d.ts",
+  ts_path_mappings = [ "/tangible_sync_style_shared.css.js|" + rebase_path(
+                           "$root_gen_dir/chrome/browser/resources/signin/tsc/tangible_sync_style_shared.css.d.ts",
                            target_gen_dir) ]
 
   ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
