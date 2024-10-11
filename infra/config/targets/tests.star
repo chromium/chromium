@@ -1463,6 +1463,8 @@ targets.tests.isolated_script_test(
 targets.tests.junit_test(
     name = "keyboard_accessory_junit_tests",
     label = "//chrome/android/features/keyboard_accessory:keyboard_accessory_junit_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.tests.gtest_test(

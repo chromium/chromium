@@ -41,35 +41,7 @@
           'shards': 2,
         },
       },
-      'android-code-coverage-native': {
-        'swarming': {
-          'shards': 3,
-        },
-      },
-      # Keep this same as android-oreo-x86-rel
-      'android-x86-code-coverage': {
-        'ci_only': True,
-        'swarming': {
-          'shards': 9,
-        },
-      },
     },
-  },
-  'android_sync_integration_tests': {
-   'modifications': {
-      'android-code-coverage-native': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
-      # Keep this same as android-oreo-x86-rel
-      'android-x86-code-coverage': {
-        'ci_only': True,
-        'swarming': {
-          'shards': 2,
-        },
-      },
-   },
   },
   'android_webview_unittests': {
   },
@@ -83,38 +55,6 @@
         # b/41493162: angle_unittests has a high failure rate.
         # Re-enable cq when the issue is fixed.
         'ci_only': True,
-      },
-    },
-  },
-  'base_unittests': {
-    'modifications': {
-      'fuchsia-code-coverage': {
-        'swarming': {
-          'shards': 5,
-        },
-      },
-    },
-  },
-  'blink_platform_unittests': {
-    'modifications': {
-      'fuchsia-code-coverage': {
-        'swarming': {
-          'shards': 5,
-        },
-      },
-    },
-  },
-  'blink_pytype': {
-    'remove_from': [
-      'linux-code-coverage',
-    ],
-  },
-  'blink_unittests': {
-    'modifications': {
-      'fuchsia-code-coverage': {
-        'swarming': {
-          'shards': 30,
-        },
       },
     },
   },
@@ -194,14 +134,6 @@
         # to the default/inherited timeout instead of an absolute.
         'swarming': {
           'hard_timeout': 1500,
-        },
-      },
-      'linux-code-coverage': {
-        'args': [
-          '--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m%c.profraw',
-        ],
-        'swarming': {
-          'shards': 8,
         },
       },
       'linux-layout-tests-edit-ng': {
@@ -326,11 +258,6 @@
           '--additional-driver-flag=--force-browsing-instance-reset-between-tests',
         ],
       },
-      'linux-code-coverage': {
-        'args': [
-          '--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m%c.profraw',
-        ],
-      },
       'linux-layout-tests-edit-ng': {
         'args': [
           '--flag-specific=enable-editing-ng',
@@ -390,7 +317,6 @@
   },
   'browser_tests': {
     'remove_from': [
-      'mac-code-coverage', # https://crbug.com/1201386
       'Linux TSan Tests',  # https://crbug.com/368525
       'linux-chromeos-chrome-preuprev', # http://b/331706144
     ],
@@ -469,11 +395,6 @@
           'shards': 20,
         },
       },
-      'linux-chromeos-code-coverage': {
-        'swarming': {
-          'shards': 50,
-        },
-      },
       'linux-chromeos-dbg': {
         'swarming': {
           'shards': 110,
@@ -496,23 +417,10 @@
           },
         },
       },
-      'linux-code-coverage': {
-        'args': [
-          '--no-sandbox',
-        ],
-        'swarming': {
-          'shards': 50,
-        },
-      },
       'linux-ubsan-fyi-rel': {
         'swarming': {
           'shards': 20,
         }
-      },
-      'mac-code-coverage': {
-        'args': [
-          '--coverage-continuous-mode=1',
-        ],
       },
       'mac-osxbeta-rel': {
         'swarming': {
@@ -529,15 +437,6 @@
         'swarming': {
           'shards': 60,
         },
-      },
-      'win10-code-coverage': {
-        'swarming': {
-          'shards': 40,
-          'dimensions': {
-            'pool': 'chromium.tests.coverage',
-            'ssd': '1',
-          },
-        }
       },
       'win10-rel-no-external-ip': {
         # crbug.com/868082
@@ -571,11 +470,6 @@
       'Linux TSan Tests': {
         'swarming': {
           'shards': 3,
-        },
-      },
-      'fuchsia-code-coverage': {
-        'swarming': {
-          'shards': 4,
         },
       },
     },
@@ -614,15 +508,9 @@
       },
     },
   },
-  'chrome_public_smoke_test': {
-    'remove_from': [
-      'android-code-coverage-native', # Does not generate profraw data.
-    ],
-  },
   'chrome_public_test_apk': {
     'remove_from': [
       'android-asan',  # https://crbug.com/964562
-      'android-code-coverage-native', # Does not generate profraw data.
     ],
     'modifications': {
       'android-pie-arm64-rel-dev': {
@@ -630,40 +518,17 @@
           'service_account': 'chrome-gold-dev@chops-service-accounts.iam.gserviceaccount.com'
         },
       },
-      # Keep this same as android-oreo-x86-rel
-      'android-x86-code-coverage': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.chrome_public_test_apk.filter',
-        ],
-        'swarming': {
-          'shards': 75,
-          'dimensions': {
-            # use 8-core to shorten runtime
-            'cores': '8',
-          },
-        },
-      },
     },
   },
   'chrome_public_test_vr_apk': {
     'remove_from': [
       'android-asan',  # https://crbug.com/964562
-      'android-code-coverage-native', # Does not generate profraw data.
     ],
   },
   'chrome_public_unit_test_apk': {
     'remove_from': [
       'android-asan',  # https://crbug.com/964562
-      'android-code-coverage-native', # Does not generate profraw data.
     ],
-    'modifications': {
-      # Keep this same as android-oreo-x86-rel
-      'android-x86-code-coverage': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.chrome_public_unit_test_apk.filter',
-        ],
-      },
-    },
   },
   'components_browsertests': {
     'modifications': {
@@ -675,17 +540,6 @@
       'android-asan': {
         'swarming': {
           'shards': 3,
-        },
-      },
-      # Keep this same as android-oreo-x86-rel
-      'android-x86-code-coverage': {
-        'swarming': {
-          'shards': 4,
-        },
-      },
-      'fuchsia-code-coverage': {
-        'swarming': {
-          'shards': 4,
         },
       },
     },
@@ -720,11 +574,6 @@
         # TODO(crbug.com/41491387): With a single shard seems to hit time limit.
         'swarming': {
           'shards': 4,
-        },
-      },
-      'win10-code-coverage': {
-        'swarming': {
-          'shards': 6,
         },
       },
     },
@@ -785,38 +634,6 @@
           'shards': 25,
         },
       },
-      'android-code-coverage-native': {
-        'swarming': {
-          'shards': 25,
-        },
-      },
-      # Keep this same as android-oreo-x86-rel
-      'android-x86-code-coverage': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.content_browsertests.filter',
-        ],
-        'swarming': {
-          'shards': 75,
-          'dimensions': {
-            # use 8-core to shorten runtime
-            'cores': '8',
-          },
-        },
-      },
-      'fuchsia-code-coverage': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.coverage.content_browsertests.filter',
-          '--test-launcher-jobs=1',
-        ],
-        'swarming': {
-          'shards': 41,
-        },
-      },
-      'linux-chromeos-code-coverage': {
-        'swarming': {
-          'shards': 12,
-        },
-      },
       'linux-chromeos-dbg': {
         'swarming': {
           'shards': 16,
@@ -836,23 +653,10 @@
           'shards': 6,
         },
       },
-      'linux-code-coverage': {
-        'args': [
-          '--no-sandbox',
-        ],
-        'swarming': {
-          'shards': 12,
-        },
-      },
       'linux-ubsan-fyi-rel': {
         'swarming': {
           'shards': 16,
         }
-      },
-      'mac-code-coverage': {
-        'args': [
-          '--coverage-continuous-mode=1',
-        ],
       },
       # https://crbug.com/1255940
       'mac-rel-dev': {
@@ -873,15 +677,6 @@
           'shards': 32,
         },
       },
-      'win10-code-coverage': {
-        'swarming': {
-          'shards': 40,
-          'dimensions': {
-            'pool': 'chromium.tests.coverage',
-            'ssd': '1',
-          },
-        }
-      },
       'win10-rel-no-external-ip': {
         # crbug.com/868082
         'args': [
@@ -890,28 +685,10 @@
       },
     },
   },
-  'content_shell_crash_test': {
-    'remove_from': [
-      'android-x86-code-coverage', # crbug.com/1084353
-    ],
-  },
   'content_shell_test_apk': {
     'remove_from': [
       'android-asan',  # https://crbug.com/964562
-      'android-code-coverage-native', # Does not generate profraw data.
     ],
-    'modifications': {
-      # Keep this same as android-oreo-x86-rel
-      'android-x86-code-coverage': {
-        'swarming': {
-          'shards': 6,
-          'dimensions': {
-            # use 8-core to shorten runtime
-            'cores': '8',
-          },
-        },
-      },
-    },
   },
   'content_unittests': {
     'modifications': {
@@ -925,16 +702,6 @@
       'Linux ChromiumOS MSan Tests': {
         # These are very slow on the Chrome OS MSAN trybot for some reason.
         # crbug.com/865455
-        'swarming': {
-          'shards': 2,
-        },
-      },
-      'fuchsia-code-coverage': {
-        'swarming': {
-          'shards': 12,
-        },
-      },
-      'win10-code-coverage': {
         'swarming': {
           'shards': 2,
         },
@@ -1242,41 +1009,10 @@
       },
     },
   },
-  'extensions_browsertests': {
-    'modifications': {
-      'win10-code-coverage': {
-        'swarming': {
-          'shards': 2,
-          'dimensions': {
-            'pool': 'chromium.tests.coverage',
-            'ssd': '1',
-          },
-        }
-      },
-    },
-  },
-  'extensions_unittests': {
-    'modifications': {
-      'fuchsia-code-coverage': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
-    },
-  },
   'gcp_unittests': {
     'modifications': {
       # Flakily times out with only a single shard due to slow runtime.
       'win-asan': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
-    },
-  },
-  'gfx_unittests': {
-    'modifications': {
-      'fuchsia-code-coverage': {
         'swarming': {
           'shards': 2,
         },
@@ -1288,14 +1024,6 @@
       'Linux ASan LSan Tests (1)',  # https://crbug.com/831667
       'Linux Chromium OS ASan LSan Tests (1)',  # https://crbug.com/831667
     ],
-    'modifications': {
-      'android-code-coverage-native': {
-        'args': [
-          # https://crbug.com/1404782
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64.gin_unittests.filter',
-        ],
-      },
-    },
   },
   'gl_tests_passthrough': {
     'remove_from': [
@@ -1399,17 +1127,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.samsung_a23.gl_tests.filter',
         ],
       },
-      'android-code-coverage-native': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64_rel.gl_tests.filter', # https://crbug.com/1034007
-        ],
-      },
-      # Keep this same as android-oreo-x86-rel
-      'android-x86-code-coverage': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o_p.gl_tests.filter',
-        ],
-      },
     },
   },
   'gl_unittests': {
@@ -1440,11 +1157,6 @@
       'Linux ChromiumOS MSan Tests',
     ],
   },
-  'gold_common_pytype': {
-    'remove_from': [
-      'linux-code-coverage',
-    ],
-  },
   'gpu_process_launch_tests': {
     'remove_from': [
       # TODO(crbug.com/40039565): Remove the Android FYI Release (Pixel 2)
@@ -1454,20 +1166,6 @@
       'Mac FYI Retina ASAN (AMD)',
     ],
   },
-  'gpu_pytype': {
-    'remove_from': [
-      'linux-code-coverage',
-    ],
-  },
-  'gpu_unittests': {
-    'modifications': {
-      'fuchsia-code-coverage': {
-        'swarming': {
-          'shards': 5,
-        },
-      },
-    },
-  },
   'hardware_accelerated_feature_tests': {
     'remove_from': [
       # TODO(crbug.com/40039565): Remove the Android FYI Release (Pixel 2)
@@ -1476,15 +1174,6 @@
       # crbug.com/1458020 for Mac Retina ASAN removal
       'Mac FYI Retina ASAN (AMD)',
     ],
-  },
-  'headless_browsertests': {
-    'modifications': {
-      'fuchsia-code-coverage': {
-        'swarming': {
-          'shards': 6,
-        },
-      },
-    },
   },
   'headless_shell_wpt_tests': {
     'remove_from': [
@@ -1638,11 +1327,6 @@
           '--gtest_filter=-SadTabViewInteractiveUITest.ReloadMultipleSadTabs',
         ],
       },
-      'linux-chromeos-code-coverage': {
-        'swarming': {
-          'shards': 10,
-        },
-      },
       'linux-chromeos-dbg': {
         'swarming': {
           'shards': 6,
@@ -1661,20 +1345,10 @@
           'shards': 5,
         },
       },
-      'linux-code-coverage': {
-        'swarming': {
-          'shards': 10,
-        },
-      },
       'linux-ubsan-fyi-rel': {
         'swarming': {
           'shards': 6,
         }
-      },
-      'mac-code-coverage': {
-        'args': [
-          '--coverage-continuous-mode=1',
-        ],
       },
       # TODO (crbug.com/1278617) Re-enable once fixed
       'mac-osxbeta-rel': {
@@ -1691,15 +1365,6 @@
         'swarming': {
           'shards': 9,
         },
-      },
-      'win10-code-coverage': {
-        'swarming': {
-          'shards': 32,
-          'dimensions': {
-            'pool': 'chromium.tests.coverage',
-            'ssd': '1',
-          },
-        }
       },
     },
   },
@@ -1727,15 +1392,6 @@
       'Win10 FYI x86 Release (NVIDIA)',
     ],
   },
-  'media_unittests': {
-    'modifications': {
-      'fuchsia-code-coverage': {
-        'swarming': {
-          'shards': 3,
-        },
-      },
-    },
-  },
   'mediapipe_passthrough_tests': {
     'remove_from': [
       # crbug.com/1458020 for Mac Retina ASAN removal
@@ -1751,21 +1407,11 @@
       },
     },
   },
-  'mojo_test_apk': {
-    'remove_from': [
-      'android-code-coverage-native', # Does not generate profraw data.
-    ],
-  },
   'mojo_unittests': {
     'modifications': {
       'android-asan': {
         'swarming': {
           'shards': 5,
-        },
-      },
-      'fuchsia-code-coverage': {
-        'swarming': {
-          'shards': 2,
         },
       },
     },
@@ -1805,11 +1451,6 @@
           'shards': 4,
         }
       },
-      'fuchsia-code-coverage': {
-        'swarming': {
-          'shards': 14,
-        },
-      },
       'linux-chromeos-dbg': {
         'swarming': {
           'shards': 2,
@@ -1835,18 +1476,6 @@
       'chromeos-brya-chrome-skylab',
       'chromeos-brya-chrome-tests',
     ],
-  },
-  'not_site_per_process_blink_web_tests': {
-    'modifications': {
-      'linux-code-coverage': {
-        'args': [
-          '--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m%c.profraw',
-        ],
-        'swarming': {
-          'shards': 20,
-        },
-      },
-    },
   },
   'notification_helper_unittests': {
     'remove_from': [
@@ -1897,20 +1526,9 @@
     },
   },
   'perfetto_unittests': {
-    'modifications': {
-      # Keep this same as android-oreo-x86-rel
-      'android-x86-code-coverage': {
-        'args': [
-          # TODO(crbug.com/40201873): Fix the failed test
-          '--gtest_filter=-ScopedDirTest.CloseOutOfScope',
-        ],
-      },
-    },
     'remove_from': [
       # TODO(crbug.com/41440830): Fix permission issue when creating tmp files
       'android-asan',
-      'android-code-coverage',
-      'android-code-coverage-native',
     ]
   },
   'pixel_skia_gold_gl_passthrough_ganesh_test': {
@@ -2131,22 +1749,6 @@
       'Linux ChromiumOS MSan Tests',  # https://crbug.com/831676
       'Linux MSan Tests',  # https://crbug.com/831676
     ],
-    'modifications': {
-      # Keep this same as android-oreo-x86-rel
-      'android-x86-code-coverage': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.services_unittests.filter',
-        ],
-        'swarming': {
-          'shards': 3,
-        },
-      },
-      'fuchsia-code-coverage': {
-        'swarming': {
-          'shards': 7,
-        },
-      },
-    }
   },
   'sync_integration_tests': {
     'modifications': {
@@ -2172,25 +1774,10 @@
           'shards': 4,
         },
       },
-      'linux-chromeos-code-coverage': {
-        'swarming': {
-          'shards': 4,
-        },
-      },
       'linux-chromeos-rel': {
         'swarming': {
           'shards': 2,
         },
-      },
-      'linux-code-coverage': {
-        'swarming': {
-          'shards': 4,
-        },
-      },
-      'mac-code-coverage': {
-        'args': [
-          '--coverage-continuous-mode=1',
-        ],
       },
       'win-asan': {
          # Tests shows tests run faster with fewer retries by using fewer jobs crbug.com/1411912
@@ -2200,15 +1787,6 @@
         'swarming': {
           'shards': 2,
         },
-      },
-      'win10-code-coverage': {
-        'swarming': {
-          'shards': 4,
-          'dimensions': {
-            'pool': 'chromium.tests.coverage',
-            'ssd': '1',
-          },
-        }
       },
     },
   },
@@ -2225,22 +1803,6 @@
       'Linux FYI Release (Intel UHD 630)',
       'Linux FYI Release (NVIDIA)',
     ],
-  },
-  'telemetry_chromium_minidump_unittests': {
-    'modifications': {
-      # Keep this same as android-oreo-x86-rel
-      'android-x86-code-coverage': {
-        'ci_only': True,
-      },
-    },
-  },
-  'telemetry_monochrome_minidump_unittests': {
-    'modifications': {
-      # Keep this same as android-oreo-x86-rel
-      'android-x86-code-coverage': {
-        'ci_only': True,
-      },
-    },
   },
   'telemetry_perf_unittests': {
     'modifications': {
@@ -2262,29 +1824,11 @@
       'win10-rel-no-external-ip',
     ],
   },
-  'telemetry_perf_unittests_android_chrome': {
-    'modifications': {
-      # Keep this same as android-oreo-x86-rel
-      'android-x86-code-coverage': {
-        'args': [
-          # For whatever reason, automatic browser selection on this bot chooses
-          # webview instead of the full browser, so explicitly specify it here.
-          '--browser=android-chromium',
-        ],
-        'ci_only': True,
-      },
-    },
-  },
   'telemetry_unittests': {
     'remove_from': [
       # TODO(crbug.com/40727045): Restore when there's more DUTs
       'chromeos-eve-chrome',
       'win10-rel-no-external-ip',
-    ],
-  },
-  'testing_pytype': {
-    'remove_from': [
-      'linux-code-coverage',
     ],
   },
   'trace_test': {
@@ -2407,11 +1951,6 @@
           'shards': 4,
         },
       },
-      'win10-code-coverage': {
-        'swarming': {
-          'shards': 6,
-        },
-      },
     },
   },
   'updater_tests_system': {
@@ -2481,27 +2020,6 @@
       'linux-chromeos-dbg',  # https://crbug.com/859307
       'linux-chromeos-dbg-oslogin',
     ],
-  },
-  'web_engine_browsertests': {
-    'modifications': {
-      'fuchsia-code-coverage': {
-        'swarming': {
-          'shards': 28,
-        },
-      },
-    },
-  },
-  'web_engine_integration_tests': {
-    'modifications': {
-      'fuchsia-code-coverage': {
-        'args': [
-          '--test-launcher-jobs=1',
-        ],
-        'swarming': {
-          'shards': 4,
-        },
-      },
-    },
   },
   'webcodecs_metal_passthrough_ganesh_tests': {
     'remove_from': [
@@ -2675,46 +2193,6 @@
       'Dawn Android arm64 Experimental Release (Pixel 6)',
       'Dawn Android arm64 Release (Pixel 6)',
     ],
-    'modifications': {
-      # These tests must run with a GPU.
-      'linux-code-coverage': {
-        'swarming': {
-          'dimensions': {
-            # TODO(crbug.com/40888390): This must be kept in sync with the
-            # appropriate mixin; currently, linux_nvidia_gtx_1660_stable,
-            # which is used by Dawn Linux x64 Release (NVIDIA).
-            'gpu': '10de:2184-440.100',
-            'os': 'Ubuntu-18.04.5|Ubuntu-18.04.6',
-            'pool': 'chromium.tests.gpu'
-          },
-        },
-      },
-      'mac-code-coverage': {
-        'swarming': {
-          'dimensions': {
-            # TODO(crbug.com/40888390): This must be kept in sync with the
-            # appropriate mixin; currently, mac_mini_intel_gpu_stable,
-            # which is used by Dawn Mac x64 Release (Intel).
-            'cpu': 'x86-64',
-            'gpu': '8086:3e9b',
-            'os': 'Mac-14.5',
-            'display_attached': '1',
-          },
-        },
-      },
-      'win10-code-coverage': {
-        'swarming': {
-          'dimensions': {
-            # TODO(crbug.com/40888390): This must be kept in sync with the
-            # appropriate mixin; currently, win10_nvidia_gtx_1660_stable,
-            # which is used by Dawn Win10 x64 Release (NVIDIA).
-            'gpu': '10de:2184-27.21.14.5638',
-            'os': 'Windows-10-18363',
-            'pool': 'chromium.tests.gpu',
-          },
-        },
-      },
-    },
   },
   'webgpu_blink_web_tests_with_backend_validation': {
     'remove_from': [
@@ -2729,9 +2207,6 @@
       'Dawn Win10 x64 DEPS Release (Intel)',
       'Dawn Win10 x64 Experimental Release (Intel)',
       'Dawn Win10 x64 Release (Intel)',
-      'linux-code-coverage',
-      'mac-code-coverage',
-      'win10-code-coverage',
     ],
   },
   'webgpu_cts_compat_tests': {
@@ -2859,44 +2334,6 @@
           'shards': 16,
         }
       },
-      # These tests must run with a GPU.
-      'linux-code-coverage': {
-        'swarming': {
-          'dimensions': {
-            # TODO(crbug.com/40888390): This must be kept in sync with the
-            # appropriate mixin; currently, linux_nvidia_gtx_1660_stable,
-            # which is used by Dawn Linux x64 Release (NVIDIA).
-            'gpu': '10de:2184-440.100',
-            'os': 'Ubuntu-18.04.5|Ubuntu-18.04.6',
-            'pool': 'chromium.tests.gpu'
-          },
-        },
-      },
-      'mac-code-coverage': {
-        'swarming': {
-          'dimensions': {
-            # TODO(crbug.com/40888390): This must be kept in sync with the
-            # appropriate mixin; currently, mac_mini_intel_gpu_stable,
-            # which is used by Dawn Mac x64 Release (Intel).
-            'cpu': 'x86-64',
-            'gpu': '8086:3e9b',
-            'os': 'Mac-14.5',
-            'display_attached': '1',
-          },
-        },
-      },
-      'win10-code-coverage': {
-        'swarming': {
-          'dimensions': {
-            # TODO(crbug.com/40888390): This must be kept in sync with the
-            # appropriate mixin; currently, win10_nvidia_gtx_1660_stable,
-            # which is used by Dawn Win10 x64 Release (NVIDIA).
-            'gpu': '10de:2184-27.21.14.5638',
-            'os': 'Windows-10-18363',
-            'pool': 'chromium.tests.gpu',
-          },
-        },
-      },
     },
   },
   'webgpu_cts_with_validation_tests': {
@@ -2905,10 +2342,6 @@
       'Dawn Win10 x64 DEPS Release (Intel)',
       'Dawn Win10 x64 Experimental Release (Intel)',
       'Dawn Win10 x64 Release (Intel)',
-      # Don't need validation layers on code coverage bots
-      'linux-code-coverage',
-      'mac-code-coverage',
-      'win10-code-coverage',
     ],
     'modifications': {
       'Dawn Android arm DEPS Release (Pixel 4)': {
@@ -2976,11 +2409,6 @@
           'shards': 6,
         },
       },
-      'win10-code-coverage': {
-        'swarming': {
-          'shards': 4,
-        },
-      },
     },
   },
   'webkit_unit_tests_v2':{
@@ -2990,83 +2418,12 @@
           'shards': 6,  # crbug.com/326231701
         },
       },
-      'win10-code-coverage': {
-        'swarming': {
-          'shards': 6,
-        },
-      },
     },
   },
   'webview_instrumentation_test_apk_multiple_process_mode': {
     'remove_from': [
       'android-asan',  # https://crbug.com/964562
     ],
-    'modifications': {
-      'android-code-coverage-native': {
-        'args': [
-          '--use-persistent-shell',
-        ],
-        'swarming': {
-          # Shard number is increased for longer test execution time and added
-          # local coverage data merging time.
-          'shards': 24,
-        },
-      },
-      # Keep this same as android-oreo-x86-rel
-      'android-x86-code-coverage': {
-        'args': [
-          '--use-persistent-shell',
-        ],
-        'swarming': {
-          'shards': 18,
-        },
-      },
-    },
-  },
-  'webview_instrumentation_test_apk_mutations': {
-    'modifications': {
-      'android-webview-code-coverage-native': {
-        'swarming': {
-          # Shard number is increased for longer test execution time and added
-          # local coverage data merging time.
-          'shards': 60,
-        },
-      },
-    }
-  },
-  'webview_instrumentation_test_apk_no_field_trial': {
-    'modifications': {
-      'android-webview-code-coverage-native': {
-        'swarming': {
-          # Shard number is increased for longer test execution time and added
-          # local coverage data merging time.
-          'shards': 30,
-        },
-      },
-    }
-  },
-  'webview_instrumentation_test_apk_single_process_mode': {
-    'modifications': {
-      'android-code-coverage-native': {
-        'args': [
-          '--use-persistent-shell',
-        ],
-        'swarming': {
-          # Shard number is increased for longer test execution time and added
-          # local coverage data merging time.
-          'shards': 12,
-        },
-      },
-      # Keep this same as android-oreo-x86-rel
-      'android-x86-code-coverage': {
-        'args': [
-          '--use-persistent-shell',
-        ],
-        'swarming': {
-          'shards': 9,
-        },
-      },
-    }
   },
   'xr_browser_tests': {
     'modifications': {

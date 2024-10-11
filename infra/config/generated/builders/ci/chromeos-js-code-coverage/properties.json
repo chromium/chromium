@@ -51,7 +51,8 @@
           "builder": "chromeos-js-coverage-rel",
           "group": "tryserver.chromium.linux"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/chromeos-js-code-coverage/targets"
     }
   },
   "$build/code_coverage": {

@@ -274,6 +274,7 @@ targets.mixin(
 
 targets.mixin(
     name = "14-x64-emulator",
+    generate_pyl_entry = False,
     description = "Run with android_34_google_apis_x64",
     args = [
         "--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb",
@@ -654,6 +655,7 @@ targets.mixin(
 
 targets.mixin(
     name = "emulator-4-cores",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "device_os": None,
@@ -678,6 +680,7 @@ targets.mixin(
 
 targets.mixin(
     name = "emulator-enable-network",
+    generate_pyl_entry = False,
     args = [
         "--emulator-enable-network",
     ],
@@ -709,6 +712,7 @@ targets.mixin(
 
 targets.mixin(
     name = "fuchsia-code-coverage",
+    generate_pyl_entry = False,
     args = [
         "--code-coverage-dir=${ISOLATED_OUTDIR}",
     ],
@@ -719,6 +723,7 @@ targets.mixin(
 # only.
 targets.mixin(
     name = "fuchsia-large-device-spec",
+    generate_pyl_entry = False,
     args = [
         "--device-spec=virtual_device_large",
     ],
@@ -947,6 +952,7 @@ targets.mixin(
 
 targets.mixin(
     name = "ios_output_disabled_tests",
+    generate_pyl_entry = False,
     args = [
         "--output-disabled-tests",
     ],
@@ -970,6 +976,7 @@ targets.mixin(
 
 targets.mixin(
     name = "ios_runtime_cache_16_4",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         named_caches = [
             swarming.cache(
@@ -1032,6 +1039,7 @@ targets.mixin(
 
 targets.mixin(
     name = "junit-swarming-emulator",
+    generate_pyl_entry = False,
     swarming = targets.swarming(
         dimensions = {
             "cores": "8",
@@ -1661,6 +1669,7 @@ targets.mixin(
 
 targets.mixin(
     name = "oreo-x86-emulator",
+    generate_pyl_entry = False,
     args = [
         "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
     ],

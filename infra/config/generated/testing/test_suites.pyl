@@ -6,65 +6,6 @@
 {
   'basic_suites': {
 
-    'android_emulator_specific_chrome_public_tests': {
-      'chrome_public_test_apk': {
-        'test_common': {
-          'mixins': [
-            'skia_gold_test',
-          ],
-        },
-        'mixins': [
-          'emulator-8-cores',
-        ],
-        'swarming': {
-          'shards': 20,
-        },
-      },
-      'chrome_public_unit_test_apk': {
-        'test_common': {
-          'mixins': [
-            'skia_gold_test',
-          ],
-        },
-        'swarming': {
-          'shards': 4,
-        },
-      },
-    },
-
-    'android_emulator_specific_network_enabled_content_browsertests': {
-      'content_browsertests_with_emulator_network': {
-        'test_common': {
-          'mixins': [
-            'emulator-enable-network',
-          ],
-          'args': [
-            '--gtest_filter=QuicConnectionMigrationTest.*',
-          ],
-        },
-        'test': 'content_browsertests',
-      },
-    },
-
-    'android_isolated_scripts': {
-      'content_shell_crash_test': {
-        'test_common': {
-          'resultdb': {
-            'enable': True,
-            'result_format': 'single',
-          },
-        },
-        'args': [
-          '--platform=android',
-        ],
-      },
-    },
-
-    'android_monochrome_smoke_tests': {
-      'monochrome_public_bundle_smoke_test': {},
-      'monochrome_public_smoke_test': {},
-    },
-
     'android_smoke_tests': {
       'chrome_public_smoke_test': {},
     },
@@ -113,37 +54,6 @@
       },
     },
 
-    'android_specific_coverage_java_tests': {
-      'content_shell_test_apk': {
-        'swarming': {
-          'shards': 3,
-        },
-      },
-      'mojo_test_apk': {},
-      'webview_instrumentation_test_apk_multiple_process_mode': {
-        'test_common': {
-          'args': [
-            '--webview-process-mode=multiple',
-          ],
-        },
-        'test': 'webview_instrumentation_test_apk',
-        'swarming': {
-          'shards': 5,
-        },
-      },
-      'webview_instrumentation_test_apk_single_process_mode': {
-        'test_common': {
-          'args': [
-            '--webview-process-mode=single',
-          ],
-        },
-        'test': 'webview_instrumentation_test_apk',
-        'swarming': {
-          'shards': 3,
-        },
-      },
-    },
-
     'android_webview_gpu_telemetry_tests': {
       'android_webview_pixel_skia_gold_test': {
         'test_common': {
@@ -161,16 +71,6 @@
           '--test-machine-name',
           '${buildername}',
         ],
-      },
-    },
-
-    'android_wpr_record_replay_tests': {
-      'chrome_java_test_wpr_tests': {
-        'test_common': {
-          'mixins': [
-            'skia_gold_test',
-          ],
-        },
       },
     },
 
@@ -577,15 +477,6 @@
       },
     },
 
-    'chromeos_js_code_coverage_browser_tests_suite': {
-      'chromeos_js_code_coverage_browser_tests': {
-        'test': 'browser_tests',
-        'swarming': {
-          'shards': 32,
-        },
-      },
-    },
-
     'chromeos_system_friendly_gtests': {
       'aura_unittests': {
         'args': [
@@ -784,12 +675,6 @@
         'mixins': [
           'vaapi_unittest_args',
         ],
-      },
-    },
-
-    'chromium_android_scripts': {
-      'check_network_annotations': {
-        'script': 'check_network_annotations.py',
       },
     },
 
@@ -1009,294 +894,6 @@
     'chromium_gtests_for_win_and_linux_only': {
       'pthreadpool_unittests': {
         'ci_only': True,
-      },
-    },
-
-    'chromium_junit_tests_scripts': {
-      'android_webview_junit_tests': {
-        'mixins': [
-          'x86-64',
-          'linux-jammy',
-          'junit-swarming-emulator',
-        ],
-        'remove_mixins': [
-          'chromium_pixel_2_pie',
-          'emulator-4-cores',
-          'oreo-x86-emulator',
-        ],
-      },
-      'base_junit_tests': {
-        'mixins': [
-          'x86-64',
-          'linux-jammy',
-          'junit-swarming-emulator',
-        ],
-        'remove_mixins': [
-          'chromium_pixel_2_pie',
-          'emulator-4-cores',
-          'oreo-x86-emulator',
-        ],
-      },
-      'build_junit_tests': {
-        'mixins': [
-          'x86-64',
-          'linux-jammy',
-          'junit-swarming-emulator',
-        ],
-        'remove_mixins': [
-          'chromium_pixel_2_pie',
-          'emulator-4-cores',
-          'oreo-x86-emulator',
-        ],
-      },
-      'chrome_java_test_pagecontroller_junit_tests': {
-        'mixins': [
-          'x86-64',
-          'linux-jammy',
-          'junit-swarming-emulator',
-        ],
-        'remove_mixins': [
-          'chromium_pixel_2_pie',
-          'emulator-4-cores',
-          'oreo-x86-emulator',
-        ],
-      },
-      'chrome_junit_tests': {
-        'mixins': [
-          'x86-64',
-          'linux-jammy',
-          'junit-swarming-emulator',
-        ],
-        'remove_mixins': [
-          'chromium_pixel_2_pie',
-          'emulator-4-cores',
-          'oreo-x86-emulator',
-        ],
-      },
-      'components_junit_tests': {
-        'mixins': [
-          'x86-64',
-          'linux-jammy',
-          'junit-swarming-emulator',
-        ],
-        'remove_mixins': [
-          'chromium_pixel_2_pie',
-          'emulator-4-cores',
-          'oreo-x86-emulator',
-        ],
-      },
-      'content_junit_tests': {
-        'mixins': [
-          'x86-64',
-          'linux-jammy',
-          'junit-swarming-emulator',
-        ],
-        'remove_mixins': [
-          'chromium_pixel_2_pie',
-          'emulator-4-cores',
-          'oreo-x86-emulator',
-        ],
-      },
-      'device_junit_tests': {
-        'mixins': [
-          'x86-64',
-          'linux-jammy',
-          'junit-swarming-emulator',
-        ],
-        'remove_mixins': [
-          'chromium_pixel_2_pie',
-          'emulator-4-cores',
-          'oreo-x86-emulator',
-        ],
-      },
-      'junit_unit_tests': {
-        'mixins': [
-          'x86-64',
-          'linux-jammy',
-          'junit-swarming-emulator',
-        ],
-        'remove_mixins': [
-          'chromium_pixel_2_pie',
-          'emulator-4-cores',
-          'oreo-x86-emulator',
-        ],
-      },
-      'keyboard_accessory_junit_tests': {
-        'mixins': [
-          'x86-64',
-          'linux-jammy',
-          'junit-swarming-emulator',
-        ],
-        'remove_mixins': [
-          'chromium_pixel_2_pie',
-          'emulator-4-cores',
-          'oreo-x86-emulator',
-        ],
-      },
-      'media_base_junit_tests': {
-        'mixins': [
-          'x86-64',
-          'linux-jammy',
-          'junit-swarming-emulator',
-        ],
-        'remove_mixins': [
-          'chromium_pixel_2_pie',
-          'emulator-4-cores',
-          'oreo-x86-emulator',
-        ],
-      },
-      'module_installer_junit_tests': {
-        'mixins': [
-          'x86-64',
-          'linux-jammy',
-          'junit-swarming-emulator',
-        ],
-        'remove_mixins': [
-          'chromium_pixel_2_pie',
-          'emulator-4-cores',
-          'oreo-x86-emulator',
-        ],
-      },
-      'net_junit_tests': {
-        'mixins': [
-          'x86-64',
-          'linux-jammy',
-          'junit-swarming-emulator',
-        ],
-        'remove_mixins': [
-          'chromium_pixel_2_pie',
-          'emulator-4-cores',
-          'oreo-x86-emulator',
-        ],
-      },
-      'paint_preview_junit_tests': {
-        'mixins': [
-          'x86-64',
-          'linux-jammy',
-          'junit-swarming-emulator',
-        ],
-        'remove_mixins': [
-          'chromium_pixel_2_pie',
-          'emulator-4-cores',
-          'oreo-x86-emulator',
-        ],
-      },
-      'password_check_junit_tests': {
-        'mixins': [
-          'x86-64',
-          'linux-jammy',
-          'junit-swarming-emulator',
-        ],
-        'remove_mixins': [
-          'chromium_pixel_2_pie',
-          'emulator-4-cores',
-          'oreo-x86-emulator',
-        ],
-      },
-      'password_manager_junit_tests': {
-        'mixins': [
-          'x86-64',
-          'linux-jammy',
-          'junit-swarming-emulator',
-        ],
-        'remove_mixins': [
-          'chromium_pixel_2_pie',
-          'emulator-4-cores',
-          'oreo-x86-emulator',
-        ],
-      },
-      'services_junit_tests': {
-        'mixins': [
-          'x86-64',
-          'linux-jammy',
-          'junit-swarming-emulator',
-        ],
-        'remove_mixins': [
-          'chromium_pixel_2_pie',
-          'emulator-4-cores',
-          'oreo-x86-emulator',
-        ],
-      },
-      'touch_to_fill_junit_tests': {
-        'mixins': [
-          'x86-64',
-          'linux-jammy',
-          'junit-swarming-emulator',
-        ],
-        'remove_mixins': [
-          'chromium_pixel_2_pie',
-          'emulator-4-cores',
-          'oreo-x86-emulator',
-        ],
-      },
-      'ui_junit_tests': {
-        'mixins': [
-          'x86-64',
-          'linux-jammy',
-          'junit-swarming-emulator',
-        ],
-        'remove_mixins': [
-          'chromium_pixel_2_pie',
-          'emulator-4-cores',
-          'oreo-x86-emulator',
-        ],
-      },
-      'webapk_client_junit_tests': {
-        'mixins': [
-          'x86-64',
-          'linux-jammy',
-          'junit-swarming-emulator',
-        ],
-        'remove_mixins': [
-          'chromium_pixel_2_pie',
-          'emulator-4-cores',
-          'oreo-x86-emulator',
-        ],
-      },
-      'webapk_shell_apk_h2o_junit_tests': {
-        'mixins': [
-          'x86-64',
-          'linux-jammy',
-          'junit-swarming-emulator',
-        ],
-        'remove_mixins': [
-          'chromium_pixel_2_pie',
-          'emulator-4-cores',
-          'oreo-x86-emulator',
-        ],
-      },
-      'webapk_shell_apk_junit_tests': {
-        'mixins': [
-          'x86-64',
-          'linux-jammy',
-          'junit-swarming-emulator',
-        ],
-        'remove_mixins': [
-          'chromium_pixel_2_pie',
-          'emulator-4-cores',
-          'oreo-x86-emulator',
-        ],
-      },
-    },
-
-    'chromium_linux_scripts': {
-      'check_network_annotations': {
-        'script': 'check_network_annotations.py',
-      },
-      'check_static_initializers': {
-        'script': 'check_static_initializers.py',
-      },
-      'checkdeps': {
-        'script': 'checkdeps.py',
-      },
-      'checkperms': {
-        'script': 'checkperms.py',
-      },
-      'metrics_python_tests': {
-        'script': 'metrics_python_tests.py',
-      },
-      'webkit_lint': {
-        'script': 'blink_lint_expectations.py',
       },
     },
 
@@ -1606,34 +1203,6 @@
         'args': [
           '--gtest-benchmark-name=components_perftests',
         ],
-      },
-    },
-
-    'cronet_clang_coverage_additional_gtests': {
-      'absl_hardening_tests': {},
-      'crypto_unittests': {},
-      'zlib_unittests': {},
-    },
-
-    'cronet_gtests': {
-      'cronet_sample_test_apk': {},
-      'cronet_smoketests_apk': {},
-      'cronet_smoketests_missing_native_library_instrumentation_apk': {},
-      'cronet_smoketests_platform_only_instrumentation_apk': {},
-      'cronet_test_instrumentation_apk': {
-        'mixins': [
-          'emulator-enable-network',
-        ],
-        'swarming': {
-          'shards': 3,
-        },
-      },
-      'cronet_tests_android': {},
-      'cronet_unittests_android': {},
-      'net_unittests': {
-        'swarming': {
-          'shards': 4,
-        },
       },
     },
 
@@ -2014,135 +1583,6 @@
       'base_unittests': {},
     },
 
-    'fuchsia_chrome_gtests': {
-      'absl_hardening_tests': {},
-      'accessibility_unittests': {},
-      'aura_unittests': {},
-      'base_unittests': {},
-      'blink_common_unittests': {},
-      'blink_fuzzer_unittests': {},
-      'blink_heap_unittests': {},
-      'blink_platform_unittests': {
-        'test_common': {
-          'mixins': [
-            'skia_gold_test',
-          ],
-        },
-      },
-      'blink_unittests': {},
-      'boringssl_crypto_tests': {},
-      'boringssl_ssl_tests': {},
-      'capture_unittests': {},
-      'cc_unittests': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
-      'components_browsertests': {
-        'args': [
-          '--test-arg=--disable-gpu',
-          '--test-arg=--headless',
-          '--test-arg=--ozone-platform=headless',
-        ],
-      },
-      'components_unittests': {
-        'swarming': {
-          'shards': 2,
-        },
-      },
-      'compositor_unittests': {},
-      'content_browsertests': {
-        'args': [
-          '--test-arg=--disable-gpu',
-          '--test-arg=--headless',
-          '--test-arg=--ozone-platform=headless',
-        ],
-        'swarming': {
-          'shards': 14,
-        },
-      },
-      'content_unittests': {},
-      'crypto_unittests': {},
-      'display_unittests': {},
-      'events_unittests': {},
-      'filesystem_service_unittests': {},
-      'gcm_unit_tests': {},
-      'gfx_unittests': {},
-      'gin_unittests': {},
-      'google_apis_unittests': {},
-      'gpu_unittests': {},
-      'gwp_asan_unittests': {},
-      'headless_browsertests': {},
-      'headless_unittests': {},
-      'ipc_tests': {},
-      'latency_unittests': {},
-      'media_unittests': {},
-      'message_center_unittests': {},
-      'midi_unittests': {},
-      'mojo_unittests': {},
-      'native_theme_unittests': {},
-      'net_unittests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter',
-        ],
-        'swarming': {
-          'shards': 4,
-        },
-      },
-      'ozone_gl_unittests': {
-        'args': [
-          '--test-arg=--ozone-platform=headless',
-        ],
-      },
-      'ozone_unittests': {},
-      'perfetto_unittests': {},
-      'services_unittests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.services_unittests.filter',
-        ],
-      },
-      'shell_dialogs_unittests': {},
-      'skia_unittests': {},
-      'snapshot_unittests': {},
-      'sql_unittests': {},
-      'storage_unittests': {},
-      'ui_base_unittests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.ui_base_unittests.filter',
-        ],
-      },
-      'ui_touch_selection_unittests': {},
-      'ui_unittests': {},
-      'url_unittests': {},
-      'views_examples_unittests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_examples_unittests.filter',
-        ],
-      },
-      'views_unittests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_unittests.filter',
-        ],
-      },
-      'viz_unittests': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.viz_unittests.filter',
-        ],
-      },
-      'wm_unittests': {},
-      'wtf_unittests': {},
-      'zlib_unittests': {},
-    },
-
-    'fuchsia_web_engine_gtests': {
-      'cast_runner_browsertests': {},
-      'cast_runner_integration_tests': {},
-      'cast_runner_unittests': {},
-      'web_engine_browsertests': {},
-      'web_engine_integration_tests': {},
-      'web_engine_unittests': {},
-    },
-
     'gl_gtests_passthrough': {
       'gl_tests_passthrough': {
         'test_common': {
@@ -2159,10 +1599,6 @@
         },
       },
       'gl_unittests': {},
-    },
-
-    'gpu_angle_fuchsia_unittests_isolated_scripts': {
-      'angle_unittests': {},
     },
 
     'gpu_angle_unit_gtests': {
@@ -4310,15 +3746,6 @@
       'base_unittests': {},
     },
 
-    'js_code_coverage_browser_tests_suite': {
-      'js_code_coverage_browser_tests': {
-        'test': 'browser_tests',
-        'swarming': {
-          'shards': 16,
-        },
-      },
-    },
-
     'leak_detection_isolated_scripts': {
       'memory.leak_detection': {
         'test_common': {
@@ -4585,25 +4012,6 @@
         'test_common': {
           'resultdb': {
             'enable': True,
-          },
-        },
-      },
-    },
-
-    'monochrome_public_apk_checker_isolated_script': {
-      'monochrome_public_apk_checker': {
-        'remove_mixins': [
-          'chromium_nexus_5x_oreo',
-          'chromium_pixel_2_pie',
-        ],
-        'swarming': {
-          'dimensions': {
-            'os': 'Ubuntu-22.04',
-            'cpu': 'x86-64',
-            'device_os': None,
-            'device_os_flavor': None,
-            'device_playstore_version': None,
-            'device_type': None,
           },
         },
       },
@@ -5188,33 +4596,6 @@
       'system_webview_shell_layout_test_apk': {},
     },
 
-    'telemetry_android_minidump_unittests_isolated_scripts': {
-      'telemetry_chromium_minidump_unittests': {
-        'test_common': {
-          'args': [
-            'BrowserMinidumpTest',
-            '--browser=android-chromium',
-            '-v',
-            '--passthrough',
-            '--retry-limit=2',
-          ],
-        },
-        'test': 'telemetry_perf_unittests_android_chrome',
-      },
-      'telemetry_monochrome_minidump_unittests': {
-        'test_common': {
-          'args': [
-            'BrowserMinidumpTest',
-            '--browser=android-chromium-monochrome',
-            '-v',
-            '--passthrough',
-            '--retry-limit=2',
-          ],
-        },
-        'test': 'telemetry_perf_unittests_android_monochrome',
-      },
-    },
-
     'telemetry_desktop_minidump_unittests_isolated_scripts': {
       'telemetry_desktop_minidump_unittests': {
         'test_common': {
@@ -5236,34 +4617,6 @@
       'telemetry_perf_unittests': {
         'args': [
           '--extra-browser-args=--enable-crashpad',
-        ],
-        'swarming': {
-          'shards': 12,
-          'idempotent': False,
-        },
-        'resultdb': {
-          'enable': True,
-        },
-      },
-    },
-
-    'telemetry_perf_unittests_isolated_scripts_android': {
-      'telemetry_perf_unittests_android_chrome': {
-        'args': [
-          '--extra-browser-args=--enable-crashpad',
-        ],
-        'swarming': {
-          'shards': 12,
-          'idempotent': False,
-        },
-      },
-    },
-
-    'telemetry_perf_unittests_isolated_scripts_xvfb': {
-      'telemetry_perf_unittests': {
-        'args': [
-          '--extra-browser-args=--enable-crashpad',
-          '--xvfb',
         ],
         'swarming': {
           'shards': 12,
@@ -5535,78 +4888,6 @@
       },
     },
 
-    'webview_bot_instrumentation_test_apk_mutations_gtest': {
-      'webview_instrumentation_test_apk_mutations': {
-        'test_common': {
-          'args': [
-            '--use-apk-under-test-flags-file',
-            '--webview-mutations-enabled',
-          ],
-        },
-        'test': 'webview_instrumentation_test_apk',
-        'swarming': {
-          'shards': 12,
-        },
-      },
-    },
-
-    'webview_bot_instrumentation_test_apk_no_field_trial_gtest': {
-      'webview_instrumentation_test_apk_no_field_trial': {
-        'test_common': {
-          'args': [
-            '--disable-field-trial-config',
-          ],
-        },
-        'test': 'webview_instrumentation_test_apk',
-        'args': [
-          '--use-apk-under-test-flags-file',
-        ],
-        'swarming': {
-          'shards': 12,
-        },
-      },
-    },
-
-    'webview_bot_unittests_gtest': {
-      'android_webview_unittests': {},
-    },
-
-    'webview_cts_tests_gtest': {
-      'webview_cts_tests': {
-        'test_common': {
-          'mixins': [
-            'webview_cts_archive',
-          ],
-        },
-        'args': [
-          '--store-tombstones',
-        ],
-        'swarming': {
-          'shards': 2,
-        },
-      },
-    },
-
-    'webview_cts_tests_gtest_no_field_trial': {
-      'webview_cts_tests_no_field_trial': {
-        'test_common': {
-          'mixins': [
-            'webview_cts_archive',
-          ],
-          'args': [
-            '--disable-field-trial-config',
-          ],
-        },
-        'test': 'webview_cts_tests',
-        'args': [
-          '--store-tombstones',
-        ],
-        'swarming': {
-          'shards': 2,
-        },
-      },
-    },
-
     'webview_instrumentation_test_apk_single_process_mode_gtests': {
       'webview_instrumentation_test_apk_single_process_mode': {
         'test_common': {
@@ -5640,17 +4921,6 @@
 
     'webview_ui_instrumentation_tests': {
       'webview_ui_test_app_test_apk': {},
-    },
-
-    'webview_ui_instrumentation_tests_no_field_trial': {
-      'webview_ui_test_app_test_apk_no_field_trial': {
-        'test_common': {
-          'args': [
-            '--disable-field-trial-config',
-          ],
-        },
-        'test': 'webview_ui_test_app_test_apk',
-      },
     },
 
     'win_specific_chromium_gtests': {
@@ -5751,35 +5021,6 @@
   },
 
   'compound_suites': {
-
-    'android_cronet_clang_coverage_gtests': [
-      'cronet_clang_coverage_additional_gtests',
-      'cronet_gtests',
-    ],
-
-    'android_oreo_emulator_gtests': [
-      'android_emulator_specific_chrome_public_tests',
-      'android_emulator_specific_network_enabled_content_browsertests',
-      'android_monochrome_smoke_tests',
-      'android_smoke_tests',
-      'android_specific_chromium_gtests',
-      'android_wpr_record_replay_tests',
-      'chromium_gtests',
-      'chromium_gtests_for_devices_with_graphical_output',
-      'linux_flavor_specific_chromium_gtests',
-      'system_webview_shell_instrumentation_tests',
-      'webview_cts_tests_gtest',
-      'webview_instrumentation_test_apk_single_process_mode_gtests',
-      'webview_ui_instrumentation_tests',
-    ],
-
-    'android_pie_coverage_instrumentation_tests': [
-      'android_smoke_tests',
-      'android_specific_coverage_java_tests',
-      'chrome_public_tests',
-      'vr_android_specific_chromium_tests',
-      'webview_ui_instrumentation_tests',
-    ],
 
     'bfcache_linux_gtests': [
       'bfcache_generic_gtests',
@@ -5882,18 +5123,6 @@
       'vulkan_swiftshader_isolated_scripts',
     ],
 
-    'chromium_linux_rel_isolated_scripts_code_coverage': [
-      'chromedriver_py_tests_isolated_scripts',
-      'chromium_web_tests_high_dpi_isolated_scripts',
-      'desktop_chromium_isolated_scripts',
-      'gpu_dawn_webgpu_blink_web_tests',
-      'linux_specific_chromium_isolated_scripts',
-      'mojo_python_unittests_isolated_scripts',
-      'pytype_tests',
-      'telemetry_perf_unittests_isolated_scripts_xvfb',
-      'vulkan_swiftshader_isolated_scripts',
-    ],
-
     'chromium_mac_gtests': [
       'chromium_gtests',
       'chromium_gtests_for_devices_with_graphical_output',
@@ -5929,9 +5158,6 @@
       'mac_specific_isolated_scripts',
       'mojo_python_unittests_isolated_scripts',
       'telemetry_perf_unittests_isolated_scripts',
-    ],
-
-    'chromium_mac_rel_isolated_scripts_code_coverage': [
     ],
 
     'chromium_mac_rel_isolated_scripts_once': [
@@ -5983,18 +5209,9 @@
       'win_specific_isolated_scripts',
     ],
 
-    'chromium_win_rel_isolated_scripts_code_coverage': [
-      'gpu_dawn_webgpu_blink_web_tests',
-    ],
-
     'devtools_gtests': [
       'blink_unittests_suite',
       'devtools_browser_tests_suite',
-    ],
-
-    'fuchsia_gtests': [
-      'fuchsia_chrome_gtests',
-      'fuchsia_web_engine_gtests',
     ],
 
     'gpu_chromeos_telemetry_tests': [
@@ -6357,34 +5574,8 @@
       'network_service_fyi_gtests',
     ],
 
-    'oreo_isolated_scripts': [
-      'android_isolated_scripts',
-      'chromium_junit_tests_scripts',
-      'components_perftests_isolated_scripts',
-      'monochrome_public_apk_checker_isolated_script',
-      'telemetry_android_minidump_unittests_isolated_scripts',
-      'telemetry_perf_unittests_isolated_scripts_android',
-    ],
-
     'rust_host_gtests': [
       'rust_common_gtests',
-    ],
-
-    'webview_fyi_bot_all_gtests': [
-      'system_webview_shell_instrumentation_tests',
-      'webview_bot_instrumentation_test_apk_mutations_gtest',
-      'webview_bot_instrumentation_test_apk_no_field_trial_gtest',
-      'webview_bot_unittests_gtest',
-      'webview_cts_tests_gtest',
-      'webview_cts_tests_gtest_no_field_trial',
-      'webview_ui_instrumentation_tests',
-      'webview_ui_instrumentation_tests_no_field_trial',
-    ],
-
-    'webview_native_coverage_bot_gtests': [
-      'webview_bot_instrumentation_test_apk_mutations_gtest',
-      'webview_bot_instrumentation_test_apk_no_field_trial_gtest',
-      'webview_bot_unittests_gtest',
     ],
 
     'win_specific_isolated_scripts_and_sizes': [
@@ -7113,55 +6304,6 @@
     'ios_blink_dbg_tests': {
       'ios_blink_tests': {
         'variants': [
-          'SIM_IPHONE_14_17_5',
-          'SIM_IPHONE_15_18_0',
-        ],
-      },
-    },
-
-    'ios_code_coverage_tests': {
-      'ios_common_tests': {
-        'variants': [
-          'SIM_IPHONE_14_16_4',
-          'SIM_IPHONE_14_17_5',
-          'SIM_IPHONE_15_18_0',
-        ],
-      },
-      'ios_eg2_cq_tests': {
-        'mixins': [
-          'xcodebuild_sim_runner',
-        ],
-        'variants': [
-          'SIM_IPAD_AIR_5TH_GEN_16_4',
-          'SIM_IPAD_AIR_5TH_GEN_17_5',
-          'SIM_IPAD_AIR_6TH_GEN_18_0',
-          'SIM_IPAD_PRO_6TH_GEN_16_4',
-          'SIM_IPAD_PRO_6TH_GEN_17_5',
-          'SIM_IPAD_PRO_7TH_GEN_18_0',
-          'SIM_IPHONE_14_16_4',
-          'SIM_IPHONE_14_17_5',
-          'SIM_IPHONE_15_18_0',
-        ],
-      },
-      'ios_eg2_tests': {
-        'mixins': [
-          'xcodebuild_sim_runner',
-        ],
-        'variants': [
-          'SIM_IPAD_PRO_6TH_GEN_16_4',
-          'SIM_IPAD_PRO_6TH_GEN_17_5',
-          'SIM_IPAD_PRO_7TH_GEN_18_0',
-          'SIM_IPHONE_14_16_4',
-          'SIM_IPHONE_14_17_5',
-          'SIM_IPHONE_15_18_0',
-        ],
-      },
-      'ios_screen_size_dependent_tests': {
-        'variants': [
-          'SIM_IPAD_PRO_6TH_GEN_16_4',
-          'SIM_IPAD_PRO_6TH_GEN_17_5',
-          'SIM_IPAD_PRO_7TH_GEN_18_0',
-          'SIM_IPHONE_14_16_4',
           'SIM_IPHONE_14_17_5',
           'SIM_IPHONE_15_18_0',
         ],

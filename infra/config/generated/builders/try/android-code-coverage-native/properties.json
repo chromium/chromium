@@ -46,7 +46,8 @@
           "builder": "android-code-coverage-native",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/android-code-coverage-native/targets"
     }
   },
   "$build/reclient": {

@@ -104,7 +104,7 @@ def _settings(
         is_linux = os_type == _os_type.LINUX,
         is_mac = os_type == _os_type.MAC,
         is_win = os_type == _os_type.WINDOWS,
-        is_win64 = os_type == (_os_type.WINDOWS and browser_config == _browser_config.RELEASE_X64),
+        is_win64 = os_type == _os_type.WINDOWS and browser_config == _browser_config.RELEASE_X64,
     )
 
 def _create_compile_target(*, name):

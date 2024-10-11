@@ -41,7 +41,8 @@
           "builder": "chromeos-js-code-coverage",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/chromeos-js-coverage-rel/targets"
     }
   },
   "$build/code_coverage": {

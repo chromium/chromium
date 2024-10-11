@@ -43,7 +43,8 @@
           "builder": "android-x86-code-coverage",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-x86-code-coverage/targets"
     }
   },
   "$build/code_coverage": {

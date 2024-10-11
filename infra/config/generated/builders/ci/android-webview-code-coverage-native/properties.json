@@ -46,7 +46,8 @@
           "builder": "android-webview-code-coverage-native",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-webview-code-coverage-native/targets"
     }
   },
   "$build/code_coverage": {

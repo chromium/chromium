@@ -48,7 +48,8 @@
           "builder": "fuchsia-code-coverage",
           "group": "tryserver.chromium.fuchsia"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/fuchsia-code-coverage/targets"
     }
   },
   "$build/code_coverage": {

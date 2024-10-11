@@ -12,44 +12,6 @@
 load("//lib/targets.star", "targets")
 
 targets.legacy_compound_suite(
-    name = "android_cronet_clang_coverage_gtests",
-    basic_suites = [
-        "cronet_clang_coverage_additional_gtests",
-        "cronet_gtests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "android_oreo_emulator_gtests",
-    basic_suites = [
-        "android_emulator_specific_chrome_public_tests",
-        "android_emulator_specific_network_enabled_content_browsertests",
-        "android_monochrome_smoke_tests",
-        "android_smoke_tests",
-        "android_specific_chromium_gtests",  # Already includes gl_gtests.
-        "android_wpr_record_replay_tests",
-        "chromium_gtests",
-        "chromium_gtests_for_devices_with_graphical_output",
-        "linux_flavor_specific_chromium_gtests",
-        "system_webview_shell_instrumentation_tests",  # Not an experimental test
-        "webview_cts_tests_gtest",
-        "webview_ui_instrumentation_tests",
-        "webview_instrumentation_test_apk_single_process_mode_gtests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "android_pie_coverage_instrumentation_tests",
-    basic_suites = [
-        "android_smoke_tests",
-        "android_specific_coverage_java_tests",
-        "chrome_public_tests",
-        "vr_android_specific_chromium_tests",
-        "webview_ui_instrumentation_tests",
-    ],
-)
-
-targets.legacy_compound_suite(
     name = "bfcache_linux_gtests",
     basic_suites = [
         "bfcache_generic_gtests",
@@ -187,21 +149,6 @@ targets.legacy_compound_suite(
 )
 
 targets.legacy_compound_suite(
-    name = "chromium_linux_rel_isolated_scripts_code_coverage",
-    basic_suites = [
-        "chromedriver_py_tests_isolated_scripts",
-        "desktop_chromium_isolated_scripts",
-        "linux_specific_chromium_isolated_scripts",
-        "mojo_python_unittests_isolated_scripts",
-        "pytype_tests",
-        "telemetry_perf_unittests_isolated_scripts_xvfb",
-        "vulkan_swiftshader_isolated_scripts",
-        "chromium_web_tests_high_dpi_isolated_scripts",
-        "gpu_dawn_webgpu_blink_web_tests",
-    ],
-)
-
-targets.legacy_compound_suite(
     name = "chromium_mac_gtests",
     basic_suites = [
         "chromium_gtests",
@@ -250,13 +197,6 @@ targets.legacy_compound_suite(
         "mac_specific_isolated_scripts",
         "mojo_python_unittests_isolated_scripts",
         "telemetry_perf_unittests_isolated_scripts",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "chromium_mac_rel_isolated_scripts_code_coverage",
-    basic_suites = [
-        # TODO(crbug.com/40249801): Enable gpu_dawn_webgpu_blink_web_tests
     ],
 )
 
@@ -335,26 +275,10 @@ targets.legacy_compound_suite(
 )
 
 targets.legacy_compound_suite(
-    name = "chromium_win_rel_isolated_scripts_code_coverage",
-    basic_suites = [
-        "gpu_dawn_webgpu_blink_web_tests",
-    ],
-)
-
-targets.legacy_compound_suite(
     name = "devtools_gtests",
     basic_suites = [
         "devtools_browser_tests_suite",
         "blink_unittests_suite",
-    ],
-)
-
-# All gtests that can be run on Fuchsia CI/CQ
-targets.legacy_compound_suite(
-    name = "fuchsia_gtests",
-    basic_suites = [
-        "fuchsia_chrome_gtests",
-        "fuchsia_web_engine_gtests",
     ],
 )
 
@@ -916,46 +840,11 @@ targets.legacy_compound_suite(
     ],
 )
 
-targets.legacy_compound_suite(
-    name = "oreo_isolated_scripts",
-    basic_suites = [
-        "android_isolated_scripts",
-        "chromium_junit_tests_scripts",
-        "components_perftests_isolated_scripts",
-        "monochrome_public_apk_checker_isolated_script",
-        "telemetry_android_minidump_unittests_isolated_scripts",
-        "telemetry_perf_unittests_isolated_scripts_android",
-    ],
-)
-
 # Rust tests run on non-cross builds.
 targets.legacy_compound_suite(
     name = "rust_host_gtests",
     basic_suites = [
         "rust_common_gtests",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "webview_fyi_bot_all_gtests",
-    basic_suites = [
-        "system_webview_shell_instrumentation_tests",
-        "webview_bot_instrumentation_test_apk_mutations_gtest",
-        "webview_bot_instrumentation_test_apk_no_field_trial_gtest",
-        "webview_bot_unittests_gtest",
-        "webview_cts_tests_gtest",
-        "webview_cts_tests_gtest_no_field_trial",
-        "webview_ui_instrumentation_tests",
-        "webview_ui_instrumentation_tests_no_field_trial",
-    ],
-)
-
-targets.legacy_compound_suite(
-    name = "webview_native_coverage_bot_gtests",
-    basic_suites = [
-        "webview_bot_instrumentation_test_apk_mutations_gtest",
-        "webview_bot_instrumentation_test_apk_no_field_trial_gtest",
-        "webview_bot_unittests_gtest",
     ],
 )
 

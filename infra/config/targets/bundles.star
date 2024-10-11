@@ -305,6 +305,14 @@ targets.bundle(
     },
 )
 
+targets.bundle(
+    name = "android_cronet_clang_coverage_gtests",
+    targets = [
+        "cronet_clang_coverage_additional_gtests",
+        "cronet_gtests",
+    ],
+)
+
 # Android desktop tests that run on a Linux host.
 targets.bundle(
     name = "android_desktop_junit_tests",
@@ -363,6 +371,36 @@ targets.bundle(
     },
 )
 
+targets.bundle(
+    name = "android_emulator_specific_chrome_public_tests",
+    targets = [
+        "chrome_public_test_apk",
+        "chrome_public_unit_test_apk",
+    ],
+    per_test_modifications = {
+        "chrome_public_test_apk": [
+            targets.mixin(
+                swarming = targets.swarming(
+                    shards = 20,
+                ),
+            ),
+            "emulator-8-cores",
+        ],
+        "chrome_public_unit_test_apk": targets.mixin(
+            swarming = targets.swarming(
+                shards = 4,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "android_emulator_specific_network_enabled_content_browsertests",
+    targets = [
+        "content_browsertests_with_emulator_network",
+    ],
+)
+
 # Test suites that need to run on hardware that is close to real Android device.
 # See https://crbug.com/40204012#comment5 for details.
 targets.bundle(
@@ -371,6 +409,20 @@ targets.bundle(
         "cc_unittests",
         "viz_unittests",
     ],
+)
+
+targets.bundle(
+    name = "android_isolated_scripts",
+    targets = [
+        "content_shell_crash_test",
+    ],
+    per_test_modifications = {
+        "content_shell_crash_test": targets.mixin(
+            args = [
+                "--platform=android",
+            ],
+        ),
+    },
 )
 
 # Used when the device capacity is limited, e.g. for CQ.
@@ -413,6 +465,33 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "android_monochrome_smoke_tests",
+    targets = [
+        "monochrome_public_bundle_smoke_test",
+        "monochrome_public_smoke_test",
+    ],
+)
+
+targets.bundle(
+    name = "android_oreo_emulator_gtests",
+    targets = [
+        "android_emulator_specific_chrome_public_tests",
+        "android_emulator_specific_network_enabled_content_browsertests",
+        "android_monochrome_smoke_tests",
+        "android_smoke_tests",
+        "android_specific_chromium_gtests",
+        "android_wpr_record_replay_tests",
+        "chromium_gtests",
+        "chromium_gtests_for_devices_with_graphical_output",
+        "linux_flavor_specific_chromium_gtests",
+        "system_webview_shell_instrumentation_tests",
+        "webview_cts_tests_gtest",
+        "webview_instrumentation_test_apk_single_process_mode_gtests",
+        "webview_ui_instrumentation_tests",
+    ],
+)
+
+targets.bundle(
     name = "android_oreo_gtests",
     targets = [
         "android_ar_gtests",
@@ -443,6 +522,17 @@ targets.bundle(
             ),
         ),
     },
+)
+
+targets.bundle(
+    name = "android_pie_coverage_instrumentation_tests",
+    targets = [
+        "android_smoke_tests",
+        "android_specific_coverage_java_tests",
+        "chrome_public_tests",
+        "vr_android_specific_chromium_tests",
+        "webview_ui_instrumentation_tests",
+    ],
 )
 
 targets.bundle(
@@ -548,9 +638,43 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "android_specific_coverage_java_tests",
+    targets = [
+        "content_shell_test_apk",
+        "mojo_test_apk",
+        "webview_instrumentation_test_apk_multiple_process_mode",
+        "webview_instrumentation_test_apk_single_process_mode",
+    ],
+    per_test_modifications = {
+        "content_shell_test_apk": targets.mixin(
+            swarming = targets.swarming(
+                shards = 3,
+            ),
+        ),
+        "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
+            swarming = targets.swarming(
+                shards = 5,
+            ),
+        ),
+        "webview_instrumentation_test_apk_single_process_mode": targets.mixin(
+            swarming = targets.swarming(
+                shards = 3,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
     name = "android_trichrome_smoke_tests",
     targets = [
         "trichrome_chrome_bundle_smoke_test",
+    ],
+)
+
+targets.bundle(
+    name = "android_wpr_record_replay_tests",
+    targets = [
+        "chrome_java_test_wpr_tests",
     ],
 )
 
@@ -692,6 +816,20 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "chromeos_js_code_coverage_browser_tests_suite",
+    targets = [
+        "chromeos_js_code_coverage_browser_tests",
+    ],
+    per_test_modifications = {
+        "chromeos_js_code_coverage_browser_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 32,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
     name = "chromium_android_cast_receiver",
     additional_compile_targets = [
         "cast_browser_apk",
@@ -721,6 +859,13 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "chromium_android_scripts",
+    targets = [
+        "check_network_annotations",
+    ],
+)
+
+targets.bundle(
     name = "chromium_dbg_isolated_scripts",
     targets = [
         "desktop_chromium_isolated_scripts",
@@ -734,6 +879,217 @@ targets.bundle(
     targets = [
         "check_static_initializers",
     ],
+)
+
+targets.bundle(
+    name = "chromium_junit_tests_scripts",
+    targets = [
+        "android_webview_junit_tests",
+        "base_junit_tests",
+        "build_junit_tests",
+        "chrome_java_test_pagecontroller_junit_tests",
+        "chrome_junit_tests",
+        "components_junit_tests",
+        "content_junit_tests",
+        "device_junit_tests",
+        "junit_unit_tests",
+        "keyboard_accessory_junit_tests",
+        "media_base_junit_tests",
+        "module_installer_junit_tests",
+        "net_junit_tests",
+        "paint_preview_junit_tests",
+        "password_check_junit_tests",
+        "password_manager_junit_tests",
+        "services_junit_tests",
+        "touch_to_fill_junit_tests",
+        "ui_junit_tests",
+        "webapk_client_junit_tests",
+        "webapk_shell_apk_h2o_junit_tests",
+        "webapk_shell_apk_junit_tests",
+    ],
+    mixins = [
+        "x86-64",
+        "linux-jammy",
+        "junit-swarming-emulator",
+    ],
+    per_test_modifications = {
+        "android_webview_junit_tests": targets.per_test_modification(
+            remove_mixins = [
+                "chromium_pixel_2_pie",
+                "emulator-4-cores",
+                "nougat-x86-emulator",
+                "oreo-x86-emulator",
+            ],
+        ),
+        "base_junit_tests": targets.per_test_modification(
+            remove_mixins = [
+                "chromium_pixel_2_pie",
+                "emulator-4-cores",
+                "nougat-x86-emulator",
+                "oreo-x86-emulator",
+            ],
+        ),
+        "build_junit_tests": targets.per_test_modification(
+            remove_mixins = [
+                "chromium_pixel_2_pie",
+                "emulator-4-cores",
+                "nougat-x86-emulator",
+                "oreo-x86-emulator",
+            ],
+        ),
+        "chrome_java_test_pagecontroller_junit_tests": targets.per_test_modification(
+            remove_mixins = [
+                "chromium_pixel_2_pie",
+                "emulator-4-cores",
+                "nougat-x86-emulator",
+                "oreo-x86-emulator",
+            ],
+        ),
+        "chrome_junit_tests": targets.per_test_modification(
+            remove_mixins = [
+                "chromium_pixel_2_pie",
+                "emulator-4-cores",
+                "nougat-x86-emulator",
+                "oreo-x86-emulator",
+            ],
+        ),
+        "components_junit_tests": targets.per_test_modification(
+            remove_mixins = [
+                "chromium_pixel_2_pie",
+                "emulator-4-cores",
+                "nougat-x86-emulator",
+                "oreo-x86-emulator",
+            ],
+        ),
+        "content_junit_tests": targets.per_test_modification(
+            remove_mixins = [
+                "chromium_pixel_2_pie",
+                "emulator-4-cores",
+                "nougat-x86-emulator",
+                "oreo-x86-emulator",
+            ],
+        ),
+        "device_junit_tests": targets.per_test_modification(
+            remove_mixins = [
+                "chromium_pixel_2_pie",
+                "emulator-4-cores",
+                "nougat-x86-emulator",
+                "oreo-x86-emulator",
+            ],
+        ),
+        "junit_unit_tests": targets.per_test_modification(
+            remove_mixins = [
+                "chromium_pixel_2_pie",
+                "emulator-4-cores",
+                "nougat-x86-emulator",
+                "oreo-x86-emulator",
+            ],
+        ),
+        "keyboard_accessory_junit_tests": targets.per_test_modification(
+            remove_mixins = [
+                "chromium_pixel_2_pie",
+                "emulator-4-cores",
+                "nougat-x86-emulator",
+                "oreo-x86-emulator",
+            ],
+        ),
+        "media_base_junit_tests": targets.per_test_modification(
+            remove_mixins = [
+                "chromium_pixel_2_pie",
+                "emulator-4-cores",
+                "nougat-x86-emulator",
+                "oreo-x86-emulator",
+            ],
+        ),
+        "module_installer_junit_tests": targets.per_test_modification(
+            remove_mixins = [
+                "chromium_pixel_2_pie",
+                "emulator-4-cores",
+                "nougat-x86-emulator",
+                "oreo-x86-emulator",
+            ],
+        ),
+        "net_junit_tests": targets.per_test_modification(
+            remove_mixins = [
+                "chromium_pixel_2_pie",
+                "emulator-4-cores",
+                "nougat-x86-emulator",
+                "oreo-x86-emulator",
+            ],
+        ),
+        "paint_preview_junit_tests": targets.per_test_modification(
+            remove_mixins = [
+                "chromium_pixel_2_pie",
+                "emulator-4-cores",
+                "nougat-x86-emulator",
+                "oreo-x86-emulator",
+            ],
+        ),
+        "password_check_junit_tests": targets.per_test_modification(
+            remove_mixins = [
+                "chromium_pixel_2_pie",
+                "emulator-4-cores",
+                "nougat-x86-emulator",
+                "oreo-x86-emulator",
+            ],
+        ),
+        "password_manager_junit_tests": targets.per_test_modification(
+            remove_mixins = [
+                "chromium_pixel_2_pie",
+                "emulator-4-cores",
+                "nougat-x86-emulator",
+                "oreo-x86-emulator",
+            ],
+        ),
+        "services_junit_tests": targets.per_test_modification(
+            remove_mixins = [
+                "chromium_pixel_2_pie",
+                "emulator-4-cores",
+                "nougat-x86-emulator",
+                "oreo-x86-emulator",
+            ],
+        ),
+        "touch_to_fill_junit_tests": targets.per_test_modification(
+            remove_mixins = [
+                "chromium_pixel_2_pie",
+                "emulator-4-cores",
+                "nougat-x86-emulator",
+                "oreo-x86-emulator",
+            ],
+        ),
+        "ui_junit_tests": targets.per_test_modification(
+            remove_mixins = [
+                "chromium_pixel_2_pie",
+                "emulator-4-cores",
+                "nougat-x86-emulator",
+                "oreo-x86-emulator",
+            ],
+        ),
+        "webapk_client_junit_tests": targets.per_test_modification(
+            remove_mixins = [
+                "chromium_pixel_2_pie",
+                "emulator-4-cores",
+                "nougat-x86-emulator",
+                "oreo-x86-emulator",
+            ],
+        ),
+        "webapk_shell_apk_h2o_junit_tests": targets.per_test_modification(
+            remove_mixins = [
+                "chromium_pixel_2_pie",
+                "emulator-4-cores",
+                "nougat-x86-emulator",
+                "oreo-x86-emulator",
+            ],
+        ),
+        "webapk_shell_apk_junit_tests": targets.per_test_modification(
+            remove_mixins = [
+                "chromium_pixel_2_pie",
+                "emulator-4-cores",
+                "nougat-x86-emulator",
+                "oreo-x86-emulator",
+            ],
+        ),
+    },
 )
 
 targets.bundle(
@@ -770,6 +1126,21 @@ targets.bundle(
     ],
 )
 
+targets.bundle(
+    name = "chromium_linux_rel_isolated_scripts_code_coverage",
+    targets = [
+        "chromedriver_py_tests_isolated_scripts",
+        "chromium_web_tests_high_dpi_isolated_scripts",
+        "desktop_chromium_isolated_scripts",
+        "gpu_dawn_webgpu_blink_web_tests",
+        "linux_specific_chromium_isolated_scripts",
+        "mojo_python_unittests_isolated_scripts",
+        "pytype_tests",
+        "telemetry_perf_unittests_isolated_scripts_xvfb",
+        "vulkan_swiftshader_isolated_scripts",
+    ],
+)
+
 # Like chromium_linux_rel_isolated_scripts, but should only
 # include test suites that aren't affected by things like extra GN args
 # (e.g. is_debug) or OS versions (e.g. Mac-12 vs Mac-13). Note: use
@@ -794,6 +1165,18 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "chromium_linux_scripts",
+    targets = [
+        "check_network_annotations",
+        "check_static_initializers",
+        "checkdeps",
+        "checkperms",
+        "metrics_python_tests",
+        "webkit_lint",
+    ],
+)
+
+targets.bundle(
     name = "chromium_mac_rel_isolated_scripts",
     targets = [
         "chromedriver_py_tests_isolated_scripts",
@@ -803,6 +1186,11 @@ targets.bundle(
         "mojo_python_unittests_isolated_scripts",
         "telemetry_perf_unittests_isolated_scripts",
     ],
+)
+
+targets.bundle(
+    name = "chromium_mac_rel_isolated_scripts_code_coverage",
+    # TODO(crbug.com/40249801): Enable gpu_dawn_webgpu_blink_web_tests
 )
 
 # On some bots we don't have capacity to run all standard tests (for example
@@ -890,6 +1278,13 @@ targets.bundle(
     ],
 )
 
+targets.bundle(
+    name = "chromium_win_rel_isolated_scripts_code_coverage",
+    targets = [
+        "gpu_dawn_webgpu_blink_web_tests",
+    ],
+)
+
 # Like chromium_win_rel_isolated_scripts, but should only include test suites
 # that aren't affected by things like extra GN args (e.g. is_debug) or OS
 # versions (e.g. Mac-12 vs Mac-13). Note: use chromium_win_rel_isolated_scripts
@@ -906,6 +1301,20 @@ targets.bundle(
         "telemetry_desktop_minidump_unittests_isolated_scripts",
         "telemetry_perf_unittests_isolated_scripts",
         "win_specific_isolated_scripts",
+    ],
+)
+
+# Compilable unit tests of cronet dependencies in:
+# //components/cronet/android/dependencies.txt
+# TODO(crbug.com/333888734): Add component_unittests or a subset of it.
+# TODO(crbug.com/333887705): Make base_unittests compilable and add it.
+# TODO(crbug.com/333888747): Make url_unittests compilable and add it.
+targets.bundle(
+    name = "cronet_clang_coverage_additional_gtests",
+    targets = [
+        "absl_hardening_tests",
+        "crypto_unittests",
+        "zlib_unittests",
     ],
 )
 
@@ -930,6 +1339,35 @@ targets.bundle(
     targets = [
         "cronet_sizes_suite",
     ],
+)
+
+targets.bundle(
+    name = "cronet_gtests",
+    targets = [
+        "cronet_sample_test_apk",
+        "cronet_smoketests_apk",
+        "cronet_smoketests_missing_native_library_instrumentation_apk",
+        "cronet_smoketests_platform_only_instrumentation_apk",
+        "cronet_test_instrumentation_apk",
+        "cronet_tests_android",
+        "cronet_unittests_android",
+        "net_unittests",
+    ],
+    per_test_modifications = {
+        "cronet_test_instrumentation_apk": [
+            targets.mixin(
+                swarming = targets.swarming(
+                    shards = 3,
+                ),
+            ),
+            "emulator-enable-network",
+        ],
+        "net_unittests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 4,
+            ),
+        ),
+    },
 )
 
 targets.bundle(
@@ -1033,6 +1471,139 @@ targets.bundle(
     ],
 )
 
+# chromium gtests running on fuchsia.
+targets.bundle(
+    name = "fuchsia_chrome_gtests",
+    targets = [
+        "absl_hardening_tests",
+        "accessibility_unittests",
+        "aura_unittests",
+        "base_unittests",
+        "blink_common_unittests",
+        "blink_fuzzer_unittests",
+        "blink_heap_unittests",
+        "blink_platform_unittests",
+        "blink_unittests",
+        "boringssl_crypto_tests",
+        "boringssl_ssl_tests",
+        "capture_unittests",
+        "cc_unittests",
+        "components_browsertests",
+        "components_unittests",
+        "compositor_unittests",
+        "content_browsertests",
+        "content_unittests",
+        "crypto_unittests",
+        "display_unittests",
+        "events_unittests",
+        "filesystem_service_unittests",
+        "gcm_unit_tests",
+        "gfx_unittests",
+        "gin_unittests",
+        "google_apis_unittests",
+        "gpu_unittests",
+        "gwp_asan_unittests",
+        "headless_browsertests",
+        "headless_unittests",
+        "ipc_tests",
+        "latency_unittests",
+        "media_unittests",
+        "message_center_unittests",
+        "midi_unittests",
+        "mojo_unittests",
+        "native_theme_unittests",
+        "net_unittests",
+        "ozone_gl_unittests",
+        "ozone_unittests",
+        "perfetto_unittests",
+        # TODO(crbug.com/40274401): Enable this.
+        # "rust_gtest_interop_unittests",
+        "services_unittests",
+        "shell_dialogs_unittests",
+        "skia_unittests",
+        "snapshot_unittests",
+        "sql_unittests",
+        "storage_unittests",
+        "ui_base_unittests",
+        "ui_touch_selection_unittests",
+        "ui_unittests",
+        "url_unittests",
+        "views_examples_unittests",
+        "views_unittests",
+        "viz_unittests",
+        "wm_unittests",
+        "wtf_unittests",
+        "zlib_unittests",
+    ],
+    per_test_modifications = {
+        "cc_unittests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+        "components_browsertests": targets.mixin(
+            args = [
+                "--test-arg=--disable-gpu",
+                "--test-arg=--headless",
+                "--test-arg=--ozone-platform=headless",
+            ],
+        ),
+        "components_unittests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+        "content_browsertests": targets.mixin(
+            args = [
+                "--test-arg=--disable-gpu",
+                "--test-arg=--headless",
+                "--test-arg=--ozone-platform=headless",
+            ],
+            swarming = targets.swarming(
+                shards = 14,
+            ),
+        ),
+        "net_unittests": targets.mixin(
+            args = [
+                "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter",
+            ],
+            swarming = targets.swarming(
+                shards = 4,
+            ),
+        ),
+        "ozone_gl_unittests": targets.mixin(
+            args = [
+                "--test-arg=--ozone-platform=headless",
+            ],
+        ),
+        "services_unittests": targets.mixin(
+            args = [
+                "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.services_unittests.filter",
+            ],
+        ),
+        "ui_base_unittests": targets.mixin(
+            args = [
+                "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.ui_base_unittests.filter",
+            ],
+        ),
+        "views_examples_unittests": targets.mixin(
+            args = [
+                "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_examples_unittests.filter",
+            ],
+        ),
+        "views_unittests": targets.mixin(
+            args = [
+                "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.views_unittests.filter",
+            ],
+        ),
+        "viz_unittests": targets.mixin(
+            args = [
+                "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.viz_unittests.filter",
+            ],
+        ),
+    },
+)
+
 # This is a set of selected tests to test the test facility only. The
 # principle of the selection includes time cost, scenario coverage,
 # stability, etc; and it's subject to change. In theory, it should only be
@@ -1049,6 +1620,15 @@ targets.bundle(
     ],
     mixins = [
         "upload_inv_extended_properties",
+    ],
+)
+
+# All gtests that can be run on Fuchsia CI/CQ
+targets.bundle(
+    name = "fuchsia_gtests",
+    targets = [
+        "fuchsia_chrome_gtests",
+        "fuchsia_web_engine_gtests",
     ],
 )
 
@@ -1122,6 +1702,26 @@ targets.bundle(
             "has_native_resultdb_integration",
         ],
     },
+)
+
+# dedicated fuchsia gtests for web-engine and its related components.
+targets.bundle(
+    name = "fuchsia_web_engine_gtests",
+    targets = [
+        "cast_runner_browsertests",
+        "cast_runner_integration_tests",
+        "cast_runner_unittests",
+        "web_engine_browsertests",
+        "web_engine_integration_tests",
+        "web_engine_unittests",
+    ],
+)
+
+targets.bundle(
+    name = "gpu_angle_fuchsia_unittests_isolated_scripts",
+    targets = [
+        "angle_unittests",
+    ],
 )
 
 targets.bundle(
@@ -1363,6 +1963,64 @@ targets.bundle(
     ],
 )
 
+# This suite is a union of ios_simulator_tests and
+# ios_simulator_full_configs_tests.
+targets.bundle(
+    name = "ios_code_coverage_tests",
+    targets = [
+        targets.bundle(
+            targets = "ios_common_tests",
+            variants = [
+                "SIM_IPHONE_14_16_4",
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_cq_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+            ],
+            variants = [
+                "SIM_IPAD_AIR_5TH_GEN_16_4",
+                "SIM_IPAD_AIR_5TH_GEN_17_5",
+                "SIM_IPAD_AIR_6TH_GEN_18_0",
+                "SIM_IPAD_PRO_6TH_GEN_16_4",
+                "SIM_IPAD_PRO_6TH_GEN_17_5",
+                "SIM_IPAD_PRO_7TH_GEN_18_0",
+                "SIM_IPHONE_14_16_4",
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_eg2_tests",
+            mixins = [
+                "xcodebuild_sim_runner",
+            ],
+            variants = [
+                "SIM_IPAD_PRO_6TH_GEN_16_4",
+                "SIM_IPAD_PRO_6TH_GEN_17_5",
+                "SIM_IPAD_PRO_7TH_GEN_18_0",
+                "SIM_IPHONE_14_16_4",
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_0",
+            ],
+        ),
+        targets.bundle(
+            targets = "ios_screen_size_dependent_tests",
+            variants = [
+                "SIM_IPAD_PRO_6TH_GEN_16_4",
+                "SIM_IPAD_PRO_6TH_GEN_17_5",
+                "SIM_IPAD_PRO_7TH_GEN_18_0",
+                "SIM_IPHONE_14_16_4",
+                "SIM_IPHONE_14_17_5",
+                "SIM_IPHONE_15_18_0",
+            ],
+        ),
+    ],
+)
+
 # Please also change ios_code_coverage_tests for any change in this suite.
 targets.bundle(
     name = "ios_simulator_full_configs_tests",
@@ -1504,6 +2162,20 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "js_code_coverage_browser_tests_suite",
+    targets = [
+        "js_code_coverage_browser_tests",
+    ],
+    per_test_modifications = {
+        "js_code_coverage_browser_tests": targets.mixin(
+            swarming = targets.swarming(
+                shards = 16,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
     name = "linux_force_accessibility_gtests",
     targets = [
         "browser_tests",
@@ -1539,6 +2211,47 @@ targets.bundle(
             ),
         ),
     },
+)
+
+targets.bundle(
+    name = "monochrome_public_apk_checker_isolated_script",
+    targets = [
+        "monochrome_public_apk_checker",
+    ],
+    per_test_modifications = {
+        "monochrome_public_apk_checker": targets.per_test_modification(
+            mixins = targets.mixin(
+                swarming = targets.swarming(
+                    dimensions = {
+                        "os": "Ubuntu-22.04",
+                        "cpu": "x86-64",
+                        "device_os": None,
+                        "device_os_flavor": None,
+                        "device_playstore_version": None,
+                        "device_type": None,
+                    },
+                ),
+            ),
+            remove_mixins = [
+                "chromium_nexus_5x_oreo",
+                "chromium_pixel_2_pie",
+                "marshmallow",
+                "oreo_mr1_fleet",
+            ],
+        ),
+    },
+)
+
+targets.bundle(
+    name = "oreo_isolated_scripts",
+    targets = [
+        "android_isolated_scripts",
+        "chromium_junit_tests_scripts",
+        "components_perftests_isolated_scripts",
+        "monochrome_public_apk_checker_isolated_script",
+        "telemetry_android_minidump_unittests_isolated_scripts",
+        "telemetry_perf_unittests_isolated_scripts_android",
+    ],
 )
 
 targets.bundle(
@@ -1591,6 +2304,58 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "telemetry_android_minidump_unittests_isolated_scripts",
+    targets = [
+        "telemetry_chromium_minidump_unittests",
+        "telemetry_monochrome_minidump_unittests",
+    ],
+)
+
+targets.bundle(
+    name = "telemetry_perf_unittests_isolated_scripts_android",
+    targets = [
+        "telemetry_perf_unittests_android_chrome",
+    ],
+    per_test_modifications = {
+        "telemetry_perf_unittests_android_chrome": targets.mixin(
+            args = [
+                # TODO(crbug.com/40129085): Remove this once Crashpad is the default.
+                "--extra-browser-args=--enable-crashpad",
+            ],
+            swarming = targets.swarming(
+                shards = 12,
+                # https://crbug.com/549140
+                idempotent = False,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "telemetry_perf_unittests_isolated_scripts_xvfb",
+    targets = [
+        "telemetry_perf_unittests",
+    ],
+    per_test_modifications = {
+        "telemetry_perf_unittests": targets.mixin(
+            args = [
+                # TODO(crbug.com/40129085): Remove this once Crashpad is the default.
+                "--extra-browser-args=--enable-crashpad",
+                "--xvfb",
+            ],
+            swarming = targets.swarming(
+                shards = 12,
+                # https://crbug.com/549140
+                idempotent = False,
+            ),
+            resultdb = targets.resultdb(
+                enable = True,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
     name = "webview_64_cts_tests_suite",
     targets = [
         "webview_64_cts_tests",
@@ -1618,6 +2383,103 @@ targets.bundle(
         "webview_cts_tests_gtest_no_field_trial",
         "webview_ui_instrumentation_tests",
         "webview_ui_instrumentation_tests_no_field_trial",
+    ],
+)
+
+targets.bundle(
+    name = "webview_bot_instrumentation_test_apk_mutations_gtest",
+    targets = [
+        "webview_instrumentation_test_apk_mutations",
+    ],
+    per_test_modifications = {
+        "webview_instrumentation_test_apk_mutations": targets.mixin(
+            swarming = targets.swarming(
+                shards = 12,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "webview_bot_instrumentation_test_apk_no_field_trial_gtest",
+    targets = [
+        "webview_instrumentation_test_apk_no_field_trial",
+    ],
+    per_test_modifications = {
+        "webview_instrumentation_test_apk_no_field_trial": targets.mixin(
+            # TODO(crbug.com/40282232): Make the target infer the correct flag file
+            # from the build config.
+            args = [
+                "--use-apk-under-test-flags-file",
+            ],
+            swarming = targets.swarming(
+                shards = 12,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "webview_bot_unittests_gtest",
+    targets = [
+        "android_webview_unittests",
+    ],
+)
+
+targets.bundle(
+    name = "webview_cts_tests_gtest",
+    targets = [
+        "webview_cts_tests",
+    ],
+    per_test_modifications = {
+        "webview_cts_tests": targets.mixin(
+            args = [
+                "--store-tombstones",
+            ],
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "webview_cts_tests_gtest_no_field_trial",
+    targets = [
+        "webview_cts_tests_no_field_trial",
+    ],
+    per_test_modifications = {
+        "webview_cts_tests_no_field_trial": targets.mixin(
+            args = [
+                "--store-tombstones",
+            ],
+            swarming = targets.swarming(
+                shards = 2,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
+    name = "webview_fyi_bot_all_gtests",
+    targets = [
+        "system_webview_shell_instrumentation_tests",
+        "webview_bot_instrumentation_test_apk_mutations_gtest",
+        "webview_bot_instrumentation_test_apk_no_field_trial_gtest",
+        "webview_bot_unittests_gtest",
+        "webview_cts_tests_gtest",
+        "webview_cts_tests_gtest_no_field_trial",
+        "webview_ui_instrumentation_tests",
+        "webview_ui_instrumentation_tests_no_field_trial",
+    ],
+)
+
+targets.bundle(
+    name = "webview_native_coverage_bot_gtests",
+    targets = [
+        "webview_bot_instrumentation_test_apk_mutations_gtest",
+        "webview_bot_instrumentation_test_apk_no_field_trial_gtest",
+        "webview_bot_unittests_gtest",
     ],
 )
 
@@ -1708,6 +2570,13 @@ targets.bundle(
             ],
         ),
     },
+)
+
+targets.bundle(
+    name = "webview_ui_instrumentation_tests_no_field_trial",
+    targets = [
+        "webview_ui_test_app_test_apk_no_field_trial",
+    ],
 )
 
 targets.bundle(

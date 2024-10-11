@@ -45,25 +45,6 @@
       ],
     },
   },
-  '14-x64-emulator': {
-    'description': 'Run with android_34_google_apis_x64',
-    'args': [
-      '--avd-config=../../tools/android/avd/proto/android_34_google_apis_x64.textpb',
-    ],
-    'swarming': {
-      'optional_dimensions': {
-        '60': {
-          'caches': 'android_34_google_apis_x64',
-        },
-      },
-      'named_caches': [
-        {
-          'name': 'android_34_google_apis_x64',
-          'path': '.android_emulator/android_34_google_apis_x64',
-        },
-      ],
-    },
-  },
   'amd_radeon_rx_5500_xt': {
     'swarming': {
       'dimensions': {
@@ -249,16 +230,6 @@
       '--extra-app-args=--disable-field-trial-config',
     ],
   },
-  'emulator-4-cores': {
-    'swarming': {
-      'dimensions': {
-        'device_os': None,
-        'device_type': None,
-        'pool': 'chromium.tests.avd',
-        'cores': '4',
-      },
-    },
-  },
   'emulator-8-cores': {
     'swarming': {
       'dimensions': {
@@ -267,14 +238,6 @@
         'pool': 'chromium.tests.avd',
         'cores': '8',
       },
-    },
-  },
-  'emulator-enable-network': {
-    'args': [
-      '--emulator-enable-network',
-    ],
-    'swarming': {
-      'idempotent': False,
     },
   },
   'experiments': {
@@ -286,16 +249,6 @@
         'pool': 'chromium.tests.finch',
       },
     },
-  },
-  'fuchsia-code-coverage': {
-    'args': [
-      '--code-coverage-dir=${ISOLATED_OUTDIR}',
-    ],
-  },
-  'fuchsia-large-device-spec': {
-    'args': [
-      '--device-spec=virtual_device_large',
-    ],
   },
   'gce': {
     'swarming': {
@@ -437,26 +390,11 @@
       '{"test_args": ["--run-with-custom-webkit"]}',
     ],
   },
-  'ios_output_disabled_tests': {
-    'args': [
-      '--output-disabled-tests',
-    ],
-  },
   'ios_parallel_simulators': {
     'args': [
       '--clones',
       '2',
     ],
-  },
-  'ios_runtime_cache_16_4': {
-    'swarming': {
-      'named_caches': [
-        {
-          'name': 'runtime_ios_16_4',
-          'path': 'Runtime-ios-16.4',
-        },
-      ],
-    },
   },
   'ios_runtime_cache_17_5': {
     'swarming': {
@@ -497,14 +435,6 @@
   },
   'isolate_profile_data': {
     'isolate_profile_data': True,
-  },
-  'junit-swarming-emulator': {
-    'swarming': {
-      'dimensions': {
-        'cores': '8',
-        'pool': 'chromium.tests',
-      },
-    },
   },
   'limited_capacity_bot': {
     'fail_if_unused': False,
@@ -907,24 +837,6 @@
       'dimensions': {
         'gpu': '10de:2184',
       },
-    },
-  },
-  'oreo-x86-emulator': {
-    'args': [
-      '--avd-config=../../tools/android/avd/proto/generic_android26.textpb',
-    ],
-    'swarming': {
-      'optional_dimensions': {
-        '60': {
-          'caches': 'generic_android26',
-        },
-      },
-      'named_caches': [
-        {
-          'name': 'generic_android26',
-          'path': '.android_emulator/generic_android26',
-        },
-      ],
     },
   },
   'out_dir_arg': {

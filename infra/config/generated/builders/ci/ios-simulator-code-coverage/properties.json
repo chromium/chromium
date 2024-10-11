@@ -48,7 +48,8 @@
           "builder": "ios-simulator-code-coverage",
           "group": "tryserver.chromium.mac"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/ios-simulator-code-coverage/targets"
     }
   },
   "$build/code_coverage": {

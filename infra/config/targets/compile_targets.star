@@ -87,6 +87,8 @@ targets.compile_target(
 targets.compile_target(
     name = "chrome_nocompile_tests",
     label = "//chrome/android:chrome_nocompile_tests",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(
@@ -254,6 +256,8 @@ targets.compile_target(
 targets.compile_target(
     name = "gn_all",
     label = "//:gn_all",
+    # All references have been moved to starlark
+    skip_usage_check = True,
 )
 
 targets.compile_target(

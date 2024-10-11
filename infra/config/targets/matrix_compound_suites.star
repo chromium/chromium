@@ -839,60 +839,6 @@ targets.legacy_matrix_compound_suite(
     },
 )
 
-# This suite is a union of ios_simulator_tests and
-# ios_simulator_full_configs_tests.
-targets.legacy_matrix_compound_suite(
-    name = "ios_code_coverage_tests",
-    basic_suites = {
-        "ios_common_tests": targets.legacy_matrix_config(
-            variants = [
-                "SIM_IPHONE_14_16_4",
-                "SIM_IPHONE_14_17_5",
-                "SIM_IPHONE_15_18_0",
-            ],
-        ),
-        "ios_eg2_cq_tests": targets.legacy_matrix_config(
-            mixins = [
-                "xcodebuild_sim_runner",
-            ],
-            variants = [
-                "SIM_IPHONE_14_16_4",
-                "SIM_IPHONE_14_17_5",
-                "SIM_IPHONE_15_18_0",
-                "SIM_IPAD_AIR_5TH_GEN_16_4",
-                "SIM_IPAD_AIR_5TH_GEN_17_5",
-                "SIM_IPAD_AIR_6TH_GEN_18_0",
-                "SIM_IPAD_PRO_6TH_GEN_16_4",
-                "SIM_IPAD_PRO_6TH_GEN_17_5",
-                "SIM_IPAD_PRO_7TH_GEN_18_0",
-            ],
-        ),
-        "ios_eg2_tests": targets.legacy_matrix_config(
-            mixins = [
-                "xcodebuild_sim_runner",
-            ],
-            variants = [
-                "SIM_IPHONE_14_16_4",
-                "SIM_IPHONE_14_17_5",
-                "SIM_IPHONE_15_18_0",
-                "SIM_IPAD_PRO_6TH_GEN_16_4",
-                "SIM_IPAD_PRO_6TH_GEN_17_5",
-                "SIM_IPAD_PRO_7TH_GEN_18_0",
-            ],
-        ),
-        "ios_screen_size_dependent_tests": targets.legacy_matrix_config(
-            variants = [
-                "SIM_IPHONE_14_16_4",
-                "SIM_IPHONE_14_17_5",
-                "SIM_IPHONE_15_18_0",
-                "SIM_IPAD_PRO_6TH_GEN_16_4",
-                "SIM_IPAD_PRO_6TH_GEN_17_5",
-                "SIM_IPAD_PRO_7TH_GEN_18_0",
-            ],
-        ),
-    },
-)
-
 targets.legacy_matrix_compound_suite(
     name = "ios_m1_simulator_tests",
     basic_suites = {

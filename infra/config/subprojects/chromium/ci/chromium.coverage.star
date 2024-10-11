@@ -4,13 +4,14 @@
 
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
+load("//lib/builder_health_indicators.star", "health_spec")
 load("//lib/builders.star", "cpu", "os", "siso")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
+load("//lib/targets.star", "targets")
 load("//lib/xcode.star", "xcode")
 load("//project.star", "settings")
-load("//lib/builder_health_indicators.star", "health_spec")
 
 # crbug/1408581 - The code coverage CI builders are expected to be triggered
 # off the same ref every 24 hours. This poller is configured with a schedule
@@ -39,6 +40,12 @@ ci.defaults.set(
     siso_enabled = True,
     siso_project = siso.project.DEFAULT_TRUSTED,
     siso_remote_jobs = siso.remote_jobs.DEFAULT,
+)
+
+targets.builder_defaults.set(
+    mixins = [
+        "chromium-tester-service-account",
+    ],
 )
 
 consoles.console_view(
@@ -94,6 +101,20 @@ coverage_builder(
             "use_java_coverage",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "android_pie_coverage_instrumentation_tests",
+            "chromium_junit_tests_scripts",
+        ],
+        mixins = [
+            "chromium_pixel_2_pie",
+            "has_native_resultdb_integration",
+            "isolate_profile_data",
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
+    ),
     os = os.LINUX_DEFAULT,
     console_view_entry = [
         consoles.console_view_entry(
@@ -148,6 +169,19 @@ ci.builder(
             "use_java_coverage",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "webview_fyi_bot_all_gtests",
+        ],
+        mixins = [
+            "chromium_pixel_2_pie",
+            "has_native_resultdb_integration",
+            "isolate_profile_data",
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
+    ),
     os = os.LINUX_DEFAULT,
     console_view_entry = [
         consoles.console_view_entry(
@@ -198,6 +232,164 @@ coverage_builder(
             "webview_shell",
             "use_java_coverage",
         ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            targets.bundle(
+                targets = [
+                    "android_oreo_emulator_gtests",
+                    "oreo_isolated_scripts",
+                ],
+                mixins = targets.mixin(
+                    args = [
+                        "--use-persistent-shell",
+                    ],
+                ),
+            ),
+            "chromium_android_scripts",
+        ],
+        additional_compile_targets = [
+            "chrome_nocompile_tests",
+        ],
+        mixins = [
+            "has_native_resultdb_integration",
+            "isolate_profile_data",
+            "oreo-x86-emulator",
+            "emulator-4-cores",
+            "linux-jammy",
+            "x86-64",
+        ],
+        per_test_modifications = {
+            # Keep this same as android-oreo-x86-rel
+            "android_browsertests": targets.mixin(
+                ci_only = True,
+                swarming = targets.swarming(
+                    shards = 9,
+                ),
+            ),
+            # Keep this same as android-oreo-x86-rel
+            "android_sync_integration_tests": targets.mixin(
+                ci_only = True,
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+            ),
+            # TODO: crbug.com/40258588 - This flag should have no effect on this
+            # script test, but it needs to be present to satisfy the
+            # targets-config-verifier, so remove it after landing
+            "check_network_annotations": targets.mixin(
+                args = [
+                    "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+                ],
+            ),
+            # Keep this same as android-oreo-x86-rel
+            "chrome_public_test_apk": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.chrome_public_test_apk.filter",
+                ],
+                swarming = targets.swarming(
+                    dimensions = {
+                        "cores": "8",
+                    },
+                    shards = 75,
+                ),
+            ),
+            # Keep this same as android-oreo-x86-rel
+            "chrome_public_unit_test_apk": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.chrome_public_unit_test_apk.filter",
+                ],
+            ),
+            # Keep this same as android-oreo-x86-rel
+            "components_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 4,
+                ),
+            ),
+            # Keep this same as android-oreo-x86-rel
+            "content_browsertests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.content_browsertests.filter",
+                ],
+                swarming = targets.swarming(
+                    dimensions = {
+                        "cores": "8",
+                    },
+                    shards = 75,
+                ),
+            ),
+            "content_shell_crash_test": targets.remove(
+                reason = "crbug.com/1084353",
+            ),
+            # Keep this same as android-oreo-x86-rel
+            "content_shell_test_apk": targets.mixin(
+                swarming = targets.swarming(
+                    dimensions = {
+                        "cores": "8",
+                    },
+                    shards = 6,
+                ),
+            ),
+            # Keep this same as android-oreo-x86-rel
+            "gl_tests_validating": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o_p.gl_tests.filter",
+                ],
+            ),
+            # Keep this same as android-oreo-x86-rel
+            "perfetto_unittests": targets.mixin(
+                args = [
+                    "--gtest_filter=-ScopedDirTest.CloseOutOfScope",
+                ],
+            ),
+            # Keep this same as android-oreo-x86-rel
+            "services_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.services_unittests.filter",
+                ],
+                swarming = targets.swarming(
+                    shards = 3,
+                ),
+            ),
+            # Keep this same as android-oreo-x86-rel
+            "telemetry_chromium_minidump_unittests": targets.mixin(
+                ci_only = True,
+            ),
+            # Keep this same as android-oreo-x86-rel
+            "telemetry_monochrome_minidump_unittests": targets.mixin(
+                ci_only = True,
+            ),
+            # Keep this same as android-oreo-x86-rel
+            "telemetry_perf_unittests_android_chrome": targets.mixin(
+                # For whatever reason, automatic browser selection on this bot chooses
+                # webview instead of the full browser, so explicitly specify it here.
+                args = [
+                    "--browser=android-chromium",
+                ],
+                ci_only = True,
+            ),
+            # Keep this same as android-oreo-x86-rel
+            "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
+                args = [
+                    "--use-persistent-shell",
+                ],
+                swarming = targets.swarming(
+                    shards = 18,
+                ),
+            ),
+            # Keep this same as android-oreo-x86-rel
+            "webview_instrumentation_test_apk_single_process_mode": targets.mixin(
+                args = [
+                    "--use-persistent-shell",
+                ],
+                swarming = targets.swarming(
+                    shards = 9,
+                ),
+            ),
+        },
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
     ),
     os = os.LINUX_DEFAULT,
     console_view_entry = [
@@ -251,6 +443,89 @@ coverage_builder(
             "android_no_proguard",
             "use_clang_coverage",
         ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_android_gtests",
+        ],
+        mixins = [
+            "chromium_pixel_2_pie",
+            "has_native_resultdb_integration",
+            "isolate_profile_data",
+        ],
+        per_test_modifications = {
+            "android_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 3,
+                ),
+            ),
+            "android_sync_integration_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+            ),
+            "chrome_public_smoke_test": targets.remove(
+                reason = "Does not generate profraw data.",
+            ),
+            "chrome_public_test_apk": targets.remove(
+                reason = "Does not generate profraw data.",
+            ),
+            "chrome_public_test_vr_apk": targets.remove(
+                reason = "Does not generate profraw data.",
+            ),
+            "chrome_public_unit_test_apk": targets.remove(
+                reason = "Does not generate profraw data.",
+            ),
+            "content_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 25,
+                ),
+            ),
+            "content_shell_test_apk": targets.remove(
+                reason = "Does not generate profraw data.",
+            ),
+            "gin_unittests": targets.mixin(
+                args = [
+                    # https://crbug.com/1404782
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64.gin_unittests.filter",
+                ],
+            ),
+            "gl_tests_validating": targets.mixin(
+                args = [
+                    # https://crbug.com/1034007
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64_rel.gl_tests.filter",
+                ],
+            ),
+            "mojo_test_apk": targets.remove(
+                reason = "Does not generate profraw data.",
+            ),
+            "perfetto_unittests": targets.remove(
+                reason = "TODO(crbug.com/41440830): Fix permission issue when creating tmp files",
+            ),
+            "webview_instrumentation_test_apk_multiple_process_mode": targets.mixin(
+                args = [
+                    "--use-persistent-shell",
+                ],
+                swarming = targets.swarming(
+                    # Shard number is increased for longer test execution time
+                    # and added local coverage data merging time.
+                    shards = 24,
+                ),
+            ),
+            "webview_instrumentation_test_apk_single_process_mode": targets.mixin(
+                args = [
+                    "--use-persistent-shell",
+                ],
+                swarming = targets.swarming(
+                    # Shard number is increased for longer test execution time
+                    # and added local coverage data merging time.
+                    shards = 12,
+                ),
+            ),
+        },
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
     ),
     os = os.LINUX_DEFAULT,
     console_view_entry = [
@@ -309,6 +584,35 @@ ci.builder(
             "use_clang_coverage",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "webview_native_coverage_bot_gtests",
+        ],
+        mixins = [
+            "chromium_pixel_2_pie",
+            "has_native_resultdb_integration",
+            "isolate_profile_data",
+        ],
+        per_test_modifications = {
+            "webview_instrumentation_test_apk_mutations": targets.mixin(
+                swarming = targets.swarming(
+                    # Shard number is increased for longer test execution time
+                    # and added local coverage data merging time.
+                    shards = 60,
+                ),
+            ),
+            "webview_instrumentation_test_apk_no_field_trial": targets.mixin(
+                swarming = targets.swarming(
+                    # Shard number is increased for longer test execution time
+                    # and added local coverage data merging time.
+                    shards = 30,
+                ),
+            ),
+        },
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
+    ),
     os = os.LINUX_DEFAULT,
     console_view_entry = [
         consoles.console_view_entry(
@@ -356,6 +660,22 @@ coverage_builder(
             "x64",
             "use_java_coverage",
         ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "cronet_gtests",
+        ],
+        mixins = [
+            "has_native_resultdb_integration",
+            "isolate_profile_data",
+            "14-x64-emulator",
+            "emulator-8-cores",
+            "linux-jammy",
+            "x86-64",
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
     ),
     os = os.LINUX_DEFAULT,
     console_view_entry = [
@@ -407,6 +727,22 @@ coverage_builder(
             "use_clang_coverage",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "android_cronet_clang_coverage_gtests",
+        ],
+        mixins = [
+            "has_native_resultdb_integration",
+            "isolate_profile_data",
+            "14-x64-emulator",
+            "emulator-8-cores",
+            "linux-jammy",
+            "x86-64",
+        ],
+    ),
+    targets_settings = targets.settings(
+        os_type = targets.os_type.ANDROID,
+    ),
     os = os.LINUX_DEFAULT,
     console_view_entry = [
         consoles.console_view_entry(
@@ -453,6 +789,110 @@ coverage_builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "fuchsia_gtests",
+            targets.bundle(
+                targets = "gpu_angle_fuchsia_unittests_isolated_scripts",
+                mixins = "expand-as-isolated-script",
+            ),
+        ],
+        mixins = [
+            "fuchsia-code-coverage",
+            "fuchsia-large-device-spec",
+            "isolate_profile_data",
+            "linux-jammy",
+        ],
+        per_test_modifications = {
+            "base_unittests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 5,
+                ),
+            ),
+            "blink_platform_unittests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 5,
+                ),
+            ),
+            "blink_unittests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 30,
+                ),
+            ),
+            "cc_unittests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 4,
+                ),
+            ),
+            "components_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 4,
+                ),
+            ),
+            "content_browsertests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.coverage.content_browsertests.filter",
+                    "--test-launcher-jobs=1",
+                ],
+                swarming = targets.swarming(
+                    shards = 41,
+                ),
+            ),
+            "content_unittests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 12,
+                ),
+            ),
+            "gfx_unittests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+            ),
+            "gpu_unittests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 5,
+                ),
+            ),
+            "headless_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 6,
+                ),
+            ),
+            "media_unittests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 3,
+                ),
+            ),
+            "mojo_unittests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+            ),
+            "net_unittests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 14,
+                ),
+            ),
+            "services_unittests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 7,
+                ),
+            ),
+            "web_engine_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 28,
+                ),
+            ),
+            "web_engine_integration_tests": targets.mixin(
+                args = [
+                    "--test-launcher-jobs=1",
+                ],
+                swarming = targets.swarming(
+                    shards = 4,
+                ),
+            ),
+        },
+    ),
     os = os.LINUX_DEFAULT,
     console_view_entry = [
         consoles.console_view_entry(
@@ -496,6 +936,22 @@ coverage_builder(
             "remoteexec",
             "x64",
             "ios",
+            "xctest",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "ios_code_coverage_tests",
+        ],
+        mixins = [
+            "expand-as-isolated-script",
+            "has_native_resultdb_integration",
+            "ios_output_disabled_tests",
+            "isolate_profile_data",
+            "mac_default_x64",
+            "mac_toolchain",
+            "out_dir_arg",
+            "xcode_16_main",
             "xctest",
         ],
     ),
@@ -545,6 +1001,41 @@ coverage_builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "linux_chromeos_gtests",
+        ],
+        additional_compile_targets = [
+            "gn_all",
+        ],
+        mixins = [
+            "isolate_profile_data",
+            "linux-jammy",
+            "x86-64",
+        ],
+        per_test_modifications = {
+            "browser_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 50,
+                ),
+            ),
+            "content_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 12,
+                ),
+            ),
+            "interactive_ui_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 10,
+                ),
+            ),
+            "sync_integration_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 4,
+                ),
+            ),
+        },
+    ),
     os = os.LINUX_DEFAULT,
     console_view_entry = [
         consoles.console_view_entry(
@@ -588,6 +1079,15 @@ coverage_builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "js_code_coverage_browser_tests_suite",
+        ],
+        mixins = [
+            "isolate_profile_data",
+            "linux-jammy",
+        ],
+    ),
     os = os.LINUX_DEFAULT,
     console_view_entry = [
         consoles.console_view_entry(
@@ -628,6 +1128,16 @@ coverage_builder(
             "use_javascript_coverage",
             "optimize_webui_off",
             "x64",
+        ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromeos_js_code_coverage_browser_tests_suite",
+        ],
+        mixins = [
+            "isolate_profile_data",
+            "linux-jammy",
+            "x86-64",
         ],
     ),
     os = os.LINUX_DEFAULT,
@@ -724,6 +1234,97 @@ coverage_builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_linux_gtests",
+            "chromium_linux_rel_isolated_scripts_code_coverage",
+            "gpu_dawn_webgpu_cts",
+            "chromium_linux_scripts",
+        ],
+        mixins = [
+            "isolate_profile_data",
+            "linux-jammy",
+        ],
+        per_test_modifications = {
+            "blink_pytype": targets.remove(
+                reason = "pytype isn't impacted by building with coverage",
+            ),
+            "blink_web_tests": targets.mixin(
+                args = [
+                    "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m%c.profraw",
+                ],
+                swarming = targets.swarming(
+                    shards = 8,
+                ),
+            ),
+            "blink_wpt_tests": targets.mixin(
+                args = [
+                    "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m%c.profraw",
+                ],
+            ),
+            "browser_tests": targets.mixin(
+                args = [
+                    "--no-sandbox",
+                ],
+                swarming = targets.swarming(
+                    shards = 50,
+                ),
+            ),
+            "content_browsertests": targets.mixin(
+                args = [
+                    "--no-sandbox",
+                ],
+                swarming = targets.swarming(
+                    shards = 12,
+                ),
+            ),
+            "gold_common_pytype": targets.remove(
+                reason = "pytype isn't impacted by building with coverage",
+            ),
+            "gpu_pytype": targets.remove(
+                reason = "pytype isn't impacted by building with coverage",
+            ),
+            "interactive_ui_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 10,
+                ),
+            ),
+            "not_site_per_process_blink_web_tests": targets.mixin(
+                args = [
+                    "--additional-env-var=LLVM_PROFILE_FILE=${ISOLATED_OUTDIR}/profraw/default-%2m%c.profraw",
+                ],
+                swarming = targets.swarming(
+                    shards = 20,
+                ),
+            ),
+            "sync_integration_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 4,
+                ),
+            ),
+            "testing_pytype": targets.remove(
+                reason = "pytype isn't impacted by building with coverage",
+            ),
+            # These tests must run with a GPU.
+            "webgpu_blink_web_tests": [
+                "linux_nvidia_gtx_1660_stable",
+            ],
+            "webgpu_blink_web_tests_with_backend_validation": targets.remove(
+                reason = "Remove from bots where capacity is constrained.",
+            ),
+            # These tests must run with a GPU.
+            "webgpu_cts_tests": [
+                "linux_nvidia_gtx_1660_stable",
+            ],
+            "webgpu_cts_with_validation_tests": targets.remove(
+                reason = "Don't need validation layers on code coverage bots",
+            ),
+        },
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE,
+        os_type = targets.os_type.LINUX,
+    ),
     os = os.LINUX_DEFAULT,
     console_view_entry = [
         consoles.console_view_entry(
@@ -763,6 +1364,37 @@ coverage_builder(
             "mac",
             "x64",
         ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_mac_gtests",
+            "chromium_mac_rel_isolated_scripts_code_coverage",
+            # TODO(crbug.com/40249801): Enable gpu_dawn_webgpu_cts
+        ],
+        mixins = [
+            "isolate_profile_data",
+            "mac_default_x64",
+        ],
+        per_test_modifications = {
+            "browser_tests": targets.remove(
+                reason = "https://crbug.com/1201386",
+            ),
+            "content_browsertests": targets.mixin(
+                args = [
+                    "--coverage-continuous-mode=1",
+                ],
+            ),
+            "interactive_ui_tests": targets.mixin(
+                args = [
+                    "--coverage-continuous-mode=1",
+                ],
+            ),
+            "sync_integration_tests": targets.mixin(
+                args = [
+                    "--coverage-continuous-mode=1",
+                ],
+            ),
+        },
     ),
     builderless = True,
     cores = None,
@@ -807,6 +1439,127 @@ coverage_builder(
             "win",
             "x64",
         ],
+    ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_win_gtests",
+            "chromium_win_rel_isolated_scripts_code_coverage",
+            "gpu_dawn_webgpu_cts",
+        ],
+        mixins = [
+            "isolate_profile_data",
+            "win10",
+        ],
+        per_test_modifications = {
+            "browser_tests": targets.mixin(
+                swarming = targets.swarming(
+                    dimensions = {
+                        "pool": "chromium.tests.coverage",
+                        "ssd": "1",
+                    },
+                    shards = 40,
+                ),
+            ),
+            "components_unittests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 6,
+                ),
+            ),
+            "content_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    dimensions = {
+                        "pool": "chromium.tests.coverage",
+                        "ssd": "1",
+                    },
+                    shards = 40,
+                ),
+            ),
+            "content_unittests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 2,
+                ),
+            ),
+            "extensions_browsertests": targets.mixin(
+                swarming = targets.swarming(
+                    dimensions = {
+                        "pool": "chromium.tests.coverage",
+                        "ssd": "1",
+                    },
+                    shards = 2,
+                ),
+            ),
+            "interactive_ui_tests": targets.mixin(
+                swarming = targets.swarming(
+                    dimensions = {
+                        "pool": "chromium.tests.coverage",
+                        "ssd": "1",
+                    },
+                    shards = 32,
+                ),
+            ),
+            "sync_integration_tests": targets.mixin(
+                swarming = targets.swarming(
+                    dimensions = {
+                        "pool": "chromium.tests.coverage",
+                        "ssd": "1",
+                    },
+                    shards = 4,
+                ),
+            ),
+            "unit_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 6,
+                ),
+            ),
+            # These tests must run with a GPU.
+            # TODO(crbug.com/40888390): This must be kept in sync with the
+            # appropriate mixin; currently, win10_nvidia_gtx_1660_stable,
+            # which is used by Dawn Win10 x64 Release (NVIDIA).
+            # TODO: crbug.com/40258588 - Mixins can be specified in
+            # per_test_modifications, but the mixin applies the extra dimension
+            # display_attached, so it can't be switched until after the tests
+            # are migrated to starlark
+            "webgpu_blink_web_tests": targets.mixin(
+                swarming = targets.swarming(
+                    dimensions = {
+                        "gpu": "10de:2184-27.21.14.5638",
+                        "os": "Windows-10-18363",
+                        "pool": "chromium.tests.gpu",
+                    },
+                ),
+            ),
+            "webgpu_blink_web_tests_with_backend_validation": targets.remove(
+                reason = "Remove from bots where capacity is constrained.",
+            ),
+            # TODO(crbug.com/40888390): This must be kept in sync with the
+            # appropriate mixin; currently, win10_nvidia_gtx_1660_stable,
+            # which is used by Dawn Win10 x64 Release (NVIDIA).
+            # TODO: crbug.com/40258588 - Mixins can be specified in
+            # per_test_modifications, but the mixin applies the extra dimension
+            # display_attached, so it can't be switched until after the tests
+            # are migrated to starlark
+            "webgpu_cts_tests": targets.mixin(
+                swarming = targets.swarming(
+                    dimensions = {
+                        "gpu": "10de:2184-27.21.14.5638",
+                        "os": "Windows-10-18363",
+                        "pool": "chromium.tests.gpu",
+                    },
+                ),
+            ),
+            "webgpu_cts_with_validation_tests": targets.remove(
+                reason = "Don't need validation layers on code coverage bots",
+            ),
+            "webkit_unit_tests": targets.mixin(
+                swarming = targets.swarming(
+                    shards = 4,
+                ),
+            ),
+        },
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE_X64,
+        os_type = targets.os_type.WINDOWS,
     ),
     builderless = True,
     os = os.WINDOWS_DEFAULT,

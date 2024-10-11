@@ -51,7 +51,8 @@
           "builder": "android-code-coverage",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-code-coverage/targets"
     }
   },
   "$build/code_coverage": {
