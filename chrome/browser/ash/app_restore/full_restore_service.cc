@@ -225,7 +225,8 @@ FullRestoreService::FullRestoreService(Profile* profile)
 
   auto* full_restore_save_handler =
       ::full_restore::FullRestoreSaveHandler::GetInstance();
-  full_restore_save_handler->InsertIgnoreApplicationId(ash::kOsFeedbackAppId);
+  full_restore_save_handler->InsertIgnoreApplicationId(
+      web_app::kOsFeedbackAppId);
 
   PrefService* prefs = profile_->GetPrefs();
   DCHECK(prefs);

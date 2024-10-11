@@ -205,7 +205,7 @@ bool IsFilesAppUrlOpener(const std::string& app_id,
 }
 
 bool IsSystemAppIdWithFileHandlers(std::string_view id) {
-  return id == ash::kMediaAppId;
+  return id == web_app::kMediaAppId;
 }
 
 void FindAppServiceTasks(Profile* profile,

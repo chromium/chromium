@@ -56,7 +56,7 @@ void SystemFeaturesDisableListPolicyHandler::RegisterPrefs(
 
 SystemFeature SystemFeaturesDisableListPolicyHandler::GetSystemFeatureFromAppId(
     const std::string& app_id) {
-  if (app_id == ash::kCanvasAppId) {
+  if (app_id == web_app::kCanvasAppId) {
     return SystemFeature::kCanvas;
   }
   return SystemFeature::kUnknownSystemFeature;

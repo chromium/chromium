@@ -348,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(HelpAppSwaSearchBrowserTest, AppListSearchHasApp) {
       {ash::AppListSearchResultType::kZeroStateHelpApp,
        ash::AppListSearchResultType::kZeroStateApp});
 
-  auto* result = FindResult(ash::kHelpAppId);
+  auto* result = FindResult(web_app::kHelpAppId);
   ASSERT_TRUE(result);
   // Has regular app name as title.
   EXPECT_EQ(base::UTF16ToASCII(result->title()), "Explore");
@@ -357,13 +357,13 @@ IN_PROC_BROWSER_TEST_F(HelpAppSwaSearchBrowserTest, AppListSearchHasApp) {
 IN_PROC_BROWSER_TEST_F(HelpAppSwaSearchBrowserTest, Launch) {
   Profile* profile = browser()->profile();
   ash::SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
-  const webapps::AppId app_id = ash::kHelpAppId;
+  const webapps::AppId app_id = web_app::kHelpAppId;
 
   ShowAppListAndWaitForZeroStateResults(
       {ash::AppListSearchResultType::kZeroStateHelpApp,
        ash::AppListSearchResultType::kZeroStateApp});
 
-  auto* result = FindResult(ash::kHelpAppId);
+  auto* result = FindResult(web_app::kHelpAppId);
   ASSERT_TRUE(result);
   result->Open(ui::EF_NONE);
 }

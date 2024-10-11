@@ -256,7 +256,7 @@ void OpenFileFromODFS(
               return;
             }
             auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
-            proxy->LaunchAppWithUrl(ash::kMicrosoft365AppId,
+            proxy->LaunchAppWithUrl(web_app::kMicrosoft365AppId,
                                     /*event_flags=*/ui::EF_NONE, url,
                                     apps::LaunchSource::kFromFileManager,
                                     /*window_info=*/nullptr);
@@ -264,7 +264,7 @@ void OpenFileFromODFS(
                     ::features::kHappinessTrackingOffice)) {
               ash::cloud_upload::HatsOfficeTrigger::Get()
                   .ShowSurveyAfterAppInactive(
-                      ash::kMicrosoft365AppId,
+                      web_app::kMicrosoft365AppId,
                       ash::cloud_upload::HatsOfficeLaunchingApp::kMS365);
             }
             std::move(callback).Run(OfficeOneDriveOpenErrors::kSuccess);

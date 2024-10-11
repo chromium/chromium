@@ -46,7 +46,7 @@ ExternalInstallOptions GetConfigForGmail() {
         LoadBundledIcons({IDR_PREINSTALLED_WEB_APPS_GMAIL_ICON_192_PNG});
     return info;
   });
-  options.expected_app_id = ash::kGmailAppId;
+  options.expected_app_id = kGmailAppId;
 
   return options;
 }

@@ -194,15 +194,16 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest, PRE_AppPinnedWhenPolicyEnabled) {
 }
 
 IN_PROC_BROWSER_TEST_F(GraduationManagerTest, AppPinnedWhenPolicyEnabled) {
-  EXPECT_EQ(apps::Readiness::kReady, GetAppReadiness(ash::kGraduationAppId));
-  EXPECT_TRUE(IsItemPinned(ash::kGraduationAppId));
+  EXPECT_EQ(apps::Readiness::kReady,
+            GetAppReadiness(web_app::kGraduationAppId));
+  EXPECT_TRUE(IsItemPinned(web_app::kGraduationAppId));
 
   SetGraduationEnablement(false);
   WaitForAppRegistryCommands(browser()->profile());
 
-  EXPECT_FALSE(IsItemPinned(ash::kGraduationAppId));
+  EXPECT_FALSE(IsItemPinned(web_app::kGraduationAppId));
   EXPECT_EQ(apps::Readiness::kDisabledByPolicy,
-            GetAppReadiness(ash::kGraduationAppId));
+            GetAppReadiness(web_app::kGraduationAppId));
 }
 
 IN_PROC_BROWSER_TEST_F(GraduationManagerTest,
@@ -270,15 +271,16 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest, AppPinnedOnEndDate) {
 }
 
 IN_PROC_BROWSER_TEST_F(GraduationManagerTest, AppUnpinnedWhenPolicyUnset) {
-  EXPECT_FALSE(IsItemPinned(ash::kGraduationAppId));
+  EXPECT_FALSE(IsItemPinned(web_app::kGraduationAppId));
   EXPECT_EQ(apps::Readiness::kDisabledByPolicy,
-            GetAppReadiness(ash::kGraduationAppId));
+            GetAppReadiness(web_app::kGraduationAppId));
 
   SetGraduationEnablement(true);
   WaitForAppRegistryCommands(browser()->profile());
 
-  EXPECT_EQ(apps::Readiness::kReady, GetAppReadiness(ash::kGraduationAppId));
-  EXPECT_TRUE(IsItemPinned(ash::kGraduationAppId));
+  EXPECT_EQ(apps::Readiness::kReady,
+            GetAppReadiness(web_app::kGraduationAppId));
+  EXPECT_TRUE(IsItemPinned(web_app::kGraduationAppId));
 }
 
 IN_PROC_BROWSER_TEST_F(GraduationManagerTest,
@@ -289,15 +291,16 @@ IN_PROC_BROWSER_TEST_F(GraduationManagerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(GraduationManagerTest, AppUnpinnedWhenPolicyDisabled) {
-  EXPECT_FALSE(IsItemPinned(ash::kGraduationAppId));
+  EXPECT_FALSE(IsItemPinned(web_app::kGraduationAppId));
   EXPECT_EQ(apps::Readiness::kDisabledByPolicy,
-            GetAppReadiness(ash::kGraduationAppId));
+            GetAppReadiness(web_app::kGraduationAppId));
 
   SetGraduationEnablement(true);
   WaitForAppRegistryCommands(browser()->profile());
 
-  EXPECT_EQ(apps::Readiness::kReady, GetAppReadiness(ash::kGraduationAppId));
-  EXPECT_TRUE(IsItemPinned(ash::kGraduationAppId));
+  EXPECT_EQ(apps::Readiness::kReady,
+            GetAppReadiness(web_app::kGraduationAppId));
+  EXPECT_TRUE(IsItemPinned(web_app::kGraduationAppId));
 }
 
 IN_PROC_BROWSER_TEST_F(GraduationManagerTest,
@@ -368,7 +371,7 @@ class GraduationManagerWithConsumerUserTest
 };
 
 IN_PROC_BROWSER_TEST_P(GraduationManagerWithConsumerUserTest, AppNotInstalled) {
-  EXPECT_FALSE(GetManager().IsSystemWebApp(ash::kGraduationAppId));
+  EXPECT_FALSE(GetManager().IsSystemWebApp(web_app::kGraduationAppId));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

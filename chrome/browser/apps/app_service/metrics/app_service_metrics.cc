@@ -307,47 +307,47 @@ void RecordAppLaunch(const std::string& app_id,
 
 const std::optional<apps::DefaultAppName> PreinstalledWebAppIdToName(
     const std::string& app_id) {
-  if (app_id == ash::kCalculatorAppId) {
+  if (app_id == web_app::kCalculatorAppId) {
     return apps::DefaultAppName::kCalculator;
-  } else if (app_id == ash::kCanvasAppId) {
+  } else if (app_id == web_app::kCanvasAppId) {
     return apps::DefaultAppName::kChromeCanvas;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
-  } else if (app_id == ash::kContainerAppId) {
+  } else if (app_id == web_app::kContainerAppId) {
     return apps::DefaultAppName::kContainer;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
-  } else if (app_id == ash::kCursiveAppId) {
+  } else if (app_id == web_app::kCursiveAppId) {
     return apps::DefaultAppName::kCursive;
-  } else if (app_id == ash::kGmailAppId) {
+  } else if (app_id == web_app::kGmailAppId) {
     return apps::DefaultAppName::kGmail;
-  } else if (app_id == ash::kGoogleMoviesAppId) {
+  } else if (app_id == web_app::kGoogleMoviesAppId) {
     return apps::DefaultAppName::kPlayMovies;
-  } else if (app_id == ash::kGoogleCalendarAppId) {
+  } else if (app_id == web_app::kGoogleCalendarAppId) {
     return apps::DefaultAppName::kGoogleCalendar;
-  } else if (app_id == ash::kGoogleChatAppId) {
+  } else if (app_id == web_app::kGoogleChatAppId) {
     return apps::DefaultAppName::kGoogleChat;
-  } else if (app_id == ash::kGoogleDocsAppId) {
+  } else if (app_id == web_app::kGoogleDocsAppId) {
     return apps::DefaultAppName::kDocs;
-  } else if (app_id == ash::kGoogleDriveAppId) {
+  } else if (app_id == web_app::kGoogleDriveAppId) {
     return apps::DefaultAppName::kDrive;
-  } else if (app_id == ash::kGoogleMeetAppId) {
+  } else if (app_id == web_app::kGoogleMeetAppId) {
     return apps::DefaultAppName::kGoogleMeet;
-  } else if (app_id == ash::kGoogleSheetsAppId) {
+  } else if (app_id == web_app::kGoogleSheetsAppId) {
     return apps::DefaultAppName::kSheets;
-  } else if (app_id == ash::kGoogleSlidesAppId) {
+  } else if (app_id == web_app::kGoogleSlidesAppId) {
     return apps::DefaultAppName::kSlides;
-  } else if (app_id == ash::kGoogleKeepAppId) {
+  } else if (app_id == web_app::kGoogleKeepAppId) {
     return apps::DefaultAppName::kKeep;
-  } else if (app_id == ash::kGoogleMapsAppId) {
+  } else if (app_id == web_app::kGoogleMapsAppId) {
     return apps::DefaultAppName::kGoogleMaps;
-  } else if (app_id == ash::kMallAppId) {
+  } else if (app_id == web_app::kMallAppId) {
     return DefaultAppName::kMall;
-  } else if (app_id == ash::kMessagesAppId) {
+  } else if (app_id == web_app::kMessagesAppId) {
     return apps::DefaultAppName::kGoogleMessages;
-  } else if (app_id == ash::kPlayBooksAppId) {
+  } else if (app_id == web_app::kPlayBooksAppId) {
     return apps::DefaultAppName::kPlayBooks;
-  } else if (app_id == ash::kYoutubeAppId) {
+  } else if (app_id == web_app::kYoutubeAppId) {
     return apps::DefaultAppName::kYouTube;
-  } else if (app_id == ash::kYoutubeMusicAppId) {
+  } else if (app_id == web_app::kYoutubeMusicAppId) {
     return apps::DefaultAppName::kYouTubeMusic;
   } else {
     return std::nullopt;
@@ -358,38 +358,38 @@ const std::optional<apps::DefaultAppName> PreinstalledWebAppIdToName(
 const std::optional<apps::DefaultAppName> SystemWebAppIdToName(
     const std::string& app_id) {
   // These apps should all have chrome:// URLs.
-  if (app_id == ash::kCameraAppId) {
+  if (app_id == web_app::kCameraAppId) {
     return apps::DefaultAppName::kCamera;
-  } else if (app_id == ash::kDiagnosticsAppId) {
+  } else if (app_id == web_app::kDiagnosticsAppId) {
     return apps::DefaultAppName::kDiagnosticsApp;
   } else if (app_id == file_manager::kFileManagerSwaAppId) {
     return apps::DefaultAppName::kFiles;
-  } else if (app_id == ash::kFirmwareUpdateAppId) {
+  } else if (app_id == web_app::kFirmwareUpdateAppId) {
     return apps::DefaultAppName::kFirmwareUpdateApp;
-  } else if (app_id == ash::kHelpAppId) {
+  } else if (app_id == web_app::kHelpAppId) {
     return apps::DefaultAppName::kHelpApp;
   } else if (app_id == ash::kMallSystemAppId) {
     return apps::DefaultAppName::kMall;
-  } else if (app_id == ash::kMediaAppId) {
+  } else if (app_id == web_app::kMediaAppId) {
     return apps::DefaultAppName::kMediaApp;
     // `MockSystemApp` is for tests only.
-  } else if (app_id == ash::kMockSystemAppId) {
+  } else if (app_id == web_app::kMockSystemAppId) {
     return apps::DefaultAppName::kMockSystemApp;
-  } else if (app_id == ash::kOsFeedbackAppId) {
+  } else if (app_id == web_app::kOsFeedbackAppId) {
     return apps::DefaultAppName::kOsFeedbackApp;
-  } else if (app_id == ash::kOsSettingsAppId) {
+  } else if (app_id == web_app::kOsSettingsAppId) {
     return apps::DefaultAppName::kSettings;
-  } else if (app_id == ash::kPrintManagementAppId) {
+  } else if (app_id == web_app::kPrintManagementAppId) {
     return apps::DefaultAppName::kPrintManagementApp;
   } else if (app_id == ash::kChromeUIUntrustedProjectorSwaAppId) {
     return apps::DefaultAppName::kProjector;
-  } else if (app_id == ash::kSanitizeAppId) {
+  } else if (app_id == web_app::kSanitizeAppId) {
     return apps::DefaultAppName::kSanitizeApp;
-  } else if (app_id == ash::kScanningAppId) {
+  } else if (app_id == web_app::kScanningAppId) {
     return apps::DefaultAppName::kScanningApp;
-  } else if (app_id == ash::kShimlessRMAAppId) {
+  } else if (app_id == web_app::kShimlessRMAAppId) {
     return apps::DefaultAppName::kShimlessRMAApp;
-  } else if (app_id == ash::kShortcutCustomizationAppId) {
+  } else if (app_id == web_app::kShortcutCustomizationAppId) {
     return apps::DefaultAppName::kShortcutCustomizationApp;
   } else {
     return std::nullopt;

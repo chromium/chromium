@@ -97,13 +97,13 @@ std::optional<std::string> GetAppIdFromFilePath(
   const std::string& file_extension = file_path.FinalExtension();
   if (file_extension == ".gdoc" ||
       file_tasks::WordGroupExtensions().contains(file_extension)) {
-    return ash::kGoogleDocsAppId;
+    return web_app::kGoogleDocsAppId;
   } else if (file_extension == ".gsheet" ||
              file_tasks::ExcelGroupExtensions().contains(file_extension)) {
-    return ash::kGoogleSheetsAppId;
+    return web_app::kGoogleSheetsAppId;
   } else if (file_extension == ".gslides" ||
              file_tasks::PowerPointGroupExtensions().contains(file_extension)) {
-    return ash::kGoogleSlidesAppId;
+    return web_app::kGoogleSlidesAppId;
   }
   return std::nullopt;
 }

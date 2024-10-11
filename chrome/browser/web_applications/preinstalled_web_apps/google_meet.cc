@@ -19,7 +19,7 @@ ExternalInstallOptions GetConfigForGoogleMeet() {
   // Exclude managed users until we have a way for admins to block the app.
   options.user_type_allowlist = {"unmanaged", "child"};
   options.only_for_new_users = true;
-  options.expected_app_id = ash::kGoogleMeetAppId;
+  options.expected_app_id = kGoogleMeetAppId;
 
   return options;
 }

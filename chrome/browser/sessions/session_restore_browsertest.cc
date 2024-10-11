@@ -3568,7 +3568,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, DontTrackUnclosableApp) {
   // tracking for session restore.
   {
     web_app::WebAppTestInstallObserver observer(profile);
-    observer.BeginListening({ash::kCalculatorAppId});
+    observer.BeginListening({web_app::kCalculatorAppId});
 
     base::Value::List web_app_settings = base::JSONReader::Read(R"([
     {
@@ -3598,7 +3598,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, DontTrackUnclosableApp) {
 
   // Open a PWA.
   Browser* app_browser =
-      web_app::LaunchWebAppBrowserAndWait(profile, ash::kCalculatorAppId);
+      web_app::LaunchWebAppBrowserAndWait(profile, web_app::kCalculatorAppId);
 
   // Pretend to 'close the browser'.
   // Just shutdown the services as we would if the browser is shutting down for
@@ -3644,7 +3644,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, DontRestoreUnclosableApp) {
 
   {
     web_app::WebAppTestInstallObserver observer(profile);
-    observer.BeginListening({ash::kCalculatorAppId});
+    observer.BeginListening({web_app::kCalculatorAppId});
 
     base::Value::List web_app_install_list = base::JSONReader::Read(R"([
     {
@@ -3663,7 +3663,7 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, DontRestoreUnclosableApp) {
 
   // Open a PWA.
   Browser* app_browser =
-      web_app::LaunchWebAppBrowserAndWait(profile, ash::kCalculatorAppId);
+      web_app::LaunchWebAppBrowserAndWait(profile, web_app::kCalculatorAppId);
 
   // Pretend to 'close the browser'.
   // Just shutdown the services as we would if the browser is shutting down for

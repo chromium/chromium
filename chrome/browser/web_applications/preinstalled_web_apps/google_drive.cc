@@ -139,7 +139,7 @@ ExternalInstallOptions GetConfigForGoogleDrive(bool is_standalone) {
         LoadBundledIcons({IDR_PREINSTALLED_WEB_APPS_GOOGLE_DRIVE_ICON_192_PNG});
     return info;
   });
-  options.expected_app_id = ash::kGoogleDriveAppId;
+  options.expected_app_id = kGoogleDriveAppId;
 
   return options;
 }

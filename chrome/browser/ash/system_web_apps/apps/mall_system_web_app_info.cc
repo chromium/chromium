@@ -67,7 +67,7 @@ std::vector<std::string> MallSystemAppDelegate::GetAppIdsToUninstallAndReplace()
   // does not occur, shelf and launcher will reset to default positions for the
   // Mall app. Fixing this requires teaching ExternallyManagedAppManager how
   // to ignore apps, the buggy behaviour is considered an acceptable tradeoff.
-  return {ash::kMallAppId};
+  return {web_app::kMallAppId};
 }
 
 bool MallSystemAppDelegate::ShouldCaptureNavigations() const {

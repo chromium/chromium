@@ -3104,14 +3104,14 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, PreventCloseYieldsCancelledEvent) {
   ASSERT_TRUE(policy_refresh_sync_future.Wait());
 
   apps::AppUpdateWaiter waiter(
-      profile(), ash::kCalculatorAppId,
+      profile(), web_app::kCalculatorAppId,
       base::BindRepeating([](const apps::AppUpdate& update) {
         return update.AllowClose().has_value() && !update.AllowClose().value();
       }));
   waiter.Await();
 
   Browser* const browser =
-      web_app::LaunchWebAppBrowser(profile(), ash::kCalculatorAppId);
+      web_app::LaunchWebAppBrowser(profile(), web_app::kCalculatorAppId);
   ASSERT_TRUE(browser);
 
   EXPECT_EQ(BrowserClosingStatus::kDeniedByPolicy,

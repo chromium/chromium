@@ -141,7 +141,7 @@ class HatsOfficeTriggerTest : public HatsOfficeTriggerTestBase {
         apps::AppServiceProxyFactory::GetForProfile(profile_)
             ->InstanceRegistry();
     auto instance = std::make_unique<apps::Instance>(
-        ash::kGoogleDocsAppId, tracked_instance_id_, nullptr);
+        web_app::kGoogleDocsAppId, tracked_instance_id_, nullptr);
     instance->UpdateState(state, Now());
     registry.OnInstance(std::move(instance));
   }
@@ -151,7 +151,7 @@ class HatsOfficeTriggerTest : public HatsOfficeTriggerTestBase {
         apps::AppServiceProxyFactory::GetForProfile(profile_)
             ->InstanceRegistry();
     auto instance = std::make_unique<apps::Instance>(
-        ash::kGoogleDocsAppId, ignored_instance_id_, nullptr);
+        web_app::kGoogleDocsAppId, ignored_instance_id_, nullptr);
     instance->UpdateState(state, Now());
     registry.OnInstance(std::move(instance));
   }
@@ -205,7 +205,7 @@ TEST_F(HatsOfficeTriggerTest, ShowSurveyAfterAppInactiveSuccess) {
   base::test::TestFuture<void> future;
   display_service_->SetNotificationAddedClosure(future.GetRepeatingCallback());
   hats_office_trigger_.ShowSurveyAfterAppInactive(
-      ash::kGoogleDocsAppId, HatsOfficeLaunchingApp::kDrive);
+      web_app::kGoogleDocsAppId, HatsOfficeLaunchingApp::kDrive);
 
   // Simulate receiving updates from an instance that shouldn't be tracked.
   OnIgnoredDocsInstance(
@@ -261,7 +261,7 @@ TEST_F(HatsOfficeTriggerTest, NoAppUpdateTimeout) {
   display_service_->SetNotificationAddedClosure(future.GetRepeatingCallback());
 
   hats_office_trigger_.ShowSurveyAfterAppInactive(
-      ash::kGoogleDocsAppId, HatsOfficeLaunchingApp::kDrive);
+      web_app::kGoogleDocsAppId, HatsOfficeLaunchingApp::kDrive);
 
   ASSERT_TRUE(IsAppStateTriggerActive());
 

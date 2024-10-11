@@ -35,7 +35,7 @@ IN_PROC_BROWSER_TEST_F(AdobeExpressOemToDefaultMigrationTest,
       test::InstallWebApp(profile(), std::move(web_app_info),
                           /*overwrite_existing_manifest_fields=*/false,
                           webapps::WebappInstallSource::PRELOADED_OEM);
-  ASSERT_EQ(app_id, ash::kAdobeExpressAppId);
+  ASSERT_EQ(app_id, kAdobeExpressAppId);
 
   auto* provider = WebAppProvider::GetForWebApps(profile());
   ASSERT_TRUE(provider->registrar_unsafe().GetAppById(app_id)->HasOnlySource(
@@ -48,7 +48,7 @@ IN_PROC_BROWSER_TEST_F(AdobeExpressOemToDefaultMigrationTest,
                        MigrateOemInstall) {
   auto* provider = WebAppProvider::GetForWebApps(profile());
   ASSERT_TRUE(provider->registrar_unsafe()
-                  .GetAppById(ash::kAdobeExpressAppId)
+                  .GetAppById(kAdobeExpressAppId)
                   ->HasOnlySource(WebAppManagement::Type::kApsDefault));
 }
 
@@ -62,7 +62,7 @@ IN_PROC_BROWSER_TEST_F(AdobeExpressOemToDefaultMigrationTest,
       test::InstallWebApp(profile(), std::move(web_app_info),
                           /*overwrite_existing_manifest_fields=*/false,
                           webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
-  ASSERT_EQ(app_id, ash::kAdobeExpressAppId);
+  ASSERT_EQ(app_id, kAdobeExpressAppId);
 
   auto* provider = WebAppProvider::GetForWebApps(profile());
   ASSERT_EQ(provider->registrar_unsafe().GetAppById(app_id)->GetSources(),
@@ -74,11 +74,10 @@ IN_PROC_BROWSER_TEST_F(AdobeExpressOemToDefaultMigrationTest,
 IN_PROC_BROWSER_TEST_F(AdobeExpressOemToDefaultMigrationTest,
                        DoNotMigrateUserInstall) {
   auto* provider = WebAppProvider::GetForWebApps(profile());
-  ASSERT_EQ(provider->registrar_unsafe()
-                .GetAppById(ash::kAdobeExpressAppId)
-                ->GetSources(),
-            WebAppManagementTypes({WebAppManagement::Type::kUserInstalled,
-                                   WebAppManagement::Type::kSync}));
+  ASSERT_EQ(
+      provider->registrar_unsafe().GetAppById(kAdobeExpressAppId)->GetSources(),
+      WebAppManagementTypes({WebAppManagement::Type::kUserInstalled,
+                             WebAppManagement::Type::kSync}));
 }
 
 }  // namespace

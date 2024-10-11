@@ -166,7 +166,7 @@ void PersonalizationProvider::OnSearchResultsChanged() {
 }
 
 void PersonalizationProvider::OnAppUpdate(const apps::AppUpdate& update) {
-  if (update.AppId() != ash::kPersonalizationAppId) {
+  if (update.AppId() != web_app::kPersonalizationAppId) {
     return;
   }
 
@@ -205,7 +205,7 @@ void PersonalizationProvider::OnUserSessionStartUpTaskCompleted() {
 void PersonalizationProvider::StartLoadIcon() {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
   proxy->LoadIcon(
-      ash::kPersonalizationAppId, apps::IconType::kStandard,
+      web_app::kPersonalizationAppId, apps::IconType::kStandard,
       ash::SharedAppListConfig::instance().search_list_icon_dimension(),
       /*allow_placeholder_icon=*/false,
       base::BindOnce(&PersonalizationProvider::OnLoadIcon,

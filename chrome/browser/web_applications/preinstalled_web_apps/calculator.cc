@@ -23,7 +23,7 @@ ExternalInstallOptions GetConfigForCalculator() {
 
   options.user_type_allowlist = {"unmanaged", "managed", "child"};
   options.uninstall_and_replace.push_back("joodangkbfjnajiiifokapkpmhfnpleo");
-  options.expected_app_id = ash::kCalculatorAppId;
+  options.expected_app_id = kCalculatorAppId;
   return options;
 }
 

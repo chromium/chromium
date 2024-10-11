@@ -66,13 +66,13 @@ IN_PROC_BROWSER_TEST_F(UnloadControllerPreventCloseTest,
     SetPolicies(/*web_app_settings=*/"[]", /*web_app_install_force_list=*/"[]");
   };
 
-  InstallPWA(GURL(kCalculatorAppUrl), ash::kCalculatorAppId);
-  SetPoliciesAndWaitUntilInstalled(ash::kCalculatorAppId,
+  InstallPWA(GURL(kCalculatorAppUrl), web_app::kCalculatorAppId);
+  SetPoliciesAndWaitUntilInstalled(web_app::kCalculatorAppId,
                                    kPreventCloseEnabledForCalculator,
                                    kCalculatorForceInstalled);
 
   Browser* const browser =
-      LaunchPWA(ash::kCalculatorAppId, /*launch_in_window=*/true);
+      LaunchPWA(web_app::kCalculatorAppId, /*launch_in_window=*/true);
   ASSERT_TRUE(browser);
 
   UnloadController unload_controller(browser);
@@ -87,13 +87,13 @@ IN_PROC_BROWSER_TEST_F(UnloadControllerPreventCloseTest,
     SetPolicies(/*web_app_settings=*/"[]", /*web_app_install_force_list=*/"[]");
   };
 
-  InstallPWA(GURL(kCalculatorAppUrl), ash::kCalculatorAppId);
-  SetPoliciesAndWaitUntilInstalled(ash::kCalculatorAppId,
+  InstallPWA(GURL(kCalculatorAppUrl), web_app::kCalculatorAppId);
+  SetPoliciesAndWaitUntilInstalled(web_app::kCalculatorAppId,
                                    kPreventCloseEnabledForCalculator,
                                    kCalculatorForceInstalled);
 
   Browser* const browser =
-      LaunchPWA(ash::kCalculatorAppId, /*launch_in_window=*/false);
+      LaunchPWA(web_app::kCalculatorAppId, /*launch_in_window=*/false);
   ASSERT_TRUE(browser);
 
   UnloadController unload_controller(browser);

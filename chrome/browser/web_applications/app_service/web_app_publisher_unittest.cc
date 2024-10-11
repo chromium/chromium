@@ -134,7 +134,7 @@ TEST_F(WebAppPublisherTest_Mall, LaunchMallAppWithContext) {
   static_cast<web_app::FakeWebAppUiManager*>(&provider->ui_manager())
       ->SetOnLaunchWebAppCallback(app_launch_future.GetRepeatingCallback());
 
-  proxy()->Launch(ash::kMallAppId, 0, apps::LaunchSource::kFromTest);
+  proxy()->Launch(kMallAppId, 0, apps::LaunchSource::kFromTest);
   auto [params, setting] = app_launch_future.Take();
 
   ASSERT_TRUE(params.intent->url.has_value());

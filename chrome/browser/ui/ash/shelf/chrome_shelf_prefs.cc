@@ -376,7 +376,7 @@ void AddContainerAppPinIfNeeded(
     return;
   }
 
-  const std::string app_id = ash::kContainerAppId;
+  const std::string app_id = web_app::kContainerAppId;
 
   if (!helper->IsAppDefaultInstalled(profile, app_id)) {
     return;
@@ -417,7 +417,7 @@ void AddMallPinIfNeeded(Profile* profile,
   // already pinned. There is no option to unpin the web app.
   if (!chromeos::features::IsCrosMallSwaEnabled()) {
     InsertPinsAfterChromeAndBeforeFirstPinnedApp(syncable_service,
-                                                 {{ash::kMallAppId}},
+                                                 {{web_app::kMallAppId}},
                                                  /*is_policy_initiated=*/false);
     return;
   }

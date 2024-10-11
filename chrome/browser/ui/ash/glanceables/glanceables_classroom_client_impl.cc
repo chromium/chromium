@@ -238,7 +238,7 @@ bool GlanceablesClassroomClientImpl::IsDisabledByAdmin() const {
   auto classroom_app_readiness = apps::Readiness::kUnknown;
   apps::AppServiceProxyFactory::GetForProfile(profile_)
       ->AppRegistryCache()
-      .ForOneApp(ash::kGoogleClassroomAppId,
+      .ForOneApp(web_app::kGoogleClassroomAppId,
                  [&classroom_app_readiness](const apps::AppUpdate& update) {
                    classroom_app_readiness = update.Readiness();
                  });

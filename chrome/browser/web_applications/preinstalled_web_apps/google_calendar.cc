@@ -131,7 +131,7 @@ ExternalInstallOptions GetConfigForGoogleCalendar() {
         {IDR_PREINSTALLED_WEB_APPS_GOOGLE_CALENDAR_ICON_192_PNG});
     return info;
   });
-  options.expected_app_id = ash::kGoogleCalendarAppId;
+  options.expected_app_id = kGoogleCalendarAppId;
 
   return options;
 }

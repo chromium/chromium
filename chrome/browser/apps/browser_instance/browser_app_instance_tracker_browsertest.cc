@@ -708,7 +708,7 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, TabbedSystemWebApp) {
     Recorder recorder(*tracker_);
 
     // Open an app window (crosh) and insert a tab.
-    browser = CreateAppBrowser(ash::kCroshAppId);
+    browser = CreateAppBrowser(web_app::kCroshAppId);
     chrome::NewTab(browser);
     content::WebContents* tab = browser->tab_strip_model()->GetWebContentsAt(0);
     NavigateActiveTab(browser, chrome::kChromeUIUntrustedCroshURL);
@@ -721,8 +721,9 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, TabbedSystemWebApp) {
     EXPECT_EQ(GetId(tab), 1u);
     window = browser->window()->GetNativeWindow();
     recorder.Verify({
-        {"added", 1, kAppWindow, ash::kCroshAppId, window, "", kActive},
-        {"updated", 1, kAppWindow, ash::kCroshAppId, window, "crosh1", kActive},
+        {"added", 1, kAppWindow, web_app::kCroshAppId, window, "", kActive},
+        {"updated", 1, kAppWindow, web_app::kCroshAppId, window, "crosh1",
+         kActive},
     });
   }
 
@@ -740,8 +741,9 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, TabbedSystemWebApp) {
     // Only title of the existing app instance should be updated.
     EXPECT_EQ(GetId(tab), 1u);
     recorder.Verify({
-        {"updated", 1, kAppWindow, ash::kCroshAppId, window, "", kActive},
-        {"updated", 1, kAppWindow, ash::kCroshAppId, window, "crosh2", kActive},
+        {"updated", 1, kAppWindow, web_app::kCroshAppId, window, "", kActive},
+        {"updated", 1, kAppWindow, web_app::kCroshAppId, window, "crosh2",
+         kActive},
     });
   }
 
@@ -753,7 +755,8 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, TabbedSystemWebApp) {
 
     // The app instance disappars with the window.
     recorder.Verify({
-        {"removed", 1, kAppWindow, ash::kCroshAppId, window, "crosh2", kActive},
+        {"removed", 1, kAppWindow, web_app::kCroshAppId, window, "crosh2",
+         kActive},
     });
   }
 }

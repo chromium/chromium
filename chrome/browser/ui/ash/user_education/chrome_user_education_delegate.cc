@@ -79,10 +79,10 @@ ChromeUserEducationDelegate::GetElementIdentifierForAppId(
   if (!strcmp(file_manager::kFileManagerSwaAppId, app_id.c_str())) {
     return ash::kFilesAppElementId;
   }
-  if (!strcmp(ash::kHelpAppId, app_id.c_str())) {
+  if (!strcmp(web_app::kHelpAppId, app_id.c_str())) {
     return ash::kExploreAppElementId;
   }
-  if (!strcmp(ash::kOsSettingsAppId, app_id.c_str())) {
+  if (!strcmp(web_app::kOsSettingsAppId, app_id.c_str())) {
     return ash::kSettingsAppElementId;
   }
   return std::nullopt;

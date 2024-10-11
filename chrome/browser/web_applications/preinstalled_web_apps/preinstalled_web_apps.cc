@@ -203,7 +203,7 @@ std::vector<PreinstalledWebAppMigration> GetPreinstalledWebAppMigrations(
       PreinstalledWebAppMigration keep_migration;
       keep_migration.install_url =
           GURL("https://keep.google.com/installwebapp?usp=chrome_default");
-      keep_migration.expected_web_app_id = ash::kGoogleKeepAppId;
+      keep_migration.expected_web_app_id = kGoogleKeepAppId;
       keep_migration.old_chrome_app_id = extension_misc::kGoogleKeepAppId;
       migrations.push_back(std::move(keep_migration));
     }
@@ -213,14 +213,14 @@ std::vector<PreinstalledWebAppMigration> GetPreinstalledWebAppMigrations(
       PreinstalledWebAppMigration books_migration;
       books_migration.install_url =
           GURL("https://play.google.com/books/installwebapp?usp=chromedefault");
-      books_migration.expected_web_app_id = ash::kPlayBooksAppId;
+      books_migration.expected_web_app_id = kPlayBooksAppId;
       books_migration.old_chrome_app_id = extension_misc::kGooglePlayBooksAppId;
       migrations.push_back(std::move(books_migration));
 
       PreinstalledWebAppMigration maps_migration;
       maps_migration.install_url =
           GURL("https://www.google.com/maps/preview/pwa/ttinstall.html");
-      maps_migration.expected_web_app_id = ash::kGoogleMapsAppId;
+      maps_migration.expected_web_app_id = kGoogleMapsAppId;
       maps_migration.old_chrome_app_id = extension_misc::kGoogleMapsAppId;
       migrations.push_back(std::move(maps_migration));
 
@@ -228,7 +228,7 @@ std::vector<PreinstalledWebAppMigration> GetPreinstalledWebAppMigrations(
       movies_migration.install_url = GURL(
           "https://play.google.com/store/movies/"
           "installwebapp?usp=chrome_default");
-      movies_migration.expected_web_app_id = ash::kGoogleMoviesAppId;
+      movies_migration.expected_web_app_id = kGoogleMoviesAppId;
       movies_migration.old_chrome_app_id =
           extension_misc::kGooglePlayMoviesAppId;
       migrations.push_back(std::move(movies_migration));

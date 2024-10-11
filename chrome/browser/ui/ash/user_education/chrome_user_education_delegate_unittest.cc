@@ -113,8 +113,8 @@ TEST_F(ChromeUserEducationDelegateTest, GetElementIdentifierForAppId) {
       std::pair<const char*, std::optional<ui::ElementIdentifier>>;
 
   const std::array<AppIdWithElementIdentifier, 4u> kAppIdsWithElementIds = {
-      {{ash::kHelpAppId, ash::kExploreAppElementId},
-       {ash::kOsSettingsAppId, ash::kSettingsAppElementId},
+      {{web_app::kHelpAppId, ash::kExploreAppElementId},
+       {web_app::kOsSettingsAppId, ash::kSettingsAppElementId},
        {"unknown", std::nullopt},
        {"", std::nullopt}}};
 

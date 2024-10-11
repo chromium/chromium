@@ -111,7 +111,7 @@ TEST_F(CalendarClientImplTest, IsDisabledByAdmin_DisabledCalendarApp) {
 
   std::vector<apps::AppPtr> app_deltas;
   app_deltas.push_back(apps::AppPublisher::MakeApp(
-      apps::AppType::kWeb, ash::kGoogleCalendarAppId,
+      apps::AppType::kWeb, web_app::kGoogleCalendarAppId,
       apps::Readiness::kDisabledByPolicy, "Calendar",
       apps::InstallReason::kUser, apps::InstallSource::kBrowser));
   apps::AppServiceProxyFactory::GetForProfile(profile)->OnApps(

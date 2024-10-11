@@ -184,7 +184,7 @@ TEST_F(GlanceablesClassroomClientImplIsDisabledByAdminTest,
 
   std::vector<apps::AppPtr> app_deltas;
   app_deltas.push_back(apps::AppPublisher::MakeApp(
-      apps::AppType::kWeb, ash::kGoogleClassroomAppId,
+      apps::AppType::kWeb, web_app::kGoogleClassroomAppId,
       apps::Readiness::kDisabledByPolicy, "Classroom",
       apps::InstallReason::kUser, apps::InstallSource::kBrowser));
 

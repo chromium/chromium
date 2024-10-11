@@ -413,17 +413,18 @@ IN_PROC_BROWSER_TEST_F(ChromeAppListModelUpdaterTest, UnmergeTwoItemFolder) {
 IN_PROC_BROWSER_TEST_F(ChromeAppListModelUpdaterTest,
                        PRE_SessionRestartDoesntOverrideDefaultAppListPosition) {
   // Simluate installation of an app pinned to shelf by default:
-  // App with ash::kGmailAppId ID.
+  // App with web_app::kGmailAppId ID.
   auto gmail_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
       GURL("https://mail.google.com/mail/?usp=installed_webapp"));
   gmail_info->display_mode = blink::mojom::DisplayMode::kMinimalUi;
   web_app::test::InstallWebApp(profile(), std::move(gmail_info));
 
-  std::set<std::string> app_filter(
-      {app_constants::kChromeAppId, ash::kGmailAppId, ash::kMessagesAppId});
-  EXPECT_EQ(
-      std::vector<std::string>({app_constants::kChromeAppId, ash::kGmailAppId}),
-      GetOrderedShelfItems(app_filter));
+  std::set<std::string> app_filter({app_constants::kChromeAppId,
+                                    web_app::kGmailAppId,
+                                    web_app::kMessagesAppId});
+  EXPECT_EQ(std::vector<std::string>(
+                {app_constants::kChromeAppId, web_app::kGmailAppId}),
+            GetOrderedShelfItems(app_filter));
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeAppListModelUpdaterTest,
@@ -439,17 +440,19 @@ IN_PROC_BROWSER_TEST_F(ChromeAppListModelUpdaterTest,
       std::make_unique<syncer::FakeSyncChangeProcessor>());
 
   // Simluate installation of an app pinned to shelf by default after initial
-  // sync data is merged: app with ash::kMessagesAppId ID.
+  // sync data is merged: app with web_app::kMessagesAppId ID.
   auto messages_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
       GURL("https://messages.google.com/web/"));
   messages_info->display_mode = blink::mojom::DisplayMode::kMinimalUi;
   web_app::test::InstallWebApp(profile(), std::move(messages_info));
 
-  std::set<std::string> app_filter(
-      {app_constants::kChromeAppId, ash::kGmailAppId, ash::kMessagesAppId});
-  EXPECT_EQ(std::vector<std::string>({app_constants::kChromeAppId,
-                                      ash::kGmailAppId, ash::kMessagesAppId}),
-            GetOrderedShelfItems(app_filter));
+  std::set<std::string> app_filter({app_constants::kChromeAppId,
+                                    web_app::kGmailAppId,
+                                    web_app::kMessagesAppId});
+  EXPECT_EQ(
+      std::vector<std::string>({app_constants::kChromeAppId,
+                                web_app::kGmailAppId, web_app::kMessagesAppId}),
+      GetOrderedShelfItems(app_filter));
 
   // Verify that order of apps in the app list respects default app ordinals
   // (for test apps that have default app list ordinal set).
@@ -462,9 +465,10 @@ IN_PROC_BROWSER_TEST_F(ChromeAppListModelUpdaterTest,
       filtered_top_level_id_list.push_back(item);
   }
 
-  EXPECT_EQ(std::vector<std::string>({app_constants::kChromeAppId,
-                                      ash::kGmailAppId, ash::kMessagesAppId}),
-            filtered_top_level_id_list);
+  EXPECT_EQ(
+      std::vector<std::string>({app_constants::kChromeAppId,
+                                web_app::kGmailAppId, web_app::kMessagesAppId}),
+      filtered_top_level_id_list);
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeAppListModelUpdaterTest,

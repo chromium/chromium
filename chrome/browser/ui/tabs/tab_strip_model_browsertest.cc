@@ -101,12 +101,12 @@ class TabStripModelPreventCloseTest : public PreventCloseTestBase,
 
 IN_PROC_BROWSER_TEST_F(TabStripModelPreventCloseTest,
                        PreventCloseEnforedByPolicy) {
-  InstallPWA(GURL(kCalculatorAppUrl), ash::kCalculatorAppId);
-  SetPoliciesAndWaitUntilInstalled(ash::kCalculatorAppId,
+  InstallPWA(GURL(kCalculatorAppUrl), web_app::kCalculatorAppId);
+  SetPoliciesAndWaitUntilInstalled(web_app::kCalculatorAppId,
                                    kPreventCloseEnabledForCalculator,
                                    kCalculatorForceInstalled);
   Browser* const browser =
-      LaunchPWA(ash::kCalculatorAppId, /*launch_in_window=*/true);
+      LaunchPWA(web_app::kCalculatorAppId, /*launch_in_window=*/true);
   ASSERT_TRUE(browser);
 
   observer_.Observe(browser->tab_strip_model());
@@ -142,12 +142,12 @@ IN_PROC_BROWSER_TEST_F(TabStripModelPreventCloseTest,
 IN_PROC_BROWSER_TEST_F(
     TabStripModelPreventCloseTest,
     MAYBE_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable) {
-  InstallPWA(GURL(kCalculatorAppUrl), ash::kCalculatorAppId);
-  SetPoliciesAndWaitUntilInstalled(ash::kCalculatorAppId,
+  InstallPWA(GURL(kCalculatorAppUrl), web_app::kCalculatorAppId);
+  SetPoliciesAndWaitUntilInstalled(web_app::kCalculatorAppId,
                                    kPreventCloseEnabledForCalculator,
                                    kCalculatorForceInstalled);
   Browser* const browser =
-      LaunchPWA(ash::kCalculatorAppId, /*launch_in_window=*/false);
+      LaunchPWA(web_app::kCalculatorAppId, /*launch_in_window=*/false);
   ASSERT_TRUE(browser);
 
   observer_.Observe(browser->tab_strip_model());

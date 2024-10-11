@@ -530,11 +530,11 @@ void ChromeNewWindowClient::LaunchCameraApp(const std::string& queries,
   DCHECK(IsCameraAppEnabled());
   ChromeCameraAppUIDelegate::CameraAppDialog::ShowIntent(
       queries, arc::GetArcWindow(task_id));
-  apps::RecordAppLaunch(ash::kCameraAppId, apps::LaunchSource::kFromArc);
+  apps::RecordAppLaunch(web_app::kCameraAppId, apps::LaunchSource::kFromArc);
 }
 
 void ChromeNewWindowClient::CloseCameraApp() {
-  const ash::ShelfID shelf_id(ash::kCameraAppId);
+  const ash::ShelfID shelf_id(web_app::kCameraAppId);
   AppWindowShelfItemController* const app_controller =
       ChromeShelfController::instance()
           ->shelf_model()

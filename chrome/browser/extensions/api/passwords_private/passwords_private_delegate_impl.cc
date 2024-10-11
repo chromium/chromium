@@ -280,7 +280,7 @@ std::u16string GetMessageForBiometricAuthenticationBeforeFillingSetting(
 void MaybeShowProfileSwitchIPH(Profile* profile) {
 #if !BUILDFLAG(IS_CHROMEOS)
   Browser* launched_app = web_app::AppBrowserController::FindForWebApp(
-      *profile, ash::kPasswordManagerAppId);
+      *profile, web_app::kPasswordManagerAppId);
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   // Try to show promo only if there is profile menu button and there are
@@ -1214,7 +1214,7 @@ void PasswordsPrivateDelegateImpl::OnSavedPasswordsChanged(
 
 void PasswordsPrivateDelegateImpl::OnWebAppInstalledWithOsHooks(
     const webapps::AppId& app_id) {
-  if (app_id != ash::kPasswordManagerAppId) {
+  if (app_id != web_app::kPasswordManagerAppId) {
     return;
   }
   // Post task with delay because new browser window for an app isn't created

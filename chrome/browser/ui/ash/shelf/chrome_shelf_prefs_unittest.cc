@@ -216,14 +216,14 @@ class ChromeShelfPrefsTest : public testing::Test {
     static const base::NoDestructor<std::map<std::string, std::string>> kAppMap(
         {
             {app_constants::kChromeAppId, "chrome"},
-            {ash::kContainerAppId, "container"},
-            {ash::kGmailAppId, "gmail"},
-            {ash::kGoogleCalendarAppId, "cal"},
+            {web_app::kContainerAppId, "container"},
+            {web_app::kGmailAppId, "gmail"},
+            {web_app::kGoogleCalendarAppId, "cal"},
             {file_manager::kFileManagerSwaAppId, "files"},
-            {ash::kMessagesAppId, "messages"},
-            {ash::kGoogleMeetAppId, "meet"},
+            {web_app::kMessagesAppId, "messages"},
+            {web_app::kGoogleMeetAppId, "meet"},
             {arc::kPlayStoreAppId, "play"},
-            {ash::kYoutubeAppId, "youtube"},
+            {web_app::kYoutubeAppId, "youtube"},
             {arc::kGooglePhotosAppId, "photos"},
         });
     std::vector<std::string> apps;
@@ -289,7 +289,7 @@ TEST_F(ChromeShelfPrefsTest, AddDefaultApps) {
 
   // Check that a pin was added for the gmail app.
   ASSERT_TRUE(syncable_service()
-                  .item_map_[ash::kGmailAppId]
+                  .item_map_[web_app::kGmailAppId]
                   ->item_pin_ordinal.IsValid());
 }
 
@@ -304,7 +304,7 @@ TEST_F(ChromeShelfPrefsTest, ProfileChanged) {
   EXPECT_EQ(pinned_apps_strs[0], app_constants::kChromeAppId);
 
   // Pinned apps should have the gmail app.
-  EXPECT_TRUE(base::Contains(pinned_apps_strs, ash::kGmailAppId));
+  EXPECT_TRUE(base::Contains(pinned_apps_strs, web_app::kGmailAppId));
 
   // Migration is no longer necessary.
   ASSERT_FALSE(shelf_prefs_->ShouldPerformConsistencyMigrations());
@@ -333,7 +333,7 @@ TEST_F(ChromeShelfPrefsTest, LacrosOnlyPinnedApp) {
   EXPECT_EQ(pinned_apps_strs[0], app_constants::kLacrosAppId);
 
   // Pinned apps should have the gmail app.
-  EXPECT_TRUE(base::Contains(pinned_apps_strs, ash::kGmailAppId));
+  EXPECT_TRUE(base::Contains(pinned_apps_strs, web_app::kGmailAppId));
 }
 
 // When moving from ash-only to lacros-only, the shelf position of the chrome
@@ -379,7 +379,7 @@ TEST_F(ChromeShelfPrefsTest, PinMallBeforeDefaultApps) {
         /*disabled_features=*/{chromeos::features::kCrosMallSwa});
 
     std::vector<std::string> pinned_apps_strs = GetPinnedAppIds();
-    EXPECT_EQ(pinned_apps_strs[1], ash::kMallAppId);
+    EXPECT_EQ(pinned_apps_strs[1], web_app::kMallAppId);
     // Mall should have pushed back any default apps.
     EXPECT_EQ(pinned_apps_strs[2], second_pin_app_id);
   }

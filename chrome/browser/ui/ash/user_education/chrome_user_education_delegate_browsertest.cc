@@ -69,8 +69,8 @@ IN_PROC_BROWSER_TEST_F(ChromeUserEducationDelegateBrowserTest,
   // Expect Explore app to launch asynchronously.
   EXPECT_TRUE(base::test::RunUntil([]() {
     auto* const browser = BrowserList::GetInstance()->GetLastActive();
-    return browser &&
-           web_app::AppBrowserController::IsForWebApp(browser, ash::kHelpAppId);
+    return browser && web_app::AppBrowserController::IsForWebApp(
+                          browser, web_app::kHelpAppId);
   }));
   histogram_tester.ExpectUniqueSample("Apps.DefaultAppLaunch.FromWelcomeTour",
                                       apps::DefaultAppName::kHelpApp, 1);

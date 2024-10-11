@@ -65,7 +65,7 @@ ExternalInstallOptions GetGmailConfig() {
     info->display_mode = DisplayMode::kBrowser;
     return info;
   });
-  options.expected_app_id = ash::kGmailAppId;
+  options.expected_app_id = kGmailAppId;
 
   return options;
 }
@@ -95,7 +95,7 @@ ExternalInstallOptions GetGoogleCalendarConfig() {
     info->display_mode = DisplayMode::kStandalone;
     return info;
   });
-  options.expected_app_id = ash::kGoogleCalendarAppId;
+  options.expected_app_id = kGoogleCalendarAppId;
 
   return options;
 }
@@ -171,10 +171,9 @@ IN_PROC_BROWSER_TEST_F(MigratePreinstallsToApsToggleTest, PRE_TurnOn) {
   EXPECT_THAT(GetAppIdsWithSources(
                   WebAppManagementTypes({WebAppManagement::Type::kDefault})),
               testing::UnorderedElementsAre(
-                  ash::kContainerAppId, ash::kGmailAppId, ash::kGoogleDocsAppId,
-                  ash::kGoogleDriveAppId, ash::kGoogleSheetsAppId,
-                  ash::kGoogleSlidesAppId, ash::kYoutubeAppId,
-                  ash::kGoogleCalendarAppId));
+                  kContainerAppId, kGmailAppId, kGoogleDocsAppId,
+                  kGoogleDriveAppId, kGoogleSheetsAppId, kGoogleSlidesAppId,
+                  kYoutubeAppId, kGoogleCalendarAppId));
   ValidateHistograms(/*install=*/11, /*source_removed=*/0, /*app_removed=*/0);
 }
 
@@ -183,13 +182,11 @@ IN_PROC_BROWSER_TEST_F(MigratePreinstallsToApsToggleTest, TurnOn) {
   EXPECT_THAT(GetAppIdsWithSources(
                   WebAppManagementTypes({WebAppManagement::Type::kDefault})),
               testing::UnorderedElementsAre(
-                  ash::kGmailAppId, ash::kGoogleDocsAppId,
-                  ash::kGoogleDriveAppId, ash::kGoogleSheetsAppId,
-                  ash::kGoogleSlidesAppId, ash::kYoutubeAppId));
-  EXPECT_THAT(
-      GetAppIdsWithSources(
-          WebAppManagementTypes({WebAppManagement::Type::kApsDefault})),
-      testing::ElementsAre(ash::kContainerAppId, ash::kGoogleCalendarAppId));
+                  kGmailAppId, kGoogleDocsAppId, kGoogleDriveAppId,
+                  kGoogleSheetsAppId, kGoogleSlidesAppId, kYoutubeAppId));
+  EXPECT_THAT(GetAppIdsWithSources(
+                  WebAppManagementTypes({WebAppManagement::Type::kApsDefault})),
+              testing::ElementsAre(kContainerAppId, kGoogleCalendarAppId));
   ValidateHistograms(/*install=*/6, /*source_removed=*/2, /*app_removed=*/0);
 }
 
@@ -198,9 +195,8 @@ IN_PROC_BROWSER_TEST_F(MigratePreinstallsToApsToggleTest, PRE_Rollback) {
   EXPECT_THAT(GetAppIdsWithSources(
                   WebAppManagementTypes({WebAppManagement::Type::kDefault})),
               testing::UnorderedElementsAre(
-                  ash::kGmailAppId, ash::kGoogleDocsAppId,
-                  ash::kGoogleDriveAppId, ash::kGoogleSheetsAppId,
-                  ash::kGoogleSlidesAppId, ash::kYoutubeAppId));
+                  kGmailAppId, kGoogleDocsAppId, kGoogleDriveAppId,
+                  kGoogleSheetsAppId, kGoogleSlidesAppId, kYoutubeAppId));
 
   auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
       GURL("https://calendar.google.com/calendar/r"));
@@ -208,10 +204,10 @@ IN_PROC_BROWSER_TEST_F(MigratePreinstallsToApsToggleTest, PRE_Rollback) {
       test::InstallWebApp(profile(), std::move(web_app_info),
                           /*overwrite_existing_manifest_fields=*/false,
                           webapps::WebappInstallSource::PRELOADED_DEFAULT);
-  ASSERT_EQ(app_id, ash::kGoogleCalendarAppId);
+  ASSERT_EQ(app_id, kGoogleCalendarAppId);
   EXPECT_THAT(GetAppIdsWithSources(
                   WebAppManagementTypes({WebAppManagement::Type::kApsDefault})),
-              testing::ElementsAre(ash::kGoogleCalendarAppId));
+              testing::ElementsAre(kGoogleCalendarAppId));
   ValidateHistograms(/*install=*/6, /*source_removed=*/0, /*app_removed=*/0);
 }
 
@@ -219,14 +215,14 @@ IN_PROC_BROWSER_TEST_F(MigratePreinstallsToApsToggleTest, PRE_Rollback) {
 IN_PROC_BROWSER_TEST_F(MigratePreinstallsToApsToggleTest, Rollback) {
   EXPECT_THAT(GetAppIdsWithSources(
                   WebAppManagementTypes({WebAppManagement::Type::kDefault})),
-              testing::UnorderedElementsAre(
-                  ash::kContainerAppId, ash::kGmailAppId, ash::kGoogleDocsAppId,
-                  ash::kGoogleDriveAppId, ash::kGoogleSheetsAppId,
-                  ash::kGoogleSlidesAppId, ash::kYoutubeAppId));
+              testing::UnorderedElementsAre(kContainerAppId, kGmailAppId,
+                                            kGoogleDocsAppId, kGoogleDriveAppId,
+                                            kGoogleSheetsAppId,
+                                            kGoogleSlidesAppId, kYoutubeAppId));
   EXPECT_THAT(GetAppIdsWithSources(
                   WebAppManagementTypes({WebAppManagement::Type::kDefault,
                                          WebAppManagement::Type::kApsDefault})),
-              testing::ElementsAre(ash::kGoogleCalendarAppId));
+              testing::ElementsAre(kGoogleCalendarAppId));
   ValidateHistograms(/*install=*/9, /*source_removed=*/0, /*app_removed=*/0);
 }
 
@@ -270,31 +266,27 @@ IN_PROC_BROWSER_TEST_F(MigratePreinstallsToApsSkipStartupTest,
   SyncApps({GetGmailConfig(), GetGoogleCalendarConfig()});
 
   EXPECT_THAT(registrar.GetAppIds(),
-              testing::UnorderedElementsAre(ash::kGmailAppId,
-                                            ash::kGoogleCalendarAppId));
+              testing::UnorderedElementsAre(kGmailAppId, kGoogleCalendarAppId));
   auto expected = WebAppManagementTypes({WebAppManagement::Type::kDefault});
-  EXPECT_EQ(registrar.GetAppById(ash::kGmailAppId)->GetSources(), expected);
-  EXPECT_EQ(registrar.GetAppById(ash::kGoogleCalendarAppId)->GetSources(),
-            expected);
+  EXPECT_EQ(registrar.GetAppById(kGmailAppId)->GetSources(), expected);
+  EXPECT_EQ(registrar.GetAppById(kGoogleCalendarAppId)->GetSources(), expected);
   // Migration should add kApsDefault for non-core apps.
   migrations::MigratePreinstallsToAps(&provider->sync_bridge_unsafe());
   EXPECT_THAT(registrar.GetAppIds(),
-              testing::UnorderedElementsAre(ash::kGmailAppId,
-                                            ash::kGoogleCalendarAppId));
-  EXPECT_EQ(registrar.GetAppById(ash::kGmailAppId)->GetSources(),
+              testing::UnorderedElementsAre(kGmailAppId, kGoogleCalendarAppId));
+  EXPECT_EQ(registrar.GetAppById(kGmailAppId)->GetSources(),
             WebAppManagementTypes({WebAppManagement::Type::kDefault}));
-  EXPECT_EQ(registrar.GetAppById(ash::kGoogleCalendarAppId)->GetSources(),
+  EXPECT_EQ(registrar.GetAppById(kGoogleCalendarAppId)->GetSources(),
             WebAppManagementTypes({WebAppManagement::Type::kDefault,
                                    WebAppManagement::Type::kApsDefault}));
 
   // Sync with core only should remove kDefault from non-core apps.
   SyncApps({GetGmailConfig()});
   EXPECT_THAT(registrar.GetAppIds(),
-              testing::UnorderedElementsAre(ash::kGmailAppId,
-                                            ash::kGoogleCalendarAppId));
-  EXPECT_EQ(registrar.GetAppById(ash::kGmailAppId)->GetSources(),
+              testing::UnorderedElementsAre(kGmailAppId, kGoogleCalendarAppId));
+  EXPECT_EQ(registrar.GetAppById(kGmailAppId)->GetSources(),
             WebAppManagementTypes({WebAppManagement::Type::kDefault}));
-  EXPECT_EQ(registrar.GetAppById(ash::kGoogleCalendarAppId)->GetSources(),
+  EXPECT_EQ(registrar.GetAppById(kGoogleCalendarAppId)->GetSources(),
             WebAppManagementTypes({WebAppManagement::Type::kApsDefault}));
 }
 
@@ -306,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(MigratePreinstallsToApsSkipStartupTest,
   SyncApps({GetGmailConfig()});
   EXPECT_THAT(
       WebAppProvider::GetForTest(profile())->registrar_unsafe().GetAppIds(),
-      testing::ElementsAre(ash::kGmailAppId));
+      testing::ElementsAre(kGmailAppId));
 }
 
 IN_PROC_BROWSER_TEST_F(MigratePreinstallsToApsSkipStartupTest,
@@ -321,13 +313,12 @@ IN_PROC_BROWSER_TEST_F(MigratePreinstallsToApsSkipStartupTest,
   // Syncing only core apps after migration should not remove APS apps.
   SyncApps({GetGmailConfig()});
   EXPECT_THAT(registrar.GetAppIds(),
-              testing::UnorderedElementsAre(ash::kGmailAppId,
-                                            ash::kGoogleCalendarAppId));
+              testing::UnorderedElementsAre(kGmailAppId, kGoogleCalendarAppId));
   // Core apps should have both kDefault and kApsDefault sources.
-  EXPECT_EQ(registrar.GetAppById(ash::kGmailAppId)->GetSources(),
+  EXPECT_EQ(registrar.GetAppById(kGmailAppId)->GetSources(),
             WebAppManagementTypes({WebAppManagement::Type::kDefault}));
   // APS apps should have only kApsDefault source.
-  EXPECT_EQ(registrar.GetAppById(ash::kGoogleCalendarAppId)->GetSources(),
+  EXPECT_EQ(registrar.GetAppById(kGoogleCalendarAppId)->GetSources(),
             WebAppManagementTypes({WebAppManagement::Type::kApsDefault}));
 }
 
@@ -343,11 +334,10 @@ IN_PROC_BROWSER_TEST_F(MigratePreinstallsToApsSkipStartupTest,
   // Rollback (syncing all apps) should leave migrated apps with both sources.
   SyncApps({GetGmailConfig(), GetGoogleCalendarConfig()});
   EXPECT_THAT(registrar.GetAppIds(),
-              testing::UnorderedElementsAre(ash::kGmailAppId,
-                                            ash::kGoogleCalendarAppId));
-  EXPECT_EQ(registrar.GetAppById(ash::kGmailAppId)->GetSources(),
+              testing::UnorderedElementsAre(kGmailAppId, kGoogleCalendarAppId));
+  EXPECT_EQ(registrar.GetAppById(kGmailAppId)->GetSources(),
             WebAppManagementTypes({WebAppManagement::Type::kDefault}));
-  EXPECT_EQ(registrar.GetAppById(ash::kGoogleCalendarAppId)->GetSources(),
+  EXPECT_EQ(registrar.GetAppById(kGoogleCalendarAppId)->GetSources(),
             WebAppManagementTypes({WebAppManagement::Type::kDefault,
                                    WebAppManagement::Type::kApsDefault}));
 }

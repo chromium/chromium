@@ -2224,7 +2224,7 @@ bool AppListSyncableService::IsAppDefaultPositionedForNewUsersOnly(
   }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (chromeos::features::IsContainerAppPreinstallEnabled() &&
-      app_id == ash::kContainerAppId) {
+      app_id == web_app::kContainerAppId) {
     return true;
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

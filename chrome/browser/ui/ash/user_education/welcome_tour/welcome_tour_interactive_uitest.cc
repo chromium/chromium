@@ -413,7 +413,7 @@ IN_PROC_BROWSER_TEST_P(WelcomeTourInteractiveUiTest, WelcomeTour) {
       // Step 7 in V1 and step 8 in V2: Explore app window.
       InAnyContext(WaitForBrowser()),
       InSameContext(Steps(WaitForAppListBubbleToHide(),
-                          CheckBrowserIsForWebApp(ash::kHelpAppId))));
+                          CheckBrowserIsForWebApp(web_app::kHelpAppId))));
 }
 
 // An interactive UI test that locks the screen during the Welcome Tour.

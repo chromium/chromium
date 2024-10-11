@@ -1187,15 +1187,15 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestPreinstallApps,
   // Those constants in `scalable_iph` must be synced with ones in `web_app`.
   // Test them in this test case.
   EXPECT_EQ(std::string(scalable_iph::kWebAppYouTubeAppId),
-            std::string(ash::kYoutubeAppId));
+            std::string(web_app::kYoutubeAppId));
   EXPECT_EQ(std::string(scalable_iph::kWebAppGoogleDocsAppId),
-            std::string(ash::kGoogleDocsAppId));
+            std::string(web_app::kGoogleDocsAppId));
 
   AppListClientImpl* app_list_client_impl = AppListClientImpl::GetInstance();
   AppListModelUpdater* app_list_model_updater =
       test::GetModelUpdater(app_list_client_impl);
 
-  AppListItemWaiter app_list_item_waiter(ash::kYoutubeAppId,
+  AppListItemWaiter app_list_item_waiter(web_app::kYoutubeAppId,
                                          app_list_model_updater);
   app_list_item_waiter.Wait();
 
@@ -1205,7 +1205,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestPreinstallApps,
       *mock_tracker(),
       NotifyEvent(scalable_iph::kEventNameAppListItemActivationYouTube));
   app_list_client_impl->ActivateItem(
-      /*profile_id=*/0, ash::kYoutubeAppId, /*event_flags=*/0,
+      /*profile_id=*/0, web_app::kYoutubeAppId, /*event_flags=*/0,
       ash::AppListLaunchedFrom::kLaunchedFromGrid, /*is_above_the_fold=*/true);
 }
 
@@ -1233,7 +1233,7 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestHelpApp, HelpAppPinnedToShelf) {
         << "Google Chrome is required for preinstall apps used by this test";
   }
 
-  EXPECT_TRUE(ash::ShelfModel::Get()->IsAppPinned(ash::kHelpAppId));
+  EXPECT_TRUE(ash::ShelfModel::Get()->IsAppPinned(web_app::kHelpAppId));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1984,5 +1984,5 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(ScalableIphBrowserTestHelpAppParameterized,
                        HelpAppNotPinnedToShelf) {
-  EXPECT_FALSE(ash::ShelfModel::Get()->IsAppPinned(ash::kHelpAppId));
+  EXPECT_FALSE(ash::ShelfModel::Get()->IsAppPinned(web_app::kHelpAppId));
 }

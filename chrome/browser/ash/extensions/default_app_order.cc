@@ -112,46 +112,46 @@ void GetDefault(std::vector<std::string>* app_ids) {
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (chromeos::features::IsContainerAppPreinstallEnabled()) {
-      app_ids->push_back(ash::kContainerAppId);
+      app_ids->push_back(web_app::kContainerAppId);
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   app_ids->insert(app_ids->end(), {
     arc::kGmailAppId,
     extension_misc::kGmailAppId,
-    ash::kGmailAppId,
+    web_app::kGmailAppId,
 
-    ash::kGoogleMeetAppId,
+    web_app::kGoogleMeetAppId,
 
-    ash::kGoogleChatAppId,
+    web_app::kGoogleChatAppId,
 
     extension_misc::kGoogleDocsAppId,
-    ash::kGoogleDocsAppId,
+    web_app::kGoogleDocsAppId,
 
     extension_misc::kGoogleSlidesAppId,
-    ash::kGoogleSlidesAppId,
+    web_app::kGoogleSlidesAppId,
 
     extension_misc::kGoogleSheetsAppId,
-    ash::kGoogleSheetsAppId,
+    web_app::kGoogleSheetsAppId,
 
     extension_misc::kGoogleDriveAppId,
-    ash::kGoogleDriveAppId,
+    web_app::kGoogleDriveAppId,
 
     extension_misc::kGoogleKeepAppId,
-    ash::kGoogleKeepAppId,
+    web_app::kGoogleKeepAppId,
 
     arc::kGoogleCalendarAppId,
     extension_misc::kCalendarAppId,
-    ash::kGoogleCalendarAppId,
+    web_app::kGoogleCalendarAppId,
 
-    ash::kMessagesAppId,
+    web_app::kMessagesAppId,
 
     arc::kYoutubeAppId,
     extension_misc::kYoutubeAppId,
-    ash::kYoutubeAppId,
+    web_app::kYoutubeAppId,
 
     arc::kYoutubeMusicAppId,
-    ash::kYoutubeMusicAppId,
+    web_app::kYoutubeMusicAppId,
     arc::kYoutubeMusicWebApkAppId,
 
     arc::kPlayMoviesAppId,
@@ -163,55 +163,55 @@ void GetDefault(std::vector<std::string>* app_ids) {
 
     arc::kPlayBooksAppId,
     extension_misc::kGooglePlayBooksAppId,
-    ash::kPlayBooksAppId,
+    web_app::kPlayBooksAppId,
 
-    ash::kCameraAppId,
-    ash::kRecorderAppId,
+    web_app::kCameraAppId,
+    web_app::kRecorderAppId,
 
     arc::kGooglePhotosAppId,
     extension_misc::kGooglePhotosAppId,
 
     arc::kGoogleMapsAppId,
-    ash::kGoogleMapsAppId,
+    web_app::kGoogleMapsAppId,
 
     ash::kInternalAppIdSettings,
-    ash::kSettingsAppId,
-    ash::kOsSettingsAppId,
+    web_app::kSettingsAppId,
+    web_app::kOsSettingsAppId,
 
-    ash::kHelpAppId,
+    web_app::kHelpAppId,
 
-    ash::kMallAppId,
+    web_app::kMallAppId,
     ash::kMallSystemAppId,
 
-    ash::kCalculatorAppId,
+    web_app::kCalculatorAppId,
     extension_misc::kCalculatorAppId,
 
-    ash::kMediaAppId,
-    ash::kCursiveAppId,
-    ash::kCanvasAppId,
+    web_app::kMediaAppId,
+    web_app::kCursiveAppId,
+    web_app::kCanvasAppId,
 
     ash::kChromeUIUntrustedProjectorSwaAppId,
-    ash::kAdobeExpressAppId,
+    web_app::kAdobeExpressAppId,
     extension_misc::kTextEditorAppId,
-    ash::kPrintManagementAppId,
-    ash::kScanningAppId,
-    ash::kShortcutCustomizationAppId,
+    web_app::kPrintManagementAppId,
+    web_app::kScanningAppId,
+    web_app::kShortcutCustomizationAppId,
     guest_os::kTerminalSystemAppId,
 
-    ash::kYoutubeTVAppId,
-    ash::kGoogleNewsAppId,
+    web_app::kYoutubeTVAppId,
+    web_app::kGoogleNewsAppId,
     extensions::kWebStoreAppId,
-    ash::kGraduationAppId,
+    web_app::kGraduationAppId,
 
     arc::kLightRoomAppId,
     arc::kInfinitePainterAppId,
-    ash::kShowtimeAppId,
+    web_app::kShowtimeAppId,
     extension_misc::kGooglePlusAppId,
   });
   // clang-format on
 
   if (chromeos::features::IsCloudGamingDeviceEnabled()) {
-    app_ids->push_back(ash::kNvidiaGeForceNowAppId);
+    app_ids->push_back(web_app::kNvidiaGeForceNowAppId);
   }
 }
 
@@ -313,12 +313,12 @@ base::span<const apps::LauncherItem> GetAppPreloadServiceDefaults() {
           PackageId(PackageType::kSystem, app_constants::kLacrosChrome),
           PackageId(PackageType::kChromeApp, arc::kPlayStoreAppId),
           SystemPackageId(ash::SystemWebAppType::FILE_MANAGER),
-          PackageId(PackageType::kWeb, ash::kGmailManifestId),
-          PackageId(PackageType::kWeb, ash::kGoogleDocsManifestId),
-          PackageId(PackageType::kWeb, ash::kGoogleSlidesManifestId),
-          PackageId(PackageType::kWeb, ash::kGoogleSheetsManifestId),
-          PackageId(PackageType::kWeb, ash::kGoogleDriveManifestId),
-          PackageId(PackageType::kWeb, ash::kYoutubeManifestId),
+          PackageId(PackageType::kWeb, web_app::kGmailManifestId),
+          PackageId(PackageType::kWeb, web_app::kGoogleDocsManifestId),
+          PackageId(PackageType::kWeb, web_app::kGoogleSlidesManifestId),
+          PackageId(PackageType::kWeb, web_app::kGoogleSheetsManifestId),
+          PackageId(PackageType::kWeb, web_app::kGoogleDriveManifestId),
+          PackageId(PackageType::kWeb, web_app::kYoutubeManifestId),
           SystemPackageId(ash::SystemWebAppType::CAMERA),
           SystemPackageId(ash::SystemWebAppType::SETTINGS),
           SystemPackageId(ash::SystemWebAppType::HELP),

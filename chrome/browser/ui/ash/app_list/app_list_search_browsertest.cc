@@ -106,7 +106,7 @@ class AppListSearchWithCustomizableShortcutsBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, SearchBuiltInApps) {
-  const std::string app_id = ash::kOsSettingsAppId;
+  const std::string app_id = web_app::kOsSettingsAppId;
   aura::Window* const primary_root_window = Shell::GetPrimaryRootWindow();
 
   SearchForSystemApp(primary_root_window, u"Settings", app_id);
@@ -126,7 +126,8 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, SearchBuiltInApps) {
 
 IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, OpenFeedbackApp) {
   aura::Window* const primary_root_window = Shell::GetPrimaryRootWindow();
-  SearchForSystemApp(primary_root_window, u"Feedback", ash::kOsFeedbackAppId);
+  SearchForSystemApp(primary_root_window, u"Feedback",
+                     web_app::kOsFeedbackAppId);
 
   GURL feedback_url = GURL(kChromeUIOSFeedbackUrl);
   content::TestNavigationObserver navigation_observer(feedback_url);
@@ -145,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, OpenFeedbackApp) {
 IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, OpenShortcutsApp) {
   aura::Window* const primary_root_window = Shell::GetPrimaryRootWindow();
   SearchForSystemApp(primary_root_window, u"Key Shortcuts",
-                     ash::kShortcutCustomizationAppId);
+                     web_app::kShortcutCustomizationAppId);
 
   GURL shortcut_customization_url = GURL(kChromeUIShortcutCustomizationAppURL);
   content::TestNavigationObserver navigation_observer(
@@ -168,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(AppListSearchWithCustomizableShortcutsBrowserTest,
   // Launch the app from the Launcher via searching for a shortcut
   aura::Window* const primary_root_window = Shell::GetPrimaryRootWindow();
   SearchForSystemApp(primary_root_window, u"Open notifications",
-                     ash::kShortcutCustomizationAppId);
+                     web_app::kShortcutCustomizationAppId);
 
   GURL shortcut_customization_url = GURL(kChromeUIShortcutCustomizationAppURL);
   content::TestNavigationObserver navigation_observer(
