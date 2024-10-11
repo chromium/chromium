@@ -1995,7 +1995,7 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, MultipleAccountFlowBackModal) {
               testing::ElementsAre(kAccountId2));
 }
 
-// Tests that auto re-authn works in button mode.
+// Tests that auto re-authn works in active mode.
 TEST_F(FedCmAccountSelectionViewDesktopTest,
        AutoReauthnSingleAccountFlowModal) {
   std::unique_ptr<TestFedCmAccountSelectionView> controller =
@@ -2007,10 +2007,10 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   Show(*controller, accounts_, SignInMode::kAuto,
        blink::mojom::RpMode::kActive);
 
-  EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
+  // Verifying UI is not shown.
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kLoading,
             account_selection_view_->sheet_type_);
-  EXPECT_THAT(account_selection_view_->account_ids_,
-              testing::ElementsAre(kAccountId1));
+  EXPECT_TRUE(account_selection_view_->account_ids_.empty());
 }
 
 // Tests that the user can dismiss the loading modal.

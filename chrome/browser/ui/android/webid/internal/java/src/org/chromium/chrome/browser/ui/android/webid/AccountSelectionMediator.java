@@ -562,14 +562,20 @@ class AccountSelectionMediator {
         mDisclosureFields = idpData.getDisclosureFields();
         mSelectedAccount = null;
 
+        if (accounts.size() == 1 && (isAutoReauthn || !mIdpMetadata.supportsAddAccount())) {
+            mSelectedAccount = accounts.get(0);
+        }
+
+        // Auto re-authn in active mode does not update the loading UI.
+        if (mRpMode == RpMode.ACTIVE && isAutoReauthn) {
+            mDelegate.onAccountSelected(mIdpMetadata.getConfigUrl(), mSelectedAccount);
+            return;
+        }
+
         fetchBrandIcon(mIdpMetadata.getBrandIconUrl(), bitmap -> updateIdpBrandIcon(bitmap));
         // RP brand icon is fetched here, but not shown until the request permission dialog.
         if (mRpMode == RpMode.ACTIVE) {
             fetchBrandIcon(mClientMetadata.getBrandIconUrl(), bitmap -> updateRpBrandIcon(bitmap));
-        }
-
-        if (accounts.size() == 1 && (isAutoReauthn || !mIdpMetadata.supportsAddAccount())) {
-            mSelectedAccount = accounts.get(0);
         }
 
         showAccountsInternal(newAccounts);

@@ -177,17 +177,6 @@ bool FedCmAccountSelectionView::Show(
   }
 
   if (sign_in_mode == Account::SignInMode::kAuto) {
-    // In Active mode the first UI we should should be a loading modal. When
-    // auto re-authn is triggered, we transform the UI to the single account
-    // that's available to notify user that they are being signed in with that
-    // account.
-    if (GetDialogType() == DialogType::MODAL) {
-      state_ = State::SINGLE_ACCOUNT_PICKER;
-      account_selection_view_->ShowSingleAccountConfirmDialog(
-          *accounts[0],
-          /*show_back_button=*/false);
-    }
-
     state_ = State::AUTO_REAUTHN;
 
     // When auto re-authn flow is triggered, the parameter
@@ -899,9 +888,15 @@ bool FedCmAccountSelectionView::ShowVerifyingSheet(
   base::WeakPtr<FedCmAccountSelectionView> weak_ptr(
       weak_ptr_factory_.GetWeakPtr());
   delegate_->OnAccountSelected(idp_data.idp_metadata.config_url, account);
+
   // AccountSelectionView::Delegate::OnAccountSelected() might delete this.
   // See https://crbug.com/1393650 for details.
   if (!weak_ptr) {
+    return false;
+  }
+
+  // Auto re-authn in active mode does not update the loading UI.
+  if (GetDialogType() == DialogType::MODAL && state_ == State::AUTO_REAUTHN) {
     return false;
   }
 

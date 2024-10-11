@@ -2503,14 +2503,12 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
   // takes a long time due to latency etc. In case that the fetching process is
   // fast, we still want to show the "Verify" sheet for at least
   // `kTokenRequestDelay` seconds for better UX.
-  // Note that for active flow we can complete without delay because the UI
-  // difference between the verifying UI and its predecessors are minor in case
-  // of manual sign-in where a user has read and made selection explicitly.
+  // Note that for active flow we can complete without delay because there is
+  // no contextual UI displayed to users.
   id_assertion_response_time_ = base::TimeTicks::Now();
   base::TimeDelta fetch_time =
       id_assertion_response_time_ - select_account_time_;
-  if (should_complete_request_immediately_ ||
-      (rp_mode_ == RpMode::kActive && identity_selection_type_ == kExplicit) ||
+  if (should_complete_request_immediately_ || rp_mode_ == RpMode::kActive ||
       fetch_time >= kTokenRequestDelay) {
     std::move(complete_request_callback).Run();
     return;

@@ -228,12 +228,9 @@ bool AccountSelectionViewAndroid::Show(
   ScopedJavaLocalRef<jobject> idp_obj =
       ConvertToJavaIdentityProviderData(env, idp_list[0].get());
 
-  // TODO(crbug.com/329235198): Support auto re-authn on Android.
   Java_AccountSelectionBridge_showAccounts(
       env, java_object_internal_, rp_for_display, idp_list[0]->idp_for_display,
-      accounts_obj, idp_obj,
-      sign_in_mode == Account::SignInMode::kAuto &&
-          rp_mode == blink::mojom::RpMode::kPassive,
+      accounts_obj, idp_obj, sign_in_mode == Account::SignInMode::kAuto,
       new_accounts_obj);
   return true;
 }

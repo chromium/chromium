@@ -463,7 +463,9 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         pressBack();
         verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.OTHER);
         verify(mMockDelegate).onAccountSelected(mTestConfigUrl, mAnaAccount);
-        verify(mMockDelegate).onAccountsDisplayed();
+        if (mRpMode == RpMode.PASSIVE) {
+            verify(mMockDelegate).onAccountsDisplayed();
+        }
         verifyNoMoreInteractions(mMockDelegate);
         assertTrue(mMediator.wasDismissed());
         // The delayed task should not call delegate after user dismissing.

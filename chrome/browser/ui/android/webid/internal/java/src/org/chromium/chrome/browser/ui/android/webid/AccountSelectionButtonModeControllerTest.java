@@ -74,7 +74,8 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
     }
 
     @Test
-    public void testShowVerifySheetAutoReauthn() {
+    public void testShowLoadingDialogAutoReauthn() {
+        mMediator.showLoadingDialog(mTestEtldPlusOne, mTestEtldPlusOne1, RpContext.SIGN_IN);
         for (int rpContext : RP_CONTEXTS) {
             when(mMockBottomSheetController.requestShowContent(any(), anyBoolean()))
                     .thenReturn(true);
@@ -88,11 +89,9 @@ public class AccountSelectionButtonModeControllerTest extends AccountSelectionJU
                     /* isAutoReauthn= */ true,
                     /* newAccounts= */ Collections.EMPTY_LIST);
 
-            // There is no account shown in the verify sheet on active mode.
+            // There is no account shown on the loading dialog in active mode.
             assertEquals(0, mSheetAccountItems.size());
-            assertEquals(
-                    HeaderType.VERIFY_AUTO_REAUTHN, mModel.get(ItemProperties.HEADER).get(TYPE));
-            verify(mMockDelegate).onAccountsDisplayed();
+            assertEquals(HeaderType.LOADING, mModel.get(ItemProperties.HEADER).get(TYPE));
             assertTrue(containsItemOfType(mModel, ItemProperties.SPINNER_ENABLED));
         }
     }
