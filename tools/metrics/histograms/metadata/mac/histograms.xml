@@ -94,6 +94,58 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Mac.Fullscreen.LocationBarViewScreenY" units="px"
+    expires_after="2024-12-31">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>lgrey@chromium.org</owner>
+  <summary>
+    Records the location bar's screen Y coordinate when the omnibox popup is
+    shown while the browser is in fullscreen mode.
+
+    This histogram is for debugging crbug.com/365733574, that bubbles are
+    misplaced in mac fullscreen.
+  </summary>
+</histogram>
+
+<histogram name="Mac.Fullscreen.OmniboxPopupTargetScreenY" units="px"
+    expires_after="2024-12-31">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>lgrey@chromium.org</owner>
+  <summary>
+    Records the target Y coordinate of the omnibox popup when it is shown while
+    the browser is in fullscreen mode.
+
+    This histogram is for debugging crbug.com/365733574, that bubbles are
+    misplaced in mac fullscreen.
+  </summary>
+</histogram>
+
+<histogram name="Mac.Fullscreen.OverlayNSWindowScreenY" units="px"
+    expires_after="2024-12-31">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>lgrey@chromium.org</owner>
+  <summary>
+    Records the overlay NSWindow's screen Y coordinate when the omnibox popup is
+    shown while the browser is in fullscreen mode.
+
+    This histogram is for debugging crbug.com/365733574, that bubbles are
+    misplaced in mac fullscreen.
+  </summary>
+</histogram>
+
+<histogram name="Mac.Fullscreen.OverlayWidgetScreenY" units="px"
+    expires_after="2024-12-31">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>lgrey@chromium.org</owner>
+  <summary>
+    Records the overlay widget's screen Y coordinate when the omnibox popup is
+    shown while the browser is in fullscreen mode.
+
+    This histogram is for debugging crbug.com/365733574, that bubbles are
+    misplaced in mac fullscreen.
+  </summary>
+</histogram>
+
 <histogram name="Mac.LaunchApplicationResult" enum="MacLaunchApplicationResult"
     expires_after="2025-01-26">
   <owner>mek@chromium.org</owner>

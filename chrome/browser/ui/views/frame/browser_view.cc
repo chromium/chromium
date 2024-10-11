@@ -4126,6 +4126,7 @@ views::View* BrowserView::CreateMacOverlayView() {
     params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
     params.activatable = views::Widget::InitParams::Activatable::kNo;
     params.is_overlay = true;
+    params.name = "mac-fullscreen-overlay";
     OverlayWidget* overlay_widget = new OverlayWidget(GetWidget());
 
     // When the overlay is used some Views are moved to the overlay_widget. When

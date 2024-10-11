@@ -19,6 +19,8 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
 #include "net/base/apple/url_conversions.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
@@ -152,6 +154,10 @@ bool IsSwipeTrackingFromScrollEventsEnabled() {
 
 NSWindow* GetActiveWindow() {
   return [NSApp keyWindow];
+}
+
+gfx::Rect GetWindowScreenBounds(gfx::NativeWindow window) {
+  return gfx::ScreenRectFromNSRect([window.GetNativeNSWindow() frame]);
 }
 
 }  // namespace platform_util
