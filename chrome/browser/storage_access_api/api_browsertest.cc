@@ -3188,6 +3188,27 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
+                       NonCookieStorage_Subresource) {
+  SetBlockThirdPartyCookies(true);
+  EnsureUserInteractionOn(kHostB);
+  prompt_factory()->set_response_type(
+      permissions::PermissionRequestManager::ACCEPT_ALL);
+
+  NavigateToPageWithFrame(kHostA);
+  // Header will be 'none' first time we navigate to `kHostB` since the
+  // permission grant does not exist yet.
+  NavigateFrameTo(GetURL(kHostB));
+  ASSERT_TRUE(content::ExecJs(
+      GetFrame(), "document.requestStorageAccess({'localStorage': true})"));
+
+  // Subresource fetches from the embed include the "inactive" header.
+  EXPECT_EQ(CookiesFromFetch(GetFrame(), kHostB), "None");
+  EXPECT_THAT(MostRecentRequestHeaders(),
+              Contains(Pair(net::HttpRequestHeaders::kSecFetchStorageAccess,
+                            "inactive")));
+}
+
+IN_PROC_BROWSER_TEST_F(StorageAccessHeadersBrowserTest,
                        RequestHeaderRetryToActive) {
   SetBlockThirdPartyCookies(true);
   SetRetryAllowedOriginFromHost(kHostA);
