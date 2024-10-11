@@ -25,9 +25,6 @@ source_set("parsing") {
     "plus_address_parsing_utils.h",
   ]
 
-  # TODO(b/322147254): The webdata dependency only exists to check if sync
-  # support is enabled. Remove when fully launched.
-  deps = [ "//components/plus_addresses/webdata" ]
   public_deps = [
     ":types",
     "//base",
