@@ -17,7 +17,8 @@ namespace {
 // FamilyLinkUserCapabilitiesObserver.
 const std::vector<std::string>& GetFamilyLinkUserCapabilityNames() {
   static base::NoDestructor<std::vector<std::string>> names{
-      {kIsSubjectToParentalControlsCapabilityName}};
+      {kIsSubjectToParentalControlsCapabilityName,
+       kCanFetchFamilyMemberInfoCapabilityName}};
   return *names;
 }
 
@@ -105,6 +106,8 @@ void FamilyLinkUserCapabilitiesObserver::NotifyCapabilityChange(
     CapabilityUpdateState capability_update_state) {
   if (name == kIsSubjectToParentalControlsCapabilityName) {
     OnIsSubjectToParentalControlsCapabilityChanged(capability_update_state);
+  } else if (name == kCanFetchFamilyMemberInfoCapabilityName) {
+    OnCanFetchFamilyMemberInfoCapabilityChanged(capability_update_state);
   }
 }
 

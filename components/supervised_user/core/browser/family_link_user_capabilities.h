@@ -41,9 +41,11 @@ class FamilyLinkUserCapabilitiesObserver
 
   ~FamilyLinkUserCapabilitiesObserver() override;
 
-  // Called when the IsSubjectToParentalControls capability for the primary
-  // account become available or unavailable.
+  // Monitors the capability kIsSubjectToParentalControlsCapabilityName.
   virtual void OnIsSubjectToParentalControlsCapabilityChanged(
+      CapabilityUpdateState capability_update_state) = 0;
+  // Monitors the capability kCanFetchFamilyMemberInfoCapabilityName.
+  virtual void OnCanFetchFamilyMemberInfoCapabilityChanged(
       CapabilityUpdateState capability_update_state) = 0;
 
  private:

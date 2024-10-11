@@ -20,7 +20,12 @@
 // FamilyLinkUserCapabilitiesObserver callbacks in Objective-C.
 @protocol FamilyLinkUserCapabilitiesObserving <NSObject>
 
+@optional
 - (void)onIsSubjectToParentalControlsCapabilityChanged:
+    (supervised_user::CapabilityUpdateState)capabilityUpdateState;
+
+@optional
+- (void)onCanFetchFamilyMemberInfoCapabilityChanged:
     (supervised_user::CapabilityUpdateState)capabilityUpdateState;
 
 @end
@@ -40,6 +45,9 @@ class FamilyLinkUserCapabilitiesObserverBridge
       const FamilyLinkUserCapabilitiesObserverBridge&) = delete;
 
   void OnIsSubjectToParentalControlsCapabilityChanged(
+      CapabilityUpdateState capability_update_state) override;
+
+  void OnCanFetchFamilyMemberInfoCapabilityChanged(
       CapabilityUpdateState capability_update_state) override;
 
  private:

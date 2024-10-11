@@ -26,6 +26,8 @@ class MockFamilyLinkUserCapabilitiesObserver
 
   MOCK_METHOD1(OnIsSubjectToParentalControlsCapabilityChanged,
                void(CapabilityUpdateState));
+  MOCK_METHOD1(OnCanFetchFamilyMemberInfoCapabilityChanged,
+               void(CapabilityUpdateState));
 };
 
 }  // namespace
@@ -43,6 +45,7 @@ TEST_F(FamilyLinkUserCapabilitiesTest,
       identity_test_env_.identity_manager());
   EXPECT_CALL(observer, OnIsSubjectToParentalControlsCapabilityChanged)
       .Times(0);
+  EXPECT_CALL(observer, OnCanFetchFamilyMemberInfoCapabilityChanged).Times(0);
 
   EXPECT_EQ(IsPrimaryAccountSubjectToParentalControls(
                 identity_test_env_.identity_manager()),
@@ -94,13 +97,14 @@ TEST_F(FamilyLinkUserCapabilitiesTest, SignedInChildSubjectToParentalControls) {
             signin::Tribool::kTrue);
 }
 
-TEST_F(FamilyLinkUserCapabilitiesTest,
-       SignedInUnknownIsSubjectToParentalControls) {
+TEST_F(FamilyLinkUserCapabilitiesTest, SignedInUnknownCapabilities) {
   // Expect no change to account capabilities state.
   MockFamilyLinkUserCapabilitiesObserver observer(
       identity_test_env_.identity_manager());
   EXPECT_CALL(observer, OnIsSubjectToParentalControlsCapabilityChanged)
       .Times(0);
+  EXPECT_CALL(observer, OnCanFetchFamilyMemberInfoCapabilityChanged).Times(0);
+
   AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
       kEmail, signin::ConsentLevel::kSignin);
 
@@ -109,10 +113,28 @@ TEST_F(FamilyLinkUserCapabilitiesTest,
             signin::Tribool::kUnknown);
 }
 
+TEST_F(FamilyLinkUserCapabilitiesTest, SignedInCanFetchFamilyMemberInfo) {
+  // Expect account capabilities to notify of can fetch family member info
+  // change.
+  base::RunLoop run_loop;
+  MockFamilyLinkUserCapabilitiesObserver observer(
+      identity_test_env_.identity_manager());
+  EXPECT_CALL(observer, OnCanFetchFamilyMemberInfoCapabilityChanged)
+      .WillOnce([&](supervised_user::CapabilityUpdateState state) {
+        ASSERT_EQ(supervised_user::CapabilityUpdateState::kSetToFalse, state);
+        run_loop.Quit();
+      });
+
+  AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
+      kEmail, signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+  mutator.set_can_fetch_family_member_info(false);
+  identity_test_env_.UpdateAccountInfoForAccount(account_info);
+}
+
 // ChromeOS does not support sign-out in tests.
 #if !BUILDFLAG(IS_CHROMEOS)
-TEST_F(FamilyLinkUserCapabilitiesTest,
-       SignOutTriggersIsSubjectToParentalControlsUpdate) {
+TEST_F(FamilyLinkUserCapabilitiesTest, SignOutTriggersCapabilitiesUpdate) {
   AccountInfo account_info = identity_test_env_.MakePrimaryAccountAvailable(
       kEmail, signin::ConsentLevel::kSignin);
 
@@ -121,6 +143,11 @@ TEST_F(FamilyLinkUserCapabilitiesTest,
   MockFamilyLinkUserCapabilitiesObserver observer(
       identity_test_env_.identity_manager());
   EXPECT_CALL(observer, OnIsSubjectToParentalControlsCapabilityChanged)
+      .WillOnce([&](supervised_user::CapabilityUpdateState state) {
+        ASSERT_EQ(supervised_user::CapabilityUpdateState::kDetached, state);
+        run_loop.Quit();
+      });
+  EXPECT_CALL(observer, OnCanFetchFamilyMemberInfoCapabilityChanged)
       .WillOnce([&](supervised_user::CapabilityUpdateState state) {
         ASSERT_EQ(supervised_user::CapabilityUpdateState::kDetached, state);
         run_loop.Quit();

@@ -23,4 +23,14 @@ void FamilyLinkUserCapabilitiesObserverBridge::
   }
 }
 
+void FamilyLinkUserCapabilitiesObserverBridge::
+    OnCanFetchFamilyMemberInfoCapabilityChanged(
+        supervised_user::CapabilityUpdateState capability_update_state) {
+  if ([observing_ respondsToSelector:@selector
+                  (onCanFetchFamilyMemberInfoCapabilityChanged:)]) {
+    [observing_
+        onCanFetchFamilyMemberInfoCapabilityChanged:capability_update_state];
+  }
+}
+
 }  // namespace supervised_user
