@@ -8957,6 +8957,22 @@
             ]
         }
     ],
+    "EarlyEstablishGpuChannelAndroid": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "EarlyEstablishGpuChannel",
+                    "enable_features": [
+                        "EarlyEstablishGpuChannel"
+                    ]
+                }
+            ]
+        }
+    ],
     "EdgeToEdgeAndroid": [
         {
             "platforms": [
