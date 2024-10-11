@@ -74,6 +74,8 @@ chromium-metrics-reviews@google.com.
   <variant name="PageVisibility" summary="Page visibility"/>
   <variant name="PainfulPageLoad" summary="Painful page load"/>
   <variant name="PassageEmbedder" summary="Text embedding for passages"/>
+  <variant name="PasswordManagerFormClassification"
+      summary="Classifies password forms"/>
   <variant name="PhraseSegmentation" summary="Phrase segmentation"/>
   <variant name="PreloadingHeuristics" summary="Speculation-rule preloading"/>
   <variant name="SegmentationAdaptiveToolbar"
