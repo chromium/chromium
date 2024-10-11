@@ -162,10 +162,10 @@ void LensPermissionBubbleController::OnHelpCenterLinkClicked(
 void LensPermissionBubbleController::OnPermissionDialogAccept() {
   RecordPermissionUserAction(LensPermissionUserAction::kAcceptButtonPressed,
                              invocation_source_);
+  pref_service_->SetBoolean(prefs::kLensSharingPageScreenshotEnabled, true);
   if (lens::features::IsLensOverlayContextualSearchboxEnabled()) {
     pref_service_->SetBoolean(prefs::kLensSharingPageContentEnabled, true);
   }
-  pref_service_->SetBoolean(prefs::kLensSharingPageScreenshotEnabled, true);
   dialog_widget_ = nullptr;
 }
 
