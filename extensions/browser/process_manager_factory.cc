@@ -44,7 +44,8 @@ ProcessManagerFactory::ProcessManagerFactory()
 ProcessManagerFactory::~ProcessManagerFactory() {
 }
 
-KeyedService* ProcessManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ProcessManagerFactory::BuildServiceInstanceForBrowserContext(
     BrowserContext* context) const {
   return ProcessManager::Create(context);
 }

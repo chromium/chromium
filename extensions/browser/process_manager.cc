@@ -181,7 +181,8 @@ ProcessManager* ProcessManager::Get(BrowserContext* context) {
 }
 
 // static
-ProcessManager* ProcessManager::Create(BrowserContext* context) {
+std::unique_ptr<ProcessManager> ProcessManager::Create(
+    BrowserContext* context) {
   ExtensionRegistry* extension_registry = ExtensionRegistry::Get(context);
   ExtensionsBrowserClient* client = ExtensionsBrowserClient::Get();
   if (client->IsGuestSession(context)) {
@@ -191,17 +192,18 @@ ProcessManager* ProcessManager::Create(BrowserContext* context) {
     // incognito behavior.
     BrowserContext* original_context = client->GetContextRedirectedToOriginal(
         context, /*force_guest_profile=*/true);
-    return new ProcessManager(context, original_context, extension_registry);
+    return std::make_unique<ProcessManager>(context, original_context,
+                                            extension_registry);
   }
 
   if (context->IsOffTheRecord()) {
     BrowserContext* original_context = client->GetContextRedirectedToOriginal(
         context, /*force_guest_profile=*/true);
-    return new IncognitoProcessManager(
-        context, original_context, extension_registry);
+    return std::make_unique<IncognitoProcessManager>(context, original_context,
+                                                     extension_registry);
   }
 
-  return new ProcessManager(context, context, extension_registry);
+  return std::make_unique<ProcessManager>(context, context, extension_registry);
 }
 
 // static
