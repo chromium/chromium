@@ -551,6 +551,10 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
         features::kEnableAIPromptAPIForExtension);
   }
 
+  if (trial_name == "TranslationAPI") {
+    return base::FeatureList::IsEnabled(features::kEnableTranslationAPI);
+  }
+
   return true;
 }
 
