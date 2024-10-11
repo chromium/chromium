@@ -205,7 +205,6 @@ class PlusAddressServiceImpl : public PlusAddressService,
   metrics::PlusAddressSubmissionLogger submission_logger_;
 
   // Handles requests to a remote server that this service uses.
-  // TODO(crbug.com/322147254): Move to allocator.
   std::unique_ptr<PlusAddressHttpClient> plus_address_http_client_;
 
   // Responsible for communicating with `PlusAddressTable`.
