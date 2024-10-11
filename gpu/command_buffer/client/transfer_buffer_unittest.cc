@@ -749,13 +749,7 @@ TEST_F(TransferBufferTest, MultipleAllocsAndFrees) {
 
 #if defined(GTEST_HAS_DEATH_TEST) && DCHECK_IS_ON()
 
-// TODO(crbug.com/372892109): Re-enable test.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_ResizeDuringScopedResultPtr DISABLED_ResizeDuringScopedResultPtr
-#else
-#define MAYBE_ResizeDuringScopedResultPtr ResizeDuringScopedResultPtr
-#endif
-TEST_F(TransferBufferTest, MAYBE_ResizeDuringScopedResultPtr) {
+TEST_F(TransferBufferTest, ResizeDuringScopedResultPtr) {
   Initialize();
   ScopedResultPtr<int> ptr(transfer_buffer_.get());
   // If an attempt is made to resize the transfer buffer while a result
@@ -767,13 +761,7 @@ TEST_F(TransferBufferTest, MAYBE_ResizeDuringScopedResultPtr) {
                "outstanding_result_pointer_");
 }
 
-// TODO(crbug.com/372892109): Re-enable test.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_AllocDuringScopedResultPtr DISABLED_AllocDuringScopedResultPtr
-#else
-#define MAYBE_AllocDuringScopedResultPtr AllocDuringScopedResultPtr
-#endif
-TEST_F(TransferBufferTest, MAYBE_AllocDuringScopedResultPtr) {
+TEST_F(TransferBufferTest, AllocDuringScopedResultPtr) {
   Initialize();
   ScopedResultPtr<int> ptr(transfer_buffer_.get());
   // If an attempt is made to allocate any amount in the transfer buffer while a
@@ -784,13 +772,7 @@ TEST_F(TransferBufferTest, MAYBE_AllocDuringScopedResultPtr) {
                "outstanding_result_pointer_");
 }
 
-// TODO(crbug.com/372892109): Re-enable test.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_TwoScopedResultPtrs DISABLED_TwoScopedResultPtrs
-#else
-#define MAYBE_TwoScopedResultPtrs TwoScopedResultPtrs
-#endif
-TEST_F(TransferBufferTest, MAYBE_TwoScopedResultPtrs) {
+TEST_F(TransferBufferTest, TwoScopedResultPtrs) {
   Initialize();
   // Attempting to create two ScopedResultPtrs at the same time should DCHECK.
   ScopedResultPtr<int> ptr(transfer_buffer_.get());
