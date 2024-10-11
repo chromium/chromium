@@ -339,7 +339,7 @@ constexpr int kThumbnailResizeDimension = 64;
 }
 
 - (void)loadFirstPage {
-  [self loadItemsAppending:NO delayed:NO animated:YES];
+  [self loadItemsAppending:NO delayed:NO animated:NO];
 }
 
 - (void)loadNextPage {
