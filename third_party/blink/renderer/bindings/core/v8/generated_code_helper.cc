@@ -201,8 +201,9 @@ std::optional<size_t> FindIndexInEnumStringTable(
     base::span<const char* const> enum_value_table,
     const char* enum_type_name,
     ExceptionState& exception_state) {
-  const String& str_value = NativeValueTraits<IDLString>::NativeValue(
-      isolate, value, exception_state);
+  auto adapter = NativeValueTraits<IDLString>::NativeValue(isolate, value,
+                                                           exception_state);
+  const StringView& str_value = adapter;
   if (exception_state.HadException()) [[unlikely]] {
     return std::nullopt;
   }
@@ -219,11 +220,12 @@ std::optional<size_t> FindIndexInEnumStringTable(
 }
 
 std::optional<size_t> FindIndexInEnumStringTable(
-    const String& str_value,
+    const StringView& str_value,
     base::span<const char* const> enum_value_table) {
   for (size_t i = 0; i < enum_value_table.size(); ++i) {
-    if (Equal(str_value.Impl(), enum_value_table[i]))
+    if (Equal(str_value, enum_value_table[i])) {
       return i;
+    }
   }
   return std::nullopt;
 }

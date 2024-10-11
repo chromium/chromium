@@ -656,6 +656,17 @@ ALWAYS_INLINE size_t StringImpl::AllocationSize<LChar>(wtf_size_t length) {
   return base::CheckAdd(sizeof(StringImpl), length).ValueOrDie();
 }
 
+WTF_EXPORT bool Equal(const StringView& a, const LChar* b);
+inline bool Equal(const StringView& a, const char* b) {
+  return Equal(a, reinterpret_cast<const LChar*>(b));
+}
+inline bool Equal(const char* a, const StringView& b) {
+  return Equal(b, reinterpret_cast<const LChar*>(a));
+}
+inline bool Equal(const LChar* a, const StringView& b) {
+  return Equal(b, a);
+}
+
 WTF_EXPORT bool Equal(const StringImpl*, const StringImpl*);
 WTF_EXPORT bool Equal(const StringImpl*, const LChar*);
 inline bool Equal(const StringImpl* a, const char* b) {

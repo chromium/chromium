@@ -1761,7 +1761,8 @@ bool Equal(const StringImpl* a, const UChar* b, wtf_size_t length) {
   return EqualInternal(a, b, length);
 }
 
-bool Equal(const StringImpl* a, const LChar* b) {
+template <typename StringType>
+bool EqualInternal(const StringType* a, const LChar* b) {
   if (!a)
     return !b;
   if (!b)
@@ -1793,6 +1794,14 @@ bool Equal(const StringImpl* a, const LChar* b) {
   }
 
   return !b[length];
+}
+
+bool Equal(const StringImpl* a, const LChar* b) {
+  return EqualInternal(a, b);
+}
+
+bool Equal(const StringView& a, const LChar* b) {
+  return EqualInternal(&a, b);
 }
 
 bool EqualNonNull(const StringImpl* a, const StringImpl* b) {

@@ -143,7 +143,7 @@ CORE_EXPORT std::optional<size_t> FindIndexInEnumStringTable(
     ExceptionState& exception_state);
 
 CORE_EXPORT std::optional<size_t> FindIndexInEnumStringTable(
-    const String& str_value,
+    const StringView& str_value,
     base::span<const char* const> enum_value_table);
 
 CORE_EXPORT void ReportInvalidEnumSetToAttribute(
