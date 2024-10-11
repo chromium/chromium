@@ -2808,28 +2808,6 @@
             ]
         }
     ],
-    "AvoidScheduleWorkDuringNativeEventProcessing": [
-        {
-            "platforms": [
-                "android_webview",
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AvoidScheduleWorkDuringNativeEventProcessing"
-                    ]
-                }
-            ]
-        }
-    ],
     "AvoidUnnecessaryForcedLayoutMeasurements": [
         {
             "platforms": [
@@ -9506,26 +9484,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EscapeLtGtInAttributes"
-                    ]
-                }
-            ]
-        }
-    ],
-    "EstablishGpuChannelChanges": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EstablishGpuChannelChanges",
-                    "enable_features": [
-                        "EarlyEstablishGpuChannel",
-                        "EstablishGpuChannelAsync"
                     ]
                 }
             ]
@@ -16858,6 +16816,9 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "AvoidScheduleWorkDuringNativeEventProcessing",
+                        "EarlyEstablishGpuChannel",
+                        "EstablishGpuChannelAsync",
                         "ExpandedPrefetchRange",
                         "FledgeEnableWALForInterestGroupStorage",
                         "GpuInfoCollectionSeparatePrefetch",
@@ -16883,6 +16844,9 @@
                         "MacEfficientFileFlushUseBarrier": "true"
                     },
                     "enable_features": [
+                        "AvoidScheduleWorkDuringNativeEventProcessing",
+                        "EarlyEstablishGpuChannel",
+                        "EstablishGpuChannelAsync",
                         "FledgeEnableWALForInterestGroupStorage",
                         "LevelDBProtoAsyncWrite",
                         "MacEfficientFileFlush",
@@ -16907,6 +16871,9 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "AvoidScheduleWorkDuringNativeEventProcessing",
+                        "EarlyEstablishGpuChannel",
+                        "EstablishGpuChannelAsync",
                         "FledgeEnableWALForInterestGroupStorage",
                         "LevelDBProtoAsyncWrite",
                         "MojoBindingsInlineSLS",
@@ -16926,6 +16893,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "AvoidScheduleWorkDuringNativeEventProcessing",
                         "FledgeEnableWALForInterestGroupStorage",
                         "LevelDBProtoAsyncWrite",
                         "MojoBindingsInlineSLS",
@@ -16945,6 +16913,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "AvoidScheduleWorkDuringNativeEventProcessing",
                         "FledgeEnableWALForInterestGroupStorage",
                         "LevelDBProtoAsyncWrite",
                         "MojoBindingsInlineSLS",
