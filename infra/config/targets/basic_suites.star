@@ -3570,6 +3570,13 @@ targets.legacy_basic_suite(
 # END tests which run on the GPU bots
 
 targets.legacy_basic_suite(
+    name = "ios_vm_tests",
+    tests = {
+        "base_unittests": targets.legacy_test_config(),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "js_code_coverage_browser_tests_suite",
     tests = {
         "js_code_coverage_browser_tests": targets.legacy_test_config(

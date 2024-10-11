@@ -1997,6 +1997,22 @@
           'isolated_scripts': 'ios_m1_simulator_tests'
         },
       },
+      'ios-vm': {
+        'additional_compile_targets': [
+          'all',
+        ],
+        'mixins': [
+          'has_native_resultdb_integration',
+          'mac_vm',
+          'mac_toolchain',
+          'out_dir_arg',
+          'xcode_16_main',
+          'xctest',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'ios_vm_tests_with_variants'
+        },
+      },
       'ios-webkit-tot': {
         'mixins': [
           'has_native_resultdb_integration',

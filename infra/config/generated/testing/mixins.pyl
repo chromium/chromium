@@ -878,6 +878,15 @@
       ],
     },
   },
+  'mac_vm': {
+    'swarming': {
+      'dimensions': {
+        'cpu': 'arm64-64-Apple_M1_(Virtual)',
+        'os': 'Mac-14',
+        'pool': 'chromium.tests.macvm',
+      },
+    },
+  },
   'no_gpu': {
     'fail_if_unused': False,
     'swarming': {

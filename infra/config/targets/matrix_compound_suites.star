@@ -940,6 +940,17 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
+    name = "ios_vm_tests_with_variants",
+    basic_suites = {
+        "ios_vm_tests": targets.legacy_matrix_config(
+            variants = [
+                "SIM_IPHONE_15_18_0",
+            ],
+        ),
+    },
+)
+
+targets.legacy_matrix_compound_suite(
     name = "ios_webkit_tot_tests",
     basic_suites = {
         "ios_common_tests": targets.legacy_matrix_config(

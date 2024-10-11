@@ -4306,6 +4306,10 @@
       'ui_base_unittests': {},
     },
 
+    'ios_vm_tests': {
+      'base_unittests': {},
+    },
+
     'js_code_coverage_browser_tests_suite': {
       'js_code_coverage_browser_tests': {
         'test': 'browser_tests',
@@ -7203,6 +7207,14 @@
           'SIM_IPHONE_14_PRO_MAX_17_5',
           'SIM_IPHONE_15_18_0',
           'SIM_IPHONE_15_PRO_MAX_18_0',
+        ],
+      },
+    },
+
+    'ios_vm_tests_with_variants': {
+      'ios_vm_tests': {
+        'variants': [
+          'SIM_IPHONE_15_18_0',
         ],
       },
     },
