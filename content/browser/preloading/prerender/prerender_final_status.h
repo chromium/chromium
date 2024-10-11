@@ -171,7 +171,11 @@ enum class PrerenderFinalStatus {
   // avoid it, prerendering is disabled in that case.
   kV8OptimizerDisabled = 85,
 
-  kMaxValue = kV8OptimizerDisabled,
+  // Prefetch ahead of prerender failed. Precise reason is recorded as UMA
+  // `Prerender.Experimental.PrefetchAheadOfPrerenderFailed.PrefetchStatus{PreloadingTriggerType}`
+  kPrerenderFailedDuringPrefetch = 86,
+
+  kMaxValue = kPrerenderFailedDuringPrefetch,
 };
 // LINT.ThenChange()
 

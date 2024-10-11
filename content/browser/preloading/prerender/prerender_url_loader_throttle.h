@@ -33,7 +33,7 @@ namespace content {
 // other dependencies are finally resolved.
 class PrerenderURLLoaderThrottle final : public blink::URLLoaderThrottle {
  public:
-  PrerenderURLLoaderThrottle() = default;
+  explicit PrerenderURLLoaderThrottle(FrameTreeNodeId frame_tree_node_id);
   ~PrerenderURLLoaderThrottle() override = default;
 
   static std::unique_ptr<PrerenderURLLoaderThrottle> MaybeCreate(
@@ -42,6 +42,9 @@ class PrerenderURLLoaderThrottle final : public blink::URLLoaderThrottle {
   // `URLLoaderThrottle` implementation
   void WillStartRequest(network::ResourceRequest* request,
                         bool* defer) override;
+
+ private:
+  FrameTreeNodeId frame_tree_node_id_;
 };
 
 }  // namespace content

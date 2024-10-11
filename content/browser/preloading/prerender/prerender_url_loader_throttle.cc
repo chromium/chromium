@@ -5,12 +5,18 @@
 #include "content/browser/preloading/prerender/prerender_url_loader_throttle.h"
 
 #include "content/browser/preloading/prerender/prerender_features.h"
+#include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
+#include "content/browser/preloading/prerender/prerender_metrics.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 
 namespace content {
+
+PrerenderURLLoaderThrottle::PrerenderURLLoaderThrottle(
+    FrameTreeNodeId frame_tree_node_id)
+    : frame_tree_node_id_(frame_tree_node_id) {}
 
 // static
 std::unique_ptr<PrerenderURLLoaderThrottle>
@@ -43,13 +49,35 @@ PrerenderURLLoaderThrottle::MaybeCreate(FrameTreeNodeId frame_tree_node_id) {
     return nullptr;
   }
 
-  return std::make_unique<PrerenderURLLoaderThrottle>();
+  // If the prefetch ahead of prerender "failed", `PrerenderURLLoaderThrottle`
+  // is added to the `ThrottlingURLLoader` for the corresponding prerendering
+  // navigation, and the `PrerenderURLLoaderThrottle` always cancels the network
+  // request before it starts, which cancels the prerender.
+  return std::make_unique<PrerenderURLLoaderThrottle>(frame_tree_node_id);
 }
 
 void PrerenderURLLoaderThrottle::WillStartRequest(
     network::ResourceRequest* request,
     bool* defer) {
   delegate_->CancelWithError(net::ERR_ABORTED);
+
+  auto* frame_tree_node = FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
+  if (!frame_tree_node) {
+    return;
+  }
+
+  PrerenderHostRegistry* prerender_host_registry =
+      frame_tree_node->current_frame_host()
+          ->delegate()
+          ->GetPrerenderHostRegistry();
+  if (!prerender_host_registry) {
+    return;
+  }
+
+  prerender_host_registry->CancelHost(
+      frame_tree_node_id_,
+      PrerenderCancellationReason(
+          PrerenderFinalStatus::kPrerenderFailedDuringPrefetch));
 }
 
 }  // namespace content

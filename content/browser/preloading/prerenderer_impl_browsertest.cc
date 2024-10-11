@@ -8,6 +8,7 @@
 #include "base/test/test_future.h"
 #include "content/browser/preloading/prefetch/prefetch_features.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
+#include "content/browser/preloading/prefetch/prefetch_status.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_confidence.h"
 #include "content/browser/preloading/preloading_decider.h"
@@ -414,7 +415,12 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
   GetPrerendererImpl().MaybePrerender(candidate, enacting_predictor,
                                       PreloadingConfidence{100});
 
-  prerender_helper().NavigatePrimaryPage(prerender_url);
+  // Here we shouldn't call
+  // `prerender_helper().WaitForPrerenderLoadCompletion(prerender_url)` since
+  // this eligibility check of prefetch synchronously fails and the call first
+  // tries to get `PrerenderHost`, which has been already destructed.
+
+  ASSERT_TRUE(NavigateToURL(shell(), prerender_url));
 
   histogram_tester().ExpectUniqueSample(
       "Preloading.Prefetch.Attempt.SpeculationRules.TriggeringOutcome",
@@ -422,11 +428,13 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
   histogram_tester().ExpectUniqueSample(
       "Preloading.Prerender.Attempt.SpeculationRules.TriggeringOutcome",
       PreloadingTriggeringOutcome::kFailure, 1);
-  // TODO(crbug.com/366144969): Use dedicated `PrerenderFinalStatus` for
-  // prefetch failure.
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
-      PrerenderFinalStatus::kNavigationRequestNetworkError, 1);
+      PrerenderFinalStatus::kPrerenderFailedDuringPrefetch, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.PrefetchAheadOfPrerenderFailed.PrefetchStatus."
+      "SpeculationRule",
+      PrefetchStatus::kPrefetchIneligibleHostIsNonUnique, 1);
 
   std::vector<RequestPathAndSecPurposeHeader> expected{
       {.path = "/empty.html", .sec_purpose_header_value = ""},
@@ -667,7 +675,7 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
                                       PreloadingConfidence{100});
   prerender_helper().WaitForPrerenderLoadCompletion(prerender_url);
 
-  prerender_helper().NavigatePrimaryPage(prerender_url);
+  ASSERT_TRUE(NavigateToURL(shell(), prerender_url));
 
   histogram_tester().ExpectUniqueSample(
       "Preloading.Prefetch.Attempt.SpeculationRules.TriggeringOutcome",
@@ -675,11 +683,13 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
   histogram_tester().ExpectUniqueSample(
       "Preloading.Prerender.Attempt.SpeculationRules.TriggeringOutcome",
       PreloadingTriggeringOutcome::kFailure, 1);
-  // TODO(crbug.com/366144969): Use dedicated `PrerenderFinalStatus` for
-  // prefetch failure.
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
-      PrerenderFinalStatus::kNavigationRequestNetworkError, 1);
+      PrerenderFinalStatus::kPrerenderFailedDuringPrefetch, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.PrefetchAheadOfPrerenderFailed.PrefetchStatus."
+      "SpeculationRule",
+      PrefetchStatus::kPrefetchNotFinishedInTime, 1);
 
   std::vector<RequestPathAndSecPurposeHeader> expected{
       {.path = "/empty.html", .sec_purpose_header_value = ""},
@@ -840,7 +850,7 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
 
   prerender_helper().WaitForPrerenderLoadCompletion(prerender_url);
 
-  prerender_helper().NavigatePrimaryPage(prerender_url);
+  ASSERT_TRUE(NavigateToURL(shell(), prerender_url));
 
   EXPECT_THAT(
       histogram_tester().GetAllSamples(
@@ -853,7 +863,11 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
       PreloadingTriggeringOutcome::kFailure, 1);
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
-      PrerenderFinalStatus::kNavigationRequestNetworkError, 1);
+      PrerenderFinalStatus::kPrerenderFailedDuringPrefetch, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.PrefetchAheadOfPrerenderFailed.PrefetchStatus."
+      "SpeculationRule",
+      PrefetchStatus::kPrefetchNotFinishedInTime, 1);
 
   std::vector<RequestPathAndSecPurposeHeader> expected{
       {.path = "/empty.html", .sec_purpose_header_value = ""},
@@ -909,7 +923,10 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
   // Proceed to the eligibility check of the first prefetch.
   eligibility_check_callback_future.Take().Run();
 
-  prerender_helper().WaitForPrerenderLoadCompletion(prerender_url);
+  // Here we shouldn't call
+  // `prerender_helper().WaitForPrerenderLoadCompletion(prerender_url)` since
+  // the call first tries to get `PrerenderHost`, which has been already
+  // destructed.
 
   prerender_helper().NavigatePrimaryPage(prerender_url);
 
@@ -919,11 +936,13 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
   histogram_tester().ExpectUniqueSample(
       "Preloading.Prerender.Attempt.SpeculationRules.TriggeringOutcome",
       PreloadingTriggeringOutcome::kFailure, 1);
-  // TODO(crbug.com/366144969): Use dedicated `PrerenderFinalStatus` for
-  // prefetch failure.
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
-      PrerenderFinalStatus::kNavigationRequestNetworkError, 1);
+      PrerenderFinalStatus::kPrerenderFailedDuringPrefetch, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.PrefetchAheadOfPrerenderFailed.PrefetchStatus."
+      "SpeculationRule",
+      PrefetchStatus::kPrefetchIneligibleHostIsNonUnique, 1);
 
   std::vector<RequestPathAndSecPurposeHeader> expected{
       {.path = "/empty.html", .sec_purpose_header_value = ""},
@@ -972,7 +991,7 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
 
   prerender_helper().WaitForPrerenderLoadCompletion(prerender_url);
 
-  prerender_helper().NavigatePrimaryPage(prerender_url);
+  ASSERT_TRUE(NavigateToURL(shell(), prerender_url));
 
   EXPECT_THAT(
       histogram_tester().GetAllSamples(
@@ -983,11 +1002,13 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
   histogram_tester().ExpectUniqueSample(
       "Preloading.Prerender.Attempt.SpeculationRules.TriggeringOutcome",
       PreloadingTriggeringOutcome::kFailure, 1);
-  // TODO(crbug.com/366144969): Use dedicated `PrerenderFinalStatus` for
-  // prefetch failure.
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
-      PrerenderFinalStatus::kNavigationRequestNetworkError, 1);
+      PrerenderFinalStatus::kPrerenderFailedDuringPrefetch, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.PrefetchAheadOfPrerenderFailed.PrefetchStatus."
+      "SpeculationRule",
+      PrefetchStatus::kPrefetchNotFinishedInTime, 1);
 
   std::vector<RequestPathAndSecPurposeHeader> expected{
       {.path = "/empty.html", .sec_purpose_header_value = ""},
@@ -1028,6 +1049,7 @@ IN_PROC_BROWSER_TEST_F(
             PreloadingTriggerType::kSpeculationRule);
     GetPrerendererImpl().MaybePrerender(candidate, enacting_predictor,
                                         PreloadingConfidence{100});
+
     prerender_helper().WaitForPrerenderLoadCompletion(prerender_url);
 
     watcher.WaitUntilPrefetchResponseCompleted(
@@ -1035,19 +1057,23 @@ IN_PROC_BROWSER_TEST_F(
         prerender_url);
   }
 
-  prerender_helper().NavigatePrimaryPage(prerender_url);
+  ASSERT_TRUE(NavigateToURL(shell(), prerender_url));
 
+  // TODO(crbug.com/372851198): Investigate why
+  // `PrefetchContainer::Reader::OnPrefetchProbeResult()` is not called.
   histogram_tester().ExpectUniqueSample(
       "Preloading.Prefetch.Attempt.SpeculationRules.TriggeringOutcome",
-      PreloadingTriggeringOutcome::kSuccess, 1);
+      PreloadingTriggeringOutcome::kReady, 1);
   histogram_tester().ExpectUniqueSample(
       "Preloading.Prerender.Attempt.SpeculationRules.TriggeringOutcome",
       PreloadingTriggeringOutcome::kFailure, 1);
-  // TODO(crbug.com/366144969): Use dedicated `PrerenderFinalStatus` for
-  // prefetch failure.
   histogram_tester().ExpectUniqueSample(
       "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
-      PrerenderFinalStatus::kNavigationRequestNetworkError, 1);
+      PrerenderFinalStatus::kPrerenderFailedDuringPrefetch, 1);
+  histogram_tester().ExpectUniqueSample(
+      "Prerender.Experimental.PrefetchAheadOfPrerenderFailed.PrefetchStatus."
+      "SpeculationRule",
+      PrefetchStatus::kPrefetchNotFinishedInTime, 1);
 
   std::vector<RequestPathAndSecPurposeHeader> expected{
       {.path = "/empty.html", .sec_purpose_header_value = ""},

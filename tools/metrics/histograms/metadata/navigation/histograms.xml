@@ -2614,6 +2614,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Prerender.Experimental.PrefetchAheadOfPrerenderFailed.PrefetchStatus{PreloadingTriggerType}"
+    enum="PrefetchProxyPrefetchStatus" expires_after="2025-03-10">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Status of prefetch ahead of prerender. Recorded by PrerenderHost or
+    PrerenderHostRegistry in the browser process when the attempt finishes.
+    Recorded only if prerender failed due to prefetch.
+  </summary>
+  <token key="PreloadingTriggerType" variants="PreloadingTriggerType"/>
+</histogram>
+
+<histogram
     name="Prerender.Experimental.PrerenderCancelledInterface{PreloadingTriggerType}"
     enum="PrerenderCancelledInterface" expires_after="2025-03-09">
   <owner>nhiroki@chromium.org</owner>

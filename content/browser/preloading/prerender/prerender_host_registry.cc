@@ -324,6 +324,8 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
       return PreloadingEligibility::kSlowNetwork;
     case PrerenderFinalStatus::kV8OptimizerDisabled:
       return PreloadingEligibility::kV8OptimizerDisabled;
+    case PrerenderFinalStatus::kPrerenderFailedDuringPrefetch:
+      NOTREACHED();
   }
 
   NOTREACHED();

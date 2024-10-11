@@ -12431,6 +12431,7 @@ experimental domain Preload
       SlowNetwork
       OtherPrerenderedPageActivated
       V8OptimizerDisabled
+      PrerenderFailedDuringPrefetch
 
   # Fired when a preload enabled state is updated.
   event preloadEnabledStateUpdated
