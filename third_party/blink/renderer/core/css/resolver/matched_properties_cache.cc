@@ -30,6 +30,10 @@
 
 #include "third_party/blink/renderer/core/css/resolver/matched_properties_cache.h"
 
+#include <algorithm>
+#include <array>
+#include <utility>
+
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/properties/css_property_ref.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
@@ -48,8 +52,11 @@ static unsigned ComputeMatchedPropertiesHash(const MatchResult& result) {
 CachedMatchedProperties::CachedMatchedProperties(
     const ComputedStyle* style,
     const ComputedStyle* parent_style,
-    const MatchedPropertiesVector& properties)
-    : computed_style(style), parent_computed_style(parent_style) {
+    const MatchedPropertiesVector& properties,
+    unsigned clock)
+    : computed_style(style),
+      parent_computed_style(parent_style),
+      last_used(clock) {
   matched_properties.ReserveInitialCapacity(properties.size());
   matched_properties_types.ReserveInitialCapacity(properties.size());
   for (const auto& new_matched_properties : properties) {
@@ -60,9 +67,11 @@ CachedMatchedProperties::CachedMatchedProperties(
 
 void CachedMatchedProperties::Set(const ComputedStyle* style,
                                   const ComputedStyle* parent_style,
-                                  const MatchedPropertiesVector& properties) {
+                                  const MatchedPropertiesVector& properties,
+                                  unsigned clock) {
   computed_style = style;
   parent_computed_style = parent_style;
+  last_used = clock;
 
   matched_properties.clear();
   matched_properties_types.clear();
@@ -161,6 +170,7 @@ const CachedMatchedProperties* MatchedPropertiesCache::Find(
   if (!cache_item->DependenciesEqual(style_resolver_state)) {
     return nullptr;
   }
+  cache_item->last_used = clock_++;
   return cache_item;
 }
 
@@ -216,9 +226,10 @@ void MatchedPropertiesCache::Add(const Key& key,
 
   if (!cache_item) {
     cache_item = MakeGarbageCollected<CachedMatchedProperties>(
-        style, parent_style, key.result_.GetMatchedProperties());
+        style, parent_style, key.result_.GetMatchedProperties(), clock_++);
   } else {
-    cache_item->Set(style, parent_style, key.result_.GetMatchedProperties());
+    cache_item->Set(style, parent_style, key.result_.GetMatchedProperties(),
+                    clock_++);
   }
 }
 
@@ -311,7 +322,7 @@ bool MatchedPropertiesCache::IsCacheable(const StyleResolverState& state) {
   // We used to include TreeScope pointer hashes in the MPC key, but that
   // didn't allow for MPC cache hits across instances of the same web component.
   // That also caused an ever-growing cache because the TreeScopes were not
-  // handled in RemoveCachedMatchedPropertiesWithDeadEntries().
+  // handled in CleanMatchedPropertiesCache().
   // See: https://crbug,com/1473836
   if (state.HasTreeScopedReference()) {
     return false;
@@ -351,30 +362,86 @@ void MatchedPropertiesCache::Trace(Visitor* visitor) const {
   visitor->Trace(cache_);
   visitor->RegisterWeakCallbackMethod<
       MatchedPropertiesCache,
-      &MatchedPropertiesCache::RemoveCachedMatchedPropertiesWithDeadEntries>(
-      this);
+      &MatchedPropertiesCache::CleanMatchedPropertiesCache>(this);
 }
 
-void MatchedPropertiesCache::RemoveCachedMatchedPropertiesWithDeadEntries(
+static inline bool ShouldRemoveMPCEntry(CachedMatchedProperties& value,
+                                        const LivenessBroker& info) {
+  return std::any_of(value.matched_properties.begin(),
+                     value.matched_properties.end(),
+                     [&info](const CSSPropertyValueSet* properties) {
+                       return !info.IsHeapObjectAlive(properties);
+                     });
+}
+
+void MatchedPropertiesCache::CleanMatchedPropertiesCache(
     const LivenessBroker& info) {
+  constexpr unsigned kCacheLimit = 500;
+  constexpr unsigned kPruneCacheTarget = 300;
+
+  if (cache_.size() <= kCacheLimit) {
+    // Fast path with no LRU pruning.
+    Vector<unsigned> to_remove;
+    for (const auto& entry_pair : cache_) {
+      // A nullptr value indicates that the entry is currently being created;
+      // see |MatchedPropertiesCache::Add|. Keep such entries.
+      if (!entry_pair.value) {
+        continue;
+      }
+      if (ShouldRemoveMPCEntry(*entry_pair.value, info)) {
+        to_remove.push_back(entry_pair.key);
+      }
+    }
+    // Allocation of Oilpan memory is forbidden during executing weak callbacks,
+    // so the data structure will not be rehashed here (ShouldShrink() internal
+    // to the map returns false during such callbacks). The next
+    // insertion/deletion from regular code will take care of shrinking
+    // accordingly.
+    //
+    // We would prefer simply use cache_.erase(it++) from inside the loop,
+    // but this hits DCHECKs with WTF::Vector.
+    cache_.RemoveAll(to_remove);
+    return;
+  }
+
+  // Our MPC is larger than the cap; since GC happens when we are under
+  // memory pressure and we are iterating over the entire map already,
+  // this is a good time to enforce the cap and remove the entries that
+  // are least recently used. In order not to have to do work for every
+  // call, we don't prune down to the cap (500 entries), but a little
+  // further (300 entries).
+
   Vector<unsigned> to_remove;
+  Vector<std::pair<unsigned, unsigned>> live_entries;
+  live_entries.ReserveInitialCapacity(cache_.size());
   for (const auto& entry_pair : cache_) {
-    // A nullptr value indicates that the entry is currently being created; see
-    // |MatchedPropertiesCache::Add|. Keep such entries.
     if (!entry_pair.value) {
       continue;
     }
-    for (const auto& matched_properties :
-         entry_pair.value->matched_properties) {
-      if (!info.IsHeapObjectAlive(matched_properties)) {
-        to_remove.push_back(entry_pair.key);
-        break;
+    if (ShouldRemoveMPCEntry(*entry_pair.value, info)) {
+      to_remove.push_back(entry_pair.key);
+    } else {
+      live_entries.emplace_back(entry_pair.value->last_used, entry_pair.key);
+    }
+  }
+
+  // If removals didn't take us back under the pruning limit,
+  // remove everything older than the 300th newest LRU entry.
+  if (live_entries.size() > kPruneCacheTarget) {
+    unsigned cutoff_idx = live_entries.size() - kPruneCacheTarget - 1;
+    // SAFETY: We just bounds-checked it above.
+    std::nth_element(live_entries.begin(),
+                     UNSAFE_BUFFERS(live_entries.begin() + cutoff_idx),
+                     live_entries.end());
+    unsigned min_last_used = live_entries[cutoff_idx].first;
+
+    for (const auto& [last_used, key] : live_entries) {
+      if (last_used <= min_last_used) {
+        to_remove.push_back(key);
       }
     }
   }
-  // Allocation is forbidden during executing weak callbacks, so the data
-  // structure will not be rehashed here. The next insertion/deletion from
-  // regular code will take care of shrinking accordingly.
+
   cache_.RemoveAll(to_remove);
 }
 

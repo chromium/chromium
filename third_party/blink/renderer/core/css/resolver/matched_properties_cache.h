@@ -55,14 +55,17 @@ class CORE_EXPORT CachedMatchedProperties final
   // for the substructures and never used as-is.
   Member<const ComputedStyle> computed_style;
   Member<const ComputedStyle> parent_computed_style;
+  unsigned last_used;
 
   CachedMatchedProperties(const ComputedStyle* style,
                           const ComputedStyle* parent_style,
-                          const MatchedPropertiesVector&);
+                          const MatchedPropertiesVector&,
+                          unsigned clock);
 
   void Set(const ComputedStyle* style,
            const ComputedStyle* parent_style,
-           const MatchedPropertiesVector&);
+           const MatchedPropertiesVector&,
+           unsigned clock);
   void Clear();
 
   bool DependenciesEqual(const StyleResolverState&) const;
@@ -123,13 +126,17 @@ class CORE_EXPORT MatchedPropertiesCache {
  private:
   // The cache is mapping a hash to a cached entry where the entry is kept as
   // long as *all* properties referred to by the entry are alive. This requires
-  // custom weakness which is managed through
-  // |RemoveCachedMatchedPropertiesWithDeadEntries|.
+  // custom weakness which is managed through |CleanMatchedPropertiesCache|.
   using Cache = HeapHashMap<unsigned, Member<CachedMatchedProperties>>;
 
-  void RemoveCachedMatchedPropertiesWithDeadEntries(const LivenessBroker&);
+  void CleanMatchedPropertiesCache(const LivenessBroker&);
 
   Cache cache_;
+
+  // Virtual clock for LRU purposes (last_used in each CachedMatchedProperties).
+  // If this wraps (more than four billion lookups or inserts), we will evict
+  // the wrong entries, but this only matters for performance, not correctness.
+  unsigned clock_ = 0;
 };
 
 // For debugging only.
