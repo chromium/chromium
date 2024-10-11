@@ -27,8 +27,6 @@ component("crypto") {
     "ec_signature_creator_impl.h",
     "encryptor.cc",
     "encryptor.h",
-    "features.cc",
-    "features.h",
     "hkdf.cc",
     "hkdf.h",
     "hmac.cc",

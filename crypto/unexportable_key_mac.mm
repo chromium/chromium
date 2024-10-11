@@ -27,7 +27,6 @@
 #include "base/apple/scoped_cftyperef.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/scoped_policy.h"
 #include "base/numerics/safe_conversions.h"
@@ -35,7 +34,6 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "crypto/apple_keychain_util.h"
 #include "crypto/apple_keychain_v2.h"
-#include "crypto/features.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key_mac.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
@@ -340,9 +338,6 @@ bool UnexportableKeyProviderMac::DeleteSigningKeySlowly(
 
 std::unique_ptr<UnexportableKeyProviderMac> GetUnexportableKeyProviderMac(
     UnexportableKeyProvider::Config config) {
-  if (!base::FeatureList::IsEnabled(crypto::kEnableMacUnexportableKeys)) {
-    return nullptr;
-  }
   CHECK(!config.keychain_access_group.empty())
       << "A keychain access group must be set when using unexportable keys on "
          "macOS";

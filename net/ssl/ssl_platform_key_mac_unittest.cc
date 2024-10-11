@@ -16,9 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/checked_math.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "crypto/features.h"
 #include "crypto/scoped_fake_apple_keychain_v2.h"
 #include "crypto/signature_verifier.h"
 #include "net/ssl/ssl_private_key.h"
@@ -162,9 +160,6 @@ const crypto::UnexportableKeyProvider::Config config = {
 TEST(UnexportableSSLPlatformKeyMacTest, Convert) {
   crypto::ScopedFakeAppleKeychainV2 scoped_fake_apple_keychain_{
       kTestKeychainAccessGroup};
-  base::test::ScopedFeatureList scoped_feature_list_{
-      crypto::kEnableMacUnexportableKeys};
-
   // Create a crypto::UnexportableSigningKey and verify preconditions.
   std::unique_ptr<crypto::UnexportableKeyProvider> provider =
       crypto::GetUnexportableKeyProvider(config);
