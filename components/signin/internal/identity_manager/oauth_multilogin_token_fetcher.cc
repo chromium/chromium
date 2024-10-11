@@ -70,8 +70,14 @@ void OAuthMultiloginTokenFetcher::OnGetTokenSuccess(
   CoreAccountId account_id = request->GetAccountId();
   DCHECK(base::Contains(account_ids_, account_id));
 
-  const std::string token = token_response.access_token;
-  DCHECK(!token.empty());
+  // Exactly one of (`access_token`, `refresh_token`) must be set.
+  CHECK(token_response.access_token.empty() !=
+        token_response.refresh_token.empty());
+  bool is_using_refresh_token = !token_response.refresh_token.empty();
+  const std::string token = is_using_refresh_token
+                                ? token_response.refresh_token
+                                : token_response.access_token;
+  CHECK(!token.empty());
   // Do not use |request| and |token_response| below this line, as they are
   // deleted.
   EraseRequest(request);

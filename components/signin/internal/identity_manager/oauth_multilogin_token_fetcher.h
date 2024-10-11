@@ -35,6 +35,9 @@ class OAuthMultiloginTokenFetcher : public OAuth2AccessTokenManager::Consumer {
     AccountIdTokenPair(const CoreAccountId& account_id,
                        const std::string& token)
         : account_id(account_id), token(token) {}
+
+    friend bool operator==(const AccountIdTokenPair&,
+                           const AccountIdTokenPair&) = default;
   };
   using SuccessCallback =
       base::OnceCallback<void(const std::vector<AccountIdTokenPair>&)>;
