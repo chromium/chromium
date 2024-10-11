@@ -20,6 +20,7 @@ constexpr ukm::SourceId kTestSourceId = 0x1234;
 
 using LeakWarningUkmEntry = ukm::builders::PasswordManager_LeakWarningDialog;
 using NewPasswordUkmEntry = ukm::builders::PasswordManager_NewlySavedPassword;
+using SavedPasswordUkmEntry = ukm::builders::PasswordManager_SavedPassword;
 
 const autofill::Suggestion PasswordEntry() {
   return autofill::Suggestion(u"samsunanligg@gmail.com",
@@ -96,22 +97,9 @@ TEST(PasswordManagerMetricsUtil, LogNewlySavedPasswordMetrics) {
   base::HistogramTester histogram_tester;
   ukm::TestAutoSetUkmRecorder test_ukm_recorder;
 
-  constexpr bool kIsGeneratedPassword = true;
   constexpr bool kIsUsernameEmpty = true;
-  LogNewlySavedPasswordMetrics(
-      /*is_generated_password=*/true, /*is_username_empty=*/true,
-      features_util::PasswordAccountStorageUsageLevel::kNotUsingAccountStorage,
-      kTestSourceId);
-
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.NewlySavedPasswordIsGenerated", kIsGeneratedPassword, 1);
-  histogram_tester.ExpectUniqueSample(
-      "PasswordManager.NewlySavedPasswordIsGenerated.NotUsingAccountStorage",
-      kIsGeneratedPassword, 1);
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.NewlySavedPasswordIsGenerated.UsingAccountStorage", 0);
-  histogram_tester.ExpectTotalCount(
-      "PasswordManager.NewlySavedPasswordIsGenerated.Syncing", 0);
+  LogNewlySavedPasswordMetrics(/*is_generated_password=*/true,
+                               /*is_username_empty=*/true, kTestSourceId);
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.NewlySavedPasswordHasEmptyUsername.Overall",
@@ -126,13 +114,41 @@ TEST(PasswordManagerMetricsUtil, LogNewlySavedPasswordMetrics) {
   const auto& entries =
       test_ukm_recorder.GetEntriesByName(NewPasswordUkmEntry::kEntryName);
   EXPECT_EQ(1u, entries.size());
-  for (const ukm::mojom::UkmEntry* entry : entries) {
-    EXPECT_EQ(kTestSourceId, entry->source_id);
-    test_ukm_recorder.ExpectEntryMetric(
-        entry, NewPasswordUkmEntry::kHasEmptyUsernameName, true);
-    test_ukm_recorder.ExpectEntryMetric(
-        entry, NewPasswordUkmEntry::kIsPasswordGeneratedName, true);
-  }
+  EXPECT_EQ(kTestSourceId, entries[0]->source_id);
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[0], NewPasswordUkmEntry::kHasEmptyUsernameName, true);
+}
+
+TEST(PasswordManagerMetricsUtil, LogIfSavedPasswordWasGenerated) {
+  // Needed for test ukm recorder.
+  base::test::TaskEnvironment task_environment_;
+
+  base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder test_ukm_recorder;
+
+  constexpr bool kIsGeneratedPassword = true;
+  LogIfSavedPasswordWasGenerated(
+      /*is_generated_password=*/true,
+      features_util::PasswordAccountStorageUsageLevel::kNotUsingAccountStorage,
+      kTestSourceId);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SavedPasswordIsGenerated", kIsGeneratedPassword, 1);
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SavedPasswordIsGenerated.NotUsingAccountStorage",
+      kIsGeneratedPassword, 1);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SavedPasswordIsGenerated.UsingAccountStorage", 0);
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.SavedPasswordIsGenerated.Syncing", 0);
+
+  // Check that UKM logging is correct.
+  const auto& entries =
+      test_ukm_recorder.GetEntriesByName(SavedPasswordUkmEntry::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  EXPECT_EQ(kTestSourceId, entries[0]->source_id);
+  test_ukm_recorder.ExpectEntryMetric(
+      entries[0], SavedPasswordUkmEntry::kIsPasswordGeneratedName, true);
 }
 
 TEST(PasswordManagerMetricsUtil, LogIsPasswordProtectedMetric) {

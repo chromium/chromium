@@ -2425,7 +2425,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="UsingAccountStorage"
       label="The user is signed in and has opted in to the account storage."/>
   <affected-histogram name="PasswordManager.FillingAssistance"/>
-  <affected-histogram name="PasswordManager.NewlySavedPasswordIsGenerated"/>
+  <affected-histogram name="PasswordManager.SavedPasswordIsGenerated"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="PasswordProtectionTriggerForAnyPasswordEntry"

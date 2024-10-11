@@ -840,13 +840,18 @@ void PasswordSaveManagerImpl::UploadVotesAndMetrics(
         parsed_submitted_form.all_alternative_usernames);
   }
 
-  if (IsNewLogin()) {
-    metrics_util::LogNewlySavedPasswordMetrics(
+  if (IsNewLogin() || IsPasswordUpdate()) {
+    metrics_util::LogIfSavedPasswordWasGenerated(
         pending_credentials_.type == PasswordForm::Type::kGenerated,
-        pending_credentials_.username_value.empty(),
         client_->GetPasswordFeatureManager()
             ->ComputePasswordAccountStorageUsageLevel(),
         client_->GetUkmSourceId());
+  }
+
+  if (IsNewLogin()) {
+    metrics_util::LogNewlySavedPasswordMetrics(
+        pending_credentials_.type == PasswordForm::Type::kGenerated,
+        pending_credentials_.username_value.empty(), client_->GetUkmSourceId());
     // Don't send votes if there was no observed form.
     if (observed_form && votes_uploader_) {
       votes_uploader_->SendVotesOnSave(*observed_form, parsed_submitted_form,
