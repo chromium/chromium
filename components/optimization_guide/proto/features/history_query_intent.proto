@@ -6,6 +6,8 @@ syntax = "proto3";
 
 package optimization_guide.proto;
 
+import "components/optimization_guide/proto/model_quality_metadata.proto";
+
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.optimization_guide.features.proto";
 
@@ -21,6 +23,10 @@ message HistoryQueryIntentLoggingData {
   HistoryQueryIntentRequest request = 1;
 
   HistoryQueryIntentResponse response = 2;
+
+  ModelExecutionInfo model_execution_info = 4;
+
+  reserved 3;
 }
 
 // The History Query Intent request.

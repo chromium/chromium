@@ -116,11 +116,13 @@ message PassageData {
   float score = 3;
 }
 
-// Next ID: 3
+// Next ID: 4
 enum UiSurface {
   UI_SURFACE_UNSPECIFIED = 0;
 
   UI_SURFACE_HISTORY_PAGE = 1;
 
   UI_SURFACE_OMNIBOX_HISTORY_SCOPE = 2;
+
+  UI_SURFACE_SIDE_PANEL = 3;
 }
