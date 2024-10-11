@@ -195,27 +195,23 @@ bool AcceleratedStaticBitmapImage::CopyToTexture(
   DCHECK(mailbox_ref_->is_cross_thread() ||
          dest_gl != ContextProvider()->ContextGL());
 
-  // Get a texture id that |destProvider| knows about and copy from it.
-  dest_gl->WaitSyncTokenCHROMIUM(mailbox_ref_->sync_token().GetConstData());
-  GLuint source_texture_id = dest_gl->CreateAndTexStorage2DSharedImageCHROMIUM(
-      shared_image_->mailbox().name);
-  dest_gl->BeginSharedImageAccessDirectCHROMIUM(
-      source_texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
+  // Create a texture that |destProvider| knows about and copy from it.
+  auto source_si_texture = shared_image_->CreateGLTexture(dest_gl);
+  auto source_scoped_si_access = source_si_texture->BeginAccess(
+      mailbox_ref_->sync_token(), /*readonly=*/true);
   dest_gl->CopySubTextureCHROMIUM(
-      source_texture_id, 0, dest_target, dest_texture_id, dest_level,
-      dest_point.x(), dest_point.y(), source_sub_rectangle.x(),
+      source_scoped_si_access->texture_id(), 0, dest_target, dest_texture_id,
+      dest_level, dest_point.x(), dest_point.y(), source_sub_rectangle.x(),
       source_sub_rectangle.y(), source_sub_rectangle.width(),
       source_sub_rectangle.height(), unpack_flip_y,
       /*unpack_premultiply_alpha=*/GL_FALSE,
       /*unpack_unmultiply_alpha=*/
       unpack_premultiply_alpha ? GL_FALSE : GL_TRUE);
-  dest_gl->EndSharedImageAccessDirectCHROMIUM(source_texture_id);
-  dest_gl->DeleteTextures(1, &source_texture_id);
+  auto sync_token = gpu::SharedImageTexture::ScopedAccess::EndAccess(
+      std::move(source_scoped_si_access));
 
   // We need to update the texture holder's sync token to ensure that when this
   // mailbox is recycled or deleted, it is done after the copy operation above.
-  gpu::SyncToken sync_token;
-  dest_gl->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
   mailbox_ref_->set_sync_token(sync_token);
 
   return true;
