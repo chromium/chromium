@@ -455,6 +455,11 @@ VTVideoEncodeAccelerator::GetSupportedProfiles() {
       }
       if (can_create_hardware_session[codec]) {
         supported_profiles.push_back(supported_profile);
+
+        SupportedProfile portrait_profile(supported_profile);
+        portrait_profile.max_resolution.Transpose();
+        portrait_profile.min_resolution.Transpose();
+        supported_profiles.push_back(portrait_profile);
       }
 
 #if SOFTWARE_ENCODING_SUPPORTED
@@ -465,6 +470,11 @@ VTVideoEncodeAccelerator::GetSupportedProfiles() {
       supported_profile.scalability_modes = always_supported_scalability_modes;
       supported_profile.is_software_codec = true;
       supported_profiles.push_back(supported_profile);
+
+      SupportedProfile portrait_profile(supported_profile);
+      portrait_profile.max_resolution.Transpose();
+      portrait_profile.min_resolution.Transpose();
+      supported_profiles.push_back(portrait_profile);
 #endif  // SOFTWARE_ENCODING_SUPPORTED
     }
   }
