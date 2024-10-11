@@ -331,7 +331,9 @@ InspectorAnimationAgent::BuildObjectForAnimation(blink::Animation& animation) {
           .setId(id)
           .setName(AnimationDisplayName(animation))
           .setPausedState(animation.Paused())
-          .setPlayState(animation.playState().AsString())
+          .setPlayState(
+              V8AnimationPlayState(animation.CalculateAnimationPlayState())
+                  .AsString())
           .setPlaybackRate(animation.playbackRate())
           .setStartTime(NormalizedStartTime(animation))
           .setCurrentTime(current_time)
