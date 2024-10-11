@@ -44,7 +44,7 @@ class BatchUploadDataProviderFake : public BatchUploadDataProvider {
   bool HasLocalData() const override { return item_count_ > 0; }
 
   BatchUploadDataContainer GetLocalData() const override {
-    BatchUploadDataContainer container(section_name_id_);
+    BatchUploadDataContainer container(GetDataType(), section_name_id_);
 
     // Add arbitrary items.
     for (int i = 0; i < item_count_; ++i) {
@@ -155,13 +155,13 @@ class BatchUploadDialogViewPixelTest
     set_should_verify_dialog_bounds(false);
   }
 
-  // Gets the list of providers as a list of pointers that
-  // `CreateBatchUploadDialogView` expects.
-  std::vector<raw_ptr<const BatchUploadDataProvider>> GetProvidersPtrVector() {
-    std::vector<raw_ptr<const BatchUploadDataProvider>> ret;
-    std::ranges::transform(
-        fake_providers_, std::back_inserter(ret),
-        [](const BatchUploadDataProviderFake& provider) { return &provider; });
+  // Gets the list of data containers from the providers.
+  std::vector<BatchUploadDataContainer> GetDataContainers() {
+    std::vector<BatchUploadDataContainer> ret;
+    std::ranges::transform(fake_providers_, std::back_inserter(ret),
+                           [](const BatchUploadDataProviderFake& provider) {
+                             return provider.GetLocalData();
+                           });
     return ret;
   }
 
@@ -201,7 +201,7 @@ class BatchUploadDialogViewPixelTest
         views::test::AnyWidgetTestPasskey{}, "BatchUploadDialogView");
 
     BatchUploadDialogView::CreateBatchUploadDialogView(
-        *browser(), /*data_providers_list=*/GetProvidersPtrVector(),
+        *browser(), GetDataContainers(),
         /*complete_callback*/ base::DoNothing());
 
     widget_waiter.WaitIfNeededAndGet();

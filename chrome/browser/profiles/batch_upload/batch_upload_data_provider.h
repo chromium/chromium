@@ -50,10 +50,14 @@ struct BatchUploadDataItemModel {
   // Movable.
   BatchUploadDataItemModel(BatchUploadDataItemModel&& other);
   BatchUploadDataItemModel& operator=(BatchUploadDataItemModel&& other);
+
+  bool operator==(const BatchUploadDataItemModel& other) const;
 };
 
 // Container representing a data type section in the BatchUpload dialog.
 struct BatchUploadDataContainer {
+  BatchUploadDataType type;
+
   // Used as the section title message id for the name in the Batch Upload
   // dialog. Along with its string representation as the message name, it will
   // be used to compute the section title in WebUi. The generated string in
@@ -64,7 +68,9 @@ struct BatchUploadDataContainer {
   // Batch Upload dialog.
   std::vector<BatchUploadDataItemModel> items;
 
-  explicit BatchUploadDataContainer(int section_name_id);
+  explicit BatchUploadDataContainer(BatchUploadDataType type,
+                                    int section_name_id);
+  ~BatchUploadDataContainer();
   // Not copyable.
   BatchUploadDataContainer(const BatchUploadDataContainer&) = delete;
   BatchUploadDataContainer& operator=(const BatchUploadDataContainer&) = delete;
@@ -72,12 +78,16 @@ struct BatchUploadDataContainer {
   BatchUploadDataContainer(BatchUploadDataContainer&& other);
   BatchUploadDataContainer& operator=(BatchUploadDataContainer&& other);
 
-  ~BatchUploadDataContainer();
+  bool operator==(const BatchUploadDataContainer& other) const;
 };
 
 // Interface to be implemented by each data type that needs to integrate with
 // the Batch Upload to allow it's local data to be uploaded to the Account
 // Storage through the Batch Upload dialog.
+//
+// TODO(crbug.com/372827385): Remove as it will be replaced with getting
+// information directly from the SyncService. It is almost not used anymore
+// execpt for getting Fake Local data and testing.
 class BatchUploadDataProvider {
  public:
   explicit BatchUploadDataProvider(BatchUploadDataType type);

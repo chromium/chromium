@@ -40,8 +40,7 @@ class BatchUploadUI : public ui::MojoWebUIController,
   // Prepares the information to be given to the handler once ready.
   void Initialize(
       const AccountInfo& account_info,
-      const std::vector<raw_ptr<const BatchUploadDataProvider>>&
-          data_providers_list,
+      std::vector<BatchUploadDataContainer> data_containers_list,
       base::RepeatingCallback<void(int)> update_view_height_callback,
       SelectedDataTypeItemsCallback completion_callback);
 
@@ -66,7 +65,7 @@ class BatchUploadUI : public ui::MojoWebUIController,
   // all the needed information to display.
   void OnMojoHandlersReady(
       const AccountInfo& account_info,
-      std::vector<raw_ptr<const BatchUploadDataProvider>> data_providers_list,
+      std::vector<BatchUploadDataContainer> data_containers_list,
       base::RepeatingCallback<void(int)> update_view_height_callback,
       SelectedDataTypeItemsCallback completion_callback,
       mojo::PendingRemote<batch_upload::mojom::Page> page,

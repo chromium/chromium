@@ -54,12 +54,12 @@ BatchUploadDialogView::~BatchUploadDialogView() {
 // static
 BatchUploadDialogView* BatchUploadDialogView::CreateBatchUploadDialogView(
     Browser& browser,
-    const std::vector<raw_ptr<const BatchUploadDataProvider>>&
-        data_providers_list,
+    std::vector<BatchUploadDataContainer> data_containers_list,
     SelectedDataTypeItemsCallback complete_callback) {
-  std::unique_ptr<BatchUploadDialogView> dialog_view = base::WrapUnique(
-      new BatchUploadDialogView(browser.profile(), data_providers_list,
-                                std::move(complete_callback)));
+  std::unique_ptr<BatchUploadDialogView> dialog_view =
+      base::WrapUnique(new BatchUploadDialogView(
+          browser.profile(), std::move(data_containers_list),
+          std::move(complete_callback)));
   BatchUploadDialogView* dialog_view_ptr = dialog_view.get();
 
   gfx::NativeWindow window = browser.tab_strip_model()
@@ -73,8 +73,7 @@ BatchUploadDialogView* BatchUploadDialogView::CreateBatchUploadDialogView(
 
 BatchUploadDialogView::BatchUploadDialogView(
     Profile* profile,
-    const std::vector<raw_ptr<const BatchUploadDataProvider>>&
-        data_providers_list,
+    std::vector<BatchUploadDataContainer> data_containers_list,
     SelectedDataTypeItemsCallback complete_callback)
     : complete_callback_(std::move(complete_callback)) {
   SetModalType(ui::mojom::ModalType::kWindow);
@@ -109,7 +108,7 @@ BatchUploadDialogView::BatchUploadDialogView(
 
   // Initializes the UI that will initialize the handler when ready.
   web_ui->Initialize(
-      primary_account_info_, data_providers_list,
+      primary_account_info_, std::move(data_containers_list),
       base::BindRepeating(&BatchUploadDialogView::SetHeightAndShowWidget,
                           base::Unretained(this)),
       base::BindOnce(&BatchUploadDialogView::OnDialogSelectionMade,
@@ -201,11 +200,10 @@ void BatchUploadDialogView::OnErrorStateOfRefreshTokenUpdatedForAccount(
 
 void BatchUploadUIDelegate::ShowBatchUploadDialogInternal(
     Browser& browser,
-    const std::vector<raw_ptr<const BatchUploadDataProvider>>&
-        data_providers_list,
+    std::vector<BatchUploadDataContainer> data_containers_list,
     SelectedDataTypeItemsCallback complete_callback) {
   BatchUploadDialogView::CreateBatchUploadDialogView(
-      browser, data_providers_list, std::move(complete_callback));
+      browser, std::move(data_containers_list), std::move(complete_callback));
 }
 
 BEGIN_METADATA(BatchUploadDialogView)

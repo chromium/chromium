@@ -24,8 +24,7 @@ class BatchUploadHandler : public batch_upload::mojom::PageHandler {
       mojo::PendingReceiver<batch_upload::mojom::PageHandler> receiver,
       mojo::PendingRemote<batch_upload::mojom::Page> page,
       const AccountInfo& account_info,
-      const std::vector<raw_ptr<const BatchUploadDataProvider>>&
-          data_providers_list,
+      std::vector<BatchUploadDataContainer> data_containers_list,
       base::RepeatingCallback<void(int)> update_view_height_callback,
       SelectedDataTypeItemsCallback completion_callback);
   ~BatchUploadHandler() override;
@@ -40,7 +39,7 @@ class BatchUploadHandler : public batch_upload::mojom::PageHandler {
   void Close() override;
 
  private:
-  std::vector<raw_ptr<const BatchUploadDataProvider>> data_providers_list_;
+  std::vector<BatchUploadDataContainer> data_containers_list_;
   base::RepeatingCallback<void(int)> update_view_height_callback_;
   SelectedDataTypeItemsCallback completion_callback_;
 

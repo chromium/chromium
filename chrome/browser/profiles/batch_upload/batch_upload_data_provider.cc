@@ -11,16 +11,21 @@ BatchUploadDataItemModel::BatchUploadDataItemModel(
 BatchUploadDataItemModel& BatchUploadDataItemModel::operator=(
     BatchUploadDataItemModel&& other) = default;
 
-BatchUploadDataContainer::BatchUploadDataContainer(int section_title_id)
-    : section_title_id(section_title_id) {}
+bool BatchUploadDataItemModel::operator==(
+    const BatchUploadDataItemModel& other) const = default;
+
+BatchUploadDataContainer::BatchUploadDataContainer(BatchUploadDataType type,
+                                                   int section_title_id)
+    : type(type), section_title_id(section_title_id) {}
+BatchUploadDataContainer::~BatchUploadDataContainer() = default;
 
 BatchUploadDataContainer::BatchUploadDataContainer(
     BatchUploadDataContainer&& other) = default;
-
 BatchUploadDataContainer& BatchUploadDataContainer::operator=(
     BatchUploadDataContainer&& other) = default;
 
-BatchUploadDataContainer::~BatchUploadDataContainer() = default;
+bool BatchUploadDataContainer::operator==(
+    const BatchUploadDataContainer& other) const = default;
 
 BatchUploadDataProvider::BatchUploadDataProvider(BatchUploadDataType type)
     : type_(type) {}

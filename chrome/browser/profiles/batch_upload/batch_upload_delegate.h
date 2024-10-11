@@ -26,8 +26,7 @@ class BatchUploadDelegate {
   // request was cancelled.
   virtual void ShowBatchUploadDialog(
       Browser* browser,
-      const std::vector<raw_ptr<const BatchUploadDataProvider>>&
-          data_providers_list,
+      std::vector<BatchUploadDataContainer> data_containers_list,
       SelectedDataTypeItemsCallback complete_callback) = 0;
 };
 

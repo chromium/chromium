@@ -36,8 +36,7 @@ class BatchUploadDialogView : public views::DialogDelegateView,
   // The created dialog view is owned by the views system.
   static BatchUploadDialogView* CreateBatchUploadDialogView(
       Browser& browser,
-      const std::vector<raw_ptr<const BatchUploadDataProvider>>&
-          data_providers_list,
+      std::vector<BatchUploadDataContainer> data_containers_list,
       SelectedDataTypeItemsCallback complete_callback);
 
  private:
@@ -50,8 +49,7 @@ class BatchUploadDialogView : public views::DialogDelegateView,
 
   explicit BatchUploadDialogView(
       Profile* profile,
-      const std::vector<raw_ptr<const BatchUploadDataProvider>>&
-          data_providers_list,
+      std::vector<BatchUploadDataContainer> data_containers_list,
       SelectedDataTypeItemsCallback complete_callback);
 
   // Callback to properly resize the view based on the loaded web ui content.

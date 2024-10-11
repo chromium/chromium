@@ -9,6 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_controller.h"
+#include "chrome/browser/profiles/batch_upload/batch_upload_data_provider.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/webui_url_constants.h"
@@ -42,6 +43,7 @@ class BatchUploadDataProviderFake : public BatchUploadDataProvider {
   BatchUploadDataContainer GetLocalData() const override {
     // IDs used here are arbitrary and should not be checked.
     BatchUploadDataContainer container(
+        GetDataType(),
         /*section_name_id=*/IDS_BATCH_UPLOAD_SECTION_TITLE_PASSWORDS);
     if (has_local_data_) {
       // Add an arbitrary item.
@@ -69,8 +71,7 @@ class BatchUploadDialogViewBrowserTest : public InProcessBrowserTest {
  public:
   BatchUploadDialogView* CreateBatchUploadDialogView(
       Profile* profile,
-      const std::vector<raw_ptr<const BatchUploadDataProvider>>&
-          data_providers_list,
+      std::vector<BatchUploadDataContainer> data_containers,
       SelectedDataTypeItemsCallback complete_callback) {
     content::TestNavigationObserver observer{
         GURL(chrome::kChromeUIBatchUploadURL)};
@@ -78,7 +79,8 @@ class BatchUploadDialogViewBrowserTest : public InProcessBrowserTest {
 
     BatchUploadDialogView* dialog_view =
         BatchUploadDialogView::CreateBatchUploadDialogView(
-            *browser(), data_providers_list, std::move(complete_callback));
+            *browser(), std::move(data_containers),
+            std::move(complete_callback));
 
     observer.Wait();
 
@@ -124,8 +126,10 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
 
   BatchUploadDataProviderFake fake_provider(BatchUploadDataType::kPasswords);
   fake_provider.SetHasLocalData(true);
+  std::vector<BatchUploadDataContainer> containers;
+  containers.push_back(fake_provider.GetLocalData());
   BatchUploadDialogView* dialog_view = CreateBatchUploadDialogView(
-      browser()->profile(), {&fake_provider}, mock_callback.Get());
+      browser()->profile(), std::move(containers), mock_callback.Get());
 
   EXPECT_CALL(mock_callback, Run(kEmptySelectedMap)).Times(1);
   dialog_view->OnDialogSelectionMade({});
@@ -141,8 +145,10 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
   {
     BatchUploadDataProviderFake fake_provider(BatchUploadDataType::kPasswords);
     fake_provider.SetHasLocalData(true);
+    std::vector<BatchUploadDataContainer> containers;
+    containers.push_back(fake_provider.GetLocalData());
     BatchUploadDialogView* dialog_view = CreateBatchUploadDialogView(
-        browser()->profile(), {&fake_provider}, mock_callback.Get());
+        browser()->profile(), std::move(containers), mock_callback.Get());
 
     // Simulate the widget closing without user action.
     views::Widget* widget = dialog_view->GetWidget();
@@ -169,8 +175,10 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
 
   BatchUploadDataProviderFake fake_provider(BatchUploadDataType::kPasswords);
   fake_provider.SetHasLocalData(true);
+  std::vector<BatchUploadDataContainer> containers;
+  containers.push_back(fake_provider.GetLocalData());
   BatchUploadDialogView* dialog_view = CreateBatchUploadDialogView(
-      browser()->profile(), {&fake_provider}, mock_callback.Get());
+      browser()->profile(), std::move(containers), mock_callback.Get());
   ASSERT_TRUE(dialog_view->GetWidget()->IsVisible());
 
   // Signing out should close the dialog.
@@ -197,8 +205,10 @@ IN_PROC_BROWSER_TEST_F(BatchUploadDialogViewBrowserTest,
 
   BatchUploadDataProviderFake fake_provider(BatchUploadDataType::kPasswords);
   fake_provider.SetHasLocalData(true);
+  std::vector<BatchUploadDataContainer> containers;
+  containers.push_back(fake_provider.GetLocalData());
   BatchUploadDialogView* dialog_view = CreateBatchUploadDialogView(
-      browser()->profile(), {&fake_provider}, mock_callback.Get());
+      browser()->profile(), std::move(containers), mock_callback.Get());
   ASSERT_TRUE(dialog_view->GetWidget()->IsVisible());
 
   // Signing out should close the dialog.

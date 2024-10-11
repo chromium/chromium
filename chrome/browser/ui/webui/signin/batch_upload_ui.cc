@@ -51,28 +51,25 @@ WEB_UI_CONTROLLER_TYPE_IMPL(BatchUploadUI)
 
 void BatchUploadUI::Initialize(
     const AccountInfo& account_info,
-    const std::vector<raw_ptr<const BatchUploadDataProvider>>&
-        data_providers_list,
+    std::vector<BatchUploadDataContainer> data_containers_list,
     base::RepeatingCallback<void(int)> update_view_height_callback,
     SelectedDataTypeItemsCallback completion_callback) {
-  initialize_handler_callback_ = base::BindOnce(
-      &BatchUploadUI::OnMojoHandlersReady, base::Unretained(this), account_info,
-      data_providers_list, update_view_height_callback,
-      std::move(completion_callback));
-
   std::unique_ptr<PluralStringHandler> plural_string_handler =
       std::make_unique<PluralStringHandler>();
   // Add the section titles variables. These will be updated based on the number
   // of selected items in each sections.
   base::flat_set<std::string> section_title_ids;
-  for (const raw_ptr<const BatchUploadDataProvider> data_provider :
-       data_providers_list) {
-    BatchUploadDataContainer data = data_provider->GetLocalData();
+  for (const BatchUploadDataContainer& data_container : data_containers_list) {
     plural_string_handler->AddLocalizedString(
-        base::ToString(data.section_title_id), data.section_title_id);
+        base::ToString(data_container.section_title_id),
+        data_container.section_title_id);
   }
-
   web_ui()->AddMessageHandler(std::move(plural_string_handler));
+
+  initialize_handler_callback_ = base::BindOnce(
+      &BatchUploadUI::OnMojoHandlersReady, base::Unretained(this), account_info,
+      std::move(data_containers_list), update_view_height_callback,
+      std::move(completion_callback));
 }
 
 void BatchUploadUI::Clear() {
@@ -95,13 +92,14 @@ void BatchUploadUI::CreateBatchUploadHandler(
 
 void BatchUploadUI::OnMojoHandlersReady(
     const AccountInfo& account_info,
-    std::vector<raw_ptr<const BatchUploadDataProvider>> data_providers_list,
+    std::vector<BatchUploadDataContainer> data_containers_list,
     base::RepeatingCallback<void(int)> update_view_height_callback,
     SelectedDataTypeItemsCallback completion_callback,
     mojo::PendingRemote<batch_upload::mojom::Page> page,
     mojo::PendingReceiver<batch_upload::mojom::PageHandler> receiver) {
   CHECK(!handler_);
   handler_ = std::make_unique<BatchUploadHandler>(
-      std::move(receiver), std::move(page), account_info, data_providers_list,
-      update_view_height_callback, std::move(completion_callback));
+      std::move(receiver), std::move(page), account_info,
+      std::move(data_containers_list), update_view_height_callback,
+      std::move(completion_callback));
 }

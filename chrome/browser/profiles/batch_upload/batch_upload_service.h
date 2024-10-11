@@ -49,12 +49,21 @@ class BatchUploadService : public KeyedService {
   bool IsDialogOpened() const;
 
  private:
-  // Callback on dialog closed. The `move_requested` input determines whether
-  // the dialog was closed with a Cancel/Upload request.
-  void OnBatchUplaodDialogClosed(bool move_requested);
+  // Callback of the dialog view closing, contains the IDs of the selected items
+  // per data type. Selected items will be processed to be moved to the account
+  // storage. Empty map means the dialog was closed explicitly not to move any
+  // data.
+  void OnBatchUplaodDialogResult(
+      const base::flat_map<BatchUploadDataType,
+                           std::vector<BatchUploadDataItemModel::Id>>&
+          item_ids_to_move);
 
   // Whether the profile is in the proper sign in state to see the dialog.
   bool IsUserEligibleToOpenDialog() const;
+
+  // Changes the avatar button text to saving data and starts a timer that will
+  // revert the button text on timeout.
+  void TriggerAvatarButtonSavingDataText(Browser* browser);
 
   // Callback to clear the overridden avatar text on timeout.
   void OnAvatarOverrideTextTimeout();

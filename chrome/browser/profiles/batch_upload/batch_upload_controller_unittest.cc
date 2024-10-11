@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_data_provider.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_delegate.h"
@@ -14,6 +15,15 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+constexpr base::flat_map<BatchUploadDataType,
+                         std::vector<BatchUploadDataItemModel::Id>>
+    kEmptySelectedMap;
+
+// Helper alias to a mock callback of the result of the Batch Upload Dialog.
+using MockBatchUploadDialogResultCallback =
+    base::MockCallback<SelectedDataTypeItemsCallback>;
+
 // Testing implementation of `BatchUploadDataProvider`.
 class BatchUploadDataProviderFake : public BatchUploadDataProvider {
  public:
@@ -27,7 +37,8 @@ class BatchUploadDataProviderFake : public BatchUploadDataProvider {
   bool HasLocalData() const override { return has_local_data_; }
 
   BatchUploadDataContainer GetLocalData() const override {
-    BatchUploadDataContainer container(/*section_name_id=*/123);
+    BatchUploadDataContainer container(GetDataType(),
+                                       /*section_name_id=*/123);
     if (has_local_data_) {
       // Add an arbitrary item.
       container.items.emplace_back();
@@ -49,8 +60,7 @@ class BatchUploadDelegateMock : public BatchUploadDelegate {
   MOCK_METHOD(void,
               ShowBatchUploadDialog,
               (Browser * browser,
-               const std::vector<raw_ptr<const BatchUploadDataProvider>>&
-                   data_providers_list,
+               std::vector<BatchUploadDataContainer> data_containers_list,
                SelectedDataTypeItemsCallback complete_callback),
               (override));
 };
@@ -58,45 +68,47 @@ class BatchUploadDelegateMock : public BatchUploadDelegate {
 }  // namespace
 
 TEST(BatchUploadControllerTest, EmptyController) {
-  BatchUploadController controller({});
+  BatchUploadController controller;
   BatchUploadDelegateMock mock;
-  base::MockCallback<base::OnceCallback<void(bool)>> mock_callback;
+  MockBatchUploadDialogResultCallback mock_callback;
 
-  // No providers means no local data; we do not show the dialog.
+  // No containers means no local data; we do not show the dialog.
   EXPECT_CALL(mock, ShowBatchUploadDialog(nullptr, testing::_, testing::_))
       .Times(0);
-  EXPECT_CALL(mock_callback, Run(false)).Times(1);
+  EXPECT_CALL(mock_callback, Run(kEmptySelectedMap)).Times(1);
   // Not showing the bubble should still call the done_callback with no move
   // request.
-  EXPECT_FALSE(controller.ShowDialog(mock, nullptr, mock_callback.Get()));
+  EXPECT_FALSE(controller.ShowDialog(mock, nullptr, {}, mock_callback.Get()));
 }
 
 TEST(BatchUploadControllerTest, ProviderWithLocalData) {
   std::unique_ptr<BatchUploadDataProviderFake> provider =
       std::make_unique<BatchUploadDataProviderFake>(
           BatchUploadDataType::kPasswords);
-  BatchUploadDataProvider* provider_ptr = provider.get();
   provider->SetHasLocalData(true);
 
-  base::flat_map<BatchUploadDataType, std::unique_ptr<BatchUploadDataProvider>>
-      providers;
-  providers.insert_or_assign(BatchUploadDataType::kPasswords,
-                             std::move(provider));
-
-  BatchUploadController controller(std::move(providers));
+  BatchUploadController controller;
   BatchUploadDelegateMock mock;
-  base::MockCallback<base::OnceCallback<void(bool)>> mock_callback;
+  MockBatchUploadDialogResultCallback mock_callback;
 
   // Having local data should show the dialog.
-  std::vector<raw_ptr<const BatchUploadDataProvider>> expected_providers_list;
-  // Provider has data and should be part of the input.
-  expected_providers_list.emplace_back(provider_ptr);
-  EXPECT_CALL(
-      mock, ShowBatchUploadDialog(nullptr, expected_providers_list, testing::_))
-      .Times(1);
+  std::vector<BatchUploadDataContainer> expected_containers_list;
+  // Container has data and should be part of the input.
+  expected_containers_list.push_back(provider->GetLocalData());
+  EXPECT_CALL(mock, ShowBatchUploadDialog(nullptr, testing::_, testing::_))
+      .WillOnce([&expected_containers_list](
+                    Browser* browser,
+                    std::vector<BatchUploadDataContainer> data_containers_list,
+                    SelectedDataTypeItemsCallback complete_callback) {
+        EXPECT_EQ(expected_containers_list, data_containers_list);
+      });
+
   // The dialog was not closed yet, the `done_callback` should not be called.
   EXPECT_CALL(mock_callback, Run(testing::_)).Times(0);
-  EXPECT_TRUE(controller.ShowDialog(mock, nullptr, mock_callback.Get()));
+  base::flat_map<BatchUploadDataType, BatchUploadDataContainer> input;
+  input.insert_or_assign(provider->GetDataType(), provider->GetLocalData());
+  EXPECT_TRUE(controller.ShowDialog(mock, nullptr, std::move(input),
+                                    mock_callback.Get()));
 }
 
 TEST(BatchUploadControllerTest, ProvideWithoutLocalData) {
@@ -105,22 +117,20 @@ TEST(BatchUploadControllerTest, ProvideWithoutLocalData) {
           BatchUploadDataType::kPasswords);
   provider->SetHasLocalData(false);
 
-  base::flat_map<BatchUploadDataType, std::unique_ptr<BatchUploadDataProvider>>
-      providers;
-  providers.insert_or_assign(BatchUploadDataType::kPasswords,
-                             std::move(provider));
-
-  BatchUploadController controller(std::move(providers));
+  BatchUploadController controller;
   BatchUploadDelegateMock mock;
-  base::MockCallback<base::OnceCallback<void(bool)>> mock_callback;
+  MockBatchUploadDialogResultCallback mock_callback;
 
   // Even if the provider exists, having no data should not show the dialog.
   EXPECT_CALL(mock, ShowBatchUploadDialog(nullptr, testing::_, testing::_))
       .Times(0);
-  // Not showing the bubble should still call the done_callback with no move
-  // request.
-  EXPECT_CALL(mock_callback, Run(false)).Times(1);
-  EXPECT_FALSE(controller.ShowDialog(mock, nullptr, mock_callback.Get()));
+  // Not showing the bubble should still call the done_callback with an empty
+  // map..
+  EXPECT_CALL(mock_callback, Run(kEmptySelectedMap)).Times(1);
+  base::flat_map<BatchUploadDataType, BatchUploadDataContainer> input;
+  input.insert_or_assign(provider->GetDataType(), provider->GetLocalData());
+  EXPECT_FALSE(controller.ShowDialog(mock, nullptr, std::move(input),
+                                     mock_callback.Get()));
 }
 
 TEST(BatchUploadControllerTest, MultipleProvidersWithAndWithoutLocalData) {
@@ -134,120 +144,129 @@ TEST(BatchUploadControllerTest, MultipleProvidersWithAndWithoutLocalData) {
   std::unique_ptr<BatchUploadDataProviderFake> provider2 =
       std::make_unique<BatchUploadDataProviderFake>(
           BatchUploadDataType::kAddresses);
-  BatchUploadDataProviderFake* provider2_ptr = provider2.get();
   provider2->SetHasLocalData(true);
 
-  base::flat_map<BatchUploadDataType, std::unique_ptr<BatchUploadDataProvider>>
-      providers;
-  providers.insert_or_assign(BatchUploadDataType::kPasswords,
-                             std::move(provider1));
-  providers.insert_or_assign(BatchUploadDataType::kAddresses,
-                             std::move(provider2));
-
-  BatchUploadController controller(std::move(providers));
+  BatchUploadController controller;
   BatchUploadDelegateMock mock;
-  base::MockCallback<base::OnceCallback<void(bool)>> mock_callback;
+  MockBatchUploadDialogResultCallback mock_callback;
 
-  // One provider with data is enough to allow showing the dialog.
-  std::vector<raw_ptr<const BatchUploadDataProvider>> expected_providers_list;
-  // Only provider2 has data and should be part of the input.
-  expected_providers_list.push_back(provider2_ptr);
-  EXPECT_CALL(
-      mock, ShowBatchUploadDialog(nullptr, expected_providers_list, testing::_))
-      .Times(1);
+  // One container with data is enough to allow showing the dialog.
+  std::vector<BatchUploadDataContainer> expected_containers_list;
+  // Only container from provider2 has data and should be part of the input.
+  expected_containers_list.push_back(provider2->GetLocalData());
+  EXPECT_CALL(mock, ShowBatchUploadDialog(nullptr, testing::_, testing::_))
+      .WillOnce([&expected_containers_list](
+                    Browser* browser,
+                    std::vector<BatchUploadDataContainer> data_containers_list,
+                    SelectedDataTypeItemsCallback complete_callback) {
+        EXPECT_EQ(expected_containers_list, data_containers_list);
+      });
+
   // The dialog was not closed yet, the `done_callback` should not be called.
   EXPECT_CALL(mock_callback, Run(testing::_)).Times(0);
-  EXPECT_TRUE(controller.ShowDialog(mock, nullptr, mock_callback.Get()));
+  base::flat_map<BatchUploadDataType, BatchUploadDataContainer> input;
+  input.insert_or_assign(provider1->GetDataType(), provider1->GetLocalData());
+  input.insert_or_assign(provider2->GetDataType(), provider2->GetLocalData());
+  EXPECT_TRUE(controller.ShowDialog(mock, nullptr, std::move(input),
+                                    mock_callback.Get()));
 }
 
 TEST(BatchUploadControllerTest, MultipleProvidersAllWithLocalData) {
-  // Provider without data.
+  // Provider with data.
   std::unique_ptr<BatchUploadDataProviderFake> provider1 =
       std::make_unique<BatchUploadDataProviderFake>(
           BatchUploadDataType::kPasswords);
-  BatchUploadDataProviderFake* provider1_ptr = provider1.get();
   provider1->SetHasLocalData(true);
 
   // Provider with data.
   std::unique_ptr<BatchUploadDataProviderFake> provider2 =
       std::make_unique<BatchUploadDataProviderFake>(
           BatchUploadDataType::kAddresses);
-  BatchUploadDataProviderFake* provider2_ptr = provider2.get();
   provider2->SetHasLocalData(true);
 
-  base::flat_map<BatchUploadDataType, std::unique_ptr<BatchUploadDataProvider>>
-      providers;
-  providers.insert_or_assign(BatchUploadDataType::kPasswords,
-                             std::move(provider1));
-  providers.insert_or_assign(BatchUploadDataType::kAddresses,
-                             std::move(provider2));
+  BatchUploadDataContainer container1 = provider1->GetLocalData();
+  BatchUploadDataContainer container2 = provider2->GetLocalData();
 
-  BatchUploadController controller(std::move(providers));
+  BatchUploadController controller;
   BatchUploadDelegateMock mock;
-  base::MockCallback<base::OnceCallback<void(bool)>> mock_callback;
+  MockBatchUploadDialogResultCallback mock_callback;
 
   // One provider with data is enough to allow showing the dialog.
-  std::vector<raw_ptr<const BatchUploadDataProvider>> expected_providers_list;
+  std::vector<BatchUploadDataContainer> expected_containers_list;
+
   // Both providers have data and should be part of the input.
   // Provider1 has a higher priority than provider2, so it should be fist.
-  EXPECT_LT(provider1_ptr->GetDataType(), provider2_ptr->GetDataType());
-  expected_providers_list.push_back(provider1_ptr);
-  expected_providers_list.push_back(provider2_ptr);
-  EXPECT_CALL(
-      mock, ShowBatchUploadDialog(nullptr, expected_providers_list, testing::_))
-      .Times(1);
+  EXPECT_LT(provider1->GetDataType(), provider2->GetDataType());
+  expected_containers_list.push_back(provider1->GetLocalData());
+  expected_containers_list.push_back(provider2->GetLocalData());
+  EXPECT_CALL(mock, ShowBatchUploadDialog(nullptr, testing::_, testing::_))
+      .WillOnce([&expected_containers_list](
+                    Browser* browser,
+                    std::vector<BatchUploadDataContainer> data_containers_list,
+                    SelectedDataTypeItemsCallback complete_callback) {
+        EXPECT_EQ(expected_containers_list, data_containers_list);
+      });
+
   // The dialog was not closed yet, the `done_callback` should not be called.
   EXPECT_CALL(mock_callback, Run(testing::_)).Times(0);
-  EXPECT_TRUE(controller.ShowDialog(mock, nullptr, mock_callback.Get()));
+  base::flat_map<BatchUploadDataType, BatchUploadDataContainer> input;
+  input.insert_or_assign(provider1->GetDataType(), provider1->GetLocalData());
+  input.insert_or_assign(provider2->GetDataType(), provider2->GetLocalData());
+  EXPECT_TRUE(controller.ShowDialog(mock, nullptr, std::move(input),
+                                    mock_callback.Get()));
 }
 
 TEST(BatchUploadControllerTest, ProviderWithItemsToMoveDoneCallback) {
-  // Provider without data.
+  // Provider with data.
   std::unique_ptr<BatchUploadDataProviderFake> provider =
       std::make_unique<BatchUploadDataProviderFake>(
           BatchUploadDataType::kPasswords);
-  BatchUploadDataProvider* provider_ptr = provider.get();
   provider->SetHasLocalData(true);
 
-  base::flat_map<BatchUploadDataType, std::unique_ptr<BatchUploadDataProvider>>
-      providers;
-  providers.insert_or_assign(BatchUploadDataType::kPasswords,
-                             std::move(provider));
-
-  BatchUploadController controller(std::move(providers));
+  BatchUploadController controller;
   BatchUploadDelegateMock mock;
-  base::MockCallback<base::OnceCallback<void(bool)>> mock_callback;
+  MockBatchUploadDialogResultCallback mock_callback;
+
+  // Extract the first item id.
+  BatchUploadDataContainer container = provider->GetLocalData();
+  BatchUploadDataItemModel::Id first_item_id = container.items[0].id;
 
   // Close the dialog directly when shown, with returned items to move.
-  std::vector<raw_ptr<const BatchUploadDataProvider>> expected_providers_list;
+  std::vector<BatchUploadDataContainer> expected_containers_list;
   // Provider has data and should be part of the input.
-  expected_providers_list.push_back(provider_ptr);
-  EXPECT_CALL(
-      mock, ShowBatchUploadDialog(nullptr, expected_providers_list, testing::_))
-      .WillOnce([](Browser* browser,
-                   const std::vector<raw_ptr<const BatchUploadDataProvider>>&
-                       data_providers_list,
-                   SelectedDataTypeItemsCallback complete_callback) {
-        ASSERT_EQ(data_providers_list.size(), 1u);
-        EXPECT_TRUE(data_providers_list[0]->HasLocalData());
+  expected_containers_list.push_back(std::move(container));
+  EXPECT_CALL(mock, ShowBatchUploadDialog(nullptr, testing::_, testing::_))
+      .WillOnce(
+          [&first_item_id](
+              Browser* browser,
+              const std::vector<BatchUploadDataContainer>& data_containers_list,
+              SelectedDataTypeItemsCallback complete_callback) {
+            ASSERT_EQ(data_containers_list.size(), 1u);
+            EXPECT_FALSE(data_containers_list[0].items.empty());
 
-        base::flat_map<BatchUploadDataType,
-                       std::vector<BatchUploadDataItemModel::Id>>
-            selected_items;
-        // Insert the first item of the first available provider.
-        std::vector<BatchUploadDataItemModel::Id> item_ids;
-        item_ids.emplace_back(
-            data_providers_list[0]->GetLocalData().items[0].id);
-        selected_items.insert_or_assign(data_providers_list[0]->GetDataType(),
-                                        item_ids);
-        std::move(complete_callback).Run(selected_items);
-      });
+            base::flat_map<BatchUploadDataType,
+                           std::vector<BatchUploadDataItemModel::Id>>
+                selected_items;
+            // Insert the first item of the first available container.
+            std::vector<BatchUploadDataItemModel::Id> item_ids;
+            item_ids.emplace_back(first_item_id);
+            selected_items.insert_or_assign(data_containers_list[0].type,
+                                            item_ids);
+            std::move(complete_callback).Run(selected_items);
+          });
 
-  // Data was requested to be moved.
-  EXPECT_CALL(mock_callback, Run(true)).Times(1);
+  // Data was requested to be moved. Map contains the first item id.
+  base::flat_map<BatchUploadDataType, std::vector<BatchUploadDataItemModel::Id>>
+      expected_result_map{
+          {provider->GetDataType(),
+           std::vector<BatchUploadDataItemModel::Id>{first_item_id}}};
+  EXPECT_CALL(mock_callback, Run(expected_result_map)).Times(1);
 
   // One provider with data is enough to allow showing the dialog.
-  EXPECT_TRUE(controller.ShowDialog(mock, nullptr, mock_callback.Get()));
+  base::flat_map<BatchUploadDataType, BatchUploadDataContainer> input;
+  input.insert_or_assign(provider->GetDataType(), provider->GetLocalData());
+  EXPECT_TRUE(controller.ShowDialog(mock, nullptr, std::move(input),
+                                    mock_callback.Get()));
 }
 
 TEST(BatchUploadControllerTest, ProviderWithoutItemsToMoveDoneCallback) {
@@ -257,27 +276,25 @@ TEST(BatchUploadControllerTest, ProviderWithoutItemsToMoveDoneCallback) {
           BatchUploadDataType::kPasswords);
   provider->SetHasLocalData(true);
 
-  base::flat_map<BatchUploadDataType, std::unique_ptr<BatchUploadDataProvider>>
-      providers;
-  providers.insert_or_assign(BatchUploadDataType::kPasswords,
-                             std::move(provider));
-
-  BatchUploadController controller(std::move(providers));
+  BatchUploadController controller;
   BatchUploadDelegateMock mock;
-  base::MockCallback<base::OnceCallback<void(bool)>> mock_callback;
+  MockBatchUploadDialogResultCallback mock_callback;
 
   // Close the dialog directly when shown, without returned items to move.
   EXPECT_CALL(mock, ShowBatchUploadDialog(nullptr, testing::_, testing::_))
-      .WillOnce([](Browser* browser,
-                   const std::vector<raw_ptr<const BatchUploadDataProvider>>&
-                       data_providers_list,
-                   SelectedDataTypeItemsCallback complete_callback) {
-        // Empty items to move.
-        std::move(complete_callback).Run({});
-      });
+      .WillOnce(
+          [](Browser* browser,
+             const std::vector<BatchUploadDataContainer>& data_containers_list,
+             SelectedDataTypeItemsCallback complete_callback) {
+            // Empty items to move.
+            std::move(complete_callback).Run({});
+          });
 
   // No move request.
-  EXPECT_CALL(mock_callback, Run(false)).Times(1);
+  EXPECT_CALL(mock_callback, Run(kEmptySelectedMap)).Times(1);
   // One provider with data is enough to allow showing the dialog.
-  EXPECT_TRUE(controller.ShowDialog(mock, nullptr, mock_callback.Get()));
+  base::flat_map<BatchUploadDataType, BatchUploadDataContainer> input;
+  input.insert_or_assign(provider->GetDataType(), provider->GetLocalData());
+  EXPECT_TRUE(controller.ShowDialog(mock, nullptr, std::move(input),
+                                    mock_callback.Get()));
 }

@@ -277,7 +277,7 @@ class BatchUploadDelegateFake : public BatchUploadDelegate {
   void SimulateCancel() {
     CHECK(complete_callback_);
 
-    data_providers_list_.clear();
+    data_containers_list_.clear();
     std::move(complete_callback_).Run({});
   }
 
@@ -288,16 +288,16 @@ class BatchUploadDelegateFake : public BatchUploadDelegate {
     base::flat_map<BatchUploadDataType,
                    std::vector<BatchUploadDataItemModel::Id>>
         result;
-    for (const BatchUploadDataProvider* provider : data_providers_list_) {
+    for (const BatchUploadDataContainer& container : data_containers_list_) {
       std::vector<BatchUploadDataItemModel::Id> data_id_list;
-      CHECK(provider->HasLocalData());
+      CHECK(!container.items.empty());
       std::ranges::transform(
-          provider->GetLocalData().items, std::back_inserter(data_id_list),
+          container.items, std::back_inserter(data_id_list),
           [](const BatchUploadDataItemModel& item) { return item.id; });
-      result.insert_or_assign(provider->GetDataType(), data_id_list);
+      result.insert_or_assign(container.type, data_id_list);
     }
 
-    data_providers_list_.clear();
+    data_containers_list_.clear();
     std::move(complete_callback_).Run(result);
   }
 
@@ -305,14 +305,13 @@ class BatchUploadDelegateFake : public BatchUploadDelegate {
   // BatchUploadDelegate:
   void ShowBatchUploadDialog(
       Browser* browser,
-      const std::vector<raw_ptr<const BatchUploadDataProvider>>&
-          data_providers_list,
+      std::vector<BatchUploadDataContainer> data_containers_list,
       SelectedDataTypeItemsCallback complete_callback) override {
-    data_providers_list_ = data_providers_list;
+    data_containers_list_ = std::move(data_containers_list);
     complete_callback_ = std::move(complete_callback);
   }
 
-  std::vector<raw_ptr<const BatchUploadDataProvider>> data_providers_list_;
+  std::vector<BatchUploadDataContainer> data_containers_list_;
   SelectedDataTypeItemsCallback complete_callback_;
 };
 

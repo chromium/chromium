@@ -38,7 +38,8 @@ class DummyBatchUploadDataProvider : public BatchUploadDataProvider {
   bool HasLocalData() const override { return item_count_ > 0; }
 
   BatchUploadDataContainer GetLocalData() const override {
-    BatchUploadDataContainer container(/*section_name_id=*/title_id_);
+    BatchUploadDataContainer container(GetDataType(),
+                                       /*section_name_id=*/title_id_);
     for (int i = 0; i < item_count_; ++i) {
       BatchUploadDataItemModel item;
       item.id = BatchUploadDataItemModel::Id(i);
@@ -96,20 +97,25 @@ std::unique_ptr<BatchUploadDataProvider> GetBatchUploadDataProvider(
   }
 }
 
-// Helper function to get the map of all `BatchUploadDataProvider` of all data
+// Helper function to get the map of all `BatchUploadDataContainer` of all data
 // types that can have local data that can be displayed by the BatchUpload
 // dialog.
-base::flat_map<BatchUploadDataType, std::unique_ptr<BatchUploadDataProvider>>
-GetBatchUploadDataProviderMap(Profile& profile) {
-  base::flat_map<BatchUploadDataType, std::unique_ptr<BatchUploadDataProvider>>
-      data_providers;
+base::flat_map<BatchUploadDataType, BatchUploadDataContainer>
+GetBatchUploadDataContainers(Profile& profile) {
+  base::flat_map<BatchUploadDataType, BatchUploadDataContainer> data_containers;
 
-  data_providers[BatchUploadDataType::kPasswords] =
-      GetBatchUploadDataProvider(profile, BatchUploadDataType::kPasswords);
-  data_providers[BatchUploadDataType::kAddresses] =
-      GetBatchUploadDataProvider(profile, BatchUploadDataType::kAddresses);
+  // TODO(crbug.com/372701325): When removing the BatchUploadDataProvider
+  // interface, get the BatchUploadDataContainers from the SyncService.
+  data_containers.insert_or_assign(
+      BatchUploadDataType::kPasswords,
+      GetBatchUploadDataProvider(profile, BatchUploadDataType::kPasswords)
+          ->GetLocalData());
+  data_containers.insert_or_assign(
+      BatchUploadDataType::kAddresses,
+      GetBatchUploadDataProvider(profile, BatchUploadDataType::kAddresses)
+          ->GetLocalData());
 
-  return data_providers;
+  return data_containers;
 }
 
 }  // namespace
@@ -135,39 +141,40 @@ bool BatchUploadService::OpenBatchUpload(Browser* browser) {
 
   // Create the controller with all the implementations of available local data
   // providers.
-  controller_ = std::make_unique<BatchUploadController>(
-      GetBatchUploadDataProviderMap(profile_.get()));
+  controller_ = std::make_unique<BatchUploadController>();
   browser_ = browser;
 
   return controller_->ShowDialog(
-      *delegate_, browser, /*done_callback=*/
-      base::BindOnce(&BatchUploadService::OnBatchUplaodDialogClosed,
+      *delegate_, browser,
+      GetBatchUploadDataContainers(profile_.get()), /*done_callback=*/
+      base::BindOnce(&BatchUploadService::OnBatchUplaodDialogResult,
                      base::Unretained(this)));
 }
 
-void BatchUploadService::OnBatchUplaodDialogClosed(bool move_requested) {
+void BatchUploadService::OnBatchUplaodDialogResult(
+    const base::flat_map<BatchUploadDataType,
+                         std::vector<BatchUploadDataItemModel::Id>>&
+        item_ids_to_move) {
   CHECK(controller_);
-  if (move_requested) {
-    avatar_override_clear_callback_ =
-        BrowserView::GetBrowserViewForBrowser(browser_.get())
-            ->toolbar_button_provider()
-            ->GetAvatarToolbarButton()
-            ->ShowExplicitText(
-                l10n_util::GetStringUTF16(
-                    IDS_BATCH_UPLOAD_AVATAR_BUTTON_SAVING_TO_ACCOUNT),
-                // TODO(b/367938326): Add the right accessibility string.
-                std::nullopt);
-    avatar_override_timer_.Start(
-        FROM_HERE, kBatchUploadAvatarButtonOverrideTextDuration,
-        base::BindOnce(&BatchUploadService::OnAvatarOverrideTextTimeout,
-                       // Unretained is fine here since the timer is a field
-                       // member and will not fire if destroyed.
-                       base::Unretained(this)));
-  }
 
+  Browser* browser = browser_.get();
   // Reset the state of the service.
   controller_.reset();
   browser_ = nullptr;
+
+  if (item_ids_to_move.empty()) {
+    return;
+  }
+
+  // TODO(crbug.com/372701325): Process `item_ids_to_move` with SyncService.
+  for (const auto& [type, item_id_list] : item_ids_to_move) {
+    LOG(ERROR) << "XXX: Moving items: " << static_cast<int>(type);
+    for (auto& id : item_id_list) {
+      LOG(ERROR) << "XXX: id: " << id;
+    }
+  }
+
+  TriggerAvatarButtonSavingDataText(browser);
 }
 
 bool BatchUploadService::ShouldShowBatchUploadEntryPointForDataType(
@@ -199,6 +206,26 @@ bool BatchUploadService::IsUserEligibleToOpenDialog() const {
   }
 
   return true;
+}
+
+void BatchUploadService::TriggerAvatarButtonSavingDataText(Browser* browser) {
+  CHECK(browser);
+  // Show the text.
+  avatar_override_clear_callback_ =
+      BrowserView::GetBrowserViewForBrowser(browser)
+          ->toolbar_button_provider()
+          ->GetAvatarToolbarButton()
+          ->ShowExplicitText(
+              l10n_util::GetStringUTF16(
+                  IDS_BATCH_UPLOAD_AVATAR_BUTTON_SAVING_TO_ACCOUNT),
+              std::nullopt);
+  // Prepare the timer to stop the overridden text from showing.
+  avatar_override_timer_.Start(
+      FROM_HERE, kBatchUploadAvatarButtonOverrideTextDuration,
+      base::BindOnce(&BatchUploadService::OnAvatarOverrideTextTimeout,
+                     // Unretained is fine here since the timer is a field
+                     // member and will not fire if destroyed.
+                     base::Unretained(this)));
 }
 
 void BatchUploadService::OnAvatarOverrideTextTimeout() {

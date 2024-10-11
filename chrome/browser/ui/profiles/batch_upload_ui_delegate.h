@@ -18,8 +18,7 @@ class BatchUploadUIDelegate : public BatchUploadDelegate {
   // BatchUploadDelegate:
   void ShowBatchUploadDialog(
       Browser* browser,
-      const std::vector<raw_ptr<const BatchUploadDataProvider>>&
-          data_providers_list,
+      std::vector<BatchUploadDataContainer> data_containers_list,
       SelectedDataTypeItemsCallback complete_callback) override;
 
  private:
@@ -28,8 +27,7 @@ class BatchUploadUIDelegate : public BatchUploadDelegate {
   // Triggers the creation of the main view for the Batch Upload Dialog.
   void ShowBatchUploadDialogInternal(
       Browser& browser,
-      const std::vector<raw_ptr<const BatchUploadDataProvider>>&
-          data_providers_list,
+      std::vector<BatchUploadDataContainer> data_containers_list,
       SelectedDataTypeItemsCallback complete_callback);
 };
 
