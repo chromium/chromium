@@ -38,11 +38,6 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
 
   static get properties() {
     return {
-      prefs: {
-        type: Object,
-        notify: true,
-      },
-
       enableAiSettingsPageRefresh_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableAiSettingsPageRefresh'),
@@ -156,6 +151,14 @@ export class SettingsAiPageElement extends SettingsAiPageElementBase {
   private onWallpaperSearchRowClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         loadTimeData.getString('wallpaperSearchLearnMoreUrl'));
+  }
+
+  private getHistorySearchSublabel_(): string {
+    if (this.getPref(SettingsAiPageFeaturePrefName.HISTORY_SEARCH).value ===
+        FeatureOptInState.ENABLED) {
+      return loadTimeData.getString('historySearchSublabelOn');
+    }
+    return loadTimeData.getString('historySearchSublabelOff');
   }
 }
 

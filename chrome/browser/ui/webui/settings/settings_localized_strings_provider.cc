@@ -378,6 +378,10 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
       {"aiInnovationsPageTitle", IDS_SETTINGS_AI_INNOVATIONS_PAGE_TITLE},
       {"aiPageMainLabel", IDS_SETTINGS_AI_PAGE_MAIN_LABEL},
       {"aiPageMainSublabel", IDS_SETTINGS_AI_PAGE_MAIN_SUBLABEL},
+      {"aiPageMainTitle", IDS_SETTINGS_AI_PAGE_MAIN_TITLE},
+      {"aiPageMainSublabel1", IDS_SETTINGS_AI_PAGE_MAIN_SUBLABEL_1},
+      {"aiPageMainSublabel2", IDS_SETTINGS_AI_PAGE_MAIN_SUBLABEL_2},
+      {"aiPageMainSublabel3", IDS_SETTINGS_AI_PAGE_MAIN_SUBLABEL_3},
       {"aiSubpageSublabelAi", IDS_SETTINGS_AI_SUBPAGE_SUBLABEL_AI},
       {"aiSubpageSublabelReviewers",
        IDS_SETTINGS_AI_SUBPAGE_SUBLABEL_REVIEWERS},
@@ -413,6 +417,8 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_HISTORY_SEARCH_CONSIDER_DATA_ENCRYPTED},
       {"historySearchLearnMoreA11yLabel",
        IDS_SETTINGS_HISTORY_SEARCH_LEARN_MORE_A11Y_LABEL},
+      {"historySearchSublabelOn", IDS_SETTINGS_HISTORY_SEARCH_SUBLABEL_ON},
+      {"historySearchSublabelOff", IDS_SETTINGS_HISTORY_SEARCH_SUBLABEL_OFF},
 
       // Compose strings.
       {"aiComposeLabel", IDS_COMPOSE_SUGGESTION_MAIN_TEXT},
@@ -453,6 +459,7 @@ void AddAiStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_LABEL},
       {"wallpaperSearchSettingSublabel",
        IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_SUBLABEL},
+      {"wallpaperSearchSettingSublabelV2", IDS_SETTINGS_AI_THEMES_SUB_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

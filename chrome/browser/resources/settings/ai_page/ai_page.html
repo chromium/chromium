@@ -63,7 +63,6 @@
   </cr-link-row>
 </template>
 
-<!-- TODO(crbug.com/362225975): Update icons and strings. -->
 <template is="dom-if" if="[[enableAiSettingsPageRefresh_]]" restamp>
   <settings-animated-pages id="pages" section="ai"
       focus-config="[[focusConfig_]]">
@@ -72,7 +71,8 @@
           hidden="[[!showHistorySearchControl_]]"
           start-icon="settings20:search-spark"
           label="$i18n{historySearchSettingLabel}"
-          sub-label="$i18n{historySearchSettingSublabelV2}"
+          sub-label="[[getHistorySearchSublabel_(
+            prefs.optimization_guide.history_search_setting_state.value)]]"
           role-description="$i18n{subpageArrowRoleDescription}"
           on-click="onHistorySearchRowClick_">
       </cr-link-row>
@@ -96,7 +96,7 @@
           hidden="[[!showWallpaperSearchControl_]]"
           start-icon="settings20:photo-filter-auto"
           label="$i18n{wallpaperSearchSettingLabel}"
-          sub-label="$i18n{wallpaperSearchSettingSublabel}"
+          sub-label="$i18n{wallpaperSearchSettingSublabelV2}"
           role-description="$i18n{subpageArrowRoleDescription}"
           on-click="onWallpaperSearchRowClick_" external>
       </cr-link-row>

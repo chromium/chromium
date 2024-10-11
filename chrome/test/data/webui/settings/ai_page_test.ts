@@ -6,7 +6,7 @@
 
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FeatureOptInState, SettingsAiPageFeaturePrefName as PrefName} from 'chrome://settings/lazy_load.js';
-import type {SettingsToggleButtonElement, SettingsAiPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
+import type {CrLinkRowElement, SettingsToggleButtonElement, SettingsAiPageElement, SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, loadTimeData, resetRouterForTesting, Router, routes, OpenWindowProxyImpl} from 'chrome://settings/settings.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 
@@ -87,10 +87,27 @@ suite('ExperimentalAdvancedPage', function() {
     await createPage();
 
     const historySearchRow =
-        page.shadowRoot!.querySelector<HTMLElement>('#historySearchRowV2');
+        page.shadowRoot!.querySelector<CrLinkRowElement>('#historySearchRowV2');
 
     assertTrue(!!historySearchRow);
     assertTrue(isVisible(historySearchRow));
+
+    page.setPrefValue(
+        PrefName.HISTORY_SEARCH, FeatureOptInState.NOT_INITIALIZED);
+    assertEquals(
+        loadTimeData.getString('historySearchSublabelOff'),
+        historySearchRow.subLabel);
+
+    page.setPrefValue(PrefName.HISTORY_SEARCH, FeatureOptInState.DISABLED);
+    assertEquals(
+        loadTimeData.getString('historySearchSublabelOff'),
+        historySearchRow.subLabel);
+
+    page.setPrefValue(PrefName.HISTORY_SEARCH, FeatureOptInState.ENABLED);
+    assertEquals(
+        loadTimeData.getString('historySearchSublabelOn'),
+        historySearchRow.subLabel);
+
     historySearchRow.click();
 
     const currentRoute = Router.getInstance().getCurrentRoute();
