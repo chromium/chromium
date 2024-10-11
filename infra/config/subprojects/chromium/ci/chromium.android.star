@@ -1596,6 +1596,7 @@ ci.builder(
         chromium_config = builder_config.chromium_config(
             config = "android",
             apply_configs = [
+                "checkout_copybara",
                 "cronet_builder",
                 "mb",
             ],
