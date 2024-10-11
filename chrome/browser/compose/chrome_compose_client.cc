@@ -49,6 +49,7 @@
 #include "components/compose/core/browser/compose_manager_impl.h"
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/compose/core/browser/config.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/unified_consent/pref_names.h"
@@ -798,7 +799,11 @@ void ChromeComposeClient::OpenProactiveNudgeSettings() {
       break;
   }
 
-  chrome::ShowSettingsSubPage(browser, chrome::kOfferWritingHelpSubpage);
+  chrome::ShowSettingsSubPage(
+      browser, base::FeatureList::IsEnabled(
+                   optimization_guide::features::kAiSettingsPageRefresh)
+                   ? chrome::kAiHelpMeWriteSubpage
+                   : chrome::kOfferWritingHelpSubpage);
 }
 
 void ChromeComposeClient::AddSiteToNeverPromptList(const url::Origin& origin) {

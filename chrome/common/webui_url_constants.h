@@ -684,6 +684,7 @@ inline constexpr char kLanguageOptionsSubPage[] = "languages";
 inline constexpr char kLanguagesSubPage[] = "languages/details";
 inline constexpr char kManageProfileSubPage[] = "manageProfile";
 inline constexpr char kOfferWritingHelpSubpage[] = "content/offerWritingHelp";
+inline constexpr char kAiHelpMeWriteSubpage[] = "ai/helpMeWrite";
 inline constexpr char kOnDeviceSiteDataSubpage[] = "content/siteData";
 inline constexpr char kOnStartupSubPage[] = "onStartup";
 inline constexpr char kPasskeysSubPage[] = "passkeys";
