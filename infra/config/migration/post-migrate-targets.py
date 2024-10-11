@@ -187,7 +187,7 @@ _UNREFERENCED_VARIANTS_RE = re.compile(
 
 # check.py outputs the referenced names like name1, name2, name3
 _UNREFERENCED_ISOLATES_RE = re.compile(
-    '^(.+) are listed in gn_isolate_map.pyl but not in any .json files$')
+    '^(.+) (is|are) listed in gn_isolate_map.pyl but not in any .json files$')
 
 
 def main():
