@@ -128,23 +128,20 @@ void IpProtectionTelemetryUma::ProxyResolution(ProxyResolutionResult result) {
     case ProxyResolutionResult::kSettingDisabled:
       eligibility = ProtectionEligibility::kEligible;
       break;
-    case ProxyResolutionResult::kTokensNotAvailable:
+    case ProxyResolutionResult::kProxyListNotAvailable:
+      eligibility = ProtectionEligibility::kEligible;
+      record_availability(
+          /*are_auth_tokens_available=*/false,
+          /*is_proxy_list_available=*/false);
+      break;
+    case ProxyResolutionResult::kTokensNeverAvailable:
+      // fall through to the same as exhausted tokens for the purpose of this
+      // metric.
+    case ProxyResolutionResult::kTokensExhausted:
       eligibility = ProtectionEligibility::kEligible;
       record_availability(
           /*are_auth_tokens_available=*/false,
           /*is_proxy_list_available=*/true);
-      break;
-    case ProxyResolutionResult::kProxyListNotAvailable:
-      eligibility = ProtectionEligibility::kEligible;
-      record_availability(
-          /*are_auth_tokens_available=*/true,
-          /*is_proxy_list_available=*/false);
-      break;
-    case ProxyResolutionResult::kTokensAndProxyListNotAvailable:
-      eligibility = ProtectionEligibility::kEligible;
-      record_availability(
-          /*are_auth_tokens_available=*/false,
-          /*is_proxy_list_available=*/false);
       break;
     case ProxyResolutionResult::kAttemptProxy:
       eligibility = ProtectionEligibility::kEligible;

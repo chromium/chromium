@@ -4943,6 +4943,12 @@ chromium-metrics-reviews@google.com.
     request is eligible for IP Protection. If this fails, tokens were not
     available in all token caches and the request will bypass the IP Protection
     proxy.
+
+    Note: This metric can be emitted as boolean failure even if there are tokens
+    available in the cache. Without an available proxy list, it cannot be
+    assumed that tokens within the caches are available for the current geo.
+    Thus, this metric can only be emitted as a success when there is a proxy
+    list available.
   </summary>
 </histogram>
 

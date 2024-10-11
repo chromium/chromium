@@ -123,6 +123,22 @@ bool IpProtectionCoreImpl::AreAuthTokensAvailable() {
   return all_caches_have_tokens;
 }
 
+bool IpProtectionCoreImpl::WereTokenCachesEverFilled() {
+  // If proxy list is not available, tokens cannot be available. Also if there
+  // are no token cache managers, there are no tokens.
+  if (!IsProxyListAvailable() || ipp_token_managers_.empty()) {
+    return false;
+  }
+
+  bool all_caches_have_been_filled = true;
+  for (const auto& manager : ipp_token_managers_) {
+    if (!manager.second->WasTokenCacheEverFilled()) {
+      all_caches_have_been_filled = false;
+    }
+  }
+  return all_caches_have_been_filled;
+}
+
 std::optional<BlindSignedAuthToken> IpProtectionCoreImpl::GetAuthToken(
     size_t chain_index) {
   std::optional<BlindSignedAuthToken> result;

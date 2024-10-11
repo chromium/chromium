@@ -42,6 +42,7 @@ class IpProtectionCoreImpl : public IpProtectionCore,
   // IpProtectionCore implementation.
   bool IsIpProtectionEnabled() override;
   bool AreAuthTokensAvailable() override;
+  bool WereTokenCachesEverFilled() override;
   std::optional<BlindSignedAuthToken> GetAuthToken(size_t chain_index) override;
   bool IsProxyListAvailable() override;
   void QuicProxiesFailed() override;

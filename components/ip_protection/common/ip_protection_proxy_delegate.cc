@@ -100,17 +100,20 @@ ProxyResolutionResult IpProtectionProxyDelegate::ClassifyRequest(
     vlog("ip protection proxy is not currently enabled");
     return ProxyResolutionResult::kSettingDisabled;
   }
+  const bool were_token_caches_ever_filled =
+      ipp_core_->WereTokenCachesEverFilled();
   const bool auth_tokens_are_available = ipp_core_->AreAuthTokensAvailable();
   const bool proxy_list_is_available = ipp_core_->IsProxyListAvailable();
-  if (!auth_tokens_are_available && !proxy_list_is_available) {
-    vlog("neither proxy list nor auth token available");
-    return ProxyResolutionResult::kTokensAndProxyListNotAvailable;
-  } else if (!auth_tokens_are_available) {
-    vlog("no auth token available from cache");
-    return ProxyResolutionResult::kTokensNotAvailable;
-  } else if (!proxy_list_is_available) {
+
+  if (!proxy_list_is_available) {
     vlog("no proxy list available from cache");
     return ProxyResolutionResult::kProxyListNotAvailable;
+  } else if (!were_token_caches_ever_filled) {
+    vlog("token caches have never been filled");
+    return ProxyResolutionResult::kTokensNeverAvailable;
+  } else if (!auth_tokens_are_available) {
+    vlog("no auth token available from cache");
+    return ProxyResolutionResult::kTokensExhausted;
   }
 
   return ProxyResolutionResult::kAttemptProxy;

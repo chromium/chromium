@@ -29,6 +29,13 @@ class IpProtectionCore {
   // This function is called on every URL load, so it should complete quickly.
   virtual bool AreAuthTokensAvailable() = 0;
 
+  // Check whether the tokens in either cache have ever been filled.
+  //
+  // If even one cache has not been filled at least once, this method should
+  // return false. Also, this method will ALWAYS return false if the proxy list
+  // is unavailable.
+  virtual bool WereTokenCachesEverFilled() = 0;
+
   // Get a token, if one is available.
   //
   // Returns `nullopt` if no token is available, whether for a transient or

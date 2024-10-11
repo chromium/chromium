@@ -38,12 +38,16 @@ enum class ProxyResolutionResult {
   kFeatureDisabled = 2,
   // The IP Protection setting is disabled.
   kSettingDisabled = 3,
-  // Tokens for the current geo are not available.
-  kTokensNotAvailable = 4,
-  // The proxy list is not available.
-  kProxyListNotAvailable = 5,
-  // Neither tokens for the current geo, nor the proxy list, are available.
-  kTokensAndProxyListNotAvailable = 6,
+  // The proxy list is not available. This disposition does not imply that
+  // tokens were available. It is possible that the proxy list was not available
+  // AND tokens were not available.
+  kProxyListNotAvailable = 4,
+  // Tokens are not available because the one or both of the token caches was
+  // never filled.
+  kTokensNeverAvailable = 5,
+  // Tokens are not available for the current geo due to the cache being
+  // exhausted.
+  kTokensExhausted = 6,
   // The request was resolved to use the IP Protection proxies.
   kAttemptProxy = 7,
   kMaxValue = kAttemptProxy,

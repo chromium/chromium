@@ -95,6 +95,10 @@ bool IpProtectionTokenManagerImpl::IsAuthTokenAvailable(
                                                              : kDefaultGeo);
 }
 
+bool IpProtectionTokenManagerImpl::WasTokenCacheEverFilled() {
+  return cache_has_been_filled_;
+}
+
 // If this is a good time to request another batch of tokens, do so. This
 // method is idempotent, and can be called at any time.
 void IpProtectionTokenManagerImpl::MaybeRefillCache() {
@@ -263,8 +267,7 @@ void IpProtectionTokenManagerImpl::OnGotAuthTokens(
   }
 
   VLOG(2) << "IPPATC::OnGotAuthTokens got " << tokens->size()
-          << " tokens for proxy "
-          << int(proxy_layer_);
+          << " tokens for proxy " << int(proxy_layer_);
   try_get_auth_tokens_after_ = base::Time();
 
   RemoveExpiredTokens();
@@ -316,6 +319,9 @@ void IpProtectionTokenManagerImpl::OnGotAuthTokens(
             [](BlindSignedAuthToken& a, BlindSignedAuthToken& b) {
               return a.expiration < b.expiration;
             });
+
+  // Cache at this point should be filled with tokens at least once.
+  cache_has_been_filled_ = true;
 
   // If a refill is still needed, we do not want to immediately re-request
   // tokens, lest we overwhelm the server. This is unlikely to happen in

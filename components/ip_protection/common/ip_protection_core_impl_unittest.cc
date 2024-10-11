@@ -46,6 +46,10 @@ class MockIpProtectionTokenManager : public IpProtectionTokenManager {
     return auth_tokens_.contains(geo_id);
   }
 
+  bool WasTokenCacheEverFilled() override {
+    return was_token_cache_ever_filled_;
+  }
+
   void InvalidateTryAgainAfterTime() override {}
 
   std::string CurrentGeo() const override { return current_geo_id_; }
@@ -68,6 +72,7 @@ class MockIpProtectionTokenManager : public IpProtectionTokenManager {
   }
 
   void SetAuthToken(BlindSignedAuthToken auth_token) {
+    was_token_cache_ever_filled_ = true;
     auth_tokens_[GetGeoIdFromGeoHint(auth_token.geo_hint)] = auth_token;
   }
 
@@ -75,6 +80,7 @@ class MockIpProtectionTokenManager : public IpProtectionTokenManager {
   std::map<std::string, BlindSignedAuthToken> auth_tokens_;
   std::optional<BlindSignedAuthToken> auth_token_;
   std::string current_geo_id_;
+  bool was_token_cache_ever_filled_ = false;
 };
 
 class MockIpProtectionProxyConfigManager
@@ -183,6 +189,7 @@ TEST_F(IpProtectionCoreImplTest, AreAuthTokensAvailable_NoProxiesConfigured) {
   ipp_core_->SetIpProtectionProxyConfigManagerForTesting(
       std::move(ipp_proxy_config_manager));
 
+  ASSERT_FALSE(ipp_core_->WereTokenCachesEverFilled());
   ASSERT_FALSE(ipp_core_->AreAuthTokensAvailable());
 }
 
@@ -199,6 +206,7 @@ TEST_F(IpProtectionCoreImplTest,
   ipp_core_->SetIpProtectionTokenManagerForTesting(
       ProxyLayer::kProxyA, std::move(ipp_token_manager));
 
+  ASSERT_FALSE(ipp_core_->WereTokenCachesEverFilled());
   ASSERT_FALSE(ipp_core_->AreAuthTokensAvailable());
   // Neither calls will return a token since there is no proxy list available.
   ASSERT_FALSE(ipp_core_->GetAuthToken(0).has_value());
@@ -222,6 +230,7 @@ TEST_F(IpProtectionCoreImplTest, GetAuthTokenFromManagerForProxyA) {
   ipp_core_->SetIpProtectionTokenManagerForTesting(
       ProxyLayer::kProxyA, std::move(ipp_token_manager));
 
+  ASSERT_TRUE(ipp_core_->WereTokenCachesEverFilled());
   ASSERT_TRUE(ipp_core_->AreAuthTokensAvailable());
   ASSERT_FALSE(
       ipp_core_->GetAuthToken(1).has_value());  // ProxyB has no tokens.
@@ -247,6 +256,7 @@ TEST_F(IpProtectionCoreImplTest, GetAuthTokenFromManagerForProxyB) {
   ipp_core_->SetIpProtectionTokenManagerForTesting(
       ProxyLayer::kProxyB, std::move(ipp_token_manager));
 
+  ASSERT_TRUE(ipp_core_->WereTokenCachesEverFilled());
   ASSERT_TRUE(ipp_core_->AreAuthTokensAvailable());
   ASSERT_FALSE(
       ipp_core_->GetAuthToken(0).has_value());  // ProxyA has no tokens.
@@ -275,6 +285,7 @@ TEST_F(IpProtectionCoreImplTest, AreAuthTokensAvailable_OneTokenCacheIsEmpty) {
   ipp_core_->SetIpProtectionTokenManagerForTesting(
       ProxyLayer::kProxyB, std::make_unique<MockIpProtectionTokenManager>());
 
+  ASSERT_FALSE(ipp_core_->WereTokenCachesEverFilled());
   ASSERT_FALSE(ipp_core_->AreAuthTokensAvailable());
   histogram_tester_.ExpectTotalCount(kEmptyTokenCacheHistogram, 1);
   histogram_tester_.ExpectBucketCount(kEmptyTokenCacheHistogram,
@@ -306,6 +317,7 @@ TEST_F(IpProtectionCoreImplTest, GetAuthTokenForOldGeo) {
 
   // The following calls will be based on the proxy list manager's geo (Mountain
   // View).
+  ASSERT_TRUE(ipp_core_->WereTokenCachesEverFilled());
   ASSERT_TRUE(ipp_core_->AreAuthTokensAvailable());
   std::optional<BlindSignedAuthToken> token = ipp_core_->GetAuthToken(0);
   ASSERT_TRUE(token);

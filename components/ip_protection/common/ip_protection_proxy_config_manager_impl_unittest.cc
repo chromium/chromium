@@ -100,6 +100,7 @@ class MockIpProtectionCore : public IpProtectionCore {
   // Dummy implementations for functions not tested in this file.
   bool IsIpProtectionEnabled() override { return true; }
   bool AreAuthTokensAvailable() override { return false; }
+  bool WereTokenCachesEverFilled() override { return false; }
   std::optional<BlindSignedAuthToken> GetAuthToken(
       size_t chain_index) override {
     return std::nullopt;

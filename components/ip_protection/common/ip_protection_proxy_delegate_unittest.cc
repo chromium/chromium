@@ -63,6 +63,11 @@ class MockIpProtectionCore : public IpProtectionCore {
   bool IsIpProtectionEnabled() override { return is_ip_protection_enabled_; }
 
   bool AreAuthTokensAvailable() override { return auth_token_.has_value(); }
+
+  bool WereTokenCachesEverFilled() override {
+    return were_token_caches_ever_filled_;
+  }
+
   std::optional<BlindSignedAuthToken> GetAuthToken(
       size_t chain_index) override {
     return std::move(auth_token_);
@@ -72,6 +77,7 @@ class MockIpProtectionCore : public IpProtectionCore {
   // `GetAuthToken()`.
   void SetNextAuthToken(std::optional<BlindSignedAuthToken> auth_token) {
     auth_token_ = std::move(auth_token);
+    were_token_caches_ever_filled_ = true;
   }
 
   std::vector<net::ProxyChain> GetProxyChainList() override {
@@ -110,8 +116,11 @@ class MockIpProtectionCore : public IpProtectionCore {
     on_proxies_failed_ = std::move(on_proxies_failed);
   }
 
+  void ExhaustTokenCache() { auth_token_ = std::nullopt; }
+
  private:
   bool is_ip_protection_enabled_ = true;
+  bool were_token_caches_ever_filled_ = false;
   std::optional<BlindSignedAuthToken> auth_token_;
   std::optional<std::vector<net::ProxyChain>> proxy_list_;
   std::vector<net::ProxyChain> proxy_chain_list_;
@@ -510,7 +519,7 @@ TEST_F(IpProtectionProxyDelegateTest,
   histogram_tester_.ExpectTotalCount(kAvailabilityHistogram, 0);
 }
 
-TEST_F(IpProtectionProxyDelegateTest, OnResolveProxy_NoAuthToken) {
+TEST_F(IpProtectionProxyDelegateTest, OnResolveProxy_NoAuthTokenEver) {
   std::map<std::string, std::set<std::string>> first_party_map;
   first_party_map["example.com"] = {};
   auto masked_domain_list_manager =
@@ -530,8 +539,46 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxy_NoAuthToken) {
 
   EXPECT_TRUE(result.is_direct());
   EXPECT_FALSE(result.is_for_ip_protection());
+
   histogram_tester_.ExpectUniqueSample(
-      kProxyResolutionHistogram, ProxyResolutionResult::kTokensNotAvailable, 1);
+      kProxyResolutionHistogram, ProxyResolutionResult::kTokensNeverAvailable,
+      1);
+  histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,
+                                       ProtectionEligibility::kEligible, 1);
+  histogram_tester_.ExpectUniqueSample(kAreAuthTokensAvailableHistogram, false,
+                                       1);
+  histogram_tester_.ExpectUniqueSample(kIsProxyListAvailableHistogram, true, 1);
+  histogram_tester_.ExpectUniqueSample(kAvailabilityHistogram, false, 1);
+}
+
+TEST_F(IpProtectionProxyDelegateTest, OnResolveProxy_NoAuthToken_Exhausted) {
+  std::map<std::string, std::set<std::string>> first_party_map;
+  first_party_map["example.com"] = {};
+  auto masked_domain_list_manager =
+      MaskedDomainListManager::CreateForTesting(first_party_map);
+  auto ipp_core = std::make_unique<MockIpProtectionCore>();
+  ipp_core->SetProxyList({MakeChain({"proxy"})});
+
+  // Token is added but will be removed to simulate exhaustion.
+  ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
+  ipp_core->ExhaustTokenCache();
+
+  // Tokens in cache are exhausted, so the result will be direct.
+  auto delegate =
+      CreateDelegate(&masked_domain_list_manager, std::move(ipp_core));
+
+  net::ProxyInfo result;
+  result.UseDirect();
+  delegate->OnResolveProxy(GURL(kHttpsUrl),
+                           net::NetworkAnonymizationKey::CreateCrossSite(
+                               net::SchemefulSite(GURL("https://top.com"))),
+                           "GET", net::ProxyRetryInfoMap(), &result);
+
+  EXPECT_TRUE(result.is_direct());
+  EXPECT_FALSE(result.is_for_ip_protection());
+
+  histogram_tester_.ExpectUniqueSample(
+      kProxyResolutionHistogram, ProxyResolutionResult::kTokensExhausted, 1);
   histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,
                                        ProtectionEligibility::kEligible, 1);
   histogram_tester_.ExpectUniqueSample(kAreAuthTokensAvailableHistogram, false,
@@ -565,7 +612,7 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxy_NoProxyList) {
       1);
   histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,
                                        ProtectionEligibility::kEligible, 1);
-  histogram_tester_.ExpectUniqueSample(kAreAuthTokensAvailableHistogram, true,
+  histogram_tester_.ExpectUniqueSample(kAreAuthTokensAvailableHistogram, false,
                                        1);
   histogram_tester_.ExpectUniqueSample(kIsProxyListAvailableHistogram, false,
                                        1);

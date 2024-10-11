@@ -29,7 +29,6 @@ namespace {
 
 constexpr char kGeoChangeTokenPresence[] =
     "NetworkService.IpProtection.GeoChangeTokenPresence";
-
 constexpr char kGetAuthTokenResultHistogram[] =
     "NetworkService.IpProtection.GetAuthTokenResult";
 constexpr char kProxyATokenSpendRateHistogram[] =
@@ -132,6 +131,7 @@ class MockIpProtectionCore : public IpProtectionCore {
   // Dummy implementations for functions not tested in this file.
   bool IsIpProtectionEnabled() override { return true; }
   bool AreAuthTokensAvailable() override { return false; }
+  bool WereTokenCachesEverFilled() override { return false; }
   std::optional<BlindSignedAuthToken> GetAuthToken(
       size_t chain_index) override {
     return std::nullopt;
@@ -271,7 +271,9 @@ class IpProtectionTokenManagerImplTest : public testing::Test {
 // disabled.
 TEST_F(IpProtectionTokenManagerImplTest, IsAuthTokenAvailableFalseEmpty) {
   SetUpIpProtectionTokenManager(kDisableTokenCacheByGeo);
+
   EXPECT_FALSE(ipp_proxy_a_token_manager_->IsAuthTokenAvailable());
+  EXPECT_FALSE(ipp_proxy_a_token_manager_->WasTokenCacheEverFilled());
 }
 
 // `IsAuthTokenAvailable()` returns false on an empty cache. Geo Caching
@@ -290,6 +292,10 @@ TEST_F(IpProtectionTokenManagerImplTest,
   // false.
   EXPECT_FALSE(
       ipp_proxy_a_token_manager_->IsAuthTokenAvailable(kMountainViewGeoId));
+
+  // Although the tokens were not available for a given geo, the cache had
+  // already been filled at some point.
+  EXPECT_TRUE(ipp_proxy_a_token_manager_->WasTokenCacheEverFilled());
 }
 
 // `IsAuthTokenAvailable()` returns true on a cache containing unexpired
@@ -303,6 +309,7 @@ TEST_F(IpProtectionTokenManagerImplTest, IsAuthTokenAvailableTrue) {
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
 
   EXPECT_TRUE(ipp_proxy_a_token_manager_->IsAuthTokenAvailable());
+  EXPECT_TRUE(ipp_proxy_a_token_manager_->WasTokenCacheEverFilled());
 }
 
 // `IsAuthTokenAvailable()` returns true on a cache containing unexpired
@@ -318,6 +325,7 @@ TEST_F(IpProtectionTokenManagerImplTest,
 
   EXPECT_TRUE(
       ipp_proxy_a_token_manager_->IsAuthTokenAvailable(kMountainViewGeoId));
+  EXPECT_TRUE(ipp_proxy_a_token_manager_->WasTokenCacheEverFilled());
 }
 
 // `IsAuthTokenAvailable()` returns false on a cache containing expired
@@ -330,6 +338,9 @@ TEST_F(IpProtectionTokenManagerImplTest, IsAuthTokenAvailableFalseExpired) {
   CallTryGetAuthTokensAndWait(ProxyLayer::kProxyA);
   ASSERT_TRUE(mock_.GotAllExpectedMockCalls());
   EXPECT_FALSE(ipp_proxy_a_token_manager_->IsAuthTokenAvailable());
+
+  // The cache has been filled at some point despite the tokens being expired.
+  EXPECT_TRUE(ipp_proxy_a_token_manager_->WasTokenCacheEverFilled());
 }
 
 // `IsAuthTokenAvailable()` returns false on a geo's cache containing expired
@@ -346,6 +357,9 @@ TEST_F(IpProtectionTokenManagerImplTest,
 
   EXPECT_FALSE(
       ipp_proxy_a_token_manager_->IsAuthTokenAvailable(kMountainViewGeoId));
+
+  // Cache has been filled at some point despite expired tokens.
+  EXPECT_TRUE(ipp_proxy_a_token_manager_->WasTokenCacheEverFilled());
 }
 
 // `GetAuthToken()` returns nullopt on an empty cache.
@@ -538,6 +552,10 @@ TEST_F(IpProtectionTokenManagerImplTest, ErrorBatch) {
   ASSERT_FALSE(
       ipp_proxy_a_token_manager_->IsAuthTokenAvailable(kMountainViewGeoId));
   ASSERT_FALSE(ipp_proxy_a_token_manager_->GetAuthToken(kMountainViewGeoId));
+
+  // Cache was never filled due to error.
+  ASSERT_FALSE(ipp_proxy_a_token_manager_->WasTokenCacheEverFilled());
+
   ExpectHistogramState(
       HistogramState{.success = 0, .failure = 1, .generated = 0});
 }
@@ -591,6 +609,9 @@ TEST_F(IpProtectionTokenManagerImplTest, NullGetter) {
       /* disable_cache_management_for_testing=*/true);
 
   EXPECT_FALSE(ipp_token_manager.IsAuthTokenAvailable(kMountainViewGeoId));
+
+  // Cache was never filled due to nullptr.
+  EXPECT_FALSE(ipp_token_manager.WasTokenCacheEverFilled());
 
   auto token = ipp_token_manager.GetAuthToken(kMountainViewGeoId);
   ASSERT_FALSE(token);
