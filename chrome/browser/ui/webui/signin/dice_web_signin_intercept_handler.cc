@@ -338,10 +338,11 @@ std::string DiceWebSigninInterceptHandler::GetChromeSigninSubtitle() {
   // so Account Capabilities will be available for the vast majority of users.
   if (base::FeatureList::IsEnabled(
           supervised_user::kCustomProfileStringsForSupervisedUsers) &&
-      bubble_parameters_.intercepted_account.capabilities
+      intercepted_account().capabilities
               .is_subject_to_parental_controls() == signin::Tribool::kTrue) {
-    return l10n_util::GetStringUTF8(
-        IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE_SUPERVISED);
+    return l10n_util::GetStringFUTF8(
+        IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE_SUPERVISED,
+        base::UTF8ToUTF16(intercepted_account().email));
   }
   return l10n_util::GetStringUTF8(
       IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE);

@@ -335,8 +335,9 @@ class DiceWebSigninInterceptHandlerChromeSigninInterceptionTest
         IsSupervisedUser() == signin::Tribool::kTrue) {
       title = l10n_util::GetStringUTF8(
           IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE_SUPERVISED);
-      subtitle = l10n_util::GetStringUTF8(
-          IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE_SUPERVISED);
+      subtitle = l10n_util::GetStringFUTF8(
+          IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE_SUPERVISED,
+          base::UTF8ToUTF16(intercepted_account.email));
     }
 
     EXPECT_EQ(*parameters.FindString("title"), title);

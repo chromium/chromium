@@ -13343,8 +13343,8 @@ This can include information about installed software, files, your browser, and 
             <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_STAY_HERE_BUTTON_LABEL" desc="Label of the cancel button in the web signin interception bubble">
               Stay Here
             </message>
-            <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE_SUPERVISED" desc="Title of the Signin Bubble intercept that is shown when a signed out user signs in on the web with a supervised account." translateable="false">
-              Be Safe Online
+            <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE_SUPERVISED" desc="This string is the title of a promotion about signing in to Chrome with the user's Google Account. It explains the overarching user benefit of signing in: Kids of a certain age are motivated to get their parents’ help staying safer online, so the tone should be motivating. We want users to understand why signing in is beneficial, and click 'Continue as name' to sign in to their Google Account.">
+              Be Safer Online
             </message>
           </then>
           <else>
@@ -13360,12 +13360,15 @@ This can include information about installed software, files, your browser, and 
             <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_STAY_HERE_BUTTON_LABEL" desc="Label of the cancel button in the web signin interception bubble">
               Stay here
             </message>
-            <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE_SUPERVISED" desc="Title of the Signin Bubble intercept that is shown when a signed out user signs in on the web with a supervised account." translateable="false">
-              Be safe online
+            <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_TITLE_SUPERVISED" desc="This string is the title of a promotion about signing in to Chrome with the user's Google Account. It explains the overarching user benefit of signing in: Kids of a certain age are motivated to get their parents’ help staying safer online, so the tone should be motivating. We want users to understand why signing in is beneficial, and click 'Continue as name' to sign in to their Google Account.">
+              Be safer online
             </message>
           </else>
         </if>
 
+        <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_SUBTITLE_SUPERVISED" desc="This string is the body of a promotion about signing in to Chrome with the user's Google Account. It explains the overarching user benefit of signing in: Kids of a certain age are motivated to get their parents’ help staying safer online, so the tone should be motivating. We want users to understand why signing in is beneficial, and click 'Continue as name' to sign in to their Google Account.">
+          To stay safer online with your parent’s choices, sign in as <ph name="USER_EMAIL">$1<ex>john@google.com</ex></ph>
+        </message>
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CANCEL_BUTTON_LABEL" desc="Label of the cancel button in the web signin interception bubble">
           No thanks
         </message>
