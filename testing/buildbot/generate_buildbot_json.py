@@ -1672,6 +1672,24 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
             f'$mixin_append is no longer supported (set in mixin "{name}"),'
             ' args and named caches specified as normal will be appended')
 
+    # All variant references must be referenced
+    seen_variants = set()
+    for suite in self.test_suites.values():
+      if isinstance(suite, list):
+        continue
+
+      for test in suite.values():
+        if isinstance(test, dict):
+          for variant in test.get('variants', []):
+            if isinstance(variant, str):
+              seen_variants.add(variant)
+
+    missing_variants = set(self.variants.keys()) - seen_variants
+    if missing_variants:
+      raise BBGenErr('The following variants were unreferenced: %s. They must '
+                     'be referenced in a matrix test suite under the variants '
+                     'key.' % str(missing_variants))
+
     # All mixins must be referenced
     seen_mixins = set()
     for waterfall in self.waterfalls:
@@ -1704,24 +1722,6 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
       raise BBGenErr('The following mixins are unreferenced: %s. They must be'
                      ' referenced in a waterfall, machine, or test suite.' % (
                          str(missing_mixins)))
-
-    # All variant references must be referenced
-    seen_variants = set()
-    for suite in self.test_suites.values():
-      if isinstance(suite, list):
-        continue
-
-      for test in suite.values():
-        if isinstance(test, dict):
-          for variant in test.get('variants', []):
-            if isinstance(variant, str):
-              seen_variants.add(variant)
-
-    missing_variants = set(self.variants.keys()) - seen_variants
-    if missing_variants:
-      raise BBGenErr('The following variants were unreferenced: %s. They must '
-                     'be referenced in a matrix test suite under the variants '
-                     'key.' % str(missing_variants))
 
 
   def type_assert(self, node, typ, file_path, verbose=False):

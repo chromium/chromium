@@ -232,25 +232,6 @@ def main():
       if _UNREFERENCED_SUITES_RE.search(ret.stderr):
         raise Exception('unreferenced suites still exist after update')
 
-    match = _UNREFERENCED_MIXINS_RE.search(ret.stderr)
-    if match:
-      unreferenced_mixin_names = ast.literal_eval(match.group(1))
-      mixins_star = _TARGETS_DIR / 'mixins.star'
-      buildozer.run(
-          'set generate_pyl_entry False',
-          *(f'{mixins_star}:{mixin_name}'
-            for mixin_name in unreferenced_mixin_names))
-
-      # Regenerating the configs updates mixins.pyl so that
-      # generate_buildbot_json.py --check should no longer complain about
-      # unreferenced mixins and allow us to see if there's any other errors
-      subprocess.check_call([_INFRA_CONFIG_DIR / 'main.star'])
-
-      ret = check_testing_buildbot_generation()
-
-      if _UNREFERENCED_MIXINS_RE.search(ret.stderr):
-        raise Exception('unreferenced mixins still exist after update')
-
     match = _UNREFERENCED_VARIANTS_RE.search(ret.stderr)
     if match:
       unreferenced_variant_names = ast.literal_eval(match.group(1))
@@ -269,6 +250,25 @@ def main():
 
       if _UNREFERENCED_VARIANTS_RE.search(ret.stderr):
         raise Exception('unreferenced variants still exist after update')
+
+    match = _UNREFERENCED_MIXINS_RE.search(ret.stderr)
+    if match:
+      unreferenced_mixin_names = ast.literal_eval(match.group(1))
+      mixins_star = _TARGETS_DIR / 'mixins.star'
+      buildozer.run(
+          'set generate_pyl_entry False',
+          *(f'{mixins_star}:{mixin_name}'
+            for mixin_name in unreferenced_mixin_names))
+
+      # Regenerating the configs updates mixins.pyl so that
+      # generate_buildbot_json.py --check should no longer complain about
+      # unreferenced mixins and allow us to see if there's any other errors
+      subprocess.check_call([_INFRA_CONFIG_DIR / 'main.star'])
+
+      ret = check_testing_buildbot_generation()
+
+      if _UNREFERENCED_MIXINS_RE.search(ret.stderr):
+        raise Exception('unreferenced mixins still exist after update')
 
     def check_check():
       return subprocess.run([_TESTING_BUILDBOT_DIR / 'check.py'],
