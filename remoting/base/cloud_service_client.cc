@@ -18,6 +18,7 @@
 #include "remoting/proto/google/internal/remoting/cloud/v1alpha/remote_access_host.pb.h"
 #include "remoting/proto/google/internal/remoting/cloud/v1alpha/remote_access_service.pb.h"
 #include "remoting/proto/google/internal/remoting/cloud/v1alpha/session_authz_service.pb.h"
+#include "remoting/proto/google/remoting/cloud/v1/provisioning_service.pb.h"
 #include "remoting/proto/remoting/v1/cloud_messages.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -266,16 +267,20 @@ constexpr net::NetworkTrafficAnnotationTag kGenerateIceConfigTrafficAnnotation =
             "Not implemented."
         })");
 
+// Legacy using statements.
 using LegacyProvisionGceInstanceRequest =
     remoting::apis::v1::ProvisionGceInstanceRequest;
 
+// Remoting Cloud API using statements.
+using ProvisionGceInstanceRequest =
+    google::remoting::cloud::v1::ProvisionGceInstanceRequest;
+
+// Remoting Cloud Private API using statements.
 using Empty = google::internal::remoting::cloud::v1alpha::Empty;
 using GenerateHostTokenRequest =
     google::internal::remoting::cloud::v1alpha::GenerateHostTokenRequest;
 using GenerateIceConfigRequest =
     google::internal::remoting::cloud::v1alpha::GenerateIceConfigRequest;
-using ProvisionGceInstanceRequest =
-    google::internal::remoting::cloud::v1alpha::ProvisionGceInstanceRequest;
 using ReauthorizeHostRequest =
     google::internal::remoting::cloud::v1alpha::ReauthorizeHostRequest;
 using RemoteAccessHost =
@@ -301,12 +306,19 @@ CloudServiceClient::CloudServiceClient(
 
 CloudServiceClient::CloudServiceClient(
     const std::string& api_key,
-    OAuthTokenGetter* oauth_token_getter,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : api_key_(api_key),
-      http_client_(ServiceUrls::GetInstance()->remoting_cloud_endpoint(),
-                   oauth_token_getter,
+      http_client_(ServiceUrls::GetInstance()->remoting_cloud_public_endpoint(),
+                   /*oauth_token_getter=*/nullptr,
                    url_loader_factory) {}
+
+CloudServiceClient::CloudServiceClient(
+    OAuthTokenGetter* oauth_token_getter,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    : http_client_(
+          ServiceUrls::GetInstance()->remoting_cloud_private_endpoint(),
+          oauth_token_getter,
+          url_loader_factory) {}
 
 CloudServiceClient::~CloudServiceClient() = default;
 
@@ -339,7 +351,7 @@ void CloudServiceClient::ProvisionGceInstance(
     const std::string& public_key,
     const std::optional<std::string>& existing_directory_id,
     ProvisionGceInstanceCallback callback) {
-  constexpr char path[] = "/v1alpha/access:provisionGceInstance";
+  constexpr char path[] = "/v1/provisioning:provisionGceInstance";
 
   auto request = std::make_unique<ProvisionGceInstanceRequest>();
   request->set_owner_email(owner_email);

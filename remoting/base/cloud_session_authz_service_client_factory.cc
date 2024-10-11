@@ -77,7 +77,7 @@ class CloudSessionAuthzServiceClient : public SessionAuthzServiceClient {
 CloudSessionAuthzServiceClient::CloudSessionAuthzServiceClient(
     OAuthTokenGetter* oauth_token_getter,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : client_(/*api_key=*/"", oauth_token_getter, url_loader_factory) {}
+    : client_(oauth_token_getter, url_loader_factory) {}
 
 CloudSessionAuthzServiceClient::~CloudSessionAuthzServiceClient() = default;
 

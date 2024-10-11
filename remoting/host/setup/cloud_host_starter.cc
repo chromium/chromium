@@ -19,7 +19,7 @@
 #include "remoting/host/pin_hash.h"
 #include "remoting/host/setup/host_starter.h"
 #include "remoting/host/setup/host_starter_base.h"
-#include "remoting/proto/google/internal/remoting/cloud/v1alpha/remote_access_service.pb.h"
+#include "remoting/proto/google/remoting/cloud/v1/provisioning_service.pb.h"
 #include "remoting/proto/remoting/v1/cloud_messages.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -30,7 +30,7 @@ namespace {
 using LegacyProvisionGceInstanceResponse =
     apis::v1::ProvisionGceInstanceResponse;
 using ProvisionGceInstanceResponse =
-    ::google::internal::remoting::cloud::v1alpha::ProvisionGceInstanceResponse;
+    ::google::remoting::cloud::v1::ProvisionGceInstanceResponse;
 
 // A helper class which provisions a cloud machine for Chrome Remote Desktop.
 class CloudHostStarter : public HostStarterBase {
@@ -79,9 +79,7 @@ CloudHostStarter::CloudHostStarter(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : HostStarterBase(url_loader_factory),
       cloud_service_client_(
-          std::make_unique<CloudServiceClient>(api_key,
-                                               /*oauth_token_getter=*/nullptr,
-                                               url_loader_factory)) {
+          std::make_unique<CloudServiceClient>(api_key, url_loader_factory)) {
   params().api_key = api_key;
 }
 

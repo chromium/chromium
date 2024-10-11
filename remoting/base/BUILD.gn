@@ -147,6 +147,7 @@ source_set("base") {
     "//google_apis/common:request_util",
     "//remoting/proto:internal_structs",
     "//remoting/proto/google/internal/remoting/cloud/v1alpha:messages",
+    "//remoting/proto/google/remoting/cloud/v1:messages",
     "//remoting/proto/remoting/v1:cloud_proto",
     "//remoting/proto/remoting/v1:directory_proto",
     "//remoting/proto/remoting/v1:telemetry_messages",
