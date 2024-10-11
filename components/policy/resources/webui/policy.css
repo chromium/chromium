@@ -288,11 +288,17 @@ a {
   gap: 12px;
 }
 
-.blue-pill-button {
+.promotion-text-container {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.blue-pill-button{
   background-color: var(--promotion-pill-button-color);
   width: 202px;
   height: 20px;
-  padding: 8px 16px 8px 16px;
+  padding: 8px 0px 8px 0px;
   text-align: center;
   line-height: 20px;
   font-size: 13px;
@@ -302,6 +308,12 @@ a {
   border-radius: 50px;
   cursor: pointer;
   text-decoration: none;
+}
+
+.blue-pill-button:hover {
+  background: color-mix(in srgb,
+    var(--promotion-pill-button-color-hover),
+    var(--promotion-pill-button-color));
 }
 
 .banner-title {
@@ -344,6 +356,8 @@ a {
   background-color: transparent;
   cursor: pointer;
   border: none;
+  padding-inline: 0;
+  padding-block: 0;
 }
 
 /* Remove the flex gap after the searchbar on smaller width devices. */

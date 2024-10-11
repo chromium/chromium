@@ -40,6 +40,7 @@ html {
   --toast-text-color: var(--google-grey-200);
   --promotion-banner-background: #E8F0FE;
   --promotion-pill-button-color: #0B57D0;
+  --promotion-pill-button-color-hover: #FDFCFB1A;
   --promotion-pill-text-color: #FFFFFF;
   --promotion-banner-title-color: #202124;
   --promotion-banner-description-color: #202124;
@@ -71,6 +72,7 @@ html {
     --toast-text-color: black;
     --promotion-banner-background: #3C4043;
     --promotion-pill-button-color: #A8C7FA;
+    --promotion-pill-button-color-hover: #1F1F1F0F;
     --promotion-pill-text-color: #062E6F;
     --promotion-banner-title-color: #FFFFFF;
     --promotion-banner-description-color: #FFFFFF;
