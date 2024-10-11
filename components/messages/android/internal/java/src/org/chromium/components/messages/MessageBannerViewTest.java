@@ -12,7 +12,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.app.Activity;
 import android.content.res.Resources;
-import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +36,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
@@ -105,9 +104,7 @@ public class MessageBannerViewTest {
      */
     @Test
     @MediumTest
-    @DisableIf.Build(
-            sdk_equals = Build.VERSION_CODES.TIRAMISU,
-            message = "This test seems to just be flaky on T https://crbug.com/349396848")
+    @DisabledTest(message = "crbug.com/349396848")
     public void testSecondaryActionDirectCallback() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -426,9 +423,7 @@ public class MessageBannerViewTest {
     /** Setting PRIMARY_WIDGET_APPEARANCE to PROGRESS_SPINNER should show the progress spinner. */
     @Test
     @MediumTest
-    @DisableIf.Build(
-            sdk_equals = Build.VERSION_CODES.TIRAMISU,
-            message = "This test seems to just be flaky on T https://crbug.com/349396848")
+    @DisabledTest(message = "crbug.com/349396848")
     public void testPrimaryWidgetAppearanceProgressSpinner() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -464,9 +459,7 @@ public class MessageBannerViewTest {
     /** Changing PRIMARY_WIDGET_APPEARANCE to PROGRESS_SPINNER should show the progress spinner. */
     @Test
     @MediumTest
-    @DisableIf.Build(
-            sdk_equals = Build.VERSION_CODES.TIRAMISU,
-            message = "This test seems to just be flaky on T https://crbug.com/349396848")
+    @DisabledTest(message = "crbug.com/349396848")
     public void testPrimaryWidgetAppearanceChangeFromButtonToProgressSpinner()
             throws ExecutionException {
         var model =
@@ -527,9 +520,7 @@ public class MessageBannerViewTest {
     /** Changing PRIMARY_WIDGET_APPEARANCE to BUTTON_IF_TEXT_IS_SET should show the text. */
     @Test
     @MediumTest
-    @DisableIf.Build(
-            sdk_equals = Build.VERSION_CODES.TIRAMISU,
-            message = "This test seems to just be flaky on T https://crbug.com/349396848")
+    @DisabledTest(message = "crbug.com/349396848")
     public void testPrimaryWidgetAppearanceChangeFromProgressSpinnerToButton()
             throws ExecutionException {
         var model =
@@ -593,9 +584,7 @@ public class MessageBannerViewTest {
      */
     @Test
     @MediumTest
-    @DisableIf.Build(
-            sdk_equals = Build.VERSION_CODES.TIRAMISU,
-            message = "This test seems to just be flaky on T https://crbug.com/349396848")
+    @DisabledTest(message = "crbug.com/349396848")
     public void testPrimaryWidgetAppearanceProgressSpinnerWithNonEmptyButtonText() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
