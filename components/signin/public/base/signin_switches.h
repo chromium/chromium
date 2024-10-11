@@ -129,9 +129,6 @@ BASE_DECLARE_FEATURE(kRemoveSignedInAccountsDialog);
 // Features to enable identities in auth error (stale token).
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnableIdentityInAuthError);
-// DEPRECATED: Please use `kEnableIdentityInAuthError`.
-COMPONENT_EXPORT(SIGNIN_SWITCHES)
-BASE_DECLARE_FEATURE(kEnableStaleIdentities);
 #endif
 
 // Pre-connectes the network socket for the Account Capabilities fetch, after
