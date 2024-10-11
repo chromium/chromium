@@ -51,6 +51,7 @@ function getMicrophoneStream(
 ): Promise<MediaStream> {
   return navigator.mediaDevices.getUserMedia({
     audio: {
+      autoGainControl: {exact: false},
       deviceId: {exact: micId},
       echoCancellation: {exact: echoCancellation},
     },
