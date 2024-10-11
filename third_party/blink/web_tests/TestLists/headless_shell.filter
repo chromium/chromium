@@ -20,3 +20,4 @@ virtual/webauthn-remote-desktop-client-override/*
 
 # These tests use the virtual authenticator API, which is only supported through webdriver.
 virtual/fenced-frame-mparch/external/wpt/fenced-frame/create-credential.https.html
+external/wpt/permissions-policy/payment-extension-allowed-by-permissions-policy-attribute.https.sub.html

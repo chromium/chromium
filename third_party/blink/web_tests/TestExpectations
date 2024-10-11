@@ -7679,7 +7679,6 @@ crbug.com/331291856 [ Mac ] storage/indexeddb/cursor-request-cycle.html [ Failur
 
 # Branch Gardener 2024-03-26
 crbug.com/40253082 [ Debug Mac13 ] fast/forms/color-scheme/select/select-multiple-appearance-basic.html [ Crash Pass ]
-crbug.com/331237019 external/wpt/permissions-policy/payment-extension-allowed-by-permissions-policy-attribute.https.sub.html [ Failure Pass ]
 
 # New blocked ports need to be added.
 crbug.com/332467110 external/wpt/websockets/Create-blocked-port.any.html?default [ Timeout ]
