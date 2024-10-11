@@ -10227,15 +10227,6 @@ regressions. -->
   </summary>
 </histogram>
 
-<histogram name="Webstore.ExtensionInstallResult" enum="BooleanSuccess"
-    expires_after="M81">
-  <owner>jackhou@chromium.org</owner>
-  <summary>
-    The success or failure of all extension installs from the webstore. This
-    includes those initiated by sync.
-  </summary>
-</histogram>
-
 <histogram name="WebUI.ColorsStylesheetServingDuration" units="ms"
     expires_after="2025-03-23">
   <owner>skau@chromium.org</owner>
