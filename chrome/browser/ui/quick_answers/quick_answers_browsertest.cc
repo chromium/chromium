@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -46,6 +47,7 @@
 #include "content/public/test/browser_test.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_event.h"
@@ -288,6 +290,36 @@ std::unique_ptr<QuickAnswersSession> CreateQuickAnswerUnitConversionResponse() {
 
   return quick_answers_session;
 }
+
+class ConsentStatusWaiter : public QuickAnswersStateObserver {
+ public:
+  explicit ConsentStatusWaiter(quick_answers::prefs::ConsentStatus status)
+      : status_(status) {
+    observation_.Observe(QuickAnswersState::Get());
+  }
+
+  void Wait() {
+    if (QuickAnswersState::Get()->GetConsentStatus() == status_) {
+      return;
+    }
+
+    run_loop_.Run();
+  }
+
+  void OnConsentStatusUpdated(
+      quick_answers::prefs::ConsentStatus status) override {
+    if (status == status_) {
+      run_loop_.Quit();
+    }
+  }
+
+ private:
+  quick_answers::prefs::ConsentStatus status_;
+  base::RunLoop run_loop_;
+
+  base::ScopedObservation<QuickAnswersState, QuickAnswersStateObserver>
+      observation_{this};
+};
 
 }  // namespace
 
@@ -659,6 +691,75 @@ IN_PROC_BROWSER_TEST_P(QuickAnswersBrowserTest, SpokenFeedback) {
       << "Expected OnQuickAnswersClick. But it is not called";
   EXPECT_EQ(controller()->GetQuickAnswersVisibility(),
             QuickAnswersVisibility::kClosed);
+}
+
+IN_PROC_BROWSER_TEST_P(QuickAnswersBrowserTest, SpokenFeedbackUserConsent) {
+  if (IsMagicBoostEnabled()) {
+    GTEST_SKIP() << "User consent is handled by Magic Boost if it's on.";
+  }
+
+  ash::test::SpeechMonitor speech_monitor;
+  speech_monitor.Call(
+      []() { ash::AccessibilityManager::Get()->EnableSpokenFeedback(true); });
+  speech_monitor.ExpectSpeech("ChromeVox spoken feedback is ready");
+  speech_monitor.Call([this]() {
+    ShowMenuParams params;
+    params.selected_text = kTestQuery;
+    params.x = kCursorXToOverlapWithANotification;
+    params.y = kCursorYToOverlapWithANotification;
+
+    // Use `ShowMenu` instead of `ShowMenuAndWait`. `ShowMenuAndWait` creates a
+    // `RunLoop`. `SpeechMonitor` might already have a message loop. Nested
+    // `RunLoop` is not enabled by default. We wait menu shown with menu opened
+    // spoken feedback.
+    ShowMenu(params);
+  });
+  speech_monitor.ExpectSpeech("menu opened");
+  // message id: IDS_QUICK_ANSWERS_USER_NOTICE_VIEW_A11Y_INFO_ALERT_TEXT
+  speech_monitor.ExpectSpeech(
+      "New feature available, use Up arrow key to learn more.");
+  speech_monitor.Call([]() {
+    ui::test::EventGenerator event_generator(
+        ash::Shell::GetPrimaryRootWindow());
+    ui::test::EmulateFullKeyPressReleaseSequence(
+        &event_generator, ui::KeyboardCode::VKEY_UP, /*control=*/false,
+        /*shift=*/false, /*alt=*/false, /*command=*/false);
+  });
+  speech_monitor.ExpectSpeech("No thanks");
+  speech_monitor.ExpectSpeech("Button");
+  speech_monitor.ExpectSpeech("Get info related to your selection");
+  speech_monitor.ExpectSpeech("Dialog");
+  speech_monitor.ExpectSpeech(
+      "Right-click or press and hold to get definitions, translations, or unit "
+      "conversions Use Left or Right arrow keys to manage this feature.");
+  speech_monitor.Call([]() {
+    ui::test::EventGenerator event_generator(
+        ash::Shell::GetPrimaryRootWindow());
+    ui::test::EmulateFullKeyPressReleaseSequence(
+        &event_generator, ui::KeyboardCode::VKEY_RIGHT, /*control=*/false,
+        /*shift=*/false, /*alt=*/false, /*command=*/false);
+  });
+  speech_monitor.ExpectSpeech("Try it");
+  speech_monitor.ExpectSpeech("Button");
+  speech_monitor.Call([]() {
+    ui::test::EventGenerator event_generator(
+        ash::Shell::GetPrimaryRootWindow());
+    ui::test::EmulateFullKeyPressReleaseSequence(
+        &event_generator, ui::KeyboardCode::VKEY_SPACE, /*control=*/false,
+        /*shift=*/false, /*alt=*/false, /*command=*/true);
+  });
+  speech_monitor.Replay();
+
+  // Activation (Search + Space) is done as an async operatnion. Wait for the
+  // consent status change.
+  ConsentStatusWaiter consent_status_waiter(
+      quick_answers::prefs::ConsentStatus::kAccepted);
+  consent_status_waiter.Wait();
+
+  EXPECT_TRUE(chrome_test_utils::GetProfile(this)->GetPrefs()->GetBoolean(
+      prefs::kQuickAnswersEnabled));
+  EXPECT_EQ(QuickAnswersVisibility::kQuickAnswersVisible,
+            controller()->GetQuickAnswersVisibility());
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -29,6 +29,8 @@
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
@@ -340,6 +342,12 @@ void QuickAnswersUiController::CreateUserConsentViewInternal(
               base::Unretained(this)))
           .Build());
   user_consent_view_.SetView(view);
+
+  // `ViewAccessibility::AnnounceText` requires a root view. Announce text after
+  // a view gets attached to a widget.
+  user_consent_view_.view()->GetViewAccessibility().AnnounceText(
+      l10n_util::GetStringUTF16(
+          IDS_QUICK_ANSWERS_USER_NOTICE_VIEW_A11Y_INFO_ALERT_TEXT));
 }
 
 void QuickAnswersUiController::CloseUserConsentView() {

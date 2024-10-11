@@ -426,9 +426,6 @@ UserConsentView::UserConsentView(
       l10n_util::GetStringUTF16(use_refreshed_design_
                                     ? kDescriptionRefreshedMessageId
                                     : kDescriptionMessageId)));
-  // Read out user-consent text if screen-reader is active.
-  GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
-      IDS_QUICK_ANSWERS_USER_NOTICE_VIEW_A11Y_INFO_ALERT_TEXT));
 
   UpdateIcon();
   UpdateUiText();
