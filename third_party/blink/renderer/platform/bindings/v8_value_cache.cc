@@ -88,6 +88,7 @@ static v8::Local<v8::String> MakeExternalString(v8::Isolate* isolate,
     v8::Local<v8::String> new_string;
     if (!v8::String::NewExternalOneByte(isolate, string_resource)
              .ToLocal(&new_string)) {
+      string_resource->Unaccount(isolate);
       delete string_resource;
       return v8::String::Empty(isolate);
     }
@@ -99,6 +100,7 @@ static v8::Local<v8::String> MakeExternalString(v8::Isolate* isolate,
   v8::Local<v8::String> new_string;
   if (!v8::String::NewExternalTwoByte(isolate, string_resource)
            .ToLocal(&new_string)) {
+    string_resource->Unaccount(isolate);
     delete string_resource;
     return v8::String::Empty(isolate);
   }
@@ -113,6 +115,7 @@ static v8::Local<v8::String> MakeExternalString(v8::Isolate* isolate,
     v8::Local<v8::String> new_string;
     if (!v8::String::NewExternalOneByte(isolate, string_resource)
              .ToLocal(&new_string)) {
+      string_resource->Unaccount(isolate);
       delete string_resource;
       return v8::String::Empty(isolate);
     }
@@ -124,6 +127,7 @@ static v8::Local<v8::String> MakeExternalString(v8::Isolate* isolate,
   v8::Local<v8::String> new_string;
   if (!v8::String::NewExternalTwoByte(isolate, string_resource)
            .ToLocal(&new_string)) {
+    string_resource->Unaccount(isolate);
     delete string_resource;
     return v8::String::Empty(isolate);
   }

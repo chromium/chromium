@@ -45,7 +45,7 @@ class StringResourceBase {
   StringResourceBase(const StringResourceBase&) = delete;
   StringResourceBase& operator=(const StringResourceBase&) = delete;
 
-  virtual ~StringResourceBase() {
+  void Unaccount(v8::Isolate* isolate) {
     int64_t reduced_external_memory = 0;
     if (!parkable_string_.IsNull()) {
       DCHECK(plain_string_.IsNull());
@@ -58,9 +58,10 @@ class StringResourceBase {
         reduced_external_memory += atomic_string_.CharactersSizeInBytes();
       }
     }
-    memory_accounter_.Decrease(v8::Isolate::GetCurrent(),
-                               reduced_external_memory);
+    memory_accounter_.Decrease(isolate, reduced_external_memory);
   }
+
+  virtual ~StringResourceBase() = default;
 
   String GetWTFString() {
     if (!parkable_string_.IsNull()) {
@@ -149,6 +150,10 @@ class StringResource16Base : public StringResourceBase,
 
   StringResource16Base(const StringResource16Base&) = delete;
   StringResource16Base& operator=(const StringResource16Base&) = delete;
+
+  void Unaccount(v8::Isolate* isolate) override {
+    StringResourceBase::Unaccount(isolate);
+  }
 };
 
 class StringResource16 final : public StringResource16Base {
@@ -207,6 +212,10 @@ class StringResource8Base : public StringResourceBase,
 
   StringResource8Base(const StringResource8Base&) = delete;
   StringResource8Base& operator=(const StringResource8Base&) = delete;
+
+  void Unaccount(v8::Isolate* isolate) override {
+    StringResourceBase::Unaccount(isolate);
+  }
 };
 
 class StringResource8 final : public StringResource8Base {

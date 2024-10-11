@@ -165,6 +165,7 @@ ConvertAndExternalizeString(v8::Isolate* isolate,
     if (result.Is8Bit()) {
       StringResource8* string_resource = new StringResource8(isolate, result);
       if (!v8_string->MakeExternal(string_resource)) [[unlikely]] {
+        string_resource->Unaccount(isolate);
         delete string_resource;
       } else {
         *was_externalized = true;
@@ -172,6 +173,7 @@ ConvertAndExternalizeString(v8::Isolate* isolate,
     } else {
       StringResource16* string_resource = new StringResource16(isolate, result);
       if (!v8_string->MakeExternal(string_resource)) [[unlikely]] {
+        string_resource->Unaccount(isolate);
         delete string_resource;
       } else {
         *was_externalized = true;
