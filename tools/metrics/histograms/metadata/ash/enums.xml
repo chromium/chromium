@@ -527,6 +527,13 @@ ash/webui/personalization_app/mojom/personalization_app.mojom -->
   <int value="3" label="Debug"/>
 </enum>
 
+<enum name="ContentTransferFlowState">
+  <int value="0" label="Welcome screen"/>
+  <int value="1" label="Takeout screen"/>
+  <int value="2" label="Transfer complete"/>
+  <int value="3" label="Error screen"/>
+</enum>
+
 <enum name="ContextualGoogleIntegrationStatus">
   <int value="0" label="Enabled"/>
   <int value="1" label="Disabled by policy"/>

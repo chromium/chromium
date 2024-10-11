@@ -5,6 +5,7 @@
 #ifndef ASH_WEBUI_GRADUATION_GRADUATION_UI_HANDLER_H_
 #define ASH_WEBUI_GRADUATION_GRADUATION_UI_HANDLER_H_
 
+#include "ash/webui/graduation/graduation_state_tracker.h"
 #include "ash/webui/graduation/mojom/graduation_ui.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -24,11 +25,16 @@ class GraduationUiHandler : public graduation_ui::mojom::GraduationUiHandler {
 
   // graduation_ui::mojom::GraduationUiHandler:
   void GetProfileInfo(GetProfileInfoCallback callback) override;
+  void OnScreenSwitched(graduation_ui::mojom::GraduationScreen screen) override;
+  void OnTransferComplete() override;
 
  private:
   friend class GraduationUiHandlerTest;
 
   mojo::Receiver<graduation_ui::mojom::GraduationUiHandler> receiver_;
+
+  // Tracks the current state of the flow, used for metrics.
+  GraduationStateTracker state_tracker_;
 };
 
 }  // namespace ash::graduation

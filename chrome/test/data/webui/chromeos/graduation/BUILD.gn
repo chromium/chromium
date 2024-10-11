@@ -9,6 +9,7 @@ build_webui_tests("build") {
     "graduation_app_test.ts",
     "graduation_takeout_ui_test.ts",
     "graduation_welcome_test.ts",
+    "test_graduation_ui_handler.ts",
   ]
 
   ts_path_mappings = [ "chrome://graduation/*|" + rebase_path(

@@ -14,9 +14,22 @@ struct ProfileInfo {
   string photo_url;
 };
 
+// Screens that can be displayed in the app.
+enum GraduationScreen {
+  kWelcome,
+  kTakeoutUi,
+  kError,
+};
+
 // Interface that supports integration between ChromeOS and the Content Transfer
 // System Web App.
 interface GraduationUiHandler {
   // Returns a struct containing the current user's email and profile photo URL.
   GetProfileInfo() => (ProfileInfo profile_info);
+
+  // Indicates that the app has switched to a new screen.
+  OnScreenSwitched(GraduationScreen screen);
+
+  // Indicates that the user has completed the Takeout Transfer Flow.
+  OnTransferComplete();
 };

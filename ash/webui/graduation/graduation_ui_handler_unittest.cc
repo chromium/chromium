@@ -6,11 +6,13 @@
 
 #include <memory>
 
+#include "ash/webui/graduation/graduation_state_tracker.h"
 #include "ash/webui/graduation/mojom/graduation_ui.mojom.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/fake_user_manager.h"
@@ -40,12 +42,14 @@ class GraduationUiHandlerTest : public testing::Test {
     fake_user_manager_->AddUser(account_id);
   }
 
-  GraduationUiHandler* handler() const { return handler_.get(); }
+  GraduationUiHandler* handler() { return handler_.get(); }
+
+  void ResetHandler() { handler_.reset(); }
 
  protected:
   base::test::TaskEnvironment task_environment_;
   mojo::Remote<graduation_ui::mojom::GraduationUiHandler> handler_remote_;
-  const std::unique_ptr<GraduationUiHandler> handler_;
+  std::unique_ptr<GraduationUiHandler> handler_;
   user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
       fake_user_manager_;
 };
@@ -60,4 +64,58 @@ TEST_F(GraduationUiHandlerTest, GetProfileInfo) {
       }));
   run_loop.Run();
 }
+
+TEST_F(GraduationUiHandlerTest, RecordExitAtWelcomeScreen) {
+  base::HistogramTester histogram_tester;
+  // Simulate a screen switch to the Welcome screen.
+  handler()->OnScreenSwitched(graduation_ui::mojom::GraduationScreen::kWelcome);
+
+  // Reset handler to simulate the dialog closing.
+  ResetHandler();
+
+  histogram_tester.ExpectUniqueSample(
+      GraduationStateTracker::kFlowStateHistogramName,
+      GraduationStateTracker::FlowState::kWelcome, 1);
+}
+
+TEST_F(GraduationUiHandlerTest, RecordExitAtTakeoutScreen) {
+  base::HistogramTester histogram_tester;
+  // Simulate a screen switch to the Takeout UI screen.
+  handler()->OnScreenSwitched(
+      graduation_ui::mojom::GraduationScreen::kTakeoutUi);
+
+  // Reset handler to simulate the dialog closing.
+  ResetHandler();
+
+  histogram_tester.ExpectUniqueSample(
+      GraduationStateTracker::kFlowStateHistogramName,
+      GraduationStateTracker::FlowState::kTakeoutUi, 1);
+}
+
+TEST_F(GraduationUiHandlerTest, RecordExitAfterTransferComplete) {
+  base::HistogramTester histogram_tester;
+  // Simulate an indication from the WebUI that the Transfer flow is complete.
+  handler()->OnTransferComplete();
+
+  // Reset handler to simulate the dialog closing.
+  ResetHandler();
+
+  histogram_tester.ExpectUniqueSample(
+      GraduationStateTracker::kFlowStateHistogramName,
+      GraduationStateTracker::FlowState::kTakeoutTransferComplete, 1);
+}
+
+TEST_F(GraduationUiHandlerTest, RecordExitAtErrorScreen) {
+  base::HistogramTester histogram_tester;
+  // Simulate a screen switch to the Error screen.
+  handler()->OnScreenSwitched(graduation_ui::mojom::GraduationScreen::kError);
+
+  // Reset handler to simulate the dialog closing.
+  ResetHandler();
+
+  histogram_tester.ExpectUniqueSample(
+      GraduationStateTracker::kFlowStateHistogramName,
+      GraduationStateTracker::FlowState::kError, 1);
+}
+
 }  // namespace ash::graduation

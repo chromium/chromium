@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/webui/graduation/graduation_state_tracker.h"
 #include "ash/webui/graduation/mojom/graduation_ui.mojom.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -35,6 +36,28 @@ void GraduationUiHandler::GetProfileInfo(GetProfileInfoCallback callback) {
   std::move(callback).Run(graduation_ui::mojom::ProfileInfo::New(
       active_user->GetDisplayEmail(),
       webui::GetBitmapDataUrl(icon.GetRepresentation(1.0f).GetBitmap())));
+}
+
+void GraduationUiHandler::OnScreenSwitched(
+    graduation_ui::mojom::GraduationScreen screen) {
+  switch (screen) {
+    case graduation_ui::mojom::GraduationScreen::kWelcome:
+      state_tracker_.set_flow_state(
+          GraduationStateTracker::FlowState::kWelcome);
+      break;
+    case graduation_ui::mojom::GraduationScreen::kTakeoutUi:
+      state_tracker_.set_flow_state(
+          GraduationStateTracker::FlowState::kTakeoutUi);
+      break;
+    case graduation_ui::mojom::GraduationScreen::kError:
+      state_tracker_.set_flow_state(GraduationStateTracker::FlowState::kError);
+      break;
+  }
+}
+
+void GraduationUiHandler::OnTransferComplete() {
+  state_tracker_.set_flow_state(
+      GraduationStateTracker::FlowState::kTakeoutTransferComplete);
 }
 
 }  // namespace ash::graduation

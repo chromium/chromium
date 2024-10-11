@@ -9,6 +9,8 @@ assert(is_chromeos_ash, "Graduation is ash-chrome only")
 
 static_library("graduation") {
   sources = [
+    "graduation_state_tracker.cc",
+    "graduation_state_tracker.h",
     "graduation_ui.cc",
     "graduation_ui.h",
     "graduation_ui_handler.cc",

@@ -16,6 +16,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {ScreenSwitchEvents} from './graduation_app.js';
 import {getTemplate} from './graduation_takeout_ui.html.js';
+import {getGraduationUiHandler} from './graduation_ui_handler.js';
 
 /**
  * The base URL of the banner shown in Takeout indicating that the user has
@@ -81,15 +82,12 @@ export class GraduationTakeoutUi extends PolymerElement {
     this.webview.request.onCompleted.addListener((details: any) => {
       if (details.statusCode === 200 &&
           details.url.startsWith(TAKEOUT_COMPLETED_BANNER_BASE_URL)) {
+        getGraduationUiHandler().onTransferComplete();
         this.takeoutFlowCompleted = true;
       }
     }, {urls: ['<all_urls>']});
 
     this.webview.src = webviewUrl.toString();
-  }
-
-  setWebviewForTest(webview: chrome.webviewTag.WebView) {
-    this.webview = webview;
   }
 
   private getBackButtonIcon_(): string {

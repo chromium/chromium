@@ -25,6 +25,8 @@ build_webui("build") {
     "js/graduation_welcome.ts",
   ]
 
+  non_web_component_files = [ "js/graduation_ui_handler.ts" ]
+
   ts_composite = true
 
   ts_deps = [
