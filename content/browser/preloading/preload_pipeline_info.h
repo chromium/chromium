@@ -20,7 +20,9 @@ namespace content {
 //
 // Ownership: At most, this is owend by a `PrefetchContainer` and
 // `PrerenderAttributes`, which is owned by `PrefetchContainer` (except for
-// transferring it to start preloads).
+// transferring it to start preloads). Note that this can be moved from a
+// `PrefetchContainer` to another `PrefetchContainer`. See
+// `PrefetchContainer::MigrateNewlyAdded()`.
 class CONTENT_EXPORT PreloadPipelineInfo final
     : public base::RefCounted<PreloadPipelineInfo> {
  public:
@@ -35,11 +37,25 @@ class CONTENT_EXPORT PreloadPipelineInfo final
   // TODO(crbug.com/342089492): Add `const base::UnguessableToken& id() const {
   // return id_; }`
 
+  PreloadingEligibility prefetch_eligibility() const {
+    return prefetch_eligibility_;
+  }
+  void SetPrefetchEligibility(PreloadingEligibility eligibility);
+
+  const std::optional<PrefetchStatus>& prefetch_status() const {
+    return prefetch_status_;
+  }
+  void SetPrefetchStatus(PrefetchStatus prefetch_status);
+
  private:
   friend class base::RefCounted<PreloadPipelineInfo>;
   ~PreloadPipelineInfo();
 
   // TODO(crbug.com/342089492): Add `const base::UnguessableToken id_;`
+
+  PreloadingEligibility prefetch_eligibility_ =
+      PreloadingEligibility::kUnspecified;
+  std::optional<PrefetchStatus> prefetch_status_ = std::nullopt;
 };
 
 }  // namespace content

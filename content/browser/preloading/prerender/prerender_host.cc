@@ -1391,4 +1391,137 @@ void PrerenderHost::OnWaitingForHeadersFinished(
   }
 }
 
+bool PrerenderHost::ShouldAbortNavigationBecausePrefetchUnavailable() const {
+  CHECK(base::FeatureList::IsEnabled(
+      features::kPrerender2FallbackPrefetchSpecRules));
+
+  auto is_prefetch_used =
+      [](const std::optional<PrefetchStatus>& prefetch_status) -> bool {
+    if (!prefetch_status.has_value()) {
+      return false;
+    }
+
+    switch (prefetch_status.value()) {
+      case PrefetchStatus::kPrefetchResponseUsed:
+        return true;
+      case PrefetchStatus::kPrefetchNotUsedProbeFailed:
+      case PrefetchStatus::kPrefetchNotStarted:
+      case PrefetchStatus::kPrefetchIneligibleUserHasCookies:
+      case PrefetchStatus::kPrefetchIneligibleUserHasServiceWorker:
+      case PrefetchStatus::kPrefetchIneligibleSchemeIsNotHttps:
+      case PrefetchStatus::kPrefetchIneligibleNonDefaultStoragePartition:
+      case PrefetchStatus::kPrefetchNotFinishedInTime:
+      case PrefetchStatus::kPrefetchFailedNetError:
+      case PrefetchStatus::kPrefetchFailedNon2XX:
+      case PrefetchStatus::kPrefetchFailedMIMENotSupported:
+      case PrefetchStatus::kPrefetchSuccessful:
+      case PrefetchStatus::kPrefetchIneligibleRetryAfter:
+      case PrefetchStatus::kPrefetchIneligiblePrefetchProxyNotAvailable:
+      case PrefetchStatus::kPrefetchIsPrivacyDecoy:
+      case PrefetchStatus::kPrefetchIsStale:
+      case PrefetchStatus::kPrefetchNotUsedCookiesChanged:
+      case PrefetchStatus::kPrefetchIneligibleHostIsNonUnique:
+      case PrefetchStatus::kPrefetchIneligibleDataSaverEnabled:
+      case PrefetchStatus::kPrefetchIneligibleExistingProxy:
+      case PrefetchStatus::kPrefetchHeldback:
+      case PrefetchStatus::kPrefetchAllowed:
+      case PrefetchStatus::kPrefetchFailedInvalidRedirect:
+      case PrefetchStatus::kPrefetchFailedIneligibleRedirect:
+      case PrefetchStatus::
+          kPrefetchIneligibleSameSiteCrossOriginPrefetchRequiredProxy:
+      case PrefetchStatus::kPrefetchIneligibleBatterySaverEnabled:
+      case PrefetchStatus::kPrefetchIneligiblePreloadingDisabled:
+      case PrefetchStatus::kPrefetchEvictedAfterCandidateRemoved:
+      case PrefetchStatus::kPrefetchEvictedForNewerPrefetch:
+        return false;
+    }
+  };
+  auto is_ineligibility_admissible =
+      [](PreloadingEligibility prefetch_eligibility) -> bool {
+    switch (prefetch_eligibility) {
+      // Prefetch is not available if SW exists, but prerender is.
+      case PreloadingEligibility::kUserHasServiceWorker:
+        // Prefetch is not available for HTTP, but prerender is available
+        // for HTTPS/HTTP.
+      case PreloadingEligibility::kSchemeIsNotHttps:
+        return true;
+      case PreloadingEligibility::kEligible:
+      case PreloadingEligibility::kUnspecified:
+      case PreloadingEligibility::kPreloadingDisabled:
+      case PreloadingEligibility::kHidden:
+      case PreloadingEligibility::kCrossOrigin:
+      case PreloadingEligibility::kLowMemory:
+      case PreloadingEligibility::kJavascriptDisabled:
+      case PreloadingEligibility::kDataSaverEnabled:
+      case PreloadingEligibility::kHasEffectiveUrl:
+      case PreloadingEligibility::kSingleProcess:
+      case PreloadingEligibility::kLinkRelNext:
+      case PreloadingEligibility::kThirdPartyCookies:
+      case PreloadingEligibility::kPreloadingInvokedWithinTimelimit:
+      case PreloadingEligibility::kRendererProcessLimitExceeded:
+      case PreloadingEligibility::kBatterySaverEnabled:
+      case PreloadingEligibility::kPreloadingUnsupportedByWebContents:
+      case PreloadingEligibility::kMemoryPressure:
+      case PreloadingEligibility::kPreloadingDisabledByDevTools:
+      case PreloadingEligibility::kHttpsOnly:
+      case PreloadingEligibility::kHttpOrHttpsOnly:
+      case PreloadingEligibility::kSlowNetwork:
+      case PreloadingEligibility::kV8OptimizerDisabled:
+      case PreloadingEligibility::kUserHasCookies:
+      case PreloadingEligibility::kNonDefaultStoragePartition:
+      case PreloadingEligibility::kRetryAfter:
+      case PreloadingEligibility::kPrefetchProxyNotAvailable:
+      case PreloadingEligibility::kHostIsNonUnique:
+      case PreloadingEligibility::kExistingProxy:
+      case PreloadingEligibility::kSameSiteCrossOriginPrefetchRequiredProxy:
+      case PreloadingEligibility::kPreloadingEligibilityContentEnd:
+      case PreloadingEligibility::kPreloadingEligibilityContentStart2:
+      case PreloadingEligibility::kPreloadingEligibilityContentEnd2:
+        return false;
+    }
+  };
+  // If a prerender navigation reached to `PrefetchURLLoaderInterceptor`, it is
+  // blocked by `PrefetchMatchResolver2` and prefetch ahead of prerender. So, we
+  // should've got prefetch eligibility when it reached to
+  // `PrerenderURLLoaderThrottle`. Therefore, if prefetch eligibility is
+  // `PreloadingEligibility::kUnspecified`, it implies that the navigation is
+  // handled by other `NavigationLoaderInterceptor` earlier than
+  // `PrefetchURLLoaderInterceptor`. In this case, the interceptor already
+  // decided to serve a resource for the navigation. So, we don't need to abort
+  // this prerender.
+  //
+  // For example, if a service worker is installed to the given URL,
+  // `ServiceWorkerMainResourceLoaderInterceptor` intercepts the navigation.
+  // `PrefetchService` may or may not report prefetch eligibility at this
+  // timing, but eventually reports
+  // `PreloadingEligibility::kUserHasServiceWorker`. So, continuing the
+  // navigation is reasonable.
+  auto nav_is_likely_handled_by_earlier_interceptor =
+      [](PreloadingEligibility prefetch_eligibility) -> bool {
+    return prefetch_eligibility == PreloadingEligibility::kUnspecified;
+  };
+
+  // Use a prefetch (in many cases, aheaf of prerender) if it is about to be
+  // used.
+  if (is_prefetch_used(attributes_.preload_pipeline_info->prefetch_status())) {
+    return false;
+  }
+
+  // Fallback to normal navigation if the prefetch was ineligible that is
+  // admissible.
+  if (is_ineligibility_admissible(
+          attributes_.preload_pipeline_info->prefetch_eligibility())) {
+    return false;
+  }
+
+  // Continue if the navigation is handled by an earlier interceptor.
+  if (nav_is_likely_handled_by_earlier_interceptor(
+          attributes_.preload_pipeline_info->prefetch_eligibility())) {
+    return false;
+  }
+
+  // Otherwise, abort this prerender.
+  return true;
+}
+
 }  // namespace content

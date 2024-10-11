@@ -426,6 +426,10 @@ void PrerendererImpl::CancelStartedPrerenders() {
   started_prerenders_.clear();
 }
 
+void PrerendererImpl::CancelStartedPrerendersForTesting() {
+  CancelStartedPrerenders();
+}
+
 void PrerendererImpl::ResetReceivedPrerendersCountForMetrics() {
   for (auto trigger_type :
        {PreloadingTriggerType::kSpeculationRule,

@@ -7477,6 +7477,7 @@ data/prerender/cross_origin_prerender.html
 data/prerender/cross_origin_srcdoc_sandboxed_postmessage.html
 data/prerender/doc-with-display-none-iframe.html
 data/prerender/duplicate_prerenders.html
+data/prerender/empty.html
 data/prerender/image_loading_lazy.html
 data/prerender/page-with-embedded-plugin.html
 data/prerender/page-with-object-plugin.html
@@ -7490,6 +7491,7 @@ data/prerender/restriction-gamepad.html
 data/prerender/restriction_file_system.html
 data/prerender/session_storage.html
 data/prerender/simple_prerender.html
+data/prerender/sw_fallback.js
 data/prerender/test_utils.js
 data/prerender/viewport.html
 data/private_aggregation/aggregatable_report_goldens/latest/private_key.txt

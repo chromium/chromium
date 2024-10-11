@@ -54,7 +54,8 @@ class CONTENT_EXPORT PreloadingDecider
   PreloadingDeciderObserverForTesting* SetObserverForTesting(
       PreloadingDeciderObserverForTesting* observer);
 
-  // Returns the prerenderer for testing.
+  // Returns subcomponents for testing.
+  Prefetcher& GetPrefetcherForTesting() { return prefetcher_; }
   Prerenderer& GetPrerendererForTesting();
 
   // Sets the new prerenderer for testing and returns the old one.

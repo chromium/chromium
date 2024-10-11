@@ -95,6 +95,12 @@ GetDelayEligibilityCheckForTesting() {
   return *prefetch_delay_eligibility_check_for_testing;
 }
 
+std::optional<PreloadingEligibility>& GetForceIneligibilityForTesting() {
+  static std::optional<PreloadingEligibility>
+      prefetch_force_ineligibility_for_testing;
+  return prefetch_force_ineligibility_for_testing;
+}
+
 PrefetchService::PrefetchResponseCompletedCallbackForTesting&
 GetPrefetchResponseCompletedCallbackForTesting() {
   static base::NoDestructor<
@@ -562,6 +568,14 @@ void PrefetchService::CheckEligibilityOfPrefetch(
         std::pair<net::RedirectInfo, network::mojom::URLResponseHeadPtr>>
         redirect_data) {
   CHECK(prefetch_container);
+
+  // Inject failure in tests.
+  if (GetForceIneligibilityForTesting().has_value()) {
+    OnGotEligibility(std::move(prefetch_container), std::move(redirect_data),
+                     GetForceIneligibilityForTesting().value()  // IN-TEST
+    );
+    return;
+  }
 
   // TODO(crbug.com/40215782): Clean up the following checks by: 1)
   // moving each check to a separate function, and 2) requiring that failed
@@ -1797,6 +1811,13 @@ void PrefetchService::SetDelayEligibilityCheckForTesting(
     DelayEligibilityCheckForTesting callback) {
   GetDelayEligibilityCheckForTesting() =  // IN-TEST
       std::move(callback);
+}
+
+// static
+void PrefetchService::SetForceIneligibilityForTesting(
+    PreloadingEligibility eligibility) {
+  GetForceIneligibilityForTesting() =  // IN-TEST
+      eligibility;
 }
 
 // static

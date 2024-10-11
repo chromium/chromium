@@ -726,6 +726,10 @@ PrefetchContainer::Reader PrefetchContainer::CreateReader() {
 void PrefetchContainer::SetPrefetchStatusWithoutUpdatingTriggeringOutcome(
     PrefetchStatus prefetch_status) {
   prefetch_status_ = prefetch_status;
+  preload_pipeline_info_->SetPrefetchStatus(prefetch_status);
+  for (auto& preload_pipeline_info : inherited_preload_pipeline_infos_) {
+    preload_pipeline_info->SetPrefetchStatus(prefetch_status);
+  }
 
   // Currently DevTools only supports when the prefetch is initiated by
   // renderer.
@@ -845,6 +849,11 @@ void PrefetchContainer::OnEligibilityCheckComplete(
     PreloadingEligibility eligibility) {
   SinglePrefetch& this_prefetch = GetCurrentSinglePrefetchToPrefetch();
   this_prefetch.eligibility_ = eligibility;
+  preload_pipeline_info_->SetPrefetchEligibility(eligibility);
+  for (auto& preload_pipeline_info : inherited_preload_pipeline_infos_) {
+    preload_pipeline_info->SetPrefetchEligibility(eligibility);
+  }
+
   bool is_eligible = eligibility == PreloadingEligibility::kEligible;
 
   if (redirect_chain_.size() == 1) {
@@ -1997,6 +2006,48 @@ void PrefetchContainer::OnUnregisterCandidate(
 
 void PrefetchContainer::MigrateNewlyAdded(
     std::unique_ptr<PrefetchContainer> added) {
+  // `inherited_preload_pipeline_infos_` increases only if it is managed under
+  // `PrefetchService`.
+  CHECK(added->inherited_preload_pipeline_infos_.empty());
+
+  // Propagate eligibility (and status) to `added`.
+  //
+  // Assume we don't. (*) case is problematic.
+  //
+  // - If eligibility is not got, eligibility and status will be propagated by
+  //   the following `OnEligibilityCheckComplete()` and
+  //   `SetPrefetchStatusWithoutUpdatingTriggeringOutcome()`.
+  // - If eligibility is got and ineligible, this `PrefetchContainer` is
+  //   `kNotServed` and `MigrateNewlyAdded()` is not called.
+  // - If eligibility is got and `kEligible`:
+  //   - If status is not got, status will be propagated by the following
+  //     `SetPrefetchStatusWithoutUpdatingTriggeringOutcome()`.
+  //     - If status is eventually `kPrefetchSuccessful` or
+  //       `kPrefetchResponseUsed`, `kPrefetchResponseUsed` will be propagated
+  //       at the prefetch matching end.
+  //     - If status is eventually failure, status is propagated, but
+  //       eligibility is `kUnspecified`. (*)
+  //   - If status is got and `kPrefetchSuccessful` or `kPrefetchResponseUsed`,
+  //     `kPrefetchResponseUsed` will be propagated at the prefetch matching
+  //     end.
+  //   - If status is got and failure, this `PrefetchContainer` is `kNotServed`
+  //     and `MigrateNewlyAdded()` is not called.
+  //
+  // In (*), `PrerenderHost` have to cancel prerender with eligibility
+  // `kUnspecified` and status failure. It's relatively complicated condition.
+  // See a test
+  // `PrerendererImplBrowserTestPrefetchAhead.PrefetchMigratedPrefetchFailurePrerenderFailure`.
+  //
+  // To make things simple, we propagate both eligibility and status.
+  added->preload_pipeline_info_->SetPrefetchEligibility(
+      preload_pipeline_info_->prefetch_eligibility());
+  if (preload_pipeline_info_->prefetch_status().has_value()) {
+    added->preload_pipeline_info_->SetPrefetchStatus(
+        preload_pipeline_info_->prefetch_status().value());
+  }
+
+  inherited_preload_pipeline_infos_.push_back(
+      std::move(added->preload_pipeline_info_));
   is_likely_ahead_of_prerender_ |= added->is_likely_ahead_of_prerender_;
 }
 

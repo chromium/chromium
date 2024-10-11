@@ -10,4 +10,13 @@ PreloadPipelineInfo::PreloadPipelineInfo() = default;
 
 PreloadPipelineInfo::~PreloadPipelineInfo() = default;
 
+void PreloadPipelineInfo::SetPrefetchEligibility(
+    PreloadingEligibility eligibility) {
+  prefetch_eligibility_ = eligibility;
+}
+
+void PreloadPipelineInfo::SetPrefetchStatus(PrefetchStatus prefetch_status) {
+  prefetch_status_ = prefetch_status;
+}
+
 }  // namespace content

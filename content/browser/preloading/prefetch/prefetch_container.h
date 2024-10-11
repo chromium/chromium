@@ -939,8 +939,30 @@ class CONTENT_EXPORT PrefetchContainer {
   // Weak pointer to DevTools observer
   base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer_;
 
-  // Information of preload pipeline that this prefetch belongs to.
+  // Information of preload pipeline that this prefetch belongs/is related to.
+  //
+  // If a prerender triggers a prefetch ahead of prerender, it needs to get to
+  // know information of the prefetch, e.g eligibility, to judge to abort
+  // prerender when prefetch failed. Unfortunately we can't pass the information
+  // at the prefetch matching process, as prefetch may fail before it and other
+  // `NavigationLoaderInterceptor` e.g. one of service worker can intercept.
+  //
+  // So, we pass such information via pipeline infos.
+  //
+  // - `redirect_chain_[0].eligibility_`
+  // - `prefetch_status_`
+  //
+  // The values must be synchronized both when these fields are updated and when
+  // a new pipeline info added to `inherited_preload_pipeline_infos_`.
+  //
+  // A new pipeline info added when another prefetch is migrated into it. See
+  // `MigrateNewlyAdded()`.
+  //
+  // Note that we distinguish the primary one and inherited ones because we send
+  // CDP events with id of `preload_pipeline_info_`.
   scoped_refptr<PreloadPipelineInfo> preload_pipeline_info_;
+  std::vector<scoped_refptr<PreloadPipelineInfo>>
+      inherited_preload_pipeline_infos_;
 
   // `PreloadingAttempt` is used to track the lifecycle of the preloading event,
   // and reports various statuses to UKM dashboard. It is initialised along with

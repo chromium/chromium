@@ -8163,6 +8163,14 @@ crbug.com/626703 [ Release Win ] external/wpt/selection/contenteditable/initial-
 crbug.com/370303484 [ Debug Win10.20h2 ] external/wpt/selection/contenteditable/initial-selection-on-focus.tentative.html?div [ Failure ]
 crbug.com/370303484 [ Debug Win11-arm64 ] external/wpt/selection/contenteditable/initial-selection-on-focus.tentative.html?div [ Failure ]
 
+# Result prerender status is changed due to `kPrerender2FallbackPrefetchSpecRules`
+#
+# Prefetch/prerender integration makes prerender fail if prefetch fail and changed the failure status for this case.
+#
+# TODO(crbug.com/372372940): Update the values when we remove the flag and the virtual test suite.
+crbug.com/372372940 virtual/prerender2-fallback-prefetch-spec-rules/http/tests/inspector-protocol/prerender/prerender-failure-status-update.js [ Failure ]
+crbug.com/372372940 virtual/prerender2-fallback-prefetch-spec-rules/http/tests/inspector-protocol/prerender/prerender-status-update-on-enable.js [ Failure ]
+
 # Flaky on WebKit Linux ASAN and Win
 crbug.com/369670465 [ Linux ] external/wpt/picture-in-picture/removed-from-document.html [ Failure Pass ]
 crbug.com/369670465 [ Debug Win10.20h2 ] external/wpt/picture-in-picture/removed-from-document.html [ Failure Pass ]

@@ -153,6 +153,8 @@ class CONTENT_EXPORT PrefetchService {
       base::RepeatingCallback<void(base::OnceClosure)>;
   static void SetDelayEligibilityCheckForTesting(
       DelayEligibilityCheckForTesting callback);
+  // Set an ineligibility to make eligibility check always fail in tests.
+  static void SetForceIneligibilityForTesting(PreloadingEligibility);
   // Set a callback for waiting for prefetch completion in tests.
   using PrefetchResponseCompletedCallbackForTesting =
       base::RepeatingCallback<void(base::WeakPtr<PrefetchContainer>)>;
