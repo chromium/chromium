@@ -32,7 +32,6 @@
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/feed_top_section_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_alert_presenter.h"
-#import "ios/chrome/browser/ui/push_notification/notifications_confirmation_presenter.h"
 
 using base::RecordAction;
 using base::UmaHistogramEnumeration;

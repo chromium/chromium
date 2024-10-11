@@ -141,7 +141,6 @@
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
-#import "ios/chrome/browser/ui/push_notification/notifications_confirmation_presenter.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_alert_coordinator.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_coordinator.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_opt_in_coordinator_delegate.h"
@@ -163,7 +162,6 @@ using segmentation_platform::TipIdentifier;
     MagicStackHalfSheetTableViewControllerDelegate,
     MagicStackModuleContainerDelegate,
     MagicStackParcelListHalfSheetTableViewControllerDelegate,
-    NotificationsConfirmationPresenter,
     NotificationsOptInAlertCoordinatorDelegate,
     NotificationsOptInCoordinatorDelegate,
     PriceTrackingPromoActionDelegate,
@@ -175,7 +173,7 @@ using segmentation_platform::TipIdentifier;
     ContentSuggestionsViewController* contentSuggestionsViewController;
 // Authentication Service for the user's signed-in state.
 @property(nonatomic, assign) AuthenticationService* authService;
-// Redefined to not be readonly.
+// The mediator used by this coordinator.
 @property(nonatomic, strong)
     ContentSuggestionsMediator* contentSuggestionsMediator;
 // Metrics recorder for the content suggestions.
@@ -1101,7 +1099,6 @@ using segmentation_platform::TipIdentifier;
                              browser:self.browser
                          application:[UIApplication sharedApplication]];
   _contentNotificationCoordinator.delegate = self;
-  _contentNotificationCoordinator.messagePresenter = self;
   [_contentNotificationCoordinator start];
 }
 
@@ -1219,28 +1216,6 @@ using segmentation_platform::TipIdentifier;
 - (void)setUpListContentNotificationPromoDidFinish {
   [_contentNotificationCoordinator stop];
   _contentNotificationCoordinator = nil;
-}
-
-#pragma mark - NotificationsConfirmationPresenter
-
-- (void)presentNotificationsConfirmationMessage {
-  id<SnackbarCommands> snackbarHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), SnackbarCommands);
-  __weak __typeof(self) weakSelf = self;
-  [snackbarHandler
-      showSnackbarWithMessage:l10n_util::GetNSString(
-                                  IDS_IOS_CONTENT_NOTIFICATION_SNACKBAR_TITLE)
-                   buttonText:
-                       l10n_util::GetNSString(
-                           IDS_IOS_CONTENT_NOTIFICATION_SNACKBAR_ACTION_MANAGE)
-                messageAction:^{
-                  [weakSelf showNotificationSettings];
-                }
-             completionAction:nil];
-
-  [self.contentSuggestionsMetricsRecorder
-      recordContentNotificationSnackbarEvent:ContentNotificationSnackbarEvent::
-                                                 kShown];
 }
 
 #pragma mark - Helpers

@@ -3,10 +3,7 @@
 # found in the LICENSE file.
 
 source_set("presenters") {
-  sources = [
-    "notifications_alert_presenter.h",
-    "notifications_confirmation_presenter.h",
-  ]
+  sources = [ "notifications_alert_presenter.h" ]
   deps = [ "//base" ]
 }
 

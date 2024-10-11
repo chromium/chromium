@@ -9,7 +9,6 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_alert_presenter.h"
-#import "ios/chrome/browser/ui/push_notification/notifications_confirmation_presenter.h"
 
 @protocol NewTabPageDelegate;
 

@@ -12,12 +12,10 @@ class WebState;
 }
 
 @protocol ContentSuggestionsDelegate;
-@class ContentSuggestionsMediator;
 @class ContentSuggestionsViewController;
 @protocol HomeCustomizationDelegate;
 @protocol HomeStartDataSource;
 @class MagicStackCollectionViewController;
-@protocol NewTabPageControllerDelegate;
 @protocol NewTabPageActionsDelegate;
 
 // Coordinator to manage the Suggestions UI via a
@@ -26,8 +24,6 @@ class WebState;
 
 // Webstate associated with this coordinator.
 @property(nonatomic, assign) web::WebState* webState;
-
-@property(nonatomic, weak) id<NewTabPageControllerDelegate> toolbarDelegate;
 
 // YES if the coordinator has started. If YES, start is a no-op.
 @property(nonatomic, readonly) BOOL started;
@@ -39,12 +35,6 @@ class WebState;
 // The Magic Stack UICollectionView.
 @property(nonatomic, strong, readonly)
     MagicStackCollectionViewController* magicStackCollectionView;
-
-// The mediator used by this coordinator.
-// TODO(crbug.com/40251499): Replace this with a delegate to avoid exposing
-// this.
-@property(nonatomic, strong, readonly)
-    ContentSuggestionsMediator* contentSuggestionsMediator;
 
 // Delegate used to communicate Content Suggestions events to the delegate.
 @property(nonatomic, weak) id<ContentSuggestionsDelegate> delegate;
