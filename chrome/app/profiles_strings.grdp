@@ -169,6 +169,9 @@
     <message name="IDS_PROFILE_MENU_OPEN_ACCOUNT_SETTINGS" desc="Button in the avatar menu bubble view for opening Chrome account settings.">
       Google services settings
     </message>
+    <message name="IDS_PROFILE_MENU_AUTOFILL_SETTINGS_BUTTON" desc="Button in the avatar menu bubble view for opening Chrome autofill settings.">
+      Passwords and autofill
+    </message>
   </if>
   <if expr="use_titlecase">
     <message name="IDS_PROFILES_LIST_PROFILES_TITLE" desc="Title in the profile menu for the list of 'other profiles'.">
@@ -200,6 +203,9 @@
     </message>
     <message name="IDS_PROFILE_MENU_OPEN_ACCOUNT_SETTINGS" desc="Button in the avatar menu bubble view for opening Chrome account settings.">
       Google Services Settings
+    </message>
+    <message name="IDS_PROFILE_MENU_AUTOFILL_SETTINGS_BUTTON" desc="Button in the avatar menu bubble view for opening Chrome autofill settings.">
+      Passwords and Autofill
     </message>
   </if>
   <message name="IDS_PROFILES_MANAGED_BY" desc="Label shown under the avatar in the avatar menu bubble view stating that the account is managed.">

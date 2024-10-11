@@ -51,6 +51,7 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
   // Enumeration of all actionable items in the profile menu.
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
+  // LINT.IfChange(ActionableItem)
   enum class ActionableItem {
     kManageGoogleAccountButton = 0,
     kPasswordsButton = 1,
@@ -76,8 +77,10 @@ class ProfileMenuViewBase : public content::WebContentsDelegate,
     kEnableSyncForWebOnlyAccountButton = 19,
     kProfileManagementLabel = 20,
     kSigninReauthButton = 21,
-    kMaxValue = kSigninReauthButton,
+    kAutofillSettingsButton = 22,
+    kMaxValue = kAutofillSettingsButton,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/profile/enums.xml:ProfileMenuActionableItem)
 
   struct EditButtonParams {
     EditButtonParams(const gfx::VectorIcon* edit_icon,

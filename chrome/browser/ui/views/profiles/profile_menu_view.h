@@ -76,6 +76,7 @@ class ProfileMenuView : public ProfileMenuViewBase {
   void OnAddNewProfileButtonClicked();
   void OnManageProfilesButtonClicked();
   void OnEditProfileButtonClicked();
+  void OnAutofillSettingsButtonClicked();
 
   // We normally close the bubble any time it becomes inactive but this can lead
   // to flaky tests where unexpected UI events are triggering this behavior.
@@ -84,6 +85,7 @@ class ProfileMenuView : public ProfileMenuViewBase {
 
   // Helper methods for building the menu.
   void BuildGuestIdentity();
+  void BuildAutofillSettingsButton();
   void MaybeBuildCustomizeProfileButton();
   void MaybeBuildChromeAccountSettingsButton();
   void MaybeBuildManageGoogleAccountButton();

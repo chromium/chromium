@@ -955,6 +955,32 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
   RunTest();
 }
 
+// List of actionable items in the correct order as they appear in the menu. If
+// a new button is added to the menu, it should also be added to this list.
+constexpr ProfileMenuViewBase::ActionableItem
+    kActionableItems_SingleProfileWithCustomName[] = {
+        ProfileMenuViewBase::ActionableItem::kSigninButton,
+        ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
+        ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+        ProfileMenuViewBase::ActionableItem::kExitProfileButton,
+        ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+        ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+        ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+        // The first button is added again to finish the cycle and test that
+        // there are no other buttons at the end.
+        ProfileMenuViewBase::ActionableItem::kSigninButton};
+
+PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
+    kActionableItems_SingleProfileWithCustomName,
+    ProfileMenuClickTest_SingleProfileWithCustomName,
+    std::vector<base::test::FeatureRef>(
+        {switches::kExplicitBrowserSigninUIOnDesktop,
+         switches::kImprovedSigninUIOnDesktop}),
+    /*disabled_features=*/{}) {
+  profiles::UpdateProfileName(browser()->profile(), u"Custom name");
+  RunTest();
+}
+
 // List of actionable items in the correct order as they appear in the menu with
 // Uno enabled. If a new button is added to the menu, it should also be added
 // to this list.
@@ -1108,6 +1134,38 @@ PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
     kActionableItems_SyncEnabled_UnoEnabled,
     MAYBE_ProfileMenuClickTest_SyncEnabled_UnoEnabled,
     /*enabled_features=*/{switches::kExplicitBrowserSigninUIOnDesktop},
+    /*disabled_features=*/{}) {
+  EnableSync();
+  RunTest();
+}
+
+// List of actionable items in the correct order as they appear in the menu. If
+// a new button is added to the menu, it should also be added to this list.
+constexpr ProfileMenuViewBase::ActionableItem kActionableItems_SyncEnabled[] = {
+    ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton,
+    ProfileMenuViewBase::ActionableItem::kManageGoogleAccountButton,
+    ProfileMenuViewBase::ActionableItem::kEditProfileButton,
+    ProfileMenuViewBase::ActionableItem::kExitProfileButton,
+    ProfileMenuViewBase::ActionableItem::kGuestProfileButton,
+    ProfileMenuViewBase::ActionableItem::kAddNewProfileButton,
+    ProfileMenuViewBase::ActionableItem::kManageProfilesButton,
+    // The first button is added again to finish the cycle and test that
+    // there are no other buttons at the end.
+    ProfileMenuViewBase::ActionableItem::kAutofillSettingsButton};
+
+// TODO(crbug.com/341975308): re-enable test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ProfileMenuClickTest_SyncEnabled \
+  DISABLED_ProfileMenuClickTest_SyncEnabled
+#else
+#define MAYBE_ProfileMenuClickTest_SyncEnabled ProfileMenuClickTest_SyncEnabled
+#endif
+PROFILE_MENU_CLICK_WITH_FEATURE_TEST(
+    kActionableItems_SyncEnabled,
+    MAYBE_ProfileMenuClickTest_SyncEnabled,
+    std::vector<base::test::FeatureRef>(
+        {switches::kExplicitBrowserSigninUIOnDesktop,
+         switches::kImprovedSigninUIOnDesktop}),
     /*disabled_features=*/{}) {
   EnableSync();
   RunTest();

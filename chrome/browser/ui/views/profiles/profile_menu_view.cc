@@ -487,6 +487,14 @@ void ProfileMenuView::OnCookiesClearedOnExitLinkClicked() {
                                              chrome::kCookieSettingsSubPage);
 }
 
+void ProfileMenuView::OnAutofillSettingsButtonClicked() {
+  RecordClick(ActionableItem::kAutofillSettingsButton);
+  if (!perform_menu_actions()) {
+    return;
+  }
+  chrome::ShowSettingsSubPage(browser(), chrome::kAutofillSubPage);
+}
+
 void ProfileMenuView::BuildIdentity() {
   // TODO(crbug.com/370473765): Delete this function after
   // `switches::IsImprovedSigninUIOnDesktopEnabled()` is launched.
@@ -785,6 +793,13 @@ void ProfileMenuView::BuildIdentityWithCallToAction() {
       account.IsEmpty()
           ? l10n_util::GetStringUTF16(IDS_PROFILE_MENU_SIGNIN_PROMO_BUTTON)
           : std::u16string();
+  base::RepeatingClosure button_action;
+  if (!button_text.empty()) {
+    button_action = base::BindRepeating(
+        &ProfileMenuView::OnSigninButtonClicked, base::Unretained(this),
+        account_info, ActionableItem::kSigninButton,
+        signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
+  }
 
   profiles::PlaceholderAvatarIconParams icon_params = {.has_padding = true,
                                                        .has_background = false};
@@ -799,7 +814,15 @@ void ProfileMenuView::BuildIdentityWithCallToAction() {
   SetProfileIdentityWithCallToAction(
       profile_attributes->GetProfileThemeColors().profile_highlight_color,
       profile_image, title, GetIdentitySectionSubtitle(account), button_text,
-      /*button_image=*/ui::ImageModel(), base::DoNothing());
+      /*button_image=*/ui::ImageModel(), button_action);
+}
+
+void ProfileMenuView::BuildAutofillSettingsButton() {
+  AddFeatureButton(
+      l10n_util::GetStringUTF16(IDS_PROFILE_MENU_AUTOFILL_SETTINGS_BUTTON),
+      base::BindRepeating(&ProfileMenuView::OnAutofillSettingsButtonClicked,
+                          base::Unretained(this)),
+      vector_icons::kPasswordManagerIcon);
 }
 
 void ProfileMenuView::MaybeBuildCustomizeProfileButton() {
@@ -920,29 +943,39 @@ void ProfileMenuView::MaybeBuildSignoutButton() {
     return;
   }
 
-    std::u16string signout_button_text;
-    if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
-      // Note: Sign out button is only added if there is a signed profile with
-      // no sync consent, so there is no need to check these conditions for the
-      // sign in pending state.
-      const bool signin_pending =
-          identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-              identity_manager->GetPrimaryAccountId(
-                  signin::ConsentLevel::kSignin));
-      signout_button_text = l10n_util::GetStringUTF16(
-          signin_pending ? IDS_PROFILE_MENU_SIGN_OUT_WHEN_SIGNIN_PENDING
-                         : IDS_PROFILE_MENU_SIGN_OUT);
-    } else {
-      signout_button_text = l10n_util::GetStringUTF16(IDS_SCREEN_LOCK_SIGN_OUT);
-    }
-    AddFeatureButton(
-        signout_button_text,
-        base::BindRepeating(&ProfileMenuView::OnSignoutButtonClicked,
-                            base::Unretained(this)),
-        kSignOutIcon);
+  std::u16string signout_button_text;
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
+    // Note: Sign out button is only added if there is a signed profile with
+    // no sync consent, so there is no need to check these conditions for the
+    // sign in pending state.
+    const bool signin_pending =
+        identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+            identity_manager->GetPrimaryAccountId(
+                signin::ConsentLevel::kSignin));
+    signout_button_text = l10n_util::GetStringUTF16(
+        signin_pending ? IDS_PROFILE_MENU_SIGN_OUT_WHEN_SIGNIN_PENDING
+                       : IDS_PROFILE_MENU_SIGN_OUT);
+  } else {
+    signout_button_text = l10n_util::GetStringUTF16(IDS_SCREEN_LOCK_SIGN_OUT);
+  }
+  AddFeatureButton(signout_button_text,
+                   base::BindRepeating(&ProfileMenuView::OnSignoutButtonClicked,
+                                       base::Unretained(this)),
+                   kSignOutIcon);
 }
 
 void ProfileMenuView::BuildFeatureButtons() {
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
+      switches::IsImprovedSigninUIOnDesktopEnabled()) {
+    BuildAutofillSettingsButton();
+    MaybeBuildManageGoogleAccountButton();
+    MaybeBuildCustomizeProfileButton();
+    MaybeBuildChromeAccountSettingsButton();
+    MaybeBuildCloseBrowsersButton();
+    MaybeBuildSignoutButton();
+    return;
+  }
+
   if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
     MaybeBuildCustomizeProfileButton();
     MaybeBuildChromeAccountSettingsButton();
