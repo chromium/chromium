@@ -2496,11 +2496,14 @@ void LensOverlayController::MaybeLaunchSurvey() {
   if (hats_triggered_in_session_) {
     return;
   }
-  hats_triggered_in_session_ = true;
   HatsService* hats_service = HatsServiceFactory::GetForProfile(
       tab_->GetBrowserWindowInterface()->GetProfile(),
       /*create_if_necessary=*/true);
-  CHECK(hats_service);
+  if (!hats_service) {
+    // HaTS may not be available in e.g. guest profile
+    return;
+  }
+  hats_triggered_in_session_ = true;
   hats_service->LaunchDelayedSurveyForWebContents(
       kHatsSurveyTriggerLensOverlayResults, tab_->GetContents(),
       lens::features::GetLensOverlaySurveyResultsTime().InMilliseconds(),
