@@ -152,8 +152,7 @@ bool GbmSurfacelessWayland::ScheduleOverlayPlane(
   if (!image) {
     // Only solid color overlays can be non-backed.
     if (!overlay_plane_data.is_solid_color) {
-      LOG(WARNING) << "Only solid color overlay planes are allowed to be "
-                      "scheduled without backing.";
+      LOG(ERROR) << "Missing buffer for overlay that is not solid color.";
       frame->schedule_planes_succeeded = false;
       return false;
     }
