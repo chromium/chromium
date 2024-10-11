@@ -23,7 +23,11 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tips_notifications/model/tips_notification_client.h"
 
-PushNotificationClientManager::PushNotificationClientManager() {
+PushNotificationClientManager::PushNotificationClientManager(
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    : task_runner_(task_runner) {
+  CHECK(task_runner_);
+
   if (IsPriceNotificationsEnabled() &&
       optimization_guide::features::IsPushNotificationsEnabled()) {
     AddPushNotificationClient(

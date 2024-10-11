@@ -71,6 +71,8 @@ class SafetyCheckMagicStackMediatorTest : public PlatformTest {
   }
 
   void TearDown() override {
+    [mediator_ disconnect];
+    mediator_ = nil;
     safety_check_manager_->StopSafetyCheck();
   }
 
@@ -89,6 +91,8 @@ class SafetyCheckMagicStackMediatorTest : public PlatformTest {
 // Tests the mediator's consumer is called with the correct Safety Check state
 // when the Safety Check is run.
 TEST_F(SafetyCheckMagicStackMediatorTest, CallsConsumerWithRunningState) {
+  safety_check_manager_->StopSafetyCheck();
+
   SafetyCheckState* expected = [[SafetyCheckState alloc]
       initWithUpdateChromeState:UpdateChromeSafetyCheckState::kRunning
                   passwordState:PasswordSafetyCheckState::kDefault

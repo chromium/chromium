@@ -367,9 +367,6 @@ TEST_F(SafetyCheckMediatorTest, TimestampResetIfNoIssuesInCheck) {
 // Checks the timestamp of the latest run is set after the Safety Check
 // completes its run.
 TEST_F(SafetyCheckMediatorTest, TimestampSetForLatestRun) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({kSafetyCheckMagicStack}, {});
-
   mediator_.checkDidRun = true;
 
   mediator_.passwordCheckRowState =

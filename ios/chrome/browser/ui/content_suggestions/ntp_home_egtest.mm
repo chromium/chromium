@@ -187,7 +187,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
                     "doodle_test/ddljson_android0.json"));
   }
   config.features_disabled.push_back(kEnableFeedAblation);
-  config.features_disabled.push_back(kSafetyCheckMagicStack);
 
   if ([self isRunningTest:@selector(testLargeFakeboxFocus)]) {
     config.features_enabled.push_back(kIOSLargeFakebox);

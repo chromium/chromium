@@ -6,6 +6,7 @@
 
 #import <UserNotifications/UserNotifications.h>
 
+#import "base/test/task_environment.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 #import "ios/chrome/browser/push_notification/model/test_push_notification_client.h"
 #import "testing/platform_test.h"
@@ -41,8 +42,15 @@ class PushNotificationClientManagerTest : public PlatformTest {
           GetClient(manager_, 0)->GetClientId());
     }
   }
+
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  const scoped_refptr<base::SequencedTaskRunner> main_task_runner_{
+      base::SequencedTaskRunner::GetCurrentDefault()};
+
   std::unique_ptr<PushNotificationClientManager> manager_ =
-      std::make_unique<PushNotificationClientManager>();
+      std::make_unique<PushNotificationClientManager>(main_task_runner_);
 };
 
 TEST_F(PushNotificationClientManagerTest, AddClient) {

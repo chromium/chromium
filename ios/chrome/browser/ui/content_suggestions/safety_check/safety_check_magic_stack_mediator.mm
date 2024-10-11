@@ -175,7 +175,11 @@ int ImpressionsCount(const base::Value::List& impressions,
   _notificationsObserver.delegate = nil;
   [_notificationsObserver disconnect];
   _notificationsObserver = nil;
+
+  _safetyCheckConsumer = nil;
+
   _safetyCheckManagerObserver.reset();
+
   if (_prefObserverBridge) {
     _prefChangeRegistrar.RemoveAll();
     if (IsHomeCustomizationEnabled()) {
@@ -184,6 +188,7 @@ int ImpressionsCount(const base::Value::List& impressions,
 
     _prefObserverBridge.reset();
   }
+
   [_profileState removeObserver:self];
   _profileState = nil;
 }

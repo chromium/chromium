@@ -110,13 +110,6 @@ UpgradeRecommendedDetails OutdatedAppDetails() {
 
 }  // namespace
 
-// Tests the the last run time of the Safety Check is unset if the Safety Check
-// hasn't been run, yet.
-TEST_F(IOSChromeSafetyCheckManagerTest,
-       ReturnsZeroSafetyCheckRunTimeIfNeverRun) {
-  EXPECT_EQ(safety_check_manager_->GetLastSafetyCheckRunTime(), base::Time());
-}
-
 // Tests the the last run time of the Safety Check is correctly returned if the
 // Safety Check has previously run.
 TEST_F(IOSChromeSafetyCheckManagerTest,
@@ -455,9 +448,6 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
 // incoming Omaha response.
 TEST_F(IOSChromeSafetyCheckManagerTest,
        StoppingRunningUpdateChromeCheckIgnoresOmahaResponse) {
-  EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
-            UpdateChromeSafetyCheckState::kDefault);
-
   safety_check_manager_->StartSafetyCheck();
 
   EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
@@ -484,9 +474,6 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
 // incoming Omaha error.
 TEST_F(IOSChromeSafetyCheckManagerTest,
        StoppingRunningUpdateChromeCheckIgnoresOmahaError) {
-  EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
-            UpdateChromeSafetyCheckState::kDefault);
-
   safety_check_manager_->StartSafetyCheck();
 
   EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
@@ -933,8 +920,20 @@ TEST_F(IOSChromeSafetyCheckManagerTest,
             PasswordSafetyCheckState::kDefault);
   EXPECT_EQ(safety_check_manager_->GetUpdateChromeCheckState(),
             UpdateChromeSafetyCheckState::kOutOfDate);
-  EXPECT_EQ(safety_check_manager_->GetSafeBrowsingCheckState(),
-            SafeBrowsingSafetyCheckState::kDefault);
+
+  // The Safety Check Notifications project improves how Safety Check state is
+  // restored.
+  if (IsSafetyCheckNotificationsEnabled()) {
+    // If Safety Check Notifications is enabled, the Safe Browsing check
+    // should be restored to `kSafe`.
+    EXPECT_EQ(safety_check_manager_->GetSafeBrowsingCheckState(),
+              SafeBrowsingSafetyCheckState::kSafe);
+  } else {
+    // Otherwise, the Safe Browsing check should be restored to the default
+    // state, as the state is not persisted.
+    EXPECT_EQ(safety_check_manager_->GetSafeBrowsingCheckState(),
+              SafeBrowsingSafetyCheckState::kDefault);
+  }
 }
 
 // Tests `DictToInsecurePasswordCounts()` correctly converts a Dict to insecure

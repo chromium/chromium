@@ -79,7 +79,6 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.features_enabled.push_back(kSafetyCheckNotifications);
-  config.features_enabled.push_back(kSafetyCheckMagicStack);
   config.additional_args.push_back("--test-ios-module-ranker=safety_check");
 
   return config;

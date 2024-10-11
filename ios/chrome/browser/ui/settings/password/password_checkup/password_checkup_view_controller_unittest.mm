@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_view_controller.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/bind.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/affiliations/core/browser/fake_affiliation_service.h"
@@ -18,6 +19,7 @@
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
@@ -29,6 +31,7 @@
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_mediator.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -61,7 +64,7 @@ class PasswordCheckupViewControllerTest
           return std::unique_ptr<KeyedService>(
               std::make_unique<affiliations::FakeAffiliationService>());
         })));
-    profile_ = std::move(builder).Build();
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     CreateController();
@@ -261,7 +264,9 @@ class PasswordCheckupViewControllerTest
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestProfileIOS> profile_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestProfileManagerIOS profile_manager_;
+  raw_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   PasswordCheckupMediator* mediator_;
   base::test::ScopedFeatureList feature_list;
