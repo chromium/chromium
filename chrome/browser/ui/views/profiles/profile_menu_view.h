@@ -84,6 +84,11 @@ class ProfileMenuView : public ProfileMenuViewBase {
 
   // Helper methods for building the menu.
   void BuildGuestIdentity();
+  void MaybeBuildCustomizeProfileButton();
+  void MaybeBuildChromeAccountSettingsButton();
+  void MaybeBuildManageGoogleAccountButton();
+  void MaybeBuildCloseBrowsersButton();
+  void MaybeBuildSignoutButton();
   void BuildFeatureButtons();
   std::u16string GetIdentitySectionSubtitle(
       const CoreAccountInfo& account_info) const;

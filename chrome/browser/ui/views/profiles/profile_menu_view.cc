@@ -802,60 +802,76 @@ void ProfileMenuView::BuildIdentityWithCallToAction() {
       /*button_image=*/ui::ImageModel(), base::DoNothing());
 }
 
-void ProfileMenuView::BuildFeatureButtons() {
+void ProfileMenuView::MaybeBuildCustomizeProfileButton() {
   Profile* profile = browser()->profile();
+  if (profile->IsGuestSession()) {
+    return;
+  }
+  AddFeatureButton(
+      l10n_util::GetStringUTF16(IDS_PROFILE_MENU_CUSTOMIZE_PROFILE_BUTTON),
+      base::BindRepeating(&ProfileMenuView::OnEditProfileButtonClicked,
+                          base::Unretained(this)),
+      vector_icons::kEditChromeRefreshIcon);
+}
+
+void ProfileMenuView::MaybeBuildChromeAccountSettingsButton() {
+  Profile* profile = browser()->profile();
+  if (profile->IsGuestSession()) {
+    return;
+  }
+
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  bool has_sync_consent =
-      identity_manager &&
+
+  if (!identity_manager) {
+    return;
+  }
+
+  // Show the settings button when signed in to Chrome or to the web. Do not
+  // show if sync is enabled.
+  const bool has_sync_consent =
       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
-  bool has_unconsented_account = HasUnconstentedProfile(profile);
-
-  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
-      !profile->IsGuestSession()) {
-    AddFeatureButton(
-        l10n_util::GetStringUTF16(IDS_PROFILE_MENU_CUSTOMIZE_PROFILE_BUTTON),
-        base::BindRepeating(&ProfileMenuView::OnEditProfileButtonClicked,
-                            base::Unretained(this)),
-        vector_icons::kEditChromeRefreshIcon);
-
-    // Show the settings button when signed in to Chrome or to the web. Do not
-    // show if sync is enabled.
-    bool should_show_settings_button =
-        !has_sync_consent && identity_manager &&
-        !identity_manager->GetExtendedAccountInfoForAccountsWithRefreshToken()
-             .empty();
-
-    if (should_show_settings_button) {
-      AddFeatureButton(
-          l10n_util::GetStringUTF16(IDS_PROFILE_MENU_OPEN_ACCOUNT_SETTINGS),
-          base::BindRepeating(&ProfileMenuView::OnSyncSettingsButtonClicked,
-                              base::Unretained(this)),
-          vector_icons::kSettingsChromeRefreshIcon);
-    }
+  const bool should_show_settings_button =
+      !has_sync_consent &&
+      !identity_manager->GetExtendedAccountInfoForAccountsWithRefreshToken()
+           .empty();
+  if (!should_show_settings_button) {
+    return;
   }
 
-  if (has_unconsented_account && !IsSyncPaused(profile)) {
+  AddFeatureButton(
+      l10n_util::GetStringUTF16(IDS_PROFILE_MENU_OPEN_ACCOUNT_SETTINGS),
+      base::BindRepeating(&ProfileMenuView::OnSyncSettingsButtonClicked,
+                          base::Unretained(this)),
+      vector_icons::kSettingsChromeRefreshIcon);
+}
+
+void ProfileMenuView::MaybeBuildManageGoogleAccountButton() {
+  Profile* profile = browser()->profile();
+  if (!HasUnconstentedProfile(profile) || IsSyncPaused(profile)) {
+    return;
+  }
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    // The Google G icon needs to be shrunk, so it won't look too big compared
-    // to the other icons.
-    AddFeatureButton(
-        l10n_util::GetStringUTF16(IDS_SETTINGS_MANAGE_GOOGLE_ACCOUNT),
-        base::BindRepeating(
-            &ProfileMenuView::OnManageGoogleAccountButtonClicked,
-            base::Unretained(this)),
-        vector_icons::kGoogleGLogoIcon,
-        /*icon_to_image_ratio=*/0.75f);
+  // The Google G icon needs to be shrunk, so it won't look too big compared
+  // to the other icons.
+  AddFeatureButton(
+      l10n_util::GetStringUTF16(IDS_SETTINGS_MANAGE_GOOGLE_ACCOUNT),
+      base::BindRepeating(&ProfileMenuView::OnManageGoogleAccountButtonClicked,
+                          base::Unretained(this)),
+      vector_icons::kGoogleGLogoIcon,
+      /*icon_to_image_ratio=*/0.75f);
 #else
-    AddFeatureButton(
-        l10n_util::GetStringUTF16(IDS_SETTINGS_MANAGE_GOOGLE_ACCOUNT),
-        base::BindRepeating(
-            &ProfileMenuView::OnManageGoogleAccountButtonClicked,
-            base::Unretained(this)));
+  AddFeatureButton(
+      l10n_util::GetStringUTF16(IDS_SETTINGS_MANAGE_GOOGLE_ACCOUNT),
+      base::BindRepeating(&ProfileMenuView::OnManageGoogleAccountButtonClicked,
+                          base::Unretained(this)));
 #endif
-  }
+}
 
-  int window_count = CountBrowsersFor(profile);
+void ProfileMenuView::MaybeBuildCloseBrowsersButton() {
+  Profile* profile = browser()->profile();
+  const int window_count = CountBrowsersFor(profile);
   if (profile->IsGuestSession()) {
     AddFeatureButton(
         l10n_util::GetPluralStringFUTF16(IDS_GUEST_PROFILE_MENU_CLOSE_BUTTON,
@@ -879,24 +895,37 @@ void ProfileMenuView::BuildFeatureButtons() {
                             base::Unretained(this)),
         vector_icons::kCloseChromeRefreshIcon);
   }
+}
 
+void ProfileMenuView::MaybeBuildSignoutButton() {
+  Profile* profile = browser()->profile();
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager) {
+    return;
+  }
+  const bool has_sync_consent =
+      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
   const bool has_primary_account =
       !profile->IsGuestSession() && has_sync_consent;
 
-  bool hide_signout_button_for_managed_profiles =
+  const bool hide_signout_button_for_managed_profiles =
       enterprise_util::UserAcceptedAccountManagement(profile) &&
       base::FeatureList::IsEnabled(kDisallowManagedProfileSignout);
 
-  bool add_sign_out_button = has_unconsented_account && !has_primary_account &&
-                             !hide_signout_button_for_managed_profiles;
-  // The sign-out button is always at the bottom.
-  if (add_sign_out_button) {
+  const bool add_sign_out_button = HasUnconstentedProfile(profile) &&
+                                   !has_primary_account &&
+                                   !hide_signout_button_for_managed_profiles;
+  if (!add_sign_out_button) {
+    return;
+  }
+
     std::u16string signout_button_text;
     if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
       // Note: Sign out button is only added if there is a signed profile with
       // no sync consent, so there is no need to check these conditions for the
       // sign in pending state.
-      bool signin_pending =
+      const bool signin_pending =
           identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
               identity_manager->GetPrimaryAccountId(
                   signin::ConsentLevel::kSignin));
@@ -911,7 +940,16 @@ void ProfileMenuView::BuildFeatureButtons() {
         base::BindRepeating(&ProfileMenuView::OnSignoutButtonClicked,
                             base::Unretained(this)),
         kSignOutIcon);
+}
+
+void ProfileMenuView::BuildFeatureButtons() {
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled()) {
+    MaybeBuildCustomizeProfileButton();
+    MaybeBuildChromeAccountSettingsButton();
   }
+  MaybeBuildManageGoogleAccountButton();
+  MaybeBuildCloseBrowsersButton();
+  MaybeBuildSignoutButton();
 }
 
 void ProfileMenuView::BuildAvailableProfiles() {
