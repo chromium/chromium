@@ -72,19 +72,12 @@ public class AutofillSaveIbanBottomSheetBridge
         mCoordinator.requestShowContent();
     }
 
-    /** Requests to hide the bottom sheet if showing. */
-    @CalledByNative
-    public void hide() {
-        if (mNativeAutofillSaveIbanBottomSheetBridge == 0) return;
-        mCoordinator.destroy(BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
-    }
-
     @CalledByNative
     @VisibleForTesting
     /*package*/ void destroy() {
         mNativeAutofillSaveIbanBottomSheetBridge = 0;
         if (mCoordinator == null) return;
-        mCoordinator.destroy(BottomSheetController.StateChangeReason.NONE);
+        mCoordinator.destroy();
         mCoordinator = null;
     }
 

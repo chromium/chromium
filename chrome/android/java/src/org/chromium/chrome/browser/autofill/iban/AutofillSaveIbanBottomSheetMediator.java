@@ -44,7 +44,6 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
     private final LayoutStateProvider mLayoutStateProvider;
     private final TabModel mTabModel;
     private boolean mIsServerSave;
-    private boolean mFinished;
 
     /**
      * Creates the mediator.
@@ -107,36 +106,11 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
         logSaveIbanPromptResult(SaveIbanPromptResult.CANCELLED, mIsServerSave);
     }
 
-    public void onIgnored() {
-        hide(StateChangeReason.INTERACTION_COMPLETE);
-        mDelegate.onUiIgnored();
-    }
-
     void hide(@StateChangeReason int hideReason) {
         mBottomSheetController.hideContent(mBottomSheetContent, /* animate= */ true, hideReason);
         mBottomSheetController.removeObserver(this);
         mLayoutStateProvider.removeObserver(this);
         mTabModel.removeObserver(this);
-    }
-
-    // Overrides EmptyBottomSheetObserver onSheetClosed method for BottomSheetController.
-    @Override
-    public void onSheetClosed(@StateChangeReason int reason) {
-        switch (reason) {
-            case StateChangeReason.BACK_PRESS:
-            case StateChangeReason.SWIPE:
-            case StateChangeReason.TAP_SCRIM:
-                finish(this::onCanceled);
-                break;
-            case StateChangeReason.INTERACTION_COMPLETE:
-                // Expecting AutofillSaveIbanBottomSheetCoordinator to set up the appropriate
-                // callbacks to native on button presses in this case.
-                mFinished = true;
-                break;
-            default:
-                finish(this::onIgnored);
-                break;
-        }
     }
 
     // TabModelObserver.
@@ -157,13 +131,6 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
         // bottom sheet must be hidden.
         if (layoutType != LayoutType.BROWSING) {
             mBottomSheetController.hideContent(mBottomSheetContent, /* animate= */ true);
-        }
-    }
-
-    void finish(Runnable callback) {
-        if (!mFinished) {
-            mFinished = true;
-            callback.run();
         }
     }
 

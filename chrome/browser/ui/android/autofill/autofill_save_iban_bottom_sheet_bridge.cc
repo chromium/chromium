@@ -66,18 +66,6 @@ void AutofillSaveIbanBottomSheetBridge::RequestShowContent(
       ConvertUiInfoToJavaObject(env, ui_info));
 }
 
-void AutofillSaveIbanBottomSheetBridge::Hide() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_AutofillSaveIbanBottomSheetBridge_hide(
-      env, java_autofill_save_iban_bottom_sheet_bridge_);
-}
-
-AutofillSaveIbanBottomSheetBridge::AutofillSaveIbanBottomSheetBridge(
-    base::android::ScopedJavaGlobalRef<jobject>
-        java_autofill_save_iban_bottom_sheet_bridge)
-    : java_autofill_save_iban_bottom_sheet_bridge_(
-          java_autofill_save_iban_bottom_sheet_bridge) {}
-
 void AutofillSaveIbanBottomSheetBridge::OnUiAccepted(
     JNIEnv* env,
     const std::u16string& user_provided_nickname) {
