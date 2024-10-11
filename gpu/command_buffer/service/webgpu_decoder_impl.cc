@@ -1463,9 +1463,16 @@ WGPUFuture WebGPUDecoderImpl::RequestDeviceImpl(
   }
 
 #if BUILDFLAG(USE_DAWN) && BUILDFLAG(DAWN_ENABLE_BACKEND_OPENGLES)
-  // On Desktop GL via ANGLE, require GL texture sharing.
-  if (use_webgpu_adapter_ == WebGPUAdapterName::kOpenGLES &&
+  // If adapter_options.forceFallbackAdapter is set to true,
+  // fallback (Swiftshader) instead of OpenGLES Adapter can still be
+  // selected.
+  // Make sure the adapter backend type is OpenGLES.
+  // Then if on Desktop GL via ANGLE, require GL texture sharing.
+  wgpu::AdapterInfo adapter_info = {};
+  adapter_obj.GetInfo(&adapter_info);
+  if (adapter_info.backendType == wgpu::BackendType::OpenGLES &&
       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kOpenGL) {
+    DCHECK(adapter_obj.HasFeature(wgpu::FeatureName::ANGLETextureSharing));
     required_features.push_back(wgpu::FeatureName::ANGLETextureSharing);
   }
 #endif
