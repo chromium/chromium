@@ -306,7 +306,7 @@ void OnDeviceTranslationServiceController::CreateTranslator(
       if (base::FeatureList::IsEnabled(
               on_device_translation::kTranslationAPILimitLanguagePackCount)) {
         if (to_be_registered_packs.size() +
-                GetRegisteredLanguagePacks().size() >=
+                GetRegisteredLanguagePacks().size() >
             on_device_translation::kTranslationAPILimitLanguagePackCountMax
                 .Get()) {
           // TODO(crbug.com/358030919): Add UMA, and consider printing errors
