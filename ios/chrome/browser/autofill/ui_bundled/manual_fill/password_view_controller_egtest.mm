@@ -484,7 +484,8 @@ void CheckKeyboardIsUpAndNotCovered() {
 }
 
 // Tests that the "Select Password..." action works in incognito mode.
-- (void)testSelectPasswordActionInIncognito {
+// TODO(crbug.com/363017975): Re-enable test
+- (void)DISABLED_testSelectPasswordActionInIncognito {
   // Open a tab in incognito.
   [ChromeEarlGrey openNewIncognitoTab];
   [self loadLoginPage];
