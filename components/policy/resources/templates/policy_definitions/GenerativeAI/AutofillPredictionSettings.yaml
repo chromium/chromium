@@ -21,7 +21,7 @@ items:
 - caption: Allow Autofill Prediction without improving AI models.
   name: AllowedWithoutLogging
   value: 1
-- caption: Do not allow Autofill Predition.
+- caption: Do not allow Autofill Prediction.
   name: Disabled
   value: 2
 owners:
