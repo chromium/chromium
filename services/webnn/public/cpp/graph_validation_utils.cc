@@ -20,6 +20,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "base/types/fixed_array.h"
 #include "services/webnn/public/cpp/context_properties.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
@@ -317,38 +318,28 @@ base::expected<void, std::string> ValidateRecurrentNetworkOperand(
 
 std::string DataTypeConstraintToString(
     const SupportedDataTypes& constraint_set) {
-  std::vector<std::string> data_types;
-  data_types.reserve(constraint_set.size());
-  for (auto data_type : constraint_set) {
-    std::string data_type_as_string;
-    switch (data_type) {
-      case OperandDataType::kFloat32:
-        data_type_as_string = "float32";
-        break;
-      case OperandDataType::kFloat16:
-        data_type_as_string = "float16";
-        break;
-      case OperandDataType::kInt32:
-        data_type_as_string = "int32";
-        break;
-      case OperandDataType::kUint32:
-        data_type_as_string = "uint32";
-        break;
-      case OperandDataType::kInt64:
-        data_type_as_string = "int64";
-        break;
-      case OperandDataType::kUint64:
-        data_type_as_string = "uint64";
-        break;
-      case OperandDataType::kInt8:
-        data_type_as_string = "int8";
-        break;
-      case OperandDataType::kUint8:
-        data_type_as_string = "uint8";
-        break;
-    }
-    data_types.push_back(std::move(data_type_as_string));
-  }
+  base::FixedArray<std::string_view> data_types(constraint_set.size());
+  base::ranges::transform(constraint_set, data_types.begin(),
+                          [](OperandDataType data_type) {
+                            switch (data_type) {
+                              case OperandDataType::kFloat32:
+                                return "float32";
+                              case OperandDataType::kFloat16:
+                                return "float16";
+                              case OperandDataType::kInt32:
+                                return "int32";
+                              case OperandDataType::kUint32:
+                                return "uint32";
+                              case OperandDataType::kInt64:
+                                return "int64";
+                              case OperandDataType::kUint64:
+                                return "uint64";
+                              case OperandDataType::kInt8:
+                                return "int8";
+                              case OperandDataType::kUint8:
+                                return "uint8";
+                            }
+                          });
   return base::JoinString(data_types, /*separator=*/",");
 }
 
