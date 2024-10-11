@@ -159,6 +159,10 @@ class PKIMetadataComponentUpdaterTest
            GetParam() == CTEnforcement::kEnabledWithStaticCTEnforcement;
   }
 
+  void DoTestAtLeastOneRFC6962LogPolicy(
+      chrome_browser_certificate_transparency::CTLog::LogType log_type,
+      bool expect_ct_error);
+
  private:
   void OnCTLogListConfigured() override {
     ++pki_metadata_configured_times_;
@@ -393,8 +397,13 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest, TestCTUpdate) {
   }
 }
 
-IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest,
-                       TestAtLeastOneRFC6962LogPolicy) {
+// Tests that at least one RFC6962 log policy is correctly applied when Static
+// CT API enforcement is enabled. All logs in the test will be set to
+// `log_type`. If `expect_ct_error_with_static_ct_api_enforcement` is true,
+// CT checks with Static CT API enforcement should cause an SSL error.
+void PKIMetadataComponentUpdaterTest::DoTestAtLeastOneRFC6962LogPolicy(
+    chrome_browser_certificate_transparency::CTLog::LogType log_type,
+    bool expect_ct_error_with_static_ct_api_enforcement) {
   const std::string kLog1OperatorName = "log operator 1";
   std::unique_ptr<crypto::ECPrivateKey> log1_private_key =
       crypto::ECPrivateKey::Create();
@@ -470,8 +479,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest,
     log->set_log_id(log1_id_base64);
     log->set_key(log1_spki_base64);
     log->set_purpose(chrome_browser_certificate_transparency::CTLog::PROD);
-    log->set_log_type(
-        chrome_browser_certificate_transparency::CTLog::LOG_TYPE_UNSPECIFIED);
+    log->set_log_type(log_type);
     log->mutable_temporal_interval()->mutable_start()->set_seconds(kLogStart);
     log->mutable_temporal_interval()->mutable_end()->set_seconds(kLogEnd);
     chrome_browser_certificate_transparency::CTLog_State* log_state =
@@ -490,8 +498,7 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest,
     log->set_log_id(log2_id_base64);
     log->set_key(log2_spki_base64);
     log->set_purpose(chrome_browser_certificate_transparency::CTLog::PROD);
-    log->set_log_type(
-        chrome_browser_certificate_transparency::CTLog::STATIC_CT_API);
+    log->set_log_type(log_type);
     log->mutable_temporal_interval()->mutable_start()->set_seconds(kLogStart);
     log->mutable_temporal_interval()->mutable_end()->set_seconds(kLogEnd);
     chrome_browser_certificate_transparency::CTLog_State* log_state =
@@ -511,18 +518,43 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest,
                                             ct_config.SerializeAsString()));
   }
 
-  // Should be untrusted since at least one RFC6962 log is required for
-  // diversity.
   PKIMetadataComponentInstallerService::GetInstance()
       ->ReconfigureAfterNetworkRestart();
   WaitForPKIConfiguration(2);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_ok.GetURL("example.com", "/simple.html")));
+
   if (GetParam() == CTEnforcement::kEnabledWithStaticCTEnforcement) {
-    EXPECT_NE(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
+    if (expect_ct_error_with_static_ct_api_enforcement) {
+      EXPECT_NE(u"OK",
+                chrome_test_utils::GetActiveWebContents(this)->GetTitle());
+    } else {
+      EXPECT_EQ(u"OK",
+                chrome_test_utils::GetActiveWebContents(this)->GetTitle());
+    }
   } else {
     EXPECT_EQ(u"OK", chrome_test_utils::GetActiveWebContents(this)->GetTitle());
   }
+}
+
+IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest,
+                       TestAtLeastOneRFC6962LogPolicy_StaticCTAPILogs) {
+  // Test with all logs with Static CT API type. Since at least one RFC6962 log
+  // is expected, this should show an SSL error caused by CT.
+  DoTestAtLeastOneRFC6962LogPolicy(
+      chrome_browser_certificate_transparency::CTLog::STATIC_CT_API,
+      /*expect_ct_error_with_static_ct_api_enforcement=*/true);
+}
+
+IN_PROC_BROWSER_TEST_P(PKIMetadataComponentUpdaterTest,
+                       TestAtLeastOneRFC6962LogPolicy_UnspecifiedLogTypes) {
+  // Test with all logs with unspecified type. These are treated as RFC6962
+  // logs so they shouldn't cause an SSL error.
+  // TODO(crbug.com/370724580): Disallow unspecified log type once all logs in
+  // the hardcoded and component updater protos have proper log types.
+  DoTestAtLeastOneRFC6962LogPolicy(
+      chrome_browser_certificate_transparency::CTLog::LOG_TYPE_UNSPECIFIED,
+      /*expect_ct_error_with_static_ct_api_enforcement=*/false);
 }
 
 INSTANTIATE_TEST_SUITE_P(

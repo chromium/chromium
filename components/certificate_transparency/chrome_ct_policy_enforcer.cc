@@ -199,8 +199,12 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
     }
 
     if (enable_static_ct_api_enforcement_) {
+      // TODO(crbug.com/370724580): Disallow kUnspecified once all logs in the
+      // hardcoded and component updater protos have proper log types.
       has_rfc6962_log |= (GetLogType(sct->log_id) ==
-                          network::mojom::CTLogInfo::LogType::kRFC6962);
+                              network::mojom::CTLogInfo::LogType::kRFC6962 ||
+                          GetLogType(sct->log_id) ==
+                              network::mojom::CTLogInfo::LogType::kUnspecified);
     }
   }
 

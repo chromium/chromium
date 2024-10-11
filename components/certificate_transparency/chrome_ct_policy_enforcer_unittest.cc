@@ -16,6 +16,7 @@
 
 #include "base/build_time.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
@@ -807,46 +808,85 @@ TEST_F(ChromeCTPolicyEnforcerTest, MultipleOperatorSwitchesBeforeSCTTimestamp) {
                 chain_.get(), scts, base::Time::Now(), NetLogWithSource()));
 }
 
+std::string GetLogTypeName(network::mojom::CTLogInfo::LogType log_type) {
+  switch (log_type) {
+    case network::mojom::CTLogInfo::LogType::kUnspecified:
+      return "Unspecified";
+    case network::mojom::CTLogInfo::LogType::kRFC6962:
+      return "RFC6962";
+    case network::mojom::CTLogInfo::LogType::kStaticCTAPI:
+      return "Static CT API";
+    default:
+      NOTREACHED();
+  }
+}
+
 TEST_F(ChromeCTPolicyEnforcerTest, DoesNotConformToCTPolicyNoRFC6962Log) {
   struct TestCase {
-    const char* const name;
+    std::string const name;
+    network::mojom::CTLogInfo::LogType log_type;
     bool enable_static_ct_api_enforcement;
     size_t sct_count;
     CTPolicyCompliance result;
   } kTestCases[] = {
+      // Tests with Static CT API log types:
       {"Not enough SCTs with StaticCT API Policy disabled",
+       network::mojom::CTLogInfo::LogType::kStaticCTAPI,
        /*enable_static_ct_api_enforcement=*/false, 2,
        CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS},
       {"Enough SCTs with StaticCT API Policy disabled",
+       network::mojom::CTLogInfo::LogType::kStaticCTAPI,
        /*enable_static_ct_api_enforcement=*/false, 3,
        CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS},
       {"Not enough SCTs with Static CT API Policy enabled",
+       network::mojom::CTLogInfo::LogType::kStaticCTAPI,
        /*enable_static_ct_api_enforcement=*/true, 2,
        // TODO(crbug.com/370724580): Reconsider this, might also return
        // CT_POLICY_NOT_ENOUGH_SCTS.
        CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS},
       {"Enough SCTs with Static CT API Policy Enabled",
+       network::mojom::CTLogInfo::LogType::kStaticCTAPI,
        /*enable_static_ct_api_enforcement=*/true, 3,
        CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS},
+
+      // Same tests as above, but with unspecified log types. These should be
+      // treated as RFC6962 logs for now.
+      // TODO(crbug.com/370724580): Disallow kUnspecified once all logs in the
+      // hardcoded and component updater protos have proper log types.
+      {"Not enough SCTs with StaticCT API Policy disabled",
+       network::mojom::CTLogInfo::LogType::kUnspecified,
+       /*enable_static_ct_api_enforcement=*/false, 2,
+       CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS},
+      {"Enough SCTs with StaticCT API Policy disabled",
+       network::mojom::CTLogInfo::LogType::kUnspecified,
+       /*enable_static_ct_api_enforcement=*/false, 3,
+       CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS},
+      {"Not enough SCTs with Static CT API Policy enabled",
+       network::mojom::CTLogInfo::LogType::kUnspecified,
+       /*enable_static_ct_api_enforcement=*/true, 2,
+       CTPolicyCompliance::CT_POLICY_NOT_ENOUGH_SCTS},
+      {"Enough SCTs with Static CT API Policy Enabled",
+       network::mojom::CTLogInfo::LogType::kUnspecified,
+       /*enable_static_ct_api_enforcement=*/true, 3,
+       CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS},
   };
 
   for (const TestCase& tc : kTestCases) {
-    SCOPED_TRACE(tc.name);
+    SCOPED_TRACE(
+        base::StrCat({tc.name, " log_type=", GetLogTypeName(tc.log_type)}));
     SCTList scts;
     FillListWithSCTsOfOrigin(SignedCertificateTimestamp::SCT_EMBEDDED,
                              tc.sct_count, &scts);
 
     std::map<std::string, LogInfo> log_info;
     FillOperatorHistoryWithDiverseOperators(scts, &log_info);
-    // Set all logs to a non-RFC6962 log type.
+    // Set all logs to the same log type given for this test.
     for (size_t i = 0; i < scts.size(); i++) {
-      log_info[scts[i]->log_id].log_type =
-          network::mojom::CTLogInfo::LogType::kStaticCTAPI;
+      log_info[scts[i]->log_id].log_type = tc.log_type;
     }
 
     scoped_refptr<ChromeCTPolicyEnforcer> policy_enforcer =
         MakeChromeCTPolicyEnforcer(GetDisqualifiedLogs(), log_info,
-                                   /*enable_static_ct_api_enforcement=*/
                                    tc.enable_static_ct_api_enforcement);
 
     EXPECT_EQ(tc.result,
