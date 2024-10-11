@@ -55,6 +55,9 @@ extern const char kAcceleratedVideoDecodeDescription[];
 extern const char kAcceleratedVideoEncodeName[];
 extern const char kAcceleratedVideoEncodeDescription[];
 
+extern const char kAiSettingsPageRefreshName[];
+extern const char kAiSettingsPageRefreshDescription[];
+
 extern const char kAlignWakeUpsName[];
 extern const char kAlignWakeUpsDescription[];
 

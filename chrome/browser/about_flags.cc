@@ -11958,6 +11958,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          password_manager::features::kPasswordFormGroupedAffiliations)},
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"ai-settings-page-refresh", flag_descriptions::kAiSettingsPageRefreshName,
+     flag_descriptions::kAiSettingsPageRefreshDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(optimization_guide::features::kAiSettingsPageRefresh)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

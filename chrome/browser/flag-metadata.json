@@ -63,6 +63,14 @@
     "expiry_milestone": 133
   },
   {
+    "name": "ai-settings-page-refresh",
+    "owners": [
+      "zalmashni@google.com",
+      "rainhard@chromium.org",
+      "chrome-browser-privacy-team@google.com"],
+    "expiry_milestone": 135
+  },
+  {
     "name": "align-wakeups",
     "owners": [
       "etiennep@google.com", "fdoray@google.com"

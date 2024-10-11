@@ -19272,6 +19272,7 @@ from previous Chrome versions.
       label="DisruptiveNotificationPermissionRevocation:disabled"/>
   <int value="-412736561" label="EnableZeroStateMixedTypesRanker:enabled"/>
   <int value="-410852857" label="ImprovedA2HS:disabled"/>
+  <int value="-410456165" label="AiSettingsPageRefresh:enabled"/>
   <int value="-408800711"
       label="CCTOpenInBrowserButtonIfAllowedByEmbedder:disabled"/>
   <int value="-408769228" label="ArcGraphicBuffersVisualizationTool:disabled"/>
@@ -25312,6 +25313,7 @@ from previous Chrome versions.
   <int value="2035351945" label="lacros-selection-policy-ignore"/>
   <int value="2035415906" label="Win11StyleMenus:enabled"/>
   <int value="2035524582" label="WebViewRecordAppDataDirectorySize:disabled"/>
+  <int value="2036398832" label="AiSettingsPageRefresh:disabled"/>
   <int value="2037407406" label="CrostiniQtImeSupport:disabled"/>
   <int value="2037562553" label="OmniboxBubbleUrlSuggestions:disabled"/>
   <int value="2037623368" label="attribution-reporting-debug-mode"/>

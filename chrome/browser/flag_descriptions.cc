@@ -21,6 +21,10 @@ const char kAccelerated2dCanvasDescription[] =
     "Enables the use of the GPU to perform 2d canvas rendering instead of "
     "using software rendering.";
 
+const char kAiSettingsPageRefreshName[] = "AI settings page refresh";
+const char kAiSettingsPageRefreshDescription[] =
+    "Enables a revamp of the existing AI settings page.";
+
 const char kCanvasHibernationName[] = "Hibernation for 2D canvas";
 const char kCanvasHibernationDescription[] =
     "Enables canvas hibernation for 2D canvas.";
