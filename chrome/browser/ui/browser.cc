@@ -852,6 +852,17 @@ std::u16string Browser::GetWindowTitleForTab(int index) const {
   return title;
 }
 
+std::u16string Browser::GetTitleForTab(int index) const {
+  std::u16string title = FormatTitleForDisplay(
+      tab_strip_model_->GetWebContentsAt(index)->GetTitle());
+
+  if (title.empty()) {
+    title = CoreTabHelper::GetDefaultTitle();
+  }
+
+  return title;
+}
+
 std::u16string Browser::GetWindowTitleForMaxWidth(int max_width) const {
   static constexpr unsigned int kMinTitleCharacters = 4;
   const gfx::FontList font_list;

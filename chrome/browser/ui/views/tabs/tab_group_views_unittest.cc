@@ -96,10 +96,10 @@ TEST_F(TabGroupViewsTest, UnderlineBoundsNoDrag) {
   TabGroupHeader* header = group_views_->header();
   Tab* tab_1 = tab_container_->AddChildView(
       std::make_unique<Tab>(tab_slot_controller_.get()));
-  tab_1->set_group(id_);
+  tab_1->SetGroup(id_);
   Tab* tab_2 = tab_container_->AddChildView(
       std::make_unique<Tab>(tab_slot_controller_.get()));
-  tab_2->set_group(id_);
+  tab_2->SetGroup(id_);
 
   header->SetBounds(0, 0, 100, 0);
   tab_1->SetBounds(50, 0, 100, 0);
@@ -127,10 +127,10 @@ TEST_F(TabGroupViewsTest, UnderlineBoundsWhenTabsAreNotVisible) {
   TabGroupHeader* header = group_views_->header();
   Tab* tab_1 = tab_container_->AddChildView(
       std::make_unique<Tab>(tab_slot_controller_.get()));
-  tab_1->set_group(id_);
+  tab_1->SetGroup(id_);
   Tab* tab_2 = tab_container_->AddChildView(
       std::make_unique<Tab>(tab_slot_controller_.get()));
-  tab_2->set_group(id_);
+  tab_2->SetGroup(id_);
 
   header->SetBounds(0, 0, 100, 0);
   tab_1->SetBounds(50, 0, 100, 0);
@@ -151,10 +151,10 @@ TEST_F(TabGroupViewsTest, UnderlineBoundsHeaderDrag) {
   drag_context_->AddChildView(header);
   Tab* tab_1 = drag_context_->AddChildView(
       std::make_unique<Tab>(tab_slot_controller_.get()));
-  tab_1->set_group(id_);
+  tab_1->SetGroup(id_);
   Tab* tab_2 = drag_context_->AddChildView(
       std::make_unique<Tab>(tab_slot_controller_.get()));
-  tab_2->set_group(id_);
+  tab_2->SetGroup(id_);
 
   header->SetBounds(0, 0, 100, 0);
   tab_1->SetBounds(50, 0, 100, 0);
@@ -192,10 +192,10 @@ TEST_F(TabGroupViewsTest, UnderlineBoundsDragTabInGroup) {
   TabGroupHeader* header = group_views_->header();
   Tab* other_tab = tab_container_->AddChildView(
       std::make_unique<Tab>(tab_slot_controller_.get()));
-  other_tab->set_group(id_);
+  other_tab->SetGroup(id_);
   Tab* dragged_tab = drag_context_->AddChildView(
       std::make_unique<Tab>(tab_slot_controller_.get()));
-  dragged_tab->set_group(id_);
+  dragged_tab->SetGroup(id_);
 
   header->SetBounds(0, 0, 100, 0);
   other_tab->SetBounds(50, 0, 100, 0);

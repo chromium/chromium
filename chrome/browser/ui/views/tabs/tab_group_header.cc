@@ -110,8 +110,13 @@ TabGroupHeader::TabGroupHeader(TabSlotController& tab_slot_controller,
       group_title_(u""),
       color_(tab_slot_controller_->GetPaintedGroupColor(
           tab_slot_controller_->GetGroupColorId(group))),
-      editor_bubble_tracker_(tab_slot_controller) {
-  set_group(group);
+      editor_bubble_tracker_(tab_slot_controller) {}
+
+TabGroupHeader::~TabGroupHeader() = default;
+
+void TabGroupHeader::Init(const tab_groups::TabGroupId& group) {
+  SetGroup(group);
+
   set_context_menu_controller(this);
 
   // Disable events processing (like tooltip handling)
@@ -143,8 +148,6 @@ TabGroupHeader::TabGroupHeader(TabSlotController& tab_slot_controller,
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kTabList);
 }
-
-TabGroupHeader::~TabGroupHeader() = default;
 
 bool TabGroupHeader::OnKeyPressed(const ui::KeyEvent& event) {
   if ((event.key_code() == ui::VKEY_SPACE ||

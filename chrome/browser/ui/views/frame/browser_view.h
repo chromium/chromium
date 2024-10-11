@@ -829,6 +829,7 @@ class BrowserView : public BrowserWindow,
   gfx::Point GetThemeOffsetFromBrowserView() const;
 
   void ApplyWatermarkSettings(const std::string& watermark_text);
+  void UpdateAccessibleNameForAllTabs();
 
 #if BUILDFLAG(ENTERPRISE_SCREENSHOT_PROTECTION)
   void ApplyScreenshotSettings(bool allow);
@@ -869,6 +870,7 @@ class BrowserView : public BrowserWindow,
   friend class TopControlsSlideControllerTest;
   FRIEND_TEST_ALL_PREFIXES(BrowserViewTest, BrowserView);
   FRIEND_TEST_ALL_PREFIXES(BrowserViewTest, AccessibleWindowTitle);
+  FRIEND_TEST_ALL_PREFIXES(PermissionChipUnitTest, AccessibleName);
   class AccessibilityModeObserver;
 
   // BrowserUserEducationInterface private methods:
@@ -1077,6 +1079,8 @@ class BrowserView : public BrowserWindow,
 
   // The Browser object we are associated with.
   std::unique_ptr<Browser> browser_;
+
+  base::CallbackListSubscription chip_visibility_subscription_;
 
   // BrowserView layout (LTR one is pictured here).
   //

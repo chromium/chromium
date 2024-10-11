@@ -90,7 +90,6 @@ class Tab : public gfx::AnimationDelegate,
   void OnMouseExited(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   void PaintChildren(const views::PaintInfo& info) override;
@@ -102,6 +101,8 @@ class Tab : public gfx::AnimationDelegate,
   void OnThemeChanged() override;
   TabSlotView::ViewType GetTabSlotViewType() const override;
   TabSizeInfo GetTabSizeInfo() const override;
+  void SetGroup(std::optional<tab_groups::TabGroupId> group) override;
+  void UpdateAccessibleName();
 
   TabSlotController* controller() const { return controller_; }
 
@@ -205,6 +206,10 @@ class Tab : public gfx::AnimationDelegate,
   FRIEND_TEST_ALL_PREFIXES(TabTest, TitleTextHasSufficientContrast);
   FRIEND_TEST_ALL_PREFIXES(TabHoverCardInteractiveUiTest,
                            HoverCardVisibleOnTabCloseButtonFocusAfterTabFocus);
+  FRIEND_TEST_ALL_PREFIXES(AlertIndicatorButtonTest, AccessibleNameChanged);
+
+  bool ShouldUpdateAccessibleName(TabRendererData& old_data,
+                                  TabRendererData& new_data);
 
   // Invoked from Layout to adjust the position of the favicon or alert
   // indicator for pinned tabs. The visual_width parameter is how wide the

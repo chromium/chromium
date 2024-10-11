@@ -3730,9 +3730,23 @@ std::u16string BrowserView::GetAccessibleWindowTitleForChannelAndProfile(
   return title;
 }
 
+void BrowserView::UpdateAccessibleNameForAllTabs() {
+  for (int i = 0; i < tabstrip_->GetTabCount(); ++i) {
+    tabstrip_->tab_at(i)->UpdateAccessibleName();
+  }
+}
+
+// This function constructs the accessible label for a tab, which is used by
+// assistive technologies to provide meaningful descriptions of the tab's
+// content. The label is based on various properties of the tab, such as the
+// title, group, alerts and memory usage.
+//
+// Note: If any new parameters are added or existing ones are removed that
+// affect the accessible name, ensure that the corresponding logic in
+// Tab::UpdateAccessibleName is updated accordingly to maintain consistency.
 std::u16string BrowserView::GetAccessibleTabLabel(int index,
                                                   bool is_for_tab) const {
-  std::u16string title = browser_->GetWindowTitleForTab(index);
+  std::u16string title = browser_->GetTitleForTab(index);
 
   std::optional<tab_groups::TabGroupId> group =
       tabstrip_->tab_at(index)->group();
@@ -4627,6 +4641,19 @@ void BrowserView::AddedToWidget() {
       base::BindOnce(&BrowserView::MaybeShowExperimentalAIIPH, GetAsWeakPtr()),
       user_education::features::GetSessionStartGracePeriod() +
           base::Minutes(5));
+
+  // Accessible name of the tab is dependent on the visibility state of the chip
+  // view, so it needs to be made aware of any changes.
+  if (toolbar_ && toolbar_->location_bar() &&
+      toolbar_->location_bar()->GetChipController()) {
+    chip_visibility_subscription_ =
+        toolbar_->location_bar()
+            ->GetChipController()
+            ->chip()
+            ->AddVisibleChangedCallback(base::BindRepeating(
+                &BrowserView::UpdateAccessibleNameForAllTabs,
+                weak_ptr_factory_.GetWeakPtr()));
+  }
 
   initialized_ = true;
 }

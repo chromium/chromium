@@ -871,3 +871,20 @@ TEST_F(TabTest, AccessibleProperties) {
   tab->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(ax::mojom::Role::kTab, data.role);
 }
+
+TEST_F(AlertIndicatorButtonTest, AccessibleNameChanged) {
+  controller_->AddTab(0, TabActive::kInactive, TabPinned::kPinned);
+
+  TabRendererData old_data = tab_strip_->tab_at(0)->data();
+  TabRendererData new_data = tab_strip_->tab_at(0)->data();
+  EXPECT_FALSE(
+      tab_strip_->tab_at(0)->ShouldUpdateAccessibleName(old_data, new_data));
+
+  new_data.incognito = !new_data.incognito;
+  EXPECT_FALSE(
+      tab_strip_->tab_at(0)->ShouldUpdateAccessibleName(old_data, new_data));
+
+  new_data.title = u"new_title";
+  EXPECT_TRUE(
+      tab_strip_->tab_at(0)->ShouldUpdateAccessibleName(old_data, new_data));
+}

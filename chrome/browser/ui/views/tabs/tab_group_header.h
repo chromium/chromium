@@ -43,6 +43,8 @@ class TabGroupHeader : public TabSlotView,
   TabGroupHeader& operator=(const TabGroupHeader&) = delete;
   ~TabGroupHeader() override;
 
+  void Init(const tab_groups::TabGroupId& group);
+
   // TabSlotView:
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
