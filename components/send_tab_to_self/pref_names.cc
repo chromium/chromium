@@ -10,5 +10,8 @@ namespace prefs {
 const char kInitialSendAnimationShown[] =
     "send_tab_to_self.initial_animation_shown";
 
+const char kIOSSendTabToSelfLastReceivedTabURLPref[] =
+    "ios.send_tab_to_self.last_received_tab_url";
+
 }  // namespace prefs
 }  // namespace send_tab_to_self

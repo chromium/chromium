@@ -34,7 +34,8 @@ SendTabToSelfSyncService::SendTabToSelfSyncService(
           base::DefaultClock::GetInstance(),
           std::move(create_store_callback),
           history_service,
-          device_info_tracker)),
+          device_info_tracker,
+          pref_service)),
       pref_service_(pref_service) {}
 
 SendTabToSelfSyncService::~SendTabToSelfSyncService() = default;

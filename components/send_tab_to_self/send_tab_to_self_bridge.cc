@@ -22,6 +22,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/metrics_util.h"
+#include "components/send_tab_to_self/pref_names.h"
 #include "components/send_tab_to_self/proto/send_tab_to_self.pb.h"
 #include "components/send_tab_to_self/target_device_info.h"
 #include "components/sync/base/deletion_origin.h"
@@ -92,11 +93,13 @@ SendTabToSelfBridge::SendTabToSelfBridge(
     base::Clock* clock,
     syncer::OnceDataTypeStoreFactory create_store_callback,
     history::HistoryService* history_service,
-    syncer::DeviceInfoTracker* device_info_tracker)
+    syncer::DeviceInfoTracker* device_info_tracker,
+    PrefService* pref_service)
     : DataTypeSyncBridge(std::move(change_processor)),
       clock_(clock),
       history_service_(history_service),
       device_info_tracker_(device_info_tracker),
+      pref_service_(pref_service),
       mru_entry_(nullptr) {
   DCHECK(clock_);
   DCHECK(device_info_tracker_);
@@ -490,6 +493,13 @@ void SendTabToSelfBridge::NotifyRemoteSendTabToSelfEntryAdded(
   for (SendTabToSelfModelObserver& observer : observers_) {
     observer.EntriesAddedRemotely(new_local_entries);
   }
+
+#if BUILDFLAG(IS_IOS)
+  if (!new_local_entries.empty()) {
+    pref_service_->SetString(prefs::kIOSSendTabToSelfLastReceivedTabURLPref,
+                             new_local_entries.back()->GetURL().spec());
+  }
+#endif
 }
 
 void SendTabToSelfBridge::NotifyRemoteSendTabToSelfEntryDeleted(

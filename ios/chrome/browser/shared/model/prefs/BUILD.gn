@@ -71,6 +71,7 @@ source_set("browser_prefs") {
     "//components/segmentation_platform/embedder/default_model:default_model",
     "//components/segmentation_platform/embedder/home_modules/tips_manager:public",
     "//components/segmentation_platform/public",
+    "//components/send_tab_to_self",
     "//components/sessions",
     "//components/sharing_message",
     "//components/signin/core/browser",
