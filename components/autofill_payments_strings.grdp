@@ -974,6 +974,9 @@
   <message name="IDS_AUTOFILL_PAYMENTS_WINDOW_USER_CONSENT_DIALOG_OK_BUTTON_LABEL_VCN_3DS" desc="This text is shown as the accept button label for the user consent dialog for VCN 3DS. If the user accepts the dialog, Chrome will open a pop-up and initiate the VCN 3DS flow.">
     Continue
   </message>
+  <message name="IDS_AUTOFILL_PAYMENTS_WINDOW_USER_CONSENT_DIALOG_ACCEPTANCE_ACCESSIBILITY_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="This text is announced to the user after they have accepted the VCN 3DS consent dialog, to let the user know that the VCN 3DS pop-up is loading the bank verification website. Otherwise screen reader users would not know what is happening during the flow.">
+    Loading bank verification website
+  </message>
   <message name="IDS_AUTOFILL_REGULAR_CARD_MANUAL_FALLBACK_BUBBLE_CARD_NUMBER_LABEL_IOS" desc="Text shown above the card number in the manual fallback bubble on IOS. This bubble shows the card number for the card being shown to fill the form. Clicking this button will populate the available card-related fields of the form.">
       Card number:
   </message>
