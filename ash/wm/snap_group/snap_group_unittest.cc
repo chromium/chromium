@@ -3922,11 +3922,9 @@ TEST_F(SnapGroupDividerTest, HoverToEnlargeDivider) {
   EXPECT_EQ(kDividerHandlerLongSideLength,
             handler_view_bounds_before_hover.height());
 
-  // Shift the hover point so that it is not right on the divider handler view
-  // to trigger hover to enlarge.
-  event_generator->MoveMouseTo(
-      divider_bounds_before_hover.CenterPoint() +
-      gfx::Vector2d(0, kDividerHandlerEnlargedLongSideLength / 2 + 1));
+  // Move the cursor slightly outside the divider's bounds, but keep it within
+  // the hit area verify that the divider remains enlarged.
+  event_generator->MoveMouseTo(divider_bounds_before_hover.left_center());
   EXPECT_EQ(kSplitviewDividerEnlargedShortSideLength, divider_view->width());
   const auto handler_view_bounds_on_hover =
       divider_view->GetHandlerViewBoundsInScreenForTesting();
@@ -3936,7 +3934,9 @@ TEST_F(SnapGroupDividerTest, HoverToEnlargeDivider) {
             handler_view_bounds_on_hover.height());
   EXPECT_FALSE(focus_ring->GetVisible());
 
-  event_generator->MoveMouseBy(10, 0);
+  // Move the cursor completely away from the divider and the hit area. Verify
+  // that divider reverts to its default, shrunk state.
+  event_generator->MoveMouseBy(-kSplitViewDividerExtraInset / 2, 0);
   EXPECT_EQ(kSplitviewDividerEnlargedShortSideLength, divider_view->width());
   const auto handler_view_bounds_on_drag =
       divider_view->GetHandlerViewBoundsInScreenForTesting();
