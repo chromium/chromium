@@ -144,13 +144,6 @@ extern const base::FeatureParam<int> kPlusAddressPreallocationMinimumSize(
     "minimum-size",
     10);
 
-// When enabled, `GoogleGroupsManager::IsFeatureEnabledForProfile` is used to
-// check whether `kPlusAddressesEnabled` is enabled. Used as a killswitch.
-// TODO: crbug.com/348575889 - Clean up.
-BASE_FEATURE(kPlusAddressProfileAwareFeatureCheck,
-             "PlusAddressProfileAwareFeatureCheck",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, creation suggestions do not contain a label prior to the user
 // acknowledging the notice.
 BASE_FEATURE(kPlusAddressSuggestionRedesign,

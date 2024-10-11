@@ -72,13 +72,10 @@ PlusAddressServiceFactory::BuildServiceInstanceFor(
       GoogleGroupsManagerFactory::GetForProfile(profile);
   plus_addresses::PlusAddressServiceImpl::FeatureEnabledForProfileCheck
       feature_check =
-          (groups_manager &&
-           base::FeatureList::IsEnabled(
-               plus_addresses::features::kPlusAddressProfileAwareFeatureCheck))
-              ? base::BindRepeating(
-                    &GoogleGroupsManager::IsFeatureEnabledForProfile,
-                    base::Unretained(groups_manager))
-              : base::BindRepeating(&base::FeatureList::IsEnabled);
+          groups_manager ? base::BindRepeating(
+                               &GoogleGroupsManager::IsFeatureEnabledForProfile,
+                               base::Unretained(groups_manager))
+                         : base::BindRepeating(&base::FeatureList::IsEnabled);
 
   if (auto test_service = tests_hook::GetOverriddenPlusAddressService()) {
     return test_service;
