@@ -195,6 +195,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DevTools.Freestyler.EvalResponseSize" units="count"
+    expires_after="2025-11-11">
+  <owner>ergunsh@chromium.org</owner>
+  <owner>alexrudenko@chromium.org</owner>
+  <summary>
+    The size (in bytes) of the code evaluation output returned by the
+    FreestylerAgent.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.Freestyler.QueryLength" units="count"
+    expires_after="2025-11-11">
+  <owner>ergunsh@chromium.org</owner>
+  <owner>alexrudenko@chromium.org</owner>
+  <summary>
+    The length of the query (number of characters) given to the FreestylerAgent.
+  </summary>
+</histogram>
+
 <histogram name="DevTools.InspectElement" units="ms" expires_after="2025-03-09">
   <owner>yangguo@chromium.org</owner>
   <owner>bmeurer@google.com</owner>
