@@ -79,8 +79,8 @@ inline bool CharIsA(const char c, const char* chars) {
 
 // Seek the iterator to the first occurrence of |character|.
 // Returns true if it hits the end, false otherwise.
-inline bool SeekToCharacter(std::string::const_iterator* it,
-                            const std::string::const_iterator& end,
+inline bool SeekToCharacter(std::string_view::iterator* it,
+                            const std::string_view::iterator& end,
                             const char character) {
   for (; *it != end && **it != character; ++(*it)) {
   }
@@ -89,8 +89,8 @@ inline bool SeekToCharacter(std::string::const_iterator* it,
 
 // Seek the iterator to the first occurrence of a character in |chars|.
 // Returns true if it hit the end, false otherwise.
-inline bool SeekTo(std::string::const_iterator* it,
-                   const std::string::const_iterator& end,
+inline bool SeekTo(std::string_view::iterator* it,
+                   const std::string_view::iterator& end,
                    const char* chars) {
   for (; *it != end && !CharIsA(**it, chars); ++(*it)) {
   }
@@ -98,39 +98,39 @@ inline bool SeekTo(std::string::const_iterator* it,
 }
 // Seek the iterator to the first occurrence of a character not in |chars|.
 // Returns true if it hit the end, false otherwise.
-inline bool SeekPast(std::string::const_iterator* it,
-                     const std::string::const_iterator& end,
+inline bool SeekPast(std::string_view::iterator* it,
+                     const std::string_view::iterator& end,
                      const char* chars) {
   for (; *it != end && CharIsA(**it, chars); ++(*it)) {
   }
   return *it == end;
 }
-inline bool SeekBackPast(std::string::const_iterator* it,
-                         const std::string::const_iterator& end,
+inline bool SeekBackPast(std::string_view::iterator* it,
+                         const std::string_view::iterator& end,
                          const char* chars) {
   for (; *it != end && CharIsA(**it, chars); --(*it)) {
   }
   return *it == end;
 }
 
-// Returns the string piece within |value| that is a valid cookie value.
-std::string_view ValidStringPieceForValue(const std::string& value) {
-  std::string::const_iterator it = value.begin();
-  std::string::const_iterator end =
+// Returns the string piece within `value` that is a valid cookie value.
+std::string_view ValidStringPieceForValue(std::string_view value) {
+  std::string_view::iterator it = value.begin();
+  std::string_view::iterator end =
       net::ParsedCookie::FindFirstTerminator(value);
-  std::string::const_iterator value_start;
-  std::string::const_iterator value_end;
+  std::string_view::iterator value_start;
+  std::string_view::iterator value_end;
 
   net::ParsedCookie::ParseValue(&it, end, &value_start, &value_end);
 
-  return base::MakeStringPiece(value_start, value_end);
+  return std::string_view(value_start, value_end);
 }
 
 }  // namespace
 
 namespace net {
 
-ParsedCookie::ParsedCookie(const std::string& cookie_line,
+ParsedCookie::ParsedCookie(std::string_view cookie_line,
                            CookieInclusionStatus* status_out) {
   // Put a pointer on the stack so the rest of the function can assign to it if
   // the default nullptr is passed in.
@@ -293,11 +293,12 @@ std::string ParsedCookie::ToCookieLine() const {
 }
 
 // static
-std::string::const_iterator ParsedCookie::FindFirstTerminator(
-    const std::string& s) {
-  std::string::const_iterator end = s.end();
-  size_t term_pos = s.find_first_of(std::string(kTerminator, kTerminatorLen));
-  if (term_pos != std::string::npos) {
+std::string_view::iterator ParsedCookie::FindFirstTerminator(
+    std::string_view s) {
+  std::string_view::iterator end = s.end();
+  size_t term_pos =
+      s.find_first_of(std::string_view(kTerminator, kTerminatorLen));
+  if (term_pos != std::string_view::npos) {
     // We found a character we should treat as an end of string.
     end = s.begin() + term_pos;
   }
@@ -305,12 +306,12 @@ std::string::const_iterator ParsedCookie::FindFirstTerminator(
 }
 
 // static
-bool ParsedCookie::ParseToken(std::string::const_iterator* it,
-                              const std::string::const_iterator& end,
-                              std::string::const_iterator* token_start,
-                              std::string::const_iterator* token_end) {
+bool ParsedCookie::ParseToken(std::string_view::iterator* it,
+                              const std::string_view::iterator& end,
+                              std::string_view::iterator* token_start,
+                              std::string_view::iterator* token_end) {
   DCHECK(it && token_start && token_end);
-  std::string::const_iterator token_real_end;
+  std::string_view::iterator token_real_end;
 
   // Seek past any whitespace before the "token" (the name).
   // token_start should point at the first character in the token
@@ -342,10 +343,10 @@ bool ParsedCookie::ParseToken(std::string::const_iterator* it,
 }
 
 // static
-void ParsedCookie::ParseValue(std::string::const_iterator* it,
-                              const std::string::const_iterator& end,
-                              std::string::const_iterator* value_start,
-                              std::string::const_iterator* value_end) {
+void ParsedCookie::ParseValue(std::string_view::iterator* it,
+                              const std::string_view::iterator& end,
+                              std::string_view::iterator* value_start,
+                              std::string_view::iterator* value_end) {
   DCHECK(it && value_start && value_end);
 
   // Seek past any whitespace that might be in-between the token and value.
@@ -371,18 +372,18 @@ void ParsedCookie::ParseValue(std::string::const_iterator* it,
 }
 
 // static
-std::string ParsedCookie::ParseTokenString(const std::string& token) {
-  std::string::const_iterator it = token.begin();
-  std::string::const_iterator end = FindFirstTerminator(token);
+std::string ParsedCookie::ParseTokenString(std::string_view token) {
+  std::string_view::iterator it = token.begin();
+  std::string_view::iterator end = FindFirstTerminator(token);
 
-  std::string::const_iterator token_start, token_end;
+  std::string_view::iterator token_start, token_end;
   if (ParseToken(&it, end, &token_start, &token_end))
     return std::string(token_start, token_end);
   return std::string();
 }
 
 // static
-std::string ParsedCookie::ParseValueString(const std::string& value) {
+std::string ParsedCookie::ParseValueString(std::string_view value) {
   return std::string(ValidStringPieceForValue(value));
 }
 
@@ -501,18 +502,18 @@ bool ParsedCookie::IsValidCookieNameValuePair(
 }
 
 // Parse all token/value pairs and populate pairs_.
-void ParsedCookie::ParseTokenValuePairs(const std::string& cookie_line,
+void ParsedCookie::ParseTokenValuePairs(std::string_view cookie_line,
                                         CookieInclusionStatus& status_out) {
   pairs_.clear();
 
   // Ok, here we go.  We should be expecting to be starting somewhere
   // before the cookie line, not including any header name...
-  std::string::const_iterator start = cookie_line.begin();
-  std::string::const_iterator it = start;
+  std::string_view::iterator start = cookie_line.begin();
+  std::string_view::iterator it = start;
 
   // TODO(erikwright): Make sure we're stripping \r\n in the network code.
   // Then we can log any unexpected terminators.
-  std::string::const_iterator end = FindFirstTerminator(cookie_line);
+  std::string_view::iterator end = FindFirstTerminator(cookie_line);
 
   // Block cookies that were truncated by control characters.
   if (end < cookie_line.end()) {
@@ -531,7 +532,7 @@ void ParsedCookie::ParseTokenValuePairs(const std::string& cookie_line,
   for (int pair_num = 0; it != end; ++pair_num) {
     TokenValuePair pair;
 
-    std::string::const_iterator token_start, token_end;
+    std::string_view::iterator token_start, token_end;
     if (!ParseToken(&it, end, &token_start, &token_end)) {
       // Allow first token to be treated as empty-key if unparsable
       if (pair_num != 0)
@@ -565,7 +566,7 @@ void ParsedCookie::ParseTokenValuePairs(const std::string& cookie_line,
     }
 
     // OK, now try to parse a value.
-    std::string::const_iterator value_start, value_end;
+    std::string_view::iterator value_start, value_end;
     ParseValue(&it, end, &value_start, &value_end);
 
     // OK, we're finished with a Token/Value.
@@ -618,7 +619,7 @@ void ParsedCookie::ParseTokenValuePairs(const std::string& cookie_line,
     }
 
     if (!ignore_pair) {
-      pairs_.push_back(pair);
+      pairs_.emplace_back(std::move(pair));
     }
 
     // We've processed a token/value pair, we're either at the end of
