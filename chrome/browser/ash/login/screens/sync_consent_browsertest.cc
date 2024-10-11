@@ -80,6 +80,10 @@ syncer::SyncUserSettings* GetSyncUserSettings() {
   return SyncServiceFactory::GetForProfile(profile)->GetUserSettings();
 }
 
+SyncConsentScreen* GetScreen() {
+  return WizardController::default_controller()->GetScreen<SyncConsentScreen>();
+}
+
 class ConsentRecordedWaiter
     : public SyncConsentScreen::SyncConsentScreenTestDelegate {
  public:
@@ -137,9 +141,7 @@ std::string GetLocalizedConsentString(const int id) {
   return sanitized_string;
 }
 
-class SyncConsentTest
-    : public OobeBaseTest,
-      public SyncConsentScreen::SyncConsentScreenExitTestDelegate {
+class SyncConsentTest : public OobeBaseTest {
  public:
   SyncConsentTest(const SyncConsentTest&) = delete;
   SyncConsentTest& operator=(const SyncConsentTest&) = delete;
@@ -174,14 +176,12 @@ class SyncConsentTest
           IDS_LOGIN_SYNC_CONSENT_SCREEN_ACCEPT_AND_CONTINUE);
     }
 
-    SyncConsentScreen::SetSyncConsentScreenExitTestDelegate(this);
+    // Exit result inspection
+    original_callback_ = GetScreen()->get_exit_callback_for_testing();
+    GetScreen()->set_exit_callback_for_testing(base::BindRepeating(
+        &SyncConsentTest::HandleScreenExit, base::Unretained(this)));
+
     SyncConsentScreen::SetProfileSyncDisabledByPolicyForTesting(false);
-  }
-
-  void TearDownOnMainThread() override {
-    SyncConsentScreen::SetSyncConsentScreenExitTestDelegate(nullptr);
-
-    OobeBaseTest::TearDownOnMainThread();
   }
 
   void SwitchLanguage(const std::string& language) {
@@ -275,14 +275,11 @@ class SyncConsentTest
   }
 
  private:
-  // SyncConsentScreen::SyncConsentScreenExitTestDelegate
-  void OnSyncConsentScreenExit(
-      SyncConsentScreen::Result result,
-      SyncConsentScreen::ScreenExitCallback& original_callback) override {
+  void HandleScreenExit(SyncConsentScreen::Result result) {
     ASSERT_FALSE(screen_exited_);
     screen_exited_ = true;
     screen_result_ = result;
-    original_callback.Run(result);
+    original_callback_.Run(result);
     if (screen_exit_callback_)
       std::move(screen_exit_callback_).Run();
   }
@@ -304,6 +301,8 @@ class SyncConsentTest
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
 
   std::unique_ptr<base::AutoReset<bool>> force_branded_build_;
+
+  SyncConsentScreen::ScreenExitCallback original_callback_;
 };
 
 IN_PROC_BROWSER_TEST_F(SyncConsentTest, SkippedNotBrandedBuild) {
