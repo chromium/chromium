@@ -39,6 +39,8 @@ class TrustedVaultClientBackend : public KeyedService {
   using GetPublicKeyCallback = base::OnceCallback<void(const PublicKey&)>;
   using CancelDialogCallback =
       base::OnceCallback<void(BOOL animated, ProceduralBlock cancel_done)>;
+  using UpdateGPMPinCompletionCallback =
+      base::OnceCallback<void(NSError* error)>;
 
   // Callback used to verify local device registration and log the result to
   // UMA metrics. The argument represents the gaia ID subject to verification.
@@ -118,6 +120,19 @@ class TrustedVaultClientBackend : public KeyedService {
   // Returns the member public key used to enroll the local device.
   virtual void GetPublicKeyForIdentity(id<SystemIdentity> identity,
                                        GetPublicKeyCallback callback) = 0;
+
+  // Starts the flow to change a GPM Pin for `identity`. This should only be
+  // used for hw_protected (passkeys) `security_domain_id` until further notice.
+  // The UI will be presented by the `navigationController` with a
+  // `brandedNavigationItemTitleView` on top. Once the flow is done,
+  // `completion` is called (unless the flow is cancelled).
+  // TODO(crbug.com/369153587): Make it pure virtual.
+  virtual CancelDialogCallback UpdateGPMPinForAccount(
+      id<SystemIdentity> identity,
+      trusted_vault::SecurityDomainId security_domain_id,
+      UINavigationController* navigationController,
+      UIView* brandedNavigationItemTitleView,
+      UpdateGPMPinCompletionCallback completion);
 
  protected:
   // Functions to notify observers.

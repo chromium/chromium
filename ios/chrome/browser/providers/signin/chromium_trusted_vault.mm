@@ -45,6 +45,12 @@ class ChromiumTrustedVaultClientBackend final
                       base::OnceCallback<void(bool)> completion) final;
   void GetPublicKeyForIdentity(id<SystemIdentity> identity,
                                GetPublicKeyCallback completion) final;
+  CancelDialogCallback UpdateGPMPinForAccount(
+      id<SystemIdentity> identity,
+      trusted_vault::SecurityDomainId security_domain_id,
+      UINavigationController* navigationController,
+      UIView* brandedNavigationItemTitleView,
+      UpdateGPMPinCompletionCallback completion) final;
 };
 
 void ChromiumTrustedVaultClientBackend::
@@ -102,6 +108,16 @@ void ChromiumTrustedVaultClientBackend::GetPublicKeyForIdentity(
     id<SystemIdentity> identity,
     GetPublicKeyCallback completion) {
   NOTREACHED();
+}
+
+TrustedVaultClientBackend::CancelDialogCallback
+ChromiumTrustedVaultClientBackend::UpdateGPMPinForAccount(
+    id<SystemIdentity> identity,
+    trusted_vault::SecurityDomainId security_domain_id,
+    UINavigationController* navigationController,
+    UIView* brandedNavigationItemTitleView,
+    UpdateGPMPinCompletionCallback completion) {
+  NOTREACHED_NORETURN();
 }
 
 }  // anonymous namespace

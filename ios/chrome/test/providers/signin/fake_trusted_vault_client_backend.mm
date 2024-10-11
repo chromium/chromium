@@ -142,6 +142,18 @@ void FakeTrustedVaultClientBackend::GetPublicKeyForIdentity(
   // Do nothing.
 }
 
+FakeTrustedVaultClientBackend::CancelDialogCallback
+FakeTrustedVaultClientBackend::UpdateGPMPinForAccount(
+    id<SystemIdentity> identity,
+    trusted_vault::SecurityDomainId security_domain_id,
+    UINavigationController* navigationController,
+    UIView* brandedNavigationItemTitleView,
+    UpdateGPMPinCompletionCallback completion) {
+  // Do nothing.
+  return base::BindOnce(
+      [](bool animated, ProceduralBlock cancel_done_callback) {});
+}
+
 void FakeTrustedVaultClientBackend::SimulateUserCancel() {
   DCHECK(view_controller_);
   [view_controller_ simulateUserCancel];

@@ -24,6 +24,16 @@ void TrustedVaultClientBackend::RemoveObserver(
       observer);
 }
 
+TrustedVaultClientBackend::CancelDialogCallback
+TrustedVaultClientBackend::UpdateGPMPinForAccount(
+    id<SystemIdentity> identity,
+    trusted_vault::SecurityDomainId security_domain_id,
+    UINavigationController* navigationController,
+    UIView* brandedNavigationItemTitleView,
+    UpdateGPMPinCompletionCallback completion) {
+  NOTREACHED_NORETURN();
+}
+
 void TrustedVaultClientBackend::NotifyKeysChanged(
     trusted_vault::SecurityDomainId security_domain_id) {
   auto it = observer_lists_per_security_domain_id_.find(security_domain_id);
