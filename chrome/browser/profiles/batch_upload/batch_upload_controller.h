@@ -54,7 +54,7 @@ class BatchUploadController {
   // selected data items per data type to the account storages.
   void MoveItemsToAccountStorage(
       const base::flat_map<BatchUploadDataType,
-                           std::vector<BatchUploadDataItemModel::Id>>&
+                           std::vector<BatchUploadDataItemModel::DataId>>&
           items_to_move);
 
   SelectedDataTypeItemsCallback selected_items_callback_;

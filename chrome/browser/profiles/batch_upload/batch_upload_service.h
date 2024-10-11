@@ -55,7 +55,7 @@ class BatchUploadService : public KeyedService {
   // data.
   void OnBatchUplaodDialogResult(
       const base::flat_map<BatchUploadDataType,
-                           std::vector<BatchUploadDataItemModel::Id>>&
+                           std::vector<BatchUploadDataItemModel::DataId>>&
           item_ids_to_move);
 
   // Whether the profile is in the proper sign in state to see the dialog.

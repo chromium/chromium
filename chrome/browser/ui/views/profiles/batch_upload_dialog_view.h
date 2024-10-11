@@ -60,7 +60,7 @@ class BatchUploadDialogView : public views::DialogDelegateView,
   // Empty list means the dialog was closed without a move item request.
   void OnDialogSelectionMade(
       const base::flat_map<BatchUploadDataType,
-                           std::vector<BatchUploadDataItemModel::Id>>&
+                           std::vector<BatchUploadDataItemModel::DataId>>&
           selected_map);
 
   // Callback used as a clearing method whenever the view is being closed. Used

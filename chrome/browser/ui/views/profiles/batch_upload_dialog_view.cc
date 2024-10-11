@@ -140,7 +140,7 @@ void BatchUploadDialogView::OnClose() {
 
 void BatchUploadDialogView::OnDialogSelectionMade(
     const base::flat_map<BatchUploadDataType,
-                         std::vector<BatchUploadDataItemModel::Id>>&
+                         std::vector<BatchUploadDataItemModel::DataId>>&
         selected_map) {
   // Take ownership of the callback, as closing the widget will attempt to
   // execute it with an empty map.

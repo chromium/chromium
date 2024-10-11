@@ -17,7 +17,7 @@
 namespace {
 
 constexpr base::flat_map<BatchUploadDataType,
-                         std::vector<BatchUploadDataItemModel::Id>>
+                         std::vector<BatchUploadDataItemModel::DataId>>
     kEmptySelectedMap;
 
 // Helper alias to a mock callback of the result of the Batch Upload Dialog.
@@ -46,7 +46,7 @@ class BatchUploadDataProviderFake : public BatchUploadDataProvider {
     return container;
   }
 
-  bool MoveToAccountStorage(const std::vector<BatchUploadDataItemModel::Id>&
+  bool MoveToAccountStorage(const std::vector<BatchUploadDataItemModel::DataId>&
                                 item_ids_to_move) override {
     return true;
   }
@@ -229,7 +229,7 @@ TEST(BatchUploadControllerTest, ProviderWithItemsToMoveDoneCallback) {
 
   // Extract the first item id.
   BatchUploadDataContainer container = provider->GetLocalData();
-  BatchUploadDataItemModel::Id first_item_id = container.items[0].id;
+  BatchUploadDataItemModel::DataId first_item_id = container.items[0].id;
 
   // Close the dialog directly when shown, with returned items to move.
   std::vector<BatchUploadDataContainer> expected_containers_list;
@@ -245,10 +245,10 @@ TEST(BatchUploadControllerTest, ProviderWithItemsToMoveDoneCallback) {
             EXPECT_FALSE(data_containers_list[0].items.empty());
 
             base::flat_map<BatchUploadDataType,
-                           std::vector<BatchUploadDataItemModel::Id>>
+                           std::vector<BatchUploadDataItemModel::DataId>>
                 selected_items;
             // Insert the first item of the first available container.
-            std::vector<BatchUploadDataItemModel::Id> item_ids;
+            std::vector<BatchUploadDataItemModel::DataId> item_ids;
             item_ids.emplace_back(first_item_id);
             selected_items.insert_or_assign(data_containers_list[0].type,
                                             item_ids);
@@ -256,10 +256,11 @@ TEST(BatchUploadControllerTest, ProviderWithItemsToMoveDoneCallback) {
           });
 
   // Data was requested to be moved. Map contains the first item id.
-  base::flat_map<BatchUploadDataType, std::vector<BatchUploadDataItemModel::Id>>
+  base::flat_map<BatchUploadDataType,
+                 std::vector<BatchUploadDataItemModel::DataId>>
       expected_result_map{
           {provider->GetDataType(),
-           std::vector<BatchUploadDataItemModel::Id>{first_item_id}}};
+           std::vector<BatchUploadDataItemModel::DataId>{first_item_id}}};
   EXPECT_CALL(mock_callback, Run(expected_result_map)).Times(1);
 
   // One provider with data is enough to allow showing the dialog.

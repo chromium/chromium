@@ -26,7 +26,7 @@
 namespace {
 
 constexpr base::flat_map<BatchUploadDataType,
-                         std::vector<BatchUploadDataItemModel::Id>>
+                         std::vector<BatchUploadDataItemModel::DataId>>
     kEmptySelectedMap;
 
 class BatchUploadDataProviderFake : public BatchUploadDataProvider {
@@ -48,7 +48,7 @@ class BatchUploadDataProviderFake : public BatchUploadDataProvider {
     if (has_local_data_) {
       // Add an arbitrary item.
       BatchUploadDataItemModel item;
-      item.id = BatchUploadDataItemModel::Id(123);
+      item.id = BatchUploadDataItemModel::DataId("123");
       item.title = "data_title";
       item.subtitle = "data_subtitle";
       container.items.push_back(std::move(item));
@@ -56,7 +56,7 @@ class BatchUploadDataProviderFake : public BatchUploadDataProvider {
     return container;
   }
 
-  bool MoveToAccountStorage(const std::vector<BatchUploadDataItemModel::Id>&
+  bool MoveToAccountStorage(const std::vector<BatchUploadDataItemModel::DataId>&
                                 item_ids_to_move) override {
     return true;
   }

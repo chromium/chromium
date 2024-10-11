@@ -49,7 +49,7 @@ class BatchUploadDataProviderFake : public BatchUploadDataProvider {
     // Add arbitrary items.
     for (int i = 0; i < item_count_; ++i) {
       BatchUploadDataItemModel item;
-      item.id = BatchUploadDataItemModel::Id(i);
+      item.id = BatchUploadDataItemModel::DataId(base::ToString(i));
       item.icon_url = GetDataType() == BatchUploadDataType::kPasswords
                           ? GURL("chrome://theme/IDR_PASSWORD_MANAGER_FAVICON")
                           : GURL();
@@ -62,7 +62,7 @@ class BatchUploadDataProviderFake : public BatchUploadDataProvider {
     return container;
   }
 
-  bool MoveToAccountStorage(const std::vector<BatchUploadDataItemModel::Id>&
+  bool MoveToAccountStorage(const std::vector<BatchUploadDataItemModel::DataId>&
                                 item_ids_to_move) override {
     return true;
   }

@@ -77,7 +77,7 @@ bool BatchUploadController::ShowDialog(
 
 void BatchUploadController::MoveItemsToAccountStorage(
     const base::flat_map<BatchUploadDataType,
-                         std::vector<BatchUploadDataItemModel::Id>>&
+                         std::vector<BatchUploadDataItemModel::DataId>>&
         items_to_move) {
   CHECK(selected_items_callback_);
   std::move(selected_items_callback_).Run(items_to_move);

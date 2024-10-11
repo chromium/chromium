@@ -15,7 +15,7 @@ class Browser;
 
 using SelectedDataTypeItemsCallback = base::OnceCallback<void(
     const base::flat_map<BatchUploadDataType,
-                         std::vector<BatchUploadDataItemModel::Id>>&)>;
+                         std::vector<BatchUploadDataItemModel::DataId>>&)>;
 
 // Delegate responsible of showing the Batch Upload Dialog view.
 class BatchUploadDelegate {

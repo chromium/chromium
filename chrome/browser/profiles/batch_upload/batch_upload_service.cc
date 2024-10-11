@@ -5,6 +5,7 @@
 #include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
 
 #include "base/functional/bind.h"
+#include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_controller.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_data_provider.h"
@@ -42,7 +43,7 @@ class DummyBatchUploadDataProvider : public BatchUploadDataProvider {
                                        /*section_name_id=*/title_id_);
     for (int i = 0; i < item_count_; ++i) {
       BatchUploadDataItemModel item;
-      item.id = BatchUploadDataItemModel::Id(i);
+      item.id = BatchUploadDataItemModel::DataId(base::ToString(i));
       item.icon_url = GetDataType() == BatchUploadDataType::kPasswords
                           ? GURL("chrome://theme/IDR_PASSWORD_MANAGER_FAVICON")
                           : GURL();
@@ -53,7 +54,7 @@ class DummyBatchUploadDataProvider : public BatchUploadDataProvider {
     return container;
   }
 
-  bool MoveToAccountStorage(const std::vector<BatchUploadDataItemModel::Id>&
+  bool MoveToAccountStorage(const std::vector<BatchUploadDataItemModel::DataId>&
                                 item_ids_to_move) override {
     // TODO(b/359146556): temporary output until there is the real
     // implementations.
@@ -153,7 +154,7 @@ bool BatchUploadService::OpenBatchUpload(Browser* browser) {
 
 void BatchUploadService::OnBatchUplaodDialogResult(
     const base::flat_map<BatchUploadDataType,
-                         std::vector<BatchUploadDataItemModel::Id>>&
+                         std::vector<BatchUploadDataItemModel::DataId>>&
         item_ids_to_move) {
   CHECK(controller_);
 

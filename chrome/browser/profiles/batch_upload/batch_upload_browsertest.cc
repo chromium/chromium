@@ -286,10 +286,10 @@ class BatchUploadDelegateFake : public BatchUploadDelegate {
     CHECK(complete_callback_);
 
     base::flat_map<BatchUploadDataType,
-                   std::vector<BatchUploadDataItemModel::Id>>
+                   std::vector<BatchUploadDataItemModel::DataId>>
         result;
     for (const BatchUploadDataContainer& container : data_containers_list_) {
-      std::vector<BatchUploadDataItemModel::Id> data_id_list;
+      std::vector<BatchUploadDataItemModel::DataId> data_id_list;
       CHECK(!container.items.empty());
       std::ranges::transform(
           container.items, std::back_inserter(data_id_list),

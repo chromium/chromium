@@ -8,26 +8,22 @@
 #include <string>
 #include <vector>
 
-#include "base/types/id_type.h"
 #include "url/gurl.h"
 
 enum class BatchUploadDataType;
 
 // Representation of a single item to be displayed in the BatchUpload dialog.
 struct BatchUploadDataItemModel {
-  // Strong Alias ID which is reprenseted as an int.
-  using Id = base::IdType32<BatchUploadDataItemModel>;
+  // This id corresponds to the data item being represented in the model. It
+  // will be used to link back to the data accurately when needing to process
+  // the result of the dialog.
+  // Currently only needed as a string, but can potentially be extended to be a
+  // `std::variant<IdType1, IdType2, ...>` based on the data id types that are
+  // added.
+  using DataId = std::string;
 
-  // This field is used to map the model item to the actual underlying item
-  // provided by the `LocalDataProvider`. Each instance of
-  // `LocalDataProvider` needs to guarantee that the id mapping stays valid,
-  // expecting that it will be returned through
-  // `LocalDataProvider::MoveToAccountStorage()` later and finding a match.
-  // A simple way would be to use the `id` as the index of the item in the
-  // `LocalDataContainer::items` vector as long as the returned vector is
-  // not modified while the dialog is shown.
-  // TODO(b/359509890): Make the ID field more easily manageable.
-  Id id;
+  // Reprensents the underlying data id.
+  DataId id;
 
   // Icon url for the icon of the item model. If empty the the icon will be
   // hidden.
@@ -111,7 +107,8 @@ class BatchUploadDataProvider {
   // Given the list of items ids that were selected in the Batch Upload dialog,
   // performs the move to the account storage.
   virtual bool MoveToAccountStorage(
-      const std::vector<BatchUploadDataItemModel::Id>& item_ids_to_move) = 0;
+      const std::vector<BatchUploadDataItemModel::DataId>&
+          item_ids_to_move) = 0;
 
  private:
   // The type should always match when `this` is a value of a map keyed by
