@@ -59,7 +59,7 @@ content::WebUIDataSource* CreateAndAddManagementUIHtmlSource(Profile* profile) {
                     ManagementUI::GetManagementPageSubtitle(profile));
 
   std::vector<webui::LocalizedString> localized_strings;
-  ManagementUI::GetLocalizedStrings(localized_strings);
+  ManagementUI::GetLocalizedStrings(localized_strings, /*remove_links=*/false);
   source->AddLocalizedStrings(localized_strings);
 
   source->SetDefaultResource(IDR_MANAGEMENT_MANAGEMENT_HTML);
@@ -136,7 +136,8 @@ std::u16string ManagementUI::GetManagementPageSubtitle(Profile* profile) {
 
 // static
 void ManagementUI::GetLocalizedStrings(
-    std::vector<webui::LocalizedString>& strings) {
+    std::vector<webui::LocalizedString>& strings,
+    bool remove_links) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
 #if BUILDFLAG(IS_CHROMEOS)
       {"learnMore", IDS_LEARN_MORE},
@@ -147,9 +148,6 @@ void ManagementUI::GetLocalizedStrings(
       {"deviceReporting", IDS_MANAGEMENT_DEVICE_REPORTING},
       {"updateRequiredEolAdminMessageTitle",
        IDS_MANAGEMENT_UPDATE_REQUIRED_EOL_ADMIN_MESSAGE_TITLE},
-      {kManagementLogUploadEnabled, IDS_MANAGEMENT_LOG_UPLOAD_ENABLED},
-      {kManagementLogUploadEnabledNoLink,
-       IDS_MANAGEMENT_LOG_UPLOAD_ENABLED_NO_LINK},
       {kManagementReportActivityTimes,
        IDS_MANAGEMENT_REPORT_DEVICE_ACTIVITY_TIMES},
       {kManagementReportNetworkData, IDS_MANAGEMENT_REPORT_DEVICE_NETWORK_DATA},
@@ -250,9 +248,6 @@ void ManagementUI::GetLocalizedStrings(
       {kManagementOnPageVisitedEvent, IDS_MANAGEMENT_PAGE_VISITED_EVENT},
       {kManagementOnPageVisitedVisibleData,
        IDS_MANAGEMENT_PAGE_VISITED_VISIBLE_DATA},
-      {kManagementLegacyTechReport, IDS_MANAGEMENT_LEGACY_TECH_REPORT},
-      {kManagementLegacyTechReportNoLink,
-       IDS_MANAGEMENT_LEGACY_TECH_REPORT_NO_LINK},
       {kManagementOnExtensionTelemetryEvent,
        IDS_MANAGEMENT_EXTENSION_TELEMETRY_EVENT},
       {kManagementOnExtensionTelemetryVisibleData,
@@ -267,9 +262,32 @@ void ManagementUI::GetLocalizedStrings(
       {kProfileReportingPolicy, IDS_MANAGEMENT_PROFILE_REPORTING_POLICY},
       {kProfileReportingLearnMore, IDS_MANAGEMENT_PROFILE_REPORTING_LEARN_MORE},
   };
-
   for (auto i : kLocalizedStrings) {
     strings.push_back(i);
+  }
+
+  static constexpr webui::LocalizedString kDeviceDisclosuresLinks[] = {
+#if BUILDFLAG(IS_CHROMEOS)
+      {kManagementLogUploadEnabled, IDS_MANAGEMENT_LOG_UPLOAD_ENABLED},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+      {kManagementLegacyTechReport, IDS_MANAGEMENT_LEGACY_TECH_REPORT}};
+
+  // Disclosures that are device-wide (not profile dependent) with links
+  // removed.
+  static constexpr webui::LocalizedString kDeviceDisclosuresLinksRemoved[] = {
+#if BUILDFLAG(IS_CHROMEOS)
+      {kManagementLogUploadEnabled, IDS_MANAGEMENT_LOG_UPLOAD_ENABLED_NO_LINK},
+#endif  // BUILDFLAG(IS_CHROMEOS)
+      {kManagementLegacyTechReport, IDS_MANAGEMENT_LEGACY_TECH_REPORT_NO_LINK}};
+
+  if (remove_links) {
+    for (auto i : kDeviceDisclosuresLinksRemoved) {
+      strings.push_back(i);
+    }
+  } else {
+    for (auto i : kDeviceDisclosuresLinks) {
+      strings.push_back(i);
+    }
   }
 }
 

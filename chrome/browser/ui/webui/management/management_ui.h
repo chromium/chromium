@@ -47,7 +47,12 @@ class ManagementUI : public content::WebUIController {
 
   static std::u16string GetManagementPageSubtitle(Profile* profile);
 
-  static void GetLocalizedStrings(std::vector<webui::LocalizedString>& strings);
+  // Returns the localized strings used on the management page.
+  // If `remove_links` is true, it will use the NO_LINK versions
+  // of device disclosure strings to be displayed on the management disclosure
+  // dialog.
+  static void GetLocalizedStrings(std::vector<webui::LocalizedString>& strings,
+                                  bool remove_links);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_MANAGEMENT_MANAGEMENT_UI_H_

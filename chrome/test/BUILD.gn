@@ -9181,6 +9181,7 @@ test("unit_tests") {
       "../browser/interstitials/enterprise_util_unittest.cc",
       "../browser/safe_browsing/download_protection/deep_scanning_request_unittest.cc",
       "../browser/ui/webui/management/management_ui_handler_unittest.cc",
+      "../browser/ui/webui/management/management_ui_unittest.cc",
     ]
     deps += [ "../browser/enterprise/connectors/test:test_support" ]
     if (is_chromeos) {

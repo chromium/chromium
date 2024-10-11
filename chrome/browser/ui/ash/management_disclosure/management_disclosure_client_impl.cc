@@ -46,7 +46,7 @@ std::vector<std::u16string> ManagementDisclosureClientImpl::GetDisclosures() {
   // Fill the map when it is first called.
   if (policy_map_.empty()) {
     std::vector<webui::LocalizedString> localized_strings;
-    ManagementUI::GetLocalizedStrings(localized_strings);
+    ManagementUI::GetLocalizedStrings(localized_strings, /*remove_links=*/true);
     for (auto pair : localized_strings) {
       policy_map_.insert(std::make_pair(pair.name, pair.id));
     }
