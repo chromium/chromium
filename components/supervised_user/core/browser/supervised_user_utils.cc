@@ -45,17 +45,46 @@ std::optional<T> GetMergedRecord(const std::vector<std::optional<T>> records,
   return merged_record;
 }
 
+bool HasSupervisedStatus(
+    std::optional<FamilyLinkUserLogRecord::Segment> segment) {
+  if (!segment.has_value()) {
+    return false;
+  }
+  switch (segment.value()) {
+    case FamilyLinkUserLogRecord::Segment::kUnsupervised:
+    case FamilyLinkUserLogRecord::Segment::kParent:
+      return false;
+    case FamilyLinkUserLogRecord::Segment::kSupervisionEnabledByPolicy:
+    case FamilyLinkUserLogRecord::Segment::kSupervisionEnabledByUser:
+      return true;
+    case FamilyLinkUserLogRecord::Segment::kMixedProfile:
+      NOTREACHED();
+  }
+}
+
 std::optional<FamilyLinkUserLogRecord::Segment> GetLogSegmentForHistogram(
     const std::vector<FamilyLinkUserLogRecord>& records) {
+  bool has_supervised_status = false;
   std::optional<FamilyLinkUserLogRecord::Segment> merged_log_segment;
   for (const FamilyLinkUserLogRecord& record : records) {
     std::optional<FamilyLinkUserLogRecord::Segment> supervision_status =
         record.GetSupervisionStatusForPrimaryAccount();
+    has_supervised_status |= HasSupervisedStatus(supervision_status);
     if (merged_log_segment.has_value() &&
         merged_log_segment.value() != supervision_status) {
-      return FamilyLinkUserLogRecord::Segment::kMixedProfile;
+      if (has_supervised_status) {
+        // A Family Link user record is only expected to be mixed if there is at
+        // least one supervised user.
+        return FamilyLinkUserLogRecord::Segment::kMixedProfile;
+      }
+      CHECK(merged_log_segment.value() ==
+                FamilyLinkUserLogRecord::Segment::kParent ||
+            merged_log_segment.value() ==
+                FamilyLinkUserLogRecord::Segment::kUnsupervised);
+      merged_log_segment = FamilyLinkUserLogRecord::Segment::kParent;
+    } else {
+      merged_log_segment = supervision_status;
     }
-    merged_log_segment = supervision_status;
   }
   return merged_log_segment;
 }

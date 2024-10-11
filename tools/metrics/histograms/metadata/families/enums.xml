@@ -169,19 +169,24 @@ chromium-metrics-reviews@google.com.
     Filters family link user metrics into categories of interest.
   </summary>
   <int value="0" label="Other Not Supervised">
-    None of the users are supervised. This includes signed out users, and where
-    a secondary account is supervised.
+    None of the users are supervised or parents. This includes signed out users,
+    and where a secondary account is supervised.
   </int>
   <int value="1" label="Policy Enabled Supervision">
-    Users under the age of consent automatically have supervision applied to
+    All profiles are under the age of consent and have supervision applied to
     their accounts.
   </int>
   <int value="2" label="User Enabled Supervision">
-    Users over the age of consent can opt into supervision.
+    All profiles are over the age of consent and have opted in to supervision.
   </int>
-  <int value="3" label="Mixed Profile">
+  <int value="3" label="Mixed Profile With Supervision">
     Profiles with different supervision types were in use during the reporting
-    window.
+    window. At least one profile must be supervised.
+  </int>
+  <int value="4" label="Parent">
+    Users that have parent accounts (family manager or parent) in Family Link.
+    There must be at least one profile with a parent and no supervision across
+    the profiles.
   </int>
 </enum>
 

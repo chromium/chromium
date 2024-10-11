@@ -99,6 +99,7 @@ void ChromeSupervisedUserServicePlatformDelegateBase::
       }
       break;
 
+    case supervised_user::FamilyLinkUserLogRecord::Segment::kParent:
     case supervised_user::FamilyLinkUserLogRecord::Segment::kUnsupervised:
     case supervised_user::FamilyLinkUserLogRecord::Segment::kMixedProfile:
       // Incognito usage is expected, so don't output any more detailed metrics.

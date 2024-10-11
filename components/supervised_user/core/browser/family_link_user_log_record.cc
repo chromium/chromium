@@ -26,8 +26,17 @@ bool AreParentalSupervisionCapabilitiesKnown(
              signin::Tribool::kUnknown;
 }
 
+bool IsParentFamilyMemberRole(const PrefService& pref_service) {
+  // TODO(crbug.com/372607761): Convert string-based pref to enum based on
+  // Family Link user state.
+  const std::string& family_link_role =
+      pref_service.GetString(prefs::kFamilyLinkUserMemberRole);
+  return family_link_role == "parent" || family_link_role == "family_manager";
+}
+
 std::optional<FamilyLinkUserLogRecord::Segment> GetSupervisionStatus(
-    signin::IdentityManager* identity_manager) {
+    signin::IdentityManager* identity_manager,
+    const PrefService& pref_service) {
   if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     // The user is not signed in to this profile, and is therefore
     // unsupervised.
@@ -54,11 +63,15 @@ std::optional<FamilyLinkUserLogRecord::Segment> GetSupervisionStatus(
       // by a policy applied to their account, e.g. Unicorn accounts.
       return FamilyLinkUserLogRecord::Segment::kSupervisionEnabledByPolicy;
     }
-  } else {
-    // Log as unsupervised user if the account is not subject to parental
-    // controls.
-    return FamilyLinkUserLogRecord::Segment::kUnsupervised;
+  } else if (account_info.capabilities.can_fetch_family_member_info() ==
+             signin::Tribool::kTrue) {
+    if (IsParentFamilyMemberRole(pref_service)) {
+      return FamilyLinkUserLogRecord::Segment::kParent;
+    }
   }
+  // Log as unsupervised user if the account is not subject to parental
+  // controls and is not a parent in Family Link.
+  return FamilyLinkUserLogRecord::Segment::kUnsupervised;
 }
 
 // Returns true if there is no available supervision status or the account is
@@ -67,7 +80,9 @@ bool IsUnsupervisedStatus(
     std::optional<FamilyLinkUserLogRecord::Segment> supervision_status) {
   return !supervision_status.has_value() ||
          supervision_status.value() ==
-             FamilyLinkUserLogRecord::Segment::kUnsupervised;
+             FamilyLinkUserLogRecord::Segment::kUnsupervised ||
+         supervision_status.value() ==
+             FamilyLinkUserLogRecord::Segment::kParent;
 }
 
 std::optional<WebFilterType> GetWebFilterType(
@@ -148,7 +163,7 @@ FamilyLinkUserLogRecord FamilyLinkUserLogRecord::Create(
     const HostContentSettingsMap& content_settings_map,
     SupervisedUserURLFilter* supervised_user_filter) {
   std::optional<FamilyLinkUserLogRecord::Segment> supervision_status =
-      GetSupervisionStatus(identity_manager);
+      GetSupervisionStatus(identity_manager, pref_service);
   return FamilyLinkUserLogRecord(
       supervision_status,
       GetWebFilterType(supervision_status, supervised_user_filter),
