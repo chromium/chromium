@@ -8,6 +8,7 @@
 #include <mferror.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -226,12 +227,18 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
     }
   }
 
+  std::optional<media::VideoDecoderConfig> video_decoder_config = std::nullopt;
+  std::optional<media::AudioDecoderConfig> audio_decoder_config = std::nullopt;
+
   // Only call the following when there is a video stream.
   for (media::DemuxerStream* stream : media_resource->GetAllStreams()) {
     if (stream->type() == media::DemuxerStream::VIDEO) {
+      video_decoder_config = stream->video_decoder_config();
       RETURN_IF_FAILED(InitializeDXGIDeviceManager());
       RETURN_IF_FAILED(InitializeVirtualVideoWindow());
       break;
+    } else if (stream->type() == media::DemuxerStream::AUDIO) {
+      audio_decoder_config = stream->audio_decoder_config();
     }
   }
 
@@ -258,7 +265,8 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
       base::BindPostTaskToCurrentDefault(base::BindRepeating(
           &MediaFoundationRenderer::OnFrameStepCompleted, weak_this)),
       base::BindPostTaskToCurrentDefault(base::BindRepeating(
-          &MediaFoundationRenderer::OnTimeUpdate, weak_this))));
+          &MediaFoundationRenderer::OnTimeUpdate, weak_this)),
+      video_decoder_config, audio_decoder_config));
 
   ComPtr<IMFAttributes> creation_attributes;
   RETURN_IF_FAILED(MFCreateAttributes(&creation_attributes, 6));

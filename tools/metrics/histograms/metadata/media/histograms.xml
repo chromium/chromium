@@ -4118,6 +4118,20 @@ chromium-metrics-reviews@google.com.
   <token key="MF_MEDIA_ENGINE_ERR" variants="MF_MEDIA_ENGINE_ERR"/>
 </histogram>
 
+<histogram name="Media.MediaFoundation.MF_E_TOPO_CODEC_NOT_FOUND.{VideoCodec}"
+    enum="AudioCodec" expires_after="2025-02-27">
+  <owner>vpasupathy@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    This histogram is recorded when MediaEngine hits an error corresponding to
+    the HRESULT MF_E_TOPO_CODEC_NOT_FOUND from Event Notify. This histogram
+    records the VideoCodec as part of the name, and reports the AudioCodec, so
+    we have both to look at the combination of codecs used when this HRESULT
+    occurs.
+  </summary>
+  <token key="VideoCodec" variants="VideoCodec"/>
+</histogram>
+
 <histogram name="Media.MediaFoundationRenderer.CreateMediaEngineError"
     enum="Hresult" expires_after="2025-02-27">
   <owner>xhwang@chromium.org</owner>
