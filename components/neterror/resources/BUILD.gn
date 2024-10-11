@@ -16,6 +16,7 @@ preprocess_if_expr("preprocess") {
     "dino_game/constants.js",
     "dino_game/distance_meter.js",
     "dino_game/generated_sound_fx.js",
+    "dino_game/game_over_panel.js",
     "dino_game/horizon_line.js",
     "dino_game/horizon.js",
     "dino_game/night_mode.js",
