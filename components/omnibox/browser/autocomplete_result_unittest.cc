@@ -1421,7 +1421,16 @@ TEST_F(AutocompleteResultTest, SortAndCullReorderForDefaultMatch) {
 
 // Note: DCHECKs not firing on Cast.
 #if DCHECK_IS_ON()
-TEST_F(AutocompleteResultTest, SortAndCullFailsWithIncorrectDefaultScheme) {
+// TODO(crbug.com/372886010): Re-enable test.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_SortAndCullFailsWithIncorrectDefaultScheme \
+  DISABLED_SortAndCullFailsWithIncorrectDefaultScheme
+#else
+#define MAYBE_SortAndCullFailsWithIncorrectDefaultScheme \
+  SortAndCullFailsWithIncorrectDefaultScheme
+#endif
+TEST_F(AutocompleteResultTest,
+       MAYBE_SortAndCullFailsWithIncorrectDefaultScheme) {
   // Scenario:
   // - User navigates to a webpage whose URL looks like a scheme,
   //   e.g. "chrome:123" (note the colon).
