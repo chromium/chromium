@@ -87,7 +87,6 @@ constexpr int kAdvancedViewButtonHeightDp = 16;
 constexpr int kJellyAdvancedViewButtonHeightDp = 20;
 constexpr int kSpacingBetweenSelectionTitleAndButtonDp = 4;
 
-constexpr int kNonEmptyWidth = 1;
 constexpr int kNonEmptyHeight = 1;
 
 constexpr char kMonitoringWarningClassName[] = "MonitoringWarning";
@@ -770,16 +769,13 @@ LoginExpandedPublicAccountView::LoginExpandedPublicAccountView(
   left_pane_ = new NonAccessibleView();
   AddChildView(left_pane_.get());
   left_pane_->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
+      views::BoxLayout::Orientation::kVertical, gfx::Insets(), 24));
 
   left_pane_->AddChildView(user_view_.get());
 
   const bool enable_warning = Shell::Get()->local_state()->GetBoolean(
       prefs::kManagedGuestSessionPrivacyWarningsEnabled);
   if (enable_warning) {
-    views::View* padding =
-        left_pane_->AddChildView(std::make_unique<NonAccessibleView>());
-    padding->SetPreferredSize(gfx::Size{kNonEmptyWidth, 24});
     monitoring_warning_view_ =
         left_pane_->AddChildView(std::make_unique<MonitoringWarningView>());
   }
