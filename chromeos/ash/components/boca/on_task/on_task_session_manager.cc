@@ -97,6 +97,18 @@ void OnTaskSessionManager::OnSessionEnded(const std::string& session_id) {
 
 void OnTaskSessionManager::OnBundleUpdated(const ::boca::Bundle& bundle) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // If the Boca SWA is closed, we launch it again so we can apply bundle
+  // updates. We clear `provider_url_tab_ids_map_` so we reopen all tabs from
+  // the latest bundle.
+  if (const SessionID window_id =
+          system_web_app_manager_->GetActiveSystemWebAppWindowID();
+      !window_id.is_valid()) {
+    provider_url_tab_ids_map_.clear();
+    system_web_app_launch_helper_->LaunchBocaSWA();
+  }
+
+  // Process bundle content.
   base::flat_set<GURL> current_urls_set;
   for (const ::boca::ContentConfig& content_config : bundle.content_configs()) {
     CHECK(content_config.has_url());

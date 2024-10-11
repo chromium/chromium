@@ -8,6 +8,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
+#include "base/test/task_environment.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
 #include "chromeos/ash/components/boca/on_task/on_task_extensions_manager.h"
 #include "chromeos/ash/components/boca/on_task/on_task_system_web_app_manager.h"
@@ -89,6 +90,7 @@ class OnTaskSessionManagerTest : public ::testing::Test {
         std::move(system_web_app_manager), std::move(extensions_manager));
   }
 
+  base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<OnTaskSessionManager> session_manager_;
   raw_ptr<NiceMock<OnTaskSystemWebAppManagerMock>> system_web_app_manager_ptr_;
   raw_ptr<NiceMock<OnTaskExtensionsManagerMock>> extensions_manager_ptr_;
@@ -375,6 +377,39 @@ TEST_F(OnTaskSessionManagerTest, ShouldRemoveTabsWhenFewerTabsFoundInBundle) {
   ::boca::Bundle bundle_2;
   bundle_2.add_content_configs()->set_url(kTestUrl1);
   session_manager_->OnBundleUpdated(bundle_2);
+}
+
+TEST_F(OnTaskSessionManagerTest,
+       ShouldLaunchSWAWithNewBundleContentIfNoWindowFound) {
+  const SessionID kWindowId = SessionID::NewUnique();
+  const SessionID kTabId_1 = SessionID::NewUnique();
+  const SessionID kTabId_2 = SessionID::NewUnique();
+
+  // SWA launch should happen before we create tabs from the bundle, but the
+  // order of tab creation does not matter.
+  Sequence s1, s2;
+  EXPECT_CALL(*system_web_app_manager_ptr_, GetActiveSystemWebAppWindowID())
+      .WillOnce(
+          Return(SessionID::InvalidValue()))  // No window found initially.
+      .WillRepeatedly(Return(kWindowId));
+  EXPECT_CALL(*system_web_app_manager_ptr_, LaunchSystemWebAppAsync(_))
+      .InSequence(s1, s2)
+      .WillOnce([](base::OnceCallback<void(bool)> callback) {
+        std::move(callback).Run(true);
+      });
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              CreateBackgroundTabWithUrl(kWindowId, GURL(kTestUrl1), _))
+      .InSequence(s1)
+      .WillOnce(Return(kTabId_1));
+  EXPECT_CALL(*system_web_app_manager_ptr_,
+              CreateBackgroundTabWithUrl(kWindowId, GURL(kTestUrl2), _))
+      .InSequence(s2)
+      .WillOnce(Return(kTabId_2));
+
+  ::boca::Bundle bundle;
+  bundle.add_content_configs()->set_url(kTestUrl1);
+  bundle.add_content_configs()->set_url(kTestUrl2);
+  session_manager_->OnBundleUpdated(bundle);
 }
 
 TEST_F(OnTaskSessionManagerTest, ShouldDisableExtensionsOnLock) {
