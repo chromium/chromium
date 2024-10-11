@@ -16,6 +16,7 @@ struct SubmitInfo {
   bool checkerboarded_needs_record = false;
   bool top_controls_moved = false;
   EventMetricsSet events_metrics;
+  bool drawn_with_new_layer_tree = true;
 };
 
 }  // namespace cc

@@ -170,6 +170,9 @@ void UkmManager::RecordCompositorLatencyUKM(
       CASE_FOR_TRACKER(CanvasAnimation);
       CASE_FOR_TRACKER(JSAnimation);
 #undef CASE_FOR_TRACKER
+      case FrameSequenceTrackerType::kCompositorRasterAnimation:
+      case FrameSequenceTrackerType::kCompositorNativeAnimation:
+        break;
       case FrameSequenceTrackerType::kSETCompositorAnimation:
       case FrameSequenceTrackerType::kSETMainThreadAnimation:
         break;

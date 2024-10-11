@@ -58,6 +58,7 @@
 #include "cc/trees/transform_node.h"
 #include "cc/trees/tree_synchronizer.h"
 #include "cc/view_transition/view_transition_request.h"
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/traced_value.h"
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "ui/gfx/geometry/box_f.h"
@@ -149,11 +150,13 @@ void LayerTreeLifecycle::AdvanceTo(LifecycleState next_state) {
 
 LayerTreeImpl::LayerTreeImpl(
     LayerTreeHostImpl& host_impl,
+    viz::BeginFrameArgs begin_frame_args,
     scoped_refptr<SyncedScale> page_scale_factor,
     scoped_refptr<SyncedBrowserControls> top_controls_shown_ratio,
     scoped_refptr<SyncedBrowserControls> bottom_controls_shown_ratio,
     scoped_refptr<SyncedElasticOverscroll> elastic_overscroll)
     : host_impl_(&host_impl),
+      created_begin_frame_args_(begin_frame_args),
       source_frame_number_(-1),
       is_first_frame_after_commit_tracker_(-1),
       hud_layer_(nullptr),
@@ -955,6 +958,7 @@ void LayerTreeImpl::PushPropertiesTo(LayerTreeImpl* target_tree) {
   // Make sure that property tree based changes are moved to layers
   // and draw properties are invalidated.
   target_tree->MoveChangeTrackingToLayers();
+  target_tree->SetCreatedBeginFrameArgs(std::move(created_begin_frame_args_));
 }
 
 void LayerTreeImpl::HandleTickmarksVisibilityChange() {
@@ -2021,6 +2025,14 @@ bool LayerTreeImpl::PinchGestureActive() const {
 
 const viz::BeginFrameArgs& LayerTreeImpl::CurrentBeginFrameArgs() const {
   return host_impl_->CurrentBeginFrameArgs();
+}
+
+const viz::BeginFrameArgs& LayerTreeImpl::CreatedBeginFrameArgs() const {
+  return created_begin_frame_args_;
+}
+
+void LayerTreeImpl::SetCreatedBeginFrameArgs(viz::BeginFrameArgs new_args) {
+  created_begin_frame_args_ = std::move(new_args);
 }
 
 base::TimeDelta LayerTreeImpl::CurrentBeginFrameInterval() const {

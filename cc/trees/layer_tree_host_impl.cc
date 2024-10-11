@@ -486,7 +486,7 @@ LayerTreeHostImpl::LayerTreeHostImpl(
 
   // LTHI always has an active tree.
   active_tree_ = std::make_unique<LayerTreeImpl>(
-      *this, new SyncedScale, new SyncedBrowserControls,
+      *this, viz::BeginFrameArgs(), new SyncedScale, new SyncedBrowserControls,
       new SyncedBrowserControls, new SyncedElasticOverscroll);
   active_tree_->property_trees()->set_is_active(true);
 
@@ -859,6 +859,8 @@ void LayerTreeHostImpl::UpdateSyncTreeAfterCommitOrImplSideInvalidation() {
   if (CommitsToActiveTree()) {
     ActivateStateForImages();
   }
+
+  sync_tree()->SetCreatedBeginFrameArgs(CurrentBeginFrameArgs());
 
   if (!paint_worklet_painter_) {
     // Blink should not send us any PaintWorklet inputs until we have a painter
@@ -1825,7 +1827,7 @@ void LayerTreeHostImpl::ResetTreesForTesting() {
   if (active_tree_)
     active_tree_->DetachLayers();
   active_tree_ = std::make_unique<LayerTreeImpl>(
-      *this, active_tree()->page_scale_factor(),
+      *this, CurrentBeginFrameArgs(), active_tree()->page_scale_factor(),
       active_tree()->top_controls_shown_ratio(),
       active_tree()->bottom_controls_shown_ratio(),
       active_tree()->elastic_overscroll());
@@ -2701,6 +2703,17 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
   layer_tree_frame_sink_->set_source_frame_number(
       active_tree_->source_frame_number());
 
+  bool drawn_with_new_layer_tree = true;
+  if (last_draw_active_tree_begin_frame_args_.IsValid()) {
+    // If the active tree's BFA are the same as the last frame that we drew,
+    // then we are reusing a tree. If we are not, then we know we are
+    // activating a new layer in the tree.
+    drawn_with_new_layer_tree =
+        active_tree_->CreatedBeginFrameArgs().frame_id !=
+        last_draw_active_tree_begin_frame_args_.frame_id;
+  }
+  last_draw_active_tree_begin_frame_args_ =
+      active_tree_->CreatedBeginFrameArgs();
   auto compositor_frame = GenerateCompositorFrame(frame);
   const auto frame_token = compositor_frame.metadata.frame_token;
   frame->frame_token = frame_token;
@@ -2798,7 +2811,8 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
                     frame->checkerboarded_needs_raster,
                     frame->checkerboarded_needs_record,
                     top_controls_moved,
-                    std::move(events_metrics)};
+                    std::move(events_metrics),
+                    drawn_with_new_layer_tree};
 }
 
 viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
@@ -3245,6 +3259,8 @@ bool LayerTreeHostImpl::WillBeginImplFrame(const viz::BeginFrameArgs& args) {
   current_begin_frame_tracker_.Start(args);
   frame_trackers_.NotifyBeginImplFrame(args);
   total_frame_counter_.OnBeginFrame(args);
+  compositor_frame_reporting_controller_->SetNeedsRasterPropertiesAnimated(
+      paint_worklet_tracker_.HasInputPropertiesAnimatedOnImpl());
   devtools_instrumentation::DidBeginFrame(id_, args.frame_time,
                                           args.frame_id.sequence_number);
 
@@ -3573,7 +3589,7 @@ void LayerTreeHostImpl::CreatePendingTree() {
     recycle_tree_.swap(pending_tree_);
   } else {
     pending_tree_ = std::make_unique<LayerTreeImpl>(
-        *this, active_tree()->page_scale_factor(),
+        *this, CurrentBeginFrameArgs(), active_tree()->page_scale_factor(),
         active_tree()->top_controls_shown_ratio(),
         active_tree()->bottom_controls_shown_ratio(),
         active_tree()->elastic_overscroll());
@@ -4634,7 +4650,7 @@ bool LayerTreeHostImpl::AnimateBrowserControls(base::TimeTicks time) {
   // being fixed while the browser controls animate.
   viewport().ScrollBy(scroll_delta,
                       /*viewport_point=*/gfx::Point(),
-                      /*is_wheel_scroll=*/false,
+                      /*is_direct_manipulation=*/false,
                       /*affect_browser_controls=*/false,
                       /*scroll_outer_viewport=*/true);
 
@@ -4676,9 +4692,27 @@ bool LayerTreeHostImpl::AnimateLayers(base::TimeTicks monotonic_time,
     SetNeedsOneBeginImplFrame();
     frame_trackers_.StartSequence(
         FrameSequenceTrackerType::kCompositorAnimation);
+    if (mutator_host_->HasInvalidationAnimation()) {
+      frame_trackers_.StartSequence(
+          FrameSequenceTrackerType::kCompositorRasterAnimation);
+    } else {
+      frame_trackers_.StopSequence(
+          FrameSequenceTrackerType::kCompositorRasterAnimation);
+    }
+    if (mutator_host_->HasNativePropertyAnimation()) {
+      frame_trackers_.StartSequence(
+          FrameSequenceTrackerType::kCompositorNativeAnimation);
+    } else {
+      frame_trackers_.StopSequence(
+          FrameSequenceTrackerType::kCompositorNativeAnimation);
+    }
   } else {
     frame_trackers_.StopSequence(
         FrameSequenceTrackerType::kCompositorAnimation);
+    frame_trackers_.StopSequence(
+        FrameSequenceTrackerType::kCompositorRasterAnimation);
+    frame_trackers_.StopSequence(
+        FrameSequenceTrackerType::kCompositorNativeAnimation);
   }
 
   if (animated && mutator_host_->HasViewTransition()) {

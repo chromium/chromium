@@ -114,6 +114,7 @@ class CC_EXPORT LayerTreeImpl {
   enum : int { kFixedPointHitsThreshold = 3 };
   LayerTreeImpl(
       LayerTreeHostImpl& host_impl,
+      viz::BeginFrameArgs begin_frame_args,
       scoped_refptr<SyncedScale> page_scale_factor,
       scoped_refptr<SyncedBrowserControls> top_controls_shown_ratio,
       scoped_refptr<SyncedBrowserControls> bottom_controls_shown_ratio,
@@ -157,7 +158,14 @@ class CC_EXPORT LayerTreeImpl {
   // TODO(bokan): PinchGestureActive is a layering violation, it's not related
   // to what LayerTreeImpl does.
   bool PinchGestureActive() const;
+  // Current BFA represents the frame that will be rendered next.
+  // Created BFA represents the begin frame args of the frame which
+  // was rendered when the LTHI was created. These are used to
+  // determine whether or not the renderer re-used a tree.
+  viz::BeginFrameArgs last_frame_begin_frame_args;
   const viz::BeginFrameArgs& CurrentBeginFrameArgs() const;
+  const viz::BeginFrameArgs& CreatedBeginFrameArgs() const;
+  void SetCreatedBeginFrameArgs(viz::BeginFrameArgs other);
   base::TimeDelta CurrentBeginFrameInterval() const;
   const gfx::Rect ViewportRectForTilePriority() const;
   std::unique_ptr<ScrollbarAnimationController>
@@ -183,7 +191,7 @@ class CC_EXPORT LayerTreeImpl {
   // ---------------------------------------------------------------------------
   void SetNeedsRedraw();
 
-  // Tracing methods.
+  // Tracing methods
   // ---------------------------------------------------------------------------
   void GetAllPrioritizedTilesForTracing(
       std::vector<PrioritizedTile>* prioritized_tiles) const;
@@ -865,7 +873,8 @@ class CC_EXPORT LayerTreeImpl {
   void UpdateScrollbarGeometries(const ScrollNode& scroll_node);
 
   raw_ptr<LayerTreeHostImpl> host_impl_;
-  int source_frame_number_;
+  viz::BeginFrameArgs created_begin_frame_args_;
+  int source_frame_number_ = 0;
   BeginMainFrameTraceId trace_id_{0};
   int is_first_frame_after_commit_tracker_;
   raw_ptr<HeadsUpDisplayLayerImpl, DanglingUntriaged> hud_layer_;

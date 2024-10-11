@@ -1365,6 +1365,10 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   std::unordered_map<uint32_t, viz::ViewTransitionElementResourceRects>
       view_transition_content_rects_;
 
+  // Last drawn frame's BeginFrameArgs, used to check whether the active tree
+  // was re-used.
+  viz::BeginFrameArgs last_draw_active_tree_begin_frame_args_;
+
   // Must be the last member to ensure this is destroyed first in the
   // destruction order and invalidates all weak pointers.
   base::WeakPtrFactory<LayerTreeHostImpl> weak_factory_{this};
