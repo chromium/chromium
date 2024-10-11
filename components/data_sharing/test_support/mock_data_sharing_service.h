@@ -29,6 +29,9 @@ class MockDataSharingService : public DataSharingService {
   MOCK_METHOD0(GetDataSharingNetworkLoader, DataSharingNetworkLoader*());
   MOCK_METHOD0(GetCollaborationGroupControllerDelegate,
                base::WeakPtr<syncer::DataTypeControllerDelegate>());
+  MOCK_METHOD0(IsGroupDataModelLoaded, bool());
+  MOCK_METHOD1(ReadGroup, std::optional<GroupData>(const GroupId&));
+  MOCK_METHOD0(ReadAllGroups, std::set<GroupData>());
   MOCK_METHOD1(
       ReadAllGroups,
       void(base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)>));

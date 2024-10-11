@@ -28,6 +28,9 @@ class EmptyDataSharingService : public DataSharingService {
   DataSharingNetworkLoader* GetDataSharingNetworkLoader() override;
   base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetCollaborationGroupControllerDelegate() override;
+  bool IsGroupDataModelLoaded() override;
+  std::optional<GroupData> ReadGroup(const GroupId& group_id) override;
+  std::set<GroupData> ReadAllGroups() override;
   void ReadAllGroups(
       base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)> callback)
       override;

@@ -5,6 +5,7 @@
 #include "components/data_sharing/internal/android/data_sharing_service_android.h"
 
 #include "base/android/jni_android.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -120,6 +121,8 @@ class DataSharingServiceAndroidTest : public testing::Test {
 
   void SetUp() override {
     Test::SetUp();
+    EXPECT_TRUE(profile_dir_.CreateUniqueTempDir());
+
     scoped_refptr<network::SharedURLLoaderFactory> test_url_loader_factory =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
@@ -129,7 +132,7 @@ class DataSharingServiceAndroidTest : public testing::Test {
     not_owned_sdk_delegate_ = sdk_delegate.get();
 
     data_sharing_service_ = std::make_unique<DataSharingServiceImpl>(
-        std::move(test_url_loader_factory),
+        profile_dir_.GetPath(), std::move(test_url_loader_factory),
         identity_test_env_.identity_manager(),
         syncer::DataTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
         version_info::Channel::UNKNOWN, std::move(sdk_delegate),
@@ -198,6 +201,7 @@ class DataSharingServiceAndroidTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  base::ScopedTempDir profile_dir_;
   signin::IdentityTestEnvironment identity_test_env_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<DataSharingServiceImpl> data_sharing_service_;

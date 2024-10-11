@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/version_info/channel.h"
 #include "components/data_sharing/internal/collaboration_group_sync_bridge.h"
+#include "components/data_sharing/internal/group_data_model.h"
 #include "components/data_sharing/internal/preview_server_proxy.h"
 #include "components/data_sharing/public/data_sharing_sdk_delegate.h"
 #include "components/data_sharing/public/data_sharing_service.h"
@@ -42,11 +43,12 @@ class PreviewServerProxy;
 
 // The internal implementation of the DataSharingService.
 class DataSharingServiceImpl : public DataSharingService,
-                               public CollaborationGroupSyncBridge::Observer {
+                               public GroupDataModel::Observer{
  public:
   // `identity_manager` must not be null and must outlive this object.
   // `sdk_delegate` is nullable, indicating that SDK is not available.
   DataSharingServiceImpl(
+      const base::FilePath& profile_dir,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       signin::IdentityManager* identity_manager,
       syncer::OnceDataTypeStoreFactory data_type_store_factory,
@@ -66,6 +68,9 @@ class DataSharingServiceImpl : public DataSharingService,
   DataSharingNetworkLoader* GetDataSharingNetworkLoader() override;
   base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetCollaborationGroupControllerDelegate() override;
+  bool IsGroupDataModelLoaded() override;
+  std::optional<GroupData> ReadGroup(const GroupId& group_id) override;
+  std::set<GroupData> ReadAllGroups() override;
   void ReadAllGroups(
       base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)> callback)
       override;
@@ -106,11 +111,11 @@ class DataSharingServiceImpl : public DataSharingService,
   DataSharingUIDelegate* GetUIDelegate() override;
   ServiceStatus GetServiceStatus() override;
 
-  // CollaborationGroupSyncBridge::Observer implementation.
-  void OnGroupsUpdated(const std::vector<GroupId>& added_group_ids,
-                       const std::vector<GroupId>& updated_group_ids,
-                       const std::vector<GroupId>& deleted_group_ids) override;
-  void OnDataLoaded() override;
+  // GroupDataModel::Observer implementation.
+  void OnModelLoaded() override;
+  void OnGroupAdded(const GroupId& group_id) override;
+  void OnGroupUpdated(const GroupId& group_id) override;
+  void OnGroupDeleted(const GroupId& group_id) override;
 
   CollaborationGroupSyncBridge* GetCollaborationGroupSyncBridgeForTesting();
 
@@ -137,11 +142,6 @@ class DataSharingServiceImpl : public DataSharingService,
       base::OnceCallback<void(PeopleGroupActionOutcome)> callback,
       const base::expected<data_sharing_pb::LookupGaiaIdByEmailResult,
                            absl::Status>& result);
-  void OnReadGroupsToNotifyObserversCompleted(
-      const std::set<GroupId>& added_group_ids,
-      const std::set<GroupId>& updated_group_ids,
-      const base::expected<data_sharing_pb::ReadGroupsResult, absl::Status>&
-          read_groups_result);
 
   // Converts absl::Status to PeopleGroupActionOutcome and passes it to
   // `callback`, used by DeleteGroup(), InviteMember(), and RemoveMember()
@@ -163,6 +163,8 @@ class DataSharingServiceImpl : public DataSharingService,
   // Nullable.
   std::unique_ptr<DataSharingSDKDelegate> sdk_delegate_;
   std::unique_ptr<DataSharingUIDelegate> ui_delegate_;
+  // Nullable when `sdk_delegate_` is null.
+  std::unique_ptr<GroupDataModel> group_data_model_;
 
   base::ObserverList<DataSharingService::Observer> observers_;
   std::unique_ptr<PreviewServerProxy> preview_server_proxy_;

@@ -19,6 +19,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::Return;
+using testing::_;
 
 namespace {
 
@@ -106,7 +107,7 @@ TEST_F(DataSharingInternalsPageHandlerImplTest, UseNonEmptyService) {
 }
 
 TEST_F(DataSharingInternalsPageHandlerImplTest, GetAllGroupsWithError) {
-  EXPECT_CALL(data_sharing_service_, ReadAllGroups)
+  EXPECT_CALL(data_sharing_service_, ReadAllGroups(_))
       .WillOnce([](base::OnceCallback<void(
                        const data_sharing::DataSharingService::
                            GroupsDataSetOrFailureOutcome&)> callback) {
@@ -126,7 +127,7 @@ TEST_F(DataSharingInternalsPageHandlerImplTest, GetAllGroupsWithError) {
 }
 
 TEST_F(DataSharingInternalsPageHandlerImplTest, GetAllGroups) {
-  EXPECT_CALL(data_sharing_service_, ReadAllGroups)
+  EXPECT_CALL(data_sharing_service_, ReadAllGroups(_))
       .WillOnce([](base::OnceCallback<void(
                        const data_sharing::DataSharingService::
                            GroupsDataSetOrFailureOutcome&)> callback) {

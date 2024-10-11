@@ -48,6 +48,7 @@ std::unique_ptr<KeyedService> BuildDataSharingService(
       std::make_unique<DataSharingSDKDelegateIOS>();
 
   return std::make_unique<DataSharingServiceImpl>(
+      browser_state->GetStatePath(),
       browser_state->GetSharedURLLoaderFactory(),
       IdentityManagerFactory::GetForProfile(profile),
       DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory(),

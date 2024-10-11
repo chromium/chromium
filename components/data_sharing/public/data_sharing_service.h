@@ -62,6 +62,11 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
     Observer& operator=(const Observer&) = delete;
     ~Observer() override = default;
 
+    // Called when the group data model has been loaded. Use
+    // DataSharingService::IsGroupDataModelLoaded() to check if the model has
+    // been already loaded before starting to observe the service.
+    virtual void OnGroupDataModelLoaded() {}
+
     virtual void OnGroupChanged(const GroupData& group_data) {}
     // User either created a new group or has been invited to the existing one.
     virtual void OnGroupAdded(const GroupData& group_data) {}
@@ -119,8 +124,24 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
   GetCollaborationGroupControllerDelegate() = 0;
 
   // People Group API.
+  // Returns true if the group data model has been loaded. Read APIs will return
+  // empty results if the model is not loaded.
+  virtual bool IsGroupDataModelLoaded() = 0;
+
+  // Synchronously reads a group from the local storage. Returns nullopt if the
+  // group doesn't exist, it has not been fetched from the server yet, or the
+  // model is not loaded yet.
+  virtual std::optional<GroupData> ReadGroup(
+      const GroupId& group_id) = 0;
+  // Synchronously reads all groups from the local storage. Returns empty set
+  // if the groups haven't been fetched from the server yet, or the model is not
+  // loaded yet.
+  virtual std::set<GroupData> ReadAllGroups() = 0;
+
   // Refreshes data if necessary. On success passes to the `callback` a set of
   // all groups known to the client (ordered by id).
+  // TODO(crbug.com/370897286): Deprecate and eventually remove asynchronous
+  // ReadAllGroups() and ReadGroup() methods.
   virtual void ReadAllGroups(
       base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)>
           callback) = 0;

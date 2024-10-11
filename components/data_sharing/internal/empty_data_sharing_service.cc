@@ -30,6 +30,19 @@ void EmptyDataSharingService::AddObserver(Observer* observer) {}
 
 void EmptyDataSharingService::RemoveObserver(Observer* observer) {}
 
+bool EmptyDataSharingService::IsGroupDataModelLoaded() {
+  return false;
+}
+
+std::optional<GroupData> EmptyDataSharingService::ReadGroup(
+    const GroupId& group_id) {
+  return std::nullopt;
+}
+
+std::set<GroupData> EmptyDataSharingService::ReadAllGroups() {
+  return std::set<GroupData>();
+}
+
 void EmptyDataSharingService::ReadAllGroups(
     base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)> callback) {}
 

@@ -78,6 +78,7 @@ KeyedService* DataSharingServiceFactory::BuildServiceInstanceFor(
 #endif  // BUILDFLAG(IS_ANDROID)
 
   return new DataSharingServiceImpl(
+      profile->GetPath(),
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
       IdentityManagerFactory::GetForProfile(profile),

@@ -111,8 +111,11 @@ void GroupDataModel::OnGroupsUpdated(
   std::vector<GroupId> added_or_updated_groups = added_group_ids;
   std::copy(updated_group_ids.begin(), updated_group_ids.end(),
             std::back_inserter(added_or_updated_groups));
-  // Observers will be notified once groups are actually fetched from the SDK.
-  FetchGroupsFromSDK(added_or_updated_groups);
+
+  if (!added_or_updated_groups.empty()) {
+    // Observers will be notified once groups are actually fetched from the SDK.
+    FetchGroupsFromSDK(added_or_updated_groups);
+  }
 }
 
 void GroupDataModel::OnDataLoaded() {
@@ -181,7 +184,9 @@ void GroupDataModel::ProcessInitialData() {
     }
   }
 
-  FetchGroupsFromSDK(added_or_updated_group_ids);
+  if (!added_or_updated_group_ids.empty()) {
+    FetchGroupsFromSDK(added_or_updated_group_ids);
+  }
 }
 
 void GroupDataModel::FetchGroupsFromSDK(
