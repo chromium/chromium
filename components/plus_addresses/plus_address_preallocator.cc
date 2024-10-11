@@ -273,9 +273,6 @@ void PlusAddressPreallocator::OnReceivePreallocatedPlusAddresses(
 void PlusAddressPreallocator::ProcessAllocationRequests(
     bool is_user_triggered) {
   if (!IsEnabled()) {
-    // TODO: crbug.com/366206137 - distinguish between the signout case other
-    // reasons for errors by making `IsEnabled` return an error code. That  will
-    // likely also require changing the `IsEnabledCheck`'s return type.
     ReplyToRequestsWithError(
         PlusAddressRequestError(PlusAddressRequestErrorType::kUserSignedOut));
     return;

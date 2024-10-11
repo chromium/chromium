@@ -367,8 +367,6 @@ void PlusAddressServiceImpl::ReservePlusAddress(
     const url::Origin& origin,
     PlusAddressRequestCallback on_completed) {
   if (!IsEnabled()) {
-    // TODO(crbug.com/366206137): Differentiate better between reasons why the
-    // service is not enabled.
     std::move(on_completed)
         .Run(base::unexpected(PlusAddressRequestError(
             PlusAddressRequestErrorType::kUserSignedOut)));
@@ -384,8 +382,6 @@ void PlusAddressServiceImpl::RefreshPlusAddress(
     const url::Origin& origin,
     PlusAddressRequestCallback on_completed) {
   if (!IsEnabled()) {
-    // TODO(crbug.com/366206137): Differentiate better between reasons why the
-    // service is not enabled.
     std::move(on_completed)
         .Run(base::unexpected(PlusAddressRequestError(
             PlusAddressRequestErrorType::kUserSignedOut)));
@@ -406,8 +402,6 @@ void PlusAddressServiceImpl::ConfirmPlusAddress(
     const PlusAddress& plus_address,
     PlusAddressRequestCallback on_completed) {
   if (!IsEnabled()) {
-    // TODO(crbug.com/366206137): Differentiate better between reasons why the
-    // service is not enabled.
     std::move(on_completed)
         .Run(base::unexpected(PlusAddressRequestError(
             PlusAddressRequestErrorType::kUserSignedOut)));
