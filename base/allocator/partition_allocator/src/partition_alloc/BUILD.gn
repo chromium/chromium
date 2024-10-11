@@ -427,6 +427,7 @@ if (is_clang_or_gcc) {
       "partition_bucket.cc",
       "partition_bucket.h",
       "partition_bucket_lookup.h",
+      "partition_cookie.cc",
       "partition_cookie.h",
       "partition_dcheck_helper.cc",
       "partition_dcheck_helper.h",

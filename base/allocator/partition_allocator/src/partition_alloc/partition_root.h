@@ -1551,8 +1551,9 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(
   if (settings.use_cookie) {
     // Verify the cookie after the allocated region.
     // If this assert fires, you probably corrupted memory.
-    internal::PartitionCookieCheckValue(static_cast<unsigned char*>(object) +
-                                        GetSlotUsableSize(slot_span));
+    const size_t usable_size = GetSlotUsableSize(slot_span);
+    internal::PartitionCookieCheckValue(
+        static_cast<unsigned char*>(object) + usable_size, usable_size);
   }
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
