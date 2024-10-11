@@ -202,6 +202,18 @@ String PermissionNameToString(PermissionName permission_name) {
   }
 }
 
+// Helper to translated permission statuses to strings.
+String PermissionStatusToString(MojoPermissionStatus status) {
+  switch (status) {
+    case MojoPermissionStatus::GRANTED:
+      return "granted";
+    case MojoPermissionStatus::ASK:
+      return "prompt";
+    case MojoPermissionStatus::DENIED:
+      return "denied";
+  }
+}
+
 float ContrastBetweenColorAndBackgroundColor(const ComputedStyle* style) {
   return color_utils::GetContrastRatio(
       style->VisitedDependentColor(GetCSSPropertyColor()).toSkColor4f(),
@@ -375,6 +387,17 @@ bool HTMLPermissionElement::isValid() const {
   return clicking_enabled_state_.is_valid;
 }
 
+String HTMLPermissionElement::initialPermissionStatus() const {
+  return PermissionStatusToString(
+      initial_aggregated_permission_status_.value_or(
+          MojoPermissionStatus::ASK));
+}
+
+String HTMLPermissionElement::permissionStatus() const {
+  return PermissionStatusToString(
+      aggregated_permission_status_.value_or(MojoPermissionStatus::ASK));
+}
+
 void HTMLPermissionElement::Trace(Visitor* visitor) const {
   visitor->Trace(permission_service_);
   visitor->Trace(permission_observer_receivers_);
@@ -442,7 +465,7 @@ void HTMLPermissionElement::DetachLayoutTree(bool performing_reattach) {
   // effectively stop listening the permission status change events.
   permission_observer_receivers_.Clear();
   permission_status_map_.clear();
-  permissions_granted_ = false;
+  aggregated_permission_status_ = std::nullopt;
   pseudo_state_ = {/*has_invalid_style*/ false, /*is_occluded*/ false};
   if (disable_reason_expire_timer_.IsActive()) {
     disable_reason_expire_timer_.Stop();
@@ -885,10 +908,8 @@ void HTMLPermissionElement::OnPermissionStatusChange(
   auto it = permission_status_map_.find(permission_name);
   CHECK(it != permission_status_map_.end());
   it->value = status;
-  permissions_granted_ =
-      base::ranges::all_of(permission_status_map_, [](const auto& status) {
-        return status.value == MojoPermissionStatus::GRANTED;
-      });
+
+  PermissionStatusUpdated();
   UpdateAppearance();
 }
 
@@ -896,7 +917,7 @@ void HTMLPermissionElement::OnEmbeddedPermissionControlRegistered(
     bool allowed,
     const std::optional<Vector<MojoPermissionStatus>>& statuses) {
   CHECK_EQ(permission_status_map_.size(), 0U);
-  CHECK(!permissions_granted_);
+  CHECK(!PermissionsGranted());
   if (!allowed) {
     AddConsoleError(String::Format(
         "The permission '%s' has not passed security checks or has surpassed "
@@ -909,17 +930,16 @@ void HTMLPermissionElement::OnEmbeddedPermissionControlRegistered(
   CHECK_LE(permission_descriptors_.size(), 2U);
   CHECK(statuses.has_value());
   CHECK_EQ(statuses->size(), permission_descriptors_.size());
-  permissions_granted_ = true;
   for (wtf_size_t i = 0; i < permission_descriptors_.size(); ++i) {
     auto status = (*statuses)[i];
     const auto& descriptor = permission_descriptors_[i];
     auto inserted_result =
         permission_status_map_.insert(descriptor->name, status);
     CHECK(inserted_result.is_new_entry);
-    permissions_granted_ &= (status == MojoPermissionStatus::GRANTED);
     RegisterPermissionObserver(descriptor, status);
   }
 
+  PermissionStatusUpdated();
   UpdateAppearance();
   MaybeDispatchValidationChangeEvent();
 }
@@ -933,7 +953,7 @@ void HTMLPermissionElement::OnEmbeddedPermissionsDecided(
       DispatchEvent(*Event::Create(event_type_names::kDismiss));
       return;
     case EmbeddedPermissionControlResult::kGranted:
-      permissions_granted_ = true;
+      aggregated_permission_status_ = MojoPermissionStatus::GRANTED;
       DispatchEvent(*Event::Create(event_type_names::kResolve));
       return;
     case EmbeddedPermissionControlResult::kDenied:
@@ -1204,8 +1224,8 @@ void HTMLPermissionElement::UpdateText() {
   int message_id = permission_status_map_.size() == 1
                        ? GetMessageIDSinglePermission(
                              permission_status_map_.begin()->key,
-                             permissions_granted_, is_precise_location_)
-                       : GetMessageIDMultiplePermissions(permissions_granted_);
+                             PermissionsGranted(), is_precise_location_)
+                       : GetMessageIDMultiplePermissions(PermissionsGranted());
 
   CHECK(message_id);
   permission_text_span_->setInnerText(GetLocale().QueryString(message_id));
@@ -1488,6 +1508,25 @@ HTMLPermissionElement::GetRecentlyAttachedTimeoutRemaining() const {
   }
 
   return it->value - now;
+}
+
+void HTMLPermissionElement::PermissionStatusUpdated() {
+  if (base::ranges::any_of(permission_status_map_, [](const auto& status) {
+        return status.value == MojoPermissionStatus::DENIED;
+      })) {
+    aggregated_permission_status_ = MojoPermissionStatus::DENIED;
+  } else if (base::ranges::any_of(
+                 permission_status_map_, [](const auto& status) {
+                   return status.value == MojoPermissionStatus::ASK;
+                 })) {
+    aggregated_permission_status_ = MojoPermissionStatus::ASK;
+  } else {
+    aggregated_permission_status_ = MojoPermissionStatus::GRANTED;
+  }
+
+  if (!initial_aggregated_permission_status_.has_value()) {
+    initial_aggregated_permission_status_ = aggregated_permission_status_;
+  }
 }
 
 }  // namespace blink

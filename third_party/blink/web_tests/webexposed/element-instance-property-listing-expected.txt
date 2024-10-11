@@ -956,11 +956,13 @@ html element param
     property value
     property valueType
 html element permission
+    property initialPermissionStatus
     property invalidReason
     property isValid
     property ondismiss
     property onresolve
     property onvalidationstatuschange
+    property permissionStatus
     property type
 html element picture
 html element plaintext

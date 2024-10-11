@@ -4814,11 +4814,13 @@ interface HTMLParamElement : HTMLElement
     setter valueType
 interface HTMLPermissionElement : HTMLElement
     attribute @@toStringTag
+    getter initialPermissionStatus
     getter invalidReason
     getter isValid
     getter ondismiss
     getter onresolve
     getter onvalidationstatuschange
+    getter permissionStatus
     getter type
     method constructor
     setter ondismiss

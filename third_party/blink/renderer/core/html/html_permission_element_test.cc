@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/run_loop.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -95,6 +96,17 @@ void NotReachedForPEPCRegistered() {
   EXPECT_TRUE(false)
       << "The RegisterPageEmbeddedPermissionControl was called despite the "
          "test expecting it not to.";
+}
+
+String PermissionStatusString(MojoPermissionStatus status) {
+  switch (status) {
+    case MojoPermissionStatus::GRANTED:
+      return "granted";
+    case MojoPermissionStatus::ASK:
+      return "prompt";
+    case MojoPermissionStatus::DENIED:
+      return "denied";
+  }
 }
 
 }  // namespace
@@ -248,7 +260,7 @@ class TestPermissionService : public PermissionService {
             : initial_statuses_;
     mojo::Remote<mojom::blink::EmbeddedPermissionControlClient> client(
         std::move(pending_client));
-    client->OnEmbeddedPermissionControlRegistered(/*allowed=*/true,
+    client->OnEmbeddedPermissionControlRegistered(/*allow=*/true,
                                                   std::move(statuses));
   }
 
@@ -683,6 +695,91 @@ TEST_F(HTMLPemissionElementTest,
         data.expected_text,
         permission_element->permission_text_span_for_testing()->innerText());
   }
+}
+
+TEST_F(HTMLPemissionElementTest, InitialAndUpdatedPermissionStatusMicCamera) {
+  for (const auto initial_status :
+       {MojoPermissionStatus::ASK, MojoPermissionStatus::DENIED,
+        MojoPermissionStatus::GRANTED}) {
+    String expected_initial_status = PermissionStatusString(initial_status);
+    auto* permission_element = CreatePermissionElement("geolocation");
+    permission_service()->set_initial_statuses({initial_status});
+    permission_service()->WaitForPermissionObserverAdded();
+    EXPECT_EQ(expected_initial_status,
+              permission_element->initialPermissionStatus());
+    EXPECT_EQ(expected_initial_status, permission_element->permissionStatus());
+
+    for (const auto updated_status :
+         {MojoPermissionStatus::ASK, MojoPermissionStatus::DENIED,
+          MojoPermissionStatus::GRANTED}) {
+      String expected_updated_status = PermissionStatusString(updated_status);
+      permission_service()->NotifyPermissionStatusChange(
+          PermissionName::GEOLOCATION, updated_status);
+      // After an updated, the initial permission status remains the same and
+      // just the permission status changes.
+      EXPECT_EQ(expected_initial_status,
+                permission_element->initialPermissionStatus());
+      EXPECT_EQ(expected_updated_status,
+                permission_element->permissionStatus());
+    }
+  }
+}
+
+TEST_F(HTMLPemissionElementTest, InitialAndUpdatedPermissionStatusCameraMic) {
+  auto* permission_element = CreatePermissionElement("camera microphone");
+  permission_service()->set_initial_statuses(
+      {MojoPermissionStatus::ASK, MojoPermissionStatus::DENIED});
+
+  // Before receiving any status, it's assumed it is "prompt" since we don't
+  // have a better idea.
+  EXPECT_EQ(PermissionStatusString(MojoPermissionStatus::ASK),
+            permission_element->initialPermissionStatus());
+  EXPECT_EQ(PermissionStatusString(MojoPermissionStatus::ASK),
+            permission_element->permissionStatus());
+
+  // Two permissoin observers should be added since it's a grouped permission
+  // element.
+  permission_service()->WaitForPermissionObserverAdded();
+  permission_service()->WaitForPermissionObserverAdded();
+
+  // The status is the most restrictive of the two permissions. The initial
+  // status never changes. camera: ASK, mic: DENIED
+  EXPECT_EQ(PermissionStatusString(MojoPermissionStatus::DENIED),
+            permission_element->initialPermissionStatus());
+  EXPECT_EQ(PermissionStatusString(MojoPermissionStatus::DENIED),
+            permission_element->permissionStatus());
+
+  // camera:ASK, mic: ASK
+  permission_service()->NotifyPermissionStatusChange(
+      PermissionName::AUDIO_CAPTURE, MojoPermissionStatus::ASK);
+  EXPECT_EQ(PermissionStatusString(MojoPermissionStatus::DENIED),
+            permission_element->initialPermissionStatus());
+  EXPECT_EQ(PermissionStatusString(MojoPermissionStatus::ASK),
+            permission_element->permissionStatus());
+
+  // camera:DENIED, mic: ASK
+  permission_service()->NotifyPermissionStatusChange(
+      PermissionName::VIDEO_CAPTURE, MojoPermissionStatus::DENIED);
+  EXPECT_EQ(PermissionStatusString(MojoPermissionStatus::DENIED),
+            permission_element->initialPermissionStatus());
+  EXPECT_EQ(PermissionStatusString(MojoPermissionStatus::DENIED),
+            permission_element->permissionStatus());
+
+  // camera:DENIED, mic: GRANTED
+  permission_service()->NotifyPermissionStatusChange(
+      PermissionName::AUDIO_CAPTURE, MojoPermissionStatus::GRANTED);
+  EXPECT_EQ(PermissionStatusString(MojoPermissionStatus::DENIED),
+            permission_element->initialPermissionStatus());
+  EXPECT_EQ(PermissionStatusString(MojoPermissionStatus::DENIED),
+            permission_element->permissionStatus());
+
+  // camera:GRANTED, mic: GRANTED
+  permission_service()->NotifyPermissionStatusChange(
+      PermissionName::VIDEO_CAPTURE, MojoPermissionStatus::GRANTED);
+  EXPECT_EQ(PermissionStatusString(MojoPermissionStatus::DENIED),
+            permission_element->initialPermissionStatus());
+  EXPECT_EQ(PermissionStatusString(MojoPermissionStatus::GRANTED),
+            permission_element->permissionStatus());
 }
 
 class HTMLPemissionElementClickingEnabledTest

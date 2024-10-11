@@ -47,6 +47,8 @@ class CORE_EXPORT HTMLPermissionElement final
   const AtomicString& GetType() const;
   String invalidReason() const;
   bool isValid() const;
+  String initialPermissionStatus() const;
+  String permissionStatus() const;
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(resolve, kResolve)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(dismiss, kDismiss)
@@ -65,7 +67,7 @@ class CORE_EXPORT HTMLPermissionElement final
 
   bool HasInvalidStyle() const;
   bool IsOccluded() const;
-  bool granted() const { return permissions_granted_; }
+  bool granted() const { return PermissionsGranted(); }
 
   // Given an input type, return permissions list. This method is for testing
   // only.
@@ -451,6 +453,17 @@ class CORE_EXPORT HTMLPermissionElement final
            it->value == base::TimeTicks::Max();
   }
 
+  // Called when the |permission_status_map_| is updated to ensure that
+  // |aggregated_permission_status_| and |initial_aggregated_permission_status_|
+  // are updated.
+  void PermissionStatusUpdated();
+
+  bool PermissionsGranted() const {
+    return aggregated_permission_status_.has_value() &&
+           aggregated_permission_status_ ==
+               mojom::blink::PermissionStatus::GRANTED;
+  }
+
   IntersectionVisibility IntersectionVisibilityForTesting() const {
     return intersection_visibility_;
   }
@@ -475,10 +488,17 @@ class CORE_EXPORT HTMLPermissionElement final
                    HTMLPermissionElement>
       embedded_permission_control_receiver_;
 
-  //  Map holds all current permission statuses, keyed by permission name.
+  // Map holds all current permission statuses, keyed by permission name.
   using PermissionStatusMap =
       HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus>;
   PermissionStatusMap permission_status_map_;
+
+  // Hold the first-received permission status in this object's lifetime and the
+  // current permission status. If this object is a grouped permission element,
+  // it aggregates the statuses by taking the most restrictive status.
+  std::optional<mojom::blink::PermissionStatus>
+      initial_aggregated_permission_status_;
+  std::optional<mojom::blink::PermissionStatus> aggregated_permission_status_;
 
   AtomicString type_;
 
@@ -494,10 +514,6 @@ class CORE_EXPORT HTMLPermissionElement final
 
   // Keeps track of the time a request was created.
   std::optional<base::TimeTicks> pending_request_created_;
-
-  // Set to true only if all the corresponding permissions (from `type`
-  // attribute) are granted.
-  bool permissions_granted_ = false;
 
   // Store information to notify CSS pseudo class changed.
   struct ClickingDisablePseudoState {

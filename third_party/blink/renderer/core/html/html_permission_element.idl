@@ -10,6 +10,9 @@ interface HTMLPermissionElement : HTMLElement {
   readonly attribute boolean isValid;
   readonly attribute DOMString invalidReason;
 
+  readonly attribute PermissionState initialPermissionStatus;
+  readonly attribute PermissionState permissionStatus;
+
   attribute EventHandler onresolve;
   attribute EventHandler ondismiss;
   attribute EventHandler onvalidationstatuschange;
