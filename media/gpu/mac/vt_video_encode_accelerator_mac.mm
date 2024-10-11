@@ -58,11 +58,6 @@ constexpr size_t kMaxFrameRateNumerator = 120;
 constexpr size_t kMaxFrameRateDenominator = 1;
 constexpr size_t kNumInputBuffers = 3;
 constexpr gfx::Size kDefaultSupportedResolution = gfx::Size(640, 480);
-// TODO(crbug.com/40876392): We should add a function like a
-// `GetVideoEncodeAcceleratorProfileIsSupported`, to test the
-// real support status with a give resolution, framerate etc,
-// instead of query a "supportedProfile" list.
-constexpr gfx::Size kMaxSupportedResolution = gfx::Size(4096, 2304);
 
 #if SOFTWARE_ENCODING_SUPPORTED
 // The IDs of the encoders that may be selected when we enable low latency via
@@ -109,6 +104,35 @@ base::span<const gfx::Size> GetMinResolutions(VideoCodec codec) {
     return kMinH264Resolutions;
   }
   return kNoLimits;
+}
+
+gfx::Size GetMaxResolution(VideoCodec codec) {
+  switch (codec) {
+    case VideoCodec::kH264:
+      // Test result on a M1 Pro Mac shows that the max supported resolution of
+      // H.264 is 4096 x 2304 if encode mode is real time, for none real time
+      // mode, the max supported resolution is 4096 x 4096. On some Intel Macs,
+      // this can go up to 8K, however, due to the excessive number of chips in
+      // x64 Macs, use the conservative values of 4096 x 2304 here.
+      return gfx::Size(4096, 2304);
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    case VideoCodec::kHEVC:
+#if defined(ARCH_CPU_ARM_FAMILY)
+      // Test result on a M1 Pro Mac shows that the max supported resolution of
+      // HEVC is 8192 x 4352 if encode mode is real time, for none real time
+      // mode, the max supported resolution is 16384 x 8192. Use the
+      // conservative values of 8192 x 4352 here.
+      return gfx::Size(8192, 4352);
+#else
+      // On some Intel Macs, this can go up to 8K, however, due to the excessive
+      // number of chips in x64 Macs, use the conservative values of 4096 x 2304
+      // here.
+      return gfx::Size(4096, 2304);
+#endif  // defined(ARCH_CPU_ARM_FAMILY)
+#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    default:
+      NOTREACHED_NORETURN();
+  }
 }
 
 bool IsSVCSupported(VideoCodec codec) {
@@ -396,7 +420,6 @@ VTVideoEncodeAccelerator::GetSupportedProfiles() {
   SupportedProfiles supported_profiles;
 
   SupportedProfile supported_profile;
-  supported_profile.max_resolution = kMaxSupportedResolution;
   supported_profile.max_framerate_numerator = kMaxFrameRateNumerator;
   supported_profile.max_framerate_denominator = kMaxFrameRateDenominator;
   // Advertise VBR here, even though the peak bitrate is never actually used.
@@ -420,6 +443,7 @@ VTVideoEncodeAccelerator::GetSupportedProfiles() {
     }
 
     supported_profile.profile = profile;
+    supported_profile.max_resolution = GetMaxResolution(codec);
 
     for (const auto& min_resolution : GetMinResolutions(codec)) {
       supported_profile.min_resolution = min_resolution;

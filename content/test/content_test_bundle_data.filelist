@@ -6834,6 +6834,7 @@ data/gpu/webcodecs/encode-color-space.html
 data/gpu/webcodecs/encode-color-space.js
 data/gpu/webcodecs/encode-decode.html
 data/gpu/webcodecs/encode.html
+data/gpu/webcodecs/encoding-framerate-resolutions.html
 data/gpu/webcodecs/encoding-modes.html
 data/gpu/webcodecs/encoding-rate-control.html
 data/gpu/webcodecs/encoding-rate-control.js

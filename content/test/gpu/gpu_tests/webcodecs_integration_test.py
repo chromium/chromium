@@ -201,6 +201,30 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
               acc
           }])
 
+    for resolution in ['1920x1080', '3840x2160', '7680x3840']:
+      for framerate in [30, 60, 120, 240]:
+        # Use at least level 6.2 (H.264/H.265/VP9), or level 6.3 (AV1) mimetypes
+        # to test 8k 120fps support.
+        for codec in [
+            'avc1.64003E', 'hvc1.1.6.L186.B0', 'vp09.00.62.08', 'av01.1.19M.08'
+        ]:
+          acc = 'prefer-hardware'
+          latency_mode = 'quality'
+          args = (resolution, framerate, codec, acc, latency_mode)
+          yield ('WebCodecs_EncodingFramerateResolutions_%s_%s_%s_%s_%s' % args,
+                 'encoding-framerate-resolutions.html', [{
+                     'resolution':
+                     resolution,
+                     'framerate':
+                     framerate,
+                     'codec':
+                     codec,
+                     'acceleration':
+                     acc,
+                     'latency_mode':
+                     latency_mode,
+                 }])
+
     for codec in video_codecs:
       for acc in accelerations:
         for bitrate_mode in ['constant', 'variable']:
