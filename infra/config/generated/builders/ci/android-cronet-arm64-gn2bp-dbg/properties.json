@@ -21,7 +21,6 @@
               },
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "checkout_copybara",
                   "cronet_builder",
                   "mb"
                 ],
