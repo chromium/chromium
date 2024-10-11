@@ -8484,29 +8484,25 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_SETTINGS_SIX_PACK_KEY_PAGE_UP_SEARCH" desc="In the keyboard settings subpage, the dropdown list item for the alt + backspace option.">
         <ph name="LAUNCHER_KEY_NAME">$1<ex>launcher</ex></ph> + up arrow
       </message>
-      <!-- TODO(b/330399248: Finalize and translate the shortcut notification strings. -->
-      <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_NUDGE_TITLE" translateable="false" desc="Title of the pop up nudge to remind using fn key.">
-        Use your fn Key
-      </message>
-      <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_TOP_ROW_NUDGE_DESCRIPTION" translateable="false" desc="Description of the pop up nudge to remind using fn key when user presses search plus top row key.">
+      <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_TOP_ROW_NUDGE_DESCRIPTION" desc="Description of the pop up nudge to remind using fn key when user presses search plus top row key.">
         To access F keys, press fn key + top row keys
       </message>
-      <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_CAPS_LOCK_NUDGE_DESCRIPTION" translateable="false" desc="Description of the pop up nudge to remind using fn key when user presses search plus top row key.">
+      <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_CAPS_LOCK_NUDGE_DESCRIPTION" desc="Description of the pop up nudge to remind using fn key when user presses search plus top row key.">
         Trying to use Caps Lock? Use
       </message>
-      <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_PAGE_UP_NUDGE_DESCRIPTION" translateable="false" desc="Description of the pop up nudge to remind using fn key when user presses search plus up arrow key.">
+      <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_PAGE_UP_NUDGE_DESCRIPTION" desc="Description of the pop up nudge to remind using fn key when user presses search plus up arrow key.">
         Trying to use Page Up? Use
       </message>
-      <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_PAGE_DOWN_NUDGE_DESCRIPTION" translateable="false" desc="Description of the pop up nudge to remind using fn key when user presses search plus down arrow key.">
+      <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_PAGE_DOWN_NUDGE_DESCRIPTION" desc="Description of the pop up nudge to remind using fn key when user presses search plus down arrow key.">
         Trying to use Page Down? Use
       </message>
-      <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_HOME_NUDGE_DESCRIPTION" translateable="false" desc="Description of the pop up nudge to remind using fn key when user presses search plus left arrow key.">
+      <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_HOME_NUDGE_DESCRIPTION" desc="Description of the pop up nudge to remind using fn key when user presses search plus left arrow key.">
         Trying to use Home? Use
       </message>
-      <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_END_NUDGE_DESCRIPTION" translateable="false" desc="Description of the pop up nudge to remind using fn key when user presses search plus right arrow key.">
+      <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_END_NUDGE_DESCRIPTION" desc="Description of the pop up nudge to remind using fn key when user presses search plus right arrow key.">
         Trying to use End? Use
       </message>
-      <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_DELETE_NUDGE_DESCRIPTION" translateable="false" desc="Description of the pop up nudge to remind using fn key when user presses search plus backspace key.">
+      <message name="IDS_ASH_SETTINGS_KEYBOARD_USE_FN_KEY_FOR_DELETE_NUDGE_DESCRIPTION" desc="Description of the pop up nudge to remind using fn key when user presses search plus backspace key.">
         Trying to Delete? Use
       </message>
       <!-- Modifier key names -->
