@@ -116,6 +116,36 @@ Commands assume the working directory is //infra/config.
     * Comments associated with removed test suite declarations should be
       transferred to the corresponding bundle declarations.
 
+## Out-of-tree migration script
+
+In order to decouple the migration script from the src revision, which makes it
+easier to manage changing the migration script separately from the config files,
+you can keep an extra spare checkout of chromium/src.
+
+Run the following commands in some directory not in your checkout.
+
+```sh
+git clone https://chromium.googlesource.com/chromium/src/ --no-checkout starlark-migration --depth 1
+cd starlark-migration
+git sparse-checkout init --cone
+git sparse-checkout set infra/config/migration
+git checkout
+```
+
+This will checkout a subset of the chromium/src repo containing the
+infra/config/migration directory. The migrate-targets.py and
+post-migrate-targets.py scripts in these directory can be run in the
+infra/config directory of your main checkout to modify the files there.
+
+`git rebase-update` won't work with the sparse checkout since it errors trying
+to get the submodules. If you want to pull in submitted changes, either do `git
+pull` on your branch or do `git fetch origin && git checkout origin/main` to
+just get the current head version.
+
+When uploading changes, you'll need to use `git cl upload --bypass-hooks`
+because due to the nature of spare checkouts, `PRESUBMIT.py` scripts in ancestor
+directories will be included but those presubmit checks assume a full checkout.
+
 ## buildozer
 
 The migration scripts make use of buildozer, which is a tool for making edits to

@@ -4,6 +4,8 @@
 # found in the LICENSE file.
 """A script to do the end work of migrating targets to starlark.
 
+Run this from the infra/config directory that should be modified.
+
 After running migrate-targets.py, some manual work is necessary to
 remove references to the migrated builders from waterfalls.pyl and
 test_suite_exceptions.pyl. Once that is done, it's possible that there
@@ -19,6 +21,7 @@ remove these errors.
 import ast
 import bisect
 import dataclasses
+import os
 import pathlib
 import re
 import subprocess
@@ -28,8 +31,7 @@ import typing
 import buildozer
 import values
 
-_THIS_DIR = pathlib.Path(__file__).parent
-_INFRA_CONFIG_DIR = _THIS_DIR.parent
+_INFRA_CONFIG_DIR = pathlib.Path(os.getcwd())
 _TESTING_BUILDBOT_DIR = (_INFRA_CONFIG_DIR / '../../testing/buildbot').resolve()
 _TARGETS_DIR = _INFRA_CONFIG_DIR / 'targets'
 

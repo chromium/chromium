@@ -2,13 +2,17 @@
 # Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Migrate tests for builders from //testing/buildbot to starlark."""
+"""Migrate tests for builders from //testing/buildbot to starlark.
+
+Run this from the infra/config directory that should be modified.
+"""
 
 import argparse
 import ast
 import collections
 import glob
 import json
+import os
 import pathlib
 import subprocess
 import sys
@@ -17,8 +21,7 @@ import typing
 import buildozer
 import values
 
-_THIS_DIR = pathlib.Path(__file__).parent
-_INFRA_CONFIG_DIR = _THIS_DIR.parent
+_INFRA_CONFIG_DIR = pathlib.Path(os.getcwd())
 _TESTING_BUILDBOT_DIR = (_INFRA_CONFIG_DIR / '../../testing/buildbot').resolve()
 
 
