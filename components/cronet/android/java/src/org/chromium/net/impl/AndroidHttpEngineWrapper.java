@@ -254,7 +254,12 @@ class AndroidHttpEngineWrapper extends CronetEngineBase {
         if (disableCache) {
             requestBuilder.setCacheDisabled(disableCache);
         }
-        requestBuilder.setDirectExecutorAllowed(allowDirectExecutor);
+        // Note we only call `setDirectExecutorAllowed()` if `allowDirectExecutor` is true because
+        // some versions of HttpEngine suffer from a bug where `setDirectExecutorAllowed(false)`
+        // will end up *allowing* direct execution. See https://crbug.com/372852416.
+        if (allowDirectExecutor) {
+            requestBuilder.setDirectExecutorAllowed(allowDirectExecutor);
+        }
         if (trafficStatsTagSet) {
             requestBuilder.setTrafficStatsTag(trafficStatsTag);
         }
