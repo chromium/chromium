@@ -6,12 +6,14 @@
 #include "base/files/file_path.h"
 // NOTE: This target is transitively depended on by //chrome/browser and thus
 // can't depend on it.
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"  // nogncheck
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -105,6 +107,10 @@ static void JNI_SafeBrowsingBridge_ReportIntent(
     JNIEnv* env,
     content::WebContents* web_contents,
     std::string& package_name,
-    std::string& uri) {}
+    std::string& uri) {
+  reinterpret_cast<SafeBrowsingServiceInterface*>(
+      g_browser_process->safe_browsing_service())
+      ->ReportExternalAppRedirect(web_contents, package_name, uri);
+}
 
 }  // namespace safe_browsing

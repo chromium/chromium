@@ -123,6 +123,8 @@ static_library("safe_browsing") {
       "delayed_warning_navigation_throttle.h",
       "download_protection/download_protection_util.cc",
       "download_protection/download_protection_util.h",
+      "external_app_redirect_checking.cc",
+      "external_app_redirect_checking.h",
       "network_context_service.cc",
       "network_context_service.h",
       "network_context_service_factory.cc",

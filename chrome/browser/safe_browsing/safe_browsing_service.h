@@ -337,6 +337,12 @@ class SafeBrowsingServiceImpl : public SafeBrowsingServiceInterface,
     url_is_allowlisted_for_testing_ = true;
   }
 
+  void MaybeSendExternalAppRedirectReport(
+      Profile* profile,
+      const std::string& app_name,
+      std::unique_ptr<ClientSafeBrowsingReportRequest> report,
+      bool should_send);
+
   std::unique_ptr<ProxyConfigMonitor> proxy_config_monitor_;
 
   // Whether SafeBrowsing Extended Reporting is enabled by the current set of

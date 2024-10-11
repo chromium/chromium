@@ -1562,6 +1562,9 @@ message ClientSafeBrowsingReportRequest {
     // This report is triggered by the sampled HPRT lookup where it showed
     // different verdicts from the URL real-time lookup.
     URL_REALTIME_AND_HASH_REALTIME_DISCREPANCY = 27;
+    // Triggered by a redirect to an external app, either through an
+    // external protocol scheme (e.g. mailto://) or an Intent.
+    EXTERNAL_APP_REDIRECT = 28;
   }
 
   message HTTPHeader {

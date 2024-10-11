@@ -17,11 +17,13 @@ source_set("android") {
 
   deps = [
     ":jni_headers",
+    "//chrome/browser:browser_process",
     "//chrome/browser/profiles",
     "//chrome/browser/safe_browsing:advanced_protection",
     "//components/password_manager/core/browser/leak_detection",
     "//components/password_manager/core/common",
     "//components/prefs",
+    "//components/safe_browsing/content/browser:safe_browsing_service",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
     "//components/signin/public/identity_manager",
