@@ -25,6 +25,9 @@
   <message name="IDS_SETTINGS_COLUMN_HEADING_CONSIDER" desc="The header used above a bulleted section on a Settings page that notes things the user might want to consider when turning this setting on or off.">
     Things to consider
   </message>
+  <message name="IDS_SETTINGS_COLUMN_HEADING_WHEN_USED" desc="The header used above a bulleted section on a Settings page that describes the behavior of a particular feature.">
+    When used
+  </message>
 
   <if expr="not chromeos_ash">
     <message name="IDS_RELAUNCH_CONFIRMATION_DIALOG_BODY" desc="The body of the modal dialog that we show when users click on relaunch and they have open Incognito windows. The dialog serves to warn the users about losing their Incognito windows if they proceed with the relaunch.">
@@ -1452,6 +1455,12 @@
   </if>
 
   <!-- Offer Writing Help Page -->
+  <message name="IDS_SETTINGS_AI_COMPOSE_SUBLABEL" desc="Secondary description explaining the 'Help me write' feature.">
+    Helps you write short-form content for things on the web, like reviews. Suggested content is based on your prompts and the content of the web page. To use this feature, right-click on a text box.
+  </message>
+  <message name="IDS_SETTINGS_AI_COMPOSE_SUBLABEL_V2" desc="This string is the subheading of a setting for ‘Help me write’. This subheading summarizes the user benefit of the Help Me Write feature. This is an AI (artificial intelligence) feature that suggests writing help when users are writing short-form text on the web. The tone should be motivating.">
+    Helps you write short-form text for things on the web, like reviews
+  </message>
   <message name="IDS_SETTINGS_OFFER_WRITING_HELP_TOGGLE_LABEL" desc="Label of the setting that enables the feature that provides writing help suggestions.">
     Offer writing help
   </message>
@@ -1467,11 +1476,23 @@
   <message name="IDS_SETTINGS_OFFER_WRITING_HELP_DISABLED_SITES_LABEL" desc="Label of the list of sites on which the writing help suggestion feature is disabled.">
     Never offer writing help on these sites
   </message>
+  <message name="IDS_SETTINGS_OFFER_WRITING_HELP_DISABLED_SITES_LABEL_V2" desc="Label of the list of sites on which the writing help suggestion feature is disabled.">
+    Not allowed to offer writing help
+  </message>
   <message name="IDS_SETTINGS_OFFER_WRITING_HELP_NO_DISABLED_SITES" desc="Placeholder text for the writing help suggestions disabled sites list, when no sites have been added.">
     No sites added
   </message>
   <message name="IDS_SETTINGS_OFFER_WRITING_HELP_REMOVE_SITE_ARIA_LABEL" desc="Text read by screen readers when focusing on the remove icon for disabled sites. Activating this button will remove the corresponding site. This text only announced by screen readers and is not visible in the UI.">
     Remove <ph name="SITE_NAME">$1<ex>https://www.google.com</ex></ph> from disabled sites
+  </message>
+  <message name="IDS_SETTINGS_COMPOSE_SETTING_LINK_A11Y" desc="This string is found in a link that takes the user to the Help Me Write help center article when the user taps it. It is at the end of the Help Me Write setting description that users see when they visit the ‘AI innovations’ section of settings (AI = artificial intelligence). The tone should be informative.">
+    Learn more about Help me write
+  </message>
+  <message name="IDS_SETTINGS_COMPOSE_WHEN_ON_WRITING_HELP" desc="This string is a bullet point in the ‘When used’ column, which describes the behavior of this feature. This string explains that this feature suggests writing help when users are writing short-form text on the web. The tone should be motivating.">
+    Helps you write short-form text for things on the web, like reviews. Writing suggestions are based on your prompts and the content of the web page
+  </message>
+  <message name="IDS_SETTINGS_COMPOSE_CONSIDER_DATA" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features will send data to Google servers in order to provide the feature’s respective benefit. The tone should be informative.">
+    When you get writing help, the page’s URL, content, and your text are sent to Google. Don’t enter personal info (like medical or financial details)
   </message>
 
   <!-- Anti-abuse Page -->
@@ -4049,6 +4070,9 @@
   <message name="IDS_SETTINGS_HISTORY_SEARCH_SETTING_SUBLABEL" desc="Sublabel of the setting that enables history search." translateable="false">
     Use everyday language to search your browsing history and find sites you visited. Only sites you visit after turning on this feature are shown in AI-powered history search results.
   </message>
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_SETTING_SUBLABEL_V2" desc="This string is the subheading of a setting for ‘History search, powered by AI’. This subheading summarizes the user benefit of the History Search feature. This is an AI (artificial intelligence) feature that improves the search functionality so that users can write queries in natural language and search their Chrome browsing history. The tone should be motivating.">
+    Use everyday language to search your browsing history and find sites you visited
+  </message>
   <message name="IDS_SETTINGS_HISTORY_SEARCH_WHEN_ON_BULLET_ONE" desc="Bullet point in the 'When on' column of the description of the setting that enables history search.">
     You can search your browsing history based on general page content, not only page title and URL. This gives you improved results, whether you're searching browsing history in the address bar using @history or from the History page.
   </message>
@@ -4075,6 +4099,18 @@
   </message>
   <message name="IDS_SETTINGS_HISTORY_SEARCH_ANSWERS_CONSIDER_BULLET_TWO" desc="Bullet point in the 'Things to consider' column of the description of the setting that enables history search with answers enabled."  translateable="false">
     As you browse sites, their page contents are encrypted and saved to your device.  AI-powered history search results and answers may become outdated if site content has changed since your last visit.  This feature may also affect Chrome’s performance.
+  </message>
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_WHEN_ON_PAGE_CONTENT" desc="This string is a bullet point in the ‘When on’ column, which describes the behavior of this feature. This string explains how users can write queries in natural language and search their Chrome browsing history. The tone should be motivating.">
+    You can search your browsing history based on general page content, not only page title and URL, and see improved results
+  </message>
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_WHEN_ON_SEARCH_FROM" desc="This string is a bullet point in the ‘When on’ column, which describes the behavior of this feature. This string explains how users search their Chrome browsing history from the address bar (always shown on the top of Chrome). They can also search from the History page itself. The tone should be motivating.">
+    You can search in the address bar using @history, as well as from the History page
+  </message>
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_CONSIDER_DATA" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features will send data to Google servers in order to provide the feature’s respective benefit. The tone should be informative.">
+    When you search browsing history, your history search terms, page content of best matches, and generated model outputs are sent to Google
+  </message>
+  <message name="IDS_SETTINGS_HISTORY_SEARCH_CONSIDER_DATA_ENCRYPTED" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features will save data to the user’s device in order to provide the feature’s respective benefit. The data will be appropriately encrypted for security. The tone should be informative.">
+    As you browse sites, their page contents are encrypted and saved to your device
   </message>
 
   <!-- Web Content -->
@@ -4633,18 +4669,34 @@
   <message name="IDS_SETTINGS_AI_PAGE_MAIN_SUBLABEL" desc="Toggle secondary description">
     These features use AI, are in early development, and won’t always get it right.
   </message>
-  <message name="IDS_SETTINGS_AI_COMPOSE_LABEL" desc="The primary description for the 'Help me write' feature.">
-    Help me write
+  <message name="IDS_SETTINGS_AI_SUBPAGE_SUBLABEL_AI" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features are actively developing and results may include errors. The tone should be informative.">
+    This feature uses AI, is in early development, and won’t always get it right
   </message>
-  <message name="IDS_SETTINGS_AI_COMPOSE_SUBLABEL" desc="Secondary description explaining the 'Help me write' feature.">
-    Helps you write short-form content for things on the web, like reviews. Suggested content is based on your prompts and the content of the web page. To use this feature, right-click on a text box.
+  <message name="IDS_SETTINGS_AI_SUBPAGE_SUBLABEL_REVIEWERS" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features are actively developing, and that humans may review feature usage and corresponding data in order to further improve the feature. The tone should be informative.">
+    Data sent to Google may be seen by human reviewers to improve this feature
   </message>
+
+  <!-- Experimental settings - Tab Organization -->
   <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE2_LABEL" desc="Toggle primary description">
     Tab organizer
   </message>
   <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE2_SUBLABEL" desc="Toggle secondary description">
     Automatically creates tab groups based on your open tabs. To use this feature, right-click on a tab and click Organize similar tabs.
   </message>
+  <message name="IDS_SETTINGS_TAB_ORGANIZER_SUB_LABEL" desc="This string is the subheading of a setting for ‘Tab organizer’. This subheading summarizes the user benefit of the Tab Organizer feature. This is an AI (artificial intelligence) feature that helps users get organized by suggesting and automatically creating tab groups out of the user’s open tabs. The tone should be motivating.">
+    Automatically creates tab groups based on your open tabs
+  </message>
+  <message name="IDS_SETTINGS_AUTOTABS_SETTING_LINK_A11Y" desc="This string is found in a link that takes the user to the Tab Organizer help center article when the user taps it. It is at the end of the Tab Organizer setting description that users see when they visit the ‘AI innovations’ section of settings (AI = artificial intelligence). The tone should be informative.">
+    Learn more about tab organizer
+  </message>
+  <message name="IDS_SETTINGS_TAB_ORGANIZER_WHEN_ON_AUTO_GROUPS" desc="This string is a bullet point in the ‘When used’ column, which describes the behavior of this feature. This string explains that this feature helps users get organized by suggesting and automatically creating tab groups out of the user’s open tabs. The tone should be motivating.">
+    Automatically suggests and creates groups from your open tabs, making it easier to find what you're looking for
+  </message>
+  <message name="IDS_SETTINGS_TAB_ORGANIZER_CONSIDER_DATA" desc="This is a bullet point in the ‘Things to consider’ column, which describes things users should consider about a feature. This string explains that AI features will send data to Google servers in order to provide the feature’s respective benefit. The tone should be informative.">
+    When you use organize tabs, the titles and URLs of your open tabs are sent to Google to generate suggested tab groups
+  </message>
+
+  <!-- Experimental settings - Wallpaper Search -->
   <message name="IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_LABEL" desc="The primary description for the create themes with AI feature.">
     Create themes with AI
   </message>

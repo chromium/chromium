@@ -70,7 +70,7 @@
     <cr-link-row label="$i18n{historySearchSettingLabel}"
         on-click="onHistorySearchLinkoutClick_" external>
       <div slot="sub-label">
-        [[toggleSubLabel_]]
+        $i18n{historySearchSettingSublabelV2}$i18n{sentenceEnd}
         <a href="$i18n{historySearchLearnMoreUrl}"
             aria-label="$i18n{historySearchLearnMoreA11yLabel}"
             on-click="onLearnMoreClick_" target="_blank">
@@ -93,12 +93,12 @@
       <ul class="icon-bulleted-list">
         <li>
           <cr-icon icon="settings20:search-spark" aria-hidden="true"></cr-icon>
-          <div class="secondary">$i18n{historySearchWhenOnBulletOne}</div>
+          <div class="secondary">$i18n{historySearchWhenOnPageContent}</div>
         </li>
         <li>
           <cr-icon icon="settings20:quick-reference-all" aria-hidden="true">
           </cr-icon>
-          <div class="secondary">$i18n{historySearchWhenOnBulletOne}</div>
+          <div class="secondary">$i18n{historySearchWhenOnSearchFrom}</div>
         </li>
       </ul>
     </div>
@@ -107,19 +107,19 @@
       <ul class="icon-bulleted-list">
         <li>
           <cr-icon icon="settings20:psychiatry" aria-hidden="true"></cr-icon>
-          <div class="secondary">$i18n{privacyPageTitle}</div>
+          <div class="secondary">$i18n{aiSubpageSublabelAi}</div>
         </li>
         <li>
           <cr-icon icon="settings20:googleg" aria-hidden="true"></cr-icon>
-          <div class="secondary">$i18n{privacyPageTitle}</div>
+          <div class="secondary">$i18n{historySearchConsiderData}</div>
         </li>
         <li>
           <cr-icon icon="settings20:account-box" aria-hidden="true"></cr-icon>
-          <div class="secondary">$i18n{privacyPageTitle}</div>
+          <div class="secondary">$i18n{aiSubpageSublabelReviewers}</div>
         </li>
         <li>
           <cr-icon icon="settings20:file-save" aria-hidden="true"></cr-icon>
-          <div class="secondary">$i18n{privacyPageTitle}</div>
+          <div class="secondary">$i18n{historySearchConsiderDataEncrypted}</div>
         </li>
       </ul>
     </div>

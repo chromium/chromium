@@ -33,10 +33,6 @@ export class SettingsOfferWritingHelpPageElement extends
 
   static get properties() {
     return {
-      prefs: {
-        type: Object,
-        notify: true,
-      },
       siteList_: {
         type: Array,
         value: [],
@@ -49,6 +45,10 @@ export class SettingsOfferWritingHelpPageElement extends
         type: Boolean,
         value: () => loadTimeData.getBoolean('enableComposeProactiveNudge'),
       },
+      disabledSitesLabel_: {
+        type: String,
+        computed: 'computeDisabledSitesLabel_(enableAiSettingsPageRefresh_)',
+      },
     };
   }
 
@@ -60,6 +60,7 @@ export class SettingsOfferWritingHelpPageElement extends
   private siteList_: string[];
   private enableAiSettingsPageRefresh_: boolean;
   private enableComposeProactiveNudge_: boolean;
+  private disabledSitesLabel_: string;
 
   private hasSites_(): boolean {
     return this.siteList_.length > 0;
@@ -81,6 +82,13 @@ export class SettingsOfferWritingHelpPageElement extends
 
   private getProactiveNudgeToggleHrCssClass_(): string {
     return this.enableAiSettingsPageRefresh_ ? 'hr' : '';
+  }
+
+  private computeDisabledSitesLabel_(): string {
+    return loadTimeData.getString(
+        this.enableAiSettingsPageRefresh_ ?
+            'offerWritingHelpDisabledSitesLabelV2' :
+            'offerWritingHelpDisabledSitesLabel');
   }
 }
 
