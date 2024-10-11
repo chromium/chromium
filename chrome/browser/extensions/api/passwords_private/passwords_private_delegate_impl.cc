@@ -161,6 +161,17 @@ std::u16string GetReauthPurpose(
     case extensions::api::passwords_private::PlaintextReason::kNone:
       NOTREACHED();
   }
+#elif BUILDFLAG(IS_CHROMEOS)
+  switch (reason) {
+    case extensions::api::passwords_private::PlaintextReason::kView:
+      return l10n_util::GetStringUTF16(
+          IDS_PASSWORDS_PAGE_AUTHENTICATION_PROMPT_CHROMEOS);
+    case extensions::api::passwords_private::PlaintextReason::kCopy:
+    case extensions::api::passwords_private::PlaintextReason::kEdit:
+      return std::u16string();
+    case extensions::api::passwords_private::PlaintextReason::kNone:
+      NOTREACHED();
+  }
 #else
   return std::u16string();
 #endif

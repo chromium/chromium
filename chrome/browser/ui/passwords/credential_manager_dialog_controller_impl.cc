@@ -38,8 +38,13 @@ std::u16string GetAuthenticationMessage(PasswordsModelDelegate* delegate) {
       password_manager::GetShownOrigin(delegate->GetWebContents()
                                            ->GetPrimaryMainFrame()
                                            ->GetLastCommittedOrigin()));
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   message =
       l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_FILLING_REAUTH, origin);
+#elif BUILDFLAG(IS_CHROMEOS)
+  message = l10n_util::GetStringFUTF16(
+      IDS_PASSWORD_MANAGER_FILLING_REAUTH_CHROMEOS, origin);
+#endif
   return message;
 }
 #endif
