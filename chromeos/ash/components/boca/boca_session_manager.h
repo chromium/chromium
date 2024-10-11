@@ -138,6 +138,8 @@ class BocaSessionManager
 
   AccountId& account_id() { return account_id_; }
 
+  SessionClientImpl* session_client_impl() { return session_client_impl_; }
+
  private:
   SEQUENCE_CHECKER(sequence_checker_);
 

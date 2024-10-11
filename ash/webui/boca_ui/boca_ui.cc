@@ -15,6 +15,7 @@
 #include "ash/webui/common/chrome_os_webui_config.h"
 #include "ash/webui/grit/ash_boca_ui_resources.h"
 #include "ash/webui/grit/ash_boca_ui_resources_map.h"
+#include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/grit/chromeos_boca_app_bundle_resources.h"
 #include "chromeos/grit/chromeos_boca_app_bundle_resources_map.h"
@@ -125,7 +126,7 @@ void BocaUI::Create(
   page_handler_impl_ = std::make_unique<BocaAppHandler>(
       this, std::move(page_handler), std::move(page), web_ui_,
       std::make_unique<ClassroomPageHandlerImpl>(),
-      std::make_unique<SessionClientImpl>());
+      BocaAppClient::Get()->GetSessionManager()->session_client_impl());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(BocaUI)
