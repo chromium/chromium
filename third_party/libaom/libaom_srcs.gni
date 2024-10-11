@@ -385,10 +385,8 @@ aom_common_app_util_sources = [
   "//third_party/libaom/source/libaom/common/y4menc.h",
 ]
 
-aom_dsp_common_asm_sse2 = [
-  "//third_party/libaom/source/libaom/aom_dsp/x86/intrapred_asm_sse2.asm",
-  "//third_party/libaom/source/libaom/aom_dsp/x86/inv_wht_sse2.asm",
-]
+aom_dsp_common_asm_sse2 =
+    [ "//third_party/libaom/source/libaom/aom_dsp/x86/intrapred_asm_sse2.asm" ]
 
 aom_dsp_common_asm_ssse3 = [
   "//third_party/libaom/source/libaom/aom_dsp/x86/aom_subpixel_8t_ssse3.asm",
