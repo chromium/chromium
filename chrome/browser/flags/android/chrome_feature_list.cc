@@ -251,7 +251,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kEdgeToEdgeBottomChin,
     &kEdgeToEdgeEverywhere,
     &kEdgeToEdgeWebOptIn,
-    &kEducationalTipModule,
     &kExperimentsForAgsa,
     &kFeedPositionAndroid,
     &kFocusOmniboxInIncognitoTabIntents,
@@ -377,6 +376,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &safe_browsing::kHashPrefixRealTimeLookups,
     &segmentation_platform::features::kContextualPageActions,
     &segmentation_platform::features::kContextualPageActionShareModel,
+    &segmentation_platform::features::kEducationalTipModule,
     &segmentation_platform::features::
         kSegmentationPlatformAndroidHomeModuleRanker,
     &segmentation_platform::features::
@@ -735,10 +735,6 @@ BASE_FEATURE(kEdgeToEdgeEverywhere,
 
 BASE_FEATURE(kEdgeToEdgeWebOptIn,
              "EdgeToEdgeWebOptIn",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kEducationalTipModule,
-             "EducationalTipModule",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExperimentsForAgsa,

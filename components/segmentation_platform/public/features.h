@@ -136,6 +136,12 @@ std::string TipsExperimentTrainEnabled();
 BASE_DECLARE_FEATURE(kSegmentationSurveyPage);
 extern const base::FeatureParam<bool> kSegmentationSurveyInternalsPage;
 
+#if BUILDFLAG(IS_ANDROID)
+// Feature flag for enabling the Educational tip module in the magic stack on
+// clank.
+BASE_DECLARE_FEATURE(kEducationalTipModule);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 }  // namespace segmentation_platform::features
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_FEATURES_H_
