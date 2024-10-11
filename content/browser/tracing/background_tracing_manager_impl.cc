@@ -535,6 +535,7 @@ bool BackgroundTracingManagerImpl::InitializeFieldScenarios(
     enabled_scenarios_.push_back(field_scenarios_.back().get());
     enabled_scenarios_.back()->Enable();
   }
+  MaybeConstructPendingAgents();
   RecordMetric(Metrics::SCENARIO_ACTIVATED_SUCCESSFULLY);
   return true;
 }
@@ -611,6 +612,7 @@ bool BackgroundTracingManagerImpl::SetEnabledScenarios(
       it->second->Enable();
     }
   }
+  MaybeConstructPendingAgents();
   return true;
 }
 
@@ -1185,8 +1187,9 @@ void BackgroundTracingManagerImpl::ClearPendingAgent(int child_process_id) {
 void BackgroundTracingManagerImpl::MaybeConstructPendingAgents() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (agent_observers_.empty())
+  if (agent_observers_.empty() && enabled_scenarios_.empty()) {
     return;
+  }
 
   for (auto& pending_agent : pending_agents_) {
     pending_agent.second.set_disconnect_handler(base::OnceClosure());
