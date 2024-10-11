@@ -426,6 +426,7 @@ artifact_zip("enterprise_companion_zip") {
       "$root_build_dir/${enterprise_companion_product_full_name}.app/Contents/MacOS/${enterprise_companion_product_full_name}",
       "$root_build_dir/${enterprise_companion_product_full_name}.app/Contents/PkgInfo",
       "$root_build_dir/EnterpriseCompanionSigning/sign.py",
+      "$root_build_dir/EnterpriseCompanionSigning/pkg-dmg",
     ]
     deps = [
       "//chrome/enterprise_companion/mac:copy_signing",
