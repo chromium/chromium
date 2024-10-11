@@ -238,6 +238,12 @@ Process LaunchProcess(const std::vector<std::string>& argv,
   if (options.disclaim_responsibility) {
     DPSXCHECK(responsibility_spawnattrs_setdisclaim(attr.get(), 1));
   }
+
+  EnvironmentMap new_environment_map = options.environment;
+  MachPortRendezvousServerMac::AddFeatureStateToEnvironment(
+      new_environment_map);
+#else
+  const EnvironmentMap& new_environment_map = options.environment;
 #endif
 
   std::vector<char*> argv_cstr;
@@ -250,9 +256,9 @@ Process LaunchProcess(const std::vector<std::string>& argv,
   char* empty_environ = nullptr;
   char** new_environ =
       options.clear_environment ? &empty_environ : *_NSGetEnviron();
-  if (!options.environment.empty()) {
+  if (!new_environment_map.empty()) {
     owned_environ =
-        internal::AlterEnvironment(new_environ, options.environment);
+        internal::AlterEnvironment(new_environ, new_environment_map);
     new_environ = owned_environ.data();
   }
 
