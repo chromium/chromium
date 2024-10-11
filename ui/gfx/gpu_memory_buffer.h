@@ -108,7 +108,7 @@ class GFX_EXPORT GpuMemoryBuffer {
   // GpuMemoryThread if some work in the GPU service is required for mapping, or
   // will be executed immediately in the current sequence. Warning: Make sure
   // the GMB isn't destroyed before the callback is run otherwise GPU process
-  // might try to write in destroyed shared memory region. Don't attempt to Map,
+  // might try to write in destroyed shared memory region. Don't attempt to
   // Unmap or get memory before the callback is executed. Otherwise a CHECK will
   // fire.
   virtual void MapAsync(base::OnceCallback<void(bool)> result_cb);

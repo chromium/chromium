@@ -447,15 +447,6 @@ void ClientSharedImage::HelperGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
   NOTIMPLEMENTED();
 }
 
-bool ClientSharedImage::HelperGpuMemoryBufferManager::CopyGpuMemoryBufferSync(
-    gfx::GpuMemoryBufferHandle buffer_handle,
-    base::UnsafeSharedMemoryRegion memory_region) {
-  // Will be implemented in follow up CLs once IPC changes to perform this
-  // operations are done.
-  NOTIMPLEMENTED();
-  return true;
-}
-
 // Access the SharedImageInterface via the SharedImageInterfaceHolder.
 scoped_refptr<SharedImageInterface>
 ClientSharedImage::HelperGpuMemoryBufferManager::GetSharedImageInterface() {

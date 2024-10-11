@@ -77,14 +77,18 @@ class GPU_EXPORT GpuMemoryBufferImplDXGI : public GpuMemoryBufferImpl {
                           scoped_refptr<base::UnsafeSharedMemoryPool> pool,
                           base::span<uint8_t> premapped_memory);
 
-  std::optional<bool> PrepareToMap(bool is_async)
-      EXCLUSIVE_LOCKS_REQUIRED(map_lock_);
-  void CheckAsyncMapResult(base::OnceCallback<void(bool)> result_cb,
-                           bool result);
+  // Returns callback for reporting early result.
+  // `DoMapAsync` can't invoke it directly as it holds a mapping lock.
+  std::optional<base::OnceCallback<void(void)>> DoMapAsync(
+      base::OnceCallback<void(bool)>);
+  void CheckAsyncMapResult(bool result);
 
   base::win::ScopedHandle dxgi_handle_;
   gfx::DXGIHandleToken dxgi_token_;
   raw_ptr<GpuMemoryBufferManager> gpu_memory_buffer_manager_;
+
+  std::vector<base::OnceCallback<void(bool)>> map_callbacks_
+      GUARDED_BY(map_lock_);
 
   // Used to create and store shared memory for data, copied via request to
   // gpu process.

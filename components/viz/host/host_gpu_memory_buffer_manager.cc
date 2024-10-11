@@ -233,26 +233,6 @@ void HostGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
   }
 }
 
-bool HostGpuMemoryBufferManager::CopyGpuMemoryBufferSync(
-    gfx::GpuMemoryBufferHandle buffer_handle,
-    base::UnsafeSharedMemoryRegion memory_region) {
-  base::WaitableEvent event;
-  bool mapping_result = false;
-
-  base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow;
-  CopyGpuMemoryBufferAsync(
-      std::move(buffer_handle), std::move(memory_region),
-      base::BindOnce(
-          [](base::WaitableEvent* event, bool* result_ptr, bool result) {
-            *result_ptr = result;
-            event->Signal();
-          },
-          &event, &mapping_result));
-  event.Wait();
-
-  return mapping_result;
-}
-
 bool HostGpuMemoryBufferManager::OnMemoryDump(
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
