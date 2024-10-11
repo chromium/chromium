@@ -121,8 +121,8 @@ BASE_DECLARE_FEATURE(kAutofillSendUnidentifiedKeyAfterFill);
 
 // https://crbug.com/1472970
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kAutoSpeculationRules);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kAutoSpeculationRulesHoldback;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(bool,
+                                               kAutoSpeculationRulesHoldback);
 
 // Switch to enabling rendering of gainmap-based AVIF HDR images.
 // Tracker: https://crbug.com/1451889
@@ -158,8 +158,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBakedGamutMapping);
 // Used to configure a per-origin allowlist of performance.mark events that are
 // permitted to be included in slow reports traces. See crbug.com/1181774.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBackgroundTracingPerformanceMark);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
-    kBackgroundTracingPerformanceMark_AllowList;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    std::string,
+    kBackgroundTracingPerformanceMark_AllowList);
 
 // Debug reporting runtime flag/JS API.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBiddingAndScoringDebugReportingAPI);
@@ -240,18 +241,21 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     kBrowsingTopicsMaxNumberOfApiUsageContextDomainsToStorePerPageLoad);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
                                                kBrowsingTopicsTaxonomyVersion);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
-    kBrowsingTopicsDisabledTopicsList;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
-    kBrowsingTopicsPrioritizedTopicsList;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    std::string,
+    kBrowsingTopicsDisabledTopicsList);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    std::string,
+    kBrowsingTopicsPrioritizedTopicsList);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     base::TimeDelta,
     kBrowsingTopicsFirstTimeoutRetryDelay);
 constexpr int kBrowsingTopicsTaxonomyVersionDefault = 2;
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCacheStorageCodeCacheHintHeader);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
-    kCacheStorageCodeCacheHintHeaderName;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    std::string,
+    kCacheStorageCodeCacheHintHeaderName);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCacheCodeOnIdle);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kCacheCodeOnIdleDelayParam);
@@ -288,8 +292,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kClientHintsViewportWidth_DEPRECATED);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kClientHintsXRFormFactor);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCompressParkableStrings);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kMaxDiskDataAllocatorCapacityMB;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int,
+                                               kMaxDiskDataAllocatorCapacityMB);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kLessAggressiveParkableString);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kConsumeCodeCacheOffThread);
@@ -374,8 +378,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     base::TimeDelta,
     kDelayAsyncScriptExecutionFeatureLimitParam);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
-    kDelayAsyncScriptAllowList;
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
     bool,
     kDelayAsyncScriptExecutionMainFrameOnlyParam);
@@ -412,8 +414,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kDelayLowPriorityRequestsAccordingToNetworkState);
 // Number of the requests that can be handled in the tight mode.
-BLINK_COMMON_EXPORT
-extern const base::FeatureParam<int> kMaxNumOfThrottleableRequestsInTightMode;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    size_t,
+    kMaxNumOfThrottleableRequestsInTightMode);
 // The HTTP RTT threshold: decide whether the
 // `kDelayLowPriorityRequestsAccordingToNetworkState` feature can take effect
 // practically according to the network connection state.
@@ -421,8 +424,9 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
                                                kHttpRttThreshold);
 // The cost reduction for the multiplexed requests when
 // `kDelayLowPriorityRequestsAccordingToNetworkState` is enabled.
-BLINK_COMMON_EXPORT
-extern const base::FeatureParam<double> kCostReductionOfMultiplexedRequests;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    double,
+    kCostReductionOfMultiplexedRequests);
 
 // Enables the use of CrabbyAvif for decoding AVIF images.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kCrabbyAvif);
@@ -464,17 +468,15 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEstablishGpuChannelAsync);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDeprecateUnload);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDeprecateUnloadByAllowList);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kDeprecateUnloadPercent;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int> kDeprecateUnloadBucket;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
-    kDeprecateUnloadAllowlist;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kDeprecateUnloadPercent);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(int, kDeprecateUnloadBucket);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(std::string,
+                                               kDeprecateUnloadAllowlist);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kEventTimingHandleOrphanPointerup);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kExcludeLowEntropyImagesFromLCP);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
-    kMinimumEntropyForLCP;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(double, kMinimumEntropyForLCP);
 
 // Controls if the file loaded via the Speculation-Rules header
 // is exempt from CSP checks. See crbug.com/371595744 for context.
@@ -533,20 +535,22 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
 // Uses the kFilterName* values in ui_base_features.h as the 'filter' feature
 // param.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFilteringScrollPrediction);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
-    kFilteringScrollPredictionFilterParam;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    std::string,
+    kFilteringScrollPredictionFilterParam);
 
 // FLEDGE ad serving runtime flag/JS API.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledge);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeBiddingAndAuctionServer);
 // Public key URL to use for the default bidding and auction Coordinator.
 // Overrides the JSON config for the default coordinator if both are specified.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
-    kFledgeBiddingAndAuctionKeyURL;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(std::string,
+                                               kFledgeBiddingAndAuctionKeyURL);
 // JSON config specifying supported coordinator origins and their public key
 // URLs.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
-    kFledgeBiddingAndAuctionKeyConfig;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    std::string,
+    kFledgeBiddingAndAuctionKeyConfig);
 // Configures FLEDGE to consider k-anonymity. If both
 // kFledgeConsiderKAnonymity and kFledgeEnforceKAnonymity are on it will be
 // enforced; if only kFledgeConsiderKAnonymity is on it will be simulated.
@@ -562,37 +566,42 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeSampleDebugReports);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeSplitTrustedSignalsFetchingURL);
 
-BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kFledgeDebugReportLockout;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                                               kFledgeDebugReportLockout);
 // Prevent ad techs who accidentally call the API repeatedly for all users,
 // from locking themselves out of sending any more debug reports for years.
 // This is accomplished by most of the time putting that ad tech in a shorter
 // cooldown period, and only some time (e.g., 10% of the time) putting it in a
 // restricted cooldown period.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kFledgeDebugReportRestrictedCooldown;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kFledgeDebugReportShortCooldown;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    base::TimeDelta,
+    kFledgeDebugReportRestrictedCooldown);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                                               kFledgeDebugReportShortCooldown);
 // Gives a 1/(kFledgeDebugReportSamplingRandomMax+1) chance of allowing sending
 // forDebuggingOnly reports.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kFledgeDebugReportSamplingRandomMax;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kFledgeDebugReportSamplingRandomMax);
 // Gives a 1/(kFledgeDebugReportSamplingRestrictedCooldownRandomMax+1) chance of
 // putting an ad tech in a restricted cooldown period.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kFledgeDebugReportSamplingRestrictedCooldownRandomMax;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kFledgeDebugReportSamplingRestrictedCooldownRandomMax);
 // Sets the time when to enable filtering debug reports. It's the time delta
 // since windows epoch. Lockout and cooldown collected before this time will be
 // ignored. This avoids locking out ad techs who used forDebuggingOnly API
 // before filtering was enabled. Set to zero to disable filtering debug reports.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kFledgeEnableFilteringDebugReportStartingFrom;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    base::TimeDelta,
+    kFledgeEnableFilteringDebugReportStartingFrom);
 
 // If kFledgeCustomMaxAuctionAdComponents is enabled, the limit on number of
 // component ads will be taken from `kFledgeCustomMaxAuctionAdComponentsValue`
 // (up to kMaxAdAuctionAdComponentsConfigLimit) rather than default.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kFledgeCustomMaxAuctionAdComponentsValue;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kFledgeCustomMaxAuctionAdComponentsValue);
 
 // If kFledgeNumberBidderWorkletGroupByOriginContextsToKeep is enabled,
 // kFledgeNumberBidderWorkletGroupByOriginContextsToKeepValue sets the number of
@@ -602,10 +611,12 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 // kFledgeNumberBidderWorkletContextsIncludeFacilitedTesting is enabled.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kFledgeNumberBidderWorkletGroupByOriginContextsToKeep);
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kFledgeNumberBidderWorkletGroupByOriginContextsToKeepValue;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kFledgeNumberBidderWorkletContextsIncludeFacilitedTesting;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kFledgeNumberBidderWorkletGroupByOriginContextsToKeepValue);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    bool,
+    kFledgeNumberBidderWorkletContextsIncludeFacilitedTesting);
 
 // Reuse a single V8 context to generate all bids in a bidder worklet.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeAlwaysReuseBidderContext);
@@ -614,23 +625,26 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kFledgeAlwaysReuseSellerContext);
 
 // Feature params for feature kFledgeRealTimeReporting.
 // Epsilon of FLEDGE real time reporting's Rappor noise algorithm.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
-    kFledgeRealTimeReportingEpsilon;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(double,
+                                               kFledgeRealTimeReportingEpsilon);
 // Total number of buckets supported for FLEDGE real time reporting. Supported
 // buckets will be [0, kFledgeRealTimeReportingNumBuckets). Platform
 // contribution buckets will start from kFledgeRealTimeReportingNumBuckets.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kFledgeRealTimeReportingNumBuckets;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kFledgeRealTimeReportingNumBuckets);
 // The priorityWeight of FLEDGE real time reporting's platform contributions.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<double>
-    kFledgeRealTimeReportingPlatformContributionPriority;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    double,
+    kFledgeRealTimeReportingPlatformContributionPriority);
 // The number of FLEDGE real time reports (`kFledgeRealTimeReportingMaxReports`)
 // allowed to be sent per reporting origin per page per
 // `kFledgeRealTimeReportingWindow`.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kFledgeRealTimeReportingWindow;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kFledgeRealTimeReportingMaxReports;
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                                               kFledgeRealTimeReportingWindow);
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kFledgeRealTimeReportingMaxReports);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kFledgeEnforcePermissionPolicyContributeOnEvent);

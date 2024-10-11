@@ -175,8 +175,11 @@ BASE_FEATURE(kAutofillSendUnidentifiedKeyAfterFill,
 BASE_FEATURE(kAutoSpeculationRules,
              "AutoSpeculationRules",
              base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<bool> kAutoSpeculationRulesHoldback{
-    &kAutoSpeculationRules, "holdback", false};
+BASE_FEATURE_PARAM(bool,
+                   kAutoSpeculationRulesHoldback,
+                   &kAutoSpeculationRules,
+                   "holdback",
+                   false);
 
 BASE_FEATURE(kAvifGainmapHdrImages,
              "AvifGainmapHdrImages",
@@ -232,9 +235,11 @@ BASE_FEATURE(kBakedGamutMapping,
 BASE_FEATURE(kBackgroundTracingPerformanceMark,
              "BackgroundTracingPerformanceMark",
              base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<std::string>
-    kBackgroundTracingPerformanceMark_AllowList{
-        &kBackgroundTracingPerformanceMark, "allow_list", ""};
+BASE_FEATURE_PARAM(std::string,
+                   kBackgroundTracingPerformanceMark_AllowList,
+                   &kBackgroundTracingPerformanceMark,
+                   "allow_list",
+                   "");
 
 // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
 // Feature flag to enable debug reporting APIs.
@@ -416,13 +421,18 @@ BASE_FEATURE_PARAM(int,
                    kBrowsingTopicsTaxonomyVersionDefault);
 // Comma separated Topic IDs to be blocked. Descendant topics of each blocked
 // topic will be blocked as well.
-const base::FeatureParam<std::string> kBrowsingTopicsDisabledTopicsList{
-    &kBrowsingTopicsParameters, "disabled_topics_list", ""};
+BASE_FEATURE_PARAM(std::string,
+                   kBrowsingTopicsDisabledTopicsList,
+                   &kBrowsingTopicsParameters,
+                   "disabled_topics_list",
+                   "");
 // Comma separated list of Topic IDs. Prioritize these topics and their
 // descendants during top topic selection.
-const base::FeatureParam<std::string> kBrowsingTopicsPrioritizedTopicsList{
-    &kBrowsingTopicsParameters, "prioritized_topics_list",
-    "57,86,126,149,172,180,196,207,239,254,263,272,289,299,332"};
+BASE_FEATURE_PARAM(std::string,
+                   kBrowsingTopicsPrioritizedTopicsList,
+                   &kBrowsingTopicsParameters,
+                   "prioritized_topics_list",
+                   "57,86,126,149,172,180,196,207,239,254,263,272,289,299,332");
 // When a topics calculation times out for the first time, the duration to wait
 // before starting a new one.
 BASE_FEATURE_PARAM(base::TimeDelta,
@@ -456,8 +466,11 @@ BASE_FEATURE_PARAM(bool,
 BASE_FEATURE(kCacheStorageCodeCacheHintHeader,
              "CacheStorageCodeCacheHintHeader",
              base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<std::string> kCacheStorageCodeCacheHintHeaderName{
-    &kCacheStorageCodeCacheHintHeader, "name", "x-CacheStorageCodeCacheHint"};
+BASE_FEATURE_PARAM(std::string,
+                   kCacheStorageCodeCacheHintHeaderName,
+                   &kCacheStorageCodeCacheHintHeader,
+                   "name",
+                   "x-CacheStorageCodeCacheHint");
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
 // Enables camera preview in permission bubble and site settings.
@@ -535,8 +548,11 @@ BASE_FEATURE(kLessAggressiveParkableString,
 // Limits maximum capacity of disk data allocator per renderer process.
 // DiskDataAllocator and its clients(ParkableString, ParkableImage) will try
 // to keep the limitation.
-const base::FeatureParam<int> kMaxDiskDataAllocatorCapacityMB{
-    &kCompressParkableStrings, "max_disk_capacity_mb", -1};
+BASE_FEATURE_PARAM(int,
+                   kMaxDiskDataAllocatorCapacityMB,
+                   &kCompressParkableStrings,
+                   "max_disk_capacity_mb",
+                   -1);
 
 // Controls off-thread code cache consumption.
 BASE_FEATURE(kConsumeCodeCacheOffThread,
@@ -660,9 +676,6 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "delay_async_exec_feature_limit",
                    base::Seconds(0));
 
-const base::FeatureParam<std::string> kDelayAsyncScriptAllowList{
-    &kDelayAsyncScriptExecution, "delay_async_exec_allow_list", ""};
-
 BASE_FEATURE_PARAM(bool,
                    kDelayAsyncScriptExecutionDelayByDefaultParam,
                    &kDelayAsyncScriptExecution,
@@ -716,9 +729,11 @@ BASE_FEATURE(kDelayLowPriorityRequestsAccordingToNetworkState,
              "DelayLowPriorityRequestsAccordingToNetworkState",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<int> kMaxNumOfThrottleableRequestsInTightMode{
-    &kDelayLowPriorityRequestsAccordingToNetworkState,
-    "MaxNumOfThrottleableRequestsInTightMode", 5};
+BASE_FEATURE_PARAM(size_t,
+                   kMaxNumOfThrottleableRequestsInTightMode,
+                   &kDelayLowPriorityRequestsAccordingToNetworkState,
+                   "MaxNumOfThrottleableRequestsInTightMode",
+                   5);
 
 BASE_FEATURE_PARAM(base::TimeDelta,
                    kHttpRttThreshold,
@@ -726,9 +741,11 @@ BASE_FEATURE_PARAM(base::TimeDelta,
                    "HttpRttThreshold",
                    base::Milliseconds(450));
 
-const base::FeatureParam<double> kCostReductionOfMultiplexedRequests{
-    &kDelayLowPriorityRequestsAccordingToNetworkState,
-    "CostReductionOfMultiplexedRequests", 0.5};
+BASE_FEATURE_PARAM(double,
+                   kCostReductionOfMultiplexedRequests,
+                   &kDelayLowPriorityRequestsAccordingToNetworkState,
+                   "CostReductionOfMultiplexedRequests",
+                   0.5);
 
 BASE_FEATURE(kDirectCompositorThreadIpc,
              "DirectCompositorThreadIpc",
@@ -775,12 +792,18 @@ BASE_FEATURE(kDeprecateUnload,
              base::FEATURE_DISABLED_BY_DEFAULT);
 // If < 100, each user experiences the deprecation on this % of origins.
 // Which origins varies per user.
-const base::FeatureParam<int> kDeprecateUnloadPercent{&kDeprecateUnload,
-                                                      "rollout_percent", 100};
+BASE_FEATURE_PARAM(int,
+                   kDeprecateUnloadPercent,
+                   &kDeprecateUnload,
+                   "rollout_percent",
+                   100);
 // This buckets users, with users in each bucket having a consistent experience
 // of the unload deprecation rollout.
-const base::FeatureParam<int> kDeprecateUnloadBucket{&kDeprecateUnload,
-                                                     "rollout_bucket", 0};
+BASE_FEATURE_PARAM(int,
+                   kDeprecateUnloadBucket,
+                   &kDeprecateUnload,
+                   "rollout_bucket",
+                   0);
 
 // Only used if `kDeprecateUnload` is enabled. The deprecation will only apply
 // if the host is on the allow-list.
@@ -789,8 +812,11 @@ BASE_FEATURE(kDeprecateUnloadByAllowList,
              base::FEATURE_DISABLED_BY_DEFAULT);
 // A list of hosts for which deprecation of unload is allowed. If it's empty
 // the all hosts are allowed.
-const base::FeatureParam<std::string> kDeprecateUnloadAllowlist{
-    &kDeprecateUnloadByAllowList, "allowlist", ""};
+BASE_FEATURE_PARAM(std::string,
+                   kDeprecateUnloadAllowlist,
+                   &kDeprecateUnloadByAllowList,
+                   "allowlist",
+                   "");
 
 // Enable not reporting orphan pointerup (pointerup not accompanied by
 // pointerdown) as an interaction in performance event timing.
@@ -807,8 +833,11 @@ BASE_FEATURE(kEventTimingHandleOrphanPointerup,
 BASE_FEATURE(kExcludeLowEntropyImagesFromLCP,
              "ExcludeLowEntropyImagesFromLCP",
              base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<double> kMinimumEntropyForLCP{
-    &kExcludeLowEntropyImagesFromLCP, "min_bpp", 0.05};
+BASE_FEATURE_PARAM(double,
+                   kMinimumEntropyForLCP,
+                   &kExcludeLowEntropyImagesFromLCP,
+                   "min_bpp",
+                   0.05);
 
 BASE_FEATURE(kExemptSpeculationRulesHeaderFromCSP,
              "ExemptSpeculationRulesHeaderFromCSP",
@@ -914,8 +943,11 @@ BASE_FEATURE(kFilteringScrollPrediction,
              base::FEATURE_DISABLED_BY_DEFAULT
 #endif
 );
-const base::FeatureParam<std::string> kFilteringScrollPredictionFilterParam{
-    &kFilteringScrollPrediction, "filter", "one_euro_filter"};
+BASE_FEATURE_PARAM(std::string,
+                   kFilteringScrollPredictionFilterParam,
+                   &kFilteringScrollPrediction,
+                   "filter",
+                   "one_euro_filter");
 
 // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
 // Enables FLEDGE implementation. See https://crbug.com/1186444.
@@ -926,10 +958,16 @@ BASE_FEATURE(kFledge, "Fledge", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kFledgeBiddingAndAuctionServer,
              "FledgeBiddingAndAuctionServer",
              base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<std::string> kFledgeBiddingAndAuctionKeyURL{
-    &kFledgeBiddingAndAuctionServer, "FledgeBiddingAndAuctionKeyURL", ""};
-const base::FeatureParam<std::string> kFledgeBiddingAndAuctionKeyConfig{
-    &kFledgeBiddingAndAuctionServer, "FledgeBiddingAndAuctionKeyConfig", ""};
+BASE_FEATURE_PARAM(std::string,
+                   kFledgeBiddingAndAuctionKeyURL,
+                   &kFledgeBiddingAndAuctionServer,
+                   "FledgeBiddingAndAuctionKeyURL",
+                   "");
+BASE_FEATURE_PARAM(std::string,
+                   kFledgeBiddingAndAuctionKeyConfig,
+                   &kFledgeBiddingAndAuctionServer,
+                   "FledgeBiddingAndAuctionKeyConfig",
+                   "");
 
 // See in the header.
 BASE_FEATURE(kFledgeConsiderKAnonymity,
@@ -950,46 +988,61 @@ BASE_FEATURE(kFledgePassRecencyToGenerateBid,
 BASE_FEATURE(kFledgeSampleDebugReports,
              "FledgeSampleDebugReports",
              base::FEATURE_ENABLED_BY_DEFAULT);
-const base::FeatureParam<base::TimeDelta> kFledgeDebugReportLockout{
-    &kFledgeSampleDebugReports, "fledge_debug_report_lockout",
-    base::Days(365 * 3)};
-const base::FeatureParam<base::TimeDelta> kFledgeDebugReportRestrictedCooldown{
-    &kFledgeSampleDebugReports, "fledge_debug_report_restricted_cooldown",
-    base::Days(365)};
-const base::FeatureParam<base::TimeDelta> kFledgeDebugReportShortCooldown{
-    &kFledgeSampleDebugReports, "fledge_debug_report_short_cooldown",
-    base::Days(14)};
-const base::FeatureParam<int> kFledgeDebugReportSamplingRandomMax{
-    &kFledgeSampleDebugReports, "fledge_debug_report_sampling_random_max",
-    1000};
-const base::FeatureParam<int>
-    kFledgeDebugReportSamplingRestrictedCooldownRandomMax{
-        &kFledgeSampleDebugReports,
-        "fledge_debug_report_sampling_restricted_cooldown_random_max", 10};
-const base::FeatureParam<base::TimeDelta>
-    kFledgeEnableFilteringDebugReportStartingFrom{
-        &kFledgeSampleDebugReports,
-        "fledge_enable_filtering_debug_report_starting_from",
-        base::Milliseconds(0)};
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kFledgeDebugReportLockout,
+                   &kFledgeSampleDebugReports,
+                   "fledge_debug_report_lockout",
+                   base::Days(365 * 3));
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kFledgeDebugReportRestrictedCooldown,
+                   &kFledgeSampleDebugReports,
+                   "fledge_debug_report_restricted_cooldown",
+                   base::Days(365));
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kFledgeDebugReportShortCooldown,
+                   &kFledgeSampleDebugReports,
+                   "fledge_debug_report_short_cooldown",
+                   base::Days(14));
+BASE_FEATURE_PARAM(int,
+                   kFledgeDebugReportSamplingRandomMax,
+                   &kFledgeSampleDebugReports,
+                   "fledge_debug_report_sampling_random_max",
+                   1000);
+BASE_FEATURE_PARAM(
+    int,
+    kFledgeDebugReportSamplingRestrictedCooldownRandomMax,
+    &kFledgeSampleDebugReports,
+    "fledge_debug_report_sampling_restricted_cooldown_random_max",
+    10);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kFledgeEnableFilteringDebugReportStartingFrom,
+                   &kFledgeSampleDebugReports,
+                   "fledge_enable_filtering_debug_report_starting_from",
+                   base::Milliseconds(0));
 
 BASE_FEATURE(kFledgeSplitTrustedSignalsFetchingURL,
              "FledgeSplitTrustedSignalsFetchingURL",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-const base::FeatureParam<int> kFledgeCustomMaxAuctionAdComponentsValue{
-    &kFledgeCustomMaxAuctionAdComponents, "FledgeAdComponentLimit", 40};
+BASE_FEATURE_PARAM(int,
+                   kFledgeCustomMaxAuctionAdComponentsValue,
+                   &kFledgeCustomMaxAuctionAdComponents,
+                   "FledgeAdComponentLimit",
+                   40);
 
 BASE_FEATURE(kFledgeNumberBidderWorkletGroupByOriginContextsToKeep,
              "FledgeBidderWorkletGroupByOriginContextsToKeep",
              base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<int>
-    kFledgeNumberBidderWorkletGroupByOriginContextsToKeepValue{
-        &kFledgeNumberBidderWorkletGroupByOriginContextsToKeep,
-        "GroupByOriginContextLimit", 10};
-const base::FeatureParam<bool>
-    kFledgeNumberBidderWorkletContextsIncludeFacilitedTesting{
-        &kFledgeNumberBidderWorkletGroupByOriginContextsToKeep,
-        "IncludeFacilitatedTestingGroups", false};
+BASE_FEATURE_PARAM(int,
+                   kFledgeNumberBidderWorkletGroupByOriginContextsToKeepValue,
+                   &kFledgeNumberBidderWorkletGroupByOriginContextsToKeep,
+                   "GroupByOriginContextLimit",
+                   10);
+BASE_FEATURE_PARAM(bool,
+                   kFledgeNumberBidderWorkletContextsIncludeFacilitedTesting,
+                   &kFledgeNumberBidderWorkletGroupByOriginContextsToKeep,
+                   "IncludeFacilitatedTestingGroups",
+                   false);
 
 BASE_FEATURE(kFledgeAlwaysReuseBidderContext,
              "FledgeAlwaysReuseBidderContext",
@@ -999,19 +1052,31 @@ BASE_FEATURE(kFledgeAlwaysReuseSellerContext,
              "FledgeAlwaysReuseSellerContext",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const base::FeatureParam<int> kFledgeRealTimeReportingNumBuckets{
-    &kFledgeRealTimeReporting, "FledgeRealTimeReportingNumBuckets", 1024};
-const base::FeatureParam<double> kFledgeRealTimeReportingEpsilon{
-    &kFledgeRealTimeReporting, "FledgeRealTimeReportingEpsilon", 1};
-const base::FeatureParam<double>
-    kFledgeRealTimeReportingPlatformContributionPriority{
-        &kFledgeRealTimeReporting,
-        "FledgeRealTimeReportingPlatformContributionPriority", 1};
-const base::FeatureParam<base::TimeDelta> kFledgeRealTimeReportingWindow{
-    &kFledgeRealTimeReporting, "FledgeRealTimeReportingWindow",
-    base::Seconds(20)};
-const base::FeatureParam<int> kFledgeRealTimeReportingMaxReports{
-    &kFledgeRealTimeReporting, "FledgeRealTimeReportingMaxReports", 10};
+BASE_FEATURE_PARAM(int,
+                   kFledgeRealTimeReportingNumBuckets,
+                   &kFledgeRealTimeReporting,
+                   "FledgeRealTimeReportingNumBuckets",
+                   1024);
+BASE_FEATURE_PARAM(double,
+                   kFledgeRealTimeReportingEpsilon,
+                   &kFledgeRealTimeReporting,
+                   "FledgeRealTimeReportingEpsilon",
+                   1);
+BASE_FEATURE_PARAM(double,
+                   kFledgeRealTimeReportingPlatformContributionPriority,
+                   &kFledgeRealTimeReporting,
+                   "FledgeRealTimeReportingPlatformContributionPriority",
+                   1);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kFledgeRealTimeReportingWindow,
+                   &kFledgeRealTimeReporting,
+                   "FledgeRealTimeReportingWindow",
+                   base::Seconds(20));
+BASE_FEATURE_PARAM(int,
+                   kFledgeRealTimeReportingMaxReports,
+                   &kFledgeRealTimeReporting,
+                   "FledgeRealTimeReportingMaxReports",
+                   10);
 
 // Enable enforcement of permission policy for
 // privateAggregation.contributeToHistogramOnEvent.
