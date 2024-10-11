@@ -24,9 +24,11 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {DisplaySettingsNightLightScheduleOption, DisplaySettingsProviderInterface, DisplaySettingsType} from '../mojom-webui/display_settings_provider.mojom-webui.js';
+import type {DisplaySettingsNightLightScheduleOption, DisplaySettingsProviderInterface} from '../mojom-webui/display_settings_provider.mojom-webui.js';
+import {DisplaySettingsType} from '../mojom-webui/display_settings_provider.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from '../os_privacy_page/privacy_hub_browser_proxy.js';
+import type {PrivacyHubBrowserProxy} from '../os_privacy_page/privacy_hub_browser_proxy.js';
+import {PrivacyHubBrowserProxyImpl} from '../os_privacy_page/privacy_hub_browser_proxy.js';
 import {GeolocationAccessLevel} from '../os_privacy_page/privacy_hub_geolocation_subpage.js';
 
 import {getTemplate} from './display_night_light.html.js';

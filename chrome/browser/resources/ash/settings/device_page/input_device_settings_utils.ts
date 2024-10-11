@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
-import {AudioOutputCapability, BluetoothDeviceProperties, DeviceConnectionState, DeviceType} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import type {BluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
+import {AudioOutputCapability, DeviceConnectionState, DeviceType} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 
-import {Button, DeviceSettings, InputDeviceSettingsPolicy, InputDeviceType, KeyEvent, PolicyStatus} from './input_device_settings_types.js';
+import type {Button, DeviceSettings, InputDeviceSettingsPolicy, InputDeviceType, KeyEvent} from './input_device_settings_types.js';
+import {PolicyStatus} from './input_device_settings_types.js';
 
 function objectsAreEqual(
     obj1: {[key: string]: any}, obj2: {[key: string]: any}): boolean {

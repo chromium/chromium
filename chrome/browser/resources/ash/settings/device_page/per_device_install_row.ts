@@ -15,10 +15,10 @@ import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {CompanionAppInfo} from './input_device_settings_types.js';
+import type {CompanionAppInfo} from './input_device_settings_types.js';
 import {getTemplate} from './per_device_install_row.html.js';
 
 const PerDeviceInstallRowElementBase = I18nMixin(PolymerElement);

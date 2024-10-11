@@ -27,21 +27,23 @@ import 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
-import {MousePolicies} from '../mojom-webui/input_device_settings.mojom-webui.js';
+import type {MousePolicies} from '../mojom-webui/input_device_settings.mojom-webui.js';
 import {MouseSettingsObserverReceiver} from '../mojom-webui/input_device_settings_provider.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {DisableTouchpadMode} from '../os_a11y_page/disable_touchpad_constants.js';
-import {Route, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {routes} from '../router.js';
 
 import {FakeInputDeviceSettingsProvider} from './fake_input_device_settings_provider.js';
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {CompanionAppState, InputDeviceSettingsProviderInterface, Mouse, SimulateRightClickModifier, Touchpad, TouchpadSettings} from './input_device_settings_types.js';
+import type {InputDeviceSettingsProviderInterface, Mouse, Touchpad, TouchpadSettings} from './input_device_settings_types.js';
+import {CompanionAppState, SimulateRightClickModifier} from './input_device_settings_types.js';
 import {settingsAreEqual} from './input_device_settings_utils.js';
 import {getTemplate} from './per_device_touchpad_subsection.html.js';
 

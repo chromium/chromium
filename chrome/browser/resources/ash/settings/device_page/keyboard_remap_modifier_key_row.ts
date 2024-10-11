@@ -15,15 +15,16 @@ import '../controls/settings_dropdown_menu.js';
 import '../os_settings_icons.html.js';
 // <if expr="_google_chrome" >
 import 'chrome://resources/ash/common/internal/ash_internal_icons.html.js';
+
 // </if>
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
+import type {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 
 import {MetaKey, ModifierKey} from './input_device_settings_types.js';
 import {getTemplate} from './keyboard_remap_modifier_key_row.html.js';

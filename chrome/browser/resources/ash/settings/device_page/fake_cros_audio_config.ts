@@ -9,7 +9,8 @@
 
 import {assert} from 'chrome://resources/js/assert.js';
 
-import {AudioDevice, AudioDeviceType, AudioEffectState, AudioSystemProperties, CrosAudioConfigInterface, MuteState} from '../mojom-webui/cros_audio_config.mojom-webui.js';
+import type {AudioDevice, AudioSystemProperties, CrosAudioConfigInterface} from '../mojom-webui/cros_audio_config.mojom-webui.js';
+import {AudioDeviceType, AudioEffectState, MuteState} from '../mojom-webui/cros_audio_config.mojom-webui.js';
 
 export const defaultFakeMicJack: AudioDevice = {
   id: BigInt(1),

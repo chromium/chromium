@@ -6,7 +6,7 @@ import 'chrome://resources/ash/common/cr_elements/md_select.css.js';
 import './input_device_settings_shared.css.js';
 import '../settings_shared.css.js';
 
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './customize_button_dropdown_item.html.js';
