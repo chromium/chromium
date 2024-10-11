@@ -127,6 +127,8 @@ class CORE_EXPORT HTMLPermissionElement final
                            DisableEnableClicking);
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementDispatchValidationEventTest,
                            DisableEnableClickingDifferentReasons);
+  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementTestBase,
+                           SetPreciseLocationAttribute);
 
   enum class DisableReason {
     kUnknown,
@@ -479,6 +481,8 @@ class CORE_EXPORT HTMLPermissionElement final
   PermissionStatusMap permission_status_map_;
 
   AtomicString type_;
+
+  bool is_precise_location_ = false;
 
   // Holds reasons for which clicking is currently disabled (if any). Each
   // entry will have an expiration time associated with it, which can be

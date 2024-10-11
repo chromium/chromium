@@ -176,7 +176,8 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
   permissions::PermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(
           permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
-  std::string permission_ids[] = {"microphone", "camera", "camera-microphone"};
+  std::string permission_ids[] = {"geolocation", "microphone", "camera",
+                                  "camera-microphone"};
   for (const auto& id : permission_ids) {
     permissions::PermissionRequestObserver observer(web_contents());
     ClickElementWithId(web_contents(), id);
@@ -285,7 +286,8 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
   permissions::PermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(
           permissions::PermissionRequestManager::AutoResponseType::NONE);
-  std::string permission_ids[] = {"microphone", "camera", "camera-microphone"};
+  std::string permission_ids[] = {"geolocation", "microphone", "camera",
+                                  "camera-microphone"};
   for (const auto& id : permission_ids) {
     views::NamedWidgetShownWaiter waiter(
         views::test::AnyWidgetTestPasskey{},
@@ -306,7 +308,8 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
   permissions::PermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(
           permissions::PermissionRequestManager::AutoResponseType::NONE);
-  std::string permission_ids[] = {"microphone", "camera", "camera-microphone"};
+  std::string permission_ids[] = {"geolocation", "microphone", "camera",
+                                  "camera-microphone"};
   for (const auto& id : permission_ids) {
     views::NamedWidgetShownWaiter waiter(
         views::test::AnyWidgetTestPasskey{},
@@ -488,7 +491,8 @@ IN_PROC_BROWSER_TEST_P(PermissionElementStandardizedBrowserZoomTest,
   // the upper bound.
   zoom_controller->SetZoomLevel(2);
 
-  for (const auto& id : {"camera", "microphone", "camera-microphone"}) {
+  for (const auto& id :
+       {"geolocation", "camera", "microphone", "camera-microphone"}) {
     // The permission element still works.
     ClickElementWithId(web_contents(), id);
     WaitForResolveEvent(id);
@@ -523,7 +527,8 @@ IN_PROC_BROWSER_TEST_P(PermissionElementHighDPITest, TestMargins) {
   SkipInvalidElementMessage();
   for (const auto& property :
        {"marginTop", "marginBottom", "marginLeft", "marginRight"}) {
-    for (const auto& id : {"camera", "microphone", "camera-microphone"}) {
+    for (const auto& id :
+         {"geolocation", "camera", "microphone", "camera-microphone"}) {
       EXPECT_EQ(
           "4px",
           content::EvalJs(

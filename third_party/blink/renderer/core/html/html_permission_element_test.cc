@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/html/html_permission_element.h"
 
+#include <optional>
+
 #include "base/run_loop.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -27,6 +29,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
@@ -42,15 +45,17 @@ using MojoPermissionStatus = mojom::blink::PermissionStatus;
 
 namespace {
 
-constexpr char kCameraString[] = "Allow camera";
+constexpr char kCameraString[] = "Use camera";
 constexpr char kCameraAllowedString[] = "Camera allowed";
-constexpr char kMicrophoneString[] = "Allow microphone";
+constexpr char kMicrophoneString[] = "Use microphone";
 constexpr char kMicrophoneAllowedString[] = "Microphone allowed";
-constexpr char kGeolocationString[] = "Share location";
-constexpr char kGeolocationAllowedString[] = "Sharing location allowed";
-constexpr char kCameraMicrophoneString[] = "Allow microphone and camera";
+constexpr char kGeolocationString[] = "Use location";
+constexpr char kGeolocationAllowedString[] = "Location allowed";
+constexpr char kCameraMicrophoneString[] = "Use microphone and camera";
 constexpr char kCameraMicrophoneAllowedString[] =
     "Camera and microphone allowed";
+constexpr char kPreciseGeolocationString[] = "Use precise location";
+constexpr char kPreciseGeolocationAllowedString[] = "Precise location allowed";
 
 constexpr base::TimeDelta kDefaultTimeout = base::Milliseconds(500);
 constexpr base::TimeDelta kSmallTimeout = base::Milliseconds(50);
@@ -75,6 +80,10 @@ class LocalePlatformSupport : public TestingPlatformSupport {
         return kCameraMicrophoneString;
       case IDS_PERMISSION_REQUEST_CAMERA_MICROPHONE_ALLOWED:
         return kCameraMicrophoneAllowedString;
+      case IDS_PERMISSION_REQUEST_PRECISE_GEOLOCATION:
+        return kPreciseGeolocationString;
+      case IDS_PERMISSION_REQUEST_PRECISE_GEOLOCATION_ALLOWED:
+        return kPreciseGeolocationAllowedString;
       default:
         break;
     }
@@ -118,6 +127,20 @@ TEST_F(HTMLPemissionElementTestBase, SetTypeAttribute) {
                                    AtomicString("geolocation"));
 
   EXPECT_EQ(AtomicString("camera"), permission_element->GetType());
+}
+
+TEST_F(HTMLPemissionElementTestBase, SetPreciseLocationAttribute) {
+  auto* permission_element =
+      MakeGarbageCollected<HTMLPermissionElement>(GetDocument());
+
+  EXPECT_FALSE(permission_element->is_precise_location_);
+
+  permission_element->setAttribute(html_names::kPreciselocationAttr,
+                                   AtomicString(""));
+  EXPECT_TRUE(permission_element->is_precise_location_);
+
+  permission_element->removeAttribute(html_names::kPreciselocationAttr);
+  EXPECT_TRUE(permission_element->is_precise_location_);
 }
 
 TEST_F(HTMLPemissionElementTestBase, ParsePermissionDescriptorsFromType) {
@@ -371,11 +394,17 @@ class HTMLPemissionElementTest : public HTMLPemissionElementTestBase {
     return permission_service_.get();
   }
 
-  HTMLPermissionElement* CreatePermissionElement(const char* permission) {
+  HTMLPermissionElement* CreatePermissionElement(
+      const char* permission,
+      bool precise_location = false) {
     HTMLPermissionElement* permission_element =
         MakeGarbageCollected<HTMLPermissionElement>(GetDocument());
     permission_element->setAttribute(html_names::kTypeAttr,
                                      AtomicString(permission));
+    if (precise_location) {
+      permission_element->setAttribute(html_names::kPreciselocationAttr,
+                                       AtomicString(""));
+    }
     GetDocument().body()->AppendChild(permission_element);
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
     return permission_element;
@@ -459,15 +488,22 @@ TEST_F(HTMLPemissionElementTest, InitializeInnerText) {
   const struct {
     const char* type;
     String expected_text;
+    bool precise_location = false;
   } kTestData[] = {{"geolocation", kGeolocationString},
                    {"microphone", kMicrophoneString},
                    {"camera", kCameraString},
-                   {"camera microphone", kCameraMicrophoneString}};
+                   {"camera microphone", kCameraMicrophoneString},
+                   {"geolocation", kPreciseGeolocationString, true},
+                   {"geolocation", kGeolocationString, false}};
   for (const auto& data : kTestData) {
     auto* permission_element =
         MakeGarbageCollected<HTMLPermissionElement>(GetDocument());
     permission_element->setAttribute(html_names::kTypeAttr,
                                      AtomicString(data.type));
+    if (data.precise_location) {
+      permission_element->setAttribute(html_names::kPreciselocationAttr,
+                                       AtomicString(""));
+    }
     EXPECT_EQ(
         data.expected_text,
         permission_element->permission_text_span_for_testing()->innerText());
@@ -497,6 +533,7 @@ TEST_F(HTMLPemissionElementTest, SetInnerTextAfterRegistrationSingleElement) {
     const char* type;
     MojoPermissionStatus status;
     String expected_text;
+    bool precise_location = false;
   } kTestData[] = {
       {"geolocation", MojoPermissionStatus::ASK, kGeolocationString},
       {"microphone", MojoPermissionStatus::ASK, kMicrophoneString},
@@ -506,9 +543,21 @@ TEST_F(HTMLPemissionElementTest, SetInnerTextAfterRegistrationSingleElement) {
       {"camera", MojoPermissionStatus::DENIED, kCameraString},
       {"geolocation", MojoPermissionStatus::GRANTED, kGeolocationAllowedString},
       {"microphone", MojoPermissionStatus::GRANTED, kMicrophoneAllowedString},
-      {"camera", MojoPermissionStatus::GRANTED, kCameraAllowedString}};
+      {"camera", MojoPermissionStatus::GRANTED, kCameraAllowedString},
+      {"geolocation", MojoPermissionStatus::ASK, kPreciseGeolocationString,
+       true},
+      {"geolocation", MojoPermissionStatus::DENIED, kPreciseGeolocationString,
+       true},
+      {"geolocation", MojoPermissionStatus::GRANTED,
+       kPreciseGeolocationAllowedString, true},
+
+      // Only affects geolocation.
+      {"camera", MojoPermissionStatus::GRANTED, kCameraAllowedString, true},
+      {"microphone", MojoPermissionStatus::ASK, kMicrophoneString, true},
+  };
   for (const auto& data : kTestData) {
-    auto* permission_element = CreatePermissionElement(data.type);
+    auto* permission_element =
+        CreatePermissionElement(data.type, data.precise_location);
     permission_service()->set_initial_statuses({data.status});
     RegistrationWaiter(permission_element).Wait();
     EXPECT_EQ(
@@ -560,26 +609,35 @@ TEST_F(HTMLPemissionElementTest, StatusChangeSinglePermissionElement) {
     PermissionName name;
     MojoPermissionStatus status;
     String expected_text;
-  } kTestData[] = {{"geolocation", PermissionName::GEOLOCATION,
-                    MojoPermissionStatus::ASK, kGeolocationString},
-                   {"microphone", PermissionName::AUDIO_CAPTURE,
-                    MojoPermissionStatus::ASK, kMicrophoneString},
-                   {"camera", PermissionName::VIDEO_CAPTURE,
-                    MojoPermissionStatus::ASK, kCameraString},
-                   {"geolocation", PermissionName::GEOLOCATION,
-                    MojoPermissionStatus::DENIED, kGeolocationString},
-                   {"microphone", PermissionName::AUDIO_CAPTURE,
-                    MojoPermissionStatus::DENIED, kMicrophoneString},
-                   {"camera", PermissionName::VIDEO_CAPTURE,
-                    MojoPermissionStatus::DENIED, kCameraString},
-                   {"geolocation", PermissionName::GEOLOCATION,
-                    MojoPermissionStatus::GRANTED, kGeolocationAllowedString},
-                   {"microphone", PermissionName::AUDIO_CAPTURE,
-                    MojoPermissionStatus::GRANTED, kMicrophoneAllowedString},
-                   {"camera", PermissionName::VIDEO_CAPTURE,
-                    MojoPermissionStatus::GRANTED, kCameraAllowedString}};
+    bool precise_location = false;
+  } kTestData[] = {
+      {"geolocation", PermissionName::GEOLOCATION, MojoPermissionStatus::ASK,
+       kGeolocationString},
+      {"microphone", PermissionName::AUDIO_CAPTURE, MojoPermissionStatus::ASK,
+       kMicrophoneString},
+      {"camera", PermissionName::VIDEO_CAPTURE, MojoPermissionStatus::ASK,
+       kCameraString},
+      {"geolocation", PermissionName::GEOLOCATION, MojoPermissionStatus::DENIED,
+       kGeolocationString},
+      {"microphone", PermissionName::AUDIO_CAPTURE,
+       MojoPermissionStatus::DENIED, kMicrophoneString},
+      {"camera", PermissionName::VIDEO_CAPTURE, MojoPermissionStatus::DENIED,
+       kCameraString},
+      {"geolocation", PermissionName::GEOLOCATION,
+       MojoPermissionStatus::GRANTED, kGeolocationAllowedString},
+      {"microphone", PermissionName::AUDIO_CAPTURE,
+       MojoPermissionStatus::GRANTED, kMicrophoneAllowedString},
+      {"camera", PermissionName::VIDEO_CAPTURE, MojoPermissionStatus::GRANTED,
+       kCameraAllowedString},
+      {"geolocation", PermissionName::GEOLOCATION, MojoPermissionStatus::ASK,
+       kPreciseGeolocationString, true},
+      {"geolocation", PermissionName::GEOLOCATION, MojoPermissionStatus::DENIED,
+       kPreciseGeolocationString, true},
+      {"geolocation", PermissionName::GEOLOCATION,
+       MojoPermissionStatus::GRANTED, kPreciseGeolocationAllowedString, true}};
   for (const auto& data : kTestData) {
-    auto* permission_element = CreatePermissionElement(data.type);
+    auto* permission_element =
+        CreatePermissionElement(data.type, data.precise_location);
     permission_service()->WaitForPermissionObserverAdded();
     permission_service()->NotifyPermissionStatusChange(data.name, data.status);
     EXPECT_EQ(
@@ -692,12 +750,18 @@ class HTMLPemissionElementSimTest : public SimTest {
     return permission_service_.get();
   }
 
-  HTMLPermissionElement* CreatePermissionElement(Document& document,
-                                                 const char* permission) {
+  HTMLPermissionElement* CreatePermissionElement(
+      Document& document,
+      const char* permission,
+      std::optional<const char*> precise_location = std::nullopt) {
     HTMLPermissionElement* permission_element =
         MakeGarbageCollected<HTMLPermissionElement>(document);
     permission_element->setAttribute(html_names::kTypeAttr,
                                      AtomicString(permission));
+    if (precise_location.has_value()) {
+      permission_element->setAttribute(html_names::kPreciselocationAttr,
+                                       AtomicString(precise_location.value()));
+    }
     document.body()->AppendChild(permission_element);
     document.UpdateStyleAndLayout(DocumentUpdateReason::kTest);
     return permission_element;

@@ -138,7 +138,9 @@ Vector<PermissionDescriptorPtr> ParsePermissionDescriptorsFromString(
 
 // Helper to get permission text resource ID for the given map which has only
 // one element.
-int GetMessageIDSinglePermission(PermissionName name, bool granted) {
+int GetMessageIDSinglePermission(PermissionName name,
+                                 bool granted,
+                                 bool is_precise_location) {
   if (name == PermissionName::VIDEO_CAPTURE) {
     return granted ? IDS_PERMISSION_REQUEST_CAMERA_ALLOWED
                    : IDS_PERMISSION_REQUEST_CAMERA;
@@ -150,6 +152,11 @@ int GetMessageIDSinglePermission(PermissionName name, bool granted) {
   }
 
   if (name == PermissionName::GEOLOCATION) {
+    if (is_precise_location) {
+      // This element uses precise location.
+      return granted ? IDS_PERMISSION_REQUEST_PRECISE_GEOLOCATION_ALLOWED
+                     : IDS_PERMISSION_REQUEST_PRECISE_GEOLOCATION;
+    }
     return granted ? IDS_PERMISSION_REQUEST_GEOLOCATION_ALLOWED
                    : IDS_PERMISSION_REQUEST_GEOLOCATION;
   }
@@ -602,20 +609,26 @@ void HTMLPermissionElement::AttributeChanged(
             String::Format("The permission type '%s' is not supported by the "
                            "permission element.",
                            GetType().Utf8().c_str()));
-        return;
-      case 1:
-        permission_text_span_->setInnerText(
-            GetLocale().QueryString(GetMessageIDSinglePermission(
-                permission_descriptors_[0]->name, /*granted=*/false)));
         break;
+      case 1:
       case 2:
-        permission_text_span_->setInnerText(
-            GetLocale().QueryString(IDS_PERMISSION_REQUEST_CAMERA_MICROPHONE));
+        UpdateText();
         break;
       default:
         NOTREACHED_IN_MIGRATION()
             << "Unexpected permissions size " << permission_descriptors_.size();
     }
+  }
+
+  if (params.name == html_names::kPreciselocationAttr) {
+    // This attribute can only be set once, and can not be modified afterwards.
+    if (is_precise_location_) {
+      return;
+    }
+
+    is_precise_location_ = true;
+
+    UpdateText();
   }
 
   HTMLElement::AttributeChanged(params);
@@ -1170,13 +1183,29 @@ void HTMLPermissionElement::UpdateAppearance() {
 }
 
 void HTMLPermissionElement::UpdateText() {
-  CHECK_GT(permission_status_map_.size(), 0U);
+  if (permission_status_map_.size() == 0U) {
+    // Use |permission_descriptors_| instead and assume a "not granted" state.
+    switch (permission_descriptors_.size()) {
+      case 1:
+        permission_text_span_->setInnerText(
+            GetLocale().QueryString(GetMessageIDSinglePermission(
+                permission_descriptors_[0]->name, /*granted=*/false,
+                is_precise_location_)));
+        break;
+      case 2:
+        permission_text_span_->setInnerText(
+            GetLocale().QueryString(IDS_PERMISSION_REQUEST_CAMERA_MICROPHONE));
+        break;
+    }
+    return;
+  }
+
   CHECK_LE(permission_status_map_.size(), 2u);
-  int message_id =
-      permission_status_map_.size() == 1
-          ? GetMessageIDSinglePermission(permission_status_map_.begin()->key,
-                                         permissions_granted_)
-          : GetMessageIDMultiplePermissions(permissions_granted_);
+  int message_id = permission_status_map_.size() == 1
+                       ? GetMessageIDSinglePermission(
+                             permission_status_map_.begin()->key,
+                             permissions_granted_, is_precise_location_)
+                       : GetMessageIDMultiplePermissions(permissions_granted_);
 
   CHECK(message_id);
   permission_text_span_->setInnerText(GetLocale().QueryString(message_id));
