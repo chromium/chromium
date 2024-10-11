@@ -102,22 +102,22 @@ void CacheLookupDone(
     const base::FilePath& temp_dir,
     base::OnceCallback<
         void(const base::expected<base::FilePath, CategorizedError>&)> callback,
-    const CrxCache::Result& cache_result) {
-  if (cache_result.error != UnpackerError::kNone) {
+    const base::expected<base::FilePath, UnpackerError>& cache_result) {
+  if (!cache_result.has_value()) {
     base::ThreadPool::PostTaskAndReply(
         FROM_HERE, kTaskTraits,
         base::BindOnce(IgnoreResult(&base::DeleteFile), patch_file),
         base::BindOnce(&PatchDone, std::move(callback), event_adder,
                        base::unexpected<CategorizedError>(
                            {.category_ = ErrorCategory::kUnpack,
-                            .code_ = static_cast<int>(cache_result.error)})));
+                            .code_ = static_cast<int>(cache_result.error())})));
     return;
   }
   base::ThreadPool::CreateSequencedTaskRunner(kTaskTraits)
       ->PostTask(
           FROM_HERE,
-          base::BindOnce(&Patch, patcher, cache_result.crx_cache_path,
-                         patch_file, temp_dir,
+          base::BindOnce(&Patch, patcher, cache_result.value(), patch_file,
+                         temp_dir,
                          base::BindPostTaskToCurrentDefault(base::BindOnce(
                              &PatchDone, std::move(callback), event_adder))));
 }
@@ -125,7 +125,7 @@ void CacheLookupDone(
 }  // namespace
 
 void PuffOperation(
-    std::optional<scoped_refptr<CrxCache>> crx_cache,
+    scoped_refptr<CrxCache> crx_cache,
     scoped_refptr<Patcher> patcher,
     base::RepeatingCallback<void(base::Value::Dict)> event_adder,
     const std::string& id,
@@ -134,18 +134,9 @@ void PuffOperation(
     const base::FilePath& temp_dir,
     base::OnceCallback<void(
         const base::expected<base::FilePath, CategorizedError>&)> callback) {
-  if (!crx_cache) {
-    CrxCache::Result result;
-    result.error = UnpackerError::kCrxCacheNotProvided;
-    CacheLookupDone(event_adder, patcher, patch_file, temp_dir,
-                    std::move(callback), result);
-    return;
-  }
-
-  crx_cache.value()->Get(
-      id, prev_fp,
-      base::BindOnce(&CacheLookupDone, event_adder, patcher, patch_file,
-                     temp_dir, std::move(callback)));
+  crx_cache->Get(id, prev_fp,
+                 base::BindOnce(&CacheLookupDone, event_adder, patcher,
+                                patch_file, temp_dir, std::move(callback)));
 }
 
 }  // namespace update_client

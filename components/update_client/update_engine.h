@@ -124,7 +124,7 @@ class UpdateEngine : public base::RefCountedThreadSafe<UpdateEngine> {
   // Called when CRX state changes occur.
   const UpdateClient::CrxStateChangeCallback notify_observers_callback_;
 
-  std::optional<scoped_refptr<CrxCache>> crx_cache_;
+  scoped_refptr<CrxCache> crx_cache_;
 
   // Contains the contexts associated with each update in progress.
   UpdateContexts update_contexts_;
@@ -132,27 +132,26 @@ class UpdateEngine : public base::RefCountedThreadSafe<UpdateEngine> {
 
 // Describes a group of components which are installed or updated together.
 struct UpdateContext : public base::RefCountedThreadSafe<UpdateContext> {
-  UpdateContext(
-      scoped_refptr<Configurator> config,
-      std::optional<scoped_refptr<CrxCache>> crx_cache,
-      bool is_foreground,
-      bool is_install,
-      const std::vector<std::string>& ids,
-      UpdateClient::CrxStateChangeCallback crx_state_change_callback,
-      UpdateEngine::Callback callback,
-      PersistedData* persisted_data,
-      bool is_update_check_only,
-      base::RepeatingCallback<int64_t(const base::FilePath&)>
-          get_available_space =
-              base::BindRepeating([](const base::FilePath& dir) {
-                return base::SysInfo::AmountOfFreeDiskSpace(dir);
-              }));
+  UpdateContext(scoped_refptr<Configurator> config,
+                scoped_refptr<CrxCache> crx_cache,
+                bool is_foreground,
+                bool is_install,
+                const std::vector<std::string>& ids,
+                UpdateClient::CrxStateChangeCallback crx_state_change_callback,
+                UpdateEngine::Callback callback,
+                PersistedData* persisted_data,
+                bool is_update_check_only,
+                base::RepeatingCallback<int64_t(const base::FilePath&)>
+                    get_available_space =
+                        base::BindRepeating([](const base::FilePath& dir) {
+                          return base::SysInfo::AmountOfFreeDiskSpace(dir);
+                        }));
   UpdateContext(const UpdateContext&) = delete;
   UpdateContext& operator=(const UpdateContext&) = delete;
 
   scoped_refptr<Configurator> config;
 
-  std::optional<scoped_refptr<CrxCache>> crx_cache_;
+  scoped_refptr<CrxCache> crx_cache_;
 
   // True if the component is updated as a result of user interaction.
   bool is_foreground = false;

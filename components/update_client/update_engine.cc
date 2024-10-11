@@ -62,7 +62,7 @@ base::Value::Dict MakeEvent(UpdateClient::PingParams ping_params,
 
 UpdateContext::UpdateContext(
     scoped_refptr<Configurator> config,
-    std::optional<scoped_refptr<CrxCache>> crx_cache,
+    scoped_refptr<CrxCache> crx_cache,
     bool is_foreground,
     bool is_install,
     const std::vector<std::string>& ids,
@@ -99,16 +99,8 @@ UpdateEngine::UpdateEngine(
     : config_(config),
       update_checker_factory_(update_checker_factory),
       ping_manager_(ping_manager),
-      notify_observers_callback_(notify_observers_callback) {
-  std::optional<base::FilePath> crx_cache_path = config->GetCrxCachePath();
-  if (crx_cache_path.has_value()) {
-    CrxCache::Options options(crx_cache_path.value());
-    crx_cache_ = std::optional<scoped_refptr<CrxCache>>(
-        base::MakeRefCounted<CrxCache>(options));
-  } else {
-    crx_cache_ = std::nullopt;
-  }
-}
+      notify_observers_callback_(notify_observers_callback),
+      crx_cache_(base::MakeRefCounted<CrxCache>(config->GetCrxCachePath())) {}
 
 UpdateEngine::~UpdateEngine() = default;
 

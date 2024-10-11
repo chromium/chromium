@@ -22,6 +22,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/types/expected.h"
 #include "base/values.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/update_client/configurator.h"
@@ -161,8 +162,8 @@ void Unpack(base::OnceCallback<void(const Unpacker::Result&)> callback,
             std::unique_ptr<Unzipper> unzipper,
             const std::vector<uint8_t>& pk_hash,
             crx_file::VerifierFormat crx_format,
-            const CrxCache::Result& cache_result) {
-  if (cache_result.error != UnpackerError::kNone) {
+            const base::expected<base::FilePath, UnpackerError>& cache_result) {
+  if (!cache_result.has_value()) {
     // Caching is optional: continue with the install, but add a task to clean
     // up crx_file.
     callback = base::BindOnce(
@@ -184,9 +185,7 @@ void Unpack(base::OnceCallback<void(const Unpacker::Result&)> callback,
           base::BindOnce(
               &Unpacker::Unpack, pk_hash,
               // If and only if cached, the original path no longer exists.
-              cache_result.error != UnpackerError::kNone
-                  ? crx_file
-                  : cache_result.crx_cache_path,
+              cache_result.has_value() ? cache_result.value() : crx_file,
               std::move(unzipper), crx_format,
               base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
@@ -194,7 +193,7 @@ void Unpack(base::OnceCallback<void(const Unpacker::Result&)> callback,
 }  // namespace
 
 void InstallOperation(
-    std::optional<scoped_refptr<CrxCache>> crx_cache,
+    scoped_refptr<CrxCache> crx_cache,
     std::unique_ptr<Unzipper> unzipper,
     crx_file::VerifierFormat crx_format,
     const std::string& id,
@@ -206,26 +205,16 @@ void InstallOperation(
     base::OnceCallback<void(const CrxInstaller::Result&)> callback,
     CrxInstaller::ProgressCallback progress_callback,
     const base::FilePath& crx_file) {
-  // Set up in the install callback.
-  auto install_callback = base::BindOnce(
-      &Install,
-      base::BindOnce(&InstallComplete, std::move(callback), event_adder),
-      next_fp, std::move(install_params), installer, progress_callback);
-
-  // Place the file into cache.
-  if (crx_cache) {
-    crx_cache.value()->Put(
-        crx_file, id, next_fp,
-        base::BindOnce(&Unpack, std::move(install_callback), crx_file,
-                       std::move(unzipper), pk_hash, crx_format));
-    return;
-  }
-
-  // If there is no cache, go straight to unpacking.
-  CrxCache::Result cache_result;
-  cache_result.error = UnpackerError::kCrxCacheNotProvided;
-  Unpack(std::move(install_callback), crx_file, std::move(unzipper), pk_hash,
-         crx_format, cache_result);
+  crx_cache->Put(
+      crx_file, id, next_fp,
+      base::BindOnce(
+          &Unpack,
+          base::BindOnce(&Install,
+                         base::BindOnce(&InstallComplete, std::move(callback),
+                                        event_adder),
+                         next_fp, std::move(install_params), installer,
+                         progress_callback),
+          crx_file, std::move(unzipper), pk_hash, crx_format));
 }
 
 }  // namespace update_client

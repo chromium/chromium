@@ -231,8 +231,10 @@ class Component {
     // State overrides.
     void DoHandle() override;
     bool CanTryDiffUpdate() const;
-    void GetNextCrxFromCacheComplete(const CrxCache::Result& result);
-    void CheckIfCacheContainsPreviousCrxComplete(bool crx_is_in_cache);
+    void GetNextCrxFromCacheComplete(
+        const base::expected<base::FilePath, UnpackerError>& result);
+    void CheckIfCacheContainsPreviousCrxComplete(
+        const base::expected<base::FilePath, UnpackerError>& result);
   };
 
   class StateUpToDate : public State {

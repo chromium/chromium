@@ -106,9 +106,8 @@ scoped_refptr<UpdateContext> PingManagerTest::MakeMockUpdateContext() const {
   if (!temp_dir.CreateUniqueTempDir()) {
     return nullptr;
   }
-  CrxCache::Options options(temp_dir.GetPath());
   return base::MakeRefCounted<UpdateContext>(
-      config_, base::MakeRefCounted<CrxCache>(options), false, false,
+      config_, base::MakeRefCounted<CrxCache>(temp_dir.GetPath()), false, false,
       std::vector<std::string>(), UpdateClient::CrxStateChangeCallback(),
       UpdateEngine::Callback(), nullptr,
       /*is_update_check_only=*/false);

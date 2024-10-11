@@ -31,7 +31,7 @@ class Unzipper;
 // regardless of whether the install is successful or not. Otherwise, `crx_file`
 // is deleted.
 void InstallOperation(
-    std::optional<scoped_refptr<CrxCache>> crx_cache,
+    scoped_refptr<CrxCache> crx_cache,
     std::unique_ptr<Unzipper> unzipper,
     crx_file::VerifierFormat crx_format,
     const std::string& id,

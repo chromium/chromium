@@ -402,7 +402,8 @@ void ExpectUpdateSequence(UpdaterScope scope,
                           UpdateService::Priority priority,
                           const base::Version& from_version,
                           const base::Version& to_version,
-                          bool do_fault_injection);
+                          bool do_fault_injection,
+                          bool skip_download);
 
 void ExpectUpdateSequenceBadHash(UpdaterScope scope,
                                  ScopedServer* test_server,
@@ -419,7 +420,8 @@ void ExpectInstallSequence(UpdaterScope scope,
                            UpdateService::Priority priority,
                            const base::Version& from_version,
                            const base::Version& to_version,
-                           bool do_fault_injection);
+                           bool do_fault_injection,
+                           bool skip_download);
 
 void ExpectAppsUpdateSequence(UpdaterScope scope,
                               ScopedServer* test_server,

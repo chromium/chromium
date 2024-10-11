@@ -530,10 +530,11 @@ class IntegrationTest : public ::testing::Test {
                             UpdateService::Priority priority,
                             const base::Version& from_version,
                             const base::Version& to_version,
-                            bool do_fault_injection = false) {
+                            bool do_fault_injection = false,
+                            bool skip_download = false) {
     test_commands_->ExpectUpdateSequence(
         test_server, app_id, install_data_index, priority, from_version,
-        to_version, do_fault_injection);
+        to_version, do_fault_injection, skip_download);
   }
 
   void ExpectUpdateSequenceBadHash(ScopedServer* test_server,
@@ -557,10 +558,11 @@ class IntegrationTest : public ::testing::Test {
                              UpdateService::Priority priority,
                              const base::Version& from_version,
                              const base::Version& to_version,
-                             bool do_fault_injection = false) {
+                             bool do_fault_injection = false,
+                             bool skip_download = false) {
     test_commands_->ExpectInstallSequence(
         test_server, app_id, install_data_index, priority, from_version,
-        to_version, do_fault_injection);
+        to_version, do_fault_injection, skip_download);
   }
 
   void StressUpdateService() { test_commands_->StressUpdateService(); }
@@ -1224,9 +1226,11 @@ TEST_F(IntegrationTest, UpdateApp) {
 
   base::Version v2("2");
   const std::string kInstallDataIndex("test_install_data_index");
-  ASSERT_NO_FATAL_FAILURE(
-      ExpectUpdateSequence(&test_server, kAppId, kInstallDataIndex,
-                           UpdateService::Priority::kForeground, v1, v2));
+  // Skip the download in this case, because it is already in cache from the
+  // previous update sequence. A real update would use a different CRX for v2.
+  ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
+      &test_server, kAppId, kInstallDataIndex,
+      UpdateService::Priority::kForeground, v1, v2, false, true));
   ASSERT_NO_FATAL_FAILURE(Update(kAppId, kInstallDataIndex));
 
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -1254,9 +1258,9 @@ TEST_F(IntegrationTest, GZipUpdateResponses) {
 
   base::Version v2("2");
   const std::string kInstallDataIndex("test_install_data_index");
-  ASSERT_NO_FATAL_FAILURE(
-      ExpectUpdateSequence(&test_server, kAppId, kInstallDataIndex,
-                           UpdateService::Priority::kForeground, v1, v2));
+  ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
+      &test_server, kAppId, kInstallDataIndex,
+      UpdateService::Priority::kForeground, v1, v2, false, true));
   ASSERT_NO_FATAL_FAILURE(Update(kAppId, kInstallDataIndex));
 
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -1317,9 +1321,9 @@ TEST_F(IntegrationTest, UpdateAppSucceedsEvenAfterDeletingInterfaces) {
 
   base::Version v2("2");
   const std::string kInstallDataIndex("test_install_data_index");
-  ASSERT_NO_FATAL_FAILURE(
-      ExpectUpdateSequence(&test_server, kAppId, kInstallDataIndex,
-                           UpdateService::Priority::kForeground, v1, v2));
+  ASSERT_NO_FATAL_FAILURE(ExpectUpdateSequence(
+      &test_server, kAppId, kInstallDataIndex,
+      UpdateService::Priority::kForeground, v1, v2, false, true));
   ASSERT_NO_FATAL_FAILURE(Update(kAppId, kInstallDataIndex));
 
   ASSERT_TRUE(WaitForUpdaterExit());
@@ -1429,7 +1433,7 @@ TEST_F(IntegrationTest, ChangeTag) {
       base::StrCat({"appguid=", kAppId, "&ap=foo&usagestats=1"})));
   ASSERT_NO_FATAL_FAILURE(ExpectInstallSequence(
       &test_server, kAppId, "", UpdateService::Priority::kForeground,
-      base::Version({1}), v1));
+      base::Version({1}), v1, false, true));
   ASSERT_NO_FATAL_FAILURE(InstallUpdaterAndApp(
       kAppId, /*is_silent_install=*/true,
       base::StrCat({"appguid=", kAppId, "&ap=foo2&usagestats=1"})));
@@ -2877,7 +2881,8 @@ class IntegrationTestUserInSystem : public IntegrationTest {
     user_test_commands_->ExpectInstallSequence(test_server, app_id,
                                                install_data_index, priority,
                                                from_version, to_version,
-                                               /*do_fault_injection=*/false);
+                                               /*do_fault_injection=*/false,
+                                               /*skip_download=*/false);
   }
 
   void InstallUserUpdaterAndApp(

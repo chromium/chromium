@@ -28,8 +28,7 @@ TEST(PuffOperationTest, Success) {
   SEQUENCE_CHECKER(sequence_checker);
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  auto cache =
-      base::MakeRefCounted<CrxCache>(CrxCache::Options(temp_dir.GetPath()));
+  auto cache = base::MakeRefCounted<CrxCache>(temp_dir.GetPath());
   base::RunLoop loop;
 
   // PuffOperation deletes the patch file, so copying it to the temp dir.
@@ -45,8 +44,9 @@ TEST(PuffOperationTest, Success) {
 
   cache->Put(
       old_file, "appid", "prev_fp",
-      base::BindLambdaForTesting([&](const CrxCache::Result& r) {
-        ASSERT_EQ(r.error, UnpackerError::kNone);
+      base::BindLambdaForTesting([&](const base::expected<base::FilePath,
+                                                          UnpackerError>& r) {
+        ASSERT_TRUE(r.has_value());
         PuffOperation(
             cache,
             base::MakeRefCounted<PatchChromiumFactory>(
@@ -74,8 +74,7 @@ TEST(PuffOperationTest, BadPatch) {
   SEQUENCE_CHECKER(sequence_checker);
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  auto cache =
-      base::MakeRefCounted<CrxCache>(CrxCache::Options(temp_dir.GetPath()));
+  auto cache = base::MakeRefCounted<CrxCache>(temp_dir.GetPath());
   base::RunLoop loop;
 
   // PuffOperation deletes the patch file, so copy it to the temp dir. For this
@@ -91,8 +90,9 @@ TEST(PuffOperationTest, BadPatch) {
 
   cache->Put(
       old_file, "appid", "prev_fp",
-      base::BindLambdaForTesting([&](const CrxCache::Result& r) {
-        ASSERT_EQ(r.error, UnpackerError::kNone);
+      base::BindLambdaForTesting([&](const base::expected<base::FilePath,
+                                                          UnpackerError>& r) {
+        ASSERT_TRUE(r.has_value());
         PuffOperation(
             cache,
             base::MakeRefCounted<PatchChromiumFactory>(
@@ -120,8 +120,7 @@ TEST(PuffOperationTest, NotInCache) {
   SEQUENCE_CHECKER(sequence_checker);
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  auto cache =
-      base::MakeRefCounted<CrxCache>(CrxCache::Options(temp_dir.GetPath()));
+  auto cache = base::MakeRefCounted<CrxCache>(temp_dir.GetPath());
   base::RunLoop loop;
 
   // PuffOperation deletes the patch file, so copying it to the temp dir.
@@ -163,7 +162,7 @@ TEST(PuffOperationTest, NoCache) {
       patch_file));
 
   PuffOperation(
-      std::nullopt,
+      base::MakeRefCounted<CrxCache>(std::nullopt),
       base::MakeRefCounted<PatchChromiumFactory>(
           base::BindRepeating(&patch::LaunchInProcessFilePatcher))
           ->Create(),

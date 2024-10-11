@@ -174,10 +174,9 @@ void UpdateCheckerTest::UpdateCheckComplete(
 }
 
 scoped_refptr<UpdateContext> UpdateCheckerTest::MakeMockUpdateContext() const {
-  CrxCache::Options options(temp_dir_.GetPath());
   return base::MakeRefCounted<UpdateContext>(
-      config_, base::MakeRefCounted<CrxCache>(options), false, false,
-      std::vector<std::string>(), UpdateClient::CrxStateChangeCallback(),
+      config_, base::MakeRefCounted<CrxCache>(temp_dir_.GetPath()), false,
+      false, std::vector<std::string>(), UpdateClient::CrxStateChangeCallback(),
       UpdateEngine::Callback(), nullptr,
       /*is_update_check_only=*/false);
 }

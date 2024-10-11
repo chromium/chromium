@@ -85,7 +85,8 @@ class IntegrationTestCommands
                                     UpdateService::Priority priority,
                                     const base::Version& from_version,
                                     const base::Version& to_version,
-                                    bool do_fault_injection) const = 0;
+                                    bool do_fault_injection,
+                                    bool skip_download) const = 0;
   virtual void ExpectUpdateSequenceBadHash(
       ScopedServer* test_server,
       const std::string& app_id,
@@ -99,7 +100,8 @@ class IntegrationTestCommands
                                      UpdateService::Priority priority,
                                      const base::Version& from_version,
                                      const base::Version& to_version,
-                                     bool do_fault_injection) const = 0;
+                                     bool do_fault_injection,
+                                     bool skip_download) const = 0;
   virtual void ExpectVersionActive(const std::string& version) const = 0;
   virtual void ExpectVersionNotActive(const std::string& version) const = 0;
   virtual void Uninstall() const = 0;

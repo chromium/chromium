@@ -103,9 +103,8 @@ class OpDownloadTest : public testing::Test {
         temp_dir_.GetPath().AppendASCII("OpDownloadTest_File"), result,
         metrics));
     return base::MakeRefCounted<UpdateContext>(
-        config,
-        base::MakeRefCounted<CrxCache>(CrxCache::Options(temp_dir_.GetPath())),
-        false, false, std::vector<std::string>(),
+        config, base::MakeRefCounted<CrxCache>(temp_dir_.GetPath()), false,
+        false, std::vector<std::string>(),
         UpdateClient::CrxStateChangeCallback(), UpdateEngine::Callback(),
         nullptr,
         /*is_update_check_only=*/false);

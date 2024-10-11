@@ -540,12 +540,10 @@ void Component::StateCanUpdate::DoHandle() {
 
   // Start computing the cost of the this update from here on.
   component.update_begin_ = base::TimeTicks::Now();
-  CHECK(component.update_context_->crx_cache_);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &update_client::CrxCache::Get,
-          component.update_context_->crx_cache_.value(),
+          &update_client::CrxCache::Get, component.update_context_->crx_cache_,
           component.crx_component()->app_id, component.next_fp_,
           base::BindOnce(
               &Component::StateCanUpdate::GetNextCrxFromCacheComplete,
@@ -556,27 +554,21 @@ void Component::StateCanUpdate::DoHandle() {
 // and the configuration allows this update.
 bool Component::StateCanUpdate::CanTryDiffUpdate() const {
   const auto& component = Component::State::component();
-  return component.HasDiffUpdate() && !component.diff_error_code_ &&
-         component.update_context_->crx_cache_.has_value() &&
-         component.update_context_->config->EnabledDeltas();
+  return component.HasDiffUpdate() && !component.diff_error_code_;
 }
 
 void Component::StateCanUpdate::GetNextCrxFromCacheComplete(
-    const CrxCache::Result& result) {
+    const base::expected<base::FilePath, UnpackerError>& result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto& component = State::component();
-  if (result.error == UnpackerError::kNone) {
-    component.payload_path_ = result.crx_cache_path;
+  if (result.has_value()) {
+    component.payload_path_ = result.value();
     TransitionState(std::make_unique<StateUpdating>(&component));
     return;
   }
   if (CanTryDiffUpdate()) {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock()},
-        base::BindOnce(&update_client::CrxCache::Contains,
-                       component.update_context_->crx_cache_.value(),
-                       component.crx_component()->app_id,
-                       component.previous_fp_),
+    component.update_context_->crx_cache_->Get(
+        component.crx_component()->app_id, component.previous_fp_,
         base::BindOnce(
             &Component::StateCanUpdate::CheckIfCacheContainsPreviousCrxComplete,
             base::Unretained(this)));
@@ -586,10 +578,10 @@ void Component::StateCanUpdate::GetNextCrxFromCacheComplete(
 }
 
 void Component::StateCanUpdate::CheckIfCacheContainsPreviousCrxComplete(
-    bool crx_is_in_cache) {
+    const base::expected<base::FilePath, UnpackerError>& result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto& component = State::component();
-  if (crx_is_in_cache) {
+  if (result.has_value()) {
     TransitionState(std::make_unique<StateDownloading>(&component, true));
   } else {
     // If the configuration allows diff update, but the previous crx
@@ -796,10 +788,7 @@ void Component::StateUpdating::DoHandle() {
   component.NotifyObservers();
 
   InstallOperation(
-      component.crx_component()->allow_cached_copies &&
-              update_context.config->EnabledDeltas()
-          ? update_context.crx_cache_
-          : std::nullopt,
+      update_context.crx_cache_,
       component.update_context_->config->GetUnzipperFactory()->Create(),
       component.crx_component()->crx_format_requirement,
       component.crx_component()->app_id, component.crx_component()->pk_hash,
@@ -836,13 +825,9 @@ void Component::StateUpdating::InstallComplete(
   component.installer_result_ = result;
 
   CHECK(component.crx_component_);
-  if (!component.crx_component_->allow_cached_copies &&
-      component.update_context_->crx_cache_) {
-    base::ThreadPool::CreateSequencedTaskRunner(kTaskTraits)
-        ->PostTask(FROM_HERE,
-                   base::BindOnce(&CrxCache::RemoveAll,
-                                  component.update_context_->crx_cache_->get(),
-                                  component.crx_component()->app_id));
+  if (!component.crx_component_->allow_cached_copies) {
+    component.update_context_->crx_cache_->RemoveAll(
+        component.crx_component()->app_id);
   }
 
   if (component.error_category_ != ErrorCategory::kNone) {

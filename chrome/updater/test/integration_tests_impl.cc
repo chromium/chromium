@@ -272,7 +272,8 @@ void ExpectUpdateSequence(UpdaterScope scope,
                           int event_type,
                           const base::Version& from_version,
                           const base::Version& to_version,
-                          bool do_fault_injection) {
+                          bool do_fault_injection,
+                          bool skip_download) {
   base::FilePath test_data_path;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_path));
   base::FilePath crx_path = test_data_path.Append(FILE_PATH_LITERAL("updater"))
@@ -302,14 +303,16 @@ void ExpectUpdateSequence(UpdaterScope scope,
                         crx_path, kDoNothingCRXRun, {}));
 
   // Second request: update download.
-  if (do_fault_injection) {
-    test_server->ExpectOnce({}, "", net::HTTP_INTERNAL_SERVER_ERROR);
+  if (!skip_download) {
+    if (do_fault_injection) {
+      test_server->ExpectOnce({}, "", net::HTTP_INTERNAL_SERVER_ERROR);
+    }
+    std::string crx_bytes;
+    base::ReadFileToString(crx_path, &crx_bytes);
+    test_server->ExpectOnce({request::GetUpdaterUserAgentMatcher(),
+                             request::GetContentMatcher({""})},
+                            crx_bytes);
   }
-  std::string crx_bytes;
-  base::ReadFileToString(crx_path, &crx_bytes);
-  test_server->ExpectOnce(
-      {request::GetUpdaterUserAgentMatcher(), request::GetContentMatcher({""})},
-      crx_bytes);
 
   // Third request: event ping.
   if (do_fault_injection) {
@@ -1275,10 +1278,11 @@ void ExpectUpdateSequence(UpdaterScope scope,
                           UpdateService::Priority priority,
                           const base::Version& from_version,
                           const base::Version& to_version,
-                          bool do_fault_injection) {
+                          bool do_fault_injection,
+                          bool skip_download) {
   ExpectUpdateSequence(scope, test_server, app_id, install_data_index, priority,
                        /*event_type=*/3, from_version, to_version,
-                       do_fault_injection);
+                       do_fault_injection, skip_download);
 }
 
 void ExpectUpdateSequenceBadHash(UpdaterScope scope,
@@ -1339,10 +1343,11 @@ void ExpectInstallSequence(UpdaterScope scope,
                            UpdateService::Priority priority,
                            const base::Version& from_version,
                            const base::Version& to_version,
-                           bool do_fault_injection) {
+                           bool do_fault_injection,
+                           bool skip_download) {
   ExpectUpdateSequence(scope, test_server, app_id, install_data_index, priority,
                        /*event_type=*/2, from_version, to_version,
-                       do_fault_injection);
+                       do_fault_injection, skip_download);
 }
 
 // Runs multiple cycles of instantiating the update service, calling

@@ -29,107 +29,110 @@
 
 namespace update_client {
 
-CrxCache::CrxCache(const CrxCache::Options& options)
-    : crx_cache_root_path_(options.crx_cache_root_path) {}
+namespace {
 
-CrxCache::~CrxCache() = default;
-
-CrxCache::Options::Options(const base::FilePath& crx_cache_root_path)
-    : crx_cache_root_path(crx_cache_root_path) {}
-
-base::FilePath CrxCache::BuildCrxFilePath(const std::string& id,
-                                          const std::string& fp) {
-  return crx_cache_root_path_.AppendASCII(base::JoinString({id, fp}, "_"));
-}
-
-bool CrxCache::Contains(const std::string& id, const std::string& fp) {
-  return base::PathExists(BuildCrxFilePath(id, fp));
-}
-
-void CrxCache::Get(const std::string& id,
-                   const std::string& fp,
-                   base::OnceCallback<void(const Result& result)> callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&CrxCache::ProcessGet, this, id, fp),
-      base::BindOnce(&CrxCache::EndRequest, this, std::move(callback)));
-}
-
-CrxCache::Result CrxCache::ProcessGet(const std::string& id,
-                                      const std::string& fp) {
-  CrxCache::Result result;
-  if (!Contains(id, fp)) {
-    result.error = UnpackerError::kPuffinMissingPreviousCrx;
-  } else {
-    result.error = UnpackerError::kNone;
-    result.crx_cache_path = BuildCrxFilePath(id, fp);
-  }
-  return result;
-}
-
-void CrxCache::Put(const base::FilePath& crx_path,
-                   const std::string& id,
-                   const std::string& fp,
-                   base::OnceCallback<void(const Result& result)> callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&CrxCache::ProcessPut, this, crx_path, id, fp),
-      base::BindOnce(&CrxCache::EndRequest, this, std::move(callback)));
-}
-
-CrxCache::Result CrxCache::ProcessPut(const base::FilePath& crx_path,
-                                      const std::string& id,
-                                      const std::string& fp) {
-  CrxCache::Result result;
-  if (id.empty() || fp.empty()) {
-    result.error = UnpackerError::kInvalidParams;
-    return result;
-  }
-  base::FilePath dest_path = BuildCrxFilePath(id, fp);
-  if (crx_path == dest_path) {
-    result.error = UnpackerError::kNone;
-    result.crx_cache_path = dest_path;
-    return result;
-  }
-  RemoveAll(id);
-  result.error = MoveFileToCache(crx_path, dest_path);
-  if (result.error == UnpackerError::kNone) {
-    result.crx_cache_path = dest_path;
-  }
-  return result;
-}
-
-void CrxCache::RemoveAll(const std::string& id) {
-  base::FileEnumerator(crx_cache_root_path_, false, base::FileEnumerator::FILES,
-                       [&id] {
-                         const std::string result = base::StrCat({id, "*"});
+void CleanUp(const base::FilePath& path, const std::string& id) {
+  base::FileEnumerator(path, false, base::FileEnumerator::FILES,
 #if BUILDFLAG(IS_WIN)
-                         return base::UTF8ToWide(result);
+                       base::UTF8ToWide(base::StrCat({id, "*"}))
 #else
-            return result;
+                       base::StrCat({id, "*"})
 #endif
-                       }())
+                           )
       .ForEach(
           [](const base::FilePath& file_path) { base::DeleteFile(file_path); });
 }
 
-UnpackerError CrxCache::MoveFileToCache(const base::FilePath& src_path,
-                                        const base::FilePath& dest_path) {
-  if (!base::CreateDirectory(crx_cache_root_path_)) {
-    return update_client::UnpackerError::kFailedToCreateCacheDir;
-  }
-  if (!base::Move(src_path, dest_path)) {
-    return update_client::UnpackerError::kFailedToAddToCache;
-  }
-  return update_client::UnpackerError::kNone;
+}  // namespace
+
+CrxCache::CrxCache(const std::optional<base::FilePath>& crx_cache_root_path)
+    : crx_cache_root_path_(crx_cache_root_path) {}
+
+CrxCache::~CrxCache() = default;
+
+base::FilePath CrxCache::BuildCrxFilePath(const std::string& id,
+                                          const std::string& fp) {
+  CHECK(crx_cache_root_path_);
+  return crx_cache_root_path_->AppendASCII(base::JoinString({id, fp}, "_"));
 }
 
-void CrxCache::EndRequest(
-    base::OnceCallback<void(const Result& result)> callback,
-    CrxCache::Result result) {
+void CrxCache::Get(
+    const std::string& id,
+    const std::string& fp,
+    base::OnceCallback<
+        void(const base::expected<base::FilePath, UnpackerError>&)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), result));
+  if (!crx_cache_root_path_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       base::unexpected(UnpackerError::kCrxCacheNotProvided)));
+    return;
+  }
+  const base::FilePath path = BuildCrxFilePath(id, fp);
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          [](const base::FilePath& path)
+              -> base::expected<base::FilePath, UnpackerError> {
+            if (base::PathExists(path)) {
+              return path;
+            }
+            return base::unexpected(UnpackerError::kPuffinMissingPreviousCrx);
+          },
+          path),
+      std::move(callback));
+}
+
+void CrxCache::Put(
+    const base::FilePath& src,
+    const std::string& id,
+    const std::string& fp,
+    base::OnceCallback<
+        void(const base::expected<base::FilePath, UnpackerError>&)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  if (!crx_cache_root_path_) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback),
+                       base::unexpected(UnpackerError::kCrxCacheNotProvided)));
+    return;
+  }
+  const base::FilePath dest = BuildCrxFilePath(id, fp);
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          [](const base::FilePath& src, const base::FilePath& dest,
+             const std::string& id)
+              -> base::expected<base::FilePath, UnpackerError> {
+            // If already in cache, just return the path.
+            if (src == dest) {
+              return dest;
+            }
+
+            // Delete existing files for the app.
+            CleanUp(dest.DirName(), id);
+
+            // Move the file into cache.
+            if (!base::CreateDirectory(dest.DirName())) {
+              return base::unexpected(UnpackerError::kFailedToCreateCacheDir);
+            }
+            if (!base::Move(src, dest)) {
+              return base::unexpected(UnpackerError::kFailedToAddToCache);
+            }
+            return dest;
+          },
+          src, dest, id),
+      std::move(callback));
+}
+
+void CrxCache::RemoveAll(const std::string& id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
+  if (!crx_cache_root_path_) {
+    return;
+  }
+  task_runner_->PostTask(FROM_HERE,
+                         base::BindOnce(&CleanUp, *crx_cache_root_path_, id));
 }
 
 }  // namespace update_client
