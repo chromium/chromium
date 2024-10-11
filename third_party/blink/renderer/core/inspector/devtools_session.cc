@@ -344,8 +344,9 @@ void DevToolsSession::SendProtocolResponse(int call_id,
   if (WebTestSupport::IsRunningWebTest())
     agent_->FlushProtocolNotifications();
 
-  host_remote_->DispatchProtocolResponse(FinalizeMessage(std::move(message)),
-                                         call_id, session_state_.TakeUpdates());
+  host_remote_->DispatchProtocolResponse(
+      FinalizeMessage(std::move(message), call_id), call_id,
+      session_state_.TakeUpdates());
 }
 
 void DevToolsSession::SendProtocolNotification(
@@ -385,7 +386,7 @@ void DevToolsSession::FlushProtocolNotifications() {
     v8_session_state_cbor_.Set(v8_session_->state());
   for (wtf_size_t i = 0; i < notification_queue_.size(); ++i) {
     host_remote_->DispatchProtocolNotification(
-        FinalizeMessage(std::move(notification_queue_[i]).Run()),
+        FinalizeMessage(std::move(notification_queue_[i]).Run(), std::nullopt),
         session_state_.TakeUpdates());
   }
   notification_queue_.clear();
@@ -399,7 +400,8 @@ void DevToolsSession::Trace(Visitor* visitor) const {
 }
 
 blink::mojom::blink::DevToolsMessagePtr DevToolsSession::FinalizeMessage(
-    std::vector<uint8_t> message) const {
+    std::vector<uint8_t> message,
+    std::optional<int> call_id) const {
   std::vector<uint8_t> message_to_send = std::move(message);
   if (!session_id_.empty()) {
     crdtp::Status status = crdtp::cbor::AppendString8EntryToCBORMap(
@@ -411,6 +413,16 @@ blink::mojom::blink::DevToolsMessagePtr DevToolsSession::FinalizeMessage(
     std::vector<uint8_t> json;
     crdtp::Status status =
         crdtp::json::ConvertCBORToJSON(crdtp::SpanFrom(message_to_send), &json);
+    if (status.error == crdtp::Error::CBOR_STACK_LIMIT_EXCEEDED &&
+        call_id.has_value()) {
+      return FinalizeMessage(
+          crdtp::CreateErrorResponse(
+              call_id.value(), crdtp::DispatchResponse::ServerError(
+                                   "Failed to convert response to JSON: " +
+                                   status.ToASCIIString()))
+              ->Serialize(),
+          std::nullopt);
+    }
     CHECK(status.ok()) << status.ToASCIIString();
     message_to_send = std::move(json);
   }
