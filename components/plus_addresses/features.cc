@@ -131,6 +131,12 @@ BASE_FEATURE(kPlusAddressOfferCreationOnSingleUsernameForms,
              "PlusAddressOfferCreationOnSingleUsernameForms",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, we check whether the server response to a Create call returned
+// information about existing profiles and return those as the parsing result.
+BASE_FEATURE(kPlusAddressParseExistingProfilesFromCreateResponse,
+             "PlusAddressParseExistingProfilesFromCreateResponse",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // When enabled, plus addresses are preallocated to avoid having to query the
 // server for every reserve call.
 BASE_FEATURE(kPlusAddressPreallocation,

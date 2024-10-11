@@ -6,6 +6,16 @@ import("//build/buildflag_header.gni")
 import("//components/plus_addresses/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
+component("features") {
+  output_name = "plus_addresses_features"
+  defines = [ "IS_PLUS_ADDRESSES_FEATURES_IMPL" ]
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  public_deps = [ "//base" ]
+}
+
 source_set("types") {
   sources = [
     "plus_address_types.cc",
@@ -25,6 +35,7 @@ source_set("parsing") {
     "plus_address_parsing_utils.h",
   ]
 
+  deps = [ ":features" ]
   public_deps = [
     ":types",
     "//base",
@@ -114,16 +125,6 @@ source_set("plus_addresses") {
     "//third_party/abseil-cpp:absl",
     "//url",
   ]
-}
-
-component("features") {
-  output_name = "plus_addresses_features"
-  defines = [ "IS_PLUS_ADDRESSES_FEATURES_IMPL" ]
-  sources = [
-    "features.cc",
-    "features.h",
-  ]
-  public_deps = [ "//base" ]
 }
 
 buildflag_header("plus_addresses_buildflags") {
