@@ -10,6 +10,7 @@ import("//extensions/buildflags/buildflags.gni")
 # TODO(https://crbug.com/356905053): Continue moving more here.
 extensions_api_schema_files_ = [
   "alarms.idl",
+  "runtime.json",
   "test.json",
 ]
 
@@ -67,7 +68,6 @@ if (enable_extensions) {
     "power.idl",
     "printer_provider.idl",
     "printer_provider_internal.idl",
-    "runtime.json",
     "serial.idl",
     "socket.idl",
     "sockets_tcp.idl",
